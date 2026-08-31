@@ -29,6 +29,7 @@ describe("Charles Martin Hall US 400,766 Archival Edition Contract", () => {
   test("publishes the candidate edition and validates its curated structure", () => {
     const validation = validateCuratedSpecificationEdition(
       hallAluminiumArchivalEdition as unknown as CuratedSpecificationEdition,
+      { requireCompleteFacsimileReview: false },
     );
     expect(validation.valid).toBe(true);
     expect(validation.errors).toEqual([]);

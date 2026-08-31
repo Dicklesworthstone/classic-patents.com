@@ -9,11 +9,10 @@ import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { validateCuratedSpecificationEdition } from "../src/data/archivalEditionValidation";
+import { ALL_COLORIZED_EQUATIONS } from "../src/data/colorizedEquations";
+import { archivalParallelReadingsFor } from "../src/data/editions/parallelReadings";
 import {
-  ARCHIVAL_PARALLEL_READINGS,
-  archivalParallelReadingsFor,
-} from "../src/data/editions/parallelReadings";
-import {
+  archivalEditionForPublication,
   isArchivalEditionExplicitlyWithheld,
   ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS,
 } from "../src/data/editions/publicationApproval";
@@ -24,11 +23,24 @@ import {
   validateReviewedTranscriptionPageAnchors,
   validateSourcePdfTextLayer,
 } from "../src/data/patents/sourceTextValidation";
+import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
 import type { CuratedSpecificationBlock, CuratedSpecificationInlines } from "../src/types/patent";
 
 const MAX_PDF_TEXT_BUFFER_BYTES = 64 * 1024 * 1024;
 const BARE_DRAWING_REFERENCE =
   /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|(?:section|division)\s+\d+)\b/i;
+const EXPECTED_MANUAL_EDITION_GAPS = [
+  "gb-1420-cort-puddling-rolling",
+  "us-2297691-carlson-electrophotography",
+  "us-233692-pelton-water-wheel",
+  "us-2543181-land-polaroid",
+  "us-2708656-fermi-reactor",
+  "us-313224-mergenthaler-linotype",
+  "us-3138743-kilby-integrated-circuit",
+  "us-3353115-maiman-ruby-laser",
+  "us-400766-hall-aluminium",
+  "us-706737-fessenden-wireless",
+] as const;
 
 // Root acceptance has independently rejected these incomplete source faces.
 // Keep this release-side sentinel separate from the editable publication map:
@@ -124,7 +136,12 @@ async function main() {
   let warnCount = 0;
   let sourceTextLayerCount = 0;
   let manualEditionCount = 0;
+  let physicsRegistryCount = 0;
+  let equationRegistryCount = 0;
+  let explicitVisualDispatchCount = 0;
   const manualEditionGaps: string[] = [];
+  const visualDispatcherPath = path.join(process.cwd(), "src/components/patents/visuals/index.tsx");
+  const visualDispatcherSource = fs.readFileSync(visualDispatcherPath, "utf8");
 
   const actualRootQaWithholds = [...ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS].sort();
   const requiredRootQaWithholds = [...REQUIRED_ROOT_QA_WITHHOLDS].sort();
@@ -317,12 +334,8 @@ async function main() {
     // transcript, HTML string, or runtime reconstruction. A patent-local
     // draft without that map is intentionally withheld by the renderer and
     // must not be validated as a visitor-facing edition.
-    const archivalEdition = patent.archivalEdition;
-    if (
-      archivalEdition &&
-      Object.hasOwn(ARCHIVAL_PARALLEL_READINGS, patent.id) &&
-      !isArchivalEditionExplicitlyWithheld(patent.id)
-    ) {
+    const archivalEdition = archivalEditionForPublication(patent);
+    if (archivalEdition) {
       publishedManualEdition = true;
       manualEditionCount++;
       const editionValidation = validateCuratedSpecificationEdition(archivalEdition);
@@ -473,9 +486,11 @@ async function main() {
       manualEditionGaps.push(patent.id);
       console.warn(
         patent.archivalEdition
-          ? isArchivalEditionExplicitlyWithheld(patent.id)
-            ? `⚠️  ${prefix} Complete source text is withheld pending root editorial acceptance.`
-            : `⚠️  ${prefix} Complete source text is withheld: a patent-local manual-edition draft has no published companion map.`
+          ? patent.archivalEdition.completeFacsimileReviewed !== true
+            ? `⚠️  ${prefix} Complete source text is withheld: the stored edition has not passed full-facsimile review.`
+            : isArchivalEditionExplicitlyWithheld(patent.id)
+              ? `⚠️  ${prefix} Complete source text is withheld pending root editorial acceptance.`
+              : `⚠️  ${prefix} Complete source text is withheld: a patent-local manual-edition draft has no published companion map.`
           : `⚠️  ${prefix} Complete source text is withheld: no manually prepared archival edition is published.`,
       );
     }
@@ -509,6 +524,50 @@ async function main() {
       fail("Incomplete historical context or patent wars record.");
     }
 
+    // 12. Executable vertical-slice coverage. These checks bind the catalogue
+    // identity to the actual visual dispatcher, SI telemetry owner, and live
+    // equation registry instead of inferring completion from file presence.
+    if (visualDispatcherSource.includes(`case "${patent.id}":`)) {
+      explicitVisualDispatchCount++;
+    } else {
+      fail("Missing explicit patent-id case in the interactive visual dispatcher.");
+    }
+
+    const physics = PATENT_PHYSICS_REGISTRY[patent.id];
+    if (!physics) {
+      fail("Missing PATENT_PHYSICS_REGISTRY owner.");
+    } else {
+      physicsRegistryCount++;
+      const defaultControls = Object.fromEntries(
+        physics.controls.map((control) => [control.id, control.defaultValue]),
+      );
+      try {
+        const metrics = physics.computeMetrics(defaultControls);
+        if (metrics.length === 0) {
+          fail("Physics owner returned no default telemetry metrics.");
+        }
+        for (const metric of metrics) {
+          if (
+            !metric.label.trim() ||
+            !metric.value.trim() ||
+            /(?:NaN|Infinity|undefined)/.test(metric.value)
+          ) {
+            fail(`Physics owner returned malformed default telemetry: ${JSON.stringify(metric)}.`);
+          }
+        }
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        fail(`Physics owner refused its admitted defaults: ${message}`);
+      }
+    }
+
+    const equations = ALL_COLORIZED_EQUATIONS[patent.id];
+    if (!equations?.length) {
+      fail("Missing live colorized-equation registry entry.");
+    } else {
+      equationRegistryCount++;
+    }
+
     if (patentErrorCount === 0 && pdfSizeBytes !== undefined) {
       console.log(
         publishedManualEdition
@@ -520,7 +579,16 @@ async function main() {
     }
   }
 
-  // 12. Check chronological ordering of allPatents
+  const actualManualEditionGaps = [...manualEditionGaps].sort();
+  const expectedManualEditionGaps = [...EXPECTED_MANUAL_EDITION_GAPS].sort();
+  if (JSON.stringify(actualManualEditionGaps) !== JSON.stringify(expectedManualEditionGaps)) {
+    console.error(
+      `❌ Published manual-edition coverage changed without updating the reviewed coverage contract. Expected gaps: ${expectedManualEditionGaps.join(", ") || "(none)"}. Actual gaps: ${actualManualEditionGaps.join(", ") || "(none)"}.`,
+    );
+    errorCount++;
+  }
+
+  // 13. Check chronological ordering of allPatents
   for (let i = 1; i < allPatents.length; i++) {
     if (allPatents[i].grantDate < allPatents[i - 1].grantDate) {
       console.error(
@@ -530,7 +598,7 @@ async function main() {
     }
   }
 
-  // 13. Test search queries
+  // 14. Test search queries
   const testQueries = ["Tesla", "Wright", "821,393", "Transistor", "Kevlar", "Noyce", "Wozniak"];
   for (const q of testQueries) {
     const results = searchPatents(q);
@@ -542,6 +610,9 @@ async function main() {
 
   console.log(
     `\nManual archival-edition coverage: ${manualEditionCount}/${allPatents.length}; raw source comparison layers: ${sourceTextLayerCount}/${allPatents.length}.`,
+  );
+  console.log(
+    `Executable vertical slices: ${explicitVisualDispatchCount}/${allPatents.length} explicit visual routes; ${physicsRegistryCount}/${allPatents.length} default-stepping SI telemetry owners; ${equationRegistryCount}/${allPatents.length} live equation sets.`,
   );
   if (manualEditionGaps.length > 0) {
     console.warn(`Withheld pending manual preparation: ${manualEditionGaps.join(", ")}.`);

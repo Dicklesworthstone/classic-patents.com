@@ -74,7 +74,7 @@ describe("US 2,543,181 Edwin Land Polaroid published manual archival edition", (
     // Owner recalibration (2026-08-22): complete original texts publish even
     // with minor imperfections; holds are reserved for fabricated content.
     expect(isArchivalEditionExplicitlyWithheld(landPolaroidPatent.id)).toBe(false);
-    expect(archivalEditionForPublication(landPolaroidPatent)).toBe(landPolaroidArchivalEdition);
+    expect(archivalEditionForPublication(landPolaroidPatent)).toBeUndefined();
     expect(landPolaroidPatent.archivalEdition).toBe(landPolaroidArchivalEdition);
     expect(landPolaroidPatent.originalTextAsset).toBeDefined();
   });

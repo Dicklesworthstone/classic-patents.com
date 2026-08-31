@@ -20,11 +20,12 @@ describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
     expect(mergenthalerLinotypePatent.originalTextAsset?.kind).toBe("source-pdf-text-layer");
   });
 
-  test("pins the 35-page facsimile and retains a structurally valid staged edition", () => {
+  test("pins the 35-page facsimile but keeps the unaccepted staged edition invalid", () => {
     expect(mergenthalerLinotypePatent.archivalEdition).toBeUndefined();
+    expect(mergenthalerLinotypeArchivalEdition.completeFacsimileReviewed).toBe(false);
     expect(validateCuratedSpecificationEdition(mergenthalerLinotypeArchivalEdition)).toEqual({
-      valid: true,
-      errors: [],
+      valid: false,
+      errors: ["The archival edition must attest that the complete facsimile was reviewed."],
     });
     const pdf = readFileSync(publicFile(mergenthalerLinotypePatent.originalPdfUrl));
     expect(createHash("sha256").update(pdf).digest("hex")).toBe(

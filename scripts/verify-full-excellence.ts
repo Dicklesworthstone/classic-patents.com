@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { archivalEditionForPublication } from "../src/data/editions/publicationApproval";
 import { allPatents } from "../src/data/patents";
 import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
 
@@ -104,11 +105,13 @@ for (const patent of allPatents) {
     passes++;
   }
 }
-console.log(`   ✓ All ${passes}/${allPatents.length} 3D simulators verified.`);
+console.log(`   ✓ ${passes}/${allPatents.length} registered visual routes passed this 3D audit.`);
 
 // 3. Audit Complete Original Text Assets & Archival Facsimiles
-console.log("\n3. Checking 100% Complete Source Text Assets & Archival Facsimiles:");
-let completeAssetsFound = 0;
+console.log("\n3. Checking reviewed source assets, published editions, and archival facsimiles:");
+let reviewedAssetsFound = 0;
+let publishedEditionsFound = 0;
+const publicationGaps: string[] = [];
 for (const patent of allPatents) {
   const pId = patent.id;
   const pdfPath = path.join(process.cwd(), "public", patent.originalPdfUrl);
@@ -117,21 +120,29 @@ for (const patent of allPatents) {
     errors++;
   }
 
-  if (patent.originalTextAsset?.url) {
+  if (patent.originalTextAsset?.kind === "reviewed-transcription") {
     const textPath = path.join(process.cwd(), "public", patent.originalTextAsset.url);
     if (fs.existsSync(textPath)) {
       const stats = fs.statSync(textPath);
       if (stats.size > 500) {
-        completeAssetsFound++;
+        reviewedAssetsFound++;
       } else {
         console.warn(`   ⚠️ [${pId}] Source text asset is small: ${stats.size} bytes`);
       }
     }
   }
+  if (archivalEditionForPublication(patent)) {
+    publishedEditionsFound++;
+  } else {
+    publicationGaps.push(pId);
+  }
 }
 console.log(
-  `   ✓ Complete Source-Text Assets verified (${completeAssetsFound}/${allPatents.length} patents published with verified full-text layers).`,
+  `   ✓ ${reviewedAssetsFound}/${allPatents.length} reviewed ledgers and ${publishedEditionsFound}/${allPatents.length} archival editions are published.`,
 );
+if (publicationGaps.length > 0) {
+  console.warn(`   ⚠️ Publication gaps: ${publicationGaps.join(", ")}.`);
+}
 
 // 4. Audit Physics Registry & Live SI Telemetry
 console.log("\n4. Checking FrankenSim Physics Engine & Governing Equations:");
@@ -167,12 +178,16 @@ for (const patent of allPatents) {
     }
   }
 }
-console.log(`   ✓ All 54 physics registry modules compute valid, non-trivial SI telemetry.`);
+console.log(
+  `   ✓ All ${allPatents.length} physics registry owners compute non-empty default telemetry.`,
+);
 
 console.log(`\n======================================================`);
 if (errors === 0) {
-  console.log(`✨ AUDIT RESULT: ALL QUALITY DIMENSIONS PASS UNIFORMLY!`);
-  console.log(`✨ 54/54 Patents satisfy the Wright Flyer standard of excellence.`);
+  console.log(`✓ AUDIT RESULT: IMPLEMENTED SOFTWARE SURFACES PASSED.`);
+  console.log(
+    `✓ Publication coverage is ${publishedEditionsFound}/${allPatents.length}; known gaps remain explicit rather than being counted as complete.`,
+  );
 } else {
   console.error(`❌ AUDIT FAILED with ${errors} errors.`);
   process.exit(1);

@@ -50,6 +50,25 @@ describe("validateCuratedSpecificationEdition", () => {
     expect(result.errors.join("\n")).toContain("full-facsimile review attestation");
   });
 
+  test("rejects an explicit negative full-facsimile attestation", () => {
+    const edition = validEdition();
+    edition.completeFacsimileReviewed = false;
+
+    expect(validateCuratedSpecificationEdition(edition)).toEqual({
+      valid: false,
+      errors: ["The archival edition must attest that the complete facsimile was reviewed."],
+    });
+  });
+
+  test("can structurally validate a stored WIP edition without publishing it", () => {
+    const edition = validEdition();
+    edition.completeFacsimileReviewed = false;
+
+    expect(
+      validateCuratedSpecificationEdition(edition, { requireCompleteFacsimileReview: false }),
+    ).toEqual({ valid: true, errors: [] });
+  });
+
   test("rejects duplicate claims and malformed authored table rows", () => {
     const edition = validEdition();
     edition.blocks.push({

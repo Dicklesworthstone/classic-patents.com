@@ -117,7 +117,7 @@ describe("archival publication boundary", () => {
     const approvedMappedIds = Object.keys(ARCHIVAL_PARALLEL_READINGS)
       .filter((patentId) => {
         const patent = allPatents.find((candidate) => candidate.id === patentId);
-        return Boolean(patent?.archivalEdition);
+        return Boolean(patent?.archivalEdition?.completeFacsimileReviewed);
       })
       .toSorted();
 
@@ -130,7 +130,12 @@ describe("archival publication boundary", () => {
     // path may consult it again.
     expect(ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS.length).toBeGreaterThan(0);
     for (const patent of allPatents) {
-      if (!patent.archivalEdition || !ARCHIVAL_PARALLEL_READINGS[patent.id]) continue;
+      if (
+        !patent.archivalEdition?.completeFacsimileReviewed ||
+        !ARCHIVAL_PARALLEL_READINGS[patent.id]
+      ) {
+        continue;
+      }
       expect(archivalEditionForPublication(patent)).toBe(patent.archivalEdition);
     }
   });

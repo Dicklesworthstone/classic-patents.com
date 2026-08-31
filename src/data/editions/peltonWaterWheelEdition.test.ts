@@ -29,6 +29,7 @@ describe("US 233,692 manual source edition", () => {
     });
     const candidateValidation = validateCuratedSpecificationEdition(
       peltonWaterWheelArchivalEdition as unknown as CuratedSpecificationEdition,
+      { requireCompleteFacsimileReview: false },
     );
     expect(candidateValidation.valid).toBeTrue();
     expect(candidateValidation.errors).toEqual([]);

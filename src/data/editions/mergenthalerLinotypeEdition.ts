@@ -733,9 +733,12 @@ const mergenthalerLinotypeClaimSeed: PatentClaim[] = [
 export const mergenthalerLinotypeArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "d85530ab4302e8be7e4c0ac280d438756f1dd21dabc844f2c5b2e76861d7444a",
-  preparedBy: "Classic Patents editorial agent (CobaltDuck)",
+  preparedBy: "Classic Patents editorial staging draft (CobaltDuck)",
   preparedAt: "2026-08-21",
-  completeFacsimileReviewed: true,
+  // This draft is deliberately invalid for publication. The 2026-08-30
+  // independent audit found that its opening blocks and the staged ledger's
+  // drawing-page headers do not match the pinned 17-sheet facsimile.
+  completeFacsimileReviewed: false,
   blocks: [
     {
       kind: "masthead",

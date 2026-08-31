@@ -94,11 +94,8 @@ const SOURCE_QA_RELEASED_EDITIONS = [
   "us-x9430-colt-revolver",
 ] as const;
 
-describe("retired root editorial holds", () => {
-  test("publishes every formerly held edition that has authored text and its companion map", () => {
-    // Owner policy (2026-08-21): the QA notes recorded against these records
-    // (short decoders, imperfect crops) no longer justify hiding a complete
-    // original text. Publication now requires only authored text + readings.
+describe("root editorial hold history", () => {
+  test("publishes a formerly held edition only after positive full-facsimile review", () => {
     for (const patentId of REQUIRED_ROOT_EDITORIAL_HOLDS) {
       const patent =
         allPatents.find((candidate) => candidate.id === patentId) ??
@@ -108,11 +105,7 @@ describe("retired root editorial holds", () => {
       expect(patent, `missing catalog record ${patentId}`).toBeDefined();
       if (!patent) continue;
 
-      // Owner policy (2026-08-22 recalibration): a bound edition publishes
-      // unconditionally — missing companion maps degrade gracefully in the
-      // renderer. Only records with no edition at all stay unpublished
-      // (nothing exists to show).
-      if (patent.archivalEdition) {
+      if (patent.archivalEdition?.completeFacsimileReviewed === true) {
         expect(archivalEditionForPublication(patent)).toBe(patent.archivalEdition);
       } else {
         expect(archivalEditionForPublication(patent)).toBeUndefined();

@@ -261,7 +261,9 @@ export function parsePatentCatalog(patents: unknown[]): Patent[] {
       throw new Error(`Patent ${parsed.data.id}: filingDate is after grantDate`);
     }
     if (parsed.data.archivalEdition) {
-      const editionValidation = validateCuratedSpecificationEdition(parsed.data.archivalEdition);
+      const editionValidation = validateCuratedSpecificationEdition(parsed.data.archivalEdition, {
+        requireCompleteFacsimileReview: false,
+      });
       if (!editionValidation.valid) {
         throw new Error(
           `Patent ${parsed.data.id}: invalid manual archival edition: ${editionValidation.errors.join(" ")}`,

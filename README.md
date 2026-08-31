@@ -10,7 +10,7 @@
 [![Type Checked: Strict TS](https://img.shields.io/badge/TypeScript-5.7_Strict-3178c6.svg)](https://www.typescriptlang.org/)
 [![Code Quality: Biome](https://img.shields.io/badge/Linter-Biome_2.5-60a5fa.svg)](https://biomejs.dev/)
 
-**An open-source digital museum and technical analysis platform restoring history's most consequential patents into verified transcripts, full original PDFs, rigorous "Plain English" engineering breakdowns, and interactive real-time 3D physical simulations.**
+**An open-source digital museum and technical analysis platform restoring history's most consequential patents into pinned facsimiles, reviewed archival editions, rigorous "Plain English" engineering breakdowns, and interactive physical simulations.**
 
 [**Explore the Live Museum**](https://classic-patents.com) · [**Interactive Timeline**](https://classic-patents.com/timeline) · [**Comprehensive Plan**](./COMPREHENSIVE_PLAN_FOR_CLASSIC_PATENTS.md) · [**Agent Guidelines**](./AGENTS.md)
 
@@ -23,16 +23,16 @@
 **The Problem:** Original patents represent the greatest technical breakthroughs in human history—from the Wright Brothers' 3-axis flight control to Tesla's progressive two-circuit alternating-current motor-generator and Robert Noyce's monolithic silicon chip. However, in their historical state, they are trapped in low-resolution microfilm scans, archaic legal jargon ("*Be it known that we...*"), and static 2D lithographs that cannot convey dynamic physical mechanisms.
 
 **The Solution:** **Classic Patents** restores these masterpieces:
-1. **Verified Archival Transcripts & Embedded PDFs**: High-fidelity digitized text alongside complete, high-resolution original USPTO facsimile documents.
+1. **Reviewed Archival Editions & Embedded PDFs**: Continuous hand-authored source faces and reviewed ledgers alongside pinned public-record facsimiles. Coverage is explicit: 69 of 79 catalogue records currently publish the reviewed edition contract; ten stored or missing editions remain fail-closed pending full-facsimile acceptance.
 2. **Dual-Projection (Diptych Engine)**: Side-by-side synchronized views of the verbatim legal specification and a lucid, mathematically rigorous **"Plain English" engineering breakdown**.
-3. **Interactive 3D WebGL & Physics Visualizations**: Parameterized 3D Three.js modules with vibrant atmospheric blue skies, studio lighting, and interactive controls allowing visitors to manipulate real physical parameters (e.g. twisting the Wright Flyer's wings to observe adverse yaw and vortex shedding, adjusting the generator rate to observe Tesla's progressive pole shift in the Fig. 9 motor-generator, testing nuclear reactor cadmium rod criticality, or inspecting Wozniak's two-phase shared memory multiplexing).
+3. **Interactive 2D/3D Physics Visualizations**: Parameterized Three.js, SVG, and Canvas instruments let visitors manipulate real physical parameters. The shared telemetry bus uses a compiled FrankenSim WASM owner only when that module genuinely loads and steps; otherwise the UI identifies its typed host owner rather than presenting a WASM badge.
 4. **Historical & Legal Deconstructions**: Line-by-line claim decoders, patent litigation histories (Wright vs. Curtiss, Bell vs. Gray, Farnsworth vs. RCA, Goodyear vs. Day, SRI vs. Xerox/Apple), and civilizational impact analyses.
 
 ---
 
 ## Curated Historical Patents (22 Featured — 79 in the Live Catalogue)
 
-The live, searchable catalogue at [classic-patents.com](https://classic-patents.com) holds all 79 records — every one with a pinned USPTO facsimile, reviewed transcription, archival edition, and interactive simulation. This table highlights 22 foundational entries; the site's search (⌘K) and timeline cover the complete registry.
+The live, searchable catalogue at [classic-patents.com](https://classic-patents.com) holds 79 records. All 79 have pinned facsimiles, explicit interactive-visual routes, default-stepping SI telemetry owners, and live equation sets. **69 of 79** currently cross the reviewed-edition publication boundary. Nine more records store editions whose own `completeFacsimileReviewed` attestation is false; Linotype has no bound edition. `us-313224-mergenthaler-linotype` remains on its pinned facsimile, source-PDF text layer, 70 staged claim nodes, and source-bounded editorial face after its ledger/draft failed independent acceptance against the pinned 17-sheet facsimile. This table highlights 22 foundational entries; search (⌘K) and the timeline cover the full registry.
 
 | Patent | Title | Inventors | Grant Date | Key Breakthrough | Interactive 3D Sim |
 |---|---|---|---|---|---|
@@ -73,8 +73,8 @@ The live, searchable catalogue at [classic-patents.com](https://classic-patents.
 │                     PATENT DUAL-PROJECTION ENGINE                       │
 │  ┌─────────────────────────────────┬────────────────────────────────┐  │
 │  │   Face 1: Archival Facsimile    │  Face 2: Plain English         │  │
-│  │   • Verbatim OCR Transcript     │  • Deep Engineering Analysis   │  │
-│  │   • Full Embedded USPTO PDF     │  • Line-by-Line Claim Decoders │  │
+│  │   • Reviewed Archival Edition   │  • Deep Engineering Analysis   │  │
+│  │   • Pinned Public Facsimile     │  • Line-by-Line Claim Decoders │  │
 │  │   • Numbered Interactive Pins   │  • Historical Patent Wars      │  │
 │  └─────────────────────────────────┴────────────────────────────────┘  │
 ├────────────────────────────────────────────────────────────────────────┤
@@ -86,27 +86,22 @@ The live, searchable catalogue at [classic-patents.com](https://classic-patents.
 │  • 3D Wozniak Apple II Interleaved Memory Bus & NTSC Color Burst       │
 │  • Dynamic On-Demand Code Splitting (198 kB Initial JS Payload)        │
 ├────────────────────────────────────────────────────────────────────────┤
-│              FRANKENSIM COMPUTATIONAL PHYSICS WASM CORE                │
-│  • 6-DoF Aerodynamics (`fs-flyer-wasm`, `fs-mbd`, `fs-time`)           │
-│  • Maxwell Electromagnetics & Alternating-Current Fields (`fs-flux`)   │
-│  • Solid-State & Microelectronics (`fs-lattice`, `fs-exec`)            │
-│  • Thermodynamics & Dalton Refrigeration (`fs-conduction`, `fs-lbm`)   │
-│  • Reactor Criticality & Delayed Neutron Kinetics (`fs-lattice`)       │
-│  • Polymer Tensile Lattices & Mechanisms (`fs-truss`, `fs-solid`)      │
+│                TYPED SI PHYSICS & TELEMETRY OWNER BUS                  │
+│  • 79/79 default-stepping registry owners with explicit equations      │
+│  • Compiled FrankenSim WASM where a module is actually loaded/stepped  │
+│  • Typed host kernels elsewhere, identified without a WASM claim       │
+│  • Shared controls/telemetry across 2D, 3D, schematic, and source face │
+│  • Blake3 state digests and refusal boundaries on WASM-owned paths     │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Computational Physics Engine (FrankenSim WASM)
+## Computational Physics and Telemetry Owners
 
-The interactive simulators are backed by **FrankenSim** WebAssembly kernels with Blake3 state digests and typed refusal boundaries:
-1. **Aerodynamics & 6-DoF MBD** (`fs-flyer-wasm`, `fs-mbd`, `fs-time`): Wright Flyer wing-warping induced drag and adverse yaw; Goddard supersonic rocket de Laval expansion.
-2. **Electromagnetics & Alternating-Current Fields** (`fs-flux`): Tesla's Fig. 9 generator-coupled progressive pole shift; Bell variable-reluctance acoustic currents; Marconi spark RF wavefields.
-3. **Solid-State & Microelectronics** (`fs-lattice`, `fs-sparse`, `fs-exec`): Bardeen point-contact hole injection; Noyce planar $\text{SiO}_2$ passivation; Wozniak two-phase interleaved memory arbitration.
-4. **Thermodynamics & Transport** (`fs-conduction`, `fs-convection`, `fs-lbm`): Edison Stefan-Boltzmann vacuum filament emission; Einstein-Szilard ternary partial-pressure absorption cooling.
-5. **Nuclear Physics** (`fs-lattice`, `fs-rand`): Fermi-Szilard 6-group delayed neutron kinetics and cadmium rod criticality index ($k_{\text{eff}}$).
-6. **Polymers & Continuum Mechanics** (`fs-truss`, `fs-solid`, `fs-matdb`): Goodyear sulfur cross-linking; Kwolek Kevlar aramid tensile alignment.
+Every catalogue id has a typed `PATENT_PHYSICS_REGISTRY` entry that accepts SI controls and produces non-empty default telemetry. Aerodynamics, electromagnetics, solid-state electronics, thermodynamics, reactor kinetics, polymers, and mechanisms all use this same presentation contract.
+
+The implementation owner is disclosed at runtime. A visual may use a compiled **FrankenSim** WebAssembly step with Blake3 state digests and typed refusal boundaries, or an explicitly identified TypeScript kernel while its generic FrankenSim composition is still being bound. Tests and `bun run pipeline:verify` exercise every catalogue id's default owner and ensure every id has its own visual-dispatch case and live equation set; file presence alone is not treated as proof of physical integration.
 
 See the complete roadmap in [`docs/FRANKENSIM_WASM_INTEGRATION_TODO.md`](./docs/FRANKENSIM_WASM_INTEGRATION_TODO.md).
 

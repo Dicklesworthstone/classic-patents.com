@@ -2,9 +2,10 @@
  * Root-owned editorial holds for source editions that have not passed final
  * facsimile, transcript, claim, figure, and companion-reading acceptance.
  *
- * Editorial calibration (root decision, 2026-08-22): withholding a readable
- * full-text edition costs the visitor more than publishing it with minor
- * imperfections. Holds are therefore reserved for substantive defects only:
+ * A stored edition is not automatically a published edition. Publication
+ * requires an authored companion map and a positive full-facsimile review
+ * attestation. This preserves useful WIP source material without presenting it
+ * to visitors as reviewed historical text.
  *
  *  - the source edition is not bound yet (no edition object), or
  *  - the companion-reading map is not authored yet (publishing would crash
@@ -22,6 +23,7 @@
  */
 
 import type { Patent } from "@/types/patent";
+import { validateCuratedSpecificationEdition } from "../archivalEditionValidation";
 import { ARCHIVAL_PARALLEL_READINGS } from "./parallelReadings";
 
 export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
@@ -50,12 +52,8 @@ export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
 ] as const;
 
 export function isArchivalEditionExplicitlyWithheld(patentId: string): boolean {
-  // OWNER POLICY (Jeffrey Emanuel, 2026-08-22): only editions whose content
-  // is fabricated relative to the source facsimile stay withheld. Nit-pick
-  // holds (missing companions, partial ledger verification, pending
-  // facsimile attestation) no longer gate publication — a missing complete
-  // original text is a far worse visitor outcome than its presence with
-  // gaps. The viewer discloses maturity honestly instead.
+  // Fabrication holds are an additional hard stop. Review attestation and
+  // companion-map checks are enforced separately below.
   return FABRICATED_CONTENT_HOLD_IDS.has(patentId);
 }
 
@@ -67,5 +65,7 @@ const FABRICATED_CONTENT_HOLD_IDS = new Set<string>([]);
 export function archivalEditionForPublication(patent: Pick<Patent, "id" | "archivalEdition">) {
   if (isArchivalEditionExplicitlyWithheld(patent.id)) return undefined;
   if (!ARCHIVAL_PARALLEL_READINGS[patent.id]) return undefined;
-  return patent.archivalEdition ?? undefined;
+  if (!patent.archivalEdition) return undefined;
+  if (!validateCuratedSpecificationEdition(patent.archivalEdition).valid) return undefined;
+  return patent.archivalEdition;
 }
