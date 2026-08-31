@@ -100,10 +100,7 @@ export function buildPageRankModel(): PageRankModel {
   daisGroup.position.set(0, -3.2, 0);
   root.add(daisGroup);
 
-  const baseDais = new THREE.Mesh(
-    trackGeo(new THREE.CylinderGeometry(4.2, 4.4, 0.4, 36)),
-    baseMat,
-  );
+  const baseDais = new THREE.Mesh(trackGeo(new THREE.CylinderGeometry(4.2, 4.4, 0.4, 36)), baseMat);
   baseDais.receiveShadow = true;
   daisGroup.add(baseDais);
 

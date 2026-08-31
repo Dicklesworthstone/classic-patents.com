@@ -80,10 +80,7 @@ export function buildCarrierAirConditionerModel(): CarrierAirConditionerModelRes
 
   // Longitudinal I-Beam Rails
   for (const z of [-1.5, 1.5]) {
-    const rail = new THREE.Mesh(
-      trackGeo(new THREE.BoxGeometry(7.6, 0.25, 0.2)),
-      materials.casing,
-    );
+    const rail = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(7.6, 0.25, 0.2)), materials.casing);
     rail.position.set(0, -1.6, z);
     rail.receiveShadow = true;
     baseFrameGroup.add(rail);

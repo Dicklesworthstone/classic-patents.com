@@ -65,7 +65,7 @@ export function buildDaimlerMarineEngineModel(): DaimlerMarineEngineModel {
   const add = (
     geometry: THREE.BufferGeometry,
     material: THREE.Material,
-    parent: THREE.Group,
+    parent: THREE.Object3D,
     position: [number, number, number],
   ) => {
     geometries.push(geometry);
@@ -105,7 +105,7 @@ export function buildDaimlerMarineEngineModel(): DaimlerMarineEngineModel {
     add(new THREE.CylinderGeometry(0.06, 0.06, 0.5, 10), steel, motorGroup, [mx, -0.15, mz]);
   }
 
-  // In-line motor cylinder & crankcase (Fig. 1 / claim 1).
+  // In-line motor cylinder and casing (Fig. 1 / claim 1).
   add(new THREE.BoxGeometry(1.8, 1.2, 1.5), castIron, motorGroup, [0, 0.2, 0]);
   // Top cylinder head and valve chest
   add(new THREE.CylinderGeometry(0.65, 0.65, 0.45, 20), castIron, motorGroup, [0, 1.0, 0]);
@@ -126,11 +126,12 @@ export function buildDaimlerMarineEngineModel(): DaimlerMarineEngineModel {
       -0.6,
       0,
     ]);
-    const bearingCap = add(new THREE.CylinderGeometry(0.28, 0.28, 0.42, 16), brass, pedestal, [
-      0,
-      0.75,
-      0,
-    ]);
+    const bearingCap = add(
+      new THREE.CylinderGeometry(0.28, 0.28, 0.42, 16),
+      brass,
+      pedestal,
+      [0, 0.75, 0],
+    );
     bearingCap.rotation.z = Math.PI / 2;
   }
 
@@ -144,12 +145,11 @@ export function buildDaimlerMarineEngineModel(): DaimlerMarineEngineModel {
   propHub.rotation.z = Math.PI / 2;
   for (let b = 0; b < 3; b++) {
     const angle = (b * Math.PI * 2) / 3;
-    const blade = add(
-      new THREE.BoxGeometry(0.08, 0.9, 0.35),
-      brass,
-      propellerShaftGroup,
-      [4.6, 0.15 + Math.sin(angle) * 0.5, Math.cos(angle) * 0.5],
-    );
+    const blade = add(new THREE.BoxGeometry(0.08, 0.9, 0.35), brass, propellerShaftGroup, [
+      4.6,
+      0.15 + Math.sin(angle) * 0.5,
+      Math.cos(angle) * 0.5,
+    ]);
     blade.rotation.x = angle + 0.35;
   }
 

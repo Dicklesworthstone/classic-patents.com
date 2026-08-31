@@ -18,15 +18,100 @@ const same = (actual: unknown, expected: unknown, label: string) => {
 // readable for defensive runtime behavior, but every alphabetic TeX command
 // in the shipped corpus must have an explicit native interpretation here.
 const supportedTeXCommands = new Set([
-  "Delta", "Gamma", "Lambda", "Omega", "Phi", "Pi", "Psi", "Rightarrow", "Sigma", "Theta",
-  "alpha", "approx", "bar", "begin", "beta", "cap", "cdot", "circ", "cos", "ddot", "delta",
-  "dot", "dots", "downarrow", "ell", "end", "epsilon", "eta", "exp", "frac", "gamma", "ge",
-  "gg", "hat", "implies", "in", "infty", "int", "kappa", "lambda", "le", "left", "leftarrow",
-  "leq", "lesssim", "lfloor", "ln", "log", "longrightarrow", "mathbf", "mathcal", "mathrm", "mbox", "min",
-  "mu", "nabla", "nu", "oint", "omega", "partial", "perp", "phi", "pi", "pm", "pmod", "prime",
-  "prod", "propto", "psi", "qquad", "quad", "rfloor", "rho", "right", "rightarrow",
-  "rightleftharpoons", "sigma", "sim", "sin", "sqrt", "sum", "tan", "tau", "text", "textcolor",
-  "theta", "times", "to", "uparrow", "varepsilon", "vec", "xi", "xrightarrow", "zeta",
+  "Delta",
+  "Gamma",
+  "Lambda",
+  "Omega",
+  "Phi",
+  "Pi",
+  "Psi",
+  "Rightarrow",
+  "Sigma",
+  "Theta",
+  "alpha",
+  "approx",
+  "bar",
+  "begin",
+  "beta",
+  "cap",
+  "cdot",
+  "circ",
+  "cos",
+  "ddot",
+  "delta",
+  "dot",
+  "dots",
+  "downarrow",
+  "ell",
+  "end",
+  "epsilon",
+  "eta",
+  "exp",
+  "frac",
+  "gamma",
+  "ge",
+  "gg",
+  "hat",
+  "implies",
+  "in",
+  "infty",
+  "int",
+  "kappa",
+  "lambda",
+  "le",
+  "left",
+  "leftarrow",
+  "leq",
+  "lesssim",
+  "lfloor",
+  "ln",
+  "log",
+  "longrightarrow",
+  "mathbf",
+  "mathcal",
+  "mathrm",
+  "mbox",
+  "min",
+  "mu",
+  "nabla",
+  "nu",
+  "oint",
+  "omega",
+  "partial",
+  "perp",
+  "phi",
+  "pi",
+  "pm",
+  "pmod",
+  "prime",
+  "prod",
+  "propto",
+  "psi",
+  "qquad",
+  "quad",
+  "rfloor",
+  "rho",
+  "right",
+  "rightarrow",
+  "rightleftharpoons",
+  "sigma",
+  "sim",
+  "sin",
+  "sqrt",
+  "sum",
+  "tan",
+  "tau",
+  "text",
+  "textcolor",
+  "theta",
+  "times",
+  "to",
+  "uparrow",
+  "varepsilon",
+  "vec",
+  "xi",
+  "xrightarrow",
+  "zeta",
 ]);
 
 const collectTeXCommands = (value: unknown, commands = new Set<string>()): Set<string> => {
@@ -44,10 +129,17 @@ const resourceURL = new URL("./Resources/patents.json", import.meta.url);
 const records = (await Bun.file(resourceURL).json()) as ExportedPatent[];
 const corpusTeXCommands = collectTeXCommands(records);
 for (const command of corpusTeXCommands) {
-  assert(supportedTeXCommands.has(command), `native equation renderer does not support \\${command}`);
+  assert(
+    supportedTeXCommands.has(command),
+    `native equation renderer does not support \\${command}`,
+  );
 }
-const nativeMathSource = await Bun.file(new URL("./Sources/NativeMathView.swift", import.meta.url)).text();
-const nativeFormatterSource = await Bun.file(new URL("./Sources/NativeDocumentKit.swift", import.meta.url)).text();
+const nativeMathSource = await Bun.file(
+  new URL("./Sources/NativeMathView.swift", import.meta.url),
+).text();
+const nativeFormatterSource = await Bun.file(
+  new URL("./Sources/NativeDocumentKit.swift", import.meta.url),
+).text();
 for (const command of corpusTeXCommands) {
   if (["begin", "end"].includes(command)) continue;
   assert(
@@ -60,12 +152,21 @@ for (const command of corpusTeXCommands) {
   );
 }
 const supportedEditionBlocks = new Set([
-  "masthead", "heading", "paragraph", "claim", "figure-sheet", "table", "equation",
+  "masthead",
+  "heading",
+  "paragraph",
+  "claim",
+  "figure-sheet",
+  "table",
+  "equation",
 ]);
 const supportedEditionInlines = new Set(["text", "emphasis", "small-caps", "term", "reference"]);
 for (const record of records) {
   for (const block of record.archivalEdition?.blocks ?? []) {
-    assert(supportedEditionBlocks.has(block.kind), `${record.id}: native edition reader does not render ${block.kind}`);
+    assert(
+      supportedEditionBlocks.has(block.kind),
+      `${record.id}: native edition reader does not render ${block.kind}`,
+    );
     const visitInlines = (value: unknown) => {
       if (Array.isArray(value)) {
         for (const child of value) visitInlines(child);
@@ -86,7 +187,10 @@ for (const record of records) {
   }
 }
 const byId = new Map(records.map((record) => [record.id, record]));
-assert(records.length === allPatents.length, `record count ${records.length} != ${allPatents.length}`);
+assert(
+  records.length === allPatents.length,
+  `record count ${records.length} != ${allPatents.length}`,
+);
 assert(byId.size === records.length, "bundled patent ids are not unique");
 assert(
   records.every((record) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(record.id)),
@@ -96,11 +200,13 @@ assert(
   new Set(records.map((record) => record.patentNumber)).size === records.length,
   "bundled patent numbers are not unique",
 );
-same(records.map((record) => record.id), allPatents.map((patent) => patent.id), "patent order or ids drifted");
+same(
+  records.map((record) => record.id),
+  allPatents.map((patent) => patent.id),
+  "patent order or ids drifted",
+);
 
-const projectConfiguration = await Bun.file(
-  new URL("./project.yml", import.meta.url),
-).text();
+const projectConfiguration = await Bun.file(new URL("./project.yml", import.meta.url)).text();
 assert(
   /excludes:\s*[\s\S]*PatentDetailView\.swift/.test(projectConfiguration),
   "the superseded external-link PatentDetailView must stay excluded from the native target",
@@ -162,14 +268,23 @@ for (const patent of allPatents) {
     /^[0-9a-f]{64}$/i.test(record.originalTextAsset?.sourcePdfSha256 ?? ""),
     `${patent.id}: canonical PDF SHA-256 is missing or malformed`,
   );
-  assert(record.sourceVisualization?.spatialComponent, `${patent.id}: missing spatial visualization route`);
-  assert(record.sourceVisualization?.vectorComponent, `${patent.id}: missing vector visualization route`);
+  assert(
+    record.sourceVisualization?.spatialComponent,
+    `${patent.id}: missing spatial visualization route`,
+  );
+  assert(
+    record.sourceVisualization?.vectorComponent,
+    `${patent.id}: missing vector visualization route`,
+  );
 
   const claimNumbers = record.claims.map((claim: { number: number }) => claim.number);
   const claimNumberSet = new Set(claimNumbers);
   assert(claimNumberSet.size === claimNumbers.length, `${patent.id}: duplicate claim number`);
   for (const claim of record.claims) {
-    assert(Number.isInteger(claim.number) && claim.number > 0, `${patent.id}: invalid claim number ${claim.number}`);
+    assert(
+      Number.isInteger(claim.number) && claim.number > 0,
+      `${patent.id}: invalid claim number ${claim.number}`,
+    );
     for (const dependency of claim.dependsOn ?? []) {
       assert(
         claimNumberSet.has(dependency) && dependency !== claim.number,
@@ -178,23 +293,38 @@ for (const patent of allPatents) {
     }
   }
   if (record.stats) {
-    assert(record.stats.totalClaims === record.claims.length, `${patent.id}: total-claim statistic drifted`);
     assert(
-      record.stats.independentClaims === record.claims.filter((claim: { isIndependent: boolean }) => claim.isIndependent).length,
+      record.stats.totalClaims === record.claims.length,
+      `${patent.id}: total-claim statistic drifted`,
+    );
+    assert(
+      record.stats.independentClaims ===
+        record.claims.filter((claim: { isIndependent: boolean }) => claim.isIndependent).length,
       `${patent.id}: independent-claim statistic drifted`,
     );
   }
 
-  const drawingIDs = record.drawings.map((drawing: { figureNumber: string }) => drawing.figureNumber);
-  assert(new Set(drawingIDs).size === drawingIDs.length, `${patent.id}: duplicate drawing figure number`);
+  const drawingIDs = record.drawings.map(
+    (drawing: { figureNumber: string }) => drawing.figureNumber,
+  );
+  assert(
+    new Set(drawingIDs).size === drawingIDs.length,
+    `${patent.id}: duplicate drawing figure number`,
+  );
   for (const drawing of record.drawings) {
     const calloutIDs = drawing.callouts.map((callout: { id: string }) => callout.id);
-    assert(new Set(calloutIDs).size === calloutIDs.length, `${patent.id}/${drawing.figureNumber}: duplicate callout id`);
+    assert(
+      new Set(calloutIDs).size === calloutIDs.length,
+      `${patent.id}/${drawing.figureNumber}: duplicate callout id`,
+    );
     for (const callout of drawing.callouts) {
       assert(
-        Number.isFinite(callout.x) && Number.isFinite(callout.y)
-          && 0 <= callout.x && callout.x <= 100
-          && 0 <= callout.y && callout.y <= 100,
+        Number.isFinite(callout.x) &&
+          Number.isFinite(callout.y) &&
+          0 <= callout.x &&
+          callout.x <= 100 &&
+          0 <= callout.y &&
+          callout.y <= 100,
         `${patent.id}/${drawing.figureNumber}/${callout.id}: invalid callout coordinate`,
       );
     }
@@ -203,9 +333,15 @@ for (const patent of allPatents) {
   const equationIDs = record.equations.map((equation: { id: string }) => equation.id);
   assert(new Set(equationIDs).size === equationIDs.length, `${patent.id}: duplicate equation id`);
   for (const equation of record.equations) {
-    assert(equation.patentId === patent.id, `${patent.id}/${equation.id}: equation patent id drifted`);
+    assert(
+      equation.patentId === patent.id,
+      `${patent.id}/${equation.id}: equation patent id drifted`,
+    );
     const variableIDs = new Set(equation.variables.map((variable: { id: string }) => variable.id));
-    assert(variableIDs.size === equation.variables.length, `${patent.id}/${equation.id}: duplicate equation variable id`);
+    assert(
+      variableIDs.size === equation.variables.length,
+      `${patent.id}/${equation.id}: duplicate equation variable id`,
+    );
     for (const fragment of equation.plainEnglishSentence) {
       assert(
         fragment.variableId == null || variableIDs.has(fragment.variableId),
@@ -220,13 +356,19 @@ for (const patent of allPatents) {
 
   if (record.physics) {
     const controlIDs = record.physics.controls.map((control: { id: string }) => control.id);
-    assert(new Set(controlIDs).size === controlIDs.length, `${patent.id}: duplicate physics control id`);
+    assert(
+      new Set(controlIDs).size === controlIDs.length,
+      `${patent.id}: duplicate physics control id`,
+    );
     for (const control of record.physics.controls) {
       assert(
-        Number.isFinite(control.min) && Number.isFinite(control.max)
-          && Number.isFinite(control.step) && Number.isFinite(control.defaultValue)
-          && control.min <= control.defaultValue && control.defaultValue <= control.max
-          && control.step > 0,
+        Number.isFinite(control.min) &&
+          Number.isFinite(control.max) &&
+          Number.isFinite(control.step) &&
+          Number.isFinite(control.defaultValue) &&
+          control.min <= control.defaultValue &&
+          control.defaultValue <= control.max &&
+          control.step > 0,
         `${patent.id}/${control.id}: invalid physics control contract`,
       );
     }
@@ -238,10 +380,15 @@ const assetGlob = new Bun.Glob("**/*.{png,txt}");
 const sourceAssets = [...assetGlob.scanSync({ cwd: publicRoot, onlyFiles: true })]
   .map((path) => `patents/${path}`)
   .sort();
-const manifest = (await Bun.file(new URL("./Resources/patent-assets.json", import.meta.url)).json()) as string[];
+const manifest = (await Bun.file(
+  new URL("./Resources/patent-assets.json", import.meta.url),
+).json()) as string[];
 const manifestSet = new Set(manifest);
 same(manifest, sourceAssets, "bundled non-PDF asset manifest drifted");
-assert(!manifest.some((path) => path.toLowerCase().endsWith(".pdf")), "a PDF was bundled into the app");
+assert(
+  !manifest.some((path) => path.toLowerCase().endsWith(".pdf")),
+  "a PDF was bundled into the app",
+);
 for (const record of records) {
   const sourcePatent = allPatents.find((patent) => patent.id === record.id);
   const editionAssets = referencedEditionAssets(sourcePatent?.archivalEdition);
@@ -258,10 +405,16 @@ for (const record of records) {
   same(record.bundledAssets, expectedBundled, `${record.id}: bundled asset ledger drifted`);
   same(record.withheldAssets, expectedWithheld, `${record.id}: withheld asset ledger drifted`);
   for (const path of record.bundledAssets ?? []) {
-    assert(manifest.includes(path), `${record.id}: linked asset is absent from the bundle manifest: ${path}`);
+    assert(
+      manifest.includes(path),
+      `${record.id}: linked asset is absent from the bundle manifest: ${path}`,
+    );
   }
   for (const path of record.withheldAssets ?? []) {
-    assert(!manifest.includes(path), `${record.id}: an available asset is incorrectly marked withheld: ${path}`);
+    assert(
+      !manifest.includes(path),
+      `${record.id}: an available asset is incorrectly marked withheld: ${path}`,
+    );
     assert(
       record.archivalEdition?.completeFacsimileReviewed !== true,
       `${record.id}: an approved edition references a missing source asset: ${path}`,
@@ -270,13 +423,15 @@ for (const record of records) {
   if (!record.archivalEdition) {
     const sourceTextPath = record.originalTextAsset?.url?.replace(/^\//, "");
     assert(
-      typeof sourceTextPath === "string"
-        && sourceTextPath.endsWith(".txt")
-        && record.bundledAssets.includes(sourceTextPath),
+      typeof sourceTextPath === "string" &&
+        sourceTextPath.endsWith(".txt") &&
+        record.bundledAssets.includes(sourceTextPath),
       `${record.id}: record without an archival edition has no complete bundled source reader`,
     );
     if (typeof sourceTextPath === "string" && manifestSet.has(sourceTextPath)) {
-      const transcription = await Bun.file(new URL(`../public/${sourceTextPath}`, import.meta.url)).text();
+      const transcription = await Bun.file(
+        new URL(`../public/${sourceTextPath}`, import.meta.url),
+      ).text();
       const pageMarkers = transcription.match(/--- SOURCE PDF PAGE /g)?.length ?? 0;
       assert(
         pageMarkers === record.originalTextAsset?.pageCount,
@@ -301,20 +456,28 @@ for (const record of records) {
 }
 
 const swiftGlob = new Bun.Glob("Sources/**/*.swift");
-const swiftSources = [...swiftGlob.scanSync({ cwd: new URL(".", import.meta.url).pathname, onlyFiles: true })];
+const swiftSources = [
+  ...swiftGlob.scanSync({ cwd: new URL(".", import.meta.url).pathname, onlyFiles: true }),
+];
 let urlSessionFiles = 0;
 for (const path of swiftSources) {
   const source = await Bun.file(new URL(path, new URL(".", import.meta.url))).text();
   assert(!/\b(?:import WebKit|WKWebView)\b/.test(source), `${path}: WebKit is forbidden`);
   if (path !== "Sources/PatentDetailView.swift") {
-    assert(!/(^|[^A-Za-z0-9_])Link\s*\(/m.test(source), `${path}: direct external Link is forbidden`);
+    assert(
+      !/(^|[^A-Za-z0-9_])Link\s*\(/m.test(source),
+      `${path}: direct external Link is forbidden`,
+    );
   }
   if (source.includes("URLSession")) {
     urlSessionFiles += 1;
     assert(path === "Sources/PatentPDFReader.swift", `${path}: unexpected network access`);
   }
   if (path !== "Sources/PatentDetailView.swift") {
-    assert(!source.includes(".monospaced"), `${path}: compiled Patent UI reintroduced monospaced typography`);
+    assert(
+      !source.includes(".monospaced"),
+      `${path}: compiled Patent UI reintroduced monospaced typography`,
+    );
   }
 }
 assert(urlSessionFiles === 1, `expected one native network boundary, found ${urlSessionFiles}`);
@@ -331,8 +494,8 @@ assert(
   "native PDF network boundary permits a non-standard HTTPS service",
 );
 assert(
-  pdfReaderSource.includes("activeRequestToken")
-    && pdfReaderSource.includes(".task(id: patent.id)"),
+  pdfReaderSource.includes("activeRequestToken") &&
+    pdfReaderSource.includes(".task(id: patent.id)"),
   "native PDF reader can publish stale state after switching patents",
 );
 
@@ -340,12 +503,14 @@ const figureResolverSource = await Bun.file(
   new URL("./Sources/PatentFigureAtlasView.swift", import.meta.url),
 ).text();
 assert(
-  figureResolverSource.includes("guard !hasWithheldReviewedCrop(token: token, in: patent) else { return nil }"),
+  figureResolverSource.includes(
+    "guard !hasWithheldReviewedCrop(token: token, in: patent) else { return nil }",
+  ),
   "native figure resolver can bypass a withheld reviewed crop through a bundled alias",
 );
 assert(
-  figureResolverSource.includes("static func markerText(for callout:")
-    && figureResolverSource.includes("static func displayTitle(for callout:"),
+  figureResolverSource.includes("static func markerText(for callout:") &&
+    figureResolverSource.includes("static func displayTitle(for callout:"),
   "native figure callouts do not normalize the source corpus' two historical field conventions",
 );
 
@@ -367,21 +532,44 @@ const nativeVisualizations = (await Bun.file(
   new URL("./Resources/native-visualizations.json", import.meta.url),
 ).json()) as NativeVisualizationEntry[];
 const nativeVisualById = new Map(nativeVisualizations.map((entry) => [entry.id, entry]));
-assert(nativeVisualizations.length === records.length, `native visualization count ${nativeVisualizations.length} != ${records.length}`);
+assert(
+  nativeVisualizations.length === records.length,
+  `native visualization count ${nativeVisualizations.length} != ${records.length}`,
+);
 assert(nativeVisualById.size === records.length, "native visualization ids are not unique");
 for (const record of records) {
   const visual = nativeVisualById.get(record.id);
   assert(visual != null, `${record.id}: no native spatial exhibit is registered`);
   if (!visual) continue;
-  same(visual.spatialComponent, record.sourceVisualization.spatialComponent, `${record.id}: native spatial source drifted`);
-  same(visual.vectorComponent, record.sourceVisualization.vectorComponent, `${record.id}: native vector source drifted`);
+  same(
+    visual.spatialComponent,
+    record.sourceVisualization.spatialComponent,
+    `${record.id}: native spatial source drifted`,
+  );
+  same(
+    visual.vectorComponent,
+    record.sourceVisualization.vectorComponent,
+    `${record.id}: native vector source drifted`,
+  );
   if (record.id === "us-971501-haber-ammonia") {
-    assert(visual.asset == null, `${record.id}: no-drawing boundary must not ship invented apparatus geometry`);
-    assert(visual.sourceBoundary?.includes("no apparatus drawing"), `${record.id}: source boundary explanation is missing`);
+    assert(
+      visual.asset == null,
+      `${record.id}: no-drawing boundary must not ship invented apparatus geometry`,
+    );
+    assert(
+      visual.sourceBoundary?.includes("no apparatus drawing"),
+      `${record.id}: source boundary explanation is missing`,
+    );
   } else {
-    assert(visual.asset === `NativeModels/${record.id}.usdz`, `${record.id}: native model path is not deterministic`);
+    assert(
+      visual.asset === `NativeModels/${record.id}.usdz`,
+      `${record.id}: native model path is not deterministic`,
+    );
     assert(visual.meshCount > 0, `${record.id}: native model contains no meshes`);
-    assert(visual.namedNodeCount > 0, `${record.id}: native model contains no named articulation nodes`);
+    assert(
+      visual.namedNodeCount > 0,
+      `${record.id}: native model contains no named articulation nodes`,
+    );
     if (visual.asset) {
       const asset = Bun.file(new URL(`./Resources/${visual.asset}`, import.meta.url));
       assert(await asset.exists(), `${record.id}: native model asset is absent`);
@@ -393,13 +581,16 @@ const nativeVisualizationSource = await Bun.file(
   new URL("./Sources/PatentVisualizationView.swift", import.meta.url),
 ).text();
 assert(
-  nativeVisualizationSource.includes("NativePatentSceneView")
-    && nativeVisualizationSource.includes("NativeSourceBoundaryExhibit"),
+  nativeVisualizationSource.includes("NativePatentSceneView") &&
+    nativeVisualizationSource.includes("NativeSourceBoundaryExhibit"),
   "native workstation does not route authored models and the no-drawing boundary explicitly",
 );
 if (requireVisualParity) {
   for (const record of records) {
-    assert(nativeVisualById.has(record.id), `${record.id}: native spatial visualization is not implemented`);
+    assert(
+      nativeVisualById.has(record.id),
+      `${record.id}: native spatial visualization is not implemented`,
+    );
   }
 }
 
@@ -414,10 +605,12 @@ const totals = records.reduce(
     equations: sum.equations + patent.equations.length,
     claims: sum.claims + patent.claims.length,
     drawings: sum.drawings + patent.drawings.length,
-    callouts: sum.callouts + patent.drawings.reduce(
-      (count: number, drawing: { callouts: unknown[] }) => count + drawing.callouts.length,
-      0,
-    ),
+    callouts:
+      sum.callouts +
+      patent.drawings.reduce(
+        (count: number, drawing: { callouts: unknown[] }) => count + drawing.callouts.length,
+        0,
+      ),
     withheldAssets: sum.withheldAssets + patent.withheldAssets.length,
   }),
   { editions: 0, equations: 0, claims: 0, drawings: 0, callouts: 0, withheldAssets: 0 },

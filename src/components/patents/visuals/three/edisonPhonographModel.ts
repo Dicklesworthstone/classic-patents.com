@@ -276,10 +276,7 @@ export function buildEdisonPhonographModel(): EdisonPhonographModel {
   soundBoxGroup.add(pivotArm);
 
   // Guide Rail Sliding Shoe / Half-Nut Follower
-  const guideShoe = new THREE.Mesh(
-    new THREE.BoxGeometry(0.5, 0.35, 0.4),
-    illustrativeDarkMetalMat,
-  );
+  const guideShoe = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.35, 0.4), illustrativeDarkMetalMat);
   guideShoe.position.set(0, -1.4, -0.4);
   soundBoxGroup.add(guideShoe);
 

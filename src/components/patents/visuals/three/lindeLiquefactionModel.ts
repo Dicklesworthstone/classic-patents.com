@@ -298,7 +298,7 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   drainSpout.position.set(0.15, -2.9, 0);
   root.add(drainSpout);
 
-  // Robust Cast-Iron Tripod Floor Stand holding up the cryostat assembly
+  // Robust Cast-Iron Staging Legs Floor Stand holding up the cryostat assembly
   const standGroup = new THREE.Group();
   root.add(standGroup);
 

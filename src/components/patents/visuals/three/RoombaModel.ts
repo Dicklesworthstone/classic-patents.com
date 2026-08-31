@@ -170,10 +170,7 @@ export function buildRoombaModel(): RoombaModel {
 
   // 5. Left & Right Spring-Loaded Drive Wheel Modules with Suspension Wells
   for (const wz of [-0.12, 0.12]) {
-    const wheelWell = new THREE.Mesh(
-      trackGeo(new THREE.BoxGeometry(0.08, 0.05, 0.035)),
-      bumperMat,
-    );
+    const wheelWell = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(0.08, 0.05, 0.035)), bumperMat);
     wheelWell.position.set(0, 0.045, wz);
     mainGroup.add(wheelWell);
   }
@@ -192,10 +189,7 @@ export function buildRoombaModel(): RoombaModel {
   mainGroup.add(rightWheel);
 
   // Main Dual Counter-Rotating Roller Brushes Underbody Cavity (US 6,883,201 Fig 1)
-  const rollerCavity = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(0.07, 0.02, 0.18)),
-    bumperMat,
-  );
+  const rollerCavity = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(0.07, 0.02, 0.18)), bumperMat);
   rollerCavity.position.set(-0.02, 0.02, 0);
   mainGroup.add(rollerCavity);
 

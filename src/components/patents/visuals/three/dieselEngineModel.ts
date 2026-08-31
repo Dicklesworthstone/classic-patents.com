@@ -54,28 +54,19 @@ export function buildDieselEngineModel(): {
   root.add(bedplateGroup);
 
   // Heavy Foundation Bedplate
-  const bedplate = new THREE.Mesh(
-    new THREE.BoxGeometry(4.8, 0.4, 2.4),
-    materials.body,
-  );
+  const bedplate = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.4, 2.4), materials.body);
   bedplate.position.set(0, -1.6, 0);
   bedplate.receiveShadow = true;
   bedplateGroup.add(bedplate);
 
   // Crankcase Housing below cylinder & crank
-  const crankcase = new THREE.Mesh(
-    new THREE.BoxGeometry(2.4, 1.2, 1.8),
-    materials.body,
-  );
+  const crankcase = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.2, 1.8), materials.body);
   crankcase.position.set(-1.0, -0.8, 0);
   crankcase.castShadow = true;
   bedplateGroup.add(crankcase);
 
   // Cylinder Support Flange Bolted to Bedplate
-  const cylinderBase = new THREE.Mesh(
-    new THREE.BoxGeometry(2.2, 0.8, 1.6),
-    materials.body,
-  );
+  const cylinderBase = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.8, 1.6), materials.body);
   cylinderBase.position.set(0.6, -1.0, 0);
   bedplateGroup.add(cylinderBase);
 
@@ -123,18 +114,12 @@ export function buildDieselEngineModel(): {
   plungerP.add(plunger);
 
   // Gudgeon Wrist Pin
-  const wristPin = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.12, 0.12, 0.9, 12),
-    materials.body,
-  );
+  const wristPin = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.9, 12), materials.body);
   wristPin.position.set(-0.7, 0, 0);
   plungerP.add(wristPin);
 
   // Connecting Rod linking Plunger to Crank Pin
-  const conRod = new THREE.Mesh(
-    new THREE.BoxGeometry(1.2, 0.16, 0.18),
-    materials.body,
-  );
+  const conRod = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.16, 0.18), materials.body);
   conRod.position.set(-1.25, 0, 0);
   plungerP.add(conRod);
 
@@ -146,10 +131,7 @@ export function buildDieselEngineModel(): {
   crank.position.set(-1.85, 0, 0);
 
   // Crank Throw Web
-  const crankWeb = new THREE.Mesh(
-    new THREE.BoxGeometry(0.25, 0.9, 0.35),
-    materials.body,
-  );
+  const crankWeb = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.9, 0.35), materials.body);
   crank.add(crankWeb);
 
   // Crankpin
@@ -161,18 +143,12 @@ export function buildDieselEngineModel(): {
   crank.add(crankPin);
 
   // Main Shaft
-  const mainShaft = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.16, 0.16, 2.6, 16),
-    materials.body,
-  );
+  const mainShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 2.6, 16), materials.body);
   mainShaft.position.set(0, 0, 0);
   crank.add(mainShaft);
 
   // Heavy Cast-Iron Flywheel
-  const flywheelRim = new THREE.Mesh(
-    new THREE.TorusGeometry(1.6, 0.16, 12, 32),
-    materials.body,
-  );
+  const flywheelRim = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.16, 12, 32), materials.body);
   flywheelRim.rotation.y = Math.PI / 2;
   flywheelRim.position.z = 1.1;
   flywheelRim.castShadow = true;
@@ -181,10 +157,7 @@ export function buildDieselEngineModel(): {
   // Flywheel Spokes
   for (let s = 0; s < 6; s++) {
     const sAngle = (s * Math.PI * 2) / 6;
-    const spoke = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.06, 0.08, 1.5, 8),
-      materials.body,
-    );
+    const spoke = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 1.5, 8), materials.body);
     spoke.position.set(0, Math.sin(sAngle) * 0.75, 1.1 + Math.cos(sAngle) * 0.75);
     spoke.rotation.x = sAngle;
     crank.add(spoke);
@@ -192,10 +165,7 @@ export function buildDieselEngineModel(): {
 
   // Pillow Block Main Bearings
   for (const bz of [-0.85, 0.85]) {
-    const bearing = new THREE.Mesh(
-      new THREE.BoxGeometry(0.45, 0.9, 0.35),
-      materials.body,
-    );
+    const bearing = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.9, 0.35), materials.body);
     bearing.position.set(-1.85, -0.45, bz);
     bedplateGroup.add(bearing);
   }

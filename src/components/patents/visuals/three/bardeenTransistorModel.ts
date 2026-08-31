@@ -178,6 +178,25 @@ export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
     ),
   };
 
+  // Heavy Brass Mounting Baseplate with Terminal Screws
+  const plinth = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(7.2, 0.35, 6.2)),
+    materials.baseMetal,
+  );
+  plinth.position.y = -1.4;
+  plinth.receiveShadow = true;
+  rootGroup.add(plinth);
+
+  // Terminal binding posts on baseplate
+  for (const bx of [-3.0, 0, 3.0]) {
+    const post = new THREE.Mesh(
+      trackGeo(new THREE.CylinderGeometry(0.16, 0.16, 0.5, 12)),
+      materials.baseMetal,
+    );
+    post.position.set(bx, -1.05, 2.6);
+    rootGroup.add(post);
+  }
+
   // Block 1: the supporting semiconductor body shown in Fig. 1 and Fig. 1a.
   const geBlock = new THREE.Mesh(
     trackGeo(new THREE.BoxGeometry(6.2, 1.1, 5.2)),
@@ -212,6 +231,50 @@ export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
   );
   surfaceLayer.position.y = 0.11;
   rootGroup.add(surfaceLayer);
+
+  // Overhead Micrometer Adjustment Bridge & Dielectric Wedge Clamp Mount
+  const bridgeMat = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0x1e293b,
+      roughness: 0.5,
+      metalness: 0.7,
+    }),
+  );
+  const wedgeMat = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0xf1f5f9,
+      roughness: 0.3,
+      metalness: 0.1,
+    }),
+  );
+
+  // Bridge Support Upright Columns
+  for (const colX of [-3.1, 3.1]) {
+    const col = new THREE.Mesh(
+      trackGeo(new THREE.CylinderGeometry(0.18, 0.22, 4.0, 16)),
+      bridgeMat,
+    );
+    col.position.set(colX, 0.6, 0);
+    col.castShadow = true;
+    rootGroup.add(col);
+  }
+  // Bridge Crossbeam
+  const bridgeBeam = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(6.6, 0.25, 0.5)),
+    bridgeMat,
+  );
+  bridgeBeam.position.set(0, 2.6, 0);
+  rootGroup.add(bridgeBeam);
+
+  // Polystyrene / Insulating Point-Contact Support Wedge
+  const wedge = new THREE.Mesh(
+    trackGeo(new THREE.ConeGeometry(0.65, 1.2, 4)),
+    wedgeMat,
+  );
+  wedge.rotation.y = Math.PI / 4;
+  wedge.position.set(0, 2.0, 0);
+  wedge.castShadow = true;
+  rootGroup.add(wedge);
 
   // Emitter 5 and collector 6: pointed spring wires, one of the expressly
   // described contact forms. Their separation is animated from the shared

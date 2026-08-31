@@ -119,18 +119,12 @@ export function buildDaVinciModel(): DaVinciModel {
     }),
   );
 
-  const surgicalTable = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(4.2, 0.4, 3.2)),
-    tableMat,
-  );
+  const surgicalTable = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(4.2, 0.4, 3.2)), tableMat);
   surgicalTable.position.set(0, -1.8, 0);
   surgicalTable.receiveShadow = true;
   root.add(surgicalTable);
 
-  const sterileDrape = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(3.6, 0.15, 2.8)),
-    drapeMat,
-  );
+  const sterileDrape = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(3.6, 0.15, 2.8)), drapeMat);
   sterileDrape.position.set(0, -1.5, 0);
   root.add(sterileDrape);
 
@@ -142,7 +136,9 @@ export function buildDaVinciModel(): DaVinciModel {
   root.add(trocar);
 
   // Patient Abdomen Dome Contour
-  const abdomenGeo = trackGeo(new THREE.SphereGeometry(1.4, 24, 16, 0, Math.PI * 2, 0, Math.PI / 3));
+  const abdomenGeo = trackGeo(
+    new THREE.SphereGeometry(1.4, 24, 16, 0, Math.PI * 2, 0, Math.PI / 3),
+  );
   const abdomenMesh = new THREE.Mesh(abdomenGeo, drapeMat);
   abdomenMesh.rotation.x = Math.PI;
   abdomenMesh.position.set(0, -0.15, 0);

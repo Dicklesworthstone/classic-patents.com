@@ -86,7 +86,34 @@ export function createYaleLockModel(): YaleLockModelNodes {
   });
   materials.push(shearLineMat);
 
-  // 1. Outer Cylinder Housing (Casing C)
+  // 1. Wooden Door Mortise Presentation Mount & Brass Faceplate
+  const woodDoorMat = new THREE.MeshStandardMaterial({
+    color: 0x5c3a21,
+    roughness: 0.75,
+    metalness: 0.05,
+    transparent: true,
+    opacity: 0.35,
+  });
+  materials.push(woodDoorMat);
+
+  const doorGroup = new THREE.Group();
+  group.add(doorGroup);
+
+  const doorBlockGeo = new THREE.BoxGeometry(5.2, 4.2, 2.8);
+  geometries.push(doorBlockGeo);
+  const doorBlock = new THREE.Mesh(doorBlockGeo, woodDoorMat);
+  doorBlock.position.set(0.4, 0.2, 0);
+  doorBlock.receiveShadow = true;
+  doorGroup.add(doorBlock);
+
+  // Brass Door Faceplate with Beveled Edge
+  const faceplateGeo = new THREE.BoxGeometry(0.12, 4.4, 1.6);
+  geometries.push(faceplateGeo);
+  const faceplate = new THREE.Mesh(faceplateGeo, brassHousingMat);
+  faceplate.position.set(2.95, 0.2, 0);
+  doorGroup.add(faceplate);
+
+  // Outer Cylinder Housing (Casing C)
   const housingGroup = new THREE.Group();
   const housingGeo = new THREE.CylinderGeometry(1.8, 1.8, 4.0, 32, 1, false);
   housingGeo.rotateZ(Math.PI / 2);

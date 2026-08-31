@@ -118,7 +118,32 @@ export function buildMultiTouchModel(): MultiTouchModel {
     }),
   );
 
-  // 1. Phone Chassis & Bezel
+  // 1. Phone Presentation Easel Stand (Museum Display Base)
+  const standMat = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0x1e293b,
+      metalness: 0.8,
+      roughness: 0.35,
+    }),
+  );
+  const easelGroup = new THREE.Group();
+  easelGroup.position.set(0, -2.6, -0.4);
+  root.add(easelGroup);
+
+  const easelBase = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(3.6, 0.25, 2.2)), standMat);
+  easelBase.receiveShadow = true;
+  easelGroup.add(easelBase);
+
+  const easelLedge = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(3.2, 0.3, 0.35)), standMat);
+  easelLedge.position.set(0, 0.25, 0.3);
+  easelGroup.add(easelLedge);
+
+  const easelBackStrut = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(0.8, 3.4, 0.15)), standMat);
+  easelBackStrut.position.set(0, 1.6, -0.3);
+  easelBackStrut.rotation.x = -0.15;
+  easelGroup.add(easelBackStrut);
+
+  // Phone Chassis & Bezel
   const chassisGeo = trackGeo(new THREE.BoxGeometry(3.0, 5.0, 0.22));
   const chassis = new THREE.Mesh(chassisGeo, aluminumMat);
   chassis.position.set(0, 0, -0.16);
