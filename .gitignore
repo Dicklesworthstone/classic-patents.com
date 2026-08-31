@@ -75,3 +75,4 @@ check_*.ts
 test_output.txt
 *.wip.txt
 
+tsconfig.tsbuildinfo
