@@ -87,23 +87,21 @@ export function createHallAluminiumModel(): HallAluminiumModelNodes {
     roughness: 0.85,
     metalness: 0.1,
   });
-  const plinth = new THREE.Mesh(
-    new THREE.BoxGeometry(5.4, 0.4, 3.8),
-    concreteMat,
-  );
+  const plinth = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.4, 3.8), concreteMat);
   plinth.position.set(0, -1.3, 0);
   plinth.receiveShadow = true;
   root.add(plinth);
 
   // 6 Refractory Insulating Support Piers beneath Pot Shell
   for (const [px, pz] of [
-    [-1.6, -1.0], [0, -1.0], [1.6, -1.0],
-    [-1.6, 1.0], [0, 1.0], [1.6, 1.0],
+    [-1.6, -1.0],
+    [0, -1.0],
+    [1.6, -1.0],
+    [-1.6, 1.0],
+    [0, 1.0],
+    [1.6, 1.0],
   ]) {
-    const pier = new THREE.Mesh(
-      new THREE.BoxGeometry(0.5, 0.25, 0.5),
-      refractoryMaterial,
-    );
+    const pier = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.25, 0.5), refractoryMaterial);
     pier.position.set(px, -1.15, pz);
     root.add(pier);
   }
@@ -119,10 +117,7 @@ export function createHallAluminiumModel(): HallAluminiumModelNodes {
 
   // Negative Cathode Collector Steel Bars exiting Bottom of Pot
   for (let b = 0; b < 3; b++) {
-    const bar = new THREE.Mesh(
-      new THREE.BoxGeometry(4.6, 0.12, 0.15),
-      copperBusMaterial,
-    );
+    const bar = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.12, 0.15), copperBusMaterial);
     bar.position.set(0, -1.0, -0.8 + b * 0.8);
     root.add(bar);
   }
@@ -162,20 +157,14 @@ export function createHallAluminiumModel(): HallAluminiumModelNodes {
     [-2.0, 1.2],
     [2.0, 1.2],
   ]) {
-    const col = new THREE.Mesh(
-      new THREE.BoxGeometry(0.16, 1.4, 0.16),
-      potShellMaterial,
-    );
+    const col = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1.4, 0.16), potShellMaterial);
     col.position.set(gx, 0.8, gz);
     col.castShadow = true;
     root.add(col);
   }
   // Crossbeams atop Gantry
   for (const gz of [-1.2, 1.2]) {
-    const crossbeam = new THREE.Mesh(
-      new THREE.BoxGeometry(4.2, 0.14, 0.14),
-      potShellMaterial,
-    );
+    const crossbeam = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.14, 0.14), potShellMaterial);
     crossbeam.position.set(0, 1.45, gz);
     root.add(crossbeam);
   }
@@ -247,10 +236,7 @@ export function createHallAluminiumModel(): HallAluminiumModelNodes {
   feederHopper.name = "alumina_feeder_hopper";
   hopperGroup.add(feederHopper);
 
-  const hopperBracket = new THREE.Mesh(
-    new THREE.BoxGeometry(0.12, 0.45, 0.35),
-    potShellMaterial,
-  );
+  const hopperBracket = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.45, 0.35), potShellMaterial);
   hopperBracket.position.set(0, 0.2, 0.2);
   hopperGroup.add(hopperBracket);
 

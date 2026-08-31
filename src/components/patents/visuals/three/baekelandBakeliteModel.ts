@@ -170,10 +170,7 @@ export function buildBaekelandBakeliteModel(): BaekelandBakeliteModelResult {
   const foundationGroup = new THREE.Group();
   rootGroup.add(foundationGroup);
 
-  const floorPlinth = new THREE.Mesh(
-    new THREE.BoxGeometry(4.8, 0.35, 3.2),
-    materials.castIron,
-  );
+  const floorPlinth = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.35, 3.2), materials.castIron);
   floorPlinth.position.set(0, -1.2, 0);
   floorPlinth.receiveShadow = true;
   foundationGroup.add(floorPlinth);
@@ -190,17 +187,11 @@ export function buildBaekelandBakeliteModel(): BaekelandBakeliteModelResult {
 
   // Steam Supply & Condensate Floor Manifold Pipes
   const pipeMat = materials.steamPipe;
-  const steamSupplyPipe = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.06, 0.06, 2.2, 16),
-    pipeMat,
-  );
+  const steamSupplyPipe = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.2, 16), pipeMat);
   steamSupplyPipe.position.set(-1.4, 0.2, 1.1);
   foundationGroup.add(steamSupplyPipe);
 
-  const returnPipe = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.06, 0.06, 2.2, 16),
-    pipeMat,
-  );
+  const returnPipe = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.2, 16), pipeMat);
   returnPipe.position.set(1.4, 0.2, -1.1);
   foundationGroup.add(returnPipe);
 

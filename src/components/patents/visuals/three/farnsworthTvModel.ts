@@ -154,7 +154,7 @@ export function buildFarnsworthTvModel(): FarnsworthTvModel {
   disposables.push(anodeBrassMat);
 
   const mahoganyMat = new THREE.MeshStandardMaterial({
-    map: mahoganyTex || undefined,
+    ...(mahoganyTex ? { map: mahoganyTex } : {}),
     transparent: true,
     opacity: 1.0,
     color: 0x78350f,

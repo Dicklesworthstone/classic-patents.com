@@ -135,7 +135,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
 
   // --- AUTHENTIC MATERIALS ---
   const copperAnodeMat = new THREE.MeshStandardMaterial({
-    map: copperTex || undefined,
+    ...(copperTex ? { map: copperTex } : {}),
     transparent: true,
     opacity: 1.0,
     color: 0xd97706,
@@ -154,7 +154,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   disposables.push(cathodeMat);
 
   const sourceMetalMat = new THREE.MeshStandardMaterial({
-    map: sourceMetalTex || undefined,
+    ...(sourceMetalTex ? { map: sourceMetalTex } : {}),
     transparent: true,
     opacity: 1.0,
     color: 0x334155,

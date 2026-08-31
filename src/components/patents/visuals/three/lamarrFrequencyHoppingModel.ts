@@ -363,7 +363,7 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
  */
 export function updateLamarrFrequencyHoppingKinematics(
   model: LamarrFrequencyHoppingModel,
-  delta: number,
+  _delta: number,
   activeChan: number,
   liveChannels: number,
   receiverTuned: boolean,

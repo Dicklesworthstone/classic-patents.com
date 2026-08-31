@@ -232,7 +232,7 @@ export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
   surfaceLayer.position.y = 0.11;
   rootGroup.add(surfaceLayer);
 
-  // Overhead Micrometer Adjustment Bridge & Dielectric Wedge Clamp Mount
+  // Overhead Dielectric Adjustment Bridge & Clamp Mount
   const bridgeMat = trackMat(
     new THREE.MeshStandardMaterial({
       color: 0x1e293b,
@@ -259,18 +259,12 @@ export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
     rootGroup.add(col);
   }
   // Bridge Crossbeam
-  const bridgeBeam = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(6.6, 0.25, 0.5)),
-    bridgeMat,
-  );
+  const bridgeBeam = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(6.6, 0.25, 0.5)), bridgeMat);
   bridgeBeam.position.set(0, 2.6, 0);
   rootGroup.add(bridgeBeam);
 
-  // Polystyrene / Insulating Point-Contact Support Wedge
-  const wedge = new THREE.Mesh(
-    trackGeo(new THREE.ConeGeometry(0.65, 1.2, 4)),
-    wedgeMat,
-  );
+  // Insulating Point-Contact Support Wedge
+  const wedge = new THREE.Mesh(trackGeo(new THREE.ConeGeometry(0.65, 1.2, 4)), wedgeMat);
   wedge.rotation.y = Math.PI / 4;
   wedge.position.set(0, 2.0, 0);
   wedge.castShadow = true;

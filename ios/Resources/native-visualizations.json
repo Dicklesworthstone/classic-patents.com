@@ -149,7 +149,7 @@
     "builder": "buildOtisElevatorModel",
     "spatialComponent": "OtisElevator3D",
     "vectorComponent": "OtisElevatorSim",
-    "meshCount": 85,
+    "meshCount": 88,
     "namedNodeCount": 91
   },
   {
@@ -374,7 +374,7 @@
     "builder": "createHallAluminiumModel",
     "spatialComponent": "HallAluminium3D",
     "vectorComponent": "HallAluminiumSim",
-    "meshCount": 16,
+    "meshCount": 33,
     "namedNodeCount": 15
   },
   {
@@ -428,7 +428,7 @@
     "builder": "buildTeslaTeleautomatonModel",
     "spatialComponent": "TeslaTeleautomaton3D",
     "vectorComponent": "TeslaTeleautomatonSim",
-    "meshCount": 41,
+    "meshCount": 46,
     "namedNodeCount": 20
   },
   {
@@ -455,7 +455,7 @@
     "builder": "buildFessendenWirelessModel",
     "spatialComponent": "FessendenWireless3D",
     "vectorComponent": "FessendenWirelessSim",
-    "meshCount": 76,
+    "meshCount": 85,
     "namedNodeCount": 28
   },
   {
@@ -500,7 +500,7 @@
     "builder": "buildBaekelandBakeliteModel",
     "spatialComponent": "BaekelandBakelite3D",
     "vectorComponent": "BaekelandBakeliteSim",
-    "meshCount": 109,
+    "meshCount": 112,
     "namedNodeCount": 13
   },
   {
@@ -519,7 +519,7 @@
     "builder": "buildGoddardRocketModel",
     "spatialComponent": "GoddardRocket3D",
     "vectorComponent": "GoddardRocketSim",
-    "meshCount": 21,
+    "meshCount": 30,
     "namedNodeCount": 6
   },
   {
@@ -537,7 +537,7 @@
     "builder": "buildEinsteinRefrigeratorModel",
     "spatialComponent": "EinsteinRefrigerator3D",
     "vectorComponent": "EinsteinRefrigeratorSim",
-    "meshCount": 29,
+    "meshCount": 43,
     "namedNodeCount": 9
   },
   {
@@ -564,7 +564,7 @@
     "builder": "buildSpencerMicrowaveModel",
     "spatialComponent": "SpencerMicrowave3D",
     "vectorComponent": "SpencerMicrowaveSim",
-    "meshCount": 84,
+    "meshCount": 98,
     "namedNodeCount": 5
   },
   {
@@ -573,7 +573,7 @@
     "builder": "buildBardeenTransistorModel",
     "spatialComponent": "BardeenTransistor3D",
     "vectorComponent": "BardeenTransistorSim",
-    "meshCount": 6,
+    "meshCount": 14,
     "namedNodeCount": 10
   },
   {
@@ -627,7 +627,7 @@
     "builder": "createMaimanRubyLaserModel",
     "spatialComponent": "MaimanRubyLaser3D",
     "vectorComponent": "MaimanRubyLaserSim",
-    "meshCount": 17,
+    "meshCount": 19,
     "namedNodeCount": 12
   },
   {
@@ -645,7 +645,7 @@
     "builder": "buildKwolekKevlarModel",
     "spatialComponent": "KwolekKevlar3D",
     "vectorComponent": "KwolekKevlarSim",
-    "meshCount": 153,
+    "meshCount": 157,
     "namedNodeCount": 10
   },
   {

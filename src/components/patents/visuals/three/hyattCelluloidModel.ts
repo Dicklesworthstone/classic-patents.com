@@ -219,7 +219,7 @@ export function buildHyattCelluloidModel(): HyattCelluloidModelResult {
   // --- Museum-Grade PBR Materials ---
   const castIron = trackMat(
     new THREE.MeshStandardMaterial({
-      map: castIronTex || undefined,
+      ...(castIronTex ? { map: castIronTex } : {}),
       transparent: true,
       opacity: 1.0,
       color: 0x242831,

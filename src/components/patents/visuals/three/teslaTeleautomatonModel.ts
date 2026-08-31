@@ -235,6 +235,37 @@ export function buildTeslaTeleautomatonModel(): TeslaTeleautomatonModelResult {
   keelBallast.position.set(0, -0.95, 0);
   hullGroup.add(keelBallast);
 
+  // Museum Display Cradle Base & Brass Saddles
+  const cradleMat = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0x4a2411,
+      roughness: 0.6,
+      metalness: 0.05,
+    }),
+  );
+
+  const cradlePlinth = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(8.2, 0.35, 3.2)), cradleMat);
+  cradlePlinth.position.set(0, -1.6, 0);
+  cradlePlinth.receiveShadow = true;
+  root.add(cradlePlinth);
+
+  // 2 Brass U-Shaped Hull Mounting Saddles
+  [-1.8, 1.8].forEach((sx) => {
+    const saddle = new THREE.Mesh(
+      trackGeo(new THREE.CylinderGeometry(1.05, 1.15, 0.45, 24, 1, false, 0, Math.PI)),
+      materials.polishedBrass,
+    );
+    saddle.rotation.z = Math.PI;
+    saddle.position.set(sx, -0.65, 0);
+    saddle.castShadow = true;
+    root.add(saddle);
+
+    const post = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(0.5, 0.6, 2.2)), cradleMat);
+    post.position.set(sx, -1.15, 0);
+    post.castShadow = true;
+    root.add(post);
+  });
+
   // -------------------------------------------------------------
   // 2. Wireless Radio Antenna Mast & Signal Beacon Stanchions
   // -------------------------------------------------------------

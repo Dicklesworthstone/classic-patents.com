@@ -215,10 +215,7 @@ export function buildFessendenWirelessModel(): FessendenWirelessModelNodes {
   root.add(receivingConductor);
 
   // Liquid / Barometric Detector Stand & Permanent Magnet Mount
-  const detectorStand = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.18, 0.22, 0.45, 16),
-    brassMat,
-  );
+  const detectorStand = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 0.45, 16), brassMat);
   detectorStand.position.set(2.35, 0.22, 0);
   root.add(detectorStand);
 

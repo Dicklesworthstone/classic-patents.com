@@ -81,7 +81,7 @@ const p = (...inlines: CuratedSpecificationInline[]) => ({
   inlines,
 });
 
-const legacyKilbyIntegratedCircuitParallelReadings: Readonly<Record<number, readonly string[]>> = {
+const _legacyKilbyIntegratedCircuitParallelReadings: Readonly<Record<number, readonly string[]>> = {
   3: [
     "Preamble and inventor declaration by Jack S. Kilby of Dallas, Texas, assigning his landmark monolithic integrated circuit invention to Texas Instruments Incorporated under Application Serial No. 791,602 filed February 6, 1959.",
   ],

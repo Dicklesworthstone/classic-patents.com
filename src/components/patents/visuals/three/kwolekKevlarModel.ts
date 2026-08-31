@@ -129,36 +129,24 @@ export function buildKwolekKevlarModel(): KwolekKevlarModel {
   const benchGroup = new THREE.Group();
   root.add(benchGroup);
 
-  const plinth = new THREE.Mesh(
-    new THREE.BoxGeometry(14.0, 0.45, 4.0),
-    spinneretSteelMat,
-  );
+  const plinth = new THREE.Mesh(new THREE.BoxGeometry(14.0, 0.45, 4.0), spinneretSteelMat);
   plinth.position.set(0, -4.2, 0);
   plinth.receiveShadow = true;
   benchGroup.add(plinth);
 
   // Left Spinneret Extrusion Pack Support Column
-  const leftStanchion = new THREE.Mesh(
-    new THREE.BoxGeometry(1.6, 1.8, 2.4),
-    spinneretSteelMat,
-  );
+  const leftStanchion = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.8, 2.4), spinneretSteelMat);
   leftStanchion.position.set(-6.0, -3.1, 0);
   leftStanchion.castShadow = true;
   benchGroup.add(leftStanchion);
 
   // Right-Side Fiber Clamp Fixture & Tensile Grip Block
-  const rightClamp = new THREE.Mesh(
-    new THREE.BoxGeometry(1.4, 7.2, 2.4),
-    spinneretSteelMat,
-  );
+  const rightClamp = new THREE.Mesh(new THREE.BoxGeometry(1.4, 7.2, 2.4), spinneretSteelMat);
   rightClamp.position.set(5.0, 0, 0);
   rightClamp.castShadow = true;
   benchGroup.add(rightClamp);
 
-  const rightStanchion = new THREE.Mesh(
-    new THREE.BoxGeometry(1.4, 1.8, 2.4),
-    spinneretSteelMat,
-  );
+  const rightStanchion = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.8, 2.4), spinneretSteelMat);
   rightStanchion.position.set(5.0, -3.1, 0);
   rightStanchion.castShadow = true;
   benchGroup.add(rightStanchion);

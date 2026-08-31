@@ -735,7 +735,7 @@ export function pagerankManualClaimText(number: number): string {
   const block = pagerankArchivalEdition.blocks.find(
     (candidate) => candidate.kind === "claim" && candidate.number === number,
   );
-  if (!block || block.kind !== "claim") {
+  if (block?.kind !== "claim") {
     throw new Error(`PageRank manual edition is missing claim ${number}.`);
   }
   return block.inlines.map((inline) => inline.text).join("");

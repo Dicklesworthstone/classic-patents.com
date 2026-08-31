@@ -189,7 +189,7 @@ export function buildCorlissEngineModel(): CorlissEngineModel {
   materialsToDispose.push(bronze);
 
   const mahogany = new THREE.MeshStandardMaterial({
-    map: mahoganyTex || undefined,
+    ...(mahoganyTex ? { map: mahoganyTex } : {}),
     transparent: true,
     opacity: 1.0,
     color: 0x451a03,

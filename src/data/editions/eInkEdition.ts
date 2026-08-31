@@ -4,17 +4,6 @@ import type {
   CuratedSpecificationInlines,
 } from "@/types/patent";
 
-const term = (
-  surfaceText: string,
-  key: string,
-  definition: string,
-): CuratedSpecificationInline => ({
-  kind: "term",
-  text: surfaceText,
-  label: key,
-  definition,
-});
-
 export const EINK_FIGURE_DIMS: Record<number, { width: number; height: number }> = {
   1: { width: 1856, height: 2385 },
   2: { width: 1856, height: 2385 },
@@ -29,30 +18,10 @@ export function manualClaimText(number: number): string {
   const block = einkArchivalEdition.blocks.find(
     (candidate) => candidate.kind === "claim" && candidate.number === number,
   );
-  if (!block || block.kind !== "claim") {
+  if (block?.kind !== "claim") {
     throw new Error(`E Ink manual edition is missing claim ${number}.`);
   }
   return block.inlines.map((inline) => inline.text).join("");
-}
-
-function figureAssetPath(number: number): string {
-  return `/patents/figures/us-6120588-eink/fig-${number}-source-crop-v1.png`;
-}
-
-function makePreview(
-  surfaceText: string,
-  figureNumbers: number[],
-  altText: string,
-): CuratedSpecificationInline {
-  return {
-    kind: "reference",
-    text: surfaceText,
-    href: `#figure-${figureNumbers[0]}`,
-    referenceType: "figure",
-    label: altText,
-    // Source crops are withheld until each occurrence is cloud-verified as an
-    // upright isolated crop from the matching printed drawing sheet.
-  };
 }
 
 const p = (

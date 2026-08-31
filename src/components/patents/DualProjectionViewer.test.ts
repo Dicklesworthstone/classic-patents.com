@@ -5,7 +5,6 @@ import { ARCHIVAL_PARALLEL_READINGS } from "@/data/editions/parallelReadings";
 import { ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS } from "@/data/editions/publicationApproval";
 import { allPatents } from "@/data/patents";
 import { goodyearRubberPatent } from "@/data/patents/goodyear-rubber";
-import { lamarrPatent } from "@/data/patents/lamarr-frequency-hopping";
 import { whitneyCottonGinPatent } from "@/data/patents/whitney-cotton-gin";
 import type { Patent } from "@/types/patent";
 import {

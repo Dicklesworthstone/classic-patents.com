@@ -252,17 +252,11 @@ export function createMaimanRubyLaserModel(): {
   targetGroup.add(targetDisc);
 
   // Sturdy Target Pedestal Stand and Floor Plinth
-  const targetPost = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.18, 0.22, 2.2, 16),
-    baseMat,
-  );
+  const targetPost = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 2.2, 16), baseMat);
   targetPost.position.set(0, -1.1, 0);
   targetGroup.add(targetPost);
 
-  const targetFoot = new THREE.Mesh(
-    new THREE.BoxGeometry(1.6, 0.25, 1.6),
-    baseMat,
-  );
+  const targetFoot = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.25, 1.6), baseMat);
   targetFoot.position.set(0, -2.1, 0);
   targetFoot.receiveShadow = true;
   targetGroup.add(targetFoot);

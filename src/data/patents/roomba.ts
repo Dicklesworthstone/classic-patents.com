@@ -6,7 +6,7 @@ export function manualClaimText(number: number): string {
   const block = roombaArchivalEdition.blocks.find(
     (candidate) => candidate.kind === "claim" && candidate.number === number,
   );
-  if (!block || block.kind !== "claim") {
+  if (block?.kind !== "claim") {
     throw new Error(`Roomba manual edition is missing claim ${number}.`);
   }
   return block.inlines.map((inline) => inline.text).join("");

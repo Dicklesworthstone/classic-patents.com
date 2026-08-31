@@ -140,17 +140,19 @@ export function buildWattSeparateCondenserModel(): WattModelHandles {
     }),
   );
 
+  const oakTex = makeOakTexture();
   const oakBeamMat = trackMat(
     new THREE.MeshStandardMaterial({
-      map: makeOakTexture(),
+      ...(oakTex ? { map: oakTex } : {}),
       roughness: 0.8,
       metalness: 0.1,
     }),
   );
 
+  const stoneTex = makeStoneTexture();
   const stoneWallMat = trackMat(
     new THREE.MeshStandardMaterial({
-      map: makeStoneTexture(),
+      ...(stoneTex ? { map: stoneTex } : {}),
       roughness: 0.9,
       metalness: 0.05,
     }),
