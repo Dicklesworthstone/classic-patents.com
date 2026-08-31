@@ -103,24 +103,81 @@ export function buildDaVinciModel(): DaVinciModel {
     }),
   );
 
-  // 1. Patient Abdominal Trocar Incision Guide Ring
+  // 1. Surgical Table Presentation Plinth & Sterile Field Drape Base
+  const drapeMat = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0x0284c7, // Surgical blue sterile drape
+      roughness: 0.85,
+      metalness: 0.05,
+    }),
+  );
+  const tableMat = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0x1e293b,
+      metalness: 0.8,
+      roughness: 0.35,
+    }),
+  );
+
+  const surgicalTable = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(4.2, 0.4, 3.2)),
+    tableMat,
+  );
+  surgicalTable.position.set(0, -1.8, 0);
+  surgicalTable.receiveShadow = true;
+  root.add(surgicalTable);
+
+  const sterileDrape = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(3.6, 0.15, 2.8)),
+    drapeMat,
+  );
+  sterileDrape.position.set(0, -1.5, 0);
+  root.add(sterileDrape);
+
+  // Patient Abdominal Trocar Incision Guide Ring
   const trocarGeo = trackGeo(new THREE.TorusGeometry(0.38, 0.045, 16, 32));
   const trocar = new THREE.Mesh(trocarGeo, trocarMat);
   trocar.rotation.x = Math.PI / 2;
   trocar.position.set(0, 0, 0);
   root.add(trocar);
 
-  // 2. Master Surgeon Console Gimbal Handle (Ghost Tracking Gizmo)
+  // Patient Abdomen Dome Contour
+  const abdomenGeo = trackGeo(new THREE.SphereGeometry(1.4, 24, 16, 0, Math.PI * 2, 0, Math.PI / 3));
+  const abdomenMesh = new THREE.Mesh(abdomenGeo, drapeMat);
+  abdomenMesh.rotation.x = Math.PI;
+  abdomenMesh.position.set(0, -0.15, 0);
+  root.add(abdomenMesh);
+
+  // 2. Patient-Side Cart Robotic Manipulator Boom Arm
+  const boomArmGroup = new THREE.Group();
+  root.add(boomArmGroup);
+
+  const boomBase = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.25, 0.32, 1.8, 16)),
+    darkTitaniumMat,
+  );
+  boomBase.position.set(-1.8, -0.8, 0);
+  boomArmGroup.add(boomBase);
+
+  const boomLink = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(0.18, 0.22, 2.2)),
+    darkTitaniumMat,
+  );
+  boomLink.position.set(-0.9, 1.85, 0);
+  boomLink.rotation.y = Math.PI / 2;
+  boomArmGroup.add(boomLink);
+
+  // 3. Master Surgeon Console Gimbal Handle (Ghost Tracking Gizmo)
   const masterGeo = trackGeo(new THREE.OctahedronGeometry(0.14, 1));
   const masterHandle = new THREE.Mesh(masterGeo, masterGhostMat);
   masterHandle.position.set(0, 1.2, 1.5);
   root.add(masterHandle);
 
-  // 3. Robotic Arm Base Carriage & Instrument Shaft
+  // 4. Robotic Arm Base Carriage & Instrument Shaft
   const baseGroup = new THREE.Group();
   mainGroup.add(baseGroup);
 
-  const carriageGeo = trackGeo(new THREE.BoxGeometry(0.24, 0.45, 0.28));
+  const carriageGeo = trackGeo(new THREE.BoxGeometry(0.32, 0.55, 0.38));
   const carriage = new THREE.Mesh(carriageGeo, darkTitaniumMat);
   carriage.position.set(0, 1.85, 0);
   carriage.castShadow = true;

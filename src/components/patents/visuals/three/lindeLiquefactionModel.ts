@@ -207,13 +207,20 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
     coilRings.push(ring);
   }
 
+  // Top dome casing header & pipe manifold flange
+  const topFlange = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(1.48, 1.48, 0.2, 32)),
+    materials.apparatusMetal,
+  );
+  topFlange.position.set(0, 2.7, 0);
+  root.add(topFlange);
+
   // High-pressure supply into G′ from cooler K
   const inletSupplyPipe = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.06, 0.06, 1.2, 12)),
     materials.highPressurePath,
   );
-  inletSupplyPipe.position.set(-1.2, 2.8, 0);
-  inletSupplyPipe.rotation.z = Math.PI / 4;
+  inletSupplyPipe.position.set(-0.65, 3.2, 0);
   counterCurrentCoilGroup.add(inletSupplyPipe);
 
   // Low-pressure return from G′
@@ -221,8 +228,7 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
     trackGeo(new THREE.CylinderGeometry(0.09, 0.09, 1.2, 12)),
     materials.lowPressureReturn,
   );
-  returnRecyclePipe.position.set(1.2, 2.8, 0);
-  returnRecyclePipe.rotation.z = -Math.PI / 4;
+  returnRecyclePipe.position.set(0.65, 3.2, 0);
   counterCurrentCoilGroup.add(returnRecyclePipe);
 
   // -------------------------------------------------------------
@@ -266,14 +272,66 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   jtValveGroup.add(jtHandwheel);
 
   // -------------------------------------------------------------
-  // 4. Closed vessel V′ beneath G′
+  // 4. Closed vessel V′ beneath G′ with Grounded Floor Support Stand
   // -------------------------------------------------------------
   const receiverVessel = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.75, 0.75, 0.9, 24)),
     materials.receiverVessel,
   );
   receiverVessel.position.set(0, -2.25, 0);
+  receiverVessel.castShadow = true;
   root.add(receiverVessel);
+
+  // Bottom Liquid Air Drain Stopcock Valve
+  const drainValve = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.08, 0.08, 0.3, 12)),
+    materials.apparatusMetal,
+  );
+  drainValve.position.set(0, -2.8, 0);
+  root.add(drainValve);
+
+  const drainSpout = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.04, 0.04, 0.25, 8)),
+    materials.apparatusMetal,
+  );
+  drainSpout.rotation.z = Math.PI / 2;
+  drainSpout.position.set(0.15, -2.9, 0);
+  root.add(drainSpout);
+
+  // Robust Cast-Iron Tripod Floor Stand holding up the cryostat assembly
+  const standGroup = new THREE.Group();
+  root.add(standGroup);
+
+  const supportRing = new THREE.Mesh(
+    trackGeo(new THREE.TorusGeometry(1.42, 0.12, 12, 32)),
+    materials.apparatusMetal,
+  );
+  supportRing.rotation.x = Math.PI / 2;
+  supportRing.position.set(0, -1.8, 0);
+  standGroup.add(supportRing);
+
+  for (let l = 0; l < 3; l++) {
+    const lAngle = (l * Math.PI * 2) / 3;
+    const legCurve = new THREE.QuadraticBezierCurve3(
+      new THREE.Vector3(Math.cos(lAngle) * 1.42, -1.8, Math.sin(lAngle) * 1.42),
+      new THREE.Vector3(Math.cos(lAngle) * 1.85, -2.4, Math.sin(lAngle) * 1.85),
+      new THREE.Vector3(Math.cos(lAngle) * 2.1, -3.0, Math.sin(lAngle) * 2.1),
+    );
+    const legMesh = new THREE.Mesh(
+      trackGeo(new THREE.TubeGeometry(legCurve, 16, 0.08, 8, false)),
+      materials.apparatusMetal,
+    );
+    legMesh.castShadow = true;
+    standGroup.add(legMesh);
+
+    // Foot pad
+    const pad = new THREE.Mesh(
+      trackGeo(new THREE.CylinderGeometry(0.18, 0.22, 0.08, 12)),
+      materials.apparatusMetal,
+    );
+    pad.position.set(Math.cos(lAngle) * 2.1, -3.0, Math.sin(lAngle) * 2.1);
+    standGroup.add(pad);
+  }
 
   // -------------------------------------------------------------
   // 5. Flow tracer at N/R′

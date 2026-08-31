@@ -56,7 +56,12 @@ export function buildDaimlerMarineEngineModel(): DaimlerMarineEngineModel {
     opacity: 0.55,
     roughness: 0.2,
   });
-  materials.push(castIron, steel, brass, copper, gas);
+  const wood = new THREE.MeshStandardMaterial({
+    color: 0x5c2c16,
+    roughness: 0.75,
+    metalness: 0.05,
+  });
+  materials.push(castIron, steel, brass, copper, gas, wood);
   const add = (
     geometry: THREE.BufferGeometry,
     material: THREE.Material,
@@ -71,14 +76,84 @@ export function buildDaimlerMarineEngineModel(): DaimlerMarineEngineModel {
     return mesh;
   };
 
-  // In-line motor and propeller shafts (Fig. 1 / claim 1).
+  // ==============================================================
+  // 1. Boat Keel Timbers & Engine Bearer Bedplate (Ground Foundation)
+  // ==============================================================
+  const foundationGroup = new THREE.Group();
+  rootGroup.add(foundationGroup);
+
+  // Main Keel Stringer Timbers
+  add(new THREE.BoxGeometry(9.0, 0.35, 0.6), wood, foundationGroup, [1.0, -1.8, 0]);
+  for (const z of [-1.1, 1.1]) {
+    add(new THREE.BoxGeometry(7.5, 0.3, 0.4), wood, foundationGroup, [0.5, -1.7, z]);
+  }
+  // Cross rib timbers
+  for (const x of [-2.0, -0.6, 0.8, 2.2, 3.6, 4.8]) {
+    add(new THREE.BoxGeometry(0.3, 0.28, 2.8), wood, foundationGroup, [x, -1.65, 0]);
+  }
+
+  // Cast-Iron Engine Bedplate
+  add(new THREE.BoxGeometry(2.4, 0.3, 1.8), castIron, motorGroup, [0, -0.45, 0]);
+  // 4 Cast Engine Mounting Feet Bolted to Bedplate
+  for (const [mx, mz] of [
+    [-0.95, -0.75],
+    [0.95, -0.75],
+    [-0.95, 0.75],
+    [0.95, 0.75],
+  ]) {
+    add(new THREE.BoxGeometry(0.3, 0.4, 0.3), castIron, motorGroup, [mx, -0.2, mz]);
+    add(new THREE.CylinderGeometry(0.06, 0.06, 0.5, 10), steel, motorGroup, [mx, -0.15, mz]);
+  }
+
+  // In-line motor cylinder & crankcase (Fig. 1 / claim 1).
   add(new THREE.BoxGeometry(1.8, 1.2, 1.5), castIron, motorGroup, [0, 0.2, 0]);
+  // Top cylinder head and valve chest
+  add(new THREE.CylinderGeometry(0.65, 0.65, 0.45, 20), castIron, motorGroup, [0, 1.0, 0]);
+  add(new THREE.CylinderGeometry(0.2, 0.2, 0.3, 12), brass, motorGroup, [0, 1.35, 0]);
+
+  // Propeller shaft with Pillow Block Bearing Pedestals
   add(
     new THREE.CylinderGeometry(0.14, 0.14, 4.8, 20),
     steel,
     propellerShaftGroup,
     [2.2, 0.15, 0],
   ).rotation.z = Math.PI / 2;
+
+  // Pillow Block Bearing Pedestals supporting the rotating shaft
+  for (const bx of [2.2, 3.8]) {
+    const pedestal = add(new THREE.BoxGeometry(0.4, 1.4, 0.6), castIron, foundationGroup, [
+      bx,
+      -0.6,
+      0,
+    ]);
+    const bearingCap = add(new THREE.CylinderGeometry(0.28, 0.28, 0.42, 16), brass, pedestal, [
+      0,
+      0.75,
+      0,
+    ]);
+    bearingCap.rotation.z = Math.PI / 2;
+  }
+
+  // Stern 3-Bladed Marine Propeller at the aft end of shaft
+  const propHub = add(
+    new THREE.CylinderGeometry(0.3, 0.3, 0.4, 16),
+    brass,
+    propellerShaftGroup,
+    [4.6, 0.15, 0],
+  );
+  propHub.rotation.z = Math.PI / 2;
+  for (let b = 0; b < 3; b++) {
+    const angle = (b * Math.PI * 2) / 3;
+    const blade = add(
+      new THREE.BoxGeometry(0.08, 0.9, 0.35),
+      brass,
+      propellerShaftGroup,
+      [4.6, 0.15 + Math.sin(angle) * 0.5, Math.cos(angle) * 0.5],
+    );
+    blade.rotation.x = angle + 0.35;
+  }
+
+  // Couplings and clutch
   add(
     new THREE.CylinderGeometry(0.48, 0.48, 0.22, 24),
     brass,
@@ -91,6 +166,7 @@ export function buildDaimlerMarineEngineModel(): DaimlerMarineEngineModel {
     couplingGroup,
     [1.25, 0.15, 0],
   ).rotation.z = Math.PI / 2;
+
   // Reversing disk and intermediate friction disks (Fig. 2 / claim 4).
   for (const x of [0.72, 1.48]) {
     add(new THREE.CylinderGeometry(0.34, 0.34, 0.12, 20), steel, reverseGroup, [
@@ -108,6 +184,7 @@ export function buildDaimlerMarineEngineModel(): DaimlerMarineEngineModel {
     [0.52, 0.15, 0],
   );
   thrustRing.rotation.y = Math.PI / 2;
+
   // Fore/aft cooling pipes and water jacket (claims 7–9).
   add(
     new THREE.CylinderGeometry(0.09, 0.09, 3.5, 12),
@@ -128,10 +205,19 @@ export function buildDaimlerMarineEngineModel(): DaimlerMarineEngineModel {
     [0, 0.2, 0.95],
   ).rotation.z = Math.PI / 2;
   add(new THREE.BoxGeometry(0.38, 0.38, 0.38), brass, coolingGroup, [1.35, 0.9, 0.95]);
-  // High-pressure holders and low-pressure reservoir (Fig. 5/6, claim 10).
+
+  // High-pressure holders and low-pressure reservoir (Fig. 5/6, claim 10) with mounting saddles
   add(new THREE.SphereGeometry(0.55, 20, 12), gas, reservoirGroup, [-1.4, -0.85, 0]);
+  add(new THREE.BoxGeometry(0.8, 0.55, 0.8), castIron, reservoirGroup, [-1.4, -1.35, 0]);
+
   add(new THREE.SphereGeometry(0.55, 20, 12), gas, reservoirGroup, [1.1, -0.85, 0]);
+  add(new THREE.BoxGeometry(0.8, 0.55, 0.8), castIron, reservoirGroup, [1.1, -1.35, 0]);
+
   add(new THREE.BoxGeometry(2.4, 0.28, 0.9), gas, reservoirGroup, [0, -1.45, 0]);
+  // Reservoir cradle straps
+  for (const rx of [-0.8, 0.8]) {
+    add(new THREE.BoxGeometry(0.12, 0.4, 1.0), steel, reservoirGroup, [rx, -1.45, 0]);
+  }
 
   return {
     rootGroup,

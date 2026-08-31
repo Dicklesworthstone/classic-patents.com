@@ -222,16 +222,66 @@ export function buildEdisonPhonographModel(): EdisonPhonographModel {
   cylinderGroup.add(crankHandle);
 
   // ==========================================
-  // 3. Source-specified diaphragm and hard point (Claim 3).
+  // 3. Source-specified diaphragm, support column & hard point (Claim 3).
   // ==========================================
+  // Heavy Cast-Iron Soundbox Support Post & Carriage Guide Rail mounted to Base
+  const soundboxSupportColumn = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.22, 0.28, 2.8, 16),
+    illustrativeDarkMetalMat,
+  );
+  soundboxSupportColumn.position.set(0, -0.1, 1.8);
+  soundboxSupportColumn.castShadow = true;
+  baseGroup.add(soundboxSupportColumn);
+
+  // Column Base Flange
+  const colBaseFlange = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.45, 0.45, 0.2, 16),
+    illustrativeWarmMetalMat,
+  );
+  colBaseFlange.position.set(0, -1.4, 1.8);
+  baseGroup.add(colBaseFlange);
+
+  // Carriage Parallel Guide Rail running between main bearing stanchions
+  const guideRail = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.12, 0.12, 8.2, 16),
+    illustrativeLightMetalMat,
+  );
+  guideRail.rotation.z = Math.PI / 2;
+  guideRail.position.set(0, 0.2, 1.4);
+  baseGroup.add(guideRail);
+
   const soundBoxGroup = new THREE.Group();
   soundBoxGroup.position.set(0, 1.6, 1.8);
   rootGroup.add(soundBoxGroup);
+
+  // Swiveling Carriage Arm & Clamping Pivot Hinge
+  const pivotHinge = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.28, 0.28, 0.5, 16),
+    illustrativeWarmMetalMat,
+  );
+  pivotHinge.position.set(0, -0.3, 0);
+  soundBoxGroup.add(pivotHinge);
+
+  const clampingThumbScrew = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.18, 0.08, 0.4, 12),
+    illustrativeWarmMetalMat,
+  );
+  clampingThumbScrew.rotation.x = Math.PI / 2;
+  clampingThumbScrew.position.set(0, -0.3, 0.35);
+  soundBoxGroup.add(clampingThumbScrew);
 
   // Pivot Arm Carriage
   const pivotArm = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 1.8), illustrativeWarmMetalMat);
   pivotArm.position.set(0, -0.4, -0.8);
   soundBoxGroup.add(pivotArm);
+
+  // Guide Rail Sliding Shoe / Half-Nut Follower
+  const guideShoe = new THREE.Mesh(
+    new THREE.BoxGeometry(0.5, 0.35, 0.4),
+    illustrativeDarkMetalMat,
+  );
+  guideShoe.position.set(0, -1.4, -0.4);
+  soundBoxGroup.add(guideShoe);
 
   // Illustrative diaphragm housing.
   const soundBox = new THREE.Mesh(

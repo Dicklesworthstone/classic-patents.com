@@ -148,13 +148,36 @@ export function buildRoombaModel(): RoombaModel {
   ledRing.position.set(0, 0.081, 0);
   bodyMesh.add(ledRing);
 
-  // 4. Front Omnidirectional Caster Wheel
-  const casterGeo = trackGeo(new THREE.SphereGeometry(0.018, 16, 16));
+  // 4. Front Omnidirectional Caster Wheel with Swivel Fork Bracket
+  const casterWell = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.026, 0.026, 0.03, 16)),
+    bumperMat,
+  );
+  casterWell.position.set(0.12, 0.035, 0);
+  mainGroup.add(casterWell);
+
+  const casterFork = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(0.025, 0.022, 0.028)),
+    silverTrimMat,
+  );
+  casterFork.position.set(0.12, 0.026, 0);
+  mainGroup.add(casterFork);
+
+  const casterGeo = trackGeo(new THREE.SphereGeometry(0.016, 16, 16));
   const caster = new THREE.Mesh(casterGeo, rubberTireMat);
-  caster.position.set(0.12, 0.018, 0);
+  caster.position.set(0.12, 0.016, 0);
   mainGroup.add(caster);
 
-  // 5. Left & Right Spring-Loaded Drive Wheels
+  // 5. Left & Right Spring-Loaded Drive Wheel Modules with Suspension Wells
+  for (const wz of [-0.12, 0.12]) {
+    const wheelWell = new THREE.Mesh(
+      trackGeo(new THREE.BoxGeometry(0.08, 0.05, 0.035)),
+      bumperMat,
+    );
+    wheelWell.position.set(0, 0.045, wz);
+    mainGroup.add(wheelWell);
+  }
+
   const wheelGeo = trackGeo(new THREE.CylinderGeometry(0.035, 0.035, 0.02, 20));
   const leftWheel = new THREE.Mesh(wheelGeo, rubberTireMat);
   leftWheel.rotation.z = Math.PI / 2;
@@ -167,6 +190,22 @@ export function buildRoombaModel(): RoombaModel {
   rightWheel.position.set(0, 0.035, -0.12);
   rightWheel.castShadow = true;
   mainGroup.add(rightWheel);
+
+  // Main Dual Counter-Rotating Roller Brushes Underbody Cavity (US 6,883,201 Fig 1)
+  const rollerCavity = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(0.07, 0.02, 0.18)),
+    bumperMat,
+  );
+  rollerCavity.position.set(-0.02, 0.02, 0);
+  mainGroup.add(rollerCavity);
+
+  const mainRoller = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.014, 0.014, 0.16, 16)),
+    brushMat,
+  );
+  mainRoller.rotation.x = Math.PI / 2;
+  mainRoller.position.set(-0.02, 0.015, 0);
+  mainGroup.add(mainRoller);
 
   // 6. Spinning 3-Arm Edge-Sweeping Side Brush
   const sideBrushGroup = new THREE.Group();

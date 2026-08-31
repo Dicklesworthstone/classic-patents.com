@@ -313,7 +313,47 @@ export function buildMcCormickReaperModel(): McCormickReaperModel {
   pitmanArm.rotation.y = -Math.PI / 8;
   cutterAssembly.add(pitmanArm);
 
-  // --- 5. REVOLVING 4-VANE GRAIN REEL (CLAIM 2) ---
+  // --- 5. REVOLVING 4-VANE GRAIN REEL & UPRIGHT TIMBER POSTS (CLAIM 2) ---
+  // Heavy Ash Timber Reel Uprights & Diagonal Struts mounted to Chassis Sills
+  [-2.2, 3.2].forEach((ux) => {
+    const postGeo = new THREE.BoxGeometry(0.24, 2.4, 0.24);
+    geometriesToDispose.push(postGeo);
+    const uprightPost = new THREE.Mesh(postGeo, ashWood);
+    uprightPost.position.set(ux, 0.4, 0.85);
+    uprightPost.castShadow = true;
+    platformGroup.add(uprightPost);
+
+    // Diagonal support strut
+    const strutGeo = new THREE.BoxGeometry(0.18, 2.2, 0.18);
+    geometriesToDispose.push(strutGeo);
+    const strut = new THREE.Mesh(strutGeo, ashWood);
+    strut.position.set(ux, 0.3, -0.2);
+    strut.rotation.x = -0.55;
+    platformGroup.add(strut);
+
+    // Bearing box atop upright post
+    const boxGeo = new THREE.BoxGeometry(0.32, 0.32, 0.38);
+    geometriesToDispose.push(boxGeo);
+    const bearingBox = new THREE.Mesh(boxGeo, castIron);
+    bearingBox.position.set(ux, 1.45, 0.85);
+    platformGroup.add(bearingBox);
+  });
+
+  // Reel Drive Pulley & Crossed Leather Belt from Main Wheel Axle
+  const reelPulleyGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.12, 16);
+  geometriesToDispose.push(reelPulleyGeo);
+  const reelPulley = new THREE.Mesh(reelPulleyGeo, castIron);
+  reelPulley.rotation.z = Math.PI / 2;
+  reelPulley.position.set(3.4, 1.45, 0.85);
+  platformGroup.add(reelPulley);
+
+  const beltGeo = new THREE.BoxGeometry(0.06, 1.8, 0.1);
+  geometriesToDispose.push(beltGeo);
+  const driveBelt = new THREE.Mesh(beltGeo, weatheredWood);
+  driveBelt.position.set(3.4, 0.6, 0.4);
+  driveBelt.rotation.x = 0.45;
+  platformGroup.add(driveBelt);
+
   const reelGroup = new THREE.Group();
   reelGroup.position.set(0.5, 1.45, 0.85);
   rootGroup.add(reelGroup);

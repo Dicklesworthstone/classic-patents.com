@@ -277,6 +277,21 @@ export function buildHoweSewingMachineModel(): HoweSewingMachineModel {
   shuttleGroup.add(shuttleMesh);
 
   // --- 6. VERTICAL BASTER PLATE & PIN FEED (Claim 3) ---
+  // Horizontal Feed Guide Rail & Rack Bed bolted to Baseplate
+  const feedRailGeo = new THREE.BoxGeometry(0.35, 0.25, 4.4);
+  geometriesToDispose.push(feedRailGeo);
+  const feedRail = new THREE.Mesh(feedRailGeo, darkIron);
+  feedRail.position.set(2.4, -1.85, 0);
+  baseGroup.add(feedRail);
+
+  // Feed Pinion Gear & Ratchet Pawl Linkage
+  const feedPinionGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.2, 16);
+  geometriesToDispose.push(feedPinionGeo);
+  const feedPinion = new THREE.Mesh(feedPinionGeo, brass);
+  feedPinion.rotation.z = Math.PI / 2;
+  feedPinion.position.set(2.2, -1.85, 0);
+  baseGroup.add(feedPinion);
+
   const basterPlateGroup = new THREE.Group();
   basterPlateGroup.position.set(2.4, -0.9, 0);
   rootGroup.add(basterPlateGroup);
@@ -286,6 +301,13 @@ export function buildHoweSewingMachineModel(): HoweSewingMachineModel {
   geometriesToDispose.push(plateGeo);
   const basterMesh = new THREE.Mesh(plateGeo, polishedSteel);
   basterPlateGroup.add(basterMesh);
+
+  // Sliding Rack Base attaching baster plate to guide rail
+  const rackBaseGeo = new THREE.BoxGeometry(0.22, 0.2, 3.2);
+  geometriesToDispose.push(rackBaseGeo);
+  const rackBase = new THREE.Mesh(rackBaseGeo, darkIron);
+  rackBase.position.set(0, -0.9, 0);
+  basterPlateGroup.add(rackBase);
 
   // Pointed Steel Holding Pins
   for (let p = -5; p <= 5; p++) {
@@ -310,6 +332,13 @@ export function buildHoweSewingMachineModel(): HoweSewingMachineModel {
   const spoolGroup = new THREE.Group();
   spoolGroup.position.set(-0.8, 2.3, 0);
   rootGroup.add(spoolGroup);
+
+  // Vertical Steel Spool Spindle Pin mounted in Girder
+  const spindleGeo = new THREE.CylinderGeometry(0.04, 0.04, 1.1, 10);
+  geometriesToDispose.push(spindleGeo);
+  const spindle = new THREE.Mesh(spindleGeo, polishedSteel);
+  spindle.position.set(0, -0.1, 0);
+  spoolGroup.add(spindle);
 
   const spoolGeo = new THREE.CylinderGeometry(0.28, 0.28, 0.6, 16);
   geometriesToDispose.push(spoolGeo);
