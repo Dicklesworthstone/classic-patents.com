@@ -82,8 +82,8 @@ export function stepDaVinci(
   dtSec = 1 / 60,
 ): DaVinciState {
   const dt = Math.max(0.001, Math.min(0.1, dtSec));
-  const scale = Math.max(1.0, Math.min(10.0, c.motionScaleRatio || 3.0));
-  const speed = c.masterInputSpeedMps || 0.5;
+  const scale = Math.max(1.0, Math.min(10.0, c.motionScaleRatio ?? 3.0));
+  const speed = c.masterInputSpeedMps ?? 0.5;
 
   // 1. Master Console Surgeon Input Trajectory
   const rawMasterX = 0.35 * Math.cos(timeSec * speed * 1.8);
