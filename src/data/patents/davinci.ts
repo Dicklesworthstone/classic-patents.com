@@ -102,7 +102,19 @@ Robotic surgical tools, systems, and methods for preparing for and performing ro
     ],
     breakthroughInsight:
       "Put compatibility, tool-type, calibration, life, and coupling information at the releasable tool boundary so the processor can configure and verify a tool during exchange.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Computer Motion, Inc. (ZEUS Surgical System)",
+        rivalClaim:
+          "Computer Motion held patents on the ZEUS robotic surgery system and HERMES voice-controlled laparoscopic cameras, asserting that Intuitive's da Vinci master-slave kinematic telemanipulator infringed its intellectual property.",
+        conflictDetails:
+          "Intuitive Surgical and Computer Motion filed eight separate patent infringement lawsuits against each other between 2000 and 2003 across Delaware and California federal courts (Intuitive Surgical, Inc. v. Computer Motion, Inc.).",
+        resolution:
+          "In March 2003, the rivals settled all litigation by merging, with Intuitive Surgical acquiring Computer Motion in a stock transaction valued at $150 million.",
+        legalOutcome:
+          "The merger consolidated SRI/da Vinci robotic wrist telemanipulation patents (including US 6,331,181) with Computer Motion's voice and arm patents, creating Intuitive Surgical's global monopoly over robotic-assisted surgery.",
+      },
+    ],
     civilizationalImpact:
       "The claim architecture helped make detachable surgical tools legible to a controller: a tool can report what it is, how its measured drive geometry differs from nominal geometry, and whether it is compatible before the system applies drive signals.",
     aftermath:

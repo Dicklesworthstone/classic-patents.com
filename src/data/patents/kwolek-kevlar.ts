@@ -395,7 +395,19 @@ The full 58-page historical instrument is available through the original PDF. It
     ],
     breakthroughInsight:
       "The grant's abstract distinguishes optically anisotropic polyamide dopes and connects them to fibers with distinctive internal structure.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Akzo Nobel N.V. (Twaron)",
+        rivalClaim:
+          "Dutch chemical manufacturer Akzo developed poly-p-phenylene terephthalamide fiber under the trade name Twaron, filing European and US patent applications asserting distinct solvent formulations.",
+        conflictDetails:
+          "DuPont and Akzo engaged in international patent infringement litigation across the United States, Netherlands, and Germany throughout the 1980s over liquid-crystalline aramid spinning processes (E.I. du Pont de Nemours & Co. v. Akzo N.V.).",
+        resolution:
+          "In 1988, DuPont and Akzo signed a worldwide cross-licensing and coexistence agreement, allocating market territories and licensing each other's aramid polymer processing patents.",
+        legalOutcome:
+          "Kwolek's foundational US Patent No. 3,671,542 was affirmed as the breakthrough patent in anisotropic liquid-crystalline polymer solutions, protecting DuPont's multi-billion-dollar Kevlar franchise.",
+      },
+    ],
     civilizationalImpact:
       "The page remains a source-preservation record until its full historical and technical interpretation can be checked against the complete facsimile.",
   },

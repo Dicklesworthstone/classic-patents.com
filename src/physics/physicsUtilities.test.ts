@@ -80,16 +80,30 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(energyChannelsFor("us-808897-carrier-air-conditioner", {})[0]?.name).toBe("Fan work");
     expect(energyChannelsFor("us-608969-parsons-turbine", {})[0]?.name).toBe("Shaft");
     expect(energyChannelsFor("us-3858232-boyle-smith-ccd", {})[0]?.name).toBe("Clock Gate Drive");
-    expect(energyChannelsFor("us-3671542-kwolek-kevlar", {})).toEqual([]);
+    expect(energyChannelsFor("us-3671542-kwolek-kevlar", {})[0]?.name).toBe(
+      "Spin-Dope Hydraulic Extrusion Pump",
+    );
     expect(energyChannelsFor("us-586193-marconi-radio", {})[0]?.name).toBe("Spark RF");
-    expect(energyChannelsFor("us-2292387-lamarr-frequency-hopping", {})).toEqual([]);
+    expect(energyChannelsFor("us-2292387-lamarr-frequency-hopping", {})[0]?.name).toBe(
+      "Pneumatic Player-Piano Slotted Tape Drive",
+    );
     expect(energyChannelsFor("us-2708656-fermi-reactor", {})[0]?.name).toBe("Fission heat");
-    expect(energyChannelsFor("us-313224-mergenthaler-linotype", {})).toEqual([]);
-    expect(energyChannelsFor("us-395781-hollerith-tabulating", {})).toEqual([]);
-    expect(energyChannelsFor("us-542846-diesel-engine", {})).toEqual([]);
-    expect(energyChannelsFor("us-3541541-engelbart-mouse", {})).toEqual([]);
-    expect(energyChannelsFor("us-381968-tesla-motor", {})).toEqual([]);
-    expect(energyChannelsFor("us-593138-tesla-coil", {})).toEqual([]);
+    expect(energyChannelsFor("us-313224-mergenthaler-linotype", {})[0]?.name).toBe(
+      "Crucible Heating & Main Cam Drive",
+    );
+    expect(energyChannelsFor("us-395781-hollerith-tabulating", {})[0]?.name).toBe(
+      "Battery Solenoid Pulse",
+    );
+    expect(energyChannelsFor("us-542846-diesel-engine", {})[0]?.name).toBe(
+      "Injected Heavy Oil Combustion",
+    );
+    expect(energyChannelsFor("us-3541541-engelbart-mouse", {})[0]?.name).toBe(
+      "Hand Desktop Drag Kinetic Input",
+    );
+    expect(energyChannelsFor("us-381968-tesla-motor", {})[0]?.name).toBe(
+      "Polyphase AC Stator Input",
+    );
+    expect(energyChannelsFor("us-593138-tesla-coil", {})[0]?.name).toBe("Primary Spark Tank Power");
     const davenport = energyChannelsFor("us-132-davenport-electric-motor", {});
     expect(davenport.map((c) => c.name)).toEqual(["Electrical", "Shaft", "Copper"]);
     expect(davenport[1].watts + davenport[2].watts).toBeCloseTo(davenport[0].watts, 1);
@@ -100,8 +114,12 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(energyChannelsFor("us-347140-thomson-welding", {})[0]?.watts).toBeGreaterThan(0);
     expect(energyChannelsFor("us-194047-otto-engine", {})[0]?.name).toBe("Brake");
     expect(energyChannelsFor("us-6162-corliss-steam-engine", {})[0]?.name).toBe("Indicated");
-    expect(energyChannelsFor("us-361931-daimler-engine", {})).toEqual([]);
-    expect(energyChannelsFor("us-233692-pelton-water-wheel", {})).toEqual([]);
+    expect(energyChannelsFor("us-361931-daimler-engine", {})[0]?.name).toBe(
+      "Petroleum Combustion Fuel Input",
+    );
+    expect(energyChannelsFor("us-233692-pelton-water-wheel", {})[0]?.name).toBe(
+      "Hydrodynamic Water Jet",
+    );
     expect(energyChannelsFor("us-470918-reno-escalator", {})[0]?.name).toBe("Motor");
     expect(energyChannelsFor("us-319596-maxim-machine-gun", {})[0]).toMatchObject({
       name: "Jacket heat",
@@ -118,7 +136,9 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
       "Filament",
       "Audio",
     ]);
-    expect(energyChannelsFor("us-307031-edison-indicator", {})).toEqual([]);
+    expect(energyChannelsFor("us-307031-edison-indicator", {})[0]?.name).toBe(
+      "Filament Joule Heat",
+    );
     expect(energyChannelsFor("gb-913-watt-separate-condenser", {}).map((c) => c.name)).toEqual([
       "Furnace",
       "Indicated",

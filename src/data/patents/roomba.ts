@@ -133,7 +133,19 @@ The invention results from the realization that a low cost, accurate, and easy t
     ],
     breakthroughInsight:
       "The source's breakthrough is geometric calibration: intersect the detector's field of view with a directed emitter field at a finite region, then test whether the floor or wall occupies that region. Angled collimators reduce reflectivity and specular-scattering errors, and the wall controller returns through decreasing radii of curvature.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Electrolux (Trilobite) & SharkNinja / bObsweep",
+        rivalClaim:
+          "Electrolux commercialized the Trilobite in 2001 using ultrasound acoustic pinging, while later competitors (SharkNinja, bObsweep) attempted to copy Roomba's optical wall-following and cliff-detection sensors.",
+        conflictDetails:
+          "iRobot brought patent infringement actions before the US International Trade Commission (ITC Investigation No. 337-TA-1057) and federal court against multiple manufacturers, asserting US Patent No. 6,594,844 and companion obstacle navigation patents.",
+        resolution:
+          "The ITC issued exclusion orders barring infringing robotic vacuums from entering the United States, and competitors settled by licensing or redesigning sensor geometries.",
+        legalOutcome:
+          "US Patent No. 6,594,844 protected iRobot's optical obstacle and boundary sensing architecture, helping Roomba sell over 40 million units worldwide as the most successful consumer autonomous robot.",
+      },
+    ],
     civilizationalImpact:
       "Within the boundaries of this grant, the contribution is a low-cost optical safety and boundary-sensing subsystem for autonomous cleaning robots. It does not by itself establish a global map, an expanding spiral, or a randomized coverage guarantee.",
     aftermath:

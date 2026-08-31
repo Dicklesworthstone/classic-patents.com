@@ -754,5 +754,203 @@ export function energyChannelsFor(
     ];
   }
 
+  if (patentId === "us-3633-goodyear-rubber") {
+    const steamW = 3500;
+    return [
+      { name: "Autoclave Steam Heat", watts: steamW, tone: "in" },
+      { name: "Polymer Crosslinking Enthalpy", watts: steamW * 0.65, tone: "useful" },
+      { name: "Vessel Thermal Radiation", watts: steamW * 0.35, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-6469-lincoln-buoy") {
+    const liftW = 850;
+    return [
+      { name: "Air Chamber Expansion Work", watts: liftW, tone: "in" },
+      { name: "Hydrostatic Displacement Lift", watts: liftW * 0.82, tone: "useful" },
+      { name: "Bellows Flap Drag Loss", watts: liftW * 0.18, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-48475-yale-lock") {
+    const keyW = 1.2;
+    return [
+      { name: "Key Insertion Force", watts: keyW, tone: "in" },
+      { name: "Pin Tumbler Shear Lift", watts: keyW * 0.78, tone: "useful" },
+      { name: "Keyway Sliding Friction", watts: keyW * 0.22, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-79265-sholes-typewriter") {
+    const strikeW = 3.5;
+    return [
+      { name: "Keystroke Kinetic Work", watts: strikeW, tone: "in" },
+      { name: "Platen Ribbon Impression", watts: strikeW * 0.72, tone: "useful" },
+      { name: "Linkage Pivot Friction", watts: strikeW * 0.28, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-120057-gramme-dynamo") {
+    const driveW = 1800;
+    return [
+      { name: "Shaft Drive Input", watts: driveW, tone: "in" },
+      { name: "Ring Armature Electrical Output", watts: driveW * 0.84, tone: "useful" },
+      { name: "Copper Joule & Core Eddy Loss", watts: driveW * 0.16, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-135245-pasteur-fermentation") {
+    const fermW = 420;
+    return [
+      { name: "Wort Biochemical Enthalpy", watts: fermW, tone: "in" },
+      { name: "Yeast Cellular Respiration", watts: fermW * 0.74, tone: "useful" },
+      { name: "Vat Thermal Convection Loss", watts: fermW * 0.26, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-233692-pelton-water-wheel") {
+    const jetW = (params.headMeters ?? 60) * (params.flowLps ?? 25) * 9.81;
+    return [
+      { name: "Hydrodynamic Water Jet", watts: jetW, tone: "in" },
+      { name: "Splitter Bucket Impulse Torque", watts: jetW * 0.88, tone: "useful" },
+      { name: "Discharge Residual Kinetic Loss", watts: jetW * 0.12, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-307031-edison-indicator") {
+    const filW = 45;
+    return [
+      { name: "Filament Joule Heat", watts: filW, tone: "in" },
+      { name: "Thermionic Emission Flux", watts: filW * 0.15, tone: "useful" },
+      { name: "Blackbody Radiation Loss", watts: filW * 0.85, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-313224-mergenthaler-linotype") {
+    const potW = 1200;
+    return [
+      { name: "Crucible Heating & Main Cam Drive", watts: potW, tone: "in" },
+      { name: "Slug Cast & Line Composition Work", watts: potW * 0.68, tone: "useful" },
+      { name: "Matrix Chute & Mold Friction", watts: potW * 0.32, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-361931-daimler-engine") {
+    const combW = 3800;
+    return [
+      { name: "Petroleum Combustion Fuel Input", watts: combW, tone: "in" },
+      { name: "Crankshaft Brake Shaft Power", watts: combW * 0.28, tone: "useful" },
+      { name: "Cylinder Heat Rejection & Exhaust", watts: combW * 0.72, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-381968-tesla-motor") {
+    const acW = 1500;
+    return [
+      { name: "Polyphase AC Stator Input", watts: acW, tone: "in" },
+      { name: "Rotating Field Rotor Torque Work", watts: acW * 0.86, tone: "useful" },
+      { name: "Stator Resistance & Magnetic Hysteresis", watts: acW * 0.14, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-388850-eastman-kodak") {
+    const shutterW = 0.8;
+    return [
+      { name: "Shutter Winding Spring Potential", watts: shutterW, tone: "in" },
+      { name: "Rotary Barrel Aperture Exposure", watts: shutterW * 0.75, tone: "useful" },
+      { name: "Barrel Escapement Friction", watts: shutterW * 0.25, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-395781-hollerith-tabulating") {
+    const pulseW = 24;
+    return [
+      { name: "Battery Solenoid Pulse", watts: pulseW, tone: "in" },
+      { name: "Counter Dial Magnet Actuation", watts: pulseW * 0.78, tone: "useful" },
+      { name: "Mercury Cup Contact Resistance", watts: pulseW * 0.22, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-542846-diesel-engine") {
+    const fuelW = 12000;
+    return [
+      { name: "Injected Heavy Oil Combustion", watts: fuelW, tone: "in" },
+      { name: "Isobaric Piston Expansion Work", watts: fuelW * 0.36, tone: "useful" },
+      { name: "Cylinder Wall Cooling & Exhaust", watts: fuelW * 0.64, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-593138-tesla-coil") {
+    const tankW = 2500;
+    return [
+      { name: "Primary Spark Tank Power", watts: tankW, tone: "in" },
+      { name: "Resonant Secondary High-Frequency Field", watts: tankW * 0.82, tone: "useful" },
+      { name: "Spark Gap Arc & Skin-Effect Loss", watts: tankW * 0.18, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-613809-tesla-teleautomaton") {
+    const rkW = 180;
+    return [
+      { name: "Propulsion & Steering Motor Battery", watts: rkW, tone: "in" },
+      { name: "Rudder & Screw Propeller Hydrodynamic Work", watts: rkW * 0.72, tone: "useful" },
+      { name: "Coherer Relay & Commutator Resistance", watts: rkW * 0.28, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-2292387-lamarr-frequency-hopping") {
+    const hopW = 65;
+    return [
+      { name: "Pneumatic Player-Piano Slotted Tape Drive", watts: hopW, tone: "in" },
+      { name: "Carrier Frequency Hop Synchronization", watts: hopW * 0.7, tone: "useful" },
+      { name: "Bellows Suction Air Loss", watts: hopW * 0.3, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-2495429-spencer-microwave") {
+    const magW = 1200;
+    return [
+      { name: "High-Voltage Magnetron Anode Supply", watts: magW, tone: "in" },
+      { name: "2.45 GHz Cavity Dielectric Food Absorption", watts: magW * 0.65, tone: "useful" },
+      { name: "Anode Cooling Fin Thermal Dissipation", watts: magW * 0.35, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-2543181-land-polaroid") {
+    const rollW = 4.2;
+    return [
+      { name: "Film Pull Mechanical Roller Work", watts: rollW, tone: "in" },
+      { name: "Reagent Pod Rupture & Diffusion Transfer", watts: rollW * 0.76, tone: "useful" },
+      { name: "Spreading Viscous Layer Shear Friction", watts: rollW * 0.24, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-3541541-engelbart-mouse") {
+    const dragW = 0.5;
+    return [
+      { name: "Hand Desktop Drag Kinetic Input", watts: dragW, tone: "in" },
+      { name: "Orthogonal Potentiometer Resolver Work", watts: dragW * 0.8, tone: "useful" },
+      { name: "Wheel Contact Rolling Slip", watts: dragW * 0.2, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-3671542-kwolek-kevlar") {
+    const spinW = 1600;
+    return [
+      { name: "Spin-Dope Hydraulic Extrusion Pump", watts: spinW, tone: "in" },
+      { name: "Liquid-Crystalline Aramid Fiber Alignment", watts: spinW * 0.78, tone: "useful" },
+      { name: "Sulfuric Acid Coagulation Bath Dissipation", watts: spinW * 0.22, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-6285999-pagerank") {
+    const srvW = 350;
+    return [
+      { name: "Server Rack Electrical Input", watts: srvW, tone: "in" },
+      { name: "Markov Transition Matrix Eigenvector Compute", watts: srvW * 0.62, tone: "useful" },
+      { name: "Processor Heat Sink & Fan Heat Rejection", watts: srvW * 0.38, tone: "loss" },
+    ];
+  }
+
   return [];
 }

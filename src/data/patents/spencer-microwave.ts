@@ -514,7 +514,19 @@ The complete reviewed source edition, all six claims, and the sole drawing are a
     ],
     breakthroughInsight:
       "The patent combines a wavelength-scale condition with guided exposure: use microwave energy of about ten centimetres or less, concentrate and guide it in a restricted region, and control the food's time there. The illustrated magnetron and conveyor arrangement makes that method concrete.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Tappan Stove Company & Amana Refrigeration",
+        rivalClaim:
+          "Appliance manufacturers attempted to engineer RF cavity heating ovens using continuous-wave magnetrons without paying Raytheon royalties.",
+        conflictDetails:
+          "Raytheon held Spencer's foundational patent on enclosing food within an electromagnetic cavity fed by a magnetron with a conductive mode stirrer. Raytheon licensed the patents to Tappan (1955) and acquired Amana (1965).",
+        resolution:
+          "Raytheon launched the 'Amana Radarange' in 1967 at $495, utilizing Spencer's exact cavity waveguide feed and safety interlocks.",
+        legalOutcome:
+          "Spencer's US Patent No. 2,495,429 and companion magnetron patents gave Raytheon exclusive control over microwave cooking technology throughout the 1950s and 1960s, creating the modern microwave appliance industry.",
+      },
+    ],
     civilizationalImpact:
       "US 2,495,429 documents a transition from low-frequency food-heating experiments to a microwave method with defined wavelength, guided-region, duration, and movement conditions. The paired-magnetron and conveyor drawing also records the industrial process framing of this early food-treatment system.",
     sideNotes: [

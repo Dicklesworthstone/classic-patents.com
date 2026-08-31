@@ -359,7 +359,19 @@ export const bellPhotophonePatent: Patent = {
     ],
     breakthroughInsight:
       "A microscopic thin mirror flexing under acoustic sound pressure dynamically modulates the divergence and intensity of a reflected light beam, which can be gathered at a distance by a parabolic reflector and converted directly into electrical sound waves by a photoconductive selenium crystal.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Charles Fritts & Willoughby Smith",
+        rivalClaim:
+          "Willoughby Smith discovered the photoconductive properties of selenium in 1873, and Charles Fritts developed early selenium solid-state cells in 1883, claiming broad rights to selenium light transduction.",
+        conflictDetails:
+          "Bell and co-inventor Charles Sumner Tainter designed a sensitive paraboloid selenium receiver and mirror-diaphragm transmitter that modulated sunlight using acoustic voice vibrations, transmitting wireless speech 213 meters between the Franklin School and Bell's laboratory in Washington D.C.",
+        resolution:
+          "The USPTO recognized Bell and Tainter's specific apparatus combining acoustic beam deflection with a multi-plate selenium cell across US Patents 235,199 and 235,496.",
+        legalOutcome:
+          "Bell's Photophone patents stood unchallenged, forming the legal and physical grandfather of all modern fiber-optic and free-space optical telecommunications.",
+      },
+    ],
     civilizationalImpact:
       "The Photophone demonstrated the principle of transmitting voice via light beams, establishing the scientific foundation for modern fiber-optic telecommunications and free-space laser links.",
   },

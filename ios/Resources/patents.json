@@ -287,7 +287,32 @@
         }
       ]
     },
-    "archivalParallelReadings": {},
+    "archivalParallelReadings": {
+      "1": [
+        "Formal opening address and identification of inventor James Watt, instrument maker of Glasgow, Scotland."
+      ],
+      "2": [
+        "Royal letters patent recital granted by King George III on January 5, 1769, granting sole rights across Great Britain and colonies subject to enrolling a written specification within four months."
+      ],
+      "3": [
+        "Formal preamble declaring the specification of the invention to satisfy the Chancery enrollment condition."
+      ],
+      "4": [
+        "General statement declaring the foundational thermodynamic objective: reducing steam and coal consumption by fundamentally restructuring engine heat flows."
+      ],
+      "12": [
+        "Legal execution testimonium signed and sealed by James Watt on April 25, 1769."
+      ],
+      "13": [
+        "Formal inventor signature and seal of James Watt executing the letters patent specification."
+      ],
+      "14": [
+        "Chancery acknowledgment and official enrollment recording on April 29, 1769 in the ninth year of King George III."
+      ],
+      "15": [
+        "Official date stamp recording Chancery enrollment on April 29, 1769."
+      ]
+    },
     "plainEnglish": {
       "overview": "Before James Watt's 1769 breakthrough, all steam engines in the world were atmospheric machines built according to Thomas Newcomen's 1712 design. In a Newcomen engine, steam filled a large open-topped cast-iron cylinder, and cold water was sprayed directly into the cylinder to condense the steam into liquid. This created a partial vacuum under the piston, allowing atmospheric air pressure to push the piston down. However, this direct water injection cooled the hundreds of kilograms of iron cylinder metal from 100°C down to 35°C on every single stroke. When fresh steam entered for the next stroke, up to 75% to 80% of it immediately condensed into useless water droplets against the cold iron walls before any mechanical work could be performed. Watt realized that the thermodynamic requirements of the cylinder and the condenser were completely contradictory: the cylinder must remain boiling hot at all times to avoid wasting steam, while the condenser must remain icy cold to create a deep vacuum. His master solution was to divide these duties into two separate vessels connected by a valve: a permanently hot, steam-jacketed working cylinder, and an external, permanently cold condenser evacuated by a mechanical air pump.",
       "coreMechanism": "When the piston reaches the top of its stroke, the exhaust valve opens, allowing low-pressure steam (102°C, 120 kPa abs) to rush out of the cylinder and into the submerged condenser vessel. In the condenser, a continuous cold water spray (15°C–35°C) collapses the vapor phase into liquid, plummeting the pressure to the saturation pressure of cold water (3.5–6.0 kPa abs, or 28+ inches of mercury vacuum). Because the cylinder metal is enclosed in an outer jacket filled with live boiler steam, its inner walls never drop below 100°C. Meanwhile, a reciprocating air pump driven from the engine's main walking beam continuously pumps out condensed water, injection spray, and non-condensable atmospheric air that would otherwise choke the vacuum. During the downward working stroke, boiler steam presses directly upon the enclosed piston top while deep vacuum pulls from below, generating a large, steady Indicated Mean Effective Pressure (IMEP ~ 10–14 psi) with more than 75% less coal consumption than a Newcomen engine.",
@@ -1070,7 +1095,38 @@
         }
       ]
     },
-    "archivalParallelReadings": {},
+    "archivalParallelReadings": {
+      "1": [
+        "Formal Letters Patent preamble identifying King George III's royal grant of exclusive privilege to Richard Arkwright of Nottingham on July 15, 1769 for an engine to spin cotton, flax, and wool."
+      ],
+      "2": [
+        "Declaration of specification compliance: setting out the full mechanical construction and operational doctrine of the spinning engine with reference to the enrolled drawing plan."
+      ],
+      "4": [
+        "Component A: the prime mover transmission drum or great water wheel, conveying continuous mechanical torque to all spinning spindles and drawing rollers."
+      ],
+      "5": [
+        "Component B: the horizontal iron driving shaft with individual spindle driving whorls, clutches, and disengaging levers allowing independent stopping of any spindle thread."
+      ],
+      "6": [
+        "Component C: the fundamental drafting organ comprising pairs of differential-speed cylindrical rollers—smooth leather top rollers and fluted brass/iron lower rollers—progressively attenuating and parallelizing staple cotton fibers by a 4x to 8x draft ratio."
+      ],
+      "7": [
+        "Component D: suspended lead weights and pressing levers acting upon the upper roller bearings to maintain steady, slip-free normal clamping force against the fluted steel cylinders."
+      ],
+      "8": [
+        "Component E: high-speed steel flyers with wire eye guides rotating at 3000–4000 RPM upon vertical spindles, imparting continuous true twist to the emerging drawn roving."
+      ],
+      "9": [
+        "Component F: drag-retarded bobbins mounted coaxially on the spindles whose speed differential relative to the flyer winds the twisted yarn under steady tension."
+      ],
+      "10": [
+        "Component G: the heart-shaped cam and traverse gearing which cyclically oscillates the bobbin rail vertically, laying down even, dense cylindrical layers across the bobbin spool."
+      ],
+      "17": [
+        "Chancery enrollment certification: signed by Richard Arkwright on November 8, 1769 in the presence of the High Court of Chancery."
+      ]
+    },
     "plainEnglish": {
       "overview": "Before 1769, textile production was constrained by a critical technological bottleneck: hand spinners on traditional spinning wheels could not produce strong cotton yarn. All European 'cotton' cloth was actually fustian—a hybrid fabric with a strong linen warp (lengthwise threads under high loom tension) and weak cotton weft (crosswise filling). James Hargreaves' 1764 Spinning Jenny multiplied human output but still relied on manual drafting, producing soft, low-twist yarn that snapped under loom tension. Richard Arkwright solved this by inventing continuous mechanical drafting using differential rollers combined with high-speed flyer twisting, creating 'Water Twist'—the world's first industrial cotton yarn strong enough for loom warp.",
       "coreMechanism": "The Water Frame operates through three coupled mechanical stages: (1) Differential Roller Drafting: Carded cotton roving passes through four successive pairs of cylindrical rollers. Each pair rotates faster than the preceding pair (D = v4 / v1 ≈ 6x). The slow feed pair holds the roving while the accelerating delivery pair pulls and stretches the fibers, sliding them past one another to parallelize and attenuate the roving. (2) Positive Clamping: Upper leather-covered rollers are held down against bottom fluted brass/iron cylinders by suspended lead deadweights, ensuring zero slippage without cutting delicate fibers. (3) Flyer Twisting and Drag Take-Up: The attenuated roving enters the hollow eye of a steel flyer rotating at 3,500+ RPM on a vertical spindle, twisting fibers into compact yarn. The yarn winds onto an internal bobbin retarded by friction drag cords, while a heart-cam slowly oscillates the bobbin rail vertically for uniform spool layering.",
@@ -1787,7 +1843,41 @@
         }
       ]
     },
-    "archivalParallelReadings": {},
+    "archivalParallelReadings": {
+      "1": [
+        "Formal Chancery preamble reciting King George III's letters patent of October 25, 1781 (21st year of his reign) granting James Watt sole patent privileges for converting reciprocating steam engine motion into continuous rotation."
+      ],
+      "2": [
+        "Legal testatum and enrollment covenant requiring James Watt to lodge a full and precise written specification describing his rotative engine mechanisms in the High Court of Chancery within four calendar months."
+      ],
+      "3": [
+        "Opening declaration establishing compliance with the Chancery proviso and defining the scope of the invention for public dissemination."
+      ],
+      "4": [
+        "Broad statement of invention: novel mechanical assemblies for converting reciprocating linear or beam motion of steam engines into continuous rotary shaft motion without relying on a simple crank, suited for driving textile machinery, mills, and forge hammers."
+      ],
+      "5": [
+        "The First Method (Sun & Planet Epicyclic Gearing): fixing a spur gear ('Sun wheel') to the rotating flywheel shaft, and bolting a matching gear ('Planet wheel') rigidly to the lower end of the connecting rod, constrained to orbit around the sun wheel via a radius guide link."
+      ],
+      "6": [
+        "The 2:1 epicyclic speed multiplication law: because the planet wheel is rigidly fixed to the connecting rod and cannot rotate independently on its own center, it forces the sun wheel and flywheel shaft to make two complete revolutions for every single double-stroke of the engine beam."
+      ],
+      "7": [
+        "The Second Method: internal epicyclic planetary motion, wherein a planet wheel or friction roller orbits inside an internal toothed ring fixed to the rotating axle."
+      ],
+      "8": [
+        "The Third Method: crown-wheel rotative motion with directional ratchet escapement teeth actuated by reciprocating push-pull catches on the connecting rod."
+      ],
+      "9": [
+        "The Fourth Method: double reciprocating toothed racks driving intermittent gear sectors and pinions mounted upon the main shaft with counterweights."
+      ],
+      "10": [
+        "The Fifth Method: a helical or spiral cam groove machined into the main shaft, traversed by a follower roller pin mounted on the reciprocating crosshead."
+      ],
+      "17": [
+        "Chancery enrollment witness clause and formal acknowledgement signed and sealed by James Watt before the Court of Chancery on February 23, 1782."
+      ]
+    },
     "plainEnglish": {
       "overview": "Before 1781, steam engines were exclusively reciprocating pumpers—suited for bailing water out of Cornish copper and coal mines, but incapable of turning a factory driveshaft. Mills still relied entirely on capricious water wheels and draft horses. When Boulton & Watt sought to apply steam to factories, they found James Pickard had patented the simple crankshaft in 1780, demanding exorbitant royalties. Instead of yielding, Watt and William Murdoch invented five ingenious rotary mechanisms, crowned by the Sun and Planet epicyclic gear. By clamping an orbiting planet gear rigidly to the connecting rod, the mechanism not only bypassed the crank patent but doubled output shaft speed, spinning factory line shafts at twice the frequency of the engine beam.",
       "coreMechanism": "The engine piston rocks a great wooden or cast-iron walking beam through a stroke $S = 1.8\\text{ m}$. Suspended from the outer beam head is a long iron connecting spear. Clamped rigidly to the bottom of this spear is the 'Planet' spur gear ($N_p = 40$ teeth). Meshing with it is the 'Sun' spur gear ($N_s = 40$ teeth) keyed directly to the flywheel shaft. A brass radius link holds the two gear centers at constant pitch distance $R_{\\text{orbit}} = r_s + r_p$. Because the planet gear cannot spin independently on its own center, orbiting once around the sun forces the sun gear to advance by its own teeth PLUS the planet's teeth, yielding an exact 2:1 epicyclic speed multiplication: $\\omega_{\\text{shaft}} = \\omega_{\\text{beam}} \\cdot (1 + N_p / N_s) = 2 \\cdot \\omega_{\\text{beam}}$.",
@@ -2367,7 +2457,20 @@
         }
       ]
     },
-    "archivalParallelReadings": {},
+    "archivalParallelReadings": {
+      "1": [
+        "The Patent Office index identifies the inventor and the 1784 patent number; this draft is not an accepted facsimile edition."
+      ],
+      "2": [
+        "The checked printed abridgment describes a dished reverberatory or air furnace and shaped iron bars used to work the molten charge."
+      ],
+      "3": [
+        "The abridgment records ebullition, a bluish flame, continued raking and stirring, and the charge being brought into nature."
+      ],
+      "4": [
+        "Loops are removed, raised to welding heat, and shingled under a hammer or otherwise; grooved rollers are one described route."
+      ]
+    },
     "plainEnglish": {
       "overview": "In the late 18th century, Great Britain faced a severe national crisis in metallurgy. The country had depleted its timber forests, making traditional charcoal finery forges economically impossible. British ironmasters could produce crude cast pig iron in blast furnaces using coal-derived coke, but pig iron contained ~4% carbon—making it brittle, unforgeable, and useless for structural engineering or tools. Refining pig iron into ductile wrought iron required burning out the carbon, but attempting to melt pig iron over raw coal contaminated the iron with sulfur, causing 'hot shortness' where the iron shattered under the forge hammer. Furthermore, shaping hot iron with water-powered tilt hammers was painfully slow (~1 ton per week per forge) and produced internal cracks. Henry Cort solved both problems simultaneously with an integrated chemical and mechanical system: (1) Decarburizing pig iron in a reverberatory furnace where coal burned in a separate grate and only clean radiant flames swept over the concave hearth, and (2) Compressing the resulting red-hot spongy iron puddle ball through continuous grooved rollers that squeezed out liquid slag and rolled finished fibrous bars in a single heat.",
       "coreMechanism": "The process operates in two synchronized thermal stages: (1) Reverberatory Puddling: High-carbon pig iron (3.5–4.2% C, melting point ~1150 °C) is charged onto a concave sand/slag hearth. Coal burns in a separate firebox, separated by a masonry bridge wall. The low arched roof reflects radiant heat (1300–1400 °C) and sweeps oxidizing combustion gases across the molten pool. The puddler inserts an iron rabble rod through the working door, vigorously stirring the bath. Oxygen from the flame and iron oxide scale reacts with dissolved carbon: $2\\text{Fe}_2\\text{O}_3 + 3\\text{C} \\rightarrow 4\\text{Fe} + 3\\text{CO} \\uparrow$. As carbon content drops below 0.1%, the melting point of the purified iron rises sharply from 1150 °C to 1538 °C. Because the furnace operates at ~1350 °C, the iron spontaneously solidifies into pasty, spongy metallic grains—a phenomenon termed 'coming to nature'. The puddler gathers these grains into 60–80 lb puddle balls (loups). (2) Grooved Rolling Mill Shingling: The incandescent puddle ball (interspersed with ~15% liquid iron silicate slag) is immediately conveyed while white-hot to Cort's grooved rolling mill. Two heavy chilled-iron cylinders with matching graduated grooves (cogging box -> gothic diamond -> flat -> round) rotate under water power. The powerful continuous rotary nip exerts 30–60 MPa of hydrostatic pressure throughout the entire core of the billet, violently squirting the liquid slag out of the pores and welding the microscopic iron crystals into a solid, fibrous, highly ductile wrought iron bar in a single heat without needing a tilt hammer.",
@@ -4004,7 +4107,98 @@
         }
       ]
     },
-    "archivalParallelReadings": {},
+    "archivalParallelReadings": {
+      "2": [
+        "This 1803 certificate identifies the copied descriptive schedule as part of the 1794 letters patent. It is an authentication record, not a new technical disclosure or a numbered claim."
+      ],
+      "4": [
+        "Whitney divides the machine into five working groups: frame, cylinder, breastwork, clearer, and hopper. The organization is the source's own way of explaining a complete operating machine."
+      ],
+      "6": [
+        "The frame is a stiff timber structure. Its width follows the cylinder length; the other dimensions can be chosen for the intended installation. The specified four-by-three-inch scantling is a practical construction suggestion, not a modern tolerance."
+      ],
+      "7": [
+        "Figure 1 names the functional layout: A is the toothed cylinder, B the seed-stopping breastwork, C the clearer that removes lint from the teeth, and D the hopper holding seed cotton."
+      ],
+      "9": [
+        "The cylinder is a wooden rotor, six to nine inches across and two to five feet long. It sits between the hopper and clearer. A hand-powered installation puts its height at about three feet four inches; a powered installation may be arranged for convenience. The iron shaft may pass through the wood or end in cemented gudgeons."
+      ],
+      "10": [
+        "Shoulders on the shaft stop sideways motion. Turned bearings keep the shaft axis concentric with the wooden cylinder. One projecting end accepts a winch and the other a whirl for the clearer. The two-part brass bearing is bolted into the frame, tightened by nuts, and supplied with oil through a drilled opening."
+      ],
+      "11": [
+        "Rows of teeth occupy the cylinder surface. Space between rows must let a seed rotate freely, at least seven-sixteenths inch. Space between teeth in a row must reject even a half seed, no more than one-twelfth inch and preferably about one-sixteenth inch. The different spacings make the seed roll and lint-selection functions coexist."
+      ],
+      "12": [
+        "Whitney describes producing each tooth from drawn, unannealed iron wire. A compound-lever cutter makes one end square and the other wedge-flat to a gauge. This yields equal-length wire blanks whose flattened ends enter the wooden cylinder more accurately and resist twisting after installation."
+      ],
+      "13": [
+        "The worker grips each wire with grooved pliers, drives it perpendicular to the cylinder axis, and then inclines it toward the local tangent. Whitney gives an angle of roughly 55 to 60 degrees: too steep and the tooth will not catch enough cotton; too shallow and lint will be hard to remove after separation."
+      ],
+      "14": [
+        "A curved two-pronged gauge follows the cylinder radius. It controls tooth length one annular row at a time before filing and polishing establish the final angular point. The passage specifies a repeatable manufacturing procedure rather than treating the teeth as interchangeable decoration."
+      ],
+      "15": [
+        "Whitney prefers the stated cylinder size because it can be made and repaired more easily than a larger one. He also selects quartered, even-density woods such as beech, maple, or black birch: uneven grain either fails to hold a tooth or bends it during insertion."
+      ],
+      "17": [
+        "The breastwork is the fixed seed barrier immediately above and alongside the cylinder. Its cross grooves admit the tooth rows, while brass or iron at the wearing face improves durability. Its face must sit at less than fifty degrees to the stated tangent."
+      ],
+      "18": [
+        "A tooth catches cotton still attached to seeds. The seed is too large for the breastwork groove, so lint is pulled through while the seed remains behind. Whitney prefers entry where the root reaches the groove before the point because some lint slips, helping make the seed cotton rotate in the hopper. He also requires enough breastwork thickness to separate carried lint from hopper lint before a knot can bend the teeth."
+      ],
+      "19": [
+        "The working lower face may be a single cast metal piece with sawn slots or separate metal pieces seated in a lengthwise wooden groove. The alternate construction keeps a shaped wooden breastwork but places a parallel wooden bar below the cylinder and connects the two with narrow metal straps that pass between tooth rows."
+      ],
+      "20": [
+        "In the alternate breastwork each strap splits at the upper end: one branch bears under the wooden breastwork and the other turns upward. The straps work close to the cylinder and between its annular tooth rows. The source explicitly offers this as a successful alternative, rather than making the preceding construction exclusive."
+      ],
+      "22": [
+        "The clearer is a second rotor, built around an iron shaft with two equal four-armed crosses. Four long parallel members join those crosses and carry longitudinal brush channels. This describes the structure that lets the brush set span the cotton-cylinder length."
+      ],
+      "23": [
+        "Each brush is a bound strip of hog bristles between thin wooden pieces, a construction Whitney compares to setting reeds in a weaver's sleigh. Pitch or rosin and a hot iron retain the root end; the exposed bristles are cut to about one inch. The brush then fits a channel in the clearer frame."
+      ],
+      "24": [
+        "The clearer uses bearings like the cylinder's and runs parallel to it. Its bristle tips touch the cylinder with slight friction. It turns opposite the cylinder and fast enough to sweep the full cylinder surface, removing lint only after the breastwork has separated it from seed."
+      ],
+      "25": [
+        "A simpler two-brush clearer uses opposed boards on the shaft, leaving spaces for brushes. A grooved cylinder is another option. Whitney makes the relevant function clear while allowing alternate brush supports."
+      ],
+      "26": [
+        "The number of brushes is not fixed, but neighboring brushes need four to five inches of separation so cotton does not wrap around the clearer. A faster clearer sweeps lint from the teeth; moving air and the lint's centrifugal force release it from the brushes. Setting bristles 20 to 25 degrees in the direction given makes their impact on the teeth more nearly perpendicular."
+      ],
+      "27": [
+        "A belt and wooden whirls transfer cylinder motion to the clearer. The whirl rim is a convex spherical segment, so a leather band tends toward its high center instead of leaving a groove. Whitney sizes band width and wheel thickness to the resistance being overcome."
+      ],
+      "28": [
+        "A sliding iron plate carries the whirl shaft so moving it adjusts belt tension. The source compares the result with a cogwheel and pinion, claiming less friction, expense, and rattling noise at high speed."
+      ],
+      "30": [
+        "The breastwork and frame make three hopper sides; the fourth slides closer to the cylinder as the batch shrinks. Narrowing the hopper keeps seed cotton circulating until the seeds are stripped. A concave movable panel and a wire crate let sand and cleaned seed fall into a receiver while maintaining easy rotation."
+      ],
+      "31": [
+        "Whitney calls for a hopper charge large enough for the cylinder to move. Smooth black-seed cotton can drop through promptly after cleaning; velvet-coated green seed remains longer. Therefore the operator finishes a batch, withdraws the movable side, clears seed, and reloads instead of continuously topping up the hopper."
+      ],
+      "32": [
+        "A partition sends seed to the hopper side and clean lint to the other side. Whitney prefers blowing lint through a wall opening into a closed adjoining room, or dropping it through a floor opening. He permits horse or water power and describes attendance as loading, narrowing the hopper when needed, and releasing cleaned seed. The stated estimate is a reduction of green-seed cleaning labor by at least forty-nine fiftieths under water power."
+      ],
+      "33": [
+        "This closing paragraph identifies the document as the description mentioned in a petition dated Philadelphia, June 20, 1793, lodged with the Secretary of State. It asks for exclusive property but does not state a separately numbered legal claim."
+      ],
+      "34": [
+        "Eli Whitney signs the descriptive schedule."
+      ],
+      "35": [
+        "Chauncey Goodrich and John Allen appear as witnesses to the signed description."
+      ],
+      "37": [
+        "Elizur Goodrich, alderman and notary public of New Haven, records Whitney's personal appearance on October 28, 1793. Whitney swore that he believed himself the true inventor and that no similar machine had previously been known or used. This is an affidavit of inventorship, not a claim set."
+      ],
+      "38": [
+        "Goodrich signs and seals the affidavit as alderman and notary public."
+      ]
+    },
     "plainEnglish": {
       "overview": "Green-seed upland cotton grew prolifically across the American South, but its sticky seeds adhered so tightly to the fibers that a laborer took an entire day to clean a single pound by hand. Eli Whitney realized that continuous mechanical tooth action combined with a rigid exclusionary grid could separate fiber from seed by exploiting the difference in their physical dimensions. His 1794 gin increased fiber output from 1 pound to 50 pounds per worker per day.",
       "coreMechanism": "A wooden cylinder fitted with circular wire saw teeth rotates through narrow slotted iron ribs forming the front wall of a hopper. The slots are sized (approximately $3.2\\text{ mm}$) to allow the wire teeth and flexible cotton fibers to pass freely, while the rigid cotton seeds ($4.5\\text{ to }6.0\\text{ mm}$) are physically excluded. As the teeth pull the lint through the grate, a second cylinder equipped with horsehair brushes rotating at four times the speed in the opposite direction sweeps the lint off the teeth and expels it via centrifugal air currents.",
@@ -7117,7 +7311,15 @@
         "The source does not identify a named prior machine or inventor; this record does not infer one from the facsimile."
       ],
       "breakthroughInsight": "Colt assigns separate mechanical work to the hammer pin, lifter, ratchet, locking key, springs, and connecting rod, then describes their order during cocking and discharge.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Massachusetts Arms Company (Edwin Wesson & Daniel Leavitt)",
+          "rivalClaim": "Mass Arms produced revolvers based on Daniel Leavitt's 1837 patent and Edwin Wesson's 1849 patent, claiming hand-rotated cylinders or bevel gear indexing did not infringe Colt's 1836 patent.",
+          "conflictDetails": "Colt sued Massachusetts Arms in 1851 in the US Circuit Court in Boston (Colt v. Massachusetts Arms Co.), represented by attorney Edward N. Dickerson.",
+          "resolution": "Colt presented mechanical models demonstrating how Mass Arms' lockwork infringed the fundamental mechanism of cocking the hammer to rotate the cylinder and lock it into direct alignment with the barrel.",
+          "legalOutcome": "Justice Levi Woodbury and the Boston jury ruled completely in Colt's favor, issuing a sweeping permanent injunction that shut down Mass Arms revolver production and cemented Colt's monopoly until his patent expired in 1857."
+        }
+      ],
       "civilizationalImpact": "The document preserves an early United States claim set for component-level solutions to repeated percussion-cap firing: cap placement and separation, smoke protection, trigger linkage, cylinder drive and lockup, and the barrel-arbor union.",
       "aftermath": "This record makes no litigation or manufacturing claim without a separately reviewed historical source."
     },
@@ -13239,7 +13441,15 @@
         "During high-heat treatment, the compound could soften enough that it required its supporting cloth and could not support its own weight."
       ],
       "breakthroughInsight": "Goodyear's stated move is a compound of India-rubber, sulphur, and white lead exposed to regulated heat. His preferred recipe is 25 parts India-rubber, 5 sulphur, and 7 white lead; the claimed method also uses cotton-wool interlayers and an oven or heated cylinder.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Horace H. Day & Thomas Hancock",
+          "rivalClaim": "British manufacturer Thomas Hancock reverse-engineered Goodyear's sulfur samples in London and secured a British patent before Goodyear filed abroad. In the US, Horace Day claimed earlier manufacture rights.",
+          "conflictDetails": "Goodyear spent over $50,000 defending his discovery in dozens of federal lawsuits, culminating in the historic 1852 Trenton, New Jersey trial (Goodyear v. Day).",
+          "resolution": "Goodyear retained legendary statesman and orator Daniel Webster, who delivered a world-famous two-day closing argument celebrating Goodyear's ten-year heroic struggle in poverty to master the chemical vulcanization of rubber.",
+          "legalOutcome": "Supreme Court Justice Robert C. Grier ruled decisively in Goodyear's favor, issuing a permanent injunction against Day and confirming Goodyear as the sole inventor of sulfur heat-vulcanized rubber."
+        }
+      ],
       "civilizationalImpact": "The grant documents a reproducible approach to compounded, heat-treated India-rubber fabric: a formulation, fabrication routes, a laminate construction, a temperature range, and three claims. Those concrete process details are the historically useful record preserved here."
     },
     "tags": [
@@ -34090,7 +34300,15 @@
         "A separate upstream compressing mechanism is described as possible, but not Otto’s preferred arrangement."
       ],
       "breakthroughInsight": "The patent’s stated move is not simply to admit gas and air separately. It is to arrange their distribution so combustible particles are closest together at ignition and increasingly dispersed through the prior air charge, making flame travel, heat release, and pressure increase gradual.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Alphonse Beau de Rochas & Christian Reithmann",
+          "rivalClaim": "French engineer Beau de Rochas published a French patent in 1862 describing the four-stroke cycle, and Munich watchmaker Christian Reithmann claimed working four-stroke engines in 1873.",
+          "conflictDetails": "German competitors sued Deutz AG (Gasmotoren-Fabrik Deutz) to break Otto's monopoly on internal combustion engines across Europe.",
+          "resolution": "The German Reichsgericht and British courts reviewed Beau de Rochas's 1862 publication in 1886 (Otto v. Steel and Deutz v. Körting).",
+          "legalOutcome": "The German patent office invalidated Otto's broad German patent claim to the four-stroke cycle based on Beau de Rochas's prior publication, throwing the four-stroke cycle into the public domain in Germany and accelerating the emergence of Benz, Daimler, and the modern automotive industry."
+        }
+      ],
       "civilizationalImpact": "US 194,047 is an unusually detailed primary record of late nineteenth-century gas-engine reasoning: combustion distribution, mechanical timing, fuel metering, exhaust control, and the formal limits Otto placed on his own claims. That primary evidence is more useful than reducing the document to a generic automobile origin story.",
       "aftermath": "The specification was signed June 1, 1876, filed July 13, 1876, and granted August 14, 1877. This manual edition preserves those three distinct dates and the source’s own limited claim statement."
     },
@@ -35417,7 +35635,15 @@
         "Édouard-Léon Scott de Martinville's 1857 phonautograph traced sound waves for visual study, but its records were not intended for playback. The Library of Congress describes that limitation; the source is recorded in this patent's provenance receipt."
       ],
       "breakthroughInsight": "The document keeps recording and reproduction in one mechanical chain: a sound-driven diaphragm marks a yielding moving surface, and a second point and diaphragm recover motion from those marks. It also expressly tests that idea against several media and geometries instead of limiting it to the illustrated foil cylinder.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Alexander Graham Bell, Chichester Bell, & Charles Sumner Tainter (Graphophone)",
+          "rivalClaim": "The Volta Laboratory associates (Bell & Tainter) patented the wax-coated cylinder Graphophone in 1886, claiming Edison's tinfoil indenting phonograph was an uncommercial toy.",
+          "conflictDetails": "Bell & Tainter offered Edison a partnership to combine their wax engraving patents with his base phonograph. Edison refused, declaring they had appropriated his concept, and spent $2 million developing the Improved Phonograph with solid wax cylinders.",
+          "resolution": "Financier Jesse H. Lippincott bought commercial rights to both Edison's Phonograph and the Bell-Tainter Graphophone in 1888, consolidating them under the North American Phonograph Company.",
+          "legalOutcome": "Edison regained sole control after Lippincott's bankruptcy in 1894, establishing the National Phonograph Company and dominating the early sound recording industry with his foundational 1878 priority."
+        }
+      ],
       "civilizationalImpact": "US 200,521 is a compact early statement of mechanical signal storage: transform an acoustic time series into a physical trace, preserve it, and use the trace to recover motion. Its plate, strip, thread, and ink alternatives make that principle broader than the cylinder pictured in Figs. 1 and 2.",
       "funFact": "The printed specification itself proposes making multiple copies from a tinfoil record by a plaster-of-Paris stereotyping process when musical compositions are wanted for numerous machines.",
       "aftermath": "The granted document is dated February 19, 1878; its signed execution is dated December 15, 1877.",
@@ -36451,7 +36677,15 @@
         "A gas at atmospheric pressure could avoid chemical attack yet still destroy hot carbon through the source-described air-washing or attrition."
       ],
       "breakthroughInsight": "Use a high-resistance carbon light-giver in a nearly perfect vacuum, with platina sealed through glass and a carbonized contact-making method for fragile forms.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Joseph Swan & The Consolidated Electric Light Co. (Sawyer-Man)",
+          "rivalClaim": "William Sawyer, Albon Man, and Joseph Swan claimed earlier experimental demonstrations of carbonized paper filaments and low-resistance incandescent lamps (1878).",
+          "conflictDetails": "The Consolidated Electric Light Company sued Edison licensees, alleging Sawyer & Man's 1878 patent preempted Edison's 1880 grant. Simultaneously, Joseph Swan established commercial carbon lamp production in Britain, threatening Edison's international rights.",
+          "resolution": "In Britain, Edison merged operations with Swan to form Ediswan (1883). In the US, the Second Circuit Court of Appeals upheld Edison's Patent No. 223,898 in Edison Electric Light Co. v. United States Electric Lighting Co. (1892), confirmed in The Incandescent Lamp Patent (159 U.S. 465, 1895).",
+          "legalOutcome": "The federal courts ruled that Edison alone recognized that commercial subdivision of light required high electrical resistance (~100 Ω) in high vacuum (< 10⁻⁴ atm), validating Claim 2 and establishing Edison's primary monopoly."
+        }
+      ],
       "civilizationalImpact": "The technical document connects a lamp's internal construction to a distribution-network constraint. Its four claims preserve the carbon element, exhausted glass receiver, coiled radiating arrangement, and carbonization method as distinct legal combinations rather than reducing the invention to a generic bulb story.",
       "aftermath": "The facsimile's attached records show that, on December 18, 1882, the United States patent was limited to expire with the shortest-running listed foreign patent under section 4887 of the Revised Statutes. A March 15, 1883 certificate then canceled that earlier certificate and recorded corrections."
     },
@@ -39987,7 +40221,15 @@
         "No mechanism existed to modulate light with articulate continuous human speech"
       ],
       "breakthroughInsight": "A microscopic thin mirror flexing under acoustic sound pressure dynamically modulates the divergence and intensity of a reflected light beam, which can be gathered at a distance by a parabolic reflector and converted directly into electrical sound waves by a photoconductive selenium crystal.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Charles Fritts & Willoughby Smith",
+          "rivalClaim": "Willoughby Smith discovered the photoconductive properties of selenium in 1873, and Charles Fritts developed early selenium solid-state cells in 1883, claiming broad rights to selenium light transduction.",
+          "conflictDetails": "Bell and co-inventor Charles Sumner Tainter designed a sensitive paraboloid selenium receiver and mirror-diaphragm transmitter that modulated sunlight using acoustic voice vibrations, transmitting wireless speech 213 meters between the Franklin School and Bell's laboratory in Washington D.C.",
+          "resolution": "The USPTO recognized Bell and Tainter's specific apparatus combining acoustic beam deflection with a multi-plate selenium cell across US Patents 235,199 and 235,496.",
+          "legalOutcome": "Bell's Photophone patents stood unchallenged, forming the legal and physical grandfather of all modern fiber-optic and free-space optical telecommunications."
+        }
+      ],
       "civilizationalImpact": "The Photophone demonstrated the principle of transmitting voice via light beams, establishing the scientific foundation for modern fiber-optic telecommunications and free-space laser links."
     },
     "tags": [],
@@ -51098,7 +51340,15 @@
         "The document omits a detailed survey of competing patent claims from contemporaneous manufacturers, such as those by Scovill or Anthony, which might have defined the technical baseline of the era."
       ],
       "breakthroughInsight": "Eastman combines a removable front lens-and-shutter module with a removable rear roller-holder in a tubular, light-tight case.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Hannibal Goodwin & Anthony & Scovill Co. (Ansco)",
+          "rivalClaim": "Reverend Hannibal Goodwin filed a patent application for flexible nitrocellulose roll film in 1887 (granted in 1898 as US 610,861), claiming priority over Eastman's 1888 paper-backed stripping film and 1889 transparent roll film.",
+          "conflictDetails": "After Goodwin's patent issued in 1898, Goodwin Film and Camera Company (later Ansco) sued Eastman Kodak for patent infringement across all Kodak roll film lines (Goodwin Film & Camera Co. v. Eastman Kodak Co.).",
+          "resolution": "In 1914, the Second Circuit Court of Appeals held that Goodwin was the original inventor of flexible transparent roll film and found Eastman Kodak guilty of infringement.",
+          "legalOutcome": "Eastman Kodak was ordered to pay Ansco a cash settlement of $5,000,000 in 1914 (~$150 million inflation-adjusted), settling one of the largest corporate patent damages awards in early American photographic history."
+        }
+      ],
       "civilizationalImpact": "The grant documents a complete mechanical architecture for a portable prepared-film camera, including exposure, light sealing, and film handling.",
       "aftermath": "No post-grant litigation or commercial outcome is asserted here because it is not established by the pinned facsimile.",
       "sideNotes": [
@@ -52866,7 +53116,149 @@
         }
       ]
     },
-    "archivalParallelReadings": {},
+    "archivalParallelReadings": {
+      "1": [
+        "This formal address opens the specification to the public."
+      ],
+      "2": [
+        "Hollerith identifies himself, the invention, and the drawings that form part of the legal description."
+      ],
+      "3": [
+        "The work modifies earlier applications by adding improved mechanisms, a sorting device, and a classification method."
+      ],
+      "4": [
+        "The figures show the complete apparatus, individual press and contact details, circuit alternatives, the Baltimore card, and later contact modifications."
+      ],
+      "5": [
+        "Repeated reference letters identify the same part in the different drawings."
+      ],
+      "6": [
+        "The earlier system used a continuous marked strip, a locating template, contact-making drum, circuits, and electromagnetically operated registers."
+      ],
+      "7": [
+        "As each strip mark reaches its matching contact, it changes a circuit and registers an item or selected combination of items."
+      ],
+      "8": [
+        "This version replaces the continuous strip and drum with independent cards and a reciprocating press, together with improvements learned in use."
+      ],
+      "9": [
+        "Each printed card gives every possible item a fixed position. Punching its assigned positions makes an independently filed and later sortable individual record."
+      ],
+      "10": [
+        "The Baltimore mortality-card example assigns spaces to month, sex, civil condition, race, age, occupation, birthplace, residence, and cause of death."
+      ],
+      "11": [
+        "The card can record a ward, cause, and certificate number, but the mechanism is offered for any recurring attribute system, not only mortality records."
+      ],
+      "12": [
+        "An index-point is any positioned feature able to actuate the circuit mechanism; Hollerith prefers holes in a nonconducting card."
+      ],
+      "13": [
+        "A record-card is the standardized card or strip, and an index-point is the feature that records an item and acts on a circuit device."
+      ],
+      "14": [
+        "A press with movable plates lets the card's positioned features change the matching circuits as the plates reciprocate."
+      ],
+      "15": [
+        "The stationary bed-plate holds mercury-filled contacts at card positions and gauges locate the card so each space aligns with its receptacle."
+      ],
+      "16": [
+        "The movable platen carries spring-loaded pins aligned to the card's positions. A perforation lets a pin reach the mercury contact, and its linkage returns it for the next card."
+      ],
+      "17": [
+        "The perforated spring-loaded pin plate can be electrically common, with its conductive frame connected to the battery or ground."
+      ],
+      "18": [
+        "Equivalent contacts or circuit-changing mechanisms can replace the displayed form, and either plate may move; Hollerith then turns to the method improvements."
+      ],
+      "19": [
+        "For compact record schemes a continuous strip can work, but when a record needs many attributes and later recombinations, its fixed sequence makes classification and reclassification impractical."
+      ],
+      "20": [
+        "Hollerith replaces the strip with independently handled cards and adds an explicit classification stage, so the same records can be regrouped for many requested statistical tables."
+      ],
+      "21": [
+        "The cards are first divided into broad groups, such as month, sex, civil condition, race, or age; counting within a group then produces the numerical total for that category."
+      ],
+      "22": [
+        "The example first separates 100 cards by sex, then runs each sex group to subdivide it by civil condition, demonstrating that totals for combinations are obtained by successive card sorting and counting."
+      ],
+      "23": [
+        "Because every attribute or attribute combination can become a grouping key, the catalogue of possible tables is large; that power also makes a single misplaced card capable of corrupting later totals."
+      ],
+      "24": [
+        "Each card carries all of its index-points, so the machine can use selected points to energize an indicator identifying the correct destination group before the card is deposited."
+      ],
+      "25": [
+        "The sorting cabinet pairs each receptacle with an electro-magnet-driven indicator and uses a pivoted lid both to identify and physically open the one box that should receive the current card."
+      ],
+      "26": [
+        "An energized magnet releases a catch that holds the spring-loaded lid shut; the rising lid identifies and opens the assigned box, then is manually closed for the next card."
+      ],
+      "27": [
+        "Each classification circuit is wired to the lid for its destination. A card energizes that circuit through the press, releases that lid, and the operator places the card in the exposed receptacle."
+      ],
+      "28": [
+        "No indicator opens for a card outside the configured divisions, so it can be set aside. The lid form makes a wrong deposit harder because only the correct box is open; counters may also count deposits."
+      ],
+      "29": [
+        "The press, counter bank, and sorting-box magnets terminate at switch-board binding posts. Hollerith deliberately leaves the interchangeable detailed wiring out because the functional circuit relationships, not one wiring layout, are the invention's point."
+      ],
+      "30": [
+        "The specification next narrows from all possible circuits to representative forms: direct circuits suffice for one index-point, while relay stages make combinations of two or more points practical without fragile resistance adjustment."
+      ],
+      "31": [
+        "Six attribute pins and an additional ground pin G form a safety interlock. A misplaced card holds G back, so no counting circuit can fire; making G close last also confines contact sparking to that one circuit."
+      ],
+      "32": [
+        "Figures 6 through 9 encode six common three-attribute outcomes from sex, race, and nativity: native or foreign white men or women, plus colored men or women."
+      ],
+      "33": [
+        "In Figure 6, the first relay layer reads individual attributes and the named operating magnets serve the counters or sorting mechanisms; dotted circuits are relay inputs and full lines are their switched outputs."
+      ],
+      "34": [
+        "Each output magnet is wired through the relay contacts for every attribute that defines its category. It therefore operates only when the card simultaneously closes all of the needed primary relay circuits."
+      ],
+      "35": [
+        "Hollerith separates low-power sensing from higher-power work: primary circuits move relays, while independent secondary circuits drive counters or distributing devices after the required relay contacts concur."
+      ],
+      "36": [
+        "Figure 7 reduces the male and female relay count: one relay for each sex branch combines with the remaining attribute relays to select the operating magnets."
+      ],
+      "37": [
+        "Figure 8 obtains the same six combinations with two relays and more batteries, using native or foreign relay selection plus separate male and female supply paths."
+      ],
+      "38": [
+        "Figure 9 shows a single-battery arrangement in which staged relays require two or three attribute contacts before an operating magnet can energize."
+      ],
+      "39": [
+        "Figures 10 and 11 divide two-index-point combinations into a group selection and a relay-selected member, avoiding the delicate current and resistance adjustment of the earlier single-battery method."
+      ],
+      "40": [
+        "Figure 12 uses one direct and one relay branch for each pair of four index-points, so every two-item combination closes its operating magnet through two contacts."
+      ],
+      "41": [
+        "Proper resistance proportions prevent working circuits from short-circuiting relays when closed, and the circuitry easily adapts to closed-circuit or mixed relay systems."
+      ],
+      "42": [
+        "The sorting pass is successive: white and colored first, native and foreign next, then male and female, while counters may register each intermediate or final division."
+      ],
+      "43": [
+        "Figures 14 through 17 add representative record-media and contact arrangements, including impediment wafers and both open-circuit and closed-circuit forms."
+      ],
+      "44": [
+        "Figure 14 uses perforations plus impediments to represent selected items, while Figure 15 puts the circuit-closing contacts on spring-mounted pins separate from the card-sensing pins."
+      ],
+      "45": [
+        "Figure 16 insulates the sensing pins and uses conducting collars for either open or closed circuits, with the Figure 14 interceptors breaking selected paths."
+      ],
+      "46": [
+        "Figure 17 moves the closed-circuit contacts below the card; perforations press them away from a common plate, and relay contacts reverse their normal open-circuit action."
+      ],
+      "69": [
+        "Herman Hollerith signs the completed claim set; John R. Floyd and Edward N. Hill appear as the printed witnesses."
+      ]
+    },
     "plainEnglish": {
       "overview": "The grant describes a way to turn a record for one individual or subject into a card whose marked index-points can control electrical circuits. The apparatus then uses those circuits to count selected items, operate indicators, and sort cards into groups. Its scope is broader than one census form; the Baltimore mortality card is presented as an example, not as a fixed format for every use.",
       "coreMechanism": "A separate card carries index-points arranged to a predetermined plan. The card is placed between contact devices. When an index-point registers with its corresponding contact, it changes a circuit condition. That circuit energizes an electro-magnet which can operate a counter or a relay controlling a counter circuit. The specification also describes sorting boxes: an indicator or lid identifies the receptacle for a card whose selected points designate a group. The source does not specify card dimensions, pin count, supply voltage, coil turns, current, material composition, contact resistance, processing rate, or a modern digital-data model.",
@@ -57188,7 +57580,15 @@
         "The document discusses solid, liquid, and gaseous fuels rather than a single later fuel system."
       ],
       "breakthroughInsight": "The key insight stated here is to obtain the highest pressure and temperature by mechanical compression before combustion, then regulate fuel admission during expansion and stop it at cut-off.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Herbert Akroyd Stuart & Emil Capitaine",
+          "rivalClaim": "Akroyd Stuart patented the hot-bulb heavy-oil engine in 1890 (UK Patent 7146), claiming earlier compression ignition without an electric spark.",
+          "conflictDetails": "Capitaine and British engine builders claimed Diesel's engine was merely an Akroyd Stuart engine operating at higher pressure. Diesel's original 1892 German patent claimed constant-temperature (Carnot) combustion, but his practical 1897 engine achieved constant-pressure (isobaric) combustion.",
+          "resolution": "The German Patent Office and international courts examined the physical difference between Akroyd Stuart's external hot vaporizing chamber (low compression, ~3 bar) and Diesel's pure-air high compression (35 bar) auto-ignition.",
+          "legalOutcome": "Diesel's patents were upheld across Europe and the US, confirming his unique thermodynamic cycle where fuel is injected directly into air heated solely by mechanical compression."
+        }
+      ],
       "civilizationalImpact": "The patent records a controlled-combustion process and several example constructions. Later industrial history is outside this held source face and is not asserted here."
     },
     "tags": [
@@ -59639,7 +60039,15 @@
         "High-frequency energy can be weakened when it dissipates along the local-battery wiring."
       ],
       "breakthroughInsight": "The claims repeatedly combine a variable-resistance contact with a local circuit and an automatic mechanical restoration, treating detection and reset as one receiving instrument.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Nikola Tesla & Oliver Lodge",
+          "rivalClaim": "Nikola Tesla filed foundational US Patent No. 645,576 and No. 649,621 in 1897 for four-tuned circuit wireless transmission, and Oliver Lodge patented resonant syntonic tuning in 1897.",
+          "conflictDetails": "Marconi was initially denied US patents in 1900 because the Patent Office recognized Tesla's priority. Backed by wealthy financial interests, Marconi successfully lobbied the USPTO to reverse its decision in 1904 and grant him US 763,772 based on his 1897 British grant.",
+          "resolution": "During World War I, the US government used wireless patents without paying royalties, prompting Marconi Wireless to sue the United States in the US Court of Claims.",
+          "legalOutcome": "In the landmark US Supreme Court decision Marconi Wireless Telegraph Co. of America v. United States (320 U.S. 1, 1943), the Supreme Court invalidated Marconi's fundamental tuning patent claims, explicitly restoring Nikola Tesla's priority as the legal and technical inventor of radio."
+        }
+      ],
       "civilizationalImpact": "The patent is a primary record of late-nineteenth-century wireless signalling hardware, including a spark source, sensitive contact, relay output, and automatic recovery mechanism.",
       "aftermath": "The facsimile records the grant on July 13, 1897; it does not itself establish later litigation or a particular communications milestone."
     },
@@ -64464,7 +64872,53 @@
         }
       ]
     },
-    "archivalParallelReadings": {},
+    "archivalParallelReadings": {
+      "1": [
+        "The formal salutation begins the legal instrument without adding a technical limitation."
+      ],
+      "2": [
+        "Zeppelin identifies himself, his Stuttgart location, and his military title, then states that the following text is the complete enabling description required for the patent."
+      ],
+      "3": [
+        "The invention treats a navigable balloon as a long, narrow powered vessel. Separating motors allows a smaller hull diameter for a given propulsive capability, and the text also contemplates a powered leading craft towing or coupling load-carrying balloons."
+      ],
+      "4": [
+        "This paragraph maps the document’s figures: elevation and cross-section views, gas-bag compartments, a movable trim weight, a trailing-rope alternative, and a train of connected balloons. The printed references to Figures 11 and 12 remain, but their panels are absent from the served facsimile."
+      ],
+      "5": [
+        "The rigid hull is a tube, wire-rope, and mesh framework under a silk-like outer casing. Partitions, vertical stays, rings, and diagonal stays create chambers for folded gas bags; leaving free volume lets the gas expand at altitude or when heated while valves handle exceptional release."
+      ],
+      "6": [
+        "Auxiliary maneuvering bags are filled before the main bags. Releasing gas from those auxiliary bags lets the main bags expand upward into the chamber, preserving the main lifting gas instead of admitting air to compensate for fuel consumed on a long journey."
+      ],
+      "7": [
+        "A rigid gangway gives access to the hull and supports cars for crew, fuel, passengers, and cargo. Each driving mechanism turns two propellers placed laterally near the craft’s center of resistance, the source’s aerodynamic reference for a force application point."
+      ],
+      "8": [
+        "Two rudders, above and below the hull at either end, provide lateral steering through suitable operating gear. The passage states placement and function but does not claim a later three-axis aircraft-control system."
+      ],
+      "9": [
+        "A suspended running weight shifts longitudinally on a traveler to trim the balloon level or inclined. The paired drums and shaped fusees keep the two supporting ropes under light tension, so the weight’s gravity supplies a restoring pull as the craft’s attitude changes."
+      ],
+      "10": [
+        "The trim weight may be disconnected from the drum mechanism when used simply as a hanging weight. Alternatively, adjustable towing or trailing ropes can be moved along the hull and tied together in flight so their geometry helps keep the vehicle in its selected position."
+      ],
+      "11": [
+        "A powered balloon can tow similarly built but unpowered load balloons as a train. The claim-side description uses movable couplings and an extensible cover over the gap to keep wind from catching the intermediate space; the cited Figures 11 and 12 are missing from the supplied drawing sheets."
+      ],
+      "12": [
+        "Zeppelin proposes balancing unequal buoyancy among balloons in a train by transferring liquids, heavy cargo, or by condensing gas or atmospheric air. These are operating options for compensating mass or gas changes, not a quantified performance guarantee."
+      ],
+      "13": [
+        "This sentence marks the transition from the descriptive specification to the four legal claims that define the asserted combinations."
+      ],
+      "18": [
+        "This closing attestation says that Zeppelin signed in the presence of two subscribing witnesses, making the signature and witness lines that follow part of the printed legal formalities."
+      ],
+      "19": [
+        "The printed signature identifies Ferdinand Graf Zeppelin and gives the two witnesses as Wm. Hahn and H. Wagner; the bracketed L. S. is the printed seal notation."
+      ]
+    },
     "plainEnglish": {
       "overview": "The specification solves several operating problems inside a long buoyant hull: preserving lifting gas while vehicle weight changes, reaching all parts of the craft, steering it, changing its inclination, and joining a powered balloon to load-carrying balloons. Its stated means are compartmented gas bags, auxiliary maneuvering bags, a rigid gangway, paired air-screws, rudders, and movable weight or trailing-rope arrangements.",
       "coreMechanism": "The source describes chambers inside a rigid tube, each receiving folded gas bags. Auxiliary maneuvering bags are filled before the main bags; releasing their gas creates room for the main bags to expand without admitting air. Beneath the hull, a running weight on ropes, drums, and fusees changes the craft’s inclination. The same document offers adjustable towing or trailing ropes and a train of powered and load-carrying balloons.",
@@ -68038,7 +68492,15 @@
         "High-frequency waves were too rapid to produce usable direct mechanical movement in a telephone diaphragm or similar receiving element"
       ],
       "breakthroughInsight": "Increasing and distributing the sending-conductor's capacity or self-induction lowers the frequency, increases wavelength, and allows a large radiating portion; a dynamo or similar alternating-voltage source can then replace the induction-coil and spark-gap.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Lee de Forest & Telefunken",
+          "rivalClaim": "De Forest patented his 'spade detector' in 1903, claiming it was an independent invention rather than a copy of Fessenden's liquid electrolytic detector.",
+          "conflictDetails": "Fessenden's National Electric Signaling Company (NESCO) sued De Forest in federal court for infringing the liquid acid electrolytic detector that made continuous-wave voice reception possible.",
+          "resolution": "Laboratory demonstrations during trial proved De Forest's device utilized the exact same Wollaston fine platinum wire immersed in nitric acid patented by Fessenden in 1903.",
+          "legalOutcome": "In National Electric Signaling Co. v. De Forest (1905), the Second Circuit Court of Appeals found De Forest guilty of deliberate infringement, ordering his equipment confiscated and establishing Fessenden's primacy in continuous-wave radio reception."
+        }
+      ],
       "civilizationalImpact": "The document records an early low-frequency wireless architecture: a distributed-capacity radiating conductor, source-to-conductor resonance, and receiving instruments driven directly by induced current."
     },
     "tags": [],
@@ -73895,7 +74357,15 @@
         "Heating above about 90–100 °C in an open vessel allowed formaldehyde vapors and the like to escape, causing foam and air bubbles"
       ],
       "breakthroughInsight": "Separate the water before final hardening, form or compound the intermediate product, and apply heat and pressure in a closed vessel when required so the finished body is hard, insoluble, and infusible.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Sir James Swinburne & Condensite Co. (J.W. Aylsworth)",
+          "rivalClaim": "Sir James Swinburne in the UK and J.W. Aylsworth (Condensite Company) in the US developed phenol-formaldehyde resins, filing competing patent claims over curing and molding methods.",
+          "conflictDetails": "Baekeland filed multiple patent infringement lawsuits (General Bakelite Co. v. Condensite Co. and General Bakelite Co. v. Redmanol Chemical Products Co.), asserting US Patent No. 942,699 covering pressurized autoclave curing in the 'Bakelizer'.",
+          "resolution": "In 1922, the competing companies consolidated under Baekeland's leadership into the Bakelite Corporation (General Bakelite, Condensite, and Redmanol merger).",
+          "legalOutcome": "Baekeland's US Patent No. 942,699 was upheld, establishing the Bakelite Corporation as the undisputed synthetic plastics monopoly throughout the 1920s and 1930s."
+        }
+      ],
       "civilizationalImpact": "The claimed sequence became an important historical example of turning a phenolic condensation into a formable, hardened material; later applications and commercial histories require separate sources beyond this three-page grant."
     },
     "tags": [
@@ -77767,7 +78237,15 @@
         "It identifies speed and synchronization within the optical period as the essential limitation."
       ],
       "breakthroughInsight": "The disclosed solution focuses the scene onto a photo-electric plate, turns its discharge into an electrical image, moves that image electrostatically past a fixed aperture, and reconstructs the resulting light-current signal with synchronized optical apparatus.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Vladimir Zworykin & Radio Corporation of America (RCA / David Sarnoff)",
+          "rivalClaim": "Zworykin filed a patent application for the Iconoscope in 1923, and RCA claimed that Farnsworth's 1927 Image Dissector infringed Zworykin's earlier priority date.",
+          "conflictDetails": "RCA maintained a strict policy of never paying patent royalties, offering Farnsworth $100,000 for his portfolio. Farnsworth refused, leading to USPTO Interference No. 64,027 (Farnsworth v. Zworykin). Zworykin's 1923 tube had never successfully transmitted an image without burning out, whereas Farnsworth had transmitted lines and dollar signs in September 1927.",
+          "resolution": "Justin Tolman, Farnsworth's Rigby High School chemistry teacher, testified and produced the preserved 1922 blackboard sketch of electron beam raster scanning that 15-year-old Philo had drawn for him.",
+          "legalOutcome": "The USPTO Patent Office examiner and the Court of Customs and Patent Appeals awarded priority of Claim 15 (continuous optical electron emission into an anode aperture) to Farnsworth in 1935. In 1939, RCA conceded and signed its first-ever patent licensing agreement to pay continuing royalties to an outside inventor."
+        }
+      ],
       "civilizationalImpact": "The document is an early, concrete system design for serial electrical analysis and synchronized optical reconstruction of an image. Its source-specific contribution is clearer when separated from later television hardware and broadcast conventions.",
       "funFact": "The printed drawing set includes not only a transmitter and receiver but a light rotator, bi-axial-crystal optical paths, quartz oscillographs, and waveform diagrams—a broader system than a single camera tube.",
       "aftermath": "This record deliberately limits its historical assertions to what the reviewed grant and its preserved source apparatus establish; it does not use later, unrelated technical descriptions as if they were text from US 1,773,980.",
@@ -83286,7 +83764,15 @@
         "Blueprints and diazo prints required noxious ammonia fumes and degraded rapidly upon exposure to light"
       ],
       "breakthroughInsight": "Combining electrostatics with photoconductivity allowed an image to be recorded as an invisible charge pattern on an insulating semiconductor, dusted with dry resin powder, and fused onto plain paper with heat, achieving 100% dry reproduction in seconds without wet chemistry.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "3M (Thermo-Fax), RCA (Electrofax), & IBM",
+          "rivalClaim": "3M (Thermo-Fax) and RCA (Electrofax) developed competing dry copy systems using zinc oxide-coated paper, challenging Carlson's fundamental transfer electrophotography patents.",
+          "conflictDetails": "Carlson and the Haloid Company (later Xerox) defended their basic patents against corporate giants attempting to bypass the electrostatic latent image transfer step.",
+          "resolution": "Haloid Xerox aggressively protected the reusable selenium drum architecture and heat-fused resin toner transfer process.",
+          "legalOutcome": "Carlson's 1942 foundational patent stood unchallenged through its full term, creating the multi-billion-dollar Xerox monopoly and generating over $150 million in royalties for Carlson, which he donated almost entirely to philanthropic foundations."
+        }
+      ],
       "civilizationalImpact": "Carlson's electrophotography created the modern office workflow and information economy. It enabled instant document copying, xerographic microfilming, and directly fathered the computer laser printer (invented by Gary Starkweather at Xerox PARC in 1971 by replacing the light bulb with a laser beam). Today, trillions of pages of documents, books, architectural drawings, and financial reports are printed annually using Carlson's fundamental 5-step xerographic cycle.",
       "funFact": "The world's first xerographic copy was made by Chester Carlson and his assistant Otto Kornei on October 22, 1938, in a rented second-floor apartment behind a beauty parlor in Astoria, Queens. The historic message, written in India ink on a glass microscope slide, read: '10-22-38 ASTORIA'."
     },
@@ -84348,7 +84834,15 @@
         "At that order of frequency, Spencer says the energy needed to generate enough heat for satisfactory cooking was too high for practical use."
       ],
       "breakthroughInsight": "The patent combines a wavelength-scale condition with guided exposure: use microwave energy of about ten centimetres or less, concentrate and guide it in a restricted region, and control the food's time there. The illustrated magnetron and conveyor arrangement makes that method concrete.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Tappan Stove Company & Amana Refrigeration",
+          "rivalClaim": "Appliance manufacturers attempted to engineer RF cavity heating ovens using continuous-wave magnetrons without paying Raytheon royalties.",
+          "conflictDetails": "Raytheon held Spencer's foundational patent on enclosing food within an electromagnetic cavity fed by a magnetron with a conductive mode stirrer. Raytheon licensed the patents to Tappan (1955) and acquired Amana (1965).",
+          "resolution": "Raytheon launched the 'Amana Radarange' in 1967 at $495, utilizing Spencer's exact cavity waveguide feed and safety interlocks.",
+          "legalOutcome": "Spencer's US Patent No. 2,495,429 and companion magnetron patents gave Raytheon exclusive control over microwave cooking technology throughout the 1950s and 1960s, creating the modern microwave appliance industry."
+        }
+      ],
       "civilizationalImpact": "US 2,495,429 documents a transition from low-frequency food-heating experiments to a microwave method with defined wavelength, guided-region, duration, and movement conditions. The paired-magnetron and conveyor drawing also records the industrial process framing of this early food-treatment system.",
       "sideNotes": [
         "The grant prints source examples of 2 kilowatt-seconds for a hard-boiled egg against 36 kilowatt-seconds conventionally, and about 240 kilowatt-seconds for a potato against 72,000 kilowatt-seconds in an electric oven. The specification calls the examples illustrative.",
@@ -88820,7 +89314,15 @@
         "Earlier solid rectifier amplifier proposals relied on embedded grids or transverse fields that the specification says were too fine to fabricate successfully."
       ],
       "breakthroughInsight": "A close forward emitter and reverse collector can use a surface layer and barrier to couple carrier injection into a high-impedance collector response.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "William Shockley (Junction Transistor Priority)",
+          "rivalClaim": "William Shockley, director of the Bell Labs solid-state physics group, contested Bardeen and Brattain's exclusive inventorship on US 2,524,035, claiming the underlying field-effect concept was his original discovery.",
+          "conflictDetails": "Shockley isolated himself for four weeks in January 1948 to invent the superior, more reproducible bipolar junction transistor (BJT, US Patent 2,569,347), asserting that junction diffusion made point-contacts obsolete.",
+          "resolution": "Bell Labs patent attorneys filed Bardeen and Brattain's point-contact patent with only Bardeen and Brattain as inventors, while filing Shockley's junction transistor patent separately.",
+          "legalOutcome": "All three men jointly shared the 1956 Nobel Prize in Physics for their discoveries, with Bardeen and Brattain's patent standing as the legal birth certificate of solid-state semiconductor electronics."
+        }
+      ],
       "civilizationalImpact": "The document records an early semiconductor amplifier architecture built around carrier injection, rectifying contacts, and impedance transformation."
     },
     "tags": [
@@ -94102,7 +94604,15 @@
         "Liquid chemicals could not be carried inside portable consumer cameras without spilling or evaporating"
       ],
       "breakthroughInsight": "The source's concrete insight is to integrate liquid retention, controlled rupture, interlayer spreading, photographic processing, and transfer-image reception in a product that can be handled as one unit. The specification offers several wall, seal, sheet, and container embodiments rather than one universal camera mechanism.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Eastman Kodak Company",
+          "rivalClaim": "In 1976, Eastman Kodak entered the instant photography market with the EK4 and EK6 cameras and PR10 film, claiming their dye-release chemistry and mechanical spread rollers circumvented Polaroid's patents.",
+          "conflictDetails": "Polaroid immediately sued Kodak for infringing 12 patents covering pod chemistry, dye developers, camera optical architecture, and processing rollers. Kodak mounted an aggressive validity challenge, arguing Land's patents were obvious variants of conventional photographic diffusion transfer.",
+          "resolution": "After a massive 75-day trial and 10 years of litigation in Boston federal court (Polaroid Corp. v. Eastman Kodak Co., 1986), Judge Rya Zobel ruled that Kodak had infringed seven valid Polaroid patents.",
+          "legalOutcome": "Judge Zobel granted a permanent injunction forcing Kodak to immediately shut down its $200 million instant camera division, recall 16 million cameras, buy back customer inventory, and pay Polaroid $909.5 million in damages—the largest patent infringement award in world history at the time."
+        }
+      ],
       "civilizationalImpact": "The patent records a durable product-engineering pattern: move processing materials into the handled article, release them only when needed, and couple transport and image reception to the same layered structure. Broader corporate and cultural impact remains outside this source-bounded record."
     },
     "tags": [],
@@ -100548,7 +101058,6 @@
       "patents/figures/us-2708656-fermi-reactor/source-sheet-27-27.png",
       "patents/source-text/us-2708656-fermi-reactor.txt",
       "patents/transcripts/us-2708656-fermi-reactor-reviewed.txt",
-      "patents/transcripts/us-2708656-fermi-reactor-reviewed.wip.txt",
       "patents/transcripts/us-2708656-fermi-reactor.txt"
     ],
     "withheldAssets": []
@@ -108018,7 +108527,15 @@
         "The patent's gaseous-state examples require critical vapor pressure, temperature, purity, and reflective parallel end plates"
       ],
       "breakthroughInsight": "The disclosed architecture combines a solid-state active medium, broadband optical pumping, radiationless transfer into a discrete upper level, and an optical feedback path that repeatedly traverses the material.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Gordon Gould & Charles Townes (Bell Labs)",
+          "rivalClaim": "Gordon Gould notarized his notebook with the term 'LASER' in 1957, and Charles Townes/Arthur Schawlow received US Patent 2,929,922 for the optical maser concept.",
+          "conflictDetails": "Hughes Aircraft filed Maiman's patent in 1961 for the first working ruby laser. Gould spent three decades in patent office interferences and federal courts claiming broad coverage over optically pumped lasers.",
+          "resolution": "In a series of landmark federal court decisions (Gould v. Control Laser Corp. and Gould v. General Photonics, 1977–1987), Gould was awarded patents on optically pumped laser amplifiers, while Maiman's US 3,353,115 stood as the definitive patent on the first operational solid-state ruby laser apparatus.",
+          "legalOutcome": "Maiman's patent was fully recognized as the historic first physical reduction to practice of laser radiation on May 16, 1960."
+        }
+      ],
       "civilizationalImpact": "The disclosed solid-state optical pumping, resonant feedback, and coherent beam extraction establish the architecture that later generations of photonic instruments use for communications, measurement, surgery, manufacturing, and scientific research.",
       "funFact": "The specification itself connects the disclosed coherent optical beam to practical optical radar, communications, investigations of matter, and selective medical sterilization or vaporization."
     },
@@ -110230,7 +110747,15 @@
         "It says this can leave the operator without both hands free to enter changes and can cover part of the display area where changes are entered."
       ],
       "breakthroughInsight": "The grant moves the position-control mechanism to a supporting surface. Its preferred construction uses two perpendicular wheels and a third ball-bearing support, then sends position information through a wire to the computer controlling the CRT.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Telefunken (Rollkugel) & Xerox PARC",
+          "rivalClaim": "Telefunken developed a trackball-based device (Rollkugel) in 1968, and Xerox PARC engineers later developed optical and ball-driven mice based on Engelbart's SRI demonstrations.",
+          "conflictDetails": "SRI International held the patent on Engelbart's orthogonal wheel mouse. When personal computers emerged in the 1980s, SRI investigated royalty enforcement against Apple, Microsoft, and Logitech.",
+          "resolution": "Apple licensed the basic patent from SRI for a one-time lump sum of approximately $40,000 prior to launching the Apple Lisa (1983) and Macintosh (1984).",
+          "legalOutcome": "Because the patent was owned entirely by SRI and not Douglas Engelbart personally, Engelbart received zero royalties despite over one billion computer mice being manufactured during the patent's lifespan."
+        }
+      ],
       "civilizationalImpact": "The grant supplies a primary-source account of an early computer position-indicator architecture: surface motion becomes wheel rotation, a transducer signal, and a cursor position on a CRT. Broader accounts of later products and adoption require separate, cited historical research and are not asserted here.",
       "funFact": "The grant itself calls the apparatus an “X-Y position indicator control,” not a mouse.",
       "aftermath": "The document issued on November 17, 1970 with eight claims. The source record does not by itself establish later licensing, product, or royalty history.",
@@ -111109,7 +111634,15 @@
         "A complete, source-reviewed account of the specification's stated prior-art limitations has not yet been prepared for publication."
       ],
       "breakthroughInsight": "The grant's abstract distinguishes optically anisotropic polyamide dopes and connects them to fibers with distinctive internal structure.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Akzo Nobel N.V. (Twaron)",
+          "rivalClaim": "Dutch chemical manufacturer Akzo developed poly-p-phenylene terephthalamide fiber under the trade name Twaron, filing European and US patent applications asserting distinct solvent formulations.",
+          "conflictDetails": "DuPont and Akzo engaged in international patent infringement litigation across the United States, Netherlands, and Germany throughout the 1980s over liquid-crystalline aramid spinning processes (E.I. du Pont de Nemours & Co. v. Akzo N.V.).",
+          "resolution": "In 1988, DuPont and Akzo signed a worldwide cross-licensing and coexistence agreement, allocating market territories and licensing each other's aramid polymer processing patents.",
+          "legalOutcome": "Kwolek's foundational US Patent No. 3,671,542 was affirmed as the breakthrough patent in anisotropic liquid-crystalline polymer solutions, protecting DuPont's multi-billion-dollar Kevlar franchise."
+        }
+      ],
       "civilizationalImpact": "The page remains a source-preservation record until its full historical and technical interpretation can be checked against the complete facsimile."
     },
     "tags": [
@@ -116981,7 +117514,15 @@
         "Earlier color generation stored four digital bits but used separate pure-color generation, gating, and mixing circuitry that the source calls complex."
       ],
       "breakthroughInsight": "Treat the chroma phase reversal as a deterministic counter-sequence error: extend the sequence by two master-clock cycles at the prescribed event, then use recirculating digital shift registers to turn RAM color bits into the display signal.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Franklin Computer Corporation (ACE 1000 Litigation)",
+          "rivalClaim": "Franklin Computer manufactured the Franklin ACE 1000 Apple II clone, arguing that video timing, ROM firmware, and system display controllers were utilitarian mechanical schemes ineligible for proprietary legal protection.",
+          "conflictDetails": "Apple sued Franklin in 1982 in federal court (Apple Computer, Inc. v. Franklin Computer Corp.), asserting US Patent 4,136,359 and software copyright over Apple II display generation and ROM routines.",
+          "resolution": "The Third Circuit Court of Appeals ruled in Apple's favor, establishing the foundational legal precedent that microcode, firmware, and video timing controllers embedded in silicon are protectable intellectual property.",
+          "legalOutcome": "Franklin agreed to pay Apple $2.5 million in damages and withdraw clone hardware, securing Apple's market dominance over the Apple II ecosystem throughout the 1980s."
+        }
+      ],
       "civilizationalImpact": "The source captures a concrete engineering route from low-cost digital logic to a usable color raster display: tie color, horizontal sync, and digital data circulation to one clock, then explicitly correct the timing mismatch that makes vertical color edges unstable.",
       "aftermath": "This record is limited to what the reviewed 1979 grant establishes. The complete manual source edition preserves the circuit, timing values, color table, and all eight printed claims; later product history and other Apple II architecture claims require separate evidence."
     },
@@ -119728,7 +120269,15 @@
         "Manual directory curation could not scale"
       ],
       "breakthroughInsight": "Academic citation indexing (where citations indicate influence) could be adapted to recursive web hyperlink topologies.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Robin Li & RankDex / Baidu",
+          "rivalClaim": "Robin Li invented RankDex in 1996 and was granted US Patent No. 5,920,859 in 1999 for hyperlink analysis to score website popularity, claiming earlier priority over Page's 1998 PageRank filing.",
+          "conflictDetails": "Li's RankDex scored search results by analyzing anchor text and inbound links. Page and Brin's PageRank introduced a mathematical Markov random walk model where the authority of the linking page recursively weighted the target page.",
+          "resolution": "The USPTO determined that PageRank's recursive eigenvector probability distribution constituted a distinct, patentable algorithm, granting US 6,285,999 to Stanford University, which exclusively licensed it to Google.",
+          "legalOutcome": "Stanford's PageRank patent provided the intellectual property foundation for Google's search engine, with Stanford earning $336 million when it sold its Google equity in 2005."
+        }
+      ],
       "civilizationalImpact": "The source-bounded contribution is a scalable way to rank nodes from directed relationships, not a promise that rank equals truth or traffic. That graph perspective influenced Web search and subsequent network-analysis systems.",
       "aftermath": "The patent was granted September 4, 2001, and the record identifies Stanford as assignee. Google Patents lists the patent as expired after its term; later family continuations are separate records and are not folded into this edition.",
       "sideNotes": [
@@ -120983,7 +121532,15 @@
         "Engagement sensing vulnerable to temporary loss of one signal"
       ],
       "breakthroughInsight": "Put compatibility, tool-type, calibration, life, and coupling information at the releasable tool boundary so the processor can configure and verify a tool during exchange.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Computer Motion, Inc. (ZEUS Surgical System)",
+          "rivalClaim": "Computer Motion held patents on the ZEUS robotic surgery system and HERMES voice-controlled laparoscopic cameras, asserting that Intuitive's da Vinci master-slave kinematic telemanipulator infringed its intellectual property.",
+          "conflictDetails": "Intuitive Surgical and Computer Motion filed eight separate patent infringement lawsuits against each other between 2000 and 2003 across Delaware and California federal courts (Intuitive Surgical, Inc. v. Computer Motion, Inc.).",
+          "resolution": "In March 2003, the rivals settled all litigation by merging, with Intuitive Surgical acquiring Computer Motion in a stock transaction valued at $150 million.",
+          "legalOutcome": "The merger consolidated SRI/da Vinci robotic wrist telemanipulation patents (including US 6,331,181) with Computer Motion's voice and arm patents, creating Intuitive Surgical's global monopoly over robotic-assisted surgery."
+        }
+      ],
       "civilizationalImpact": "The claim architecture helped make detachable surgical tools legible to a controller: a tool can report what it is, how its measured drive geometry differs from nominal geometry, and whether it is compatible before the system applies drive signals.",
       "aftermath": "The patent is expired according to the Google Patents record. This page does not infer a specific litigation outcome or commercial product scope from the family record.",
       "sideNotes": [
@@ -122078,7 +122635,15 @@
         "Single intensity thresholds confounded by surface reflectivity and specular scattering"
       ],
       "breakthroughInsight": "The source's breakthrough is geometric calibration: intersect the detector's field of view with a directed emitter field at a finite region, then test whether the floor or wall occupies that region. Angled collimators reduce reflectivity and specular-scattering errors, and the wall controller returns through decreasing radii of curvature.",
-      "patentWars": [],
+      "patentWars": [
+        {
+          "rivalName": "Electrolux (Trilobite) & SharkNinja / bObsweep",
+          "rivalClaim": "Electrolux commercialized the Trilobite in 2001 using ultrasound acoustic pinging, while later competitors (SharkNinja, bObsweep) attempted to copy Roomba's optical wall-following and cliff-detection sensors.",
+          "conflictDetails": "iRobot brought patent infringement actions before the US International Trade Commission (ITC Investigation No. 337-TA-1057) and federal court against multiple manufacturers, asserting US Patent No. 6,594,844 and companion obstacle navigation patents.",
+          "resolution": "The ITC issued exclusion orders barring infringing robotic vacuums from entering the United States, and competitors settled by licensing or redesigning sensor geometries.",
+          "legalOutcome": "US Patent No. 6,594,844 protected iRobot's optical obstacle and boundary sensing architecture, helping Roomba sell over 40 million units worldwide as the most successful consumer autonomous robot."
+        }
+      ],
       "civilizationalImpact": "Within the boundaries of this grant, the contribution is a low-cost optical safety and boundary-sensing subsystem for autonomous cleaning robots. It does not by itself establish a global map, an expanding spiral, or a randomized coverage guarantee.",
       "aftermath": "The patent issued July 22, 2003 as US 6,594,844 B2. This record makes no unsupported claim about later litigation, sales, or market share; those belong to separate documented sources.",
       "sideNotes": [

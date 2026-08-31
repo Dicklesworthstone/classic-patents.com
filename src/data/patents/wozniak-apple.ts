@@ -600,7 +600,19 @@ The invention is for the generation of signals for raster scanned video displays
     ],
     breakthroughInsight:
       "Treat the chroma phase reversal as a deterministic counter-sequence error: extend the sequence by two master-clock cycles at the prescribed event, then use recirculating digital shift registers to turn RAM color bits into the display signal.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Franklin Computer Corporation (ACE 1000 Litigation)",
+        rivalClaim:
+          "Franklin Computer manufactured the Franklin ACE 1000 Apple II clone, arguing that video timing, ROM firmware, and system display controllers were utilitarian mechanical schemes ineligible for proprietary legal protection.",
+        conflictDetails:
+          "Apple sued Franklin in 1982 in federal court (Apple Computer, Inc. v. Franklin Computer Corp.), asserting US Patent 4,136,359 and software copyright over Apple II display generation and ROM routines.",
+        resolution:
+          "The Third Circuit Court of Appeals ruled in Apple's favor, establishing the foundational legal precedent that microcode, firmware, and video timing controllers embedded in silicon are protectable intellectual property.",
+        legalOutcome:
+          "Franklin agreed to pay Apple $2.5 million in damages and withdraw clone hardware, securing Apple's market dominance over the Apple II ecosystem throughout the 1980s.",
+      },
+    ],
     civilizationalImpact:
       "The source captures a concrete engineering route from low-cost digital logic to a usable color raster display: tie color, horizontal sync, and digital data circulation to one clock, then explicitly correct the timing mismatch that makes vertical color edges unstable.",
     aftermath:

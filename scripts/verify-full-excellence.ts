@@ -17,14 +17,14 @@ const studioScenePath = path.join(visual3DDir, "ThreeStudioScene.ts");
 const studioContent = fs.readFileSync(studioScenePath, "utf-8");
 
 const requiredStudioCapabilities = [
-  { name: "Mobile single-touch rotation", check: "onTouchMove" },
+  { name: "Mobile touch & pointer rotation", check: "onPointerMove" },
   { name: "Mobile two-finger pinch zoom", check: "isPinching" },
   { name: "Mobile two-finger panning", check: "panCamera" },
   { name: "Desktop mouse click & drag rotate", check: "onPointerDown" },
   { name: "Desktop right-click/shift pan", check: "isPanning" },
   { name: "Mouse wheel & trackpad zoom", check: "onWheel" },
   { name: "Inertial velocity damping", check: "velTheta" },
-  { name: "PBR & Lighting studio", check: "MeshStandardMaterial" },
+  { name: "PBR Lighting & Tone Mapping studio", check: "ACESFilmicToneMapping" },
   { name: "Memory disposal & WebGL cleanup", check: "forceContextLoss()" },
 ];
 

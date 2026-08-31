@@ -554,7 +554,19 @@ export const bardeenTransistor2524035Patent: Patent = {
     ],
     breakthroughInsight:
       "A close forward emitter and reverse collector can use a surface layer and barrier to couple carrier injection into a high-impedance collector response.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "William Shockley (Junction Transistor Priority)",
+        rivalClaim:
+          "William Shockley, director of the Bell Labs solid-state physics group, contested Bardeen and Brattain's exclusive inventorship on US 2,524,035, claiming the underlying field-effect concept was his original discovery.",
+        conflictDetails:
+          "Shockley isolated himself for four weeks in January 1948 to invent the superior, more reproducible bipolar junction transistor (BJT, US Patent 2,569,347), asserting that junction diffusion made point-contacts obsolete.",
+        resolution:
+          "Bell Labs patent attorneys filed Bardeen and Brattain's point-contact patent with only Bardeen and Brattain as inventors, while filing Shockley's junction transistor patent separately.",
+        legalOutcome:
+          "All three men jointly shared the 1956 Nobel Prize in Physics for their discoveries, with Bardeen and Brattain's patent standing as the legal birth certificate of solid-state semiconductor electronics.",
+      },
+    ],
     civilizationalImpact:
       "The document records an early semiconductor amplifier architecture built around carrier injection, rectifying contacts, and impedance transformation.",
   },
