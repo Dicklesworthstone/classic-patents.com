@@ -29,7 +29,7 @@ let waveFn: WaveFn | null = null;
 let fluidFn: FluidFn | null = null;
 let cyclicFn: CyclicFn | null = null;
 let modesFn: ModesFn | null = null;
-let loadAttempted = false;
+let loadPromise: Promise<GenericKernelSource> | null = null;
 let source: GenericKernelSource = "unloaded";
 
 /**
@@ -77,13 +77,25 @@ const fluidCache = new Map<string, Float64Array>();
 const cyclicCache = new Map<string, Float64Array>();
 const modesCache = new Map<string, Float64Array>();
 
+function clearKernelCaches() {
+  orbitCache.clear();
+  heatCache.clear();
+  waveCache.clear();
+  fluidCache.clear();
+  cyclicCache.clear();
+  modesCache.clear();
+}
+
 export function genericKernelSource(): GenericKernelSource {
   return source;
 }
 
-export async function ensureGenericWasm(): Promise<GenericKernelSource> {
-  if (loadAttempted) return source;
-  loadAttempted = true;
+export function ensureGenericWasm(): Promise<GenericKernelSource> {
+  loadPromise ??= initializeGenericWasm();
+  return loadPromise;
+}
+
+async function initializeGenericWasm(): Promise<GenericKernelSource> {
   if (typeof window === "undefined") {
     source = "ts-fallback";
     return source;
@@ -117,15 +129,22 @@ export async function ensureGenericWasm(): Promise<GenericKernelSource> {
         engine?: () => string;
       };
       await mod.default({ module_or_path: wasmUrl });
-      if (typeof mod.ga_motor_orbit !== "function" || typeof mod.heat_frames !== "function") {
-        throw new Error("fs-wasm motor/heat exports missing");
+      if (
+        typeof mod.ga_motor_orbit !== "function" ||
+        typeof mod.heat_frames !== "function" ||
+        typeof mod.wave2d_frames !== "function" ||
+        typeof mod.fluid_frames !== "function" ||
+        typeof mod.cyclic_symmetry !== "function" ||
+        typeof mod.laplacian_modes !== "function"
+      ) {
+        throw new Error("fs-wasm core motor/heat/wave/fluid/cyclic/modal exports missing");
       }
       gaFn = mod.ga_motor_orbit;
       heatFn = mod.heat_frames;
-      waveFn = typeof mod.wave2d_frames === "function" ? mod.wave2d_frames : null;
-      fluidFn = typeof mod.fluid_frames === "function" ? mod.fluid_frames : null;
-      cyclicFn = typeof mod.cyclic_symmetry === "function" ? mod.cyclic_symmetry : null;
-      modesFn = typeof mod.laplacian_modes === "function" ? mod.laplacian_modes : null;
+      waveFn = mod.wave2d_frames;
+      fluidFn = mod.fluid_frames;
+      cyclicFn = mod.cyclic_symmetry;
+      modesFn = mod.laplacian_modes;
       extraWasmFns.poisson2d = typeof mod.poisson2d === "function" ? mod.poisson2d : null;
       extraWasmFns.grayScottFrames =
         typeof mod.gray_scott_frames === "function" ? mod.gray_scott_frames : null;
@@ -140,6 +159,10 @@ export async function ensureGenericWasm(): Promise<GenericKernelSource> {
       extraWasmFns.trussPath = typeof mod.trusspath === "function" ? mod.trusspath : null;
       extraWasmFns.flowcert = typeof mod.flowcert === "function" ? mod.flowcert : null;
       extraWasmFns.runFrame = typeof mod.run_frame === "function" ? mod.run_frame : null;
+      // A studio can sample its host fallback before this asynchronous load
+      // resolves. Do not let those cached arrays survive while the UI reports
+      // a WASM source: the first post-load sample must cross the bound export.
+      clearKernelCaches();
       source = "wasm";
     } finally {
       URL.revokeObjectURL(blobUrl);

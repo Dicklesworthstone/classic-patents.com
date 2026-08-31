@@ -14,7 +14,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
-import { ensureTeslaWasm } from "@/physics/teslaWasm";
+import { ensureTeslaWasm, teslaKernelSource } from "@/physics/teslaWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -42,9 +42,16 @@ const CAMERA_PRESETS: Record<
 
 export function TeslaCoil3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [, setKernelSource] = useState(teslaKernelSource);
 
   useEffect(() => {
-    ensureTeslaWasm();
+    let active = true;
+    void ensureTeslaWasm().then((nextSource) => {
+      if (active) setKernelSource(nextSource);
+    });
+    return () => {
+      active = false;
+    };
   }, []);
 
   // Interpretive high-potential-transformer controls, not a facsimile reconstruction.
@@ -334,6 +341,14 @@ export function TeslaCoil3D() {
           visible={showUiOverlay}
           title="HIGH-FREQUENCY RESONANT TRANSFORMER"
           chips={[
+            {
+              label: "Kernel",
+              value:
+                coilPhysics.runtimeSource === "wasm"
+                  ? "Interpretive WASM step"
+                  : "TypeScript fallback",
+              tone: coilPhysics.runtimeSource === "wasm" ? "ok" : "warn",
+            },
             {
               label: "V_secondary",
               value: `${secondaryVoltageMv}`,

@@ -125,6 +125,29 @@ class PatentTransport {
       }
     }
   }
+
+  publishSnapshot(
+    nowMs: number,
+    update: Partial<UniversalPatentPhysicsTelemetry>,
+    provenance: Provenance,
+  ) {
+    const merged: UniversalPatentPhysicsTelemetry = {
+      ...this.lastFrame.telemetry,
+      ...update,
+      timestampMs: nowMs,
+    };
+    const digest = telemetryDigest(merged);
+    if (digest === this.lastFrame.digest && provenance === this.lastFrame.provenance) return;
+
+    this.lastFrame = {
+      tick: this.lastFrame.tick,
+      atMs: nowMs,
+      digest,
+      provenance,
+      telemetry: merged,
+    };
+    for (const listener of this.listeners) listener(this.lastFrame);
+  }
 }
 
 class TransportBus {
@@ -164,6 +187,22 @@ class TransportBus {
 
   unregisterUpdater(patentId: string) {
     this.updaters.delete(patentId);
+  }
+
+  publishSnapshot(
+    patentId: string,
+    update: Partial<UniversalPatentPhysicsTelemetry>,
+    provenance: Provenance = "TS_FALLBACK",
+  ): boolean {
+    if (this.updaters.has(patentId)) return false;
+    const transport = this.getTransport(patentId, update);
+    transport.declaredProvenance = provenance;
+    transport.publishSnapshot(
+      typeof performance !== "undefined" ? performance.now() : Date.now(),
+      update,
+      provenance,
+    );
+    return true;
   }
 
   private startPump() {
@@ -213,6 +252,10 @@ export function useFrankenSimPhysics(
   useLayoutEffect(() => {
     telemetryRef.current = frame.telemetry;
   });
+
+  useLayoutEffect(() => {
+    globalTransportBus.publishSnapshot(patentId, initialTelemetry, "TS_FALLBACK");
+  }, [initialTelemetry, patentId]);
 
   useEffect(() => {
     return transport.subscribe((newFrame) => {

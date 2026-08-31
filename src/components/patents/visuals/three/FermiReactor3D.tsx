@@ -4,6 +4,7 @@ import { Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-re
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
+import { ensureGenericWasm } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -44,6 +45,10 @@ export function FermiReactor3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+
+  useEffect(() => {
+    void ensureGenericWasm();
+  }, []);
 
   // Four-Factor Nuclear Physics Calculations
   const reactorKinetics = FrankenSimEngine.stepFermiReactor(

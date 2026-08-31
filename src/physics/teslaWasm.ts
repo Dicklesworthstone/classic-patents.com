@@ -7,17 +7,48 @@ type TeslaFn = (
   qFactor: number,
 ) => string;
 
+export interface TeslaWasmStep {
+  resonant_freq_khz: number;
+  secondary_potential_mv: number;
+  streamer_length_inches: number;
+  streamer_length_meters: number;
+}
+
 let teslaFn: TeslaFn | null = null;
-let loadAttempted = false;
+let loadPromise: Promise<TeslaKernelSource> | null = null;
 let source: TeslaKernelSource = "unloaded";
 
 export function teslaKernelSource(): TeslaKernelSource {
   return source;
 }
 
-export async function ensureTeslaWasm(): Promise<TeslaKernelSource> {
-  if (loadAttempted) return source;
-  loadAttempted = true;
+export function decodeTeslaWasmStep(raw: string): TeslaWasmStep | null {
+  try {
+    const parsed = JSON.parse(raw) as { ok?: Partial<TeslaWasmStep> };
+    const result = parsed.ok;
+    if (!result) return null;
+    const values = [
+      result.resonant_freq_khz,
+      result.secondary_potential_mv,
+      result.streamer_length_inches,
+      result.streamer_length_meters,
+    ];
+    if (!values.every((value) => typeof value === "number" && Number.isFinite(value))) {
+      return null;
+    }
+    if (values.some((value) => (value as number) <= 0)) return null;
+    return result as TeslaWasmStep;
+  } catch {
+    return null;
+  }
+}
+
+export function ensureTeslaWasm(): Promise<TeslaKernelSource> {
+  loadPromise ??= initializeTeslaWasm();
+  return loadPromise;
+}
+
+async function initializeTeslaWasm(): Promise<TeslaKernelSource> {
   if (typeof window === "undefined") {
     source = "ts-fallback";
     return source;
@@ -57,17 +88,11 @@ export function tryTeslaWasmStep(
   inputKv: number,
   sparkGapMm: number,
   qFactor: number,
-): {
-  resonant_freq_khz: number;
-  secondary_potential_mv: number;
-  streamer_length_inches: number;
-  streamer_length_meters: number;
-} | null {
+): TeslaWasmStep | null {
   if (!teslaFn) return null;
   try {
     const raw = teslaFn(resonantFreqKhz, inputKv, sparkGapMm, qFactor);
-    const parsed = JSON.parse(raw);
-    if (parsed.ok) return parsed.ok;
+    return decodeTeslaWasmStep(raw);
   } catch {
     // fall back
   }

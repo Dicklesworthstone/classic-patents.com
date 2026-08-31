@@ -20,6 +20,7 @@ import { PortHamiltonianEnergyStrip } from "@/components/patents/visuals/PortHam
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { coltNextChamber } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
+import { ensureGenericWasm } from "@/physics/genericWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -65,6 +66,10 @@ export function ColtRevolver3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+
+  useEffect(() => {
+    void ensureGenericWasm();
+  }, []);
 
   // Solid Mechanics & Ballistics via FrankenSim Engine
   const coltMech = FrankenSimEngine.stepColtRevolver({

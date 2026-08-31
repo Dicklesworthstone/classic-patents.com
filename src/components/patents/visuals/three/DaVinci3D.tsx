@@ -8,7 +8,12 @@ import {
 } from "@/components/patents/visuals/three/ThreeStudioScene";
 import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimParams";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
-import { type DaVinciState, stepDaVinci } from "@/physics/daVinciKernel";
+import {
+  DA_VINCI_MODEL_BASE_HEIGHT_M,
+  type DaVinciState,
+  readDaVinciControls,
+  stepDaVinci,
+} from "@/physics/daVinciKernel";
 import {
   globalTransportBus,
   type TapeUpdater,
@@ -51,7 +56,7 @@ export function DaVinci3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [hud, setHud] = useState({
     scale: 3,
-    tremorAtten: 94.5,
+    compatibilitySignalPercent: 100,
     tipVelocity: 0,
     isColliding: false,
     isGrasped: false,
@@ -95,12 +100,12 @@ export function DaVinci3D() {
   const kernelStateRef = useRef<DaVinciState | null>(null);
   useEffect(() => {
     const integrate: TapeUpdater = (_prev, dt) => {
-      const controls = {
-        motionScaleRatio: live.current.motionScaleRatio ?? 3.0,
-        tremorFilterEnabled: (live.current.tremorFilterEnabled ?? 1) > 0.5,
-        masterInputSpeedMps: live.current.masterInputSpeedMps ?? 0.5,
-        gripAngleDeg: live.current.gripAngleDeg ?? 30,
-      };
+      const controls = readDaVinciControls({
+        motionScaleRatio: live.current.motionScaleRatio,
+        tremorFilterEnabled: live.current.tremorFilterEnabled,
+        masterInputSpeedMps: live.current.masterInputSpeedMps,
+        gripAngleDeg: live.current.gripAngleDeg,
+      });
       const subSteps = Math.max(1, Math.round(dt / (1 / 120)));
       let state = kernelStateRef.current ?? undefined;
       const subDt = dt / subSteps;
@@ -114,11 +119,15 @@ export function DaVinci3D() {
         ? {
             refusal: { isRefused: false },
             machine: {
-              poseXMeters: s.slaveX,
-              poseYMeters: s.slaveY,
-              headingRad: s.baseYawRad,
-              modeLabel: "teleop slave arm",
-              wheelSpeedMps: 0,
+              poseXMeters: s.tipX,
+              poseYMeters: s.tipY,
+              headingRad: s.wristYawRad,
+              modeLabel: s.isGrasped
+                ? "tool grasped"
+                : s.isColliding
+                  ? "contact resolved"
+                  : "teleop tool clear",
+              wheelSpeedMps: s.tipVelocityMms / 1000,
             },
           }
         : null;
@@ -164,7 +173,11 @@ export function DaVinci3D() {
       const currentState = kernelStateRef.current;
 
       if (currentState) {
-        model.baseGroup.position.set(currentState.slaveX, currentState.slaveY, currentState.slaveZ);
+        model.baseGroup.position.set(
+          currentState.slaveX,
+          currentState.slaveY + DA_VINCI_MODEL_BASE_HEIGHT_M,
+          currentState.slaveZ,
+        );
         model.baseGroup.rotation.y = currentState.baseYawRad;
         model.baseGroup.rotation.x = currentState.shoulderPitchRad;
 
@@ -175,6 +188,7 @@ export function DaVinci3D() {
           currentState.gripRad,
           [currentState.masterX, currentState.masterY + 0.8, currentState.masterZ],
         );
+        model.alignEndEffectorTip(currentState.tipX, currentState.tipY, currentState.tipZ);
 
         // Anti-Clipping Physical Object Pose & Contact Gizmo
         model.setCupPose(
@@ -200,7 +214,7 @@ export function DaVinci3D() {
         if (hudCounter % 10 === 0) {
           setHud({
             scale: p.motionScaleRatio ?? 3,
-            tremorAtten: currentState.compatibilitySignalPercent,
+            compatibilitySignalPercent: currentState.compatibilitySignalPercent,
             tipVelocity: currentState.tipVelocityMms,
             isColliding: currentState.isColliding,
             isGrasped: currentState.isGrasped,
@@ -345,7 +359,7 @@ export function DaVinci3D() {
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Compatibility signal:</span>
               <span className="font-bold text-purple-800 dark:text-purple-400">
-                {hud.tremorAtten > 0 ? "PRESENT" : "ABSENT"}
+                {hud.compatibilitySignalPercent > 0 ? "PRESENT" : "ABSENT"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2 border-t border-parchment-200 dark:border-ink-800/80 pt-1">

@@ -44,6 +44,11 @@ import {
   stepWozniakApple,
   stepZeppelinAirship,
 } from "./catalogKernels";
+import {
+  type DaVinciControls,
+  type DaVinciState,
+  stepDaVinci as stepDaVinciKernel,
+} from "./daVinciKernel";
 import { stepDieselEngine as kernelStepDieselEngine } from "./dieselEngineKernel";
 import { stepFermiKinetics } from "./fermiKinetics";
 import { tryGoddardWasmStep } from "./goddardWasm";
@@ -232,6 +237,16 @@ export const FrankenSimEngine = {
 
   stepTeslaMotorFig9,
 
+  /** US 6,331,181 illustrative tool-interface and contact model. */
+  stepDaVinci(
+    controls: DaVinciControls,
+    timeSec: number,
+    previousState?: DaVinciState,
+    dtSec = 1 / 60,
+  ): DaVinciState {
+    return stepDaVinciKernel(controls, timeSec, previousState, dtSec);
+  },
+
   /**
    * Enrico Fermi Chicago Pile-1 (US 2,708,656).
    * Delegates to fermiKinetics — same k_eff as the badge, schematic, and 3D HUD.
@@ -286,8 +301,9 @@ export const FrankenSimEngine = {
   },
 
   /**
-   * Robert H. Goddard Liquid-Propellant Rocket (US 1,155,986 / US 1,102,653)
-   * Supersonic de Laval Nozzle & Thermodynamic Expansion
+   * Adjacent liquid-propellant de Laval model used by the US 1,102,653
+   * presentation. This is interpretive telemetry, not a claimed mechanism in
+   * the catalogued solid-charge apparatus patent.
    */
   stepGoddardRocket(
     chamberPressurePsi: number,
@@ -313,11 +329,12 @@ export const FrankenSimEngine = {
         (0.5 * fuelFlowKgPerSec * wasmRes.exhaust_velocity_mps ** 2).toFixed(0),
       );
       return {
+        runtimeSource: "wasm" as const,
         chamberPressurePsi: wasmRes.chamber_pressure_psi,
-        chamberPressurePa: wasmRes.chamber_pressure_psi * 6894.76,
+        chamberPressurePa: wasmRes.chamber_pressure_pa,
         exhaustVelocityMps: wasmRes.exhaust_velocity_mps,
         thrustNewtons: wasmRes.thrust_newtons,
-        specificImpulseSec: wasmRes.exhaust_velocity_mps / 9.80665,
+        specificImpulseSec: wasmRes.specific_impulse_sec,
         machExit: wasmRes.mach_exit,
         thrustLbf: Math.round(wasmRes.thrust_newtons * 0.224809),
         exhaustTempK: thermo.exhaustTempK,
@@ -346,6 +363,7 @@ export const FrankenSimEngine = {
     );
 
     return {
+      runtimeSource: "ts-fallback" as const,
       chamberPressurePsi,
       chamberPressurePa,
       exhaustVelocityMps,
@@ -525,6 +543,7 @@ export const FrankenSimEngine = {
       const scale = (k / 0.18) * nScale;
       const secondaryPotentialMv = Number((wasmRes.secondary_potential_mv * scale).toFixed(2));
       return {
+        runtimeSource: "wasm" as const,
         resonantFreqKhz: wasmRes.resonant_freq_khz,
         secondaryPotentialMv,
         streamerLengthInches: Number((wasmRes.streamer_length_inches * scale).toFixed(1)),
@@ -552,6 +571,7 @@ export const FrankenSimEngine = {
 
     const secondaryPotentialMvRounded = Number(secondaryPotentialMv.toFixed(2));
     return {
+      runtimeSource: "ts-fallback" as const,
       resonantFreqKhz,
       secondaryPotentialMv: secondaryPotentialMvRounded,
       streamerLengthInches: Number(streamerLengthInches.toFixed(1)),

@@ -25,14 +25,14 @@
 **The Solution:** **Classic Patents** restores these masterpieces:
 1. **Reviewed Archival Editions & Embedded PDFs**: Continuous hand-authored source faces and reviewed ledgers alongside pinned public-record facsimiles. Coverage is explicit: 69 of 79 catalogue records currently publish the reviewed edition contract; ten stored or missing editions remain fail-closed pending full-facsimile acceptance.
 2. **Dual-Projection (Diptych Engine)**: Side-by-side synchronized views of the verbatim legal specification and a lucid, mathematically rigorous **"Plain English" engineering breakdown**.
-3. **Interactive 2D/3D Physics Visualizations**: Parameterized Three.js, SVG, and Canvas instruments let visitors manipulate real physical parameters. The shared telemetry bus uses a compiled FrankenSim WASM owner only when that module genuinely loads and steps; otherwise the UI identifies its typed host owner rather than presenting a WASM badge.
+3. **Interactive 2D/3D Physics Visualizations**: Parameterized Three.js, SVG, and Canvas instruments let visitors manipulate real physical parameters. Runtime ownership is executable rather than aspirational: the catalogue has 1 patent-specific WASM surface (Flyer), 2 dedicated interpretive WASM surfaces (Goddard and Tesla coil), 36 generic FrankenSim WASM consumers, and 40 typed-host-only records. All 79 have a TypeScript default telemetry owner; a WASM label is admitted only after the relevant module loads and steps.
 4. **Historical & Legal Deconstructions**: Line-by-line claim decoders, patent litigation histories (Wright vs. Curtiss, Bell vs. Gray, Farnsworth vs. RCA, Goodyear vs. Day, SRI vs. Xerox/Apple), and civilizational impact analyses.
 
 ---
 
-## Curated Historical Patents (22 Featured — 79 in the Live Catalogue)
+## Curated Historical Patents (22 Highlighted — 79 in the Live Catalogue)
 
-The live, searchable catalogue at [classic-patents.com](https://classic-patents.com) holds 79 records. All 79 have pinned facsimiles, explicit interactive-visual routes, default-stepping SI telemetry owners, and live equation sets. **69 of 79** currently cross the reviewed-edition publication boundary. Nine more records store editions whose own `completeFacsimileReviewed` attestation is false; Linotype has no bound edition. `us-313224-mergenthaler-linotype` remains on its pinned facsimile, source-PDF text layer, 70 staged claim nodes, and source-bounded editorial face after its ledger/draft failed independent acceptance against the pinned 17-sheet facsimile. This table highlights 22 foundational entries; search (⌘K) and the timeline cover the full registry.
+The live, searchable catalogue at [classic-patents.com](https://classic-patents.com) holds 79 records. All 79 have pinned facsimiles, explicit interactive-visual routes, default-stepping SI telemetry owners, and live equation sets; 78 have reviewed ledgers. **69 of 79** currently cross the reviewed-edition publication boundary. Nine more records store editions whose own `completeFacsimileReviewed` attestation is false; Linotype has no bound edition. `us-313224-mergenthaler-linotype` remains on its pinned facsimile, source-PDF text layer, 70 staged claim nodes, and source-bounded editorial face after its ledger/draft failed independent acceptance against the pinned 17-sheet facsimile. This table highlights 22 foundational entries; search (⌘K) and the timeline cover the full registry.
 
 | Patent | Title | Inventors | Grant Date | Key Breakthrough | Interactive 3D Sim |
 |---|---|---|---|---|---|
@@ -46,7 +46,7 @@ The live, searchable catalogue at [classic-patents.com](https://classic-patents.
 | **[US 586,193](./src/data/patents/marconi-radio.ts)** | Transmitting Electrical Signals | Guglielmo Marconi | Jul 13, 1897 | Elevated monopole aerial & earth-grounded spark system | 📡 3D RF Spark Transmitter |
 | **[US 593,138](./src/data/patents/tesla-coil-593138.ts)** | Electrical Transformer | Nikola Tesla | Nov 2, 1897 | Graded spiral windings for high-potential transformation and transmission | ⚡ 3D High-Potential Transformer |
 | **[US 821,393](./src/data/patents/wright-flyer.ts)** | Flying-Machine | Orville & Wilbur Wright | May 22, 1906 | 3-axis aerodynamic flight control via wing warping | 🛩️ 3D 6-DoF Flight Sim |
-| **[US 1,155,986](./src/data/patents/goddard-rocket.ts)** | Rocket Apparatus | Robert H. Goddard | Oct 5, 1915 | Bipropellant combustion chamber & de Laval nozzle | 🚀 3D Supersonic Rocket Nozzle |
+| **[US 1,102,653](./src/data/patents/goddard-rocket.ts)** | Rocket Apparatus | Robert H. Goddard | Jul 7, 1914 | Multi-stage solid-propellant rocket arrangement; interpretive liquid-nozzle visual is explicitly separated | 🚀 3D Interpretive Rocket Apparatus |
 | **[US 1,781,541](./src/data/patents/einstein-refrigerator.ts)** | Refrigeration | Albert Einstein & Leo Szilard | Nov 11, 1930 | Zero-moving-parts hermetic Dalton partial pressure cooling | ❄️ 3D Absorption Refrigerator |
 | **[US 1,773,980](./src/data/patents/farnsworth-tv.ts)** | Television System | Philo T. Farnsworth | Aug 26, 1930 | All-electronic image dissector & magnetic raster | 📺 3D Dissector Tube Raster |
 | **[US 2,292,387](./src/data/patents/lamarr-frequency-hopping.ts)** | Secret Communication System | Hedy Lamarr & George Antheil | Aug 11, 1942 | 88-frequency piano-roll spread-spectrum carrier hopping | 🎹 3D 88-Channel RF Analyzer |
@@ -87,11 +87,11 @@ The live, searchable catalogue at [classic-patents.com](https://classic-patents.
 │  • Dynamic On-Demand Code Splitting (198 kB Initial JS Payload)        │
 ├────────────────────────────────────────────────────────────────────────┤
 │                TYPED SI PHYSICS & TELEMETRY OWNER BUS                  │
-│  • 79/79 default-stepping registry owners with explicit equations      │
-│  • Compiled FrankenSim WASM where a module is actually loaded/stepped  │
-│  • Typed host kernels elsewhere, identified without a WASM claim       │
-│  • Shared controls/telemetry across 2D, 3D, schematic, and source face │
-│  • Blake3 state digests and refusal boundaries on WASM-owned paths     │
+│  • 79/79 typed-host default owners with explicit live equations        │
+│  • 1 patent-specific + 2 interpretive + 36 generic WASM surfaces       │
+│  • 47 ticking bus updaters + 32 typed snapshot publishers              │
+│  • TS fallback and cold-start placeholder provenance remain explicit   │
+│  • Typed WASM refusal where exposed; host validation everywhere else   │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -99,9 +99,9 @@ The live, searchable catalogue at [classic-patents.com](https://classic-patents.
 
 ## Computational Physics and Telemetry Owners
 
-Every catalogue id has a typed `PATENT_PHYSICS_REGISTRY` entry that accepts SI controls and produces non-empty default telemetry. Aerodynamics, electromagnetics, solid-state electronics, thermodynamics, reactor kinetics, polymers, and mechanisms all use this same presentation contract.
+Every catalogue id has a typed `PATENT_PHYSICS_REGISTRY` entry that accepts SI controls and produces non-empty default telemetry. Aerodynamics, electromagnetics, solid-state electronics, thermodynamics, reactor kinetics, polymers, and mechanisms all use this same presentation contract. The generated [`coverageManifest`](./src/physics/coverageManifest.ts) binds each of the 79 ids to its facsimile, ledger and edition state, visual route, default owner, optional WASM surface, shared-bus participation, and admitted provenance.
 
-The implementation owner is disclosed at runtime. A visual may use a compiled **FrankenSim** WebAssembly step with Blake3 state digests and typed refusal boundaries, or an explicitly identified TypeScript kernel while its generic FrankenSim composition is still being bound. Tests and `bun run pipeline:verify` exercise every catalogue id's default owner and ensure every id has its own visual-dispatch case and live equation set; file presence alone is not treated as proof of physical integration.
+The synchronous default owner is TypeScript for all 79 records. After browser initialization, the Flyer can use its patent-specific **FrankenSim** WebAssembly package, Goddard and Tesla coil can use dedicated interpretive packages, and 36 visuals consume selected exports from the generic FrankenSim package; every such path retains an admitted TypeScript fallback. The Goddard package computes a liquid-propellant nozzle model adjacent to—but not claimed by—the catalogued solid-charge US 1,102,653 apparatus. The Tesla package is an unvalidated lumped-LC presentation seam, not proof that its constants reconstruct US 593,138. Flyer, Goddard, and Tesla expose typed WASM refusals; the host still validates every accepted result before using it. Tests instantiate and step all four shipped packages, exercise all three dedicated refusal boundaries and malformed-output rejection, pin the binary digests, and make `bun run pipeline:verify` fail on coverage drift.
 
 See the complete roadmap in [`docs/FRANKENSIM_WASM_INTEGRATION_TODO.md`](./docs/FRANKENSIM_WASM_INTEGRATION_TODO.md).
 

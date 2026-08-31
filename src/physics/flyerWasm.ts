@@ -46,7 +46,7 @@ type AeroFn = (
 
 let helloFn: HelloFn | null = null;
 let aeroFn: AeroFn | null = null;
-let loadAttempted = false;
+let loadPromise: Promise<FlyerKernelSource> | null = null;
 let source: FlyerKernelSource = "unloaded";
 let aeroSource: "wasm" | "ts-lie-fallback" = "ts-lie-fallback";
 
@@ -58,9 +58,12 @@ export function flyerKernelSource(): FlyerKernelSource {
   return source;
 }
 
-export async function ensureFlyerWasm(): Promise<FlyerKernelSource> {
-  if (loadAttempted) return source;
-  loadAttempted = true;
+export function ensureFlyerWasm(): Promise<FlyerKernelSource> {
+  loadPromise ??= initializeFlyerWasm();
+  return loadPromise;
+}
+
+async function initializeFlyerWasm(): Promise<FlyerKernelSource> {
   if (typeof window === "undefined") {
     source = "ts-lie-fallback";
     return source;
@@ -94,7 +97,9 @@ export async function ensureFlyerWasm(): Promise<FlyerKernelSource> {
     }
   } catch {
     helloFn = null;
+    aeroFn = null;
     source = "ts-lie-fallback";
+    aeroSource = "ts-lie-fallback";
   }
   return source;
 }
@@ -102,6 +107,27 @@ export async function ensureFlyerWasm(): Promise<FlyerKernelSource> {
 export interface HelloState {
   quaternion: Quat;
   omega: Vec3;
+}
+
+export function decodeFlyerState(raw: string): HelloState | null {
+  try {
+    const parsed = JSON.parse(raw) as {
+      ok?: { quaternion?: unknown; omega_body?: unknown };
+    };
+    const quaternion = parsed.ok?.quaternion;
+    const omega = parsed.ok?.omega_body;
+    if (!Array.isArray(quaternion) || quaternion.length !== 4) return null;
+    if (!Array.isArray(omega) || omega.length !== 3) return null;
+    if (!quaternion.every((value) => typeof value === "number" && Number.isFinite(value))) {
+      return null;
+    }
+    if (!omega.every((value) => typeof value === "number" && Number.isFinite(value))) return null;
+    const normSquared = quaternion.reduce((sum, value) => sum + value * value, 0);
+    if (Math.abs(normSquared - 1) > 1e-6) return null;
+    return { quaternion: quaternion as unknown as Quat, omega: omega as unknown as Vec3 };
+  } catch {
+    return null;
+  }
 }
 
 export function stepFlyerHello(state: HelloState, dtS: number): HelloState {
@@ -121,19 +147,8 @@ export function stepFlyerHello(state: HelloState, dtS: number): HelloState {
       dt,
       1,
     );
-    let parsed: { ok?: { quaternion: number[]; omega_body: number[] } } | undefined;
-    try {
-      parsed = JSON.parse(raw) as { ok?: { quaternion: number[]; omega_body: number[] } };
-    } catch {
-      parsed = undefined;
-    }
-    const ok = parsed?.ok;
-    if (ok?.quaternion && ok.omega_body) {
-      return {
-        quaternion: ok.quaternion as unknown as Quat,
-        omega: ok.omega_body as unknown as Vec3,
-      };
-    }
+    const decoded = decodeFlyerState(raw);
+    if (decoded) return decoded;
   }
   const next = rigidBodyStep(state.quaternion, state.omega, FLYER_INERTIA, dt);
   return { quaternion: next.q, omega: next.omega };
@@ -167,17 +182,8 @@ export function stepFlyerAero(state: HelloState, torque: Vec3, dtS: number): Hel
       dt,
       1,
     );
-    try {
-      const parsed = JSON.parse(raw) as { ok?: { quaternion: number[]; omega_body: number[] } };
-      if (parsed.ok?.quaternion && parsed.ok.omega_body) {
-        return {
-          quaternion: parsed.ok.quaternion as unknown as Quat,
-          omega: parsed.ok.omega_body as unknown as Vec3,
-        };
-      }
-    } catch {
-      /* fall through to TS */
-    }
+    const decoded = decodeFlyerState(raw);
+    if (decoded) return decoded;
   }
   const next = rigidBodyStep(state.quaternion, state.omega, FLYER_INERTIA, dt, torque);
   return { quaternion: next.q, omega: next.omega };

@@ -22,6 +22,11 @@ import {
   validateReviewedTranscriptionPageAnchors,
   validateSourcePdfTextLayer,
 } from "../src/data/patents/sourceTextValidation";
+import {
+  buildPatentCoverageManifest,
+  type SharedBusParticipation,
+  wasmSurfaceForPatent,
+} from "../src/physics/coverageManifest";
 import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
 import type { CuratedSpecificationBlock, CuratedSpecificationInlines } from "../src/types/patent";
 
@@ -106,6 +111,16 @@ function readPngDimensions(filePath: string): { width: number; height: number } 
   return { width: header.readUInt32BE(16), height: header.readUInt32BE(20) };
 }
 
+function sharedBusParticipationFor(
+  patentId: string,
+  threeVisualSources: readonly string[],
+): SharedBusParticipation {
+  const matchingSources = threeVisualSources.filter((source) => source.includes(patentId));
+  if (matchingSources.some((source) => source.includes("registerUpdater"))) return "updater";
+  if (matchingSources.some((source) => source.includes("useFrankenSimPhysics"))) return "snapshot";
+  return "missing";
+}
+
 async function main() {
   console.log("=== Classic Patents Data Verification Gate ===");
   console.log(`Checking ${allPatents.length} curated historical patents...\n`);
@@ -135,6 +150,11 @@ async function main() {
   const manualEditionGaps: string[] = [];
   const visualDispatcherPath = path.join(process.cwd(), "src/components/patents/visuals/index.tsx");
   const visualDispatcherSource = fs.readFileSync(visualDispatcherPath, "utf8");
+  const threeVisualDirectory = path.join(process.cwd(), "src/components/patents/visuals/three");
+  const threeVisualSources = fs
+    .readdirSync(threeVisualDirectory)
+    .filter((filename) => filename.endsWith("3D.tsx"))
+    .map((filename) => fs.readFileSync(path.join(threeVisualDirectory, filename), "utf8"));
 
   for (const patent of allPatents) {
     const prefix = `[${patent.patentNumber} - ${patent.id}]`;
@@ -563,6 +583,91 @@ async function main() {
     }
   }
 
+  const coverageManifest = buildPatentCoverageManifest(allPatents, {
+    assetExists: (publicUrl) =>
+      fs.existsSync(path.join(process.cwd(), "public", publicUrl.replace(/^\//, ""))),
+    isEditionPublished: (patent) => Boolean(archivalEditionForPublication(patent)),
+    hasVisualDispatch: (patentId) => visualDispatcherSource.includes(`case "${patentId}":`),
+    hasTelemetryOwner: (patentId) => Boolean(PATENT_PHYSICS_REGISTRY[patentId]),
+    hasEquationSet: (patentId) => Boolean(ALL_COLORIZED_EQUATIONS[patentId]?.length),
+    sharedBusParticipation: (patentId) => sharedBusParticipationFor(patentId, threeVisualSources),
+  });
+  const manifestIds = new Set(coverageManifest.map((row) => row.patentId));
+  if (coverageManifest.length !== allPatents.length || manifestIds.size !== allPatents.length) {
+    console.error(
+      `❌ Coverage manifest must contain exactly one row for each catalogue id; received ${coverageManifest.length} row(s) and ${manifestIds.size} unique id(s) for ${allPatents.length} patents.`,
+    );
+    errorCount++;
+  }
+
+  const wasmArtifacts = new Map<string, { expectedSha256: string; patentIds: string[] }>();
+  for (const row of coverageManifest) {
+    if (
+      !row.source.pinnedFacsimile ||
+      !row.presentation.explicitVisualDispatch ||
+      row.presentation.defaultTelemetryOwner === "missing" ||
+      !row.presentation.liveEquationSet
+    ) {
+      console.error(
+        `❌ [${row.patentId}] Incomplete executable coverage row: ${JSON.stringify(row)}.`,
+      );
+      errorCount++;
+    }
+    if (row.runtime.sharedBus === "missing") {
+      console.error(
+        `❌ [${row.patentId}] 3D visual does not publish or subscribe to the shared telemetry bus.`,
+      );
+      errorCount++;
+    }
+    if (row.runtime.wasmSurface !== "none") {
+      if (!row.runtime.wasmArtifactPresent || !row.runtime.wasmArtifactUrl) {
+        console.error(
+          `❌ [${row.patentId}] Declared ${row.runtime.wasmSurface} surface has no shipped artifact.`,
+        );
+        errorCount++;
+        continue;
+      }
+      const descriptor = wasmSurfaceForPatent(row.patentId);
+      if (!descriptor) {
+        console.error(`❌ [${row.patentId}] WASM surface is missing its descriptor.`);
+        errorCount++;
+        continue;
+      }
+      const matchingVisualSources = threeVisualSources.filter((source) =>
+        source.includes(row.patentId),
+      );
+      if (!matchingVisualSources.some((source) => source.includes(descriptor.loaderFunction))) {
+        console.error(
+          `❌ [${row.patentId}] Declares ${descriptor.sourceCrate}, but its 3D visual does not call ${descriptor.loaderFunction}.`,
+        );
+        errorCount++;
+      }
+      const existing = wasmArtifacts.get(descriptor.artifactUrl);
+      if (existing) {
+        existing.patentIds.push(row.patentId);
+      } else {
+        wasmArtifacts.set(descriptor.artifactUrl, {
+          expectedSha256: descriptor.artifactSha256,
+          patentIds: [row.patentId],
+        });
+      }
+    }
+  }
+
+  for (const [artifactUrl, descriptor] of wasmArtifacts) {
+    const artifactPath = path.join(process.cwd(), "public", artifactUrl.replace(/^\//, ""));
+    const actualSha256 = createHash("sha256").update(fs.readFileSync(artifactPath)).digest("hex");
+    if (actualSha256 !== descriptor.expectedSha256) {
+      console.error(
+        `❌ WASM artifact ${artifactUrl} changed for ${descriptor.patentIds.join(", ")}: expected ${descriptor.expectedSha256}, received ${actualSha256}.`,
+      );
+      errorCount++;
+    }
+  }
+
+  const wasmSurfaceCounts = Object.groupBy(coverageManifest, (row) => row.runtime.wasmSurface);
+  const sharedBusCounts = Object.groupBy(coverageManifest, (row) => row.runtime.sharedBus);
+
   const actualManualEditionGaps = [...manualEditionGaps].sort();
   const expectedManualEditionGaps = [...EXPECTED_MANUAL_EDITION_GAPS].sort();
   if (JSON.stringify(actualManualEditionGaps) !== JSON.stringify(expectedManualEditionGaps)) {
@@ -597,6 +702,9 @@ async function main() {
   );
   console.log(
     `Executable vertical slices: ${explicitVisualDispatchCount}/${allPatents.length} explicit visual routes; ${physicsRegistryCount}/${allPatents.length} default-stepping SI telemetry owners; ${equationRegistryCount}/${allPatents.length} live equation sets.`,
+  );
+  console.log(
+    `Runtime ownership: ${wasmSurfaceCounts["patent-specific-wasm"]?.length ?? 0} patent-specific WASM surface; ${wasmSurfaceCounts["interpretive-wasm"]?.length ?? 0} dedicated interpretive WASM surfaces; ${wasmSurfaceCounts["generic-wasm"]?.length ?? 0} generic WASM consumers; ${wasmSurfaceCounts.none?.length ?? 0} typed-host-only records. Shared bus: ${sharedBusCounts.updater?.length ?? 0} updaters; ${sharedBusCounts.snapshot?.length ?? 0} typed snapshots; ${sharedBusCounts.missing?.length ?? 0} honest placeholders.`,
   );
   if (manualEditionGaps.length > 0) {
     console.warn(`Withheld pending manual preparation: ${manualEditionGaps.join(", ")}.`);

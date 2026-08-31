@@ -10,6 +10,7 @@ export interface DaVinciModel {
   wristRollGroup: THREE.Group;
   leftJawGroup: THREE.Group;
   rightJawGroup: THREE.Group;
+  endEffectorTipAnchor: THREE.Object3D;
   cableLines: THREE.Line[];
   cupGroup: THREE.Group;
   updateKinematics: (
@@ -36,6 +37,7 @@ export interface DaVinciModel {
     nz: number,
     active: boolean,
   ) => void;
+  alignEndEffectorTip: (x: number, y: number, z: number) => void;
   setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
@@ -59,7 +61,7 @@ export function buildDaVinciModel(): DaVinciModel {
     return geo;
   };
 
-  // --- Museum-Grade Materials ---
+  // --- Shared scene materials ---
   const surgicalSteelMat = trackMat(
     new THREE.MeshStandardMaterial({
       color: 0xe2e8f0,
@@ -255,6 +257,13 @@ export function buildDaVinciModel(): DaVinciModel {
   rightJaw.castShadow = true;
   rightJawGroup.add(rightJaw);
 
+  // Centerline seat at the distal jaw tips. The scene aligns this anchor to
+  // the collision-resolved world-space tip emitted by daVinciKernel.
+  const endEffectorTipAnchor = new THREE.Object3D();
+  endEffectorTipAnchor.name = "Collision-resolved end-effector tip";
+  endEffectorTipAnchor.position.set(0, -0.22, 0);
+  wristRollGroup.add(endEffectorTipAnchor);
+
   // 6. Miniature Stainless Steel Drive Cables
   const cableLines: THREE.Line[] = [];
   const cableGeo1 = trackGeo(
@@ -277,7 +286,7 @@ export function buildDaVinciModel(): DaVinciModel {
   wristPitchGroup.add(cable2);
   cableLines.push(cable2);
 
-  // 7. Interactive Coffee Cup / Specimen Container (Museum-Grade PBR Model)
+  // 7. Interactive Coffee Cup / Specimen Container
   const cupGroup = new THREE.Group();
   cupGroup.name = "Robotic Manipulation Coffee Cup";
   root.add(cupGroup);
@@ -455,6 +464,18 @@ export function buildDaVinciModel(): DaVinciModel {
     }
   };
 
+  const currentTipInParent = new THREE.Vector3();
+  const targetTipInParent = new THREE.Vector3();
+  const alignEndEffectorTip = (x: number, y: number, z: number) => {
+    root.updateMatrixWorld(true);
+    endEffectorTipAnchor.getWorldPosition(currentTipInParent);
+    targetTipInParent.set(x, y, z);
+    mainGroup.worldToLocal(currentTipInParent);
+    mainGroup.worldToLocal(targetTipInParent);
+    baseGroup.position.add(targetTipInParent.sub(currentTipInParent));
+    root.updateMatrixWorld(true);
+  };
+
   const setCutaway = (cutaway: boolean) => {
     shaftSteelMat.transparent = cutaway;
     shaftSteelMat.opacity = cutaway ? 0.35 : 1.0;
@@ -474,11 +495,13 @@ export function buildDaVinciModel(): DaVinciModel {
     wristRollGroup,
     leftJawGroup,
     rightJawGroup,
+    endEffectorTipAnchor,
     cableLines,
     cupGroup,
     updateKinematics,
     setCupPose,
     setContactGizmo,
+    alignEndEffectorTip,
     setCutaway,
     dispose: () => {
       for (const g of geometriesToDispose) g.dispose();

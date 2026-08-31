@@ -160,6 +160,39 @@ export function stepRoomba(c: RoombaControls, s?: RoombaState, dt: number = 1 / 
   state.y += dy * dt;
   state.heading += dtheta * dt;
 
+  // --- SOTA Penetration Resolution & Anti-Clipping Boundaries (Zero Geometry Clipping) ---
+  const minX = -roomWidth / 2 + ROOMBA_BUMPER_M;
+  const maxX = roomWidth / 2 - ROOMBA_BUMPER_M;
+  const minY = -roomHeight / 2 + ROOMBA_BUMPER_M;
+  const maxY = roomHeight / 2 - ROOMBA_BUMPER_M;
+
+  // 1. Perimeter Wall Anti-Clipping Projection
+  if (state.x < minX) state.x = minX;
+  if (state.x > maxX) state.x = maxX;
+  if (state.y < minY) state.y = minY;
+  if (state.y > maxY) state.y = maxY;
+
+  // 2. Obstacle Furniture SDF Anti-Clipping Projection
+  for (const obs of ROOMBA_FURNITURE) {
+    const halfW = obs.w / 2;
+    const halfH = obs.h / 2;
+    const clampedX = Math.max(obs.x - halfW, Math.min(obs.x + halfW, state.x));
+    const clampedY = Math.max(obs.y - halfH, Math.min(obs.y + halfH, state.y));
+
+    const deltaX = state.x - clampedX;
+    const deltaY = state.y - clampedY;
+    const distToSurface = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+    if (distToSurface < ROOMBA_BUMPER_M) {
+      // Roomba penetrated furniture: project strictly onto bumper perimeter
+      const normX = distToSurface > 1e-4 ? deltaX / distToSurface : state.x >= obs.x ? 1 : -1;
+      const normY = distToSurface > 1e-4 ? deltaY / distToSurface : state.y >= obs.y ? 1 : -1;
+
+      state.x = clampedX + normX * ROOMBA_BUMPER_M;
+      state.y = clampedY + normY * ROOMBA_BUMPER_M;
+    }
+  }
+
   state.displayX = state.x;
   state.displayY = state.y;
 

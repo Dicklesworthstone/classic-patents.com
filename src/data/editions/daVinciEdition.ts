@@ -175,7 +175,9 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
       ),
       " is a perspective view of a robotic surgical workstation and patient cart;\n",
       makePreview("FIG. 2", [2], "Perspective view of the robotic surgical arm cart system"),
-      " is a perspective view of a robotic surgical arm cart system; FIGS. 2A-C show a manipulator and its remote-center linkage; FIGS. 3 and 3A show exemplary cart structures; FIG. 4 shows an exemplary tool; FIGS. 4A-B show alternative drive systems; FIGS. 5A-H show different end-effectors; FIG. 6 shows the tool interface; FIGS. 7A-E and 7G-L show adapters, holders, drives, and contacts; FIG. 8 shows wiring; FIGS. 8A-B show the master console; FIGS. 9-10 show tool-change signal and software paths; FIGS. 11-13 show engagement state logic; FIGS. 14A-C show mounting; and FIG. 15 shows compatibility verification.",
+      " is a perspective view of a robotic surgical arm cart system; ",
+      makePreview("FIGS. 2A-C", [3], "Manipulator linkage and remote-center construction"),
+      " show a manipulator and its remote-center linkage; FIGS. 3 and 3A show exemplary cart structures; FIG. 4 shows an exemplary tool; FIGS. 4A-B show alternative drive systems; FIGS. 5A-H show different end-effectors; FIG. 6 shows the tool interface; FIGS. 7A-E and 7G-L show adapters, holders, drives, and contacts; FIG. 8 shows wiring; FIGS. 8A-B show the master console; FIGS. 9-10 show tool-change signal and software paths; FIGS. 11-13 show engagement state logic; FIGS. 14A-C show mounting; and FIG. 15 shows compatibility verification.",
     ),
     {
       kind: "heading",
@@ -401,7 +403,7 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "A robotic surgical tool for use with a robotic manipulator having a tool holder, the tool holder having magnetically actuatable circuitry, the tool comprising; a probe having a proximal end and a distal end; a surgical end effector adjacent the distal end of the probe; an interface adjacent the proximal end of the probe, the interface releasably coupleable with the holder, the interface comprising a magnet positioned so as to actuate the circuitry of the holder.",
+          text: "A robotic surgical tool for use with a robotic manipulator having a tool holder, the tool holder having magnetically actuatable circuitry, the tool comprising: a probe having a proximal end and a distal end; a surgical end effector adjacent the distal end of the probe; an interface adjacent the proximal end of the probe, the interface releasably coupleable with the holder, the interface comprising a magnet positioned so as to actuate the circuitry of the holder.",
         },
       ],
     },

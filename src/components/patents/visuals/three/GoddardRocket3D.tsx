@@ -2,7 +2,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "l
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
-import { ensureGoddardWasm } from "@/physics/goddardWasm";
+import { ensureGoddardWasm, goddardKernelSource } from "@/physics/goddardWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -37,9 +37,16 @@ const CAMERA_PRESETS: Record<
 
 export function GoddardRocket3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [, setKernelSource] = useState(goddardKernelSource);
 
   useEffect(() => {
-    ensureGoddardWasm();
+    let active = true;
+    void ensureGoddardWasm().then((nextSource) => {
+      if (active) setKernelSource(nextSource);
+    });
+    return () => {
+      active = false;
+    };
   }, []);
 
   // Propulsion & Staging State Controls
@@ -182,7 +189,9 @@ export function GoddardRocket3D() {
           chamberPressure: chamberPressurePsi,
         }}
       />
-      <div className="sr-only">Robert H. Goddard Rocket Apparatus 3D Simulation</div>
+      <div className="sr-only">
+        Robert H. Goddard Rocket Apparatus with an adjacent interpretive liquid-nozzle model
+      </div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
@@ -297,6 +306,9 @@ export function GoddardRocket3D() {
         {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="text-[10px] font-sans font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
+              Adjacent liquid-nozzle model — not claimed by US 1,102,653
+            </div>
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
               <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
                 Thrust Force:
@@ -330,8 +342,16 @@ export function GoddardRocket3D() {
         <StudioKernelChips
           side="right"
           visible={showUiOverlay}
-          title="LIQUID PROPELLANT ROCKET PROPULSION"
+          title="INTERPRETIVE LIQUID-PROPELLANT MODEL"
           chips={[
+            {
+              label: "Kernel",
+              value:
+                rocketPhysics.runtimeSource === "wasm"
+                  ? "Interpretive WASM step"
+                  : "TypeScript fallback",
+              tone: rocketPhysics.runtimeSource === "wasm" ? "ok" : "warn",
+            },
             {
               label: "Thrust",
               value: `${thrustNewtons.toFixed(0)} N`,
@@ -343,7 +363,7 @@ export function GoddardRocket3D() {
             { label: "Exit Mach", value: `M ${machExit.toFixed(2)}`, tone: "hot" },
             { label: "P_chamber", value: `${chamberPressurePsi.toFixed(0)}`, unit: "psi" },
             { label: "Expansion", value: `${expansionRatio.toFixed(1)}:1`, unit: "ratio" },
-            { label: "Propellant", value: "Liquid Oxygen + Gasoline" },
+            { label: "Adjacent model", value: "Liquid oxygen + gasoline" },
           ]}
         />
       </div>

@@ -1,9 +1,11 @@
 "use client";
 
 import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { useEffect, useState } from "react";
 import { SparkWaterfall } from "@/components/patents/visuals/SparkWaterfall";
 import { FrankenSimEngine } from "@/physics/engine";
 import { teslaCoilWindingSvg } from "@/physics/teslaKernel";
+import { ensureTeslaWasm, teslaKernelSource } from "@/physics/teslaWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -11,6 +13,17 @@ import { usePatentAudio } from "./three/usePatentAudio";
 export function TeslaCoilSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-593138-tesla-coil");
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [, setKernelSource] = useState(teslaKernelSource);
+
+  useEffect(() => {
+    let active = true;
+    void ensureTeslaWasm().then((nextSource) => {
+      if (active) setKernelSource(nextSource);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
   const primaryCapacitanceNf = params.primaryCap ?? 45;
   const inputKv = params.inputVoltageKv ?? 15;
   const sparkGap = params.sparkGapDistanceMm ?? 12;
@@ -50,6 +63,9 @@ export function TeslaCoilSim() {
         </div>
 
         <div className="flex items-center gap-2 self-end sm:self-auto">
+          <div className="px-3.5 py-1.5 rounded-xl bg-parchment-100 dark:bg-ink-900 text-ink-700 dark:text-parchment-300 text-xs sm:text-sm font-mono font-bold border border-parchment-300 dark:border-ink-700 shadow-2xs">
+            {res.runtimeSource === "wasm" ? "Interpretive WASM step" : "TypeScript fallback"}
+          </div>
           <div className="px-3.5 py-1.5 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-900 dark:text-purple-300 text-xs sm:text-sm font-mono font-bold border border-purple-300 dark:border-purple-800 shadow-2xs">
             {secondaryVoltageKv} kV Peak Potential
           </div>

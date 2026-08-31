@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { stepDaVinci } from "@/physics/daVinciKernel";
+import * as THREE from "three";
+import { DA_VINCI_MODEL_BASE_HEIGHT_M, stepDaVinci } from "@/physics/daVinciKernel";
 import { stepEInk } from "@/physics/eInkKernel";
 import { stepMultiTouch } from "@/physics/multiTouchKernel";
 import { stepPageRank } from "@/physics/pageRankKernel";
@@ -118,7 +119,7 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
   });
 
   describe("US 6,331,181 Da Vinci Surgical System", () => {
-    test("applies motion scaling and digital tremor cancellation", () => {
+    test("applies motion scaling and exposes the illustrative filter switch honestly", () => {
       const withFilter = stepDaVinci(
         {
           motionScaleRatio: 5,
@@ -137,8 +138,8 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
         },
         1.0,
       );
-      expect(withFilter.tremorAttenuationPercent).toBe(94.5);
-      expect(withoutFilter.tremorAttenuationPercent).toBe(0.0);
+      expect(withFilter.compatibilitySignalPercent).toBe(100);
+      expect(withoutFilter.compatibilitySignalPercent).toBe(0);
       expect(withFilter.slaveX).toBeDefined();
       expect(withFilter.wristPitchRad).toBeDefined();
     });
@@ -149,14 +150,41 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
       expect(simSource).not.toContain("setGripAngleDeg");
       expect(simSource).toContain('updateParam("masterInputSpeedMps"');
       expect(simSource).toContain('updateParam("gripAngleDeg"');
+      expect(simSource).toContain("projectPatientWorld(state.tipX, state.tipY)");
+      expect(simSource).not.toContain("trocarX + state.slaveX");
     });
 
-    test("articulates multi-axis EndoWrist and dual forceps jaws", () => {
+    test("articulates the wrist and aligns its visible tip to the resolved kernel tip", () => {
+      const state = stepDaVinci(
+        {
+          motionScaleRatio: 3,
+          tremorFilterEnabled: true,
+          masterInputSpeedMps: 0.5,
+          gripAngleDeg: 30,
+        },
+        0,
+      );
       const model = buildDaVinciModel();
-      expect(model.root).toBeDefined();
-      expect(model.wristPitchGroup).toBeDefined();
-      expect(model.leftJawGroup).toBeDefined();
-      expect(model.rightJawGroup).toBeDefined();
+      model.baseGroup.position.set(
+        state.slaveX,
+        state.slaveY + DA_VINCI_MODEL_BASE_HEIGHT_M,
+        state.slaveZ,
+      );
+      model.baseGroup.rotation.y = state.baseYawRad;
+      model.baseGroup.rotation.x = state.shoulderPitchRad;
+      model.updateKinematics(
+        state.wristPitchRad,
+        state.wristYawRad,
+        state.wristRollRad,
+        state.gripRad,
+        [state.masterX, state.masterY + 0.8, state.masterZ],
+      );
+      model.alignEndEffectorTip(state.tipX, state.tipY, state.tipZ);
+
+      const renderedTip = model.endEffectorTipAnchor.getWorldPosition(new THREE.Vector3());
+      expect(renderedTip.x).toBeCloseTo(state.tipX, 8);
+      expect(renderedTip.y).toBeCloseTo(state.tipY, 8);
+      expect(renderedTip.z).toBeCloseTo(state.tipZ, 8);
       expect(() => model.dispose()).not.toThrow();
     });
   });

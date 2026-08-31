@@ -17,6 +17,7 @@ import * as THREE from "three";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { ensureFlyerWasm, flyerAeroSource, flyerKernelSource } from "@/physics/flyerWasm";
 import { createStudioClock, TickScheduler } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { identityAeroBody, stepWrightAeroBody } from "@/physics/wrightAeroBody";
 import {
@@ -88,6 +89,32 @@ export function WrightFlyer3D() {
     airspeedMph,
     coupled: isCoupled,
   } = controls;
+
+  useFrankenSimPhysics(WRIGHT_PATENT_ID, {
+    domain: "aerodynamics_mbd",
+    timestampMs: 0,
+    timeStepDt: 1 / 60,
+    refusal: {
+      isRefused: si.trussRefused,
+      ...(si.trussRefused ? { reason: "Stay-wire truss solve refused this load state." } : {}),
+    },
+    aero: {
+      airspeedMps: si.airspeedMps,
+      altitudeMeters: 0,
+      angleOfAttackRad: 0,
+      sideslipRad: 0,
+      pitchRateRps: 0,
+      rollRateRps: 0,
+      yawRateRps: 0,
+      liftNewtons: si.liftNewtons,
+      inducedDragNewtons: si.inducedDragNewtons,
+      parasiticDragNewtons: si.parasiticDragNewtons,
+      thrustNewtons: 0,
+      elevatorDeflectionDeg: elevatorPitchDeg,
+      rudderDeflectionDeg: rudderYawDeg,
+      wingWarpDeflectionDeg: wingWarpDeg,
+    },
+  });
 
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);

@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { wrapCycleRad } from "@/physics/catalogKernels";
 import { stepDieselEngine as kernelStepDieselEngine } from "@/physics/dieselEngineKernel";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { ThermodynamicsState } from "@/physics/types";
 import {
@@ -129,7 +128,6 @@ export function DieselEngine3D() {
   const animRef = useRef<number | null>(null);
   const nodesRef = useRef<DieselEngineNodes | null>(null);
   const matsRef = useRef<DieselEngineMaterials | null>(null);
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   // One tape-bound integrator (br-ixl.3): the registered updater owns the
   // crank-angle integration; the render loop only consumes bus frames.
@@ -188,10 +186,6 @@ export function DieselEngine3D() {
     live.current.isAutoIgnition,
     live.current.claim1Active,
   ]);
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -433,10 +427,7 @@ export function DieselEngine3D() {
             { label: "η_brake", value: String(thermalEfficiencyPct), unit: "%" },
             { label: "Ignition", value: isAutoIgnition ? "Spontaneous" : "Sub-critical" },
             { label: "ω", value: diesel.crankOmegaRadPerS.toFixed(2), unit: "rad/s" },
-            {
-              label: "Gas crate",
-              value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
-            },
+            { label: "Runtime", value: "typed host cycle" },
           ]}
         />
       </div>

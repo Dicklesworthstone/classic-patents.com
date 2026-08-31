@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { allPatents } from "@/data/patents";
+import { daVinciRegistryEntry } from "./daVinciRegistry";
 import { PATENT_PHYSICS_REGISTRY } from "./telemetryData";
 
 describe("Physics Telemetry Data Registry", () => {
@@ -86,6 +87,25 @@ describe("Physics Telemetry Data Registry", () => {
     });
     expect(metrics.some((m) => m.label.includes("Lift"))).toBe(true);
     expect(metrics.some((m) => m.label.includes("Drag"))).toBe(true);
+  });
+
+  test("routes Da Vinci telemetry through the executable shared contact kernel", () => {
+    const daVinci = PATENT_PHYSICS_REGISTRY["us-6331181-davinci"];
+    expect(daVinciRegistryEntry).toBe(daVinci);
+    expect(daVinci.engineMethod).toBe("FrankenSimEngine.stepDaVinci");
+    expect(
+      daVinci.computeMetrics({
+        motionScaleRatio: 4,
+        tremorFilterEnabled: 0,
+        masterInputSpeedMps: 0.75,
+        gripAngleDeg: 20,
+      }),
+    ).toMatchObject([
+      { label: "Illustrative offset scale", value: "4:1" },
+      { label: "Compatibility signal", value: "absent" },
+      { label: "End-effector angle", value: "20", unit: "°" },
+      { label: "Illustrative tip clearance", unit: "mm" },
+    ]);
   });
 
   test("keeps Edison phonograph telemetry within the quantities printed by US 200,521", () => {
@@ -178,7 +198,7 @@ describe("Physics Telemetry Data Registry", () => {
     }
   });
 
-  test("routes Goddard US 1,102,653 telemetry through the de Laval kernel", () => {
+  test("routes Goddard telemetry through the explicitly adjacent de Laval model", () => {
     const goddard = PATENT_PHYSICS_REGISTRY["us-1102653-goddard-rocket"];
     expect(goddard.engineMethod).toContain("stepGoddardRocket");
     expect(goddard.controls.map((control) => control.id)).toEqual([

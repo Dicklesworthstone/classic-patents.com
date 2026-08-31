@@ -7,17 +7,52 @@ type GoddardFn = (
   expansionRatio: number,
 ) => string;
 
+export interface GoddardWasmStep {
+  chamber_pressure_psi: number;
+  chamber_pressure_pa: number;
+  exhaust_velocity_mps: number;
+  thrust_newtons: number;
+  specific_impulse_sec: number;
+  mach_exit: number;
+}
+
 let goddardFn: GoddardFn | null = null;
-let loadAttempted = false;
+let loadPromise: Promise<GoddardKernelSource> | null = null;
 let source: GoddardKernelSource = "unloaded";
 
 export function goddardKernelSource(): GoddardKernelSource {
   return source;
 }
 
-export async function ensureGoddardWasm(): Promise<GoddardKernelSource> {
-  if (loadAttempted) return source;
-  loadAttempted = true;
+export function decodeGoddardWasmStep(raw: string): GoddardWasmStep | null {
+  try {
+    const parsed = JSON.parse(raw) as { ok?: Partial<GoddardWasmStep> };
+    const result = parsed.ok;
+    if (!result) return null;
+    const values = [
+      result.chamber_pressure_psi,
+      result.chamber_pressure_pa,
+      result.exhaust_velocity_mps,
+      result.thrust_newtons,
+      result.specific_impulse_sec,
+      result.mach_exit,
+    ];
+    if (!values.every((value) => typeof value === "number" && Number.isFinite(value))) {
+      return null;
+    }
+    if (values.some((value) => (value as number) <= 0)) return null;
+    return result as GoddardWasmStep;
+  } catch {
+    return null;
+  }
+}
+
+export function ensureGoddardWasm(): Promise<GoddardKernelSource> {
+  loadPromise ??= initializeGoddardWasm();
+  return loadPromise;
+}
+
+async function initializeGoddardWasm(): Promise<GoddardKernelSource> {
   if (typeof window === "undefined") {
     source = "ts-fallback";
     return source;
@@ -57,19 +92,11 @@ export function tryGoddardWasmStep(
   fuelFlowKgPerSec: number,
   throatAreaCm2: number,
   expansionRatio: number,
-): {
-  chamber_pressure_psi: number;
-  expansion_ratio: number;
-  exhaust_velocity_mps: number;
-  mach_exit: number;
-  exit_pressure_psi: number;
-  thrust_newtons: number;
-} | null {
+): GoddardWasmStep | null {
   if (!goddardFn) return null;
   try {
     const raw = goddardFn(chamberPressurePsi, fuelFlowKgPerSec, throatAreaCm2, expansionRatio);
-    const parsed = JSON.parse(raw);
-    if (parsed.ok) return parsed.ok;
+    return decodeGoddardWasmStep(raw);
   } catch {
     // fall back
   }

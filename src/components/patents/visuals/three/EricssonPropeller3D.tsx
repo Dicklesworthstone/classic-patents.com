@@ -83,6 +83,7 @@ export function EricssonPropeller3D() {
     shaftOmegaRadPerS: ericson.shaftOmegaRadPerS,
     wakeSwirlCoeff: ericson.wakeSwirlCoeff,
     wakeOpacity: ericson.wakeOpacity,
+    wakeCrateDensity: ericson.wakeCrateDensity,
     claim1Active: claimStates[1] === false ? 0 : 1,
   });
 
@@ -177,7 +178,7 @@ export function EricssonPropeller3D() {
         model,
         dt,
         p.shaftOmegaRadPerS,
-        p.wakeOpacity ?? 0.65,
+        Math.min(1, (p.wakeOpacity ?? 0.65) * (0.45 + (p.wakeCrateDensity ?? 0))),
         p.pitchAngleDeg ?? 0,
         p.wakeSwirlCoeff ?? 1.0,
         p.showWake ?? true,

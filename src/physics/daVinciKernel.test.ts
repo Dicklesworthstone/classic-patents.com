@@ -1,7 +1,43 @@
 import { describe, expect, test } from "bun:test";
-import { stepDaVinci } from "./daVinciKernel";
+import {
+  DA_VINCI_CUP_HEIGHT_M,
+  DA_VINCI_CUP_RADIUS_M,
+  DA_VINCI_END_EFFECTOR_RADIUS_M,
+  DA_VINCI_TABLE_SURFACE_Y_M,
+  readDaVinciControls,
+  stepDaVinci,
+} from "./daVinciKernel";
+import { FrankenSimEngine } from "./engine";
 
-describe("US 6,331,181 Robotic Surgical Tool Interface: SOTA Collision & Anti-Clipping Physics", () => {
+describe("US 6,331,181 robotic surgical tool interface contact model", () => {
+  test("clamps the shared parameter bus while preserving an explicit disabled flag", () => {
+    expect(
+      readDaVinciControls({
+        motionScaleRatio: 20,
+        tremorFilterEnabled: 0,
+        masterInputSpeedMps: 0,
+        gripAngleDeg: -5,
+      }),
+    ).toEqual({
+      motionScaleRatio: 10,
+      tremorFilterEnabled: false,
+      masterInputSpeedMps: 0.2,
+      gripAngleDeg: 0,
+    });
+    expect(
+      readDaVinciControls({
+        motionScaleRatio: Number.NaN,
+        masterInputSpeedMps: Number.POSITIVE_INFINITY,
+        gripAngleDeg: Number.NEGATIVE_INFINITY,
+      }),
+    ).toEqual({
+      motionScaleRatio: 3,
+      tremorFilterEnabled: true,
+      masterInputSpeedMps: 0.5,
+      gripAngleDeg: 30,
+    });
+  });
+
   test("computes baseline kinematic teleoperation and tremor filtering", () => {
     const stateFiltered = stepDaVinci(
       {
@@ -66,11 +102,13 @@ describe("US 6,331,181 Robotic Surgical Tool Interface: SOTA Collision & Anti-Cl
         collisionOccurred = true;
         maxForce = Math.max(maxForce, state.contactForceN);
 
-        // Anti-Clipping Invariant: distance between resolved tip and cup center must be >= cup radius
+        // The resolved tip center stays outside the Minkowski-expanded cup.
         const dx = state.tipX - state.cupX;
         const dz = state.tipZ - state.cupZ;
         const distHoriz = Math.sqrt(dx * dx + dz * dz);
-        expect(distHoriz).toBeGreaterThanOrEqual(0.075 - 1e-4);
+        expect(distHoriz).toBeGreaterThanOrEqual(
+          DA_VINCI_CUP_RADIUS_M + DA_VINCI_END_EFFECTOR_RADIUS_M - 1e-4,
+        );
         expect(state.contactForceN).toBeGreaterThan(0);
         expect(state.penetrationDepthMm).toBeGreaterThan(0);
       }
@@ -139,40 +177,86 @@ describe("US 6,331,181 Robotic Surgical Tool Interface: SOTA Collision & Anti-Cl
         1 / 60,
       );
 
-      // Table surface is at y = -0.15, tip radius is 0.024 => tipY >= -0.15 + 0.024 = -0.126
-      expect(state.tipY).toBeGreaterThanOrEqual(-0.15 + 0.024 - 1e-4);
+      expect(state.tipY).toBeGreaterThanOrEqual(
+        DA_VINCI_TABLE_SURFACE_Y_M + DA_VINCI_END_EFFECTOR_RADIUS_M - 1e-4,
+      );
     }
   });
 
-  test("executes bilateral jaw grasp locking when forceps jaws close around cup rim", () => {
-    let state = stepDaVinci(
+  test("keeps the grasped tool and carried cup above the table", () => {
+    const grasped = stepDaVinci(
+      {
+        motionScaleRatio: 1,
+        tremorFilterEnabled: true,
+        masterInputSpeedMps: 0.5,
+        gripAngleDeg: 10,
+        cupInitialPos: [0.00382127505236541, -0.15, 0.43226054442228073],
+      },
+      1.5,
+    );
+
+    expect(grasped.isGrasped).toBe(true);
+    expect(grasped.tipY).toBeGreaterThanOrEqual(
+      DA_VINCI_TABLE_SURFACE_Y_M + DA_VINCI_CUP_HEIGHT_M * 0.85,
+    );
+    expect(grasped.cupY).toBeGreaterThanOrEqual(DA_VINCI_TABLE_SURFACE_Y_M);
+    expect(grasped.cupY).toBeCloseTo(grasped.tipY - DA_VINCI_CUP_HEIGHT_M * 0.85, 10);
+  });
+
+  test("uses time-step-invariant smoothing for the slave trajectory", () => {
+    const controls = {
+      motionScaleRatio: 3,
+      tremorFilterEnabled: true,
+      masterInputSpeedMps: 0.5,
+      gripAngleDeg: 30,
+    };
+    const initial = stepDaVinci(controls, 0);
+    const oneSixtieth = stepDaVinci(controls, 1 / 60, initial, 1 / 60);
+    const oneOneTwentieth = stepDaVinci(controls, 1 / 120, initial, 1 / 120);
+    const twoOneTwentieth = stepDaVinci(controls, 1 / 60, oneOneTwentieth, 1 / 120);
+
+    expect(twoOneTwentieth.slaveX).toBeCloseTo(oneSixtieth.slaveX, 3);
+    expect(twoOneTwentieth.slaveY).toBeCloseTo(oneSixtieth.slaveY, 3);
+    expect(twoOneTwentieth.slaveZ).toBeCloseTo(oneSixtieth.slaveZ, 3);
+  });
+
+  test("locks a cup at the rim and releases it when the jaws reopen", () => {
+    const grasped = stepDaVinci(
       {
         motionScaleRatio: 1.0,
         tremorFilterEnabled: true,
-        masterInputSpeedMps: 0.2,
+        masterInputSpeedMps: 0.5,
         gripAngleDeg: 10,
-        cupInitialPos: [0.12, -0.15, 0.24],
+        cupInitialPos: [0.00382127505236541, -0.15, 0.43226054442228073],
       },
-      0,
+      1.5,
     );
 
-    for (let i = 1; i <= 60; i++) {
-      state = stepDaVinci(
-        {
-          motionScaleRatio: 1.0,
-          tremorFilterEnabled: true,
-          masterInputSpeedMps: 0.2,
-          gripAngleDeg: 10,
-        },
-        i * (1 / 60),
-        state,
-        1 / 60,
-      );
-    }
+    expect(grasped.isGrasped).toBe(true);
+    expect(Math.abs(grasped.cupX - grasped.tipX)).toBeLessThan(DA_VINCI_CUP_RADIUS_M);
+    expect(Math.abs(grasped.cupZ - grasped.tipZ)).toBeLessThan(DA_VINCI_CUP_RADIUS_M);
 
-    if (state.isGrasped) {
-      expect(state.isGrasped).toBe(true);
-      expect(Math.abs(state.cupX - state.tipX)).toBeLessThan(0.15);
-    }
+    const released = stepDaVinci(
+      {
+        motionScaleRatio: 1.0,
+        tremorFilterEnabled: true,
+        masterInputSpeedMps: 0.5,
+        gripAngleDeg: 30,
+      },
+      1.5 + 1 / 60,
+      grasped,
+      1 / 60,
+    );
+    expect(released.isGrasped).toBe(false);
+  });
+
+  test("FrankenSimEngine.stepDaVinci is the same kernel boundary", () => {
+    const controls = readDaVinciControls({
+      motionScaleRatio: 4,
+      tremorFilterEnabled: 1,
+      masterInputSpeedMps: 0.75,
+      gripAngleDeg: 20,
+    });
+    expect(FrankenSimEngine.stepDaVinci(controls, 1.25)).toEqual(stepDaVinci(controls, 1.25));
   });
 });

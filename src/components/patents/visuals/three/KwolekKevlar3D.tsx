@@ -15,6 +15,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepKevlarContinuum } from "@/physics/catalogKernels";
+import { ensureGenericWasm } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { ContinuumState } from "@/physics/types";
 import {
@@ -73,6 +74,10 @@ export function KwolekKevlar3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+
+  useEffect(() => {
+    void ensureGenericWasm();
+  }, []);
 
   const kevlar = stepKevlarContinuum(
     drawRatio,

@@ -1,9 +1,10 @@
 "use client";
 
 import { Rocket, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { ensureGoddardWasm, goddardKernelSource } from "@/physics/goddardWasm";
 import { goddardNozzleMatch } from "@/physics/thermochem";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -13,6 +14,17 @@ export function GoddardRocketSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-1102653-goddard-rocket");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [activeStage, setActiveStage] = useState<1 | 2 | 3>(1);
+  const [, setKernelSource] = useState(goddardKernelSource);
+
+  useEffect(() => {
+    let active = true;
+    void ensureGoddardWasm().then((nextSource) => {
+      if (active) setKernelSource(nextSource);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
   const combustionPressurePsi = params.chamberPressure ?? 350;
   const nozzleExpansionRatio = params.expansionRatio ?? 3.5;
   const flow = params.fuelFlowRateKgs ?? 1.8;
@@ -47,12 +59,15 @@ export function GoddardRocketSim() {
             </h3>
           </div>
           <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Simulate supersonic de Laval nozzle expansion, multi-stage deadweight jettisoning, and
-            high-altitude rocket dynamics.
+            The staged solid-charge apparatus follows US 1,102,653. The liquid-propellant de Laval
+            telemetry is an adjacent interpretive model, not a mechanism claimed by this patent.
           </p>
         </div>
 
         <div className="flex items-center gap-2 self-end sm:self-auto">
+          <div className="px-3.5 py-1.5 rounded-xl bg-parchment-100 dark:bg-ink-900 text-ink-700 dark:text-parchment-300 text-xs sm:text-sm font-mono font-bold border border-parchment-300 dark:border-ink-700 shadow-2xs">
+            {res.runtimeSource === "wasm" ? "Interpretive WASM step" : "TypeScript fallback"}
+          </div>
           <div className="px-3.5 py-1.5 rounded-xl bg-red-100 dark:bg-red-950 text-red-900 dark:text-red-300 text-xs sm:text-sm font-mono font-bold border border-red-300 dark:border-red-800 shadow-2xs">
             Stage {activeStage} Active · {exhaustVelocityMs} m/s
           </div>

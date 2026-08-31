@@ -52,6 +52,7 @@ import {
   voltsToKv,
 } from "./catalogKernels";
 import { stepCortPuddlingRolling } from "./cortKernel";
+import { readDaVinciControls } from "./daVinciKernel";
 import { stepEInk } from "./eInkKernel";
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
@@ -1489,7 +1490,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     equationName: "Nozzle Exhaust Velocity & Specific Impulse",
     governingEquation:
       "v_e = \\sqrt{\\frac{2\\gamma}{\\gamma - 1} R T_c \\left[1 - \\left(\\frac{P_e}{P_c}\\right)^{\\frac{\\gamma - 1}{\\gamma}}\\right]} \\quad \\text{and} \\quad F = \\dot{m} v_e",
-    engineMethod: "FrankenSimEngine.stepGoddardRocket",
+    engineMethod:
+      "FrankenSimEngine.stepGoddardRocket (dedicated interpretive WASM after load; validated TypeScript fallback; liquid-nozzle model is adjacent to US 1,102,653)",
     controls: [
       {
         id: "chamberPressure",
@@ -3211,7 +3213,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     domainTitle: "Interpretive High-Potential Transformer Visualization",
     equationName: "Source-Described Quarter-Wave Secondary",
     governingEquation: "l \\approx \\lambda / 4",
-    engineMethod: "FrankenSimEngine.stepTeslaCoil (interpretive host fallback)",
+    engineMethod:
+      "FrankenSimEngine.stepTeslaCoil (dedicated interpretive WASM after load; validated TypeScript fallback)",
     controls: [
       {
         id: "primaryCap",
@@ -6796,7 +6799,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     domainTitle: "Compatibility, Calibration, and Engagement Data",
     equationName: "Nominal-to-Measured Tool Offset",
     governingEquation: "\\Delta q_{tool} = q_{measured} - q_{nominal}",
-    engineMethod: "stepDaVinci",
+    engineMethod: "FrankenSimEngine.stepDaVinci",
     controls: [
       {
         id: "motionScaleRatio",
@@ -6836,29 +6839,36 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const scale = p.motionScaleRatio ?? 3;
-      const filterOn = (p.tremorFilterEnabled ?? 1) > 0.5;
+      const controls = readDaVinciControls(p);
+      const state = FrankenSimEngine.stepDaVinci(controls, 1);
       return [
         {
-          label: "Compatibility entries",
-          value: `${scale}:1`,
-          unit: "K",
+          label: "Illustrative offset scale",
+          value: `${controls.motionScaleRatio}:1`,
+          unit: "",
           badgeColor: "cyan",
-          progressPct: clampProgress((scale / 10) * 100),
+          progressPct: clampProgress((controls.motionScaleRatio / 10) * 100),
         },
         {
           label: "Compatibility signal",
-          value: filterOn ? "present" : "absent",
+          value: state.compatibilitySignalPercent > 0 ? "present" : "absent",
           unit: "",
-          badgeColor: filterOn ? "emerald" : "rose",
-          progressPct: filterOn ? 100 : 0,
+          badgeColor: state.compatibilitySignalPercent > 0 ? "emerald" : "rose",
+          progressPct: state.compatibilitySignalPercent,
         },
         {
-          label: "Drive velocity (illustrative)",
-          value: (p.masterInputSpeedMps ?? 0.5).toFixed(2),
-          unit: "m/s",
+          label: "End-effector angle",
+          value: ((state.gripRad * 180) / Math.PI).toFixed(0),
+          unit: "°",
           badgeColor: "amber",
-          progressPct: clampProgress(((p.masterInputSpeedMps ?? 0.5) / 1.5) * 100),
+          progressPct: clampProgress((controls.gripAngleDeg / 60) * 100),
+        },
+        {
+          label: "Illustrative tip clearance",
+          value: state.obstacleDistanceMm.toFixed(1),
+          unit: "mm",
+          badgeColor: state.isCupContact ? "rose" : "emerald",
+          progressPct: clampProgress((state.obstacleDistanceMm / 150) * 100),
         },
       ];
     },

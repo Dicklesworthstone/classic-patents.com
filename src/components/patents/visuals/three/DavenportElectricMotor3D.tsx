@@ -3,7 +3,6 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepDavenportMotor } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { ElectromagneticsState } from "@/physics/types";
 import {
@@ -71,7 +70,6 @@ export function DavenportElectricMotor3D() {
   const [showSparkParticles, setShowSparkParticles] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const live = useLiveSimParams({
@@ -136,10 +134,6 @@ export function DavenportElectricMotor3D() {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -343,10 +337,7 @@ export function DavenportElectricMotor3D() {
             },
             { label: "Efficiency", value: `${davenport.efficiencyPct.toFixed(1)}`, unit: "%" },
             { label: "ω_shaft", value: `${davenport.shaftOmegaRadPerS.toFixed(1)}`, unit: "rad/s" },
-            {
-              label: "Spark crate",
-              value: crateSource === "wasm" ? "fs-ga" : "ts-ga-fallback",
-            },
+            { label: "Runtime", value: "typed host motor" },
           ]}
         />
       </div>

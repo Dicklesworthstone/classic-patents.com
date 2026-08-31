@@ -11,6 +11,7 @@ import {
   createColormappedFieldTexture,
   writeColormappedField,
 } from "@/physics/fieldTextures";
+import { ensureGenericWasm } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -58,6 +59,10 @@ export function FarnsworthTV3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+
+  useEffect(() => {
+    void ensureGenericWasm();
+  }, []);
 
   // Electron Optics Physics (FrankenSim Relativistic Electron Beam)
   const beamState = FrankenSimEngine.stepFarnsworthTv(
