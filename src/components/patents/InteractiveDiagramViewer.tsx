@@ -76,8 +76,11 @@ import {
   zeppelinSchematicCell,
   zeppelinSchematicGondola,
 } from "@/physics/catalogKernels";
+import { stepDevolProgrammedTransfer } from "@/physics/devolProgrammedTransferKernel";
 import { FrankenSimEngine, lamarrSchematicHop, lamarrSchematicStaffY } from "@/physics/engine";
 import { fermiSchematicSlug, stepFermiKinetics } from "@/physics/fermiKinetics";
+import { stepKamenInjectionMechanism } from "@/physics/kamenInjectionKernel";
+import { stepLemelsonWarehouseTopology } from "@/physics/lemelsonWarehouseKernel";
 import {
   ccdSchematicGateX,
   mergenthalerSchematicChuteX,
@@ -92,6 +95,7 @@ import {
 import { stepMakinoScaraTopology } from "@/physics/makinoScaraKernel";
 import { readOtisTopologyControls, stepOtis1861Topology } from "@/physics/otisKernel";
 import { stepParsonsMarine } from "@/physics/parsonsMarineKernel";
+import { stepStackhouseSourceTopology } from "@/physics/stackhouseSourceKernel";
 import {
   stepTeslaMotorFig9,
   teslaBAt,
@@ -105,6 +109,7 @@ import {
   teslaTransformerSecondaryTerminals,
 } from "@/physics/teslaTransformerKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { stepWatsonRemoteCenterComplianceTopology } from "@/physics/watsonRemoteCenterComplianceKernel";
 import { materialProbe, whitneySamples } from "@/physics/weaveSurfaces";
 import { wrightSchematicPose, wrightWarpFromPointerNx } from "@/physics/wrightKernel";
 import type { PatentDrawing } from "@/types/patent";
@@ -158,6 +163,7 @@ interface InteractiveDiagramViewerProps {
 }
 
 const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
+  [/devol|programmed[- ]transfer|2988.?237/, "devol-programmed-transfer"],
   [/wright|821.?393/, "wright-flyer"],
   [/tesla[- ]coil|533.?367|593.?138/, "tesla-coil"],
   [/tesla|381.?968/, "tesla-motor"],
@@ -244,6 +250,7 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "cort-puddling-rolling": true,
   "daimler-engine": true,
   "davenport-motor": true,
+  "devol-programmed-transfer": true,
   "de-forest-audion": true,
   "delaval-separator": true,
   "diesel-engine": true,
@@ -269,6 +276,7 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "kilby-ic-components": true,
   "kilby-ic-multivibrator": true,
   "kilby-ic-transistor": true,
+  "kamen-injection-device": true,
   "kwolek-kevlar": true,
   "lamarr-frequency-hopping": true,
   "lincoln-buoy": true,
@@ -292,6 +300,8 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "reno-escalator": true,
   "sholes-typewriter": true,
   "spencer-microwave": true,
+  "stackhouse-manipulator": true,
+  "sundback-zipper": true,
   "tesla-coil": true,
   "tesla-motor": true,
   "tesla-teleautomaton": true,
@@ -303,6 +313,7 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "watt-separate-condenser": true,
   "westinghouse-air-brake": true,
   "whitney-cotton-gin": true,
+  "watson-remote-center-compliance": true,
   "wozniak-apple": true,
   "wright-flyer": true,
   "zeppelin-airship": true,
@@ -6113,6 +6124,111 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
+    case "devol-programmed-transfer": {
+      const state = stepDevolProgrammedTransfer(params ?? {});
+      const maximum = 2 ** state.bitWidth - 1;
+      const matchColor = state.coincidence ? "#86efac" : "#fbbf24";
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <defs>
+            <marker
+              id="devol-schematic-arrow"
+              viewBox="0 0 10 10"
+              refX="8"
+              refY="5"
+              markerWidth="4"
+              markerHeight="4"
+              orient="auto"
+            >
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
+            </marker>
+          </defs>
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#c7d2fe"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            PROGRAM DRUM 40 · CLAIM 1 CODE COMPARISON
+          </text>
+          <rect x="36" y="65" width="92" height="74" rx="10" fill="#312e81" stroke="#818cf8" />
+          <text x="82" y="90" textAnchor="middle" fill="#e0e7ff" fontSize="9">
+            DRUM 40
+          </text>
+          <text
+            x="82"
+            y="116"
+            textAnchor="middle"
+            fill="#c7d2fe"
+            fontSize="13"
+            fontFamily="monospace"
+          >
+            {state.recordedCode.map((bit) => (bit ? "1" : "0")).join("")}
+          </text>
+          <path d="M 130 102 H 167" markerEnd="url(#devol-schematic-arrow)" />
+          <rect x="170" y="62" width="76" height="80" rx="10" fill="#0c4a6e" stroke="#38bdf8" />
+          <text x="208" y="87" textAnchor="middle" fill="#e0f2fe" fontSize="8">
+            MATCH 100
+          </text>
+          <text
+            x="208"
+            y="113"
+            textAnchor="middle"
+            fill={matchColor}
+            fontSize="14"
+            fontFamily="monospace"
+          >
+            {state.matchingBits}/{state.bitWidth}
+          </text>
+          <path d="M 248 102 H 283" markerEnd="url(#devol-schematic-arrow)" />
+          <rect x="286" y="59" width="72" height="94" rx="8" fill="#172554" stroke="#67e8f9" />
+          <rect x="305" y="88" width="34" height="26" rx="4" fill="#0f172a" stroke="#fbbf24" />
+          <path d="M 322 114 V 137 M 310 137 H 334" stroke="#fbbf24" strokeWidth="3" />
+          <text x="322" y="48" textAnchor="middle" fill="#e0f2fe" fontSize="8">
+            HEAD 10a / 44
+          </text>
+          <rect x="45" y="202" width="310" height="42" rx="6" fill="#0f172a" stroke="#475569" />
+          <text x="60" y="221" fill="#bae6fd" fontSize="8">
+            ENCODER 50
+          </text>
+          {state.sensedCode.map((bit, index) => {
+            const x = 144 + index * 30;
+            return (
+              <g key={index}>
+                <rect
+                  x={x}
+                  y="209"
+                  width="20"
+                  height="20"
+                  rx="3"
+                  fill={bit ? "#22d3ee" : "#1e293b"}
+                  stroke={state.recordedCode[index] === bit ? "#86efac" : "#fb7185"}
+                />
+                <text
+                  x={x + 10}
+                  y="223"
+                  textAnchor="middle"
+                  fill={bit ? "#082f49" : "#94a3b8"}
+                  fontSize="8"
+                >
+                  {bit ? "1" : "0"}
+                </text>
+              </g>
+            );
+          })}
+          <text x="200" y="270" textAnchor="middle" fill="#fda4af" fontSize="8">
+            {state.traversalMode.replaceAll("-", " ")} · code slots only; no source-backed geometry,
+            rate, or load
+          </text>
+          <text x="200" y="287" textAnchor="middle" fill="#94a3b8" fontSize="7">
+            sensed {state.sensedSlot}/{maximum} · {state.programPhase} · gripper{" "}
+            {state.gripperState}
+          </text>
+        </g>
+      );
+    }
     case "makino-scara": {
       const pose = stepMakinoScaraTopology(params ?? {});
       const toSvg = ([x, y]: readonly [number, number]): readonly [number, number] => [
@@ -6242,6 +6358,430 @@ function _renderHistoricalSchematic(
           </text>
           <text x="200" y="282" textAnchor="middle" fill="#fda4af" fontSize="8">
             normalized schematic; source gives no dimensional or load telemetry
+          </text>
+        </g>
+      );
+    }
+    case "kamen-injection-device": {
+      const pose = stepKamenInjectionMechanism(params ?? {});
+      const plungerX = 132 + pose.plungerPosition * 142;
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            MOTOR / LEAD-SCREW / PULSE-COUNTER TOPOLOGY
+          </text>
+          <rect x="42" y="112" width="316" height="92" rx="12" fill="#172554" stroke="#64748b" />
+          <rect x="52" y="127" width="62" height="62" rx="9" fill="#0f172a" stroke="#22d3ee" />
+          <text x="83" y="153" textAnchor="middle" fill="#a5f3fc" fontSize="8">
+            MOTOR 24
+          </text>
+          <text x="83" y="169" textAnchor="middle" fill="#94a3b8" fontSize="7">
+            {pose.motorState}
+          </text>
+          <line x1="114" y1="158" x2="332" y2="158" stroke="#e2e8f0" strokeWidth="8" />
+          <line
+            x1="114"
+            y1="158"
+            x2="332"
+            y2="158"
+            stroke="#64748b"
+            strokeWidth="2"
+            strokeDasharray="7 5"
+          />
+          <text x="165" y="147" fill="#e2e8f0" fontSize="7">
+            uniform-pitch lead screw 22
+          </text>
+          <rect
+            x={plungerX - 8}
+            y="122"
+            width="16"
+            height="72"
+            rx="3"
+            fill="#f59e0b"
+            stroke="#fde68a"
+          />
+          <text x={plungerX} y="218" textAnchor="middle" fill="#fde68a" fontSize="7">
+            follower / plunger
+          </text>
+          <circle cx="262" cy="158" r="11" fill="#0f172a" stroke="#c084fc" />
+          <text x="262" y="161" textAnchor="middle" fill="#e9d5ff" fontSize="7">
+            80
+          </text>
+          <rect x="280" y="141" width="34" height="34" rx="5" fill="#0f172a" stroke="#c084fc" />
+          <text x="297" y="161" textAnchor="middle" fill="#e9d5ff" fontSize="7">
+            84
+          </text>
+          <path d="M 270 150 L 280 146" stroke="#c084fc" strokeWidth="2" />
+          <rect x="277" y="58" width="78" height="45" rx="7" fill="#0f172a" stroke="#a78bfa" />
+          <text x="316" y="76" textAnchor="middle" fill="#e9d5ff" fontSize="7">
+            COUNTERS
+          </text>
+          <text x="316" y="90" textAnchor="middle" fill="#c4b5fd" fontSize="7">
+            114 / 116
+          </text>
+          <path d="M 297 141 V 104" stroke="#a78bfa" strokeDasharray="4 3" />
+          {pose.reliefPathShown && (
+            <path
+              d="M 158 193 C 181 237, 243 237, 266 193"
+              stroke="#fb7185"
+              strokeWidth="4"
+              strokeDasharray="6 4"
+            />
+          )}
+          <text x="200" y="254" textAnchor="middle" fill="#94a3b8" fontSize="8">
+            selected screw pose {(pose.plungerPosition * 100).toFixed(0)}% · pulse progress{" "}
+            {(pose.pulseProgress * 100).toFixed(0)}%
+          </text>
+          <text x="200" y="278" textAnchor="middle" fill="#fda4af" fontSize="8">
+            nonclinical normalized mechanism; dose, flow, pressure, and outcome refused
+          </text>
+        </g>
+      );
+    }
+    case "watson-remote-center-compliance": {
+      const pose = stepWatsonRemoteCenterComplianceTopology(params ?? {});
+      const toolX = 200 + pose.translationOffset * 58;
+      const toolAngle = (pose.remainingAxisMismatch - 0.22) * 0.42;
+      const toolEnd = {
+        x: toolX + Math.sin(toolAngle) * 82,
+        y: 173 + Math.cos(toolAngle) * 82,
+      };
+      const remoteCenter = pose.remoteCenterTopology ? toolEnd : { x: toolX, y: 118 };
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            RADIAL + AXIAL FLEXURE TOPOLOGY · NORMALIZED
+          </text>
+          <rect x="118" y="42" width="164" height="24" rx="5" fill="#172554" stroke="#38bdf8" />
+          <text x="200" y="57" textAnchor="middle" fill="#bae6fd" fontSize="7">
+            fixed machine portion 18
+          </text>
+          <rect
+            x={toolX - 61}
+            y="95"
+            width="122"
+            height="14"
+            rx="4"
+            fill="#1e293b"
+            stroke="#e2e8f0"
+          />
+          <text x={toolX + 67} y="106" fill="#cbd5e1" fontSize="7">
+            ring 22
+          </text>
+          <rect
+            x={toolX - 55}
+            y="159"
+            width="110"
+            height="14"
+            rx="4"
+            fill="#1e293b"
+            stroke="#fbbf24"
+          />
+          <text x={toolX + 61} y="170" fill="#fde68a" fontSize="7">
+            plate 20
+          </text>
+          {[-42, 0, 42].map((offset) => (
+            <line
+              key={`axial-${offset}`}
+              x1={200 + offset}
+              y1="66"
+              x2={toolX + offset}
+              y2="95"
+              stroke="#22d3ee"
+              strokeWidth="4"
+            />
+          ))}
+          {[-42, 0, 42].map((offset) => (
+            <g key={`radial-${offset}`}>
+              <line
+                x1={remoteCenter.x}
+                y1={remoteCenter.y}
+                x2={toolX + offset}
+                y2="109"
+                stroke="#67e8f9"
+                strokeDasharray="4 4"
+                opacity="0.62"
+              />
+              <line
+                x1={toolX + offset}
+                y1="109"
+                x2={toolX + offset * 0.78}
+                y2="159"
+                stroke="#f59e0b"
+                strokeWidth="4"
+              />
+            </g>
+          ))}
+          <text x="46" y="82" fill="#67e8f9" fontSize="7">
+            translational flexures 56 / 58 / 60
+          </text>
+          <text x="43" y="145" fill="#fcd34d" fontSize="7">
+            rotational flexures 24 / 26 / 28
+          </text>
+          <line
+            x1={toolX}
+            y1="173"
+            x2={toolEnd.x}
+            y2={toolEnd.y}
+            stroke="#e2e8f0"
+            strokeWidth="10"
+            strokeLinecap="round"
+          />
+          <line x1="310" y1="164" x2="310" y2="271" stroke="#94a3b8" strokeDasharray="5 4" />
+          <path d="M 283 253 L 296 237 L 324 237 L 337 253" stroke="#7dd3fc" strokeWidth="3" />
+          <circle
+            cx={remoteCenter.x}
+            cy={remoteCenter.y}
+            r="6"
+            fill={pose.remoteCenterTopology ? "#06b6d4" : "#64748b"}
+            stroke="#ecfeff"
+          />
+          <text x={remoteCenter.x + 9} y={remoteCenter.y - 7} fill="#cffafe" fontSize="7">
+            {pose.remoteCenterTopology ? "remote center 50" : "local contrast"}
+          </text>
+          {pose.antiTwistConstraint && (
+            <ellipse cx={toolX} cy="158" rx="22" ry="6" stroke="#c084fc" strokeWidth="3" />
+          )}
+          <text x="200" y="278" textAnchor="middle" fill="#fda4af" fontSize="8">
+            normalized geometry only; SI force, stiffness, clearance, and timing refused
+          </text>
+        </g>
+      );
+    }
+    case "lemelson-warehousing": {
+      const pose = stepLemelsonWarehouseTopology(params ?? {});
+      const carX = 70 + pose.carrierX * 260;
+      const liftY = 235 - pose.carrierY * 150;
+      const forkEndX = carX + 18 + pose.shuttleZ * 32;
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            SERIAL RAIL / LIFT / FORK · NORMALIZED SOURCE TOPOLOGY
+          </text>
+          <line x1="52" y1="45" x2="348" y2="45" stroke="#78716c" strokeWidth="3" />
+          <text x="54" y="39" fill="#a8a29e" fontSize="7">
+            OVERHEAD TRACK 21
+          </text>
+          {Array.from({ length: 7 }).map((_, column) => {
+            const x = 70 + column * (260 / 6);
+            return (
+              <line
+                key={`rack-post-${column}`}
+                x1={x}
+                y1="66"
+                x2={x}
+                y2="250"
+                stroke="#334155"
+                strokeWidth="1"
+              />
+            );
+          })}
+          {Array.from({ length: 5 }).map((_, row) => {
+            const y = 250 - row * 46;
+            return (
+              <line
+                key={`rack-shelf-${row}`}
+                x1="60"
+                y1={y}
+                x2="340"
+                y2={y}
+                stroke="#334155"
+                strokeWidth="1"
+              />
+            );
+          })}
+          <rect
+            x={carX - 12}
+            y="38"
+            width="24"
+            height="14"
+            fill="#1e293b"
+            stroke="#38bdf8"
+            rx="2"
+          />
+          <text x={carX} y="48" fill="#38bdf8" fontSize="7" textAnchor="middle">
+            22
+          </text>
+          <line
+            x1={carX}
+            y1="52"
+            x2={carX}
+            y2="250"
+            stroke="#38bdf8"
+            strokeWidth="2"
+            strokeDasharray="4 2"
+          />
+          <rect
+            x={carX - 10}
+            y={liftY - 8}
+            width="20"
+            height="16"
+            fill="#0f172a"
+            stroke="#fbbf24"
+            rx="2"
+          />
+          <line
+            x1={carX + 10}
+            y1={liftY}
+            x2={forkEndX}
+            y2={liftY}
+            stroke="#fbbf24"
+            strokeWidth="2.5"
+          />
+          <circle cx={carX - 14} cy={60} r="3" fill="#ef4444" stroke="#fca5a5" />
+          {[0, 0.25, 0.5, 0.75, 1].map((fraction) => (
+            <rect
+              key={fraction}
+              x={67 + fraction * 260}
+              y="53"
+              width="6"
+              height="4"
+              fill="#0ea5e9"
+              stroke="#67e8f9"
+            />
+          ))}
+          <text x={carX + 13} y={liftY - 10} fill="#fde68a" fontSize="7">
+            second carriage 25 / fork 27
+          </text>
+          <rect x="245" y="68" width="112" height="58" rx="4" fill="#0f172a" stroke="#475569" />
+          <text x="253" y="82" fill="#94a3b8" fontSize="7">
+            rail address: {(pose.carrierX * 100).toFixed(0)}%
+          </text>
+          <text x="253" y="96" fill="#94a3b8" fontSize="7">
+            lift address: {(pose.carrierY * 100).toFixed(0)}%
+          </text>
+          <text x="253" y="110" fill="#c4b5fd" fontSize="7">
+            fork extension: {(pose.shuttleZ * 100).toFixed(0)}%
+          </text>
+          <text x="253" y="121" fill="#4ade80" fontSize="7">
+            {pose.addressState}
+          </text>
+          <text x="200" y="278" textAnchor="middle" fill="#fda4af" fontSize="8">
+            normalized topology only; no source dimensions, speed, payload, or throughput
+          </text>
+        </g>
+      );
+    }
+    case "stackhouse-manipulator": {
+      const pose = stepStackhouseSourceTopology(params ?? {});
+      const pointP = { x: 180, y: 150 };
+      const intermediateEnd = {
+        x: pointP.x + Math.cos(pose.alphaABRad) * 88,
+        y: pointP.y - Math.sin(pose.alphaABRad) * 88,
+      };
+      const terminalBaseX = pointP.x + pose.terminalAxisOffset * 70;
+      const projectedMagnitude = Math.hypot(pose.toolDirection[0], pose.toolDirection[2]) || 1;
+      const toolEndX = terminalBaseX + (pose.toolDirection[2] / projectedMagnitude) * 88;
+      const toolEndY = pointP.y - (pose.toolDirection[0] / projectedMagnitude) * 88;
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            THREE SERIAL ROTARY SHAFTS · SOURCE-BOUNDED TOPOLOGY
+          </text>
+          <rect x="42" y="126" width="138" height="48" rx="7" fill="#1e293b" stroke="#64748b" />
+          {[0, 1, 2].map((index) => (
+            <line
+              key={index}
+              x1="52"
+              y1={141 + index * 9}
+              x2={pointP.x}
+              y2={141 + index * 9}
+              stroke={["#0369a1", "#0ea5e9", "#7dd3fc"][index]}
+              strokeWidth={5 - index}
+            />
+          ))}
+          <text x="48" y="119" fill="#94a3b8" fontSize="7">
+            forearm section 6 · concentric shafts 15 / 16 / 19
+          </text>
+          <line
+            x1={pointP.x}
+            y1={pointP.y}
+            x2={intermediateEnd.x}
+            y2={intermediateEnd.y}
+            stroke="#2563eb"
+            strokeWidth="14"
+            strokeLinecap="round"
+          />
+          <line
+            x1={pointP.x}
+            y1={pointP.y}
+            x2={intermediateEnd.x}
+            y2={intermediateEnd.y}
+            stroke="#60a5fa"
+            strokeWidth="3"
+            strokeDasharray="4 2"
+          />
+          <text x="193" y="87" fill="#60a5fa" fontSize="7">
+            housing shaft 14a / shaft 23
+          </text>
+          {pose.terminalAxisOffset > 0 && (
+            <line
+              x1={pointP.x}
+              y1={pointP.y}
+              x2={terminalBaseX}
+              y2={pointP.y}
+              stroke="#fb923c"
+              strokeWidth="8"
+            />
+          )}
+          <line
+            x1={terminalBaseX}
+            y1={pointP.y}
+            x2={toolEndX}
+            y2={toolEndY}
+            stroke="#a855f7"
+            strokeWidth="10"
+            strokeLinecap="round"
+          />
+          <circle cx={toolEndX} cy={toolEndY} r="8" fill="#ec4899" stroke="#be185d" />
+          <text x={toolEndX + 9} y={toolEndY - 8} fill="#c084fc" fontSize="7">
+            shaft 26 / mounting surface 14c
+          </text>
+          <circle
+            cx={pointP.x}
+            cy={pointP.y}
+            r="5"
+            fill="#ef4444"
+            stroke="#ffffff"
+            strokeWidth="1.5"
+          />
+          <text x="168" y="169" fill="#ef4444" fontSize="7" fontWeight="bold">
+            point P
+          </text>
+          <text x="248" y="208" fill="#fbbf24" fontSize="7">
+            selected obliquities {pose.firstObliqueAngleDeg.toFixed(0)}° /{" "}
+            {pose.secondObliqueAngleDeg.toFixed(0)}°; source states only &gt;45°
+          </text>
+          <text x="200" y="278" textAnchor="middle" fill="#fda4af" fontSize="8">
+            normalized pose; SI dynamics and performance refused
           </text>
         </g>
       );

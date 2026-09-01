@@ -4,20 +4,26 @@ import fs from "node:fs";
 import path from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { davinciArchivalEdition } from "@/data/editions/daVinciEdition";
+import { archivalEditionForPublication } from "@/data/editions/publicationApproval";
 import { daVinciPatent } from "@/data/patents/davinci";
 import type { CuratedSpecificationInline } from "@/types/patent";
 
 const PINNED_SHA256 = "ff8eef36d94ec5ec3ec01038b7145030caf617ea018fcde9f00df6380beb3d91";
 
-describe("US 6,331,181 Surgical Robotic Tools Archival Edition Contract", () => {
-  test("is a valid, complete manual edition of US 6,331,181", () => {
-    const result = validateCuratedSpecificationEdition(davinciArchivalEdition);
+describe("US 6,331,181 Surgical Robotic Tools Archival Research Boundary", () => {
+  test("keeps the source-bound draft valid internally while withholding the abridged source face", () => {
+    const result = validateCuratedSpecificationEdition(davinciArchivalEdition, {
+      requireCompleteFacsimileReview: false,
+    });
     expect(result).toEqual({
       valid: true,
       errors: [],
     });
     expect(daVinciPatent.archivalEdition).toBe(davinciArchivalEdition);
     expect(daVinciPatent.originalTextAsset).toBeDefined();
+    expect(davinciArchivalEdition.completeFacsimileReviewed).toBe(false);
+    expect(validateCuratedSpecificationEdition(davinciArchivalEdition).valid).toBe(false);
+    expect(archivalEditionForPublication(daVinciPatent)).toBeUndefined();
   });
 
   test("pinned PDF SHA-256 matches archival edition", () => {

@@ -11,7 +11,8 @@ function manualClaimText(number: number): string {
   return block.inlines.map((inline) => inline.text).join("");
 }
 
-export const watsonRccPatent: Patent = {
+/** @deprecated Migration witness for the pre-audit catalogue copy. */
+export const legacyWatsonRccPatent: Patent = {
   id: "us-4098001-watson-rcc",
   patentNumber: "US 4,098,001",
   title: "Remote Center Compliance System",
@@ -299,3 +300,7 @@ Conventional flexible mountings, such as rubber bushings or cantilever springs m
     independentClaims: 1,
   },
 };
+
+// Keep the published import name stable while routing it to the source-audited
+// record. The legacy object above remains only as an explicit migration witness.
+export { watsonRemoteCenterCompliancePatent as watsonRccPatent } from "./watson-remote-center-compliance";

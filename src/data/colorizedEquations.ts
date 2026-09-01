@@ -21359,6 +21359,131 @@ ALL_COLORIZED_EQUATIONS["us-6331181-davinci"] = [
   },
 ];
 
+ALL_COLORIZED_EQUATIONS["us-2988237-devol-programmed-transfer"] = [
+  {
+    id: "devol-code-coincidence",
+    patentId: "us-2988237-devol-programmed-transfer",
+    title: "Program Code and Encoder Coincidence",
+    category: "Source-Bounded Programmed Transfer Control",
+    rawLatex: "d_H(c_p,c_s)=0",
+    colorizedLatex:
+      "\\textcolor{#9333ea}{d_H}(\\textcolor{#0891b2}{c_p},\\textcolor{#059669}{c_s})=\\textcolor{#d97706}{0}",
+    plainEnglishSentence: [
+      { text: "The program " },
+      { text: "code", variableId: "program_code" },
+      { text: " and the coupled encoder " },
+      { text: "code", variableId: "encoder_code" },
+      { text: " reach coincidence when the " },
+      { text: "unequal-bit count", variableId: "hamming_distance" },
+      { text: " is zero." },
+    ],
+    variables: [
+      {
+        id: "program_code",
+        symbol: "c_p",
+        name: "Selected Program Slot Code",
+        color: "cyan",
+        role: "Combinational position symbol selected from the program controller",
+        unit: "coded position",
+        dimension: "[1]",
+        explanation:
+          "The source stores position-representing symbols in the program controller. This display uses a compact binary teaching code; it does not claim a modern digital storage representation.",
+        telemetryKey: "recordedSlot",
+      },
+      {
+        id: "encoder_code",
+        symbol: "c_s",
+        name: "Mechanically Coupled Encoder Code",
+        color: "emerald",
+        role: "Code sensed by the position representation that moves with the transfer head",
+        unit: "coded position",
+        dimension: "[1]",
+        explanation:
+          "The apparatus couples its sensing head to the transfer head, then compares its code against the selected program code. The source does not provide a general arm-coordinate transform.",
+        telemetryKey: "sensedSlot",
+      },
+      {
+        id: "hamming_distance",
+        symbol: "d_H",
+        name: "Unequal Code Portions",
+        color: "amber",
+        role: "Modern count of unlike corresponding code channels in the teaching projection",
+        unit: "unequal bits",
+        dimension: "[1]",
+        explanation:
+          "This is a modern explanatory notation for the source's individual coincidence detectors. It makes match and mismatch legible without asserting that the grant printed a Hamming-distance equation.",
+        telemetryMetricLabel: "Hamming Distance",
+      },
+    ],
+    pedagogicalNote:
+      "The equality is a modern logic reading of the grant's coincidence condition. It binds only to discrete source-bounded code state and intentionally carries no fictional distance, speed, force, or timing value.",
+    claimRef: 1,
+    historicalSignificance:
+      "Claim 1 makes the comparison architecture concrete: coupled sensing units, unique position codes, stored symbols, and individually related coincidence detectors.",
+  },
+  {
+    id: "devol-anticipatory-sensing",
+    patentId: "us-2988237-devol-programmed-transfer",
+    title: "Advance Sensing Before the True Stop",
+    category: "Programmed Rate-Control State",
+    rawLatex:
+      "\\mathrm{advance\\ match}\\rightarrow\\mathrm{slow\\ search}\\rightarrow\\mathrm{true\\ match}",
+    colorizedLatex:
+      "\\textcolor{#0891b2}{\\mathrm{advance\\ match}}\\rightarrow\\textcolor{#d97706}{\\mathrm{slow\\ search}}\\rightarrow\\textcolor{#059669}{\\mathrm{true\\ match}}",
+    plainEnglishSentence: [
+      { text: "Claim 8 changes from " },
+      { text: "advance sensing", variableId: "advance_sensing" },
+      { text: " to " },
+      { text: "true-position sensing", variableId: "true_sensing" },
+      { text: " after an early match, making the coded " },
+      { text: "traversal state", variableId: "traversal_state" },
+      { text: " explicit without inventing a braking curve." },
+    ],
+    variables: [
+      {
+        id: "advance_sensing",
+        symbol: "\\mathrm{advance}",
+        name: "Advance-Sensing Relationship",
+        color: "cyan",
+        role: "The early sensing relationship claimed before the final true-position comparison",
+        unit: "control state",
+        dimension: "[1]",
+        explanation:
+          "The grant describes an anticipator that detects approaching coincidence and then returns toward a centered relation for the final comparison. It does not print a physical advance offset.",
+        telemetryKey: "anticipationEnabled",
+      },
+      {
+        id: "true_sensing",
+        symbol: "\\mathrm{true}",
+        name: "True-Position Sensing Relationship",
+        color: "emerald",
+        role: "The final comparison relationship used to recognize the required programmed position",
+        unit: "control state",
+        dimension: "[1]",
+        explanation:
+          "This state is the legal counterpart of the final match. The model represents only its discrete sequence and expressly refuses unprovided rate or stopping-distance computation.",
+      },
+      {
+        id: "traversal_state",
+        symbol: "s",
+        name: "Coded Traversal State",
+        color: "amber",
+        role: "Seeking, progressive rate reduction as corresponding channels agree, or true-position hold",
+        unit: "coded control",
+        dimension: "[1]",
+        explanation:
+          "The named states communicate the source's causal sequence. They are not measurements of actuator velocity, acceleration, fluid flow, or impact.",
+        telemetryMetricLabel: "Traversal State",
+      },
+    ],
+    pedagogicalNote:
+      "The sequence comes from the anticipator discussion and Claim 8. It is a state diagram, not a numerical deceleration formula.",
+    claimRef: 8,
+    historicalSignificance:
+      "Claim 8 makes an early sensing relation and a true-position sensing relation part of the article-transfer combination.",
+  },
+];
+
 ALL_COLORIZED_EQUATIONS["us-4341502-makino-scara"] = [
   {
     id: "makino-four-link-loop-closure",
@@ -22338,189 +22463,497 @@ ALL_COLORIZED_EQUATIONS["us-5701965-kamen-transporter"] = [
   },
 ];
 
-ALL_COLORIZED_EQUATIONS["us-4098001-watson-rcc"] = [
+ALL_COLORIZED_EQUATIONS["us-4098001-watson-remote-center-compliance"] = [
   {
-    id: "watson-rcc-decoupled-compliance",
-    patentId: "us-4098001-watson-rcc",
-    title: "Decoupled Spatial Compliance Matrix & Remote Center Projection",
+    id: "watson-rcc-remote-center-geometry",
+    patentId: "us-4098001-watson-remote-center-compliance",
+    title: "Remote-Center Radius Geometry & Small-Rotation Teaching Relation",
     category: "Robotics & Mechanisms",
     rawLatex:
-      "\\begin{bmatrix} \\delta_x \\\\ \\theta_y \\end{bmatrix} = \\begin{bmatrix} C_{xx} & 0 \\\\ 0 & C_{\\theta\\theta} \\end{bmatrix} \\begin{bmatrix} F_x \\\\ M_y \\end{bmatrix}",
+      "\\mathbf{r}_{24},\\mathbf{r}_{26},\\mathbf{r}_{28} \\rightarrow O_{remote}; \\quad \\Delta\\mathbf{x}_{tip} \\approx \\boldsymbol{\\theta} \\times \\mathbf{r}_{tip}",
     colorizedLatex:
-      "\\begin{bmatrix} \\textcolor{#0891b2}{\\delta_x} \\\\ \\textcolor{#d97706}{\\theta_y} \\end{bmatrix} = \\begin{bmatrix} \\textcolor{#2563eb}{C_{xx}} & 0 \\\\ 0 & \\textcolor{#9333ea}{C_{\\theta\\theta}} \\end{bmatrix} \\begin{bmatrix} \\textcolor{#16a34a}{F_x} \\\\ \\textcolor{#dc2626}{M_y} \\end{bmatrix}",
+      "\\textcolor{#2563eb}{\\mathbf{r}_{24},\\mathbf{r}_{26},\\mathbf{r}_{28}} \\rightarrow \\textcolor{#0891b2}{O_{remote}}; \\quad \\textcolor{#16a34a}{\\Delta\\mathbf{x}_{tip}} \\approx \\textcolor{#d97706}{\\boldsymbol{\\theta}} \\times \\textcolor{#9333ea}{\\mathbf{r}_{tip}}",
     plainEnglishSentence: [
-      { text: "The " },
-      { text: "lateral tip deflection", variableId: "delta_x" },
-      { text: " and " },
-      { text: "angular peg tilt", variableId: "theta_y" },
-      { text: " are decoupled by " },
-      { text: "lateral flexure compliance", variableId: "C_xx" },
-      { text: " and " },
-      { text: "angular focal compliance", variableId: "C_tt" },
-      { text: " in response to " },
-      { text: "lateral contact force", variableId: "F_x" },
-      { text: " and " },
-      { text: "applied tip moment", variableId: "M_y" },
+      { text: "The three " },
+      { text: "printed radial-element directions", variableId: "radial_vectors" },
+      { text: " converge on the " },
+      { text: "remote center", variableId: "remote_center" },
+      { text: "; for a small illustrative " },
+      { text: "rotation", variableId: "rotation" },
+      { text: ", the " },
+      { text: "tool-tip displacement", variableId: "tip_displacement" },
+      { text: " follows from its vector from that center, " },
+      { text: "r-tip", variableId: "tip_radius" },
       { text: "." },
     ],
     variables: [
       {
-        id: "delta_x",
-        symbol: "\\delta_x",
-        name: "Lateral Tip Deflection",
-        color: "cyan",
-        role: "Transverse displacement of the peg tip along the x-axis ($0.40\\text{ mm/N}$)",
-        unit: "Millimeters (mm)",
-        dimension: "[L]",
+        id: "radial_vectors",
+        symbol: "\\mathbf{r}_{24},\\mathbf{r}_{26},\\mathbf{r}_{28}",
+        name: "Rotational-Element Radius Directions",
+        color: "sapphire",
+        role: "Directions of the three numbered elements that the specification places along spherical radii",
+        unit: "Direction vectors",
+        dimension: "[1]",
         explanation:
-          "Produced by parallel flexure bending without introducing angular tilt ($\theta_y = 0$).",
-        telemetryMetricLabel: "Lateral Tip Deflection",
+          "This is the patent's source geometry. The exhibit visualizes the directions but does not assign unreported lengths or stiffnesses.",
       },
       {
-        id: "theta_y",
-        symbol: "\\theta_y",
-        name: "Angular Peg Tilt",
+        id: "remote_center",
+        symbol: "O_{remote}",
+        name: "Remote Center 50",
+        color: "cyan",
+        role: "Virtual point at, near, or beyond the free end of the operator tool",
+        unit: "Geometric point",
+        dimension: "[L]",
+        explanation:
+          "The claimed rotational elements lie along portions of spherical radii emanating from this point.",
+        telemetryMetricLabel: "Remote Center",
+      },
+      {
+        id: "tip_displacement",
+        symbol: "\\Delta\\mathbf{x}_{tip}",
+        name: "Illustrative Tool-Tip Displacement",
+        color: "emerald",
+        role: "Small-displacement teaching cue for the tool point under a change of orientation",
+        unit: "Normalized display displacement",
+        dimension: "[L]",
+        explanation:
+          "The public exhibit keeps this normalized because the grant supplies no dimensions, loads, material properties, or calibrated response.",
+        telemetryMetricLabel: "Illustrated Translation",
+      },
+      {
+        id: "rotation",
+        symbol: "\\boldsymbol{\\theta}",
+        name: "Small Orientation Change",
         color: "amber",
-        role: "Rotational deflection about the projected remote compliance center",
+        role: "Infinitesimal rotation used to explain motion about a virtual point",
+        unit: "Radians in the general teaching relation",
+        dimension: "[1]",
+        explanation:
+          "This is a general small-rotation kinematic relation, not a source-backed compliance coefficient or a predicted response rate.",
+      },
+      {
+        id: "tip_radius",
+        symbol: "\\mathbf{r}_{tip}",
+        name: "Center-to-Tip Vector",
+        color: "amethyst",
+        role: "Vector from the illustrated virtual center to the point whose motion is being explained",
+        unit: "Normalized display length",
+        dimension: "[L]",
+        explanation:
+          "Its displayed length is illustrative; the source locates the remote center relationally but does not prescribe a universal tool length.",
+      },
+    ],
+    pedagogicalNote:
+      "The equation separates what the grant actually supplies—the radial elements' convergence on a remote point—from a general small-rotation relation used to explain the geometry. Quantitative force, stiffness, clearance, friction, and success predictions are deliberately refused.",
+    claimRef: 1,
+    historicalSignificance:
+      "US 4,098,001 made a particular passive remote-center and translational-flexure architecture available as a concrete industrial-robotics teaching example.",
+  },
+];
+ALL_COLORIZED_EQUATIONS["us-4098001-watson-rcc"] = ALL_COLORIZED_EQUATIONS[
+  "us-4098001-watson-remote-center-compliance"
+].map((eq) => ({
+  ...eq,
+  patentId: "us-4098001-watson-rcc",
+}));
+
+ALL_COLORIZED_EQUATIONS["us-3119501-lemelson-automatic-warehousing"] = [
+  {
+    id: "lemelson-predetermining-downcount",
+    patentId: "us-3119501-lemelson-automatic-warehousing",
+    title: "Preset-Count Marker Event Sequence",
+    category: "Industrial Automation & Control",
+    rawLatex: "c_{next}=c_{now}-1; \\quad c=0 \\Rightarrow \\text{change motor state}",
+    colorizedLatex:
+      "\\textcolor{#0891b2}{c_{next}}=\\textcolor{#2563eb}{c_{now}}-\\textcolor{#16a34a}{1}; \\quad \\textcolor{#0891b2}{c}=0 \\Rightarrow \\textcolor{#dc2626}{\\text{change motor state}}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "remaining count accumulator", variableId: "counter_c" },
+      { text: " decrements from the " },
+      { text: "preset address count", variableId: "preset_n" },
+      { text: " with each " },
+      { text: "position-marker event", variableId: "marker_impulse" },
+      { text: " until zero changes the " },
+      { text: "source-described motor state", variableId: "trip_relay" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "counter_c",
+        symbol: "c",
+        name: "Remaining Down-Count",
+        color: "cyan",
+        role: "State variable of the source-described preset counting relay",
+        unit: "Position events",
+        dimension: "[1]",
+        explanation:
+          "The grant describes a counter that uncounts as the scanner sees identifiers, then changes control state at the selected count. It does not state a count frequency or event timing.",
+        telemetryMetricLabel: "Addressing State",
+      },
+      {
+        id: "preset_n",
+        symbol: "N_{\\text{preset}}",
+        name: "Preset Target Address",
+        color: "sapphire",
+        role: "Selected source-described marker count before motion begins",
+        unit: "Position events",
+        dimension: "[1]",
+        explanation:
+          "The source permits local or remote presetting of counters for travel, lift, and transfer. It gives no prescribed bay count, rack dimensions, or mapping to physical distance.",
+      },
+      {
+        id: "marker_impulse",
+        symbol: "e_k",
+        name: "Position-Marker Event",
+        color: "emerald",
+        role: "A discrete source-described scanning event associated with a rack or guide marker",
+        unit: "Event",
+        dimension: "[1]",
+        explanation:
+          "Claims 1–5 permit marker scanning, including reflective and ambient-light alternatives; Claim 6 describes a limit-switch and protrusion alternative. No sensor rate is supplied.",
+      },
+      {
+        id: "trip_relay",
+        symbol: "\\text{state}_{motor}",
+        name: "Motor-State Transition",
+        color: "crimson",
+        role: "Source control change after a preset count has been received",
+        unit: "State",
+        dimension: "[1]",
+        explanation:
+          "The specification describes stopping one motion and beginning another in its sequence. It does not provide braking distance, positioning tolerance, velocity, or motor electrical values.",
+        telemetryMetricLabel: "Quantitative Performance",
+      },
+    ],
+    pedagogicalNote:
+      "The equation is a symbolic reading of the printed preset-count sequence. It intentionally omits numerical warehouse scale, payload, speed, motor, timing, and sensor-performance assumptions absent from the facsimile.",
+    claimRef: 1,
+    historicalSignificance:
+      "The issued claims show a physical warehouse address formed by guide travel, vertical movement, transfer, marker sensing, and a preset count; they do not justify a claim to all later automated storage systems.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-3858581-kamen-medication-injection-device"] = [
+  {
+    id: "kamen-rotation-event-count",
+    patentId: "us-3858581-kamen-medication-injection-device",
+    title: "Lead-Screw Rotation and Pulse-Count Relation (Nonclinical)",
+    category: "Mechatronics & Historical Control",
+    rawLatex: "N_{pulse}=n_{turns}; \\quad x=n p",
+    colorizedLatex:
+      "\\textcolor{#0891b2}{N_{pulse}}=\\textcolor{#2563eb}{n_{turns}}; \\quad \\textcolor{#16a34a}{x}=\\textcolor{#2563eb}{n}\\textcolor{#9333ea}{p}",
+    plainEnglishSentence: [
+      { text: "The source ties a " },
+      { text: "pulse count", variableId: "pulse_count" },
+      { text: " to lead-screw " },
+      { text: "turns", variableId: "turn_count" },
+      { text: ", while the screw's symbolic " },
+      { text: "pitch", variableId: "pitch" },
+      { text: " relates those turns to a displayed follower " },
+      { text: "position", variableId: "position" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "pulse_count",
+        symbol: "N_{pulse}",
+        name: "Rotation-Event Count",
+        color: "cyan",
+        role: "Count of striker-triggered electrical events in the Claim 1 mechanism",
+        unit: "Events",
+        dimension: "[1]",
+        explanation:
+          "Claim 1 says the radially oriented striker reaches the pulse-emitting switch during each lead-screw rotation. The grant does not give a pulse frequency or a clinical setting.",
+        telemetryMetricLabel: "Counter Progress",
+      },
+      {
+        id: "turn_count",
+        symbol: "n_{turns}",
+        name: "Lead-Screw Turns",
+        color: "sapphire",
+        role: "Source-described rotational traverses of the motor-driven screw",
+        unit: "Turns",
+        dimension: "[1]",
+        explanation:
+          "The source connects repeated screw turns to repeated striker/switch events, but supplies no rotational speed, motor power, friction value, or precision specification.",
+      },
+      {
+        id: "pitch",
+        symbol: "p",
+        name: "Uniform Thread Pitch",
+        color: "amethyst",
+        role: "Constant advance per ideal screw turn in the source description",
+        unit: "Unreported",
+        dimension: "[L]",
+        explanation:
+          "The patent calls the threads uniform pitch but does not print a numerical pitch. The museum therefore keeps $p$ symbolic and does not compute a volume, flow, dose, or clinical schedule.",
+      },
+      {
+        id: "position",
+        symbol: "x",
+        name: "Follower Position",
+        color: "emerald",
+        role: "Normalized displayed position of the source-described lead-screw follower",
+        unit: "Normalized display",
+        dimension: "[L]",
+        explanation:
+          "The interactive exhibit makes the mechanical position relationship visible without converting the 1975 apparatus into a medical-device instruction or prediction.",
+        telemetryMetricLabel: "Lead-Screw Position",
+      },
+    ],
+    pedagogicalNote:
+      "This is a historical kinematic and event-count relation only. The source does not provide any dose, concentration, pressure, patient condition, safe delivery rate, clinical outcome, or medical recommendation.",
+    claimRef: 1,
+    historicalSignificance:
+      "The claim links a familiar mechanical actuator to countable electrical events and motor-state control; its archival value is the mechatronic architecture, not a present-day clinical protocol.",
+  },
+];
+
+// Withdrawn research equations retained under a non-catalogue key for audit
+// history. The draft assumed exact 45° geometry and undisclosed performance.
+ALL_COLORIZED_EQUATIONS["_legacy-unpublished-us-4068536-stackhouse-manipulator"] = [
+  {
+    id: "stackhouse-spherical-orientation",
+    patentId: "us-4068536-stackhouse-manipulator",
+    title: "3-Roll Intersecting Axis Forward Kinematic Composition",
+    category: "Spherical Kinematics",
+    rawLatex:
+      "\\mathbf{R} = \\mathbf{R}_z(\\theta_1) \\mathbf{R}_y(45^\\circ) \\mathbf{R}_z(\\theta_2) \\mathbf{R}_y(45^\\circ) \\mathbf{R}_z(\\theta_3)",
+    colorizedLatex:
+      "\\mathbf{R} = \\textcolor{#059669}{\\mathbf{R}_z(\\theta_1)} \\textcolor{#d97706}{\\mathbf{R}_y(45^\\circ)} \\textcolor{#2563eb}{\\mathbf{R}_z(\\theta_2)} \\textcolor{#d97706}{\\mathbf{R}_y(45^\\circ)} \\textcolor{#9333ea}{\\mathbf{R}_z(\\theta_3)}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "total tool orientation matrix", variableId: "total_orientation" },
+      { text: " is the sequential product of the " },
+      { text: "forearm roll rotation", variableId: "forearm_roll" },
+      { text: ", the " },
+      { text: "dual 45° oblique joint intersections", variableId: "oblique_tilt" },
+      { text: ", the " },
+      { text: "intermediate link roll", variableId: "intermediate_roll" },
+      { text: ", and the " },
+      { text: "terminal tool spin", variableId: "tool_roll" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "total_orientation",
+        symbol: "\\mathbf{R}",
+        name: "Total Tool Orientation Matrix",
+        color: "amber",
+        role: "3x3 special orthogonal matrix SO(3) defining tool attitude relative to forearm base",
+        unit: "Dimensionless matrix",
+        dimension: "[1]",
+        explanation:
+          "Relates the local end-effector coordinate system directly to the robot arm forearm.",
+      },
+      {
+        id: "forearm_roll",
+        symbol: "\\mathbf{R}_z(\\theta_1)",
+        name: "Forearm Roll Rotation",
+        color: "emerald",
+        role: "Rotation of intermediate housing 28 about forearm longitudinal axis 22 by angle θ₁",
+        unit: "Radians (rad)",
+        dimension: "[1]",
+        explanation: "Sweeps the oblique intermediate roll axis in a 90° conical surface.",
+      },
+      {
+        id: "oblique_tilt",
+        symbol: "\\mathbf{R}_y(45^\\circ)",
+        name: "45° Oblique Intersecting Joint Angle",
+        color: "amber",
+        role: "Fixed oblique bevel gear intersection angle canted at exactly α = 45°",
         unit: "Degrees (°)",
         dimension: "[1]",
         explanation:
-          "Produced by focal flexure pivoting about the remote center without lateral tip displacement ($delta_x = 0$).",
-        telemetryMetricLabel: "Angular Peg Tilt",
+          "Dual 45° joints add constructively from 0° (collinear) to 90° (perpendicular) pitch bend.",
       },
       {
-        id: "C_xx",
-        symbol: "C_{xx}",
-        name: "Decoupled Lateral Compliance",
+        id: "intermediate_roll",
+        symbol: "\\mathbf{R}_z(\\theta_2)",
+        name: "Intermediate Link Roll",
         color: "sapphire",
-        role: "Compliance coefficient relating transverse force to pure lateral displacement ($C_{xx} = 0.40\\text{ mm/N}$)",
-        unit: "mm / N",
-        dimension: "[M^-1 T^2]",
+        role: "Rotation of intermediate shaft 32 within housing 28 by angle θ₂",
+        unit: "Radians (rad)",
+        dimension: "[1]",
         explanation:
-          "Governed by the cubic flexural bending rigidity of the three parallel vertical rods.",
+          "Controls the effective pitch deflection angle of the tool flange from 0° to 90°.",
       },
       {
-        id: "C_tt",
-        symbol: "C_{\\theta\\theta}",
-        name: "Decoupled Angular Compliance",
+        id: "tool_roll",
+        symbol: "\\mathbf{R}_z(\\theta_3)",
+        name: "Terminal Tool Spin",
         color: "amethyst",
-        role: "Compliance coefficient relating moment to pure rotation about the remote center ($C_{\\theta\\theta} = 0.022\\text{ rad}/(\\text{N}\\cdot\\text{m})$)",
-        unit: "rad / (N·m)",
-        dimension: "[M^-1 L^-2 T^2]",
-        explanation: "Governed by the necked pivot flexures and focal cone convergence geometry.",
-      },
-      {
-        id: "F_x",
-        symbol: "F_x",
-        name: "Transverse Contact Force",
-        color: "emerald",
-        role: "Lateral reaction force generated when the peg tip contacts the hole chamfer or bore wall",
-        unit: "Newtons (N)",
-        dimension: "[M L T^-2]",
+        role: "Final continuous spin of tool mounting flange 46 about tool axis 44 by angle θ₃",
+        unit: "Radians (rad)",
+        dimension: "[1]",
         explanation:
-          "In an RCC system, $F_x$ acts directly at the elastic center, generating zero net moment.",
-        telemetryMetricLabel: "Lateral Contact Force",
-      },
-      {
-        id: "M_y",
-        symbol: "M_y",
-        name: "Applied Tip Moment",
-        color: "crimson",
-        role: "External torque applied to the held workpiece or tool",
-        unit: "Newton-meters (N·m)",
-        dimension: "[M L^2 T^-2]",
-        explanation:
-          "Causes pure angular rotation about the remote center, allowing the peg to align with the hole axis.",
-        telemetryMetricLabel: "Tip Moment",
+          "Provides full continuous rotation for welding torches, paint guns, or milling heads.",
       },
     ],
     pedagogicalNote:
-      "By angling the flexure rods toward a common focal point at the peg tip, Watson's RCC diagonalizes the spatial compliance matrix, ensuring that lateral forces produce pure translation and moments produce pure rotation, eliminating the positive-feedback angular tilting that causes jamming.",
+      "Because all three roll axes intersect at a single geometric point, the 3-roll wrist provides pure spherical reorientation without unwanted translation of the tool center point.",
     claimRef: 1,
     historicalSignificance:
-      "US 4,098,001 enabled industrial robots worldwide to perform sub-millimeter precision insertions at high speed without jamming.",
+      "Stackhouse's 3-roll intersecting formulation eliminated bulky exterior motors and became the industry standard on the Cincinnati Milacron T3 robot.",
   },
   {
-    id: "watson-rcc-anti-jamming-clearance",
-    patentId: "us-4098001-watson-rcc",
-    title: "Peg-in-Hole Critical Wedging Angle & Jamming Insertion Depth",
-    category: "Robotics & Mechanisms",
+    id: "stackhouse-jacobian-determinant",
+    patentId: "us-4068536-stackhouse-manipulator",
+    title: "Wrist Jacobian Determinant & Singularity Metric",
+    category: "Kinematic Dexterity",
     rawLatex:
-      "\\theta_{\\text{crit}} = \\frac{2c}{d_{\\text{peg}}} \\quad \\text{and} \\quad L_{\\text{jam}} = \\frac{d_{\\text{peg}}}{2\\mu}",
+      "|\\det(\\mathbf{J})| = \\sin(\\alpha_1) \\sin(\\alpha_2) |\\sin(\\theta_2)| = 0.5 |\\sin(\\theta_2)|",
     colorizedLatex:
-      "\\textcolor{#0891b2}{\\theta_{\\text{crit}}} = \\frac{2 \\textcolor{#2563eb}{c}}{\\textcolor{#16a34a}{d_{\\text{peg}}}} \\quad \\text{and} \\quad \\textcolor{#9333ea}{L_{\\text{jam}}} = \\frac{\\textcolor{#16a34a}{d_{\\text{peg}}}}{2 \\textcolor{#dc2626}{\\mu}}",
+      "\\textcolor{#059669}{|\\det(\\mathbf{J})|} = \\textcolor{#d97706}{\\sin(\\alpha_1) \\sin(\\alpha_2)} \\textcolor{#2563eb}{|\\sin(\\theta_2)|} = \\textcolor{#9333ea}{0.5 |\\sin(\\theta_2)|}",
     plainEnglishSentence: [
       { text: "The " },
-      { text: "critical wedging angle", variableId: "theta_crit" },
-      { text: " depends on " },
-      { text: "hole clearance", variableId: "clearance_c" },
-      { text: " and " },
-      { text: "peg diameter", variableId: "peg_diam" },
-      { text: ", while " },
-      { text: "jamming depth", variableId: "L_jam" },
-      { text: " is determined by " },
-      { text: "friction coefficient", variableId: "friction_mu" },
+      { text: "wrist Jacobian determinant", variableId: "jacobian_det" },
+      { text: " depends on the " },
+      { text: "product of oblique joint sines", variableId: "oblique_sines" },
+      { text: " and the " },
+      { text: "sine of intermediate roll angle", variableId: "intermediate_sine" },
+      { text: ", reaching maximum dexterity of " },
+      { text: "0.5 at a 90° intermediate bend", variableId: "max_dexterity" },
       { text: "." },
     ],
     variables: [
       {
-        id: "theta_crit",
-        symbol: "\\theta_{\\text{crit}}",
-        name: "Critical Wedging Tilt Angle",
-        color: "cyan",
-        role: "Maximum allowable angular misalignment before two-point contact causes geometric lock",
-        unit: "Radians (rad) or Degrees (°)",
-        dimension: "[1]",
-        explanation:
-          "For a $12\\text{ mm}$ peg with $25\\,\\mu\\text{m}$ clearance, $\\theta_{\\text{crit}} \\approx 0.24^\\circ$. Exceeding this angle causes irreversible wedging.",
-      },
-      {
-        id: "clearance_c",
-        symbol: "c",
-        name: "Radial Clearance",
-        color: "sapphire",
-        role: "Difference between hole radius and peg radius ($c = (D - d)/2 \\approx 0.025\\text{ mm}$)",
-        unit: "Millimeters (mm)",
-        dimension: "[L]",
-        explanation:
-          "Tight precision fits typically have clearances of $10$ to $50\\,\\mu\\text{m}$.",
-      },
-      {
-        id: "peg_diam",
-        symbol: "d_{\\text{peg}}",
-        name: "Workpiece Peg Diameter",
+        id: "jacobian_det",
+        symbol: "|\\det(\\mathbf{J})|",
+        name: "Jacobian Determinant Magnitude",
         color: "emerald",
-        role: "Nominal outer diameter of the cylindrical insertion workpiece ($12\\text{ mm}$)",
-        unit: "Millimeters (mm)",
-        dimension: "[L]",
-        explanation: "Sets the geometric moment arm for two-point contact forces.",
-      },
-      {
-        id: "L_jam",
-        symbol: "L_{\\text{jam}}",
-        name: "Critical Jamming Insertion Depth",
-        color: "amethyst",
-        role: "Insertion depth beyond which rotational moments exceed the frictional sliding threshold ($L_{\\text{jam}} \\approx 40\\text{ mm}$)",
-        unit: "Millimeters (mm)",
-        dimension: "[L]",
-        explanation:
-          "When insertion depth $L > d/(2\\mu)$, pushing harder increases normal forces faster than insertion force, locking the peg permanently.",
-      },
-      {
-        id: "friction_mu",
-        symbol: "\\mu",
-        name: "Coulomb Friction Coefficient",
-        color: "crimson",
-        role: "Static/kinetic friction coefficient between peg and hole bore ($mu \\approx 0.15$ for lubricated steel)",
-        unit: "dimensionless",
+        role: "Kinematic dexterity index measuring volume of the velocity ellipsoid",
+        unit: "Dimensionless index",
         dimension: "[1]",
-        explanation: "Determines the slope of the friction cones at the contact points.",
+        explanation:
+          "Measures proximity to kinematic singularities; vanishes only at θ₂ = 0° or 180°.",
+      },
+      {
+        id: "oblique_sines",
+        symbol: "\\sin(\\alpha_1) \\sin(\\alpha_2)",
+        name: "Oblique Angle Geometric Factor",
+        color: "amber",
+        role: "Product of joint sine factors: $\\sin(45^\\circ) \\cdot \\sin(45^\\circ) = 0.5$",
+        unit: "Ratio",
+        dimension: "[1]",
+        explanation:
+          "Constant geometric scale factor determined by the 45° bevel gear housing angles.",
+      },
+      {
+        id: "intermediate_sine",
+        symbol: "|\\sin(\\theta_2)|",
+        name: "Intermediate Roll Sine Factor",
+        color: "sapphire",
+        role: "Modulation factor determined by the intermediate joint rotation θ₂",
+        unit: "Dimensionless factor",
+        dimension: "[1]",
+        explanation: "Provides smooth, predictable dexterity across the entire working hemisphere.",
+      },
+      {
+        id: "max_dexterity",
+        symbol: "0.5 |\\sin(\\theta_2)|",
+        name: "Maximum Wrist Dexterity Index",
+        color: "amethyst",
+        role: "Peak normalized dexterity value of 0.5 achieved at $\\theta_2 = 90^\\circ$",
+        unit: "Peak index",
+        dimension: "[1]",
+        explanation:
+          "At peak dexterity, the wrist generates maximum angular velocity with minimal motor effort.",
       },
     ],
     pedagogicalNote:
-      "Because the RCC projects its elastic center to the tip of the peg, lateral forces never generate tilting moments that could push the peg past the critical wedging angle $\\theta_{\\text{crit}}$, allowing flawless insertion even in deep, tight-tolerance bores.",
-    claimRef: 1,
+      "The 3-roll wrist confines singularities strictly to the outer boundary of the workspace, eliminating internal gimbal lock dead zones that plague conventional roll-pitch-yaw wrists.",
+    claimRef: 14,
     historicalSignificance:
-      "Provided the mathematical and mechanical proof for Whitney's landmark Draper Lab peg-in-hole assembly theory.",
+      "Enabled high-speed continuous path contouring in automotive manufacturing without controller algorithmic stalls.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-4068536-stackhouse-manipulator"] = [
+  {
+    id: "stackhouse-source-bounded-axis-composition",
+    patentId: "us-4068536-stackhouse-manipulator",
+    title: "Selected Intersecting-Axis Display Composition",
+    category: "Source-Bounded Mechanism Geometry",
+    rawLatex:
+      "\\mathbf{R}_{display}=\\mathbf{R}_{z}(q_A)\\,\\mathbf{R}_{y}(\\alpha_{AB})\\,\\mathbf{R}_{z}(q_B)\\,\\mathbf{R}_{y}(-\\alpha_{BC})\\,\\mathbf{R}_{z}(q_C),\\quad \\alpha_{AB},\\alpha_{BC}>45^\\circ",
+    colorizedLatex:
+      "\\textcolor{#059669}{\\mathbf{R}_{display}}=\\textcolor{#0284c7}{\\mathbf{R}_{z}(q_A)}\\,\\textcolor{#d97706}{\\mathbf{R}_{y}(\\alpha_{AB})}\\,\\textcolor{#2563eb}{\\mathbf{R}_{z}(q_B)}\\,\\textcolor{#d97706}{\\mathbf{R}_{y}(-\\alpha_{BC})}\\,\\textcolor{#9333ea}{\\mathbf{R}_{z}(q_C)},\\quad \\textcolor{#d97706}{\\alpha_{AB},\\alpha_{BC}>45^\\circ}",
+    plainEnglishSentence: [
+      { text: "The modern teaching " },
+      { text: "display orientation", variableId: "display_orientation" },
+      { text: " composes the selected rolls about source axes " },
+      { text: "A–A′", variableId: "axis_a" },
+      { text: ", " },
+      { text: "B–B′", variableId: "axis_b" },
+      { text: ", and " },
+      { text: "C–C′", variableId: "axis_c" },
+      { text: " with two selected oblique angles satisfying the printed " },
+      { text: ">45° conditions", variableId: "oblique_condition" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "display_orientation",
+        symbol: "\\mathbf{R}_{display}",
+        name: "Selected Display Orientation",
+        color: "emerald",
+        role: "Drawing-space orientation shared by the connected 2D and 3D exhibits",
+        unit: "Dimensionless display",
+        dimension: "[1]",
+        explanation:
+          "This is a modern serial-rotation teaching construction, not a motor calibration or equation printed in the grant.",
+      },
+      {
+        id: "axis_a",
+        symbol: "\\mathbf{R}_{z}(q_A)",
+        name: "Forearm-Axis Roll",
+        color: "cyan",
+        role: "Selected rotation about the source's forearm axis A–A′",
+        unit: "Selected degrees",
+        dimension: "[1]",
+        explanation:
+          "Outer forearm shaft 15 rotates housing 14 about A–A′. No speed or motor-to-joint ratio is inferred.",
+      },
+      {
+        id: "axis_b",
+        symbol: "\\mathbf{R}_{z}(q_B)",
+        name: "Housing-Shaft Roll",
+        color: "sapphire",
+        role: "Selected rotation about oblique axis B–B′",
+        unit: "Selected degrees",
+        dimension: "[1]",
+        explanation:
+          "Shaft 16 and bevel gears 17/18 rotate housing shaft 14a about B–B′ in the preferred embodiment.",
+      },
+      {
+        id: "axis_c",
+        symbol: "\\mathbf{R}_{z}(q_C)",
+        name: "Terminal-Shaft Roll",
+        color: "amethyst",
+        role: "Selected rotation of terminal shaft 26 about C–C′",
+        unit: "Selected degrees",
+        dimension: "[1]",
+        explanation:
+          "Shafts 19/20, shaft 23, and bevel gears 21/22 and 24/25 carry the third input to terminal shaft 26.",
+      },
+      {
+        id: "oblique_condition",
+        symbol: "\\alpha_{AB},\\alpha_{BC}>45^\\circ",
+        name: "Printed Oblique-Angle Conditions",
+        color: "amber",
+        role: "The only quantitative geometry stated for the illustrated oblique axes",
+        unit: "Inequalities",
+        dimension: "[1]",
+        explanation:
+          "The patent says both fixed angles are greater than 45 degrees. It does not print exact values, so the exhibit lets readers choose source-consistent display angles and labels them as selections.",
+      },
+    ],
+    pedagogicalNote:
+      "The composition makes the serial topology legible while refusing undisclosed dimensions, gear ratios, hydraulic dynamics, loads, power, precision, Jacobian, and singularity performance. Exact intersection at P is the preferred embodiment; the source also allows small deviations and warns that they create small orientation holes.",
+    historicalSignificance:
+      "The grant documents a compact remotely driven industrial-robot wrist built from nested shafts, bevel gears, and a preferred common orientation point.",
   },
 ];

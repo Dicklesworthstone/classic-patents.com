@@ -42,10 +42,13 @@ the pinned facsimile's masthead and final claim pages.
 ## Editorial and preservation boundaries
 
 - The pinned PDF is the immutable facsimile.
-- The future reviewed ledger will preserve page markers and the complete
-  textual sequence; it must not be substituted with a raw text-layer export.
-- The future archival edition will be a continuous manually curated source
-  face, with all twenty-eight claims dynamically consumed by its data record.
+- `public/patents/transcripts/us-2988237-devol-programmed-transfer-reviewed.txt`
+  is the page-marked, complete reviewed ledger. It was manually reconciled to
+  the pinned facsimile on 2026-09-01 and is not a raw text-layer export.
+- `src/data/editions/devolProgrammedTransferEdition.ts` is the continuous,
+  manually curated visitor-facing source face. Its data record dynamically
+  consumes all twenty-eight claim blocks, so no second legal-text copy can
+  drift from the edition.
 - Source drawing-sheet previews must be derived from the pinned sheets, not a
   later Unimate photograph or a reconstructed robot.
 - The grant describes a programmable transfer mechanism and its controller;

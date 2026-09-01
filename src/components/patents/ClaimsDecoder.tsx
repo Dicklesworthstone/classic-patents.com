@@ -194,6 +194,7 @@ export function ClaimsDecoder({ claims, patentId, claimStatus }: ClaimsDecoderPr
   }, [claim]);
 
   if (claims.length === 0) {
+    const hasVerifiedNoClaimsAttestation = Boolean(claimStatus?.evidence);
     return (
       <section className="rounded-2xl border border-parchment-300 bg-parchment-50 p-6 shadow-xs dark:border-ink-800 dark:bg-ink-950 sm:p-8">
         <div className="flex items-center gap-2.5">
@@ -203,9 +204,9 @@ export function ClaimsDecoder({ claims, patentId, claimStatus }: ClaimsDecoderPr
           </h3>
         </div>
         <p className="mt-4 text-base leading-relaxed text-ink-800 dark:text-parchment-200">
-          This reviewed historical facsimile contains no separately numbered formal claims. The
-          edition preserves the document&apos;s actual description instead of inventing a modern
-          claims list.
+          {hasVerifiedNoClaimsAttestation
+            ? "This reviewed historical facsimile contains no separately numbered formal claims. The edition preserves the document's actual description instead of inventing a modern claims list."
+            : "A verified transcription of this record's formal claims is not available yet. Consult the pinned source PDF while the archival record remains under review."}
         </p>
         {claimStatus?.evidence ? (
           <p className="mt-3 border-l-2 border-amber-500 pl-4 text-sm leading-relaxed text-ink-700 dark:text-parchment-300">

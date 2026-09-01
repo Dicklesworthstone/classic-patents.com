@@ -45,7 +45,9 @@ const EXPECTED_MANUAL_EDITION_GAPS = [
   "us-3138743-kilby-integrated-circuit",
   "us-3353115-maiman-ruby-laser",
   "us-400766-hall-aluminium",
+  "us-4068536-stackhouse-manipulator",
   "us-6120588-eink",
+  "us-6331181-davinci",
   "us-706737-fessenden-wireless",
 ] as const;
 

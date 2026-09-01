@@ -45,7 +45,8 @@ export interface DevolProgramState {
   matchingBits: number;
   hammingDistance: number;
   coincidence: boolean;
-  traversalMode: "fast-seek" | "anticipated-slow" | "true-position-hold";
+  traversalMode: "seek" | "progressive-rate-reduction" | "true-position-hold";
+  sensingRelationship: "advance-sensing" | "true-position-sensing";
   programPhase: "record" | "replay";
   gripperState: "open" | "seizing";
   positionUnit: "coded positions (not a physical distance)";
@@ -101,10 +102,9 @@ export function stepDevolProgrammedTransfer(params: DevolProgramParams): DevolPr
   const coincidence = hammingDistance === 0;
   const traversalMode = coincidence
     ? "true-position-hold"
-    : controls.anticipationEnabled &&
-        hammingDistance <= Math.max(1, Math.floor(controls.bitWidth / 3))
-      ? "anticipated-slow"
-      : "fast-seek";
+    : controls.anticipationEnabled && controls.bitWidth - hammingDistance > 0
+      ? "progressive-rate-reduction"
+      : "seek";
 
   return {
     recordedSlot: controls.recordedSlot,
@@ -116,6 +116,8 @@ export function stepDevolProgrammedTransfer(params: DevolProgramParams): DevolPr
     hammingDistance,
     coincidence,
     traversalMode,
+    sensingRelationship:
+      controls.anticipationEnabled && !coincidence ? "advance-sensing" : "true-position-sensing",
     programPhase: controls.recordingMode ? "record" : "replay",
     gripperState: controls.gripperClosed ? "seizing" : "open",
     positionUnit: "coded positions (not a physical distance)",

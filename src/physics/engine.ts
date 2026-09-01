@@ -59,6 +59,11 @@ import {
   stepKamenTransporterSi,
 } from "./kamenTransporterKernel";
 import {
+  type LemelsonWarehouseControls,
+  type LemelsonWarehousePose,
+  stepLemelsonWarehouseTopology,
+} from "./lemelsonWarehouseKernel";
+import {
   stepCcdWells,
   stepEngelbartResolver,
   stepHoweLockstitch,
@@ -68,6 +73,11 @@ import {
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "./machineKernels";
+import {
+  type StackhouseSourceControls,
+  type StackhouseSourcePose,
+  stepStackhouseSourceTopology,
+} from "./stackhouseSourceKernel";
 import {
   type SundbackZipperControls,
   type SundbackZipperTelemetry,
@@ -83,10 +93,10 @@ import type {
   UniversalPatentPhysicsTelemetry,
 } from "./types";
 import {
-  stepWatsonRccSi,
-  type WatsonRccControls,
-  type WatsonRccTelemetry,
-} from "./watsonRccKernel";
+  stepWatsonRemoteCenterComplianceTopology,
+  type WatsonRemoteCenterComplianceControls,
+  type WatsonRemoteCenterCompliancePose,
+} from "./watsonRemoteCenterComplianceKernel";
 import { stepWrightFlyerSi } from "./wrightKernel";
 
 /** US 2,292,387 illustrated record rows. Shared by the source diagrams. */
@@ -1226,8 +1236,16 @@ export const FrankenSimEngine = {
     return stepKamenTransporterSi(controls, dt);
   },
 
-  stepWatsonRcc(controls: WatsonRccControls): WatsonRccTelemetry {
-    return stepWatsonRccSi(controls);
+  stepWatsonRcc(controls: WatsonRemoteCenterComplianceControls): WatsonRemoteCenterCompliancePose {
+    return stepWatsonRemoteCenterComplianceTopology(controls);
+  },
+
+  stepLemelsonWarehousing(controls: LemelsonWarehouseControls): LemelsonWarehousePose {
+    return stepLemelsonWarehouseTopology(controls);
+  },
+
+  stepStackhouseManipulator(controls: StackhouseSourceControls): StackhouseSourcePose {
+    return stepStackhouseSourceTopology(controls);
   },
 
   createTelemetryEnvelope(

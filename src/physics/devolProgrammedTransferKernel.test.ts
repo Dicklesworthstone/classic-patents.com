@@ -21,7 +21,8 @@ describe("US 2,988,237 source-bounded program controller", () => {
       }),
     );
     expect(state.hammingDistance).toBeGreaterThan(0);
-    expect(state.traversalMode).toBe("anticipated-slow");
+    expect(state.traversalMode).toBe("progressive-rate-reduction");
+    expect(state.sensingRelationship).toBe("advance-sensing");
     expect(state.refusal.refused).toBe(true);
     expect(state.refusal.reason).toContain("not arm geometry");
   });
@@ -31,8 +32,11 @@ describe("US 2,988,237 source-bounded program controller", () => {
       "true-position-hold",
     );
     expect(
+      stepDevolProgrammedTransfer({ recordedSlot: 8, sensedSlot: 8 }).sensingRelationship,
+    ).toBe("true-position-sensing");
+    expect(
       stepDevolProgrammedTransfer({ recordedSlot: 8, sensedSlot: 9, bitWidth: 4 }).traversalMode,
-    ).toBe("anticipated-slow");
+    ).toBe("progressive-rate-reduction");
     expect(readDevolProgramControls({ bitWidth: 50, recordedSlot: -2 }).bitWidth).toBe(8);
     expect(readDevolProgramControls({ bitWidth: 2, recordedSlot: -2 }).recordedSlot).toBe(0);
   });

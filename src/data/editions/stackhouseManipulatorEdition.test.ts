@@ -1,0 +1,56 @@
+import { describe, expect, test } from "bun:test";
+import { existsSync, readFileSync } from "node:fs";
+import { stackhouseManipulatorPatent } from "@/data/patents/stackhouse-manipulator-source-bounded";
+import {
+  archivalEditionForPublication,
+  isArchivalEditionExplicitlyWithheld,
+} from "./publicationApproval";
+import { stackhouseManipulatorArchivalEdition } from "./stackhouseManipulatorEdition";
+
+describe("US 4,068,536 source boundary", () => {
+  test("pins the eight-page facsimile without certifying the withdrawn draft", () => {
+    const pdfPath = `${process.cwd()}/public/patents/pdfs/us-4068536-stackhouse-manipulator.pdf`;
+    expect(existsSync(pdfPath)).toBe(true);
+
+    const pdfBuffer = readFileSync(pdfPath);
+    const hasher = new Bun.CryptoHasher("sha256");
+    hasher.update(pdfBuffer);
+    const computedDigest = hasher.digest("hex");
+
+    expect(computedDigest).toBe("dcd6652f996f2583bb6bd39f341bac2474b08472adb931972e94137aea1b7846");
+    expect(stackhouseManipulatorPatent.originalTextAsset).toBeUndefined();
+    expect(stackhouseManipulatorArchivalEdition.sourcePdfSha256).toBe(
+      "dcd6652f996f2583bb6bd39f341bac2474b08472adb931972e94137aea1b7846",
+    );
+    expect(stackhouseManipulatorArchivalEdition.completeFacsimileReviewed).toBe(false);
+    expect(isArchivalEditionExplicitlyWithheld(stackhouseManipulatorPatent.id)).toBe(true);
+    expect(archivalEditionForPublication(stackhouseManipulatorPatent)).toBeUndefined();
+  });
+
+  test("publishes no claim decoder, drawing annotation, or reviewed-ledger assertion", () => {
+    expect(stackhouseManipulatorPatent.claims).toEqual([]);
+    expect(stackhouseManipulatorPatent.drawings).toEqual([]);
+    expect(stackhouseManipulatorPatent.stats).toEqual({ totalClaims: 0, independentClaims: 0 });
+  });
+
+  test("keeps the public excerpt on literal facsimile text", () => {
+    expect(stackhouseManipulatorPatent.originalText).toContain(
+      "This invention relates to mechanical manipulators",
+    );
+    expect(stackhouseManipulatorPatent.originalText).toContain(
+      "spot welding, spray painting, and assembly operations",
+    );
+    expect(stackhouseManipulatorPatent.originalText).not.toContain("2π");
+    expect(stackhouseManipulatorPatent.originalText).not.toContain("singularity");
+  });
+
+  test("states the source's actual geometric boundary without invented performance", () => {
+    const publicText = JSON.stringify(stackhouseManipulatorPatent);
+    expect(publicText).toContain("greater than 45 degrees");
+    expect(publicText).toContain("small orientation ‘holes.’");
+    expect(publicText).not.toContain("exactly 45");
+    expect(publicText).not.toContain("2π steradian");
+    expect(publicText).not.toContain("provides singularity-free");
+    expect(publicText).not.toContain("payload capacity");
+  });
+});

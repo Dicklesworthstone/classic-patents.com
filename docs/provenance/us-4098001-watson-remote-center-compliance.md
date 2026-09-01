@@ -1,5 +1,10 @@
 # Provenance receipt: US 4,098,001, Paul C. Watson
 
+> **Legacy filename notice:** the active catalogue id and publication receipt are
+> `us-4098001-watson-rcc` and `docs/provenance/us-4098001-watson-rcc.md`.
+> This older receipt is preserved for audit history only and does not describe a
+> second published catalogue record.
+
 ## Source identity
 
 - Catalogue id: `us-4098001-watson-remote-center-compliance`
@@ -55,4 +60,3 @@ the map is retained so a later editor can reproduce the comparison.
   geometry, elastic constants, loads, or cycle times. Editorial visualizations
   must expose that boundary rather than presenting inferred values as patent
   facts.
-

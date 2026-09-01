@@ -39,8 +39,7 @@ describe("ClaimsDecoder component", () => {
       <ClaimsDecoder
         claims={[]}
         claimStatus={{
-          hasExplicitClaims: false,
-          historicalNote: "Pre-1836 Patent Act specification without numbered claims.",
+          kind: "no-formal-claims-in-facsimile",
           evidence: "Historical patent description without formal claims.",
         }}
       />,
@@ -51,6 +50,17 @@ describe("ClaimsDecoder component", () => {
       "This reviewed historical facsimile contains no separately numbered formal claims.",
     );
     expect(html).toContain("Historical patent description without formal claims.");
+  });
+
+  test("does not claim facsimile review when an unverified record has no claim transcription", () => {
+    const html = renderToStaticMarkup(<ClaimsDecoder claims={[]} />);
+
+    expect(html).toContain(
+      "A verified transcription of this record&#x27;s formal claims is not available yet.",
+    );
+    expect(html).not.toContain(
+      "This reviewed historical facsimile contains no separately numbered",
+    );
   });
 
   test("evaluates Pasteur Claim 1 from the claimed air-expulsion and cooling sequence", () => {

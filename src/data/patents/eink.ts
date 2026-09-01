@@ -45,10 +45,7 @@ ABSTRACT
 We describe a system of electronically active inks which may include electronically addressable contrast media, conductors, insulators, resistors, semiconductive materials, magnetic materials, spin materials, piezoelectric materials, optoelectronic, thermoelectric or radio frequency materials. We further describe a printing system capable of laying down said materials in a definite pattern. Such a system may be used for instance to: print a flat panel display complete with onboard drive logic; print a working logic circuit onto any of a large class of substrates; print an electrostatic or piezoelectric motor with onboard logic and feedback or print a working radio transmitter or receiver.
 
 BACKGROUND OF THE INVENTION
-The patent begins with prior-art electronically addressable contrast media and extends the concept to electronically active inks and printed functional structures. The specification distinguishes several physical mechanisms, including electrophoretic migration, dielectrophoretic movement, frequency-dependent dielectric response, and printed semiconductor or conductor systems.
-
-CLAIMS
-1. An electrically addressable ink comprising a microcapsule, said microcapsule containing a dielectric fluid, a first particle, and a second particle, wherein said first particle and said second particle are suspended in said dielectric fluid and wherein said first particle has an electrical charge which is opposite in polarity to the electrical charge of said second particle, such that upon application of a first electric field, said first particle and said second particle translate within said microcapsule in opposite directions.`,
+Means are known in the prior art for producing bichromal particles or microspheres for use in electronic displays. Such techniques produce a particle that does not have an implanted dipole moment but rather relies in general on the Zeta potential of the material to create a permanent dipole.`,
   plainEnglishExplanation: {
     overview:
       "The grant is broader than the later E Ink product story: it describes electronically addressable contrast media together with printable conductors, semiconductors, logic, sensors, actuators, and radio-frequency structures.",
@@ -124,6 +121,7 @@ CLAIMS
     {
       number: 2,
       isIndependent: false,
+      dependsOn: [1],
       originalText: manualClaimText(2),
       plainEnglish:
         "Claim 2 narrows claim 1 by requiring that both charged particles move in response to the applied electric field, rather than leaving movement of only one particle within the capsule sufficient.",
@@ -132,6 +130,7 @@ CLAIMS
     {
       number: 3,
       isIndependent: false,
+      dependsOn: [1],
       originalText: manualClaimText(3),
       plainEnglish:
         "Claim 3 narrows the charged-particle system by requiring that the first particle itself has a color, making its movement capable of changing the capsule’s perceived optical state.",
@@ -140,6 +139,7 @@ CLAIMS
     {
       number: 4,
       isIndependent: false,
+      dependsOn: [1],
       originalText: manualClaimText(4),
       plainEnglish:
         "Claim 4 narrows the first colored particle to one that comprises a dye, covering a dye-bearing particle rather than every possible colored particle material.",
@@ -148,6 +148,7 @@ CLAIMS
     {
       number: 5,
       isIndependent: false,
+      dependsOn: [1],
       originalText: manualClaimText(5),
       plainEnglish:
         "Claim 5 narrows the first particle to one that further comprises a dye-indicator system, so the optical change can arise from the indicator chemistry associated with that particle.",
@@ -156,6 +157,7 @@ CLAIMS
     {
       number: 6,
       isIndependent: false,
+      dependsOn: [1],
       originalText: manualClaimText(6),
       plainEnglish:
         "Claim 6 adds a material in the microcapsule that keeps both particles substantially immobile when no electric field is applied, supplying the claimed field-off stability.",
@@ -164,6 +166,7 @@ CLAIMS
     {
       number: 7,
       isIndependent: false,
+      dependsOn: [1],
       originalText: manualClaimText(7),
       plainEnglish:
         "Claim 7 covers a second particle or substance that can react with the first particle: one field keeps them separate in a first color state, and another field permits reaction into a compound with a second color state.",
@@ -172,6 +175,7 @@ CLAIMS
     {
       number: 8,
       isIndependent: false,
+      dependsOn: [7],
       originalText: manualClaimText(8),
       plainEnglish:
         "Claim 8 narrows claim 7 so the reacting first particle and substance produce a colored compound when at least one of the first and second electric fields is zero.",
@@ -180,6 +184,7 @@ CLAIMS
     {
       number: 9,
       isIndependent: false,
+      dependsOn: [1],
       originalText: manualClaimText(9),
       plainEnglish:
         "Claim 9 claims a first particle with a charged head coupled to a ring structure and a second charged head coupled to another substance; an electric field separates the ring and substance to produce a first color state.",
@@ -188,6 +193,7 @@ CLAIMS
     {
       number: 10,
       isIndependent: false,
+      dependsOn: [9],
       originalText: manualClaimText(10),
       plainEnglish:
         "Claim 10 adds reversible operation to claim 9: a second electric field brings the ring structure and substance back into contact to produce a second color state.",
@@ -212,6 +218,7 @@ CLAIMS
     {
       number: 13,
       isIndependent: false,
+      dependsOn: [12],
       originalText: manualClaimText(13),
       plainEnglish:
         "Claim 13 narrows the molecular embodiment by requiring that the hairpin transition between its open and closed states when an electric field is applied.",
@@ -220,6 +227,7 @@ CLAIMS
     {
       number: 14,
       isIndependent: false,
+      dependsOn: [13],
       originalText: manualClaimText(14),
       plainEnglish:
         "Claim 14 further requires an alternating field whose frequency is resonant with a vibrational mode of the two moieties, defining the claimed field-driven conformational transition.",
@@ -236,6 +244,7 @@ CLAIMS
     {
       number: 16,
       isIndependent: false,
+      dependsOn: [15],
       originalText: manualClaimText(16),
       plainEnglish:
         "Claim 16 adds a third-field operation: the polymer assumes a second nonlinear shape and causes the first and second moieties to react, producing a second color state.",
@@ -244,6 +253,7 @@ CLAIMS
     {
       number: 17,
       isIndependent: false,
+      dependsOn: [16],
       originalText: manualClaimText(17),
       plainEnglish:
         "Claim 17 narrows claim 16 by requiring that the first and third electric fields are the same field, tying the two nonlinear-state operations to one shared field condition.",
@@ -258,4 +268,8 @@ CLAIMS
       keyInnovations: ["Non-colored dye-solvent complex", "Field-induced dissociation"],
     },
   ],
+  stats: {
+    totalClaims: 18,
+    independentClaims: 5,
+  },
 };

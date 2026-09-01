@@ -68,6 +68,12 @@ export const ARKWRIGHT_WATER_FRAME_PARALLEL_READINGS: Readonly<Record<number, re
     ],
   };
 
+/**
+ * Research transcription of the pinned 2026 Typst reconstruction. This is not
+ * an archival edition of the 1769 enrollment and must never be attached to the
+ * public patent record without a replacement primary facsimile and a fresh
+ * source transcription.
+ */
 export const arkwrightWaterFrameArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "3254894ae66cb4ddd2612d164e24af76f5efa8ee8ac6b741c8affc70d8fe62fd",
@@ -246,17 +252,3 @@ export const arkwrightWaterFrameArchivalEdition: CuratedSpecificationEdition = {
     ),
   ],
 };
-
-/**
- * Dynamic runtime lookup of exact claim text from the archival edition blocks.
- * Enforces the Single Source of Truth architectural doctrine.
- */
-export function manualArkwrightClaimText(claimNumber: number): string {
-  const block = arkwrightWaterFrameArchivalEdition.blocks.find(
-    (b) => b.kind === "claim" && b.number === claimNumber,
-  );
-  if (block?.kind !== "claim") {
-    throw new Error(`Claim ${claimNumber} not found in arkwrightWaterFrameArchivalEdition`);
-  }
-  return block.inlines.map((i) => ("text" in i ? i.text : "")).join("");
-}

@@ -6,6 +6,7 @@ import { DualProjectionViewer } from "@/components/patents/DualProjectionViewer"
 import { LegacyPatentRedirect } from "@/components/patents/LegacyPatentRedirect";
 import { PatentHeader } from "@/components/patents/PatentHeader";
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
+import { archivalEditionForPublication } from "@/data/editions/publicationApproval";
 import {
   allPatents,
   getAdjacentPatents,
@@ -74,6 +75,7 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
     notFound();
   }
   const colorizedEquations = getColorizedEquationsForPatent(id);
+  const archivalEdition = archivalEditionForPublication(patent);
   const { prev, next } = getAdjacentPatents(id);
 
   const jsonLd = {
@@ -112,7 +114,7 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
       <PatentHeader patent={patent} />
 
       {/* Dual Projection Viewer (Plain English + Original Spec + Interactive Simulator) */}
-      <div data-archival-edition={patent.archivalEdition?.kind ?? "withheld"}>
+      <div data-archival-edition={archivalEdition?.kind ?? "withheld"}>
         <DualProjectionViewer patent={patent} colorizedEquations={colorizedEquations} />
       </div>
 

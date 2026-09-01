@@ -12,6 +12,7 @@ import { watsonRccArchivalEdition, watsonRccParallelReadings } from "./watsonRcc
 
 describe("US 4,098,001 manual source edition", () => {
   test("pins the complete eight-page facsimile and both printed claims", () => {
+    expect(watsonRccPatent.id).toBe("us-4098001-watson-rcc");
     expect(watsonRccPatent.archivalEdition).toBe(watsonRccArchivalEdition);
     expect(validateCuratedSpecificationEdition(watsonRccArchivalEdition)).toEqual({
       valid: true,
@@ -53,6 +54,7 @@ describe("US 4,098,001 manual source edition", () => {
     expect(references).not.toHaveLength(0);
     for (const reference of references) {
       for (const preview of reference.figurePreviews ?? []) {
+        expect(preview.src).toStartWith("/patents/figures/us-4098001-watson-rcc/");
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
       }
     }

@@ -4,7 +4,7 @@
 
 - Catalogue id: `us-3119501-lemelson-automatic-warehousing`
 - Granted title: *Automatic Warehousing System*
-- Inventor as printed: Jerome H. Lemelson, 88 Garfield Apts., Metuchen, New
+- Inventor as printed: Jerome H. Lemelson, 8B Garfield Apts., Metuchen, New
   Jersey
 - Grant date: 1964-01-28
 - Continuation application filed: 1961-10-10, Serial No. 145,013
@@ -56,4 +56,3 @@ breaks; this map keeps the source comparison reproducible.
 - The drawings and specification define a coordinate/control topology; they do
   not provide a tested payload, aisle dimension, travel speed, or motor power.
   A teaching model must not fabricate those operational values.
-

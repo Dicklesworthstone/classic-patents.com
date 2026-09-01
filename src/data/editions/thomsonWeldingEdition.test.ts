@@ -91,9 +91,12 @@ describe("thomsonWeldingArchivalEdition", () => {
               });
       expect(previews.map((preview) => preview.src)).toEqual(expectedPaths);
       for (const preview of previews) {
-        expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
-        expect(preview.width).toBeGreaterThan(0);
-        expect(preview.height).toBeGreaterThan(0);
+        const previewPath = resolve(process.cwd(), "public", preview.src.slice(1));
+        expect(existsSync(previewPath)).toBe(true);
+        const png = readFileSync(previewPath);
+        expect(png.subarray(1, 4).toString("ascii")).toBe("PNG");
+        expect(preview.width).toBe(png.readUInt32BE(16));
+        expect(preview.height).toBe(png.readUInt32BE(20));
       }
     }
 
@@ -131,6 +134,12 @@ describe("thomsonWeldingArchivalEdition", () => {
     expect(thomsonWeldingPatent.archivalEdition).toBe(thomsonWeldingArchivalEdition);
     expect(thomsonWeldingPatent.filingDate).toBe("1886-03-29");
     expect(thomsonWeldingPatent.stats).toMatchObject({ totalClaims: 8, independentClaims: 8 });
+    const openingParagraphs = thomsonWeldingArchivalEdition.blocks
+      .filter((block) => block.kind === "paragraph")
+      .slice(0, 2)
+      .map((block) => block.inlines.map((inline) => inline.text).join(""))
+      .join("\n\n");
+    expect(thomsonWeldingPatent.originalText).toBe(openingParagraphs);
     expect(thomsonWeldingPatent.claims.map((claim) => claim.originalText)).toEqual(
       thomsonWeldingArchivalEdition.blocks
         .filter((block) => block.kind === "claim")

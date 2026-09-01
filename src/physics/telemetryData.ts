@@ -53,15 +53,26 @@ import {
 } from "./catalogKernels";
 import { stepCortPuddlingRolling } from "./cortKernel";
 import { readDaVinciControls } from "./daVinciKernel";
+import { stepDevolProgrammedTransfer } from "./devolProgrammedTransferKernel";
 import { stepEInk } from "./eInkKernel";
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
 import { stepHopkinsPotash } from "./hopkinsPotashKernel";
 import {
+  KAMEN_INJECTION_DEFAULT_CONTROLS,
+  readKamenInjectionControls,
+  stepKamenInjectionMechanism,
+} from "./kamenInjectionKernel";
+import {
   KAMEN_TRANSPORTER_DEFAULT_CONTROLS,
   readKamenTransporterControls,
   stepKamenTransporterSi,
 } from "./kamenTransporterKernel";
+import {
+  LEMELSON_WAREHOUSE_DEFAULT_CONTROLS,
+  readLemelsonWarehouseControls,
+  stepLemelsonWarehouseTopology,
+} from "./lemelsonWarehouseKernel";
 import {
   stepHoweSewingMachine,
   stepMergenthalerLinotype,
@@ -74,17 +85,23 @@ import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { stepPageRank } from "./pageRankKernel";
 import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
 import {
+  readStackhouseSourceControls,
+  STACKHOUSE_SOURCE_DEFAULT_CONTROLS,
+  stepStackhouseSourceTopology,
+} from "./stackhouseSourceKernel";
+import {
   readSundbackZipperControls,
   SUNDBACK_ZIPPER_DEFAULT_CONTROLS,
   stepSundbackZipperSi,
 } from "./sundbackZipperKernel";
 import { readTeslaTransformerControls, stepTeslaTransformerSi } from "./teslaTransformerKernel";
 import { goddardNozzleMatch } from "./thermochem";
+
 import {
-  readWatsonRccControls,
-  stepWatsonRccSi,
-  WATSON_RCC_DEFAULT_CONTROLS,
-} from "./watsonRccKernel";
+  readWatsonRemoteCenterComplianceControls,
+  stepWatsonRemoteCenterComplianceTopology,
+  WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS,
+} from "./watsonRemoteCenterComplianceKernel";
 import { stepWattCondenser } from "./wattCondenserKernel";
 import { stepWattRotaryEngine } from "./wattRotaryKernel";
 import { readWrightControls, stepWrightFlyerSi, WRIGHT_COUPLING } from "./wrightKernel";
@@ -6951,6 +6968,109 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "The patent calls α the random-jump probability and assigns each backlink source a normalized contribution through 1−α; repeated application approaches a steady-state score vector when the iteration converges.",
   },
+  "us-2988237-devol-programmed-transfer": {
+    domain: "source_bounded_programmed_transfer_control",
+    domainTitle: "Program-Drum Code Coincidence",
+    equationName: "Coded Position Matching and Anticipation",
+    governingEquation:
+      "d_H(c_{program},c_{encoder})=0;\\quad \\text{advance sensing}\\rightarrow\\text{true-position sensing}",
+    engineMethod: "stepDevolProgrammedTransfer (source-bounded TypeScript code-state)",
+    controls: [
+      {
+        id: "recordedSlot",
+        label: "Recorded program slot",
+        min: 0,
+        max: 255,
+        step: 1,
+        defaultValue: 11,
+        unit: "code",
+      },
+      {
+        id: "sensedSlot",
+        label: "Sensed encoder slot",
+        min: 0,
+        max: 255,
+        step: 1,
+        defaultValue: 3,
+        unit: "code",
+      },
+      {
+        id: "bitWidth",
+        label: "Code bit width",
+        min: 2,
+        max: 8,
+        step: 1,
+        defaultValue: 6,
+        unit: "bits",
+      },
+      {
+        id: "anticipationEnabled",
+        label: "Claim 8 anticipatory sensing",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "off/on",
+      },
+      {
+        id: "recordingMode",
+        label: "Claim 5 record / replay",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 0,
+        unit: "replay/record",
+      },
+      {
+        id: "gripperClosed",
+        label: "Claim 6 article gripper",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 0,
+        unit: "open/seizing",
+      },
+    ],
+    computeMetrics: (params) => {
+      const state = stepDevolProgrammedTransfer(params);
+      return [
+        {
+          label: "Code Agreement",
+          value: `${state.matchingBits}/${state.bitWidth}`,
+          unit: "matching bits",
+          badgeColor: state.coincidence ? "emerald" : "amber",
+          progressPct: (state.matchingBits / state.bitWidth) * 100,
+        },
+        {
+          label: "Hamming Distance",
+          value: String(state.hammingDistance),
+          unit: "unequal bits",
+          badgeColor: state.hammingDistance === 0 ? "emerald" : "rose",
+          progressPct: (state.hammingDistance / state.bitWidth) * 100,
+        },
+        {
+          label: "Traversal State",
+          value: state.traversalMode.replaceAll("-", " ").toUpperCase(),
+          unit: "coded control",
+          badgeColor: "indigo",
+        },
+        {
+          label: "Sensing Relationship",
+          value: state.sensingRelationship.replaceAll("-", " ").toUpperCase(),
+          unit: "Claim 8 state",
+          badgeColor: state.coincidence ? "emerald" : "cyan",
+        },
+        {
+          label: "Program / Gripper",
+          value: `${state.programPhase.toUpperCase()} · ${state.gripperState.toUpperCase()}`,
+          unit: "function code",
+          badgeColor: "purple",
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "US 2,988,237 claims a program controller, a mechanically coupled position representation, and coincidence-based control, plus record/replay and anticipatory sensing forms. It supplies an illustrative one-sixteenth-inch code increment but no transfer-head geometry, payload, hydraulic pressure, speed, braking law, or controller gain. This shared instrument deliberately reports discrete code state and refuses SI kinematics, forces, rates, and contact performance.",
+  },
   "us-4341502-makino-scara": {
     domain: "source_bounded_robot_kinematics",
     domainTitle: "Four-Link Assembly-Robot Topology",
@@ -7294,106 +7414,167 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "Dean Kamen's dynamic stabilization continuously drives the wheels underneath the vehicle center of gravity in response to detected pitch tilt $\\theta$ and pitch angular rate $\\dot{\\theta}$. When the rider leans forward, the inverted pendulum equation commands restorative motor torque $\\tau = K_p \\theta + K_d \\dot{\\theta}$ that balances the vehicle while creating smooth forward acceleration.",
   },
-  "us-4098001-watson-rcc": {
+  "us-4098001-watson-remote-center-compliance": {
     domain: "robotics_mechanisms",
-    domainTitle: "Spatial Compliance Matrices & Decoupled Flexure Kinematics",
-    equationName: "Focal Cone Compliance Diagonalization & Wedging Clearance",
+    domainTitle: "Remote-Center Flexure Topology",
+    equationName: "Source-Bounded Remote-Center Geometry",
     governingEquation:
-      "\\begin{bmatrix} \\delta_x \\\\ \\theta_y \\end{bmatrix} = \\begin{bmatrix} C_{xx} & 0 \\\\ 0 & C_{\\theta\\theta} \\end{bmatrix} \\begin{bmatrix} F_x \\\\ M_y \\end{bmatrix} \\quad \\text{and} \\quad \\theta_{\\text{crit}} = \\frac{2c}{d}",
-    engineMethod: "FrankenSimEngine.stepWatsonRcc",
+      "\\mathbf{r}_{24},\\mathbf{r}_{26},\\mathbf{r}_{28} \\rightarrow O_{remote}; \\quad \\Delta\\mathbf{x}_{tip} \\approx \\boldsymbol{\\theta} \\times \\mathbf{r}_{tip}",
+    engineMethod:
+      "stepWatsonRemoteCenterComplianceTopology (normalized host topology; quantitative SI model refused)",
     controls: [
       {
-        id: "lateralContactForceN",
-        label: "Lateral Contact Force",
+        id: "lateralContactFraction",
+        label: "Chamfer Contact Position",
         min: 0,
-        max: 80,
-        step: 1,
-        defaultValue: WATSON_RCC_DEFAULT_CONTROLS.lateralContactForceN,
-        unit: "N",
-      },
-      {
-        id: "appliedMomentNm",
-        label: "Tip Moment",
-        min: -3,
-        max: 3,
-        step: 0.1,
-        defaultValue: WATSON_RCC_DEFAULT_CONTROLS.appliedMomentNm,
-        unit: "N·m",
-      },
-      {
-        id: "insertionForceN",
-        label: "Axial Insertion Force",
-        min: 0,
-        max: 400,
-        step: 10,
-        defaultValue: WATSON_RCC_DEFAULT_CONTROLS.insertionForceN,
-        unit: "N",
-      },
-      {
-        id: "initialMisalignmentMm",
-        label: "Initial Misalignment",
-        min: 0,
-        max: 2.5,
-        step: 0.1,
-        defaultValue: WATSON_RCC_DEFAULT_CONTROLS.initialMisalignmentMm,
-        unit: "mm",
-      },
-      {
-        id: "pegLengthM",
-        label: "Peg Tool Length",
-        min: 0.05,
-        max: 0.25,
+        max: 1,
         step: 0.01,
-        defaultValue: WATSON_RCC_DEFAULT_CONTROLS.pegLengthM,
-        unit: "m",
+        defaultValue: WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.lateralContactFraction,
+        unit: "normalized",
+      },
+      {
+        id: "axisMismatchFraction",
+        label: "Initial Axis Mismatch",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.axisMismatchFraction,
+        unit: "normalized",
+      },
+      {
+        id: "remoteCenterTopology",
+        label: "Claim 1 Remote-Center Topology",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.remoteCenterTopology,
+        unit: "off/on",
+      },
+      {
+        id: "antiTwistConstraint",
+        label: "Claim 2 Torque-Resistant Means",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.antiTwistConstraint,
+        unit: "off/on",
       },
     ],
     computeMetrics: (p) => {
-      const controls = readWatsonRccControls(p);
-      const tel = stepWatsonRccSi(controls);
+      const controls = readWatsonRemoteCenterComplianceControls(p);
+      const pose = stepWatsonRemoteCenterComplianceTopology(controls);
       return [
         {
-          label: "Lateral Tip Deflection",
-          value: `${tel.tipLateralDisplacementMm.toFixed(2)} mm`,
-          unit: "δ_x",
+          label: "Illustrated Translation",
+          value: (pose.translationOffset * 100).toFixed(0),
+          unit: "% display",
           badgeColor: "cyan",
-          progressPct: clampProgress((tel.tipLateralDisplacementMm / 2.5) * 100),
+          progressPct: clampProgress(pose.translationOffset * 100),
         },
         {
-          label: "Angular Peg Tilt",
-          value: `${tel.pegTiltAngleDeg.toFixed(2)}°`,
-          unit: "θ_y",
+          label: "Remaining Axis Mismatch",
+          value: (pose.remainingAxisMismatch * 100).toFixed(0),
+          unit: "% normalized",
           badgeColor: "amber",
-          progressPct: clampProgress((Math.abs(tel.pegTiltAngleDeg) / 1.5) * 100),
+          progressPct: clampProgress(pose.remainingAxisMismatch * 100),
         },
         {
-          label: "Jamming Risk Index",
-          value: tel.jammingIndex.toFixed(2),
-          unit: "J_index",
-          badgeColor:
-            tel.jammingIndex >= 1.0 ? "rose" : tel.jammingIndex > 0.35 ? "amber" : "emerald",
-          progressPct: clampProgress(tel.jammingIndex * 100),
+          label: "Remote Center",
+          value: pose.remoteCenterTopology ? "AT TOOL END" : "LOCAL CONTRAST",
+          unit: "source geometry",
+          badgeColor: pose.remoteCenterTopology ? "emerald" : "amber",
         },
         {
-          label: "Insertion Status",
-          value:
-            tel.insertionState === "smooth_insertion"
-              ? "SMOOTH PASS"
-              : tel.insertionState === "compliant_correction"
-                ? "COMPLIANT PASS"
-                : "JAMMED/WEDGED",
-          unit: "status",
-          badgeColor:
-            tel.insertionState === "smooth_insertion"
-              ? "emerald"
-              : tel.insertionState === "compliant_correction"
-                ? "cyan"
-                : "rose",
+          label: "Quantitative SI Prediction",
+          value: "REFUSED",
+          unit: "missing source inputs",
+          badgeColor: "rose",
         },
       ];
     },
     pedagogicalInsight:
-      "Watson's Remote Center Compliance device projects the elastic rotational center forward to the tip of the held peg by angling the focal flexure rods along converging conical generators. Lateral contact forces produce pure lateral translation without tilting, while applied moments produce pure rotation about the tip without translation, eliminating the positive-feedback angular jamming and wedging that plagues rigid robot assemblers.",
+      "Watson claims a connected passive stack: at least three radial rotational elements project a virtual center to the tool end, while separate generally axial elements permit translation; Claim 2 adds torque-resistant means. The grant supplies no dimensions, material, stiffness, force, clearance, friction, mass, or timing, so this exhibit reports normalized geometry and explicitly refuses an SI performance prediction.",
+  },
+  "us-4098001-watson-rcc": {
+    domain: "robotics_mechanisms",
+    domainTitle: "Remote-Center Flexure Topology",
+    equationName: "Source-Bounded Remote-Center Geometry",
+    governingEquation:
+      "\\mathbf{r}_{24},\\mathbf{r}_{26},\\mathbf{r}_{28} \\rightarrow O_{remote}; \\quad \\Delta\\mathbf{x}_{tip} \\approx \\boldsymbol{\\theta} \\times \\mathbf{r}_{tip}",
+    engineMethod:
+      "stepWatsonRemoteCenterComplianceTopology (normalized host topology; quantitative SI model refused)",
+    controls: [
+      {
+        id: "lateralContactFraction",
+        label: "Chamfer Contact Position",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.lateralContactFraction,
+        unit: "normalized",
+      },
+      {
+        id: "axisMismatchFraction",
+        label: "Initial Axis Mismatch",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.axisMismatchFraction,
+        unit: "normalized",
+      },
+      {
+        id: "remoteCenterTopology",
+        label: "Claim 1 Remote-Center Topology",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.remoteCenterTopology,
+        unit: "off/on",
+      },
+      {
+        id: "antiTwistConstraint",
+        label: "Claim 2 Anti-Twist Constraint",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.antiTwistConstraint,
+        unit: "off/on",
+      },
+    ],
+    computeMetrics: (p) => {
+      const controls = readWatsonRemoteCenterComplianceControls(p);
+      const pose = stepWatsonRemoteCenterComplianceTopology(controls);
+      return [
+        {
+          label: "Illustrated Translation",
+          value: (pose.translationOffset * 100).toFixed(0),
+          unit: "% display",
+          badgeColor: "cyan",
+          progressPct: clampProgress(pose.translationOffset * 100),
+        },
+        {
+          label: "Remaining Axis Mismatch",
+          value: (pose.remainingAxisMismatch * 100).toFixed(0),
+          unit: "% normalized",
+          badgeColor: "amber",
+          progressPct: clampProgress(pose.remainingAxisMismatch * 100),
+        },
+        {
+          label: "Remote Center",
+          value: pose.remoteCenterTopology ? "AT TOOL END" : "LOCAL CONTRAST",
+          unit: "source geometry",
+          badgeColor: pose.remoteCenterTopology ? "emerald" : "amber",
+        },
+        {
+          label: "Quantitative SI Prediction",
+          value: "REFUSED",
+          unit: "missing source inputs",
+          badgeColor: "rose",
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Watson claims a connected passive stack: at least three radial rotational elements project a virtual center to the tool end, while separate generally axial elements permit translation; Claim 2 adds torque-resistant means. The grant supplies no dimensions, material, stiffness, force, clearance, friction, mass, or timing, so this exhibit reports normalized geometry and explicitly refuses an SI performance prediction.",
   },
   "us-6120588-eink": {
     domain: "colloidal_physics",
@@ -7509,6 +7690,294 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     },
     pedagogicalInsight:
       "The iPhone multi-touch architecture converts multi-point mutual capacitance drops into real-time affine transformations, enabling fluid pinch-to-zoom magnification and geometric gesture recognition.",
+  },
+  "us-3119501-lemelson-automatic-warehousing": {
+    domain: "industrial_automation",
+    domainTitle: "Marker-Addressed Warehouse Topology",
+    equationName: "Preset-Count Position Event Sequence",
+    governingEquation:
+      "c_{next}=c_{now}-1; \\quad c=0 \\Rightarrow \\text{stop current stage / begin the next source-described stage}",
+    engineMethod:
+      "stepLemelsonWarehouseTopology (normalized host topology; quantitative SI model refused)",
+    controls: [
+      {
+        id: "railAddressFraction",
+        label: "Rail Address",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: LEMELSON_WAREHOUSE_DEFAULT_CONTROLS.railAddressFraction,
+        unit: "normalized",
+      },
+      {
+        id: "levelAddressFraction",
+        label: "Vertical Address",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: LEMELSON_WAREHOUSE_DEFAULT_CONTROLS.levelAddressFraction,
+        unit: "normalized",
+      },
+      {
+        id: "shuttleExtensionFraction",
+        label: "Shuttle Extension",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: LEMELSON_WAREHOUSE_DEFAULT_CONTROLS.shuttleExtensionFraction,
+        unit: "normalized",
+      },
+      {
+        id: "automaticAddressing",
+        label: "Preset-Count Addressing",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: LEMELSON_WAREHOUSE_DEFAULT_CONTROLS.automaticAddressing,
+        unit: "off/on",
+      },
+    ],
+    computeMetrics: (p) => {
+      const controls = readLemelsonWarehouseControls(p);
+      const pose = stepLemelsonWarehouseTopology(controls);
+      return [
+        {
+          label: "Rail Address",
+          value: (pose.carrierX * 100).toFixed(0),
+          unit: "% normalized",
+          badgeColor: "cyan",
+          progressPct: clampProgress(pose.carrierX * 100),
+        },
+        {
+          label: "Vertical Address",
+          value: (pose.carrierY * 100).toFixed(0),
+          unit: "% normalized",
+          badgeColor: "emerald",
+          progressPct: clampProgress(pose.carrierY * 100),
+        },
+        {
+          label: "Shuttle Extension",
+          value: (pose.shuttleZ * 100).toFixed(0),
+          unit: "% normalized",
+          badgeColor: "purple",
+          progressPct: clampProgress(pose.shuttleZ * 100),
+        },
+        {
+          label: "Addressing State",
+          value: pose.addressState.toUpperCase(),
+          unit: "source topology",
+          badgeColor: pose.automaticAddressing ? "amber" : "indigo",
+        },
+        {
+          label: "Quantitative Performance",
+          value: "REFUSED",
+          unit: "missing source inputs",
+          badgeColor: "rose",
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "US 3,119,501 joins rail travel, vertical position, lateral transfer, bay markers, scanning relays, and preset counting relays. The facsimile does not state geometry, payload, speed, motor power, timing, or sensor precision, so the public model remains a normalized source topology rather than a performance simulation.",
+  },
+  "us-3858581-kamen-medication-injection-device": {
+    domain: "mechatronics",
+    domainTitle: "Pulse-Counted Lead-Screw Mechanism (Nonclinical)",
+    equationName: "Rotation Event and Actuator-State Topology",
+    governingEquation:
+      "N_{pulse}=n_{turns}; \\quad x=n p; \\quad \\text{state}=f(\\text{counter},\\text{motor circuit},\\text{clutch path})",
+    engineMethod:
+      "stepKamenInjectionMechanism (normalized nonclinical host topology; quantitative delivery model refused)",
+    controls: [
+      {
+        id: "leadScrewTurnFraction",
+        label: "Lead-Screw Rotation",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: KAMEN_INJECTION_DEFAULT_CONTROLS.leadScrewTurnFraction,
+        unit: "normalized",
+      },
+      {
+        id: "counterTargetFraction",
+        label: "Pulse-Counter Target",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: KAMEN_INJECTION_DEFAULT_CONTROLS.counterTargetFraction,
+        unit: "normalized",
+      },
+      {
+        id: "motorCircuitClosed",
+        label: "Motor Circuit",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: KAMEN_INJECTION_DEFAULT_CONTROLS.motorCircuitClosed,
+        unit: "open/closed",
+      },
+      {
+        id: "reliefPathShown",
+        label: "Clutch Relief Path",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: KAMEN_INJECTION_DEFAULT_CONTROLS.reliefPathShown,
+        unit: "hidden/shown",
+      },
+    ],
+    computeMetrics: (p) => {
+      const controls = readKamenInjectionControls(p);
+      const pose = stepKamenInjectionMechanism(controls);
+      return [
+        {
+          label: "Lead-Screw Position",
+          value: (pose.plungerPosition * 100).toFixed(0),
+          unit: "% normalized",
+          badgeColor: "cyan",
+          progressPct: clampProgress(pose.plungerPosition * 100),
+        },
+        {
+          label: "Counter Progress",
+          value: (pose.pulseProgress * 100).toFixed(0),
+          unit: "% normalized",
+          badgeColor: "amber",
+          progressPct: clampProgress(pose.pulseProgress * 100),
+        },
+        {
+          label: "Mechanism State",
+          value: pose.motorState.toUpperCase(),
+          unit: "source topology",
+          badgeColor: pose.reliefPathShown
+            ? "rose"
+            : pose.motorCircuitClosed
+              ? "emerald"
+              : "indigo",
+        },
+        {
+          label: "Claim Probe",
+          value: `CLAIM ${pose.activeClaim}`,
+          unit: "source claim",
+          badgeColor: "purple",
+        },
+        {
+          label: "Clinical Delivery Prediction",
+          value: "REFUSED",
+          unit: "not in source",
+          badgeColor: "rose",
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "US 3,858,581 ties a uniform-pitch lead screw to a striker-operated pulse switch and counter-controlled motor state. The source lacks a dose, volume-per-pulse calibration, pressure, patient condition, delivery rate, or clinical outcome, so this is explicitly a nonclinical mechanism exhibit.",
+  },
+  "us-4068536-stackhouse-manipulator": {
+    domain: "solid_mechanics",
+    domainTitle: "Intersecting-Axis Wrist Topology & Concentric Shaft Transmission",
+    equationName: "Selected Serial-Axis Display Composition",
+    governingEquation:
+      "\\mathbf{R}_{display}=\\mathbf{R}_{z}(q_A)\\,\\mathbf{R}_{y}(\\alpha_{AB})\\,\\mathbf{R}_{z}(q_B)\\,\\mathbf{R}_{y}(-\\alpha_{BC})\\,\\mathbf{R}_{z}(q_C),\\quad \\alpha_{AB},\\alpha_{BC}>45^\\circ",
+    engineMethod: "stepStackhouseSourceTopology (normalized host geometry; SI dynamics refused)",
+    controls: [
+      {
+        id: "forearmRollDeg",
+        label: "Forearm Roll (θ₁)",
+        min: -180,
+        max: 180,
+        step: 1,
+        defaultValue: STACKHOUSE_SOURCE_DEFAULT_CONTROLS.forearmRollDeg,
+        unit: "°",
+      },
+      {
+        id: "intermediateRollDeg",
+        label: "Intermediate Oblique Roll (θ₂)",
+        min: -180,
+        max: 180,
+        step: 1,
+        defaultValue: STACKHOUSE_SOURCE_DEFAULT_CONTROLS.intermediateRollDeg,
+        unit: "°",
+      },
+      {
+        id: "toolRollDeg",
+        label: "Tool Spin Roll (θ₃)",
+        min: -180,
+        max: 180,
+        step: 1,
+        defaultValue: STACKHOUSE_SOURCE_DEFAULT_CONTROLS.toolRollDeg,
+        unit: "°",
+      },
+      {
+        id: "firstObliqueAngleDeg",
+        label: "Selected A–B Obliquity",
+        min: 46,
+        max: 80,
+        step: 1,
+        defaultValue: STACKHOUSE_SOURCE_DEFAULT_CONTROLS.firstObliqueAngleDeg,
+        unit: "° display",
+      },
+      {
+        id: "secondObliqueAngleDeg",
+        label: "Selected B–C Obliquity",
+        min: 46,
+        max: 80,
+        step: 1,
+        defaultValue: STACKHOUSE_SOURCE_DEFAULT_CONTROLS.secondObliqueAngleDeg,
+        unit: "° display",
+      },
+      {
+        id: "singleIntersection",
+        label: "Preferred Common Point P",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: STACKHOUSE_SOURCE_DEFAULT_CONTROLS.singleIntersection,
+        unit: "offset/exact",
+      },
+    ],
+    computeMetrics: (params) => {
+      const controls = readStackhouseSourceControls(params);
+      const pose = stepStackhouseSourceTopology(controls);
+      return [
+        {
+          label: "Selected Display Bend",
+          value: pose.bendAngleDeg.toFixed(1),
+          unit: "° display",
+          badgeColor: "cyan",
+          progressPct: clampProgress((pose.bendAngleDeg / 180) * 100),
+        },
+        {
+          label: "Selected Display Azimuth",
+          value: pose.azimuthAngleDeg.toFixed(1),
+          unit: "° display",
+          badgeColor: "indigo",
+        },
+        {
+          label: "Axis Intersection",
+          value: pose.singleIntersection >= 0.5 ? "POINT P" : "OFFSET CONTRAST",
+          unit: "source topology",
+          badgeColor: pose.singleIntersection >= 0.5 ? "emerald" : "amber",
+        },
+        {
+          label: "Printed Oblique Condition",
+          value: ">45° / >45°",
+          unit: "source inequality",
+          badgeColor: "emerald",
+        },
+        {
+          label: "Orientation-Hole State",
+          value: pose.singleIntersection >= 0.5 ? "PREFERRED" : "SOURCE-WARNED",
+          unit: "qualitative",
+          badgeColor: pose.singleIntersection >= 0.5 ? "emerald" : "rose",
+        },
+        {
+          label: "SI Dynamics / Performance",
+          value: "REFUSED",
+          unit: "missing source inputs",
+          badgeColor: "rose",
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "US 4,068,536 routes three elbow-mounted hydraulic-motor inputs through concentric forearm shafts, bevel gears, a second concentric-shaft set, and terminal shaft 26. The preferred axes meet at P, and the printed illustrated oblique angles are only specified as greater than 45 degrees; quantitative performance is therefore refused.",
   },
 };
 

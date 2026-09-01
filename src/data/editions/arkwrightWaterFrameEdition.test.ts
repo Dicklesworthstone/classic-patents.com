@@ -3,12 +3,14 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import { archivalEditionForPublication } from "@/data/editions/publicationApproval";
+import {
+  archivalEditionForPublication,
+  isArchivalEditionExplicitlyWithheld,
+} from "@/data/editions/publicationApproval";
 import { arkwrightWaterFramePatent } from "../patents/arkwright-water-frame";
 import {
   ARKWRIGHT_WATER_FRAME_PARALLEL_READINGS,
   arkwrightWaterFrameArchivalEdition,
-  manualArkwrightClaimText,
 } from "./arkwrightWaterFrameEdition";
 
 describe("Richard Arkwright Water Frame Archival Edition Research Boundary", () => {
@@ -34,9 +36,19 @@ describe("Richard Arkwright Water Frame Archival Edition Research Boundary", () 
     expect(digest).toBe("3254894ae66cb4ddd2612d164e24af76f5efa8ee8ac6b741c8affc70d8fe62fd");
   });
 
-  test("keeps the research edition bound for claim sourcing but fails closed at publication", () => {
-    expect(arkwrightWaterFramePatent.archivalEdition).toBe(arkwrightWaterFrameArchivalEdition);
+  test("keeps the modern reconstruction outside every public legal-source surface", () => {
+    expect(arkwrightWaterFramePatent.archivalEdition).toBeUndefined();
     expect(arkwrightWaterFramePatent.originalTextAsset).toBeUndefined();
+    expect(arkwrightWaterFramePatent.filingDate).toBeNull();
+    expect(arkwrightWaterFramePatent.claims).toEqual([]);
+    expect(arkwrightWaterFramePatent.drawings).toEqual([]);
+    expect(arkwrightWaterFramePatent.stats).toMatchObject({
+      totalClaims: 0,
+      independentClaims: 0,
+    });
+    expect(isArchivalEditionExplicitlyWithheld(arkwrightWaterFramePatent.id)).toBe(true);
+    expect(arkwrightWaterFramePatent.originalText).toContain("modern research reconstruction");
+    expect(arkwrightWaterFramePatent.heroQuote).not.toContain("Drawing out and attenuating");
     expect(arkwrightWaterFrameArchivalEdition.completeFacsimileReviewed).toBe(false);
     expect(
       validateCuratedSpecificationEdition(arkwrightWaterFrameArchivalEdition, {
@@ -86,18 +98,7 @@ describe("Richard Arkwright Water Frame Archival Edition Research Boundary", () 
     expect(content).toContain("Drawing out and attenuating cotton");
   });
 
-  test("exposes all 4 claims via dynamic single-source lookup", () => {
-    for (let c = 1; c <= 4; c++) {
-      const claimText = manualArkwrightClaimText(c);
-      expect(claimText).toBeDefined();
-      expect(claimText.length).toBeGreaterThan(30);
-    }
-  });
-
-  test("validates parallel readings map covers the archival blocks", () => {
-    const _paragraphs = arkwrightWaterFrameArchivalEdition.blocks
-      .map((block, idx) => ({ block, idx }))
-      .filter(({ block }) => block.kind === "paragraph");
+  test("keeps research companion notes internally indexed without publishing them", () => {
     const keys = Object.keys(ARKWRIGHT_WATER_FRAME_PARALLEL_READINGS).map(Number);
     expect(keys.length).toBeGreaterThanOrEqual(8);
     for (const key of keys) {

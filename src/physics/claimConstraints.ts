@@ -597,6 +597,20 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Early image sensors used destructive X-Y matrix diode addressing with high readout noise and low fill factor.",
     },
   ],
+  "us-3858581-kamen-medication-injection-device": [
+    {
+      claimNumber: 1,
+      patentId: "us-3858581-kamen-medication-injection-device",
+      claimTitle: "Lead Screw Striker & Pulse-Counted Syringe Advance",
+      activeDescription:
+        "Claim 1 couples a drive motor to a uniform-pitch lead screw with a radial striker that trips a pulse switch once per revolution to count turns and control plunger displacement.",
+      invertedDescription:
+        "Open-loop timed injection: without pulse counting from the lead-screw striker, variations in motor speed cause erratic plunger advance and inaccurate dosing.",
+      failureModeName: "Uncounted Open-Loop Plunger Advance",
+      historicalPriorArt:
+        "Early automated infusion pumps used unregulated clockwork or analog motor timers that drifted under varying mechanical friction.",
+    },
+  ],
   "us-2495429-spencer-microwave": [
     {
       claimNumber: 1,
@@ -877,20 +891,6 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Newcomen atmospheric engine condensed steam directly inside the working cylinder on every power stroke.",
     },
   ],
-  "gb-931-arkwright-water-frame": [
-    {
-      claimNumber: 1,
-      patentId: "gb-931-arkwright-water-frame",
-      claimTitle: "Differential Speed Drafting Rollers & Continuous Flyer Spindle",
-      activeDescription:
-        "Claim 1 draws roving through successive differential-speed rollers before twisting with continuous water-powered flyer spindles.",
-      invertedDescription:
-        "Manual spinning wheel: uneven manual drawing produces weak, slubby yarn with inconsistent count that snaps during power weaving.",
-      failureModeName: "Manual Fiber Bunching & Inconsistent Tensile Warp Rupture",
-      historicalPriorArt:
-        "Hargreaves' Spinning Jenny still relied on manual intermittent drafting and could only spin soft, weak weft yarns.",
-    },
-  ],
   "gb-1306-watt-rotary-engine": [
     {
       claimNumber: 1,
@@ -903,48 +903,6 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       failureModeName: "Non-Rotary Reciprocating Constraint Bottleneck",
       historicalPriorArt:
         "Reciprocating atmospheric and early steam beam engines were confined strictly to vertical water pumping.",
-    },
-  ],
-  "gb-1420-cort-puddling-rolling": [
-    {
-      claimNumber: 1,
-      patentId: "gb-1420-cort-puddling-rolling",
-      claimTitle: "Reverberatory Puddling Decarburization & Grooved Roller Consolidation",
-      activeDescription:
-        "Claim 1 decarburizes pig iron using reverberatory flames and iron silicate slag without coal contact, rolling blooms through grooved rollers.",
-      invertedDescription:
-        "Charcoal finery forge: direct coal contact contaminates iron with sulfur, while manual hammering leaves brittle trapped slag pockets.",
-      failureModeName: "Sulfur Contamination & Trapped Slag Inclusions",
-      historicalPriorArt:
-        "Charcoal finery forges required scarce timber charcoal and laborious manual hammer smithing.",
-    },
-  ],
-  "us-x1-hopkins-potash": [
-    {
-      claimNumber: 1,
-      patentId: "us-x1-hopkins-potash",
-      claimTitle: "Secondary High-Heat Ash Roasting & Pearlash Leaching",
-      activeDescription:
-        "Claim 1 burns raw wood ashes in a second high-temperature furnace to incinerate organic carbon before leaching into pure potassium carbonate.",
-      invertedDescription:
-        "Single-burn crude pot-ash: unburned carbon soot and insoluble organic impurities discolor the lye, reducing potash chemical grade.",
-      failureModeName: "Carbon Soot Contamination & Low Lye Potency",
-      historicalPriorArt:
-        "Crude potash production dissolved raw fireplace ashes directly, leaving dark, impure, low-carbonate residue.",
-    },
-  ],
-  "us-x72-whitney-cotton-gin": [
-    {
-      claimNumber: 1,
-      patentId: "us-x72-whitney-cotton-gin",
-      claimTitle: "Toothed Wire Cylinder, Slotted Breastwork Grate, and Clearer Brush",
-      activeDescription:
-        "Claim 1 pulls cotton fibers through narrow slotted ribs with wire teeth while leaving seeds behind, cleared by a high-speed counter-rotating brush.",
-      invertedDescription:
-        "Manual roller gin on upland green-seed cotton: sticky seeds crush between rollers, ruining fibers and yielding < 1 lb/day per worker.",
-      failureModeName: "Seed Crushing & Mechanical Lint Jamming",
-      historicalPriorArt:
-        "Churka roller gins worked only on smooth-seeded sea island cotton and jammed instantly on sticky green-seed upland cotton.",
     },
   ],
   "us-x8277-mccormick-reaper": [
@@ -1239,32 +1197,76 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Conventional light sources relied on thermal incandescence or gas discharge with incoherent, multi-directional emission.",
     },
   ],
+  "us-3119501-lemelson-automatic-warehousing": [
+    {
+      claimNumber: 1,
+      patentId: "us-3119501-lemelson-automatic-warehousing",
+      claimTitle: "Rail Carriage, Vertical Carrier, Lateral Fixture, Scanner, and Preset Counter",
+      activeDescription:
+        "Claim 1 combines a self-propelled rail carriage, a vertical second guide and carrier, a lateral article fixture, storage bays and identifiers, a scanning relay, and preset counting logic that stops the carriage drive after selected position signals.",
+      invertedDescription:
+        "Claim-topology probe: omitting the scan-and-count stop chain leaves a moving storage carrier but removes the issued claim's selected-position feedback combination; no performance or safety outcome is inferred.",
+      failureModeName: "Claim 1 Position-Feedback Chain Omitted",
+      historicalPriorArt:
+        "The specification contrasts its programmed storage/retrieval apparatus with manual direction, manual remote control, and limited single-level conveyor storage.",
+    },
+    {
+      claimNumber: 3,
+      patentId: "us-3119501-lemelson-automatic-warehousing",
+      claimTitle: "Dual-Axis Optical Scanning & Independent Coordinate Down-Counters",
+      activeDescription:
+        "Claim 3 expressly adds reflective markers in the scanner path and uses generated feedback signals with a predetermining counter circuit in the claimed first- and second-conveying-means combination.",
+      invertedDescription:
+        "Claim-topology probe: omitting reflective marker feedback removes Claim 3's specified sensing implementation; the grant supplies no drift, load, voltage, or collision model.",
+      failureModeName: "Claim 3 Reflective-Marker Feedback Omitted",
+      historicalPriorArt:
+        "The specification presents photoelectric markers and a mechanical limit-switch alternative as position-event sources for its preset counting control.",
+    },
+  ],
   "us-4098001-watson-rcc": [
     {
       claimNumber: 1,
       patentId: "us-4098001-watson-rcc",
-      claimTitle: "Decoupled Focal Cone and Parallel Flexure Remote Center Compliance",
+      claimTitle: "Radial Rotation and Axial Translation Topology",
       activeDescription:
-        "Claim 1 angles focal flexure rods toward a common apex at the workpiece tip while mounting parallel flexures for lateral translation, diagonalizing the compliance matrix.",
+        "Claim 1 connects fixed, intermediate, and tool-carrying members with at least three rotational elements lying along spherical radii of a remote point, plus plural generally axis-parallel translational elements.",
       invertedDescription:
-        "Uncompensated wrist compliance: elastic center sits at robot wrist, causing lateral contact forces to create tilting moments that wedge the peg into the bore.",
-      failureModeName: "Wrist Pivot Cross-Coupled Jamming & Wedging",
+        "Topology contrast only: moving the illustrated center back to the wrist removes the claim's remote-point arrangement; the patent does not quantify the resulting compliance or insertion outcome.",
+      failureModeName: "Claimed Remote-Point Topology Omitted",
       historicalPriorArt:
-        "Conventional compliant robot wrists pivoted at the mounting plate, exacerbating angular misalignment during peg insertion and causing severe jamming.",
+        "The specification contrasts remote-center geometry with proximate-center mechanisms whose supporting structure can occupy the work area.",
     },
     {
       claimNumber: 2,
       patentId: "us-4098001-watson-rcc",
       claimTitle: "Torsional Drive Restraint for Fastener Torque Transmission",
       activeDescription:
-        "Claim 2 interposes a torsional restraint (such as a metal bellows) to transmit drive torque for threaded assembly while preserving lateral and angular compliance.",
+        "Claim 2 retains Claim 1 and adds torque-resistant means between the fixed member and operator means to prevent twisting of the operator tool.",
       invertedDescription:
-        "Unrestrained flexure twisting: rotational assembly torque twists the focal flexure rods beyond yield limits, destroying alignment.",
-      failureModeName: "Torsional Flexure Buckling & Yield",
+        "With the torque-resistant means omitted, the normalized exhibit no longer depicts Claim 2's added anti-twist limitation; no source-backed stiffness or yield prediction is made.",
+      failureModeName: "Claim 2 Anti-Twist Means Omitted",
       historicalPriorArt:
-        "Prior flexure wrists twisted under driving torque, precluding automated nut and bolt fastening operations.",
+        "The specification presents bellows 90 as one embodiment for resisting operator-axis twist when a tool applies torque.",
     },
   ],
+  "us-2988237-devol-programmed-transfer": [
+    {
+      claimNumber: 1,
+      patentId: "us-2988237-devol-programmed-transfer",
+      claimTitle: "Stored Position Symbols and Individual Coincidence Detectors",
+      activeDescription:
+        "Claim 1 couples position-representing sensing units to the mechanical output, stores selected combinational position symbols in a program controller, and compares corresponding channels with individual coincidence detectors that jointly control the power-operating means.",
+      invertedDescription:
+        "Claim-topology probe: omitting the corresponding coincidence-detector chain removes Claim 1's selected-code comparison condition; the source supplies no retooling-time or productivity model.",
+      failureModeName: "Claim 1 Coincidence Chain Omitted",
+      historicalPriorArt:
+        "The specification contrasts its recorded reusable position sequence with transfer equipment directed manually or by fixed-purpose arrangements.",
+    },
+  ],
+  // Claims remain unpublished while the Stackhouse edition/ledger draft is on
+  // fabrication hold. The source-bounded geometry exhibit must not surface
+  // decoders for unverified claim text.
+  "us-4068536-stackhouse-manipulator": [],
   "us-4341502-makino-scara": [
     {
       claimNumber: 1,
@@ -1910,3 +1912,10 @@ export function applyClaimConstraintModifications(
     refusalWarning,
   };
 }
+
+CATALOG_CLAIM_CONSTRAINTS["us-4098001-watson-remote-center-compliance"] = CATALOG_CLAIM_CONSTRAINTS[
+  "us-4098001-watson-rcc"
+].map((c) => ({
+  ...c,
+  patentId: "us-4098001-watson-remote-center-compliance",
+}));

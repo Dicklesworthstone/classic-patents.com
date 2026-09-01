@@ -15,6 +15,7 @@ import { davenportElectricMotorPatent } from "./davenport-electric-motor";
 import { daVinciPatent } from "./davinci";
 import { deForestAudionPatent } from "./de-forest-audion";
 import { delavalSeparatorPatent } from "./delaval-separator";
+import { devolProgrammedTransferPatent } from "./devol-programmed-transfer";
 import { dieselEnginePatent } from "./diesel-engine";
 import { eastmanKodakPatent } from "./eastman-kodak";
 import { edisonIndicatorPatent } from "./edison-indicator";
@@ -39,11 +40,13 @@ import { hollerithTabulatingPatent } from "./hollerith-tabulating";
 import { hopkinsPotashPatent } from "./hopkins-potash";
 import { howeSewingMachinePatent } from "./howe-sewing-machine";
 import { hyattCelluloidPatent } from "./hyatt-celluloid";
+import { kamenMedicationInjectionPatent } from "./kamen-medication-injection-device";
 import { kamenTransporterPatent } from "./kamen-transporter";
 import { kilbyIntegratedCircuitPatent } from "./kilby-integrated-circuit";
 import { kwolekKevlarPatent } from "./kwolek-kevlar";
 import { lamarrPatent as lamarrFrequencyHoppingPatent } from "./lamarr-frequency-hopping";
 import { landPolaroidPatent } from "./land-polaroid";
+import { lemelsonAutomaticWarehousingPatent } from "./lemelson-automatic-warehousing";
 import { lincolnBuoyPatent } from "./lincoln-buoy";
 import { lindeAirLiquefactionPatent } from "./linde-air-liquefaction";
 import { maimanRubyLaserPatent } from "./maiman-ruby-laser";
@@ -68,6 +71,7 @@ import { roombaPatent } from "./roomba";
 import { parsePatentCatalog } from "./schema";
 import { sholesTypewriterPatent } from "./sholes-typewriter";
 import { spencerMicrowavePatent } from "./spencer-microwave";
+import { stackhouseManipulatorPatent } from "./stackhouse-manipulator-source-bounded";
 import { sundbackZipperPatent } from "./sundback-zipper";
 import { teslaCoil593138Patent } from "./tesla-coil-593138";
 import { teslaMotorPatent } from "./tesla-motor";
@@ -94,6 +98,7 @@ export {
   multiTouchPatent,
   pagerankPatent,
   roombaPatent,
+  stackhouseManipulatorPatent,
   sundbackZipperPatent,
   watsonRccPatent,
 };
@@ -168,12 +173,16 @@ export const allPatents: Patent[] = parsePatentCatalog([
   fermiReactorPatent,
   townesLaserPatent, // 1960-03-22
   noyceIcPatent,
+  devolProgrammedTransferPatent,
+  lemelsonAutomaticWarehousingPatent, // 1964-01-28
   kilbyIntegratedCircuitPatent, // 1964-06-23
   maimanRubyLaserPatent, // 1967-11-14
   engelbartMousePatent,
   kwolekKevlarPatent,
   boyleSmithCcdPatent,
-  watsonRccPatent,
+  kamenMedicationInjectionPatent, // 1975-01-07
+  stackhouseManipulatorPatent, // 1978-01-17
+  watsonRccPatent, // 1978-07-04
   wozniakApplePatent,
   makinoScaraPatent,
   kamenTransporterPatent, // 1997-12-30
@@ -197,6 +206,7 @@ export const LEGACY_PATENT_REDIRECTS = {
   "us-533367-tesla-coil": "us-593138-tesla-coil",
   "us-2569347-bardeen-transistor": "us-2524035-bardeen-transistor",
   "us-3923554-boyle-smith-ccd": "us-3858232-boyle-smith-ccd",
+  "us-4098001-watson-remote-center-compliance": "us-4098001-watson-rcc",
   // A prior Fessenden route carried Linde's US 727,650 number. Keep that
   // inbound URL alive, but resolve it only to the source-correct Fessenden
   // record. US 727,650 remains independently catalogued as Linde.

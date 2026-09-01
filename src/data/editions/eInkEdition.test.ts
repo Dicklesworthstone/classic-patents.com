@@ -41,6 +41,8 @@ describe("US 6,120,588 E-Ink Archival Edition Contract", () => {
   test("contains all 18 printed claims and keeps the record dynamically sourced", () => {
     const claims = einkArchivalEdition.blocks.filter((b) => b.kind === "claim");
     expect(claims.length).toBe(18);
+    expect(eInkPatent.claims).toHaveLength(18);
+    expect(eInkPatent.stats).toEqual({ totalClaims: 18, independentClaims: 5 });
 
     for (let i = 1; i <= 18; i++) {
       const claim = claims.find((c) => c.number === i);
@@ -48,7 +50,37 @@ describe("US 6,120,588 E-Ink Archival Edition Contract", () => {
         throw new Error(`eInk manual edition is missing printed claim ${i}.`);
       }
       expect(manualClaimText(i)).toBe(claim.inlines.map((inline) => inline.text).join(""));
+      expect(eInkPatent.claims.find((recordClaim) => recordClaim.number === i)?.originalText).toBe(
+        manualClaimText(i),
+      );
     }
+
+    expect(manualClaimText(7)).toContain("form a compound having a second color state");
+    expect(manualClaimText(7)).not.toContain("com- pound");
+    expect(
+      Object.fromEntries(
+        eInkPatent.claims
+          .filter((claim) => !claim.isIndependent)
+          .map((claim) => [claim.number, claim.dependsOn]),
+      ),
+    ).toEqual({
+      2: [1],
+      3: [1],
+      4: [1],
+      5: [1],
+      6: [1],
+      7: [1],
+      8: [7],
+      9: [1],
+      10: [9],
+      13: [12],
+      14: [13],
+      16: [15],
+      17: [16],
+    });
+    expect(eInkPatent.originalText).toContain("Means are known in the prior art");
+    expect(eInkPatent.originalText).not.toContain("The patent begins with");
+    expect(eInkPatent.originalText).not.toContain("\nCLAIMS\n");
   });
 
   test("all figure preview assets exist on disk with exact pixel dimensions", () => {

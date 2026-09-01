@@ -21,6 +21,7 @@ import { davinciParallelReadings } from "./daVinciEdition";
 import { davenportElectricMotorParallelReadings } from "./davenportElectricMotorEdition";
 import { deForestAudionParallelReadings } from "./deForestAudionEdition";
 import { delavalSeparatorParallelReadings } from "./delavalSeparatorEdition";
+import { devolProgrammedTransferParallelReadings } from "./devolProgrammedTransferEdition";
 import { dieselEngineParallelReadings } from "./dieselEngineEdition";
 import { eastmanKodakParallelReadings } from "./eastmanKodakEdition";
 import { edisonIndicatorParallelReadings } from "./edisonIndicatorEdition";
@@ -44,11 +45,13 @@ import { hewittMercuryLampParallelReadings } from "./hewittMercuryLampEdition";
 import { hollerithTabulatingParallelReadings } from "./hollerithTabulatingEdition";
 import { HOPKINS_PARALLEL_READINGS as hopkinsPotashParallelReadings } from "./hopkinsPotashEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
+import { kamenMedicationInjectionParallelReadings } from "./kamenMedicationInjectionEdition";
 import { kamenTransporterParallelReadings } from "./kamenTransporterEdition";
 import { kilbyIntegratedCircuitParallelReadings } from "./kilbyIntegratedCircuitEdition";
 import { kwolekKevlarParallelReadings } from "./kwolekKevlarEdition";
 import { lamarrFrequencyHoppingParallelReadings } from "./lamarrFrequencyHoppingEdition";
 import { landPolaroidParallelReadings } from "./landPolaroidEdition";
+import { lemelsonAutomaticWarehousingParallelReadings } from "./lemelsonAutomaticWarehousingEdition";
 import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
 import { lindeAirLiquefactionParallelReadings } from "./lindeAirLiquefactionEdition";
 import { maimanRubyLaserParallelReadings } from "./maimanRubyLaserEdition";
@@ -72,6 +75,7 @@ import { rillieuxEvaporatorParallelReadings } from "./rillieuxEvaporatorEdition"
 import { roombaParallelReadings } from "./roombaEdition";
 import { sholesTypewriterParallelReadings } from "./sholesTypewriterEdition";
 import { spencerMicrowaveParallelReadings } from "./spencerMicrowaveEdition";
+import { stackhouseManipulatorParallelReadings } from "./stackhouseManipulatorEdition";
 import { sundbackZipperParallelReadings } from "./sundbackZipperEdition";
 import { teslaCoil593138ParallelReadings } from "./teslaCoil593138Edition";
 import { teslaMotorParallelReadings } from "./teslaMotorEdition";
@@ -159,7 +163,9 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-2524035-bardeen-transistor": bardeenTransistorParallelReadings,
   "us-2543181-land-polaroid": landPolaroidParallelReadings,
   "us-2708656-fermi-reactor": fermiReactorParallelReadings,
+  "us-2988237-devol-programmed-transfer": devolProgrammedTransferParallelReadings,
   "us-2981877-noyce-ic": noyceIcParallelReadings,
+  "us-3119501-lemelson-automatic-warehousing": lemelsonAutomaticWarehousingParallelReadings,
   "us-3138743-kilby-integrated-circuit": kilbyIntegratedCircuitParallelReadings,
   "us-313224-mergenthaler-linotype": mergenthalerLinotypeParallelReadings,
   "us-3353115-maiman-ruby-laser": maimanRubyLaserParallelReadings,
@@ -167,7 +173,9 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-3541541-engelbart-mouse": engelbartMouseParallelReadings,
   "us-3671542-kwolek-kevlar": kwolekKevlarParallelReadings,
   "us-3858232-boyle-smith-ccd": boyleSmithCcdParallelReadings,
+  "us-4068536-stackhouse-manipulator": stackhouseManipulatorParallelReadings,
   "us-4098001-watson-rcc": watsonRccParallelReadings,
+  "us-3858581-kamen-medication-injection-device": kamenMedicationInjectionParallelReadings,
   "us-4136359-wozniak-apple": wozniakAppleParallelReadings,
   "us-4341502-makino-scara": makinoScaraParallelReadings,
   "us-5701965-kamen-transporter": kamenTransporterParallelReadings,

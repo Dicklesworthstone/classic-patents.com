@@ -58,10 +58,13 @@ export function isArchivalEditionExplicitlyWithheld(patentId: string): boolean {
   return FABRICATED_CONTENT_HOLD_IDS.has(patentId);
 }
 
-// No active fabrication holds. us-x1-hopkins-potash was repaired 2026-08-22:
-// its invented kiln/vat/kettle callouts and schematic were removed; the
-// drawing entry now points at the real parchment crop with an honest caption.
-const FABRICATED_CONTENT_HOLD_IDS = new Set<string>([]);
+// us-x1-hopkins-potash was repaired 2026-08-22: its invented kiln/vat/kettle
+// callouts and schematic were removed. GB 931 remains held because its pinned
+// PDF is a 2026 Typst reconstruction rather than a historical facsimile.
+const FABRICATED_CONTENT_HOLD_IDS = new Set<string>([
+  "gb-931-arkwright-water-frame",
+  "us-4068536-stackhouse-manipulator",
+]);
 
 export function archivalEditionForPublication(patent: Pick<Patent, "id" | "archivalEdition">) {
   if (isArchivalEditionExplicitlyWithheld(patent.id)) return undefined;

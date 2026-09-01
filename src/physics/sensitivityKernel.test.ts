@@ -76,6 +76,10 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
       "us-307031-edison-indicator",
       "us-361931-daimler-engine",
       "us-2495429-spencer-microwave",
+      "us-2988237-devol-programmed-transfer",
+      "us-3858581-kamen-medication-injection-device",
+      "us-4098001-watson-remote-center-compliance",
+      "us-4098001-watson-rcc",
     ]);
 
     for (const patent of allPatents) {

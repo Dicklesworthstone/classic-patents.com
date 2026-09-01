@@ -47,7 +47,12 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-4750-howe-sewing-machine",
       "us-31128-otis-elevator",
       "us-4341502-makino-scara",
+      "us-2988237-devol-programmed-transfer",
+      "us-3119501-lemelson-automatic-warehousing",
       "us-4098001-watson-rcc",
+      "us-4098001-watson-remote-center-compliance",
+      "us-3858581-kamen-medication-injection-device",
+      "us-4068536-stackhouse-manipulator",
     ]);
   });
 

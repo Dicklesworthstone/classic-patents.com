@@ -12,7 +12,7 @@ function manualClaimText(number: number): string {
 }
 
 export const watsonRemoteCenterCompliancePatent: Patent = {
-  id: "us-4098001-watson-remote-center-compliance",
+  id: "us-4098001-watson-rcc",
   patentNumber: "US 4,098,001",
   title: "Remote Center Compliance System",
   shortTitle: "Watson Passive Remote-Center Compliance End Effector",
@@ -28,15 +28,15 @@ export const watsonRemoteCenterCompliancePatent: Patent = {
     "Granted on July 4, 1978, Watson's two-claim grant covers a passive assembly attachment with at least three rotational interconnection elements laid along spherical radii of a remote point and a separate plurality of generally axial translational elements. The claimed arrangement lets an inserted tool seek a hole laterally and then rotate about a virtual center at, near, or beyond its working end, without asserting an active sensor-and-servo control loop.",
   heroQuote:
     "The invention results from the realization that by creating virtual rotation centers located beyond the remote center compliance system mechanism and near or at the end of the insertion member, forces and moments may be created corresponding to a gentle pulling of the member to be inserted into the hole.",
-  originalPdfUrl: "/patents/pdfs/us-4098001-watson-remote-center-compliance.pdf",
+  originalPdfUrl: "/patents/pdfs/us-4098001-watson-rcc.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US4098001A/en",
   usptoClassification: "Int. Cl. G01B 5/25; U.S. Cl. 33/169 C, 33/185 R, 33/189 (printed)",
   archivalEdition: watsonRccArchivalEdition,
   originalTextAsset: {
-    url: "/patents/transcripts/us-4098001-watson-remote-center-compliance-reviewed.txt",
+    url: "/patents/transcripts/us-4098001-watson-rcc-reviewed.txt",
     pageCount: 8,
     kind: "reviewed-transcription",
-    sourcePdfSha256: "a1a74eca681f31888bc8843cb96d2c495990c449405fbbc33b51b980510beaf8",
+    sourcePdfSha256: "67ca409f96f1456b603f198653a1a5d9c411c25dab5737ac2824b7fdaff2093b",
     reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
     reviewedAt: "2026-09-01",
     pageAnchors: [
@@ -186,7 +186,7 @@ The invention results from the realization that by creating virtual rotation cen
       title: "Remote center compliance system",
       caption:
         "Sectional Figure 1 places three rotational flexures and three translational flexures between the fixed machine portion and rod 16; dashed radii meet at remote center 50 near the working end.",
-      svgType: "watson-rcc",
+      svgType: "watson-remote-center-compliance",
       callouts: [
         {
           id: "wrcc-1",
@@ -231,7 +231,7 @@ The invention results from the realization that by creating virtual rotation cen
       title: "Angular correction at the hole",
       caption:
         "The source shows rod axis 76 initially noncoincident with hole axis 78, then rotated by the indicated moment M after contact at the chamfered opening.",
-      svgType: "watson-rcc",
+      svgType: "watson-remote-center-compliance",
       callouts: [
         {
           id: "wrcc-5",

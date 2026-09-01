@@ -3,15 +3,21 @@ import { allPatents } from "@/data/patents";
 import { applyClaimConstraintModifications, CATALOG_CLAIM_CONSTRAINTS } from "./claimConstraints";
 
 describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
-  test("every patent in allPatents has at least one claim constraint definition", () => {
+  test("every numbered constraint names a claim that actually exists in the catalogue record", () => {
     for (const patent of allPatents) {
-      const constraints = CATALOG_CLAIM_CONSTRAINTS[patent.id];
-      expect(constraints).toBeDefined();
+      const constraints = CATALOG_CLAIM_CONSTRAINTS[patent.id] ?? [];
+      const claimNumbers = new Set(patent.claims.map((claim) => claim.number));
+
+      if (patent.claims.length === 0) {
+        expect(constraints).toEqual([]);
+        continue;
+      }
+
       expect(constraints.length).toBeGreaterThanOrEqual(1);
 
       for (const c of constraints) {
         expect(c.patentId).toBe(patent.id);
-        expect(c.claimNumber).toBeGreaterThanOrEqual(1);
+        expect(claimNumbers.has(c.claimNumber)).toBe(true);
         expect(c.claimTitle.length).toBeGreaterThan(3);
         expect(c.activeDescription.length).toBeGreaterThan(10);
         expect(c.invertedDescription.length).toBeGreaterThan(10);

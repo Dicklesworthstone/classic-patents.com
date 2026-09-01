@@ -121,9 +121,11 @@ export const davinciParallelReadings: Readonly<Record<number, readonly string[]>
 export const davinciArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "ff8eef36d94ec5ec3ec01038b7145030caf617ea018fcde9f00df6380beb3d91",
-  preparedBy: "Classic Patents Editorial Team",
+  preparedBy: "Classic Patents source-audit draft",
   preparedAt: "2026-08-20",
-  completeFacsimileReviewed: true,
+  // Claims and figure-sheet mappings are source-bound, but the selected body
+  // paragraphs do not yet constitute the complete 16-page specification.
+  completeFacsimileReviewed: false,
   blocks: [
     {
       kind: "masthead",
@@ -222,7 +224,7 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
         [15],
         "Master console view (FIG. 8A is present; FIG. 8B is cited by the specification but absent from the pinned drawing sheets)",
       ),
-      " show the master console; ",
+      " identify the cited master-console material; ",
       makeSourceSheetPreview("FIGS. 9-10", [16, 17], "Tool-change signal path and software flow"),
       " show tool-change signal and software paths; ",
       makeSourceSheetPreview(

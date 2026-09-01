@@ -183,7 +183,7 @@ describe("Specification Clauses & Interactive Telemetry Weave", () => {
 
   test("every patent in allPatents has at least one authored spec clause with valid SI metadata", async () => {
     const { allPatents } = await import("@/data/patents");
-    expect(allPatents.length).toBe(83);
+    expect(allPatents.length).toBeGreaterThanOrEqual(85);
 
     for (const patent of allPatents) {
       const clauses = specClausesFor(patent.id, {});

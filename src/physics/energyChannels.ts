@@ -66,8 +66,18 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 31,128 prints the hoist, reversing-belt, brake, stop-rope, counterpoise, and hook-rack topology but no load, force, speed, torque, friction, travel, timing, or power datum from which an SI energy channel can be derived.",
   "us-4341502-makino-scara":
     "US 4,341,502 prints link topology and joint angle relationships but no link lengths, motor torque, payload mass, velocity, friction, or power datum from which an SI energy channel can be derived.",
+  "us-2988237-devol-programmed-transfer":
+    "US 2,988,237 prints coded-position, program-controller, hydraulic-actuator, transfer-head, and gripper relationships but no reusable hydraulic pressure, flow, actuator dimensions, payload, mass, speed, efficiency, or power datum from which an SI energy channel can be derived.",
+  "us-3119501-lemelson-automatic-warehousing":
+    "US 3,119,501 prints 3-axis carriage, mast, hoist, and fork transfer topology but no motor horsepower, electrical current, friction coefficients, travel speeds, or thermal dissipation datum from which an SI energy channel can be derived.",
   "us-4098001-watson-rcc":
-    "US 4,098,001 prints passive flexure topology and compliance matrices but no continuous drive power, motor torque, or thermal dissipation datum from which an SI energy channel can be derived.",
+    "US 4,098,001 prints passive radial and generally axial flexure topology but no dimensions, material, stiffness, load, motion rate, continuous drive power, motor torque, or thermal dissipation datum from which an SI energy channel can be derived.",
+  "us-4098001-watson-remote-center-compliance":
+    "US 4,098,001 prints passive radial and generally axial flexure topology but no dimensions, material, stiffness, load, motion rate, continuous drive power, motor torque, or thermal dissipation datum from which an SI energy channel can be derived.",
+  "us-3858581-kamen-medication-injection-device":
+    "US 3,858,581 prints a motor-driven lead screw and pulse switch mechanism but no motor electrical input wattage, coil resistance, torque curve, battery discharge rate, or thermal loss datum from which an SI energy channel can be derived.",
+  "us-4068536-stackhouse-manipulator":
+    "US 4,068,536 prints hydraulic-motor, concentric-shaft, bevel-gear, and intersecting-axis topology but no pressure, flow, torque, speed, dimensions, gear ratios, friction, efficiency, payload, or power datum from which an SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(

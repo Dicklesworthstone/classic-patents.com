@@ -10,7 +10,10 @@
  * use automatic differentiation; the unused Dual class was removed.
  */
 
+import { stepLemelsonWarehouseTopology } from "./lemelsonWarehouseKernel";
 import { OTIS_DECLARED_MAX_DISPLAY_TRAVEL_PER_S } from "./otisKernel";
+import { stepStackhouseSourceTopology } from "./stackhouseSourceKernel";
+import { stepWatsonRemoteCenterComplianceTopology } from "./watsonRemoteCenterComplianceKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 export interface SensitivityResult {
@@ -1533,25 +1536,73 @@ export function computeParameterSensitivity(
       break;
     }
 
-    case "us-4098001-watson-rcc": {
-      if (controlKey === "lateralContactForceN" || controlKey === "lateralForce") {
+    case "us-3119501-lemelson-automatic-warehousing": {
+      if (controlKey === "railAddressFraction") {
+        const pose = stepLemelsonWarehouseTopology(params);
         return {
-          metricName: "Lateral Tip Deflection",
-          derivativeSymbol: "∂δ_x / ∂F_x",
-          derivativeValue: 0.4,
-          derivativeUnit: "mm / N",
+          metricName: "Normalized Rail Address",
+          derivativeSymbol: "∂q_x / ∂a_x",
+          derivativeValue: pose.carrierX === (params.railAddressFraction ?? 0.55) ? 1 : 0,
+          derivativeUnit: "display fraction / address fraction",
           interpretation:
-            "Decoupled lateral flexure compliance yielding pure transverse displacement without angular tipping.",
+            "The normalized exhibit maps its rail-address control directly to the carrier pose; the grant supplies no bay spacing in meters.",
         };
       }
-      if (controlKey === "appliedMomentNm" || controlKey === "moment") {
+      if (controlKey === "levelAddressFraction") {
         return {
-          metricName: "Angular Peg Tilt",
-          derivativeSymbol: "∂θ_y / ∂M_y",
-          derivativeValue: 1.27,
-          derivativeUnit: "deg / (N·m)",
+          metricName: "Normalized Vertical Address",
+          derivativeSymbol: "∂q_z / ∂a_z",
+          derivativeValue: 1,
+          derivativeUnit: "display fraction / address fraction",
           interpretation:
-            "Decoupled rotational compliance yielding pure angular rotation about the remote compliance center.",
+            "The normalized exhibit maps its level-address control directly to the lift pose; no shelf height is asserted.",
+        };
+      }
+      if (controlKey === "shuttleExtensionFraction") {
+        return {
+          metricName: "Normalized Shuttle Extension",
+          derivativeSymbol: "∂q_y / ∂a_y",
+          derivativeValue: 1,
+          derivativeUnit: "display fraction / extension fraction",
+          interpretation:
+            "The normalized exhibit maps the control directly to the transverse transfer pose; no reach, speed, or payload is asserted.",
+        };
+      }
+      break;
+    }
+
+    case "us-4098001-watson-rcc": {
+      const probe = (key: "lateralContactFraction" | "axisMismatchFraction", value: number) =>
+        stepWatsonRemoteCenterComplianceTopology({ ...params, [key]: value });
+      const h = 0.001;
+      if (controlKey === "lateralContactFraction") {
+        const contact = params.lateralContactFraction ?? 0.62;
+        const derivative =
+          (probe("lateralContactFraction", contact + h).translationOffset -
+            probe("lateralContactFraction", contact - h).translationOffset) /
+          (2 * h);
+        return {
+          metricName: "Illustrated Translation",
+          derivativeSymbol: "∂q_t / ∂q_c",
+          derivativeValue: Number(derivative.toFixed(3)),
+          derivativeUnit: "display fraction / contact fraction",
+          interpretation:
+            "Slope of the normalized exhibit pose. It is not a force-compliance or dimensional prediction.",
+        };
+      }
+      if (controlKey === "axisMismatchFraction") {
+        const mismatch = params.axisMismatchFraction ?? 0.44;
+        const derivative =
+          (probe("axisMismatchFraction", mismatch + h).remainingAxisMismatch -
+            probe("axisMismatchFraction", mismatch - h).remainingAxisMismatch) /
+          (2 * h);
+        return {
+          metricName: "Remaining Axis Mismatch",
+          derivativeSymbol: "∂q_e / ∂q_m",
+          derivativeValue: Number(derivative.toFixed(3)),
+          derivativeUnit: "normalized / normalized",
+          interpretation:
+            "Slope of the source-illustrative alignment cue. The grant does not provide a convergence rate or controller gain.",
         };
       }
       break;
@@ -1576,6 +1627,28 @@ export function computeParameterSensitivity(
           derivativeUnit: "(m/s²) / (m/s)",
           interpretation:
             "Wheel traction acceleration generated to match rider commanded travel speed.",
+        };
+      }
+      break;
+    }
+
+    case "us-4068536-stackhouse-manipulator": {
+      if (
+        controlKey === "intermediateRollDeg" ||
+        controlKey === "firstObliqueAngleDeg" ||
+        controlKey === "secondObliqueAngleDeg"
+      ) {
+        const baseline = params[controlKey] ?? 55;
+        const probe = (value: number) =>
+          stepStackhouseSourceTopology({ ...params, [controlKey]: value }).bendAngleDeg;
+        const derivative = (probe(baseline + 0.25) - probe(baseline - 0.25)) / 0.5;
+        return {
+          metricName: "Selected Display-Bend Sensitivity",
+          derivativeSymbol: "∂β_display / ∂q",
+          derivativeValue: Number(derivative.toFixed(4)),
+          derivativeUnit: "display deg / selected deg",
+          interpretation:
+            "Central difference of the same normalized display composition used by the 2D and 3D exhibits. It is not an SI dexterity, velocity, motor, or manufacturing-performance derivative.",
         };
       }
       break;

@@ -64,10 +64,11 @@ that public source path without discarding the old research asset.
 
 ## Independent-review boundary
 
-The author completed a direct visual pass across all five source pages. Root
-must still perform a second independent facsimile and live-render review before
-accepting or closing the Bead. Focused tests establish structure and pinned
-assets, not independent archival acceptance or deployment.
+The author completed a direct visual pass across all five source pages. A
+second fresh-eyes pass compared the accepted individual crops with their full
+source sheets and substituted full-sheet fallbacks where isolation remained
+unsafe. Focused tests establish structure and pinned assets; they do not by
+themselves constitute deployment proof.
 
 ## Source-crop audit and repair ledger (2026-08-21)
 

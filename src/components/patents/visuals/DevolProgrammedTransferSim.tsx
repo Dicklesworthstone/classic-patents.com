@@ -256,9 +256,7 @@ export function DevolProgrammedTransferSim() {
             Anticipator (Claims 2–4, 8, 19)
             <input
               type="checkbox"
-              checked={
-                state.traversalMode !== "fast-seek" || (params.anticipationEnabled ?? 1) >= 0.5
-              }
+              checked={(params.anticipationEnabled ?? 1) >= 0.5}
               onChange={(event) => updateParam("anticipationEnabled", Number(event.target.checked))}
             />
           </label>

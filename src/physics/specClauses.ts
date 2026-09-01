@@ -3,11 +3,13 @@
  * Highlighted on the spec face so an interaction lights the clause it tests.
  */
 
+import { stepDevolProgrammedTransfer } from "./devolProgrammedTransferKernel";
 import { stepFermiKinetics } from "./fermiKinetics";
 import { readKamenTransporterControls, stepKamenTransporterSi } from "./kamenTransporterKernel";
 import { stepHoweSewingMachine } from "./machineKernels";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
+import { stepStackhouseSourceTopology } from "./stackhouseSourceKernel";
 import { readSundbackZipperControls, stepSundbackZipperSi } from "./sundbackZipperKernel";
 import { stepTeslaMotorFig9, teslaMotorPhaseHz } from "./teslaKernel";
 import { readTeslaTransformerControls, stepTeslaTransformerSi } from "./teslaTransformerKernel";
@@ -2378,35 +2380,115 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
     ];
   }
 
-  if (patentId === "us-4098001-watson-rcc") {
-    const fLat = params.lateralContactForceN ?? 15;
-    const mTip = params.appliedMomentNm ?? 0.25;
-    const isRCC = params.complianceMode === undefined || params.complianceMode === 0;
+  if (patentId === "us-3119501-lemelson-automatic-warehousing") {
+    const railAddress = params.railAddressFraction ?? 0.55;
+    const levelAddress = params.levelAddressFraction ?? 0.42;
+    const shuttleExtension = params.shuttleExtensionFraction ?? 0.32;
+    const automaticAddressing = (params.automaticAddressing ?? 1) >= 0.5;
+    return [
+      {
+        id: "automatic-conveying-system",
+        phrase: "automatic conveying system",
+        active: automaticAddressing,
+        tone: automaticAddressing ? "held" : "broken",
+        caption:
+          "The source-described rail carrier, vertical carrier, and transverse transfer path are shown as one connected conveying topology.",
+      },
+      {
+        id: "predetermining-counter",
+        phrase: "predetermining counter",
+        active: automaticAddressing,
+        tone: automaticAddressing ? "live" : "broken",
+        caption: `Normalized rail/level address cues ${(railAddress * 100).toFixed(0)}% / ${(levelAddress * 100).toFixed(0)}% make the preset-count sequence visible without inventing bay spacing, pulse rate, or stopping tolerance.`,
+      },
+      {
+        id: "sequential-controller",
+        phrase: "sequential controller",
+        active: automaticAddressing && shuttleExtension > 0.02,
+        tone: automaticAddressing ? "live" : "broken",
+        caption: `The normalized transfer cue is ${(shuttleExtension * 100).toFixed(0)}%; the exhibit shows stage ordering but makes no timing or throughput prediction.`,
+      },
+      {
+        id: "photoelectric-scanner",
+        phrase: "photoelectric scanner",
+        active: automaticAddressing,
+        tone: automaticAddressing ? "live" : "broken",
+        caption:
+          "The source's non-contact marker/scanner relationship supplies address events; optical power, sensitivity, noise margin, and precision are not stated.",
+      },
+    ];
+  }
+
+  if (
+    patentId === "us-4098001-watson-rcc" ||
+    patentId === "us-4098001-watson-remote-center-compliance"
+  ) {
+    const contactFraction = params.lateralContactFraction ?? 0.62;
+    const mismatchFraction = params.axisMismatchFraction ?? 0.44;
+    const isRemoteCenter = (params.remoteCenterTopology ?? 1) >= 0.5;
+    const hasAntiTwist = (params.antiTwistConstraint ?? 1) >= 0.5;
     return [
       {
         id: "remote-center-compliance",
         phrase: "remote center compliance system",
-        active: isRCC,
-        tone: isRCC ? "live" : "broken",
-        caption: `Focal Compliance: ${
-          isRCC
-            ? "focal flexure rods project elastic rotational center to peg tip, eliminating jamming."
-            : "uncompensated wrist compliance allows contact moments to tilt peg into hole bore."
-        }`,
+        active: isRemoteCenter,
+        tone: isRemoteCenter ? "live" : "broken",
+        caption: isRemoteCenter
+          ? "Claim 1 topology shown: radial elements converge on a point at, near, or beyond the tool end."
+          : "Comparison pose only: the remote point has been moved back to the wrist, outside the illustrated Claim 1 arrangement.",
       },
       {
         id: "rotational-elements",
         phrase: "rotational interconnection elements",
-        active: Math.abs(mTip) > 0.05,
+        active: isRemoteCenter && mismatchFraction > 0.02,
         tone: "live",
-        caption: `Tip Moment M_y = ${mTip} N·m: focal flexures accommodate pure rotation about the projected remote compliance center.`,
+        caption: `Normalized axis-mismatch cue ${(mismatchFraction * 100).toFixed(0)}%: the exhibit makes the source's radial-element orientation legible without inventing torque or stiffness.`,
       },
       {
         id: "translational-elements",
         phrase: "translational interconnection elements",
-        active: fLat > 0.5,
+        active: contactFraction > 0.02,
         tone: "live",
-        caption: `Lateral Force F_x = ${fLat} N: parallel flexures translate laterally without inducing angular peg tilt.`,
+        caption: `Normalized chamfer-contact cue ${(contactFraction * 100).toFixed(0)}%: the connected axial elements move with the intermediate member; no force or dimensional response is asserted.`,
+      },
+      {
+        id: "torque-resistant-means",
+        phrase: "torque resistant means",
+        active: hasAntiTwist,
+        tone: hasAntiTwist ? "held" : "broken",
+        caption: hasAntiTwist
+          ? "Claim 2 addition shown: the bellows embodiment represents means for preventing operator-axis twist."
+          : "Claim 2 probe: the torque-resistant addition is omitted, leaving only Claim 1's topology.",
+      },
+    ];
+  }
+
+  if (patentId === "us-3858581-kamen-medication-injection-device") {
+    const pulseCount = params.pulseCount ?? 12;
+    const motorRunning = (params.motorRunning ?? 1) >= 0.5;
+    return [
+      {
+        id: "lead-screw",
+        phrase: "uniform-pitch lead screw",
+        active: true,
+        tone: "live",
+        caption:
+          "Claim 1 lead screw: rotation of the screw advances the syringe plunger axially by a fixed displacement per turn.",
+      },
+      {
+        id: "striker-switch",
+        phrase: "radially oriented striker mounted on said lead screw",
+        active: motorRunning,
+        tone: motorRunning ? "live" : "held",
+        caption: `Pulse counting switch active (${pulseCount} pulses recorded): striker trips switch once per screw revolution.`,
+      },
+      {
+        id: "motor-control",
+        phrase: "pulse-counting control circuit",
+        active: pulseCount > 0,
+        tone: "live",
+        caption:
+          "Claim 1 pulse counter stops the motor upon reaching the predetermined pulse count.",
       },
     ];
   }
@@ -2428,6 +2510,66 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         tone: "held",
         caption:
           "Multi-touch gesture engine applies geometric heuristics to disambiguate pinch-zoom, pan, scroll, and tap.",
+      },
+    ];
+  }
+
+  if (patentId === "us-2988237-devol-programmed-transfer") {
+    const state = stepDevolProgrammedTransfer(params);
+    return [
+      {
+        id: "magnetic-drum-recording",
+        phrase: "magnetic recording member",
+        active: true,
+        tone: "held",
+        caption: `The source stores combinational position symbols for ${state.programPhase}; the display code is pedagogical and does not assert a modern digital coordinate format or storage density.`,
+      },
+      {
+        id: "programmed-article-transfer",
+        phrase: "programmed article transfer",
+        active: state.coincidence,
+        tone: state.coincidence ? "live" : "held",
+        caption: `${state.matchingBits}/${state.bitWidth} corresponding code channels agree. The source compares a mechanically coupled position representation with a selected program symbol; it does not disclose robot-joint coordinates or an SI servo model.`,
+      },
+    ];
+  }
+
+  if (patentId === "us-4068536-stackhouse-manipulator") {
+    const pose = stepStackhouseSourceTopology(params);
+    const preferredPointP = pose.singleIntersection >= 0.5;
+
+    return [
+      {
+        id: "concentric-drive-shafts",
+        phrase: "concentric drive shafts",
+        active: true,
+        tone: "held",
+        caption:
+          "The source describes independently rotatable concentric shafts and, in the preferred embodiment, hydraulic motors 9a, 9b, and 9c mounted at the elbow. It prints no torque, speed, or power values.",
+      },
+      {
+        id: "single-point-p",
+        phrase: "intersect at a single point, P",
+        active: preferredPointP,
+        tone: preferredPointP ? "live" : "held",
+        caption:
+          "The preferred illustrated axes A–A′, B–B′, and C–C′ meet at P. The contrast control shows the source's expressly permitted small deviation, not a measured tolerance.",
+      },
+      {
+        id: "greater-than-hemisphere",
+        phrase: "greater than a hemisphere",
+        active: pose.firstObliqueAngleDeg > 45 && pose.secondObliqueAngleDeg > 45,
+        tone: "held",
+        caption: `The selected exhibit angles are ${pose.firstObliqueAngleDeg.toFixed(0)}° and ${pose.secondObliqueAngleDeg.toFixed(0)}°. The patent supplies only the two >45° inequalities and the qualitative sector statement, not exact angles or a steradian value.`,
+      },
+      {
+        id: "orientation-holes",
+        phrase: "correspondingly small “holes”",
+        active: !preferredPointP,
+        tone: preferredPointP ? "held" : "live",
+        caption: preferredPointP
+          ? "The preferred point-P topology is selected."
+          : "The source says small deviations from coincidence may be used but inherently reduce the full orientation range by creating small holes.",
       },
     ];
   }

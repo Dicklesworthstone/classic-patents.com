@@ -1,0 +1,58 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 8 ---
+
+United States Patent
+[19] Kamen
+
+MEDICATION INJECTION DEVICE
+
+Dean Kamen, 99 Bulsar Rd., Rockville Centre, N.Y. 11570
+Appl. No. 375,955. Filed July 2, 1973. Patented Jan. 7, 1975.
+5 Claims, 6 Drawing Figures.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 8 ---
+
+FIG. 1 is a perspective view of a medication injection device according to the present invention; FIG. 2 is a plan view of the device illustrating further structural features thereof, and also illustrating how the volume of the medication to be dispensed is related to an operating parameter of the device, namely electrical pulses emitted during its operation; and FIG. 3 is a side elevational view, taken in longitudinal section, illustrating internal structural features.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 8 ---
+
+FIG. 4 is an end elevational view, in section taken on line 4-4 of FIG. 3, illustrating structural features of a pulse generator used in the device hereof; FIG. 5 is a partial plan view, in section taken on line 5-5 of FIG. 3, illustrating further structural features; and FIG. 6 is a block diagram illustrating the electrical components used in controlling the operation of the mechanical components of the device hereof.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 8 ---
+
+MEDICATION INJECTION DEVICE
+
+The present invention relates to improvements in a medication injection device, and more particularly to an automatic medication-injecting or administering device readily capable of dispensing medication in accordance with any selected schedule of successive intervals of operation and non-operation of a syringe-driving or powering motor.
+
+FIGS. 1-3 show the general organization of the mechanical parts of a medication injection device, generally designated 10, demonstrating objects and advantages of the present invention. The device 10 includes a syringe 12 of the type having a plunger 14, the linear displacement of which dictates the amount of medication which is dispensed from the syringe chamber 12 through tubing 15.
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 8 ---
+
+Arranged to cause linear displacement of the plunger 14 is an upstanding head 16 of a follower, generally designated 18, which, as best shown in FIG. 3, has a threaded member which is mounted, as at 20, on a lead screw 22 which is powered in rotation by a motor 24. The lead screw 22 has threads 26 of uniform pitch machined along its length and is disposed substantially parallel to the path of linear displacement of the plunger 14.
+
+A body element 40 of the follower is prevented from partaking of rotative movement while the lead screw 22 is driven in rotation, and the threaded member in meshing engagement therewith is therefore advanced along the length of the lead screw 22. FIG. 2 shows a scale 62 laid out in ascending numbers corresponding to distances of advancement produced by the uniform thread pitch 26.
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 8 ---
+
+A radially oriented striker 80 is driven in rotation simultaneously with the lead screw 22. Actual physical contact is made by the striker 80 against a switch contact arm 82 during each rotational traverse. This contact results in actuation of switch 84, which is part of a pulse-generating circuit effective to produce and transmit an electric pulse to a pulse-counting circuit embodied on a printed circuit board 86.
+
+The pulse-counting circuit 86 is effective in causing commencement of operation of the powering motor 24 and continued operation thereof for the duration of transmission to it of a selected number of pulses. The electrical control components cause resetting of the motor-on timer, termination of operation of the powering motor, and starting of the timing operation of the motor-off timer.
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 8 ---
+
+FIG. 6 illustrates an exemplary electronic circuit embodied on the printed circuit board 86. Its pulse-counting service may use first and second pulse counters 114 and 116, whose outputs are activated in succession. During operation of the motor 24, the pulse generator is controlled by the striker which, upon physical contact with switch 84 during each rotational traverse of the lead screw 22, produces a pulse counted by the motor-on timer.
+
+Completing the device is a safety feature which disconnects the drive between motor 24 and lead screw 22 in the event of buildup of resistance pressure transmitted in a reverse direction. A clutch 136 of shaft coupling 90 breaks its driving connection between driving and driven elements and discontinues the driving connection between motor 24 and lead screw 22.
+
+--- REVIEWED TRANSCRIPTION PAGE 8 OF 8 ---
+
+What is claimed is:
+
+1. A medication injection device comprising a syringe for dispensing medication in accordance with linear displacement of a plunger thereof, means secured to said syringe for connection to a patient for dispensing said medication to said patient, a rotatively mounted lead screw with threads of uniform pitch disposed in substantially parallel relation to the linear displacement path of said syringe plunger, pushing means mounted on said lead screw for advancement therealong in pushing engagement with said syringe plunger, a motor operatively arranged to power said lead screw in rotation to cause advancement of said pushing means and corresponding linear displacement of said syringe plunger, a radially oriented striker mounted on said lead screw, a pulse-emitting switch located adjacent said lead screw in the path of the rotational traverse of said striker so as to be engaged thereby to cause an emission of an electrical pulse during each rotation of said lead screw, and a pulse-counting means electrically connected to receive the transmission of each aforesaid pulse and operatively connected to permit the operation of said motor for the duration of the transmission thereto of a selected number of said pulses, whereby medication is dispensed in accordance with the linear displacement of said syringe plunger as a function of the number of rotational traverses of said lead screw as counted by said pulse-counting means.
+
+2. A medication injection device as defined in claim 1 including an additional timing means operatively connected to said motor to cause the commencement of the operation thereof after a selected interval of non-operation, whereby said medication is dispensed by said device in accordance with a selected schedule of successive intervals of operation and non-operation of said motor.
+
+3. A medication injection device as defined in claim 2 including a clutch interposed in the drive connection between said motor and said lead screw, and including means mounting said lead screw for selected limited linear movement for disengaging the same from said clutch to thereby terminate the powering rotation of said lead screw by said motor, whereby said dispensing of medication by said device is capable of being terminated in an emergency situation.
+
+4. A medication injection device as defined in claim 2 wherein said additional timing means is of the type operated by pulses transmitted to it as is also said pulse-counting means, and further including a visual signaling device connected to be operated by each pulse being transmitted to said additional timing means and to said pulse-counting means, whereby the operation of said visual signal device is effective in indicating the working condition of said medication injection device.
+
+5. A medication injection device as defined in claim 4 including a scale calibrating linear displacement of said syringe plunger with an ascending number of pulses produced during said rotational operation of said motor, whereby the volume of medication to be dispensed can be readily related to a selected number of pulses as counted by said pulse-counting means.
