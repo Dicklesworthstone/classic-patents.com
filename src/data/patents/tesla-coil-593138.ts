@@ -1,6 +1,16 @@
 import { teslaCoil593138ArchivalEdition } from "@/data/editions/teslaCoil593138Edition";
 import type { Patent } from "@/types/patent";
 
+function manualClaimText(number: number): string {
+  const block = teslaCoil593138ArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Tesla US 593,138 manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 /**
  * Canonical catalogue record for the four-sheet facsimile inspected on
  * 2026-08-18. Its title sheet and specification identify it as US 593,138,
@@ -101,8 +111,7 @@ The present application is based upon an apparatus which I have devised and empl
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "A transformer for developing or converting currents of high potential, comprising a primary and secondary coil, one terminal of the secondary being electrically connected with the primary, and with earth when the transformer is in use, as set forth.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "Claims a high-potential transformer having primary and secondary coils, with one secondary terminal electrically tied to the primary and, during operation, to earth. The claim makes that specified three-way relationship the legal limitation, without requiring the later flat-spiral geometry.",
       keyInnovations: ["primary-secondary connection", "grounded secondary terminal"],
@@ -110,8 +119,7 @@ The present application is based upon an apparatus which I have devised and empl
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "A transformer for developing or converting currents of high potential, comprising a primary and secondary wound in the form of a flat spiral, the end of the secondary adjacent to the primary being electrically connected therewith and with earth when the transformer is in use, as set forth.",
+      originalText: manualClaimText(2),
       plainEnglish:
         "Claims the same high-potential transformer when its primary and secondary are wound as a flat spiral. It specifically fixes the secondary end nearest the primary as the end electrically connected both to the primary and, in use, to earth.",
       keyInnovations: ["flat spiral winding", "adjacent secondary terminal"],
@@ -119,8 +127,7 @@ The present application is based upon an apparatus which I have devised and empl
     {
       number: 3,
       isIndependent: true,
-      originalText:
-        "A transformer for developing or converting currents of high potential comprising a primary and secondary wound in the form of a spiral, the secondary being inside of, and surrounded by, the convolutions of the primary and having its adjacent terminal electrically connected therewith and with earth when the transformer is in use, as set forth.",
+      originalText: manualClaimText(3),
       plainEnglish:
         "Claims a spiral arrangement in which the secondary lies inside and is surrounded by the primary turns. The secondary terminal adjacent to the primary must be electrically connected both to that primary and, while in use, to earth; that nested placement distinguishes this claim from the broader first claim.",
       keyInnovations: ["nested spiral geometry", "surrounding primary winding"],
@@ -128,8 +135,7 @@ The present application is based upon an apparatus which I have devised and empl
     {
       number: 4,
       isIndependent: true,
-      originalText:
-        "In a system for the conversion and transmission of electrical energy, the combination of two transformers, one for raising, the other for lowering, the potential of the currents, the said transformers having one terminal of the longer or fine-wire coils connected to line, and the other terminals adjacent to the shorter coils electrically connected therewith and to the earth, as set forth.",
+      originalText: manualClaimText(4),
       plainEnglish:
         "Claims a transmission system using two transformers: one raises and the other lowers the current potential. The longer or fine-wire coil has a terminal on the line; its other terminal, adjacent to the shorter coil, is electrically connected to that coil and to earth at each transformer.",
       keyInnovations: ["step-up transformer", "step-down transformer", "line transmission pair"],

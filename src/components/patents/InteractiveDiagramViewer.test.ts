@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { allPatents } from "@/data/patents";
 import { wrightFlyerPatent } from "@/data/patents/wright-flyer";
+import { resetPatentPhysicsParams, setPatentPhysicsParam } from "@/physics/usePatentPhysics";
 
 describe("Interactive Historical Schematic & Drawing Sheets", () => {
   test("ensures every catalog patent with drawings has authentic figures, titles, and captions", () => {
@@ -122,6 +123,24 @@ describe("InteractiveDiagramViewer React rendering", () => {
     expect(source).not.toContain("165° Jet Energy Extraction");
     expect(source).not.toContain("Balanced Crankcase Flywheels");
     expect(source).not.toContain("Hot Tube");
+  });
+
+  test("opens Tesla's secondary bond on the same shared Claim 1 state as both model faces", () => {
+    const patent = allPatents.find((candidate) => candidate.id === "us-593138-tesla-coil");
+    if (!patent) throw new Error("Tesla transformer patent fixture is missing");
+    setPatentPhysicsParam(patent.id, "claim1CommonNodeConnected", 0);
+    try {
+      const html = renderToStaticMarkup(
+        React.createElement(InteractiveDiagramViewer, {
+          drawings: patent.drawings,
+          patentId: patent.id,
+          patentNumber: patent.patentNumber,
+        }),
+      );
+      expect(html).toContain(">open</text>");
+    } finally {
+      resetPatentPhysicsParams(patent.id);
+    }
   });
 
   test("keeps the Pasteur schematic on the apparatus printed in US 135,245", () => {

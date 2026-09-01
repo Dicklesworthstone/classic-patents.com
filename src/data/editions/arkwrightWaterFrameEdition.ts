@@ -21,7 +21,15 @@ const figure = (label: string, sourceText: string = label): CuratedSpecification
   text: sourceText,
   href: "#",
   referenceType: "figure",
-  label: `${label} preview unavailable: the pinned PDF is a 2026 Typst reconstruction, not a primary facsimile.`,
+  label: `${label} as reproduced in the pinned 2026 Typst reconstruction; this is not a primary facsimile.`,
+  figurePreviews: [
+    {
+      src: "/patents/figures/gb-931-arkwright-water-frame/fig-1-source-crop-v3.png",
+      alt: `${label} from the pinned reconstruction of GB 931; not a primary facsimile`,
+      width: 1550,
+      height: 1500,
+    },
+  ],
 });
 
 const p = (

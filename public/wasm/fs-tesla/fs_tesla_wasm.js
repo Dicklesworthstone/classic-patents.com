@@ -1,17 +1,16 @@
 /* @ts-self-types="./fs_tesla_wasm.d.ts" */
 
 /**
- * @param {number} resonant_freq_khz
- * @param {number} input_kv
- * @param {number} spark_gap_mm
- * @param {number} q_factor
+ * @param {number} frequency_hz
+ * @param {number} propagation_speed_mps
+ * @param {number} conductor_length_m
  * @returns {string}
  */
-export function tesla_coil_step(resonant_freq_khz, input_kv, spark_gap_mm, q_factor) {
+export function tesla_transformer_step(frequency_hz, propagation_speed_mps, conductor_length_m) {
     let deferred1_0;
     let deferred1_1;
     try {
-        const ret = wasm.tesla_coil_step(resonant_freq_khz, input_kv, spark_gap_mm, q_factor);
+        const ret = wasm.tesla_transformer_step(frequency_hz, propagation_speed_mps, conductor_length_m);
         deferred1_0 = ret[0];
         deferred1_1 = ret[1];
         return getStringFromWasm0(ret[0], ret[1]);
@@ -22,9 +21,6 @@ export function tesla_coil_step(resonant_freq_khz, input_kv, spark_gap_mm, q_fac
 function __wbg_get_imports() {
     const import0 = {
         __proto__: null,
-        __wbg___wbindgen_throw_bb96b2010945f0bc: function(arg0, arg1) {
-            throw new Error(getStringFromWasm0(arg0, arg1));
-        },
         __wbindgen_init_externref_table: function() {
             const table = wasm.__wbindgen_externrefs;
             const offset = table.grow(4);

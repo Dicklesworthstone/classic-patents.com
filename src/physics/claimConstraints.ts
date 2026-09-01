@@ -233,14 +233,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-6594844-roomba",
-      claimTitle: "Autonomous Multi-Mode Coverage & Obstacle Escape",
+      claimTitle: "Intersecting Optical Fields & Redirect Circuit",
       activeDescription:
-        "Claim 1 switches deterministically between spiral, wall-following, and bounce modes upon mechanical bumper contact.",
+        "Claim 1 mounts a directed photon emitter and detector on the robot so their fields intersect at a finite surface region, then redirects the housing when that expected surface is absent.",
       invertedDescription:
-        "Linear dead-reckoning: vacuum gets trapped in room corners or furniture legs indefinitely.",
-      failureModeName: "Corner Entrapment & Battery Depletion",
+        "Optical subsystem absent: no emitter/detector intersection is observed and the claimed circuit cannot command the source-described surface-absence redirect. Mechanical bumper contact remains a separate behavior.",
+      failureModeName: "Claimed Optical Redirect Condition Absent",
       historicalPriorArt:
-        "Industrial robotic cleaners required complex laser positioning beacons or magnetic floor tape.",
+        "The grant frames the improvement as a low-cost finite-region optical test for floors, walls, and obstacles rather than a claim to a complete coverage algorithm.",
     },
   ],
   "us-7479949-multitouch": [
@@ -589,14 +589,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-194047-otto-engine",
-      claimTitle: "Four-Stroke Stratified Charge Compression & Power Cycle",
+      claimTitle: "Graded Separate Air and Combustible Charge",
       activeDescription:
-        "Claim 1 separates intake, compression, power expansion, and positive exhaust scavenging into four distinct piston strokes over two crankshaft revolutions.",
+        "Claim 1 introduces the combustible mixture separately from an air or incombustible-gas charge, concentrated near ignition and increasingly dispersed farther forward so heat and pressure rise gradually.",
       invertedDescription:
-        "Two-stroke uncompressed scavenging: fresh fuel charge mixes with burning residual exhaust gases, causing intake backfire and thermal efficiency collapse.",
-      failureModeName: "Scavenging Charge Loss & Intake Backfire",
+        "Ungraded charge counterfactual: the source-described concentration gradient and its claimed gradual heat-and-pressure development are absent. The grant supplies no measurements from which to invent a replacement pressure trace.",
+      failureModeName: "Claimed Charge Gradient Absent",
       historicalPriorArt:
-        "Lenoir and atmospheric gas engines ignited uncompressed charge at mid-stroke with poor thermal efficiency (<4%).",
+        "Otto's specification distinguishes this staged, spatially graded charge from engines that ignite a combustible charge without the claimed intervening distribution of air or incombustible gas.",
     },
   ],
   "us-235199-bell-photophone": [
@@ -729,14 +729,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-593138-tesla-coil",
-      claimTitle: "Resonant Air-Core High-Frequency Step-Up Transformer",
+      claimTitle: "Primary / Secondary / Earth Common-Node Transformer",
       activeDescription:
-        "Claim 1 steps up high-frequency electrical oscillations using tuned air-core primary/secondary coils ($L_1 C_1 = L_2 C_2$) without an iron core, achieving mega-volt potential.",
+        "Claim 1 electrically connects one secondary terminal with the primary and, while the transformer is in use, with earth.",
       invertedDescription:
-        "Iron-core transformer at RF (100+ kHz): magnetic hysteresis and eddy-current losses saturate the core instantly, causing thermal insulation destruction and zero resonant step-up.",
-      failureModeName: "Ferromagnetic Core Saturation & RF Eddy Burnout",
+        "Open secondary bond: the secondary terminal is no longer electrically connected to the claimed primary-and-earth common node, so the Claim 1 topology is absent. No voltage or damage result is inferred.",
+      failureModeName: "Claimed Common-Node Topology Absent",
       historicalPriorArt:
-        "Conventional Ruhmkorff induction coils and closed iron-core transformers experienced severe core saturation and breakdown at radio frequencies.",
+        "The specification distinguishes its terminal arrangement and winding placement from the flat spiral itself, which Tesla expressly says was already old.",
     },
   ],
   "us-613809-tesla-teleautomaton": [
@@ -1524,14 +1524,12 @@ export function applyClaimConstraintModifications(
     case "us-194047-otto-engine": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
-        modified.compressionRatio = 1.2; // Uncompressed atmospheric charge
-        modified.thermalEfficiencyPct = 3.5; // Collapsed from 24% to 3.5%
-        modified.indicatedPowerHp = 0.4;
+        modified.claim1ChargeGradingPresent = 0;
         activeFailures.push(
-          "Intake Backfire & Residual Exhaust Contamination: Fresh gas charge ignites prematurely in intake tract",
+          "Claim 1 charge-grading condition absent: the combustible mixture is no longer represented as concentrated near ignition and increasingly dispersed through the separate air charge",
         );
         refusalWarning =
-          "FOUR-STROKE CYCLE COLLAPSE: Without distinct 4-stroke induction and scavenging, engine suffers backfire.";
+          "CLAIM 1 TOPOLOGY ABSENT: no source-backed pressure, efficiency, or power consequence is inferred for an ungraded replacement charge.";
       }
       break;
     }
@@ -1666,13 +1664,12 @@ export function applyClaimConstraintModifications(
     case "us-593138-tesla-coil": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
-        modified.secondaryVoltageKv = 2.5; // Iron core hysteresis saturation collapse
-        modified.resonantQ = 1.2; // Destroyed high-Q resonance
+        modified.claim1CommonNodeConnected = 0;
         activeFailures.push(
-          "Iron Core Hysteresis Saturation: Ferromagnetic core induces massive RF eddy currents and insulation burnout",
+          "Source-bound Claim 1 condition absent: the secondary terminal is disconnected from the primary-and-earth common node",
         );
         refusalWarning =
-          "RF CORE SATURATION: Tuned air-core quarter-wave resonance required for mega-volt high-frequency potential.";
+          "SOURCE-BOUND REFUSAL: Tesla Claim 1 requires one secondary terminal to be electrically connected with the primary and, in use, with earth; no voltage or failure magnitude is inferred.";
       }
       break;
     }
@@ -1687,6 +1684,19 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "TELECONTROL DESYNC: Multi-pulse coded sequencing and rotary commutator required for deterministic remote steering.";
+      }
+      break;
+    }
+
+    case "us-6594844-roomba": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.opticalSensorEnabled = 0;
+        activeFailures.push(
+          "Source-bound Claim 1 condition absent: no intersecting emitter/detector field drives the surface-absence redirect circuit",
+        );
+        refusalWarning =
+          "SOURCE-BOUND REFUSAL: Claim 1 requires a directed photon field, an intersecting detector field, and circuitry that redirects the robot when the expected surface is absent; mechanical bumper behavior is not a substitute.";
       }
       break;
     }

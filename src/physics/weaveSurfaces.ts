@@ -28,7 +28,6 @@ import {
   stepMorseTelegraph,
   stepNobelDynamite,
   stepNoyceIC,
-  stepOttoEngine,
   stepParsonsTurbine,
   stepPasteurFermentation,
   stepThomsonWelding,
@@ -48,7 +47,9 @@ import {
   stepSholesTypewriter,
 } from "./machineKernels";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
+import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
 import { stepTeslaMotorFig9, teslaBAt, teslaMotorPhaseHz } from "./teslaKernel";
+import { readTeslaTransformerControls, stepTeslaTransformerSi } from "./teslaTransformerKernel";
 
 import { readWrightControls, stepWrightFlyerSi, WRIGHT_GROSS_WEIGHT_N } from "./wrightKernel";
 
@@ -266,14 +267,14 @@ export function materialProbe(
     };
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
-    const coil = FrankenSimEngine.stepTeslaCoilFromControls(params);
+    const transformer = stepTeslaTransformerSi(readTeslaTransformerControls(params));
     return {
       part: calloutLabel,
-      material: "Air-core dual-tuned LC, spark-gap primary",
-      qty: "arc",
-      value: coil.streamerLengthInches.toFixed(1),
-      unit: "in",
-      note: `${coil.secondaryPotentialMv.toFixed(2)} MV at k=${(params.couplingK ?? 0.18).toFixed(2)}.`,
+      material: "Graded spiral secondary with common primary / earth terminal",
+      qty: "βl",
+      value: transformer.electricalLengthDeg.toFixed(1),
+      unit: "deg",
+      note: `${transformer.secondaryLengthMiles.toFixed(1)} mi wire against a ${transformer.quarterWaveLengthMiles.toFixed(2)} mi quarter-wave target.`,
     };
   }
   if (patentId.includes("kodak") || patentId.includes("388850")) {
@@ -448,17 +449,14 @@ export function materialProbe(
     };
   }
   if (patentId.includes("otto-engine") || patentId.includes("194047")) {
-    const otto = stepOttoEngine({
-      engineRpm: params.engineRpm,
-      compressionRatio: params.compressionRatio,
-    });
+    const rpm = params.engineRpm ?? 180;
     return {
       part: calloutLabel,
-      material: "Slide-valve four-stroke, coal-gas charge",
-      qty: "η",
-      value: otto.thermalEfficiencyPct.toString(),
-      unit: "%",
-      note: `Air-standard 1−r^(1−γ). ${otto.brakeHorsepower} BHP. P2 ${otto.peakCompressionBar} bar / P3 ${otto.peakFiringBar} bar · ω ${otto.crankOmegaRadPerS} rad/s.`,
+      material: "Source-described graded gas/air charge and slide-valve gear",
+      qty: "ω_K/ω_I",
+      value: "0.5",
+      unit: "shaft ratio",
+      note: `At the declared ${rpm} RPM display input, counter-shaft K runs at ${(rpm / 2).toFixed(1)} RPM. The grant prints no pressure, power, mass, inertia, or efficiency datum.`,
     };
   }
   if (patentId.includes("pelton") || patentId.includes("233692")) {
@@ -977,11 +975,8 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     return [{ label: "T_fil", min: 1200, max: 2400, live: bulb.filamentTempK, unit: "K" }];
   }
   if (patentId.includes("otto-engine") || patentId.includes("194047")) {
-    const otto = stepOttoEngine({
-      engineRpm: params.engineRpm,
-      compressionRatio: params.compressionRatio,
-    });
-    return [{ label: "η", min: 20, max: 60, live: otto.thermalEfficiencyPct, unit: "%" }];
+    const rpm = params.engineRpm ?? 180;
+    return [{ label: "Counter-shaft", min: 30, max: 160, live: rpm / 2, unit: "RPM" }];
   }
   if (patentId.includes("pelton") || patentId.includes("233692")) {
     return [{ label: "Head", min: 10, max: 150, live: params.headMeters ?? 60, unit: "m" }];
@@ -1059,8 +1054,16 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
-    const coil = FrankenSimEngine.stepTeslaCoilFromControls(params);
-    return [{ label: "Arc", min: 0.1, max: 4, live: coil.streamerLengthMeters, unit: "m" }];
+    const transformer = stepTeslaTransformerSi(readTeslaTransformerControls(params));
+    return [
+      {
+        label: "βl",
+        min: 45,
+        max: 180,
+        live: transformer.electricalLengthDeg,
+        unit: "deg",
+      },
+    ];
   }
   if (patentId.includes("kodak") || patentId.includes("388850")) {
     const raw = params.shutterSpeed ?? 0.05;
@@ -1483,7 +1486,23 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId.includes("roomba") || patentId.includes("6594844")) {
-    return [{ label: "V_batt", min: 10, max: 18, live: params.batteryVoltage ?? 14.4, unit: "V" }];
+    const sensor = stepRoomba({
+      wheelSpeedMps: params.wheelSpeedMps ?? 0.3,
+      turnRateRadSec: params.turnRateRadSec ?? 1.5,
+      roomWidth: ROOMBA_ROOM.width,
+      roomHeight: ROOMBA_ROOM.height,
+      sensorHeightInches: params.sensorHeightInches,
+      opticalSensorEnabled: (params.opticalSensorEnabled ?? 1) >= 0.5,
+    });
+    return [
+      {
+        label: "Optical overlap",
+        min: 0,
+        max: 100,
+        live: sensor.opticalSensorEnabled ? sensor.surfaceOverlapFraction * 100 : 0,
+        unit: "%",
+      },
+    ];
   }
   if (patentId.includes("multitouch") || patentId.includes("7479949")) {
     return [
@@ -1521,17 +1540,7 @@ export function fidelityField(
     return null;
   }
   if (patentId.includes("otto-engine") || patentId.includes("194047")) {
-    const otto = stepOttoEngine({
-      engineRpm: params.engineRpm,
-      compressionRatio: params.compressionRatio,
-    });
-    return {
-      part: "Air-standard η vs 1876 Deutz shop",
-      model: otto.thermalEfficiencyPct.toString(),
-      reference: "27",
-      residual: (otto.thermalEfficiencyPct - 27).toString(),
-      unit: "%",
-    };
+    return null;
   }
   if (patentId.includes("howe") || patentId.includes("4750")) {
     const sew = stepHoweSewingMachine(
@@ -1582,13 +1591,13 @@ export function fidelityField(
     };
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
-    const coil = FrankenSimEngine.stepTeslaCoilFromControls(params);
+    const transformer = stepTeslaTransformerSi(readTeslaTransformerControls(params));
     return {
-      part: "Streamer vs Colorado Springs 1899",
-      model: coil.streamerLengthMeters.toFixed(2),
-      reference: "30",
-      residual: (coil.streamerLengthMeters - 30).toFixed(2),
-      unit: "m",
+      part: "Quarter-wave length vs Tesla's printed 925 Hz example",
+      model: transformer.quarterWaveLengthMiles.toFixed(6),
+      reference: "50.000000",
+      residual: (transformer.quarterWaveLengthMiles - 50).toFixed(6),
+      unit: "mi",
     };
   }
   if (patentId.includes("kodak") || patentId.includes("388850")) {
@@ -2226,13 +2235,7 @@ export function fidelityField(
     return null;
   }
   if (patentId.includes("roomba") || patentId.includes("6594844")) {
-    return {
-      part: "Floor area coverage efficiency vs 2002 iRobot test",
-      model: "94",
-      reference: "92",
-      residual: "2",
-      unit: "%",
-    };
+    return null;
   }
   if (patentId.includes("multitouch") || patentId.includes("7479949")) {
     return {
@@ -2307,13 +2310,8 @@ export function spectralModes(patentId: string, params: Record<string, number>):
     }));
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
-    const f0 = FrankenSimEngine.stepTeslaCoilFromControls(params).resonantFreqHz;
-    return [1, 2, 3].map((n) => ({
-      n,
-      freqHz: f0 * n,
-      amp: n === 1 ? 1 : 0.25 / n,
-      name: n === 1 ? "LC tank" : `harmonic ${n}`,
-    }));
+    const transformer = stepTeslaTransformerSi(readTeslaTransformerControls(params));
+    return [{ n: 1, freqHz: transformer.frequencyHz, amp: 1, name: "printed disturbance" }];
   }
   return [];
 }
@@ -2516,10 +2514,10 @@ export function datedScenarios(patentId: string): DatedScenario[] {
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
     return [
       {
-        id: "columbia-1891",
-        date: "1891-05-20",
-        name: "Columbia lecture coil",
-        writes: { primaryCap: 45, couplingK: 0.18, inputVoltageKv: 15, sparkGapDistanceMm: 12 },
+        id: "patent-printed-example-1897",
+        date: "1897-11-02",
+        name: "US 593,138 printed quarter-wave example",
+        writes: { disturbanceFrequencyHz: 925, secondaryLengthMiles: 50 },
       },
     ];
   }
@@ -3105,10 +3103,10 @@ export function datedScenarios(patentId: string): DatedScenario[] {
   if (patentId.includes("roomba") || patentId.includes("6594844")) {
     return [
       {
-        id: "irobot-2002",
-        date: "2002-09-15",
-        name: "iRobot autonomous coverage navigation release",
-        writes: { spiralExpansionRate: 1.2, wallFollowDistanceCm: 1.5 },
+        id: "us-6594844-filed-optical-region",
+        date: "2001-01-24",
+        name: "Filed finite-region optical obstacle detector",
+        writes: { opticalSensorEnabled: 1, wallDistanceInches: 2.6 },
       },
     ];
   }
@@ -3223,11 +3221,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [{ from: "steam", to: "shaft", watts: parsons.shaftPowerKw * 1000 }];
   }
   if (patentId.includes("otto-engine") || patentId.includes("194047")) {
-    const otto = stepOttoEngine({
-      engineRpm: params.engineRpm,
-      compressionRatio: params.compressionRatio,
-    });
-    return [{ from: "gas charge", to: "brake", watts: otto.brakeHorsepower * 745.7 }];
+    return [];
   }
   if (patentId.includes("daimler") || patentId.includes("361931")) {
     // US 361,931 prints no speed, torque, flow, heat, or power datum.
@@ -3286,7 +3280,9 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [{ from: "furnace", to: "indicated", watts: watt.indicatedPowerKw * 1000 }];
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
-    return [{ from: "primary tank", to: "secondary field", watts: 2050 }];
+    // The grant prints topology and distributed-wave geometry, but no current,
+    // impedance, excitation, loss, or load datum for a watt-valued coupling.
+    return [];
   }
   if (
     patentId.includes("boyle") ||
@@ -3465,7 +3461,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [];
   }
   if (patentId.includes("roomba") || patentId.includes("6594844")) {
-    return [{ from: "battery", to: "drive wheels & vacuum", watts: 19.6 }];
+    return [];
   }
   if (patentId.includes("multitouch") || patentId.includes("7479949")) {
     return [{ from: "scan drive", to: "mutual capacitance charge", watts: 0.024 }];
@@ -3548,7 +3544,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [{ from: "oil combustion", to: "isobaric expansion", watts: 4320 }];
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
-    return [{ from: "primary tank", to: "secondary field", watts: 2050 }];
+    return [];
   }
   if (patentId.includes("teleautomaton") || patentId.includes("613809")) {
     return [{ from: "motor battery", to: "screw propeller", watts: 129.6 }];

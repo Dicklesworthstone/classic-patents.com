@@ -1,25 +1,38 @@
 import * as THREE from "three";
 import { fourStrokeCycle, stepOttoEngine } from "@/physics/catalogKernels";
 import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
+import {
+  OTTO_MODEL_CONNECTING_ROD_LENGTH,
+  OTTO_MODEL_CRANK_RADIUS,
+  type OttoMechanismPose,
+} from "@/physics/ottoKernel";
 
 export interface OttoEngineModelNodes {
   root: THREE.Group;
   // Reciprocating kinematics
   pistonGroup: THREE.Group;
   pistonMesh: THREE.Mesh;
+  wristPin: THREE.Mesh;
   connectingRod: THREE.Group;
   crankshaftGroup: THREE.Group;
+  crankPin: THREE.Mesh;
   leftFlywheel: THREE.Group;
   rightFlywheel: THREE.Group;
   // 2:1 Side shaft / Camshaft
   sideShaftGroup: THREE.Group;
   slideValvePlate: THREE.Group;
-  slideValveEccentricRod: THREE.Group;
+  slideValveEccentricPin: THREE.Mesh;
+  slideValveEccentricRod: THREE.Mesh;
+  exhaustCam: THREE.Mesh;
   exhaustRockerArm: THREE.Group;
   exhaustValveStem: THREE.Mesh;
+  exhaustValveLink: THREE.Mesh;
+  exhaustCamFollower: THREE.Mesh;
   governorSpindle: THREE.Group;
   governorBallLeft: THREE.Mesh;
   governorBallRight: THREE.Mesh;
+  governorArmLeft: THREE.Mesh;
+  governorArmRight: THREE.Mesh;
   governorSleeve: THREE.Mesh;
   // Gas & Flame
   pilotFlameMesh: THREE.Mesh;
@@ -44,17 +57,61 @@ export interface OttoEngineModelResult {
   root: THREE.Group;
   nodes: OttoEngineModelNodes;
   materials: OttoEngineMaterials;
+  connectivityReceipt: () => readonly { interface: string; gapMeters: number }[];
   dispose: () => void;
 }
 
-// Engine kinematic dimensions (meters / scaled scene units)
-export const OTTO_CRANK_RADIUS = 0.65; // Crank throw r
-export const OTTO_CONNECTING_ROD_LENGTH = 2.4; // Rod length L
+// The patent drawing is not dimensioned. These are explicit display-scale
+// reconstruction units shared with the fs-mbd topology and the 2D reduction.
+export const OTTO_CRANK_RADIUS = OTTO_MODEL_CRANK_RADIUS;
+export const OTTO_CONNECTING_ROD_LENGTH = OTTO_MODEL_CONNECTING_ROD_LENGTH;
 export const OTTO_CYLINDER_BORE = 1.1; // Diameter
 export const OTTO_STROKE = OTTO_CRANK_RADIUS * 2; // 1.3 units
+export const OTTO_PISTON_LENGTH = 1.4;
+export const OTTO_STUDIO_FLOOR_Y = -4.5;
+const OTTO_FOOT_BOTTOM_Y = -1.575;
+export const OTTO_STUDIO_FLOOR_OFFSET_Y = OTTO_STUDIO_FLOOR_Y - OTTO_FOOT_BOTTOM_Y;
+const UNIT_Y = new THREE.Vector3(0, 1, 0);
+
+function seatUnitCylinderBetween(mesh: THREE.Mesh, start: THREE.Vector3, end: THREE.Vector3): void {
+  const delta = end.clone().sub(start);
+  const length = delta.length();
+  if (!Number.isFinite(length) || length <= 1e-12) {
+    throw new RangeError("Otto display linkage endpoints must be distinct and finite");
+  }
+  mesh.position.copy(start).add(end).multiplyScalar(0.5);
+  mesh.quaternion.setFromUnitVectors(UNIT_Y, delta.multiplyScalar(1 / length));
+  mesh.scale.set(1, length, 1);
+}
+
+function segmentEndpointsWorld(mesh: THREE.Mesh): readonly [THREE.Vector3, THREE.Vector3] {
+  return [
+    mesh.localToWorld(new THREE.Vector3(0, -0.5, 0)),
+    mesh.localToWorld(new THREE.Vector3(0, 0.5, 0)),
+  ];
+}
+
+export function ottoCombustionFlamePresentation(
+  crankAngleRad: number,
+  running: boolean,
+  cutawayMode: boolean,
+): { strokeIndex: number; visible: boolean; opacity: number; scale: number } {
+  const cycleAngle = ((crankAngleRad % (4 * Math.PI)) + 4 * Math.PI) % (4 * Math.PI);
+  const strokeIndex = Math.min(3, Math.floor(cycleAngle / Math.PI));
+  const powerPhase = strokeIndex === 2 ? (cycleAngle - 2 * Math.PI) / Math.PI : 0;
+  const pulse = strokeIndex === 2 ? Math.max(0, Math.sin(powerPhase * Math.PI)) : 0;
+  const visible = running && cutawayMode && strokeIndex === 2;
+  return {
+    strokeIndex,
+    visible,
+    opacity: visible ? pulse * 0.8 : 0,
+    scale: 1 + (visible ? pulse * 0.5 : 0),
+  };
+}
 
 export function buildOttoEngineModel(): OttoEngineModelResult {
   const root = new THREE.Group();
+  root.position.y = OTTO_STUDIO_FLOOR_OFFSET_Y;
   const disposableGeometries: THREE.BufferGeometry[] = [];
   const disposableMaterials: THREE.Material[] = [];
 
@@ -161,6 +218,7 @@ export function buildOttoEngineModel(): OttoEngineModelResult {
     materials.castIron,
   );
   footFlange.position.set(0, -1.5, 0);
+  footFlange.name = "Engine foundation foot seated on studio floor";
   footFlange.receiveShadow = true;
   bedplateGroup.add(footFlange);
 
@@ -267,9 +325,10 @@ export function buildOttoEngineModel(): OttoEngineModelResult {
 
   // Cooling Water Pipes & Spigots
   const waterInlet = new THREE.Mesh(
-    trackGeo(new THREE.CylinderGeometry(0.06, 0.06, 0.5, 12)),
+    trackGeo(new THREE.CylinderGeometry(0.06, 0.06, 0.62, 12)),
     materials.copperPipe,
   );
+  waterInlet.name = "Cylinder-to-bed cooling-water inlet";
   waterInlet.position.set(-2.6, -0.9, 0.6);
   root.add(waterInlet);
 
@@ -297,7 +356,7 @@ export function buildOttoEngineModel(): OttoEngineModelResult {
 
   // Trunk piston body (hollow skirt, closed crown)
   const pistonMesh = new THREE.Mesh(
-    trackGeo(new THREE.CylinderGeometry(0.56, 0.56, 1.4, 28)),
+    trackGeo(new THREE.CylinderGeometry(0.56, 0.56, OTTO_PISTON_LENGTH, 28)),
     materials.polishedSteel,
   );
   pistonMesh.rotation.z = Math.PI / 2;
@@ -320,7 +379,9 @@ export function buildOttoEngineModel(): OttoEngineModelResult {
     trackGeo(new THREE.CylinderGeometry(0.09, 0.09, 0.95, 16)),
     materials.polishedSteel,
   );
-  wristPin.position.set(0.1, 0, 0);
+  // The connecting-rod small end is seated at the piston-group origin. Keep
+  // the visible gudgeon pin on that same physical axis.
+  wristPin.position.set(0, 0, 0);
   pistonGroup.add(wristPin);
 
   // -------------------------------------------------------------
@@ -398,7 +459,9 @@ export function buildOttoEngineModel(): OttoEngineModelResult {
     materials.polishedSteel,
   );
   crankPin.rotation.x = Math.PI / 2;
-  crankPin.position.set(0, OTTO_CRANK_RADIUS, 0);
+  // The kernel defines theta=0 on +X. The pin must use the same local axis so
+  // rotating crankshaftGroup seats the visible pin in the rod's big end.
+  crankPin.position.set(OTTO_CRANK_RADIUS, 0, 0);
   crankshaftGroup.add(crankPin);
 
   // Spiral Bevel Driving Gear (Crankshaft Side)
@@ -475,6 +538,18 @@ export function buildOttoEngineModel(): OttoEngineModelResult {
   layShaft.position.set(-0.5, 0, 0);
   sideShaftGroup.add(layShaft);
 
+  // Three bed-mounted pedestals carry the complete counter-shaft/cam train.
+  // Their top faces meet the shaft centerline instead of leaving it airborne.
+  for (const [index, supportX] of [-2.6, -0.4, 1.8].entries()) {
+    const support = new THREE.Mesh(
+      trackGeo(new THREE.BoxGeometry(0.22, 1.4, 0.35)),
+      materials.paintedGreen,
+    );
+    support.name = `Counter-shaft bed support ${index + 1}`;
+    support.position.set(supportX, -0.15, 1.25);
+    root.add(support);
+  }
+
   // Driven Bevel Gear (2:1 ratio - twice the diameter of crank gear)
   const layBevelGear = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.44, 0.38, 0.18, 24)),
@@ -500,7 +575,17 @@ export function buildOttoEngineModel(): OttoEngineModelResult {
   );
   exhaustCam.rotation.z = Math.PI / 2;
   exhaustCam.position.set(-2.5, 0, 0);
+  exhaustCam.name = "Half-speed exhaust cam";
   sideShaftGroup.add(exhaustCam);
+
+  const slideValveEccentricPin = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.07, 0.07, 0.16, 16)),
+    materials.bearingBronze,
+  );
+  slideValveEccentricPin.name = "Slide-valve eccentric pin";
+  slideValveEccentricPin.rotation.z = Math.PI / 2;
+  slideValveEccentricPin.position.set(-3.2, 0.16, 0);
+  sideShaftGroup.add(slideValveEccentricPin);
 
   // -------------------------------------------------------------
   // 7. Reciprocating Slide Valve & External Flame Pocket Ignition
@@ -532,16 +617,17 @@ export function buildOttoEngineModel(): OttoEngineModelResult {
   slideValvePlate.add(flamePocket);
 
   // Slide Valve Eccentric Rod Linkage
-  const slideValveEccentricRod = new THREE.Group();
-  slideValveEccentricRod.position.set(-3.2, cylinderCenterY + 0.55, 1.25);
-  root.add(slideValveEccentricRod);
-
-  const eccentricRodLink = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(0.04, 0.6, 0.6)),
+  const slideValveEccentricRod = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.035, 0.035, 1, 12)),
     materials.polishedSteel,
   );
-  eccentricRodLink.position.set(-0.15, -0.25, -0.3);
-  slideValveEccentricRod.add(eccentricRodLink);
+  slideValveEccentricRod.name = "Eccentric-pin-to-slide-valve link";
+  root.add(slideValveEccentricRod);
+  seatUnitCylinderBetween(
+    slideValveEccentricRod,
+    new THREE.Vector3(-3.2, cylinderCenterY + 0.71, 1.25),
+    slideValvePlate.position,
+  );
 
   // External Town-Gas Pilot Flame Chimney
   const pilotChimney = new THREE.Mesh(
@@ -559,7 +645,7 @@ export function buildOttoEngineModel(): OttoEngineModelResult {
   root.add(pilotFlameMesh);
 
   // -------------------------------------------------------------
-  // 8. Centrifugal Flyball Governor (Hit-and-Miss Speed Regulation)
+  // 8. Centrifugal Flyball Governor and Gas-Metering Linkage
   // -------------------------------------------------------------
   const governorGroup = new THREE.Group();
   governorGroup.position.set(-1.2, cylinderCenterY + 0.55, 1.25);
@@ -591,6 +677,22 @@ export function buildOttoEngineModel(): OttoEngineModelResult {
   governorBallRight.position.set(0.22, 0.6, 0);
   governorSpindle.add(governorBallRight);
 
+  const governorArmLeft = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.018, 0.018, 1, 10)),
+    materials.brass,
+  );
+  governorArmLeft.name = "Left governor flyball arm";
+  governorSpindle.add(governorArmLeft);
+  const governorArmRight = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.018, 0.018, 1, 10)),
+    materials.brass,
+  );
+  governorArmRight.name = "Right governor flyball arm";
+  governorSpindle.add(governorArmRight);
+  const governorArmPivot = new THREE.Vector3(0, 0.2, 0);
+  seatUnitCylinderBetween(governorArmLeft, governorArmPivot, governorBallLeft.position);
+  seatUnitCylinderBetween(governorArmRight, governorArmPivot, governorBallRight.position);
+
   // Sliding Collar / Sleeve
   const governorSleeve = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.07, 0.07, 0.12, 12)),
@@ -610,10 +712,10 @@ export function buildOttoEngineModel(): OttoEngineModelResult {
   root.add(exhaustChest);
 
   const exhaustPipe = new THREE.Mesh(
-    trackGeo(new THREE.CylinderGeometry(0.12, 0.12, 1.2, 16)),
+    trackGeo(new THREE.CylinderGeometry(0.12, 0.12, 0.575, 16)),
     materials.castIron,
   );
-  exhaustPipe.position.set(-2.5, cylinderCenterY - 1.4, 0);
+  exhaustPipe.position.set(-2.5, -1.2875, 0);
   root.add(exhaustPipe);
 
   // Exhaust Valve Spindle
@@ -624,38 +726,140 @@ export function buildOttoEngineModel(): OttoEngineModelResult {
   exhaustValveStem.position.set(-2.5, cylinderCenterY - 0.35, 0.45);
   root.add(exhaustValveStem);
 
+  const exhaustValveGuide = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(0.18, 0.38, 0.24)),
+    materials.bearingBronze,
+  );
+  exhaustValveGuide.name = "Exhaust-chest valve-stem guide";
+  exhaustValveGuide.position.set(-2.5, cylinderCenterY - 0.35, 0.32);
+  root.add(exhaustValveGuide);
+
   // Rocker Arm Pivot & Lever
   const exhaustRockerArm = new THREE.Group();
-  exhaustRockerArm.position.set(-2.5, cylinderCenterY, 0.85);
+  exhaustRockerArm.position.set(-2.5, cylinderCenterY - 0.05, 0.65);
   root.add(exhaustRockerArm);
 
   const rockerLever = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(0.05, 0.7, 0.12)),
+    trackGeo(new THREE.BoxGeometry(0.06, 0.08, 0.65)),
     materials.polishedSteel,
   );
+  rockerLever.name = "Exhaust rocker lever";
   exhaustRockerArm.add(rockerLever);
+
+  const exhaustValveLink = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.025, 0.025, 1, 10)),
+    materials.polishedSteel,
+  );
+  exhaustValveLink.name = "Rocker-to-exhaust-valve link";
+  root.add(exhaustValveLink);
+  seatUnitCylinderBetween(
+    exhaustValveLink,
+    new THREE.Vector3(-2.5, -0.05, 0.325),
+    new THREE.Vector3(-2.5, -0.125, 0.45),
+  );
+
+  const exhaustCamFollower = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.025, 0.025, 1, 10)),
+    materials.polishedSteel,
+  );
+  exhaustCamFollower.name = "Exhaust-cam-to-rocker follower";
+  root.add(exhaustCamFollower);
+  seatUnitCylinderBetween(
+    exhaustCamFollower,
+    new THREE.Vector3(-2.5, -0.05, 0.975),
+    new THREE.Vector3(-2.5, 0.55, 1.25),
+  );
 
   const nodes: OttoEngineModelNodes = {
     root,
     pistonGroup,
     pistonMesh,
+    wristPin,
     connectingRod,
     crankshaftGroup,
+    crankPin,
     leftFlywheel,
     rightFlywheel,
     sideShaftGroup,
     slideValvePlate,
+    slideValveEccentricPin,
     slideValveEccentricRod,
+    exhaustCam,
     exhaustRockerArm,
     exhaustValveStem,
+    exhaustValveLink,
+    exhaustCamFollower,
     governorSpindle,
     governorBallLeft,
     governorBallRight,
+    governorArmLeft,
+    governorArmRight,
     governorSleeve,
     pilotFlameMesh,
     combustionVolumeMesh,
     cylinderJacketMesh,
     cylinderCutawayMesh,
+  };
+
+  const connectivityReceipt = () => {
+    root.updateMatrixWorld(true);
+    const [slideRodStart, slideRodEnd] = segmentEndpointsWorld(slideValveEccentricRod);
+    const [leftArmStart, leftArmEnd] = segmentEndpointsWorld(governorArmLeft);
+    const [rightArmStart, rightArmEnd] = segmentEndpointsWorld(governorArmRight);
+    const [valveLinkStart, valveLinkEnd] = segmentEndpointsWorld(exhaustValveLink);
+    const [camFollowerStart, camFollowerEnd] = segmentEndpointsWorld(exhaustCamFollower);
+    const rockerLow = exhaustRockerArm.localToWorld(new THREE.Vector3(0, 0, -0.325));
+    const rockerHigh = exhaustRockerArm.localToWorld(new THREE.Vector3(0, 0, 0.325));
+    return [
+      {
+        interface: "slide eccentric pin / connecting link",
+        gapMeters: slideRodStart.distanceTo(
+          slideValveEccentricPin.getWorldPosition(new THREE.Vector3()),
+        ),
+      },
+      {
+        interface: "connecting link / slide valve",
+        gapMeters: slideRodEnd.distanceTo(slideValvePlate.getWorldPosition(new THREE.Vector3())),
+      },
+      {
+        interface: "governor spindle / left flyball arm",
+        gapMeters: leftArmStart.distanceTo(
+          governorSpindle.localToWorld(new THREE.Vector3(0, 0.2, 0)),
+        ),
+      },
+      {
+        interface: "left flyball arm / ball",
+        gapMeters: leftArmEnd.distanceTo(governorBallLeft.getWorldPosition(new THREE.Vector3())),
+      },
+      {
+        interface: "governor spindle / right flyball arm",
+        gapMeters: rightArmStart.distanceTo(
+          governorSpindle.localToWorld(new THREE.Vector3(0, 0.2, 0)),
+        ),
+      },
+      {
+        interface: "right flyball arm / ball",
+        gapMeters: rightArmEnd.distanceTo(governorBallRight.getWorldPosition(new THREE.Vector3())),
+      },
+      {
+        interface: "exhaust rocker / valve link",
+        gapMeters: valveLinkStart.distanceTo(rockerLow),
+      },
+      {
+        interface: "exhaust rocker / cam follower",
+        gapMeters: camFollowerStart.distanceTo(rockerHigh),
+      },
+      {
+        interface: "cam follower / half-speed exhaust cam",
+        gapMeters: camFollowerEnd.distanceTo(exhaustCam.getWorldPosition(new THREE.Vector3())),
+      },
+      {
+        interface: "valve link / exhaust valve stem",
+        gapMeters: valveLinkEnd.distanceTo(
+          exhaustValveStem.localToWorld(new THREE.Vector3(0, 0.225, 0)),
+        ),
+      },
+    ] as const;
   };
 
   const dispose = () => {
@@ -667,7 +871,7 @@ export function buildOttoEngineModel(): OttoEngineModelResult {
     }
   };
 
-  return { root, nodes, materials, dispose };
+  return { root, nodes, materials, connectivityReceipt, dispose };
 }
 
 /**
@@ -677,69 +881,109 @@ export function buildOttoEngineModel(): OttoEngineModelResult {
 export function updateOttoEngineKinematics(
   nodes: OttoEngineModelNodes,
   materials: OttoEngineMaterials,
-  crankAngle: number,
+  pose: OttoMechanismPose,
   compressionRatio: number,
   cutawayMode: boolean,
   running: boolean,
   dt: number,
   govDisplayOmegaRadPerS: number,
-  flyballRadius: number,
   engineRpm = 180,
 ) {
+  const cycleAngle = pose.cycleAngleRad;
+  const mechanicalCrankAngle = Math.atan2(pose.crankPinY, pose.crankPinX);
   // 1. Crankshaft & Twin Flywheels Rotation
-  nodes.crankshaftGroup.rotation.z = crankAngle;
+  nodes.crankshaftGroup.rotation.z = mechanicalCrankAngle;
 
-  // 2. Exact Slider-Crank Kinematics for Piston
-  const crankPinX = 2.4 + OTTO_CRANK_RADIUS * Math.cos(crankAngle);
-  const crankPinY = 0.0 + OTTO_CRANK_RADIUS * Math.sin(crankAngle);
-
-  const sinTheta = Math.sin(crankAngle);
-  const underRadical = OTTO_CONNECTING_ROD_LENGTH ** 2 - (OTTO_CRANK_RADIUS * sinTheta) ** 2;
-  const pistonWristX = crankPinX - Math.sqrt(Math.max(0.1, underRadical));
+  // 2. The fs-mbd pose is already a closed slider-crank solve. Offset its
+  // shaft-relative coordinates to the model's one fixed crank center.
+  const crankCenterX = 2.4;
+  const pistonWristX = crankCenterX + pose.pistonPinX;
 
   nodes.pistonGroup.position.set(pistonWristX, 0, 0);
 
-  // 3. Connecting Rod Position & Articulation
+  // 3. Seat the rod's modeled small and big ends on the two kernel pins.
   nodes.connectingRod.position.set(pistonWristX, 0, 0);
-  const rodAngle = Math.atan2(crankPinY, crankPinX - pistonWristX);
-  nodes.connectingRod.rotation.z = rodAngle;
+  nodes.connectingRod.rotation.z = pose.connectingRodAngleRad;
 
   // 4. 2:1 Lay Shaft (Camshaft) Half-Speed Rotation
   const otto = stepOttoEngine({ engineRpm, compressionRatio });
-  const cycle = fourStrokeCycle(crankAngle);
-  const camAngle = cycle.camAngleRad;
+  const cycle = fourStrokeCycle(cycleAngle);
+  const camAngle = pose.sideShaftAngleRad;
   nodes.sideShaftGroup.rotation.x = camAngle;
 
   // 5. Slide Valve Reciprocation (Driven by Lay Shaft Eccentric)
-  const slideOffset = Math.sin(camAngle) * otto.slideStroke;
+  const slideOffset = pose.slideValveNormalized * otto.slideStroke;
   nodes.slideValvePlate.position.x = otto.slideHomeX + slideOffset;
-  nodes.slideValveEccentricRod.rotation.x = Math.sin(camAngle) * otto.eccentricRodAmp;
+  const eccentricRadius = 0.16;
+  const eccentricPin = new THREE.Vector3(
+    -3.2,
+    0.55 + Math.cos(camAngle) * eccentricRadius,
+    1.25 + Math.sin(camAngle) * eccentricRadius,
+  );
+  seatUnitCylinderBetween(
+    nodes.slideValveEccentricRod,
+    eccentricPin,
+    nodes.slideValvePlate.position,
+  );
 
   // 6. Exhaust Valve & Rocker Arm (Opens during Exhaust Stroke 540-720 deg)
   const cyclePhase = cycle.cyclePhaseRad;
-  const isExhaustStroke = cycle.strokeIndex === 3;
-  const exhaustLift = isExhaustStroke
-    ? Math.sin(cyclePhase - cycle.exhaustStartRad) * otto.exhaustLiftAmp
-    : 0;
+  const exhaustLift = pose.exhaustLiftNormalized * otto.exhaustLiftAmp;
 
   nodes.exhaustValveStem.position.y = otto.exhaustValveHomeY - exhaustLift;
-  nodes.exhaustRockerArm.rotation.z = exhaustLift * otto.exhaustRockerCoupling;
+  nodes.exhaustRockerArm.rotation.x = -exhaustLift * otto.exhaustRockerCoupling;
+  const rockerAngle = nodes.exhaustRockerArm.rotation.x;
+  const rockerEndpoint = (localZ: number) =>
+    new THREE.Vector3(
+      nodes.exhaustRockerArm.position.x,
+      nodes.exhaustRockerArm.position.y - localZ * Math.sin(rockerAngle),
+      nodes.exhaustRockerArm.position.z + localZ * Math.cos(rockerAngle),
+    );
+  seatUnitCylinderBetween(
+    nodes.exhaustValveLink,
+    rockerEndpoint(-0.325),
+    new THREE.Vector3(
+      nodes.exhaustValveStem.position.x,
+      nodes.exhaustValveStem.position.y + 0.225,
+      nodes.exhaustValveStem.position.z,
+    ),
+  );
+  seatUnitCylinderBetween(
+    nodes.exhaustCamFollower,
+    rockerEndpoint(0.325),
+    new THREE.Vector3(-2.5, 0.55, 1.25),
+  );
 
   // 7. Centrifugal Flyball Governor Kinematics
   if (running) {
     nodes.governorSpindle.rotation.y += govDisplayOmegaRadPerS * dt;
-    nodes.governorBallLeft.position.x = -flyballRadius;
-    nodes.governorBallRight.position.x = flyballRadius;
-    nodes.governorSleeve.position.y =
-      otto.sleeveHomeY + (flyballRadius - otto.sleeveRadius0) * otto.sleeveCoupling;
   }
+  // A stopped governor has no centrifugal spread. Always write the absolute
+  // ball and sleeve pose so pausing cannot freeze them improbably in mid-air.
+  // The topology owns running spread; this is only a display-scale mapping.
+  const governorMaxDisplayRadius = 0.33;
+  const displayedSpread = running ? pose.governorSpreadNormalized : 0;
+  const kernelFlyballRadius =
+    otto.sleeveRadius0 + displayedSpread * (governorMaxDisplayRadius - otto.sleeveRadius0);
+  nodes.governorBallLeft.position.x = -kernelFlyballRadius;
+  nodes.governorBallRight.position.x = kernelFlyballRadius;
+  const governorArmPivot = new THREE.Vector3(0, 0.2, 0);
+  seatUnitCylinderBetween(nodes.governorArmLeft, governorArmPivot, nodes.governorBallLeft.position);
+  seatUnitCylinderBetween(
+    nodes.governorArmRight,
+    governorArmPivot,
+    nodes.governorBallRight.position,
+  );
+  nodes.governorSleeve.position.y =
+    otto.sleeveHomeY + (kernelFlyballRadius - otto.sleeveRadius0) * otto.sleeveCoupling;
 
   // 8. Cutaway Visibility
   nodes.cylinderJacketMesh.visible = !cutawayMode;
   nodes.cylinderCutawayMesh.visible = cutawayMode;
 
   // 9. Thermodynamic 4-Stroke Gas Volume Color & Luminance
-  const gasLength = Math.max(otto.gasMinLength, pistonWristX - otto.cylinderTdcX);
+  const pistonCrownX = pistonWristX - OTTO_PISTON_LENGTH / 2;
+  const gasLength = Math.max(otto.gasMinLength, pistonCrownX - otto.cylinderTdcX);
   nodes.combustionVolumeMesh.scale.set(1, gasLength / otto.combustionLengthRef, 1);
   nodes.combustionVolumeMesh.position.x = otto.cylinderTdcX + gasLength / 2;
 

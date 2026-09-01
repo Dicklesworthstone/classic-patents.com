@@ -37,7 +37,7 @@ describe("Richard Arkwright Water Frame Archival Edition Publication Contract", 
     expect(arkwrightWaterFramePatent.originalTextAsset).toBeDefined();
   });
 
-  test("withholds every Figure 1 preview because the pinned PDF is not a primary facsimile", () => {
+  test("labels the reconstructed Figure 1 preview without presenting it as a primary facsimile", () => {
     const figureReference = arkwrightWaterFrameArchivalEdition.blocks
       .filter((block) => block.kind === "paragraph")
       .flatMap((block) => block.inlines)
@@ -53,8 +53,15 @@ describe("Richard Arkwright Water Frame Archival Edition Publication Contract", 
       throw new Error("GB 931 must retain its authored Figure 1 reference.");
     }
     expect(figureReference.label).toContain("2026 Typst reconstruction");
-    expect(figureReference.figurePreviews).toBeUndefined();
-    expect(JSON.stringify(arkwrightWaterFrameArchivalEdition)).not.toContain("source-crop");
+    expect(figureReference.label).toContain("not a primary facsimile");
+    expect(figureReference.figurePreviews).toEqual([
+      {
+        src: "/patents/figures/gb-931-arkwright-water-frame/fig-1-source-crop-v3.png",
+        alt: "Fig. 1 from the pinned reconstruction of GB 931; not a primary facsimile",
+        width: 1550,
+        height: 1500,
+      },
+    ]);
 
     for (const cropPath of preservedCropPaths) {
       expect(existsSync(cropPath)).toBe(true);

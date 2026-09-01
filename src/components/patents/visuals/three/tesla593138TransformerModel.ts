@@ -9,8 +9,6 @@
  */
 
 import * as THREE from "three";
-import { createLcg } from "@/utils/lcg";
-import { createGlowPointTexture } from "./ThreeStudioScene";
 
 export interface TeslaTransformerConnectivityGap {
   interface: string;
@@ -23,18 +21,12 @@ export interface TeslaCoilModel {
   tableBase: THREE.Mesh;
   secondaryCylinder: THREE.Mesh;
   spiralMesh: THREE.Mesh;
-  toroidMesh: THREE.Mesh;
-  sparkGapBase: THREE.Mesh;
-  coronaPoints: THREE.Points;
-  streamerLines: THREE.Line[];
-  streamerGeos: THREE.BufferGeometry[];
-  capacitorGroup?: THREE.Group;
-  updateKinematics: (
-    delta: number,
-    showLightningStreamers: boolean,
-    streamerStudioLength: number,
-    secondaryVoltageMv: number,
-  ) => void;
+  highTerminalMesh: THREE.Mesh;
+  terminalBoard: THREE.Mesh;
+  potentialMarkers: THREE.Mesh[];
+  updateElectricalProfile: (electricalLengthRad: number) => void;
+  setProfileMarkersVisible: (visible: boolean) => void;
+  setClaimedCommonNodeConnected: (connected: boolean) => void;
   connectivityReceipt: () => readonly TeslaTransformerConnectivityGap[];
   setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
@@ -174,24 +166,34 @@ export function buildTeslaCoilModel(): TeslaCoilModel {
   spiralMesh.castShadow = true;
   coilGroup.add(spiralMesh);
 
+  const primarySupportHeight = 0.18;
+  const primarySupports: THREE.Mesh[] = [];
   for (let index = 0; index < 6; index++) {
     const angle = (index * Math.PI * 2) / 6;
-    const support = new THREE.Mesh(track(new THREE.BoxGeometry(1.15, 0.18, 0.16)), mahogany);
+    const support = new THREE.Mesh(
+      track(new THREE.BoxGeometry(1.15, primarySupportHeight, 0.16)),
+      mahogany,
+    );
     support.name = `Primary winding support ${index + 1}`;
-    support.position.set(Math.cos(angle) * 1.45, -1.94, Math.sin(angle) * 1.45);
+    support.position.set(
+      Math.cos(angle) * 1.45,
+      BASE_TOP_Y + primarySupportHeight / 2,
+      Math.sin(angle) * 1.45,
+    );
     support.rotation.y = -angle;
     coilGroup.add(support);
+    primarySupports.push(support);
   }
 
   const terminalBoardHeight = 0.3;
-  const sparkGapBase = new THREE.Mesh(
+  const terminalBoard = new THREE.Mesh(
     track(new THREE.BoxGeometry(5.25, terminalBoardHeight, 0.8)),
     ebonite,
   );
-  sparkGapBase.name = "Primary and earth terminal board";
-  sparkGapBase.position.set(0, BASE_TOP_Y + terminalBoardHeight / 2, 2.35);
-  sparkGapBase.castShadow = true;
-  coilGroup.add(sparkGapBase);
+  terminalBoard.name = "Primary and earth terminal board";
+  terminalBoard.position.set(0, BASE_TOP_Y + terminalBoardHeight / 2, 2.35);
+  terminalBoard.castShadow = true;
+  coilGroup.add(terminalBoard);
 
   const commonNode = new THREE.Vector3(2.35, -1.25, 2.35);
   const inputNode = new THREE.Vector3(-2.35, -1.25, 2.35);
@@ -217,14 +219,14 @@ export function buildTeslaCoilModel(): TeslaCoilModel {
     HIGH_TERMINAL_CENTER.y - HIGH_TERMINAL_RADIUS,
     HIGH_TERMINAL_CENTER.z,
   );
-  const toroidMesh = new THREE.Mesh(
+  const highTerminalMesh = new THREE.Mesh(
     track(new THREE.SphereGeometry(HIGH_TERMINAL_RADIUS, 24, 18)),
     brass,
   );
-  toroidMesh.name = "Remote high-potential terminal (not a toroid)";
-  toroidMesh.position.copy(HIGH_TERMINAL_CENTER);
-  toroidMesh.castShadow = true;
-  coilGroup.add(toroidMesh);
+  highTerminalMesh.name = "Remote high-potential terminal";
+  highTerminalMesh.position.copy(HIGH_TERMINAL_CENTER);
+  highTerminalMesh.castShadow = true;
+  coilGroup.add(highTerminalMesh);
 
   const makeConductor = (name: string, points: THREE.Vector3[], radius = 0.035) => {
     const curve = new THREE.CatmullRomCurve3(points);
@@ -235,119 +237,119 @@ export function buildTeslaCoilModel(): TeslaCoilModel {
     conductor.name = name;
     conductor.castShadow = true;
     coilGroup.add(conductor);
-    return curve;
+    return { curve, conductor };
   };
 
   const secondaryLow = secondaryPoints[0].clone();
   const secondaryHigh = secondaryPoints[secondaryPoints.length - 1].clone();
   const primaryLow = primaryPoints[0].clone();
   const primaryInput = primaryPoints[primaryPoints.length - 1].clone();
-  const secondaryBondCurve = makeConductor("Secondary low terminal to claimed common node", [
+  const secondaryGapA = new THREE.Vector3(1.67, -1.49, 1.51);
+  const secondaryGapB = new THREE.Vector3(1.9, -1.43, 1.78);
+  const secondaryBondLowStub = makeConductor("Secondary low-terminal tethered lead stub", [
     secondaryLow,
     new THREE.Vector3(1.55, -1.55, 1.35),
+    secondaryGapA,
+  ]);
+  const secondaryBond = makeConductor("Secondary low terminal to claimed common node", [
+    secondaryGapA,
+    secondaryGapA.clone().lerp(secondaryGapB, 0.5),
+    secondaryGapB,
+  ]);
+  const secondaryBondNodeStub = makeConductor("Common-node tethered secondary lead stub", [
+    secondaryGapB,
+    secondaryGapB.clone().lerp(commonNode, 0.5),
     commonNode,
   ]);
-  const primaryBondCurve = makeConductor("Primary adjacent terminal to claimed common node", [
+  const primaryBond = makeConductor("Primary adjacent terminal to claimed common node", [
     primaryLow,
     new THREE.Vector3(1.72, -1.38, 1.45),
     commonNode,
   ]);
-  const primarySourceCurve = makeConductor("Primary source lead", [
+  const primarySource = makeConductor("Primary source lead", [
     primaryInput,
     new THREE.Vector3(-2.05, -1.48, 1.45),
     inputNode,
   ]);
-  const secondaryHighCurve = makeConductor("Secondary high-potential lead", [
+  const secondaryHighLead = makeConductor("Secondary high-potential lead", [
     secondaryHigh,
     new THREE.Vector3(0.18, 2.38, 0),
     highTerminalBottom,
   ]);
-  const earthCurve = makeConductor(
+  const earthLead = makeConductor(
     "Claimed earth lead",
-    [commonNode, new THREE.Vector3(2.75, -2.0, 0), earthPlateTop],
+    [
+      commonNode,
+      new THREE.Vector3(3.55, -2.55, 2.35),
+      new THREE.Vector3(3.55, FLOOR_Y + 0.1, 2.35),
+      earthPlateTop,
+    ],
     0.045,
   );
 
-  const streamerLines: THREE.Line[] = [];
-  const streamerGeos: THREE.BufferGeometry[] = [];
-  const streamerMaterials: THREE.LineBasicMaterial[] = [];
-  const lcg = createLcg(593138);
-  const streamerCount = 5;
-  const streamerSegments = 12;
-  for (let index = 0; index < streamerCount; index++) {
-    const geometry = track(new THREE.BufferGeometry());
-    geometry.setAttribute(
-      "position",
-      new THREE.BufferAttribute(new Float32Array(streamerSegments * 3), 3),
-    );
-    const material = track(
-      new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.85 }),
-    );
-    const line = new THREE.Line(geometry, material);
-    line.name = "Interpretive terminal discharge";
-    root.add(line);
-    streamerGeos.push(geometry);
-    streamerMaterials.push(material);
-    streamerLines.push(line);
-  }
-
-  const coronaCount = 48;
-  const coronaGeometry = track(new THREE.BufferGeometry());
-  const coronaPositions = new Float32Array(coronaCount * 3);
-  for (let index = 0; index < coronaCount; index++) {
-    const theta = lcg() * Math.PI * 2;
-    const phi = lcg() * Math.PI;
-    const radius = HIGH_TERMINAL_RADIUS + lcg() * 0.12;
-    coronaPositions[index * 3] = HIGH_TERMINAL_CENTER.x + Math.cos(theta) * Math.sin(phi) * radius;
-    coronaPositions[index * 3 + 1] = HIGH_TERMINAL_CENTER.y + Math.cos(phi) * radius;
-    coronaPositions[index * 3 + 2] =
-      HIGH_TERMINAL_CENTER.z + Math.sin(theta) * Math.sin(phi) * radius;
-  }
-  coronaGeometry.setAttribute("position", new THREE.BufferAttribute(coronaPositions, 3));
-  const glowTexture = track(createGlowPointTexture());
-  const coronaMaterial = track(
-    new THREE.PointsMaterial({
-      size: 0.2,
-      map: glowTexture,
-      color: 0x67e8f9,
-      transparent: true,
-      opacity: 0.75,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
+  const commonNodeBreakMarker = new THREE.Group();
+  const openTerminalGeometry = track(new THREE.SphereGeometry(0.1, 16, 12));
+  const openTerminalMaterial = track(
+    new THREE.MeshStandardMaterial({
+      color: 0xbe123c,
+      emissive: new THREE.Color(0x881337),
+      emissiveIntensity: 0.8,
+      roughness: 0.35,
     }),
   );
-  const coronaPoints = new THREE.Points(coronaGeometry, coronaMaterial);
-  coronaPoints.name = "Interpretive high-terminal corona";
-  root.add(coronaPoints);
+  for (const endpoint of [secondaryGapA, secondaryGapB]) {
+    const terminal = new THREE.Mesh(openTerminalGeometry, openTerminalMaterial);
+    terminal.position.copy(endpoint);
+    commonNodeBreakMarker.add(terminal);
+  }
+  commonNodeBreakMarker.name = "Claim 1 open secondary-bond marker";
+  commonNodeBreakMarker.visible = false;
+  coilGroup.add(commonNodeBreakMarker);
 
-  const updateKinematics = (
-    _delta: number,
-    showLightningStreamers: boolean,
-    streamerStudioLength: number,
-    secondaryVoltageMv: number,
-  ) => {
-    const intensity = Math.max(0.15, Math.min(1, secondaryVoltageMv / 2));
-    coronaPoints.visible = showLightningStreamers;
-    coronaMaterial.opacity = showLightningStreamers ? 0.3 + intensity * 0.5 : 0;
-    for (let lineIndex = 0; lineIndex < streamerCount; lineIndex++) {
-      const line = streamerLines[lineIndex];
-      line.visible = showLightningStreamers;
-      if (!showLightningStreamers) continue;
-      streamerMaterials[lineIndex].opacity = 0.35 + intensity * 0.55;
-      const positions = streamerGeos[lineIndex].attributes.position as THREE.BufferAttribute;
-      const theta = (lineIndex * Math.PI * 2) / streamerCount + (lcg() - 0.5) * 0.25;
-      const length = streamerStudioLength * (0.7 + lcg() * 0.3);
-      let x = HIGH_TERMINAL_CENTER.x;
-      let y = HIGH_TERMINAL_CENTER.y + HIGH_TERMINAL_RADIUS;
-      let z = HIGH_TERMINAL_CENTER.z;
-      for (let segment = 0; segment < streamerSegments; segment++) {
-        positions.setXYZ(segment, x, y, z);
-        x += Math.cos(theta) * (length / streamerSegments) + (lcg() - 0.5) * 0.08;
-        y += (0.15 + lcg() * 0.25) * (length / streamerSegments);
-        z += Math.sin(theta) * (length / streamerSegments) + (lcg() - 0.5) * 0.08;
-      }
-      positions.needsUpdate = true;
+  // Anchored sampling beads expose the normalized distributed-wave profile.
+  // They sit on winding B and never imply an untethered discharge path.
+  const potentialMarkers: THREE.Mesh[] = [];
+  const potentialMarkerMaterials: THREE.MeshStandardMaterial[] = [];
+  for (let index = 0; index <= 8; index++) {
+    const fraction = index / 8;
+    const point = secondaryPoints[Math.round(fraction * secondarySegments)];
+    const material = track(
+      new THREE.MeshStandardMaterial({
+        color: 0x2563eb,
+        emissive: new THREE.Color(0x1d4ed8),
+        emissiveIntensity: 0,
+        metalness: 0.25,
+        roughness: 0.35,
+      }),
+    );
+    const marker = new THREE.Mesh(track(new THREE.SphereGeometry(0.06, 14, 10)), material);
+    marker.name = `Secondary normalized-potential sample ${index}`;
+    marker.position.copy(point);
+    coilGroup.add(marker);
+    potentialMarkers.push(marker);
+    potentialMarkerMaterials.push(material);
+  }
+
+  const updateElectricalProfile = (electricalLengthRad: number) => {
+    for (let index = 0; index < potentialMarkers.length; index++) {
+      const fraction = index / (potentialMarkers.length - 1);
+      const profile = Math.abs(Math.sin(electricalLengthRad * fraction));
+      const material = potentialMarkerMaterials[index];
+      material.color.setRGB(0.12 + profile * 0.82, 0.32 + profile * 0.32, 0.82);
+      material.emissive.setRGB(profile * 0.75, profile * 0.22, profile * 0.85);
+      material.emissiveIntensity = profile * 0.9;
+      potentialMarkers[index].scale.setScalar(0.7 + profile * 0.65);
     }
+  };
+
+  const setProfileMarkersVisible = (visible: boolean) => {
+    for (const marker of potentialMarkers) marker.visible = visible;
+  };
+  setProfileMarkersVisible(false);
+
+  const setClaimedCommonNodeConnected = (connected: boolean) => {
+    secondaryBond.conductor.visible = connected;
+    commonNodeBreakMarker.visible = !connected;
   };
 
   const connectivityReceipt = (): readonly TeslaTransformerConnectivityGap[] => {
@@ -359,8 +361,11 @@ export function buildTeslaCoilModel(): TeslaCoilModel {
     );
     const baseTop = tableBase.localToWorld(new THREE.Vector3(0, BASE_HEIGHT / 2, 0));
     const coneBase = secondaryCylinder.localToWorld(new THREE.Vector3(0, -coneHeight / 2, 0));
-    const boardBottom = sparkGapBase.localToWorld(
+    const boardBottom = terminalBoard.localToWorld(
       new THREE.Vector3(0, -terminalBoardHeight / 2, 0),
+    );
+    const firstSupportBottom = primarySupports[0].localToWorld(
+      new THREE.Vector3(0, -primarySupportHeight / 2, 0),
     );
     return [
       distanceGap(
@@ -371,6 +376,11 @@ export function buildTeslaCoilModel(): TeslaCoilModel {
       distanceGap("table leg -> insulating base", legTop, baseBottomAtLeg),
       distanceGap("insulating base -> conical support", baseTop, coneBase),
       distanceGap(
+        "insulating base -> primary winding support",
+        new THREE.Vector3(primarySupports[0].position.x, BASE_TOP_Y, primarySupports[0].position.z),
+        firstSupportBottom,
+      ),
+      distanceGap(
         "insulating base -> terminal board",
         new THREE.Vector3(0, BASE_TOP_Y, 2.35),
         boardBottom,
@@ -378,39 +388,49 @@ export function buildTeslaCoilModel(): TeslaCoilModel {
       distanceGap(
         "secondary low end -> low-terminal lead",
         secondaryLow,
-        secondaryBondCurve.getPoint(0),
+        secondaryBondLowStub.curve.getPoint(0),
       ),
       distanceGap(
-        "secondary low-terminal lead -> common node",
-        secondaryBondCurve.getPoint(1),
+        "secondary low-terminal stub -> removable bridge",
+        secondaryBondLowStub.curve.getPoint(1),
+        secondaryBond.curve.getPoint(0),
+      ),
+      distanceGap(
+        "removable bridge -> common-node stub",
+        secondaryBond.curve.getPoint(1),
+        secondaryBondNodeStub.curve.getPoint(0),
+      ),
+      distanceGap(
+        "secondary common-node stub -> common node",
+        secondaryBondNodeStub.curve.getPoint(1),
         commonNode,
       ),
       distanceGap(
         "primary adjacent end -> common-node lead",
         primaryLow,
-        primaryBondCurve.getPoint(0),
+        primaryBond.curve.getPoint(0),
       ),
       distanceGap(
         "primary common-node lead -> common node",
-        primaryBondCurve.getPoint(1),
+        primaryBond.curve.getPoint(1),
         commonNode,
       ),
-      distanceGap("common node -> earth lead", commonNode, earthCurve.getPoint(0)),
-      distanceGap("earth lead -> earth plate", earthCurve.getPoint(1), earthPlateTop),
+      distanceGap("common node -> earth lead", commonNode, earthLead.curve.getPoint(0)),
+      distanceGap("earth lead -> earth plate", earthLead.curve.getPoint(1), earthPlateTop),
       distanceGap(
         "primary source end -> source lead",
         primaryInput,
-        primarySourceCurve.getPoint(0),
+        primarySource.curve.getPoint(0),
       ),
-      distanceGap("primary source lead -> source post", primarySourceCurve.getPoint(1), inputNode),
+      distanceGap("primary source lead -> source post", primarySource.curve.getPoint(1), inputNode),
       distanceGap(
         "secondary high end -> high-terminal lead",
         secondaryHigh,
-        secondaryHighCurve.getPoint(0),
+        secondaryHighLead.curve.getPoint(0),
       ),
       distanceGap(
         "high-terminal lead -> remote terminal",
-        secondaryHighCurve.getPoint(1),
+        secondaryHighLead.curve.getPoint(1),
         highTerminalBottom,
       ),
     ];
@@ -430,12 +450,12 @@ export function buildTeslaCoilModel(): TeslaCoilModel {
     tableBase,
     secondaryCylinder,
     spiralMesh,
-    toroidMesh,
-    sparkGapBase,
-    coronaPoints,
-    streamerLines,
-    streamerGeos,
-    updateKinematics,
+    highTerminalMesh,
+    terminalBoard,
+    potentialMarkers,
+    updateElectricalProfile,
+    setProfileMarkersVisible,
+    setClaimedCommonNodeConnected,
     connectivityReceipt,
     setCutaway,
     dispose: () => {

@@ -8,7 +8,11 @@ test("concurrent WASM consumers share one in-flight load and receive the final s
     const edison = await import("./src/physics/edisonWasm.ts");
     const tesla = await import("./src/physics/teslaWasm.ts");
     const flyer = await import("./src/physics/flyerWasm.ts");
+    const otto = await import("./src/physics/ottoWasm.ts");
+    const roomba = await import("./src/physics/roombaWasm.ts");
     const { FrankenSimEngine } = await import("./src/physics/engine.ts");
+    const { stepTeslaTransformerSi } = await import("./src/physics/teslaTransformerKernel.ts");
+    const { stepOttoMechanism } = await import("./src/physics/ottoKernel.ts");
     Object.defineProperty(globalThis, "window", { configurable: true, value: {} });
 
     const init = "export default async function init() {}";
@@ -45,11 +49,25 @@ test("concurrent WASM consumers share one in-flight load and receive the final s
       ].join("\n"),
       tesla: [
         init,
-        "export function tesla_coil_step() {",
-        "  return JSON.stringify({ ok: { resonant_freq_khz: 100, secondary_potential_mv: 1.2, streamer_length_inches: 33.6, streamer_length_meters: 0.853 } });",
+        "export function tesla_transformer_step() {",
+        "  return JSON.stringify({ ok: { wavelength_m: 321868.8, quarter_wave_length_m: 80467.2, electrical_length_rad: 1.5707963267948966, quarter_wave_error_rad: 0, length_error_m: 0, length_ratio: 1, remote_terminal_profile_fraction: 1 } });",
         "}",
       ].join("\n"),
       flyer: [init, "export function flyer_hello_spin() { return '{}'; }"].join("\n"),
+      otto: [
+        init,
+        "export function otto_topology_step(angle, radius, rodLength, rpm) {",
+        "  const cycle = ((angle % (4 * Math.PI)) + 4 * Math.PI) % (4 * Math.PI);",
+        "  const crank = (cycle + Math.PI) % (2 * Math.PI);",
+        "  const crankX = radius * Math.cos(crank);",
+        "  const crankY = radius * Math.sin(crank);",
+        "  const pistonX = crankX - Math.sqrt(rodLength ** 2 - (radius * Math.sin(crank)) ** 2);",
+        "  const side = cycle * 0.5;",
+        "  const phase = cycle < Math.PI ? 'intake' : cycle < 2 * Math.PI ? 'compression' : cycle < 3 * Math.PI ? 'power' : 'exhaust';",
+        "  return JSON.stringify({ ok: { scalar_joint_coordinates: 8, independent_drive_dofs: 1, crank_axis: [0, 0, 1], piston_axis: [1, 0, 0], side_shaft_axis: [1, 0, 0], slide_valve_axis: [1, 0, 0], exhaust_valve_axis: [0, 1, 0], governor_axis: [0, 1, 0], cycle_angle_rad: cycle, crank_pin_x: crankX, crank_pin_y: crankY, piston_pin_x: pistonX, piston_pin_y: 0, connecting_rod_angle_rad: Math.atan2(crankY, crankX - pistonX), connecting_rod_span: Math.hypot(crankX - pistonX, crankY), side_shaft_angle_rad: side, slide_valve_normalized: Math.sin(side), exhaust_lift_normalized: cycle >= 3 * Math.PI ? Math.max(0, Math.sin(cycle - 3 * Math.PI)) : 0, governor_spread_normalized: Math.max(0, Math.min(1, rpm / 300)), cycle_phase: phase } });",
+        "}",
+      ].join("\n"),
+      roomba: [init, "export function roomba_step() { return '{}'; }"].join("\n"),
     };
     const counts = new Map();
     globalThis.fetch = async (input) => {
@@ -65,6 +83,10 @@ test("concurrent WASM consumers share one in-flight load and receive the final s
             ? "davinci"
           : url.includes("fs-tesla")
             ? "tesla"
+            : url.includes("fs-otto")
+              ? "otto"
+            : url.includes("fs-roomba")
+              ? "roomba"
             : "flyer";
       return new Response(sources[key], { status: 200 });
     };
@@ -76,6 +98,8 @@ test("concurrent WASM consumers share one in-flight load and receive the final s
       [davinci.ensureDaVinciTopologyWasm, "wasm", davinci.daVinciTopologyKernelSource],
       [tesla.ensureTeslaWasm, "wasm", tesla.teslaKernelSource],
       [flyer.ensureFlyerWasm, "wasm", flyer.flyerKernelSource],
+      [otto.ensureOttoWasm, "wasm", otto.ottoKernelSource],
+      [roomba.ensureRoombaWasm, "wasm", roomba.roombaKernelSource],
     ];
     for (const [load, expected, readSource] of cases) {
       const results = await Promise.all([load(), load(), load()]);
@@ -83,16 +107,17 @@ test("concurrent WASM consumers share one in-flight load and receive the final s
         throw new Error("a concurrent caller observed an intermediate source");
       }
     }
-    if (counts.size !== 6 || [...counts.values()].some((count) => count !== 1)) {
+    if (counts.size !== 8 || [...counts.values()].some((count) => count !== 1)) {
       throw new Error("a loader performed duplicate glue fetches");
     }
     if (FrankenSimEngine.stepGoddardApparatus(0, 120, 6000, 4.5, 0, false, true).runtimeSource !== "wasm") {
       throw new Error("Goddard loaded the module without accepting the source apparatus WASM step");
     }
-    if (
-      FrankenSimEngine.stepTeslaCoil(100, 15, 12, 145, 0.18, 850).runtimeSource !== "wasm"
-    ) {
+    if (stepTeslaTransformerSi({ disturbanceFrequencyHz: 925, secondaryLengthMiles: 50 }).runtimeSource !== "wasm") {
       throw new Error("Tesla loaded the module without accepting a valid WASM step");
+    }
+    if (stepOttoMechanism({ crankAngleRad: Math.PI / 2, crankRadius: 0.65, connectingRodLength: 2.4, engineRpm: 180 }).runtimeSource !== "wasm") {
+      throw new Error("Otto loaded the module without accepting a closed WASM pose");
     }
     console.log("loader-concurrency-ok");
   `;

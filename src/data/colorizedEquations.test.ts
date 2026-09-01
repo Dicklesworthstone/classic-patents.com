@@ -200,6 +200,29 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
     }
   });
 
+  test("keeps Otto's public cards on the printed graded-charge and shaft sequence", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-194047-otto-engine"];
+    expect(cards.map((card) => card.id)).toEqual([
+      "otto-graded-charge",
+      "otto-four-stroke-shaft-timing",
+    ]);
+    expect(cards.map((card) => card.claimRef)).toEqual([1, 3]);
+    expect(cards[0]?.rawLatex).toContain("\\phi(0)");
+    expect(cards[1]?.rawLatex).toContain("\\theta_K");
+
+    const publicCopy = JSON.stringify(cards).toLowerCase();
+    expect(publicCopy).toContain("air");
+    for (const unsupported of [
+      "brake horsepower",
+      "peak combustion",
+      "indicated power",
+      "1876 deutz shop",
+      "fuel specific heat release",
+    ]) {
+      expect(publicCopy).not.toContain(unsupported);
+    }
+  });
+
   test("keeps Goddard US 1,102,653 on its printed solid-charge tapered-tube limitation", () => {
     const cards = ALL_COLORIZED_EQUATIONS["us-1102653-goddard-rocket"];
     expect(cards.map((card) => card.id)).toEqual(["goddard-source-tapered-tube-minimum"]);

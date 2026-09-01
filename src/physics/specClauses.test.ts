@@ -159,6 +159,28 @@ describe("Specification Clauses & Interactive Telemetry Weave", () => {
     expect(clauses[2].phrase).toContain("liquid-crystalline domains undergo spontaneous");
   });
 
+  test("Tesla US 593,138 breaks the exact common-node clause when Claim 1 is opened", () => {
+    const connected = specClausesFor("us-593138-tesla-coil", {
+      disturbanceFrequencyHz: 925,
+      secondaryLengthMiles: 50,
+      claim1CommonNodeConnected: 1,
+    });
+    const heldBond = connected.find((clause) => clause.id === "primary-secondary-earth-bond");
+    expect(heldBond?.phrase).toContain("I also connect it with the primary");
+    expect(heldBond?.active).toBe(true);
+    expect(heldBond?.tone).toBe("held");
+
+    const opened = specClausesFor("us-593138-tesla-coil", {
+      disturbanceFrequencyHz: 925,
+      secondaryLengthMiles: 50,
+      claim1CommonNodeConnected: 0,
+    });
+    const brokenBond = opened.find((clause) => clause.id === "primary-secondary-earth-bond");
+    expect(brokenBond?.active).toBe(false);
+    expect(brokenBond?.tone).toBe("broken");
+    expect(brokenBond?.caption).toContain("without inventing a voltage or damage result");
+  });
+
   test("every patent in allPatents has at least one authored spec clause with valid SI metadata", async () => {
     const { allPatents } = await import("@/data/patents");
     expect(allPatents.length).toBe(79);

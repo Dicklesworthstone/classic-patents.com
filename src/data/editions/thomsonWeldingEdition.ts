@@ -48,16 +48,16 @@ const FIGURE_PREVIEWS: Readonly<Record<number, FigurePreview>> = {
     height: 300,
   },
   5: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-5-source-crop-v5.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-5-source-crop-v6.png",
     alt: "US 347,140, Fig. 5: removable clamp for a selected wire size.",
-    width: 340,
-    height: 400,
+    width: 260,
+    height: 330,
   },
   6: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-6-source-crop-v5.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-6-source-crop-v6.png",
     alt: "US 347,140, Fig. 6: compound clamp with three wire grooves.",
-    width: 270,
-    height: 380,
+    width: 250,
+    height: 350,
   },
   7: {
     src: "/patents/figures/us-347140-thomson-welding/figure-7-source-crop-v1.png",
@@ -136,11 +136,6 @@ const FIGURE_PREVIEWS: Readonly<Record<number, FigurePreview>> = {
 const SHEET_ONE = 1 as const;
 const SHEET_TWO = 2 as const;
 
-// Root visual QC rejected these candidate rectangles. Keep their files for
-// evidence, but fail closed by withholding them from authored references until
-// a source-aware replacement or explicit split preview is accepted.
-const WITHHELD_FIGURES = new Set([1, 3, 5, 6, 8, 9]);
-
 /** Each source label is manually bound to its own local crop(s); no prose is parsed. */
 const FIGURE_REFERENCE_PREVIEWS: Readonly<Record<string, readonly number[]>> = {
   "Figure 1": [1],
@@ -176,9 +171,7 @@ const figure = (
   href: "#",
   referenceType: "figure",
   label: `Preview the source drawing for ${text}`,
-  figurePreviews: FIGURE_REFERENCE_PREVIEWS[text]
-    .filter((number) => !WITHHELD_FIGURES.has(number))
-    .map((number) => FIGURE_PREVIEWS[number]),
+  figurePreviews: FIGURE_REFERENCE_PREVIEWS[text].map((number) => FIGURE_PREVIEWS[number]),
 });
 
 const term = (text: string, definition: string): CuratedSpecificationInline => ({

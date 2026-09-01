@@ -1,17 +1,23 @@
 "use client";
 
-import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
-import { useEffect, useState } from "react";
-import { FrankenSimEngine } from "@/physics/engine";
+import { RotateCcw, Zap } from "lucide-react";
+import { useEffect, useId, useState } from "react";
+import {
+  readTeslaTransformerControls,
+  stepTeslaTransformerSi,
+  TESLA_TRANSFORMER_SCHEMATIC,
+  teslaTransformerSecondaryPath,
+  teslaTransformerSecondaryTerminals,
+} from "@/physics/teslaTransformerKernel";
 import { ensureTeslaWasm, teslaKernelSource } from "@/physics/teslaWasm";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
-import { usePatentAudio } from "./three/usePatentAudio";
+import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
 
 export function TeslaCoilSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-593138-tesla-coil");
-  const { isAudioMuted, toggleSound } = usePatentAudio();
   const [, setKernelSource] = useState(teslaKernelSource);
+  const profileGradientId = `tesla-profile-${useId().replaceAll(":", "")}`;
 
   useEffect(() => {
     let active = true;
@@ -22,25 +28,32 @@ export function TeslaCoilSim() {
       active = false;
     };
   }, []);
-  const primaryCapacitanceNf = params.primaryCap ?? 45;
-  const inputKv = params.inputVoltageKv ?? 15;
-  const sparkGap = params.sparkGapDistanceMm ?? 12;
-  const couplingK = params.couplingK ?? 0.18;
-  const secondaryTurns = params.secondaryTurns ?? 850;
-  const toploadCapacitancePf = params.toploadCapacitancePf ?? 35;
-
-  // Interpretive host-model calculations; see the source-edition gate on the record.
-  const res = FrankenSimEngine.stepTeslaCoilFromControls({
-    primaryCap: primaryCapacitanceNf,
-    toploadCapacitancePf,
-    inputVoltageKv: inputKv,
-    sparkGapDistanceMm: sparkGap,
-    couplingK,
-    secondaryTurns,
+  const controls = readTeslaTransformerControls({
+    disturbanceFrequencyHz: params.disturbanceFrequencyHz,
+    secondaryLengthMiles: params.secondaryLengthMiles,
   });
-  const resonantFreqKhz = res.resonantFreqKhz;
-  const secondaryVoltageKv = res.secondaryPotentialKv;
-  const streamerScale = res.streamerScale;
+  const res = stepTeslaTransformerSi(controls);
+  const secondaryTerminals = teslaTransformerSecondaryTerminals();
+  const secondaryLow = {
+    x: secondaryTerminals.low.x + 100,
+    y: secondaryTerminals.low.y * 1.23 - 10,
+  };
+  const secondaryHigh = {
+    x: secondaryTerminals.high.x + 100,
+    y: secondaryTerminals.high.y * 1.23 - 10,
+  };
+  const claim1CommonNodeConnected = (params.claim1CommonNodeConnected ?? 1) >= 0.5;
+  const claimStates = { 1: claim1CommonNodeConnected };
+
+  useFrankenSimPhysics("us-593138-tesla-coil", {
+    domain: "electromagnetics_flux",
+    refusal: {
+      isRefused: !claim1CommonNodeConnected,
+      reason: !claim1CommonNodeConnected
+        ? "Claim 1 topology absent: secondary low terminal is open from the primary / earth node."
+        : undefined,
+    },
+  });
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
@@ -54,36 +67,21 @@ export function TeslaCoilSim() {
             </h3>
           </div>
           <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            High-frequency resonant air-core transformer: conical secondary winding, distributed
-            capacitance voltage grading, and quarter-wave standing resonance.
+            Source-described graded transformer: a conical secondary, surrounding primary, claimed
+            common earth terminal, and quarter-wave distributed-line example.
           </p>
         </div>
 
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <div className="px-3.5 py-1.5 rounded-xl bg-parchment-100 dark:bg-ink-900 text-ink-700 dark:text-parchment-300 text-xs sm:text-sm font-mono font-bold border border-parchment-300 dark:border-ink-700 shadow-2xs">
-            {res.runtimeSource === "wasm" ? "Interpretive WASM step" : "TypeScript fallback"}
+            {res.runtimeSource === "wasm" ? "fs-flux WASM" : "TypeScript fallback"}
           </div>
           <div className="px-3.5 py-1.5 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-900 dark:text-purple-300 text-xs sm:text-sm font-mono font-bold border border-purple-300 dark:border-purple-800 shadow-2xs">
-            {secondaryVoltageKv} kV Peak Potential
+            Absolute potential: source-underdetermined
           </div>
           <button
             type="button"
-            onClick={() => {
-              toggleSound();
-              soundEngine.playSwitchClick();
-            }}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              resetParams();
-              soundEngine.playSwitchClick();
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
             title="Reset Simulation"
@@ -99,11 +97,33 @@ export function TeslaCoilSim() {
           <svg
             viewBox="0 0 600 340"
             role="img"
-            aria-label={`US 593,138 Fig. 2 transformer: conical secondary, surrounding primary, common earth terminal, and ${streamerScale > 0 ? "interpretive remote-terminal discharge" : "no discharge"}`}
+            aria-label="US 593,138 Fig. 2 transformer: supported conical secondary, surrounding primary, common earth terminal, and normalized distributed-wave profile"
             className="w-full h-auto max-h-[340px]"
           >
             {/* Background Dark Lab */}
             <rect width="600" height="340" fill="#0a0f1d" />
+            <defs>
+              <linearGradient
+                id={profileGradientId}
+                gradientUnits="userSpaceOnUse"
+                x1="0"
+                y1="260"
+                x2="0"
+                y2="78"
+              >
+                {Array.from({ length: 9 }).map((_, index) => {
+                  const fraction = index / 8;
+                  const profile = Math.abs(Math.sin(res.electricalLengthRad * fraction));
+                  return (
+                    <stop
+                      key={fraction}
+                      offset={`${fraction * 100}%`}
+                      stopColor={`hsl(${38 + profile * 220} 82% 55%)`}
+                    />
+                  );
+                })}
+              </linearGradient>
+            </defs>
 
             {/* Ground plane and mechanically supported table */}
             <line x1="50" y1="300" x2="550" y2="300" stroke="#334155" strokeWidth="3" />
@@ -118,38 +138,37 @@ export function TeslaCoilSim() {
               stroke="#e7d7b7"
               strokeWidth="2"
             />
-            {Array.from({ length: 32 }).map((_, index) => {
-              const fraction = index / 31;
-              const y = 86 + fraction * 166;
-              const halfWidth = 25 + fraction * 31;
-              return (
-                <line
-                  key={index}
-                  x1={300 - halfWidth}
-                  y1={y}
-                  x2={300 + halfWidth}
-                  y2={y}
-                  stroke="#d97706"
-                  strokeWidth="2"
-                />
-              );
-            })}
+            <path
+              d={teslaTransformerSecondaryPath()}
+              transform="translate(100 -10) scale(1 1.23)"
+              fill="none"
+              stroke={claim1CommonNodeConnected ? `url(#${profileGradientId})` : "#64748b"}
+              strokeWidth="2.4"
+              strokeLinejoin="round"
+            />
             <text x="326" y="110" fill="#fbbf24" fontSize="12" fontFamily="monospace">
               B — GRADED SECONDARY
             </text>
 
             {/* Primary C surrounds the adjacent broad secondary end. */}
-            <g fill="none" stroke="#f59e0b" strokeWidth="5">
-              {[0, 1, 2, 3, 4].map((index) => (
-                <ellipse key={index} cx="300" cy="255" rx={68 + index * 13} ry={10 + index * 3} />
-              ))}
-            </g>
+            <path
+              d={TESLA_TRANSFORMER_SCHEMATIC.primaryWindingPath}
+              transform="translate(100 35)"
+              fill="none"
+              stroke="#f59e0b"
+              strokeWidth="5"
+            />
             <text x="175" y="240" fill="#fbbf24" fontSize="12" fontFamily="monospace">
               C — PRIMARY
             </text>
 
             {/* Remote high-potential terminal; no source toroid. */}
-            <line x1="300" y1="78" x2="300" y2="58" stroke="#f59e0b" strokeWidth="4" />
+            <path
+              d={`M ${secondaryHigh.x} ${secondaryHigh.y} L 300 58`}
+              stroke="#f59e0b"
+              strokeWidth="4"
+              fill="none"
+            />
             <circle cx="300" cy="50" r="9" fill="#fbbf24" stroke="#fef3c7" strokeWidth="2" />
             <text x="318" y="53" fill="#fde68a" fontSize="10" fontFamily="monospace">
               REMOTE HIGH TERMINAL
@@ -157,16 +176,42 @@ export function TeslaCoilSim() {
 
             {/* The claimed adjacent secondary / primary / earth bond. */}
             <rect x="452" y="235" width="12" height="35" rx="3" fill="#f59e0b" />
-            <path d="M 356 245 Q 405 222 458 235" stroke="#f59e0b" strokeWidth="4" fill="none" />
-            <path d="M 380 258 Q 420 250 458 245" stroke="#f59e0b" strokeWidth="4" fill="none" />
+            <path d="M 210 255 Q 350 242 458 235" stroke="#f59e0b" strokeWidth="4" fill="none" />
+            {claim1CommonNodeConnected ? (
+              <path
+                d={`M ${secondaryLow.x} ${secondaryLow.y} Q 355 258 458 245`}
+                stroke="#fbbf24"
+                strokeWidth="4"
+                fill="none"
+              />
+            ) : (
+              <>
+                <path
+                  d={`M ${secondaryLow.x} ${secondaryLow.y} Q 292 260 330 257`}
+                  stroke="#fbbf24"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <path
+                  d="M 370 254 Q 420 250 458 245"
+                  stroke="#fbbf24"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <circle cx="330" cy="257" r="5" fill="#be123c" />
+                <circle cx="370" cy="254" r="5" fill="#be123c" />
+              </>
+            )}
             <path d="M 458 235 L 480 300" stroke="#f59e0b" strokeWidth="4" fill="none" />
             <text x="394" y="216" fill="#6ee7b7" fontSize="10" fontFamily="monospace">
-              PRIMARY + SECONDARY + EARTH
+              {claim1CommonNodeConnected
+                ? "PRIMARY + SECONDARY + EARTH"
+                : "SECONDARY OPEN FROM PRIMARY + EARTH"}
             </text>
 
             {/* Other primary terminal and source lead. */}
             <rect x="136" y="235" width="12" height="35" rx="3" fill="#f59e0b" />
-            <path d="M 142 235 Q 185 235 220 255" stroke="#f59e0b" strokeWidth="4" fill="none" />
+            <path d="M 142 235 Q 160 245 182 255" stroke="#f59e0b" strokeWidth="4" fill="none" />
             <text x="72" y="228" fill="#93c5fd" fontSize="10" fontFamily="monospace">
               PRIMARY SOURCE
             </text>
@@ -178,18 +223,18 @@ export function TeslaCoilSim() {
               strokeWidth="2"
             />
 
-            {/* Interpretive discharge from the source's remote terminal. */}
-            <g
-              stroke="#c084fc"
-              strokeWidth="2"
-              fill="none"
-              opacity="0.9"
-              transform={`translate(300 50) scale(${streamerScale}) translate(-300 -50)`}
+            <text
+              x="300"
+              y="22"
+              textAnchor="middle"
+              fill="#c4b5fd"
+              fontSize="10"
+              fontFamily="monospace"
             >
-              <path d="M 300 41 Q 268 25 238 34" strokeWidth="2" />
-              <path d="M 300 41 Q 334 22 366 35" strokeWidth="2" />
-              <path d="M 300 41 Q 294 18 304 5" strokeWidth="2" stroke="#e9d5ff" />
-            </g>
+              {claim1CommonNodeConnected
+                ? "NORMALIZED PROFILE ONLY — ABSOLUTE V UNKNOWN"
+                : "CLAIM 1 COMMON NODE OPEN — PROFILE REFUSED"}
+            </text>
           </svg>
 
           {/* Telemetry Strip */}
@@ -199,67 +244,73 @@ export function TeslaCoilSim() {
               <span className="text-purple-400 font-bold text-sm sm:text-base">FIG. 2 CONICAL</span>
             </div>
             <div>
-              <span className="text-ink-400 block text-xs">ILLUSTRATIVE POTENTIAL</span>
+              <span className="text-ink-400 block text-xs">ELECTRICAL LENGTH</span>
               <span className="text-amber-400 font-bold text-sm sm:text-base">
-                {secondaryVoltageKv} kV
+                {claim1CommonNodeConnected ? `${res.electricalLengthDeg.toFixed(1)}°` : "REFUSED"}
               </span>
             </div>
             <div>
-              <span className="text-ink-400 block text-xs">INTERPRETIVE WASM</span>
+              <span className="text-ink-400 block text-xs">QUARTER-WAVE TARGET</span>
               <span className="text-emerald-400 font-bold text-sm sm:text-base">
-                {resonantFreqKhz.toFixed(1)} kHz
+                {res.quarterWaveLengthMiles.toFixed(2)} mi
               </span>
             </div>
           </div>
+
+          <ClaimConstraintToggle
+            patentId="us-593138-tesla-coil"
+            claimStates={claimStates}
+            onToggleClaim={(_claimNo, active) =>
+              updateParam("claim1CommonNodeConnected", active ? 1 : 0)
+            }
+          />
         </div>
 
         {/* Controls Sidebar */}
         <div className="lg:col-span-4 space-y-4">
           <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-5 space-y-4 shadow-sm">
             <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
-              Interpretive Excitation Parameters
+              Source Example &amp; Distributed-Wave Parameters
             </span>
 
-            {/* Secondary Turns Slider */}
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Secondary Turns ($N_s$)
+                  Disturbance frequency
                 </span>
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {secondaryTurns} turns
+                  {controls.disturbanceFrequencyHz.toFixed(0)} Hz
                 </span>
               </div>
               <input
                 type="range"
-                aria-label="Secondary Turns (N_s)"
-                min="400"
-                max="1400"
-                step="50"
-                value={secondaryTurns}
-                onChange={(e) => updateParam("secondaryTurns", Number(e.target.value))}
+                aria-label="Electrical disturbance frequency"
+                min="500"
+                max="1500"
+                step="25"
+                value={controls.disturbanceFrequencyHz}
+                onChange={(e) => updateParam("disturbanceFrequencyHz", Number(e.target.value))}
                 className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
               />
             </div>
 
-            {/* Illustrative input excitation */}
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Input excitation
+                  Developed secondary wire length
                 </span>
                 <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                  {inputKv} kV
+                  {controls.secondaryLengthMiles.toFixed(0)} mi
                 </span>
               </div>
               <input
                 type="range"
-                aria-label="Illustrative input excitation"
-                min="5"
-                max="30"
+                aria-label="Developed secondary wire length"
+                min="25"
+                max="75"
                 step="1"
-                value={inputKv}
-                onChange={(e) => updateParam("inputVoltageKv", Number(e.target.value))}
+                value={controls.secondaryLengthMiles}
+                onChange={(e) => updateParam("secondaryLengthMiles", Number(e.target.value))}
                 className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-emerald-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
               />
             </div>
@@ -269,11 +320,12 @@ export function TeslaCoilSim() {
                 Quarter-Wave Resonance:
               </span>
               <p className="leading-relaxed">
-                Tesla specifies secondary wire length near one quarter of the disturbance
-                wavelength. The current {resonantFreqKhz.toFixed(1)} kHz value and{" "}
-                {secondaryVoltageKv} kV potential come from the explicitly interpretive lumped
-                model; the source apparatus claim is the graded winding and its
-                primary-secondary-earth connection.
+                Tesla&apos;s printed example uses 925 Hz, a propagation speed of 185,000 mi/s, and a
+                50 mi secondary: exactly one quarter of a 200 mi wavelength. The current inputs
+                produce {res.electricalLengthDeg.toFixed(1)}° electrical length and a{" "}
+                {res.lengthErrorMiles.toFixed(2)} mi length error. Absolute voltage remains unknown
+                because the grant does not supply the required excitation, impedance, loss, or load
+                data.
               </p>
             </div>
           </div>

@@ -241,7 +241,10 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
   });
 
   test("computes spectral eigenmodes for resonant patents", () => {
-    const teslaCoilModes = spectralModes("us-593138-tesla-coil", { secondaryTurns: 1000 });
+    const teslaCoilModes = spectralModes("us-593138-tesla-coil", {
+      disturbanceFrequencyHz: 925,
+      secondaryLengthMiles: 50,
+    });
     expect(teslaCoilModes.length).toBeGreaterThan(0);
   });
 
@@ -263,9 +266,7 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(coupleLinks("us-381968-tesla-motor", { frequency: 60 })[0]?.from).toBe(
       "polyphase stator",
     );
-    expect(coupleLinks("us-593138-tesla-coil", { inputVoltageKv: 15 })[0]?.from).toBe(
-      "primary tank",
-    );
+    expect(coupleLinks("us-593138-tesla-coil", {})).toEqual([]);
     expect(coupleLinks("us-132-davenport-electric-motor", {}).length).toBe(1);
     expect(coupleLinks("us-347140-thomson-welding", {})[0]?.from).toBe("I²R");
     expect(coupleLinks("us-233692-pelton-water-wheel", {})[0]?.from).toBe("water jet");

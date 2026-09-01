@@ -13,7 +13,6 @@ import {
   stepMarconiRadio,
   stepMorseTelegraph,
   stepNoyceIC,
-  stepOttoEngine,
 } from "./catalogKernels";
 import { fermiKeff } from "./fermiKinetics";
 import { stepHoweSewingMachine } from "./machineKernels";
@@ -137,26 +136,12 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId === "us-194047-otto-engine") {
-    const cr = params.compressionRatio ?? 4.5;
-    const otto = stepOttoEngine({
-      engineRpm: params.engineRpm ?? 180,
-      compressionRatio: cr,
-    });
-    const dEta = 0.4 / cr ** 1.4;
     return [
       {
-        from: "compression",
-        to: "thermal efficiency",
-        gain: Number((dEta * 100).toFixed(3)),
-        unit: "% / ratio",
-        crate: "fs-couple",
-        source: "ts-fallback",
-      },
-      {
-        from: "rpm",
-        to: "brake hp",
-        gain: Number((otto.brakeHorsepower / Math.max(1, params.engineRpm ?? 180)).toFixed(4)),
-        unit: "hp / rpm",
+        from: "engine shaft I",
+        to: "counter-shaft K",
+        gain: 0.5,
+        unit: "revolution / revolution",
         crate: "fs-couple",
         source: "ts-fallback",
       },

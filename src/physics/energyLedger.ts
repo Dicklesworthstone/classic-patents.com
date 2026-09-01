@@ -214,18 +214,8 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-194047-otto-engine": {
-      const rpm = params.rpm ?? 180;
-      const compRatio = params.compressionRatio ?? 8.0;
-      const omega = (rpm * 2 * Math.PI) / 60;
-      const flywheelInertia = 2.4; // kg*m^2
-
-      kinetic = 0.5 * flywheelInertia * omega * omega;
-      // Air-standard Otto cycle
-      const fuelFlowGps = 0.15 * (rpm / 180);
-      powerIn = fuelFlowGps * 44000.0; // Fuel heating value input (Watts)
-      const efficiency = 1.0 - 1.0 / compRatio ** 0.4;
-      dissipated = powerIn * (1.0 - efficiency);
-      thermal = 25000.0; // Engine block thermal capacity
+      // The grant prints no mass, inertia, speed, pressure trace, fuel flow,
+      // heating value, or loss datum for a closed SI energy ledger.
       break;
     }
 
@@ -494,13 +484,8 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-6594844-roomba": {
-      const driveMps = params.driveVelocityMps ?? 0.25;
-      const vacWatts = params.vacuumMotorWatts ?? 30.0;
-      const robotMassKg = 3.6;
-      kinetic = 0.5 * robotMassKg * driveMps * driveMps;
-      powerIn = 14.4 * 2.5; // NiMH battery discharge power (36 Watts)
-      dissipated = vacWatts + 5.5 * driveMps; // Impeller airflow turbulence + floor brush friction
-      thermal = 180.0; // Motor casing and battery thermal capacity
+      // The grant contains no source data for a closed SI energy ledger.
+      // Preserve the explicit zero state; the public 3D face omits the strip.
       break;
     }
 

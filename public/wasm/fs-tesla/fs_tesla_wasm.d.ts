@@ -1,13 +1,13 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export function tesla_coil_step(resonant_freq_khz: number, input_kv: number, spark_gap_mm: number, q_factor: number): string;
+export function tesla_transformer_step(frequency_hz: number, propagation_speed_mps: number, conductor_length_m: number): string;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
     readonly memory: WebAssembly.Memory;
-    readonly tesla_coil_step: (a: number, b: number, c: number, d: number) => [number, number];
+    readonly tesla_transformer_step: (a: number, b: number, c: number) => [number, number];
     readonly __wbindgen_externrefs: WebAssembly.Table;
     readonly __wbindgen_free: (a: number, b: number, c: number) => void;
     readonly __wbindgen_start: () => void;

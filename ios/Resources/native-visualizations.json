@@ -146,11 +146,11 @@
   {
     "id": "us-31128-otis-elevator",
     "asset": "NativeModels/us-31128-otis-elevator.usdz",
-    "builder": "buildOtisElevatorModel",
-    "spatialComponent": "OtisElevator3D",
-    "vectorComponent": "OtisElevatorSim",
-    "meshCount": 88,
-    "namedNodeCount": 91
+    "builder": "buildOtis1861HoistingModel",
+    "spatialComponent": "OtisHoistingApparatus3D",
+    "vectorComponent": "OtisHoistingApparatusSim",
+    "meshCount": 90,
+    "namedNodeCount": 119
   },
   {
     "id": "us-36836-gatling-gun",

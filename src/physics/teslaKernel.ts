@@ -5,7 +5,7 @@
  */
 
 import type { TeslaStatorHodge } from "./deepWasm";
-import { hodgeWasmStepped, teslaCoilSpectrum, teslaStatorHodge } from "./deepWasm";
+import { hodgeWasmStepped, teslaStatorHodge } from "./deepWasm";
 
 export const TESLA_PATENT_ID = "us-381968-tesla-motor";
 export const TESLA_STROBE_COUNT = 8;
@@ -38,40 +38,6 @@ export function teslaFieldDisplayOmegaRadPerS(freqHz: number): number {
 
 export function teslaFieldDisplayOmegaDegPerS(freqHz: number): number {
   return (360 * Math.max(0, freqHz)) / TESLA_FIELD_DISPLAY_SLOWDOWN;
-}
-
-/**
- * Primary tank plus secondary topload. 180 kHz at the registry defaults
- * (45 nF primary, 35 pF topload over a 15 pF secondary). Shared by 2D, 3D, badge, weave.
- */
-export function teslaCoilResonantKhz(primaryCapNf?: number, toploadCapacitancePf?: number): number {
-  const cap = Math.max(10, primaryCapNf ?? 45);
-  const cTop = Math.max(5, toploadCapacitancePf ?? 35);
-  return Math.round(180 * Math.sqrt(45 / cap) * Math.sqrt(50 / (15 + cTop)));
-}
-
-/** Registry-shaped controls for the interpretive US 593,138 host model. */
-export function teslaCoilControls(params: {
-  primaryCap?: number;
-  primaryCapNf?: number;
-  toploadCapacitancePf?: number;
-  inputVoltageKv?: number;
-  sparkGapDistanceMm?: number;
-  couplingK?: number;
-  secondaryTurns?: number;
-}) {
-  const resonantFreqKhz = teslaCoilResonantKhz(
-    params.primaryCap ?? params.primaryCapNf,
-    params.toploadCapacitancePf,
-  );
-  return {
-    resonantFreqKhz,
-    inputKv: params.inputVoltageKv ?? 15,
-    sparkGapMm: params.sparkGapDistanceMm ?? 12,
-    couplingK: params.couplingK ?? 0.18,
-    secondaryTurns: params.secondaryTurns ?? 850,
-    ...teslaCoilSpectrum(resonantFreqKhz),
-  };
 }
 
 export interface TeslaFieldSample {
@@ -264,54 +230,6 @@ export function teslaPhaseVectors(omegaT: number, phaseCount: 2 | 3 = 2) {
       color: colors[ph],
     };
   });
-}
-
-/** kHz / kV / MV leftovers shared by WASM and host coil steps. */
-export function teslaCoilSiUnits(
-  resonantFreqKhz: number,
-  inputKv: number,
-  secondaryPotentialMv: number,
-) {
-  return {
-    resonantFreqHz: Number((Math.max(0, resonantFreqKhz) * 1000).toFixed(0)),
-    inputVoltageVolts: Number((Math.max(0, inputKv) * 1000).toFixed(0)),
-    secondaryPotentialVolts: Number((Math.max(0, secondaryPotentialMv) * 1e6).toFixed(0)),
-    secondaryTurnCount: 18,
-    windingTaperPx: 0.55,
-    windingPitchY: 7.5,
-    windingHalfW: 25,
-    schematicToploadCx: 200,
-    schematicToploadCy: 70,
-    schematicToploadRx: 50,
-    schematicToploadRy: 18,
-    schematicSparkX0: 160,
-    schematicSparkX1: 240,
-    schematicSparkY: 245,
-    schematicSparkR: 5,
-    schematicSparkDx: 5,
-    schematicBaseX: 70,
-    schematicBaseY: 230,
-    schematicBaseW: 260,
-    schematicBaseH: 18,
-    schematicPostX0: 100,
-    schematicPostX1: 300,
-    schematicPostY0: 230,
-    schematicPostY1: 170,
-    schematicBellD: "M 120 170 C 120 120 160 80 200 80 C 240 80 280 120 280 170 Z",
-    schematicSecondaryX: 200,
-    schematicSecondaryY0: 88,
-    schematicSecondaryY1: 170,
-  };
-}
-
-/** Secondary helical turn on the 2D resonator. Shared by 2D. */
-export function teslaCoilWindingSvg(index: number, taperPx = 0.55, pitchY = 7.5, halfW = 25) {
-  return {
-    x1: Number((-halfW + index * taperPx).toFixed(2)),
-    y1: Number((-index * pitchY).toFixed(2)),
-    x2: Number((halfW - index * taperPx).toFixed(2)),
-    y2: Number((-index * pitchY - 3).toFixed(2)),
-  };
 }
 
 export function teslaBAt(

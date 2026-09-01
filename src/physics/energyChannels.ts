@@ -26,7 +26,6 @@ import {
   stepMorseTelegraph,
   stepNobelDynamite,
   stepNoyceIC,
-  stepOttoEngine,
   stepParsonsTurbine,
   stepThomsonWelding,
   stepTownesLaser,
@@ -54,8 +53,12 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 361,931 prints marine shaft, coupling, reversing, cooling, steering, and gas-storage topology but no speed, torque, friction coefficient, flow, heat, or power datum from which an SI energy channel can be derived.",
   "us-593138-tesla-coil":
     "US 593,138 prints winding geometry, terminal relationships, an earth connection, and a quarter-wave example but no capacitance, spark rate, current, load, loss, or power datum from which an SI energy channel can be derived.",
+  "us-194047-otto-engine":
+    "US 194,047 prints charge ordering, valve-gear topology, and a one-to-two shaft timing relation but no cylinder dimensions, operating speed, fuel flow, pressure trace, torque, inertia, or power datum from which an SI energy channel can be derived.",
   "us-6331181-davinci":
     "US 6,331,181 prints tool-memory, compatibility, calibration-offset, engagement, and linkage topology but no motor torque, drive speed, friction, electrical load, or power datum from which an SI energy channel can be derived.",
+  "us-6594844-roomba":
+    "US 6,594,844 prints optical emitter/detector geometry and redirect-circuit behavior but no battery voltage, current, robot mass, motor load, brush drag, vacuum flow, loss, or power datum from which an SI energy channel can be derived.",
   "us-4750-howe-sewing-machine":
     "US 4,750 prints the mechanism topology and two local dimensions but no force, torque, inertia, speed, friction, or power datum from which an SI energy channel can be derived.",
   "us-31128-otis-elevator":
@@ -174,13 +177,7 @@ export function energyChannelsFor(
     return [{ name: "I²R nugget", watts: weld.jouleWatts, tone: "in" }];
   }
   if (patentId === "us-194047-otto-engine") {
-    const otto = stepOttoEngine({
-      engineRpm: params.engineRpm,
-      compressionRatio: params.compressionRatio,
-    });
-    return [
-      { name: "Brake", watts: otto.brakeHorsepower * MECHANICAL_HORSEPOWER_W, tone: "useful" },
-    ];
+    return [];
   }
   if (patentId === "us-6162-corliss-steam-engine") {
     const corliss = stepCorlissEngine({
@@ -680,13 +677,7 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-6594844-roomba") {
-    const vWheel = params.wheelSpeedMps ?? 0.3;
-    const battW = 28.0 * (vWheel / 0.3);
-    return [
-      { name: "NiMH Battery", watts: battW, tone: "in" },
-      { name: "Drive Wheels & Impeller", watts: battW * 0.7, tone: "useful" },
-      { name: "Floor & Brush Drag", watts: battW * 0.3, tone: "loss" },
-    ];
+    return [];
   }
 
   if (patentId === "us-7479949-multitouch") {

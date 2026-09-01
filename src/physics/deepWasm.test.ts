@@ -217,7 +217,7 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     );
     expect(coupleEdgesFor("us-233692-pelton-water-wheel", { headMeters: 450 })).toEqual([]);
     expect(coupleEdgesFor("us-194047-otto-engine", { compressionRatio: 4.5 })[0]?.from).toBe(
-      "compression",
+      "engine shaft I",
     );
     expect(coupleEdgesFor("us-120057-gramme-dynamo", { shaftRate: 1 })[0]?.from).toBe("shaft rate");
     expect(coupleEdgesFor("gb-931-arkwright-water-frame", { totalDraftRatio: 6 })[0]?.from).toBe(
@@ -271,7 +271,11 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
       "BoyleSmithCcd3D.tsx",
     ]) {
       const src = readFileSync(join(dir, name), "utf8");
-      if (name === "ArkwrightWaterFrame3D.tsx" || name === "BoyleSmithCcd3D.tsx") {
+      if (
+        name === "ArkwrightWaterFrame3D.tsx" ||
+        name === "BoyleSmithCcd3D.tsx" ||
+        name === "TeslaCoil3D.tsx"
+      ) {
         // Bus-driven pose consumers: they integrate nothing locally, so the
         // honest contract is "no local clock AND no fake fixed dt" — phases
         // arrive pre-integrated on the shared transport tape.

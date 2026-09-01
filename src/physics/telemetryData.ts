@@ -66,6 +66,8 @@ import {
 import { stepMultiTouch } from "./multiTouchKernel";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { stepPageRank } from "./pageRankKernel";
+import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
+import { readTeslaTransformerControls, stepTeslaTransformerSi } from "./teslaTransformerKernel";
 import { goddardNozzleMatch } from "./thermochem";
 import { stepWattCondenser } from "./wattCondenserKernel";
 import { stepWattRotaryEngine } from "./wattRotaryKernel";
@@ -3325,123 +3327,75 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-593138-tesla-coil": {
     domain: "electromagnetics_flux",
-    domainTitle: "Interpretive High-Potential Transformer Visualization",
+    domainTitle: "Distributed-Wave Transformer Geometry",
     equationName: "Source-Described Quarter-Wave Secondary",
-    governingEquation: "l \\approx \\lambda / 4",
-    engineMethod:
-      "FrankenSimEngine.stepTeslaCoil (dedicated interpretive WASM after load; validated TypeScript fallback)",
+    governingEquation: "\\lambda=v/f; \\quad \\beta l=2\\pi f l/v; \\quad l_{1/4}=v/(4f)",
+    engineMethod: "stepTeslaTransformerSi / fs-flux quarter-wave WASM",
     controls: [
       {
-        id: "primaryCap",
-        label: "Primary Tank Capacitance",
-        min: 10,
-        max: 90,
-        step: 5,
-        defaultValue: 45,
-        unit: "nF",
-      },
-      {
-        id: "couplingK",
-        label: "Coil Magnetic Coupling (k)",
-        min: 0.08,
-        max: 0.35,
-        step: 0.01,
-        defaultValue: 0.18,
-        unit: "ratio",
-      },
-      {
-        id: "sparkGapDistanceMm",
-        label: "Spark Gap Distance",
-        min: 2,
-        max: 30,
-        step: 1,
-        defaultValue: 12,
-        unit: "mm",
-      },
-      {
-        id: "inputVoltageKv",
-        label: "Input Voltage",
-        min: 5,
-        max: 30,
-        step: 1,
-        defaultValue: 15,
-        unit: "kV",
-      },
-      {
-        id: "secondaryTurns",
-        label: "Secondary Turns",
-        min: 400,
-        max: 1400,
-        step: 50,
-        defaultValue: 850,
-        unit: "N_s",
-      },
-      {
-        id: "sparkRateHz",
-        label: "Rotary Spark Rate",
-        min: 30,
-        max: 400,
-        step: 10,
-        defaultValue: 120,
+        id: "disturbanceFrequencyHz",
+        label: "Electrical Disturbance Frequency",
+        min: 500,
+        max: 1500,
+        step: 25,
+        defaultValue: 925,
         unit: "Hz",
       },
       {
-        id: "toploadCapacitancePf",
-        label: "Topload Capacitance",
-        min: 10,
-        max: 80,
-        step: 5,
-        defaultValue: 35,
-        unit: "pF",
+        id: "secondaryLengthMiles",
+        label: "Developed Secondary Wire Length",
+        min: 25,
+        max: 75,
+        step: 1,
+        defaultValue: 50,
+        unit: "mi",
+      },
+      {
+        id: "claim1CommonNodeConnected",
+        label: "Claim 1 Primary / Secondary / Earth Node",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "",
       },
     ],
     computeMetrics: (p) => {
-      const res = FrankenSimEngine.stepTeslaCoilFromControls({
-        primaryCap: p.primaryCap,
-        toploadCapacitancePf: p.toploadCapacitancePf,
-        inputVoltageKv: p.inputVoltageKv,
-        sparkGapDistanceMm: p.sparkGapDistanceMm,
-        couplingK: p.couplingK,
-        secondaryTurns: p.secondaryTurns,
-      });
-      const freqKhz = res.resonantFreqKhz;
-      const peakKv = res.secondaryPotentialKv;
-      const streamerM = res.streamerLengthMeters.toFixed(2);
-      const k = p.couplingK ?? 0.15;
+      const res = stepTeslaTransformerSi(readTeslaTransformerControls(p));
 
       return [
         {
-          label: "Illustrative Peak Voltage",
-          value: `${peakKv}`,
-          unit: "kV",
+          label: "Electrical Length",
+          value: res.electricalLengthDeg.toFixed(1),
+          unit: "deg",
           badgeColor: "purple",
-          progressPct: clampProgress((peakKv / 800) * 100),
+          progressPct: clampProgress((res.electricalLengthDeg / 180) * 100),
         },
         {
-          label: "Illustrative Frequency",
-          value: freqKhz.toString(),
-          unit: "kHz",
+          label: "Quarter-Wave Target",
+          value: res.quarterWaveLengthMiles.toFixed(2),
+          unit: "mi",
           badgeColor: "cyan",
-          progressPct: clampProgress((freqKhz / 350) * 100),
+          progressPct: clampProgress((res.quarterWaveLengthMiles / 100) * 100),
         },
         {
-          label: "Illustrative Discharge Length",
-          value: streamerM,
-          unit: "m",
+          label: "Wire-Length Error",
+          value: res.lengthErrorMiles.toFixed(2),
+          unit: "mi",
           badgeColor: "amber",
-          progressPct: clampProgress((Number(streamerM) / 3.0) * 100),
+          progressPct: clampProgress(Math.abs(res.lengthErrorMiles) * 4),
         },
         {
-          label: "Coupling Coefficient",
-          value: k.toFixed(2),
-          unit: "k",
+          label: "Absolute Potential",
+          value: "UNDERDETERMINED",
+          unit: "source boundary",
           badgeColor: "emerald",
-          progressPct: clampProgress((k / 0.35) * 100),
+          progressPct: 0,
         },
       ];
     },
     pedagogicalInsight:
-      "US 593,138 describes a secondary approximately one-quarter of the electrical disturbance wavelength, with the remote terminal at maximum potential. The interactive numbers are an interpretive host model, not a reconstruction of a measured historic apparatus.",
+      "US 593,138 prints a checkable example: at 925 Hz and 185,000 mi/s, the wavelength is 200 mi and the quarter-wave secondary is 50 mi. The shared fs-flux kernel computes that distributed-wave geometry; it does not invent voltage, coupling, loss, Q, or discharge length.",
   },
   "us-x9430-colt-revolver": {
     domain: "continuum_elasticity",
@@ -5641,12 +5595,12 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "Coiling the short spur wire around a single core strand and twisting a second line wire around it locks the barb permanently in place against longitudinal slipping or livestock pressure.",
   },
   "us-194047-otto-engine": {
-    domain: "aerodynamics_mbd",
-    domainTitle: "Internal Combustion & 4-Stroke Otto Thermodynamic Cycle",
-    equationName: "Air-Standard Otto Cycle Efficiency",
+    domain: "thermodynamics_transport",
+    domainTitle: "Graded-Charge Gas Engine & Four-Stroke Valve Gear",
+    equationName: "Source Timing Topology with a Declared Air-Standard Lens",
     governingEquation:
-      "\\eta_{\\text{Otto}} = 1 - \\frac{1}{r_c^{\\gamma - 1}} \\quad (\\gamma = 1.4)",
-    engineMethod: "FrankenSimEngine.stepOttoEngine",
+      "\\omega_K=\\omega_I/2; \\quad \\eta_{ideal}=1-r^{1-\\gamma} \\;\\text{(modern declared analysis)}",
+    engineMethod: "fs-mbd source topology + explicitly declared air-standard analysis",
     controls: [
       {
         id: "engineRpm",
@@ -5659,51 +5613,59 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "compressionRatio",
-        label: "Geometric Compression Ratio",
+        label: "Declared Analysis Compression Ratio",
         min: 3.0,
         max: 8.0,
         step: 0.5,
         defaultValue: 4.5,
         unit: ":1",
       },
+      {
+        id: "claim1ChargeGradingPresent",
+        label: "Claim 1 Graded Separate Charge",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "",
+      },
     ],
     computeMetrics: (p) => {
       const otto = stepOttoEngine({ engineRpm: p.engineRpm, compressionRatio: p.compressionRatio });
-      const hp = otto.brakeHorsepower.toFixed(1);
-      const etaPct = otto.thermalEfficiencyPct;
+      const rpm = p.engineRpm ?? 180;
       return [
         {
-          label: "Brake Horsepower",
-          value: `${hp} BHP`,
-          unit: "P_bhp",
+          label: "Counter-Shaft K",
+          value: `${(rpm / 2).toFixed(1)} RPM`,
+          unit: "ω_K = ω_I / 2",
           badgeColor: "amber",
-          progressPct: clampProgress((Number(hp) / 6) * 100),
+          progressPct: clampProgress((rpm / 320) * 100),
         },
         {
-          label: "Cycle Efficiency",
-          value: `${etaPct}%`,
-          unit: "eta_otto",
+          label: "Modern Ideal Efficiency",
+          value: `${otto.thermalEfficiencyPct}%`,
+          unit: "declared r; not measured",
           badgeColor: "emerald",
-          progressPct: clampProgress(etaPct),
+          progressPct: clampProgress(otto.thermalEfficiencyPct),
         },
         {
-          label: "Peak Compression",
-          value: `${otto.peakCompressionBar} bar`,
-          unit: "P2",
+          label: "Source Pressure Trace",
+          value: "NOT PRINTED",
+          unit: "refused",
           badgeColor: "cyan",
-          progressPct: clampProgress((otto.peakCompressionBar / 20) * 100),
+          progressPct: 0,
         },
         {
-          label: "Peak Firing",
-          value: `${otto.peakFiringBar} bar`,
-          unit: "P3",
+          label: "Source Power",
+          value: "NOT PRINTED",
+          unit: "refused",
           badgeColor: "rose",
-          progressPct: clampProgress((otto.peakFiringBar / 50) * 100),
+          progressPct: 0,
         },
       ];
     },
     pedagogicalInsight:
-      "The four distinct strokes (Intake, Compression, Power, Exhaust) compress the fuel-air charge prior to flame ignition, raising peak thermodynamic combustion temperature and work output.",
+      "US 194,047 claims a spatially graded charge and the machinery that admits, compresses, ignites, and exhausts it over four strokes. The source fixes the one-to-two counter-shaft relation but supplies no operating speed, compression ratio, pressure trace, fuel flow, or power measurement; the ideal-efficiency slider is a clearly labeled modern analysis input.",
   },
   "us-200521-edison-phonograph": {
     domain: "solid_mechanics",
@@ -6862,10 +6824,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-6594844-roomba": {
     domain: "autonomous_robotics",
-    domainTitle: "Deterministic Expanding Coverage & Deflection Heuristics",
-    equationName: "Differential Drive Kinematics & Archimedean Spiral",
+    domainTitle: "Finite-Region Optical Obstacle Detection",
+    equationName: "Intersecting Emitter / Detector Fields & Differential Drive",
     governingEquation:
-      "r(t) = r_0 + \\frac{v}{2\\pi} t, \\quad \\mathbf{x}(t+\\Delta t) = \\mathbf{x}(t) + \\mathbf{v}_{drive} \\Delta t",
+      "\\mathcal{R}=\\Omega_{emit}\\cap\\Omega_{detect}; \\quad v=(v_R+v_L)/2; \\quad \\omega=(v_R-v_L)/b",
     engineMethod: "stepRoomba",
     controls: [
       {
@@ -6886,28 +6848,52 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 1.5,
         unit: "rad/s",
       },
+      {
+        id: "opticalSensorEnabled",
+        label: "Claim 1 Optical Redirect Subsystem",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "",
+      },
     ],
     computeMetrics: (p) => {
       const v = p.wheelSpeedMps ?? 0.3;
+      const state = stepRoomba({
+        wheelSpeedMps: v,
+        turnRateRadSec: p.turnRateRadSec ?? 1.5,
+        roomWidth: ROOMBA_ROOM.width,
+        roomHeight: ROOMBA_ROOM.height,
+        sensorHeightInches: p.sensorHeightInches,
+        opticalSensorEnabled: (p.opticalSensorEnabled ?? 1) >= 0.5,
+      });
       return [
         {
-          label: "Linear Velocity",
-          value: `${v.toFixed(2)} m/s`,
-          unit: "v",
+          label: "Optical Field Overlap",
+          value: (state.surfaceOverlapFraction * 100).toFixed(0),
+          unit: "%",
           badgeColor: "emerald",
-          progressPct: clampProgress((v / 1.0) * 100),
+          progressPct: clampProgress(state.surfaceOverlapFraction * 100),
         },
         {
-          label: "Angular Deflection Rate",
-          value: `${(p.turnRateRadSec ?? 1.5).toFixed(1)} rad/s`,
-          unit: "ω",
-          badgeColor: "cyan",
-          progressPct: clampProgress(((p.turnRateRadSec ?? 1.5) / 3.0) * 100),
+          label: "Surface in Region",
+          value: state.surfacePresent ? "PRESENT" : "ABSENT",
+          unit: "optical test",
+          badgeColor: state.surfacePresent ? "cyan" : "amber",
+          progressPct: state.surfacePresent ? 100 : 0,
+        },
+        {
+          label: "Context Drive Speed",
+          value: v.toFixed(2),
+          unit: "m/s",
+          badgeColor: "purple",
+          progressPct: clampProgress((v / 1.0) * 100),
         },
       ];
     },
     pedagogicalInsight:
-      "The Roomba achieves complete floor coverage without persistent global mapping by combining expanding Archimedean spiral cleaning with randomized bump-and-turn deflection heuristics.",
+      "US 6,594,844 claims a low-cost optical geometry: the emitter and detector fields overlap in a finite region, and the redirect circuit responds when the expected floor or wall does not occupy it. The room motion is a contextual differential-drive demonstrator, not a coverage guarantee.",
   },
   "us-6331181-davinci": {
     domain: "medical_robotics",

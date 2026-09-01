@@ -26,7 +26,7 @@ describe("thomsonWeldingArchivalEdition", () => {
     ).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
   });
 
-  test("binds every accepted source-figure occurrence and withholds rejected crops", () => {
+  test("binds every source-figure occurrence to an accepted local crop", () => {
     const figureReferences = thomsonWeldingArchivalEdition.blocks.flatMap((block) => {
       if (!("inlines" in block)) return [];
       return block.inlines.filter(
@@ -60,21 +60,20 @@ describe("thomsonWeldingArchivalEdition", () => {
     for (const reference of figureReferences) {
       const expectedFigures = expectedFiguresByReference[reference.text];
       expect(expectedFigures).toBeDefined();
-      const acceptedFigures = expectedFigures.filter(
-        (figureNumber) => ![1, 3, 5, 6, 8, 9].includes(figureNumber),
-      );
       const previews = reference.figurePreviews ?? [];
       expect(previews.map((preview) => preview.src)).toEqual(
-        acceptedFigures.map(
+        expectedFigures.map(
           (figureNumber) =>
             `/patents/figures/us-347140-thomson-welding/figure-${figureNumber}-source-crop-v${
-              [1, 2, 3, 5, 6, 8, 9, 12, 13, 15].includes(figureNumber)
-                ? 5
-                : [11, 14].includes(figureNumber)
-                  ? 4
-                  : [4, 10].includes(figureNumber)
-                    ? 2
-                    : 1
+              [5, 6].includes(figureNumber)
+                ? 6
+                : [1, 2, 3, 8, 9, 12, 13, 15].includes(figureNumber)
+                  ? 5
+                  : [11, 14].includes(figureNumber)
+                    ? 4
+                    : [4, 10].includes(figureNumber)
+                      ? 2
+                      : 1
             }.png`,
         ),
       );
@@ -94,15 +93,17 @@ describe("thomsonWeldingArchivalEdition", () => {
         { length: 18 },
         (_, index) =>
           `/patents/figures/us-347140-thomson-welding/figure-${index + 1}-source-crop-v${
-            [1, 2, 3, 5, 6, 8, 9, 12, 13, 15].includes(index + 1)
-              ? 5
-              : [11, 14].includes(index + 1)
-                ? 4
-                : [4, 10].includes(index + 1)
-                  ? 2
-                  : 1
+            [5, 6].includes(index + 1)
+              ? 6
+              : [1, 2, 3, 8, 9, 12, 13, 15].includes(index + 1)
+                ? 5
+                : [11, 14].includes(index + 1)
+                  ? 4
+                  : [4, 10].includes(index + 1)
+                    ? 2
+                    : 1
           }.png`,
-      ).filter((_, index) => ![1, 3, 5, 6, 8, 9].includes(index + 1)),
+      ),
     );
   });
 

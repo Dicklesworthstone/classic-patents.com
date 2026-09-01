@@ -33,6 +33,21 @@ describe("Physics Telemetry Data Registry", () => {
     }
   });
 
+  test("registers source-topology claim switches as shared boolean controls", () => {
+    const claimControls = [
+      ["us-194047-otto-engine", "claim1ChargeGradingPresent"],
+      ["us-593138-tesla-coil", "claim1CommonNodeConnected"],
+      ["us-6594844-roomba", "opticalSensorEnabled"],
+    ] as const;
+
+    for (const [patentId, controlId] of claimControls) {
+      const control = PATENT_PHYSICS_REGISTRY[patentId].controls.find(
+        (candidate) => candidate.id === controlId,
+      );
+      expect(control).toMatchObject({ min: 0, max: 1, step: 1, defaultValue: 1, unit: "" });
+    }
+  });
+
   test("Boyle CCD leftover US 3,923,554 bus is the published US 3,858,232 kernel", () => {
     const published = PATENT_PHYSICS_REGISTRY["us-3858232-boyle-smith-ccd"];
     const leftover = PATENT_PHYSICS_REGISTRY["us-3923554-boyle-smith-ccd"];

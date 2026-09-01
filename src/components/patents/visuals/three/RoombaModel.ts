@@ -1,23 +1,29 @@
 import * as THREE from "three";
-import { ROOMBA_FURNITURE, ROOMBA_ROOM } from "@/physics/roombaKernel";
+import { ROOMBA_ENVIRONMENT_PARTS, ROOMBA_ROOM, type RoombaState } from "@/physics/roombaKernel";
 import { createLcg } from "@/utils/lcg";
 
 export interface RoombaModel {
   root: THREE.Group;
   mainGroup: THREE.Group;
   sideBrushGroup: THREE.Group;
-  leftWheel: THREE.Mesh;
-  rightWheel: THREE.Mesh;
+  leftWheel: THREE.Group;
+  rightWheel: THREE.Group;
+  opticalSensorGroup: THREE.Group;
+  opticalFieldGroup: THREE.Group;
   dustPoints: THREE.Points;
   updateTrail: (x: number, z: number) => void;
-  updateKinematics: (delta: number, speedMPerS: number, x: number, z: number) => void;
+  updateKinematics: (state: RoombaState) => void;
+  setOpticalSensorEnabled: (enabled: boolean) => void;
   setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
 
+export const ROOMBA_STUDIO_FLOOR_Y = -4.5;
+
 export function buildRoombaModel(): RoombaModel {
   const lcg = createLcg(6594);
   const root = new THREE.Group();
+  root.position.y = ROOMBA_STUDIO_FLOOR_Y;
   root.name = "iRobot Roomba Autonomous Vacuum Model";
   const mainGroup = new THREE.Group();
   root.add(mainGroup);
@@ -96,6 +102,26 @@ export function buildRoombaModel(): RoombaModel {
     }),
   );
 
+  const emitterMat = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0x38bdf8,
+      emissive: new THREE.Color(0x0284c7),
+      emissiveIntensity: 0.85,
+      roughness: 0.22,
+      metalness: 0.18,
+    }),
+  );
+
+  const detectorMat = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0xa78bfa,
+      emissive: new THREE.Color(0x7c3aed),
+      emissiveIntensity: 0.45,
+      roughness: 0.25,
+      metalness: 0.15,
+    }),
+  );
+
   const floorMat = trackMat(
     new THREE.MeshStandardMaterial({
       color: 0xf8fafc,
@@ -112,9 +138,18 @@ export function buildRoombaModel(): RoombaModel {
     }),
   );
 
+  const upholsteryMat = trackMat(
+    new THREE.MeshStandardMaterial({ color: 0x7c2d12, roughness: 0.82, metalness: 0.02 }),
+  );
+
+  const furnitureWoodMat = trackMat(
+    new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.64, metalness: 0.04 }),
+  );
+
   // 1. Roomba Main Cylindrical Body
   const bodyGeo = trackGeo(new THREE.CylinderGeometry(0.17, 0.17, 0.065, 32));
   const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
+  bodyMesh.name = "Roomba chassis body";
   bodyMesh.position.y = 0.045;
   bodyMesh.castShadow = true;
   bodyMesh.receiveShadow = true;
@@ -123,8 +158,11 @@ export function buildRoombaModel(): RoombaModel {
   // Silver Trim Top Ring
   const trimGeo = trackGeo(new THREE.TorusGeometry(0.165, 0.008, 8, 32));
   const trimMesh = new THREE.Mesh(trimGeo, silverTrimMat);
+  trimMesh.name = "Chassis-supported silver top trim";
   trimMesh.rotation.x = Math.PI / 2;
-  trimMesh.position.y = 0.078;
+  // Children of bodyMesh use chassis-local coordinates. Seat the torus on
+  // the body's +Y face instead of adding the body's world offset twice.
+  trimMesh.position.y = 0.0325;
   bodyMesh.add(trimMesh);
 
   // 2. Front Floating Tactile Bumper
@@ -139,13 +177,15 @@ export function buildRoombaModel(): RoombaModel {
   // 3. Central CLEAN Button & LED Status Ring
   const cleanBtnGeo = trackGeo(new THREE.CylinderGeometry(0.032, 0.032, 0.012, 24));
   const cleanBtn = new THREE.Mesh(cleanBtnGeo, cleanBtnMat);
-  cleanBtn.position.set(0, 0.08, 0);
+  cleanBtn.name = "Chassis-supported CLEAN button";
+  cleanBtn.position.set(0, 0.0385, 0);
   bodyMesh.add(cleanBtn);
 
   const ringGeo = trackGeo(new THREE.RingGeometry(0.035, 0.042, 24));
   const ledRing = new THREE.Mesh(ringGeo, ledRingMat);
+  ledRing.name = "Chassis-supported CLEAN LED ring";
   ledRing.rotation.x = -Math.PI / 2;
-  ledRing.position.set(0, 0.081, 0);
+  ledRing.position.set(0, 0.033, 0);
   bodyMesh.add(ledRing);
 
   // 4. Front Omnidirectional Caster Wheel with Swivel Fork Bracket
@@ -168,6 +208,72 @@ export function buildRoombaModel(): RoombaModel {
   caster.position.set(0.12, 0.016, 0);
   mainGroup.add(caster);
 
+  // Claim 1 optical sensor assembly. The mounting plate overlaps the chassis
+  // underside, and both field rays begin at their attached emitter/detector
+  // apertures before intersecting at the expected floor region.
+  const opticalSensorGroup = new THREE.Group();
+  opticalSensorGroup.name = "Claim 1 chassis-mounted optical sensor subsystem";
+  opticalSensorGroup.position.set(0.125, 0, -0.065);
+  mainGroup.add(opticalSensorGroup);
+
+  const sensorMount = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(0.06, 0.014, 0.065)),
+    bumperMat,
+  );
+  sensorMount.name = "Optical sensor mounting plate tethered to chassis";
+  sensorMount.position.y = 0.014;
+  opticalSensorGroup.add(sensorMount);
+
+  const sensorApertureGeo = trackGeo(new THREE.CylinderGeometry(0.009, 0.009, 0.014, 14));
+  const emitter = new THREE.Mesh(sensorApertureGeo, emitterMat);
+  emitter.name = "Directed photon emitter";
+  emitter.position.set(0, 0.007, -0.018);
+  opticalSensorGroup.add(emitter);
+
+  const detector = new THREE.Mesh(sensorApertureGeo, detectorMat);
+  detector.name = "Photon detector field aperture";
+  detector.position.set(0, 0.007, 0.018);
+  opticalSensorGroup.add(detector);
+
+  const opticalFieldGroup = new THREE.Group();
+  opticalFieldGroup.name = "Intersecting emitter and detector fields";
+  opticalSensorGroup.add(opticalFieldGroup);
+  const fieldIntersection = new THREE.Vector3(0.02, 0.0008, 0);
+  const makeFieldRay = (
+    name: string,
+    origin: THREE.Vector3,
+    color: number,
+  ): THREE.Line<THREE.BufferGeometry, THREE.LineBasicMaterial> => {
+    const geometry = trackGeo(
+      new THREE.BufferGeometry().setFromPoints([origin, fieldIntersection]),
+    );
+    const material = trackMat(
+      new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.8 }),
+    );
+    const ray = new THREE.Line(geometry, material);
+    ray.name = name;
+    opticalFieldGroup.add(ray);
+    return ray;
+  };
+  makeFieldRay("Directed emission field", emitter.position.clone(), 0x38bdf8);
+  makeFieldRay("Intersecting detector field", detector.position.clone(), 0xa78bfa);
+
+  const intersectionMarker = new THREE.Mesh(
+    trackGeo(new THREE.RingGeometry(0.012, 0.018, 18)),
+    trackMat(
+      new THREE.MeshBasicMaterial({
+        color: 0xf8fafc,
+        transparent: true,
+        opacity: 0.72,
+        side: THREE.DoubleSide,
+      }),
+    ),
+  );
+  intersectionMarker.name = "Finite optical field intersection region";
+  intersectionMarker.rotation.x = -Math.PI / 2;
+  intersectionMarker.position.copy(fieldIntersection);
+  opticalFieldGroup.add(intersectionMarker);
+
   // 5. Left & Right Spring-Loaded Drive Wheel Modules with Suspension Wells
   for (const wz of [-0.12, 0.12]) {
     const wheelWell = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(0.08, 0.05, 0.035)), bumperMat);
@@ -176,16 +282,22 @@ export function buildRoombaModel(): RoombaModel {
   }
 
   const wheelGeo = trackGeo(new THREE.CylinderGeometry(0.035, 0.035, 0.02, 20));
-  const leftWheel = new THREE.Mesh(wheelGeo, rubberTireMat);
-  leftWheel.rotation.z = Math.PI / 2;
+  const leftWheel = new THREE.Group();
+  leftWheel.name = "Left drive wheel revolute joint";
   leftWheel.position.set(0, 0.035, 0.12);
-  leftWheel.castShadow = true;
+  const leftWheelMesh = new THREE.Mesh(wheelGeo, rubberTireMat);
+  leftWheelMesh.rotation.x = Math.PI / 2;
+  leftWheelMesh.castShadow = true;
+  leftWheel.add(leftWheelMesh);
   mainGroup.add(leftWheel);
 
-  const rightWheel = new THREE.Mesh(wheelGeo, rubberTireMat);
-  rightWheel.rotation.z = Math.PI / 2;
+  const rightWheel = new THREE.Group();
+  rightWheel.name = "Right drive wheel revolute joint";
   rightWheel.position.set(0, 0.035, -0.12);
-  rightWheel.castShadow = true;
+  const rightWheelMesh = new THREE.Mesh(wheelGeo, rubberTireMat);
+  rightWheelMesh.rotation.x = Math.PI / 2;
+  rightWheelMesh.castShadow = true;
+  rightWheel.add(rightWheelMesh);
   mainGroup.add(rightWheel);
 
   // Main Dual Counter-Rotating Roller Brushes Underbody Cavity (US 6,883,201 Fig 1)
@@ -203,12 +315,24 @@ export function buildRoombaModel(): RoombaModel {
 
   // 6. Spinning 3-Arm Edge-Sweeping Side Brush
   const sideBrushGroup = new THREE.Group();
-  sideBrushGroup.position.set(0.11, 0.015, 0.12);
+  // Bristle bottoms touch the floor at y=0; an overlapping vertical shaft
+  // connects the low brush hub back into the chassis instead of leaving the
+  // complete brush assembly suspended below it.
+  sideBrushGroup.position.set(0.11, 0.002, 0.12);
   mainGroup.add(sideBrushGroup);
 
   const hubGeo = trackGeo(new THREE.CylinderGeometry(0.012, 0.012, 0.008, 12));
   const brushHub = new THREE.Mesh(hubGeo, silverTrimMat);
+  brushHub.position.y = 0.004;
   sideBrushGroup.add(brushHub);
+
+  const brushShaft = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.005, 0.005, 0.018, 12)),
+    silverTrimMat,
+  );
+  brushShaft.name = "Side-brush hub-to-chassis drive shaft";
+  brushShaft.position.y = 0.01;
+  sideBrushGroup.add(brushShaft);
 
   const bristleArmGeo = trackGeo(new THREE.BoxGeometry(0.065, 0.004, 0.006));
   for (let i = 0; i < 3; i++) {
@@ -221,6 +345,7 @@ export function buildRoombaModel(): RoombaModel {
   // 7. Floor Room Grid & Walls
   const floorGeo = trackGeo(new THREE.PlaneGeometry(ROOMBA_ROOM.width, ROOMBA_ROOM.height));
   const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+  floorMesh.name = "Shared Roomba room floor seated on studio floor";
   floorMesh.rotation.x = -Math.PI / 2;
   floorMesh.receiveShadow = true;
   root.add(floorMesh);
@@ -247,11 +372,17 @@ export function buildRoombaModel(): RoombaModel {
     root.add(wallMesh);
   });
 
-  // Obstacle Furniture
-  for (const obs of ROOMBA_FURNITURE) {
-    const furnGeo = trackGeo(new THREE.BoxGeometry(obs.w, 0.35, obs.h));
-    const furnMesh = new THREE.Mesh(furnGeo, wallMat);
-    furnMesh.position.set(obs.x, 0.175, obs.y);
+  // Furniture assemblies. Every visible solid drains the same dimensions as
+  // the kernel receipt; low legs collide, while elevated tops/seats do not
+  // masquerade as floor-to-ceiling blocks.
+  for (const part of ROOMBA_ENVIRONMENT_PARTS) {
+    const furnGeo = trackGeo(new THREE.BoxGeometry(part.w, part.height, part.h));
+    const furnMesh = new THREE.Mesh(
+      furnGeo,
+      part.assemblyId === "armchair" && part.kind !== "leg" ? upholsteryMat : furnitureWoodMat,
+    );
+    furnMesh.name = `${part.assemblyId}: ${part.id}`;
+    furnMesh.position.set(part.x, part.centerHeight, part.y);
     furnMesh.castShadow = true;
     furnMesh.receiveShadow = true;
     root.add(furnMesh);
@@ -304,31 +435,34 @@ export function buildRoombaModel(): RoombaModel {
     pointCount++;
   };
 
-  const updateKinematics = (
-    delta: number,
-    speedMPerS: number,
-    currentX: number,
-    currentZ: number,
-  ) => {
-    // Side-brush ω drains wheel speed (0.3 m/s → leftover 18). Parked chassis freezes the brush.
-    const sideBrushOmegaRadPerS = 18.0 * (speedMPerS / 0.3);
-    sideBrushGroup.rotation.y += delta * sideBrushOmegaRadPerS;
-
-    // Rotate drive wheels
-    const wheelRotDelta = (speedMPerS / 0.035) * delta;
-    leftWheel.rotation.x += wheelRotDelta;
-    rightWheel.rotation.x += wheelRotDelta;
+  const updateKinematics = (state: RoombaState) => {
+    // Absolute joint coordinates come from the fixed-step kernel. Rendering
+    // cadence cannot change wheel/brush pose or reverse-motion direction.
+    sideBrushGroup.rotation.y = state.sideBrushAngleRad;
+    leftWheel.rotation.z = state.leftWheelAngleRad;
+    rightWheel.rotation.z = state.rightWheelAngleRad;
+    opticalSensorGroup.visible = state.opticalSensorEnabled;
+    opticalFieldGroup.visible = state.opticalSensorEnabled;
+    emitterMat.emissiveIntensity = state.opticalSensorEnabled ? 0.85 : 0;
+    detectorMat.emissiveIntensity = state.opticalSensorEnabled ? 0.45 : 0;
 
     // Dynamic Dust Cleaning: hide dust particles when Roomba sweeps over them
     const cleanupRadiusSq = 0.18 * 0.18;
     for (let i = 0; i < dustCount; i++) {
-      const dx = dustPositions[i * 3] - currentX;
-      const dz = dustPositions[i * 3 + 2] - currentZ;
+      const dx = dustPositions[i * 3] - state.displayX;
+      const dz = dustPositions[i * 3 + 2] - state.displayY;
       if (dx * dx + dz * dz < cleanupRadiusSq) {
         dustPositions[i * 3 + 1] = -10; // Hide below floor
       }
     }
     dustGeo.attributes.position.needsUpdate = true;
+  };
+
+  const setOpticalSensorEnabled = (enabled: boolean) => {
+    opticalSensorGroup.visible = enabled;
+    opticalFieldGroup.visible = enabled;
+    emitterMat.emissiveIntensity = enabled ? 0.85 : 0;
+    detectorMat.emissiveIntensity = enabled ? 0.45 : 0;
   };
 
   const setCutaway = (cutaway: boolean) => {
@@ -346,9 +480,12 @@ export function buildRoombaModel(): RoombaModel {
     sideBrushGroup,
     leftWheel,
     rightWheel,
+    opticalSensorGroup,
+    opticalFieldGroup,
     dustPoints,
     updateTrail,
     updateKinematics,
+    setOpticalSensorEnabled,
     setCutaway,
     dispose: () => {
       for (const g of geometriesToDispose) g.dispose();

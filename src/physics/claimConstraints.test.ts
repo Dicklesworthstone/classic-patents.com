@@ -63,4 +63,34 @@ describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
     expect(res.activeFailures[0]).toContain("Source-bound Claim 1 condition absent");
     expect(res.refusalWarning).toContain("SOURCE-BOUND REFUSAL");
   });
+
+  test("Tesla transformer Claim 1 inversion opens only the source-described common node", () => {
+    const res = applyClaimConstraintModifications("us-593138-tesla-coil", {}, { 1: false });
+    expect(res.modifiedParams.claim1CommonNodeConnected).toBe(0);
+    expect(res.activeFailures[0]).toContain("secondary terminal is disconnected");
+    expect(res.refusalWarning).toContain("SOURCE-BOUND REFUSAL");
+    expect(res.modifiedParams.secondaryVoltageKv).toBeUndefined();
+    expect(res.modifiedParams.resonantQ).toBeUndefined();
+  });
+
+  test("Otto Claim 1 inversion removes only the source-described charge grading", () => {
+    const res = applyClaimConstraintModifications(
+      "us-194047-otto-engine",
+      { compressionRatio: 4.5 },
+      { 1: false },
+    );
+    expect(res.modifiedParams.claim1ChargeGradingPresent).toBe(0);
+    expect(res.modifiedParams.compressionRatio).toBe(4.5);
+    expect(res.modifiedParams.thermalEfficiencyPct).toBeUndefined();
+    expect(res.modifiedParams.indicatedPowerHp).toBeUndefined();
+    expect(res.refusalWarning).toContain("no source-backed pressure");
+  });
+
+  test("Roomba Claim 1 inversion disables optical redirection without inventing a coverage failure", () => {
+    const res = applyClaimConstraintModifications("us-6594844-roomba", {}, { 1: false });
+    expect(res.modifiedParams.opticalSensorEnabled).toBe(0);
+    expect(res.activeFailures[0]).toContain("intersecting emitter/detector field");
+    expect(res.refusalWarning).toContain("mechanical bumper behavior is not a substitute");
+    expect(res.modifiedParams.coveragePct).toBeUndefined();
+  });
 });

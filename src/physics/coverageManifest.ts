@@ -16,6 +16,8 @@ export interface WasmSurfaceDescriptor {
   artifactUrl: string;
   artifactSha256: string;
   refusalBoundary: "typed-wasm" | "host-decoder" | "none";
+  /** True only when an accepted owner step promotes the shared tape itself. */
+  provesSharedBusSource?: boolean;
 }
 
 export interface PatentCoverageFacts {
@@ -46,7 +48,7 @@ export interface PatentCoverageRow {
     admittedProvenance: readonly RuntimeProvenance[];
     coldStartProvenance: "HONEST_PLACEHOLDER";
     sharedBus: SharedBusParticipation;
-    sharedBusProvenance: "TS_FALLBACK" | "HONEST_PLACEHOLDER";
+    admittedSharedBusProvenance: readonly RuntimeProvenance[];
   };
 }
 
@@ -75,6 +77,16 @@ const GENERIC_WASM_SURFACE: WasmSurfaceDescriptor = {
 };
 
 export const DEDICATED_WASM_SURFACES = {
+  "us-194047-otto-engine": {
+    kind: "generic-wasm",
+    sourceCrate: "fs-otto-wasm",
+    loaderFunction: "ensureOttoWasm",
+    exportName: "otto_topology_step",
+    artifactUrl: "/wasm/fs-otto/fs_otto_wasm_bg.wasm",
+    artifactSha256: "0d0c8c7a10c876c3ccd56ee6b8e1075bb72e3ff9bb57464b9295cc61e820eda1",
+    refusalBoundary: "typed-wasm",
+    provesSharedBusSource: true,
+  },
   "us-31128-otis-elevator": {
     kind: "generic-wasm",
     sourceCrate: "fs-otis-wasm",
@@ -103,12 +115,12 @@ export const DEDICATED_WASM_SURFACES = {
     refusalBoundary: "typed-wasm",
   },
   "us-593138-tesla-coil": {
-    kind: "interpretive-wasm",
+    kind: "generic-wasm",
     sourceCrate: "fs-tesla-wasm",
     loaderFunction: "ensureTeslaWasm",
-    exportName: "tesla_coil_step",
+    exportName: "tesla_transformer_step",
     artifactUrl: "/wasm/fs-tesla/fs_tesla_wasm_bg.wasm",
-    artifactSha256: "589fa98b01bfcef131a5b6c81583ec7c9abcac193fcb4aeb7a676c085241ff18",
+    artifactSha256: "acd1672b052cd9a41cff0b12ae60fc133eb981cc547f7f07a59de44d06975d34",
     refusalBoundary: "typed-wasm",
   },
   "us-821393-wright-flyer": {
@@ -147,6 +159,16 @@ export const DEDICATED_WASM_SURFACES = {
     artifactSha256: "f09c2a0718c927247a56f84b10037ac21318f89d8a4e27c53b030fa43b14816d",
     refusalBoundary: "typed-wasm",
   },
+  "us-6594844-roomba": {
+    kind: "generic-wasm",
+    sourceCrate: "fs-roomba-wasm",
+    loaderFunction: "ensureRoombaWasm",
+    exportName: "roomba_step",
+    artifactUrl: "/wasm/fs-roomba/fs_roomba_wasm_bg.wasm",
+    artifactSha256: "711ec2910b16382d328c6943ecfd7793c820868933b275db923b832b49d8b594",
+    refusalBoundary: "typed-wasm",
+    provesSharedBusSource: true,
+  },
 } as const satisfies Record<string, WasmSurfaceDescriptor>;
 
 const GENERIC_WASM_PATENT_IDS = new Set([
@@ -175,7 +197,6 @@ const GENERIC_WASM_PATENT_IDS = new Set([
   "us-586193-marconi-radio",
   "us-621195-zeppelin-airship",
   "us-x9430-colt-revolver",
-  "us-194047-otto-engine",
   "us-608969-parsons-turbine",
   "us-1773980-farnsworth-tv",
   "us-1781541-einstein-refrigerator",
@@ -230,7 +251,12 @@ export function buildPatentCoverageManifest(
             : (["TS_FALLBACK"] as const),
         coldStartProvenance: "HONEST_PLACEHOLDER",
         sharedBus,
-        sharedBusProvenance: sharedBus === "missing" ? "HONEST_PLACEHOLDER" : "TS_FALLBACK",
+        admittedSharedBusProvenance:
+          sharedBus === "missing"
+            ? (["HONEST_PLACEHOLDER"] as const)
+            : wasmSurface?.provesSharedBusSource && wasmArtifactPresent
+              ? (["WASM", "TS_FALLBACK"] as const)
+              : (["TS_FALLBACK"] as const),
       },
     };
   });

@@ -111,7 +111,10 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
       tone: "in",
     });
     expect(energyChannelsFor("us-347140-thomson-welding", {})[0]?.watts).toBeGreaterThan(0);
-    expect(energyChannelsFor("us-194047-otto-engine", {})[0]?.name).toBe("Brake");
+    expect(energyChannelsFor("us-194047-otto-engine", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-194047-otto-engine"]).toContain(
+      "no cylinder dimensions",
+    );
     expect(energyChannelsFor("us-6162-corliss-steam-engine", {})[0]?.name).toBe("Indicated");
     expect(energyChannelsFor("us-361931-daimler-engine", {})).toEqual([]);
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-361931-daimler-engine"]).toContain(

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import {
+  normalizeReviewedLedgerText,
   validateReviewedTranscription,
   validateReviewedTranscriptionCoverage,
   validateReviewedTranscriptionEditorialIntegrity,
@@ -7,6 +8,34 @@ import {
   validateReviewedTranscriptionPageAnchors,
   validateSourcePdfTextLayer,
 } from "./sourceTextValidation";
+
+describe("reviewed-ledger literal comparison", () => {
+  it("bridges page furniture, column numbers, and discretionary line-break hyphens", () => {
+    const ledgerClaim = [
+      "--- REVIEWED TRANSCRIPTION PAGE 26 OF 26 ---",
+      "17. The circuit redirects the robot when the wall occu-",
+      "",
+      "10",
+      "",
+      "15",
+      "",
+      "pies the region and returns toward the non-",
+      "colored marker.",
+    ].join("\n");
+    const authoredClaim =
+      "17. The circuit redirects the robot when the wall occupies the region and returns toward the non-colored marker.";
+
+    expect(normalizeReviewedLedgerText(ledgerClaim)).toContain(
+      normalizeReviewedLedgerText(authoredClaim),
+    );
+  });
+
+  it("does not erase punctuation or ordinary words while normalizing layout noise", () => {
+    expect(normalizeReviewedLedgerText("Claim: first field; second field.")).toBe(
+      "Claim: first field; second field.",
+    );
+  });
+});
 
 describe("source-PDF text layer validation", () => {
   it("accepts a complete, ordered page ledger", () => {

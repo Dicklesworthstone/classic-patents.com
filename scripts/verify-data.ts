@@ -18,6 +18,7 @@ import {
 import { allPatents, searchPatents } from "../src/data/patents";
 import { patentSchema } from "../src/data/patents/schema";
 import {
+  normalizeReviewedLedgerText,
   validateReviewedTranscription,
   validateReviewedTranscriptionPageAnchors,
   validateSourcePdfTextLayer,
@@ -69,19 +70,6 @@ function isValidIsoDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const date = new Date(`${value}T00:00:00.000Z`);
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
-}
-
-/**
- * Reviewed ledgers keep source-page markers for auditability. They are not
- * part of the historical wording, so claim-parity checks must bridge a claim
- * that happens to cross a source-page boundary without weakening word-level
- * verification.
- */
-function normalizeReviewedLedgerText(value: string): string {
-  return value
-    .replace(/--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
 }
 
 function authoredInlinesForBlock(block: CuratedSpecificationBlock): CuratedSpecificationInlines[] {
@@ -155,6 +143,14 @@ async function main() {
     .readdirSync(threeVisualDirectory)
     .filter((filename) => filename.endsWith("3D.tsx"))
     .map((filename) => fs.readFileSync(path.join(threeVisualDirectory, filename), "utf8"));
+  const physicsDirectory = path.join(process.cwd(), "src/physics");
+  const runtimeOwnerSources = [
+    ...threeVisualSources,
+    ...fs
+      .readdirSync(physicsDirectory)
+      .filter((filename) => filename.endsWith("Kernel.ts"))
+      .map((filename) => fs.readFileSync(path.join(physicsDirectory, filename), "utf8")),
+  ];
 
   for (const patent of allPatents) {
     const prefix = `[${patent.patentNumber} - ${patent.id}]`;
@@ -633,12 +629,12 @@ async function main() {
         errorCount++;
         continue;
       }
-      const matchingVisualSources = threeVisualSources.filter((source) =>
+      const matchingRuntimeSources = runtimeOwnerSources.filter((source) =>
         source.includes(row.patentId),
       );
-      if (!matchingVisualSources.some((source) => source.includes(descriptor.loaderFunction))) {
+      if (!matchingRuntimeSources.some((source) => source.includes(descriptor.loaderFunction))) {
         console.error(
-          `❌ [${row.patentId}] Declares ${descriptor.sourceCrate}, but its 3D visual does not call ${descriptor.loaderFunction}.`,
+          `❌ [${row.patentId}] Declares ${descriptor.sourceCrate}, but its active visual/kernel owner does not call ${descriptor.loaderFunction}.`,
         );
         errorCount++;
       }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useSyncExternalStore } from "react";
 import { FrankenSimEngine } from "./engine";
 import { TickScheduler } from "./tickScheduler";
 import type { UniversalPatentPhysicsTelemetry } from "./types";
@@ -16,6 +16,7 @@ export interface TransportTapeFrame {
 }
 
 type TapeListener = (frame: TransportTapeFrame) => void;
+type FrameScheduler = (callback: (nowMs: number) => void) => number;
 const TRANSPORT_TICK_S = 1 / 60;
 const TRANSPORT_TICK_MS = TRANSPORT_TICK_S * 1000;
 
@@ -78,25 +79,31 @@ class PatentTransport {
     };
   }
 
-  /** @internal Wired up by TransportBus so subscribe() can re-adopt after an idle eviction. */
+  /** @internal Wired by TransportBus so subscribe() can complete the owner handshake. */
   attachBus(bus: TransportBus) {
     this.bus = bus;
   }
 
   subscribe(listener: TapeListener): () => void {
-    // React effects run after paint: a frame can fire between getTransport()
-    // (render) and this subscribe, idling the pump out and evicting this
-    // instance. Re-insert it, or the face would pump a transport the bus
-    // no longer knows about and freeze.
-    this.bus?.adopt(this);
     this.listeners.add(listener);
-    listener(this.lastFrame);
+    const frameBeforeAdoption = this.lastFrame;
+    // Make the listener visible before adopt() restarts the rAF pump. This
+    // closes the mount-time race where the pump could observe zero listeners,
+    // idle out, and leave a newly mounted owner frozen until another render.
+    this.bus?.adopt(this);
+    // adopt() may synchronously admit the first fixed step, which already
+    // notifies this listener. Prime it only when adoption left the frame alone.
+    if (this.lastFrame === frameBeforeAdoption) listener(this.lastFrame);
     return () => {
       this.listeners.delete(listener);
     };
   }
   get hasListeners(): boolean {
     return this.listeners.size > 0;
+  }
+
+  notifyListeners() {
+    for (const listener of this.listeners) listener(this.lastFrame);
   }
 
   pump(nowMs: number, updater: TapeUpdater) {
@@ -123,9 +130,7 @@ class PatentTransport {
     });
 
     if (ran > 0 && this.listeners.size > 0) {
-      for (const listener of this.listeners) {
-        listener(this.lastFrame);
-      }
+      this.notifyListeners();
     }
   }
 
@@ -149,15 +154,18 @@ class PatentTransport {
       provenance,
       telemetry: merged,
     };
-    for (const listener of this.listeners) listener(this.lastFrame);
+    this.notifyListeners();
   }
 }
 
-class TransportBus {
+export class TransportBus {
   private transports = new Map<string, PatentTransport>();
   private rafId: number | null = null;
   private updaters = new Map<string, { updater: TapeUpdater; provenance?: Provenance }>();
   private virtualNowMs = 0;
+  private hostFrameAnchorMs: number | null = null;
+
+  constructor(private readonly frameScheduler?: FrameScheduler) {}
 
   getTransport(
     patentId: string,
@@ -173,24 +181,60 @@ class TransportBus {
     return t;
   }
 
-  /** Re-insert a transport after an idle eviction (see PatentTransport.subscribe). */
+  /** Canonicalize a render-time transport and complete its owner handshake. */
   adopt(transport: PatentTransport) {
-    if (!this.transports.has(transport.patentId)) {
+    const current = this.transports.get(transport.patentId);
+    // During hot replacement or an abandoned concurrent render, two objects
+    // can briefly share an id. Prefer the transport that actually owns the
+    // listener over an unsubscribed replacement so updater and listener do not
+    // split across different objects.
+    if (!current || (current !== transport && !current.hasListeners)) {
       this.transports.set(transport.patentId, transport);
     }
-    this.startPump();
+    this.activateRunnableOwner(transport.patentId, transport);
   }
 
   registerUpdater(patentId: string, updater: TapeUpdater, provenance?: Provenance) {
-    this.updaters.set(patentId, { updater, provenance });
+    const registration = { updater, provenance };
+    this.updaters.set(patentId, registration);
     const existing = this.transports.get(patentId);
     if (existing) existing.declaredProvenance = provenance;
-    // The updater may arrive after the pump idled out (effect ordering).
-    this.startPump();
+    this.activateRunnableOwner(patentId, existing);
+    // React transitions can briefly overlap two owners for one patent. An old
+    // effect cleanup must not remove the updater that replaced it.
+    return () => {
+      if (this.updaters.get(patentId) === registration) {
+        this.updaters.delete(patentId);
+      }
+    };
+  }
+
+  /** Promote or demote an updater only after its latest step proves the source. */
+  setUpdaterProvenance(patentId: string, provenance: Provenance): boolean {
+    const entry = this.updaters.get(patentId);
+    if (!entry) return false;
+    entry.provenance = provenance;
+    const existing = this.transports.get(patentId);
+    if (existing) existing.declaredProvenance = provenance;
+    return true;
   }
 
   unregisterUpdater(patentId: string) {
     this.updaters.delete(patentId);
+  }
+
+  /** Read-only receipt for route-level owner/lifecycle verification. */
+  runtimeReceipt(patentId: string): {
+    hasTransport: boolean;
+    hasUpdater: boolean;
+    hasListeners: boolean;
+  } {
+    const transport = this.transports.get(patentId);
+    return {
+      hasTransport: Boolean(transport),
+      hasUpdater: this.updaters.has(patentId),
+      hasListeners: transport?.hasListeners ?? false,
+    };
   }
 
   publishSnapshot(
@@ -207,13 +251,49 @@ class TransportBus {
     return true;
   }
 
+  /**
+   * Complete the listener/updater ownership handshake without depending on
+   * React effect ordering relative to the first animation frame. The first
+   * fixed step is admitted synchronously exactly once; later ownership
+   * changes only restart the ordinary rAF pump.
+   */
+  private activateRunnableOwner(patentId: string, transport?: PatentTransport) {
+    if (!transport?.hasListeners) {
+      this.startPump();
+      return;
+    }
+    const entry = this.updaters.get(patentId);
+    if (!entry) {
+      this.startPump();
+      return;
+    }
+    transport.declaredProvenance = entry.provenance;
+    if (transport.lastFrame.tick === 0) {
+      const virtualNowMs = Math.max(
+        this.virtualNowMs + TRANSPORT_TICK_MS,
+        transport.lastFrame.atMs + TRANSPORT_TICK_MS,
+      );
+      transport.pump(virtualNowMs, entry.updater);
+      this.virtualNowMs = virtualNowMs;
+    }
+    this.startPump();
+  }
+
   private startPump() {
     if (this.rafId !== null) return;
-    if (typeof window === "undefined") return;
+    const scheduleFrame =
+      this.frameScheduler ??
+      (typeof window !== "undefined"
+        ? (callback: (nowMs: number) => void) => requestAnimationFrame(callback)
+        : undefined);
+    if (!scheduleFrame) return;
 
-    const loop = () => {
+    const loop = (hostNowMs: number) => {
       let pumpedAny = false;
-      const virtualNowMs = this.virtualNowMs + TRANSPORT_TICK_MS;
+      const safeHostNowMs = Number.isFinite(hostNowMs) ? hostNowMs : (this.hostFrameAnchorMs ?? 0);
+      const elapsedMs =
+        this.hostFrameAnchorMs === null ? 0 : Math.max(0, safeHostNowMs - this.hostFrameAnchorMs);
+      const virtualNowMs = this.virtualNowMs + elapsedMs;
       for (const [patentId, transport] of this.transports) {
         // A transport with no subscribers or no registered updater cannot
         // emit a frame; pumping it would burn rAF iterations for nothing
@@ -226,19 +306,26 @@ class TransportBus {
         pumpedAny = true;
       }
       if (!pumpedAny) {
-        // Idle out: stop the rAF chain entirely and drop transports nobody
-        // subscribes to, so memory stays bounded across navigation. A later
-        // getTransport()/registerUpdater() restarts the loop on demand.
+        // Idle out: stop the rAF chain entirely. Keep the small per-patent
+        // transport object stable across React's render-to-subscribe window;
+        // deleting it here can strand a pending subscription on a different
+        // object than the updater. The finite catalogue bounds this map.
         this.rafId = null;
-        for (const [patentId, transport] of this.transports) {
-          if (!transport.hasListeners) this.transports.delete(patentId);
-        }
+        this.hostFrameAnchorMs = null;
+        // registerUpdater()/subscribe() may have arrived re-entrantly while
+        // this callback still owned a non-null rafId. Re-check only after
+        // clearing it so a newly runnable owner cannot be stranded.
+        const runnableOwnerPresent = [...this.transports].some(
+          ([patentId, transport]) => transport.hasListeners && this.updaters.has(patentId),
+        );
+        if (runnableOwnerPresent) this.startPump();
         return;
       }
       this.virtualNowMs = virtualNowMs;
-      this.rafId = requestAnimationFrame(loop);
+      this.hostFrameAnchorMs = safeHostNowMs;
+      this.rafId = scheduleFrame(loop);
     };
-    this.rafId = requestAnimationFrame(loop);
+    this.rafId = scheduleFrame(loop);
   }
 }
 
@@ -249,7 +336,12 @@ export function useFrankenSimPhysics(
   initialTelemetry: Partial<UniversalPatentPhysicsTelemetry> = {},
 ) {
   const transport = globalTransportBus.getTransport(patentId, initialTelemetry);
-  const [frame, setFrame] = useState<TransportTapeFrame>(transport.lastFrame);
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => transport.subscribe(() => onStoreChange()),
+    [transport],
+  );
+  const getSnapshot = useCallback(() => transport.lastFrame, [transport]);
+  const frame = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
   const telemetryRef = useRef(frame.telemetry);
   useLayoutEffect(() => {
@@ -259,12 +351,6 @@ export function useFrankenSimPhysics(
   useLayoutEffect(() => {
     globalTransportBus.publishSnapshot(patentId, initialTelemetry, "TS_FALLBACK");
   }, [initialTelemetry, patentId]);
-
-  useEffect(() => {
-    return transport.subscribe((newFrame) => {
-      setFrame(newFrame);
-    });
-  }, [transport]);
 
   const updateTelemetry = useCallback(
     (
@@ -283,7 +369,7 @@ export function useFrankenSimPhysics(
         digest: telemetryDigest(telemetry),
         telemetry,
       };
-      setFrame(transport.lastFrame);
+      transport.notifyListeners();
     },
     [transport],
   );

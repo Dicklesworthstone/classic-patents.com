@@ -322,7 +322,8 @@ export function computeParameterSensitivity(
           derivativeSymbol: "∂η / ∂r",
           derivativeValue: Number((dEta_dr * 100).toFixed(2)),
           derivativeUnit: "% / ratio",
-          interpretation: "Thermodynamic Carnot limit expansion from peak cycle compression.",
+          interpretation:
+            "Modern air-standard Otto-cycle sensitivity for the declared analysis ratio. It is not a measured efficiency or a numerical limitation printed by US 194,047.",
         };
       }
       break;
@@ -741,14 +742,24 @@ export function computeParameterSensitivity(
     }
 
     case "us-593138-tesla-coil": {
-      if (controlKey === "couplingK" || controlKey === "coupling") {
+      if (controlKey === "disturbanceFrequencyHz") {
         return {
-          metricName: "Resonant Secondary Voltage",
-          derivativeSymbol: "∂V_sec / ∂k",
-          derivativeValue: 650.0,
-          derivativeUnit: "kV / unit_k",
+          metricName: "Required Quarter-Wave Length",
+          derivativeSymbol: "∂l_{1/4} / ∂f",
+          derivativeValue: -50 / 925,
+          derivativeUnit: "mi / Hz at 925 Hz",
           interpretation:
-            "Step-up voltage transformation via tuned air-core mutual magnetic flux coupling.",
+            "From l=v/(4f), increasing frequency shortens the required developed secondary length; this derivative uses Tesla's printed 185,000 mi/s example.",
+        };
+      }
+      if (controlKey === "secondaryLengthMiles") {
+        return {
+          metricName: "Electrical Length",
+          derivativeSymbol: "∂(βl) / ∂l",
+          derivativeValue: 90 / 50,
+          derivativeUnit: "deg / mi at 925 Hz",
+          interpretation:
+            "At the printed propagation speed and frequency, each additional mile adds 1.8 degrees of distributed-wave electrical length.",
         };
       }
       break;
@@ -1169,21 +1180,22 @@ export function computeParameterSensitivity(
     case "us-6594844-roomba": {
       if (controlKey === "wheelSpeedMps") {
         return {
-          metricName: "Coverage Sweep Rate",
-          derivativeSymbol: "∂Area / ∂v_wheel",
-          derivativeValue: 0.32,
-          derivativeUnit: "m²/s / (m/s)",
+          metricName: "Contextual Chassis Advance Rate",
+          derivativeSymbol: "∂v_chassis / ∂v_command",
+          derivativeValue: 1,
+          derivativeUnit: "(m/s) / (m/s)",
           interpretation:
-            "Deterministic spiral and bounce path surface cleaning area rate per wheel velocity.",
+            "In the straight contextual differential-drive mode, chassis advance equals the shared wheel-speed command. This is not a claimed coverage rate.",
         };
       }
       if (controlKey === "turnRateRadSec") {
         return {
-          metricName: "Obstacle Avoidance Angular Velocity",
+          metricName: "Contextual In-Place Turn Rate",
           derivativeSymbol: "∂ω / ∂Rate",
           derivativeValue: 1.0,
           derivativeUnit: "rad·s⁻¹ / unit",
-          interpretation: "Differential drive yaw rotation upon bumper switch obstacle collision.",
+          interpretation:
+            "During a commanded in-place redirect, the shared kernel applies this yaw rate through equal-and-opposite wheel speeds; the patent claim concerns the optical trigger, not a particular rate.",
         };
       }
       break;

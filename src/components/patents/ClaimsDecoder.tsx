@@ -76,7 +76,7 @@ export function claimLiveState(
     return (params.anodeVoltage ?? 1500) >= 400 ? "held" : "broken";
   }
   if (patentId.includes("otto-engine") && claimNum === 1) {
-    return (params.compressionRatio ?? 4.5) >= 2.5 ? "held" : "broken";
+    return (params.claim1ChargeGradingPresent ?? 1) >= 0.5 ? "held" : "broken";
   }
   if (patentId === "us-608969-parsons-turbine") {
     if (claimNum === 1) {
@@ -110,7 +110,10 @@ export function claimLiveState(
     return (params.bowlRpm ?? 6000) >= 3000 ? "held" : "broken";
   }
   if (patentId.includes("tesla-coil") && claimNum === 1) {
-    return (params.sparkRateHz ?? 240) >= 60 ? "held" : "broken";
+    return (params.claim1CommonNodeConnected ?? 1) >= 0.5 ? "held" : "broken";
+  }
+  if (patentId.includes("roomba") && claimNum === 1) {
+    return (params.opticalSensorEnabled ?? 1) >= 0.5 ? "held" : "broken";
   }
   if (patentId.includes("lincoln") && claimNum === 1) {
     return (params.inflationPct ?? 80) >= 20 ? "held" : "broken";

@@ -851,7 +851,15 @@
               "text": "Drawing hereunto annexed",
               "href": "#",
               "referenceType": "figure",
-              "label": "Fig. 1 preview unavailable: the pinned PDF is a 2026 Typst reconstruction, not a primary facsimile."
+              "label": "Fig. 1 as reproduced in the pinned 2026 Typst reconstruction; this is not a primary facsimile.",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/gb-931-arkwright-water-frame/fig-1-source-crop-v3.png",
+                  "alt": "Fig. 1 from the pinned reconstruction of GB 931; not a primary facsimile",
+                  "width": 1550,
+                  "height": 1500
+                }
+              ]
             },
             {
               "kind": "text",
@@ -15022,62 +15030,62 @@
     },
     "plainEnglish": {
       "overview": "For over twenty thousand years, human clothing was stitched exclusively by hand: a seamstress pushed a needle through fabric and pulled the entire length of thread through with every individual stitch. Early inventors failed because they attempted to mechanize this hand motion. Elias Howe Jr. achieved a historic breakthrough by abandoning hand sewing entirely. He placed the eye of the needle at its piercing tip and introduced a second thread carried inside a flying shuttle. When the needle pushes through cloth and begins to retract, the upper thread bows out into an open loop; the shuttle shoots through that loop, creating a permanent knot buried invisibly inside the fabric thickness.",
-      "coreMechanism": "A curved needle with an eye at its sharp point is driven by a cam linkage through the workpiece. As the needle reaches bottom dead center and begins its upward stroke, friction between the thread and fabric forces the upper thread to buckle outward, forming an open teardrop loop. A reciprocating steel shuttle carrying a bobbin of lower thread is thrown through the open loop by a synchronized cam driver. As the needle retracts completely, both threads are cinched tight with balanced tension ($T_{upper} \\approx T_{lower}$), embedding the interlock knot precisely at the neutral axis of the cloth layers.",
+      "coreMechanism": "Main shaft C carries the cams that coordinate the machine. Cam Q rocks shaft O and arm G, whose curved needle carries the first thread through the cloth; the eye is printed as about one eighth inch from the point. Lifting rod W then raises that thread to make deliberate slack. Picker-staves J drive shuttle K back and forth in trough I so the shuttle and its second thread pass between the needle and the first thread. Cam R, arm S, claw T, ratchet U, shaft V, and the rack holes in pinned baster plate H advance the supported cloth for the next stitch.",
       "mechanicalBreakdown": [
         {
           "title": "Eye-Pointed Curved Needle",
           "summary": "A steel needle with the thread eye placed near its sharp piercing point.",
-          "technicalDetails": "Pushes a loop of upper thread through the fabric without pulling the entire thread spool through, reducing thread friction and eliminating yarn breakage at high speeds ($300\\text{ SPM}$).",
+          "technicalDetails": "The specification places the eye within about one eighth inch of the pointed end. The curved needle is fixed to vibrating arm G, so the arm carries a bight of the first thread through the cloth instead of passing the whole needle and thread supply through by hand.",
           "archaicTerm": "Curved needle with eye near the point",
           "modernEquivalent": "Industrial lockstitch sewing machine needle"
         },
         {
           "title": "Reciprocating Shuttle & Internal Bobbin",
           "summary": "A bullet-shaped steel shuttle carrying a second spool of thread through the loop.",
-          "technicalDetails": "Guided along a machined curved race, the shuttle passes cleanly through the dilated upper thread loop before needle withdrawal, locking the stitch permanently against raveling.",
+          "technicalDetails": "Shuttle K reciprocates in trough I and is pushed alternately by picker-staves J. During the admitted pass phase it travels between the curved needle and the loop of first thread, carrying the second thread through that loop.",
           "archaicTerm": "Shuttle carrying second thread in race",
           "modernEquivalent": "Rotary hook and bobbin case assembly"
         },
         {
-          "title": "Intermittent Baseler Cloth Feed",
+          "title": "Intermittent Baster-Plate Cloth Feed",
           "summary": "A pinned plate advancing the cloth by exact stitch pitch increments.",
-          "technicalDetails": "Rack-and-pinion feed indexed by a pawl mechanism during needle retraction, translating the fabric automatically at up to 300 stitches per minute with uniform seam pitch ($p_{stitch}$).",
+          "technicalDetails": "The plate's points, printed as about three quarters inch apart, hold the cloth. Holes in the same plate act as a rack; cam R drives arm S and claw T against ratchet U so shaft V and its pinion advance the supported plate between stitches.",
           "archaicTerm": "Baseler plate with pins and rack",
           "modernEquivalent": "Four-motion drop feed dog mechanism"
         },
         {
           "title": "Synchronized Cam Drive & Tension Take-Up Lever",
           "summary": "Grooved face cams on the main shaft coordinating needle and shuttle timing.",
-          "technicalDetails": "Maintains strict phase synchronization ($\\Delta t < 5\\text{ ms}$) between needle loop expansion and shuttle transit, cinching thread tension as the needle reaches top dead center.",
+          "technicalDetails": "Roller k on arm P follows zigzag groove l in cam Q to rock the needle arm, while the shuttle and feed cams on the same shaft preserve the printed causal order. The grant supplies no millisecond timing, shaft speed, or cam lift table.",
           "archaicTerm": "Grooved cams and thread-tightening levers",
           "modernEquivalent": "Precision rotary timing cams & dynamic take-up lever"
         }
       ],
       "scientificPrinciples": [
         {
-          "principle": "Lockstitch Capstan Knot Equilibrium",
-          "formula": "T_{upper} \\cdot e^{\\mu \\theta_{1}} = T_{lower} \\cdot e^{\\mu \\theta_{2}}, \\quad \\theta_1 = \\theta_2 = \\pi",
-          "explanation": "Balancing upper and lower thread tensions locks the interloop knot at the exact midpoint of fabric thickness, maximizing seam shear strength and preventing surface puckering."
+          "principle": "One-Drive Multibody Constraint",
+          "formula": "q = q(\\theta_C), \\qquad n_{drive}=1",
+          "explanation": "The flywheel and cams share main shaft C. The needle arm, picker-staves, shuttle, lifting rod, and baster feed therefore have several joint coordinates but only one prescribed drive coordinate; the model never animates them from unrelated clocks."
         },
         {
           "principle": "Eye-Pointed Needle Loop Dilation Dynamics",
-          "formula": "\\delta_{loop} = h_{retract} \\cdot \\left(1 - \\frac{\\mu_{needle/thread}}{\\mu_{fabric/thread}}\\right) > w_{shuttle}",
-          "explanation": "As the needle retreats by $h_{retract}$, higher friction against the cloth holds the thread stationary while the needle eye slips, bowing out a loop wider than the shuttle body ($w_{shuttle}$)."
+          "formula": "\\mathcal{P}_{pass}=(\\lambda_{loop} \\ge \\lambda_{min}) \\land (K \\subset I)",
+          "explanation": "Rod W creates the slack named by Claim 2. The interactive model reports the Claim 1 pass only when the displayed loop clears the shuttle section and shuttle K remains on its prismatic guide in trough I; $\\lambda_{min}$ is an explicit display boundary, not a dimension printed by Howe."
         },
         {
-          "principle": "Harmonic Cam Kinematic Acceleration Profile",
-          "formula": "y(t) = \\frac{h}{2}\\left(1 - \\cos(\\omega t)\\right), \\quad a_{max} = \\frac{h \\omega^2}{2} = \\frac{h (2\\pi f_{rpm})^2}{2}",
-          "explanation": "Harmonic face cams smoothly accelerate the needle arm and shuttle without shock loads, enabling sewing speeds ten times faster than human hands."
+          "principle": "Admitted Normalized Cam Profile",
+          "formula": "q_G(\\theta_C)=\\frac{1-\\cos\\theta_C}{2}, \\qquad x_K(\\theta_C)=-A_K\\cos\\theta_C",
+          "explanation": "The grant prints cam and linkage topology but no lift table. A smooth normalized profile makes that topology executable without inventing a dimensional stroke, velocity, acceleration, or historical operating rate."
         },
         {
-          "principle": "Continuous Linear Seam Throughput Rate",
+          "principle": "Declared Display Feed Relation",
           "formula": "v_{seam} = f_{stitch} \\cdot p_{pitch} = \\frac{\\text{SPM}}{60} \\cdot p_{stitch}",
-          "explanation": "At 300 stitches per minute and a 2.5 mm pitch, Howe's machine produced 75 cm of finished seam per minute, reducing garment construction time from 14 hours to 1 hour."
+          "explanation": "For a visitor-selected demonstration cadence and pitch, one feed increment per shaft cycle gives the displayed cloth velocity. Both quantities are declared controls; the 1846 grant does not supply an operating speed or stitch pitch for this calculation."
         },
         {
-          "principle": "Seam Tensile Shear Resistance & Interlock Security",
-          "formula": "\\sigma_{seam} = 2 \\cdot N_{stitches/cm} \\cdot F_{thread\\_tensile} \\cdot \\cos(\\phi)",
-          "explanation": "Because each lockstitch knot is independent, cutting or breaking one stitch does not cause the seam to run or unravel, unlike chain stitches."
+          "principle": "Printed Local Geometry",
+          "formula": "d_{eye} \\approx \\frac{1}{8}\\,\\mathrm{in}=3.175\\,\\mathrm{mm}, \\qquad p_H \\approx \\frac{3}{4}\\,\\mathrm{in}=19.05\\,\\mathrm{mm}",
+          "explanation": "These are the two local dimensions used by the reconstruction. All other rendered lengths are normalized proportions and are not presented as measurements of Howe's machine."
         }
       ],
       "whyItMattersToday": "Every modern garment, automotive seat, leather shoe, and aerospace spacesuit is constructed using the two-thread lockstitch principle Howe patented in 1846. Furthermore, the 1856 Sewing Machine Combination formed to cross-license Howe's patent became the blueprint for modern patent pools, including standard-essential patent pools for MPEG, Wi-Fi, and 5G cellular technologies."
@@ -15105,7 +15113,7 @@
           "Guided cam-driven lifting pin",
           "Controlled slack and tension timing"
         ],
-        "legalSignificance": "Protected the mechanical tensioning linkages that prevented loose or tangled thread loops during high-speed sewing."
+        "legalSignificance": "Protected the specific lifting-rod and guide arrangement that deliberately creates the loose loop later drawn in by the shuttle."
       },
       {
         "number": 3,
@@ -15129,7 +15137,7 @@
           "Sliding shuttle box linkage",
           "Dynamic stitch tightening cycle"
         ],
-        "legalSignificance": "Secured uniform stitch tension across varying fabric thicknesses."
+        "legalSignificance": "Protected the stated lever, sliding-box, and spring relationship used to tighten the stitch while the needle is retracted."
       },
       {
         "number": 5,
@@ -15547,141 +15555,106 @@
     },
     "equations": [
       {
-        "id": "howe-lockstitch-tension-equilibrium",
+        "id": "howe-source-printed-local-dimensions",
         "patentId": "us-4750-howe-sewing-machine",
-        "title": "Two-Thread Lockstitch Tension Equilibrium & Seam Interlock",
-        "category": "Kinematics & Textile Mechanics",
-        "rawLatex": "T_{\\text{needle}} \\cdot \\sin(\\theta_{\\text{upper}}) = T_{\\text{shuttle}} \\cdot \\sin(\\theta_{\\text{lower}})",
-        "colorizedLatex": "\\textcolor{#059669}{T_{\\text{needle}}} \\cdot \\sin(\\textcolor{#2563eb}{\\theta_{\\text{upper}}}) = \\textcolor{#dc2626}{T_{\\text{shuttle}}} \\cdot \\sin(\\textcolor{#d97706}{\\theta_{\\text{lower}}})",
+        "title": "The Two Local Dimensions Printed by US 4,750",
+        "category": "Source Geometry",
+        "rawLatex": "d_{\\text{eye}} \\approx \\frac{1}{8}\\,\\mathrm{in}=3.175\\,\\mathrm{mm},\\qquad p_H \\approx \\frac{3}{4}\\,\\mathrm{in}=19.05\\,\\mathrm{mm}",
+        "colorizedLatex": "\\textcolor{#2563eb}{d_{\\text{eye}}} \\approx \\frac{1}{8}\\,\\mathrm{in}=3.175\\,\\mathrm{mm},\\qquad \\textcolor{#d97706}{p_H} \\approx \\frac{3}{4}\\,\\mathrm{in}=19.05\\,\\mathrm{mm}",
         "plainEnglishSentence": [
           {
-            "text": "The "
+            "text": "The grant places the "
           },
           {
-            "text": "upper needle thread tension force",
-            "variableId": "t_needle"
+            "text": "needle eye about one eighth inch from the point",
+            "variableId": "d_eye"
           },
           {
-            "text": " resolved at "
+            "text": " and spaces the "
           },
           {
-            "text": "upper fabric entry angle",
-            "variableId": "theta_upper"
+            "text": "baster-plate points about three quarters inch apart",
+            "variableId": "p_h"
           },
           {
-            "text": " must balance "
-          },
-          {
-            "text": "lower shuttle thread tension force",
-            "variableId": "t_shuttle"
-          },
-          {
-            "text": " at "
-          },
-          {
-            "text": "lower fabric exit angle",
-            "variableId": "theta_lower"
-          },
-          {
-            "text": " to lock the stitch knot precisely in the fabric core."
+            "text": "; it does not print an overall machine size, needle stroke, shuttle throw, speed, force, or power."
           }
         ],
         "variables": [
           {
-            "id": "t_needle",
-            "symbol": "T_{\\text{needle}}",
-            "name": "Upper Needle Thread Tension",
-            "color": "emerald",
-            "role": "Tension regulated by spring friction disks on the upper spool thread ($2.0 - 5.0\\text{ N}$)",
-            "unit": "Newtons (N)",
-            "dimension": "[M L T^-2]",
-            "explanation": "Must be balanced with the shuttle tension: too high pulls the knot to the top surface, too low leaves loose loops below.",
-            "telemetryMetricLabel": "Needle Tension"
-          },
-          {
-            "id": "theta_upper",
-            "symbol": "\\theta_{\\text{upper}}",
-            "name": "Upper Thread Fabric Angle",
+            "id": "d_eye",
+            "symbol": "d_{\\text{eye}}",
+            "name": "Needle Eye Offset",
             "color": "sapphire",
-            "role": "Entry angle of needle thread into the punched needle hole",
-            "unit": "degrees / radians",
-            "dimension": "[1]",
-            "explanation": "Geometry of thread passage."
+            "role": "Approximate point-to-eye distance stated on specification page 1",
+            "unit": "Inches (in) / millimeters (mm)",
+            "dimension": "[L]",
+            "explanation": "The eye lies near the pointed end so the needle can carry a loop through the cloth without pulling the whole thread supply through."
           },
           {
-            "id": "t_shuttle",
-            "symbol": "T_{\\text{shuttle}}",
-            "name": "Lower Shuttle Bobbin Tension",
-            "color": "crimson",
-            "role": "Tension exerted by the reciprocating shuttle bobbin spring leaf ($2.0 - 5.0\\text{ N}$)",
-            "unit": "Newtons (N)",
-            "dimension": "[M L T^-2]",
-            "explanation": "The shuttle carries the second thread through the needle loop."
-          },
-          {
-            "id": "theta_lower",
-            "symbol": "\\theta_{\\text{lower}}",
-            "name": "Lower Thread Fabric Angle",
+            "id": "p_h",
+            "symbol": "p_H",
+            "name": "Baster-Plate Point Pitch",
             "color": "amber",
-            "role": "Exit angle of shuttle thread from the underside of the seam",
-            "unit": "degrees / radians",
-            "dimension": "[1]",
-            "explanation": "Underside lockstitch geometry."
+            "role": "Approximate spacing of the cloth-holding points stated on specification page 2",
+            "unit": "Inches (in) / millimeters (mm)",
+            "dimension": "[L]",
+            "explanation": "The pointed plate H holds the cloth while its rack holes let the feed mechanism advance that same supported plate."
           }
         ],
-        "pedagogicalNote": "Howe's breakthrough was using an eye-pointed needle (with the eye at the point rather than the tail) combined with a reciprocating shuttle carrying a second thread, locking both threads inside the fabric to form a seam that would not unravel.",
+        "pedagogicalNote": "These are source dimensions, not calibration of the normalized studio reconstruction. Every other visible length is a proportion chosen to make the printed topology legible.",
         "claimRef": 1,
-        "historicalSignificance": "US 4,750 established the lockstitch mechanism found in every domestic and industrial sewing machine manufactured to this day."
+        "historicalSignificance": "The near-point eye and pinned feed plate made Howe's non-hand-sewing topology mechanically explicit and reproducible."
       },
       {
-        "id": "howe-lockstitch-capstan-tension",
+        "id": "howe-one-shaft-source-order-kinematics",
         "patentId": "us-4750-howe-sewing-machine",
-        "title": "Two-Thread Lockstitch Capstan Friction Equilibrium & Seam Throughput",
-        "category": "Precision Mechanics & Textile Automation",
-        "rawLatex": "T_{\\text{upper}} \\cdot e^{\\mu \\pi} = T_{\\text{lower}} \\cdot e^{\\mu \\pi} \\quad \\text{and} \\quad v_{\\text{seam}} = \\frac{\\text{SPM}}{60} \\cdot p_{\\text{pitch}}",
-        "colorizedLatex": "\\textcolor{#2563eb}{T_{\\text{upper}}} \\cdot e^{\\textcolor{#dc2626}{\\mu} \\pi} = \\textcolor{#059669}{T_{\\text{lower}}} \\cdot e^{\\textcolor{#dc2626}{\\mu} \\pi} \\quad \\text{and} \\quad \\textcolor{#d97706}{v_{\\text{seam}}} = \\frac{\\textcolor{#9333ea}{\\text{SPM}}}{60} \\cdot \\textcolor{#ea580c}{p_{\\text{pitch}}}",
+        "title": "One-Shaft Needle, Loop, Shuttle, and Feed Ordering",
+        "category": "Multibody Kinematics",
+        "rawLatex": "q_G(\\theta_C)=\\frac{1-\\cos\\theta_C}{2},\\quad x_K(\\theta_C)=-A_K\\cos\\theta_C,\\quad \\mathcal{P}_{\\text{pass}}=(\\lambda_{\\text{loop}}\\ge\\lambda_{\\min})\\land(K\\subset I)",
+        "colorizedLatex": "\\textcolor{#9333ea}{q_G}(\\textcolor{#2563eb}{\\theta_C})=\\frac{1-\\cos\\textcolor{#2563eb}{\\theta_C}}{2},\\quad \\textcolor{#059669}{x_K}(\\textcolor{#2563eb}{\\theta_C})=-\\textcolor{#d97706}{A_K}\\cos\\textcolor{#2563eb}{\\theta_C},\\quad \\textcolor{#dc2626}{\\mathcal{P}_{\\text{pass}}}=(\\textcolor{#0891b2}{\\lambda_{\\text{loop}}}\\ge\\lambda_{\\min})\\land(K\\subset I)",
         "plainEnglishSentence": [
           {
-            "text": "The two-thread lockstitch knot is centered at fabric equilibrium by balancing "
+            "text": "A single "
           },
           {
-            "text": "upper needle thread tension",
-            "variableId": "t_upper"
+            "text": "main-shaft angle",
+            "variableId": "theta_c"
           },
           {
-            "text": " and "
+            "text": " prescribes the normalized "
           },
           {
-            "text": "lower shuttle thread tension",
-            "variableId": "t_lower"
+            "text": "needle-arm penetration",
+            "variableId": "q_g"
           },
           {
-            "text": " over "
+            "text": ", the reciprocating "
           },
           {
-            "text": "fabric capstan friction coefficient",
-            "variableId": "mu"
+            "text": "boat shuttle displacement",
+            "variableId": "x_k"
           },
           {
-            "text": ", delivering "
+            "text": " inside guide trough I, the "
           },
           {
-            "text": "continuous linear seam throughput",
-            "variableId": "v_seam"
+            "text": "displayed shuttle amplitude",
+            "variableId": "a_k"
           },
           {
-            "text": " determined by "
+            "text": ", and the "
           },
           {
-            "text": "sewing cadence SPM",
-            "variableId": "spm"
+            "text": "loop slack clearance",
+            "variableId": "lambda_loop"
           },
           {
-            "text": " and "
+            "text": " required for the "
           },
           {
-            "text": "stitch feed pitch",
-            "variableId": "p_pitch"
+            "text": "Claim 1 loop-passage predicate",
+            "variableId": "p_pass"
           },
           {
             "text": "."
@@ -15689,85 +15662,82 @@
         ],
         "variables": [
           {
-            "id": "t_upper",
-            "symbol": "T_{\\text{upper}}",
-            "name": "Upper Needle Thread Tension",
+            "id": "theta_c",
+            "symbol": "\\theta_C",
+            "name": "Main Drive Crank Angle",
             "color": "sapphire",
-            "role": "Tensile force applied to top spool thread by the dynamic take-up lever (approx 1.5 to 3.0 N)",
-            "unit": "Newtons (N)",
-            "dimension": "[M L T^-2]",
-            "explanation": "Cinched tight as the needle ascends, pulling the interloop knot into the center of the cloth thickness.",
-            "telemetryMetricLabel": "Upper Tension"
-          },
-          {
-            "id": "t_lower",
-            "symbol": "T_{\\text{lower}}",
-            "name": "Lower Shuttle Bobbin Tension",
-            "color": "emerald",
-            "role": "Restraining friction tension on bobbin thread passing through the shuttle body (approx 1.5 to 3.0 N)",
-            "unit": "Newtons (N)",
-            "dimension": "[M L T^-2]",
-            "explanation": "Regulated by a small leaf spring on the shuttle casing to match upper tension exactly.",
-            "telemetryMetricLabel": "Shuttle Tension"
-          },
-          {
-            "id": "mu",
-            "symbol": "\\mu",
-            "name": "Capstan Thread-Fabric Friction",
-            "color": "crimson",
-            "role": "Friction coefficient of thread wrapping around fabric fibers ($\\mu \\approx 0.20\\text{ to }0.35$)",
-            "unit": "Dimensionless friction factor",
+            "role": "Continuous rotation of the central drive shaft driven by hand or power",
+            "unit": "Radians (rad) / degrees (°)",
             "dimension": "[1]",
-            "explanation": "Locks the interlocked knot stationary once drawn into the fabric, preventing unraveling if adjacent stitches are cut."
+            "explanation": "Howe drives needle arm G, baster-feed lifting rod W, and shuttle carrier lever through cams and eccentrics on this single shaft."
           },
           {
-            "id": "v_seam",
-            "symbol": "v_{\\text{seam}}",
-            "name": "Linear Seam Throughput Velocity",
-            "color": "amber",
-            "role": "Finished linear sewing speed along the fabric joint (over 0.0125 m/s = 75 cm/min)",
-            "unit": "Meters / second (m/s)",
-            "dimension": "[L T^-1]",
-            "explanation": "Produced finished garments 10 to 14 times faster than experienced hand seamstresses.",
-            "telemetryKey": "sewingSpeedMpm"
-          },
-          {
-            "id": "spm",
-            "symbol": "\\text{SPM}",
-            "name": "Crankshaft Sewing Cadence",
+            "id": "q_g",
+            "symbol": "q_G",
+            "name": "Needle-Arm Penetration Fraction",
             "color": "amethyst",
-            "role": "Reciprocating cycles executed per minute by curved needle arm and shuttle (250 to 350 SPM)",
-            "unit": "Stitches per minute (SPM)",
-            "dimension": "[T^-1]",
-            "explanation": "Driven smoothly by a hand wheel or foot treadle via internal harmonic face cams.",
-            "telemetryKey": "stitchesPerMin"
+            "role": "Normalized cam lift driving the curved needle through the cloth plane ($0\\le q_G\\le 1$)",
+            "unit": "Normalized fraction",
+            "dimension": "[1]",
+            "explanation": "Reaches peak depth when the eye carries the upper thread completely through the vertical seam plane."
           },
           {
-            "id": "p_pitch",
-            "symbol": "p_{\\text{pitch}}",
-            "name": "Stitch Feed Pitch Spacing",
-            "color": "coral",
-            "role": "Linear advance distance of the fabric baster plate per needle cycle (2.0 to 3.5 mm)",
-            "unit": "Millimeters (mm)",
-            "dimension": "[L]",
-            "explanation": "Set by the ratchet feed mechanism advancing the fabric toothed plate between stitches."
+            "id": "x_k",
+            "symbol": "x_K",
+            "name": "Reciprocating Shuttle Stroke",
+            "color": "emerald",
+            "role": "Normalized linear displacement of shuttle K along guide trough I",
+            "unit": "Normalized displacement",
+            "dimension": "[1]",
+            "explanation": "Passes through the needle-thread loop while the needle pauses near bottom dead center."
+          },
+          {
+            "id": "a_k",
+            "symbol": "A_K",
+            "name": "Displayed Shuttle Throw",
+            "color": "amber",
+            "role": "Normalized studio amplitude; the grant prints no dimensional shuttle travel",
+            "unit": "Studio units",
+            "dimension": "[1]",
+            "explanation": "This presentation scale controls legibility only and is never exposed as measured inches or SI travel."
+          },
+          {
+            "id": "lambda_loop",
+            "symbol": "\\lambda_{\\text{loop}}",
+            "name": "Displayed Loop Slack",
+            "color": "cyan",
+            "role": "Normalized lifting-rod W loop opening used for the explicit clearance refusal",
+            "unit": "Percent (%)",
+            "dimension": "[1]",
+            "explanation": "If the loop does not clear the displayed shuttle section, the kernel refuses to report the Claim 1 interlock.",
+            "telemetryKey": "loopSlackPct"
+          },
+          {
+            "id": "p_pass",
+            "symbol": "\\mathcal{P}_{\\text{pass}}",
+            "name": "Claim 1 Passage Predicate",
+            "color": "crimson",
+            "role": "True only during the source-order phase where K passes between the needle and upper thread",
+            "unit": "Boolean",
+            "dimension": "[1]",
+            "explanation": "This predicate describes topology and timing; it is not a seam-strength, productivity, or safety measurement."
           }
         ],
-        "pedagogicalNote": "Previous inventors tried to replicate hand sewing by pushing an entire needle all the way through cloth, which required constantly unthreading and rethreading. Howe placed the eye at the needle tip, passed a loop of thread through the cloth, and shot a shuttle with a second bobbin thread through that loop, inventing the two-thread lockstitch.",
+        "pedagogicalNote": "The sinusoidal display law is an admitted normalized cam profile because the grant supplies topology but no cam lift table. The physically important fact is the shared drive and enforced order, not a fabricated speed or force.",
         "claimRef": 1,
-        "historicalSignificance": "US 4750 mechanized the global garment industry and created the modern 'Sewing Machine Combination' (1856), the first patent pool in commercial history."
+        "historicalSignificance": "Howe's claims bind the curved needle, vibrating arm, thread loop, shuttle, and feed apparatus into one repeatable machine sequence."
       }
     ],
     "physics": {
       "domain": "continuum_elasticity",
       "domainTitle": "Eye-Pointed Needle & Reciprocating Shuttle Lockstitch Kinematics",
       "equationName": "Lockstitch Loop Interlocking Kinematics",
-      "governingEquation": "\\theta_{\\text{shuttle}}(t) = A \\sin(\\omega t + \\delta) \\quad \\text{with} \\quad \\text{Stitch Rate} = \\frac{\\omega}{2\\pi}",
+      "governingEquation": "x_K(\\theta_C)=-A\\cos\\theta_C,\\qquad \\text{pass}=\\bigl(\\lambda_{loop}\\ge\\lambda_{min}\\bigr)",
       "engineMethod": "FrankenSimEngine.stepHoweSewingMachine",
       "controls": [
         {
           "id": "crankRpm",
-          "label": "Flywheel Drive Velocity",
+          "label": "Declared Display Crank",
           "min": 60,
           "max": 420,
           "step": 10,
@@ -15776,7 +15746,7 @@
         },
         {
           "id": "stitchPitchMm",
-          "label": "Stitch Pitch",
+          "label": "Declared Display Pitch",
           "min": 1,
           "max": 6,
           "step": 0.1,
@@ -15784,17 +15754,17 @@
           "unit": "mm"
         },
         {
-          "id": "threadTensionGrams",
-          "label": "Thread Tension",
-          "min": 20,
-          "max": 90,
+          "id": "loopSlackPct",
+          "label": "Displayed Loop Slack",
+          "min": 0,
+          "max": 100,
           "step": 1,
-          "defaultValue": 45,
-          "unit": "g"
+          "defaultValue": 65,
+          "unit": "%"
         },
         {
           "id": "isCranking",
-          "label": "Drive Power",
+          "label": "Crank Motion",
           "min": 0,
           "max": 1,
           "step": 1,
@@ -15802,7 +15772,7 @@
           "unit": ""
         }
       ],
-      "pedagogicalInsight": "A curved eye-pointed needle pushes a thread loop through the cloth; an oscillating shuttle carrying a second bobbin thread passes through the loop, locking both threads inside the seam."
+      "pedagogicalInsight": "One shaft orders the curved eye-pointed needle on arm G, lifting-rod W, shuttle K in trough I, and pinned baster-plate H. Cadence, pitch, travel, and clearance are declared display parameters because US 4,750 does not print historical operating values for them."
     },
     "sourceVisualization": {
       "spatialComponent": "HoweSewingMachine3D",
@@ -18528,263 +18498,265 @@
     },
     "equations": [
       {
-        "id": "otis-safety-pawl-engagement-force",
+        "id": "otis-claim-one-hook-lock-topology",
         "patentId": "us-31128-otis-elevator",
-        "title": "Spring-Loaded Safety Pawl Ratchet Engagement & Gravitational Arrest",
-        "category": "Mechanics & Safety Engineering",
-        "rawLatex": "F_{\\text{arrest}} = N_{\\text{pawls}} \\cdot F_{\\text{spring}} \\cdot \\tan(\\alpha_{\\text{tooth}}) - m_{\\text{cab}} \\cdot g",
-        "colorizedLatex": "\\textcolor{#059669}{F_{\\text{arrest}}} = \\textcolor{#d97706}{N_{\\text{pawls}}} \\cdot \\textcolor{#2563eb}{F_{\\text{spring}}} \\cdot \\tan(\\textcolor{#9333ea}{\\alpha_{\\text{tooth}}}) - \\textcolor{#dc2626}{m_{\\text{cab}}} \\cdot \\textcolor{#0891b2}{g}",
+        "title": "Claim 1: Platform-Weight Hook Lock",
+        "category": "Source-Bound Multibody Topology",
+        "rawLatex": "\\neg G_{\\text{taut}} \\land C_1 \\Rightarrow f \\hookrightarrow C",
+        "colorizedLatex": "\\neg \\textcolor{#2563eb}{G_{\\text{taut}}} \\land \\textcolor{#d97706}{C_1} \\Rightarrow \\textcolor{#059669}{f} \\hookrightarrow \\textcolor{#9333ea}{C}",
         "plainEnglishSentence": [
           {
-            "text": "The "
+            "text": "When "
           },
           {
-            "text": "net vertical deceleration force",
-            "variableId": "f_arrest"
+            "text": "lifting rope G is no longer taut",
+            "variableId": "rope_g"
           },
           {
-            "text": " arresting the falling elevator platform equals "
+            "text": " and "
           },
           {
-            "text": "number of safety pawls",
-            "variableId": "n_pawls"
+            "text": "Claim 1's hook geometry is present",
+            "variableId": "claim_one"
           },
           {
-            "text": " times "
+            "text": ", platform weight turns "
           },
           {
-            "text": "wagon-spring outward extension force",
-            "variableId": "f_spring"
+            "text": "pawls f",
+            "variableId": "pawls_f"
           },
           {
-            "text": " multiplied by the tangent of "
+            "text": " into hook-form "
           },
           {
-            "text": "ratchet tooth wedge angle",
-            "variableId": "alpha_tooth"
+            "text": "racks C",
+            "variableId": "racks_c"
           },
           {
-            "text": ", overcoming "
-          },
-          {
-            "text": "elevator cab mass",
-            "variableId": "m_cab"
-          },
-          {
-            "text": " under "
-          },
-          {
-            "text": "gravitational acceleration",
-            "variableId": "g_grav"
-          },
-          {
-            "text": "."
+            "text": " so their geometry resists separation."
           }
         ],
         "variables": [
           {
-            "id": "f_arrest",
-            "symbol": "F_{\\text{arrest}}",
-            "name": "Net Vertical Deceleration Force",
-            "color": "emerald",
-            "role": "Upward braking force halting the severed elevator cab within inches ($15 - 40\\text{ kN}$)",
-            "unit": "kiloNewtons (kN)",
-            "dimension": "[M L T^-2]",
-            "explanation": "When the hoisting cable snaps, upward cable tension ceases, allowing the heavy elliptical bow spring to uncoil and drive steel pawls into cast-iron vertical ratchet racks.",
-            "telemetryMetricLabel": "Arrest Force"
-          },
-          {
-            "id": "n_pawls",
-            "symbol": "N_{\\text{pawls}}",
-            "name": "Safety Pawl Count",
-            "color": "amber",
-            "role": "Dual hardened cast-iron locking pawls on opposite vertical guide rails ($N = 2$)",
-            "unit": "Pawls (integer)",
-            "dimension": "[1]",
-            "explanation": "Distributes arrest force symmetrically to prevent cab jamming."
-          },
-          {
-            "id": "f_spring",
-            "symbol": "F_{\\text{spring}}",
-            "name": "Wagon-Spring Outward Restoring Force",
+            "id": "rope_g",
+            "symbol": "G_{\\text{taut}}",
+            "name": "Lifting Rope G State",
             "color": "sapphire",
-            "role": "Transverse force exerted by laminated steel leaf spring when released from cable tension ($5 - 10\\text{ kN}$)",
-            "unit": "Newtons (N)",
-            "dimension": "[M L T^-2]",
-            "explanation": "During normal hoisting, cable tension holds the spring arched flat; when tension drops to zero, the spring instantly expands outward."
-          },
-          {
-            "id": "alpha_tooth",
-            "symbol": "\\alpha_{\\text{tooth}}",
-            "name": "Ratchet Tooth Undercut Angle",
-            "color": "amethyst",
-            "role": "Angle of saw-tooth ratchet bars bolted along the timber hoistway guides ($15^\\circ - 25^\\circ$)",
-            "unit": "degrees / radians",
+            "role": "Boolean source state: intact/tension-supporting or broken",
+            "unit": "state",
             "dimension": "[1]",
-            "explanation": "Downward weight of the cab cams the pawls deeper into the rack (self-locking wedge)."
+            "explanation": "The grant describes the consequence of breaking rope G, not its force, elongation, or failure time.",
+            "telemetryKey": "ropeGIntegrityPct"
           },
           {
-            "id": "m_cab",
-            "symbol": "m_{\\text{cab}}",
-            "name": "Elevator Platform & Passenger Mass",
-            "color": "crimson",
-            "role": "Total loaded mass of hoisting platform ($1,000 - 2,500\\text{ kg}$)",
-            "unit": "kg",
-            "dimension": "[M]",
-            "explanation": "Total suspended payload mass."
+            "id": "claim_one",
+            "symbol": "C_1",
+            "name": "Claim 1 Geometry",
+            "color": "amber",
+            "role": "Hook-form pawls and rack teeth arranged to self-lock under platform weight",
+            "unit": "predicate",
+            "dimension": "[1]",
+            "explanation": "Turning this constraint off is an explicit counterfactual, not a statement about the historical machine."
           },
           {
-            "id": "g_grav",
-            "symbol": "g",
-            "name": "Gravitational Acceleration",
-            "color": "cyan",
-            "role": "Standard gravity constant ($9.81\\text{ m/s}^2$)",
-            "unit": "m/s^2",
-            "dimension": "[L T^-2]",
-            "explanation": "Downward gravitational pull."
+            "id": "pawls_f",
+            "symbol": "f",
+            "name": "Hook Pawls f",
+            "color": "emerald",
+            "role": "Paired pawls carried by platform D through levers E",
+            "unit": "component",
+            "dimension": "[1]",
+            "explanation": "Their inner ends remain linked through E to eye c on safety bar F."
+          },
+          {
+            "id": "racks_c",
+            "symbol": "C",
+            "name": "Fixed Hook Racks C",
+            "color": "amethyst",
+            "role": "Hook-form teeth fixed along uprights B",
+            "unit": "component",
+            "dimension": "[1]",
+            "explanation": "The claimed interlock depends on complementary hook form, not an unsupported tooth angle or spring force."
           }
         ],
-        "pedagogicalNote": "At the 1854 Crystal Palace Exhibition in New York, Elisha Otis stood on a hoisting platform high above the crowd and ordered the hoisting rope slashed with an axe. The platform dropped only a few inches before his safety pawls snapped into the ratchet racks, making passenger skyscrapers possible.",
+        "pedagogicalNote": "Claim 1 is a load-directed geometric lock. The visualization therefore reports a discrete satisfied/refused predicate and does not invent quantitative dynamics.",
         "claimRef": 1,
-        "historicalSignificance": "US 31,128 created the safety elevator, enabling vertical urbanization and the birth of modern skyscraper architecture."
+        "historicalSignificance": "This grant expresses the safety as a claimed hook-rack relationship inside a complete powered hoisting apparatus."
       },
       {
-        "id": "otis-safety-leaf-spring-arrest",
+        "id": "otis-claim-three-stop-interlock",
         "patentId": "us-31128-otis-elevator",
-        "title": "Hoisting Cable Rupture Spring Decompression & Cam Pawl Arrest Kinetics",
-        "category": "Structural Safety & Vertical Transportation",
-        "rawLatex": "F_{\\text{pawl}} = k_{\\text{leaf}} \\cdot \\Delta y_{\\text{cable}} \\quad \\text{and} \\quad t_{\\text{snap}} = \\frac{\\pi}{2} \\sqrt{\\frac{m_{\\text{pawl}}}{k_{\\text{leaf}}}} < 0.040\\text{ s}",
-        "colorizedLatex": "\\textcolor{#059669}{F_{\\text{pawl}}} = \\textcolor{#dc2626}{k_{\\text{leaf}}} \\cdot \\textcolor{#2563eb}{\\Delta y_{\\text{cable}}} \\quad \\text{and} \\quad \\textcolor{#d97706}{t_{\\text{snap}}} = \\frac{\\pi}{2} \\sqrt{\\frac{\\textcolor{#0891b2}{m_{\\text{pawl}}}}{\\textcolor{#dc2626}{k_{\\text{leaf}}}}} < 0.040\\text{ s}",
+        "title": "Claim 3: Simultaneous Belt Idle and Brake Application",
+        "category": "Source-Bound Control Interlock",
+        "rawLatex": "\\text{stop}(T,S) \\Rightarrow (O,P) \\to (J,K) \\land Z \\dashv L",
+        "colorizedLatex": "\\textcolor{#d97706}{\\text{stop}(T,S)} \\Rightarrow \\textcolor{#2563eb}{(O,P) \\to (J,K)} \\land \\textcolor{#dc2626}{Z \\dashv L}",
         "plainEnglishSentence": [
           {
-            "text": "If the hoisting cable snaps, loss of cable tension releases "
+            "text": "A "
           },
           {
-            "text": "transverse pawl thrust force",
-            "variableId": "f_pawl"
+            "text": "stop command through rope T and shipper S",
+            "variableId": "stop_chain"
           },
           {
-            "text": " from "
+            "text": " moves "
           },
           {
-            "text": "heavy leaf spring stiffness",
-            "variableId": "k_leaf"
+            "text": "belts O and P onto idle pulleys J and K",
+            "variableId": "belt_idle"
           },
           {
-            "text": " across "
+            "text": " while applying "
           },
           {
-            "text": "cable rupture vertical displacement",
-            "variableId": "dy_cable"
+            "text": "brake shoe Z to working pulley L",
+            "variableId": "brake_z"
           },
           {
-            "text": ", snapping the safety catches into ratchet racks within a "
-          },
-          {
-            "text": "mechanical arrest snap time",
-            "variableId": "t_snap"
-          },
-          {
-            "text": " governed by "
-          },
-          {
-            "text": "safety catch inertial mass",
-            "variableId": "m_pawl"
-          },
-          {
-            "text": " in under 40 milliseconds."
+            "text": " in the same connected linkage."
           }
         ],
         "variables": [
           {
-            "id": "f_pawl",
-            "symbol": "F_{\\text{pawl}}",
-            "name": "Lateral Safety Pawl Thrust Force",
-            "color": "emerald",
-            "role": "Dynamic horizontal force driving the forged iron pawl teeth into the hoistway vertical ratchet racks (over $2.4\\text{ kN}$)",
-            "unit": "Newtons (N)",
-            "dimension": "[M L T^-2]",
-            "explanation": "Released instantly by the heavy wagon-type leaf spring when hoisting rope tension drops to zero.",
-            "telemetryMetricLabel": "Pawl Thrust Force"
-          },
-          {
-            "id": "k_leaf",
-            "symbol": "k_{\\text{leaf}}",
-            "name": "Transverse Leaf Spring Stiffness",
-            "color": "crimson",
-            "role": "Spring rate of the laminated oil-tempered steel leaf spring ($k \\approx 80\\text{ kN/m}$)",
-            "unit": "Newtons / meter (N/m)",
-            "dimension": "[M T^-2]",
-            "explanation": "Pre-loaded in bowed deflection by the weight of the hoisted elevator car during normal travel.",
-            "telemetryKey": "springDeflectionMm"
-          },
-          {
-            "id": "dy_cable",
-            "symbol": "\\Delta y_{\\text{cable}}",
-            "name": "Cable Rupture Vertical Release Travel",
-            "color": "sapphire",
-            "role": "Vertical upward snap deflection of the spring center as tension relaxes ($\\Delta y \\approx 30\\text{ mm}$)",
-            "unit": "Millimeters (mm)",
-            "dimension": "[L]",
-            "explanation": "Transmitted via dual vertical tie-rods to the bellcrank rocker arms pivoting the pawls outward."
-          },
-          {
-            "id": "t_snap",
-            "symbol": "t_{\\text{snap}}",
-            "name": "Mechanical Arrest Snap Time",
+            "id": "stop_chain",
+            "symbol": "\\text{stop}(T,S)",
+            "name": "Stop Command Chain",
             "color": "amber",
-            "role": "Total time required for pawls to engage the nearest ratchet tooth root ($t < 40\\text{ ms}$)",
-            "unit": "Milliseconds (ms)",
-            "dimension": "[T]",
-            "explanation": "Because engagement occurs in under 40 milliseconds, the car drops less than 1 cm, eliminating dangerous impact shock loads."
+            "role": "Hand rope T moves the belt-shipper slide S",
+            "unit": "state",
+            "dimension": "[1]",
+            "explanation": "Stop rope U and branch V act upon the same hand-rope control path.",
+            "telemetryKey": "stopRopePulled"
           },
           {
-            "id": "m_pawl",
-            "symbol": "m_{\\text{pawl}}",
-            "name": "Pivoted Safety Pawl Inertial Mass",
-            "color": "cyan",
-            "role": "Effective mass of the forged iron safety pawls and bellcrank rocker linkages ($\\approx 3.5\\text{ kg}$)",
-            "unit": "Kilograms (kg)",
-            "dimension": "[M]",
-            "explanation": "Low linkage inertia ensures near-instantaneous mechanical acceleration under spring release."
+            "id": "belt_idle",
+            "symbol": "(O,P) \\to (J,K)",
+            "name": "Reversing Belts Idled",
+            "color": "sapphire",
+            "role": "Straight belt O and crossed belt P leave working pulley L for idle pulleys",
+            "unit": "topology",
+            "dimension": "[1]",
+            "explanation": "O raises and P lowers; the middle shipper state idles both.",
+            "telemetryKey": "driveCommand"
+          },
+          {
+            "id": "brake_z",
+            "symbol": "Z \\dashv L",
+            "name": "Brake Shoe Z on Pulley L",
+            "color": "crimson",
+            "role": "Mechanical brake applied with the belt shift",
+            "unit": "state",
+            "dimension": "[1]",
+            "explanation": "The patent claims simultaneous application, but gives no braking torque or stopping time."
           }
         ],
-        "pedagogicalNote": "Before Elisha Otis, elevators were terrifying death traps because if the hoisting rope frayed and snapped, the cab plummeted in free fall. At the 1854 New York Crystal Palace exhibition, Otis stood on an elevated platform, ordered the suspension rope slashed with an axe, and safely remained suspended in midair as his spring catches locked into the guide racks.",
-        "claimRef": 1,
-        "historicalSignificance": "US 31128 made passenger elevators safe for human transport, enabling high-density multi-story architecture and creating the modern skyscraper metropolis."
+        "pedagogicalNote": "Claim 3 is valuable because one operator action both removes drive and applies the brake. The model preserves that causal linkage rather than animating an isolated brake shoe.",
+        "claimRef": 3,
+        "historicalSignificance": "The linked shipper-and-brake arrangement makes powered ascent, descent, and stopping parts of one controlled apparatus."
+      },
+      {
+        "id": "otis-claim-four-opposite-counterpoise",
+        "patentId": "us-31128-otis-elevator",
+        "title": "Claim 4: Opposite-Wound Counterpoise",
+        "category": "Source-Bound Kinematic Constraint",
+        "rawLatex": "dq_R = -dq_D",
+        "colorizedLatex": "d\\textcolor{#0891b2}{q_R} = -d\\textcolor{#d97706}{q_D}",
+        "plainEnglishSentence": [
+          {
+            "text": "Because counterpoise rope Q is attached to the opposite side of drum H, the "
+          },
+          {
+            "text": "counterpoise coordinate",
+            "variableId": "counterpoise_r"
+          },
+          {
+            "text": " changes opposite the "
+          },
+          {
+            "text": "platform coordinate",
+            "variableId": "platform_d"
+          },
+          {
+            "text": " without interfering with safety mechanism E-e-f."
+          }
+        ],
+        "variables": [
+          {
+            "id": "counterpoise_r",
+            "symbol": "q_R",
+            "name": "Counterpoise R Coordinate",
+            "color": "cyan",
+            "role": "Normalized display coordinate of counterpoise R on rope Q",
+            "unit": "normalized display coordinate",
+            "dimension": "[1]",
+            "explanation": "Only opposition of motion is asserted; the source does not provide counterweight mass or travel."
+          },
+          {
+            "id": "platform_d",
+            "symbol": "q_D",
+            "name": "Platform D Coordinate",
+            "color": "amber",
+            "role": "Normalized display coordinate of the guided platform",
+            "unit": "normalized display coordinate",
+            "dimension": "[1]",
+            "explanation": "Platform D remains captured between its grooved uprights a and the fixed guide frame."
+          }
+        ],
+        "pedagogicalNote": "The relation is kinematic and dimensionless because the grant describes opposite winding but supplies no drum diameter, rope length, or travel dimension.",
+        "claimRef": 4,
+        "historicalSignificance": "The opposite winding balances platform motion while preserving the separate hook-rack safety path."
       }
     ],
     "physics": {
-      "domain": "continuum_elasticity",
-      "domainTitle": "Transverse Leaf Spring Deflection & Ratchet Catch Kinematics",
-      "equationName": "Elastic Release Time Constant & Deceleration Impulse",
-      "governingEquation": "t_{\\text{snap}} = \\frac{\\pi}{2} \\sqrt{\\frac{m_{\\text{pawl}}}{k_{\\text{spring}}}} \\quad \\text{and} \\quad F_{\\text{arrest}} = m_{\\text{cab}} (g + a_{\\text{stop}})",
-      "engineMethod": "FrankenSimEngine.stepOtisElevator",
+      "domain": "multibody_topology",
+      "domainTitle": "Connected Hoist, Reversing-Belt, Brake, and Hook-Rack Topology",
+      "equationName": "Claimed Discrete Interlocks and Opposite Counterpoise Motion",
+      "governingEquation": "\\neg G_{\\text{taut}} \\land C_1 \\Rightarrow f \\hookrightarrow C; \\quad \\text{stop} \\Rightarrow (O,P) \\to (J,K) \\land Z \\dashv L; \\quad dq_R=-dq_D",
+      "engineMethod": "stepOtis1861Topology / fs-otis-wasm",
       "controls": [
         {
-          "id": "cabPayload",
-          "label": "Elevator Passenger & Freight Payload",
-          "min": 200,
-          "max": 1500,
-          "step": 50,
-          "defaultValue": 650,
-          "unit": "kg"
+          "id": "driveCommand",
+          "label": "Drive Command (P / Idle / O)",
+          "min": -1,
+          "max": 1,
+          "step": 1,
+          "defaultValue": 0,
+          "unit": "state"
         },
         {
-          "id": "cableTension",
-          "label": "Hoisting Cable Tension",
+          "id": "displayRatePct",
+          "label": "Declared Display Rate",
           "min": 0,
           "max": 100,
-          "step": 5,
+          "step": 1,
+          "defaultValue": 60,
+          "unit": "%"
+        },
+        {
+          "id": "ropeGIntegrityPct",
+          "label": "Displayed Rope G Integrity",
+          "min": 0,
+          "max": 100,
+          "step": 100,
           "defaultValue": 100,
+          "unit": "%"
+        },
+        {
+          "id": "stopRopePulled",
+          "label": "Stop Rope U",
+          "min": 0,
+          "max": 1,
+          "step": 1,
+          "defaultValue": 0,
           "unit": "%"
         }
       ],
-      "pedagogicalInsight": "Hoisting cable tension actively holds the safety pawls disengaged by bowing a heavy transverse leaf spring upward. If the cable snaps, the spring instantly straightens flat, firing pawls outward into the vertical guide-rail ratchets within 38 milliseconds."
+      "pedagogicalInsight": "The 1861 grant is a whole hoisting system: straight belt O raises, crossed belt P lowers, shipper S and rope T idle both belts while shoe Z brakes working pulley L, rope Q counterpoises D, and a failed lifting rope G lets platform weight lock hook pawls f into racks C. The source provides topology—not load, force, timing, stopping distance, or power."
     },
     "sourceVisualization": {
-      "spatialComponent": "OtisElevator3D",
-      "vectorComponent": "OtisElevatorSim"
+      "spatialComponent": "OtisHoistingApparatus3D",
+      "vectorComponent": "OtisHoistingApparatusSim"
     },
     "bundledAssets": [
       "patents/figures/us-31128-otis-elevator/figure-1-oriented-cw.png",
@@ -19834,10 +19806,10 @@
     },
     "equations": [
       {
-        "id": "gatling-cyclic-rate-cam-kinematics",
+        "id": "gatling-gun-fire-rate",
         "patentId": "us-36836-gatling-gun",
-        "title": "Multi-Barrel Cluster Firing Rate & Cylindrical Cam Lock Geometry",
-        "category": "Ballistics & Rapid-Fire Mechanism",
+        "title": "Gatling Rotary Multi-Barrel Fire Rate & Cam Bolt Motion",
+        "category": "Armament & Mechanical Kinematics",
         "rawLatex": "\\text{Rate}_{\\text{fire}} = N_{\\text{barrels}} \\cdot \\Omega_{\\text{crank}} \\cdot \\left(\\frac{Z_{\\text{crank}}}{Z_{\\text{cluster}}}\\right) \\quad \\text{and} \\quad z_{\\text{bolt}}(\\theta) = R_{\\text{cam}} \\tan\\alpha_{\\text{groove}} \\cdot \\theta",
         "colorizedLatex": "\\textcolor{#059669}{\\text{Rate}_{\\text{fire}}} = \\textcolor{#9333ea}{N_{\\text{barrels}}} \\cdot \\textcolor{#2563eb}{\\Omega_{\\text{crank}}} \\cdot \\left(\\frac{\\textcolor{#ea580c}{Z_{\\text{crank}}}}{\\textcolor{#d97706}{Z_{\\text{cluster}}}}\\right) \\quad \\text{and} \\quad \\textcolor{#dc2626}{z_{\\text{bolt}}(\\theta)} = \\textcolor{#0891b2}{R_{\\text{cam}}} \\tan\\alpha_{\\text{groove}} \\cdot \\theta",
         "plainEnglishSentence": [
@@ -34326,33 +34298,33 @@
     },
     "equations": [
       {
-        "id": "otto-cycle-efficiency",
+        "id": "otto-graded-charge",
         "patentId": "us-194047-otto-engine",
-        "title": "Otto Cycle Air-Standard Thermal Efficiency",
-        "category": "Thermodynamics & Heat Engines",
-        "rawLatex": "\\eta_{\\text{Otto}} = 1 - \\frac{1}{r^{\\gamma - 1}}",
-        "colorizedLatex": "\\textcolor{#059669}{\\eta_{\\text{Otto}}} = 1 - \\frac{1}{\\textcolor{#2563eb}{r}^{\\textcolor{#d97706}{\\gamma - 1}}}",
+        "title": "Claim 1 Spatial Charge Gradient",
+        "category": "Combustion & Charge Preparation",
+        "rawLatex": "\\phi(0)>\\phi(x)>\\phi(L),\\qquad \\frac{d\\phi}{dx}<0",
+        "colorizedLatex": "\\textcolor{#059669}{\\phi(0)}>\\textcolor{#2563eb}{\\phi(x)}>\\textcolor{#9333ea}{\\phi(L)},\\qquad \\textcolor{#d97706}{\\frac{d\\phi}{dx}}<0",
         "plainEnglishSentence": [
           {
             "text": "The "
           },
           {
-            "text": "air-standard thermal efficiency",
-            "variableId": "eta_otto"
+            "text": "combustible-mixture concentration",
+            "variableId": "mixture_fraction"
           },
           {
-            "text": " of the four-stroke cycle depends solely on "
+            "text": " is greatest beside the "
           },
           {
-            "text": "volumetric compression ratio",
-            "variableId": "comp_r"
+            "text": "ignition point",
+            "variableId": "ignition_end"
           },
           {
-            "text": " and "
+            "text": " and becomes progressively smaller through the separate air charge toward the "
           },
           {
-            "text": "working gas specific heat ratio",
-            "variableId": "gamma_air"
+            "text": "forward end",
+            "variableId": "forward_end"
           },
           {
             "text": "."
@@ -34360,91 +34332,68 @@
         ],
         "variables": [
           {
-            "id": "eta_otto",
-            "symbol": "\\eta_{\\text{Otto}}",
-            "name": "Otto Cycle Thermal Efficiency",
-            "color": "emerald",
-            "role": "Fraction of combustion heat converted into mechanical shaft work ($~25\\% - 35\\%$ in early engines)",
-            "unit": "Dimensionless percentage (%)",
-            "dimension": "[1]",
-            "explanation": "Otto proved that pre-compressing the charge prior to ignition raised thermal efficiency from 4% (Lenoir non-compression engine) to over 20%.",
-            "telemetryMetricLabel": "Thermal Eff"
-          },
-          {
-            "id": "comp_r",
-            "symbol": "r",
-            "name": "Volumetric Compression Ratio",
+            "id": "mixture_fraction",
+            "symbol": "\\phi(x)",
+            "name": "Local Combustible-Mixture Concentration",
             "color": "sapphire",
-            "role": "Ratio of cylinder maximum volume at BDC to minimum clearance volume at TDC ($V_1 / V_2 \\approx 4:1 - 6:1$)",
-            "unit": "Dimensionless ratio",
+            "role": "Qualitative concentration along the compressed cylinder charge",
+            "unit": "Source gives no numerical fraction",
             "dimension": "[1]",
-            "explanation": "Limited by fuel knock/auto-ignition in spark engines, but higher $r$ increases thermodynamic expansion work.",
-            "telemetryKey": "compressionRatio"
+            "explanation": "Otto describes particle spacing and ordering qualitatively; the model must not invent a stoichiometric profile."
           },
           {
-            "id": "gamma_air",
-            "symbol": "\\gamma",
-            "name": "Adiabatic Heat Capacity Ratio",
-            "color": "amber",
-            "role": "Ratio of specific heats for atmospheric air ($c_p / c_v = 1.40$)",
-            "unit": "Dimensionless constant (1.40)",
-            "dimension": "[1]",
-            "explanation": "Dictates the steepness of adiabatic compression and expansion curves on the $P-V$ diagram."
+            "id": "ignition_end",
+            "symbol": "x=0",
+            "name": "Ignition End",
+            "color": "emerald",
+            "role": "Cylinder end where combustible particles are described as close together",
+            "unit": "Display coordinate",
+            "dimension": "[L]",
+            "explanation": "This is the high-concentration end of the source-described ordering."
+          },
+          {
+            "id": "forward_end",
+            "symbol": "x=L",
+            "name": "Forward Charge End",
+            "color": "amethyst",
+            "role": "Direction in which combustible particles become increasingly dispersed",
+            "unit": "Display coordinate",
+            "dimension": "[L]",
+            "explanation": "The patent connects this increasing dispersion to gradual heat development and pressure rise without printing either rate."
           }
         ],
-        "pedagogicalNote": "Before Otto, gas engines ignited uncompressed gas at atmospheric pressure, wasting 90% of heat into water jackets. Otto's four strokes (Intake, Compression, Power, Exhaust) established the architecture of all modern automotive engines.",
+        "pedagogicalNote": "This is a qualitative source topology, not a calibrated mixture field. Claim 1 requires the ordering and its gradual-combustion purpose; pressure, flame speed, and efficiency are not numerically reconstructed.",
         "claimRef": 1,
-        "historicalSignificance": "US 194,047 created the four-stroke spark-ignition internal combustion engine that powered the rise of the automobile, aviation, and motorized transport."
+        "historicalSignificance": "It keeps the legal center of US 194,047 on the deliberately graded charge instead of mislabeling Claim 1 as a generic four-stroke monopoly."
       },
       {
-        "id": "otto-peak-combustion-pressure",
+        "id": "otto-four-stroke-shaft-timing",
         "patentId": "us-194047-otto-engine",
-        "title": "Isochoric Combustion Pressure & Heat Release",
-        "category": "Thermodynamics & Combustion",
-        "rawLatex": "P_3 = P_1 \\cdot r^\\gamma \\left( 1 + \\frac{Q_{\\text{in}}}{c_v \\cdot T_1 \\cdot r^{\\gamma - 1}} \\right)",
-        "colorizedLatex": "\\textcolor{#dc2626}{P_3} = \\textcolor{#0891b2}{P_1} \\cdot \\textcolor{#2563eb}{r^\\gamma} \\left( 1 + \\frac{\\textcolor{#ea580c}{Q_{\\text{in}}}}{\\textcolor{#9333ea}{c_v} \\cdot \\textcolor{#0891b2}{T_1} \\cdot \\textcolor{#2563eb}{r}^{\\textcolor{#d97706}{\\gamma - 1}}} \\right)",
+        "title": "Claim 3 Four-Stroke Sequence & Source Shaft Ratio",
+        "category": "Mechanism Kinematics",
+        "rawLatex": "\\theta_K=\\frac{1}{2}\\theta_I,\\qquad 4\\;\\text{strokes}=2\\;\\text{crank revolutions}",
+        "colorizedLatex": "\\textcolor{#059669}{\\theta_K}=\\frac{1}{2}\\textcolor{#2563eb}{\\theta_I},\\qquad \\textcolor{#d97706}{4\\;\\text{strokes}}=\\textcolor{#9333ea}{2\\;\\text{crank revolutions}}",
         "plainEnglishSentence": [
           {
             "text": "The "
           },
           {
-            "text": "peak combustion cylinder pressure",
-            "variableId": "p_peak"
+            "text": "counter-shaft",
+            "variableId": "counter_shaft"
           },
           {
-            "text": " equals "
+            "text": " makes one revolution while the "
           },
           {
-            "text": "ambient intake pressure",
-            "variableId": "p_intake"
+            "text": "engine shaft",
+            "variableId": "engine_shaft"
           },
           {
-            "text": " multiplied by "
+            "text": " makes two, coordinating "
           },
           {
-            "text": "compression ratio",
-            "variableId": "r_ratio"
-          },
-          {
-            "text": " scaled by "
-          },
-          {
-            "text": "fuel heat release",
-            "variableId": "q_combust"
-          },
-          {
-            "text": " over "
-          },
-          {
-            "text": "constant-volume heat capacity",
-            "variableId": "cv_air"
-          },
-          {
-            "text": " and "
-          },
-          {
-            "text": "adiabatic temperature rise",
-            "variableId": "t_intake"
+            "text": "four piston strokes",
+            "variableId": "stroke_sequence"
           },
           {
             "text": "."
@@ -34452,219 +34401,48 @@
         ],
         "variables": [
           {
-            "id": "p_peak",
-            "symbol": "P_3",
-            "name": "Peak Combustion Pressure at Top Dead Center",
-            "color": "crimson",
-            "role": "Maximum gas pressure driving the piston downward on the power stroke ($15 - 30\\text{ bar}$)",
-            "unit": "Bar / Pascals (Pa)",
-            "dimension": "[M L^-1 T^-2]",
-            "explanation": "Occurs immediately following spark ignition at constant volume (isochoric combustion).",
-            "telemetryMetricLabel": "Peak Pressure"
-          },
-          {
-            "id": "p_intake",
-            "symbol": "P_1",
-            "name": "Ambient Intake Pressure",
-            "color": "cyan",
-            "role": "Atmospheric pressure of fresh fuel-air charge drawn during intake stroke ($1.013\\text{ bar}$)",
-            "unit": "Bar / Pascals (Pa)",
-            "dimension": "[M L^-1 T^-2]",
-            "explanation": "Initial pressure before compression starts."
-          },
-          {
-            "id": "r_ratio",
-            "symbol": "r",
-            "name": "Compression Ratio",
-            "color": "sapphire",
-            "role": "Displacement volume ratio ($V_{\\text{BDC}} / V_{\\text{TDC}} = 4.0$)",
-            "unit": "Dimensionless ratio",
-            "dimension": "[1]",
-            "explanation": "Pre-compression elevates pressure by $r^\\gamma = 4^{1.4} = 6.96\\text{ bar}$ prior to ignition."
-          },
-          {
-            "id": "q_combust",
-            "symbol": "Q_{\\text{in}}",
-            "name": "Fuel Specific Heat Release",
-            "color": "coral",
-            "role": "Chemical energy liberated by coal gas or gasoline combustion per kg of air charge ($1.8\\text{ MJ/kg}$)",
-            "unit": "J/kg",
-            "dimension": "[L^2 T^-2]",
-            "explanation": "Instantaneous burning of stratified charge releases thermal energy rapidly."
-          },
-          {
-            "id": "cv_air",
-            "symbol": "c_v",
-            "name": "Constant-Volume Specific Heat",
-            "color": "amethyst",
-            "role": "Specific heat capacity of air at constant volume ($718\\text{ J}/(\\text{kg}\\cdot\\text{K})$)",
-            "unit": "J / (kg * K)",
-            "dimension": "[L^2 T^-2 \\Theta^-1]",
-            "explanation": "Determines temperature rise resulting from fuel chemical energy release."
-          },
-          {
-            "id": "t_intake",
-            "symbol": "T_1",
-            "name": "Intake Charge Temperature",
-            "color": "cyan",
-            "role": "Ambient temperature of inducted gas ($293\\text{ K} = 20^\\circ\\text{C}$)",
-            "unit": "Kelvin (K)",
-            "dimension": "[\\Theta]",
-            "explanation": "Starting temperature before compression."
-          }
-        ],
-        "pedagogicalNote": "Because pressure spikes instantaneously at TDC while the piston is stationary, the gas performs maximum expansion work as it drives the piston down the entire stroke length.",
-        "claimRef": 1,
-        "historicalSignificance": "Established the pressure-volume cycle analysis that engineers still use to design internal combustion engines."
-      },
-      {
-        "id": "otto-four-stroke-thermal-efficiency",
-        "patentId": "us-194047-otto-engine",
-        "title": "Four-Stroke Otto Cycle Efficiency & Indicated Mean Effective Power",
-        "category": "Thermodynamics & Internal Combustion",
-        "rawLatex": "\\eta_{\\text{Otto}} = 1 - \\frac{1}{r_c^{\\gamma - 1}} \\quad \\text{and} \\quad P_{\\text{indicated}} = \\frac{\\text{IMEP} \\cdot V_d \\cdot N_{\\text{rpm}}}{120}",
-        "colorizedLatex": "\\textcolor{#059669}{\\eta_{\\text{Otto}}} = 1 - \\frac{1}{\\textcolor{#2563eb}{r_c}^{\\textcolor{#d97706}{\\gamma - 1}}} \\quad \\text{and} \\quad \\textcolor{#dc2626}{P_{\\text{indicated}}} = \\frac{\\textcolor{#0891b2}{\\text{IMEP}} \\cdot \\textcolor{#9333ea}{V_d} \\cdot \\textcolor{#ea580c}{N_{\\text{rpm}}}}{120}",
-        "plainEnglishSentence": [
-          {
-            "text": "The "
-          },
-          {
-            "text": "Otto thermodynamic cycle efficiency",
-            "variableId": "eta_otto"
-          },
-          {
-            "text": " scales with "
-          },
-          {
-            "text": "pre-ignition compression ratio",
-            "variableId": "r_c"
-          },
-          {
-            "text": " governed by "
-          },
-          {
-            "text": "air specific heat ratio",
-            "variableId": "gamma"
-          },
-          {
-            "text": ", delivering "
-          },
-          {
-            "text": "indicated mechanical power",
-            "variableId": "p_ind"
-          },
-          {
-            "text": " proportional to "
-          },
-          {
-            "text": "indicated mean effective pressure",
-            "variableId": "imep"
-          },
-          {
-            "text": ", "
-          },
-          {
-            "text": "swept displacement volume",
-            "variableId": "v_d"
-          },
-          {
-            "text": ", and "
-          },
-          {
-            "text": "crankshaft RPM",
-            "variableId": "n_rpm"
-          },
-          {
-            "text": " across two revolutions per power stroke."
-          }
-        ],
-        "variables": [
-          {
-            "id": "eta_otto",
-            "symbol": "\\eta_{\\text{Otto}}",
-            "name": "Ideal Otto Thermal Efficiency",
+            "id": "counter_shaft",
+            "symbol": "\\theta_K",
+            "name": "Counter-Shaft K Angle",
             "color": "emerald",
-            "role": "Theoretical upper bound of thermal conversion efficiency for a 4-stroke spark ignition gas cycle",
-            "unit": "Efficiency percentage (%)",
+            "role": "Source-named shaft carrying the slide crank and valve cams",
+            "unit": "Radians",
             "dimension": "[1]",
-            "explanation": "Otto proved that pre-compressing the air-fuel mixture prior to ignition dramatically multiplies thermodynamic efficiency compared to non-compression Lenoir atmospheric engines.",
-            "telemetryMetricLabel": "Otto Efficiency"
+            "explanation": "The procedural model derives this coordinate at exactly half crank angle."
           },
           {
-            "id": "r_c",
-            "symbol": "r_c",
-            "name": "Volumetric Compression Ratio",
+            "id": "engine_shaft",
+            "symbol": "\\theta_I",
+            "name": "Engine-Shaft I Angle",
             "color": "sapphire",
-            "role": "Ratio of cylinder maximum volume at BDC to clearance volume at TDC ($r_c = 4.5\\text{ to }6.0$)",
-            "unit": "Compression ratio (r:1)",
+            "role": "Single independent crank coordinate that drives the connected mechanism",
+            "unit": "Radians",
             "dimension": "[1]",
-            "explanation": "Pre-compressing charge gas raises mixture density and accelerates deflagration velocity, quadrupling work output.",
-            "telemetryKey": "compressionRatio"
-          },
-          {
-            "id": "gamma",
-            "symbol": "\\gamma",
-            "name": "Specific Heat Ratio (Air)",
-            "color": "amber",
-            "role": "Ratio of constant pressure to constant volume specific heats ($C_p / C_v \\approx 1.40$ for diatomic air)",
-            "unit": "Dimensionless ratio (1.40)",
-            "dimension": "[1]",
-            "explanation": "Governs isentropic temperature and pressure rise during the rapid mechanical compression stroke."
-          },
-          {
-            "id": "p_ind",
-            "symbol": "P_{\\text{indicated}}",
-            "name": "Indicated Power Output",
-            "color": "crimson",
-            "role": "Gross mechanical shaft power developed in cylinder combustion chamber before mechanical friction losses",
-            "unit": "Kilowatts (kW) / Horsepower (HP)",
-            "dimension": "[M L^2 T^-3]",
-            "explanation": "Calculated with a 120 divisor because a four-stroke engine executes one power stroke for every two complete crank revolutions ($720^\\circ$).",
-            "telemetryMetricLabel": "Indicated Power"
-          },
-          {
-            "id": "imep",
-            "symbol": "\\text{IMEP}",
-            "name": "Indicated Mean Effective Pressure",
-            "color": "cyan",
-            "role": "Average effective combustion pressure acting on piston crown throughout power stroke (4 to 8 bar)",
-            "unit": "Bar / Pascals",
-            "dimension": "[M L^-1 T^-2]",
-            "explanation": "Determined from the enclosed area of the indicator $P\\text{--}V$ card diagram."
-          },
-          {
-            "id": "v_d",
-            "symbol": "V_d",
-            "name": "Swept Cylinder Displacement",
-            "color": "amethyst",
-            "role": "Swept cylinder volume displaced by piston stroke ($V_d = \\frac{\\pi}{4} D^2 \\cdot S$)",
-            "unit": "Liters / Cubic meters",
-            "dimension": "[L^3]",
-            "explanation": "Product of bore cross-sectional area and crankshaft stroke length."
-          },
-          {
-            "id": "n_rpm",
-            "symbol": "N_{\\text{rpm}}",
-            "name": "Crankshaft Rotational Speed",
-            "color": "coral",
-            "role": "Rotational velocity of the engine output shaft and inertial flywheels (150 to 300 RPM)",
-            "unit": "Revolutions per minute (RPM)",
-            "dimension": "[T^-1]",
-            "explanation": "Stabilized across the three non-power strokes by dual heavy cast-iron flywheels.",
+            "explanation": "The displayed RPM is a declared presentation input because the grant prints no operating speed.",
             "telemetryKey": "engineRpm"
+          },
+          {
+            "id": "stroke_sequence",
+            "symbol": "4\\;\\text{strokes}",
+            "name": "Complete Operating Sequence",
+            "color": "amber",
+            "role": "Admission, compression, working expansion, and exhaust",
+            "unit": "Four piston strokes",
+            "dimension": "[1]",
+            "explanation": "Claim 3 combines this sequence with the separately introduced air and combustible charges."
           }
         ],
-        "pedagogicalNote": "Earlier gas engines (like Lenoir's) ignited gas at atmospheric pressure, achieving under 5% thermal efficiency and consuming exorbitant fuel. Nikolaus Otto invented the four-stroke cycle: Intake, Compression, Power, and Exhaust. Pre-compressing the mixture prior to ignition jumped efficiency to over 20%, creating the modern internal combustion engine.",
-        "claimRef": 1,
-        "historicalSignificance": "US 194047 established the universal four-stroke 'Otto cycle' that powers billions of automobiles, motorcycles, aircraft, and generators across human history."
+        "pedagogicalNote": "The one-to-two shaft ratio is source-fixed and is shared by the 2D and 3D poses. It does not imply a historical RPM, torque, pressure, or power value.",
+        "claimRef": 3,
+        "historicalSignificance": "This separates the source's actual four-stroke machinery from later ideal-cycle performance equations that require unprinted dimensions and operating data."
       }
     ],
     "physics": {
-      "domain": "aerodynamics_mbd",
-      "domainTitle": "Internal Combustion & 4-Stroke Otto Thermodynamic Cycle",
-      "equationName": "Air-Standard Otto Cycle Efficiency",
-      "governingEquation": "\\eta_{\\text{Otto}} = 1 - \\frac{1}{r_c^{\\gamma - 1}} \\quad (\\gamma = 1.4)",
-      "engineMethod": "FrankenSimEngine.stepOttoEngine",
+      "domain": "thermodynamics_transport",
+      "domainTitle": "Graded-Charge Gas Engine & Four-Stroke Valve Gear",
+      "equationName": "Source Timing Topology with a Declared Air-Standard Lens",
+      "governingEquation": "\\omega_K=\\omega_I/2; \\quad \\eta_{ideal}=1-r^{1-\\gamma} \\;\\text{(modern declared analysis)}",
+      "engineMethod": "fs-mbd source topology + explicitly declared air-standard analysis",
       "controls": [
         {
           "id": "engineRpm",
@@ -34677,15 +34455,24 @@
         },
         {
           "id": "compressionRatio",
-          "label": "Geometric Compression Ratio",
+          "label": "Declared Analysis Compression Ratio",
           "min": 3,
           "max": 8,
           "step": 0.5,
           "defaultValue": 4.5,
           "unit": ":1"
+        },
+        {
+          "id": "claim1ChargeGradingPresent",
+          "label": "Claim 1 Graded Separate Charge",
+          "min": 0,
+          "max": 1,
+          "step": 1,
+          "defaultValue": 1,
+          "unit": ""
         }
       ],
-      "pedagogicalInsight": "The four distinct strokes (Intake, Compression, Power, Exhaust) compress the fuel-air charge prior to flame ignition, raising peak thermodynamic combustion temperature and work output."
+      "pedagogicalInsight": "US 194,047 claims a spatially graded charge and the machinery that admits, compresses, ignites, and exhausts it over four strokes. The source fixes the one-to-two counter-shaft relation but supplies no operating speed, compression ratio, pressure trace, fuel flow, or power measurement; the ideal-efficiency slider is a clearly labeled modern analysis input."
     },
     "sourceVisualization": {
       "spatialComponent": "OttoEngine3D",
@@ -36705,8 +36492,8 @@
         "patentId": "us-223898-edison-lightbulb",
         "title": "High-Resistance Carbon Filament & Parallel Distribution Law",
         "category": "Thermodynamics & Electrical Distribution",
-        "rawLatex": "R_{\\text{filament}} = \\rho_{\\text{carbon}} \\frac{L}{A} = \\rho_{\\text{carbon}} \\frac{4 L}{\\pi d^2} = \\frac{V_{\\text{grid}}^2}{P_{\\text{lamp}}} \\approx 100\\,\\Omega",
-        "colorizedLatex": "\\textcolor{#059669}{R_{\\text{filament}}} = \\textcolor{#9333ea}{\\rho_{\\text{carbon}}} \\frac{\\textcolor{#2563eb}{L}}{\\textcolor{#ea580c}{A}} = \\textcolor{#9333ea}{\\rho_{\\text{carbon}}} \\frac{4 \\textcolor{#2563eb}{L}}{\\pi \\textcolor{#ea580c}{d^2}} = \\frac{\\textcolor{#dc2626}{V_{\\text{grid}}^2}}{\\textcolor{#0891b2}{P_{\\text{lamp}}}} \\approx 100\\,\\Omega",
+        "rawLatex": "R_{\\text{filament}} = \\rho_{\\text{carbon}} \\frac{L}{A} = \\rho_{\\text{carbon}} \\frac{4 L}{\\pi d^2} = \\frac{V_{\\text{declared}}^2}{P_{\\text{electric}}}",
+        "colorizedLatex": "\\textcolor{#059669}{R_{\\text{filament}}} = \\textcolor{#9333ea}{\\rho_{\\text{carbon}}} \\frac{\\textcolor{#2563eb}{L}}{\\textcolor{#ea580c}{A}} = \\textcolor{#9333ea}{\\rho_{\\text{carbon}}} \\frac{4 \\textcolor{#2563eb}{L}}{\\pi \\textcolor{#ea580c}{d^2}} = \\frac{\\textcolor{#dc2626}{V_{\\text{declared}}^2}}{\\textcolor{#0891b2}{P_{\\text{electric}}}}",
         "plainEnglishSentence": [
           {
             "text": "The "
@@ -36737,17 +36524,17 @@
             "variableId": "diam_d"
           },
           {
-            "text": ", engineered to match "
+            "text": ". At a declared operating point it also equals "
           },
           {
-            "text": "distribution grid voltage squared",
+            "text": "declared exhibit voltage squared",
             "variableId": "v_grid"
           },
           {
-            "text": " over "
+            "text": " divided by "
           },
           {
-            "text": "lamp power rating",
+            "text": "computed electrical input",
             "variableId": "p_lamp"
           },
           {
@@ -36760,28 +36547,28 @@
             "symbol": "R_{\\text{filament}}",
             "name": "Hot Filament Electrical Resistance",
             "color": "emerald",
-            "role": "Ohmic resistance of the incandescent carbon horseshoe thread at $1900\\text{ K}$ ($~100\\,\\Omega$)",
+            "role": "The source reports 100 to 500 ohms for one carbonized-thread example and up to 2,000 ohms for a compact spiral",
             "unit": "Ohms (\\Omega)",
             "dimension": "[M L^2 T^-3 I^-2]",
-            "explanation": "Edison's genius insight: other inventors used thick rods ($1\\,\\Omega$) requiring massive copper cables; Edison engineered high-resistance ($100\\,\\Omega$) filaments requiring only $1\\text{ A}$ at $110\\text{ V}$.",
+            "explanation": "The patent contrasts its high-resistance filament with reported prior practice of one-to-four-ohm carbon rods because low-resistance lamps in multiple arc demand enormous main conductors.",
             "telemetryMetricLabel": "Filament Resistance"
           },
           {
             "id": "rho_carbon",
             "symbol": "\\rho_{\\text{carbon}}",
-            "name": "Carbonized Cellulose Resistivity",
+            "name": "Carbon-Form Resistivity",
             "color": "amethyst",
-            "role": "Specific resistivity of carbonized cotton or Japanese bamboo fiber ($~4 \\times 10^{-5}\\,\\Omega\\cdot\\text{m}$)",
+            "role": "Material property in the modern geometry relation; the grant supplies no numerical carbon resistivity",
             "unit": "\\Omega * m",
             "dimension": "[M L^3 T^-3 I^-2]",
-            "explanation": "Carbon maintains high electrical resistance and withstands temperatures exceeding $2,000^\\circ\\text{C}$ without melting."
+            "explanation": "The source reports resistance for finished carbon forms rather than enough material data to infer a universal resistivity or operating temperature."
           },
           {
             "id": "len_l",
             "symbol": "L",
-            "name": "Filament Horseshoe Length",
+            "name": "Filament Path Length",
             "color": "sapphire",
-            "role": "Total length of the looping carbon thread ($10 - 15\\text{ cm}$)",
+            "role": "The source's rolled-wire example is over one foot long; the thermal-area model instead declares a fixed 22 cm display length",
             "unit": "cm or meters",
             "dimension": "[L]",
             "explanation": "Longer thread increases resistance and radiating surface area."
@@ -36791,40 +36578,40 @@
             "symbol": "d",
             "name": "Filament Wire Diameter",
             "color": "coral",
-            "role": "Cross-sectional diameter of carbonized filament ($0.15 - 0.25\\text{ mm}$)",
+            "role": "The source says its rolled plastic stock may be as small as seven one-thousandths of an inch ($0.1778\\text{ mm}$)",
             "unit": "mm or meters",
             "dimension": "[L]",
             "explanation": "Because resistance scales inversely with $d^2$, drawing an ultra-thin thread was the key manufacturing breakthrough."
           },
           {
             "id": "v_grid",
-            "symbol": "V_{\\text{grid}}",
-            "name": "Central Station Distribution Voltage",
+            "symbol": "V_{\\text{declared}}",
+            "name": "Declared Exhibit Voltage",
             "color": "crimson",
-            "role": "Standardized DC electrical distribution potential ($110\\text{ V}$)",
+            "role": "The simulator declares $110\\text{ V}$ as an interpretive operating input; US 223,898 states no supply voltage",
             "unit": "Volts (V)",
             "dimension": "[M L^2 T^-3 I^-1]",
-            "explanation": "High voltage minimized $I^2 R$ transmission losses across neighborhood street mains."
+            "explanation": "Voltage is required to evaluate an operating point, so the interface labels it as a model input instead of attributing it to the patent."
           },
           {
             "id": "p_lamp",
-            "symbol": "P_{\\text{lamp}}",
-            "name": "Lamp Thermal Power Consumption",
+            "symbol": "P_{\\text{electric}}",
+            "name": "Computed Electrical Input",
             "color": "cyan",
-            "role": "Power consumed to produce 16 candlepower illumination ($~100\\text{ W}$ at $1\\text{ A}$)",
+            "role": "Electrical input computed from the declared voltage and hot-resistance operating point",
             "unit": "Watts (W)",
             "dimension": "[M L^2 T^-3]",
             "explanation": "Electrical energy converted to incandescent radiant heat and light."
           }
         ],
-        "pedagogicalNote": "The 'subdivision of electric light' was deemed mathematically impossible by British scientists until Edison realized Joule heating losses ($P_{\\text{loss}} = I^2 R_{\\text{wire}}$) drop with the square of current. By multiplying lamp resistance by 100x, line current dropped by 10x and copper cable weight dropped by 100x.",
+        "pedagogicalNote": "The source's network argument is precise but qualitative: one-to-four-ohm lamps in multiple arc require enormous main conductors, while a much higher-resistance light-giver permits finer leads. The simulator computes one declared operating point without turning that comparison into an unsupported percentage claim.",
         "claimRef": 1,
-        "historicalSignificance": "US 223,898 established the commercial electric power grid, making domestic electric lighting economically viable."
+        "historicalSignificance": "US 223,898 connects the internal resistance of the lamp to the practical subdivision of electric light across many parallel branches."
       },
       {
         "id": "edison-vacuum-mean-free-path",
         "patentId": "us-223898-edison-lightbulb",
-        "title": "Sprengel High-Vacuum Mean Free Path & Oxidation Suppression",
+        "title": "Source Vacuum Level, Mean Free Path & Oxidation Suppression",
         "category": "Thermodynamics & Vacuum Physics",
         "rawLatex": "\\lambda_{\\text{mfp}} = \\frac{k_B \\cdot T}{\\sqrt{2} \\pi d_{\\text{mol}}^2 \\cdot P_{\\text{vac}}} \\gg r_{\\text{bulb}}",
         "colorizedLatex": "\\textcolor{#059669}{\\lambda_{\\text{mfp}}} = \\frac{\\textcolor{#d97706}{k_B} \\cdot \\textcolor{#dc2626}{T}}{\\sqrt{2} \\pi \\textcolor{#9333ea}{d_{\\text{mol}}^2} \\cdot \\textcolor{#2563eb}{P_{\\text{vac}}}} \\gg \\textcolor{#0891b2}{r_{\\text{bulb}}}",
@@ -36881,10 +36668,10 @@
             "symbol": "\\lambda_{\\text{mfp}}",
             "name": "Molecular Mean Free Path",
             "color": "emerald",
-            "role": "Average distance a residual gas molecule travels before colliding with another molecule ($> 10\\text{ cm}$ in high vacuum)",
+            "role": "Modern hard-sphere estimate of roughly $7$ to $11\\text{ cm}$ at the source pressure and a declared 300-to-500-K gas range",
             "unit": "meters (m)",
             "dimension": "[L]",
-            "explanation": "When $\\lambda_{\\text{mfp}}$ exceeds bulb radius ($r_{\\text{bulb}} \\approx 3\\text{ cm}$), gas thermal convection ceases entirely.",
+            "explanation": "When $\\lambda_{\\text{mfp}}$ approaches or exceeds the receiver scale, continuum convection is strongly suppressed; the equation does not prove a perfectly collisionless enclosure.",
             "telemetryMetricLabel": "Mean Free Path"
           },
           {
@@ -36902,7 +36689,7 @@
             "symbol": "T",
             "name": "Enclosure Absolute Temperature",
             "color": "crimson",
-            "role": "Temperature of residual gas molecules inside the glass globe ($~300 - 500\\text{ K}$)",
+            "role": "Declared 300-to-500-K range used only for the modern mean-free-path interpretation",
             "unit": "Kelvin (K)",
             "dimension": "[\\Theta]",
             "explanation": "Heated by radiation from the incandescent filament."
@@ -36912,7 +36699,7 @@
             "symbol": "d_{\\text{mol}}",
             "name": "Gas Molecular Collision Diameter",
             "color": "amethyst",
-            "role": "Effective diameter of oxygen and nitrogen molecules ($~0.37\\text{ nm}$)",
+            "role": "Declared modern hard-sphere collision diameter ($~0.37\\text{ nm}$)",
             "unit": "meters (m)",
             "dimension": "[L]",
             "explanation": "Determines hard-sphere scattering cross-section."
@@ -36922,39 +36709,39 @@
             "symbol": "P_{\\text{vac}}",
             "name": "Residual Vacuum Pressure",
             "color": "sapphire",
-            "role": "Pressure achieved by Sprengel mercury fall-pumps ($< 10^{-6}\\text{ atm} \\approx 0.1\\text{ Pa}$)",
+            "role": "The source reports a bulb exhausted to one-millionth of an atmosphere ($\\approx 0.101\\text{ Pa}$ or $7.6\\times10^{-4}\\text{ Torr}$)",
             "unit": "Pascals (Pa) / Torr",
             "dimension": "[M L^-1 T^-2]",
-            "explanation": "Eliminating oxygen stops the white-hot carbon filament from combusting, extending operating lifespan to over 1,200 hours."
+            "explanation": "Reducing the residual atmosphere suppresses oxidation and the source-described atmospheric injury; the grant gives no lamp-life figure."
           },
           {
             "id": "r_bulb",
             "symbol": "r_{\\text{bulb}}",
             "name": "Glass Bulb Inner Radius",
             "color": "cyan",
-            "role": "Radius of the sealed spherical glass envelope ($~3.5\\text{ cm}$)",
+            "role": "Illustrative receiver radius needed for the modern scale comparison; the grant gives no bulb radius",
             "unit": "meters (m)",
             "dimension": "[L]",
             "explanation": "All-glass one-piece envelope sealed with fused platinum lead-in wires."
           }
         ],
-        "pedagogicalNote": "Earlier vacuum bulbs failed because multi-piece glass-and-brass joints leaked. Edison used all-glass hermetic fusion with platinum leads (which match glass's thermal expansion coefficient) evacuated to one-millionth of an atmosphere.",
+        "pedagogicalNote": "The source contrasts its all-glass receiver with prior vessels made of glass cemented to a metallic base, then says platina is suitable because its expansion is nearly the same as glass. The mean-free-path calculation is a modern interpretation of the reported one-millionth-atmosphere pressure.",
         "claimRef": 2,
-        "historicalSignificance": "Demonstrated the necessity of ultra-high vacuum techniques that later enabled vacuum tubes, X-ray tubes, and cathode ray tubes."
+        "historicalSignificance": "The claimed combination makes the exhausted all-glass receiver and conductors passing through its glass wall part of the lamp rather than incidental laboratory equipment."
       },
       {
         "id": "edison-blackbody-radiation",
         "patentId": "us-223898-edison-lightbulb",
         "title": "Stefan-Boltzmann Thermal Radiation & High Resistance Law",
         "category": "Thermodynamics & Vacuum Physics",
-        "rawLatex": "P_{\\text{rad}} = \\varepsilon \\cdot \\sigma \\cdot A \\cdot T^4 \\quad \\text{and} \\quad P = \\frac{V^2}{R}",
-        "colorizedLatex": "\\textcolor{#ea580c}{P_{\\text{rad}}} = \\textcolor{#0891b2}{\\varepsilon} \\cdot \\textcolor{#d97706}{\\sigma} \\cdot \\textcolor{#9333ea}{A} \\cdot \\textcolor{#dc2626}{T^4} \\quad \\text{and} \\quad P = \\frac{\\textcolor{#2563eb}{V^2}}{\\textcolor{#059669}{R}}",
+        "rawLatex": "P_{\\text{rad}} = \\varepsilon \\sigma A (T^4 - T_{\\text{ambient}}^4) \\quad \\text{and} \\quad P_{\\text{electric}} = \\frac{V^2}{R}",
+        "colorizedLatex": "\\textcolor{#ea580c}{P_{\\text{rad}}} = \\textcolor{#0891b2}{\\varepsilon} \\textcolor{#d97706}{\\sigma} \\textcolor{#9333ea}{A} (\\textcolor{#dc2626}{T^4} - T_{\\text{ambient}}^4) \\quad \\text{and} \\quad P_{\\text{electric}} = \\frac{\\textcolor{#2563eb}{V^2}}{\\textcolor{#059669}{R}}",
         "plainEnglishSentence": [
           {
             "text": "The "
           },
           {
-            "text": "radiant optical power",
+            "text": "net radiant thermal power",
             "variableId": "p_rad"
           },
           {
@@ -36979,21 +36766,21 @@
             "variableId": "t4"
           },
           {
-            "text": "; parallel distribution requires "
+            "text": "; at a "
+          },
+          {
+            "text": "declared exhibit voltage",
+            "variableId": "voltage"
+          },
+          {
+            "text": ", "
           },
           {
             "text": "high filament resistance",
             "variableId": "res"
           },
           {
-            "text": " to avoid melting "
-          },
-          {
-            "text": "mains voltage feeder wires",
-            "variableId": "voltage"
-          },
-          {
-            "text": "."
+            "text": " limits the current demanded by a parallel branch."
           }
         ],
         "variables": [
@@ -37002,10 +36789,10 @@
             "symbol": "P_{\\text{rad}}",
             "name": "Radiant Thermal Power",
             "color": "coral",
-            "role": "Total electromagnetic radiation emitted per second across the blackbody spectrum",
+            "role": "Net electromagnetic radiation emitted above the declared ambient-temperature background",
             "unit": "Watts (W)",
             "dimension": "[M L^2 T^-3]",
-            "explanation": "At 2,200 Kelvin, a carbon filament glows with warm incandescent luminescence, converting electrical input power into visible photons and infrared heat.",
+            "explanation": "The narrow FrankenSim owner solves the steady operating point where declared electrical input equals net gray-body radiation; it does not infer visible efficacy or lamp life.",
             "telemetryMetricLabel": "Radiant Power"
           },
           {
@@ -37013,10 +36800,10 @@
             "symbol": "\\varepsilon",
             "name": "Filament Emissivity",
             "color": "cyan",
-            "role": "Surface radiative efficiency compared to a theoretical ideal blackbody (0.82 for carbonized cotton/bamboo)",
+            "role": "Declared gray-body factor of 0.8 for this exhibit; the patent does not provide emissivity",
             "unit": "Dimensionless fraction",
             "dimension": "[1]",
-            "explanation": "Carbonized organic fibers possess high emissivity (approx 0.82), producing rich blackbody emission without early reflective dissipation."
+            "explanation": "Emissivity is an explicit model input used to close the radiative balance, not a hidden material property attributed to the historical specimen."
           },
           {
             "id": "area",
@@ -37026,7 +36813,7 @@
             "role": "Exposed cylindrical surface area of the slender carbon thread",
             "unit": "Square meters (m^2)",
             "dimension": "[L^2]",
-            "explanation": "By making the filament microscopic in cross-section (a hair-like thread) with minimal surface area, heat loss is minimized and resistance maximized."
+            "explanation": "The source-derived seven-thousandths-inch diameter and the illustrative length define the cylindrical area supplied explicitly to the gray-body balance."
           },
           {
             "id": "t4",
@@ -37036,18 +36823,18 @@
             "role": "Filament thermodynamic core temperature in Kelvin raised to the fourth power",
             "unit": "Kelvin^4 (K^4)",
             "dimension": "[\\Theta^4]",
-            "explanation": "Doubling filament temperature multiplies radiated light by 16 ($2^4$). To prevent rapid carbon sublimation at 2,200 K, Edison evacuated the globe to one-millionth of an atmosphere (high vacuum).",
-            "telemetryMetricLabel": "Color Temp"
+            "explanation": "At fixed area and emissivity, net thermal radiation rises approximately with the fourth power of absolute temperature above ambient. The solved temperature is a model result, not a value printed in the grant.",
+            "telemetryMetricLabel": "Filament Temperature"
           },
           {
             "id": "voltage",
             "symbol": "V^2",
-            "name": "Supply Line Voltage",
+            "name": "Declared Exhibit Voltage",
             "color": "sapphire",
-            "role": "Central electrical station parallel distribution potential (110 Volts DC)",
+            "role": "Visitor-controlled exhibit input, initialized to 110 volts; US 223,898 states no operating voltage",
             "unit": "Volts (V)",
             "dimension": "[M L^2 T^-3 I^-1]",
-            "explanation": "Edison selected 110 Volts as the optimal standard balancing insulation safety against copper wire mass.",
+            "explanation": "The operating voltage is declared in the interface so the radiative balance has a reproducible electrical input without presenting it as source text.",
             "telemetryKey": "voltage"
           },
           {
@@ -37055,24 +36842,24 @@
             "symbol": "R",
             "name": "High Filament Resistance",
             "color": "emerald",
-            "role": "Electrical resistance of carbonized thread filament (100 Ohms vs 1 Ohm for arc lamps)",
+            "role": "Visitor-controlled declared hot resistance, bounded to the source's reported 100-to-500-ohm example range",
             "unit": "Ohms (\\Omega)",
             "dimension": "[M L^2 T^-3 I^-2]",
-            "explanation": "Edison's core insight was that low-resistance arc lights required enormous copper conductors ($I = V/R$). High resistance ($100\\ \\Omega$) slashed current, allowing hundreds of lamps to run in parallel on thin copper lines.",
+            "explanation": "The source contrasts its high-resistance carbon thread with reported one-to-four-ohm prior-practice carbon rods and explains the resulting main-conductor problem.",
             "telemetryMetricLabel": "Hot Resistance"
           }
         ],
-        "pedagogicalNote": "Every other inventor attempted to make low-resistance electric lamps ($1\\ \\Omega$), which caused copper transmission lines to melt. Edison understood the $P = I^2 R = V^2 / R$ tradeoff and engineered high-resistance filaments in a sealed vacuum globe.",
+        "pedagogicalNote": "This card separates source facts from model assumptions. The grant supplies the high-resistance ranges, carbon geometry example, nearly perfect vacuum, and multiple-arc motivation; the simulator declares voltage, emissivity, ambient temperature, and illustrative length, then asks FrankenSim to close only the gray-body power balance.",
         "claimRef": 1,
-        "historicalSignificance": "US 223,898 laid the mathematical and commercial foundation for the global electric utility grid."
+        "historicalSignificance": "The equation makes the patent's electrical-distribution argument inspectable while keeping the thermal operating point explicitly interpretive."
       }
     ],
     "physics": {
       "domain": "thermodynamics_transport",
-      "domainTitle": "High-Vacuum Stefan-Boltzmann Radiative Blackbody Kinetics",
-      "equationName": "Stefan-Boltzmann Radiative Blackbody Law",
-      "governingEquation": "P_{\\text{rad}} = \\varepsilon \\sigma A (T^4 - T_0^4) \\quad \\text{with} \\quad R(T) = R_0(1 + \\alpha \\Delta T)",
-      "engineMethod": "FrankenSimEngine.stepEdisonBulb",
+      "domainTitle": "Declared High-Vacuum Gray-Body Steady Balance",
+      "equationName": "Joule-to-Stefan-Boltzmann Gray-Body Balance",
+      "governingEquation": "\\frac{V^2}{R_{\\text{declared}}} = \\varepsilon \\sigma (\\pi d_{\\text{source}} L_{\\text{declared}})(T^4 - T_0^4)",
+      "engineMethod": "fs-conduction incandescent radiative balance",
       "controls": [
         {
           "id": "voltage",
@@ -37084,13 +36871,13 @@
           "unit": "V"
         },
         {
-          "id": "filamentLength",
-          "label": "Carbon Filament Length",
-          "min": 10,
-          "max": 30,
-          "step": 1,
-          "defaultValue": 22,
-          "unit": "cm"
+          "id": "hotResistanceOhm",
+          "label": "Declared Hot Resistance",
+          "min": 100,
+          "max": 500,
+          "step": 5,
+          "defaultValue": 145,
+          "unit": "Ω"
         }
       ],
       "pedagogicalInsight": "Evacuating the glass globe to one-millionth of an atmosphere prevents oxygen combustion and dramatically suppresses convective heat transfer, enabling a high-resistance carbonized thread to glow incandescently."
@@ -44752,10 +44539,22 @@
               "label": "Preview the source drawing for Figs. 1 through 9",
               "figurePreviews": [
                 {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-1-source-crop-v5.png",
+                  "alt": "US 347,140, Fig. 1: Thomson's pivoted electric-welding clamp and spring-pressure arrangement.",
+                  "width": 830,
+                  "height": 1050
+                },
+                {
                   "src": "/patents/figures/us-347140-thomson-welding/figure-2-source-crop-v5.png",
                   "alt": "US 347,140, Fig. 2: side view of the electric-welding clamp.",
                   "width": 450,
                   "height": 1050
+                },
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-3-source-crop-v5.png",
+                  "alt": "US 347,140, Fig. 3: wires in the clamps before abutment.",
+                  "width": 650,
+                  "height": 260
                 },
                 {
                   "src": "/patents/figures/us-347140-thomson-welding/figure-4-source-crop-v2.png",
@@ -44764,10 +44563,34 @@
                   "height": 300
                 },
                 {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-5-source-crop-v6.png",
+                  "alt": "US 347,140, Fig. 5: removable clamp for a selected wire size.",
+                  "width": 260,
+                  "height": 330
+                },
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-6-source-crop-v6.png",
+                  "alt": "US 347,140, Fig. 6: compound clamp with three wire grooves.",
+                  "width": 250,
+                  "height": 350
+                },
+                {
                   "src": "/patents/figures/us-347140-thomson-welding/figure-7-source-crop-v1.png",
                   "alt": "US 347,140, Fig. 7: hand-operated pressure arrangement.",
                   "width": 430,
                   "height": 400
+                },
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-8-source-crop-v5.png",
+                  "alt": "US 347,140, Fig. 8: gravity-pressure arrangement with an adjustable weight.",
+                  "width": 780,
+                  "height": 310
+                },
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-9-source-crop-v5.png",
+                  "alt": "US 347,140, Fig. 9: modified pressure arrangement for the welding apparatus.",
+                  "width": 450,
+                  "height": 560
                 }
               ]
             },
@@ -44932,7 +44755,14 @@
               "href": "#",
               "referenceType": "figure",
               "label": "Preview the source drawing for Figure 1",
-              "figurePreviews": []
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-1-source-crop-v5.png",
+                  "alt": "US 347,140, Fig. 1: Thomson's pivoted electric-welding clamp and spring-pressure arrangement.",
+                  "width": 830,
+                  "height": 1050
+                }
+              ]
             },
             {
               "kind": "text",
@@ -44963,7 +44793,14 @@
               "href": "#",
               "referenceType": "figure",
               "label": "Preview the source drawing for Fig. 3",
-              "figurePreviews": []
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-3-source-crop-v5.png",
+                  "alt": "US 347,140, Fig. 3: wires in the clamps before abutment.",
+                  "width": 650,
+                  "height": 260
+                }
+              ]
             },
             {
               "kind": "text",
@@ -44994,7 +44831,14 @@
               "href": "#",
               "referenceType": "figure",
               "label": "Preview the source drawing for Fig. 5",
-              "figurePreviews": []
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-5-source-crop-v6.png",
+                  "alt": "US 347,140, Fig. 5: removable clamp for a selected wire size.",
+                  "width": 260,
+                  "height": 330
+                }
+              ]
             },
             {
               "kind": "text",
@@ -45006,7 +44850,14 @@
               "href": "#",
               "referenceType": "figure",
               "label": "Preview the source drawing for Fig. 6",
-              "figurePreviews": []
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-6-source-crop-v6.png",
+                  "alt": "US 347,140, Fig. 6: compound clamp with three wire grooves.",
+                  "width": 250,
+                  "height": 350
+                }
+              ]
             },
             {
               "kind": "text",
@@ -45037,7 +44888,14 @@
               "href": "#",
               "referenceType": "figure",
               "label": "Preview the source drawing for Fig. 8",
-              "figurePreviews": []
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-8-source-crop-v5.png",
+                  "alt": "US 347,140, Fig. 8: gravity-pressure arrangement with an adjustable weight.",
+                  "width": 780,
+                  "height": 310
+                }
+              ]
             },
             {
               "kind": "text",
@@ -45049,7 +44907,14 @@
               "href": "#",
               "referenceType": "figure",
               "label": "Preview the source drawing for Fig. 9",
-              "figurePreviews": []
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-9-source-crop-v5.png",
+                  "alt": "US 347,140, Fig. 9: modified pressure arrangement for the welding apparatus.",
+                  "width": 450,
+                  "height": 560
+                }
+              ]
             },
             {
               "kind": "text",
@@ -45204,7 +45069,14 @@
               "href": "#",
               "referenceType": "figure",
               "label": "Preview the source drawing for Fig. 1",
-              "figurePreviews": []
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-1-source-crop-v5.png",
+                  "alt": "US 347,140, Fig. 1: Thomson's pivoted electric-welding clamp and spring-pressure arrangement.",
+                  "width": 830,
+                  "height": 1050
+                }
+              ]
             },
             {
               "kind": "text",
@@ -45245,7 +45117,14 @@
               "href": "#",
               "referenceType": "figure",
               "label": "Preview the source drawing for Fig. 3",
-              "figurePreviews": []
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-3-source-crop-v5.png",
+                  "alt": "US 347,140, Fig. 3: wires in the clamps before abutment.",
+                  "width": 650,
+                  "height": 260
+                }
+              ]
             },
             {
               "kind": "text",
@@ -45257,7 +45136,14 @@
               "href": "#",
               "referenceType": "figure",
               "label": "Preview the source drawing for Fig. 1",
-              "figurePreviews": []
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-1-source-crop-v5.png",
+                  "alt": "US 347,140, Fig. 1: Thomson's pivoted electric-welding clamp and spring-pressure arrangement.",
+                  "width": 830,
+                  "height": 1050
+                }
+              ]
             },
             {
               "kind": "text",
@@ -45293,7 +45179,14 @@
               "href": "#",
               "referenceType": "figure",
               "label": "Preview the source drawing for Fig. 5",
-              "figurePreviews": []
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-5-source-crop-v6.png",
+                  "alt": "US 347,140, Fig. 5: removable clamp for a selected wire size.",
+                  "width": 260,
+                  "height": 330
+                }
+              ]
             },
             {
               "kind": "text",
@@ -45305,7 +45198,14 @@
               "href": "#",
               "referenceType": "figure",
               "label": "Preview the source drawing for Fig. 6",
-              "figurePreviews": []
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-6-source-crop-v6.png",
+                  "alt": "US 347,140, Fig. 6: compound clamp with three wire grooves.",
+                  "width": 250,
+                  "height": 350
+                }
+              ]
             },
             {
               "kind": "text",
@@ -45345,7 +45245,14 @@
               "href": "#",
               "referenceType": "figure",
               "label": "Preview the source drawing for Fig. 1",
-              "figurePreviews": []
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-1-source-crop-v5.png",
+                  "alt": "US 347,140, Fig. 1: Thomson's pivoted electric-welding clamp and spring-pressure arrangement.",
+                  "width": 830,
+                  "height": 1050
+                }
+              ]
             },
             {
               "kind": "text",
@@ -45366,7 +45273,14 @@
               "href": "#",
               "referenceType": "figure",
               "label": "Preview the source drawing for Fig. 8",
-              "figurePreviews": []
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-8-source-crop-v5.png",
+                  "alt": "US 347,140, Fig. 8: gravity-pressure arrangement with an adjustable weight.",
+                  "width": 780,
+                  "height": 310
+                }
+              ]
             },
             {
               "kind": "text",
@@ -45378,7 +45292,14 @@
               "href": "#",
               "referenceType": "figure",
               "label": "Preview the source drawing for Fig. 1",
-              "figurePreviews": []
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-1-source-crop-v5.png",
+                  "alt": "US 347,140, Fig. 1: Thomson's pivoted electric-welding clamp and spring-pressure arrangement.",
+                  "width": 830,
+                  "height": 1050
+                }
+              ]
             },
             {
               "kind": "text",
@@ -45399,7 +45320,14 @@
               "href": "#",
               "referenceType": "figure",
               "label": "Preview the source drawing for Fig. 1",
-              "figurePreviews": []
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-1-source-crop-v5.png",
+                  "alt": "US 347,140, Fig. 1: Thomson's pivoted electric-welding clamp and spring-pressure arrangement.",
+                  "width": 830,
+                  "height": 1050
+                }
+              ]
             },
             {
               "kind": "text",
@@ -45633,7 +45561,14 @@
               "href": "#",
               "referenceType": "figure",
               "label": "Preview the source drawing for Fig. 1",
-              "figurePreviews": []
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-347140-thomson-welding/figure-1-source-crop-v5.png",
+                  "alt": "US 347,140, Fig. 1: Thomson's pivoted electric-welding clamp and spring-pressure arrangement.",
+                  "width": 830,
+                  "height": 1050
+                }
+              ]
             },
             {
               "kind": "text",
@@ -46474,10 +46409,12 @@
       "patents/figures/us-347140-thomson-welding/figure-5-source-crop-v3.png",
       "patents/figures/us-347140-thomson-welding/figure-5-source-crop-v4.png",
       "patents/figures/us-347140-thomson-welding/figure-5-source-crop-v5.png",
+      "patents/figures/us-347140-thomson-welding/figure-5-source-crop-v6.png",
       "patents/figures/us-347140-thomson-welding/figure-6-source-crop-v1.png",
       "patents/figures/us-347140-thomson-welding/figure-6-source-crop-v3.png",
       "patents/figures/us-347140-thomson-welding/figure-6-source-crop-v4.png",
       "patents/figures/us-347140-thomson-welding/figure-6-source-crop-v5.png",
+      "patents/figures/us-347140-thomson-welding/figure-6-source-crop-v6.png",
       "patents/figures/us-347140-thomson-welding/figure-7-source-crop-v1.png",
       "patents/figures/us-347140-thomson-welding/figure-7-source-crop-v3.png",
       "patents/figures/us-347140-thomson-welding/figure-8-source-crop-v1.png",
@@ -47592,7 +47529,7 @@
       "domainTitle": "Marine Ahead/Astern Coupling and Cooling Arrangement",
       "equationName": "Source-Stated Sliding-Shaft Drive Selection",
       "governingEquation": "x_b > 0 \\Rightarrow a\\,a^2\\;\\text{engaged}; \\qquad x_b < 0 \\Rightarrow e^{\\prime},e^2\\;\\text{engage}\\;a^2,c",
-      "engineMethod": "Source-bounded TypeScript apparatus state; no quantitative motor model",
+      "engineMethod": "FrankenSimEngine.stepDaimlerMarineApparatus (fs-mbd prismatic-joint WASM after load; typed TypeScript fallback; normalized source topology only)",
       "controls": [
         {
           "id": "shaftPosition",
@@ -60965,78 +60902,95 @@
     },
     "equations": [
       {
-        "id": "tesla-voltage-grading",
+        "id": "tesla-adjacent-turn-grading",
         "patentId": "us-593138-tesla-coil",
-        "title": "Inter-Turn Voltage Gradient & Dielectric Stress Grading",
+        "title": "Claimed Common Node & Adjacent-Turn Grading",
         "category": "High-Voltage Electromagnetics",
-        "rawLatex": "\\Delta V_{\\text{turn}} = \\frac{V_{\\text{max}}}{N}",
-        "colorizedLatex": "\\textcolor{#059669}{\\Delta V_{\\text{turn}}} = \\frac{\\textcolor{#ef4444}{V_{\\text{max}}}}{\\textcolor{#2563eb}{N}}",
+        "rawLatex": "V(B_0)=V(C_0)=V_{\\mathrm{earth}},\\qquad |V(B_{i+1})-V(B_i)| \\ll |V(B_N)-V_{\\mathrm{earth}}|",
+        "colorizedLatex": "\\textcolor{#059669}{V(B_0)}=\\textcolor{#2563eb}{V(C_0)}=\\textcolor{#0d9488}{V_{\\mathrm{earth}}},\\qquad \\textcolor{#9333ea}{|V(B_{i+1})-V(B_i)|} \\ll \\textcolor{#ef4444}{|V(B_N)-V_{\\mathrm{earth}}|}",
         "plainEnglishSentence": [
           {
             "text": "The "
           },
           {
-            "text": "inter-turn potential gradient",
-            "variableId": "dv_turn"
+            "text": "secondary end nearest the primary",
+            "variableId": "secondary_low"
           },
           {
-            "text": " is minimized by distributing the "
+            "text": ", the "
           },
           {
-            "text": "terminal high voltage",
-            "variableId": "v_max"
+            "text": "adjacent primary end",
+            "variableId": "primary_low"
           },
           {
-            "text": " uniformly across "
+            "text": ", and "
           },
           {
-            "text": "total secondary turns",
-            "variableId": "turn_count"
+            "text": "earth",
+            "variableId": "earth"
           },
           {
-            "text": " wound in a flat spiral."
+            "text": " share one node; the graded winding keeps the "
+          },
+          {
+            "text": "difference between neighboring turns",
+            "variableId": "adjacent_difference"
+          },
+          {
+            "text": " small relative to the total terminal-to-earth difference."
           }
         ],
         "variables": [
           {
-            "id": "dv_turn",
-            "symbol": "\\Delta V_{\\text{turn}}",
-            "name": "Inter-Turn Potential Difference",
+            "id": "secondary_low",
+            "symbol": "V(B_0)",
+            "name": "Adjacent Secondary-End Potential",
             "color": "emerald",
-            "role": "Voltage drop between adjacent concentric winding turns",
+            "role": "Potential at the secondary terminal physically adjacent to the primary",
             "unit": "Volts (V)",
             "dimension": "[M L^2 T^-3 I^-1]",
-            "explanation": "By winding the high-voltage secondary as a flat spiral, Tesla keeps adjacent convolutions at minimal voltage differences, preventing insulation puncture."
+            "explanation": "Claims 1 through 3 electrically connect this terminal to the adjacent primary terminal and, in use, to earth."
           },
           {
-            "id": "v_max",
-            "symbol": "V_{\\text{max}}",
-            "name": "Peak Secondary Terminal Potential",
-            "color": "crimson",
-            "role": "Maximum output potential developed at the outer elevated secondary terminal",
-            "unit": "Volts (V)",
-            "dimension": "[M L^2 T^-3 I^-1]",
-            "explanation": "The outermost convolution attains several hundred thousand to millions of volts relative to earth."
-          },
-          {
-            "id": "turn_count",
-            "symbol": "N",
-            "name": "Total Secondary Winding Turns",
+            "id": "primary_low",
+            "symbol": "V(C_0)",
+            "name": "Adjacent Primary-End Potential",
             "color": "sapphire",
-            "role": "Number of helical or spiral convolutions comprising the secondary inductor",
-            "unit": "Turns (dimensionless)",
-            "dimension": "[1]",
-            "explanation": "A large number of finely spaced turns progressively steps up voltage without allowing concentrated dielectric stress."
+            "role": "Potential at the primary terminal named in the claimed common connection",
+            "unit": "Volts (V)",
+            "dimension": "[M L^2 T^-3 I^-1]",
+            "explanation": "This is a topology identity from the claimed connection, not a numerical primary-voltage estimate."
+          },
+          {
+            "id": "earth",
+            "symbol": "V_{\\mathrm{earth}}",
+            "name": "Earth Reference Potential",
+            "color": "teal",
+            "role": "The earth connection required while the transformer is in use",
+            "unit": "Volts (V)",
+            "dimension": "[M L^2 T^-3 I^-1]",
+            "explanation": "The schematic and 3D model render a continuous conductor from the common node to an earth terminal."
+          },
+          {
+            "id": "adjacent_difference",
+            "symbol": "|V(B_{i+1})-V(B_i)|",
+            "name": "Adjacent-Turn Potential Difference",
+            "color": "amethyst",
+            "role": "Local potential difference between neighboring secondary convolutions",
+            "unit": "Volts (V)",
+            "dimension": "[M L^2 T^-3 I^-1]",
+            "explanation": "The source describes this difference as comparatively small; it does not print a uniform volts-per-turn value or a turn count from which one could be invented."
           }
         ],
-        "pedagogicalNote": "In US Patent 593,138, Tesla solves high-voltage insulation by geometry: the inner end near the primary is grounded, while potential climbs radially outward away from ground and the primary coil.",
-        "claimRef": 2,
-        "historicalSignificance": "Claim 2 explicitly protects the flat spiral geometry with the inner terminal connected to the primary and to earth."
+        "pedagogicalNote": "This relation separates what the grant fixes exactly (the common electrical node) from what it describes qualitatively (small adjacent-turn differences). Absolute voltages remain underdetermined.",
+        "claimRef": 1,
+        "historicalSignificance": "Claim 1 establishes the common-node connection; Claims 2 and 3 add the flat or nested spiral geometry that moves the remote high-potential terminal away from the primary."
       },
       {
         "id": "tesla-quarter-wave-standing-wave",
         "patentId": "us-593138-tesla-coil",
-        "title": "Quarter-Wave Resonant Standing Wave Distribution",
+        "title": "Quarter-Wave Stationary-Wave Distribution",
         "category": "High-Frequency Resonance",
         "rawLatex": "\\ell \\approx \\frac{\\lambda}{4} = \\frac{v_p}{4 f_0}",
         "colorizedLatex": "\\textcolor{#059669}{\\ell} \\approx \\frac{\\textcolor{#9333ea}{\\lambda}}{4} = \\frac{\\textcolor{#0d9488}{v_p}}{4 \\textcolor{#2563eb}{f_0}}",
@@ -61045,7 +60999,7 @@
             "text": "The "
           },
           {
-            "text": "physical secondary wire length",
+            "text": "developed secondary wire length",
             "variableId": "wire_len"
           },
           {
@@ -61066,7 +61020,7 @@
             "text": " divided by four times the "
           },
           {
-            "text": "fundamental resonant frequency",
+            "text": "electrical-disturbance frequency",
             "variableId": "res_freq"
           },
           {
@@ -61077,7 +61031,7 @@
           {
             "id": "wire_len",
             "symbol": "\\ell",
-            "name": "Secondary Wire Axial Length",
+            "name": "Developed Secondary Wire Length",
             "color": "emerald",
             "role": "Total developed wire length of the secondary spiral",
             "unit": "Meters (m)",
@@ -61092,106 +61046,70 @@
             "role": "Spatial wavelength of the oscillatory electrical impulse",
             "unit": "Meters (m)",
             "dimension": "[L]",
-            "explanation": "Governed by the LC resonant period of the primary tank discharge."
+            "explanation": "Tesla's printed example gives a 200-mile electrical-disturbance wavelength; the source does not provide a primary LC model from which to reconstruct it."
           },
           {
             "id": "phase_vel",
             "symbol": "v_p",
             "name": "Phase Propagation Velocity",
             "color": "teal",
-            "role": "Velocity of electromagnetic wave propagation along the helical conductor",
+            "role": "Velocity of electrical-disturbance propagation through the secondary circuit",
             "unit": "Meters per second (m/s)",
             "dimension": "[L T^-1]",
-            "explanation": "Close to the speed of light ($c \\approx 3 \\times 10^8\\text{ m/s}$) modified by coil geometry and dielectric loading."
+            "explanation": "Tesla's numerical example uses 185,000 miles per second. The shared kernel preserves that printed value rather than substituting a modern coil-velocity estimate."
           },
           {
             "id": "res_freq",
             "symbol": "f_0",
-            "name": "Fundamental Resonant Frequency",
+            "name": "Electrical Disturbance Frequency",
             "color": "sapphire",
-            "role": "Natural oscillatory frequency of the tuned transformer",
+            "role": "Frequency used in the source's printed stationary-wave example",
             "unit": "Hertz (Hz)",
             "dimension": "[T^-1]",
-            "explanation": "Typically 50 kHz to 500 kHz in Tesla's high-power experimental stations."
+            "explanation": "Tesla's worked example uses 925 disturbances per second. The model varies this source variable without relabelling it as a later experimental station's tank frequency."
           }
         ],
-        "pedagogicalNote": "Under quarter-wave resonance, a standing wave forms: a current antinode and voltage node exist at the grounded base, while a voltage antinode and zero current exist at the elevated terminal.",
+        "pedagogicalNote": "The source fixes the terminal-potential endpoints: zero at the common primary / earth end and maximum at the remote end. It does not print current magnitude, impedance, loss, or load data.",
         "claimRef": 1,
-        "historicalSignificance": "The quarter-wave resonance principle formed the basis of Tesla's Colorado Springs magnifying transmitter experiments in 1899."
+        "historicalSignificance": "The grant prints a directly checkable example: 925 disturbances per second at 185,000 miles per second gives a 200-mile wavelength and a 50-mile quarter-wave secondary."
       }
     ],
     "physics": {
       "domain": "electromagnetics_flux",
-      "domainTitle": "Interpretive High-Potential Transformer Visualization",
+      "domainTitle": "Distributed-Wave Transformer Geometry",
       "equationName": "Source-Described Quarter-Wave Secondary",
-      "governingEquation": "l \\approx \\lambda / 4",
-      "engineMethod": "FrankenSimEngine.stepTeslaCoil (interpretive host fallback)",
+      "governingEquation": "\\lambda=v/f; \\quad \\beta l=2\\pi f l/v; \\quad l_{1/4}=v/(4f)",
+      "engineMethod": "stepTeslaTransformerSi / fs-flux quarter-wave WASM",
       "controls": [
         {
-          "id": "primaryCap",
-          "label": "Primary Tank Capacitance",
-          "min": 10,
-          "max": 90,
-          "step": 5,
-          "defaultValue": 45,
-          "unit": "nF"
-        },
-        {
-          "id": "couplingK",
-          "label": "Coil Magnetic Coupling (k)",
-          "min": 0.08,
-          "max": 0.35,
-          "step": 0.01,
-          "defaultValue": 0.18,
-          "unit": "ratio"
-        },
-        {
-          "id": "sparkGapDistanceMm",
-          "label": "Spark Gap Distance",
-          "min": 2,
-          "max": 30,
-          "step": 1,
-          "defaultValue": 12,
-          "unit": "mm"
-        },
-        {
-          "id": "inputVoltageKv",
-          "label": "Input Voltage",
-          "min": 5,
-          "max": 30,
-          "step": 1,
-          "defaultValue": 15,
-          "unit": "kV"
-        },
-        {
-          "id": "secondaryTurns",
-          "label": "Secondary Turns",
-          "min": 400,
-          "max": 1400,
-          "step": 50,
-          "defaultValue": 850,
-          "unit": "N_s"
-        },
-        {
-          "id": "sparkRateHz",
-          "label": "Rotary Spark Rate",
-          "min": 30,
-          "max": 400,
-          "step": 10,
-          "defaultValue": 120,
+          "id": "disturbanceFrequencyHz",
+          "label": "Electrical Disturbance Frequency",
+          "min": 500,
+          "max": 1500,
+          "step": 25,
+          "defaultValue": 925,
           "unit": "Hz"
         },
         {
-          "id": "toploadCapacitancePf",
-          "label": "Topload Capacitance",
-          "min": 10,
-          "max": 80,
-          "step": 5,
-          "defaultValue": 35,
-          "unit": "pF"
+          "id": "secondaryLengthMiles",
+          "label": "Developed Secondary Wire Length",
+          "min": 25,
+          "max": 75,
+          "step": 1,
+          "defaultValue": 50,
+          "unit": "mi"
+        },
+        {
+          "id": "claim1CommonNodeConnected",
+          "label": "Claim 1 Primary / Secondary / Earth Node",
+          "min": 0,
+          "max": 1,
+          "step": 1,
+          "defaultValue": 1,
+          "unit": ""
         }
       ],
-      "pedagogicalInsight": "US 593,138 describes a secondary approximately one-quarter of the electrical disturbance wavelength, with the remote terminal at maximum potential. The interactive numbers are an interpretive host model, not a reconstruction of a measured historic apparatus."
+      "pedagogicalInsight": "US 593,138 prints a checkable example: at 925 Hz and 185,000 mi/s, the wavelength is 200 mi and the quarter-wave secondary is 50 mi. The shared fs-flux kernel computes that distributed-wave geometry; it does not invent voltage, coupling, loss, Q, or discharge length."
     },
     "sourceVisualization": {
       "spatialComponent": "TeslaCoil3D",
@@ -76490,41 +76408,68 @@
       }
     ],
     "physics": {
-      "domain": "thermodynamics_transport",
-      "domainTitle": "Supersonic Isentropic de Laval Expansion & Thrust Kinetics",
-      "equationName": "Nozzle Exhaust Velocity & Specific Impulse",
-      "governingEquation": "v_e = \\sqrt{\\frac{2\\gamma}{\\gamma - 1} R T_c \\left[1 - \\left(\\frac{P_e}{P_c}\\right)^{\\frac{\\gamma - 1}{\\gamma}}\\right]} \\quad \\text{and} \\quad F = \\dot{m} v_e",
-      "engineMethod": "FrankenSimEngine.stepGoddardRocket",
+      "domain": "mechanical_kinematics",
+      "domainTitle": "Source-Bounded Rigid-Body Spin, Staging Sequence, and Gyro Isolation",
+      "equationName": "Claim 2 Geometry and Torque-Free Spin Kinematics",
+      "governingEquation": "\\omega = \\frac{2\\pi N}{60}, \\qquad L \\ge 3D, \\qquad \\omega_{\\mathrm{support}} = 0 \\; \\text{(ideal, spinning gyro)}",
+      "engineMethod": "FrankenSimEngine.stepGoddardApparatus (fs-mbd torque-free rigid-body WASM after load; typed TypeScript fallback; source-bounded no-thrust model)",
       "controls": [
         {
-          "id": "chamberPressure",
-          "label": "Chamber Pressure (Pc)",
-          "min": 100,
-          "max": 600,
-          "step": 10,
-          "defaultValue": 350,
-          "unit": "psi"
-        },
-        {
-          "id": "expansionRatio",
-          "label": "Nozzle Expansion Ratio (Ae/At)",
-          "min": 2,
-          "max": 8,
+          "id": "tubeLengthRatio",
+          "label": "Tapered Tube Length / Diameter",
+          "min": 1.5,
+          "max": 6,
           "step": 0.1,
-          "defaultValue": 3.5,
-          "unit": "ratio"
+          "defaultValue": 4.5,
+          "unit": "L/D"
         },
         {
-          "id": "flightAltitudeMiles",
-          "label": "Flight Altitude",
+          "id": "primarySpinRpm",
+          "label": "Declared Primary Spin",
           "min": 0,
-          "max": 200,
+          "max": 300,
+          "step": 5,
+          "defaultValue": 120,
+          "unit": "rpm"
+        },
+        {
+          "id": "gyroSpinRpm",
+          "label": "Declared Gyroscope Spin",
+          "min": 0,
+          "max": 12000,
+          "step": 250,
+          "defaultValue": 6000,
+          "unit": "rpm"
+        },
+        {
+          "id": "auxiliaryReleaseFraction",
+          "label": "Auxiliary Release from Tube 24",
+          "min": 0,
+          "max": 1,
+          "step": 0.02,
+          "defaultValue": 0,
+          "unit": "fraction"
+        },
+        {
+          "id": "primaryChargeConsumed",
+          "label": "Primary Charge Substantially Consumed",
+          "min": 0,
+          "max": 1,
           "step": 1,
-          "defaultValue": 18,
-          "unit": "mi"
+          "defaultValue": 0,
+          "unit": "state"
+        },
+        {
+          "id": "gyroEnabled",
+          "label": "Claim 7 Gyroscope Present",
+          "min": 0,
+          "max": 1,
+          "step": 1,
+          "defaultValue": 1,
+          "unit": "state"
         }
       ],
-      "pedagogicalInsight": "Converging-diverging de Laval nozzle geometry accelerates subsonic combustion gases past the sonic throat ($M=1$) into supersonic exhaust, transferring thermal enthalpy into axial kinetic momentum."
+      "pedagogicalInsight": "The 1914 grant is a solid-charge staged apparatus: frame bearings permit pre-launch spin, an auxiliary rocket remains nested until the main charge is substantially consumed, and a gyroscope ideally prevents the camera support from sharing the rotating head's world rate. RPM values are declared teaching inputs because the source prints no numerical speeds."
     },
     "sourceVisualization": {
       "spatialComponent": "GoddardRocket3D",
@@ -118010,7 +117955,32 @@
           "inlines": [
             {
               "kind": "text",
-              "text": "Such a scheme suffers from the fact that it links the material properties to the electronic properties thus limiting the size of the dipole moment which may be created. FIG. 1 details means of producing particles, either bichromal as might be used in an electrostatic display, or monochromal as might be used in a dielectrophoretic display, with an implanted dipole moment."
+              "text": "Such a scheme suffers from the fact that it links the material properties to the electronic properties thus limiting the size of the dipole moment which may be created. "
+            },
+            {
+              "kind": "reference",
+              "text": "FIG. 1",
+              "href": "#eink-source-sheet-1",
+              "referenceType": "figure",
+              "label": "Particle-fabrication embodiments spanning source drawing sheets 1 and 2",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-1-source-crop-v1.png",
+                  "alt": "FIG. 1: Particle-fabrication embodiments spanning source drawing sheets 1 and 2 (source drawing sheet 1 of 16)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-2-source-crop-v1.png",
+                  "alt": "FIG. 1: Particle-fabrication embodiments spanning source drawing sheets 1 and 2 (source drawing sheet 2 of 16)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " details means of producing particles, either bichromal as might be used in an electrostatic display, or monochromal as might be used in a dielectrophoretic display, with an implanted dipole moment."
             }
           ]
         },
@@ -118033,7 +118003,26 @@
           "inlines": [
             {
               "kind": "text",
-              "text": "Referring to FIG. 3B a microcapsule 120 may contain positively charged particles of one color 210 and negatively charged particles of another color 220 such that application of an electric field to said electrodes causes a migration of the one color or the other color, depending on the polarity of the field, toward the surface of said microcapsule and thus effecting a perceived color change. Such a system constitutes a microencapsulated electrophoretic system."
+              "text": "Referring to "
+            },
+            {
+              "kind": "reference",
+              "text": "FIG. 3B",
+              "href": "#eink-source-sheet-4",
+              "referenceType": "figure",
+              "label": "Two-color electrophoretic microcapsule on source drawing sheet 4",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-4-source-crop-v1.png",
+                  "alt": "FIG. 3B: Two-color electrophoretic microcapsule on source drawing sheet 4 (source drawing sheet 4 of 16)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " a microcapsule 120 may contain positively charged particles of one color 210 and negatively charged particles of another color 220 such that application of an electric field to said electrodes causes a migration of the one color or the other color, depending on the polarity of the field, toward the surface of said microcapsule and thus effecting a perceived color change. Such a system constitutes a microencapsulated electrophoretic system."
             }
           ]
         },
@@ -118046,8 +118035,191 @@
           "kind": "paragraph",
           "inlines": [
             {
+              "kind": "reference",
+              "text": "FIGS. 1A, 1B, 1C, 1D, 1E, and 1F",
+              "href": "#eink-source-sheet-1",
+              "referenceType": "figure",
+              "label": "Permanent-dipole particle fabrication",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-1-source-crop-v1.png",
+                  "alt": "FIGS. 1A, 1B, 1C, 1D, 1E, and 1F: Permanent-dipole particle fabrication (source drawing sheet 1 of 16)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-2-source-crop-v1.png",
+                  "alt": "FIGS. 1A, 1B, 1C, 1D, 1E, and 1F: Permanent-dipole particle fabrication (source drawing sheet 2 of 16)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
               "kind": "text",
-              "text": "FIGS. 1A, 1B, 1C, 1D, 1E, and 1F are schematic representations of means of fabricating particles with a permanent dipole moment. FIGS. 2A, 2B and 2C are schematic representations of means of microencapsulation. FIGS. 3A, 3B, 3C, 3D, and 3E are schematic representations of microencapsulated electronically addressable contrast media systems suitable for top to bottom addressing. FIGS. 4A through 4M are schematic representations of systems suitable for bottom addressing. FIGS. 5A through 6E describe dielectrophoretic and frequency-dependent systems. FIGS. 7 through 10 depict electronic inks, printing systems, and printed structures. FIGS. 11 through 14 depict displays, an electrostatic motor, a watch, and a spin computer."
+              "text": " are schematic representations of means of fabricating particles with a permanent dipole moment. "
+            },
+            {
+              "kind": "reference",
+              "text": "FIGS. 2A, 2B and 2C",
+              "href": "#eink-source-sheet-3",
+              "referenceType": "figure",
+              "label": "Microencapsulation methods",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-3-source-crop-v1.png",
+                  "alt": "FIGS. 2A, 2B and 2C: Microencapsulation methods (source drawing sheet 3 of 16)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " are schematic representations of means of microencapsulation. "
+            },
+            {
+              "kind": "reference",
+              "text": "FIGS. 3A, 3B, 3C, 3D, and 3E",
+              "href": "#eink-source-sheet-4",
+              "referenceType": "figure",
+              "label": "Top-to-bottom electronically addressable contrast-media systems",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-4-source-crop-v1.png",
+                  "alt": "FIGS. 3A, 3B, 3C, 3D, and 3E: Top-to-bottom electronically addressable contrast-media systems (source drawing sheet 4 of 16)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " are schematic representations of microencapsulated electronically addressable contrast media systems suitable for top to bottom addressing. "
+            },
+            {
+              "kind": "reference",
+              "text": "FIGS. 4A through 4M",
+              "href": "#eink-source-sheet-5",
+              "referenceType": "figure",
+              "label": "Bottom-addressed contrast-media systems",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-5-source-crop-v1.png",
+                  "alt": "FIGS. 4A through 4M: Bottom-addressed contrast-media systems (source drawing sheet 5 of 16)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-6-source-crop-v1.png",
+                  "alt": "FIGS. 4A through 4M: Bottom-addressed contrast-media systems (source drawing sheet 6 of 16)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-7-source-crop-v1.png",
+                  "alt": "FIGS. 4A through 4M: Bottom-addressed contrast-media systems (source drawing sheet 7 of 16)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " are schematic representations of systems suitable for bottom addressing. "
+            },
+            {
+              "kind": "reference",
+              "text": "FIGS. 5A through 6E",
+              "href": "#eink-source-sheet-8",
+              "referenceType": "figure",
+              "label": "Dielectrophoretic and frequency-dependent systems",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-8-source-crop-v1.png",
+                  "alt": "FIGS. 5A through 6E: Dielectrophoretic and frequency-dependent systems (source drawing sheet 8 of 16)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-9-source-crop-v1.png",
+                  "alt": "FIGS. 5A through 6E: Dielectrophoretic and frequency-dependent systems (source drawing sheet 9 of 16)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " describe dielectrophoretic and frequency-dependent systems. "
+            },
+            {
+              "kind": "reference",
+              "text": "FIGS. 7 through 10",
+              "href": "#eink-source-sheet-10",
+              "referenceType": "figure",
+              "label": "Electronic inks, printing systems, and printed structures",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-10-source-crop-v1.png",
+                  "alt": "FIGS. 7 through 10: Electronic inks, printing systems, and printed structures (source drawing sheet 10 of 16)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-11-source-crop-v1.png",
+                  "alt": "FIGS. 7 through 10: Electronic inks, printing systems, and printed structures (source drawing sheet 11 of 16)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-12-source-crop-v1.png",
+                  "alt": "FIGS. 7 through 10: Electronic inks, printing systems, and printed structures (source drawing sheet 12 of 16)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-13-source-crop-v1.png",
+                  "alt": "FIGS. 7 through 10: Electronic inks, printing systems, and printed structures (source drawing sheet 13 of 16)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " depict electronic inks, printing systems, and printed structures. "
+            },
+            {
+              "kind": "reference",
+              "text": "FIGS. 11 through 14",
+              "href": "#eink-source-sheet-14",
+              "referenceType": "figure",
+              "label": "Displays, electrostatic motor, watch, and spin computer",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-14-source-crop-v1.png",
+                  "alt": "FIGS. 11 through 14: Displays, electrostatic motor, watch, and spin computer (source drawing sheet 14 of 16)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-15-source-crop-v1.png",
+                  "alt": "FIGS. 11 through 14: Displays, electrostatic motor, watch, and spin computer (source drawing sheet 15 of 16)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-16-source-crop-v1.png",
+                  "alt": "FIGS. 11 through 14: Displays, electrostatic motor, watch, and spin computer (source drawing sheet 16 of 16)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " depict displays, an electrostatic motor, a watch, and a spin computer."
             }
           ]
         },
@@ -118061,7 +118233,26 @@
           "inlines": [
             {
               "kind": "text",
-              "text": "Referring to FIG. 1A atomizing nozzles 1 are loaded with materials 12 and 13 which may be differently colored. A first atomizing nozzle may be held at a positive potential 3 and a second nozzle may be held at a negative potential 4. Such potentials aid in atomization and impart a charge to droplets which form from said nozzles producing positively charge droplets 5 and negatively charged droplets 6. Such opposite charged droplets are attracted to each other electrostatically forming an overall neutral pair."
+              "text": "Referring to "
+            },
+            {
+              "kind": "reference",
+              "text": "FIG. 1A",
+              "href": "#eink-source-sheet-1",
+              "referenceType": "figure",
+              "label": "Oppositely charged atomized droplets forming a neutral particle pair",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-1-source-crop-v1.png",
+                  "alt": "FIG. 1A: Oppositely charged atomized droplets forming a neutral particle pair (source drawing sheet 1 of 16)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " atomizing nozzles 1 are loaded with materials 12 and 13 which may be differently colored. A first atomizing nozzle may be held at a positive potential 3 and a second nozzle may be held at a negative potential 4. Such potentials aid in atomization and impart a charge to droplets which form from said nozzles producing positively charge droplets 5 and negatively charged droplets 6. Such opposite charged droplets are attracted to each other electrostatically forming an overall neutral pair."
             }
           ]
         },
@@ -118079,7 +118270,26 @@
           "inlines": [
             {
               "kind": "text",
-              "text": "Referring to FIG. 3B a microcapsule 120 may contain positively charged particles of one color 210 and negatively charged particles of another color 220 such that application of an electric field to said electrodes causes a migration of the one color or the other color, depending on the polarity of the field, toward the surface of said microcapsule and thus effecting a perceived color change. Such a system constitutes a microencapsulated electrophoretic system."
+              "text": "Referring to "
+            },
+            {
+              "kind": "reference",
+              "text": "FIG. 3B",
+              "href": "#eink-source-sheet-4",
+              "referenceType": "figure",
+              "label": "Two-color electrophoretic microcapsule on source drawing sheet 4",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-4-source-crop-v1.png",
+                  "alt": "FIG. 3B: Two-color electrophoretic microcapsule on source drawing sheet 4 (source drawing sheet 4 of 16)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " a microcapsule 120 may contain positively charged particles of one color 210 and negatively charged particles of another color 220 such that application of an electric field to said electrodes causes a migration of the one color or the other color, depending on the polarity of the field, toward the surface of said microcapsule and thus effecting a perceived color change. Such a system constitutes a microencapsulated electrophoretic system."
             }
           ]
         },
@@ -118088,7 +118298,45 @@
           "inlines": [
             {
               "kind": "text",
-              "text": "Referring to FIGS. 4A and B the chemistry described in reference to FIGS. 3C-D may be employed with in-plane electrodes such that said chemistry undergoes a color switch from one color state to a second color state upon application of an electric field to in-plane electrodes 270 and 280."
+              "text": "Referring to "
+            },
+            {
+              "kind": "reference",
+              "text": "FIGS. 4A and B",
+              "href": "#eink-source-sheet-5",
+              "referenceType": "figure",
+              "label": "Bottom-addressed capsule arrangements",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-5-source-crop-v1.png",
+                  "alt": "FIGS. 4A and B: Bottom-addressed capsule arrangements (source drawing sheet 5 of 16)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " the chemistry described in reference to "
+            },
+            {
+              "kind": "reference",
+              "text": "FIGS. 3C-D",
+              "href": "#eink-source-sheet-4",
+              "referenceType": "figure",
+              "label": "Alternative electrophoretic capsule states",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-4-source-crop-v1.png",
+                  "alt": "FIGS. 3C-D: Alternative electrophoretic capsule states (source drawing sheet 4 of 16)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " may be employed with in-plane electrodes such that said chemistry undergoes a color switch from one color state to a second color state upon application of an electric field to in-plane electrodes 270 and 280."
             }
           ]
         },
@@ -118106,7 +118354,26 @@
           "inlines": [
             {
               "kind": "text",
-              "text": "Referring to FIG. 14, a spin computer is depicted in which dipoles 912 with dipole moment 914 are situated at the nodes of row 920 and column 930 address lines. Such a computer works by means of initially addressing said dipoles to an initial condition and then allowing dipole interactions to produce a final state of the system as a whole."
+              "text": "Referring to "
+            },
+            {
+              "kind": "reference",
+              "text": "FIG. 14",
+              "href": "#eink-source-sheet-16",
+              "referenceType": "figure",
+              "label": "Dipole-node spin computer",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6120588-eink/sheet-16-source-crop-v1.png",
+                  "alt": "FIG. 14: Dipole-node spin computer (source drawing sheet 16 of 16)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": ", a spin computer is depicted in which dipoles 912 with dipole moment 914 are situated at the nodes of row 920 and column 930 address lines. Such a computer works by means of initially addressing said dipoles to an initial condition and then allowing dipole interactions to produce a final state of the system as a whole."
             }
           ]
         },
@@ -118708,8 +118975,24 @@
       "patents/figures/us-6120588-eink/fig-2-source-crop-v1.png",
       "patents/figures/us-6120588-eink/fig-3-source-crop-v1.png",
       "patents/figures/us-6120588-eink/sheet-1-03.png",
+      "patents/figures/us-6120588-eink/sheet-1-source-crop-v1.png",
+      "patents/figures/us-6120588-eink/sheet-10-source-crop-v1.png",
+      "patents/figures/us-6120588-eink/sheet-11-source-crop-v1.png",
+      "patents/figures/us-6120588-eink/sheet-12-source-crop-v1.png",
+      "patents/figures/us-6120588-eink/sheet-13-source-crop-v1.png",
+      "patents/figures/us-6120588-eink/sheet-14-source-crop-v1.png",
+      "patents/figures/us-6120588-eink/sheet-15-source-crop-v1.png",
+      "patents/figures/us-6120588-eink/sheet-16-source-crop-v1.png",
       "patents/figures/us-6120588-eink/sheet-2-04.png",
+      "patents/figures/us-6120588-eink/sheet-2-source-crop-v1.png",
       "patents/figures/us-6120588-eink/sheet-3-05.png",
+      "patents/figures/us-6120588-eink/sheet-3-source-crop-v1.png",
+      "patents/figures/us-6120588-eink/sheet-4-source-crop-v1.png",
+      "patents/figures/us-6120588-eink/sheet-5-source-crop-v1.png",
+      "patents/figures/us-6120588-eink/sheet-6-source-crop-v1.png",
+      "patents/figures/us-6120588-eink/sheet-7-source-crop-v1.png",
+      "patents/figures/us-6120588-eink/sheet-8-source-crop-v1.png",
+      "patents/figures/us-6120588-eink/sheet-9-source-crop-v1.png",
       "patents/transcripts/us-6120588-eink-reviewed.txt"
     ],
     "withheldAssets": []
@@ -120611,7 +120894,314 @@
             },
             {
               "kind": "text",
-              "text": " is a perspective view of a robotic surgical arm cart system; FIGS. 2A-C show a manipulator and its remote-center linkage; FIGS. 3 and 3A show exemplary cart structures; FIG. 4 shows an exemplary tool; FIGS. 4A-B show alternative drive systems; FIGS. 5A-H show different end-effectors; FIG. 6 shows the tool interface; FIGS. 7A-E and 7G-L show adapters, holders, drives, and contacts; FIG. 8 shows wiring; FIGS. 8A-B show the master console; FIGS. 9-10 show tool-change signal and software paths; FIGS. 11-13 show engagement state logic; FIGS. 14A-C show mounting; and FIG. 15 shows compatibility verification."
+              "text": " is a perspective view of a robotic surgical arm cart system; "
+            },
+            {
+              "kind": "reference",
+              "text": "FIGS. 2A-C",
+              "href": "#figure-3",
+              "referenceType": "figure",
+              "label": "Manipulator linkage and remote-center construction",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6331181-davinci/fig-3-source-crop-v1.png",
+                  "alt": "FIGS. 2A-C: Manipulator linkage and remote-center construction",
+                  "width": 1856,
+                  "height": 2385
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " show a manipulator and its remote-center linkage; "
+            },
+            {
+              "kind": "reference",
+              "text": "FIGS. 3 and 3A",
+              "href": "#davinci-source-sheet-5",
+              "referenceType": "figure",
+              "label": "Exemplary robotic-arm cart structures",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-5-source-crop-v1.png",
+                  "alt": "FIGS. 3 and 3A: Exemplary robotic-arm cart structures (source drawing sheet 5 of 22)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-6-source-crop-v1.png",
+                  "alt": "FIGS. 3 and 3A: Exemplary robotic-arm cart structures (source drawing sheet 6 of 22)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " show exemplary cart structures; "
+            },
+            {
+              "kind": "reference",
+              "text": "FIG. 4",
+              "href": "#davinci-source-sheet-7",
+              "referenceType": "figure",
+              "label": "Exemplary detachable surgical tool",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-7-source-crop-v1.png",
+                  "alt": "FIG. 4: Exemplary detachable surgical tool (source drawing sheet 7 of 22)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " shows an exemplary tool; "
+            },
+            {
+              "kind": "reference",
+              "text": "FIGS. 4A-B",
+              "href": "#davinci-source-sheet-7",
+              "referenceType": "figure",
+              "label": "Alternative tool-drive systems",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-7-source-crop-v1.png",
+                  "alt": "FIGS. 4A-B: Alternative tool-drive systems (source drawing sheet 7 of 22)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-8-source-crop-v1.png",
+                  "alt": "FIGS. 4A-B: Alternative tool-drive systems (source drawing sheet 8 of 22)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " show alternative drive systems; "
+            },
+            {
+              "kind": "reference",
+              "text": "FIGS. 5A-H",
+              "href": "#davinci-source-sheet-9",
+              "referenceType": "figure",
+              "label": "Alternative surgical end effectors",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-9-source-crop-v1.png",
+                  "alt": "FIGS. 5A-H: Alternative surgical end effectors (source drawing sheet 9 of 22)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-10-source-crop-v1.png",
+                  "alt": "FIGS. 5A-H: Alternative surgical end effectors (source drawing sheet 10 of 22)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " show different end-effectors; "
+            },
+            {
+              "kind": "reference",
+              "text": "FIG. 6",
+              "href": "#davinci-source-sheet-11",
+              "referenceType": "figure",
+              "label": "Mechanical and electrical tool interface",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-11-source-crop-v1.png",
+                  "alt": "FIG. 6: Mechanical and electrical tool interface (source drawing sheet 11 of 22)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " shows the tool interface; "
+            },
+            {
+              "kind": "reference",
+              "text": "FIGS. 7A-E and 7G-L",
+              "href": "#davinci-source-sheet-11",
+              "referenceType": "figure",
+              "label": "Adapters, holders, driven elements, and electrical contacts",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-11-source-crop-v1.png",
+                  "alt": "FIGS. 7A-E and 7G-L: Adapters, holders, driven elements, and electrical contacts (source drawing sheet 11 of 22)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-12-source-crop-v1.png",
+                  "alt": "FIGS. 7A-E and 7G-L: Adapters, holders, driven elements, and electrical contacts (source drawing sheet 12 of 22)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-13-source-crop-v1.png",
+                  "alt": "FIGS. 7A-E and 7G-L: Adapters, holders, driven elements, and electrical contacts (source drawing sheet 13 of 22)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " show adapters, holders, drives, and contacts; "
+            },
+            {
+              "kind": "reference",
+              "text": "FIG. 8",
+              "href": "#davinci-source-sheet-14",
+              "referenceType": "figure",
+              "label": "Tool-interface wiring schematic",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-14-source-crop-v1.png",
+                  "alt": "FIG. 8: Tool-interface wiring schematic (source drawing sheet 14 of 22)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " shows wiring; "
+            },
+            {
+              "kind": "reference",
+              "text": "FIGS. 8A-B",
+              "href": "#davinci-source-sheet-15",
+              "referenceType": "figure",
+              "label": "Master surgeon console views",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-15-source-crop-v1.png",
+                  "alt": "FIGS. 8A-B: Master surgeon console views (source drawing sheet 15 of 22)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-16-source-crop-v1.png",
+                  "alt": "FIGS. 8A-B: Master surgeon console views (source drawing sheet 16 of 22)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " show the master console; "
+            },
+            {
+              "kind": "reference",
+              "text": "FIGS. 9-10",
+              "href": "#davinci-source-sheet-15",
+              "referenceType": "figure",
+              "label": "Tool-change signal path and software flow",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-15-source-crop-v1.png",
+                  "alt": "FIGS. 9-10: Tool-change signal path and software flow (source drawing sheet 15 of 22)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-16-source-crop-v1.png",
+                  "alt": "FIGS. 9-10: Tool-change signal path and software flow (source drawing sheet 16 of 22)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-17-source-crop-v1.png",
+                  "alt": "FIGS. 9-10: Tool-change signal path and software flow (source drawing sheet 17 of 22)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " show tool-change signal and software paths; "
+            },
+            {
+              "kind": "reference",
+              "text": "FIGS. 11-13",
+              "href": "#davinci-source-sheet-18",
+              "referenceType": "figure",
+              "label": "Tool-engagement sensing and operating-state logic",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-18-source-crop-v1.png",
+                  "alt": "FIGS. 11-13: Tool-engagement sensing and operating-state logic (source drawing sheet 18 of 22)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-19-source-crop-v1.png",
+                  "alt": "FIGS. 11-13: Tool-engagement sensing and operating-state logic (source drawing sheet 19 of 22)",
+                  "width": 928,
+                  "height": 1364
+                },
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-20-source-crop-v1.png",
+                  "alt": "FIGS. 11-13: Tool-engagement sensing and operating-state logic (source drawing sheet 20 of 22)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " show engagement state logic; "
+            },
+            {
+              "kind": "reference",
+              "text": "FIGS. 14A-C",
+              "href": "#davinci-source-sheet-21",
+              "referenceType": "figure",
+              "label": "Sterile-adapter and tool mounting sequence",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-21-source-crop-v1.png",
+                  "alt": "FIGS. 14A-C: Sterile-adapter and tool mounting sequence (source drawing sheet 21 of 22)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " show mounting; and "
+            },
+            {
+              "kind": "reference",
+              "text": "FIG. 15",
+              "href": "#davinci-source-sheet-22",
+              "referenceType": "figure",
+              "label": "Tool-compatibility verification algorithm",
+              "figurePreviews": [
+                {
+                  "src": "/patents/figures/us-6331181-davinci/sheet-22-source-crop-v1.png",
+                  "alt": "FIG. 15: Tool-compatibility verification algorithm (source drawing sheet 22 of 22)",
+                  "width": 928,
+                  "height": 1364
+                }
+              ]
+            },
+            {
+              "kind": "text",
+              "text": " shows compatibility verification."
             }
           ]
         },
@@ -120913,7 +121503,7 @@
           "inlines": [
             {
               "kind": "text",
-              "text": "A robotic surgical tool for use with a robotic manipulator having a tool holder, the tool holder having magnetically actuatable circuitry, the tool comprising; a probe having a proximal end and a distal end; a surgical end effector adjacent the distal end of the probe; an interface adjacent the proximal end of the probe, the interface releasably coupleable with the holder, the interface comprising a magnet positioned so as to actuate the circuitry of the holder."
+              "text": "A robotic surgical tool for use with a robotic manipulator having a tool holder, the tool holder having magnetically actuatable circuitry, the tool comprising: a probe having a proximal end and a distal end; a surgical end effector adjacent the distal end of the probe; an interface adjacent the proximal end of the probe, the interface releasably coupleable with the holder, the interface comprising a magnet positioned so as to actuate the circuitry of the holder."
             }
           ]
         },
@@ -121317,7 +121907,7 @@
       {
         "number": 19,
         "isIndependent": true,
-        "originalText": "A robotic surgical tool for use with a robotic manipulator having a tool holder, the tool holder having magnetically actuatable circuitry, the tool comprising; a probe having a proximal end and a distal end; a surgical end effector adjacent the distal end of the probe; an interface adjacent the proximal end of the probe, the interface releasably coupleable with the holder, the interface comprising a magnet positioned so as to actuate the circuitry of the holder.",
+        "originalText": "A robotic surgical tool for use with a robotic manipulator having a tool holder, the tool holder having magnetically actuatable circuitry, the tool comprising: a probe having a proximal end and a distal end; a surgical end effector adjacent the distal end of the probe; an interface adjacent the proximal end of the probe, the interface releasably coupleable with the holder, the interface comprising a magnet positioned so as to actuate the circuitry of the holder.",
         "plainEnglish": "This independent claim covers a tool whose proximal interface contains a magnet positioned to actuate circuitry in a manipulator holder, alongside the probe and distal surgical end effector.",
         "keyInnovations": [
           "Magnetic proximity latching",
@@ -121628,7 +122218,7 @@
       "domainTitle": "Compatibility, Calibration, and Engagement Data",
       "equationName": "Nominal-to-Measured Tool Offset",
       "governingEquation": "\\Delta q_{tool} = q_{measured} - q_{nominal}",
-      "engineMethod": "stepDaVinci",
+      "engineMethod": "FrankenSimEngine.stepDaVinci",
       "controls": [
         {
           "id": "motionScaleRatio",
@@ -121678,8 +122268,30 @@
       "patents/figures/us-6331181-davinci/fig-2-source-crop-v1.png",
       "patents/figures/us-6331181-davinci/fig-3-source-crop-v1.png",
       "patents/figures/us-6331181-davinci/sheet-1-03.png",
+      "patents/figures/us-6331181-davinci/sheet-1-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-10-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-11-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-12-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-13-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-14-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-15-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-16-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-17-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-18-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-19-source-crop-v1.png",
       "patents/figures/us-6331181-davinci/sheet-2-04.png",
+      "patents/figures/us-6331181-davinci/sheet-2-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-20-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-21-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-22-source-crop-v1.png",
       "patents/figures/us-6331181-davinci/sheet-3-05.png",
+      "patents/figures/us-6331181-davinci/sheet-3-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-4-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-5-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-6-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-7-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-8-source-crop-v1.png",
+      "patents/figures/us-6331181-davinci/sheet-9-source-crop-v1.png",
       "patents/transcripts/us-6331181-davinci-reviewed.txt"
     ],
     "withheldAssets": []
@@ -122658,97 +123270,114 @@
     },
     "equations": [
       {
-        "id": "roomba-spiral-coverage",
+        "id": "roomba-finite-optical-region",
         "patentId": "us-6594844-roomba",
-        "title": "Archimedean Spiral Coverage & Differential Kinematics",
-        "category": "Autonomous Mobile Robotics & Coverage Algorithms",
-        "rawLatex": "r(\\theta) = r_0 + \\frac{w_{\\text{brush}}}{2\\pi} \\theta",
-        "colorizedLatex": "\\textcolor{#059669}{r(\\theta)} = \\textcolor{#2563eb}{r_0} + \\frac{\\textcolor{#ef4444}{w_{\\text{brush}}}}{2\\pi} \\textcolor{#d97706}{\\theta}",
+        "title": "Finite Emitter / Detector Intersection & Redirect Condition",
+        "category": "Optical Obstacle Detection",
+        "rawLatex": "\\mathcal{R}=\\Omega_{e}\\cap\\Omega_{d},\\qquad u_{redirect}=\\mathbf{1}[\\mathcal{S}\\cap\\mathcal{R}=\\varnothing]",
+        "colorizedLatex": "\\textcolor{#059669}{\\mathcal{R}}=\\textcolor{#2563eb}{\\Omega_e}\\cap\\textcolor{#9333ea}{\\Omega_d},\\qquad \\textcolor{#ef4444}{u_{redirect}}=\\mathbf{1}[\\textcolor{#d97706}{\\mathcal{S}}\\cap\\textcolor{#059669}{\\mathcal{R}}=\\varnothing]",
         "plainEnglishSentence": [
           {
-            "text": "The expanding "
+            "text": "The finite "
           },
           {
-            "text": "cleaning radius",
-            "variableId": "spiral_radius"
+            "text": "test region",
+            "variableId": "test_region"
           },
           {
-            "text": " grows linearly from an "
+            "text": " is where the directed "
           },
           {
-            "text": "initial radius",
-            "variableId": "initial_radius"
+            "text": "emitter field",
+            "variableId": "emitter_field"
           },
           {
-            "text": " proportional to "
+            "text": " overlaps the "
           },
           {
-            "text": "brush cleaning swath width",
-            "variableId": "brush_width"
+            "text": "detector field",
+            "variableId": "detector_field"
           },
           {
-            "text": " and cumulative "
+            "text": "; the circuit commands a "
           },
           {
-            "text": "angular wheel rotation",
-            "variableId": "turn_angle"
+            "text": "redirect",
+            "variableId": "redirect"
           },
           {
-            "text": "."
+            "text": " when the expected "
+          },
+          {
+            "text": "surface",
+            "variableId": "surface"
+          },
+          {
+            "text": " does not occupy that region."
           }
         ],
         "variables": [
           {
-            "id": "spiral_radius",
-            "symbol": "r(\\theta)",
-            "name": "Instantaneous Spiral Trajectory Radius",
+            "id": "test_region",
+            "symbol": "\\mathcal{R}",
+            "name": "Finite Optical Test Region",
             "color": "emerald",
-            "role": "Radial distance from the spiral initiation center to the robot's center of mass",
-            "unit": "m",
-            "dimension": "L",
-            "explanation": "Differential wheel speed modulation continuously expands this radius during open floor sweeping."
+            "role": "Geometric intersection of the emitter and detector fields",
+            "unit": "Region",
+            "dimension": "L^3",
+            "explanation": "The claim makes this finite overlap region the place where the circuit tests for the expected floor, wall, or obstacle surface."
           },
           {
-            "id": "initial_radius",
-            "symbol": "r_0",
-            "name": "Initial Turning Radius",
+            "id": "emitter_field",
+            "symbol": "\\Omega_e",
+            "name": "Directed Emission Field",
             "color": "sapphire",
-            "role": "Starting spiral radius at beginning of cleaning cycle (typically ~0.15 m)",
-            "unit": "m",
-            "dimension": "L",
-            "explanation": "Prevents tire scrubbing while initiating outward rotational sweep from a resting point."
+            "role": "Photon field projected from the chassis-mounted emitter",
+            "unit": "Region",
+            "dimension": "L^3",
+            "explanation": "The 2D and 3D instruments begin this field at the visible emitter aperture rather than drawing an untethered beam."
           },
           {
-            "id": "brush_width",
-            "symbol": "w_{\\text{brush}}",
-            "name": "Effective Cleaning Brush Width",
-            "color": "crimson",
-            "role": "Linear track width covered by counter-rotating brush rollers (w ≈ 0.20–0.25 m)",
-            "unit": "m",
-            "dimension": "L",
-            "explanation": "Track-to-track pitch equals brush width, ensuring complete floor coverage without uncleaned gaps."
+            "id": "detector_field",
+            "symbol": "\\Omega_d",
+            "name": "Detector Field of View",
+            "color": "amethyst",
+            "role": "Directed region observed by the chassis-mounted photon detector",
+            "unit": "Region",
+            "dimension": "L^3",
+            "explanation": "The detector field is modeled as a second attached ray that intersects the emitter field at the finite test region."
           },
           {
-            "id": "turn_angle",
-            "symbol": "\\theta",
-            "name": "Cumulative Heading Angle",
+            "id": "surface",
+            "symbol": "\\mathcal{S}",
+            "name": "Expected Surface",
             "color": "amber",
-            "role": "Total integrated angular rotation around the spiral center",
-            "unit": "radians",
+            "role": "Floor, wall, or obstacle surface tested inside the overlap region",
+            "unit": "Surface",
+            "dimension": "L^2",
+            "explanation": "Presence or absence of this surface changes the detector response; no map or coverage estimate is required by the claim."
+          },
+          {
+            "id": "redirect",
+            "symbol": "u_{redirect}",
+            "name": "Redirect Command",
+            "color": "crimson",
+            "role": "Circuit output that redirects the robot when the expected surface is absent",
+            "unit": "Boolean",
             "dimension": "1",
-            "explanation": "Controlled by differential wheel velocities: omega = (v_right - v_left) / wheelbase."
+            "explanation": "The indicator expresses the claim's logical condition only. The contextual kernel owns the subsequent differential-drive turn rate."
           }
         ],
-        "pedagogicalNote": "Combining deterministic Archimedean spirals with pseudo-random collision turns achieves statistically complete floor coverage without internal map memory.",
+        "pedagogicalNote": "US 6,594,844 claims the optical geometry and its redirect circuit. The surrounding room path is useful context but is not presented as a patented global-coverage law.",
         "claimRef": 1,
-        "historicalSignificance": "Created the consumer domestic mobile robotics industry, selling over 40 million Roomba units."
+        "historicalSignificance": "The grant makes a low-cost finite optical intersection do the obstacle discrimination that more elaborate ranging hardware would otherwise perform."
       }
     ],
     "physics": {
       "domain": "autonomous_robotics",
-      "domainTitle": "Deterministic Expanding Coverage & Deflection Heuristics",
-      "equationName": "Differential Drive Kinematics & Archimedean Spiral",
-      "governingEquation": "r(t) = r_0 + \\frac{v}{2\\pi} t, \\quad \\mathbf{x}(t+\\Delta t) = \\mathbf{x}(t) + \\mathbf{v}_{drive} \\Delta t",
+      "domainTitle": "Finite-Region Optical Obstacle Detection",
+      "equationName": "Intersecting Emitter / Detector Fields & Differential Drive",
+      "governingEquation": "\\mathcal{R}=\\Omega_{emit}\\cap\\Omega_{detect}; \\quad v=(v_R+v_L)/2; \\quad \\omega=(v_R-v_L)/b",
       "engineMethod": "stepRoomba",
       "controls": [
         {
@@ -122768,9 +123397,18 @@
           "step": 0.5,
           "defaultValue": 1.5,
           "unit": "rad/s"
+        },
+        {
+          "id": "opticalSensorEnabled",
+          "label": "Claim 1 Optical Redirect Subsystem",
+          "min": 0,
+          "max": 1,
+          "step": 1,
+          "defaultValue": 1,
+          "unit": ""
         }
       ],
-      "pedagogicalInsight": "The Roomba achieves complete floor coverage without persistent global mapping by combining expanding Archimedean spiral cleaning with randomized bump-and-turn deflection heuristics."
+      "pedagogicalInsight": "US 6,594,844 claims a low-cost optical geometry: the emitter and detector fields overlap in a finite region, and the redirect circuit responds when the expected floor or wall does not occupy it. The room motion is a contextual differential-drive demonstrator, not a coverage guarantee."
     },
     "sourceVisualization": {
       "spatialComponent": "Roomba3D",

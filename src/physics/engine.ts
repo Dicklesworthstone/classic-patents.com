@@ -63,14 +63,7 @@ import {
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "./machineKernels";
-import {
-  stepTeslaMotorFig9,
-  teslaBAt,
-  teslaCoilControls,
-  teslaCoilSiUnits,
-  teslaFig4Strobe,
-} from "./teslaKernel";
-import { tryTeslaWasmStep } from "./teslaWasm";
+import { stepTeslaMotorFig9, teslaBAt, teslaFig4Strobe } from "./teslaKernel";
 import { goddardThermo } from "./thermochem";
 import type {
   AerodynamicsState,
@@ -608,92 +601,6 @@ export const FrankenSimEngine = {
    */
   stepSpencerMicrowave(anodeKv: number, magneticGauss: number, rfWatts: number) {
     return stepSpencerMicrowaveCatalog(anodeKv, magneticGauss, rfWatts);
-  },
-
-  /**
-   * Generic coupled-LC and breakdown host fallback used by the interpretive
-   * high-potential-transformer visualization. It is not a source-faithful
-   * reconstruction of US 593,138.
-   */
-  stepTeslaCoil(
-    resonantFreqKhz: number,
-    inputKv: number,
-    sparkGapMm: number,
-    qFactor: number = 145,
-    couplingK: number = 0.18,
-    secondaryTurns: number = 850,
-  ) {
-    const k = Math.max(0.05, Math.min(0.5, couplingK));
-    const nScale = Math.max(0.4, Math.min(2, secondaryTurns / 850));
-    const wasmRes = tryTeslaWasmStep(resonantFreqKhz, inputKv, sparkGapMm, qFactor);
-    if (wasmRes) {
-      // tesla_coil_step has no k or N_s input; scale from registry defaults.
-      const scale = (k / 0.18) * nScale;
-      const secondaryPotentialMv = Number((wasmRes.secondary_potential_mv * scale).toFixed(2));
-      return {
-        runtimeSource: "wasm" as const,
-        resonantFreqKhz: wasmRes.resonant_freq_khz,
-        secondaryPotentialMv,
-        streamerLengthInches: Number((wasmRes.streamer_length_inches * scale).toFixed(1)),
-        streamerLengthMeters: Number((wasmRes.streamer_length_meters * scale).toFixed(2)),
-        secondaryPotentialKv: Math.round(wasmRes.secondary_potential_mv * scale * 1000),
-        streamerScale: Number(
-          Math.min(2.2, Math.max(0.35, (wasmRes.streamer_length_inches * scale) / 48)).toFixed(2),
-        ),
-        streamerStudioLength: Number(((wasmRes.streamer_length_meters * scale) / 1.5).toFixed(3)),
-        toneEnergy: Number(
-          Math.min(1, Math.round(wasmRes.secondary_potential_mv * scale * 1000) / 1500).toFixed(3),
-        ),
-        toneHz: Number((wasmRes.resonant_freq_khz * 2).toFixed(1)),
-        ...teslaCoilSiUnits(wasmRes.resonant_freq_khz, inputKv, secondaryPotentialMv),
-      };
-    }
-
-    const primaryL = 0.012; // mH
-    const secondaryL = 85.0; // mH
-    const transformationRatio = Math.sqrt(secondaryL / primaryL) * nScale;
-    // V₂ ≈ V₁ √(L₂/L₁) k √Q, then spark-gap loading. 28 in/MV air breakdown.
-    const secondaryPotentialMv =
-      ((inputKv * transformationRatio * k * Math.sqrt(qFactor)) / 1000) * (sparkGapMm / 15);
-    const streamerLengthInches = secondaryPotentialMv * 28.0;
-
-    const secondaryPotentialMvRounded = Number(secondaryPotentialMv.toFixed(2));
-    return {
-      runtimeSource: "ts-fallback" as const,
-      resonantFreqKhz,
-      secondaryPotentialMv: secondaryPotentialMvRounded,
-      streamerLengthInches: Number(streamerLengthInches.toFixed(1)),
-      streamerLengthMeters: Number(((streamerLengthInches * 2.54) / 100).toFixed(2)),
-      secondaryPotentialKv: Math.round(secondaryPotentialMv * 1000),
-      streamerScale: Number(Math.min(2.2, Math.max(0.35, streamerLengthInches / 48)).toFixed(2)),
-      streamerStudioLength: Number(((streamerLengthInches * 2.54) / 100 / 1.5).toFixed(3)),
-      toneEnergy: Number(Math.min(1, Math.round(secondaryPotentialMv * 1000) / 1500).toFixed(3)),
-      toneHz: Number((resonantFreqKhz * 2).toFixed(1)),
-      ...teslaCoilSiUnits(resonantFreqKhz, inputKv, secondaryPotentialMvRounded),
-    };
-  },
-
-  /**
-   * Same interpretive coil step, but the resonant frequency is owned here
-   * (teslaCoilResonantKhz) so 2D / 3D / badge / weave cannot drift.
-   */
-  stepTeslaCoilFromControls(params: {
-    primaryCap?: number;
-    toploadCapacitancePf?: number;
-    inputVoltageKv?: number;
-    sparkGapDistanceMm?: number;
-    couplingK?: number;
-    secondaryTurns?: number;
-  }) {
-    const c = teslaCoilControls(params);
-    return FrankenSimEngine.stepTeslaCoil(
-      c.resonantFreqKhz,
-      c.inputKv,
-      c.sparkGapMm,
-      145,
-      c.couplingK,
-      c.secondaryTurns,
-    );
   },
 
   /**

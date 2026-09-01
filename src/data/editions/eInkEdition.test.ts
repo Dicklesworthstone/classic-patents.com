@@ -60,7 +60,7 @@ describe("US 6,120,588 E-Ink Archival Edition Contract", () => {
       return [];
     });
 
-    expect(figurePreviews.length).toBe(0);
+    expect(figurePreviews.length).toBe(24);
 
     for (const preview of figurePreviews) {
       const relPath = preview.src.replace(/^\//, "");

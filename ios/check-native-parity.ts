@@ -7,6 +7,8 @@ type ExportedPatent = Record<string, any> & { id: string };
 
 const failures: string[] = [];
 const requireVisualParity = process.argv.includes("--require-visual-parity");
+const isNullish = (value: unknown): value is null | undefined =>
+  value === null || value === undefined;
 const assert = (condition: unknown, message: string) => {
   if (!condition) failures.push(message);
 };
@@ -33,6 +35,8 @@ const supportedTeXCommands = new Set([
   "bar",
   "begin",
   "beta",
+  "bigl",
+  "bigr",
   "cap",
   "cdot",
   "circ",
@@ -42,6 +46,7 @@ const supportedTeXCommands = new Set([
   "dot",
   "dots",
   "downarrow",
+  "dashv",
   "ell",
   "end",
   "epsilon",
@@ -52,18 +57,21 @@ const supportedTeXCommands = new Set([
   "ge",
   "gg",
   "hat",
+  "hookrightarrow",
   "implies",
   "in",
   "infty",
   "int",
   "kappa",
   "lambda",
+  "land",
   "le",
   "left",
   "leftarrow",
   "leq",
   "lesssim",
   "lfloor",
+  "ll",
   "ln",
   "log",
   "longrightarrow",
@@ -74,6 +82,7 @@ const supportedTeXCommands = new Set([
   "min",
   "mu",
   "nabla",
+  "neg",
   "nu",
   "oint",
   "omega",
@@ -99,6 +108,7 @@ const supportedTeXCommands = new Set([
   "sin",
   "sqrt",
   "sum",
+  "subset",
   "tan",
   "tau",
   "text",
@@ -107,6 +117,7 @@ const supportedTeXCommands = new Set([
   "times",
   "to",
   "uparrow",
+  "varnothing",
   "varepsilon",
   "vec",
   "xi",
@@ -344,12 +355,12 @@ for (const patent of allPatents) {
     );
     for (const fragment of equation.plainEnglishSentence) {
       assert(
-        fragment.variableId == null || variableIDs.has(fragment.variableId),
+        isNullish(fragment.variableId) || variableIDs.has(fragment.variableId),
         `${patent.id}/${equation.id}: sentence references unknown variable ${fragment.variableId}`,
       );
     }
     assert(
-      equation.claimRef == null || claimNumberSet.has(equation.claimRef),
+      isNullish(equation.claimRef) || claimNumberSet.has(equation.claimRef),
       `${patent.id}/${equation.id}: equation references unknown claim ${equation.claimRef}`,
     );
   }
@@ -539,7 +550,7 @@ assert(
 assert(nativeVisualById.size === records.length, "native visualization ids are not unique");
 for (const record of records) {
   const visual = nativeVisualById.get(record.id);
-  assert(visual != null, `${record.id}: no native spatial exhibit is registered`);
+  assert(visual !== undefined, `${record.id}: no native spatial exhibit is registered`);
   if (!visual) continue;
   same(
     visual.spatialComponent,
@@ -553,7 +564,7 @@ for (const record of records) {
   );
   if (record.id === "us-971501-haber-ammonia") {
     assert(
-      visual.asset == null,
+      visual.asset === null,
       `${record.id}: no-drawing boundary must not ship invented apparatus geometry`,
     );
     assert(
@@ -621,6 +632,6 @@ console.log(
     `${totals.callouts} callouts, ${records.length} source visualization pairs, ` +
     `${manifest.length} bundled non-PDF assets, ${totals.withheldAssets} explicitly gated source crops, ` +
     `one first-party PDF network boundary. Native spatial parity: ` +
-    `${nativeVisualizations.filter((entry) => entry.asset != null).length} authored USDZ models plus ` +
-    `${nativeVisualizations.filter((entry) => entry.sourceBoundary != null).length} explicit no-drawing source boundary; no source plate is credited as a 3D model.`,
+    `${nativeVisualizations.filter((entry) => entry.asset !== null).length} authored USDZ models plus ` +
+    `${nativeVisualizations.filter((entry) => entry.sourceBoundary !== undefined).length} explicit no-drawing source boundary; no source plate is credited as a 3D model.`,
 );

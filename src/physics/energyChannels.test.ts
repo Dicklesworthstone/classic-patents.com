@@ -41,7 +41,9 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-1102653-goddard-rocket",
       "us-361931-daimler-engine",
       "us-593138-tesla-coil",
+      "us-194047-otto-engine",
       "us-6331181-davinci",
+      "us-6594844-roomba",
       "us-4750-howe-sewing-machine",
       "us-31128-otis-elevator",
     ]);

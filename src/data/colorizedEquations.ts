@@ -5310,87 +5310,101 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   "us-593138-tesla-coil": [
     {
-      id: "tesla-voltage-grading",
+      id: "tesla-adjacent-turn-grading",
       patentId: "us-593138-tesla-coil",
-      title: "Inter-Turn Voltage Gradient & Dielectric Stress Grading",
+      title: "Claimed Common Node & Adjacent-Turn Grading",
       category: "High-Voltage Electromagnetics",
-      rawLatex: "\\Delta V_{\\text{turn}} = \\frac{V_{\\text{max}}}{N}",
+      rawLatex:
+        "V(B_0)=V(C_0)=V_{\\mathrm{earth}},\\qquad |V(B_{i+1})-V(B_i)| \\ll |V(B_N)-V_{\\mathrm{earth}}|",
       colorizedLatex:
-        "\\textcolor{#059669}{\\Delta V_{\\text{turn}}} = \\frac{\\textcolor{#ef4444}{V_{\\text{max}}}}{\\textcolor{#2563eb}{N}}",
+        "\\textcolor{#059669}{V(B_0)}=\\textcolor{#2563eb}{V(C_0)}=\\textcolor{#0d9488}{V_{\\mathrm{earth}}},\\qquad \\textcolor{#9333ea}{|V(B_{i+1})-V(B_i)|} \\ll \\textcolor{#ef4444}{|V(B_N)-V_{\\mathrm{earth}}|}",
       plainEnglishSentence: [
         { text: "The " },
-        { text: "inter-turn potential gradient", variableId: "dv_turn" },
-        { text: " is minimized by distributing the " },
-        { text: "terminal high voltage", variableId: "v_max" },
-        { text: " uniformly across " },
-        { text: "total secondary turns", variableId: "turn_count" },
-        { text: " wound in a flat spiral." },
+        { text: "secondary end nearest the primary", variableId: "secondary_low" },
+        { text: ", the " },
+        { text: "adjacent primary end", variableId: "primary_low" },
+        { text: ", and " },
+        { text: "earth", variableId: "earth" },
+        { text: " share one node; the graded winding keeps the " },
+        { text: "difference between neighboring turns", variableId: "adjacent_difference" },
+        { text: " small relative to the total terminal-to-earth difference." },
       ],
       variables: [
         {
-          id: "dv_turn",
-          symbol: "\\Delta V_{\\text{turn}}",
-          name: "Inter-Turn Potential Difference",
+          id: "secondary_low",
+          symbol: "V(B_0)",
+          name: "Adjacent Secondary-End Potential",
           color: "emerald",
-          role: "Voltage drop between adjacent concentric winding turns",
+          role: "Potential at the secondary terminal physically adjacent to the primary",
           unit: "Volts (V)",
           dimension: "[M L^2 T^-3 I^-1]",
           explanation:
-            "By winding the high-voltage secondary as a flat spiral, Tesla keeps adjacent convolutions at minimal voltage differences, preventing insulation puncture.",
+            "Claims 1 through 3 electrically connect this terminal to the adjacent primary terminal and, in use, to earth.",
         },
         {
-          id: "v_max",
-          symbol: "V_{\\text{max}}",
-          name: "Peak Secondary Terminal Potential",
-          color: "crimson",
-          role: "Maximum output potential developed at the outer elevated secondary terminal",
-          unit: "Volts (V)",
-          dimension: "[M L^2 T^-3 I^-1]",
-          explanation:
-            "The outermost convolution attains several hundred thousand to millions of volts relative to earth.",
-        },
-        {
-          id: "turn_count",
-          symbol: "N",
-          name: "Total Secondary Winding Turns",
+          id: "primary_low",
+          symbol: "V(C_0)",
+          name: "Adjacent Primary-End Potential",
           color: "sapphire",
-          role: "Number of helical or spiral convolutions comprising the secondary inductor",
-          unit: "Turns (dimensionless)",
-          dimension: "[1]",
+          role: "Potential at the primary terminal named in the claimed common connection",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
           explanation:
-            "A large number of finely spaced turns progressively steps up voltage without allowing concentrated dielectric stress.",
+            "This is a topology identity from the claimed connection, not a numerical primary-voltage estimate.",
+        },
+        {
+          id: "earth",
+          symbol: "V_{\\mathrm{earth}}",
+          name: "Earth Reference Potential",
+          color: "teal",
+          role: "The earth connection required while the transformer is in use",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
+          explanation:
+            "The schematic and 3D model render a continuous conductor from the common node to an earth terminal.",
+        },
+        {
+          id: "adjacent_difference",
+          symbol: "|V(B_{i+1})-V(B_i)|",
+          name: "Adjacent-Turn Potential Difference",
+          color: "amethyst",
+          role: "Local potential difference between neighboring secondary convolutions",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
+          explanation:
+            "The source describes this difference as comparatively small; it does not print a uniform volts-per-turn value or a turn count from which one could be invented.",
         },
       ],
       pedagogicalNote:
-        "In US Patent 593,138, Tesla solves high-voltage insulation by geometry: the inner end near the primary is grounded, while potential climbs radially outward away from ground and the primary coil.",
-      claimRef: 2,
+        "This relation separates what the grant fixes exactly (the common electrical node) from what it describes qualitatively (small adjacent-turn differences). Absolute voltages remain underdetermined.",
+      claimRef: 1,
       historicalSignificance:
-        "Claim 2 explicitly protects the flat spiral geometry with the inner terminal connected to the primary and to earth.",
+        "Claim 1 establishes the common-node connection; Claims 2 and 3 add the flat or nested spiral geometry that moves the remote high-potential terminal away from the primary.",
     },
     {
       id: "tesla-quarter-wave-standing-wave",
       patentId: "us-593138-tesla-coil",
-      title: "Quarter-Wave Resonant Standing Wave Distribution",
+      title: "Quarter-Wave Stationary-Wave Distribution",
       category: "High-Frequency Resonance",
       rawLatex: "\\ell \\approx \\frac{\\lambda}{4} = \\frac{v_p}{4 f_0}",
       colorizedLatex:
         "\\textcolor{#059669}{\\ell} \\approx \\frac{\\textcolor{#9333ea}{\\lambda}}{4} = \\frac{\\textcolor{#0d9488}{v_p}}{4 \\textcolor{#2563eb}{f_0}}",
       plainEnglishSentence: [
         { text: "The " },
-        { text: "physical secondary wire length", variableId: "wire_len" },
+        { text: "developed secondary wire length", variableId: "wire_len" },
         { text: " is tuned to approximately one-quarter of the " },
         { text: "electrical disturbance wavelength", variableId: "wavelength" },
         { text: ", equal to the " },
         { text: "wave phase propagation velocity", variableId: "phase_vel" },
         { text: " divided by four times the " },
-        { text: "fundamental resonant frequency", variableId: "res_freq" },
+        { text: "electrical-disturbance frequency", variableId: "res_freq" },
         { text: "." },
       ],
       variables: [
         {
           id: "wire_len",
           symbol: "\\ell",
-          name: "Secondary Wire Axial Length",
+          name: "Developed Secondary Wire Length",
           color: "emerald",
           role: "Total developed wire length of the secondary spiral",
           unit: "Meters (m)",
@@ -5406,35 +5420,37 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           role: "Spatial wavelength of the oscillatory electrical impulse",
           unit: "Meters (m)",
           dimension: "[L]",
-          explanation: "Governed by the LC resonant period of the primary tank discharge.",
+          explanation:
+            "Tesla's printed example gives a 200-mile electrical-disturbance wavelength; the source does not provide a primary LC model from which to reconstruct it.",
         },
         {
           id: "phase_vel",
           symbol: "v_p",
           name: "Phase Propagation Velocity",
           color: "teal",
-          role: "Velocity of electromagnetic wave propagation along the helical conductor",
+          role: "Velocity of electrical-disturbance propagation through the secondary circuit",
           unit: "Meters per second (m/s)",
           dimension: "[L T^-1]",
           explanation:
-            "Close to the speed of light ($c \\approx 3 \\times 10^8\\text{ m/s}$) modified by coil geometry and dielectric loading.",
+            "Tesla's numerical example uses 185,000 miles per second. The shared kernel preserves that printed value rather than substituting a modern coil-velocity estimate.",
         },
         {
           id: "res_freq",
           symbol: "f_0",
-          name: "Fundamental Resonant Frequency",
+          name: "Electrical Disturbance Frequency",
           color: "sapphire",
-          role: "Natural oscillatory frequency of the tuned transformer",
+          role: "Frequency used in the source's printed stationary-wave example",
           unit: "Hertz (Hz)",
           dimension: "[T^-1]",
-          explanation: "Typically 50 kHz to 500 kHz in Tesla's high-power experimental stations.",
+          explanation:
+            "Tesla's worked example uses 925 disturbances per second. The model varies this source variable without relabelling it as a later experimental station's tank frequency.",
         },
       ],
       pedagogicalNote:
-        "Under quarter-wave resonance, a standing wave forms: a current antinode and voltage node exist at the grounded base, while a voltage antinode and zero current exist at the elevated terminal.",
+        "The source fixes the terminal-potential endpoints: zero at the common primary / earth end and maximum at the remote end. It does not print current magnitude, impedance, loss, or load data.",
       claimRef: 1,
       historicalSignificance:
-        "The quarter-wave resonance principle formed the basis of Tesla's Colorado Springs magnifying transmitter experiments in 1899.",
+        "The grant prints a directly checkable example: 925 disturbances per second at 185,000 miles per second gives a 200-mile wavelength and a 50-mile quarter-wave secondary.",
     },
   ],
 
@@ -21184,77 +21200,214 @@ ALL_COLORIZED_EQUATIONS["us-6331181-davinci"] = [
   },
 ];
 
-ALL_COLORIZED_EQUATIONS["us-6594844-roomba"] = [
+// The legacy catalogue block above described a generic modern Otto cycle and
+// attached it to the wrong printed claim. This active set follows the reviewed
+// US 194,047 edition: Claim 1 owns the graded charge and Claim 3 owns the
+// four-stroke sequence. Numerical pressure and power remain source-refused.
+ALL_COLORIZED_EQUATIONS["us-194047-otto-engine"] = [
   {
-    id: "roomba-spiral-coverage",
-    patentId: "us-6594844-roomba",
-    title: "Archimedean Spiral Coverage & Differential Kinematics",
-    category: "Autonomous Mobile Robotics & Coverage Algorithms",
-    rawLatex: "r(\\theta) = r_0 + \\frac{w_{\\text{brush}}}{2\\pi} \\theta",
+    id: "otto-graded-charge",
+    patentId: "us-194047-otto-engine",
+    title: "Claim 1 Spatial Charge Gradient",
+    category: "Combustion & Charge Preparation",
+    rawLatex: "\\phi(0)>\\phi(x)>\\phi(L),\\qquad \\frac{d\\phi}{dx}<0",
     colorizedLatex:
-      "\\textcolor{#059669}{r(\\theta)} = \\textcolor{#2563eb}{r_0} + \\frac{\\textcolor{#ef4444}{w_{\\text{brush}}}}{2\\pi} \\textcolor{#d97706}{\\theta}",
+      "\\textcolor{#059669}{\\phi(0)}>\\textcolor{#2563eb}{\\phi(x)}>\\textcolor{#9333ea}{\\phi(L)},\\qquad \\textcolor{#d97706}{\\frac{d\\phi}{dx}}<0",
     plainEnglishSentence: [
-      { text: "The expanding " },
-      { text: "cleaning radius", variableId: "spiral_radius" },
-      { text: " grows linearly from an " },
-      { text: "initial radius", variableId: "initial_radius" },
-      { text: " proportional to " },
-      { text: "brush cleaning swath width", variableId: "brush_width" },
-      { text: " and cumulative " },
-      { text: "angular wheel rotation", variableId: "turn_angle" },
+      { text: "The " },
+      { text: "combustible-mixture concentration", variableId: "mixture_fraction" },
+      { text: " is greatest beside the " },
+      { text: "ignition point", variableId: "ignition_end" },
+      { text: " and becomes progressively smaller through the separate air charge toward the " },
+      { text: "forward end", variableId: "forward_end" },
       { text: "." },
     ],
     variables: [
       {
-        id: "spiral_radius",
-        symbol: "r(\\theta)",
-        name: "Instantaneous Spiral Trajectory Radius",
-        color: "emerald",
-        role: "Radial distance from the spiral initiation center to the robot's center of mass",
-        unit: "m",
-        dimension: "L",
-        explanation:
-          "Differential wheel speed modulation continuously expands this radius during open floor sweeping.",
-      },
-      {
-        id: "initial_radius",
-        symbol: "r_0",
-        name: "Initial Turning Radius",
+        id: "mixture_fraction",
+        symbol: "\\phi(x)",
+        name: "Local Combustible-Mixture Concentration",
         color: "sapphire",
-        role: "Starting spiral radius at beginning of cleaning cycle (typically ~0.15 m)",
-        unit: "m",
-        dimension: "L",
+        role: "Qualitative concentration along the compressed cylinder charge",
+        unit: "Source gives no numerical fraction",
+        dimension: "[1]",
         explanation:
-          "Prevents tire scrubbing while initiating outward rotational sweep from a resting point.",
+          "Otto describes particle spacing and ordering qualitatively; the model must not invent a stoichiometric profile.",
       },
       {
-        id: "brush_width",
-        symbol: "w_{\\text{brush}}",
-        name: "Effective Cleaning Brush Width",
-        color: "crimson",
-        role: "Linear track width covered by counter-rotating brush rollers (w ≈ 0.20–0.25 m)",
-        unit: "m",
-        dimension: "L",
-        explanation:
-          "Track-to-track pitch equals brush width, ensuring complete floor coverage without uncleaned gaps.",
+        id: "ignition_end",
+        symbol: "x=0",
+        name: "Ignition End",
+        color: "emerald",
+        role: "Cylinder end where combustible particles are described as close together",
+        unit: "Display coordinate",
+        dimension: "[L]",
+        explanation: "This is the high-concentration end of the source-described ordering.",
       },
       {
-        id: "turn_angle",
-        symbol: "\\theta",
-        name: "Cumulative Heading Angle",
-        color: "amber",
-        role: "Total integrated angular rotation around the spiral center",
-        unit: "radians",
-        dimension: "1",
+        id: "forward_end",
+        symbol: "x=L",
+        name: "Forward Charge End",
+        color: "amethyst",
+        role: "Direction in which combustible particles become increasingly dispersed",
+        unit: "Display coordinate",
+        dimension: "[L]",
         explanation:
-          "Controlled by differential wheel velocities: omega = (v_right - v_left) / wheelbase.",
+          "The patent connects this increasing dispersion to gradual heat development and pressure rise without printing either rate.",
       },
     ],
     pedagogicalNote:
-      "Combining deterministic Archimedean spirals with pseudo-random collision turns achieves statistically complete floor coverage without internal map memory.",
+      "This is a qualitative source topology, not a calibrated mixture field. Claim 1 requires the ordering and its gradual-combustion purpose; pressure, flame speed, and efficiency are not numerically reconstructed.",
     claimRef: 1,
     historicalSignificance:
-      "Created the consumer domestic mobile robotics industry, selling over 40 million Roomba units.",
+      "It keeps the legal center of US 194,047 on the deliberately graded charge instead of mislabeling Claim 1 as a generic four-stroke monopoly.",
+  },
+  {
+    id: "otto-four-stroke-shaft-timing",
+    patentId: "us-194047-otto-engine",
+    title: "Claim 3 Four-Stroke Sequence & Source Shaft Ratio",
+    category: "Mechanism Kinematics",
+    rawLatex:
+      "\\theta_K=\\frac{1}{2}\\theta_I,\\qquad 4\\;\\text{strokes}=2\\;\\text{crank revolutions}",
+    colorizedLatex:
+      "\\textcolor{#059669}{\\theta_K}=\\frac{1}{2}\\textcolor{#2563eb}{\\theta_I},\\qquad \\textcolor{#d97706}{4\\;\\text{strokes}}=\\textcolor{#9333ea}{2\\;\\text{crank revolutions}}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "counter-shaft", variableId: "counter_shaft" },
+      { text: " makes one revolution while the " },
+      { text: "engine shaft", variableId: "engine_shaft" },
+      { text: " makes two, coordinating " },
+      { text: "four piston strokes", variableId: "stroke_sequence" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "counter_shaft",
+        symbol: "\\theta_K",
+        name: "Counter-Shaft K Angle",
+        color: "emerald",
+        role: "Source-named shaft carrying the slide crank and valve cams",
+        unit: "Radians",
+        dimension: "[1]",
+        explanation: "The procedural model derives this coordinate at exactly half crank angle.",
+      },
+      {
+        id: "engine_shaft",
+        symbol: "\\theta_I",
+        name: "Engine-Shaft I Angle",
+        color: "sapphire",
+        role: "Single independent crank coordinate that drives the connected mechanism",
+        unit: "Radians",
+        dimension: "[1]",
+        explanation:
+          "The displayed RPM is a declared presentation input because the grant prints no operating speed.",
+        telemetryKey: "engineRpm",
+      },
+      {
+        id: "stroke_sequence",
+        symbol: "4\\;\\text{strokes}",
+        name: "Complete Operating Sequence",
+        color: "amber",
+        role: "Admission, compression, working expansion, and exhaust",
+        unit: "Four piston strokes",
+        dimension: "[1]",
+        explanation:
+          "Claim 3 combines this sequence with the separately introduced air and combustible charges.",
+      },
+    ],
+    pedagogicalNote:
+      "The one-to-two shaft ratio is source-fixed and is shared by the 2D and 3D poses. It does not imply a historical RPM, torque, pressure, or power value.",
+    claimRef: 3,
+    historicalSignificance:
+      "This separates the source's actual four-stroke machinery from later ideal-cycle performance equations that require unprinted dimensions and operating data.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-6594844-roomba"] = [
+  {
+    id: "roomba-finite-optical-region",
+    patentId: "us-6594844-roomba",
+    title: "Finite Emitter / Detector Intersection & Redirect Condition",
+    category: "Optical Obstacle Detection",
+    rawLatex:
+      "\\mathcal{R}=\\Omega_{e}\\cap\\Omega_{d},\\qquad u_{redirect}=\\mathbf{1}[\\mathcal{S}\\cap\\mathcal{R}=\\varnothing]",
+    colorizedLatex:
+      "\\textcolor{#059669}{\\mathcal{R}}=\\textcolor{#2563eb}{\\Omega_e}\\cap\\textcolor{#9333ea}{\\Omega_d},\\qquad \\textcolor{#ef4444}{u_{redirect}}=\\mathbf{1}[\\textcolor{#d97706}{\\mathcal{S}}\\cap\\textcolor{#059669}{\\mathcal{R}}=\\varnothing]",
+    plainEnglishSentence: [
+      { text: "The finite " },
+      { text: "test region", variableId: "test_region" },
+      { text: " is where the directed " },
+      { text: "emitter field", variableId: "emitter_field" },
+      { text: " overlaps the " },
+      { text: "detector field", variableId: "detector_field" },
+      { text: "; the circuit commands a " },
+      { text: "redirect", variableId: "redirect" },
+      { text: " when the expected " },
+      { text: "surface", variableId: "surface" },
+      { text: " does not occupy that region." },
+    ],
+    variables: [
+      {
+        id: "test_region",
+        symbol: "\\mathcal{R}",
+        name: "Finite Optical Test Region",
+        color: "emerald",
+        role: "Geometric intersection of the emitter and detector fields",
+        unit: "Region",
+        dimension: "L^3",
+        explanation:
+          "The claim makes this finite overlap region the place where the circuit tests for the expected floor, wall, or obstacle surface.",
+      },
+      {
+        id: "emitter_field",
+        symbol: "\\Omega_e",
+        name: "Directed Emission Field",
+        color: "sapphire",
+        role: "Photon field projected from the chassis-mounted emitter",
+        unit: "Region",
+        dimension: "L^3",
+        explanation:
+          "The 2D and 3D instruments begin this field at the visible emitter aperture rather than drawing an untethered beam.",
+      },
+      {
+        id: "detector_field",
+        symbol: "\\Omega_d",
+        name: "Detector Field of View",
+        color: "amethyst",
+        role: "Directed region observed by the chassis-mounted photon detector",
+        unit: "Region",
+        dimension: "L^3",
+        explanation:
+          "The detector field is modeled as a second attached ray that intersects the emitter field at the finite test region.",
+      },
+      {
+        id: "surface",
+        symbol: "\\mathcal{S}",
+        name: "Expected Surface",
+        color: "amber",
+        role: "Floor, wall, or obstacle surface tested inside the overlap region",
+        unit: "Surface",
+        dimension: "L^2",
+        explanation:
+          "Presence or absence of this surface changes the detector response; no map or coverage estimate is required by the claim.",
+      },
+      {
+        id: "redirect",
+        symbol: "u_{redirect}",
+        name: "Redirect Command",
+        color: "crimson",
+        role: "Circuit output that redirects the robot when the expected surface is absent",
+        unit: "Boolean",
+        dimension: "1",
+        explanation:
+          "The indicator expresses the claim's logical condition only. The contextual kernel owns the subsequent differential-drive turn rate.",
+      },
+    ],
+    pedagogicalNote:
+      "US 6,594,844 claims the optical geometry and its redirect circuit. The surrounding room path is useful context but is not presented as a patented global-coverage law.",
+    claimRef: 1,
+    historicalSignificance:
+      "The grant makes a low-cost finite optical intersection do the obstacle discrimination that more elaborate ranging hardware would otherwise perform.",
   },
 ];
 

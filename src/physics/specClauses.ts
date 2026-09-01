@@ -6,7 +6,9 @@
 import { stepFermiKinetics } from "./fermiKinetics";
 import { stepHoweSewingMachine } from "./machineKernels";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
+import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
 import { stepTeslaMotorFig9, teslaMotorPhaseHz } from "./teslaKernel";
+import { readTeslaTransformerControls, stepTeslaTransformerSi } from "./teslaTransformerKernel";
 
 export interface SpecClause {
   id: string;
@@ -869,25 +871,35 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
 
   if (patentId === OTTO_ENGINE_ID) {
     const rpm = params.engineRpm ?? 180;
-    const cr = params.compressionRatio ?? 4.5;
-    const isRunning = rpm >= 60;
+    const chargeGradingPresent = (params.claim1ChargeGradingPresent ?? 1) >= 0.5;
+    const isRunning = (params.isRunning ?? 1) >= 0.5;
 
     return [
       {
         id: "dispersed-charge",
         phrase:
           "particles of the combustible gaseous mixture are more or less dispersed in an isolated condition in the air or other gas",
-        active: true,
-        tone: "held",
-        caption:
-          "Stratified gas-air charge provides progressive combustion wave front without destructive detonation.",
+        active: chargeGradingPresent,
+        tone: chargeGradingPresent ? "held" : "broken",
+        caption: chargeGradingPresent
+          ? "The source-described charge is fuel-rich near ignition and increasingly dispersed through the separate air charge; no numerical flame speed or pressure is inferred."
+          : "Claim 1's spatial charge gradient is absent, so the source does not determine a replacement heat-release or pressure trace.",
       },
       {
         id: "four-stroke-cycle",
         phrase: "four strokes of the piston required for one complete operation",
         active: isRunning,
         tone: "live",
-        caption: `N = ${rpm} RPM (CR = ${cr}:1): Four distinct strokes (intake, compression, power, exhaust) across two crankshaft revolutions.`,
+        caption: isRunning
+          ? `Declared display speed N = ${rpm} RPM: four piston strokes occur across two crankshaft revolutions; US 194,047 prints no operating speed.`
+          : "The shared mechanism tape is paused with the four-stroke topology held in its last admitted pose.",
+      },
+      {
+        id: "counter-shaft-ratio",
+        phrase: "the slide-crank K² makes one revolution while the engine-shaft makes two",
+        active: true,
+        tone: "held",
+        caption: `The source's exact timing relation gives a displayed counter-shaft rate of ${(rpm / 2).toFixed(1)} RPM from the declared ${rpm} RPM crank input.`,
       },
     ];
   }
@@ -1219,15 +1231,35 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === TESLA_COIL_ID) {
-    const vinKv = params.inputVoltageKv ?? 15;
+    const transformer = stepTeslaTransformerSi(readTeslaTransformerControls(params));
+    const commonNodeConnected = (params.claim1CommonNodeConnected ?? 1) >= 0.5;
 
     return [
       {
-        id: "high-potential-discharge",
+        id: "high-potential-purpose",
         phrase: "developing electrical currents of high potential",
-        active: vinKv > 0,
-        tone: "live",
-        caption: `Illustrative excitation = ${vinKv} kV. The source claims high-potential conversion but does not print this input or a megavolt performance value.`,
+        active: true,
+        tone: "held",
+        caption:
+          "The source states the high-potential purpose but does not print excitation, impedance, loss, load, or an absolute output potential; the kernel therefore reports no voltage.",
+      },
+      {
+        id: "primary-secondary-earth-bond",
+        phrase:
+          "I connect one end of the secondary, or that in proximity to the primary, to earth, and in order to more effectually provide against injury to persons or to the apparatus I also connect it with the primary",
+        active: commonNodeConnected,
+        tone: commonNodeConnected ? "held" : "broken",
+        caption: commonNodeConnected
+          ? "The Claim 1 secondary terminal remains electrically bonded to the adjacent primary end and to earth."
+          : "The removable bridge is open, visibly breaking the Claim 1 primary / secondary / earth common node without inventing a voltage or damage result.",
+      },
+      {
+        id: "quarter-wave-secondary",
+        phrase:
+          "a length of secondary which is approximately one-quarter of the wave length of the electrical disturbance",
+        active: Math.abs(transformer.quarterWaveErrorDeg) < 0.01,
+        tone: Math.abs(transformer.quarterWaveErrorDeg) < 0.01 ? "live" : "broken",
+        caption: `βl = ${transformer.electricalLengthDeg.toFixed(1)}°; developed wire = ${transformer.secondaryLengthMiles.toFixed(1)} mi and the current quarter-wave target = ${transformer.quarterWaveLengthMiles.toFixed(2)} mi.`,
       },
       {
         id: "voltage-grading",
@@ -2221,22 +2253,34 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-6594844-roomba") {
-    const spiral = params.spiralExpansionRate ?? 1.2;
+    const opticalSensorEnabled = (params.opticalSensorEnabled ?? 1) >= 0.5;
+    const sensor = stepRoomba({
+      wheelSpeedMps: params.wheelSpeedMps ?? 0.3,
+      turnRateRadSec: params.turnRateRadSec ?? 1.5,
+      roomWidth: ROOMBA_ROOM.width,
+      roomHeight: ROOMBA_ROOM.height,
+      sensorHeightInches: params.sensorHeightInches,
+      wallDistanceInches: params.wallDistanceInches,
+      opticalSensorEnabled,
+    });
     return [
       {
-        id: "sensor-subsystem",
-        phrase: "sensor subsystem",
-        active: true,
-        tone: "held",
-        caption:
-          "Infrared cliff emitter-detectors and bumper switches continuously monitor obstacles and drop-offs.",
+        id: "intersecting-optical-fields",
+        phrase: "first directed field of photons intersects said directed field of emission",
+        active: opticalSensorEnabled,
+        tone: opticalSensorEnabled ? "held" : "broken",
+        caption: opticalSensorEnabled
+          ? `Emitter/detector overlap = ${(sensor.surfaceOverlapFraction * 100).toFixed(0)}%; the chassis-mounted fields meet at the modeled finite surface region.`
+          : "The optical fields are disabled, so the Claim 1 intersection condition is absent.",
       },
       {
-        id: "robot-housing-which-navigates",
-        phrase: "robot housing which navigates",
-        active: spiral > 0,
-        tone: "live",
-        caption: `Spiral Rate=${spiral}: Algorithmic behaviors navigate floor surface with autonomous room coverage.`,
+        id: "surface-absence-redirect",
+        phrase: "redirects said robot housing when said surface is not present",
+        active: opticalSensorEnabled,
+        tone: opticalSensorEnabled ? "live" : "broken",
+        caption: opticalSensorEnabled
+          ? `Surface test=${sensor.surfacePresent ? "PRESENT" : "ABSENT"}; redirect=${sensor.redirectReason}. Mechanical bumper projection is tracked separately.`
+          : "Without the optical subsystem, the claimed surface-absence redirect is not available; no coverage consequence is inferred.",
       },
     ];
   }

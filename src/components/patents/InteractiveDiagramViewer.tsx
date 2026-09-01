@@ -94,11 +94,15 @@ import { stepParsonsMarine } from "@/physics/parsonsMarineKernel";
 import {
   stepTeslaMotorFig9,
   teslaBAt,
-  teslaCoilSiUnits,
   teslaFig4Strobe,
   teslaSchematicPoleRect,
   teslaSchematicStrobeOpacity,
 } from "@/physics/teslaKernel";
+import {
+  TESLA_TRANSFORMER_SCHEMATIC,
+  teslaTransformerSecondaryPath,
+  teslaTransformerSecondaryTerminals,
+} from "@/physics/teslaTransformerKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { materialProbe, whitneySamples } from "@/physics/weaveSurfaces";
 import { wrightSchematicPose, wrightWarpFromPointerNx } from "@/physics/wrightKernel";
@@ -652,79 +656,118 @@ function _renderHistoricalSchematic(
       );
     }
     case "tesla-coil": {
-      const coil = teslaCoilSiUnits(180, 15, 0);
+      const coil = TESLA_TRANSFORMER_SCHEMATIC;
+      const secondaryPath = teslaTransformerSecondaryPath();
+      const secondaryTerminals = teslaTransformerSecondaryTerminals();
+      const commonNodeConnected = (params?.claim1CommonNodeConnected ?? 1) >= 0.5;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
-            x={coil.schematicBaseX}
-            y={coil.schematicBaseY}
-            width={coil.schematicBaseW}
-            height={coil.schematicBaseH}
+            x={coil.baseX}
+            y={coil.baseY}
+            width={coil.baseWidth}
+            height={coil.baseHeight}
             rx="3"
             fill="#334155"
             stroke="#94a3b8"
           />
-          <line
-            x1={coil.schematicPostX0}
-            y1={coil.schematicPostY0}
-            x2={coil.schematicPostX0}
-            y2={coil.schematicPostY1}
-            stroke="#f59e0b"
-            strokeWidth="3"
-          />
-          <line
-            x1={coil.schematicPostX1}
-            y1={coil.schematicPostY0}
-            x2={coil.schematicPostX1}
-            y2={coil.schematicPostY1}
-            stroke="#f59e0b"
-            strokeWidth="3"
-          />
           <path
-            d={coil.schematicBellD}
+            d={coil.coneSupportPath}
             fill="#1e3a8a"
-            fillOpacity="0.3"
+            fillOpacity="0.18"
             stroke="#60a5fa"
             strokeWidth="2"
           />
-          <ellipse
-            cx={coil.schematicToploadCx}
-            cy={coil.schematicToploadCy}
-            rx={coil.schematicToploadRx}
-            ry={coil.schematicToploadRy}
+          <path d={secondaryPath} stroke="#fbbf24" strokeWidth="2.5" />
+          <path d={coil.primaryWindingPath} stroke="#f59e0b" strokeWidth="3" />
+          <line x1="58" y1="220" x2="82" y2="220" stroke="#f59e0b" strokeWidth="3" />
+          <line x1="110" y1="220" x2="330" y2="220" stroke="#f59e0b" strokeWidth="3" />
+          {commonNodeConnected ? (
+            <line
+              x1={secondaryTerminals.low.x}
+              y1={secondaryTerminals.low.y}
+              x2={coil.commonNodeX}
+              y2={coil.commonNodeY}
+              stroke="#fbbf24"
+              strokeWidth="2"
+            />
+          ) : (
+            <>
+              <line
+                x1={secondaryTerminals.low.x}
+                y1={secondaryTerminals.low.y}
+                x2="218"
+                y2={coil.commonNodeY}
+                stroke="#fbbf24"
+                strokeWidth="2"
+              />
+              <line x1="242" y1="220" x2="330" y2="220" stroke="#fbbf24" strokeWidth="2" />
+              <circle cx="218" cy="220" r="4" fill="#be123c" stroke="#fb7185" />
+              <circle cx="242" cy="220" r="4" fill="#be123c" stroke="#fb7185" />
+              <text x="230" y="211" fill="#fb7185" fontSize="8" textAnchor="middle">
+                open
+              </text>
+            </>
+          )}
+          <circle cx={coil.commonNodeX} cy={coil.commonNodeY} r="5" fill="#f59e0b" />
+          <line
+            x1={coil.commonNodeX}
+            y1={coil.commonNodeY}
+            x2={coil.earthX}
+            y2={coil.earthY - 12}
+            stroke="#22c55e"
+            strokeWidth="2.5"
+          />
+          <line
+            x1={coil.earthX - 14}
+            y1={coil.earthY - 12}
+            x2={coil.earthX + 14}
+            y2={coil.earthY - 12}
+            stroke="#22c55e"
+          />
+          <line
+            x1={coil.earthX - 9}
+            y1={coil.earthY - 6}
+            x2={coil.earthX + 9}
+            y2={coil.earthY - 6}
+            stroke="#22c55e"
+          />
+          <line
+            x1={coil.earthX - 4}
+            y1={coil.earthY}
+            x2={coil.earthX + 4}
+            y2={coil.earthY}
+            stroke="#22c55e"
+          />
+          <line
+            x1={secondaryTerminals.high.x}
+            y1={secondaryTerminals.high.y}
+            x2={coil.highTerminalX}
+            y2={coil.highTerminalY}
+            stroke="#fbbf24"
+            strokeWidth="2"
+          />
+          <circle
+            cx={coil.highTerminalX}
+            cy={coil.highTerminalY}
+            r={coil.highTerminalRadius}
             fill="#d97706"
-            fillOpacity="0.4"
             stroke="#f59e0b"
             strokeWidth="2"
           />
-          <line
-            x1={coil.schematicSecondaryX}
-            y1={coil.schematicSecondaryY0}
-            x2={coil.schematicSecondaryX}
-            y2={coil.schematicSecondaryY1}
-            stroke="#fbbf24"
-            strokeWidth="2.5"
-          />
-          <circle
-            cx={coil.schematicSparkX0}
-            cy={coil.schematicSparkY}
-            r={coil.schematicSparkR}
-            fill="#ef4444"
-          />
-          <circle
-            cx={coil.schematicSparkX1}
-            cy={coil.schematicSparkY}
-            r={coil.schematicSparkR}
-            fill="#ef4444"
-          />
-          <line
-            x1={coil.schematicSparkX0 + coil.schematicSparkDx}
-            y1={coil.schematicSparkY}
-            x2={coil.schematicSparkX1 - coil.schematicSparkDx}
-            y2={coil.schematicSparkY}
-            stroke="#f87171"
-            strokeDasharray="2 2"
-          />
+          <circle cx={coil.primarySourceX} cy="220" r="5" fill="#38bdf8" />
+          <text x="205" y="50" fill="#fbbf24" fontSize="10" fontFamily="monospace">
+            remote high terminal
+          </text>
+          <text x="215" y="125" fill="#fbbf24" fontSize="11" fontFamily="monospace">
+            B
+          </text>
+          <text x="292" y="205" fill="#f59e0b" fontSize="11" fontFamily="monospace">
+            C
+          </text>
+          <text x="314" y="214" fill="#22c55e" fontSize="8" fontFamily="monospace">
+            common / earth
+          </text>
         </g>
       );
     }
