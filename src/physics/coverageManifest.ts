@@ -75,6 +75,15 @@ const GENERIC_WASM_SURFACE: WasmSurfaceDescriptor = {
 };
 
 export const DEDICATED_WASM_SURFACES = {
+  "us-31128-otis-elevator": {
+    kind: "generic-wasm",
+    sourceCrate: "fs-otis-wasm",
+    loaderFunction: "ensureOtisWasm",
+    exportName: "otis_topology_step",
+    artifactUrl: "/wasm/fs-otis/fs_otis_wasm_bg.wasm",
+    artifactSha256: "1625fd8ea88d245e947ca4a474c1b3b81b4b2fd5f3dbdbd620c3bec776a7046d",
+    refusalBoundary: "typed-wasm",
+  },
   "us-4750-howe-sewing-machine": {
     kind: "generic-wasm",
     sourceCrate: "fs-howe-wasm",
@@ -147,7 +156,6 @@ const GENERIC_WASM_PATENT_IDS = new Set([
   "us-3633-goodyear-rubber",
   "us-6162-corliss-steam-engine",
   "us-6469-lincoln-buoy",
-  "us-31128-otis-elevator",
   "us-36836-gatling-gun",
   "us-78317-nobel-dynamite",
   "us-79265-sholes-typewriter",

@@ -10,6 +10,7 @@
  * use automatic differentiation; the unused Dual class was removed.
  */
 
+import { OTIS_DECLARED_MAX_DISPLAY_TRAVEL_PER_S } from "./otisKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 export interface SensitivityResult {
@@ -1013,14 +1014,14 @@ export function computeParameterSensitivity(
     }
 
     case "us-31128-otis-elevator": {
-      if (controlKey === "cabPayload") {
+      if (controlKey === "displayRatePct") {
         return {
-          metricName: "Safety Pawl Engagement Normal Force",
-          derivativeSymbol: "∂F_pawl / ∂m_payload",
-          derivativeValue: 9.81,
-          derivativeUnit: "N / kg",
+          metricName: "Declared Coordinate-Speed Magnitude",
+          derivativeSymbol: "∂|dq_D/dt| / ∂r_display",
+          derivativeValue: OTIS_DECLARED_MAX_DISPLAY_TRAVEL_PER_S / 100,
+          derivativeUnit: "normalized coordinate·s⁻¹ / %",
           interpretation:
-            "Gravitational ratchet wedge clamping force against vertical serrated guides upon rope release.",
+            "Sensitivity of the explicitly declared studio display rate. This is a normalized animation coordinate, not a historical speed, load, force, or stopping-distance claim.",
         };
       }
       break;

@@ -2,12 +2,12 @@
 
 This document is the design inventory for integrating the **FrankenSim** computational physics engine (`~/projects/frankensim`) into **Classic Patents** (`classic-patents.com`). It is not the completion ledger. The executable source of truth is [`src/physics/coverageManifest.ts`](../src/physics/coverageManifest.ts), enforced by `scripts/verify-data.ts` and the runtime-instantiation tests.
 
-## Executable status (2026-08-31)
+## Executable status (2026-09-01)
 
 - 79/79 catalogue ids have a pinned facsimile, explicit visual route, TypeScript default telemetry owner, and live equation set; 78/79 have reviewed ledgers and 69/79 publish an accepted archival edition.
-- Runtime surfaces: 3 patent-specific WASM packages (Flyer, Goddard's source-bounded 1914 apparatus, and Daimler's source-bounded marine installation), 1 dedicated interpretive package (Tesla coil), 37 consumers of generic FrankenSim owners, and 38 typed-host-only records. Da Vinci's narrow package composes five generic `fs-mbd` revolute joints and one normalized prismatic insertion joint while leaving unprinted dimensions and cup contact explicitly illustrative. Edison's narrow package composes the generic `fs-conduction` gray-body balance with explicit operating-point inputs and the source's seven-thousandths-inch filament example; it does not infer efficacy or lifetime. Goddard's separately named liquid-nozzle seam is adjacent to, not called by, the catalogued solid-charge US 1,102,653 apparatus; Tesla's seam is an unvalidated lumped-LC presentation model.
+- Runtime surfaces: 3 patent-specific WASM packages (Flyer, Goddard's source-bounded 1914 apparatus, and Daimler's source-bounded marine installation), 1 dedicated interpretive package (Tesla coil), 38 consumers of generic FrankenSim owners, and 37 typed-host-only records. Da Vinci's narrow package composes five generic `fs-mbd` revolute joints and one normalized prismatic insertion joint while leaving unprinted dimensions and cup contact explicitly illustrative. Howe's narrow package composes one prescribed `fs-mbd` shaft drive into the source's needle-arm, picker, shuttle, lifting-rod, and baster-feed joints; it uses only the two local dimensions printed by the grant and refuses loop capture below an explicit normalized display boundary. Otis's narrow package composes twelve generic `fs-mbd` scalar joints for the complete 1861 hoist, reversing-belt, stop, brake, hook-rack, and counterpoise topology; its travel and speed are explicitly normalized display coordinates because the grant supplies no load, force, timing, travel, or power data. Edison's narrow package composes the generic `fs-conduction` gray-body balance with explicit operating-point inputs and the source's seven-thousandths-inch filament example; it does not infer efficacy or lifetime. Goddard's separately named liquid-nozzle seam is adjacent to, not called by, the catalogued solid-charge US 1,102,653 apparatus; Tesla's seam is an unvalidated lumped-LC presentation model.
 - Shared bus: 47 time-advancing TypeScript updaters and 32 typed snapshot publishers. Every cold start is `HONEST_PLACEHOLDER`; a computed host frame is `TS_FALLBACK`. No shared-bus updater currently claims `WASM` provenance.
-- `wasmArtifacts.test.ts` instantiates and steps all six shipped packages. Flyer, Goddard, Daimler, Da Vinci, and Tesla prove typed WASM refusals; finite-field host decoders still fail closed on malformed accepted results.
+- `wasmArtifacts.test.ts` instantiates and steps all nine shipped packages. Flyer, Goddard, Daimler, Da Vinci, Edison, Howe, Otis, and Tesla prove typed WASM refusals; finite-field host decoders still fail closed on malformed accepted results.
 
 The bullets below preserve mechanism requirements and design ideas. A bullet means the treatment exists in the design inventory; it does not assert a Rust owner, a stepped WASM path, cross-face parity, or scientific validation.
 
@@ -107,8 +107,9 @@ The bullets below preserve mechanism requirements and design ideas. A bullet mea
   - Liquid-crystalline poly-p-phenylene terephthalamide hydrogen-bonded polymer chains
   - Extreme tensile modulus ($E = 130\ \text{GPa}$) and stress-strain rupture threshold
 - **Elias Howe Sewing Machine (US 4,750)**
-  - Eye-pointed needle thread loop penetration and oscillating shuttle lockstitch capture
-  - Camshaft and feed-dog synchronization kinematics
+  - One main shaft C carries needle cam Q and feed cam R; follower P rocks needle-arm G about shaft O while shuttle K remains prismatic in trough I between attached picker staves J
+  - Lifting-rod W creates the upper-thread slack named by Claim 2, and pinned baster-plate H advances after the shuttle clears the loop
+  - The grant's one-eighth-inch needle-eye offset and three-quarter-inch baster-point pitch remain the only historical dimensions; the cam profile, travel, cadence, and loop-clearance threshold are declared normalized display parameters
 - **Douglas Engelbart Coordinate Computer Mouse (US 3,541,541)**
   - Orthogonal knife-edge dual wheels planar coordinate resolver kinematics
   - Potentiometer resistance wiper angle to $(X, Y)$ screen cursor position
@@ -181,7 +182,8 @@ must render without COOP/COEP.
 | Einstein–Szilard | absorption-cycle thermo | T_evap, T_abs, COP, lift-bubble rate | Bubble pump frequency from the sample; COP card is not a second formula |
 | Goodyear | `fs-lattice` cross-link kinetics | ν, E(T, S, t) | Mesh stiffness / bounce from ν; undercured vs scorched is a refusal/regime flag |
 | Kwolek | `fs-solid` nematic chain | σ, ε, alignment | Chains align from the order parameter; rupture is a refusal, not a scale(0) |
-| Howe | `fs-mbd` cam/shuttle | needle Z, shuttle θ, feed | Lockstitch only closes when the phase window is true — that is Claim 1 |
+| Howe | `fs-mbd` one-drive joint composition | shaft angle, needle-arm angle, shuttle X, picker angles, lifting-rod Y, baster-feed X, loop/refusal state | The curved needle remains fixed to arm G, shuttle K remains in trough I, attached picker staves exchange it, W opens slack, and Claim 1 capture occurs only when source order and the declared clearance boundary agree |
+| Otis | `fs-mbd` twelve-joint source topology | platform D, safety bar F, paired E/f rotations, H/I/N drive rotation, shipper S, brake Z, counterpoise R, claim/refusal states | G stays tethered through pulleys i to H; O/P remain guided between N and J/K/L; S/T/U/V moves the belt/brake chain; Q moves R opposite D; a Claim 1 inversion preserves guided geometry but refuses the hook lock |
 | Engelbart | dual-wheel kinematics | X, Y, wheel θ | Cursor and wheels are the same integrator; no leftover `isDragging` physics |
 | Lincoln | hydrostatic ΔV | Fb, draft | Bellows mesh volume is the state; hull rise = Δdraft |
 | Lamarr | deterministic 88-key roll | channel, hop index | Waterfall bars are the roll, not `Math.random`; jamming SNR from the kernel |

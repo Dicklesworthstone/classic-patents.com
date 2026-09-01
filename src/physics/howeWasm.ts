@@ -1,7 +1,7 @@
 import {
-  type HoweLockstitchState,
   HOWE_BASTER_POINT_PITCH_IN,
   HOWE_NEEDLE_EYE_OFFSET_IN,
+  type HoweLockstitchState,
   stepHoweLockstitch,
 } from "./machineKernels";
 

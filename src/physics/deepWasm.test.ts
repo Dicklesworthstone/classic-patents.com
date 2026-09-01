@@ -42,7 +42,7 @@ import {
   writeColormappedField,
 } from "./fieldTextures";
 import { extraWasmFns, genericKernelSource } from "./genericWasm";
-import { stepOtisElevator } from "./machineKernels";
+import { stepOtisTopology } from "./otisWasm";
 import { stepTeslaMotorFig9 } from "./teslaKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
@@ -172,10 +172,30 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     expect(stepNoyceIC({ reverseBias: 5 }).poissonPeak).toBeGreaterThan(0);
     expect(stepGoodyearRubber(145, 8, 30).grayScottMeanV).toBeGreaterThanOrEqual(0);
     expect(stepMarconiRadio(88, 10, 28).sparkOddHarmonicPower).toBeGreaterThan(0);
-    const otis = stepOtisElevator({ cabPayloadKg: 650, cableTensionPct: 100 });
-    expect(otis.cableCertificate).toBe("Certified");
-    const snapped = stepOtisElevator({ cabPayloadKg: 650, cableTensionPct: 0 });
-    expect(snapped.cableRefused).toBe(true);
+    const otis = stepOtisTopology({
+      platformPositionNormalized: 0.55,
+      drivePhaseRad: 0,
+      driveCommand: 1,
+      ropeGIntact: true,
+      stopRopePulled: false,
+      claim1HookLockEnabled: true,
+      claim3BrakeInterlockEnabled: true,
+      claim4CounterpoiseEnabled: true,
+    });
+    expect(otis.scalarJointCoordinates).toBe(12);
+    expect(otis.straightBeltOWorking).toBe(true);
+    const snapped = stepOtisTopology({
+      platformPositionNormalized: 0.55,
+      drivePhaseRad: 0,
+      driveCommand: 1,
+      ropeGIntact: false,
+      stopRopePulled: false,
+      claim1HookLockEnabled: true,
+      claim3BrakeInterlockEnabled: true,
+      claim4CounterpoiseEnabled: true,
+    });
+    expect(snapped.pawlsFEngaged).toBe(true);
+    expect(snapped.freeFallCounterfactual).toBe(false);
   });
 
   test("couple edges name source-bound mechanisms as ts-fallback", () => {
@@ -214,7 +234,10 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     ).toBe("range");
     expect(coupleEdgesFor("us-2981877-noyce-ic", { reverseBias: 5 })[0]?.from).toBe("reverse bias");
     expect(coupleEdgesFor("us-4750-howe-sewing-machine", { crankRpm: 200 })[0]?.from).toBe(
-      "flywheel",
+      "main shaft C",
+    );
+    expect(coupleEdgesFor("us-4750-howe-sewing-machine", { crankRpm: 200 })[0]?.to).toBe(
+      "baster plate H feed",
     );
   });
 

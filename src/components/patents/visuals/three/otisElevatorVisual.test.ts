@@ -1,41 +1,61 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { stepOtisElevator } from "@/physics/machineKernels";
-import { buildOtisElevatorModel, updateOtisElevatorKinematics } from "./otisElevatorModel";
+import { stepOtisTopology } from "@/physics/otisWasm";
+import {
+  buildOtis1861HoistingModel,
+  inspectOtis1861Connectivity,
+  updateOtis1861Kinematics,
+} from "./otis1861HoistingModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
 describe("US 31,128 Elisha Otis Safety Hoisting Apparatus visual & mechanics boundary", () => {
-  test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
+  test("routes pure procedural source-order 2D and 3D models", () => {
     const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "OtisElevator3D.tsx"),
+      join(VISUALS_DIRECTORY, "three", "OtisHoistingApparatus3D.tsx"),
       "utf8",
     );
     const modelSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "otisElevatorModel.ts"),
+      join(VISUALS_DIRECTORY, "three", "otis1861HoistingModel.ts"),
+      "utf8",
+    );
+    const twoDimensionalSource = readFileSync(
+      join(VISUALS_DIRECTORY, "OtisHoistingApparatusSim.tsx"),
       "utf8",
     );
 
-    expect(threeSource).not.toContain("GLTFLoader");
-    expect(threeSource).not.toContain(".glb");
-    expect(threeSource).not.toContain(".gltf");
-    expect(modelSource).toContain("buildOtisElevatorModel");
-    expect(modelSource).toContain("updateOtisElevatorKinematics");
-    expect(modelSource).toContain("otisSheaveCrate");
-    expect(modelSource).not.toContain("cyclicSymmetry(6, 0.4)");
-    expect(modelSource).not.toContain("stepOtisElevator({})");
-    expect(threeSource).toContain("p.cabPayloadKg");
-    expect(threeSource).toContain("p.cableTensionPct");
+    for (const source of [threeSource, modelSource, twoDimensionalSource]) {
+      expect(source).not.toContain("GLTFLoader");
+      expect(source).not.toContain(".glb");
+      expect(source).not.toContain(".gltf");
+      expect(source).not.toContain("stepOtisElevator");
+      expect(source).not.toContain("cabPayload");
+      expect(source).not.toContain("pawlEngagementMs");
+      expect(source).not.toContain("stoppingDistance");
+      expect(source).not.toContain("hoistTensionKn");
+    }
+    for (const letteredOrgan of [
+      "windingDrumH",
+      "straightBeltO",
+      "crossedBeltP",
+      "shipperS",
+      "handRopeT",
+      "stopRopeU",
+      "brakeShoeZ",
+      "counterpoiseR",
+    ]) {
+      expect(modelSource).toContain(letteredOrgan);
+    }
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
     const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "OtisElevator3D.tsx"),
+      join(VISUALS_DIRECTORY, "three", "OtisHoistingApparatus3D.tsx"),
       "utf8",
     );
     const modelSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "otisElevatorModel.ts"),
+      join(VISUALS_DIRECTORY, "three", "otis1861HoistingModel.ts"),
       "utf8",
     );
 
@@ -45,66 +65,84 @@ describe("US 31,128 Elisha Otis Safety Hoisting Apparatus visual & mechanics bou
     }
   });
 
-  test("exposes authentic camera presets and cutaway mode for hoistway observation", () => {
+  test("exposes views for every major connected subsystem", () => {
     const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "OtisElevator3D.tsx"),
+      join(VISUALS_DIRECTORY, "three", "OtisHoistingApparatus3D.tsx"),
       "utf8",
     );
 
-    for (const preset of ["iso", "safety_pawls", "leaf_spring", "cab", "crown_sheave", "top"]) {
+    for (const preset of ["overview", "safety", "drive", "interlock", "counterpoise", "top"]) {
       expect(threeSource).toContain(preset);
     }
 
     expect(threeSource).toContain("isCutaway");
-    expect(threeSource).toContain("Otis Safety Elevator 3D");
+    expect(threeSource).toContain("Otis 1861 Complete Hoisting Apparatus 3D");
     expect(threeSource).toContain("controls.setView");
     expect(threeSource).not.toContain("cameraRef");
   });
 
-  test("computes genuine Otis wagon-spring safety dynamics in SI units", () => {
-    const intact = stepOtisElevator({ cabPayloadKg: 650, cableTensionPct: 100 });
-    expect(intact.isSnapped).toBe(false);
-    expect(intact.isPawlEngaged).toBe(false);
-    expect(intact.springDeflectionCm).toBe(10);
-    expect(intact.hoistTensionKn).toBeGreaterThan(9.0);
-    expect(intact.springBowY).toBeCloseTo(0.22, 4);
-    expect(intact.schematicSpringBowPx).toBe(15);
-    expect(intact.schematicPawlExtPx).toBe(4);
-    expect(intact.springBowSvgH).toBe(18);
-    expect(intact.pawlSvgX).toBe(4);
-    expect(intact.pawlSvgY).toBeCloseTo(7.2, 2);
+  test("keeps every moving safety organ parented to D and every rope endpoint tethered", () => {
+    const model = buildOtis1861HoistingModel();
+    const intact = stepOtisTopology({
+      platformPositionNormalized: 0.55,
+      drivePhaseRad: 1,
+      driveCommand: 1,
+      ropeGIntact: true,
+      stopRopePulled: false,
+      claim1HookLockEnabled: true,
+      claim3BrakeInterlockEnabled: true,
+      claim4CounterpoiseEnabled: true,
+    });
+    updateOtis1861Kinematics(model, intact);
+    expect(inspectOtis1861Connectivity(model)).toEqual([]);
+    expect(model.nodes.gearJ.parent).toBe(model.nodes.windingDrumH);
+    expect(model.nodes.gearK.parent).toBe(model.nodes.shaftI);
+    expect(model.nodes.gearJ.getWorldPosition(model.nodes.gearJ.position.clone()).z).toBeCloseTo(
+      model.nodes.gearK.getWorldPosition(model.nodes.gearK.position.clone()).z,
+      6,
+    );
+    expect(model.nodes.windingDrumH.rotation.z).toBe(-model.nodes.shaftI.rotation.z);
+    expect(model.nodes.lowerStopArm.parent).toBe(model.nodes.platformD);
+    expect(model.nodes.armW.parent).toBe(model.nodes.brakeLinkageWXY);
+    expect(model.nodes.ropeGIntact.visible).toBe(true);
+    expect(model.nodes.ropeGBrokenPlatform.visible).toBe(false);
+    expect(model.nodes.straightBeltO.material).toBe(model.materials.beltWorking);
+    expect(model.nodes.crossedBeltP.material).toBe(model.materials.beltIdle);
+    expect(model.nodes.straightBeltO.geometry.getAttribute("position").getZ(0)).toBe(0);
+    expect(model.nodes.handRopeT.geometry.getAttribute("position").getZ(0)).toBeCloseTo(0.97, 6);
 
-    const severed = stepOtisElevator({ cabPayloadKg: 650, cableTensionPct: 0 });
-    expect(severed.isSnapped).toBe(true);
-    expect(severed.isPawlEngaged).toBe(true);
-    expect(severed.pawlEngagementMs).toBe(38);
-    expect(severed.peakArrestForceKn).toBeGreaterThan(15.0);
-    expect(severed.stoppingDistanceCm).toBe(4.5);
-    expect(severed.cabFallPx).toBeCloseTo(12, 2);
-    expect(severed.schematicSpringBowPx).toBe(0);
-    expect(severed.schematicPawlExtPx).toBe(15);
-    expect(intact.cabFallPx).toBe(0);
-  });
+    const stopped = stepOtisTopology({
+      platformPositionNormalized: 0.55,
+      drivePhaseRad: 1,
+      driveCommand: 0,
+      ropeGIntact: true,
+      stopRopePulled: true,
+      claim1HookLockEnabled: true,
+      claim3BrakeInterlockEnabled: true,
+      claim4CounterpoiseEnabled: true,
+    });
+    updateOtis1861Kinematics(model, stopped);
+    expect(model.nodes.straightBeltO.geometry.getAttribute("position").getZ(0)).toBe(-1.25);
+    expect(model.nodes.crossedBeltP.geometry.getAttribute("position").getZ(0)).toBe(1.25);
+    expect(model.nodes.brakeShoeZ.position.y).toBe(-0.43);
 
-  test("builds and articulates procedural hoistway frame and safety pawls correctly", () => {
-    const { root, nodes, materials, dispose } = buildOtisElevatorModel();
-    expect(root.children.length).toBeGreaterThan(2);
-    expect(nodes.leftRackTeeth.length).toBe(32);
-    expect(nodes.rightRackTeeth.length).toBe(32);
-    expect(nodes.springLeaves.length).toBe(4);
-
-    // Initial intact state
-    const intact = stepOtisElevator({ cabPayloadKg: 650, cableTensionPct: 100 });
-    updateOtisElevatorKinematics(nodes, materials, 0.016, 0, false, intact.springBowY, false);
-    expect(nodes.tautCable.visible).toBe(true);
-    expect(nodes.severedCableTop.visible).toBe(false);
-
-    // Severed state
-    updateOtisElevatorKinematics(nodes, materials, 0.016, 0.5, true, 0, true);
-    expect(nodes.tautCable.visible).toBe(false);
-    expect(nodes.severedCableTop.visible).toBe(true);
-    expect(nodes.severedCableBottom.visible).toBe(true);
-
-    dispose();
+    const broken = stepOtisTopology({
+      platformPositionNormalized: 0.55,
+      drivePhaseRad: 1,
+      driveCommand: -1,
+      ropeGIntact: false,
+      stopRopePulled: false,
+      claim1HookLockEnabled: true,
+      claim3BrakeInterlockEnabled: true,
+      claim4CounterpoiseEnabled: true,
+    });
+    updateOtis1861Kinematics(model, broken);
+    expect(inspectOtis1861Connectivity(model)).toEqual([]);
+    expect(model.nodes.ropeGIntact.visible).toBe(false);
+    expect(model.nodes.ropeGBrokenPlatform.visible).toBe(true);
+    expect(model.nodes.ropeGBrokenDrum.visible).toBe(true);
+    expect(model.nodes.leftPawlF.rotation.z).toBeLessThan(0);
+    expect(model.nodes.rightPawlF.rotation.z).toBeGreaterThan(0);
+    model.dispose();
   });
 });

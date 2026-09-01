@@ -995,14 +995,38 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-31128-otis-elevator",
-      claimTitle: "Spring-Loaded Safety Pawl Ratchet Engagement upon Hoisting Rope Severance",
+      claimTitle: "Hook-Form Pawls and Racks That Lock under Platform Weight",
       activeDescription:
-        "Claim 1 holds ratchet pawls disengaged against spring tension while the hoist rope is taut; upon rope failure, the spring snaps pawls into guide rails.",
+        "Claim 1 gives pawls f and racks C complementary hook form so a broken lifting rope G lets the platform's own weight draw them into a lock that resists separation.",
       invertedDescription:
-        "Unchecked gravitational free-fall: severed hoisting cable causes immediate catastrophic elevator car plunge, resulting in fatal passenger impact.",
-      failureModeName: "Hoisting Cable Severance Free-Fall Impact",
+        "Counterfactual geometry: pawls f remain guided with platform D but cannot lock into racks C after rope G breaks; the model refuses to assert an arrest.",
+      failureModeName: "Claim 1 Hook-Lock Geometry Removed",
       historicalPriorArt:
-        "Hoists and freight elevators were considered death traps because cable breakage meant unchecked plummet to the pit.",
+        "The patent identifies separation of pawls from rack teeth under platform load as the contingency that its hook geometry prevents.",
+    },
+    {
+      claimNumber: 3,
+      patentId: "us-31128-otis-elevator",
+      claimTitle: "Simultaneous Belt Idling and Brake Application",
+      activeDescription:
+        "Claim 3 connects slide S, brake shoe Z, and hand rope T so a stop shifts straight belt O and crossed belt P onto idle pulleys J and K while applying Z to working pulley L.",
+      invertedDescription:
+        "Counterfactual interlock: a stop still idles both belts, but brake shoe Z is disconnected from the same control action; no stopping performance is inferred.",
+      failureModeName: "Claim 3 Brake Interlock Disconnected",
+      historicalPriorArt:
+        "The claim is directed to coordinated drive disengagement and braking, not to a quantified brake force or stopping distance.",
+    },
+    {
+      claimNumber: 4,
+      patentId: "us-31128-otis-elevator",
+      claimTitle: "Opposite-Wound Counterpoise without Safety Interference",
+      activeDescription:
+        "Claim 4 attaches counterpoise rope Q to the opposite side of winding drum H from lifting rope G, so R moves opposite platform D without interfering with safety mechanism E-e-f.",
+      invertedDescription:
+        "Counterfactual winding: R follows D rather than opposing it, exposing why the claimed opposite-side attachment matters without inventing counterweight mass or travel.",
+      failureModeName: "Claim 4 Counterpoise Winding Inverted",
+      historicalPriorArt:
+        "The source claims the rope attachment topology and preservation of the safety path; it does not disclose a balancing mass ratio.",
     },
   ],
   "us-48475-yale-lock": [

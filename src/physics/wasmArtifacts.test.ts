@@ -5,6 +5,7 @@ import { decodeEdisonRadiativeWasmStep } from "./edisonWasm";
 import { decodeFlyerState } from "./flyerWasm";
 import { decodeGoddardApparatusWasmStep, decodeGoddardWasmStep } from "./goddardWasm";
 import { decodeHoweTopologyWasmStep } from "./howeWasm";
+import { decodeOtisTopologyWasmStep } from "./otisWasm";
 import { decodeTeslaWasmStep } from "./teslaWasm";
 
 async function wasmBytes(relativePath: string): Promise<ArrayBuffer> {
@@ -187,6 +188,41 @@ describe("shipped FrankenSim WebAssembly artifacts", () => {
     expect(refused.refusal?.repairs.length).toBeGreaterThan(0);
   });
 
+  test("instantiates the source-bounded Otis multibody bundle and proves its refusal", async () => {
+    const module = await import("../../public/wasm/fs-otis/fs_otis_wasm.js");
+    const bytes = await wasmBytes("../../public/wasm/fs-otis/fs_otis_wasm_bg.wasm");
+    expect(WebAssembly.validate(bytes)).toBe(true);
+    await module.default({ module_or_path: bytes });
+
+    const raise = decodeOtisTopologyWasmStep(
+      module.otis_topology_step(0.55, 0, 1, true, false, true, true, true),
+    );
+    expect(raise?.scalar_joint_coordinates).toBe(12);
+    expect(raise?.independent_drive_dofs).toBe(1);
+    expect(raise?.platform_axis).toEqual([0, 1, 0]);
+    expect(raise?.shipper_axis).toEqual([1, 0, 0]);
+    expect(raise?.straight_belt_o_working).toBe(true);
+    expect(raise?.counterpoise_position_normalized).toBeCloseTo(0.45, 12);
+
+    const caught = decodeOtisTopologyWasmStep(
+      module.otis_topology_step(0.55, 0, 1, false, false, true, true, true),
+    );
+    expect(caught?.pawls_f_engaged).toBe(true);
+    expect(caught?.mechanism_mode).toBe("rope-failure-hook-lock");
+
+    const counterfactual = decodeOtisTopologyWasmStep(
+      module.otis_topology_step(0.55, 0, 1, false, false, false, true, true),
+    );
+    expect(counterfactual?.free_fall_counterfactual).toBe(true);
+    expect(counterfactual?.platform_motion_direction).toBe(-1);
+
+    const refused = JSON.parse(
+      module.otis_topology_step(1.2, 0, 1, true, false, true, true, true),
+    ) as { refusal?: { code: string; repairs: string[] } };
+    expect(refused.refusal?.code).toBe("input-outside-domain");
+    expect(refused.refusal?.repairs.length).toBeGreaterThan(0);
+  });
+
   test("instantiates the Edison fs-conduction balance and proves its refusal", async () => {
     const module = await import("../../public/wasm/fs-edison/fs_edison_wasm.js");
     const bytes = await wasmBytes("../../public/wasm/fs-edison/fs_edison_wasm_bg.wasm");
@@ -244,6 +280,7 @@ describe("shipped FrankenSim WebAssembly artifacts", () => {
     ).toBeNull();
     expect(decodeGoddardWasmStep("not json")).toBeNull();
     expect(decodeHoweTopologyWasmStep("not json")).toBeNull();
+    expect(decodeOtisTopologyWasmStep("not json")).toBeNull();
     expect(decodeGoddardWasmStep('{"ok":{"thrust_newtons":1}}')).toBeNull();
     expect(
       decodeGoddardWasmStep(

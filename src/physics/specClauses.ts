@@ -5,6 +5,7 @@
 
 import { stepFermiKinetics } from "./fermiKinetics";
 import { stepHoweSewingMachine } from "./machineKernels";
+import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { stepTeslaMotorFig9, teslaMotorPhaseHz } from "./teslaKernel";
 
 export interface SpecClause {
@@ -1490,22 +1491,45 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-31128-otis-elevator") {
-    const tension = params.cableTension ?? 0;
-    const isSnapped = tension < 50;
+    const state = stepOtis1861Topology(readOtisTopologyControls(params));
     return [
       {
-        id: "pawls",
-        phrase: "pawls",
-        active: isSnapped,
-        tone: isSnapped ? "live" : "held",
-        caption: `Cable Tension=${tension} N: Spring-loaded ratchet pawls engage notched guide rails the moment hoist cable snaps.`,
+        id: "breaking-rope-g",
+        phrase: "breaking of the rope G",
+        active: !state.ropeGTaut,
+        tone: state.ropeGTaut ? "held" : "live",
+        caption: state.ropeGTaut
+          ? "Rope G remains intact; safety bar F holds the E/f linkage in its running state."
+          : "Rope G is broken in the displayed counterfactual; F releases the paired E/f linkage.",
       },
       {
-        id: "teeth-racks",
-        phrase: "teeth of the racks",
-        active: true,
-        tone: "held",
-        caption: "Hook-formed teeth along vertical racks arrest platform downward motion.",
+        id: "pawls-teeth-lock",
+        phrase: "pawls and teeth to lock together",
+        active: state.pawlsFEngaged,
+        tone: state.freeFallCounterfactual ? "broken" : state.pawlsFEngaged ? "live" : "held",
+        caption: state.freeFallCounterfactual
+          ? "Claim 1 hook geometry is inverted, so the kernel refuses to assert a lock."
+          : state.pawlsFEngaged
+            ? "Platform weight has turned hook pawls f into hook racks C: Claim 1 is satisfied."
+            : "Claim 1 geometry remains available while rope G is intact.",
+      },
+      {
+        id: "simultaneous-brake-belt-shift",
+        phrase: "simultaneous application of the brake and the shifting of the belts",
+        active: state.bothBeltsIdle,
+        tone: state.claim3StopInterlockSatisfied ? "held" : "broken",
+        caption: state.claim3StopInterlockSatisfied
+          ? "A stop moves O/P to idle pulleys J/K while applying brake shoe Z to working pulley L."
+          : "Claim 3 is inverted: O/P are idle, but brake Z is disconnected from the stop action.",
+      },
+      {
+        id: "counterpoise-opposite-side",
+        phrase: "opposite side from the lifting-rope G",
+        active: state.claim4CounterpoiseTopologySatisfied,
+        tone: state.claim4CounterpoiseTopologySatisfied ? "held" : "broken",
+        caption: state.claim4CounterpoiseTopologySatisfied
+          ? "Rope Q is opposite-wound on drum H, so counterpoise R moves opposite platform D."
+          : "Claim 4 is inverted: R follows D instead of opposing it.",
       },
     ];
   }

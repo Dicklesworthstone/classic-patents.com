@@ -64,6 +64,7 @@ import {
   stepSholesTypewriter,
 } from "./machineKernels";
 import { stepMultiTouch } from "./multiTouchKernel";
+import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { stepPageRank } from "./pageRankKernel";
 import { goddardNozzleMatch } from "./thermochem";
 import { stepWattCondenser } from "./wattCondenserKernel";
@@ -3231,7 +3232,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     controls: [
       {
         id: "crankRpm",
-        label: "Flywheel Drive Velocity",
+        label: "Declared Display Crank",
         min: 60,
         max: 420,
         step: 10,
@@ -3240,7 +3241,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "stitchPitchMm",
-        label: "Stitch Pitch",
+        label: "Declared Display Pitch",
         min: 1.0,
         max: 6.0,
         step: 0.1,
@@ -3258,7 +3259,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "isCranking",
-        label: "Drive Power",
+        label: "Crank Motion",
         min: 0,
         max: 1,
         step: 1,
@@ -3276,35 +3277,35 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
 
       return [
         {
-          label: "Stitch Velocity",
+          label: "Display Cadence",
           value: sew.stitchesPerMinute.toString(),
           unit: "SPM",
           badgeColor: "cyan",
           progressPct: clampProgress((sew.stitchesPerMinute / 350) * 100),
         },
         {
-          label: "Shuttle Oscillations",
+          label: "Display Shuttle Cycles",
           value: shuttleHz,
           unit: "Hz",
           badgeColor: "emerald",
           progressPct: clampProgress((Number(shuttleHz) / 6) * 100),
         },
         {
-          label: "Cloth Feed",
+          label: "Display Cloth Feed",
           value: `${sew.clothFeedMmPerS} mm/s`,
           unit: "v_feed",
           badgeColor: "amber",
           progressPct: clampProgress((sew.clothFeedMmPerS / 20) * 100),
         },
         {
-          label: "Crank ω",
+          label: "Display Crank ω",
           value: `${sew.crankOmegaDegPerS}`,
           unit: "deg/s",
           badgeColor: "purple",
           progressPct: Math.min(100, (sew.crankOmegaDegPerS / 2160) * 100),
         },
         {
-          label: "Stitch Length",
+          label: "Display Stitch Pitch",
           value: stitchLen,
           unit: "mm",
           badgeColor: "amber",
@@ -3320,7 +3321,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       ];
     },
     pedagogicalInsight:
-      "A curved eye-pointed needle pushes a thread loop through the cloth; an oscillating shuttle carrying a second bobbin thread passes through the loop, locking both threads inside the seam.",
+      "One shaft orders the curved eye-pointed needle on arm G, lifting-rod W, shuttle K in trough I, and pinned baster-plate H. Cadence, pitch, travel, and clearance are declared display parameters because US 4,750 does not print historical operating values for them.",
   },
   "us-593138-tesla-coil": {
     domain: "electromagnetics_flux",
@@ -3529,111 +3530,103 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "Drawing back the hammer with the thumb lifts the pawl to advance the ratchet 72 degrees, while simultaneously withdrawing and re-engaging the perimeter bolt to lock the next chamber directly into concentric alignment with the stationary rifled barrel.",
   },
   "us-31128-otis-elevator": {
-    domain: "continuum_elasticity",
-    domainTitle: "Transverse Leaf Spring Deflection & Ratchet Catch Kinematics",
-    equationName: "Elastic Release Time Constant & Deceleration Impulse",
+    domain: "multibody_topology",
+    domainTitle: "Connected Hoist, Reversing-Belt, Brake, and Hook-Rack Topology",
+    equationName: "Claimed Discrete Interlocks and Opposite Counterpoise Motion",
     governingEquation:
-      "t_{\\text{snap}} = \\frac{\\pi}{2} \\sqrt{\\frac{m_{\\text{pawl}}}{k_{\\text{spring}}}} \\quad \\text{and} \\quad F_{\\text{arrest}} = m_{\\text{cab}} (g + a_{\\text{stop}})",
-    engineMethod: "FrankenSimEngine.stepOtisElevator",
+      "\\neg G_{\\text{taut}} \\land C_1 \\Rightarrow f \\hookrightarrow C; \\quad \\text{stop} \\Rightarrow (O,P) \\to (J,K) \\land Z \\dashv L; \\quad dq_R=-dq_D",
+    engineMethod: "stepOtis1861Topology / fs-otis-wasm",
     controls: [
       {
-        id: "cabPayload",
-        label: "Elevator Passenger & Freight Payload",
-        min: 200,
-        max: 1500,
-        step: 50,
-        defaultValue: 650,
-        unit: "kg",
+        id: "driveCommand",
+        label: "Drive Command (P / Idle / O)",
+        min: -1,
+        max: 1,
+        step: 1,
+        defaultValue: 0,
+        unit: "state",
       },
       {
-        id: "cableTension",
-        label: "Hoisting Cable Tension",
+        id: "displayRatePct",
+        label: "Declared Display Rate",
         min: 0,
         max: 100,
-        step: 5,
+        step: 1,
+        defaultValue: 60,
+        unit: "%",
+      },
+      {
+        id: "ropeGIntegrityPct",
+        label: "Displayed Rope G Integrity",
+        min: 0,
+        max: 100,
+        step: 100,
         defaultValue: 100,
+        unit: "%",
+      },
+      {
+        id: "stopRopePulled",
+        label: "Stop Rope U",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 0,
         unit: "%",
       },
     ],
     computeMetrics: (p) => {
-      const otis = FrankenSimEngine.stepOtisElevator({
-        cabPayloadKg: p.cabPayload ?? 650,
-        cableTensionPct: p.cableTension ?? 100,
-      });
-      const isSnapped = otis.isSnapped;
-      const deflectionCm = otis.springDeflectionCm.toFixed(1);
-      const snapTimeMs = otis.pawlEngagementMs || 38;
-      const arrestForceKn = otis.peakArrestForceKn.toFixed(1);
-      const stopDistCm = otis.stoppingDistanceCm;
-
+      const otis = stepOtis1861Topology(readOtisTopologyControls(p));
       return [
         {
-          label: "Spring Bow Deflection",
-          value: `${deflectionCm} cm`,
-          unit: "δ",
-          badgeColor: Number(deflectionCm) > 5 ? "emerald" : "amber",
-          progressPct: clampProgress((Number(deflectionCm) / 10) * 100),
-        },
-        {
-          label: "Brake Release Speed",
-          value: `${snapTimeMs} ms`,
-          unit: "t_snap",
-          badgeColor: "cyan",
-          progressPct: clampProgress(95),
-        },
-        {
-          label: "Arrest Catch Status",
-          value: isSnapped ? "LOCKED (ARRESTED)" : "RUNNING (FREE)",
+          label: "Operating Mode",
+          value: otis.mechanismMode,
           unit: "state",
-          badgeColor: isSnapped ? "emerald" : "purple",
-          progressPct: clampProgress(isSnapped ? 100 : 0),
+          badgeColor: otis.freeFallCounterfactual ? "rose" : "emerald",
+          progressPct: otis.freeFallCounterfactual ? 0 : 100,
         },
         {
-          label: "Arrest Dynamic Force",
-          value: arrestForceKn,
-          unit: "kN",
-          badgeColor: isSnapped ? "amber" : "emerald",
-          progressPct: clampProgress((Number(arrestForceKn) / 30) * 100),
-        },
-        {
-          label: "Arrest Catch Distance",
-          value: `${stopDistCm} cm`,
-          unit: "Δy",
-          badgeColor: isSnapped ? "emerald" : "cyan",
-          progressPct: clampProgress(isSnapped ? 45 : 0),
-        },
-        {
-          label: "Hanging Mass",
-          value: `${otis.hangingMassKg} kg`,
-          unit: "m",
-          badgeColor: "amber",
-          progressPct: clampProgress((otis.hangingMassKg / 1500) * 100),
-        },
-        {
-          label: "Hoist Tension",
-          value: `${otis.hoistTensionKn} kN`,
-          unit: "T",
+          label: "Belt O / P",
+          value: otis.straightBeltOWorking
+            ? "O working"
+            : otis.crossBeltPWorking
+              ? "P working"
+              : "J/K idle",
+          unit: "topology",
           badgeColor: "cyan",
-          progressPct: clampProgress((otis.hoistTensionKn / 15) * 100),
+          progressPct: otis.bothBeltsIdle ? 0 : 100,
         },
         {
-          label: "Cab Payload",
-          value: `${otis.cabPayloadLbs} lb`,
-          unit: "lb",
-          badgeColor: "purple",
-          progressPct: clampProgress((otis.cabPayloadLbs / 2000) * 100),
+          label: "Brake Shoe Z",
+          value: otis.brakeZEngaged ? "ON L" : "RELEASED",
+          unit: "interlock",
+          badgeColor: otis.brakeZEngaged ? "emerald" : "purple",
+          progressPct: otis.brakeZEngaged ? 100 : 0,
         },
         {
-          label: "Catch Distance",
-          value: `${otis.stoppingDistanceIn} in`,
-          unit: "in",
-          badgeColor: isSnapped ? "emerald" : "cyan",
-          progressPct: clampProgress(isSnapped ? 45 : 0),
+          label: "Hooks f / Racks C",
+          value: otis.pawlsFEngaged ? "LOCKED" : "CLEAR",
+          unit: "Claim 1",
+          badgeColor: otis.pawlsFEngaged ? "amber" : "emerald",
+          progressPct: otis.pawlsFEngaged ? 100 : 0,
+        },
+        {
+          label: "Counterpoise Q / R",
+          value: otis.claim4CounterpoiseTopologySatisfied ? "OPPOSED TO D" : "INVERTED",
+          unit: "Claim 4",
+          badgeColor: otis.claim4CounterpoiseTopologySatisfied ? "emerald" : "rose",
+          progressPct: otis.claim4CounterpoiseTopologySatisfied ? 100 : 0,
+        },
+        {
+          label: "Platform D",
+          value: `${Math.round(otis.platformPositionNormalized * 100)}%`,
+          unit: "declared display coordinate",
+          badgeColor: "cyan",
+          progressPct: clampProgress(otis.platformPositionNormalized * 100),
         },
       ];
     },
     pedagogicalInsight:
-      "Hoisting cable tension actively holds the safety pawls disengaged by bowing a heavy transverse leaf spring upward. If the cable snaps, the spring instantly straightens flat, firing pawls outward into the vertical guide-rail ratchets within 38 milliseconds.",
+      "The 1861 grant is a whole hoisting system: straight belt O raises, crossed belt P lowers, shipper S and rope T idle both belts while shoe Z brakes working pulley L, rope Q counterpoises D, and a failed lifting rope G lets platform weight lock hook pawls f into racks C. The source provides topology—not load, force, timing, stopping distance, or power.",
   },
   // Retained non-serving later-Linotype model. The exact US 313,224 route is
   // assigned a source-reading guide below until its full manual edition passes QA.

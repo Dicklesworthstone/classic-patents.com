@@ -101,8 +101,7 @@ In sewing a seam with my machine two threads are employed, one of which threads 
       },
       {
         principle: "Eye-Pointed Needle Loop Dilation Dynamics",
-        formula:
-          "\\mathcal{P}_{pass}=(\\lambda_{loop} \\ge \\lambda_{min}) \\land (K \\subset I)",
+        formula: "\\mathcal{P}_{pass}=(\\lambda_{loop} \\ge \\lambda_{min}) \\land (K \\subset I)",
         explanation:
           "Rod W creates the slack named by Claim 2. The interactive model reports the Claim 1 pass only when the displayed loop clears the shuttle section and shuttle K remains on its prismatic guide in trough I; $\\lambda_{min}$ is an explicit display boundary, not a dimension printed by Howe.",
       },

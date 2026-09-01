@@ -154,7 +154,7 @@ describe("executable project coverage manifest", () => {
         surface.artifactSha256,
       );
     }
-    expect(checkedArtifacts.size).toBe(8);
+    expect(checkedArtifacts.size).toBe(9);
   });
 
   test("all 3D studios now have an updater or a typed snapshot path", () => {

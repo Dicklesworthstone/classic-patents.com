@@ -38,7 +38,7 @@ import {
 import { stepCortPuddlingRolling } from "./cortKernel";
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
-import { stepOtisElevator, stepRenoEscalator } from "./machineKernels";
+import { stepRenoEscalator } from "./machineKernels";
 import { stepRillieuxEvaporator } from "./rillieuxEvaporatorKernel";
 import { readWattRotaryControls, stepWattRotaryEngine } from "./wattRotaryKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
@@ -58,6 +58,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 6,331,181 prints tool-memory, compatibility, calibration-offset, engagement, and linkage topology but no motor torque, drive speed, friction, electrical load, or power datum from which an SI energy channel can be derived.",
   "us-4750-howe-sewing-machine":
     "US 4,750 prints the mechanism topology and two local dimensions but no force, torque, inertia, speed, friction, or power datum from which an SI energy channel can be derived.",
+  "us-31128-otis-elevator":
+    "US 31,128 prints the hoist, reversing-belt, brake, stop-rope, counterpoise, and hook-rack topology but no load, force, speed, torque, friction, travel, timing, or power datum from which an SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -439,18 +441,7 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-31128-otis-elevator") {
-    const otis = stepOtisElevator({ cabPayloadKg: params.cabPayload });
-    const hoistW = otis.hoistTensionKn * 1000 * 0.75;
-    const potW = otis.hangingMassKg * 9.81 * 0.75;
-    return [
-      { name: "Hoisting Cable", watts: hoistW, tone: "in" },
-      { name: "Potential Energy Gain", watts: potW, tone: "useful" },
-      {
-        name: "Guide Shoe Friction",
-        watts: Math.max(0, hoistW - potW),
-        tone: "loss",
-      },
-    ];
+    return [];
   }
 
   if (patentId === "us-36836-gatling-gun") {

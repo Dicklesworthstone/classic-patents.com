@@ -43,6 +43,7 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-593138-tesla-coil",
       "us-6331181-davinci",
       "us-4750-howe-sewing-machine",
+      "us-31128-otis-elevator",
     ]);
   });
 

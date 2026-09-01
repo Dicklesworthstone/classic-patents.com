@@ -26,9 +26,9 @@ const CAMERA_PRESETS: Record<
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
   iso: { pos: [11, 8, 13], target: [0, 0, 0] },
-  needle: { pos: [3.2, 0.4, 3.0], target: [2.8, -1.0, 0] },
-  shuttle: { pos: [2.8, -1.2, 2.5], target: [2.8, -1.5, 0] },
-  flywheel: { pos: [-4.5, 2.2, 3.5], target: [-3.8, 2.1, 0] },
+  needle: { pos: [3.45, -0.15, 2.65], target: [2.2, -0.7, 0] },
+  shuttle: { pos: [2.7, -0.25, 3.1], target: [2.15, -1.18, 0.34] },
+  flywheel: { pos: [-4.7, 2.7, 1.7], target: [-2.25, 1.35, -1.72] },
   top: { pos: [1.0, 7.0, 0.1], target: [1.0, 0, 0] },
 };
 
@@ -47,9 +47,10 @@ export function HoweSewingMachine3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [kernelSource, setKernelSource] = useState<HoweKernelSource>("unloaded");
+  const kernelSourceRef = useRef<HoweKernelSource>("unloaded");
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
-  // Lockstitch Kinematics Calculations (FrankenSim 4-Bar Mechanism)
+  // Source-order kinematics from the generic FrankenSim fs-mbd composition.
   const stitchState = FrankenSimEngine.stepHoweSewingMachine(
     stitchingSpeedRpm,
     loopSlackPct,
@@ -106,7 +107,10 @@ export function HoweSewingMachine3D() {
   useEffect(() => {
     let mounted = true;
     void ensureHoweWasm().then((loadedSource) => {
-      if (mounted) setKernelSource(loadedSource);
+      if (mounted) {
+        kernelSourceRef.current = loadedSource;
+        setKernelSource(loadedSource);
+      }
     });
     return () => {
       mounted = false;
@@ -166,6 +170,10 @@ export function HoweSewingMachine3D() {
         p.loopSlackPct,
         p.claim1InterlockEnabled,
       );
+      if (mechanismState.runtimeSource !== kernelSourceRef.current) {
+        kernelSourceRef.current = mechanismState.runtimeSource;
+        setKernelSource(mechanismState.runtimeSource);
+      }
       updateHoweSewingMachineKinematics(model, mechanismState, completedCycles, p.showCalloutPins);
 
       model.setCutaway?.(p.isCutaway ?? false);
@@ -311,14 +319,14 @@ export function HoweSewingMachine3D() {
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
               <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
-                Stitch Speed:
+                Declared display cadence:
               </span>
               <span className="font-bold text-amber-700 dark:text-amber-400">
                 {stitchesPerSecond} stitches/s ({stitchingSpeedRpm} RPM)
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Cloth Feed Rate:</span>
+              <span className="text-ink-600 dark:text-ink-400">Declared display feed:</span>
               <span className="text-cyan-800 dark:text-cyan-400 font-bold">
                 {clothFeedRateMmPerSec} mm/s
               </span>
@@ -348,18 +356,18 @@ export function HoweSewingMachine3D() {
           title="LOCKSTITCH KINEMATIC SYNCHRONIZATION"
           chips={[
             {
-              label: "Stitch Rate",
+              label: "Display Cadence",
               value: stitchesPerSecond,
               unit: "stitches/s",
               tone: "hot",
             },
             {
-              label: "Feed Speed",
+              label: "Display Feed",
               value: clothFeedRateMmPerSec,
               unit: "mm/s",
             },
-            { label: "Stitch Pitch", value: `${stitchPitchMm.toFixed(1)}`, unit: "mm" },
-            { label: "Crank Speed", value: `${stitchingSpeedRpm}`, unit: "RPM" },
+            { label: "Display Pitch", value: `${stitchPitchMm.toFixed(1)}`, unit: "mm" },
+            { label: "Display Crank", value: `${stitchingSpeedRpm}`, unit: "RPM" },
             { label: "Loop Slack", value: `${loopSlackPct}`, unit: "%" },
             {
               label: "Kernel",

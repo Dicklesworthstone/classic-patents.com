@@ -276,8 +276,8 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
     const howe = stepHoweSewingMachine(rpm, params.loopSlackPct ?? 65, params.stitchPitchMm ?? 3.5);
     return [
       {
-        from: "flywheel",
-        to: "cloth feed",
+        from: "main shaft C",
+        to: "baster plate H feed",
         gain: Number((howe.clothFeedMmPerS / Math.max(1, rpm)).toFixed(4)),
         unit: "mm/s / rpm",
         crate: "fs-couple",

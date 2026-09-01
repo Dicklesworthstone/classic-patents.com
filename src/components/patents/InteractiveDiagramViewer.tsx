@@ -81,17 +81,15 @@ import { fermiSchematicSlug, stepFermiKinetics } from "@/physics/fermiKinetics";
 import {
   ccdSchematicGateX,
   mergenthalerSchematicChuteX,
-  otisSchematicPawl,
-  otisSchematicRailY,
   renoSchematicCleat,
   sholesSchematicTypebar,
   stepCcdWells,
   stepHoweSewingMachine,
   stepMergenthalerLinotype,
-  stepOtisElevator,
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "@/physics/machineKernels";
+import { readOtisTopologyControls, stepOtis1861Topology } from "@/physics/otisKernel";
 import { stepParsonsMarine } from "@/physics/parsonsMarineKernel";
 import {
   stepTeslaMotorFig9,
@@ -2153,117 +2151,140 @@ function _renderHistoricalSchematic(
       );
     }
     case "otis-elevator": {
-      const tension = params?.cableTension ?? 100;
-      const otis = stepOtisElevator({ cableTensionPct: tension });
-      const isCut = otis.isSnapped;
-      const springBow = otis.schematicSpringBowPx;
-      const pawlExt = otis.schematicPawlExtPx;
+      const otis = stepOtis1861Topology(readOtisTopologyControls(params ?? {}));
+      const platformY = 166 - otis.platformPositionNormalized * 54;
+      const counterY = 166 - otis.counterpoisePositionNormalized * 54;
+      const pawlExtension = otis.pawlsFEngaged ? 9 : 2;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          <line
-            x1={otis.schematicRailLeftX}
-            y1={otis.schematicRailY0}
-            x2={otis.schematicRailLeftX}
-            y2={otis.schematicRailY1}
-            stroke="#64748b"
+          {/* H/I/J/K/L/N and both guided belts remain one drive train. */}
+          <circle cx="92" cy="174" r="18" stroke="#94a3b8" strokeWidth="5" />
+          <text x="92" y="178" fill="#f8fafc" fontSize="9" textAnchor="middle">
+            H
+          </text>
+          <line x1="32" y1="112" x2="174" y2="112" stroke="#64748b" strokeWidth="5" />
+          {[52, 103, 154].map((x, index) => (
+            <g key={x}>
+              <circle
+                cx={x}
+                cy="112"
+                r="13"
+                stroke={index === 1 ? "#f59e0b" : "#64748b"}
+                strokeWidth="4"
+              />
+              <text x={x} y="115" fill="#f8fafc" fontSize="8" textAnchor="middle">
+                {["J", "L", "K"][index]}
+              </text>
+            </g>
+          ))}
+          <circle cx="103" cy="39" r="22" stroke="#94a3b8" strokeWidth="5" />
+          <text x="103" y="43" fill="#f8fafc" fontSize="9" textAnchor="middle">
+            N
+          </text>
+          <path
+            d="M 81 39 L 90 112 L 116 112 L 125 39 Z"
+            stroke={otis.straightBeltOWorking ? "#22c55e" : "#64748b"}
             strokeWidth="3"
           />
-          <line
-            x1={otis.schematicRailRightX}
-            y1={otis.schematicRailY0}
-            x2={otis.schematicRailRightX}
-            y2={otis.schematicRailY1}
-            stroke="#64748b"
+          <path
+            d="M 83 31 L 116 121 M 123 31 L 90 121"
+            stroke={otis.crossBeltPWorking ? "#22c55e" : "#64748b"}
             strokeWidth="3"
           />
-          {Array.from({ length: otis.schematicRailCount }, (_, i) => {
-            const y = otisSchematicRailY(i, otis.schematicRailOriginY, otis.schematicRailPitchY);
-            return (
-              <g key={i}>
-                <polygon
-                  points={`${otis.schematicRailLeftX},${y} ${otis.schematicRailLeftX + otis.schematicToothIn},${y + otis.schematicToothMid} ${otis.schematicRailLeftX},${y + otis.schematicToothH}`}
-                  fill="#94a3b8"
-                  stroke="#cbd5e1"
-                />
-                <polygon
-                  points={`${otis.schematicRailRightX},${y} ${otis.schematicRailRightX - otis.schematicToothIn},${y + otis.schematicToothMid} ${otis.schematicRailRightX},${y + otis.schematicToothH}`}
-                  fill="#94a3b8"
-                  stroke="#cbd5e1"
-                />
-              </g>
-            );
-          })}
-          {!isCut ? (
-            <line
-              x1={otis.schematicRopeX}
-              y1={otis.schematicRopeY0}
-              x2={otis.schematicRopeX}
-              y2={otis.schematicRopeAttachY - springBow}
-              stroke="#f59e0b"
+          <text x="20" y="18" fill="#94a3b8" fontSize="8">
+            N · O · P · I/J/K/L
+          </text>
+
+          {/* S/T/U/V simultaneously controls idle belts and brake Z. */}
+          <line
+            x1={52 + otis.shipperPositionNormalized * 8}
+            y1="78"
+            x2={154 + otis.shipperPositionNormalized * 8}
+            y2="78"
+            stroke="#f59e0b"
+            strokeWidth="5"
+          />
+          <path d="M 75 78 L 42 213" stroke="#d97706" strokeWidth="2.5" />
+          <path d="M 378 30 L 378 204 L 42 194" stroke="#d97706" strokeWidth="2" />
+          <path d="M 42 194 l -8 -10 M 42 194 l 8 -10" stroke="#fbbf24" strokeWidth="2.5" />
+          <path d="M 75 78 L 178 94 L 154 112" stroke="#cbd5e1" strokeWidth="3" />
+          <rect
+            x="145"
+            y={otis.brakeZEngaged ? 94 : 87}
+            width="20"
+            height="7"
+            fill={otis.brakeZEngaged ? "#ef4444" : "#64748b"}
+            stroke="none"
+          />
+          <text x="20" y="224" fill="#f59e0b" fontSize="8">
+            S/m/o/p/q/r · T · U/V · W/X/Y/Z
+          </text>
+
+          {/* A/B/C frame and D/a/d/E/F/f carriage. */}
+          <rect x="226" y="24" width="142" height="12" fill="#6f4b2e" stroke="none" />
+          <rect x="232" y="24" width="12" height="185" fill="#6f4b2e" stroke="none" />
+          <rect x="350" y="24" width="12" height="185" fill="#6f4b2e" stroke="none" />
+          <rect x="220" y="204" width="154" height="16" fill="#6f4b2e" stroke="none" />
+          {Array.from({ length: 10 }, (_, index) => 48 + index * 14).map((y) => (
+            <g key={y} fill="#94a3b8" stroke="none">
+              <path d={`M 244 ${y} l 7 -4 v 8 z`} />
+              <path d={`M 350 ${y} l -7 -4 v 8 z`} />
+            </g>
+          ))}
+          <g transform={`translate(0 ${platformY})`}>
+            <rect x="257" y="0" width="78" height="11" fill="#8b5e34" stroke="none" />
+            <rect x="260" y="-38" width="8" height="38" fill="#64748b" stroke="none" />
+            <rect x="324" y="-38" width="8" height="38" fill="#64748b" stroke="none" />
+            <line x1="296" y1="-53" x2="296" y2="-22" stroke="#f59e0b" strokeWidth="3" />
+            <path
+              d="M 264 -22 L 281 -15 L 296 -22 M 328 -22 L 311 -15 L 296 -22"
+              stroke="#cbd5e1"
               strokeWidth="3"
             />
-          ) : (
+            <line
+              x1="264"
+              y1="-22"
+              x2={264 - pawlExtension}
+              y2="-18"
+              stroke="#f59e0b"
+              strokeWidth="4"
+            />
+            <line
+              x1="328"
+              y1="-22"
+              x2={328 + pawlExtension}
+              y2="-18"
+              stroke="#f59e0b"
+              strokeWidth="4"
+            />
+          </g>
+
+          {/* G and opposite-wound Q/R remain tethered in every state. */}
+          {otis.ropeGTaut ? (
             <path
-              d={`M ${otis.schematicRopeX} ${otis.schematicRopeY0} L ${otis.schematicRopeX - otis.schematicCutDx} ${otis.schematicCutY1} L ${otis.schematicRopeX + otis.schematicCutDx} ${otis.schematicCutY2}`}
-              stroke="#ef4444"
+              d={`M 296 ${platformY - 53} L 296 30 L 268 30 L 92 174`}
+              stroke="#d97706"
               strokeWidth="2.5"
             />
+          ) : (
+            <g stroke="#ef4444" strokeWidth="2.5">
+              <path d={`M 296 ${platformY - 53} L 296 30 L 261 54`} />
+              <path d="M 92 174 L 268 30 L 253 61" />
+            </g>
           )}
-          <rect
-            x={otis.schematicFrameX}
-            y={otis.schematicFrameY}
-            width={otis.schematicFrameW}
-            height={otis.schematicFrameH}
-            stroke="#60a5fa"
-            strokeWidth="2"
-            fill="#1e3a8a"
-            fillOpacity="0.2"
-            rx="3"
-          />
-
-          <path
-            d={`M ${otis.schematicSpringX0} ${otis.schematicSpringY} Q ${otis.schematicRopeX} ${otis.schematicSpringY - springBow} ${otis.schematicSpringX1} ${otis.schematicSpringY}`}
-            stroke="#38bdf8"
-            strokeWidth="4"
-          />
-          {(["left", "right"] as const).map((side) => {
-            const pawl = otisSchematicPawl(
-              side,
-              pawlExt,
-              otis.schematicPawlInnerX0,
-              otis.schematicPawlInnerX1,
-              otis.schematicPawlOuterBase0,
-              otis.schematicPawlOuterBase1,
-              otis.schematicPawlY0,
-              otis.schematicPawlY1,
-            );
-            return (
-              <line
-                key={side}
-                x1={pawl.x1}
-                y1={pawl.y1}
-                x2={pawl.x2}
-                y2={pawl.y2}
-                stroke={isCut ? "#34d399" : "#38bdf8"}
-                strokeWidth="3.5"
-              />
-            );
-          })}
-
-          <text x="200" y="70" fill="#fbbf24" fontSize="9" textAnchor="middle">
-            {!isCut ? "Hoisting Cable" : "Rope Severed"}
-          </text>
-          <text x="200" y="140" fill="#93c5fd" fontSize="9" textAnchor="middle">
-            Cab Platform
+          <path d={`M 92 174 L 342 30 L 342 ${counterY}`} stroke="#38bdf8" strokeWidth="2.5" />
+          <rect x="333" y={counterY} width="18" height="27" fill="#475569" stroke="#38bdf8" />
+          <text x="342" y={counterY + 17} fill="#f8fafc" fontSize="8" textAnchor="middle">
+            R
           </text>
           <text
-            x="200"
-            y="180"
-            fill={isCut ? "#34d399" : "#38bdf8"}
-            fontSize="9"
+            x="286"
+            y="16"
+            fill={otis.freeFallCounterfactual ? "#fb7185" : "#34d399"}
+            fontSize="8"
             textAnchor="middle"
           >
-            {isCut ? "PAWLS LOCKED IN RATCHETS" : "Leaf Spring Bowed Under Tension"}
+            {otis.mechanismMode.toUpperCase()} · G/i · Q/l/R
           </text>
         </g>
       );

@@ -44,10 +44,10 @@ import {
   stepCcdWells,
   stepHoweSewingMachine,
   stepMergenthalerLinotype,
-  stepOtisElevator,
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "./machineKernels";
+import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { stepTeslaMotorFig9, teslaBAt, teslaMotorPhaseHz } from "./teslaKernel";
 
 import { readWrightControls, stepWrightFlyerSi, WRIGHT_GROSS_WEIGHT_N } from "./wrightKernel";
@@ -618,19 +618,16 @@ export function materialProbe(
     };
   }
   if (patentId.includes("otis") || patentId.includes("31128")) {
-    const otis = stepOtisElevator({
-      cabPayloadKg: params.cabPayload,
-      cableTensionPct: params.cableTension,
-    });
+    const otis = stepOtis1861Topology(readOtisTopologyControls(params));
     return {
       part: calloutLabel,
-      material: "Wagon-spring dogs on notched racks",
-      qty: "F_arrest",
-      value: otis.peakArrestForceKn.toString(),
-      unit: "kN",
-      note: otis.isPawlEngaged
-        ? `Rope gone. Pawls fire in ${otis.pawlEngagementMs} ms, stop in ${otis.stoppingDistanceCm} cm.`
-        : `Cable at ${otis.cableTensionPct}%. Pawls stowed.`,
+      material: "Hook pawls f, hook racks C, and connected E/F release linkage",
+      qty: "state",
+      value: otis.pawlsFEngaged ? "locked" : "clear",
+      unit: "topology",
+      note: otis.freeFallCounterfactual
+        ? "Claim 1 geometry is inverted; no arrest performance is asserted."
+        : `${otis.mechanismMode}; source provides no material grade, force, timing, or stopping distance.`,
     };
   }
   if (patentId.includes("delaval") || patentId.includes("247804")) {
@@ -1179,11 +1176,16 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId.includes("otis") || patentId.includes("31128")) {
-    const otis = stepOtisElevator({
-      cabPayloadKg: params.cabPayload,
-      cableTensionPct: params.cableTension,
-    });
-    return [{ label: "Arrest", min: 0, max: 20, live: otis.peakArrestForceKn, unit: "kN" }];
+    const otis = stepOtis1861Topology(readOtisTopologyControls(params));
+    return [
+      {
+        label: "Platform D",
+        min: 0,
+        max: 1,
+        live: otis.platformPositionNormalized,
+        unit: "normalized display coordinate",
+      },
+    ];
   }
   if (patentId.includes("delaval") || patentId.includes("247804")) {
     const sep = stepDeLavalSeparator({ bowlRpm: params.bowlRpm ?? params.rotorRpm });
@@ -1882,13 +1884,7 @@ export function fidelityField(
     };
   }
   if (patentId.includes("otis") || patentId.includes("31128")) {
-    return {
-      part: "Pawl arrest distance vs 1854 Crystal Palace",
-      model: "3.8",
-      reference: "5.0",
-      residual: "-1.2",
-      unit: "cm",
-    };
+    return null;
   }
   if (patentId.includes("gatling") || patentId.includes("36836")) {
     return {
@@ -2395,10 +2391,10 @@ export function datedScenarios(patentId: string): DatedScenario[] {
   if (patentId.includes("otis") || patentId.includes("31128")) {
     return [
       {
-        id: "crystal-palace-1854",
-        date: "1854-05-23",
-        name: "Crystal Palace cut-rope",
-        writes: { cableTension: 0, cabPayload: 650 },
+        id: "us-31128-claim-one-rope-break",
+        date: "1861-01-15",
+        name: "US 31,128 Claim 1 rope-G break state",
+        writes: { ropeGIntegrityPct: 0, driveCommand: 0, stopRopePulled: 0 },
       },
     ];
   }
@@ -3301,13 +3297,9 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [{ from: "3-phase clock gate", to: "packet shift", watts: 0.085 }];
   }
   if (patentId.includes("howe") || patentId.includes("4750")) {
-    return [
-      {
-        from: "hand crank",
-        to: "lockstitch",
-        watts: (params.crankRpm ?? 120) * 0.25 * 0.68,
-      },
-    ];
+    // US 4,750 prints topology and two local dimensions, but no torque,
+    // force, inertia, efficiency, or power datum for a watt-valued coupling.
+    return [];
   }
   if (patentId.includes("gb-931") || patentId.includes("arkwright")) {
     return [
@@ -3387,9 +3379,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     ];
   }
   if (patentId.includes("otis") || patentId.includes("31128")) {
-    return [
-      { from: "hoist cable", to: "potential energy", watts: (params.cabPayload ?? 450) * 7.35 },
-    ];
+    return [];
   }
   if (patentId.includes("gatling") || patentId.includes("36836")) {
     return [{ from: "crank", to: "revolving barrels", watts: (params.crankRpm ?? 80) * 1.22 }];
@@ -3487,13 +3477,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [{ from: "autoclave steam", to: "crosslinking", watts: 2275 }];
   }
   if (patentId.includes("howe") || patentId.includes("4750")) {
-    return [
-      {
-        from: "hand crank",
-        to: "lockstitch",
-        watts: (params.crankRpm ?? 120) * 0.25 * 0.68,
-      },
-    ];
+    return [];
   }
   if (patentId.includes("lincoln") || patentId.includes("6469")) {
     return [{ from: "air chamber", to: "buoyancy lift", watts: 697 }];

@@ -14,7 +14,7 @@
  */
 
 import * as THREE from "three";
-import type { HoweLockstitchState } from "@/physics/machineKernels";
+import { type HoweLockstitchState, stepHoweLockstitch } from "@/physics/machineKernels";
 
 export { howeCyclicFlex } from "@/physics/genericWasm";
 
@@ -53,6 +53,7 @@ export interface HoweSewingMachineModel {
   clothMesh: THREE.Mesh;
   feedRatchet: THREE.Mesh;
   liftingRodGroup: THREE.Group;
+  liftingGuide: THREE.Mesh;
   upperThreadLine: THREE.Line;
   lowerThreadLine: THREE.Line;
   calloutGroup: THREE.Group;
@@ -92,7 +93,7 @@ export function inspectHoweConnectivity(model: HoweSewingMachineModel): HoweConn
   return {
     mainShaftOwnsNeedleCam: model.needleCamQ.parent === model.mainShaftRotor,
     mainShaftOwnsFeedCam: model.feedCamR.parent === model.mainShaftRotor,
-    needleOwnsEye: model.needleEye.parent === model.needleArmGroup,
+    needleOwnsEye: model.needleEye.parent === model.curvedNeedle,
     armOwnsNeedle: model.curvedNeedle.parent === model.needleArmGroup,
     basterPlateOwnsCloth: model.clothMesh.parent === model.basterPlateGroup,
     shuttleConstrainedToRace:
@@ -338,7 +339,7 @@ export function buildHoweSewingMachineModel(): HoweSewingMachineModel {
     "curved eye-pointed needle — Claim 1",
   );
   const needleEye = addMesh(
-    needleArmGroup,
+    curvedNeedle,
     geometry(new THREE.TorusGeometry(0.061, 0.013, 7, 16)),
     brass,
     "needle eye — about 1/8 inch from point",
@@ -604,6 +605,7 @@ export function buildHoweSewingMachineModel(): HoweSewingMachineModel {
     clothMesh,
     feedRatchet,
     liftingRodGroup,
+    liftingGuide,
     upperThreadLine,
     lowerThreadLine,
     calloutGroup,
@@ -631,31 +633,7 @@ export function buildHoweSewingMachineModel(): HoweSewingMachineModel {
     },
   };
 
-  updateHoweSewingMachineKinematics(model, {
-    crankAngleDeg: 0,
-    crankAngleRad: 0,
-    needleY: 0,
-    shuttleX: -60,
-    loopOpen: false,
-    loopWidth: 0,
-    loopSvgControlX: 0,
-    needleStudioRotZ: 0.12,
-    needleStudioY: 0,
-    needleArmAngleRad: 0.12,
-    needlePenetrationNormalized: 0,
-    needleRetracting: false,
-    shuttleTravelNormalized: -1,
-    shuttlePassesLoop: false,
-    shuttleTrackOffsetZ: 0,
-    pickerLeftNormalized: 1,
-    pickerRightNormalized: 0,
-    liftingRodNormalized: 0,
-    feedAdvanceFraction: 0,
-    threadClampEngaged: true,
-    claim1InterlockSatisfied: true,
-    cyclePhaseLabel: "penetrate",
-    shuttleStudioZ: -1.2,
-  });
+  updateHoweSewingMachineKinematics(model, stepHoweLockstitch(0, 65, true));
 
   return model;
 }
@@ -721,7 +699,7 @@ export function updateHoweSewingMachineKinematics(
   ) as THREE.BufferAttribute;
   const upper = upperAttribute.array as Float32Array;
   const needleEyePoint = inRootSpace(model, model.needleEye, scratchNeedleEye);
-  const liftPoint = inRootSpace(model, model.liftingRodGroup.children[1], scratchLiftGuide);
+  const liftPoint = inRootSpace(model, model.liftingGuide, scratchLiftGuide);
   const loopRadius = state.loopOpen ? 0.16 + state.loopWidth * 0.012 : 0.035;
   const fabricPoint = scratchRootPoint.set(
     needleEyePoint.x + 0.04,

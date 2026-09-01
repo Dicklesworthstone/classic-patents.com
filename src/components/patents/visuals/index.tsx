@@ -243,10 +243,10 @@ const NoycePlanarICSim = dynamic(
   () => import("./NoycePlanarICSim").then((m) => m.NoycePlanarICSim),
   { ssr: false, loading: SimLoading },
 );
-const OtisElevatorSim = dynamic(() => import("./OtisElevatorSim").then((m) => m.OtisElevatorSim), {
-  ssr: false,
-  loading: SimLoading,
-});
+const OtisHoistingApparatusSim = dynamic(
+  () => import("./OtisHoistingApparatusSim").then((module) => module.OtisHoistingApparatusSim),
+  { ssr: false, loading: SimLoading },
+);
 const OttoEngineSim = dynamic(() => import("./OttoEngineSim").then((m) => m.OttoEngineSim), {
   ssr: false,
   loading: SimLoading,
@@ -545,8 +545,8 @@ const NoycePlanarIC3D = dynamic(
   () => import("./three/NoycePlanarIC3D").then((mod) => mod.NoycePlanarIC3D),
   { ssr: false, loading: ThreeLoading },
 );
-const OtisElevator3D = dynamic(
-  () => import("./three/OtisElevator3D").then((mod) => mod.OtisElevator3D),
+const OtisHoistingApparatus3D = dynamic(
+  () => import("./three/OtisHoistingApparatus3D").then((module) => module.OtisHoistingApparatus3D),
   { ssr: false, loading: ThreeLoading },
 );
 const OttoEngine3D = dynamic(() => import("./three/OttoEngine3D").then((mod) => mod.OttoEngine3D), {
@@ -776,7 +776,11 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-6469-lincoln-buoy":
             return renderMode === "3d-physics" ? <LincolnBuoy3D /> : <LincolnBuoySim />;
           case "us-31128-otis-elevator":
-            return renderMode === "3d-physics" ? <OtisElevator3D /> : <OtisElevatorSim />;
+            return renderMode === "3d-physics" ? (
+              <OtisHoistingApparatus3D />
+            ) : (
+              <OtisHoistingApparatusSim />
+            );
           case "us-36836-gatling-gun":
             return renderMode === "3d-physics" ? <GatlingGun3D /> : <GatlingGunSim />;
           case "us-48475-yale-lock":

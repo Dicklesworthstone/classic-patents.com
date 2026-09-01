@@ -305,6 +305,10 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(datedScenarios(patentId)).toEqual([]);
   });
 
+  test("refuses to invent a watt-valued Howe hand-crank coupling", () => {
+    expect(coupleLinks("us-4750-howe-sewing-machine", { crankRpm: 240 })).toEqual([]);
+  });
+
   test("derives Pelton performance weaves and source bucket labels", () => {
     expect(intervalGhosts("us-233692-pelton-water-wheel", {}).length).toBeGreaterThan(0);
     expect(fidelityField("us-233692-pelton-water-wheel", {})).toBeNull();

@@ -8502,9 +8502,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       title: "The Two Local Dimensions Printed by US 4,750",
       category: "Source Geometry",
       rawLatex:
-        "d_{\text{eye}} \approx \frac{1}{8}\,\mathrm{in}=3.175\,\mathrm{mm},\qquad p_H \approx \frac{3}{4}\,\mathrm{in}=19.05\,\mathrm{mm}",
+        "d_{\\text{eye}} \\approx \\frac{1}{8}\\,\\mathrm{in}=3.175\\,\\mathrm{mm},\\qquad p_H \\approx \\frac{3}{4}\\,\\mathrm{in}=19.05\\,\\mathrm{mm}",
       colorizedLatex:
-        "\textcolor{#2563eb}{d_{\text{eye}}} \approx \frac{1}{8}\,\mathrm{in}=3.175\,\mathrm{mm},\qquad \textcolor{#d97706}{p_H} \approx \frac{3}{4}\,\mathrm{in}=19.05\,\mathrm{mm}",
+        "\\textcolor{#2563eb}{d_{\\text{eye}}} \\approx \\frac{1}{8}\\,\\mathrm{in}=3.175\\,\\mathrm{mm},\\qquad \\textcolor{#d97706}{p_H} \\approx \\frac{3}{4}\\,\\mathrm{in}=19.05\\,\\mathrm{mm}",
       plainEnglishSentence: [
         { text: "The grant places the " },
         { text: "needle eye about one eighth inch from the point", variableId: "d_eye" },
@@ -8517,7 +8517,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       variables: [
         {
           id: "d_eye",
-          symbol: "d_{\text{eye}}",
+          symbol: "d_{\\text{eye}}",
           name: "Needle Eye Offset",
           color: "sapphire",
           role: "Approximate point-to-eye distance stated on specification page 1",
@@ -8550,53 +8550,57 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       title: "One-Shaft Needle, Loop, Shuttle, and Feed Ordering",
       category: "Multibody Kinematics",
       rawLatex:
-        "q_G(\theta_C)=\frac{1-\cos\theta_C}{2},\quad x_K(\theta_C)=-A_K\cos\theta_C,\quad \mathcal{P}_{\text{pass}}=(\lambda_{\text{loop}}\ge\lambda_{\min})\land(K\subset I)",
+        "q_G(\\theta_C)=\\frac{1-\\cos\\theta_C}{2},\\quad x_K(\\theta_C)=-A_K\\cos\\theta_C,\\quad \\mathcal{P}_{\\text{pass}}=(\\lambda_{\\text{loop}}\\ge\\lambda_{\\min})\\land(K\\subset I)",
       colorizedLatex:
-        "\textcolor{#9333ea}{q_G}(\textcolor{#2563eb}{\theta_C})=\frac{1-\cos\textcolor{#2563eb}{\theta_C}}{2},\quad \textcolor{#059669}{x_K}(\textcolor{#2563eb}{\theta_C})=-\textcolor{#d97706}{A_K}\cos\textcolor{#2563eb}{\theta_C},\quad \textcolor{#dc2626}{\mathcal{P}_{\text{pass}}}=(\textcolor{#0891b2}{\lambda_{\text{loop}}}\ge\lambda_{\min})\land(K\subset I)",
+        "\\textcolor{#9333ea}{q_G}(\\textcolor{#2563eb}{\\theta_C})=\\frac{1-\\cos\\textcolor{#2563eb}{\\theta_C}}{2},\\quad \\textcolor{#059669}{x_K}(\\textcolor{#2563eb}{\\theta_C})=-\\textcolor{#d97706}{A_K}\\cos\\textcolor{#2563eb}{\\theta_C},\\quad \\textcolor{#dc2626}{\\mathcal{P}_{\\text{pass}}}=(\\textcolor{#0891b2}{\\lambda_{\\text{loop}}}\\ge\\lambda_{\\min})\\land(K\\subset I)",
       plainEnglishSentence: [
         { text: "A single " },
         { text: "main-shaft angle", variableId: "theta_c" },
         { text: " prescribes the normalized " },
         { text: "needle-arm penetration", variableId: "q_g" },
-        { text: " and the " },
-        { text: "shuttle coordinate along trough I", variableId: "x_k" },
-        { text: "; a pass is reported only when the displayed " },
-        { text: "upper-thread loop clears the shuttle", variableId: "lambda_loop" },
-        { text: " and K remains constrained to I." },
+        { text: ", the reciprocating " },
+        { text: "boat shuttle displacement", variableId: "x_k" },
+        { text: " inside guide trough I, the " },
+        { text: "displayed shuttle amplitude", variableId: "a_k" },
+        { text: ", and the " },
+        { text: "loop slack clearance", variableId: "lambda_loop" },
+        { text: " required for the " },
+        { text: "Claim 1 loop-passage predicate", variableId: "p_pass" },
+        { text: "." },
       ],
       variables: [
         {
           id: "theta_c",
-          symbol: "\theta_C",
-          name: "Main-Shaft Coordinate",
+          symbol: "\\theta_C",
+          name: "Main Drive Crank Angle",
           color: "sapphire",
-          role: "The single prescribed revolute drive coordinate shared by cams Q/R and the flywheel",
-          unit: "Radians (rad)",
+          role: "Continuous rotation of the central drive shaft driven by hand or power",
+          unit: "Radians (rad) / degrees (°)",
           dimension: "[1]",
           explanation:
-            "The FrankenSim multibody owner wraps this finite coordinate to one turn and drives every displayed mechanism phase from it.",
+            "Howe drives needle arm G, baster-feed lifting rod W, and shuttle carrier lever through cams and eccentrics on this single shaft.",
         },
         {
           id: "q_g",
           symbol: "q_G",
-          name: "Needle-Arm Penetration Coordinate",
+          name: "Needle-Arm Penetration Fraction",
           color: "amethyst",
-          role: "Normalized cam-prescribed position of vibrating arm G",
-          unit: "Normalized (0–1)",
+          role: "Normalized cam lift driving the curved needle through the cloth plane ($0\\le q_G\\le 1$)",
+          unit: "Normalized fraction",
           dimension: "[1]",
           explanation:
-            "The curved needle is rigidly parented to arm G, so it follows this rotation and is never translated by an independent animation.",
+            "Reaches peak depth when the eye carries the upper thread completely through the vertical seam plane.",
         },
         {
           id: "x_k",
           symbol: "x_K",
-          name: "Shuttle Coordinate",
+          name: "Reciprocating Shuttle Stroke",
           color: "emerald",
-          role: "Normalized prismatic position of shuttle K along horizontal trough I",
-          unit: "Normalized (-1–1)",
+          role: "Normalized linear displacement of shuttle K along guide trough I",
+          unit: "Normalized displacement",
           dimension: "[1]",
           explanation:
-            "Picker-staves J remain attached to the shuttle ends while the prismatic joint prevents sideways or floating motion.",
+            "Passes through the needle-thread loop while the needle pauses near bottom dead center.",
         },
         {
           id: "a_k",
@@ -8611,7 +8615,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
         },
         {
           id: "lambda_loop",
-          symbol: "\lambda_{\text{loop}}",
+          symbol: "\\lambda_{\\text{loop}}",
           name: "Displayed Loop Slack",
           color: "cyan",
           role: "Normalized lifting-rod W loop opening used for the explicit clearance refusal",
@@ -8623,7 +8627,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
         },
         {
           id: "p_pass",
-          symbol: "\mathcal{P}_{\text{pass}}",
+          symbol: "\\mathcal{P}_{\\text{pass}}",
           name: "Claim 1 Passage Predicate",
           color: "crimson",
           role: "True only during the source-order phase where K passes between the needle and upper thread",
@@ -21545,5 +21549,184 @@ ALL_COLORIZED_EQUATIONS["us-3353115-maiman-ruby-laser"] = [
           "Consists of hundreds of micro-spikes generated by coupled population-photon relaxation oscillations.",
       },
     ],
+  },
+];
+
+// US 31,128 supplies a connected mechanism and discrete interlocks, but no
+// historical dimensions, load, spring rate, force, timing, stopping distance,
+// or power. These cards deliberately replace the older invented dynamics.
+ALL_COLORIZED_EQUATIONS["us-31128-otis-elevator"] = [
+  {
+    id: "otis-claim-one-hook-lock-topology",
+    patentId: "us-31128-otis-elevator",
+    title: "Claim 1: Platform-Weight Hook Lock",
+    category: "Source-Bound Multibody Topology",
+    rawLatex: "\\neg G_{\\text{taut}} \\land C_1 \\Rightarrow f \\hookrightarrow C",
+    colorizedLatex:
+      "\\neg \\textcolor{#2563eb}{G_{\\text{taut}}} \\land \\textcolor{#d97706}{C_1} \\Rightarrow \\textcolor{#059669}{f} \\hookrightarrow \\textcolor{#9333ea}{C}",
+    plainEnglishSentence: [
+      { text: "When " },
+      { text: "lifting rope G is no longer taut", variableId: "rope_g" },
+      { text: " and " },
+      { text: "Claim 1's hook geometry is present", variableId: "claim_one" },
+      { text: ", platform weight turns " },
+      { text: "pawls f", variableId: "pawls_f" },
+      { text: " into hook-form " },
+      { text: "racks C", variableId: "racks_c" },
+      { text: " so their geometry resists separation." },
+    ],
+    variables: [
+      {
+        id: "rope_g",
+        symbol: "G_{\\text{taut}}",
+        name: "Lifting Rope G State",
+        color: "sapphire",
+        role: "Boolean source state: intact/tension-supporting or broken",
+        unit: "state",
+        dimension: "[1]",
+        explanation:
+          "The grant describes the consequence of breaking rope G, not its force, elongation, or failure time.",
+        telemetryKey: "ropeGIntegrityPct",
+      },
+      {
+        id: "claim_one",
+        symbol: "C_1",
+        name: "Claim 1 Geometry",
+        color: "amber",
+        role: "Hook-form pawls and rack teeth arranged to self-lock under platform weight",
+        unit: "predicate",
+        dimension: "[1]",
+        explanation:
+          "Turning this constraint off is an explicit counterfactual, not a statement about the historical machine.",
+      },
+      {
+        id: "pawls_f",
+        symbol: "f",
+        name: "Hook Pawls f",
+        color: "emerald",
+        role: "Paired pawls carried by platform D through levers E",
+        unit: "component",
+        dimension: "[1]",
+        explanation: "Their inner ends remain linked through E to eye c on safety bar F.",
+      },
+      {
+        id: "racks_c",
+        symbol: "C",
+        name: "Fixed Hook Racks C",
+        color: "amethyst",
+        role: "Hook-form teeth fixed along uprights B",
+        unit: "component",
+        dimension: "[1]",
+        explanation:
+          "The claimed interlock depends on complementary hook form, not an unsupported tooth angle or spring force.",
+      },
+    ],
+    pedagogicalNote:
+      "Claim 1 is a load-directed geometric lock. The visualization therefore reports a discrete satisfied/refused predicate and does not invent quantitative dynamics.",
+    claimRef: 1,
+    historicalSignificance:
+      "This grant expresses the safety as a claimed hook-rack relationship inside a complete powered hoisting apparatus.",
+  },
+  {
+    id: "otis-claim-three-stop-interlock",
+    patentId: "us-31128-otis-elevator",
+    title: "Claim 3: Simultaneous Belt Idle and Brake Application",
+    category: "Source-Bound Control Interlock",
+    rawLatex: "\\text{stop}(T,S) \\Rightarrow (O,P) \\to (J,K) \\land Z \\dashv L",
+    colorizedLatex:
+      "\\textcolor{#d97706}{\\text{stop}(T,S)} \\Rightarrow \\textcolor{#2563eb}{(O,P) \\to (J,K)} \\land \\textcolor{#dc2626}{Z \\dashv L}",
+    plainEnglishSentence: [
+      { text: "A " },
+      { text: "stop command through rope T and shipper S", variableId: "stop_chain" },
+      { text: " moves " },
+      { text: "belts O and P onto idle pulleys J and K", variableId: "belt_idle" },
+      { text: " while applying " },
+      { text: "brake shoe Z to working pulley L", variableId: "brake_z" },
+      { text: " in the same connected linkage." },
+    ],
+    variables: [
+      {
+        id: "stop_chain",
+        symbol: "\\text{stop}(T,S)",
+        name: "Stop Command Chain",
+        color: "amber",
+        role: "Hand rope T moves the belt-shipper slide S",
+        unit: "state",
+        dimension: "[1]",
+        explanation: "Stop rope U and branch V act upon the same hand-rope control path.",
+        telemetryKey: "stopRopePulled",
+      },
+      {
+        id: "belt_idle",
+        symbol: "(O,P) \\to (J,K)",
+        name: "Reversing Belts Idled",
+        color: "sapphire",
+        role: "Straight belt O and crossed belt P leave working pulley L for idle pulleys",
+        unit: "topology",
+        dimension: "[1]",
+        explanation: "O raises and P lowers; the middle shipper state idles both.",
+        telemetryKey: "driveCommand",
+      },
+      {
+        id: "brake_z",
+        symbol: "Z \\dashv L",
+        name: "Brake Shoe Z on Pulley L",
+        color: "crimson",
+        role: "Mechanical brake applied with the belt shift",
+        unit: "state",
+        dimension: "[1]",
+        explanation:
+          "The patent claims simultaneous application, but gives no braking torque or stopping time.",
+      },
+    ],
+    pedagogicalNote:
+      "Claim 3 is valuable because one operator action both removes drive and applies the brake. The model preserves that causal linkage rather than animating an isolated brake shoe.",
+    claimRef: 3,
+    historicalSignificance:
+      "The linked shipper-and-brake arrangement makes powered ascent, descent, and stopping parts of one controlled apparatus.",
+  },
+  {
+    id: "otis-claim-four-opposite-counterpoise",
+    patentId: "us-31128-otis-elevator",
+    title: "Claim 4: Opposite-Wound Counterpoise",
+    category: "Source-Bound Kinematic Constraint",
+    rawLatex: "dq_R = -dq_D",
+    colorizedLatex: "d\\textcolor{#0891b2}{q_R} = -d\\textcolor{#d97706}{q_D}",
+    plainEnglishSentence: [
+      { text: "Because counterpoise rope Q is attached to the opposite side of drum H, the " },
+      { text: "counterpoise coordinate", variableId: "counterpoise_r" },
+      { text: " changes opposite the " },
+      { text: "platform coordinate", variableId: "platform_d" },
+      { text: " without interfering with safety mechanism E-e-f." },
+    ],
+    variables: [
+      {
+        id: "counterpoise_r",
+        symbol: "q_R",
+        name: "Counterpoise R Coordinate",
+        color: "cyan",
+        role: "Normalized display coordinate of counterpoise R on rope Q",
+        unit: "normalized display coordinate",
+        dimension: "[1]",
+        explanation:
+          "Only opposition of motion is asserted; the source does not provide counterweight mass or travel.",
+      },
+      {
+        id: "platform_d",
+        symbol: "q_D",
+        name: "Platform D Coordinate",
+        color: "amber",
+        role: "Normalized display coordinate of the guided platform",
+        unit: "normalized display coordinate",
+        dimension: "[1]",
+        explanation:
+          "Platform D remains captured between its grooved uprights a and the fixed guide frame.",
+      },
+    ],
+    pedagogicalNote:
+      "The relation is kinematic and dimensionless because the grant describes opposite winding but supplies no drum diameter, rope length, or travel dimension.",
+    claimRef: 4,
+    historicalSignificance:
+      "The opposite winding balances platform motion while preserving the separate hook-rack safety path.",
   },
 ];

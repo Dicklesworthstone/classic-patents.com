@@ -60,6 +60,15 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
     expect(sens?.derivativeValue).toBeGreaterThan(1.0); // Alpha > 1
   });
 
+  test("Otis exposes only its declared normalized display-rate sensitivity", () => {
+    const sens = computeParameterSensitivity("us-31128-otis-elevator", "displayRatePct", {});
+    expect(sens).toBeDefined();
+    expect(sens?.metricName).toBe("Declared Coordinate-Speed Magnitude");
+    expect(sens?.derivativeValue).toBe(0.0012);
+    expect(sens?.interpretation).toContain("not a historical speed");
+    expect(computeParameterSensitivity("us-31128-otis-elevator", "cabPayload", {})).toBeNull();
+  });
+
   test("all non-refused patents in registry with valid controls return non-null sensitivities", () => {
     const refused = new Set([
       "us-135245-pasteur-fermentation",

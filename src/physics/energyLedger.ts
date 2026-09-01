@@ -803,13 +803,9 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-31128-otis-elevator": {
-      const carMassKg = params.carMassKg ?? 800.0;
-      const velocityMps = params.velocityMps ?? 1.2;
-      const heightM = params.heightM ?? 15.0;
-      kinetic = 0.5 * carMassKg * velocityMps ** 2; // Elevator car & counterweight kinetic energy
-      potential = carMassKg * 9.80665 * heightM; // Gravitational potential energy
-      powerIn = carMassKg * 9.80665 * velocityMps; // Hoisting cable power
-      dissipated = 450.0; // Guide rail and safety ratchet friction
+      // US 31,128 provides connectivity and switching logic, but no mass,
+      // speed, height, friction, torque, or power. Preserve an explicit zero
+      // ledger rather than fabricating a quantitative Hamiltonian.
       break;
     }
 
