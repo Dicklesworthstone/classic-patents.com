@@ -39,6 +39,7 @@ import { hollerithTabulatingPatent } from "./hollerith-tabulating";
 import { hopkinsPotashPatent } from "./hopkins-potash";
 import { howeSewingMachinePatent } from "./howe-sewing-machine";
 import { hyattCelluloidPatent } from "./hyatt-celluloid";
+import { kamenTransporterPatent } from "./kamen-transporter";
 import { kilbyIntegratedCircuitPatent } from "./kilby-integrated-circuit";
 import { kwolekKevlarPatent } from "./kwolek-kevlar";
 import { lamarrPatent as lamarrFrequencyHoppingPatent } from "./lamarr-frequency-hopping";
@@ -46,6 +47,7 @@ import { landPolaroidPatent } from "./land-polaroid";
 import { lincolnBuoyPatent } from "./lincoln-buoy";
 import { lindeAirLiquefactionPatent } from "./linde-air-liquefaction";
 import { maimanRubyLaserPatent } from "./maiman-ruby-laser";
+import { makinoScaraPatent } from "./makino-scara";
 import { marconiRadioPatent } from "./marconi-radio";
 import { maximMachineGunPatent } from "./maxim-machine-gun";
 import { mccormickReaperPatent } from "./mccormick-reaper";
@@ -66,11 +68,13 @@ import { roombaPatent } from "./roomba";
 import { parsePatentCatalog } from "./schema";
 import { sholesTypewriterPatent } from "./sholes-typewriter";
 import { spencerMicrowavePatent } from "./spencer-microwave";
+import { sundbackZipperPatent } from "./sundback-zipper";
 import { teslaCoil593138Patent } from "./tesla-coil-593138";
 import { teslaMotorPatent } from "./tesla-motor";
 import { teslaTeleautomatonPatent } from "./tesla-teleautomaton";
 import { thomsonWeldingPatent } from "./thomson-welding";
 import { townesLaserPatent } from "./townes-laser";
+import { watsonRccPatent } from "./watson-rcc";
 import { wattRotaryEnginePatent } from "./watt-rotary-engine";
 import { wattSeparateCondenserPatent } from "./watt-separate-condenser";
 import { westinghouseAirBrakePatent } from "./westinghouse-air-brake";
@@ -90,6 +94,8 @@ export {
   multiTouchPatent,
   pagerankPatent,
   roombaPatent,
+  sundbackZipperPatent,
+  watsonRccPatent,
 };
 
 export const allPatents: Patent[] = parsePatentCatalog([
@@ -151,6 +157,7 @@ export const allPatents: Patent[] = parsePatentCatalog([
   baekelandBakelitePatent,
   haberAmmoniaPatent, // 1910-09-27
   goddardRocketPatent,
+  sundbackZipperPatent, // 1917-03-20
   farnsworthTvPatent,
   einsteinRefrigeratorPatent,
   lamarrFrequencyHoppingPatent,
@@ -166,7 +173,10 @@ export const allPatents: Patent[] = parsePatentCatalog([
   engelbartMousePatent,
   kwolekKevlarPatent,
   boyleSmithCcdPatent,
+  watsonRccPatent,
   wozniakApplePatent,
+  makinoScaraPatent,
+  kamenTransporterPatent, // 1997-12-30
   eInkPatent, // 2000-09-19
   pagerankPatent, // 2001-09-04
   daVinciPatent, // 2001-12-18

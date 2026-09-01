@@ -5261,6 +5261,166 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
+  "us-1219881-sundback-zipper": [
+    {
+      id: "sundback-cam-wedge-force",
+      patentId: "us-1219881-sundback-zipper",
+      title: "Cam Wedge Normal Force Resolution",
+      category: "Wedge Cam Kinematics",
+      rawLatex: "F_{\\text{engage}} = \\frac{F_{\\text{pull}}}{2 \\sin\\theta + \\mu}",
+      colorizedLatex:
+        "\\textcolor{#059669}{F_{\\text{engage}}} = \\frac{\\textcolor{#2563eb}{F_{\\text{pull}}}}{2\\sin\\textcolor{#d97706}{\\theta} + \\textcolor{#0d9488}{\\mu}}",
+      plainEnglishSentence: [
+        { text: "The lateral " },
+        { text: "engagement normal force", variableId: "engage_force" },
+        { text: " exerted on the scoops scales with the " },
+        { text: "slider pull force", variableId: "pull_force" },
+        { text: " divided by twice the sine of the " },
+        { text: "wedge convergence half-angle", variableId: "wedge_angle" },
+        { text: " plus the " },
+        { text: "friction coefficient", variableId: "friction_coeff" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "engage_force",
+          symbol: "F_{\\text{engage}}",
+          name: "Lateral Engagement Normal Force",
+          color: "emerald",
+          role: "Compressive force squeezing opposing scoops into nested alignment",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "The converging wedge side walls of the Y-slider act as inclined planes, multiplying pull tab force into high lateral compressive force that drives the rounded scoops together.",
+          telemetryMetricLabel: "Cam Wedge Force",
+        },
+        {
+          id: "pull_force",
+          symbol: "F_{\\text{pull}}",
+          name: "Slider Pull Force",
+          color: "sapphire",
+          role: "User-applied longitudinal pull force on slider tab ring",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation: "Force exerted by fingers when sliding the fastener closed.",
+          telemetryKey: "pullForceN",
+        },
+        {
+          id: "wedge_angle",
+          symbol: "\\theta",
+          name: "Wedge Convergence Half-Angle",
+          color: "amber",
+          role: "Internal angle of slider guide channels (θ ≈ 18°)",
+          unit: "Degrees (°)",
+          dimension: "[1]",
+          explanation:
+            "Optimal wedge angle balances mechanical advantage against jam-free smooth sliding.",
+        },
+        {
+          id: "friction_coeff",
+          symbol: "\\mu",
+          name: "Dry Friction Coefficient",
+          color: "teal",
+          role: "Sliding friction coefficient between stamped brass scoops and slider flanges (μ ≈ 0.18)",
+          unit: "Dimensionless",
+          dimension: "[1]",
+          explanation: "Low friction ensures effortless one-handed opening and closing.",
+        },
+      ],
+      pedagogicalNote:
+        "Sundback's Y-channel slider converts axial pull into transverse squeeze, seating each projection into its mating hollow socket without requiring manual alignment.",
+      claimRef: 5,
+      historicalSignificance:
+        "Claim 5 protects the dual-plate slider with diverging guide channels and central diamond wedge.",
+    },
+    {
+      id: "sundback-burst-resistance",
+      patentId: "us-1219881-sundback-zipper",
+      title: "Interlocking Scoop Burst Resistance",
+      category: "Mechanical Fastener Strength",
+      rawLatex:
+        "F_{\\text{burst}} = 2 N_{\\text{teeth}} A_{\\text{shear}} \\tau_{\\text{max}} \\cos\\left(\\frac{\\theta_{\\text{flex}}}{2}\\right)",
+      colorizedLatex:
+        "\\textcolor{#059669}{F_{\\text{burst}}} = 2\\,\\textcolor{#2563eb}{N_{\\text{teeth}}}\\,\\textcolor{#d97706}{A_{\\text{shear}}}\\,\\textcolor{#9333ea}{\\tau_{\\text{max}}}\\,\\cos\\left(\\frac{\\textcolor{#0d9488}{\\theta_{\\text{flex}}}}{2}\\right)",
+      plainEnglishSentence: [
+        { text: "Total transverse " },
+        { text: "burst resistance force", variableId: "burst_force" },
+        { text: " equals twice the number of " },
+        { text: "engaged teeth", variableId: "num_teeth" },
+        { text: " multiplied by the single tooth " },
+        { text: "shear contact area", variableId: "shear_area" },
+        { text: ", the " },
+        { text: "metal shear strength", variableId: "shear_strength" },
+        { text: ", and the " },
+        { text: "transverse flex cosine factor", variableId: "flex_factor" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "burst_force",
+          symbol: "F_{\\text{burst}}",
+          name: "Total Chain Burst Resistance",
+          color: "emerald",
+          role: "Maximum transverse tensile pull load across the closed zipper before tooth pop-out or cord tear",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Because each nested cup projection overlaps behind the shoulder of the adjacent scoop, transverse loads put the metal scoops into pure mechanical shear.",
+          telemetryMetricLabel: "Burst Resistance",
+        },
+        {
+          id: "num_teeth",
+          symbol: "N_{\\text{teeth}}",
+          name: "Engaged Tooth Count",
+          color: "sapphire",
+          role: "Number of interlocked scoops in the closed portion of the chain",
+          unit: "Teeth",
+          dimension: "[1]",
+          explanation:
+            "Higher tooth density (11 TPI) distributes the lateral load across dozens of contact shoulders.",
+          telemetryMetricLabel: "Engaged Scoops",
+        },
+        {
+          id: "shear_area",
+          symbol: "A_{\\text{shear}}",
+          name: "Tooth Contact Shear Area",
+          color: "amber",
+          role: "Overlapping shear contact shoulder area per scoop (A ≈ 1.45 mm²)",
+          unit: "Square millimeters (mm^2)",
+          dimension: "[L^2]",
+          explanation: "Transversely elongated cup geometry maximizes shear contact area.",
+        },
+        {
+          id: "shear_strength",
+          symbol: "\\tau_{\\text{max}}",
+          name: "Brass Yield Shear Strength",
+          color: "amethyst",
+          role: "Ultimate shear strength of stamped cartridge brass (τ ≈ 220 MPa)",
+          unit: "Megapascals (MPa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation: "Stamping and work-hardening increase scoop yield strength.",
+        },
+        {
+          id: "flex_factor",
+          symbol: "\\theta_{\\text{flex}}",
+          name: "Transverse Bending Angle",
+          color: "teal",
+          role: "Angle at which the closed zipper chain is bent or folded across its length",
+          unit: "Degrees (°)",
+          dimension: "[1]",
+          explanation:
+            "Rounded cup profiles allow the scoops to oscillate inside their sockets without unmeshing when clothing flexes.",
+          telemetryKey: "flexAngleDeg",
+        },
+      ],
+      pedagogicalNote:
+        "Unlike Judson's rigid hooks that popped open when folded, Sundback's cup sockets let adjacent teeth pivot like ball-and-socket joints while maintaining full shear engagement.",
+      claimRef: 2,
+      historicalSignificance:
+        "Claim 2 and the 1932 disclaimer protect the thin, transversely elongated scoops that enable sharp bending without automatic opening.",
+    },
+  ],
+
   "us-1102653-goddard-rocket": [
     {
       id: "goddard-source-tapered-tube-minimum",
@@ -16020,7 +16180,6 @@ ALL_COLORIZED_EQUATIONS["us-542846-diesel-engine"] = [
       "The card identifies the legal sequence printed in Claim 1 rather than presenting a later-engine performance narrative as if it were a measurement in US 542,846.",
   },
 ];
-
 /**
  * Universal fallback builder that constructs a valid ColorizedEquation from
  * a patent's PATENT_PHYSICS_REGISTRY definition or scientific principles.
@@ -21200,6 +21359,118 @@ ALL_COLORIZED_EQUATIONS["us-6331181-davinci"] = [
   },
 ];
 
+ALL_COLORIZED_EQUATIONS["us-4341502-makino-scara"] = [
+  {
+    id: "makino-four-link-loop-closure",
+    patentId: "us-4341502-makino-scara",
+    title: "Four-Link Loop Closure and Tool Configuration",
+    category: "Source-Bounded Robot Kinematics",
+    rawLatex:
+      "\\sum_{i=1}^{4}\\mathbf{r}_i=\\mathbf{0},\\qquad\\mathbf{p}_{tool}=f(\\theta_1,\\theta_2;\\mathcal{T})",
+    colorizedLatex:
+      "\\sum_{i=1}^{4}\\textcolor{#059669}{\\mathbf{r}_i}=\\mathbf{0},\\qquad\\textcolor{#9333ea}{\\mathbf{p}_{tool}}=f(\\textcolor{#0891b2}{\\theta_1},\\textcolor{#d97706}{\\theta_2};\\textcolor{#0d9488}{\\mathcal{T}})",
+    plainEnglishSentence: [
+      { text: "A closed four-link chain returns to its start; the normalized " },
+      { text: "tool configuration", variableId: "tool_position" },
+      { text: " follows the two driven source angles " },
+      { text: "θ₁", variableId: "theta_one" },
+      { text: " and " },
+      { text: "θ₂", variableId: "theta_two" },
+      { text: " under the selected claim " },
+      { text: "topology", variableId: "topology" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "tool_position",
+        symbol: "\\mathbf{p}_{tool}",
+        name: "Assembly-Tool Configuration",
+        color: "amethyst",
+        role: "Display-only normalized position of the tool joint opposite the base drives",
+        unit: "normalized exhibit coordinate",
+        dimension: "[1]",
+        explanation:
+          "The patent names the tool and linkage but prints no link lengths, so this coordinate is intentionally not represented as metres or a physical reach claim.",
+        telemetryMetricLabel: "Tool Projection",
+      },
+      {
+        id: "theta_one",
+        symbol: "\\theta_1",
+        name: "First-Link Drive Angle",
+        color: "cyan",
+        role: "Angle of the first link driven by the first base motor in the source drawing",
+        unit: "degrees",
+        dimension: "[1]",
+        explanation:
+          "Figure 2 identifies θ1 as a rotating angle determined by the first motor; the slider controls a configuration, not a historical operating schedule.",
+        telemetryKey: "firstLinkAngleDeg",
+      },
+      {
+        id: "theta_two",
+        symbol: "\\theta_2",
+        name: "Fourth-Link Drive Angle",
+        color: "amber",
+        role: "Angle of the fourth link driven by the second base motor in the source drawing",
+        unit: "degrees",
+        dimension: "[1]",
+        explanation:
+          "Figure 2 identifies θ2 as the second motor-determined configuration angle; no source controller gain, acceleration, or velocity is inferred.",
+        telemetryKey: "fourthLinkAngleDeg",
+      },
+      {
+        id: "topology",
+        symbol: "\\mathcal{T}",
+        name: "Claim Topology Form",
+        color: "teal",
+        role: "Concentric, nonconcentric, or Y-shaped claimed linkage construction",
+        unit: "claim form",
+        dimension: "[1]",
+        explanation:
+          "The selector maps only to independent claims 1, 3, and 6, keeping the visual tied to the alternative linkage structures actually printed in the grant.",
+        telemetryKey: "topologyVariant",
+      },
+    ],
+    pedagogicalNote:
+      "This is a topological kinematics relation, not an SI performance equation. US 4,341,502 supplies the closed-chain mechanism and source-named angles, but no numerical geometry, payload, torque, stiffness, clearance, or servo law.",
+    claimRef: 1,
+    historicalSignificance:
+      "Makes the legal core visible: the patent claims specific four-link and Y-link arrangements, not the broad abstract idea of a factory robot arm.",
+  },
+  {
+    id: "makino-independent-tool-attitude",
+    patentId: "us-4341502-makino-scara",
+    title: "Independent Tool-Attitude Coordinate",
+    category: "Belt-Driven Assembly-Tool Orientation",
+    rawLatex: "q=[\\theta_1,\\theta_2,\\phi]^T",
+    colorizedLatex:
+      "q=[\\textcolor{#0891b2}{\\theta_1},\\textcolor{#d97706}{\\theta_2},\\textcolor{#059669}{\\phi}]^T",
+    plainEnglishSentence: [
+      { text: "The two base angles form planar configuration, while a separate " },
+      { text: "tool-attitude coordinate", variableId: "tool_attitude" },
+      { text: " represents the third motor and belt arrangement of claims 2 and 5." },
+    ],
+    variables: [
+      {
+        id: "tool_attitude",
+        symbol: "\\phi",
+        name: "Tool Attitude",
+        color: "emerald",
+        role: "Assembly-tool rotational coordinate transmitted by the source-described third motor and belt devices",
+        unit: "degrees",
+        dimension: "[1]",
+        explanation:
+          "The patent says the third motor can rotate the assembly tool independently of horizontal position. It does not print the belt ratio, angle range, or motor performance.",
+        telemetryKey: "toolAttitudeDeg",
+      },
+    ],
+    pedagogicalNote:
+      "The vector names coordinates rather than simulating an unprinted control law. It separates the position-setting links from the source's optional belt-driven tool rotation.",
+    claimRef: 2,
+    historicalSignificance:
+      "Claims 2 and 5 make independent orientation a concrete linkage-and-belt combination rather than a vague promise of robot dexterity.",
+  },
+];
+
 // The legacy catalogue block above described a generic modern Otto cycle and
 // attached it to the wrong printed claim. This active set follows the reviewed
 // US 194,047 edition: Claim 1 owns the graded charge and Claim 3 owns the
@@ -21881,5 +22152,375 @@ ALL_COLORIZED_EQUATIONS["us-31128-otis-elevator"] = [
     claimRef: 4,
     historicalSignificance:
       "The opposite winding balances platform motion while preserving the separate hook-rack safety path.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-5701965-kamen-transporter"] = [
+  {
+    id: "kamen-inverted-pendulum-torque",
+    patentId: "us-5701965-kamen-transporter",
+    title: "Inverted Pendulum Dynamic Equilibrium & Motor Torque",
+    category: "Robotics & Dynamic Stabilization",
+    rawLatex:
+      "\\tau_{\\text{motor}} = K_p \\theta + K_d \\dot{\\theta} + K_v (v_{\\text{cmd}} - v) \\quad \\text{and} \\quad I \\ddot{\\theta} = m g h \\sin\\theta - \\tau_{\\text{motor}}",
+    colorizedLatex:
+      "\\textcolor{#9333ea}{\\tau_{\\text{motor}}} = \\textcolor{#0891b2}{K_p} \\textcolor{#dc2626}{\\theta} + \\textcolor{#059669}{K_d} \\textcolor{#d97706}{\\dot{\\theta}} + \\textcolor{#2563eb}{K_v} (\\textcolor{#ea580c}{v_{\\text{cmd}}} - \\textcolor{#4f46e5}{v}) \\quad \\text{and} \\quad \\textcolor{#7c3aed}{I \\ddot{\\theta}} = \\textcolor{#16a34a}{m g h \\sin\\theta} - \\textcolor{#9333ea}{\\tau_{\\text{motor}}}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "restoring motor torque", variableId: "motor_torque" },
+      { text: " is computed from proportional feedback of " },
+      { text: "pitch angle deviation", variableId: "pitch_angle" },
+      { text: ", derivative damping of " },
+      { text: "pitch rate", variableId: "pitch_rate" },
+      { text: ", and velocity error between " },
+      { text: "command speed", variableId: "v_cmd" },
+      { text: " and " },
+      { text: "actual speed", variableId: "v_actual" },
+      { text: " to counteract " },
+      { text: "gravitational overturning moment", variableId: "grav_moment" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "motor_torque",
+        symbol: "\\tau_{\\text{motor}}",
+        name: "Restorative Motor Drive Torque",
+        color: "amethyst",
+        role: "Net torque delivered by wheel servomotors to ground contact patch",
+        unit: "Newton-meters (N·m)",
+        dimension: "[M L^2 T^-2]",
+        explanation:
+          "Drives the wheel axles forward or backward underneath the rider center of gravity to maintain vertical balance.",
+      },
+      {
+        id: "pitch_angle",
+        symbol: "\\theta",
+        name: "Pitch Tilt Angle",
+        color: "rose",
+        role: "Angular deviation from vertical gravito-inertial plumbline ($0^\\circ = \\text{vertical}$)",
+        unit: "Radians (rad) / Degrees (°)",
+        dimension: "[1]",
+        explanation: "Measured continuously by solid-state accelerometers and gyroscopes.",
+      },
+      {
+        id: "pitch_rate",
+        symbol: "\\dot{\\theta}",
+        name: "Pitch Angular Velocity",
+        color: "amber",
+        role: "Rate of change of pitch angle ($d\\theta / dt$)",
+        unit: "Radians per second (rad/s)",
+        dimension: "[T^-1]",
+        explanation:
+          "Supplied by vibrating tuning-fork rate gyroscopes to provide derivative damping against oscillations.",
+      },
+      {
+        id: "grav_moment",
+        symbol: "m g h \\sin\\theta",
+        name: "Gravitational Overturning Moment",
+        color: "emerald",
+        role: "Destabilizing torque exerted by gravity when center of mass tilts away from vertical",
+        unit: "Newton-meters (N·m)",
+        dimension: "[M L^2 T^-2]",
+        explanation:
+          "Increases with rider payload mass and center of gravity height ($h \\approx 0.90\\text{ m}$).",
+      },
+      {
+        id: "v_cmd",
+        symbol: "v_{\\text{cmd}}",
+        name: "Commanded Forward Velocity",
+        color: "coral",
+        role: "Target travel speed commanded by rider body pitch lean",
+        unit: "Meters per second (m/s)",
+        dimension: "[L T^-1]",
+        explanation:
+          "Derived directly from rider pitch lean angle offset ($v_{\\text{cmd}} = K_{\\text{lean}} \\theta$).",
+      },
+      {
+        id: "v_actual",
+        symbol: "v",
+        name: "Actual Ground Velocity",
+        color: "amethyst",
+        role: "Measured linear velocity of the transporter over ground",
+        unit: "Meters per second (m/s)",
+        dimension: "[L T^-1]",
+        explanation: "Calculated from wheel optical encoder angular velocities ($v = \\omega r$).",
+      },
+    ],
+    pedagogicalNote:
+      "Dean Kamen's human transporter replaces passive static stability (wide 4-wheel wheelbases) with active algorithmic stabilization, modeling the passenger as an inverted pendulum and commanding restorative wheel torque to follow user body lean.",
+    claimRef: 1,
+    historicalSignificance:
+      "US 5,701,965 established the legal foundation for the iBOT mobility system, Segway PT, and modern self-balancing robotics.",
+  },
+  {
+    id: "kamen-cluster-stair-kinematics",
+    patentId: "us-5701965-kamen-transporter",
+    title: "Planetary Cluster Wheel Stair-Climbing Kinematics",
+    category: "Robotics & Dynamic Stabilization",
+    rawLatex:
+      "H_{\\text{step, max}} \\le 2 R_{\\text{cluster}} \\cos\\left(\\frac{\\pi}{N_{\\text{wheels}}}\\right) \\quad \\text{and} \\quad \\tau_{\\text{cluster}} = m_{\\text{total}} g R_{\\text{cluster}} \\cos\\phi",
+    colorizedLatex:
+      "\\textcolor{#0891b2}{H_{\\text{step, max}}} \\le 2 \\textcolor{#2563eb}{R_{\\text{cluster}}} \\cos\\left(\\frac{\\pi}{\\textcolor{#d97706}{N_{\\text{wheels}}}}\\right) \\quad \\text{and} \\quad \\textcolor{#9333ea}{\\tau_{\\text{cluster}}} = \\textcolor{#16a34a}{m_{\\text{total}} g} \\textcolor{#2563eb}{R_{\\text{cluster}}} \\cos\\textcolor{#dc2626}{\\phi}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "maximum stair step height", variableId: "step_height" },
+      { text: " is determined by the " },
+      { text: "cluster pitch radius", variableId: "cluster_radius" },
+      { text: " and " },
+      { text: "number of planetary wheels", variableId: "wheel_count" },
+      { text: ", requiring " },
+      { text: "cluster lift torque", variableId: "cluster_torque" },
+      { text: " to hoist total vehicle mass over the riser at cluster angle " },
+      { text: "phi", variableId: "phi_angle" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "step_height",
+        symbol: "H_{\\text{step, max}}",
+        name: "Maximum Climbable Riser Height",
+        color: "cyan",
+        role: "Vertical step clearance that can be surmounted in one cluster rotation cycle",
+        unit: "Meters (m)",
+        dimension: "[L]",
+        explanation:
+          "Geometrically bounded by the planetary cluster diameter ($H \\le 0.22\\text{ m}$).",
+      },
+      {
+        id: "cluster_radius",
+        symbol: "R_{\\text{cluster}}",
+        name: "Planetary Cluster Arm Radius",
+        color: "sapphire",
+        role: "Distance from central cluster rotation axis to planetary wheel centers ($0.18\\text{ m}$)",
+        unit: "Meters (m)",
+        dimension: "[L]",
+        explanation:
+          "Determines step clearance and torque leverage during weight transfer sequence.",
+      },
+      {
+        id: "wheel_count",
+        symbol: "N_{\\text{wheels}}",
+        name: "Number of Planetary Wheels per Cluster",
+        color: "amber",
+        role: "Count of ground-contact wheels arranged symmetrically on each cluster carrier ($N = 2$ or $3$)",
+        unit: "integer count",
+        dimension: "[1]",
+        explanation:
+          "A 2-wheel cluster requires $180^\\circ$ rotation per step; a 3-wheel cluster requires $120^\\circ$ rotation.",
+      },
+      {
+        id: "phi_angle",
+        symbol: "\\phi",
+        name: "Cluster Carrier Angular Position",
+        color: "crimson",
+        role: "Current rotation angle of the planetary carrier arm relative to horizontal ($0^\\circ = \\text{horizontal}$)",
+        unit: "Degrees (°)",
+        dimension: "[1]",
+        explanation: "Modulates gravitational moment arm during stair-climbing rotation cycle.",
+      },
+      {
+        id: "cluster_torque",
+        symbol: "\\tau_{\\text{cluster}}",
+        name: "Cluster Rotation Motor Torque",
+        color: "amethyst",
+        role: "Torque applied to rotate cluster carrier about central axle during stair climbing",
+        unit: "Newton-meters (N·m)",
+        dimension: "[M L^2 T^-2]",
+        explanation:
+          "Carries total vehicle weight while individual ground wheels drive against step tread.",
+      },
+    ],
+    pedagogicalNote:
+      "By rotating planetary multi-wheel cluster arms, the transporter transfers passenger weight smoothly between step edges while maintaining active 2-wheel dynamic balance on the upper tread.",
+    claimRef: 16,
+    historicalSignificance:
+      "Enabled the iBOT mobility system to conquer standard architectural staircases without external ramps or helpers.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-4098001-watson-rcc"] = [
+  {
+    id: "watson-rcc-decoupled-compliance",
+    patentId: "us-4098001-watson-rcc",
+    title: "Decoupled Spatial Compliance Matrix & Remote Center Projection",
+    category: "Robotics & Mechanisms",
+    rawLatex:
+      "\\begin{bmatrix} \\delta_x \\\\ \\theta_y \\end{bmatrix} = \\begin{bmatrix} C_{xx} & 0 \\\\ 0 & C_{\\theta\\theta} \\end{bmatrix} \\begin{bmatrix} F_x \\\\ M_y \\end{bmatrix}",
+    colorizedLatex:
+      "\\begin{bmatrix} \\textcolor{#0891b2}{\\delta_x} \\\\ \\textcolor{#d97706}{\\theta_y} \\end{bmatrix} = \\begin{bmatrix} \\textcolor{#2563eb}{C_{xx}} & 0 \\\\ 0 & \\textcolor{#9333ea}{C_{\\theta\\theta}} \\end{bmatrix} \\begin{bmatrix} \\textcolor{#16a34a}{F_x} \\\\ \\textcolor{#dc2626}{M_y} \\end{bmatrix}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "lateral tip deflection", variableId: "delta_x" },
+      { text: " and " },
+      { text: "angular peg tilt", variableId: "theta_y" },
+      { text: " are decoupled by " },
+      { text: "lateral flexure compliance", variableId: "C_xx" },
+      { text: " and " },
+      { text: "angular focal compliance", variableId: "C_tt" },
+      { text: " in response to " },
+      { text: "lateral contact force", variableId: "F_x" },
+      { text: " and " },
+      { text: "applied tip moment", variableId: "M_y" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "delta_x",
+        symbol: "\\delta_x",
+        name: "Lateral Tip Deflection",
+        color: "cyan",
+        role: "Transverse displacement of the peg tip along the x-axis ($0.40\\text{ mm/N}$)",
+        unit: "Millimeters (mm)",
+        dimension: "[L]",
+        explanation:
+          "Produced by parallel flexure bending without introducing angular tilt ($\theta_y = 0$).",
+        telemetryMetricLabel: "Lateral Tip Deflection",
+      },
+      {
+        id: "theta_y",
+        symbol: "\\theta_y",
+        name: "Angular Peg Tilt",
+        color: "amber",
+        role: "Rotational deflection about the projected remote compliance center",
+        unit: "Degrees (°)",
+        dimension: "[1]",
+        explanation:
+          "Produced by focal flexure pivoting about the remote center without lateral tip displacement ($delta_x = 0$).",
+        telemetryMetricLabel: "Angular Peg Tilt",
+      },
+      {
+        id: "C_xx",
+        symbol: "C_{xx}",
+        name: "Decoupled Lateral Compliance",
+        color: "sapphire",
+        role: "Compliance coefficient relating transverse force to pure lateral displacement ($C_{xx} = 0.40\\text{ mm/N}$)",
+        unit: "mm / N",
+        dimension: "[M^-1 T^2]",
+        explanation:
+          "Governed by the cubic flexural bending rigidity of the three parallel vertical rods.",
+      },
+      {
+        id: "C_tt",
+        symbol: "C_{\\theta\\theta}",
+        name: "Decoupled Angular Compliance",
+        color: "amethyst",
+        role: "Compliance coefficient relating moment to pure rotation about the remote center ($C_{\\theta\\theta} = 0.022\\text{ rad}/(\\text{N}\\cdot\\text{m})$)",
+        unit: "rad / (N·m)",
+        dimension: "[M^-1 L^-2 T^2]",
+        explanation: "Governed by the necked pivot flexures and focal cone convergence geometry.",
+      },
+      {
+        id: "F_x",
+        symbol: "F_x",
+        name: "Transverse Contact Force",
+        color: "emerald",
+        role: "Lateral reaction force generated when the peg tip contacts the hole chamfer or bore wall",
+        unit: "Newtons (N)",
+        dimension: "[M L T^-2]",
+        explanation:
+          "In an RCC system, $F_x$ acts directly at the elastic center, generating zero net moment.",
+        telemetryMetricLabel: "Lateral Contact Force",
+      },
+      {
+        id: "M_y",
+        symbol: "M_y",
+        name: "Applied Tip Moment",
+        color: "crimson",
+        role: "External torque applied to the held workpiece or tool",
+        unit: "Newton-meters (N·m)",
+        dimension: "[M L^2 T^-2]",
+        explanation:
+          "Causes pure angular rotation about the remote center, allowing the peg to align with the hole axis.",
+        telemetryMetricLabel: "Tip Moment",
+      },
+    ],
+    pedagogicalNote:
+      "By angling the flexure rods toward a common focal point at the peg tip, Watson's RCC diagonalizes the spatial compliance matrix, ensuring that lateral forces produce pure translation and moments produce pure rotation, eliminating the positive-feedback angular tilting that causes jamming.",
+    claimRef: 1,
+    historicalSignificance:
+      "US 4,098,001 enabled industrial robots worldwide to perform sub-millimeter precision insertions at high speed without jamming.",
+  },
+  {
+    id: "watson-rcc-anti-jamming-clearance",
+    patentId: "us-4098001-watson-rcc",
+    title: "Peg-in-Hole Critical Wedging Angle & Jamming Insertion Depth",
+    category: "Robotics & Mechanisms",
+    rawLatex:
+      "\\theta_{\\text{crit}} = \\frac{2c}{d_{\\text{peg}}} \\quad \\text{and} \\quad L_{\\text{jam}} = \\frac{d_{\\text{peg}}}{2\\mu}",
+    colorizedLatex:
+      "\\textcolor{#0891b2}{\\theta_{\\text{crit}}} = \\frac{2 \\textcolor{#2563eb}{c}}{\\textcolor{#16a34a}{d_{\\text{peg}}}} \\quad \\text{and} \\quad \\textcolor{#9333ea}{L_{\\text{jam}}} = \\frac{\\textcolor{#16a34a}{d_{\\text{peg}}}}{2 \\textcolor{#dc2626}{\\mu}}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "critical wedging angle", variableId: "theta_crit" },
+      { text: " depends on " },
+      { text: "hole clearance", variableId: "clearance_c" },
+      { text: " and " },
+      { text: "peg diameter", variableId: "peg_diam" },
+      { text: ", while " },
+      { text: "jamming depth", variableId: "L_jam" },
+      { text: " is determined by " },
+      { text: "friction coefficient", variableId: "friction_mu" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "theta_crit",
+        symbol: "\\theta_{\\text{crit}}",
+        name: "Critical Wedging Tilt Angle",
+        color: "cyan",
+        role: "Maximum allowable angular misalignment before two-point contact causes geometric lock",
+        unit: "Radians (rad) or Degrees (°)",
+        dimension: "[1]",
+        explanation:
+          "For a $12\\text{ mm}$ peg with $25\\,\\mu\\text{m}$ clearance, $\\theta_{\\text{crit}} \\approx 0.24^\\circ$. Exceeding this angle causes irreversible wedging.",
+      },
+      {
+        id: "clearance_c",
+        symbol: "c",
+        name: "Radial Clearance",
+        color: "sapphire",
+        role: "Difference between hole radius and peg radius ($c = (D - d)/2 \\approx 0.025\\text{ mm}$)",
+        unit: "Millimeters (mm)",
+        dimension: "[L]",
+        explanation:
+          "Tight precision fits typically have clearances of $10$ to $50\\,\\mu\\text{m}$.",
+      },
+      {
+        id: "peg_diam",
+        symbol: "d_{\\text{peg}}",
+        name: "Workpiece Peg Diameter",
+        color: "emerald",
+        role: "Nominal outer diameter of the cylindrical insertion workpiece ($12\\text{ mm}$)",
+        unit: "Millimeters (mm)",
+        dimension: "[L]",
+        explanation: "Sets the geometric moment arm for two-point contact forces.",
+      },
+      {
+        id: "L_jam",
+        symbol: "L_{\\text{jam}}",
+        name: "Critical Jamming Insertion Depth",
+        color: "amethyst",
+        role: "Insertion depth beyond which rotational moments exceed the frictional sliding threshold ($L_{\\text{jam}} \\approx 40\\text{ mm}$)",
+        unit: "Millimeters (mm)",
+        dimension: "[L]",
+        explanation:
+          "When insertion depth $L > d/(2\\mu)$, pushing harder increases normal forces faster than insertion force, locking the peg permanently.",
+      },
+      {
+        id: "friction_mu",
+        symbol: "\\mu",
+        name: "Coulomb Friction Coefficient",
+        color: "crimson",
+        role: "Static/kinetic friction coefficient between peg and hole bore ($mu \\approx 0.15$ for lubricated steel)",
+        unit: "dimensionless",
+        dimension: "[1]",
+        explanation: "Determines the slope of the friction cones at the contact points.",
+      },
+    ],
+    pedagogicalNote:
+      "Because the RCC projects its elastic center to the tip of the peg, lateral forces never generate tilting moments that could push the peg past the critical wedging angle $\\theta_{\\text{crit}}$, allowing flawless insertion even in deep, tight-tolerance bores.",
+    claimRef: 1,
+    historicalSignificance:
+      "Provided the mathematical and mechanical proof for Whitney's landmark Draper Lab peg-in-hole assembly theory.",
   },
 ];

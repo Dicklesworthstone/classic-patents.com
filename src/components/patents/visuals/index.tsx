@@ -187,6 +187,10 @@ const KilbyIntegratedCircuitSim = dynamic(
   () => import("./KilbyIntegratedCircuitSim").then((m) => m.KilbyIntegratedCircuitSim),
   { ssr: false, loading: SimLoading },
 );
+const KamenTransporterSim = dynamic(
+  () => import("./KamenTransporterSim").then((m) => m.KamenTransporterSim),
+  { ssr: false, loading: SimLoading },
+);
 const KwolekKevlarSim = dynamic(() => import("./KwolekKevlarSim").then((m) => m.KwolekKevlarSim), {
   ssr: false,
   loading: SimLoading,
@@ -211,6 +215,10 @@ const MaimanRubyLaserSim = dynamic(
   () => import("./MaimanRubyLaserSim").then((m) => m.MaimanRubyLaserSim),
   { ssr: false, loading: SimLoading },
 );
+const MakinoScaraSim = dynamic(() => import("./MakinoScaraSim").then((m) => m.MakinoScaraSim), {
+  ssr: false,
+  loading: SimLoading,
+});
 const MarconiRadioSim = dynamic(() => import("./MarconiRadioSim").then((m) => m.MarconiRadioSim), {
   ssr: false,
   loading: SimLoading,
@@ -287,6 +295,10 @@ const SpencerMicrowaveSim = dynamic(
   () => import("./SpencerMicrowaveSim").then((m) => m.SpencerMicrowaveSim),
   { ssr: false, loading: SimLoading },
 );
+const SundbackZipperSim = dynamic(
+  () => import("./SundbackZipperSim").then((m) => m.SundbackZipperSim),
+  { ssr: false, loading: SimLoading },
+);
 const TeslaCoilSim = dynamic(() => import("./TeslaCoilSim").then((m) => m.TeslaCoilSim), {
   ssr: false,
   loading: SimLoading,
@@ -304,6 +316,10 @@ const ThomsonWeldingSim = dynamic(
   { ssr: false, loading: SimLoading },
 );
 const TownesLaserSim = dynamic(() => import("./TownesLaserSim").then((m) => m.TownesLaserSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const WatsonRccSim = dynamic(() => import("./WatsonRccSim").then((m) => m.WatsonRccSim), {
   ssr: false,
   loading: SimLoading,
 });
@@ -497,6 +513,10 @@ const HyattCelluloid3D = dynamic(
   () => import("./three/HyattCelluloid3D").then((mod) => mod.HyattCelluloid3D),
   { ssr: false, loading: ThreeLoading },
 );
+const KamenTransporter3D = dynamic(() => import("./three/KamenTransporter3D"), {
+  ssr: false,
+  loading: ThreeLoading,
+});
 const KwolekKevlar3D = dynamic(
   () => import("./three/KwolekKevlar3D").then((mod) => mod.KwolekKevlar3D),
   { ssr: false, loading: ThreeLoading },
@@ -577,6 +597,14 @@ const SpencerMicrowave3D = dynamic(
   () => import("./three/SpencerMicrowave3D").then((mod) => mod.SpencerMicrowave3D),
   { ssr: false, loading: ThreeLoading },
 );
+const SundbackZipper3D = dynamic(() => import("./three/SundbackZipper3D"), {
+  ssr: false,
+  loading: ThreeLoading,
+});
+const MakinoScara3D = dynamic(() => import("./three/MakinoScara3D").then((m) => m.MakinoScara3D), {
+  ssr: false,
+  loading: ThreeLoading,
+});
 const MaimanRubyLaser3D = dynamic(
   () => import("./three/MaimanRubyLaser3D").then((m) => m.MaimanRubyLaser3D),
   { ssr: false, loading: ThreeLoading },
@@ -610,6 +638,10 @@ const ThomsonWelding3D = dynamic(
   () => import("./three/ThomsonWelding3D").then((mod) => mod.ThomsonWelding3D),
   { ssr: false, loading: ThreeLoading },
 );
+const WatsonRcc3D = dynamic(() => import("./three/WatsonRcc3D").then((mod) => mod.WatsonRcc3D), {
+  ssr: false,
+  loading: ThreeLoading,
+});
 const WattRotaryEngine3D = dynamic(
   () => import("./three/WattRotaryEngine3D").then((mod) => mod.WattRotaryEngine3D),
   { ssr: false, loading: ThreeLoading },
@@ -891,6 +923,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             return renderMode === "3d-physics" ? <HaberAmmonia3D /> : <HaberAmmoniaSim />;
           case "us-1102653-goddard-rocket":
             return renderMode === "3d-physics" ? <GoddardRocket3D /> : <GoddardRocketSim />;
+          case "us-1219881-sundback-zipper":
+            return renderMode === "3d-physics" ? (
+              <SundbackZipper3D patentId={patentId} />
+            ) : (
+              <SundbackZipperSim patentId={patentId} />
+            );
           case "us-1773980-farnsworth-tv":
             return renderMode === "3d-physics" ? <FarnsworthTV3D /> : <FarnsworthTVSim />;
           case "us-1781541-einstein-refrigerator":
@@ -939,8 +977,22 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-3923554-boyle-smith-ccd":
           case "us-3858232-boyle-smith-ccd":
             return renderMode === "3d-physics" ? <BoyleSmithCcd3D /> : <BoyleSmithCcdSim />;
+          case "us-4098001-watson-rcc":
+            return renderMode === "3d-physics" ? (
+              <WatsonRcc3D patentId={patentId} />
+            ) : (
+              <WatsonRccSim patentId={patentId} />
+            );
           case "us-4136359-wozniak-apple":
             return renderMode === "3d-physics" ? <WozniakApple3D /> : <WozniakAppleSim />;
+          case "us-4341502-makino-scara":
+            return renderMode === "3d-physics" ? <MakinoScara3D /> : <MakinoScaraSim />;
+          case "us-5701965-kamen-transporter":
+            return renderMode === "3d-physics" ? (
+              <KamenTransporter3D patentId={patentId} />
+            ) : (
+              <KamenTransporterSim patentId={patentId} />
+            );
           case "us-6120588-eink":
             return renderMode === "3d-physics" ? <EInk3D /> : <EInkSim />;
           case "us-6285999-pagerank":

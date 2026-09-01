@@ -104,15 +104,6 @@ export const arkwrightWaterFramePatent: Patent = {
     "Drawing out and attenuating cotton, wool, or other fibrous substances into a roving or thread of any desired fineness by passing the same successively through two or more pairs of rollers turning with different and accelerating velocities.",
   originalPdfUrl: "/patents/pdfs/gb-931-arkwright-water-frame.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/GB176900931A/en",
-  originalTextAsset: {
-    url: "/patents/transcripts/gb-931-arkwright-water-frame-reviewed.txt",
-    pageCount: 2,
-    kind: "reviewed-transcription",
-    reviewedBy:
-      "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
-    reviewedAt: "2026-08-22",
-    sourcePdfSha256: "3254894ae66cb4ddd2612d164e24af76f5efa8ee8ac6b741c8affc70d8fe62fd",
-  },
   archivalEdition: arkwrightWaterFrameArchivalEdition,
   usptoClassification: "D01H 1/04 (Spinning machines with drawing rollers and revolving flyers)",
   stats: {

@@ -2,6 +2,8 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { archivalEditionForPublication } from "@/data/editions/publicationApproval";
 import { arkwrightWaterFramePatent } from "../patents/arkwright-water-frame";
 import {
   ARKWRIGHT_WATER_FRAME_PARALLEL_READINGS,
@@ -9,7 +11,7 @@ import {
   manualArkwrightClaimText,
 } from "./arkwrightWaterFrameEdition";
 
-describe("Richard Arkwright Water Frame Archival Edition Publication Contract", () => {
+describe("Richard Arkwright Water Frame Archival Edition Research Boundary", () => {
   const root = process.cwd();
   const pdfPath = resolve(root, "public/patents/pdfs/gb-931-arkwright-water-frame.pdf");
   const preservedCropPaths = [
@@ -32,12 +34,22 @@ describe("Richard Arkwright Water Frame Archival Edition Publication Contract", 
     expect(digest).toBe("3254894ae66cb4ddd2612d164e24af76f5efa8ee8ac6b741c8affc70d8fe62fd");
   });
 
-  test("publishes the bound catalogue source face", () => {
+  test("keeps the research edition bound for claim sourcing but fails closed at publication", () => {
     expect(arkwrightWaterFramePatent.archivalEdition).toBe(arkwrightWaterFrameArchivalEdition);
-    expect(arkwrightWaterFramePatent.originalTextAsset).toBeDefined();
+    expect(arkwrightWaterFramePatent.originalTextAsset).toBeUndefined();
+    expect(arkwrightWaterFrameArchivalEdition.completeFacsimileReviewed).toBe(false);
+    expect(
+      validateCuratedSpecificationEdition(arkwrightWaterFrameArchivalEdition, {
+        requireCompleteFacsimileReview: false,
+      }),
+    ).toEqual({ valid: true, errors: [] });
+    expect(validateCuratedSpecificationEdition(arkwrightWaterFrameArchivalEdition).valid).toBe(
+      false,
+    );
+    expect(archivalEditionForPublication(arkwrightWaterFramePatent)).toBeUndefined();
   });
 
-  test("labels the reconstructed Figure 1 preview without presenting it as a primary facsimile", () => {
+  test("preserves rejected reconstruction crops without rendering one as archival evidence", () => {
     const figureReference = arkwrightWaterFrameArchivalEdition.blocks
       .filter((block) => block.kind === "paragraph")
       .flatMap((block) => block.inlines)
@@ -54,14 +66,8 @@ describe("Richard Arkwright Water Frame Archival Edition Publication Contract", 
     }
     expect(figureReference.label).toContain("2026 Typst reconstruction");
     expect(figureReference.label).toContain("not a primary facsimile");
-    expect(figureReference.figurePreviews).toEqual([
-      {
-        src: "/patents/figures/gb-931-arkwright-water-frame/fig-1-source-crop-v3.png",
-        alt: "Fig. 1 from the pinned reconstruction of GB 931; not a primary facsimile",
-        width: 1550,
-        height: 1500,
-      },
-    ]);
+    expect(figureReference.href).toBe("?view=pdf-facsimile");
+    expect(figureReference.figurePreviews).toBeUndefined();
 
     for (const cropPath of preservedCropPaths) {
       expect(existsSync(cropPath)).toBe(true);

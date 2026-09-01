@@ -58,17 +58,33 @@ import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
 import { stepHopkinsPotash } from "./hopkinsPotashKernel";
 import {
+  KAMEN_TRANSPORTER_DEFAULT_CONTROLS,
+  readKamenTransporterControls,
+  stepKamenTransporterSi,
+} from "./kamenTransporterKernel";
+import {
   stepHoweSewingMachine,
   stepMergenthalerLinotype,
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "./machineKernels";
+import { stepMakinoScaraTopology } from "./makinoScaraKernel";
 import { stepMultiTouch } from "./multiTouchKernel";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { stepPageRank } from "./pageRankKernel";
 import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
+import {
+  readSundbackZipperControls,
+  SUNDBACK_ZIPPER_DEFAULT_CONTROLS,
+  stepSundbackZipperSi,
+} from "./sundbackZipperKernel";
 import { readTeslaTransformerControls, stepTeslaTransformerSi } from "./teslaTransformerKernel";
 import { goddardNozzleMatch } from "./thermochem";
+import {
+  readWatsonRccControls,
+  stepWatsonRccSi,
+  WATSON_RCC_DEFAULT_CONTROLS,
+} from "./watsonRccKernel";
 import { stepWattCondenser } from "./wattCondenserKernel";
 import { stepWattRotaryEngine } from "./wattRotaryKernel";
 import { readWrightControls, stepWrightFlyerSi, WRIGHT_COUPLING } from "./wrightKernel";
@@ -3023,6 +3039,119 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     },
     pedagogicalInsight:
       "Two sharp metal wheels mounted at right angles roll independently across the desk: each wheel turns a variable potentiometer wiper, decomposing continuous 2D planar motion into orthogonal $(X, Y)$ signals.",
+  },
+  "us-1219881-sundback-zipper": {
+    domain: "mechanical_kinematics",
+    domainTitle: "Interlocking Scoop Cam Kinematics, Bending Flexibility & Burst Resistance",
+    equationName: "Cam Wedge Normal Force Resolution & Interlocking Shear Resistance",
+    governingEquation:
+      "F_{\\text{engage}} = \\frac{F_{\\text{pull}}}{2\\sin\\theta + \\mu}, \\qquad F_{\\text{burst}} = 2 N_{\\text{engaged}} A_{\\text{shear}} \\tau_{\\text{max}} \\cos(\\theta_{\\text{flex}})",
+    engineMethod: "FrankenSimEngine.stepSundbackZipper",
+    controls: [
+      {
+        id: "sliderPositionPct",
+        label: "Slider Position",
+        min: 0,
+        max: 100,
+        step: 1,
+        defaultValue: SUNDBACK_ZIPPER_DEFAULT_CONTROLS.sliderPositionPct,
+        unit: "%",
+      },
+      {
+        id: "pullForceN",
+        label: "Pull Tab Force",
+        min: 1,
+        max: 50,
+        step: 1,
+        defaultValue: SUNDBACK_ZIPPER_DEFAULT_CONTROLS.pullForceN,
+        unit: "N",
+      },
+      {
+        id: "lateralTensionN",
+        label: "Transverse Tension",
+        min: 0,
+        max: 200,
+        step: 5,
+        defaultValue: SUNDBACK_ZIPPER_DEFAULT_CONTROLS.lateralTensionN,
+        unit: "N",
+      },
+      {
+        id: "flexAngleDeg",
+        label: "Bending / Folding Angle",
+        min: 0,
+        max: 180,
+        step: 5,
+        defaultValue: SUNDBACK_ZIPPER_DEFAULT_CONTROLS.flexAngleDeg,
+        unit: "deg",
+      },
+      {
+        id: "toothDensityTpi",
+        label: "Tooth Density",
+        min: 8,
+        max: 14,
+        step: 1,
+        defaultValue: SUNDBACK_ZIPPER_DEFAULT_CONTROLS.toothDensityTpi,
+        unit: "TPI",
+      },
+      {
+        id: "staggerAligned",
+        label: "Claim 1 Stagger Alignment",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "state",
+      },
+    ],
+    computeMetrics: (p: Record<string, number | boolean>): PhysicsMetric[] => {
+      const controls = readSundbackZipperControls(p);
+      const tel = stepSundbackZipperSi(controls);
+      return [
+        {
+          label: "Engaged Scoops",
+          value: `${tel.engagedTeeth} / ${tel.totalTeeth}`,
+          unit: "teeth",
+          badgeColor: "cyan",
+          progressPct: tel.engagementFraction * 100,
+        },
+        {
+          label: "Cam Wedge Force",
+          value: tel.wedgeNormalForceN.toFixed(1),
+          unit: "N",
+          badgeColor: "emerald",
+          progressPct: clampProgress((tel.wedgeNormalForceN / 60) * 100),
+        },
+        {
+          label: "Burst Resistance",
+          value: tel.burstResistanceN.toFixed(1),
+          unit: "N",
+          badgeColor: tel.burstRefusal ? "rose" : "amber",
+          progressPct: clampProgress((tel.burstResistanceN / 300) * 100),
+        },
+        {
+          label: "Tape Core Strain",
+          value: tel.tapeStrainPct.toFixed(1),
+          unit: "%",
+          badgeColor: tel.tapeStrainPct > 8 ? "rose" : "indigo",
+          progressPct: clampProgress((tel.tapeStrainPct / 12) * 100),
+        },
+        {
+          label: "Lock Status",
+          value: tel.burstRefusal
+            ? "RUPTURE"
+            : tel.isStalled
+              ? "COLLISION"
+              : tel.isLocked
+                ? "SECURE LOCK"
+                : "OPEN",
+          unit: "state",
+          badgeColor:
+            tel.burstRefusal || tel.isStalled ? "rose" : tel.isLocked ? "emerald" : "amber",
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Identical metal scoops with convex upper projections and concave lower pockets are offset by half a tooth pitch ($p/2$) along corded fabric tapes. Squeezing the teeth together through a converging Y-cam causes each scoop to nest positively inside the hollow socket of its opposing neighbor, providing extreme transverse burst strength while allowing 180° folding flexibility.",
   },
   "us-1773980-farnsworth-tv": {
     domain: "semiconductor_carrier",
@@ -6822,6 +6951,96 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "The patent calls α the random-jump probability and assigns each backlink source a normalized contribution through 1−α; repeated application approaches a steady-state score vector when the iteration converges.",
   },
+  "us-4341502-makino-scara": {
+    domain: "source_bounded_robot_kinematics",
+    domainTitle: "Four-Link Assembly-Robot Topology",
+    equationName: "Planar Closed-Chain Configuration",
+    governingEquation:
+      "\\sum_{i=1}^{4}\\mathbf{r}_i=\\mathbf{0};\\quad\\mathbf{p}_{tool}=f(\\theta_1,\\theta_2;\\text{four-link topology})",
+    engineMethod: "stepMakinoScaraTopology (source-bounded TypeScript geometry)",
+    controls: [
+      {
+        id: "firstLinkAngleDeg",
+        label: "First-link angle θ₁",
+        min: -180,
+        max: 180,
+        step: 1,
+        defaultValue: 32,
+        unit: "°",
+      },
+      {
+        id: "fourthLinkAngleDeg",
+        label: "Fourth-link angle θ₂",
+        min: -180,
+        max: 180,
+        step: 1,
+        defaultValue: -38,
+        unit: "°",
+      },
+      {
+        id: "toolAttitudeDeg",
+        label: "Tool attitude φ",
+        min: -180,
+        max: 180,
+        step: 1,
+        defaultValue: 0,
+        unit: "°",
+      },
+      {
+        id: "topologyVariant",
+        label: "Claim topology",
+        min: 1,
+        max: 3,
+        step: 1,
+        defaultValue: 1,
+        unit: "claim form",
+      },
+    ],
+    computeMetrics: (params) => {
+      const pose = stepMakinoScaraTopology(params);
+      const topologyLabel =
+        pose.topology === "claim-1-concentric"
+          ? "CONCENTRIC"
+          : pose.topology === "claim-3-offset"
+            ? "OFFSET"
+            : "Y-LINK";
+      return [
+        {
+          label: "Independent Claim",
+          value: `CLAIM ${pose.independentClaim}`,
+          unit: topologyLabel,
+          badgeColor: "purple",
+          progressPct: (pose.independentClaim / 6) * 100,
+        },
+        {
+          label: "First-link Angle",
+          value: (pose.firstLinkAngleRad * (180 / Math.PI)).toFixed(0),
+          unit: "° θ₁",
+          badgeColor: "cyan",
+          progressPct: clampProgress(((pose.firstLinkAngleRad * 180) / Math.PI + 180) / 3.6),
+        },
+        {
+          label: "Fourth-link Angle",
+          value: (pose.fourthLinkAngleRad * (180 / Math.PI)).toFixed(0),
+          unit: "° θ₂",
+          badgeColor: "amber",
+          progressPct: clampProgress(((pose.fourthLinkAngleRad * 180) / Math.PI + 180) / 3.6),
+        },
+        {
+          label: "Tool Projection",
+          value: `(${pose.tool[0].toFixed(2)}, ${pose.tool[1].toFixed(2)})`,
+          unit: "normalized",
+          badgeColor: "emerald",
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "The grant supplies a topology and the two driven angles θ₁ and θ₂, plus belt-drive and Y-link claim forms. It does not provide a length, payload, torque, stiffness, or servo law. The shared instrument therefore renders a normalized loop-closure configuration and openly refuses SI force or performance telemetry.",
+    enforceConstraints: (params) => ({
+      ...params,
+      topologyVariant: Math.max(1, Math.min(3, Math.round(params.topologyVariant ?? 1))),
+    }),
+  },
   "us-6594844-roomba": {
     domain: "autonomous_robotics",
     domainTitle: "Finite-Region Optical Obstacle Detection",
@@ -6975,6 +7194,206 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     },
     pedagogicalInsight:
       "US 6,331,181 centers tool-boundary data: compatibility, tool type, measured calibration offsets, life information, and engagement signals are transmitted to a processor before or during tool exchange.",
+  },
+  "us-5701965-kamen-transporter": {
+    domain: "robotics_locomotion",
+    domainTitle: "Inverted Pendulum Dynamic Balancing & Cluster Stair-Climbing Kinematics",
+    equationName: "Inverted Pendulum Dynamic Equilibrium & Motor Torque",
+    governingEquation:
+      "I \\ddot{\\theta} = m g h \\sin\\theta - \\tau_{\\text{motor}} - F_{\\text{traction}} h \\cos\\theta \\quad \\text{and} \\quad \\tau_{\\text{motor}} = K_p \\theta + K_d \\dot{\\theta} + K_v (v_{\\text{cmd}} - v)",
+    engineMethod: "FrankenSimEngine.stepKamenTransporter",
+    controls: [
+      {
+        id: "riderPitchLeanDeg",
+        label: "Rider Pitch Lean",
+        min: -15,
+        max: 15,
+        step: 1,
+        defaultValue: KAMEN_TRANSPORTER_DEFAULT_CONTROLS.riderPitchLeanDeg,
+        unit: "°",
+      },
+      {
+        id: "velocityCommandMs",
+        label: "Velocity Command",
+        min: -2.0,
+        max: 4.0,
+        step: 0.2,
+        defaultValue: KAMEN_TRANSPORTER_DEFAULT_CONTROLS.velocityCommandMs,
+        unit: "m/s",
+      },
+      {
+        id: "yawSteering",
+        label: "Yaw Steering Differential",
+        min: -1.0,
+        max: 1.0,
+        step: 0.1,
+        defaultValue: KAMEN_TRANSPORTER_DEFAULT_CONTROLS.yawSteering,
+        unit: "",
+      },
+      {
+        id: "riderMassKg",
+        label: "Rider Payload Mass",
+        min: 40,
+        max: 120,
+        step: 5,
+        defaultValue: KAMEN_TRANSPORTER_DEFAULT_CONTROLS.riderMassKg,
+        unit: "kg",
+      },
+    ],
+    computeMetrics: (p) => {
+      const controls = readKamenTransporterControls(p);
+      const tel = stepKamenTransporterSi(controls);
+      return [
+        {
+          label: "Pitch Angle",
+          value: tel.pitchAngleDeg.toFixed(1),
+          unit: "°",
+          badgeColor: tel.pitchRefusal
+            ? "rose"
+            : Math.abs(tel.pitchAngleDeg) > 10
+              ? "amber"
+              : "emerald",
+          progressPct: clampProgress((Math.abs(tel.pitchAngleDeg) / 25) * 100),
+        },
+        {
+          label: "Balancing Torque",
+          value: tel.balanceTorqueNm.toFixed(1),
+          unit: "N·m",
+          badgeColor: Math.abs(tel.balanceTorqueNm) > 80 ? "amber" : "cyan",
+          progressPct: clampProgress((Math.abs(tel.balanceTorqueNm) / 120) * 100),
+        },
+        {
+          label: "Linear Speed",
+          value: tel.forwardVelocityMs.toFixed(2),
+          unit: "m/s",
+          badgeColor: "indigo",
+          progressPct: clampProgress((Math.abs(tel.forwardVelocityMs) / 5.0) * 100),
+        },
+        {
+          label: "Stability Margin",
+          value: (tel.stabilityMargin * 100).toFixed(0),
+          unit: "%",
+          badgeColor:
+            tel.stabilityMargin > 0.6 ? "emerald" : tel.stabilityMargin > 0.2 ? "amber" : "rose",
+          progressPct: clampProgress(tel.stabilityMargin * 100),
+        },
+        {
+          label: "Operating State",
+          value: tel.pitchRefusal
+            ? "UNSTABLE RUNAWAY"
+            : tel.isClimbing
+              ? "STAIR CLIMB"
+              : tel.isBalancing
+                ? "2-WHEEL BALANCE"
+                : "4-WHEEL STANDARD",
+          unit: "state",
+          badgeColor: tel.pitchRefusal ? "rose" : tel.isBalancing ? "emerald" : "amber",
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Dean Kamen's dynamic stabilization continuously drives the wheels underneath the vehicle center of gravity in response to detected pitch tilt $\\theta$ and pitch angular rate $\\dot{\\theta}$. When the rider leans forward, the inverted pendulum equation commands restorative motor torque $\\tau = K_p \\theta + K_d \\dot{\\theta}$ that balances the vehicle while creating smooth forward acceleration.",
+  },
+  "us-4098001-watson-rcc": {
+    domain: "robotics_mechanisms",
+    domainTitle: "Spatial Compliance Matrices & Decoupled Flexure Kinematics",
+    equationName: "Focal Cone Compliance Diagonalization & Wedging Clearance",
+    governingEquation:
+      "\\begin{bmatrix} \\delta_x \\\\ \\theta_y \\end{bmatrix} = \\begin{bmatrix} C_{xx} & 0 \\\\ 0 & C_{\\theta\\theta} \\end{bmatrix} \\begin{bmatrix} F_x \\\\ M_y \\end{bmatrix} \\quad \\text{and} \\quad \\theta_{\\text{crit}} = \\frac{2c}{d}",
+    engineMethod: "FrankenSimEngine.stepWatsonRcc",
+    controls: [
+      {
+        id: "lateralContactForceN",
+        label: "Lateral Contact Force",
+        min: 0,
+        max: 80,
+        step: 1,
+        defaultValue: WATSON_RCC_DEFAULT_CONTROLS.lateralContactForceN,
+        unit: "N",
+      },
+      {
+        id: "appliedMomentNm",
+        label: "Tip Moment",
+        min: -3,
+        max: 3,
+        step: 0.1,
+        defaultValue: WATSON_RCC_DEFAULT_CONTROLS.appliedMomentNm,
+        unit: "N·m",
+      },
+      {
+        id: "insertionForceN",
+        label: "Axial Insertion Force",
+        min: 0,
+        max: 400,
+        step: 10,
+        defaultValue: WATSON_RCC_DEFAULT_CONTROLS.insertionForceN,
+        unit: "N",
+      },
+      {
+        id: "initialMisalignmentMm",
+        label: "Initial Misalignment",
+        min: 0,
+        max: 2.5,
+        step: 0.1,
+        defaultValue: WATSON_RCC_DEFAULT_CONTROLS.initialMisalignmentMm,
+        unit: "mm",
+      },
+      {
+        id: "pegLengthM",
+        label: "Peg Tool Length",
+        min: 0.05,
+        max: 0.25,
+        step: 0.01,
+        defaultValue: WATSON_RCC_DEFAULT_CONTROLS.pegLengthM,
+        unit: "m",
+      },
+    ],
+    computeMetrics: (p) => {
+      const controls = readWatsonRccControls(p);
+      const tel = stepWatsonRccSi(controls);
+      return [
+        {
+          label: "Lateral Tip Deflection",
+          value: `${tel.tipLateralDisplacementMm.toFixed(2)} mm`,
+          unit: "δ_x",
+          badgeColor: "cyan",
+          progressPct: clampProgress((tel.tipLateralDisplacementMm / 2.5) * 100),
+        },
+        {
+          label: "Angular Peg Tilt",
+          value: `${tel.pegTiltAngleDeg.toFixed(2)}°`,
+          unit: "θ_y",
+          badgeColor: "amber",
+          progressPct: clampProgress((Math.abs(tel.pegTiltAngleDeg) / 1.5) * 100),
+        },
+        {
+          label: "Jamming Risk Index",
+          value: tel.jammingIndex.toFixed(2),
+          unit: "J_index",
+          badgeColor:
+            tel.jammingIndex >= 1.0 ? "rose" : tel.jammingIndex > 0.35 ? "amber" : "emerald",
+          progressPct: clampProgress(tel.jammingIndex * 100),
+        },
+        {
+          label: "Insertion Status",
+          value:
+            tel.insertionState === "smooth_insertion"
+              ? "SMOOTH PASS"
+              : tel.insertionState === "compliant_correction"
+                ? "COMPLIANT PASS"
+                : "JAMMED/WEDGED",
+          unit: "status",
+          badgeColor:
+            tel.insertionState === "smooth_insertion"
+              ? "emerald"
+              : tel.insertionState === "compliant_correction"
+                ? "cyan"
+                : "rose",
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Watson's Remote Center Compliance device projects the elastic rotational center forward to the tip of the held peg by angling the focal flexure rods along converging conical generators. Lateral contact forces produce pure lateral translation without tilting, while applied moments produce pure rotation about the tip without translation, eliminating the positive-feedback angular jamming and wedging that plagues rigid robot assemblers.",
   },
   "us-6120588-eink": {
     domain: "colloidal_physics",

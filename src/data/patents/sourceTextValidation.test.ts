@@ -25,7 +25,7 @@ describe("reviewed-ledger literal comparison", () => {
     const authoredClaim =
       "17. The circuit redirects the robot when the wall occupies the region and returns toward the non-colored marker.";
 
-    expect(normalizeReviewedLedgerText(ledgerClaim)).toContain(
+    expect(normalizeReviewedLedgerText(ledgerClaim)).toBe(
       normalizeReviewedLedgerText(authoredClaim),
     );
   });
@@ -33,6 +33,18 @@ describe("reviewed-ledger literal comparison", () => {
   it("does not erase punctuation or ordinary words while normalizing layout noise", () => {
     expect(normalizeReviewedLedgerText("Claim: first field; second field.")).toBe(
       "Claim: first field; second field.",
+    );
+    expect(normalizeReviewedLedgerText("17. A circuit with 10 conductors.")).toBe(
+      "17. A circuit with 10 conductors.",
+    );
+  });
+
+  it("still rejects a substantive word change after layout normalization", () => {
+    const ledger = "17. The circuit redirects the robot when the wall occu-\npies the region.";
+    const alteredClaim = "17. The circuit stops the robot when the wall occupies the region.";
+
+    expect(normalizeReviewedLedgerText(ledger)).not.toContain(
+      normalizeReviewedLedgerText(alteredClaim),
     );
   });
 });

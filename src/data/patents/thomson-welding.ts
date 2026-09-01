@@ -417,8 +417,9 @@ export const thomsonWeldingPatent: Patent = {
   },
   originalText:
     "Thomson calls electric welding the union of abutting metal wires or bars by a high-volume current at the joint under controlled pressure. The complete five-page source, two drawing sheets, and all eight claims are available in the manually prepared Original Patent Text edition.",
-  // Held unbound until root accepts source-aware replacements for the
-  // rejected figure crops (1, 3, 5, 6, 8, 9) and the Fig. 9 continuation.
+  // The complete edition is published with isolated source crops where they
+  // are safe and full source-sheet fallbacks where isolation would clip or
+  // import neighboring drawing matter.
   plainEnglishExplanation: {
     overview:
       "The patent makes the joint itself the resistive part of a deliberately low-voltage, high-current circuit. Clamps hold the work ends near J; when current crosses the abutment, heat forms there, and spring, hand, weight, or other pressure closes the softened ends into a continuous piece.",

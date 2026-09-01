@@ -377,6 +377,32 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "A camera rigidly carried by a spinning rocket head rotates with the casing and cannot retain its initial pointing direction.",
     },
   ],
+  "us-1219881-sundback-zipper": [
+    {
+      claimNumber: 1,
+      patentId: "us-1219881-sundback-zipper",
+      claimTitle: "Staggered Interlocking Scoop Geometry",
+      activeDescription:
+        "Claim 1 requires interlocking members arranged in staggered relation with rounded recess and projection meeting in a guiding edge.",
+      invertedDescription:
+        "Break half-pitch stagger alignment, forcing teeth to collide head-to-head at the slider throat.",
+      failureModeName: "Tooth Jam & Throat Collision",
+      historicalPriorArt:
+        "Judson's clasp lockers and early hook-and-eye chains jammed continuously because they lacked self-guiding nested cup geometry.",
+    },
+    {
+      claimNumber: 2,
+      patentId: "us-1219881-sundback-zipper",
+      claimTitle: "Transversely Elongated Rounded Nesting Sockets",
+      activeDescription:
+        "Claim 2 requires transversely elongated rounded projections and sockets that prevent unmeshing under lateral flexion.",
+      invertedDescription:
+        "Reduce tooth overlap shoulder area, causing the closed fastener to pop open when folded or bent.",
+      failureModeName: "Flexion Unmeshing Pop-Out",
+      historicalPriorArt:
+        "Judson's 1905 C-curity fastener popped open unexpectedly whenever clothing was flexed across the knee or torso.",
+    },
+  ],
   "us-400766-hall-aluminium": [
     {
       claimNumber: 1,
@@ -1210,7 +1236,73 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Incoherent thermal lamp: spontaneous emission photons emit randomly in all directions and phases, with zero spatial coherence and massive divergence.",
       failureModeName: "Incoherent Spontaneous Emission & Spatial Beam Divergence",
       historicalPriorArt:
-        "Masers operated only at microwave frequencies; light sources were limited to incoherent thermal gas discharge arcs and incandescent bulbs.",
+        "Conventional light sources relied on thermal incandescence or gas discharge with incoherent, multi-directional emission.",
+    },
+  ],
+  "us-4098001-watson-rcc": [
+    {
+      claimNumber: 1,
+      patentId: "us-4098001-watson-rcc",
+      claimTitle: "Decoupled Focal Cone and Parallel Flexure Remote Center Compliance",
+      activeDescription:
+        "Claim 1 angles focal flexure rods toward a common apex at the workpiece tip while mounting parallel flexures for lateral translation, diagonalizing the compliance matrix.",
+      invertedDescription:
+        "Uncompensated wrist compliance: elastic center sits at robot wrist, causing lateral contact forces to create tilting moments that wedge the peg into the bore.",
+      failureModeName: "Wrist Pivot Cross-Coupled Jamming & Wedging",
+      historicalPriorArt:
+        "Conventional compliant robot wrists pivoted at the mounting plate, exacerbating angular misalignment during peg insertion and causing severe jamming.",
+    },
+    {
+      claimNumber: 2,
+      patentId: "us-4098001-watson-rcc",
+      claimTitle: "Torsional Drive Restraint for Fastener Torque Transmission",
+      activeDescription:
+        "Claim 2 interposes a torsional restraint (such as a metal bellows) to transmit drive torque for threaded assembly while preserving lateral and angular compliance.",
+      invertedDescription:
+        "Unrestrained flexure twisting: rotational assembly torque twists the focal flexure rods beyond yield limits, destroying alignment.",
+      failureModeName: "Torsional Flexure Buckling & Yield",
+      historicalPriorArt:
+        "Prior flexure wrists twisted under driving torque, precluding automated nut and bolt fastening operations.",
+    },
+  ],
+  "us-4341502-makino-scara": [
+    {
+      claimNumber: 1,
+      patentId: "us-4341502-makino-scara",
+      claimTitle: "Concentric Base Four-Link SCARA Mechanism",
+      activeDescription:
+        "Claim 1 mounts first and fourth links coaxially on a common base axis, forming a closed four-link kinematic chain with planar compliance.",
+      invertedDescription:
+        "Serial Cartesian gantry: heavy cantilevered axes introduce serial flexure and high inertia, degrading assembly cycle speed.",
+      failureModeName: "Serial Axis Inertial Lag & Non-Selective Flexure",
+      historicalPriorArt:
+        "Cartesian and articulated robots suffered from high moving inertia and lack of selective horizontal compliance for peg-in-hole insertion.",
+    },
+  ],
+  "us-5701965-kamen-transporter": [
+    {
+      claimNumber: 1,
+      patentId: "us-5701965-kamen-transporter",
+      claimTitle: "Closed-Loop Dynamic Inverted Pendulum Stability in Fore-Aft Plane",
+      activeDescription:
+        "Claim 1 maintains dynamic pitch balance by commanding restorative motor torque to ground wheels based on sensed pitch deviation and angular rate.",
+      invertedDescription:
+        "Disabled balance loop: inverted pendulum chassis immediately falls over due to uncontrolled gravitational moment.",
+      failureModeName: "Inverted Pendulum Gravitational Overturn",
+      historicalPriorArt:
+        "Prior-art wheelchairs relied on static 4-point wheelbases with low centers of gravity, unable to navigate rough ground or climb stairs.",
+    },
+    {
+      claimNumber: 16,
+      patentId: "us-5701965-kamen-transporter",
+      claimTitle: "Planetary Cluster Wheel Stair-Climbing Mechanism",
+      activeDescription:
+        "Claim 16 equips opposing sides with multi-wheel clusters rotatable about a central axle for stair stepping and dynamic elevation.",
+      invertedDescription:
+        "Locked cluster: vehicle is constrained to standard 4-wheel rolling, unable to step over curbs or climb stair risers.",
+      failureModeName: "Obstacle / Stair Riser Immobilization",
+      historicalPriorArt:
+        "Tracked or legged stair climbers were excessively heavy, mechanically complex, and prone to slipping.",
     },
   ],
 };
@@ -1778,6 +1870,32 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "INSTANT DEVELOPMENT COLLAPSE: Rupturable pod and solubilizing diffusion transfer required for 60-second daylight processing.";
+      }
+      break;
+    }
+
+    case "us-1219881-sundback-zipper": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.staggerAligned = 0;
+        activeFailures.push(
+          "Tooth Jam & Collision: Without half-pitch stagger, scoops collide head-to-head at slider throat",
+        );
+        refusalWarning =
+          "STAGGER ALIGNMENT LOSS: Claim 1 half-pitch offset required for progressive nested interlock.";
+      }
+      break;
+    }
+
+    case "us-5701965-kamen-transporter": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.riderPitchLeanDeg = 25; // Overturn tilt
+        activeFailures.push(
+          "Dynamic Balance Collapse: Without closed-loop motor torque feedback, inverted pendulum falls over under gravity",
+        );
+        refusalWarning =
+          "INVERTED PENDULUM INSTABILITY: Claim 1 active feedback control loop required to counteract gravitational overturning moment.";
       }
       break;
     }

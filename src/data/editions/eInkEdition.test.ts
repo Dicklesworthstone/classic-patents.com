@@ -9,20 +9,23 @@ import {
   isArchivalEditionExplicitlyWithheld,
 } from "@/data/editions/publicationApproval";
 import { eInkPatent } from "@/data/patents/eink";
+import type { CuratedSpecificationInline } from "@/types/patent";
 
 const PINNED_SHA256 = "574678473ca13e7daaeb661cfd96808fffb6c16d06d86872923fec52a08ab324";
 
 describe("US 6,120,588 E-Ink Archival Edition Contract", () => {
-  test("published edition keeps its valid typed shape in the served record", () => {
-    const result = validateCuratedSpecificationEdition(einkArchivalEdition);
+  test("keeps a valid research draft while failing closed at the publication boundary", () => {
+    const result = validateCuratedSpecificationEdition(einkArchivalEdition, {
+      requireCompleteFacsimileReview: false,
+    });
     expect(result).toEqual({
       valid: true,
       errors: [],
     });
-    // Owner recalibration (2026-08-22): complete original texts publish even
-    // with minor imperfections; holds are reserved for fabricated content.
     expect(isArchivalEditionExplicitlyWithheld(eInkPatent.id)).toBe(false);
-    expect(archivalEditionForPublication(eInkPatent)).toBe(einkArchivalEdition);
+    expect(einkArchivalEdition.completeFacsimileReviewed).toBe(false);
+    expect(validateCuratedSpecificationEdition(einkArchivalEdition).valid).toBe(false);
+    expect(archivalEditionForPublication(eInkPatent)).toBeUndefined();
     expect(eInkPatent.archivalEdition).toBe(einkArchivalEdition);
     expect(eInkPatent.originalTextAsset).toBeDefined();
   });
@@ -73,6 +76,46 @@ describe("US 6,120,588 E-Ink Archival Edition Contract", () => {
 
       expect(preview.width).toBe(width);
       expect(preview.height).toBe(height);
+    }
+  });
+
+  test("maps every authored figure occurrence to the exact pinned source sheets", () => {
+    const sourceReferences = einkArchivalEdition.blocks.flatMap((block) =>
+      block.kind === "paragraph"
+        ? block.inlines.filter(
+            (inline): inline is Extract<CuratedSpecificationInline, { kind: "reference" }> =>
+              inline.kind === "reference" &&
+              inline.referenceType === "figure" &&
+              inline.figurePreviews?.some((preview) => preview.src.includes("/sheet-")) === true,
+          )
+        : [],
+    );
+    const expectedSheets: Readonly<Record<string, readonly number[]>> = {
+      "FIG. 1": [1, 2],
+      "FIG. 3B": [4],
+      "FIGS. 1A, 1B, 1C, 1D, 1E, and 1F": [1, 2],
+      "FIGS. 2A, 2B and 2C": [3],
+      "FIGS. 3A, 3B, 3C, 3D, and 3E": [4],
+      "FIGS. 4A through 4M": [5, 6, 7],
+      "FIGS. 5A through 6E": [8, 9],
+      "FIGS. 7 through 10": [10, 11, 12, 13],
+      "FIGS. 11 through 14": [14, 15, 16],
+      "FIG. 1A": [1],
+      "FIGS. 4A and B": [5],
+      "FIGS. 3C-D": [4],
+      "FIG. 14": [16],
+    };
+
+    expect(sourceReferences).toHaveLength(14);
+    for (const reference of sourceReferences) {
+      const expected = expectedSheets[reference.text];
+      expect(expected).toBeDefined();
+      if (!expected) throw new Error(`Unexpected E Ink figure reference: ${reference.text}`);
+      expect(
+        reference.figurePreviews?.map((preview) =>
+          Number(preview.src.match(/\/sheet-(\d+)-source-crop-v1\.png$/)?.[1]),
+        ),
+      ).toEqual([...expected]);
     }
   });
 

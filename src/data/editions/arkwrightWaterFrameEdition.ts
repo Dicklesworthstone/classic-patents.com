@@ -19,17 +19,9 @@ const term = (value: string, definition: string, label?: string): CuratedSpecifi
 const figure = (label: string, sourceText: string = label): CuratedSpecificationInline => ({
   kind: "reference",
   text: sourceText,
-  href: "#",
+  href: "?view=pdf-facsimile",
   referenceType: "figure",
-  label: `${label} as reproduced in the pinned 2026 Typst reconstruction; this is not a primary facsimile.`,
-  figurePreviews: [
-    {
-      src: "/patents/figures/gb-931-arkwright-water-frame/fig-1-source-crop-v3.png",
-      alt: `${label} from the pinned reconstruction of GB 931; not a primary facsimile`,
-      width: 1550,
-      height: 1500,
-    },
-  ],
+  label: `${label} preview unavailable: the pinned PDF is a 2026 Typst reconstruction, not a primary facsimile. Open the pinned research artifact instead.`,
 });
 
 const p = (
@@ -81,7 +73,7 @@ export const arkwrightWaterFrameArchivalEdition: CuratedSpecificationEdition = {
   sourcePdfSha256: "3254894ae66cb4ddd2612d164e24af76f5efa8ee8ac6b741c8affc70d8fe62fd",
   preparedBy: "Classic Patents editorial agent (Antigravity)",
   preparedAt: "2026-08-19",
-  completeFacsimileReviewed: true,
+  completeFacsimileReviewed: false,
   blocks: [
     {
       kind: "masthead",

@@ -89,6 +89,7 @@ import {
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "@/physics/machineKernels";
+import { stepMakinoScaraTopology } from "@/physics/makinoScaraKernel";
 import { readOtisTopologyControls, stepOtis1861Topology } from "@/physics/otisKernel";
 import { stepParsonsMarine } from "@/physics/parsonsMarineKernel";
 import {
@@ -271,6 +272,7 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "kwolek-kevlar": true,
   "lamarr-frequency-hopping": true,
   "lincoln-buoy": true,
+  "makino-scara": true,
   "linde-air-liquefaction": true,
   "marconi-radio": true,
   "maxim-machine-gun": true,
@@ -6107,6 +6109,139 @@ function _renderHistoricalSchematic(
             textAnchor="middle"
           >
             {marine.directionLabel.toUpperCase()} · valves select the topology
+          </text>
+        </g>
+      );
+    }
+    case "makino-scara": {
+      const pose = stepMakinoScaraTopology(params ?? {});
+      const toSvg = ([x, y]: readonly [number, number]): readonly [number, number] => [
+        200 + x * 92,
+        155 - y * 92,
+      ];
+      const [firstBaseX, firstBaseY] = toSvg(pose.firstBase);
+      const [fourthBaseX, fourthBaseY] = toSvg(pose.fourthBase);
+      const [firstOuterX, firstOuterY] = toSvg(pose.firstOuterJoint);
+      const [fourthOuterX, fourthOuterY] = toSvg(pose.fourthOuterJoint);
+      const [toolX, toolY] = toSvg(pose.tool);
+      const toolTipX = toolX + Math.cos(pose.toolAttitudeRad) * 33;
+      const toolTipY = toolY - Math.sin(pose.toolAttitudeRad) * 33;
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#bae6fd"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            CLAIM {pose.independentClaim} · {pose.topology.replace("claim-", "").replace("-", " ")}
+          </text>
+          <line
+            x1="46"
+            y1={firstBaseY}
+            x2="354"
+            y2={firstBaseY}
+            stroke="#334155"
+            strokeDasharray="4 4"
+          />
+          <rect
+            x={Math.min(firstBaseX, fourthBaseX) - 26}
+            y={firstBaseY - 10}
+            width={Math.abs(fourthBaseX - firstBaseX) + 52}
+            height="20"
+            rx="3"
+            fill="#172554"
+            stroke="#60a5fa"
+          />
+          <line
+            x1={firstBaseX}
+            y1={firstBaseY}
+            x2={firstOuterX}
+            y2={firstOuterY}
+            stroke="#67e8f9"
+            strokeWidth="5"
+          />
+          <line
+            x1={fourthBaseX}
+            y1={fourthBaseY}
+            x2={fourthOuterX}
+            y2={fourthOuterY}
+            stroke="#fbbf24"
+            strokeWidth="5"
+          />
+          <line
+            x1={firstOuterX}
+            y1={firstOuterY}
+            x2={toolX}
+            y2={toolY}
+            stroke="#bae6fd"
+            strokeWidth="4"
+          />
+          <line
+            x1={fourthOuterX}
+            y1={fourthOuterY}
+            x2={toolX}
+            y2={toolY}
+            stroke="#bae6fd"
+            strokeWidth="4"
+          />
+          {pose.yLinkHub &&
+            (() => {
+              const [hubX, hubY] = toSvg(pose.yLinkHub);
+              return (
+                <g stroke="#d8b4fe" strokeWidth="2" strokeDasharray="5 3">
+                  <line x1={firstBaseX} y1={firstBaseY} x2={hubX} y2={hubY} />
+                  <line x1={fourthBaseX} y1={fourthBaseY} x2={hubX} y2={hubY} />
+                  <line x1={hubX} y1={hubY} x2={toolX} y2={toolY} />
+                  <circle cx={hubX} cy={hubY} r="6" fill="#581c87" />
+                </g>
+              );
+            })()}
+          {[
+            { x: firstBaseX, y: firstBaseY, label: "1", color: "#67e8f9" },
+            { x: fourthBaseX, y: fourthBaseY, label: "2", color: "#fbbf24" },
+            { x: firstOuterX, y: firstOuterY, label: "4", color: "#67e8f9" },
+            { x: fourthOuterX, y: fourthOuterY, label: "5", color: "#fbbf24" },
+          ].map((node) => (
+            <g key={node.label}>
+              <circle
+                cx={node.x}
+                cy={node.y}
+                r="8"
+                fill="#0f172a"
+                stroke={node.color}
+                strokeWidth="2"
+              />
+              <text x={node.x} y={node.y + 3} textAnchor="middle" fill={node.color} fontSize="8">
+                {node.label}
+              </text>
+            </g>
+          ))}
+          <rect
+            x={toolX - 9}
+            y={toolY - 9}
+            width="18"
+            height="18"
+            rx="3"
+            fill="#713f12"
+            stroke="#fde68a"
+            strokeWidth="2"
+          />
+          <line
+            x1={toolX}
+            y1={toolY}
+            x2={toolTipX}
+            y2={toolTipY}
+            stroke="#fde68a"
+            strokeWidth="2"
+          />
+          <text x={toolX + 12} y={toolY + 24} fill="#fef3c7" fontSize="8">
+            9 tool
+          </text>
+          <text x="200" y="282" textAnchor="middle" fill="#fda4af" fontSize="8">
+            normalized schematic; source gives no dimensional or load telemetry
           </text>
         </g>
       );

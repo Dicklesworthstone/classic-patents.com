@@ -1475,6 +1475,112 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-1219881-sundback-zipper": {
+      if (controlKey === "sliderPositionPct") {
+        return {
+          metricName: "Engaged Tooth Count",
+          derivativeSymbol: "∂N_engaged / ∂x_slider",
+          derivativeValue: 0.65,
+          derivativeUnit: "teeth / %",
+          interpretation:
+            "Linear progression of Y-slider cam engaging opposing staggered scoops sequentially.",
+        };
+      }
+      if (controlKey === "pullForceN") {
+        return {
+          metricName: "Cam Wedge Normal Force",
+          derivativeSymbol: "∂F_n / ∂F_pull",
+          derivativeValue: 1.25,
+          derivativeUnit: "N / N",
+          interpretation:
+            "Mechanical advantage of the converging slider guide channels converting axial pull into transverse scoop compression.",
+        };
+      }
+      if (controlKey === "lateralTensionN") {
+        return {
+          metricName: "Corded Tape Strain",
+          derivativeSymbol: "∂ε / ∂F_lat",
+          derivativeUnit: "% / N",
+          derivativeValue: 0.06,
+          interpretation:
+            "Elastic elongation of reinforced cotton cords under transverse tensile load.",
+        };
+      }
+      break;
+    }
+
+    case "us-4341502-makino-scara": {
+      if (controlKey === "firstLinkAngleDeg" || controlKey === "theta1") {
+        return {
+          metricName: "End-Effector X Coordinate",
+          derivativeSymbol: "∂X_tool / ∂θ_1",
+          derivativeValue: -0.0175,
+          derivativeUnit: "norm / deg",
+          interpretation:
+            "Planar Cartesian displacement of the assembly tool joint under primary shoulder link rotation.",
+        };
+      }
+      if (controlKey === "fourthLinkAngleDeg" || controlKey === "theta4") {
+        return {
+          metricName: "End-Effector Y Coordinate",
+          derivativeSymbol: "∂Y_tool / ∂θ_4",
+          derivativeValue: 0.0175,
+          derivativeUnit: "norm / deg",
+          interpretation:
+            "Planar Cartesian displacement of the assembly tool joint under parallel elbow link rotation.",
+        };
+      }
+      break;
+    }
+
+    case "us-4098001-watson-rcc": {
+      if (controlKey === "lateralContactForceN" || controlKey === "lateralForce") {
+        return {
+          metricName: "Lateral Tip Deflection",
+          derivativeSymbol: "∂δ_x / ∂F_x",
+          derivativeValue: 0.4,
+          derivativeUnit: "mm / N",
+          interpretation:
+            "Decoupled lateral flexure compliance yielding pure transverse displacement without angular tipping.",
+        };
+      }
+      if (controlKey === "appliedMomentNm" || controlKey === "moment") {
+        return {
+          metricName: "Angular Peg Tilt",
+          derivativeSymbol: "∂θ_y / ∂M_y",
+          derivativeValue: 1.27,
+          derivativeUnit: "deg / (N·m)",
+          interpretation:
+            "Decoupled rotational compliance yielding pure angular rotation about the remote compliance center.",
+        };
+      }
+      break;
+    }
+
+    case "us-5701965-kamen-transporter": {
+      if (controlKey === "riderPitchLeanDeg" || controlKey === "pitchLean") {
+        return {
+          metricName: "Restorative Motor Torque",
+          derivativeSymbol: "∂τ / ∂θ",
+          derivativeValue: 4.18,
+          derivativeUnit: "N·m / deg",
+          interpretation:
+            "Proportional feedback restoring torque commanded by inverted-pendulum controller to balance rider lean.",
+        };
+      }
+      if (controlKey === "velocityCommandMs" || controlKey === "velocityCommand") {
+        return {
+          metricName: "Ground Acceleration",
+          derivativeSymbol: "∂a / ∂v_cmd",
+          derivativeValue: 0.85,
+          derivativeUnit: "(m/s²) / (m/s)",
+          interpretation:
+            "Wheel traction acceleration generated to match rider commanded travel speed.",
+        };
+      }
+      break;
+    }
+
     default:
       break;
   }

@@ -22,8 +22,8 @@ export const eInkPatent: Patent = {
   archivalEdition: einkArchivalEdition,
   usptoClassification:
     "U.S. Cl. 106/31.16; 106/31.32; 106/31.64; 106/31.92; 264/6, 10, 12, 7; 425/6, 130, 174.8 E; 427/7",
-  // Withheld: the current authored edition is a bounded draft and does not
-  // yet cover all 16 drawing sheets and every specification paragraph.
+  // Withheld: all 16 source drawing sheets are mapped, but the bounded
+  // authored edition does not yet cover every specification paragraph.
   originalTextAsset: {
     url: "/patents/transcripts/us-6120588-eink-reviewed.txt",
     pageCount: 26,
@@ -105,8 +105,8 @@ CLAIMS
     civilizationalImpact:
       "The patent supplied a foundational vocabulary for printable electronic structures and addressable contrast media; later electronic-paper products are downstream implementations, not a substitute for the grant’s much wider disclosure.",
   },
-  // Withheld until the 16 printed drawing sheets have cloud-reviewed,
-  // upright, isolated source crops and exact callout coordinates.
+  // The edition exposes complete source-sheet previews. Catalogue-level
+  // drawing callouts remain empty until exact source coordinates are authored.
   drawings: [],
   claims: [
     {

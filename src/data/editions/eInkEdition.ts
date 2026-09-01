@@ -14,7 +14,7 @@ const EINK_SOURCE_SHEET_DIMS = { width: 928, height: 1364 } as const;
 
 function sourceFigure(
   surfaceText: string,
-  sheetNumbers: readonly number[],
+  sheetNumbers: readonly [number, ...number[]],
   altText: string,
 ): CuratedSpecificationInline {
   return {
@@ -100,12 +100,11 @@ export const einkParallelReadings: Readonly<Record<number, readonly string[]>> =
 export const einkArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "574678473ca13e7daaeb661cfd96808fffb6c16d06d86872923fec52a08ab324",
-  preparedBy: "Classic Patents source-audit draft (withheld pending full cloud reconciliation)",
+  preparedBy: "Classic Patents source-audit draft",
   preparedAt: "2026-08-21",
-  // Typed edition drafts require this field, but this draft is not attached to
-  // the served record until the remaining specification and figure coverage
-  // receives independent acceptance.
-  completeFacsimileReviewed: true,
+  // This bounded draft remains attached for dynamic claim sourcing, but it is
+  // not publishable until every specification paragraph is reconciled.
+  completeFacsimileReviewed: false,
   blocks: [
     {
       kind: "masthead",

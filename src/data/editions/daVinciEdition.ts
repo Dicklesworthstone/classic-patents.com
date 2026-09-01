@@ -27,7 +27,7 @@ function figureAssetPath(number: number): string {
 
 function makePreview(
   surfaceText: string,
-  figureNumbers: number[],
+  figureNumbers: readonly [number, ...number[]],
   altText: string,
 ): CuratedSpecificationInline {
   return {
@@ -49,7 +49,7 @@ const DAVINCI_SOURCE_SHEET_DIMS = { width: 928, height: 1364 } as const;
 
 function makeSourceSheetPreview(
   surfaceText: string,
-  sheetNumbers: readonly number[],
+  sheetNumbers: readonly [number, ...number[]],
   altText: string,
 ): CuratedSpecificationInline {
   return {
@@ -217,13 +217,13 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
       " show adapters, holders, drives, and contacts; ",
       makeSourceSheetPreview("FIG. 8", [14], "Tool-interface wiring schematic"),
       " shows wiring; ",
-      makeSourceSheetPreview("FIGS. 8A-B", [15, 16], "Master surgeon console views"),
-      " show the master console; ",
       makeSourceSheetPreview(
-        "FIGS. 9-10",
-        [15, 16, 17],
-        "Tool-change signal path and software flow",
+        "FIGS. 8A-B",
+        [15],
+        "Master console view (FIG. 8A is present; FIG. 8B is cited by the specification but absent from the pinned drawing sheets)",
       ),
+      " show the master console; ",
+      makeSourceSheetPreview("FIGS. 9-10", [16, 17], "Tool-change signal path and software flow"),
       " show tool-change signal and software paths; ",
       makeSourceSheetPreview(
         "FIGS. 11-13",

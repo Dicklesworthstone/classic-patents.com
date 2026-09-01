@@ -37,6 +37,7 @@ import {
 import { stepCortPuddlingRolling } from "./cortKernel";
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
+import { readKamenTransporterControls, stepKamenTransporterSi } from "./kamenTransporterKernel";
 import { stepRenoEscalator } from "./machineKernels";
 import { stepRillieuxEvaporator } from "./rillieuxEvaporatorKernel";
 import { readWattRotaryControls, stepWattRotaryEngine } from "./wattRotaryKernel";
@@ -63,6 +64,10 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 4,750 prints the mechanism topology and two local dimensions but no force, torque, inertia, speed, friction, or power datum from which an SI energy channel can be derived.",
   "us-31128-otis-elevator":
     "US 31,128 prints the hoist, reversing-belt, brake, stop-rope, counterpoise, and hook-rack topology but no load, force, speed, torque, friction, travel, timing, or power datum from which an SI energy channel can be derived.",
+  "us-4341502-makino-scara":
+    "US 4,341,502 prints link topology and joint angle relationships but no link lengths, motor torque, payload mass, velocity, friction, or power datum from which an SI energy channel can be derived.",
+  "us-4098001-watson-rcc":
+    "US 4,098,001 prints passive flexure topology and compliance matrices but no continuous drive power, motor torque, or thermal dissipation datum from which an SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -924,6 +929,41 @@ export function energyChannelsFor(
       { name: "Server Rack Electrical Input", watts: srvW, tone: "in" },
       { name: "Markov Transition Matrix Eigenvector Compute", watts: srvW * 0.62, tone: "useful" },
       { name: "Processor Heat Sink & Fan Heat Rejection", watts: srvW * 0.38, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-1219881-sundback-zipper") {
+    const pullN = params.pullForceN ?? 15;
+    const velMmS = (pullN / 0.41) * 0.8; // ~29 mm/s
+    const pullW = Math.max(0.1, pullN * (velMmS / 1000));
+    return [
+      { name: "Slider Pull Kinetic Input", watts: pullW, tone: "in" },
+      { name: "Scoop Cam Wedge Interlocking Work", watts: pullW * 0.74, tone: "useful" },
+      { name: "Slider Flange & Tape Friction Loss", watts: pullW * 0.26, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-5701965-kamen-transporter") {
+    const controls = readKamenTransporterControls(params);
+    const tel = stepKamenTransporterSi(controls);
+    const motorElecW = Math.max(
+      20,
+      Math.abs(tel.balanceTorqueNm) * (Math.abs(tel.forwardVelocityMs) / 0.15) * 1.15 + 35,
+    );
+    const mechTractionW = Math.abs(tel.groundTractionForceN * tel.forwardVelocityMs);
+    const heatLossW = Math.max(5, motorElecW - mechTractionW);
+    return [
+      { name: "Battery Pack Electric Power Supply", watts: motorElecW, tone: "in" },
+      {
+        name: "Inverted Pendulum Ground Traction & Balancing Work",
+        watts: mechTractionW,
+        tone: "useful",
+      },
+      {
+        name: "Servomotor Copper I²R & Planetary Gearbox Heat Loss",
+        watts: heatLossW,
+        tone: "loss",
+      },
     ];
   }
 

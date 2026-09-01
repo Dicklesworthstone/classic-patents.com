@@ -44,6 +44,7 @@ import { hewittMercuryLampParallelReadings } from "./hewittMercuryLampEdition";
 import { hollerithTabulatingParallelReadings } from "./hollerithTabulatingEdition";
 import { HOPKINS_PARALLEL_READINGS as hopkinsPotashParallelReadings } from "./hopkinsPotashEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
+import { kamenTransporterParallelReadings } from "./kamenTransporterEdition";
 import { kilbyIntegratedCircuitParallelReadings } from "./kilbyIntegratedCircuitEdition";
 import { kwolekKevlarParallelReadings } from "./kwolekKevlarEdition";
 import { lamarrFrequencyHoppingParallelReadings } from "./lamarrFrequencyHoppingEdition";
@@ -51,6 +52,7 @@ import { landPolaroidParallelReadings } from "./landPolaroidEdition";
 import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
 import { lindeAirLiquefactionParallelReadings } from "./lindeAirLiquefactionEdition";
 import { maimanRubyLaserParallelReadings } from "./maimanRubyLaserEdition";
+import { makinoScaraParallelReadings } from "./makinoScaraEdition";
 import { marconiRadioParallelReadings } from "./marconiRadioEdition";
 import { maximMachineGunParallelReadings } from "./maximMachineGunEdition";
 import { mccormickReaperParallelReadings } from "./mccormickReaperEdition";
@@ -70,6 +72,7 @@ import { rillieuxEvaporatorParallelReadings } from "./rillieuxEvaporatorEdition"
 import { roombaParallelReadings } from "./roombaEdition";
 import { sholesTypewriterParallelReadings } from "./sholesTypewriterEdition";
 import { spencerMicrowaveParallelReadings } from "./spencerMicrowaveEdition";
+import { sundbackZipperParallelReadings } from "./sundbackZipperEdition";
 import { teslaCoil593138ParallelReadings } from "./teslaCoil593138Edition";
 import { teslaMotorParallelReadings } from "./teslaMotorEdition";
 import { teslaTeleautomatonParallelReadings } from "./teslaTeleautomatonEdition";
@@ -77,6 +80,7 @@ import { thomsonWeldingParallelReadings } from "./thomsonWeldingEdition";
 import { townesLaserParallelReadings } from "./townesLaserEdition";
 import { HOWE_SEWING_MACHINE_PARALLEL_READINGS } from "./us-4750-howe-sewing-machine";
 import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-engine";
+import { watsonRccParallelReadings } from "./watsonRccEdition";
 import { wattRotaryEngineParallelReadings } from "./wattRotaryEngineEdition";
 import { WATT_SEPARATE_CONDENSER_PARALLEL_READINGS } from "./wattSeparateCondenserEdition";
 import { westinghouseAirBrakeParallelReadings } from "./westinghouseAirBrakeEdition";
@@ -146,6 +150,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-942699-baekeland-bakelite": baekelandBakeliteParallelReadings,
   "us-971501-haber-ammonia": haberAmmoniaParallelReadings,
   "us-1102653-goddard-rocket": goddardRocketParallelReadings,
+  "us-1219881-sundback-zipper": sundbackZipperParallelReadings,
   "us-1773980-farnsworth-tv": farnsworthTvParallelReadings,
   "us-1781541-einstein-refrigerator": einsteinRefrigeratorParallelReadings,
   "us-2292387-lamarr-frequency-hopping": lamarrFrequencyHoppingParallelReadings,
@@ -162,7 +167,10 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-3541541-engelbart-mouse": engelbartMouseParallelReadings,
   "us-3671542-kwolek-kevlar": kwolekKevlarParallelReadings,
   "us-3858232-boyle-smith-ccd": boyleSmithCcdParallelReadings,
+  "us-4098001-watson-rcc": watsonRccParallelReadings,
   "us-4136359-wozniak-apple": wozniakAppleParallelReadings,
+  "us-4341502-makino-scara": makinoScaraParallelReadings,
+  "us-5701965-kamen-transporter": kamenTransporterParallelReadings,
   "us-6120588-eink": einkParallelReadings,
   "us-6285999-pagerank": pagerankParallelReadings,
   "us-6331181-davinci": davinciParallelReadings,

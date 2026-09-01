@@ -54,6 +54,11 @@ import { stepDieselEngine as kernelStepDieselEngine } from "./dieselEngineKernel
 import { stepFermiKinetics } from "./fermiKinetics";
 import { tryGoddardApparatusWasmStep, tryGoddardWasmStep } from "./goddardWasm";
 import {
+  type KamenTransporterControls,
+  type KamenTransporterTelemetry,
+  stepKamenTransporterSi,
+} from "./kamenTransporterKernel";
+import {
   stepCcdWells,
   stepEngelbartResolver,
   stepHoweLockstitch,
@@ -63,6 +68,11 @@ import {
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "./machineKernels";
+import {
+  type SundbackZipperControls,
+  type SundbackZipperTelemetry,
+  stepSundbackZipperSi,
+} from "./sundbackZipperKernel";
 import { stepTeslaMotorFig9, teslaBAt, teslaFig4Strobe } from "./teslaKernel";
 import { goddardThermo } from "./thermochem";
 import type {
@@ -72,6 +82,11 @@ import type {
   ThermodynamicsState,
   UniversalPatentPhysicsTelemetry,
 } from "./types";
+import {
+  stepWatsonRccSi,
+  type WatsonRccControls,
+  type WatsonRccTelemetry,
+} from "./watsonRccKernel";
 import { stepWrightFlyerSi } from "./wrightKernel";
 
 /** US 2,292,387 illustrated record rows. Shared by the source diagrams. */
@@ -1195,6 +1210,24 @@ export const FrankenSimEngine = {
     engineRpm?: number;
   }) {
     return kernelStepDieselEngine(params);
+  },
+
+  stepSundbackZipper(
+    controls: SundbackZipperControls,
+    dt: number = 1 / 60,
+  ): SundbackZipperTelemetry {
+    return stepSundbackZipperSi(controls, dt);
+  },
+
+  stepKamenTransporter(
+    controls: KamenTransporterControls,
+    dt: number = 1 / 60,
+  ): KamenTransporterTelemetry {
+    return stepKamenTransporterSi(controls, dt);
+  },
+
+  stepWatsonRcc(controls: WatsonRccControls): WatsonRccTelemetry {
+    return stepWatsonRccSi(controls);
   },
 
   createTelemetryEnvelope(

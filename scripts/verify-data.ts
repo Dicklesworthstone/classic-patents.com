@@ -35,6 +35,7 @@ const MAX_PDF_TEXT_BUFFER_BYTES = 64 * 1024 * 1024;
 const BARE_DRAWING_REFERENCE =
   /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|(?:section|division)\s+\d+)\b/i;
 const EXPECTED_MANUAL_EDITION_GAPS = [
+  "gb-931-arkwright-water-frame",
   "gb-1420-cort-puddling-rolling",
   "us-2297691-carlson-electrophotography",
   "us-233692-pelton-water-wheel",
@@ -44,6 +45,7 @@ const EXPECTED_MANUAL_EDITION_GAPS = [
   "us-3138743-kilby-integrated-circuit",
   "us-3353115-maiman-ruby-laser",
   "us-400766-hall-aluminium",
+  "us-6120588-eink",
   "us-706737-fessenden-wireless",
 ] as const;
 

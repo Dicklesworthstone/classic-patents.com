@@ -46,6 +46,8 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-6594844-roomba",
       "us-4750-howe-sewing-machine",
       "us-31128-otis-elevator",
+      "us-4341502-makino-scara",
+      "us-4098001-watson-rcc",
     ]);
   });
 

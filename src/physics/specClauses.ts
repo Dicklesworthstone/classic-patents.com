@@ -4,9 +4,11 @@
  */
 
 import { stepFermiKinetics } from "./fermiKinetics";
+import { readKamenTransporterControls, stepKamenTransporterSi } from "./kamenTransporterKernel";
 import { stepHoweSewingMachine } from "./machineKernels";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
+import { readSundbackZipperControls, stepSundbackZipperSi } from "./sundbackZipperKernel";
 import { stepTeslaMotorFig9, teslaMotorPhaseHz } from "./teslaKernel";
 import { readTeslaTransformerControls, stepTeslaTransformerSi } from "./teslaTransformerKernel";
 
@@ -45,6 +47,8 @@ const CORLISS_ENGINE_ID = "us-6162-corliss-steam-engine";
 const WESTINGHOUSE_BRAKE_ID = "us-124404-westinghouse-air-brake";
 const OTTO_ENGINE_ID = "us-194047-otto-engine";
 const GODDARD_ROCKET_ID = "us-1102653-goddard-rocket";
+const SUNDBACK_ZIPPER_ID = "us-1219881-sundback-zipper";
+const KAMEN_TRANSPORTER_ID = "us-5701965-kamen-transporter";
 const FARNSWORTH_TV_ID = "us-1773980-farnsworth-tv";
 const EINSTEIN_REFRIGERATOR_ID = "us-1781541-einstein-refrigerator";
 const LAMARR_FREQUENCY_HOPPING_ID = "us-2292387-lamarr-frequency-hopping";
@@ -955,6 +959,44 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
           : gyroEnabled
             ? `Gyroscope 37 is present but stopped, so support 33 inherits the declared ${primarySpinRpm.toFixed(0)} rpm head rotation.`
             : `Without gyroscope 37, support 33 inherits the declared ${primarySpinRpm.toFixed(0)} rpm head rotation.`,
+      },
+    ];
+  }
+
+  if (patentId === SUNDBACK_ZIPPER_ID) {
+    const controls = readSundbackZipperControls(params);
+    const tel = stepSundbackZipperSi(controls);
+
+    return [
+      {
+        id: "staggered-scoops",
+        phrase:
+          "interlocking members secured at one end thereto in staggered relation, each member having at the free end a rounded recess on one side and a corresponding projection on the opposite side",
+        active: controls.staggerAligned,
+        tone: controls.staggerAligned ? "held" : "broken",
+        caption: controls.staggerAligned
+          ? `Opposing scoops maintain half-pitch stagger (${(tel.toothPitchMm / 2).toFixed(2)} mm offset), enabling clean nested interlock.`
+          : "Stagger alignment broken: opposing teeth collide head-to-head at slider throat (Claim 1 violation).",
+      },
+      {
+        id: "sliding-cam-action",
+        phrase:
+          "means sliding on both stringers for actuating said members to lock and unlock according to its direction of movement",
+        active: tel.isLocked,
+        tone: tel.isLocked ? "held" : "live",
+        caption: tel.isLocked
+          ? `Sliding cam has driven ${tel.engagedTeeth} of ${tel.totalTeeth} scoops into positive nested lock (cam normal force: ${tel.wedgeNormalForceN.toFixed(1)} N).`
+          : "Slider is disengaged or open.",
+      },
+      {
+        id: "transverse-flex-security",
+        phrase:
+          "so as to enable the fastener to be bent sharply transversely of its length without opening automatically",
+        active: !tel.burstRefusal,
+        tone: !tel.burstRefusal ? "held" : "broken",
+        caption: !tel.burstRefusal
+          ? `Transversely elongated cup geometry holds secure under ${controls.flexAngleDeg}° flex angle (burst limit: ${tel.burstResistanceN.toFixed(1)} N).`
+          : `Burst rupture: lateral load exceeds chain limit (${tel.burstResistanceN.toFixed(1)} N).`,
       },
     ];
   }
@@ -2281,6 +2323,90 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         caption: opticalSensorEnabled
           ? `Surface test=${sensor.surfacePresent ? "PRESENT" : "ABSENT"}; redirect=${sensor.redirectReason}. Mechanical bumper projection is tracked separately.`
           : "Without the optical subsystem, the claimed surface-absence redirect is not available; no coverage consequence is inferred.",
+      },
+    ];
+  }
+
+  if (patentId === KAMEN_TRANSPORTER_ID) {
+    const controls = readKamenTransporterControls(params);
+    const tel = stepKamenTransporterSi(controls);
+    return [
+      {
+        id: "dynamically-maintaining-stability",
+        phrase: "dynamically maintaining stability",
+        active: tel.isBalancing && !tel.pitchRefusal,
+        tone: tel.pitchRefusal ? "broken" : tel.isBalancing ? "held" : "live",
+        caption: tel.pitchRefusal
+          ? "Safety Refusal: pitch tilt exceeded maximum dynamic balance envelope (25°)."
+          : tel.isBalancing
+            ? `Active 2-wheel inverted pendulum equilibrium held (torque=${tel.balanceTorqueNm.toFixed(1)} N·m, speed=${tel.forwardVelocityMs.toFixed(2)} m/s).`
+            : "Operating in 4-wheel static stability support mode.",
+      },
+      {
+        id: "cluster-of-wheels",
+        phrase: "cluster of wheels",
+        active: tel.isClimbing || controls.operatingMode === "stair_climb",
+        tone: tel.isClimbing ? "live" : "held",
+        caption: `Planetary cluster angle = ${tel.clusterAngleDeg.toFixed(0)}°; ${
+          tel.isClimbing
+            ? "actively rotating carrier to hoist vehicle over stair risers."
+            : "cluster locked for rolling ground contact."
+        }`,
+      },
+    ];
+  }
+
+  if (patentId === "us-4341502-makino-scara") {
+    const theta1 = params.firstLinkAngleDeg ?? 32;
+    const theta4 = params.fourthLinkAngleDeg ?? -38;
+    return [
+      {
+        id: "four-link-mechanism",
+        phrase: "four-link mechanism",
+        active: true,
+        tone: "live",
+        caption: `θ1=${theta1}°, θ4=${theta4}°: Parallel-link SCARA configuration maintaining high vertical rigidity with planar compliance.`,
+      },
+      {
+        id: "assembly-robot",
+        phrase: "assembly robot",
+        active: true,
+        tone: "held",
+        caption:
+          "Selective Compliance Assembly Robot Arm architecture designed for high-speed precision component insertion.",
+      },
+    ];
+  }
+
+  if (patentId === "us-4098001-watson-rcc") {
+    const fLat = params.lateralContactForceN ?? 15;
+    const mTip = params.appliedMomentNm ?? 0.25;
+    const isRCC = params.complianceMode === undefined || params.complianceMode === 0;
+    return [
+      {
+        id: "remote-center-compliance",
+        phrase: "remote center compliance system",
+        active: isRCC,
+        tone: isRCC ? "live" : "broken",
+        caption: `Focal Compliance: ${
+          isRCC
+            ? "focal flexure rods project elastic rotational center to peg tip, eliminating jamming."
+            : "uncompensated wrist compliance allows contact moments to tilt peg into hole bore."
+        }`,
+      },
+      {
+        id: "rotational-elements",
+        phrase: "rotational interconnection elements",
+        active: Math.abs(mTip) > 0.05,
+        tone: "live",
+        caption: `Tip Moment M_y = ${mTip} N·m: focal flexures accommodate pure rotation about the projected remote compliance center.`,
+      },
+      {
+        id: "translational-elements",
+        phrase: "translational interconnection elements",
+        active: fLat > 0.5,
+        tone: "live",
+        caption: `Lateral Force F_x = ${fLat} N: parallel flexures translate laterally without inducing angular peg tilt.`,
       },
     ];
   }
