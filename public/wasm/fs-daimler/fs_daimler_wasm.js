@@ -1,45 +1,20 @@
-/* @ts-self-types="./fs_goddard_wasm.d.ts" */
+/* @ts-self-types="./fs_daimler_wasm.d.ts" */
 
 /**
- * Source-bounded US 1,102,653 apparatus step composed from `fs-mbd`.
+ * Step the normalized source topology for Daimler's US 361,931 installation.
  *
- * The two speed inputs are declared visitor controls because the facsimile
- * prints no numerical spin rates. The output deliberately contains no liquid
- * propellant, de Laval, Mach, thrust, or trajectory field.
- * @param {number} elapsed_seconds
- * @param {number} primary_spin_rpm
- * @param {number} gyro_spin_rpm
- * @param {number} tube_length_ratio
- * @param {number} auxiliary_release_fraction
- * @param {boolean} primary_charge_substantially_consumed
- * @param {boolean} gyro_enabled
+ * `shaft_selection` is exactly `-1` astern, `0` neutral, or `1` ahead.
+ * Distances are normalized display coordinates because the grant supplies no
+ * physical shaft travel.
+ * @param {number} shaft_selection
+ * @param {boolean} cooling_pump_enabled
  * @returns {string}
  */
-export function goddard_apparatus_step(elapsed_seconds, primary_spin_rpm, gyro_spin_rpm, tube_length_ratio, auxiliary_release_fraction, primary_charge_substantially_consumed, gyro_enabled) {
+export function daimler_marine_step(shaft_selection, cooling_pump_enabled) {
     let deferred1_0;
     let deferred1_1;
     try {
-        const ret = wasm.goddard_apparatus_step(elapsed_seconds, primary_spin_rpm, gyro_spin_rpm, tube_length_ratio, auxiliary_release_fraction, primary_charge_substantially_consumed, gyro_enabled);
-        deferred1_0 = ret[0];
-        deferred1_1 = ret[1];
-        return getStringFromWasm0(ret[0], ret[1]);
-    } finally {
-        wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
-    }
-}
-
-/**
- * @param {number} chamber_pressure_psi
- * @param {number} fuel_flow_kg_per_sec
- * @param {number} throat_area_cm2
- * @param {number} expansion_ratio
- * @returns {string}
- */
-export function goddard_rocket_step(chamber_pressure_psi, fuel_flow_kg_per_sec, throat_area_cm2, expansion_ratio) {
-    let deferred1_0;
-    let deferred1_1;
-    try {
-        const ret = wasm.goddard_rocket_step(chamber_pressure_psi, fuel_flow_kg_per_sec, throat_area_cm2, expansion_ratio);
+        const ret = wasm.daimler_marine_step(shaft_selection, cooling_pump_enabled);
         deferred1_0 = ret[0];
         deferred1_1 = ret[1];
         return getStringFromWasm0(ret[0], ret[1]);
@@ -62,7 +37,7 @@ function __wbg_get_imports() {
     };
     return {
         __proto__: null,
-        "./fs_goddard_wasm_bg.js": import0,
+        "./fs_daimler_wasm_bg.js": import0,
     };
 }
 
@@ -174,7 +149,7 @@ async function __wbg_init(module_or_path) {
     }
 
     if (module_or_path === undefined) {
-        module_or_path = new URL('fs_goddard_wasm_bg.wasm', import.meta.url);
+        module_or_path = new URL('fs_daimler_wasm_bg.wasm', import.meta.url);
     }
     const imports = __wbg_get_imports();
 

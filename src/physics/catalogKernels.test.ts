@@ -84,7 +84,6 @@ import {
   stepCarlsonElectrophotography,
   stepColtRevolver,
   stepCorlissEngine,
-  stepDaimlerEngine,
   stepDavenportMotor,
   stepDeForestAudion,
   stepDeLavalSeparator,
@@ -107,6 +106,7 @@ import {
   stepKevlarContinuum,
   stepKilbyIntegratedCircuit,
   stepLandPolaroidInstantFilm,
+  stepLegacyDaimlerEngineUS349983,
   stepLincolnBuoy,
   stepMaimanRubyLaser,
   stepMarconiRadio,
@@ -535,8 +535,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.gasCellSvgPitch).toBe(27);
   });
 
-  test("Daimler internal combustion engine computes hot-tube ignition timing and brake power", () => {
-    const res = stepDaimlerEngine({ engineRpm: 750, hotTubeTempC: 850 });
+  test("legacy US 349,983 illustration remains isolated from the US 361,931 marine model", () => {
+    const res = stepLegacyDaimlerEngineUS349983({ engineRpm: 750, hotTubeTempC: 850 });
     expect(res.brakeHorsepower).toBeGreaterThan(0);
     expect(res.isRunning).toBe(true);
     expect(res.schematicFlywheelR).toBe(50);

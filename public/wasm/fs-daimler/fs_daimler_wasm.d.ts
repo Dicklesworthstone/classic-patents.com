@@ -2,22 +2,19 @@
 /* eslint-disable */
 
 /**
- * Source-bounded US 1,102,653 apparatus step composed from `fs-mbd`.
+ * Step the normalized source topology for Daimler's US 361,931 installation.
  *
- * The two speed inputs are declared visitor controls because the facsimile
- * prints no numerical spin rates. The output deliberately contains no liquid
- * propellant, de Laval, Mach, thrust, or trajectory field.
+ * `shaft_selection` is exactly `-1` astern, `0` neutral, or `1` ahead.
+ * Distances are normalized display coordinates because the grant supplies no
+ * physical shaft travel.
  */
-export function goddard_apparatus_step(elapsed_seconds: number, primary_spin_rpm: number, gyro_spin_rpm: number, tube_length_ratio: number, auxiliary_release_fraction: number, primary_charge_substantially_consumed: boolean, gyro_enabled: boolean): string;
-
-export function goddard_rocket_step(chamber_pressure_psi: number, fuel_flow_kg_per_sec: number, throat_area_cm2: number, expansion_ratio: number): string;
+export function daimler_marine_step(shaft_selection: number, cooling_pump_enabled: boolean): string;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
     readonly memory: WebAssembly.Memory;
-    readonly goddard_apparatus_step: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => [number, number];
-    readonly goddard_rocket_step: (a: number, b: number, c: number, d: number) => [number, number];
+    readonly daimler_marine_step: (a: number, b: number) => [number, number];
     readonly __wbindgen_externrefs: WebAssembly.Table;
     readonly __wbindgen_free: (a: number, b: number, c: number) => void;
     readonly __wbindgen_start: () => void;

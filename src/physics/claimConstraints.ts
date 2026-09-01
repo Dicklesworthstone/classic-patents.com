@@ -331,14 +331,50 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-1102653-goddard-rocket",
-      claimTitle: "Step-Down Multi-Stage Chamber Jettisoning",
+      claimTitle: "Nested Auxiliary Rocket with Ordered Firing",
       activeDescription:
-        "Claim 1 combines successive combustion chambers, jettisoning spent primary casings to maximize final velocity.",
+        "Claim 1 keeps a secondary rocket mounted in firing tube 24 and fires it only when the primary explosive is substantially consumed.",
       invertedDescription:
-        "Single-stage deadweight: carrying empty combustion chamber mass to apogee slashes mass ratio ln(m₀/mf).",
-      failureModeName: "Single-Stage Deadweight Apogee Ceiling",
+        "Omit the nested auxiliary rocket entirely, leaving only the primary solid-charge chamber and tapered tube.",
+      failureModeName: "Missing Auxiliary Flight Stage",
       historicalPriorArt:
-        "Nineteenth-century gunpowder black powder rockets carried all structural casings throughout the trajectory.",
+        "Ordinary single-body rockets did not carry a reduced rocket inside a forward firing tube with the printed delayed-firing sequence.",
+    },
+    {
+      claimNumber: 2,
+      patentId: "us-1102653-goddard-rocket",
+      claimTitle: "Long Slightly Tapered Combustion-Gas Tube",
+      activeDescription:
+        "Claim 2 requires tube 11 to be a slightly tapered truncated cone whose length is not less than three times its longest diameter.",
+      invertedDescription:
+        "Shorten tube 11 to L/D = 2.5 so the model visibly crosses the exact legal geometry boundary printed in Claim 2.",
+      failureModeName: "Claim 2 Tube-Ratio Violation",
+      historicalPriorArt:
+        "The specification contrasts tube 11 with ordinary rockets that discharged combustion gases through a rear opening.",
+    },
+    {
+      claimNumber: 3,
+      patentId: "us-1102653-goddard-rocket",
+      claimTitle: "Initial and Restored Rocket Rotation",
+      activeDescription:
+        "Claim 3 combines primary spin passages with corresponding means in the secondary rocket for maintaining its rotation.",
+      invertedDescription:
+        "Remove both sets of transverse spin-charge passages and set the declared primary spin rate to zero.",
+      failureModeName: "Spin-System Omission",
+      historicalPriorArt:
+        "A rocket without the printed spin-charge systems has no claimed mechanism for imparting and restoring rotation.",
+    },
+    {
+      claimNumber: 7,
+      patentId: "us-1102653-goddard-rocket",
+      claimTitle: "Gyroscope-Restrained Pivoted Instrument Support",
+      activeDescription:
+        "Claim 7 mounts gyroscope 37 on pivoted support 33 so the camera support can be restrained from rotating with head 29.",
+      invertedDescription:
+        "Remove the gyroscope assembly so support 33 inherits the rocket head's angular velocity.",
+      failureModeName: "Camera Support Co-Rotation",
+      historicalPriorArt:
+        "A camera rigidly carried by a spinning rocket head rotates with the casing and cannot retain its initial pointing direction.",
     },
   ],
   "us-400766-hall-aluminium": [
@@ -1261,16 +1297,33 @@ export function applyClaimConstraintModifications(
     }
 
     case "us-1102653-goddard-rocket": {
-      const claim1Active = claimStates[1] ?? true;
-      if (!claim1Active) {
-        modified.activeStage = 1; // Locked single stage
-        modified.chamberPressure = 80.0; // Reduced chamber pressure from deadweight backpressure
-        modified.fuelFlowRateKgs = 0.5; // Stagnating burn rate
+      if (!(claimStates[1] ?? true)) {
+        modified.auxiliaryReleaseFraction = 0;
         activeFailures.push(
-          "Single-Stage Inertial Drag: Retained structural deadweight caps terminal altitude at 5.8 km",
+          "Claim 1 omission: the nested auxiliary rocket and firing sequence are absent",
         );
+      }
+      if (!(claimStates[2] ?? true)) {
+        modified.tubeLengthRatio = 2.5;
+        activeFailures.push(
+          "Claim 2 violation: tapered tube length falls below three longest diameters",
+        );
+      }
+      if (!(claimStates[3] ?? true)) {
+        modified.primarySpinRpm = 0;
+        activeFailures.push(
+          "Claim 3 omission: primary and auxiliary spin-charge passages are absent",
+        );
+      }
+      if (!(claimStates[7] ?? true)) {
+        modified.gyroEnabled = 0;
+        activeFailures.push(
+          "Claim 7 omission: camera support co-rotates without gyroscope restraint",
+        );
+      }
+      if (activeFailures.length > 0) {
         refusalWarning =
-          "PROPULSION REFUSAL: Tsiolkovsky mass ratio insufficient to overcome gravity drag without staging.";
+          "SOURCE CLAIM PROBE: the connected apparatus now visibly omits or violates the selected printed combination.";
       }
       break;
     }

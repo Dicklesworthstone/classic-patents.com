@@ -46,6 +46,14 @@ import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 /** Mechanical horsepower in watts. Used only to print an already-owned hp field. */
 const MECHANICAL_HORSEPOWER_W = 745.7;
 
+/** Explicit reasons that a published record has no honest SI power-flow strip. */
+export const ENERGY_CHANNEL_OMISSION_REASONS = {
+  "us-1102653-goddard-rocket":
+    "US 1,102,653 prints apparatus geometry and firing order but no burn rate, force, speed, or power datum from which an SI energy channel can be derived.",
+  "us-361931-daimler-engine":
+    "US 361,931 prints marine shaft, coupling, reversing, cooling, steering, and gas-storage topology but no speed, torque, friction coefficient, flow, heat, or power datum from which an SI energy channel can be derived.",
+} as const satisfies Record<string, string>;
+
 export function energyChannelsFor(
   patentId: string,
   params: Record<string, number>,
@@ -69,7 +77,7 @@ export function energyChannelsFor(
       { name: "Feeder I²R", watts: bulb.feederLossWatts, tone: "loss" },
     ];
   }
-  if (patentId === "us-1102653-goddard-rocket" || patentId === "us-1155986-goddard-rocket") {
+  if (patentId === "us-1155986-goddard-rocket") {
     const rocket = FrankenSimEngine.stepGoddardRocket(
       params.chamberPressure ?? 350,
       params.fuelFlowRateKgs ?? 1.8,
@@ -836,12 +844,7 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-361931-daimler-engine") {
-    const combW = 3800;
-    return [
-      { name: "Petroleum Combustion Fuel Input", watts: combW, tone: "in" },
-      { name: "Crankshaft Brake Shaft Power", watts: combW * 0.28, tone: "useful" },
-      { name: "Cylinder Heat Rejection & Exhaust", watts: combW * 0.72, tone: "loss" },
-    ];
+    return [];
   }
 
   if (patentId === "us-381968-tesla-motor") {

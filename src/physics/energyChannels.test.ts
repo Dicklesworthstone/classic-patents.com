@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { allPatents } from "@/data/patents";
-import { energyChannelsFor } from "./energyChannels";
+import { ENERGY_CHANNEL_OMISSION_REASONS, energyChannelsFor } from "./energyChannels";
 
 describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
   it("derives conservative energy flow partitions for the Wright Flyer exemplar", () => {
@@ -16,9 +16,17 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
     expect(channels[1].watts + channels[2].watts).toBeCloseTo(channels[0].watts, 1);
   });
 
-  it("derives valid, positive SI watt values for all 79 catalogue patents", () => {
+  it("derives valid SI watt values or carries an explicit source-bounded omission", () => {
     for (const patent of allPatents) {
       const channels = energyChannelsFor(patent.id, {});
+      if (patent.id in ENERGY_CHANNEL_OMISSION_REASONS) {
+        expect(channels).toEqual([]);
+        expect(
+          ENERGY_CHANNEL_OMISSION_REASONS[patent.id as keyof typeof ENERGY_CHANNEL_OMISSION_REASONS]
+            .length,
+        ).toBeGreaterThan(80);
+        continue;
+      }
       expect(channels.length).toBeGreaterThan(0);
       for (const ch of channels) {
         expect(typeof ch.name).toBe("string");
@@ -29,6 +37,10 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
         expect(ch.watts).toBeGreaterThanOrEqual(0);
       }
     }
+    expect(Object.keys(ENERGY_CHANNEL_OMISSION_REASONS)).toEqual([
+      "us-1102653-goddard-rocket",
+      "us-361931-daimler-engine",
+    ]);
   });
 
   it("handles unknown patent IDs safely returning an empty array", () => {

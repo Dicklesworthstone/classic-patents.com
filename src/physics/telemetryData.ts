@@ -1595,6 +1595,125 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "Converging-diverging de Laval nozzle geometry accelerates subsonic combustion gases past the sonic throat ($M=1$) into supersonic exhaust, transferring thermal enthalpy into axial kinetic momentum.",
   },
+  "us-1102653-goddard-rocket": {
+    domain: "mechanical_kinematics",
+    domainTitle: "Source-Bounded Rigid-Body Spin, Staging Sequence, and Gyro Isolation",
+    equationName: "Claim 2 Geometry and Torque-Free Spin Kinematics",
+    governingEquation:
+      "\\omega = \\frac{2\\pi N}{60}, \\qquad L \\ge 3D, \\qquad \\omega_{\\mathrm{support}} = 0 \\; \\text{(ideal, spinning gyro)}",
+    engineMethod:
+      "FrankenSimEngine.stepGoddardApparatus (fs-mbd torque-free rigid-body WASM after load; typed TypeScript fallback; source-bounded no-thrust model)",
+    controls: [
+      {
+        id: "tubeLengthRatio",
+        label: "Tapered Tube Length / Diameter",
+        min: 1.5,
+        max: 6,
+        step: 0.1,
+        defaultValue: 4.5,
+        unit: "L/D",
+      },
+      {
+        id: "primarySpinRpm",
+        label: "Declared Primary Spin",
+        min: 0,
+        max: 300,
+        step: 5,
+        defaultValue: 120,
+        unit: "rpm",
+      },
+      {
+        id: "gyroSpinRpm",
+        label: "Declared Gyroscope Spin",
+        min: 0,
+        max: 12_000,
+        step: 250,
+        defaultValue: 6_000,
+        unit: "rpm",
+      },
+      {
+        id: "auxiliaryReleaseFraction",
+        label: "Auxiliary Release from Tube 24",
+        min: 0,
+        max: 1,
+        step: 0.02,
+        defaultValue: 0,
+        unit: "fraction",
+      },
+      {
+        id: "primaryChargeConsumed",
+        label: "Primary Charge Substantially Consumed",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 0,
+        unit: "state",
+      },
+      {
+        id: "gyroEnabled",
+        label: "Claim 7 Gyroscope Present",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "state",
+      },
+    ],
+    computeMetrics: (p) => {
+      const result = FrankenSimEngine.stepGoddardApparatus(
+        0,
+        p.primarySpinRpm ?? 120,
+        p.gyroSpinRpm ?? 6_000,
+        p.tubeLengthRatio ?? 4.5,
+        p.auxiliaryReleaseFraction ?? 0,
+        (p.primaryChargeConsumed ?? 0) !== 0,
+        (p.gyroEnabled ?? 1) !== 0,
+      );
+      return [
+        {
+          label: "Claim 2 Tapered-Tube Ratio",
+          value: result.tubeLengthRatio.toFixed(1),
+          unit: result.claim2Satisfied ? "L/D · PASS" : "L/D · FAIL",
+          badgeColor: result.claim2Satisfied ? "emerald" : "rose",
+          progressPct: clampProgress((result.tubeLengthRatio / 6) * 100),
+        },
+        {
+          label: "Claim 1 Firing Sequence",
+          value: result.claim1SequenceSatisfied ? "ordered" : "premature",
+          unit: result.auxiliaryNested ? "nested" : "released",
+          badgeColor: result.claim1SequenceSatisfied ? "emerald" : "rose",
+          progressPct: result.claim1SequenceSatisfied ? 100 : 0,
+        },
+        {
+          label: "Primary Angular Velocity",
+          value: result.primaryAngularVelocityRadPerSec.toFixed(2),
+          unit: "rad/s",
+          badgeColor: "amber",
+          progressPct: clampProgress(((p.primarySpinRpm ?? 120) / 300) * 100),
+        },
+        {
+          label: "Gyroscope Angular Velocity",
+          value: result.gyroAngularVelocityRadPerSec.toFixed(1),
+          unit: "rad/s",
+          badgeColor: "purple",
+          progressPct: clampProgress(((p.gyroSpinRpm ?? 6_000) / 12_000) * 100),
+        },
+        {
+          label: "Instrument Support World Rate",
+          value: result.cameraSupportAngularVelocityRadPerSec.toFixed(2),
+          unit: "rad/s",
+          badgeColor: result.cameraSupportAngularVelocityRadPerSec === 0 ? "emerald" : "rose",
+          progressPct: clampProgress(
+            (result.cameraSupportAngularVelocityRadPerSec /
+              Math.max(1, result.primaryAngularVelocityRadPerSec)) *
+              100,
+          ),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "The 1914 grant is a solid-charge staged apparatus: frame bearings permit pre-launch spin, an auxiliary rocket remains nested until the main charge is substantially consumed, and a gyroscope ideally prevents the camera support from sharing the rotating head's world rate. RPM values are declared teaching inputs because the source prints no numerical speeds.",
+  },
   "us-2524035-bardeen-transistor": {
     domain: "semiconductor_carrier",
     domainTitle: "Point-Contact Minority Carrier Injection & Hole Diffusion",
@@ -3721,7 +3840,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     equationName: "Source-Stated Sliding-Shaft Drive Selection",
     governingEquation:
       "x_b > 0 \\Rightarrow a\\,a^2\\;\\text{engaged}; \\qquad x_b < 0 \\Rightarrow e^{\\prime},e^2\\;\\text{engage}\\;a^2,c",
-    engineMethod: "Source-bounded TypeScript apparatus state; no quantitative motor model",
+    engineMethod:
+      "FrankenSimEngine.stepDaimlerMarineApparatus (fs-mbd prismatic-joint WASM after load; typed TypeScript fallback; normalized source topology only)",
     controls: [
       {
         id: "shaftPosition",
@@ -3744,8 +3864,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     ],
     computeMetrics: (p) => {
       const shaftPosition = Math.max(-1, Math.min(1, Math.round(p.shaftPosition ?? 1)));
-      const driveState = shaftPosition > 0 ? "ahead" : shaftPosition < 0 ? "astern" : "neutral";
       const coolingPumpEnabled = (p.coolingPumpEnabled ?? 0) > 0;
+      const state = FrankenSimEngine.stepDaimlerMarineApparatus(shaftPosition, coolingPumpEnabled);
+      const driveState = state.aheadCouplingEngaged
+        ? "ahead"
+        : state.asternGearingEngaged
+          ? "astern"
+          : "neutral";
 
       return [
         {
@@ -3757,24 +3882,26 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Ahead Contact",
-          value: driveState === "ahead" ? "coupling a / a²" : "open",
+          value: state.aheadCouplingEngaged ? "coupling a / a²" : "open",
           unit: "source labels",
           badgeColor: "cyan",
-          progressPct: driveState === "ahead" ? 100 : 0,
+          progressPct: state.aheadCouplingEngaged ? 100 : 0,
         },
         {
           label: "Astern Contact",
-          value: driveState === "astern" ? "disks e¹ / e² with a² / c" : "open",
+          value: state.asternGearingEngaged ? "disks e¹ / e² with a² / c" : "open",
           unit: "source labels",
           badgeColor: "indigo",
-          progressPct: driveState === "astern" ? 100 : 0,
+          progressPct: state.asternGearingEngaged ? 100 : 0,
         },
         {
           label: "Cooling Circulation",
-          value: coolingPumpEnabled ? "centrifugal pump u" : "fore-and-aft pipes s¹ / s²",
+          value: state.coolingPumpActive
+            ? "fore-and-aft pipes s¹ / s² + pump u"
+            : "fore-and-aft pipes s¹ / s²",
           unit: "source alternatives",
           badgeColor: "purple",
-          progressPct: coolingPumpEnabled ? 100 : 0,
+          progressPct: state.coolingPumpActive ? 100 : 0,
         },
       ];
     },
@@ -7005,8 +7132,6 @@ PATENT_PHYSICS_REGISTRY["us-608969-parsons-turbine"] =
   PATENT_PHYSICS_REGISTRY["us-328710-parsons-turbine"];
 PATENT_PHYSICS_REGISTRY["us-3923554-boyle-smith-ccd"] =
   PATENT_PHYSICS_REGISTRY["us-3858232-boyle-smith-ccd"];
-PATENT_PHYSICS_REGISTRY["us-1102653-goddard-rocket"] =
-  PATENT_PHYSICS_REGISTRY["us-1155986-goddard-rocket"];
 PATENT_PHYSICS_REGISTRY["us-3671542-kwolek-kevlar"] =
   PATENT_PHYSICS_REGISTRY["_legacy-unpublished-us-3671542-kwolek-kevlar"];
 PATENT_PHYSICS_REGISTRY["us-586193-marconi-radio"] =

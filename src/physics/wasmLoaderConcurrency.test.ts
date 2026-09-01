@@ -22,6 +22,9 @@ test("concurrent WASM consumers share one in-flight load and receive the final s
       ].join("\n"),
       goddard: [
         init,
+        "export function goddard_apparatus_step() {",
+        "  return JSON.stringify({ ok: { primary_quaternion: [1, 0, 0, 0], gyro_quaternion: [1, 0, 0, 0], primary_angular_velocity_rad_per_sec: 12.56, gyro_angular_velocity_rad_per_sec: 628.3, camera_support_angular_velocity_rad_per_sec: 0, primary_rim_speed_per_radius_mps_per_m: 12.56, tube_length_ratio: 4.5, claim_2_ratio_margin: 1.5, claim_2_satisfied: true, claim_1_sequence_satisfied: true, auxiliary_nested: true, gyro_enabled: true } });",
+        "}",
         "export function goddard_rocket_step() {",
         "  return JSON.stringify({ ok: { chamber_pressure_psi: 350, chamber_pressure_pa: 2413166, exhaust_velocity_mps: 1657, thrust_newtons: 2983, specific_impulse_sec: 169, mach_exit: 2 } });",
         "}",
@@ -63,8 +66,8 @@ test("concurrent WASM consumers share one in-flight load and receive the final s
     if (counts.size !== 4 || [...counts.values()].some((count) => count !== 1)) {
       throw new Error("a loader performed duplicate glue fetches");
     }
-    if (FrankenSimEngine.stepGoddardRocket(350, 1.8, 4.2, 3.5).runtimeSource !== "wasm") {
-      throw new Error("Goddard loaded the module without accepting a valid WASM step");
+    if (FrankenSimEngine.stepGoddardApparatus(0, 120, 6000, 4.5, 0, false, true).runtimeSource !== "wasm") {
+      throw new Error("Goddard loaded the module without accepting the source apparatus WASM step");
     }
     if (
       FrankenSimEngine.stepTeslaCoil(100, 15, 12, 145, 0.18, 850).runtimeSource !== "wasm"

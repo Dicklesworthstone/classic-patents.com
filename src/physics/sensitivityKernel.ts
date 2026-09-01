@@ -237,28 +237,27 @@ export function computeParameterSensitivity(
     }
 
     case "us-1102653-goddard-rocket": {
-      if (controlKey === "chamberPressure") {
-        const _pc = params.chamberPressure ?? 350.0;
-        const dF_dPc = 5.8; // N / psi
+      if (controlKey === "tubeLengthRatio") {
         return {
-          metricName: "Chamber Pressure Thrust Sensitivity",
-          derivativeSymbol: "∂F_thrust / ∂P_c",
-          derivativeValue: Number(dF_dPc.toFixed(1)),
-          derivativeUnit: "N / psi",
+          metricName: "Claim 2 Ratio Margin",
+          derivativeSymbol: "∂(L/D - 3) / ∂(L/D)",
+          derivativeValue: 1,
+          derivativeUnit: "ratio / ratio",
           interpretation:
-            "Linear nozzle chamber pressure gain driving supersonic momentum expansion.",
+            "The printed Claim 2 margin changes one-for-one with the declared tapered-tube length-to-diameter ratio.",
         };
       }
-      if (controlKey === "fuelFlowRateKgs") {
-        const pc = params.chamberPressure ?? 350.0;
-        const vExhaust = 1800.0 + pc * 1.2; // 2220 m/s
+      if (controlKey === "primarySpinRpm" || controlKey === "gyroSpinRpm") {
         return {
-          metricName: "Mass Flow Thrust Coupling",
-          derivativeSymbol: "∂F_thrust / ∂ṁ",
-          derivativeValue: Number(vExhaust.toFixed(0)),
-          derivativeUnit: "N / (kg/s)",
+          metricName:
+            controlKey === "primarySpinRpm"
+              ? "Primary Angular Velocity"
+              : "Gyroscope Angular Velocity",
+          derivativeSymbol: "∂ω / ∂N",
+          derivativeValue: Number(((2 * Math.PI) / 60).toFixed(6)),
+          derivativeUnit: "rad/s / rpm",
           interpretation:
-            "Specific impulse exhaust velocity determining thrust generated per unit propellant mass flow.",
+            "Exact revolutions-per-minute to radians-per-second conversion; the source prints no absolute spin rate.",
         };
       }
       break;

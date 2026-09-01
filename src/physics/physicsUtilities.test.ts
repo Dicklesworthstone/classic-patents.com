@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { blackbodyRgb } from "./blackbody";
-import { energyChannelsFor } from "./energyChannels";
+import { ENERGY_CHANNEL_OMISSION_REASONS, energyChannelsFor } from "./energyChannels";
 import { canonicalizeParam, expandParamAliases } from "./paramAliases";
 import { formatSones, sonesFromDbSpl } from "./psycho";
 import { qtyDimension } from "./qty";
@@ -72,10 +72,8 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(edisonChannels[1].tone).toBe("loss");
 
     const goddardChannels = energyChannelsFor("us-1102653-goddard-rocket", {});
-    expect(goddardChannels.length).toBe(3);
-    expect(goddardChannels[0]?.name).toBe("Chem. enthalpy");
-    expect(goddardChannels[1]?.name).toBe("Exhaust KE");
-    expect(goddardChannels[2]?.name).toBe("Heat leak");
+    expect(goddardChannels).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-1102653-goddard-rocket"]).toContain("no burn rate");
     expect(energyChannelsFor("us-2981877-noyce-ic", {})[0]?.name).toBe("DC Power Supply");
     expect(energyChannelsFor("us-808897-carrier-air-conditioner", {})[0]?.name).toBe("Fan work");
     expect(energyChannelsFor("us-608969-parsons-turbine", {})[0]?.name).toBe("Shaft");
@@ -114,8 +112,9 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(energyChannelsFor("us-347140-thomson-welding", {})[0]?.watts).toBeGreaterThan(0);
     expect(energyChannelsFor("us-194047-otto-engine", {})[0]?.name).toBe("Brake");
     expect(energyChannelsFor("us-6162-corliss-steam-engine", {})[0]?.name).toBe("Indicated");
-    expect(energyChannelsFor("us-361931-daimler-engine", {})[0]?.name).toBe(
-      "Petroleum Combustion Fuel Input",
+    expect(energyChannelsFor("us-361931-daimler-engine", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-361931-daimler-engine"]).toContain(
+      "no speed, torque",
     );
     expect(energyChannelsFor("us-233692-pelton-water-wheel", {})[0]?.name).toBe(
       "Hydrodynamic Water Jet",

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
+import { decodeDaimlerMarineWasmStep } from "./daimlerWasm";
 import { decodeFlyerState } from "./flyerWasm";
-import { decodeGoddardWasmStep } from "./goddardWasm";
+import { decodeGoddardApparatusWasmStep, decodeGoddardWasmStep } from "./goddardWasm";
 import { decodeTeslaWasmStep } from "./teslaWasm";
 
 async function wasmBytes(relativePath: string): Promise<ArrayBuffer> {
@@ -51,12 +52,40 @@ describe("shipped FrankenSim WebAssembly artifacts", () => {
     expect(refused.refusal?.code).toBeDefined();
   });
 
-  test("instantiates the dedicated interpretive Goddard bundle and proves its refusal", async () => {
+  test("instantiates the source-bounded Goddard apparatus bundle and proves its refusal", async () => {
     const module = await import("../../public/wasm/fs-goddard/fs_goddard_wasm.js");
     const bytes = await wasmBytes("../../public/wasm/fs-goddard/fs_goddard_wasm_bg.wasm");
     expect(WebAssembly.validate(bytes)).toBe(true);
     await module.default({ module_or_path: bytes });
 
+    const apparatus = decodeGoddardApparatusWasmStep(
+      module.goddard_apparatus_step(0.25, 120, 6_000, 4.5, 0, false, true),
+    );
+    expect(apparatus).not.toBeNull();
+    expect(apparatus?.primary_quaternion).toHaveLength(4);
+    expect(apparatus?.gyro_quaternion).toHaveLength(4);
+    expect(apparatus?.claim_2_satisfied).toBe(true);
+    expect(apparatus?.auxiliary_nested).toBe(true);
+
+    const brokenClaim = decodeGoddardApparatusWasmStep(
+      module.goddard_apparatus_step(0.25, 120, 6_000, 2.5, 0.5, false, false),
+    );
+    expect(brokenClaim?.claim_2_satisfied).toBe(false);
+    expect(brokenClaim?.claim_1_sequence_satisfied).toBe(false);
+
+    const stoppedGyro = decodeGoddardApparatusWasmStep(
+      module.goddard_apparatus_step(0.25, 120, 0, 4.5, 0, false, true),
+    );
+    expect(stoppedGyro?.camera_support_angular_velocity_rad_per_sec).toBeGreaterThan(0);
+
+    const apparatusRefusal = JSON.parse(
+      module.goddard_apparatus_step(Number.NaN, 120, 6_000, 4.5, 0, false, true),
+    ) as { refusal?: { code: string; ranked_repairs: string[] } };
+    expect(apparatusRefusal.refusal?.code).toBe("non-finite-input");
+    expect(apparatusRefusal.refusal?.ranked_repairs.length).toBeGreaterThan(0);
+
+    // The older export remains available only for the separately catalogued
+    // adjacent liquid-propellant interpretation.
     const result = decodeGoddardWasmStep(module.goddard_rocket_step(350, 1.8, 4.2, 3.5));
     expect(result).not.toBeNull();
     expect(result?.chamber_pressure_psi).toBe(350);
@@ -68,6 +97,34 @@ describe("shipped FrankenSim WebAssembly artifacts", () => {
     };
     expect(refused.refusal?.code).toBe("non-finite-input");
     expect(refused.refusal?.ranked_repairs.length).toBeGreaterThan(0);
+  });
+
+  test("instantiates the source-bounded Daimler marine bundle and proves its refusal", async () => {
+    const module = await import("../../public/wasm/fs-daimler/fs_daimler_wasm.js");
+    const bytes = await wasmBytes("../../public/wasm/fs-daimler/fs_daimler_wasm_bg.wasm");
+    expect(WebAssembly.validate(bytes)).toBe(true);
+    await module.default({ module_or_path: bytes });
+
+    const ahead = decodeDaimlerMarineWasmStep(module.daimler_marine_step(1, false));
+    expect(ahead).not.toBeNull();
+    expect(ahead?.shaft_translation_along_axis_normalized).toBe(-1);
+    expect(ahead?.shaft_axis).toEqual([1, 0, 0]);
+    expect(ahead?.ahead_coupling_engaged).toBe(true);
+    expect(ahead?.astern_gearing_engaged).toBe(false);
+
+    const astern = decodeDaimlerMarineWasmStep(module.daimler_marine_step(-1, true));
+    expect(astern?.shaft_translation_along_axis_normalized).toBe(1);
+    expect(astern?.ahead_coupling_engaged).toBe(false);
+    expect(astern?.astern_gearing_engaged).toBe(true);
+    expect(astern?.propeller_rotation_sign).toBe(-1);
+    expect(astern?.passive_fore_aft_cooling_path_present).toBe(true);
+    expect(astern?.cooling_pump_active).toBe(true);
+
+    const refused = JSON.parse(module.daimler_marine_step(2, false)) as {
+      refusal?: { code: string; repairs: string[] };
+    };
+    expect(refused.refusal?.code).toBe("input-outside-domain");
+    expect(refused.refusal?.repairs.length).toBeGreaterThan(0);
   });
 
   test("instantiates the dedicated interpretive Tesla bundle and proves its refusal", async () => {
@@ -90,6 +147,20 @@ describe("shipped FrankenSim WebAssembly artifacts", () => {
   });
 
   test("host decoders fail closed on malformed or non-finite owner output", () => {
+    expect(decodeDaimlerMarineWasmStep("not json")).toBeNull();
+    expect(decodeDaimlerMarineWasmStep('{"ok":{"shaft_axis":[1,0,0]}}')).toBeNull();
+    expect(
+      decodeDaimlerMarineWasmStep(
+        '{"ok":{"shaft_translation_along_axis_normalized":-1,"shaft_axis":[1,0,0],"shaft_joint_dofs":1,"motor_rotation_sign":1,"propeller_rotation_sign":1,"ahead_coupling_engaged":true,"astern_gearing_engaged":true,"neutral":false,"thrust_can_maintain_ahead_contact":true,"passive_fore_aft_cooling_path_present":true,"cooling_pump_active":false}}',
+      ),
+    ).toBeNull();
+    expect(decodeGoddardApparatusWasmStep("not json")).toBeNull();
+    expect(decodeGoddardApparatusWasmStep('{"ok":{"primary_quaternion":[1,0,0,0]}}')).toBeNull();
+    expect(
+      decodeGoddardApparatusWasmStep(
+        '{"ok":{"primary_quaternion":[2,0,0,0],"gyro_quaternion":[1,0,0,0],"primary_angular_velocity_rad_per_sec":1,"gyro_angular_velocity_rad_per_sec":2,"camera_support_angular_velocity_rad_per_sec":0,"primary_rim_speed_per_radius_mps_per_m":1,"tube_length_ratio":4.5,"claim_2_ratio_margin":1.5,"claim_2_satisfied":true,"claim_1_sequence_satisfied":true,"auxiliary_nested":true,"gyro_enabled":true}}',
+      ),
+    ).toBeNull();
     expect(decodeGoddardWasmStep("not json")).toBeNull();
     expect(decodeGoddardWasmStep('{"ok":{"thrust_newtons":1}}')).toBeNull();
     expect(

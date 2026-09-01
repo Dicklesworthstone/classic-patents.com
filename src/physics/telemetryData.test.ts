@@ -198,21 +198,35 @@ describe("Physics Telemetry Data Registry", () => {
     }
   });
 
-  test("routes Goddard telemetry through the explicitly adjacent de Laval model", () => {
+  test("routes Goddard telemetry through the source-bounded 1914 apparatus", () => {
     const goddard = PATENT_PHYSICS_REGISTRY["us-1102653-goddard-rocket"];
-    expect(goddard.engineMethod).toContain("stepGoddardRocket");
+    expect(goddard.engineMethod).toContain("stepGoddardApparatus");
     expect(goddard.controls.map((control) => control.id)).toEqual([
-      "chamberPressure",
-      "expansionRatio",
-      "flightAltitudeMiles",
+      "tubeLengthRatio",
+      "primarySpinRpm",
+      "gyroSpinRpm",
+      "auxiliaryReleaseFraction",
+      "primaryChargeConsumed",
+      "gyroEnabled",
     ]);
     const metrics = goddard.computeMetrics({
-      chamberPressure: 350,
-      expansionRatio: 3.5,
-      flightAltitudeMiles: 18,
+      tubeLengthRatio: 2.5,
+      primarySpinRpm: 120,
+      gyroSpinRpm: 0,
+      auxiliaryReleaseFraction: 0.5,
+      primaryChargeConsumed: 0,
+      gyroEnabled: 1,
     });
-    expect(metrics[0]?.label).toBe("Exit Mach Number");
-    expect(metrics.some((metric) => metric.label.includes("Thrust"))).toBe(true);
+    expect(metrics[0]).toMatchObject({ label: "Claim 2 Tapered-Tube Ratio", value: "2.5" });
+    expect(metrics[1]).toMatchObject({ label: "Claim 1 Firing Sequence", value: "premature" });
+    expect(metrics.at(-1)).toMatchObject({
+      label: "Instrument Support World Rate",
+      value: ((120 * 2 * Math.PI) / 60).toFixed(2),
+    });
+    const metricLabels = metrics.map((metric) => metric.label.toLowerCase());
+    for (const unsupported of ["thrust", "mach", "flight altitude", "chamber pressure"]) {
+      expect(metricLabels.some((label) => label.includes(unsupported))).toBeFalse();
+    }
   });
 
   test("routes Noyce US 2,981,877 telemetry through the planar-junction kernel", () => {
@@ -283,9 +297,8 @@ describe("Physics Telemetry Data Registry", () => {
 
   test("keeps Daimler telemetry on the marine installation printed by US 361,931", () => {
     const daimler = PATENT_PHYSICS_REGISTRY["us-361931-daimler-engine"];
-    expect(daimler.engineMethod).toBe(
-      "Source-bounded TypeScript apparatus state; no quantitative motor model",
-    );
+    expect(daimler.engineMethod).toContain("stepDaimlerMarineApparatus");
+    expect(daimler.engineMethod).toContain("fs-mbd prismatic-joint WASM");
     expect(daimler.controls.map((control) => control.id)).toEqual([
       "shaftPosition",
       "coolingPumpEnabled",
@@ -295,6 +308,12 @@ describe("Physics Telemetry Data Registry", () => {
       { label: "Ahead Contact", value: "coupling a / a²" },
       { label: "Astern Contact", value: "open" },
       { label: "Cooling Circulation", value: "fore-and-aft pipes s¹ / s²" },
+    ]);
+    expect(daimler.computeMetrics({ shaftPosition: -1, coolingPumpEnabled: 1 })).toMatchObject([
+      { label: "Drive Selection", value: "astern" },
+      { label: "Ahead Contact", value: "open" },
+      { label: "Astern Contact", value: "disks e¹ / e² with a² / c" },
+      { label: "Cooling Circulation", value: "fore-and-aft pipes s¹ / s² + pump u" },
     ]);
 
     const publicCopy = JSON.stringify(daimler).toLowerCase();

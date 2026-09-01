@@ -1263,7 +1263,15 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     return [{ label: "Lift", min: -20, max: 40, live: zep.netLiftKn, unit: "kN" }];
   }
   if (patentId.includes("daimler") || patentId.includes("361931")) {
-    return [{ label: "RPM", min: 200, max: 1000, live: params.engineRpm ?? 600, unit: "rpm" }];
+    return [
+      {
+        label: "Drive",
+        min: -1,
+        max: 1,
+        live: Math.max(-1, Math.min(1, Math.round(params.shaftPosition ?? 1))),
+        unit: "astern / neutral / ahead",
+      },
+    ];
   }
   if (patentId.includes("hollerith") || patentId.includes("395781")) {
     const h = stepHollerithTabulating({
@@ -1395,7 +1403,15 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     return [{ label: "V_plate", min: 0, max: 50, live: params.plateBiasV ?? 24, unit: "V" }];
   }
   if (patentId.includes("daimler") || patentId.includes("361931")) {
-    return [{ label: "RPM", min: 200, max: 1000, live: params.engineRpm ?? 600, unit: "rpm" }];
+    return [
+      {
+        label: "Drive",
+        min: -1,
+        max: 1,
+        live: Math.max(-1, Math.min(1, Math.round(params.shaftPosition ?? 1))),
+        unit: "astern / neutral / ahead",
+      },
+    ];
   }
   if (patentId.includes("hall") || patentId.includes("400766")) {
     return [
@@ -2854,14 +2870,9 @@ export function datedScenarios(patentId: string): DatedScenario[] {
     ];
   }
   if (patentId.includes("daimler") || patentId.includes("361931")) {
-    return [
-      {
-        id: "neckar-1886",
-        date: "1886-08-20",
-        name: "Neckar river motorboat hot-tube run",
-        writes: { engineRpm: 600, tubeTempC: 750 },
-      },
-    ];
+    // The grant supplies no dated operating point or numerical control values
+    // that can be replayed without importing evidence from a different record.
+    return [];
   }
   if (patentId.includes("tesla-motor") || patentId.includes("381968")) {
     return [
@@ -3251,7 +3262,8 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [{ from: "gas charge", to: "brake", watts: otto.brakeHorsepower * 745.7 }];
   }
   if (patentId.includes("daimler") || patentId.includes("361931")) {
-    return [{ from: "combustion", to: "crankshaft shaft", watts: 1064 }];
+    // US 361,931 prints no speed, torque, flow, heat, or power datum.
+    return [];
   }
   if (patentId.includes("corliss") || patentId.includes("6162")) {
     const corliss = stepCorlissEngine({
@@ -3569,7 +3581,9 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [{ from: "crucible heat", to: "slug casting", watts: 816 }];
   }
   if (patentId.includes("daimler") || patentId.includes("361931")) {
-    return [{ from: "combustion", to: "crankshaft shaft", watts: 1064 }];
+    // Preserve the source-stated mechanical topology without fabricating a
+    // watt-valued cross-domain edge.
+    return [];
   }
   if (patentId.includes("tesla-motor") || patentId.includes("381968")) {
     return [{ from: "polyphase stator", to: "rotor torque", watts: 1290 }];

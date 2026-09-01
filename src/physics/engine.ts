@@ -8,9 +8,9 @@
 import {
   stepBardeenTransistor as catalogStepBardeen,
   stepColtRevolver as catalogStepColt,
-  stepDaimlerEngine as catalogStepDaimlerEngine,
   stepHollerithTabulating as catalogStepHollerith,
   stepKevlarContinuum as catalogStepKevlar,
+  stepLegacyDaimlerEngineUS349983 as catalogStepLegacyDaimlerEngineUS349983,
   stepLincolnBuoy as catalogStepLincolnBuoy,
   goddardSchematicStack,
   stepBellTelephone,
@@ -44,6 +44,7 @@ import {
   stepWozniakApple,
   stepZeppelinAirship,
 } from "./catalogKernels";
+import { tryDaimlerMarineWasmStep } from "./daimlerWasm";
 import {
   type DaVinciControls,
   type DaVinciState,
@@ -51,7 +52,7 @@ import {
 } from "./daVinciKernel";
 import { stepDieselEngine as kernelStepDieselEngine } from "./dieselEngineKernel";
 import { stepFermiKinetics } from "./fermiKinetics";
-import { tryGoddardWasmStep } from "./goddardWasm";
+import { tryGoddardApparatusWasmStep, tryGoddardWasmStep } from "./goddardWasm";
 import {
   stepCcdWells,
   stepEngelbartResolver,
@@ -88,6 +89,24 @@ export const LAMARR_PIANO_ROLL_STEP = 1;
 export const LAMARR_JAM_CHANNEL_FRACTION = 0;
 export const LAMARR_SCHEMATIC_STAFF_COUNT = 11;
 export const LAMARR_SCHEMATIC_STAFF_ORIGIN_Y = 75;
+
+function canonicalAxisQuaternion(
+  axis: "x" | "y",
+  angleRadians: number,
+): [number, number, number, number] {
+  const halfAngle = angleRadians / 2;
+  const sine = Math.sin(halfAngle);
+  const quaternion: [number, number, number, number] = [
+    Math.cos(halfAngle),
+    axis === "x" ? sine : 0,
+    axis === "y" ? sine : 0,
+    0,
+  ];
+  const firstNonZero = quaternion.find((component) => component !== 0) ?? 1;
+  return firstNonZero < 0
+    ? (quaternion.map((component) => -component) as [number, number, number, number])
+    : quaternion;
+}
 export const LAMARR_SCHEMATIC_STAFF_PITCH_Y = 13;
 export const LAMARR_SCHEMATIC_HOP_ORIGIN_X = 80;
 export const LAMARR_SCHEMATIC_HOP_PITCH_X = 30;
@@ -301,9 +320,78 @@ export const FrankenSimEngine = {
   },
 
   /**
-   * Adjacent liquid-propellant de Laval model used by the US 1,102,653
-   * presentation. This is interpretive telemetry, not a claimed mechanism in
-   * the catalogued solid-charge apparatus patent.
+   * Source-bounded US 1,102,653 apparatus state.
+   *
+   * Primary and gyroscope speeds are declared visitor inputs because the
+   * facsimile prints no numerical rates. The owner returns torque-free
+   * rigid-body poses and exact claim predicates, never fabricated thrust,
+   * Mach, liquid-propellant, or trajectory telemetry.
+   */
+  stepGoddardApparatus(
+    elapsedSeconds: number,
+    primarySpinRpm: number,
+    gyroSpinRpm: number,
+    tubeLengthRatio: number,
+    auxiliaryReleaseFraction: number,
+    primaryChargeSubstantiallyConsumed: boolean,
+    gyroEnabled: boolean,
+  ) {
+    const wasmResult = tryGoddardApparatusWasmStep(
+      elapsedSeconds,
+      primarySpinRpm,
+      gyroSpinRpm,
+      tubeLengthRatio,
+      auxiliaryReleaseFraction,
+      primaryChargeSubstantiallyConsumed,
+      gyroEnabled,
+    );
+    if (wasmResult) {
+      return {
+        runtimeSource: "wasm" as const,
+        primaryQuaternion: wasmResult.primary_quaternion,
+        gyroQuaternion: wasmResult.gyro_quaternion,
+        primaryAngularVelocityRadPerSec: wasmResult.primary_angular_velocity_rad_per_sec,
+        gyroAngularVelocityRadPerSec: wasmResult.gyro_angular_velocity_rad_per_sec,
+        cameraSupportAngularVelocityRadPerSec:
+          wasmResult.camera_support_angular_velocity_rad_per_sec,
+        primaryRimSpeedPerRadiusMpsPerM: wasmResult.primary_rim_speed_per_radius_mps_per_m,
+        tubeLengthRatio: wasmResult.tube_length_ratio,
+        claim2RatioMargin: wasmResult.claim_2_ratio_margin,
+        claim2Satisfied: wasmResult.claim_2_satisfied,
+        claim1SequenceSatisfied: wasmResult.claim_1_sequence_satisfied,
+        auxiliaryNested: wasmResult.auxiliary_nested,
+        gyroEnabled: wasmResult.gyro_enabled,
+      };
+    }
+
+    const primaryAngularVelocityRadPerSec = (primarySpinRpm * Math.PI * 2) / 60;
+    const gyroAngularVelocityRadPerSec = (gyroSpinRpm * Math.PI * 2) / 60;
+    const auxiliaryNested = auxiliaryReleaseFraction === 0;
+    return {
+      runtimeSource: "ts-fallback" as const,
+      primaryQuaternion: canonicalAxisQuaternion(
+        "y",
+        primaryAngularVelocityRadPerSec * elapsedSeconds,
+      ),
+      gyroQuaternion: canonicalAxisQuaternion("x", gyroAngularVelocityRadPerSec * elapsedSeconds),
+      primaryAngularVelocityRadPerSec,
+      gyroAngularVelocityRadPerSec,
+      cameraSupportAngularVelocityRadPerSec:
+        gyroEnabled && gyroSpinRpm > 0 ? 0 : primaryAngularVelocityRadPerSec,
+      primaryRimSpeedPerRadiusMpsPerM: primaryAngularVelocityRadPerSec,
+      tubeLengthRatio,
+      claim2RatioMargin: tubeLengthRatio - 3,
+      claim2Satisfied: tubeLengthRatio >= 3,
+      claim1SequenceSatisfied: auxiliaryNested || primaryChargeSubstantiallyConsumed,
+      auxiliaryNested,
+      gyroEnabled,
+    };
+  },
+
+  /**
+   * Liquid-propellant de Laval model for the separately catalogued 1926
+   * US 1,155,986 record. It is not a model of the solid-charge apparatus
+   * claimed in US 1,102,653.
    */
   stepGoddardRocket(
     chamberPressurePsi: number,
@@ -916,16 +1004,56 @@ export const FrankenSimEngine = {
    */
   stepMaximMachineGun,
 
+  /** Source-bounded US 361,931 prismatic shaft and contact topology. */
+  stepDaimlerMarineApparatus(shaftSelection: number, coolingPumpEnabled: boolean) {
+    const normalizedSelection = Math.max(-1, Math.min(1, Math.round(shaftSelection)));
+    const wasmResult = tryDaimlerMarineWasmStep(normalizedSelection, coolingPumpEnabled);
+    if (wasmResult) {
+      return {
+        runtimeSource: "wasm" as const,
+        shaftTranslationAlongAxisNormalized: wasmResult.shaft_translation_along_axis_normalized,
+        shaftAxis: wasmResult.shaft_axis,
+        shaftJointDofs: wasmResult.shaft_joint_dofs,
+        motorRotationSign: wasmResult.motor_rotation_sign,
+        propellerRotationSign: wasmResult.propeller_rotation_sign,
+        aheadCouplingEngaged: wasmResult.ahead_coupling_engaged,
+        asternGearingEngaged: wasmResult.astern_gearing_engaged,
+        neutral: wasmResult.neutral,
+        thrustCanMaintainAheadContact: wasmResult.thrust_can_maintain_ahead_contact,
+        passiveForeAftCoolingPathPresent: wasmResult.passive_fore_aft_cooling_path_present,
+        coolingPumpActive: wasmResult.cooling_pump_active,
+      };
+    }
+
+    const ahead = normalizedSelection === 1;
+    const astern = normalizedSelection === -1;
+    return {
+      runtimeSource: "ts-fallback" as const,
+      shaftTranslationAlongAxisNormalized: -normalizedSelection,
+      shaftAxis: [1, 0, 0] as [number, number, number],
+      shaftJointDofs: 1,
+      motorRotationSign: 1,
+      propellerRotationSign: normalizedSelection,
+      aheadCouplingEngaged: ahead,
+      asternGearingEngaged: astern,
+      neutral: normalizedSelection === 0,
+      thrustCanMaintainAheadContact: ahead,
+      passiveForeAftCoolingPathPresent: true,
+      coolingPumpActive: coolingPumpEnabled,
+    };
+  },
+
   /**
-   * Gottlieb Daimler High-Speed Motor Carriage (US 361,931)
-   * High-RPM ICE Powertrain & Bevel Gear Differential
+   * Legacy illustrative motor calculation associated with the separately
+   * referenced US 349,983 engine. It is not the active US 361,931 marine
+   * installation model and must not supply that page's telemetry.
    */
-  stepDaimlerEngine(params: {
+  stepLegacyDaimlerEngineUS349983(params: {
     engineRpm?: number;
     hotTubeTempC?: number;
     differentialSlipAngleDeg?: number;
   }) {
-    return catalogStepDaimlerEngine(params);
+    return catalogStepLegacyDaimlerEngineUS349983(params);
   },
 
   /**

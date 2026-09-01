@@ -61,12 +61,12 @@ describe("executable project coverage manifest", () => {
   test("distinguishes patent-specific, interpretive, generic, and typed-host surfaces", () => {
     expect(
       manifest.filter((row) => row.runtime.wasmSurface === "patent-specific-wasm"),
-    ).toHaveLength(1);
+    ).toHaveLength(3);
     expect(manifest.filter((row) => row.runtime.wasmSurface === "interpretive-wasm")).toHaveLength(
-      2,
+      1,
     );
     expect(manifest.filter((row) => row.runtime.wasmSurface === "generic-wasm")).toHaveLength(36);
-    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(40);
+    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(39);
 
     for (const patentId of [
       "us-x9430-colt-revolver",
@@ -154,7 +154,7 @@ describe("executable project coverage manifest", () => {
         surface.artifactSha256,
       );
     }
-    expect(checkedArtifacts.size).toBe(4);
+    expect(checkedArtifacts.size).toBe(5);
   });
 
   test("all 3D studios now have an updater or a typed snapshot path", () => {
@@ -168,8 +168,12 @@ describe("executable project coverage manifest", () => {
     const readme = readFileSync(join(ROOT, "README.md"), "utf8");
     expect(readme).toContain(`${summary.reviewedLedgers} have reviewed ledgers`);
     expect(readme).toContain(`**${summary.publishedEditions} of ${summary.total}**`);
-    expect(readme).toContain(`${summary.patentSpecificWasm} patent-specific WASM surface`);
-    expect(readme).toContain(`${summary.interpretiveWasm} dedicated interpretive WASM surfaces`);
+    expect(readme).toContain(
+      `${summary.patentSpecificWasm} patent-specific WASM surface${summary.patentSpecificWasm === 1 ? "" : "s"}`,
+    );
+    expect(readme).toContain(
+      `${summary.interpretiveWasm} dedicated interpretive WASM surface${summary.interpretiveWasm === 1 ? "" : "s"}`,
+    );
     expect(readme).toContain(`${summary.genericWasm} generic FrankenSim WASM consumers`);
     expect(readme).toContain(`${summary.typedHostOnly} typed-host-only records`);
     expect(readme).toContain(

@@ -889,33 +889,56 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === GODDARD_ROCKET_ID) {
-    const pc = params.chamberPressure ?? 350;
-    const aeAt = params.expansionRatio ?? 3.5;
-    const alt = params.flightAltitudeMiles ?? 18;
+    const tubeRatio = params.tubeLengthRatio ?? 4.5;
+    const releaseFraction = params.auxiliaryReleaseFraction ?? 0;
+    const primaryConsumed = (params.primaryChargeConsumed ?? 0) !== 0;
+    const primarySpinRpm = params.primarySpinRpm ?? 120;
+    const gyroSpinRpm = params.gyroSpinRpm ?? 6_000;
+    const gyroEnabled = (params.gyroEnabled ?? 1) !== 0;
+    const gyroOperational = gyroEnabled && gyroSpinRpm > 0;
+    const sequenceHeld = releaseFraction === 0 || primaryConsumed;
 
     return [
       {
         id: "staged-rockets",
         phrase:
           "primary rocket, comprising a combustion chamber and a firing tube, a secondary rocket mounted in said firing tube",
-        active: alt >= 10,
-        tone: "live",
-        caption: `Altitude = ${alt} mi: Multi-stage cartridge reloading increases mass fraction and terminal velocity.`,
+        active: releaseFraction === 0,
+        tone: releaseFraction === 0 ? "held" : "live",
+        caption:
+          releaseFraction === 0
+            ? "Auxiliary chamber 25 and tube 26 remain physically nested inside firing tube 24."
+            : `Auxiliary release is ${Math.round(releaseFraction * 100)}% through the source firing path.`,
       },
       {
-        id: "tapered-nozzle",
-        phrase: "rearwardly extended tapered tube connected with said chamber",
-        active: pc >= 200,
-        tone: "held",
-        caption: `P_c = ${pc} psi: De Laval convergent-divergent nozzle accelerates combustion gases to supersonic exhaust velocity.`,
+        id: "ordered-auxiliary-firing",
+        phrase:
+          "means for firing said secondary rocket when the explosive in the primary rocket is substantially consumed",
+        active: sequenceHeld,
+        tone: sequenceHeld ? "held" : "broken",
+        caption: sequenceHeld
+          ? "The requested auxiliary state follows the printed substantial-consumption condition."
+          : "The auxiliary was released while the primary charge was still marked burning: a visible Claim 1 failure.",
       },
       {
-        id: "optimal-expansion",
+        id: "claim-two-tapered-tube",
         phrase:
           "truncated cone of slight taper and having its length equal to not less than three times its longest diameter",
-        active: aeAt >= 3.0,
-        tone: "live",
-        caption: `Ae/At = ${aeAt}: Long slight-taper expansion cone converts thermal enthalpy into axial kinetic thrust without separation.`,
+        active: tubeRatio >= 3,
+        tone: tubeRatio >= 3 ? "held" : "broken",
+        caption: `Tube 11 is L/D = ${tubeRatio.toFixed(1)}; Claim 2 requires L/D ≥ 3 and supplies no de Laval throat, area ratio, Mach number, or thrust value.`,
+      },
+      {
+        id: "spin-and-gyro-restraint",
+        phrase:
+          "a gyroscope mounted thereon by which the support may be restrained from rotation with the head",
+        active: gyroOperational,
+        tone: gyroOperational ? "held" : "broken",
+        caption: gyroOperational
+          ? `Gyroscope 37 ideally holds support 33 at zero world rate while the declared rocket spin is ${primarySpinRpm.toFixed(0)} rpm.`
+          : gyroEnabled
+            ? `Gyroscope 37 is present but stopped, so support 33 inherits the declared ${primarySpinRpm.toFixed(0)} rpm head rotation.`
+            : `Without gyroscope 37, support 33 inherits the declared ${primarySpinRpm.toFixed(0)} rpm head rotation.`,
       },
     ];
   }
@@ -1812,21 +1835,57 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-361931-daimler-engine") {
-    const rpm = params.engineRpm ?? 600;
+    const selection = Math.max(-1, Math.min(1, Math.round(params.shaftPosition ?? 1)));
+    const pumpActive = (params.coolingPumpEnabled ?? 0) > 0.5;
     return [
       {
         id: "propeller",
         phrase: "propeller",
-        active: rpm > 300,
+        active: selection !== 0,
         tone: "live",
-        caption: `Engine Speed=${rpm} RPM: High-speed internal combustion engine delivers direct rotary propulsion.`,
+        caption:
+          selection === 1
+            ? "Ahead: the sliding shaft places coupling members a and a² in contact; propeller thrust can maintain that contact."
+            : selection === -1
+              ? "Astern: intermediate disks e¹ and e² engage a² and c so the propeller turns opposite the motor shaft."
+              : "Neutral: both source-defined drive paths are open, so the propeller shaft is not driven.",
       },
       {
         id: "friction-coupling",
         phrase: "friction-coupling",
+        active: selection === 1,
+        tone: "held",
+        caption:
+          selection === 1
+            ? "Coupling members a and a² are in ahead contact."
+            : "The ahead coupling members are separated.",
+      },
+      {
+        id: "reversing-gearing",
+        phrase: "gearing",
+        active: selection === -1,
+        tone: "held",
+        caption:
+          selection === -1
+            ? "Disks e¹/e² bridge a² and c for astern rotation."
+            : "The astern intermediate disks are clear of the shaft disks.",
+      },
+      {
+        id: "cooling-pipes",
+        phrase: "pipes",
         active: true,
         tone: "held",
-        caption: "Cone friction coupling switches between direct forward drive and geared reverse.",
+        caption:
+          "Fore and aft pipes s¹ and s² form the source-defined cooling-water path whether or not optional pump u is used.",
+      },
+      {
+        id: "centrifugal-pump",
+        phrase: "centrifugal pump",
+        active: pumpActive,
+        tone: "live",
+        caption: pumpActive
+          ? "Optional centrifugal pump u augments the connected cooling path."
+          : "Optional pump u is idle; the patent's fore-and-aft pipes remain present.",
       },
     ];
   }

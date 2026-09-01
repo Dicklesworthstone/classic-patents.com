@@ -1636,7 +1636,7 @@ export function zeppelinSchematicCell(index: number, originX = 70, pitch = 32) {
   return { cx: originX + index * pitch };
 }
 
-export function stepDaimlerEngine(params: {
+export function stepLegacyDaimlerEngineUS349983(params: {
   engineRpm?: number;
   hotTubeTempC?: number;
   differentialSlipAngleDeg?: number;

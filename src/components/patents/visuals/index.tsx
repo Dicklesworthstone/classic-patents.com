@@ -144,7 +144,7 @@ const GliddenBarbedWireSim = dynamic(
   { ssr: false, loading: SimLoading },
 );
 const GoddardRocketSim = dynamic(
-  () => import("./GoddardRocketSim").then((m) => m.GoddardRocketSim),
+  () => import("./Goddard1914ApparatusSim").then((m) => m.GoddardRocketSim),
   { ssr: false, loading: SimLoading },
 );
 const GoodyearRubberSim = dynamic(
@@ -466,7 +466,7 @@ const GliddenBarbedWire3D = dynamic(
   { ssr: false, loading: ThreeLoading },
 );
 const GoddardRocket3D = dynamic(
-  () => import("./three/GoddardRocket3D").then((mod) => mod.GoddardRocket3D),
+  () => import("./three/Goddard1914Apparatus3D").then((mod) => mod.GoddardRocket3D),
   { ssr: false, loading: ThreeLoading },
 );
 const GoodyearRubber3D = dynamic(

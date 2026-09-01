@@ -118,15 +118,19 @@ describe("US 361,931 Daimler manual marine-engine edition", () => {
     const visualSources = [
       "src/components/patents/visuals/DaimlerEngineSim.tsx",
       "src/components/patents/visuals/three/DaimlerEngine3D.tsx",
-      "src/components/patents/visuals/three/daimlerEngineModel.ts",
+      "src/components/patents/visuals/three/daimlerMarineInstallationModel.ts",
     ].map((path) => readFileSync(join(process.cwd(), path), "utf8").toLowerCase());
     for (const source of visualSources) {
       expect(source).not.toMatch(
         /hot[- ]?tube|standuhr|bmep|flywheel|crankcase|motor[- ]?carriage|automobile/,
       );
     }
-    expect(visualSources.every((source) => source.includes("shaftposition"))).toBe(true);
-    expect(visualSources.every((source) => source.includes("coolingpumpenabled"))).toBe(true);
+    expect(visualSources[0]).toContain("shaftposition");
+    expect(visualSources[1]).toContain("shaftposition");
+    expect(visualSources[2]).toContain("shafttranslationalongaxisnormalized");
+    expect(visualSources[0]).toContain("coolingpumpenabled");
+    expect(visualSources[1]).toContain("coolingpumpenabled");
+    expect(visualSources[2]).toContain("coolingpumpactive");
   });
 
   test("gives every authored source paragraph a patent-local, non-lossy companion", () => {

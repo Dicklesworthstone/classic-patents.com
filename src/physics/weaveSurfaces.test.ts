@@ -279,12 +279,18 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(coupleLinks("us-400766-hall-aluminium", {})[0]?.from).toBe("bus");
     expect(coupleLinks("us-879532-de-forest-audion", {})[0]?.from).toBe("filament");
     expect(coupleLinks("us-307031-edison-indicator", {})[0]?.from).toBe("filament heat");
-    expect(coupleLinks("us-361931-daimler-engine", {})[0]?.from).toBe("combustion");
+    expect(coupleLinks("us-361931-daimler-engine", {})).toEqual([]);
     expect(coupleLinks("gb-913-watt-separate-condenser", {})[0]?.from).toBe("furnace");
   });
 
-  test("derives Daimler performance weaves and source apparatus labels", () => {
+  test("keeps Daimler weaves on source controls and source apparatus labels", () => {
     expect(intervalGhosts("us-361931-daimler-engine", {}).length).toBeGreaterThan(0);
+    expect(intervalGhosts("us-361931-daimler-engine", {})[0]).toMatchObject({
+      label: "Drive",
+      live: 1,
+      unit: "astern / neutral / ahead",
+    });
+    expect(datedScenarios("us-361931-daimler-engine")).toEqual([]);
     expect(materialProbe("us-361931-daimler-engine", "coupling", {})).toMatchObject({
       part: "coupling",
       qty: "source",
