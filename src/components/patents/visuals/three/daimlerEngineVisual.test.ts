@@ -123,7 +123,7 @@ describe("US 361,931 Gottlieb Daimler Boat Propulsion Engine visual & kinematics
       return Math.hypot(dx, dy, dz);
     };
 
-    expect(model.sourceInterfaces.length).toBeGreaterThanOrEqual(20);
+    expect(model.sourceInterfaces.length).toBeGreaterThanOrEqual(25);
     for (const sourceInterface of model.sourceInterfaces) {
       expect(
         boxGap(sourceInterface.a, sourceInterface.b),
@@ -139,7 +139,7 @@ describe("US 361,931 Gottlieb Daimler Boat Propulsion Engine visual & kinematics
     expect(source).toContain("ensureDaimlerWasm");
     expect(source).toContain("stepDaimlerMarineApparatus");
     expect(source).toContain('step="1"');
-    expect(source).toContain("passive paths always present");
+    expect(source).toContain("s¹/s² always present");
     expect(source).toContain("longitudinally movable propeller shaft and attached members");
     expect(source).not.toContain("engineRpm");
     expect(source).not.toContain("hotTube");

@@ -529,9 +529,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       title: "High-Resistance Carbon Filament & Parallel Distribution Law",
       category: "Thermodynamics & Electrical Distribution",
       rawLatex:
-        "R_{\\text{filament}} = \\rho_{\\text{carbon}} \\frac{L}{A} = \\rho_{\\text{carbon}} \\frac{4 L}{\\pi d^2} = \\frac{V_{\\text{grid}}^2}{P_{\\text{lamp}}} \\approx 100\\,\\Omega",
+        "R_{\\text{filament}} = \\rho_{\\text{carbon}} \\frac{L}{A} = \\rho_{\\text{carbon}} \\frac{4 L}{\\pi d^2} = \\frac{V_{\\text{declared}}^2}{P_{\\text{electric}}}",
       colorizedLatex:
-        "\\textcolor{#059669}{R_{\\text{filament}}} = \\textcolor{#9333ea}{\\rho_{\\text{carbon}}} \\frac{\\textcolor{#2563eb}{L}}{\\textcolor{#ea580c}{A}} = \\textcolor{#9333ea}{\\rho_{\\text{carbon}}} \\frac{4 \\textcolor{#2563eb}{L}}{\\pi \\textcolor{#ea580c}{d^2}} = \\frac{\\textcolor{#dc2626}{V_{\\text{grid}}^2}}{\\textcolor{#0891b2}{P_{\\text{lamp}}}} \\approx 100\\,\\Omega",
+        "\\textcolor{#059669}{R_{\\text{filament}}} = \\textcolor{#9333ea}{\\rho_{\\text{carbon}}} \\frac{\\textcolor{#2563eb}{L}}{\\textcolor{#ea580c}{A}} = \\textcolor{#9333ea}{\\rho_{\\text{carbon}}} \\frac{4 \\textcolor{#2563eb}{L}}{\\pi \\textcolor{#ea580c}{d^2}} = \\frac{\\textcolor{#dc2626}{V_{\\text{declared}}^2}}{\\textcolor{#0891b2}{P_{\\text{electric}}}}",
       plainEnglishSentence: [
         {
           text: "The ",
@@ -562,17 +562,17 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           variableId: "diam_d",
         },
         {
-          text: ", engineered to match ",
+          text: ". At a declared operating point it also equals ",
         },
         {
-          text: "distribution grid voltage squared",
+          text: "declared exhibit voltage squared",
           variableId: "v_grid",
         },
         {
-          text: " over ",
+          text: " divided by ",
         },
         {
-          text: "lamp power rating",
+          text: "computed electrical input",
           variableId: "p_lamp",
         },
         {
@@ -585,30 +585,30 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "R_{\\text{filament}}",
           name: "Hot Filament Electrical Resistance",
           color: "emerald",
-          role: "Ohmic resistance of the incandescent carbon horseshoe thread at $1900\\text{ K}$ ($~100\\,\\Omega$)",
+          role: "The source reports 100 to 500 ohms for one carbonized-thread example and up to 2,000 ohms for a compact spiral",
           unit: "Ohms (\\Omega)",
           dimension: "[M L^2 T^-3 I^-2]",
           explanation:
-            "Edison's genius insight: other inventors used thick rods ($1\\,\\Omega$) requiring massive copper cables; Edison engineered high-resistance ($100\\,\\Omega$) filaments requiring only $1\\text{ A}$ at $110\\text{ V}$.",
+            "The patent contrasts its high-resistance filament with reported prior practice of one-to-four-ohm carbon rods because low-resistance lamps in multiple arc demand enormous main conductors.",
           telemetryMetricLabel: "Filament Resistance",
         },
         {
           id: "rho_carbon",
           symbol: "\\rho_{\\text{carbon}}",
-          name: "Carbonized Cellulose Resistivity",
+          name: "Carbon-Form Resistivity",
           color: "amethyst",
-          role: "Specific resistivity of carbonized cotton or Japanese bamboo fiber ($~4 \\times 10^{-5}\\,\\Omega\\cdot\\text{m}$)",
+          role: "Material property in the modern geometry relation; the grant supplies no numerical carbon resistivity",
           unit: "\\Omega * m",
           dimension: "[M L^3 T^-3 I^-2]",
           explanation:
-            "Carbon maintains high electrical resistance and withstands temperatures exceeding $2,000^\\circ\\text{C}$ without melting.",
+            "The source reports resistance for finished carbon forms rather than enough material data to infer a universal resistivity or operating temperature.",
         },
         {
           id: "len_l",
           symbol: "L",
-          name: "Filament Horseshoe Length",
+          name: "Filament Path Length",
           color: "sapphire",
-          role: "Total length of the looping carbon thread ($10 - 15\\text{ cm}$)",
+          role: "The source's rolled-wire example is over one foot long; the thermal-area model instead declares a fixed 22 cm display length",
           unit: "cm or meters",
           dimension: "[L]",
           explanation: "Longer thread increases resistance and radiating surface area.",
@@ -618,7 +618,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "d",
           name: "Filament Wire Diameter",
           color: "coral",
-          role: "Cross-sectional diameter of carbonized filament ($0.15 - 0.25\\text{ mm}$)",
+          role: "The source says its rolled plastic stock may be as small as seven one-thousandths of an inch ($0.1778\\text{ mm}$)",
           unit: "mm or meters",
           dimension: "[L]",
           explanation:
@@ -626,36 +626,36 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
         },
         {
           id: "v_grid",
-          symbol: "V_{\\text{grid}}",
-          name: "Central Station Distribution Voltage",
+          symbol: "V_{\\text{declared}}",
+          name: "Declared Exhibit Voltage",
           color: "crimson",
-          role: "Standardized DC electrical distribution potential ($110\\text{ V}$)",
+          role: "The simulator declares $110\\text{ V}$ as an interpretive operating input; US 223,898 states no supply voltage",
           unit: "Volts (V)",
           dimension: "[M L^2 T^-3 I^-1]",
           explanation:
-            "High voltage minimized $I^2 R$ transmission losses across neighborhood street mains.",
+            "Voltage is required to evaluate an operating point, so the interface labels it as a model input instead of attributing it to the patent.",
         },
         {
           id: "p_lamp",
-          symbol: "P_{\\text{lamp}}",
-          name: "Lamp Thermal Power Consumption",
+          symbol: "P_{\\text{electric}}",
+          name: "Computed Electrical Input",
           color: "cyan",
-          role: "Power consumed to produce 16 candlepower illumination ($~100\\text{ W}$ at $1\\text{ A}$)",
+          role: "Electrical input computed from the declared voltage and hot-resistance operating point",
           unit: "Watts (W)",
           dimension: "[M L^2 T^-3]",
           explanation: "Electrical energy converted to incandescent radiant heat and light.",
         },
       ],
       pedagogicalNote:
-        "The 'subdivision of electric light' was deemed mathematically impossible by British scientists until Edison realized Joule heating losses ($P_{\\text{loss}} = I^2 R_{\\text{wire}}$) drop with the square of current. By multiplying lamp resistance by 100x, line current dropped by 10x and copper cable weight dropped by 100x.",
+        "The source's network argument is precise but qualitative: one-to-four-ohm lamps in multiple arc require enormous main conductors, while a much higher-resistance light-giver permits finer leads. The simulator computes one declared operating point without turning that comparison into an unsupported percentage claim.",
       claimRef: 1,
       historicalSignificance:
-        "US 223,898 established the commercial electric power grid, making domestic electric lighting economically viable.",
+        "US 223,898 connects the internal resistance of the lamp to the practical subdivision of electric light across many parallel branches.",
     },
     {
       id: "edison-vacuum-mean-free-path",
       patentId: "us-223898-edison-lightbulb",
-      title: "Sprengel High-Vacuum Mean Free Path & Oxidation Suppression",
+      title: "Source Vacuum Level, Mean Free Path & Oxidation Suppression",
       category: "Thermodynamics & Vacuum Physics",
       rawLatex:
         "\\lambda_{\\text{mfp}} = \\frac{k_B \\cdot T}{\\sqrt{2} \\pi d_{\\text{mol}}^2 \\cdot P_{\\text{vac}}} \\gg r_{\\text{bulb}}",
@@ -714,11 +714,11 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "\\lambda_{\\text{mfp}}",
           name: "Molecular Mean Free Path",
           color: "emerald",
-          role: "Average distance a residual gas molecule travels before colliding with another molecule ($> 10\\text{ cm}$ in high vacuum)",
+          role: "Modern hard-sphere estimate of roughly $7$ to $11\\text{ cm}$ at the source pressure and a declared 300-to-500-K gas range",
           unit: "meters (m)",
           dimension: "[L]",
           explanation:
-            "When $\\lambda_{\\text{mfp}}$ exceeds bulb radius ($r_{\\text{bulb}} \\approx 3\\text{ cm}$), gas thermal convection ceases entirely.",
+            "When $\\lambda_{\\text{mfp}}$ approaches or exceeds the receiver scale, continuum convection is strongly suppressed; the equation does not prove a perfectly collisionless enclosure.",
           telemetryMetricLabel: "Mean Free Path",
         },
         {
@@ -736,7 +736,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "T",
           name: "Enclosure Absolute Temperature",
           color: "crimson",
-          role: "Temperature of residual gas molecules inside the glass globe ($~300 - 500\\text{ K}$)",
+          role: "Declared 300-to-500-K range used only for the modern mean-free-path interpretation",
           unit: "Kelvin (K)",
           dimension: "[\\Theta]",
           explanation: "Heated by radiation from the incandescent filament.",
@@ -746,7 +746,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "d_{\\text{mol}}",
           name: "Gas Molecular Collision Diameter",
           color: "amethyst",
-          role: "Effective diameter of oxygen and nitrogen molecules ($~0.37\\text{ nm}$)",
+          role: "Declared modern hard-sphere collision diameter ($~0.37\\text{ nm}$)",
           unit: "meters (m)",
           dimension: "[L]",
           explanation: "Determines hard-sphere scattering cross-section.",
@@ -756,28 +756,28 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "P_{\\text{vac}}",
           name: "Residual Vacuum Pressure",
           color: "sapphire",
-          role: "Pressure achieved by Sprengel mercury fall-pumps ($< 10^{-6}\\text{ atm} \\approx 0.1\\text{ Pa}$)",
+          role: "The source reports a bulb exhausted to one-millionth of an atmosphere ($\\approx 0.101\\text{ Pa}$ or $7.6\\times10^{-4}\\text{ Torr}$)",
           unit: "Pascals (Pa) / Torr",
           dimension: "[M L^-1 T^-2]",
           explanation:
-            "Eliminating oxygen stops the white-hot carbon filament from combusting, extending operating lifespan to over 1,200 hours.",
+            "Reducing the residual atmosphere suppresses oxidation and the source-described atmospheric injury; the grant gives no lamp-life figure.",
         },
         {
           id: "r_bulb",
           symbol: "r_{\\text{bulb}}",
           name: "Glass Bulb Inner Radius",
           color: "cyan",
-          role: "Radius of the sealed spherical glass envelope ($~3.5\\text{ cm}$)",
+          role: "Illustrative receiver radius needed for the modern scale comparison; the grant gives no bulb radius",
           unit: "meters (m)",
           dimension: "[L]",
           explanation: "All-glass one-piece envelope sealed with fused platinum lead-in wires.",
         },
       ],
       pedagogicalNote:
-        "Earlier vacuum bulbs failed because multi-piece glass-and-brass joints leaked. Edison used all-glass hermetic fusion with platinum leads (which match glass's thermal expansion coefficient) evacuated to one-millionth of an atmosphere.",
+        "The source contrasts its all-glass receiver with prior vessels made of glass cemented to a metallic base, then says platina is suitable because its expansion is nearly the same as glass. The mean-free-path calculation is a modern interpretation of the reported one-millionth-atmosphere pressure.",
       claimRef: 2,
       historicalSignificance:
-        "Demonstrated the necessity of ultra-high vacuum techniques that later enabled vacuum tubes, X-ray tubes, and cathode ray tubes.",
+        "The claimed combination makes the exhausted all-glass receiver and conductors passing through its glass wall part of the lamp rather than incidental laboratory equipment.",
     },
     {
       id: "edison-blackbody-radiation",
@@ -785,23 +785,23 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       title: "Stefan-Boltzmann Thermal Radiation & High Resistance Law",
       category: "Thermodynamics & Vacuum Physics",
       rawLatex:
-        "P_{\\text{rad}} = \\varepsilon \\cdot \\sigma \\cdot A \\cdot T^4 \\quad \\text{and} \\quad P = \\frac{V^2}{R}",
+        "P_{\\text{rad}} = \\varepsilon \\sigma A (T^4 - T_{\\text{ambient}}^4) \\quad \\text{and} \\quad P_{\\text{electric}} = \\frac{V^2}{R}",
       colorizedLatex:
-        "\\textcolor{#ea580c}{P_{\\text{rad}}} = \\textcolor{#0891b2}{\\varepsilon} \\cdot \\textcolor{#d97706}{\\sigma} \\cdot \\textcolor{#9333ea}{A} \\cdot \\textcolor{#dc2626}{T^4} \\quad \\text{and} \\quad P = \\frac{\\textcolor{#2563eb}{V^2}}{\\textcolor{#059669}{R}}",
+        "\\textcolor{#ea580c}{P_{\\text{rad}}} = \\textcolor{#0891b2}{\\varepsilon} \\textcolor{#d97706}{\\sigma} \\textcolor{#9333ea}{A} (\\textcolor{#dc2626}{T^4} - T_{\\text{ambient}}^4) \\quad \\text{and} \\quad P_{\\text{electric}} = \\frac{\\textcolor{#2563eb}{V^2}}{\\textcolor{#059669}{R}}",
       plainEnglishSentence: [
         { text: "The " },
-        { text: "radiant optical power", variableId: "p_rad" },
+        { text: "net radiant thermal power", variableId: "p_rad" },
         { text: " emitted by the filament scales with " },
         { text: "material emissivity", variableId: "epsilon" },
         { text: ", " },
         { text: "filament surface area", variableId: "area" },
         { text: ", and the " },
         { text: "fourth power of absolute temperature", variableId: "t4" },
-        { text: "; parallel distribution requires " },
+        { text: "; at a " },
+        { text: "declared exhibit voltage", variableId: "voltage" },
+        { text: ", " },
         { text: "high filament resistance", variableId: "res" },
-        { text: " to avoid melting " },
-        { text: "mains voltage feeder wires", variableId: "voltage" },
-        { text: "." },
+        { text: " limits the current demanded by a parallel branch." },
       ],
       variables: [
         {
@@ -809,11 +809,11 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "P_{\\text{rad}}",
           name: "Radiant Thermal Power",
           color: "coral",
-          role: "Total electromagnetic radiation emitted per second across the blackbody spectrum",
+          role: "Net electromagnetic radiation emitted above the declared ambient-temperature background",
           unit: "Watts (W)",
           dimension: "[M L^2 T^-3]",
           explanation:
-            "At 2,200 Kelvin, a carbon filament glows with warm incandescent luminescence, converting electrical input power into visible photons and infrared heat.",
+            "The narrow FrankenSim owner solves the steady operating point where declared electrical input equals net gray-body radiation; it does not infer visible efficacy or lamp life.",
           telemetryMetricLabel: "Radiant Power",
         },
         {
@@ -821,11 +821,11 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "\\varepsilon",
           name: "Filament Emissivity",
           color: "cyan",
-          role: "Surface radiative efficiency compared to a theoretical ideal blackbody (0.82 for carbonized cotton/bamboo)",
+          role: "Declared gray-body factor of 0.8 for this exhibit; the patent does not provide emissivity",
           unit: "Dimensionless fraction",
           dimension: "[1]",
           explanation:
-            "Carbonized organic fibers possess high emissivity (approx 0.82), producing rich blackbody emission without early reflective dissipation.",
+            "Emissivity is an explicit model input used to close the radiative balance, not a hidden material property attributed to the historical specimen.",
         },
         {
           id: "area",
@@ -836,7 +836,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           unit: "Square meters (m^2)",
           dimension: "[L^2]",
           explanation:
-            "By making the filament microscopic in cross-section (a hair-like thread) with minimal surface area, heat loss is minimized and resistance maximized.",
+            "The source-derived seven-thousandths-inch diameter and the illustrative length define the cylindrical area supplied explicitly to the gray-body balance.",
         },
         {
           id: "t4",
@@ -847,19 +847,19 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           unit: "Kelvin^4 (K^4)",
           dimension: "[\\Theta^4]",
           explanation:
-            "Doubling filament temperature multiplies radiated light by 16 ($2^4$). To prevent rapid carbon sublimation at 2,200 K, Edison evacuated the globe to one-millionth of an atmosphere (high vacuum).",
-          telemetryMetricLabel: "Color Temp",
+            "At fixed area and emissivity, net thermal radiation rises approximately with the fourth power of absolute temperature above ambient. The solved temperature is a model result, not a value printed in the grant.",
+          telemetryMetricLabel: "Filament Temperature",
         },
         {
           id: "voltage",
           symbol: "V^2",
-          name: "Supply Line Voltage",
+          name: "Declared Exhibit Voltage",
           color: "sapphire",
-          role: "Central electrical station parallel distribution potential (110 Volts DC)",
+          role: "Visitor-controlled exhibit input, initialized to 110 volts; US 223,898 states no operating voltage",
           unit: "Volts (V)",
           dimension: "[M L^2 T^-3 I^-1]",
           explanation:
-            "Edison selected 110 Volts as the optimal standard balancing insulation safety against copper wire mass.",
+            "The operating voltage is declared in the interface so the radiative balance has a reproducible electrical input without presenting it as source text.",
           telemetryKey: "voltage",
         },
         {
@@ -867,19 +867,19 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "R",
           name: "High Filament Resistance",
           color: "emerald",
-          role: "Electrical resistance of carbonized thread filament (100 Ohms vs 1 Ohm for arc lamps)",
+          role: "Visitor-controlled declared hot resistance, bounded to the source's reported 100-to-500-ohm example range",
           unit: "Ohms (\\Omega)",
           dimension: "[M L^2 T^-3 I^-2]",
           explanation:
-            "Edison's core insight was that low-resistance arc lights required enormous copper conductors ($I = V/R$). High resistance ($100\\ \\Omega$) slashed current, allowing hundreds of lamps to run in parallel on thin copper lines.",
+            "The source contrasts its high-resistance carbon thread with reported one-to-four-ohm prior-practice carbon rods and explains the resulting main-conductor problem.",
           telemetryMetricLabel: "Hot Resistance",
         },
       ],
       pedagogicalNote:
-        "Every other inventor attempted to make low-resistance electric lamps ($1\\ \\Omega$), which caused copper transmission lines to melt. Edison understood the $P = I^2 R = V^2 / R$ tradeoff and engineered high-resistance filaments in a sealed vacuum globe.",
+        "This card separates source facts from model assumptions. The grant supplies the high-resistance ranges, carbon geometry example, nearly perfect vacuum, and multiple-arc motivation; the simulator declares voltage, emissivity, ambient temperature, and illustrative length, then asks FrankenSim to close only the gray-body power balance.",
       claimRef: 1,
       historicalSignificance:
-        "US 223,898 laid the mathematical and commercial foundation for the global electric utility grid.",
+        "The equation makes the patent's electrical-distribution argument inspectable while keeping the thermal operating point explicitly interpretive.",
     },
   ],
 
@@ -8497,208 +8497,155 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 30. Elias Howe Sewing Machine (US 4,750)
   "us-4750-howe-sewing-machine": [
     {
-      id: "howe-lockstitch-tension-equilibrium",
+      id: "howe-source-printed-local-dimensions",
       patentId: "us-4750-howe-sewing-machine",
-      title: "Two-Thread Lockstitch Tension Equilibrium & Seam Interlock",
-      category: "Kinematics & Textile Mechanics",
+      title: "The Two Local Dimensions Printed by US 4,750",
+      category: "Source Geometry",
       rawLatex:
-        "T_{\\text{needle}} \\cdot \\sin(\\theta_{\\text{upper}}) = T_{\\text{shuttle}} \\cdot \\sin(\\theta_{\\text{lower}})",
+        "d_{\text{eye}} \approx \frac{1}{8}\,\mathrm{in}=3.175\,\mathrm{mm},\qquad p_H \approx \frac{3}{4}\,\mathrm{in}=19.05\,\mathrm{mm}",
       colorizedLatex:
-        "\\textcolor{#059669}{T_{\\text{needle}}} \\cdot \\sin(\\textcolor{#2563eb}{\\theta_{\\text{upper}}}) = \\textcolor{#dc2626}{T_{\\text{shuttle}}} \\cdot \\sin(\\textcolor{#d97706}{\\theta_{\\text{lower}}})",
+        "\textcolor{#2563eb}{d_{\text{eye}}} \approx \frac{1}{8}\,\mathrm{in}=3.175\,\mathrm{mm},\qquad \textcolor{#d97706}{p_H} \approx \frac{3}{4}\,\mathrm{in}=19.05\,\mathrm{mm}",
       plainEnglishSentence: [
+        { text: "The grant places the " },
+        { text: "needle eye about one eighth inch from the point", variableId: "d_eye" },
+        { text: " and spaces the " },
+        { text: "baster-plate points about three quarters inch apart", variableId: "p_h" },
         {
-          text: "The ",
-        },
-        {
-          text: "upper needle thread tension force",
-          variableId: "t_needle",
-        },
-        {
-          text: " resolved at ",
-        },
-        {
-          text: "upper fabric entry angle",
-          variableId: "theta_upper",
-        },
-        {
-          text: " must balance ",
-        },
-        {
-          text: "lower shuttle thread tension force",
-          variableId: "t_shuttle",
-        },
-        {
-          text: " at ",
-        },
-        {
-          text: "lower fabric exit angle",
-          variableId: "theta_lower",
-        },
-        {
-          text: " to lock the stitch knot precisely in the fabric core.",
+          text: "; it does not print an overall machine size, needle stroke, shuttle throw, speed, force, or power.",
         },
       ],
       variables: [
         {
-          id: "t_needle",
-          symbol: "T_{\\text{needle}}",
-          name: "Upper Needle Thread Tension",
-          color: "emerald",
-          role: "Tension regulated by spring friction disks on the upper spool thread ($2.0 - 5.0\\text{ N}$)",
-          unit: "Newtons (N)",
-          dimension: "[M L T^-2]",
-          explanation:
-            "Must be balanced with the shuttle tension: too high pulls the knot to the top surface, too low leaves loose loops below.",
-          telemetryMetricLabel: "Needle Tension",
-        },
-        {
-          id: "theta_upper",
-          symbol: "\\theta_{\\text{upper}}",
-          name: "Upper Thread Fabric Angle",
+          id: "d_eye",
+          symbol: "d_{\text{eye}}",
+          name: "Needle Eye Offset",
           color: "sapphire",
-          role: "Entry angle of needle thread into the punched needle hole",
-          unit: "degrees / radians",
-          dimension: "[1]",
-          explanation: "Geometry of thread passage.",
-        },
-        {
-          id: "t_shuttle",
-          symbol: "T_{\\text{shuttle}}",
-          name: "Lower Shuttle Bobbin Tension",
-          color: "crimson",
-          role: "Tension exerted by the reciprocating shuttle bobbin spring leaf ($2.0 - 5.0\\text{ N}$)",
-          unit: "Newtons (N)",
-          dimension: "[M L T^-2]",
-          explanation: "The shuttle carries the second thread through the needle loop.",
-        },
-        {
-          id: "theta_lower",
-          symbol: "\\theta_{\\text{lower}}",
-          name: "Lower Thread Fabric Angle",
-          color: "amber",
-          role: "Exit angle of shuttle thread from the underside of the seam",
-          unit: "degrees / radians",
-          dimension: "[1]",
-          explanation: "Underside lockstitch geometry.",
-        },
-      ],
-      pedagogicalNote:
-        "Howe's breakthrough was using an eye-pointed needle (with the eye at the point rather than the tail) combined with a reciprocating shuttle carrying a second thread, locking both threads inside the fabric to form a seam that would not unravel.",
-      claimRef: 1,
-      historicalSignificance:
-        "US 4,750 established the lockstitch mechanism found in every domestic and industrial sewing machine manufactured to this day.",
-    },
-    {
-      id: "howe-lockstitch-capstan-tension",
-      patentId: "us-4750-howe-sewing-machine",
-      title: "Two-Thread Lockstitch Capstan Friction Equilibrium & Seam Throughput",
-      category: "Precision Mechanics & Textile Automation",
-      rawLatex:
-        "T_{\\text{upper}} \\cdot e^{\\mu \\pi} = T_{\\text{lower}} \\cdot e^{\\mu \\pi} \\quad \\text{and} \\quad v_{\\text{seam}} = \\frac{\\text{SPM}}{60} \\cdot p_{\\text{pitch}}",
-      colorizedLatex:
-        "\\textcolor{#2563eb}{T_{\\text{upper}}} \\cdot e^{\\textcolor{#dc2626}{\\mu} \\pi} = \\textcolor{#059669}{T_{\\text{lower}}} \\cdot e^{\\textcolor{#dc2626}{\\mu} \\pi} \\quad \\text{and} \\quad \\textcolor{#d97706}{v_{\\text{seam}}} = \\frac{\\textcolor{#9333ea}{\\text{SPM}}}{60} \\cdot \\textcolor{#ea580c}{p_{\\text{pitch}}}",
-      plainEnglishSentence: [
-        { text: "The two-thread lockstitch knot is centered at fabric equilibrium by balancing " },
-        { text: "upper needle thread tension", variableId: "t_upper" },
-        { text: " and " },
-        { text: "lower shuttle thread tension", variableId: "t_lower" },
-        { text: " over " },
-        { text: "fabric capstan friction coefficient", variableId: "mu" },
-        { text: ", delivering " },
-        { text: "continuous linear seam throughput", variableId: "v_seam" },
-        { text: " determined by " },
-        { text: "sewing cadence SPM", variableId: "spm" },
-        { text: " and " },
-        { text: "stitch feed pitch", variableId: "p_pitch" },
-        { text: "." },
-      ],
-      variables: [
-        {
-          id: "t_upper",
-          symbol: "T_{\\text{upper}}",
-          name: "Upper Needle Thread Tension",
-          color: "sapphire",
-          role: "Tensile force applied to top spool thread by the dynamic take-up lever (approx 1.5 to 3.0 N)",
-          unit: "Newtons (N)",
-          dimension: "[M L T^-2]",
-          explanation:
-            "Cinched tight as the needle ascends, pulling the interloop knot into the center of the cloth thickness.",
-          telemetryMetricLabel: "Upper Tension",
-        },
-        {
-          id: "t_lower",
-          symbol: "T_{\\text{lower}}",
-          name: "Lower Shuttle Bobbin Tension",
-          color: "emerald",
-          role: "Restraining friction tension on bobbin thread passing through the shuttle body (approx 1.5 to 3.0 N)",
-          unit: "Newtons (N)",
-          dimension: "[M L T^-2]",
-          explanation:
-            "Regulated by a small leaf spring on the shuttle casing to match upper tension exactly.",
-          telemetryMetricLabel: "Shuttle Tension",
-        },
-        {
-          id: "mu",
-          symbol: "\\mu",
-          name: "Capstan Thread-Fabric Friction",
-          color: "crimson",
-          role: "Friction coefficient of thread wrapping around fabric fibers ($\\mu \\approx 0.20\\text{ to }0.35$)",
-          unit: "Dimensionless friction factor",
-          dimension: "[1]",
-          explanation:
-            "Locks the interlocked knot stationary once drawn into the fabric, preventing unraveling if adjacent stitches are cut.",
-        },
-        {
-          id: "v_seam",
-          symbol: "v_{\\text{seam}}",
-          name: "Linear Seam Throughput Velocity",
-          color: "amber",
-          role: "Finished linear sewing speed along the fabric joint (over 0.0125 m/s = 75 cm/min)",
-          unit: "Meters / second (m/s)",
-          dimension: "[L T^-1]",
-          explanation:
-            "Produced finished garments 10 to 14 times faster than experienced hand seamstresses.",
-          telemetryKey: "sewingSpeedMpm",
-        },
-        {
-          id: "spm",
-          symbol: "\\text{SPM}",
-          name: "Crankshaft Sewing Cadence",
-          color: "amethyst",
-          role: "Reciprocating cycles executed per minute by curved needle arm and shuttle (250 to 350 SPM)",
-          unit: "Stitches per minute (SPM)",
-          dimension: "[T^-1]",
-          explanation:
-            "Driven smoothly by a hand wheel or foot treadle via internal harmonic face cams.",
-          telemetryKey: "stitchesPerMin",
-        },
-        {
-          id: "p_pitch",
-          symbol: "p_{\\text{pitch}}",
-          name: "Stitch Feed Pitch Spacing",
-          color: "coral",
-          role: "Linear advance distance of the fabric baster plate per needle cycle (2.0 to 3.5 mm)",
-          unit: "Millimeters (mm)",
+          role: "Approximate point-to-eye distance stated on specification page 1",
+          unit: "Inches (in) / millimeters (mm)",
           dimension: "[L]",
           explanation:
-            "Set by the ratchet feed mechanism advancing the fabric toothed plate between stitches.",
+            "The eye lies near the pointed end so the needle can carry a loop through the cloth without pulling the whole thread supply through.",
+        },
+        {
+          id: "p_h",
+          symbol: "p_H",
+          name: "Baster-Plate Point Pitch",
+          color: "amber",
+          role: "Approximate spacing of the cloth-holding points stated on specification page 2",
+          unit: "Inches (in) / millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "The pointed plate H holds the cloth while its rack holes let the feed mechanism advance that same supported plate.",
         },
       ],
       pedagogicalNote:
-        "Previous inventors tried to replicate hand sewing by pushing an entire needle all the way through cloth, which required constantly unthreading and rethreading. Howe placed the eye at the needle tip, passed a loop of thread through the cloth, and shot a shuttle with a second bobbin thread through that loop, inventing the two-thread lockstitch.",
+        "These are source dimensions, not calibration of the normalized studio reconstruction. Every other visible length is a proportion chosen to make the printed topology legible.",
       claimRef: 1,
       historicalSignificance:
-        "US 4750 mechanized the global garment industry and created the modern 'Sewing Machine Combination' (1856), the first patent pool in commercial history.",
+        "The near-point eye and pinned feed plate made Howe's non-hand-sewing topology mechanically explicit and reproducible.",
+    },
+    {
+      id: "howe-one-shaft-source-order-kinematics",
+      patentId: "us-4750-howe-sewing-machine",
+      title: "One-Shaft Needle, Loop, Shuttle, and Feed Ordering",
+      category: "Multibody Kinematics",
+      rawLatex:
+        "q_G(\theta_C)=\frac{1-\cos\theta_C}{2},\quad x_K(\theta_C)=-A_K\cos\theta_C,\quad \mathcal{P}_{\text{pass}}=(\lambda_{\text{loop}}\ge\lambda_{\min})\land(K\subset I)",
+      colorizedLatex:
+        "\textcolor{#9333ea}{q_G}(\textcolor{#2563eb}{\theta_C})=\frac{1-\cos\textcolor{#2563eb}{\theta_C}}{2},\quad \textcolor{#059669}{x_K}(\textcolor{#2563eb}{\theta_C})=-\textcolor{#d97706}{A_K}\cos\textcolor{#2563eb}{\theta_C},\quad \textcolor{#dc2626}{\mathcal{P}_{\text{pass}}}=(\textcolor{#0891b2}{\lambda_{\text{loop}}}\ge\lambda_{\min})\land(K\subset I)",
+      plainEnglishSentence: [
+        { text: "A single " },
+        { text: "main-shaft angle", variableId: "theta_c" },
+        { text: " prescribes the normalized " },
+        { text: "needle-arm penetration", variableId: "q_g" },
+        { text: " and the " },
+        { text: "shuttle coordinate along trough I", variableId: "x_k" },
+        { text: "; a pass is reported only when the displayed " },
+        { text: "upper-thread loop clears the shuttle", variableId: "lambda_loop" },
+        { text: " and K remains constrained to I." },
+      ],
+      variables: [
+        {
+          id: "theta_c",
+          symbol: "\theta_C",
+          name: "Main-Shaft Coordinate",
+          color: "sapphire",
+          role: "The single prescribed revolute drive coordinate shared by cams Q/R and the flywheel",
+          unit: "Radians (rad)",
+          dimension: "[1]",
+          explanation:
+            "The FrankenSim multibody owner wraps this finite coordinate to one turn and drives every displayed mechanism phase from it.",
+        },
+        {
+          id: "q_g",
+          symbol: "q_G",
+          name: "Needle-Arm Penetration Coordinate",
+          color: "amethyst",
+          role: "Normalized cam-prescribed position of vibrating arm G",
+          unit: "Normalized (0–1)",
+          dimension: "[1]",
+          explanation:
+            "The curved needle is rigidly parented to arm G, so it follows this rotation and is never translated by an independent animation.",
+        },
+        {
+          id: "x_k",
+          symbol: "x_K",
+          name: "Shuttle Coordinate",
+          color: "emerald",
+          role: "Normalized prismatic position of shuttle K along horizontal trough I",
+          unit: "Normalized (-1–1)",
+          dimension: "[1]",
+          explanation:
+            "Picker-staves J remain attached to the shuttle ends while the prismatic joint prevents sideways or floating motion.",
+        },
+        {
+          id: "a_k",
+          symbol: "A_K",
+          name: "Displayed Shuttle Throw",
+          color: "amber",
+          role: "Normalized studio amplitude; the grant prints no dimensional shuttle travel",
+          unit: "Studio units",
+          dimension: "[1]",
+          explanation:
+            "This presentation scale controls legibility only and is never exposed as measured inches or SI travel.",
+        },
+        {
+          id: "lambda_loop",
+          symbol: "\lambda_{\text{loop}}",
+          name: "Displayed Loop Slack",
+          color: "cyan",
+          role: "Normalized lifting-rod W loop opening used for the explicit clearance refusal",
+          unit: "Percent (%)",
+          dimension: "[1]",
+          explanation:
+            "If the loop does not clear the displayed shuttle section, the kernel refuses to report the Claim 1 interlock.",
+          telemetryKey: "loopSlackPct",
+        },
+        {
+          id: "p_pass",
+          symbol: "\mathcal{P}_{\text{pass}}",
+          name: "Claim 1 Passage Predicate",
+          color: "crimson",
+          role: "True only during the source-order phase where K passes between the needle and upper thread",
+          unit: "Boolean",
+          dimension: "[1]",
+          explanation:
+            "This predicate describes topology and timing; it is not a seam-strength, productivity, or safety measurement.",
+        },
+      ],
+      pedagogicalNote:
+        "The sinusoidal display law is an admitted normalized cam profile because the grant supplies topology but no cam lift table. The physically important fact is the shared drive and enforced order, not a fabricated speed or force.",
+      claimRef: 1,
+      historicalSignificance:
+        "Howe's claims bind the curved needle, vibrating arm, thread loop, shuttle, and feed apparatus into one repeatable machine sequence.",
     },
   ],
-
-  // 31. Richard Gatling Revolving Battery Gun (US 36,836)
   "us-36836-gatling-gun": [
     {
-      id: "gatling-cyclic-rate-cam-kinematics",
+      id: "gatling-gun-fire-rate",
       patentId: "us-36836-gatling-gun",
-      title: "Multi-Barrel Cluster Firing Rate & Cylindrical Cam Lock Geometry",
-      category: "Ballistics & Rapid-Fire Mechanism",
+      title: "Gatling Rotary Multi-Barrel Fire Rate & Cam Bolt Motion",
+      category: "Armament & Mechanical Kinematics",
       rawLatex:
         "\\text{Rate}_{\\text{fire}} = N_{\\text{barrels}} \\cdot \\Omega_{\\text{crank}} \\cdot \\left(\\frac{Z_{\\text{crank}}}{Z_{\\text{cluster}}}\\right) \\quad \\text{and} \\quad z_{\\text{bolt}}(\\theta) = R_{\\text{cam}} \\tan\\alpha_{\\text{groove}} \\cdot \\theta",
       colorizedLatex:

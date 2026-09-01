@@ -217,16 +217,16 @@ export function materialProbe(
   if (patentId.includes("howe") || patentId.includes("4750")) {
     const sew = stepHoweSewingMachine(
       params.crankRpm ?? 240,
-      params.threadTensionGrams ?? 45,
+      params.loopSlackPct ?? 65,
       params.stitchPitchMm ?? 3.5,
     );
     return {
       part: calloutLabel,
       material: "Eye-pointed needle + boat shuttle, two threads",
-      qty: "shear",
-      value: sew.lockstitchShearStrengthN.toString(),
-      unit: "N",
-      note: `${sew.stitchesPerMinute} spm · ω ${sew.crankOmegaDegPerS} °/s. Needle Y and shuttle X from stepHoweLockstitch.`,
+      qty: "loop clearance",
+      value: sew.maximumLoopClearancePct.toString(),
+      unit: "%",
+      note: `Eye is ${sew.needleEyeFromPointMm} mm from the point; baster points are about ${sew.basterPointPitchMm} mm apart. Cadence is visitor-declared.`,
     };
   }
   if (patentId.includes("engelbart") || patentId.includes("3541541")) {
@@ -564,15 +564,15 @@ export function materialProbe(
   ) {
     const bulb = stepEdisonBulb({
       voltage: params.voltage,
-      filamentLength: params.filamentLength,
+      hotResistanceOhm: params.hotResistanceOhm,
     });
     return {
       part: calloutLabel,
-      material: "Carbonized bamboo in hard vacuum",
+      material: "Carbonized fibrous filament in exhausted glass",
       qty: "T",
       value: bulb.filamentTempK.toString(),
       unit: "K",
-      note: `${bulb.radiantWatts} W, ${bulb.luminousLmPerW} lm/W, ${bulb.hotResistanceOhm} Ω hot.`,
+      note: `${bulb.radiantWatts} W gray-body balance, ${bulb.hotResistanceOhm} Ω declared hot resistance.`,
     };
   }
   if (patentId.includes("sholes") || patentId.includes("79265")) {
@@ -975,7 +975,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   ) {
     const bulb = stepEdisonBulb({
       voltage: params.voltage,
-      filamentLength: params.filamentLength,
+      hotResistanceOhm: params.hotResistanceOhm,
     });
     return [{ label: "T_fil", min: 1200, max: 2400, live: bulb.filamentTempK, unit: "K" }];
   }
@@ -1019,10 +1019,10 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   if (patentId.includes("howe") || patentId.includes("4750")) {
     const sew = stepHoweSewingMachine(
       params.crankRpm ?? 240,
-      params.threadTensionGrams ?? 45,
+      params.loopSlackPct ?? 65,
       params.stitchPitchMm ?? 3.5,
     );
-    return [{ label: "Shear", min: 1, max: 8, live: sew.lockstitchShearStrengthN, unit: "N" }];
+    return [{ label: "Loop slack", min: 0, max: 100, live: sew.loopSlackPct, unit: "%" }];
   }
   if (patentId.includes("engelbart") || patentId.includes("3541541")) {
     const mouse = stepEngelbartMouse({
@@ -1534,15 +1534,15 @@ export function fidelityField(
   if (patentId.includes("howe") || patentId.includes("4750")) {
     const sew = stepHoweSewingMachine(
       params.crankRpm ?? 240,
-      params.threadTensionGrams ?? 45,
+      params.loopSlackPct ?? 65,
       params.stitchPitchMm ?? 3.5,
     );
     return {
-      part: "Stitch rate vs 1846 Howe shop",
-      model: sew.stitchesPerMinute.toString(),
-      reference: "250",
-      residual: (sew.stitchesPerMinute - 250).toString(),
-      unit: "spm",
+      part: "Needle eye from point",
+      model: sew.needleEyeFromPointMm.toString(),
+      reference: "3.175",
+      residual: (sew.needleEyeFromPointMm - 3.175).toFixed(3),
+      unit: "mm",
     };
   }
   if (patentId.includes("engelbart") || patentId.includes("3541541")) {
@@ -1983,18 +1983,6 @@ export function fidelityField(
       unit: "µm",
     };
   }
-  if (
-    patentId.includes("edison") &&
-    (patentId.includes("223898") || patentId.includes("lightbulb"))
-  ) {
-    return {
-      part: "Luminous efficacy vs Menlo Park 1879 carbon loop",
-      model: "1.4",
-      reference: "1.4",
-      residual: "0.0",
-      unit: "lm/W",
-    };
-  }
   if (patentId.includes("photophone") || patentId.includes("235199")) {
     return {
       part: "Signal-to-noise ratio vs Franklin School 1880",
@@ -2239,13 +2227,7 @@ export function fidelityField(
     };
   }
   if (patentId.includes("davinci") || patentId.includes("6331181")) {
-    return {
-      part: "Tremor suppression attenuation vs 1999 master-slave",
-      model: "32",
-      reference: "30",
-      residual: "2",
-      unit: "dB",
-    };
+    return null;
   }
   if (patentId.includes("roomba") || patentId.includes("6594844")) {
     return {
@@ -2390,16 +2372,6 @@ export function datedScenarios(patentId: string): DatedScenario[] {
       },
     ];
   }
-  if (patentId.includes("223898") || patentId.includes("lightbulb")) {
-    return [
-      {
-        id: "menlo-1879-10-21",
-        date: "1879-10-21",
-        name: "Menlo Park 40-hour lamp",
-        writes: { voltage: 110 },
-      },
-    ];
-  }
   if (patentId.includes("marconi")) {
     return [
       {
@@ -2513,10 +2485,10 @@ export function datedScenarios(patentId: string): DatedScenario[] {
   if (patentId.includes("howe") || patentId.includes("4750")) {
     return [
       {
-        id: "cambridge-1846",
+        id: "us-4750-source-topology",
         date: "1846-09-10",
-        name: "Howe lockstitch shop rate",
-        writes: { crankRpm: 250, stitchPitchMm: 2.5, threadTensionGrams: 50 },
+        name: "US 4,750 source topology",
+        writes: { crankRpm: 240, stitchPitchMm: 3.5, loopSlackPct: 65 },
       },
     ];
   }
@@ -3127,10 +3099,10 @@ export function datedScenarios(patentId: string): DatedScenario[] {
   if (patentId.includes("davinci") || patentId.includes("6331181")) {
     return [
       {
-        id: "intuition-1999",
-        date: "1999-03-01",
-        name: "da Vinci surgical master-slave telemanipulator trial",
-        writes: { motionScaleRatio: 3.0, tremourFilterEnabled: 1 },
+        id: "tool-interface-contract",
+        date: "1999-10-15",
+        name: "Filed tool compatibility and measured-offset interface",
+        writes: { motionScaleRatio: 3.0, tremorFilterEnabled: 1 },
       },
     ];
   }
@@ -3169,7 +3141,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
   if (patentId.includes("223898") || patentId.includes("lightbulb")) {
     const bulb = stepEdisonBulb({
       voltage: params.voltage ?? 110,
-      filamentLength: params.filamentLength,
+      hotResistanceOhm: params.hotResistanceOhm,
     });
     return [{ from: "I²R", to: "radiation", watts: bulb.radiantWatts }];
   }
@@ -3500,13 +3472,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [{ from: "electrode drive", to: "electrophoretic translation", watts: 0.042 }];
   }
   if (patentId.includes("davinci") || patentId.includes("6331181")) {
-    return [
-      {
-        from: "servomotors",
-        to: "surgical end-effector",
-        watts: (params.motionScaleRatio ?? 3.0) * 16.5,
-      },
-    ];
+    return [];
   }
   if (patentId.includes("roomba") || patentId.includes("6594844")) {
     return [{ from: "battery", to: "drive wheels & vacuum", watts: 19.6 }];

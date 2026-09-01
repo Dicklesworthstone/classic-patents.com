@@ -4,6 +4,8 @@ test("concurrent WASM consumers share one in-flight load and receive the final s
   const code = String.raw`
     const generic = await import("./src/physics/genericWasm.ts");
     const goddard = await import("./src/physics/goddardWasm.ts");
+    const davinci = await import("./src/physics/daVinciWasm.ts");
+    const edison = await import("./src/physics/edisonWasm.ts");
     const tesla = await import("./src/physics/teslaWasm.ts");
     const flyer = await import("./src/physics/flyerWasm.ts");
     const { FrankenSimEngine } = await import("./src/physics/engine.ts");
@@ -29,6 +31,18 @@ test("concurrent WASM consumers share one in-flight load and receive the final s
         "  return JSON.stringify({ ok: { chamber_pressure_psi: 350, chamber_pressure_pa: 2413166, exhaust_velocity_mps: 1657, thrust_newtons: 2983, specific_impulse_sec: 169, mach_exit: 2 } });",
         "}",
       ].join("\n"),
+      davinci: [
+        init,
+        "export function davinci_topology_step() {",
+        "  return JSON.stringify({ ok: { joint_dofs: 6, base_yaw_axis: [0, 1, 0], carriage_pitch_axis: [1, 0, 0], insertion_axis: [0, -1, 0], distal_pitch_axis: [1, 0, 0], distal_yaw_axis: [0, 0, 1], tool_roll_axis: [0, 1, 0], base_yaw_rad: 0, carriage_pitch_rad: 0, distal_pitch_rad: 0, distal_yaw_rad: 0, tool_roll_rad: 0, insertion_normalized: 0, compatibility_identifier_present: true } });",
+        "}",
+      ].join("\n"),
+      edison: [
+        init,
+        "export function edison_radiative_step() {",
+        "  return JSON.stringify({ ok: { voltage_v: 110, current_a: 0.7333333333333333, joule_power_w: 80.66666666666666, filament_temperature_k: 1950, radiative_power_w: 80.66666666666666, relative_energy_closure: 0 } });",
+        "}",
+      ].join("\n"),
       tesla: [
         init,
         "export function tesla_coil_step() {",
@@ -45,6 +59,10 @@ test("concurrent WASM consumers share one in-flight load and receive the final s
         ? "generic"
         : url.includes("fs-goddard")
           ? "goddard"
+          : url.includes("fs-edison")
+            ? "edison"
+          : url.includes("fs-davinci")
+            ? "davinci"
           : url.includes("fs-tesla")
             ? "tesla"
             : "flyer";
@@ -54,6 +72,8 @@ test("concurrent WASM consumers share one in-flight load and receive the final s
     const cases = [
       [generic.ensureGenericWasm, "wasm", generic.genericKernelSource],
       [goddard.ensureGoddardWasm, "wasm", goddard.goddardKernelSource],
+      [edison.ensureEdisonWasm, "wasm", edison.edisonKernelSource],
+      [davinci.ensureDaVinciTopologyWasm, "wasm", davinci.daVinciTopologyKernelSource],
       [tesla.ensureTeslaWasm, "wasm", tesla.teslaKernelSource],
       [flyer.ensureFlyerWasm, "wasm", flyer.flyerKernelSource],
     ];
@@ -63,7 +83,7 @@ test("concurrent WASM consumers share one in-flight load and receive the final s
         throw new Error("a concurrent caller observed an intermediate source");
       }
     }
-    if (counts.size !== 4 || [...counts.values()].some((count) => count !== 1)) {
+    if (counts.size !== 6 || [...counts.values()].some((count) => count !== 1)) {
       throw new Error("a loader performed duplicate glue fetches");
     }
     if (FrankenSimEngine.stepGoddardApparatus(0, 120, 6000, 4.5, 0, false, true).runtimeSource !== "wasm") {

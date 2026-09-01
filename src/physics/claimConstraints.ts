@@ -263,10 +263,10 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       patentId: "us-4750-howe-sewing-machine",
       claimTitle: "Synchronized Eye-Pointed Needle & Shuttle Interlock",
       activeDescription:
-        "Claim 1 coordinates the eye-pointed needle dwell with the oscillating shuttle pass.",
+        "Claim 1 combines the curved eye-pointed needle on its vibrating arm with shuttle K passing between the needle and upper thread.",
       invertedDescription:
-        "Desynchronized shuttle pass: shuttle misses the thread loop, jamming the mechanical feed dog.",
-      failureModeName: "Shuttle Collision & Thread Jam",
+        "Offset shuttle track: shuttle K passes beside the upper-thread loop instead of between the needle and thread, so the interlock is not formed.",
+      failureModeName: "Shuttle Misses Upper-Thread Loop",
       historicalPriorArt:
         "Hand-sewing needles passed entirely through the fabric, making continuous mechanical feeding impossible.",
     },

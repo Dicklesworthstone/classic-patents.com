@@ -110,6 +110,34 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
     }
   });
 
+  test("keeps Edison's lamp equations source-bounded and labels declared thermal inputs", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-223898-edison-lightbulb"];
+    expect(cards.map((card) => card.id)).toEqual([
+      "edison-high-resistance-carbon-filament",
+      "edison-vacuum-mean-free-path",
+      "edison-blackbody-radiation",
+    ]);
+    expect(cards[2]?.rawLatex).toContain("T_{\\text{ambient}}^4");
+
+    const publicCopy = JSON.stringify(cards).toLowerCase();
+    expect(publicCopy).toContain("one-millionth");
+    expect(publicCopy).toContain("seven one-thousandths");
+    for (const unsupported of [
+      "sprengel",
+      "bamboo",
+      "2,200",
+      "1,200",
+      "16 candlepower",
+      "110 volts dc",
+      "100x",
+      "ultra-high",
+      "operating lifespan",
+      "to avoid melting",
+    ]) {
+      expect(publicCopy).not.toContain(unsupported);
+    }
+  });
+
   test("keeps Daimler's public card within the marine coupling relation printed by US 361,931", () => {
     const cards = ALL_COLORIZED_EQUATIONS["us-361931-daimler-engine"];
     expect(cards.map((card) => card.id)).toEqual(["daimler-source-thrust-maintained-coupling"]);

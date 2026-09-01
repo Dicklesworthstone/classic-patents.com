@@ -13,12 +13,16 @@ export interface DaVinciModel {
   endEffectorTipAnchor: THREE.Object3D;
   cableLines: THREE.Line[];
   cupGroup: THREE.Group;
-  updateKinematics: (
+  updateArmPose: (
+    baseYawRad: number,
+    shoulderPitchRad: number,
+    elbowPitchRad: number,
     pitchRad: number,
     yawRad: number,
     rollRad: number,
     gripRad: number,
     masterPos: [number, number, number],
+    resolvedTip: [number, number, number],
   ) => void;
   setCupPose: (
     x: number,
@@ -38,9 +42,30 @@ export interface DaVinciModel {
     active: boolean,
   ) => void;
   alignEndEffectorTip: (x: number, y: number, z: number) => void;
+  connectivityReceipt: () => readonly DaVinciConnectivityGap[];
   setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
+
+export interface DaVinciConnectivityGap {
+  interface: string;
+  gapMeters: number;
+}
+
+/**
+ * Normalized exhibit geometry. US 6,331,181 prints linkage topology and joint
+ * directions, but not a dimensioned manipulator drawing. These values define
+ * only the museum model's internally consistent scale.
+ */
+export const DA_VINCI_EXHIBIT_GEOMETRY = {
+  cartFootY: -1.72,
+  cartShoulder: [-1.72, 1.28, 0] as const,
+  upperLinkLengthM: 1.35,
+  foreLinkLengthM: 1.35,
+  carriageHeightM: 0.42,
+  shaftLengthM: 1.42,
+  distalStackLengthM: 0.36,
+} as const;
 
 export function buildDaVinciModel(): DaVinciModel {
   const root = new THREE.Group();
@@ -164,24 +189,90 @@ export function buildDaVinciModel(): DaVinciModel {
   abdomenMesh.position.set(0, -0.15, 0);
   root.add(abdomenMesh);
 
-  // 2. Patient-Side Cart Robotic Manipulator Boom Arm
-  const boomArmGroup = new THREE.Group();
-  root.add(boomArmGroup);
+  // 2. Patient-side cart and articulated manipulator support, reconstructed
+  // from Figs. 2 and 2A. The source establishes a cart, a supported linkage,
+  // a tool carriage, and intersecting tool-axis motions. It does not print
+  // dimensions, so this is normalized topology rather than a commercial-arm
+  // dimensional claim.
+  const cartGroup = new THREE.Group();
+  cartGroup.name = "Fig. 2 patient-side cart support";
+  root.add(cartGroup);
 
-  const boomBase = new THREE.Mesh(
-    trackGeo(new THREE.CylinderGeometry(0.25, 0.32, 1.8, 16)),
+  const cartFoot = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(1.05, 0.22, 0.92)),
     darkTitaniumMat,
   );
-  boomBase.position.set(-1.8, -0.8, 0);
-  boomArmGroup.add(boomBase);
+  cartFoot.name = "Cart foundation foot";
+  cartFoot.position.set(-1.72, DA_VINCI_EXHIBIT_GEOMETRY.cartFootY, 0);
+  cartFoot.castShadow = true;
+  cartFoot.receiveShadow = true;
+  cartGroup.add(cartFoot);
 
-  const boomLink = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(0.18, 0.22, 2.2)),
+  const pedestalBottomY = DA_VINCI_EXHIBIT_GEOMETRY.cartFootY + 0.11;
+  const shoulderPosition = new THREE.Vector3(...DA_VINCI_EXHIBIT_GEOMETRY.cartShoulder);
+  const pedestalHeight = shoulderPosition.y - pedestalBottomY;
+  const cartPedestal = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(0.48, pedestalHeight, 0.48)),
     darkTitaniumMat,
   );
-  boomLink.position.set(-0.9, 1.85, 0);
-  boomLink.rotation.y = Math.PI / 2;
-  boomArmGroup.add(boomLink);
+  cartPedestal.name = "Cart pedestal";
+  cartPedestal.position.set(
+    shoulderPosition.x,
+    pedestalBottomY + pedestalHeight / 2,
+    shoulderPosition.z,
+  );
+  cartPedestal.castShadow = true;
+  cartGroup.add(cartPedestal);
+
+  const shoulderHub = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.22, 0.22, 0.34, 24)),
+    surgicalSteelMat,
+  );
+  shoulderHub.name = "Manipulator shoulder hub";
+  shoulderHub.position.copy(shoulderPosition);
+  shoulderHub.rotation.x = Math.PI / 2;
+  shoulderHub.castShadow = true;
+  cartGroup.add(shoulderHub);
+
+  const linkGeo = trackGeo(new THREE.BoxGeometry(0.22, 1, 0.28));
+  const upperArm = new THREE.Mesh(linkGeo, surgicalSteelMat);
+  upperArm.name = "Normalized upper support link";
+  upperArm.castShadow = true;
+  cartGroup.add(upperArm);
+
+  const foreArm = new THREE.Mesh(linkGeo, surgicalSteelMat);
+  foreArm.name = "Normalized fore support link";
+  foreArm.castShadow = true;
+  cartGroup.add(foreArm);
+
+  const elbowHub = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.18, 0.18, 0.3, 24)),
+    surgicalSteelMat,
+  );
+  elbowHub.name = "Manipulator elbow hub";
+  elbowHub.rotation.x = Math.PI / 2;
+  elbowHub.castShadow = true;
+  cartGroup.add(elbowHub);
+
+  const toolMountHub = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.18, 0.18, 0.32, 24)),
+    surgicalSteelMat,
+  );
+  toolMountHub.name = "Releasable tool holder mount";
+  toolMountHub.rotation.x = Math.PI / 2;
+  toolMountHub.castShadow = true;
+  cartGroup.add(toolMountHub);
+
+  const cableLoomGeometry = trackGeo(
+    new THREE.BufferGeometry().setFromPoints([
+      shoulderPosition,
+      shoulderPosition,
+      shoulderPosition,
+    ]),
+  );
+  const cableLoom = new THREE.Line(cableLoomGeometry, cableMat);
+  cableLoom.name = "Connected tool-data and drive loom";
+  cartGroup.add(cableLoom);
 
   // 3. Master Surgeon Console Gimbal Handle (Ghost Tracking Gizmo)
   const masterGeo = trackGeo(new THREE.OctahedronGeometry(0.14, 1));
@@ -189,19 +280,30 @@ export function buildDaVinciModel(): DaVinciModel {
   masterHandle.position.set(0, 1.2, 1.5);
   root.add(masterHandle);
 
-  // 4. Robotic Arm Base Carriage & Instrument Shaft
+  // 4. Releasable tool carriage and instrument shaft. The carriage is the
+  // distal endpoint of the articulated support above; every child is nested
+  // from that load path instead of being translated as an untethered object.
   const baseGroup = new THREE.Group();
+  baseGroup.name = "Connected releasable tool carriage";
   mainGroup.add(baseGroup);
 
-  const carriageGeo = trackGeo(new THREE.BoxGeometry(0.32, 0.55, 0.38));
+  const carriageGeo = trackGeo(
+    new THREE.BoxGeometry(0.38, DA_VINCI_EXHIBIT_GEOMETRY.carriageHeightM, 0.44),
+  );
   const carriage = new THREE.Mesh(carriageGeo, darkTitaniumMat);
-  carriage.position.set(0, 1.85, 0);
+  carriage.name = "Tool holder carriage";
+  carriage.position.set(0, 0, 0);
   carriage.castShadow = true;
   baseGroup.add(carriage);
 
-  const shaftGeo = trackGeo(new THREE.CylinderGeometry(0.038, 0.038, 2.3, 24));
+  const shaftTopY = -DA_VINCI_EXHIBIT_GEOMETRY.carriageHeightM / 2;
+  const shaftBottomY = shaftTopY - DA_VINCI_EXHIBIT_GEOMETRY.shaftLengthM;
+  const shaftGeo = trackGeo(
+    new THREE.CylinderGeometry(0.038, 0.038, DA_VINCI_EXHIBIT_GEOMETRY.shaftLengthM, 24),
+  );
   const shaft = new THREE.Mesh(shaftGeo, shaftSteelMat);
-  shaft.position.set(0, 0.72, 0);
+  shaft.name = "Tool instrument shaft";
+  shaft.position.set(0, (shaftTopY + shaftBottomY) / 2, 0);
   shaft.castShadow = true;
   baseGroup.add(shaft);
 
@@ -210,7 +312,8 @@ export function buildDaVinciModel(): DaVinciModel {
   // EndoWrist name or a universal degree-of-freedom count.
   // Wrist Pitch Joint
   const wristPitchGroup = new THREE.Group();
-  wristPitchGroup.position.set(0, -0.42, 0);
+  wristPitchGroup.name = "Illustrative distal pitch joint";
+  wristPitchGroup.position.set(0, shaftBottomY, 0);
   baseGroup.add(wristPitchGroup);
 
   const clevisGeo = trackGeo(new THREE.CylinderGeometry(0.046, 0.046, 0.085, 16));
@@ -221,6 +324,7 @@ export function buildDaVinciModel(): DaVinciModel {
 
   // Wrist Yaw Joint
   const wristYawGroup = new THREE.Group();
+  wristYawGroup.name = "Illustrative distal yaw joint";
   wristYawGroup.position.set(0, -0.065, 0);
   wristPitchGroup.add(wristYawGroup);
 
@@ -230,6 +334,7 @@ export function buildDaVinciModel(): DaVinciModel {
 
   // Wrist Roll Joint
   const wristRollGroup = new THREE.Group();
+  wristRollGroup.name = "Illustrative distal roll joint";
   wristRollGroup.position.set(0, -0.055, 0);
   wristYawGroup.add(wristRollGroup);
 
@@ -257,8 +362,8 @@ export function buildDaVinciModel(): DaVinciModel {
   rightJaw.castShadow = true;
   rightJawGroup.add(rightJaw);
 
-  // Centerline seat at the distal jaw tips. The scene aligns this anchor to
-  // the collision-resolved world-space tip emitted by daVinciKernel.
+  // Centerline seat at the distal jaw tips. The complete connected mechanism
+  // is positioned from this anchor to the collision-resolved kernel tip.
   const endEffectorTipAnchor = new THREE.Object3D();
   endEffectorTipAnchor.name = "Collision-resolved end-effector tip";
   endEffectorTipAnchor.position.set(0, -0.22, 0);
@@ -403,7 +508,79 @@ export function buildDaVinciModel(): DaVinciModel {
   const normalLine = new THREE.Line(normalLineGeo, normalLineMat);
   contactGizmoGroup.add(normalLine);
 
-  const updateKinematics = (
+  const yAxis = new THREE.Vector3(0, 1, 0);
+  const linkDirection = new THREE.Vector3();
+  const linkMidpoint = new THREE.Vector3();
+  const orientLinkBetween = (mesh: THREE.Mesh, start: THREE.Vector3, end: THREE.Vector3) => {
+    linkDirection.subVectors(end, start);
+    const length = linkDirection.length();
+    if (length <= 1e-9) return;
+    linkDirection.multiplyScalar(1 / length);
+    mesh.position.copy(linkMidpoint.addVectors(start, end).multiplyScalar(0.5));
+    mesh.quaternion.setFromUnitVectors(yAxis, linkDirection);
+    mesh.scale.set(1, length, 1);
+  };
+
+  const direct = new THREE.Vector3();
+  const directUnit = new THREE.Vector3();
+  const bendDirection = new THREE.Vector3();
+  const elbowPosition = new THREE.Vector3();
+  const mountPosition = new THREE.Vector3();
+  const shoulderWorld = new THREE.Vector3();
+  let lastElbowPitchRad = 0;
+
+  const updateSupportLinkage = (elbowPitchRad: number) => {
+    root.updateMatrixWorld(true);
+    shoulderHub.getWorldPosition(shoulderWorld);
+    baseGroup.getWorldPosition(mountPosition);
+    direct.subVectors(mountPosition, shoulderWorld);
+    const distance = direct.length();
+    const upperLength = DA_VINCI_EXHIBIT_GEOMETRY.upperLinkLengthM;
+    const foreLength = DA_VINCI_EXHIBIT_GEOMETRY.foreLinkLengthM;
+    const maximumReach = upperLength + foreLength;
+    const minimumReach = Math.abs(upperLength - foreLength);
+    if (distance <= minimumReach + 1e-6 || distance >= maximumReach - 1e-6) {
+      throw new Error(
+        `Da Vinci exhibit linkage target ${distance.toFixed(6)} m is outside its fixed-link reach`,
+      );
+    }
+
+    directUnit.copy(direct).multiplyScalar(1 / distance);
+    bendDirection
+      .set(0, 1, 0)
+      .addScaledVector(directUnit, -directUnit.dot(new THREE.Vector3(0, 1, 0)));
+    if (bendDirection.lengthSq() < 1e-8) {
+      bendDirection
+        .set(0, 0, 1)
+        .addScaledVector(directUnit, -directUnit.dot(new THREE.Vector3(0, 0, 1)));
+    }
+    bendDirection.normalize().applyAxisAngle(directUnit, elbowPitchRad);
+
+    const along =
+      (upperLength * upperLength - foreLength * foreLength + distance * distance) / (2 * distance);
+    const transverse = Math.sqrt(Math.max(0, upperLength * upperLength - along * along));
+    elbowPosition
+      .copy(shoulderWorld)
+      .addScaledVector(directUnit, along)
+      .addScaledVector(bendDirection, transverse);
+
+    const shoulderLocal = cartGroup.worldToLocal(shoulderWorld.clone());
+    const elbowLocal = cartGroup.worldToLocal(elbowPosition.clone());
+    const mountLocal = cartGroup.worldToLocal(mountPosition.clone());
+    orientLinkBetween(upperArm, shoulderLocal, elbowLocal);
+    orientLinkBetween(foreArm, elbowLocal, mountLocal);
+    elbowHub.position.copy(elbowLocal);
+    toolMountHub.position.copy(mountLocal);
+
+    const loomPositions = cableLoomGeometry.attributes.position as THREE.BufferAttribute;
+    loomPositions.setXYZ(0, shoulderLocal.x, shoulderLocal.y, shoulderLocal.z);
+    loomPositions.setXYZ(1, elbowLocal.x, elbowLocal.y, elbowLocal.z);
+    loomPositions.setXYZ(2, mountLocal.x, mountLocal.y, mountLocal.z);
+    loomPositions.needsUpdate = true;
+    root.updateMatrixWorld(true);
+  };
+
+  const updateDistalKinematics = (
     pitchRad: number,
     yawRad: number,
     rollRad: number,
@@ -474,6 +651,81 @@ export function buildDaVinciModel(): DaVinciModel {
     mainGroup.worldToLocal(targetTipInParent);
     baseGroup.position.add(targetTipInParent.sub(currentTipInParent));
     root.updateMatrixWorld(true);
+    updateSupportLinkage(lastElbowPitchRad);
+  };
+
+  const updateArmPose = (
+    baseYawRad: number,
+    shoulderPitchRad: number,
+    elbowPitchRad: number,
+    pitchRad: number,
+    yawRad: number,
+    rollRad: number,
+    gripRad: number,
+    masterPos: [number, number, number],
+    resolvedTip: [number, number, number],
+  ) => {
+    lastElbowPitchRad = elbowPitchRad;
+    baseGroup.rotation.set(shoulderPitchRad, baseYawRad, 0, "XYZ");
+    updateDistalKinematics(pitchRad, yawRad, rollRad, gripRad, masterPos);
+    alignEndEffectorTip(...resolvedTip);
+  };
+
+  const endpoint = (mesh: THREE.Mesh, localY: number) =>
+    mesh.localToWorld(new THREE.Vector3(0, localY, 0));
+  const origin = (object: THREE.Object3D) => object.getWorldPosition(new THREE.Vector3());
+  const gap = (interfaceName: string, a: THREE.Vector3, b: THREE.Vector3) => ({
+    interface: interfaceName,
+    gapMeters: a.distanceTo(b),
+  });
+  const connectivityReceipt = (): readonly DaVinciConnectivityGap[] => {
+    root.updateMatrixWorld(true);
+    const footTop = cartFoot.localToWorld(new THREE.Vector3(0, 0.11, 0));
+    const pedestalBottom = cartPedestal.localToWorld(new THREE.Vector3(0, -pedestalHeight / 2, 0));
+    const pedestalTop = cartPedestal.localToWorld(new THREE.Vector3(0, pedestalHeight / 2, 0));
+    const shoulder = origin(shoulderHub);
+    const upperStart = endpoint(upperArm, -0.5);
+    const upperEnd = endpoint(upperArm, 0.5);
+    const elbow = origin(elbowHub);
+    const foreStart = endpoint(foreArm, -0.5);
+    const foreEnd = endpoint(foreArm, 0.5);
+    const mount = origin(toolMountHub);
+    const carriageMount = origin(baseGroup);
+    const carriageBottom = carriage.localToWorld(
+      new THREE.Vector3(0, -DA_VINCI_EXHIBIT_GEOMETRY.carriageHeightM / 2, 0),
+    );
+    const shaftTop = shaft.localToWorld(
+      new THREE.Vector3(0, DA_VINCI_EXHIBIT_GEOMETRY.shaftLengthM / 2, 0),
+    );
+    const shaftBottom = shaft.localToWorld(
+      new THREE.Vector3(0, -DA_VINCI_EXHIBIT_GEOMETRY.shaftLengthM / 2, 0),
+    );
+    const wristPitch = origin(wristPitchGroup);
+    const wristYaw = origin(wristYawGroup);
+    const wristRoll = origin(wristRollGroup);
+    return [
+      gap("cart foot -> pedestal", footTop, pedestalBottom),
+      gap("pedestal -> shoulder hub", pedestalTop, shoulder),
+      gap("shoulder hub -> upper support", shoulder, upperStart),
+      gap("upper support -> elbow hub", upperEnd, elbow),
+      gap("elbow hub -> fore support", elbow, foreStart),
+      gap("fore support -> tool mount", foreEnd, mount),
+      gap("tool mount -> releasable carriage", mount, carriageMount),
+      gap("carriage -> instrument shaft", carriageBottom, shaftTop),
+      gap("instrument shaft -> distal pitch", shaftBottom, wristPitch),
+      gap(
+        "distal pitch -> distal yaw",
+        wristPitchGroup.localToWorld(new THREE.Vector3(0, -0.065, 0)),
+        wristYaw,
+      ),
+      gap(
+        "distal yaw -> distal roll",
+        wristYawGroup.localToWorld(new THREE.Vector3(0, -0.055, 0)),
+        wristRoll,
+      ),
+      gap("distal roll -> left jaw", wristRoll, origin(leftJawGroup)),
+      gap("distal roll -> right jaw", wristRoll, origin(rightJawGroup)),
+    ];
   };
 
   const setCutaway = (cutaway: boolean) => {
@@ -498,10 +750,11 @@ export function buildDaVinciModel(): DaVinciModel {
     endEffectorTipAnchor,
     cableLines,
     cupGroup,
-    updateKinematics,
+    updateArmPose,
     setCupPose,
     setContactGizmo,
     alignEndEffectorTip,
+    connectivityReceipt,
     setCutaway,
     dispose: () => {
       for (const g of geometriesToDispose) g.dispose();

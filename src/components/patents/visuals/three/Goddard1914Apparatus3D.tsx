@@ -22,7 +22,7 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [11.5, 3.2, 14.5], target: [0, -1.4, 0] },
+  iso: { pos: [14.5, 4.4, 18.5], target: [0, -1.7, 0] },
   solid_charge: { pos: [4.4, -0.5, 5.4], target: [0, -0.6, 0] },
   spin_tubes: { pos: [4.2, 1.8, 4.2], target: [0, 1.0, 0] },
   auxiliary: { pos: [4.2, 4.3, 5.2], target: [0, 3.1, 0] },

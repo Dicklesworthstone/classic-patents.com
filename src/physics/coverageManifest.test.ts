@@ -65,8 +65,8 @@ describe("executable project coverage manifest", () => {
     expect(manifest.filter((row) => row.runtime.wasmSurface === "interpretive-wasm")).toHaveLength(
       1,
     );
-    expect(manifest.filter((row) => row.runtime.wasmSurface === "generic-wasm")).toHaveLength(36);
-    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(39);
+    expect(manifest.filter((row) => row.runtime.wasmSurface === "generic-wasm")).toHaveLength(38);
+    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(37);
 
     for (const patentId of [
       "us-x9430-colt-revolver",
@@ -154,7 +154,7 @@ describe("executable project coverage manifest", () => {
         surface.artifactSha256,
       );
     }
-    expect(checkedArtifacts.size).toBe(5);
+    expect(checkedArtifacts.size).toBe(8);
   });
 
   test("all 3D studios now have an updater or a typed snapshot path", () => {

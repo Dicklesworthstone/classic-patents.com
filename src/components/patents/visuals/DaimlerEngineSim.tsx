@@ -77,7 +77,7 @@ function DaimlerMarineInstallationFace({
           <text x="113" y="171" textAnchor="middle" fill="#082f49" fontSize="12">
             w¹
           </text>
-          <text x="104" y="31" textAnchor="middle" fontSize="12">
+          <text x="145" y="31" textAnchor="middle" fontSize="12">
             high → reducing cock → low pressure
           </text>
         </g>
@@ -132,7 +132,7 @@ function DaimlerMarineInstallationFace({
             rx="5"
             fill={topology.aheadCouplingEngaged ? "#17875d" : "#7b8794"}
           />
-          <text x="326" y="187" textAnchor="middle" fontSize="11">
+          <text x="342" y="193" textAnchor="middle" fontSize="11">
             a²
           </text>
           <circle
@@ -174,8 +174,8 @@ function DaimlerMarineInstallationFace({
               />
             </g>
           ))}
-          <text x="500" y="280" textAnchor="middle" fontSize="11">
-            shaft b slides through fixed bearings
+          <text x="620" y="197" textAnchor="middle" fontSize="11">
+            b · sliding shaft
           </text>
         </g>
 
@@ -205,19 +205,19 @@ function DaimlerMarineInstallationFace({
         </g>
         <g aria-label="passive fore and aft cooling paths and optional pump branch">
           <path
-            d="M42 295 Q78 261 114 238 Q154 214 181 200"
+            d="M42 295 Q78 261 114 220 Q154 174 181 140"
             fill="none"
             stroke="#0e7490"
             strokeWidth="6"
           />
           <path
-            d="M275 200 Q365 224 488 248 Q610 272 705 295"
+            d="M275 140 Q365 190 488 232 Q610 271 705 295"
             fill="none"
             stroke="#0e7490"
             strokeWidth="6"
           />
           <path
-            d="M395 295 V265 Q360 224 275 218"
+            d="M395 295 V265 Q360 190 275 155"
             fill="none"
             stroke={topology.coolingPumpActive ? "#22b8cf" : "#64748b"}
             strokeWidth="5"
@@ -231,8 +231,8 @@ function DaimlerMarineInstallationFace({
           <text x="395" y="267" textAnchor="middle" fill="white" fontSize="10">
             u
           </text>
-          <text x="552" y="312" textAnchor="middle" fontSize="11">
-            s¹/s² passive paths always present · pump u {topology.coolingPumpActive ? "on" : "off"}
+          <text x="400" y="60" textAnchor="middle" fontSize="11">
+            s¹/s² always present · u additive ({topology.coolingPumpActive ? "on" : "off"})
           </text>
         </g>
 
@@ -263,8 +263,8 @@ function DaimlerMarineInstallationFace({
           </text>
         </g>
 
-        <rect x="526" y="126" width="170" height="25" rx="12" fill="#0f172a" opacity="0.88" />
-        <text x="611" y="143" textAnchor="middle" fill="white" fontSize="11">
+        <rect x="466" y="14" width="230" height="25" rx="12" fill="#0f172a" opacity="0.88" />
+        <text x="581" y="31" textAnchor="middle" fill="white" fontSize="11">
           {driveState} · {kernelLabel}
         </text>
       </svg>

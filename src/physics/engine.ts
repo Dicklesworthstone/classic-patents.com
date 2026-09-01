@@ -726,8 +726,8 @@ export const FrankenSimEngine = {
    * Elias Howe Sewing Machine (US 4,750)
    * 4-Bar Kinematic Linkage & Shuttle Lockstitch Interlock
    */
-  stepHoweSewingMachine(flywheelRpm: number, stitchTensionGrams: number, stitchPitchMm?: number) {
-    return stepHoweSewingMachineKernel(flywheelRpm, stitchTensionGrams, stitchPitchMm);
+  stepHoweSewingMachine(crankRpm: number, loopSlackPct: number, stitchPitchMm?: number) {
+    return stepHoweSewingMachineKernel(crankRpm, loopSlackPct, stitchPitchMm);
   },
 
   /**
@@ -1297,7 +1297,9 @@ export const FrankenSimEngine = {
     return {
       patentId,
       domain: data.domain || "aerodynamics_mbd",
-      timestampMs: Date.now(),
+      // Tape timestamps are virtual replay coordinates. UI wall clocks never
+      // enter the physics envelope unless a caller explicitly supplies one.
+      timestampMs: data.timestampMs ?? 0,
       timeStepDt: 0.016,
       refusal: { isRefused: false },
       ...data,

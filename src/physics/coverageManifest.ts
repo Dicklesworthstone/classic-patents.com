@@ -75,6 +75,24 @@ const GENERIC_WASM_SURFACE: WasmSurfaceDescriptor = {
 };
 
 export const DEDICATED_WASM_SURFACES = {
+  "us-4750-howe-sewing-machine": {
+    kind: "generic-wasm",
+    sourceCrate: "fs-howe-wasm",
+    loaderFunction: "ensureHoweWasm",
+    exportName: "howe_topology_step",
+    artifactUrl: "/wasm/fs-howe/fs_howe_wasm_bg.wasm",
+    artifactSha256: "f8ecfc56eca4c9e5e66e45a3e4f45b7444b0d27cbacda078fb1f0549341978c0",
+    refusalBoundary: "typed-wasm",
+  },
+  "us-223898-edison-lightbulb": {
+    kind: "generic-wasm",
+    sourceCrate: "fs-edison-wasm",
+    loaderFunction: "ensureEdisonWasm",
+    exportName: "edison_radiative_step",
+    artifactUrl: "/wasm/fs-edison/fs_edison_wasm_bg.wasm",
+    artifactSha256: "5b1ffe2e22f758003d48d85dbc423367e8a4c2d3f6adc03603690cfe9c78eec5",
+    refusalBoundary: "typed-wasm",
+  },
   "us-593138-tesla-coil": {
     kind: "interpretive-wasm",
     sourceCrate: "fs-tesla-wasm",
@@ -111,6 +129,15 @@ export const DEDICATED_WASM_SURFACES = {
     artifactSha256: "9c8ee2c8fcf80a1186b32b1ecae529476f24646060f7f767fcb051ddbb1b69c2",
     refusalBoundary: "typed-wasm",
   },
+  "us-6331181-davinci": {
+    kind: "generic-wasm",
+    sourceCrate: "fs-davinci-wasm",
+    loaderFunction: "ensureDaVinciTopologyWasm",
+    exportName: "davinci_topology_step",
+    artifactUrl: "/wasm/fs-davinci/fs_davinci_wasm_bg.wasm",
+    artifactSha256: "f09c2a0718c927247a56f84b10037ac21318f89d8a4e27c53b030fa43b14816d",
+    refusalBoundary: "typed-wasm",
+  },
 } as const satisfies Record<string, WasmSurfaceDescriptor>;
 
 const GENERIC_WASM_PATENT_IDS = new Set([
@@ -128,7 +155,6 @@ const GENERIC_WASM_PATENT_IDS = new Set([
   "us-120057-gramme-dynamo",
   "us-157124-glidden-barbed-wire",
   "us-174465-bell-telephone",
-  "us-223898-edison-lightbulb",
   "us-247804-delaval-separator",
   "us-2981877-noyce-ic",
   "us-313224-mergenthaler-linotype",

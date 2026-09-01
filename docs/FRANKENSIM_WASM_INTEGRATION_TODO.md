@@ -5,9 +5,9 @@ This document is the design inventory for integrating the **FrankenSim** computa
 ## Executable status (2026-08-31)
 
 - 79/79 catalogue ids have a pinned facsimile, explicit visual route, TypeScript default telemetry owner, and live equation set; 78/79 have reviewed ledgers and 69/79 publish an accepted archival edition.
-- Runtime surfaces: 1 patent-specific WASM package (Flyer), 2 dedicated interpretive packages (Goddard and Tesla coil), 36 consumers of the generic FrankenSim package, and 40 typed-host-only records. Goddard's liquid-nozzle seam is adjacent to, not claimed by, the catalogued solid-charge US 1,102,653 apparatus; Tesla's seam is an unvalidated lumped-LC presentation model.
+- Runtime surfaces: 3 patent-specific WASM packages (Flyer, Goddard's source-bounded 1914 apparatus, and Daimler's source-bounded marine installation), 1 dedicated interpretive package (Tesla coil), 37 consumers of generic FrankenSim owners, and 38 typed-host-only records. Da Vinci's narrow package composes five generic `fs-mbd` revolute joints and one normalized prismatic insertion joint while leaving unprinted dimensions and cup contact explicitly illustrative. Edison's narrow package composes the generic `fs-conduction` gray-body balance with explicit operating-point inputs and the source's seven-thousandths-inch filament example; it does not infer efficacy or lifetime. Goddard's separately named liquid-nozzle seam is adjacent to, not called by, the catalogued solid-charge US 1,102,653 apparatus; Tesla's seam is an unvalidated lumped-LC presentation model.
 - Shared bus: 47 time-advancing TypeScript updaters and 32 typed snapshot publishers. Every cold start is `HONEST_PLACEHOLDER`; a computed host frame is `TS_FALLBACK`. No shared-bus updater currently claims `WASM` provenance.
-- `wasmArtifacts.test.ts` instantiates and steps every shipped package. Flyer, Goddard, and Tesla prove typed WASM refusals; finite-field host decoders still fail closed on malformed accepted results.
+- `wasmArtifacts.test.ts` instantiates and steps all six shipped packages. Flyer, Goddard, Daimler, Da Vinci, and Tesla prove typed WASM refusals; finite-field host decoders still fail closed on malformed accepted results.
 
 The bullets below preserve mechanism requirements and design ideas. A bullet means the treatment exists in the design inventory; it does not assert a Rust owner, a stepped WASM path, cross-face parity, or scientific validation.
 
@@ -28,9 +28,13 @@ The bullets below preserve mechanism requirements and design ideas. A bullet mea
   - Coupled rudder yaw moment ($N_r \cdot r$) to counteract adverse yaw
   - Real-time aerodynamic telemetry HUD (Airspeed, Altitude, Drag, Alpha, Beta)
 - **Goddard Rocket Apparatus (US 1,102,653)**
-  - The claimed multi-stage solid-charge apparatus remains distinct from the adjacent liquid-nozzle teaching model.
-  - The interpretive seam computes de Laval isentropic expansion ($M = v/a$), chamber pressure ($P_c$), and specific impulse ($I_{sp}$); those quantities are not presented as limitations of this grant.
-  - Gyroscopic steering-vane treatment must remain source-bounded to the actual figures and claims.
+  - The active model is the claimed multi-stage solid-charge apparatus, distinct from the adjacent liquid-nozzle teaching export for the later 1926 record.
+  - A patent-specific owner composes generic `fs-mbd` rigid-body stepping for primary spin, auxiliary-stage release, the Claim 2 tube-ratio predicate, and the gyroscopically isolated camera support.
+  - The active face publishes no invented chamber pressure, thrust, Mach number, liquid-propellant state, trajectory, or dimensional performance value.
+- **Daimler Explosive-Gas Marine Engine (US 361,931)**
+  - A patent-specific owner composes the generic `fs-mbd` prismatic joint for the propeller shaft's single source-stated longitudinal degree of freedom.
+  - Ahead, neutral, and astern are mutually exclusive contact topologies; ahead movement is toward the motor, while astern inserts the intermediate reversing disks without reversing the motor shaft.
+  - Fore and aft cooling pipes remain present with pump `u` as an additive option. No travel, speed, torque, flow, thrust, friction, heat, or power value is inferred.
 
 ### Domain 2: Electromagnetics & Resonant LC Oscillators
 - **Tesla Progressive Alternating-Current Motor-Generator (US 381,968)**
@@ -165,7 +169,8 @@ must render without COOP/COEP.
 | Tesla coil | `fs-flux` dual-resonant LC | V1, V2, spark-gap state, streamer seeds | Streamer line vertices come from the seed buffer; tone frequency = 1/√(LC) sample |
 | Bell | `fs-flux` + Web Audio | instantaneous R(t), i(t) | Diaphragm displacement drives resistance; AudioWorklet reads i(t); "undulating current" is audible |
 | Marconi / Morse | `fs-flux` RLC + solenoid | spark train / armature force | Sounder click when F > spring; RF envelope from the damped train, not `playClick()` |
-| Goddard | `fs-mbd` + isentropic nozzle (honest: no ICE gas crate yet) | Pe/Pc, Me, Isp, vane moment | Plume length ∝ Me; refuse if Pe/Pa is outside the documented expansion map |
+| Goddard | generic `fs-mbd` rigid-body owner | normalized primary spin, auxiliary-stage release, Claim 2 tube-ratio satisfaction, camera-support counter-rotation | Connected 1914 apparatus follows one source-bounded state; refuse contradictory release/contact or invalid tube geometry |
+| Daimler | generic `fs-mbd` prismatic-joint owner | normalized shaft coordinate, ahead/neutral/astern contacts, motor/propeller rotation signs, passive and pump-assisted cooling topology | Shaft, coupling, reversing disks, propeller, and both visual faces use the same discrete state; refuse non-discrete selection or contradictory contacts |
 | Fermi | `fs-lattice` 6-group kinetics | n, Ci, keff, rod worth | Pile glow ∝ flux; **refuse** at documented supercritical bound instead of a red CSS tint |
 | Bardeen | `fs-lattice` hole injection | Ie, Ic, α | Band diagram / current arrows scale from α; bias point is a kernel state |
 | Noyce | depletion + interconnect R | Cj, Vbi, Rlead | Layer stack thickness / window etch is a parameter; Cj HUD is the same sample as the 3D oxide flash |
@@ -245,7 +250,7 @@ element exists.
 - **`fs-phs` energy strip.** A thin ledger under machines with authored energy quantities: H, uᵀy, supply defect. If the defect is not ~0, the visual is lying. Tesla's source apparatus remains empty because the grant supplies no authored energy quantity.
 - **`fs-couple` coupling and load.** Couple only authored ports; Tesla's Fig. 9 source relation does not provide a mechanical load port. The Dirac interconnection is the point — energy should not appear from nowhere when two patents touch.
 - **`fs-ad` on every slider.** Hover a control and show ∂Q/∂u for the on-screen quantity. Adverse yaw is ∂N/∂warp. Hull cutoff is ∂Bc/∂√Va. No extra lecture widget.
-- **`fs-thermochem` for fire and ice.** Goddard chamber uses NASA-9 + frozen composition, not a magic Isp. Einstein–Szilard butane/ammonia partial pressures come from the same evaluator. Goodyear sulfur chemistry is a named reaction card or it is refused.
+- **`fs-thermochem` for fire and ice.** A later liquid-Goddard record can use NASA-9 + frozen composition rather than a magic specific impulse; the active 1914 solid-charge record must not acquire those unprinted quantities. Einstein–Szilard butane/ammonia partial pressures come from the same evaluator. Goodyear sulfur chemistry is a named reaction card or it is refused.
 - **`fs-contact` for needle and wheels.** Howe lockstitch and Engelbart knife-edge wheels are contact events. The stitch forms when the contact flag is true; the mouse pulse fires when the wheel rolls, not when React sees a pointer move.
 - **The visitor is the transducer.** Mic → Bell R(t). Hardware mouse → Engelbart wheels. Device roll → Wright bank. Typed SOS → Morse L/R kernel. Punched 88-key grid → Lamarr roll (not Math.random). WebMIDI keyboard → Tesla coil / Bell frequency. Gamepad hip-cradle → warp.
 - **CCD / Spencer / Fermi pointer sources.** Drag a "lamp" over the CCD wells and watch packets fill; drag a heat blot on the magnetron load; click a uranium lattice cell. Source terms, not hover tooltips.

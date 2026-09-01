@@ -101,7 +101,8 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(energyChannelsFor("us-381968-tesla-motor", {})[0]?.name).toBe(
       "Polyphase AC Stator Input",
     );
-    expect(energyChannelsFor("us-593138-tesla-coil", {})[0]?.name).toBe("Primary Spark Tank Power");
+    expect(energyChannelsFor("us-593138-tesla-coil", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-593138-tesla-coil"]).toContain("no capacitance");
     const davenport = energyChannelsFor("us-132-davenport-electric-motor", {});
     expect(davenport.map((c) => c.name)).toEqual(["Electrical", "Shaft", "Copper"]);
     expect(davenport[1].watts + davenport[2].watts).toBeCloseTo(davenport[0].watts, 1);
@@ -116,6 +117,8 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-361931-daimler-engine"]).toContain(
       "no speed, torque",
     );
+    expect(energyChannelsFor("us-6331181-davinci", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-6331181-davinci"]).toContain("no motor torque");
     expect(energyChannelsFor("us-233692-pelton-water-wheel", {})[0]?.name).toBe(
       "Hydrodynamic Water Jet",
     );

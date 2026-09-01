@@ -583,16 +583,26 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(noyceSchematicContactX(2)).toBe(275);
   });
 
-  test("Edison incandescent bulb computes Stefan-Boltzmann radiation, filament temperature, and lumen output", () => {
-    const res = stepEdisonBulb({ voltage: 110, filamentLength: 22 });
+  test("Edison incandescent bulb composes the declared fs-conduction radiative balance", () => {
+    const res = stepEdisonBulb({
+      voltage: 110,
+      hotResistanceOhm: 145,
+      filamentLength: 22,
+    });
     expect(res.filamentTempK).toBeGreaterThan(1800);
     expect(res.radiantWatts).toBeGreaterThan(0);
     expect(res.schematicTerminalR).toBe(4);
-    expect(edisonSchematicTerminal(0).cx).toBe(185);
-    expect(edisonSchematicTerminal(1).cx).toBe(215);
+    expect(edisonSchematicTerminal(0, res.schematicTerminalXs).cx).toBe(188);
+    expect(edisonSchematicTerminal(1, res.schematicTerminalXs).cx).toBe(212);
     expect(res.glowThreshold).toBe(0.05);
     expect(res.gasPhaseOmega).toBe(2);
     expect(res.gasYOmega).toBe(1.3);
+    const highResistance = stepEdisonBulb({ voltage: 110, hotResistanceOhm: 500 });
+    expect(highResistance.radiantWatts).toBeLessThan(res.radiantWatts);
+    expect(highResistance.incandescenceIntensity).toBeLessThan(res.incandescenceIntensity);
+    expect(stepEdisonBulb({ voltage: 40, hotResistanceOhm: 145 }).hotResistanceOhm).toBe(145);
+    expect(stepEdisonBulb({ voltage: 130, hotResistanceOhm: 145 }).hotResistanceOhm).toBe(145);
+    expect(() => stepEdisonBulb({ voltage: 110, hotResistanceOhm: 99 })).toThrow();
   });
 
   test("Bell telephone computes liquid transmitter resistance modulation and acoustic current", () => {

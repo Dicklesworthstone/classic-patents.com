@@ -63,7 +63,7 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
   });
 
   test("stepHoweSewingMachine and stepHoweLockstitch compute eye-pointed needle kinematics and shuttle loop capture", () => {
-    const machine = stepHoweSewingMachine(300, 120, 3.5);
+    const machine = stepHoweSewingMachine(300, 65, 3.5);
     expect(machine.stitchesPerMinute).toBe(300);
     expect(machine.stitchFrequencyHz).toBe(5);
     expect(machine.clothFeedMmPerS).toBe(17.5);
@@ -74,19 +74,42 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(machine.schematicBedW).toBe(260);
     expect(machine.schematicShuttleArmDx).toBe(22);
     expect(machine.stitchLen).toBe(40);
+    expect(machine.needleEyeFromPointIn).toBe(0.125);
+    expect(machine.needleEyeFromPointMm).toBe(3.175);
+    expect(machine.basterPointPitchIn).toBe(0.75);
+    expect(machine.basterPointPitchMm).toBe(19.05);
+    expect(machine.claim1InterlockPossible).toBe(true);
     expect(howeStitch(0).x2).toBe(140);
 
-    // Needle Top Dead Center (crankDeg = 90)
-    const atTdc = stepHoweLockstitch(90);
-    expect(atTdc.needleY).toBeCloseTo(45, 1);
-    expect(atTdc.loopOpen).toBe(true);
-    expect(atTdc.loopWidth).toBeGreaterThan(0);
-    expect(atTdc.loopSvgControlX).toBeCloseTo(atTdc.loopWidth * 1.5, 2);
+    const atTop = stepHoweLockstitch(0, 65, true);
+    expect(atTop.needlePenetrationNormalized).toBe(0);
+    expect(atTop.shuttleTravelNormalized).toBe(-1);
+    expect(atTop.loopOpen).toBe(false);
 
-    // Needle Bottom Dead Center (crankDeg = 270)
-    const atBdc = stepHoweLockstitch(270);
-    expect(atBdc.needleY).toBeCloseTo(-45, 1);
-    expect(atBdc.loopOpen).toBe(false);
+    const atBottom = stepHoweLockstitch(180, 65, true);
+    expect(atBottom.needlePenetrationNormalized).toBe(1);
+    expect(atBottom.needleRetracting).toBe(false);
+
+    const duringPass = stepHoweLockstitch(270, 65, true);
+    expect(duringPass.needleRetracting).toBe(true);
+    expect(duringPass.loopOpen).toBe(true);
+    expect(duringPass.loopWidth).toBeGreaterThan(0);
+    expect(duringPass.loopSvgControlX).toBeCloseTo(duringPass.loopWidth * 1.5, 2);
+    expect(duringPass.shuttleTravelNormalized).toBeCloseTo(0, 4);
+    expect(duringPass.shuttlePassesLoop).toBe(true);
+    expect(duringPass.cyclePhaseLabel).toBe("shuttle-pass");
+
+    const insufficientSlack = stepHoweLockstitch(270, 20, true);
+    expect(insufficientSlack.loopOpen).toBe(false);
+    expect(insufficientSlack.shuttlePassesLoop).toBe(false);
+
+    const claimDisabled = stepHoweLockstitch(270, 65, false);
+    expect(claimDisabled.shuttleTrackOffsetZ).toBe(0.55);
+    expect(claimDisabled.shuttlePassesLoop).toBe(false);
+    expect(claimDisabled.claim1InterlockSatisfied).toBe(false);
+
+    expect(() => stepHoweSewingMachine(300, 101, 3.5)).toThrow();
+    expect(() => stepHoweLockstitch(Number.NaN, 65, true)).toThrow();
   });
 
   test("stepEngelbartResolver computes orthogonal wheel rotation and encoder pulses", () => {

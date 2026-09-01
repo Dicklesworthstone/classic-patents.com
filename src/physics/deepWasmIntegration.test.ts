@@ -167,6 +167,18 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       expect(ledger.isConservative).toBe(true);
     });
 
+    test("digests Edison's closed steady power flow as real host state", () => {
+      const ledger = computePortHamiltonianEnergy("us-223898-edison-lightbulb", {
+        voltage: 110,
+        filamentLength: 22,
+      });
+      expect(ledger.energy.totalHamiltonianJoules).toBe(0);
+      expect(ledger.inputPowerWatts).toBeGreaterThan(0);
+      expect(ledger.dissipatedPowerWatts).toBe(ledger.inputPowerWatts);
+      expect(ledger.stateDigest).toMatch(/^host:[0-9a-f]{8}$/);
+      expect(ledger.stateDigest).not.toBe("host:00000000");
+    });
+
     test("computes steam enthalpy power balance for Watt separate condenser", () => {
       const ledger = computePortHamiltonianEnergy("gb-913-watt-separate-condenser", {
         boilerPressurePsi: 14.7,

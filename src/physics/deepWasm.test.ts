@@ -213,7 +213,7 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
       coupleEdgesFor("us-235199-bell-photophone", { transmissionDistanceM: 213 })[0]?.from,
     ).toBe("range");
     expect(coupleEdgesFor("us-2981877-noyce-ic", { reverseBias: 5 })[0]?.from).toBe("reverse bias");
-    expect(coupleEdgesFor("us-4750-howe-sewing-machine", { flywheelRpm: 200 })[0]?.from).toBe(
+    expect(coupleEdgesFor("us-4750-howe-sewing-machine", { crankRpm: 200 })[0]?.from).toBe(
       "flywheel",
     );
   });

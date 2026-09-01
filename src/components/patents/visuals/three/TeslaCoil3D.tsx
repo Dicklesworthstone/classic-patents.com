@@ -20,23 +20,22 @@ import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
-import { buildTeslaCoilModel } from "./teslaCoilModel";
+import { buildTeslaCoilModel } from "./tesla593138TransformerModel";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "toroid_breakout" | "primary_spiral" | "spark_gap" | "top";
+type CameraPreset = "iso" | "high_terminal" | "primary_spiral" | "earth_bond" | "top";
 
 const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [11, 9, 14], target: [0, 0, 0] },
-  toroid_breakout: { pos: [0, 4.2, 4.5], target: [0, 2.5, 0] },
-  primary_spiral: { pos: [0, -1.2, 5.5], target: [0, -2.4, 0] },
-  spark_gap: { pos: [2.8, -2.2, 3.8], target: [2.4, -3.2, 0] },
+  iso: { pos: [10, 6.5, 13], target: [0, -0.5, 0] },
+  high_terminal: { pos: [2.5, 3.8, 5.2], target: [0, 2.25, 0] },
+  primary_spiral: { pos: [0, -0.5, 5.8], target: [0, -1.75, 0] },
+  earth_bond: { pos: [5.2, -0.5, 4.8], target: [1.75, -1.65, 0] },
   top: { pos: [0, 13.0, 0.1], target: [0, 0, 0] },
 };
 
@@ -202,9 +201,9 @@ export function TeslaCoil3D() {
             {(
               [
                 ["iso", "Isometric"],
-                ["toroid_breakout", "Toroid"],
+                ["high_terminal", "Remote Terminal"],
                 ["primary_spiral", "Spiral Primary"],
-                ["spark_gap", "Rotary Gap"],
+                ["earth_bond", "Primary / Earth Bond"],
                 ["top", "Overhead"],
               ] as const
             ).map(([id, label]) => (
@@ -328,7 +327,7 @@ export function TeslaCoil3D() {
               <div className="flex items-center justify-between gap-2">
                 <span className="text-ink-600 dark:text-ink-400">Input:</span>
                 <span className="font-bold text-emerald-700 dark:text-emerald-400">
-                  {inputVoltageKv} kV ({sparkGapDistanceMm} mm)
+                  {inputVoltageKv} kV (interpretive excitation)
                 </span>
               </div>
             </div>
@@ -341,6 +340,11 @@ export function TeslaCoil3D() {
           visible={showUiOverlay}
           title="HIGH-FREQUENCY RESONANT TRANSFORMER"
           chips={[
+            {
+              label: "Source form",
+              value: "Fig. 2 conical graded winding",
+              tone: "ok",
+            },
             {
               label: "Kernel",
               value:
@@ -370,7 +374,7 @@ export function TeslaCoil3D() {
             { label: "Secondary", value: `${secondaryTurns}`, unit: "turns" },
             {
               label: "State",
-              value: "Quarter-Wave Helical Resonance",
+              value: "Quarter-Wave Graded Winding",
               tone: "hot",
             },
           ]}
@@ -379,25 +383,12 @@ export function TeslaCoil3D() {
 
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <SensitivitySlider
-            id="primaryCap"
-            patentId="us-593138-tesla-coil"
-            paramKey="primaryCap"
-            label="Primary Capacitance"
-            value={primaryCap}
-            min={10}
-            max={100}
-            step={5}
-            onChange={(val) => updateParam("primaryCap", val)}
-            allParams={params}
-          />
-
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <SensitivitySlider
             id="inputVoltage"
             patentId="us-593138-tesla-coil"
             paramKey="inputVoltageKv"
-            label="Input Voltage"
+            label="Illustrative excitation"
             value={inputVoltageKv}
             min={5}
             max={30}
@@ -407,28 +398,29 @@ export function TeslaCoil3D() {
           />
 
           <SensitivitySlider
-            id="sparkGapDistance"
-            patentId="us-593138-tesla-coil"
-            paramKey="sparkGapDistanceMm"
-            label="Spark Gap Distance"
-            value={sparkGapDistanceMm}
-            min={2}
-            max={30}
-            step={1}
-            onChange={(val) => updateParam("sparkGapDistanceMm", val)}
-            allParams={params}
-          />
-
-          <SensitivitySlider
             id="couplingK"
             patentId="us-593138-tesla-coil"
             paramKey="couplingK"
-            label="Coil Coupling (k)"
+            label="Illustrative coupling (k)"
             value={couplingK}
             min={0.05}
             max={0.4}
             step={0.01}
             onChange={(val) => updateParam("couplingK", val)}
+            allParams={params}
+          />
+
+          <SensitivitySlider
+            id="secondaryTurns"
+            patentId="us-593138-tesla-coil"
+            paramKey="secondaryTurns"
+            label="Illustrative secondary turns"
+            value={secondaryTurns}
+            min={400}
+            max={1400}
+            step={50}
+            unit=" turns"
+            onChange={(val) => updateParam("secondaryTurns", val)}
             allParams={params}
           />
         </div>
@@ -442,11 +434,12 @@ export function TeslaCoil3D() {
           className="mt-2"
         />
 
-        <PortHamiltonianEnergyStrip
-          patentId="us-593138-tesla-coil"
-          params={params}
-          className="mt-3"
-        />
+        <p className="mt-3 text-[10px] text-ink-500 dark:text-ink-400">
+          Source boundary: the apparatus geometry follows Fig. 2 and the claimed
+          primary-secondary-earth bond. Excitation, coupling, turn count, corona, and the lumped-LC
+          WASM step are interpretive; the grant supplies no power or loss data, so no SI energy
+          strip is shown.
+        </p>
       </div>
     </div>
   );

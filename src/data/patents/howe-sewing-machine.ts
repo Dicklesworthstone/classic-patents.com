@@ -56,13 +56,13 @@ In sewing a seam with my machine two threads are employed, one of which threads 
     overview:
       "For over twenty thousand years, human clothing was stitched exclusively by hand: a seamstress pushed a needle through fabric and pulled the entire length of thread through with every individual stitch. Early inventors failed because they attempted to mechanize this hand motion. Elias Howe Jr. achieved a historic breakthrough by abandoning hand sewing entirely. He placed the eye of the needle at its piercing tip and introduced a second thread carried inside a flying shuttle. When the needle pushes through cloth and begins to retract, the upper thread bows out into an open loop; the shuttle shoots through that loop, creating a permanent knot buried invisibly inside the fabric thickness.",
     coreMechanism:
-      "A curved needle with an eye at its sharp point is driven by a cam linkage through the workpiece. As the needle reaches bottom dead center and begins its upward stroke, friction between the thread and fabric forces the upper thread to buckle outward, forming an open teardrop loop. A reciprocating steel shuttle carrying a bobbin of lower thread is thrown through the open loop by a synchronized cam driver. As the needle retracts completely, both threads are cinched tight with balanced tension ($T_{upper} \\approx T_{lower}$), embedding the interlock knot precisely at the neutral axis of the cloth layers.",
+      "Main shaft C carries the cams that coordinate the machine. Cam Q rocks shaft O and arm G, whose curved needle carries the first thread through the cloth; the eye is printed as about one eighth inch from the point. Lifting rod W then raises that thread to make deliberate slack. Picker-staves J drive shuttle K back and forth in trough I so the shuttle and its second thread pass between the needle and the first thread. Cam R, arm S, claw T, ratchet U, shaft V, and the rack holes in pinned baster plate H advance the supported cloth for the next stitch.",
     mechanicalBreakdown: [
       {
         title: "Eye-Pointed Curved Needle",
         summary: "A steel needle with the thread eye placed near its sharp piercing point.",
         technicalDetails:
-          "Pushes a loop of upper thread through the fabric without pulling the entire thread spool through, reducing thread friction and eliminating yarn breakage at high speeds ($300\\text{ SPM}$).",
+          "The specification places the eye within about one eighth inch of the pointed end. The curved needle is fixed to vibrating arm G, so the arm carries a bight of the first thread through the cloth instead of passing the whole needle and thread supply through by hand.",
         archaicTerm: "Curved needle with eye near the point",
         modernEquivalent: "Industrial lockstitch sewing machine needle",
       },
@@ -71,15 +71,15 @@ In sewing a seam with my machine two threads are employed, one of which threads 
         summary:
           "A bullet-shaped steel shuttle carrying a second spool of thread through the loop.",
         technicalDetails:
-          "Guided along a machined curved race, the shuttle passes cleanly through the dilated upper thread loop before needle withdrawal, locking the stitch permanently against raveling.",
+          "Shuttle K reciprocates in trough I and is pushed alternately by picker-staves J. During the admitted pass phase it travels between the curved needle and the loop of first thread, carrying the second thread through that loop.",
         archaicTerm: "Shuttle carrying second thread in race",
         modernEquivalent: "Rotary hook and bobbin case assembly",
       },
       {
-        title: "Intermittent Baseler Cloth Feed",
+        title: "Intermittent Baster-Plate Cloth Feed",
         summary: "A pinned plate advancing the cloth by exact stitch pitch increments.",
         technicalDetails:
-          "Rack-and-pinion feed indexed by a pawl mechanism during needle retraction, translating the fabric automatically at up to 300 stitches per minute with uniform seam pitch ($p_{stitch}$).",
+          "The plate's points, printed as about three quarters inch apart, hold the cloth. Holes in the same plate act as a rack; cam R drives arm S and claw T against ratchet U so shaft V and its pinion advance the supported plate between stitches.",
         archaicTerm: "Baseler plate with pins and rack",
         modernEquivalent: "Four-motion drop feed dog mechanism",
       },
@@ -87,46 +87,45 @@ In sewing a seam with my machine two threads are employed, one of which threads 
         title: "Synchronized Cam Drive & Tension Take-Up Lever",
         summary: "Grooved face cams on the main shaft coordinating needle and shuttle timing.",
         technicalDetails:
-          "Maintains strict phase synchronization ($\\Delta t < 5\\text{ ms}$) between needle loop expansion and shuttle transit, cinching thread tension as the needle reaches top dead center.",
+          "Roller k on arm P follows zigzag groove l in cam Q to rock the needle arm, while the shuttle and feed cams on the same shaft preserve the printed causal order. The grant supplies no millisecond timing, shaft speed, or cam lift table.",
         archaicTerm: "Grooved cams and thread-tightening levers",
         modernEquivalent: "Precision rotary timing cams & dynamic take-up lever",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Lockstitch Capstan Knot Equilibrium",
-        formula:
-          "T_{upper} \\cdot e^{\\mu \\theta_{1}} = T_{lower} \\cdot e^{\\mu \\theta_{2}}, \\quad \\theta_1 = \\theta_2 = \\pi",
+        principle: "One-Drive Multibody Constraint",
+        formula: "q = q(\\theta_C), \\qquad n_{drive}=1",
         explanation:
-          "Balancing upper and lower thread tensions locks the interloop knot at the exact midpoint of fabric thickness, maximizing seam shear strength and preventing surface puckering.",
+          "The flywheel and cams share main shaft C. The needle arm, picker-staves, shuttle, lifting rod, and baster feed therefore have several joint coordinates but only one prescribed drive coordinate; the model never animates them from unrelated clocks.",
       },
       {
         principle: "Eye-Pointed Needle Loop Dilation Dynamics",
         formula:
-          "\\delta_{loop} = h_{retract} \\cdot \\left(1 - \\frac{\\mu_{needle/thread}}{\\mu_{fabric/thread}}\\right) > w_{shuttle}",
+          "\\mathcal{P}_{pass}=(\\lambda_{loop} \\ge \\lambda_{min}) \\land (K \\subset I)",
         explanation:
-          "As the needle retreats by $h_{retract}$, higher friction against the cloth holds the thread stationary while the needle eye slips, bowing out a loop wider than the shuttle body ($w_{shuttle}$).",
+          "Rod W creates the slack named by Claim 2. The interactive model reports the Claim 1 pass only when the displayed loop clears the shuttle section and shuttle K remains on its prismatic guide in trough I; $\\lambda_{min}$ is an explicit display boundary, not a dimension printed by Howe.",
       },
       {
-        principle: "Harmonic Cam Kinematic Acceleration Profile",
+        principle: "Admitted Normalized Cam Profile",
         formula:
-          "y(t) = \\frac{h}{2}\\left(1 - \\cos(\\omega t)\\right), \\quad a_{max} = \\frac{h \\omega^2}{2} = \\frac{h (2\\pi f_{rpm})^2}{2}",
+          "q_G(\\theta_C)=\\frac{1-\\cos\\theta_C}{2}, \\qquad x_K(\\theta_C)=-A_K\\cos\\theta_C",
         explanation:
-          "Harmonic face cams smoothly accelerate the needle arm and shuttle without shock loads, enabling sewing speeds ten times faster than human hands.",
+          "The grant prints cam and linkage topology but no lift table. A smooth normalized profile makes that topology executable without inventing a dimensional stroke, velocity, acceleration, or historical operating rate.",
       },
       {
-        principle: "Continuous Linear Seam Throughput Rate",
+        principle: "Declared Display Feed Relation",
         formula:
           "v_{seam} = f_{stitch} \\cdot p_{pitch} = \\frac{\\text{SPM}}{60} \\cdot p_{stitch}",
         explanation:
-          "At 300 stitches per minute and a 2.5 mm pitch, Howe's machine produced 75 cm of finished seam per minute, reducing garment construction time from 14 hours to 1 hour.",
+          "For a visitor-selected demonstration cadence and pitch, one feed increment per shaft cycle gives the displayed cloth velocity. Both quantities are declared controls; the 1846 grant does not supply an operating speed or stitch pitch for this calculation.",
       },
       {
-        principle: "Seam Tensile Shear Resistance & Interlock Security",
+        principle: "Printed Local Geometry",
         formula:
-          "\\sigma_{seam} = 2 \\cdot N_{stitches/cm} \\cdot F_{thread\\_tensile} \\cdot \\cos(\\phi)",
+          "d_{eye} \\approx \\frac{1}{8}\\,\\mathrm{in}=3.175\\,\\mathrm{mm}, \\qquad p_H \\approx \\frac{3}{4}\\,\\mathrm{in}=19.05\\,\\mathrm{mm}",
         explanation:
-          "Because each lockstitch knot is independent, cutting or breaking one stitch does not cause the seam to run or unravel, unlike chain stitches.",
+          "These are the two local dimensions used by the reconstruction. All other rendered lengths are normalized proportions and are not presented as measurements of Howe's machine.",
       },
     ],
     whyItMattersToday:
@@ -159,7 +158,7 @@ In sewing a seam with my machine two threads are employed, one of which threads 
         "Controlled slack and tension timing",
       ],
       legalSignificance:
-        "Protected the mechanical tensioning linkages that prevented loose or tangled thread loops during high-speed sewing.",
+        "Protected the specific lifting-rod and guide arrangement that deliberately creates the loose loop later drawn in by the shuttle.",
     },
     {
       number: 3,
@@ -186,7 +185,8 @@ In sewing a seam with my machine two threads are employed, one of which threads 
         "Sliding shuttle box linkage",
         "Dynamic stitch tightening cycle",
       ],
-      legalSignificance: "Secured uniform stitch tension across varying fabric thicknesses.",
+      legalSignificance:
+        "Protected the stated lever, sliding-box, and spring relationship used to tighten the stitch while the needle is retracted.",
     },
     {
       number: 5,

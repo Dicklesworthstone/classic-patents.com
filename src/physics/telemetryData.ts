@@ -2010,11 +2010,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-223898-edison-lightbulb": {
     domain: "thermodynamics_transport",
-    domainTitle: "High-Vacuum Stefan-Boltzmann Radiative Blackbody Kinetics",
-    equationName: "Stefan-Boltzmann Radiative Blackbody Law",
+    domainTitle: "Declared High-Vacuum Gray-Body Steady Balance",
+    equationName: "Joule-to-Stefan-Boltzmann Gray-Body Balance",
     governingEquation:
-      "P_{\\text{rad}} = \\varepsilon \\sigma A (T^4 - T_0^4) \\quad \\text{with} \\quad R(T) = R_0(1 + \\alpha \\Delta T)",
-    engineMethod: "FrankenSimEngine.stepEdisonBulb",
+      "\\frac{V^2}{R_{\\text{declared}}} = \\varepsilon \\sigma (\\pi d_{\\text{source}} L_{\\text{declared}})(T^4 - T_0^4)",
+    engineMethod: "fs-conduction incandescent radiative balance",
     controls: [
       {
         id: "voltage",
@@ -2026,21 +2026,23 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         unit: "V",
       },
       {
-        id: "filamentLength",
-        label: "Carbon Filament Length",
-        min: 10,
-        max: 30,
-        step: 1,
-        defaultValue: 22,
-        unit: "cm",
+        id: "hotResistanceOhm",
+        label: "Declared Hot Resistance",
+        min: 100,
+        max: 500,
+        step: 5,
+        defaultValue: 145,
+        unit: "Ω",
       },
     ],
     computeMetrics: (p) => {
-      const bulb = stepEdisonBulb({ voltage: p.voltage, filamentLength: p.filamentLength });
+      const bulb = stepEdisonBulb({
+        voltage: p.voltage,
+        hotResistanceOhm: p.hotResistanceOhm,
+      });
       const tempK = bulb.filamentTempK;
       const res = bulb.hotResistanceOhm;
       const powerWatts = bulb.radiantWatts;
-      const lumEff = bulb.luminousLmPerW.toFixed(2);
 
       return [
         {
@@ -2065,13 +2067,6 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: clampProgress((res / 200) * 100),
         },
         {
-          label: "Luminous Efficiency",
-          value: lumEff,
-          unit: "lm/W",
-          badgeColor: "cyan",
-          progressPct: clampProgress((Number(lumEff) / 4.0) * 100),
-        },
-        {
           label: "Filament Current",
           value: bulb.currentAmps.toFixed(2),
           unit: "A",
@@ -2079,11 +2074,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: clampProgress((bulb.currentAmps / 2) * 100),
         },
         {
-          label: "Design Life",
-          value: String(bulb.designLifeHours),
-          unit: "h",
+          label: "Radiative Closure",
+          value: bulb.radiativeEnergyClosure.toExponential(1),
+          unit: "relative",
           badgeColor: "purple",
-          progressPct: Math.min(100, (bulb.designLifeHours / 2400) * 100),
+          progressPct: clampProgress(100 - bulb.radiativeEnergyClosure * 100),
         },
       ];
     },
@@ -3231,7 +3226,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     domainTitle: "Eye-Pointed Needle & Reciprocating Shuttle Lockstitch Kinematics",
     equationName: "Lockstitch Loop Interlocking Kinematics",
     governingEquation:
-      "\\theta_{\\text{shuttle}}(t) = A \\sin(\\omega t + \\delta) \\quad \\text{with} \\quad \\text{Stitch Rate} = \\frac{\\omega}{2\\pi}",
+      "x_K(\\theta_C)=-A\\cos\\theta_C,\\qquad \\text{pass}=\\bigl(\\lambda_{loop}\\ge\\lambda_{min}\\bigr)",
     engineMethod: "FrankenSimEngine.stepHoweSewingMachine",
     controls: [
       {
@@ -3253,13 +3248,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         unit: "mm",
       },
       {
-        id: "threadTensionGrams",
-        label: "Thread Tension",
-        min: 20,
-        max: 90,
+        id: "loopSlackPct",
+        label: "Displayed Loop Slack",
+        min: 0,
+        max: 100,
         step: 1,
-        defaultValue: 45,
-        unit: "g",
+        defaultValue: 65,
+        unit: "%",
       },
       {
         id: "isCranking",
@@ -3274,8 +3269,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     computeMetrics: (p) => {
       const rpm = p.crankRpm ?? 240;
       const feed = p.stitchPitchMm ?? 3.5;
-      const tension = p.threadTensionGrams ?? 45;
-      const sew = stepHoweSewingMachine(rpm, tension, feed);
+      const loopSlackPct = p.loopSlackPct ?? 65;
+      const sew = stepHoweSewingMachine(rpm, loopSlackPct, feed);
       const shuttleHz = sew.stitchFrequencyHz.toFixed(2);
       const stitchLen = feed.toFixed(1);
 
@@ -3316,11 +3311,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: clampProgress((Number(stitchLen) / 5) * 100),
         },
         {
-          label: "Lockstitch Shear",
-          value: sew.lockstitchShearStrengthN.toString(),
-          unit: "N",
+          label: "Loop Clearance",
+          value: sew.maximumLoopClearancePct.toString(),
+          unit: "%",
           badgeColor: "indigo",
-          progressPct: Math.min(100, (sew.lockstitchShearStrengthN / 8) * 100),
+          progressPct: clampProgress(loopSlackPct),
         },
       ];
     },

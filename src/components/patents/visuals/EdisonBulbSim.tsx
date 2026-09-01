@@ -1,10 +1,17 @@
 "use client";
 
 import { AlertCircle, Lightbulb, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MaterialCard } from "@/components/patents/MaterialCard";
 import { blackbodyRgb } from "@/physics/blackbody";
 import { stepEdisonBulb } from "@/physics/catalogKernels";
+import {
+  EDISON_DECLARED_FILAMENT_LENGTH_CM,
+  EDISON_DECLARED_HOT_RESISTANCE_OHM,
+  edisonKernelSource,
+  ensureEdisonWasm,
+  stepEdisonRadiativeBalance,
+} from "@/physics/edisonWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -13,33 +20,47 @@ export function EdisonBulbSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-223898-edison-lightbulb");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const voltage = params.voltage ?? 110;
-  const [resistanceMode, setResistanceMode] = useState<"high-resistance" | "low-resistance">(
-    "high-resistance",
-  );
+  const hotResistanceOhm = params.hotResistanceOhm ?? EDISON_DECLARED_HOT_RESISTANCE_OHM;
+  const filamentLengthCm = EDISON_DECLARED_FILAMENT_LENGTH_CM;
+  const [resistanceMode, setResistanceMode] = useState<
+    "source-high-resistance" | "reported-prior-art"
+  >("source-high-resistance");
   const [isVacuumIntact, setIsVacuumIntact] = useState<boolean>(true);
+  const [kernelSource, setKernelSource] = useState(edisonKernelSource());
 
-  const bulb = stepEdisonBulb({ voltage, filamentLength: params.filamentLength ?? 22 });
-  // High-R path is the Edison kernel. Low-R is the Swan/Maxim counterfactual for feeder I²R.
+  const bulb = stepEdisonBulb({ voltage, hotResistanceOhm, filamentLength: filamentLengthCm });
+  const radiative = stepEdisonRadiativeBalance({
+    voltageV: voltage,
+    hotResistanceOhm: bulb.hotResistanceOhm,
+    filamentLengthCm,
+  });
+  if (!radiative) {
+    throw new Error("Edison radiative balance refused admitted UI inputs");
+  }
+  useEffect(() => {
+    void ensureEdisonWasm().then((next) => setKernelSource(next));
+  }, []);
+
+  // The 1.5 Ω path sits inside the source's reported one-to-four-ohm prior
+  // practice. Applying this exhibit's branch voltage is a feeder-loss
+  // counterfactual, not an admitted thermal operating point.
   const resistanceOhms =
-    resistanceMode === "high-resistance" ? bulb.hotResistanceOhm : bulb.lowResistanceOhm;
+    resistanceMode === "source-high-resistance" ? bulb.hotResistanceOhm : bulb.lowResistanceOhm;
   const currentAmps =
-    resistanceMode === "high-resistance" ? bulb.currentAmps : bulb.lowResistanceAmps;
+    resistanceMode === "source-high-resistance" ? radiative.current_a : bulb.lowResistanceAmps;
   const powerWatts =
-    resistanceMode === "high-resistance" ? bulb.radiantWatts : bulb.lowResistanceWatts;
+    resistanceMode === "source-high-resistance"
+      ? radiative.radiative_power_w
+      : bulb.lowResistanceWatts;
 
   const feederResistance = bulb.feederResistanceOhm;
-  const feederPowerLossWatts =
-    resistanceMode === "high-resistance" ? bulb.feederLossWatts : bulb.lowResistanceFeederLossWatts;
 
   const isBurnedOut = !isVacuumIntact && voltage > 30;
-  const tempKelvin = isBurnedOut
-    ? 300
-    : resistanceMode === "high-resistance"
-      ? bulb.filamentTempK
-      : bulb.lowResistanceTempK;
+  const priorArtOverload = resistanceMode === "reported-prior-art";
+  const tempKelvin = isBurnedOut || priorArtOverload ? 300 : radiative.filament_temperature_k;
 
   const getFilamentColor = () => {
-    if (isBurnedOut) return "#475569";
+    if (isBurnedOut || priorArtOverload) return "#475569";
     return blackbodyRgb(tempKelvin);
   };
 
@@ -55,8 +76,8 @@ export function EdisonBulbSim() {
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
-            Discover why increasing filament resistance from <strong>1.5 Ω to 100 Ω</strong>{" "}
-            unlocked parallel electrical power distribution.
+            Compare the source&apos;s 100–500 Ω filament range with its reported 1–4 Ω prior
+            practice and see why high resistance made “multiple arc” distribution practical.
           </p>
         </div>
 
@@ -92,7 +113,7 @@ export function EdisonBulbSim() {
             onClick={() => {
               resetParams();
               setIsVacuumIntact(true);
-              setResistanceMode("high-resistance");
+              setResistanceMode("source-high-resistance");
               soundEngine.playSwitchClick();
             }}
             aria-label="Reset Simulation"
@@ -111,7 +132,7 @@ export function EdisonBulbSim() {
           {isBurnedOut && (
             <div className="absolute top-4 left-4 z-20 px-3 py-1 bg-red-950/90 border border-red-700 text-red-300 text-xs font-mono rounded-lg flex items-center gap-1.5">
               <AlertCircle className="w-4 h-4" />
-              Filament Oxidized! In atmosphere, carbon burns to CO₂ in &lt;1 second.
+              Vacuum boundary broken: the hot carbon path oxidizes instead of remaining stable.
             </div>
           )}
 
@@ -119,7 +140,7 @@ export function EdisonBulbSim() {
           <svg
             viewBox="0 0 300 260"
             role="img"
-            aria-label={`Edison incandescent bulb simulation: filament at ${Math.round(tempKelvin)} Kelvin with ${voltage} volts applied, ${isBurnedOut ? "filament burned out" : "vacuum intact"}, ${resistanceMode === "high-resistance" ? "high-resistance filament" : "low-resistance filament"}`}
+            aria-label={`Source-bounded Edison lamp and interpretive parallel house branch: ${voltage} volts applied, ${isBurnedOut ? "vacuum boundary broken" : "vacuum intact"}, ${resistanceMode === "source-high-resistance" ? "source high-resistance filament" : "reported prior-practice resistance counterfactual"}`}
             className="w-full max-w-xs h-auto select-none relative z-10"
           >
             <defs>
@@ -128,9 +149,9 @@ export function EdisonBulbSim() {
                   offset="0%"
                   stopColor={getFilamentColor()}
                   stopOpacity={
-                    isBurnedOut
+                    isBurnedOut || priorArtOverload
                       ? 0
-                      : resistanceMode === "high-resistance"
+                      : resistanceMode === "source-high-resistance"
                         ? Math.min(1, bulb.glowStopInner * (1 + Math.abs(bulb.filamentHeatSample)))
                         : bulb.lowResistanceGlowStopInner
                   }
@@ -139,9 +160,9 @@ export function EdisonBulbSim() {
                   offset="60%"
                   stopColor={getFilamentColor()}
                   stopOpacity={
-                    isBurnedOut
+                    isBurnedOut || priorArtOverload
                       ? 0
-                      : resistanceMode === "high-resistance"
+                      : resistanceMode === "source-high-resistance"
                         ? bulb.glowStopOuter
                         : bulb.lowResistanceGlowStopOuter
                   }
@@ -150,40 +171,61 @@ export function EdisonBulbSim() {
               </radialGradient>
             </defs>
 
-            {/* Glowing Light Aura */}
-            <circle cx="150" cy="110" r="110" fill="url(#edisonGlassGlow)" />
+            {/* Interpretive domestic wall and mounting board reach the frame floor. */}
+            <rect x="20" y="20" width="260" height="225" rx="4" fill="#1e293b" />
+            <rect x="20" y="230" width="260" height="15" fill="#3f2a1f" />
+            <rect x="62" y="208" width="176" height="35" rx="4" fill="#5b3825" />
 
-            {/* Pear-Shaped Hand-Blown Glass Bulb Enclosure */}
+            <circle cx="150" cy="105" r="100" fill="url(#edisonGlassGlow)" />
+
+            {/* Fig. 1 all-glass exhausted receiver: no later screw base. */}
             <path
-              d="M 110,180 C 80,140 85,70 150,70 C 215,70 220,140 190,180 Z"
-              fill="none"
+              d="M 130,176 C 94,156 88,92 112,58 C 131,31 169,31 188,58 C 212,92 206,156 170,176 L 170,194 L 130,194 Z"
+              fill="#0f172a"
+              fillOpacity="0.35"
               stroke="#94a3b8"
               strokeWidth="2.5"
               opacity="0.85"
             />
+            <path d="M 147,39 L 150,29 L 153,39" fill="none" stroke="#94a3b8" strokeWidth="2" />
+            <rect x="138" y="144" width="24" height="49" rx="8" fill="#cbd5e1" fillOpacity="0.18" />
 
-            {/* Copper Screw Base & Platinum Lead Wires */}
-            <rect
-              x="130"
-              y="180"
-              width="40"
-              height="30"
-              rx="3"
-              fill="#b45309"
-              stroke="#f59e0b"
-              strokeWidth="1.5"
-            />
-            <line x1="140" y1="180" x2="140" y2="135" stroke="#cbd5e1" strokeWidth="2" />
-            <line x1="160" y1="180" x2="160" y2="135" stroke="#cbd5e1" strokeWidth="2" />
-
-            {/* Carbonized Cotton Sewing Thread Horseshoe Filament */}
+            {/* Continuous source path: a → c/c′ → d/d′ → h/h′ → x/x′ → e/e′. */}
             <path
-              d="M 140,135 C 140,95 160,95 160,135"
+              d="M 140,117 C 133,88 139,70 150,66 C 161,70 167,88 160,117"
               fill="none"
               stroke={getFilamentColor()}
-              strokeWidth={resistanceMode === "high-resistance" ? "2" : "5"}
+              strokeWidth={resistanceMode === "source-high-resistance" ? "3" : "6"}
               strokeLinecap="round"
             />
+            <path d="M 140,117 L 137,128" stroke="#402820" strokeWidth="7" strokeLinecap="round" />
+            <path d="M 160,117 L 163,128" stroke="#402820" strokeWidth="7" strokeLinecap="round" />
+            <path d="M 137,128 L 141,143" stroke="#dbe4ea" strokeWidth="2.5" />
+            <path d="M 163,128 L 159,143" stroke="#dbe4ea" strokeWidth="2.5" />
+            <circle cx="141" cy="146" r="5" fill="#dbe4ea" />
+            <circle cx="159" cy="146" r="5" fill="#dbe4ea" />
+            <path d="M 141,151 L 141,204" stroke="#b86132" strokeWidth="3" />
+            <path d="M 159,151 L 159,204" stroke="#b86132" strokeWidth="3" />
+
+            {/* Collar plus brackets physically carry the receiver. */}
+            <path d="M 126,181 Q 105,198 88,213" fill="none" stroke="#b88635" strokeWidth="5" />
+            <path d="M 174,181 Q 195,198 212,213" fill="none" stroke="#b88635" strokeWidth="5" />
+            <path d="M 126,181 Q 150,190 174,181" fill="none" stroke="#d0a34e" strokeWidth="5" />
+
+            {/* External leads land on posts, then enter one closed house branch. */}
+            <path d="M 141,204 Q 125,218 106,225" fill="none" stroke="#2b211b" strokeWidth="5" />
+            <path d="M 159,204 Q 178,218 194,225" fill="none" stroke="#2b211b" strokeWidth="5" />
+            <circle cx="106" cy="225" r="7" fill="#e8e1cf" stroke="#b88635" strokeWidth="3" />
+            <circle cx="194" cy="225" r="7" fill="#e8e1cf" stroke="#b88635" strokeWidth="3" />
+            <path d="M 106,225 L 42,225 L 42,45" fill="none" stroke="#29231d" strokeWidth="4" />
+            <path d="M 194,225 L 230,225 L 230,190" fill="none" stroke="#29231d" strokeWidth="4" />
+            <circle cx="230" cy="190" r="5" fill="#b88635" />
+            <circle cx="230" cy="165" r="5" fill="#b88635" />
+            <path d="M 230,190 L 230,165" stroke="#d0a34e" strokeWidth="5" />
+            <path d="M 230,165 L 258,165 L 258,45" fill="none" stroke="#29231d" strokeWidth="4" />
+            <text x="28" y="256" fill="#94a3b8" fontSize="9">
+              INTERPRETIVE DOMESTIC PARALLEL BRANCH · CLOSED SWITCH
+            </text>
           </svg>
 
           {/* Telemetry Footer */}
@@ -193,17 +235,23 @@ export function EdisonBulbSim() {
               <span className="text-amber-400 font-bold">{currentAmps.toFixed(2)} A</span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">POWER CONSUMED</span>
+              <span className="text-ink-500 block text-[10px]">ELECTRICAL INPUT</span>
               <span className="text-emerald-400 font-bold">{Math.round(powerWatts)} W</span>
             </div>
             <div>
               <span className="text-ink-500 block text-[10px]">FILAMENT TEMP</span>
-              <span className="text-orange-400 font-bold">{tempKelvin} K</span>
+              <span className="text-orange-400 font-bold">
+                {priorArtOverload ? "REFUSED" : `${Math.round(tempKelvin)} K`}
+              </span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">DESIGN LIFE</span>
+              <span className="text-ink-500 block text-[10px]">THERMAL OWNER</span>
               <span className="text-purple-400 font-bold">
-                {resistanceMode === "high-resistance" ? `${bulb.designLifeHours} h` : "—"}
+                {resistanceMode === "source-high-resistance"
+                  ? kernelSource === "wasm" && radiative.runtimeSource === "wasm"
+                    ? "FS WASM"
+                    : "TS FALLBACK"
+                  : "OUT OF DOMAIN"}
               </span>
             </div>
           </div>
@@ -224,61 +272,74 @@ export function EdisonBulbSim() {
               <div className="grid grid-cols-1 gap-2 text-xs font-mono">
                 <button
                   type="button"
-                  onClick={() => setResistanceMode("high-resistance")}
+                  onClick={() => setResistanceMode("source-high-resistance")}
                   className={`p-2.5 rounded-lg border text-left transition-colors ${
-                    resistanceMode === "high-resistance"
+                    resistanceMode === "source-high-resistance"
                       ? "bg-amber-700 text-white border-amber-800 font-bold shadow-sm"
                       : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
                   }`}
                 >
                   <div className="flex justify-between items-center">
-                    <span>Edison High Resistance (100 Ω)</span>
+                    <span>Source high resistance ({bulb.hotResistanceOhm.toFixed(0)} Ω)</span>
                     <span className="text-amber-200">✓ Feasible</span>
                   </div>
                   <div className="text-[10px] opacity-80 mt-0.5">
-                    Draws only 1.1 A; allows thin copper cables across a whole city block.
+                    Within the source&apos;s 100–500 Ω example range; supports multiple-arc
+                    subdivision without enormous mains.
                   </div>
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => setResistanceMode("low-resistance")}
+                  onClick={() => setResistanceMode("reported-prior-art")}
                   className={`p-2.5 rounded-lg border text-left transition-colors ${
-                    resistanceMode === "low-resistance"
+                    resistanceMode === "reported-prior-art"
                       ? "bg-red-700 text-white border-red-800 font-bold shadow-sm"
                       : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
                   }`}
                 >
                   <div className="flex justify-between items-center">
-                    <span>Swan / Prior Art ({bulb.lowResistanceOhm} Ω)</span>
-                    <span className="text-red-200">✗ Impractical</span>
+                    <span>Reported prior practice ({bulb.lowResistanceOhm} Ω)</span>
+                    <span className="text-red-200">✗ Branch overload</span>
                   </div>
                   <div className="text-[10px] opacity-80 mt-0.5">
-                    Draws {currentAmps.toFixed(1)} A; {feederResistance} Ω copper feeder wires
-                    overheat ({Math.round(feederPowerLossWatts)} W lost).
+                    The same illustrative branch voltage would draw{" "}
+                    {bulb.lowResistanceAmps.toFixed(1)} A; the thermal state is refused while{" "}
+                    {feederResistance} Ω feeder loss reaches{" "}
+                    {Math.round(bulb.lowResistanceFeederLossWatts)} W.
                   </div>
                 </button>
               </div>
             </div>
 
             <MaterialCard
-              name={resistanceMode === "high-resistance" ? "Carbonized bamboo" : "Platinum wire"}
-              formula={resistanceMode === "high-resistance" ? "C (bamboo)" : "Pt"}
+              name={
+                resistanceMode === "source-high-resistance"
+                  ? "Carbonized fibrous filament"
+                  : "Reported prior-practice carbon rod"
+              }
+              formula="C"
               role={
-                resistanceMode === "high-resistance"
-                  ? "High-resistance carbon thread: enough ohms that a 110 V feeder can light many lamps in parallel."
-                  : "Low-resistance metal: needs huge current. Feeder I²R eats the station."
+                resistanceMode === "source-high-resistance"
+                  ? "High-resistance carbon thread secured to platina contacts inside an all-glass exhausted receiver."
+                  : "The specification reports one-to-four-ohm carbon rods as prior practice; this branch-voltage comparison is explicitly counterfactual."
               }
               numbers={[
-                { label: "Hot T", value: `${tempKelvin} K` },
-                { label: "R", value: `${resistanceOhms.toFixed(1)} Ω` },
-                { label: "P_rad", value: `${powerWatts.toFixed(1)} W` },
                 {
-                  label: "lm/W",
+                  label: "Hot T",
+                  value: priorArtOverload ? "refused" : `${Math.round(tempKelvin)} K`,
+                },
+                { label: "R", value: `${resistanceOhms.toFixed(1)} Ω` },
+                {
+                  label: resistanceMode === "source-high-resistance" ? "P_rad" : "P_in",
+                  value: `${powerWatts.toFixed(1)} W`,
+                },
+                {
+                  label: "closure",
                   value:
-                    resistanceMode === "high-resistance"
-                      ? `${bulb.luminousLmPerW}`
-                      : "counterfactual",
+                    resistanceMode === "source-high-resistance"
+                      ? radiative.relative_energy_closure.toExponential(1)
+                      : "n/a",
                 },
               ]}
             />
@@ -287,7 +348,7 @@ export function EdisonBulbSim() {
             <div className="space-y-1">
               <div className="flex justify-between text-xs font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Generator Terminal Voltage
+                  Illustrative Branch Voltage
                 </span>
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
                   {voltage} Volts
@@ -295,7 +356,7 @@ export function EdisonBulbSim() {
               </div>
               <input
                 type="range"
-                aria-label="Generator Terminal Voltage"
+                aria-label="Illustrative Branch Voltage"
                 min="40"
                 max="130"
                 step="1"
@@ -305,6 +366,12 @@ export function EdisonBulbSim() {
               />
             </div>
           </div>
+          <p className="text-xs text-ink-600 dark:text-ink-400">
+            Lamp geometry follows Fig. 1. The supported wall bracket, closed switch, and house
+            branch are interpretive context for the patent&apos;s “multiple arc” distribution
+            argument; voltage, hot resistance, emissivity 0.8, ambient temperature, and the 22 cm
+            thermal-area length are declared model inputs, not printed source constants.
+          </p>
         </div>
       </div>
     </div>

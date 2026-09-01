@@ -52,6 +52,12 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 1,102,653 prints apparatus geometry and firing order but no burn rate, force, speed, or power datum from which an SI energy channel can be derived.",
   "us-361931-daimler-engine":
     "US 361,931 prints marine shaft, coupling, reversing, cooling, steering, and gas-storage topology but no speed, torque, friction coefficient, flow, heat, or power datum from which an SI energy channel can be derived.",
+  "us-593138-tesla-coil":
+    "US 593,138 prints winding geometry, terminal relationships, an earth connection, and a quarter-wave example but no capacitance, spark rate, current, load, loss, or power datum from which an SI energy channel can be derived.",
+  "us-6331181-davinci":
+    "US 6,331,181 prints tool-memory, compatibility, calibration-offset, engagement, and linkage topology but no motor torque, drive speed, friction, electrical load, or power datum from which an SI energy channel can be derived.",
+  "us-4750-howe-sewing-machine":
+    "US 4,750 prints the mechanism topology and two local dimensions but no force, torque, inertia, speed, friction, or power datum from which an SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -70,7 +76,7 @@ export function energyChannelsFor(
   if (patentId === "us-223898-edison-lightbulb" || patentId === "us-223898-edison-lamp") {
     const bulb = stepEdisonBulb({
       voltage: params.voltage ?? 110,
-      filamentLength: params.filamentLength,
+      hotResistanceOhm: params.hotResistanceOhm,
     });
     return [
       { name: "Joule heat", watts: bulb.radiantWatts, tone: "in" },
@@ -679,13 +685,7 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-6331181-davinci") {
-    const scale = params.motionScaleRatio ?? 3.0;
-    const totalW = 65.0 * (scale / 3.0);
-    return [
-      { name: "Servomotor Drive", watts: totalW, tone: "in" },
-      { name: "Surgical Manipulation", watts: totalW * 0.78, tone: "useful" },
-      { name: "Cable Tendon Friction", watts: totalW * 0.22, tone: "loss" },
-    ];
+    return [];
   }
 
   if (patentId === "us-6594844-roomba") {
@@ -708,12 +708,7 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-4750-howe-sewing-machine") {
-    const crankW = (params.crankRpm ?? 120) * 0.25;
-    return [
-      { name: "Hand Crank", watts: crankW, tone: "in" },
-      { name: "Needle & Shuttle Work", watts: crankW * 0.68, tone: "useful" },
-      { name: "Thread Tension Friction", watts: crankW * 0.32, tone: "loss" },
-    ];
+    return [];
   }
 
   if (patentId === "us-105338-hyatt-celluloid") {
@@ -884,12 +879,7 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-593138-tesla-coil") {
-    const tankW = 2500;
-    return [
-      { name: "Primary Spark Tank Power", watts: tankW, tone: "in" },
-      { name: "Resonant Secondary High-Frequency Field", watts: tankW * 0.82, tone: "useful" },
-      { name: "Spark Gap Arc & Skin-Effect Loss", watts: tankW * 0.18, tone: "loss" },
-    ];
+    return [];
   }
 
   if (patentId === "us-613809-tesla-teleautomaton") {

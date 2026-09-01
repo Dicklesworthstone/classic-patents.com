@@ -57,10 +57,10 @@ describe("Specification Clauses & Interactive Telemetry Weave", () => {
     expect(marconi[0].active).toBe(true);
   });
 
-  test("Edison lightbulb lights high resistance and vacuum clauses under voltage telemetry", () => {
+  test("Edison lightbulb lights source clauses under declared resistance telemetry", () => {
     const clauses = specClausesFor("us-223898-edison-lightbulb", {
       voltage: 110,
-      filamentLength: 22,
+      hotResistanceOhm: 145,
     });
     expect(clauses.length).toBe(4);
     expect(clauses[0].phrase).toContain("high resistance");
@@ -71,7 +71,7 @@ describe("Specification Clauses & Interactive Telemetry Weave", () => {
     expect(clauses[2].phrase).toBe("fine platina wires for leading-wires");
     expect(clauses[3].phrase).toBe("coiled as a spiral and carbonized");
     expect(clauses[3].active).toBe(true);
-    expect(clauses[3].tone).toBe("live");
+    expect(clauses[3].tone).toBe("held");
   });
 
   test("Bell telephone lights undulatory current and air vibration undulation clauses", () => {

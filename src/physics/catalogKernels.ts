@@ -15,6 +15,13 @@ import {
   spencerCavityWave,
 } from "./deepWasm";
 import {
+  EDISON_DECLARED_FILAMENT_LENGTH_CM,
+  EDISON_DECLARED_HOT_RESISTANCE_OHM,
+  EDISON_SOURCE_MAX_RESISTANCE_OHM,
+  EDISON_SOURCE_MIN_RESISTANCE_OHM,
+  stepEdisonRadiativeBalance,
+} from "./edisonWasm";
+import {
   bellowsFluidCrate,
   bellWaveCrate,
   chainHeatCrate,
@@ -1897,16 +1904,29 @@ export function noyceSchematicContactX(index: number, originX = 115, pitchX = 80
   return originX + index * pitchX;
 }
 
-export function stepEdisonBulb(params: { voltage?: number; filamentLength?: number }) {
+export function stepEdisonBulb(params: {
+  voltage?: number;
+  hotResistanceOhm?: number;
+  filamentLength?: number;
+}) {
   const v = params.voltage ?? 110;
-  const len = params.filamentLength ?? 22;
-  const tempK = Math.round(1200 + (v / 130) * 1150);
-  const resOhm = Math.round(90 + (tempK / 2350) * 60 * (len / 22));
-  const powerWatts = Number((v ** 2 / resOhm).toFixed(1));
-  const currentAmps = Number((v / resOhm).toFixed(3));
-  // Carbon-filament life ≈ 1200 h at 110 V, Langmuir V^{-3.5} scaling.
-  const designLifeHours = Math.round(1200 / (Math.max(v, 1) / 110) ** 3.5);
-  // Swan/Maxim low-R counterfactual (1.5 Ω feeder hog) shares one formula.
+  const len = params.filamentLength ?? EDISON_DECLARED_FILAMENT_LENGTH_CM;
+  const resOhm = params.hotResistanceOhm ?? EDISON_DECLARED_HOT_RESISTANCE_OHM;
+  if (resOhm < EDISON_SOURCE_MIN_RESISTANCE_OHM || resOhm > EDISON_SOURCE_MAX_RESISTANCE_OHM) {
+    throw new Error("Edison patent surface requires the source's 100-to-500-ohm example range");
+  }
+  const radiative = stepEdisonRadiativeBalance({
+    voltageV: v,
+    hotResistanceOhm: resOhm,
+    filamentLengthCm: len,
+  });
+  if (!radiative) throw new Error("Edison radiative balance refused finite catalogue inputs");
+  const tempK = Math.round(radiative.filament_temperature_k);
+  const powerWatts = Number(radiative.radiative_power_w.toFixed(1));
+  const currentAmps = Number(radiative.current_a.toFixed(3));
+  const referenceRadiantPowerWatts = 110 ** 2 / EDISON_DECLARED_HOT_RESISTANCE_OHM;
+  // The 1.5 Ω comparison lies inside the source's reported one-to-four-ohm
+  // prior practice. Its same-voltage thermal state is deliberately refused.
   const lowResistanceOhm = 1.5;
   const lowResistanceWatts = Number((v ** 2 / lowResistanceOhm).toFixed(1));
   const lowResistanceAmps = Number((v / lowResistanceOhm).toFixed(3));
@@ -1914,17 +1934,18 @@ export function stepEdisonBulb(params: { voltage?: number; filamentLength?: numb
     filamentTempK: tempK,
     hotResistanceOhm: resOhm,
     radiantWatts: powerWatts,
-    luminousLmPerW: Number(Math.max(0.1, ((tempK - 1400) / 1000) ** 2 * 2.8).toFixed(2)),
     feederResistanceOhm: 0.4,
     currentAmps,
     feederLossWatts: Number((currentAmps ** 2 * 0.4).toFixed(1)),
-    designLifeHours,
     lowResistanceOhm,
     lowResistanceWatts,
     lowResistanceAmps,
-    lowResistanceTempK: Math.round(300 + lowResistanceWatts ** 0.45 * 160),
+    radiativeEnergyClosure: radiative.relative_energy_closure,
+    radiativeRuntimeSource: radiative.runtimeSource,
     lowResistanceFeederLossWatts: Number((lowResistanceAmps ** 2 * 0.4).toFixed(1)),
-    incandescenceIntensity: Number(Math.min(1, (v / 110) ** 2).toFixed(3)),
+    incandescenceIntensity: Number(
+      Math.min(1, radiative.radiative_power_w / referenceRadiantPowerWatts).toFixed(3),
+    ),
     ...edisonFilamentHeat(v),
     thermalJitterPerS: Number(((tempK / 300) * 0.4).toFixed(3)),
     filamentEmissiveScale: 3.5,
@@ -1949,13 +1970,20 @@ export function stepEdisonBulb(params: { voltage?: number; filamentLength?: numb
     gasZOmega: 0.7,
     schematicEnvelopeD:
       "M 150 190 C 120 160 120 100 160 70 C 200 40 240 70 280 100 C 280 160 250 190 230 210 L 170 210 Z",
+    schematicHolderD: "M 178 205 L 183 150 Q 200 137 217 150 L 222 205 Z",
+    schematicLeftLeadD: "M 185 220 L 185 142 L 188 132",
+    schematicRightLeadD: "M 215 220 L 215 142 L 212 132",
+    schematicExternalLeftLeadD: "M 185 220 L 185 258",
+    schematicExternalRightLeadD: "M 215 220 L 215 258",
+    // Legacy fields retained for old consumers; the active schematic renders
+    // the source's glass holder and external leads, not a later screw base.
     schematicBaseD: "M 170 210 L 170 235 L 230 235 L 230 210 Z",
     schematicFootX1: 160,
     schematicFootX2: 240,
     schematicFootY: 245,
-    schematicFilamentD: "M 185 220 L 185 140 C 185 90 215 90 215 140 L 215 220",
-    schematicTerminalXs: [185, 215],
-    schematicTerminalY: 220,
+    schematicFilamentD: "M 188 132 C 178 100 184 82 200 78 C 216 82 222 100 212 132",
+    schematicTerminalXs: [188, 212],
+    schematicTerminalY: 132,
     schematicTerminalR: 4,
   };
 }

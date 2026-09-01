@@ -4,6 +4,7 @@
  */
 
 import { stepFermiKinetics } from "./fermiKinetics";
+import { stepHoweSewingMachine } from "./machineKernels";
 import { stepTeslaMotorFig9, teslaMotorPhaseHz } from "./teslaKernel";
 
 export interface SpecClause {
@@ -700,17 +701,18 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
 
   if (patentId === EDISON_LIGHTBULB_ID || patentId === EDISON_LAMP_LEGACY_ID) {
     const voltage = params.voltage ?? 110;
-    const filamentLength = params.filamentLength ?? 22;
-    const isIncandescent = voltage >= 85;
+    const hotResistanceOhm = params.hotResistanceOhm ?? 145;
+    const currentA = voltage / hotResistanceOhm;
+    const isSourceHighResistance = hotResistanceOhm >= 100 && hotResistanceOhm <= 500;
 
     return [
       {
         id: "high-resistance",
         phrase:
           "high resistance, so as to allow of the practical subdivision of the electric light",
-        active: isIncandescent,
-        tone: voltage >= 100 ? "live" : "held",
-        caption: `V = ${voltage} V: High carbon filament resistance (>100 Ω hot) enables high voltage, low current distribution across parallel circuit branches.`,
+        active: isSourceHighResistance,
+        tone: isSourceHighResistance ? "live" : "held",
+        caption: `Declared R = ${hotResistanceOhm} Ω and V = ${voltage} V give I = ${currentA.toFixed(2)} A. The grant reports 100–500 Ω for its carbonized-thread example and contrasts that range with 1–4 Ω prior practice.`,
       },
       {
         id: "vacuum-preservation",
@@ -718,7 +720,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: true,
         tone: "held",
         caption:
-          "Sprengel mercury pump vacuum (< 10⁻⁶ atm) prevents carbon oxidation and thermal convection loss at incandescent temperatures.",
+          "The source reports a sealed bulb exhausted to one-millionth of an atmosphere (about 7.6×10⁻⁴ Torr), then separately describes exhaustion by a mercury pump and hermetic sealing.",
       },
       {
         id: "platina-leads",
@@ -726,14 +728,15 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: true,
         tone: "held",
         caption:
-          "Platinum leads match the thermal expansion coefficient of glass (α ≈ 9×10⁻⁶/K), maintaining the hermetic seal during thermal cycling.",
+          "Edison says platina can be used because its expansion is nearly the same as glass, allowing fine leading wires to cross the sealed receiver wall.",
       },
       {
         id: "spiral-filament",
         phrase: "coiled as a spiral and carbonized",
-        active: filamentLength >= 15,
-        tone: filamentLength >= 20 ? "live" : "held",
-        caption: `L = ${filamentLength} cm: Carbonized spiral thread concentrates radiant surface area while maintaining high path resistance.`,
+        active: true,
+        tone: "held",
+        caption:
+          "The source says a suitably coiled carbon residue can reach 2,000 Ω without exposing more than three-sixteenths of an inch of radiating surface; the display loop remains source topology, not a length measurement.",
       },
     ];
   }
@@ -1221,9 +1224,9 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
       {
         id: "high-potential-discharge",
         phrase: "developing electrical currents of high potential",
-        active: vinKv >= 10,
+        active: vinKv > 0,
         tone: "live",
-        caption: `Vin = ${vinKv} kV: Resonant step-up transforms tank energy to megavolt RF potential.`,
+        caption: `Illustrative excitation = ${vinKv} kV. The source claims high-potential conversion but does not print this input or a megavolt performance value.`,
       },
       {
         id: "voltage-grading",
@@ -1241,7 +1244,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: true,
         tone: "held",
         caption:
-          "Center-fed flat spiral maximizes self-inductance while minimizing inter-turn capacitance and dielectric breakdown.",
+          "The flat-spiral form keeps the high-potential point remote while adjacent turns remain comparatively near one another in potential.",
       },
     ];
   }
@@ -1438,21 +1441,30 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
 
   if (patentId === "us-4750-howe-sewing-machine") {
     const rpm = params.crankRpm ?? 240;
+    const sew = stepHoweSewingMachine(rpm, params.loopSlackPct ?? 65, params.stitchPitchMm ?? 3.5);
     return [
       {
         id: "needle",
         phrase: "needle",
         active: rpm > 0,
         tone: "live",
-        caption: `Crank=${rpm} RPM: Curved eye-pointed needle carries upper thread through fabric.`,
+        caption: `The curved needle remains fixed to arm G; its printed eye is about ${sew.needleEyeFromPointIn} inch from the point. ${rpm} RPM is a declared display cadence.`,
       },
       {
         id: "shuttle",
         phrase: "shuttle",
-        active: rpm > 0,
-        tone: "live",
-        caption:
-          "Reciprocating shuttle passes lower bobbin thread through loop to lock the stitch.",
+        active: sew.claim1InterlockPossible,
+        tone: sew.claim1InterlockPossible ? "held" : "broken",
+        caption: sew.claim1InterlockPossible
+          ? "Shuttle K remains in trough I and can pass between the needle and upper thread during the loop-open phase."
+          : "Refused: the displayed upper-thread loop does not clear shuttle K, so the claimed interlock cannot be reported.",
+      },
+      {
+        id: "lifting-rod",
+        phrase: "lifting rod",
+        active: sew.loopSlackPct > 0,
+        tone: sew.loopSlackPct > 0 ? "live" : "broken",
+        caption: `Rod W supplies ${sew.loopSlackPct}% displayed loop slack; this is a normalized presentation control, not a force measurement from the grant.`,
       },
     ];
   }
@@ -2162,6 +2174,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
 
   if (patentId === "us-6331181-davinci") {
     const ratio = params.motionScaleRatio ?? 3.0;
+    const compatibilityPresent = (params.tremorFilterEnabled ?? 1) > 0.5;
     return [
       {
         id: "robotic-surgical-tool",
@@ -2169,14 +2182,16 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: true,
         tone: "held",
         caption:
-          "Articulated wrist end-effector inside patient replicates surgeon hand movements with 7 degrees of freedom.",
+          "The releasable tool carries a proximal interface, a distal end effector, and tool-specific circuitry or memory.",
       },
       {
         id: "processor-which-directs-movement",
         phrase: "processor which directs movement",
-        active: ratio >= 1.0,
+        active: compatibilityPresent,
         tone: "live",
-        caption: `Motion Scaling=${ratio}:1: Digital processor scales movements and filters resting hand tremor.`,
+        caption: compatibilityPresent
+          ? `Compatibility identifier is present; the ${ratio.toFixed(0)}-entry illustrative offset control represents tool-specific data available to the processor.`
+          : "Compatibility identifier is absent, so the source-facing processor/tool boundary is not satisfied.",
       },
     ];
   }

@@ -40,6 +40,9 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
     expect(Object.keys(ENERGY_CHANNEL_OMISSION_REASONS)).toEqual([
       "us-1102653-goddard-rocket",
       "us-361931-daimler-engine",
+      "us-593138-tesla-coil",
+      "us-6331181-davinci",
+      "us-4750-howe-sewing-machine",
     ]);
   });
 

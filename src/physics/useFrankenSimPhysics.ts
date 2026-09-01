@@ -16,6 +16,8 @@ export interface TransportTapeFrame {
 }
 
 type TapeListener = (frame: TransportTapeFrame) => void;
+const TRANSPORT_TICK_S = 1 / 60;
+const TRANSPORT_TICK_MS = TRANSPORT_TICK_S * 1000;
 
 export type TapeUpdater = (
   prev: UniversalPatentPhysicsTelemetry,
@@ -58,17 +60,18 @@ class PatentTransport {
 
   constructor(
     patentId: string,
-    tickS = 1 / 60,
+    tickS = TRANSPORT_TICK_S,
     initialTelemetry: Partial<UniversalPatentPhysicsTelemetry> = {},
   ) {
     this.patentId = patentId;
     this.tickS = tickS;
-    const nowS = typeof performance !== "undefined" ? performance.now() / 1000 : 0;
-    this.scheduler = new TickScheduler(tickS, nowS, 3);
+    // Begin at the first virtual step. Machine uptime and mount timing must not
+    // alter the first transport tick or replay digest.
+    this.scheduler = new TickScheduler(tickS, tickS, 3);
 
     this.lastFrame = {
       tick: 0,
-      atMs: nowS * 1000,
+      atMs: 0,
       digest: "00000000",
       provenance: "HONEST_PLACEHOLDER",
       telemetry: FrankenSimEngine.createTelemetryEnvelope(patentId, initialTelemetry),
@@ -140,7 +143,7 @@ class PatentTransport {
     if (digest === this.lastFrame.digest && provenance === this.lastFrame.provenance) return;
 
     this.lastFrame = {
-      tick: this.lastFrame.tick,
+      tick: this.lastFrame.tick + 1,
       atMs: nowMs,
       digest,
       provenance,
@@ -154,6 +157,7 @@ class TransportBus {
   private transports = new Map<string, PatentTransport>();
   private rafId: number | null = null;
   private updaters = new Map<string, { updater: TapeUpdater; provenance?: Provenance }>();
+  private virtualNowMs = 0;
 
   getTransport(
     patentId: string,
@@ -197,11 +201,9 @@ class TransportBus {
     if (this.updaters.has(patentId)) return false;
     const transport = this.getTransport(patentId, update);
     transport.declaredProvenance = provenance;
-    transport.publishSnapshot(
-      typeof performance !== "undefined" ? performance.now() : Date.now(),
-      update,
-      provenance,
-    );
+    const virtualAtMs = transport.lastFrame.atMs + TRANSPORT_TICK_MS;
+    this.virtualNowMs = Math.max(this.virtualNowMs, virtualAtMs);
+    transport.publishSnapshot(virtualAtMs, update, provenance);
     return true;
   }
 
@@ -210,8 +212,8 @@ class TransportBus {
     if (typeof window === "undefined") return;
 
     const loop = () => {
-      const now = performance.now();
       let pumpedAny = false;
+      const virtualNowMs = this.virtualNowMs + TRANSPORT_TICK_MS;
       for (const [patentId, transport] of this.transports) {
         // A transport with no subscribers or no registered updater cannot
         // emit a frame; pumping it would burn rAF iterations for nothing
@@ -220,7 +222,7 @@ class TransportBus {
         const entry = this.updaters.get(patentId);
         if (!entry) continue;
         transport.declaredProvenance = entry.provenance;
-        transport.pump(now, entry.updater);
+        transport.pump(virtualNowMs, entry.updater);
         pumpedAny = true;
       }
       if (!pumpedAny) {
@@ -233,6 +235,7 @@ class TransportBus {
         }
         return;
       }
+      this.virtualNowMs = virtualNowMs;
       this.rafId = requestAnimationFrame(loop);
     };
     this.rafId = requestAnimationFrame(loop);
@@ -267,13 +270,20 @@ export function useFrankenSimPhysics(
     (
       updater: (prev: UniversalPatentPhysicsTelemetry) => Partial<UniversalPatentPhysicsTelemetry>,
     ) => {
-      transport.lastFrame.telemetry = {
+      const atMs = transport.lastFrame.atMs + TRANSPORT_TICK_MS;
+      const telemetry: UniversalPatentPhysicsTelemetry = {
         ...transport.lastFrame.telemetry,
         ...updater(transport.lastFrame.telemetry),
-        timestampMs: Date.now(),
+        timestampMs: atMs,
       };
-      transport.lastFrame.digest = telemetryDigest(transport.lastFrame.telemetry);
-      setFrame({ ...transport.lastFrame });
+      transport.lastFrame = {
+        ...transport.lastFrame,
+        tick: transport.lastFrame.tick + 1,
+        atMs,
+        digest: telemetryDigest(telemetry),
+        telemetry,
+      };
+      setFrame(transport.lastFrame);
     },
     [transport],
   );

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import * as THREE from "three";
-import { DA_VINCI_MODEL_BASE_HEIGHT_M, stepDaVinci } from "@/physics/daVinciKernel";
+import { stepDaVinci } from "@/physics/daVinciKernel";
 import { stepEInk } from "@/physics/eInkKernel";
 import { stepMultiTouch } from "@/physics/multiTouchKernel";
 import { stepPageRank } from "@/physics/pageRankKernel";
@@ -165,26 +165,65 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
         0,
       );
       const model = buildDaVinciModel();
-      model.baseGroup.position.set(
-        state.slaveX,
-        state.slaveY + DA_VINCI_MODEL_BASE_HEIGHT_M,
-        state.slaveZ,
-      );
-      model.baseGroup.rotation.y = state.baseYawRad;
-      model.baseGroup.rotation.x = state.shoulderPitchRad;
-      model.updateKinematics(
+      model.updateArmPose(
+        state.baseYawRad,
+        state.shoulderPitchRad,
+        state.elbowPitchRad,
         state.wristPitchRad,
         state.wristYawRad,
         state.wristRollRad,
         state.gripRad,
         [state.masterX, state.masterY + 0.8, state.masterZ],
+        [state.tipX, state.tipY, state.tipZ],
       );
-      model.alignEndEffectorTip(state.tipX, state.tipY, state.tipZ);
 
       const renderedTip = model.endEffectorTipAnchor.getWorldPosition(new THREE.Vector3());
       expect(renderedTip.x).toBeCloseTo(state.tipX, 8);
       expect(renderedTip.y).toBeCloseTo(state.tipY, 8);
       expect(renderedTip.z).toBeCloseTo(state.tipZ, 8);
+      for (const connection of model.connectivityReceipt()) {
+        expect(connection.gapMeters).toBeLessThanOrEqual(1e-8);
+      }
+      expect(() => model.dispose()).not.toThrow();
+    });
+
+    test("keeps every cart-to-jaw interface connected across the control envelope", () => {
+      const model = buildDaVinciModel();
+      for (const motionScaleRatio of [1, 3, 10]) {
+        for (const tremorFilterEnabled of [false, true]) {
+          let previous: ReturnType<typeof stepDaVinci> | undefined;
+          for (let timeSec = 0; timeSec <= 12; timeSec += 0.25) {
+            const state = stepDaVinci(
+              {
+                motionScaleRatio,
+                tremorFilterEnabled,
+                masterInputSpeedMps: 1.5,
+                gripAngleDeg: 12,
+              },
+              timeSec,
+              previous,
+              0.25,
+            );
+            previous = state;
+            expect(() =>
+              model.updateArmPose(
+                state.baseYawRad,
+                state.shoulderPitchRad,
+                state.elbowPitchRad,
+                state.wristPitchRad,
+                state.wristYawRad,
+                state.wristRollRad,
+                state.gripRad,
+                [state.masterX, state.masterY + 0.8, state.masterZ],
+                [state.tipX, state.tipY, state.tipZ],
+              ),
+            ).not.toThrow();
+            for (const connection of model.connectivityReceipt()) {
+              expect(connection.gapMeters).toBeLessThanOrEqual(1e-8);
+            }
+          }
+        }
+      }
       expect(() => model.dispose()).not.toThrow();
     });
   });

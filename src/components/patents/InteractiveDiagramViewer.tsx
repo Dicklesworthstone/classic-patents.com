@@ -733,7 +733,7 @@ function _renderHistoricalSchematic(
     case "edison-bulb": {
       const bulb = stepEdisonBulb({
         voltage: params?.voltage ?? 110,
-        filamentLength: params?.filamentLength ?? 22,
+        hotResistanceOhm: params?.hotResistanceOhm,
       });
       const filamentTemp = bulb.filamentTempK;
       const _glowOpacity = edisonSchematicGlowOpacity(filamentTemp);
@@ -746,14 +746,11 @@ function _renderHistoricalSchematic(
             stroke="#eab308"
             strokeWidth="2"
           />
-          <path d={bulb.schematicBaseD} fill="#64748b" stroke="#94a3b8" />
-          <line
-            x1={bulb.schematicFootX1}
-            y1={bulb.schematicFootY}
-            x2={bulb.schematicFootX2}
-            y2={bulb.schematicFootY}
-            stroke="#94a3b8"
-          />
+          <path d={bulb.schematicHolderD} fill="#cbd5e1" fillOpacity="0.18" stroke="#94a3b8" />
+          <path d={bulb.schematicLeftLeadD} stroke="#dbe4ea" strokeWidth="2" />
+          <path d={bulb.schematicRightLeadD} stroke="#dbe4ea" strokeWidth="2" />
+          <path d={bulb.schematicExternalLeftLeadD} stroke="#b86132" strokeWidth="2" />
+          <path d={bulb.schematicExternalRightLeadD} stroke="#b86132" strokeWidth="2" />
           <path d={bulb.schematicFilamentD} stroke="#f59e0b" strokeWidth="3" fill="none" />
           {bulb.schematicTerminalXs.map((_: number, i: number) => {
             const t = edisonSchematicTerminal(
@@ -1365,7 +1362,7 @@ function _renderHistoricalSchematic(
       );
     }
     case "howe-sewing": {
-      const howe = stepHoweSewingMachine(300, 120, 3.5);
+      const howe = stepHoweSewingMachine(300, 65, 3.5);
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect

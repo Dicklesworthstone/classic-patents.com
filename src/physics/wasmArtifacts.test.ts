@@ -1,7 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { decodeDaimlerMarineWasmStep } from "./daimlerWasm";
+import { decodeDaVinciTopologyWasmStep } from "./daVinciWasm";
+import { decodeEdisonRadiativeWasmStep } from "./edisonWasm";
 import { decodeFlyerState } from "./flyerWasm";
 import { decodeGoddardApparatusWasmStep, decodeGoddardWasmStep } from "./goddardWasm";
+import { decodeHoweTopologyWasmStep } from "./howeWasm";
 import { decodeTeslaWasmStep } from "./teslaWasm";
 
 async function wasmBytes(relativePath: string): Promise<ArrayBuffer> {
@@ -127,6 +130,84 @@ describe("shipped FrankenSim WebAssembly artifacts", () => {
     expect(refused.refusal?.repairs.length).toBeGreaterThan(0);
   });
 
+  test("instantiates the source-bounded da Vinci joint bundle and proves its refusal", async () => {
+    const module = await import("../../public/wasm/fs-davinci/fs_davinci_wasm.js");
+    const bytes = await wasmBytes("../../public/wasm/fs-davinci/fs_davinci_wasm_bg.wasm");
+    expect(WebAssembly.validate(bytes)).toBe(true);
+    await module.default({ module_or_path: bytes });
+
+    const topology = decodeDaVinciTopologyWasmStep(
+      module.davinci_topology_step(0.2, -0.3, 0.4, -0.1, 1.2, 0.25, true),
+    );
+    expect(topology).not.toBeNull();
+    expect(topology?.joint_dofs).toBe(6);
+    expect(topology?.base_yaw_axis).toEqual([0, 1, 0]);
+    expect(topology?.insertion_axis).toEqual([0, -1, 0]);
+    expect(topology?.compatibility_identifier_present).toBe(true);
+
+    const absent = decodeDaVinciTopologyWasmStep(
+      module.davinci_topology_step(0.2, -0.3, 0.4, -0.1, 1.2, -0.4, false),
+    );
+    expect(absent?.base_yaw_rad).toBe(0.2);
+    expect(absent?.insertion_normalized).toBe(-0.4);
+    expect(absent?.compatibility_identifier_present).toBe(false);
+
+    const refused = JSON.parse(module.davinci_topology_step(0, 0, 0, 0, 0, 1.2, true)) as {
+      refusal?: { code: string; repairs: string[] };
+    };
+    expect(refused.refusal?.code).toBe("input-outside-domain");
+    expect(refused.refusal?.repairs.length).toBeGreaterThan(0);
+  });
+
+  test("instantiates the source-bounded Howe multibody bundle and proves its refusal", async () => {
+    const module = await import("../../public/wasm/fs-howe/fs_howe_wasm.js");
+    const bytes = await wasmBytes("../../public/wasm/fs-howe/fs_howe_wasm_bg.wasm");
+    expect(WebAssembly.validate(bytes)).toBe(true);
+    await module.default({ module_or_path: bytes });
+
+    const pass = decodeHoweTopologyWasmStep(module.howe_topology_step(1.5 * Math.PI, 0.65, true));
+    expect(pass?.scalar_joint_coordinates).toBe(7);
+    expect(pass?.independent_drive_dofs).toBe(1);
+    expect(pass?.main_shaft_axis).toEqual([0, 0, 1]);
+    expect(pass?.shuttle_axis).toEqual([1, 0, 0]);
+    expect(pass?.shuttle_passes_loop).toBe(true);
+    expect(pass?.needle_eye_offset_in).toBe(0.125);
+    expect(pass?.baster_point_pitch_in).toBe(0.75);
+
+    const removedClaim = decodeHoweTopologyWasmStep(
+      module.howe_topology_step(1.5 * Math.PI, 0.65, false),
+    );
+    expect(removedClaim?.shuttle_passes_loop).toBe(false);
+    expect(removedClaim?.shuttle_track_offset_normalized).toBe(0.55);
+
+    const refused = JSON.parse(module.howe_topology_step(0, 1.2, true)) as {
+      refusal?: { code: string; repairs: string[] };
+    };
+    expect(refused.refusal?.code).toBe("input-outside-domain");
+    expect(refused.refusal?.repairs.length).toBeGreaterThan(0);
+  });
+
+  test("instantiates the Edison fs-conduction balance and proves its refusal", async () => {
+    const module = await import("../../public/wasm/fs-edison/fs_edison_wasm.js");
+    const bytes = await wasmBytes("../../public/wasm/fs-edison/fs_edison_wasm_bg.wasm");
+    expect(WebAssembly.validate(bytes)).toBe(true);
+    await module.default({ module_or_path: bytes });
+
+    const state = decodeEdisonRadiativeWasmStep(
+      module.edison_radiative_step(110, 150, Math.PI * 0.0001778 * 0.22, 0.8, 293.15),
+    );
+    expect(state).not.toBeNull();
+    expect(state?.runtimeSource).toBe("wasm");
+    expect(state?.filament_temperature_k).toBeGreaterThan(1800);
+    expect(state?.relative_energy_closure).toBeLessThan(1e-12);
+
+    const refused = JSON.parse(module.edison_radiative_step(110, 150, 0, 0.8, 293.15)) as {
+      refusal?: { code: string; repairs: string[] };
+    };
+    expect(refused.refusal?.code).toBe("non-positive-area");
+    expect(refused.refusal?.repairs.length).toBeGreaterThan(0);
+  });
+
   test("instantiates the dedicated interpretive Tesla bundle and proves its refusal", async () => {
     const module = await import("../../public/wasm/fs-tesla/fs_tesla_wasm.js");
     const bytes = await wasmBytes("../../public/wasm/fs-tesla/fs_tesla_wasm_bg.wasm");
@@ -162,6 +243,7 @@ describe("shipped FrankenSim WebAssembly artifacts", () => {
       ),
     ).toBeNull();
     expect(decodeGoddardWasmStep("not json")).toBeNull();
+    expect(decodeHoweTopologyWasmStep("not json")).toBeNull();
     expect(decodeGoddardWasmStep('{"ok":{"thrust_newtons":1}}')).toBeNull();
     expect(
       decodeGoddardWasmStep(
@@ -175,6 +257,8 @@ describe("shipped FrankenSim WebAssembly artifacts", () => {
     ).toBeNull();
 
     expect(decodeTeslaWasmStep("not json")).toBeNull();
+    expect(decodeEdisonRadiativeWasmStep("not json")).toBeNull();
+    expect(decodeEdisonRadiativeWasmStep('{"ok":{"voltage_v":110}}')).toBeNull();
     expect(decodeTeslaWasmStep('{"ok":{"resonant_freq_khz":100}}')).toBeNull();
     expect(
       decodeTeslaWasmStep(

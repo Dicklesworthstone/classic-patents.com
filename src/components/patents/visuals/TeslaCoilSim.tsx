@@ -2,9 +2,7 @@
 
 import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
-import { SparkWaterfall } from "@/components/patents/visuals/SparkWaterfall";
 import { FrankenSimEngine } from "@/physics/engine";
-import { teslaCoilWindingSvg } from "@/physics/teslaKernel";
 import { ensureTeslaWasm, teslaKernelSource } from "@/physics/teslaWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -28,7 +26,6 @@ export function TeslaCoilSim() {
   const inputKv = params.inputVoltageKv ?? 15;
   const sparkGap = params.sparkGapDistanceMm ?? 12;
   const couplingK = params.couplingK ?? 0.18;
-  const sparkRateHz = params.sparkRateHz ?? 120;
   const secondaryTurns = params.secondaryTurns ?? 850;
   const toploadCapacitancePf = params.toploadCapacitancePf ?? 35;
 
@@ -102,142 +99,115 @@ export function TeslaCoilSim() {
           <svg
             viewBox="0 0 600 340"
             role="img"
-            aria-label={`Tesla coil simulation: primary tank capacitor at ${primaryCapacitanceNf} nanofarads, ${streamerScale > 0 ? `streamer discharge at ${Math.round(streamerScale * 100)} percent intensity` : "no streamer discharge"}`}
+            aria-label={`US 593,138 Fig. 2 transformer: conical secondary, surrounding primary, common earth terminal, and ${streamerScale > 0 ? "interpretive remote-terminal discharge" : "no discharge"}`}
             className="w-full h-auto max-h-[340px]"
           >
             {/* Background Dark Lab */}
             <rect width="600" height="340" fill="#0a0f1d" />
 
-            {/* Floor Ground Plane */}
+            {/* Ground plane and mechanically supported table */}
             <line x1="50" y1="300" x2="550" y2="300" stroke="#334155" strokeWidth="3" />
-            {/* Ground Symbol */}
+            <rect x="145" y="260" width="310" height="24" rx="5" fill="#5c2c16" />
+            <rect x="175" y="284" width="22" height="16" fill="#5c2c16" />
+            <rect x="403" y="284" width="22" height="16" fill="#5c2c16" />
+
+            {/* Fig. 2 conical insulating support and graded secondary B */}
             <path
-              d="M 300 300 L 300 320 M 285 320 L 315 320 M 290 325 L 310 325 M 295 330 L 305 330"
-              stroke="#64748b"
+              d="M 242 260 L 275 78 L 325 78 L 358 260 Z"
+              fill="rgba(241,228,199,0.22)"
+              stroke="#e7d7b7"
+              strokeWidth="2"
+            />
+            {Array.from({ length: 32 }).map((_, index) => {
+              const fraction = index / 31;
+              const y = 86 + fraction * 166;
+              const halfWidth = 25 + fraction * 31;
+              return (
+                <line
+                  key={index}
+                  x1={300 - halfWidth}
+                  y1={y}
+                  x2={300 + halfWidth}
+                  y2={y}
+                  stroke="#d97706"
+                  strokeWidth="2"
+                />
+              );
+            })}
+            <text x="326" y="110" fill="#fbbf24" fontSize="12" fontFamily="monospace">
+              B — GRADED SECONDARY
+            </text>
+
+            {/* Primary C surrounds the adjacent broad secondary end. */}
+            <g fill="none" stroke="#f59e0b" strokeWidth="5">
+              {[0, 1, 2, 3, 4].map((index) => (
+                <ellipse key={index} cx="300" cy="255" rx={68 + index * 13} ry={10 + index * 3} />
+              ))}
+            </g>
+            <text x="175" y="240" fill="#fbbf24" fontSize="12" fontFamily="monospace">
+              C — PRIMARY
+            </text>
+
+            {/* Remote high-potential terminal; no source toroid. */}
+            <line x1="300" y1="78" x2="300" y2="58" stroke="#f59e0b" strokeWidth="4" />
+            <circle cx="300" cy="50" r="9" fill="#fbbf24" stroke="#fef3c7" strokeWidth="2" />
+            <text x="318" y="53" fill="#fde68a" fontSize="10" fontFamily="monospace">
+              REMOTE HIGH TERMINAL
+            </text>
+
+            {/* The claimed adjacent secondary / primary / earth bond. */}
+            <rect x="452" y="235" width="12" height="35" rx="3" fill="#f59e0b" />
+            <path d="M 356 245 Q 405 222 458 235" stroke="#f59e0b" strokeWidth="4" fill="none" />
+            <path d="M 380 258 Q 420 250 458 245" stroke="#f59e0b" strokeWidth="4" fill="none" />
+            <path d="M 458 235 L 480 300" stroke="#f59e0b" strokeWidth="4" fill="none" />
+            <text x="394" y="216" fill="#6ee7b7" fontSize="10" fontFamily="monospace">
+              PRIMARY + SECONDARY + EARTH
+            </text>
+
+            {/* Other primary terminal and source lead. */}
+            <rect x="136" y="235" width="12" height="35" rx="3" fill="#f59e0b" />
+            <path d="M 142 235 Q 185 235 220 255" stroke="#f59e0b" strokeWidth="4" fill="none" />
+            <text x="72" y="228" fill="#93c5fd" fontSize="10" fontFamily="monospace">
+              PRIMARY SOURCE
+            </text>
+
+            {/* Ground symbol at the end of the actual common-node lead. */}
+            <path
+              d="M 480 300 L 480 315 M 465 315 L 495 315 M 470 321 L 490 321 M 475 327 L 485 327"
+              stroke="#6ee7b7"
               strokeWidth="2"
             />
 
-            {/* Primary Coil (Heavy Flat Spiral / Conical Outer Ring) */}
-            <g transform="translate(300, 270)">
-              {[-60, -45, -30, 30, 45, 60].map((x, i) => (
-                <circle
-                  key={i}
-                  cx={x}
-                  cy="0"
-                  r="5"
-                  fill="#f59e0b"
-                  stroke="#d97706"
-                  strokeWidth="1.5"
-                />
-              ))}
-            </g>
-
-            {/* Secondary Conical / Helical Resonator Winding */}
-            <g transform="translate(300, 260)">
-              <path
-                d="M -25 0 L -15 -140 L 15 -140 L 25 0 Z"
-                fill="#1e1b4b"
-                stroke="#6366f1"
-                strokeWidth="2"
-              />
-              {/* Helical Turn Lines */}
-              {Array.from({ length: res.secondaryTurnCount }).map((_, i) => {
-                const turn = teslaCoilWindingSvg(
-                  i,
-                  res.windingTaperPx,
-                  res.windingPitchY,
-                  res.windingHalfW,
-                );
-                return (
-                  <line
-                    key={i}
-                    x1={turn.x1}
-                    y1={turn.y1}
-                    x2={turn.x2}
-                    y2={turn.y2}
-                    stroke="#a855f7"
-                    strokeWidth="1.5"
-                    opacity="0.85"
-                  />
-                );
-              })}
-            </g>
-
-            {/* Topload Toroid Terminal (High Voltage Sphere) */}
-            <g transform="translate(300, 110)">
-              <ellipse
-                cx="0"
-                cy="0"
-                rx="45"
-                ry="18"
-                fill="#cbd5e1"
-                stroke="#f8fafc"
-                strokeWidth="2"
-              />
-              <ellipse cx="0" cy="0" rx="35" ry="12" fill="#94a3b8" />
-            </g>
-
-            {/* High-Frequency Plasma Electrical Streamers (Lightning Discharges) */}
+            {/* Interpretive discharge from the source's remote terminal. */}
             <g
               stroke="#c084fc"
               strokeWidth="2"
               fill="none"
               opacity="0.9"
-              transform={`translate(300 110) scale(${streamerScale}) translate(-300 -110)`}
+              transform={`translate(300 50) scale(${streamerScale}) translate(-300 -50)`}
             >
-              {/* Left Branching Arc */}
-              <path d="M 260 110 Q 220 80 180 90 T 130 60 T 80 110 T 50 140" strokeWidth="2.5" />
-              <path d="M 180 90 Q 150 130 110 150" strokeWidth="1.5" />
-              {/* Right Branching Arc */}
-              <path d="M 340 110 Q 380 70 420 85 T 480 50 T 530 90 T 560 130" strokeWidth="2.5" />
-              <path d="M 420 85 Q 460 120 500 140" strokeWidth="1.5" />
-              {/* Vertical Corona Streamers */}
-              <path d="M 300 95 Q 290 50 310 20" strokeWidth="2" stroke="#e9d5ff" />
-              <path d="M 280 100 Q 260 60 250 30" strokeWidth="1.5" stroke="#e9d5ff" />
-              <path d="M 320 100 Q 340 60 350 30" strokeWidth="1.5" stroke="#e9d5ff" />
-            </g>
-
-            {/* Spark Gap & Tank Circuit Representation on Left */}
-            <g transform="translate(100, 240)">
-              <rect x="-30" y="-30" width="60" height="40" fill="#1e293b" stroke="#475569" rx="4" />
-              <text x="-25" y="-12" fill="#38bdf8" fontSize="9" fontFamily="monospace">
-                PRIMARY CAP
-              </text>
-              <text
-                x="-20"
-                y="2"
-                fill="#f8fafc"
-                fontSize="10"
-                fontFamily="monospace"
-                fontWeight="bold"
-              >
-                {primaryCapacitanceNf} nF
-              </text>
-              {/* Spark Gap */}
-              <circle cx="55" cy="-10" r="4" fill="#fbbf24" />
-              <circle cx="65" cy="-10" r="4" fill="#fbbf24" />
-              <line x1="58" y1="-10" x2="62" y2="-10" stroke="#67e8f9" strokeWidth="3" />
+              <path d="M 300 41 Q 268 25 238 34" strokeWidth="2" />
+              <path d="M 300 41 Q 334 22 366 35" strokeWidth="2" />
+              <path d="M 300 41 Q 294 18 304 5" strokeWidth="2" stroke="#e9d5ff" />
             </g>
           </svg>
 
           {/* Telemetry Strip */}
           <div className="w-full grid grid-cols-3 gap-2 text-center text-xs sm:text-sm font-mono pt-3 border-t border-ink-800 text-ink-300">
             <div>
-              <span className="text-ink-400 block text-xs">RESONANT FREQUENCY</span>
-              <span className="text-purple-400 font-bold text-sm sm:text-base">
-                {resonantFreqKhz.toFixed(1)} kHz
-              </span>
+              <span className="text-ink-400 block text-xs">SOURCE FORM</span>
+              <span className="text-purple-400 font-bold text-sm sm:text-base">FIG. 2 CONICAL</span>
             </div>
             <div>
-              <span className="text-ink-400 block text-xs">TOPLOAD VOLTAGE</span>
+              <span className="text-ink-400 block text-xs">ILLUSTRATIVE POTENTIAL</span>
               <span className="text-amber-400 font-bold text-sm sm:text-base">
                 {secondaryVoltageKv} kV
               </span>
             </div>
             <div>
-              <span className="text-ink-400 block text-xs">SPARK REPETITION</span>
+              <span className="text-ink-400 block text-xs">INTERPRETIVE WASM</span>
               <span className="text-emerald-400 font-bold text-sm sm:text-base">
-                {sparkRateHz} PPS
+                {resonantFreqKhz.toFixed(1)} kHz
               </span>
             </div>
           </div>
@@ -245,37 +215,10 @@ export function TeslaCoilSim() {
 
         {/* Controls Sidebar */}
         <div className="lg:col-span-4 space-y-4">
-          <SparkWaterfall
-            fundamentalHz={res.resonantFreqHz}
-            energy={res.toneEnergy}
-            firing={true}
-          />
           <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-5 space-y-4 shadow-sm">
             <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
-              Resonant LC Parameters
+              Interpretive Excitation Parameters
             </span>
-
-            {/* Primary Tank Capacitance Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Primary Tank Cap ($C_p$)
-                </span>
-                <span className="text-purple-600 dark:text-purple-400 font-bold">
-                  {primaryCapacitanceNf} nF
-                </span>
-              </div>
-              <input
-                type="range"
-                aria-label="Primary Tank Cap (C_p)"
-                min="10"
-                max="90"
-                step="5"
-                value={primaryCapacitanceNf}
-                onChange={(e) => updateParam("primaryCap", Number(e.target.value))}
-                className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-purple-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-purple-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-              />
-            </div>
 
             {/* Secondary Turns Slider */}
             <div className="space-y-1.5">
@@ -299,24 +242,24 @@ export function TeslaCoilSim() {
               />
             </div>
 
-            {/* Spark Gap Repetition Rate Slider */}
+            {/* Illustrative input excitation */}
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Rotary Spark Gap Rate
+                  Input excitation
                 </span>
                 <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                  {sparkRateHz} Hz
+                  {inputKv} kV
                 </span>
               </div>
               <input
                 type="range"
-                aria-label="Rotary Spark Gap Rate"
-                min="30"
-                max="400"
-                step="10"
-                value={sparkRateHz}
-                onChange={(e) => updateParam("sparkRateHz", Number(e.target.value))}
+                aria-label="Illustrative input excitation"
+                min="5"
+                max="30"
+                step="1"
+                value={inputKv}
+                onChange={(e) => updateParam("inputVoltageKv", Number(e.target.value))}
                 className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-emerald-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
               />
             </div>
@@ -326,10 +269,11 @@ export function TeslaCoilSim() {
                 Quarter-Wave Resonance:
               </span>
               <p className="leading-relaxed">
-                By tuning the primary capacitor tank circuit to match the secondary coil&apos;s
-                natural resonant frequency ({resonantFreqKhz.toFixed(1)} kHz), standing
-                electromagnetic waves build up massive electrical potential at the ungrounded toroid
-                terminal.
+                Tesla specifies secondary wire length near one quarter of the disturbance
+                wavelength. The current {resonantFreqKhz.toFixed(1)} kHz value and{" "}
+                {secondaryVoltageKv} kV potential come from the explicitly interpretive lumped
+                model; the source apparatus claim is the graded winding and its
+                primary-secondary-earth connection.
               </p>
             </div>
           </div>

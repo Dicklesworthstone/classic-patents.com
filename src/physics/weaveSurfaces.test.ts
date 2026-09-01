@@ -299,6 +299,12 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     });
   });
 
+  test("keeps Edison telemetry free of unsupported efficacy and life demonstrations", () => {
+    const patentId = "us-223898-edison-lightbulb";
+    expect(fidelityField(patentId, { voltage: 110, filamentLength: 22 })).toBeNull();
+    expect(datedScenarios(patentId)).toEqual([]);
+  });
+
   test("derives Pelton performance weaves and source bucket labels", () => {
     expect(intervalGhosts("us-233692-pelton-water-wheel", {}).length).toBeGreaterThan(0);
     expect(fidelityField("us-233692-pelton-water-wheel", {})).toBeNull();

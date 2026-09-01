@@ -30,14 +30,14 @@ describe("Cross-Face Integration", () => {
 
     globalTransportBus.registerUpdater(id, () => ({ timeStepDt: 1 / 60 }), "TS_FALLBACK");
     const step = () => ({ timeStepDt: 1 / 60 });
-    transport.pump(performance.now() + 16, step);
+    transport.pump(1000, step);
     expect(transport.lastFrame.tick).toBeGreaterThan(0);
     expect(transport.lastFrame.provenance).toBe("TS_FALLBACK");
     const first = transport.lastFrame.digest;
     expect(first).not.toBe("00000000");
 
     // Identical logical state (wall clock excluded from digest) -> identical tape digest.
-    transport.pump(performance.now() + 32, step);
+    transport.pump(1020, step);
     expect(transport.lastFrame.digest).toBe(first);
 
     globalTransportBus.unregisterUpdater(id);
@@ -48,7 +48,7 @@ describe("Cross-Face Integration", () => {
     const transport = globalTransportBus.getTransport(id);
     globalTransportBus.registerUpdater(id, () => ({ timeStepDt: 1 / 60 }), "WASM");
     const step = () => ({ timeStepDt: 1 / 60 });
-    transport.pump(performance.now() + 16, step);
+    transport.pump(1000, step);
     expect(transport.lastFrame.provenance).toBe("WASM");
     globalTransportBus.unregisterUpdater(id);
   });
@@ -120,13 +120,13 @@ describe("Cross-Face Integration", () => {
     };
     globalTransportBus.registerUpdater(id, integrate, "TS_FALLBACK");
 
-    transport.pump(performance.now() + 16, integrate);
+    transport.pump(1000, integrate);
     const first = transport.lastFrame.digest;
     const tickAfterOne = transport.lastFrame.tick;
     expect(tickAfterOne).toBeGreaterThan(0);
     expect(first).not.toBe("00000000");
 
-    transport.pump(performance.now() + 32, integrate);
+    transport.pump(1020, integrate);
     expect(transport.lastFrame.tick).toBeGreaterThan(tickAfterOne);
     expect(transport.lastFrame.digest).not.toBe(first); // state advanced -> tape moved
     expect(transport.lastFrame.provenance).toBe("TS_FALLBACK");

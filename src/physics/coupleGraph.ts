@@ -73,7 +73,7 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
   if (patentId === "us-223898-edison-lightbulb" || patentId === "us-223898-edison-lamp") {
     const bulb = stepEdisonBulb({
       voltage: params.voltage ?? params.mainsVoltageV ?? 110,
-      filamentLength: params.filamentLength,
+      hotResistanceOhm: params.hotResistanceOhm,
     });
     const v = params.voltage ?? params.mainsVoltageV ?? 110;
     const dPdV = v === 0 ? 0 : (2 * bulb.radiantWatts) / v;
@@ -272,8 +272,8 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId === "us-4750-howe-sewing-machine") {
-    const rpm = params.flywheelRpm ?? 200;
-    const howe = stepHoweSewingMachine(rpm, params.stitchTensionGrams ?? 40);
+    const rpm = params.crankRpm ?? 240;
+    const howe = stepHoweSewingMachine(rpm, params.loopSlackPct ?? 65, params.stitchPitchMm ?? 3.5);
     return [
       {
         from: "flywheel",

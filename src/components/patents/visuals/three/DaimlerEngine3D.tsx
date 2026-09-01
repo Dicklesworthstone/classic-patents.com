@@ -33,8 +33,8 @@ const CAMERA_PRESETS: Record<
 > = {
   iso: { pos: [10.5, 6.2, 11.5], target: [1, -0.25, 0] },
   motor: { pos: [2.7, 2.7, 5.4], target: [0, 0.25, 0] },
-  coupling: { pos: [3.2, 1.3, 4.2], target: [1.45, -0.15, 0] },
-  reverse: { pos: [3.5, 0.2, 4.5], target: [1.65, -0.15, 0] },
+  coupling: { pos: [4.2, 4.2, 4.8], target: [1.45, -0.15, 0] },
+  reverse: { pos: [4.5, 4.0, 5.1], target: [1.72, -0.15, 0] },
   cooling: { pos: [-0.5, 3.3, 6.5], target: [0, 0.45, 0.4] },
   reservoirs: { pos: [1.4, 2.6, 6.8], target: [0.5, 0, 0] },
   steering: { pos: [8.6, 3.4, 5.8], target: [4.6, -0.2, 0.5] },
