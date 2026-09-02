@@ -1,0 +1,50 @@
+[
+  {
+    "id": "us-132-davenport-electric-motor",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-588-ericsson-propeller",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-1647-morse-telegraph",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-3237-rillieux-evaporator",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-3633-goodyear-rubber",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-4750-howe-sewing-machine",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-6162-corliss-steam-engine",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-6469-lincoln-buoy",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  }
+]
