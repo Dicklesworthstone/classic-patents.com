@@ -79,6 +79,46 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
     model.dispose();
   });
 
+  test("maintains exact geometric seating and epicyclic tooth meshing through full 360-degree orbit", () => {
+    const model = buildWattRotaryEngineModel();
+    const controls = readWattRotaryControls({ strokeRateSpm: 20, gearRatioNpOverNs: 1.0 });
+
+    for (let sec = 0; sec <= 3.0; sec += 0.25) {
+      const telemetry = stepWattRotaryEngine(controls, sec);
+      model.updateAnimation(telemetry);
+
+      const beamAngleRad = (telemetry.beamAngleDeg * Math.PI) / 180;
+      const rightBeamEndX = Math.cos(beamAngleRad) * 2.2;
+      const rightBeamEndY = 3.2 + Math.sin(beamAngleRad) * 2.2;
+
+      // Connecting rod top matches right beam end
+      expect(model.connectingRodGroup.position.x).toBeCloseTo(rightBeamEndX, 5);
+      expect(model.connectingRodGroup.position.y).toBeCloseTo(rightBeamEndY, 5);
+
+      // Planet gear rotation matches connecting rod sway angle
+      expect(model.planetGearGroup.rotation.z).toBeCloseTo(model.connectingRodGroup.rotation.z, 5);
+
+      // Connecting rod bottom reaches planet center
+      const rodAngle = model.connectingRodGroup.rotation.z;
+      const rodLength = Math.hypot(
+        model.planetGearGroup.position.x - rightBeamEndX,
+        model.planetGearGroup.position.y - rightBeamEndY,
+      );
+      const computedBottomX = rightBeamEndX + rodLength * Math.sin(rodAngle);
+      const computedBottomY = rightBeamEndY - rodLength * Math.cos(rodAngle);
+      expect(computedBottomX).toBeCloseTo(model.planetGearGroup.position.x, 5);
+      expect(computedBottomY).toBeCloseTo(model.planetGearGroup.position.y, 5);
+
+      // Sun gear rotates at conjugate rolling angle 2*theta - rodAngle
+      const phase = (telemetry.planetOrbitAngleDeg * Math.PI) / 180;
+      const expectedSunAngle = 2 * phase - rodAngle;
+      expect(model.sunGearGroup.rotation.z).toBeCloseTo(expectedSunAngle, 5);
+      expect(model.flywheelGroup.rotation.z).toBeCloseTo(expectedSunAngle, 5);
+    }
+
+    model.dispose();
+  });
+
   test("disposes all allocated geometries and materials cleanly", () => {
     const model = buildWattRotaryEngineModel();
     expect(() => model.dispose()).not.toThrow();

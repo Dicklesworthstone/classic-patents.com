@@ -1212,37 +1212,37 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
     reviewer: "Classic Patents editorial agent (GPT-5.6)",
     reviewedAt: "2026-09-01",
     acceptanceBasis: "migrated-reviewed-edition-attestation",
-    acceptedOccurrenceCount: 9,
+    acceptedOccurrenceCount: 33,
     assets: {
-      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-1-source-crop-v1.png": {
-        sha256: "87eb863e34410983efc36dcf3d062c1ef940c3f40ac20ce063b236b8f52d65e3",
-        width: 2800,
-        height: 1350,
+      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-1-source-crop-v2.png": {
+        sha256: "5cceb7d8b7cf17713a25b90fb0f2a961a51037f548db678d5d52a310f0cedbd6",
+        width: 8700,
+        height: 3400,
       },
-      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-2-source-crop-v1.png": {
-        sha256: "a7ea1a21ac2f659b437ce2c854d0be68bdec3b05f2711ebe687bd5f11597dea8",
-        width: 2800,
-        height: 1000,
+      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-2-source-crop-v2.png": {
+        sha256: "46d347d89033a6d9d027a39270efcc5603b3c1862ec08d8f3e6553df805ee6e4",
+        width: 9000,
+        height: 3250,
       },
-      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-3-source-crop-v1.png": {
-        sha256: "afc6bdffc25b2259c3eebee719c8da1c42638b4855b788ed9f669b32ac6a2b9e",
-        width: 3000,
-        height: 1350,
+      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-3-source-crop-v2.png": {
+        sha256: "d0eed4ec3eec314567dd4be72d52b9d4b5d4fdb1d8756c142de0b97753990d0f",
+        width: 8700,
+        height: 4200,
       },
-      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-4-source-crop-v1.png": {
-        sha256: "689e0197dc7ee3f7347bc8c40cb319df784655149bd8e8fb6aeb09e3edd528f0",
-        width: 1000,
-        height: 800,
+      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-4-source-crop-v2.png": {
+        sha256: "01d95cbb188a9a4ded179c960718b8e028f2e1eb4aaa8992329067d973bb03e6",
+        width: 4000,
+        height: 4200,
       },
-      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-5-source-crop-v1.png": {
-        sha256: "7fa63356c2865f676c78de4a3af5e323d6dfe12559177df125f20be86e0c8513",
-        width: 1200,
-        height: 750,
+      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-5-source-crop-v2.png": {
+        sha256: "8127be49739e1f2ec76439d6e27de8605b626eb044c79c8857d1fa464a63dce3",
+        width: 4300,
+        height: 3200,
       },
-      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-6-source-crop-v1.png": {
-        sha256: "cc32da787f8e90e3deb58afd89da0f235bfa4912493d67dbc5adecfb2148f90f",
-        width: 2800,
-        height: 2700,
+      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-6-source-crop-v2.png": {
+        sha256: "4f253f9a308f0c48cfe0a8c62674b98c48561fc2e5aff67ea811734fc570ea36",
+        width: 8500,
+        height: 7300,
       },
     },
   },

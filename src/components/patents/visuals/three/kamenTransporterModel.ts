@@ -254,23 +254,28 @@ export function updateKamenTransporterKinematics(
   const isBalanceMode = controls.operatingMode === "balance_2wheel";
   const isStairMode = controls.operatingMode === "stair_climb";
 
+  let elevationY = 0.0;
   if (isBalanceMode) {
-    model.chassis.position.y = 0.28;
+    elevationY = 0.28;
     model.seatGroup.visible = true;
     model.standingMast.visible = true;
     model.stairTerrain.visible = false;
   } else if (isStairMode) {
-    model.chassis.position.y = 0.22;
+    elevationY = 0.22;
     model.seatGroup.visible = true;
     model.standingMast.visible = false;
     model.stairTerrain.visible = true;
   } else {
     // 4-wheel standard mode
-    model.chassis.position.y = 0.0;
+    elevationY = 0.0;
     model.seatGroup.visible = true;
     model.standingMast.visible = false;
     model.stairTerrain.visible = false;
   }
+
+  model.chassis.position.y = elevationY;
+  model.leftCluster.position.y = elevationY;
+  model.rightCluster.position.y = elevationY;
 
   // 3. Cluster Rotation Kinematics
   const clusterRad = (tel.clusterAngleDeg * Math.PI) / 180;

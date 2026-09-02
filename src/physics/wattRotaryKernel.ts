@@ -91,18 +91,18 @@ export function stepWattRotaryEngine(
 
   const rightBeamEndX = 2.2 * Math.cos(beamAngleRad);
   const rightBeamEndY = 3.2 + 2.2 * Math.sin(beamAngleRad);
-  const planetPosX = 2.2 + rOrbit * Math.sin(orbitPhase);
-  const planetPosY = 0.9 - rOrbit * Math.cos(orbitPhase);
+  const planetPosX = rOrbit * Math.sin(orbitPhase);
+  const planetPosY = -rOrbit * Math.cos(orbitPhase);
 
-  const rodDx = planetPosX - rightBeamEndX;
-  const rodDy = rightBeamEndY - planetPosY;
+  const rodDx = 2.2 + planetPosX - rightBeamEndX;
+  const rodDy = rightBeamEndY - (0.9 + planetPosY);
   const rodAngle = Math.atan2(rodDx, rodDy);
 
   // Shaft Rotational Speed (exact 2:1 epicyclic multiplication with rod sway conjugate)
   const shaftRpm = spm * speedMultiplier;
   const shaftAngularVelocityRadS = (shaftRpm * 2 * Math.PI) / 60;
   const sunShaftAngleRad = speedMultiplier * orbitPhase - ratio * rodAngle;
-  const sunShaftAngleDeg = (((sunShaftAngleRad * 180) / Math.PI) % 360 + 360) % 360;
+  const sunShaftAngleDeg = ((((sunShaftAngleRad * 180) / Math.PI) % 360) + 360) % 360;
 
   // Piston Kinematics (left beam end)
   const pistonPositionM = (stroke / 2) * (1 + Math.cos(orbitPhase));

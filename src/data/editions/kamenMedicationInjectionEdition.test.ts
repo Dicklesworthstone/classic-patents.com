@@ -71,9 +71,10 @@ describe("US 3,858,581 manual source edition", () => {
         inline.kind === "term",
     );
     expect(terms.map((item) => item.text)).toEqual([
+      "rotational traverse",
+      "pulse-counting means",
       "uniform pitch",
-      "pulse-counting circuit",
-      "clutch",
+      "motor-off interval",
     ]);
     expect(terms.every((item) => item.definition.length > 80)).toBe(true);
     const paragraphIndexes = kamenMedicationInjectionArchivalEdition.blocks.flatMap(

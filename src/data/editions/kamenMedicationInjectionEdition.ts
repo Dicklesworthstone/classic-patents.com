@@ -83,6 +83,12 @@ export const kamenMedicationInjectionArchivalEdition: CuratedSpecificationEditio
         "[51] Int. Cl. A61m 5/20",
         "[58] Field of Search 128/2 R, 2.05 R, 218 R, 128/218 A, 214 E, 214 F, DIG. 1, 234, 236",
         "[56] References Cited",
+        "UNITED STATES PATENTS",
+        "2,602,446 7/1952 Glass et al. 128/218 A",
+        "2,627,270 2/1953 Glass 128/218 A",
+        "3,091,239 5/1963 Moeller 128/214 F",
+        "3,631,847 1/1972 Hobbs 128/218 A",
+        "3,701,345 10/1972 Heilman et al. 128/2 R",
         "Primary Examiner—Dalton L. Truluck",
         "Attorney, Agent, or Firm—Bauer & Amer",
         "[57] ABSTRACT",
@@ -168,24 +174,37 @@ export const kamenMedicationInjectionArchivalEdition: CuratedSpecificationEditio
     ),
     paragraph([
       figure(1),
-      { kind: "text", text: " is a perspective view of a medication injection device according to the present invention; " },
+      {
+        kind: "text",
+        text: " is a perspective view of a medication injection device according to the present invention; ",
+      },
       figure(2),
       {
         kind: "text",
         text: " is a plan view of the device illustrating further structural features thereof, and also illustrating how the volume of the medication to be dispensed is related to an operating parameter of the device, namely electrical pulses emitted during its operation; ",
       },
       figure(3),
-      { kind: "text", text: " is a side elevational view, taken in longitudinal section, illustrating internal structural features; " },
+      {
+        kind: "text",
+        text: " is a side elevational view, taken in longitudinal section, illustrating internal structural features; ",
+      },
       figure(4),
       {
         kind: "text",
-        text: " is an end elevational view, in section taken on line 4—4 of FIG. 3, illustrating structural features of a pulse generator used in the device hereof; ",
+        text: " is an end elevational view, in section taken on line 4—4 of ",
+      },
+      figure(3),
+      {
+        kind: "text",
+        text: ", illustrating structural features of a pulse generator used in the device hereof; ",
       },
       figure(5),
       {
         kind: "text",
-        text: " is a partial plan view, in section taken on line 5—5 of FIG. 3, illustrating further structural features; and ",
+        text: " is a partial plan view, in section taken on line 5—5 of ",
       },
+      figure(3),
+      { kind: "text", text: ", illustrating further structural features; and " },
       figure(6),
       {
         kind: "text",
@@ -451,24 +470,96 @@ export const kamenMedicationInjectionParallelReadings: Record<number, readonly s
     "The formal enumeration confirms five granted claims and six accompanying drawing figures detailing the electromechanical assembly and timing circuitry.",
   ],
   6: [
-    "The specification opens by stating the primary objective: dispensing medication according to a programmable schedule of operating and idle intervals.",
+    "The specification opens by stating the field of invention: an improved automatic medication injection device with regulated delivery.",
   ],
   7: [
-    "The core mechanical structure couples a lead screw and traveling nut follower directly to the syringe plunger, transforming motor shaft rotations into linear displacement.",
+    "The inventor identifies prior art motor-driven syringes that run for a set time, which fail when battery voltage sags or fluid viscosity changes.",
   ],
   8: [
-    "A uniform screw thread ensures each complete rotation produces an identical increment of plunger travel, linking kinematic displacement to turn count.",
+    "Prior art time-governed devices could not deliver repeatable micro-volumes when mechanical resistance or line voltage drifted over time.",
   ],
   9: [
-    "The external scale provides an empirical visual correlation between cumulative rotational pulses and volumetric markings along the syringe barrel.",
+    "The broad objective is formulated: an automatic injector that reliably delivers preset volumes on an intermittent timed schedule regardless of fluid viscosity.",
   ],
   10: [
-    "A rotating striker physically closes a microswitch once per screw rotation, generating discrete electrical pulses fed into decade counter circuits.",
+    "The mechanism summary introduces a motor driving a uniform-pitch lead screw whose rotations are sensed by a striker-operated pulse switch connected to a counter.",
   ],
   11: [
-    "Configurable decade counter stages establish programmable delivery volumes and idle interval timers, terminating motor power upon reaching selected pulse counts.",
+    "The figure list introduces six drawings showing the mechanical layout, sectional details, and electronic decade counter control circuitry.",
   ],
   12: [
-    "An overload spring clutch disengages the drive train upon excessive downstream backpressure, providing mechanical overpressure relief.",
+    "FIG. 1 shows an overall perspective view of the compact bedside medication injection device with top-mounted syringe and control panel.",
+  ],
+  13: [
+    "FIG. 2 shows a top plan view illustrating the calibrated volume scale and rotary selector knobs for timing and pulse quantity.",
+  ],
+  14: [
+    "FIG. 3 shows a longitudinal cross-section illustrating the motor, clutch, lead screw, and traveling follower pushing head.",
+  ],
+  15: [
+    "FIG. 4 shows a cross-section on line 4—4 detailing the radial striker rotating past the microswitch to generate electrical pulses.",
+  ],
+  16: [
+    "FIG. 5 shows a partial plan view on line 5—5 illustrating the microswitch contacts and radial striker alignment.",
+  ],
+  17: [
+    "FIG. 6 shows a block diagram of the electronic pulse counters, selector switches, oscillator, and motor control relays.",
+  ],
+  18: [
+    "The mechanical assembly is described in detail, explaining how the device housing supports the syringe, motor, and internal drive train.",
+  ],
+  19: [
+    "Clinical rationale is presented: intermittent delivery of discrete boluses (e.g. anti-coagulants) allows the body to react between administrations.",
+  ],
+  20: [
+    "The syringe plunger is pushed linearly by an upstanding follower head riding on a precision uniform-pitch lead screw driven by the motor.",
+  ],
+  21: [
+    "An anti-rotation guide rod constrains the follower nut to pure linear translation, advancing the syringe plunger while clamped in the mounting recess.",
+  ],
+  22: [
+    "The specification explains why counting lead screw turns eliminates viscosity, voltage, and bearing friction errors inherent in time-based prior art.",
+  ],
+  23: [
+    "The volume calibration scale directly maps linear displacement of the syringe barrel to an exact integer count of screw rotations.",
+  ],
+  24: [
+    "Two coordinated timing controls govern delivery: a motor-on pulse counter setting dose volume and a motor-off timer setting the rest interval.",
+  ],
+  25: [
+    "The motor-off timer measures the prolonged idle period between intermittent doses using an electronic oscillator and counter chain.",
+  ],
+  26: [
+    "During each screw revolution, the radial striker physically triggers the pulse switch, generating a clean discrete pulse for the counter.",
+  ],
+  27: [
+    "The pulse counting circuit tallies each emitted pulse in real time, tracking cumulative plunger advancement against the dialed limit.",
+  ],
+  28: [
+    "Upon reaching the preset pulse target (e.g. 27 pulses), the control circuit immediately shuts off the motor and starts the motor-off interval timer.",
+  ],
+  29: [
+    "When the motor-off rest interval elapses, the starter circuit re-energizes the motor to administer the next scheduled medication dose.",
+  ],
+  30: [
+    "Safety features include an end-of-stroke limit switch to prevent syringe over-travel and a manual push-button override for unscheduled doses.",
+  ],
+  31: [
+    "A visual blinking signal light flashes on every emitted pulse, providing immediate real-time feedback that the injector is operating correctly.",
+  ],
+  32: [
+    "An axial slip clutch allows the lead screw to disengage upon encountering excessive mechanical backpressure or manual emergency pull.",
+  ],
+  33: [
+    "The electronic circuit architecture of FIG. 6 details the pulse generator, decade counters, selector wipers, and motor shutoff switches.",
+  ],
+  34: [
+    "The circuit performs a dual function: counting striker pulses during active injection and counting oscillator ticks during the idle interval.",
+  ],
+  35: [
+    "Cascaded decade counters advance from units to tens, outputting carry pulses to higher-order stages to count up to arbitrary pulse totals.",
+  ],
+  36: [
+    "Rotary selector wipers pick specific counter output lines to complete the motor-off trigger circuit when the desired pulse total is achieved.",
   ],
 };
