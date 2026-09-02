@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct PatentRootView: View {
+    @AppStorage(LabAppearance.storageKey) private var appearance = LabAppearance.dark.rawValue
     @StateObject private var library = PatentLibrary()
 
     private var launchPatent: PatentRecord? {
@@ -45,6 +46,60 @@ struct PatentRootView: View {
                 .toolbarBackground(.visible, for: .tabBar)
             }
         }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            HStack(spacing: 9) {
+                Image("MonsterIcon")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 34, height: 34)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Lab.brass.opacity(0.35)))
+                    .accessibilityHidden(true)
+                FrankenWordmark()
+                Spacer()
+                categoryMenu
+                LabAppearanceButton(selection: $appearance)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(Lab.background.opacity(0.96))
+        }
+        .preferredColorScheme((LabAppearance(rawValue: appearance) ?? .dark).colorScheme)
+    }
+
+    private var categoryMenu: some View {
+        Menu {
+            Button {
+                library.selectedCategory = nil
+            } label: {
+                if library.selectedCategory == nil {
+                    Label("All inventions", systemImage: "checkmark")
+                } else {
+                    Text("All inventions")
+                }
+            }
+            Divider()
+            ForEach(library.categories, id: \.self) { category in
+                Button {
+                    library.selectedCategory = category
+                } label: {
+                    if library.selectedCategory == category {
+                        Label(library.label(for: category), systemImage: "checkmark")
+                    } else {
+                        Text(library.label(for: category))
+                    }
+                }
+            }
+        } label: {
+            Image(systemName: "line.3.horizontal.decrease.circle")
+                .font(.system(size: Lab.size(14), weight: .bold))
+                .frame(width: 44, height: 44)
+                .background(Lab.panelStrong, in: Circle())
+                .overlay(Circle().stroke(Lab.stroke))
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(Lab.brass)
+        .accessibilityLabel("Filter patent category")
     }
 }
 

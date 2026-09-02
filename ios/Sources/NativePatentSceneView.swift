@@ -137,7 +137,7 @@ struct NativeSourceBoundaryExhibit: View {
                 }
             }
             .frame(height: 170)
-            .background(Color.black.opacity(0.34), in: RoundedRectangle(cornerRadius: 14))
+            .background(Lab.panelStrong, in: RoundedRectangle(cornerRadius: 14))
             .overlay(RoundedRectangle(cornerRadius: 14).stroke(Lab.brass.opacity(0.28)))
         }
         .padding(18)

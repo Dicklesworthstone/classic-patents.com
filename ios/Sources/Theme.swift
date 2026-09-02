@@ -1,18 +1,30 @@
 import SwiftUI
 import UIKit
 
+enum LabAppearance: String {
+    static let storageKey = "frankenpatents.appearance"
+    case dark
+    case light
+    var colorScheme: ColorScheme { self == .dark ? .dark : .light }
+}
+
 enum Lab {
-    static let background = Color(red: 0.018, green: 0.024, blue: 0.027)
-    static let backgroundWarm = Color(red: 0.055, green: 0.043, blue: 0.026)
-    static let panel = Color.black.opacity(0.55)
-    static let stroke = Color.white.opacity(0.09)
-    static let emerald = Color(red: 0.20, green: 0.83, blue: 0.60)
-    static let blueprint = Color(red: 0.20, green: 0.72, blue: 0.98)
-    static let brass = Color(red: 0.85, green: 0.65, blue: 0.31)
-    static let parchment = Color(red: 0.96, green: 0.91, blue: 0.80)
-    static let text = Color(red: 0.91, green: 0.92, blue: 0.93)
-    static let secondary = Color(red: 0.61, green: 0.65, blue: 0.70)
-    static let danger = Color(red: 0.97, green: 0.44, blue: 0.44)
+    static let background = adaptive(dark: UIColor(red: 0.018, green: 0.024, blue: 0.027, alpha: 1), light: UIColor(red: 0.945, green: 0.925, blue: 0.875, alpha: 1))
+    static let backgroundWarm = adaptive(dark: UIColor(red: 0.055, green: 0.043, blue: 0.026, alpha: 1), light: UIColor(red: 0.985, green: 0.955, blue: 0.885, alpha: 1))
+    static let panel = adaptive(dark: UIColor(white: 0, alpha: 0.55), light: UIColor(red: 1, green: 0.985, blue: 0.94, alpha: 0.96))
+    static let panelStrong = adaptive(dark: UIColor(white: 0, alpha: 0.74), light: UIColor(red: 0.90, green: 0.86, blue: 0.76, alpha: 0.96))
+    static let stroke = adaptive(dark: UIColor(white: 1, alpha: 0.09), light: UIColor(red: 0.33, green: 0.24, blue: 0.10, alpha: 0.18))
+    static let emerald = adaptive(dark: UIColor(red: 0.20, green: 0.83, blue: 0.60, alpha: 1), light: UIColor(red: 0.02, green: 0.405, blue: 0.245, alpha: 1))
+    static let blueprint = adaptive(dark: UIColor(red: 0.20, green: 0.72, blue: 0.98, alpha: 1), light: UIColor(red: 0.035, green: 0.36, blue: 0.60, alpha: 1))
+    static let brass = adaptive(dark: UIColor(red: 0.85, green: 0.65, blue: 0.31, alpha: 1), light: UIColor(red: 0.56, green: 0.33, blue: 0.055, alpha: 1))
+    static let parchment = adaptive(dark: UIColor(red: 0.96, green: 0.91, blue: 0.80, alpha: 1), light: UIColor(red: 0.16, green: 0.115, blue: 0.065, alpha: 1))
+    static let text = adaptive(dark: UIColor(red: 0.91, green: 0.92, blue: 0.93, alpha: 1), light: UIColor(red: 0.105, green: 0.095, blue: 0.075, alpha: 1))
+    static let secondary = adaptive(dark: UIColor(red: 0.61, green: 0.65, blue: 0.70, alpha: 1), light: UIColor(red: 0.37, green: 0.335, blue: 0.275, alpha: 1))
+    static let danger = adaptive(dark: UIColor(red: 0.97, green: 0.44, blue: 0.44, alpha: 1), light: UIColor(red: 0.70, green: 0.12, blue: 0.16, alpha: 1))
+
+    private static func adaptive(dark: UIColor, light: UIColor) -> Color {
+        Color(uiColor: UIColor { traits in traits.userInterfaceStyle == .dark ? dark : light })
+    }
 
     static func size(_ base: CGFloat) -> CGFloat {
 #if targetEnvironment(macCatalyst)
@@ -38,6 +50,29 @@ enum Lab {
         case "optics": "camera.aperture"
         default: "gearshape.2.fill"
         }
+    }
+}
+
+struct LabAppearanceButton: View {
+    @Binding var selection: String
+    private var appearance: LabAppearance { LabAppearance(rawValue: selection) ?? .dark }
+
+    var body: some View {
+        Button {
+            selection = appearance == .dark ? LabAppearance.light.rawValue : LabAppearance.dark.rawValue
+        } label: {
+            Image(systemName: appearance == .dark ? "sun.max.fill" : "moon.stars.fill")
+                .font(.system(size: Lab.size(14), weight: .bold))
+                .frame(width: 44, height: 44)
+                .background(Lab.panelStrong, in: Circle())
+                .overlay(Circle().stroke(Lab.stroke))
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(appearance == .dark ? Lab.brass : Lab.blueprint)
+        .accessibilityIdentifier("appearance-toggle")
+        .accessibilityLabel(appearance == .dark ? "Switch to light mode" : "Switch to dark mode")
+        .accessibilityValue(appearance == .dark ? "Dark mode" : "Light mode")
+        .accessibilityHint("Remembers this choice for future launches")
     }
 }
 

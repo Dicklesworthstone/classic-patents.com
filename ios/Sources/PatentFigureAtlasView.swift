@@ -336,7 +336,7 @@ struct PatentFigureAtlasView: View {
                                 .font(.system(size: Lab.size(8.5), weight: .black, design: .rounded))
                                 .foregroundStyle(selectedCalloutID == item.id ? Lab.background : Lab.parchment)
                                 .frame(minWidth: 27, minHeight: 27)
-                                .background(selectedCalloutID == item.id ? Lab.brass : Color.black.opacity(0.78), in: Circle())
+                                .background(selectedCalloutID == item.id ? Lab.brass : Lab.panelStrong, in: Circle())
                                 .overlay(Circle().stroke(Lab.brass, lineWidth: selectedCalloutID == item.id ? 2 : 1))
                                 .shadow(color: .black.opacity(0.45), radius: 4, y: 2)
                         }

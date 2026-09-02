@@ -33,10 +33,6 @@ struct PatentMuseumView: View {
             patentList(compact: true)
                 .navigationTitle("FrankenPatents")
                 .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .principal) { compactHeader }
-                    ToolbarItem(placement: .topBarTrailing) { categoryMenu }
-                }
                 .navigationDestination(for: PatentRecord.self) { patent in
                     PatentWorkstationView(patent: patent)
                 }
@@ -48,7 +44,6 @@ struct PatentMuseumView: View {
         NavigationSplitView {
             patentList(compact: false)
                 .navigationSplitViewColumnWidth(min: 330, ideal: 390, max: 460)
-                .toolbar { ToolbarItem(placement: .topBarTrailing) { categoryMenu } }
         } detail: {
             if let selected = selectedPatent {
                 PatentWorkstationView(patent: selected)
@@ -92,51 +87,6 @@ struct PatentMuseumView: View {
         if forceFirst || !filtered.contains(where: { $0.id == selectedID }) {
             selectedID = filtered.first?.id
         }
-    }
-
-    private var compactHeader: some View {
-        HStack(spacing: 8) {
-            Image("MonsterIcon")
-                .resizable()
-                .scaledToFill()
-                .frame(width: 30, height: 30)
-                .clipShape(RoundedRectangle(cornerRadius: 7))
-            FrankenWordmark()
-                .scaleEffect(0.80, anchor: .leading)
-        }
-    }
-
-    private var categoryMenu: some View {
-        Menu {
-            Button {
-                library.selectedCategory = nil
-            } label: {
-                if library.selectedCategory == nil {
-                    Label("All inventions", systemImage: "checkmark")
-                } else {
-                    Text("All inventions")
-                }
-            }
-            Divider()
-            ForEach(library.categories, id: \.self) { category in
-                Button {
-                    library.selectedCategory = category
-                } label: {
-                    if library.selectedCategory == category {
-                        Label(library.label(for: category), systemImage: "checkmark")
-                    } else {
-                        Text(library.label(for: category))
-                    }
-                }
-            }
-        } label: {
-            Label(
-                library.selectedCategory.map { library.label(for: $0) } ?? "All",
-                systemImage: "line.3.horizontal.decrease.circle"
-            )
-            .lineLimit(1)
-        }
-        .accessibilityLabel("Filter patent category")
     }
 
     private var categorySidebar: some View {
@@ -210,7 +160,7 @@ struct PatentMuseumView: View {
         }
         .background(MuseumBackground())
         .searchable(text: $library.query, prompt: "Inventor, mechanism, patent…")
-        .navigationTitle(library.selectedCategory.map { library.label(for: $0) } ?? "The archive")
+        .navigationTitle(compact ? "" : library.selectedCategory.map { library.label(for: $0) } ?? "The archive")
     }
 }
 

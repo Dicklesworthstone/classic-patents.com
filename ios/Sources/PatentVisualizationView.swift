@@ -98,7 +98,7 @@ struct NativePatentVisualization: View {
                         }
                     }
                     .frame(minHeight: 300, idealHeight: 420, maxHeight: 520)
-                    .background(Color.black.opacity(0.45), in: RoundedRectangle(cornerRadius: 16))
+                    .background(Lab.panelStrong, in: RoundedRectangle(cornerRadius: 16))
                     .overlay(RoundedRectangle(cornerRadius: 16).stroke(Lab.blueprint.opacity(0.24)))
                     .accessibilityLabel("Native interactive visualization for \(patent.shortTitle)")
 

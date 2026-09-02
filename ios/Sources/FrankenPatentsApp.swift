@@ -6,7 +6,6 @@ struct FrankenPatentsApp: App {
     var body: some Scene {
         WindowGroup {
             PatentRootView()
-                .preferredColorScheme(.dark)
                 .background(CatalystWindowFreedom())
 #if targetEnvironment(macCatalyst)
                 .frame(minWidth: 720, minHeight: 540)
