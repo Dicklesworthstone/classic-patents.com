@@ -29,10 +29,7 @@ export default function MestralVelcro3D({
   const modelRef = useRef<MestralVelcro3DObjects | null>(null);
 
   const { effectiveParams, claimStates, updateParam } = usePatentPhysics(patentId);
-  const controls = useMemo(
-    () => readMestralVelcroControls(effectiveParams),
-    [effectiveParams],
-  );
+  const controls = useMemo(() => readMestralVelcroControls(effectiveParams), [effectiveParams]);
   const tel = useMemo(() => stepMestralVelcroSi(controls), [controls]);
 
   useFrankenSimPhysics(patentId);

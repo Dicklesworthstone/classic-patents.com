@@ -1,12 +1,12 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import {
   type MestralVelcroControls,
   readMestralVelcroControls,
   stepMestralVelcroSi,
 } from "@/physics/mestralVelcroKernel";
-import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "./PortHamiltonianEnergyStrip";
@@ -603,7 +603,7 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
         {viewMode === "peel" && (
           <div className="flex flex-col space-y-1.5 md:col-span-2 lg:col-span-4 pt-2 border-t border-stone-800/60">
             <div className="flex justify-between text-stone-300 font-medium">
-                <span>Interactive Peeling Separation Front</span>
+              <span>Interactive Peeling Separation Front</span>
               <span className="font-mono text-cyan-400">
                 {(tel.peelProgress * 100).toFixed(0)}% Separated
               </span>
