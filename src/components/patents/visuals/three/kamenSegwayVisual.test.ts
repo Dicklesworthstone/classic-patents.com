@@ -75,5 +75,6 @@ describe("US 6,302,230 Dean Kamen Segway Transporter 3D WebGL Model", () => {
 
     expect(threeD).toContain("studio.controls.update()");
     expect(threeD).toContain("studio.renderer.render(studio.scene, studio.camera)");
+    expect(threeD).toContain("hidden sm:flex flex-col");
   });
 });

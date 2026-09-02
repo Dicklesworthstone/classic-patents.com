@@ -13,6 +13,7 @@ import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildSikorskyHelicopterModel } from "./sikorskyHelicopterModel";
+import { useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 
 const PATENT_ID = "us-2318259-sikorsky-helicopter";
@@ -40,7 +41,7 @@ export function SikorskyHelicopter3D({ patentId = PATENT_ID }: { patentId?: stri
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
   const [view, setView] = useState<keyof typeof VIEWS>("overview");
-  const [interfaceVisible, setInterfaceVisible] = useState(true);
+  const [interfaceVisible, setInterfaceVisible] = useResponsiveStudioHud(true);
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
 
   const { params, updateParam, resetParams } = usePatentPhysics(patentId);

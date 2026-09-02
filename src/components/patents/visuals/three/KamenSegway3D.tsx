@@ -135,7 +135,7 @@ export function KamenSegway3D({ patentId = PATENT_ID }: { patentId?: string }) {
         )}
 
         {/* HUD Overlay */}
-        <div className="absolute top-3 left-3 bg-slate-950/85 backdrop-blur border border-slate-800/80 rounded-lg p-3 text-xs font-mono flex flex-col gap-1.5 pointer-events-none">
+        <div className="absolute top-3 left-3 bg-slate-950/85 backdrop-blur border border-slate-800/80 rounded-lg p-3 text-xs font-mono hidden sm:flex flex-col gap-1.5 pointer-events-none">
           <div className="text-cyan-400 font-bold border-b border-slate-800 pb-1 flex items-center justify-between gap-4">
             <span>DYNAMICS HUD</span>
             <span>{tel.velocityKmh.toFixed(1)} km/h</span>

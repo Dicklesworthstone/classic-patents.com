@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import * as THREE from "three";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import {
   DEFAULT_SIKORSKY_CONTROLS,
   INITIAL_SIKORSKY_STATE,
@@ -35,6 +37,14 @@ describe("US 2,318,259 Sikorsky Helicopter 3D Procedural Model", () => {
       ).toBeLessThan(1e-9);
     }
     model.dispose();
+  });
+
+  test("keeps the full airframe visible by default on narrow viewports", () => {
+    const source = readFileSync(
+      resolve(process.cwd(), "src/components/patents/visuals/three/SikorskyHelicopter3D.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("useResponsiveStudioHud(true)");
   });
 
   test("updates 3D articulated rotor kinematics and flight attitude from SI physics telemetry", () => {
