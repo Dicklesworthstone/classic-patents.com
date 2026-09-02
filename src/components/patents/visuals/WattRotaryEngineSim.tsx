@@ -83,12 +83,15 @@ export function WattRotaryEngineSim() {
   const rPlanetPx = rSunPx * gearRatioNpOverNs;
   const rOrbitPx = rSunPx + rPlanetPx;
 
-  // Orbit angle
+  // Orbit angle and planet center
   const orbitAngleRad = (telemetry.planetOrbitAngleDeg * Math.PI) / 180;
   const planetCenterX = sunCenterX + rOrbitPx * Math.sin(orbitAngleRad);
   const planetCenterY = sunCenterY - rOrbitPx * Math.cos(orbitAngleRad);
 
-  const sunAngleDeg = telemetry.sunShaftAngleDeg;
+  const rodAngleRad = Math.atan2(planetCenterX - rightBeamX, -(planetCenterY - rightBeamY));
+  const rodAngleDeg = (rodAngleRad * 180) / Math.PI;
+
+  const sunAngleDeg = ((2 * orbitAngleRad - rodAngleRad) * 180) / Math.PI;
 
   return (
     <div
@@ -430,7 +433,7 @@ export function WattRotaryEngineSim() {
             />
 
             {/* Planet Gear Wheel (Rigidly clamped to Connecting Rod, orbiting Sun) */}
-            <g>
+            <g transform={`rotate(${rodAngleDeg}, ${planetCenterX}, ${planetCenterY})`}>
               <circle
                 cx={planetCenterX}
                 cy={planetCenterY}
@@ -439,8 +442,8 @@ export function WattRotaryEngineSim() {
                 stroke="#bae6fd"
                 strokeWidth="1.5"
               />
-              {/* Planet Gear Teeth */}
-              {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => (
+              {/* Planet Gear Teeth (offset by half pitch to interlock with Sun teeth) */}
+              {[15, 45, 75, 105, 135, 165, 195, 225, 255, 285, 315, 345].map((deg) => (
                 <rect
                   key={deg}
                   x={planetCenterX - 3}
@@ -460,6 +463,16 @@ export function WattRotaryEngineSim() {
                 strokeWidth="2"
               />
               {/* Rigid Connecting Rod Bracket */}
+              <rect
+                x={planetCenterX - 4}
+                y={planetCenterY - 20}
+                width="8"
+                height="24"
+                fill="#fef08a"
+                stroke="#d97706"
+                strokeWidth="1"
+                rx="2"
+              />
               <circle cx={planetCenterX} cy={planetCenterY} r="4" fill="#fef08a" />
             </g>
 
@@ -496,80 +509,112 @@ export function WattRotaryEngineSim() {
             >
               <rect width="500" height="350" fill="#0a0f1d" rx="10" stroke="#1f2937" />
 
-              {/* Sun Gear Pitch Circle */}
-              <circle
-                cx="200"
-                cy="175"
-                r="70"
-                fill="#b45309"
-                fillOpacity="0.3"
-                stroke="#f59e0b"
-                strokeWidth="2.5"
-              />
-              <circle cx="200" cy="175" r="14" fill="#1e293b" stroke="#f59e0b" strokeWidth="2" />
-              <text
-                x="200"
-                y="180"
-                fill="#fef08a"
-                fontSize="11"
-                fontWeight="bold"
-                textAnchor="middle"
-              >
-                SUN (A)
-              </text>
-
-              {/* Planet Gear Pitch Circle Orbiting at 45 deg */}
-              <g transform={`rotate(${orbitAngleRad * (180 / Math.PI)}, 200, 175)`}>
-                <line
-                  x1="200"
-                  y1="175"
-                  x2="340"
-                  y2="175"
-                  stroke="#94a3b8"
-                  strokeWidth="2"
-                  strokeDasharray="4,4"
-                />
+              {/* Sun Gear Pitch Circle & Teeth (Rotating at 2x orbit rate) */}
+              <g transform={`rotate(${sunAngleDeg}, 180, 180)`}>
                 <circle
-                  cx="340"
-                  cy="175"
-                  r="70"
-                  fill="#0284c7"
+                  cx="180"
+                  cy="180"
+                  r="60"
+                  fill="#b45309"
                   fillOpacity="0.3"
-                  stroke="#38bdf8"
+                  stroke="#f59e0b"
                   strokeWidth="2.5"
                 />
-                <circle cx="340" cy="175" r="12" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
+                {[0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180, 202.5, 225, 247.5, 270, 292.5, 315, 337.5].map((deg) => (
+                  <rect
+                    key={deg}
+                    x={180 - 3}
+                    y={180 - 64}
+                    width="6"
+                    height="8"
+                    fill="#fef08a"
+                    transform={`rotate(${deg}, 180, 180)`}
+                  />
+                ))}
+                <circle cx="180" cy="180" r="14" fill="#1e293b" stroke="#f59e0b" strokeWidth="2" />
                 <text
-                  x="340"
-                  y="180"
-                  fill="#bae6fd"
+                  x="180"
+                  y="185"
+                  fill="#fef08a"
                   fontSize="11"
                   fontWeight="bold"
                   textAnchor="middle"
                 >
-                  PLANET (B)
-                </text>
-
-                {/* Rigid Connecting Rod Extension */}
-                <line
-                  x1="340"
-                  y1="175"
-                  x2="450"
-                  y2="100"
-                  stroke="#e2e8f0"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-                <text x="400" y="110" fill="#e2e8f0" fontSize="9">
-                  Connecting Rod
-                </text>
-
-                {/* Pitch Line Tooth Mesh Contact Point */}
-                <circle cx="270" cy="175" r="6" fill="#ef4444" />
-                <text x="270" y="160" fill="#fca5a5" fontSize="8" textAnchor="middle">
-                  Pitch Contact
+                  SUN (A)
                 </text>
               </g>
+
+              {/* Radius Guide Link connecting Sun to Planet */}
+              {(() => {
+                const meshPlanetX = 180 + 120 * Math.sin(orbitAngleRad);
+                const meshPlanetY = 180 - 120 * Math.cos(orbitAngleRad);
+                const meshContactX = 180 + 60 * Math.sin(orbitAngleRad);
+                const meshContactY = 180 - 60 * Math.cos(orbitAngleRad);
+                const meshRodAngleDeg = rodAngleDeg;
+
+                return (
+                  <>
+                    <line
+                      x1="180"
+                      y1="180"
+                      x2={meshPlanetX}
+                      y2={meshPlanetY}
+                      stroke="#64748b"
+                      strokeWidth="3"
+                      strokeDasharray="4,3"
+                    />
+
+                    {/* Planet Gear (Orbiting Sun, orientation held by Connecting Rod) */}
+                    <g transform={`rotate(${meshRodAngleDeg}, ${meshPlanetX}, ${meshPlanetY})`}>
+                      <circle
+                        cx={meshPlanetX}
+                        cy={meshPlanetY}
+                        r="60"
+                        fill="#0284c7"
+                        fillOpacity="0.3"
+                        stroke="#38bdf8"
+                        strokeWidth="2.5"
+                      />
+                      {[11.25, 33.75, 56.25, 78.75, 101.25, 123.75, 146.25, 168.75, 191.25, 213.75, 236.25, 258.75, 281.25, 303.75, 326.25, 348.75].map((deg) => (
+                        <rect
+                          key={deg}
+                          x={meshPlanetX - 3}
+                          y={meshPlanetY - 64}
+                          width="6"
+                          height="8"
+                          fill="#bae6fd"
+                          transform={`rotate(${deg}, ${meshPlanetX}, ${meshPlanetY})`}
+                        />
+                      ))}
+                      <circle cx={meshPlanetX} cy={meshPlanetY} r="12" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
+                      <text
+                        x={meshPlanetX}
+                        y={meshPlanetY + 5}
+                        fill="#bae6fd"
+                        fontSize="11"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                      >
+                        PLANET (B)
+                      </text>
+
+                      {/* Rigid Connecting Rod Clamped to Planet */}
+                      <line
+                        x1={meshPlanetX}
+                        y1={meshPlanetY}
+                        x2={meshPlanetX}
+                        y2={meshPlanetY - 110}
+                        stroke="#e2e8f0"
+                        strokeWidth="4"
+                        strokeLinecap="round"
+                      />
+                    </g>
+
+                    {/* Pitch Line Tooth Mesh Contact Point */}
+                    <circle cx={meshContactX} cy={meshContactY} r="5" fill="#ef4444" />
+                  </>
+                );
+              })()}
 
               {/* Formula & Explanation Card */}
               <g transform="translate(20, 20)">

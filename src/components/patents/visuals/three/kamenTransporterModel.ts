@@ -277,13 +277,13 @@ export function updateKamenTransporterKinematics(
   model.leftCluster.rotation.z = clusterRad;
   model.rightCluster.rotation.z = clusterRad;
 
-  // 4. Individual Wheel Roll Kinematics
+  // 4. Individual Wheel Roll Kinematics (Rolling around axle Z axis in direction of travel)
   const wheelSpinSpeed = tel.forwardVelocityMs / 0.15;
   const wheelSpinAngle = wheelSpinSpeed * timeS;
-  model.leftWheel1.rotation.y = wheelSpinAngle;
-  model.leftWheel2.rotation.y = wheelSpinAngle;
-  model.rightWheel1.rotation.y = wheelSpinAngle;
-  model.rightWheel2.rotation.y = wheelSpinAngle;
+  model.leftWheel1.rotation.z = -wheelSpinAngle;
+  model.leftWheel2.rotation.z = -wheelSpinAngle;
+  model.rightWheel1.rotation.z = -wheelSpinAngle;
+  model.rightWheel2.rotation.z = -wheelSpinAngle;
 
   // 5. Center of Gravity Marker Color Feedback
   const cgMat = model.cgMarker.material as THREE.MeshStandardMaterial;

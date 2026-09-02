@@ -84,22 +84,29 @@ export function stepWattRotaryEngine(
   const orbitPhase = (timeSec * omegaCycle) % (2 * Math.PI);
   const planetOrbitAngleDeg = ((orbitPhase * 180) / Math.PI) % 360;
 
-  // Shaft Rotational Speed (2:1 multiplication)
-  const shaftRpm = spm * speedMultiplier;
-  const shaftAngularVelocityRadS = (shaftRpm * 2 * Math.PI) / 60;
-  const sunShaftAngleDeg = ((orbitPhase * speedMultiplier * 180) / Math.PI) % 360;
-
-  // Beam & Piston Kinematics
-  const maxBeamAngleRad = Math.asin(stroke / (2 * 2.4)); // ~22 deg
-  const beamAngleRad = maxBeamAngleRad * Math.sin(orbitPhase);
+  // Beam Kinematics (driven by planet orbit at beam right arm length 2.2 m)
+  const sinBeta = Math.max(-1, Math.min(1, -(rOrbit / 2.2) * Math.cos(orbitPhase)));
+  const beamAngleRad = Math.asin(sinBeta);
   const beamAngleDeg = (beamAngleRad * 180) / Math.PI;
 
-  const pistonPositionM = (stroke / 2) * (1 - Math.cos(orbitPhase));
-  const pistonVelocityMps = (stroke / 2) * omegaCycle * Math.sin(orbitPhase);
+  const rightBeamEndX = 2.2 * Math.cos(beamAngleRad);
+  const rightBeamEndY = 3.2 + 2.2 * Math.sin(beamAngleRad);
+  const planetPosX = 2.2 + rOrbit * Math.sin(orbitPhase);
+  const planetPosY = 0.9 - rOrbit * Math.cos(orbitPhase);
 
-  // Planet Center Position (relative to Sun shaft center at (0, 0))
-  const planetPosX = rOrbit * Math.sin(orbitPhase);
-  const planetPosY = -rOrbit * Math.cos(orbitPhase);
+  const rodDx = planetPosX - rightBeamEndX;
+  const rodDy = rightBeamEndY - planetPosY;
+  const rodAngle = Math.atan2(rodDx, rodDy);
+
+  // Shaft Rotational Speed (exact 2:1 epicyclic multiplication with rod sway conjugate)
+  const shaftRpm = spm * speedMultiplier;
+  const shaftAngularVelocityRadS = (shaftRpm * 2 * Math.PI) / 60;
+  const sunShaftAngleRad = speedMultiplier * orbitPhase - ratio * rodAngle;
+  const sunShaftAngleDeg = (((sunShaftAngleRad * 180) / Math.PI) % 360 + 360) % 360;
+
+  // Piston Kinematics (left beam end)
+  const pistonPositionM = (stroke / 2) * (1 + Math.cos(orbitPhase));
+  const pistonVelocityMps = -(stroke / 2) * omegaCycle * Math.sin(orbitPhase);
 
   // Forces
   const pistonArea = (Math.PI * bore * bore) / 4;

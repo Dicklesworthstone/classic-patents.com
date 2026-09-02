@@ -200,9 +200,9 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
   const connectingRodGroup = new THREE.Group();
   connectingRodGroup.position.set(2.2, 3.2, 0);
 
-  const rodGeom = track(new THREE.CylinderGeometry(0.07, 0.07, 2.8, 16));
+  const rodGeom = track(new THREE.CylinderGeometry(0.07, 0.07, 2.3, 16));
   const rodMesh = new THREE.Mesh(rodGeom, polishedIronMat);
-  rodMesh.position.set(0, -1.4, 0);
+  rodMesh.position.set(0, -1.15, 0);
   connectingRodGroup.add(rodMesh);
   root.add(connectingRodGroup);
 
@@ -251,9 +251,9 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
   planetDiscMesh.rotation.x = Math.PI / 2;
   planetGearGroup.add(planetDiscMesh);
 
-  // Planet Gear Teeth
+  // Planet Gear Teeth (offset by half-pitch Math.PI / 20 to mesh cleanly between Sun teeth)
   for (let i = 0; i < 20; i++) {
-    const ang = (i / 20) * Math.PI * 2;
+    const ang = (i / 20) * Math.PI * 2 + Math.PI / 20;
     const tooth = new THREE.Mesh(toothGeom, planetGearMat);
     tooth.position.set(Math.cos(ang) * rPlanet, Math.sin(ang) * rPlanet, 0);
     tooth.rotation.z = ang;
@@ -380,10 +380,11 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
   const updateAnimation = (pose: WattRotaryPose) => {
     const beamAngle = (pose.beamAngleDeg * Math.PI) / 180;
     const phase = (pose.planetOrbitAngleDeg * Math.PI) / 180;
-    const sunAngle = -((pose.sunShaftAngleDeg * Math.PI) / 180);
 
     beamGroup.rotation.z = beamAngle;
-    pistonGroup.position.y = 1.3 - beamAngle * 2.2;
+
+    const leftBeamEndY = 3.2 - Math.sin(beamAngle) * 2.2;
+    pistonGroup.position.set(cylPosX, leftBeamEndY - 2.0, 0);
 
     const planetX = sunPosX + rOrbit * Math.sin(phase);
     const planetY = sunPosY - rOrbit * Math.cos(phase);
@@ -394,9 +395,21 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
     connectingRodGroup.position.set(rightBeamEndX, rightBeamEndY, 0);
     const rodDx = planetX - rightBeamEndX;
     const rodDy = planetY - rightBeamEndY;
-    connectingRodGroup.rotation.z = Math.atan2(rodDx, -rodDy);
+    const rodAngle = Math.atan2(rodDx, -rodDy);
+    connectingRodGroup.rotation.z = rodAngle;
 
-    radiusLinkGroup.rotation.z = -phase;
+    // Scale connecting rod to seamlessly seat from right beam end to planet center
+    const rodLength = Math.hypot(rodDx, rodDy);
+    connectingRodGroup.scale.set(1, rodLength / 2.3, 1);
+
+    // Planet gear is rigidly bolted/keyed to the connecting rod in Watt's design
+    planetGearGroup.rotation.z = rodAngle;
+
+    // Radius link guide bar pivots at sun center and rotates with phase
+    radiusLinkGroup.rotation.z = phase;
+
+    // Sun gear and flywheel rotate at conjugate rolling tooth angle (2:1 speed multiplication)
+    const sunAngle = 2 * phase - rodAngle;
     sunGearGroup.rotation.z = sunAngle;
     flywheelGroup.rotation.z = sunAngle;
   };
