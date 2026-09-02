@@ -37,6 +37,11 @@ const VIEWS = {
   },
 } as const;
 
+const MOBILE_OVERVIEW = {
+  position: [5.7, 5.4, 6.4] as [number, number, number],
+  target: [0, 2.7, -1.3] as [number, number, number],
+};
+
 export function SikorskyHelicopter3D({ patentId = PATENT_ID }: { patentId?: string } = {}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
@@ -54,7 +59,10 @@ export function SikorskyHelicopter3D({ patentId = PATENT_ID }: { patentId?: stri
 
   const selectView = (nextView: keyof typeof VIEWS) => {
     setView(nextView);
-    const camera = VIEWS[nextView];
+    const camera =
+      nextView === "overview" && (containerRef.current?.clientWidth ?? 1000) < 640
+        ? MOBILE_OVERVIEW
+        : VIEWS[nextView];
     studioRef.current?.controls.setView(camera.position, camera.target);
   };
 
@@ -62,7 +70,7 @@ export function SikorskyHelicopter3D({ patentId = PATENT_ID }: { patentId?: stri
     const container = containerRef.current;
     if (!container) return;
 
-    const initialCamera = VIEWS.overview;
+    const initialCamera = container.clientWidth < 640 ? MOBILE_OVERVIEW : VIEWS.overview;
     const studio = createThreeStudioScene({
       container,
       cameraPos: initialCamera.position,
@@ -120,13 +128,13 @@ export function SikorskyHelicopter3D({ patentId = PATENT_ID }: { patentId?: stri
       <div ref={containerRef} className="w-full h-full" />
 
       {/* Floating View Presets */}
-      <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
+      <div className="absolute top-4 left-4 right-20 flex flex-nowrap gap-2 z-10 overflow-x-auto scrollbar-none">
         {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((key) => (
           <button
             key={key}
             type="button"
             onClick={() => selectView(key)}
-            className={`px-3 py-1 rounded text-xs font-semibold tracking-wider uppercase transition-colors backdrop-blur-md ${
+            className={`shrink-0 px-3 py-1 rounded text-xs font-semibold tracking-wider uppercase transition-colors backdrop-blur-md ${
               view === key
                 ? "bg-amber-500/90 text-stone-950 shadow-md"
                 : "bg-stone-900/80 hover:bg-stone-800/80 text-stone-300 border border-stone-700/60"

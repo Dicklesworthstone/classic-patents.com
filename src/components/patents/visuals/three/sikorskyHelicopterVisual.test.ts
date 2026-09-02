@@ -45,6 +45,8 @@ describe("US 2,318,259 Sikorsky Helicopter 3D Procedural Model", () => {
       "utf8",
     );
     expect(source).toContain("useResponsiveStudioHud(true)");
+    expect(source).toContain("MOBILE_OVERVIEW");
+    expect(source).toContain("flex-nowrap");
   });
 
   test("updates 3D articulated rotor kinematics and flight attitude from SI physics telemetry", () => {

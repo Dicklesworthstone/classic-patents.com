@@ -2,7 +2,11 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import * as THREE from "three";
-import { createGlowPointTexture } from "./ThreeStudioScene";
+import {
+  classifySingleTouchGesture,
+  createGlowPointTexture,
+  TOUCH_ORBIT_THRESHOLD_PX,
+} from "./ThreeStudioScene";
 
 const THREE_DIRECTORY = join(process.cwd(), "src/components/patents/visuals/three");
 
@@ -44,5 +48,24 @@ describe("ThreeStudioScene Visual Foundation", () => {
     expect(source).toContain("setRadius");
     expect(source).toContain("updateEnvironment");
     expect(source).toContain("forceContextLoss");
+  });
+
+  test("keeps a one-finger vertical swipe available to the document while recognizing a deliberate horizontal orbit", () => {
+    expect(classifySingleTouchGesture(TOUCH_ORBIT_THRESHOLD_PX - 1, 0)).toBe("pending");
+    expect(classifySingleTouchGesture(0, TOUCH_ORBIT_THRESHOLD_PX)).toBe("scroll");
+    expect(classifySingleTouchGesture(TOUCH_ORBIT_THRESHOLD_PX, TOUCH_ORBIT_THRESHOLD_PX)).toBe(
+      "scroll",
+    );
+    expect(classifySingleTouchGesture(TOUCH_ORBIT_THRESHOLD_PX, 0)).toBe("orbit");
+  });
+
+  test("uses gesture-gated touch ownership instead of globally disabling page scroll", () => {
+    const source = readFileSync(join(THREE_DIRECTORY, "ThreeStudioScene.ts"), "utf8");
+
+    expect(source).toContain('touchAction = "pan-y"');
+    expect(source).toContain("classifySingleTouchGesture");
+    expect(source).toContain('touchGesture === "orbit"');
+    expect(source).toContain('touchGesture !== "pinch"');
+    expect(source).toContain("gesturestart");
   });
 });

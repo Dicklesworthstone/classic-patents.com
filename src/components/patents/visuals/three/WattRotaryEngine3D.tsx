@@ -45,6 +45,27 @@ const CAMERA_PRESETS: Record<
   cylinder: { pos: [-3.8, 2.5, 3.2], target: [-2.2, 1.5, 0] },
 };
 
+function cameraPresetForViewport(preset: CameraPreset): {
+  pos: [number, number, number];
+  target: [number, number, number];
+} {
+  const config = CAMERA_PRESETS[preset];
+  if (typeof window === "undefined" || window.innerWidth >= 640) return config;
+
+  // A portrait viewport has far less horizontal field of view than the
+  // desktop studio. Preserve the same target but move the camera outward so
+  // the complete mechanism remains inspectable instead of clipping its gears.
+  const mobileDistanceMultiplier = 1.55;
+  return {
+    pos: [
+      config.target[0] + (config.pos[0] - config.target[0]) * mobileDistanceMultiplier,
+      config.target[1] + (config.pos[1] - config.target[1]) * mobileDistanceMultiplier,
+      config.target[2] + (config.pos[2] - config.target[2]) * mobileDistanceMultiplier,
+    ],
+    target: config.target,
+  };
+}
+
 export function WattRotaryEngine3D() {
   const { params, updateParam } = usePatentPhysics("gb-1306-watt-rotary-engine");
 
@@ -61,7 +82,9 @@ export function WattRotaryEngine3D() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [cutaway, setCutaway] = useState(false);
   const [showCallouts, setShowCallouts] = useState(true);
-  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
+  // The gear train is the teaching surface. Telemetry remains available from
+  // the toggle, but it must not cover the mesh by default.
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(false);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
@@ -113,7 +136,7 @@ export function WattRotaryEngine3D() {
 
   const handleCameraPreset = (preset: CameraPreset) => {
     setCameraPreset(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = cameraPresetForViewport(preset);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -121,7 +144,7 @@ export function WattRotaryEngine3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const initialPreset = CAMERA_PRESETS.overview;
+    const initialPreset = cameraPresetForViewport("overview");
     const studio = createThreeStudioScene({
       container,
       cameraPos: initialPreset.pos,
@@ -168,6 +191,18 @@ export function WattRotaryEngine3D() {
     };
   }, []);
 
+  useEffect(() => {
+    const restoreMobileFraming = () => {
+      if (window.innerWidth >= 640) return;
+      const config = cameraPresetForViewport(cameraPreset);
+      studioRef.current?.controls.setView(config.pos, config.target);
+    };
+
+    restoreMobileFraming();
+    window.addEventListener("resize", restoreMobileFraming);
+    return () => window.removeEventListener("resize", restoreMobileFraming);
+  }, [cameraPreset]);
+
   const telemetry = stepWattRotaryEngine(
     {
       strokeRateSpm,
@@ -185,8 +220,7 @@ export function WattRotaryEngine3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Top-Left Camera Preset Toolbar */}
-        {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-28rem)] gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 hidden sm:flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-28rem)] gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
             <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
               <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
             </span>
@@ -211,8 +245,25 @@ export function WattRotaryEngine3D() {
                 {label}
               </button>
             ))}
-          </div>
-        )}
+        </div>
+
+        <div className="absolute top-3 left-3 z-10 sm:hidden">
+          <label className="sr-only" htmlFor="watt-camera-view">
+            Camera view
+          </label>
+          <select
+            id="watt-camera-view"
+            value={cameraPreset}
+            onChange={(event) => handleCameraPreset(event.target.value as CameraPreset)}
+            className="min-h-9 max-w-32 rounded-lg border border-parchment-300 bg-white/95 px-2 text-xs font-semibold text-ink-800 shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/95 dark:text-parchment-100"
+            aria-label="Watt engine camera view"
+          >
+            <option value="overview">Overview</option>
+            <option value="gear-mesh">Gear Mesh</option>
+            <option value="beam">Beam</option>
+            <option value="cylinder">Cylinder</option>
+          </select>
+        </div>
 
         {/* Top-Right Action Controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[min(90%,26rem)] sm:max-w-[26rem]">
