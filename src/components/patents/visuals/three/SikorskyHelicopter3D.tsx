@@ -19,8 +19,8 @@ const PATENT_ID = "us-2318259-sikorsky-helicopter";
 
 const VIEWS = {
   overview: {
-    position: [0, 3.8, 6.8] as [number, number, number],
-    target: [0, 1.2, 0] as [number, number, number],
+    position: [7.8, 6.2, 9.4] as [number, number, number],
+    target: [0, 2.7, -1.5] as [number, number, number],
   },
   rotorHead: {
     position: [0.9, 2.2, 1.2] as [number, number, number],
