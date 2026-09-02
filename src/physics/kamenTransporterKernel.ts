@@ -178,7 +178,7 @@ export function stepKamenTransporterSi(
     forwardVelocityMs = controls.velocityCommandMs;
     forwardAccelerationMs2 = 0;
     groundTractionForceN = totalMassKg * 0.1 * forwardVelocityMs;
-    balanceTorqueNm = groundTractionForceN * WHEEL_RADIUS_M;
+    balanceTorqueNm = groundTractionForceN * KAMEN_TRANSPORTER_SCENARIO_WHEEL_RADIUS_M;
   }
 
   // Differential drive for yaw turning
