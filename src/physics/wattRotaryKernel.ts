@@ -117,6 +117,16 @@ function solveBeamAngleRad(planetX: number, planetY: number): number {
   return Math.atan2(qy, qx) + Math.acos(closureCosine);
 }
 
+export const INITIAL_WATT_CONNECTING_ROD_ANGLE_RAD = (() => {
+  const geom = WATT_ROTARY_KINEMATIC_GEOMETRY;
+  const pX = geom.sunCenterX;
+  const pY = geom.sunCenterY - geom.gearCenterDistanceM;
+  const beamAngle = solveBeamAngleRad(pX, pY);
+  const rEndX = geom.beamPivotX + geom.beamHalfLengthM * Math.cos(beamAngle);
+  const rEndY = geom.beamPivotY + geom.beamHalfLengthM * Math.sin(beamAngle);
+  return Math.atan2(pX - rEndX, -(pY - rEndY));
+})();
+
 export function readWattRotaryControls(
   raw: Partial<WattRotaryControls> | Record<string, number | undefined>,
 ): WattRotaryControls {
@@ -183,17 +193,25 @@ export function stepWattRotaryEngine(
   const connectingRodLength = Math.hypot(rodDx, rodDy);
   const connectingRodAngleRad = Math.atan2(rodDx, -rodDy);
 
-  // Watt's planet is restrained from making a full revolution on its own
-  // axis. Willis' external epicyclic relation therefore gives
-  // Ns(omega_s-omega_c)+Np(omega_p-omega_c)=0 with omega_p=0.
-  const planetBodyAngleRad = 0;
+  // In James Watt's GB 1306 engine, the planet gear is rigidly affixed to the
+  // lower end of the connecting rod ("spear"). As the walking beam rocks, the
+  // rod oscillates, causing the planet gear to rock by connectingRodAngleRad.
+  // Willis' external epicyclic rolling relation with no slip at the pitch line:
+  // Rs * (theta_s - theta_s0) + Rp * (theta_p - theta_p0) = (Rs + Rp) * theta_c
+  // gives:
+  // theta_s = (1 + Np/Ns) * theta_c - (Np/Ns) * (connectingRodAngleRad - initialRodAngle)
+  const planetBodyAngleRad = connectingRodAngleRad;
+  const planetBodyAngleDeg = (planetBodyAngleRad * 180) / Math.PI;
   const shaftRpm = spm * speedMultiplier;
   const shaftAngularVelocityRadS = (shaftRpm * 2 * Math.PI) / 60;
-  const sunShaftAngleRad = speedMultiplier * carrierAngleRad;
+  const sunShaftAngleRad =
+    speedMultiplier * carrierAngleRad -
+    ratio * (connectingRodAngleRad - INITIAL_WATT_CONNECTING_ROD_ANGLE_RAD);
   const sunShaftAngleDeg = positiveModulo((sunShaftAngleRad * 180) / Math.PI, 360);
   const gearMeshConstraintResidualRad =
-    sunTeeth * (sunShaftAngleRad - carrierAngleRad) +
-    planetTeeth * (planetBodyAngleRad - carrierAngleRad);
+    sunTeeth * sunShaftAngleRad +
+    planetTeeth * (planetBodyAngleRad - INITIAL_WATT_CONNECTING_ROD_ANGLE_RAD) -
+    (sunTeeth + planetTeeth) * carrierAngleRad;
 
   // The piston follows the left beam end. Differentiate the four-bar closure
   // analytically so velocity and rendered position remain the same mechanism.

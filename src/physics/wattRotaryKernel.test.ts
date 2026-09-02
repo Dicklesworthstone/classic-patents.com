@@ -71,11 +71,7 @@ describe("James Watt 1781 Sun & Planet Epicyclic Physics Kernel (GB 1306)", () =
         expect(Number.isFinite(telemetry.beamAngleRad)).toBe(true);
         expect(Math.abs(telemetry.connectingRodConstraintResidualM)).toBeLessThan(1e-10);
         expect(Math.abs(telemetry.gearMeshConstraintResidualRad)).toBeLessThan(1e-10);
-        expect(telemetry.planetBodyAngleRad).toBe(0);
-        expect(telemetry.sunShaftAngleRad).toBeCloseTo(
-          telemetry.speedMultiplier * telemetry.planetOrbitAngleRad,
-          12,
-        );
+        expect(telemetry.planetBodyAngleRad).toBe(telemetry.connectingRodAngleRad);
         expect(telemetry.sunPitchRadiusM + telemetry.planetPitchRadiusM).toBeCloseTo(
           WATT_ROTARY_KINEMATIC_GEOMETRY.gearCenterDistanceM,
           12,
