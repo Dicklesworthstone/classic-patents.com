@@ -121,6 +121,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US X8277 specifies the mechanical kinematic gear train (30:9 and 27:9 tooth ratios), ground-wheel diameter, reel pulley, and cutting blades, but supplies no draft horse pull force, sickle cutting resistance, ground rolling resistance, or continuous power consumption datum from which an authentic SI energy channel can be derived.",
   "us-727650-linde-air-liquefaction":
     "US 727,650 specifies the regenerative counter-current heat exchanger G', throttling valve R', and vessel V' operating across a stated 75 atm to 25 atm expansion, but supplies no compressor shaft power, mass flow rate, motor wattage, or cooling kilowattage from which an authentic SI energy channel can be derived.",
+  "us-307031-edison-indicator":
+    "US 307,031 specifies placing an internal terminal within an incandescent lamp globe and connecting it externally to indicate or regulate the circuit, but prints no filament wattage, lamp voltage, vacuum pressure, thermionic current, or sensitivity from which an authentic SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -737,15 +739,6 @@ export function energyChannelsFor(
       { name: "Hydrodynamic Water Jet", watts: jetW, tone: "in" },
       { name: "Splitter Bucket Impulse Torque", watts: jetW * 0.88, tone: "useful" },
       { name: "Discharge Residual Kinetic Loss", watts: jetW * 0.12, tone: "loss" },
-    ];
-  }
-
-  if (patentId === "us-307031-edison-indicator") {
-    const filW = 45;
-    return [
-      { name: "Filament Joule Heat", watts: filW, tone: "in" },
-      { name: "Thermionic Emission Flux", watts: filW * 0.15, tone: "useful" },
-      { name: "Blackbody Radiation Loss", watts: filW * 0.85, tone: "loss" },
     ];
   }
 

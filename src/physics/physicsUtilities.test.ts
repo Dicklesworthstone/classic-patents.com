@@ -147,8 +147,9 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
       "Filament",
       "Audio",
     ]);
-    expect(energyChannelsFor("us-307031-edison-indicator", {})[0]?.name).toBe(
-      "Filament Joule Heat",
+    expect(energyChannelsFor("us-307031-edison-indicator", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-307031-edison-indicator"]).toContain(
+      "prints no filament wattage",
     );
     expect(energyChannelsFor("gb-913-watt-separate-condenser", {}).map((c) => c.name)).toEqual([
       "Furnace",

@@ -7505,6 +7505,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 1,
         unit: "source polarity",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics: (p) => {
@@ -7516,6 +7517,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "source text",
           badgeColor: "cyan",
           progressPct: 100,
+          provenance: "source-disclosed",
         },
         {
           label: "External Connection",
@@ -7523,6 +7525,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "reader comparison",
           badgeColor: positiveSide ? "emerald" : "indigo",
           progressPct: positiveSide ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
           label: "Illustrated Apparatus",
@@ -7530,6 +7533,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "source text",
           badgeColor: "indigo",
           progressPct: 100,
+          provenance: "source-disclosed",
         },
         {
           label: "Printed Conductors",
@@ -7537,6 +7541,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "figure labels",
           badgeColor: "amber",
           progressPct: 100,
+          provenance: "source-disclosed",
         },
       ];
     },

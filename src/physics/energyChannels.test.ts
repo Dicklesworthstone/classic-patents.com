@@ -77,6 +77,7 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-6469-lincoln-buoy",
       "us-x8277-mccormick-reaper",
       "us-727650-linde-air-liquefaction",
+      "us-307031-edison-indicator",
     ]);
   });
 

@@ -1963,21 +1963,22 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-307031-edison-indicator") {
-    const v = params.filamentVoltageV ?? 110;
+    const polarity = params.plateBiasPolarity ?? 1;
     return [
       {
         id: "conducting-substance",
         phrase: "conducting substance",
         active: true,
         tone: "held",
-        caption: "Platinum plate electrode mounted inside bulb collects thermionic space charge.",
+        caption:
+          "Platinum plate electrode mounted inside bulb forms the internal terminal in vacuous space.",
       },
       {
         id: "vacuous-space",
         phrase: "vacuous space",
-        active: v >= 90,
+        active: polarity > 0,
         tone: "live",
-        caption: `Filament Voltage=${v} V: Thermionic electron current crosses vacuous space to indicate mains voltage variations.`,
+        caption: `External Connection=${polarity > 0 ? "positive side" : "other side"}: Circuit connects from internal terminal through external apparatus to the lamp circuit.`,
       },
     ];
   }
