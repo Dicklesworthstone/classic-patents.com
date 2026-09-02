@@ -1,5 +1,18 @@
 import { describe, expect, test } from "bun:test";
-import { MESTRAL_VELCRO_DEFAULTS, stepMestralVelcroSi } from "@/physics/mestralVelcroKernel";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
+import {
+  MESTRAL_VELCRO_DEFAULTS,
+  readMestralVelcroControls,
+  stepMestralVelcroSi,
+} from "@/physics/mestralVelcroKernel";
+import {
+  getEffectivePatentPhysicsParams,
+  getPatentPhysicsParams,
+  resetPatentPhysicsParams,
+  setPatentPhysicsParam,
+} from "@/physics/usePatentPhysics";
 import { createMestralVelcroModel } from "./mestralVelcroModel";
 
 describe("Mestral Velcro 3D Procedural Model", () => {
@@ -14,7 +27,7 @@ describe("Mestral Velcro 3D Procedural Model", () => {
 
     // Update model with default SI physics telemetry
     const tel = stepMestralVelcroSi(MESTRAL_VELCRO_DEFAULTS);
-    expect(() => model.update(MESTRAL_VELCRO_DEFAULTS, tel, 0.45)).not.toThrow();
+    expect(() => model.update(MESTRAL_VELCRO_DEFAULTS, tel)).not.toThrow();
 
     // Verify upper tape position and loop positions
     expect(model.upperTapeGroup.position.y).toBeCloseTo(1.1, 1);
@@ -35,12 +48,78 @@ describe("Mestral Velcro 3D Procedural Model", () => {
     for (const angle of angles) {
       const controls = { ...MESTRAL_VELCRO_DEFAULTS, peelAngleDeg: angle };
       const tel = stepMestralVelcroSi(controls);
-      expect(() => model.update(controls, tel, 0.5)).not.toThrow();
+      expect(() => model.update(controls, tel)).not.toThrow();
       expect(tel.totalPeelForceN).toBeGreaterThan(0);
       expect(tel.forceAnisotropyRatio).toBeGreaterThan(5);
     }
 
     model.dispose();
+  });
+
+  test("uses the kernel-emitted peel front to pose the 3D loop field", () => {
+    const model = createMestralVelcroModel();
+    const earlyControls = { ...MESTRAL_VELCRO_DEFAULTS, peelProgress: 0.05 };
+    const lateControls = { ...MESTRAL_VELCRO_DEFAULTS, peelProgress: 0.95 };
+    const loopNearTheFront = model.loopMeshes[1];
+
+    model.update(earlyControls, stepMestralVelcroSi(earlyControls));
+    expect(loopNearTheFront?.position.y).toBeGreaterThan(0);
+
+    model.update(lateControls, stepMestralVelcroSi(lateControls));
+    expect(loopNearTheFront?.position.y).toBe(0);
+    model.dispose();
+  });
+
+  test("shares peel-front and claim constraints through the canonical patent bus", () => {
+    const patentId = "us-2717437-mestral-velcro";
+    resetPatentPhysicsParams(patentId);
+
+    try {
+      setPatentPhysicsParam(patentId, "peelProgress", 0.72);
+      expect(getPatentPhysicsParams(patentId).peelProgress).toBe(0.72);
+
+      const activeControls = readMestralVelcroControls(getEffectivePatentPhysicsParams(patentId));
+      expect(activeControls.peelProgress).toBe(0.72);
+      expect(activeControls.heatSettingTempC).toBe(MESTRAL_VELCRO_DEFAULTS.heatSettingTempC);
+
+      setPatentPhysicsParam(patentId, claimConstraintStateParamId(1), 0);
+      expect(getPatentPhysicsParams(patentId).heatSettingTempC).toBe(
+        MESTRAL_VELCRO_DEFAULTS.heatSettingTempC,
+      );
+
+      const constrainedControls = readMestralVelcroControls(
+        getEffectivePatentPhysicsParams(patentId),
+      );
+      expect(constrainedControls.peelProgress).toBe(0.72);
+      expect(constrainedControls.heatSettingTempC).toBe(25);
+      expect(stepMestralVelcroSi(constrainedControls).thermalRetentionFraction).toBeLessThan(0.01);
+    } finally {
+      resetPatentPhysicsParams(patentId);
+    }
+  });
+
+  test("keeps both Velcro faces on the effective bus controls rather than private peel or claim state", () => {
+    const twoDSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/MestralVelcroSim.tsx"),
+      "utf8",
+    );
+    const threeDSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/MestralVelcro3D.tsx"),
+      "utf8",
+    );
+    const modelSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/mestralVelcroModel.ts"),
+      "utf8",
+    );
+
+    for (const source of [twoDSource, threeDSource]) {
+      expect(source).toContain("effectiveParams");
+      expect(source).toContain("claimConstraintStateParamId");
+      expect(source).not.toContain("interactivePeelProgress");
+      expect(source).not.toContain("setClaimStates");
+    }
+    expect(threeDSource).not.toContain("useState<number>");
+    expect(modelSource).toContain("tel.peelProgress");
   });
 
   test("derives all printed claims dynamically from edition without duplicate strings", () => {

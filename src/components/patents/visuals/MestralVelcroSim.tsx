@@ -6,6 +6,7 @@ import {
   readMestralVelcroControls,
   stepMestralVelcroSi,
 } from "@/physics/mestralVelcroKernel";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "./PortHamiltonianEnergyStrip";
@@ -16,18 +17,18 @@ interface MestralVelcroSimProps {
 }
 
 export function MestralVelcroSim({ initialControls = {}, className = "" }: MestralVelcroSimProps) {
-  const { params, updateParam } = usePatentPhysics("us-2717437-mestral-velcro");
+  const { effectiveParams, claimStates, updateParam } = usePatentPhysics(
+    "us-2717437-mestral-velcro",
+  );
   const controls = useMemo(
     () =>
       readMestralVelcroControls({
         ...(initialControls as Record<string, number>),
-        ...params,
+        ...effectiveParams,
       }),
-    [initialControls, params],
+    [effectiveParams, initialControls],
   );
   const [viewMode, setViewMode] = useState<"loom" | "peel" | "single-hook">("peel");
-  const [interactivePeelProgress, setInteractivePeelProgress] = useState<number>(0.35);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 3: true });
 
   const clipId = useId();
   const tel = stepMestralVelcroSi(controls);
@@ -184,7 +185,7 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
               {/* Upper Foundation Tape (Peeling Flap) */}
               {(() => {
                 const peelAngleRad = (controls.peelAngleDeg * Math.PI) / 180;
-                const peelStartX = 90 + interactivePeelProgress * 550;
+                const peelStartX = 90 + tel.peelProgress * 550;
                 const flapLength = 260;
                 const flapEndX = peelStartX + flapLength * Math.cos(Math.PI - peelAngleRad);
                 const flapEndY = 220 - flapLength * Math.sin(peelAngleRad);
@@ -602,9 +603,9 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
         {viewMode === "peel" && (
           <div className="flex flex-col space-y-1.5 md:col-span-2 lg:col-span-4 pt-2 border-t border-stone-800/60">
             <div className="flex justify-between text-stone-300 font-medium">
-              <span>Interactive Peeling Separation Front</span>
+                <span>Interactive Peeling Separation Front</span>
               <span className="font-mono text-cyan-400">
-                {(interactivePeelProgress * 100).toFixed(0)}% Separated
+                {(tel.peelProgress * 100).toFixed(0)}% Separated
               </span>
             </div>
             <input
@@ -612,8 +613,8 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
               min="0.05"
               max="0.95"
               step="0.01"
-              value={interactivePeelProgress}
-              onChange={(e) => setInteractivePeelProgress(parseFloat(e.target.value))}
+              value={controls.peelProgress}
+              onChange={(e) => updateControl("peelProgress", parseFloat(e.target.value))}
               className="accent-cyan-500 bg-stone-800 h-2 rounded-lg cursor-pointer"
             />
           </div>
@@ -625,7 +626,9 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
         <ClaimConstraintToggle
           patentId="us-2717437-mestral-velcro"
           claimStates={claimStates}
-          onClaimStateChange={(num, state) => setClaimStates((prev) => ({ ...prev, [num]: state }))}
+          onToggleClaim={(claimNumber, active) =>
+            updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
+          }
         />
         <PortHamiltonianEnergyStrip
           patentId="us-2717437-mestral-velcro"

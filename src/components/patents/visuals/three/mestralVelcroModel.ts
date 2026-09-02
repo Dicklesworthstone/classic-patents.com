@@ -24,7 +24,7 @@ export interface MestralVelcro3DObjects {
   lancetMaterial: THREE.MeshStandardMaterial;
   hookMaterial: THREE.MeshStandardMaterial;
   loopMaterial: THREE.MeshStandardMaterial;
-  update: (controls: MestralVelcroControls, tel: MestralVelcroTelemetry) => void;
+  update: (controls: MestralVelcroControls, tel: MestralVelcroTelemetry, timeSec?: number) => void;
   dispose: () => void;
 }
 
@@ -161,7 +161,7 @@ export function createMestralVelcroModel(): MestralVelcro3DObjects {
   rootGroup.add(lancetBarGroup);
 
   // Dynamic Update Function
-  function update(controls: MestralVelcroControls, tel: MestralVelcroTelemetry) {
+  function update(controls: MestralVelcroControls, tel: MestralVelcroTelemetry, _timeSec = 0) {
     const peelRad = (controls.peelAngleDeg * Math.PI) / 180;
     const peelPivotX = -4.5 + tel.peelProgress * 9.0;
 

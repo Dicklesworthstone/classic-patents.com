@@ -10404,6 +10404,18 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         provenance: "scenario-reader",
       },
       {
+        id: "peelProgress",
+        label: "Peel Front Advance",
+        min: 0.05,
+        max: 0.95,
+        step: 0.01,
+        defaultValue: MESTRAL_VELCRO_DEFAULTS.peelProgress,
+        unit: "normalized",
+        provenance: "topology-normalized",
+        provenanceCitation:
+          "Reader-controlled normalized peel-front position shared by the 2D and 3D pedagogical projections; not a historical travel measurement.",
+      },
+      {
         id: "heatSettingTempC",
         label: "Lancet Bar Temp",
         min: 100,
@@ -10471,6 +10483,16 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "amber",
           progressPct: clampProgress((tel.totalPeelForceN / 8) * 100),
           provenance: "scenario-modern",
+        },
+        {
+          label: "Peel Front Advance",
+          value: `${(tel.peelProgress * 100).toFixed(0)}%`,
+          unit: "normalized",
+          badgeColor: "cyan",
+          progressPct: tel.peelProgress * 100,
+          provenance: "topology-normalized",
+          provenanceCitation:
+            "Reader-controlled normalized peel-front position shared by the 2D and 3D pedagogical projections; not a historical travel measurement.",
         },
         {
           label: "Shear/Peel Anisotropy",
