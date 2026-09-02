@@ -989,6 +989,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 10,
         defaultValue: 150,
         unit: "J",
+        provenance: "scenario-modern",
       },
       {
         id: "flashDurationMs",
@@ -998,6 +999,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.1,
         defaultValue: 1.0,
         unit: "ms",
+        provenance: "scenario-modern",
       },
       {
         id: "rodLengthCm",
@@ -1007,6 +1009,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: 5.0,
         unit: "cm",
+        provenance: "scenario-modern",
       },
       {
         id: "outputMirrorReflectivity",
@@ -1016,6 +1019,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: 0.92,
         unit: "R",
+        provenance: "scenario-modern",
       },
       {
         id: "crystalTemperatureKelvin",
@@ -1025,6 +1029,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 10,
         defaultValue: 300,
         unit: "K",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (controls: Record<string, number>) => {
@@ -1045,6 +1050,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "",
           badgeColor: res.isLasing ? "rose" : "amber",
           progressPct: res.isLasing ? 100 : 30,
+          provenance: "scenario-modern",
         },
         {
           label: "Population Inversion (N2/N1)",
@@ -1052,6 +1058,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "ratio",
           badgeColor: res.populationInversionRatio > 1.0 ? "rose" : "amber",
           progressPct: clampProgress((res.populationInversionRatio / 2.5) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Threshold Pump Energy",
@@ -1059,6 +1066,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "J",
           badgeColor: "cyan",
           progressPct: clampProgress((res.thresholdPumpEnergyJoules / 2000) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Laser Output Pulse Energy",
@@ -1066,6 +1074,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "J",
           badgeColor: res.laserPulseEnergyJoules > 0 ? "emerald" : "indigo",
           progressPct: clampProgress((res.laserPulseEnergyJoules / 5.0) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Peak Optical Power",
@@ -1073,6 +1082,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "kW",
           badgeColor: res.laserPeakPowerKw > 0 ? "rose" : "indigo",
           progressPct: clampProgress((res.laserPeakPowerKw / 100) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Net Round-Trip Gain",
@@ -1080,6 +1090,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "dB",
           badgeColor: "indigo",
           progressPct: clampProgress(((res.netRoundTripGainDb + 5) / 15) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Emission Wavelength (R1)",
@@ -1087,6 +1098,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "nm",
           badgeColor: "rose",
           progressPct: 100,
+          provenance: "source-disclosed",
         },
         {
           label: "Longitudinal Mode Spacing",
@@ -1094,6 +1106,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "GHz",
           badgeColor: "cyan",
           progressPct: clampProgress((res.modeSpacingGhz / 5.0) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },

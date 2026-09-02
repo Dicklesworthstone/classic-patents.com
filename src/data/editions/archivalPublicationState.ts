@@ -9,6 +9,10 @@
 
 import type { CuratedSpecificationEdition, OriginalTextAssetKind, Patent } from "@/types/patent";
 import { validateCuratedSpecificationEdition } from "../archivalEditionValidation";
+import {
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS,
+  type ArchivalFigureAcceptanceAttestation,
+} from "./archivalFigureAcceptance";
 
 export const ARCHIVAL_PUBLICATION_REASON_CODES = [
   "ACCEPTED",
@@ -435,13 +439,17 @@ function inlinesForBlock(edition: CuratedSpecificationEdition, blockIndex: numbe
 }
 
 function figureManifestForEdition(
+  patentId: string,
   edition: CuratedSpecificationEdition | undefined,
 ): ArchivalFigureManifest {
   if (!edition) return { requiredFigureCount: 0, acceptedFigureCount: 0, figures: [] };
-  const preparedBy = typeof edition.preparedBy === "string" ? edition.preparedBy : "";
-  const preparedAt = typeof edition.preparedAt === "string" ? edition.preparedAt : "";
+  const attestation = (
+    ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS as Readonly<
+      Record<string, ArchivalFigureAcceptanceAttestation>
+    >
+  )[patentId];
 
-  const figures = edition.blocks.flatMap((_, blockIndex) =>
+  const candidates = edition.blocks.flatMap((_, blockIndex) =>
     inlinesForBlock(edition, blockIndex).flatMap((inlines, groupIndex) =>
       inlines.flatMap((inline, inlineIndex) => {
         if (inline.kind !== "reference" || inline.referenceType !== "figure") return [];
@@ -450,13 +458,6 @@ function figureManifestForEdition(
           preview && preview.width > 0 && preview.height > 0
             ? { width: preview.width, height: preview.height }
             : null;
-        const accepted = Boolean(
-          preview?.src &&
-            preview.alt.trim() &&
-            dimensions &&
-            preparedBy.trim() &&
-            preparedAt.trim(),
-        );
         return [
           {
             occurrence: `edition-block-${blockIndex}-group-${groupIndex}-inline-${inlineIndex}`,
@@ -465,19 +466,58 @@ function figureManifestForEdition(
             sourceRegion: null,
             activeAsset: preview?.src ?? null,
             priorAssets: (inline.figurePreviews ?? []).slice(1).map((candidate) => candidate.src),
-            assetSha256: null,
             dimensions,
-            status: accepted ? "accepted" : "pending",
-            reviewer: accepted ? preparedBy : null,
-            reviewedAt: accepted ? preparedAt : null,
-            rejectionReason: accepted
-              ? null
-              : "This figure occurrence lacks a reviewed, dimensioned source crop.",
-          } satisfies ArchivalFigureEvidence,
+            preview,
+          },
         ];
       }),
     ),
   );
+
+  const activeAssetPaths = [
+    ...new Set(candidates.flatMap((candidate) => (candidate.preview ? [candidate.preview.src] : []))),
+  ].sort();
+  const attestedAssetPaths = attestation ? Object.keys(attestation.assets).sort() : [];
+  const attestationMatches = Boolean(
+    attestation &&
+      attestation.sourcePdfSha256 === edition.sourcePdfSha256 &&
+      attestation.acceptedOccurrenceCount === candidates.length &&
+      activeAssetPaths.length === attestedAssetPaths.length &&
+      activeAssetPaths.every((path, index) => path === attestedAssetPaths[index]) &&
+      candidates.every((candidate) => {
+        if (!candidate.preview || !candidate.dimensions) return false;
+        const assetEvidence = attestation.assets[candidate.preview.src];
+        return Boolean(
+          assetEvidence &&
+            assetEvidence.width === candidate.preview.width &&
+            assetEvidence.height === candidate.preview.height &&
+            /^[a-f0-9]{64}$/.test(assetEvidence.sha256),
+        );
+      }),
+  );
+
+  const figures: ArchivalFigureEvidence[] = candidates.map((candidate) => {
+    const assetEvidence = candidate.preview ? attestation?.assets[candidate.preview.src] : undefined;
+    const accepted = Boolean(attestationMatches && assetEvidence);
+    return {
+      occurrence: candidate.occurrence,
+      sourceFigure: candidate.sourceFigure,
+      sourcePdfPage: candidate.sourcePdfPage,
+      sourceRegion: candidate.sourceRegion,
+      activeAsset: candidate.activeAsset,
+      priorAssets: candidate.priorAssets,
+      assetSha256: assetEvidence?.sha256 ?? null,
+      dimensions: candidate.dimensions,
+      status: accepted ? "accepted" : "pending",
+      reviewer: accepted ? attestation?.reviewer ?? null : null,
+      reviewedAt: accepted ? attestation?.reviewedAt ?? null : null,
+      rejectionReason: accepted
+        ? null
+        : attestation
+          ? "The active figure occurrence no longer matches its digest-pinned acceptance attestation."
+          : "This figure occurrence has no explicit digest-pinned acceptance attestation.",
+    };
+  });
 
   return {
     requiredFigureCount: figures.length,
@@ -529,7 +569,7 @@ function baseEvidence(
     companionReadings: hasCompanionReadings,
     claimDisposition: edition?.claimStatus ? "no-formal-claims" : "formal-claims",
     drawingDisposition: edition?.drawingStatus ? "no-drawings" : "drawings-required",
-    figures: figureManifestForEdition(edition),
+    figures: figureManifestForEdition(patent.id, edition),
     evidenceReferences: [
       patent.id,
       ...(edition ? [`edition:${patent.id}`] : []),
