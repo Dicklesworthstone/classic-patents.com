@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "@/components/patents/visuals/PortHamiltonianEnergyStrip";
 import {
   createMestralVelcroModel,
   type MestralVelcro3DObjects,
@@ -24,6 +26,7 @@ export default function MestralVelcro3D({
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
   const modelRef = useRef<MestralVelcro3DObjects | null>(null);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 3: true });
 
   const { params, updateParam } = usePatentPhysics(patentId);
   const controls = useMemo(() => readMestralVelcroControls(params), [params]);
@@ -237,6 +240,16 @@ export default function MestralVelcro3D({
             className="accent-cyan-500 bg-stone-800 h-1.5 rounded-lg cursor-pointer"
           />
         </div>
+      </div>
+
+      {/* Claim Constraints & Energy Ledger */}
+      <div className="p-4 bg-stone-950 border-t border-stone-800 flex flex-col space-y-3">
+        <ClaimConstraintToggle
+          patentId={patentId}
+          claimStates={claimStates}
+          onClaimStateChange={(num, state) => setClaimStates((prev) => ({ ...prev, [num]: state }))}
+        />
+        <PortHamiltonianEnergyStrip patentId={patentId} params={controls as unknown as Record<string, number>} />
       </div>
     </div>
   );

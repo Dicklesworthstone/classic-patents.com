@@ -6,6 +6,7 @@ import { DualProjectionViewer } from "@/components/patents/DualProjectionViewer"
 import { LegacyPatentRedirect } from "@/components/patents/LegacyPatentRedirect";
 import { PatentHeader } from "@/components/patents/PatentHeader";
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
+import { archivalPublicationDiagnostics } from "@/data/editions/archivalPublicationState";
 import { evaluateArchivalPublicationState } from "@/data/editions/publicationApproval";
 import {
   allPatents,
@@ -77,6 +78,7 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
   const colorizedEquations = getColorizedEquationsForPatent(id);
   const archivalPublication = evaluateArchivalPublicationState(patent);
   const archivalEdition = archivalPublication.publishedEdition;
+  const archivalDiagnostics = archivalPublicationDiagnostics(archivalPublication);
   const archivalPublicationView = {
     isPublished: archivalPublication.isPublished,
     reasonCode: archivalPublication.reasonCode,
@@ -125,6 +127,7 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
         data-archival-edition={archivalEdition?.kind ?? "withheld"}
         data-archival-publication-state={archivalPublication.state.kind}
         data-archival-publication-reason={archivalPublication.reasonCode}
+        data-archival-publication-evidence={JSON.stringify(archivalDiagnostics)}
       >
         <DualProjectionViewer
           patent={patent}

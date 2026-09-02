@@ -1,7 +1,9 @@
 import type {
+  ArchivalPublicationDiagnostics,
   ArchivalPublicationDecision,
   ArchivalPublicationStateKind,
 } from "../src/data/editions/archivalPublicationState";
+import { archivalPublicationDiagnostics } from "../src/data/editions/archivalPublicationState";
 import type { Patent } from "../src/types/patent";
 
 export const PATENT_E2E_LOG_SCHEMA = "classic-patents.e2e-event.v1" as const;
@@ -36,25 +38,7 @@ export interface PatentE2EScenario {
   sourceState: PatentE2ESourceState;
   sourcePublicationState: ArchivalPublicationStateKind;
   sourceReasonCode: string;
-  sourceDecision: {
-    completeFacsimileReviewed: boolean;
-    ledgerKind: string | undefined;
-    ledgerReviewer: string | null;
-    ledgerReviewedAt: string | null;
-    digestParity: "matching" | "mismatched" | "unavailable";
-    requiredFigureCount: number;
-    acceptedFigureCount: number;
-    figureAttestation: {
-      reviewer: string;
-      reviewedAt: string;
-      acceptanceBasis: string;
-      sourcePdfSha256: string;
-      acceptedOccurrenceCount: number;
-      acceptedAssetCount: number;
-      matchesEdition: boolean;
-    } | null;
-    evidenceReferences: readonly string[];
-  };
+  sourceDecision: ArchivalPublicationDiagnostics;
   claimCount: number;
   drawingCount: number;
   hasReviewedLedger: boolean;
@@ -198,19 +182,20 @@ export function buildPatentE2EScenarios(
           : patent.archivalEdition
             ? "UNSPECIFIED_HOLD"
             : "NO_EDITION_BOUND"),
-      sourceDecision: {
-        completeFacsimileReviewed:
-          decision?.reviewerAttestation.completeFacsimileReviewed ??
-          patent.archivalEdition?.completeFacsimileReviewed === true,
-        ledgerKind: decision?.state.evidence.ledger.kind ?? patent.originalTextAsset?.kind,
-        ledgerReviewer: decision?.state.evidence.ledger.reviewer ?? null,
-        ledgerReviewedAt: decision?.state.evidence.ledger.reviewedAt ?? null,
-        digestParity: decision?.state.evidence.digestParity ?? "unavailable",
-        requiredFigureCount: decision?.figureManifest.requiredFigureCount ?? 0,
-        acceptedFigureCount: decision?.figureManifest.acceptedFigureCount ?? 0,
-        figureAttestation: decision?.figureManifest.attestation ?? null,
-        evidenceReferences: decision?.state.evidence.evidenceReferences ?? [patent.id],
-      },
+      sourceDecision: decision
+        ? archivalPublicationDiagnostics(decision)
+        : {
+            completeFacsimileReviewed:
+              patent.archivalEdition?.completeFacsimileReviewed === true,
+            ledgerKind: patent.originalTextAsset?.kind ?? null,
+            ledgerReviewer: patent.originalTextAsset?.reviewedBy ?? null,
+            ledgerReviewedAt: patent.originalTextAsset?.reviewedAt ?? null,
+            digestParity: "unavailable",
+            requiredFigureCount: 0,
+            acceptedFigureCount: 0,
+            figureAttestation: null,
+            evidenceReferences: [patent.id],
+          },
       claimCount: patent.claims.length,
       drawingCount: patent.drawings.length,
       hasReviewedLedger: patent.originalTextAsset?.kind === "reviewed-transcription",

@@ -80,4 +80,29 @@ describe("Mestral Velcro 3D Procedural Model", () => {
     const tel = stepMestralVelcroSi(MESTRAL_VELCRO_DEFAULTS);
     expect(channels[0]?.watts).toBeCloseTo(tel.peelDisengagementPowerWatts, 4);
   });
+
+  test("wires claim 1 and claim 3 inversion probes through hook/loop engagement", () => {
+    const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
+    const { readMestralVelcroControls } = require("@/physics/mestralVelcroKernel");
+
+    const res1 = applyClaimConstraintModifications(
+      "us-2717437-mestral-velcro",
+      {},
+      { 1: false, 3: true },
+    );
+    expect(res1.modifiedParams.heatSettingTempC).toBe(25);
+    expect(res1.refusalWarning).toContain("THERMAL SETTING LOSS");
+
+    const tel1 = stepMestralVelcroSi(readMestralVelcroControls(res1.modifiedParams));
+    expect(tel1.thermalRetentionFraction).toBeLessThan(0.01);
+    expect(tel1.singleHookReleaseForceN).toBeLessThan(0.001);
+
+    const res3 = applyClaimConstraintModifications(
+      "us-2717437-mestral-velcro",
+      {},
+      { 1: true, 3: false },
+    );
+    expect(res3.modifiedParams.engagementRatio).toBe(0.05);
+    expect(res3.refusalWarning).toContain("HOOK GEOMETRY LOSS");
+  });
 });

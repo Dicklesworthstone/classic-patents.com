@@ -67,6 +67,9 @@ describe("patent view URL state", () => {
       /const setViewMode = \(mode: PatentViewMode\) => \{\s*setViewModeState\(mode\);\s*\};/,
     );
     expect(PATENT_PAGE_SOURCE).toContain("archivalPublication={archivalPublicationView}");
+    expect(PATENT_PAGE_SOURCE).toContain(
+      "data-archival-publication-evidence={JSON.stringify(archivalDiagnostics)}",
+    );
     expect(VIEWER_SOURCE).toContain(
       "const archivalEdition = archivalPublication.isPublished ? patent.archivalEdition : undefined",
     );

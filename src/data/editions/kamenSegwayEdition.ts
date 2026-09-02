@@ -364,7 +364,7 @@ export const kamenSegwayParallelReadings: Record<number, string[]> = {
     "The drawing summary outlines the complete design: side and perspective views of the vehicle, wheel torque balance strategies, joystick steering, sensor fusion, and driver interface assemblies.",
   ],
   12: [
-    "Figures 1A, 1B, and 2 detail the physical transporter configuration: a foot platform on two coaxial laterally disposed wheels with an upright handlebar mast, creating an ultra-compact zero-turning-radius footprint.",
+    "Figures 1 and 2 depict two standing-rider vehicle embodiments: Figure 1 shows a personal vehicle without a stable static position, while Figure 2 shows an alternate embodiment with a clustered ground-contacting arrangement. The source does not state a turning-radius measurement.",
   ],
   13: [
     "The control loop architecture: solid-state gyroscopes and accelerometers measure pitch lean θ, commanding motor torque proportional to rider displacement to restore equilibrium.",

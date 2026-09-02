@@ -10,6 +10,7 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { isDeepStrictEqual } from "node:util";
 import {
   type BrowserContext,
   type ConsoleMessage,
@@ -639,6 +640,16 @@ async function verifySourceFace(
       const archivalKind = await root.getAttribute("data-archival-edition");
       const publicationState = await root.getAttribute("data-archival-publication-state");
       const reasonCode = await root.getAttribute("data-archival-publication-reason");
+      const serializedDecision = await root.getAttribute("data-archival-publication-evidence");
+      if (!serializedDecision) {
+        throw new Error("The route did not render typed archival publication evidence.");
+      }
+      let renderedDecision: unknown;
+      try {
+        renderedDecision = JSON.parse(serializedDecision);
+      } catch {
+        throw new Error("The route rendered malformed archival publication evidence JSON.");
+      }
       if (scenario.sourceState === "published" && archivalKind === "withheld") {
         throw new Error(
           "Expected a published manual edition, but the route rendered withheld state.",
@@ -666,12 +677,17 @@ async function verifySourceFace(
           `Expected typed publication reason ${scenario.sourceReasonCode}, received ${reasonCode}.`,
         );
       }
+      if (!isDeepStrictEqual(renderedDecision, scenario.sourceDecision)) {
+        throw new Error(
+          `Rendered archival evidence differs from the executable catalogue decision. expected=${JSON.stringify(scenario.sourceDecision)} actual=${JSON.stringify(renderedDecision)}`,
+        );
+      }
       return {
         sourceState: archivalKind === "withheld" ? "withheld" : "published",
         archivalKind,
         publicationState,
         reasonCode,
-        decision: scenario.sourceDecision,
+        decision: renderedDecision,
         hasStoredEdition: scenario.hasStoredEdition,
         hasReviewedLedger: scenario.hasReviewedLedger,
       };

@@ -9387,10 +9387,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   "us-6302230-kamen-segway": {
     domain: "robotics_locomotion",
     domainTitle: "Inverted Pendulum Dynamic Balancing & Balancing Margin Supervision",
-    equationName: "Euler-Lagrange Dynamic Balance, State Feedback, & Acceleration Margin",
+    equationName: "Modern Illustrative Inverted-Pendulum Scenario & Source-Disclosed Margin Relation",
     governingEquation:
-      "\\tau_{\\text{motor}} = M g L \\sin\\theta + M L \\ddot{x} \\cos\\theta, \\quad \\text{Margin} = 1 - \\frac{|v|}{v_{\\text{max}}} - \\frac{|\\tau|}{\\tau_{\\text{max}}}",
-    engineMethod: "FrankenSimEngine.stepKamenSegway",
+      "Modern illustrative mechanics: \\tau_{\\text{motor}} = M g L \\sin\\theta + M L \\ddot{x} \\cos\\theta; source relationship (Claim 1): balancing margin is the difference between maximum operating velocity and present velocity.",
+    engineMethod: "TypeScript modern illustrative Kamen Segway kernel",
+    provenance: "scenario-modern",
     controls: [
       {
         id: "riderPitchDeg",
@@ -9401,6 +9402,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: KAMEN_SEGWAY_DEFAULT_CONTROLS.riderPitchDeg,
         unit: "°",
         provenance: "scenario-modern",
+        provenanceCitation: "Reader-set modern illustrative lean input; US 6,302,230 prints no lean-angle range.",
       },
       {
         id: "steeringInput",
@@ -9411,6 +9413,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: KAMEN_SEGWAY_DEFAULT_CONTROLS.steeringInput,
         unit: "yaw",
         provenance: "scenario-modern",
+        provenanceCitation: "Reader-set modern illustrative steering input; not a numerical grant value.",
       },
       {
         id: "riderMassKg",
@@ -9421,6 +9424,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: KAMEN_SEGWAY_DEFAULT_CONTROLS.riderMassKg,
         unit: "kg",
         provenance: "scenario-modern",
+        provenanceCitation: "Reader-set modern illustrative payload input; not a numerical grant value.",
       },
       {
         id: "groundFrictionCoeff",
@@ -9431,16 +9435,18 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: KAMEN_SEGWAY_DEFAULT_CONTROLS.groundFrictionCoeff,
         unit: "μ",
         provenance: "scenario-modern",
+        provenanceCitation: "Reader-set modern tire-contact scenario; US 6,302,230 names an underlying surface but prints no friction coefficient.",
       },
       {
         id: "speedLimitMS",
-        label: "Speed Governor Limit",
+        label: "Illustrative Maximum Operating Velocity",
         min: 2.0,
         max: 6.0,
         step: 0.5,
         defaultValue: KAMEN_SEGWAY_DEFAULT_CONTROLS.speedLimitMS,
         unit: "m/s",
         provenance: "scenario-modern",
+        provenanceCitation: "Reader-set modern illustrative velocity bound; Claim 1 names a maximum operating velocity without printing a number.",
       },
     ],
     computeMetrics: (controls) => {

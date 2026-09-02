@@ -141,6 +141,39 @@ export interface ArchivalPublicationDecision {
   };
 }
 
+/**
+ * Stable, serializable projection used by route diagnostics and the browser
+ * acceptance harness. Keeping this projection beside the state machine stops
+ * server-rendered evidence and E2E expectations from drifting independently.
+ */
+export interface ArchivalPublicationDiagnostics {
+  completeFacsimileReviewed: boolean;
+  ledgerKind: OriginalTextAssetKind | null;
+  ledgerReviewer: string | null;
+  ledgerReviewedAt: string | null;
+  digestParity: ArchivalPublicationEvidence["digestParity"];
+  requiredFigureCount: number;
+  acceptedFigureCount: number;
+  figureAttestation: ArchivalFigureManifest["attestation"];
+  evidenceReferences: readonly string[];
+}
+
+export function archivalPublicationDiagnostics(
+  decision: ArchivalPublicationDecision,
+): ArchivalPublicationDiagnostics {
+  return {
+    completeFacsimileReviewed: decision.reviewerAttestation.completeFacsimileReviewed,
+    ledgerKind: decision.state.evidence.ledger.kind,
+    ledgerReviewer: decision.state.evidence.ledger.reviewer,
+    ledgerReviewedAt: decision.state.evidence.ledger.reviewedAt,
+    digestParity: decision.state.evidence.digestParity,
+    requiredFigureCount: decision.figureManifest.requiredFigureCount,
+    acceptedFigureCount: decision.figureManifest.acceptedFigureCount,
+    figureAttestation: decision.figureManifest.attestation,
+    evidenceReferences: decision.state.evidence.evidenceReferences,
+  };
+}
+
 interface PublicationOverride {
   kind: Exclude<ArchivalPublicationStateKind, "accepted">;
   reasonCode: Extract<
