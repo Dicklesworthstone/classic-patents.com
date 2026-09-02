@@ -6540,6 +6540,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 10,
         defaultValue: 213,
         unit: "m",
+        provenance: "scenario-modern",
       },
       {
         id: "voiceSplDb",
@@ -6549,6 +6550,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 75,
         unit: "dB SPL",
+        provenance: "scenario-modern",
       },
       {
         id: "solarIrradianceWPerM2",
@@ -6558,6 +6560,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 50,
         defaultValue: 950,
         unit: "W/m²",
+        provenance: "scenario-modern",
       },
       {
         id: "collectorDiameterM",
@@ -6567,6 +6570,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.05,
         defaultValue: 0.5,
         unit: "m",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (p) => {
@@ -6583,6 +6587,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "P_cell",
           badgeColor: "amber",
           progressPct: clampProgress((photo.concentratedPowerMw / 50.0) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Selenium Cell Resistance",
@@ -6592,6 +6597,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: clampProgress(
             Math.max(0, 100 - (photo.seleniumOperatingResistanceKOhms / 180.0) * 100),
           ),
+          provenance: "scenario-modern",
         },
         {
           label: "Audio AC Signal Current",
@@ -6599,6 +6605,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "i_audio",
           badgeColor: "cyan",
           progressPct: clampProgress((photo.audioSignalCurrentUa / 15.0) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Reproduced Sound Level",
@@ -6606,6 +6613,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "SPL_out",
           badgeColor: photo.reproducedAudioSplDb >= 45 ? "emerald" : "amber",
           progressPct: clampProgress((photo.reproducedAudioSplDb / 85.0) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Optical Modulation Depth",
@@ -6613,6 +6621,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "m_opt",
           badgeColor: "indigo",
           progressPct: clampProgress(photo.modulationDepth * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Optical Link SNR",
@@ -6620,6 +6629,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "SNR",
           badgeColor: photo.linkSnrDb >= 20 ? "emerald" : "rose",
           progressPct: clampProgress((photo.linkSnrDb / 50.0) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },

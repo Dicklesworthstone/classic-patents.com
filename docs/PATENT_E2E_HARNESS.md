@@ -64,7 +64,11 @@ runner does not replace archival-edition tests or numerical kernel tests.
 Every invocation gets a unique directory under
 `artifacts/e2e-patent-vertical-slices/` unless `--output-dir` is supplied. The
 runner appends one schema-validated JSON object per action to `events.jsonl`
-and writes `summary.json` at completion. Failures also retain stable-named:
+and writes `summary.json` at completion. Scenario rows name the exact shared
+control contract and expected telemetry surfaces; events record the observed
+control, kernel method, telemetry/refusal envelope, and browser diagnostics
+when applicable. The summary groups results by patent, viewport, face, and
+action, preserving the associated evidence paths. Failures also retain stable-named:
 
 - a full-page PNG;
 - a redacted DOM snapshot;
@@ -78,6 +82,7 @@ it supports. Any later cleanup is a separate, explicitly approved retention
 decision; the harness performs no automatic cleanup.
 
 The failure self-test is successful only when the command exits `1`, its
-summary reports exactly one `__harness-self-test__` failure, and all four
-failure artifacts are nonempty. A zero exit from that command means the
+summary reports exactly one `__harness-self-test__` failure plus an informative
+`failure-evidence-integrity` event, and all four failure artifacts are
+nonempty. A zero exit from that command—or a failed integrity event—means the
 failure path was not actually proven.
