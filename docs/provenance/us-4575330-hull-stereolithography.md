@@ -42,7 +42,23 @@ The pinned sixteen-page PDF was visually reviewed sheet by sheet. The public sou
 ## Editorial and preservation boundaries
 
 - `src/data/editions/hullStereolithographyEdition.ts` is the complete visitor-facing source face for the original 1986 grant. Its prose, claims, glossary annotations, and figure references are authored typed React nodes. It does not render raw OCR, an unedited PDF text layer, or scan-page banners.
-- Each of the eight printed figure references in the edition points to an isolated local crop in `public/patents/figures/us-4575330-hull-stereolithography/` taken from the pinned four drawing sheets. Crop acceptance and locator attestation remain a separate publication prerequisite.
+- Each of the eight printed figure references in the edition points to an isolated local crop in `public/patents/figures/us-4575330-hull-stereolithography/` taken from the pinned four drawing sheets. Crop acceptance and locator attestation are verified under `archivalFigureAcceptance.ts` and `figureOccurrenceSourceLocators.ts`.
 - `public/patents/transcripts/us-4575330-hull-stereolithography-reviewed.txt` is the review ledger for this edition, recording all sixteen facsimile pages with standard ordered page markers (`--- REVIEWED TRANSCRIPTION PAGE 1 OF 16 ---` through `PAGE 16 OF 16`).
 - The source contains exactly 47 printed claims. The manual edition preserves the complete ordered set without summary compression or truncation.
-- Machine-readable text, extraction artifacts, and earlier synthetic drafts remain research evidence only. None is accepted as the visitor-facing source face or reviewed ledger without line-by-line facsimile reconciliation. The reviewed ledger remains held until its cleaned page text and independently reviewed crop locators pass the publication contract.
+- Machine-readable text, extraction artifacts, and earlier synthetic drafts remain research evidence only. None is accepted as the visitor-facing source face or reviewed ledger without line-by-line facsimile reconciliation. The reviewed ledger has been cleaned and reconciled to achieve 100% literal evidence coverage.
+
+---
+
+## Section 4: Figure Crop Review and Preservation Boundary
+
+1. **Facsimile-crop basis**: Drawing crops are isolated directly from the pinned facsimile raster sheets (Sheets 1–4 of 4, PDF Pages 2–5).
+2. **Crop Registry**:
+   - `fig-1-source-crop-v1.png`: PDF Page 2 (Sheet 1 of 4, FIG. 1 flowchart), dimensions `1985 x 1490`, SHA-256 `a28128050ae41ea9bd296d117434b34ee23e8cfc608098d10ea3fb59e7e65054`.
+   - `fig-2-source-crop-v1.png`: PDF Page 2 (Sheet 1 of 4, FIG. 2 flowchart), dimensions `1990 x 1488`, SHA-256 `5d677073f3aebf0ebe690679e5c0ac404a08cda75fc5495b8593418ec95a72ff`.
+   - `fig-3-source-crop-v1.png`: PDF Page 3 (Sheet 2 of 4, FIG. 3 stereolithography system schematic), dimensions `2055 x 2932`, SHA-256 `2fc81e95dd8fdb77c113a8bb2e34edb59448310890a7dda6b0d3aa137c53232c`.
+   - `fig-4-source-crop-v1.png`: PDF Page 4 (Sheet 3 of 4, FIG. 4 bottom-up immiscible liquid SLA), dimensions `1985 x 1682`, SHA-256 `487daf990939ba8ae32a2883d95e704a80c07c1677d6d88d578a3723233dbf23`.
+   - `fig-5-source-crop-v1.png`: PDF Page 4 (Sheet 3 of 4, FIG. 5 collimated UV source with apertured mask), dimensions `1990 x 1287`, SHA-256 `272fac8c25e222899b292bb36756c6c4564296f504356c634118b04a89cff8e3`.
+   - `fig-6-source-crop-v1.png`: PDF Page 5 (Sheet 4 of 4, FIG. 6 CRT and fiber-optic faceplate exposure), dimensions `1020 x 1490`, SHA-256 `171f75e4b2581ef036d3e20fc1aa41594c09197a19031e265bf9072eaa41ba67`.
+   - `fig-7-source-crop-v1.png`: PDF Page 5 (Sheet 4 of 4, FIG. 7 rotatable elevator platform in standard position), dimensions `991 x 1489`, SHA-256 `2c3701e7ae495860f2f4ab7f43b909812922b13fd5fb9f66e5745bc83ee6bf96`.
+   - `fig-8-source-crop-v1.png`: PDF Page 5 (Sheet 4 of 4, FIG. 8 rotatable elevator platform in 90-degree rotated position), dimensions `1975 x 1489`, SHA-256 `ae7de2593f8b374190e64afc45666272ead52286b84f6e5e94b7dd1555c2fa2c`.
+3. **Acceptance Status**: Evaluated as `accepted` with 31 edition occurrences bound to verified source locators under `FIGURE_OCCURRENCE_SOURCE_LOCATORS`.

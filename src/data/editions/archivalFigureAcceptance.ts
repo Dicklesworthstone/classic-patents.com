@@ -1550,10 +1550,12 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
   },
   "us-4575330-hull-stereolithography": {
     sourcePdfSha256: "5dc2211b18f88883ee92394917154d57d102b73c26a4744332cbf0d89b1db1c7",
-    reviewer: "Classic Patents editorial agent (Gemini 3.7 Flash)",
-    reviewedAt: "2026-09-01",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
-    acceptedOccurrenceCount: 17,
+    reviewer: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-09-02",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 31,
+    evidenceReference:
+      "docs/provenance/us-4575330-hull-stereolithography.md#section-4-figure-crop-review-and-preservation-boundary",
     assets: {
       "/patents/figures/us-4575330-hull-stereolithography/fig-1-source-crop-v1.png": {
         sha256: "a28128050ae41ea9bd296d117434b34ee23e8cfc608098d10ea3fb59e7e65054",

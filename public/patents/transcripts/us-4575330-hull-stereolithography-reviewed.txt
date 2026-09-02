@@ -3,7 +3,7 @@
 United States Patent [19]
 Hull
 [11] Patent Number: 4,575,330
-[] Date of Patent: Mar. 11, 1986
+[45] Date of Patent: Mar. 11, 1986
 [54] APPARATUS FOR PRODUCTION OF THREE-DIMENSIONAL OBJECTS BY STEREOLITHOGRAPHY
 [75] Inventor: Charles W. Hull, Arcadia, Calif.
 [73] Assignee: UVP, Inc., San Gabriel, Calif.
@@ -116,7 +116,7 @@ FIG. 5 is an elevational sectional view, illustrating a third embodiment of the 
 
 FIG. 6 is an elevational sectional view illustrating still another embodiment of the present invention; and
 
-FIGS. 7 and 8 are partial, elevational sectional views, illustrating a modification of the stereolithographic system of FIG. 3 to incorporate an elevator platform with multiple degrees of freedom.
+FIG. 7 and FIG. 8 are partial, elevational sectional views, illustrating a modification of the stereolithographic system of FIG. 3 to incorporate an elevator platform with multiple degrees of freedom.
 
 
 --- REVIEWED TRANSCRIPTION PAGE 8 OF 16 ---
@@ -133,7 +133,7 @@ Computer aided design (CAD) and computer aided manufacturing (CAM) are technique
 
 A prime object of the present invention is to harness the principles of computer generated graphics, combined with UV curable plastic and the like, to simultaneously execute CAD and CAM, and to produce three-dimensional objects directly from computer instructions. This invention, referred to as stereolithography, can be used to sculpture models and prototypes in a design phase of product development, or as a manufacturing device, or even as an art form.
 
-Referring now to FIG. 1, the stereolithographic method is broadly outlined. Step 10 in FIG. calls for the generation of individual solid laminae representing cross-sections of a three-dimensional object to be formed. Step 11, which inherently occurs if Step is performed properly, combines the successively formed adjacent laminae to form the desired three-dimensional object which has been programmed into the system for selective curing. Hence, the stereolithographic system of the present invention generates three-dimensional objects by creating a cross-sectional pattern of the object to be formed at a selected surface of a fluid medium, e.g., a UV curable liquid or the like, capable of altering its physical state in response to appropriate synergistic stimulation such as impinging radiation, electron beam or other particle bombardment, or applied chemicals (as by ink jet or spraying over a mask adjacent the fluid surface), successive adjacent laminae, representing corresponding successive adjacent cross-sections of the object, being automatically formed and integrated together to provide a step-wise laminar or thin layer buildup of the object, whereby a three-dimensional object is formed and drawn from a substantially planar or sheet-like surface of the fluid medium during the forming process.
+Referring now to FIG. 1, the stereolithographic method is broadly outlined. Step 10 in FIG. 1 calls for the generation of individual solid laminae representing cross-sections of a three-dimensional object to be formed. Step 11, which inherently occurs if Step 10 is performed properly, combines the successively formed adjacent laminae to form the desired three-dimensional object which has been programmed into the system for selective curing. Hence, the stereolithographic system of the present invention generates three-dimensional objects by creating a cross-sectional pattern of the object to be formed at a selected surface of a fluid medium, e.g., a UV curable liquid or the like, capable of altering its physical state in response to appropriate synergistic stimulation such as impinging radiation, electron beam or other particle bombardment, or applied chemicals (as by ink jet or spraying over a mask adjacent the fluid surface), successive adjacent laminae, representing corresponding successive adjacent cross-sections of the object, being automatically formed and integrated together to provide a step-wise laminar or thin layer buildup of the object, whereby a three-dimensional object is formed and drawn from a substantially planar or sheet-like surface of the fluid medium during the forming process.
 
 The aforedescribed technique is more specifically outlined in the flowchart of FIG. 2, wherein Step 12 calls for containing a fluid medium capable of solidification in response to prescribed reactive stimulation. Step 13 calls for application of that stimulation as a graphic pattern at a designated fluid surface to form thin, solid, individual layers at that surface, each layer representing an adjacent cross-section of a three-dimensional object to be produced. It is desirable to make each such layer as thin as possible during the practice of the invention in order to maximize resolution and the accurate reproduction of the three-dimensional object being formed. Hence, the ideal theoretical state would be an object produced only at the designated working surface of the fluid medium to provide an infinite number of laminae, each lamina having a cured depth of approximately only slightly more than zero thickness. Of course, in the practical application of the invention, each lamina will be a thin lamina, but thick enough to be adequately cohesive in forming the cross-section and adhering to the adjacent laminae defining other cross-sections of the object being formed.
 

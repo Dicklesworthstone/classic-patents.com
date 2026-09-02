@@ -45,6 +45,24 @@ describe("reviewed-ledger literal comparison", () => {
     );
   });
 
+  it("bridges a repeated header after page-bound column furniture", () => {
+    const ledger = [
+      "--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---",
+      "The circuit is laid out on the printed circuit",
+      "--- REVIEWED TRANSCRIPTION PAGE 2 OF 2 ---",
+      "",
+      "Column 3",
+      "",
+      "3,858,581",
+      "7",
+      "board.",
+    ].join("\n");
+
+    expect(normalizeReviewedLedgerText(ledger)).toBe(
+      normalizeReviewedLedgerText("The circuit is laid out on the printed circuit board."),
+    );
+  });
+
   it("preserves a patent-number citation when it occurs in source prose", () => {
     const ledger = [
       "--- REVIEWED TRANSCRIPTION PAGE 1 OF 1 ---",

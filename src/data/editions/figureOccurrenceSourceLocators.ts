@@ -511,7 +511,185 @@ function kamenSegwayLocator(args: {
   };
 }
 
+function hullStereolithographyLocator(options: {
+  occurrenceKey: FigureOccurrenceKey;
+  activeAsset: string;
+  sourcePdfPage: number;
+}): FigureOccurrenceSourceLocator {
+  const raster = { width: 2360, height: 3200 };
+  const rect = { x: 100, y: 100, width: 2160, height: 3000 };
+  return {
+    occurrenceKey: options.occurrenceKey,
+    activeAsset: options.activeAsset,
+    sourcePdfPage: options.sourcePdfPage,
+    sourceRaster: raster,
+    sourceRectPixels: rect,
+    normalizedSourceRect: normalizeSourceRectangle(rect, raster),
+    reviewer: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-09-02",
+    evidenceReference:
+      "docs/provenance/us-4575330-hull-stereolithography.md#section-4-figure-crop-review-and-preservation-boundary",
+  };
+}
+
 export const FIGURE_OCCURRENCE_SOURCE_LOCATORS = {
+  "us-4575330-hull-stereolithography": [
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-1-group-0-inline-1",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-1-source-crop-v1.png",
+      sourcePdfPage: 2,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-1-group-0-inline-3",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-2-source-crop-v1.png",
+      sourcePdfPage: 2,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-1-group-0-inline-5",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-3-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-1-group-0-inline-7",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-4-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-1-group-0-inline-9",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-5-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-1-group-0-inline-11",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-6-source-crop-v1.png",
+      sourcePdfPage: 5,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-1-group-0-inline-13",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-7-source-crop-v1.png",
+      sourcePdfPage: 5,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-1-group-0-inline-15",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-8-source-crop-v1.png",
+      sourcePdfPage: 5,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-20-group-0-inline-0",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-1-source-crop-v1.png",
+      sourcePdfPage: 2,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-20-group-0-inline-2",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-2-source-crop-v1.png",
+      sourcePdfPage: 2,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-20-group-0-inline-4",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-3-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-20-group-0-inline-6",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-4-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-20-group-0-inline-8",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-5-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-20-group-0-inline-10",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-6-source-crop-v1.png",
+      sourcePdfPage: 5,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-20-group-0-inline-12",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-7-source-crop-v1.png",
+      sourcePdfPage: 5,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-20-group-0-inline-14",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-8-source-crop-v1.png",
+      sourcePdfPage: 5,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-22-group-0-inline-1",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-1-source-crop-v1.png",
+      sourcePdfPage: 2,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-26-group-0-inline-1",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-1-source-crop-v1.png",
+      sourcePdfPage: 2,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-27-group-0-inline-1",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-2-source-crop-v1.png",
+      sourcePdfPage: 2,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-28-group-0-inline-1",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-2-source-crop-v1.png",
+      sourcePdfPage: 2,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-29-group-0-inline-0",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-3-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-32-group-0-inline-1",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-3-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-36-group-0-inline-1",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-3-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-39-group-0-inline-1",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-3-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-43-group-0-inline-1",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-3-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-52-group-0-inline-1",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-3-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-53-group-0-inline-1",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-4-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-54-group-0-inline-1",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-4-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-55-group-0-inline-1",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-5-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-56-group-0-inline-0",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-6-source-crop-v1.png",
+      sourcePdfPage: 5,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-57-group-0-inline-0",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-7-source-crop-v1.png",
+      sourcePdfPage: 5,
+    }),
+  ],
   "us-5701965-kamen-transporter": [
     kamenTransporterLocator({
       occurrenceKey: figureOccurrenceKey(11, 0, 1),

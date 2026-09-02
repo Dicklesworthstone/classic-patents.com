@@ -410,8 +410,17 @@ const KAMEN_SEGWAY_OCCURRENCES = Object.fromEntries(
   FIGURE_OCCURRENCE_SOURCE_LOCATORS[KAMEN_SEGWAY_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
 );
 
+const HULL_ID = "us-4575330-hull-stereolithography";
+const HULL_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[HULL_ID].assets,
+);
+const HULL_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[HULL_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
+);
+
 const VALIDATION_OPTIONS = {
   canonicalAssetsByPatent: {
+    [HULL_ID]: HULL_ASSETS,
     [KAMEN_TRANSPORTER_ID]: KAMEN_TRANSPORTER_ASSETS,
     [KAMEN_SEGWAY_ID]: KAMEN_SEGWAY_ASSETS,
     [KAMEN_MEDICATION_INJECTION_ID]: KAMEN_MEDICATION_INJECTION_ASSETS,
@@ -423,6 +432,7 @@ const VALIDATION_OPTIONS = {
     [PAGERANK_ID]: PAGERANK_ASSETS,
   },
   canonicalOccurrencesByPatent: {
+    [HULL_ID]: HULL_OCCURRENCES,
     [KAMEN_TRANSPORTER_ID]: KAMEN_TRANSPORTER_OCCURRENCES,
     [KAMEN_SEGWAY_ID]: KAMEN_SEGWAY_OCCURRENCES,
     [KAMEN_MEDICATION_INJECTION_ID]: KAMEN_MEDICATION_INJECTION_OCCURRENCES,
@@ -434,6 +444,7 @@ const VALIDATION_OPTIONS = {
     [PAGERANK_ID]: PAGERANK_OCCURRENCES,
   },
   sourcePdfPageCountsByPatent: {
+    [HULL_ID]: 16,
     [KAMEN_TRANSPORTER_ID]: 48,
     [KAMEN_SEGWAY_ID]: 29,
     [KAMEN_MEDICATION_INJECTION_ID]: 8,
@@ -450,6 +461,7 @@ describe("figure occurrence source locators", () => {
   test("seeds all three receipt-backed Pasteur figure occurrences", () => {
     const locators = FIGURE_OCCURRENCE_SOURCE_LOCATORS[PASTEUR_ID];
     expect(Object.keys(FIGURE_OCCURRENCE_SOURCE_LOCATORS)).toEqual([
+      HULL_ID,
       KAMEN_TRANSPORTER_ID,
       KAMEN_SEGWAY_ID,
       KAMEN_MEDICATION_INJECTION_ID,

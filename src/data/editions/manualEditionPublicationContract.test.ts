@@ -75,6 +75,15 @@ describe("manual-edition publication contract", () => {
     );
   });
 
+  test("accepts Hull Stereolithography after full facsimile and reviewed ledger repair", () => {
+    const hull = allPatents.find((patent) => patent.id === "us-4575330-hull-stereolithography");
+
+    expect(hull).toBeDefined();
+    expect(isArchivalEditionExplicitlyWithheld("us-4575330-hull-stereolithography")).toBe(false);
+    expect(hull && archivalEditionForPublication(hull)).toBeDefined();
+    expect(hull && evaluateArchivalPublicationState(hull).reasonCode).toBe("ACCEPTED");
+  });
+
   test("accepts Pasteur after full facsimile and reviewed ledger repair", () => {
     const pasteur = allPatents.find((patent) => patent.id === "us-135245-pasteur-fermentation");
 

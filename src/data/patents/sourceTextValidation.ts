@@ -4,12 +4,13 @@ const SOURCE_PAGE_MARKER = /^--- SOURCE PDF PAGE (\d+) OF (\d+) ---$/gm;
 const REVIEWED_PAGE_MARKER = /^--- REVIEWED TRANSCRIPTION PAGE (\d+) OF (\d+) ---$/gm;
 /**
  * A repeated patent-number/page-number pair printed immediately after a
- * reviewed-page marker. Keeping the marker in this pattern matters: a patent
- * citation followed by a standalone number can be actual source prose in the
- * middle of a ledger page, whereas this position is page furniture.
+ * reviewed-page marker, optionally after the ledger's own `Column N` line.
+ * Keeping the marker in this pattern matters: a patent citation followed by a
+ * standalone number can be actual source prose in the middle of a ledger
+ * page, whereas this position is page furniture.
  */
 const REVIEWED_PATENT_PAGE_HEADER_AFTER_MARKER =
-  /^(--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---[^\S\r\n]*\r?\n(?:[^\S\r\n]*\r?\n)*)[^\S\r\n]*(?:US\s+)?\d{1,3}(?:,\d{3})+(?:\s+[A-Z]\d?)?[^\S\r\n]*\r?\n[^\S\r\n]*\d+[^\S\r\n]*$/gim;
+  /^(--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---[^\S\r\n]*\r?\n(?:(?:[^\S\r\n]*|[^\S\r\n]*Column \d+[^\S\r\n]*)\r?\n)*)[^\S\r\n]*(?:US\s+)?\d{1,3}(?:,\d{3})+(?:\s+[A-Z]\d?)?[^\S\r\n]*\r?\n[^\S\r\n]*\d+[^\S\r\n]*$/gim;
 const REVIEWED_BLANK_FACSIMILE_PAGE = "[BLANK FACSIMILE PAGE: no printed content]";
 
 const REVIEWED_EDITORIAL_SUMMARY_PATTERNS: readonly RegExp[] = [
