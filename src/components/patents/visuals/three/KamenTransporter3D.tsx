@@ -169,9 +169,7 @@ export default function KamenTransporter3D({
           className="absolute right-3 top-3 z-10 max-w-[calc(100%-1.5rem)] rounded-lg border border-ink-700 bg-ink-900/90 px-2.5 py-2 text-[11px] font-mono font-bold text-ink-200 backdrop-blur-sm sm:hidden"
           value={cameraPreset}
           onChange={(event) =>
-            handleCameraPreset(
-              event.target.value as "perspective" | "side" | "balance" | "stairs",
-            )
+            handleCameraPreset(event.target.value as "perspective" | "side" | "balance" | "stairs")
           }
         >
           <option value="perspective">PERSPECTIVE</option>
@@ -222,7 +220,10 @@ export default function KamenTransporter3D({
       </div>
 
       <div data-mobile-layout="telemetry-after-canvas" className="w-full sm:hidden">
-        <PhysicsTelemetryBadge patentId={patentId} equations={ALL_COLORIZED_EQUATIONS[patentId] ?? []} />
+        <PhysicsTelemetryBadge
+          patentId={patentId}
+          equations={ALL_COLORIZED_EQUATIONS[patentId] ?? []}
+        />
       </div>
 
       {/* Control Sliders */}
