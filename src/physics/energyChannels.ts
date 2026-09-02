@@ -141,6 +141,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 1,773,980 describes an electrical image dissector using a photoelectric cathode, accelerating anode, electrostatic deflection plates, collector aperture, and quartz oscillograph light valve, but supplies no operational beam current, deflection voltage power, RF carrier wattage, or continuous wattage datum from which an authentic SI energy channel can be derived.",
   "us-233692-pelton-water-wheel":
     "US 233,692 describes the bucket geometry (curved bottoms c, central apex d, inclined sides e, and sloping face b) for dividing a water jet, but supplies no hydraulic head, volumetric flow rate, runner RPM, efficiency, or continuous mechanical power datum from which an authentic SI energy channel can be derived.",
+  "us-3541541-engelbart-mouse":
+    "US 3,541,541 specifies the mechanical construction of perpendicular knife-edge wheels, potentiometer shafts, and housing, but supplies no hand translation velocity, rolling friction, potentiometer power dissipation, or continuous mechanical/electrical wattage datum from which an authentic SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -756,15 +758,6 @@ export function energyChannelsFor(
       { name: "Film Pull Mechanical Roller Work", watts: rollW, tone: "in" },
       { name: "Reagent Pod Rupture & Diffusion Transfer", watts: rollW * 0.76, tone: "useful" },
       { name: "Spreading Viscous Layer Shear Friction", watts: rollW * 0.24, tone: "loss" },
-    ];
-  }
-
-  if (patentId === "us-3541541-engelbart-mouse") {
-    const dragW = 0.5;
-    return [
-      { name: "Hand Desktop Drag Kinetic Input", watts: dragW, tone: "in" },
-      { name: "Orthogonal Potentiometer Resolver Work", watts: dragW * 0.8, tone: "useful" },
-      { name: "Wheel Contact Rolling Slip", watts: dragW * 0.2, tone: "loss" },
     ];
   }
 

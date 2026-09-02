@@ -3536,6 +3536,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 25,
         defaultValue: 350,
         unit: "mm/s",
+        provenance: "scenario-modern",
       },
       {
         id: "wheelRadius",
@@ -3545,6 +3546,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: 10.0,
         unit: "mm",
+        provenance: "scenario-modern",
       },
       {
         id: "pulsesPerRev",
@@ -3554,6 +3556,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 4,
         defaultValue: 200,
         unit: "ppr",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (p) => {
@@ -3572,6 +3575,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "DPI",
           badgeColor: "cyan",
           progressPct: clampProgress((dpi / 350) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Wheel Angular Velocity",
@@ -3579,6 +3583,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "rad/s",
           badgeColor: "emerald",
           progressPct: clampProgress((Number(omegaRps) / 80) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Resolver Orthogonality",
@@ -3586,6 +3591,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "deg",
           badgeColor: "indigo",
           progressPct: clampProgress(100),
+          provenance: "source-disclosed",
         },
         {
           label: "Tracking Slew Rate",
@@ -3593,6 +3599,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "px/s",
           badgeColor: "purple",
           progressPct: Math.min(100, (mouse.slewPxPerS / 3000) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Pulse Pitch",
@@ -3600,6 +3607,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "Δx",
           badgeColor: "amber",
           progressPct: clampProgress(100),
+          provenance: "scenario-modern",
         },
         {
           label: "Counts / mm",
@@ -3607,6 +3615,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "1/mm",
           badgeColor: "indigo",
           progressPct: Math.min(100, (mouse.countsPerMm / 10) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Pulse Rate",
@@ -3614,6 +3623,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "Hz",
           badgeColor: "cyan",
           progressPct: Math.min(100, (mouse.pulseRateHz / 2000) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },
