@@ -18,7 +18,10 @@ import {
   type Page,
 } from "playwright";
 import { getColorizedEquationsForPatent } from "../src/data/colorizedEquations";
-import { archivalEditionForPublication } from "../src/data/editions/publicationApproval";
+import {
+  archivalEditionForPublication,
+  evaluateArchivalPublicationState,
+} from "../src/data/editions/publicationApproval";
 import { allPatents } from "../src/data/patents";
 import { CATALOG_CLAIM_CONSTRAINTS } from "../src/physics/claimConstraints";
 import { energyChannelsFor } from "../src/physics/energyChannels";
@@ -117,6 +120,7 @@ async function main() {
   try {
     scenarios = buildPatentE2EScenarios(allPatents, {
       isEditionPublished: (patent) => Boolean(archivalEditionForPublication(patent)),
+      publicationDecision: evaluateArchivalPublicationState,
       assetExists: (publicUrl) =>
         fs.existsSync(path.join(process.cwd(), "public", publicUrl.replace(/^\/+/, ""))),
       equationIdsForPatent: (patent) =>
@@ -256,6 +260,18 @@ async function runFailureEvidenceSelfTest(args: {
     route: "/",
     pdfUrl: "/patents/pdfs/__not-used__.pdf",
     sourceState: "withheld",
+    sourcePublicationState: "held",
+    sourceReasonCode: "SELF_TEST_FAILURE",
+    sourceDecision: {
+      completeFacsimileReviewed: false,
+      ledgerKind: undefined,
+      ledgerReviewer: null,
+      ledgerReviewedAt: null,
+      digestParity: "unavailable",
+      requiredFigureCount: 0,
+      acceptedFigureCount: 0,
+      evidenceReferences: ["self-test"],
+    },
     claimCount: 0,
     drawingCount: 0,
     hasReviewedLedger: false,
@@ -553,10 +569,17 @@ async function verifySourceFace(
   await checked(
     recorder,
     meta(scenario, viewport, "original-spec", "publication-state"),
-    scenario.sourceState,
+    {
+      sourceState: scenario.sourceState,
+      publicationState: scenario.sourcePublicationState,
+      reasonCode: scenario.sourceReasonCode,
+      decision: scenario.sourceDecision,
+    },
     async () => {
       const root = page.locator("[data-archival-edition]").first();
       const archivalKind = await root.getAttribute("data-archival-edition");
+      const publicationState = await root.getAttribute("data-archival-publication-state");
+      const reasonCode = await root.getAttribute("data-archival-publication-reason");
       if (scenario.sourceState === "published" && archivalKind === "withheld") {
         throw new Error(
           "Expected a published manual edition, but the route rendered withheld state.",
@@ -574,9 +597,22 @@ async function verifySourceFace(
           .getByRole("heading", { name: /Specification of Letters Patent/ })
           .waitFor({ state: "visible" });
       }
+      if (publicationState !== scenario.sourcePublicationState) {
+        throw new Error(
+          `Expected typed publication state ${scenario.sourcePublicationState}, received ${publicationState}.`,
+        );
+      }
+      if (reasonCode !== scenario.sourceReasonCode) {
+        throw new Error(
+          `Expected typed publication reason ${scenario.sourceReasonCode}, received ${reasonCode}.`,
+        );
+      }
       return {
         sourceState: archivalKind === "withheld" ? "withheld" : "published",
         archivalKind,
+        publicationState,
+        reasonCode,
+        decision: scenario.sourceDecision,
         hasStoredEdition: scenario.hasStoredEdition,
         hasReviewedLedger: scenario.hasReviewedLedger,
       };

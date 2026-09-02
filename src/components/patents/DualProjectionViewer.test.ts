@@ -1,8 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { ARCHIVAL_PARALLEL_READINGS } from "@/data/editions/parallelReadings";
-import { ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS } from "@/data/editions/publicationApproval";
+import { evaluateArchivalPublicationState } from "@/data/editions/publicationApproval";
 import { allPatents } from "@/data/patents";
 import { goodyearRubberPatent } from "@/data/patents/goodyear-rubber";
 import { whitneyCottonGinPatent } from "@/data/patents/whitney-cotton-gin";
@@ -75,16 +74,13 @@ describe("patent view URL state", () => {
 });
 
 describe("archival publication boundary", () => {
-  test("publishes every authored edition whose companion map exists", () => {
+  test("publishes accepted editions and withholds held audit records", () => {
     expect(archivalEditionForPublication(goodyearRubberPatent)).toBe(
       goodyearRubberPatent.archivalEdition,
     );
-    // Owner policy (2026-08-21): the former root-QA hold list no longer
-    // gates publication — presence with minor omissions beats absence.
-    // Whitney now has an authored edition AND a registered companion map.
-    expect(archivalEditionForPublication(whitneyCottonGinPatent)).toBe(
-      whitneyCottonGinPatent.archivalEdition,
-    );
+    // Whitney has an audit hold in ARCHIVAL_PUBLICATION_STATE_OVERRIDES (classic-patentscom-hi0)
+    expect(archivalEditionForPublication(whitneyCottonGinPatent)).toBeUndefined();
+
     const unmappedPatent: Patent = {
       ...goodyearRubberPatent,
       id: "us-unmapped-draft-test",
@@ -108,35 +104,29 @@ describe("archival publication boundary", () => {
     );
   });
 
-  test("releases exactly the curated companion-reading registry", () => {
+  test("releases exactly the records that pass evaluateArchivalPublicationState", () => {
     const releasedIds = allPatents
       .filter((patent) => archivalEditionForPublication(patent))
       .map((patent) => patent.id)
       .toSorted();
 
-    const approvedMappedIds = Object.keys(ARCHIVAL_PARALLEL_READINGS)
-      .filter((patentId) => {
-        const patent = allPatents.find((candidate) => candidate.id === patentId);
-        return Boolean(patent?.archivalEdition?.completeFacsimileReviewed);
-      })
+    const expectedAcceptedIds = allPatents
+      .filter((patent) => evaluateArchivalPublicationState(patent).isPublished)
+      .map((patent) => patent.id)
       .toSorted();
 
-    expect(releasedIds).toEqual(approvedMappedIds);
+    expect(releasedIds).toEqual(expectedAcceptedIds);
     expect(releasedIds).not.toHaveLength(0);
   });
 
-  test("keeps the retired hold list as a historical record without enforcement", () => {
-    // The list must survive as QA history, but nothing on the publication
-    // path may consult it again.
-    expect(ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS.length).toBeGreaterThan(0);
+  test("returns publishedEdition for all accepted patents", () => {
     for (const patent of allPatents) {
-      if (
-        !patent.archivalEdition?.completeFacsimileReviewed ||
-        !ARCHIVAL_PARALLEL_READINGS[patent.id]
-      ) {
-        continue;
+      const decision = evaluateArchivalPublicationState(patent);
+      if (decision.isPublished) {
+        expect(archivalEditionForPublication(patent)).toBe(patent.archivalEdition);
+      } else {
+        expect(archivalEditionForPublication(patent)).toBeUndefined();
       }
-      expect(archivalEditionForPublication(patent)).toBe(patent.archivalEdition);
     }
   });
 });

@@ -65,4 +65,40 @@ describe("US 1,219,881 Gideon Sundback Separable Fastener visual & kinematics bo
     expect(model.chainGroup.rotation.y).toBeGreaterThan(0);
     model.dispose();
   });
+
+  test("derives all 11 printed claims dynamically from edition without duplicate strings", () => {
+    const { sundbackZipperPatent } = require("@/data/patents/sundback-zipper");
+    const { sundbackZipperArchivalEdition } = require("@/data/editions/sundbackZipperEdition");
+    expect(sundbackZipperPatent.claims.length).toBe(11);
+    const editionClaims = sundbackZipperArchivalEdition.blocks.filter((b: any) => b.kind === "claim");
+    expect(editionClaims.length).toBe(11);
+
+    for (const claim of sundbackZipperPatent.claims) {
+      const editionBlock = editionClaims.find((c: any) => c.number === claim.number);
+      expect(editionBlock).toBeDefined();
+      const expectedText = editionBlock.inlines.map((inl: any) => inl.text).join("");
+      expect(claim.originalText).toBe(expectedText);
+    }
+  });
+
+  test("provides valid provenance classifications for all Sundback controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-1219881-sundback-zipper"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({ sliderPositionPct: 50 });
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("binds energy output to honest omission reason without synthetic wattage", () => {
+    const { energyChannelsFor, ENERGY_CHANNEL_OMISSION_REASONS } = require("@/physics/energyChannels");
+    expect(energyChannelsFor("us-1219881-sundback-zipper", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-1219881-sundback-zipper"]).toContain(
+      "supplies no continuous slider pull velocity",
+    );
+  });
 });

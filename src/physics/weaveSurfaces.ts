@@ -370,17 +370,17 @@ export function materialProbe(
   }
   if (patentId.includes("maxim") || patentId.includes("319596")) {
     const maxim = FrankenSimEngine.stepMaximMachineGun({
-      firingRateRpm: params.firingRate ?? params.fireRateRpm ?? 600,
-      waterJacketLiters: params.waterLevel ?? 4,
-      recoilStrokeMm: params.recoilStroke ?? 19,
+      cyclePhaseDeg: params.cyclePhaseDeg ?? params.cyclePhase ?? 0,
+      gasImpulsePct: params.gasImpulsePct ?? 75,
+      cycleRpm: params.cycleRpm ?? 60,
     });
     return {
       part: calloutLabel,
-      material: "Water-jacketed short-recoil toggle lock",
-      qty: "F_toggle",
-      value: maxim.toggleUnlockForceN.toString(),
-      unit: "N",
-      note: `Barrel ${maxim.barrelTempC} °C. Evap ${maxim.waterEvapRateGs} g/s. ${maxim.muzzleEnergyJoules} J · ω ${maxim.fireOmegaRadPerS} rad/s.`,
+      material: "Sliding muzzle-gas sleeve + lever linkage to breech crosshead",
+      qty: "sleeve_forward",
+      value: maxim.sleeveForwardMm.toString(),
+      unit: "mm",
+      note: `Sleeve ${maxim.sleeveForwardMm} mm forward · Breech ${maxim.breechOpenMm} mm open · Spring ${maxim.springWoundPct}% wound · Crank ${maxim.crankAngleDeg}°.`,
     };
   }
   if (patentId.includes("westinghouse") || patentId.includes("124404")) {
@@ -1126,11 +1126,11 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   }
   if (patentId.includes("maxim") || patentId.includes("319596")) {
     const maxim = FrankenSimEngine.stepMaximMachineGun({
-      firingRateRpm: params.firingRate ?? params.fireRateRpm ?? 600,
-      waterJacketLiters: params.waterLevel ?? 4,
-      recoilStrokeMm: params.recoilStroke ?? 19,
+      cyclePhaseDeg: params.cyclePhaseDeg ?? params.cyclePhase ?? 0,
+      gasImpulsePct: params.gasImpulsePct ?? 75,
+      cycleRpm: params.cycleRpm ?? 60,
     });
-    return [{ label: "T_b", min: 80, max: 450, live: maxim.barrelTempC, unit: "°C" }];
+    return [{ label: "x_sleeve", min: 0, max: 24, live: maxim.sleeveForwardMm, unit: "mm" }];
   }
   if (patentId.includes("westinghouse") || patentId.includes("124404")) {
     const wh = FrankenSimEngine.stepWestinghouseAirBrake({
@@ -1645,16 +1645,16 @@ export function fidelityField(
   }
   if (patentId.includes("maxim") || patentId.includes("319596")) {
     const maxim = FrankenSimEngine.stepMaximMachineGun({
-      firingRateRpm: params.firingRate ?? params.fireRateRpm ?? 600,
-      waterJacketLiters: params.waterLevel ?? 4,
-      recoilStrokeMm: params.recoilStroke ?? 19,
+      cyclePhaseDeg: params.cyclePhaseDeg ?? params.cyclePhase ?? 0,
+      gasImpulsePct: params.gasImpulsePct ?? 75,
+      cycleRpm: params.cycleRpm ?? 60,
     });
     return {
-      part: "Jacket boil vs 1884 Maxim water-cooled gun",
-      model: maxim.barrelTempC.toString(),
-      reference: "100",
-      residual: (maxim.barrelTempC - 100).toString(),
-      unit: "°C",
+      part: "Claimed forward muzzle sleeve travel vs nominal stroke",
+      model: maxim.sleeveForwardMm.toString(),
+      reference: "24",
+      residual: (maxim.sleeveForwardMm - 24).toString(),
+      unit: "mm",
     };
   }
   if (patentId.includes("westinghouse") || patentId.includes("124404")) {
@@ -2568,10 +2568,10 @@ export function datedScenarios(patentId: string): DatedScenario[] {
   if (patentId.includes("maxim") || patentId.includes("319596")) {
     return [
       {
-        id: "hatton-garden-1884",
-        date: "1884",
-        name: "Hatton Garden water-jacket trial",
-        writes: { firingRate: 600, waterLevel: 4, recoilStroke: 19 },
+        id: "muzzle-sleeve-travel",
+        date: "1885",
+        name: "US 319,596 Muzzle-gas sleeve cycle",
+        writes: { gasImpulsePct: 75, cyclePhaseDeg: 90 },
       },
     ];
   }
@@ -3172,11 +3172,11 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
   }
   if (patentId.includes("maxim") || patentId.includes("319596")) {
     const maxim = FrankenSimEngine.stepMaximMachineGun({
-      firingRateRpm: params.firingRate ?? params.fireRateRpm ?? 600,
-      waterJacketLiters: params.waterLevel ?? 4,
-      recoilStrokeMm: params.recoilStroke ?? 19,
+      cyclePhaseDeg: params.cyclePhaseDeg ?? params.cyclePhase ?? 0,
+      gasImpulsePct: params.gasImpulsePct ?? 75,
+      cycleRpm: params.cycleRpm ?? 60,
     });
-    return [{ from: "powder", to: "jacket", watts: maxim.heatGeneratedWatts }];
+    return [{ from: "muzzle_gas", to: "volute_spring", watts: maxim.springWoundPct }];
   }
   if (patentId.includes("ericsson") || patentId.includes("us-588")) {
     const screw = stepEricssonPropeller({

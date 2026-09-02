@@ -91,4 +91,40 @@ describe("US 2,495,429 Percy Spencer Microwave Cavity Magnetron visual & RF phys
 
     model.dispose();
   });
+
+  test("derives all 6 printed claims dynamically from edition without duplicate strings", () => {
+    const { spencerMicrowavePatent } = require("@/data/patents/spencer-microwave");
+    const { spencerMicrowaveArchivalEdition } = require("@/data/editions/spencerMicrowaveEdition");
+    expect(spencerMicrowavePatent.claims.length).toBe(6);
+    const editionClaims = spencerMicrowaveArchivalEdition.blocks.filter((b: any) => b.kind === "claim");
+    expect(editionClaims.length).toBe(6);
+
+    for (const claim of spencerMicrowavePatent.claims) {
+      const editionBlock = editionClaims.find((c: any) => c.number === claim.number);
+      expect(editionBlock).toBeDefined();
+      const expectedText = editionBlock.inlines.map((inl: any) => inl.text).join("");
+      expect(claim.originalText).toBe(expectedText);
+    }
+  });
+
+  test("provides valid provenance classifications for all Spencer controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-2495429-spencer-microwave"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({ rfPowerSetting: 1 });
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("binds energy output to honest omission reason without synthetic wattage", () => {
+    const { energyChannelsFor, ENERGY_CHANNEL_OMISSION_REASONS } = require("@/physics/energyChannels");
+    expect(energyChannelsFor("us-2495429-spencer-microwave", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-2495429-spencer-microwave"]).toContain(
+      "supplies no continuous electrical power input",
+    );
+  });
 });

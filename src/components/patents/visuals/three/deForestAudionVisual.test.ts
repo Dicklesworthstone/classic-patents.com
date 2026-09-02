@@ -102,4 +102,34 @@ describe("US 879,532 Lee de Forest Audion Triode Visual & Electronics Boundary",
 
     expect(nodes.filamentLight.intensity).toBeGreaterThan(2.0);
   });
+
+  test("derives all printed claims dynamically from edition without duplicate strings", () => {
+    const { deForestAudionPatent } = require("@/data/patents/de-forest-audion");
+    const { deForestAudionArchivalEdition } = require("@/data/editions/deForestAudionEdition");
+    expect(deForestAudionPatent.claims.length).toBeGreaterThanOrEqual(1);
+    const editionClaims = deForestAudionArchivalEdition.blocks.filter(
+      (b: any) => b.kind === "claim",
+    );
+    expect(editionClaims.length).toBe(deForestAudionPatent.claims.length);
+
+    for (const claim of deForestAudionPatent.claims) {
+      const editionBlock = editionClaims.find((c: any) => c.number === claim.number);
+      expect(editionBlock).toBeDefined();
+      const expectedText = editionBlock.inlines.map((inl: any) => inl.text).join("");
+      expect(claim.originalText).toBe(expectedText);
+    }
+  });
+
+  test("provides valid provenance classifications for all Audion controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-879532-de-forest-audion"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({ plateVoltageV: 45, filamentCurrentA: 1.0 });
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
 });

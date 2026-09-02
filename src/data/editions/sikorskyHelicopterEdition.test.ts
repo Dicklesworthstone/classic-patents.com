@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { CuratedSpecificationBlock, CuratedSpecificationInline } from "@/types/patent";
 import { validateCuratedSpecificationEdition } from "../archivalEditionValidation";
+import { sikorskyHelicopterPatent } from "../patents/sikorsky-helicopter";
 import {
   validateReviewedTranscription,
   validateReviewedTranscriptionEditorialIntegrity,
@@ -32,10 +33,7 @@ describe("US 2,318,259 Direct-Lift Aircraft (Helicopter) archival edition", () =
     );
     expect(editionValidation.valid).toBe(true);
 
-    const published = archivalEditionForPublication({
-      id: "us-2318259-sikorsky-helicopter",
-      archivalEdition: sikorskyHelicopterArchivalEdition,
-    });
+    const published = archivalEditionForPublication(sikorskyHelicopterPatent);
     expect(published).toBeDefined();
     expect(published?.sourcePdfSha256).toBe(
       "7ab2b9b23907b26bff0afd37e2630b73b15c2c429c603a73cb841c8a2b4e114c",

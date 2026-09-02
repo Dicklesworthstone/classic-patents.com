@@ -76,7 +76,7 @@ export async function runScenarioOnPage(
     action: Parameters<E2EDiagnosticLogger["log"]>[0]["action"],
     expectedState: string,
     actualState: string,
-    status: "PASS" | "FAIL",
+    status: "PASS" | "FAIL" | "WARN" | "SKIP",
     face?: E2EFaceName,
   ) => {
     const artifactPaths: E2EEventLog["artifactPaths"] = {};

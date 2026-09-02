@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepThomsonWelding } from "@/physics/catalogKernels";
+import { PATENT_PHYSICS_REGISTRY } from "@/physics/telemetryData";
 import { buildThomsonWeldingModel, updateThomsonWeldingKinematics } from "./thomsonWeldingModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
@@ -101,5 +102,17 @@ describe("US 347,140 Elihu Thomson Electric Resistance Butt-Welding visual & ele
     expect(nodes.sparkPoints.visible).toBe(true);
 
     dispose();
+  });
+
+  test("provides valid provenance classifications for all Thomson welding metrics and controls", () => {
+    const entry = PATENT_PHYSICS_REGISTRY["us-347140-thomson-welding"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({ weldCurrentAmps: 4500, clampPressureMpa: 35 });
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
   });
 });

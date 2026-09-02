@@ -1,6 +1,16 @@
 import { gatlingGunArchivalEdition } from "@/data/editions/gatlingGunEdition";
 import type { Patent } from "@/types/patent";
 
+function manualClaimText(number: number): string {
+  const block = gatlingGunArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`US 36,836 is missing claim ${number} in its archival edition.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const gatlingGunPatent: Patent = {
   id: "us-36836-gatling-gun",
   patentNumber: "US 36,836",
@@ -39,54 +49,65 @@ export const gatlingGunPatent: Patent = {
       "Turning the hand crank rotates a central steel shaft carrying a forward barrel disk, a central fluted cartridge carrier, and a rear lock cylinder. Each barrel has its own longitudinal bolt sliding in a guide channel. As the cluster turns through $360^\\circ$: (1) At the top ($0^\\circ$), a cartridge drops by gravity from a top hopper into the carrier groove; (2) From $0^\\circ\\text{ to }180^\\circ$, a stationary internal helical cam track pushes the bolt forward, seating the cartridge in the chamber and locking the breech; (3) At bottom center ($180^\\circ$), a cocking lug drops off a firing cam, releasing the spring-loaded striker to fire the bullet; (4) From $180^\\circ\\text{ to }360^\\circ$, the cam track pulls the bolt rearward, an extractor claw pulls out the spent metallic case, and it drops out the bottom.",
     mechanicalBreakdown: [
       {
-        title: "Stationary Cylindrical Helical Cam Track",
-        summary: "3D internal helical cam groove guiding bolt reciprocation.",
-        technicalDetails:
-          "Machined into the interior of a stationary bronze casing. The cam profile $z(\\theta)$ converts rotational angular displacement into smooth linear harmonic bolt travel ($z_{\\text{stroke}} = 10\\text{ to }15\\text{ cm}$), maintaining constant mechanical advantage without peak impact loads.",
-        archaicTerm: "Stationary spiral or helical cam track",
-        modernEquivalent: "Rotary barrel-cam bolt actuator / Linear follower track",
-      },
-      {
-        title: "Revolving Multi-Barrel Cluster & fluted Carrier",
-        summary: "6 to 10 rifled steel barrels mounted in rotating circular bronze disks.",
-        technicalDetails:
-          "Barrels spaced at $60^\\circ$ or $36^\\circ$ intervals around a forged central arbor. For $N = 6$ barrels firing at $300\\text{ rounds/min}$, the shaft turns at only $50\\text{ RPM}$, allowing each barrel a full $1.0\\text{ second}$ cooling interval between consecutive shots.",
-        archaicTerm: "Series of barrels revolving around a central axis",
-        modernEquivalent: "Gatling rotary barrel cluster / Rotor assembly",
-      },
-      {
-        title: "Gravity Feed Hopper & Striker Cocking Cam",
-        summary: "Overhead gravity feed chute and wedge-shaped firing pin sear.",
-        technicalDetails:
-          "Cartridges fall from an overhead hopper into fluted grooves. A rear stationary cocking ramp compresses the striker spring ($k = 3.5\\text{ N/mm}, \\Delta x = 12\\text{ mm}$); when the follower reaches the sharp drop-off at bottom center, the striker delivers an impact energy $>0.4\\text{ Joules}$ to detonate the primer.",
-        archaicTerm: "Feed hopper and cocking ring",
-        modernEquivalent: "Gravity feed magazine & spring-striker firing sear",
-      },
-      {
-        title: "Spring-Hook Shell Case Extractor Claw",
-        summary: "Pivoted hook riding on bolt head snapping over rim to extract fired cases.",
-        technicalDetails:
-          "A tempered spring-steel hook mounted on the forward face of each bolt. As the bolt chambers the round, the hook ramps over the copper cartridge rim; during the rearward cam stroke, it pulls the spent casing ($F_{\\text{extract}} > 180\\text{ N}$) clear of the chamber until an ejector blade flips it downward through the bottom discharge port.",
-        archaicTerm: "Extractor hook attached to each breech-pin",
-        modernEquivalent: "Bolt-mounted claw extractor & fixed ejector spur",
-      },
-      {
-        title: "Bevel Gear Reduction & Hand Crank Flywheel",
+        title: "Revolving Multi-Barrel Cluster E & Circular Plates F, G",
         summary:
-          "Transverse bevel gearset providing steady mechanical advantage and dampening torque ripple.",
+          "Parallel group of rifled gun barrels fixed between forward and rear circular bronze plates on the main shaft.",
         technicalDetails:
-          "A manual side crank turns a 45-tooth crown bevel gear meshing with a 15-tooth pinion on the central main shaft ($3:1$ step-up ratio). A balanced brass flywheel ring dampens cyclic cocking torque variations ($\\tau_{\\text{ripple}} < 12\\%$), preventing crank shudder as successive strikers engage the cam ramps.",
-        archaicTerm: "Crank and gearing communicating rotary motion",
-        modernEquivalent: "Bevel gear rotor drive & inertia flywheel",
+          "Mounting multiple barrels (typically 6) in circular plates $F$ and $G$ locked to central shaft $N$ distributes firing heat across multiple thermal masses. Each barrel fires only once per full $360^\\circ$ rotation, giving a cooling interval $t_{\\text{cool}} = 60 / \\text{RPM}$.",
+        archaicTerm: "Circular plate F and barrels E",
+        modernEquivalent: "Rotary barrel cluster and rotor carrier plates",
+      },
+      {
+        title: "Fluted Cartridge Carrier C & Gravity Hopper H",
+        summary:
+          "Grooved rotating cylinder positioned under the top hopper to accept loose cartridges without human handling.",
+        technicalDetails:
+          "Carrier cylinder $C$ contains semicircular longitudinal troughs matching the barrel caliber. As the carrier rotates beneath feed hopper $H$, gravity drops one cartridge into each empty groove at top dead center ($0^\\circ$).",
+        archaicTerm: "Grooved carrier C and reservoir H",
+        modernEquivalent: "Rotary feed rotor and gravity feed chute",
+      },
+      {
+        title: "Revolving Lock Cylinder D & Reciprocating Bolts",
+        summary:
+          "Cylinder carrying independent spring-loaded firing bolts aligned with each individual barrel.",
+        technicalDetails:
+          "Lock cylinder $D$ contains as many longitudinal bolt chambers as barrels. Each bolt carries a firing pin, mainspring, extractor hook, and an external cam follower lug that rides in the stationary spiral cam groove.",
+        archaicTerm: "Lock-cylinder or breech D with lock-hammers b",
+        modernEquivalent: "Bolt carrier cylinder and reciprocating bolt assemblies",
+      },
+      {
+        title: "Stationary Cocking Ring P & Spiral Cam Track",
+        summary:
+          "Fixed rear cam housing converting rotary shaft motion into longitudinal forward-and-back bolt translation.",
+        technicalDetails:
+          "Stationary ring $P$ with rear inclined planes drives the bolt forward over $180^\\circ$, compresses the firing spring, drops the striker at the bottom, and pulls the bolt rearward over the remaining $180^\\circ$ to extract the case.",
+        archaicTerm: "Stationary ring P with inclined planes",
+        modernEquivalent: "Stationary internal barrel cam track",
+      },
+      {
+        title: "Main Drive Shaft N, Pinion L, & Hand Crank S",
+        summary:
+          "Manual gear drive multiplying operator hand torque into smooth high-speed continuous cluster rotation.",
+        technicalDetails:
+          "Hand crank $S$ turns transverse shaft $M$ and pinion $L$, which meshes with large crown gear $K$ on main shaft $N$, providing mechanical advantage and smooth continuous rotation without jerky ratchet indexing.",
+        archaicTerm: "Crank S, shaft M, pinion L, and cog-wheel K",
+        modernEquivalent: "Geared manual drive train and main rotor shaft",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Parallelized Mechanical Pipeline Processing",
+        principle: "Rotary Kinematic Multiplexing & Cyclic Timing",
         formula:
-          "\\text{Cadence} = N_{\\text{barrels}} \\cdot \\omega_{\\text{crank}}, \\quad t_{\\text{cycle}} = \\frac{2\\pi}{\\omega_{\\text{crank}}} = N_{\\text{barrels}} \\cdot t_{\\text{shot}}",
+          "\\text{ROF} = N_{\\text{barrels}} \\cdot \\text{RPM}_{\\text{crank}} \\cdot \\frac{Z_K}{Z_L}, \\quad \\Delta t_{\\text{cycle}} = \\frac{60}{\\text{ROF}}",
         explanation:
-          "The Gatling mechanism is an exact mechanical analog of pipelining in computer processors: at any given moment, Barrel 1 is extracting, Barrel 2 is cocking, Barrel 3 is firing, Barrel 4 is chambering, and Barrel 5 is loading.",
+          "Spreading the discrete mechanical operations (feed, chamber, lock, fire, extract, eject) across $N$ angular sectors allows continuous uniform cranking rather than stop-and-start reciprocating stroke cycles.",
+      },
+      {
+        principle: "Cycloidal Cam Profile & Acceleration Control",
+        formula:
+          "a_{\\text{bolt}}(\\theta) = \\omega^2 \\frac{d^2 z}{d\\theta^2}, \\quad F_{\\text{cam}} = m_{\\text{bolt}} a_{\\text{bolt}} + F_{\\text{friction}} + F_{\\text{spring}}",
+        explanation:
+          "The helical cam profile is contoured with cycloidal ramps to minimize peak jerk ($da/dt$), preventing bolt binding and reducing hand crank operating torque.",
       },
       {
         principle: "Multi-Barrel Convective & Radiative Heat Dissipation",
@@ -94,13 +115,6 @@ export const gatlingGunPatent: Patent = {
           "\\dot{q}_{\\text{cluster}} = N \\cdot \\left[ h(\\omega) A (T_{\\text{barrel}} - T_0) + \\varepsilon \\sigma A (T_{\\text{barrel}}^4 - T_0^4) \\right]",
         explanation:
           "Rotation through ambient air increases the convective heat transfer coefficient ($h \\propto \\omega^{0.6}$), while distributing the total thermal enthalpy across $N$ barrels prevents any single barrel from reaching softening or cook-off temperatures ($>300^\\circ\\text{C}$).",
-      },
-      {
-        principle: "Kinematics of 3D Cylindrical Cam Acceleration",
-        formula:
-          "a_{\\text{bolt}}(\\theta) = \\omega^2 \\frac{d^2 z}{d\\theta^2}, \\quad F_{\\text{cam}} = m_{\\text{bolt}} a_{\\text{bolt}} + F_{\\text{friction}} + F_{\\text{spring}}",
-        explanation:
-          "The helical cam profile is contoured with cycloidal ramps to minimize peak jerk ($da/dt$), preventing bolt binding and reducing hand crank operating torque.",
       },
       {
         principle: "Recoil Impulse Gyroscopic Precession & Mount Stability",
@@ -118,8 +132,7 @@ export const gatlingGunPatent: Patent = {
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "The combination of the lock-cylinder or breech D with the grooved carrier C, circular plate F, and barrels E E, &c., the lock-cylinder or breech, carrier, and circular plate being firmly fastened upon the main shaft N, and the locks, grooves in the carrier, and barrels being arranged on a line parallel with the axis of revolution, the whole revolving together when the gun is in operation, substantially as described.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "Claims the combined rotating assembly, not a barrel alone: the breech, grooved carrier, circular plate, and barrels must be fixed to one main shaft, with their locks, grooves, and bores parallel to the rotation axis so the parts turn together.",
       keyInnovations: [
@@ -134,8 +147,7 @@ export const gatlingGunPatent: Patent = {
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "In the construction of revolving fire-arms, the use of as many locks as there are barrels, said locks revolving simultaneously with the breech and barrels, and being arranged and operated substantially as set forth.",
+      originalText: manualClaimText(2),
       plainEnglish:
         "Claims the one-lock-per-barrel arrangement, with every lock revolving at the same time as the breech and barrel group and working in the described sequence.",
       keyInnovations: ["One lock per barrel", "Simultaneous lock rotation"],
@@ -145,8 +157,7 @@ export const gatlingGunPatent: Patent = {
     {
       number: 3,
       isIndependent: true,
-      originalText:
-        "The stationary ring P, provided with inclined planes on its rear edge, in combination with lock-cylinder D and locks, when constructed and operated for the purposes substantially as set forth.",
+      originalText: manualClaimText(3),
       plainEnglish:
         "Claims the fixed ring whose two sloping rear surfaces cock and then reposition each rotating hammer in relation to the lock-cylinder.",
       keyInnovations: ["Stationary cocking ring", "Inclined hammer-cocking planes"],
@@ -156,8 +167,7 @@ export const gatlingGunPatent: Patent = {
     {
       number: 4,
       isIndependent: true,
-      originalText:
-        "The tubes a a, &c., furnished with the flanged breech-pins c c, &c., and springs e e, &c., and which contain the lock-hammers b b, &c., and mainsprings d d, &c., in combination with the revolving breech D, disk I, and swell o, when constructed, arranged, and operated for the purposes substantially as set forth.",
+      originalText: manualClaimText(4),
       plainEnglish:
         "Claims the lock tubes as an assembly: their flanged breech-pins, springs, hammers, and mainsprings work with the rotating breech, divider disk, and its projecting swell to seat the cartridge-chamber and energize the hammer.",
       keyInnovations: ["Lock tubes", "Flanged breech-pins", "Disk swell", "Hammer mainsprings"],
@@ -167,8 +177,7 @@ export const gatlingGunPatent: Patent = {
     {
       number: 5,
       isIndependent: true,
-      originalText:
-        "The disk I, in combination with the external breech-piece or casing, A, which forms a shield or covering for the lock-cylinder and which protects the locks and cog-wheels from injury.",
+      originalText: manualClaimText(5),
       plainEnglish:
         "Claims the internal divider disk together with the outer casing, whose forward and rear portions shield the rotating locks and gears from damage.",
       keyInnovations: ["Divider disk", "Protective outer casing", "Lock and gear shielding"],

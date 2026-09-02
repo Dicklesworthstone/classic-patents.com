@@ -387,23 +387,11 @@ This invention relates more particularly to improvements in that class of photog
     ],
     breakthroughInsight:
       "Eastman combines a removable front lens-and-shutter module with a removable rear roller-holder in a tubular, light-tight case.",
-    patentWars: [
-      {
-        rivalName: "Hannibal Goodwin & Anthony & Scovill Co. (Ansco)",
-        rivalClaim:
-          "Reverend Hannibal Goodwin filed a patent application for flexible nitrocellulose roll film in 1887 (granted in 1898 as US 610,861), claiming priority over Eastman's 1888 paper-backed stripping film and 1889 transparent roll film.",
-        conflictDetails:
-          "After Goodwin's patent issued in 1898, Goodwin Film and Camera Company (later Ansco) sued Eastman Kodak for patent infringement across all Kodak roll film lines (Goodwin Film & Camera Co. v. Eastman Kodak Co.).",
-        resolution:
-          "In 1914, the Second Circuit Court of Appeals held that Goodwin was the original inventor of flexible transparent roll film and found Eastman Kodak guilty of infringement.",
-        legalOutcome:
-          "Eastman Kodak was ordered to pay Ansco a cash settlement of $5,000,000 in 1914 (~$150 million inflation-adjusted), settling one of the largest corporate patent damages awards in early American photographic history.",
-      },
-    ],
+    patentWars: [],
     civilizationalImpact:
       "The grant documents a complete mechanical architecture for a portable prepared-film camera, including exposure, light sealing, and film handling.",
     aftermath:
-      "No post-grant litigation or commercial outcome is asserted here because it is not established by the pinned facsimile.",
+      "The pinned facsimile documents the camera apparatus itself; historical litigation regarding nitrocellulose film chemistry is separate from this apparatus grant and has no primary repository packet.",
     sideNotes: [
       "The printed specification cites Eastman's Patents Nos. 317,019, 317,050, and 316,933 and a prior application, Serial No. 199,329, filed April 19, 1886.",
     ],

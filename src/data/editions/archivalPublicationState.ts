@@ -7,7 +7,7 @@
  * release gate can evaluate consistently.
  */
 
-import type { CuratedSpecificationEdition, Patent } from "@/types/patent";
+import type { CuratedSpecificationEdition, OriginalTextAssetKind, Patent } from "@/types/patent";
 import { validateCuratedSpecificationEdition } from "../archivalEditionValidation";
 
 export const ARCHIVAL_PUBLICATION_REASON_CODES = [
@@ -82,11 +82,7 @@ export interface ArchivalPublicationEvidence {
     reviewedAt: string | null;
   };
   ledger: {
-    kind: Patent["originalTextAsset"] extends infer Asset
-      ? Asset extends { kind?: infer Kind }
-        ? Kind
-        : never
-      : never;
+    kind: OriginalTextAssetKind | null;
     reviewer: string | null;
     reviewedAt: string | null;
     sourcePdfSha256: string | null;
@@ -357,13 +353,13 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "classic-patentscom-hi0",
     "Figure provenance must be repaired before publication.",
   ),
-  "gb-1420-cort-puddling-process": auditHold(
+  "gb-1420-cort-puddling-rolling": auditHold(
     "AUDIT_FACSIMILE_REVIEW_PENDING",
     "classic-patentscom-xqu",
     "The archival hold remains in force while source support is completed.",
     "source-bounded",
   ),
-  "gb-1306-newcomen-steam-engine": auditHold(
+  "gb-1306-watt-rotary-engine": auditHold(
     "AUDIT_RECONSTRUCTION_QUARANTINE",
     "classic-patentscom-ab0",
     "The reconstruction is quarantined until rebuilt from a primary source.",
@@ -410,6 +406,16 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "AUDIT_CLAIM_PARITY_PENDING",
     "classic-patentscom-phm",
     "Publication remains held while the legal-text contract is repaired.",
+  ),
+  "us-347140-thomson-welding": auditHold(
+    "AUDIT_FACSIMILE_REVIEW_PENDING",
+    "classic-patentscom-qm2",
+    "The inherited archival hold remains in force until the source packet is independently accepted.",
+  ),
+  "us-x1-hopkins-potash": auditHold(
+    "AUDIT_FACSIMILE_REVIEW_PENDING",
+    "classic-patentscom-qm2",
+    "The inherited archival hold remains in force until the source packet is independently accepted.",
   ),
   "us-4068536-stackhouse-manipulator": auditHold(
     "FABRICATION_OR_RECONSTRUCTION_QUARANTINE",
@@ -514,7 +520,7 @@ function baseEvidence(
       reviewedAt: typeof edition?.preparedAt === "string" ? edition.preparedAt : null,
     },
     ledger: {
-      kind: asset?.kind,
+      kind: asset?.kind ?? null,
       reviewer: asset?.reviewedBy ?? null,
       reviewedAt: asset?.reviewedAt ?? null,
       sourcePdfSha256: ledgerDigest,

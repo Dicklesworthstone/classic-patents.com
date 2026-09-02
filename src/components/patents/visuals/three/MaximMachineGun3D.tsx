@@ -59,17 +59,14 @@ export function MaximMachineGun3D() {
   });
 
   useFrankenSimPhysics("us-319596-maxim-machine-gun", {
-    domain: "multibody_topology",
+    domain: "solid_mechanics",
     refusal: { isRefused: false },
-    mbd: {
-      position: [0, 0, maxim.sleeveStudioStroke],
-      velocity: [0, 0, 0],
-      angularVelocity: [maxim.fireOmegaRadPerS, 0, 0],
-      quaternion: [0, 0, 0, 1],
-      kineticEnergyJoules: 0,
-      potentialEnergyJoules: 0,
-      generalizedCoordinates: [maxim.sleeveForwardMm, maxim.breechOpenMm],
-      constraintResidualNorm: 0,
+    machine: {
+      poseXMeters: 0,
+      poseYMeters: 0,
+      headingRad: 0,
+      modeLabel: "muzzle-gas-sleeve",
+      wheelSpeedMps: 0,
     },
   });
 
@@ -132,9 +129,9 @@ export function MaximMachineGun3D() {
     let timeSec = 0;
     const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const dt = clock.getDelta();
+      const { dt } = clock.pump(now);
       timeSec += dt;
 
       const p = live.current;
@@ -155,7 +152,7 @@ export function MaximMachineGun3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
@@ -180,7 +177,12 @@ export function MaximMachineGun3D() {
           <span className="font-serif text-xs font-semibold tracking-wide text-parchment-100">
             Maxim Machine Gun 3D (US 319,596)
           </span>
-          <StudioKernelChips kernel={crateSource} solver="FrankenSim (WASM SI)" />
+          <StudioKernelChips
+            chips={[
+              { label: "Kernel", value: crateSource },
+              { label: "Topology", value: "Fixed Barrel / Sleeve" },
+            ]}
+          />
         </div>
       </div>
 
@@ -282,6 +284,9 @@ export function MaximMachineGun3D() {
 
           <div className="flex flex-col gap-2">
             <SensitivitySlider
+              id="maxim-gas-impulse"
+              patentId="us-319596-maxim-machine-gun"
+              paramKey="gasImpulsePct"
               label="Muzzle Gas Expansion Pressure"
               value={gasImpulsePct}
               min={25}
@@ -296,10 +301,10 @@ export function MaximMachineGun3D() {
 
           <ClaimConstraintToggle
             patentId="us-319596-maxim-machine-gun"
-            claimNumber={1}
-            claimTitle="Sliding Muzzle Sleeve & Breech Linkage"
-            active={claimStates[1] ?? true}
-            onChange={(active) => setClaimStates((prev) => ({ ...prev, 1: active }))}
+            claimStates={claimStates}
+            onToggleClaim={(claimNumber, active) =>
+              setClaimStates((prev) => ({ ...prev, [claimNumber]: active }))
+            }
           />
         </div>
       )}

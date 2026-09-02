@@ -7,9 +7,9 @@ import {
 } from "./publicationApproval";
 
 /**
- * Independent snapshot of the historical root-QA roster. Active publication
- * is governed by positive review/companion/validation checks below, so a
- * repaired edition may publish while remaining in this audit history.
+ * Independent snapshot of the root-QA roster. The typed publication boundary
+ * consumes this audit evidence as a restrictive release condition until a
+ * record receives an explicit replacement acceptance.
  */
 const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-2297691-carlson-electrophotography",
@@ -93,7 +93,7 @@ const SOURCE_QA_RELEASED_EDITIONS = [
 ] as const;
 
 describe("root editorial hold history", () => {
-  test("publishes a formerly held edition only after positive full-facsimile review", () => {
+  test("keeps every inherited root-QA hold out of the accepted source face", () => {
     for (const patentId of REQUIRED_ROOT_EDITORIAL_HOLDS) {
       const patent =
         allPatents.find((candidate) => candidate.id === patentId) ??
@@ -103,11 +103,7 @@ describe("root editorial hold history", () => {
       expect(patent, `missing catalog record ${patentId}`).toBeDefined();
       if (!patent) continue;
 
-      if (patent.archivalEdition?.completeFacsimileReviewed === true) {
-        expect(archivalEditionForPublication(patent)).toBe(patent.archivalEdition);
-      } else {
-        expect(archivalEditionForPublication(patent)).toBeUndefined();
-      }
+      expect(archivalEditionForPublication(patent)).toBeUndefined();
     }
   });
 

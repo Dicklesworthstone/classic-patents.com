@@ -12,7 +12,6 @@ import {
   stepEdisonBulb,
   stepEdisonPhonograph,
   stepEinsteinRefrigerator,
-  stepGatlingGun,
   stepHaberAmmonia,
   stepHallAluminium,
   stepHewittMercuryLamp,
@@ -108,6 +107,14 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 588 specifies the geometry of submerged metallic hoops with spiral plates and gearing; it supplies no measured ship thrust, engine shaft horsepower, hull resistance, or vessel speed datum from which an SI energy channel can be derived.",
   "us-319596-maxim-machine-gun":
     "US 319,596 prints a direct muzzle-gas sleeve, reversing linkage, cross-head, and volute clock spring; it supplies no continuous firing rate, gas pressure, powder mass, thermodynamic heat transfer, or continuous electrical/thermal power datum from which an SI energy channel can be derived.",
+  "us-36836-gatling-gun":
+    "US 36,836 specifies a hand-cranked rotary multi-barrel gun mechanism; it supplies no measured operator torque, crank power, projectile kinetic energy, barrel thermal transfer, or continuous electrical power datum from which an SI energy channel can be derived.",
+  "us-971501-haber-ammonia":
+    "US 971,501 discloses a chemical process of passing nitrogen and hydrogen over osmium at pressure and temperature, but supplies no continuous mechanical or electrical power consumption, reactor flow rate, or cooling power datum from which an SI energy channel can be derived.",
+  "us-1219881-sundback-zipper":
+    "US 1,219,881 specifies the mechanical geometry of corded edge tapes, stamped interlocking scoops, and the Y-slider cam, but supplies no continuous slider pull velocity, friction coefficient, or power datum from which an SI energy channel can be derived.",
+  "us-2495429-spencer-microwave":
+    "US 2,495,429 specifies dual magnetron oscillators feeding a common hollow waveguide over a conveyor, but supplies no continuous electrical power input, magnetron efficiency, tube voltage, or cooling dissipation datum from which an SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -441,16 +448,6 @@ export function energyChannelsFor(
     return [];
   }
 
-  if (patentId === "us-36836-gatling-gun") {
-    const _gat = stepGatlingGun({ crankRpm: params.crankRpm, barrelCount: params.barrelCount });
-    const crankW = (params.crankRpm ?? 80) * 1.8;
-    return [
-      { name: "Manual Crank", watts: crankW, tone: "in" },
-      { name: "Cluster Rotation", watts: crankW * 0.68, tone: "useful" },
-      { name: "Cam Track Friction", watts: crankW * 0.32, tone: "loss" },
-    ];
-  }
-
   if (patentId === "us-621195-zeppelin-airship") {
     const zep = stepZeppelinAirship({
       flightSpeedKnots: params.flightSpeedKnots,
@@ -496,25 +493,7 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-971501-haber-ammonia") {
-    const haber = stepHaberAmmonia({
-      pressureAtm: params.pressureAtm,
-      temperatureCelsius: params.temperatureCelsius,
-      feedFlowRateMolesPerSec: params.feedFlowRateMolesPerSec,
-      catalystActivity: params.catalystActivity,
-    });
-    return [
-      {
-        name: "Preheater & Gas Feed",
-        watts: haber.reactionHeatGeneratedKw * 1000 * 0.85,
-        tone: "in",
-      },
-      { name: "Exothermic Synthesis", watts: haber.reactionHeatGeneratedKw * 1000, tone: "useful" },
-      {
-        name: "Flue Radiation Loss",
-        watts: haber.reactionHeatGeneratedKw * 1000 * 0.15,
-        tone: "loss",
-      },
-    ];
+    return [];
   }
 
   if (patentId === "us-2297691-carlson-electrophotography") {
@@ -858,12 +837,7 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-2495429-spencer-microwave") {
-    const magW = 1200;
-    return [
-      { name: "High-Voltage Magnetron Anode Supply", watts: magW, tone: "in" },
-      { name: "2.45 GHz Cavity Dielectric Food Absorption", watts: magW * 0.65, tone: "useful" },
-      { name: "Anode Cooling Fin Thermal Dissipation", watts: magW * 0.35, tone: "loss" },
-    ];
+    return [];
   }
 
   if (patentId === "us-2543181-land-polaroid") {
@@ -903,14 +877,7 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-1219881-sundback-zipper") {
-    const pullN = params.pullForceN ?? 15;
-    const velMmS = (pullN / 0.41) * 0.8; // ~29 mm/s
-    const pullW = Math.max(0.1, pullN * (velMmS / 1000));
-    return [
-      { name: "Slider Pull Kinetic Input", watts: pullW, tone: "in" },
-      { name: "Scoop Cam Wedge Interlocking Work", watts: pullW * 0.74, tone: "useful" },
-      { name: "Slider Flange & Tape Friction Loss", watts: pullW * 0.26, tone: "loss" },
-    ];
+    return [];
   }
 
   if (patentId === "us-5701965-kamen-transporter") {

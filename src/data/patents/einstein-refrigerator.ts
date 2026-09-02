@@ -243,6 +243,5 @@ export const einsteinRefrigeratorPatent: Patent = {
   stats: {
     totalClaims: 5,
     independentClaims: 5,
-    impactScore: 98,
   },
 };

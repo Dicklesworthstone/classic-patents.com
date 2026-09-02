@@ -171,6 +171,8 @@ describe("US 3,212,649 AMF Versatran procedural visual boundary", () => {
     expect(threeD).toContain("useFrankenSimPhysics");
     expect(threeD).toContain("createThreeStudioScene");
     expect(threeD).toContain("createStudioClock");
+    expect(threeD).toContain('data-amf-versatran-webgl-fallback="true"');
+    expect(threeD).toContain("This browser cannot create WebGL.");
     expect(model).toContain("display proportions only");
     expect(model).not.toContain("Math.random");
     expect(model).not.toContain("GLTFLoader");

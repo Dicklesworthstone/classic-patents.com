@@ -70,6 +70,9 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-247804-delaval-separator",
       "us-588-ericsson-propeller",
       "us-319596-maxim-machine-gun",
+      "us-36836-gatling-gun",
+      "us-971501-haber-ammonia",
+      "us-1219881-sundback-zipper",
     ]);
   });
 

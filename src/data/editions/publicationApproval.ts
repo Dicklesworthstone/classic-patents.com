@@ -16,9 +16,9 @@
 import type { CuratedSpecificationEdition, Patent } from "@/types/patent";
 import {
   ARCHIVAL_PUBLICATION_STATE_OVERRIDES,
-  evaluateTypedArchivalPublicationState,
   type ArchivalPublicationDecision,
   type ArchivalPublicationStatus,
+  evaluateTypedArchivalPublicationState,
 } from "./archivalPublicationState";
 import { ARCHIVAL_PARALLEL_READINGS } from "./parallelReadings";
 

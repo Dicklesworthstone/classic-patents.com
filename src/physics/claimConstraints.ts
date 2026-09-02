@@ -673,14 +673,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-971501-haber-ammonia",
-      claimTitle: "High-Pressure Catalytic Cycle & Continuous Recycling",
+      claimTitle: "Passing Nitrogen and Hydrogen Over Osmium Catalyst",
       activeDescription:
-        "Claim 1 passes stoichiometric N₂/H₂ over osmium/iron catalysts at 200 bar, continuously condensing NH₃ and recycling unreacted gases.",
+        "Claim 1 passes a gas mixture containing nitrogen and hydrogen over an osmium-bearing catalyst to produce ammonia.",
       invertedDescription:
-        "Low-pressure single-pass synthesis: equilibrium conversion drops below 0.1%, wasting 99.9% of purified feed gas.",
-      failureModeName: "Le Chatelier Thermodynamic Equilibrium Quench",
+        "Without an active osmium catalyst contact, inert N₂ and H₂ molecules do not dissociate, yielding no detectable ammonia.",
+      failureModeName: "Uncatalyzed Molecular Nitrogen Inaction & Zero Yield",
       historicalPriorArt:
-        "Atmospheric synthesis produced undetectable traces of ammonia, deemed commercially unviable by physical chemists.",
+        "Prior attempts passing nitrogen and hydrogen over non-osmium catalysts produced negligible ammonia yield.",
     },
   ],
   "us-2292387-lamarr-frequency-hopping": [
@@ -919,14 +919,64 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-36836-gatling-gun",
-      claimTitle: "Revolving Multi-Barrel Cluster with Continuous Cam Track Reciprocation",
+      claimTitle:
+        "Co-Revolving Lock-Cylinder, Grooved Carrier, Circular Plate, and Barrels on Main Shaft",
       activeDescription:
-        "Claim 1 rotates a cluster of six barrels around a central shaft, each barrel having an independent lock guided by an elliptical stationary cam to load, fire, and extract continuously.",
+        "Claim 1 fastens lock-cylinder D, grooved carrier C, circular plate F, and barrels E firmly upon central shaft N with locks, grooves, and barrels parallel to the axis of revolution to turn together.",
       invertedDescription:
-        "Single-barrel rapid fire: continuous firing through one barrel overheats the chamber (>450°C) within seconds, causing barrel rupture and dangerous round cook-off.",
-      failureModeName: "Single-Barrel Thermal Overheat & Cook-Off Rupture",
+        "Without a co-rotating central shaft assembly, the carrier and barrels decouple from the lock cylinder, preventing synchronized alignment between cartridge grooves, locks, and barrel bores.",
+      failureModeName: "Decoupled Carrier-Barrel Kinematics & Bore Misalignment",
       historicalPriorArt:
-        "Single-barrel machine and volley guns (Billinghurst-Requa, Ager Coffee Mill) suffered catastrophic overheating and frequent feed jamming.",
+        "Prior hand-cranked guns (such as Ager) used separate revolving hopper drums beside stationary barrels, suffering severe indexing misalignments.",
+    },
+    {
+      claimNumber: 2,
+      patentId: "us-36836-gatling-gun",
+      claimTitle: "One Simultaneous Lock Per Barrel",
+      activeDescription:
+        "Claim 2 provides as many independent locks as barrels, all revolving simultaneously with the breech and barrels.",
+      invertedDescription:
+        "Using a single stationary or reciprocating lock for multiple barrels creates a single-point mechanical bottleneck and thermal concentration.",
+      failureModeName: "Single-Lock Cycling Bottleneck & Firing Jam",
+      historicalPriorArt:
+        "Multi-barrel volley guns typically fired from a single shared lock or hammer plate, preventing continuous cyclic firing.",
+    },
+    {
+      claimNumber: 3,
+      patentId: "us-36836-gatling-gun",
+      claimTitle: "Stationary Cocking Ring with Inclined Planes",
+      activeDescription:
+        "Claim 3 uses stationary ring P with rear inclined planes to cam the revolving locks rearward into cocked position and then release them.",
+      invertedDescription:
+        "Without inclined cocking planes on ring P, the revolving locks cannot be progressively cocked against their springs during rotation.",
+      failureModeName: "Uncocked Lock Stoppage & Failure to Fire",
+      historicalPriorArt:
+        "Manual cocking levers required external trigger manipulation for each shot.",
+    },
+    {
+      claimNumber: 4,
+      patentId: "us-36836-gatling-gun",
+      claimTitle:
+        "Lock Tubes with Flanged Breech-Pins, Hammers, Mainsprings, and Divider Disk Swell",
+      activeDescription:
+        "Claim 4 combines lock tubes a with flanged breech-pins c, springs e, hammers b, and mainsprings d in revolving breech D against disk I with swell o.",
+      invertedDescription:
+        "Missing flanged breech-pins and springs causes gas leakage at the breech and fails to clamp cartridge-chambers firmly against barrel breeches.",
+      failureModeName: "Breech Pressure Blowby & Loose Chamber Seating",
+      historicalPriorArt:
+        "Early revolving arms suffered severe gas escape between breech and barrel faces.",
+    },
+    {
+      claimNumber: 5,
+      patentId: "us-36836-gatling-gun",
+      claimTitle: "Protective External Casing and Internal Divider Disk",
+      activeDescription:
+        "Claim 5 encases revolving lock-cylinder D and gears with protective shield casing A and internal divider disk I.",
+      invertedDescription:
+        "Operating without protective casing A leaves revolving lock tubes and bevel cog-wheels exposed to dirt, debris, and operator hazard.",
+      failureModeName: "Exposed Gear Ingestion & Lock Contamination",
+      historicalPriorArt:
+        "Open-frame battery guns rapidly jammed when dirt, mud, or fouling entered the gear teeth.",
     },
   ],
   "us-586193-marconi-radio": [
@@ -1999,13 +2049,12 @@ export function applyClaimConstraintModifications(
     case "us-971501-haber-ammonia": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
-        modified.synthesisPressureBar = 1.0; // Atmospheric pressure
-        modified.equilibriumYieldPct = 0.04; // Collapsed yield
+        modified.catalystActivity = 0.0;
         activeFailures.push(
-          "Le Chatelier Equilibrium Collapse: 1 bar pressure achieves <0.05% ammonia conversion",
+          "Uncatalyzed Feed Gas Inaction: No osmium catalyst present to dissociate molecular nitrogen",
         );
         refusalWarning =
-          "EQUILIBRIUM QUENCH: Forward reaction 3H₂ + N₂ ⇌ 2NH₃ volume contraction requires extreme 200 bar drive.";
+          "CATALYSIS FAILURE: Claim 1 requires passing nitrogen and hydrogen gases over an osmium catalyst.";
       }
       break;
     }
@@ -2209,14 +2258,29 @@ export function applyClaimConstraintModifications(
 
     case "us-36836-gatling-gun": {
       const claim1Active = claimStates[1] ?? true;
+      const claim2Active = claimStates[2] ?? true;
+      const claim3Active = claimStates[3] ?? true;
       if (!claim1Active) {
-        modified.barrelCount = 1.0;
-        modified.barrelTempC = 480.0; // Critical single-barrel thermal runaway
+        modified.isShaftCoRotating = 0;
         activeFailures.push(
-          "Single-Barrel Thermal Overheat: Continuous cyclic firing causes rapid chamber heat accumulation and cook-off",
+          "Decoupled Carrier-Barrel Assembly: Lock cylinder, carrier, and barrels are not rigidly locked to main shaft N",
         );
         refusalWarning =
-          "THERMAL OVERLOAD: Multi-barrel revolving cluster required to distribute thermal load across consecutive discharges.";
+          "SYNCHRONIZATION FAILURE: Claim 1 requires lock-cylinder D, grooved carrier C, circular plate F, and barrels E to be firmly fastened upon main shaft N to revolve together.";
+      } else if (!claim2Active) {
+        modified.locksPerBarrelRatio = 0.16; // 1 lock for 6 barrels
+        activeFailures.push(
+          "Single-Lock Bottleneck: Only one lock available instead of one lock revolving with each barrel",
+        );
+        refusalWarning =
+          "LOCK MULTIPLEXING FAILURE: Claim 2 requires as many independent locks as there are barrels revolving simultaneously.";
+      } else if (!claim3Active) {
+        modified.isCockingCamEngaged = 0;
+        activeFailures.push(
+          "Uncocked Lock Stoppage: Stationary ring P inclined planes are missing; hammers cannot be energized during rotation",
+        );
+        refusalWarning =
+          "COCKING FAILURE: Claim 3 requires stationary ring P with rear inclined planes to cam lock-hammers into working position.";
       }
       break;
     }

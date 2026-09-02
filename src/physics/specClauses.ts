@@ -1693,22 +1693,38 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-36836-gatling-gun") {
-    const rpm = params.crankRpm ?? 80;
+    const rpm = params.crankRpm ?? 60;
     return [
       {
-        id: "barrels",
-        phrase: "barrels",
-        active: rpm > 0,
-        tone: "live",
-        caption: `Crank Speed=${rpm} RPM: Revolving cluster of 6 barrels distributes heat across rotating chambers.`,
-      },
-      {
-        id: "carrier",
-        phrase: "carrier",
+        id: "lock-cylinder",
+        phrase: "lock-cylinder or breech D",
         active: true,
         tone: "held",
         caption:
-          "Grooved carrier block feeds cartridges and guides lock plungers through firing cycle.",
+          "Lock-cylinder D, grooved carrier C, circular plate F, and barrels E are fastened firmly upon main shaft N to revolve together.",
+      },
+      {
+        id: "grooved-carrier",
+        phrase: "grooved carrier C",
+        active: true,
+        tone: "held",
+        caption:
+          "Grooved carrier C receives cartridges from hopper H and conveys them continuously to the firing position.",
+      },
+      {
+        id: "stationary-ring",
+        phrase: "stationary ring P",
+        active: rpm > 0,
+        tone: "live",
+        caption: `Crank Speed=${rpm} RPM: Stationary ring P rear inclined planes cock and release lock-hammers b as the cylinder rotates.`,
+      },
+      {
+        id: "flanged-breech-pins",
+        phrase: "flanged breech-pins",
+        active: true,
+        tone: "held",
+        caption:
+          "Flanged breech-pins c and springs e hold cartridge-chambers firmly against the rear ends of barrels E during discharge.",
       },
     ];
   }

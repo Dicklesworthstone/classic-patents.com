@@ -271,7 +271,7 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(coupleLinks("us-347140-thomson-welding", {})[0]?.from).toBe("I²R");
     expect(coupleLinks("us-233692-pelton-water-wheel", {})[0]?.from).toBe("water jet");
     expect(coupleLinks("us-470918-reno-escalator", {})[0]?.from).toBe("motor");
-    expect(coupleLinks("us-319596-maxim-machine-gun", {})[0]?.from).toBe("powder");
+    expect(coupleLinks("us-319596-maxim-machine-gun", {})[0]?.from).toBe("muzzle_gas");
     expect(coupleLinks("us-588-ericsson-propeller", {})[0]?.from).toBe("thrust · v");
     expect(coupleLinks("us-586193-marconi-radio", {})[0]?.from).toBe("spark");
     expect(coupleLinks("us-808897-carrier-air-conditioner", {})[0]?.from).toBe("fan");

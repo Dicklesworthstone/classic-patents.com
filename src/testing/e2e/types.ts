@@ -120,3 +120,5 @@ export interface E2ERunSummary {
     };
   }>;
 }
+
+export type E2EEventLog = E2ELogEvent;

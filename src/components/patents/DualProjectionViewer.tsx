@@ -16,7 +16,11 @@ import { useCallback, useEffect, useState } from "react";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
 import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
-import { archivalEditionForPublication } from "@/data/editions/publicationApproval";
+import {
+  type ArchivalPublicationDecision,
+  archivalEditionForPublication,
+  evaluateArchivalPublicationState,
+} from "@/data/editions/publicationApproval";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { ColorizedEquation as ColorizedEquationType } from "@/types/equation";
 import type { Patent } from "@/types/patent";
@@ -112,9 +116,11 @@ function handlePrint() {
 function TranscriptUnavailable({
   patent,
   hasRawSourceText,
+  decision,
 }: {
   patent: Patent;
   hasRawSourceText: boolean;
+  decision: ArchivalPublicationDecision;
 }) {
   return (
     <div
@@ -125,9 +131,13 @@ function TranscriptUnavailable({
         Complete archival edition is not published yet
       </h4>
       <p className="mt-2 font-sans text-sm leading-relaxed">
+        {decision.explanation}{" "}
         {hasRawSourceText
           ? "A private raw comparison layer exists, but it is not a publication-ready edition. The page deliberately does not render it or substitute a short editorial excerpt."
           : "This record does not yet have an explicitly authored archival edition. The page deliberately does not substitute its short editorial excerpt for the full legal instrument."}
+      </p>
+      <p className="mt-3 font-mono text-xs font-semibold tracking-wide text-amber-900 dark:text-amber-200">
+        Review status: {decision.state.kind} · reason {decision.reasonCode}
       </p>
       <p className="mt-3 font-sans text-sm leading-relaxed">
         The complete primary source is available as the scanned patent PDF. It remains the
@@ -173,6 +183,7 @@ export function DualProjectionViewer({
   // A semantic edition becomes visitor-facing only together with its explicit
   // paragraph companions. Treat an accidentally bound draft as withheld rather
   // than calling the fail-closed lookup during render and crashing the route.
+  const archivalPublication = evaluateArchivalPublicationState(patent);
   const archivalEdition = archivalEditionForPublication(patent);
   const originalTextLabel = archivalEdition
     ? `Complete manually prepared edition · facsimile reviewed ${archivalEdition.preparedAt}`
@@ -226,6 +237,8 @@ export function DualProjectionViewer({
     <div
       className="space-y-8 print:space-y-4"
       data-archival-edition={archivalEdition?.kind ?? "withheld"}
+      data-archival-publication-state={archivalPublication.state.kind}
+      data-archival-publication-reason={archivalPublication.reasonCode}
     >
       {/* Archival Broadside Plaque Header (Active during print) */}
       <MuseumBroadsidePlaque patent={patent} />
@@ -526,6 +539,7 @@ export function DualProjectionViewer({
                 <TranscriptUnavailable
                   patent={patent}
                   hasRawSourceText={Boolean(rawSourceTextAsset)}
+                  decision={archivalPublication}
                 />
               )}
             </div>
@@ -775,6 +789,7 @@ export function DualProjectionViewer({
               <TranscriptUnavailable
                 patent={patent}
                 hasRawSourceText={Boolean(rawSourceTextAsset)}
+                decision={archivalPublication}
               />
             )}
           </div>

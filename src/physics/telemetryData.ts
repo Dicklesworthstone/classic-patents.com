@@ -1436,7 +1436,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
 
   "us-879532-de-forest-audion": {
-    domain: "semiconductor",
+    domain: "electromagnetism",
     domainTitle: "Thermionic Triode Vacuum Tube & Electrostatic Grid Control",
     equationName: "Child-Langmuir Triode Equation & Transconductance",
     governingEquation:
@@ -1444,7 +1444,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     engineMethod:
       "Richardson-Dushman Thermionic Emission & Child-Langmuir Space-Charge Triode Load Line",
     pedagogicalInsight:
-      "Because the control grid is positioned much closer to the filament than the plate, a 1-volt swing on the grid exerts the same electrostatic force as a 12-volt swing on the plate (amplification factor μ = 12), achieving genuine electronic power gain.",
+      "US 879,532 claims the physical placement of an interposed grid-shaped member between a heated filament and plate to increase oscillation detector sensitiveness; numerical tube parameters (μ = 12, Child-Langmuir currents) are modern illustrative vacuum tube values.",
     controls: [
       {
         id: "plateVoltageV",
@@ -1454,6 +1454,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 45,
         unit: "V",
+        provenance: "scenario-modern",
       },
       {
         id: "gridBiasVoltageV",
@@ -1463,6 +1464,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.25,
         defaultValue: -1.5,
         unit: "V",
+        provenance: "scenario-modern",
       },
       {
         id: "filamentCurrentA",
@@ -1472,6 +1474,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.1,
         defaultValue: 1.0,
         unit: "A",
+        provenance: "scenario-modern",
       },
       {
         id: "gridSignalAmplitudeMv",
@@ -1481,6 +1484,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 50,
         unit: "mV",
+        provenance: "scenario-modern",
       },
       {
         id: "loadResistanceKOhms",
@@ -1490,6 +1494,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 20,
         unit: "kΩ",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (params) => {
@@ -1503,36 +1508,47 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
 
       return [
         {
-          label: "Voltage Amplification Gain",
+          label: "Detector Configuration",
+          value: "INTERPOSED GRID MEMBER a",
+          badgeColor: "emerald",
+          unit: "topology",
+          primary: true,
+          provenance: "source-disclosed",
+        },
+        {
+          label: "Illustrative Voltage Gain",
           value: `${res.voltageGain}x`,
           badgeColor: "emerald",
           unit: "x",
-          primary: true,
+          provenance: "scenario-modern",
         },
         {
-          label: "Output Signal Amplitude",
+          label: "Illustrative Output Signal",
           value: `${res.outputSignalMv} mV`,
           badgeColor: "cyan",
           unit: "mV",
-          primary: true,
+          provenance: "scenario-modern",
         },
         {
-          label: "Plate Current",
+          label: "Illustrative Plate Current",
           value: `${res.plateCurrentMa} mA`,
           badgeColor: "amber",
           unit: "mA",
+          provenance: "scenario-modern",
         },
         {
-          label: "Dynamic Transconductance",
+          label: "Illustrative Transconductance",
           value: `${res.dynamicTransconductanceMicromhos} µmhos`,
           badgeColor: "purple",
           unit: "µmhos",
+          provenance: "scenario-modern",
         },
         {
-          label: "Power Gain",
+          label: "Illustrative Power Gain",
           value: `${res.powerGainDb} dB`,
           badgeColor: "rose",
           unit: "dB",
+          provenance: "scenario-modern",
         },
       ];
     },
@@ -1630,9 +1646,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     equationName: "Haber Equilibrium Constant & Le Chatelier Conversion",
     governingEquation:
       "K_p(T) = \\frac{P_{\\text{NH}_3}^2}{P_{\\text{N}_2} \\cdot P_{\\text{H}_2}^3} \\quad \\text{and} \\quad \\Delta H_{298} = -92.4 \\text{ kJ/mol}",
-    engineMethod: "High-Pressure Counter-Current Recirculation & Osmium/Iron Catalyst Kinetics",
+    engineMethod: "Le Chatelier High-Pressure Equilibrium & Catalytic Chemical Kinetics",
     pedagogicalInsight:
-      "Operating at 200 atmospheres and 500°C strikes the optimal balance between thermodynamic equilibrium yield and catalytic reaction kinetics.",
+      "Operating at 175 atmospheres and ~550°C (the example reported in US 971,501) balances high-pressure equilibrium yield with catalytic reaction kinetics.",
     controls: [
       {
         id: "pressureAtm",
@@ -1642,6 +1658,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 10,
         defaultValue: 175,
         unit: "atm",
+        provenance: "scenario-reader",
       },
       {
         id: "temperatureCelsius",
@@ -1651,6 +1668,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 10,
         defaultValue: 530,
         unit: "°C",
+        provenance: "scenario-reader",
       },
       {
         id: "feedFlowRateMolesPerSec",
@@ -1660,6 +1678,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 50,
         unit: "mol/s",
+        provenance: "scenario-reader",
       },
       {
         id: "catalystActivity",
@@ -1669,6 +1688,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.1,
         defaultValue: 1.0,
         unit: "x",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics: (params) => {
@@ -1686,6 +1706,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "%",
           badgeColor: "emerald",
           primary: true,
+          provenance: "scenario-modern",
         },
         {
           label: "Hourly Production Rate",
@@ -1693,18 +1714,21 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "kg/h",
           badgeColor: "cyan",
           primary: true,
+          provenance: "scenario-modern",
         },
         {
           label: "Equilibrium Conversion",
           value: `${res.equilibriumAmmoniaPct}%`,
           unit: "%",
           badgeColor: "amber",
+          provenance: "scenario-modern",
         },
         {
           label: "Reaction Heat Generated",
           value: `${res.reactionHeatGeneratedKw} kW`,
           unit: "kW",
           badgeColor: "purple",
+          provenance: "scenario-modern",
         },
       ];
     },
@@ -2301,6 +2325,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 220,
         unit: "W",
+        provenance: "scenario-reader",
       },
       {
         id: "totalPressure",
@@ -2310,6 +2335,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: 15.0,
         unit: "atm",
+        provenance: "scenario-reader",
       },
       {
         id: "ammoniaRatio",
@@ -2319,6 +2345,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: 0.65,
         unit: "x_NH₃",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics: (p) => {
@@ -2339,6 +2366,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "°C",
           badgeColor: evapTemp < 0 ? "cyan" : "amber",
           progressPct: Math.min(100, Math.max(0, (30 - evapTemp) * 2)),
+          provenance: "scenario-modern",
         },
         {
           label: "Cooling Power (Qc)",
@@ -2346,6 +2374,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "W",
           badgeColor: "emerald",
           progressPct: Math.min(100, (coolingWatts / 120) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Thermodynamic COP",
@@ -2353,6 +2382,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "ratio",
           badgeColor: "indigo",
           progressPct: Math.min(100, (cop / 0.5) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Total System Pressure",
@@ -2360,6 +2390,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "atm",
           badgeColor: "purple",
           progressPct: clampProgress((press / 25) * 100),
+          provenance: "scenario-reader",
         },
       ];
     },
@@ -2381,6 +2412,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 1,
         unit: "on/off",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics: (p) => {
@@ -2393,6 +2425,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "",
           badgeColor: "cyan",
           progressPct: energyPathActive ? 100 : 0,
+          provenance: "scenario-reader",
         },
         {
           label: "Oscillators",
@@ -2400,6 +2433,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "source numerals",
           badgeColor: "emerald",
           progressPct: 100,
+          provenance: "source-disclosed",
         },
         {
           label: "Common Guide",
@@ -2407,6 +2441,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "source numeral",
           badgeColor: "purple",
           progressPct: 100,
+          provenance: "source-disclosed",
         },
         {
           label: "Conveyor",
@@ -2414,6 +2449,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "source numeral",
           badgeColor: "amber",
           progressPct: 100,
+          provenance: "source-disclosed",
         },
       ];
     },
@@ -3529,6 +3565,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: SUNDBACK_ZIPPER_DEFAULT_CONTROLS.sliderPositionPct,
         unit: "%",
+        provenance: "scenario-reader",
       },
       {
         id: "pullForceN",
@@ -3538,6 +3575,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: SUNDBACK_ZIPPER_DEFAULT_CONTROLS.pullForceN,
         unit: "N",
+        provenance: "scenario-modern",
       },
       {
         id: "lateralTensionN",
@@ -3547,6 +3585,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: SUNDBACK_ZIPPER_DEFAULT_CONTROLS.lateralTensionN,
         unit: "N",
+        provenance: "scenario-modern",
       },
       {
         id: "flexAngleDeg",
@@ -3556,6 +3595,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: SUNDBACK_ZIPPER_DEFAULT_CONTROLS.flexAngleDeg,
         unit: "deg",
+        provenance: "scenario-reader",
       },
       {
         id: "toothDensityTpi",
@@ -3565,6 +3605,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: SUNDBACK_ZIPPER_DEFAULT_CONTROLS.toothDensityTpi,
         unit: "TPI",
+        provenance: "scenario-modern",
       },
       {
         id: "staggerAligned",
@@ -3574,6 +3615,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 1,
         unit: "state",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics: (p: Record<string, number | boolean>): PhysicsMetric[] => {
@@ -3586,6 +3628,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "teeth",
           badgeColor: "cyan",
           progressPct: tel.engagementFraction * 100,
+          provenance: "source-disclosed",
         },
         {
           label: "Cam Wedge Force",
@@ -3593,6 +3636,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "N",
           badgeColor: "emerald",
           progressPct: clampProgress((tel.wedgeNormalForceN / 60) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Burst Resistance",
@@ -3600,6 +3644,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "N",
           badgeColor: tel.burstRefusal ? "rose" : "amber",
           progressPct: clampProgress((tel.burstResistanceN / 300) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Tape Core Strain",
@@ -3607,6 +3652,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "%",
           badgeColor: tel.tapeStrainPct > 8 ? "rose" : "indigo",
           progressPct: clampProgress((tel.tapeStrainPct / 12) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Lock Status",
@@ -3620,6 +3666,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "state",
           badgeColor:
             tel.burstRefusal || tel.isStalled ? "rose" : tel.isLocked ? "emerald" : "amber",
+          provenance: "source-disclosed",
         },
       ];
     },
@@ -4484,6 +4531,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: 0.05,
         unit: "s",
+        provenance: "scenario-reader",
       },
       {
         id: "apertureStop",
@@ -4493,6 +4541,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 9,
         unit: "f/#",
+        provenance: "scenario-reader",
       },
       {
         id: "subjectDist",
@@ -4502,6 +4551,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.2,
         defaultValue: 3.0,
         unit: "m",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics: (p) => {
@@ -4520,6 +4570,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "H",
           badgeColor: "emerald",
           progressPct: clampProgress((kodak.hyperfocalM / 15) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Near Focus Limit",
@@ -4527,6 +4578,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "D_near",
           badgeColor: "cyan",
           progressPct: clampProgress((kodak.dofNearM / 5) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Exposure Value (EV)",
@@ -4534,6 +4586,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "EV",
           badgeColor: "indigo",
           progressPct: clampProgress((kodak.exposureValueEv / 15) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Focus Status",
@@ -4541,6 +4594,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "status",
           badgeColor: kodak.isInFocus ? "emerald" : "rose",
           progressPct: clampProgress(kodak.isInFocus ? 100 : 25),
+          provenance: "scenario-modern",
         },
         {
           label: "Fixed Doublet",
@@ -4548,6 +4602,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "f",
           badgeColor: "amber",
           progressPct: clampProgress(100),
+          provenance: "scenario-modern",
         },
         {
           label: "Circular Frame",
@@ -4555,6 +4610,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "format",
           badgeColor: "cyan",
           progressPct: clampProgress(100),
+          provenance: "scenario-modern",
         },
         {
           label: "Shutter Flash",
@@ -4562,6 +4618,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "t_shut",
           badgeColor: "amber",
           progressPct: Math.min(100, (kodak.flashDisplayMs / 200) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Barrel ω",
@@ -4569,6 +4626,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "rad/s",
           badgeColor: "cyan",
           progressPct: Math.min(100, (kodak.barrelOmegaRadPerS / 700) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },
@@ -5683,6 +5741,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 60,
         unit: "RPM",
+        provenance: "scenario-reader",
       },
       {
         id: "barrelCount",
@@ -5692,6 +5751,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 2,
         defaultValue: 6,
         unit: "barrels",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (p) => {
@@ -5699,11 +5759,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const rof = gatling.roundsPerMin;
       return [
         {
+          label: "Co-Rotating Assembly",
+          value: "LOCKED ON SHAFT N",
+          unit: "assembly",
+          badgeColor: "emerald",
+          progressPct: clampProgress(100),
+          provenance: "source-disclosed",
+        },
+        {
           label: "Rate of Fire",
           value: `${rof} rounds/min`,
           unit: "ROF",
           badgeColor: "rose",
           progressPct: clampProgress((rof / 1200) * 100),
+          provenance: "scenario-reader",
         },
         {
           label: "Barrel Cooling Interval",
@@ -5711,25 +5780,28 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "t_cool",
           badgeColor: "cyan",
           progressPct: clampProgress(80),
+          provenance: "scenario-modern",
         },
         {
-          label: "Muzzle Energy",
-          value: `${gatling.muzzleEnergyJoules} J`,
-          unit: "E_k",
+          label: "Cocking Ring Action",
+          value: "INCLINED PLANES P",
+          unit: "cam",
           badgeColor: "amber",
-          progressPct: clampProgress((gatling.muzzleEnergyJoules / 2000) * 100),
+          progressPct: clampProgress(100),
+          provenance: "source-disclosed",
         },
         {
           label: "Cycle Interval",
           value: `${gatling.cycleTimeMs} ms`,
           unit: "t_cyc",
-          badgeColor: "cyan",
+          badgeColor: "purple",
           progressPct: clampProgress((gatling.cycleTimeMs / 400) * 100),
+          provenance: "scenario-reader",
         },
       ];
     },
     pedagogicalInsight:
-      "Six revolving barrels rotate around a stationary central cylinder containing spiral cam grooves that load, cock, lock, fire, and extract cartridges during one continuous turn.",
+      "Lock-cylinder D, grooved carrier C, and circular plate F fasten firmly to main shaft N to co-rotate barrels E, while stationary ring P inclined planes cock and release lock-hammers b.",
   },
   "us-48475-yale-lock": {
     domain: "solid_mechanics",
@@ -6606,6 +6678,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 100,
         defaultValue: 4500,
         unit: "A",
+        provenance: "scenario-reader",
       },
       {
         id: "clampPressureMpa",
@@ -6615,6 +6688,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 35,
         unit: "MPa",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics: (p) => {
@@ -6632,6 +6706,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "P_joule",
           badgeColor: "rose",
           progressPct: clampProgress((kw / 8) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Interface Temperature",
@@ -6639,6 +6714,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "T_weld",
           badgeColor: tempC >= 1150 ? "amber" : "cyan",
           progressPct: Math.min(100, (tempC / 1500) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Solid-State Weld Quality",
@@ -6646,6 +6722,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "fusion",
           badgeColor: isForged ? "emerald" : "rose",
           progressPct: clampProgress(isForged ? 100 : 30),
+          provenance: "scenario-modern",
         },
         {
           label: "Upset Burr",
@@ -6653,6 +6730,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "w_burr",
           badgeColor: "amber",
           progressPct: clampProgress((weld.upsetBurrWidthMm / 6) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },

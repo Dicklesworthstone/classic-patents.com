@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { validateCuratedSpecificationEdition } from "../archivalEditionValidation";
+import { baerOdysseyPatent } from "../patents/baer-odyssey";
 import {
   validateReviewedTranscription,
   validateReviewedTranscriptionEditorialIntegrity,
@@ -26,10 +27,7 @@ describe("US 3,728,480 Television Gaming and Training Apparatus (Magnavox Odysse
     const editionValidation = validateCuratedSpecificationEdition(baerOdysseyArchivalEdition);
     expect(editionValidation.valid).toBe(true);
 
-    const published = archivalEditionForPublication({
-      id: "us-3728480-baer-odyssey",
-      archivalEdition: baerOdysseyArchivalEdition,
-    });
+    const published = archivalEditionForPublication(baerOdysseyPatent);
     expect(published).toBeDefined();
     expect(published?.sourcePdfSha256).toBe(
       "620a5c6c5563115c9ec3fa34f64c646b4f32cb9f587eda6bef78a9516439a0cc",

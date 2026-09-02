@@ -2,7 +2,10 @@ import { describe, expect, test } from "bun:test";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { getColorizedEquationsForPatent } from "../src/data/colorizedEquations";
-import { archivalEditionForPublication } from "../src/data/editions/publicationApproval";
+import {
+  archivalEditionForPublication,
+  evaluateArchivalPublicationState,
+} from "../src/data/editions/publicationApproval";
 import { allPatents } from "../src/data/patents";
 import { CATALOG_CLAIM_CONSTRAINTS } from "../src/physics/claimConstraints";
 import { energyChannelsFor } from "../src/physics/energyChannels";
@@ -89,6 +92,8 @@ describe("patent E2E scenario contract", () => {
       patentId: "us-1-published",
       route: "/patents/us-1-published",
       sourceState: "published",
+      sourcePublicationState: "accepted",
+      sourceReasonCode: "ACCEPTED",
       claimCount: 1,
       drawingCount: 1,
       hasReviewedLedger: true,
@@ -131,6 +136,7 @@ describe("patent E2E scenario contract", () => {
   test("builds an exact manifest from the live catalogue and all pinned PDFs", () => {
     const scenarios = buildPatentE2EScenarios(allPatents, {
       isEditionPublished: (entry) => Boolean(archivalEditionForPublication(entry)),
+      publicationDecision: evaluateArchivalPublicationState,
       assetExists: (publicUrl) =>
         fs.existsSync(path.join(process.cwd(), "public", publicUrl.replace(/^\/+/, ""))),
       equationIdsForPatent: (entry) =>
@@ -157,6 +163,14 @@ describe("patent E2E scenario contract", () => {
     );
     expect(scenarios.some((scenario) => scenario.sourceState === "published")).toBe(true);
     expect(scenarios.some((scenario) => scenario.sourceState === "withheld")).toBe(true);
+    expect(scenarios.every((scenario) => scenario.sourceReasonCode.length > 0)).toBe(true);
+    expect(
+      scenarios.every(
+        (scenario) =>
+          scenario.sourceDecision.acceptedFigureCount <=
+          scenario.sourceDecision.requiredFigureCount,
+      ),
+    ).toBe(true);
     expect(scenarios.some((scenario) => scenario.figurePreviewUrls.length > 0)).toBe(true);
     expect(scenarios.some((scenario) => scenario.claimProbeCount > 0)).toBe(true);
     expect(scenarios.some((scenario) => scenario.hasEnergyChannels)).toBe(true);

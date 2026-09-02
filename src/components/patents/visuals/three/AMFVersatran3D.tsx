@@ -94,6 +94,7 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
   const studioRef = useRef<StudioContext | null>(null);
   const [view, setView] = useState<keyof typeof VIEWS>("overview");
   const [interfaceVisible, setInterfaceVisible] = useState(true);
+  const [webglUnavailable, setWebglUnavailable] = useState(false);
   const { params, updateParam, resetParams } = usePatentPhysics(patentId);
   const claimStates = useMemo(() => readAmfVersatranClaimStates(params), [params]);
   const claimResult = useMemo(
@@ -120,17 +121,25 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const studio = createThreeStudioScene({
-      container,
-      cameraPos: VIEWS.overview.position,
-      targetPos: VIEWS.overview.target,
-      environmentStyle: "studio",
-      enableClouds: false,
-      ambientIntensity: 2.7,
-      sunIntensity: 3.1,
-      cameraMinDistance: 2.3,
-      cameraMaxDistance: 13,
-    });
+    let studio: StudioContext;
+    try {
+      studio = createThreeStudioScene({
+        container,
+        cameraPos: VIEWS.overview.position,
+        targetPos: VIEWS.overview.target,
+        environmentStyle: "studio",
+        enableClouds: false,
+        ambientIntensity: 2.7,
+        sunIntensity: 3.1,
+        cameraMinDistance: 2.3,
+        cameraMaxDistance: 13,
+      });
+    } catch {
+      // A blocked GPU or a browser without WebGL must not take down the full
+      // patent page. The dispatcher still exposes the shared 2D instrument.
+      setWebglUnavailable(true);
+      return;
+    }
     studioRef.current = studio;
     const { scene, camera, renderer, controls } = studio;
 
@@ -179,6 +188,27 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
     <section className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl">
       <div className="relative min-h-[500px] sm:min-h-[630px]">
         <div ref={containerRef} className="absolute inset-0" />
+        {webglUnavailable && (
+          <div
+            className="absolute inset-0 z-10 grid place-items-center bg-slate-950/95 p-6 text-center"
+            role="status"
+            aria-live="polite"
+            data-amf-versatran-webgl-fallback="true"
+          >
+            <div className="max-w-md rounded-2xl border border-amber-700/70 bg-slate-900 p-5 shadow-2xl">
+              <p className="font-mono text-[11px] tracking-[0.15em] text-amber-300">
+                3D STUDIO UNAVAILABLE
+              </p>
+              <h4 className="mt-2 font-serif text-xl text-white">
+                This browser cannot create WebGL.
+              </h4>
+              <p className="mt-2 text-sm leading-6 text-slate-300">
+                The archival source, shared telemetry, and claim probes remain available. Choose the
+                2D Diagram view to inspect the same source-bounded AMF topology without WebGL.
+              </p>
+            </div>
+          </div>
+        )}
         <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-3 sm:inset-x-5 sm:top-5">
           <div className="rounded-xl border border-cyan-700/70 bg-slate-950/85 px-3 py-2 backdrop-blur">
             <p className="font-mono text-[10px] tracking-[0.16em] text-cyan-300">
@@ -203,7 +233,7 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
           </button>
         </div>
 
-        {interfaceVisible && (
+        {interfaceVisible && !webglUnavailable && (
           <>
             <div className="pointer-events-none absolute left-3 top-24 rounded-xl border border-slate-700/80 bg-slate-950/85 p-2.5 font-mono text-[11px] text-slate-200 backdrop-blur sm:left-5">
               <p>

@@ -7,18 +7,21 @@ import {
 } from "./publicationApproval";
 
 describe("Publication Approval State Machine", () => {
-  it("authorizes publication for verified exemplar Wright Flyer", () => {
-    const wright = allPatents.find((p) => p.id === "us-821393-wright-flyer");
-    if (!wright) throw new Error("Wright flyer patent not found");
-    expect(wright).toBeDefined();
+  it("authorizes publication for a verified, non-held exemplar", () => {
+    const teslaMotor = allPatents.find((p) => p.id === "us-381968-tesla-motor");
+    if (!teslaMotor) throw new Error("Tesla motor patent not found");
+    expect(teslaMotor).toBeDefined();
 
-    const decision = evaluateArchivalPublicationState(wright);
+    const decision = evaluateArchivalPublicationState(teslaMotor);
     expect(decision.status).toBe("published");
     expect(decision.isPublished).toBe(true);
-    expect(decision.publishedEdition).toBe(wright.archivalEdition);
+    expect(decision.publishedEdition).toBe(teslaMotor.archivalEdition);
     expect(decision.reviewerAttestation.completeFacsimileReviewed).toBe(true);
     expect(decision.reviewerAttestation.hasCompanionReadings).toBe(true);
     expect(decision.reviewerAttestation.structuralValidationPassed).toBe(true);
+    expect(decision.figureManifest.acceptedFigureCount).toBe(
+      decision.figureManifest.requiredFigureCount,
+    );
   });
 
   it("fail-closes and isolates quarantined patents (e.g. GB 931 Arkwright)", () => {
@@ -53,7 +56,7 @@ describe("Publication Approval State Machine", () => {
       attorneyOrAgentSignatures: [],
       inventorSignatures: [],
     };
-    const fakePatent = { id: "us-821393-wright-flyer", archivalEdition: unreviewedEdition };
+    const fakePatent = { id: "test-unreviewed", archivalEdition: unreviewedEdition };
     const decision = evaluateArchivalPublicationState(fakePatent);
     expect(decision.status).toBe("withheld-pending-review");
     expect(decision.isPublished).toBe(false);

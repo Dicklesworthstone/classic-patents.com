@@ -1,3 +1,7 @@
+import type {
+  ArchivalPublicationDecision,
+  ArchivalPublicationStateKind,
+} from "@/data/editions/archivalPublicationState";
 import type { Patent } from "@/types/patent";
 
 export type WasmSurfaceKind =
@@ -23,6 +27,8 @@ export interface WasmSurfaceDescriptor {
 export interface PatentCoverageFacts {
   assetExists: (publicUrl: string) => boolean;
   isEditionPublished: (patent: Patent) => boolean;
+  /** The typed source-face decision is authoritative when supplied. */
+  publicationDecision?: (patent: Patent) => ArchivalPublicationDecision;
   hasVisualDispatch: (patentId: string) => boolean;
   hasTelemetryOwner: (patentId: string) => boolean;
   hasEquationSet: (patentId: string) => boolean;
@@ -35,6 +41,12 @@ export interface PatentCoverageRow {
     pinnedFacsimile: boolean;
     reviewedLedger: boolean;
     archivalEdition: "published" | "review-pending" | "missing";
+    publication: {
+      state: ArchivalPublicationStateKind;
+      reasonCode: string;
+      requiredFigureCount: number;
+      acceptedFigureCount: number;
+    };
   };
   presentation: {
     explicitVisualDispatch: boolean;
@@ -57,6 +69,11 @@ export interface PatentCoverageSummary {
   pinnedFacsimiles: number;
   reviewedLedgers: number;
   publishedEditions: number;
+  candidateEditions: number;
+  heldEditions: number;
+  rejectedEditions: number;
+  facsimileOnlyRecords: number;
+  sourceBoundedRecords: number;
   patentSpecificWasm: number;
   interpretiveWasm: number;
   genericWasm: number;
@@ -221,7 +238,9 @@ export function buildPatentCoverageManifest(
     const wasmSurface = wasmSurfaceForPatent(patent.id);
     const wasmArtifactPresent = wasmSurface ? facts.assetExists(wasmSurface.artifactUrl) : false;
     const sharedBus = facts.sharedBusParticipation(patent.id);
-    const archivalEdition = facts.isEditionPublished(patent)
+    const publicationDecision = facts.publicationDecision?.(patent);
+    const isEditionPublished = publicationDecision?.isPublished ?? facts.isEditionPublished(patent);
+    const archivalEdition = isEditionPublished
       ? "published"
       : patent.archivalEdition
         ? "review-pending"
@@ -235,6 +254,24 @@ export function buildPatentCoverageManifest(
           patent.originalTextAsset?.kind === "reviewed-transcription" &&
           facts.assetExists(patent.originalTextAsset.url),
         archivalEdition,
+        publication: {
+          state:
+            publicationDecision?.state.kind ??
+            (isEditionPublished
+              ? "accepted"
+              : patent.archivalEdition
+                ? "candidate"
+                : "facsimile-only"),
+          reasonCode:
+            publicationDecision?.reasonCode ??
+            (isEditionPublished
+              ? "ACCEPTED"
+              : patent.archivalEdition
+                ? "UNSPECIFIED_HOLD"
+                : "NO_EDITION_BOUND"),
+          requiredFigureCount: publicationDecision?.figureManifest.requiredFigureCount ?? 0,
+          acceptedFigureCount: publicationDecision?.figureManifest.acceptedFigureCount ?? 0,
+        },
       },
       presentation: {
         explicitVisualDispatch: facts.hasVisualDispatch(patent.id),
@@ -270,6 +307,16 @@ export function summarizePatentCoverage(
     pinnedFacsimiles: manifest.filter((row) => row.source.pinnedFacsimile).length,
     reviewedLedgers: manifest.filter((row) => row.source.reviewedLedger).length,
     publishedEditions: manifest.filter((row) => row.source.archivalEdition === "published").length,
+    candidateEditions: manifest.filter((row) => row.source.publication.state === "candidate")
+      .length,
+    heldEditions: manifest.filter((row) => row.source.publication.state === "held").length,
+    rejectedEditions: manifest.filter((row) => row.source.publication.state === "rejected").length,
+    facsimileOnlyRecords: manifest.filter(
+      (row) => row.source.publication.state === "facsimile-only",
+    ).length,
+    sourceBoundedRecords: manifest.filter(
+      (row) => row.source.publication.state === "source-bounded",
+    ).length,
     patentSpecificWasm: manifest.filter((row) => row.runtime.wasmSurface === "patent-specific-wasm")
       .length,
     interpretiveWasm: manifest.filter((row) => row.runtime.wasmSurface === "interpretive-wasm")

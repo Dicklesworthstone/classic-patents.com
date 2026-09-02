@@ -3,7 +3,10 @@ import { createHash } from "node:crypto";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
-import { archivalEditionForPublication } from "@/data/editions/publicationApproval";
+import {
+  archivalEditionForPublication,
+  evaluateArchivalPublicationState,
+} from "@/data/editions/publicationApproval";
 import { allPatents } from "@/data/patents";
 import {
   buildPatentCoverageManifest,
@@ -44,6 +47,7 @@ function sharedBusParticipation(patentId: string): SharedBusParticipation {
 const manifest = buildPatentCoverageManifest(allPatents, {
   assetExists,
   isEditionPublished: (patent) => Boolean(archivalEditionForPublication(patent)),
+  publicationDecision: evaluateArchivalPublicationState,
   hasVisualDispatch: (patentId) => visualDispatcherSource.includes(`case "${patentId}":`),
   hasTelemetryOwner: (patentId) => Boolean(PATENT_PHYSICS_REGISTRY[patentId]),
   hasEquationSet: (patentId) => Boolean(ALL_COLORIZED_EQUATIONS[patentId]?.length),
@@ -57,7 +61,14 @@ describe("executable project coverage manifest", () => {
     expect(new Set(manifest.map((row) => row.patentId)).size).toBe(102);
     expect(manifest.every((row) => row.source.pinnedFacsimile)).toBe(true);
     expect(manifest.filter((row) => row.source.reviewedLedger)).toHaveLength(99);
-    expect(manifest.filter((row) => row.source.archivalEdition === "published")).toHaveLength(89);
+    expect(manifest.filter((row) => row.source.archivalEdition === "published")).toHaveLength(50);
+    expect(manifest.filter((row) => row.source.publication.state === "accepted")).toHaveLength(50);
+    expect(
+      manifest.every(
+        (row) =>
+          row.source.publication.acceptedFigureCount <= row.source.publication.requiredFigureCount,
+      ),
+    ).toBe(true);
     expect(manifest.every((row) => row.presentation.explicitVisualDispatch)).toBe(true);
     expect(manifest.every((row) => row.presentation.defaultTelemetryOwner === "typescript")).toBe(
       true,

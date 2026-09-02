@@ -33,4 +33,18 @@ describe("DualProjectionViewer component", () => {
     expect(html).toContain("Dual Split-Screen");
     expect(html).toContain("Print Broadside");
   });
+
+  test("renders placeholder when archival edition is held in original-spec view mode", () => {
+    const originalHtml = renderToStaticMarkup(
+      <DualProjectionViewer
+        patent={wrightFlyerPatent}
+        colorizedEquations={getColorizedEquationsForPatent(wrightFlyerPatent.id)}
+        initialView="original-spec"
+      />,
+    );
+
+    expect(originalHtml).toContain('data-archival-publication-state="held"');
+    expect(originalHtml).toContain("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+    expect(originalHtml).toContain("Open Complete Original PDF");
+  });
 });

@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { CuratedSpecificationBlock, CuratedSpecificationInline } from "@/types/patent";
 import { validateCuratedSpecificationEdition } from "../archivalEditionValidation";
+import { metcalfeEthernetPatent } from "../patents/metcalfe-ethernet";
 import {
   validateReviewedTranscription,
   validateReviewedTranscriptionEditorialIntegrity,
@@ -30,10 +31,7 @@ describe("US 4,063,220 Multipoint Data Communication System (Ethernet) archival 
     const editionValidation = validateCuratedSpecificationEdition(metcalfeEthernetArchivalEdition);
     expect(editionValidation.valid).toBe(true);
 
-    const published = archivalEditionForPublication({
-      id: "us-4063220-metcalfe-ethernet",
-      archivalEdition: metcalfeEthernetArchivalEdition,
-    });
+    const published = archivalEditionForPublication(metcalfeEthernetPatent);
     expect(published).toBeDefined();
     expect(published?.sourcePdfSha256).toBe(
       "3bd400ad08a604c1911f554f3bda8ddc4a64923170760736fde6bd481e5ec928",

@@ -1,3 +1,7 @@
+import type {
+  ArchivalPublicationDecision,
+  ArchivalPublicationStateKind,
+} from "../src/data/editions/archivalPublicationState";
 import type { Patent } from "../src/types/patent";
 
 export const PATENT_E2E_LOG_SCHEMA = "classic-patents.e2e-event.v1" as const;
@@ -20,6 +24,18 @@ export interface PatentE2EScenario {
   route: string;
   pdfUrl: string;
   sourceState: PatentE2ESourceState;
+  sourcePublicationState: ArchivalPublicationStateKind;
+  sourceReasonCode: string;
+  sourceDecision: {
+    completeFacsimileReviewed: boolean;
+    ledgerKind: string | undefined;
+    ledgerReviewer: string | null;
+    ledgerReviewedAt: string | null;
+    digestParity: "matching" | "mismatched" | "unavailable";
+    requiredFigureCount: number;
+    acceptedFigureCount: number;
+    evidenceReferences: readonly string[];
+  };
   claimCount: number;
   drawingCount: number;
   hasReviewedLedger: boolean;
@@ -86,6 +102,7 @@ export interface PatentE2EOptions {
 
 interface ScenarioFacts {
   isEditionPublished: (patent: Patent) => boolean;
+  publicationDecision?: (patent: Patent) => ArchivalPublicationDecision;
   assetExists?: (publicUrl: string) => boolean;
   equationIdsForPatent?: (patent: Patent) => readonly string[];
   claimProbeCountForPatent?: (patent: Patent) => number;
@@ -127,13 +144,37 @@ export function buildPatentE2EScenarios(
       );
     }
 
+    const decision = facts.publicationDecision?.(patent);
+    const isPublished = decision?.isPublished ?? facts.isEditionPublished(patent);
     return {
       patentId: patent.id,
       patentNumber: patent.patentNumber,
       title: patent.shortTitle,
       route: `/patents/${patent.id}`,
       pdfUrl: patent.originalPdfUrl,
-      sourceState: facts.isEditionPublished(patent) ? "published" : "withheld",
+      sourceState: isPublished ? "published" : "withheld",
+      sourcePublicationState:
+        decision?.state.kind ??
+        (isPublished ? "accepted" : patent.archivalEdition ? "candidate" : "facsimile-only"),
+      sourceReasonCode:
+        decision?.reasonCode ??
+        (isPublished
+          ? "ACCEPTED"
+          : patent.archivalEdition
+            ? "UNSPECIFIED_HOLD"
+            : "NO_EDITION_BOUND"),
+      sourceDecision: {
+        completeFacsimileReviewed:
+          decision?.reviewerAttestation.completeFacsimileReviewed ??
+          patent.archivalEdition?.completeFacsimileReviewed === true,
+        ledgerKind: decision?.state.evidence.ledger.kind ?? patent.originalTextAsset?.kind,
+        ledgerReviewer: decision?.state.evidence.ledger.reviewer ?? null,
+        ledgerReviewedAt: decision?.state.evidence.ledger.reviewedAt ?? null,
+        digestParity: decision?.state.evidence.digestParity ?? "unavailable",
+        requiredFigureCount: decision?.figureManifest.requiredFigureCount ?? 0,
+        acceptedFigureCount: decision?.figureManifest.acceptedFigureCount ?? 0,
+        evidenceReferences: decision?.state.evidence.evidenceReferences ?? [patent.id],
+      },
       claimCount: patent.claims.length,
       drawingCount: patent.drawings.length,
       hasReviewedLedger: patent.originalTextAsset?.kind === "reviewed-transcription",

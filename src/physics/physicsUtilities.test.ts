@@ -134,6 +134,10 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-588-ericsson-propeller"]).toContain(
       "no measured ship thrust",
     );
+    expect(energyChannelsFor("us-36836-gatling-gun", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-36836-gatling-gun"]).toContain(
+      "no measured operator torque",
+    );
     expect(energyChannelsFor("us-400766-hall-aluminium", {})[0]).toMatchObject({
       name: "Cell",
       tone: "in",
