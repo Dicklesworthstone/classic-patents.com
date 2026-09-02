@@ -158,4 +158,16 @@ describe("coltRevolverArchivalEdition", () => {
       "#division-5-drawing",
     );
   });
+
+  test("accepts publication with all 61 figure occurrences bound to source locators", () => {
+    const { evaluateArchivalPublicationState } = require("./publicationApproval");
+    const decision = evaluateArchivalPublicationState(coltRevolverPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.status).toBe("published");
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest.requiredFigureCount).toBe(61);
+    expect(decision.figureManifest.acceptedFigureCount).toBe(61);
+    expect(decision.figureManifest.attestation?.matchesLocators).toBe(true);
+    expect(decision.figureManifest.attestation?.matchesEdition).toBe(true);
+  });
 });

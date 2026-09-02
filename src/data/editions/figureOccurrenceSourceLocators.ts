@@ -289,6 +289,35 @@ function clavelDeltaRobotLocator(args: {
  * to the same exact v3 source crop, so the repeated occurrence is mapped
  * explicitly rather than inferred from its filename.
  */
+const COLT_REVOLVER_SOURCE_RASTER = { width: 4800, height: 6800 } as const;
+const COLT_REVOLVER_EVIDENCE_REFERENCE =
+  "docs/provenance/us-x9430-colt-revolver.md#exact-source-locators";
+
+function coltRevolverLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  activeAsset: string;
+  sourcePdfPage: number;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: COLT_REVOLVER_SOURCE_RASTER.width,
+    height: COLT_REVOLVER_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    sourceRaster: COLT_REVOLVER_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      COLT_REVOLVER_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-18",
+    evidenceReference: COLT_REVOLVER_EVIDENCE_REFERENCE,
+  };
+}
+
 export const FIGURE_OCCURRENCE_SOURCE_LOCATORS = {
   "us-135245-pasteur-fermentation": [
     pasteurLocator({
@@ -305,6 +334,313 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS = {
       occurrenceKey: figureOccurrenceKey(12, 0, 1),
       activeAsset: "/patents/figures/us-135245-pasteur-fermentation/figure-2-v3.png",
       sourceRectPixels: { x: 710, y: 1770, width: 900, height: 750 },
+    }),
+  ],
+  "us-x9430-colt-revolver": [
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(1, 0, 1),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+      sourcePdfPage: 2,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(7, 0, 0),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-1-pistol-source-crop-v2.png",
+      sourcePdfPage: 1,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(7, 0, 2),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+      sourcePdfPage: 2,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(7, 0, 4),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-1-pistol-source-crop-v2.png",
+      sourcePdfPage: 1,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(7, 0, 6),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(7, 0, 8),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+      sourcePdfPage: 2,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(7, 0, 10),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+      sourcePdfPage: 2,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(7, 0, 12),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(7, 0, 14),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(7, 0, 16),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+      sourcePdfPage: 2,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(7, 0, 18),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-5-combination-source-crop-v2.png",
+      sourcePdfPage: 2,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(8, 0, 0),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(8, 0, 2),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(9, 0, 0),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(10, 0, 0),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(10, 0, 2),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(11, 0, 0),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(11, 0, 2),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(12, 0, 0),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(12, 0, 2),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(12, 0, 4),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(12, 0, 6),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(12, 0, 8),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(12, 0, 10),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(12, 0, 12),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(12, 0, 14),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(12, 0, 16),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(12, 0, 18),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(13, 0, 0),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(13, 0, 2),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(13, 0, 4),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(13, 0, 6),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(13, 0, 8),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(13, 0, 10),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(13, 0, 12),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(13, 0, 14),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(13, 0, 16),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(13, 0, 18),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(13, 0, 20),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+      sourcePdfPage: 2,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(14, 0, 0),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 0),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 2),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 4),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+      sourcePdfPage: 2,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 6),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 8),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      sourcePdfPage: 3,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 10),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 12),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+      sourcePdfPage: 2,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(16, 0, 1),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+      sourcePdfPage: 2,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(16, 0, 3),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(16, 0, 5),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+      sourcePdfPage: 2,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(17, 0, 1),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(20, 0, 0),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(20, 0, 2),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(20, 0, 4),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(20, 0, 6),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(20, 0, 8),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(20, 0, 10),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(20, 0, 12),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(20, 0, 14),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(20, 0, 16),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+      sourcePdfPage: 4,
+    }),
+    coltRevolverLocator({
+      occurrenceKey: figureOccurrenceKey(21, 0, 1),
+      activeAsset: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      sourcePdfPage: 4,
     }),
   ],
   "us-4976582-clavel-delta-robot": [

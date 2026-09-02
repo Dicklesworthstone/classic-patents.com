@@ -244,6 +244,28 @@ describe("InteractiveDiagramViewer React rendering", () => {
       expect(source).toContain('{isLinearFigure ? "13" : "2"}');
       expect(source).toContain("ACTUATOR HOUSINGS 13 · TRANSLATING MEMBERS 24");
 
+      const renderOnlyFigure = (figureNumber: string) => {
+        const drawing = patent.drawings.find((candidate) => candidate.figureNumber === figureNumber);
+        if (!drawing) throw new Error(`Clavel Figure ${figureNumber} fixture is missing`);
+        return renderToStaticMarkup(
+          React.createElement(InteractiveDiagramViewer, {
+            drawings: [drawing],
+            patentId: patent.id,
+            patentNumber: patent.patentNumber,
+          }),
+        );
+      };
+      const figureTwo = renderOnlyFigure("2");
+      expect(figureTwo).toContain('data-clavel-delta-figure-2-drive="claim-9-movable-member"');
+      expect(figureTwo).toContain("11 ON 8 · CLAIM 9");
+      expect(figureTwo).not.toContain(">14</text>");
+
+      const figureFive = renderOnlyFigure("5");
+      expect(figureFive).toContain("ACTUATOR HOUSINGS 13 · TRANSLATING MEMBERS 24");
+      expect(figureFive).toContain(">13</text>");
+      expect(figureFive).toContain(">24</text>");
+      expect(figureFive).not.toContain(">2</text>");
+
       setPatentPhysicsParam(patent.id, "armOneInput", 0.55);
       expect(renderFrame()).not.toBe(baseline);
 
