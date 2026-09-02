@@ -180,8 +180,8 @@ describe("executable project coverage manifest", () => {
   });
 
   test("all 3D studios now have an updater or a typed snapshot path", () => {
-    expect(manifest.filter((row) => row.runtime.sharedBus === "updater")).toHaveLength(47);
-    expect(manifest.filter((row) => row.runtime.sharedBus === "snapshot")).toHaveLength(56);
+    expect(manifest.filter((row) => row.runtime.sharedBus === "updater")).toHaveLength(48);
+    expect(manifest.filter((row) => row.runtime.sharedBus === "snapshot")).toHaveLength(55);
     expect(manifest.filter((row) => row.runtime.sharedBus === "missing")).toHaveLength(0);
     for (const patentId of ["us-194047-otto-engine", "us-6594844-roomba"]) {
       const promotedOwner = manifest.find((row) => row.patentId === patentId);

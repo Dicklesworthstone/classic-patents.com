@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { FrankenSimEngine } from "@/physics/engine";
+import { computeFermiNeutronFluxField } from "@/physics/fieldTextures";
 import { buildFermiReactorModel, updateFermiReactorKinematics } from "./fermiReactorModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
@@ -37,6 +38,34 @@ describe("US 2,708,656 Enrico Fermi Chicago Pile-1 Nuclear Reactor visual & kine
     expect(modelSource).not.toContain("Math.random");
     expect(threeSource).not.toContain("Math.random");
     expect(threeSource).not.toContain("performance.now()");
+  });
+
+  test("reuses color and field storage throughout the frame-update hot path", () => {
+    const modelSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "fermiReactorModel.ts"),
+      "utf8",
+    );
+    const updateSource = modelSource.slice(
+      modelSource.indexOf("export function updateFermiReactorKinematics"),
+    );
+    const model = buildFermiReactorModel();
+    const emissive = model.uraniumFuelMat.emissive;
+    const fluxField = model.neutronFluxField;
+
+    updateFermiReactorKinematics(model, 1 / 60, 80, 0.99, 99.5, 1, 2, 0.2, true);
+    expect(model.uraniumFuelMat.emissive).toBe(emissive);
+    expect(model.uraniumFuelMat.emissive.getHex()).toBe(0x22c55e);
+    expect(model.neutronFluxField).toBe(fluxField);
+
+    updateFermiReactorKinematics(model, 1 / 60, 90, 1.01, 99.5, 1, 2.2, 0.8, true);
+    expect(model.uraniumFuelMat.emissive).toBe(emissive);
+    expect(model.uraniumFuelMat.emissive.getHex()).toBe(0xf97316);
+    expect(model.neutronFluxField).toBe(fluxField);
+    expect(computeFermiNeutronFluxField(1.01, 0.2, 16, fluxField)).toBe(fluxField);
+    expect(updateSource).not.toContain("new THREE.Color");
+    expect(updateSource).not.toContain("new Float32Array");
+
+    model.dispose();
   });
 
   test("exposes authentic camera presets and UI overlay for nuclear pile observation", () => {

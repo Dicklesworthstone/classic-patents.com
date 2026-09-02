@@ -364,8 +364,10 @@ export function computeFermiNeutronFluxField(
   keff: number,
   rodInsertion: number,
   gridSize = 32,
+  target?: Float32Array,
 ): Float32Array {
-  const grid = new Float32Array(gridSize * gridSize);
+  const cellCount = gridSize * gridSize;
+  const grid = target?.length === cellCount ? target : new Float32Array(cellCount);
   const fluxScale = Math.max(0.1, Math.min(1.0, keff > 1.0 ? 0.6 + (keff - 1.0) * 8 : 0.6 * keff));
   const rodSuppression = Math.max(0, Math.min(1, rodInsertion));
 

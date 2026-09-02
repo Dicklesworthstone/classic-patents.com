@@ -96,7 +96,7 @@ The live, searchable catalogue at [classic-patents.com](https://classic-patents.
 │                   TYPED PHYSICS & TELEMETRY OWNER BUS                  │
 │  • 103/103 typed-host default owners with explicit live equations      │
 │  • 3 patent-specific + 0 interpretive + 40 generic WASM surfaces       │
-│  • 47 ticking bus updaters + 56 typed snapshot publishers              │
+│  • 48 ticking bus updaters + 55 typed snapshot publishers              │
 │  • TS fallback and cold-start placeholder provenance remain explicit   │
 │  • Typed WASM refusal where exposed; host validation everywhere else   │
 └────────────────────────────────────────────────────────────────────────┘
