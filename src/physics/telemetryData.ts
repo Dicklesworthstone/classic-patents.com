@@ -3292,33 +3292,38 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     governingEquation:
       "\\Delta F_b = \\rho_{\\text{water}} \\cdot g \\cdot \\Delta V_{\\text{air}} \\quad \\text{and} \\quad \\Delta d = \\frac{\\Delta F_b}{\\rho g A_{\\text{waterplane}}}",
     engineMethod: "FrankenSimEngine.stepLincolnBuoy",
+    pedagogicalInsight:
+      "US 6,469 claims the combination of expansible side chambers, sliding spars D fixed to chamber bottoms, and a main shaft C with ropes/pulleys to expand chambers into the water to lessen vessel draft; numerical tonnage and draft values are illustrative hydrostatic parameters.",
     controls: [
       {
         id: "inflationPct",
-        label: "Air Bellows Inflation",
+        label: "Chamber Expansion / Inflation",
         min: 0,
         max: 100,
         step: 1,
         defaultValue: 75,
         unit: "%",
+        provenance: "source-disclosed",
       },
       {
         id: "weightTons",
-        label: "Steamboat Weight",
+        label: "Illustrative Steamboat Displacement",
         min: 200,
         max: 600,
         step: 10,
         defaultValue: 380,
         unit: "T",
+        provenance: "scenario-modern",
       },
       {
         id: "shoalDepth",
-        label: "Riverbed Shoal Water Depth",
+        label: "Illustrative Shoal Water Depth",
         min: 2.0,
         max: 12.0,
         step: 0.1,
         defaultValue: 3.5,
         unit: "ft",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (p) => {
@@ -3334,11 +3339,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
 
       return [
         {
+          label: "Chamber Operating State",
+          value: (p.inflationPct ?? 75) > 10 ? "EXPANDED DISPLACEMENT" : "CONTRACTED STOWED",
+          badgeColor: "emerald",
+          unit: "topology",
+          primary: true,
+          provenance: "source-disclosed",
+        },
+        {
           label: "Buoyant Lift Force",
           value: liftKn.toString(),
           unit: "kN",
           badgeColor: "cyan",
           progressPct: clampProgress((liftKn / 450) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Draft Reduction",
@@ -3346,6 +3360,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "ft",
           badgeColor: "emerald",
           progressPct: clampProgress((Number(draftRedFt) / 3.0) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Shoal Keel Clearance",
@@ -3353,6 +3368,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "ft",
           badgeColor: Number(clearanceFt) > 0 ? "emerald" : "rose",
           progressPct: Math.min(100, Math.max(0, (Number(clearanceFt) + 1.5) * 35)),
+          provenance: "scenario-modern",
         },
         {
           label: "Displaced Air Volume",
@@ -3360,6 +3376,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "m³",
           badgeColor: "indigo",
           progressPct: clampProgress((Number(volM3) / 45) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Hull Draft",
@@ -3367,18 +3384,18 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "d",
           badgeColor: "amber",
           progressPct: clampProgress((buoy.hullDraftFt / 8) * 100),
+          provenance: "scenario-modern",
         },
         {
-          label: "Waterplane",
+          label: "Waterplane Area",
           value: `${buoy.waterplaneAreaSqFt} ft²`,
           unit: "A_wp",
           badgeColor: "cyan",
           progressPct: clampProgress(100),
+          provenance: "scenario-modern",
         },
       ];
     },
-    pedagogicalInsight:
-      "Waterproof bellows affixed to the steamboat hull expand downwards via geared shaft linkages, displacing hundreds of cubic feet of river water to float the grounded hull over shallow sandbars.",
   },
   // Preserved source-bound model. Publication remains held pending independent
   // figure-crop review; metrics describe only the illustrated record system.
@@ -5504,6 +5521,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.2,
         defaultValue: 2.5,
         unit: "MPH",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics: (p) => {
@@ -5514,30 +5532,35 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: `${reaper.groundWheelRpm} RPM`,
           unit: "n_wheel",
           badgeColor: "amber",
+          provenance: "scenario-modern",
         },
         {
           label: "30:9 × 27:9 Crank",
           value: `${reaper.cutterCrankRpm} RPM`,
           unit: "n_crank",
           badgeColor: "cyan",
+          provenance: "scenario-modern",
         },
         {
           label: "13-inch to 12-inch Reel Belt",
           value: `${reaper.reelRpm} RPM`,
           unit: "n_reel",
           badgeColor: "emerald",
+          provenance: "scenario-modern",
         },
         {
           label: "Ground Speed",
           value: `${reaper.groundSpeedMps} m/s`,
           unit: "v",
           badgeColor: "cyan",
+          provenance: "scenario-reader",
         },
         {
           label: "Cutter Frequency",
           value: `${reaper.cutterHz} Hz`,
           unit: "f_cut",
           badgeColor: "purple",
+          provenance: "scenario-modern",
         },
       ];
     },
@@ -5560,6 +5583,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 12,
         unit: "V",
+        provenance: "scenario-reader",
       },
       {
         id: "loadTorque",
@@ -5569,6 +5593,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.1,
         defaultValue: 0.8,
         unit: "N·m",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics: (p) => {
@@ -5585,6 +5610,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "omega",
           badgeColor: "cyan",
           progressPct: clampProgress((rpm / 900) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Shaft Power Output",
@@ -5592,11 +5618,12 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "P_out",
           badgeColor: "amber",
           progressPct: clampProgress((powerW / 120) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },
     pedagogicalInsight:
-      "Davenport's split-ring commutator reverses the polarity of the cross-arm electromagnets every half revolution, producing continuous rotation against permanent stator shoes.",
+      "Davenport's fixed copper contact plates and revolving magnet wires reverse the polarity of the cross-arm electromagnets every half revolution, producing continuous rotation against stationary field magnets.",
   },
   "us-588-ericsson-propeller": {
     domain: "aerodynamics_mbd",
@@ -7282,6 +7309,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 25,
         defaultValue: 750,
         unit: "°C",
+        provenance: "scenario-reader",
       },
       {
         id: "roastTimeHours",
@@ -7291,6 +7319,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: 2.5,
         unit: "hrs",
+        provenance: "scenario-reader",
       },
       {
         id: "ashBatchKg",
@@ -7300,6 +7329,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 25,
         defaultValue: 200,
         unit: "kg",
+        provenance: "scenario-reader",
       },
       {
         id: "waterTempC",
@@ -7309,6 +7339,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 80,
         unit: "°C",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics: (p) => {
@@ -7325,6 +7356,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "K₂CO₃",
           badgeColor: "emerald",
           progressPct: clampProgress((hopkins.pearlAshYieldKg / 50) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Carbon Combustion",
@@ -7332,6 +7364,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "η_comb",
           badgeColor: "amber",
           progressPct: clampProgress(hopkins.decarbonizationPct),
+          provenance: "scenario-modern",
         },
         {
           label: "Potash Purity",
@@ -7339,6 +7372,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "purity",
           badgeColor: "cyan",
           progressPct: clampProgress(hopkins.pearlAshPurityPct),
+          provenance: "scenario-modern",
         },
         {
           label: "Dissolved K₂CO₃",
@@ -7346,6 +7380,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "conc",
           badgeColor: "purple",
           progressPct: clampProgress((hopkins.leyConcentrationGpl / 200) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },
@@ -9376,6 +9411,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: MESTRAL_VELCRO_DEFAULTS.filamentDiameterMm,
         unit: "mm",
+        provenance: "scenario-reader",
       },
       {
         id: "hookLengthMm",
@@ -9385,6 +9421,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.1,
         defaultValue: MESTRAL_VELCRO_DEFAULTS.hookLengthMm,
         unit: "mm",
+        provenance: "scenario-reader",
       },
       {
         id: "hookDensityPerCm2",
@@ -9394,6 +9431,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 4,
         defaultValue: MESTRAL_VELCRO_DEFAULTS.hookDensityPerCm2,
         unit: "cm⁻²",
+        provenance: "scenario-reader",
       },
       {
         id: "peelAngleDeg",
@@ -9403,6 +9441,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: MESTRAL_VELCRO_DEFAULTS.peelAngleDeg,
         unit: "deg",
+        provenance: "scenario-reader",
       },
       {
         id: "heatSettingTempC",
@@ -9412,6 +9451,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: MESTRAL_VELCRO_DEFAULTS.heatSettingTempC,
         unit: "°C",
+        provenance: "scenario-reader",
       },
       {
         id: "appliedShearForceN",
@@ -9421,6 +9461,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: MESTRAL_VELCRO_DEFAULTS.appliedShearForceN,
         unit: "N",
+        provenance: "scenario-reader",
       },
       {
         id: "appliedPeelRateMmS",
@@ -9430,6 +9471,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 2,
         defaultValue: MESTRAL_VELCRO_DEFAULTS.appliedPeelRateMmS,
         unit: "mm/s",
+        provenance: "scenario-reader",
       },
       {
         id: "engagementRatio",
@@ -9439,6 +9481,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.05,
         defaultValue: MESTRAL_VELCRO_DEFAULTS.engagementRatio,
         unit: "ratio",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics: (params: Record<string, number>) => {
@@ -9451,6 +9494,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "F_hook",
           badgeColor: "cyan",
           progressPct: clampProgress((tel.singleHookReleaseForceN / 0.1) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "In-Plane Shear Capacity",
@@ -9458,6 +9502,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "τ_max",
           badgeColor: "emerald",
           progressPct: clampProgress((tel.shearStressCapacityN_Cm2 / 80) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Peel Force (1-in Tape)",
@@ -9465,6 +9510,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "F_peel",
           badgeColor: "amber",
           progressPct: clampProgress((tel.totalPeelForceN / 8) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Shear/Peel Anisotropy",
@@ -9472,6 +9518,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "α_aniso",
           badgeColor: "purple",
           progressPct: clampProgress((tel.forceAnisotropyRatio / 40) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Shape Retention",
@@ -9479,6 +9526,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "ϕ_set",
           badgeColor: "indigo",
           progressPct: clampProgress(tel.thermalRetentionFraction * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Peeling Power",
@@ -9486,6 +9534,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "P_peel",
           badgeColor: "rose",
           progressPct: clampProgress((tel.peelDisengagementPowerWatts / 0.1) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },

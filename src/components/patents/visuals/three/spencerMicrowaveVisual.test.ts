@@ -96,7 +96,9 @@ describe("US 2,495,429 Percy Spencer Microwave Cavity Magnetron visual & RF phys
     const { spencerMicrowavePatent } = require("@/data/patents/spencer-microwave");
     const { spencerMicrowaveArchivalEdition } = require("@/data/editions/spencerMicrowaveEdition");
     expect(spencerMicrowavePatent.claims.length).toBe(6);
-    const editionClaims = spencerMicrowaveArchivalEdition.blocks.filter((b: any) => b.kind === "claim");
+    const editionClaims = spencerMicrowaveArchivalEdition.blocks.filter(
+      (b: any) => b.kind === "claim",
+    );
     expect(editionClaims.length).toBe(6);
 
     for (const claim of spencerMicrowavePatent.claims) {
@@ -121,7 +123,10 @@ describe("US 2,495,429 Percy Spencer Microwave Cavity Magnetron visual & RF phys
   });
 
   test("binds energy output to honest omission reason without synthetic wattage", () => {
-    const { energyChannelsFor, ENERGY_CHANNEL_OMISSION_REASONS } = require("@/physics/energyChannels");
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
     expect(energyChannelsFor("us-2495429-spencer-microwave", {})).toEqual([]);
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-2495429-spencer-microwave"]).toContain(
       "supplies no continuous electrical power input",

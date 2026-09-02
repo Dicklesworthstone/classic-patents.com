@@ -1151,14 +1151,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-132-davenport-electric-motor",
-      claimTitle: "Electromagnetic Commutating Rotor and Stationary Stator Magnets",
+      claimTitle: "Application of Magnetic and Electro-Magnetic Power as a Moving Principle",
       activeDescription:
-        "Claim 1 alternates the polarity of rotating electromagnets via a split-ring commutator against stationary magnets to generate rotary torque.",
+        "Claim 1 applies magnetic and electro-magnetic power as a moving principle for machinery by changing the polarity of rotating galvanic magnets via contact plates as they pass stationary artificial magnets, producing continuous rotary motion.",
       invertedDescription:
-        "Non-commutated electromagnet: rotor rotates 90° to maximum magnetic alignment and locks permanently in place with zero continuous rotation.",
-      failureModeName: "Static Magnetic Alignment Stall (Zero Continuous Torque)",
+        "Without polarity-changing position contact against stationary poles, the revolving galvanic magnets align once with the field magnets and stall in static equilibrium with zero continuous rotary motion.",
+      failureModeName: "Static Magnetic Quiescence & Stall (No Rotary Power)",
       historicalPriorArt:
-        "Early electromagnetic devices (Henry, Ritchie) produced oscillating rocker or clicking motion rather than practical rotary power.",
+        "Prior apparatus produced rocking, reciprocating, or oscillatory motions without applying electro-magnetic polarity switching as a continuous rotary moving principle for machinery.",
     },
   ],
   "us-588-ericsson-propeller": [

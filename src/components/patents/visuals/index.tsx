@@ -4,6 +4,7 @@ import { Activity, Sparkles } from "lucide-react";
 // 3D WebGL Physics Simulators
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 // 2D Vector Schematics & Dynamic Simulators
 
@@ -880,6 +881,11 @@ interface PatentVisualDispatcherProps {
 const renderModeMemory = new Map<string, "3d-physics" | "vector-diagram">();
 
 export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps) {
+  // This is deliberately read-only instrumentation. The visual modules and the
+  // telemetry badge own their own subscriptions, while the dispatcher makes
+  // the shared transport tick observable to browser acceptance tests without
+  // inventing a second control path.
+  const { tick: physicsTick, lastChange } = usePatentPhysics(patentId);
   const [renderMode, setRenderMode] = useState<"3d-physics" | "vector-diagram">(
     () => renderModeMemory.get(patentId) ?? "3d-physics",
   );
@@ -895,6 +901,8 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
       data-testid="patent-visual-dispatcher"
       data-patent-id={patentId}
       data-render-mode={renderMode}
+      data-physics-tick={physicsTick}
+      data-physics-last-change={lastChange?.id ?? ""}
     >
       {/* 3D vs 2D Toggle Switcher */}
       <div className="flex justify-end">

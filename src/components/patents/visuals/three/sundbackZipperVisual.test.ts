@@ -70,7 +70,9 @@ describe("US 1,219,881 Gideon Sundback Separable Fastener visual & kinematics bo
     const { sundbackZipperPatent } = require("@/data/patents/sundback-zipper");
     const { sundbackZipperArchivalEdition } = require("@/data/editions/sundbackZipperEdition");
     expect(sundbackZipperPatent.claims.length).toBe(11);
-    const editionClaims = sundbackZipperArchivalEdition.blocks.filter((b: any) => b.kind === "claim");
+    const editionClaims = sundbackZipperArchivalEdition.blocks.filter(
+      (b: any) => b.kind === "claim",
+    );
     expect(editionClaims.length).toBe(11);
 
     for (const claim of sundbackZipperPatent.claims) {
@@ -95,7 +97,10 @@ describe("US 1,219,881 Gideon Sundback Separable Fastener visual & kinematics bo
   });
 
   test("binds energy output to honest omission reason without synthetic wattage", () => {
-    const { energyChannelsFor, ENERGY_CHANNEL_OMISSION_REASONS } = require("@/physics/energyChannels");
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
     expect(energyChannelsFor("us-1219881-sundback-zipper", {})).toEqual([]);
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-1219881-sundback-zipper"]).toContain(
       "supplies no continuous slider pull velocity",

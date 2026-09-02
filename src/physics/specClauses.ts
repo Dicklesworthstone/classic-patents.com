@@ -1456,7 +1456,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-x1-hopkins-potash") {
-    const t = params.furnaceTempC ?? 850;
+    const t = params.roastTempC ?? params.furnaceTempC ?? 750;
     return [
       {
         id: "pearl-ash",

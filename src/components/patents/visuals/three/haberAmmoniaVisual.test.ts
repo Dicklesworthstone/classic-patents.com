@@ -108,7 +108,10 @@ describe("US 971,501 Fritz Haber Ammonia Synthesis Visual Boundary", () => {
   });
 
   test("binds energy output to honest omission reason without synthetic wattage", () => {
-    const { energyChannelsFor, ENERGY_CHANNEL_OMISSION_REASONS } = require("@/physics/energyChannels");
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
     expect(energyChannelsFor("us-971501-haber-ammonia", {})).toEqual([]);
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-971501-haber-ammonia"]).toContain(
       "no continuous mechanical or electrical power consumption",

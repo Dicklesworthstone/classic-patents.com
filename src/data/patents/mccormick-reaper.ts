@@ -1,6 +1,16 @@
 import { mccormickReaperArchivalEdition } from "@/data/editions/mccormickReaperEdition";
 import type { Patent } from "@/types/patent";
 
+function manualClaimText(number: number): string {
+  const block = mccormickReaperArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`McCormick manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const mccormickReaperPatent: Patent = {
   id: "us-x8277-mccormick-reaper",
   patentNumber: "US X8277",
@@ -22,7 +32,7 @@ export const mccormickReaperPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/USX8277/en",
   usptoClassification: "A01D 34/02 (Mowers; Harvesting machines; Cutters)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-x8277-mccormick-reaper.txt",
+    url: "/patents/transcripts/us-x8277-mccormick-reaper-reviewed.txt",
     pageCount: 3,
     kind: "reviewed-transcription",
     reviewedBy: "Classic Patents editorial agent (PurpleSummit)",
@@ -113,8 +123,7 @@ export const mccormickReaperPatent: Patent = {
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "My claim is for the arrangement of the several parts so as to constitute the above-described machine, and I particularly claim the method of cutting by means of a vibrating blade operated by a crank having the edge either smooth or with teeth, either with stationary wires or pieces above and below, and projecting before it, for the purpose of staying or supporting the grain whilst cutting; or using a double crank, and another blade or vibrating bar, as before described, having projections before the blade or cutter on the upper side, both working in contrary directions, thereby lessening the friction and liability to wear, by dividing the motion necessary for one between the two, and improving the principle of cutting by gathering and holding the grain to the cutter, the projections standing at a proper angle to said cutter; also the method of securing them.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "This first, unnumbered claim reaches the claimed machine arrangement and the cutting system: a crank-driven moving blade with either a smooth or toothed edge, supports placed above and below and ahead of it, and the alternative of two oppositely moving cutting elements. The described function is to keep grain in position while cutting while dividing motion to reduce friction and wear.",
       keyInnovations: [
@@ -126,8 +135,7 @@ export const mccormickReaperPatent: Patent = {
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "I also claim the method of gathering and bringing the grain back to the cutter, and delivering it on the apron or platform by means of a reel, as described above, movable to any height required to suit the grain, and the platform to hold the grain until a sufficient quantity shall have been collected for a sheaf, more or less; likewise the mode of changing the machine for cutting either high or low, as described above; also the method of dividing and keeping separate the grain to be cut from that to be left standing, and the method of attaching the tongue, when behind, to the breast of the horse, to enable him to guide the machine with accuracy.",
+      originalText: manualClaimText(2),
       plainEnglish:
         "This second, unnumbered claim covers the gathering and delivery system: an adjustable-height reel sends grain to the cutter and platform, which holds it until a sheaf can be raked away. It also names the cutter-height adjustment, the divider separating cut from standing grain, and the behind-the-horse tongue attachment used to guide the machine.",
       keyInnovations: [

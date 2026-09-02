@@ -334,3 +334,13 @@ export const lincolnBuoyParallelReadings: Readonly<Record<number, readonly strin
     "The printed execution names A. Lincoln and witnesses Z. C. Robbins and H. H. Sylvester. The witnesses attest execution; the source does not present them as co-inventors.",
   ],
 };
+
+export function manualLincolnClaimText(claimNumber: number): string {
+  const claimBlock = lincolnBuoyArchivalEdition.blocks.find(
+    (b) => b.kind === "claim" && b.number === claimNumber,
+  );
+  if (claimBlock?.kind !== "claim") {
+    throw new Error(`Claim ${claimNumber} not found in Lincoln Buoy archival edition`);
+  }
+  return claimBlock.inlines.map((inl) => inl.text).join("");
+}

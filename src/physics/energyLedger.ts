@@ -767,10 +767,11 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
+    case "us-x1-hopkins-potash":
     case "us-1-hopkins-potash": {
-      const kilnTempC = params.kilnTempC ?? 650.0;
-      const ashMassKg = params.ashMassKg ?? 50.0;
-      thermal = ashMassKg * 850.0 * (kilnTempC - 20.0); // Leached wood ash furnace thermal capacity
+      const kilnTempC = params.roastTempC ?? params.kilnTempC ?? 750.0;
+      const ashMassKg = params.ashBatchKg ?? params.ashMassKg ?? 200.0;
+      thermal = ashMassKg * 840.0 * (kilnTempC - 20.0); // Leached wood ash furnace thermal capacity
       powerIn = 8500.0; // Hardwood combustion heat input
       dissipated = 8200.0; // Radiative furnace flue gas dissipation
       break;

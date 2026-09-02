@@ -1,5 +1,5 @@
 import type { Patent } from "@/types/patent";
-import { lincolnBuoyArchivalEdition } from "../editions/lincolnBuoyEdition";
+import { lincolnBuoyArchivalEdition, manualLincolnClaimText } from "../editions/lincolnBuoyEdition";
 
 export const lincolnBuoyPatent: Patent = {
   id: "us-6469-lincoln-buoy",
@@ -23,7 +23,7 @@ export const lincolnBuoyPatent: Patent = {
   usptoClassification: "B63B 43/14 (Vessels; buoyancy tanks)",
   archivalEdition: lincolnBuoyArchivalEdition,
   originalTextAsset: {
-    url: "/patents/transcripts/us-6469-lincoln-buoy.txt",
+    url: "/patents/transcripts/us-6469-lincoln-buoy-reviewed.txt",
     pageCount: 3,
     kind: "reviewed-transcription",
     reviewedBy: "Classic Patents editorial agent (codex-juliet)",
@@ -96,8 +96,7 @@ The buoyant chambers A, A, which I employ, are constructed in such a manner that
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "What I claim as my invention and desire to secure by letters patent, is the combination of expansible buoyant chambers placed at the sides of a vessel, with the main shaft or shafts C, by means of the sliding spars or shafts D, which pass down through the buoyant chambers and are made fast to their bottoms, and the series of ropes and pullies, or their equivalents, in such a manner that by turning the main shaft or shafts in one direction, the buoyant chambers will be forced downwards into the water and at the same time expanded and filled with air for buoying up the vessel by the displacement of water; and by turning the shaft in an opposite direction, the buoyant chambers will be contracted into a small space and secured against injury.",
+      originalText: manualLincolnClaimText(1),
       plainEnglish:
         "Claim 1 covers the combination, not buoyancy in the abstract: expansible chambers at vessel sides; main shaft C; sliding spars D fixed to the chamber bottoms; and ropes and pulleys or equivalents. Rotation in one direction must drive the chambers down, expand them, and fill them with air to buoy the vessel by water displacement; reverse rotation must contract and protect them.",
       keyInnovations: [

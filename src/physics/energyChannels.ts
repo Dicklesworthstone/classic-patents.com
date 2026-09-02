@@ -12,7 +12,6 @@ import {
   stepEdisonBulb,
   stepEdisonPhonograph,
   stepEinsteinRefrigerator,
-  stepHaberAmmonia,
   stepHallAluminium,
   stepHewittMercuryLamp,
   stepMaimanRubyLaser,
@@ -31,9 +30,11 @@ import {
 import { stepCortPuddlingRolling } from "./cortKernel";
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
+import { stepHopkinsPotash } from "./hopkinsPotashKernel";
 import { readKamenSegwayControls, stepKamenSegwaySi } from "./kamenSegwayKernel";
 import { readKamenTransporterControls, stepKamenTransporterSi } from "./kamenTransporterKernel";
 import { stepRenoEscalator } from "./machineKernels";
+import { readMestralVelcroControls, stepMestralVelcroSi } from "./mestralVelcroKernel";
 import { stepRillieuxEvaporator } from "./rillieuxEvaporatorKernel";
 import { readWattRotaryControls, stepWattRotaryEngine } from "./wattRotaryKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
@@ -115,6 +116,10 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 1,219,881 specifies the mechanical geometry of corded edge tapes, stamped interlocking scoops, and the Y-slider cam, but supplies no continuous slider pull velocity, friction coefficient, or power datum from which an SI energy channel can be derived.",
   "us-2495429-spencer-microwave":
     "US 2,495,429 specifies dual magnetron oscillators feeding a common hollow waveguide over a conveyor, but supplies no continuous electrical power input, magnetron efficiency, tube voltage, or cooling dissipation datum from which an SI energy channel can be derived.",
+  "us-6469-lincoln-buoy":
+    "US 6,469 specifies expansible buoyant side chambers, sliding spars D, and main shaft C with ropes and pulleys for vessel draft reduction, but supplies no shaft horsepower, steam engine wattage, manual cranking rate, or continuous power datum from which an SI energy channel can be derived.",
+  "us-x8277-mccormick-reaper":
+    "US X8277 specifies the mechanical kinematic gear train (30:9 and 27:9 tooth ratios), ground-wheel diameter, reel pulley, and cutting blades, but supplies no draft horse pull force, sickle cutting resistance, ground rolling resistance, or continuous power consumption datum from which an authentic SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -345,16 +350,6 @@ export function energyChannelsFor(
       { name: "Manual Crank", watts: crankWatts, tone: "in" },
       { name: "Saw-Tooth Work", watts: crankWatts * 0.72, tone: "useful" },
       { name: "Grate Friction", watts: crankWatts * 0.28, tone: "loss" },
-    ];
-  }
-
-  if (patentId === "us-x8277-mccormick-reaper") {
-    const reaper = stepMcCormickReaper({ forwardSpeedMph: params.forwardSpeedMph });
-    const draftWatts = reaper.groundSpeedMps * 280; // Draft resistance force ~280 N
-    return [
-      { name: "Horse Draft", watts: draftWatts, tone: "in" },
-      { name: "Sickle Cutting", watts: draftWatts * 0.65, tone: "useful" },
-      { name: "Terrain Drag", watts: draftWatts * 0.35, tone: "loss" },
     ];
   }
 
@@ -703,11 +698,18 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-x1-hopkins-potash") {
-    const roastW = 2400;
+    const hopkins = stepHopkinsPotash({
+      roastTempC: params.roastTempC ?? params.furnaceTempC,
+      roastTimeHours: params.roastTimeHours,
+      ashBatchKg: params.ashBatchKg,
+      waterTempC: params.waterTempC,
+    });
+    const roastHours = params.roastTimeHours ?? 2.5;
+    const roastW = Math.max(100, Math.round(hopkins.thermalEnergyJoules / (roastHours * 3600)));
     return [
       { name: "Combustion Fire", watts: roastW, tone: "in" },
-      { name: "Pearlash Carbon Burnout", watts: roastW * 0.7, tone: "useful" },
-      { name: "Flue Convection Loss", watts: roastW * 0.3, tone: "loss" },
+      { name: "Pearlash Carbon Burnout & Evap", watts: roastW * 0.7, tone: "useful" },
+      { name: "Flue & Vessel Convection Loss", watts: roastW * 0.3, tone: "loss" },
     ];
   }
 
@@ -717,15 +719,6 @@ export function energyChannelsFor(
       { name: "Autoclave Steam Heat", watts: steamW, tone: "in" },
       { name: "Polymer Crosslinking Enthalpy", watts: steamW * 0.65, tone: "useful" },
       { name: "Vessel Thermal Radiation", watts: steamW * 0.35, tone: "loss" },
-    ];
-  }
-
-  if (patentId === "us-6469-lincoln-buoy") {
-    const liftW = 850;
-    return [
-      { name: "Air Chamber Expansion Work", watts: liftW, tone: "in" },
-      { name: "Hydrostatic Displacement Lift", watts: liftW * 0.82, tone: "useful" },
-      { name: "Bellows Flap Drag Loss", watts: liftW * 0.18, tone: "loss" },
     ];
   }
 
@@ -936,9 +929,9 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-2717437-mestral-velcro") {
-    const peelRateMmS = params.appliedPeelRateMmS ?? 10.0;
-    const totalPeelN = params.totalPeelForceN ?? 2.1;
-    const totalPeelW = Math.max(0.005, totalPeelN * (peelRateMmS / 1000));
+    const controls = readMestralVelcroControls(params);
+    const tel = stepMestralVelcroSi(controls);
+    const totalPeelW = tel.peelDisengagementPowerWatts;
     return [
       { name: "Manual Peeling Traction Input", watts: totalPeelW, tone: "in" },
       {

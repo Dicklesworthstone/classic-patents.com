@@ -73,6 +73,9 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-36836-gatling-gun",
       "us-971501-haber-ammonia",
       "us-1219881-sundback-zipper",
+      "us-2495429-spencer-microwave",
+      "us-6469-lincoln-buoy",
+      "us-x8277-mccormick-reaper",
     ]);
   });
 
