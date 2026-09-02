@@ -51,7 +51,10 @@ export default function SundbackZipper3D({
 
     const studio = createThreeStudioScene({
       container: containerRef.current,
-      cameraPos: [0, 1.5, 14],
+      // The unseparated chain is 12 units long. This is an overview, not the
+      // tooth-detail camera, so retain both end stops and give the slider room
+      // to travel without leaving the frame.
+      cameraPos: [0, 0, 20],
       targetPos: [0, 0, 0],
       environmentStyle: "studio",
       enableFloorGrid: true,

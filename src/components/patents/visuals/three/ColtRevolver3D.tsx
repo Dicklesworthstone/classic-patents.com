@@ -40,7 +40,10 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [4.5, 2.8, 9.5], target: [1.2, 0.0, 0] },
+  // The Paterson spans roughly fifteen studio units from grip to muzzle. Keep
+  // the overview far enough back to show that full claimed assembly before a
+  // visitor selects one of the close mechanical views.
+  iso: { pos: [5.6, 3.4, 15.4], target: [1.2, 0.0, 0] },
   cylinder: { pos: [0.0, 1.8, 4.2], target: [0.0, 0.2, 0] },
   lockwork: { pos: [-2.2, 0.8, 3.8], target: [-1.8, -0.4, 0] },
   sightline: { pos: [-5.2, 1.38, 0.0], target: [6.0, 1.25, 0.0] },
