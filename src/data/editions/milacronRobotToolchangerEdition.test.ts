@@ -156,4 +156,36 @@ describe("US 4,512,709 Cincinnati Milacron Robot Toolchanger Archival Edition Co
     }
     expect(milacronRobotToolchangerPatent.historicalContext.patentWars).toEqual([]);
   });
+
+  test("provides valid provenance classifications for all Milacron controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-4512709-milacron-robot-toolchanger"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("wires claim 1 and claim 4 constraints in claimConstraints", () => {
+    const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
+    const r1 = applyClaimConstraintModifications(
+      "us-4512709-milacron-robot-toolchanger",
+      {},
+      { 1: false, 4: true },
+    );
+    expect(r1.modifiedParams.lockingSlideFraction).toBe(0);
+    expect(r1.refusalWarning).toContain("TOOL RETENTION LOSS");
+
+    const r4 = applyClaimConstraintModifications(
+      "us-4512709-milacron-robot-toolchanger",
+      {},
+      { 1: true, 4: false },
+    );
+    expect(r4.modifiedParams.claimFourTMember).toBe(0);
+    expect(r4.activeFailures[0]).toContain("Claim 4 Geometry Not Selected");
+  });
 });

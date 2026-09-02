@@ -8933,6 +8933,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 1,
         unit: "absent / present",
+        provenance: "scenario-reader",
       },
       {
         id: "registrationFraction",
@@ -8942,6 +8943,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: 1,
         unit: "normalized state",
+        provenance: "scenario-reader",
       },
       {
         id: "lockingSlideFraction",
@@ -8951,6 +8953,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: 1,
         unit: "aligned → capture",
+        provenance: "scenario-reader",
       },
       {
         id: "claimFourTMember",
@@ -8960,6 +8963,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 1,
         unit: "generic → Claim 4",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics: (rawParams) => {
@@ -8971,6 +8975,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "source topology",
           badgeColor: "cyan",
           progressPct: state.toolRetained ? 100 : state.registrationComplete ? 60 : 20,
+          provenance: "source-disclosed",
         },
         {
           label: "Pin Registration",
@@ -8978,6 +8983,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "cylindrical + diamond",
           badgeColor: "amber",
           progressPct: state.registrationFraction * 100,
+          provenance: "source-disclosed",
         },
         {
           label: "Slide Aperture",
@@ -8985,12 +8991,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: state.apertureAligned ? "admission / release" : "retention path",
           badgeColor: state.apertureAligned ? "amber" : "emerald",
           progressPct: state.lockingSlideFraction * 100,
+          provenance: "source-disclosed",
         },
         {
           label: "Quantitative Mechanics",
           value: "refused",
           unit: "no force / stroke / time data",
           badgeColor: "rose",
+          provenance: "refusal-bounded",
         },
       ];
     },

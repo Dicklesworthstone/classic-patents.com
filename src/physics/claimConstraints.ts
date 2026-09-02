@@ -2767,6 +2767,27 @@ export function applyClaimConstraintModifications(
       break;
     }
 
+    case "us-4512709-milacron-robot-toolchanger": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim4Active = claimStates[4] ?? true;
+
+      if (!claim1Active) {
+        modified.lockingSlideFraction = 0;
+        activeFailures.push(
+          "Open-Aperture Release State: With slide aperture left aligned, tool-base member remains in admission path rather than locked capture configuration.",
+        );
+        refusalWarning =
+          "TOOL RETENTION LOSS: Claim 1 transverse locking slide required for positive robot tool capture.";
+      }
+      if (!claim4Active) {
+        modified.claimFourTMember = 0;
+        activeFailures.push(
+          "Claim 4 Geometry Not Selected: Display represents general slide retention without the dependent claim's bifurcated ramp and T-member crossbar geometry.",
+        );
+      }
+      break;
+    }
+
     default:
       break;
   }

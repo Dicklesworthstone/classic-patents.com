@@ -22563,7 +22563,7 @@ ALL_COLORIZED_EQUATIONS["us-6302230-kamen-segway"] = [
   {
     id: "kamen-segway-dynamic-balance-margin",
     patentId: "us-6302230-kamen-segway",
-    title: "Inverted Pendulum Dynamic Balancing & Balancing Margin Headroom",
+    title: "Modern Illustrative Balance Model & Source-Disclosed Margin Relation",
     category: "Robotics & Personal Mechatronics",
     rawLatex:
       "\\tau_{\\text{motor}} = M g L \\sin\\theta + K_v v \\quad \\text{and} \\quad \\text{Margin} = 1 - \\frac{|v|}{v_{\\text{max}}} - \\frac{|\\tau|}{\\tau_{\\text{max}}}",
@@ -22590,22 +22590,22 @@ ALL_COLORIZED_EQUATIONS["us-6302230-kamen-segway"] = [
         symbol: "\\tau_{\\text{motor}}",
         name: "Restoring Motor Drive Torque",
         color: "sapphire",
-        role: "Net torque applied by dual brushless DC motors to drive wheels beneath the center of gravity",
+        role: "Modern illustrative net drive torque used to teach wheel acceleration beneath a center of gravity",
         unit: "Newton-meters (N·m)",
         dimension: "[M L^2 T^-2]",
         explanation:
-          "Provides the horizontal acceleration required to outrun gravity and maintain dynamic balance.",
+          "A modern illustrative mechanics term. The grant specifies a motorized drive arrangement, not motor topology or torque magnitude.",
       },
       {
         id: "grav_moment",
         symbol: "M g L",
         name: "Gravitational Overturning Coefficient",
         color: "emerald",
-        role: "Total system weight multiplied by center of mass height above wheel axle (~1060 N·m/rad)",
+        role: "Modern illustrative product of system weight and center-of-mass height",
         unit: "Newton-meters (N·m)",
         dimension: "[M L^2 T^-2]",
         explanation:
-          "The destabilizing pendulum moment that attempts to pull the rider downward when leaning.",
+          "The modern-model destabilizing moment. The source says the unpowered system is unstable with respect to tipping but prints no mass or geometry.",
       },
       {
         id: "pitch_lean",
@@ -22616,7 +22616,7 @@ ALL_COLORIZED_EQUATIONS["us-6302230-kamen-segway"] = [
         unit: "Radians (rad) or Degrees (°)",
         dimension: "[1]",
         explanation:
-          "Measured by rate gyroscopes and accelerometers to determine user acceleration command.",
+          "A teaching-state variable. The drawings identify pitch and pitch-rate sensing, but the grant does not specify a sensor implementation or measurement accuracy.",
       },
       {
         id: "margin_ratio",
@@ -22627,7 +22627,7 @@ ALL_COLORIZED_EQUATIONS["us-6302230-kamen-segway"] = [
         unit: "Dimensionless ratio",
         dimension: "[1]",
         explanation:
-          "When this ratio falls below 0.22, the controller activates tactile ripple shudder and pitch pushback.",
+          "Claim 1 defines margin from maximum and present velocity. This normalized ratio and any threshold are modern illustrative values.",
       },
       {
         id: "current_vel",
@@ -22638,25 +22638,25 @@ ALL_COLORIZED_EQUATIONS["us-6302230-kamen-segway"] = [
         unit: "Meters per second (m/s)",
         dimension: "[L T^-1]",
         explanation:
-          "Proportional to rider lean angle during steady-state cruising.",
+          "A modern illustrative state variable rather than a speed performance claim from the grant.",
       },
       {
         id: "max_vel",
         symbol: "v_{\\text{max}}",
         name: "Maximum Allowable Operating Speed",
         color: "emerald",
-        role: "Governor limit ensuring adequate motor voltage reserve for emergency deceleration (~5.5 m/s)",
+        role: "Source-named maximum operating velocity represented by a reader-set modern scenario value",
         unit: "Meters per second (m/s)",
         dimension: "[L T^-1]",
         explanation:
-          "The upper speed boundary beyond which active pitch pushback is enforced.",
+          "Claim 1 names a maximum operating velocity determined by an acceleration requirement; it does not print a numerical limit or tiltback law.",
       },
     ],
     pedagogicalNote:
-      "Dean Kamen's key safety insight in US 6,302,230 was that an inverted pendulum vehicle must never reach motor saturation; the balancing margin monitor enforces a reserve acceleration buffer, warning the rider through haptic platform vibration before stability is lost.",
+      "US 6,302,230 claims a balancing-margin monitor and an alarm, while Claim 2 adds ripple modulation. This equation is a modern illustrative mechanics model; its numerical parameters and control threshold are not asserted to be disclosed by the grant.",
     claimRef: 1,
     historicalSignificance:
-      "Defined the fundamental dynamic balancing margin architecture for the Segway HT and all subsequent self-balancing robotic mobility vehicles.",
+      "The claim record identifies a balancing-margin monitor and an alarm in this vehicle combination. This catalogue entry makes no unreviewed assertion about later products or market adoption.",
   },
 ];
 

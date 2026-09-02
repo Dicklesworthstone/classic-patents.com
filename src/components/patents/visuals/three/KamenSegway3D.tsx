@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { createKamenSegwayModel } from "@/components/patents/visuals/three/kamenSegwayModel";
 import {
   createThreeStudioScene,
@@ -29,6 +30,13 @@ export function KamenSegway3D({ patentId = PATENT_ID }: { patentId?: string }) {
   const tel = useMemo(() => {
     return stepKamenSegwaySi(effectiveControls);
   }, [effectiveControls]);
+  const claimStates = useMemo(
+    () => ({
+      1: effectiveControls.claim1BalanceEnabled,
+      2: effectiveControls.claim2RippleEnabled,
+    }),
+    [effectiveControls.claim1BalanceEnabled, effectiveControls.claim2RippleEnabled],
+  );
 
   // Dynamic references for the render loop
   const controlsRef = useRef(effectiveControls);
@@ -85,9 +93,18 @@ export function KamenSegway3D({ patentId = PATENT_ID }: { patentId?: string }) {
             </h3>
           </div>
           <p className="text-xs text-slate-400 mt-0.5">
-            Real-time 3D WebGL kinematics with rider lean, wheel rotation, speed tiltback, and 18 Hz
-            tactile vibration
+            Source-disclosed automatic-balance and ripple-alarm topology with modern illustrative
+            3D kinematics
           </p>
+          <ClaimConstraintToggle
+            patentId={PATENT_ID}
+            claimStates={claimStates}
+            onToggleClaim={(claimNumber, active) => {
+              const key = claimNumber === 1 ? "claim1BalanceEnabled" : "claim2RippleEnabled";
+              patentPhysics?.updateParam?.(key, active ? 1 : 0);
+            }}
+            className="mt-2"
+          />
         </div>
       </div>
 
@@ -150,7 +167,11 @@ export function KamenSegway3D({ patentId = PATENT_ID }: { patentId?: string }) {
                 tel.tactileAlarmActive ? "text-rose-400 font-bold animate-pulse" : "text-slate-500"
               }
             >
-              {tel.tactileAlarmActive ? "18 Hz SHUDDER" : "OFF"}
+              {tel.claim2RippleWithheld
+                ? "CLAIM 2 WITHHELD"
+                : tel.tactileAlarmActive
+                  ? "RIPPLE ACTIVE"
+                  : "OFF"}
             </span>
           </div>
         </div>
