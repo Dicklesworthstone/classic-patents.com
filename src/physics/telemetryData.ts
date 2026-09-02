@@ -6991,8 +6991,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     ],
     computeMetrics: (p) => {
       const weld = stepThomsonWelding({
-        weldCurrentAmps: p.weldCurrentAmps,
-        clampPressureMpa: p.clampPressureMpa,
+        weldCurrentAmps: p.weldCurrentAmps ?? 4500,
+        clampPressureMpa: p.clampPressureMpa ?? 35,
       });
       const kw = weld.jouleKw;
       const tempC = weld.interfaceTempC;
