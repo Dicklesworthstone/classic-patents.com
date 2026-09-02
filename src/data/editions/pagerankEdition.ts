@@ -256,7 +256,7 @@ export const pagerankArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "heading",
       level: 2,
-      text: "SUMMARY OF THE INVENTION",
+      text: "SUMMARY",
     },
     p(
       "Various aspects of the present invention provide systems and methods for ranking documents in a linked database. One aspect provides an objective ranking based on the relationship between documents. Another aspect of the invention is directed to a technique for ranking documents within a database whose content has a large variation in quality and importance. Another aspect of the present invention is to provide a document ranking method that is scalable and can be applied to extremely large databases such as the World Wide Web. Additional aspects of the invention will become apparent in view of the following description and associated figures.",
