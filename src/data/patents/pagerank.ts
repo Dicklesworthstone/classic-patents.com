@@ -133,7 +133,19 @@ Various aspects of the present invention provide systems and methods for ranking
     ],
     breakthroughInsight:
       "Academic citation indexing (where citations indicate influence) could be adapted to recursive web hyperlink topologies.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Robin Li & RankDex / Baidu",
+        rivalClaim:
+          "Robin Li invented RankDex in 1996 and was granted US Patent No. 5,920,859 in 1999 for hyperlink analysis to score website popularity, claiming earlier priority over Page's 1998 PageRank filing.",
+        conflictDetails:
+          "Li's RankDex scored search results by analyzing anchor text and inbound links. Page and Brin's PageRank introduced a mathematical Markov random walk model where the authority of the linking page recursively weighted the target page.",
+        resolution:
+          "The USPTO determined that PageRank's recursive eigenvector probability distribution constituted a distinct, patentable algorithm, granting US 6,285,999 to Stanford University, which exclusively licensed it to Google.",
+        legalOutcome:
+          "Stanford's PageRank patent provided the intellectual property foundation for Google's search engine, with Stanford earning $336 million when it sold its Google equity in 2005.",
+      },
+    ],
     civilizationalImpact:
       "The source-bounded contribution is a scalable way to rank nodes from directed relationships, not a promise that rank equals truth or traffic. That graph perspective influenced Web search and subsequent network-analysis systems.",
     aftermath:

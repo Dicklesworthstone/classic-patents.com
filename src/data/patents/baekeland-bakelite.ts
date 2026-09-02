@@ -210,7 +210,19 @@ export const baekelandBakelitePatent: Patent = {
     ],
     breakthroughInsight:
       "Separate the water before final hardening, form or compound the intermediate product, and apply heat and pressure in a closed vessel when required so the finished body is hard, insoluble, and infusible.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Sir James Swinburne & Condensite Co. (J.W. Aylsworth)",
+        rivalClaim:
+          "Sir James Swinburne in the UK and J.W. Aylsworth (Condensite Company) in the US developed phenol-formaldehyde resins, filing competing patent claims over curing and molding methods.",
+        conflictDetails:
+          "Baekeland filed multiple patent infringement lawsuits (General Bakelite Co. v. Condensite Co. and General Bakelite Co. v. Redmanol Chemical Products Co.), asserting US Patent No. 942,699 covering pressurized autoclave curing in the 'Bakelizer'.",
+        resolution:
+          "In 1922, the competing companies consolidated under Baekeland's leadership into the Bakelite Corporation (General Bakelite, Condensite, and Redmanol merger).",
+        legalOutcome:
+          "Baekeland's US Patent No. 942,699 was upheld, establishing the Bakelite Corporation as the undisputed synthetic plastics monopoly throughout the 1920s and 1930s.",
+      },
+    ],
     civilizationalImpact:
       "The claimed sequence became an important historical example of turning a phenolic condensation into a formable, hardened material; later applications and commercial histories require separate sources beyond this three-page grant.",
   },

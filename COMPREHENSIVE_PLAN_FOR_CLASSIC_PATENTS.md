@@ -84,7 +84,7 @@ The platform provides:
 
 ## 3. Curated Historical Patents Registry
 
-The platform launches with eight of the most transformative patents across aviation, electricity, telecommunications, computing, materials science, and consumer technology:
+The platform launches with eight of the most transformative patents across aviation, electricity, telecommunications, computing, materials science, and consumer technology. These launch entries remain the reference curriculum below; the live catalogue has since expanded beyond them. `src/data/patents/index.ts` is the canonical live registry, while the README records its current public catalogue count. Every subsequent record, including the Goertz master–slave manipulator below, must satisfy the same complete archival, editorial, physics-boundary, visual, and test contract.
 
 ### 3.1 Orville & Wilbur Wright — Flying Machine
 - **Patent Number**: US 8,21,393
@@ -150,6 +150,14 @@ The platform launches with eight of the most transformative patents across aviat
 - **Plain English Breakdown**: Transforming an uncooperative, cloudy liquid-crystal solution into a fiber 5x stronger than steel on an equal-weight basis through radical molecular chain alignment and dense benzene-ring hydrogen bonding.
 - **Interactive Visual**: Polymer alignment & tensile stress test. Users switch between randomly oriented flexible polymer chains and aligned PPTA crystalline fibrils, applying ballistic tensile strain to observe stress distribution.
 
+### 3.9 Raymond C. Goertz, William M. Thompson & Robert A. Olsen — Electronic Master Slave Manipulator
+- **Patent Number**: US 2,846,084
+- **Grant Date**: August 5, 1958 (Filed June 21, 1955)
+- **Classification**: Robotics / Bilateral Teleoperation
+- **Core Invention**: A paired electrically connected master and slave manipulator with seven corresponding motion channels, synchro-derived position error, reversible motor actuation, tachometer-derived damping, signal limiting, and reflected resistance at the operator’s master handle.
+- **Plain English Breakdown**: How an angular mismatch between corresponding master and slave elements becomes an error signal, how motors reduce that mismatch, and why tachometer feedback plus a limiter help tame response during ordinary and abnormal operating conditions. The document’s arm dimensions, controller gains, payload, motor constants, and bandwidth are not published and must not be inferred.
+- **Interactive Visual**: A 2D/3D seven-channel master–slave topology studio that visualizes normalized correspondence, remote contact mismatch, reflected resistance, limiter state, and derivative branch. It explicitly does not label a WASM/SI performance simulation because the facsimile supplies no quantified physical model for one.
+
 ---
 
 ## 4. The Dual-Projection Engine (The Diptych Model)
@@ -183,6 +191,7 @@ Each curated patent features a custom interactive simulation component located i
 | **Farnsworth TV** | `FarnsworthTVSim.tsx` | Horizontal/Vertical scan line frequency, electron beam deflection coils, image dissector aperture capture, cathode ray CRT raster reconstruction. |
 | **Noyce Planar IC** | `NoycePlanarICSim.tsx` | Layer-by-layer 3D/2D cutaway: Silicon substrate, N/P doped regions, $\text{SiO}_2$ isolation oxide, deposited aluminum interconnects. |
 | **Spencer Microwave** | `SpencerMicrowaveSim.tsx` | RF cavity resonance frequency, water molecule dipole rotation simulator, thermal penetration depth vs surface browning comparison. |
+| **Goertz Master–Slave Manipulator** | `GoertzElectronicMasterSlaveManipulatorSim.tsx` | Seven named master/slave motion channels, normalized position mismatch, bilateral resistance reflection, limiter state, and tachometer derivative branch; source-bound rather than a claimed physical-performance model. |
 | **Kwolek Kevlar** | `KwolekKevlarSim.tsx` | Polymer chain alignment slider (Isotropic vs Liquid Crystalline Nematic), hydrogen bond network density, ballistic impact stress-strain curve. |
 
 ---

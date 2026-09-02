@@ -76,32 +76,46 @@ import {
   zeppelinSchematicCell,
   zeppelinSchematicGondola,
 } from "@/physics/catalogKernels";
+import { stepDevolProgrammedTransfer } from "@/physics/devolProgrammedTransferKernel";
 import { FrankenSimEngine, lamarrSchematicHop, lamarrSchematicStaffY } from "@/physics/engine";
 import { fermiSchematicSlug, stepFermiKinetics } from "@/physics/fermiKinetics";
+import { stepGoertzMasterSlaveTopology } from "@/physics/goertzElectronicMasterSlaveManipulatorKernel";
+import { stepKamenInjectionMechanism } from "@/physics/kamenInjectionKernel";
+import { stepLemelsonManipulatorTopology } from "@/physics/lemelsonAdjustableManipulatorKernel";
+import { stepLemelsonAutomaticProductionTopology } from "@/physics/lemelsonAutomaticProductionKernel";
+import { stepLemelsonWarehouseTopology } from "@/physics/lemelsonWarehouseKernel";
 import {
   ccdSchematicGateX,
   mergenthalerSchematicChuteX,
-  otisSchematicPawl,
-  otisSchematicRailY,
   renoSchematicCleat,
   sholesSchematicTypebar,
   stepCcdWells,
   stepHoweSewingMachine,
   stepMergenthalerLinotype,
-  stepOtisElevator,
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "@/physics/machineKernels";
+import { stepMakinoScaraTopology } from "@/physics/makinoScaraKernel";
+import { stepMilacronRobotToolchanger } from "@/physics/milacronRobotToolchangerKernel";
+import { readOtisTopologyControls, stepOtis1861Topology } from "@/physics/otisKernel";
 import { stepParsonsMarine } from "@/physics/parsonsMarineKernel";
+import { stepRobotEndEffector } from "@/physics/robotEndEffectorKernel";
+import { readSalisburyRobotHandControls } from "@/physics/salisburyRobotHandKernel";
+import { stepStackhouseSourceTopology } from "@/physics/stackhouseSourceKernel";
 import {
   stepTeslaMotorFig9,
   teslaBAt,
-  teslaCoilSiUnits,
   teslaFig4Strobe,
   teslaSchematicPoleRect,
   teslaSchematicStrobeOpacity,
 } from "@/physics/teslaKernel";
+import {
+  TESLA_TRANSFORMER_SCHEMATIC,
+  teslaTransformerSecondaryPath,
+  teslaTransformerSecondaryTerminals,
+} from "@/physics/teslaTransformerKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { stepWatsonRemoteCenterComplianceTopology } from "@/physics/watsonRemoteCenterComplianceKernel";
 import { materialProbe, whitneySamples } from "@/physics/weaveSurfaces";
 import { wrightSchematicPose, wrightWarpFromPointerNx } from "@/physics/wrightKernel";
 import type { PatentDrawing } from "@/types/patent";
@@ -155,6 +169,11 @@ interface InteractiveDiagramViewerProps {
 }
 
 const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
+  [/versatran|3212649|3,212,649/, "amf-versatran"],
+  [/salisbury|4921293|4,921,293/, "salisbury-robot-hand"],
+  [/milacron|4512709|4,512,709/, "milacron-robot-toolchanger"],
+  [/segway|6302230|6,302,230/, "kamen-segway"],
+  [/devol|programmed[- ]transfer|2988.?237/, "devol-programmed-transfer"],
   [/wright|821.?393/, "wright-flyer"],
   [/tesla[- ]coil|533.?367|593.?138/, "tesla-coil"],
   [/tesla|381.?968/, "tesla-motor"],
@@ -227,6 +246,7 @@ const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
  * Phonograph to the bulb (/edison/), and Kilby to Colt (/138/).
  */
 const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
+  "amf-versatran": true,
   "arkwright-water-frame": true,
   "baekeland-bakelite": true,
   "bardeen-transistor": true,
@@ -241,6 +261,7 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "cort-puddling-rolling": true,
   "daimler-engine": true,
   "davenport-motor": true,
+  "devol-programmed-transfer": true,
   "de-forest-audion": true,
   "delaval-separator": true,
   "diesel-engine": true,
@@ -256,6 +277,7 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "gatling-gun": true,
   "glidden-barbed-wire": true,
   "goddard-rocket": true,
+  "goertz-master-slave": true,
   "goodyear-rubber": true,
   "gramme-dynamo": true,
   "haber-ammonia": true,
@@ -263,17 +285,29 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "hollerith-tabulating": true,
   "howe-sewing": true,
   "hyatt-celluloid": true,
+  "hull-stereolithography": true,
   "kilby-ic-components": true,
   "kilby-ic-multivibrator": true,
   "kilby-ic-transistor": true,
+  "kamen-injection-device": true,
+  "kamen-segway": true,
   "kwolek-kevlar": true,
   "lamarr-frequency-hopping": true,
   "lincoln-buoy": true,
+  "makino-scara": true,
+  "robot-end-effector": true,
+  "salisbury-robot-hand": true,
   "linde-air-liquefaction": true,
+  "lemelson-automatic-production": true,
+  "lemelson-adjustable-manipulator": true,
+  "lemelson-adjustable-manipulator-side": true,
+  "lemelson-adjustable-manipulator-control": true,
   "marconi-radio": true,
   "maxim-machine-gun": true,
   "mccormick-reaper": true,
   "mergenthaler-linotype": true,
+  "mestral-velcro": true,
+  "milacron-robot-toolchanger": true,
   "morse-telegraph": true,
   "nobel-dynamite": true,
   "noyce-ic": true,
@@ -288,6 +322,8 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "reno-escalator": true,
   "sholes-typewriter": true,
   "spencer-microwave": true,
+  "stackhouse-manipulator": true,
+  "sundback-zipper": true,
   "tesla-coil": true,
   "tesla-motor": true,
   "tesla-teleautomaton": true,
@@ -299,6 +335,7 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "watt-separate-condenser": true,
   "westinghouse-air-brake": true,
   "whitney-cotton-gin": true,
+  "watson-remote-center-compliance": true,
   "wozniak-apple": true,
   "wright-flyer": true,
   "zeppelin-airship": true,
@@ -654,86 +691,125 @@ function _renderHistoricalSchematic(
       );
     }
     case "tesla-coil": {
-      const coil = teslaCoilSiUnits(180, 15, 0);
+      const coil = TESLA_TRANSFORMER_SCHEMATIC;
+      const secondaryPath = teslaTransformerSecondaryPath();
+      const secondaryTerminals = teslaTransformerSecondaryTerminals();
+      const commonNodeConnected = (params?.claim1CommonNodeConnected ?? 1) >= 0.5;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
-            x={coil.schematicBaseX}
-            y={coil.schematicBaseY}
-            width={coil.schematicBaseW}
-            height={coil.schematicBaseH}
+            x={coil.baseX}
+            y={coil.baseY}
+            width={coil.baseWidth}
+            height={coil.baseHeight}
             rx="3"
             fill="#334155"
             stroke="#94a3b8"
           />
-          <line
-            x1={coil.schematicPostX0}
-            y1={coil.schematicPostY0}
-            x2={coil.schematicPostX0}
-            y2={coil.schematicPostY1}
-            stroke="#f59e0b"
-            strokeWidth="3"
-          />
-          <line
-            x1={coil.schematicPostX1}
-            y1={coil.schematicPostY0}
-            x2={coil.schematicPostX1}
-            y2={coil.schematicPostY1}
-            stroke="#f59e0b"
-            strokeWidth="3"
-          />
           <path
-            d={coil.schematicBellD}
+            d={coil.coneSupportPath}
             fill="#1e3a8a"
-            fillOpacity="0.3"
+            fillOpacity="0.18"
             stroke="#60a5fa"
             strokeWidth="2"
           />
-          <ellipse
-            cx={coil.schematicToploadCx}
-            cy={coil.schematicToploadCy}
-            rx={coil.schematicToploadRx}
-            ry={coil.schematicToploadRy}
+          <path d={secondaryPath} stroke="#fbbf24" strokeWidth="2.5" />
+          <path d={coil.primaryWindingPath} stroke="#f59e0b" strokeWidth="3" />
+          <line x1="58" y1="220" x2="82" y2="220" stroke="#f59e0b" strokeWidth="3" />
+          <line x1="110" y1="220" x2="330" y2="220" stroke="#f59e0b" strokeWidth="3" />
+          {commonNodeConnected ? (
+            <line
+              x1={secondaryTerminals.low.x}
+              y1={secondaryTerminals.low.y}
+              x2={coil.commonNodeX}
+              y2={coil.commonNodeY}
+              stroke="#fbbf24"
+              strokeWidth="2"
+            />
+          ) : (
+            <>
+              <line
+                x1={secondaryTerminals.low.x}
+                y1={secondaryTerminals.low.y}
+                x2="218"
+                y2={coil.commonNodeY}
+                stroke="#fbbf24"
+                strokeWidth="2"
+              />
+              <line x1="242" y1="220" x2="330" y2="220" stroke="#fbbf24" strokeWidth="2" />
+              <circle cx="218" cy="220" r="4" fill="#be123c" stroke="#fb7185" />
+              <circle cx="242" cy="220" r="4" fill="#be123c" stroke="#fb7185" />
+              <text x="230" y="211" fill="#fb7185" fontSize="8" textAnchor="middle">
+                open
+              </text>
+            </>
+          )}
+          <circle cx={coil.commonNodeX} cy={coil.commonNodeY} r="5" fill="#f59e0b" />
+          <line
+            x1={coil.commonNodeX}
+            y1={coil.commonNodeY}
+            x2={coil.earthX}
+            y2={coil.earthY - 12}
+            stroke="#22c55e"
+            strokeWidth="2.5"
+          />
+          <line
+            x1={coil.earthX - 14}
+            y1={coil.earthY - 12}
+            x2={coil.earthX + 14}
+            y2={coil.earthY - 12}
+            stroke="#22c55e"
+          />
+          <line
+            x1={coil.earthX - 9}
+            y1={coil.earthY - 6}
+            x2={coil.earthX + 9}
+            y2={coil.earthY - 6}
+            stroke="#22c55e"
+          />
+          <line
+            x1={coil.earthX - 4}
+            y1={coil.earthY}
+            x2={coil.earthX + 4}
+            y2={coil.earthY}
+            stroke="#22c55e"
+          />
+          <line
+            x1={secondaryTerminals.high.x}
+            y1={secondaryTerminals.high.y}
+            x2={coil.highTerminalX}
+            y2={coil.highTerminalY}
+            stroke="#fbbf24"
+            strokeWidth="2"
+          />
+          <circle
+            cx={coil.highTerminalX}
+            cy={coil.highTerminalY}
+            r={coil.highTerminalRadius}
             fill="#d97706"
-            fillOpacity="0.4"
             stroke="#f59e0b"
             strokeWidth="2"
           />
-          <line
-            x1={coil.schematicSecondaryX}
-            y1={coil.schematicSecondaryY0}
-            x2={coil.schematicSecondaryX}
-            y2={coil.schematicSecondaryY1}
-            stroke="#fbbf24"
-            strokeWidth="2.5"
-          />
-          <circle
-            cx={coil.schematicSparkX0}
-            cy={coil.schematicSparkY}
-            r={coil.schematicSparkR}
-            fill="#ef4444"
-          />
-          <circle
-            cx={coil.schematicSparkX1}
-            cy={coil.schematicSparkY}
-            r={coil.schematicSparkR}
-            fill="#ef4444"
-          />
-          <line
-            x1={coil.schematicSparkX0 + coil.schematicSparkDx}
-            y1={coil.schematicSparkY}
-            x2={coil.schematicSparkX1 - coil.schematicSparkDx}
-            y2={coil.schematicSparkY}
-            stroke="#f87171"
-            strokeDasharray="2 2"
-          />
+          <circle cx={coil.primarySourceX} cy="220" r="5" fill="#38bdf8" />
+          <text x="205" y="50" fill="#fbbf24" fontSize="10" fontFamily="monospace">
+            remote high terminal
+          </text>
+          <text x="215" y="125" fill="#fbbf24" fontSize="11" fontFamily="monospace">
+            B
+          </text>
+          <text x="292" y="205" fill="#f59e0b" fontSize="11" fontFamily="monospace">
+            C
+          </text>
+          <text x="314" y="214" fill="#22c55e" fontSize="8" fontFamily="monospace">
+            common / earth
+          </text>
         </g>
       );
     }
     case "edison-bulb": {
       const bulb = stepEdisonBulb({
         voltage: params?.voltage ?? 110,
-        filamentLength: params?.filamentLength ?? 22,
+        hotResistanceOhm: params?.hotResistanceOhm,
       });
       const filamentTemp = bulb.filamentTempK;
       const _glowOpacity = edisonSchematicGlowOpacity(filamentTemp);
@@ -746,14 +822,11 @@ function _renderHistoricalSchematic(
             stroke="#eab308"
             strokeWidth="2"
           />
-          <path d={bulb.schematicBaseD} fill="#64748b" stroke="#94a3b8" />
-          <line
-            x1={bulb.schematicFootX1}
-            y1={bulb.schematicFootY}
-            x2={bulb.schematicFootX2}
-            y2={bulb.schematicFootY}
-            stroke="#94a3b8"
-          />
+          <path d={bulb.schematicHolderD} fill="#cbd5e1" fillOpacity="0.18" stroke="#94a3b8" />
+          <path d={bulb.schematicLeftLeadD} stroke="#dbe4ea" strokeWidth="2" />
+          <path d={bulb.schematicRightLeadD} stroke="#dbe4ea" strokeWidth="2" />
+          <path d={bulb.schematicExternalLeftLeadD} stroke="#b86132" strokeWidth="2" />
+          <path d={bulb.schematicExternalRightLeadD} stroke="#b86132" strokeWidth="2" />
           <path d={bulb.schematicFilamentD} stroke="#f59e0b" strokeWidth="3" fill="none" />
           {bulb.schematicTerminalXs.map((_: number, i: number) => {
             const t = edisonSchematicTerminal(
@@ -1365,7 +1438,7 @@ function _renderHistoricalSchematic(
       );
     }
     case "howe-sewing": {
-      const howe = stepHoweSewingMachine(300, 120, 3.5);
+      const howe = stepHoweSewingMachine(300, 65, 3.5);
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
@@ -2156,117 +2229,140 @@ function _renderHistoricalSchematic(
       );
     }
     case "otis-elevator": {
-      const tension = params?.cableTension ?? 100;
-      const otis = stepOtisElevator({ cableTensionPct: tension });
-      const isCut = otis.isSnapped;
-      const springBow = otis.schematicSpringBowPx;
-      const pawlExt = otis.schematicPawlExtPx;
+      const otis = stepOtis1861Topology(readOtisTopologyControls(params ?? {}));
+      const platformY = 166 - otis.platformPositionNormalized * 54;
+      const counterY = 166 - otis.counterpoisePositionNormalized * 54;
+      const pawlExtension = otis.pawlsFEngaged ? 9 : 2;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          <line
-            x1={otis.schematicRailLeftX}
-            y1={otis.schematicRailY0}
-            x2={otis.schematicRailLeftX}
-            y2={otis.schematicRailY1}
-            stroke="#64748b"
+          {/* H/I/J/K/L/N and both guided belts remain one drive train. */}
+          <circle cx="92" cy="174" r="18" stroke="#94a3b8" strokeWidth="5" />
+          <text x="92" y="178" fill="#f8fafc" fontSize="9" textAnchor="middle">
+            H
+          </text>
+          <line x1="32" y1="112" x2="174" y2="112" stroke="#64748b" strokeWidth="5" />
+          {[52, 103, 154].map((x, index) => (
+            <g key={x}>
+              <circle
+                cx={x}
+                cy="112"
+                r="13"
+                stroke={index === 1 ? "#f59e0b" : "#64748b"}
+                strokeWidth="4"
+              />
+              <text x={x} y="115" fill="#f8fafc" fontSize="8" textAnchor="middle">
+                {["J", "L", "K"][index]}
+              </text>
+            </g>
+          ))}
+          <circle cx="103" cy="39" r="22" stroke="#94a3b8" strokeWidth="5" />
+          <text x="103" y="43" fill="#f8fafc" fontSize="9" textAnchor="middle">
+            N
+          </text>
+          <path
+            d="M 81 39 L 90 112 L 116 112 L 125 39 Z"
+            stroke={otis.straightBeltOWorking ? "#22c55e" : "#64748b"}
             strokeWidth="3"
           />
-          <line
-            x1={otis.schematicRailRightX}
-            y1={otis.schematicRailY0}
-            x2={otis.schematicRailRightX}
-            y2={otis.schematicRailY1}
-            stroke="#64748b"
+          <path
+            d="M 83 31 L 116 121 M 123 31 L 90 121"
+            stroke={otis.crossBeltPWorking ? "#22c55e" : "#64748b"}
             strokeWidth="3"
           />
-          {Array.from({ length: otis.schematicRailCount }, (_, i) => {
-            const y = otisSchematicRailY(i, otis.schematicRailOriginY, otis.schematicRailPitchY);
-            return (
-              <g key={i}>
-                <polygon
-                  points={`${otis.schematicRailLeftX},${y} ${otis.schematicRailLeftX + otis.schematicToothIn},${y + otis.schematicToothMid} ${otis.schematicRailLeftX},${y + otis.schematicToothH}`}
-                  fill="#94a3b8"
-                  stroke="#cbd5e1"
-                />
-                <polygon
-                  points={`${otis.schematicRailRightX},${y} ${otis.schematicRailRightX - otis.schematicToothIn},${y + otis.schematicToothMid} ${otis.schematicRailRightX},${y + otis.schematicToothH}`}
-                  fill="#94a3b8"
-                  stroke="#cbd5e1"
-                />
-              </g>
-            );
-          })}
-          {!isCut ? (
-            <line
-              x1={otis.schematicRopeX}
-              y1={otis.schematicRopeY0}
-              x2={otis.schematicRopeX}
-              y2={otis.schematicRopeAttachY - springBow}
-              stroke="#f59e0b"
+          <text x="20" y="18" fill="#94a3b8" fontSize="8">
+            N · O · P · I/J/K/L
+          </text>
+
+          {/* S/T/U/V simultaneously controls idle belts and brake Z. */}
+          <line
+            x1={52 + otis.shipperPositionNormalized * 8}
+            y1="78"
+            x2={154 + otis.shipperPositionNormalized * 8}
+            y2="78"
+            stroke="#f59e0b"
+            strokeWidth="5"
+          />
+          <path d="M 75 78 L 42 213" stroke="#d97706" strokeWidth="2.5" />
+          <path d="M 378 30 L 378 204 L 42 194" stroke="#d97706" strokeWidth="2" />
+          <path d="M 42 194 l -8 -10 M 42 194 l 8 -10" stroke="#fbbf24" strokeWidth="2.5" />
+          <path d="M 75 78 L 178 94 L 154 112" stroke="#cbd5e1" strokeWidth="3" />
+          <rect
+            x="145"
+            y={otis.brakeZEngaged ? 94 : 87}
+            width="20"
+            height="7"
+            fill={otis.brakeZEngaged ? "#ef4444" : "#64748b"}
+            stroke="none"
+          />
+          <text x="20" y="224" fill="#f59e0b" fontSize="8">
+            S/m/o/p/q/r · T · U/V · W/X/Y/Z
+          </text>
+
+          {/* A/B/C frame and D/a/d/E/F/f carriage. */}
+          <rect x="226" y="24" width="142" height="12" fill="#6f4b2e" stroke="none" />
+          <rect x="232" y="24" width="12" height="185" fill="#6f4b2e" stroke="none" />
+          <rect x="350" y="24" width="12" height="185" fill="#6f4b2e" stroke="none" />
+          <rect x="220" y="204" width="154" height="16" fill="#6f4b2e" stroke="none" />
+          {Array.from({ length: 10 }, (_, index) => 48 + index * 14).map((y) => (
+            <g key={y} fill="#94a3b8" stroke="none">
+              <path d={`M 244 ${y} l 7 -4 v 8 z`} />
+              <path d={`M 350 ${y} l -7 -4 v 8 z`} />
+            </g>
+          ))}
+          <g transform={`translate(0 ${platformY})`}>
+            <rect x="257" y="0" width="78" height="11" fill="#8b5e34" stroke="none" />
+            <rect x="260" y="-38" width="8" height="38" fill="#64748b" stroke="none" />
+            <rect x="324" y="-38" width="8" height="38" fill="#64748b" stroke="none" />
+            <line x1="296" y1="-53" x2="296" y2="-22" stroke="#f59e0b" strokeWidth="3" />
+            <path
+              d="M 264 -22 L 281 -15 L 296 -22 M 328 -22 L 311 -15 L 296 -22"
+              stroke="#cbd5e1"
               strokeWidth="3"
             />
-          ) : (
+            <line
+              x1="264"
+              y1="-22"
+              x2={264 - pawlExtension}
+              y2="-18"
+              stroke="#f59e0b"
+              strokeWidth="4"
+            />
+            <line
+              x1="328"
+              y1="-22"
+              x2={328 + pawlExtension}
+              y2="-18"
+              stroke="#f59e0b"
+              strokeWidth="4"
+            />
+          </g>
+
+          {/* G and opposite-wound Q/R remain tethered in every state. */}
+          {otis.ropeGTaut ? (
             <path
-              d={`M ${otis.schematicRopeX} ${otis.schematicRopeY0} L ${otis.schematicRopeX - otis.schematicCutDx} ${otis.schematicCutY1} L ${otis.schematicRopeX + otis.schematicCutDx} ${otis.schematicCutY2}`}
-              stroke="#ef4444"
+              d={`M 296 ${platformY - 53} L 296 30 L 268 30 L 92 174`}
+              stroke="#d97706"
               strokeWidth="2.5"
             />
+          ) : (
+            <g stroke="#ef4444" strokeWidth="2.5">
+              <path d={`M 296 ${platformY - 53} L 296 30 L 261 54`} />
+              <path d="M 92 174 L 268 30 L 253 61" />
+            </g>
           )}
-          <rect
-            x={otis.schematicFrameX}
-            y={otis.schematicFrameY}
-            width={otis.schematicFrameW}
-            height={otis.schematicFrameH}
-            stroke="#60a5fa"
-            strokeWidth="2"
-            fill="#1e3a8a"
-            fillOpacity="0.2"
-            rx="3"
-          />
-
-          <path
-            d={`M ${otis.schematicSpringX0} ${otis.schematicSpringY} Q ${otis.schematicRopeX} ${otis.schematicSpringY - springBow} ${otis.schematicSpringX1} ${otis.schematicSpringY}`}
-            stroke="#38bdf8"
-            strokeWidth="4"
-          />
-          {(["left", "right"] as const).map((side) => {
-            const pawl = otisSchematicPawl(
-              side,
-              pawlExt,
-              otis.schematicPawlInnerX0,
-              otis.schematicPawlInnerX1,
-              otis.schematicPawlOuterBase0,
-              otis.schematicPawlOuterBase1,
-              otis.schematicPawlY0,
-              otis.schematicPawlY1,
-            );
-            return (
-              <line
-                key={side}
-                x1={pawl.x1}
-                y1={pawl.y1}
-                x2={pawl.x2}
-                y2={pawl.y2}
-                stroke={isCut ? "#34d399" : "#38bdf8"}
-                strokeWidth="3.5"
-              />
-            );
-          })}
-
-          <text x="200" y="70" fill="#fbbf24" fontSize="9" textAnchor="middle">
-            {!isCut ? "Hoisting Cable" : "Rope Severed"}
-          </text>
-          <text x="200" y="140" fill="#93c5fd" fontSize="9" textAnchor="middle">
-            Cab Platform
+          <path d={`M 92 174 L 342 30 L 342 ${counterY}`} stroke="#38bdf8" strokeWidth="2.5" />
+          <rect x="333" y={counterY} width="18" height="27" fill="#475569" stroke="#38bdf8" />
+          <text x="342" y={counterY + 17} fill="#f8fafc" fontSize="8" textAnchor="middle">
+            R
           </text>
           <text
-            x="200"
-            y="180"
-            fill={isCut ? "#34d399" : "#38bdf8"}
-            fontSize="9"
+            x="286"
+            y="16"
+            fill={otis.freeFallCounterfactual ? "#fb7185" : "#34d399"}
+            fontSize="8"
             textAnchor="middle"
           >
-            {isCut ? "PAWLS LOCKED IN RATCHETS" : "Leaf Spring Bowed Under Tension"}
+            {otis.mechanismMode.toUpperCase()} · G/i · Q/l/R
           </text>
         </g>
       );
@@ -2453,30 +2549,32 @@ function _renderHistoricalSchematic(
     }
     case "maxim-machine-gun": {
       const maxim = stepMaximMachineGun({
-        firingRateRpm: params?.firingRate ?? params?.fireRateRpm,
-        waterJacketLiters: params?.waterLevel,
-        recoilStrokeMm: params?.recoilStroke,
+        cyclePhaseDeg: params?.cyclePhase ?? 0,
+        gasImpulsePct: params?.gasImpulsePct ?? 75,
       });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          <rect
-            x={maxim.schematicJacketX}
-            y={maxim.schematicJacketY}
-            width={maxim.schematicJacketW}
-            height={maxim.schematicJacketH}
-            rx="4"
-            stroke="#60a5fa"
-            fill="#0284c7"
-            fillOpacity="0.25"
-          />
+          {/* Fixed Barrel B */}
           <line
             x1={maxim.schematicBarrelX1}
             y1={maxim.schematicBarrelY}
             x2={maxim.schematicBarrelX2}
             y2={maxim.schematicBarrelY}
             stroke="#e2e8f0"
-            strokeWidth="3"
+            strokeWidth="4"
           />
+          {/* Sliding Muzzle Sleeve l */}
+          <rect
+            x={maxim.schematicSleeveX}
+            y={maxim.schematicSleeveY}
+            width={maxim.schematicSleeveW}
+            height={maxim.schematicSleeveH}
+            rx="3"
+            stroke="#fbbf24"
+            fill="#d97706"
+            fillOpacity="0.3"
+          />
+          {/* Sliding Breech Block C */}
           <rect
             x={maxim.schematicBreechX}
             y={maxim.schematicBreechY}
@@ -2484,37 +2582,46 @@ function _renderHistoricalSchematic(
             height={maxim.schematicBreechH}
             rx="3"
             stroke="#94a3b8"
+            fill="#334155"
+            fillOpacity="0.4"
+          />
+          {/* Reversing Lever Pivot & Bar */}
+          <circle
+            cx={maxim.schematicLeverPivotX}
+            cy={maxim.schematicLeverPivotY}
+            r="4"
+            fill="#38bdf8"
           />
           <line
-            x1={maxim.schematicToggleX0}
-            y1={maxim.schematicToggleY0}
-            x2={maxim.schematicToggleX1}
-            y2={maxim.schematicToggleY1}
+            x1={maxim.schematicSleeveX}
+            y1={maxim.schematicSleeveY + 15}
+            x2={maxim.schematicLeverPivotX}
+            y2={maxim.schematicLeverPivotY}
             stroke="#fbbf24"
-            strokeWidth="4"
+            strokeWidth="3"
             strokeLinecap="round"
           />
-          <line
-            x1={maxim.schematicToggleX1}
-            y1={maxim.schematicToggleY1}
-            x2={maxim.schematicToggleX2}
-            y2={maxim.schematicToggleY2}
+          {/* Crankshaft e & Volute Spring k */}
+          <circle
+            cx={maxim.schematicCrankCx}
+            cy={maxim.schematicCrankCy}
+            r={maxim.schematicCrankR}
             stroke="#fbbf24"
-            strokeWidth="4"
-            strokeLinecap="round"
+            strokeWidth="2"
           />
           <circle
-            cx={maxim.schematicToggleCx}
-            cy={maxim.schematicToggleCy}
-            r={maxim.schematicToggleR}
-            fill="#fbbf24"
+            cx={maxim.schematicCrankCx}
+            cy={maxim.schematicCrankCy}
+            r={maxim.schematicSpringR}
+            stroke="#4ade80"
+            strokeWidth="1.5"
+            strokeDasharray="4 2"
           />
-          <path d={maxim.schematicFuseeD} stroke="#4ade80" strokeWidth="2" strokeDasharray="3 2" />
-          <text x="130" y="110" fill="#93c5fd" fontSize="9" textAnchor="middle">
-            Water Jacket (4L)
+          <text x="320" y="90" fill="#fbbf24" fontSize="9" textAnchor="middle">
+            Sleeve l (Forward)
           </text>
-          <text x="280" y="70" fill="#fbbf24" fontSize="9" textAnchor="middle">
-            Toggle-Lock Linkage
+          <text x="100" y="80" fill="#4ade80" fontSize="9" textAnchor="middle">
+            Volute Spring k & Crank e
           </text>
         </g>
       );
@@ -6046,6 +6153,2378 @@ function _renderHistoricalSchematic(
             textAnchor="middle"
           >
             {marine.directionLabel.toUpperCase()} · valves select the topology
+          </text>
+        </g>
+      );
+    }
+    case "devol-programmed-transfer": {
+      const state = stepDevolProgrammedTransfer(params ?? {});
+      const maximum = 2 ** state.bitWidth - 1;
+      const matchColor = state.coincidence ? "#86efac" : "#fbbf24";
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <defs>
+            <marker
+              id="devol-schematic-arrow"
+              viewBox="0 0 10 10"
+              refX="8"
+              refY="5"
+              markerWidth="4"
+              markerHeight="4"
+              orient="auto"
+            >
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
+            </marker>
+          </defs>
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#c7d2fe"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            PROGRAM DRUM 40 · CLAIM 1 CODE COMPARISON
+          </text>
+          <rect x="36" y="65" width="92" height="74" rx="10" fill="#312e81" stroke="#818cf8" />
+          <text x="82" y="90" textAnchor="middle" fill="#e0e7ff" fontSize="9">
+            DRUM 40
+          </text>
+          <text
+            x="82"
+            y="116"
+            textAnchor="middle"
+            fill="#c7d2fe"
+            fontSize="13"
+            fontFamily="monospace"
+          >
+            {state.recordedCode.map((bit) => (bit ? "1" : "0")).join("")}
+          </text>
+          <path d="M 130 102 H 167" markerEnd="url(#devol-schematic-arrow)" />
+          <rect x="170" y="62" width="76" height="80" rx="10" fill="#0c4a6e" stroke="#38bdf8" />
+          <text x="208" y="87" textAnchor="middle" fill="#e0f2fe" fontSize="8">
+            MATCH 100
+          </text>
+          <text
+            x="208"
+            y="113"
+            textAnchor="middle"
+            fill={matchColor}
+            fontSize="14"
+            fontFamily="monospace"
+          >
+            {state.matchingBits}/{state.bitWidth}
+          </text>
+          <path d="M 248 102 H 283" markerEnd="url(#devol-schematic-arrow)" />
+          <rect x="286" y="59" width="72" height="94" rx="8" fill="#172554" stroke="#67e8f9" />
+          <rect x="305" y="88" width="34" height="26" rx="4" fill="#0f172a" stroke="#fbbf24" />
+          <path d="M 322 114 V 137 M 310 137 H 334" stroke="#fbbf24" strokeWidth="3" />
+          <text x="322" y="48" textAnchor="middle" fill="#e0f2fe" fontSize="8">
+            HEAD 10a / 44
+          </text>
+          <rect x="45" y="202" width="310" height="42" rx="6" fill="#0f172a" stroke="#475569" />
+          <text x="60" y="221" fill="#bae6fd" fontSize="8">
+            ENCODER 50
+          </text>
+          {state.sensedCode.map((bit, index) => {
+            const x = 144 + index * 30;
+            return (
+              <g key={index}>
+                <rect
+                  x={x}
+                  y="209"
+                  width="20"
+                  height="20"
+                  rx="3"
+                  fill={bit ? "#22d3ee" : "#1e293b"}
+                  stroke={state.recordedCode[index] === bit ? "#86efac" : "#fb7185"}
+                />
+                <text
+                  x={x + 10}
+                  y="223"
+                  textAnchor="middle"
+                  fill={bit ? "#082f49" : "#94a3b8"}
+                  fontSize="8"
+                >
+                  {bit ? "1" : "0"}
+                </text>
+              </g>
+            );
+          })}
+          <text x="200" y="270" textAnchor="middle" fill="#fda4af" fontSize="8">
+            {state.traversalMode.replaceAll("-", " ")} · code slots only; no source-backed geometry,
+            rate, or load
+          </text>
+          <text x="200" y="287" textAnchor="middle" fill="#94a3b8" fontSize="7">
+            sensed {state.sensedSlot}/{maximum} · {state.programPhase} · gripper{" "}
+            {state.gripperState}
+          </text>
+        </g>
+      );
+    }
+    case "makino-scara": {
+      const pose = stepMakinoScaraTopology(params ?? {});
+      const toSvg = ([x, y]: readonly [number, number]): readonly [number, number] => [
+        200 + x * 92,
+        155 - y * 92,
+      ];
+      const [firstBaseX, firstBaseY] = toSvg(pose.firstBase);
+      const [fourthBaseX, fourthBaseY] = toSvg(pose.fourthBase);
+      const [firstOuterX, firstOuterY] = toSvg(pose.firstOuterJoint);
+      const [fourthOuterX, fourthOuterY] = toSvg(pose.fourthOuterJoint);
+      const [toolX, toolY] = toSvg(pose.tool);
+      const toolTipX = toolX + Math.cos(pose.toolAttitudeRad) * 33;
+      const toolTipY = toolY - Math.sin(pose.toolAttitudeRad) * 33;
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#bae6fd"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            CLAIM {pose.independentClaim} · {pose.topology.replace("claim-", "").replace("-", " ")}
+          </text>
+          <line
+            x1="46"
+            y1={firstBaseY}
+            x2="354"
+            y2={firstBaseY}
+            stroke="#334155"
+            strokeDasharray="4 4"
+          />
+          <rect
+            x={Math.min(firstBaseX, fourthBaseX) - 26}
+            y={firstBaseY - 10}
+            width={Math.abs(fourthBaseX - firstBaseX) + 52}
+            height="20"
+            rx="3"
+            fill="#172554"
+            stroke="#60a5fa"
+          />
+          <line
+            x1={firstBaseX}
+            y1={firstBaseY}
+            x2={firstOuterX}
+            y2={firstOuterY}
+            stroke="#67e8f9"
+            strokeWidth="5"
+          />
+          <line
+            x1={fourthBaseX}
+            y1={fourthBaseY}
+            x2={fourthOuterX}
+            y2={fourthOuterY}
+            stroke="#fbbf24"
+            strokeWidth="5"
+          />
+          <line
+            x1={firstOuterX}
+            y1={firstOuterY}
+            x2={toolX}
+            y2={toolY}
+            stroke="#bae6fd"
+            strokeWidth="4"
+          />
+          <line
+            x1={fourthOuterX}
+            y1={fourthOuterY}
+            x2={toolX}
+            y2={toolY}
+            stroke="#bae6fd"
+            strokeWidth="4"
+          />
+          {pose.yLinkHub &&
+            (() => {
+              const [hubX, hubY] = toSvg(pose.yLinkHub);
+              return (
+                <g stroke="#d8b4fe" strokeWidth="2" strokeDasharray="5 3">
+                  <line x1={firstBaseX} y1={firstBaseY} x2={hubX} y2={hubY} />
+                  <line x1={fourthBaseX} y1={fourthBaseY} x2={hubX} y2={hubY} />
+                  <line x1={hubX} y1={hubY} x2={toolX} y2={toolY} />
+                  <circle cx={hubX} cy={hubY} r="6" fill="#581c87" />
+                </g>
+              );
+            })()}
+          {[
+            { x: firstBaseX, y: firstBaseY, label: "1", color: "#67e8f9" },
+            { x: fourthBaseX, y: fourthBaseY, label: "2", color: "#fbbf24" },
+            { x: firstOuterX, y: firstOuterY, label: "4", color: "#67e8f9" },
+            { x: fourthOuterX, y: fourthOuterY, label: "5", color: "#fbbf24" },
+          ].map((node) => (
+            <g key={node.label}>
+              <circle
+                cx={node.x}
+                cy={node.y}
+                r="8"
+                fill="#0f172a"
+                stroke={node.color}
+                strokeWidth="2"
+              />
+              <text x={node.x} y={node.y + 3} textAnchor="middle" fill={node.color} fontSize="8">
+                {node.label}
+              </text>
+            </g>
+          ))}
+          <rect
+            x={toolX - 9}
+            y={toolY - 9}
+            width="18"
+            height="18"
+            rx="3"
+            fill="#713f12"
+            stroke="#fde68a"
+            strokeWidth="2"
+          />
+          <line
+            x1={toolX}
+            y1={toolY}
+            x2={toolTipX}
+            y2={toolTipY}
+            stroke="#fde68a"
+            strokeWidth="2"
+          />
+          <text x={toolX + 12} y={toolY + 24} fill="#fef3c7" fontSize="8">
+            9 tool
+          </text>
+          <text x="200" y="282" textAnchor="middle" fill="#fda4af" fontSize="8">
+            normalized schematic; source gives no dimensional or load telemetry
+          </text>
+        </g>
+      );
+    }
+    case "salisbury-robot-hand": {
+      const state = FrankenSimEngine.stepSalisburyRobotHand(
+        readSalisburyRobotHandControls(params ?? {}),
+      );
+      const sourceFigure = Number.parseInt(figureNumber.match(/\d+/)?.[0] ?? "1", 10);
+      const cableColors = ["#38bdf8", "#34d399", "#fbbf24", "#fb7185"];
+
+      if (sourceFigure === 4 || sourceFigure === 5) {
+        const isCantilever = sourceFigure === 4;
+        return (
+          <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+            <text x="200" y="24" textAnchor="middle" fill="#bae6fd" fontSize="9">
+              {isCantilever
+                ? "FIG. 4 · CANTILEVER TENSION SENSOR"
+                : "FIG. 5 · DEFLECTING-MEMBER SENSOR"}
+            </text>
+            <rect x="55" y="62" width="290" height="180" rx="10" fill="#0f172a" stroke="#475569" />
+            <path d="M72 154 H142" stroke="#38bdf8" strokeWidth="4" />
+            <path d="M258 154 H328" stroke="#38bdf8" strokeWidth="4" />
+            {isCantilever ? (
+              <g>
+                <path d="M142 154 Q200 82 258 154" stroke="#67e8f9" strokeWidth="4" />
+                <path d="M178 198 V116 H221" stroke="#94a3b8" strokeWidth="10" />
+                <circle cx="221" cy="116" r="24" fill="#78350f" stroke="#fbbf24" strokeWidth="3" />
+                <rect x="174" y="168" width="20" height="12" fill="#34d399" stroke="none" />
+                <text x="204" y="220" fill="#cbd5e1" fontSize="8" textAnchor="middle">
+                  pulley 59 · cantilever 58 · gauges 56
+                </text>
+              </g>
+            ) : (
+              <g>
+                <rect
+                  x="142"
+                  y="98"
+                  width="116"
+                  height="112"
+                  rx="8"
+                  fill="#1e293b"
+                  stroke="#94a3b8"
+                />
+                <path d="M142 154 H186 Q200 112 214 154 H258" stroke="#67e8f9" strokeWidth="4" />
+                <line x1="200" y1="116" x2="200" y2="172" stroke="#fbbf24" strokeWidth="10" />
+                <rect x="218" y="134" width="18" height="9" fill="#34d399" stroke="none" />
+                <rect x="218" y="166" width="18" height="9" fill="#34d399" stroke="none" />
+                <text x="200" y="226" fill="#cbd5e1" fontSize="8" textAnchor="middle">
+                  member 64 · strut 54 · gauges 56
+                </text>
+              </g>
+            )}
+            <text x="200" y="266" fill="#fda4af" fontSize="8" textAnchor="middle">
+              source supplies no calibration curve, range, accuracy, or bandwidth
+            </text>
+          </g>
+        );
+      }
+
+      if (sourceFigure === 3 || sourceFigure === 6 || sourceFigure === 7) {
+        const radiiMm = state.pulleyRadiiM.map((radius) => radius * 1000);
+        return (
+          <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+            <text x="200" y="22" textAnchor="middle" fill="#bae6fd" fontSize="9">
+              FOUR CONNECTED CABLE ENDS · THREE JOINT AXES
+            </text>
+            {[0, 1, 2, 3].map((index) => (
+              <g key={`salisbury-route-${index}`}>
+                <path
+                  d={`M28 ${72 + index * 34} C98 ${72 + index * 34}, 112 ${92 + index * 18}, 176 ${100 + index * 18} S276 ${90 + index * 24}, 344 ${112 + index * 18}`}
+                  stroke={cableColors[index]}
+                  strokeWidth={2 + Math.min(3, state.tendonTensionsN[index] / 16)}
+                />
+                <text x="14" y={76 + index * 34} fill={cableColors[index]} fontSize="8">
+                  T{index + 1}
+                </text>
+              </g>
+            ))}
+            <g fill="#1e293b" stroke="#fbbf24" strokeWidth="2">
+              {[76, 102, 128, 154].map((y) => (
+                <circle key={y} cx="105" cy={y} r="13" />
+              ))}
+              <circle cx="210" cy="132" r="23" />
+              <circle cx="318" cy="166" r="20" />
+            </g>
+            <g fill="#fde68a" stroke="none" fontSize="8" textAnchor="middle">
+              <text x="105" y="210">
+                Axis 1 · four contiguous sheaves
+              </text>
+              <text x="210" y="174">
+                Axis 2
+              </text>
+              <text x="318" y="198">
+                Axis 3
+              </text>
+              <text x="105" y="224">
+                R₁/R₂
+              </text>
+              <text x="210" y="188">
+                R₂/R₃
+              </text>
+              <text x="318" y="212">
+                R₂
+              </text>
+            </g>
+            <rect x="46" y="242" width="308" height="38" rx="6" fill="#0f172a" stroke="#475569" />
+            <text x="200" y="257" textAnchor="middle" fill="#cbd5e1" fontSize="8">
+              τ₁ {state.jointTorquesNm[0].toFixed(3)} · τ₂ {state.jointTorquesNm[1].toFixed(3)} · τ₃{" "}
+              {state.jointTorquesNm[2].toFixed(3)} N·m
+            </text>
+            <text x="200" y="271" textAnchor="middle" fill="#94a3b8" fontSize="7">
+              visitor scale R₁/R₂/R₃ = {radiiMm.map((radius) => radius.toFixed(1)).join("/")} mm ·
+              no historic dimensions
+            </text>
+          </g>
+        );
+      }
+
+      const [axis1Deg, axis2Deg, axis3Deg] = state.displayJointAnglesDeg;
+      const renderDigit = (
+        key: string,
+        baseX: number,
+        baseY: number,
+        baseRotation: number,
+        mirror: number,
+      ) => (
+        <g
+          key={key}
+          transform={`translate(${baseX} ${baseY}) rotate(${baseRotation + mirror * axis1Deg})`}
+        >
+          <circle cx="0" cy="0" r="8" fill="#0f172a" stroke="#38bdf8" strokeWidth="2" />
+          <line
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="-34"
+            stroke="#94a3b8"
+            strokeWidth="10"
+            strokeLinecap="round"
+          />
+          <g transform={`translate(0 -34) rotate(${-axis2Deg})`}>
+            <circle cx="0" cy="0" r="7" fill="#0f172a" stroke="#34d399" strokeWidth="2" />
+            <line
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="-42"
+              stroke="#cbd5e1"
+              strokeWidth="8"
+              strokeLinecap="round"
+            />
+            <g transform={`translate(0 -42) rotate(${-axis3Deg})`}>
+              <circle cx="0" cy="0" r="6" fill="#0f172a" stroke="#fbbf24" strokeWidth="2" />
+              <line
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="-36"
+                stroke="#e2e8f0"
+                strokeWidth="7"
+                strokeLinecap="round"
+              />
+              <circle cx="0" cy="-41" r="10" fill="#78350f" stroke="#f59e0b" strokeWidth="2" />
+            </g>
+          </g>
+        </g>
+      );
+
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text x="200" y="20" textAnchor="middle" fill="#bae6fd" fontSize="9">
+            FIG. 1/2 · CONNECTED ARM, WRIST, PALM, AND THREE DIGITS
+          </text>
+          <rect
+            x="132"
+            y="126"
+            width="136"
+            height="62"
+            rx="12"
+            fill="#1e293b"
+            stroke="#64748b"
+            strokeWidth="2"
+          />
+          <rect x="160" y="184" width="80" height="18" rx="5" fill="#334155" stroke="#94a3b8" />
+          <line
+            x1="154"
+            y1="194"
+            x2="246"
+            y2="194"
+            stroke="#fbbf24"
+            strokeWidth="6"
+            strokeLinecap="round"
+          />
+          <line
+            x1="200"
+            y1="190"
+            x2="200"
+            y2="220"
+            stroke="#f59e0b"
+            strokeWidth="6"
+            strokeLinecap="round"
+          />
+          <rect
+            x="176"
+            y="214"
+            width="48"
+            height="70"
+            rx="6"
+            fill="#1e293b"
+            stroke="#64748b"
+            strokeWidth="2"
+          />
+          <rect
+            x="292"
+            y="220"
+            width="88"
+            height="54"
+            rx="7"
+            fill="#0f172a"
+            stroke="#64748b"
+            strokeWidth="2"
+          />
+          <text x="336" y="242" textAnchor="middle" fill="#cbd5e1" fontSize="7">
+            REMOTE DRIVE 35
+          </text>
+          <text x="200" y="240" textAnchor="middle" fill="#cbd5e1" fontSize="7">
+            ARM 12
+          </text>
+          {cableColors.map((color, index) => (
+            <path
+              key={`salisbury-external-${color}`}
+              d={`M292 ${238 + index * 8} C260 ${238 + index * 7}, 246 ${250 - index * 5}, ${224 - index * 6} ${232 - index * 9} S ${225 - index * 4} 188, ${238 - index * 8} 162`}
+              stroke={color}
+              strokeWidth="2"
+            />
+          ))}
+          {renderDigit("left", 164, 132, -22, 1)}
+          {renderDigit("right", 228, 132, 22, -1)}
+          {renderDigit("thumb", 262, 168, 112, 1)}
+          <text x="200" y="296" textAnchor="middle" fill="#fda4af" fontSize="7">
+            normalized pose from printed torque signs · no historic dynamics/contact claim
+          </text>
+        </g>
+      );
+    }
+    case "robot-end-effector": {
+      const state = stepRobotEndEffector(params ?? {});
+      const offset = state.perHandOffsetM * 900;
+      const leftX = 200 - offset;
+      const rightX = 200 + offset;
+      const fingerVisible = state.fingerRetainedFraction > 0.03;
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#bae6fd"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            CLAIM 1 · OPPOSED-THREAD SYMMETRIC HANDS
+          </text>
+          <rect x="45" y="102" width="310" height="112" rx="12" fill="#0f172a" stroke="#475569" />
+          <rect x="45" y="153" width="310" height="12" rx="4" fill="#334155" stroke="#64748b" />
+          <text x="200" y="148" textAnchor="middle" fill="#bae6fd" fontSize="8">
+            WEB 28 · FIXED IDEAL MIDPOINT
+          </text>
+          <line x1="200" y1="67" x2="200" y2="255" stroke="#34d399" strokeDasharray="4 4" />
+          {[128, 190].map((y, index) => (
+            <g key={y}>
+              <line x1="72" y1={y} x2="328" y2={y} stroke="#cbd5e1" strokeWidth="7" />
+              {Array.from({ length: 12 }, (_, tooth) => (
+                <line
+                  key={tooth}
+                  x1={92 + tooth * 18}
+                  y1={y - 8}
+                  x2={103 + tooth * 18}
+                  y2={y + 8}
+                  stroke="#0f172a"
+                  strokeWidth="1.5"
+                />
+              ))}
+              {[leftX, rightX].map((x, hand) => (
+                <g key={`${y}-${x}`} transform={`translate(${x} ${y})`}>
+                  <rect
+                    x="-14"
+                    y="-18"
+                    width="28"
+                    height="36"
+                    rx="4"
+                    fill="#0e7490"
+                    stroke="#67e8f9"
+                  />
+                  {fingerVisible && (
+                    <path
+                      d={
+                        hand === 0
+                          ? "M -16 -12 L -31 -24 L -31 24 L -16 12"
+                          : "M 16 -12 L 31 -24 L 31 24 L 16 12"
+                      }
+                      stroke="#fbbf24"
+                      strokeWidth="5"
+                    />
+                  )}
+                </g>
+              ))}
+              <text x="54" y={y + 3} fill="#94a3b8" fontSize="7">
+                {index === 0 ? "14/16" : "18/20"}
+              </text>
+            </g>
+          ))}
+          <line x1={leftX} y1="250" x2={rightX} y2="250" stroke="#fbbf24" />
+          <text x="200" y="269" textAnchor="middle" fill="#fde68a" fontSize="9">
+            g = {(state.jawOpeningM * 1000).toFixed(1)} mm · 5 mm/rev source lead
+          </text>
+          <circle cx="370" cy="158" r="22" fill="#92400e" stroke="#fbbf24" strokeWidth="2" />
+          {Array.from({ length: 8 }, (_, peg) => {
+            const angle = (peg * Math.PI * 2) / 8 + state.encoderCountModulo * (Math.PI / 4);
+            return (
+              <circle
+                key={peg}
+                cx={370 + Math.cos(angle) * 17}
+                cy={158 + Math.sin(angle) * 17}
+                r="2.5"
+                fill="#67e8f9"
+                stroke="none"
+              />
+            );
+          })}
+          <text x="370" y="193" textAnchor="middle" fill="#bae6fd" fontSize="7">
+            72 / 74 · 8 count
+          </text>
+          <text x="200" y="292" textAnchor="middle" fill="#fda4af" fontSize="8">
+            force is a source-labelled setpoint; no contact, pressure, payload, or arm model is
+            inferred
+          </text>
+        </g>
+      );
+    }
+    case "kamen-injection-device": {
+      const pose = stepKamenInjectionMechanism(params ?? {});
+      const plungerX = 132 + pose.plungerPosition * 142;
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            MOTOR / LEAD-SCREW / PULSE-COUNTER TOPOLOGY
+          </text>
+          <rect x="42" y="112" width="316" height="92" rx="12" fill="#172554" stroke="#64748b" />
+          <rect x="52" y="127" width="62" height="62" rx="9" fill="#0f172a" stroke="#22d3ee" />
+          <text x="83" y="153" textAnchor="middle" fill="#a5f3fc" fontSize="8">
+            MOTOR 24
+          </text>
+          <text x="83" y="169" textAnchor="middle" fill="#94a3b8" fontSize="7">
+            {pose.motorState}
+          </text>
+          <line x1="114" y1="158" x2="332" y2="158" stroke="#e2e8f0" strokeWidth="8" />
+          <line
+            x1="114"
+            y1="158"
+            x2="332"
+            y2="158"
+            stroke="#64748b"
+            strokeWidth="2"
+            strokeDasharray="7 5"
+          />
+          <text x="165" y="147" fill="#e2e8f0" fontSize="7">
+            uniform-pitch lead screw 22
+          </text>
+          <rect
+            x={plungerX - 8}
+            y="122"
+            width="16"
+            height="72"
+            rx="3"
+            fill="#f59e0b"
+            stroke="#fde68a"
+          />
+          <text x={plungerX} y="218" textAnchor="middle" fill="#fde68a" fontSize="7">
+            follower / plunger
+          </text>
+          <circle cx="262" cy="158" r="11" fill="#0f172a" stroke="#c084fc" />
+          <text x="262" y="161" textAnchor="middle" fill="#e9d5ff" fontSize="7">
+            80
+          </text>
+          <rect x="280" y="141" width="34" height="34" rx="5" fill="#0f172a" stroke="#c084fc" />
+          <text x="297" y="161" textAnchor="middle" fill="#e9d5ff" fontSize="7">
+            84
+          </text>
+          <path d="M 270 150 L 280 146" stroke="#c084fc" strokeWidth="2" />
+          <rect x="277" y="58" width="78" height="45" rx="7" fill="#0f172a" stroke="#a78bfa" />
+          <text x="316" y="76" textAnchor="middle" fill="#e9d5ff" fontSize="7">
+            COUNTERS
+          </text>
+          <text x="316" y="90" textAnchor="middle" fill="#c4b5fd" fontSize="7">
+            114 / 116
+          </text>
+          <path d="M 297 141 V 104" stroke="#a78bfa" strokeDasharray="4 3" />
+          {pose.reliefPathShown && (
+            <path
+              d="M 158 193 C 181 237, 243 237, 266 193"
+              stroke="#fb7185"
+              strokeWidth="4"
+              strokeDasharray="6 4"
+            />
+          )}
+          <text x="200" y="254" textAnchor="middle" fill="#94a3b8" fontSize="8">
+            selected screw pose {(pose.plungerPosition * 100).toFixed(0)}% · pulse progress{" "}
+            {(pose.pulseProgress * 100).toFixed(0)}%
+          </text>
+          <text x="200" y="278" textAnchor="middle" fill="#fda4af" fontSize="8">
+            nonclinical normalized mechanism; dose, flow, pressure, and outcome refused
+          </text>
+        </g>
+      );
+    }
+    case "watson-remote-center-compliance": {
+      const pose = stepWatsonRemoteCenterComplianceTopology(params ?? {});
+      const toolX = 200 + pose.translationOffset * 58;
+      const toolAngle = (pose.remainingAxisMismatch - 0.22) * 0.42;
+      const toolEnd = {
+        x: toolX + Math.sin(toolAngle) * 82,
+        y: 173 + Math.cos(toolAngle) * 82,
+      };
+      const remoteCenter = pose.remoteCenterTopology ? toolEnd : { x: toolX, y: 118 };
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            RADIAL + AXIAL FLEXURE TOPOLOGY · NORMALIZED
+          </text>
+          <rect x="118" y="42" width="164" height="24" rx="5" fill="#172554" stroke="#38bdf8" />
+          <text x="200" y="57" textAnchor="middle" fill="#bae6fd" fontSize="7">
+            fixed machine portion 18
+          </text>
+          <rect
+            x={toolX - 61}
+            y="95"
+            width="122"
+            height="14"
+            rx="4"
+            fill="#1e293b"
+            stroke="#e2e8f0"
+          />
+          <text x={toolX + 67} y="106" fill="#cbd5e1" fontSize="7">
+            ring 22
+          </text>
+          <rect
+            x={toolX - 55}
+            y="159"
+            width="110"
+            height="14"
+            rx="4"
+            fill="#1e293b"
+            stroke="#fbbf24"
+          />
+          <text x={toolX + 61} y="170" fill="#fde68a" fontSize="7">
+            plate 20
+          </text>
+          {[-42, 0, 42].map((offset) => (
+            <line
+              key={`axial-${offset}`}
+              x1={200 + offset}
+              y1="66"
+              x2={toolX + offset}
+              y2="95"
+              stroke="#22d3ee"
+              strokeWidth="4"
+            />
+          ))}
+          {[-42, 0, 42].map((offset) => (
+            <g key={`radial-${offset}`}>
+              <line
+                x1={remoteCenter.x}
+                y1={remoteCenter.y}
+                x2={toolX + offset}
+                y2="109"
+                stroke="#67e8f9"
+                strokeDasharray="4 4"
+                opacity="0.62"
+              />
+              <line
+                x1={toolX + offset}
+                y1="109"
+                x2={toolX + offset * 0.78}
+                y2="159"
+                stroke="#f59e0b"
+                strokeWidth="4"
+              />
+            </g>
+          ))}
+          <text x="46" y="82" fill="#67e8f9" fontSize="7">
+            translational flexures 56 / 58 / 60
+          </text>
+          <text x="43" y="145" fill="#fcd34d" fontSize="7">
+            rotational flexures 24 / 26 / 28
+          </text>
+          <line
+            x1={toolX}
+            y1="173"
+            x2={toolEnd.x}
+            y2={toolEnd.y}
+            stroke="#e2e8f0"
+            strokeWidth="10"
+            strokeLinecap="round"
+          />
+          <line x1="310" y1="164" x2="310" y2="271" stroke="#94a3b8" strokeDasharray="5 4" />
+          <path d="M 283 253 L 296 237 L 324 237 L 337 253" stroke="#7dd3fc" strokeWidth="3" />
+          <circle
+            cx={remoteCenter.x}
+            cy={remoteCenter.y}
+            r="6"
+            fill={pose.remoteCenterTopology ? "#06b6d4" : "#64748b"}
+            stroke="#ecfeff"
+          />
+          <text x={remoteCenter.x + 9} y={remoteCenter.y - 7} fill="#cffafe" fontSize="7">
+            {pose.remoteCenterTopology ? "remote center 50" : "local contrast"}
+          </text>
+          {pose.antiTwistConstraint && (
+            <ellipse cx={toolX} cy="158" rx="22" ry="6" stroke="#c084fc" strokeWidth="3" />
+          )}
+          <text x="200" y="278" textAnchor="middle" fill="#fda4af" fontSize="8">
+            normalized geometry only; SI force, stiffness, clearance, and timing refused
+          </text>
+        </g>
+      );
+    }
+    case "goertz-master-slave": {
+      const pose = stepGoertzMasterSlaveTopology(params ?? {});
+      const master = pose.masterChannels;
+      const slave = pose.slaveChannels;
+      const masterShoulder = { x: 82, y: 187 };
+      const masterElbow = {
+        x: masterShoulder.x + 47 + (master[0] ?? 0) * 23,
+        y: masterShoulder.y - 25 - (master[2] ?? 0) * 20,
+      };
+      const masterTool = {
+        x: masterElbow.x + 28 + (master[4] ?? 0) * 13,
+        y: masterElbow.y + 34 + (master[5] ?? 0) * 12,
+      };
+      const slaveShoulder = { x: 318, y: 187 };
+      const slaveElbow = {
+        x: slaveShoulder.x - 47 - (slave[0] ?? 0) * 23,
+        y: slaveShoulder.y - 25 - (slave[2] ?? 0) * 20,
+      };
+      const slaveTool = {
+        x: slaveElbow.x - 28 - (slave[4] ?? 0) * 13,
+        y: slaveElbow.y + 34 + (slave[5] ?? 0) * 12,
+      };
+      const contactVisible = pose.errorMagnitude > 0.01;
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.45" fill="none">
+          <defs>
+            <marker
+              id="goertz-schematic-arrow"
+              viewBox="0 0 10 10"
+              refX="8"
+              refY="5"
+              markerWidth="4"
+              markerHeight="4"
+              orient="auto"
+            >
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#fbbf24" stroke="none" />
+            </marker>
+          </defs>
+          <text
+            x="200"
+            y="22"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            FIGS. 1 / 15 · MASTER–SLAVE ELECTRONIC CORRESPONDENCE
+          </text>
+          <line x1="200" y1="32" x2="200" y2="260" stroke="#64748b" strokeDasharray="5 4" />
+          <text
+            x="94"
+            y="39"
+            textAnchor="middle"
+            fill="#67e8f9"
+            fontSize="7"
+            fontFamily="monospace"
+          >
+            MASTER / HANDLE
+          </text>
+          <text
+            x="306"
+            y="39"
+            textAnchor="middle"
+            fill="#c4b5fd"
+            fontSize="7"
+            fontFamily="monospace"
+          >
+            SLAVE / GRASPER
+          </text>
+
+          {Array.from({ length: 7 }, (_, index) => {
+            const y = 54 + index * 13;
+            const error = Math.abs(pose.positionErrors[index] ?? 0);
+            return (
+              <g key={index}>
+                <text x="164" y={y + 3} textAnchor="end" fill="#94a3b8" fontSize="6">
+                  {index === 0
+                    ? "113b"
+                    : index === 1 || index === 3
+                      ? "roll"
+                      : index === 2
+                        ? "126"
+                        : index === 4
+                          ? "171"
+                          : index === 5
+                            ? "172"
+                            : "grip"}
+                </text>
+                <line x1="171" y1={y} x2="229" y2={y} stroke="#155e75" strokeWidth="3" />
+                <line
+                  x1="171"
+                  y1={y}
+                  x2={171 + (1 - error) * 58}
+                  y2={y}
+                  stroke="#22d3ee"
+                  strokeWidth="2"
+                />
+                <circle cx="171" cy={y} r="2.4" fill="#67e8f9" />
+                <circle cx="229" cy={y} r="2.4" fill="#c4b5fd" />
+              </g>
+            );
+          })}
+          <text x="200" y="154" textAnchor="middle" fill="#94a3b8" fontSize="6">
+            seven duplicate electrical systems 54–60
+          </text>
+
+          <rect x="40" y="218" width="86" height="9" rx="2" fill="#0f172a" stroke="#64748b" />
+          <rect x="274" y="218" width="86" height="9" rx="2" fill="#0f172a" stroke="#64748b" />
+          <text x="83" y="238" textAnchor="middle" fill="#94a3b8" fontSize="6">
+            support 50
+          </text>
+          <text x="317" y="238" textAnchor="middle" fill="#94a3b8" fontSize="6">
+            sealed remote side
+          </text>
+
+          <line
+            x1={masterShoulder.x}
+            y1={masterShoulder.y}
+            x2={masterElbow.x}
+            y2={masterElbow.y}
+            stroke="#22d3ee"
+            strokeWidth="7"
+            strokeLinecap="round"
+          />
+          <line
+            x1={masterElbow.x}
+            y1={masterElbow.y}
+            x2={masterTool.x}
+            y2={masterTool.y}
+            stroke="#0ea5e9"
+            strokeWidth="6"
+            strokeLinecap="round"
+          />
+          <line
+            x1={masterTool.x}
+            y1={masterTool.y}
+            x2={masterTool.x + 12}
+            y2={masterTool.y + 8}
+            stroke="#fbbf24"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+          <circle cx={masterShoulder.x} cy={masterShoulder.y} r="6" fill="#082f49" />
+          <circle cx={masterElbow.x} cy={masterElbow.y} r="5" fill="#082f49" />
+          <text x="56" y="177" fill="#bae6fd" fontSize="6">
+            arm 51
+          </text>
+          <text x={masterElbow.x + 6} y={masterElbow.y - 8} fill="#bae6fd" fontSize="6">
+            arm 52
+          </text>
+          <text x={masterTool.x - 8} y={masterTool.y + 20} fill="#fde68a" fontSize="6">
+            handle 53
+          </text>
+
+          <line
+            x1={slaveShoulder.x}
+            y1={slaveShoulder.y}
+            x2={slaveElbow.x}
+            y2={slaveElbow.y}
+            stroke="#a78bfa"
+            strokeWidth="7"
+            strokeLinecap="round"
+          />
+          <line
+            x1={slaveElbow.x}
+            y1={slaveElbow.y}
+            x2={slaveTool.x}
+            y2={slaveTool.y}
+            stroke="#8b5cf6"
+            strokeWidth="6"
+            strokeLinecap="round"
+          />
+          <path
+            d={`M ${slaveTool.x - 4} ${slaveTool.y + 5 - (slave[6] ?? 0) * 4} L ${slaveTool.x - 18} ${slaveTool.y + 15} L ${slaveTool.x - 4} ${slaveTool.y + 23 + (slave[6] ?? 0) * 4}`}
+            stroke="#fbbf24"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx={slaveShoulder.x} cy={slaveShoulder.y} r="6" fill="#2e1065" />
+          <circle cx={slaveElbow.x} cy={slaveElbow.y} r="5" fill="#2e1065" />
+          <text x="325" y="177" fill="#ddd6fe" fontSize="6">
+            arm 51
+          </text>
+          <text x={slaveElbow.x - 31} y={slaveElbow.y - 8} fill="#ddd6fe" fontSize="6">
+            arm 52
+          </text>
+          <text x={slaveTool.x - 34} y={slaveTool.y + 30} fill="#fde68a" fontSize="6">
+            grasper 53
+          </text>
+
+          <rect x="118" y="257" width="37" height="19" rx="2" fill="#0f172a" stroke="#67e8f9" />
+          <text x="136.5" y="266" textAnchor="middle" fill="#bae6fd" fontSize="6">
+            209
+          </text>
+          <text x="136.5" y="273" textAnchor="middle" fill="#94a3b8" fontSize="5">
+            synchro
+          </text>
+          <path d="M 156 266 H 177" stroke="#fbbf24" markerEnd="url(#goertz-schematic-arrow)" />
+          <text x="166" y="261" textAnchor="middle" fill="#fde68a" fontSize="6">
+            E
+          </text>
+          <rect x="178" y="257" width="31" height="19" rx="2" fill="#0f172a" stroke="#fbbf24" />
+          <text x="193.5" y="269" textAnchor="middle" fill="#fde68a" fontSize="6">
+            210
+          </text>
+          <rect x="212" y="257" width="31" height="19" rx="2" fill="#0f172a" stroke="#38bdf8" />
+          <text x="227.5" y="269" textAnchor="middle" fill="#bae6fd" fontSize="6">
+            211
+          </text>
+          <path d="M 244 266 H 265" stroke="#fbbf24" markerEnd="url(#goertz-schematic-arrow)" />
+          <rect x="266" y="257" width="35" height="19" rx="2" fill="#0f172a" stroke="#c4b5fd" />
+          <text x="283.5" y="266" textAnchor="middle" fill="#ddd6fe" fontSize="6">
+            204
+          </text>
+          <text x="283.5" y="273" textAnchor="middle" fill="#94a3b8" fontSize="5">
+            motor
+          </text>
+          <text x="318" y="266" fill="#94a3b8" fontSize="6">
+            205 tachometer
+          </text>
+
+          {contactVisible && (
+            <g>
+              <line
+                x1={slaveTool.x - 18}
+                y1={slaveTool.y + 14}
+                x2={slaveTool.x - 39}
+                y2={slaveTool.y + 14}
+                stroke="#fb7185"
+                strokeWidth="3"
+              />
+              <text
+                x={slaveTool.x - 42}
+                y={slaveTool.y + 9}
+                textAnchor="end"
+                fill="#fda4af"
+                fontSize="6"
+              >
+                remote resistance
+              </text>
+            </g>
+          )}
+          {pose.forceReflectionEnabled && contactVisible && (
+            <path
+              d="M 280 245 C 250 225 151 225 120 245"
+              stroke="#fbbf24"
+              strokeWidth="2"
+              strokeDasharray="4 3"
+              markerEnd="url(#goertz-schematic-arrow)"
+            />
+          )}
+          <text x="200" y="291" textAnchor="middle" fill="#fda4af" fontSize="7">
+            Claim {pose.activeClaim} · {pose.state} · normalized topology; SI force and speed
+            refused
+          </text>
+        </g>
+      );
+    }
+    case "lemelson-warehousing": {
+      const pose = stepLemelsonWarehouseTopology(params ?? {});
+      const carX = 70 + pose.carrierX * 260;
+      const liftY = 235 - pose.carrierY * 150;
+      const forkEndX = carX + 18 + pose.shuttleZ * 32;
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            SERIAL RAIL / LIFT / FORK · NORMALIZED SOURCE TOPOLOGY
+          </text>
+          <line x1="52" y1="45" x2="348" y2="45" stroke="#78716c" strokeWidth="3" />
+          <text x="54" y="39" fill="#a8a29e" fontSize="7">
+            OVERHEAD TRACK 21
+          </text>
+          {Array.from({ length: 7 }).map((_, column) => {
+            const x = 70 + column * (260 / 6);
+            return (
+              <line
+                key={`rack-post-${column}`}
+                x1={x}
+                y1="66"
+                x2={x}
+                y2="250"
+                stroke="#334155"
+                strokeWidth="1"
+              />
+            );
+          })}
+          {Array.from({ length: 5 }).map((_, row) => {
+            const y = 250 - row * 46;
+            return (
+              <line
+                key={`rack-shelf-${row}`}
+                x1="60"
+                y1={y}
+                x2="340"
+                y2={y}
+                stroke="#334155"
+                strokeWidth="1"
+              />
+            );
+          })}
+          <rect
+            x={carX - 12}
+            y="38"
+            width="24"
+            height="14"
+            fill="#1e293b"
+            stroke="#38bdf8"
+            rx="2"
+          />
+          <text x={carX} y="48" fill="#38bdf8" fontSize="7" textAnchor="middle">
+            22
+          </text>
+          <line
+            x1={carX}
+            y1="52"
+            x2={carX}
+            y2="250"
+            stroke="#38bdf8"
+            strokeWidth="2"
+            strokeDasharray="4 2"
+          />
+          <rect
+            x={carX - 10}
+            y={liftY - 8}
+            width="20"
+            height="16"
+            fill="#0f172a"
+            stroke="#fbbf24"
+            rx="2"
+          />
+          <line
+            x1={carX + 10}
+            y1={liftY}
+            x2={forkEndX}
+            y2={liftY}
+            stroke="#fbbf24"
+            strokeWidth="2.5"
+          />
+          <circle cx={carX - 14} cy={60} r="3" fill="#ef4444" stroke="#fca5a5" />
+          {[0, 0.25, 0.5, 0.75, 1].map((fraction) => (
+            <rect
+              key={fraction}
+              x={67 + fraction * 260}
+              y="53"
+              width="6"
+              height="4"
+              fill="#0ea5e9"
+              stroke="#67e8f9"
+            />
+          ))}
+          <text x={carX + 13} y={liftY - 10} fill="#fde68a" fontSize="7">
+            second carriage 25 / fork 27
+          </text>
+          <rect x="245" y="68" width="112" height="58" rx="4" fill="#0f172a" stroke="#475569" />
+          <text x="253" y="82" fill="#94a3b8" fontSize="7">
+            rail address: {(pose.carrierX * 100).toFixed(0)}%
+          </text>
+          <text x="253" y="96" fill="#94a3b8" fontSize="7">
+            lift address: {(pose.carrierY * 100).toFixed(0)}%
+          </text>
+          <text x="253" y="110" fill="#c4b5fd" fontSize="7">
+            fork extension: {(pose.shuttleZ * 100).toFixed(0)}%
+          </text>
+          <text x="253" y="121" fill="#4ade80" fontSize="7">
+            {pose.addressState}
+          </text>
+          <text x="200" y="278" textAnchor="middle" fill="#fda4af" fontSize="8">
+            normalized topology only; no source dimensions, speed, payload, or throughput
+          </text>
+        </g>
+      );
+    }
+    case "lemelson-automatic-production": {
+      const state = stepLemelsonAutomaticProductionTopology(params ?? {});
+      const carriageX = 62 + state.carrierAddressFraction * 270;
+      const liftY = 128 + (1 - state.liftFraction) * 52;
+      const reach = 20 + state.reachFraction * 42;
+      const flowColor = state.controllerCoupled ? "#34d399" : "#fb7185";
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            CARRIER / MARKER / COUPLING · SOURCE-BOUNDED TOPOLOGY
+          </text>
+          <line x1="48" y1="52" x2="352" y2="52" stroke="#94a3b8" strokeWidth="4" />
+          <text x="50" y="44" fill="#cbd5e1" fontSize="7">
+            guideway 21
+          </text>
+          {[122, 200, 278].map((x, index) => (
+            <g key={x}>
+              <line x1={x} y1="57" x2={x} y2="222" stroke="#334155" strokeDasharray="3 3" />
+              <circle
+                cx={x}
+                cy="66"
+                r="4"
+                fill={state.markerMatched && Math.abs(carriageX - x) < 48 ? "#fbbf24" : "#334155"}
+              />
+              <rect
+                x={x - 24}
+                y="202"
+                width="48"
+                height="37"
+                rx="4"
+                fill={
+                  state.machineCommandAuthorized && Math.abs(carriageX - x) < 48
+                    ? "#34d399"
+                    : "#172554"
+                }
+                stroke={flowColor}
+              />
+              <text x={x} y="226" textAnchor="middle" fill="#bfdbfe" fontSize="7">
+                MT {index + 1}
+              </text>
+            </g>
+          ))}
+          <g transform={`translate(${carriageX} 0)`}>
+            <rect x="-15" y="38" width="30" height="20" rx="3" fill="#0f766e" />
+            <text x="0" y="52" textAnchor="middle" fill="#ccfbf1" fontSize="7">
+              22 / Mx
+            </text>
+            <line x1="0" y1="58" x2="0" y2={liftY} stroke="#0f766e" strokeWidth="8" />
+            <rect x="-18" y={liftY - 7} width="36" height="14" rx="2" fill="#0e7490" />
+            <line x1="18" y1={liftY} x2={18 + reach} y2={liftY} stroke="#7c3aed" strokeWidth="7" />
+            <rect
+              x={14 + reach}
+              y={liftY - 12}
+              width="12"
+              height="24"
+              rx="2"
+              fill={state.carrierLocked ? "#f59e0b" : "#64748b"}
+            />
+            <rect x="-15" y="96" width="30" height="16" rx="2" fill="#1d4ed8" />
+            <text x="0" y="107" textAnchor="middle" fill="#dbeafe" fontSize="7">
+              47
+            </text>
+          </g>
+          <path
+            d={`M${carriageX + reach + 24} ${liftY} V196`}
+            stroke={flowColor}
+            strokeWidth="3"
+            strokeDasharray={state.controllerCoupled ? undefined : "4 3"}
+          />
+          <text x="50" y="267" fill="#a7f3d0" fontSize="7">
+            marker → retain → position → couple → operate → release → travel
+          </text>
+          <text x="200" y="284" textAnchor="middle" fill="#fda4af" fontSize="7">
+            {state.phase}; normalized display only — no dimensions, speed, payload, force, or time
+          </text>
+        </g>
+      );
+    }
+    case "lemelson-adjustable-manipulator":
+    case "lemelson-adjustable-manipulator-side":
+    case "lemelson-adjustable-manipulator-control": {
+      const state = stepLemelsonManipulatorTopology(params ?? {});
+      const carriageX = 200 + state.controls.carriagePosition * 80;
+      const mastY = 80 + state.controls.columnElevation * 60;
+      const armAngleRad = state.displayPose.pivotRad;
+      const wristX =
+        carriageX + Math.cos(state.displayPose.azimuthRad) * 45 * Math.cos(armAngleRad);
+      const wristY = mastY + Math.sin(armAngleRad) * 25 + 15;
+      const jawGap = 4 + state.displayPose.jawOpeningFraction * 8;
+
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            US 3,260,375 · RECONFIGURABLE GANTRY & LIMIT-STOP TOPOLOGY
+          </text>
+          {/* Overhead Track */}
+          <line x1="60" y1="50" x2="340" y2="50" stroke="#94a3b8" strokeWidth="3" />
+          <line x1="60" y1="42" x2="340" y2="42" stroke="#f59e0b" strokeWidth="1.5" />
+          <text x="65" y="38" fill="#f59e0b" fontSize="6">
+            bus 28
+          </text>
+
+          {/* Carriage 22 & Motor Mx */}
+          <rect
+            x={carriageX - 20}
+            y="44"
+            width="40"
+            height="18"
+            rx="2"
+            fill="#1e293b"
+            stroke="#38bdf8"
+          />
+          <text x={carriageX - 6} y="56" fill="#38bdf8" fontSize="7" fontWeight="bold">
+            Mx
+          </text>
+
+          {/* Vertical Column 23 & Telescoping Mast 23' */}
+          <line x1={carriageX} y1="62" x2={carriageX} y2={mastY} stroke="#64748b" strokeWidth="6" />
+          <line x1={carriageX} y1="62" x2={carriageX} y2={mastY} stroke="#38bdf8" strokeWidth="2" />
+          {/* Stop block 59' */}
+          <rect
+            x={carriageX + 4}
+            y={70 + state.controls.stop2Elevation * 40}
+            width="6"
+            height="8"
+            rx="1"
+            fill="#ef4444"
+          />
+
+          {/* Turntable Base 43 & Articulated Arm 35 */}
+          <ellipse
+            cx={carriageX}
+            cy={mastY}
+            rx="16"
+            ry="5"
+            fill="#0f172a"
+            stroke="#f59e0b"
+            strokeWidth="1"
+          />
+          <line
+            x1={carriageX}
+            y1={mastY}
+            x2={wristX}
+            y2={wristY}
+            stroke="#10b981"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+
+          {/* Gripper Jaws 87a / 87b */}
+          <circle cx={wristX} cy={wristY} r="3" fill="#0284c7" />
+          <line
+            x1={wristX}
+            y1={wristY - 2}
+            x2={wristX + 12}
+            y2={wristY - jawGap}
+            stroke="#f43f5e"
+            strokeWidth="1.5"
+          />
+          <line
+            x1={wristX}
+            y1={wristY + 2}
+            x2={wristX + 12}
+            y2={wristY + jawGap}
+            stroke="#f43f5e"
+            strokeWidth="1.5"
+          />
+
+          {/* Relay State Display */}
+          <text x="60" y="240" fill="#a7f3d0" fontSize="7" fontFamily="monospace">
+            Phase: {state.sequencer.phaseName} | Active Motor:{" "}
+            {state.sequencer.activeMotor.toUpperCase()}
+          </text>
+          <text x="60" y="252" fill="#38bdf8" fontSize="7">
+            Limit Switches:{" "}
+            {state.sequencer.trippedLimitSwitches.length > 0
+              ? state.sequencer.trippedLimitSwitches.join(", ")
+              : "Scanning"}
+          </text>
+          <text x="200" y="278" textAnchor="middle" fill="#fda4af" fontSize="7">
+            normalized topology only; no source dimensions, speed, motor power, or jaw force
+          </text>
+        </g>
+      );
+    }
+    case "stackhouse-manipulator": {
+      const pose = stepStackhouseSourceTopology(params ?? {});
+      const pointP = { x: 180, y: 150 };
+      const intermediateEnd = {
+        x: pointP.x + Math.cos(pose.alphaABRad) * 88,
+        y: pointP.y - Math.sin(pose.alphaABRad) * 88,
+      };
+      const terminalBaseX = pointP.x + pose.terminalAxisOffset * 70;
+      const projectedMagnitude = Math.hypot(pose.toolDirection[0], pose.toolDirection[2]) || 1;
+      const toolEndX = terminalBaseX + (pose.toolDirection[2] / projectedMagnitude) * 88;
+      const toolEndY = pointP.y - (pose.toolDirection[0] / projectedMagnitude) * 88;
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            THREE SERIAL ROTARY SHAFTS · SOURCE-BOUNDED TOPOLOGY
+          </text>
+          <rect x="42" y="126" width="138" height="48" rx="7" fill="#1e293b" stroke="#64748b" />
+          {[0, 1, 2].map((index) => (
+            <line
+              key={index}
+              x1="52"
+              y1={141 + index * 9}
+              x2={pointP.x}
+              y2={141 + index * 9}
+              stroke={["#0369a1", "#0ea5e9", "#7dd3fc"][index]}
+              strokeWidth={5 - index}
+            />
+          ))}
+          <text x="48" y="119" fill="#94a3b8" fontSize="7">
+            forearm section 6 · concentric shafts 15 / 16 / 19
+          </text>
+          <line
+            x1={pointP.x}
+            y1={pointP.y}
+            x2={intermediateEnd.x}
+            y2={intermediateEnd.y}
+            stroke="#2563eb"
+            strokeWidth="14"
+            strokeLinecap="round"
+          />
+          <line
+            x1={pointP.x}
+            y1={pointP.y}
+            x2={intermediateEnd.x}
+            y2={intermediateEnd.y}
+            stroke="#60a5fa"
+            strokeWidth="3"
+            strokeDasharray="4 2"
+          />
+          <text x="193" y="87" fill="#60a5fa" fontSize="7">
+            housing shaft 14a / shaft 23
+          </text>
+          {pose.terminalAxisOffset > 0 && (
+            <line
+              x1={pointP.x}
+              y1={pointP.y}
+              x2={terminalBaseX}
+              y2={pointP.y}
+              stroke="#fb923c"
+              strokeWidth="8"
+            />
+          )}
+          <line
+            x1={terminalBaseX}
+            y1={pointP.y}
+            x2={toolEndX}
+            y2={toolEndY}
+            stroke="#a855f7"
+            strokeWidth="10"
+            strokeLinecap="round"
+          />
+          <circle cx={toolEndX} cy={toolEndY} r="8" fill="#ec4899" stroke="#be185d" />
+          <text x={toolEndX + 9} y={toolEndY - 8} fill="#c084fc" fontSize="7">
+            shaft 26 / mounting surface 14c
+          </text>
+          <circle
+            cx={pointP.x}
+            cy={pointP.y}
+            r="5"
+            fill="#ef4444"
+            stroke="#ffffff"
+            strokeWidth="1.5"
+          />
+          <text x="168" y="169" fill="#ef4444" fontSize="7" fontWeight="bold">
+            point P
+          </text>
+          <text x="248" y="208" fill="#fbbf24" fontSize="7">
+            selected obliquities {pose.firstObliqueAngleDeg.toFixed(0)}° /{" "}
+            {pose.secondObliqueAngleDeg.toFixed(0)}°; source states only &gt;45°
+          </text>
+          <text x="200" y="278" textAnchor="middle" fill="#fda4af" fontSize="8">
+            normalized pose; SI dynamics and performance refused
+          </text>
+        </g>
+      );
+    }
+    case "mestral-velcro": {
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            VELVET WEAVE & THERMAL HOOK FORMATION (FIG. 1 / FIG. 2)
+          </text>
+          {/* Foundation Weave Line */}
+          <line
+            x1="60"
+            y1="240"
+            x2="340"
+            y2="240"
+            stroke="#64748b"
+            strokeWidth="8"
+            strokeLinecap="round"
+          />
+          {/* Weft Picks 1 */}
+          {[80, 120, 160, 200, 240, 280, 320].map((wx) => (
+            <circle
+              key={`mv-weft-${wx}`}
+              cx={wx}
+              cy="240"
+              r="5"
+              fill="#475569"
+              stroke="#94a3b8"
+              strokeWidth="1.5"
+            />
+          ))}
+          {/* Lancet Bar 5 */}
+          <rect
+            x="250"
+            y="110"
+            width="28"
+            height="125"
+            rx="4"
+            fill="#991b1b"
+            stroke="#ef4444"
+            strokeWidth="1.5"
+          />
+          <line x1="268" y1="120" x2="268" y2="225" stroke="#1e293b" strokeWidth="3" />
+          <text x="264" y="170" fill="#fef08a" fontSize="7" fontWeight="bold" textAnchor="middle">
+            5
+          </text>
+          {/* Knife 8 */}
+          <polygon
+            points="280,95 295,65 305,70 290,100"
+            fill="#e2e8f0"
+            stroke="#38bdf8"
+            strokeWidth="1"
+          />
+          <text x="310" y="80" fill="#f87171" fontSize="8" fontWeight="bold">
+            8
+          </text>
+          {/* Loop over bar */}
+          <path
+            d="M 238,240 L 238,125 Q 264,75 290,125 L 290,240"
+            stroke="#f59e0b"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+          />
+          {/* Cut Hooks 9 and Strands 10 */}
+          <line
+            x1="110"
+            y1="240"
+            x2="110"
+            y2="170"
+            stroke="#78716c"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+          <path
+            d="M 95,240 L 95,145 Q 95,115 75,130"
+            stroke="#fbbf24"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+          />
+          <text x="70" y="120" fill="#fbbf24" fontSize="8" fontWeight="bold">
+            4
+          </text>
+          <line
+            x1="190"
+            y1="240"
+            x2="190"
+            y2="170"
+            stroke="#78716c"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+          <path
+            d="M 175,240 L 175,145 Q 175,115 155,130"
+            stroke="#fbbf24"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+          />
+          <text x="150" y="120" fill="#fbbf24" fontSize="8" fontWeight="bold">
+            4
+          </text>
+        </g>
+      );
+    }
+    case "milacron-robot-toolchanger": {
+      const state = stepMilacronRobotToolchanger(params ?? {});
+      const slideOffset = state.lockingSlideFraction * 30;
+      const toolBaseX = state.toolBasePresent ? 250 : 318;
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            ROBOT TOOLCHANGER ADAPTER & WEDGING CLAMP (FIGS. 2, 3, 6)
+          </text>
+          {/* Rear Plate 27 & Front Plate 26 */}
+          <rect
+            x="70"
+            y="60"
+            width="18"
+            height="180"
+            rx="3"
+            fill="#1e293b"
+            stroke="#64748b"
+            strokeWidth="1.5"
+          />
+          <text
+            x="79"
+            y="52"
+            fill="#94a3b8"
+            fontSize="7"
+            textAnchor="middle"
+            fontFamily="monospace"
+          >
+            27
+          </text>
+          <rect
+            x="220"
+            y="60"
+            width="18"
+            height="180"
+            rx="3"
+            fill="#1e293b"
+            stroke="#64748b"
+            strokeWidth="1.5"
+          />
+          <text
+            x="229"
+            y="52"
+            fill="#94a3b8"
+            fontSize="7"
+            textAnchor="middle"
+            fontFamily="monospace"
+          >
+            26
+          </text>
+          {/* Spacer Blocks 28, 29 */}
+          <rect
+            x="88"
+            y="60"
+            width="132"
+            height="22"
+            fill="#334155"
+            stroke="#475569"
+            strokeWidth="1"
+          />
+          <rect
+            x="88"
+            y="218"
+            width="132"
+            height="22"
+            fill="#334155"
+            stroke="#475569"
+            strokeWidth="1"
+          />
+          {/* Pneumatic Cylinder 47 */}
+          <rect
+            x="98"
+            y="125"
+            width="65"
+            height="50"
+            rx="3"
+            fill="#0284c7"
+            stroke="#38bdf8"
+            strokeWidth="1.2"
+            opacity="0.6"
+          />
+          <text
+            x="130"
+            y="154"
+            fill="#e0f2fe"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            47
+          </text>
+          {/* Piston Rod 46 & Yoke 45 */}
+          <rect
+            x="163"
+            y="145"
+            width="22"
+            height="10"
+            fill="#cbd5e1"
+            stroke="#64748b"
+            strokeWidth="1"
+          />
+          <rect
+            x="185"
+            y="135"
+            width="14"
+            height="30"
+            rx="2"
+            fill="#64748b"
+            stroke="#94a3b8"
+            strokeWidth="1"
+          />
+          {/* Locking Slide 33 & Wedging Ramps 41 */}
+          <rect
+            x={222 + slideOffset}
+            y="100"
+            width="14"
+            height="100"
+            rx="2"
+            fill={state.lockingSlideEngaged ? "#d97706" : "#0e7490"}
+            stroke="#fbbf24"
+            strokeWidth="1.2"
+          />
+          <text
+            x={229 + slideOffset}
+            y="120"
+            fill="#fef3c7"
+            fontSize="7"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            33
+          </text>
+          {/* Tool Base Plate 18 */}
+          <rect
+            x={toolBaseX}
+            y="60"
+            width="18"
+            height="180"
+            rx="3"
+            fill="#334155"
+            stroke="#94a3b8"
+            strokeWidth="1.5"
+            opacity={state.toolBasePresent ? 1 : 0.3}
+          />
+          <text
+            x={toolBaseX + 9}
+            y="52"
+            fill="#38bdf8"
+            fontSize="7"
+            textAnchor="middle"
+            fontFamily="monospace"
+          >
+            18
+          </text>
+          {/* T-Member 35 */}
+          <polygon
+            points={`215,140 220,135 ${toolBaseX},140 ${toolBaseX},160 220,165 215,160`}
+            fill={state.claimFourRampCaptured ? "#f43f5e" : "#e2e8f0"}
+            stroke="#f59e0b"
+            strokeWidth="1.2"
+            opacity={state.toolBasePresent ? 1 : 0.3}
+          />
+          <text
+            x={toolBaseX - 12}
+            y="153"
+            fill="#1e293b"
+            fontSize="7"
+            fontFamily="monospace"
+            fontWeight="bold"
+          >
+            35
+          </text>
+          {/* Cylindrical Pin 43 & Diamond Pin 44 */}
+          <circle cx="229" cy="80" r="5" fill="#38bdf8" stroke="#0284c7" strokeWidth="1.2" />
+          <text x="210" y="83" fill="#38bdf8" fontSize="7" fontFamily="monospace">
+            43
+          </text>
+          <polygon
+            points="229,210 234,215 229,220 224,215"
+            fill="#f59e0b"
+            stroke="#b45309"
+            strokeWidth="1.2"
+          />
+          <text x="210" y="218" fill="#fbbf24" fontSize="7" fontFamily="monospace">
+            44
+          </text>
+          {/* Proximity Switch 58 */}
+          <rect
+            x="205"
+            y="95"
+            width="15"
+            height="8"
+            rx="1"
+            fill="#0284c7"
+            stroke="#38bdf8"
+            strokeWidth="1"
+          />
+          <circle cx="220" cy="99" r="2" fill="#10b981" />
+          <text x="185" y="92" fill="#7dd3fc" fontSize="6" fontFamily="monospace">
+            58
+          </text>
+          {/* Tool Head 19 */}
+          <rect
+            x="268"
+            y="90"
+            width="80"
+            height="120"
+            rx="4"
+            fill="#1c1917"
+            stroke="#78716c"
+            strokeWidth="1.2"
+          />
+          <text
+            x="308"
+            y="155"
+            fill="#fcd34d"
+            fontSize="9"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            {state.toolRetained ? "CAPTURED TOOL 19" : "TOOL 19"}
+          </text>
+        </g>
+      );
+    }
+    case "amf-versatran": {
+      const state = FrankenSimEngine.stepAmfVersatranTopology(params);
+      const { controls, displayPose } = state;
+      const [toolX, toolY, toolZ] = displayPose.normalizedToolPosition;
+      const columnX = 200;
+      const carriageY = 224 - (toolY - 0.36) * 92;
+      const wristX = columnX + toolX * 88;
+      const wristY = carriageY - toolZ * 28;
+      const armLabelX = (columnX + wristX) / 2;
+      const armLabelY = (carriageY + wristY) / 2 - 14;
+      const wristSwingDegrees = (displayPose.wristSwingDisplayRad * 180) / Math.PI;
+      const wristRotationDegrees = (displayPose.wristRotationDisplayRad * 180) / Math.PI;
+      const gripperGap = 4 + displayPose.gripperOpenFraction * 11;
+      const pinionAngleDegrees = (displayPose.gripperPinionRotationDisplayRad * 180) / Math.PI;
+      const rackOffset = (displayPose.gripperRackTravelFraction - 0.5) * 9;
+      return (
+        <g
+          stroke="#38bdf8"
+          strokeWidth="1.5"
+          fill="none"
+          data-amf-versatran-topology="typed-ts-source-bounded"
+          data-amf-versatran-active-claim={state.activeClaim}
+          data-amf-versatran-program-mode={state.programMode}
+          data-amf-versatran-claim-1={state.claimProbeStates[1] ? "live" : "withheld"}
+          data-amf-versatran-claim-8={state.claimProbeStates[8] ? "live" : "withheld"}
+          data-amf-versatran-claim-12={state.claimProbeStates[12] ? "live" : "withheld"}
+          data-amf-versatran-carriage-y={carriageY.toFixed(3)}
+          data-amf-versatran-wrist-x={wristX.toFixed(3)}
+          data-amf-versatran-wrist-y={wristY.toFixed(3)}
+        >
+          <title>
+            Source-bounded AMF Versatran topology frame: unitless configuration only; SI motion and
+            hydraulic performance are refused.
+          </title>
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            AMF VERSATRAN MECHANISM & CONTROL TOPOLOGY (FIGS. 1, 37, 42, 46, 49)
+          </text>
+          {/* Base Bed Plate 70 & Housing 72 */}
+          <rect
+            x="80"
+            y="240"
+            width="240"
+            height="20"
+            rx="3"
+            fill="#1e293b"
+            stroke="#475569"
+            strokeWidth="1.5"
+          />
+          <rect
+            x="120"
+            y="215"
+            width="160"
+            height="25"
+            rx="2"
+            fill="#334155"
+            stroke="#64748b"
+            strokeWidth="1.5"
+          />
+          <text x="140" y="232" fill="#94a3b8" fontSize="8" fontFamily="monospace">
+            HOUSING 72 / SPROCKET 80
+          </text>
+          <g aria-label="Live source-bounded topology state">
+            <rect
+              x="18"
+              y="38"
+              width="144"
+              height="42"
+              rx="3"
+              fill="#0f172a"
+              stroke="#475569"
+              strokeWidth="1"
+            />
+            <text x="25" y="52" fill="#7dd3fc" fontSize="6.5" fontFamily="monospace">
+              CLAIM {state.activeClaim} ·{" "}
+              {!state.claimProbeStates[8]
+                ? "REPLAY WITHHELD"
+                : controls.teachReplayMode === 1
+                  ? "PLAYBACK"
+                  : "TEACH"}
+            </text>
+            <text x="25" y="64" fill="#fbbf24" fontSize="6.5" fontFamily="monospace">
+              max |e_i| = {state.maximumNormalizedPhaseError.toFixed(2)} · unitless
+            </text>
+            <text x="25" y="75" fill="#94a3b8" fontSize="5.5" fontFamily="monospace">
+              TS topology frame · SI motion refused
+            </text>
+            {!state.claimProbeStates[8] && (
+              <text x="25" y="85" fill="#fda4af" fontSize="5.5" fontFamily="monospace">
+                CLAIM 8 RECORD / PLAYBACK PATH WITHHELD
+              </text>
+            )}
+          </g>
+          {/* Vertical Column B */}
+          <rect
+            x={columnX - 25}
+            y="70"
+            width="50"
+            height="145"
+            rx="3"
+            fill="#1e293b"
+            stroke="#38bdf8"
+            strokeWidth="2"
+          />
+          <text x={columnX - 15} y="85" fill="#38bdf8" fontSize="8" fontFamily="monospace">
+            COL B
+          </text>
+          {/* Elevation Carriage C & Stroke Doubler 150/154 */}
+          <rect
+            x={columnX - 40}
+            y={carriageY - 18}
+            width="80"
+            height="35"
+            rx="3"
+            fill="#334155"
+            stroke="#f59e0b"
+            strokeWidth="2"
+          />
+          <circle
+            cx={columnX}
+            cy={carriageY}
+            r="8"
+            fill="#d97706"
+            stroke="#fef3c7"
+            strokeWidth="1.5"
+          />
+          <text
+            x={columnX - 35}
+            y={carriageY - 25}
+            fill="#f59e0b"
+            fontSize="8"
+            fontFamily="monospace"
+          >
+            CARRIAGE C (2:1)
+          </text>
+          {/* Horizontal Arm A and source rack 234 */}
+          <line
+            x1={columnX}
+            y1={carriageY}
+            x2={wristX}
+            y2={wristY}
+            stroke="#475569"
+            strokeWidth="20"
+            strokeLinecap="round"
+          />
+          <line
+            x1={columnX}
+            y1={carriageY + 8}
+            x2={wristX}
+            y2={wristY + 8}
+            stroke="#cbd5e1"
+            strokeWidth="1.5"
+            strokeDasharray="3 2"
+          />
+          <text
+            x={armLabelX}
+            y={armLabelY}
+            fill="#cbd5e1"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            ARM A / RACK 234
+          </text>
+          {/* Wrist G & Gripper Fingers 324/326 */}
+          <g transform={`translate(${wristX} ${wristY}) rotate(${wristSwingDegrees})`}>
+            <circle cx="0" cy="0" r="9" fill="#0284c7" stroke="#38bdf8" strokeWidth="1.5" />
+            <g transform={`rotate(${wristRotationDegrees})`}>
+              <line x1="-6" y1="0" x2="6" y2="0" stroke="#e9d5ff" strokeWidth="2" />
+              <line x1="0" y1="-6" x2="0" y2="6" stroke="#e9d5ff" strokeWidth="1" />
+            </g>
+            {displayPose.pinionGripperTopologyEnabled ? (
+              <g aria-label="Claim 12 paired pinions and Claim 13 racks">
+                {[
+                  [-gripperGap, 1],
+                  [gripperGap, -1],
+                ].map(([pinionY, direction]) => (
+                  <g
+                    key={`${pinionY}`}
+                    transform={`rotate(${pinionAngleDegrees * direction} 11 ${pinionY})`}
+                  >
+                    <circle
+                      cx="11"
+                      cy={pinionY}
+                      r="4"
+                      fill="#f59e0b"
+                      stroke="#fef3c7"
+                      strokeWidth="0.8"
+                    />
+                    <path
+                      d={`M 7 ${pinionY} H 15 M 11 ${pinionY - 4} V ${pinionY + 4}`}
+                      stroke="#451a03"
+                      strokeWidth="0.8"
+                    />
+                  </g>
+                ))}
+                <line
+                  x1={-5 + rackOffset}
+                  y1={-gripperGap - 7}
+                  x2={13 + rackOffset}
+                  y2={-gripperGap - 7}
+                  stroke="#fde68a"
+                  strokeWidth="1.5"
+                  strokeDasharray="2 1"
+                />
+                <line
+                  x1={-5 - rackOffset}
+                  y1={gripperGap + 7}
+                  x2={13 - rackOffset}
+                  y2={gripperGap + 7}
+                  stroke="#fde68a"
+                  strokeWidth="1.5"
+                  strokeDasharray="2 1"
+                />
+                <path
+                  d={`M 9 ${-gripperGap} L 30 ${-gripperGap - 3} L 30 ${-gripperGap + 2} Z`}
+                  fill="#e2e8f0"
+                  stroke="#0f172a"
+                  strokeWidth="1"
+                />
+                <path
+                  d={`M 9 ${gripperGap} L 30 ${gripperGap + 3} L 30 ${gripperGap - 2} Z`}
+                  fill="#e2e8f0"
+                  stroke="#0f172a"
+                  strokeWidth="1"
+                />
+              </g>
+            ) : (
+              <rect
+                x="9"
+                y="-5"
+                width="25"
+                height="10"
+                rx="2"
+                fill="#334155"
+                stroke="#fb7185"
+                strokeDasharray="2 1"
+              />
+            )}
+          </g>
+          <text
+            x={wristX}
+            y={wristY - 17}
+            fill="#a855f7"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            WRIST G
+          </text>
+          {/* Separate programming arm H */}
+          <line
+            x1={columnX + 24}
+            y1={carriageY - 18}
+            x2="250"
+            y2="105"
+            stroke="#d97706"
+            strokeWidth="2"
+          />
+          <circle cx="250" cy="105" r="4" fill="#b45309" stroke="#fef3c7" />
+          <text x="235" y="100" fill="#d97706" fontSize="7" fontFamily="monospace">
+            PROGRAMMING ARM H
+          </text>
+          {!state.claimProbeStates[1] && (
+            <g aria-label="Claim 1 six-motion topology withheld">
+              <rect
+                x="52"
+                y="92"
+                width="296"
+                height="126"
+                rx="6"
+                fill="#020617"
+                fillOpacity="0.88"
+                stroke="#fb7185"
+                strokeWidth="1.5"
+              />
+              <text
+                x="200"
+                y="147"
+                textAnchor="middle"
+                fill="#fecdd3"
+                fontSize="11"
+                fontFamily="monospace"
+              >
+                CLAIM 1 SIX-MOTION TOPOLOGY WITHHELD
+              </text>
+              <text
+                x="200"
+                y="165"
+                textAnchor="middle"
+                fill="#fda4af"
+                fontSize="6.5"
+                fontFamily="monospace"
+              >
+                Source topology omitted; no unsupported physical failure inferred.
+              </text>
+            </g>
+          )}
+        </g>
+      );
+    }
+    case "kamen-segway": {
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            SEGWAY DYNAMIC BALANCING & HEADROOM CONTROL (FIGS. 1–4)
+          </text>
+          {/* Ground Contact Line */}
+          <line
+            x1="40"
+            y1="260"
+            x2="360"
+            y2="260"
+            stroke="#475569"
+            strokeWidth="2"
+            strokeDasharray="4 2"
+          />
+          {/* Left & Right Coaxial Wheels 20 */}
+          <circle cx="200" cy="225" r="35" fill="#0f172a" stroke="#38bdf8" strokeWidth="2.5" />
+          <circle cx="200" cy="225" r="14" fill="#1e293b" stroke="#0284c7" strokeWidth="1.5" />
+          <circle cx="200" cy="225" r="4" fill="#fbbf24" />
+          <text x="160" y="235" fill="#7dd3fc" fontSize="8" fontFamily="monospace">
+            20
+          </text>
+          {/* Foot Platform / Chassis 12 */}
+          <rect
+            x="150"
+            y="185"
+            width="100"
+            height="12"
+            rx="3"
+            fill="#334155"
+            stroke="#94a3b8"
+            strokeWidth="1.5"
+          />
+          <text x="260" y="194" fill="#cbd5e1" fontSize="8" fontFamily="monospace">
+            12
+          </text>
+          {/* Vertical Handlebar Mast 16 */}
+          <line x1="195" y1="185" x2="185" y2="70" stroke="#94a3b8" strokeWidth="2.5" />
+          <rect
+            x="170"
+            y="65"
+            width="30"
+            height="6"
+            rx="2"
+            fill="#d97706"
+            stroke="#fbbf24"
+            strokeWidth="1.2"
+          />
+          <text x="155" y="72" fill="#fbbf24" fontSize="8" fontFamily="monospace">
+            14
+          </text>
+          <text x="170" y="125" fill="#94a3b8" fontSize="8" fontFamily="monospace">
+            16
+          </text>
+          {/* Inertial Measurement Cluster 30 & DSP Controller 32 */}
+          <rect
+            x="175"
+            y="165"
+            width="50"
+            height="18"
+            rx="2"
+            fill="#0284c7"
+            stroke="#38bdf8"
+            strokeWidth="1.2"
+            opacity="0.8"
+          />
+          <text
+            x="200"
+            y="177"
+            fill="#f0f9ff"
+            fontSize="7"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            IMU 30 / DSP 32
+          </text>
+          {/* Balancing Margin Monitor 34 */}
+          <rect
+            x="70"
+            y="90"
+            width="80"
+            height="45"
+            rx="3"
+            fill="#1e1b4b"
+            stroke="#818cf8"
+            strokeWidth="1.2"
+          />
+          <text
+            x="110"
+            y="105"
+            fill="#c7d2fe"
+            fontSize="7"
+            fontFamily="monospace"
+            textAnchor="middle"
+            fontWeight="bold"
+          >
+            MARGIN MONITOR 34
+          </text>
+          <text
+            x="110"
+            y="120"
+            fill="#a5b4fc"
+            fontSize="6"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            Δv = v_max - |v|
+          </text>
+          {/* Alarm Transducer 36 (Haptic Ripple + Tone) */}
+          <path
+            d="M 70 112 Q 50 112 50 140 Q 50 170 150 190"
+            stroke="#f43f5e"
+            strokeWidth="1.5"
+            strokeDasharray="3 2"
+            fill="none"
+          />
+          <circle cx="50" cy="140" r="10" fill="#881337" stroke="#f43f5e" strokeWidth="1.5" />
+          <text
+            x="50"
+            y="143"
+            fill="#ffe4e6"
+            fontSize="6"
+            fontFamily="monospace"
+            textAnchor="middle"
+            fontWeight="bold"
+          >
+            ALARM 36
+          </text>
+          {/* CG and Inverted Pendulum Vector */}
+          <circle cx="215" cy="110" r="5" fill="#ef4444" stroke="#fee2e2" strokeWidth="1.2" />
+          <text
+            x="225"
+            y="113"
+            fill="#ef4444"
+            fontSize="8"
+            fontFamily="monospace"
+            fontWeight="bold"
+          >
+            CG
+          </text>
+          <line
+            x1="200"
+            y1="225"
+            x2="215"
+            y2="110"
+            stroke="#ef4444"
+            strokeWidth="1.2"
+            strokeDasharray="4 2"
+          />
+          <text x="210" y="150" fill="#f87171" fontSize="7" fontFamily="monospace">
+            θ (lean)
+          </text>
+        </g>
+      );
+    }
+    case "hull-stereolithography": {
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            STEREOLITHOGRAPHY APPARATUS (FIG. 1 / FIG. 3)
+          </text>
+          {/* Vat Container 21 */}
+          <rect
+            x="60"
+            y="140"
+            width="280"
+            height="130"
+            rx="4"
+            stroke="#78716c"
+            strokeWidth="2"
+            fill="#1c1917"
+          />
+          {/* Liquid Resin 22 */}
+          <rect x="65" y="155" width="270" height="110" fill="#0284c7" opacity="0.4" />
+          <line
+            x1="65"
+            y1="155"
+            x2="335"
+            y2="155"
+            stroke="#38bdf8"
+            strokeWidth="1.5"
+            strokeDasharray="4 2"
+          />
+          <text x="75" y="150" fill="#7dd3fc" fontSize="8" fontFamily="monospace">
+            22 RESIN SURFACE
+          </text>
+          {/* Elevator 29 & Shaft 30 */}
+          <rect
+            x="195"
+            y="195"
+            width="10"
+            height="85"
+            fill="#475569"
+            stroke="#94a3b8"
+            strokeWidth="1"
+          />
+          <rect
+            x="120"
+            y="195"
+            width="160"
+            height="8"
+            rx="2"
+            fill="#64748b"
+            stroke="#cbd5e1"
+            strokeWidth="1"
+          />
+          <text x="130" y="215" fill="#e2e8f0" fontSize="8" fontFamily="monospace">
+            29 PLATFORM
+          </text>
+          {/* Cured Part 30 */}
+          <rect
+            x="150"
+            y="180"
+            width="100"
+            height="15"
+            rx="1"
+            fill="#d97706"
+            stroke="#fbbf24"
+            strokeWidth="1"
+          />
+          <text x="165" y="191" fill="#fef3c7" fontSize="8" fontFamily="monospace">
+            30 CURED PART
+          </text>
+          {/* UV Laser 26 & Galvo Scanner */}
+          <rect
+            x="160"
+            y="45"
+            width="80"
+            height="25"
+            rx="3"
+            fill="#292524"
+            stroke="#c084fc"
+            strokeWidth="1.5"
+          />
+          <text x="175" y="61" fill="#d8b4fe" fontSize="8" fontFamily="monospace" fontWeight="bold">
+            26 LASER
+          </text>
+          {/* Laser Beam Spot 27 */}
+          <line
+            x1="200"
+            y1="70"
+            x2="200"
+            y2="155"
+            stroke="#c084fc"
+            strokeWidth="1.5"
+            strokeDasharray="3 1"
+          />
+          <circle cx="200" cy="155" r="3" fill="#fbbf24" stroke="#f59e0b" strokeWidth="1" />
+          <text x="210" y="145" fill="#facc15" fontSize="8" fontFamily="monospace">
+            27 SPOT
           </text>
         </g>
       );

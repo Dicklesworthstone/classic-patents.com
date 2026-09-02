@@ -4,14 +4,16 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "l
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
-import { stepHoweLockstitch } from "@/physics/machineKernels";
+import { ensureHoweWasm, type HoweKernelSource, stepHoweTopology } from "@/physics/howeWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
-import { buildHoweSewingMachineModel } from "./howeSewingMachineModel";
+import {
+  buildHoweSewingMachineModel,
+  updateHoweSewingMachineKinematics,
+} from "./howeSewingMachineModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -24,9 +26,9 @@ const CAMERA_PRESETS: Record<
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
   iso: { pos: [11, 8, 13], target: [0, 0, 0] },
-  needle: { pos: [3.2, 0.4, 3.0], target: [2.8, -1.0, 0] },
-  shuttle: { pos: [2.8, -1.2, 2.5], target: [2.8, -1.5, 0] },
-  flywheel: { pos: [-4.5, 2.2, 3.5], target: [-3.8, 2.1, 0] },
+  needle: { pos: [3.45, -0.15, 2.65], target: [2.2, -0.7, 0] },
+  shuttle: { pos: [2.7, -0.25, 3.1], target: [2.15, -1.18, 0.34] },
+  flywheel: { pos: [-4.7, 2.7, 1.7], target: [-2.25, 1.35, -1.72] },
   top: { pos: [1.0, 7.0, 0.1], target: [1.0, 0, 0] },
 };
 
@@ -40,16 +42,18 @@ export function HoweSewingMachine3D() {
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const stitchingSpeedRpm = (params.crankRpm as number) ?? 240;
   const stitchPitchMm = (params.stitchPitchMm as number) ?? 3.5;
-  const threadTensionGrams = (params.threadTensionGrams as number) ?? 45;
+  const loopSlackPct = (params.loopSlackPct as number) ?? 65;
   const isCranking = params.isCranking !== 0;
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [kernelSource, setKernelSource] = useState<HoweKernelSource>("unloaded");
+  const kernelSourceRef = useRef<HoweKernelSource>("unloaded");
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
-  // Lockstitch Kinematics Calculations (FrankenSim 4-Bar Mechanism)
+  // Source-order kinematics from the generic FrankenSim fs-mbd composition.
   const stitchState = FrankenSimEngine.stepHoweSewingMachine(
     stitchingSpeedRpm,
-    threadTensionGrams,
+    loopSlackPct,
     stitchPitchMm,
   );
 
@@ -57,7 +61,12 @@ export function HoweSewingMachine3D() {
     domain: "continuum_elasticity",
     timestampMs: Date.now(),
     timeStepDt: 0.016,
-    refusal: { isRefused: false },
+    refusal: {
+      isRefused: !stitchState.claim1InterlockPossible,
+      reason: stitchState.claim1InterlockPossible
+        ? undefined
+        : "Displayed slack is below the declared loop-clearance boundary.",
+    },
     continuum: {
       tensileStressMpa: 0,
       tensileStrainPct: 0,
@@ -76,13 +85,13 @@ export function HoweSewingMachine3D() {
     isCranking,
     stitchPitchMm,
     clothFeedRateMmPerSec,
-    threadTensionGrams,
+    loopSlackPct,
+    claim1InterlockEnabled: claimStates[1] !== false,
+    showCalloutPins,
     isAudioMuted,
     crankOmegaRadPerS: stitchState.crankOmegaRadPerS,
     crankOmegaDegPerS: stitchState.crankOmegaDegPerS,
     displayWrapDeg: stitchState.displayWrapDeg,
-    clothStudioAdvancePerS: stitchState.clothStudioAdvancePerS,
-    clothStudioWrap: stitchState.clothStudioWrap,
     stitchFrequencyHz: stitchState.stitchFrequencyHz,
     isCutaway,
   });
@@ -94,6 +103,19 @@ export function HoweSewingMachine3D() {
     const cfg = CAMERA_PRESETS[preset];
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
+
+  useEffect(() => {
+    let mounted = true;
+    void ensureHoweWasm().then((loadedSource) => {
+      if (mounted) {
+        kernelSourceRef.current = loadedSource;
+        setKernelSource(loadedSource);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -118,6 +140,7 @@ export function HoweSewingMachine3D() {
     let mainCrankAngleDeg = 0;
     let lastStitchTickTime = 0;
     let virtualTime = 0;
+    let completedCycles = 0;
 
     const clock = createStudioClock();
 
@@ -129,34 +152,9 @@ export function HoweSewingMachine3D() {
       const p = live.current;
 
       if (p.isCranking) {
-        mainCrankAngleDeg = (mainCrankAngleDeg + p.crankOmegaDegPerS * dt) % p.displayWrapDeg;
-
-        // Kinematic 4-bar linkage drive
-        const theta = (mainCrankAngleDeg * Math.PI) / 180;
-        model.flywheelGroup.rotation.x = -theta;
-
-        // Needle Rocking Lever Arc & Kinematic Needle Rotation
-        const stitchState = stepHoweLockstitch(mainCrankAngleDeg);
-        const needleAngle = Math.sin(theta) * 0.35;
-        model.needleArmGroup.rotation.z = needleAngle;
-
-        // Curved Eye-Pointed Needle Kinematic Position
-        model.curvedNeedle.position.y = -0.15 + Math.sin(theta) * 0.45;
-        model.curvedNeedle.position.z = Math.cos(theta) * 0.12;
-        model.curvedNeedle.rotation.z = Math.PI + stitchState.needleStudioRotZ;
-
-        // Shuttle Box Linear Reciprocation
-        model.shuttleMesh.position.x = -0.3 + Math.cos(theta - Math.PI / 4) * 0.65;
-
-        // Baster Plate Continuous Cloth Feed
-        const clothShift =
-          (virtualTime * p.clothStudioAdvancePerS) % Math.max(0.1, p.clothStudioWrap);
-        model.clothMesh.position.x = 0.5 - clothShift;
-        model.basterPlateGroup.position.x = 0.5 - clothShift;
-
-        // Thread Tension Line Deflection
-        const threadSag = Math.abs(Math.sin(theta)) * 0.15;
-        model.upperThreadLine.scale.set(1, 1 + threadSag, 1);
+        const unwrappedAngle = mainCrankAngleDeg + p.crankOmegaDegPerS * dt;
+        completedCycles += Math.floor(unwrappedAngle / p.displayWrapDeg);
+        mainCrankAngleDeg = unwrappedAngle % p.displayWrapDeg;
 
         // Periodic Click Audio Synthesis
         if (virtualTime - lastStitchTickTime > 1 / Math.max(1, p.stitchFrequencyHz)) {
@@ -166,6 +164,17 @@ export function HoweSewingMachine3D() {
           }
         }
       }
+
+      const mechanismState = stepHoweTopology(
+        mainCrankAngleDeg,
+        p.loopSlackPct,
+        p.claim1InterlockEnabled,
+      );
+      if (mechanismState.runtimeSource !== kernelSourceRef.current) {
+        kernelSourceRef.current = mechanismState.runtimeSource;
+        setKernelSource(mechanismState.runtimeSource);
+      }
+      updateHoweSewingMachineKinematics(model, mechanismState, completedCycles, p.showCalloutPins);
 
       model.setCutaway?.(p.isCutaway ?? false);
 
@@ -227,7 +236,6 @@ export function HoweSewingMachine3D() {
             claimStates={claimStates}
             onToggleClaim={(c: number, active: boolean) => {
               setClaimStates((prev) => ({ ...prev, [c]: active }));
-              updateParam("crankRpm", active ? 240 : 0);
             }}
           />
           <button
@@ -291,7 +299,7 @@ export function HoweSewingMachine3D() {
                 ? "bg-amber-600 text-white border-amber-700 shadow-md"
                 : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
-            title="Toggle Historical Patent Numeral Pins"
+            title="Toggle Historical Patent Letter Pins"
           >
             <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
@@ -311,32 +319,66 @@ export function HoweSewingMachine3D() {
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
               <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
-                Stitch Speed:
+                Declared display cadence:
               </span>
               <span className="font-bold text-amber-700 dark:text-amber-400">
                 {stitchesPerSecond} stitches/s ({stitchingSpeedRpm} RPM)
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Cloth Feed Rate:</span>
+              <span className="text-ink-600 dark:text-ink-400">Declared display feed:</span>
               <span className="text-cyan-800 dark:text-cyan-400 font-bold">
                 {clothFeedRateMmPerSec} mm/s
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Lockstitch Shear:</span>
+              <span className="text-ink-600 dark:text-ink-400">Loop clearance:</span>
               <span className="text-emerald-800 dark:text-emerald-400 font-bold">
-                {stitchState.lockstitchShearStrengthN} N
+                {stitchState.maximumLoopClearancePct >= 0 ? "+" : ""}
+                {stitchState.maximumLoopClearancePct}%
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Thread Tension:</span>
+              <span className="text-ink-600 dark:text-ink-400">Claim 1 interlock:</span>
               <span className="text-purple-800 dark:text-purple-400 font-bold">
-                {threadTensionGrams} g
+                {claimStates[1] !== false && stitchState.claim1InterlockPossible
+                  ? "available"
+                  : "refused"}
               </span>
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="LOCKSTITCH KINEMATIC SYNCHRONIZATION"
+          chips={[
+            {
+              label: "Display Cadence",
+              value: stitchesPerSecond,
+              unit: "stitches/s",
+              tone: "hot",
+            },
+            {
+              label: "Display Feed",
+              value: clothFeedRateMmPerSec,
+              unit: "mm/s",
+            },
+            { label: "Display Pitch", value: `${stitchPitchMm.toFixed(1)}`, unit: "mm" },
+            { label: "Display Crank", value: `${stitchingSpeedRpm}`, unit: "RPM" },
+            { label: "Loop Slack", value: `${loopSlackPct}`, unit: "%" },
+            {
+              label: "Kernel",
+              value: kernelSource === "wasm" ? "fs-mbd WASM" : "typed mirror",
+            },
+            {
+              label: "Mechanism",
+              value: "Eye-Pointed Needle & Reciprocating Shuttle",
+            },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -371,52 +413,25 @@ export function HoweSewingMachine3D() {
           />
 
           <SensitivitySlider
-            id="howeTension"
+            id="howeLoopSlack"
             patentId="us-4750-howe-sewing-machine"
-            paramKey="threadTensionGrams"
-            label="Thread Tension"
-            value={threadTensionGrams}
-            min={20}
-            max={90}
+            paramKey="loopSlackPct"
+            label="Displayed Loop Slack"
+            value={loopSlackPct}
+            min={0}
+            max={100}
             step={1}
-            unit="g"
-            onChange={(val) => updateParam("threadTensionGrams", val)}
+            unit="%"
+            onChange={(val) => updateParam("loopSlackPct", val)}
             allParams={params}
           />
         </div>
 
-        <PortHamiltonianEnergyStrip
-          patentId="us-4750-howe-sewing-machine"
-          params={params}
-          className="mt-3"
-        />
+        <p className="mt-3 text-[11px] text-ink-500 dark:text-ink-400">
+          No SI power strip is shown: US 4,750 gives no force, torque, inertia, friction, or power
+          datum from which to close an honest energy balance.
+        </p>
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="LOCKSTITCH KINEMATIC SYNCHRONIZATION"
-        chips={[
-          {
-            label: "Stitch Rate",
-            value: stitchesPerSecond,
-            unit: "stitches/s",
-            tone: "hot",
-          },
-          {
-            label: "Feed Speed",
-            value: clothFeedRateMmPerSec,
-            unit: "mm/s",
-          },
-          { label: "Stitch Pitch", value: `${stitchPitchMm.toFixed(1)}`, unit: "mm" },
-          { label: "Crank Speed", value: `${stitchingSpeedRpm}`, unit: "RPM" },
-          { label: "Thread Tension", value: `${threadTensionGrams}`, unit: "g" },
-          {
-            label: "Mechanism",
-            value: "Eye-Pointed Needle & Reciprocating Shuttle",
-          },
-        ]}
-      />
     </div>
   );
 }

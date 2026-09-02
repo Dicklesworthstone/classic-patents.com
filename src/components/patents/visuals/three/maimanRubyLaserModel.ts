@@ -243,17 +243,31 @@ export function createMaimanRubyLaserModel(): {
   laserBeam.position.set(3.0 + beamLength / 2, 0.4, 0);
   group.add(laserBeam);
 
-  // 10. Distant Target Disc with Ablation Focal Spot
+  // 10. Distant Target Disc with Mounting Pedestal & Ablation Focal Spot
+  const targetGroup = new THREE.Group();
+  targetGroup.position.set(3.0 + beamLength, 0.4, 0);
+
   const targetDisc = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 0.2, 32), targetMat);
   targetDisc.rotation.z = Math.PI / 2;
-  targetDisc.position.set(3.0 + beamLength, 0.4, 0);
-  group.add(targetDisc);
+  targetGroup.add(targetDisc);
+
+  // Sturdy Target Pedestal Stand and Floor Plinth
+  const targetPost = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 2.2, 16), baseMat);
+  targetPost.position.set(0, -1.1, 0);
+  targetGroup.add(targetPost);
+
+  const targetFoot = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.25, 1.6), baseMat);
+  targetFoot.position.set(0, -2.1, 0);
+  targetFoot.receiveShadow = true;
+  targetGroup.add(targetFoot);
 
   const ablationGeo = new THREE.CircleGeometry(0.32, 24);
   const targetAblationSpot = new THREE.Mesh(ablationGeo, ablationMat);
   targetAblationSpot.rotation.y = -Math.PI / 2;
-  targetAblationSpot.position.set(3.0 + beamLength - 0.11, 0.4, 0);
-  group.add(targetAblationSpot);
+  targetAblationSpot.position.set(-0.11, 0, 0);
+  targetGroup.add(targetAblationSpot);
+
+  group.add(targetGroup);
 
   // Update loop
   const update = (controls: MaimanRubyLaserControls, timeSec: number, isFiring: boolean) => {

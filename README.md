@@ -10,7 +10,7 @@
 [![Type Checked: Strict TS](https://img.shields.io/badge/TypeScript-5.7_Strict-3178c6.svg)](https://www.typescriptlang.org/)
 [![Code Quality: Biome](https://img.shields.io/badge/Linter-Biome_2.5-60a5fa.svg)](https://biomejs.dev/)
 
-**An open-source digital museum and technical analysis platform restoring history's most consequential patents into verified transcripts, full original PDFs, rigorous "Plain English" engineering breakdowns, and interactive real-time 3D physical simulations.**
+**An open-source digital museum and technical analysis platform restoring history's most consequential patents into pinned facsimiles, reviewed archival editions, rigorous "Plain English" engineering breakdowns, and interactive physical simulations.**
 
 [**Explore the Live Museum**](https://classic-patents.com) · [**Interactive Timeline**](https://classic-patents.com/timeline) · [**Comprehensive Plan**](./COMPREHENSIVE_PLAN_FOR_CLASSIC_PATENTS.md) · [**Agent Guidelines**](./AGENTS.md)
 
@@ -23,16 +23,16 @@
 **The Problem:** Original patents represent the greatest technical breakthroughs in human history—from the Wright Brothers' 3-axis flight control to Tesla's progressive two-circuit alternating-current motor-generator and Robert Noyce's monolithic silicon chip. However, in their historical state, they are trapped in low-resolution microfilm scans, archaic legal jargon ("*Be it known that we...*"), and static 2D lithographs that cannot convey dynamic physical mechanisms.
 
 **The Solution:** **Classic Patents** restores these masterpieces:
-1. **Verified Archival Transcripts & Embedded PDFs**: High-fidelity digitized text alongside complete, high-resolution original USPTO facsimile documents.
+1. **Reviewed Archival Editions & Embedded PDFs**: Continuous hand-authored source faces and reviewed ledgers alongside pinned public-record facsimiles. Coverage is explicit: 50 of 102 catalogue records currently publish the typed accepted-edition contract; the remaining 52 retain their pinned facsimiles and independently supportable education while typed review evidence remains restrictive.
 2. **Dual-Projection (Diptych Engine)**: Side-by-side synchronized views of the verbatim legal specification and a lucid, mathematically rigorous **"Plain English" engineering breakdown**.
-3. **Interactive 3D WebGL & Physics Visualizations**: Parameterized 3D Three.js modules with vibrant atmospheric blue skies, studio lighting, and interactive controls allowing visitors to manipulate real physical parameters (e.g. twisting the Wright Flyer's wings to observe adverse yaw and vortex shedding, adjusting the generator rate to observe Tesla's progressive pole shift in the Fig. 9 motor-generator, testing nuclear reactor cadmium rod criticality, or inspecting Wozniak's two-phase shared memory multiplexing).
+3. **Interactive 2D/3D Physics Visualizations**: Parameterized Three.js, SVG, and Canvas instruments let visitors manipulate real physical parameters. Runtime ownership is executable rather than aspirational: the catalogue has 3 patent-specific WASM surfaces (the Flyer, Goddard's source-bounded 1914 apparatus, and Daimler's source-bounded marine installation), 0 dedicated interpretive WASM surfaces, 40 generic FrankenSim WASM consumers, and 59 typed-host-only records. Roomba composes the generic `fs-mbd` planar differential-drive owner with its source-bounded optical redirect; Otto composes generic revolute and prismatic joints into one closed slider-crank, half-speed side shaft, valve, and governor topology. Both promote the shared 2D/3D tape only after an accepted WASM step. All 102 have a TypeScript default telemetry owner; a WASM label is admitted only after the relevant module loads and steps.
 4. **Historical & Legal Deconstructions**: Line-by-line claim decoders, patent litigation histories (Wright vs. Curtiss, Bell vs. Gray, Farnsworth vs. RCA, Goodyear vs. Day, SRI vs. Xerox/Apple), and civilizational impact analyses.
 
 ---
 
-## Curated Historical Patents (22 Featured — 79 in the Live Catalogue)
+## Curated Historical Patents (29 Highlighted — 102 in the Live Catalogue)
 
-The live, searchable catalogue at [classic-patents.com](https://classic-patents.com) holds all 79 records — every one with a pinned USPTO facsimile, reviewed transcription, archival edition, and interactive simulation. This table highlights 22 foundational entries; the site's search (⌘K) and timeline cover the complete registry.
+The live, searchable catalogue at [classic-patents.com](https://classic-patents.com) holds 102 records. All 102 have pinned facsimiles, explicit interactive-visual routes, default TypeScript telemetry owners, and live equation sets; 99 have reviewed ledgers. **50 of 102** currently cross the typed reviewed-edition publication boundary. The other 52 records are explicitly classified as candidates, held, rejected, facsimile-only, or source-bounded: their pinned PDFs and independently supportable educational material remain available, but a short excerpt, draft, ledger, or crop is never represented as an accepted complete source face. This table highlights 29 foundational entries; search (⌘K) and the timeline cover the full registry.
 
 | Patent | Title | Inventors | Grant Date | Key Breakthrough | Interactive 3D Sim |
 |---|---|---|---|---|---|
@@ -46,18 +46,25 @@ The live, searchable catalogue at [classic-patents.com](https://classic-patents.
 | **[US 586,193](./src/data/patents/marconi-radio.ts)** | Transmitting Electrical Signals | Guglielmo Marconi | Jul 13, 1897 | Elevated monopole aerial & earth-grounded spark system | 📡 3D RF Spark Transmitter |
 | **[US 593,138](./src/data/patents/tesla-coil-593138.ts)** | Electrical Transformer | Nikola Tesla | Nov 2, 1897 | Graded spiral windings for high-potential transformation and transmission | ⚡ 3D High-Potential Transformer |
 | **[US 821,393](./src/data/patents/wright-flyer.ts)** | Flying-Machine | Orville & Wilbur Wright | May 22, 1906 | 3-axis aerodynamic flight control via wing warping | 🛩️ 3D 6-DoF Flight Sim |
-| **[US 1,155,986](./src/data/patents/goddard-rocket.ts)** | Rocket Apparatus | Robert H. Goddard | Oct 5, 1915 | Bipropellant combustion chamber & de Laval nozzle | 🚀 3D Supersonic Rocket Nozzle |
+| **[US 1,102,653](./src/data/patents/goddard-rocket.ts)** | Rocket Apparatus | Robert H. Goddard | Jul 7, 1914 | Nested solid-charge rockets, curved spin passages, launch bearings, and gyroscopically isolated camera support | 🚀 3D Connected Rocket Apparatus |
 | **[US 1,781,541](./src/data/patents/einstein-refrigerator.ts)** | Refrigeration | Albert Einstein & Leo Szilard | Nov 11, 1930 | Zero-moving-parts hermetic Dalton partial pressure cooling | ❄️ 3D Absorption Refrigerator |
 | **[US 1,773,980](./src/data/patents/farnsworth-tv.ts)** | Television System | Philo T. Farnsworth | Aug 26, 1930 | All-electronic image dissector & magnetic raster | 📺 3D Dissector Tube Raster |
 | **[US 2,292,387](./src/data/patents/lamarr-frequency-hopping.ts)** | Secret Communication System | Hedy Lamarr & George Antheil | Aug 11, 1942 | 88-frequency piano-roll spread-spectrum carrier hopping | 🎹 3D 88-Channel RF Analyzer |
 | **[US 2,495,429](./src/data/patents/spencer-microwave.ts)** | Method of Treating Foodstuffs | Percy L. Spencer | Jan 24, 1950 | Cavity magnetron dielectric microwave heating | 🍕 3D Microwave Magnetron |
 | **[US 2,708,656](./src/data/patents/fermi-reactor.ts)** | Neutronic Reactor | Enrico Fermi & Leo Szilard | May 17, 1955 | Heterogeneous graphite lattice & cadmium criticality | ⚛️ 3D Criticality Pile Simulator |
+| **[US 2,846,084](./src/data/patents/goertz-electronic-master-slave-manipulator.ts)** | Electronic Master Slave Manipulator | Raymond C. Goertz, William M. Thompson & Robert A. Olsen | Aug 5, 1958 | Seven-channel bilateral teleoperation, force reflection, tachometer feedback & signal limiting | 🦾 3D Master–Slave Servo Studio |
 | **[US 2,524,035](./src/data/patents/bardeen-transistor-2524035.ts)** | Three-Electrode Circuit Element Utilizing Semiconductive Materials | John Bardeen & Walter Brattain | Oct 3, 1950 | Point-contact germanium semiconductor circuit element | 🔬 3D Solid-State Transistor |
 | **[US 2,981,877](./src/data/patents/noyce-ic.ts)** | Semiconductor Device-and-Lead Structure | Robert N. Noyce | Apr 25, 1961 | Monolithic planar silicon IC with aluminum leads | 🔬 3D Planar Silicon Wafer |
 | **[US 3,541,541](./src/data/patents/engelbart-mouse.ts)** | X-Y Position Indicator | Douglas C. Engelbart | Nov 17, 1970 | Orthogonal dual-wheel coordinate encoder mouse | 🖱️ 3D Dual-Wheel Table Mouse |
 | **[US 3,671,542](./src/data/patents/kwolek-kevlar.ts)** | Wholly Aromatic Polycarbonamide Filaments | Stephanie L. Kwolek | Jun 20, 1972 | Liquid-crystalline aramid polymer chain alignment (Kevlar) | 🛡️ 3D Polymer Tensile Lattice |
 | **[US 3,923,554](./src/data/patents/boyle-smith-ccd.ts)** | 3-Phase Charge-Coupled Device | Willard Boyle & George Smith | Dec 2, 1975 | 3-phase MOS potential well charge packets | 📷 3D Digital Pixel CCD Well |
+| **[US 4,098,001](./src/data/patents/watson-remote-center-compliance.ts)** | Remote Center Compliance System | Paul C. Watson | Jul 4, 1978 | Decoupled focal flexures & passive anti-jamming compliance | 🦾 3D Focal RCC Wrist |
 | **[US 4,136,359](./src/data/patents/wozniak-apple.ts)** | Microcomputer for Use with Video Display | Steve Wozniak | Jan 23, 1979 | Two-phase shared-bus time-multiplexed DRAM | 💻 3D Apple II Bus Multiplexer |
+| **[US 4,341,502](./src/data/patents/makino-scara.ts)** | Assembly Robot | Hiroshi Makino | Jul 27, 1982 | Selective compliance 4-link parallel arm (SCARA) | 🦾 3D SCARA Robot Arm |
+| **[US 4,765,668](./src/data/patents/robot-end-effector.ts)** | Robot End Effector | Alexander H. Slocum & Peter A. Jurgens | Aug 23, 1988 | Symmetric double hand, opposed-thread ball screws & interchangeable dovetail fingers | 🦾 3D Double-Handed End Effector |
+| **[US 4,921,293](./src/data/patents/salisbury-robot-hand.ts)** | Multi-Fingered Robotic Hand | Carl F. Ruoff & J. Kenneth Salisbury, Jr. | May 1, 1990 | Three palm-rooted cable-driven digits & the Figure 3 four-tension / three-torque map | 🖐️ 3D Connected Transmission Studio |
+| **[US 5,701,965](./src/data/patents/kamen-transporter.ts)** | Human Transporter | Dean L. Kamen et al. | Dec 30, 1997 | Inverted pendulum dynamic balance & cluster stair climbing | 🛴 3D Balancing Transporter |
+| **[US 6,302,230](./src/data/patents/kamen-segway.ts)** | Personal Mobility Vehicles (Segway HT) | Dean L. Kamen et al. | Oct 16, 2001 | Dynamic balancing, balancing margin supervisory monitor & 18 Hz tactile ripple alarm | 🛴 3D Segway Transporter Studio |
 
 ---
 
@@ -73,8 +80,8 @@ The live, searchable catalogue at [classic-patents.com](https://classic-patents.
 │                     PATENT DUAL-PROJECTION ENGINE                       │
 │  ┌─────────────────────────────────┬────────────────────────────────┐  │
 │  │   Face 1: Archival Facsimile    │  Face 2: Plain English         │  │
-│  │   • Verbatim OCR Transcript     │  • Deep Engineering Analysis   │  │
-│  │   • Full Embedded USPTO PDF     │  • Line-by-Line Claim Decoders │  │
+│  │   • Reviewed Archival Edition   │  • Deep Engineering Analysis   │  │
+│  │   • Pinned Public Facsimile     │  • Line-by-Line Claim Decoders │  │
 │  │   • Numbered Interactive Pins   │  • Historical Patent Wars      │  │
 │  └─────────────────────────────────┴────────────────────────────────┘  │
 ├────────────────────────────────────────────────────────────────────────┤
@@ -86,27 +93,22 @@ The live, searchable catalogue at [classic-patents.com](https://classic-patents.
 │  • 3D Wozniak Apple II Interleaved Memory Bus & NTSC Color Burst       │
 │  • Dynamic On-Demand Code Splitting (198 kB Initial JS Payload)        │
 ├────────────────────────────────────────────────────────────────────────┤
-│              FRANKENSIM COMPUTATIONAL PHYSICS WASM CORE                │
-│  • 6-DoF Aerodynamics (`fs-flyer-wasm`, `fs-mbd`, `fs-time`)           │
-│  • Maxwell Electromagnetics & Alternating-Current Fields (`fs-flux`)   │
-│  • Solid-State & Microelectronics (`fs-lattice`, `fs-exec`)            │
-│  • Thermodynamics & Dalton Refrigeration (`fs-conduction`, `fs-lbm`)   │
-│  • Reactor Criticality & Delayed Neutron Kinetics (`fs-lattice`)       │
-│  • Polymer Tensile Lattices & Mechanisms (`fs-truss`, `fs-solid`)      │
+│                   TYPED PHYSICS & TELEMETRY OWNER BUS                  │
+│  • 102/102 typed-host default owners with explicit live equations      │
+│  • 3 patent-specific + 0 interpretive + 40 generic WASM surfaces       │
+│  • 47 ticking bus updaters + 55 typed snapshot publishers              │
+│  • TS fallback and cold-start placeholder provenance remain explicit   │
+│  • Typed WASM refusal where exposed; host validation everywhere else   │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Computational Physics Engine (FrankenSim WASM)
+## Computational Physics and Telemetry Owners
 
-The interactive simulators are backed by **FrankenSim** WebAssembly kernels with Blake3 state digests and typed refusal boundaries:
-1. **Aerodynamics & 6-DoF MBD** (`fs-flyer-wasm`, `fs-mbd`, `fs-time`): Wright Flyer wing-warping induced drag and adverse yaw; Goddard supersonic rocket de Laval expansion.
-2. **Electromagnetics & Alternating-Current Fields** (`fs-flux`): Tesla's Fig. 9 generator-coupled progressive pole shift; Bell variable-reluctance acoustic currents; Marconi spark RF wavefields.
-3. **Solid-State & Microelectronics** (`fs-lattice`, `fs-sparse`, `fs-exec`): Bardeen point-contact hole injection; Noyce planar $\text{SiO}_2$ passivation; Wozniak two-phase interleaved memory arbitration.
-4. **Thermodynamics & Transport** (`fs-conduction`, `fs-convection`, `fs-lbm`): Edison Stefan-Boltzmann vacuum filament emission; Einstein-Szilard ternary partial-pressure absorption cooling.
-5. **Nuclear Physics** (`fs-lattice`, `fs-rand`): Fermi-Szilard 6-group delayed neutron kinetics and cadmium rod criticality index ($k_{\text{eff}}$).
-6. **Polymers & Continuum Mechanics** (`fs-truss`, `fs-solid`, `fs-matdb`): Goodyear sulfur cross-linking; Kwolek Kevlar aramid tensile alignment.
+Every catalogue id has a typed `PATENT_PHYSICS_REGISTRY` entry and non-empty default telemetry. Where a historical source does not supply a dimensional law or operating constants, its controls and telemetry are explicitly normalized or source-bounded rather than falsely represented as SI facts. Aerodynamics, electromagnetics, solid-state electronics, thermodynamics, reactor kinetics, polymers, and mechanisms all use this same presentation contract. Salisbury’s three palm-rooted digit chains remain typed-host-only until a patent-specific FrankenSim boundary is built, hash-pinned, and successfully stepped: its live surface evaluates the printed Figure 3 four-tension / three-torque law, but does not imply historic dynamic grasp performance. The generated [`coverageManifest`](./src/physics/coverageManifest.ts) binds each of the 102 ids to its facsimile, ledger and edition state, visual route, default owner, optional WASM surface, shared-bus participation, and admitted provenance.
+
+The synchronous default owner is TypeScript for all 102 records. After browser initialization, the Flyer, Goddard's US 1,102,653 apparatus, and Daimler's US 361,931 marine installation can use patent-specific **FrankenSim** WebAssembly packages, while 40 visuals consume generic FrankenSim owners; every such path retains an admitted TypeScript fallback. Goddard's active export composes `fs-mbd` rigid-body integration for the patent's primary spin, auxiliary-stage release sequence, Claim 2 tube ratio, and gyroscopically isolated camera support. It publishes no invented thrust, Mach number, liquid-propellant state, or trajectory. Daimler's export composes the generic `fs-mbd` prismatic-joint owner for the source's one-axis propeller-shaft motion, mutually exclusive ahead/neutral/astern contact topology, and passive-plus-optional-pump cooling paths. The da Vinci tool-interface visual composes five generic `fs-mbd` revolute joints and one normalized prismatic insertion joint behind its own narrow browser boundary; link dimensions and host-side cup contact remain explicitly illustrative. Makino's US 4,341,502 visual does not pretend the un-dimensioned four-link grant can step a physical arm: it shares a normalized topology/angle exhibit and refuses SI force, stiffness, payload, and controller telemetry. Howe's source-order lockstitch visual composes one prescribed `fs-mbd` shaft drive into revolute needle-arm and picker joints plus prismatic shuttle, lifting-rod, and baster-feed joints; only the printed one-eighth-inch needle-eye offset and three-quarter-inch baster-point pitch are dimensional, while an explicit normalized loop-clearance boundary can refuse Claim 1 capture. Otis's full 1861 apparatus composes twelve generic `fs-mbd` scalar joints for platform D, safety bar F, levers E, pawls f, drums H/N, shaft I, shipper S, brake Z, and counterpoise R; the browser kernel owns only the printed switching topology and normalized display coordinates because US 31,128 supplies no load, force, timing, travel, or power data. Otto's narrow browser boundary composes eight generic `fs-mbd` joint coordinates behind one crank drive, closes the display-scale slider-crank exactly, and derives the 2:1 side shaft, slide valve, exhaust lift, and normalized governor pose from the same coordinate; the grant supplies no build dimensions, masses, inertia, or operating speed, so those remain declared presentation inputs rather than historical claims. Edison's browser seam composes the generic `fs-conduction` Stefan-Boltzmann owner with explicit voltage and hot resistance, the source's seven-thousandths-inch filament diameter, a declared 22 cm thermal-area length, declared emissivity, and ambient temperature; it does not infer lifetime, efficacy, or hidden material properties. Tesla's narrow browser boundary composes the dependency-free `fs-flux` quarter-wave feature from the frequency, propagation speed, and developed conductor length printed in US 593,138. It reports wavelength, electrical length, and normalized standing-wave position only; absolute voltage, current, loss, air breakdown, and discharge reach remain explicitly unknown. These compositions publish no invented travel, speed, friction, flow, thrust, power, or clinical metric. The Goddard package retains a separately named liquid-nozzle export for the later 1926 liquid-rocket record, but the 1914 model never calls it. All ten dedicated boundaries expose typed WASM refusals; the host still validates every accepted result before using it. Tests instantiate and step all eleven shipped packages, exercise the dedicated refusal boundaries and malformed-output rejection, pin the binary digests, and make `bun run pipeline:verify` fail on coverage drift.
 
 See the complete roadmap in [`docs/FRANKENSIM_WASM_INTEGRATION_TODO.md`](./docs/FRANKENSIM_WASM_INTEGRATION_TODO.md).
 
@@ -137,6 +139,10 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ---
 
 ## Verification & Deployment
+
+For per-patent and full-catalogue production-browser acceptance, including the
+exact 320 px route, structured JSONL diagnostics, and retained failure traces,
+see [Patent vertical-slice browser acceptance](./docs/PATENT_E2E_HARNESS.md).
 
 ```bash
 # Verified production release. This serializes shared builds, runs the quality

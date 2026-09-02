@@ -1,0 +1,77 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 8 ---
+
+United States Patent. Watson. 4,098,001. July 4, 1978.
+REMOTE CENTER COMPLIANCE SYSTEM.
+Inventor: Paul C. Watson, Arlington, Mass. Assignee: The Charles Stark Draper Laboratory, Inc., Cambridge, Mass. Appl. No. 732,286. Filed Oct. 13, 1976. Int. Cl. G01B 5/25. 2 Claims, 15 Drawing Figures.
+
+Abstract: A remote center compliance system including means for establishing rotational motion about a center remote from the means for establishing the rotational motion and in two directions transverse to radii from the remote center.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 8 ---
+
+U.S. Patent. July 4, 1978. Sheet 1 of 3. 4,098,001.
+
+Figs. 1, 2, 3, 4, 4A, and 5. Remote center compliance system 10; rotational mechanism 12; translational mechanism 14; rod 16; fixed machine portion 18; plate 20; ring 22; flexures 24, 26, 28; remote center 50; chamfered hole 71; and the translational and rotational force diagrams.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 8 ---
+
+U.S. Patent. July 4, 1978. Sheet 2 of 3. 4,098,001.
+
+Figs. 5A, 6, 7, 8, and 9. The complying orientation, alternate annular construction, bellows 90 with casing 92 and support wire 94, bearing construction, and an arrangement that places flexures in tension for excessive axial force.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 8 ---
+
+U.S. Patent. July 4, 1978. Sheet 3 of 3. 4,098,001.
+
+Figs. 10, 11, 11A, and 12. Concatenated rotational and translational mechanisms, four support/flexure elements, their geometry, and an alternative conical structure. Paul C. Watson, inventor.
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 8 ---
+
+REMOTE CENTER COMPLIANCE SYSTEM
+
+FIELD OF INVENTION
+
+This invention relates to a remote center compliance system and more particularly to such a system which enables rotation in two directions about a remote center and which enables translational motion as well as rotational motion.
+
+BACKGROUND OF INVENTION
+
+In many industrial, scientific and other applications, it is necessary to perform insertion operations, such as putting pegs in holes, screws into threaded apertures, placing parts into specific locations, and similar operations. Conventionally, such operations could be done by hand by humans, but this work is tedious and boring, and often requires extremely precise and delicate placement which may not be possible for humans to accomplish for extended periods of time or with the proper delicacy. In addition, the use of human labor is often extremely expensive. Mechanical hands and arms using servo and force sensors have been used in many applications. These devices are typically extremely expensive because of the complex circuitry required to sense and feed back operational signals to the servos, and because of the relatively high cost of the computers and software which must be used to operate such systems. More recently, a variation on these mechanical devices has been introduced which searches in one dimension for a periphery and then returns some predetermined distance to an assumed middle point and then performs the same operation in a perpendicular direction. This too is a relatively expensive and complex device. Proximate center mechanical centering devices have been suggested for such applications, but they necessarily require the presence of part of their supporting structure in the work area, where it may interfere with the operations of the device.
+
+While human operators are limited as to the size and force of the tasks they can perform, the automated devices are not so limited but they do require increasing energy with increasing size and force range demands.
+
+SUMMARY OF INVENTION
+
+It is therefore an object of this invention to provide a remote center compliance system which may be used in an assembly or insertion device. It is a further object of this invention to provide an improved insertion or assembly device which is extremely simple and inexpensive. It is a further object of this invention to provide such a device which requires no energy sources, no people, and no sensors and servos for its operation.
+
+The invention results from the realization that by creating virtual rotation centers located beyond the remote center compliance system mechanism and near or at the end of the insertion member, forces and moments may be created corresponding to a gentle pulling of the member to be inserted into the hole, and the further realization that by the addition of a translational motion device concatenated with the rotational motion device and the operator member, the operator member is enabled to seek the hole with translational motion and then, in a second separate, decoupled, independent rotational motion, rotate to bring the axis of the operator member in line with that of the hole.
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 8 ---
+
+The invention features a remote center compliance system which may be used in a mechanical assembler or insertion device. It includes means for establishing rotational motion in directions transverse (tangential) to the radii of and about a center remote from the means for establishing the rotational motion. In a preferred embodiment the means for establishing the rotational motion may include first and second members and means for relatively, rotatably engaging the first and second members with each other for relative rotation about a center remote from the first and second members. The means for relatively, rotatably engaging may include at least three rotational interconnection elements located along portions of spherical radii emanating from the remote center, and each such rotational interconnection element may include two major motion portions, one proximate each of the first and second members. Also in a preferred embodiment, operator means are fixed to the means for establishing the rotational motion, and the center of rotational motion is at or near the end of the operator means.
+
+The system may further include means for establishing translational motion which is concatenated with the means for establishing rotational motion. The means for establishing translational motion may include third and fourth members relatively, translationally moveable with respect to each other and means for relatively, translationally engaging the third and fourth members with each other.
+
+DISCLOSURE OF PREFERRED EMBODIMENT
+
+Other objects, features and advantages will occur from the following description of a preferred embodiment and the accompanying drawings. FIG. 1 is a schematic cross-sectional diagram using rotational and translational mechanisms; FIG. 2 is a plan view; FIG. 3 shows the basic geometry; FIG. 4 and FIG. 4a show translational response; FIG. 5 and FIG. 5a show rotational response; FIG. 6 through FIG. 10 show alternate constructions.
+
+There is shown in FIG. 1 a remote center compliance system 10 including means for establishing rotational motion 12 and means for establishing translational motion 14. An operating member, rod 16, is extended outwardly from the means for establishing rotational motion 12, and the means for establishing rotational motion 12 and translational motion 14 are concatenated and extended from the fixed portion 18 of the machine or device in which they are applied. Rod 16 is typically replaced by or carries a robot hand, mechanical grip, claws, clamps or the like which manipulate the part to be inserted or directed by the mechanism. The means for establishing rotational motion includes a member, plate 20, and another member, ring 22, which are relatively, rotatably interconnected by means such as flexures 24, 26, and 28. Flexures 24, 26, and 28 have major motion portions, pairs of reduced portions 30, 32; 34, 36; 38, 40, respectively, conveniently located proximate associated plates 20 and 22 in order to concentrate the motion at those reduced portions. Flexures 24, 26, and 28 lie along portions or radii 42, 44, 46, which emanate from center 50 which is remote from the system: it exists at, near, or beyond the free end 52 of rod 16.
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 8 ---
+
+The means for establishing translational motion 14 includes a member such as lip 54 integral with cylindrical wall 55 of machine 18, and another member which can be constituted by plate 22, which thus forms a part of both the translational and rotational mechanisms. Means for establishing translational motion 14 also includes, between plate 22 and lip 54, flexures 56, 58, and 60. A translational force, T, on the end 52 of rod 16 causes relative translational motion between plates 20 and 22 by means of flexures 56, 58, and 60, while a rotational force, R, about the end 52 causes relative rotational motion between plates 20 and 22 about remote center 50 by means of flexures 24, 26, and 28. The basic geometry is depicted in FIG. 3, where flexures 24, 26, and 28 are disposed along portions of radii 42, 44, and 46 emanating from remote center 50, to form a triangular pattern typically but not necessarily equilateral.
+
+In operation, system 10, FIG. 4, is moved axially with machine part 18 to move rod 16 into hole 71 in work piece 73. Fine adjustment occurs by means for establishing translational motion 14 in response to force F developed as end 52 of rod 16 is guided by chamfer 75 as rod 16 experiences force I. The means for establishing translational motion 14 is shown in its shifted position in FIG. 4a. The fine adjustment afforded by the remote center compliance system, after the machine brings rod 16 to an approximate position over hole 71, enables precise translational alignment of rod 16 with hole 71 as an insertion force is applied.
+
+The means for establishing rotational motion operates in a similar fashion to make fine, precise adjustment. For example, as shown in FIG. 5, when rod 16 has been located at hole 71′, perfect alignment is not yet obtained because the axis 76 of rod 16 is not coincident with the center axis 78 of hole 71′. Upon application of insertion force, rod 16 makes contact at point 81 or 83 and then at the other point, subsequent to which a rotational moment, arrow M, is applied and is enabled by the rotational mechanism to rotate rod 16 until axis 76 becomes coincident with axis 78. The system may be made adaptive for different rod or tool lengths by suitable adjustment of the inclination of flexures 24, 26, and 28. The rotational mechanism in that condition is shown in FIG. 5a.
+
+The system may be alternatively constructed as shown in FIG. 6, where rod 16a is fixed to plate 20a and the rotational and translational flexures connect annular parts. In applications where the operator or rod is used to apply a torque or turning force to a workpiece, such as threading a screw into a threaded hole, it may be desirable to prevent even slight twisting. For this purpose bellows 90, FIG. 7, composed of casing 92 and support wire 94, may be fixed to machine 18 and plate 20 to permit translational motion and rotational motion in directions transverse to radii from the remote center, but prevent a third rotational motion, a twisting motion of rod 16. Bellows 90 need not be introduced through the center of the device but may as well be externally attached so that it envelops the entire mechanism.
+
+--- REVIEWED TRANSCRIPTION PAGE 8 OF 8 ---
+
+Although the system has been shown with mechanisms employing flexures, that is not a necessary limitation: the interconnection between members of rotational and translational portions may be made by springs, ball bearings, and various other devices. In FIG. 8, ball bearings replace the illustrated flexures for limited rotation and translation. In FIG. 9, the arrangement puts rotational flexures in tension under an excessive axial-force condition. As thus far described, the decoupled, independent translational and rotational motions enabled by the system are effected by two discrete mechanisms, one of which performs solely translational motion, the other of which performs solely rotational motion. However, this is not a necessary limitation of the invention: a single mechanism which enables both motions, or two mechanisms, one of which performs one motion and the other both motions, may be constructed.
+
+An example of a combined arrangement is shown in FIG. 10, where a concatenated rotational mechanism 12c and translational mechanism 14c support operating member 16c. The flexures lie along radii emanating from remote center 50c beyond the end 52c. A translational force T and a rotational force R produce the separately described rotations of the plates and flexure. The source also says the relatively rotatable parts need not be discrete engagements: they may be sections of a sphere sliding relative to one another by low-friction surfaces, coatings, or members. Other objects, features and advantages will occur to those skilled in the art and are within the following claims:
+
+1. A remote center compliance system for an assembler device comprising: a first member fixed to said assembler device; a second member; operator means interconnected with said second member; a third member intermediately interconnected with said first and second members; at least three rotational interconnection elements interconnected between said third member and one of said first and second members and disposed along spherical radii of a remote center at, near or beyond the end of said operator means for enabling said operator means to rotate about said remote center; each of said rotational elements including a major motion portion proximate each of said members with which it is interconnected; and a plurality of translational interconnection elements interconnected between said third member and the other of said first and second members and disposed generally parallel to the axis of said operator means for enabling said operator means to translate relative to said first member; each of said translational elements including a major motion portion proximate each of said members with which it is interconnected.
+
+2. The system of claim 1, further including torque resistant means interconnected between said first member and operator means for preventing twisting of the operator means.

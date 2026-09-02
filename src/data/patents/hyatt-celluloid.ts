@@ -1,6 +1,16 @@
 import { hyattCelluloidArchivalEdition } from "@/data/editions/hyattCelluloidEdition";
 import type { Patent } from "@/types/patent";
 
+function manualClaimText(number: number): string {
+  const block = hyattCelluloidArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Hyatt manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const hyattCelluloidPatent: Patent = {
   id: "us-105338-hyatt-celluloid",
   patentNumber: "US 105,338",
@@ -100,7 +110,7 @@ export const hyattCelluloidPatent: Patent = {
     {
       number: 1,
       isIndependent: true,
-      originalText: "Grinding pyroxyline into a pulp, as and for the purpose described.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "Claim 1 protects the preparatory operation of grinding pyroxyline into pulp. Its legal role is narrow but foundational: the pulp is the condition that the specification says permits pigments and other powders to be mixed thoroughly before solvent action.",
       keyInnovations: ["Pyroxyline pulp", "Wet grinding", "Pre-solvent powder mixing"],
@@ -110,8 +120,7 @@ export const hyattCelluloidPatent: Patent = {
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "The use of finely-comminuted camphor-gum mixed with pyroxyline pulp, and rendered a solvent thereof by the application of heat, substantially as described.",
+      originalText: manualClaimText(2),
       plainEnglish:
         "Claim 2 covers the combination of finely divided camphor-gum with pyroxyline pulp when heat renders the camphor a solvent of that pulp. It requires the named material relationship and heat-activated solvent effect; it does not claim the disclaimed older practice of using a pre-made liquid camphor solution merely because camphor is present.",
       keyInnovations: [
@@ -126,8 +135,7 @@ export const hyattCelluloidPatent: Patent = {
       number: 3,
       isIndependent: false,
       dependsOn: [2],
-      originalText:
-        "In conjunction with such use of camphor-gum, the employment of pressure, and continuing the same until the mold and contents are cooled, substantially as described.",
+      originalText: manualClaimText(3),
       plainEnglish:
         "Claim 3 adds a pressure-and-cooling condition to the camphor-gum use of claim 2. The pressure is not momentary: the source requires it to continue until both mold and contents have cooled, matching the process description's sequence of completing solvent action, cooling under pressure, and only then removing the molded mass.",
       keyInnovations: ["Pressure during molding", "Cooling under pressure", "Camphor-gum process"],

@@ -1,50 +1,78 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera, Eye, EyeOff, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import { daimlerKernelSource, ensureDaimlerWasm } from "@/physics/daimlerWasm";
+import { FrankenSimEngine } from "@/physics/engine";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
-  buildDaimlerMarineEngineModel,
-  updateDaimlerMarineEngineKinematics,
-} from "./daimlerEngineModel";
+  buildDaimlerMarineInstallationModel,
+  updateDaimlerMarineInstallationKinematics,
+} from "./daimlerMarineInstallationModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "motor" | "coupling" | "reverse" | "cooling" | "reservoirs";
+type CameraPreset =
+  | "iso"
+  | "motor"
+  | "coupling"
+  | "reverse"
+  | "cooling"
+  | "reservoirs"
+  | "steering";
 
 const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [4.5, 3.5, 5.5], target: [0, 0.4, 0] },
-  motor: { pos: [0, 1.4, 4.5], target: [0, 0.2, 0] },
-  coupling: { pos: [1.3, 0.6, 3.2], target: [1.1, 0.15, 0] },
-  reverse: { pos: [1.0, -0.2, 3.5], target: [1.1, 0.15, 0] },
-  cooling: { pos: [0, 1.5, 3.5], target: [0, 0.2, 0.6] },
-  reservoirs: { pos: [0, -1.5, 4.2], target: [0, -0.8, 0] },
+  iso: { pos: [10.5, 6.2, 11.5], target: [1, -0.25, 0] },
+  motor: { pos: [2.7, 2.7, 5.4], target: [0, 0.25, 0] },
+  coupling: { pos: [4.2, 4.2, 4.8], target: [1.45, -0.15, 0] },
+  reverse: { pos: [4.5, 4.0, 5.1], target: [1.72, -0.15, 0] },
+  cooling: { pos: [-0.5, 3.3, 6.5], target: [0, 0.45, 0.4] },
+  reservoirs: { pos: [1.4, 2.6, 6.8], target: [0.5, 0, 0] },
+  steering: { pos: [8.6, 3.4, 5.8], target: [4.6, -0.2, 0.5] },
 };
 
 export function DaimlerEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { params, updateParam } = usePatentPhysics("us-361931-daimler-engine");
+  const [kernelSource, setKernelSource] = useState(daimlerKernelSource());
 
   const shaftPosition = params.shaftPosition ?? 1;
-  const coolingPumpEnabled = params.coolingPumpEnabled ?? 1;
-  const aheadContact = Math.max(0, Math.min(1, shaftPosition));
-  const asternEngagement = Math.max(0, Math.min(1, -shaftPosition));
-  const neutral = 1 - Math.min(1, Math.abs(shaftPosition));
+  const coolingPumpEnabled = params.coolingPumpEnabled ?? 0;
+  const topology = FrankenSimEngine.stepDaimlerMarineApparatus(
+    shaftPosition,
+    coolingPumpEnabled > 0.5,
+  );
+  const aheadContact = topology.aheadCouplingEngaged ? 1 : 0;
+  const asternEngagement = topology.asternGearingEngaged ? 1 : 0;
+  const driveState = topology.aheadCouplingEngaged
+    ? "ahead"
+    : topology.asternGearingEngaged
+      ? "astern"
+      : "neutral";
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isMuted, toggleMute } = usePatentAudio();
+
+  useEffect(() => {
+    let active = true;
+    void ensureDaimlerWasm().then((nextSource) => {
+      if (active) setKernelSource(nextSource);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const live = useLiveSimParams({
     shaftPosition,
@@ -52,9 +80,8 @@ export function DaimlerEngine3D() {
     isPlaying,
   });
 
-  // ENVELOPE pattern (br-ixl.3): this face has no physics kernel and no
-  // meaningful cross-face state — its kinematics are pure functions of the
-  // shaft-position control — so it declares only an honest static envelope.
+  // The shared envelope remains the presentation bus; the normalized
+  // prismatic/contact state is owned by fs-mbd through the dedicated loader.
   useFrankenSimPhysics("us-361931-daimler-engine", {
     domain: "solid_mechanics",
     timestampMs: 0,
@@ -77,16 +104,17 @@ export function DaimlerEngine3D() {
 
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [4.5, 3.5, 5.5],
-      targetPos: [0, 0.4, 0],
+      cameraPos: CAMERA_PRESETS.iso.pos,
+      targetPos: CAMERA_PRESETS.iso.target,
     });
     studioRef.current = studio;
 
-    const engineModel = buildDaimlerMarineEngineModel();
+    const engineModel = buildDaimlerMarineInstallationModel();
     studio.scene.add(engineModel.rootGroup);
 
     let animId = 0;
     const clock = createStudioClock();
+    let illustrativePhaseRad = 0;
 
     const animate = (now: number) => {
       animId = requestAnimationFrame(animate);
@@ -94,8 +122,15 @@ export function DaimlerEngine3D() {
       const { dt } = clock.pump(now);
 
       const p = live.current;
-      if (p.isPlaying && !isMuted && dt > 0.5) soundEngine.playSwitchClick();
-      updateDaimlerMarineEngineKinematics(engineModel, p.shaftPosition, p.coolingPumpEnabled);
+      if (p.isPlaying) illustrativePhaseRad = (illustrativePhaseRad + dt * 1.4) % (Math.PI * 2);
+      const state = FrankenSimEngine.stepDaimlerMarineApparatus(
+        p.shaftPosition,
+        p.coolingPumpEnabled > 0.5,
+      );
+      updateDaimlerMarineInstallationKinematics(engineModel, {
+        ...state,
+        illustrativePhaseRad,
+      });
 
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
@@ -109,18 +144,15 @@ export function DaimlerEngine3D() {
       studio.cleanup();
       studioRef.current = null;
     };
-  }, [live, isMuted]);
+  }, [live]);
 
   return (
-    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <PortHamiltonianEnergyStrip
-        patentId="us-361931-daimler-engine"
-        params={{
-          shaftPosition,
-          coolingPumpEnabled,
-        }}
-      />
-      <div className="sr-only">Daimler marine propulsion installation, US 361,931</div>
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-parchment-300 bg-parchment-50/60 shadow-patent dark:border-ink-800 dark:bg-ink-950/80">
+      <div className="sr-only">
+        Connected Daimler marine propulsion installation with vessel frame, in-line motor,
+        longitudinally sliding propeller shaft, ahead and astern contacts, thrust starter, steering,
+        outside-water cooling, and high-to-low-pressure gas storage, US 361,931.
+      </div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
@@ -138,6 +170,7 @@ export function DaimlerEngine3D() {
                 ["reverse", "Reverse disks"],
                 ["cooling", "Cooling pipes"],
                 ["reservoirs", "Gas reservoirs"],
+                ["steering", "Steering & rudder"],
               ] as [CameraPreset, string][]
             ).map(([preset, label]) => (
               <button
@@ -167,7 +200,11 @@ export function DaimlerEngine3D() {
                 : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-700"
             }`}
           >
-            <Play className="w-3.5 h-3.5 inline sm:mr-1" />
+            {isPlaying ? (
+              <Pause className="inline h-3.5 w-3.5 sm:mr-1" />
+            ) : (
+              <Play className="inline h-3.5 w-3.5 sm:mr-1" />
+            )}
             <span className="hidden md:inline">{isPlaying ? "Pause" : "Run"}</span>
           </button>
           <button
@@ -216,26 +253,24 @@ export function DaimlerEngine3D() {
               <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
                 Shaft position:
               </span>
-              <span className="text-amber-800 dark:text-amber-400 font-bold">
-                {shaftPosition.toFixed(2)}
-              </span>
+              <span className="text-amber-800 dark:text-amber-400 font-bold">{driveState}</span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Ahead contact:</span>
               <span className="text-emerald-700 dark:text-emerald-400 font-bold">
-                {aheadContact.toFixed(2)} fraction
+                {topology.aheadCouplingEngaged ? "a / a² engaged" : "open"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Neutral:</span>
               <span className="text-rose-700 dark:text-rose-400 font-bold">
-                {neutral.toFixed(2)} fraction
+                {topology.neutral ? "both paths open" : "drive selected"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Astern train:</span>
               <span className="text-sky-800 dark:text-sky-400 font-bold">
-                {asternEngagement.toFixed(2)} fraction
+                {topology.asternGearingEngaged ? "e¹ / e² engaged" : "open"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
@@ -246,6 +281,38 @@ export function DaimlerEngine3D() {
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="MARINE PROPULSION INSTALLATION"
+          chips={[
+            {
+              label: "Kernel",
+              value:
+                kernelSource === "wasm"
+                  ? "fs-mbd compiled browser kernel stepped"
+                  : "typed TS fallback",
+              tone: kernelSource === "wasm" ? "ok" : "warn",
+            },
+            { label: "Drive state", value: driveState, unit: "reader selection" },
+            {
+              label: "Shaft translation",
+              value: `${topology.shaftTranslationAlongAxisNormalized}`,
+              unit: "normalized axial coordinate",
+            },
+            { label: "Ahead contact", value: aheadContact ? "closed" : "open" },
+            { label: "Astern train", value: asternEngagement ? "closed" : "open" },
+            {
+              label: "Cooling pump",
+              value: coolingPumpEnabled ? "on" : "off",
+              unit: "fore / aft pipes",
+              tone: "ok",
+            },
+            { label: "Gas storage", value: "high / low pressure", unit: "reservoirs" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -259,8 +326,11 @@ export function DaimlerEngine3D() {
             value={shaftPosition}
             min={-1}
             max={1}
-            step={0.05}
-            onChange={(val) => updateParam("shaftPosition", val)}
+            step={1}
+            onChange={(val) => {
+              updateParam("shaftPosition", val);
+              if (!isMuted) soundEngine.playSwitchClick();
+            }}
             allParams={params}
           />
 
@@ -283,30 +353,12 @@ export function DaimlerEngine3D() {
           </div>
         </div>
 
-        <PortHamiltonianEnergyStrip
-          patentId="us-361931-daimler-engine"
-          params={params}
-          className="mt-3"
-        />
+        <p className="mt-3 font-mono text-[11px] leading-relaxed text-ink-600 dark:text-ink-400">
+          The rotation phase is illustrative only. US 361,931 prints no shaft speed, travel,
+          friction coefficient, cooling flow, thrust, or power from which quantitative performance
+          could be derived.
+        </p>
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="MARINE PROPULSION INSTALLATION"
-        chips={[
-          { label: "Shaft position", value: `${shaftPosition.toFixed(2)}`, unit: "fraction" },
-          { label: "Ahead contact", value: `${aheadContact.toFixed(2)}`, unit: "fraction" },
-          { label: "Astern train", value: `${asternEngagement.toFixed(2)}`, unit: "fraction" },
-          {
-            label: "Cooling pump",
-            value: coolingPumpEnabled ? "on" : "off",
-            unit: "fore / aft pipes",
-            tone: "ok",
-          },
-          { label: "Gas storage", value: "high / low pressure", unit: "reservoirs" },
-        ]}
-      />
     </div>
   );
 }

@@ -6,11 +6,16 @@
  */
 
 import {
+  type AmfVersatranParams,
+  type AmfVersatranTopologyState,
+  stepAmfVersatranTopology as stepAmfVersatranTopologyKernel,
+} from "./amfVersatranKernel";
+import {
   stepBardeenTransistor as catalogStepBardeen,
   stepColtRevolver as catalogStepColt,
-  stepDaimlerEngine as catalogStepDaimlerEngine,
   stepHollerithTabulating as catalogStepHollerith,
   stepKevlarContinuum as catalogStepKevlar,
+  stepLegacyDaimlerEngineUS349983 as catalogStepLegacyDaimlerEngineUS349983,
   stepLincolnBuoy as catalogStepLincolnBuoy,
   goddardSchematicStack,
   stepBellTelephone,
@@ -44,9 +49,37 @@ import {
   stepWozniakApple,
   stepZeppelinAirship,
 } from "./catalogKernels";
+import { stepCrumpFdmSi } from "./crumpFdmKernel";
+import { tryDaimlerMarineWasmStep } from "./daimlerWasm";
+import {
+  type DaVinciControls,
+  type DaVinciState,
+  stepDaVinci as stepDaVinciKernel,
+} from "./daVinciKernel";
 import { stepDieselEngine as kernelStepDieselEngine } from "./dieselEngineKernel";
 import { stepFermiKinetics } from "./fermiKinetics";
-import { tryGoddardWasmStep } from "./goddardWasm";
+import { tryGoddardApparatusWasmStep, tryGoddardWasmStep } from "./goddardWasm";
+import { stepHullStereolithographySi } from "./hullStereolithographyKernel";
+import { stepKamenSegwaySi } from "./kamenSegwayKernel";
+import {
+  type KamenTransporterControls,
+  type KamenTransporterTelemetry,
+  stepKamenTransporterSi,
+} from "./kamenTransporterKernel";
+import {
+  type LemelsonAdjustableManipulatorParams,
+  stepLemelsonAdjustableManipulator,
+} from "./lemelsonAdjustableManipulatorKernel";
+import {
+  type LemelsonMachineVisionControls,
+  type LemelsonMachineVisionState,
+  stepLemelsonMachineVisionSi,
+} from "./lemelsonMachineVisionKernel";
+import {
+  type LemelsonWarehouseControls,
+  type LemelsonWarehousePose,
+  stepLemelsonWarehouseTopology,
+} from "./lemelsonWarehouseKernel";
 import {
   stepCcdWells,
   stepEngelbartResolver,
@@ -58,13 +91,24 @@ import {
   stepSholesTypewriter,
 } from "./machineKernels";
 import {
-  stepTeslaMotorFig9,
-  teslaBAt,
-  teslaCoilControls,
-  teslaCoilSiUnits,
-  teslaFig4Strobe,
-} from "./teslaKernel";
-import { tryTeslaWasmStep } from "./teslaWasm";
+  type MestralVelcroControls,
+  type MestralVelcroTelemetry,
+  stepMestralVelcroSi,
+} from "./mestralVelcroKernel";
+import { stepRobotEndEffectorSi } from "./robotEndEffectorKernel";
+import type { SalisburyRobotHandControls } from "./salisburyRobotHandKernel";
+import { type SalisburyMechanismState, stepSalisburyTopology } from "./salisburyWasm";
+import {
+  type StackhouseSourceControls,
+  type StackhouseSourcePose,
+  stepStackhouseSourceTopology,
+} from "./stackhouseSourceKernel";
+import {
+  type SundbackZipperControls,
+  type SundbackZipperTelemetry,
+  stepSundbackZipperSi,
+} from "./sundbackZipperKernel";
+import { stepTeslaMotorFig9, teslaBAt, teslaFig4Strobe } from "./teslaKernel";
 import { goddardThermo } from "./thermochem";
 import type {
   AerodynamicsState,
@@ -73,6 +117,11 @@ import type {
   ThermodynamicsState,
   UniversalPatentPhysicsTelemetry,
 } from "./types";
+import {
+  stepWatsonRemoteCenterComplianceTopology,
+  type WatsonRemoteCenterComplianceControls,
+  type WatsonRemoteCenterCompliancePose,
+} from "./watsonRemoteCenterComplianceKernel";
 import { stepWrightFlyerSi } from "./wrightKernel";
 
 /** US 2,292,387 illustrated record rows. Shared by the source diagrams. */
@@ -83,6 +132,24 @@ export const LAMARR_PIANO_ROLL_STEP = 1;
 export const LAMARR_JAM_CHANNEL_FRACTION = 0;
 export const LAMARR_SCHEMATIC_STAFF_COUNT = 11;
 export const LAMARR_SCHEMATIC_STAFF_ORIGIN_Y = 75;
+
+function canonicalAxisQuaternion(
+  axis: "x" | "y",
+  angleRadians: number,
+): [number, number, number, number] {
+  const halfAngle = angleRadians / 2;
+  const sine = Math.sin(halfAngle);
+  const quaternion: [number, number, number, number] = [
+    Math.cos(halfAngle),
+    axis === "x" ? sine : 0,
+    axis === "y" ? sine : 0,
+    0,
+  ];
+  const firstNonZero = quaternion.find((component) => component !== 0) ?? 1;
+  return firstNonZero < 0
+    ? (quaternion.map((component) => -component) as [number, number, number, number])
+    : quaternion;
+}
 export const LAMARR_SCHEMATIC_STAFF_PITCH_Y = 13;
 export const LAMARR_SCHEMATIC_HOP_ORIGIN_X = 80;
 export const LAMARR_SCHEMATIC_HOP_PITCH_X = 30;
@@ -229,8 +296,32 @@ export const FrankenSimEngine = {
   stepMorseTelegraph,
   stepEngelbartMouse,
   stepWozniakApple,
+  stepRobotEndEffector: stepRobotEndEffectorSi,
+  stepHullStereolithography: stepHullStereolithographySi,
+  stepCrumpFdm: stepCrumpFdmSi,
+  stepKamenSegway: stepKamenSegwaySi,
+
+  /**
+   * US 3,212,649 AMF Versatran host-only topology step.
+   *
+   * This delegates to the typed source-bounded TypeScript kernel. It does not
+   * initialize, step, or advertise a WASM module.
+   */
+  stepAmfVersatranTopology(rawParams: AmfVersatranParams = {}): AmfVersatranTopologyState {
+    return stepAmfVersatranTopologyKernel(rawParams);
+  },
 
   stepTeslaMotorFig9,
+
+  /** US 6,331,181 illustrative tool-interface and contact model. */
+  stepDaVinci(
+    controls: DaVinciControls,
+    timeSec: number,
+    previousState?: DaVinciState,
+    dtSec = 1 / 60,
+  ): DaVinciState {
+    return stepDaVinciKernel(controls, timeSec, previousState, dtSec);
+  },
 
   /**
    * Enrico Fermi Chicago Pile-1 (US 2,708,656).
@@ -286,8 +377,78 @@ export const FrankenSimEngine = {
   },
 
   /**
-   * Robert H. Goddard Liquid-Propellant Rocket (US 1,155,986 / US 1,102,653)
-   * Supersonic de Laval Nozzle & Thermodynamic Expansion
+   * Source-bounded US 1,102,653 apparatus state.
+   *
+   * Primary and gyroscope speeds are declared visitor inputs because the
+   * facsimile prints no numerical rates. The owner returns torque-free
+   * rigid-body poses and exact claim predicates, never fabricated thrust,
+   * Mach, liquid-propellant, or trajectory telemetry.
+   */
+  stepGoddardApparatus(
+    elapsedSeconds: number,
+    primarySpinRpm: number,
+    gyroSpinRpm: number,
+    tubeLengthRatio: number,
+    auxiliaryReleaseFraction: number,
+    primaryChargeSubstantiallyConsumed: boolean,
+    gyroEnabled: boolean,
+  ) {
+    const wasmResult = tryGoddardApparatusWasmStep(
+      elapsedSeconds,
+      primarySpinRpm,
+      gyroSpinRpm,
+      tubeLengthRatio,
+      auxiliaryReleaseFraction,
+      primaryChargeSubstantiallyConsumed,
+      gyroEnabled,
+    );
+    if (wasmResult) {
+      return {
+        runtimeSource: "wasm" as const,
+        primaryQuaternion: wasmResult.primary_quaternion,
+        gyroQuaternion: wasmResult.gyro_quaternion,
+        primaryAngularVelocityRadPerSec: wasmResult.primary_angular_velocity_rad_per_sec,
+        gyroAngularVelocityRadPerSec: wasmResult.gyro_angular_velocity_rad_per_sec,
+        cameraSupportAngularVelocityRadPerSec:
+          wasmResult.camera_support_angular_velocity_rad_per_sec,
+        primaryRimSpeedPerRadiusMpsPerM: wasmResult.primary_rim_speed_per_radius_mps_per_m,
+        tubeLengthRatio: wasmResult.tube_length_ratio,
+        claim2RatioMargin: wasmResult.claim_2_ratio_margin,
+        claim2Satisfied: wasmResult.claim_2_satisfied,
+        claim1SequenceSatisfied: wasmResult.claim_1_sequence_satisfied,
+        auxiliaryNested: wasmResult.auxiliary_nested,
+        gyroEnabled: wasmResult.gyro_enabled,
+      };
+    }
+
+    const primaryAngularVelocityRadPerSec = (primarySpinRpm * Math.PI * 2) / 60;
+    const gyroAngularVelocityRadPerSec = (gyroSpinRpm * Math.PI * 2) / 60;
+    const auxiliaryNested = auxiliaryReleaseFraction === 0;
+    return {
+      runtimeSource: "ts-fallback" as const,
+      primaryQuaternion: canonicalAxisQuaternion(
+        "y",
+        primaryAngularVelocityRadPerSec * elapsedSeconds,
+      ),
+      gyroQuaternion: canonicalAxisQuaternion("x", gyroAngularVelocityRadPerSec * elapsedSeconds),
+      primaryAngularVelocityRadPerSec,
+      gyroAngularVelocityRadPerSec,
+      cameraSupportAngularVelocityRadPerSec:
+        gyroEnabled && gyroSpinRpm > 0 ? 0 : primaryAngularVelocityRadPerSec,
+      primaryRimSpeedPerRadiusMpsPerM: primaryAngularVelocityRadPerSec,
+      tubeLengthRatio,
+      claim2RatioMargin: tubeLengthRatio - 3,
+      claim2Satisfied: tubeLengthRatio >= 3,
+      claim1SequenceSatisfied: auxiliaryNested || primaryChargeSubstantiallyConsumed,
+      auxiliaryNested,
+      gyroEnabled,
+    };
+  },
+
+  /**
+   * Liquid-propellant de Laval model for the separately catalogued 1926
+   * US 1,155,986 record. It is not a model of the solid-charge apparatus
+   * claimed in US 1,102,653.
    */
   stepGoddardRocket(
     chamberPressurePsi: number,
@@ -313,11 +474,12 @@ export const FrankenSimEngine = {
         (0.5 * fuelFlowKgPerSec * wasmRes.exhaust_velocity_mps ** 2).toFixed(0),
       );
       return {
+        runtimeSource: "wasm" as const,
         chamberPressurePsi: wasmRes.chamber_pressure_psi,
-        chamberPressurePa: wasmRes.chamber_pressure_psi * 6894.76,
+        chamberPressurePa: wasmRes.chamber_pressure_pa,
         exhaustVelocityMps: wasmRes.exhaust_velocity_mps,
         thrustNewtons: wasmRes.thrust_newtons,
-        specificImpulseSec: wasmRes.exhaust_velocity_mps / 9.80665,
+        specificImpulseSec: wasmRes.specific_impulse_sec,
         machExit: wasmRes.mach_exit,
         thrustLbf: Math.round(wasmRes.thrust_newtons * 0.224809),
         exhaustTempK: thermo.exhaustTempK,
@@ -346,6 +508,7 @@ export const FrankenSimEngine = {
     );
 
     return {
+      runtimeSource: "ts-fallback" as const,
       chamberPressurePsi,
       chamberPressurePa,
       exhaustVelocityMps,
@@ -505,90 +668,6 @@ export const FrankenSimEngine = {
   },
 
   /**
-   * Generic coupled-LC and breakdown host fallback used by the interpretive
-   * high-potential-transformer visualization. It is not a source-faithful
-   * reconstruction of US 593,138.
-   */
-  stepTeslaCoil(
-    resonantFreqKhz: number,
-    inputKv: number,
-    sparkGapMm: number,
-    qFactor: number = 145,
-    couplingK: number = 0.18,
-    secondaryTurns: number = 850,
-  ) {
-    const k = Math.max(0.05, Math.min(0.5, couplingK));
-    const nScale = Math.max(0.4, Math.min(2, secondaryTurns / 850));
-    const wasmRes = tryTeslaWasmStep(resonantFreqKhz, inputKv, sparkGapMm, qFactor);
-    if (wasmRes) {
-      // tesla_coil_step has no k or N_s input; scale from registry defaults.
-      const scale = (k / 0.18) * nScale;
-      const secondaryPotentialMv = Number((wasmRes.secondary_potential_mv * scale).toFixed(2));
-      return {
-        resonantFreqKhz: wasmRes.resonant_freq_khz,
-        secondaryPotentialMv,
-        streamerLengthInches: Number((wasmRes.streamer_length_inches * scale).toFixed(1)),
-        streamerLengthMeters: Number((wasmRes.streamer_length_meters * scale).toFixed(2)),
-        secondaryPotentialKv: Math.round(wasmRes.secondary_potential_mv * scale * 1000),
-        streamerScale: Number(
-          Math.min(2.2, Math.max(0.35, (wasmRes.streamer_length_inches * scale) / 48)).toFixed(2),
-        ),
-        streamerStudioLength: Number(((wasmRes.streamer_length_meters * scale) / 1.5).toFixed(3)),
-        toneEnergy: Number(
-          Math.min(1, Math.round(wasmRes.secondary_potential_mv * scale * 1000) / 1500).toFixed(3),
-        ),
-        toneHz: Number((wasmRes.resonant_freq_khz * 2).toFixed(1)),
-        ...teslaCoilSiUnits(wasmRes.resonant_freq_khz, inputKv, secondaryPotentialMv),
-      };
-    }
-
-    const primaryL = 0.012; // mH
-    const secondaryL = 85.0; // mH
-    const transformationRatio = Math.sqrt(secondaryL / primaryL) * nScale;
-    // V₂ ≈ V₁ √(L₂/L₁) k √Q, then spark-gap loading. 28 in/MV air breakdown.
-    const secondaryPotentialMv =
-      ((inputKv * transformationRatio * k * Math.sqrt(qFactor)) / 1000) * (sparkGapMm / 15);
-    const streamerLengthInches = secondaryPotentialMv * 28.0;
-
-    const secondaryPotentialMvRounded = Number(secondaryPotentialMv.toFixed(2));
-    return {
-      resonantFreqKhz,
-      secondaryPotentialMv: secondaryPotentialMvRounded,
-      streamerLengthInches: Number(streamerLengthInches.toFixed(1)),
-      streamerLengthMeters: Number(((streamerLengthInches * 2.54) / 100).toFixed(2)),
-      secondaryPotentialKv: Math.round(secondaryPotentialMv * 1000),
-      streamerScale: Number(Math.min(2.2, Math.max(0.35, streamerLengthInches / 48)).toFixed(2)),
-      streamerStudioLength: Number(((streamerLengthInches * 2.54) / 100 / 1.5).toFixed(3)),
-      toneEnergy: Number(Math.min(1, Math.round(secondaryPotentialMv * 1000) / 1500).toFixed(3)),
-      toneHz: Number((resonantFreqKhz * 2).toFixed(1)),
-      ...teslaCoilSiUnits(resonantFreqKhz, inputKv, secondaryPotentialMvRounded),
-    };
-  },
-
-  /**
-   * Same interpretive coil step, but the resonant frequency is owned here
-   * (teslaCoilResonantKhz) so 2D / 3D / badge / weave cannot drift.
-   */
-  stepTeslaCoilFromControls(params: {
-    primaryCap?: number;
-    toploadCapacitancePf?: number;
-    inputVoltageKv?: number;
-    sparkGapDistanceMm?: number;
-    couplingK?: number;
-    secondaryTurns?: number;
-  }) {
-    const c = teslaCoilControls(params);
-    return FrankenSimEngine.stepTeslaCoil(
-      c.resonantFreqKhz,
-      c.inputKv,
-      c.sparkGapMm,
-      145,
-      c.couplingK,
-      c.secondaryTurns,
-    );
-  },
-
-  /**
    * Guglielmo Marconi Spark Transmitter (US 586,193)
    * Monopole Quarter-Wave Radiation & Range Proportionality
    */
@@ -618,8 +697,8 @@ export const FrankenSimEngine = {
    * Elias Howe Sewing Machine (US 4,750)
    * 4-Bar Kinematic Linkage & Shuttle Lockstitch Interlock
    */
-  stepHoweSewingMachine(flywheelRpm: number, stitchTensionGrams: number, stitchPitchMm?: number) {
-    return stepHoweSewingMachineKernel(flywheelRpm, stitchTensionGrams, stitchPitchMm);
+  stepHoweSewingMachine(crankRpm: number, loopSlackPct: number, stitchPitchMm?: number) {
+    return stepHoweSewingMachineKernel(crankRpm, loopSlackPct, stitchPitchMm);
   },
 
   /**
@@ -726,8 +805,8 @@ export const FrankenSimEngine = {
     carMassTonnes?: number; // 20 to 60 tonnes
     approachSpeedMph?: number;
   }) {
-    const pipePsi = params.trainPipePressurePsi ?? 70;
-    const resPipePsi = params.reservoirPipePressurePsi ?? 90;
+    const pipePsi = params.trainPipePressurePsi ?? 0;
+    const resPipePsi = params.reservoirPipePressurePsi ?? 0;
     const carMass = params.carMassTonnes ?? 35;
     const approachSpeedMph = params.approachSpeedMph ?? 45;
     const isReversed = params.selectingCockState === "reversed";
@@ -896,16 +975,56 @@ export const FrankenSimEngine = {
    */
   stepMaximMachineGun,
 
+  /** Source-bounded US 361,931 prismatic shaft and contact topology. */
+  stepDaimlerMarineApparatus(shaftSelection: number, coolingPumpEnabled: boolean) {
+    const normalizedSelection = Math.max(-1, Math.min(1, Math.round(shaftSelection)));
+    const wasmResult = tryDaimlerMarineWasmStep(normalizedSelection, coolingPumpEnabled);
+    if (wasmResult) {
+      return {
+        runtimeSource: "wasm" as const,
+        shaftTranslationAlongAxisNormalized: wasmResult.shaft_translation_along_axis_normalized,
+        shaftAxis: wasmResult.shaft_axis,
+        shaftJointDofs: wasmResult.shaft_joint_dofs,
+        motorRotationSign: wasmResult.motor_rotation_sign,
+        propellerRotationSign: wasmResult.propeller_rotation_sign,
+        aheadCouplingEngaged: wasmResult.ahead_coupling_engaged,
+        asternGearingEngaged: wasmResult.astern_gearing_engaged,
+        neutral: wasmResult.neutral,
+        thrustCanMaintainAheadContact: wasmResult.thrust_can_maintain_ahead_contact,
+        passiveForeAftCoolingPathPresent: wasmResult.passive_fore_aft_cooling_path_present,
+        coolingPumpActive: wasmResult.cooling_pump_active,
+      };
+    }
+
+    const ahead = normalizedSelection === 1;
+    const astern = normalizedSelection === -1;
+    return {
+      runtimeSource: "ts-fallback" as const,
+      shaftTranslationAlongAxisNormalized: -normalizedSelection,
+      shaftAxis: [1, 0, 0] as [number, number, number],
+      shaftJointDofs: 1,
+      motorRotationSign: 1,
+      propellerRotationSign: normalizedSelection,
+      aheadCouplingEngaged: ahead,
+      asternGearingEngaged: astern,
+      neutral: normalizedSelection === 0,
+      thrustCanMaintainAheadContact: ahead,
+      passiveForeAftCoolingPathPresent: true,
+      coolingPumpActive: coolingPumpEnabled,
+    };
+  },
+
   /**
-   * Gottlieb Daimler High-Speed Motor Carriage (US 361,931)
-   * High-RPM ICE Powertrain & Bevel Gear Differential
+   * Legacy illustrative motor calculation associated with the separately
+   * referenced US 349,983 engine. It is not the active US 361,931 marine
+   * installation model and must not supply that page's telemetry.
    */
-  stepDaimlerEngine(params: {
+  stepLegacyDaimlerEngineUS349983(params: {
     engineRpm?: number;
     hotTubeTempC?: number;
     differentialSlipAngleDeg?: number;
   }) {
-    return catalogStepDaimlerEngine(params);
+    return catalogStepLegacyDaimlerEngineUS349983(params);
   },
 
   /**
@@ -1142,6 +1261,51 @@ export const FrankenSimEngine = {
     return kernelStepDieselEngine(params);
   },
 
+  stepSundbackZipper(
+    controls: SundbackZipperControls,
+    dt: number = 1 / 60,
+  ): SundbackZipperTelemetry {
+    return stepSundbackZipperSi(controls, dt);
+  },
+
+  stepKamenTransporter(
+    controls: KamenTransporterControls,
+    dt: number = 1 / 60,
+  ): KamenTransporterTelemetry {
+    return stepKamenTransporterSi(controls, dt);
+  },
+
+  stepWatsonRcc(controls: WatsonRemoteCenterComplianceControls): WatsonRemoteCenterCompliancePose {
+    return stepWatsonRemoteCenterComplianceTopology(controls);
+  },
+
+  stepLemelsonWarehousing(controls: LemelsonWarehouseControls): LemelsonWarehousePose {
+    return stepLemelsonWarehouseTopology(controls);
+  },
+
+  stepStackhouseManipulator(controls: StackhouseSourceControls): StackhouseSourcePose {
+    return stepStackhouseSourceTopology(controls);
+  },
+
+  stepMestralVelcro(controls: MestralVelcroControls, timeSec = 0): MestralVelcroTelemetry {
+    return stepMestralVelcroSi(controls, timeSec);
+  },
+
+  /** US 3,081,379 Lemelson automatic measurement & machine vision apparatus. */
+  stepLemelsonMachineVision(controls: LemelsonMachineVisionControls): LemelsonMachineVisionState {
+    return stepLemelsonMachineVisionSi(controls);
+  },
+
+  /** US 3,260,375 Lemelson adjustable limit-switch industrial manipulator. */
+  stepLemelsonAdjustableManipulator(rawParams: LemelsonAdjustableManipulatorParams = {}) {
+    return stepLemelsonAdjustableManipulator(rawParams);
+  },
+
+  /** US 4,921,293 nine-joint/12-cable topology and source-printed static torque law. */
+  stepSalisburyRobotHand(controls: SalisburyRobotHandControls): SalisburyMechanismState {
+    return stepSalisburyTopology(controls);
+  },
+
   createTelemetryEnvelope(
     patentId: string,
     data: Partial<UniversalPatentPhysicsTelemetry>,
@@ -1149,7 +1313,9 @@ export const FrankenSimEngine = {
     return {
       patentId,
       domain: data.domain || "aerodynamics_mbd",
-      timestampMs: Date.now(),
+      // Tape timestamps are virtual replay coordinates. UI wall clocks never
+      // enter the physics envelope unless a caller explicitly supplies one.
+      timestampMs: data.timestampMs ?? 0,
       timeStepDt: 0.016,
       refusal: { isRefused: false },
       ...data,

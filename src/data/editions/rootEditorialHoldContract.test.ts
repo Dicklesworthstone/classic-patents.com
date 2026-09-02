@@ -1,18 +1,15 @@
 import { describe, expect, test } from "bun:test";
 import { allPatents } from "@/data/patents";
 import { carlsonElectrophotographyPatent } from "@/data/patents/carlson-electrophotography";
-import { ARCHIVAL_PARALLEL_READINGS } from "./parallelReadings";
 import {
   archivalEditionForPublication,
   ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS,
 } from "./publicationApproval";
 
 /**
- * Independent release sentinel for editions that have failed source QA.
- *
- * This list intentionally does not share a constant with the editable
- * publication map. A mistaken bulk registration must therefore fail the
- * release path instead of exposing an incomplete source face to visitors.
+ * Independent snapshot of the root-QA roster. The typed publication boundary
+ * consumes this audit evidence as a restrictive release condition until a
+ * record receives an explicit replacement acceptance.
  */
 const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-2297691-carlson-electrophotography",
@@ -95,11 +92,8 @@ const SOURCE_QA_RELEASED_EDITIONS = [
   "us-x9430-colt-revolver",
 ] as const;
 
-describe("retired root editorial holds", () => {
-  test("publishes every formerly held edition that has authored text and its companion map", () => {
-    // Owner policy (2026-08-21): the QA notes recorded against these records
-    // (short decoders, imperfect crops) no longer justify hiding a complete
-    // original text. Publication now requires only authored text + readings.
+describe("root editorial hold history", () => {
+  test("keeps every inherited root-QA hold out of the accepted source face", () => {
     for (const patentId of REQUIRED_ROOT_EDITORIAL_HOLDS) {
       const patent =
         allPatents.find((candidate) => candidate.id === patentId) ??
@@ -109,15 +103,7 @@ describe("retired root editorial holds", () => {
       expect(patent, `missing catalog record ${patentId}`).toBeDefined();
       if (!patent) continue;
 
-      // Owner policy (2026-08-22 recalibration): a bound edition publishes
-      // unconditionally — missing companion maps degrade gracefully in the
-      // renderer. Only records with no edition at all stay unpublished
-      // (nothing exists to show).
-      if (patent.archivalEdition) {
-        expect(archivalEditionForPublication(patent)).toBe(patent.archivalEdition);
-      } else {
-        expect(archivalEditionForPublication(patent)).toBeUndefined();
-      }
+      expect(archivalEditionForPublication(patent)).toBeUndefined();
     }
   });
 

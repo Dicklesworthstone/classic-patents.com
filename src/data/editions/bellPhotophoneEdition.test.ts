@@ -215,4 +215,27 @@ describe("US 235,199 Alexander Graham Bell Photophone Archival Edition Contract"
       expect(reading[0]).not.toContain("This companion preserves the source proposition");
     }
   });
+
+  test("provides valid provenance classifications for all Bell Photophone controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-235199-bell-photophone"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBe("scenario-modern");
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBe("scenario-modern");
+    }
+  });
+
+  test("enforces figure acceptance audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(bellPhotophonePatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+  });
 });

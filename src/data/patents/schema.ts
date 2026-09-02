@@ -161,8 +161,8 @@ const curatedSpecificationEditionSchema = z.object({
   sourcePdfSha256: z.string().regex(/^[a-f0-9]{64}$/, "expected a SHA-256 hex digest"),
   preparedBy: z.string().min(1),
   preparedAt: isoDate,
-  // Owner policy (2026-08-22): pending facsimile review publishes with a
-  // viewer disclosure rather than withholding the specification text.
+  // Research drafts may record a negative attestation; the strict publication
+  // boundary rejects them until complete facsimile review is affirmative.
   completeFacsimileReviewed: z.boolean().optional(),
   claimStatus: z
     .object({
@@ -261,7 +261,9 @@ export function parsePatentCatalog(patents: unknown[]): Patent[] {
       throw new Error(`Patent ${parsed.data.id}: filingDate is after grantDate`);
     }
     if (parsed.data.archivalEdition) {
-      const editionValidation = validateCuratedSpecificationEdition(parsed.data.archivalEdition);
+      const editionValidation = validateCuratedSpecificationEdition(parsed.data.archivalEdition, {
+        requireCompleteFacsimileReview: false,
+      });
       if (!editionValidation.valid) {
         throw new Error(
           `Patent ${parsed.data.id}: invalid manual archival edition: ${editionValidation.errors.join(" ")}`,

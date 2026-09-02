@@ -135,7 +135,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
 
   // --- AUTHENTIC MATERIALS ---
   const copperAnodeMat = new THREE.MeshStandardMaterial({
-    map: copperTex || undefined,
+    ...(copperTex ? { map: copperTex } : {}),
     transparent: true,
     opacity: 1.0,
     color: 0xd97706,
@@ -154,7 +154,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   disposables.push(cathodeMat);
 
   const sourceMetalMat = new THREE.MeshStandardMaterial({
-    map: sourceMetalTex || undefined,
+    ...(sourceMetalTex ? { map: sourceMetalTex } : {}),
     transparent: true,
     opacity: 1.0,
     color: 0x334155,
@@ -331,6 +331,25 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   secondOscillator.position.x = 5.4;
   root.add(secondOscillator);
 
+  // Equipment Foundation Plinth & Conveyor Stand Legs
+  const benchGroup = new THREE.Group();
+  root.add(benchGroup);
+
+  const floorPlinthGeo = new THREE.BoxGeometry(14.0, 0.35, 8.0);
+  disposables.push(floorPlinthGeo);
+  const floorPlinth = new THREE.Mesh(floorPlinthGeo, sourceMetalMat);
+  floorPlinth.position.set(0, -3.8, 0);
+  floorPlinth.receiveShadow = true;
+  benchGroup.add(floorPlinth);
+
+  // Transformer floor foundation pedestal
+  const transPlinthGeo = new THREE.BoxGeometry(3.2, 2.4, 2.8);
+  disposables.push(transPlinthGeo);
+  const transPlinth = new THREE.Mesh(transPlinthGeo, sourceMetalMat);
+  transPlinth.position.set(0, -2.4, -2.6);
+  transPlinth.castShadow = true;
+  benchGroup.add(transPlinth);
+
   const transformerGeo = new THREE.BoxGeometry(2.6, 2.4, 2.2);
   disposables.push(transformerGeo);
   const transformer = new THREE.Mesh(transformerGeo, steelMat);
@@ -343,11 +362,35 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   commonGuide.position.set(0, 0, 1.3);
   root.add(commonGuide);
 
+  // 4 Chamber Support Upright Columns holding treatment applicator
+  for (const cx of [-3.4, 3.4]) {
+    for (const cz of [0.5, 2.1]) {
+      const colGeo = new THREE.CylinderGeometry(0.08, 0.08, 2.4, 16);
+      disposables.push(colGeo);
+      const col = new THREE.Mesh(colGeo, steelMat);
+      col.position.set(cx, -1.2, cz);
+      col.castShadow = true;
+      benchGroup.add(col);
+    }
+  }
+
   const conveyorGeo = new THREE.BoxGeometry(11.5, 0.16, 3.2);
   disposables.push(conveyorGeo);
   const conveyor = new THREE.Mesh(conveyorGeo, steelMat);
   conveyor.position.set(0, -2.4, 1.3);
   root.add(conveyor);
+
+  // Conveyor Bed Stanchion Legs down to Floor Plinth
+  for (const lx of [-5.2, -1.8, 1.8, 5.2]) {
+    for (const lz of [-0.1, 2.7]) {
+      const cLegGeo = new THREE.BoxGeometry(0.16, 1.35, 0.16);
+      disposables.push(cLegGeo);
+      const cLeg = new THREE.Mesh(cLegGeo, steelMat);
+      cLeg.position.set(lx, -3.1, lz);
+      cLeg.castShadow = true;
+      benchGroup.add(cLeg);
+    }
+  }
 
   // The source names a conveyor (28), not a turntable or mode-stirrer.
 

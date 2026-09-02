@@ -36,6 +36,26 @@ export function normalizeLiteralSourceText(value: string): string {
     .replace(/[^\p{L}\p{N}]+/gu, "");
 }
 
+/**
+ * Normalizes a reviewed page ledger for literal claim comparison without
+ * treating facsimile typography as claim text. Patent scans commonly insert
+ * page markers, column-line numbers, and discretionary end-of-line hyphens in
+ * the middle of a printed claim. Those artifacts must not make an otherwise
+ * present claim look absent. Intra-word hyphens are ignored on both sides
+ * because a line-ending hyphen cannot reliably distinguish a compound word
+ * from typesetter continuation.
+ */
+export function normalizeReviewedLedgerText(value: string): string {
+  return value
+    .replace(/--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---/g, "")
+    .replace(/^\s*Column \d+\s*$/gim, "")
+    .replace(/^\s*\d+\s*$/gm, "")
+    .replace(/([\p{L}])-\s+([\p{Ll}])/gu, "$1$2")
+    .replace(/([\p{L}])-(?=[\p{L}])/gu, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function normalizeAnchorText(value: string): string {
   return value.replace(/\s+/g, " ").trim();
 }
@@ -183,7 +203,9 @@ export function validateReviewedTranscriptionPageAnchors(
     };
   }
 
-  const markers = [...text.matchAll(reviewedMarkerPattern)];
+  const markers = [
+    ...text.matchAll(new RegExp(REVIEWED_PAGE_MARKER.source, REVIEWED_PAGE_MARKER.flags)),
+  ];
   for (const [index, anchor] of anchors.entries()) {
     const expectedPage = index + 1;
     if (!Number.isSafeInteger(anchor.page) || anchor.page !== expectedPage) {
@@ -277,7 +299,7 @@ export function validateReviewedTranscriptionLiteralCoverage(
   const ledger = validateReviewedTranscription(text, expectedPageCount);
   if (!ledger.valid) return ledger;
 
-  const normalizedLedger = normalizeLiteralSourceText(text.replace(reviewedMarkerPattern, ""));
+  const normalizedLedger = normalizeLiteralSourceText(normalizeReviewedLedgerText(text));
   for (const [index, section] of authoredSections.entries()) {
     const normalizedSection = normalizeLiteralSourceText(section);
     if (!normalizedSection) {

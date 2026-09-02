@@ -1,7 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { gatlingGunArchivalEdition } from "@/data/editions/gatlingGunEdition";
+import { gatlingGunPatent } from "@/data/patents/gatling-gun";
 import { stepGatlingGun } from "@/physics/catalogKernels";
+import { CATALOG_CLAIM_CONSTRAINTS } from "@/physics/claimConstraints";
+import { ENERGY_CHANNEL_OMISSION_REASONS, energyChannelsFor } from "@/physics/energyChannels";
+import { PATENT_PHYSICS_REGISTRY } from "@/physics/telemetryData";
 import { buildGatlingGunModel } from "./gatlingGunModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
@@ -70,5 +75,49 @@ describe("US 36,836 Richard Gatling Revolving Battery Gun visual & ballistics bo
     expect(materials.bronzeReceiver.roughness).toBeLessThan(0.4);
 
     dispose();
+  });
+
+  test("derives all 5 printed claims dynamically from edition without duplicate strings", () => {
+    expect(gatlingGunPatent.claims).toHaveLength(5);
+    const editionClaims = gatlingGunArchivalEdition.blocks.filter((b) => b.kind === "claim");
+    expect(editionClaims).toHaveLength(5);
+
+    for (let i = 1; i <= 5; i++) {
+      const claim = gatlingGunPatent.claims.find((c) => c.number === i);
+      const editionBlock = editionClaims.find((c) => c.number === i);
+      expect(claim).toBeDefined();
+      expect(editionBlock).toBeDefined();
+      const expectedText = editionBlock?.inlines.map((inl) => inl.text).join("");
+      expect(claim?.originalText).toBe(expectedText);
+    }
+  });
+
+  test("aligns claim constraints with authentic US 36,836 claims 1 through 5", () => {
+    const constraints = CATALOG_CLAIM_CONSTRAINTS["us-36836-gatling-gun"];
+    expect(constraints).toBeDefined();
+    expect(constraints.length).toBe(5);
+    expect(constraints.map((c) => c.claimNumber)).toEqual([1, 2, 3, 4, 5]);
+    expect(constraints[0].claimTitle).toContain("Co-Revolving Lock-Cylinder");
+    expect(constraints[1].claimTitle).toContain("One Simultaneous Lock Per Barrel");
+    expect(constraints[2].claimTitle).toContain("Stationary Cocking Ring");
+  });
+
+  test("binds energy output to honest omission reason without synthetic wattage", () => {
+    expect(energyChannelsFor("us-36836-gatling-gun", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-36836-gatling-gun"]).toContain(
+      "no measured operator torque",
+    );
+  });
+
+  test("provides valid provenance classifications for all Gatling metrics and controls", () => {
+    const entry = PATENT_PHYSICS_REGISTRY["us-36836-gatling-gun"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({ crankRpm: 60, barrelCount: 6 });
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
   });
 });

@@ -191,7 +191,7 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   renderer.toneMappingExposure = 1.35;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
 
   // Do not let setSize write inline pixel CSS — that fights the container and
   // retriggers ResizeObserver (black flashes while the page scrolls).

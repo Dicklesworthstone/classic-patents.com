@@ -4,7 +4,6 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import {
   globalTransportBus,
@@ -75,7 +74,6 @@ export function WestinghouseAirBrake3D() {
   const clampingForceKn = westinghouse.shoeClampingForceKn;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
     trainPipePressurePsi,
@@ -150,10 +148,6 @@ export function WestinghouseAirBrake3D() {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -379,10 +373,7 @@ export function WestinghouseAirBrake3D() {
             { label: "Cylinder C", value: `${westinghouse.brakeCylinderPressurePsi} psi` },
             { label: "Clamping", value: `${clampingForceKn.toFixed(1)} kN` },
             { label: "Signal Code", value: westinghouse.signalMessage },
-            {
-              label: "Pneumatics kernel",
-              value: crateSource === "wasm" ? "fs-fluid" : "ts-pneumatics",
-            },
+            { label: "Runtime", value: "typed host pneumatics" },
           ]}
         />
       </div>

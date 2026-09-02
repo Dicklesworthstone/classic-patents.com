@@ -209,4 +209,36 @@ describe("US 2,292,387 manual source edition", () => {
     expect(canonical).toContain("record strip 37");
     expect(lamarrPatent.historicalContext.patentWars).toEqual([]);
   });
+
+  test("provides valid provenance classifications for all Lamarr controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-2292387-lamarr-frequency-hopping"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBe("source-disclosed");
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBe("source-disclosed");
+    }
+  });
+
+  test("registers explicit energy channel omission reason for Lamarr", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-2292387-lamarr-frequency-hopping"]).toBeDefined();
+    expect(energyChannelsFor("us-2292387-lamarr-frequency-hopping", {})).toEqual([]);
+  });
+
+  test("enforces figure acceptance pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(lamarrPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+  });
 });

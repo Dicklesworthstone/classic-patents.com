@@ -58,7 +58,7 @@ import { MultiTouchSim } from "./MultiTouchSim";
 import { NobelDynamiteSim } from "./NobelDynamiteSim";
 import { NoycePlanarICSim } from "./NoycePlanarICSim";
 import { NoycePlanarSourceVisual } from "./NoycePlanarSourceVisual";
-import { OtisElevatorSim } from "./OtisElevatorSim";
+import { OtisHoistingApparatusSim } from "./OtisHoistingApparatusSim";
 import { OttoEngineSim } from "./OttoEngineSim";
 import { PageRankSim } from "./PageRankSim";
 import { ParsonsTurbineSim } from "./ParsonsTurbineSim";
@@ -140,7 +140,7 @@ describe("2D Dynamic Vector Simulators & Source Visuals", () => {
     { name: "Multi Touch", comp: MultiTouchSim },
     { name: "Nobel Dynamite", comp: NobelDynamiteSim },
     { name: "Noyce Planar I C", comp: NoycePlanarICSim },
-    { name: "Otis Elevator", comp: OtisElevatorSim },
+    { name: "Otis Hoisting Apparatus", comp: OtisHoistingApparatusSim },
     { name: "Otto Engine", comp: OttoEngineSim },
     { name: "Page Rank", comp: PageRankSim },
     { name: "Parsons Turbine", comp: ParsonsTurbineSim },

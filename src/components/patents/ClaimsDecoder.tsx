@@ -76,7 +76,7 @@ export function claimLiveState(
     return (params.anodeVoltage ?? 1500) >= 400 ? "held" : "broken";
   }
   if (patentId.includes("otto-engine") && claimNum === 1) {
-    return (params.compressionRatio ?? 4.5) >= 2.5 ? "held" : "broken";
+    return (params.claim1ChargeGradingPresent ?? 1) >= 0.5 ? "held" : "broken";
   }
   if (patentId === "us-608969-parsons-turbine") {
     if (claimNum === 1) {
@@ -110,7 +110,10 @@ export function claimLiveState(
     return (params.bowlRpm ?? 6000) >= 3000 ? "held" : "broken";
   }
   if (patentId.includes("tesla-coil") && claimNum === 1) {
-    return (params.sparkRateHz ?? 240) >= 60 ? "held" : "broken";
+    return (params.claim1CommonNodeConnected ?? 1) >= 0.5 ? "held" : "broken";
+  }
+  if (patentId.includes("roomba") && claimNum === 1) {
+    return (params.opticalSensorEnabled ?? 1) >= 0.5 ? "held" : "broken";
   }
   if (patentId.includes("lincoln") && claimNum === 1) {
     return (params.inflationPct ?? 80) >= 20 ? "held" : "broken";
@@ -191,6 +194,7 @@ export function ClaimsDecoder({ claims, patentId, claimStatus }: ClaimsDecoderPr
   }, [claim]);
 
   if (claims.length === 0) {
+    const hasVerifiedNoClaimsAttestation = Boolean(claimStatus?.evidence);
     return (
       <section className="rounded-2xl border border-parchment-300 bg-parchment-50 p-6 shadow-xs dark:border-ink-800 dark:bg-ink-950 sm:p-8">
         <div className="flex items-center gap-2.5">
@@ -200,9 +204,9 @@ export function ClaimsDecoder({ claims, patentId, claimStatus }: ClaimsDecoderPr
           </h3>
         </div>
         <p className="mt-4 text-base leading-relaxed text-ink-800 dark:text-parchment-200">
-          This reviewed historical facsimile contains no separately numbered formal claims. The
-          edition preserves the document&apos;s actual description instead of inventing a modern
-          claims list.
+          {hasVerifiedNoClaimsAttestation
+            ? "This reviewed historical facsimile contains no separately numbered formal claims. The edition preserves the document's actual description instead of inventing a modern claims list."
+            : "A verified transcription of this record's formal claims is not available yet. Consult the pinned source PDF while the archival record remains under review."}
         </p>
         {claimStatus?.evidence ? (
           <p className="mt-3 border-l-2 border-amber-500 pl-4 text-sm leading-relaxed text-ink-700 dark:text-parchment-300">

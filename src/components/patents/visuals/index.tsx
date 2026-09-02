@@ -4,6 +4,7 @@ import { Activity, Sparkles } from "lucide-react";
 // 3D WebGL Physics Simulators
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 // 2D Vector Schematics & Dynamic Simulators
 
@@ -27,6 +28,10 @@ const SimLoading = () => (
 );
 // 2D sims are lazy: the dispatcher defaults to the 3D face, so each page only
 // downloads the vector-diagram code when the visitor actually toggles it.
+const AmfVersatranSim = dynamic(() => import("./AMFVersatranSim").then((m) => m.AmfVersatranSim), {
+  ssr: false,
+  loading: SimLoading,
+});
 const ArkwrightWaterFrameSim = dynamic(
   () => import("./ArkwrightWaterFrameSim").then((m) => m.ArkwrightWaterFrameSim),
   { ssr: false, loading: SimLoading },
@@ -35,6 +40,10 @@ const BaekelandBakeliteSim = dynamic(
   () => import("./BaekelandBakeliteSim").then((m) => m.BaekelandBakeliteSim),
   { ssr: false, loading: SimLoading },
 );
+const BaerOdysseySim = dynamic(() => import("./BaerOdysseySim").then((m) => m.BaerOdysseySim), {
+  ssr: false,
+  loading: SimLoading,
+});
 const BardeenTransistorSim = dynamic(
   () => import("./BardeenTransistorSim").then((m) => m.BardeenTransistorSim),
   { ssr: false, loading: SimLoading },
@@ -71,6 +80,10 @@ const CortPuddlingRollingSim = dynamic(
   () => import("./CortPuddlingRollingSim").then((m) => m.CortPuddlingRollingSim),
   { ssr: false, loading: SimLoading },
 );
+const CrumpFdmSim = dynamic(() => import("./CrumpFdmSim").then((m) => m.CrumpFdmSim), {
+  ssr: false,
+  loading: SimLoading,
+});
 const DaimlerEngineSim = dynamic(
   () => import("./DaimlerEngineSim").then((m) => m.DaimlerEngineSim),
   { ssr: false, loading: SimLoading },
@@ -85,6 +98,10 @@ const DavenportMotorSim = dynamic(
 );
 const DeLavalSeparatorSim = dynamic(
   () => import("./DeLavalSeparatorSim").then((m) => m.DeLavalSeparatorSim),
+  { ssr: false, loading: SimLoading },
+);
+const DevolProgrammedTransferSim = dynamic(
+  () => import("./DevolProgrammedTransferSim").then((m) => m.DevolProgrammedTransferSim),
   { ssr: false, loading: SimLoading },
 );
 const DieselEngineSim = dynamic(() => import("./DieselEngineSim").then((m) => m.DieselEngineSim), {
@@ -144,11 +161,18 @@ const GliddenBarbedWireSim = dynamic(
   { ssr: false, loading: SimLoading },
 );
 const GoddardRocketSim = dynamic(
-  () => import("./GoddardRocketSim").then((m) => m.GoddardRocketSim),
+  () => import("./Goddard1914ApparatusSim").then((m) => m.GoddardRocketSim),
   { ssr: false, loading: SimLoading },
 );
 const GoodyearRubberSim = dynamic(
   () => import("./GoodyearRubberSim").then((m) => m.GoodyearRubberSim),
+  { ssr: false, loading: SimLoading },
+);
+const GoertzElectronicMasterSlaveManipulatorSim = dynamic(
+  () =>
+    import("./GoertzElectronicMasterSlaveManipulatorSim").then(
+      (m) => m.GoertzElectronicMasterSlaveManipulatorSim,
+    ),
   { ssr: false, loading: SimLoading },
 );
 const GrammeDynamoSim = dynamic(() => import("./GrammeDynamoSim").then((m) => m.GrammeDynamoSim), {
@@ -179,12 +203,28 @@ const HoweSewingMachineSim = dynamic(
   () => import("./HoweSewingMachineSim").then((m) => m.HoweSewingMachineSim),
   { ssr: false, loading: SimLoading },
 );
+const HullStereolithographySim = dynamic(
+  () => import("./HullStereolithographySim").then((m) => m.HullStereolithographySim),
+  { ssr: false, loading: SimLoading },
+);
 const HyattCelluloidSim = dynamic(
   () => import("./HyattCelluloidSim").then((m) => m.HyattCelluloidSim),
   { ssr: false, loading: SimLoading },
 );
 const KilbyIntegratedCircuitSim = dynamic(
   () => import("./KilbyIntegratedCircuitSim").then((m) => m.KilbyIntegratedCircuitSim),
+  { ssr: false, loading: SimLoading },
+);
+const KamenTransporterSim = dynamic(
+  () => import("./KamenTransporterSim").then((m) => m.KamenTransporterSim),
+  { ssr: false, loading: SimLoading },
+);
+const KamenSegwaySim = dynamic(() => import("./KamenSegwaySim").then((m) => m.KamenSegwaySim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const KamenMedicationInjectionSim = dynamic(
+  () => import("./KamenMedicationInjectionSim").then((m) => m.KamenMedicationInjectionSim),
   { ssr: false, loading: SimLoading },
 );
 const KwolekKevlarSim = dynamic(() => import("./KwolekKevlarSim").then((m) => m.KwolekKevlarSim), {
@@ -211,6 +251,18 @@ const MaimanRubyLaserSim = dynamic(
   () => import("./MaimanRubyLaserSim").then((m) => m.MaimanRubyLaserSim),
   { ssr: false, loading: SimLoading },
 );
+const MakinoScaraSim = dynamic(() => import("./MakinoScaraSim").then((m) => m.MakinoScaraSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const MilacronRobotToolchangerSim = dynamic(
+  () => import("./MilacronRobotToolchangerSim").then((m) => m.MilacronRobotToolchangerSim),
+  { ssr: false, loading: SimLoading },
+);
+const RobotEndEffectorSim = dynamic(
+  () => import("./RobotEndEffectorSim").then((m) => m.RobotEndEffectorSim),
+  { ssr: false, loading: SimLoading },
+);
 const MarconiRadioSim = dynamic(() => import("./MarconiRadioSim").then((m) => m.MarconiRadioSim), {
   ssr: false,
   loading: SimLoading,
@@ -225,6 +277,14 @@ const McCormickReaperSim = dynamic(
 );
 const MergenthalerLinotypeSim = dynamic(
   () => import("./MergenthalerLinotypeSim").then((m) => m.MergenthalerLinotypeSim),
+  { ssr: false, loading: SimLoading },
+);
+const MestralVelcroSim = dynamic(
+  () => import("./MestralVelcroSim").then((m) => m.MestralVelcroSim),
+  { ssr: false, loading: SimLoading },
+);
+const MetcalfeEthernetSim = dynamic(
+  () => import("./MetcalfeEthernetSim").then((m) => m.MetcalfeEthernetSim),
   { ssr: false, loading: SimLoading },
 );
 const MorseTelegraphSim = dynamic(
@@ -243,10 +303,10 @@ const NoycePlanarICSim = dynamic(
   () => import("./NoycePlanarICSim").then((m) => m.NoycePlanarICSim),
   { ssr: false, loading: SimLoading },
 );
-const OtisElevatorSim = dynamic(() => import("./OtisElevatorSim").then((m) => m.OtisElevatorSim), {
-  ssr: false,
-  loading: SimLoading,
-});
+const OtisHoistingApparatusSim = dynamic(
+  () => import("./OtisHoistingApparatusSim").then((module) => module.OtisHoistingApparatusSim),
+  { ssr: false, loading: SimLoading },
+);
 const OttoEngineSim = dynamic(() => import("./OttoEngineSim").then((m) => m.OttoEngineSim), {
   ssr: false,
   loading: SimLoading,
@@ -283,8 +343,24 @@ const SholesTypewriterSim = dynamic(
   () => import("./SholesTypewriterSim").then((m) => m.SholesTypewriterSim),
   { ssr: false, loading: SimLoading },
 );
+const SikorskyHelicopterSim = dynamic(
+  () => import("./SikorskyHelicopterSim").then((m) => m.SikorskyHelicopterSim),
+  { ssr: false, loading: SimLoading },
+);
 const SpencerMicrowaveSim = dynamic(
   () => import("./SpencerMicrowaveSim").then((m) => m.SpencerMicrowaveSim),
+  { ssr: false, loading: SimLoading },
+);
+const StackhouseManipulatorSim = dynamic(
+  () => import("./StackhouseSourceBoundedSim").then((m) => m.StackhouseSourceBoundedSim),
+  { ssr: false, loading: SimLoading },
+);
+const SalisburyRobotHandSim = dynamic(
+  () => import("./SalisburyRobotHandSim").then((m) => m.SalisburyRobotHandSim),
+  { ssr: false, loading: SimLoading },
+);
+const SundbackZipperSim = dynamic(
+  () => import("./SundbackZipperSim").then((m) => m.SundbackZipperSim),
   { ssr: false, loading: SimLoading },
 );
 const TeslaCoilSim = dynamic(() => import("./TeslaCoilSim").then((m) => m.TeslaCoilSim), {
@@ -307,6 +383,27 @@ const TownesLaserSim = dynamic(() => import("./TownesLaserSim").then((m) => m.To
   ssr: false,
   loading: SimLoading,
 });
+const LemelsonAutomaticWarehousingSim = dynamic(
+  () => import("./LemelsonAutomaticWarehousingSim").then((m) => m.LemelsonAutomaticWarehousingSim),
+  { ssr: false, loading: SimLoading },
+);
+const LemelsonAutomaticProductionSim = dynamic(
+  () => import("./LemelsonAutomaticProductionSim").then((m) => m.LemelsonAutomaticProductionSim),
+  { ssr: false, loading: SimLoading },
+);
+const LemelsonAdjustableManipulatorSim = dynamic(
+  () =>
+    import("./LemelsonAdjustableManipulatorSim").then((m) => m.LemelsonAdjustableManipulatorSim),
+  { ssr: false, loading: SimLoading },
+);
+const LemelsonMachineVisionSim = dynamic(
+  () => import("./LemelsonMachineVisionSim").then((m) => m.LemelsonMachineVisionSim),
+  { ssr: false, loading: SimLoading },
+);
+const WatsonRemoteCenterComplianceSim = dynamic(
+  () => import("./WatsonRemoteCenterComplianceSim").then((m) => m.WatsonRemoteCenterComplianceSim),
+  { ssr: false, loading: SimLoading },
+);
 const WattRotaryEngineSim = dynamic(
   () => import("./WattRotaryEngineSim").then((m) => m.WattRotaryEngineSim),
   { ssr: false, loading: SimLoading },
@@ -368,6 +465,10 @@ const BaekelandBakelite3D = dynamic(
   () => import("./three/BaekelandBakelite3D").then((m) => m.BaekelandBakelite3D),
   { ssr: false, loading: ThreeLoading },
 );
+const BaerOdyssey3D = dynamic(
+  () => import("./three/BaerOdyssey3D").then((mod) => mod.BaerOdyssey3D),
+  { ssr: false, loading: ThreeLoading },
+);
 const BardeenTransistor3D = dynamic(
   () => import("./three/BardeenTransistor3D").then((mod) => mod.BardeenTransistor3D),
   { ssr: false, loading: ThreeLoading },
@@ -405,6 +506,10 @@ const CortPuddlingRolling3D = dynamic(
   () => import("./three/CortPuddlingRolling3D").then((mod) => mod.CortPuddlingRolling3D),
   { ssr: false, loading: ThreeLoading },
 );
+const CrumpFdm3D = dynamic(() => import("./three/CrumpFdm3D").then((mod) => mod.CrumpFdm3D), {
+  ssr: false,
+  loading: ThreeLoading,
+});
 const DaimlerEngine3D = dynamic(
   () => import("./three/DaimlerEngine3D").then((mod) => mod.DaimlerEngine3D),
   { ssr: false, loading: ThreeLoading },
@@ -466,11 +571,18 @@ const GliddenBarbedWire3D = dynamic(
   { ssr: false, loading: ThreeLoading },
 );
 const GoddardRocket3D = dynamic(
-  () => import("./three/GoddardRocket3D").then((mod) => mod.GoddardRocket3D),
+  () => import("./three/Goddard1914Apparatus3D").then((mod) => mod.GoddardRocket3D),
   { ssr: false, loading: ThreeLoading },
 );
 const GoodyearRubber3D = dynamic(
   () => import("./three/GoodyearRubber3D").then((mod) => mod.GoodyearRubber3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const GoertzElectronicMasterSlaveManipulator3D = dynamic(
+  () =>
+    import("./three/GoertzElectronicMasterSlaveManipulator3D").then(
+      (mod) => mod.GoertzElectronicMasterSlaveManipulator3D,
+    ),
   { ssr: false, loading: ThreeLoading },
 );
 const GrammeDynamo3D = dynamic(
@@ -493,8 +605,24 @@ const HoweSewingMachine3D = dynamic(
   () => import("./three/HoweSewingMachine3D").then((mod) => mod.HoweSewingMachine3D),
   { ssr: false, loading: ThreeLoading },
 );
+const HullStereolithography3D = dynamic(
+  () => import("./three/HullStereolithography3D").then((mod) => mod.HullStereolithography3D),
+  { ssr: false, loading: ThreeLoading },
+);
 const HyattCelluloid3D = dynamic(
   () => import("./three/HyattCelluloid3D").then((mod) => mod.HyattCelluloid3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const KamenTransporter3D = dynamic(() => import("./three/KamenTransporter3D"), {
+  ssr: false,
+  loading: ThreeLoading,
+});
+const KamenSegway3D = dynamic(() => import("./three/KamenSegway3D").then((m) => m.KamenSegway3D), {
+  ssr: false,
+  loading: ThreeLoading,
+});
+const KamenMedicationInjection3D = dynamic(
+  () => import("./three/KamenMedicationInjection3D").then((m) => m.KamenMedicationInjection3D),
   { ssr: false, loading: ThreeLoading },
 );
 const KwolekKevlar3D = dynamic(
@@ -529,6 +657,18 @@ const MergenthalerLinotype3D = dynamic(
   () => import("./three/MergenthalerLinotype3D").then((mod) => mod.MergenthalerLinotype3D),
   { ssr: false, loading: ThreeLoading },
 );
+const MestralVelcro3D = dynamic(() => import("./three/MestralVelcro3D"), {
+  ssr: false,
+  loading: ThreeLoading,
+});
+const MetcalfeEthernet3D = dynamic(
+  () => import("./three/MetcalfeEthernet3D").then((m) => m.MetcalfeEthernet3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const SikorskyHelicopter3D = dynamic(
+  () => import("./three/SikorskyHelicopter3D").then((m) => m.SikorskyHelicopter3D),
+  { ssr: false, loading: ThreeLoading },
+);
 const MorseTelegraph3D = dynamic(
   () => import("./three/MorseTelegraph3D").then((mod) => mod.MorseTelegraph3D),
   { ssr: false, loading: ThreeLoading },
@@ -545,8 +685,8 @@ const NoycePlanarIC3D = dynamic(
   () => import("./three/NoycePlanarIC3D").then((mod) => mod.NoycePlanarIC3D),
   { ssr: false, loading: ThreeLoading },
 );
-const OtisElevator3D = dynamic(
-  () => import("./three/OtisElevator3D").then((mod) => mod.OtisElevator3D),
+const OtisHoistingApparatus3D = dynamic(
+  () => import("./three/OtisHoistingApparatus3D").then((module) => module.OtisHoistingApparatus3D),
   { ssr: false, loading: ThreeLoading },
 );
 const OttoEngine3D = dynamic(() => import("./three/OttoEngine3D").then((mod) => mod.OttoEngine3D), {
@@ -575,6 +715,38 @@ const SholesTypewriter3D = dynamic(
 );
 const SpencerMicrowave3D = dynamic(
   () => import("./three/SpencerMicrowave3D").then((mod) => mod.SpencerMicrowave3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const SundbackZipper3D = dynamic(() => import("./three/SundbackZipper3D"), {
+  ssr: false,
+  loading: ThreeLoading,
+});
+const SalisburyRobotHand3D = dynamic(() => import("./three/SalisburyRobotHand3D"), {
+  ssr: false,
+  loading: ThreeLoading,
+});
+const StackhouseManipulator3D = dynamic(() => import("./three/StackhouseSourceBounded3D"), {
+  ssr: false,
+  loading: ThreeLoading,
+});
+const MakinoScara3D = dynamic(() => import("./three/MakinoScara3D").then((m) => m.MakinoScara3D), {
+  ssr: false,
+  loading: ThreeLoading,
+});
+const MilacronRobotToolchanger3D = dynamic(
+  () => import("./three/MilacronRobotToolchanger3D").then((m) => m.MilacronRobotToolchanger3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const RobotEndEffector3D = dynamic(
+  () => import("./three/RobotEndEffector3D").then((m) => m.RobotEndEffector3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const DevolProgrammedTransfer3D = dynamic(
+  () => import("./three/DevolProgrammedTransfer3D").then((m) => m.DevolProgrammedTransfer3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const AmfVersatran3D = dynamic(
+  () => import("./three/AMFVersatran3D").then((m) => m.AmfVersatran3D),
   { ssr: false, loading: ThreeLoading },
 );
 const MaimanRubyLaser3D = dynamic(
@@ -608,6 +780,38 @@ const TeslaTeleautomaton3D = dynamic(
 );
 const ThomsonWelding3D = dynamic(
   () => import("./three/ThomsonWelding3D").then((mod) => mod.ThomsonWelding3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const LemelsonAutomaticWarehousing3D = dynamic(
+  () =>
+    import("./three/LemelsonAutomaticWarehousing3D").then(
+      (mod) => mod.LemelsonAutomaticWarehousing3D,
+    ),
+  { ssr: false, loading: ThreeLoading },
+);
+const LemelsonAutomaticProduction3D = dynamic(
+  () =>
+    import("./three/LemelsonAutomaticProduction3D").then(
+      (mod) => mod.LemelsonAutomaticProduction3D,
+    ),
+  { ssr: false, loading: ThreeLoading },
+);
+const LemelsonAdjustableManipulator3D = dynamic(
+  () =>
+    import("./three/LemelsonAdjustableManipulator3D").then(
+      (mod) => mod.LemelsonAdjustableManipulator3D,
+    ),
+  { ssr: false, loading: ThreeLoading },
+);
+const LemelsonMachineVision3D = dynamic(
+  () => import("./three/LemelsonMachineVision3D").then((mod) => mod.LemelsonMachineVision3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const WatsonRemoteCenterCompliance3D = dynamic(
+  () =>
+    import("./three/WatsonRemoteCenterCompliance3D").then(
+      (mod) => mod.WatsonRemoteCenterCompliance3D,
+    ),
   { ssr: false, loading: ThreeLoading },
 );
 const WattRotaryEngine3D = dynamic(
@@ -677,6 +881,11 @@ interface PatentVisualDispatcherProps {
 const renderModeMemory = new Map<string, "3d-physics" | "vector-diagram">();
 
 export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps) {
+  // This is deliberately read-only instrumentation. The visual modules and the
+  // telemetry badge own their own subscriptions, while the dispatcher makes
+  // the shared transport tick observable to browser acceptance tests without
+  // inventing a second control path.
+  const { tick: physicsTick, lastChange } = usePatentPhysics(patentId);
   const [renderMode, setRenderMode] = useState<"3d-physics" | "vector-diagram">(
     () => renderModeMemory.get(patentId) ?? "3d-physics",
   );
@@ -687,7 +896,14 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
   };
 
   return (
-    <div className="space-y-4">
+    <div
+      className="space-y-4"
+      data-testid="patent-visual-dispatcher"
+      data-patent-id={patentId}
+      data-render-mode={renderMode}
+      data-physics-tick={physicsTick}
+      data-physics-last-change={lastChange?.id ?? ""}
+    >
       {/* 3D vs 2D Toggle Switcher */}
       <div className="flex justify-end">
         <div className="flex items-center gap-1 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs sm:text-sm font-sans shadow-sm">
@@ -721,243 +937,396 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
       </div>
 
       {/* Render Selected Visual Module */}
-      {(() => {
-        switch (patentId) {
-          case "gb-913-watt-separate-condenser":
-            return renderMode === "3d-physics" ? (
-              <WattSeparateCondenser3D />
-            ) : (
-              <WattSeparateCondenserSim />
-            );
-          case "gb-931-arkwright-water-frame":
-            return renderMode === "3d-physics" ? (
-              <ArkwrightWaterFrame3D />
-            ) : (
-              <ArkwrightWaterFrameSim />
-            );
-          case "gb-1306-watt-rotary-engine":
-            return renderMode === "3d-physics" ? <WattRotaryEngine3D /> : <WattRotaryEngineSim />;
-          case "gb-1420-cort-puddling-rolling":
-            return renderMode === "3d-physics" ? (
-              <CortPuddlingRolling3D />
-            ) : (
-              <CortPuddlingRollingSim />
-            );
-          case "us-x1-hopkins-potash":
-            return renderMode === "3d-physics" ? <HopkinsPotash3D /> : <HopkinsPotashSim />;
-          case "us-x72-whitney-cotton-gin":
-            return renderMode === "3d-physics" ? <WhitneyCottonGin3D /> : <WhitneyCottonGinSim />;
-          case "us-x8277-mccormick-reaper":
-            return renderMode === "3d-physics" ? <McCormickReaper3D /> : <McCormickReaperSim />;
-          case "us-x9430-colt-revolver":
-            return renderMode === "3d-physics" ? <ColtRevolver3D /> : <ColtRevolverSim />;
-          case "us-132-davenport-electric-motor":
-            return renderMode === "3d-physics" ? (
-              <DavenportElectricMotor3D />
-            ) : (
-              <DavenportMotorSim />
-            );
-          case "us-588-ericsson-propeller":
-            return renderMode === "3d-physics" ? <EricssonPropeller3D /> : <EricssonPropellerSim />;
-          case "us-1647-morse-telegraph":
-            return renderMode === "3d-physics" ? <MorseTelegraph3D /> : <MorseTelegraphSim />;
-          case "us-3237-rillieux-evaporator":
-            return renderMode === "3d-physics" ? (
-              <RillieuxEvaporator3D />
-            ) : (
-              <RillieuxEvaporatorSim />
-            );
-          case "us-3633-goodyear-rubber":
-            return renderMode === "3d-physics" ? <GoodyearRubber3D /> : <GoodyearRubberSim />;
-          case "us-4750-howe-sewing-machine":
-            return renderMode === "3d-physics" ? <HoweSewingMachine3D /> : <HoweSewingMachineSim />;
-          case "us-6162-corliss-steam-engine":
-            return renderMode === "3d-physics" ? <CorlissSteamEngine3D /> : <CorlissEngineSim />;
-          case "us-6469-lincoln-buoy":
-            return renderMode === "3d-physics" ? <LincolnBuoy3D /> : <LincolnBuoySim />;
-          case "us-31128-otis-elevator":
-            return renderMode === "3d-physics" ? <OtisElevator3D /> : <OtisElevatorSim />;
-          case "us-36836-gatling-gun":
-            return renderMode === "3d-physics" ? <GatlingGun3D /> : <GatlingGunSim />;
-          case "us-48475-yale-lock":
-            return renderMode === "3d-physics" ? <YaleLock3D /> : <YaleLockSim />;
-          case "us-78317-nobel-dynamite":
-            return renderMode === "3d-physics" ? <NobelDynamite3D /> : <NobelDynamiteSim />;
-          case "us-79265-sholes-typewriter":
-            return renderMode === "3d-physics" ? <SholesTypewriter3D /> : <SholesTypewriterSim />;
-          case "us-105338-hyatt-celluloid":
-            return renderMode === "3d-physics" ? <HyattCelluloid3D /> : <HyattCelluloidSim />;
-          case "us-120057-gramme-dynamo":
-            return renderMode === "3d-physics" ? <GrammeDynamo3D /> : <GrammeDynamoSim />;
-          case "us-124404-westinghouse-air-brake":
-            return renderMode === "3d-physics" ? (
-              <WestinghouseAirBrake3D />
-            ) : (
-              <WestinghouseAirBrakeSim />
-            );
-          case "us-135245-pasteur-fermentation":
-            return renderMode === "3d-physics" ? (
-              <PasteurFermentation3D />
-            ) : (
-              <PasteurFermentationSim />
-            );
-          case "us-157124-glidden-barbed-wire":
-            return renderMode === "3d-physics" ? <GliddenBarbedWire3D /> : <GliddenBarbedWireSim />;
-          case "us-174465-bell-telephone":
-            return renderMode === "3d-physics" ? <BellTelephone3D /> : <BellTelephoneSim />;
-          case "us-194047-otto-engine":
-            return renderMode === "3d-physics" ? <OttoEngine3D /> : <OttoEngineSim />;
-          case "us-200521-edison-phonograph":
-            return renderMode === "3d-physics" ? <EdisonPhonograph3D /> : <EdisonPhonographSim />;
-          case "us-223898-edison-lightbulb":
-            return renderMode === "3d-physics" ? <EdisonBulb3D /> : <EdisonBulbSim />;
-          case "us-233692-pelton-water-wheel":
-            return renderMode === "3d-physics" ? <PeltonWheel3D /> : <PeltonWheelSim />;
-          case "us-235199-bell-photophone":
-            return renderMode === "3d-physics" ? <BellPhotophone3D /> : <BellPhotophoneSim />;
-          case "us-247804-delaval-separator":
-            return renderMode === "3d-physics" ? <DeLavalSeparator3D /> : <DeLavalSeparatorSim />;
-          case "us-307031-edison-indicator":
-            return renderMode === "3d-physics" ? <EdisonIndicator3D /> : <EdisonIndicatorSim />;
-          case "us-313224-mergenthaler-linotype":
-            return renderMode === "3d-physics" ? (
-              <MergenthalerLinotype3D />
-            ) : (
-              <MergenthalerLinotypeSim />
-            );
-          case "us-319596-maxim-machine-gun":
-            return renderMode === "3d-physics" ? <MaximMachineGun3D /> : <MaximMachineGunSim />;
-          case "us-347140-thomson-welding":
-            return renderMode === "3d-physics" ? <ThomsonWelding3D /> : <ThomsonWeldingSim />;
-          case "us-361931-daimler-engine":
-            return renderMode === "3d-physics" ? <DaimlerEngine3D /> : <DaimlerEngineSim />;
-          case "us-381968-tesla-motor":
-            return renderMode === "3d-physics" ? <TeslaMotor3D /> : <TeslaMotorSim />;
-          case "us-388850-eastman-kodak":
-            return renderMode === "3d-physics" ? <EastmanKodak3D /> : <EastmanKodakSim />;
-          case "us-395781-hollerith-tabulating":
-            return renderMode === "3d-physics" ? (
-              <HollerithTabulating3D />
-            ) : (
-              <HollerithTabulatingSim />
-            );
-          case "us-400766-hall-aluminium":
-            return renderMode === "3d-physics" ? <HallAluminium3D /> : <HallAluminiumSim />;
-          case "us-470918-reno-escalator":
-            return renderMode === "3d-physics" ? <RenoEscalator3D /> : <RenoEscalatorSim />;
-          case "us-593138-tesla-coil":
-            return renderMode === "3d-physics" ? <TeslaCoil3D /> : <TeslaCoilSim />;
-          case "us-542846-diesel-engine":
-            return renderMode === "3d-physics" ? <DieselEngine3D /> : <DieselEngineSim />;
-          case "us-586193-marconi-radio":
-            return renderMode === "3d-physics" ? <MarconiRadio3D /> : <MarconiRadioSim />;
-          case "us-608969-parsons-turbine":
-            return renderMode === "3d-physics" ? <ParsonsTurbine3D /> : <ParsonsTurbineSim />;
-          case "us-613809-tesla-teleautomaton":
-            return renderMode === "3d-physics" ? (
-              <TeslaTeleautomaton3D />
-            ) : (
-              <TeslaTeleautomatonSim />
-            );
-          case "us-621195-zeppelin-airship":
-            return renderMode === "3d-physics" ? <ZeppelinAirship3D /> : <ZeppelinAirshipSim />;
-          case "us-682690-hewitt-mercury-lamp":
-            return renderMode === "3d-physics" ? <HewittMercuryLamp3D /> : <HewittMercuryLampSim />;
-          case "us-706737-fessenden-wireless":
-            return renderMode === "3d-physics" ? <FessendenWireless3D /> : <FessendenWirelessSim />;
-          case "us-727650-linde-air-liquefaction":
-            return renderMode === "3d-physics" ? (
-              <LindeAirLiquefaction3D />
-            ) : (
-              <LindeAirLiquefactionSim />
-            );
-          case "us-808897-carrier-air-conditioner":
-            return renderMode === "3d-physics" ? (
-              <CarrierAirConditioner3D />
-            ) : (
-              <CarrierAirConditionerSim />
-            );
-          case "us-821393-wright-flyer":
-            return renderMode === "3d-physics" ? <WrightFlyer3D /> : <WrightFlyerSim />;
-          case "us-879532-de-forest-audion":
-            return renderMode === "3d-physics" ? <DeForestAudion3D /> : <DeForestAudionSim />;
-          case "us-942699-baekeland-bakelite":
-            return renderMode === "3d-physics" ? <BaekelandBakelite3D /> : <BaekelandBakeliteSim />;
-          case "us-971501-haber-ammonia":
-            return renderMode === "3d-physics" ? <HaberAmmonia3D /> : <HaberAmmoniaSim />;
-          case "us-1102653-goddard-rocket":
-            return renderMode === "3d-physics" ? <GoddardRocket3D /> : <GoddardRocketSim />;
-          case "us-1773980-farnsworth-tv":
-            return renderMode === "3d-physics" ? <FarnsworthTV3D /> : <FarnsworthTVSim />;
-          case "us-1781541-einstein-refrigerator":
-            return renderMode === "3d-physics" ? (
-              <EinsteinRefrigerator3D />
-            ) : (
-              <EinsteinRefrigeratorSim />
-            );
-          case "us-2292387-lamarr-frequency-hopping":
-            return renderMode === "3d-physics" ? (
-              <LamarrFrequencyHopping3D />
-            ) : (
-              <LamarrFrequencyHoppingSim />
-            );
-          case "us-2297691-carlson-electrophotography":
-            return renderMode === "3d-physics" ? (
-              <CarlsonElectrophotography3D />
-            ) : (
-              <CarlsonElectrophotographySim />
-            );
-          case "us-2495429-spencer-microwave":
-            return renderMode === "3d-physics" ? <SpencerMicrowave3D /> : <SpencerMicrowaveSim />;
-          case "us-2524035-bardeen-transistor":
-            return renderMode === "3d-physics" ? <BardeenTransistor3D /> : <BardeenTransistorSim />;
-          case "us-2708656-fermi-reactor":
-            return renderMode === "3d-physics" ? <FermiReactor3D /> : <FermiReactorSim />;
-          case "us-3353115-maiman-ruby-laser":
-            return renderMode === "3d-physics" ? <MaimanRubyLaser3D /> : <MaimanRubyLaserSim />;
-          case "us-2929922-townes-laser":
-            return renderMode === "3d-physics" ? <TownesLaser3D /> : <TownesLaserSim />;
-          case "us-2543181-land-polaroid":
-            return renderMode === "3d-physics" ? <LandPolaroid3D /> : <LandPolaroidSim />;
-          case "us-3138743-kilby-integrated-circuit":
-            return renderMode === "3d-physics" ? (
-              <KilbyIntegratedCircuit3D />
-            ) : (
-              <KilbyIntegratedCircuitSim />
-            );
+      <div data-testid="patent-visual-surface" data-render-mode={renderMode}>
+        {(() => {
+          switch (patentId) {
+            case "gb-913-watt-separate-condenser":
+              return renderMode === "3d-physics" ? (
+                <WattSeparateCondenser3D />
+              ) : (
+                <WattSeparateCondenserSim />
+              );
+            case "gb-931-arkwright-water-frame":
+              return renderMode === "3d-physics" ? (
+                <ArkwrightWaterFrame3D />
+              ) : (
+                <ArkwrightWaterFrameSim />
+              );
+            case "gb-1306-watt-rotary-engine":
+              return renderMode === "3d-physics" ? <WattRotaryEngine3D /> : <WattRotaryEngineSim />;
+            case "gb-1420-cort-puddling-rolling":
+              return renderMode === "3d-physics" ? (
+                <CortPuddlingRolling3D />
+              ) : (
+                <CortPuddlingRollingSim />
+              );
+            case "us-x1-hopkins-potash":
+              return renderMode === "3d-physics" ? <HopkinsPotash3D /> : <HopkinsPotashSim />;
+            case "us-x72-whitney-cotton-gin":
+              return renderMode === "3d-physics" ? <WhitneyCottonGin3D /> : <WhitneyCottonGinSim />;
+            case "us-x8277-mccormick-reaper":
+              return renderMode === "3d-physics" ? <McCormickReaper3D /> : <McCormickReaperSim />;
+            case "us-x9430-colt-revolver":
+              return renderMode === "3d-physics" ? <ColtRevolver3D /> : <ColtRevolverSim />;
+            case "us-132-davenport-electric-motor":
+              return renderMode === "3d-physics" ? (
+                <DavenportElectricMotor3D />
+              ) : (
+                <DavenportMotorSim />
+              );
+            case "us-588-ericsson-propeller":
+              return renderMode === "3d-physics" ? (
+                <EricssonPropeller3D />
+              ) : (
+                <EricssonPropellerSim />
+              );
+            case "us-1647-morse-telegraph":
+              return renderMode === "3d-physics" ? <MorseTelegraph3D /> : <MorseTelegraphSim />;
+            case "us-3237-rillieux-evaporator":
+              return renderMode === "3d-physics" ? (
+                <RillieuxEvaporator3D />
+              ) : (
+                <RillieuxEvaporatorSim />
+              );
+            case "us-3633-goodyear-rubber":
+              return renderMode === "3d-physics" ? <GoodyearRubber3D /> : <GoodyearRubberSim />;
+            case "us-4750-howe-sewing-machine":
+              return renderMode === "3d-physics" ? (
+                <HoweSewingMachine3D />
+              ) : (
+                <HoweSewingMachineSim />
+              );
+            case "us-6162-corliss-steam-engine":
+              return renderMode === "3d-physics" ? <CorlissSteamEngine3D /> : <CorlissEngineSim />;
+            case "us-6469-lincoln-buoy":
+              return renderMode === "3d-physics" ? <LincolnBuoy3D /> : <LincolnBuoySim />;
+            case "us-31128-otis-elevator":
+              return renderMode === "3d-physics" ? (
+                <OtisHoistingApparatus3D />
+              ) : (
+                <OtisHoistingApparatusSim />
+              );
+            case "us-36836-gatling-gun":
+              return renderMode === "3d-physics" ? <GatlingGun3D /> : <GatlingGunSim />;
+            case "us-48475-yale-lock":
+              return renderMode === "3d-physics" ? <YaleLock3D /> : <YaleLockSim />;
+            case "us-78317-nobel-dynamite":
+              return renderMode === "3d-physics" ? <NobelDynamite3D /> : <NobelDynamiteSim />;
+            case "us-79265-sholes-typewriter":
+              return renderMode === "3d-physics" ? <SholesTypewriter3D /> : <SholesTypewriterSim />;
+            case "us-105338-hyatt-celluloid":
+              return renderMode === "3d-physics" ? <HyattCelluloid3D /> : <HyattCelluloidSim />;
+            case "us-120057-gramme-dynamo":
+              return renderMode === "3d-physics" ? <GrammeDynamo3D /> : <GrammeDynamoSim />;
+            case "us-124404-westinghouse-air-brake":
+              return renderMode === "3d-physics" ? (
+                <WestinghouseAirBrake3D />
+              ) : (
+                <WestinghouseAirBrakeSim />
+              );
+            case "us-135245-pasteur-fermentation":
+              return renderMode === "3d-physics" ? (
+                <PasteurFermentation3D />
+              ) : (
+                <PasteurFermentationSim />
+              );
+            case "us-157124-glidden-barbed-wire":
+              return renderMode === "3d-physics" ? (
+                <GliddenBarbedWire3D />
+              ) : (
+                <GliddenBarbedWireSim />
+              );
+            case "us-174465-bell-telephone":
+              return renderMode === "3d-physics" ? <BellTelephone3D /> : <BellTelephoneSim />;
+            case "us-194047-otto-engine":
+              return renderMode === "3d-physics" ? <OttoEngine3D /> : <OttoEngineSim />;
+            case "us-200521-edison-phonograph":
+              return renderMode === "3d-physics" ? <EdisonPhonograph3D /> : <EdisonPhonographSim />;
+            case "us-223898-edison-lightbulb":
+              return renderMode === "3d-physics" ? <EdisonBulb3D /> : <EdisonBulbSim />;
+            case "us-233692-pelton-water-wheel":
+              return renderMode === "3d-physics" ? <PeltonWheel3D /> : <PeltonWheelSim />;
+            case "us-235199-bell-photophone":
+              return renderMode === "3d-physics" ? <BellPhotophone3D /> : <BellPhotophoneSim />;
+            case "us-247804-delaval-separator":
+              return renderMode === "3d-physics" ? <DeLavalSeparator3D /> : <DeLavalSeparatorSim />;
+            case "us-307031-edison-indicator":
+              return renderMode === "3d-physics" ? <EdisonIndicator3D /> : <EdisonIndicatorSim />;
+            case "us-313224-mergenthaler-linotype":
+              return renderMode === "3d-physics" ? (
+                <MergenthalerLinotype3D />
+              ) : (
+                <MergenthalerLinotypeSim />
+              );
+            case "us-319596-maxim-machine-gun":
+              return renderMode === "3d-physics" ? <MaximMachineGun3D /> : <MaximMachineGunSim />;
+            case "us-347140-thomson-welding":
+              return renderMode === "3d-physics" ? <ThomsonWelding3D /> : <ThomsonWeldingSim />;
+            case "us-361931-daimler-engine":
+              return renderMode === "3d-physics" ? <DaimlerEngine3D /> : <DaimlerEngineSim />;
+            case "us-381968-tesla-motor":
+              return renderMode === "3d-physics" ? <TeslaMotor3D /> : <TeslaMotorSim />;
+            case "us-388850-eastman-kodak":
+              return renderMode === "3d-physics" ? <EastmanKodak3D /> : <EastmanKodakSim />;
+            case "us-395781-hollerith-tabulating":
+              return renderMode === "3d-physics" ? (
+                <HollerithTabulating3D />
+              ) : (
+                <HollerithTabulatingSim />
+              );
+            case "us-400766-hall-aluminium":
+              return renderMode === "3d-physics" ? <HallAluminium3D /> : <HallAluminiumSim />;
+            case "us-470918-reno-escalator":
+              return renderMode === "3d-physics" ? <RenoEscalator3D /> : <RenoEscalatorSim />;
+            case "us-593138-tesla-coil":
+              return renderMode === "3d-physics" ? <TeslaCoil3D /> : <TeslaCoilSim />;
+            case "us-542846-diesel-engine":
+              return renderMode === "3d-physics" ? <DieselEngine3D /> : <DieselEngineSim />;
+            case "us-586193-marconi-radio":
+              return renderMode === "3d-physics" ? <MarconiRadio3D /> : <MarconiRadioSim />;
+            case "us-608969-parsons-turbine":
+              return renderMode === "3d-physics" ? <ParsonsTurbine3D /> : <ParsonsTurbineSim />;
+            case "us-613809-tesla-teleautomaton":
+              return renderMode === "3d-physics" ? (
+                <TeslaTeleautomaton3D />
+              ) : (
+                <TeslaTeleautomatonSim />
+              );
+            case "us-621195-zeppelin-airship":
+              return renderMode === "3d-physics" ? <ZeppelinAirship3D /> : <ZeppelinAirshipSim />;
+            case "us-682690-hewitt-mercury-lamp":
+              return renderMode === "3d-physics" ? (
+                <HewittMercuryLamp3D />
+              ) : (
+                <HewittMercuryLampSim />
+              );
+            case "us-706737-fessenden-wireless":
+              return renderMode === "3d-physics" ? (
+                <FessendenWireless3D />
+              ) : (
+                <FessendenWirelessSim />
+              );
+            case "us-727650-linde-air-liquefaction":
+              return renderMode === "3d-physics" ? (
+                <LindeAirLiquefaction3D />
+              ) : (
+                <LindeAirLiquefactionSim />
+              );
+            case "us-808897-carrier-air-conditioner":
+              return renderMode === "3d-physics" ? (
+                <CarrierAirConditioner3D />
+              ) : (
+                <CarrierAirConditionerSim />
+              );
+            case "us-821393-wright-flyer":
+              return renderMode === "3d-physics" ? <WrightFlyer3D /> : <WrightFlyerSim />;
+            case "us-879532-de-forest-audion":
+              return renderMode === "3d-physics" ? <DeForestAudion3D /> : <DeForestAudionSim />;
+            case "us-942699-baekeland-bakelite":
+              return renderMode === "3d-physics" ? (
+                <BaekelandBakelite3D />
+              ) : (
+                <BaekelandBakeliteSim />
+              );
+            case "us-971501-haber-ammonia":
+              return renderMode === "3d-physics" ? <HaberAmmonia3D /> : <HaberAmmoniaSim />;
+            case "us-1102653-goddard-rocket":
+              return renderMode === "3d-physics" ? <GoddardRocket3D /> : <GoddardRocketSim />;
+            case "us-1219881-sundback-zipper":
+              return renderMode === "3d-physics" ? (
+                <SundbackZipper3D patentId={patentId} />
+              ) : (
+                <SundbackZipperSim patentId={patentId} />
+              );
+            case "us-1773980-farnsworth-tv":
+              return renderMode === "3d-physics" ? <FarnsworthTV3D /> : <FarnsworthTVSim />;
+            case "us-1781541-einstein-refrigerator":
+              return renderMode === "3d-physics" ? (
+                <EinsteinRefrigerator3D />
+              ) : (
+                <EinsteinRefrigeratorSim />
+              );
+            case "us-2292387-lamarr-frequency-hopping":
+              return renderMode === "3d-physics" ? (
+                <LamarrFrequencyHopping3D />
+              ) : (
+                <LamarrFrequencyHoppingSim />
+              );
+            case "us-2297691-carlson-electrophotography":
+              return renderMode === "3d-physics" ? (
+                <CarlsonElectrophotography3D />
+              ) : (
+                <CarlsonElectrophotographySim />
+              );
+            case "us-2495429-spencer-microwave":
+              return renderMode === "3d-physics" ? <SpencerMicrowave3D /> : <SpencerMicrowaveSim />;
+            case "us-2524035-bardeen-transistor":
+              return renderMode === "3d-physics" ? (
+                <BardeenTransistor3D />
+              ) : (
+                <BardeenTransistorSim />
+              );
+            case "us-2708656-fermi-reactor":
+              return renderMode === "3d-physics" ? <FermiReactor3D /> : <FermiReactorSim />;
+            case "us-2717437-mestral-velcro":
+              return renderMode === "3d-physics" ? (
+                <MestralVelcro3D patentId={patentId} />
+              ) : (
+                <MestralVelcroSim />
+              );
+            case "us-2846084-goertz-electronic-master-slave-manipulator":
+              return renderMode === "3d-physics" ? (
+                <GoertzElectronicMasterSlaveManipulator3D />
+              ) : (
+                <GoertzElectronicMasterSlaveManipulatorSim />
+              );
+            case "us-3353115-maiman-ruby-laser":
+              return renderMode === "3d-physics" ? <MaimanRubyLaser3D /> : <MaimanRubyLaserSim />;
+            case "us-2929922-townes-laser":
+              return renderMode === "3d-physics" ? <TownesLaser3D /> : <TownesLaserSim />;
+            case "us-2543181-land-polaroid":
+              return renderMode === "3d-physics" ? <LandPolaroid3D /> : <LandPolaroidSim />;
+            case "us-3138743-kilby-integrated-circuit":
+              return renderMode === "3d-physics" ? (
+                <KilbyIntegratedCircuit3D />
+              ) : (
+                <KilbyIntegratedCircuitSim />
+              );
 
-          case "us-2981877-noyce-ic":
-            return renderMode === "3d-physics" ? <NoycePlanarIC3D /> : <NoycePlanarICSim />;
-          case "us-3541541-engelbart-mouse":
-            return renderMode === "3d-physics" ? <EngelbartMouse3D /> : <EngelbartMouseSim />;
-          case "us-3671542-kwolek-kevlar":
-            return renderMode === "3d-physics" ? <KwolekKevlar3D /> : <KwolekKevlarSim />;
-          case "us-3923554-boyle-smith-ccd":
-          case "us-3858232-boyle-smith-ccd":
-            return renderMode === "3d-physics" ? <BoyleSmithCcd3D /> : <BoyleSmithCcdSim />;
-          case "us-4136359-wozniak-apple":
-            return renderMode === "3d-physics" ? <WozniakApple3D /> : <WozniakAppleSim />;
-          case "us-6120588-eink":
-            return renderMode === "3d-physics" ? <EInk3D /> : <EInkSim />;
-          case "us-6285999-pagerank":
-            return renderMode === "3d-physics" ? <PageRank3D /> : <PageRankSim />;
-          case "us-6331181-davinci":
-            return renderMode === "3d-physics" ? <DaVinci3D /> : <DaVinciSim />;
-          case "us-6594844-roomba":
-            return renderMode === "3d-physics" ? <Roomba3D /> : <RoombaSim />;
-          case "us-7479949-multitouch":
-            return renderMode === "3d-physics" ? <MultiTouch3D /> : <MultiTouchSim />;
+            case "us-2981877-noyce-ic":
+              return renderMode === "3d-physics" ? <NoycePlanarIC3D /> : <NoycePlanarICSim />;
+            case "us-3081379-lemelson-machine-vision":
+              return renderMode === "3d-physics" ? (
+                <LemelsonMachineVision3D />
+              ) : (
+                <LemelsonMachineVisionSim />
+              );
+            case "us-3119501-lemelson-automatic-warehousing":
+              return renderMode === "3d-physics" ? (
+                <LemelsonAutomaticWarehousing3D />
+              ) : (
+                <LemelsonAutomaticWarehousingSim />
+              );
+            case "us-3260375-lemelson-adjustable-manipulator":
+              return renderMode === "3d-physics" ? (
+                <LemelsonAdjustableManipulator3D />
+              ) : (
+                <LemelsonAdjustableManipulatorSim />
+              );
+            case "us-3313014-lemelson-automatic-production":
+              return renderMode === "3d-physics" ? (
+                <LemelsonAutomaticProduction3D />
+              ) : (
+                <LemelsonAutomaticProductionSim />
+              );
+            case "us-3541541-engelbart-mouse":
+              return renderMode === "3d-physics" ? <EngelbartMouse3D /> : <EngelbartMouseSim />;
+            case "us-3671542-kwolek-kevlar":
+              return renderMode === "3d-physics" ? <KwolekKevlar3D /> : <KwolekKevlarSim />;
+            case "us-3728480-baer-odyssey":
+              return renderMode === "3d-physics" ? <BaerOdyssey3D /> : <BaerOdysseySim />;
+            case "us-3923554-boyle-smith-ccd":
+            case "us-3858232-boyle-smith-ccd":
+              return renderMode === "3d-physics" ? <BoyleSmithCcd3D /> : <BoyleSmithCcdSim />;
+            case "us-4098001-watson-remote-center-compliance":
+            case "us-4098001-watson-rcc":
+              return renderMode === "3d-physics" ? (
+                <WatsonRemoteCenterCompliance3D />
+              ) : (
+                <WatsonRemoteCenterComplianceSim />
+              );
+            case "us-3858581-kamen-medication-injection-device":
+              return renderMode === "3d-physics" ? (
+                <KamenMedicationInjection3D />
+              ) : (
+                <KamenMedicationInjectionSim />
+              );
+            case "us-4068536-stackhouse-manipulator":
+              return renderMode === "3d-physics" ? (
+                <StackhouseManipulator3D />
+              ) : (
+                <StackhouseManipulatorSim />
+              );
+            case "us-4063220-metcalfe-ethernet":
+              return renderMode === "3d-physics" ? <MetcalfeEthernet3D /> : <MetcalfeEthernetSim />;
+            case "us-2318259-sikorsky-helicopter":
+              return renderMode === "3d-physics" ? (
+                <SikorskyHelicopter3D />
+              ) : (
+                <SikorskyHelicopterSim />
+              );
+            case "us-4136359-wozniak-apple":
+              return renderMode === "3d-physics" ? <WozniakApple3D /> : <WozniakAppleSim />;
+            case "us-2988237-devol-programmed-transfer":
+              return renderMode === "3d-physics" ? (
+                <DevolProgrammedTransfer3D />
+              ) : (
+                <DevolProgrammedTransferSim />
+              );
+            case "us-3212649-amf-versatran":
+              return renderMode === "3d-physics" ? <AmfVersatran3D /> : <AmfVersatranSim />;
+            case "us-4341502-makino-scara":
+              return renderMode === "3d-physics" ? <MakinoScara3D /> : <MakinoScaraSim />;
+            case "us-4512709-milacron-robot-toolchanger":
+              return renderMode === "3d-physics" ? (
+                <MilacronRobotToolchanger3D />
+              ) : (
+                <MilacronRobotToolchangerSim />
+              );
+            case "us-4575330-hull-stereolithography":
+              return renderMode === "3d-physics" ? (
+                <HullStereolithography3D />
+              ) : (
+                <HullStereolithographySim />
+              );
+            case "us-4765668-robot-end-effector":
+              return renderMode === "3d-physics" ? <RobotEndEffector3D /> : <RobotEndEffectorSim />;
+            case "us-4921293-salisbury-robot-hand":
+              return renderMode === "3d-physics" ? (
+                <SalisburyRobotHand3D patentId={patentId} />
+              ) : (
+                <SalisburyRobotHandSim patentId={patentId} />
+              );
+            case "us-5121329-crump-fdm":
+              return renderMode === "3d-physics" ? (
+                <CrumpFdm3D patentId={patentId} />
+              ) : (
+                <CrumpFdmSim />
+              );
+            case "us-5701965-kamen-transporter":
+              return renderMode === "3d-physics" ? (
+                <KamenTransporter3D patentId={patentId} />
+              ) : (
+                <KamenTransporterSim patentId={patentId} />
+              );
+            case "us-6302230-kamen-segway":
+              return renderMode === "3d-physics" ? (
+                <KamenSegway3D patentId={patentId} />
+              ) : (
+                <KamenSegwaySim patentId={patentId} />
+              );
+            case "us-6120588-eink":
+              return renderMode === "3d-physics" ? <EInk3D /> : <EInkSim />;
+            case "us-6285999-pagerank":
+              return renderMode === "3d-physics" ? <PageRank3D /> : <PageRankSim />;
+            case "us-6331181-davinci":
+              return renderMode === "3d-physics" ? <DaVinci3D /> : <DaVinciSim />;
+            case "us-6594844-roomba":
+              return renderMode === "3d-physics" ? <Roomba3D /> : <RoombaSim />;
+            case "us-7479949-multitouch":
+              return renderMode === "3d-physics" ? <MultiTouch3D /> : <MultiTouchSim />;
 
-          default:
-            return (
-              <div className="w-full min-h-[240px] rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100 dark:bg-ink-900 flex items-center justify-center p-6 text-center">
-                <p className="font-sans text-sm text-ink-600 dark:text-ink-300">
-                  No interactive physics module is registered for this patent yet.
-                </p>
-              </div>
-            );
-        }
-      })()}
+            default:
+              return (
+                <div className="w-full min-h-[240px] rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100 dark:bg-ink-900 flex items-center justify-center p-6 text-center">
+                  <p className="font-sans text-sm text-ink-600 dark:text-ink-300">
+                    No interactive physics module is registered for this patent yet.
+                  </p>
+                </div>
+              );
+          }
+        })()}
+      </div>
     </div>
   );
 }

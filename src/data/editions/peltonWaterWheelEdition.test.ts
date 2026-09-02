@@ -29,6 +29,7 @@ describe("US 233,692 manual source edition", () => {
     });
     const candidateValidation = validateCuratedSpecificationEdition(
       peltonWaterWheelArchivalEdition as unknown as CuratedSpecificationEdition,
+      { requireCompleteFacsimileReview: false },
     );
     expect(candidateValidation.valid).toBeTrue();
     expect(candidateValidation.errors).toEqual([]);
@@ -147,5 +148,37 @@ describe("US 233,692 manual source edition", () => {
     expect(visibleData).not.toContain("$\\");
     expect(visibleData).toContain("single printed claim");
     expect(visibleData).toContain("bucket-front b");
+  });
+
+  test("provides valid provenance classifications for all Pelton controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-233692-pelton-water-wheel"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("registers explicit energy channel omission reason for US 233,692", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-233692-pelton-water-wheel"]).toBeDefined();
+    expect(energyChannelsFor("us-233692-pelton-water-wheel", {})).toEqual([]);
+  });
+
+  test("enforces facsimile review pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(peltonWaterWheelPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("source-bounded");
+    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
   });
 });

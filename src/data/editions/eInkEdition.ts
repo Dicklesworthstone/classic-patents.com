@@ -4,22 +4,32 @@ import type {
   CuratedSpecificationInlines,
 } from "@/types/patent";
 
-const term = (
-  surfaceText: string,
-  key: string,
-  definition: string,
-): CuratedSpecificationInline => ({
-  kind: "term",
-  text: surfaceText,
-  label: key,
-  definition,
-});
-
 export const EINK_FIGURE_DIMS: Record<number, { width: number; height: number }> = {
   1: { width: 1856, height: 2385 },
   2: { width: 1856, height: 2385 },
   3: { width: 1856, height: 2385 },
 };
+
+const EINK_SOURCE_SHEET_DIMS = { width: 928, height: 1364 } as const;
+
+function sourceFigure(
+  surfaceText: string,
+  sheetNumbers: readonly [number, ...number[]],
+  altText: string,
+): CuratedSpecificationInline {
+  return {
+    kind: "reference",
+    text: surfaceText,
+    href: `#eink-source-sheet-${sheetNumbers[0]}`,
+    referenceType: "figure",
+    label: altText,
+    figurePreviews: sheetNumbers.map((sheetNumber) => ({
+      src: `/patents/figures/us-6120588-eink/sheet-${sheetNumber}-source-crop-v1.png`,
+      alt: `${surfaceText}: ${altText} (source drawing sheet ${sheetNumber} of 16)`,
+      ...EINK_SOURCE_SHEET_DIMS,
+    })),
+  };
+}
 
 /**
  * Claims are authored once in the edition.  The catalogue record must never
@@ -29,30 +39,10 @@ export function manualClaimText(number: number): string {
   const block = einkArchivalEdition.blocks.find(
     (candidate) => candidate.kind === "claim" && candidate.number === number,
   );
-  if (!block || block.kind !== "claim") {
+  if (block?.kind !== "claim") {
     throw new Error(`E Ink manual edition is missing claim ${number}.`);
   }
   return block.inlines.map((inline) => inline.text).join("");
-}
-
-function figureAssetPath(number: number): string {
-  return `/patents/figures/us-6120588-eink/fig-${number}-source-crop-v1.png`;
-}
-
-function makePreview(
-  surfaceText: string,
-  figureNumbers: number[],
-  altText: string,
-): CuratedSpecificationInline {
-  return {
-    kind: "reference",
-    text: surfaceText,
-    href: `#figure-${figureNumbers[0]}`,
-    referenceType: "figure",
-    label: altText,
-    // Source crops are withheld until each occurrence is cloud-verified as an
-    // upright isolated crop from the matching printed drawing sheet.
-  };
 }
 
 const p = (
@@ -110,12 +100,11 @@ export const einkParallelReadings: Readonly<Record<number, readonly string[]>> =
 export const einkArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "574678473ca13e7daaeb661cfd96808fffb6c16d06d86872923fec52a08ab324",
-  preparedBy: "Classic Patents source-audit draft (withheld pending full cloud reconciliation)",
+  preparedBy: "Classic Patents source-audit draft",
   preparedAt: "2026-08-21",
-  // Typed edition drafts require this field, but this draft is not attached to
-  // the served record until the remaining specification and figure coverage
-  // receives independent acceptance.
-  completeFacsimileReviewed: true,
+  // This bounded draft remains attached for dynamic claim sourcing, but it is
+  // not publishable until every specification paragraph is reconciled.
+  completeFacsimileReviewed: false,
   blocks: [
     {
       kind: "masthead",
@@ -155,7 +144,13 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       "Means are known in the prior art for producing bichromal particles or microspheres for use in electronic displays. Such techniques produce a particle that does not have an implanted dipole moment but rather relies in general on the Zeta potential of the material to create a permanent dipole.",
     ),
     p(
-      "Such a scheme suffers from the fact that it links the material properties to the electronic properties thus limiting the size of the dipole moment which may be created. FIG. 1 details means of producing particles, either bichromal as might be used in an electrostatic display, or monochromal as might be used in a dielectrophoretic display, with an implanted dipole moment.",
+      "Such a scheme suffers from the fact that it links the material properties to the electronic properties thus limiting the size of the dipole moment which may be created. ",
+      sourceFigure(
+        "FIG. 1",
+        [1, 2],
+        "Particle-fabrication embodiments spanning source drawing sheets 1 and 2",
+      ),
+      " details means of producing particles, either bichromal as might be used in an electrostatic display, or monochromal as might be used in a dielectrophoretic display, with an implanted dipole moment.",
     ),
     {
       kind: "heading",
@@ -166,7 +161,13 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       "A large number of techniques are known in the literature for microencapsulating one material inside another material. Such techniques are generally used in the paper or pharmaceutical industry and do not generally produce a microcapsule which embodies simultaneously the properties of optical clarity, high dielectric strength, impermeability and resistance to pressure. With proper modification however these techniques may be made amenable to microencapsulating systems with electronic properties.",
     ),
     p(
-      "Referring to FIG. 3B a microcapsule 120 may contain positively charged particles of one color 210 and negatively charged particles of another color 220 such that application of an electric field to said electrodes causes a migration of the one color or the other color, depending on the polarity of the field, toward the surface of said microcapsule and thus effecting a perceived color change. Such a system constitutes a microencapsulated electrophoretic system.",
+      "Referring to ",
+      sourceFigure(
+        "FIG. 3B",
+        [4],
+        "Two-color electrophoretic microcapsule on source drawing sheet 4",
+      ),
+      " a microcapsule 120 may contain positively charged particles of one color 210 and negatively charged particles of another color 220 such that application of an electric field to said electrodes causes a migration of the one color or the other color, depending on the polarity of the field, toward the surface of said microcapsule and thus effecting a perceived color change. Such a system constitutes a microencapsulated electrophoretic system.",
     ),
     {
       kind: "heading",
@@ -174,7 +175,40 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       text: "BRIEF DESCRIPTION OF THE DRAWING FIGURES",
     },
     p(
-      "FIGS. 1A, 1B, 1C, 1D, 1E, and 1F are schematic representations of means of fabricating particles with a permanent dipole moment. FIGS. 2A, 2B and 2C are schematic representations of means of microencapsulation. FIGS. 3A, 3B, 3C, 3D, and 3E are schematic representations of microencapsulated electronically addressable contrast media systems suitable for top to bottom addressing. FIGS. 4A through 4M are schematic representations of systems suitable for bottom addressing. FIGS. 5A through 6E describe dielectrophoretic and frequency-dependent systems. FIGS. 7 through 10 depict electronic inks, printing systems, and printed structures. FIGS. 11 through 14 depict displays, an electrostatic motor, a watch, and a spin computer.",
+      sourceFigure(
+        "FIGS. 1A, 1B, 1C, 1D, 1E, and 1F",
+        [1, 2],
+        "Permanent-dipole particle fabrication",
+      ),
+      " are schematic representations of means of fabricating particles with a permanent dipole moment. ",
+      sourceFigure("FIGS. 2A, 2B and 2C", [3], "Microencapsulation methods"),
+      " are schematic representations of means of microencapsulation. ",
+      sourceFigure(
+        "FIGS. 3A, 3B, 3C, 3D, and 3E",
+        [4],
+        "Top-to-bottom electronically addressable contrast-media systems",
+      ),
+      " are schematic representations of microencapsulated electronically addressable contrast media systems suitable for top to bottom addressing. ",
+      sourceFigure("FIGS. 4A through 4M", [5, 6, 7], "Bottom-addressed contrast-media systems"),
+      " are schematic representations of systems suitable for bottom addressing. ",
+      sourceFigure(
+        "FIGS. 5A through 6E",
+        [8, 9],
+        "Dielectrophoretic and frequency-dependent systems",
+      ),
+      " describe dielectrophoretic and frequency-dependent systems. ",
+      sourceFigure(
+        "FIGS. 7 through 10",
+        [10, 11, 12, 13],
+        "Electronic inks, printing systems, and printed structures",
+      ),
+      " depict electronic inks, printing systems, and printed structures. ",
+      sourceFigure(
+        "FIGS. 11 through 14",
+        [14, 15, 16],
+        "Displays, electrostatic motor, watch, and spin computer",
+      ),
+      " depict displays, an electrostatic motor, a watch, and a spin computer.",
     ),
     {
       kind: "heading",
@@ -182,22 +216,40 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       text: "DETAILED DESCRIPTION OF THE PREFERRED EMBODIMENTS",
     },
     p(
-      "Referring to FIG. 1A atomizing nozzles 1 are loaded with materials 12 and 13 which may be differently colored. A first atomizing nozzle may be held at a positive potential 3 and a second nozzle may be held at a negative potential 4. Such potentials aid in atomization and impart a charge to droplets which form from said nozzles producing positively charge droplets 5 and negatively charged droplets 6. Such opposite charged droplets are attracted to each other electrostatically forming an overall neutral pair.",
+      "Referring to ",
+      sourceFigure(
+        "FIG. 1A",
+        [1],
+        "Oppositely charged atomized droplets forming a neutral particle pair",
+      ),
+      " atomizing nozzles 1 are loaded with materials 12 and 13 which may be differently colored. A first atomizing nozzle may be held at a positive potential 3 and a second nozzle may be held at a negative potential 4. Such potentials aid in atomization and impart a charge to droplets which form from said nozzles producing positively charge droplets 5 and negatively charged droplets 6. Such opposite charged droplets are attracted to each other electrostatically forming an overall neutral pair.",
     ),
     p(
       "A large number of techniques are known in the literature for microencapsulating one material inside another material. With proper modification, these techniques may be made amenable to microencapsulating systems with electronic properties.",
     ),
     p(
-      "Referring to FIG. 3B a microcapsule 120 may contain positively charged particles of one color 210 and negatively charged particles of another color 220 such that application of an electric field to said electrodes causes a migration of the one color or the other color, depending on the polarity of the field, toward the surface of said microcapsule and thus effecting a perceived color change. Such a system constitutes a microencapsulated electrophoretic system.",
+      "Referring to ",
+      sourceFigure(
+        "FIG. 3B",
+        [4],
+        "Two-color electrophoretic microcapsule on source drawing sheet 4",
+      ),
+      " a microcapsule 120 may contain positively charged particles of one color 210 and negatively charged particles of another color 220 such that application of an electric field to said electrodes causes a migration of the one color or the other color, depending on the polarity of the field, toward the surface of said microcapsule and thus effecting a perceived color change. Such a system constitutes a microencapsulated electrophoretic system.",
     ),
     p(
-      "Referring to FIGS. 4A and B the chemistry described in reference to FIGS. 3C-D may be employed with in-plane electrodes such that said chemistry undergoes a color switch from one color state to a second color state upon application of an electric field to in-plane electrodes 270 and 280.",
+      "Referring to ",
+      sourceFigure("FIGS. 4A and B", [5], "Bottom-addressed capsule arrangements"),
+      " the chemistry described in reference to ",
+      sourceFigure("FIGS. 3C-D", [4], "Alternative electrophoretic capsule states"),
+      " may be employed with in-plane electrodes such that said chemistry undergoes a color switch from one color state to a second color state upon application of an electric field to in-plane electrodes 270 and 280.",
     ),
     p(
       "In one printing system a semiconductor ink 350 may be fabricated by dispersing a semiconductor powder 355 in a suitable binder 356. The semiconductive ink may be applied by printing techniques to form switch or logic structures.",
     ),
     p(
-      "Referring to FIG. 14, a spin computer is depicted in which dipoles 912 with dipole moment 914 are situated at the nodes of row 920 and column 930 address lines. Such a computer works by means of initially addressing said dipoles to an initial condition and then allowing dipole interactions to produce a final state of the system as a whole.",
+      "Referring to ",
+      sourceFigure("FIG. 14", [16], "Dipole-node spin computer"),
+      ", a spin computer is depicted in which dipoles 912 with dipole moment 914 are situated at the nodes of row 920 and column 930 address lines. Such a computer works by means of initially addressing said dipoles to an initial condition and then allowing dipole interactions to produce a final state of the system as a whole.",
     ),
     {
       kind: "heading",
@@ -264,7 +316,7 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "The ink of claim 1 wherein said second particle comprises a substance capable of reacting with said first particle, whereupon the application of a first electric field causes said first particle to be maintained separate from said substance such that said ink is maintained in a first color state; and whereupon application of a second electric field said first particle and said substance react to form a com- pound having a second color state.",
+          text: "The ink of claim 1 wherein said second particle comprises a substance capable of reacting with said first particle, whereupon the application of a first electric field causes said first particle to be maintained separate from said substance such that said ink is maintained in a first color state; and whereupon application of a second electric field said first particle and said substance react to form a compound having a second color state.",
         },
       ],
     },

@@ -2,6 +2,7 @@
 
 import { Cpu, Monitor, Pause, Play, RotateCcw, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { stepWozniakApple, wozniakBusCycle } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -433,6 +434,24 @@ export function WozniakAppleSim() {
                 Monochrome Text (40x24)
               </button>
             </div>
+
+            <TwoClocksStrip
+              title="CPU/video phase interleaving vs DRAM refresh deadline"
+              fast={{
+                name: "Phase cycle (Φ1/Φ2)",
+                period: apple.dramWindowNs.toFixed(0),
+                scale: "ns",
+                detail:
+                  "6502 CPU accesses RAM during Phase 1; video shift registers read memory during Phase 2 with zero wait states.",
+              }}
+              slow={{
+                name: "DRAM refresh cycle",
+                period: "2.0",
+                scale: "ms",
+                detail:
+                  "Dynamic RAM row refresh occurs naturally on every raster beam scan without dedicated DMA hardware.",
+              }}
+            />
           </div>
         </div>
       </div>

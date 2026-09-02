@@ -10,6 +10,9 @@
  * and D(x) >= 0 is the positive semi-definite dissipation function.
  */
 
+import { stepEdisonBulb } from "./catalogKernels";
+import { hostStateDigest } from "./deepWasm";
+
 export interface EnergyComponents {
   kineticJoules: number;
   potentialJoules: number;
@@ -70,19 +73,17 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
+    case "us-223898-edison-lightbulb":
     case "us-223898-edison-lamp": {
-      const v = params.mainsVoltageV ?? 110.0;
-      const r = 100.0;
-      const tempK = params.filamentTempK ?? 2200.0;
-      const filamentMassKg = 2.5e-5; // Carbon filament
-      const specificHeat = 710.0; // J/(kg*K)
-
-      thermal = filamentMassKg * specificHeat * (tempK - 293.15);
-      powerIn = (v * v) / r;
-      // Radiative loss Stefan-Boltzmann P = sigma * A * T^4
-      const areaM2 = 1.2e-4;
-      const sigma = 5.670374e-8;
-      dissipated = 0.85 * sigma * areaM2 * (tempK ** 4 - 293.15 ** 4);
+      const bulb = stepEdisonBulb({
+        voltage: params.voltage ?? params.mainsVoltageV ?? 110,
+        hotResistanceOhm: params.hotResistanceOhm,
+      });
+      // Steady admitted rung: no source-backed filament mass or heat capacity
+      // exists for a stored-energy claim, so only the closed power flow is shown.
+      thermal = 0;
+      powerIn = bulb.radiantWatts;
+      dissipated = bulb.radiantWatts;
       break;
     }
 
@@ -213,18 +214,8 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-194047-otto-engine": {
-      const rpm = params.rpm ?? 180;
-      const compRatio = params.compressionRatio ?? 8.0;
-      const omega = (rpm * 2 * Math.PI) / 60;
-      const flywheelInertia = 2.4; // kg*m^2
-
-      kinetic = 0.5 * flywheelInertia * omega * omega;
-      // Air-standard Otto cycle
-      const fuelFlowGps = 0.15 * (rpm / 180);
-      powerIn = fuelFlowGps * 44000.0; // Fuel heating value input (Watts)
-      const efficiency = 1.0 - 1.0 / compRatio ** 0.4;
-      dissipated = powerIn * (1.0 - efficiency);
-      thermal = 25000.0; // Engine block thermal capacity
+      // The grant prints no mass, inertia, speed, pressure trace, fuel flow,
+      // heating value, or loss datum for a closed SI energy ledger.
       break;
     }
 
@@ -487,28 +478,14 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-6331181-davinci": {
-      // The grant claims tool-boundary data and calibration memory, not a
-      // particular motor, cable material, torque, or power budget. Keep this
-      // ledger explicitly illustrative instead of presenting invented hardware
-      // constants as source telemetry.
-      const interfaceReadWatts = params.interfaceReadWatts ?? 1.0;
-      const processorReadWatts = params.processorReadWatts ?? 2.0;
-      kinetic = 0;
-      potential = 0;
-      powerIn = interfaceReadWatts + processorReadWatts;
-      dissipated = powerIn;
-      thermal = 0;
+      // The grant contains no source data for a closed SI energy ledger.
+      // Preserve the explicit zero state; the public 3D face omits the strip.
       break;
     }
 
     case "us-6594844-roomba": {
-      const driveMps = params.driveVelocityMps ?? 0.25;
-      const vacWatts = params.vacuumMotorWatts ?? 30.0;
-      const robotMassKg = 3.6;
-      kinetic = 0.5 * robotMassKg * driveMps * driveMps;
-      powerIn = 14.4 * 2.5; // NiMH battery discharge power (36 Watts)
-      dissipated = vacWatts + 5.5 * driveMps; // Impeller airflow turbulence + floor brush friction
-      thermal = 180.0; // Motor casing and battery thermal capacity
+      // The grant contains no source data for a closed SI energy ledger.
+      // Preserve the explicit zero state; the public 3D face omits the strip.
       break;
     }
 
@@ -565,18 +542,8 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-593138-tesla-coil": {
-      const inputVoltageKv = params.inputVoltageKv ?? 15.0;
-      const primaryCapNf = params.primaryCap ?? 45.0;
-      const toploadPf = params.toploadCapacitancePf ?? 35.0;
-      const couplingK = params.couplingK ?? 0.18;
-      const vPrimary = inputVoltageKv * 1000.0;
-      const cPrimary = primaryCapNf * 1e-9;
-      const cTopload = toploadPf * 1e-12;
-      const vSecondary = vPrimary * Math.sqrt(cPrimary / cTopload) * couplingK;
-      em = 0.5 * cPrimary * vPrimary * vPrimary + 0.5 * cTopload * vSecondary * vSecondary;
-      powerIn = 0.5 * cPrimary * vPrimary * vPrimary * 120.0; // 120 breaks/sec
-      dissipated = powerIn * 0.85; // Spark gap plasma heat + coronal RF streamer dissipation
-      thermal = 450.0; // Primary tank damping resistor + spark-gap electrode thermal capacity
+      // The grant contains no source data for a closed SI energy ledger.
+      // Preserve the explicit zero state; the public 3D face omits the strip.
       break;
     }
 
@@ -729,18 +696,10 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-4750-howe-sewing-machine": {
-      const stitchesPerMinute = params.stitchesPerMinute ?? 300.0;
-      const needleStrokeMm = params.needleStrokeMm ?? 32.0;
-      const vNeedle = (stitchesPerMinute / 60.0) * (needleStrokeMm / 1000.0) * 2.0;
-      const needleAssemblyMassKg = 0.12;
-      const flywheelInertia = 0.015;
-      const omega = (stitchesPerMinute * 2 * Math.PI) / 60.0;
-      kinetic =
-        0.5 * needleAssemblyMassKg * vNeedle * vNeedle + 0.5 * flywheelInertia * omega * omega;
-      potential = 0.5 * 45.0 * 0.008 * 0.008; // Thread tension spring
-      powerIn = 25.0; // Treadle mechanical input power
-      dissipated = 22.0; // Fabric penetration shear + shuttle race friction
-      thermal = 35.0;
+      // US 4,750 supplies mechanism topology, an approximate 1/8-inch eye
+      // offset, and an approximate 3/4-inch baster-point pitch. It supplies no
+      // mass, inertia, force, torque, speed, friction, or thermal datum from
+      // which an honest SI energy ledger can be closed.
       break;
     }
 
@@ -808,10 +767,11 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
+    case "us-x1-hopkins-potash":
     case "us-1-hopkins-potash": {
-      const kilnTempC = params.kilnTempC ?? 650.0;
-      const ashMassKg = params.ashMassKg ?? 50.0;
-      thermal = ashMassKg * 850.0 * (kilnTempC - 20.0); // Leached wood ash furnace thermal capacity
+      const kilnTempC = params.roastTempC ?? params.kilnTempC ?? 750.0;
+      const ashMassKg = params.ashBatchKg ?? params.ashMassKg ?? 200.0;
+      thermal = ashMassKg * 840.0 * (kilnTempC - 20.0); // Leached wood ash furnace thermal capacity
       powerIn = 8500.0; // Hardwood combustion heat input
       dissipated = 8200.0; // Radiative furnace flue gas dissipation
       break;
@@ -829,13 +789,9 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-31128-otis-elevator": {
-      const carMassKg = params.carMassKg ?? 800.0;
-      const velocityMps = params.velocityMps ?? 1.2;
-      const heightM = params.heightM ?? 15.0;
-      kinetic = 0.5 * carMassKg * velocityMps ** 2; // Elevator car & counterweight kinetic energy
-      potential = carMassKg * 9.80665 * heightM; // Gravitational potential energy
-      powerIn = carMassKg * 9.80665 * velocityMps; // Hoisting cable power
-      dissipated = 450.0; // Guide rail and safety ratchet friction
+      // US 31,128 provides connectivity and switching logic, but no mass,
+      // speed, height, friction, torque, or power. Preserve an explicit zero
+      // ledger rather than fabricating a quantitative Hamiltonian.
       break;
     }
 
@@ -981,9 +937,17 @@ export function computePortHamiltonianEnergy(
   const netPower = powerIn - dissipated;
   const supplyDefect = Math.abs(netPower * 0.015); // Bounded discrepancy
 
-  const seed = Math.round(totalH * 100 + simTimeSec * 1000);
-  const hashVal = ((seed * 2654435761) ^ (seed >> 16)) >>> 0;
-  const stateDigest = `host:${hashVal.toString(16).padStart(8, "0")}`;
+  const stateDigest = hostStateDigest([
+    kinetic,
+    potential,
+    em,
+    thermal,
+    powerIn,
+    dissipated,
+    netPower,
+    supplyDefect,
+    simTimeSec,
+  ]);
 
   return {
     energy: {

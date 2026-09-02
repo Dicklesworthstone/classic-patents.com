@@ -15,6 +15,7 @@ const listenersMap = new Map<string, Set<Listener>>();
 const stateMap = new Map<string, Record<string, number>>();
 const tickMap = new Map<string, number>();
 const changeMap = new Map<string, ParamChange | null>();
+const CONTROL_SAMPLE_PERIOD_S = 1 / 60;
 
 export interface ParamChange {
   id: string;
@@ -92,18 +93,17 @@ export function setPatentPhysicsParam(patentId: string, paramId: string, value: 
   // zero rate instead of a spike from an out-of-range raw input.
   const from = current[paramId] ?? updated[paramId];
   const to = updated[paramId];
-  const now =
-    typeof performance !== "undefined" && typeof performance.now === "function"
-      ? performance.now()
-      : Date.now();
-  const prev = changeMap.get(patentId);
-  const dtSec = prev ? Math.max(0.016, (now - prev.atMs) / 1000) : 0.05;
+  // A control event is one deterministic input sample. Wall-clock gesture
+  // timing differs across browsers and would make cross-face sensitivity
+  // readouts non-replayable for the same committed parameter sequence.
+  const nextTick = (tickMap.get(patentId) ?? 0) + 1;
+  const virtualAtMs = nextTick * CONTROL_SAMPLE_PERIOD_S * 1000;
   bumpTick(patentId, {
     id: paramId,
     from,
     to,
-    ratePerSec: (to - from) / dtSec,
-    atMs: now,
+    ratePerSec: (to - from) / CONTROL_SAMPLE_PERIOD_S,
+    atMs: virtualAtMs,
   });
 
   stateMap.set(patentId, updated);

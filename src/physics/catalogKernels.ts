@@ -15,6 +15,13 @@ import {
   spencerCavityWave,
 } from "./deepWasm";
 import {
+  EDISON_DECLARED_FILAMENT_LENGTH_CM,
+  EDISON_DECLARED_HOT_RESISTANCE_OHM,
+  EDISON_SOURCE_MAX_RESISTANCE_OHM,
+  EDISON_SOURCE_MIN_RESISTANCE_OHM,
+  stepEdisonRadiativeBalance,
+} from "./edisonWasm";
+import {
   bellowsFluidCrate,
   bellWaveCrate,
   chainHeatCrate,
@@ -1636,7 +1643,7 @@ export function zeppelinSchematicCell(index: number, originX = 70, pitch = 32) {
   return { cx: originX + index * pitch };
 }
 
-export function stepDaimlerEngine(params: {
+export function stepLegacyDaimlerEngineUS349983(params: {
   engineRpm?: number;
   hotTubeTempC?: number;
   differentialSlipAngleDeg?: number;
@@ -1897,16 +1904,29 @@ export function noyceSchematicContactX(index: number, originX = 115, pitchX = 80
   return originX + index * pitchX;
 }
 
-export function stepEdisonBulb(params: { voltage?: number; filamentLength?: number }) {
+export function stepEdisonBulb(params: {
+  voltage?: number;
+  hotResistanceOhm?: number;
+  filamentLength?: number;
+}) {
   const v = params.voltage ?? 110;
-  const len = params.filamentLength ?? 22;
-  const tempK = Math.round(1200 + (v / 130) * 1150);
-  const resOhm = Math.round(90 + (tempK / 2350) * 60 * (len / 22));
-  const powerWatts = Number((v ** 2 / resOhm).toFixed(1));
-  const currentAmps = Number((v / resOhm).toFixed(3));
-  // Carbon-filament life ≈ 1200 h at 110 V, Langmuir V^{-3.5} scaling.
-  const designLifeHours = Math.round(1200 / (Math.max(v, 1) / 110) ** 3.5);
-  // Swan/Maxim low-R counterfactual (1.5 Ω feeder hog) shares one formula.
+  const len = params.filamentLength ?? EDISON_DECLARED_FILAMENT_LENGTH_CM;
+  const resOhm = params.hotResistanceOhm ?? EDISON_DECLARED_HOT_RESISTANCE_OHM;
+  if (resOhm < EDISON_SOURCE_MIN_RESISTANCE_OHM || resOhm > EDISON_SOURCE_MAX_RESISTANCE_OHM) {
+    throw new Error("Edison patent surface requires the source's 100-to-500-ohm example range");
+  }
+  const radiative = stepEdisonRadiativeBalance({
+    voltageV: v,
+    hotResistanceOhm: resOhm,
+    filamentLengthCm: len,
+  });
+  if (!radiative) throw new Error("Edison radiative balance refused finite catalogue inputs");
+  const tempK = Math.round(radiative.filament_temperature_k);
+  const powerWatts = Number(radiative.radiative_power_w.toFixed(1));
+  const currentAmps = Number(radiative.current_a.toFixed(3));
+  const referenceRadiantPowerWatts = 110 ** 2 / EDISON_DECLARED_HOT_RESISTANCE_OHM;
+  // The 1.5 Ω comparison lies inside the source's reported one-to-four-ohm
+  // prior practice. Its same-voltage thermal state is deliberately refused.
   const lowResistanceOhm = 1.5;
   const lowResistanceWatts = Number((v ** 2 / lowResistanceOhm).toFixed(1));
   const lowResistanceAmps = Number((v / lowResistanceOhm).toFixed(3));
@@ -1914,17 +1934,18 @@ export function stepEdisonBulb(params: { voltage?: number; filamentLength?: numb
     filamentTempK: tempK,
     hotResistanceOhm: resOhm,
     radiantWatts: powerWatts,
-    luminousLmPerW: Number(Math.max(0.1, ((tempK - 1400) / 1000) ** 2 * 2.8).toFixed(2)),
     feederResistanceOhm: 0.4,
     currentAmps,
     feederLossWatts: Number((currentAmps ** 2 * 0.4).toFixed(1)),
-    designLifeHours,
     lowResistanceOhm,
     lowResistanceWatts,
     lowResistanceAmps,
-    lowResistanceTempK: Math.round(300 + lowResistanceWatts ** 0.45 * 160),
+    radiativeEnergyClosure: radiative.relative_energy_closure,
+    radiativeRuntimeSource: radiative.runtimeSource,
     lowResistanceFeederLossWatts: Number((lowResistanceAmps ** 2 * 0.4).toFixed(1)),
-    incandescenceIntensity: Number(Math.min(1, (v / 110) ** 2).toFixed(3)),
+    incandescenceIntensity: Number(
+      Math.min(1, radiative.radiative_power_w / referenceRadiantPowerWatts).toFixed(3),
+    ),
     ...edisonFilamentHeat(v),
     thermalJitterPerS: Number(((tempK / 300) * 0.4).toFixed(3)),
     filamentEmissiveScale: 3.5,
@@ -1949,13 +1970,20 @@ export function stepEdisonBulb(params: { voltage?: number; filamentLength?: numb
     gasZOmega: 0.7,
     schematicEnvelopeD:
       "M 150 190 C 120 160 120 100 160 70 C 200 40 240 70 280 100 C 280 160 250 190 230 210 L 170 210 Z",
+    schematicHolderD: "M 178 205 L 183 150 Q 200 137 217 150 L 222 205 Z",
+    schematicLeftLeadD: "M 185 220 L 185 142 L 188 132",
+    schematicRightLeadD: "M 215 220 L 215 142 L 212 132",
+    schematicExternalLeftLeadD: "M 185 220 L 185 258",
+    schematicExternalRightLeadD: "M 215 220 L 215 258",
+    // Legacy fields retained for old consumers; the active schematic renders
+    // the source's glass holder and external leads, not a later screw base.
     schematicBaseD: "M 170 210 L 170 235 L 230 235 L 230 210 Z",
     schematicFootX1: 160,
     schematicFootX2: 240,
     schematicFootY: 245,
-    schematicFilamentD: "M 185 220 L 185 140 C 185 90 215 90 215 140 L 215 220",
-    schematicTerminalXs: [185, 215],
-    schematicTerminalY: 220,
+    schematicFilamentD: "M 188 132 C 178 100 184 82 200 78 C 216 82 222 100 212 132",
+    schematicTerminalXs: [188, 212],
+    schematicTerminalY: 132,
     schematicTerminalR: 4,
   };
 }
@@ -3052,72 +3080,84 @@ export function lincolnSchematicChamber(index: number, xs = [80, 250], y = 140) 
 }
 
 export function stepMaximMachineGun(params: {
+  cyclePhaseDeg?: number;
+  cyclePhaseRad?: number;
+  gasImpulsePct?: number;
+  cycleRpm?: number;
+  // Compatibility parameter aliases
   firingRateRpm?: number;
-  waterJacketLiters?: number;
-  recoilStrokeMm?: number;
+  firingRate?: number;
+  fireRateRpm?: number;
+  cyclePhase?: number;
 }) {
-  const rpm = params.firingRateRpm ?? 600;
-  const water = params.waterJacketLiters ?? 4.0;
-  const stroke = params.recoilStrokeMm ?? 19;
-  const bulletMassKg = 0.014;
-  const bulletVelMps = 740;
-  const recoilMassKg = 3.2;
-  const recoilVelocityMps = Number(((bulletMassKg * bulletVelMps) / recoilMassKg).toFixed(2));
-  const recoilMomentumNs = Number((recoilMassKg * recoilVelocityMps).toFixed(2));
-  const toggleUnlockForceN = Math.round(180 * (19 / Math.max(5, stroke)));
-  const heatGeneratedWatts = Math.round((rpm / 60) * 45 * 1000 * 0.28);
-  const waterEvapRateGs = Number(((heatGeneratedWatts / 2260) * (water > 0 ? 1 : 0)).toFixed(2));
-  const barrelTempC = water > 0.5 ? 100 : Math.min(450, Math.round(100 + (rpm / 600) * 280));
-  const muzzleEnergyJoules = Math.round(0.5 * bulletMassKg * bulletVelMps ** 2);
-  const cycleIntervalMs = Math.round(60000 / Math.max(1, rpm));
+  const rpm =
+    params.cycleRpm ?? params.firingRateRpm ?? params.firingRate ?? params.fireRateRpm ?? 60;
+  let phaseRad = params.cyclePhaseRad ?? 0;
+  if (params.cyclePhaseDeg !== undefined) {
+    phaseRad = (params.cyclePhaseDeg * Math.PI) / 180;
+  } else if (params.cyclePhase !== undefined) {
+    phaseRad = (params.cyclePhase * Math.PI) / 180;
+  }
+
+  const normPhase = ((phaseRad % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+  const strokeFactor = Math.sin(normPhase / 2) ** 2; // 0 to 1 smooth cycle
+
+  const sleeveForwardMm = Number((24 * strokeFactor).toFixed(2));
+  const sleeveForwardM = Number((0.024 * strokeFactor).toFixed(4));
+  const leverAngleDeg = Number((18 * strokeFactor).toFixed(2));
+  const connectingRodRearMm = Number((24 * strokeFactor).toFixed(2));
+  const crankAngleDeg = Number((180 * strokeFactor).toFixed(2));
+  const breechOpenMm = Number((48 * strokeFactor).toFixed(2));
+  const breechOpenM = Number((0.048 * strokeFactor).toFixed(4));
+  const springWoundPct = Number((100 * strokeFactor).toFixed(1));
+  const isBreechOpen = strokeFactor > 0.1;
+  const isMuzzleFiring = normPhase < 0.45;
+  const isFiring = isMuzzleFiring ? 1 : 0;
+  const extractorState = strokeFactor > 0.5 ? "EXTRACTING" : "ENGAGED";
+  const searState = strokeFactor > 0.85 ? "COCKED" : "SEATED";
+  const feedWheelIndexing = strokeFactor > 0.6;
+
+  const omega = rpmToOmega(rpm);
 
   return {
-    recoilVelocityMps,
-    recoilMomentumNs,
-    toggleUnlockForceN,
-    heatGeneratedWatts,
-    waterEvapRateGs,
-    barrelTempC,
-    muzzleEnergyJoules,
-    cycleIntervalMs,
-    recoilStrokeMm: stroke,
-    recoilStrokeM: Number((stroke / 1000).toFixed(5)),
-    recoilStudioStroke: Number(Math.max(0.06, (stroke / 1000) * 5.0).toFixed(4)),
-    recoilSvgAmp: Number((stroke / 2).toFixed(2)),
-    fireOmegaRadPerS: rpmToOmega(rpm).omegaRadPerS,
-    fireOmegaDegPerS: rpmToOmega(rpm).omegaDegPerS,
+    sleeveForwardMm,
+    sleeveForwardM,
+    leverAngleDeg,
+    connectingRodRearMm,
+    crankAngleDeg,
+    breechOpenMm,
+    breechOpenM,
+    springWoundPct,
+    isBreechOpen,
+    isMuzzleFiring,
+    isFiring,
+    extractorState,
+    searState,
+    feedWheelIndexing,
+    fireOmegaRadPerS: omega.omegaRadPerS,
+    fireOmegaDegPerS: omega.omegaDegPerS,
     fireCycleWrapRad: Math.PI * 2,
-    firingWindowRad: 0.6,
-    muzzleFlashSinThreshold: 0.82,
-    toggleLiftAmp: 0.32,
-    toggleHomeY: 0.12,
-    toggleHomeX: -0.8,
-    toggleRecoilCoupling: 1.8,
-    crankThrowAmp: 0.75,
-    steamOpacity:
-      barrelTempC >= 95 ? Number(Math.min(0.85, (waterEvapRateGs / 15) * 0.75).toFixed(3)) : 0,
-    ...jacketHeatCrate(barrelTempC),
-    schematicToggleCx: 280,
-    schematicToggleCy: 105,
-    schematicToggleR: 4,
-    schematicJacketX: 40,
-    schematicJacketY: 90,
-    schematicJacketW: 180,
-    schematicJacketH: 60,
-    schematicBarrelX1: 20,
-    schematicBarrelX2: 240,
+    firingWindowRad: 0.45,
+    muzzleFlashSinThreshold: 0.85,
+    sleeveStudioStroke: sleeveForwardM,
+    breechStudioStroke: breechOpenM,
+    schematicBarrelX1: 40,
+    schematicBarrelX2: 320,
     schematicBarrelY: 120,
-    schematicBreechX: 220,
-    schematicBreechY: 80,
-    schematicBreechW: 140,
-    schematicBreechH: 80,
-    schematicToggleX0: 240,
-    schematicToggleY0: 120,
-    schematicToggleX1: 280,
-    schematicToggleY1: 105,
-    schematicToggleX2: 330,
-    schematicToggleY2: 120,
-    schematicFuseeD: "M 330 140 Q 350 150, 330 160 T 310 170",
+    schematicSleeveX: Number((300 + 20 * strokeFactor).toFixed(1)),
+    schematicSleeveY: 105,
+    schematicSleeveW: 40,
+    schematicSleeveH: 30,
+    schematicLeverPivotX: 260,
+    schematicLeverPivotY: 145,
+    schematicBreechX: Number((160 - 35 * strokeFactor).toFixed(1)),
+    schematicBreechY: 100,
+    schematicBreechW: 70,
+    schematicBreechH: 40,
+    schematicCrankCx: 100,
+    schematicCrankCy: 120,
+    schematicCrankR: 20,
+    schematicSpringR: 28,
   };
 }
 

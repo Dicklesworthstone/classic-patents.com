@@ -1,15 +1,20 @@
 "use client";
 
 import { Flame, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { stepOttoEngine } from "@/physics/catalogKernels";
 import {
-  ottoConnectingRod,
-  ottoStrokePhase,
-  pistonSvgDisplacement,
-  stepOttoEngine,
-} from "@/physics/catalogKernels";
+  createOttoTransportUpdater,
+  getOttoTapePose,
+  OTTO_MODEL_CONNECTING_ROD_LENGTH,
+  OTTO_MODEL_CRANK_RADIUS,
+  resetOttoTapePose,
+  stepOttoMechanism,
+} from "@/physics/ottoKernel";
+import { globalTransportBus, useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -18,67 +23,84 @@ export function OttoEngineSim() {
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const engineRpm = params.engineRpm ?? 180;
   const compressionRatio = params.compressionRatio ?? 4.5;
+  const claim1ChargeGradingPresent = (params.claim1ChargeGradingPresent ?? 1) >= 0.5;
+  const claimStates = { 1: claim1ChargeGradingPresent };
   const otto = stepOttoEngine({ engineRpm, compressionRatio });
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [crankAngleDeg, setCrankAngleDeg] = useState<number>(0);
-  const animRef = useRef<number | null>(null);
+  const isPlaying = (params.isRunning ?? 1) >= 0.5;
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
+  const liveControls = useRef({ engineRpm, isPlaying, claim1ChargeGradingPresent });
+  liveControls.current = { engineRpm, isPlaying, claim1ChargeGradingPresent };
+
+  const { frame } = useFrankenSimPhysics("us-194047-otto-engine", {
+    domain: "thermodynamics_transport",
+    refusal: {
+      isRefused: !claim1ChargeGradingPresent,
+      reason: !claim1ChargeGradingPresent
+        ? "Claim 1 charge grading is absent; source-bounded performance telemetry is refused."
+        : undefined,
+    },
+    machine: {
+      poseXMeters: 0,
+      poseYMeters: 0,
+      headingRad: 0,
+      modeLabel: "stopped",
+      wheelSpeedMps: 0,
+    },
+  });
+
+  useEffect(() => {
+    return globalTransportBus.registerUpdater(
+      "us-194047-otto-engine",
+      createOttoTransportUpdater(() => ({
+        engineRpm: liveControls.current.engineRpm,
+        running: liveControls.current.isPlaying && onscreenRef.current,
+        claim1ChargeGradingPresent: liveControls.current.claim1ChargeGradingPresent,
+      })),
+    );
+  }, [onscreenRef]);
+
+  const pose =
+    getOttoTapePose() ??
+    stepOttoMechanism({
+      crankAngleRad: frame.telemetry.machine?.headingRad ?? 0,
+      crankRadius: OTTO_MODEL_CRANK_RADIUS,
+      connectingRodLength: OTTO_MODEL_CONNECTING_ROD_LENGTH,
+      engineRpm,
+    });
+  const crankAngleDeg = (pose.cycleAngleRad * 180) / Math.PI;
+  const mechanicalCrankAngleDeg = (Math.atan2(pose.crankPinY, pose.crankPinX) * 180) / Math.PI;
 
   // 4-Stroke Thermodynamics (720-degree cycle)
   const cycleAngleDeg = crankAngleDeg % otto.cycleWrapDeg;
-  const strokePhase = ottoStrokePhase(
-    cycleAngleDeg,
-    otto.stroke1EndDeg,
-    otto.stroke2EndDeg,
-    otto.stroke3EndDeg,
-  );
+  const strokePhase =
+    pose.cyclePhase === "intake"
+      ? 1
+      : pose.cyclePhase === "compression"
+        ? 2
+        : pose.cyclePhase === "power"
+          ? 3
+          : 4;
   const currentStroke =
     strokePhase === 1
-      ? "1. INTAKE (Fuel-Air Induction)"
+      ? "1. INTAKE (Air, Then Combustible Mixture)"
       : strokePhase === 2
-        ? "2. COMPRESSION (Charge Squeeze)"
+        ? "2. COMPRESSION (Separate Charges Compressed)"
         : strokePhase === 3
-          ? "3. POWER (Combustion Expansion)"
+          ? "3. POWER (Gradual Heat & Pressure Rise)"
           : "4. EXHAUST (Scavenging Stroke)";
 
   const isSparkFiring = cycleAngleDeg >= otto.sparkStartDeg && cycleAngleDeg <= otto.sparkEndDeg;
   const thermalEfficiencyPct = otto.thermalEfficiencyPct;
-  const peakPressureBar =
-    cycleAngleDeg >= otto.firingStartDeg && cycleAngleDeg < otto.firingEndDeg
-      ? otto.peakFiringBar
-      : otto.peakCompressionBar;
-  const indicatedHorsepower = otto.brakeHorsepower;
 
-  useEffect(() => {
-    if (!isPlaying) return;
-
-    let lastTime = performance.now();
-
-    const loop = (time: number) => {
-      animRef.current = requestAnimationFrame(loop);
-      if (!onscreenRef.current) return;
-      const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
-      lastTime = time;
-
-      setCrankAngleDeg((prev) => (prev + otto.crankOmegaDegPerS * dt) % otto.cycleWrapDeg);
-    };
-
-    animRef.current = requestAnimationFrame(loop);
-    return () => {
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-    };
-  }, [isPlaying, otto.crankOmegaDegPerS, otto.cycleWrapDeg, onscreenRef.current]);
-
-  // Piston linear displacement x(theta)
-  const pistonDisplacement = pistonSvgDisplacement(cycleAngleDeg, otto.pistonStrokePx);
-  const connectingRod = ottoConnectingRod(
-    crankAngleDeg,
-    pistonDisplacement,
-    otto.pistonStrokePx,
-    otto.crankCx,
-    otto.crankCy,
-    otto.rodOriginX,
-  );
+  // Orthographic reduction of the same fs-mbd pin coordinates consumed by 3D.
+  const svgScale = otto.flywheelSvgR / OTTO_MODEL_CRANK_RADIUS;
+  const pistonPinX = otto.crankCx + pose.pistonPinX * svgScale;
+  const pistonGroupX = pistonPinX - 22;
+  const crankPinX = otto.crankCx + pose.crankPinX * svgScale;
+  const crankPinY = otto.crankCy + pose.crankPinY * svgScale;
+  const cylinderOuterFaceX = 45;
+  const cylinderInnerFaceX = 60;
+  const gasWidth = Math.max(0, pistonGroupX - cylinderInnerFaceX);
 
   return (
     <div
@@ -102,7 +124,7 @@ export function OttoEngineSim() {
           <button
             type="button"
             onClick={() => {
-              setIsPlaying(!isPlaying);
+              updateParam("isRunning", isPlaying ? 0 : 1);
               soundEngine.playSwitchClick();
             }}
             aria-label={isPlaying ? "Pause Simulation" : "Play Simulation"}
@@ -133,7 +155,7 @@ export function OttoEngineSim() {
             type="button"
             onClick={() => {
               resetParams();
-              setCrankAngleDeg(0);
+              resetOttoTapePose();
               soundEngine.playSwitchClick();
             }}
             aria-label="Reset Simulation"
@@ -149,14 +171,14 @@ export function OttoEngineSim() {
         <svg
           viewBox="0 0 600 340"
           role="img"
-          aria-label={`Four-stroke gas engine simulation: ${isPlaying ? `crank at ${Math.round(crankAngleDeg)} degrees, ${currentStroke.toLowerCase()}` : "engine stopped"}, flywheel spinning`}
+          aria-label={`Four-stroke gas engine simulation: ${isPlaying ? `crank at ${Math.round(crankAngleDeg)} degrees, ${currentStroke.toLowerCase()}, flywheel spinning` : "engine paused, flywheel stationary"}`}
           className="w-full h-full"
         >
           {/* Cylinder Block and Combustion Chamber */}
           <rect
-            x="80"
+            x={cylinderOuterFaceX}
             y="100"
-            width="260"
+            width={340 - cylinderOuterFaceX}
             height="140"
             rx="8"
             fill="#4A5568"
@@ -166,9 +188,9 @@ export function OttoEngineSim() {
 
           {/* Combustion Gas Color changing with stroke */}
           <rect
-            x="95"
+            x={cylinderInnerFaceX}
             y="115"
-            width={otto.gasChargeW0 + pistonDisplacement}
+            width={gasWidth}
             height="110"
             fill={
               isSparkFiring
@@ -186,11 +208,18 @@ export function OttoEngineSim() {
 
           {/* Flame Ignition Port in Slide Valve */}
           {isSparkFiring && (
-            <circle cx="95" cy="170" r="14" fill="#FFFFFF" stroke="#E53E3E" strokeWidth="3" />
+            <circle
+              cx={cylinderInnerFaceX}
+              cy="170"
+              r="14"
+              fill="#FFFFFF"
+              stroke="#E53E3E"
+              strokeWidth="3"
+            />
           )}
 
           {/* Reciprocating Piston Head */}
-          <g transform={`translate(${otto.pistonSvgX + pistonDisplacement}, ${otto.pistonSvgY})`}>
+          <g transform={`translate(${pistonGroupX}, ${otto.pistonSvgY})`}>
             <rect
               x="0"
               y="-50"
@@ -218,7 +247,7 @@ export function OttoEngineSim() {
             {/* Flywheel Spokes */}
             {Array.from({ length: otto.spokeCount }).map((_, i) => {
               const spkAngle =
-                (i * otto.spokePitchDeg + (crankAngleDeg % otto.crankWrapDeg)) % otto.crankWrapDeg;
+                (i * otto.spokePitchDeg + mechanicalCrankAngleDeg) % otto.crankWrapDeg;
               return (
                 <line
                   key={`otto-spoke-${spkAngle}`}
@@ -233,8 +262,9 @@ export function OttoEngineSim() {
             })}
             {/* Crank Pin */}
             <circle
-              cx={connectingRod.x2 - otto.crankCx}
-              cy={connectingRod.y2 - otto.crankCy}
+              data-otto-crank-pin="true"
+              cx={crankPinX - otto.crankCx}
+              cy={crankPinY - otto.crankCy}
               r={otto.crankPinR}
               fill="#D4AF37"
             />
@@ -242,10 +272,11 @@ export function OttoEngineSim() {
 
           {/* Connecting Rod */}
           <line
-            x1={connectingRod.x1}
-            y1={connectingRod.y1}
-            x2={connectingRod.x2}
-            y2={connectingRod.y2}
+            data-otto-connecting-rod="true"
+            x1={pistonPinX}
+            y1={otto.crankCy}
+            x2={crankPinX}
+            y2={crankPinY}
             stroke="#1A202C"
             strokeWidth="6"
             strokeLinecap="round"
@@ -279,26 +310,29 @@ export function OttoEngineSim() {
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Peak Pressure
+            Counter-Shaft K
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            {peakPressureBar} bar · P2 {otto.peakCompressionBar} / P3 {otto.peakFiringBar}
+            {(engineRpm / 2).toFixed(1)} RPM
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Indicated Power
+            Claim 1 Charge
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {indicatedHorsepower} hp
+            {claim1ChargeGradingPresent ? "GRADED" : "ABSENT"}
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Thermal Efficiency
+            Modern Ideal η
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
             {thermalEfficiencyPct}%
+          </span>
+          <span className="block text-[9px] text-ink-500 dark:text-ink-400">
+            declared r · not measured
           </span>
         </div>
       </div>
@@ -322,7 +356,7 @@ export function OttoEngineSim() {
         </div>
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Compression Ratio (r)</span>
+            <span>Declared Analysis Compression Ratio (r)</span>
             <span className="font-mono">{compressionRatio}:1</span>
           </div>
           <input
@@ -336,6 +370,15 @@ export function OttoEngineSim() {
           />
         </div>
       </div>
+
+      <ClaimConstraintToggle
+        patentId="us-194047-otto-engine"
+        claimStates={claimStates}
+        onToggleClaim={(_claimNo, active) =>
+          updateParam("claim1ChargeGradingPresent", active ? 1 : 0)
+        }
+        className="mt-4"
+      />
     </div>
   );
 }

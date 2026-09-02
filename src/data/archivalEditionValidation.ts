@@ -9,6 +9,15 @@ export interface ArchivalEditionValidationResult {
   errors: string[];
 }
 
+export interface ArchivalEditionValidationOptions {
+  /**
+   * WIP editions may be stored in the typed catalogue with a negative review
+   * attestation, but only a fully reviewed edition may cross the publication
+   * boundary. The default is deliberately strict.
+   */
+  requireCompleteFacsimileReview?: boolean;
+}
+
 const SHA_256_HEX = /^[a-f0-9]{64}$/;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -109,8 +118,10 @@ function validateBlock(
  */
 export function validateCuratedSpecificationEdition(
   edition: CuratedSpecificationEdition,
+  options: ArchivalEditionValidationOptions = {},
 ): ArchivalEditionValidationResult {
   const errors: string[] = [];
+  const requireCompleteFacsimileReview = options.requireCompleteFacsimileReview ?? true;
 
   if (edition.kind !== "manual-react-edition") {
     errors.push("The archival edition must be an explicitly manual React edition.");
@@ -121,6 +132,11 @@ export function validateCuratedSpecificationEdition(
   if (!edition.preparedBy.trim()) errors.push("The archival edition must name its preparer.");
   if (!isRealIsoDate(edition.preparedAt)) {
     errors.push("The archival edition must have a real YYYY-MM-DD preparation date.");
+  }
+  if (edition.completeFacsimileReviewed === undefined) {
+    errors.push("The archival edition must record a full-facsimile review attestation.");
+  } else if (requireCompleteFacsimileReview && edition.completeFacsimileReviewed !== true) {
+    errors.push("The archival edition must attest that the complete facsimile was reviewed.");
   }
   if (edition.blocks.length === 0) {
     errors.push("The archival edition must contain authored document blocks.");

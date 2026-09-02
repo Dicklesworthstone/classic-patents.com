@@ -1,6 +1,16 @@
 import { otisElevatorArchivalEdition } from "@/data/editions/otisElevatorEdition";
 import type { Patent } from "@/types/patent";
 
+function manualClaimText(number: number): string {
+  const block = otisElevatorArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Otis manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 /** Source-checked catalogue record for the actual four-claim US 31,128 grant. */
 export const otisElevatorPatent: Patent = {
   id: "us-31128-otis-elevator",
@@ -23,7 +33,7 @@ export const otisElevatorPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US31128A/en",
   usptoClassification: "B66B 5/26 (positively acting catch devices for elevators)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-31128-otis-elevator.txt",
+    url: "/patents/transcripts/us-31128-otis-elevator-reviewed.txt",
     pageCount: 3,
     kind: "reviewed-transcription",
     reviewedBy: "CopperLotus, direct PDF comparison",
@@ -96,8 +106,7 @@ export const otisElevatorPatent: Patent = {
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "Having the pawls f f and the teeth of the racks C C hook-formed, essentially as shown, so that the weight of the platform will, in case of the breaking of the rope G, cause the pawls and teeth to lock together and prevent the contingency of a separation of the same, as herein set forth.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "Claim 1 requires hook-form pawls and racks arranged so a broken lifting rope G lets platform weight lock them together. The legal point is the load-directed geometry that prevents separation, not merely the existence of a spring or a brake.",
       keyInnovations: ["hook-form rack teeth", "pivoted pawls f f", "rope-failure load lock"],
@@ -105,8 +114,7 @@ export const otisElevatorPatent: Patent = {
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "The arrangement of the ropes T, U, and V, combined and operating substantially as and for the purpose set forth.",
+      originalText: manualClaimText(2),
       plainEnglish:
         "Claim 2 covers the combined hand rope T, stop rope U, and fork V. Their arrangement both actuates the running control and, once aligned horizontally at the stop, prevents that stop linkage from moving the rope again.",
       keyInnovations: ["hand rope T", "stop rope U", "branched end V"],
@@ -114,8 +122,7 @@ export const otisElevatorPatent: Patent = {
     {
       number: 3,
       isIndependent: true,
-      originalText:
-        "The arrangement of the slide or belt-shipper S with the shoe or brake Z and rope T, substantially as shown, to admit of the simultaneous application of the brake and the shifting of the belts O P on the idle-pulleys J K, as set forth.",
+      originalText: manualClaimText(3),
       plainEnglish:
         "Claim 3 covers the linkage in which rope T moves slide S, shifts belts O and P onto the idle pulleys J and K, and applies brake shoe Z at the same time. It is a claim to coordinated power disengagement and braking.",
       keyInnovations: ["slide S", "brake shoe Z", "simultaneous belt shifting"],
@@ -123,8 +130,7 @@ export const otisElevatorPatent: Patent = {
     {
       number: 4,
       isIndependent: true,
-      originalText:
-        "Attaching the rope Q of the counterpoise R to the drum H on the opposite side from the lifting-rope G, substantially as shown, so as to counterpoise the platform D without preventing or interfering with the action of the safety mechanism E e f.",
+      originalText: manualClaimText(4),
       plainEnglish:
         "Claim 4 places counterpoise rope Q on the opposite side of drum H from lifting rope G. The arrangement must balance platform D while preserving the operation of safety mechanism E e f.",
       keyInnovations: [

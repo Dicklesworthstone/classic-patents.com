@@ -947,7 +947,19 @@ According to this invention electrical signals, actions, or manifestations are t
     ],
     breakthroughInsight:
       "The claims repeatedly combine a variable-resistance contact with a local circuit and an automatic mechanical restoration, treating detection and reset as one receiving instrument.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Nikola Tesla & Oliver Lodge",
+        rivalClaim:
+          "Nikola Tesla filed foundational US Patent No. 645,576 and No. 649,621 in 1897 for four-tuned circuit wireless transmission, and Oliver Lodge patented resonant syntonic tuning in 1897.",
+        conflictDetails:
+          "Marconi was initially denied US patents in 1900 because the Patent Office recognized Tesla's priority. Backed by wealthy financial interests, Marconi successfully lobbied the USPTO to reverse its decision in 1904 and grant him US 763,772 based on his 1897 British grant.",
+        resolution:
+          "During World War I, the US government used wireless patents without paying royalties, prompting Marconi Wireless to sue the United States in the US Court of Claims.",
+        legalOutcome:
+          "In the landmark US Supreme Court decision Marconi Wireless Telegraph Co. of America v. United States (320 U.S. 1, 1943), the Supreme Court invalidated Marconi's fundamental tuning patent claims, explicitly restoring Nikola Tesla's priority as the legal and technical inventor of radio.",
+      },
+    ],
     civilizationalImpact:
       "The patent is a primary record of late-nineteenth-century wireless signalling hardware, including a spark source, sensitive contact, relay output, and automatic recovery mechanism.",
     aftermath:

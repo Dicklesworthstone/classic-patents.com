@@ -13,11 +13,12 @@ describe("ThreeStudioScene Visual Foundation", () => {
     expect(tex instanceof THREE.Texture).toBe(true);
   });
 
-  test("enforces museum-grade ACES Filmic tone mapping and PCF Soft Shadows", () => {
+  test("enforces museum-grade ACES Filmic tone mapping and supported PCF shadows", () => {
     const source = readFileSync(join(THREE_DIRECTORY, "ThreeStudioScene.ts"), "utf8");
 
     expect(source).toContain("ACESFilmicToneMapping");
-    expect(source).toContain("PCFSoftShadowMap");
+    expect(source).toContain("PCFShadowMap");
+    expect(source).not.toContain("PCFSoftShadowMap");
     expect(source).toContain("DirectionalLight");
     expect(source).toContain("HemisphereLight");
     expect(source).toContain("SpotLight");

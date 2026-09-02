@@ -1,9 +1,16 @@
 import { describe, expect, test } from "bun:test";
+import * as THREE from "three";
 import { stepDaVinci } from "@/physics/daVinciKernel";
 import { stepEInk } from "@/physics/eInkKernel";
 import { stepMultiTouch } from "@/physics/multiTouchKernel";
 import { stepPageRank } from "@/physics/pageRankKernel";
-import { ROOMBA_FURNITURE, ROOMBA_ROOM, stepRoomba } from "@/physics/roombaKernel";
+import {
+  projectRoombaOutsidePart,
+  ROOMBA_COLLIDERS,
+  ROOMBA_ENVIRONMENT_PARTS,
+  ROOMBA_ROOM,
+  stepRoomba,
+} from "@/physics/roombaKernel";
 import { buildDaVinciModel } from "./DaVinciModel";
 import { buildEInkModel } from "./EInkModel";
 import { buildMultiTouchModel } from "./MultiTouchModel";
@@ -75,11 +82,11 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
         roomWidth: ROOMBA_ROOM.width,
         roomHeight: ROOMBA_ROOM.height,
       });
-      const table = ROOMBA_FURNITURE[0];
+      const tableLeg = ROOMBA_COLLIDERS[0];
       state = {
         ...state,
-        x: table.x,
-        y: table.y,
+        x: tableLeg.x,
+        y: tableLeg.y,
         mode: "straight",
         timeInMode: 0.2,
       };
@@ -94,31 +101,122 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
         1 / 60,
       );
       expect(state.mode).toBe("backup");
+      expect(state.contactPartId).toBe(tableLeg.id);
 
       const simSource = await Bun.file(new URL("../RoombaSim.tsx", import.meta.url)).text();
       expect(simSource).toContain("ROOMBA_ROOM");
       expect(simSource).toContain("ROOMBA_FURNITURE");
+      expect(simSource).toContain("getRoombaTapeState");
+      expect(simSource).toContain("globalTransportBus.registerUpdater");
+      expect(simSource).toContain("running: liveControls.current.isPlaying");
+      expect(simSource).toContain('updateParam("isRunning"');
       expect(simSource).not.toContain('state.mode = "backup"');
       expect(simSource).not.toContain("roomWidth: 5.0");
+      expect(simSource).not.toContain("setCleanedAreaPct");
+
+      const threeSource = await Bun.file(new URL("./Roomba3D.tsx", import.meta.url)).text();
+      expect(threeSource).toContain("tape.contactPartId");
+      expect(threeSource).toContain('updateParam("opticalSensorEnabled"');
+      expect(threeSource).toContain('updateParam("isRunning"');
+      expect(threeSource).not.toContain("Room Coverage");
+      expect(threeSource).not.toContain("98.4%");
     });
 
     test("builds procedural Roomba chassis, arena, and path trail tracer", () => {
       const model = buildRoombaModel();
       expect(model.root).toBeDefined();
       expect(model.mainGroup).toBeDefined();
+      expect(model.opticalSensorGroup.parent).toBe(model.mainGroup);
+      expect(model.opticalFieldGroup.parent).toBe(model.opticalSensorGroup);
+      expect(model.root.getObjectByName("Directed photon emitter")).toBeDefined();
+      expect(model.root.getObjectByName("Photon detector field aperture")).toBeDefined();
+      expect(model.root.getObjectByName("Side-brush hub-to-chassis drive shaft")).toBeDefined();
+      model.root.updateMatrixWorld(true);
+      const chassis = model.root.getObjectByName("Roomba chassis body");
+      const trim = model.root.getObjectByName("Chassis-supported silver top trim");
+      const cleanButton = model.root.getObjectByName("Chassis-supported CLEAN button");
+      const ledRing = model.root.getObjectByName("Chassis-supported CLEAN LED ring");
+      expect(chassis).toBeDefined();
+      expect(trim).toBeDefined();
+      expect(cleanButton).toBeDefined();
+      expect(ledRing).toBeDefined();
+      const chassisBounds = new THREE.Box3().setFromObject(chassis as THREE.Object3D);
+      const trimBounds = new THREE.Box3().setFromObject(trim as THREE.Object3D);
+      const cleanButtonBounds = new THREE.Box3().setFromObject(cleanButton as THREE.Object3D);
+      const ledRingBounds = new THREE.Box3().setFromObject(ledRing as THREE.Object3D);
+      expect(trimBounds.min.y).toBeLessThanOrEqual(chassisBounds.max.y + 1e-8);
+      expect(cleanButtonBounds.min.y).toBeLessThanOrEqual(chassisBounds.max.y + 1e-8);
+      expect(ledRingBounds.min.y - chassisBounds.max.y).toBeLessThanOrEqual(0.001);
+      const roomFloor = model.root.getObjectByName(
+        "Shared Roomba room floor seated on studio floor",
+      );
+      expect(roomFloor?.getWorldPosition(new THREE.Vector3()).y).toBeCloseTo(-4.5, 12);
+      model.setOpticalSensorEnabled(false);
+      expect(model.opticalSensorGroup.visible).toBe(false);
+      expect(model.opticalFieldGroup.visible).toBe(false);
+      model.setOpticalSensorEnabled(true);
+      expect(model.opticalSensorGroup.visible).toBe(true);
+      expect(model.opticalFieldGroup.visible).toBe(true);
       expect(() => model.updateTrail(0.5, 0.5)).not.toThrow();
+      const state = stepRoomba({
+        wheelSpeedMps: 0.3,
+        turnRateRadSec: 1.5,
+        roomWidth: ROOMBA_ROOM.width,
+        roomHeight: ROOMBA_ROOM.height,
+      });
+      expect(() => model.updateKinematics(state)).not.toThrow();
       expect(() => model.dispose()).not.toThrow();
     });
 
-    test("side-brush ω drains wheel speed instead of leftover 18 rad/s", async () => {
+    test("one room receipt owns supported furniture solids and low collision footprints", () => {
+      expect(
+        ROOMBA_ENVIRONMENT_PARTS.filter((part) => part.assemblyId === "coffee-table"),
+      ).toHaveLength(5);
+      expect(ROOMBA_COLLIDERS).toHaveLength(8);
+      for (const part of ROOMBA_ENVIRONMENT_PARTS) {
+        expect(part.centerHeight - part.height / 2).toBeGreaterThanOrEqual(0);
+      }
+      for (const collider of ROOMBA_COLLIDERS) {
+        expect(collider.kind).toBe("leg");
+      }
+    });
+
+    test("projects an embedded robot through the nearest furniture face with a unit normal", () => {
+      const leg = ROOMBA_COLLIDERS[0];
+      const projected = projectRoombaOutsidePart(leg.x, leg.y, leg);
+      expect(projected.hit).toBe(true);
+      expect(Math.hypot(projected.normalX, projected.normalY)).toBeCloseTo(1, 12);
+      const secondPass = projectRoombaOutsidePart(projected.x, projected.y, leg);
+      expect(secondPass.hit).toBe(false);
+    });
+
+    test("differential wheel joints reverse in backup and counter-rotate in place", () => {
+      const controls = {
+        wheelSpeedMps: 0.3,
+        turnRateRadSec: 1.5,
+        roomWidth: ROOMBA_ROOM.width,
+        roomHeight: ROOMBA_ROOM.height,
+      };
+      const initial = stepRoomba(controls);
+      const backing = stepRoomba(controls, { ...initial, mode: "backup", timeInMode: 0 }, 1 / 60);
+      expect(backing.leftWheelSpeedMps).toBeLessThan(0);
+      expect(backing.rightWheelSpeedMps).toBeLessThan(0);
+      const turning = stepRoomba(controls, { ...initial, mode: "turn", timeInMode: 0 }, 1 / 60);
+      expect(turning.leftWheelSpeedMps).toBeLessThan(0);
+      expect(turning.rightWheelSpeedMps).toBeGreaterThan(0);
+    });
+
+    test("side-brush and wheel angles drain the fixed-step kernel instead of frame time", async () => {
       const modelSource = await Bun.file(new URL("./RoombaModel.ts", import.meta.url)).text();
       expect(modelSource).not.toContain("delta * 18.0");
-      expect(modelSource).toContain("sideBrushOmegaRadPerS");
+      expect(modelSource).toContain("state.sideBrushAngleRad");
+      expect(modelSource).toContain("state.leftWheelAngleRad");
+      expect(modelSource).not.toContain("wheelRotDelta");
     });
   });
 
   describe("US 6,331,181 Da Vinci Surgical System", () => {
-    test("applies motion scaling and digital tremor cancellation", () => {
+    test("applies motion scaling and exposes the illustrative filter switch honestly", () => {
       const withFilter = stepDaVinci(
         {
           motionScaleRatio: 5,
@@ -137,8 +235,8 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
         },
         1.0,
       );
-      expect(withFilter.tremorAttenuationPercent).toBe(94.5);
-      expect(withoutFilter.tremorAttenuationPercent).toBe(0.0);
+      expect(withFilter.compatibilitySignalPercent).toBe(100);
+      expect(withoutFilter.compatibilitySignalPercent).toBe(0);
       expect(withFilter.slaveX).toBeDefined();
       expect(withFilter.wristPitchRad).toBeDefined();
     });
@@ -149,14 +247,80 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
       expect(simSource).not.toContain("setGripAngleDeg");
       expect(simSource).toContain('updateParam("masterInputSpeedMps"');
       expect(simSource).toContain('updateParam("gripAngleDeg"');
+      expect(simSource).toContain("projectPatientWorld(state.tipX, state.tipY)");
+      expect(simSource).not.toContain("trocarX + state.slaveX");
     });
 
-    test("articulates multi-axis EndoWrist and dual forceps jaws", () => {
+    test("articulates the wrist and aligns its visible tip to the resolved kernel tip", () => {
+      const state = stepDaVinci(
+        {
+          motionScaleRatio: 3,
+          tremorFilterEnabled: true,
+          masterInputSpeedMps: 0.5,
+          gripAngleDeg: 30,
+        },
+        0,
+      );
       const model = buildDaVinciModel();
-      expect(model.root).toBeDefined();
-      expect(model.wristPitchGroup).toBeDefined();
-      expect(model.leftJawGroup).toBeDefined();
-      expect(model.rightJawGroup).toBeDefined();
+      model.updateArmPose(
+        state.baseYawRad,
+        state.shoulderPitchRad,
+        state.elbowPitchRad,
+        state.wristPitchRad,
+        state.wristYawRad,
+        state.wristRollRad,
+        state.gripRad,
+        [state.masterX, state.masterY + 0.8, state.masterZ],
+        [state.tipX, state.tipY, state.tipZ],
+      );
+
+      const renderedTip = model.endEffectorTipAnchor.getWorldPosition(new THREE.Vector3());
+      expect(renderedTip.x).toBeCloseTo(state.tipX, 8);
+      expect(renderedTip.y).toBeCloseTo(state.tipY, 8);
+      expect(renderedTip.z).toBeCloseTo(state.tipZ, 8);
+      for (const connection of model.connectivityReceipt()) {
+        expect(connection.gapMeters).toBeLessThanOrEqual(1e-8);
+      }
+      expect(() => model.dispose()).not.toThrow();
+    });
+
+    test("keeps every cart-to-jaw interface connected across the control envelope", () => {
+      const model = buildDaVinciModel();
+      for (const motionScaleRatio of [1, 3, 10]) {
+        for (const tremorFilterEnabled of [false, true]) {
+          let previous: ReturnType<typeof stepDaVinci> | undefined;
+          for (let timeSec = 0; timeSec <= 12; timeSec += 0.25) {
+            const state = stepDaVinci(
+              {
+                motionScaleRatio,
+                tremorFilterEnabled,
+                masterInputSpeedMps: 1.5,
+                gripAngleDeg: 12,
+              },
+              timeSec,
+              previous,
+              0.25,
+            );
+            previous = state;
+            expect(() =>
+              model.updateArmPose(
+                state.baseYawRad,
+                state.shoulderPitchRad,
+                state.elbowPitchRad,
+                state.wristPitchRad,
+                state.wristYawRad,
+                state.wristRollRad,
+                state.gripRad,
+                [state.masterX, state.masterY + 0.8, state.masterZ],
+                [state.tipX, state.tipY, state.tipZ],
+              ),
+            ).not.toThrow();
+            for (const connection of model.connectivityReceipt()) {
+              expect(connection.gapMeters).toBeLessThanOrEqual(1e-8);
+            }
+          }
+        }
+      }
       expect(() => model.dispose()).not.toThrow();
     });
   });

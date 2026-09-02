@@ -68,9 +68,35 @@ export function buildFessendenWirelessModel(): FessendenWirelessModelNodes {
   });
   materials.push(woodMat, castIronMat, copperMat, brassMat, porcelainMat, wireMat, waveMat);
 
-  const bench = new THREE.Mesh(new THREE.BoxGeometry(6, 0.2, 3), woodMat);
+  // Laboratory Workbench with Turned Wooden Legs & Stretchers
+  const benchGroup = new THREE.Group();
+  root.add(benchGroup);
+
+  const bench = new THREE.Mesh(new THREE.BoxGeometry(6.4, 0.18, 3.2), woodMat);
   bench.position.set(0, -0.1, 0);
-  root.add(bench);
+  bench.receiveShadow = true;
+  benchGroup.add(bench);
+
+  // 4 Robust Table Legs & Cross-Stretchers
+  const legGeo = new THREE.BoxGeometry(0.24, 1.45, 0.24);
+  const legPositions = [
+    [-2.9, -0.85, -1.35],
+    [2.9, -0.85, -1.35],
+    [-2.9, -0.85, 1.35],
+    [2.9, -0.85, 1.35],
+  ];
+  for (const [lx, ly, lz] of legPositions) {
+    const leg = new THREE.Mesh(legGeo, woodMat);
+    leg.position.set(lx, ly, lz);
+    leg.castShadow = true;
+    benchGroup.add(leg);
+  }
+  // Side stretchers
+  for (const z of [-1.35, 1.35]) {
+    const stretcher = new THREE.Mesh(new THREE.BoxGeometry(5.6, 0.12, 0.15), woodMat);
+    stretcher.position.set(0, -1.2, z);
+    benchGroup.add(stretcher);
+  }
 
   const alternatorGroup = new THREE.Group();
   alternatorGroup.name = "alternator-source-assembly";
@@ -102,6 +128,18 @@ export function buildFessendenWirelessModel(): FessendenWirelessModelNodes {
   alternatorGroup.add(alternatorRotor);
   root.add(alternatorGroup);
 
+  // Copper Jumper Lead: Alternator to Tuning Coil
+  const lead1Curve = new THREE.QuadraticBezierCurve3(
+    new THREE.Vector3(-1.1, 0.35, 0),
+    new THREE.Vector3(-0.85, 0.1, 0),
+    new THREE.Vector3(-0.6, 0.35, 0),
+  );
+  const altToCoilWire = new THREE.Mesh(
+    new THREE.TubeGeometry(lead1Curve, 12, 0.02, 8, false),
+    copperMat,
+  );
+  root.add(altToCoilWire);
+
   const tuningCoil = new THREE.Group();
   tuningCoil.name = "source-resonance-coil";
   tuningCoil.position.set(-0.6, 0.4, 0);
@@ -116,6 +154,18 @@ export function buildFessendenWirelessModel(): FessendenWirelessModelNodes {
   sliderRod.position.set(0.28, 0.45, 0);
   tuningCoil.add(sliderRod);
   root.add(tuningCoil);
+
+  // Copper Jumper Lead: Tuning Coil to Cage Antenna
+  const lead2Curve = new THREE.QuadraticBezierCurve3(
+    new THREE.Vector3(-0.35, 0.35, 0),
+    new THREE.Vector3(0.05, 0.1, 0),
+    new THREE.Vector3(0.5, 0.25, 0),
+  );
+  const coilToAntennaWire = new THREE.Mesh(
+    new THREE.TubeGeometry(lead2Curve, 12, 0.02, 8, false),
+    copperMat,
+  );
+  root.add(coilToAntennaWire);
 
   const cageAntenna = new THREE.Group();
   cageAntenna.name = "cylindrical-cage-antenna";
@@ -164,20 +214,28 @@ export function buildFessendenWirelessModel(): FessendenWirelessModelNodes {
   receivingConductor.add(new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.05, 0.35), woodMat));
   root.add(receivingConductor);
 
+  // Liquid / Barometric Detector Stand & Permanent Magnet Mount
+  const detectorStand = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 0.45, 16), brassMat);
+  detectorStand.position.set(2.35, 0.22, 0);
+  root.add(detectorStand);
+
   const fineWire = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.42, 8), copperMat);
   fineWire.name = "fine-wire-receiver-element";
   fineWire.position.set(2.35, 0.52, 0);
   fineWire.rotation.z = Math.PI / 2;
   root.add(fineWire);
+
   const magneticField = new THREE.Group();
   magneticField.name = "constant-or-independent-magnetic-field";
   magneticField.position.set(2.35, 0.52, 0);
   magneticField.add(new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.16, 0.12), castIronMat));
   root.add(magneticField);
+
   const microphonicContact = new THREE.Mesh(new THREE.SphereGeometry(0.025, 12, 12), brassMat);
   microphonicContact.name = "microphonic-contact";
   microphonicContact.position.set(2.35, 0.52, 0.08);
   root.add(microphonicContact);
+
   const sourceRelay = new THREE.Group();
   sourceRelay.name = "battery-and-relay-circuit";
   sourceRelay.position.set(2.55, 0.18, 0);
@@ -186,6 +244,7 @@ export function buildFessendenWirelessModel(): FessendenWirelessModelNodes {
   relay.position.x = 0.18;
   sourceRelay.add(relay);
   root.add(sourceRelay);
+
   const receiverInstrument = new THREE.Group();
   receiverInstrument.name = "telephone-receiver-instrument";
   receiverInstrument.position.set(2.75, 0.16, 0.35);

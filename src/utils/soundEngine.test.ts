@@ -50,6 +50,10 @@ describe("Procedural Sound Synthesizer Engine (soundEngine.ts)", () => {
     expect(() => soundEngine.playGunshot()).not.toThrow();
     expect(() => soundEngine.playSparks()).not.toThrow();
     expect(() => soundEngine.playPopcornPop()).not.toThrow();
+    expect(() => soundEngine.playBellSpeechCurrent(0.2, 440)).not.toThrow();
+    expect(() => soundEngine.playMarconiSparkTrain(850, 28)).not.toThrow();
+    expect(() => soundEngine.playFermiRadiationClicks(1.5)).not.toThrow();
+    expect(() => soundEngine.playWrightPropellerPass(1020, 28)).not.toThrow();
 
     // When unmuted
     soundEngine.setMuted(false);
@@ -67,6 +71,10 @@ describe("Procedural Sound Synthesizer Engine (soundEngine.ts)", () => {
     expect(() => soundEngine.playGunshot()).not.toThrow();
     expect(() => soundEngine.playSparks()).not.toThrow();
     expect(() => soundEngine.playPopcornPop()).not.toThrow();
+    expect(() => soundEngine.playBellSpeechCurrent(0.2, 440)).not.toThrow();
+    expect(() => soundEngine.playMarconiSparkTrain(850, 28)).not.toThrow();
+    expect(() => soundEngine.playFermiRadiationClicks(1.5)).not.toThrow();
+    expect(() => soundEngine.playWrightPropellerPass(1020, 28)).not.toThrow();
 
     soundEngine.stopAll();
   });

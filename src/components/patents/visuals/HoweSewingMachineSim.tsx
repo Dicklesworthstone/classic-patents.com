@@ -3,68 +3,95 @@
 import { Pause, Play, RotateCcw, Scissors, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
-import { howeStitch, stepHoweLockstitch, stepHoweSewingMachine } from "@/physics/machineKernels";
+import { ensureHoweWasm, stepHoweTopology } from "@/physics/howeWasm";
+import { stepHoweSewingMachine } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
+const NEEDLE_PIVOT_X = 225;
+const NEEDLE_PIVOT_Y = 76;
+const NEEDLE_EYE_LOCAL_X = 122;
+const NEEDLE_EYE_LOCAL_Y = 136;
+const SHUTTLE_THROW_PX = 105;
+
+function rotatePoint(
+  originX: number,
+  originY: number,
+  localX: number,
+  localY: number,
+  angleRad: number,
+): { x: number; y: number } {
+  const cos = Math.cos(angleRad);
+  const sin = Math.sin(angleRad);
+  return {
+    x: originX + localX * cos - localY * sin,
+    y: originY + localX * sin + localY * cos,
+  };
+}
+
 export function HoweSewingMachineSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-4750-howe-sewing-machine");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [crankAngleDeg, setCrankAngleDeg] = useState<number>(120); // 0 to 360 degrees
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [crankAngleDeg, setCrankAngleDeg] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
   const sewingSpeedRpm = params.crankRpm ?? 240;
-  const sew = stepHoweSewingMachine(
-    sewingSpeedRpm,
-    params.threadTensionGrams ?? 45,
-    params.stitchPitchMm ?? 3.5,
+  const loopSlackPct = params.loopSlackPct ?? 65;
+  const stitchPitchMm = params.stitchPitchMm ?? 3.5;
+  const machine = stepHoweSewingMachine(sewingSpeedRpm, loopSlackPct, stitchPitchMm);
+  const state = stepHoweTopology(crankAngleDeg, loopSlackPct, true);
+  const needleEye = rotatePoint(
+    NEEDLE_PIVOT_X,
+    NEEDLE_PIVOT_Y,
+    NEEDLE_EYE_LOCAL_X,
+    NEEDLE_EYE_LOCAL_Y,
+    state.needleArmAngleRad,
   );
+  const shuttleX = 350 + state.shuttleTravelNormalized * SHUTTLE_THROW_PX;
+  const loopRadius = state.loopOpen ? 10 + state.loopWidth * 0.45 : 4;
+
+  useEffect(() => {
+    void ensureHoweWasm();
+  }, []);
 
   useEffect(() => {
     if (!isPlaying) return;
-    const tickMs = sew.crankDisplayTickMs;
-    const degPerTick = sew.crankOmegaDegPerS * sew.crankDisplayTickS;
     const interval = setInterval(() => {
       if (!onscreenRef.current) return;
-      setCrankAngleDeg((prev) => (prev + degPerTick) % sew.displayWrapDeg);
-    }, tickMs);
+      setCrankAngleDeg(
+        (previous) =>
+          (previous + machine.crankOmegaDegPerS * machine.crankDisplayTickS) %
+          machine.displayWrapDeg,
+      );
+    }, machine.crankDisplayTickMs);
     return () => clearInterval(interval);
   }, [
     isPlaying,
-    sew.crankDisplayTickMs,
-    sew.crankOmegaDegPerS,
-    sew.crankDisplayTickS,
-    sew.displayWrapDeg,
-    onscreenRef.current,
+    machine.crankDisplayTickMs,
+    machine.crankOmegaDegPerS,
+    machine.crankDisplayTickS,
+    machine.displayWrapDeg,
+    onscreenRef,
   ]);
-
-  const {
-    needleY,
-    shuttleX,
-    loopOpen: isLoopFormed,
-    loopWidth,
-    loopSvgControlX,
-  } = stepHoweLockstitch(crankAngleDeg);
 
   return (
     <div
       ref={rootRef}
       className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6"
     >
-      {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2.5">
             <Scissors className="w-6 h-6 text-amber-600 dark:text-amber-400" />
             <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50">
-              Elias Howe&apos;s Lockstitch Sewing Simulator (US 4,750)
+              Howe&apos;s Source-Order Lockstitch (US 4,750)
             </h3>
           </div>
           <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Kinematic simulation of the <strong>eye-pointed needle</strong> and{" "}
-            <strong>flying shuttle</strong> creating the two-thread locked seam.
+            One shaft drives the curved needle, loop-lifting rod, shuttle pickers, and pinned
+            baster-plate feed in the order printed by the 1846 grant.
           </p>
         </div>
 
@@ -72,7 +99,7 @@ export function HoweSewingMachineSim() {
           <button
             type="button"
             onClick={() => {
-              setIsPlaying(!isPlaying);
+              setIsPlaying((value) => !value);
               soundEngine.playSwitchClick();
             }}
             className={`p-2 rounded-lg transition-colors border shadow-sm ${
@@ -80,8 +107,7 @@ export function HoweSewingMachineSim() {
                 ? "bg-amber-600 text-white border-amber-700"
                 : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-parchment-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-300"
             }`}
-            title={isPlaying ? "Pause Mechanism" : "Run Mechanism"}
-            aria-label={isPlaying ? "Pause Mechanism" : "Run Mechanism"}
+            aria-label={isPlaying ? "Pause mechanism" : "Run mechanism"}
           >
             {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
           </button>
@@ -91,9 +117,8 @@ export function HoweSewingMachineSim() {
               toggleSound();
               soundEngine.playSwitchClick();
             }}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute sound" : "Mute sound"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
           >
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
@@ -101,231 +126,268 @@ export function HoweSewingMachineSim() {
             type="button"
             onClick={() => {
               resetParams();
-              setCrankAngleDeg(120);
+              setCrankAngleDeg(0);
               setIsPlaying(false);
               soundEngine.playSwitchClick();
             }}
-            aria-label="Reset Simulation"
+            aria-label="Reset simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title="Reset Simulation"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {/* Interactive Visual Canvas */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-canvas border border-parchment-300 dark:border-ink-800 p-6 relative min-h-[380px] overflow-hidden">
+        <div className="lg:col-span-8 rounded-2xl bg-canvas border border-parchment-300 dark:border-ink-800 p-3 sm:p-5 min-h-[390px] overflow-hidden">
           <svg
-            viewBox="0 0 600 320"
+            viewBox="0 0 600 340"
             role="img"
-            aria-label={`Howe sewing machine simulation: ${isPlaying ? "stitching" : "paused"}, crank angle ${Math.round(crankAngleDeg)} degrees`}
-            className="w-full h-auto max-h-[340px]"
+            aria-label={`Howe sewing machine source-order mechanism, ${state.cyclePhaseLabel}, crank ${Math.round(crankAngleDeg)} degrees`}
+            className="w-full h-auto"
           >
-            {/* Background Plate */}
-            <rect width="600" height="320" fill="#0f172a" />
+            <rect width="600" height="340" fill="#0f172a" />
 
-            {/* Fabric Layers (Horizontal Workpiece) */}
-            <rect x="50" y="150" width="500" height="18" fill="#475569" rx="2" />
-            <rect x="50" y="156" width="500" height="2" fill="#64748b" />
-            <text x="60" y="142" fill="#94a3b8" fontSize="11" fontFamily="monospace">
-              FABRIC WORKPIECE (TWO LAYERS)
+            {/* A bed and B standards physically support both shafts and working parts. */}
+            <rect x="38" y="284" width="520" height="24" rx="4" fill="#334155" />
+            <rect x="83" y="72" width="28" height="212" fill="#334155" />
+            <rect x="208" y="62" width="28" height="222" fill="#334155" />
+            <rect x="82" y="60" width="155" height="20" fill="#475569" />
+            <text x="44" y="324" fill="#94a3b8" fontSize="11" fontFamily="monospace">
+              A BED · B STANDARDS
             </text>
 
-            {/* Existing Stitches on Left */}
-            {sew.stitchXs.map((_, i) => {
-              const stitch = howeStitch(
-                i,
-                sew.stitchXs,
-                sew.stitchLen,
-                sew.stitchUpperY,
-                sew.stitchLowerY,
-              );
-              return (
-                <g key={stitch.x}>
-                  <line
-                    x1={stitch.x}
-                    y1={stitch.upperY}
-                    x2={stitch.x2}
-                    y2={stitch.upperY}
-                    stroke="#f59e0b"
-                    strokeWidth="3"
-                  />
-                  <line
-                    x1={stitch.x}
-                    y1={stitch.upperY}
-                    x2={stitch.x}
-                    y2={stitch.lowerY}
-                    stroke="#10b981"
-                    strokeWidth="2.5"
-                  />
-                  <line
-                    x1={stitch.x}
-                    y1={stitch.lowerY}
-                    x2={stitch.x2}
-                    y2={stitch.lowerY}
-                    stroke="#38bdf8"
-                    strokeWidth="3"
-                  />
-                </g>
-              );
-            })}
+            {/* C carries D/Q/R: flywheel and cams rotate as one rigid rotor. */}
+            <g transform={`translate(99 92) rotate(${-state.crankAngleDeg})`}>
+              <circle r="46" fill="none" stroke="#94a3b8" strokeWidth="7" />
+              {[0, 60, 120].map((angle) => (
+                <line
+                  key={angle}
+                  x1="-42"
+                  x2="42"
+                  y1="0"
+                  y2="0"
+                  transform={`rotate(${angle})`}
+                  stroke="#64748b"
+                  strokeWidth="4"
+                />
+              ))}
+              <circle r="13" fill="#d97706" stroke="#fbbf24" strokeWidth="2" />
+              <circle cx="31" cy="0" r="7" fill="#fbbf24" />
+            </g>
+            <line x1="99" y1="92" x2="225" y2="92" stroke="#cbd5e1" strokeWidth="7" />
+            <circle cx="174" cy="92" r="24" fill="#b45309" stroke="#f59e0b" strokeWidth="3" />
+            <text x="60" y="31" fill="#e2e8f0" fontSize="11" fontFamily="monospace">
+              D FLYWHEEL · C SHAFT · Q/R CAMS
+            </text>
 
-            {/* Sewing Machine Arm Casting */}
-            <path d="M 260 20 L 320 20 L 320 100 L 280 100 L 280 40 L 260 40 Z" fill="#334155" />
-
-            {/* Eye-Pointed Needle & Bar */}
-            <g transform={`translate(280, ${100 + needleY})`}>
-              {/* Needle Bar */}
-              <rect x="-3" y="-80" width="6" height="80" fill="#cbd5e1" />
-              {/* Curved Steel Needle */}
+            {/* O/G/P/k rock as one body; the curved needle is not independently translated. */}
+            <g
+              transform={`translate(${NEEDLE_PIVOT_X} ${NEEDLE_PIVOT_Y}) rotate(${(state.needleArmAngleRad * 180) / Math.PI})`}
+            >
+              <line x1="-47" y1="0" x2="126" y2="0" stroke="#64748b" strokeWidth="13" />
+              <circle cx="-47" cy="0" r="7" fill="#e2e8f0" />
               <path
-                d="M 0 0 C 4 20 8 45 0 70"
+                d="M 112 0 Q 145 54 122 143"
                 fill="none"
                 stroke="#e2e8f0"
-                strokeWidth="3.5"
+                strokeWidth="4"
                 strokeLinecap="round"
               />
-              {/* Eye in Needle Point */}
-              <circle cx="0" cy="62" r="2.5" fill="#0f172a" stroke="#e2e8f0" strokeWidth="1" />
-
-              {/* Upper Thread (Yellow) Through Eye */}
-              <path
-                d={`M -50 -70 Q -20 -30 0 62 Q ${loopSvgControlX} 85 0 ${95 + needleY > 150 ? 95 : 62}`}
-                fill="none"
-                stroke="#f59e0b"
-                strokeWidth="2.5"
+              <circle
+                cx={NEEDLE_EYE_LOCAL_X}
+                cy={NEEDLE_EYE_LOCAL_Y}
+                r="4"
+                fill="#0f172a"
+                stroke="#fbbf24"
+                strokeWidth="2"
               />
+              <text x="43" y="-10" fill="#fbbf24" fontSize="10" fontFamily="monospace">
+                G + CURVED NEEDLE
+              </text>
+            </g>
+            <circle cx={NEEDLE_PIVOT_X} cy={NEEDLE_PIVOT_Y} r="9" fill="#d97706" />
+            <text x="239" y="74" fill="#fbbf24" fontSize="10" fontFamily="monospace">
+              O
+            </text>
+
+            {/* H is a vertical cloth-carrying plate with printed 3/4-inch point pitch. */}
+            <g transform={`translate(${state.feedAdvanceFraction * 8} 0)`}>
+              <rect x="270" y="128" width="236" height="112" fill="#475569" opacity="0.72" />
+              <rect x="276" y="136" width="224" height="96" fill="#d6c7a2" opacity="0.9" />
+              {Array.from({ length: 9 }, (_, index) => (
+                <g key={index} transform={`translate(${291 + index * 25} 232)`}>
+                  <path d="M 0 0 l 0 12" stroke="#e2e8f0" strokeWidth="2" />
+                  <circle cx="0" cy="17" r="3" fill="none" stroke="#f59e0b" />
+                </g>
+              ))}
+              <text x="390" y="151" fill="#0f172a" fontSize="10" fontFamily="monospace">
+                H BASTER PLATE + CLOTH
+              </text>
             </g>
 
-            {/* Lower Shuttle Race & Reciprocating Shuttle (Below Fabric) */}
-            <g transform={`translate(${280 + shuttleX}, 200)`}>
-              {/* Shuttle Boat Body */}
+            {/* I fixes the shuttle axis; J staves remain attached to both ends of K. */}
+            <line x1="218" y1="264" x2="523" y2="264" stroke="#64748b" strokeWidth="12" />
+            <line x1="218" y1="250" x2="523" y2="250" stroke="#334155" strokeWidth="4" />
+            <line x1="190" y1="226" x2={shuttleX - 31} y2="255" stroke="#94a3b8" strokeWidth="5" />
+            <line x1="548" y1="226" x2={shuttleX + 31} y2="255" stroke="#94a3b8" strokeWidth="5" />
+            <g transform={`translate(${shuttleX} 255)`}>
               <path
-                d="M -35 0 L 25 -10 Q 38 0 25 10 L -35 0 Z"
+                d="M -33 0 L -18 -10 L 23 -10 L 34 0 L 23 10 L -18 10 Z"
                 fill="#d97706"
                 stroke="#fbbf24"
                 strokeWidth="2"
               />
-              {/* Internal Lower Bobbin */}
-              <ellipse cx="-5" cy="0" rx="14" ry="6" fill="#0284c7" />
-              {/* Lower Bobbin Thread (Cyan) */}
-              <path
-                d="M -5 0 Q 0 -20 0 -40"
-                fill="none"
-                stroke="#38bdf8"
-                strokeWidth="2.5"
-                strokeDasharray="3,3"
-              />
+              <ellipse rx="12" ry="6" fill="#2563eb" />
+              <text x="-8" y="4" fill="white" fontSize="9" fontFamily="monospace">
+                K
+              </text>
             </g>
+            <text x="226" y="280" fill="#94a3b8" fontSize="10" fontFamily="monospace">
+              I TROUGH · J PICKER-STAVES
+            </text>
 
-            {/* Status Annotations */}
-            <g transform="translate(420, 50)">
-              <rect width="160" height="70" fill="#1e293b" rx="8" stroke="#334155" />
-              <text x="10" y="22" fill="#94a3b8" fontSize="10" fontFamily="monospace">
-                CYCLE PHASE:
+            {/* W supplies the explicit slack loop; both thread paths remain tethered. */}
+            <circle cx="150" cy="40" r="15" fill="#92400e" stroke="#d97706" strokeWidth="3" />
+            <circle cx="270" cy={67 - state.liftingRodNormalized * 13} r="6" fill="#fbbf24" />
+            <path
+              d={`M 150 25 L 270 ${67 - state.liftingRodNormalized * 13} L ${needleEye.x} ${needleEye.y} Q ${needleEye.x + loopRadius} 242 ${needleEye.x} 242 Q ${needleEye.x - loopRadius} 242 ${needleEye.x} ${needleEye.y}`}
+              fill="none"
+              stroke="#f59e0b"
+              strokeWidth="3"
+            />
+            <path
+              d={`M ${shuttleX} 255 Q ${(shuttleX + needleEye.x) / 2} 241 ${needleEye.x} 242 L ${needleEye.x - 55} 242`}
+              fill="none"
+              stroke="#38bdf8"
+              strokeWidth="3"
+            />
+            <text x="278" y="56" fill="#fbbf24" fontSize="10" fontFamily="monospace">
+              W LIFTING ROD
+            </text>
+
+            <g transform="translate(402 44)">
+              <rect width="178" height="66" fill="#1e293b" rx="8" stroke="#475569" />
+              <text x="10" y="18" fill="#94a3b8" fontSize="9" fontFamily="monospace">
+                SOURCE-ORDER PHASE
+              </text>
+              <text x="10" y="37" fill="#f59e0b" fontSize="11" fontFamily="monospace">
+                {state.cyclePhaseLabel.toUpperCase()}
               </text>
               <text
                 x="10"
-                y="42"
-                fill="#f59e0b"
-                fontSize="12"
+                y="55"
+                fill={state.shuttlePassesLoop ? "#34d399" : "#cbd5e1"}
+                fontSize="10"
                 fontFamily="monospace"
-                fontWeight="bold"
               >
-                {isLoopFormed ? "SHUTTLE PASSING LOOP" : "NEEDLE PENETRATING"}
-              </text>
-              <text x="10" y="60" fill="#10b981" fontSize="10" fontFamily="monospace">
-                CRANK: {Math.round(crankAngleDeg)}°
+                {state.shuttlePassesLoop ? "K PASSES THROUGH LOOP" : "INTERLOCK NOT AT PASS"}
               </text>
             </g>
           </svg>
 
-          {/* Telemetry Strip */}
-          <div className="w-full grid grid-cols-3 gap-2 text-center text-xs sm:text-sm font-mono pt-3 border-t border-ink-800 text-ink-300">
+          <div className="grid grid-cols-3 gap-2 text-center font-mono pt-3 border-t border-ink-800 text-ink-300">
             <div>
-              <span className="text-ink-400 block text-xs">NEEDLE STROKE</span>
-              <span className="text-amber-400 font-bold text-sm sm:text-base">
-                {needleY > 0 ? "PENETRATING" : "RETRACTING"}
+              <span className="text-ink-400 block text-[10px]">NEEDLE</span>
+              <span className="text-amber-400 font-bold text-xs sm:text-sm">
+                {state.needleRetracting ? "RETRACTING" : "PENETRATING"}
               </span>
             </div>
             <div>
-              <span className="text-ink-400 block text-xs">SHUTTLE SPEED</span>
-              <span className="text-emerald-400 font-bold text-sm sm:text-base">
-                {sewingSpeedRpm} stitches/min
+              <span className="text-ink-400 block text-[10px]">SHUTTLE / LOOP</span>
+              <span className="text-emerald-400 font-bold text-xs sm:text-sm">
+                {state.shuttlePassesLoop ? "PASS" : "CLEAR"}
               </span>
             </div>
             <div>
-              <span className="text-ink-400 block text-xs">LOOP DILATION</span>
-              <span className="text-blue-400 font-bold text-sm sm:text-base">
-                {loopWidth.toFixed(1)} mm
-              </span>
+              <span className="text-ink-400 block text-[10px]">LOOP SLACK</span>
+              <span className="text-blue-400 font-bold text-xs sm:text-sm">{loopSlackPct}%</span>
             </div>
           </div>
         </div>
 
-        {/* Controls Sidebar */}
         <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-5 space-y-4 shadow-sm">
+          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-5 space-y-5 shadow-sm">
             <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
-              Kinematic Cycle Controls
+              Mechanism controls
             </span>
 
-            {/* Crank Angle Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  <TextWithLatex text="Manual Flywheel Crank Angle ($\\theta$)" />
-                </span>
+            <label className="space-y-1.5 block">
+              <span className="flex justify-between text-xs sm:text-sm font-mono">
+                <TextWithLatex text="Main-shaft angle ($\\theta_C$)" />
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
                   {Math.round(crankAngleDeg)}°
                 </span>
-              </div>
+              </span>
               <input
                 type="range"
-                aria-label="Manual Flywheel Crank Angle (theta)"
+                aria-label="Main-shaft angle"
                 min="0"
-                max="360"
-                step="2"
+                max="359"
+                step="1"
                 value={crankAngleDeg}
-                onChange={(e) => setCrankAngleDeg(Number(e.target.value))}
-                className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
+                onChange={(event) => setCrankAngleDeg(Number(event.target.value))}
+                className="w-full h-11 accent-amber-600 cursor-pointer"
               />
-            </div>
+            </label>
 
-            {/* Sewing Speed Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  <TextWithLatex text="Machine Speed ($f_{sew}$)" />
-                </span>
+            <label className="space-y-1.5 block">
+              <span className="flex justify-between text-xs sm:text-sm font-mono">
+                <span>Declared display cadence</span>
                 <span className="text-blue-600 dark:text-blue-400 font-bold">
-                  {sewingSpeedRpm} RPM · {sew.stitchFrequencyHz} Hz · {sew.crankOmegaDegPerS} °/s ·{" "}
-                  {sew.clothFeedMmPerS} mm/s · {sew.lockstitchShearStrengthN} N
+                  {sewingSpeedRpm} RPM
                 </span>
-              </div>
+              </span>
               <input
                 type="range"
-                aria-label="Flywheel Drive Velocity"
+                aria-label="Declared display cadence"
                 min="60"
-                max="320"
+                max="420"
                 step="10"
                 value={sewingSpeedRpm}
-                onChange={(e) => updateParam("crankRpm", Number(e.target.value))}
-                className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-blue-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
+                onChange={(event) => updateParam("crankRpm", Number(event.target.value))}
+                className="w-full h-11 accent-blue-600 cursor-pointer"
               />
+            </label>
+
+            <label className="space-y-1.5 block">
+              <span className="flex justify-between text-xs sm:text-sm font-mono">
+                <span>Displayed loop slack</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                  {loopSlackPct}%
+                </span>
+              </span>
+              <input
+                type="range"
+                aria-label="Displayed loop slack"
+                min="0"
+                max="100"
+                step="1"
+                value={loopSlackPct}
+                onChange={(event) => updateParam("loopSlackPct", Number(event.target.value))}
+                className="w-full h-11 accent-emerald-600 cursor-pointer"
+              />
+            </label>
+
+            <div
+              className={`p-3.5 rounded-xl border text-xs sm:text-sm ${
+                machine.claim1InterlockPossible
+                  ? "bg-emerald-500/10 border-emerald-500/30"
+                  : "bg-red-500/10 border-red-500/30"
+              }`}
+            >
+              <span className="font-bold block font-mono text-xs uppercase tracking-wider mb-1">
+                Claim 1 topology
+              </span>
+              {machine.claim1InterlockPossible
+                ? "The displayed loop clears the shuttle section, so the source-order interlock can occur during the pass phase."
+                : "Refused: the displayed loop does not clear the shuttle section. The model will not report a lockstitch pass."}
             </div>
 
-            <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-ink-950 dark:text-parchment-100 text-xs sm:text-sm font-sans">
-              <span className="font-bold text-amber-900 dark:text-amber-300 block font-mono text-xs uppercase tracking-wider mb-1">
-                The Lockstitch Secret:
-              </span>
-              <p className="leading-relaxed">
-                As the needle begins pulling upward, friction against the fabric bows the thread out
-                into a loop. The bullet shuttle carries the second thread straight through this
-                loop, locking both threads tight within the seam.
-              </p>
+            <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs sm:text-sm">
+              The 1846 grant prints the needle eye at about <strong>1/8 inch</strong> from the point
+              and the baster points about <strong>3/4 inch</strong> apart. Cadence, pitch, and loop
+              slack are declared display inputs—not historical operating measurements.
             </div>
           </div>
         </div>

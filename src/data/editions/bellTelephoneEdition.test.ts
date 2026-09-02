@@ -31,6 +31,10 @@ describe("US 174,465 manual source edition", () => {
     );
     expect(bellTelephonePatent.claims.map((claim) => claim.number)).toEqual([1, 2, 3, 4, 5]);
     expect(bellTelephonePatent.claims.every((claim) => claim.isIndependent)).toBe(true);
+    expect(bellTelephonePatent.stats).toEqual({
+      totalClaims: bellTelephonePatent.claims.length,
+      independentClaims: bellTelephonePatent.claims.filter((claim) => claim.isIndependent).length,
+    });
   });
 
   test("keeps every published source paragraph and claim in the reviewed ledger", () => {
@@ -63,6 +67,23 @@ describe("US 174,465 manual source edition", () => {
     expect(bellTelephonePatent.claims.map((claim) => claim.originalText)).toEqual(
       authoredClaims.map((claim) => claim.inlines.map((inline) => inline.text).join("")),
     );
+  });
+
+  test("keeps canonical claim text dynamically sourced from the edition blocks", () => {
+    const authoredClaimNumbers = bellTelephoneArchivalEdition.blocks.flatMap((block) =>
+      block.kind === "claim" ? [block.number] : [],
+    );
+    const canonicalRecordSource = readFileSync(
+      resolve(process.cwd(), "src/data/patents/bell-telephone.ts"),
+      "utf8",
+    );
+
+    expect(canonicalRecordSource).toContain("function manualClaimText");
+    expect(canonicalRecordSource).toContain("bellTelephoneArchivalEdition.blocks.find");
+    expect(canonicalRecordSource).not.toContain("MANUALLY_REVIEWED_CLAIM_TEXT");
+    for (const claimNumber of authoredClaimNumbers) {
+      expect(canonicalRecordSource).toContain(`originalText: manualClaimText(${claimNumber}),`);
+    }
   });
 
   test("pairs every source paragraph with a non-lossy explanation and every figure with a local crop", () => {

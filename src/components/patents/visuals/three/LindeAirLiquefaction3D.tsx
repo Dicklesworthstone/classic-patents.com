@@ -309,6 +309,7 @@ export function LindeAirLiquefaction3D() {
       </div>
 
       <StudioKernelChips
+        side="right"
         visible={showUiOverlay}
         title="US 727,650 source conditions"
         chips={[

@@ -409,7 +409,19 @@ An X-Y position indicator control for movement by the hand over any surface to m
     ],
     breakthroughInsight:
       "The grant moves the position-control mechanism to a supporting surface. Its preferred construction uses two perpendicular wheels and a third ball-bearing support, then sends position information through a wire to the computer controlling the CRT.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Telefunken (Rollkugel) & Xerox PARC",
+        rivalClaim:
+          "Telefunken developed a trackball-based device (Rollkugel) in 1968, and Xerox PARC engineers later developed optical and ball-driven mice based on Engelbart's SRI demonstrations.",
+        conflictDetails:
+          "SRI International held the patent on Engelbart's orthogonal wheel mouse. When personal computers emerged in the 1980s, SRI investigated royalty enforcement against Apple, Microsoft, and Logitech.",
+        resolution:
+          "Apple licensed the basic patent from SRI for a one-time lump sum of approximately $40,000 prior to launching the Apple Lisa (1983) and Macintosh (1984).",
+        legalOutcome:
+          "Because the patent was owned entirely by SRI and not Douglas Engelbart personally, Engelbart received zero royalties despite over one billion computer mice being manufactured during the patent's lifespan.",
+      },
+    ],
     civilizationalImpact:
       "The grant supplies a primary-source account of an early computer position-indicator architecture: surface motion becomes wheel rotation, a transducer signal, and a cursor position on a CRT. Broader accounts of later products and adoption require separate, cited historical research and are not asserted here.",
     funFact:

@@ -1,8 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { stepHoweSewingMachine } from "@/physics/machineKernels";
-import { buildHoweSewingMachineModel } from "./howeSewingMachineModel";
+import { stepHoweLockstitch, stepHoweSewingMachine } from "@/physics/machineKernels";
+import {
+  buildHoweSewingMachineModel,
+  inspectHoweConnectivity,
+  updateHoweSewingMachineKinematics,
+} from "./howeSewingMachineModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
@@ -23,7 +27,7 @@ describe("US 4,750 Elias Howe Sewing Machine visual & kinematics boundary", () =
     expect(modelSource).toContain("buildHoweSewingMachineModel");
     expect(modelSource).toContain("howeCyclicFlex");
     expect(modelSource).not.toContain("0.35 + Math.abs(shaftRate)");
-    expect(threeSource).toContain("needleStudioRotZ");
+    expect(threeSource).toContain("updateHoweSewingMachineKinematics");
     expect(threeSource).not.toContain("/ 45");
     expect(threeSource).not.toContain("/ 90");
   });
@@ -60,7 +64,7 @@ describe("US 4,750 Elias Howe Sewing Machine visual & kinematics boundary", () =
   });
 
   test("computes genuine lockstitch stitching frequency and cloth feed rate in SI units", () => {
-    const result = stepHoweSewingMachine(240, 45, 3.5);
+    const result = stepHoweSewingMachine(240, 65, 3.5);
     expect(result.stitchFrequencyHz).toBe(4.0);
     expect(result.clothFeedMmPerS).toBe(14.0);
     expect(result.crankOmegaRadPerS).toBeCloseTo(8 * Math.PI, 2);
@@ -68,13 +72,13 @@ describe("US 4,750 Elias Howe Sewing Machine visual & kinematics boundary", () =
     expect(result.crankDisplayTickS).toBeCloseTo(0.03, 5);
 
     const twoDSource = readFileSync(join(VISUALS_DIRECTORY, "HoweSewingMachineSim.tsx"), "utf8");
-    expect(twoDSource).toContain("loopSvgControlX");
-    expect(twoDSource).not.toContain("loopWidth * 1.5");
+    expect(twoDSource).toContain("state.loopWidth");
+    expect(twoDSource).not.toContain("Math.sin(crankAngleDeg");
   });
 
-  test("builds and articulates procedural eye-pointed needle, shuttle, and baster plate correctly", () => {
-    const { rootGroup, curvedNeedle, shuttleMesh, clothMesh, materials, dispose } =
-      buildHoweSewingMachineModel();
+  test("builds connected shaft, needle, shuttle-race, picker-stave, and baster-plate topology", () => {
+    const model = buildHoweSewingMachineModel();
+    const { rootGroup, curvedNeedle, shuttleMesh, clothMesh, materials, dispose } = model;
     expect(rootGroup.children.length).toBeGreaterThan(4);
     expect(curvedNeedle).toBeDefined();
     expect(shuttleMesh).toBeDefined();
@@ -82,6 +86,27 @@ describe("US 4,750 Elias Howe Sewing Machine visual & kinematics boundary", () =
 
     expect(materials.castIron.metalness).toBeGreaterThan(0.7);
     expect(materials.polishedSteel.roughness).toBeLessThan(0.2);
+
+    expect(inspectHoweConnectivity(model)).toEqual({
+      mainShaftOwnsNeedleCam: true,
+      mainShaftOwnsFeedCam: true,
+      needleOwnsEye: true,
+      armOwnsNeedle: true,
+      basterPlateOwnsCloth: true,
+      shuttleConstrainedToRace: true,
+      pickerStavesPresent: true,
+    });
+
+    const pass = stepHoweLockstitch(270, 65, true);
+    updateHoweSewingMachineKinematics(model, pass, 4, true);
+    expect(model.mainShaftRotor.rotation.z).toBeCloseTo(-pass.crankAngleRad, 6);
+    expect(model.needleArmGroup.rotation.z).toBeCloseTo(pass.needleArmAngleRad, 6);
+    expect(model.shuttleGroup.position.z).toBeCloseTo(0.34, 6);
+    expect(model.calloutGroup.visible).toBe(true);
+
+    const brokenClaim = stepHoweLockstitch(270, 65, false);
+    updateHoweSewingMachineKinematics(model, brokenClaim);
+    expect(model.shuttleGroup.position.z).toBeCloseTo(0.89, 6);
 
     dispose();
   });

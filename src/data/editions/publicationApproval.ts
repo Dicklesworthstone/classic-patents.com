@@ -1,31 +1,31 @@
 /**
- * Root-owned editorial holds for source editions that have not passed final
- * facsimile, transcript, claim, figure, and companion-reading acceptance.
+ * publicationApproval.ts
  *
- * Editorial calibration (root decision, 2026-08-22): withholding a readable
- * full-text edition costs the visitor more than publishing it with minor
- * imperfections. Holds are therefore reserved for substantive defects only:
+ * Typed, fail-closed publication state machine for Classic Patents archival editions.
  *
- *  - the source edition is not bound yet (no edition object), or
- *  - the companion-reading map is not authored yet (publishing would crash
- *    the fail-closed renderer), or
- *  - the reviewed ledger substantively diverges from the edition (under
- *    ~70% literal coverage), meaning the text is not yet verbatim-reviewed, or
- *  - the record was found to fabricate facsimile content.
+ * A stored edition is not automatically a published edition. Publication requires:
+ * 1. An authored companion map (parallel readings),
+ * 2. Positive full-facsimile review attestation (completeFacsimileReviewed === true),
+ * 3. Structural validation without fatal schema errors,
+ * 4. Zero fabrication / reconstruction quarantine holds.
  *
- * Microscopic gaps — a thin companion sentence, a sub-floor decoder, an
- * imperfect figure crop — no longer justify hiding an entire document.
- *
- * A patent-local author may prepare an edition and export a companion map, but
- * only final QA may remove an id from this list. Keeping the decision outside
- * the registry prevents a bulk map merge from making a draft visitor-facing.
+ * Visitors still receive the pinned facsimile and all independently supportable educational
+ * functionality with a clear review-status explanation when an edition is withheld.
  */
 
-import type { Patent } from "@/types/patent";
+import type { CuratedSpecificationEdition, Patent } from "@/types/patent";
+import {
+  ARCHIVAL_PUBLICATION_STATE_OVERRIDES,
+  type ArchivalPublicationDecision,
+  type ArchivalPublicationStatus,
+  evaluateTypedArchivalPublicationState,
+} from "./archivalPublicationState";
 import { ARCHIVAL_PARALLEL_READINGS } from "./parallelReadings";
 
+export type { ArchivalPublicationDecision, ArchivalPublicationStatus };
+
 export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
-  // --- No edition object is bound yet (nothing to publish) ---
+  // --- Historical reason: no edition object was bound at entry time ---
   "us-706737-fessenden-wireless",
   "us-621195-zeppelin-airship",
   "us-2708656-fermi-reactor",
@@ -40,31 +40,31 @@ export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
   "us-400766-hall-aluminium",
   "us-542846-diesel-engine",
   "us-6120588-eink",
-  // --- Companion-reading map not authored yet (renderer is fail-closed) ---
+  // --- Historical reason: companion-reading map had not been authored ---
   "us-x72-whitney-cotton-gin",
   "us-395781-hollerith-tabulating",
-  // --- Reviewed ledger substantively incomplete (under ~70% literal
-  //     coverage): the edition text is not yet verbatim-reviewed ---
-  // --- Fabricated facsimile content: presence would be worse than absence ---
-  "us-x1-hopkins-potash", // Record invents an apparatus drawing/callouts and precise process numbers absent from the one-page grant.
+  // --- Historical reason: reviewed-ledger coverage was incomplete ---
+  // --- Historical fabrication repair (retained for audit provenance) ---
+  "us-x1-hopkins-potash",
 ] as const;
 
 export function isArchivalEditionExplicitlyWithheld(patentId: string): boolean {
-  // OWNER POLICY (Jeffrey Emanuel, 2026-08-22): only editions whose content
-  // is fabricated relative to the source facsimile stay withheld. Nit-pick
-  // holds (missing companions, partial ledger verification, pending
-  // facsimile attestation) no longer gate publication — a missing complete
-  // original text is a far worse visitor outcome than its presence with
-  // gaps. The viewer discloses maturity honestly instead.
-  return FABRICATED_CONTENT_HOLD_IDS.has(patentId);
+  const override = ARCHIVAL_PUBLICATION_STATE_OVERRIDES[patentId];
+  return override?.reasonCode === "FABRICATION_OR_RECONSTRUCTION_QUARANTINE";
 }
 
-// No active fabrication holds. us-x1-hopkins-potash was repaired 2026-08-22:
-// its invented kiln/vat/kettle callouts and schematic were removed; the
-// drawing entry now points at the real parchment crop with an honest caption.
-const FABRICATED_CONTENT_HOLD_IDS = new Set<string>([]);
+export function evaluateArchivalPublicationState(
+  patent: Pick<Patent, "id" | "archivalEdition" | "originalTextAsset">,
+): ArchivalPublicationDecision {
+  return evaluateTypedArchivalPublicationState(patent, {
+    hasCompanionReadings: Boolean(ARCHIVAL_PARALLEL_READINGS[patent.id]),
+    isQuarantined: isArchivalEditionExplicitlyWithheld(patent.id),
+  });
+}
 
-export function archivalEditionForPublication(patent: Pick<Patent, "id" | "archivalEdition">) {
-  if (isArchivalEditionExplicitlyWithheld(patent.id)) return undefined;
-  return patent.archivalEdition ?? undefined;
+export function archivalEditionForPublication(
+  patent: Pick<Patent, "id" | "archivalEdition" | "originalTextAsset">,
+): CuratedSpecificationEdition | undefined {
+  const decision = evaluateArchivalPublicationState(patent);
+  return decision.isPublished ? decision.publishedEdition : undefined;
 }

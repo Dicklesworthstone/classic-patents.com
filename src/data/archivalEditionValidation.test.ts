@@ -42,12 +42,31 @@ describe("validateCuratedSpecificationEdition", () => {
   test("rejects missing provenance and a missing full-facsimile attestation", () => {
     const edition = validEdition();
     edition.sourcePdfSha256 = "not-a-digest";
-    edition.completeFacsimileReviewed = false as true;
+    edition.completeFacsimileReviewed = undefined as unknown as boolean;
 
     const result = validateCuratedSpecificationEdition(edition);
     expect(result.valid).toBe(false);
     expect(result.errors.join("\n")).toContain("SHA-256");
     expect(result.errors.join("\n")).toContain("full-facsimile review attestation");
+  });
+
+  test("rejects an explicit negative full-facsimile attestation", () => {
+    const edition = validEdition();
+    edition.completeFacsimileReviewed = false;
+
+    expect(validateCuratedSpecificationEdition(edition)).toEqual({
+      valid: false,
+      errors: ["The archival edition must attest that the complete facsimile was reviewed."],
+    });
+  });
+
+  test("can structurally validate a stored WIP edition without publishing it", () => {
+    const edition = validEdition();
+    edition.completeFacsimileReviewed = false;
+
+    expect(
+      validateCuratedSpecificationEdition(edition, { requireCompleteFacsimileReview: false }),
+    ).toEqual({ valid: true, errors: [] });
   });
 
   test("rejects duplicate claims and malformed authored table rows", () => {

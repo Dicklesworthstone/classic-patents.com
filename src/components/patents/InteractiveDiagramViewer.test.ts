@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { allPatents } from "@/data/patents";
 import { wrightFlyerPatent } from "@/data/patents/wright-flyer";
+import { resetPatentPhysicsParams, setPatentPhysicsParam } from "@/physics/usePatentPhysics";
 
 describe("Interactive Historical Schematic & Drawing Sheets", () => {
   test("ensures every catalog patent with drawings has authentic figures, titles, and captions", () => {
@@ -122,6 +123,82 @@ describe("InteractiveDiagramViewer React rendering", () => {
     expect(source).not.toContain("165° Jet Energy Extraction");
     expect(source).not.toContain("Balanced Crankcase Flywheels");
     expect(source).not.toContain("Hot Tube");
+  });
+
+  test("opens Tesla's secondary bond on the same shared Claim 1 state as both model faces", () => {
+    const patent = allPatents.find((candidate) => candidate.id === "us-593138-tesla-coil");
+    if (!patent) throw new Error("Tesla transformer patent fixture is missing");
+    setPatentPhysicsParam(patent.id, "claim1CommonNodeConnected", 0);
+    try {
+      const html = renderToStaticMarkup(
+        React.createElement(InteractiveDiagramViewer, {
+          drawings: patent.drawings,
+          patentId: patent.id,
+          patentNumber: patent.patentNumber,
+        }),
+      );
+      expect(html).toContain(">open</text>");
+    } finally {
+      resetPatentPhysicsParams(patent.id);
+    }
+  });
+
+  test("routes AMF Versatran figure variants to one live, source-bounded topology frame", () => {
+    const patent = allPatents.find((candidate) => candidate.id === "us-3212649-amf-versatran");
+    if (!patent) throw new Error("AMF Versatran patent fixture is missing");
+
+    const source = readFileSync(
+      join(process.cwd(), "src/components/patents/InteractiveDiagramViewer.tsx"),
+      "utf8",
+    );
+    expect(source).toContain('"amf-versatran": true');
+    expect(source).toContain("FrankenSimEngine.stepAmfVersatranTopology(params)");
+
+    const renderFrame = () =>
+      renderToStaticMarkup(
+        React.createElement(InteractiveDiagramViewer, {
+          drawings: patent.drawings,
+          patentId: patent.id,
+          patentNumber: patent.patentNumber,
+        }),
+      );
+
+    resetPatentPhysicsParams(patent.id);
+    try {
+      const teachFrame = renderFrame();
+      setPatentPhysicsParam(patent.id, "columnRotation", 0.5);
+      setPatentPhysicsParam(patent.id, "carriageLift", 0.8);
+      setPatentPhysicsParam(patent.id, "armTravel", 0.2);
+      setPatentPhysicsParam(patent.id, "wristRotation", -0.4);
+      setPatentPhysicsParam(patent.id, "wristSwing", 0.4);
+      setPatentPhysicsParam(patent.id, "teachReplayMode", 1);
+      setPatentPhysicsParam(patent.id, "resolverPhaseOffset", 0.25);
+      const playbackFrame = renderFrame();
+
+      expect(playbackFrame).toContain('data-amf-versatran-topology="typed-ts-source-bounded"');
+      expect(playbackFrame).toContain('data-amf-versatran-active-claim="8"');
+      expect(playbackFrame).toContain(
+        'data-amf-versatran-program-mode="automatic-recorded-signal-playback"',
+      );
+      expect(playbackFrame).toContain("max |e_i| = 0.25");
+      expect(playbackFrame).not.toBe(teachFrame);
+
+      setPatentPhysicsParam(patent.id, "claim12PinionGripperEnabled", 0);
+      const claim12WithheldFrame = renderFrame();
+      expect(claim12WithheldFrame).toContain('data-amf-versatran-claim-12="withheld"');
+
+      setPatentPhysicsParam(patent.id, "claim8RecordPlaybackEnabled", 0);
+      const claim8WithheldFrame = renderFrame();
+      expect(claim8WithheldFrame).toContain('data-amf-versatran-claim-8="withheld"');
+      expect(claim8WithheldFrame).toContain("REPLAY WITHHELD");
+
+      setPatentPhysicsParam(patent.id, "claim1TopologyEnabled", 0);
+      const claim1WithheldFrame = renderFrame();
+      expect(claim1WithheldFrame).toContain('data-amf-versatran-claim-1="withheld"');
+      expect(claim1WithheldFrame).toContain("CLAIM 1 SIX-MOTION TOPOLOGY WITHHELD");
+    } finally {
+      resetPatentPhysicsParams(patent.id);
+    }
   });
 
   test("keeps the Pasteur schematic on the apparatus printed in US 135,245", () => {

@@ -61,9 +61,8 @@ export const maimanRubyLaserPatent: Patent = {
     url: "/patents/transcripts/us-3353115-maiman-ruby-laser-reviewed.txt",
     pageCount: 10,
     kind: "reviewed-transcription",
-    reviewedBy:
-      "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
-    reviewedAt: "2026-08-22",
+    reviewedBy: "Classic Patents editorial team (full-facsimile review completed)",
+    reviewedAt: "2026-09-01",
     sourcePdfSha256: "3222cc08d6662719dba7566e07f96f3d1687dda40d6fe213ac9993ceb1ba03e6",
   },
   archivalEdition: maimanRubyLaserArchivalEdition,
@@ -251,7 +250,19 @@ export const maimanRubyLaserPatent: Patent = {
     ],
     breakthroughInsight:
       "The disclosed architecture combines a solid-state active medium, broadband optical pumping, radiationless transfer into a discrete upper level, and an optical feedback path that repeatedly traverses the material.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Gordon Gould & Charles Townes (Bell Labs)",
+        rivalClaim:
+          "Gordon Gould notarized his notebook with the term 'LASER' in 1957, and Charles Townes/Arthur Schawlow received US Patent 2,929,922 for the optical maser concept.",
+        conflictDetails:
+          "Hughes Aircraft filed Maiman's patent in 1961 for the first working ruby laser. Gould spent three decades in patent office interferences and federal courts claiming broad coverage over optically pumped lasers.",
+        resolution:
+          "In a series of landmark federal court decisions (Gould v. Control Laser Corp. and Gould v. General Photonics, 1977–1987), Gould was awarded patents on optically pumped laser amplifiers, while Maiman's US 3,353,115 stood as the definitive patent on the first operational solid-state ruby laser apparatus.",
+        legalOutcome:
+          "Maiman's patent was fully recognized as the historic first physical reduction to practice of laser radiation on May 16, 1960.",
+      },
+    ],
     civilizationalImpact:
       "The disclosed solid-state optical pumping, resonant feedback, and coherent beam extraction establish the architecture that later generations of photonic instruments use for communications, measurement, surgery, manufacturing, and scientific research.",
     funFact:

@@ -9,6 +9,7 @@ import { coupleEdgesFor } from "@/physics/coupleGraph";
 import { energyChannelsFor } from "@/physics/energyChannels";
 import { qtyDimension } from "@/physics/qty";
 import { computeParameterSensitivity } from "@/physics/sensitivityKernel";
+import { getProvenanceLabel } from "@/physics/telemetryProvenance";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { ColorizedEquation as ColorizedEquationType } from "@/types/equation";
 import { soundEngine } from "@/utils/soundEngine";
@@ -62,7 +63,14 @@ export function PhysicsTelemetryBadge({
   if (!data) return null;
 
   return (
-    <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950/90 p-4 sm:p-5 text-xs font-sans text-ink-800 dark:text-parchment-200 shadow-sm space-y-4">
+    <div
+      className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950/90 p-4 sm:p-5 text-xs font-sans text-ink-800 dark:text-parchment-200 shadow-sm space-y-4"
+      data-testid="physics-telemetry-badge"
+      data-patent-id={patentId}
+      data-kernel-method={data.engineMethod}
+      data-last-change={lastChange?.id ?? ""}
+      data-telemetry-envelope={liveEnvelope}
+    >
       <div className="sr-only" aria-live="polite" aria-atomic="true">
         {data.domainTitle}. {announcedEnvelope}
       </div>
@@ -141,11 +149,21 @@ export function PhysicsTelemetryBadge({
               key={metric.label}
               className="p-3.5 rounded-xl border border-parchment-300/80 dark:border-ink-800 bg-white dark:bg-ink-900/90 text-ink-900 dark:text-parchment-100 flex flex-col justify-between shadow-2xs hover:border-amber-700/30 dark:hover:border-ink-700 transition-colors"
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-1">
                 <span className="text-[10px] uppercase font-mono tracking-wider font-semibold text-ink-500 dark:text-ink-400 truncate">
                   {metric.label}
                 </span>
-                <Gauge className="w-3.5 h-3.5 text-amber-700/60 dark:text-amber-400/60" />
+                <div className="flex items-center gap-1">
+                  {metric.provenance && (
+                    <span
+                      className={`inline-block px-1 py-0.2 rounded text-[8px] font-mono border leading-none ${getProvenanceLabel(metric.provenance).badgeClass}`}
+                      title={getProvenanceLabel(metric.provenance).description}
+                    >
+                      {getProvenanceLabel(metric.provenance).shortLabel}
+                    </span>
+                  )}
+                  <Gauge className="w-3.5 h-3.5 text-amber-700/60 dark:text-amber-400/60 shrink-0" />
+                </div>
               </div>
 
               <div className="flex items-baseline gap-1.5 my-2">
@@ -241,6 +259,7 @@ export function PhysicsTelemetryBadge({
                     type="checkbox"
                     checked={val > 0.5}
                     onChange={(e) => updateParam(ctrl.id, e.target.checked ? 1 : 0)}
+                    data-physics-control-id={ctrl.id}
                     className="rounded accent-emerald-600 w-4 h-4"
                   />
                   <span className="font-bold text-ink-900 dark:text-parchment-100 truncate">
@@ -265,6 +284,7 @@ export function PhysicsTelemetryBadge({
                     value={val}
                     onChange={(e) => updateParam(ctrl.id, Number(e.target.value))}
                     disabled={rudderInterlocked}
+                    data-physics-control-id={ctrl.id}
                     className={`${rudderInterlocked ? "opacity-50 cursor-not-allowed" : ""} w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 dark:[&::-webkit-slider-thumb]:bg-amber-400 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 dark:[&::-moz-range-thumb]:bg-amber-400 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950`}
                     aria-label={ctrl.label}
                     aria-valuetext={`${val > 0 && ctrl.min < 0 ? `+${val}` : val} ${ctrl.unit || ""}`.trim()}

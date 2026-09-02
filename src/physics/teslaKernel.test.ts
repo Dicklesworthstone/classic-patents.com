@@ -5,10 +5,6 @@ import {
   TESLA_PATENT_ID,
   TESLA_STROBE_COUNT,
   teslaBAt,
-  teslaCoilControls,
-  teslaCoilResonantKhz,
-  teslaCoilSiUnits,
-  teslaCoilWindingSvg,
   teslaFieldDisplayOmegaDegPerS,
   teslaFieldDisplayOmegaRadPerS,
   teslaFig4Strobe,
@@ -38,7 +34,6 @@ describe("Tesla Fig. 9 generator circuits and progressive attraction", () => {
     expect(teslaMotorPhaseHz({ frequencyHz: 80 })).toBe(80);
     expect(teslaMotorPhaseHz({ frequency: 45, frequencyHz: 80 })).toBe(45);
   });
-
   test("stepTeslaMotorFig9 keeps the two-circuit generator relation source-bound", () => {
     const state60Hz = stepTeslaMotorFig9(60);
     expect(state60Hz.phaseCycleHz).toBe(60);
@@ -89,32 +84,5 @@ describe("Tesla Fig. 9 generator circuits and progressive attraction", () => {
       expect(strobe[i].omegaT).toBeCloseTo((i * Math.PI) / 4, 3);
       expect(Math.hypot(strobe[i].bx, strobe[i].by)).toBeCloseTo(1.0, 3);
     }
-  });
-
-  test("teslaCoilResonantKhz and teslaCoilControls compute dual-tank resonance", () => {
-    const fRes = teslaCoilResonantKhz(45, 35);
-    expect(fRes).toBe(180);
-
-    const controls = teslaCoilControls({
-      primaryCapNf: 45,
-      toploadCapacitancePf: 35,
-      inputVoltageKv: 20,
-      sparkGapDistanceMm: 15,
-    });
-    expect(controls.resonantFreqKhz).toBe(180);
-    expect(controls.inputKv).toBe(20);
-    expect(controls.sparkGapMm).toBe(15);
-    const si = teslaCoilSiUnits(180, 15, 1.25);
-    expect(si.resonantFreqHz).toBe(180000);
-    expect(si.inputVoltageVolts).toBe(15000);
-    expect(si.secondaryPotentialVolts).toBe(1250000);
-    expect(si.secondaryTurnCount).toBe(18);
-    expect(si.schematicToploadRx).toBe(50);
-    expect(si.schematicToploadRy).toBe(18);
-    expect(si.schematicSparkX0).toBe(160);
-    expect(si.schematicSparkR).toBe(5);
-    expect(si.schematicBaseW).toBe(260);
-    expect(si.schematicSparkDx).toBe(5);
-    expect(teslaCoilWindingSvg(0).x1).toBe(-25);
   });
 });

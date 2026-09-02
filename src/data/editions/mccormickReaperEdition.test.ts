@@ -113,4 +113,53 @@ describe("mccormickReaperArchivalEdition", () => {
       expect(mccormickReaperParallelReadings[index][0].length).toBeGreaterThan(30);
     }
   });
+
+  test("derives all printed claims dynamically from edition without duplicate strings", () => {
+    expect(mccormickReaperPatent.claims.length).toBe(2);
+    const editionClaims = mccormickReaperArchivalEdition.blocks.filter(
+      (b): b is Extract<typeof b, { kind: "claim" }> => b.kind === "claim",
+    );
+    expect(editionClaims.length).toBe(2);
+
+    for (let i = 0; i < 2; i++) {
+      const editionBlock = editionClaims[i];
+      const expectedText = editionBlock.inlines.map((inl) => inl.text).join("");
+      expect(mccormickReaperPatent.claims[i].originalText).toBe(expectedText);
+    }
+  });
+
+  test("binds canonical reviewed ledger with complete ordered page markers", () => {
+    const sourceAsset = mccormickReaperPatent.originalTextAsset;
+    expect(sourceAsset).toBeDefined();
+    expect(sourceAsset?.url).toBe("/patents/transcripts/us-x8277-mccormick-reaper-reviewed.txt");
+    const ledgerPath = join(process.cwd(), `public${sourceAsset?.url}`);
+    expect(existsSync(ledgerPath)).toBe(true);
+    const ledger = readFileSync(ledgerPath, "utf8");
+    expect(ledger).toContain("--- REVIEWED TRANSCRIPTION PAGE 1 OF 3 ---");
+    expect(ledger).toContain("--- REVIEWED TRANSCRIPTION PAGE 2 OF 3 ---");
+    expect(ledger).toContain("--- REVIEWED TRANSCRIPTION PAGE 3 OF 3 ---");
+    expect(ledger).toContain("CYRUS H. McCORMICK");
+  });
+
+  test("provides valid provenance classifications for all McCormick reaper controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-x8277-mccormick-reaper"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({ forwardSpeedMph: 2.5 });
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("registers explicit energy channel omission reason and returns empty channels", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-x8277-mccormick-reaper"]).toBeDefined();
+    expect(energyChannelsFor("us-x8277-mccormick-reaper", {})).toEqual([]);
+  });
 });

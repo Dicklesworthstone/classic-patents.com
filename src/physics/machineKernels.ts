@@ -150,21 +150,57 @@ export function ccdWellSvgDepth(
   );
 }
 
+/** Source dimensions printed in US 4,750, specification pages 1 and 2. */
+export const HOWE_NEEDLE_EYE_OFFSET_IN = 1 / 8;
+export const HOWE_BASTER_POINT_PITCH_IN = 3 / 4;
+
+/**
+ * Minimum normalized slack needed for the displayed shuttle section to clear
+ * the displayed upper-thread loop. This is an explicit presentation-domain
+ * boundary, not a dimension claimed by the 1846 grant.
+ */
+export const HOWE_MIN_LOOP_SLACK_PCT = 38;
+
+function howeSmoothstep(value: number): number {
+  const t = Math.min(1, Math.max(0, value));
+  return t * t * (3 - 2 * t);
+}
+
 export function stepHoweSewingMachine(
-  flywheelRpm: number,
-  stitchTensionGrams: number,
+  crankRpm: number,
+  loopSlackPct: number = 65,
   stitchPitchMm: number = 3.5,
 ) {
-  const rpm = Math.max(0, flywheelRpm);
+  if (
+    !Number.isFinite(crankRpm) ||
+    !Number.isFinite(loopSlackPct) ||
+    !Number.isFinite(stitchPitchMm) ||
+    crankRpm < 0 ||
+    loopSlackPct < 0 ||
+    loopSlackPct > 100 ||
+    stitchPitchMm <= 0
+  ) {
+    throw new Error("Howe display inputs must be finite and inside their declared domains");
+  }
+  const rpm = crankRpm;
   const stitchFrequencyHz = Number((rpm / 60).toFixed(1));
-  const pitch = Math.max(0.5, stitchPitchMm);
+  const pitch = stitchPitchMm;
+  const loopSlackNormalized = loopSlackPct / 100;
   return {
     stitchesPerMinute: rpm,
     stitchFrequencyHz,
     cycleTimeMs: Math.round(1000 / Math.max(0.01, stitchFrequencyHz)),
-    lockstitchShearStrengthN: Math.round(stitchTensionGrams * 0.088),
     stitchPitchMm: pitch,
     clothFeedMmPerS: Number((stitchFrequencyHz * pitch).toFixed(1)),
+    loopSlackPct,
+    loopSlackNormalized,
+    minimumLoopSlackPct: HOWE_MIN_LOOP_SLACK_PCT,
+    maximumLoopClearancePct: Number((loopSlackPct - HOWE_MIN_LOOP_SLACK_PCT).toFixed(1)),
+    claim1InterlockPossible: loopSlackPct >= HOWE_MIN_LOOP_SLACK_PCT,
+    needleEyeFromPointIn: HOWE_NEEDLE_EYE_OFFSET_IN,
+    needleEyeFromPointMm: Number((HOWE_NEEDLE_EYE_OFFSET_IN * 25.4).toFixed(3)),
+    basterPointPitchIn: HOWE_BASTER_POINT_PITCH_IN,
+    basterPointPitchMm: Number((HOWE_BASTER_POINT_PITCH_IN * 25.4).toFixed(2)),
     crankOmegaRadPerS: Number((stitchFrequencyHz * 2 * Math.PI).toFixed(3)),
     crankOmegaDegPerS: Number((stitchFrequencyHz * 360).toFixed(1)),
     crankDisplayTickMs: 30,
@@ -210,7 +246,9 @@ export function howeStitch(
   return { x: xs[i], x2: xs[i] + len, upperY, lowerY };
 }
 
-export function stepHoweLockstitch(crankDeg: number): {
+export interface HoweLockstitchState {
+  crankAngleDeg: number;
+  crankAngleRad: number;
   needleY: number;
   shuttleX: number;
   loopOpen: boolean;
@@ -218,22 +256,88 @@ export function stepHoweLockstitch(crankDeg: number): {
   loopSvgControlX: number;
   needleStudioRotZ: number;
   needleStudioY: number;
+  needleArmAngleRad: number;
+  needlePenetrationNormalized: number;
+  needleRetracting: boolean;
+  shuttleTravelNormalized: number;
+  shuttlePassesLoop: boolean;
+  shuttleTrackOffsetZ: number;
+  pickerLeftNormalized: number;
+  pickerRightNormalized: number;
+  liftingRodNormalized: number;
+  feedAdvanceFraction: number;
+  threadClampEngaged: boolean;
+  claim1InterlockSatisfied: boolean;
+  cyclePhaseLabel: "penetrate" | "retract-and-open-loop" | "shuttle-pass" | "feed";
   shuttleStudioZ: number;
-} {
-  const rad = (crankDeg * Math.PI) / 180;
-  const loopOpen = crankDeg > 80 && crankDeg < 220;
-  const sinR = Math.sin(rad);
-  const cosR = Math.cos(rad);
-  const loopWidth = loopOpen ? Math.sin((crankDeg - 80) * (Math.PI / 140)) * 24 : 0;
+}
+
+export function stepHoweLockstitch(
+  crankDeg: number,
+  loopSlackPct = 65,
+  claim1InterlockEnabled = true,
+): HoweLockstitchState {
+  if (
+    !Number.isFinite(crankDeg) ||
+    !Number.isFinite(loopSlackPct) ||
+    loopSlackPct < 0 ||
+    loopSlackPct > 100
+  ) {
+    throw new Error("Howe cycle inputs must be finite and loop slack must be in [0, 100]");
+  }
+  const wrappedDeg = ((crankDeg % 360) + 360) % 360;
+  const rad = (wrappedDeg * Math.PI) / 180;
+  const needlePenetrationNormalized = (1 - Math.cos(rad)) / 2;
+  const needleRetracting = wrappedDeg > 180;
+  const shuttleTravelNormalized = -Math.cos(rad);
+  const loopEnvelope =
+    wrappedDeg > 180 && wrappedDeg < 330 ? Math.sin(((wrappedDeg - 180) / 150) * Math.PI) : 0;
+  const loopOpenFraction = Math.max(0, loopEnvelope) * (loopSlackPct / 100);
+  const loopOpen = claim1InterlockEnabled && loopOpenFraction >= HOWE_MIN_LOOP_SLACK_PCT / 100;
+  const shuttleAtNeedlePlane =
+    wrappedDeg > 210 && wrappedDeg < 320 && Math.abs(shuttleTravelNormalized) < 0.22;
+  const shuttlePassesLoop = loopOpen && shuttleAtNeedlePlane;
+  const loopWidth = loopOpenFraction * 40;
+  const feedAdvanceFraction = howeSmoothstep((wrappedDeg - 315) / 45);
+  // The long curved needle is fixed to arm G. Clockwise rocking lowers its
+  // point into the cloth; the model must not translate the needle separately.
+  const needleArmAngleRad = 0.12 - needlePenetrationNormalized * 0.24;
+  const pickerLeftNormalized = Math.max(0, -shuttleTravelNormalized);
+  const pickerRightNormalized = Math.max(0, shuttleTravelNormalized);
+  const liftingRodNormalized = loopOpenFraction;
+  const threadClampEngaged = wrappedDeg >= 320 || wrappedDeg <= 35;
+  const cyclePhaseLabel =
+    wrappedDeg < 180
+      ? "penetrate"
+      : wrappedDeg < 235
+        ? "retract-and-open-loop"
+        : wrappedDeg < 315
+          ? "shuttle-pass"
+          : "feed";
   return {
-    needleY: sinR * 45,
-    shuttleX: cosR * 60,
+    crankAngleDeg: Number(wrappedDeg.toFixed(4)),
+    crankAngleRad: Number(rad.toFixed(6)),
+    needleY: Number((needlePenetrationNormalized * 45).toFixed(3)),
+    shuttleX: Number((shuttleTravelNormalized * 60).toFixed(3)),
     loopOpen,
-    loopWidth,
+    loopWidth: Number(loopWidth.toFixed(3)),
     loopSvgControlX: Number((loopWidth * 1.5).toFixed(2)),
-    needleStudioRotZ: Number((sinR * 0.45).toFixed(4)),
-    needleStudioY: Number((1.8 + sinR * 0.5).toFixed(4)),
-    shuttleStudioZ: Number((cosR * 1.2).toFixed(4)),
+    needleStudioRotZ: Number(needleArmAngleRad.toFixed(4)),
+    needleStudioY: Number(needlePenetrationNormalized.toFixed(4)),
+    needleArmAngleRad: Number(needleArmAngleRad.toFixed(4)),
+    needlePenetrationNormalized: Number(needlePenetrationNormalized.toFixed(4)),
+    needleRetracting,
+    shuttleTravelNormalized: Number(shuttleTravelNormalized.toFixed(4)),
+    shuttlePassesLoop,
+    shuttleTrackOffsetZ: claim1InterlockEnabled ? 0 : 0.55,
+    pickerLeftNormalized: Number(pickerLeftNormalized.toFixed(4)),
+    pickerRightNormalized: Number(pickerRightNormalized.toFixed(4)),
+    liftingRodNormalized: Number(liftingRodNormalized.toFixed(4)),
+    feedAdvanceFraction: Number(feedAdvanceFraction.toFixed(4)),
+    threadClampEngaged,
+    claim1InterlockSatisfied: claim1InterlockEnabled && loopSlackPct >= HOWE_MIN_LOOP_SLACK_PCT,
+    cyclePhaseLabel,
+    shuttleStudioZ: Number((shuttleTravelNormalized * 1.2).toFixed(4)),
   };
 }
 

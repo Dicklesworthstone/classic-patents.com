@@ -6,7 +6,7 @@ import { buildMaximMachineGunModel, updateMaximMachineGunKinematics } from "./ma
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
-describe("US 319,596 Sir Hiram Maxim Automatic Machine Gun visual & ballistics boundary", () => {
+describe("US 319,596 Hiram Maxim Muzzle-Gas Machine-Gun visual & mechanism boundary", () => {
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "MaximMachineGun3D.tsx"),
@@ -23,7 +23,6 @@ describe("US 319,596 Sir Hiram Maxim Automatic Machine Gun visual & ballistics b
     expect(modelSource).toContain("buildMaximMachineGunModel");
     expect(modelSource).toContain("updateMaximMachineGunKinematics");
     expect(modelSource).not.toContain("stepMaximMachineGun({})");
-    expect(threeSource).toContain("p.fireRateRpm");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -42,7 +41,7 @@ describe("US 319,596 Sir Hiram Maxim Automatic Machine Gun visual & ballistics b
     }
   });
 
-  test("exposes authentic camera presets and cutaway mode for automatic weapon observation", () => {
+  test("exposes authentic camera presets and cutaway mode for muzzle-gas mechanism observation", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "MaximMachineGun3D.tsx"),
       "utf8",
@@ -50,10 +49,10 @@ describe("US 319,596 Sir Hiram Maxim Automatic Machine Gun visual & ballistics b
 
     for (const preset of [
       "iso",
-      "toggle_lock",
-      "water_jacket",
-      "belt_feed",
-      "spade_grips",
+      "muzzle_sleeve",
+      "reversing_linkage",
+      "breech_crosshead",
+      "volute_spring",
       "top",
     ]) {
       expect(threeSource).toContain(preset);
@@ -65,51 +64,79 @@ describe("US 319,596 Sir Hiram Maxim Automatic Machine Gun visual & ballistics b
     expect(threeSource).toContain("Maxim Machine Gun 3D");
   });
 
-  test("computes genuine recoil kinematics and thermodynamic water evaporation in SI units", () => {
-    const result = FrankenSimEngine.stepMaximMachineGun({
-      firingRateRpm: 600,
-      waterJacketLiters: 4,
-      recoilStrokeMm: 19,
-    });
-    expect(result.recoilStrokeMm).toBe(19);
-    expect(result.recoilStrokeM).toBeCloseTo(0.019, 5);
-    expect(result.recoilStudioStroke).toBeCloseTo(Math.max(0.06, 0.019 * 5), 4);
-    expect(result.recoilMomentumNs).toBeGreaterThan(5);
-    expect(result.toggleUnlockForceN).toBeGreaterThan(100);
-    expect(result.muzzleEnergyJoules).toBeGreaterThan(2000);
-    expect(result.steamOpacity).toBeGreaterThan(0);
-    expect(result.toggleLiftAmp).toBe(0.32);
-    expect(result.toggleHomeY).toBe(0.12);
-    expect(result.crankThrowAmp).toBe(0.75);
+  test("computes genuine muzzle-gas expansion and Scotch-yoke kinematics in SI units", () => {
+    const atRest = FrankenSimEngine.stepMaximMachineGun({ cyclePhaseDeg: 0 });
+    expect(atRest.sleeveForwardMm).toBe(0);
+    expect(atRest.breechOpenMm).toBe(0);
+    expect(atRest.leverAngleDeg).toBe(0);
+    expect(atRest.springWoundPct).toBe(0);
+    expect(atRest.isBreechOpen).toBe(false);
+
+    const midStroke = FrankenSimEngine.stepMaximMachineGun({ cyclePhaseDeg: 180 });
+    expect(midStroke.sleeveForwardMm).toBe(24);
+    expect(midStroke.breechOpenMm).toBe(48);
+    expect(midStroke.leverAngleDeg).toBe(18);
+    expect(midStroke.springWoundPct).toBe(100);
+    expect(midStroke.isBreechOpen).toBe(true);
+    expect(midStroke.extractorState).toBe("EXTRACTING");
   });
 
-  test("builds and articulates procedural barrel, toggle lock, belt feed, and water jacket correctly", () => {
+  test("builds and articulates procedural fixed barrel, muzzle sleeve, reversing levers, and crankshaft crosshead correctly", () => {
     const model = buildMaximMachineGunModel();
-    expect(model.rootGroup.children.length).toBeGreaterThan(2);
-    expect(model.recoilingBarrelGroup).toBeDefined();
-    expect(model.toggleJointGroup).toBeDefined();
-    expect(model.crankHandle).toBeDefined();
+    expect(model.rootGroup.children.length).toBeGreaterThan(1);
+    expect(model.fixedBarrelGroup).toBeDefined();
+    expect(model.muzzleSleeveGroup).toBeDefined();
+    expect(model.reversingLeversGroup).toBeDefined();
+    expect(model.operatingRodsGroup).toBeDefined();
+    expect(model.crankshaftGroup).toBeDefined();
+    expect(model.crossHeadBreechGroup).toBeDefined();
+    expect(model.voluteSpringHousing).toBeDefined();
+    expect(model.feedStarwheelsGroup).toBeDefined();
     expect(model.muzzleFlashMesh).toBeDefined();
 
-    const maxim = FrankenSimEngine.stepMaximMachineGun({
-      firingRateRpm: 600,
-      waterJacketLiters: 4,
-      recoilStrokeMm: 19,
-    });
+    const maxim = FrankenSimEngine.stepMaximMachineGun({ cyclePhaseDeg: 180 });
     const { isMuzzleFlash } = updateMaximMachineGunKinematics(
       model,
       0.016,
-      0.5,
+      Math.PI,
       maxim.fireOmegaRadPerS,
-      maxim.recoilStudioStroke,
-      maxim.barrelTempC,
-      maxim.steamOpacity,
+      75,
       true,
       true,
     );
     expect(typeof isMuzzleFlash).toBe("boolean");
-    expect(model.materials.jacketMat.transparent).toBe(true);
+    expect(model.materials.gunmetal.transparent).toBe(true);
+    expect(model.muzzleSleeveGroup.position.z).toBeGreaterThan(0.01);
+    expect(model.crossHeadBreechGroup.position.z).toBeLessThan(-0.01);
 
     model.dispose();
+  });
+
+  test("forbids legacy recoil, toggle lock, and water jacket terms across US 319,596 visuals and data", () => {
+    const patentSource = readFileSync(
+      join(process.cwd(), "src/data/patents/maxim-machine-gun.ts"),
+      "utf8",
+    );
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "MaximMachineGun3D.tsx"),
+      "utf8",
+    );
+    const sim2dSource = readFileSync(join(VISUALS_DIRECTORY, "MaximMachineGunSim.tsx"), "utf8");
+
+    for (const forbidden of [
+      "water_jacket",
+      "waterJacket",
+      "toggle_lock",
+      "toggleLock",
+      "short-recoil",
+      "recoilStroke",
+      "250-round",
+      "canvas belt",
+      "fusee cam",
+    ]) {
+      expect(patentSource.toLowerCase()).not.toContain(forbidden.toLowerCase());
+      expect(threeSource.toLowerCase()).not.toContain(forbidden.toLowerCase());
+      expect(sim2dSource.toLowerCase()).not.toContain(forbidden.toLowerCase());
+    }
   });
 });

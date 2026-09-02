@@ -36,17 +36,19 @@ describe("lincolnBuoyArchivalEdition", () => {
     expect(lincolnBuoyPatent.id).toBe("us-6469-lincoln-buoy");
     expect(lincolnBuoyPatent.originalPdfUrl).toBe("/patents/pdfs/us-6469-lincoln-buoy.pdf");
     expect(lincolnBuoyPatent.originalTextAsset?.url).toBe(
-      "/patents/transcripts/us-6469-lincoln-buoy.txt",
+      "/patents/transcripts/us-6469-lincoln-buoy-reviewed.txt",
     );
     expect(existsSync(resolve(process.cwd(), "public/patents/pdfs/us-6469-lincoln-buoy.pdf"))).toBe(
       true,
     );
-    expect(
-      readFileSync(
-        resolve(process.cwd(), "public/patents/transcripts/us-6469-lincoln-buoy.txt"),
-        "utf8",
-      ),
-    ).toContain("A. LINCOLN.");
+    const reviewedTxt = readFileSync(
+      resolve(process.cwd(), "public/patents/transcripts/us-6469-lincoln-buoy-reviewed.txt"),
+      "utf8",
+    );
+    expect(reviewedTxt).toContain("--- REVIEWED TRANSCRIPTION PAGE 1 OF 3 ---");
+    expect(reviewedTxt).toContain("--- REVIEWED TRANSCRIPTION PAGE 2 OF 3 ---");
+    expect(reviewedTxt).toContain("--- REVIEWED TRANSCRIPTION PAGE 3 OF 3 ---");
+    expect(reviewedTxt).toContain("A. LINCOLN.");
   });
 
   test("binds every source figure citation to a local source-derived hover preview", () => {

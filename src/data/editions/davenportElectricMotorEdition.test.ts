@@ -139,10 +139,10 @@ describe("davenportElectricMotorArchivalEdition", () => {
   test("keeps all three visual facsimile pages aligned to their reviewed-ledger sections", () => {
     const sourceAsset = davenportElectricMotorPatent.originalTextAsset;
     if (!sourceAsset) throw new Error("US 132 is missing its reviewed transcription asset.");
-    const ledger = readFileSync(
-      join(process.cwd(), "public/patents/transcripts/us-132-davenport-electric-motor.txt"),
-      "utf8",
+    expect(sourceAsset.url).toBe(
+      "/patents/transcripts/us-132-davenport-electric-motor-reviewed.txt",
     );
+    const ledger = readFileSync(join(process.cwd(), `public${sourceAsset.url}`), "utf8");
     expect(validateReviewedTranscriptionPageAnchors(ledger, 3, sourceAsset.pageAnchors)).toEqual({
       valid: true,
     });
@@ -150,5 +150,29 @@ describe("davenportElectricMotorArchivalEdition", () => {
     expect(ledger).not.toContain("Drawing sheet:");
     expect(ledger).toContain("A, B, C, D, E, F, G, H, I, K, L, M, N, O, P, Q, R, S, T, V");
     expect(ledger).toContain("not confidently legible in the supplied scan");
+  });
+
+  test("provides valid provenance classifications for all Davenport controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-132-davenport-electric-motor"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({ batteryVoltage: 12, loadTorque: 0.8 });
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("proves Claim 1 constraint matches authentic broad claim and excludes split-ring wording", () => {
+    const { CATALOG_CLAIM_CONSTRAINTS } = require("@/physics/claimConstraints");
+    const constraints = CATALOG_CLAIM_CONSTRAINTS["us-132-davenport-electric-motor"];
+    expect(constraints).toBeDefined();
+    expect(constraints.length).toBe(1);
+    const c1 = constraints[0];
+    expect(c1.activeDescription.toLowerCase()).toContain("moving principle");
+    expect(c1.activeDescription.toLowerCase()).not.toContain("split-ring");
+    expect(c1.claimTitle.toLowerCase()).not.toContain("split-ring");
   });
 });

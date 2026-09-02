@@ -318,6 +318,29 @@ export function DeForestAudion3D() {
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="TRIODE THERMIONIC AMPLIFICATION"
+          chips={[
+            { label: "V_plate", value: `${plateVoltageV.toFixed(0)}`, unit: "V" },
+            { label: "V_grid", value: `${gridBiasVoltageV.toFixed(1)}`, unit: "V" },
+            { label: "I_plate", value: `${sim.plateCurrentMa.toFixed(2)}`, unit: "mA" },
+            { label: "Gain (A_v)", value: `${sim.voltageGain.toFixed(1)}x` },
+            {
+              label: "T_filament",
+              value: `${sim.filamentTemperatureK.toFixed(0)}`,
+              unit: "K",
+            },
+            {
+              label: "State",
+              value: sim.isConducting ? "Active Linear Triode" : "Cutoff",
+              tone: sim.isConducting ? "ok" : "warn",
+            },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -383,28 +406,6 @@ export function DeForestAudion3D() {
           className="mt-3"
         />
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="TRIODE THERMIONIC AMPLIFICATION"
-        chips={[
-          { label: "V_plate", value: `${plateVoltageV.toFixed(0)}`, unit: "V" },
-          { label: "V_grid", value: `${gridBiasVoltageV.toFixed(1)}`, unit: "V" },
-          { label: "I_plate", value: `${sim.plateCurrentMa.toFixed(2)}`, unit: "mA" },
-          { label: "Gain (A_v)", value: `${sim.voltageGain.toFixed(1)}x` },
-          {
-            label: "T_filament",
-            value: `${sim.filamentTemperatureK.toFixed(0)}`,
-            unit: "K",
-          },
-          {
-            label: "State",
-            value: sim.isConducting ? "Active Linear Triode" : "Cutoff",
-            tone: sim.isConducting ? "ok" : "warn",
-          },
-        ]}
-      />
     </div>
   );
 }

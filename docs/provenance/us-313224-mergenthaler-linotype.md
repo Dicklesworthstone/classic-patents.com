@@ -11,20 +11,24 @@
 - Rights basis: United States Patent No. 313,224 was granted in 1885. Its
   historic text and drawings are public-domain material in the United States.
 
-## Direct facsimile review
+## Independent acceptance status
 
 The pinned document has seventeen drawing sheets followed by eighteen
-specification and claim pages. Every page was rendered and read visually. The
-PDF text layer was used only as comparison evidence; it is visibly unreliable
-for this source and is not the transcription authority.
+specification and claim pages. A fresh 2026-08-30 visual audit confirmed that
+page topology and rejected the staged ledger and edition for publication. The
+ledger labels only thirteen drawing sheets, inserts four invented specification
+summaries before the real masthead on PDF page 18, and names a different filing
+date in those summaries. The draft edition repeats that wrong date and includes
+later-commercial-machine language not supported by this grant. The canonical
+record therefore remains bound only to the pinned PDF and source-PDF text layer.
 
 | PDF locator | Source material | Editorial treatment |
 | --- | --- | --- |
-| pp. 1-17 | The 17 drawing sheets; printed title; figure labels 1 through 51; drawing-sheet signatures | Direct visual review; figure crop work is still in progress and is not yet visitor-facing |
-| p. 18 | Masthead, assignee, August 30, 1884 application date, purpose, matrix/casting groups, bar selection, alignment, and casting cycle | Cloud-authoritative US313224A comparison plus manual source-led transcription; ledger and continuous edition now cover this page |
-| pp. 19-25 | Overlap cycle, correction, Figs. 1-51 descriptions, principal parts, matrix-bar geometry, lower-case recesses, bar connections, stop-pin frame, adjusting-pin escapement, inactive bars, spacing/justification, and indicator | Bounded cloud-only continuation slice manually reconciled into the ledger and continuous edition; every printed figure citation is authored as a typed reference (local crops remain staged only where already present) |
-| pp. 26-30 | Continuation of the specification: remaining casting, pump, drive, operating cycle, and modifications | Five authored continuous React source blocks now preserve the complete literal continuation; later figure previews remain unbound pending drawing-sheet acceptance |
-| pp. 31-35 | Claims 1-70, execution, signature, and witness names | Direct visual review; every claim manually transcribed and source-pinned in `mergenthalerLinotypeClaims` |
+| pp. 1-17 | The 17 drawing sheets; printed title; figure labels 1 through 51; drawing-sheet signatures | Independently rendered and visually checked on 2026-08-30. The staged ledger incorrectly calls these 13 sheets and must be replaced, not patched around. Only four local figure crops exist. |
+| p. 18 | Masthead, assignee, August 30, 1884 application date, purpose, matrix/casting groups, bar selection, alignment, and casting cycle | The source-bounded catalogue excerpt is correct. The staged edition masthead/opening is not accepted. |
+| pp. 19-25 | Overlap cycle, correction, Figs. 1-51 descriptions, principal parts, matrix-bar geometry, lower-case recesses, bar connections, stop-pin frame, adjusting-pin escapement, inactive bars, spacing/justification, and indicator | Staged ledger text exists, but the draft edition skips most of this continuous source material and substitutes later-machine editorial prose. Fresh page-by-page acceptance remains required. |
+| pp. 26-30 | Continuation of the specification: remaining casting, pump, drive, operating cycle, and modifications | Staged continuous blocks exist and remain unpublished pending comparison with the pinned pages and repair of the preceding gap. |
+| pp. 31-35 | Claims 1-70, execution, signature, and witness names | Seventy staged claim nodes exist and retain their earlier source-pinning tests. They have not been promoted into a reviewed publication asset by this audit. |
 
 ## Source observations and corrections
 
@@ -51,40 +55,37 @@ history. These assertions have not been carried into the source-led work. The
 pinned facsimile does not support using them as its complete primary-source
 edition.
 
-### Specification pages 18-30 and claims pages 31-35 (2026-08-21)
+### Earlier staging pass (2026-08-21)
 
-Pages 18 through 30 were authored from the pinned facsimile with the
-authoritative Google Patents US313224A text and the existing PDF text layer
-used only as cloud/source comparison aids. No local OCR or rendering was run.
-The reviewed ledger now carries literal page-local prose through the alarm,
-clamping, mold, pump, drawing-gear, operation, and modifications sections on
-page 30. Page 31 begins the formal claims; pages 31 through 35 retain all
-70 claim literals in order followed by the printed Ottmar Mergenthaler,
-F. E. Stephens, and C. E. Tully signature sequence.
+The earlier pass assembled source text through the alarm, clamping, mold,
+pump, drawing-gear, operation, and modifications sections and staged all 70
+claim literals. The 2026-08-30 audit does not accept that work as a reviewed
+ledger because the file's first seventeen page records demonstrably conflict
+with the pinned facsimile and the draft edition is not continuous through the
+opening specification pages.
 
-The exact continuation boundary is the final modifications paragraph on page
-30, followed by the claim introduction on page 31. The edition now contains
-the p26-30 continuation blocks and derives its claim literals from the typed
-edition claim nodes. The canonical record remains unbound pending direct local
-crops for every figure reference and independent acceptance of drawing pages
-1-17.
+The exact continuation boundary remains the final modifications paragraph on
+page 30, followed by the claim introduction on page 31. The staged claim data
+is still useful research evidence, but it cannot turn an internally
+inconsistent ledger into a reviewed publication artifact.
 
 ## Published-edition boundary
 
-The public record has **not** yet been switched to this edition. Direct local
-crops for all figure references and independent drawing-sheet acceptance must
-be complete before it may replace the current source face. The claim
-transcription is deliberately staged in
+The public record has **not** been switched to this edition. A replacement
+ledger must first reproduce all seventeen drawing sheets honestly; the edition
+must replace the unsupported opening with continuous source text, attach local
+source previews to every figure citation, and pass a fresh page-by-page review.
+The claim transcription remains staged in
 `src/data/editions/mergenthalerLinotypeEdition.ts`, where a focused test pins
-both the PDF digest and the exact 1-70 sequence.
+both the PDF digest and the staged numbered 1-70 sequence while explicitly
+requiring the draft's full-facsimile attestation to remain false.
 
 That boundary prevents an in-progress draft from presenting partial source
 coverage as a complete historical edition.
 
 ### Root re-hold (2026-08-20)
 
-The canonical record remains unbound. The ledger now has literal specification
-content through pages 18-30 and retains the complete 70-claim/signature tail;
-the edition has the p26-30 continuation and dynamic claim binding, but
-publication still requires complete figure-reference previews and independent
-facsimile acceptance for drawing pages 1-17.
+The canonical record remains unbound. The staged ledger and edition are useful
+recovery inputs, not reviewed publication artifacts. Publication requires a
+correct 35-page ledger, continuous source blocks, complete figure-reference
+previews, and independent acceptance of the repaired whole.

@@ -72,6 +72,39 @@ export function buildCarrierAirConditionerModel(): CarrierAirConditionerModelRes
     ),
   };
 
+  // ==============================================================
+  // 1. Structural Steel Base Frame & Foundation Channels
+  // ==============================================================
+  const baseFrameGroup = new THREE.Group();
+  root.add(baseFrameGroup);
+
+  // Longitudinal I-Beam Rails
+  for (const z of [-1.5, 1.5]) {
+    const rail = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(7.6, 0.25, 0.2)), materials.casing);
+    rail.position.set(0, -1.6, z);
+    rail.receiveShadow = true;
+    baseFrameGroup.add(rail);
+  }
+
+  // Cross I-Beams & Floor Support Piers
+  for (const x of [-3.2, -1.2, 0.8, 2.8]) {
+    const crossBeam = new THREE.Mesh(
+      trackGeo(new THREE.BoxGeometry(0.25, 0.22, 3.4)),
+      materials.casing,
+    );
+    crossBeam.position.set(x, -1.6, 0);
+    baseFrameGroup.add(crossBeam);
+
+    for (const z of [-1.5, 1.5]) {
+      const pier = new THREE.Mesh(
+        trackGeo(new THREE.CylinderGeometry(0.18, 0.22, 0.35, 12)),
+        materials.casing,
+      );
+      pier.position.set(x, -1.85, z);
+      baseFrameGroup.add(pier);
+    }
+  }
+
   const solidCasingMesh = new THREE.Mesh(
     trackGeo(new THREE.BoxGeometry(7, 3.1, 3.4)),
     materials.casing,
@@ -95,6 +128,49 @@ export function buildCarrierAirConditionerModel(): CarrierAirConditionerModelRes
   const filter = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(0.5, 0.1, 1.5)), materials.brass);
   filter.position.set(2.1, -1.15, 0);
   root.add(filter);
+
+  // Recirculation Centrifugal Water Pump bolted to base
+  const pumpGroup = new THREE.Group();
+  pumpGroup.position.set(-2.8, -1.35, 1.4);
+  root.add(pumpGroup);
+
+  const pumpVolute = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.3, 0.3, 0.25, 16)),
+    materials.casing,
+  );
+  pumpVolute.rotation.x = Math.PI / 2;
+  pumpGroup.add(pumpVolute);
+
+  const pumpMotor = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.22, 0.22, 0.45, 16)),
+    materials.casing,
+  );
+  pumpMotor.position.set(0, 0, 0.35);
+  pumpGroup.add(pumpMotor);
+
+  // Pump Suction Pipe from Basin Filter
+  const suctionCurve = new THREE.QuadraticBezierCurve3(
+    new THREE.Vector3(2.1, -1.15, 0.8),
+    new THREE.Vector3(0, -1.35, 1.4),
+    new THREE.Vector3(-2.8, -1.35, 1.4),
+  );
+  const suctionPipe = new THREE.Mesh(
+    trackGeo(new THREE.TubeGeometry(suctionCurve, 16, 0.045, 8, false)),
+    materials.brass,
+  );
+  root.add(suctionPipe);
+
+  // Pump Discharge Pipe to Vertical Spray Header
+  const dischargeCurve = new THREE.QuadraticBezierCurve3(
+    new THREE.Vector3(-2.8, -1.2, 1.4),
+    new THREE.Vector3(-2.6, -0.4, 0.8),
+    new THREE.Vector3(-2.4, 0.25, 0),
+  );
+  const dischargePipe = new THREE.Mesh(
+    trackGeo(new THREE.TubeGeometry(dischargeCurve, 16, 0.045, 8, false)),
+    materials.brass,
+  );
+  root.add(dischargePipe);
 
   const sprayHeadersGroup = new THREE.Group();
   const sprayNozzles: THREE.Mesh[] = [];
@@ -143,6 +219,22 @@ export function buildCarrierAirConditionerModel(): CarrierAirConditionerModelRes
     separatorPlates.push(plate);
   }
   root.add(separatorGroup);
+
+  // Fan Scroll Casing Housing & Drive Motor
+  const fanHousing = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(1.6, 1.6, 0.6, 32, 1, false, 0, Math.PI * 1.5)),
+    materials.casing,
+  );
+  fanHousing.rotation.x = Math.PI / 2;
+  fanHousing.position.set(2.7, 0.35, 0);
+  root.add(fanHousing);
+
+  const fanMotorBase = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(0.8, 0.6, 0.8)),
+    materials.casing,
+  );
+  fanMotorBase.position.set(2.7, -1.2, 0);
+  root.add(fanMotorBase);
 
   const fanRotor = new THREE.Group();
   fanRotor.position.set(2.7, 0.35, 0);

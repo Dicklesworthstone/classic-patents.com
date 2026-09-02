@@ -1,23 +1,22 @@
 /**
- * teslaCoilModel.ts
+ * Compatibility module for the former Tesla model import path.
  *
- * Museum-Grade Procedural 3D Model for Nikola Tesla's 1897 High-Frequency Electrical Transformer
- * (US Patent 593,138 - "Electrical Transformer").
- *
- * Reconstructs the authentic resonant air-core transformer:
- * - Turned mahogany baseboard with 6 radial slotted guide combs and brass binding posts.
- * - Continuous Archimedean flat pancake / conical spiral primary coil of heavy copper tubing (Claim 1).
- * - Vertical helical secondary resonator cylinder with high-voltage insulation and RF ground (Claim 2).
- * - Spun aluminum toroidal electrostatic topload terminal with discharge needle (Claim 3).
- * - Rotary quenching spark gap with spherical brass electrodes and Leyden jar tank capacitor.
- * - Real-time branching lightning streamers and glowing coronal discharge particles.
+ * The only exported builder is the source-bounded, connected US 593,138 Fig. 2
+ * transformer. The private legacy reconstruction below is retained solely as
+ * migration history; it is unreachable from application imports and owns no
+ * simulation or presentation authority.
  */
 
 import * as THREE from "three";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
+import {
+  buildTeslaCoilModel as buildSourceBoundTeslaTransformerModel,
+  type TeslaCoilModel,
+  type TeslaTransformerConnectivityGap,
+} from "./tesla593138TransformerModel";
 
-export interface TeslaCoilModel {
+interface LegacyTeslaCoilModel {
   root: THREE.Group;
   coilGroup: THREE.Group;
   tableBase: THREE.Mesh;
@@ -39,7 +38,7 @@ export interface TeslaCoilModel {
   dispose: () => void;
 }
 
-export function buildTeslaCoilModel(): TeslaCoilModel {
+function _buildLegacyTeslaCoilModel(): LegacyTeslaCoilModel {
   const root = new THREE.Group();
   const disposables: Array<{ dispose: () => void }> = [];
   const lcg = createLcg(18971102);
@@ -365,3 +364,10 @@ export function buildTeslaCoilModel(): TeslaCoilModel {
     dispose,
   };
 }
+
+/**
+ * Compatibility export for the former module path. New and legacy imports now
+ * resolve to the connected, source-bounded US 593,138 model.
+ */
+export const buildTeslaCoilModel = buildSourceBoundTeslaTransformerModel;
+export type { TeslaCoilModel, TeslaTransformerConnectivityGap };

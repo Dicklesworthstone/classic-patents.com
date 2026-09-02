@@ -146,7 +146,7 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
 
   const walnutWood = trackMat(
     new THREE.MeshStandardMaterial({
-      map: benchTex || undefined,
+      ...(benchTex ? { map: benchTex } : {}),
       transparent: true,
       opacity: 1.0,
       color: 0x4a2810,
@@ -157,7 +157,7 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
 
   const agedPostWood = trackMat(
     new THREE.MeshStandardMaterial({
-      map: benchTex || undefined,
+      ...(benchTex ? { map: benchTex } : {}),
       transparent: true,
       opacity: 1.0,
       color: 0x6e5d4e,

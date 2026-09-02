@@ -76,3 +76,5 @@ test_output.txt
 *.wip.txt
 
 tsconfig.tsbuildinfo
+# br doctor per-run artifacts
+.doctor/

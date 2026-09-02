@@ -7,6 +7,7 @@
 - **Subtitle**: *Differential Roller Attenuation, High-Speed Flyer Twisting, and Water-Powered Continuous Bobbin Winding*
 - **Patent Number**: British Patent No. 931 (A.D. 1769)
 - **Grant Date**: July 15, 1769
+- **Filing Date**: Not established by a reviewed primary record; stored as `null` in the catalogue.
 - **Enrolled in Chancery**: November 8, 1769
 - **Inventor**: Richard Arkwright (Nottingham / Cromford, England)
 - **Primary Public Record**: Research attribution only; a stable primary-record URL and an independent review of the historical enrollment remain required before publication acceptance.
@@ -30,5 +31,6 @@
 - **Pinned PDF**: An immutable local research artifact, not an archival facsimile or a publication-grade source.
 - **Figure Crops**: `fig-1-source-crop-v1.png`, `fig-1-source-crop-v2.png`, and `fig-1-source-crop-v3.png` are preserved non-archival reconstruction assets. None may be cited, rendered, or represented as an archival preview. V2 and V3 are retained solely to preserve the rejected-repair evidence.
 - **Reviewed Ledger**: `public/patents/transcripts/gb-931-arkwright-water-frame-reviewed.txt` is retained as pre-repair research evidence only. Its two-page markers do not map to the pinned PDF's three pages; it is intentionally unbound from the catalogue record.
-- **Archival Edition**: `src/data/editions/arkwrightWaterFrameEdition.ts` is an unbound research draft. Its Figure 1 reference deliberately has no preview, and it must remain unpublished until a correct primary facsimile is pinned locally and independently accepted.
+- **Archival Edition**: `src/data/editions/arkwrightWaterFrameEdition.ts` is a stored transcription of the modern reconstruction, not an edition of the historical enrollment. It is unbound from the catalogue record, carries a negative full-facsimile attestation, and is protected by an explicit fabrication hold. Its four numbered reconstruction statements are not published as legal claims, and its Figure 1 reference deliberately has no preview.
+- **Public claims and drawings**: The canonical record exposes zero verified claims and zero source drawings. The modern A–G reconstruction cannot populate either surface. A correct primary facsimile, page-complete reviewed ledger, and independent source review are required before those arrays may be restored.
 - **Physics Kernel**: Shared SI differential drafting and flyer twist kinematic kernel in `src/physics/arkwrightKernel.ts`.

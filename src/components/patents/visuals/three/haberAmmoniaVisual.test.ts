@@ -78,4 +78,43 @@ describe("US 971,501 Fritz Haber Ammonia Synthesis Visual Boundary", () => {
     expect(HABER_3D_SOURCE_BOUNDARY).toContain("no drawing");
     expect(() => buildHaberAmmoniaModel()).toThrow(HABER_3D_SOURCE_BOUNDARY);
   });
+
+  test("derives all 6 printed claims dynamically from edition without duplicate strings", () => {
+    const { haberAmmoniaPatent } = require("@/data/patents/haber-ammonia");
+    const { haberAmmoniaArchivalEdition } = require("@/data/editions/haberAmmoniaEdition");
+    expect(haberAmmoniaPatent.claims.length).toBe(6);
+    const editionClaims = haberAmmoniaArchivalEdition.blocks.filter((b: any) => b.kind === "claim");
+    expect(editionClaims.length).toBe(6);
+
+    for (const claim of haberAmmoniaPatent.claims) {
+      const editionBlock = editionClaims.find((c: any) => c.number === claim.number);
+      expect(editionBlock).toBeDefined();
+      const expectedText = editionBlock.inlines.map((inl: any) => inl.text).join("");
+      expect(claim.originalText).toBe(expectedText);
+    }
+  });
+
+  test("provides valid provenance classifications for all Haber controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-971501-haber-ammonia"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({ pressureAtm: 175, temperatureCelsius: 530 });
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("binds energy output to honest omission reason without synthetic wattage", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(energyChannelsFor("us-971501-haber-ammonia", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-971501-haber-ammonia"]).toContain(
+      "no continuous mechanical or electrical power consumption",
+    );
+  });
 });

@@ -182,7 +182,7 @@ describe("US 157,124 manual source edition", () => {
     const claimBlock = gliddenBarbedWireArchivalEdition.blocks.find(
       (block) => block.kind === "claim" && block.number === 1,
     );
-    if (!claimBlock || claimBlock.kind !== "claim") {
+    if (claimBlock?.kind !== "claim") {
       throw new Error("Glidden edition is missing its printed claim block.");
     }
     expect(gliddenBarbedWirePatent.claims).toHaveLength(1);

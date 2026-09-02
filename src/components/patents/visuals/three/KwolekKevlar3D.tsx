@@ -15,6 +15,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepKevlarContinuum } from "@/physics/catalogKernels";
+import { ensureGenericWasm } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { ContinuumState } from "@/physics/types";
 import {
@@ -73,6 +74,10 @@ export function KwolekKevlar3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+
+  useEffect(() => {
+    void ensureGenericWasm();
+  }, []);
 
   const kevlar = stepKevlarContinuum(
     drawRatio,
@@ -392,6 +397,30 @@ export function KwolekKevlar3D() {
             ))}
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="POLY-P-PHENYLENE TEREPHTHALAMIDE"
+          chips={[
+            { label: "Tensile Strength", value: tensileStrengthGpa, unit: "GPa" },
+            { label: "Young's Modulus", value: modulusGpa, unit: "GPa" },
+            { label: "Draw Ratio", value: `${drawRatio.toFixed(1)}x` },
+            {
+              label: "Concentration",
+              value: `${polymerConcentrationPct.toFixed(1)}%`,
+              unit: "PPD-T",
+            },
+            { label: "Temperature", value: `${temperatureCelsius}°C` },
+            {
+              label: "Phase",
+              value: isNematicLCP ? "Nematic Liquid Crystal" : "Isotropic Solution",
+              tone: isNematicLCP ? "ok" : "warn",
+            },
+            { label: "H-Bonds", value: showHydrogenBonds ? "Inter-chain Sheet" : "Disordered" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -440,29 +469,6 @@ export function KwolekKevlar3D() {
           />
         </div>
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="POLY-P-PHENYLENE TEREPHTHALAMIDE"
-        chips={[
-          { label: "Tensile Strength", value: tensileStrengthGpa, unit: "GPa" },
-          { label: "Young's Modulus", value: modulusGpa, unit: "GPa" },
-          { label: "Draw Ratio", value: `${drawRatio.toFixed(1)}x` },
-          {
-            label: "Concentration",
-            value: `${polymerConcentrationPct.toFixed(1)}%`,
-            unit: "PPD-T",
-          },
-          { label: "Temperature", value: `${temperatureCelsius}°C` },
-          {
-            label: "Phase",
-            value: isNematicLCP ? "Nematic Liquid Crystal" : "Isotropic Solution",
-            tone: isNematicLCP ? "ok" : "warn",
-          },
-          { label: "H-Bonds", value: showHydrogenBonds ? "Inter-chain Sheet" : "Disordered" },
-        ]}
-      />
     </div>
   );
 }

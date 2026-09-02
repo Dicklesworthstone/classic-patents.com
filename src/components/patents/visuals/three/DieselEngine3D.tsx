@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { wrapCycleRad } from "@/physics/catalogKernels";
 import { stepDieselEngine as kernelStepDieselEngine } from "@/physics/dieselEngineKernel";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { ThermodynamicsState } from "@/physics/types";
 import {
@@ -23,8 +22,9 @@ import {
   type DieselEngineNodes,
   updateDieselEngineKinematics,
 } from "./dieselEngineModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
@@ -74,7 +74,7 @@ export function DieselEngine3D() {
   });
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [cutawayMode, setCutawayMode] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isMuted, toggleMute } = usePatentAudio();
@@ -128,7 +128,6 @@ export function DieselEngine3D() {
   const animRef = useRef<number | null>(null);
   const nodesRef = useRef<DieselEngineNodes | null>(null);
   const matsRef = useRef<DieselEngineMaterials | null>(null);
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   // One tape-bound integrator (br-ixl.3): the registered updater owns the
   // crank-angle integration; the render loop only consumes bus frames.
@@ -187,10 +186,6 @@ export function DieselEngine3D() {
     live.current.isAutoIgnition,
     live.current.claim1Active,
   ]);
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -418,6 +413,23 @@ export function DieselEngine3D() {
             </div>
           </div>
         )}
+
+        {/* Bottom-Right SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          visible={showUiOverlay}
+          side="right"
+          title="DIESEL THERMODYNAMICS"
+          chips={[
+            { label: "Bore / Stroke", value: "250 × 400", unit: "mm" },
+            { label: "P_comp", value: String(peakPressureBar), unit: "bar" },
+            { label: "T_comp", value: String(peakTempC), unit: "°C" },
+            { label: "P_blast", value: String(blastAirPressure), unit: "bar" },
+            { label: "η_brake", value: String(thermalEfficiencyPct), unit: "%" },
+            { label: "Ignition", value: isAutoIgnition ? "Spontaneous" : "Sub-critical" },
+            { label: "ω", value: diesel.crankOmegaRadPerS.toFixed(2), unit: "rad/s" },
+            { label: "Runtime", value: "typed host cycle" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -481,25 +493,6 @@ export function DieselEngine3D() {
           className="mt-3"
         />
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="DIESEL THERMODYNAMICS"
-        chips={[
-          { label: "Bore / Stroke", value: "250 × 400", unit: "mm" },
-          { label: "P_comp", value: String(peakPressureBar), unit: "bar" },
-          { label: "T_comp", value: String(peakTempC), unit: "°C" },
-          { label: "P_blast", value: String(blastAirPressure), unit: "bar" },
-          { label: "η_brake", value: String(thermalEfficiencyPct), unit: "%" },
-          { label: "Ignition", value: isAutoIgnition ? "Spontaneous" : "Sub-critical" },
-          { label: "ω", value: diesel.crankOmegaRadPerS.toFixed(2), unit: "rad/s" },
-          {
-            label: "Gas crate",
-            value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
-          },
-        ]}
-      />
     </div>
   );
 }

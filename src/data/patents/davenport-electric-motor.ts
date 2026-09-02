@@ -31,7 +31,7 @@ export const davenportElectricMotorPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US132/en",
   usptoClassification: "H02K 23/00 (DC commutator motors; Commutation)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-132-davenport-electric-motor.txt",
+    url: "/patents/transcripts/us-132-davenport-electric-motor-reviewed.txt",
     pageCount: 3,
     kind: "reviewed-transcription",
     reviewedBy: "Classic Patents editorial agent (StormyCreek)",

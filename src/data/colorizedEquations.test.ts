@@ -110,6 +110,34 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
     }
   });
 
+  test("keeps Edison's lamp equations source-bounded and labels declared thermal inputs", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-223898-edison-lightbulb"];
+    expect(cards.map((card) => card.id)).toEqual([
+      "edison-high-resistance-carbon-filament",
+      "edison-vacuum-mean-free-path",
+      "edison-blackbody-radiation",
+    ]);
+    expect(cards[2]?.rawLatex).toContain("T_{\\text{ambient}}^4");
+
+    const publicCopy = JSON.stringify(cards).toLowerCase();
+    expect(publicCopy).toContain("one-millionth");
+    expect(publicCopy).toContain("seven one-thousandths");
+    for (const unsupported of [
+      "sprengel",
+      "bamboo",
+      "2,200",
+      "1,200",
+      "16 candlepower",
+      "110 volts dc",
+      "100x",
+      "ultra-high",
+      "operating lifespan",
+      "to avoid melting",
+    ]) {
+      expect(publicCopy).not.toContain(unsupported);
+    }
+  });
+
   test("keeps Daimler's public card within the marine coupling relation printed by US 361,931", () => {
     const cards = ALL_COLORIZED_EQUATIONS["us-361931-daimler-engine"];
     expect(cards.map((card) => card.id)).toEqual(["daimler-source-thrust-maintained-coupling"]);
@@ -124,6 +152,29 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
       "4.5-meter",
       "motorcycle",
       "automobile",
+    ]) {
+      expect(publicCopy).not.toContain(unsupported);
+    }
+  });
+
+  test("keeps Howe's public cards on the printed local geometry and declared display kinematics", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-4750-howe-sewing-machine"];
+    expect(cards.map((card) => card.id)).toEqual([
+      "howe-source-printed-local-dimensions",
+      "howe-one-shaft-source-order-kinematics",
+    ]);
+    expect(cards[0]?.rawLatex).toContain("3.175\\,\\mathrm{mm}");
+    expect(cards[1]?.rawLatex).toContain("K\\subset I");
+
+    const publicCopy = JSON.stringify(cards).toLowerCase();
+    for (const unsupported of [
+      "thread tension",
+      "seam strength",
+      "capstan",
+      "newtons",
+      "watts",
+      "300 spm",
+      "feed dog",
     ]) {
       expect(publicCopy).not.toContain(unsupported);
     }
@@ -144,6 +195,29 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
       "wheel rpm",
       "shaft power",
       "needle spear",
+    ]) {
+      expect(publicCopy).not.toContain(unsupported);
+    }
+  });
+
+  test("keeps Otto's public cards on the printed graded-charge and shaft sequence", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-194047-otto-engine"];
+    expect(cards.map((card) => card.id)).toEqual([
+      "otto-graded-charge",
+      "otto-four-stroke-shaft-timing",
+    ]);
+    expect(cards.map((card) => card.claimRef)).toEqual([1, 3]);
+    expect(cards[0]?.rawLatex).toContain("\\phi(0)");
+    expect(cards[1]?.rawLatex).toContain("\\theta_K");
+
+    const publicCopy = JSON.stringify(cards).toLowerCase();
+    expect(publicCopy).toContain("air");
+    for (const unsupported of [
+      "brake horsepower",
+      "peak combustion",
+      "indicated power",
+      "1876 deutz shop",
+      "fuel specific heat release",
     ]) {
       expect(publicCopy).not.toContain(unsupported);
     }
@@ -420,6 +494,35 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
       "solenoid force",
     ]) {
       expect(published).not.toContain(unsupportedPublicAssertion);
+    }
+  });
+
+  test("keeps Otis US 31,128 on its source topology and refuses invented arrest dynamics", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-31128-otis-elevator"];
+    expect(cards.map((card) => card.id)).toEqual([
+      "otis-claim-one-hook-lock-topology",
+      "otis-claim-three-stop-interlock",
+      "otis-claim-four-opposite-counterpoise",
+    ]);
+    expect(cards.map((card) => card.claimRef)).toEqual([1, 3, 4]);
+    expect(cards[0]?.rawLatex).toContain("G_{\\text{taut}}");
+    expect(cards[1]?.rawLatex).toContain("(O,P)");
+    expect(cards[2]?.rawLatex).toContain("dq_R = -dq_D");
+
+    const published = JSON.stringify(cards).toLowerCase();
+    for (const unsupportedLegacyAssertion of [
+      "wagon-spring",
+      "leaf spring stiffness",
+      "arrest force",
+      "stopping distance",
+      "38 milliseconds",
+      "0.040",
+      "80\\text{ kn/m}",
+      "2.4\\text{ kn}",
+      "3.5\\text{ kg}",
+      "1854 crystal palace",
+    ]) {
+      expect(published).not.toContain(unsupportedLegacyAssertion);
     }
   });
 

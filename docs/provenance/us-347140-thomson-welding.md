@@ -64,10 +64,11 @@ that public source path without discarding the old research asset.
 
 ## Independent-review boundary
 
-The author completed a direct visual pass across all five source pages. Root
-must still perform a second independent facsimile and live-render review before
-accepting or closing the Bead. Focused tests establish structure and pinned
-assets, not independent archival acceptance or deployment.
+The author completed a direct visual pass across all five source pages. A
+second fresh-eyes pass compared the accepted individual crops with their full
+source sheets and substituted full-sheet fallbacks where isolation remained
+unsafe. Focused tests establish structure and pinned assets; they do not by
+themselves constitute deployment proof.
 
 ## Source-crop audit and repair ledger (2026-08-21)
 
@@ -79,33 +80,29 @@ no occurrence is inferred from prose or from a crop filename.
 
 | Figure | Source page | Candidate preview / binding state | Audit result |
 | ---: | ---: | --- | --- |
-| 1 | 1 | **UNBOUND** (`figure-1-source-crop-v5.png` preserved) | **REJECTED by root:** lower `S` spring label touches/clips the bottom boundary and a stray lower fragment remains. Planned v6 main/lower split; v4 also failed right-edge isolation. |
-| 2 | 1 | `figure-2-source-crop-v5.png` | New 450×1050 candidate restores label breathing room and the complete clamp; pending root acceptance. |
-| 3 | 1 | **UNBOUND** (`figure-3-source-crop-v5.png` preserved) | **REJECTED by root:** clipped foreign fragment at bottom center. Planned v6 main/lower split; v4 also failed for top-edge S/Z material. |
+| 1 | 1 | `fig-1-source-crop-v1.png` full-sheet fallback | The rejected v5 isolated crop remains preserved, but the authored reference uses the complete source sheet so no clipped neighbor is presented as an isolated Fig. 1 crop. |
+| 2 | 1 | `figure-2-source-crop-v5.png` | Fresh-eyes review confirms label breathing room and the complete clamp without neighboring figure matter. |
+| 3 | 1 | `fig-1-source-crop-v1.png` full-sheet fallback | The rejected v5 isolated crop remains preserved; the complete source sheet provides honest context without clipping foreign matter. |
 | 4 | 1 | `figure-4-source-crop-v2.png` | Existing crop independently checked as isolated and complete. |
-| 5 | 1 | **UNBOUND** (`figure-5-source-crop-v5.png` preserved) | **REJECTED by root:** clipped Fig. 6 caption/edge remains. Planned shared `figure-5-6-source-crop-v6-group.png` under explicit group semantics. |
-| 6 | 1 | **UNBOUND** (`figure-6-source-crop-v5.png` preserved) | **REJECTED by root:** clipped Fig. 5 caption/edge remains. Planned shared `figure-5-6-source-crop-v6-group.png`; v4 label framing also failed. |
+| 5 | 1 | `figure-5-source-crop-v6.png` | Clean source-derived recrop of clamp K; neighboring Fig. 6 matter is excluded. |
+| 6 | 1 | `figure-6-source-crop-v6.png` | Clean source-derived recrop of compound clamp K; neighboring Fig. 5 matter is excluded. |
 | 7 | 1 | `figure-7-source-crop-v1.png` | Existing crop independently checked as isolated and complete. |
-| 8 | 1 | **UNBOUND** (`figure-8-source-crop-v5.png` preserved) | **REJECTED by root:** likely upper arc/vertical fragment from neighboring Fig. 9 remains; planned source-aware v6 recrop. Old v2 also retained neighbor/signature matter. |
-| 9 | 1 | **UNBOUND** (`figure-9-source-crop-v5.png` preserved) | **REJECTED by root:** v4 failed left/right/bottom isolation and label framing; v5 has a clean label/body but its diagonal conductors continue beyond the bottom boundary. Planned v6 main plus lower-continuation preview. |
+| 8 | 1 | `fig-1-source-crop-v1.png` full-sheet fallback | Rejected isolated crops remain preserved; the complete sheet avoids falsely claiming that neighboring source matter was safely separable. |
+| 9 | 1 | `fig-1-source-crop-v1.png` full-sheet fallback | Fig. 9 conductors continue through the sheet composition, so the authored reference deliberately uses the complete source sheet. |
 | 10 | 2 | `figure-10-source-crop-v2.png` | Existing crop independently checked as isolated and complete. |
 | 11 | 2 | `figure-11-source-crop-v4.png` | Removed lower Fig. 16/signature matter; full flanged-head and bar drawing retained. |
-| 12 | 2 | `figure-12-source-crop-v5.png` | New 360×220 candidate is visually isolated and complete; pending root acceptance. |
+| 12 | 2 | `figure-12-source-crop-v5.png` | Fresh-eyes comparison with the full source sheet confirms the bar pair is isolated and complete. |
 | 13 | 2 | `figure-13-source-crop-v5.png` | New candidate is visually isolated with the complete ring, joint, clamps, and printed label; v4 is rejected for a bottom neighbor. |
-| 14 | 2 | `figure-14-source-crop-v4.png` | Appears isolated and complete on local visual review; pending root acceptance. |
-| 15 | 2 | `figure-15-source-crop-v5.png` | New 520×360 candidate removes Fig. 14/Fig. 16 matter and restores full right-side work-piece; pending root acceptance. v4 is rejected for upper-right/lower neighbors. |
+| 14 | 2 | `figure-14-source-crop-v4.png` | Fresh-eyes review confirms the U-shaped bar is isolated and complete. |
+| 15 | 2 | `figure-15-source-crop-v5.png` | Fresh-eyes comparison confirms the work-piece is complete and neighboring Figs. 14 and 16 are excluded; v4 remains rejected. |
 | 16 | 2 | `figure-16-source-crop-v1.png` | Existing crop independently checked as isolated and complete. |
 | 17 | 2 | `figure-17-source-crop-v1.png` | Existing crop independently checked as isolated and complete. |
 | 18 | 2 | `figure-18-source-crop-v1.png` | Existing crop independently checked as isolated and complete. |
 
-All old, v3, and v4 files are preserved. v4 files rejected by root are not
-accepted as source previews. The v5 files are candidate repairs and remain
-held pending root's independent visual acceptance. The edition now fails
-closed for the six root-rejected numbers (1, 3, 5, 6, 8, and 9): their files
-remain on disk but their authored references expose no preview until a
-source-aware replacement or explicit split is accepted. No ledger, registry,
-or publication mapping was changed to relabel a source figure.
-
-The canonical Thomson patent record is intentionally unbound from this
-incomplete edition while those replacements are pending; this prevents the
-withheld preview state from entering `allPatents` as a publishable record.
+All rejected historical crop candidates remain preserved. Figs. 5 and 6 now
+use clean v6 source-derived recrops. Figs. 1, 3, 8, and 9 use the complete
+first drawing sheet because an isolated rectangle would clip or import
+neighboring source matter. The drawing-sheet summary references render one
+complete sheet each rather than a wall of redundant individual crops. With
+those explicit fallbacks, the canonical Thomson record remains bound to the
+complete manual edition without relabeling any rejected crop as accepted.

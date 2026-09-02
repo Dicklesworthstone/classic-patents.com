@@ -1,6 +1,16 @@
 import { bellTelephoneArchivalEdition } from "@/data/editions/bellTelephoneEdition";
 import type { Patent } from "@/types/patent";
 
+function manualClaimText(number: number): string {
+  const block = bellTelephoneArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Bell manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const bellTelephonePatent: Patent = {
   id: "us-174465-bell-telephone",
   patentNumber: "US 174,465",
@@ -124,8 +134,7 @@ The method of, and apparatus for, transmitting vocal or other sounds telegraphic
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "A system of telegraphy in which the receiver is set in vibration by the employment of undulatory currents of electricity, substantially as set forth.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "Claims a telegraphy system in which an undulatory electrical current sets the receiving instrument in vibration. The claim names the receiver result, not a single detailed transmitter structure.",
       keyInnovations: [
@@ -139,8 +148,7 @@ The method of, and apparatus for, transmitting vocal or other sounds telegraphic
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "The combination, substantially as set forth, of a permanent magnet or other body capable of inductive action, with a closed circuit, so that the vibration of the one shall occasion electrical undulations in the other, or in itself, and this I claim, whether the permanent magnet be set in vibration in the neighborhood of the conducting-wire forming the circuit, or whether the conducting-wire be set in vibration in the neighborhood of the permanent magnet, or whether the conducting-wire and the permanent magnet both simultaneously be set in vibration in each other's neighborhood.",
+      originalText: manualClaimText(2),
       plainEnglish:
         "Claims the combination of a permanent magnet or other inductive body with a closed circuit when moving one relative to the other produces electrical undulations. It expressly covers moving the magnet, the wire, or both.",
       keyInnovations: [
@@ -154,8 +162,7 @@ The method of, and apparatus for, transmitting vocal or other sounds telegraphic
     {
       number: 3,
       isIndependent: true,
-      originalText:
-        "The method of producing undulations in a continuous voltaic current by the vibration or motion of bodies capable of inductive action, or by the vibration or motion of the conducting-wire itself, in the neighborhood of such bodies, as set forth.",
+      originalText: manualClaimText(3),
       plainEnglish:
         "Claims the method of producing undulations in a continuous battery current by moving an inductive body or the conductor itself near such a body.",
       keyInnovations: [
@@ -169,8 +176,7 @@ The method of, and apparatus for, transmitting vocal or other sounds telegraphic
     {
       number: 4,
       isIndependent: true,
-      originalText:
-        "The method of producing undulations in a continuous voltaic circuit by gradually increasing and diminishing the resistance of the circuit, or by gradually increasing and diminishing the power of the battery, as set forth.",
+      originalText: manualClaimText(4),
       plainEnglish:
         "Claims a second way to form an undulatory battery current: gradually vary either the circuit resistance or the battery's power, while retaining a continuous circuit.",
       keyInnovations: [
@@ -184,8 +190,7 @@ The method of, and apparatus for, transmitting vocal or other sounds telegraphic
     {
       number: 5,
       isIndependent: true,
-      originalText:
-        "The method of, and apparatus for, transmitting vocal or other sounds telegraphically, as herein described, by causing electrical undulations, similar in form to the vibrations of the air accompanying the said vocal or other sounds, substantially as set forth.",
+      originalText: manualClaimText(5),
       plainEnglish:
         "Claims the method and apparatus for sending vocal or other sounds by causing electrical undulations similar in form to the sound-caused air vibrations. It links the legal scope to the source's shape-correspondence account.",
       keyInnovations: [
@@ -324,7 +329,5 @@ The method of, and apparatus for, transmitting vocal or other sounds telegraphic
   stats: {
     totalClaims: 5,
     independentClaims: 5,
-    patentWarYears: "1876–1888",
-    impactScore: 100,
   },
 };

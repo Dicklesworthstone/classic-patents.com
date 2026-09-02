@@ -223,6 +223,19 @@ export function CarrierAirConditioner3D() {
             <strong>{carrier.pressureDropPa} Pa</strong>
           </div>
         )}
+
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="Carrier wet air washer"
+          chips={[
+            { label: "Air current", value: `${carrier.airCurrentMps} m/s` },
+            { label: "Wet film", value: `${carrier.wetFilmCoveragePct}%` },
+            { label: "Dust capture", value: `${carrier.particleCapturePct}%` },
+            { label: "Droplet separation", value: `${carrier.dropletSeparationPct}%` },
+            { label: "Kernel", value: "host SI" },
+          ]}
+        />
       </div>
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -272,17 +285,6 @@ export function CarrierAirConditioner3D() {
           className="mt-3"
         />
       </div>
-      <StudioKernelChips
-        visible={showUiOverlay}
-        title="Carrier wet air washer"
-        chips={[
-          { label: "Air current", value: `${carrier.airCurrentMps} m/s` },
-          { label: "Wet film", value: `${carrier.wetFilmCoveragePct}%` },
-          { label: "Dust capture", value: `${carrier.particleCapturePct}%` },
-          { label: "Droplet separation", value: `${carrier.dropletSeparationPct}%` },
-          { label: "Kernel", value: "host SI" },
-        ]}
-      />
     </div>
   );
 }

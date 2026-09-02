@@ -191,16 +191,16 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(intervalGhosts("us-3858232-boyle-smith-ccd", {})[0]?.unit).toBe("e⁻");
     expect(fidelityField("us-3858232-boyle-smith-ccd", {})?.unit).toBe("");
     expect(datedScenarios("us-3858232-boyle-smith-ccd")[0]?.id).toBe("murray-hill-1969");
-    expect(coupleLinks("us-3858232-boyle-smith-ccd", {})).toEqual([]);
+    expect(coupleLinks("us-3858232-boyle-smith-ccd", {})[0]?.from).toBe("3-phase clock gate");
 
     expect(materialProbe("us-3671542-kwolek-kevlar", "Dope", {})?.qty).toBe("E");
     expect(intervalGhosts("us-3671542-kwolek-kevlar", {})[0]?.unit).toBe("GPa");
     expect(fidelityField("us-3671542-kwolek-kevlar", {})?.reference).toBe("90");
 
     expect(materialProbe("us-542846-diesel-engine", "Claim 1 process", {})).toBeNull();
-    expect(intervalGhosts("us-542846-diesel-engine", {})).toEqual([]);
-    expect(fidelityField("us-542846-diesel-engine", {})).toBeNull();
-    expect(datedScenarios("us-542846-diesel-engine")).toEqual([]);
+    expect(intervalGhosts("us-542846-diesel-engine", {})[0]?.unit).toBe(":1");
+    expect(fidelityField("us-542846-diesel-engine", {})?.reference).toBe("26.2");
+    expect(datedScenarios("us-542846-diesel-engine")[0]?.id).toBe("augsburg-1897");
 
     expect(materialProbe("us-586193-marconi-radio", "Contact receiver", {})?.qty).toBe("f₀");
     expect(intervalGhosts("us-586193-marconi-radio", {})[0]?.label).toBe("Aerial");
@@ -241,7 +241,10 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
   });
 
   test("computes spectral eigenmodes for resonant patents", () => {
-    const teslaCoilModes = spectralModes("us-593138-tesla-coil", { secondaryTurns: 1000 });
+    const teslaCoilModes = spectralModes("us-593138-tesla-coil", {
+      disturbanceFrequencyHz: 925,
+      secondaryLengthMiles: 50,
+    });
     expect(teslaCoilModes.length).toBeGreaterThan(0);
   });
 
@@ -260,13 +263,15 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     const bulbCouples = coupleLinks("us-223898-edison-lightbulb", { voltage: 110 });
     expect(bulbCouples.length).toBeGreaterThan(0);
 
-    expect(coupleLinks("us-381968-tesla-motor", { frequency: 60 })).toEqual([]);
-    expect(coupleLinks("us-593138-tesla-coil", { inputVoltageKv: 15 })).toEqual([]);
+    expect(coupleLinks("us-381968-tesla-motor", { frequency: 60 })[0]?.from).toBe(
+      "polyphase stator",
+    );
+    expect(coupleLinks("us-593138-tesla-coil", {})).toEqual([]);
     expect(coupleLinks("us-132-davenport-electric-motor", {}).length).toBe(1);
     expect(coupleLinks("us-347140-thomson-welding", {})[0]?.from).toBe("I²R");
-    expect(coupleLinks("us-233692-pelton-water-wheel", {})).toEqual([]);
+    expect(coupleLinks("us-233692-pelton-water-wheel", {})[0]?.from).toBe("water jet");
     expect(coupleLinks("us-470918-reno-escalator", {})[0]?.from).toBe("motor");
-    expect(coupleLinks("us-319596-maxim-machine-gun", {})[0]?.from).toBe("powder");
+    expect(coupleLinks("us-319596-maxim-machine-gun", {})[0]?.from).toBe("muzzle_gas");
     expect(coupleLinks("us-588-ericsson-propeller", {})[0]?.from).toBe("thrust · v");
     expect(coupleLinks("us-586193-marconi-radio", {})[0]?.from).toBe("spark");
     expect(coupleLinks("us-808897-carrier-air-conditioner", {})[0]?.from).toBe("fan");
@@ -274,13 +279,19 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(coupleLinks("us-608969-parsons-turbine", {})[0]?.from).toBe("steam");
     expect(coupleLinks("us-400766-hall-aluminium", {})[0]?.from).toBe("bus");
     expect(coupleLinks("us-879532-de-forest-audion", {})[0]?.from).toBe("filament");
-    expect(coupleLinks("us-307031-edison-indicator", {})).toEqual([]);
+    expect(coupleLinks("us-307031-edison-indicator", {})[0]?.from).toBe("filament heat");
     expect(coupleLinks("us-361931-daimler-engine", {})).toEqual([]);
     expect(coupleLinks("gb-913-watt-separate-condenser", {})[0]?.from).toBe("furnace");
   });
 
-  test("refuses unsupported Daimler performance weaves while retaining source apparatus labels", () => {
-    expect(intervalGhosts("us-361931-daimler-engine", {})).toEqual([]);
+  test("keeps Daimler weaves on source controls and source apparatus labels", () => {
+    expect(intervalGhosts("us-361931-daimler-engine", {}).length).toBeGreaterThan(0);
+    expect(intervalGhosts("us-361931-daimler-engine", {})[0]).toMatchObject({
+      label: "Drive",
+      live: 1,
+      unit: "astern / neutral / ahead",
+    });
+    expect(datedScenarios("us-361931-daimler-engine")).toEqual([]);
     expect(materialProbe("us-361931-daimler-engine", "coupling", {})).toMatchObject({
       part: "coupling",
       qty: "source",
@@ -289,10 +300,20 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     });
   });
 
-  test("refuses unsupported Pelton performance weaves while retaining source bucket labels", () => {
-    expect(intervalGhosts("us-233692-pelton-water-wheel", {})).toEqual([]);
+  test("keeps Edison telemetry free of unsupported efficacy and life demonstrations", () => {
+    const patentId = "us-223898-edison-lightbulb";
+    expect(fidelityField(patentId, { voltage: 110, filamentLength: 22 })).toBeNull();
+    expect(datedScenarios(patentId)).toEqual([]);
+  });
+
+  test("refuses to invent a watt-valued Howe hand-crank coupling", () => {
+    expect(coupleLinks("us-4750-howe-sewing-machine", { crankRpm: 240 })).toEqual([]);
+  });
+
+  test("derives Pelton performance weaves and source bucket labels", () => {
+    expect(intervalGhosts("us-233692-pelton-water-wheel", {}).length).toBeGreaterThan(0);
     expect(fidelityField("us-233692-pelton-water-wheel", {})).toBeNull();
-    expect(datedScenarios("us-233692-pelton-water-wheel")).toEqual([]);
+    expect(datedScenarios("us-233692-pelton-water-wheel").length).toBeGreaterThan(0);
     expect(materialProbe("us-233692-pelton-water-wheel", "bucket B", {})).toMatchObject({
       part: "bucket B",
       qty: "source",

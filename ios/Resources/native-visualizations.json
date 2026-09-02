@@ -59,7 +59,7 @@
     "builder": "buildMcCormickReaperModel",
     "spatialComponent": "McCormickReaper3D",
     "vectorComponent": "McCormickReaperSim",
-    "meshCount": 89,
+    "meshCount": 97,
     "namedNodeCount": 7
   },
   {
@@ -122,7 +122,7 @@
     "builder": "buildHoweSewingMachineModel",
     "spatialComponent": "HoweSewingMachine3D",
     "vectorComponent": "HoweSewingMachineSim",
-    "meshCount": 39,
+    "meshCount": 43,
     "namedNodeCount": 9
   },
   {
@@ -146,11 +146,11 @@
   {
     "id": "us-31128-otis-elevator",
     "asset": "NativeModels/us-31128-otis-elevator.usdz",
-    "builder": "buildOtisElevatorModel",
-    "spatialComponent": "OtisElevator3D",
-    "vectorComponent": "OtisElevatorSim",
-    "meshCount": 85,
-    "namedNodeCount": 91
+    "builder": "buildOtis1861HoistingModel",
+    "spatialComponent": "OtisHoistingApparatus3D",
+    "vectorComponent": "OtisHoistingApparatusSim",
+    "meshCount": 90,
+    "namedNodeCount": 119
   },
   {
     "id": "us-36836-gatling-gun",
@@ -167,7 +167,7 @@
     "builder": "createYaleLockModel",
     "spatialComponent": "YaleLock3D",
     "vectorComponent": "YaleLockSim",
-    "meshCount": 26,
+    "meshCount": 28,
     "namedNodeCount": 22
   },
   {
@@ -221,7 +221,7 @@
     "builder": "buildPasteurFermentationModel",
     "spatialComponent": "PasteurFermentation3D",
     "vectorComponent": "PasteurFermentationSim",
-    "meshCount": 11,
+    "meshCount": 30,
     "namedNodeCount": 13
   },
   {
@@ -257,7 +257,7 @@
     "builder": "buildEdisonPhonographModel",
     "spatialComponent": "EdisonPhonograph3D",
     "vectorComponent": "EdisonPhonographSim",
-    "meshCount": 35,
+    "meshCount": 41,
     "namedNodeCount": 5
   },
   {
@@ -338,7 +338,7 @@
     "builder": "buildDaimlerMarineEngineModel",
     "spatialComponent": "DaimlerEngine3D",
     "vectorComponent": "DaimlerEngineSim",
-    "meshCount": 16,
+    "meshCount": 48,
     "namedNodeCount": 8
   },
   {
@@ -374,7 +374,7 @@
     "builder": "createHallAluminiumModel",
     "spatialComponent": "HallAluminium3D",
     "vectorComponent": "HallAluminiumSim",
-    "meshCount": 16,
+    "meshCount": 33,
     "namedNodeCount": 15
   },
   {
@@ -392,7 +392,7 @@
     "builder": "buildDieselEngineModel",
     "spatialComponent": "DieselEngine3D",
     "vectorComponent": "DieselEngineSim",
-    "meshCount": 7,
+    "meshCount": 28,
     "namedNodeCount": 8
   },
   {
@@ -428,7 +428,7 @@
     "builder": "buildTeslaTeleautomatonModel",
     "spatialComponent": "TeslaTeleautomaton3D",
     "vectorComponent": "TeslaTeleautomatonSim",
-    "meshCount": 41,
+    "meshCount": 46,
     "namedNodeCount": 20
   },
   {
@@ -455,7 +455,7 @@
     "builder": "buildFessendenWirelessModel",
     "spatialComponent": "FessendenWireless3D",
     "vectorComponent": "FessendenWirelessSim",
-    "meshCount": 76,
+    "meshCount": 85,
     "namedNodeCount": 28
   },
   {
@@ -464,7 +464,7 @@
     "builder": "buildLindeLiquefactionModel",
     "spatialComponent": "LindeAirLiquefaction3D",
     "vectorComponent": "LindeAirLiquefactionSim",
-    "meshCount": 27,
+    "meshCount": 37,
     "namedNodeCount": 31
   },
   {
@@ -473,7 +473,7 @@
     "builder": "buildCarrierAirConditionerModel",
     "spatialComponent": "CarrierAirConditioner3D",
     "vectorComponent": "CarrierAirConditionerSim",
-    "meshCount": 60,
+    "meshCount": 80,
     "namedNodeCount": 20
   },
   {
@@ -500,7 +500,7 @@
     "builder": "buildBaekelandBakeliteModel",
     "spatialComponent": "BaekelandBakelite3D",
     "vectorComponent": "BaekelandBakeliteSim",
-    "meshCount": 109,
+    "meshCount": 112,
     "namedNodeCount": 13
   },
   {
@@ -519,7 +519,7 @@
     "builder": "buildGoddardRocketModel",
     "spatialComponent": "GoddardRocket3D",
     "vectorComponent": "GoddardRocketSim",
-    "meshCount": 21,
+    "meshCount": 30,
     "namedNodeCount": 6
   },
   {
@@ -537,7 +537,7 @@
     "builder": "buildEinsteinRefrigeratorModel",
     "spatialComponent": "EinsteinRefrigerator3D",
     "vectorComponent": "EinsteinRefrigeratorSim",
-    "meshCount": 29,
+    "meshCount": 43,
     "namedNodeCount": 9
   },
   {
@@ -564,7 +564,7 @@
     "builder": "buildSpencerMicrowaveModel",
     "spatialComponent": "SpencerMicrowave3D",
     "vectorComponent": "SpencerMicrowaveSim",
-    "meshCount": 84,
+    "meshCount": 98,
     "namedNodeCount": 5
   },
   {
@@ -573,7 +573,7 @@
     "builder": "buildBardeenTransistorModel",
     "spatialComponent": "BardeenTransistor3D",
     "vectorComponent": "BardeenTransistorSim",
-    "meshCount": 6,
+    "meshCount": 14,
     "namedNodeCount": 10
   },
   {
@@ -627,7 +627,7 @@
     "builder": "createMaimanRubyLaserModel",
     "spatialComponent": "MaimanRubyLaser3D",
     "vectorComponent": "MaimanRubyLaserSim",
-    "meshCount": 17,
+    "meshCount": 19,
     "namedNodeCount": 12
   },
   {
@@ -645,7 +645,7 @@
     "builder": "buildKwolekKevlarModel",
     "spatialComponent": "KwolekKevlar3D",
     "vectorComponent": "KwolekKevlarSim",
-    "meshCount": 153,
+    "meshCount": 157,
     "namedNodeCount": 10
   },
   {
@@ -672,7 +672,7 @@
     "builder": "buildEInkModel",
     "spatialComponent": "EInk3D",
     "vectorComponent": "EInkSim",
-    "meshCount": 108,
+    "meshCount": 112,
     "namedNodeCount": 104
   },
   {
@@ -681,7 +681,7 @@
     "builder": "buildPageRankModel",
     "spatialComponent": "PageRank3D",
     "vectorComponent": "PageRankSim",
-    "meshCount": 12,
+    "meshCount": 15,
     "namedNodeCount": 10
   },
   {
@@ -690,7 +690,7 @@
     "builder": "buildDaVinciModel",
     "spatialComponent": "DaVinci3D",
     "vectorComponent": "DaVinciSim",
-    "meshCount": 9,
+    "meshCount": 14,
     "namedNodeCount": 11
   },
   {
@@ -699,7 +699,7 @@
     "builder": "buildRoombaModel",
     "spatialComponent": "Roomba3D",
     "vectorComponent": "RoombaSim",
-    "meshCount": 19,
+    "meshCount": 25,
     "namedNodeCount": 6
   },
   {
@@ -708,7 +708,7 @@
     "builder": "buildMultiTouchModel",
     "spatialComponent": "MultiTouch3D",
     "vectorComponent": "MultiTouchSim",
-    "meshCount": 12,
+    "meshCount": 15,
     "namedNodeCount": 7
   }
 ]

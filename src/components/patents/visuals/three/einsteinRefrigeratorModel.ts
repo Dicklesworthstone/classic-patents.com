@@ -117,15 +117,55 @@ export function buildEinsteinRefrigeratorModel(): EinsteinRefrigeratorModel {
   const fridgeGroup = new THREE.Group();
   rootGroup.add(fridgeGroup);
 
-  // Structural Mounting Chassis / Base Legs
-  [-3.2, 3.2].forEach((lx) => {
+  // Structural Mounting Chassis / Angle-Iron Frame & Base Skids
+  const chassisGroup = new THREE.Group();
+  fridgeGroup.add(chassisGroup);
+
+  [-3.8, 4.4].forEach((lx) => {
     const legGeo = new THREE.BoxGeometry(0.3, 0.4, 3.4);
     geometriesToDispose.push(legGeo);
     const leg = new THREE.Mesh(legGeo, weldedSteel);
     leg.position.set(lx, -3.3, 0);
     leg.castShadow = true;
-    fridgeGroup.add(leg);
+    leg.receiveShadow = true;
+    chassisGroup.add(leg);
   });
+
+  // 4 Welded Vertical Angle-Iron Chassis Columns
+  for (const cx of [-3.8, 4.4]) {
+    for (const cz of [-1.5, 1.5]) {
+      const colGeo = new THREE.BoxGeometry(0.18, 6.6, 0.18);
+      geometriesToDispose.push(colGeo);
+      const col = new THREE.Mesh(colGeo, weldedSteel);
+      col.position.set(cx, 0, cz);
+      col.castShadow = true;
+      chassisGroup.add(col);
+    }
+  }
+
+  // Horizontal Cross-Bracing Girders (Top, Middle, Bottom)
+  for (const gy of [-3.1, 0.2, 3.3]) {
+    for (const gz of [-1.5, 1.5]) {
+      const gBeamGeo = new THREE.BoxGeometry(8.4, 0.14, 0.14);
+      geometriesToDispose.push(gBeamGeo);
+      const gBeam = new THREE.Mesh(gBeamGeo, weldedSteel);
+      gBeam.position.set(0.3, gy, gz);
+      chassisGroup.add(gBeam);
+    }
+  }
+
+  // Vessel Mounting Saddles / Welded Clamp Brackets
+  for (const sy of [-2.4, -0.2]) {
+    const saddleGeo = new THREE.BoxGeometry(1.2, 0.14, 0.6);
+    geometriesToDispose.push(saddleGeo);
+    const saddleGen = new THREE.Mesh(saddleGeo, weldedSteel);
+    saddleGen.position.set(3.9, sy, 0);
+    chassisGroup.add(saddleGen);
+
+    const saddleAbs = new THREE.Mesh(saddleGeo, weldedSteel);
+    saddleAbs.position.set(-3.3, sy, 0);
+    chassisGroup.add(saddleAbs);
+  }
 
   // A. Boiler Generator (Bottom Right: drives ammonia vapor out of water)
   const genGeo = new THREE.CylinderGeometry(0.95, 0.95, 3.6, 24);

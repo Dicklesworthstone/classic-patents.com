@@ -13,7 +13,6 @@ import {
   stepMarconiRadio,
   stepMorseTelegraph,
   stepNoyceIC,
-  stepOttoEngine,
 } from "./catalogKernels";
 import { fermiKeff } from "./fermiKinetics";
 import { stepHoweSewingMachine } from "./machineKernels";
@@ -73,7 +72,7 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
   if (patentId === "us-223898-edison-lightbulb" || patentId === "us-223898-edison-lamp") {
     const bulb = stepEdisonBulb({
       voltage: params.voltage ?? params.mainsVoltageV ?? 110,
-      filamentLength: params.filamentLength,
+      hotResistanceOhm: params.hotResistanceOhm,
     });
     const v = params.voltage ?? params.mainsVoltageV ?? 110;
     const dPdV = v === 0 ? 0 : (2 * bulb.radiantWatts) / v;
@@ -137,26 +136,12 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId === "us-194047-otto-engine") {
-    const cr = params.compressionRatio ?? 4.5;
-    const otto = stepOttoEngine({
-      engineRpm: params.engineRpm ?? 180,
-      compressionRatio: cr,
-    });
-    const dEta = 0.4 / cr ** 1.4;
     return [
       {
-        from: "compression",
-        to: "thermal efficiency",
-        gain: Number((dEta * 100).toFixed(3)),
-        unit: "% / ratio",
-        crate: "fs-couple",
-        source: "ts-fallback",
-      },
-      {
-        from: "rpm",
-        to: "brake hp",
-        gain: Number((otto.brakeHorsepower / Math.max(1, params.engineRpm ?? 180)).toFixed(4)),
-        unit: "hp / rpm",
+        from: "engine shaft I",
+        to: "counter-shaft K",
+        gain: 0.5,
+        unit: "revolution / revolution",
         crate: "fs-couple",
         source: "ts-fallback",
       },
@@ -272,12 +257,12 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId === "us-4750-howe-sewing-machine") {
-    const rpm = params.flywheelRpm ?? 200;
-    const howe = stepHoweSewingMachine(rpm, params.stitchTensionGrams ?? 40);
+    const rpm = params.crankRpm ?? 240;
+    const howe = stepHoweSewingMachine(rpm, params.loopSlackPct ?? 65, params.stitchPitchMm ?? 3.5);
     return [
       {
-        from: "flywheel",
-        to: "cloth feed",
+        from: "main shaft C",
+        to: "baster plate H feed",
         gain: Number((howe.clothFeedMmPerS / Math.max(1, rpm)).toFixed(4)),
         unit: "mm/s / rpm",
         crate: "fs-couple",

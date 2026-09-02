@@ -7,6 +7,10 @@ import { LegacyPatentRedirect } from "@/components/patents/LegacyPatentRedirect"
 import { PatentHeader } from "@/components/patents/PatentHeader";
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
 import {
+  archivalEditionForPublication,
+  evaluateArchivalPublicationState,
+} from "@/data/editions/publicationApproval";
+import {
   allPatents,
   getAdjacentPatents,
   getPatentById,
@@ -74,6 +78,8 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
     notFound();
   }
   const colorizedEquations = getColorizedEquationsForPatent(id);
+  const archivalEdition = archivalEditionForPublication(patent);
+  const archivalPublication = evaluateArchivalPublicationState(patent);
   const { prev, next } = getAdjacentPatents(id);
 
   const jsonLd = {
@@ -112,7 +118,11 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
       <PatentHeader patent={patent} />
 
       {/* Dual Projection Viewer (Plain English + Original Spec + Interactive Simulator) */}
-      <div data-archival-edition={patent.archivalEdition?.kind ?? "withheld"}>
+      <div
+        data-archival-edition={archivalEdition?.kind ?? "withheld"}
+        data-archival-publication-state={archivalPublication.state.kind}
+        data-archival-publication-reason={archivalPublication.reasonCode}
+      >
         <DualProjectionViewer patent={patent} colorizedEquations={colorizedEquations} />
       </div>
 

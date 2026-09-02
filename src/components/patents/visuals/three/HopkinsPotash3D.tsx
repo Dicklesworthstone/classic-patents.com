@@ -400,7 +400,7 @@ export function HopkinsPotash3D() {
         />
 
         <PortHamiltonianEnergyStrip
-          patentId="us-1-hopkins-potash"
+          patentId="us-x1-hopkins-potash"
           params={params}
           className="mt-3"
         />

@@ -21,10 +21,10 @@ class PatentTransport {
 
   constructor(patentId: string, tickS = 1 / 60) {
     this.patentId = patentId;
-    this.scheduler = new TickScheduler(
-      tickS,
-      typeof performance !== "undefined" ? performance.now() / 1000 : 0,
-    );
+    // This legacy transport is replay infrastructure, not UI chrome. Anchor
+    // its scheduler at virtual time zero so construction order and machine
+    // uptime cannot change the first admitted tick.
+    this.scheduler = new TickScheduler(tickS, 0);
   }
 
   subscribe(listener: TapeListener): () => void {

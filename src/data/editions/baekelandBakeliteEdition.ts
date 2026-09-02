@@ -22,7 +22,7 @@ export const baekelandBakeliteArchivalEdition: CuratedSpecificationEdition = {
   sourcePdfSha256: "91b63f1cfe7c4a24739ea63c9d45caa8059e74010ae3a2191bed97616a384dc5",
   preparedBy: "Classic Patents editorial agent (MossyCat; cloud-Luna visual review pending)",
   preparedAt: "2026-08-21",
-  completeFacsimileReviewed: true,
+  completeFacsimileReviewed: false,
   drawingStatus: {
     kind: "no-drawings-in-facsimile",
     evidence:

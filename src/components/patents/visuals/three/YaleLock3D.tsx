@@ -264,6 +264,36 @@ export function YaleLock3D({
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="PIN-TUMBLER SHEAR LINE MECHANICS"
+          chips={[
+            { label: "Key Insertion", value: `${(keyInsertion * 100).toFixed(0)}%` },
+            {
+              label: "Applied Torque",
+              value: `${appliedTorqueNm.toFixed(2)}`,
+              unit: "N·m",
+            },
+            {
+              label: "Shear Line",
+              value: yaleState.isUnlocked ? "Aligned Clear" : "Binding Tumbler",
+              tone: yaleState.isUnlocked ? "ok" : "warn",
+            },
+            {
+              label: "Lock Status",
+              value: yaleState.isUnlocked ? "Unlocked & Rotating" : "Locked",
+              tone: yaleState.isUnlocked ? "hot" : "warn",
+            },
+            {
+              label: "Key Profile",
+              value: useAuthorizedKey ? "Factory Milled Bittings" : "Incorrect Blank",
+            },
+            { label: "Tumbler Array", value: "5 Spring-Loaded Driver Pins" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -327,35 +357,6 @@ export function YaleLock3D({
           className="mt-3"
         />
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="PIN-TUMBLER SHEAR LINE MECHANICS"
-        chips={[
-          { label: "Key Insertion", value: `${(keyInsertion * 100).toFixed(0)}%` },
-          {
-            label: "Applied Torque",
-            value: `${appliedTorqueNm.toFixed(2)}`,
-            unit: "N·m",
-          },
-          {
-            label: "Shear Line",
-            value: yaleState.isUnlocked ? "Aligned Clear" : "Binding Tumbler",
-            tone: yaleState.isUnlocked ? "ok" : "warn",
-          },
-          {
-            label: "Lock Status",
-            value: yaleState.isUnlocked ? "Unlocked & Rotating" : "Locked",
-            tone: yaleState.isUnlocked ? "hot" : "warn",
-          },
-          {
-            label: "Key Profile",
-            value: useAuthorizedKey ? "Factory Milled Bittings" : "Incorrect Blank",
-          },
-          { label: "Tumbler Array", value: "5 Spring-Loaded Driver Pins" },
-        ]}
-      />
     </div>
   );
 }

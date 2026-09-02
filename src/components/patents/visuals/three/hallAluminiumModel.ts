@@ -81,12 +81,46 @@ export function createHallAluminiumModel(): HallAluminiumModelNodes {
     roughness: 0.3,
   });
 
+  // Concrete Foundation Plinth & Refractory Support Piers
+  const concreteMat = new THREE.MeshStandardMaterial({
+    color: 0x1e293b,
+    roughness: 0.85,
+    metalness: 0.1,
+  });
+  const plinth = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.4, 3.8), concreteMat);
+  plinth.position.set(0, -1.3, 0);
+  plinth.receiveShadow = true;
+  root.add(plinth);
+
+  // 6 Refractory Insulating Support Piers beneath Pot Shell
+  for (const [px, pz] of [
+    [-1.6, -1.0],
+    [0, -1.0],
+    [1.6, -1.0],
+    [-1.6, 1.0],
+    [0, 1.0],
+    [1.6, 1.0],
+  ]) {
+    const pier = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.25, 0.5), refractoryMaterial);
+    pier.position.set(px, -1.15, pz);
+    root.add(pier);
+  }
+
   // 1. STEEL POT SHELL (A) - Outer box
   const potShellGeometry = new THREE.BoxGeometry(4.2, 1.8, 2.6);
   const potShell = new THREE.Mesh(potShellGeometry, potShellMaterial);
   potShell.position.set(0, -0.2, 0);
   potShell.name = "pot_shell_A";
+  potShell.castShadow = true;
+  potShell.receiveShadow = true;
   root.add(potShell);
+
+  // Negative Cathode Collector Steel Bars exiting Bottom of Pot
+  for (let b = 0; b < 3; b++) {
+    const bar = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.12, 0.15), copperBusMaterial);
+    bar.position.set(0, -1.0, -0.8 + b * 0.8);
+    root.add(bar);
+  }
 
   // 2. THERMAL REFRACTORY INSULATION
   const refractoryGeometry = new THREE.BoxGeometry(4.0, 1.6, 2.4);
@@ -116,6 +150,25 @@ export function createHallAluminiumModel(): HallAluminiumModelNodes {
   cryoliteBath.name = "cryolite_bath_D";
   root.add(cryoliteBath);
 
+  // Anode Superstructure Gantry Frame Columns
+  for (const [gx, gz] of [
+    [-2.0, -1.2],
+    [2.0, -1.2],
+    [-2.0, 1.2],
+    [2.0, 1.2],
+  ]) {
+    const col = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1.4, 0.16), potShellMaterial);
+    col.position.set(gx, 0.8, gz);
+    col.castShadow = true;
+    root.add(col);
+  }
+  // Crossbeams atop Gantry
+  for (const gz of [-1.2, 1.2]) {
+    const crossbeam = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.14, 0.14), potShellMaterial);
+    crossbeam.position.set(0, 1.45, gz);
+    root.add(crossbeam);
+  }
+
   // 6. ANODE ASSEMBLY - 4 Consumable Prebaked Carbon Blocks (C C)
   const anodeAssembly = new THREE.Group();
   anodeAssembly.name = "anode_assembly";
@@ -129,6 +182,7 @@ export function createHallAluminiumModel(): HallAluminiumModelNodes {
     const anodeMesh = new THREE.Mesh(anodeGeo, carbonAnodeMaterial);
     anodeMesh.position.set(xPositions[i], 0.25, 0);
     anodeMesh.name = `carbon_anode_block_${i + 1}`;
+    anodeMesh.castShadow = true;
     anodeAssembly.add(anodeMesh);
     anodeBlocks.push(anodeMesh);
 
@@ -171,13 +225,20 @@ export function createHallAluminiumModel(): HallAluminiumModelNodes {
   bubbleParticles.name = "co2_bubbles";
   root.add(bubbleParticles);
 
-  // 9. ALUMINA POINT FEEDER HOPPER
+  // 9. ALUMINA POINT FEEDER HOPPER & SUPPORT BRACKET
+  const hopperGroup = new THREE.Group();
+  hopperGroup.position.set(0, 0.9, 0.8);
+  root.add(hopperGroup);
+
   const hopperGeo = new THREE.ConeGeometry(0.25, 0.5, 8);
   const feederHopper = new THREE.Mesh(hopperGeo, potShellMaterial);
   feederHopper.rotation.x = Math.PI;
-  feederHopper.position.set(0, 0.9, 0.8);
   feederHopper.name = "alumina_feeder_hopper";
-  root.add(feederHopper);
+  hopperGroup.add(feederHopper);
+
+  const hopperBracket = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.45, 0.35), potShellMaterial);
+  hopperBracket.position.set(0, 0.2, 0.2);
+  hopperGroup.add(hopperBracket);
 
   // 10. MOLTEN ALUMINIUM SIPHON TAP SPOUT
   const spoutGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.7, 12);

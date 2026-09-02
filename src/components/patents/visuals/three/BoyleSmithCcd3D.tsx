@@ -317,6 +317,33 @@ export function BoyleSmithCcd3D() {
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="CHARGE-COUPLED DEVICE SEMICONDUCTOR"
+          chips={[
+            { label: "V_gate", value: `${gateVoltage.toFixed(0)}`, unit: "V" },
+            { label: "f_clock", value: `${clockFreq.toFixed(1)}`, unit: "MHz" },
+            {
+              label: "Full Well",
+              value: `${metrics.fullWellCapacityElectrons.toLocaleString()}`,
+              unit: "e⁻",
+            },
+            {
+              label: "CTE",
+              value: `${metrics.ctePct.toFixed(4)}%`,
+            },
+            {
+              label: "Dark Charge",
+              value: `${metrics.darkElectrons.toFixed(0)}`,
+              unit: "e⁻",
+            },
+            { label: "Integration", value: `${integrationTime.toFixed(1)}`, unit: "ms" },
+            { label: "Architecture", value: "3-Phase Polysilicon MOS Transfer" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -365,32 +392,6 @@ export function BoyleSmithCcd3D() {
           />
         </div>
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="CHARGE-COUPLED DEVICE SEMICONDUCTOR"
-        chips={[
-          { label: "V_gate", value: `${gateVoltage.toFixed(0)}`, unit: "V" },
-          { label: "f_clock", value: `${clockFreq.toFixed(1)}`, unit: "MHz" },
-          {
-            label: "Full Well",
-            value: `${metrics.fullWellCapacityElectrons.toLocaleString()}`,
-            unit: "e⁻",
-          },
-          {
-            label: "CTE",
-            value: `${metrics.ctePct.toFixed(4)}%`,
-          },
-          {
-            label: "Dark Charge",
-            value: `${metrics.darkElectrons.toFixed(0)}`,
-            unit: "e⁻",
-          },
-          { label: "Integration", value: `${integrationTime.toFixed(1)}`, unit: "ms" },
-          { label: "Architecture", value: "3-Phase Polysilicon MOS Transfer" },
-        ]}
-      />
     </div>
   );
 }

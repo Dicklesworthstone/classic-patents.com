@@ -341,4 +341,36 @@ describe("US 3,541,541 Douglas Engelbart Mouse manual archival edition", () => {
       /^--- REVIEWED TRANSCRIPTION PAGE 7 OF 7 ---\s*said computer\./,
     );
   });
+
+  test("provides valid provenance classifications for all Engelbart controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-3541541-engelbart-mouse"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("registers explicit energy channel omission reason for Engelbart", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-3541541-engelbart-mouse"]).toBeDefined();
+    expect(energyChannelsFor("us-3541541-engelbart-mouse", {})).toEqual([]);
+  });
+
+  test("enforces ledger acceptance pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(engelbartMousePatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_LEDGER_ACCEPTANCE_PENDING");
+  });
 });

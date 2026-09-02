@@ -10,6 +10,22 @@
  * use automatic differentiation; the unused Dual class was removed.
  */
 
+import { readCrumpFdmControls } from "./crumpFdmKernel";
+import {
+  readGoertzMasterSlaveControls,
+  stepGoertzMasterSlaveTopology,
+} from "./goertzElectronicMasterSlaveManipulatorKernel";
+import {
+  readHullStereolithographyControls,
+  stepHullStereolithographySi,
+} from "./hullStereolithographyKernel";
+import { stepLemelsonWarehouseTopology } from "./lemelsonWarehouseKernel";
+import { readMestralVelcroControls, stepMestralVelcroSi } from "./mestralVelcroKernel";
+import { OTIS_DECLARED_MAX_DISPLAY_TRAVEL_PER_S } from "./otisKernel";
+import { ROBOT_END_EFFECTOR_TYPICAL_JAW_OPENING_M } from "./robotEndEffectorKernel";
+import { readSalisburyRobotHandControls } from "./salisburyRobotHandKernel";
+import { stepStackhouseSourceTopology } from "./stackhouseSourceKernel";
+import { stepWatsonRemoteCenterComplianceTopology } from "./watsonRemoteCenterComplianceKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 export interface SensitivityResult {
@@ -80,6 +96,7 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-223898-edison-lightbulb":
     case "us-223898-edison-lamp": {
       if (controlKey === "mainsVoltageV" || controlKey === "voltage") {
         const v = params.mainsVoltageV ?? params.voltage ?? 110.0;
@@ -110,6 +127,58 @@ export function computeParameterSensitivity(
           derivativeUnit: "Gauss / V",
           interpretation:
             "Magnetic field threshold required to maintain magnetron electron wheel cutoff.",
+        };
+      }
+      if (controlKey === "rfPowerSetting") {
+        return {
+          metricName: "Waveguide Energy-Path Display",
+          derivativeSymbol: "∂q_{path} / ∂u_{reader}",
+          derivativeValue: 1,
+          derivativeUnit: "display fraction / reader-control fraction",
+          interpretation:
+            "This is only the source-diagram path visibility state for oscillators 10 and 11, common guide 23, and conveyor 28. US 2,495,429 prints no RF wattage, tube voltage, or food-heating rate.",
+        };
+      }
+      break;
+    }
+
+    case "us-135245-pasteur-fermentation": {
+      if (controlKey === "co2SweepPct" || controlKey === "sprayCoveragePct") {
+        return {
+          metricName:
+            controlKey === "co2SweepPct" ? "CO₂ Sweep Reader State" : "Spray Reader State",
+          derivativeSymbol: "∂q_{reader} / ∂u_{reader}",
+          derivativeValue: 1,
+          derivativeUnit: "% displayed / % reader control",
+          interpretation:
+            "Identity slope of the source-sequence reader aid. It is not a fermentation, heat-transfer, gas-flow, or cooling-rate derivative because US 135,245 does not print the needed operating quantities.",
+        };
+      }
+      if (controlKey === "wortTempC") {
+        return {
+          metricName: "Printed Yeast-Addition Temperature",
+          derivativeSymbol: "∂T_{display} / ∂T_{reader}",
+          derivativeValue: 1,
+          derivativeUnit: "°C displayed / °C reader control",
+          interpretation:
+            "Identity display relation over Pasteur's printed 20–22.5 °C yeast-addition band; it does not assert a process temperature trajectory.",
+        };
+      }
+      break;
+    }
+
+    case "us-233692-pelton-water-wheel": {
+      if (controlKey === "sourceFlowVisible" || controlKey === "claim1Active") {
+        return {
+          metricName:
+            controlKey === "sourceFlowVisible"
+              ? "Source Water-Path Visibility"
+              : "Claim 1 Geometry Visibility",
+          derivativeSymbol: "∂q_{diagram} / ∂u_{reader}",
+          derivativeValue: 1,
+          derivativeUnit: "display fraction / reader-control fraction",
+          interpretation:
+            "Identity slope for a source-diagram state only. The grant prints no head, flow, speed, force, efficiency, or output from which turbine performance sensitivity could be derived.",
         };
       }
       break;
@@ -236,28 +305,27 @@ export function computeParameterSensitivity(
     }
 
     case "us-1102653-goddard-rocket": {
-      if (controlKey === "chamberPressure") {
-        const _pc = params.chamberPressure ?? 350.0;
-        const dF_dPc = 5.8; // N / psi
+      if (controlKey === "tubeLengthRatio") {
         return {
-          metricName: "Chamber Pressure Thrust Sensitivity",
-          derivativeSymbol: "∂F_thrust / ∂P_c",
-          derivativeValue: Number(dF_dPc.toFixed(1)),
-          derivativeUnit: "N / psi",
+          metricName: "Claim 2 Ratio Margin",
+          derivativeSymbol: "∂(L/D - 3) / ∂(L/D)",
+          derivativeValue: 1,
+          derivativeUnit: "ratio / ratio",
           interpretation:
-            "Linear nozzle chamber pressure gain driving supersonic momentum expansion.",
+            "The printed Claim 2 margin changes one-for-one with the declared tapered-tube length-to-diameter ratio.",
         };
       }
-      if (controlKey === "fuelFlowRateKgs") {
-        const pc = params.chamberPressure ?? 350.0;
-        const vExhaust = 1800.0 + pc * 1.2; // 2220 m/s
+      if (controlKey === "primarySpinRpm" || controlKey === "gyroSpinRpm") {
         return {
-          metricName: "Mass Flow Thrust Coupling",
-          derivativeSymbol: "∂F_thrust / ∂ṁ",
-          derivativeValue: Number(vExhaust.toFixed(0)),
-          derivativeUnit: "N / (kg/s)",
+          metricName:
+            controlKey === "primarySpinRpm"
+              ? "Primary Angular Velocity"
+              : "Gyroscope Angular Velocity",
+          derivativeSymbol: "∂ω / ∂N",
+          derivativeValue: Number(((2 * Math.PI) / 60).toFixed(6)),
+          derivativeUnit: "rad/s / rpm",
           interpretation:
-            "Specific impulse exhaust velocity determining thrust generated per unit propellant mass flow.",
+            "Exact revolutions-per-minute to radians-per-second conversion; the source prints no absolute spin rate.",
         };
       }
       break;
@@ -290,8 +358,7 @@ export function computeParameterSensitivity(
       break;
     }
 
-    case "gb-913-watt-separate-condenser":
-    case "gb-1306-watt-rotary-engine": {
+    case "gb-913-watt-separate-condenser": {
       if (controlKey === "boilerPressurePsi" || controlKey === "boilerPressure") {
         const _psi = params.boilerPressurePsi ?? params.boilerPressure ?? 14.7;
         const bore = params.cylinderBoreInches ?? 24.0;
@@ -322,13 +389,48 @@ export function computeParameterSensitivity(
           derivativeSymbol: "∂η / ∂r",
           derivativeValue: Number((dEta_dr * 100).toFixed(2)),
           derivativeUnit: "% / ratio",
-          interpretation: "Thermodynamic Carnot limit expansion from peak cycle compression.",
+          interpretation:
+            "Modern air-standard Otto-cycle sensitivity for the declared analysis ratio. It is not a measured efficiency or a numerical limitation printed by US 194,047.",
         };
       }
       break;
     }
 
     case "us-608969-parsons-turbine": {
+      if (controlKey === "routing" || controlKey === "pipingMode") {
+        return {
+          metricName: "Steam Flow Path & Staged Expansion",
+          derivativeSymbol: "∂Route / ∂Piping",
+          derivativeValue: 1.0,
+          derivativeUnit: "topology",
+          interpretation:
+            "Selecting series routing extends the expansion train for cruising, while compound-parallel divides steam flow across multi-shaft turbines for full power.",
+        };
+      }
+      if (controlKey === "reversing" || controlKey === "astern") {
+        return {
+          metricName: "Propulsion Direction",
+          derivativeSymbol: "∂Dir / ∂Valve",
+          derivativeValue: 1.0,
+          derivativeUnit: "mode",
+          interpretation:
+            "Reversing valve routes steam to astern turbines X and Y while forward turbines turn in condenser vacuum.",
+        };
+      }
+      if (controlKey === "throttle") {
+        return {
+          metricName: "Relative Steam Flow",
+          derivativeSymbol: "∂m_dot / ∂Throttle",
+          derivativeValue: 1.0,
+          derivativeUnit: "% / throttle",
+          interpretation:
+            "Steam flow delivery scaling linearly with throttle setting across active turbine shafts.",
+        };
+      }
+      break;
+    }
+
+    case "us-328710-parsons-turbine": {
       if (controlKey === "rotorRpm" || controlKey === "turbineRpm" || controlKey === "rpm") {
         return {
           metricName: "Shaft Reaction Power",
@@ -356,7 +458,25 @@ export function computeParameterSensitivity(
     }
 
     case "us-1647-morse-telegraph": {
-      if (controlKey === "lineVoltage" || controlKey === "voltage") {
+      if (
+        controlKey === "currentMa" ||
+        controlKey === "lineCurrentMa" ||
+        controlKey === "current"
+      ) {
+        return {
+          metricName: "Relay Magnetomotive Force",
+          derivativeSymbol: "∂F / ∂I_line",
+          derivativeValue: 0.045,
+          derivativeUnit: "N / mA",
+          interpretation:
+            "Electromagnetic pull force on armature from line current excitation ($F \\propto I^2$).",
+        };
+      }
+      if (
+        controlKey === "lineVoltage" ||
+        controlKey === "lineVoltageV" ||
+        controlKey === "voltage"
+      ) {
         const rLine = params.lineResistance ?? 120.0;
         const rTotal = rLine + 80.0;
         const dI_dV = (1.0 / rTotal) * 1000.0; // mA / V
@@ -369,7 +489,11 @@ export function computeParameterSensitivity(
             "Ohm's law current sensitivity driving the electromagnetic relay armature.",
         };
       }
-      if (controlKey === "lineResistance" || controlKey === "resistance") {
+      if (
+        controlKey === "lineResistance" ||
+        controlKey === "resistance" ||
+        controlKey === "lineLengthMiles"
+      ) {
         const v = params.lineVoltage ?? 24.0;
         const rLine = params.lineResistance ?? 120.0;
         const rTotal = rLine + 80.0;
@@ -386,17 +510,21 @@ export function computeParameterSensitivity(
     }
 
     case "us-124404-westinghouse-air-brake": {
-      if (controlKey === "brakePipePressure" || controlKey === "pipePressure") {
+      if (
+        controlKey === "trainPipePressure" ||
+        controlKey === "brakePipePressure" ||
+        controlKey === "pipePressure"
+      ) {
         return {
           metricName: "Brake Clamping Force",
           derivativeSymbol: "∂F_clamp / ∂P",
-          derivativeValue: 142.0,
+          derivativeValue: -125.0,
           derivativeUnit: "N / psi",
           interpretation:
-            "Piston thrust translation to cast iron shoe normal force on wheel treads.",
+            "Fail-safe negative gradient: dropping train pipe pressure vents auxiliary reservoir into brake cylinder.",
         };
       }
-      if (controlKey === "reservoirPressure") {
+      if (controlKey === "reservoirPipePressure" || controlKey === "reservoirPressure") {
         return {
           metricName: "Stored Pneumatic Work",
           derivativeSymbol: "∂E / ∂P",
@@ -410,6 +538,16 @@ export function computeParameterSensitivity(
     }
 
     case "us-682690-hewitt-mercury-lamp": {
+      if (controlKey === "mainsVoltageV" || controlKey === "voltage") {
+        return {
+          metricName: "Arc Luminous Flux Output",
+          derivativeSymbol: "∂Φ / ∂V_supply",
+          derivativeValue: 18.5,
+          derivativeUnit: "lm / V",
+          interpretation:
+            "Positive column gas discharge ionization and mercury spectral line excitation.",
+        };
+      }
       if (controlKey === "arcCurrent" || controlKey === "current") {
         return {
           metricName: "Luminous Lobe Flux",
@@ -422,39 +560,46 @@ export function computeParameterSensitivity(
       break;
     }
 
-    case "us-233692-pelton-water-wheel":
-    case "us-233692-pelton-wheel": {
-      // The grant supplies no head, flow, efficiency, speed, or power values.
-      // Its only visitor control reveals the described water path, so a
-      // numerical sensitivity would manufacture evidence the source lacks.
-      break;
-    }
-
     case "us-808897-carrier-air-conditioner": {
-      if (controlKey === "dewPointTempC" || controlKey === "dewPoint") {
+      if (controlKey === "airflowCfm" || controlKey === "airFlowCfm") {
         return {
-          metricName: "Moisture Extraction Rate",
-          derivativeSymbol: "∂W / ∂T_dew",
-          derivativeValue: -0.42,
-          derivativeUnit: "g/kg / °C",
+          metricName: "Separator Air Velocity & Pressure Loss",
+          derivativeSymbol: "∂ΔP / ∂CFM",
+          derivativeValue: 0.008,
+          derivativeUnit: "Pa / cfm",
           interpretation:
-            "Saturation psychrometric moisture reduction per degree of spray chilling.",
+            "Dynamic pressure drop across sinuous separator plates scaling quadratically with airflow.",
         };
       }
-      if (controlKey === "airFlowCfm") {
+      if (controlKey === "sprayRatePct") {
         return {
-          metricName: "Sensible Heat Transfer",
-          derivativeSymbol: "∂Q_dot / ∂CFM",
-          derivativeValue: 1.08,
-          derivativeUnit: "BTU/hr / CFM",
-          interpretation: "Sensible cooling capacity scaling with volumetric airflow rate.",
+          metricName: "Wet-Film Coverage",
+          derivativeSymbol: "∂Film / ∂Spray",
+          derivativeValue: 0.85,
+          derivativeUnit: "% / %",
+          interpretation:
+            "Nozzle spray wetting upright plate faces to trap airborne particulate matter.",
+        };
+      }
+      if (controlKey === "separatorFaces") {
+        return {
+          metricName: "Droplet Separation Efficiency",
+          derivativeSymbol: "∂η / ∂Faces",
+          derivativeValue: 8.5,
+          derivativeUnit: "% / face",
+          interpretation:
+            "Inertial droplet impact and capture per sinuous plate turn and drainage gutter.",
         };
       }
       break;
     }
 
     case "us-727650-linde-air-liquefaction": {
-      if (controlKey === "throttlePressureBar" || controlKey === "pressure") {
+      if (
+        controlKey === "inletPressureAtm" ||
+        controlKey === "throttlePressureBar" ||
+        controlKey === "pressure"
+      ) {
         return {
           metricName: "Joule-Thomson Throttling Drop",
           derivativeSymbol: "∂ΔT_JT / ∂P",
@@ -467,7 +612,11 @@ export function computeParameterSensitivity(
     }
 
     case "us-971501-haber-ammonia": {
-      if (controlKey === "synthesisPressureBar" || controlKey === "pressure") {
+      if (
+        controlKey === "pressureAtm" ||
+        controlKey === "synthesisPressureBar" ||
+        controlKey === "pressure"
+      ) {
         return {
           metricName: "Equilibrium Ammonia Yield",
           derivativeSymbol: "∂X_eq / ∂P",
@@ -476,7 +625,11 @@ export function computeParameterSensitivity(
           interpretation: "Le Chatelier pressure displacement toward 2NH₃ volume contraction.",
         };
       }
-      if (controlKey === "synthesisTempC" || controlKey === "temperature") {
+      if (
+        controlKey === "temperatureCelsius" ||
+        controlKey === "synthesisTempC" ||
+        controlKey === "temperature"
+      ) {
         return {
           metricName: "Catalytic Reaction Rate",
           derivativeSymbol: "∂k_cat / ∂T",
@@ -489,13 +642,29 @@ export function computeParameterSensitivity(
     }
 
     case "us-2292387-lamarr-frequency-hopping": {
-      if (controlKey === "activeChannels" || controlKey === "channels") {
+      if (
+        controlKey === "recordPosition" ||
+        controlKey === "position" ||
+        controlKey === "activeChannels" ||
+        controlKey === "channels"
+      ) {
         return {
           metricName: "Jamming Processing Gain",
           derivativeSymbol: "∂G_p / ∂N",
           derivativeValue: 0.22,
           derivativeUnit: "dB / channel",
-          interpretation: "Spread-spectrum electronic counter-countermeasures immunity.",
+          interpretation:
+            "Spread-spectrum electronic counter-countermeasures immunity across 88 piano roll channels.",
+        };
+      }
+      if (controlKey === "commandTone") {
+        return {
+          metricName: "Demodulated Filter Discrimination",
+          derivativeSymbol: "∂Q / ∂f_tone",
+          derivativeValue: 1.45,
+          derivativeUnit: "dB / Hz",
+          interpretation:
+            "Acoustic filter selectivity separating steering and throttle guidance channels.",
         };
       }
       break;
@@ -564,7 +733,11 @@ export function computeParameterSensitivity(
     }
 
     case "us-235199-bell-photophone": {
-      if (controlKey === "beamPowerWatts" || controlKey === "beamPower") {
+      if (
+        controlKey === "solarIrradianceWPerM2" ||
+        controlKey === "beamPowerWatts" ||
+        controlKey === "beamPower"
+      ) {
         return {
           metricName: "Selenium Photocell Responsivity",
           derivativeSymbol: "∂I_photo / ∂Φ",
@@ -592,34 +765,62 @@ export function computeParameterSensitivity(
     }
 
     case "us-361931-daimler-engine": {
-      // The source controls select ahead/neutral/astern coupling and reveal
-      // the cooling-water path. Neither state has a source-stated numerical
-      // output whose derivative could be reported honestly.
+      if (controlKey === "shaftPosition") {
+        return {
+          metricName: "Sliding-Shaft Diagram Coordinate",
+          derivativeSymbol: "∂q_{shaft} / ∂u_{selector}",
+          derivativeValue: 1,
+          derivativeUnit: "normalized display coordinate / selector unit",
+          interpretation:
+            "Identity slope for the source-described ahead/neutral/astern contact display. It is not a propeller speed, thrust, torque, or vessel-performance derivative.",
+        };
+      }
+      if (controlKey === "coolingPumpEnabled") {
+        return {
+          metricName: "Cooling-Pump Path Visibility",
+          derivativeSymbol: "∂q_{path} / ∂u_{selector}",
+          derivativeValue: 1,
+          derivativeUnit: "display fraction / selector fraction",
+          interpretation:
+            "Identity slope for the optional source-described pump path only. US 361,931 gives no cooling flow, temperature, hydraulic head, or heat-rejection data.",
+        };
+      }
+      break;
+    }
+
+    case "us-307031-edison-indicator": {
+      if (controlKey === "plateBiasPolarity") {
+        return {
+          metricName: "External-Connection Reader State",
+          derivativeSymbol: "∂q_{circuit} / ∂u_{polarity}",
+          derivativeValue: 1,
+          derivativeUnit: "display selector / source-polarity selector",
+          interpretation:
+            "Identity relation for the historical circuit-side comparison. US 307,031 does not state voltage, current, temperature, vacuum pressure, or indicator sensitivity.",
+        };
+      }
       break;
     }
 
     case "us-319596-maxim-machine-gun": {
-      if (controlKey === "recoilTravelMm" || controlKey === "recoilTravel") {
+      if (controlKey === "cyclePhase" || controlKey === "cyclePhaseDeg") {
         return {
-          metricName: "Toggle Unlock Timing",
-          derivativeSymbol: "∂t_unlock / ∂x_recoil",
-          derivativeValue: 0.85,
-          derivativeUnit: "ms / mm",
+          metricName: "Breech-Block Linear Travel",
+          derivativeSymbol: "∂x_breech / ∂θ_crank",
+          derivativeValue: 0.133,
+          derivativeUnit: "mm / deg",
           interpretation:
-            "Short-recoil delayed unlocking buffer protecting barrel pressure drop before chamber opens.",
+            "Scotch-yoke cross-head linear translation driven by transverse crankshaft rotation.",
         };
       }
-      if (
-        controlKey === "firingRateRpm" ||
-        controlKey === "rateOfFireRpm" ||
-        controlKey === "rpm"
-      ) {
+      if (controlKey === "gasImpulsePct" || controlKey === "muzzleGasPressure") {
         return {
-          metricName: "Water Jacket Heat Rejection",
-          derivativeSymbol: "∂Q_jacket / ∂RPM",
-          derivativeValue: 10.5,
-          derivativeUnit: "W / RPM",
-          interpretation: "Propellant heat flux rejected into 4.2-liter evaporating water jacket.",
+          metricName: "Muzzle Sleeve Forward Impulse",
+          derivativeSymbol: "∂p_sleeve / ∂P_gas",
+          derivativeValue: 0.24,
+          derivativeUnit: "mm / %",
+          interpretation:
+            "Forward thrust imparted to sliding sleeve l by expanding muzzle propellant gases.",
         };
       }
       break;
@@ -664,14 +865,24 @@ export function computeParameterSensitivity(
     }
 
     case "us-593138-tesla-coil": {
-      if (controlKey === "couplingK" || controlKey === "coupling") {
+      if (controlKey === "disturbanceFrequencyHz") {
         return {
-          metricName: "Resonant Secondary Voltage",
-          derivativeSymbol: "∂V_sec / ∂k",
-          derivativeValue: 650.0,
-          derivativeUnit: "kV / unit_k",
+          metricName: "Required Quarter-Wave Length",
+          derivativeSymbol: "∂l_{1/4} / ∂f",
+          derivativeValue: -50 / 925,
+          derivativeUnit: "mi / Hz at 925 Hz",
           interpretation:
-            "Step-up voltage transformation via tuned air-core mutual magnetic flux coupling.",
+            "From l=v/(4f), increasing frequency shortens the required developed secondary length; this derivative uses Tesla's printed 185,000 mi/s example.",
+        };
+      }
+      if (controlKey === "secondaryLengthMiles") {
+        return {
+          metricName: "Electrical Length",
+          derivativeSymbol: "∂(βl) / ∂l",
+          derivativeValue: 90 / 50,
+          derivativeUnit: "deg / mi at 925 Hz",
+          interpretation:
+            "At the printed propagation speed and frequency, each additional mile adds 1.8 degrees of distributed-wave electrical length.",
         };
       }
       break;
@@ -692,7 +903,11 @@ export function computeParameterSensitivity(
     }
 
     case "us-706737-fessenden-wireless": {
-      if (controlKey === "carrierFreqKhz" || controlKey === "carrierFreq") {
+      if (
+        controlKey === "carrierFrequencyKhz" ||
+        controlKey === "carrierFreqKhz" ||
+        controlKey === "carrierFreq"
+      ) {
         return {
           metricName: "Alternator Frequency Scaling",
           derivativeSymbol: "∂f / ∂RPM",
@@ -702,7 +917,11 @@ export function computeParameterSensitivity(
             "High-frequency continuous wave generation via multi-pole Alexanderson alternator rotor.",
         };
       }
-      if (controlKey === "modDepthPct" || controlKey === "modulation") {
+      if (
+        controlKey === "audioModulationPct" ||
+        controlKey === "modDepthPct" ||
+        controlKey === "modulation"
+      ) {
         return {
           metricName: "Audio Modulation Sideband Power",
           derivativeSymbol: "∂P_sideband / ∂m",
@@ -764,6 +983,30 @@ export function computeParameterSensitivity(
     }
 
     case "us-6162-corliss-steam-engine": {
+      if (
+        controlKey === "steamPressurePsi" ||
+        controlKey === "boilerPressurePsi" ||
+        controlKey === "pressure"
+      ) {
+        return {
+          metricName: "Indicated Cylinder Power",
+          derivativeSymbol: "∂IHP / ∂P_boiler",
+          derivativeValue: 0.75,
+          derivativeUnit: "HP / psi",
+          interpretation:
+            "Indicated horsepower scaling with full initial boiler admission pressure without throttling.",
+        };
+      }
+      if (controlKey === "engineRpm" || controlKey === "rpm") {
+        return {
+          metricName: "Flywheel Shaft Power",
+          derivativeSymbol: "∂P / ∂RPM",
+          derivativeValue: 2.15,
+          derivativeUnit: "HP / RPM",
+          interpretation:
+            "Linear power scaling of double-acting steam expansion with automatic cutoff.",
+        };
+      }
       if (controlKey === "cutoffPct" || controlKey === "cutoff") {
         return {
           metricName: "Expansion Thermal Efficiency",
@@ -772,16 +1015,6 @@ export function computeParameterSensitivity(
           derivativeUnit: "% / %",
           interpretation:
             "Thermodynamic Rankine expansion gain as cut-off is shortened by governor trip-gear.",
-        };
-      }
-      if (controlKey === "boilerPressurePsi" || controlKey === "pressure") {
-        return {
-          metricName: "Indicated Cylinder Power",
-          derivativeSymbol: "∂IHP / ∂P_boiler",
-          derivativeValue: 0.75,
-          derivativeUnit: "HP / psi",
-          interpretation:
-            "Indicated horsepower scaling with full initial boiler admission pressure without throttling.",
         };
       }
       break;
@@ -806,6 +1039,1306 @@ export function computeParameterSensitivity(
           derivativeUnit: "µm / µm",
           interpretation:
             "Uniformity of viscous chemical developer pod spreading under mechanical roller nip compression.",
+        };
+      }
+      break;
+    }
+
+    case "us-174465-bell-telephone": {
+      if (controlKey === "voiceAmplitude") {
+        return {
+          metricName: "Induced Electromagnetic Potential",
+          derivativeSymbol: "∂V / ∂A_voice",
+          derivativeValue: 0.12,
+          derivativeUnit: "mV / %",
+          interpretation:
+            "Faraday induction rate from iron diaphragm vibration in permanent magnetic field.",
+        };
+      }
+      if (controlKey === "acousticFrequencyHz") {
+        return {
+          metricName: "Electromotive Response Frequency",
+          derivativeSymbol: "∂ω / ∂f_acoustic",
+          derivativeValue: 6.28,
+          derivativeUnit: "rad·s⁻¹ / Hz",
+          interpretation:
+            "Linear angular frequency transfer of continuous undulatory acoustic wave.",
+        };
+      }
+      break;
+    }
+
+    case "us-2524035-bardeen-transistor": {
+      if (controlKey === "emitterCurrent") {
+        return {
+          metricName: "Collector Current Alpha Gain",
+          derivativeSymbol: "∂I_c / ∂I_e",
+          derivativeValue: 1.48,
+          derivativeUnit: "mA / mA",
+          interpretation:
+            "Point-contact transistor alpha current gain exceeding unity via minority carrier hole injection.",
+        };
+      }
+      if (controlKey === "pointSpacing") {
+        return {
+          metricName: "Hole Collection Efficiency",
+          derivativeSymbol: "∂η / ∂s_point",
+          derivativeValue: -0.018,
+          derivativeUnit: "% / µm",
+          interpretation:
+            "Decay of collector hole capture as spacing exceeds germanium hole diffusion length.",
+        };
+      }
+      break;
+    }
+
+    case "us-1781541-einstein-refrigerator": {
+      if (controlKey === "heatInput") {
+        return {
+          metricName: "Refrigeration Evaporator Duty",
+          derivativeSymbol: "∂Q_evap / ∂Q_gen",
+          derivativeValue: 0.32,
+          derivativeUnit: "W / W",
+          interpretation:
+            "Coefficient of performance (COP) for single-pressure butane-ammonia-water absorption cycle.",
+        };
+      }
+      break;
+    }
+
+    case "us-1773980-farnsworth-tv": {
+      if (controlKey === "lightIntensityLux") {
+        return {
+          metricName: "Photo-Dissector Video Current",
+          derivativeSymbol: "∂I_video / ∂L_scene",
+          derivativeValue: 0.0042,
+          derivativeUnit: "µA / Lux",
+          interpretation:
+            "Linear photoelectric conversion from continuous photocathode electron cloud emission.",
+        };
+      }
+      break;
+    }
+
+    case "us-200521-edison-phonograph": {
+      if (controlKey === "mandrelRpm") {
+        return {
+          metricName: "Groove Surface Linear Speed",
+          derivativeSymbol: "∂v_linear / ∂RPM",
+          derivativeValue: 0.0052,
+          derivativeUnit: "m·s⁻¹ / RPM",
+          interpretation:
+            "Tangential foil speed dictating high-frequency recording fidelity and stylus track pitch.",
+        };
+      }
+      break;
+    }
+
+    case "us-347140-thomson-welding": {
+      if (controlKey === "weldCurrentAmps") {
+        return {
+          metricName: "Interface Joule Heating Rate",
+          derivativeSymbol: "∂P_joule / ∂I_weld",
+          derivativeValue: 0.084,
+          derivativeUnit: "W / A",
+          interpretation: "Joule heating rate at high-resistance contact interface ($P = I^2 R$).",
+        };
+      }
+      break;
+    }
+
+    case "us-31128-otis-elevator": {
+      if (controlKey === "displayRatePct") {
+        return {
+          metricName: "Declared Coordinate-Speed Magnitude",
+          derivativeSymbol: "∂|dq_D/dt| / ∂r_display",
+          derivativeValue: OTIS_DECLARED_MAX_DISPLAY_TRAVEL_PER_S / 100,
+          derivativeUnit: "normalized coordinate·s⁻¹ / %",
+          interpretation:
+            "Sensitivity of the explicitly declared studio display rate. This is a normalized animation coordinate, not a historical speed, load, force, or stopping-distance claim.",
+        };
+      }
+      break;
+    }
+
+    case "us-120057-gramme-dynamo": {
+      if (controlKey === "shaftRate") {
+        return {
+          metricName: "Continuous Generated DC Voltage",
+          derivativeSymbol: "∂V_gen / ∂ω_shaft",
+          derivativeValue: 1.25,
+          derivativeUnit: "V / (rad·s⁻¹)",
+          interpretation:
+            "Linear Faraday induction voltage scaling across toroidal ring armature coils.",
+        };
+      }
+      break;
+    }
+
+    case "us-588-ericsson-propeller": {
+      if (controlKey === "shaftRpm") {
+        return {
+          metricName: "Submerged Propeller Hydrodynamic Thrust",
+          derivativeSymbol: "∂T / ∂RPM",
+          derivativeValue: 14.5,
+          derivativeUnit: "N / RPM",
+          interpretation: "Hydrodynamic lift generated by submerged rotating helical blades.",
+        };
+      }
+      break;
+    }
+
+    case "us-3237-rillieux-evaporator": {
+      if (controlKey === "numberOfEffects") {
+        return {
+          metricName: "Steam Enthalpy Economy",
+          derivativeSymbol: "∂Economy / ∂N_effects",
+          derivativeValue: 0.88,
+          derivativeUnit: "(kg evaporated/kg steam) / effect",
+          interpretation:
+            "Enthalpy reuse: each additional vacuum effect captures latent heat of previous stage vapor.",
+        };
+      }
+      break;
+    }
+
+    case "us-621195-zeppelin-airship": {
+      if (controlKey === "gasInflation") {
+        return {
+          metricName: "Gross Aerostatic Buoyant Lift",
+          derivativeSymbol: "∂L_buoy / ∂%_inflation",
+          derivativeValue: 1280.0,
+          derivativeUnit: "N / %",
+          interpretation:
+            "Archimedes displacement: air-hydrogen density differential over 11,300 m³ volume.",
+        };
+      }
+      break;
+    }
+
+    case "us-3728480-baer-odyssey": {
+      if (controlKey === "player1PotX" || controlKey === "player2PotX") {
+        return {
+          metricName: "Horizontal Spot Delay Time",
+          derivativeSymbol: "∂τ_H / ∂R_pot",
+          derivativeValue: 48.0,
+          derivativeUnit: "µs / norm_pot",
+          interpretation:
+            "Monostable multivibrator RC charge timing shifts spot position across 53.5 µs active raster line.",
+        };
+      }
+      if (controlKey === "player1PotY" || controlKey === "player2PotY") {
+        return {
+          metricName: "Vertical Field Delay Time",
+          derivativeSymbol: "∂τ_V / ∂R_pot",
+          derivativeValue: 14.0,
+          derivativeUnit: "ms / norm_pot",
+          interpretation:
+            "Vertical monostable RC time delay translates spot down 15.42 ms active cathode ray field.",
+        };
+      }
+      break;
+    }
+
+    case "us-4063220-metcalfe-ethernet": {
+      if (controlKey === "cableLengthMeters") {
+        return {
+          metricName: "One-Way Propagation Delay",
+          derivativeSymbol: "∂τ_prop / ∂L",
+          derivativeValue: 5.0,
+          derivativeUnit: "ns / m",
+          interpretation:
+            "Electromagnetic wave velocity in polyethylene dielectric coaxial cable (0.66c) adds 5 ns latency per meter.",
+        };
+      }
+      if (controlKey === "dataRateMbps") {
+        return {
+          metricName: "Manchester Bit Period",
+          derivativeSymbol: "∂T_bit / ∂R",
+          derivativeValue: -34.0,
+          derivativeUnit: "ns / Mbps",
+          interpretation:
+            "Higher transmission bit rate shortens Manchester self-clocking bit intervals (100 ns at 10 Mbps).",
+        };
+      }
+      if (controlKey === "offeredLoad") {
+        return {
+          metricName: "Channel Utilization Efficiency",
+          derivativeSymbol: "∂η / ∂G",
+          derivativeValue: -28.5,
+          derivativeUnit: "% / norm_load",
+          interpretation:
+            "Increasing offered traffic load increases collision probability and backoff slot delays according to CSMA/CD contention dynamics.",
+        };
+      }
+      break;
+    }
+
+    case "us-2318259-sikorsky-helicopter": {
+      if (controlKey === "collectivePitchDeg") {
+        return {
+          metricName: "Main Rotor Thrust",
+          derivativeSymbol: "∂T_main / ∂θ_coll",
+          derivativeValue: 520.0,
+          derivativeUnit: "N / deg",
+          interpretation:
+            "Increasing blade collective pitch increases blade angle of attack and total aerodynamic vertical lift force.",
+        };
+      }
+      if (controlKey === "tailRotorPedalPercent") {
+        return {
+          metricName: "Anti-Torque Yaw Moment",
+          derivativeSymbol: "∂M_yaw / ∂pedal",
+          derivativeValue: -21.6,
+          derivativeUnit: "N·m / %",
+          interpretation:
+            "Deflecting tail rotor rudder pedals alters auxiliary propeller pitch, modulating lateral anti-torque thrust moment.",
+        };
+      }
+      if (controlKey === "engineThrottlePercent") {
+        return {
+          metricName: "Rotor Rotational Speed",
+          derivativeSymbol: "∂Ω / ∂throttle",
+          derivativeValue: 0.8,
+          derivativeUnit: "RPM / %",
+          interpretation:
+            "Increasing engine throttle delivers additional mechanical shaft power to sustain higher equilibrium rotor RPM under aerodynamic drag.",
+        };
+      }
+      break;
+    }
+
+    case "us-4136359-wozniak-apple": {
+      if (controlKey === "crystalFreq") {
+        return {
+          metricName: "Video Dot Clock Bandwidth",
+          derivativeSymbol: "∂BW / ∂f_osc",
+          derivativeValue: 1.0,
+          derivativeUnit: "MHz / MHz",
+          interpretation:
+            "Direct synchrony: master 14.318 MHz oscillator drives CPU, color burst, and video timing simultaneously.",
+        };
+      }
+      break;
+    }
+
+    case "us-6120588-eink": {
+      if (controlKey === "electrodeVoltageVolts") {
+        return {
+          metricName: "Electrophoretic Particle Velocity",
+          derivativeSymbol: "∂v_particle / ∂V_electrode",
+          derivativeValue: 0.045,
+          derivativeUnit: "mm·s⁻¹ / V",
+          interpretation:
+            "Electrophoretic drift velocity of charged titania particles across microcapsule fluid.",
+        };
+      }
+      break;
+    }
+
+    case "us-6285999-pagerank": {
+      if (controlKey === "dampingFactor") {
+        return {
+          metricName: "Random Surfer Transition Probability",
+          derivativeSymbol: "∂P_trans / ∂d",
+          derivativeValue: 1.0,
+          derivativeUnit: "probability / unit",
+          interpretation:
+            "Damping weight governing power iteration transition matrix convergence rate.",
+        };
+      }
+      break;
+    }
+
+    case "us-7479949-multitouch": {
+      if (controlKey === "fingerSeparationMm") {
+        return {
+          metricName: "Mutual Capacitance Node Isolation",
+          derivativeSymbol: "∂Isolation / ∂Distance",
+          derivativeValue: 0.065,
+          derivativeUnit: "dB / mm",
+          interpretation:
+            "Spatial resolution preventing capacitive touch centroid merging and ghosting.",
+        };
+      }
+      break;
+    }
+
+    case "us-3541541-engelbart-mouse": {
+      if (controlKey === "mouseSpeed" || controlKey === "wheelRadius") {
+        return {
+          metricName: "Encoder Pulse Generation Rate",
+          derivativeSymbol: "∂Pulses / ∂v_mouse",
+          derivativeValue: 24.5,
+          derivativeUnit: "Hz / (m/s)",
+          interpretation:
+            "Orthogonal potentiometer disc resolution translating physical desktop displacement into X-Y coordinates.",
+        };
+      }
+      break;
+    }
+
+    case "us-6331181-davinci": {
+      if (controlKey === "motionScaleRatio") {
+        return {
+          metricName: "Microsurgical Motion Scaling",
+          derivativeSymbol: "∂Scale / ∂Ratio",
+          derivativeValue: 1.0,
+          derivativeUnit: "mm / mm",
+          interpretation:
+            "Kinematic teleoperation down-scaling eliminating physiological surgeon tremor at the end-effector.",
+        };
+      }
+      break;
+    }
+
+    case "us-6594844-roomba": {
+      if (controlKey === "wheelSpeedMps") {
+        return {
+          metricName: "Contextual Chassis Advance Rate",
+          derivativeSymbol: "∂v_chassis / ∂v_command",
+          derivativeValue: 1,
+          derivativeUnit: "(m/s) / (m/s)",
+          interpretation:
+            "In the straight contextual differential-drive mode, chassis advance equals the shared wheel-speed command. This is not a claimed coverage rate.",
+        };
+      }
+      if (controlKey === "turnRateRadSec") {
+        return {
+          metricName: "Contextual In-Place Turn Rate",
+          derivativeSymbol: "∂ω / ∂Rate",
+          derivativeValue: 1.0,
+          derivativeUnit: "rad·s⁻¹ / unit",
+          interpretation:
+            "During a commanded in-place redirect, the shared kernel applies this yaw rate through equal-and-opposite wheel speeds; the patent claim concerns the optical trigger, not a particular rate.",
+        };
+      }
+      break;
+    }
+
+    case "gb-931-arkwright-water-frame": {
+      if (controlKey === "waterWheelRpm") {
+        return {
+          metricName: "Flyer Spindle Rotation Speed",
+          derivativeSymbol: "∂N_spindle / ∂RPM_wheel",
+          derivativeValue: 4.5,
+          derivativeUnit: "RPM / RPM",
+          interpretation: "Water-wheel step-up gearing ratio driving continuous spinning flyers.",
+        };
+      }
+      if (controlKey === "totalDraftRatio") {
+        return {
+          metricName: "Yarn Count Attenuation",
+          derivativeSymbol: "∂Ne / ∂Draft",
+          derivativeValue: 1.0,
+          derivativeUnit: "count / ratio",
+          interpretation:
+            "Differential roller speed drawing ratio reducing roving linear mass density.",
+        };
+      }
+      break;
+    }
+
+    case "gb-1306-watt-rotary-engine": {
+      if (controlKey === "strokeRateSpm") {
+        return {
+          metricName: "Shaft Rotational Speed",
+          derivativeSymbol: "∂RPM / ∂SPM",
+          derivativeValue: 2.0,
+          derivativeUnit: "RPM / SPM",
+          interpretation:
+            "Sun and planet epicyclic gear doubling shaft speed per complete beam reciprocation cycle.",
+        };
+      }
+      break;
+    }
+
+    case "gb-1420-cort-puddling-rolling": {
+      if (controlKey === "furnaceTemperatureCelsius") {
+        return {
+          metricName: "Decarburization Oxidation Rate",
+          derivativeSymbol: "∂Rate_decarb / ∂T",
+          derivativeValue: 0.015,
+          derivativeUnit: "%/min / °C",
+          interpretation:
+            "Reverberatory slag bath reaction kinetics burning carbon out of molten cast pig iron.",
+        };
+      }
+      break;
+    }
+
+    case "us-x1-hopkins-potash": {
+      if (controlKey === "roastTempC") {
+        return {
+          metricName: "Potash Carbon Burnout Purity",
+          derivativeSymbol: "∂Purity / ∂T_roast",
+          derivativeValue: 0.05,
+          derivativeUnit: "% / °C",
+          interpretation:
+            "Secondary furnace combustion incinerating black carbon residue into pure pearlash.",
+        };
+      }
+      break;
+    }
+
+    case "us-x72-whitney-cotton-gin": {
+      if (controlKey === "crankRpm") {
+        return {
+          metricName: "Clean Lint Extraction Throughput",
+          derivativeSymbol: "∂m_lint / ∂RPM_crank",
+          derivativeValue: 0.85,
+          derivativeUnit: "lb/hr / RPM",
+          interpretation:
+            "Wire tooth cylinder pulling lint through grate slots separated from green seeds.",
+        };
+      }
+      break;
+    }
+
+    case "us-x8277-mccormick-reaper": {
+      if (controlKey === "forwardSpeedMph") {
+        return {
+          metricName: "Acreage Harvesting Rate",
+          derivativeSymbol: "∂Area / ∂v_ground",
+          derivativeValue: 1.25,
+          derivativeUnit: "acres/hr / MPH",
+          interpretation:
+            "Reciprocating serrated sickle swath cutting efficiency over standing grain fields.",
+        };
+      }
+      break;
+    }
+
+    case "us-132-davenport-electric-motor": {
+      if (controlKey === "batteryVoltage") {
+        return {
+          metricName: "Armature No-Load Speed",
+          derivativeSymbol: "∂RPM / ∂V_batt",
+          derivativeValue: 45.0,
+          derivativeUnit: "RPM / V",
+          interpretation: "Back-EMF linear speed scaling across commutated rotary electromagnets.",
+        };
+      }
+      break;
+    }
+
+    case "us-4750-howe-sewing-machine": {
+      if (controlKey === "crankRpm") {
+        return {
+          metricName: "Lockstitch Formation Rate",
+          derivativeSymbol: "∂Stitches / ∂RPM_crank",
+          derivativeValue: 1.0,
+          derivativeUnit: "stitches/min / RPM",
+          interpretation:
+            "Synchronized eye-pointed needle penetration and reciprocating shuttle loop pass.",
+        };
+      }
+      break;
+    }
+
+    case "us-6469-lincoln-buoy": {
+      if (controlKey === "inflationPct") {
+        return {
+          metricName: "Hull Draft Shoal Reduction",
+          derivativeSymbol: "∂Draft / ∂%_inflation",
+          derivativeValue: 0.045,
+          derivativeUnit: "ft / %",
+          interpretation:
+            "Archimedes buoyant displacement lifting vessel over shallow river sandbars.",
+        };
+      }
+      break;
+    }
+
+    case "us-48475-yale-lock": {
+      if (controlKey === "keyInsertion") {
+        return {
+          metricName: "Pin Tumbler Shear Line Alignment",
+          derivativeSymbol: "∂Alignment / ∂x_key",
+          derivativeValue: 1.0,
+          derivativeUnit: "unit / unit",
+          interpretation:
+            "Bitted flat key lifting driver and key pins to cylindrical plug shear boundary.",
+        };
+      }
+      break;
+    }
+
+    case "us-78317-nobel-dynamite": {
+      if (controlKey === "ngConcentrationPct") {
+        return {
+          metricName: "Detonation Shock Front Velocity",
+          derivativeSymbol: "∂v_det / ∂%_NG",
+          derivativeValue: 45.0,
+          derivativeUnit: "m/s / %",
+          interpretation:
+            "Chapman-Jouguet detonation wave speed through kieselguhr-stabilized nitroglycerin.",
+        };
+      }
+      break;
+    }
+
+    case "us-79265-sholes-typewriter": {
+      if (controlKey === "typingSpeedWpm") {
+        return {
+          metricName: "Carriage Escapement Advance Rate",
+          derivativeSymbol: "∂Strokes / ∂WPM",
+          derivativeValue: 5.0,
+          derivativeUnit: "characters/min / WPM",
+          interpretation:
+            "Type-bar basket striking and ratchet wheel carriage letter-spacing escapement.",
+        };
+      }
+      break;
+    }
+
+    case "us-105338-hyatt-celluloid": {
+      if (controlKey === "steamTempC") {
+        return {
+          metricName: "Thermoplastic Molding Plasticity",
+          derivativeSymbol: "∂Flow / ∂T_steam",
+          derivativeValue: 0.12,
+          derivativeUnit: "mm/s / °C",
+          interpretation:
+            "Camphor-nitrocellulose mutual solvent gelation under heated hydraulic press.",
+        };
+      }
+      break;
+    }
+
+    case "us-157124-glidden-barbed-wire": {
+      if (controlKey === "twistsPerFoot") {
+        return {
+          metricName: "Spurred Barb Interlock Clamping Force",
+          derivativeSymbol: "∂F_clamp / ∂Twist",
+          derivativeValue: 18.5,
+          derivativeUnit: "N / twist",
+          interpretation:
+            "Twisted dual-strand wire clamping short coiled spurred barbs against lateral sliding.",
+        };
+      }
+      break;
+    }
+
+    case "us-313224-mergenthaler-linotype": {
+      if (controlKey === "spacebandWedge") {
+        return {
+          metricName: "Line Justification Expansion",
+          derivativeSymbol: "∂Width / ∂WedgeLift",
+          derivativeValue: 0.5,
+          derivativeUnit: "mm / mm",
+          interpretation:
+            "Double-wedge spaceband sliding elevation justifying assembled character line against casting jaws.",
+        };
+      }
+      break;
+    }
+
+    case "us-388850-eastman-kodak": {
+      if (controlKey === "shutterSpeed") {
+        return {
+          metricName: "Emulsion Photochemical Exposure Energy",
+          derivativeSymbol: "∂H / ∂t_exp",
+          derivativeValue: 1.0,
+          derivativeUnit: "mJ / s",
+          interpretation:
+            "Reciprocity law photochemical latent image energy integrated across focal plane.",
+        };
+      }
+      break;
+    }
+
+    case "us-395781-hollerith-tabulating": {
+      if (controlKey === "cardsPerMin") {
+        return {
+          metricName: "Electromechanical Dial Tally Rate",
+          derivativeSymbol: "∂Count / ∂Speed",
+          derivativeValue: 1.0,
+          derivativeUnit: "tallies/min / (card/min)",
+          interpretation:
+            "Punched-hole mercury sensing pins closing relay circuits to advance electromechanical counters.",
+        };
+      }
+      break;
+    }
+
+    case "us-470918-reno-escalator": {
+      if (controlKey === "beltSpeed") {
+        return {
+          metricName: "Passenger Incline Transport Throughput",
+          derivativeSymbol: "∂Throughput / ∂v_belt",
+          derivativeValue: 75.0,
+          derivativeUnit: "passengers/min / (m/s)",
+          interpretation:
+            "Endless traveling slatted treadway transporting riders safely across stationary comb landing.",
+        };
+      }
+      break;
+    }
+
+    case "us-542846-diesel-engine": {
+      if (controlKey === "compRatio") {
+        return {
+          metricName: "End-of-Compression Air Temperature",
+          derivativeSymbol: "∂T_comp / ∂CR",
+          derivativeValue: 42.0,
+          derivativeUnit: "K / unit_CR",
+          interpretation:
+            "Isentropic air compression heating cylinder air past fuel auto-ignition threshold without spark plugs.",
+        };
+      }
+      break;
+    }
+
+    case "us-1219881-sundback-zipper": {
+      if (controlKey === "sliderPositionPct") {
+        return {
+          metricName: "Engaged Tooth Count",
+          derivativeSymbol: "∂N_engaged / ∂x_slider",
+          derivativeValue: 0.65,
+          derivativeUnit: "teeth / %",
+          interpretation:
+            "Linear progression of Y-slider cam engaging opposing staggered scoops sequentially.",
+        };
+      }
+      if (controlKey === "pullForceN") {
+        return {
+          metricName: "Cam Wedge Normal Force",
+          derivativeSymbol: "∂F_n / ∂F_pull",
+          derivativeValue: 1.25,
+          derivativeUnit: "N / N",
+          interpretation:
+            "Mechanical advantage of the converging slider guide channels converting axial pull into transverse scoop compression.",
+        };
+      }
+      if (controlKey === "lateralTensionN") {
+        return {
+          metricName: "Corded Tape Strain",
+          derivativeSymbol: "∂ε / ∂F_lat",
+          derivativeUnit: "% / N",
+          derivativeValue: 0.06,
+          interpretation:
+            "Elastic elongation of reinforced cotton cords under transverse tensile load.",
+        };
+      }
+      break;
+    }
+
+    case "us-2717437-mestral-velcro": {
+      const controls = readMestralVelcroControls(params);
+      if (controlKey === "filamentDiameterMm") {
+        const d0 = controls.filamentDiameterMm;
+        const probePlus = stepMestralVelcroSi({ ...controls, filamentDiameterMm: d0 + 0.01 });
+        const probeMinus = stepMestralVelcroSi({
+          ...controls,
+          filamentDiameterMm: Math.max(0.05, d0 - 0.01),
+        });
+        const dTauDd =
+          (probePlus.shearStressCapacityN_Cm2 - probeMinus.shearStressCapacityN_Cm2) / 0.02;
+        return {
+          metricName: "Shear Stress Capacity",
+          derivativeSymbol: "∂τ_shear / ∂d",
+          derivativeValue: Number(dTauDd.toFixed(1)),
+          derivativeUnit: "N/cm² / mm",
+          interpretation:
+            "Central difference of hook shear capacity showing steep d⁴ fourth-power stiffness dependence on monofilament diameter.",
+        };
+      }
+      if (controlKey === "heatSettingTempC") {
+        const t0 = controls.heatSettingTempC;
+        const probePlus = stepMestralVelcroSi({ ...controls, heatSettingTempC: t0 + 2 });
+        const probeMinus = stepMestralVelcroSi({ ...controls, heatSettingTempC: t0 - 2 });
+        const dPhiDt =
+          ((probePlus.thermalRetentionFraction - probeMinus.thermalRetentionFraction) / 4) * 100;
+        return {
+          metricName: "Thermal Shape Retention",
+          derivativeSymbol: "∂ϕ_set / ∂T",
+          derivativeValue: Number(dPhiDt.toFixed(2)),
+          derivativeUnit: "% / °C",
+          interpretation:
+            "Rate of polymer chain crystallization annealing per degree Celsius across the lancet bar heating threshold.",
+        };
+      }
+      if (controlKey === "peelAngleDeg") {
+        const a0 = controls.peelAngleDeg;
+        const probePlus = stepMestralVelcroSi({ ...controls, peelAngleDeg: Math.min(170, a0 + 2) });
+        const probeMinus = stepMestralVelcroSi({ ...controls, peelAngleDeg: Math.max(10, a0 - 2) });
+        const dFdTheta = (probePlus.totalPeelForceN - probeMinus.totalPeelForceN) / 4;
+        return {
+          metricName: "Steady Peeling Force",
+          derivativeSymbol: "∂F_peel / ∂θ",
+          derivativeValue: Number(dFdTheta.toFixed(3)),
+          derivativeUnit: "N / deg",
+          interpretation:
+            "Kendall peeling gradient demonstrating reduced disengagement force requirement as peeling angle approaches 180° (T-peel).",
+        };
+      }
+      break;
+    }
+
+    case "us-2846084-goertz-electronic-master-slave-manipulator": {
+      const controls = readGoertzMasterSlaveControls(params);
+      const h = 0.01;
+      if (controlKey === "contactResistance") {
+        const contact = controls.contactResistance;
+        const plus = stepGoertzMasterSlaveTopology({
+          ...controls,
+          contactResistance: Math.min(1, contact + h),
+        });
+        const minus = stepGoertzMasterSlaveTopology({
+          ...controls,
+          contactResistance: Math.max(0, contact - h),
+        });
+        const derivative =
+          (plus.reflectedResistance - minus.reflectedResistance) /
+          (Math.min(1, contact + h) - Math.max(0, contact - h));
+        return {
+          metricName: "Reflected-Resistance Display",
+          derivativeSymbol: "∂r_display / ∂u_contact",
+          derivativeValue: Number(derivative.toFixed(3)),
+          derivativeUnit: "normalized display / normalized scenario",
+          interpretation:
+            "Central difference of the shared source-topology kernel. It shows how the illustrative remote-obstruction selector affects the normalized Claim 9 reflection cue; it is not a contact force or a servo-performance measurement.",
+        };
+      }
+      if (controlKey === "horizontalArmPivot") {
+        const pivot = controls.horizontalArmPivot;
+        const plus = stepGoertzMasterSlaveTopology({
+          ...controls,
+          horizontalArmPivot: Math.min(1, pivot + h),
+        });
+        const minus = stepGoertzMasterSlaveTopology({
+          ...controls,
+          horizontalArmPivot: Math.max(-1, pivot - h),
+        });
+        const derivative =
+          (plus.positionErrors[0] - minus.positionErrors[0]) /
+          (Math.min(1, pivot + h) - Math.max(-1, pivot - h));
+        return {
+          metricName: "Axis 113b Mismatch Display",
+          derivativeSymbol: "∂e_113b / ∂q_m",
+          derivativeValue: Number(derivative.toFixed(3)),
+          derivativeUnit: "normalized mismatch / normalized master coordinate",
+          interpretation:
+            "Central difference of the normalized correspondence display for one printed motion channel. The historical source supplies the proportional-error topology, not an SI arm displacement, gain, velocity, or force law.",
+        };
+      }
+      break;
+    }
+
+    case "us-4341502-makino-scara": {
+      if (controlKey === "firstLinkAngleDeg" || controlKey === "theta1") {
+        return {
+          metricName: "End-Effector X Coordinate",
+          derivativeSymbol: "∂X_tool / ∂θ_1",
+          derivativeValue: -0.0175,
+          derivativeUnit: "norm / deg",
+          interpretation:
+            "Planar Cartesian displacement of the assembly tool joint under primary shoulder link rotation.",
+        };
+      }
+      if (controlKey === "fourthLinkAngleDeg" || controlKey === "theta4") {
+        return {
+          metricName: "End-Effector Y Coordinate",
+          derivativeSymbol: "∂Y_tool / ∂θ_4",
+          derivativeValue: 0.0175,
+          derivativeUnit: "norm / deg",
+          interpretation:
+            "Planar Cartesian displacement of the assembly tool joint under parallel elbow link rotation.",
+        };
+      }
+      break;
+    }
+
+    case "us-3119501-lemelson-automatic-warehousing": {
+      if (controlKey === "railAddressFraction") {
+        const pose = stepLemelsonWarehouseTopology(params);
+        return {
+          metricName: "Normalized Rail Address",
+          derivativeSymbol: "∂q_x / ∂a_x",
+          derivativeValue: pose.carrierX === (params.railAddressFraction ?? 0.55) ? 1 : 0,
+          derivativeUnit: "display fraction / address fraction",
+          interpretation:
+            "The normalized exhibit maps its rail-address control directly to the carrier pose; the grant supplies no bay spacing in meters.",
+        };
+      }
+      if (controlKey === "levelAddressFraction") {
+        return {
+          metricName: "Normalized Vertical Address",
+          derivativeSymbol: "∂q_z / ∂a_z",
+          derivativeValue: 1,
+          derivativeUnit: "display fraction / address fraction",
+          interpretation:
+            "The normalized exhibit maps its level-address control directly to the lift pose; no shelf height is asserted.",
+        };
+      }
+      if (controlKey === "shuttleExtensionFraction") {
+        return {
+          metricName: "Normalized Shuttle Extension",
+          derivativeSymbol: "∂q_y / ∂a_y",
+          derivativeValue: 1,
+          derivativeUnit: "display fraction / extension fraction",
+          interpretation:
+            "The normalized exhibit maps the control directly to the transverse transfer pose; no reach, speed, or payload is asserted.",
+        };
+      }
+      break;
+    }
+
+    case "us-2988237-devol-programmed-transfer": {
+      if (controlKey === "recordedSlot" || controlKey === "sensedSlot") {
+        return {
+          metricName:
+            controlKey === "recordedSlot" ? "Recorded Position Symbol" : "Sensed Position Symbol",
+          derivativeSymbol: "∂c_{display} / ∂c_{input}",
+          derivativeValue: 1,
+          derivativeUnit: "code value / code value",
+          interpretation:
+            "Identity relation for the patent's recorded-versus-sensed code comparison. It does not infer actuator travel, controller latency, hydraulic power, payload, or transfer throughput.",
+        };
+      }
+      break;
+    }
+
+    case "us-3212649-amf-versatran": {
+      if (
+        controlKey === "columnRotation" ||
+        controlKey === "carriageLift" ||
+        controlKey === "armTravel" ||
+        controlKey === "wristRotation" ||
+        controlKey === "wristSwing" ||
+        controlKey === "gripperOperation" ||
+        controlKey === "resolverPhaseOffset"
+      ) {
+        if (controlKey === "resolverPhaseOffset") {
+          return {
+            metricName: "Phase Error Sensitivity",
+            derivativeSymbol: "∂(Δφ) / ∂(φ_offset)",
+            derivativeValue: 1.0,
+            derivativeUnit: "normalized phase / normalized phase",
+            interpretation:
+              "Direct display relationship between the deliberately injected normalized phase offset and the normalized resolver/tape phase difference.",
+          };
+        }
+        if (controlKey === "armTravel") {
+          return {
+            metricName: "Horizontal Reach Sensitivity",
+            derivativeSymbol: "∂r_{display} / ∂q_{arm}",
+            derivativeValue: 0.72,
+            derivativeUnit: "normalized radius / control increment",
+            interpretation:
+              "Display-only radial relationship used to make arm travel legible. It is not a recovered arm length, calibrated workspace, or speed relationship.",
+          };
+        }
+        if (controlKey === "gripperOperation") {
+          return {
+            metricName: "Normalized Gripper Operation",
+            derivativeSymbol: "∂g_{display} / ∂q_{gripper}",
+            derivativeValue: 1.0,
+            derivativeUnit: "display command / control increment",
+            interpretation:
+              "Direct display relationship for the source-described work-manipulating-member operation. It does not predict jaw travel, grip force, contact, or payload.",
+          };
+        }
+        return {
+          metricName: "Normalized Motion Display Sensitivity",
+          derivativeSymbol: "∂p_{display} / ∂q_{joint}",
+          derivativeValue: 1.0,
+          derivativeUnit: "display coordinate / command",
+          interpretation:
+            "Display relationship for one source-described motion channel. It retains topology without asserting unprinted dimensions, pressure, speed, payload, or dynamics.",
+        };
+      }
+      break;
+    }
+
+    case "us-3081379-lemelson-machine-vision": {
+      if (controlKey === "scanLineCount") {
+        return {
+          metricName: "Horizontal Scan Frequency Sensitivity",
+          derivativeSymbol: "∂f_H / ∂N_L",
+          derivativeValue: 30,
+          derivativeUnit: "Hz / line",
+          interpretation:
+            "Linear rate of increase in horizontal line scanning frequency per added raster line.",
+        };
+      }
+      if (controlKey === "gateSolenoidCurrentA") {
+        const turns = 450;
+        const current = 2.5;
+        const mu0 = 4 * Math.PI * 1e-7;
+        const area = 0.0004;
+        const gap = 0.008;
+        const dFdI = (turns * turns * current * mu0 * area) / (gap * gap);
+        return {
+          metricName: "Solenoid Ejection Force Sensitivity",
+          derivativeSymbol: "∂F_{mag} / ∂I",
+          derivativeValue: dFdI,
+          derivativeUnit: "N / A",
+          interpretation:
+            "Electromagnetic Lorentz force gradient with respect to coil excitation current.",
+        };
+      }
+      if (controlKey === "targetWidthM") {
+        const linePeriod = 1 / (525 * 30);
+        const activeSweep = linePeriod * 0.84;
+        return {
+          metricName: "Scan Beam Velocity Sensitivity",
+          derivativeSymbol: "∂v_{scan} / ∂W_{target}",
+          derivativeValue: 1 / activeSweep,
+          derivativeUnit: "(m/s) / m",
+          interpretation:
+            "Rate of optical beam scan speed increase across the image field per metre of target width.",
+        };
+      }
+      break;
+    }
+
+    case "us-3260375-lemelson-adjustable-manipulator": {
+      if (
+        controlKey === "columnAzimuth" ||
+        controlKey === "carriagePosition" ||
+        controlKey === "columnElevation" ||
+        controlKey === "wristPivot" ||
+        controlKey === "jawClosure"
+      ) {
+        if (controlKey === "columnAzimuth") {
+          return {
+            metricName: "Azimuth Angle Sensitivity",
+            derivativeSymbol: "∂θ_{rad} / ∂q_{azimuth}",
+            derivativeValue: Math.PI,
+            derivativeUnit: "rad / control increment",
+            interpretation:
+              "Direct coordinate angular gradient for the rotating manipulator turntable.",
+          };
+        }
+        if (controlKey === "wristPivot") {
+          return {
+            metricName: "Wrist Pivot Angle Sensitivity",
+            derivativeSymbol: "∂φ_{rad} / ∂q_{pivot}",
+            derivativeValue: Math.PI / 2,
+            derivativeUnit: "rad / control increment",
+            interpretation: "Geometric rate of wrist bevel pivot rotation.",
+          };
+        }
+        return {
+          metricName: "Normalized Axis Coordinate Sensitivity",
+          derivativeSymbol: "∂q_{display} / ∂q_{control}",
+          derivativeValue: 1.0,
+          derivativeUnit: "display coordinate / control unit",
+          interpretation:
+            "Linear coordinate mapping for the gantry and hoist motions without unprinted force or velocity assumptions.",
+        };
+      }
+      break;
+    }
+
+    case "us-3858581-kamen-medication-injection-device": {
+      if (controlKey === "leadScrewTurnFraction") {
+        return {
+          metricName: "Normalized Lead-Screw Display Position",
+          derivativeSymbol: "∂q_{plunger} / ∂q_{turn}",
+          derivativeValue: 1,
+          derivativeUnit: "normalized display fraction / normalized turn fraction",
+          interpretation:
+            "Identity slope of the nonclinical source-topology exhibit. The grant does not provide a screw pitch, reservoir geometry, dose, pressure, or delivery-rate datum, so no clinical or physical output is inferred.",
+        };
+      }
+      break;
+    }
+
+    case "us-4098001-watson-rcc": {
+      const probe = (key: "lateralContactFraction" | "axisMismatchFraction", value: number) =>
+        stepWatsonRemoteCenterComplianceTopology({ ...params, [key]: value });
+      const h = 0.001;
+      if (controlKey === "lateralContactFraction") {
+        const contact = params.lateralContactFraction ?? 0.62;
+        const derivative =
+          (probe("lateralContactFraction", contact + h).translationOffset -
+            probe("lateralContactFraction", contact - h).translationOffset) /
+          (2 * h);
+        return {
+          metricName: "Illustrated Translation",
+          derivativeSymbol: "∂q_t / ∂q_c",
+          derivativeValue: Number(derivative.toFixed(3)),
+          derivativeUnit: "display fraction / contact fraction",
+          interpretation:
+            "Slope of the normalized exhibit pose. It is not a force-compliance or dimensional prediction.",
+        };
+      }
+      if (controlKey === "axisMismatchFraction") {
+        const mismatch = params.axisMismatchFraction ?? 0.44;
+        const derivative =
+          (probe("axisMismatchFraction", mismatch + h).remainingAxisMismatch -
+            probe("axisMismatchFraction", mismatch - h).remainingAxisMismatch) /
+          (2 * h);
+        return {
+          metricName: "Remaining Axis Mismatch",
+          derivativeSymbol: "∂q_e / ∂q_m",
+          derivativeValue: Number(derivative.toFixed(3)),
+          derivativeUnit: "normalized / normalized",
+          interpretation:
+            "Slope of the source-illustrative alignment cue. The grant does not provide a convergence rate or controller gain.",
+        };
+      }
+      break;
+    }
+
+    case "us-5701965-kamen-transporter": {
+      if (controlKey === "riderPitchLeanDeg" || controlKey === "pitchLean") {
+        return {
+          metricName: "Restorative Motor Torque",
+          derivativeSymbol: "∂τ / ∂θ",
+          derivativeValue: 4.18,
+          derivativeUnit: "N·m / deg",
+          interpretation:
+            "Proportional feedback restoring torque commanded by inverted-pendulum controller to balance rider lean.",
+        };
+      }
+      if (controlKey === "velocityCommandMs" || controlKey === "velocityCommand") {
+        return {
+          metricName: "Ground Acceleration",
+          derivativeSymbol: "∂a / ∂v_cmd",
+          derivativeValue: 0.85,
+          derivativeUnit: "(m/s²) / (m/s)",
+          interpretation:
+            "Wheel traction acceleration generated to match rider commanded travel speed.",
+        };
+      }
+      break;
+    }
+
+    case "us-6302230-kamen-segway": {
+      if (controlKey === "riderPitchDeg" || controlKey === "pitch") {
+        return {
+          metricName: "Overturning Gravitational Moment",
+          derivativeSymbol: "∂τ_grav / ∂θ",
+          derivativeValue: 18.5,
+          derivativeUnit: "N·m / deg",
+          interpretation:
+            "Gravitational destabilizing moment per degree of rider forward pitch lean requiring proportional servomotor balancing torque.",
+        };
+      }
+      if (controlKey === "groundFrictionCoeff" || controlKey === "friction") {
+        return {
+          metricName: "Maximum Ground Grip Traction",
+          derivativeSymbol: "∂F_traction / ∂μ",
+          derivativeValue: 1157.0,
+          derivativeUnit: "N / μ",
+          interpretation:
+            "Traction force limit scaling directly with total rider + vehicle weight (118 kg × 9.81 m/s²).",
+        };
+      }
+      if (controlKey === "speedLimitMS" || controlKey === "speedLimit") {
+        return {
+          metricName: "Balancing Margin Velocity Ceiling",
+          derivativeSymbol: "∂Margin / ∂v_max",
+          derivativeValue: 0.18,
+          derivativeUnit: "1 / (m/s)",
+          interpretation:
+            "Higher speed governor increases forward velocity potential while narrowing reserve acceleration balancing buffer.",
+        };
+      }
+      break;
+    }
+
+    case "us-4068536-stackhouse-manipulator": {
+      if (
+        controlKey === "intermediateRollDeg" ||
+        controlKey === "firstObliqueAngleDeg" ||
+        controlKey === "secondObliqueAngleDeg"
+      ) {
+        const baseline = params[controlKey] ?? 55;
+        const probe = (value: number) =>
+          stepStackhouseSourceTopology({ ...params, [controlKey]: value }).bendAngleDeg;
+        const derivative = (probe(baseline + 0.25) - probe(baseline - 0.25)) / 0.5;
+        return {
+          metricName: "Selected Display-Bend Sensitivity",
+          derivativeSymbol: "∂β_display / ∂q",
+          derivativeValue: Number(derivative.toFixed(4)),
+          derivativeUnit: "display deg / selected deg",
+          interpretation:
+            "Central difference of the same normalized display composition used by the 2D and 3D exhibits. It is not an SI dexterity, velocity, motor, or manufacturing-performance derivative.",
+        };
+      }
+      break;
+    }
+
+    case "us-3313014-lemelson-automatic-production": {
+      if (
+        controlKey === "carrierAddressFraction" ||
+        controlKey === "liftFraction" ||
+        controlKey === "reachFraction"
+      ) {
+        return {
+          metricName: "Normalized Stage Interlock Coordination",
+          derivativeSymbol: "∂Pose / ∂q",
+          derivativeValue: 1.0,
+          derivativeUnit: "normalized / input",
+          interpretation:
+            "Linear kinematic positioning of carrier address, Mz vertical lift, and My platform reach in automatic production sequence.",
+        };
+      }
+      break;
+    }
+
+    case "us-4512709-milacron-robot-toolchanger": {
+      if (
+        controlKey === "lockingSlideFraction" ||
+        controlKey === "registrationFraction" ||
+        controlKey === "toolBasePresent" ||
+        controlKey === "claimFourTMember"
+      ) {
+        return {
+          metricName: "Locking Slide Capture Progression",
+          derivativeSymbol: "∂State / ∂q",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / fraction",
+          interpretation:
+            "Deterministic source-bounded registration, aperture admission, and ramp engagement progression.",
+        };
+      }
+      break;
+    }
+
+    case "us-4575330-hull-stereolithography": {
+      const controls = readHullStereolithographyControls(params);
+      if (controlKey === "laserPowerMw") {
+        // dC_d / dP_L = D_p / P_L
+        const dCd_dP = controls.penetrationDepthUm / Math.max(1, controls.laserPowerMw);
+        return {
+          metricName: "Polymerization Curing Depth",
+          derivativeSymbol: "∂C_d / ∂P_L",
+          derivativeValue: Number(dCd_dP.toFixed(3)),
+          derivativeUnit: "µm / mW",
+          interpretation:
+            "Logarithmic sensitivity from Beer-Lambert law: increasing laser power expands cure depth with diminishing returns (scaling inversely with operating power P_L).",
+        };
+      }
+      if (controlKey === "laserScanSpeedMmS") {
+        // dC_d / dv_s = -D_p / v_s
+        const dCd_dVs = -controls.penetrationDepthUm / Math.max(1, controls.laserScanSpeedMmS);
+        return {
+          metricName: "Polymerization Curing Depth",
+          derivativeSymbol: "∂C_d / ∂v_s",
+          derivativeValue: Number(dCd_dVs.toFixed(3)),
+          derivativeUnit: "µm / (mm/s)",
+          interpretation:
+            "Increasing galvanometer vector scan velocity reduces dwell time, exponentially thinning the cured cross-sectional lamina.",
+        };
+      }
+      if (controlKey === "layerThicknessUm") {
+        const tel = stepHullStereolithographySi(controls);
+        const dAdhesion_dZ = -tel.cureDepthUm / Math.max(1, controls.layerThicknessUm) ** 2;
+        return {
+          metricName: "Interlayer Adhesion Ratio",
+          derivativeSymbol: "∂(C_d / Δz) / ∂Δz",
+          derivativeValue: Number(dAdhesion_dZ.toFixed(4)),
+          derivativeUnit: "1 / µm",
+          interpretation:
+            "Increasing layer step height reduces relative overlap cure margin; step height must remain below cure depth C_d to prevent catastrophic part delamination.",
+        };
+      }
+      break;
+    }
+
+    case "us-5121329-crump-fdm": {
+      const controls = readCrumpFdmControls(params);
+      if (controlKey === "printSpeedMmS") {
+        // dQ / dv_head = w * h
+        const dQ_dVs = controls.roadWidthMm * controls.layerHeightMm;
+        return {
+          metricName: "Volumetric Extrusion Flow Rate",
+          derivativeSymbol: "∂Q / ∂v_{\\text{head}}",
+          derivativeValue: Number(dQ_dVs.toFixed(3)),
+          derivativeUnit: "mm³/s / (mm/s)",
+          interpretation:
+            "Volumetric extrusion demand scales linearly with toolhead print velocity, requiring proportional filament feed motor stepping.",
+        };
+      }
+      if (controlKey === "nozzleTempC") {
+        // dmu / dT ~ -Ea/(R*T^2) * mu
+        const T_K = controls.nozzleTempC + 273.15;
+        const dMu_dT = -(48.0 / (8.314e-3 * T_K * T_K)) * 280.0;
+        return {
+          metricName: "Apparent Melt Viscosity",
+          derivativeSymbol: "∂μ / ∂T",
+          derivativeValue: Number(dMu_dT.toFixed(2)),
+          derivativeUnit: "Pa·s / °C",
+          interpretation:
+            "Negative exponential sensitivity from Arrhenius polymer rheology: heating liquefier thins molten polymer and sharply reduces required axial feed force.",
+        };
+      }
+      if (controlKey === "layerHeightMm") {
+        // dtau / dh = 2h / (pi^2 * alpha)
+        const dTau_dh = (2 * controls.layerHeightMm) / (Math.PI * Math.PI * 0.082);
+        return {
+          metricName: "Road Thermal Cooling Time Constant",
+          derivativeSymbol: "∂τ / ∂h",
+          derivativeValue: Number(dTau_dh.toFixed(3)),
+          derivativeUnit: "s / mm",
+          interpretation:
+            "Cooling time scales quadratically with layer thickness: thicker slices retain thermal energy longer before freezing below Tg.",
+        };
+      }
+      break;
+    }
+
+    case "us-4921293-salisbury-robot-hand": {
+      if (controlKey === "tensionT1N") {
+        const controls = readSalisburyRobotHandControls(params);
+        const r1M = (controls.radiusScaleMm * 1.2) / 1000;
+        return {
+          metricName: "Figure 3 First-Joint Torque",
+          derivativeSymbol: "∂τ₁ / ∂T₁",
+          derivativeValue: Number((-r1M).toFixed(6)),
+          derivativeUnit: "N·m / N",
+          interpretation:
+            "Exact static derivative of Figure 3’s printed first-joint equation, τ₁ = −T₁R₁ + T₂R₂ + T₃R₂ − T₄R₁, evaluated at the visitor-declared R₁ study scale. It is a tendon-to-torque relation only; the grant does not disclose dynamic finger motion, contact force, or grasp stability.",
+        };
+      }
+      break;
+    }
+
+    case "us-4765668-robot-end-effector": {
+      if (controlKey === "jawOpeningFraction") {
+        return {
+          metricName: "Symmetric Jaw Opening",
+          derivativeSymbol: "∂g / ∂u_{jaw}",
+          derivativeValue: ROBOT_END_EFFECTOR_TYPICAL_JAW_OPENING_M * 1000,
+          derivativeUnit: "mm / opening fraction",
+          interpretation:
+            "Exact slope of the source's typical 152.4 mm opening under the shared opposed-thread kinematic relation. It is not a force, payload, contact, or stiffness sensitivity.",
+        };
+      }
+      if (controlKey === "gripForceSetpointN") {
+        return {
+          metricName: "Source-Labelled Grip Setpoint",
+          derivativeSymbol: "∂F_{set} / ∂u_{set}",
+          derivativeValue: 1,
+          derivativeUnit: "N setpoint / N control",
+          interpretation:
+            "Identity of the bounded source-labelled command. The grant's incomplete pneumatic, finger, workpiece, and friction data prohibit treating it as a calculated contact force or payload result.",
+        };
+      }
+      if (controlKey === "frameRotationDeg") {
+        return {
+          metricName: "Frame Orientation",
+          derivativeSymbol: "∂θ / ∂u_{rot}",
+          derivativeValue: Math.PI / 180,
+          derivativeUnit: "rad / deg",
+          interpretation:
+            "Exact degree-to-radian conversion for Claim 17's source-described longitudinal-axis rotation; no connector stroke or robot-arm dynamics are inferred.",
+        };
+      }
+      if (controlKey === "fingerChangeFraction") {
+        return {
+          metricName: "Illustrated Finger Retention",
+          derivativeSymbol: "∂r_{finger} / ∂u_{change}",
+          derivativeValue: -1,
+          derivativeUnit: "retained fraction / fixture-change fraction",
+          interpretation:
+            "The shared reader state defines retained fraction as one minus the source-described finger-change fraction. It does not assert an automatic change time or gripping outcome.",
         };
       }
       break;

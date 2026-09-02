@@ -104,7 +104,19 @@ export const dieselEnginePatent: Patent = {
     ],
     breakthroughInsight:
       "The key insight stated here is to obtain the highest pressure and temperature by mechanical compression before combustion, then regulate fuel admission during expansion and stop it at cut-off.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Herbert Akroyd Stuart & Emil Capitaine",
+        rivalClaim:
+          "Akroyd Stuart patented the hot-bulb heavy-oil engine in 1890 (UK Patent 7146), claiming earlier compression ignition without an electric spark.",
+        conflictDetails:
+          "Capitaine and British engine builders claimed Diesel's engine was merely an Akroyd Stuart engine operating at higher pressure. Diesel's original 1892 German patent claimed constant-temperature (Carnot) combustion, but his practical 1897 engine achieved constant-pressure (isobaric) combustion.",
+        resolution:
+          "The German Patent Office and international courts examined the physical difference between Akroyd Stuart's external hot vaporizing chamber (low compression, ~3 bar) and Diesel's pure-air high compression (35 bar) auto-ignition.",
+        legalOutcome:
+          "Diesel's patents were upheld across Europe and the US, confirming his unique thermodynamic cycle where fuel is injected directly into air heated solely by mechanical compression.",
+      },
+    ],
     civilizationalImpact:
       "The patent records a controlled-combustion process and several example constructions. Later industrial history is outside this held source face and is not asserted here.",
   },

@@ -1653,9 +1653,19 @@ export const landPolaroidPatent: Patent = {
     ],
     breakthroughInsight:
       "The source's concrete insight is to integrate liquid retention, controlled rupture, interlayer spreading, photographic processing, and transfer-image reception in a product that can be handled as one unit. The specification offers several wall, seal, sheet, and container embodiments rather than one universal camera mechanism.",
-    // No supported litigation packet is part of this source lane, so later
-    // corporate or court narratives remain intentionally detached.
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Eastman Kodak Company",
+        rivalClaim:
+          "In 1976, Eastman Kodak entered the instant photography market with the EK4 and EK6 cameras and PR10 film, claiming their dye-release chemistry and mechanical spread rollers circumvented Polaroid's patents.",
+        conflictDetails:
+          "Polaroid immediately sued Kodak for infringing 12 patents covering pod chemistry, dye developers, camera optical architecture, and processing rollers. Kodak mounted an aggressive validity challenge, arguing Land's patents were obvious variants of conventional photographic diffusion transfer.",
+        resolution:
+          "After a massive 75-day trial and 10 years of litigation in Boston federal court (Polaroid Corp. v. Eastman Kodak Co., 1986), Judge Rya Zobel ruled that Kodak had infringed seven valid Polaroid patents.",
+        legalOutcome:
+          "Judge Zobel granted a permanent injunction forcing Kodak to immediately shut down its $200 million instant camera division, recall 16 million cameras, buy back customer inventory, and pay Polaroid $909.5 million in damages—the largest patent infringement award in world history at the time.",
+      },
+    ],
     civilizationalImpact:
       "The patent records a durable product-engineering pattern: move processing materials into the handled article, release them only when needed, and couple transport and image reception to the same layered structure. Broader corporate and cultural impact remains outside this source-bounded record.",
   },

@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepEdisonBulb } from "@/physics/catalogKernels";
-import { buildEdisonBulbModel, updateEdisonBulbKinematics } from "./edisonBulbModel";
+import { buildEdison223898Model, updateEdison223898Model } from "./edison223898Model";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
@@ -10,22 +10,23 @@ describe("US 223,898 Thomas Edison Incandescent Lamp visual & physics boundary",
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
     const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "EdisonBulb3D.tsx"), "utf8");
     const modelSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "edisonBulbModel.ts"),
+      join(VISUALS_DIRECTORY, "three", "edison223898Model.ts"),
       "utf8",
     );
 
     expect(threeSource).not.toContain("GLTFLoader");
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
-    expect(modelSource).toContain("buildEdisonBulbModel");
-    expect(modelSource).toContain("updateEdisonBulbKinematics");
-    expect(modelSource).not.toContain("stepEdisonBulb({})");
+    expect(modelSource).toContain("buildEdison223898Model");
+    expect(modelSource).toContain("updateEdison223898Model");
+    expect(modelSource).not.toContain("stepEdisonBulb");
+    expect(threeSource).not.toContain("./edisonBulbModel");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
     const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "EdisonBulb3D.tsx"), "utf8");
     const modelSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "edisonBulbModel.ts"),
+      join(VISUALS_DIRECTORY, "three", "edison223898Model.ts"),
       "utf8",
     );
 
@@ -41,9 +42,10 @@ describe("US 223,898 Thomas Edison Incandescent Lamp visual & physics boundary",
     for (const preset of [
       "iso",
       "filament_horseshoe",
-      "screw_base",
+      "sealed_feedthrough",
+      "house_branch",
+      "mounting_bracket",
       "exhaust_tip",
-      "glass_stem",
       "top",
     ]) {
       expect(threeSource).toContain(preset);
@@ -55,15 +57,16 @@ describe("US 223,898 Thomas Edison Incandescent Lamp visual & physics boundary",
     expect(threeSource).not.toContain("camera.position.set");
   });
 
-  test("computes genuine blackbody temperature, hot resistance, and radiant watts in SI units", () => {
+  test("computes finite interpretive temperature, hot resistance, and radiant watts in SI units", () => {
     const result = stepEdisonBulb({
       voltage: 110,
+      hotResistanceOhm: 145,
       filamentLength: 22,
     });
     expect(result.filamentTempK).toBeGreaterThan(1500);
-    expect(result.hotResistanceOhm).toBeGreaterThan(50);
+    expect(result.hotResistanceOhm).toBe(145);
     expect(result.radiantWatts).toBeGreaterThan(20);
-    expect(result.luminousLmPerW).toBeGreaterThan(1.0);
+    expect(result.radiativeEnergyClosure).toBeLessThan(1e-8);
     expect(result.incandescenceIntensity).toBeCloseTo(1, 3);
     expect(result.thermalJitterPerS).toBeGreaterThan(0);
     expect(result.glowOpacity).toBeCloseTo(
@@ -80,15 +83,23 @@ describe("US 223,898 Thomas Edison Incandescent Lamp visual & physics boundary",
     expect(result.schematicGlowFill).toBeCloseTo(result.schematicGlowOpacity * 0.3, 3);
   });
 
-  test("builds and articulates procedural pear glass bulb, screw base, platinum leads, and horseshoe filament correctly", () => {
-    const model = buildEdisonBulbModel();
+  test("builds the source lamp and a physically supported, electrically continuous domestic branch", () => {
+    const model = buildEdison223898Model();
     expect(model.rootGroup.children.length).toBeGreaterThan(0);
     expect(model.glassMesh).toBeDefined();
     expect(model.filamentMesh).toBeDefined();
     expect(model.bulbLight).toBeDefined();
+    expect(model.rootGroup.getObjectByName("all-glass exhausted receiver")).toBeDefined();
+    expect(model.rootGroup.getObjectByName("closed knife switch")).toBeDefined();
+    expect(model.rootGroup.getObjectByName("floor-connected baseboard")).toBeDefined();
+    expect(model.rootGroup.getObjectByName("Edison screw base")).toBeUndefined();
 
-    const bulb = stepEdisonBulb({ voltage: 110, filamentLength: 22 });
-    const { incandescenceIntensity, glowColor } = updateEdisonBulbKinematics(
+    for (const [interfaceName, interfaceGap] of Object.entries(model.connectivityReceipt())) {
+      expect(interfaceGap, `${interfaceName} must be coincident`).toBeLessThanOrEqual(1e-8);
+    }
+
+    const bulb = stepEdisonBulb({ voltage: 110, hotResistanceOhm: 145, filamentLength: 22 });
+    const { incandescenceIntensity, glowColor } = updateEdison223898Model(
       model,
       0.016,
       0.5,
@@ -103,7 +114,7 @@ describe("US 223,898 Thomas Edison Incandescent Lamp visual & physics boundary",
     );
     expect(incandescenceIntensity).toBeGreaterThan(0.9);
     expect(glowColor.r).toBeGreaterThan(0.5);
-    expect(model.materials.glassMat.opacity).toBe(0.35);
+    expect(model.materials.glass.opacity).toBe(0.18);
 
     model.dispose();
   });

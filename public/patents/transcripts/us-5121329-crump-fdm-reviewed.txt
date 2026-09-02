@@ -1,0 +1,728 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 15 ---
+
+|||||||||||||||    US00521329A
+United States Patent (19)                                                            11) Patent Number:                 5,121,329
+Crump                                                                                45 Date of Patent:               Jun. 9, 1992
+(54) CREATING
+     APPARATUSTHREE-DIMENSIONAL
+               AND METHOD FOR                                                  Asyntek Brochure, "Benchtop Automation' May
+                                                                               1988.
+         OBJECTS                                                               Primary Examiner-Joseph Ruggiero
+ 75)    Inventor: S. Scott Crump, Minnetonka, Minn.                            Assistant Examiner-Patrick D. Muir
+(73)    Assignee: Stratasys, Inc., Minneapolis, Minn.                          Attorney, Agent, or Firm-Moore & Hansen
+21      Appl. No.: 429,012                                                     57)                  ABSTRACT
+                                                                               Apparatus incorporating a movable dispensing head
+22      Filed:     Oct. 30, 1989                                               provided with a supply of material which solidifies at a
+51) Int. Cl. .............................................. G06F 15/46         predetermined temperature, and a base member, which
+52 U.S. Cl. ............................... 364/468; 364/474.24;               are moved relative to each other along "X," "Y," and
+                   364/477; 264/239; 264/25; 425/1744                          "Z" axes in a predetermined pattern to create three-di
+58) Field of Search ....................... 364/472, 473, 477;                 mensional objects by building up material discharged
+          264/308, 13; 425/1744; 427/8, 52; 164/94;                            from the dispensing head onto the base member at a
+                                       239/75, 82, 83, 84, 132                 controlled rate. The apparatus is preferably computer
+56)                       References Cited                                     driven in a process utilizing computer aided design
+                U.S. PATENT DOCUMENTS
+                                                                               (CAD) and computer-aided (CAM) software to gener
+                                                                               ate drive signals for controlled movement of the dis
+       1,934,891 11/1933 Taylor ................................... 239/83     pensing head and base member as material is being dis
+       3,749,149 7/1973 Paton et al. ........................... 164/94        pensed.
+       4,071,944 2/1978 Chuss et al. ............................. 427/8
+       4,247,508 l/1981 Housholder ........................, 264/22            Three-dimensional objects may be produced by deposit
+       4,293,513 10/1981 Langley et al. ..................... 264/308          ing repeated layers of solidifying material until the
+       4,545,529 0/1985 Tropecano et al. .................. 239/75             shape is formed. Any material, such as self-hardening
+       4,575,330    3/1986 Hull ...................             ... 364/473    waxes, thermoplastic resins, molten metals, two-part
+       4,595,816    6/1986 Hall et al. ........................... 364/477     epoxies, foaming plastics, and glass, which adheres to
+       4,665,492    5/1987 Masters .........               ... 364/474.02      the previous layer with an adequate bond upon solidifi
+       4,681,258    7/1987 Jenkins et al. ........................ 239/83      cation, may be utilized. Each layer base is defined by
+       4,863,538    9/1989 Deckard .                                           the previous layer, and each layer thickness is defined
+       4,938,816 7/990 Beannan et al. .
+       4,944,817 7/1990 Bourell et al. .                                       and closely controlled by the height at which the tip of
+                                                                               the dispensing head is positioned above the preceding
+                OTHER PUBLICATIONS                                             layer.
+Article entitled "Instant Gratification', High Technol
+ogy Business Author-Gregory T. Pope-Jun. 1989.                                              44 Claims, 3 Drawing Sheets
+
+                                                                  36
+                                                                          42
+                                                             2- 4.42 a/A/6
+                                                                       sa/7 waaa
+                                                           1247
+                                                                    aAAa
+                                                                    424/7.62/Aaa
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 15 ---
+
+U.S. Patent   June 9, 1992   Sheet 1 of 3   5,121,329
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 15 ---
+
+U.S. Patent   June 9, 1992       Sheet 2 of 3        5,121,329
+
+
+
+
+                                  N             A
+                                                SN
+                             VN 2NSE:
+                             aQe Z. AlSEf
+                                SSS      N.E.K;
+                                      Rivs2.fy        g
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 15 ---
+
+U.S. Patent   June 9, 1992   Sheet 3 of 3             5,121,329
+
+
+
+
+                                          =es
+                                         NNS
+                                                 22       t
+
+                                                SSV DSNS24.
+                                                sp
+                                   e   g NNY Sess
+                                         N
+                                       N 2x222222    es
+                               X
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 15 ---
+
+This invention relates to an apparatus and process for forming a three-dimensional article from a computer-aided design (CAD) database. More particularly, the invention is directed to an apparatus and method for creating three-dimensional physical objects of a predetermined shape by sequentially depositing multiple layers of solidifying material on a base member in a desired pattern, as illustrated in FIG. 1.
+
+In the preferred embodiment shown in FIG. 1 and FIG. 2, a movable dispensing head 10 incorporates a heated liquefier flow passage 20 terminating in a dispensing outlet comprising a calibrated discharge nozzle tip 22. A solid flexible strand or filament 12 is drawn from supply reel 14 by motor-driven pinch feed rollers 28 and driven into liquefier 20 under positive pressure.
+
+As depicted in FIG. 3 and FIG. 4, the dispensing head 10 is maintained in close, working proximity to base member 18 or the preceding layer. The planar bottom face of discharge tip 22 provides a continuous shearing and flattening effect on the top surface of the dispensed thermoplastic bead 40, ensuring precise layer thickness control and eliminating accumulative Z-axis height errors.
+
+Referring to FIG. 5 and FIG. 6, each successive planar cross-section is fabricated by depositing a continuous closed perimeter contour bead followed by back-and-forth raster vector infill passes 46. The newly extruded molten bead adheres and thermally welds to the preceding layer upon cooling below its solidification temperature, building up solid, dense, high-strength articles.
+
+As shown in FIG. 11, CAD solid model data is sliced into parallel cross-sectional layers, and machine-level G-code drive signals are computed to actuate X, Y, and Z stepper motors in coordination with filament feed velocity. Free-space wireframe geometries (FIG. 12) or multiple-orifice extrusion manifolds (FIG. 7 and FIG. 8) may also be utilized within the scope of the invention.
+
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 15 ---
+
+5,121,329
+                           3                                                             4.
+three-dimensional object can be created at an office hering to the previous layer. A temperature controller
+work station in a very time and cost effective manner. It responsive to temperature sensors on the dispensing
+is anticipated that the invention will be particularly head is used to closely control the temperature of the
+useful in the making of single prototypes or models of supply material to a level of about 1° C. above its solifi
+products so that they may be quickly made and studied 5 cation temperature at the point of discharge. This en
+by designers. Products having complicated shapes may sures consistent flow and that the material will solidify
+thus be evolved effectively and efficiently through im        substantially instantly upon cooling, after discharge,
+mediate observation of design errors and repeated mod         with resultant efficiency in the article-forming process
+eling.                                                        as multiple layers are discharged, solidify, and build-up.
+   These basic objectives are realized by dispensing a A supplemental heater on the nozzle tip responsive to
+material at a controlled rate from a dispensing head the temperature controller provides the close control of
+unto a substrate or base member in a predetermined the temperature of the material as it is discharged, to
+pattern dictated by the shape of an article to be formed, ensure that it is in a fluid state slightly above its solidifi
+with the material being dispensed in multiple layers cation temperature.
+which solidify and adhere to each other to build up the 5 These and other objects and advantages of the inven
+article. The process is controlled so that the material in tion will become readily apparent as the following de
+the preceding layer, and in particular at least the mate scription is read in conjunction with the accompanying
+rial under the dispensing head, has solidified before drawings wherein like reference numerals have been
+additional material is applied on top of it to form a used to designate like elements throughout the several
+subsequent layer.                                          20 WeWS.
+   Advantageously, material is applied in a fluid state in       BRIEF DESCRIPTION OF THE DRAWINGS
+very thin layers which adhere to the preceding layers in
+a multiple laminate of exceptionally smooth surface              FIG. 1 is a perspective view showing one version of
+quality. The dispensing head is controllably elevated the apparatus for forming three-dimensional objects;
+along a "Z" axis so as to sequentially form layers of 25 FIG. 2 is a diagrammatic view showing the comput
+material as thin as 0.0001 inches or as great at 0.125 er-aided design system for operating the article-forming
+inches in thickness. The thickness of each layer is con apparatus;
+trolled by regulating the gap between the dispensing             FIG. 3 is a vertical section view of the dispensing
+head and the previously-formed layer.                         head of FIG. 1;
+   In order to mechanically form each successive layer, 30 FIG. 4 is a fragmentary view showing the dispensing
+drive motors are provided to selectively move the base head applying multiple layers of material;
+member and dispensing head relative to each other in a           FIG. 5 is an elevation view of a different embodiment
+predetermined pattern along "X" and "Y" axes as mate of the material-applying apparatus utilizing a flexible
+rial is being dispensed. Relative vertical movement strand as the supply material;
+along a "Z" axis may also be carried out during the 35 FIG. 6 is a fragmentary, section view of a modified
+formation of each layer, as well as at the completion of form of dispensing nozzle showing multiple flow pas
+each layer to achieve desired layer shape and thickness. Sages;
+Such mechanical movements are preferably achieved                FIG. 7 is a fragmentary, perspective view of a mani
+through drive signals inputed to the drive motors for fold type of material dispenser having multiple outlets;
+the base member and dispensing head from a com 40 FIG. 8 is a verticle section view of the manifold and
+puter/controller CAD/CAM system. In such a system valve assembly of FIG. 7;
+the design of an article to be formed is initially created       FIG. 9 is a diagrammatic illustration showing how
+on a computer, with commercially available software multiple layers of material can be built up in varying
+being utilized to convert the three-dimensional shape heights and thicknesses; and
+into multiple layer data which is transmitted as drive 45 FIG. 10 is a diagrammatic illustration showing how
+signals through a computer-aided machine (CAM) con material can be dispensed and formed in free space by
+troller to the aforesaid drive motors. Each layer can the apparatus of this invention.
+have its own distinctive shape as controlled by the pro          FIG. 11 is a bottom plan view of an alternative multi
+gram in the CAD system, and the layers may have ple orifice dispensing head as viewed along lines 11-11
+different thicknesses.                                     50 of FIG. 6; and
+   The article-forming material is preferably supplied to        FIG. 12 is a diagrammatic illustration showing how a
+the dispensing head in the form of a flexible strand of wire frame article can be formed by the apparatus of
+solid material from a supply source, such as a reel. A this invention.
+rod of solid material may also be used as the material               DESCRIPTION OF THE PREFERRED
+supply medium on the dispensing head. In either case, 55                          EMBODIMENTS
+the material is heated above its solidification tempera
+ture by a heater on the dispensing head and applied as a         Referring now to the drawings, FIG. 1 illustrates one
+fluid. Preferably, the dispensing head includes a flow embodiment of the apparatus of this invention for mak
+passage connected to a discharge outlet in a nozzle from ing three-dimensional articles, the apparatus being gen
+which the fluid material is dispensed. The nozzle may erally indicated by reference numeral 1. The apparatus
+advantageously function as a "doctor blade' acting on includes a movable dispensing head 2 having a dis
+the surface of each layer as it is formed to closely con charge nozzle 4 at its bottom end, dispensing head 2
+trol the thickness of each layer.                             being supported from a pedestal 6 by a mounting arm 8.
+   Various material, including waxes, thermoplastic Dispensing head 2 is located in close proximity to a base
+resins, and metals may be used to form three-dimen 65 member comprising a plate 10 on which an article to be
+sional articles as described herein. The material is pref. formed is built up as hereinafter set forth.
+erably one which will melt at a preselected temperature          Dispensing head 2 and base plate 10 are supported for
+and rapidly solidify without shrink distortion upon ad mechanical movement relative to each other. In the
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 15 ---
+
+5,121,329
+                            5                                                         6
+preferred embodiment shown, this is accomplished by         the working material is supplied in the form of a solid
+providing mechanical means for translational move           rod 46, heated to its melting point in dispensing head 2
+ment of base plate 10 laterally along "X" and 'Y' axes      and dispensed from nozzle 4 as a flowable fluid.
+of a base plane and for vertical movement of dispensing       Various material may be used for the rod, including
+head 2 along a 'Z' axis. Accordingly, as is shown in      bees wax. casting wax, machineable and industrial
+FIGS. 1 and 2, base plate 10 is supported on an X-Y axis  waxes, parafin, a variety of thermoplastic resins, metals,
+table 12 having a slide rod 14 in threaded engagement     and metal alloys. Suitable metals include silver, gold,
+within its drive block 16 with a drive screw 8. A drive   platinum, nickel, alloys of those metals, aluminum, cop
+motor 20 provides rotary power to drive screw 18. per, gold, lead, magnesium, steel, titanium, pewter,
+Slide rod 14 also carries an elongated drive screw 22 O manganese bronze. Glass, and particularly Corning
+driven by a second motor 24 and coupled to mating glass, would also be satisfactory. Materials of varying
+threads (not shown) secured to the underside of base degree of transparency would be useful in forming cer
+plate 10 for driving engagement therewith. It will thus tain objects, such as for forming windows in model
+be seen that article-receiving base plate 10 may be buildings. Chemical setting materials, including two
+moved along the X and Y axes indicated in FIG. 1 by 15 part epoxys would also be suitable. Materials which
+the selected actuation of motors 24 and 20, respectively. have been found to be particularly suitable for making
+   Separate mechanical drive means are provided for up three-dimensional objects with the apparatus disclosed
+and down vertical movement of dispensing head 2. For herein include Freeman "machineable wax' manufac
+that purposed, head 2 is mounted for vertical movement tured by Freeman Manufacturing and Supply of Cleve
+on a micro-slide bearing 26 on one end of support arm 20 land, Ohio, "Friendly Plastic' thermoplastic manufac
+8 by a bracket 28. One apertured end of right angle tured by Friendly Plastic of Boulder, Colo., bismuth
+bracket 28 is threadedly engaged with a drive screw 30. 153 alloy manufactured by Metal Specialties of Fair
+A third drive motor 32 supplies driving, rotary power field, Conn., and Thermoplastic Polymer No. 235-10,
+to screw 30 and is mounted on support arm 8 by bracket Specification No. 11061 sold by Ad-Tech of Hampton,
+34 as shown. Selected actuation of reversible motor 32 25 N.H.
+thus rotates screw 30 to provide up and down vertical       Supply rod 46 is inserted into supply chamber 50 of
+movement of dispensing head 2 on slide bearing 26. For dispensing head 2 through a guide sleeve 48 as is best
+that purpose, motor 32 is preferably a high resolution shown in FIG. 3. Various means may be utilized for
+stepper motor. It is to be noted, however, that various advancing supply rod 46 through supply chamber 50 as
+types of motors could be used for drive motors 20, 24, 30 material from the rod is dispensed through nozzle 4.
+and 32, including stepper motors, linear motors, servo One suitable means which has proven to be suitable for
+motors, synchronous motors, D.C. motors, and fluid that purpose comprises a drive rod 52 which is attached
+  OtOS.                                                   as an extension to reciprocating piston 54 of a power
+   Preferably, for fully-automated operation, motors 20, cylinder 56. Cylinder 56 is a fluid cylinder which is
+24, and 32 are computer-controlled by drive signals 35 preferably actuated by a supply of pressurized air
+generated from a computer 36, by means of which a through air line 58 from air compressor 60 and its re
+computer-aided design (CAD) can be created at a de          ceiver tank 62 in which a reservoir of compressed air is
+sign person's work station. Support table 12 on which       maintained. Air from the compressor/receiver 60/62 is
+base plate 10 is carried is of such a size that it can be   delivered through supply line 58 and a 3-way solenoid
+located on a desktop. Thus, by operation of the com         valve 64 and a pressure-regulating valve 66 to air cylin
+puter keyboard 38 as shown in FIG. 1, a three-dimen         der 56. A pressure gauge 68 is connected to the air
+sional article can be designed and created at a single      pressure regulator 66, all as shown in FIG. 1.
+office work station by one operator, in the manner here       Drive rod 52 is connected by a pivotal link 70 to a
+inafter set forth. As is indicated schematically in FIG. 2, ratchet head 72 having one or more ratchet teeth 74
+the design of a three-dimensional article 40 is inputted 45 which engage supply rod 46 to advance it downwardly
+to computer 36 utilizing commercially available CAD within supply chamber 50 of dispensing head 2 towards
+software. The article design is sectioned into multiple dispensing nozzle 4. For that purpose, a predetermined
+layers by a commercially available software program to air pressure, preferably at a constant level, is maintained
+provide multiple-layer data corresponding to the partic on top of piston 54 within cylinder 56 so as to move
+ular shape of each separate layer. Such software pro 50 drive rod 52 downwardly. It will be understood that as
+grams are in commercial use for computer-aided ma           rod 52 is moved downwardly, ratchet teeth 74 on
+chining (CAM) purposes, and include NC Polaris, ratchet head 72 will advance supply rod 46 down
+Smartcan, and Mastercan. AUTOLISP, has been suc            wardly within chamber 50. Drive rod 52 extend
+cessfully used to layer AUTOCAD drawings into mul through an apertured bracket plate 78 within supply
+tiple layers or sections of specific patterns and dimen 55 chamber 50, bracket plate 78 serving as a stop for a
+sions. The layering data signals are directed to a ma return spring 76 acting on the bottom of piston 54.
+chine controller 44 from the layering software 42 as          Supply rod 46 is heated within heating head 84 to a
+shown diagramatically in FIG. 2. Controller 44 in turn      predetermined temperature at which it will exceed its
+is connected to the X, Y, and Z drive notors 24, 20, and   solidification temperature and melt to a flowable, fluid
+32, respectively, for selective acuation of those motors form. For that purpose, a main or primary cartridge
+by the transmission of the layering drive signals.         type, electric resistance heater 80 is provided within
+  Various materials in different forms may be used for heating head 84 within supply chamber 50 of dispensing
+making three-dimensional articles with the apparatus head 2. A suitable seal ring 83 is provided around the
+described herein. It is preferred that the material be one top of heating head 84. An electrical power lead 82 is
+which is thermally solidifiable from a fluid state in 65 connected to resistance heater 80 as shown in FIG. 3.
+which it is applied, either at room temperature or at a Heater 80 is closely controlled in order to heat the solid
+predetermined temperature by the use of a cooling me material of supply rod 46 to a temperature slightly
+dium. FIGS. 1 and 3 illustrate one embodiment in which     above its melting point, and preferably on the order of
+
+--- REVIEWED TRANSCRIPTION PAGE 8 OF 15 ---
+
+5,121,329
+                           7                                                              8
+l' C. above the melting point of the rod material. This timer 106 as shown schematically in FIG. 1 may be
+is accomplished by the use of an electronic temperature utilized to time the downward movement of supply rod
+controller 86 connected by an electrical lead or conduit 46 and to initiate the return of drive rod 52 at the expira
+90 to a first thermocouple-sensing element 88 as shown tion of a predetermined time interval. Either type of
+in FIGS. 1 and 3. Thermocouple 88 is located as shown control device would be connected to air valve 64 So as
+in close proximity to the supply rod 46 within heating to de-energize that solenoid valve and cut off the supply
+head 84 so as to be able to sense the temperature to of pressurized air to the top of drive cylinder 56. When
+which the supply material is being heated. Temperature that happens, return spring 76 urges piston rod 54 back
+controller 86 has a main, adjustable controller as indi       upwardly. That movement is further assisted and per
+cated in FIG. 1 which is set to a predetermined temper O mitted by the use of a quick release, vent valve 55 con
+ature to which the supply rod material is heated by nected to the fitting on the top of air cylinder 56 as
+resistance heater 80, in response to sensing signals re shown in FIG. 1. When the supply of pressurized air
+ceived from thermocouple 88.                                  through line 58 to air cylinder 56 is cut off by the clos
+   A heater blade 92 forming a part of the heating assem ing of valve 64, the upward movement of piston 54
+bly is embedded in the supply-rod material as shown in 15 under the action of return spring 76 expells the air in the
+FIG. 3 and serves to directly heat it to the predeter top of cylinder 56 through valve 55. At the top of the
+mined temperature. At its lower end, supply chamber return stroke of drive rod 52, ratchet head 72 takes a
+50 communicates with a flow passage indicated by ref.
+erence numeral 94 and extending through discharge new         opened
+                                                                    grip on supply rod 46. Air valve 64 is then re
+                                                                       at a timed interval by timer 106 to again intro
+nozzle 4 to a dispensing outlet in the form of an orifice 20 duce a supply of pressurized air on top of drive piston
+98 of predetermined size at the bottom end of nozzle 4. 54 within cylinder 56. The downward, supply move
+A spring-loaded ball check valve 96 is located within ment of rod 46 is then reactivated. As supply rod 46
+flow passage 94, and opens to assist in metering the moves            downwardly within chamber 50, it is heated
+outlet flow of fluid material in response to the pressure within heating       head 84 to its melting point. As a result,
+maintained on the supply rod 46 within supply chamber liquid material flows downwardly into flow passage 94
+50. Check valve 94 also eliminates leakage from nozzle
+4 when the system is stopped, even temporarily. Supply andThe      cut through dispensing outlet 98.
+                                                                      opening and closing of air valve 64 to regulate
+material from rod 46, reduced to a liquid state by heater the supply
+80 upstream of flow passage 94, flows downwardly into material in aoffluid    pressurized air, and thus the supply of
+said flow passage and into dispensing outlet 98 from 30 its dispensing outletstate   98
+                                                                                        through dispensing head 2 and
+                                                                                         may also be accomplished by
+which it may be discharged onto base plate 10 to form means of a relay 104 shows
+layers of material in the course of building up an article. and 2. As is indicated in FIG.schematically
+                                                                                               2, relay 104 is
+                                                                                                              in FIGS. 1
+                                                                                                               responsive
+    The size of dispensing outlet 98 may be varied for the
+particular application, as by using interchangeable ori to the software layering signals directed to the drive
+                                                              motor 32 which provides vertical movement of dispens
+fice inserts in the tip of nozzle 4. Also a variable size 35 ing
+orifice of the type employed in cameras for varying the energized  head 2 along a "Z" axis. Relay 104 may thus be
+aperture could be utilized.                                               and de-energized to open and close air valve
+    It is desired to discharge the supply material in a fluid 64  in response to programmed signals indicative of
+state at a temperature only very slightly above its solidi upward and downward movement of dispensing head 2.
+fication point, so that the material will solidify very As hereinafter set forth, it may be desirable when build
+rapidly upon cooling after discharge onto base plate 10. ing certain types of articles to close air valve 64 and cut
+To ensure that the supply material is discharged from off the supply of material 46 when dispensing head 2 is
+outlet 98 at the desired, predetermined temperature and moved upwardly             to commence the formation of se
+that the material is maintained in a liquid state through quential      layers a predetermined vertical distance above
+out flow passage 94, and does not solidify therein, a 45 each previously formed layer. When the supply of pres
+supplemental electric heater 100 is provided on the tip surized air to cylinder 56 is shut off, spring-loaded
+of discharge nozzle 4 adjacent to fluid passage 94. Tem check valve 96 closes flow passage 94.
+perature controller 86 has a second, adjustable tempera          With the above-described embodiment, utilizing a
+ture regulator for the tip heater 100 as indicated in FIG. solid rod 46 as the source of supply material for forming
+ 1. That temperature regulator receives control signals 50 an article, the metering of the material onto base plate
+ from a second sensing device in the form of a thermo 10 at a predetermined rate is accomplished by a combi
+ couple 102 attached to nozzle 4 in close proximity to nation of the preselected size of dispensing outlet orifice
+ flow passage 94 near its outlet end. As is also indicated 98 as well as by the preselected, constant pressure main
+ in FIG. 1, the electrical connectors for thermocouples tained on piston 54 so as to control the rate at which
+ 88 and 102 both extend through power lead or conduit 55 supply rod 46 slowly advances through supply chamber
+90 connected to the temperature regulators for the main 50 of dispensing head 2 as it is heated and reduced to a
+ heater 80 and for tip heater 100 on temperature control liquid state. The metered flow of material is also con
+ ler 86.                                                      trolled by the gap or vertical height of the tip of nozzle
+    As drive rod 52 moves downwardly towards the end 4 above the last layer and by the material viscosity.
+ of its rod supply stroke to bring ratchet head 72 near the      Various substrates may be utilized to receive an arti
+ position shown in FIG. 3, the piston 54 and drive rod 52 cle being formed on top of base plate 10. Relatively fine,
+ must be retracted upwardly in order that ratchet head wire mesh sandpaper 108 as shown in FIGS. 1 and 2,
+ 72 with its teeth 74 may take a new grip along supply has been found to be particularly satisfactory for that
+ rod 46 near its upper end. The upward and downward purpose. After an article 4.0a is formed on the sandpaper
+ movement of drive rod 52 may be controlled by a limit 65 108, corresponding to a master article 40 to be copied as
+ switch within dispensing head supply chamber 50, shown in FIG. 2, the sandpaper substrate or foundation
+ which is activated by the downward movement of may be readily peeled off of the bottom of the article
+ ratchet head 72 or pivotal link 70; or, alternatively, a without damage.
+
+--- REVIEWED TRANSCRIPTION PAGE 9 OF 15 ---
+
+5,121,329
+                            9                                                             10
+  As noted above, the substrate or foundation 108 may rollers by a motor 142 and a drive belt or chain 144.
+advantageously take the form of a fine wire-mesh screen Motor 142 may take various forms. A high resolution
+coated with sand and thus comprising an abrasive cloth, stepper motor is preferred. A plurality of idler rollers
+such as Norton No. 47650-4. Such "sandpaper" or abra 136 disposed opposite drive rollers 134 cooperate there
+sive cloth can be applied to base plate 10 by double with to grip the flexible strand 110 therebetween and to
+faced adhesive tape. The substrate 108 is important in advance it through dispensing head 112 towards the
+avoiding localized shrinkage in the foundation layer of dispensing outlet 126 of nozzle 122. Rollers 136 are
+the article being formed and in enhancing release of the spring biased towards rollers 134 to maintain gripping,
+article from base plate 110 without damage. The sand frictional contact on flexible strand 110 by the use of
+particles on the substrate 108 provide particularly effec 10 springs 140 acting on a pressure plate 138, which en
+tive adhesion of the dispensed material. The material gages rollers 136.
+also flows into and imbeds in the cells or pores of the        Supply reel 114 for the flexible strand may be free
+open matrix wire screen. Separation of the article can be wheeling, in which case drive motor 142 is the only
+facilitated by using a conductive wire mesh screen sub driving, power source for advancing flexible strand 110.
+strate 108 made of copper wires to which a low voltage 15 In such an arrangement, motor 142 would preferably be
+current is applied after the article is formed. This heats a stepper motor. Alternatively, an additional drive
+the screen slightly and frees the article.                   motor 146 could be provided on rotary wheel 114, with
+   Alternatively, the wire mesh screen could be magne motor 146 being a stepper motor to assist in controlling
+tized and iron particles would be mixed into the supply the advance o the flexible strand 110. With two drive
+material to enhance adhesion of the foundation layer to 20
+the substrate 108. Interruption of a magnetic field ap motors        142 and 146 being utilized, their speeds would be
+plied to base plate 10 would permit separation of the flexible coordinated
+                                                             closely              and controlled so that they advance
+                                                                      strand 110 at the same linear rate. With either
+formed article.                                              drive arrangement, sufficient slack is maintained in flex
+   The substrate 108 could also be made of water-solu
+ble wax, which could be dissolved to separate the arti 25 ible
+                                                             ing
+                                                                  strand 110 to permit unrestrained travel of dispens
+                                                                  head 112 as an article is being formed.
+cle without damage.                                             Flexible strand 110 is preferably of a very small diam
+   FIG. 5 illustrates another version of the apparatus for
+dispensing supply material unto the movable base plate eter,       on the order of 1/16th inch; however, fine, flexible
+                                                             wires of supply material as small as 0.001 inch in diame
+10 in order to form a three-dimensional object by build ter       may be utilized for controlled advancing through
+ing up multiple layers. In this embodiment, the supply 30 dispensing     head 112. By selective control of the drive
+material is in the form of a flexible strand in solid form.
+The flexible strand, like the solid rod 46 of the embodi      motor 142 or motor 142 in combination with motor 146,
+ment of FIG. 3, is a solid material which can be heated       the rate of advance of flexible strand 110, and thus of the
+relatively rapidly above its solidification temperature, basevolumetric dispensing rate of the supply material onto
+and which will very quickly solidify upon a small drop    35      plate 10 can be very closely controlled. The flexi
+in temperature after being dispensed onto the receiving ble      strand is heated to a predetermined temperature
+plate 10. Any of the materials described above with slightly above it solidification point by heater coil 130,
+respect to the embodiment of FIGS. 1 and 3 would be within topassage           124 of nozzle 122. The material is re
+satisfactory. A flexible strand of thermoplastic resin, duced          a fluid state in which it flows outwardly from
+wax, or metal in the form of a flexible wire, such as a dispensing outlet 126 onto the sandpaper-receiving sur
+strand of bismuth, gold or silver, would be suitable. The face    108 of base plate 10 as shown in FIG. 1. It is to be
+flexible strand 110 is advanced into and through a dis noted        that the material-supply apparatus of FIG. 5
+pensing head 112 from a supply reel 114. It is fed would            be utilized with the same X-Y table 12 and me
+                                                             chanically  movable base plate 10 as shown and de
+through a guide sleeve 111 made of a suitable low fric
+tion material such as Teflon for support in motion. Dis 45 scribed with respect to FIGS. 1 and 2. Dispensing head
+pensing head 112 has a supply chamber 118 with an inlet 112, like dispensing head 2, would be mounted on a
+aperture 116 at its upper end, and a lower guide aper support arm 8 for selective vertical movement along a
+ture 120 through which the flexible strand is fed "Z' axis by a control notor 32. In like manner, a CAD
+towards discharge nozzle 122. Discharge nozzle 122 has design system utilizing computer 36 and related soft
+a threaded connection as shown to dispensing head 112 50 ware for sectioning a design article into multiple layers
+and contains a central, material supply and flow passage as shown and described with respect to FIGS. 1 and 2,
+ 124 in flow communication at its lower end with a dis       would be utilized with the dispensing embodiment of
+pensing outlet orifice 126 of predetermined size to assist FIG. 5.
+in providing a metered supply of material in a fluid           With respect to either the dispensing apparatus of
+state. A heater 128 in the form of a sleeve containing an 55 FIGS. 1 and 2, or the flexible strand supply apparatus of
+electric resistance heater coil 130 is positioned around FIG. 5, the supply material is heated to a fluid state in
+discharge nozzle 122 as shown closely adjacent to the the dispensing head and metered at a controlled flow
+walls of nozzle 122 for heating the supply strand in rate onto a receiving surface, such as sandpaper 108
+passage 124. A seal ring 132 is provided around the positioned on base plate 10. In response to drive signals
+internal surface of flow passage 124 at the inlet to dis from the computer 36 and the layering software 42
+charge nozzle 122 to provide an hydraulic seal at that inputted through controller 44, the dispensing head 2
+ location.                                                   and base plate 10 are selectively moved with respect to
+   In order to introduce the flexible strand of supply each other in a predetermined pattern to form an article
+ material into and through dispensing head 112, a plural of desired shape. In the embodiment shown, base plate
+ity of drive rollers 134 are provided within supply 65 10 is movable along "X" and "Y" axes with the dispens
+ chamber 118 as shown, those rollers being drivingly ing head being movable vertically along a "Z" axis.
+connected to each other as by suitable belt or chain          However, it is to be understood that total, controlled
+drives 143. Rotational power is supplied to the drive         movement to form the article could be achieved by
+
+--- REVIEWED TRANSCRIPTION PAGE 10 OF 15 ---
+
+5,121,329
+                         11                                                           12
+moving either the base plate alone or the dispensing        commencement of the next layer, or it may be elevated
+head alone, without moving the other.                       incrementally a very small distance to form the desired
+   As is indicated in FIG. 4, the supply material is dis    gap between layers, and thus the predetermined layer
+pensed in a fluid state from the dispensing head 2 or 112 thickness.
+through a dispensing outlet onto sandpaper 108 to form        Each layer of material is dispensed in a liquid state,
+and build up multiple layers of material. Multiple passes solidifies and adheres to the previous layer. This forms
+of the dispensing head are made, with each pass taking a very strong bond between layers. When utilizing a
+place in a controlled pattern as dictated by the layering dispenser with a nozzle tip having a flat bottom surface
+software 42 for multiple cross sections of the article as shown with respect to the nozzles 4 and 122 in FIG.
+being produced in accordance with design data inputted 10 4, the bottom flat face of the nozzle provides a "doctor
+to computer 36. The computer and related software blade' effect as the nozzle and sandpaper substrate 108
+programs determine when the dispenser is on and off are moved in an "X" - "Y" plane relative to each other.
+based on the original design drawing. The machine By surface contact with the layer of material as it is
+controller 44 controls the operation of drive motors 20, being dispensed, the dispenser tip limits the top of each
+24, and 32 along the "X," "Y," and "Z" axes. Each of 15 layer to the precise "Z" axis setting, and thus assists in
+these motors may be operating separately, or one or regulating the thickness of each layer so that no accu
+more of them may be operating simultaneously, depend mulated error along the "Z" axis occurs,
+ing upon the shape of the article to be formed. Circular      The multiple layers may be of uniform thickness as
+patterns for each layer can be generated by controlled shown in FIG. 4, or the layers may vary in thickness, as
+movement along the "X" and "Y" axes of the base plate 20 necessary and appropriate for the forming of a particu
+10. The dispensing head is initially positioned a prede lar article. Also, the layers may each vary in thickness
+termined height above base plate 10 or its receiving across the height of each layer, as shown in FIG. 9. As
+substrate 108 to form the first layer. The height of each shown in the FIG. 9 illustration, the layers formed on
+subsequent layer is then closely controlled in order to the sandpaper substrate 108 may vary in height along
+dispense and form very thin layers. The thinner the 25 inclined surfaces, and such surfaces may either be
+layers, the smoother the resulting surface on the article. straight or arcuate.
+Layers as thin as 0.0001 inches may be formed. The            Feeding of the supply material is controlled relative
+layers can be formed horizontally, vertically, or in any to the "X," "Y," and "Z" movement of the base plate 10
+360 orientation to the horizontal. Depositing of the and dispensing head in such a way that the flow of
+material may take place along any of the three axes. The 30 material onto the substrate 108 is not starved or unduly
+dispensing of material may take place along only the excessive. The main concern is the control of layer
+"X" - "Y" plane, until it is advantageous to deposit in thickness, and thus of smoothness of finish. If material
+the "X" "Z" plane or the “Z” “Y” plane. Normally, the spills over on one layer and/or is starved on other lay
+dispenser head will be mounted along the "Z" axis ers, the layers will be of irregular thickness with a re
+generally perpendicular to the receiving or base plate 35 sulting rough wall surface on the article produced.
+10, and thus perpendicular to the "X" - “Y” plane of Supply material control may be accomplished in vari
+table 12.                                                   ous ways. One approach utilizes the discharge of fluid
+   When forming and building up multiple layers as material from the nozzle orifice by the advance of a
+shown in FIG. 4, the initial relative movement of base      solid rod 46 under a constant, predetermined air pres
+plate 10 and the dispensing head will be in a horizontal sure as described and illustrated with respect to FIGS.
+plane along the "X" - "Y" axes. The first layer is dis 1 and 3. This provides constant fluid pressure of the
+pensed and solidifies as it adheres to the substrate, such supply material at the dispensing outlet orifice 98. The
+as sandpaper 108. The first layer may take any shape advancing movement of the solid rod 46 would be at a
+dictated by the computer program and it solidifies sub speed initially determined by the relative movement
+stantially instantly. No material is dispensed onto a 45 speed of the dispensing head and base plate in the "X"
+previously formed layer, until that portion of the layer "Y" plane. In the embodiment of FIG. 5, very accurate
+under the dispensing head has solidified. The second control of the volume rate of feeding of the flexible
+and each subsequent layer may take slightly different strand 110 can be achieved. This can be done by propor
+shapes, as dictated by the particular cross section for tionally regulating the linear speed of the drive motor
+ each layer from the computer program and layering 50 142 in relation to the resultant "X" "Y" speed in the
+ software. In the pattern situation for each layer wherein horizontal plane of the dispensing head and base plate
+each layer is formed only in a horizontal "X" - “Y” relative to each other, as achieved by sensing the driv
+plane, motor 32 is selectively actuated after each layer is ing speed of control motors 20 and 24. Alternatively,
+ formed to raise the dispensing head incrementally along the speed of motor 142 can be proportionally regulated
+ the "Z" axis a closely controlled, predetermined dis 55 in relation to the resultant "X,” “Y," "Z" speed by
+ tance to control the gap between layers and thus the sensing motors 20, 24, and 32. Thus, the volumetric
+ thickness of each layer. After the dispensing head is flow rate of the supply material in a fluid state as dis
+ thus raised, the next layer is dispensed and formed along charged from dispensing head 112 would be controlled
+a controlled path. In some instances, the dispensing in a proportional relation to the "X" - "Y" speed of the
+ head may be moving in a direction along the "Z" axis as 60 dispensing head and base plate 10 relative to each other.
+the layer is formed, such as when forming a spiral pat This can be done by sensing the pulse signals driving
+ tern, and the software program will control the location motors 20 and 24, and sending proportional pulse drive
+of the dispensing head at the end of each layer. Thus, signals to drive motor 142 on dispensing head 112.
+ when at the start position for the next layer, the dispens    The material supply apparatus of FIG. 5, using a
+ing head may have already been raised a distance along 65 flexible strand of very small, predetermined diameter,
+the "Z" axis above the corresponding point on the permits very accurate control over the volume flow
+ previously-formed layer. In such a situation, the dis rate of dispensing of the material. Effective on/off fluid
+ pensing head may not have to be elevated at all at the dispensing can be achieved by simply stopping the ad
+
+--- REVIEWED TRANSCRIPTION PAGE 11 OF 15 ---
+
+5,121,329
+                         13                                                             14
+vancing motors. This might be done, for example, when         will depend upon the nature of the material used. For
+tracing a pattern which includes corners. To avoid            example, wax will cool and solidify substantially instan
+puddling or excessive build-up of the supply material at taneously in thin layers. In one working embodiment as
+the corners of a pattern, when there is no relative move shown in FIG. 1, compressed air supplied from com
+ment between the dispensing head and the base plate pressor 60 and its receiving tank 162 was provided
+along the "X" - “Y” plane, the interruption of the drive through a separate supply line 150, with its discharge
+signals to motors 20 and 24 can also be used to provide end positioned closely adjacent the tip of discharge
+a stop signal to the drive motor(s) for advancing flexible nozzle 4, as shown in FIG. 1. The cooling air from line
+strand 110.                                                   150 assisted in rapidly solidifying the wax as the multi
+    Alternatively, the "X" - "Y" drive motors 20 and 24 10 ple layers were formed.
+can be driven at a constant speed, without interruption.         Different structures and arrangements of dispensing
+Such a speed would be selected to correspond to the heads may be utilized for receiving and dispensing dif
+slowest speed required to form patterns, such as around ferent types and/or different colors of dispensing mate
+corners, where a relatively slow output feed of dispens rial from separate sources. For example, as shown in
+ing material would be required. The flexible strand 110 15 FIG. 6, the dispensing head 112 may have multiple
+of FIG. 5 would be advanced at a constant linear rate by supply chambers 151 and 152 into which different sup
+controlling the strand drive motors to correspond pro ply materials 110a and 110b may be directed from sepa
+portionally with such a constant speed movement of a rate supply sources. The supply materials 110a and 110b
+dispensing head and base plate relative to each other in could be flexible strands supplied from a reel in the
+the "X" - "Y" plane. This approach to volume rate 20 manner described and shown with respect to FIG. 5, or
+control of the supply material simplifies the control they could be in the form of rods as illustrated at 46 with
+operation, but would necessitate a greater length of time respect to FIG. 1. In either case, different materials
+for building up the article in desired layers. As noted could be supplied and alternately melted by a resistance
+above, the use of a flexible strand as the supply material heater 156 on the dispensing head for flow through
+in the dispensing head apparatus shown in FIG. 5 does 25 check valves 154 into alternate flow passages 124a and
+permit close control of the dispensing of the supply 124b. As shown in FIG. 6, both of those passages com
+material in a liquid state. The flexible strand 110 is of municate with a single discharge outlet or orifice 126 on
+such a small diameter and of resulting small mass, that the tip of nozzle 122. Thus, with such an arrangement
+as it is heated in dispensing head 112, there is substan on the dispensing head, different materials, such as ther
+tially minimal accumulation of supply material in a 30 moplastic resins and wax could be utilized to form dif
+liquid state at the dispensing outlet 126. Thus, positive ferent layers of the same article. Also, the supply mate
+cut-off of the linear advancing movement of strand 110 rials 110a and 110b could be provided in different colors
+substantially cuts off liquid material dispensing from the in order to form alternate or different layers of different
+head 112. The flow of supply material may need to be colors in the object being created. For example, mate
+interrupted in such a manner when moving the dispens 35 rial 110a could be in the form of a red wax, and material
+ing head vertically upwardly a predetermined distance 110b could be in the form of a blue plastic.
+along a "Z" axis after forming each layer, and prior to          As shown in FIG. 11, a plurality of dispensing ori
+dispensing material in the next layer. Continued mate fices 127 could also be arranged in a circular pattern on
+rial flow from the dispensing head during such incre a dispensing head 112. The dispensing head would be of
+mental vertical movement along the "Z" axis of the the same basic construction as shown in FIG. 6 with
+dispensing head could result in excessive accumulation multiple supply passages 151, 152, etc., into which mul
+of material on the preceding layer at a particular point. tiple rods or flexible strands of different compositions
+    The close control of the temperature to which the and colors of materials may be directed. However, the
+flexible strand 110 is heated in dispensing head 112 also bottom of the dispensing head would terminate at sec
+assists in regulating its flow at a desired outlet tempera 45 tion line 11-11 along which FIG. 11 is viewed. Thus
+ture. For this purpose, a thermocouple 148 as shown in material would be dispensed through separate orifices
+ FIG.5 may be located in close proximity to the internal 127 at the outlet of each check valve 154. Such a dis
+passage 124 of nozzle 122, with thermocouple 148 being charge head construction would expedite set-up time
+ used in conjunction with a temperature controller 86 as and also permit discharge of material from any desired
+ described above with respect to FIG. 1, for the purpose 50 number of orifices by selective control of the separate
+ of closely regulating the temperature of electric resis supply materials. The user can draw from particular
+ tance heating element 130.                                    material and color supplies for purposes of the particu
+     Preferably, the supply material utilized will have a lar article being made and for different layers within
+ solidification temperature permitting it to solidify sub each article. It is contemplated that chemical setting
+ stantially instantaneously at room temperature in which 55 materials, such as two-part epoxy compositions could
+ it is dispensed. For example, thermoplastic resin depos be applied by using the applicator as described with
+ ited in relatively thin layers less than 0.001 inch in thick respect to FIG. 11. The two components would be
+ ness solidifies substantially instantaneously upon being discharged through separate, aligned orifices 127 so as
+ dispensed at room temperature. If thicker layers of to mix together.
+ thermoplastic are to be formed, on the order of 0.020 60 Also, as illustrated in FIG. 10, it is contemplated that
+ inch, then a cooling medium, such as air, water, or freon thermally solidifying material could be dispensed into
+ may have to be utilized on or in conjunction with base free space so as to be suspended above a base plate or
+ plate 10 so as to cool the thermoplastic resin rapidly as substrate 108 to which it is bonded at selected locations.
+ it is dispensed in order to ensure that it will immediately For this purpose, a dispensing head 112 would have an
+ solidify. Cooling medium application must be con 65 ultrasonic vibrator or horn 158 secured to its outlet end
+ trolled. Over cooling can cause shrink distortion. The or dispensing tip as shown. Material would be supplied
+ nature and extent of cooling medium application for the to the dispensing head 112 as a solid, and heated to a
+ purpose of rapidly solidifying the dispensed material fluid or a liquid state by the use of a heating element
+
+--- REVIEWED TRANSCRIPTION PAGE 12 OF 15 ---
+
+5,121,329
+                            15                                                  16
+such as that disclosed at 130 with respect to FIG. 5. trated in FIGS. 7 and 8. Main, electric resistance strip
+Ultrasonic energy is then applied by means of the elec heaters disposed lengthwise along the internal wall
+trosonic vibrator 158, and the material is dispensed at a surfaces of manifold 162 serve to initially heat and liq
+temperature slightly below its ambient solidification uify the solid supply materials 172 and 174; and separate
+temperature, the energy supplied by ultrasonic vibra strip heaters 178 mounted on the outside surface of the
+tion serving to increase the pressure and keep the mate bottom of the manifold adjacent to outlet 170 serve to
+rial in a fluid state as it is discharged from dispensing closely control the temperature of the liquified material
+outlet 126. Since the material is dispensed at a tempera to a level just slightly above its solidification tempera
+ture below its solidification temperature, it will solidify ture. It will be appreciated that manifold 162 can be
+instantaneously upon discharge. This technique can be 10 moved in a linear path across a receiving substrate so as
+utilized to form a pattern of material in threads, struts, to apply a wide swath of material for building up a
+or strands in free space, above substrate 108 as shown in relatively large object.
+FIG. 10. Each strand of material would be initially             The multiple-dispensing orifice approach may also be
+discharged onto the substrate for attachment to it. used with the flexible strand supply arrangement of
+Thereafter, various patterns of the material could be 15 FIG. 5. For that purpose, feed rollers 134, 136 would be
+formed in the free space above the substrate as shown in elongated along their rotational axes to grip and ad
+arcuate form, with the material strands being secured in vance a plurality of flexible strands 110 supplied from a
+a cantilevered fashion at their opposite ends to substrate plurality of separate supply reels 114. Each strand
+108. Strands of material 160 formed and solidified in         would be advanced into a separate nozzle 122.
+free space in a layered fashion are shown in FIG. 10. 20 In addition to the material supply arrangements de
+   The dispensing tip with an ultrasonic vibrator can scribe above, the material could also be supplied to a
+also be used to create three-dimensional objects without dispensing head as a liquid from a liquid storage vessel
+laminations. For example, wire frame objects comprised using a fixed or variable displacement pump. For exam
+of multiple, free-standing strands 180 defining wire ple, a multiple part, chemically hardening, epoxy com
+frame segments anchored to a substrate 108 at spaced 25 pound could be used as the article-forming material,
+locations 180a and 180b could be formed as shown in           with each of the epoxy components being supplied as a
+FIG. 12. Each strand 180 instantaneously solidifies in liquid         from a separate supply source to a multiple-pas
+space as it is dispensed from nozzle 112, with the nozzle sage dispensing        head.
+and substrate being moved relative to each other in a
+predetermined pattern along "X," "Y," and "Z" axes by 30 tions may be made that
+                                                                It is  anticipated        various changes and modifica
+                                                                                     in the construction and operation of
+computer-driven control motors. When forming strands the apparatus disclosed
+in an arcuate shape as shown in FIG. 12, the nozzle 112 sional objects, as well asherein    in
+                                                                                                 for forming three-dimen
+                                                                                               the  methods disclosed for
+could be canted to an angle from the vertical 'Z' axis forming such objects, without departing
+generally perpendicular to lines tangent to the arc being and scope of the invention as set forth infrom    the
+                                                                                                                 the spirit
+                                                                                                                following
+formed. Thus a wire frame created CAD drawing can          35
+be directly translated into a wire frame, three-dimen claims.   What is claimed is:
+sional object. For the object shown in FIG. 12 the              1. Apparatus for making three-dimensional physical
+strands are anchored at two points and also to each objects             of a predetermined shape by sequentially depos
+other where they intersect. Cantilevered strands and iting multiple             layers of solidifying material on a base
+objects can also be formed with each strand anchored at member in a desired            pattern, comprising:
+only one point on the substrate. Thin strands of material       a movable head having flow-passage means therein
+can be solidified as wire frames in free space to create           connected to a dispensing outlet at one end thereof,
+hollow or open articles, including those of a spider web
+configuration or hollow, single piece spheres.                     said outlet comprising a tip with a discharge orifice
+   With respect to the embodiments of FIGS. 10 and 12,     45      of  predetermined size therein;
+the ultrasonic vibrator could alone be the means of             a supply of material which solidifies at a predeter
+fluidizing the material, with no heater being used. In             mined temperature, and means for introducing said
+stantaneous solidification of the material, even in free           material    in a fluid state into said flow-passage
+space, can also be accomplished by the use of a coolant            means;
+such as Freon applied to the material as it is discharged 50 a base member disposed in close, working proximity
+from nozzle 112.                                                   to said dispensing outlet of said dispensing head;
+   It is also contemplated that the dispensing heads may           and
+be connected to outlet manifolds incorporating a plural         mechanical means for moving said dispensing head
+ity of dispensing outlets or orifices. Such a dispensing           and said base member relative to each other in
+arrangement would be useful for forming a wide swath 55            three dimensions along "X," "Y,” and "Z" axes in
+in multiple layers in a paint brush type of layering ef.           a rectangular coordinate system in a predetermined
+fect. FIGS. 7 and 8 show a multiple orifice discharge              sequence and pattern and for displacing said dis
+manifold 162 which would be suitable for such pur                  pensing head a predetermined incremental distance
+poses. Positioned along the length of the manifold 162             relative to the base member and thence relative to
+are a plurality of solenoid actuators, each having a con           each    successive layer deposited prior to the com
+nected plunger 166 with a bottom tip valve element 168             mencement of the formation of each successive
+positioned in close, operating relation to a dispensing            layer to form multiple layers of said material of
+outlet or orifice 170. The controllers 164 could be elec           predetermined thickness which build up on each
+trically actuated solenoids, or they could be air actua            other sequentially as they solidify after discharge
+tors connected to a supply source of pressurized air, in 65        from said orifice; and
+a manner as is commonly utilized with air actuated              means for metering the discharge of said material in a
+ valves. Material supply rods or strands 172 and 174 may           fluid stream from said discharge orifice at a prede
+be introduced lengthwise inside of manifold 164 as illus           termined rate onto said base member to form a
+
+--- REVIEWED TRANSCRIPTION PAGE 13 OF 15 ---
+
+What is claimed is:
+1. Apparatus for making three-dimensional physical objects of a predetermined shape by sequentially depos iting multiple layers of solidifying material on a base member in a desired pattern, comprising: a movable head having flow-passage means therein connected to a dispensing outlet at one end thereof, said outlet comprising a tip with a discharge orifice of predetermined size therein; a supply of material which solidifies at a predeter mined temperature, and means for introducing said material in a fluid state into said flow-passage means; a base member disposed in close, working proximity to said dispensing outlet of said dispensing head; and mechanical means for moving said dispensing head and said base member relative to each other in three dimensions along "X," "Y,” and "Z" axes in a rectangular coordinate system in a predetermined sequence and pattern and for displacing said dis pensing head a predetermined incremental distance relative to the base member and thence relative to each successive layer deposited prior to the com mencement of the formation of each successive layer to form multiple layers of said material of predetermined thickness which build up on each other sequentially as they solidify after discharge from said orifice; and means for metering the discharge of said material in a fluid stream from said discharge orifice at a prede termined rate onto said base member to form a 5,121,3 17 three-dimensional object as said dispensing head and base member are moved relative to each other.
+
+2. Apparatus as defined in claim 1 wherein: said means for introducing said material in a fluid state comprises heating means disposed in close proximity to said flow passage means to maintain said material at a temperature above its solidifica tion temperature in said flow passage means and at said discharge orifice.
+
+3. Apparatus as defined in claim 2 wherein: O a temperature controller is connected to said heating means and temperature-sensing means is positioned on said dispensing head adjacent to said dispensing outlet, said sensing means being connected to said temperature controller, whereby said temperature 15 controller is operative to closely regulate said heat ing means and thus to accurately control the tem perature of said material.
+
+4. Apparatus as defined in claim 2 wherein: said supply of material is in solid form; and further including a material-advance mechanism op eratively associated with said solid material to ad vance said material through said supply chamber towards said flow-passage means, said heating means serving to melt said solid material to a flow 25 able, fluid state.
+
+5. Apparatus as defined in claim 4 wherein: said supply of solid material is in the form of a rod, and said material advance mechanism is in the form of fluid under pressure connected to power 30 advance means coupled to said rod. c
+
+6. Apparatus as defined in claim 5 wherein: said rod is between 0.40 inches and 0.50 inches in diameter.
+
+7. Apparatus as defined in claim 2 wherein: 35 said material is in the form of a continuous flexible strand; and further including material advance means operatively associated with said strand for the controlled ad vance of said strand of material through said supply chamber toward said flow passage means, said heating means serving to melt said flexible strand to a flowable, fluid state.
+
+8. Apparatus as defined in claim 7 and further includ ing: 45 a supply reel on which said flexible strand is wound, and said material-advance means comprises means c for engaging said strand and pulling it from said reel.
+
+9. Apparatus as defined in claim 7 wherein: 50 said flexible strand is a thermoplastic resin.
+
+10. Apparatus as defined in claim 1 wherein: said base member is supported for translational move ment along "X" and "Y" axes in a horizontal plane; and 55 said mechanical means comprises motor means opera tive to selectively move said base member along said "X' and 'Y' axes.
+
+11. Apparatus as defined in claim 1, and further com prising: a computer-aided design computer programmed to crease a three-dimensional drawing of a desired object or model, and software associated with said computer operative to convert the drawing into c multiple elevation layer data; and 65 a three-dimensional controller electronically linked to said mechanical means and operative to actuate said mechanical means in response to "X," "Y," 329 18 "Z" axis drive signals for each layer received from said computer.
+
+--- REVIEWED TRANSCRIPTION PAGE 14 OF 15 ---
+
+12. Apparatus as defined in claim 1 wherein: said material is a thermoplastic resin.
+
+13. Apparatus as defined in claim 1 wherein: said material is a wax.
+
+14. Apparatus as defined in claim 1 wherein: said material is a metal.
+
+15. Apparatus as defined in claim 1 wherein: a substrate having a sand particle-receiving surface is positioned on said base member, whereby the first layer of said material discharged from said dispens ing outlet is received on and hardens to a solid on said sand particle-receiving surface
+
+16. Apparatus as defined in claim 1 wherein: an open matrix substrate is positioned on said base member, whereby the first material discharged from said dispensing nozzle is received on and hardens to a solid on said open matrix substrate
+
+17. Apparatus as defined in claim 16 wherein: said open matrix substrate is a fine, wire mesh screen.
+
+18. Apparatus as defined in claim 17 wherein: said wire mesh screen has sand particles thereon.
+
+19. Apparatus as defined in claim 17 wherein: said open matrix substrate is electrically conductive.
+
+20. Apparatus as defined in claim 1 wherein: said material includes magnetic particles and said base member has a magnetized surface thereon to attract said particles to said surface.
+
+21. Apparatus as defined in claim 1, and further in cluding: a plurality of dispensing outlets in a fluid-flow com munication with said flow-passage means; and a separate flow-regulating valve in fluid-flow control relation to each of said dispensing outlets.
+
+22. Apparatus as defined in claim 1 wherein: said flow passage means comprises a plurality of flow passages communicating with a single discharge orifice; and a plurality of separate supply materials supported in input relation to each of said flow passages on said dispensing head.
+
+23. Apparatus as defined in claim 1 wherein: the size of said dispensing outlet is variably adjust able.
+
+24. Apparatus as defined in claim 1 and further in cluding: substrate having a plurality of small openings therein positioned on said base member, whereby the first material discharged from said dispensing nozzle is received on and anchored to said substrate as said material hardens to a solid.
+
+25. Apparatus as defined in claim 1 wherein: said tip has a bottom surface positioned by said me chanical means in contact with the material being discharged as said dispensing head and base mem ber move relative to each other in the course of forming each layer to assist in controlling layer thickness.
+
+26. Apparatus as defined in claim 1 wherein: said material has solid particles entrained therein as discharged in said liquid stream.
+
+27. A process for making a three-dimensional article comprising: introducing a supply of thermally solidifiable material in a fluid state into a flow passage of a discharge nozzle on a mechanically moveable dispensing head, said nozzle having a dispensing outlet at one 5,121, 19 end thereof in fluid-flow communication with said flow passage; dispensing said material from said dispensing outlet as a continuous, flowable fluid stream at a predeter mined temperature above the temperature at which it solidifies onto a base member positioned in close proximity to said nozzle; simultaneously with the dispensing of said material onto said base member, mechanically generating relative movement of said base member and said O dispensing head with respect to each other in a predetermined pattern to form a first layer of said material on said base member; and displacing said dispensing head a predetermined layer thickness distance from said first layer, and after 15 the portion of said first layer adjacent said nozzle has cooled and solidified, dispensing a second layer of said material in a fluid state onto said first layer from said dispensing outlet while simultaneously moving said base member and said dispensing head 20 relative to each other, whereby said second layer solidifies upon cooling and adheres to said first layer to form a three-dimensional article; and forming multiple layers of said material built up on top of each other in multiple passes by repeated dispensing of said material in a fluid state from said dispensing outlet as said base member and said dispensing head are moved relative to each other, with said dispensing head and said base member being displaced a predetermined distance after 30 each preceding layer is formed, and with the dis pensing of each successive layer being controlled to take place after the material in the preceding layer immediately adjacent to said nozzle has solid ified. 35
+
+28. The process of claim 27 wherein: said dispensing head and said base member are dis placed a distance not greater than 0.002 inches after each of said passes to thereby build up very thin multiple layers of said material forming a three-di mensional article.
+
+29. The process of claim 27 wherein: said dispensing head and said base member are dis placed a distance between 0.000 inches and 0.125 inches after each of said passes. 45
+
+30. The process of claim 27 and further including: introducing said material in a solid state into said dispensing head, and heating said material in said dispensing head to a temperature above its solidifi cation temperature, and controlling the tempera 50 ture of said material within a range of plus or minus one degree centigrade of said temperature.
+
+31. The process of claim 30 wherein: said material is introduced into said dispensing head as a flexible strand from a source of supply thereof. 55
+
+32. The process of claim 27 wherein: said base member has a substrate thereon which is heat conductive and onto which the material is dispensed, and further including heating said sub strate after said article is formed to facilitate separa tion of the article from the base member.
+
+33. The process of claim 27 wherein: said base member has an electrically conductive sub strate thereon onto which said material is dis pensed, and further including passing an electric 65 current through said substrate after the article is formed to generate heat and thereby assist in sepa rating the article from said base member. ,329 20
+
+34. The process of claim 27 wherein: said material is selected from the group comprising aluminum, bismuth, pewter, copper, gold, silver, lead, magnesium, nickel, platinum, Steel, titanium. and plutonium.
+
+35. The process of claim 27 and further including: controlling the volumetric rate at which said material is introduced into said discharge nozzle propor tionally in response to the resultant "X," "Y" speed of the dispensing head and base member relative to each other, whereby the flow of material from said dispensing outlet will be at a proper volumetric rate to control material build-up in forming an article.
+
+--- REVIEWED TRANSCRIPTION PAGE 15 OF 15 ---
+
+36. A process for making a three-dimensional article comprising: creating a drawing of a three-dimensional article on a computer in a computer-aided design process 0 wherein the drawing comprises a plurality of seg ments defining said article; generating programmed signals corresponding to each of said segments in a predetermined sequence; dispensing a solidifiable material in a fluid state from a dispensing head at predetermined conditions such that said material will solidify substantially instan taneously at ambient conditions into which said material is dispensed; simultaneously with the dispensing of said material, and in response to said programmed signals, me chanically generating relative movement between said head and a base member positioned in close proximity thereto in a predetermined sequence and pattern of multiple movements along a plurality of axes of a rectangular coordinate system such that at least a portion of the dispensed material is depos ited on and anchored to said base member, said material being dispensed in free space as a plurality of upstanding segments sequentially formed so that the last dispensed segment overlies at least a por tion of the preceding segment in contact therewith to thereby form a three-dimensional article of pre determined design anchored to said base member.
+
+37. The process of claim 36 wherein: said upstanding segments are each dispensed and formed to be anchored to said base member at spaced-apart locations thereon and to intersect each other to define said article as a wire frame network.
+
+38. The process of claim 36 wherein: said material is a thermally solidifiable material; and ultrasonically vibrating said material in said dispens ing head to thereby pressurize said material and lower its solidification temperature; and cooling said material to a temperature just below its ambient solidification temperature prior to dis charge from said dispensing head, whereby said material solidifies instantaneously upon discharge from said nozzle into ambient conditions in the absence of the energy imparted to it by said ultra sonic vibration.
+
+39. A process for making a three-dimensional article comprising: dispensing a solidifiable material in a fluid state from a dispensing head having a tip with a discharge orifice therein, said tip having a substantially planar bottom surface, said material being one of which will solidify at ambient conditions; 5,121,3 21 maintaining a predetermined gap distance between said planar bottom surface of said tip and a base member positioned in close proximity thereto, with said material being dispensed onto said base men ber; 5 simultaneously with the dispensing of said material onto said base member, generating relative move ment between said base member and said dispens ing head in the plane of said base member to form o a first layer of said material on said base member; 10 i and m displacing said dispensing head a predetermined dis tance with respect to said first layer, and then dis pensing a second layer of said material in a fluid state onto said first layer form said discharge ori- 15 fice while generating relative movement between said base member and said dispensing head in the plane of said base member, with said planar bottom surface of said tip being maintained substantially parallel to said first layer and to the plane of said 20 base member, whereby said tip planar bottom sur face provides a shearing effect on the top surface of said second layer of material as it is dispensed to thus closely control the absolute location of succes sive layers with respect to the base member and to 25 avoid any accumulative error in layer build-up, and to maintain a smooth layer surface.
+
+40. The process of claim 39 wherein: said material is a multiple component composition comprised of material components which react 30 with each other.
+
+41. Apparatus as defined in claim 39 wherein: said substrate is a fine, wire mesh screen.
+
+42. Apparatus as defined in claim 47 wherein: said wire mesh screen has sand particles thereon. 35
+
+43. Apparatus for making three-dimensional, physical objects of a predetermined shape by depositing solidify ing material on a base member in a desired pattern com prising: a dispensing head having means to hold a supply of 40 material and to dispense such material in a fluid state; a base member disposed in close, working proximity to said dispensing head; an open matrix substrate on said base member; 45 means for moving said dispensing head and said base member relative to each other in a predetermined sequence and pattern of movement simultaneously 50 55 65 329 22 with the discharge of fluid material onto said sub strate commencing with the initial discharge of material onto said substrate, whereby the first ma terial dispensed from said dispensing head is re ceive on and hardens to a solid on said open matrix substrate to thereby firmly anchor the article being formed.
+
+44. Apparatus for making three-dimensional physical objects of a predetermined shape by sequentially depos iting multiple layers of solidifying material on a base member in a desired pattern, comprising: a movable dispensing head having flow-passage means therein connected to a dispensing outlet at one end thereof. a supply material which solidifies at a predetermined temperature, and means for introducing said mate rial in a fluid state into said flow-passage means; a base member disposed in close, working proximity to said dispensing outlet of said dispensing head; mechanical means for moving said dispensing head and said base member relative to each other in three dimensions along "X." "Y," and "Z" axes in a rectangular coordinate system in a predetermined sequence and pattern; means for metering the discharge of said material in a fluid state from said dispensing outlet at a predeter mined rate onto said base member to form a three dimensional object as said dispensing head and base member are moved relative to each other; said dispensing head comprising a supply chamber communicating with said flow-passage means and containing a supply of said material upstream of said flow-passage means in the direction of material movement toward said dispensing outlet, and a discharge nozzle having said fluid passage means therein, said dispensing outlet being at the tip of said nozzle; and heating means on said dispensing head controlled to heat said material to a temperature above its solidi fication temperature, said heating means compris ing a first, main heater adjacent to said supply of material in said supply chamber and second heater on said nozzle adjacent to said flow passage means, said second heater serving to maintain said material at a temperature above its solidification point in said flow-passage means and at said dispensing outlet. x: k k k k
+

@@ -792,4 +792,27 @@ describe("US 2,524,035 manual source edition", () => {
         .map((inline) => inline.text),
     ).toEqual(["Fig. 13", "Fig. 14", "Fig. 15", "Fig. 16", "Fig. 15"]);
   });
+
+  test("provides valid provenance classifications for all Bardeen controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-2524035-bardeen-transistor"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBe("scenario-modern");
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBe("scenario-modern");
+    }
+  });
+
+  test("enforces figure acceptance pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(bardeenTransistorPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+  });
 });

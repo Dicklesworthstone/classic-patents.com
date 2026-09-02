@@ -26,7 +26,9 @@ const records = (await Bun.file(new URL("patents.json", resourcesURL)).json()) a
 
 const objectSize = (object: THREE.Object3D): number => {
   let count = 0;
-  object.traverse(() => { count += 1; });
+  object.traverse(() => {
+    count += 1;
+  });
   return count;
 };
 
@@ -38,7 +40,9 @@ const assignExportNames = (value: unknown, seen = new Set<unknown>(), path = "mo
     return;
   }
   if (Array.isArray(value)) {
-    value.forEach((child, index) => assignExportNames(child, seen, `${path}_${index}`));
+    value.forEach((child, index) => {
+      assignExportNames(child, seen, `${path}_${index}`);
+    });
     return;
   }
   for (const [key, child] of Object.entries(value)) {
@@ -58,11 +62,15 @@ const objectCandidates = (value: unknown, seen = new Set<unknown>()): THREE.Obje
 };
 
 const modelModuleSpecifiers = (source: string): string[] => {
-  const matches = source.matchAll(/from\s+["'](\.\/[A-Za-z0-9_-]*(?:Model|model|Airframe|airframe))["']/g);
+  const matches = source.matchAll(
+    /from\s+["'](\.\/[A-Za-z0-9_-]*(?:Model|model|Airframe|airframe))["']/g,
+  );
   return [...new Set([...matches].map((match) => match[1]))];
 };
 
-const modelBuilder = async (component: string): Promise<{ name: string; result: unknown; root: THREE.Object3D }> => {
+const modelBuilder = async (
+  component: string,
+): Promise<{ name: string; result: unknown; root: THREE.Object3D }> => {
   const componentURL = new URL(`${component}.tsx`, threeSourceURL);
   const componentSource = await Bun.file(componentURL).text();
   const moduleSpecifiers = modelModuleSpecifiers(componentSource);
@@ -73,10 +81,11 @@ const modelBuilder = async (component: string): Promise<{ name: string; result: 
   const attempts: string[] = [];
   for (const specifier of moduleSpecifiers) {
     const moduleURL = new URL(`${specifier}.ts`, componentURL);
-    const modelModule = await import(moduleURL.href) as Record<string, unknown>;
-    const builders = Object.entries(modelModule).filter(([name, value]) => (
-      typeof value === "function" && /^(?:build|create).*(?:Model|Airframe)$/i.test(name)
-    ));
+    const modelModule = (await import(moduleURL.href)) as Record<string, unknown>;
+    const builders = Object.entries(modelModule).filter(
+      ([name, value]) =>
+        typeof value === "function" && /^(?:build|create).*(?:Model|Airframe)$/i.test(name),
+    );
     for (const [name, candidate] of builders) {
       try {
         const result = (candidate as (...args: never[]) => unknown)();
@@ -145,9 +154,12 @@ for (const [index, record] of records.entries()) {
       vectorComponent,
       meshCount: 0,
       namedNodeCount: 0,
-      sourceBoundary: "US 971,501 contains no apparatus drawing; its web exhibit intentionally withholds the interpretive process-loop model.",
+      sourceBoundary:
+        "US 971,501 contains no apparatus drawing; its web exhibit intentionally withholds the interpretive process-loop model.",
     });
-    console.log(`[${index + 1}/${records.length}] ${record.id}: source-bounded live chemistry exhibit`);
+    console.log(
+      `[${index + 1}/${records.length}] ${record.id}: source-bounded live chemistry exhibit`,
+    );
     continue;
   }
   const { name: builder, root } = built;

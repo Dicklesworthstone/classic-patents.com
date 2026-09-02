@@ -671,10 +671,19 @@ export const carlsonElectrophotographyPatent: Patent = {
     ],
     breakthroughInsight:
       "Combining electrostatics with photoconductivity allowed an image to be recorded as an invisible charge pattern on an insulating semiconductor, dusted with dry resin powder, and fused onto plain paper with heat, achieving 100% dry reproduction in seconds without wet chemistry.",
-    // No supported patent-war record is established for this grant. The
-    // Battelle/Haloid commercial-development history belongs in aftermath,
-    // not in a rival-claim field.
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "3M (Thermo-Fax), RCA (Electrofax), & IBM",
+        rivalClaim:
+          "3M (Thermo-Fax) and RCA (Electrofax) developed competing dry copy systems using zinc oxide-coated paper, challenging Carlson's fundamental transfer electrophotography patents.",
+        conflictDetails:
+          "Carlson and the Haloid Company (later Xerox) defended their basic patents against corporate giants attempting to bypass the electrostatic latent image transfer step.",
+        resolution:
+          "Haloid Xerox aggressively protected the reusable selenium drum architecture and heat-fused resin toner transfer process.",
+        legalOutcome:
+          "Carlson's 1942 foundational patent stood unchallenged through its full term, creating the multi-billion-dollar Xerox monopoly and generating over $150 million in royalties for Carlson, which he donated almost entirely to philanthropic foundations.",
+      },
+    ],
     civilizationalImpact:
       "Carlson's electrophotography created the modern office workflow and information economy. It enabled instant document copying, xerographic microfilming, and directly fathered the computer laser printer (invented by Gary Starkweather at Xerox PARC in 1971 by replacing the light bulb with a laser beam). Today, trillions of pages of documents, books, architectural drawings, and financial reports are printed annually using Carlson's fundamental 5-step xerographic cycle.",
     funFact:

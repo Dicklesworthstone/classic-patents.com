@@ -116,7 +116,11 @@ private struct NativeTeXParser {
         case "xrightarrow":
             let label = parseRequiredGroup()
             return .sequence([.glyph("→"), .scripted(base: .space(0), subscriptNode: label, superscriptNode: nil)])
-        case "left", "right": return parseAtom()
+        // TeX's sizing commands modify the following delimiter. SwiftUI lays
+        // out this compact display at one optical size, so consume the command
+        // and render the authored delimiter itself instead of leaking "bigl"
+        // or "bigr" into the equation.
+        case "left", "right", "bigl", "bigr": return parseAtom()
         case "quad": return .space(16)
         case "qquad": return .space(28)
         case ",": return .space(3)
@@ -245,12 +249,14 @@ private struct NativeTeXParser {
         "cdot": "·", "times": "×", "div": "÷", "pm": "±", "mp": "∓",
         "le": "≤", "leq": "≤", "ge": "≥", "geq": "≥", "neq": "≠", "approx": "≈",
         "equiv": "≡", "propto": "∝", "rightarrow": "→", "leftarrow": "←",
+        "hookrightarrow": "↪", "dashv": "⊣",
         "to": "→", "longrightarrow": "⟶", "Rightarrow": "⇒", "Leftarrow": "⇐", "leftrightarrow": "↔", "rightleftharpoons": "⇌",
         "mapsto": "↦", "in": "∈", "notin": "∉", "subset": "⊂", "subseteq": "⊆",
+        "varnothing": "∅",
         "cup": "∪", "cap": "∩", "forall": "∀", "exists": "∃", "neg": "¬",
         "land": "∧", "lor": "∨", "perp": "⊥", "parallel": "∥", "angle": "∠",
         "circ": "∘", "bullet": "•", "ell": "ℓ", "hbar": "ℏ", "Re": "ℜ", "Im": "ℑ",
-        "lfloor": "⌊", "rfloor": "⌋", "lesssim": "≲", "gg": "≫", "sim": "∼",
+        "lfloor": "⌊", "rfloor": "⌋", "lesssim": "≲", "ll": "≪", "gg": "≫", "sim": "∼",
         "prime": "′", "implies": "⇒",
         "|": "‖",
         "dots": "…", "ldots": "…", "cdots": "⋯", "vdots": "⋮", "ddots": "⋱",

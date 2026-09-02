@@ -281,6 +281,25 @@ export function McCormickReaper3D() {
             </div>
           </div>
         )}
+
+        <StudioKernelChips
+          visible={showUiOverlay}
+          side="right"
+          title="McCormick cutter bar"
+          chips={[
+            { label: "Ground", value: String(groundSpeedMph), unit: "mph" },
+            { label: "24-inch wheel", value: String(reaper.groundWheelRpm), unit: "rpm" },
+            { label: "Crank", value: String(reaper.cutterCrankRpm), unit: "rpm" },
+            { label: "Reel", value: String(reaper.reelRpm), unit: "rpm" },
+            { label: "v", value: String(reaper.groundSpeedMps), unit: "m/s" },
+            { label: "f_cut", value: String(reaper.cutterHz), unit: "Hz" },
+            { label: "ω_cut", value: reaper.cutterOmegaRadPerS.toFixed(2), unit: "rad/s" },
+            {
+              label: "Reel crate",
+              value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
+            },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -334,25 +353,6 @@ export function McCormickReaper3D() {
           className="mt-3"
         />
       </div>
-
-      <StudioKernelChips
-        visible
-        side="right"
-        title="McCormick cutter bar"
-        chips={[
-          { label: "Ground", value: String(groundSpeedMph), unit: "mph" },
-          { label: "24-inch wheel", value: String(reaper.groundWheelRpm), unit: "rpm" },
-          { label: "Crank", value: String(reaper.cutterCrankRpm), unit: "rpm" },
-          { label: "Reel", value: String(reaper.reelRpm), unit: "rpm" },
-          { label: "v", value: String(reaper.groundSpeedMps), unit: "m/s" },
-          { label: "f_cut", value: String(reaper.cutterHz), unit: "Hz" },
-          { label: "ω_cut", value: reaper.cutterOmegaRadPerS.toFixed(2), unit: "rad/s" },
-          {
-            label: "Reel crate",
-            value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
-          },
-        ]}
-      />
     </div>
   );
 }

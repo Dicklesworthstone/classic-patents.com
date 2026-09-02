@@ -391,7 +391,7 @@ This invention relates more particularly to improvements in that class of photog
     civilizationalImpact:
       "The grant documents a complete mechanical architecture for a portable prepared-film camera, including exposure, light sealing, and film handling.",
     aftermath:
-      "No post-grant litigation or commercial outcome is asserted here because it is not established by the pinned facsimile.",
+      "The pinned facsimile documents the camera apparatus itself; historical litigation regarding nitrocellulose film chemistry is separate from this apparatus grant and has no primary repository packet.",
     sideNotes: [
       "The printed specification cites Eastman's Patents Nos. 317,019, 317,050, and 316,933 and a prior application, Serial No. 199,329, filed April 19, 1886.",
     ],

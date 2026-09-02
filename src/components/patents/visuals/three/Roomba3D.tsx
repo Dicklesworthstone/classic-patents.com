@@ -1,6 +1,16 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import {
+  Camera,
+  Eye,
+  EyeOff,
+  Layers,
+  Pause,
+  Play,
+  RotateCcw,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   createThreeStudioScene,
@@ -13,12 +23,12 @@ import {
   getRoombaTapeState,
   ROOMBA_ROOM,
 } from "@/physics/roombaKernel";
+import { roombaPoseHudPresentation } from "@/physics/roombaWasm";
 import { globalTransportBus, useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
-import { buildRoombaModel } from "./RoombaModel";
+import { buildRoombaModel, ROOMBA_STUDIO_FLOOR_Y } from "./RoombaModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { usePatentAudio } from "./usePatentAudio";
 
@@ -30,10 +40,22 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [0, 3.2, 3.2], target: [0, 0, 0] },
-  robot_chassis: { pos: [0, 1.2, 1.5], target: [0, 0, 0] },
-  cleaning_path: { pos: [2.5, 3.5, 2.5], target: [0, 0, 0] },
-  top: { pos: [0, 5.5, 0.01], target: [0, 0, 0] },
+  iso: {
+    pos: [0, 3.2 + ROOMBA_STUDIO_FLOOR_Y, 3.2],
+    target: [0, ROOMBA_STUDIO_FLOOR_Y, 0],
+  },
+  robot_chassis: {
+    pos: [0, 1.2 + ROOMBA_STUDIO_FLOOR_Y, 1.5],
+    target: [0, ROOMBA_STUDIO_FLOOR_Y, 0],
+  },
+  cleaning_path: {
+    pos: [2.5, 3.5 + ROOMBA_STUDIO_FLOOR_Y, 2.5],
+    target: [0, ROOMBA_STUDIO_FLOOR_Y, 0],
+  },
+  top: {
+    pos: [0, 5.5 + ROOMBA_STUDIO_FLOOR_Y, 0.01],
+    target: [0, ROOMBA_STUDIO_FLOOR_Y, 0],
+  },
 };
 
 export function Roomba3D() {
@@ -41,25 +63,39 @@ export function Roomba3D() {
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [hud, setHud] = useState({ mode: "spiral", speed: 0.3 });
+  const [hud, setHud] = useState<{
+    mode: string;
+    speed: number;
+    opticalSensorEnabled: boolean;
+    contactPartId?: string;
+  }>({ mode: "spiral", speed: 0.3, opticalSensorEnabled: true });
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
   const wheelSpeedMps = (params.wheelSpeedMps as number) ?? 0.3;
   const turnRateRadSec = (params.turnRateRadSec as number) ?? 1.5;
+  const opticalSensorEnabled = (params.opticalSensorEnabled ?? 1) >= 0.5;
+  const isRunning = (params.isRunning ?? 1) >= 0.5;
+  const claimStates = { 1: opticalSensorEnabled };
 
   const live = useLiveSimParams({
     wheelSpeedMps,
     turnRateRadSec,
     isCutaway,
+    opticalSensorEnabled,
+    isRunning,
   });
 
   // Shared transport tape: the roombaKernel module owns one shared tape for
   // every Roomba face. This face registers the kernel's transport updater on
   // the bus; the render loop only draws from getRoombaTapeState().
-  useFrankenSimPhysics(EXHIBIT_ID, {
+  const { frame: physicsFrame } = useFrankenSimPhysics(EXHIBIT_ID, {
     domain: "solid_mechanics",
-    refusal: { isRefused: false },
+    refusal: {
+      isRefused: !opticalSensorEnabled,
+      reason: !opticalSensorEnabled
+        ? "Claim 1 optical emitter/detector and surface-absence redirect circuit are disabled."
+        : undefined,
+    },
     machine: {
       poseXMeters: 0,
       poseYMeters: 0,
@@ -70,18 +106,21 @@ export function Roomba3D() {
   });
 
   useEffect(() => {
-    globalTransportBus.registerUpdater(
+    return globalTransportBus.registerUpdater(
       EXHIBIT_ID,
       createRoombaTransportUpdater(() => ({
         wheelSpeedMps: live.current.wheelSpeedMps ?? 0.3,
         turnRateRadSec: live.current.turnRateRadSec ?? 1.5,
         roomWidth: ROOMBA_ROOM.width,
         roomHeight: ROOMBA_ROOM.height,
+        opticalSensorEnabled: live.current.opticalSensorEnabled ?? true,
+        running: live.current.isRunning ?? true,
       })),
       "TS_FALLBACK",
     );
-    return () => globalTransportBus.unregisterUpdater(EXHIBIT_ID);
   }, [live]);
+
+  const poseHud = roombaPoseHudPresentation(physicsFrame.provenance);
 
   const studioRef = useRef<StudioContext | null>(null);
 
@@ -104,20 +143,14 @@ export function Roomba3D() {
     const model = buildRoombaModel();
     studio.scene.add(model.root);
 
-    let renderedSteps = 0;
-    let hudCounter = 0;
+    const transport = globalTransportBus.getTransport(EXHIBIT_ID);
+    let lastTrailTick = -1;
+    let lastHudTick = -1;
     let rafId = 0;
-    let lastFrameTimeMs: number | undefined;
 
-    const animate = (frameTimeMs: number) => {
+    const animate = () => {
       rafId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
-      const delta =
-        lastFrameTimeMs !== undefined ? Math.min((frameTimeMs - lastFrameTimeMs) / 1000, 0.1) : 0;
-      lastFrameTimeMs = frameTimeMs;
-
-      renderedSteps += 1;
-      const p = live.current;
 
       // Draw-only consumer: pose/mode arrive on the single shared kernel tape
       // stepped by the bus-registered roombaKernel updater.
@@ -126,22 +159,26 @@ export function Roomba3D() {
         model.mainGroup.position.x = tape.displayX;
         model.mainGroup.position.z = tape.displayY;
         model.mainGroup.rotation.y = -tape.heading;
-        model.updateKinematics(delta, p.wheelSpeedMps ?? 0.3, tape.displayX, tape.displayY);
+        model.updateKinematics(tape);
 
-        if (renderedSteps % 4 === 0) {
+        const physicsTick = transport.lastFrame.tick;
+        if (physicsTick !== lastTrailTick && physicsTick % 4 === 0) {
           model.updateTrail(tape.displayX, tape.displayY);
+          lastTrailTick = physicsTick;
         }
 
-        hudCounter += 1;
-        if (hudCounter % 15 === 0) {
+        if (physicsTick !== lastHudTick && physicsTick % 15 === 0) {
           setHud({
             mode: tape.mode,
-            speed: p.wheelSpeedMps ?? 0.3,
+            speed: (tape.leftWheelSpeedMps + tape.rightWheelSpeedMps) / 2,
+            opticalSensorEnabled: tape.opticalSensorEnabled,
+            contactPartId: tape.contactPartId ?? undefined,
           });
+          lastHudTick = physicsTick;
         }
       }
 
-      model.setCutaway?.(p.isCutaway ?? false);
+      model.setCutaway?.(live.current.isCutaway ?? false);
 
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
@@ -193,6 +230,22 @@ export function Roomba3D() {
 
         {/* Top Controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => {
+              updateParam("isRunning", isRunning ? 0 : 1);
+              soundEngine.playSwitchClick();
+            }}
+            className="min-h-9 p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isRunning ? "Pause navigation" : "Run navigation"}
+            aria-label={isRunning ? "Pause navigation" : "Run navigation"}
+          >
+            {isRunning ? (
+              <Pause className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
+          </button>
           <button
             type="button"
             onClick={() => {
@@ -253,7 +306,7 @@ export function Roomba3D() {
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
               <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
-                Drive Speed:
+                Commanded Wheel Speed:
               </span>
               <span className="font-bold text-amber-700 dark:text-amber-400">
                 {wheelSpeedMps.toFixed(2)} m/s
@@ -272,8 +325,16 @@ export function Roomba3D() {
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Room Coverage:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">98.4%</span>
+              <span className="text-ink-600 dark:text-ink-400">Optical Redirect:</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400 uppercase">
+                {hud.opticalSensorEnabled ? "armed" : "claim absent"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Bumper Contact:</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400 uppercase">
+                {hud.contactPartId?.replaceAll("-", " ") ?? "clear"}
+              </span>
             </div>
           </div>
         )}
@@ -283,9 +344,23 @@ export function Roomba3D() {
           side="right"
           title="Autonomous Navigation State"
           chips={[
+            {
+              label: "Law owner",
+              value: poseHud.value,
+              tone: poseHud.tone,
+            },
             { label: "Behavior", value: hud.mode.toUpperCase() },
-            { label: "Wheel Speed", value: `${hud.speed.toFixed(2)}`, unit: "m/s" },
-            { label: "Coverage", value: "98.4", unit: "%", tone: "ok" },
+            { label: "Chassis Speed", value: `${hud.speed.toFixed(2)}`, unit: "m/s" },
+            {
+              label: "Optical field",
+              value: hud.opticalSensorEnabled ? "INTERSECTING" : "ABSENT",
+              tone: hud.opticalSensorEnabled ? "ok" : "warn",
+            },
+            {
+              label: "Contact",
+              value: hud.contactPartId ? "BUMPER" : "CLEAR",
+              tone: hud.contactPartId ? "warn" : "ok",
+            },
           ]}
         />
       </div>
@@ -325,13 +400,9 @@ export function Roomba3D() {
         <ClaimConstraintToggle
           patentId="us-6594844-roomba"
           claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
+          onToggleClaim={(_claimNo, active) => updateParam("opticalSensorEnabled", active ? 1 : 0)}
           className="mt-2"
         />
-
-        <PortHamiltonianEnergyStrip patentId="us-6594844-roomba" params={params} className="mt-3" />
       </div>
     </div>
   );

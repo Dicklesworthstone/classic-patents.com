@@ -1,0 +1,15 @@
+{
+  "name": "fs-tesla-wasm",
+  "type": "module",
+  "version": "0.0.1",
+  "files": [
+    "fs_tesla_wasm_bg.wasm",
+    "fs_tesla_wasm.js",
+    "fs_tesla_wasm.d.ts"
+  ],
+  "main": "fs_tesla_wasm.js",
+  "types": "fs_tesla_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

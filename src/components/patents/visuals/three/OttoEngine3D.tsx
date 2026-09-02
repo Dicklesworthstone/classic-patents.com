@@ -1,23 +1,31 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera, Eye, EyeOff, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
-import { stepOttoEngine, wrapCycleRad } from "@/physics/catalogKernels";
-import { createStudioClock } from "@/physics/tickScheduler";
+import { stepOttoEngine } from "@/physics/catalogKernels";
+import { ensureGenericWasm } from "@/physics/genericWasm";
 import {
-  globalTransportBus,
-  type TapeUpdater,
-  useFrankenSimPhysics,
-} from "@/physics/useFrankenSimPhysics";
+  createOttoTransportUpdater,
+  getOttoTapePose,
+  OTTO_MODEL_CONNECTING_ROD_LENGTH,
+  OTTO_MODEL_CRANK_RADIUS,
+  readOttoKernelStatus,
+  stepOttoMechanism,
+} from "@/physics/ottoKernel";
+import { ottoPoseHudPresentation } from "@/physics/ottoWasm";
+import { createStudioClock } from "@/physics/tickScheduler";
+import { globalTransportBus, useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildOttoEngineModel,
+  OTTO_STUDIO_FLOOR_OFFSET_Y,
   type OttoEngineModelResult,
+  ottoCombustionFlamePresentation,
   updateOttoEngineKinematics,
 } from "./ottoEngineModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
@@ -41,12 +49,30 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [8.5, 6.0, 9.5], target: [0, 0, 0] },
-  slide_valve: { pos: [-4.5, 2.0, 2.8], target: [-3.2, 0.4, 0.7] },
-  cylinder_piston: { pos: [-1.2, 2.8, 4.0], target: [-1.6, 0, 0] },
-  lay_shaft: { pos: [1.2, 2.2, 3.4], target: [0.5, 0.4, 1.0] },
-  governor: { pos: [-1.2, 1.8, 2.6], target: [-1.2, 0.8, 1.25] },
-  flywheels: { pos: [4.5, 3.2, 5.5], target: [2.4, 0, 0] },
+  iso: {
+    pos: [8.5, 6.0 + OTTO_STUDIO_FLOOR_OFFSET_Y, 9.5],
+    target: [0, OTTO_STUDIO_FLOOR_OFFSET_Y, 0],
+  },
+  slide_valve: {
+    pos: [-4.5, 2.0 + OTTO_STUDIO_FLOOR_OFFSET_Y, 2.8],
+    target: [-3.2, 0.4 + OTTO_STUDIO_FLOOR_OFFSET_Y, 0.7],
+  },
+  cylinder_piston: {
+    pos: [-1.2, 2.8 + OTTO_STUDIO_FLOOR_OFFSET_Y, 4.0],
+    target: [-1.6, OTTO_STUDIO_FLOOR_OFFSET_Y, 0],
+  },
+  lay_shaft: {
+    pos: [1.2, 2.2 + OTTO_STUDIO_FLOOR_OFFSET_Y, 3.4],
+    target: [0.5, 0.4 + OTTO_STUDIO_FLOOR_OFFSET_Y, 1.0],
+  },
+  governor: {
+    pos: [-1.2, 1.8 + OTTO_STUDIO_FLOOR_OFFSET_Y, 2.6],
+    target: [-1.2, 0.8 + OTTO_STUDIO_FLOOR_OFFSET_Y, 1.25],
+  },
+  flywheels: {
+    pos: [4.5, 3.2 + OTTO_STUDIO_FLOOR_OFFSET_Y, 5.5],
+    target: [2.4, OTTO_STUDIO_FLOOR_OFFSET_Y, 0],
+  },
 };
 
 export function OttoEngine3D() {
@@ -58,18 +84,24 @@ export function OttoEngine3D() {
   const [cutawayMode, setCutawayMode] = useState<boolean>(true);
   const engineRpm = params.engineRpm ?? 180;
   const compressionRatio = params.compressionRatio ?? 4.5;
-  const isRunning = params.isRunning ?? true;
+  const isRunning = (params.isRunning ?? 1) >= 0.5;
+  const claim1ChargeGradingPresent = (params.claim1ChargeGradingPresent ?? 1) >= 0.5;
 
   const otto = stepOttoEngine({
     engineRpm,
     compressionRatio,
   });
 
-  const powerBhp = otto.brakeHorsepower.toFixed(1);
   const thermalEfficiencyPct = otto.thermalEfficiencyPct;
+  const kernelStatus = readOttoKernelStatus();
+  const transportReceipt = globalTransportBus.runtimeReceipt("us-194047-otto-engine");
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+  const claimStates = { 1: claim1ChargeGradingPresent };
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+
+  useEffect(() => {
+    void ensureGenericWasm();
+  }, []);
 
   const live = useLiveSimParams({
     engineRpm,
@@ -78,11 +110,10 @@ export function OttoEngine3D() {
     isAudioMuted,
     cutawayMode,
     thermalEfficiencyPct,
-    brakeHorsepower: otto.brakeHorsepower,
     crankOmegaRadPerS: otto.crankOmegaRadPerS,
     govDisplayOmegaRadPerS: otto.govDisplayOmegaRadPerS,
     flyballRadius: otto.flyballRadius,
-    cycleWrapRad: otto.cycleWrapRad,
+    claim1ChargeGradingPresent,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -96,9 +127,14 @@ export function OttoEngine3D() {
   // Shared transport tape: the bus owns crank-angle integration so every
   // stroke-timed consumer reads one deterministic state; this render loop only
   // draws and fires the power-stroke thud.
-  useFrankenSimPhysics("us-194047-otto-engine", {
+  const { frame: physicsFrame } = useFrankenSimPhysics("us-194047-otto-engine", {
     domain: "thermodynamics_transport",
-    refusal: { isRefused: false },
+    refusal: {
+      isRefused: !claim1ChargeGradingPresent,
+      reason: !claim1ChargeGradingPresent
+        ? "Claim 1 charge grading is absent; source-bounded performance telemetry is refused."
+        : undefined,
+    },
     thermo: {
       temperatureCelsius: 0,
       temperatureKelvin: 0,
@@ -119,38 +155,18 @@ export function OttoEngine3D() {
     },
   });
 
-  const crankAngleRef = useRef(0);
-
   useEffect(() => {
-    const strokeLabels = ["intake", "compression", "power", "exhaust"] as const;
-    const integrate: TapeUpdater = (_prev, dt) => {
-      if (!live.current.isRunning) {
-        return {
-          refusal: { isRefused: true, reason: "Engine stopped: crank held at last angle" },
-        };
-      }
-      crankAngleRef.current = wrapCycleRad(
-        crankAngleRef.current + live.current.crankOmegaRadPerS * dt,
-        live.current.cycleWrapRad,
-      );
-      const strokeIndex = Math.min(
-        3,
-        Math.max(0, Math.floor((crankAngleRef.current / (Math.PI * 4)) * 4)),
-      );
-      return {
-        refusal: { isRefused: false },
-        machine: {
-          poseXMeters: 0,
-          poseYMeters: 0,
-          headingRad: crankAngleRef.current,
-          modeLabel: strokeLabels[strokeIndex],
-          wheelSpeedMps: 0,
-        },
-      };
-    };
-    globalTransportBus.registerUpdater("us-194047-otto-engine", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-194047-otto-engine");
+    return globalTransportBus.registerUpdater(
+      "us-194047-otto-engine",
+      createOttoTransportUpdater(() => ({
+        engineRpm: live.current.engineRpm,
+        running: Boolean(live.current.isRunning),
+        claim1ChargeGradingPresent: Boolean(live.current.claim1ChargeGradingPresent),
+      })),
+    );
   }, [live]);
+
+  const poseHud = ottoPoseHudPresentation(physicsFrame.provenance);
 
   const toggleSound = () => {
     toggleEngine(() => {
@@ -188,7 +204,10 @@ export function OttoEngine3D() {
     });
     const flameMesh = new THREE.Mesh(flameGeo, flameMat);
     flameMesh.position.set(-2.5, 0.4, 0);
-    scene.add(flameMesh);
+    // The flare is an engine-local indicator. Parenting it to the grounded
+    // model keeps it inside the cylinder after the complete assembly is
+    // translated onto the studio floor.
+    engineModel.root.add(flameMesh);
 
     let reqId: number;
     let lastSoundStroke = -1;
@@ -204,36 +223,44 @@ export function OttoEngine3D() {
 
       // Crank angle arrives on the tape from the bus-owned integrator; before
       // the first tick this falls back to the last pose (0 rad).
-      const crankAngle = transport.lastFrame.telemetry.machine?.headingRad ?? 0;
+      const pose =
+        getOttoTapePose() ??
+        stepOttoMechanism({
+          crankAngleRad: transport.lastFrame.telemetry.machine?.headingRad ?? 0,
+          crankRadius: OTTO_MODEL_CRANK_RADIUS,
+          connectingRodLength: OTTO_MODEL_CONNECTING_ROD_LENGTH,
+          engineRpm: p.engineRpm,
+        });
+      const crankAngle = pose.cycleAngleRad;
+      const flame = ottoCombustionFlamePresentation(
+        crankAngle,
+        Boolean(p.isRunning),
+        p.cutawayMode,
+      );
 
       if (p.isRunning) {
-        const currentStroke = Math.floor((crankAngle / (Math.PI * 4)) * 4);
-        if (currentStroke === 2 && lastSoundStroke !== 2 && !p.isAudioMuted) {
+        if (flame.strokeIndex === 2 && lastSoundStroke !== 2 && !p.isAudioMuted) {
           soundEngine.playImpactThud(0.8);
         }
-        lastSoundStroke = currentStroke;
-
-        const isPowerStroke = currentStroke === 2;
-        flameMesh.visible = isPowerStroke && p.cutawayMode;
-        if (isPowerStroke) {
-          const strokePhase = ((crankAngle % (Math.PI * 4)) - Math.PI * 2) / Math.PI;
-          flameMat.opacity = Math.sin(strokePhase * Math.PI) * 0.8;
-          flameMesh.scale.setScalar(1 + Math.sin(strokePhase * Math.PI) * 0.5);
-        }
-
-        updateOttoEngineKinematics(
-          engineModel.nodes,
-          engineModel.materials,
-          crankAngle,
-          p.compressionRatio,
-          p.cutawayMode,
-          Boolean(p.isRunning),
-          dt,
-          p.govDisplayOmegaRadPerS,
-          p.flyballRadius,
-          p.engineRpm,
-        );
+        lastSoundStroke = flame.strokeIndex;
       }
+      flameMesh.visible = flame.visible;
+      flameMat.opacity = flame.opacity;
+      flameMesh.scale.setScalar(flame.scale);
+
+      // Static configuration changes still need to reach the scene while the
+      // crank is stopped (especially cutaway visibility and gas state).
+      updateOttoEngineKinematics(
+        engineModel.nodes,
+        engineModel.materials,
+        pose,
+        p.compressionRatio,
+        p.cutawayMode,
+        Boolean(p.isRunning),
+        dt,
+        p.govDisplayOmegaRadPerS,
+        p.engineRpm,
+      );
 
       controls.update();
       renderer.render(scene, studio.camera);
@@ -253,7 +280,16 @@ export function OttoEngine3D() {
   }, [live]);
 
   return (
-    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+    <div
+      data-otto-loader-source={kernelStatus.loaderSource}
+      data-otto-pose-source={kernelStatus.poseSource}
+      data-otto-running={isRunning ? "true" : "false"}
+      data-otto-frame-angle={physicsFrame.telemetry.machine?.headingRad ?? 0}
+      data-otto-has-transport={transportReceipt.hasTransport ? "true" : "false"}
+      data-otto-has-updater={transportReceipt.hasUpdater ? "true" : "false"}
+      data-otto-has-listeners={transportReceipt.hasListeners ? "true" : "false"}
+      className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent"
+    >
       <div className="sr-only">Otto Four-Stroke Engine 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
@@ -295,11 +331,22 @@ export function OttoEngine3D() {
           <ClaimConstraintToggle
             patentId="us-194047-otto-engine"
             claimStates={claimStates}
-            onToggleClaim={(c: number, active: boolean) => {
-              setClaimStates((prev) => ({ ...prev, [c]: active }));
-              updateParam("compressionRatio", active ? 4.5 : 1.2);
-            }}
+            onToggleClaim={(_claimNo: number, active: boolean) =>
+              updateParam("claim1ChargeGradingPresent", active ? 1 : 0)
+            }
           />
+          <button
+            type="button"
+            onClick={() => {
+              updateParam("isRunning", isRunning ? 0 : 1);
+              soundEngine.playSwitchClick();
+            }}
+            title={isRunning ? "Pause mechanism" : "Run mechanism"}
+            aria-label={isRunning ? "Pause mechanism" : "Run mechanism"}
+            className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:px-2 sm:py-1.5 rounded-lg text-xs font-sans bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
+          >
+            {isRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+          </button>
           <button
             type="button"
             onClick={() => setCutawayMode(!cutawayMode)}
@@ -356,6 +403,34 @@ export function OttoEngine3D() {
             <RotateCcw className="w-3.5 h-3.5 inline" />
           </button>
         </div>
+
+        <StudioKernelChips
+          visible={showUiOverlay}
+          title="Otto Source Topology + Modern Ideal Lens"
+          chips={[
+            {
+              label: "pose",
+              value: poseHud.value,
+              tone: poseHud.tone,
+            },
+            { label: "rpm", value: String(engineRpm) },
+            { label: "r", value: `${compressionRatio.toFixed(1)}:1` },
+            {
+              label: "Claim 1 charge",
+              value: claim1ChargeGradingPresent ? "GRADED" : "ABSENT",
+              tone: claim1ChargeGradingPresent ? "ok" : "warn",
+            },
+            {
+              label: "modern ideal η",
+              value: String(thermalEfficiencyPct),
+              unit: "%",
+              tone: thermalEfficiencyPct > 25 ? "ok" : "warn",
+            },
+            { label: "counter-shaft K", value: (engineRpm / 2).toFixed(1), unit: "RPM" },
+            { label: "pressure / power", value: "not printed", tone: "warn" },
+            { label: "ω", value: otto.crankOmegaRadPerS.toFixed(1), unit: "rad/s" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -371,7 +446,7 @@ export function OttoEngine3D() {
             <input
               type="range"
               min="60"
-              max="300"
+              max="320"
               step="10"
               value={engineRpm}
               onChange={(e) => updateParam("engineRpm", Number.parseInt(e.target.value, 10))}
@@ -383,10 +458,10 @@ export function OttoEngine3D() {
             id="compressionRatio"
             patentId="us-194047-otto-engine"
             paramKey="compressionRatio"
-            label="Compression Ratio"
+            label="Declared Analysis Compression Ratio"
             value={compressionRatio}
             min={3}
-            max={7}
+            max={8}
             step={0.5}
             unit=":1"
             onChange={(val) => updateParam("compressionRatio", val)}
@@ -400,25 +475,6 @@ export function OttoEngine3D() {
           className="mt-3"
         />
       </div>
-
-      <StudioKernelChips
-        visible={showUiOverlay}
-        title="Otto 4-Stroke Air-Standard"
-        chips={[
-          { label: "rpm", value: String(engineRpm) },
-          { label: "r", value: `${compressionRatio.toFixed(1)}:1` },
-          {
-            label: "η",
-            value: String(thermalEfficiencyPct),
-            unit: "%",
-            tone: thermalEfficiencyPct > 25 ? "ok" : "warn",
-          },
-          { label: "BHP", value: powerBhp },
-          { label: "P2", value: String(otto.peakCompressionBar), unit: "bar" },
-          { label: "P3", value: String(otto.peakFiringBar), unit: "bar" },
-          { label: "ω", value: otto.crankOmegaRadPerS.toFixed(1), unit: "rad/s" },
-        ]}
-      />
     </div>
   );
 }

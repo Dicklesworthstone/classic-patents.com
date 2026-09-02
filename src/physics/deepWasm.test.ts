@@ -42,7 +42,7 @@ import {
   writeColormappedField,
 } from "./fieldTextures";
 import { extraWasmFns, genericKernelSource } from "./genericWasm";
-import { stepOtisElevator } from "./machineKernels";
+import { stepOtisTopology } from "./otisWasm";
 import { stepTeslaMotorFig9 } from "./teslaKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
@@ -172,10 +172,30 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     expect(stepNoyceIC({ reverseBias: 5 }).poissonPeak).toBeGreaterThan(0);
     expect(stepGoodyearRubber(145, 8, 30).grayScottMeanV).toBeGreaterThanOrEqual(0);
     expect(stepMarconiRadio(88, 10, 28).sparkOddHarmonicPower).toBeGreaterThan(0);
-    const otis = stepOtisElevator({ cabPayloadKg: 650, cableTensionPct: 100 });
-    expect(otis.cableCertificate).toBe("Certified");
-    const snapped = stepOtisElevator({ cabPayloadKg: 650, cableTensionPct: 0 });
-    expect(snapped.cableRefused).toBe(true);
+    const otis = stepOtisTopology({
+      platformPositionNormalized: 0.55,
+      drivePhaseRad: 0,
+      driveCommand: 1,
+      ropeGIntact: true,
+      stopRopePulled: false,
+      claim1HookLockEnabled: true,
+      claim3BrakeInterlockEnabled: true,
+      claim4CounterpoiseEnabled: true,
+    });
+    expect(otis.scalarJointCoordinates).toBe(12);
+    expect(otis.straightBeltOWorking).toBe(true);
+    const snapped = stepOtisTopology({
+      platformPositionNormalized: 0.55,
+      drivePhaseRad: 0,
+      driveCommand: 1,
+      ropeGIntact: false,
+      stopRopePulled: false,
+      claim1HookLockEnabled: true,
+      claim3BrakeInterlockEnabled: true,
+      claim4CounterpoiseEnabled: true,
+    });
+    expect(snapped.pawlsFEngaged).toBe(true);
+    expect(snapped.freeFallCounterfactual).toBe(false);
   });
 
   test("couple edges name source-bound mechanisms as ts-fallback", () => {
@@ -197,7 +217,7 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     );
     expect(coupleEdgesFor("us-233692-pelton-water-wheel", { headMeters: 450 })).toEqual([]);
     expect(coupleEdgesFor("us-194047-otto-engine", { compressionRatio: 4.5 })[0]?.from).toBe(
-      "compression",
+      "engine shaft I",
     );
     expect(coupleEdgesFor("us-120057-gramme-dynamo", { shaftRate: 1 })[0]?.from).toBe("shaft rate");
     expect(coupleEdgesFor("gb-931-arkwright-water-frame", { totalDraftRatio: 6 })[0]?.from).toBe(
@@ -213,8 +233,11 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
       coupleEdgesFor("us-235199-bell-photophone", { transmissionDistanceM: 213 })[0]?.from,
     ).toBe("range");
     expect(coupleEdgesFor("us-2981877-noyce-ic", { reverseBias: 5 })[0]?.from).toBe("reverse bias");
-    expect(coupleEdgesFor("us-4750-howe-sewing-machine", { flywheelRpm: 200 })[0]?.from).toBe(
-      "flywheel",
+    expect(coupleEdgesFor("us-4750-howe-sewing-machine", { crankRpm: 200 })[0]?.from).toBe(
+      "main shaft C",
+    );
+    expect(coupleEdgesFor("us-4750-howe-sewing-machine", { crankRpm: 200 })[0]?.to).toBe(
+      "baster plate H feed",
     );
   });
 
@@ -248,7 +271,11 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
       "BoyleSmithCcd3D.tsx",
     ]) {
       const src = readFileSync(join(dir, name), "utf8");
-      if (name === "ArkwrightWaterFrame3D.tsx" || name === "BoyleSmithCcd3D.tsx") {
+      if (
+        name === "ArkwrightWaterFrame3D.tsx" ||
+        name === "BoyleSmithCcd3D.tsx" ||
+        name === "TeslaCoil3D.tsx"
+      ) {
         // Bus-driven pose consumers: they integrate nothing locally, so the
         // honest contract is "no local clock AND no fake fixed dt" — phases
         // arrive pre-integrated on the shared transport tape.

@@ -2,15 +2,17 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
-import * as THREE from "three";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepEdisonBulb } from "@/physics/catalogKernels";
 import {
-  computeEdisonFilamentThermalField,
-  createColormappedFieldTexture,
-  writeColormappedField,
-} from "@/physics/fieldTextures";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
+  EDISON_DECLARED_FILAMENT_LENGTH_CM,
+  EDISON_DECLARED_HOT_RESISTANCE_OHM,
+  EDISON_SOURCE_MAX_RESISTANCE_OHM,
+  EDISON_SOURCE_MIN_RESISTANCE_OHM,
+  edisonKernelSource,
+  ensureEdisonWasm,
+  stepEdisonRadiativeBalance,
+} from "@/physics/edisonWasm";
 import { TickScheduler } from "@/physics/tickScheduler";
 import type { ThermodynamicsState } from "@/physics/types";
 import {
@@ -22,7 +24,7 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
-import { buildEdisonBulbModel, updateEdisonBulbKinematics } from "./edisonBulbModel";
+import { buildEdison223898Model, updateEdison223898Model } from "./edison223898Model";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -31,22 +33,23 @@ import { usePatentAudio } from "./usePatentAudio";
 type CameraPreset =
   | "iso"
   | "filament_horseshoe"
-  | "screw_base"
+  | "sealed_feedthrough"
+  | "house_branch"
+  | "mounting_bracket"
   | "exhaust_tip"
-  | "glass_stem"
   | "top";
 
 const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [11, 7, 14], target: [0, 0, 0] },
-
-  filament_horseshoe: { pos: [0, 2.5, 4.2], target: [0, 1.2, 0] },
-  screw_base: { pos: [0, -2.2, 3.8], target: [0, -2.8, 0] },
-  exhaust_tip: { pos: [0, 4.8, 2.6], target: [0, 3.8, 0] },
-  glass_stem: { pos: [0, 0.5, 3.2], target: [0, -0.6, 0] },
-  top: { pos: [0, 10.5, 0.1], target: [0, 0, 0] },
+  iso: { pos: [10.5, 5.8, 14.5], target: [0, -0.15, -0.8] },
+  filament_horseshoe: { pos: [0, 2.35, 5.0], target: [0, 1.45, 0] },
+  sealed_feedthrough: { pos: [0, -0.55, 4.6], target: [0, -0.8, 0] },
+  house_branch: { pos: [7.0, -0.5, 8.2], target: [1.1, -2.65, -2.3] },
+  mounting_bracket: { pos: [5.8, -1.5, 5.3], target: [0.2, -2.2, -1.1] },
+  exhaust_tip: { pos: [0, 4.8, 3.2], target: [0, 4.05, 0] },
+  top: { pos: [0, 11.5, 0.4], target: [0, -0.4, -0.8] },
 };
 const IDLE_THERMO: ThermodynamicsState = {
   temperatureCelsius: 0,
@@ -68,18 +71,28 @@ export const EdisonBulb3D = memo(() => {
   // Electrical & Thermal Simulation State
   const { params, updateParam } = usePatentPhysics("us-223898-edison-lightbulb");
   const appliedVoltage = params.voltage ?? 110;
-  const filamentLengthCm = params.filamentLength ?? 22;
-  const vacuumTorr = params.vacuumTorr ?? 1e-6;
+  const hotResistanceOhm = params.hotResistanceOhm ?? EDISON_DECLARED_HOT_RESISTANCE_OHM;
+  const filamentLengthCm = EDISON_DECLARED_FILAMENT_LENGTH_CM;
+  const vacuumTorr = params.vacuumTorr ?? 7.6e-4;
   const [showGasMolecules] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const [kernelSource, setKernelSource] = useState(edisonKernelSource());
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const bulb = stepEdisonBulb({
     voltage: appliedVoltage,
+    hotResistanceOhm,
     filamentLength: filamentLengthCm,
   });
+  const radiative = stepEdisonRadiativeBalance({
+    voltageV: appliedVoltage,
+    hotResistanceOhm: bulb.hotResistanceOhm,
+    filamentLengthCm,
+  });
+  if (!radiative) {
+    throw new Error("Edison radiative balance refused admitted UI inputs");
+  }
 
   // Shared transport tape: the kernel-derived filament operating point
   // publishes to the patentId-keyed bus so every face reads one state.
@@ -88,25 +101,30 @@ export const EdisonBulb3D = memo(() => {
     refusal: { isRefused: false },
     thermo: {
       ...IDLE_THERMO,
-      temperatureCelsius: bulb.filamentTempK - 273.15,
-      temperatureKelvin: bulb.filamentTempK,
+      temperatureCelsius: radiative.filament_temperature_k - 273.15,
+      temperatureKelvin: radiative.filament_temperature_k,
       pressureAtm: vacuumTorr / 760,
-      heatInputWatts: bulb.radiantWatts,
+      heatInputWatts: radiative.radiative_power_w,
     },
   });
 
   const live = useLiveSimParams({
     appliedVoltage,
-    filamentTempKelvin: bulb.filamentTempK,
+    hotResistanceOhm,
+    filamentTempKelvin: radiative.filament_temperature_k,
     showGasMolecules,
     vacuumTorr,
     isCutaway,
     isAudioMuted,
     incandescenceIntensity: bulb.incandescenceIntensity,
+    glowThreshold: bulb.glowThreshold,
+    gasPhaseOmega: bulb.gasPhaseOmega,
+    gasYOmega: bulb.gasYOmega,
+    gasZOmega: bulb.gasZOmega,
     thermalJitterPerS: bulb.thermalJitterPerS,
     filamentEmissiveScale: bulb.filamentEmissiveScale,
     bulbLightScale: bulb.bulbLightScale,
-    filamentRadiantWatts: bulb.radiantWatts,
+    filamentRadiantWatts: radiative.radiative_power_w,
     claim1Active: claimStates[1] === false ? 0 : 1,
   });
 
@@ -157,7 +175,7 @@ export const EdisonBulb3D = memo(() => {
   };
 
   useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
+    void ensureEdisonWasm().then((next) => setKernelSource(next));
   }, []);
 
   useEffect(() => {
@@ -174,28 +192,8 @@ export const EdisonBulb3D = memo(() => {
 
     const { scene, camera, renderer, controls } = studio;
 
-    const model = buildEdisonBulbModel();
+    const model = buildEdison223898Model();
     scene.add(model.rootGroup);
-
-    const fieldGrid = 32;
-    const fieldTex = createColormappedFieldTexture(
-      computeEdisonFilamentThermalField(2200, 110, 1e-4, fieldGrid),
-      fieldGrid,
-      fieldGrid,
-    );
-    const fieldPlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(3.2, 3.2),
-      new THREE.MeshBasicMaterial({
-        map: fieldTex,
-        transparent: true,
-        opacity: 0.5,
-        depthWrite: false,
-        side: THREE.DoubleSide,
-      }),
-    );
-    fieldPlane.position.set(0, 1.2, 0);
-    scene.add(fieldPlane);
-    const fieldRgba = fieldTex.image.data as Uint8Array;
 
     let reqId: number;
     let timeSec = 0;
@@ -220,7 +218,7 @@ export const EdisonBulb3D = memo(() => {
         });
       }
 
-      updateEdisonBulbKinematics(
+      updateEdison223898Model(
         model,
         refused ? 0 : delta,
         timeSec,
@@ -232,21 +230,11 @@ export const EdisonBulb3D = memo(() => {
         p.vacuumTorr,
         p.showGasMolecules,
         p.isCutaway,
-        p.appliedVoltage,
+        p.glowThreshold,
+        p.gasPhaseOmega,
+        p.gasYOmega,
+        p.gasZOmega,
       );
-
-      writeColormappedField(
-        fieldRgba,
-        computeEdisonFilamentThermalField(
-          filamentTempKelvin,
-          p.appliedVoltage ?? 110,
-          p.vacuumTorr ?? 1e-4,
-          fieldGrid,
-        ),
-        fieldGrid,
-        fieldGrid,
-      );
-      fieldTex.needsUpdate = true;
 
       controls.update();
       renderer.render(scene, camera);
@@ -256,9 +244,6 @@ export const EdisonBulb3D = memo(() => {
 
     return () => {
       cancelAnimationFrame(reqId);
-      fieldTex.dispose();
-      fieldPlane.geometry.dispose();
-      (fieldPlane.material as THREE.MeshBasicMaterial).dispose();
       model.dispose();
       studio.cleanup();
       studioRef.current = null;
@@ -273,7 +258,7 @@ export const EdisonBulb3D = memo(() => {
 
         {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-28rem)] gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+          <div className="absolute top-16 left-3 right-3 sm:top-4 sm:left-4 sm:right-auto z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-[calc(100%-28rem)] gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
             <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
               <Camera className="w-3.5 h-3.5" /> View:
             </span>
@@ -281,9 +266,10 @@ export const EdisonBulb3D = memo(() => {
               [
                 ["iso", "Isometric"],
                 ["filament_horseshoe", "Horseshoe Filament"],
-                ["screw_base", "Edison Screw Base"],
+                ["sealed_feedthrough", "Sealed Conductors"],
+                ["house_branch", "House Branch"],
+                ["mounting_bracket", "Wall Bracket"],
                 ["exhaust_tip", "Exhaust Seal Tip"],
-                ["glass_stem", "Lead-in Stem"],
                 ["top", "Plan View"],
               ] as [CameraPreset, string][]
             ).map(([preset, label]) => (
@@ -306,7 +292,7 @@ export const EdisonBulb3D = memo(() => {
         {/* Top Right Tool Bar */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
           <ClaimConstraintToggle
-            patentId="us-223898-edison-lamp"
+            patentId="us-223898-edison-lightbulb"
             claimStates={claimStates}
             onToggleClaim={(c, active) => setClaimStates((prev) => ({ ...prev, [c]: active }))}
           />
@@ -367,7 +353,7 @@ export const EdisonBulb3D = memo(() => {
                 Filament Temp:
               </span>
               <span className="font-bold text-amber-700 dark:text-amber-400">
-                {bulb.filamentTempK.toFixed(0)} K
+                {radiative.filament_temperature_k.toFixed(0)} K
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
@@ -379,13 +365,7 @@ export const EdisonBulb3D = memo(() => {
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Radiant Output:</span>
               <span className="font-bold text-emerald-800 dark:text-emerald-400">
-                {bulb.radiantWatts.toFixed(1)} W
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Luminous Efficacy:</span>
-              <span className="text-purple-800 dark:text-purple-400 font-bold">
-                {bulb.luminousLmPerW.toFixed(2)} lm/W
+                {radiative.radiative_power_w.toFixed(1)} W
               </span>
             </div>
           </div>
@@ -396,21 +376,32 @@ export const EdisonBulb3D = memo(() => {
           side="right"
           title="Edison high-resistance incandescent lamp"
           chips={[
+            { label: "Source form", value: "Fig. 1 all-glass receiver" },
+            { label: "Installed context", value: "Interpretive parallel branch" },
             { label: "Voltage", value: `${appliedVoltage}`, unit: "V" },
-            { label: "Filament Temp", value: `${bulb.filamentTempK.toFixed(0)}`, unit: "K" },
-            { label: "Hot Resistance", value: `${bulb.hotResistanceOhm.toFixed(1)}`, unit: "Ω" },
-            { label: "Current", value: `${bulb.currentAmps.toFixed(2)}`, unit: "A" },
-            { label: "Radiant Power", value: `${bulb.radiantWatts.toFixed(1)}`, unit: "W" },
             {
-              label: "Luminous Efficacy",
-              value: `${bulb.luminousLmPerW.toFixed(2)}`,
-              unit: "lm/W",
+              label: "Filament Temp",
+              value: `${radiative.filament_temperature_k.toFixed(0)}`,
+              unit: "K",
             },
-            { label: "Design Life", value: `${bulb.designLifeHours}`, unit: "hrs" },
+            { label: "Hot Resistance", value: `${bulb.hotResistanceOhm.toFixed(1)}`, unit: "Ω" },
+            { label: "Current", value: `${radiative.current_a.toFixed(2)}`, unit: "A" },
+            {
+              label: "Radiant Power",
+              value: `${radiative.radiative_power_w.toFixed(1)}`,
+              unit: "W",
+            },
             { label: "Vacuum Level", value: vacuumTorr.toExponential(1), unit: "Torr" },
             {
-              label: "Heat crate",
-              value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
+              label: "Thermal owner",
+              value:
+                kernelSource === "wasm" && radiative.runtimeSource === "wasm"
+                  ? "fs-conduction WASM"
+                  : "typed TS fallback",
+            },
+            {
+              label: "Energy closure",
+              value: radiative.relative_energy_closure.toExponential(1),
             },
           ]}
         />
@@ -421,7 +412,7 @@ export const EdisonBulb3D = memo(() => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
           <SensitivitySlider
             id="voltage"
-            patentId="us-223898-edison-lamp"
+            patentId="us-223898-edison-lightbulb"
             paramKey="mainsVoltageV"
             label="Applied Terminal Voltage"
             value={appliedVoltage}
@@ -436,26 +427,35 @@ export const EdisonBulb3D = memo(() => {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Carbon Filament Length
+                Declared Hot Resistance
               </span>
               <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {filamentLengthCm} cm
+                {hotResistanceOhm} Ω
               </span>
             </div>
             <input
               type="range"
-              min="10"
-              max="30"
-              step="1"
-              value={filamentLengthCm}
-              onChange={(e) => updateParam("filamentLength", Number.parseInt(e.target.value, 10))}
+              aria-label="Declared Hot Resistance"
+              min={EDISON_SOURCE_MIN_RESISTANCE_OHM}
+              max={EDISON_SOURCE_MAX_RESISTANCE_OHM}
+              step="5"
+              value={hotResistanceOhm}
+              onChange={(e) => updateParam("hotResistanceOhm", Number.parseInt(e.target.value, 10))}
               className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-purple-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-purple-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
             />
           </div>
         </div>
 
+        <p className="mt-3 text-xs text-ink-600 dark:text-ink-400 max-w-3xl">
+          The receiver, carbon loop, contact enlargements, clamps, sealed lead-ins, and external
+          wires follow Fig. 1. The wall bracket, closed switch, and domestic parallel-branch wiring
+          are labeled interpretive context for the specification&apos;s stated “multiple arc” use.
+          The voltage, hot resistance, emissivity, ambient temperature, and 22 cm thermal-area
+          length are declared model inputs.
+        </p>
+
         <PortHamiltonianEnergyStrip
-          patentId="us-223898-edison-lamp"
+          patentId="us-223898-edison-lightbulb"
           params={params}
           className="mt-3"
         />

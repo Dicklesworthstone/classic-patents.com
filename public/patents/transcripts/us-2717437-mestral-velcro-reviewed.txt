@@ -1,0 +1,100 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 3 ---
+Sept. 13, 1955 G. DE MESTRAL 2,717,437
+VELVET TYPE FABRIC AND METHOD OF PRODUCING SAME
+Filed Oct. 15, 1952
+
+Fig. 1
+4
+4
+8
+6
+7
+9
+10
+5
+3
+2
+1
+1
+2
+
+Fig. 2
+9
+10
+4
+10
+9
+
+INVENTOR
+George de Mestral.
+BY
+Emory L. Groff
+ATTORNEY
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 3 ---
+United States Patent Office 2,717,437
+Patented Sept. 13, 1955
+
+1
+2,717,437
+VELVET TYPE FABRIC AND METHOD OF PRODUCING SAME
+George de Mestral, Prangins, Vaud, Switzerland, assignor to Velcro S. A., Fribourg, Switzerland, a corporation of Switzerland
+Application October 15, 1952, Serial No. 314,933
+Claims priority, application Switzerland October 22, 1951
+4 Claims. (Cl. 28—72)
+
+My invention has for its object a velvet fabric including a foundation structure constituted by a weft and a warp incorporating threads that are cut at a predetermined length so as to form a raised pile. My novel fabric distinguishes from the other similar fabrics by the fact that the raised pile is made of artificial material, while at least part of the threads in said pile is provided near its end with material-engaging means, as required for adhering to a similar fabric or for scouring purposes.
+
+My invention has for its further object a method for producing a fabric of the above type, according to which the raised pile is provided with its material-engaging means by forming loops round a carrier and submitting the loops formed on the carrier to a thermic action with a view to giving them their final shape, after which the loops are cut on one side of the carrier so that each loop produces at least one pile thread having a hook-shaped end.
+
+Fabrics of the type referred to are intended primarily for use as closing means or fasteners for garments, curtains and the like as substitutes for the usual slider-operated closing means or fasteners or for buttons or the like attaching means, whenever a yielding invisible closing arrangement is of advantage.
+
+Fabrics of the type referred to may also be used to advantage as cleaning implements. As a matter of fact, it is possible to lay them on a support made of wood or of plastic material so as to produce a clothes or shoe brush.
+
+I have illustrated diagrammatically and by way of example in accompanying drawings various embodiments of the fabric according to my invention. In said drawings:
+
+Fig. 1 is an explanatory diagram of a preferred method of production of such a fabric.
+
+Fig. 2 shows two pieces of fabric executed according to a first embodiment of my invention and laid over each other so as to interengage and to adhere to each other.
+
+Turning to Fig. 1, it is apparent that the velvet fabric, illustrated in the making, includes a foundation structure constituted by a weft 1 and by a warp 2.
+
+The foundation structure also carries the warp thread 3 in addition to the warp thread 2, said thread 3 being adapted to form the raised pile 9, 10, some of the pile threads showing near their ends material-engaging means; in the example illustrated, the threads 9 of the pile are bent downwardly to form a hook 4.
+
+Obviously, the weft and warp threads forming the foundation structure may be arranged otherwise than in the manner illustrated.
+
+Furthermore, the raised pile is made of artificial or a synthetic resin material so that it is possible to give the pile threads the desired shape and to make them retain the said desired shape. I may use as an artificial material any suitable plastic material, such as that sold in the trade as “nylon”, which is a generic term for any long chain synthetic polymeric amide which has recurring amide groups as an integral part of the main polymer chain and which is capable of being formed into a filament in which the structural elements are oriented in the direction of the axis. Note “Du Pont Products Index,” published by E. I. du Pont de Nemours & Company (Inc.), Wilmington 98, Delaware, page 91, January, 1951.
+
+When producing a fabric of the type illustrated in Fig. 1, I proceed in the same manner as for the production of the special valvet made on bar looms. As a matter of fact, it is possible to use for the formation of the pile, small transverse metal bars (Fig. 1) round which the additional warp threads are caused to pass so as to form loops 6. Each small bar 5 is provided with a longitudinal groove 7 in which is guided a knife 8 adapted to cut the loop 6 open and to form thus the raised pile threads. However, with a view to obtaining the hooks 4, I heat the bar 5 before the cutting of the loops 6, so that the thread extending over the bar may assume and retain the shape imparted to it by the latter. The heating of the bars may be obtained by making an electric current flow through them. Obviously, the carrier bars 5 for the loop may be heated as well through any means other than an electric current, e. g. the carrier bars may be hollow and heated by steam.
+
+After the loop 6 has been cut, the raised pile retains its shape and each loop produces, on one hand, the raised pile threads 9, the ends of which are hook-shaped and, on the other hand, ordinary raised pile threads 10 forming lost strands.
+
+As apparent from inspection of Fig. 2, it is possible to superpose two pieces of fabric of the type illustrated in Fig. 1, after having imparted to one of the two pieces a 90° angular displacement in respect to the other piece and after turning them so that their pile surfaces face each other, the pile threads 9 of one piece engaging the pile threads 9 of the other piece through the co-operating hooks 4. Thus, as the number of hooks 4 per surface unit, say per square inch, may be high, the two pieces of fabric adhere together perfectly, and it is necessary to draw them away from each other with some energy, when it is desired to separate them. After separation of the two pieces, the hooks 4 return into their original shape.
+
+It is thus possible to use a pair of such pieces of fabric to advantage as a substitute for the usual fastening means, such as slide-operated fasteners, ordinary buttons, press buttons or the like attaching means. As a matter of fact, it is sufficient to sew a piece of fabric of the type described along the edges of the parts of garments, curtains and the like, which are to be held together. A mere pressure exerted on the two garment elements against each other will provide for their fastening. A somewhat considerable tractional stress exerted on the two garment elements thus associated, allows separating them when required.
+
+A fastening arrangement obtained as disclosed hereinabove shows inter alia the following advantages:
+
+The possibility of compensating any clearance between the associated elements as such elements are not always in exact register with each other;
+
+In the case of any straining, the fastening arrangement will yield before any damage is inflicted on the fabric, which is very important whenever a piece of velvet has engaged some fabric having delicate meshes.
+
+It should be remarked that the velvet fabrics according to my invention and more particularly those illustrated in Figs. 1 and 2, may serve advantageously for the execution of household implements, such as clothes brushes, shoe brushes and the like cleaning or scouring means. Obviously, in such a case, the size of the threads and more particularly their thickness and their rigidity may be selected according to the purpose intended for the pieces of fabric that are to be executed.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 3 ---
+The velvet fabric according to my invention is thus obtained in practice in a manner similar to a conventional velvet. However, it is obvious that my novel fabric has neither the silky feel nor the outer appearance of the usual velvet that serves for the execution of clothes or for upholstery.
+
+I claim:
+
+1. A method for producing a velvet type fabric consisting in weaving together a plurality of weft threads and a plurality of warp threads together with a plurality of auxiliary warp threads of synthetic resin material, forming loops with said auxiliary warp threads on one surface of the so woven fabric, submitting the said loops to a thermal source, thereby causing said loops to retain their shape to form raised pile threads, cutting said loops near their outer ends, thereby forming material-engaging means on at least a portion of said pile threads constituted by said cut loops.
+
+2. A method for producing a velvet type fabric consisting in weaving together a plurality of weft threads and a plurality of warp threads together with a plurality of auxiliary warp threads of synthetic resin material, forming loops with said auxiliary warp threads on one surface of the so woven fabric, submitting the said loops to a thermal source, thereby causing said loops to retain their shape to form raised pile threads, cutting each of said loops near the respective outer end at a point between said outer end and the fabric surface, thereby forming a hook-shaped section with the free end of the respective pile thread at one side of said point at which the cut is made.
+
+3. A velvet type fabric comprising a foundation structure including a plurality of weft threads, a plurality of warp threads, and a plurality of auxiliary warp threads of a synthetic resin material in the form of raised pile threads, the ends of at least part of said raised pile threads being in the form of material-engaging hooks.
+
+4. A velvet type fabric comprising a foundation structure including a plurality of weft threads, a plurality of warp threads, and a plurality of auxiliary warp threads of a synthetic resin material in the form of raised pile threads, the terminal portions of at least part of said raised pile threads being in the form of a material-engaging means including hook-shaped sections.
+
+References Cited in the file of this patent
+UNITED STATES PATENTS
+2,062,884 Holland Dec. 1, 1936
+2,662,559 Miller Dec. 15, 1953

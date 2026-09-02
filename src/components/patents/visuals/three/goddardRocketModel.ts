@@ -104,6 +104,41 @@ export function buildGoddardRocketModel(): GoddardRocketModel {
   disposables.push(interstageMat);
 
   // ==========================================
+  // LAUNCH STAND TOWER & HOLD-DOWN CLAMPS
+  // ==========================================
+  const padGroup = new THREE.Group();
+  root.add(padGroup);
+
+  const padBaseGeo = new THREE.BoxGeometry(6.4, 0.4, 6.4);
+  disposables.push(padBaseGeo);
+  const padBase = new THREE.Mesh(padBaseGeo, interstageMat);
+  padBase.position.set(0, -4.8, 0);
+  padBase.receiveShadow = true;
+  padGroup.add(padBase);
+
+  // 4 Launch Stand Hold-Down Stanchions
+  for (let s = 0; s < 4; s++) {
+    const sAngle = (s * Math.PI) / 2 + Math.PI / 4;
+    const sx = Math.cos(sAngle) * 2.2;
+    const sz = Math.sin(sAngle) * 2.2;
+
+    const stanGeo = new THREE.BoxGeometry(0.35, 2.6, 0.35);
+    disposables.push(stanGeo);
+    const stan = new THREE.Mesh(stanGeo, interstageMat);
+    stan.position.set(sx, -3.5, sz);
+    stan.castShadow = true;
+    padGroup.add(stan);
+
+    // Inward clamp arm
+    const armGeo = new THREE.BoxGeometry(0.6, 0.18, 0.25);
+    disposables.push(armGeo);
+    const arm = new THREE.Mesh(armGeo, darkVaneMat);
+    arm.position.set(sx * 0.7, -2.4, sz * 0.7);
+    arm.rotation.y = -sAngle;
+    padGroup.add(arm);
+  }
+
+  // ==========================================
   // STAGE 1 (BOOSTER STAGE WITH PROPELLANT TANKS)
   // ==========================================
   const stage1Group = new THREE.Group();

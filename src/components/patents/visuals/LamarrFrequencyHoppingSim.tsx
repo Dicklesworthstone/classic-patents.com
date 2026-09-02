@@ -2,6 +2,7 @@
 
 import { Radio, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useState } from "react";
+import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -216,6 +217,24 @@ export function LamarrFrequencyHoppingSim() {
             rudder by one ratchet increment. A, B, and C are deliberately unreceivable transmitter
             channels; the lamp warns the operator.
           </p>
+
+          <TwoClocksStrip
+            title="carrier wave cycle vs piano roll frequency hop rate"
+            fast={{
+              name: "RF carrier period",
+              period: "20.0",
+              scale: "µs",
+              detail:
+                "50 kHz electromagnetic radio frequency carrier wave oscillations transmitted to torpedo antenna.",
+            }}
+            slow={{
+              name: "Slotted tape hop rate",
+              period: "700",
+              scale: "ms",
+              detail:
+                "Punched player-piano paper roll step rate advancing synchronously between transmitter and receiver.",
+            }}
+          />
         </div>
       </div>
     </div>

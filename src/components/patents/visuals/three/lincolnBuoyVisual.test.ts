@@ -83,4 +83,39 @@ describe("US 6,469 Abraham Lincoln Buoying Vessels Over Shoals visual & hydrosta
 
     model.dispose();
   });
+
+  test("derives all printed claims dynamically from edition without duplicate strings", () => {
+    const { lincolnBuoyPatent } = require("@/data/patents/lincoln-buoy");
+    const { lincolnBuoyArchivalEdition } = require("@/data/editions/lincolnBuoyEdition");
+    expect(lincolnBuoyPatent.claims.length).toBe(1);
+    const editionClaims = lincolnBuoyArchivalEdition.blocks.filter((b: any) => b.kind === "claim");
+    expect(editionClaims.length).toBe(1);
+
+    const editionBlock = editionClaims[0];
+    expect(editionBlock).toBeDefined();
+    const expectedText = editionBlock.inlines.map((inl: any) => inl.text).join("");
+    expect(lincolnBuoyPatent.claims[0].originalText).toBe(expectedText);
+  });
+
+  test("provides valid provenance classifications for all Lincoln buoy controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-6469-lincoln-buoy"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({ inflationPct: 80, weightTons: 380, shoalDepth: 3.5 });
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("registers explicit energy channel omission reason", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-6469-lincoln-buoy"]).toBeDefined();
+    expect(energyChannelsFor("us-6469-lincoln-buoy", {})).toEqual([]);
+  });
 });

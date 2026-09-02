@@ -70,7 +70,8 @@ enum NativeMathFormatter {
         let replacements: [String: String] = [
             "\\quad": "   ", "\\qquad": "      ", "\\cdot": "·", "\\times": "×",
             "\\approx": "≈", "\\leq": "≤", "\\le": "≤", "\\geq": "≥", "\\ge": "≥",
-            "\\lesssim": "≲", "\\gg": "≫", "\\rightarrow": "→", "\\longrightarrow": "⟶",
+            "\\lesssim": "≲", "\\ll": "≪", "\\gg": "≫", "\\rightarrow": "→", "\\longrightarrow": "⟶",
+            "\\hookrightarrow": "↪", "\\dashv": "⊣",
             "\\rightleftharpoons": "⇌", "\\xrightarrow": "→", "\\to": "→",
             "\\leftarrow": "←", "\\Rightarrow": "⇒", "\\implies": "⇒", "\\prime": "′",
             "\\partial": "∂", "\\nabla": "∇", "\\infty": "∞", "\\pi": "π",
@@ -83,12 +84,14 @@ enum NativeMathFormatter {
             "\\varepsilon": "ε", "\\epsilon": "ε", "\\sum": "∑", "\\prod": "∏", "\\int": "∫",
             "\\oint": "∮", "\\circ": "∘", "\\in": "∈", "\\perp": "⊥", "\\sqrt": "√",
             "\\sim": "∼", "\\pm": "±", "\\propto": "∝", "\\cap": "∩",
+            "\\land": "∧", "\\subset": "⊂", "\\neg": "¬", "\\varnothing": "∅",
             "\\dots": "…", "\\uparrow": "↑", "\\downarrow": "↓",
             "\\sin": "sin", "\\cos": "cos", "\\tan": "tan", "\\ln": "ln",
             "\\log": "log", "\\exp": "exp", "\\min": "min",
             "\\dot": "˙", "\\ddot": "¨", "\\vec": "→", "\\lfloor": "⌊",
             "\\rfloor": "⌋", "\\text": "", "\\mathrm": "", "\\mathbf": "",
             "\\mathcal": "", "\\operatorname": "", "\\mbox": "", "\\left": "", "\\right": "",
+            "\\bigl": "", "\\bigr": "",
             "\\,": " ", "\\;": " ", "\\|": "‖", "\\": "",
         ]
         for (source, target) in replacements.sorted(by: { $0.key.count > $1.key.count }) {

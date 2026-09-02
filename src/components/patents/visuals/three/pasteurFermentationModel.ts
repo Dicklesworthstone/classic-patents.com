@@ -141,22 +141,53 @@ export function buildPasteurFermentationModel(): PasteurFermentationModelResult 
   vesselGroup.add(domeLid);
 
   const support = new THREE.Group();
-  for (const x of [-1.45, 1.45]) {
+  // 4 robust cast-iron curved vessel legs with floor footings
+  for (const [lx, lz] of [
+    [-1.45, -0.85],
+    [1.45, -0.85],
+    [-1.45, 0.85],
+    [1.45, 0.85],
+  ]) {
     const leg = new THREE.Mesh(
-      trackGeo(new THREE.BoxGeometry(0.24, 1.35, 0.34)),
+      trackGeo(new THREE.BoxGeometry(0.26, 1.25, 0.26)),
       materials.structure,
     );
-    leg.position.set(x, -2.35, 0);
+    leg.position.set(lx, -2.2, lz);
+    leg.castShadow = true;
     support.add(leg);
+
+    const foot = new THREE.Mesh(
+      trackGeo(new THREE.CylinderGeometry(0.24, 0.28, 0.12, 16)),
+      materials.structure,
+    );
+    foot.position.set(lx, -2.78, lz);
+    support.add(foot);
   }
-  const crossbar = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(3.7, 0.22, 0.42)),
+  const crossbarX = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(3.2, 0.18, 0.24)),
     materials.structure,
   );
-  crossbar.position.y = -1.78;
-  support.add(crossbar);
+  crossbarX.position.y = -2.0;
+  support.add(crossbarX);
+
+  const crossbarZ = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(0.24, 0.18, 2.0)),
+    materials.structure,
+  );
+  crossbarZ.position.y = -2.0;
+  support.add(crossbarZ);
+
+  // Catch Basin / Floor Drainage Tray beneath vessel
+  const drainTray = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(2.3, 2.4, 0.2, 32)),
+    materials.structure,
+  );
+  drainTray.position.set(0, -2.75, 0);
+  drainTray.receiveShadow = true;
+  support.add(drainTray);
   vesselGroup.add(support);
 
+  // Overhead water pipe E with vertical supply riser pipe and ceiling hanger brackets
   const pipeE = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.11, 0.11, 8.4, 14)),
     materials.structure,
@@ -164,6 +195,31 @@ export function buildPasteurFermentationModel(): PasteurFermentationModelResult 
   pipeE.rotation.z = Math.PI / 2;
   pipeE.position.set(0, 4.35, 0);
   rootGroup.add(pipeE);
+
+  // Vertical water supply riser pipe connecting floor to overhead pipe E
+  const waterRiser = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.11, 0.11, 7.15, 14)),
+    materials.structure,
+  );
+  waterRiser.position.set(-4.2, 0.8, 0);
+  rootGroup.add(waterRiser);
+
+  const elbowJoint = new THREE.Mesh(
+    trackGeo(new THREE.SphereGeometry(0.16, 16, 12)),
+    materials.structure,
+  );
+  elbowJoint.position.set(-4.2, 4.35, 0);
+  rootGroup.add(elbowJoint);
+
+  // Overhead ceiling hanger drop rods
+  for (const hx of [-2.0, 2.0, 4.0]) {
+    const hanger = new THREE.Mesh(
+      trackGeo(new THREE.CylinderGeometry(0.04, 0.04, 1.6, 8)),
+      materials.structure,
+    );
+    hanger.position.set(hx, 5.15, 0);
+    rootGroup.add(hanger);
+  }
 
   const nozzleP = new THREE.Mesh(
     trackGeo(new THREE.ConeGeometry(0.45, 0.7, 18)),
@@ -173,13 +229,32 @@ export function buildPasteurFermentationModel(): PasteurFermentationModelResult 
   nozzleP.position.set(0, 3.78, 0);
   rootGroup.add(nozzleP);
 
+  // CO2 Gas Generator M with cast-iron support legs grounded to floor
+  const generatorGroup = new THREE.Group();
+  generatorGroup.position.set(-4.4, -0.9, 0);
+  rootGroup.add(generatorGroup);
+
   const generatorM = new THREE.Mesh(
     trackGeo(new THREE.BoxGeometry(2.1, 1.7, 1.8)),
     materials.structure,
   );
-  generatorM.position.set(-4.4, -0.9, 0);
   generatorM.castShadow = true;
-  rootGroup.add(generatorM);
+  generatorGroup.add(generatorM);
+
+  // Generator support stand legs
+  for (const [gx, gz] of [
+    [-0.85, -0.7],
+    [0.85, -0.7],
+    [-0.85, 0.7],
+    [0.85, 0.7],
+  ]) {
+    const genLeg = new THREE.Mesh(
+      trackGeo(new THREE.CylinderGeometry(0.1, 0.12, 1.05, 12)),
+      materials.structure,
+    );
+    genLeg.position.set(gx, -1.35, gz);
+    generatorGroup.add(genLeg);
+  }
 
   const supplyLineW = tubeBetween(
     [
@@ -206,12 +281,30 @@ export function buildPasteurFermentationModel(): PasteurFermentationModelResult 
   );
   rootGroup.add(exitTubeX);
 
+  // Water Cup V with wall mounting bracket & shelf
+  const cupGroup = new THREE.Group();
+  cupGroup.position.set(3.45, -1.35, 0);
+  rootGroup.add(cupGroup);
+
   const waterCupV = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.72, 0.72, 0.85, 24, 1, true)),
     materials.cupWater,
   );
-  waterCupV.position.set(3.45, -1.35, 0);
-  rootGroup.add(waterCupV);
+  cupGroup.add(waterCupV);
+
+  const cupBracketShelf = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.82, 0.85, 0.15, 24)),
+    materials.structure,
+  );
+  cupBracketShelf.position.y = -0.5;
+  cupGroup.add(cupBracketShelf);
+
+  const cupSupportPost = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.09, 0.12, 1.0, 12)),
+    materials.structure,
+  );
+  cupSupportPost.position.set(0, -1.0, 0);
+  cupGroup.add(cupSupportPost);
 
   const sprayGeometry = trackGeo(new THREE.BufferGeometry());
   const sprayPositions = new Float32Array(SPRAY_COUNT * 3);

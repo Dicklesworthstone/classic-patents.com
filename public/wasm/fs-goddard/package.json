@@ -1,0 +1,15 @@
+{
+  "name": "fs-goddard-wasm",
+  "type": "module",
+  "version": "0.0.1",
+  "files": [
+    "fs_goddard_wasm_bg.wasm",
+    "fs_goddard_wasm.js",
+    "fs_goddard_wasm.d.ts"
+  ],
+  "main": "fs_goddard_wasm.js",
+  "types": "fs_goddard_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

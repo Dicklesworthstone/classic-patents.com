@@ -105,21 +105,65 @@ export function buildEInkModel(): EInkModel {
     }),
   );
 
-  // 1. Top clear electrode 100 (source numbering)
-  const topPlateGeo = trackGeo(new THREE.BoxGeometry(2.8, 0.06, 2.8));
-  const topPlate = new THREE.Mesh(topPlateGeo, itoElectrodeMat);
-  topPlate.position.set(0, 1.45, 0);
-  topPlate.castShadow = true;
-  mainGroup.add(topPlate);
+  // 1. Bottom Substrate Baseplate (Glass / PET carrier)
+  const substrateMat = trackMat(
+    new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      roughness: 0.15,
+      metalness: 0.05,
+      transmission: 0.9,
+      transparent: true,
+      opacity: 0.6,
+    }),
+  );
+  const substrate = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(3.6, 0.25, 3.6)), substrateMat);
+  substrate.position.set(0, -1.65, 0);
+  substrate.receiveShadow = true;
+  mainGroup.add(substrate);
 
-  // 2. Bottom electrode 110 (source numbering)
-  const bottomPlateGeo = trackGeo(new THREE.BoxGeometry(2.8, 0.08, 2.8));
+  // 2. Bottom rear electrode 110 with contact busbar
+  const bottomPlateGeo = trackGeo(new THREE.BoxGeometry(3.0, 0.08, 3.0));
   const bottomPlate = new THREE.Mesh(bottomPlateGeo, bottomElectrodeMat);
   bottomPlate.position.set(0, -1.45, 0);
   bottomPlate.receiveShadow = true;
   mainGroup.add(bottomPlate);
 
-  // 3. Transparent Polymer Microcapsule Shell
+  const bottomTerminal = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.1, 0.1, 0.4, 16)),
+    bottomElectrodeMat,
+  );
+  bottomTerminal.position.set(1.4, -1.45, 1.4);
+  mainGroup.add(bottomTerminal);
+
+  // 3. Clear Elastomeric Binder Matrix Surround
+  const binderMat = trackMat(
+    new THREE.MeshPhysicalMaterial({
+      color: 0xe0f2fe,
+      transparent: true,
+      opacity: 0.2,
+      roughness: 0.1,
+      transmission: 0.92,
+    }),
+  );
+  const binderLayer = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(2.9, 2.7, 2.9)), binderMat);
+  binderLayer.position.set(0, 0, 0);
+  mainGroup.add(binderLayer);
+
+  // 4. Top clear ITO electrode 100 with border contact frame
+  const topPlateGeo = trackGeo(new THREE.BoxGeometry(3.0, 0.06, 3.0));
+  const topPlate = new THREE.Mesh(topPlateGeo, itoElectrodeMat);
+  topPlate.position.set(0, 1.45, 0);
+  topPlate.castShadow = true;
+  mainGroup.add(topPlate);
+
+  const topTerminal = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.1, 0.1, 0.4, 16)),
+    bottomElectrodeMat,
+  );
+  topTerminal.position.set(-1.4, 1.45, -1.4);
+  mainGroup.add(topTerminal);
+
+  // 5. Transparent Polymer Microcapsule Shell
   const capsuleGeo = trackGeo(new THREE.SphereGeometry(1.25, 32, 32));
   const capsule = new THREE.Mesh(capsuleGeo, capsuleShellMat);
   mainGroup.add(capsule);

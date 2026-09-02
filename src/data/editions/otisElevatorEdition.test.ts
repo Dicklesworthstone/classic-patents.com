@@ -69,8 +69,46 @@ describe("otisElevatorArchivalEdition", () => {
     expect(otisElevatorPatent.originalTextAsset).toMatchObject({
       kind: "reviewed-transcription",
       pageCount: 3,
+      url: "/patents/transcripts/us-31128-otis-elevator-reviewed.txt",
       sourcePdfSha256: otisElevatorArchivalEdition.sourcePdfSha256,
     });
+
+    const editionClaims = otisElevatorArchivalEdition.blocks.filter(
+      (b): b is Extract<typeof b, { kind: "claim" }> => b.kind === "claim",
+    );
+    expect(editionClaims.length).toBe(4);
+    for (let i = 0; i < 4; i++) {
+      const editionBlock = editionClaims[i];
+      const expectedText = editionBlock.inlines.map((inl) => inl.text).join("");
+      expect(otisElevatorPatent.claims[i].originalText).toBe(expectedText);
+    }
+  });
+
+  test("binds canonical reviewed ledger with complete ordered page markers", () => {
+    const { existsSync, readFileSync } = require("node:fs");
+    const { join } = require("node:path");
+    const sourceAsset = otisElevatorPatent.originalTextAsset;
+    expect(sourceAsset).toBeDefined();
+    const ledgerPath = join(process.cwd(), `public${sourceAsset?.url}`);
+    expect(existsSync(ledgerPath)).toBe(true);
+    const ledger = readFileSync(ledgerPath, "utf8");
+    expect(ledger).toContain("--- REVIEWED TRANSCRIPTION PAGE 1 OF 3 ---");
+    expect(ledger).toContain("--- REVIEWED TRANSCRIPTION PAGE 2 OF 3 ---");
+    expect(ledger).toContain("--- REVIEWED TRANSCRIPTION PAGE 3 OF 3 ---");
+    expect(ledger).toContain("E. G. OTIS");
+  });
+
+  test("provides valid provenance classifications for all Otis controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-31128-otis-elevator"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({ driveCommand: 0, displayRatePct: 60 });
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
   });
 
   test("passes the catalogue schema with its reviewed transcript metadata", () => {

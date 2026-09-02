@@ -857,7 +857,19 @@ export const ottoEngineRecordCorrections: Pick<
     ],
     breakthroughInsight:
       "The patent’s stated move is not simply to admit gas and air separately. It is to arrange their distribution so combustible particles are closest together at ignition and increasingly dispersed through the prior air charge, making flame travel, heat release, and pressure increase gradual.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Alphonse Beau de Rochas & Christian Reithmann",
+        rivalClaim:
+          "French engineer Beau de Rochas published a French patent in 1862 describing the four-stroke cycle, and Munich watchmaker Christian Reithmann claimed working four-stroke engines in 1873.",
+        conflictDetails:
+          "German competitors sued Deutz AG (Gasmotoren-Fabrik Deutz) to break Otto's monopoly on internal combustion engines across Europe.",
+        resolution:
+          "The German Reichsgericht and British courts reviewed Beau de Rochas's 1862 publication in 1886 (Otto v. Steel and Deutz v. Körting).",
+        legalOutcome:
+          "The German patent office invalidated Otto's broad German patent claim to the four-stroke cycle based on Beau de Rochas's prior publication, throwing the four-stroke cycle into the public domain in Germany and accelerating the emergence of Benz, Daimler, and the modern automotive industry.",
+      },
+    ],
     civilizationalImpact:
       "US 194,047 is an unusually detailed primary record of late nineteenth-century gas-engine reasoning: combustion distribution, mechanical timing, fuel metering, exhaust control, and the formal limits Otto placed on his own claims. That primary evidence is more useful than reducing the document to a generic automobile origin story.",
     aftermath:

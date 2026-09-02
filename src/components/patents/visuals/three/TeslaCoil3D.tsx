@@ -1,116 +1,80 @@
 "use client";
 
-import {
-  Camera,
-  Eye,
-  EyeOff,
-  Layers,
-  RotateCcw,
-  Sparkles,
-  Volume2,
-  VolumeX,
-  Zap,
-} from "lucide-react";
+// Pure consumer of the shared transport tape: standing-wave spatial profile is parameter-prescribed.
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Sparkles, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
-import { FrankenSimEngine } from "@/physics/engine";
-import { ensureTeslaWasm } from "@/physics/teslaWasm";
-import { createStudioClock } from "@/physics/tickScheduler";
+import {
+  readTeslaTransformerControls,
+  stepTeslaTransformerSi,
+} from "@/physics/teslaTransformerKernel";
+import { ensureTeslaWasm, teslaKernelSource } from "@/physics/teslaWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
-import { buildTeslaCoilModel } from "./teslaCoilModel";
+import { buildTeslaCoilModel } from "./tesla593138TransformerModel";
 import { useLiveSimParams } from "./useLiveSimParams";
-import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "toroid_breakout" | "primary_spiral" | "spark_gap" | "top";
+type CameraPreset = "iso" | "high_terminal" | "primary_spiral" | "earth_bond" | "top";
 
 const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [11, 9, 14], target: [0, 0, 0] },
-  toroid_breakout: { pos: [0, 4.2, 4.5], target: [0, 2.5, 0] },
-  primary_spiral: { pos: [0, -1.2, 5.5], target: [0, -2.4, 0] },
-  spark_gap: { pos: [2.8, -2.2, 3.8], target: [2.4, -3.2, 0] },
+  iso: { pos: [10, 6.5, 13], target: [0, -0.5, 0] },
+  high_terminal: { pos: [2.5, 3.8, 5.2], target: [0, 2.25, 0] },
+  primary_spiral: { pos: [0, -0.5, 5.8], target: [0, -1.75, 0] },
+  earth_bond: { pos: [5.2, -0.5, 4.8], target: [1.75, -1.65, 0] },
   top: { pos: [0, 13.0, 0.1], target: [0, 0, 0] },
 };
 
 export function TeslaCoil3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [, setKernelSource] = useState(teslaKernelSource);
 
   useEffect(() => {
-    ensureTeslaWasm();
+    let active = true;
+    void ensureTeslaWasm().then((nextSource) => {
+      if (active) setKernelSource(nextSource);
+    });
+    return () => {
+      active = false;
+    };
   }, []);
 
-  // Interpretive high-potential-transformer controls, not a facsimile reconstruction.
   const { params, updateParam } = usePatentPhysics("us-593138-tesla-coil");
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
-  const primaryCap = params.primaryCap ?? 45;
-  const toploadCapacitancePf = params.toploadCapacitancePf ?? 35;
-  const sparkGapDistanceMm = params.sparkGapDistanceMm ?? 12;
-  const inputVoltageKv = params.inputVoltageKv ?? 15;
-  const couplingK = params.couplingK ?? 0.18;
-  const secondaryTurns = params.secondaryTurns ?? 850;
-  const [showLightningStreamers, _setShowLightningStreamers] = useState<boolean>(true);
-  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-
-  // Interpretive coupled-LC host-model calculations.
-  const coilPhysics = FrankenSimEngine.stepTeslaCoilFromControls({
-    primaryCap,
-    toploadCapacitancePf,
-    inputVoltageKv,
-    sparkGapDistanceMm,
-    couplingK,
-    secondaryTurns,
+  const transformerControls = readTeslaTransformerControls({
+    disturbanceFrequencyHz: params.disturbanceFrequencyHz,
+    secondaryLengthMiles: params.secondaryLengthMiles,
   });
-  const resonantFreqKhz = coilPhysics.resonantFreqKhz;
-  const secondaryVoltageMv = coilPhysics.secondaryPotentialMv.toFixed(2);
-  const streamerLengthInches = coilPhysics.streamerLengthInches.toFixed(1);
-  const streamerLengthMeters = coilPhysics.streamerLengthMeters.toFixed(2);
+  const disturbanceFrequencyHz = transformerControls.disturbanceFrequencyHz;
+  const secondaryLengthMiles = transformerControls.secondaryLengthMiles;
+  const [showProfileSamples, setShowProfileSamples] = useState<boolean>(false);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const claim1CommonNodeConnected = (params.claim1CommonNodeConnected ?? 1) >= 0.5;
+  const claimStates = { 1: claim1CommonNodeConnected };
+
+  const transformerPhysics = stepTeslaTransformerSi(transformerControls);
 
   useFrankenSimPhysics("us-593138-tesla-coil", {
     domain: "electromagnetics_flux",
-    refusal: { isRefused: false },
-    em: {
-      frequencyHz: coilPhysics.resonantFreqHz,
-      magneticFluxDensityTesla: 0,
-      electricFieldVpm: coilPhysics.secondaryPotentialVolts,
-      phaseAngleRad: 0,
-      inductanceHenry: 0,
-      capacitanceFarad: 0,
-      currentAmperes: 0,
-      voltageVolts: coilPhysics.inputVoltageVolts,
-      powerFactor: 0,
-      efficiencyPct: 0,
-      synchronousRpm: 0,
-      slipFraction: 0,
-      rotorRpm: 0,
-      shaftPowerWatts: 0,
-      electricalInputWatts: 0,
+    refusal: {
+      isRefused: !claim1CommonNodeConnected,
+      reason: !claim1CommonNodeConnected
+        ? "Claim 1 topology absent: secondary low terminal is open from the primary / earth node."
+        : undefined,
     },
   });
 
   const live = useLiveSimParams({
-    resonantFreqKhz,
-    sparkGapDistanceMm,
-    inputVoltageKv,
-    couplingK,
-    showLightningStreamers,
-    secondaryVoltageMv,
-    streamerLengthInches: coilPhysics.streamerLengthInches,
-    streamerStudioLength: coilPhysics.streamerStudioLength,
-    sparkRateHz: params.sparkRateHz ?? 120,
-    isAudioMuted,
+    electricalLengthRad: transformerPhysics.electricalLengthRad,
     isCutaway,
+    showProfileSamples,
+    claim1CommonNodeConnected: claim1CommonNodeConnected ? 1 : 0,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -138,33 +102,19 @@ export function TeslaCoil3D() {
     const model = buildTeslaCoilModel();
     scene.add(model.root);
 
-    // Audio synthesizer
-    let audioTick = 0;
     let reqId: number;
 
-    const clock = createStudioClock();
-
-    const animate = (now: number) => {
+    const animate = () => {
       reqId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
-      const { dt } = clock.pump(now);
       const p = live.current;
 
-      model.updateKinematics(
-        dt,
-        p.showLightningStreamers,
-        p.streamerStudioLength,
-        Number.parseFloat(p.secondaryVoltageMv),
-      );
+      model.updateElectricalProfile(p.electricalLengthRad);
+      const commonNodeConnected = (p.claim1CommonNodeConnected ?? 1) >= 0.5;
+      model.setProfileMarkersVisible((p.showProfileSamples ?? false) && commonNodeConnected);
+      model.setClaimedCommonNodeConnected(commonNodeConnected);
 
       model.setCutaway?.(p.isCutaway ?? false);
-
-      if (!p.isAudioMuted) {
-        audioTick += 1;
-        if (audioTick % Math.max(1, Math.round(60 / (p.sparkRateHz / 10))) === 0) {
-          soundEngine.playSparkDischarge(0.2);
-        }
-      }
 
       controls.update();
       renderer.render(scene, camera);
@@ -195,9 +145,9 @@ export function TeslaCoil3D() {
             {(
               [
                 ["iso", "Isometric"],
-                ["toroid_breakout", "Toroid"],
+                ["high_terminal", "Remote Terminal"],
                 ["primary_spiral", "Spiral Primary"],
-                ["spark_gap", "Rotary Gap"],
+                ["earth_bond", "Primary / Earth Bond"],
                 ["top", "Overhead"],
               ] as const
             ).map(([id, label]) => (
@@ -217,7 +167,7 @@ export function TeslaCoil3D() {
           </div>
         )}
 
-        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Reset) */}
+        {/* Top Right Tool Bar (Toggle UI, cutaway, pins, reset) */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
           <button
             type="button"
@@ -237,22 +187,6 @@ export function TeslaCoil3D() {
             )}
           </button>
           <button
-            aria-label="Toggle test tone"
-            type="button"
-            onClick={() => {
-              toggleSound();
-              soundEngine.playSwitchClick();
-            }}
-            className="min-h-9 p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title={isAudioMuted ? "Unmute Tesla Audio" : "Mute Tesla Audio"}
-          >
-            {isAudioMuted ? (
-              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            ) : (
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
-            )}
-          </button>
-          <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
             className={`min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
@@ -260,24 +194,34 @@ export function TeslaCoil3D() {
                 ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
                 : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
-            title={isCutaway ? "Solid Secondary Coil" : "Wireframe Coil & Base Cutaway"}
-            aria-label={isCutaway ? "Solid Secondary Coil" : "Wireframe Coil & Base Cutaway"}
+            title={isCutaway ? "Solid Secondary Coil" : "Wireframe Secondary & Support Cutaway"}
+            aria-label={
+              isCutaway ? "Solid Secondary Coil" : "Wireframe Secondary & Support Cutaway"
+            }
           >
             <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
           <button
-            aria-label={showCalloutPins ? "Hide annotation pins" : "Show annotation pins"}
+            aria-label={
+              showProfileSamples
+                ? "Hide normalized winding samples"
+                : "Show normalized winding samples"
+            }
             type="button"
-            onClick={() => {
-              setShowCalloutPins(!showCalloutPins);
-              soundEngine.playSwitchClick();
-            }}
+            disabled={!claim1CommonNodeConnected}
+            onClick={() => setShowProfileSamples(!showProfileSamples)}
             className={`min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showCalloutPins
-                ? "bg-amber-600 text-white border-amber-700 shadow-md"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+              !claim1CommonNodeConnected
+                ? "bg-slate-300/80 dark:bg-ink-800/80 text-slate-500 cursor-not-allowed border-slate-400/50"
+                : showProfileSamples
+                  ? "bg-amber-600 text-white border-amber-700 shadow-md"
+                  : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
-            title="Toggle Historical Patent Numeral Pins"
+            title={
+              claim1CommonNodeConnected
+                ? "Toggle normalized distributed-wave samples anchored to winding B"
+                : "Claim 1 common node is open; normalized profile is refused"
+            }
           >
             <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
@@ -297,90 +241,126 @@ export function TeslaCoil3D() {
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5 pb-1 border-b border-parchment-200 dark:border-ink-800/80">
               <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-              Interpretive Transformer Telemetry
+              Source-Bounded Transformer Telemetry
             </div>
             <div className="space-y-1">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-ink-600 dark:text-ink-400">Resonant Freq:</span>
+                <span className="text-ink-600 dark:text-ink-400">Disturbance frequency:</span>
                 <span className="font-bold text-amber-700 dark:text-amber-400">
-                  {resonantFreqKhz} kHz
+                  {disturbanceFrequencyHz.toFixed(0)} Hz
                 </span>
               </div>
               <div className="flex items-center justify-between gap-2">
-                <span className="text-ink-600 dark:text-ink-400">Secondary Potential:</span>
+                <span className="text-ink-600 dark:text-ink-400">Required quarter-wave:</span>
                 <span className="font-bold text-cyan-700 dark:text-cyan-400">
-                  {secondaryVoltageMv} MV
+                  {transformerPhysics.quarterWaveLengthMiles.toFixed(2)} mi
                 </span>
               </div>
               <div className="flex items-center justify-between gap-2">
-                <span className="text-ink-600 dark:text-ink-400">Corona Streamers:</span>
+                <span className="text-ink-600 dark:text-ink-400">Electrical length:</span>
                 <span className="font-bold text-purple-700 dark:text-purple-400">
-                  {streamerLengthInches}" ({streamerLengthMeters} m)
+                  {transformerPhysics.electricalLengthDeg.toFixed(1)}°
                 </span>
               </div>
               <div className="flex items-center justify-between gap-2">
-                <span className="text-ink-600 dark:text-ink-400">Input:</span>
+                <span className="text-ink-600 dark:text-ink-400">Claimed common node:</span>
+                <span
+                  className={`font-bold ${
+                    claim1CommonNodeConnected
+                      ? "text-emerald-700 dark:text-emerald-400"
+                      : "text-rose-700 dark:text-rose-400"
+                  }`}
+                >
+                  {claim1CommonNodeConnected ? "Connected" : "Open — profile refused"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-ink-600 dark:text-ink-400">Absolute potential:</span>
                 <span className="font-bold text-emerald-700 dark:text-emerald-400">
-                  {inputVoltageKv} kV ({sparkGapDistanceMm} mm)
+                  Underdetermined by source
                 </span>
               </div>
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="US 593,138 DISTRIBUTED-WAVE TRANSFORMER"
+          chips={[
+            {
+              label: "Source form",
+              value: "Fig. 2 conical graded winding",
+              tone: "ok",
+            },
+            {
+              label: "Claim 1 topology",
+              value: claim1CommonNodeConnected ? "common node connected" : "secondary open",
+              tone: claim1CommonNodeConnected ? "ok" : "warn",
+            },
+            {
+              label: "Kernel",
+              value:
+                transformerPhysics.runtimeSource === "wasm"
+                  ? "fs-flux WASM"
+                  : "TypeScript fallback",
+              tone: transformerPhysics.runtimeSource === "wasm" ? "ok" : "warn",
+            },
+            {
+              label: "Secondary wire",
+              value: secondaryLengthMiles.toFixed(1),
+              unit: "mi",
+            },
+            {
+              label: "Quarter-wave target",
+              value: transformerPhysics.quarterWaveLengthMiles.toFixed(2),
+              unit: "mi",
+            },
+            {
+              label: "Length error",
+              value: transformerPhysics.lengthErrorMiles.toFixed(2),
+              unit: "mi",
+              tone: Math.abs(transformerPhysics.lengthErrorMiles) < 0.01 ? "ok" : "warn",
+            },
+            {
+              label: "V / discharge",
+              value: "source-underdetermined",
+              tone: "warn",
+            },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <SensitivitySlider
-            id="primaryCap"
+            id="disturbanceFrequency"
             patentId="us-593138-tesla-coil"
-            paramKey="primaryCap"
-            label="Primary Capacitance"
-            value={primaryCap}
-            min={10}
-            max={100}
-            step={5}
-            onChange={(val) => updateParam("primaryCap", val)}
+            paramKey="disturbanceFrequencyHz"
+            label="Disturbance frequency"
+            value={disturbanceFrequencyHz}
+            min={500}
+            max={1500}
+            step={25}
+            unit=" Hz"
+            onChange={(val) => updateParam("disturbanceFrequencyHz", val)}
             allParams={params}
           />
 
           <SensitivitySlider
-            id="inputVoltage"
+            id="secondaryLengthMiles"
             patentId="us-593138-tesla-coil"
-            paramKey="inputVoltageKv"
-            label="Input Voltage"
-            value={inputVoltageKv}
-            min={5}
-            max={30}
+            paramKey="secondaryLengthMiles"
+            label="Developed secondary length"
+            value={secondaryLengthMiles}
+            min={25}
+            max={75}
             step={1}
-            onChange={(val) => updateParam("inputVoltageKv", val)}
-            allParams={params}
-          />
-
-          <SensitivitySlider
-            id="sparkGapDistance"
-            patentId="us-593138-tesla-coil"
-            paramKey="sparkGapDistanceMm"
-            label="Spark Gap Distance"
-            value={sparkGapDistanceMm}
-            min={2}
-            max={30}
-            step={1}
-            onChange={(val) => updateParam("sparkGapDistanceMm", val)}
-            allParams={params}
-          />
-
-          <SensitivitySlider
-            id="couplingK"
-            patentId="us-593138-tesla-coil"
-            paramKey="couplingK"
-            label="Coil Coupling (k)"
-            value={couplingK}
-            min={0.05}
-            max={0.4}
-            step={0.01}
-            onChange={(val) => updateParam("couplingK", val)}
+            unit=" mi"
+            onChange={(val) => updateParam("secondaryLengthMiles", val)}
             allParams={params}
           />
         </div>
@@ -388,50 +368,19 @@ export function TeslaCoil3D() {
         <ClaimConstraintToggle
           patentId="us-593138-tesla-coil"
           claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          onToggleClaim={(_claimNo, active) =>
+            updateParam("claim1CommonNodeConnected", active ? 1 : 0)
           }
           className="mt-2"
         />
 
-        <PortHamiltonianEnergyStrip
-          patentId="us-593138-tesla-coil"
-          params={params}
-          className="mt-3"
-        />
+        <p className="mt-3 text-[10px] text-ink-500 dark:text-ink-400">
+          The 925 Hz, 185,000 mi/s, 50 mi defaults reproduce Tesla&apos;s printed example. The
+          fs-flux kernel computes wavelength and electrical length only. Because the grant supplies
+          no excitation, impedance, coupling, loss, or load data, absolute voltage and discharge
+          length are deliberately not reported.
+        </p>
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="HIGH-FREQUENCY RESONANT TRANSFORMER"
-        chips={[
-          {
-            label: "V_secondary",
-            value: `${secondaryVoltageMv}`,
-            unit: "MV",
-            tone: "hot",
-          },
-          {
-            label: "f_resonant",
-            value: `${resonantFreqKhz.toFixed(1)}`,
-            unit: "kHz",
-          },
-          {
-            label: "Streamer Length",
-            value: `${streamerLengthInches}"`,
-            unit: `(${streamerLengthMeters} m)`,
-          },
-          { label: "V_primary", value: `${inputVoltageKv.toFixed(0)}`, unit: "kV" },
-          { label: "Coupling (k)", value: `${couplingK.toFixed(2)}` },
-          { label: "Secondary", value: `${secondaryTurns}`, unit: "turns" },
-          {
-            label: "State",
-            value: "Quarter-Wave Helical Resonance",
-            tone: "hot",
-          },
-        ]}
-      />
     </div>
   );
 }

@@ -1,0 +1,16 @@
+{
+  "name": "fs-otto-wasm",
+  "type": "module",
+  "description": "Browser boundary for the source-bounded US 194,047 Otto mechanism composition.",
+  "version": "0.0.1",
+  "files": [
+    "fs_otto_wasm_bg.wasm",
+    "fs_otto_wasm.js",
+    "fs_otto_wasm.d.ts"
+  ],
+  "main": "fs_otto_wasm.js",
+  "types": "fs_otto_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

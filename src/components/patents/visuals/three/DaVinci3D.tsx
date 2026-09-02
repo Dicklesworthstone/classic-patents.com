@@ -8,7 +8,12 @@ import {
 } from "@/components/patents/visuals/three/ThreeStudioScene";
 import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimParams";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
-import { type DaVinciState, stepDaVinci } from "@/physics/daVinciKernel";
+import { type DaVinciState, readDaVinciControls, stepDaVinci } from "@/physics/daVinciKernel";
+import {
+  daVinciTopologyKernelSource,
+  ensureDaVinciTopologyWasm,
+  tryDaVinciTopologyWasmStep,
+} from "@/physics/daVinciWasm";
 import {
   globalTransportBus,
   type TapeUpdater,
@@ -17,7 +22,6 @@ import {
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildDaVinciModel } from "./DaVinciModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { usePatentAudio } from "./usePatentAudio";
@@ -30,10 +34,10 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [0, 1.2, 2.5], target: [0, 0, 0] },
-  master_console: { pos: [0, 1.6, 1.8], target: [0, 0.8, 0] },
-  slave_wrist: { pos: [0, 0.5, 1.5], target: [0, 0, 0] },
-  top: { pos: [0, 4.0, 0.01], target: [0, 0, 0] },
+  iso: { pos: [4.4, 2.8, 6], target: [-0.55, 0.35, 0] },
+  master_console: { pos: [2.5, 2.2, 4.2], target: [0, 0.75, 0] },
+  slave_wrist: { pos: [1.25, 0.55, 2.0], target: [0, -0.15, 0.15] },
+  top: { pos: [0, 5.6, 0.01], target: [-0.55, 0, 0] },
 };
 
 const IDLE_MACHINE = {
@@ -51,11 +55,16 @@ export function DaVinci3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [hud, setHud] = useState({
     scale: 3,
-    tremorAtten: 94.5,
+    compatibilitySignalPercent: 100,
     tipVelocity: 0,
+    isColliding: false,
+    isGrasped: false,
+    contactForceN: 0,
+    obstacleDistanceMm: 50,
   });
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+  const [topologyKernelSource, setTopologyKernelSource] = useState(daVinciTopologyKernelSource());
   const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
   const motionScaleRatio = (params.motionScaleRatio as number) ?? 3.0;
   const tremorFilterEnabled = (params.tremorFilterEnabled as number) ?? 1;
@@ -82,6 +91,16 @@ export function DaVinci3D() {
 
   const studioRef = useRef<StudioContext | null>(null);
 
+  useEffect(() => {
+    let active = true;
+    void ensureDaVinciTopologyWasm().then((nextSource) => {
+      if (active) setTopologyKernelSource(nextSource);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   // One tape-bound stepper (br-ixl.3): the registered updater owns the
   // per-tick daVinciKernel integration (two 1/120 sub-steps per 1/60 bus tick,
   // matching the previous TickScheduler cadence). The render loop only
@@ -91,17 +110,18 @@ export function DaVinci3D() {
   const kernelStateRef = useRef<DaVinciState | null>(null);
   useEffect(() => {
     const integrate: TapeUpdater = (_prev, dt) => {
-      const controls = {
-        motionScaleRatio: live.current.motionScaleRatio ?? 3.0,
-        tremorFilterEnabled: (live.current.tremorFilterEnabled ?? 1) > 0.5,
-        masterInputSpeedMps: live.current.masterInputSpeedMps ?? 0.5,
-        gripAngleDeg: live.current.gripAngleDeg ?? 30,
-      };
+      const controls = readDaVinciControls({
+        motionScaleRatio: live.current.motionScaleRatio,
+        tremorFilterEnabled: live.current.tremorFilterEnabled,
+        masterInputSpeedMps: live.current.masterInputSpeedMps,
+        gripAngleDeg: live.current.gripAngleDeg,
+      });
       const subSteps = Math.max(1, Math.round(dt / (1 / 120)));
       let state = kernelStateRef.current ?? undefined;
+      const subDt = dt / subSteps;
       for (let sub = 0; sub < subSteps; sub++) {
-        simTimeRef.current += dt / subSteps;
-        state = stepDaVinci(controls, simTimeRef.current, state);
+        simTimeRef.current += subDt;
+        state = stepDaVinci(controls, simTimeRef.current, state, subDt);
       }
       kernelStateRef.current = state ?? null;
       const s = kernelStateRef.current;
@@ -109,11 +129,15 @@ export function DaVinci3D() {
         ? {
             refusal: { isRefused: false },
             machine: {
-              poseXMeters: s.slaveX,
-              poseYMeters: s.slaveY,
-              headingRad: s.baseYawRad,
-              modeLabel: "teleop slave arm",
-              wheelSpeedMps: 0,
+              poseXMeters: s.tipX,
+              poseYMeters: s.tipY,
+              headingRad: s.wristYawRad,
+              modeLabel: s.isGrasped
+                ? "tool grasped"
+                : s.isColliding
+                  ? "contact resolved"
+                  : "teleop tool clear",
+              wheelSpeedMps: s.tipVelocityMms / 1000,
             },
           }
         : null;
@@ -159,24 +183,57 @@ export function DaVinci3D() {
       const currentState = kernelStateRef.current;
 
       if (currentState) {
-        model.baseGroup.position.set(currentState.slaveX, currentState.slaveY, currentState.slaveZ);
-        model.baseGroup.rotation.y = currentState.baseYawRad;
-        model.baseGroup.rotation.x = currentState.shoulderPitchRad;
-
-        model.updateKinematics(
+        const topology = tryDaVinciTopologyWasmStep(
+          currentState.baseYawRad,
+          currentState.shoulderPitchRad,
           currentState.wristPitchRad,
           currentState.wristYawRad,
           currentState.wristRollRad,
+          Math.max(-1, Math.min(1, currentState.slaveY)),
+          currentState.compatibilitySignalPercent > 0,
+        );
+        model.updateArmPose(
+          topology?.base_yaw_rad ?? currentState.baseYawRad,
+          topology?.carriage_pitch_rad ?? currentState.shoulderPitchRad,
+          currentState.elbowPitchRad,
+          topology?.distal_pitch_rad ?? currentState.wristPitchRad,
+          topology?.distal_yaw_rad ?? currentState.wristYawRad,
+          topology?.tool_roll_rad ?? currentState.wristRollRad,
           currentState.gripRad,
           [currentState.masterX, currentState.masterY + 0.8, currentState.masterZ],
+          [currentState.tipX, currentState.tipY, currentState.tipZ],
+        );
+
+        // Anti-Clipping Physical Object Pose & Contact Gizmo
+        model.setCupPose(
+          currentState.cupX,
+          currentState.cupY,
+          currentState.cupZ,
+          currentState.cupRotY,
+          currentState.isColliding,
+          currentState.isGrasped,
+        );
+
+        model.setContactGizmo(
+          currentState.contactPointX,
+          currentState.contactPointY,
+          currentState.contactPointZ,
+          currentState.contactNormalX,
+          currentState.contactNormalY,
+          currentState.contactNormalZ,
+          currentState.isColliding,
         );
 
         hudCounter += 1;
         if (hudCounter % 10 === 0) {
           setHud({
             scale: p.motionScaleRatio ?? 3,
-            tremorAtten: currentState.compatibilitySignalPercent,
+            compatibilitySignalPercent: currentState.compatibilitySignalPercent,
             tipVelocity: currentState.tipVelocityMms,
+            isColliding: currentState.isColliding,
+            isGrasped: currentState.isGrasped,
+            contactForceN: currentState.contactForceN,
+            obstacleDistanceMm: currentState.obstacleDistanceMm,
           });
         }
       }
@@ -316,7 +373,27 @@ export function DaVinci3D() {
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Compatibility signal:</span>
               <span className="font-bold text-purple-800 dark:text-purple-400">
-                {hud.tremorAtten > 0 ? "PRESENT" : "ABSENT"}
+                {hud.compatibilitySignalPercent > 0 ? "PRESENT" : "ABSENT"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2 border-t border-parchment-200 dark:border-ink-800/80 pt-1">
+              <span className="text-ink-600 dark:text-ink-400">Collision State:</span>
+              <span
+                className={`font-bold ${
+                  hud.isGrasped
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : hud.isColliding
+                      ? "text-rose-600 dark:text-rose-400 animate-pulse"
+                      : "text-ink-500 dark:text-ink-400"
+                }`}
+              >
+                {hud.isGrasped ? "GRASPED" : hud.isColliding ? "CONTACT (RESOLVED)" : "CLEAR"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Contact Force:</span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {hud.contactForceN > 0 ? `${hud.contactForceN.toFixed(1)} N` : "0.0 N"}
               </span>
             </div>
           </div>
@@ -325,13 +402,23 @@ export function DaVinci3D() {
         <StudioKernelChips
           visible={showUiOverlay}
           side="right"
-          title="Da Vinci Tool Interface Data"
+          title="Da Vinci Tool Interface & Contact Telemetry"
           chips={[
+            {
+              label: "Topology",
+              value: topologyKernelSource === "wasm" ? "fs-mbd WASM" : "host fallback",
+              tone: topologyKernelSource === "wasm" ? "ok" : "warn",
+            },
             { label: "Illustrative offset", value: `${hud.scale}` },
             {
-              label: "Compatibility signal",
-              value: hud.tremorAtten > 0 ? "Present" : "Absent",
-              tone: hud.tremorAtten > 0 ? "ok" : "warn",
+              label: "Collision",
+              value: hud.isGrasped ? "Grasped" : hud.isColliding ? "Contact" : "Clear",
+              tone: hud.isGrasped ? "ok" : hud.isColliding ? "warn" : "ok",
+            },
+            {
+              label: "Force",
+              value: hud.contactForceN > 0 ? hud.contactForceN.toFixed(1) : "0.0",
+              unit: "N",
             },
             { label: "Tip Speed", value: hud.tipVelocity.toFixed(1), unit: "mm/s" },
           ]}
@@ -393,11 +480,11 @@ export function DaVinci3D() {
           className="mt-2"
         />
 
-        <PortHamiltonianEnergyStrip
-          patentId="us-6331181-davinci"
-          params={params}
-          className="mt-3"
-        />
+        <p className="mt-3 text-[10px] text-ink-500 dark:text-ink-400">
+          Source boundary: linkage scale, trajectory, contact stiffness, and cup mechanics are
+          illustrative. The grant supplies no motor-power or friction data, so no SI energy strip is
+          shown.
+        </p>
       </div>
     </div>
   );

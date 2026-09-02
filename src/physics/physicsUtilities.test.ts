@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { blackbodyRgb } from "./blackbody";
-import { energyChannelsFor } from "./energyChannels";
+import { ENERGY_CHANNEL_OMISSION_REASONS, energyChannelsFor } from "./energyChannels";
 import { canonicalizeParam, expandParamAliases } from "./paramAliases";
 import { formatSones, sonesFromDbSpl } from "./psycho";
 import { qtyDimension } from "./qty";
@@ -72,24 +72,42 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(edisonChannels[1].tone).toBe("loss");
 
     const goddardChannels = energyChannelsFor("us-1102653-goddard-rocket", {});
-    expect(goddardChannels.length).toBe(3);
-    expect(goddardChannels[0]?.name).toBe("Chem. enthalpy");
-    expect(goddardChannels[1]?.name).toBe("Exhaust KE");
-    expect(goddardChannels[2]?.name).toBe("Heat leak");
-    expect(energyChannelsFor("us-2981877-noyce-ic", {})).toEqual([]);
+    expect(goddardChannels).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-1102653-goddard-rocket"]).toContain("no burn rate");
+    expect(energyChannelsFor("us-2981877-noyce-ic", {})[0]?.name).toBe("DC Power Supply");
     expect(energyChannelsFor("us-808897-carrier-air-conditioner", {})[0]?.name).toBe("Fan work");
-    expect(energyChannelsFor("us-608969-parsons-turbine", {})[0]?.name).toBe("Shaft");
-    expect(energyChannelsFor("us-3858232-boyle-smith-ccd", {})).toEqual([]);
+    expect(energyChannelsFor("us-608969-parsons-turbine", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-608969-parsons-turbine"]).toContain(
+      "marine piping combinations",
+    );
+    expect(energyChannelsFor("us-3858232-boyle-smith-ccd", {})[0]?.name).toBe("Clock Gate Drive");
     expect(energyChannelsFor("us-3671542-kwolek-kevlar", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-3671542-kwolek-kevlar"]).toContain(
+      "anisotropic liquid-crystalline polyamide dopes",
+    );
     expect(energyChannelsFor("us-586193-marconi-radio", {})[0]?.name).toBe("Spark RF");
     expect(energyChannelsFor("us-2292387-lamarr-frequency-hopping", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-2292387-lamarr-frequency-hopping"]).toContain(
+      "slotted record strips",
+    );
     expect(energyChannelsFor("us-2708656-fermi-reactor", {})[0]?.name).toBe("Fission heat");
-    expect(energyChannelsFor("us-313224-mergenthaler-linotype", {})).toEqual([]);
-    expect(energyChannelsFor("us-395781-hollerith-tabulating", {})).toEqual([]);
-    expect(energyChannelsFor("us-542846-diesel-engine", {})).toEqual([]);
-    expect(energyChannelsFor("us-3541541-engelbart-mouse", {})).toEqual([]);
-    expect(energyChannelsFor("us-381968-tesla-motor", {})).toEqual([]);
+    expect(energyChannelsFor("us-313224-mergenthaler-linotype", {})[0]?.name).toBe(
+      "Crucible Heating & Main Cam Drive",
+    );
+    expect(energyChannelsFor("us-395781-hollerith-tabulating", {})[0]?.name).toBe(
+      "Battery Solenoid Pulse",
+    );
+    expect(energyChannelsFor("us-542846-diesel-engine", {})[0]?.name).toBe(
+      "Injected Heavy Oil Combustion",
+    );
+    expect(energyChannelsFor("us-3541541-engelbart-mouse", {})[0]?.name).toBe(
+      "Hand Desktop Drag Kinetic Input",
+    );
+    expect(energyChannelsFor("us-381968-tesla-motor", {})[0]?.name).toBe(
+      "Polyphase AC Stator Input",
+    );
     expect(energyChannelsFor("us-593138-tesla-coil", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-593138-tesla-coil"]).toContain("no capacitance");
     const davenport = energyChannelsFor("us-132-davenport-electric-motor", {});
     expect(davenport.map((c) => c.name)).toEqual(["Electrical", "Shaft", "Copper"]);
     expect(davenport[1].watts + davenport[2].watts).toBeCloseTo(davenport[0].watts, 1);
@@ -98,17 +116,34 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
       tone: "in",
     });
     expect(energyChannelsFor("us-347140-thomson-welding", {})[0]?.watts).toBeGreaterThan(0);
-    expect(energyChannelsFor("us-194047-otto-engine", {})[0]?.name).toBe("Brake");
+    expect(energyChannelsFor("us-194047-otto-engine", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-194047-otto-engine"]).toContain(
+      "no cylinder dimensions",
+    );
     expect(energyChannelsFor("us-6162-corliss-steam-engine", {})[0]?.name).toBe("Indicated");
     expect(energyChannelsFor("us-361931-daimler-engine", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-361931-daimler-engine"]).toContain(
+      "no speed, torque",
+    );
+    expect(energyChannelsFor("us-6331181-davinci", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-6331181-davinci"]).toContain("no motor torque");
     expect(energyChannelsFor("us-233692-pelton-water-wheel", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-233692-pelton-water-wheel"]).toContain(
+      "bucket geometry",
+    );
     expect(energyChannelsFor("us-470918-reno-escalator", {})[0]?.name).toBe("Motor");
-    expect(energyChannelsFor("us-319596-maxim-machine-gun", {})[0]).toMatchObject({
-      name: "Jacket heat",
-      tone: "loss",
-    });
-    expect(energyChannelsFor("us-319596-maxim-machine-gun", {})[0]?.watts).toBeGreaterThan(0);
-    expect(energyChannelsFor("us-588-ericsson-propeller", {})[0]?.name).toBe("Thrust · v");
+    expect(energyChannelsFor("us-319596-maxim-machine-gun", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-319596-maxim-machine-gun"]).toContain(
+      "no continuous firing rate",
+    );
+    expect(energyChannelsFor("us-588-ericsson-propeller", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-588-ericsson-propeller"]).toContain(
+      "no measured ship thrust",
+    );
+    expect(energyChannelsFor("us-36836-gatling-gun", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-36836-gatling-gun"]).toContain(
+      "no measured operator torque",
+    );
     expect(energyChannelsFor("us-400766-hall-aluminium", {})[0]).toMatchObject({
       name: "Cell",
       tone: "in",
@@ -119,6 +154,9 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
       "Audio",
     ]);
     expect(energyChannelsFor("us-307031-edison-indicator", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-307031-edison-indicator"]).toContain(
+      "prints no filament wattage",
+    );
     expect(energyChannelsFor("gb-913-watt-separate-condenser", {}).map((c) => c.name)).toEqual([
       "Furnace",
       "Indicated",

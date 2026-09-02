@@ -89,7 +89,7 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
 
   // --- 1. MATERIALS ---
   const castIron = new THREE.MeshStandardMaterial({
-    map: castIronTex || undefined,
+    ...(castIronTex ? { map: castIronTex } : {}),
     transparent: true,
     opacity: 1.0,
     color: 0x243242,

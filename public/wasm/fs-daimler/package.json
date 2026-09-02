@@ -1,0 +1,15 @@
+{
+  "name": "fs-daimler-wasm",
+  "type": "module",
+  "version": "0.0.1",
+  "files": [
+    "fs_daimler_wasm_bg.wasm",
+    "fs_daimler_wasm.js",
+    "fs_daimler_wasm.d.ts"
+  ],
+  "main": "fs_daimler_wasm.js",
+  "types": "fs_daimler_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

@@ -12,15 +12,17 @@ import {
 } from "./dieselEngineEdition";
 import {
   archivalEditionForPublication,
+  evaluateArchivalPublicationState,
   isArchivalEditionExplicitlyWithheld,
 } from "./publicationApproval";
 
 describe("US 542,846 manual source edition", () => {
-  test("pins the actual ten-page facsimile and serves the bound source face", () => {
-    // Owner recalibration (2026-08-22): complete original texts publish even
-    // with minor imperfections; holds are reserved for fabricated content.
+  test("pins the actual ten-page facsimile while retaining its source-face hold", () => {
     expect(isArchivalEditionExplicitlyWithheld(dieselEnginePatent.id)).toBe(false);
-    expect(archivalEditionForPublication(dieselEnginePatent)).toBe(dieselEngineArchivalEdition);
+    expect(archivalEditionForPublication(dieselEnginePatent)).toBeUndefined();
+    expect(evaluateArchivalPublicationState(dieselEnginePatent).reasonCode).toBe(
+      "AUDIT_FACSIMILE_REVIEW_PENDING",
+    );
     expect(dieselEnginePatent.archivalEdition).toBe(dieselEngineArchivalEdition);
     expect(dieselEnginePatent.originalTextAsset).toBeDefined();
     expect(dieselEnginePatent.title).toBe("Method of and Apparatus for Converting Heat into Work");
@@ -287,5 +289,28 @@ describe("US 542,846 manual source edition", () => {
       expect(dieselEngineParallelReadings[index]?.join(" ").trim().length).toBeGreaterThan(80);
       expect(dieselEngineParallelReadings[index]?.join(" ")).not.toContain("source paragraph");
     }
+  });
+
+  test("provides valid provenance classifications for all Diesel controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-542846-diesel-engine"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("enforces facsimile review pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(dieselEnginePatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
   });
 });

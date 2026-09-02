@@ -1,6 +1,16 @@
 import type { Patent } from "@/types/patent";
 import { goodyearRubberArchivalEdition } from "../editions/goodyearRubberEdition";
 
+function manualClaimText(number: number): string {
+  const block = goodyearRubberArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`US 3,633 is missing claim ${number} in its archival edition.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const goodyearRubberPatent: Patent = {
   id: "us-3633-goodyear-rubber",
   patentNumber: "US 3,633",
@@ -10,7 +20,7 @@ export const goodyearRubberPatent: Patent = {
   inventors: ["Charles Goodyear"],
   inventorLocation: "New York, New York",
   grantDate: "1844-06-15",
-  filingDate: "1844-01-30",
+  filingDate: null,
   era: "Industrial Dawn (1840–1870)",
   category: "materials",
   categoryLabel: "Materials Science & Chemical Engineering",
@@ -124,8 +134,7 @@ My principal improvement consists in the combining of sulphur and white lead wit
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "The combining of the said gum with sulphur and with white lead, so as to form a triple compound, either in the proportions herein named or in any other within such limits as will produce a like result; and I will here remark that although I have obtained the best results from the carbonate of lead, other salts of lead or the oxides of that metal may be substituted therefor, and will produce a good effect. I therefore under this head claim the employment of either of the oxides or salts of lead in the place of the white lead in the above-named compound.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "Claim 1 covers the three-part compound: the gum, sulphur, and white lead. It says the stated proportions are examples, permits other proportions that produce a like result, and expressly extends the lead component to other lead salts or oxides. The claim does not state a catalyst role or a molecular reaction.",
       keyInnovations: [
@@ -139,8 +148,7 @@ My principal improvement consists in the combining of sulphur and white lead wit
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "The formation of a fabric of the india-rubber by interposing layers of cotton-batting between those of the gum, in the manner and for the purpose above described.",
+      originalText: manualClaimText(2),
       plainEnglish:
         "Claim 2 covers the stated layered fabric: cotton-batting is placed between layers of gum in the manner the specification describes. It is a claim to that interposed batting construction, not a claim to every rubber-coated or waterproof textile.",
       keyInnovations: [
@@ -155,8 +163,7 @@ My principal improvement consists in the combining of sulphur and white lead wit
       number: 3,
       isIndependent: false,
       dependsOn: [1, 2],
-      originalText:
-        "In combination with the foregoing, the process of exposing the india-rubber fabric to the action of a high degree of heat, such as is herein specified, by means of which my improved compound is effectually changed in its properties so as to protect it from decomposition or deterioration by the action of those agents which have heretofore been found to produce that effect upon india-rubber goods.",
+      originalText: manualClaimText(3),
       plainEnglish:
         "With the preceding compound and fabric, this claim adds the specified high-heat exposure. The specification permits 212°F to 350°F, says the best effect approaches 270°F, and warns that exposure above 270°F must be brief.",
       keyInnovations: [
@@ -181,7 +188,19 @@ My principal improvement consists in the combining of sulphur and white lead wit
     ],
     breakthroughInsight:
       "Goodyear's stated move is a compound of India-rubber, sulphur, and white lead exposed to regulated heat. His preferred recipe is 25 parts India-rubber, 5 sulphur, and 7 white lead; the claimed method also uses cotton-wool interlayers and an oven or heated cylinder.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Horace H. Day & Thomas Hancock",
+        rivalClaim:
+          "British manufacturer Thomas Hancock reverse-engineered Goodyear's sulfur samples in London and secured a British patent before Goodyear filed abroad. In the US, Horace Day claimed earlier manufacture rights.",
+        conflictDetails:
+          "Goodyear spent over $50,000 defending his discovery in dozens of federal lawsuits, culminating in the historic 1852 Trenton, New Jersey trial (Goodyear v. Day).",
+        resolution:
+          "Goodyear retained legendary statesman and orator Daniel Webster, who delivered a world-famous two-day closing argument celebrating Goodyear's ten-year heroic struggle in poverty to master the chemical vulcanization of rubber.",
+        legalOutcome:
+          "Supreme Court Justice Robert C. Grier ruled decisively in Goodyear's favor, issuing a permanent injunction against Day and confirming Goodyear as the sole inventor of sulfur heat-vulcanized rubber.",
+      },
+    ],
     civilizationalImpact:
       "The grant documents a reproducible approach to compounded, heat-treated India-rubber fabric: a formulation, fabrication routes, a laminate construction, a temperature range, and three claims. Those concrete process details are the historically useful record preserved here.",
   },

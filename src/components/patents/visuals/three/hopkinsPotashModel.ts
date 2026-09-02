@@ -174,8 +174,8 @@ export function buildHopkinsPotashModel(): HopkinsPotashModelResult {
   });
 
   const brickMasonry = new THREE.MeshStandardMaterial({
+    ...(brickTex ? { map: brickTex } : {}),
     color: 0xa8432e,
-    map: brickTex || undefined,
     roughness: 0.85,
     metalness: 0.08,
   });
@@ -194,8 +194,8 @@ export function buildHopkinsPotashModel(): HopkinsPotashModelResult {
   });
 
   const oakWood = new THREE.MeshStandardMaterial({
+    ...(oakTex ? { map: oakTex } : {}),
     color: 0x85522e,
-    map: oakTex || undefined,
     roughness: 0.75,
     metalness: 0.05,
   });

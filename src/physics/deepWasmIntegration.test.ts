@@ -127,13 +127,14 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       expect(sens).toBeNull();
     });
 
-    test("computes Otto engine Carnot thermal efficiency sensitivity ∂η/∂r", () => {
+    test("labels the declared modern Otto-cycle sensitivity without calling it source telemetry", () => {
       const sens = computeParameterSensitivity("us-194047-otto-engine", "compressionRatio", {
         compressionRatio: 8.0,
       });
       expect(sens).not.toBeNull();
       expect(sens?.derivativeValue).toBeGreaterThan(1.0);
       expect(sens?.derivativeUnit).toContain("% / ratio");
+      expect(sens?.interpretation).toContain("not a measured efficiency");
     });
   });
 
@@ -167,6 +168,18 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       expect(ledger.isConservative).toBe(true);
     });
 
+    test("digests Edison's closed steady power flow as real host state", () => {
+      const ledger = computePortHamiltonianEnergy("us-223898-edison-lightbulb", {
+        voltage: 110,
+        filamentLength: 22,
+      });
+      expect(ledger.energy.totalHamiltonianJoules).toBe(0);
+      expect(ledger.inputPowerWatts).toBeGreaterThan(0);
+      expect(ledger.dissipatedPowerWatts).toBe(ledger.inputPowerWatts);
+      expect(ledger.stateDigest).toMatch(/^host:[0-9a-f]{8}$/);
+      expect(ledger.stateDigest).not.toBe("host:00000000");
+    });
+
     test("computes steam enthalpy power balance for Watt separate condenser", () => {
       const ledger = computePortHamiltonianEnergy("gb-913-watt-separate-condenser", {
         boilerPressurePsi: 14.7,
@@ -183,6 +196,23 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
         waterHeadM: 150.0,
         flowRateLps: 45.0,
         wheelRpm: 320.0,
+      });
+      expect(ledger.energy).toEqual({
+        kineticJoules: 0,
+        potentialJoules: 0,
+        electromagneticJoules: 0,
+        thermalJoules: 0,
+        totalHamiltonianJoules: 0,
+      });
+      expect(ledger.inputPowerWatts).toBe(0);
+      expect(ledger.dissipatedPowerWatts).toBe(0);
+      expect(ledger.isConservative).toBe(true);
+    });
+
+    test("does not fabricate an Otto energy ledger from unprinted operating data", () => {
+      const ledger = computePortHamiltonianEnergy("us-194047-otto-engine", {
+        rpm: 180,
+        compressionRatio: 8,
       });
       expect(ledger.energy).toEqual({
         kineticJoules: 0,

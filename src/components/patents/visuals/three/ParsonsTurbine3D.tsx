@@ -2,6 +2,7 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Wind } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
+import { ensureGenericWasm } from "@/physics/genericWasm";
 import { type ParsonsRoutingMode, stepParsonsMarine } from "@/physics/parsonsMarineKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -51,6 +52,11 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
   const [showSteamFlow, setShowSteamFlow] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+
+  useEffect(() => {
+    void ensureGenericWasm();
+  }, []);
+
   const live = useLiveSimParams({
     routing,
     reversing,
@@ -284,6 +290,20 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
             </div>
           </div>
         )}
+
+        <StudioKernelChips
+          visible={showUiOverlay}
+          side="right"
+          title="Parsons marine routing"
+          chips={[
+            { label: "Topology", value: marine.routing },
+            { label: "Banks", value: String(marine.activeTurbines.length) },
+            { label: "Shafts", value: String(marine.activeShafts) },
+            { label: "Direction", value: marine.directionLabel },
+            { label: "Flow edges", value: String(marine.routeEdges.length) },
+            { label: "Control", value: "valves + pipes" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -326,20 +346,6 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
           className="mt-3"
         />
       </div>
-
-      <StudioKernelChips
-        visible={showUiOverlay}
-        side="right"
-        title="Parsons marine routing"
-        chips={[
-          { label: "Topology", value: marine.routing },
-          { label: "Banks", value: String(marine.activeTurbines.length) },
-          { label: "Shafts", value: String(marine.activeShafts) },
-          { label: "Direction", value: marine.directionLabel },
-          { label: "Flow edges", value: String(marine.routeEdges.length) },
-          { label: "Control", value: "valves + pipes" },
-        ]}
-      />
     </div>
   );
 });

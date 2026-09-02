@@ -104,4 +104,31 @@ describe("US 942,699 Leo Hendrik Baekeland Bakelite visual & polymer mechanics b
     expect(model.materials.bakeliteResin.color.getHex()).toBe(0x5c2b0e); // C-stage unfoamed color
     expect(model.nodes.molecularNetworkGroup.rotation.y).toBe(0);
   });
+
+  test("derives all printed claims dynamically from edition without duplicate strings", () => {
+    const { baekelandBakelitePatent } = require("@/data/patents/baekeland-bakelite");
+    const {
+      baekelandBakeliteArchivalEdition,
+    } = require("@/data/editions/baekelandBakeliteEdition");
+    expect(baekelandBakelitePatent.claims.length).toBe(5);
+    const editionClaims = baekelandBakeliteArchivalEdition.blocks.filter(
+      (b: any) => b.kind === "claim",
+    );
+    expect(editionClaims.length).toBe(5);
+    for (let i = 0; i < 5; i++) {
+      const editionBlock = editionClaims[i];
+      expect(editionBlock).toBeDefined();
+      const expectedText = editionBlock.inlines.map((inl: any) => inl.text).join("");
+      expect(baekelandBakelitePatent.claims[i].originalText).toBe(expectedText);
+    }
+  });
+
+  test("registers explicit energy channel omission reason", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-942699-baekeland-bakelite"]).toBeDefined();
+    expect(energyChannelsFor("us-942699-baekeland-bakelite", {})).toEqual([]);
+  });
 });

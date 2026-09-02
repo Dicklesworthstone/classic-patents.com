@@ -232,7 +232,19 @@ An electrical shutter is then interposed between said sensitive plate and the an
     ],
     breakthroughInsight:
       "The disclosed solution focuses the scene onto a photo-electric plate, turns its discharge into an electrical image, moves that image electrostatically past a fixed aperture, and reconstructs the resulting light-current signal with synchronized optical apparatus.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Vladimir Zworykin & Radio Corporation of America (RCA / David Sarnoff)",
+        rivalClaim:
+          "Zworykin filed a patent application for the Iconoscope in 1923, and RCA claimed that Farnsworth's 1927 Image Dissector infringed Zworykin's earlier priority date.",
+        conflictDetails:
+          "RCA maintained a strict policy of never paying patent royalties, offering Farnsworth $100,000 for his portfolio. Farnsworth refused, leading to USPTO Interference No. 64,027 (Farnsworth v. Zworykin). Zworykin's 1923 tube had never successfully transmitted an image without burning out, whereas Farnsworth had transmitted lines and dollar signs in September 1927.",
+        resolution:
+          "Justin Tolman, Farnsworth's Rigby High School chemistry teacher, testified and produced the preserved 1922 blackboard sketch of electron beam raster scanning that 15-year-old Philo had drawn for him.",
+        legalOutcome:
+          "The USPTO Patent Office examiner and the Court of Customs and Patent Appeals awarded priority of Claim 15 (continuous optical electron emission into an anode aperture) to Farnsworth in 1935. In 1939, RCA conceded and signed its first-ever patent licensing agreement to pay continuing royalties to an outside inventor.",
+      },
+    ],
     civilizationalImpact:
       "The document is an early, concrete system design for serial electrical analysis and synchronized optical reconstruction of an image. Its source-specific contribution is clearer when separated from later television hardware and broadcast conventions.",
     funFact:

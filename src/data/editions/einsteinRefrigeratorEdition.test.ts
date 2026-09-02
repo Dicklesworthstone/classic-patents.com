@@ -63,6 +63,7 @@ describe("einsteinRefrigeratorArchivalEdition", () => {
       totalClaims: 5,
       independentClaims: 5,
     });
+    expect(einsteinRefrigeratorPatent.stats?.impactScore).toBeUndefined();
     expect(einsteinRefrigeratorPatent.claims.map((claim) => claim.originalText)).toEqual(
       einsteinRefrigeratorArchivalEdition.blocks
         .filter((block) => block.kind === "claim")
@@ -73,6 +74,19 @@ describe("einsteinRefrigeratorArchivalEdition", () => {
     );
     expect(JSON.stringify(einsteinRefrigeratorPatent)).not.toContain("240,436");
     expect(JSON.stringify(einsteinRefrigeratorPatent)).not.toContain("Magnetohydrodynamic");
+  });
+
+  test("provides valid provenance classifications for all Einstein controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-1781541-einstein-refrigerator"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({ heatInput: 220, totalPressure: 15 });
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
   });
 
   test("pins every published source block to the reviewed ledger and PDF", () => {

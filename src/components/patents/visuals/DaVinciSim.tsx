@@ -2,7 +2,13 @@
 
 import { Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
-import { stepDaVinci } from "@/physics/daVinciKernel";
+import {
+  DA_VINCI_CUP_HEIGHT_M,
+  DA_VINCI_CUP_RADIUS_M,
+  DA_VINCI_TABLE_SURFACE_Y_M,
+  readDaVinciControls,
+  stepDaVinci,
+} from "@/physics/daVinciKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -32,6 +38,22 @@ export function DaVinciSim({
   const gripAngleDeg = params.gripAngleDeg ?? 30;
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const isPlayingRef = useRef(isPlaying);
+  const controlsRef = useRef(
+    readDaVinciControls({
+      motionScaleRatio: motionScale,
+      tremorFilterEnabled: tremorFilter,
+      masterInputSpeedMps: inputSpeed,
+      gripAngleDeg,
+    }),
+  );
+  isPlayingRef.current = isPlaying;
+  controlsRef.current = readDaVinciControls({
+    motionScaleRatio: motionScale,
+    tremorFilterEnabled: tremorFilter,
+    masterInputSpeedMps: inputSpeed,
+    gripAngleDeg,
+  });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -42,32 +64,17 @@ export function DaVinciSim({
     let animId: number;
     let timeSec = 0;
     const clock = createStudioClock();
-    let state = stepDaVinci(
-      {
-        motionScaleRatio: motionScale,
-        tremorFilterEnabled: tremorFilter,
-        masterInputSpeedMps: inputSpeed,
-        gripAngleDeg,
-      },
-      0,
-    );
+    let state = stepDaVinci(controlsRef.current, 0);
 
     const render = (now: number) => {
       animId = requestAnimationFrame(render);
+      const { dt } = clock.pump(now);
       if (!onscreenRef.current) return;
-      if (isPlaying) {
-        const { simTimeSec } = clock.pump(now);
-        timeSec = simTimeSec;
-        state = stepDaVinci(
-          {
-            motionScaleRatio: motionScale,
-            tremorFilterEnabled: tremorFilter,
-            masterInputSpeedMps: inputSpeed,
-            gripAngleDeg,
-          },
-          timeSec,
-          state,
-        );
+      const frameControls = controlsRef.current;
+      if (isPlayingRef.current) {
+        const stepDt = dt > 0 ? dt : 1 / 60;
+        timeSec += stepDt;
+        state = stepDaVinci(frameControls, timeSec, state, stepDt);
       }
 
       const w = canvas.width;
@@ -100,7 +107,7 @@ export function DaVinciSim({
       ctx.font = "11px monospace";
       ctx.fillStyle = "#94a3b8";
       ctx.fillText(
-        `US 6,331,181 • Tool-interface data path • Compatibility: ${tremorFilter ? "PRESENT" : "ABSENT"} • Illustrative offset: ${motionScale.toFixed(1)}`,
+        `US 6,331,181 • Tool-interface data path • Compatibility: ${frameControls.tremorFilterEnabled ? "PRESENT" : "ABSENT"} • Illustrative offset: ${frameControls.motionScaleRatio.toFixed(1)}`,
         20,
         42,
       );
@@ -201,11 +208,17 @@ export function DaVinciSim({
       ctx.font = "9px monospace";
       ctx.fillText("TROCAR CANNULA (8mm Port Fulcrum)", sX + 25, trocarY - 10);
 
-      // Slave Instrument Shaft passing through Trocar
-      const sTipX =
-        trocarX + state.slaveX * 240 * (1.0 / (motionScale > 1 ? motionScale * 0.35 : 1));
-      const sTipY =
-        trocarY + 110 + state.slaveY * 240 * (1.0 / (motionScale > 1 ? motionScale * 0.35 : 1));
+      // One world-to-canvas projection for both the resolved tool tip and the
+      // cup. This keeps the picture on the same coordinates as the kernel.
+      const patientScalePxPerM = 220;
+      const patientTableCanvasY = sY + 220;
+      const projectPatientWorld = (worldX: number, worldY: number) => ({
+        x: trocarX + worldX * patientScalePxPerM,
+        y: patientTableCanvasY - (worldY - DA_VINCI_TABLE_SURFACE_Y_M) * patientScalePxPerM,
+      });
+      const resolvedTip = projectPatientWorld(state.tipX, state.tipY);
+      const sTipX = resolvedTip.x;
+      const sTipY = resolvedTip.y;
 
       // Shaft Line
       ctx.strokeStyle = "#64748b";
@@ -241,8 +254,8 @@ export function DaVinciSim({
       // Micro-Forceps Jaws (Grip Angle)
       const halfGrip = state.gripRad / 2;
       const jawLen = 14;
-      ctx.strokeStyle = "#10b981";
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = state.isGrasped ? "#34d399" : state.isColliding ? "#f43f5e" : "#10b981";
+      ctx.lineWidth = 2.5;
       ctx.beginPath();
       ctx.moveTo(sTipX, sTipY - 6);
       ctx.lineTo(sTipX - Math.sin(halfGrip) * jawLen, sTipY - 6 + Math.cos(halfGrip) * jawLen);
@@ -250,10 +263,88 @@ export function DaVinciSim({
       ctx.lineTo(sTipX + Math.sin(halfGrip) * jawLen, sTipY - 6 + Math.cos(halfGrip) * jawLen);
       ctx.stroke();
 
+      // ========================================================
+      // 2B. COFFEE CUP OBSTACLE & ANTI-CLIPPING BOUNDARY
+      // ========================================================
+      const cupCenter = projectPatientWorld(state.cupX, state.cupY + DA_VINCI_CUP_HEIGHT_M / 2);
+      const cupCanvasX = cupCenter.x;
+      const cupCanvasY = cupCenter.y;
+      const cupCanvasR = DA_VINCI_CUP_RADIUS_M * patientScalePxPerM;
+      const cupCanvasH = DA_VINCI_CUP_HEIGHT_M * patientScalePxPerM;
+
+      // Cup Shadow
+      ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+      ctx.beginPath();
+      ctx.ellipse(cupCanvasX, cupCanvasY + cupCanvasH / 2, cupCanvasR + 2, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Cup Body
+      ctx.fillStyle = state.isGrasped
+        ? "rgba(16, 185, 129, 0.35)"
+        : state.isCupContact
+          ? "rgba(244, 63, 94, 0.35)"
+          : "rgba(248, 250, 252, 0.2)";
+      ctx.strokeStyle = state.isGrasped ? "#10b981" : state.isCupContact ? "#ef4444" : "#e2e8f0";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(
+        cupCanvasX - cupCanvasR,
+        cupCanvasY - cupCanvasH / 2,
+        cupCanvasR * 2,
+        cupCanvasH,
+        4,
+      );
+      ctx.fill();
+      ctx.stroke();
+
+      // Cup Handle
+      ctx.strokeStyle = state.isCupContact ? "#ef4444" : "#cbd5e1";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cupCanvasX + cupCanvasR + 4, cupCanvasY, 7, -Math.PI / 2, Math.PI / 2);
+      ctx.stroke();
+
+      // Coffee Liquid Top
+      ctx.fillStyle = "#3b1d11";
+      ctx.beginPath();
+      ctx.ellipse(
+        cupCanvasX,
+        cupCanvasY - cupCanvasH / 2 + 2,
+        cupCanvasR - 2,
+        3,
+        0,
+        0,
+        Math.PI * 2,
+      );
+      ctx.fill();
+
+      // Cup Label & State
+      ctx.font = "8px monospace";
+      ctx.fillStyle = state.isGrasped ? "#34d399" : state.isCupContact ? "#f87171" : "#94a3b8";
+      ctx.fillText(
+        state.isGrasped
+          ? "CUP (GRASPED)"
+          : state.isCupContact
+            ? `CUP HIT (${state.contactForceN.toFixed(1)}N)`
+            : "COFFEE CUP",
+        cupCanvasX - 22,
+        cupCanvasY + cupCanvasH / 2 + 12,
+      );
+
+      // Contact Spark / Normal line if colliding
+      if (state.isColliding) {
+        const contactPoint = projectPatientWorld(state.contactPointX, state.contactPointY);
+        ctx.strokeStyle = "#fbbf24";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(contactPoint.x, contactPoint.y, 5, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
       ctx.fillStyle = "#6ee7b7";
       ctx.font = "10px monospace";
       ctx.fillText(
-        `Tip Velocity (illustrative): ${state.tipVelocityMms.toFixed(1)} mm/s  Compatibility: ${tremorFilter ? "signal present" : "no signal"}`,
+        `Tip: ${state.tipVelocityMms.toFixed(1)} mm/s | Collision: ${state.isGrasped ? "GRASPED" : state.isColliding ? "CONTACT (RESOLVED)" : "CLEAR"}`,
         sX + 12,
         sY + sH - 14,
       );
@@ -275,7 +366,7 @@ export function DaVinciSim({
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [motionScale, tremorFilter, inputSpeed, gripAngleDeg, isPlaying, onscreenRef.current]);
+  }, [onscreenRef]);
 
   return (
     <div

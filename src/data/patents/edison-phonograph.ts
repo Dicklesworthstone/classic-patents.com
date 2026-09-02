@@ -293,7 +293,19 @@ The invention consists in arranging a plate, diaphragm, or other flexible body c
     ],
     breakthroughInsight:
       "The document keeps recording and reproduction in one mechanical chain: a sound-driven diaphragm marks a yielding moving surface, and a second point and diaphragm recover motion from those marks. It also expressly tests that idea against several media and geometries instead of limiting it to the illustrated foil cylinder.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Alexander Graham Bell, Chichester Bell, & Charles Sumner Tainter (Graphophone)",
+        rivalClaim:
+          "The Volta Laboratory associates (Bell & Tainter) patented the wax-coated cylinder Graphophone in 1886, claiming Edison's tinfoil indenting phonograph was an uncommercial toy.",
+        conflictDetails:
+          "Bell & Tainter offered Edison a partnership to combine their wax engraving patents with his base phonograph. Edison refused, declaring they had appropriated his concept, and spent $2 million developing the Improved Phonograph with solid wax cylinders.",
+        resolution:
+          "Financier Jesse H. Lippincott bought commercial rights to both Edison's Phonograph and the Bell-Tainter Graphophone in 1888, consolidating them under the North American Phonograph Company.",
+        legalOutcome:
+          "Edison regained sole control after Lippincott's bankruptcy in 1894, establishing the National Phonograph Company and dominating the early sound recording industry with his foundational 1878 priority.",
+      },
+    ],
     civilizationalImpact:
       "US 200,521 is a compact early statement of mechanical signal storage: transform an acoustic time series into a physical trace, preserve it, and use the trace to recover motion. Its plate, strip, thread, and ink alternatives make that principle broader than the cylinder pictured in Figs. 1 and 2.",
     funFact:

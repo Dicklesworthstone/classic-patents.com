@@ -3,6 +3,7 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -47,6 +48,37 @@ export function LamarrFrequencyHopping3D() {
   const txRow = "ABCDEFG"[recordPosition] ?? "A";
   const receiverTuned = recordPosition >= 3;
   const lampOn = !receiverTuned;
+
+  useFrankenSimPhysics("us-2292387-lamarr-frequency-hopping", {
+    domain: "electromagnetics_flux",
+    timestampMs: 0,
+    timeStepDt: 1 / 60,
+    refusal: { isRefused: false },
+    em: {
+      frequencyHz: 0,
+      magneticFluxDensityTesla: 0,
+      electricFieldVpm: 0,
+      phaseAngleRad: 0,
+      inductanceHenry: 0,
+      capacitanceFarad: 0,
+      currentAmperes: 0,
+      voltageVolts: 0,
+      powerFactor: 0,
+      efficiencyPct: 0,
+      synchronousRpm: 0,
+      slipFraction: 0,
+      rotorRpm: 0,
+      shaftPowerWatts: 0,
+      electricalInputWatts: 0,
+    },
+    machine: {
+      poseXMeters: recordPosition,
+      poseYMeters: 0,
+      headingRad: 0,
+      modeLabel: receiverTuned ? `matched row ${txRow}` : `unmatched row ${txRow}`,
+      wheelSpeedMps: 0,
+    },
+  });
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);

@@ -1,88 +1,9 @@
 import type { Patent } from "@/types/patent";
-import {
-  arkwrightWaterFrameArchivalEdition,
-  manualArkwrightClaimText,
-} from "../editions/arkwrightWaterFrameEdition";
-
-const arkwrightFigureCallouts = {
-  "1": [
-    {
-      id: "aw-drum-a",
-      figureRef: "Fig. 1",
-      label: "Great Wheel / Drum (A)",
-      element: "A",
-      description: "Great wooden driving drum transmitting mechanical water power to the frame.",
-      x: 49,
-      y: 88,
-    },
-    {
-      id: "aw-shaft-b",
-      figureRef: "Fig. 1",
-      label: "Driving Shaft & Clutch (B)",
-      element: "B",
-      description:
-        "Horizontal iron driving shaft with individual spindle whorl bands and disengaging levers.",
-      x: 21,
-      y: 78,
-    },
-    {
-      id: "aw-rollers-c",
-      figureRef: "Fig. 1",
-      label: "Differential Drawing Rollers (C)",
-      element: "C",
-      description:
-        "Accelerating pairs of leather-covered top rollers and fluted brass/iron lower cylinders.",
-      x: 35,
-      y: 19,
-    },
-    {
-      id: "aw-weights-d",
-      figureRef: "Fig. 1",
-      label: "Weighted Levers (D)",
-      element: "D",
-      description:
-        "Suspended lead weights pressing upper leather rollers for slip-free fiber traction.",
-      x: 27,
-      y: 32,
-    },
-    {
-      id: "aw-flyers-e",
-      figureRef: "Fig. 1",
-      label: "High-Speed Steel Flyers (E)",
-      element: "E",
-      description:
-        "U-shaped steel flyers with guide eyes rotating at 3500+ RPM to impart true helical twist.",
-      x: 20,
-      y: 46,
-    },
-    {
-      id: "aw-bobbins-f",
-      figureRef: "Fig. 1",
-      label: "Drag-Retarded Bobbins (F)",
-      element: "F",
-      description:
-        "Friction-retarded bobbins collecting spun yarn under steady differential winding tension.",
-      x: 29,
-      y: 57,
-    },
-    {
-      id: "aw-cam-g",
-      figureRef: "Fig. 1",
-      label: "Heart-Cam Traverse Motion (G)",
-      element: "G",
-      description:
-        "Cardioid builder cam oscillating the bobbin rail for uniform cylindrical yarn distribution.",
-      x: 87,
-      y: 66,
-    },
-  ],
-};
 
 /**
- * The PDF's source face is deliberately withheld from the catalogue while a
- * fresh reviewer reconciles the three-page pinned document, ledger, and
- * authored edition. The claim lookup remains dynamic so this record does not
- * introduce a second copy of legal-text strings.
+ * The PDF's source face is deliberately withheld from the catalogue. It is a
+ * modern reconstruction, so no legal claim, source drawing, filing date, or
+ * purported quotation is derived from it.
  */
 export const arkwrightWaterFramePatent: Patent = {
   id: "gb-931-arkwright-water-frame",
@@ -94,35 +15,22 @@ export const arkwrightWaterFramePatent: Patent = {
   inventors: ["Richard Arkwright"],
   inventorLocation: "Nottingham, England",
   grantDate: "1769-07-15",
-  filingDate: "1769-07-15",
+  filingDate: null,
   era: "Pre-Industrial & Early Industrial (Pre-1800)",
   category: "materials",
   categoryLabel: "Textile Machinery & Automation",
   summary:
     "British Patent No. 931, granted to Richard Arkwright in 1769, is the foundational milestone of mechanical textile manufacturing and the catalyst of the modern factory system. By passing loose cotton roving through successive pairs of rollers rotating with differential, accelerating velocities, the Water Frame mechanically drafted and parallelized cotton fibers before imparting intense helical twist with 3,500+ RPM flyers. Unlike Hargreaves' Spinning Jenny, which produced fragile weft thread suitable only for cross-filling, Arkwright's machine produced 'Water Twist'—a dense, hard-spun cotton warp yarn strong enough to replace expensive linen in commercial looms, enabling the production of 100% pure cotton cloth at industrial scale.",
-  heroQuote:
-    "Drawing out and attenuating cotton, wool, or other fibrous substances into a roving or thread of any desired fineness by passing the same successively through two or more pairs of rollers turning with different and accelerating velocities.",
+  heroQuote: "An Engine for the Making of Cotton and Other Yarn",
   originalPdfUrl: "/patents/pdfs/gb-931-arkwright-water-frame.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/GB176900931A/en",
-  originalTextAsset: {
-    url: "/patents/transcripts/gb-931-arkwright-water-frame-reviewed.txt",
-    pageCount: 2,
-    kind: "reviewed-transcription",
-    reviewedBy:
-      "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
-    reviewedAt: "2026-08-22",
-    sourcePdfSha256: "3254894ae66cb4ddd2612d164e24af76f5efa8ee8ac6b741c8affc70d8fe62fd",
-  },
-  archivalEdition: arkwrightWaterFrameArchivalEdition,
   usptoClassification: "D01H 1/04 (Spinning machines with drawing rollers and revolving flyers)",
   stats: {
-    totalClaims: 4,
-    independentClaims: 4,
-    patentWarYears: "1781–1785",
-    impactScore: 99,
+    totalClaims: 0,
+    independentClaims: 0,
   },
   originalText:
-    "TO ALL TO WHOM THESE PRESENTS SHALL COME, I, RICHARD ARKWRIGHT, of Nottingham, in the County of Nottingham, send greeting: WHEREAS His most Excellent Majesty King George the Third, by His Letters Patent under the Great Seal of Great Britain, bearing date at Westminster, the Fifteenth day of July, in the ninth year of His reign, did give and grant unto me... my new Invented Apparatus or Engine for the Making of Weft or Yarn from Cotton, Flax, and Wool...\n\n[Curated source excerpt only. The archival edition and reviewed ledger are withheld while an independent review reconciles the three-page pinned PDF, including the Figure 1 drawing on PDF page 3.]",
+    "Primary-source transcription unavailable. The pinned PDF is a modern research reconstruction and is not published as historical patent text.",
   plainEnglishExplanation: {
     overview:
       "Before 1769, textile production was constrained by a critical technological bottleneck: hand spinners on traditional spinning wheels could not produce strong cotton yarn. All European 'cotton' cloth was actually fustian—a hybrid fabric with a strong linen warp (lengthwise threads under high loom tension) and weak cotton weft (crosswise filling). James Hargreaves' 1764 Spinning Jenny multiplied human output but still relied on manual drafting, producing soft, low-twist yarn that snapped under loom tension. Richard Arkwright solved this by inventing continuous mechanical drafting using differential rollers combined with high-speed flyer twisting, creating 'Water Twist'—the world's first industrial cotton yarn strong enough for loom warp.",
@@ -211,74 +119,11 @@ export const arkwrightWaterFramePatent: Patent = {
     whyItMattersToday:
       "Arkwright's Water Frame was the machine that built the modern world. In 1771, Arkwright erected Cromford Mill in Derbyshire, powered by the Bonsall Brook and River Derwent. Operating 24 hours a day with hundreds of organized workers, Cromford became the blueprint for the industrial factory system. By producing inexpensive, high-strength all-cotton yarn, the Water Frame enabled the British textile industry to surpass Indian hand-spinners, sparking global trade expansion, urban industrialization, and the First Industrial Revolution.",
   },
-  claims: [
-    {
-      number: 1,
-      isIndependent: true,
-      originalText: manualArkwrightClaimText(1),
-      plainEnglish:
-        "Protects the fundamental principle of differential roller drafting: drawing out and attenuating fibrous roving by passing it successively through two or more pairs of rollers turning with different, accelerating velocities.",
-      keyInnovations: [
-        "Multi-stage differential roller drafting",
-        "Continuous mechanical fiber attenuation",
-        "Elimination of manual human finger drawing",
-      ],
-      legalSignificance:
-        "The primary patent claim of the Industrial Revolution. It established the universal drafting mechanism used in every cotton, wool, and synthetic spinning mill in the world to this day.",
-    },
-    {
-      number: 2,
-      isIndependent: true,
-      originalText: manualArkwrightClaimText(2),
-      plainEnglish:
-        "Protects the composite roller structure and pressure system: clamping smooth leather-covered top rollers onto fluted metal cylinders via suspended deadweights to maintain uniform slip-free traction.",
-      keyInnovations: [
-        "Leather-covered top cots",
-        "Fluted iron/brass lower drive cylinders",
-        "Suspended deadweight pressure saddles",
-      ],
-      legalSignificance:
-        "Overcame previous failures by Lewis Paul and John Wyatt (1738), whose unweighted smooth rollers allowed roving to slip or snag and tear.",
-    },
-    {
-      number: 3,
-      isIndependent: true,
-      originalText: manualArkwrightClaimText(3),
-      plainEnglish:
-        "Protects the continuous twist insertion mechanism: rapidly revolving flyers mounted upon upright spindles that twist the drawn fibers into compact, strong yarn immediately upon exit from the front delivery rollers.",
-      keyInnovations: [
-        "High-speed vertical spindle flyers (3500+ RPM)",
-        "Direct flyer-to-roller twist synchronization",
-        "Creation of high-tenacity 'Water Twist' warp yarn",
-      ],
-      legalSignificance:
-        "Transformed fragile roving into warp-grade yarn strong enough to endure the aggressive mechanical shedding and beating of power looms.",
-    },
-    {
-      number: 4,
-      isIndependent: true,
-      originalText: manualArkwrightClaimText(4),
-      plainEnglish:
-        "Protects the bobbin take-up and traverse mechanism: winding twisted yarn onto drag-retarded bobbins while an oscillating heart-cam moves the bobbin rail vertically for uniform spool packaging.",
-      keyInnovations: [
-        "Friction-retarded dead-spindle bobbin take-up",
-        "Constant-velocity heart-cam builder motion",
-        "Uniform cylindrical cop packaging",
-      ],
-      legalSignificance:
-        "Prevented yarn snarling and uneven bobbin bulges, allowing bobbins to be transferred directly to warping mills and shuttles without manual rewinding.",
-    },
-  ],
-  drawings: [
-    {
-      figureNumber: "1",
-      title: "Water Frame Drawing Sheet (PDF Page 3)",
-      caption:
-        "The pinned PDF's third page carries the water-frame drawing sheet, with the great driving drum (A), horizontal shaft and clutches (B), differential drafting rollers (C), pressing weights (D), flyers (E), bobbins (F), and heart-cam traverse (G).",
-      svgType: "arkwright-water-frame",
-      callouts: arkwrightFigureCallouts["1"],
-    },
-  ],
+  // No claim or drawing nodes may escape from the modern reconstruction.
+  // A primary historical facsimile must be pinned and reviewed before either
+  // array is populated.
+  claims: [],
+  drawings: [],
   historicalContext: {
     problemStatement:
       "The mid-18th century British textile trade was starved for cotton warp yarn. While John Kay's Flying Shuttle (1733) doubled weaver productivity, it created an acute yarn shortage—six hand spinners were required to supply a single loom. Hargreaves' Spinning Jenny (1764) multiplied output but produced weak, fragile thread suitable only for crosswise weft filling.",

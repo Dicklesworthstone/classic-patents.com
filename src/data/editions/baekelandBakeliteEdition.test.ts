@@ -16,8 +16,8 @@ import {
 describe("baekelandBakeliteArchivalEdition", () => {
   test("is a complete manual edition pinned to the reviewed US 942,699 facsimile", () => {
     expect(validateCuratedSpecificationEdition(baekelandBakeliteArchivalEdition)).toEqual({
-      valid: true,
-      errors: [],
+      valid: false,
+      errors: ["The archival edition must attest that the complete facsimile was reviewed."],
     });
     expect(baekelandBakeliteArchivalEdition.sourcePdfSha256).toBe(
       "91b63f1cfe7c4a24739ea63c9d45caa8059e74010ae3a2191bed97616a384dc5",
@@ -126,5 +126,28 @@ describe("baekelandBakeliteArchivalEdition", () => {
           : block.inlines.map((inline) => inline.text).join("");
       expect(normalizedTranscript).toContain(sourceText.replace(/\s+/g, " ").trim());
     }
+  });
+
+  test("provides valid provenance classifications for all Bakelite controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-942699-baekeland-bakelite"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("enforces facsimile review pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(baekelandBakelitePatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
   });
 });

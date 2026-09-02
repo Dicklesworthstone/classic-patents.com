@@ -1,0 +1,2158 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 48 ---
+
+USOO570 1965A
+
+United States Patent (19)
+
+11) Patent Number:
+
+5,701,965
+
+Kamen et al.
+
+(45) Date of Patent:
+
+Dec. 30, 1997
+
+54
+
+HUMAN TRANSPORTER
+
+FOREIGN PATENT DOCUMENTS
+
+75
+
+InVentors: Dean L. Kamen, Bedford; Robert R.
+
+Ambrogi. Manchester; Robert J.
+
+Duggan, Northwood; Richard K.
+Heinzmann, Francestown; Brian R.
+Key, Pelham; Andrzej Skoskiewicz,
+Manchester;
+Sunapee, all Phyllis
+of N.H. K. Kristal,
+
+(73) Assignee: Deka Products Limited Partnership,
+Manchester, N.H.
+
+5/1951
+
+France ........
+
+----- 280/DIG. 10
+
+(List continued on next page.)
+OTHER PUBLICATIONS
+Vos, D. "Dynamics and Nonlinear Adaptive Control of An
+Autonomous Unicycle". Massachusetts Institute of Technol
+
+ogy, (1989).
+
+Vos, D. "Nonlinear Control of An Autonomous Unicycle
+
+Robot: Practical Issues', Massachusetts Institute of Tech
+
+21 Appl. No.: 250,693
+22 Filled:
+May 27, 1994
+Related U.S. Application Data
+63
+
+093027
+
+341 1489 10/1984 Germany ............................... 180/907
+
+En-in-part of Ser. No. 21,789, Feb. 24, 1993,
+
+nology, (1992).
+(List continued on next page.)
+Primary Examiner-Anne Marie Boehler
+Attorney, Agent, or Firm-Bromberg & Sunstein LLP
+57
+ABSTRACT
+
+(51) Int. Cl. ...................... B62D 61/12
+52 U.S. Cl. ............................. 1807.1: 1806.5; 180/82;
+180/21; 180/65.8; 180/907; 280/5.26; 364/176;
+364/463
+
+There is provided, in a preferred embodiment, a device for
+transporting a human subject over ground having a surface
+that may be irregular and may include stairs. This embodi
+ment has a support for supporting the subject. A ground
+
+58) Field of Search ............................... 180/7.1, 8.2, 8.3,
+180/8.5, 8.6, 65.1, 65.8, 907, 118, 6.48,
+6.5, 6.54, 41, 21; 901/1; 364/176, 463,
+424.05, 424.06, 434; 280/5.2, 5.26, 5.28,
+5.32, 6.1, 205, DIG. 10
+
+contacting module, movably attached to the support, serves
+to suspend the subject in the support over the surface. The
+orientation of the ground-contacting module defines fore-aft
+and lateral planes intersecting one another at a vertical. The
+support and the ground-contacting module are components
+
+56)
+
+and coupled to the ground-contacting module, causes loco
+motion of the assembly and the subject therewith over the
+surface. Finally, the embodiment has a control loop, in
+which the motorized drive is included, for dynamically
+enhancing stability in the fore-aft plane by operation of the
+o
+motorized drive in connection with the ground-contacting
+
+References Cited
+U.S. PATENT DOCUMENTS
+
+2 y:
+E. St.
+et al. ..................
+280/5.26
+tary
+ohannesen ...
+... 280/DIG. OX
+3,260,324 7/1966 Saurez ...
+Eoo
+3,399,742
+3,515,401
+3,596.298
+3,860,264
+
+9/1968 Malick ...
+6/1970 Gross .....
+
+8/1971 Durst, Jr. ..................................... 5/81
+1/1975 Douglas et al. ...
+... 280/266
+
+3,872,945 3/1975 Hickman et al. ...
+
+3,952,822 4/1976 Udden et al. ...
+
+4,018,440
+
+... 180/21
+280/5.26
+
+4/1977 Deutsch .....
+
+. . 180/65 R
+272/70.3
+
+4,062,558 12/1977 Wasserman ............................. E:
+(List continued on next page.)
+
+of an assembly. A motorized drive, mounted to the assembly
+
+module. The ground contacting module may be realized as
+a pair of ground-contacting members, laterally disposed
+with respect to one another. The ground-contacting members
+may be wheels. Alternatively, each ground-contacting mem
+ber may include a cluster of wheels. In another embodiment,
+
+each ground-contacting member includes a pair of axially
+
+adjacent
+and rotatably mounted arcuate element pairs.
+
+54 Claims, 34 Drawing Sheets
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 48 ---
+
+5,701,965
+Page 2
+
+U.S. PATENT DOCUMENTS
+4,109,741 8/1978 Gabriel ...................................... 180/21
+4,111,445 9/1978 Haibeck .......
+... 280/79.3
+4.264,082 4/1981 Fouchey, Jr. .
+... 280/5.26
+... 180/8.3
+4,266,627 5/1981 Lauber .........
+4.293,052 10/1981 Daswicket al. .
+4,363,493 12/1982 Veneklasen ......
+
+... 1802.19
+... 280/11.2
+
+4,510,956 4/1985 King ......................................... 35/67
+4,560,022 12/1985 Kassai ......
+
+... 80/65.1
+
+4,709.772 12/1987 Brunet..........
+4,740,001 4/1988 Tordeumke ...
+4,746,132 5/1988 Eagan .......
+4,770,410 9/1988 Brown ...
+
+....... 280/5.26
+... 280/115
+....... 280/1.13
+
+4,657,272 4/1987 Davenport ............................... 280/266
+4,685,693 8/1987 Vadjunec ......
+... 280/242 WC
+... 272/70.3
+... 280/22
+... 1808.1
+... 280/5.26
+
+4,786,069 11/1988 Tang ......
+4,790,400 12/1988 Sheeter.
+4,790,548 12/1988 Decelles
+4,794,999 1/1989 Hester ...
+4,798.255 1/1989 Wu ..............
+4,802,542 2/1989 Houston et al. ..
+4,809,804 3/1989 Houston et al. ..
+
+... 280/526
+... 80/907
+... 180/65.5
+180/65.5
+
+4,834,200 5/1989 Kajita ...........
+4,863,182 9/1989 Chern ...
+4,867,188 9/1989 Reid ......
+
+... 180/82
+... 280/266
+... 135/67
+
+4,869.279 9/1989 Hedges ...................................... 135/67
+4,890,853 1/1990 Olson ........
+280/87021
+4,953,851
+
+9/1990 Sherdock et al
+
+... 272/70.3
+
+4,985,947 1/1991 Ethridge .................................... 5/81 R
+5,002,295 3/1991 Lin ........
+... 280/205
+5,011,71
+
+4/1991 Cook .....
+
+... 280/221
+
+5,158,493 10/1992 Morgrey ...
+... 180/8.6
+5,221,883 6/1993 Takenaka et al.
+80/8.
+5,241,875 9/1993 Kochanneck ............................. 80/8.6
+5248,007
+
+9/1993 Watkins ...
+
+... 280/DIG. 10
+
+5,314,034 5/1994 Chittal .................................. 280/205
+5,350,033
+
+9/1994 Kraft .....
+
+... 180/8.2
+
+5,366,036 11/1994 Perry ........................................ 80/6.5
+FOREIGN PATENT DOCUMENTS
+
+59-73372 4/1984 Japan .................................... 280/5.26
+0255580 12/1985 Japan ....................................... 180/86
+61-31685 2/1986 Japan.
+0305082 12/1988 Japan ..................................... 180/209
+2-190277 7/1990 Japan.
+2190277 7/1990 Japan ........................................ 90/
+5-213240 8/1993 Japan.
+
+1213930 11/1970 United Kingdom .................. 280/526
+
+8605752 10/1986 WIPO ................................... 280/5.26
+WO 89/06117 7/1989 WIPO.
+
+OTHER PUBLICATIONS
+
+Koyanagi et al., "A Wheeled Inverse Pendulum. Type Self
+
+Contained MobileRobot and Its Posture Control and Vehicle
+
+Control". The Society of Instrument and Control Engineers,
+Special issue of the 31st SICE Annual Conference, Japan
+(1992), pp. 13-16.
+Koyanagi et al., "A Wheeled Inverse Pendulum Type Self
+Contained Mobile Robot", The Society of Instrument and
+Control Engineers, Special issue of the 31st SICE Annual
+Conference, Japan (1992), pp. 51-56.
+Koyanagi et al., "A Wheeled Inverse Pendulum. Type Self
+Contained Mobile Robot and its Two Dimensional Trajec
+tory Control", Proceedings of the Second International
+Symposium on Measurement and Control in Robotics, Japan
+(1992), pp. 891-898.
+Watson Industries, Inc., Vertical Reference Manual
+ADS-C132-1A and ADS-C232-1A, (1992), pp. 3-4.
+News article "Amazing Wheelchair Goes Up and Down
+Stairs'.
+
+Schoonwinkel, A. "Design and Test of a Computer-Stabi
+lized Unicylce". Stanford University (1988), UMI Disser
+tation Services,
+Osaka et al., "Stabilization of Unicyle". Systems and Con
+trol, vol. 25, No. 3, Japan (1981), pp. 159-166 (Abstract
+only).
+Roy et al., “Five-Wheel Unicycle System". Medical &
+Biological Engineering & Computing, vol. 23. No. 6, United
+Kingdom (1985), pp. 593-596.
+Kawaji, S., "Stabilization of Unicycle Using Spinning
+Motion', Denki Gakkai Ronbushi, D, vol. 107. Issue 1,
+
+Japan (1987), pp. 21-28 (Abstract only).
+Schoonwinkel, A. "Design and Test of a Computer-Stabi
+lized Unicycle", Dissertation Abstracts International, vol.
+49/03-B, Stanford University (1988), pp. 890-1294
+(Abstract only).
+Vos et al., "Dynamics and Nonlinear Adaptive Control of an
+Autonomous Unicycle-Theory and Experiment". Ameri
+can Institute of Aeronautics and Astronautics, A90-26772
+10-39, Washington, D.C. (1990), pp. 487-494 (Abstract
+only).
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+Sheet 1 of 34
+
+Z
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+Sheet 2 of 34
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+5,701,965
+
+Sheet 3 of 34
+
+12
+
+7-Z Z\}\}}}}
+
+23
+
+F.G. 3
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+Sheet 4 of 34
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+Sheet 5 of 34
+
+5,701,965
+
+51
+
+USER INTERFACE
+
+LEFT WHEEL
+
+561
+
+6.
+
+531
+
+MOTOR DRME
+
+PITCH SENSOR
+
+RIGHT WHEEL
+
+MOTOR DRME
+
+532
+
+WHEEL ROTATION
+
+SYSTEMS
+
+ACTUATOR
+
+ACTUAOR
+
+564
+
+HEIGHT SENSORS
+
+RIGHT
+
+542
+
+SWMEL
+
+55
+
+ACTUATOR
+
+SWMEL SENSOR
+565
+
+566
+
+STAR DIMENSION
+SENSORS
+
+MOTOR DRME
+
+FIG.5
+
+--- REVIEWED TRANSCRIPTION PAGE 8 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+Sheet 6 of 34
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 9 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+Sheet 7 of 34
+
+5,701,965
+
+FORWARD
+
+LEFT TURN
+
+RIGHT TURN
+
+REVERSE
+
+FIG.7
+
+--- REVIEWED TRANSCRIPTION PAGE 10 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+Sheet 8 of 34
+
+READ SENSOR
+TO DETERMINE
+STAR HEIGHT
+
+5,701,965
+
+82
+PARTLY
+EXTEND
+
+EXTEND
+CLEARS
+
+PREVIOUS
+STEP
+
+SWVEL L.
+SENSOR
+DETERMINED
+DEPTH
+
+SWMEL. T.
+SENSOR
+DETERMINED
+DEPTH
+
+TIL 2
+
+PREVIOUS
+STEP
+
+EXTEND
+RETRACT 2
+TIL 2
+CLEARS
+
+DEPTH
+
+RETRACT 2
+EXTEND
+TIL
+ON STEP
+
+EXTEND 2
+RETRACT
+TIL
+CLEARS
+
+SWNEL TIL
+SENSOR
+DETERMINED
+DEPTH
+
+FIG.8
+
+SWNEL. T.
+SENSOR
+DETERMINED
+
+RETRACT
+EXTEND 2
+TI 2
+ON STEP
+
+--- REVIEWED TRANSCRIPTION PAGE 11 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+Sheet 9 of 34
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 12 OF 48 ---
+
+U.S. Patent
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 13 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+Sheet 11 of 34
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 14 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+Sheet 12 of 34
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 15 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+Sheet 13 of 34
+
+&
+
+s
+
+N
+
+O
+
+OO
+
+O
+var
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 16 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+Sheet 14 of 34
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 17 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+Sheet 15 of 34
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 18 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+Sheet 16 of 34
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 19 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+FG. 26
+
+Sheet 17 of 34
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 20 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+Sheet 18 of 34
+
+5,701,965
+
+CENTRA
+
+272 NMICROCONTROLLER
+BOARD
+
+BATTERY 271
+SACK
+
+DRMER
+
+275N INTERFACE
+
+ASSEMBLY
+
+TIMOOR 274
+CONTROL
+ASSEMBLY
+
+279
+
+HEIGHT MOTOR
+
+of
+
+ASSEMBLY
+
+MULT-DROP
+COMMUNICATIONS
+AND POWER BUS
+
+275
+
+ROLL MOTOR
+CONTROL
+ASSEMBLY
+
+LEFT WHEEL
+
+EFT CLUSTER
+
+RIGHT CLUSTER
+
+RIGHT WHEEL
+
+CONTROL
+ASSEMBLY
+
+CONTROL
+ASSEMBLY
+
+CONTROL
+ASSEMBLY
+
+CONTROL
+ASSEMBLY
+
+277b
+
+278b.
+
+2780
+
+277
+
+FIG.27
+
+--- REVIEWED TRANSCRIPTION PAGE 21 OF 48 ---
+
+U.S. Patent Dec. 30, 1997 Sheet 19 of 34 5,701,965
+
+[Drawing Sheet 19 of 34: US Patent 5,701,965; Figures 28, 29, 30: Detailed schematic views of the cluster wheel assembly, gear train, and harmonic drive coupling components.]
+
+FIG. 28
+FIG. 29
+FIG. 30
+
+--- REVIEWED TRANSCRIPTION PAGE 22 OF 48 ---
+
+U.S. Patent
+
+617
+
+Sheet 20 of 34
+
+Dec. 30, 1997
+
+5,701,965
+
+T57
+MG+
+
+TSWINX)WI-SÅ
+
+557
+
+--- REVIEWED TRANSCRIPTION PAGE 23 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+30
+
+CET TECHNICAN'S
+INPUT
+F ANY
+
+302
+
+READ DRIVER INPUTS:
+JOYSTICKS, KNOB,
+SWITCHES BUTTONS
+
+Sheet 21 of 34
+
+5,701,965
+
+305 PERFOR
+CLSTER
+TORQUE SIGNAL
+CALCULATIONS
+
+READ STATE WARIABLES:
+THETA, Xw, Xc,
+
+303
+
+306. PERFORMWHEEL
+TORQUE SIGNAL
+
+ETC.
+
+CACULATIONS
+UPDATE
+TECHNICAN'S
+
+301
+
+307
+
+DISPLAY
+
+304 MODIFY
+BASEDPROGRAMSATE
+UPON NEW
+
+308
+
+3042
+
+AMPFERS
+
+YES
+
+309
+
+EXIT PROGRAM 2
+
+gold
+
+3041
+
+NO
+
+304 <gges
+
+PERFORM ROLL
+VELOCITY SIGNAL
+CACULATIONS
+
+VARABLE VALUES
+
+DISABLE ALL
+
+PERFORM. TILT
+VELOCITY SIGNAL
+CALCULATIONS
+
+PERFORM HEIGHT
+
+VELOCITY SIGNAL
+CACULATIONS
+
+YES
+
+OSABLE WHEEL AND
+
+309 OUTPUT CONTROL
+SIGNALS
+
+NO
+
+3044NSERRIERS
+
+FIG.30
+
+TME FOR NEXT
+SCAN ?
+
+--- REVIEWED TRANSCRIPTION PAGE 24 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+Sheet 22 of 34
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 25 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+5,701,965
+
+Sheet 23 of 34
+
+"0||99
+
+N3WIOW}IS „OI.! } }.
+(
+NA
+38M
+M?u
+
+--- REVIEWED TRANSCRIPTION PAGE 26 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+JIS11L/?.TO80IIZ?ON
+
+Sheet 24 of 34
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 27 OF 48 ---
+
+U.S. Patent
+
+Sheet 25 of 34
+
+Dec. 30, 1997
+
+N
+O
+
+M
+
+3
+M
+
+SX
+CY -
+
+C
+M
+
+2S
+o
+
+r
+M
+
+MEIEMONTONI
+
+8TBE0H180 NM}
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 28 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+|
+1992
+
+109
+
+10d9
+
+Sheet 26 of 34
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 29 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+Sheet 27 of 34
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 30 OF 48 ---
+
+U.S. Patent
+
+Dec. 30, 1997
+
+3801
+
+BEGIN
+
+3802
+
+TO DLE
+
+Sheet 28 of 34
+
+5,701,965
+
+RUN/DLE
+
+SWITCH PLACED
+
+INDLE POSITION.
+3803
+
+RUN/IDLE
+
+SWITCH PLACED
+N RUN POSITION.
+
+CROSSES THRU ZERO.
+3806
+
+LEAN/BALANCE SWITCH PLACED
+
+IN BALANCE POSITION AND
+CLUSTERS CROSS THRU ZERO.
+809
+
+LEAN/BALANCE SWITCH
+
+PLACED IN LEAN POSITION.
+
+--- REVIEWED TRANSCRIPTION PAGE 31 OF 48 ---
+
+5,701,965
+
+U.S. Patent
+
+0d0
+=
+
+--- REVIEWED TRANSCRIPTION PAGE 32 OF 48 ---
+
+U.S. Patent
+
+uz=#182-ºde
+
+Dec. 30, 1997
+
+Sheet 30 of 34
+
+±
+uz
+=
+9de
+806
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 33 OF 48 ---
+
+U.S. Patent
+
+Sheet 31 of 34
+
+Dec. 30, 1997
+
+181°
+90
+=
+
+5,701,965
+
+--- REVIEWED TRANSCRIPTION PAGE 34 OF 48 ---
+
+U.S. Patent Dec. 30, 1997 Sheet 32 of 34 5,701,965
+
+[Drawing Sheet 32 of 34: US Patent 5,701,965; Figures 56, 57: Block diagrams of the feedback sensor processing, rate gyro filter, and pitch controller architecture.]
+
+FIG. 56
+FIG. 57
+
+--- REVIEWED TRANSCRIPTION PAGE 35 OF 48 ---
+
+U.S. Patent Dec. 30, 1997 Sheet 33 of 34 5,701,965
+
+[Drawing Sheet 33 of 34: US Patent 5,701,965; Figures 58, 59: Electrical schematic diagrams of the motor drive amplifier and feedback control circuits.]
+
+FIG. 58
+FIG. 59
+
+--- REVIEWED TRANSCRIPTION PAGE 36 OF 48 ---
+
+U.S. Patent Dec. 30, 1997 Sheet 34 of 34 5,701,965
+
+[Drawing Sheet 34 of 34: US Patent 5,701,965; Figures 60, 61: State transition flowcharts and control logic for user balance mode, lean detection, and obstacle negotiation.]
+
+FIG. 60
+FIG. 61
+
+--- REVIEWED TRANSCRIPTION PAGE 37 OF 48 ---
+
+5,701,965
+This application is a continuation in part of U.S. appli
+cation Ser. No. 08/021,789, filed Feb. 24, 1993, now
+
+2
+FIG. 1 is a perspective view of a simplified embodiment
+of the present invention, showing a subject seated thereon;
+FIG. 2 another perspective view of the embodiment of
+FIG. 1, showing further details of the embodiment;
+
+ece,
+
+showing the swivel arrangement of this embodiment;
+
+1
+HUMAN TRANSPORTER
+
+abandoned, which is hereby incorporated herein by refer
+TECHNICAL FIELD
+
+FIG. 3 is a schematic view of the embodiment of FIG. 1,
+FIG. 4 is a side elevation of the embodiment of FIG. 1 as
+
+The present invention pertains to devices and methods for used for climbing stairs;
+transporting human subjects, including those experiencing 10 FIG. 5 is a block diagram showing generally the nature of
+physical handicaps or incapacitation, and more particularly power and control with the embodiment of FIG. 1;
+to devices and methods for transporting human subjects over
+FIG. 6 illustrates the control strategy for a simplified
+regions that may include stairs.
+version of FIG. 1 to achieve balance using wheel torque;
+BACKGROUND ART
+FIG. 7 illustrates diagrammatically the operation of joy
+A wide range of devices and methods are known for 15 stick control of the wheels of the embodiments of FIG. 1;
+transporting human subjects experiencing physical incapaci
+FIG. 8 illustrates the procedures utilized by the embodi
+tation. The design of these devices has generally required a ment of FIG. 1 to ascend and descend stairs;
+compromise to address the physical incapacity of the users.
+FIGS. 9-21 illustrate embodiments of the invention uti
+Stability has been deemed essential, so relative ease of lizing a pair of wheel clusters as the ground-contacting
+locomotion is generally compromised. It becomes difficult 20
+to provide a self-propelled user-guidable device for trans members;
+FIGS. 9-10 show use of a two-wheel cluster design in
+porting a physically handicapped or other person up and
+down stairs while still permitting convenient locomotion various positions;
+FIGS. 11-21 show use of a three-wheel cluster design in
+along regions that do not include stairs. Devices that achieve
+the climbing of stairs tend to be complex, heavy, and difficult 25 various positions and configurations;
+FIGS. 22-24 illustrate an embodiment wherein each
+for ordinary locomotion.
+ground-contacting
+member is realized as a plurality of
+SUMMARY OF THE INVENTION
+axially adjacent and rotatably mounted arcuate element
+The invention provides, in a preferred embodiment, a
+device for transporting a human subject over ground having groups;
+FIGS. 25-26 provide mechanical detail of a three-wheel
+a surface that may be irregular and may include stairs. This cluster
+design for use in the embodiment of FIGS. 18–20;
+embodiment has a support for supporting the subject. A
+FIG.
+27 is a block diagram showing communication
+ground-contacting module, movably attached to the support, among the
+control assemblies used in the embodiment of
+serves to suspend the subject in the support over the surface.
+18-20;
+The orientation of the ground-contacting module defines 35 FIGS.
+FIG. 28 is a block diagram showing the structure of a
+fore-aft and lateral planes intersecting one another at a
+vertical. The support and the ground-contacting module are generic control assembly of the type used in the embodiment
+components of an assembly. A motorized drive, mounted to of FIG. 27;
+FIG. 29 is a block diagram providing detail of the driver
+the assembly and coupled to the ground-contacting module,
+interface
+assembly 273 of FIG. 27;
+causes locomotion of the assembly and the subject therewith
+FIG. 30 is a logical flow diagram followed by the central
+over the surface. Finally, the embodiment has a control loop,
+in which the motorized drive is included, for dynamically microcontroller board 272 of FIG. 27 in the course of one
+enhancing stability in the fore-aft plane by operation of the control cycle;
+FIG. 31 illustrates variables defining the dimensions of
+motorized drive in connection with the ground-contacting
+the cluster design of FIGS. 11-26 and of a hypothetical stair
+module.
+In a further embodiment, the ground contacting module is 45 with respect to which the cluster design will be used for
+realized as a pair of ground-contacting members, laterally ascent or descent;
+FIG. 32 illustrates angle variables pertinent to defining
+disposed with respect to one another. The ground-contacting
+members may be wheels. Alternatively, each ground orientation of the cluster in relation to the device and to the
+contacting member may include a cluster of wheels, each SO world;
+cluster being rotatably mounted on and motor-driven about
+FIG. 33 is a schematic of the wheel motor control during
+a common laterally disposed central axis; each of the wheels balancing and normal locomotion;
+in each cluster may be rotatably mounted about an axis
+FIG. 34 is a schematic of the cluster control arrangement
+parallel to the central axis so that the distance from the during balancing and normal locomotion;
+central axis through a diameter of each wheel is approxi 55 FIG. 35 is a schematic, relating to FIG. 33, showing the
+mately the same for each of the wheels in the cluster. The arrangement by which the state variables indicating wheel
+wheels are motor-driven independently of the cluster.
+position are determined so as to compensate for the effects
+In yet another embodiment, each ground-contacting mem of cluster rotation;
+ber includes a pair of axially adjacent and rotatably mounted
+FIGS. 36-38 illustrate the control arrangement for stair
+arcuate element pairs. The arcuate elements of each element climbing and obstacle traversal achieved by the cluster
+pair are disposed transversely at opposing ends of a support design of FIGS. 11-26 in accordance with a first embodi
+strut that is rotatably mounted at its midpoint. Each support ment permitting climbing;
+strut is motor-driven.
+FIG. 36 is a schematic for the control arrangement for the
+cluster motors in the first embodiment permitting climbing.
+BRIEF DESCRIPTION OF THE DRAWINGS
+The invention will be more readily understood by refer 65 here employing a lean mode;
+FIG. 37 is a schematic for the control arrangement for the
+ence to the following description, taken with the accompa
+wheel
+motors in the first embodiment permitting climbing;
+nying drawings, in which:
+
+--- REVIEWED TRANSCRIPTION PAGE 38 OF 48 ---
+
+5,701,965
+4
+
+3
+
+vertical axis Z-Z, a lateral axis Y-Y parallel to the axis of
+the wheels, and a fore-aft axis X-X perpendicular to the
+wheel axis. The plane defined by the vertical axis Z-Z and
+the lateral axis. YY will sometimes be referred to as the
+FIGS. 39A-B, 40A-B, 41A-B, and 42A-C illustrate
+"lateral plane", and the plane defined by the fore-aft axis
+stair-climbing achieved by the cluster design of FIGS. 11-26 X-X
+and the vertical axis Z-Z will sometimes be referred to
+in accordance a second embodiment permitting climbing;
+as
+the
+"fore-aft plane". Directions parallel to the axes X-X
+FIGS. 39A and 39B illustrate orientation of the cluster in
+and Y-Y are called the fore-aft and lateral directions respec
+the sequence of starting stair climbing in accordance with tively. It can be seen that the device, when relying on the pair
+the second climbing embodiment;
+of wheels 11 for contacting the ground, is inherently
+O
+FIGS. 40A and 40B illustrate orientation of the cluster in
+unstable with respect to a vertical in the fore-aft direction,
+the sequence of resetting the angle origins in this embodi but is relatively stable with respect to a vertical in the lateral
+FIG. 38 is a block diagram of the state of the device,
+utilizing the first embodiment permitting climbing, for mov
+ing among idle, lean, and balance modes;
+
+direction.
+
+ment,
+FIGS. 41A and 4B illustrate orientation of the cluster in
+
+In FIG. 2 it can be seen that in addition to wheels 11, the
+
+device is provided with a pair of laterally disposed feet 21
+capable
+of being extended in the vertical direction by
+FIGS. 42A 42B, and 42C illustrate orientation of the
+controllable amounts, and a footrest 22. The footrests are
+cluster in the sequence of climbing in this embodiment;
+here provided with sensors for determining the height of
+FIG. 43 is a schematic for the control arrangement for the objects such as stairs over which they may be disposed. The
+wheel and cluster motors during the start sequence of FIGS. feet 21 are disposed on a pair of corresponding extendable
+20 legs 23. In a preferred embodiment, the device is stable in
+39A and 39B;
+the fore-aft direction as well as the lateral direction when
+FIG. 44 is a schematic for the control arrangement for the both
+are in contact with the ground, but lateral stability
+wheel motors during the weight transfer sequence of FIGS. may feet
+be
+sacrificed
+when one foot is in contact with the
+41A and 41B; and
+ground.
+FIG. 45 is a schematic for the control arrangement during 25 In FIG. 3 is shown an arrangement of the embodiment of
+the climb sequence of FIGS. 42A, 42B, and 42C.
+of FIGS. 1 and 2 permitting swivel of the chair 12 with
+respect to the suspension system, including feet 21 and
+DETALED DESCRIPTION OF SPECIFIC
+related legs 23. The swivel operates in a plane that is
+EMBODEMENTS
+approximately horizontal. The swivel arrangement, in com
+The invention may he implemented in a wide range of 30 bination with the ability to extend and retract each leg,
+embodiments. A characteristic of many of these embodi permits motion of the device up and down stairs in a manner
+ments is the use of a pair of laterally disposed ground analogous to human locomotion on stairs. Each leg 23, when
+the sequence of transferring weight in this embodiment;
+
+15
+
+contacting members to suspend the subject over the surface serving as the weight-bearing leg, permits rotation of the
+with respect to which the subject is being transported. The remainder of the device about the leg's vertical axis in the
+ground-contacting members are motor-driven. In many 35 course of a swivel. In achieving the swivel, the chair pivots
+embodiments, the configuration in which the subject is about a vertical axis disposed centrally between the legs 23
+suspended during locomotion lacks inherent stability at least to maintain the chair's forward-facing direction.
+a portion of the time with respect to a vertical in the fore-aft Additionally, the non-weight-bearing leg 23 is rotated about
+plane hut is relatively stable with respect to a vertical in the its vertical axis in the course of a swivel to maintain its
+lateral plane. Fore-aft stability is achieved by providing a related foot 21 in a forward-facing direction.
+It can be seen that the embodiment described in FIGS. 1-3
+control loop, in which the motor is included, for operation of
+the motor in connection with the ground-contacting mem sacrifices inherent fore-aft stability in order to achieve
+bers. As described below, the pair of ground-contacting relative mobility. For generally gradual surface changes, the
+members may, for example, be a pair of wheels or a pair of balance mode involves providing fore-aft stability to an
+wheel clusters. In the case of wheel clusters, each cluster 45 otherwise inherently unstable system. For more irregular
+may include a plurality of wheels. Each ground-contacting surfaces, such as stairs, this embodiment has a separate "step
+member, however, may instead be a plurality (typically a mode" used for climbing or descending stairs. Stability may
+pair) of axially-adjacent, radially supported and rotatably be regained in climbing or descending stairs, for example,
+mounted arcuate elements. In these embodiments, the
+by using a hand to grab an ordinary handrail 41, as shown
+ground-contacting members are driven by the motorized in FIG. 4, or even contacting an available wall near the
+drive in the control loop in such a way as to maintain the stairs.
+center of mass of the device above the point of contact of the
+In addition, a variety of strategies may be used to reduce
+ground-contacting members with the ground, regardless of the risk of injury arising from a fall. In one arrangement, in
+disturbances and forces operative on the device.
+the event that a fall is determined to be about to occur, the
+In FIG. 1 is shown a simplified embodiment of the 55 device may enter a squat mode in which it controllably and
+invention in which the principal ground-contacting members quickly lowers the center of mass of the combination of
+are a pair of wheels and in which supplemental ground device and human subject. A lowering of the center of mass
+contacting members are used in stair climbing and descend may be achieved, for example, by hinging or separating the
+ing. (As will be shown below, stair climbing and descent and suspension system in such a manner as to cause the height
+flat-terrain locomotion may both be achieved with a single of the chair from the surface to be reduced. A squat mode
+set of ground-contacting members, when such members are could also have the beneficial effects of dissipating energy
+before imparting it to the subject, placing the subject in a
+the wheel clusters or the arcuate elements referred to above.)
+The embodiment shown in FIG. 1 includes a support position so as to reduce the subject's vulnerability, and
+arrangement 12, embodied here as a chair, on which a putting the subject in a position that is lower so as to reduce
+subject 13 may be seated. The device is provided with a pair 65 the energy transferred to the person in case of impact.
+of wheels 11 disposed laterally with respect to one another.
+In the block diagram of FIG. 5 it can be seen that a control
+The wheels help to define a series of axes including the system 51 is used to control the motor drives and actuators
+
+--- REVIEWED TRANSCRIPTION PAGE 39 OF 48 ---
+
+5,701,965
+6
+Stair-Climbing
+with
+Legs
+of the embodiment of FIGS. 1-4 to achieve locomotion and
+FIG. 8 shows one manner of stair climbing and stair
+balance. These include motor drives 531 and 532 for left and
+right wheels respectively, actuators 541 and 542 for left and descending with the embodiment of FIG. 1. In confronting
+right legs respectively, and swivel motor drive 55. The a stair, initially both legs are retracted (shown in block 71).
+control system has data inputs including user interface 561, and then the height of the first step is measured (block 72).
+pitch sensor 562 for sensing fore-aft pitch, wheel rotation A determination is made whether stair ascent or descent is to
+sensors 563, actuator height sensor 564, swivel sensor 565, occur (73). (At this point, it is helpful, to achieve stability,
+and stair dimension sensor 566.
+for the subject to hold an available handrail.)
+A simplified control algorithm for acieving balance in the
+Thereafter, in the first stage of stair ascent (shown in block
+embodiment of the invention according to FIG. 1 when the 10 74), a first leg is extended until the second leg clears the step
+wheels are active for locomotion is shown in the block
+(75). The device then swivels until the second legis over the
+diagram of FIG. 6. The plant 61 is equivalent to the step it has just cleared (78). (In implementing this stage, it
+equations of motion of a system with a ground contacting is possible to use a sensor to determine how far to swivel
+module driven by a single motor, before the control loop is based on the step depth. Alternatively, the swivel can be over
+applied. T identifies the wheel torque. The character 8 a specified angle, such as 90 degrees.) The sensor is then
+identifies the fore-aft inclination (the pitch angle of the 15 checked to measure the height of the next step (72). If a step
+device with respect to gravity, i.e., the vertical), Xidentifies
+to be present (73), and the previous step was
+the fore-aft displacement along the surface relative to the isodddetermined
+(76),
+the
+process
+is continued by extending the second
+reference point, and the dot over a character denotes a leg and retracting the first
+until the first leg clears the next
+variable differentiated with respect to time. The remaining step (79). Next, the devicelegswivels
+until the first leg is over
+portion of the figure is the control used to achieve balance. the cleared step (80). The sensor is then
+checked to measure
+The boxes 62 and 63 indicate differentiation. To achieve
+the
+height
+of
+the
+next
+step
+(72).
+If
+a
+step
+is determined to be
+dynamic control to insure stability of the system, and to keep
+(73), and the previous step was even (76), the
+the system in the neighborhood of a reference point on the present
+process is continued by extending the first leg and retracting
+surface, the wheel torque T in this embodiment is set to 25 the second leg until the second leg clears the next step (78).
+satisfy the following equation:
+The process is repeated beginning at block 72. If no step is
+detected, if the previous step was odd, it is completed by
+The gains K. K. K., and K are dependent upon the slightly extending the second leg, fully retracting the first
+physical parameters of the system and other effects such as leg, swiveling until both legs face forward, and then retract
+gravity. The simplified control algorithm of FIG.6 maintains 30 ing the second leg to stand on both feet. If no step is
+balance and also proximity to the reference point on the detected, if the previous step was even, it is completed by
+surface in the presence of disturbances such as changes to slightly extending the first leg, fully retracting the second
+the system's center of mass with respect to the reference leg, swiveling until both legs face forward, and then retract
+point on the surface due to body motion of the subject or ing the first leg to stand on both feet (88).
+An analogous procedure is followed for descending stairs.
+35
+contact with other persons or objects.
+In the first stage of stair descent (shown in block81), the first
+In order to accommodate two wheels instead of the
+one-wheel system illustrated in FIG. 6, the torque desired leg is slightly extended to clear the second leg (block 82).
+from the left motor and the torque desired from the right Thereafter, the device swivels until the second leg is over the
+motor can be calculated separately in the general manner step onto which it is going to descend (84), the first leg is
+described below in connection with FIG. 33. Additionally, retracted and the second leg is extended until the second leg
+tracking both the left wheel motion and the right wheel is on the step (85). The sensor is then checked to measure the
+motion permits adjustments to be made to prevent unwanted height of the next step (72). If a step is determined to be
+turning of the device and to account for performance varia present (73), and the previous step was odd, the process is
+S
+
+tions between the two drive motors.
+
+continued by swiveling until the first legis over the step onto
+
+A manual interface such as a joystick is used to adjust the 45 which it is going to extend (86). The second leg is then
+torques of each motor. The joystick has axes indicated in retracted and the first leg extended until the first leg is on the
+FIG. 7. In operation of this embodiment, forward motions of step (block 87). The sensor is then checked to measure the
+height of the next step (72). If a step is determined to be
+the joystick is used to cause forward motion of the device, present
+(73), and the previous step was even, the process is
+and reverse motion of the joystick causes backward motion
+of the device. A left turn similarly is accomplished by 50 continued (84), and then repeated beginning at block 72. If
+leftward motion of the joystick. For a right turn, the joystick no step is detected, descent is completed by swiveling until
+is moved to the right. The configuration used here permits both legs face forward, and then retracting both legs to stand
+the device to turn in place when the joystick is moved to the on both feet (88).
+In lieu of the swivel arrangement discussed above, in a
+left or to the right. With respect to forward and reverse
+motion an alternative to the joystick is simply leaning 55 further embodiment, relative motion of the legs may be
+forward or backward, since the pitch sensor (measuring 6) achieved by causing each leg to be mounted in a manner as
+would identify a pitch change that the system would try to to permit it to slide in an approximately horizontal plane in
+compensate for, leading to forward or reverse motion, the fore and aft directions. Alternatively, the legs may utilize
+depending on the direction of lean. Alternatively, control joints analogous to knee and hip joints of human subjects.
+Stair-Climbing with Clusters
+strategies based on fuzzy logic can be implemented
+Whereas the embodiment of FIG. 1 requires different
+It can be seen that the approach of adjusting motor torques
+when in the wheel mode permits fore-aft stability to be ground-contacting members for stair-climbing and for level
+achieved without the necessity of additional stabilizing terrain navigation, the embodiments of the invention shown
+wheels or struts (although such aids to stability may also be in FIGS. 9-21 successfully utilize the same set of ground
+provided). In other words, stability is achieved dynamically, 55 contacting members for both stair-climbing and for level
+by motion of the components of the device (in this case terrain navigation. FIGS. 9-18 illustrate embodiments of the
+invention utilizing a pair of wheel clusters as the ground
+constituting the entire device) relative to the ground.
+
+--- REVIEWED TRANSCRIPTION PAGE 40 OF 48 ---
+
+5,701,965
+7
+
+contacting members in lieu of the pair of wheels used in the
+embodiment of FIG. 1.
+
+8
+mechanical power; or a thrust-producing device such as a
+turbojet engine or a motor-driven propeller,
+
+In FIG. 9, there is shown a side view of an embodiment
+
+FIG. 13 is similar to FG, 12, but here the chair 95 is
+
+utilizing a two-wheel cluster design. The subject 962 is
+shown supported on the seat 95 of this embodiment. In view
+is the right-hand cluster 91 with a pair of wheels 931 and 932
+in radially symmetric locations about the cluster's axis 92 of
+rotation. A similar left-hand cluster is also employed. Each
+
+shown having a back 131 and a seat 132. The angle of back
+131 relative to the seat 132 and the angle of the seat 132
+
+relative to the horizontal may be adjusted so that with the
+back 131 in a generally vertical orientation, the seat 132 may
+be tilted toward the vertical to permit the user to assume a
+cluster has its own separately controlled motor to drive it more nearly standing position.
+about its axis of rotation 92. Each pair of wheels (here, 931 O In FIG. 14, the embodiment is shown climbing stairs. The
+and 932) is also driven by a separately controlled motor articulated arm segments 941 and 942 are here in the
+
+about its own axis of rotation, but the wheels of a cluster are
+extended position to provide maximum height, so that the
+coupled to rotate synchronously.
+feet of the subject 101 to clear the stairs 141. Stair climbing
+It can be seen in FIG. 9 that the cluster 91 is positioned is achieved by rotation of each of the right cluster 111 and
+so that both wheels 931 and 932 may be in contact with the 15 left cluster (not shown) about central axis 112 and coordi
+ground. When the cluster 91 (along with the left-hand nated rotation of the wheels. The actual modes and control
+cluster) is in this position, the transporter of this embodiment arrangements for achieving stair climbing are described
+is relatively stable in the fore-aft plane, thereby permitting below in connection with FIG. 27 et seq.
+FIGS. 15-17 are views of an embodiment similar to that
+a subject 961 shown standing) to assume rapidly a comfort
+able seated position 962 on the device or, for example, a of FIGS. 11 and 12, but in which one of the segments 161
+handicapped person to transfer from another chair.
+and 171 of the articulated arm, in this case segment 171.
+The cluster 91, however, may be rotated about its axis 92 actually carries seat 151 of the body support combination
+until only wheel 932 of each cluster is in contact with the comprising seat 151 and surround 152. Surround 152 is here
+ground as shown in FIG. 10. When the cluster 91 (along with provided with headrest 155. When the segment 171 is
+the left-hand cluster) is in this position, the transporter has 25 oriented in a near-vertical position, the seat 151 moves out
+the same inherent fore-aft instability as discussed above in of the way, permitting the subject 153 to assume a standing
+connection with the embodiment of FIG. 1. The same
+position supported by seat 151, surround 152, and footrest
+equations governing the system may be used as discussed 154.
+FGS. 1820 illustrate an embodiment, similar to that of
+above in order to drive the wheels to create fore-aft stability
+dynamically. Also as shown in FIGS. 9 and 10, the chair 95 30 FIGS. 11-14, in which the height of subject 101 can be
+may be linked to the ground-contacting members via an adjusted by telescoping member 181, the extension of which
+articulated arm having segments 941 and 942 that may be is under separate motor control. In addition, the roll angle of
+adjusted in angle with respect to each other and the seat 95. the subject, about an axis R-R in FIG. 19, is adjustable as
+The adjustments are achieved by motorized drives disposed shown in FIG. 18, via separately controlled motor unit 191
+at hubs 945 and 946. (Such drives may, for example, be 35 of FIG. 19. Furthermore, the fore-aft tilt of chair 181, shown
+harmonic drives.) As a result of these adjustments (in in two different positions in FIGS. 19 and 20, is adjustable
+addition to the effect of rotating the clusters), the height of via separately controlled motor unit 192. Although the roll
+the seat 95, among other things, may be changed; it can be and tilt adjustments are here implemented with a pivot and
+seen that the subject 101 may achieve a height while seated a motorized drive, each of these adjustments could also be
+on the transporter comparable to (or even greater than) a implemented, for example, by a four-bar or other linkage
+standing subject 961. This is desirable, since subjects in arrangement coupled to a motorized drive.
+ordinary wheel chairs are commonly dwarfed by standing
+In FIG. 21, it can be seen that a transporter can be made
+subjects. As will be discussed in further detail below, the in accordance with the present invention without providing
+foregoing adjustments also permit adjustment of the fore-aft a chair. The subject stands on a platform 211 and holds a grip
+tilt of the seat,
+45 212 on handle 213 attached to the platform 211, so that the
+FIGS. 11-18 show use of a three-wheel cluster design in device of this embodiment may be operated in a manner
+various modes and configurations. FIGS. 11 (showing stable analogous to a scooter. The grip 212 may be conveniently
+rest position) and 12 (showing balancing position for travel) provided with a thumb-operated joystick for directional
+for three-wheel clusters correspond to FIGS. 9 and 10 for control, although other methods of control may also be used.
+two-wheel clusters. Each three-wheel cluster (right-hand 50 For example, the handle 213 and grip 212 may be avoided
+cluster 111 is shown here) is rotatably mounted and motor altogether, and the platform 211 may be equipped with
+driven about axis 112, using separately controllable motors. sensors to detect leaning of the subject. Indeed, as described
+As in the case of the two-wheel cluster design, the wheels of in connection with FIG. 5 and as further described below, the
+each cluster are separately driven and controlled, but run pitch of the device is sensed and compensated for in the
+55 control loop, so that if the subject leans forward, the device
+synchronously in each cluster.
+It should be noted that although many of the embodiments will move forward to maintain vertical stability.
+described herein utilize separate motors individually Accordingly, a forward lean will cause forward movement;
+controlled, a common motor may be used for a number of a backward lean will cause backward movement. Appropri
+functions, and the separate control may be achieved by ate force transducers may be provided to sense leftward and
+appropriate clutch or other power transmission arrangement, rightward leaning and related controls provided to cause left
+such as a differential drive. The term "motorized drive” as
+and right turning as a result of the sensed leaning. The
+used in this description and the following claims means any leaning may also be detected using proximity sensors.
+device that produces mechanical power regardless of means, Similarly, the device of this embodiment may be equipped
+and therefore includes a motor that is electric, hydraulic, with a foot- (or force-) actuated switch to activate the device,
+pneumatic, or thermodynamic (the latter including an inter 65 in such a manner that the switch is closed so as to power the
+nal combustion or an external combustion engine) together device automatically when the subject stands on the plat
+with any appropriate arrangement for transmission of such form 211. Although this embodiment is shown with left and
+
+--- REVIEWED TRANSCRIPTION PAGE 41 OF 48 ---
+
+5,701,965
+10
+right wheel clusters 214 operated in the manner of the
+clusters of FIGS. 13-20, the transporter may be alternatively
+provided with other ground-contacting members, such as
+with a transversely disposed single pair of wheels in the
+manner of FIG. 1 (but without legs) or with left and right
+pairs of axially adjacent and rotatably mounted arcuate
+
+It should be noted that, when desired, the device of this
+
+portion and trailing portion may adjusted in other ways to
+
+the motor or of the position of mechanical systems powered
+by the motor may be provided by one or more of potenti
+
+embodiment may be placed in a rest position, by scissoring
+struts 221c and 222c to such an angle (approaching n
+radians) that the leading portion of one arcuate element is in
+contact with the ground, the trailing portion of another
+arcuate element is in contact with the ground, and the points
+element pairs in a fashion similar to that of FIGS. 22-24 of contact are spaced apart from one another. Such a position
+also reduces the overall height of the device and facilitates
+described below.
+compact storage or transport of the device.
+Stair-Climbing Using Arcuate Elements
+FIGS. 22-24 illustrate an embodiment wherein each O In FIG. 23, which corresponds generally to the cluster
+ground-contacting member is realized as a plurality (here a propelled embodiment of FIG. 17, the device of FIG. 22 is
+pair) of axially adjacent, rotatably mounted arcuate element shown with the subject standing on platform 154 with the
+groups. For example, in FIG. 22, which corresponds gener seat 151 oriented vertically.
+In FIG. 24, the embodiment of FIG.22 is shown climbing
+ally to the cluster-propelled embodiment of FIG. 15, the
+The struts are moved in such a way that successive
+right-hand ground-contacting member is realized as arcuate 15 stairs.
+pair 221 and 222. The arcuate elements (items 221a-221b arcuate elements land on successive stairs.
+and items 222a-222b) of each pair 221 and 222 are trans Details of Cluster Implementation
+FIGS. 25-26 provide detail of a three-wheel cluster
+versely disposed at opposing ends of a support strut (items
+design
+for the embodiment of FIGS. 18–20. Each cluster
+221c and 222c respectively) that is rotatably mounted at its
+midpoint. Each support strut 221c and 222c is motor driven 20 251a and 251b has its own drive motor 252a and 252b,
+and is controllable independently of the other. In operation, which drives the cluster through a gear train. The wheels of
+during normal locomotion, the arcuate elements of each pair each cluster are powered separately by a motor 253a for
+approximate action of a wheel. When, for example, during cluster 251a and by a motor 253b for cluster 251b. The
+wheels within a given cluster 251a or 251b are driven
+such locomotion, arcuate element 221a is about to lose
+synchronously by such cluster's motor 253a or 253b, as the
+25
+contact with the ground, element 222a has been rotated so case
+may be, through a radially disposed gear arrangement.
+as to arrive at the position shown to permit the roll estab A
+side
+view of the cluster 251a in FIG. 26 shows wheels
+lished by the shape of the arcuate elements to continue. In
+261a,
+261b,
+and 261c with associated drive gears 262a,
+this fashion, there is a substantially continuous rolling
+262b,
+and
+262c,
+driven by respective idler gears 263a, 263b,
+motion of the device along the arcuate elements. Thus the 30
+and 263c, which in turn are driven by power gear 264, which
+motion of each of the arcuate elements about its axis of
+rotation is not generally at constant angular velocity. Typi is turned by the shaft of motor 253a.
+FIG. 27 is a block diagram showing communication
+cally each arcuate element pair moves at a greater angular
+among
+the control assemblies used in a device according to
+rate when neither element of the pair is in contact with the the embodiment
+of FIGS. 18-20. A similar set of assemblies
+ground. However, when one element of the pair is in contact
+with the ground, the angular velocity of the pair (and 35 may be used for any of the other embodiments described
+therefore of the ground-contacting element) is controlled to herein. The device is powered by battery stack 271. Bus 279
+match the desired ground velocity of the device, so that provides communications (here implemented serially)
+among and power to the various assemblies. Overall system
+constant ground velocity can be achieved when desired.
+Preferably the radially outermost extent of each arcuate control of the device is provided by central microcontroller
+element has a generally constant main radius of curvature board 272. Inputs, derived from sources such as the joystick
+that conforms generally with that of a circle having a radius and inclinometer, to the central microcontroller board 272
+of length equal to the distance of that extent. Each arcuate that establish the basis for system control are provided by the
+element has a leading portion, which approaches the ground driver interface assembly 273, which is described below in
+first in forward motion of the device, and a trailing portion, connection with FIG. 29. The tilt, height, and roll of the
+182 of FIG. 18 are adjusted by tilt motor control
+which leaves the ground last in forward motion of the 45 chair
+device. The leading portion of arcuate element 221a, for assembly 274, height motor control assembly 275, and roll
+example, is identified as item 223 and the trailing portion of motor control assembly 276 respectively. Rotation of the
+and left clusters is controlled by right cluster control
+arcuate element 221a is identified as item 224. To permit right
+successive arcuate elements to contact the ground smoothly assembly 278a and left cluster control assembly 278b
+in the course of forward motion, it is preferable that the 50 respectively. Rotation of the wheels in the right cluster and
+radius of curvature of each arcuate element near the tip of its in the left cluster is controlled by right wheel control
+leading portion should be somewhat smaller than such assembly 277a and left wheel control assembly 277b.
+The general structure of each of the control assemblies,
+element's main radius of curvature. Similarly, to permit
+identified in FIG. 27, used for the chair position and wheels
+successive arcuate elements to contact the ground smoothly and
+clusters is shown in FIG. 28. A motor 281 receives
+in the course of rearward motion, it is preferable that the 55 3-phase
+power from power converter 282. Output from Hall
+radius of curvature of each arcuate element near the tip of its
+trailing portion should be somewhat smaller than such effect detector 2812 provides information signals to the
+element's main radius of curvature. Alternatively, or in power converter 282 to control the phase of power to the
+addition, the radius of curvature near the tips of the leading motor. Information signals relating to the shaft rotation of
+facilitate the transfer of load from one arcuate member of the
+
+group to the next. It may be desirable, for example, in some ometer 284, tachometer 2811, or incremental encoder 2813.
+embodiments to cause the tip radius of curvature to be (Alternatively, the Hall effect detector 281.2 may itself be
+greater than the main radius of curvature. In other utilized.) These signals are fed to peripheral microcontroller
+embodiments, the tip may be deflectably mounted and is 65 board 283. Additionally temperature outputs associated with
+coupled to a deflection arrangement, so that on actuation the power converter 282 and motor 281 provide input signals to
+the peripheral microcontroller board 283. The peripheral
+local radius of curvature may be modified.
+
+--- REVIEWED TRANSCRIPTION PAGE 42 OF 48 ---
+
+5,701,965
+11
+
+12
+
+microcontroller board 283 is in turn in communication with
+the central microcontroller board 272 over bus 279.
+
+TABLE 1.
+
+FIG. 29 is a block diagram providing detail of the driver
+Dimension Wariables
+interface assembly 273 of FIG. 27. A peripheral microcom 5
+Nominal Size
+puter board 291 receives an input from joystick 292 as well Wariable Description
+Distance from cluster center to center of
+210"
+as from inclinometer 293. The inclinometer provides infor L
+mass of system
+mation signals as to pitch and pitch rate. To permit con
+Distance from cluster center to wheel center 5.581"
+trolled banking into turns by the device (thereby to increase 1"
+Distance from wheel center to wheel center 9.667"
+Depth of stair
+109"
+stability while turning) it is also feasible to utilize a second O d
+Height of stair
+6.85"
+inclinometer to provide information as to roll and roll rate or, h
+Distance between the edge of the riser and 3.011"
+alternatively, the resultant of system weight and centrifugal
+the wheel contact point when four wheels
+are in contact with the stairs and the lower
+force. Other inputs 294 may also be desirably provided as an
+wheels are against the riser. This can be
+input to the peripheral microcontroller board 291. Such 15
+calculated using z = (1'-h)' - r.
+Radius of the wheel
+3.81"
+other inputs may include signals gated by switches (knobs
+and buttons) for chair adjustment and for determining the
+mode of operation (such as lean mode or balance mode
+The following conventions have been employed in using
+described below). The peripheral microcontroller board 291 these
+variables and those in Table 2 below in connection
+also has inputs for receiving signals from the battery stack with the description below:
+271 as to battery voltage, battery current, and battery tem
+1. Variables defined in world coordinates are named using
+perature. The peripheral microcontroller board 291 is in
+a single subscript in capital letters. World coordinates
+communication over bus 279 with the central microcontrol
+are coordinates fixed to the earth (inertial).
+
+er board 272.
+
+FIG. 30 is a logical flow diagram followed by the central
+
+2. Variables defined in relative coordinates are named
+
+25
+
+with a dual subscript. The subscripts indicate the end
+points of the variable. The order of the subscripts
+indicates the sign of the variable. For example, 6 is
+the angle between the post and the cluster leg where
+clockwise rotation from the cluster post is positive (see
+note 4). A cluster's "leg" is the line segment from the
+
+microcontroller board 272 of FIG. 27 in the course of one
+
+control cycle. For diagnostic purposes, the cycle begins at
+step 301, checking for the presence of any input from the
+technician. The next step, 302, is to read the driver's inputs 30
+from the joystick, switches, knobs, and buttons. Next, in step
+303, the state variables of the device are read as inputs. Next,
+
+center of the cluster to the center of the wheel that is
+
+currently being balanced on. A cluster's "post” is the
+
+in step 3011, the technician's display is updated (in case of
+diagnostic use), and then, in step 304, the program state is 35
+
+line segment from the system's center of mass to the
+center of the cluster.
+
+modified based upon the input variables obtained in steps
+301 through 303. A test is then made whether to exit the
+program (step 3041), and if the determination is yes, all of
+the motor amplifiers are disabled (step 3042), and the
+program is ended. Otherwise, a safety check is made (in step
+3043) of pertinent variables (such as temperature, battery
+
+3. Lower case subscripts are used to indicate other
+attributes, e.g., right/left, etc.: r=right; l=left; ref
+=reference; fefinish; s-start.
+
+4. All angles are positive in the clockwise direction, where
+positive travel is in the positive x direction.
+
+5. A dot over a variable indicates differentiation in time,
+voltage, etc., and if the result is negative, the wheel and
+e.g., 6.
+cluster motor amplifiers are disabled (step 3044), and the
+FIG.
+32 illustrates angle and motion variables pertinent to
+program state is then modified (step 3055). However, several
+defining orientation of the cluster in relation to the device
+levels of ckecking are suitably employed so that the motor 45 and
+to the world. These variables are defined as set forth in
+amplifiers are disabled only after threshhold alarm condi the following
+table.
+tioners have been established. If the safety check in step
+
+3043 is positive or after the program state is modified in step
+3055, calculations are performed seriatim for the cluster
+
+TABLE 2
+
+torque signal (step 305), wheel torque signal (step 306), tilt 50
+velocity signal (step 307), roll velocity signal (step 308), and
+height velocity signal (309). The results of these calculations Wariable
+are then provided as an output to their respective devices in 6c
+step 3010. Under step 3091, the program waits for the next
+timing signal to begin the control cycle again. The frequency 55 8w
+of the control cycles in this embodiment is in the range of
+200-400 Hz., which provides satisfactory control respon 9pc
+siveness and stability.
+FIG. 31 illustrates variables defining the dimensions of
+the cluster design of FIGS. 11-26 and of a hypothetical stair
+with respect to which the cluster design can be used for
+ascent or descent. Set forth in the following table are ,
+variables used to identify these dimensions shown in FIG.
+31. "Nominal size” means typical dimensions of these items, 65
+in connection with which the embodiment of FIGS. 1820
+
+has been implemented and functions.
+
+8
+
+Name
+
+Angle and Motion Variables.
+Description
+
+Theta Cluster
+
+The angle between vertical and the line
+from the wheel that is currently being
+balanced on to the cluster hub.
+
+Theta Wheel
+
+The angle between vertical and an
+arbitrary radial line on the wheel.
+Theta Post-Custer The angle centered at the cluster hub
+that starts at the post and ends at the
+leg being balanced on. (8 = 180
+when balanced on one wheel with the
+
+Theta Post-Wheel
+
+Theta Inclinometer
+
+leg vertical.)
+The angle between the post and the
+arbitrary line on the wheel.
+The linear position of the wheel center
+along the floor in reference coordinates.
+The angle of the inclinometer with
+respect to gravity.
+
+Theta (Pitch Angle) The actual angle between center of mass
+
+--- REVIEWED TRANSCRIPTION PAGE 43 OF 48 ---
+
+5,701,965
+14
+system. In turn the average of these signals, determined via
+summer 3317 and divider 3318, produces a linear velocity
+TABLE 2-continued
+error signal Displacement error signal x is derived by
+Angle and Motion Wariables.
+integrating and rein integrators 3310 and 3309, limiting
+the results in saturation limiters 3312 and 3311, and then
+Description
+Wariable Name
+averaging their outputs via summer 3313 and divider 3315.
+The difference between these displacements, determined via
+of the transporter and the wheel center.
+This is derived by compensating
+summer 3314, produces the yaw error signal y.
+inclinometer angle 8 for 8 and 9.
+The yaw error signal x is run through a standard
+The angle between the X axis of the
+Yaw Angle
+proportional-plus-integral-plus-derivative
+(PID) control
+device and the x-axis of the reference
+loop 3316, the output of which is combined with the output
+frame.
+of the basic balancing torque command of summer 3319, to
+produce the individual wheel torque commands, which
+FIGS. 33-35 are block diagrams showing control cause the wheels to maintain fore-aft stability and also cause
+algorithms, suitable for use in conjunction with the control 15 the transporter to align itself with the axes of, and follow the
+assemblies of FIG. 27, to provide stability for a device origin of, the reference coordinate system as directed by
+according to the embodiment of FIGS. 11-21 when balanced directional input 3300.
+on a pair of wheels, both during locomotion and in a fixed
+FIG. 34 is a schematic of the cluster control arrangement.
+position.
+The orientation of the clusters can be controlled by direc
+FIG. 33 shows the control arrangement for the motors of tional inputs 3400. If desired, the same joystick as used to
+the right and left wheels (corresponding to items 252a and 2 provide directional inputs 3300 to the wheels may be
+252b of FIG. 25). The arrangement has inputs of (linear switched by a separate switch, to be operative, in a separate
+velocity of the left wheel relative to the world coordinate mode, to provide the directional inputs 3400 specifying the
+system) and re. (linear velocity of the right wheel), in orientation of the clusters. In a fashion generally analogous
+addition to directional inputs 3300 determined by joystick to the signal path through summers 3306 and 3305 of FIG.
+position along X and Y axes of a reference coordinate 25 33, here the joystick signals resulting from positive displace
+system. Inputs 0, 0, and error signals x and (described ment in the X direction are added, and signals resulting from
+below), subject to gains K1, K2, K3, and K4 respectively, positive displacement in the Y direction are subtracted from
+become inputs to summer 3319, which produces the basic one another, in summers 3402 and 3401 to provide left and
+balancing torque command for the wheels, in the general right cluster rotation rate signals, which, after integration in
+integrators 3404 and 3403 respectively, provide desired
+manner described above in connection with FIG. 6 above.
+The output of summer 3319 is combined with the output of cluster angle orientation information to left and right cluster
+yaw PID loop 3316 (described below) in summer 3320, then summers 3406 and 3405 respectively.
+divided in divider 3322 and limited in saturation limiter
+Absent directional inputs 3400, the preferred cluster
+3324, to produce the left wheel torque command. Similarly, orientation, normally 0-II radians, is provided over line
+the output of summer 3319 is combined with the output of 35 3413 of FG. 34 to each of the summers 3406 and 3405,
+PID loop 3316 in summer 3321, then divided in divider 3323 along with signals showing actual cluster orientation 6
+and limited in saturation limiter 3325, to produce the right and 0 (derived by passing cluster angle rate signals from
+left and right cluster encoders through integrators 3412 and
+wheel torque command.
+In FIG. 33, a directional input along the X axis moves the 3411 respectively). The outputs of the summers 3406 and
+reference coordinate system along its X axis relative to the 3405 are therefore cluster position error signals for the left
+world coordinate system (which represents the travelled and right clusters respectively. These signals are fed through
+surface), at a velocity proportional to the displacement of the PID control loops 3408 and 3407 and saturation limiters
+joystick. A directional input along the Y axis rotates the 3410 and 3409 to drive the left and right cluster motors.
+FIG. 35 is a schematic, relating to FIG. 33, showing the
+reference coordinate system about its Z axis at an angular
+velocity proportional to the displacement of the joystick. It 45 arrangement by which the state variables indicating wheel
+will be appreciated that motion of the joystick in the positive position, pitch, and pitch rate are determined so as to
+X direction is here interpreted to mean forward motion; compensate for the effects of cluster rotation. As mentioned
+motion of the joystick in the negative X direction means in Table 2, the pitch angle 6 is the actual angle between the
+reverse motion. Similarly, motion of the joystick in the center of mass of the transporter and the center of the wheel
+positive Y direction means leftward turning, counter 50 that is currently being balanced on. The angle 8, measured
+clockwise as viewed from above; motion of the joystick in by the inclinometer is the angle of the post with respect to
+the negative Y direction means rightward turning clockwise the vertical. Hence the actual pitch angle 0 is based on 6
+is subtracted by
+as viewed from above. Hence the directional inputs Y and X from which a correction signal 6,
+is calculated in summer
+are given deadband via deadband blocks 3301 and 3302 summer 3518. The signal 6,
+respectively, to widen the neutral position of the joystick, 55 3516 as 0+10. The signal 6 is determined as the
+then subject to gains K11 and K10, then rate-limited by average of the left and right post-to-cluster angles 6 and
+limiters 3303 and 3304 respectively, which limit the angular 0 obtained from integration in integrators 3509 and 3510
+and linear accelerations respectively of the reference coor of left and right cluster encoder outputs; the average is
+dinate system. The sum of these outputs achieved through obtained by using summer 3511 and divider 3512. Assuming
+summer 3305 becomes the reference velocityx, whereas that the transporter is balanced, 6 can be derived from 6
+the difference of these outputs achieved through summer using the formula
+3306 becomes the reference velocity These reference veloci
+13
+
+ties are subtracted in summers 3308 and 3307 from com
+
+pensated linear velocity input signals and r0,r for left and
+
+right wheels (see description below in connection with FIG. 65
+
+35 for these quantities) to obtain velocity error signals x and
+x, for left and right wheels within the reference coordinate
+
+This calculation is achieved in section 3515. The 0 is
+differentiated by differentiator 3517 to provide a correction
+
+--- REVIEWED TRANSCRIPTION PAGE 44 OF 48 ---
+
+5,701,965
+16
+obtained by running the left and right wheel encoder outputs
+through integrators 3713 and 3712 are also subtracted by
+yielding the corrected output 8.
+3703 and 3702.
+Similarly, the linear left and right velocities re, and r summers
+The use of the lean mode provides a powerful and stable
+6, for left and right wheels are derived from differentiation method to achieve climbing over obstacles. The climb ratio
+by differentiators 3507 and 3508 of the derived linear left is determined by the multiplier selected for gain 3701 of
+and right position signals ré, and re. The position signals, FIG. 37. Once this is determined (an item that can be
+in turn, are derived by multiplying by a gain of r in selected manually or automatically determined following
+multipliers 3505 and 3504 the determined absolute angular obstacle measurement using appropriate spatial sensors or
+positions 0 and 0 of the left and right wheels. The O determined in whole or in part empirically based on the state
+angular positions 6 and 0 are determined by first inte variables themselves) the device can surmount obstacles by
+grating the left and right wheel encoder signals 0w and the subject's leaning or causing the device to lean in the
+6 win integrators 3501 and 3592 to obtain 6 and 9. desired direction. The clusters rotate to maintain balance at
+These signals are then fed into summers 3503 and 3504 the same time that they, with the wheels, are rotating over
+where they are compensated for the effects of cluster rotation 15 the obstacles. When the device does not encounter obstacles,
+by the addition of 0 and the quantity 200-n) derived it may desirably be operated in the balance mode of FIGS.
+from summer 353 and divider 3514.
+and 34, with the clusters slaved to II radians and the
+FIGS. 36 and 37 are block diagrams showing control 33
+wheels
+maintaining balance and causing desired locomotion.
+algorithms, suitable for use in conjunction with the control
+The
+transitions
+wheelbalancing mode and clus
+assemblies of FIG. 27, to permit a device according to the 20 terlean mode are between
+a
+matter
+attention. FIG. 38 is a
+embodiment of FIGS. 11-21 to achieve stair-climbing and block diagram of the staterequiring
+of the device, utilizing the
+obstacle traversal in accordance with a first embodiment
+of FIGS. 33-37, among idle, lean, and balance
+permitting climbing. In this embodiment the clusters are put embodiment
+modes. At key times, there will be no state change until it is
+in a lean mode, in which they are rotated to attempt to determined
+that (0-1) mod (2II/3)=0. This point, at
+maintain balance in the same general manner as used in 25 which the center
+mass is approximately above the ground
+normally balancing by wheel rotation as shown in FIG. 33. contacting pair, isofreferred
+as a "zero crossing" below in
+The same basic equations are used. In FIG. 36, summer 3601 this description and in thetofollowing
+claims. At the zero
+provides correction signals to drive the left and right crossing, the cluster is in a position so that,
+for example, it
+clusters, derived, among other things, from inclinometer can be slaved to the 6=n position in the manner
+FIG.
+3602, which provides pitch and pitch rate signals 0 and 6 via 30 34. After beginning at block 3801, the device's initialof state
+gains K1 and K2 respectively. The encoder outputs from left is To Idle 3802, from which it enters and remains in Idle
+15
+
+to pitch rate signal 6, which is supplied by summer 3519,
+
+and right clusters provide inputs of 6c and bec, which are
+
+3803, until the Run/Idle switch is moved into the Run
+
+integrated by integrators 3603 and 3604 respectively and position. Once in that position, the device enters the From
+saturation limited by limiters 3605 and 3606 respectively to Idle state 3804. Because there is no absolute reference on
+produce 6 and 6. These values, when averaged via 35 either of the clusters, we assume that the device is on flat,
+summer 3608 and divider 3610, result in angular displace level ground at state "From Idle" 3804, where an absolute
+ment 6, which is provided through gain K3 as an addi reference is established. All movement of the clusters deter
+tional input to summer 3601. The velocity 0, determined mined by the incremental encoders is relative to this refer
+as the average of 6 and 6, via summer 3617 and ence. At this point, or at any later point, if the Run/Idle
+divider 3618, is a further input to summer 3601, this time via switch is moved back to the Idle position, the state returns
+gain K4. The output of summer 3601 provides uniform drive over path 3812 to the To Idle state 3802. Otherwise, the state
+of the left and right cluster motors via summers 3611 and becomes Wait 3805, and remains there, until it is determined
+that 0=0, whereupon the state becomes To Lean 3806. To
+3612, dividers 3613 and 3614, and saturation limits 3615
+and 3616 respectively. In addition, however, the twist signal, Lean then moves to Lean 3807, and remains there, unless a
+via PID control loop 3609, provides a differential drive 45 switch is moved. If the Lean/Balance switch is then placed
+through summers 3611 and 3612 to the left and right cluster in the Balance position and if the clusters experience a zero
+motors. The twist signal is derived by using summer 3607 to crossing, then the state moves successively to From Lean
+3808, to To Balance 3809, and finally to Balance 3810. If the
+subtract the signals 8 and 6 from one another.
+Lean/Balance switch is moved to the Lean position, the state
+When the clusters are in the lean mode, the wheels are in
+a slave mode, in which the wheels are driven as a function 50 moves to From Balance 3811 and back to To Lean 3806.
+
+The Wait state allows a smooth startup of the wheel and
+cluster motors. Without it, the control loop would immedi
+ately attempt to compensate for a potentially large error
+produce eew a signal that is fed to summers 3703 and signal from the inclinometer. By starting at a zero crossing,
+3702 to control the left and right wheel motors via PID 55 this is avoided. An additional technique of monitoring 6 and
+control loops 3705 and 3704 and saturation limits 3707 and requiring it to be below a certain threshold at a zero crossing
+3706 respectively. A comparison of FIGS. 37 and 34 show provides an even softer start.
+of the rotation of the clusters. This is shown in FIG. 37,
+
+where 6, derived from FIG. 36, as output from divider
+3610, is multiplied by a climb ratio constant in gain 3701 to
+
+that the wheels are slaved to the clusters in FG. 37 in the
+same manner that the clusters are slaved to the vertical
+
+FIGS. 39A-B, 40A-B, 41A-B, and 42A-C illustrate the
+
+sequences in a control arrangement, to permit a device
+
+radians) input 3413 in FIG. 34. In FIG. 37, the summers according to the embodiment of FIGS.11-21 to achieve stair
+3703 and 3702 have two other inputs each. One input is to climbing in accordance a second embodiment. Four basic
+track the results of directional inputs 3714 from the joystick, sequences of operation are involved in this embodiment:
+which, in a manner analogous to the processing in FIG. 34, start; reset angle origins; transfer weight; and climb. This
+via summers 3709 and 3708 and integrators 3711 and 3710, embodiment, among others, may be conveniently imple
+produces left and right control signals provided as inputs 65 mented in the control arrangement of FIG. 27. Block dia
+summers 3703 and 3702 respectively. Another input is to grams showing control algorithms for achieving these four
+track the effects of wheel rotation, so 6
+
+and 6.
+
+sequences are shown in FIGS. 43 (start), 44 (transfer
+
+--- REVIEWED TRANSCRIPTION PAGE 45 OF 48 ---
+
+5,701,965
+17
+18
+
+FIGS. 41A and 41B illustrate orientation of the cluster in the transfer weight sequence. In this sequence, the weight of the device and of the subject is transferred from the wheel on the lower stair to the wheel on the upper stair. It is here implemented as a pre-programmed operation based on the known geometry of the stairs and the cluster.
+
+What is claimed is:
+
+1. A device, for transporting a human subject over a surface that may be irregular and may include stairs, the device comprising: (a) a support for supporting the subject, the support having left and right sides and defining fore-aft and lateral planes; (b) a plurality of support members on each side of the a support, each support member being mounted to permit complete travel around an axis and joined to a discrete ground-contacting component, the ground-contacting component having a point of contact with the surface 19 and occupying only a portion of the entire angular distance around the axis; the support and the support members being parts of an assembly; (c) a motorized drive arrangement, mounted to the assembly, coupled to the support members, for causing locomotion of the assembly and the subject over the surface; and (d) a control loop, in which the motorized drive arrange ment is included, for dynamically maintaining stability in the fore-aft plane by operation of the motorized drive arrangement so that the net torque experienced by the assembly about the point of contact with the surface, taking into account torques caused by gravity as well as by all other external forces and by the motorized drive, causes a desired acceleration of the assembly.
+
+2. A device according to claim 1, wherein the axes of all of the support members are substantially collinear.
+
+3. A device according to claim 2, wherein each ground contacting component is an arcuate element mounted to its respective support member, each support member being rotatably mounted and motor-driven about a central axis defined by the axes.
+
+4. A device according to claim 3, wherein the radially outermost extent of each arcuate element has a generally constant main radius of curvature conforming generally with that of a circle having a radius equal to such extent.
+
+5. A device according to claim 4, wherein each arcuate element has a leading portion and a trailing portion deter mined in relation to forward motion of the assembly, the leading portion contacting the ground first during forward motion, each portion having a tip, and wherein the radius of curvature of the arcuate element near the tip of each leading portion is somewhat smaller than the element's main radius of curvature.
+
+6. A device according to claim 4, wherein each arcuate element has a leading portion and a trailing portion deter mined in relation to forward motion of the assembly, the leading portion contacting the ground first during forward motion, each portion having a tip, and wherein the radius of curvature of each arcuate element near the tip of its trailing portion is somewhat smaller than such element's main radius of curvature.
+
+7. A device according to claim 4, wherein each arcuate element has a leading portion and a trailing portion deter mined in relation to forward motion of the assembly, the leading portion contacting the ground first during forward motion, each portion having a tip, and wherein the radius of curvature of each arcuate element near at least one of its tips differs from the main radius of curvature.
+
+8. A device according to claim 4, wherein each arcuate element has a leading portion and a trailing portion deter mined in relation to forward motion of the assembly, the leading portion contacting the ground first during forward motion, each portion having a tip, and wherein at least one of the tips of each arcuate element is deflectably mounted and is coupled to a deflection arrangement, so that on actuation the local radius of curvature may be modified.
+
+9. A device according to claim 3, wherein the support is proximate to the ground to permit a subject to stand thereon.
+
+10. A device according to claim 9, further comprising a handle, affixed to the support. having a grip at approximately waist height of the subject, so that the device may be operated in a manner analogous to a scooter.
+
+--- REVIEWED TRANSCRIPTION PAGE 46 OF 48 ---
+
+5,701,965
+19
+20
+
+11. A device according to claim , further comprising: a joystick, mounted on the handle, for use by the subject in controlling direction of the device.
+
+12. A device according to claim 9, further comprising: leaning means for sensingleaning of the subject in a given direction and for controlling the motorized drive to cause the device to move in the direction in which the subject may lean.
+
+13. A device according to claim 3, further comprising: drive control means, including the control loop, for driv ing the support members in a first mode wherein a first arcuate element in each group of axially adjacent arcuate elements generally remains in contact with the ground up to a point near in arcuate distance to where the next succeeding arcuate element comes in contact with the ground, and so on as successive arcuate elements come in contact with the ground, so as to provide substantially continuous rolling motion of the device along the arcuate elements.
+
+14. A device according to claim 13, wherein the drive control means includes means for driving the support mem bers in a second mode to permit ascent and descent of stairs and other surface features.
+
+15. A device according to claim 14, further comprising: means for causing a second one of the arcuate elements of each group to land on a succeeding surface feature, which may include a step, when a first one of the elements of each group is on a preceding surface feature.
+
+16. A device according to claim 1, wherein the ground contacting components are wheels and the support members on the left and right sides of the vehicle are in each case coupled so as to provide a cluster of wheels on each of the left and right sides of the vehicle respectively, the wheels of each cluster being capable of being motor-driven indepen dently of the cluster.
+
+17. A device according to claim 16, wherein the axes of all of the support members are substantially collinear and define a central axis.
+
+18. A device according to claim 17, wherein the distance from the central axis through a diameter of each wheel is approximately the same for each of the wheels in the cluster.
+
+19. A device according to claim 17, wherein each cluster has two wheels of substantially equal diameter.
+
+20. A device according to claim 17, wherein each cluster has three wheels of substantially equal diameter.
+
+21. A device according to claim 17, further comprising: cluster control means for controlling the angular orienta tion of each cluster about the central axis; and wheel control means for controlling separately, as to the wheels of each cluster, the rotation of wheels in contact with the ground.
+
+22. A device according to claim 21, wherein the wheel control means has a balance mode, utilizing the control loop, in which the wheels of each cluster in contact with the ground are driven in such a manner as to maintain balance of the device in the fore-aft plane.
+
+23. A device according to claim 21, wherein the wheel control means has a slave mode in which the wheels are driven as a function of the rotation of the clusters; and the cluster control means has a lean mode, utilizing the control loop, in which the clusters are driven in such a manner as to tend to maintain balance of the device in the fore-aft plane while the wheels are in the slave mode, so as to permit the device to ascend or descend stairs or other surface features.
+
+24. A device according to claim 23, wherein the wheel control means has a balance mode, utilizing the control loop, in which the wheels of each cluster in contact with the ground are driven in such a manner as to maintain balance of the device in the fore-aft plane.
+
+25. A device according to claim 24, wherein the wheel control means has a transition mode, used in the transition 21 from the slave mode to the balance mode, operative to prevent entering the balance mode until a zero crossing by the clusters has been sensed.
+
+--- REVIEWED TRANSCRIPTION PAGE 47 OF 48 ---
+
+5,701,965
+21
+22
+
+26. A device according to claim 21, further comprising: coordination control means for coordinating operation of the cluster control means with that of the wheel control means, the coordination control means having a stair climbing mode to cause steps as follows: (1) start, in which the assembly, balanced on a first wheel pair, one from each cluster, is disposed adjacent to a stair and the clusters are then rotated so that a second wheel pair is resting on the stair; (2) transfer weight, in which the weight of the device and the subject is transferred from the lower first wheel pair to the second wheel pair on the stair by motion of the clusters relative to the assembly while the wheels are driven to maintain the position of the clusters relative to the world; (3) climb, in which the second wheel pair is driven to move the device forward to the riser of the succeeding stair while simultaneously the clusters are driven to position the next wheel pair on the tread of the suc ceeding stair, this step being carried out while the wheel control means is in the balance mode; and wherein steps (2) and (3) are alternated until the last stair, at which point normal balance mode of the wheel control means is entered into.
+
+27. A device according to claim 23, further comprising: slave function adjustment for modifying the function in the slave mode, so that the device may accommodate climbing and descent of stairs and of surface features having varying geometries.
+
+28. A device according to claim 17, further comprising: a joystickfor use by the subject in controlling direction of the device.
+
+29. A device according to claim 17, further comprising: leaning means for sensing leaning of the subjectin a given direction and for controlling the motorized drive to cause the device to move in the direction in which the subject may lean.
+
+30. A device according to claim 29, wherein the leaning means includes a forceplate.
+
+31. A device according to claim 29, wherein the leaning means includes a proximity sensor.
+
+32. A device according to claim 17, wherein the support includes a chair having a seat, hingedly attached to the assembly, so as to have a first position in which the subject may be seated on the seat and a second position in which the subject may stand.
+
+33. A device according to claim 17, wherein the device has a roll axis and a pitch axis, further comprising: attitude determination means for determining the attitude of the support; attitude control means for controlling the attitude of the support relative to the ground-contacting member.
+
+34. A device according to claim 23, further comprising: roll adjustment means for permitting adjustment of the angular orientation of the support with respect to the ground-contacting module about an axis approximately parallel to the roll axis of the device, the roll adjustment means controlled by the attitude control means.
+
+35. A device according to claim 24, further comprising: banking means for causing the roll adjustment means, in the course of a turn, to bank the support in the general direction of turning. 22
+
+36. A device according to claim 33, further comprising: tilt adjustment means for permitting adjustment of the angular orientation of the support with respect to the ground-contacting module about an axis approximately parallel to the pitch axis of the device, the tilt adjust ment means controlled by the attitude control means.
+
+37. A device according to claim 17, further comprising: height adjustment means for adjusting the height of the support relative to the ground.
+
+38. A device according to claim 37, wherein the height adjustment means includes a variable extension between the support and the ground-contacting module.
+
+39. A device according to claim 17, wherein the support is proximate to the ground to permit a subject to stand thereon.
+
+40. A device according to claim 39, further comprising a handle, affixed to the support, having a grip at approximately waist height of the subject, so that the device may be operated in a manner analogous to a scooter.
+
+41. A device according to claim 39, further comprising: leaning means for sensingleaning of the subject in a given direction and for controlling the motorized drive to cause the device to move in the direction in which the subject may lean.
+
+42. A device according to claim 41, further comprising: a joystick, mounted on the handle, for use by the subject in controlling direction of the device.
+
+--- REVIEWED TRANSCRIPTION PAGE 48 OF 48 ---
+
+5,701,965
+23
+24
+
+43. A device according to claim 1, wherein the support is proximate to the ground to permit a subject to stand thereon.
+
+44. A device according to claim 43, further comprising: a handle, affixed to the support, having a grip at approxi mately waist height of the subject, so that the device may be operated in a manner analogous to a scooter.
+
+45. A device according to claim 43, wherein the ground contacting components are wheels.
+
+46. A device according to claim 43 further comprising: leaning means for sensingleaning of the subject in a given direction and for controlling the motorized drive to cause the device to move in the direction in which the subject may lean.
+
+47. A device according to claim 44, further comprising: a joystick, mounted on the handle, for use by the subject in controlling direction of the device.
+
+48. A device according to claim 1, wherein the control loop includes means for performing the following steps on a cyclical basis: (1) reading inputs provided by the subject; (2) reading state variable inputs; (3) modifying the program state based upon the state variables; and (4) performing calculations for controlling the motorized drive based on the subject-provided inputs and the state variable inputs.
+
+49. A device, for transporting a payload over a surface that may be irregular and may include stairs, the device com prising: (a) a support for supporting the payload, the support having left and right sides and defining fore-aft and lateral planes; (b) a plurality of support members on each side of the support, each support member being mounted to permit complete travel around an axis and joined to a discrete ground-contacting component, the ground-contacting component having a point of contact with the surface and occupying only a portion of the entire angular 23 distance around the axis; the support and the support members being parts of an assembly; (c) a motorized drive arrangement, mounted to the assembly, coupled to the support members, for causing locomotion of the assembly and the payload over the surface; and (d) a control loop. in which the motorized drive arrange ment is included, for dynamically maintaining stability in the fore-aft plane by operation of the motorized drive arrangement so that the net torque experienced by the assembly about the point of contact with the surface, taking into account torques caused by gravity as well as by all other external forces and by the motorized drive, causes a desired acceleration of the assembly,
+
+50. A device according to claim 49, wherein the axes are substantially collinear and define a central axis, and the ground-contacting components are wheels and the support members on the left and right sides of the vehicle are in each case coupled so as to provide a cluster of wheels on each of the left and rightsides of the vehicle respectively, the wheels of each cluster being capable of being motor-driven inde pendently of the cluster.
+
+51. A device according to claim 49, wherein the axes substantially collinear and each ground-contacting compo 24 nent is an arcuate element mounted to its respective support member, each support member being rotatably mounted and motor-driven about a central axis defined by the axes.
+
+52. A device according to claim , further comprising: cluster control means for controlling the angular orienta tion of each cluster about the central axis; and wheel control means for controlling separately, as to the wheels of each cluster, the rotation of wheels in contact with the ground.
+
+53. A device according to claim 52, wherein the wheel control means has a slave mode in which the wheels are driven as a function of the rotation of the clusters; and the cluster control means has a lean mode, utilizing the control loop, in which the clusters are driven in such a manner as to tend to maintain balance of the device in the fore-aft plane while the wheels are in the slave mode, so as to permit the device to ascend or descend stairs or other surface features.
+
+54. A device according to claim 52, wherein the wheel control means has a balance mode, utilizing the control loop, in which the wheels of each cluster in contact with the ground are driven in such a manner as to maintain balance of the device in the fore-aft plane. k 3 is
+

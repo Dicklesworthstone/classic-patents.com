@@ -15,6 +15,7 @@ import type {
   EquationVariable,
 } from "@/types/equation";
 import { COLOR_STYLES, prepareInteractiveLatex } from "./colorPalette";
+import { formatEquationTelemetryValue } from "./equationValueFormatting";
 
 interface ColorizedEquationProps {
   equation: ColorizedEquationModel;
@@ -60,9 +61,7 @@ export function ColorizedEquation({
     if (activeVar.telemetryKey && params[activeVar.telemetryKey] !== undefined) {
       const rawVal = params[activeVar.telemetryKey];
       if (typeof rawVal === "number") {
-        return activeVar.formatValue
-          ? activeVar.formatValue(rawVal)
-          : `${rawVal.toFixed(2)} ${activeVar.unit}`;
+        return formatEquationTelemetryValue(rawVal, activeVar);
       }
       return String(rawVal);
     }
@@ -163,6 +162,9 @@ export function ColorizedEquation({
 
   return (
     <div
+      data-testid="colorized-equation"
+      data-equation-id={equation.id}
+      data-patent-id={equation.patentId}
       className={`rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950/90 shadow-sm overflow-hidden transition-all text-xs font-sans text-ink-900 dark:text-parchment-100 ${className}`}
     >
       {/* 1. Header Bar */}

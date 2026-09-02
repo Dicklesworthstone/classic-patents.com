@@ -30,14 +30,14 @@ describe("Cross-Face Integration", () => {
 
     globalTransportBus.registerUpdater(id, () => ({ timeStepDt: 1 / 60 }), "TS_FALLBACK");
     const step = () => ({ timeStepDt: 1 / 60 });
-    transport.pump(performance.now() + 16, step);
+    transport.pump(1000, step);
     expect(transport.lastFrame.tick).toBeGreaterThan(0);
     expect(transport.lastFrame.provenance).toBe("TS_FALLBACK");
     const first = transport.lastFrame.digest;
     expect(first).not.toBe("00000000");
 
     // Identical logical state (wall clock excluded from digest) -> identical tape digest.
-    transport.pump(performance.now() + 32, step);
+    transport.pump(1020, step);
     expect(transport.lastFrame.digest).toBe(first);
 
     globalTransportBus.unregisterUpdater(id);
@@ -48,8 +48,51 @@ describe("Cross-Face Integration", () => {
     const transport = globalTransportBus.getTransport(id);
     globalTransportBus.registerUpdater(id, () => ({ timeStepDt: 1 / 60 }), "WASM");
     const step = () => ({ timeStepDt: 1 / 60 });
-    transport.pump(performance.now() + 16, step);
+    transport.pump(1000, step);
     expect(transport.lastFrame.provenance).toBe("WASM");
+    globalTransportBus.unregisterUpdater(id);
+  });
+
+  test("a computed subscriber snapshot replaces the cold-start placeholder honestly", () => {
+    const id = "us-test-snapshot-publisher";
+    const transport = globalTransportBus.getTransport(id);
+
+    expect(transport.lastFrame.provenance).toBe("HONEST_PLACEHOLDER");
+    expect(
+      globalTransportBus.publishSnapshot(id, {
+        domain: "aerodynamics_mbd",
+        refusal: { isRefused: false },
+        aero: {
+          airspeedMps: 12,
+          altitudeMeters: 3,
+          angleOfAttackRad: 0,
+          sideslipRad: 0,
+          pitchRateRps: 0,
+          rollRateRps: 0,
+          yawRateRps: 0,
+          liftNewtons: 400,
+          inducedDragNewtons: 20,
+          parasiticDragNewtons: 10,
+          thrustNewtons: 0,
+          elevatorDeflectionDeg: 0,
+          rudderDeflectionDeg: 0,
+          wingWarpDeflectionDeg: 0,
+        },
+      }),
+    ).toBe(true);
+    expect(transport.lastFrame.provenance).toBe("TS_FALLBACK");
+    expect(transport.lastFrame.telemetry.aero?.liftNewtons).toBe(400);
+    expect(transport.lastFrame.digest).not.toBe("00000000");
+  });
+
+  test("a subscriber snapshot cannot overwrite a registered owner", () => {
+    const id = "us-test-snapshot-with-owner";
+    const transport = globalTransportBus.getTransport(id);
+    globalTransportBus.registerUpdater(id, () => ({ timeStepDt: 1 / 60 }), "WASM");
+
+    expect(globalTransportBus.publishSnapshot(id, { timeStepDt: 1 })).toBe(false);
+    expect(transport.lastFrame.telemetry.timeStepDt).not.toBe(1);
+
     globalTransportBus.unregisterUpdater(id);
   });
 
@@ -77,13 +120,13 @@ describe("Cross-Face Integration", () => {
     };
     globalTransportBus.registerUpdater(id, integrate, "TS_FALLBACK");
 
-    transport.pump(performance.now() + 16, integrate);
+    transport.pump(1000, integrate);
     const first = transport.lastFrame.digest;
     const tickAfterOne = transport.lastFrame.tick;
     expect(tickAfterOne).toBeGreaterThan(0);
     expect(first).not.toBe("00000000");
 
-    transport.pump(performance.now() + 32, integrate);
+    transport.pump(1020, integrate);
     expect(transport.lastFrame.tick).toBeGreaterThan(tickAfterOne);
     expect(transport.lastFrame.digest).not.toBe(first); // state advanced -> tape moved
     expect(transport.lastFrame.provenance).toBe("TS_FALLBACK");

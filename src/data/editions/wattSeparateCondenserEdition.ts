@@ -287,7 +287,9 @@ export const WATT_SEPARATE_CONDENSER_PARALLEL_READINGS: Readonly<
     "General statement declaring the foundational thermodynamic objective: reducing steam and coal consumption by fundamentally restructuring engine heat flows.",
   ],
   12: ["Legal execution testimonium signed and sealed by James Watt on April 25, 1769."],
-  13: ["Inventor signature of James Watt."],
+  13: [
+    "Formal inventor signature and seal of James Watt executing the letters patent specification.",
+  ],
   14: [
     "Chancery acknowledgment and official enrollment recording on April 29, 1769 in the ninth year of King George III.",
   ],

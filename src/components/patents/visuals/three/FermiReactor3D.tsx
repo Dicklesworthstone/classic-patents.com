@@ -4,6 +4,7 @@ import { Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-re
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
+import { ensureGenericWasm } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -44,6 +45,10 @@ export function FermiReactor3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+
+  useEffect(() => {
+    void ensureGenericWasm();
+  }, []);
 
   // Four-Factor Nuclear Physics Calculations
   const reactorKinetics = FrankenSimEngine.stepFermiReactor(
@@ -196,7 +201,7 @@ export function FermiReactor3D() {
 
         {/* Top-Left Camera View Presets Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-wrap items-center gap-1.5 p-1.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 shadow-sm max-w-[calc(100%-120px)] sm:max-w-[calc(100%-28rem)]">
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 shadow-sm max-w-[calc(100%-14rem)] sm:max-w-[calc(100%-28rem)]">
             {(
               [
                 ["iso", "Overview"],
@@ -211,7 +216,7 @@ export function FermiReactor3D() {
                 key={preset}
                 type="button"
                 onClick={() => applyCameraPreset(preset)}
-                className={`min-h-9 px-2 py-1 rounded-lg text-xs font-sans font-semibold transition-colors ${
+                className={`min-h-9 px-2 py-1 rounded-lg text-xs font-sans font-semibold shrink-0 whitespace-nowrap transition-colors ${
                   activeCamera === preset
                     ? "bg-amber-600 text-white shadow-xs"
                     : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800"
@@ -338,6 +343,48 @@ export function FermiReactor3D() {
             </div>
           </div>
         )}
+
+        {/* Bottom-Right SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="CP-1 FOUR-FACTOR KINETICS"
+          chips={[
+            {
+              label: "k_eff",
+              value: String(kEff),
+              tone: isSupercritical ? "hot" : isCritical ? "ok" : "warn",
+            },
+            {
+              label: "Thermal Power",
+              value:
+                reactorPowerWatts >= 1000
+                  ? `${(reactorPowerWatts / 1000).toFixed(1)} kW`
+                  : `${reactorPowerWatts.toFixed(0)} W`,
+            },
+            { label: "Reactivity ($)", value: reactivityDollars, unit: "$" },
+            {
+              label: "Rod Position",
+              value: `${controlRodWithdrawalPct.toFixed(1)}%`,
+              unit: "withdrawn",
+            },
+            { label: "Moderator", value: `${moderatorPurityPct.toFixed(1)}%`, unit: "purity" },
+            {
+              label: "Neutron Flux",
+              value: reactorKinetics.thermalNeutronFluxNPerCm2S.toExponential(2),
+              unit: "n/cm²s",
+            },
+            {
+              label: "Regime",
+              value: isSupercritical
+                ? "Supercritical"
+                : isCritical
+                  ? "Critical Steady"
+                  : "Subcritical Dampened",
+              tone: isSupercritical ? "hot" : isCritical ? "ok" : "warn",
+            },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -386,47 +433,6 @@ export function FermiReactor3D() {
           />
         </div>
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="CP-1 FOUR-FACTOR KINETICS"
-        chips={[
-          {
-            label: "k_eff",
-            value: String(kEff),
-            tone: isSupercritical ? "hot" : isCritical ? "ok" : "warn",
-          },
-          {
-            label: "Thermal Power",
-            value:
-              reactorPowerWatts >= 1000
-                ? `${(reactorPowerWatts / 1000).toFixed(1)} kW`
-                : `${reactorPowerWatts.toFixed(0)} W`,
-          },
-          { label: "Reactivity ($)", value: reactivityDollars, unit: "$" },
-          {
-            label: "Rod Position",
-            value: `${controlRodWithdrawalPct.toFixed(1)}%`,
-            unit: "withdrawn",
-          },
-          { label: "Moderator", value: `${moderatorPurityPct.toFixed(1)}%`, unit: "purity" },
-          {
-            label: "Neutron Flux",
-            value: reactorKinetics.thermalNeutronFluxNPerCm2S.toExponential(2),
-            unit: "n/cm²s",
-          },
-          {
-            label: "Regime",
-            value: isSupercritical
-              ? "Supercritical"
-              : isCritical
-                ? "Critical Steady"
-                : "Subcritical Dampened",
-            tone: isSupercritical ? "hot" : isCritical ? "ok" : "warn",
-          },
-        ]}
-      />
     </div>
   );
 }

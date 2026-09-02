@@ -1,0 +1,1460 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 29 ---
+
+                                                                                              USOO630223OB1
+(12) United States Patent                                                     (10) Patent No.:               US 6,302,230 B1
+        Kamen et al.                                                          (45) Date of Patent:                   Oct. 16, 2001
+(54) PERSONAL MOBILITY VEHICLES AND                                                  FOREIGN PATENT DOCUMENTS
+     METHODS                                                                   2048 593  5/1971 (DE).
+                                                                           31 28 112 A1       2/1983 (DE).
+(75) Inventors: Dean L. Kamen, Bedford; Robert R.                            341 1489 A1     10/1984 (DE).
+                      Ambrogi, Manchester; Robert J.                       3242880 A1         6/1989 (DE).
+                      Duggan, Northwood; J. Douglas Field,                   298 08091
+                      Bedford; Richard Kurt Heinzmann,                               U1      10/1998 (DE).
+                      Francetown, all of NH (US); Burl                       298 08 096
+               Amesbury, Cambridge, MA (US);                                          U1     10/1998 (DE).
+               Christopher C. Langenfeld, Nashua,                                 584127      6/1897 (EP).
+               NH (US)
+                                                                                           (List continued on next page.)
+(73) Assignee: DEKA Products Limited Partnership,
+                      Manchester, NH (US)                                                   OTHER PUBLICATIONS
+(*) Notice:           subject to any disclaimer, the term of this          Teruaki Self Supported Carrier Machine and Automatic
+                      patent is extended or adjusted under 35              Carrier Device Using the Same in Patent Abstracts of Japan,
+                      U.S.C. 154(b) by 0 days.                             Dec. 21, 1989, #63149523, Japanese Patent Office, Japan.
+                                                                           Kawaji, S., Stabilization of Unicycle. Using Spinning
+(21) Appl. No.: 09/325,978                                                 Motion, Denki Gakkai Ronbushi, D, vol. 107, Issue 1, Japan
+(22) Filed:     Jun. 4, 1999                                               (1987), pp. 21–28.
+                                                                           Schoonwinkel, A., Design and Test of a Computer Stabi
+                                                                           lized Unicycle, Stanford University (1988), UMI Disserta
+(51) Int. Cl." ........................... B60K31/00, B60K 28.00,              s.
+                                             B62D 63/00, B60Q 1/00
+(52) U.S. Cl. .......................... 180/171; 180/218; 180/271;        Vos, D., Dynamics and Nonlinear Adaptive Control of an
+                                                    180/21: 340/441        Autonomous Unicycle, Massachusetts Institute of Technol
+(58) Field of Search ..................................... 180/218, 271,   Ogy, 1989.
+                      180/274, 170, 171, 21, 41, 440; 340/438,
+                        441, 440, 439, 905, 936; 318/.465, 461,                            (List continued on next page.)
+                       798; 188/181 C; 280/455.1; 298/175, 5,
+                                                        2O R               Primary Examiner Brian L. Johnson
+                                                                           Assistant Examiner Matthew Luby
+(56)                     References Cited                                  (74) Attorney, Agent, or Firm-Bromberg & Sunstein LLP
+                U.S. PATENT DOCUMENTS                                      (57)                    ABSTRACT
+        849,270    4/1907 Schafer et al. .
+       2,742,973      4/1956 Johannesen.                                   An automatically balancing vehicle having a headroom
+       3,145,797      8/1964 Taylor.                                       monitor. The headroom monitor determines the difference
+       3.260,324      7/1966 Suarez.                                       between the maximum velocity of the vehicle and the
+       3,283,398     11/1966 Andren.                                       present velocity of the vehicle. An alarm receives a signal
+       3.288.234     11/1966 Feliz.                                        from the headroom monitor and produces a warning when
+       3,306,626      2/1967 Kawada.                                       the headroom falls below a specified limit.
+       3,348,518     10/1967 Forsyth et al..
+                   (List continued on next page.)                                          7 Claims, 16 Drawing Sheets
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 29 ---
+
+                                                                 US 6,302,230 B1
+                                                                            Page 2
+            U.S. PATENT DOCUMENTS                                                    5,241,875        9/1993 Kochanneck.
+                                                                                     5.248,007        9/1993 Watkins et al. .
+3,374,845       3/1968 Selwyn.                                                       5,314,034        5/1994 Chittal.
+3,399,742       9/1968 Malick ................................... 180/21             5,350,033        9/1994 Kraft.
+3,450,219       6/1969 Fleming.                                                      5,366,036       11/1994 Perry.
+3,515,401       6/1970 Gross.                                                        5,430,432   7/1995 Camhi et al. ........................ 340/438
+3,580,344       5/1971 Floyd.                                                        5,502,432 * 3/1996 Ohmamyuda et al.                 ... 180/271
+3,596.298       8/1971. Durst, Jr. .                                                 5,652,486 * 7/1997 Mueller et al. ...               ... 180/171
+3,860,264       1/1975 Douglas et al..                                               5,676,217 * 10/1997 Torji et al. ........................... 180/171
+3,872,945       3/1975 Hickman et al. .                                              5,701,965       12/1997 Kamen et al. .
+3,952,822      4/1976 Udden et al..                                                  5,705,746    1/1998 Trost et al. .......................... 180/170
+4,018,440      4/1977 Duetsch.                                                       5,757,161 * 5/1998 Ikkai et al.......                          180/171
+4,062,558     12/1977 Wasserman.                                                     5,791,425    8/1998 Kamen et al..
+4,076.270      2/1978 Winchell.                                                      5,925,084    7/1999 Gotoh et al. ......................... 180/271
+4,088,199      5/1978 Trautwein.                                                     5,971,091 * 10/1999 Kamen et al. ..                       ... 180/218
+4,094,372      6/1978 Notter.                                                        5,979,586 * 11/1999 Farmer et al.                              180/274
+4,109,741      8/1978 Gabriel.                                                       6,037,861 * 3/2000 Ying ...                                    340/.441
+4,111,445      9/1978 Haibeck.                                                       6,037,862    3/2000 Ying ..................................... 340/441
+4,151,892       5/1979 Francken.
+4,222,449       9/1980 Feliz.                                                                 FOREIGN PATENT DOCUMENTS
+4.264,082      4/1981 Fouchey, Jr. .
+4,266,627      5/1981 Lauber.                                                       O 109 927         7/1984 (EP).
+4.293,052     10/1981 Daswicket al..                                                O 193 473         9/1986 (EP).
+4,325,565      4/1982 Winchell.                                                  O 537 698 A1         4/1993 (EP).
+4,354,569     10/1982 Eichholz.                                                       980 237         5/1951 (FR).
+4,363,493     12/1982 Veneklasen.                                                   2502 090          9/1982 (FR).
+4,373,600      2/1983 Buschbom et al..                                                 152664         2/1922 (GB).
+4,375,840      3/1983 Campbell.                                                       1213930        11/1970 (GB).
+4,414.937     11/1983 Ueda et al. .......................... 180/271              2 139576 A         11/1984 (GB).
+4,510,956      4/1985 King.                                                          52-44933        10/1975 (JP).
+4,560,022     12/1985 Kassai.                                                        57-87766         6/1982 (JP).
+4,566,707      1/1986 Nitzberg.                                                     57-110569         7/1982 (JP).
+4,571,844      2/1986 Komasaku et al. .                                              59-73372         4/1984 (JP).
+4,624,469     11/1986 Bourne, Jr. .                                                  62-12810         7/1985 (JP).
+4,657,272      4/1987 Davenport.                                                      0255580        12/1985 (JP).
+4,685,693      8/1987 Vadjunec.                                                      61-31685         2/1986 (JP).
+4,709,772     12/1987 Brunet.                                                       63-305082        12/1988 (JP).
+4,716.980      1/1988 Butler.                                                        2-190277         7/1990 (JP).
+4,740,001      4/1988 Torleumke.                                                     4-171562        12/1992 (JP).
+4,746,132      5/1988 Eagan.                                                         5-213240         8/1993 (JP).
+4,770,410      9/1988 Brown.                                                      61054156 B         12/1994 (JP).
+4,786,069     11/1988 Tang.                                                           7255780         3/1995 (JP).
+4,790,400     12/1988 Sheeter.                                                   WO 86/05752         10/1986 (WO).
+4,790,548     12/1988 Decelles et al..                                           WO 89/06117          7/1989 (WO).
+4,794,999       1/1989 Hester.                                                             2WO
+4,796,716   1/1989 Masuda ................................ 180/171                    96/23478        8/1996 (WO).
+4,797,826 * 1/1989
+4,798.255
+            1/1989 Onogi
+                   Wu .
+                         et al. ......................... 180/171                                   OTHER PUBLICATIONS
+4,802,542       2/1989 Houston et al. .                                          Vos, D., Nonlinear Control of an Autonomous Unicycle
+    2:            1. tion et al. .                                               Robot: Practical Isues, Massachusetts Institute of Technol
+4,863,182       9/1989 Chern.                                                    ogy, 1992.
+4,867,188       9/1989 Reid.                                                     Koyanagi et al., A Wheeled Inverse Pendulum Type Self
+4,869.279       9/1989 Hedges.                                                   Contained Mobile Robot and its Posture Control and Vehicle
+4,874,055     10/1989 Beer.                                                      Control, The Society of Instrument and Control Engineers,
+4,890,853      1/1990 Olson.                                                     Special issue of the 31 SICE Annual Conference, Japan
+4,919,225      4/1990 Stueges.                                                   1992, pp. 13–16.
+E. : re9. Stock et al. .                                              180/171    Koyanagi et al., A Wheeled Inverse Pendulum Type Self
+4984754         1/1991            .................................              Contained Mobile Robot, The Society of Instrument and
+ 2 - a? a                   arrington.                                           Control Engineers, Special issue of the 31 SICE Annual
+4,985,947       1/1991 Ethridge.                                                             g         , Sp
+4,998,596      3/1991 MikSitz.                                                   Conference, Japan 1992, pp. 51-56.
+5,002.295      3/1991 Lin.                                                       Koyanagi et al., A Wheeled Inverse Pendulum Type Self
+5,011,171      4/1991 Cook.                                                      Contained Mobile Robot and its Two Dimensional Tragec
+5,052,237     10/1991 Reimann.                                                   tory Control, Proceeding of the Secon International Sym
+5,111,899      5/1992 Reimann.                                                   posium on Measurement and Control in Robotics, Japan
+5,158,493     10/1992 Morgrey.                                                   1992, pp. 891-898.
+   s
+ 2 - as
+              :1992  Rodenborn.
+               /1992 Henderson et al. .
+                                                                                 Watson Industries, Inc., Vertical Reference Manual
+5,186,270       2/1993 West.                                                     ADS-C132-1A, 1992, pp. 3–4.
+5,215,159       6/1993 Nishida ................................ 180/171          News article Amazing Wheelchair Goes Up and Down
+5,221,883       6/1993 Takenaka et al. .                                         Stairs.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 29 ---
+
+                                                US 6,302,230 B1
+                                                         Page 3
+Osaka et al., Systems and Control, vol. 25, No. 3, Japan      Vos et al., Dynamics and Nonlinear Adaptive Control of an
+1981, pp. 159-166 (Abstract Only).                            Autonomous Unicycle-Theory and Experiment, American
+Roy et al., Five-Wheel Unicycle system, Medical & Bio         Institute of Aeronautics and Astronautics, A90-26772
+logical Engineering & Computing, vol. 23, No. 6, United       10–39, Washington, D.C. 1990, pp. 487-494 (Abstract
+Kingdom 1985, pp. 593-596.                                    only).
+Kawaji, S., Stabilization of Unicycle. Using Spinning         TECKNICOS Home Page, Those Amazing Flying
+Motion, Denki Gakkai Ronbushi, D, vol. 107, Issue 1, Japan    Machines, http://www.swiftsite.com/technico.
+1987, pp. 21-28 (Abstract Only).
+Schoonwinkel, A., Design and Test of a Computer-Stabi         Stew's Hovercraft Page, http://www.stewcam.com/hover
+lized Unicycle, Dissertation Abstracts International, vol.    craft.html.
+49/03–B, Stanford University 1988, pp. 890–1294 (Abstract
+only).                                                        * cited by examiner
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 29 ---
+
+U.S. Patent   Oct. 16, 2001   Sheet 1 of 16   US 6,302,230 B1
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 29 ---
+
+U.S. Patent        Oct. 16, 2001   Sheet 2 of 16             US 6,302,230 B1
+                                                        10
+              24                           T       E.        2
+               N                                                   30
+                                                                  14
+                                                             16
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 29 ---
+
+U.S. Patent   Oct. 16, 2001   Sheet 3 of 16   US 6,302,230 B1
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 29 ---
+
+U.S. Patent   Oct. 16, 2001      Sheet 4 of 16   US 6,302,230 B1
+                              FORWARD
+ LEFT TURN                                        RIGH TURN
+                              REVERSE
+                              FIG. 4
+
+--- REVIEWED TRANSCRIPTION PAGE 8 OF 29 ---
+
+U.S. Patent   Oct. 16, 2001   Sheet 5 of 16   US 6,302,230 B1
+
+FIG. 5A
+FIG. 5B
+
+--- REVIEWED TRANSCRIPTION PAGE 9 OF 29 ---
+
+U.S. Patent   Oct. 16, 2001   Sheet 6 of 16   US 6,302,230 B1
+
+FIG. 6
+
+--- REVIEWED TRANSCRIPTION PAGE 10 OF 29 ---
+
+U.S. Patent   Oct. 16, 2001   Sheet 7 of 16   US 6,302,230 B1
+
+FIG. 7
+
+--- REVIEWED TRANSCRIPTION PAGE 11 OF 29 ---
+
+U.S. Patent   Oct. 16, 2001   Sheet 8 of 16   US 6,302,230 B1
+
+--- REVIEWED TRANSCRIPTION PAGE 12 OF 29 ---
+
+U.S. Patent   Oct. 16, 2001   Sheet 9 of 16   US 6,302,230 B1
+
+--- REVIEWED TRANSCRIPTION PAGE 13 OF 29 ---
+
+U.S. Patent   Oct. 16, 2001   Sheet 10 of 16   US 6,302,230 B1
+
+--- REVIEWED TRANSCRIPTION PAGE 14 OF 29 ---
+
+U.S. Patent   Oct. 16, 2001   Sheet 11 of 16   US 6,302,230 B1
+
+--- REVIEWED TRANSCRIPTION PAGE 15 OF 29 ---
+
+U.S. Patent   Oct. 16, 2001   Sheet 12 of 16   US 6,302,230 B1
+
+--- REVIEWED TRANSCRIPTION PAGE 16 OF 29 ---
+
+U.S. Patent   Oct. 16, 2001   Sheet 13 of 16   US 6,302,230 B1
+
+--- REVIEWED TRANSCRIPTION PAGE 17 OF 29 ---
+
+U.S. Patent   Oct. 16, 2001   Sheet 14 of 16   US 6,302,230 B1
+
+--- REVIEWED TRANSCRIPTION PAGE 18 OF 29 ---
+
+U.S. Patent   Oct. 16, 2001   Sheet 15 of 16   US 6,302,230 B1
+
+--- REVIEWED TRANSCRIPTION PAGE 19 OF 29 ---
+
+U.S. Patent   Oct. 16, 2001   Sheet 16 of 16   US 6,302,230 B1
+
+--- REVIEWED TRANSCRIPTION PAGE 20 OF 29 ---
+
+1
+PERSONAL MOBILITY VEHICLES AND
+METHODS
+TECHNICAL FIELD
+The present invention pertains to vehicles and methods
+for transporting individuals, and more particularly to bal
+ancing vehicles and methods for transporting individuals
+over ground having a surface that may be irregular.
+BACKGROUND ART
+A wide range of vehicles and methods are known for
+transporting human subjects. Typically, such vehicles rely
+upon static stability, being designed So as to be stable under
+all foreseen conditions of placement of their ground
+contacting members. Thus, for example, the gravity vector
+acting on the center of gravity of an automobile passes
+between the points of ground contact of the automobile&apos;s
+wheels, the suspension keeping all wheels on the ground at
+all times, and the automobile is thus stable. Another example
+of a Statically stable vehicle is the Stair-climbing vehicle
+described in U.S. Pat. No. 4,790,548 (Decelles et al.).
+SUMMARY OF THE INVENTION
+In one embodiment there is provided a vehicle for carry
+ing a user. In this case, the user is a standing person. The
+vehicle of this embodiment includes:
+a. a ground-contacting module which supports a payload
+including the standing person, the ground-contacting
+module contacting an underlying surface Substantially
+at a single region of contact; and
+b. a motorized drive arrangement, coupled to the ground
+contacting module; the drive arrangement, ground
+contacting module and payload constituting a system;
+the motorized drive arrangement causing, when
+powered, automatically balanced operation of the SyS
+tem.
+In a related embodiment, the ground-contacting module
+includes a uniball.
+In another embodiment, there is provided a vehicle for
+carrying a payload including a user. The vehicle of this
+embodiment includes:
+a. a ground-contacting module including two Substantially
+coaxial wheels;
+b. a platform supporting the user in a standing position
+Substantially astride both wheels; and
+c. a motorized drive arrangement, coupled to the ground
+contacting module; the drive arrangement, ground
+contacting module and payload constituting a system;
+the motorized drive arrangement causing, when
+powered, automatically balanced operation of the SyS
+tem.
+In another embodiment, there is provided a vehicle for
+carrying a payload including a user, and the vehicle of this
+embodiment includes:
+a. a platform which supports the user;
+b. a ground-contacting module, to which the platform is
+mounted, which propels the user in desired motion over
+an underlying surface,
+c. a proximity sensor for determining the presence of the
+user on the device; and
+d. a safety switch, coupled to the proximity detector, for
+inhibiting operation of the ground-contacting module
+unless the proximity sensor has determined the pres
+ence of the user on the device.
+
+2
+The proximity sensor may be a member, mechanically
+coupled to the safety switch, having an operating position
+and a non-operating position, wherein the member is in the
+non-operating position in the absence of the user from the
+5 device and the member is moveable to the operating position
+when the user is on the device. The member may include a
+plate, disposed on the device, for receiving a foot of the user,
+wherein placement of the foot on the plate causes it to move
+into the operating position.
+Alternatively, the proximity detector may be electronic
+and may include a semiconductor device. In a further related
+embodiment, the device may include a motorized drive
+arrangement, coupled to the ground-contacting module; the
+motorized drive arrangement causing, when powered, auto
+15 matically balanced and stationary operation of the device
+unless the proximity sensor has determined the presence of
+the user on the device.
+In another embodiment, there is provided a vehicle for
+carrying a payload including a user. The vehicle of this
+embodiment includes:
+a. a platform which supports the user;
+b. a ground-contacting module, to which the platform is
+mounted, which propels the user in desired motion over
+an underlying surface, 25
+c. a motorized drive arrangement, coupled to the ground
+contacting module, the drive arrangement, ground
+contacting module and payload constituting a system;
+the motorized drive arrangement causing, when
+powered, automatically balanced operation of the Sys
+tem wherein the motorized drive arrangement has a
+present power output and a specified maximum power
+Output and, in operation, has balancing margin deter
+mined by the difference between the maximum power
+35 output and the present power output of the drive
+arrangement,
+d. a balancing margin monitor, coupled to the motorized
+drive arrangement, for generating a signal characteriz
+ing the balancing margin; and
+40 e. an alarm, coupled to the balancing margin monitor, for
+receiving the signal characterizing the balancing mar
+gin and for warning when the balancing margin falls
+below a specified limit.
+The alarm may include ripple modulation of the power
+45
+output of the motorized drive arrangement, and alternatively,
+or in addition, may be audible.
+In a still further embodiment there is provided a device for
+carrying a user, and the device includes:
+50 a. a platform which supports a payload including the user,
+b. a ground-contacting module, mounted to the platform,
+including at least one ground-contacting member and
+defining a fore-aft plane;
+c. a motorized drive arrangement, coupled to the ground
+55 contacting module, the drive arrangement, ground
+contacting module and payload constituting a system;
+the motorized drive arrangement causing, when
+powered, automatically balanced operation of the Sys
+60
+tem in an operating position that is unstable with
+respect to tipping in at least a fore-aft plane when the
+motorized drive arrangement is not powered; and
+d. a user input control that receives an indication from the
+user of a specified pitch of the device under conditions
+of motion at uniform velocity. 65
+The user input control may include a thumb-wheel disposed
+upon a handle that is part of the device. A related embodi
+
+--- REVIEWED TRANSCRIPTION PAGE 21 OF 29 ---
+
+3
+ment provides a device for carrying a payload including a
+user, and the device includes:
+a. a platform which supports the user in a Standing
+position,
+b. a ground-contacting module, mounted to the platform,
+including at least one ground-contacting member and
+defining a fore-aft plane;
+c. a motorized drive arrangement, coupled to the ground
+contacting module; the drive arrangement, ground
+contacting module and payload constituting a system;
+the motorized drive arrangement causing, when
+powered, automatically balanced operation of the SyS
+tem in an operating position that is unstable with
+respect to tipping in at least a fore-aft plane when the
+motorized drive arrangement is not powered;
+d. a user-operated mode control having first and Second
+modes,
+e. a user input control that receives an indication from the
+user of one of (i) a specified pitch of the device under
+conditions of motion at uniform velocity and (ii) Steer
+ing command, depending on the mode of the mode
+control.
+In yet another embodiment there is provided a device for
+carrying a payload including a user, and in this embodiment
+the device includes:
+a. a platform which supports the user in a Standing
+position,
+b. a ground-contacting module, mounted to the platform,
+including a plurality of laterally disposed ground
+contacting members and defining a fore-aft plane;
+c. a motorized drive arrangement, coupled to the ground
+contacting module; the drive arrangement, ground
+contacting module and payload constituting a system;
+the motorized drive arrangement causing, when
+powered, automatically balanced operation of the SyS
+tem in an operating position that is unstable with
+respect to tipping in at least a fore-aft plane when the
+motorized drive arrangement is not powered; and
+d. a user drive mode Selector that on indication from the
+user causes the motorized drive to operate the ground
+contacting members at a uniform user-controllable
+Speed So as to permit a dismounted user to guide the
+vehicle running under its own power.
+The invention provides methods corresponding to
+embodiments of the general nature described above. In one
+embodiment, there is provided a method of using a vehicle
+to carry a user and this method includes:
+a. standing on a ground-contacting module which Sup
+ports a payload including a person standing thereon, the
+ground-contacting module contacting an underlying
+Surface substantially at a single region of contact, and
+b. operating a motorized drive arrangement, coupled to
+the ground-contacting module; the drive arrangement,
+ground-contacting module and payload constituting a
+System; the motorized drive arrangement causing,
+when powered, automatically balanced operation of the
+System.
+In a related embodiment, the ground-contacting module may
+include a uniball.
+In another embodiment, there is provided a method of
+using a vehicle to carry a user, and in this embodiment, the
+method includes:
+a. standing on a platform that supports a payload includ
+ing a standing person, the platform mounted to a
+ground-contacting module including two Substantially
+coaxial wheels, and
+
+4
+b. operating a motorized drive arrangement, coupled to
+the ground-contacting module; the drive arrangement,
+ground-contacting module and payload constituting a
+System; the motorized drive arrangement causing,
+when powered, automatically balanced operation of the
+System.
+In another embodiment, there is provided a method of
+using a vehicle to carry a payload including a user, and the
+method of this embodiment includes:
+a. standing on a platform supporting the user, the platform
+mounted to a ground-contacting module, which propels
+the user in desired motion over an underlying surface;
+b. using a proximity sensor to determine the presence of
+the user on the device, and
+c. inhibiting operation of the ground-contacting module
+15 unless the proximity sensor has determined the pres
+ence of the user on the device.
+AS in the corresponding device, discussed above, the proX
+imity sensor may be a member, mechanically coupled to the
+Safety switch, having an operating position and a non
+operating position, wherein the member is in the non
+operating position in the absence of the user from the device
+and the member is moveable to the operating position when
+the user is on the device. The member may include a plate,
+disposed on the device, for receiving a foot of the user,
+25 wherein placement of the foot on the plate causes it to move
+into the operating position. Alternatively, the proximity
+detector may be electronic and may include a Semiconductor
+device. A further embodiment of the method includes oper
+ating a motorized drive arrangement, coupled to the ground
+contacting module; the motorized drive arrangement
+causing, when powered, automatically balanced and Station
+ary operation of the device unless the proximity sensor has
+determined the presence of the user on the device.
+Yet another emobodiment, provides a method of using a
+vehicle to carry a payload including a user, and the method
+35 of this embodiment includes:
+a. standing on a platform supporting the user, the platform
+mounted to a ground-contacting module, which propels
+the user in desired motion over an underlying surface;
+40
+b. operating a motorized drive arrangement, coupled to
+the ground-contacting module; the drive arrangement,
+ground-contacting module and payload constituting a
+System; the motorized drive arrangement causing,
+when powered, automatically balanced operation of the
+System wherein the motorized drive arrangement has a
+45 present power output and a specified maximum power
+output and, in operation, has balancing margin deter
+mined by the difference between the maximum power
+output and the present power output of the drive
+arrangement,
+50 c. monitoring the balancing margin and generating a
+Signal characterizing the balancing margin; and
+d. receiving the signal characterizing the balancing mar
+gin and generating an alarm to warn when the balanc
+ing margin falls below a specified limit.
+55 Alternatively, the balancing margin may be determined by
+the difference between a specified maximum velocity of the
+vehicle and the current velocity of the vehicle. The alarm
+may include ripple modulation of the power output of the
+motorized drive arrangement, and alternatively, or in
+60 addition, may be audible.
+Another embodiment provides a method for carrying a
+user, and the method includes:
+a. assuming a position on a platform which supports a
+payload including the user, the platform being coupled
+to a ground-contacting module, the module including at 65
+least one ground-contacting member and defining a
+fore-aft plane;
+
+--- REVIEWED TRANSCRIPTION PAGE 22 OF 29 ---
+
+S
+b. operating a motorized drive arrangement, coupled to
+the ground-contacting module; the drive arrangement,
+ground-contacting module and payload constituting a
+System; the motorized drive arrangement causing,
+when powered, automatically balanced operation of the
+System in an operating position that is unstable with
+respect to tipping in at least a fore-aft plane when the
+motorized drive arrangement is not powered; and
+c. providing via a user input control an indication from the
+user of a specified pitch of the device under conditions
+of motion at uniform velocity.
+The user input control may include a thumb-wheel disposed
+upon a handle coupled to the platform.
+Yet another embodiment provides a method for carrying
+a payload including a user, and the method of this embodi
+ment includes:
+a. assuming a position on a platform which supports a
+payload including the user, the platform being coupled
+to a ground-contacting module, the module including at
+least one ground-contacting member and defining a
+fore-aft plane;
+b. operating a motorized drive arrangement, coupled to
+the ground-contacting module; the drive arrangement,
+ground-contacting module and payload constituting a
+System; the motorized drive arrangement causing,
+when powered, automatically balanced operation of the
+System in an operating position that is unstable with
+respect to tipping in at least a fore-aft plane when the
+motorized drive arrangement is not powered; and
+c. operating a user-operated mode control to select one of
+first and second modes;
+d. providing via a user input control an indication of one
+of (i) a specified pitch of the device under conditions of
+motion at uniform velocity and (ii) steering command,
+depending on whether the first mode or the Second
+mode has been selected.
+Another embodiment provides a method for carrying a
+payload including a user, and the embodiment includes:
+a. providing a device having
+i. a platform which supports the user in a Standing
+position,
+ii. a ground-contacting module, mounted to the
+platform, including a plurality of laterally disposed
+ground-contacting members and defining a fore-aft
+plane;
+iii. a motorized drive arrangement, coupled to the
+ground-contacting module; the drive arrangement,
+ground-contacting module and payload constituting
+a system; the motorized drive arrangement causing,
+when powered, automatically balanced operation of
+the system in an operating position that is unstable
+with respect to tipping in at least a fore-aft plane
+when the motorized drive arrangement is not pow
+ered; and
+b. causing the motorized drive to operate the ground
+contacting members at a user-controllable speed So as
+to permit a dismounted user to guide the vehicle
+running under its own power.
+BRIEF DESCRIPTION OF THE DRAWINGS
+The invention will be more readily understood by refer
+ence to the following description, taken with the accompa
+nying drawings, in which:
+FIG. 1 is a side view of a personal vehicle lacking a stable
+Static position, in accordance with a preferred embodiment
+
+6
+of the present invention, for supporting or conveying a
+Subject who remains in a standing position thereon;
+FIG. 2 is a perspective view of a further personal vehicle
+lacking a stable static position, in accordance with an
+alternate embodiment of the present invention;
+FIG. 3 illustrates the control strategy for a simplified
+version of FIG. 1 to achieve balance using wheel torque;
+FIG. 4 illustrates diagrammatically the operation of joy
+Stick control of the wheels of the embodiment of FIG. 1;
+FIG. 5 is a block diagram showing generally the nature of
+sensors, power and control with the embodiment of FIG. 1;
+FIG. 6 is a block diagram providing detail of a driver
+interface assembly;
+15 FIG. 7 is a schematic of the wheel motor control during
+balancing and normal locomotion, in accordance with an
+embodiment of the present invention;
+FIG. 8 shows a balancing vehicle with a single wheel
+central to the support platform of the vehicle and an articu
+lated handle in accordance with an embodiment of the
+present invention;
+FIG. 9 shows a balancing vehicle with a single wheel
+central to the support platform of the vehicle and a handle in
+accordance with an embodiment of the present invention;
+25
+FIG. 10 shows a balancing vehicle with two coaxial
+wheels central to the support platform of the vehicle and an
+articulated handle in accordance with an embodiment of the
+present invention;
+FIG. 11 shows a balancing vehicle with a single wheel
+central to the support platform of the vehicle and no handle
+in accordance with an embodiment of the present invention;
+FIG. 12 shows an alternate embodiment of a balancing
+vehicle with a single wheel central to the support platform
+35 of the vehicle and no handle in accordance with an embodi
+ment of the present invention;
+FIG. 13 shows a balancing vehicle with a single wheel
+transversely mounted central to the support platform of the
+vehicle and no handle in accordance with an embodiment of
+40 the present invention;
+FIG. 14 shows a balancing vehicle with a single wheel
+transversely mounted central to the support platform of the
+vehicle and a handle in accordance with an embodiment of
+the present invention;
+45
+FIG.15 shows a balancing vehicle with a uniball mounted
+central to the support platform of the vehicle and a handle in
+accordance with an embodiment of the present invention;
+and
+FIG. 16 shows an illustrative diagram of an idealized 50
+balancing vehicle with a rigid wheel in motion at a constant
+Velocity acroSS a flat surface.
+DETAILED DESCRIPTION OF SPECIFIC
+EMBODIMENTS
+55
+The subject matter of this application is related to that of
+U.S. application Ser. No. 08/479,901, filed Jun. 7, 1995, now
+allowed, which is a continuation in part of U.S. application
+Ser. No. 08/384,705, filed Feb. 3, 1995, now allowed, which
+60 is a continuation in part of U.S. application Ser. No. 08/250,
+693, filed May 27, 1994, now issued as U.S. Pat. No.
+5,701,965, which in turn is a continuation in part of U.S.
+application Ser. No. 08/021,789, filed Feb. 24, 1993, now
+abandoned. Each of these related applications is incorpo
+rated herein by reference in its entirety. 65
+An alternative to operation of a Statically stable vehicle is
+that dynamic stability may be maintained by action of the
+
+--- REVIEWED TRANSCRIPTION PAGE 23 OF 29 ---
+
+7
+user, as in the case of a bicycle or motorcycle or Scooter, or,
+in accordance with embodiments of the present invention,
+by a control loop, as in the case of the human transporter
+described in U.S. Pat. No. 5,701,965. The invention may be
+implemented in a wide range of embodiments. A character
+istic of many of these embodiments is the use of a pair of
+laterally disposed ground-contacting members to Suspend
+the subject over the surface with respect to which the subject
+is being transported. The ground or other surface, such as a
+floor, over which a vehicle in accordance with the invention
+is employed may be referred to generally herein as the
+&quot;ground.” The ground-contacting members are typically
+motor-driven. In many embodiments, the configuration in
+which the subject is suspended during locomotion lackS
+inherent stability at least a portion of the time with respect
+to a vertical in the fore-aft plane but is relatively stable with
+respect to a vertical in the lateral plane.
+Some embodiments of the invention invoke the concept of
+primary wheels. The term “primary wheels,” as used in this
+description and in any appended claims, refers to a minimum
+set of a vehicle&apos;s wheels on which the vehicle is capable of
+operating stably. More generally, the term “primary ground
+contacting members&apos; allows for a more general class of
+members, that includes but is not limited to wheels. Hence,
+as used in this description and in any appended claims,
+“primary ground-contacting members&apos; refers to a minimum
+Set of a vehicle&apos;s ground-contacting members on which the
+vehicle is capable of operating stably. Other ground
+contacting members may include, without limitation: arcu
+ate sections of a wheel, clusters of wheels, treads, etc.
+In various embodiments of the invention, fore-aft stability
+may be achieved by providing a control loop, in which one
+or more motors are included, for operation of a motorized
+drive in connection with the ground-contacting members. AS
+described below, a pair of ground-contacting members may,
+for example, be a pair of wheels or a pair of wheel clusters.
+In the case of wheel clusters, each cluster may include a
+plurality of wheels. Each ground-contacting member,
+however, may instead be a plurality (typically a pair) of
+axially-adjacent, radially Supported and rotatably mounted
+arcuate elements. In these embodiments, the ground
+contacting members are driven by the motorized drive in the
+control loop in such a way as to maintain, when the vehicle
+is not in locomotion, the center of mass of the vehicle above
+the region of contact of the ground-contacting members with
+the ground, regardless of disturbances and forces operative
+on the vehicle.
+A ground-contacting member typically has a “point&apos;
+(actually, a region) of contact or tangency with the Surface
+over which the vehicle is traveling or standing. Due to the
+compliance of the ground-contacting member, the “point of
+contact is actually an area, where the region of contact may
+also be referred to as a contact patch. The weight of the
+vehicle is distributed over the contact region, giving rise to
+a distribution of preSSures over the region, with the center of
+preSSure displaced forward during forward motion. The
+distribution of preSSures is a function both of the composi
+tion and structure of the wheel, the rotational velocity of the
+wheel, the torque applied to the wheel, and thus of the
+frictional forces acting on the wheel.
+A force in the direction of motion is required to overcome
+rolling friction (and other frictional forces, including air
+resistance). Gravity may be used, in accordance with pre
+ferred embodiments of the invention, to provide a torque
+about the point of contact with the surface in a direction
+having a component in the Sense of desired motion. Refer
+ring to FIG. 16, to illustrate these principles, a diagram is
+
+8
+shown of the forces acting on a vehicle that locomotes with
+constant velocity V on a single wheel over a flat surface. The
+principles now discussed may readily be generalized to
+operation on a sloped surface and to accommodate any other
+external forces that might be present. Wheel 160 of radius
+R. rotates with respect to chassis 162 about axle 164 and
+contacts the underlying surface at point P. For purposes of
+illustration only, it is assumed that wheel 160 contacts the
+Surface at a point.
+The wheel is driven with respect to the vehicle by a torque
+T (Supplied by a motor, for example) which in turn creates
+a reaction torque -T on the vehicle. Since the torque acts
+about the axle 164, the reaction torque corresponds to a force
+F, acting at the center of gravity (CG) of the system,
+15 including the vehicle and payload, where F=T/R, where
+R is the distance between the axle and the CG of the
+system. The line 170 from the CG to point P is at an angle
+0 relative to the vertical 172.
+The rolling friction, f, acting on the wheel at point P, is
+proportional to the velocity V of the rim of the wheel, with
+the proportionality expressed as f=lev. For constant Velocity
+to be maintained, this force f must be exactly canceled.
+Consequently, with gravity providing the force, the condi
+tion that must be satisfied is:
+25
+f, COS 6,f, (Eqn. 1)
+where f is the component of the reaction force acting
+transverse to axis 174 between the CG and point P. In order
+to prevent the vehicle from falling, a stability condition must
+also exist, namely that no net force acts on the CG in a
+direction transverse to line 170, i.e., there is no net torque
+about the point of contact P during motion at constant
+Velocity (i.e., in an inertial frame of reference where the
+35 point P is fixed). This condition may be expressed as:
+F sin 0-f. (Eqn. 2)
+where F sin 0, is the “tipping” component of gravity, and
+40
+f, is the counter-tipping component of the reactive force on
+the vehicle caused by wheel rotation (f=F, cos Y), and
+where Y is the angle shown line 170 and line 174.
+Eqns. 1 and 2 may be combined to yield F, sin 0, cos
+0=f=uV, thus, in the limit of Small angles (where sin 0s0),
+45
+showing that increasing velocity requires increased lean to
+overcome the effects of friction. Additionally, a control loop
+that imposes stability on the system will respond to an
+50 increased lean by increasing velocity of the system. While
+the preceding discussion assumed constant velocity, addi
+tional lean beyond that required to overcome the effects of
+friction will result in acceleration Since an additional
+forward-directed force acts on the CG. Conversely, in order
+55 to achieve acceleration (or deceleration) of the vehicle,
+additional leaning (forward or backward) must be provided
+in a manner discussed in further detail below.
+FIG. 1 shows a simplified embodiment of the invention.
+A personal transporter is shown and designated generally by
+60 numeral 18. A subject 10 stands on a support platform 12 and
+holds a grip 14 on a handle 16 attached to the platform 12,
+so that the vehicle 18 of this embodiment may be operated
+in a manner analogous to a Scooter. A control loop may be
+provided So that leaning of the subject results in the appli
+cation of torque to wheel 20 about axle 22 thereby causing 65
+an acceleration of the vehicle. Vehicle 18, however, is
+Statically unstable, and, absent operation of the control loop
+
+--- REVIEWED TRANSCRIPTION PAGE 24 OF 29 ---
+
+to maintain dynamic stability, subject 10 will no longer be
+Supported in a standing position and will fall from platform
+12. Different numbers of wheels or other ground-contacting
+members may advantageously be used in various embodi
+ments of the invention as particularly Suited to varying
+applications. Thus, as described in greater detail below, the
+number of ground-contacting members may be any number
+equal to, or greater than, one. For many applications, the
+dimensions of platform 12, and indeed of the entire ground
+contacting module, designated generally by numeral 6, are
+advantageously comparable to the dimensions of the foot
+print or shoulder width of user 10. Thus transporter 18 may
+advantageously be used as a mobile work platform or a
+recreational vehicle such as a golf cart, or as a delivery
+vehicle.
+Transporter 18 may be operated in a Station-keeping
+mode, wherein balance is maintained substantially at a
+Specified position. Additionally, transporter 18, which may
+be referred to herein, without limitation, as a “vehicle,” may
+also maintain a fixed position and orientation when the user
+10 is not on platform 12. This mode of operation, referred to
+as a &quot;kickStand” mode, prevents runaway of the vehicle and
+provides for the safety of the user and other perSons. A
+forceplate 8 or other sensor, disposed on platform 12, detects
+the presence of a user on the vehicle.
+Another embodiment of a balancing vehicle in accordance
+with the present invention is shown in FIG. 2 and designated
+generally by numeral 24. Personal vehicle 24 shares the
+characteristics of vehicle 18 of FIG. 1, namely a support
+platform 12 for supporting subject 10 and grip 14 on handle
+16 attached to platform 12, so that the vehicle 18 of this
+embodiment may also be operated in a manner analogous to
+a scooter. FIG. 2 shows that while vehicle 24 may have
+clusters 26 each cluster having a plurality of wheels 28,
+vehicle 24 remains Statically unstable and, absent operation
+of a control loop to maintain dynamic stability, subject 10
+will no longer be Supported in a standing position and will
+fall from platform 12. In the embodiment of FIG. 2, as in the
+embodiment of FIG. 1, the primary ground-contacting mem
+bers are a pair of wheels. Supplemental ground-contacting
+members may be used in stair climbing and descending or in
+traversing other obstacles. In one mode of operation, for
+example, it is possible to rotate clusters 26 So that two
+wheels on each of the clusters are simultaneously in contact
+with the ground. stair climbing and flat-terrain locomotion
+may both be achieved, however, with the vehicle Supported
+on only a single Set of primary ground-contacting members.
+Operation of the balancing transporter will be described
+with reference to the set of coordinate axes shown in FIG.
+1. Gravity defines the vertical axis Z, while the axis coinci
+dent with the wheel axis 22 may be used to define a lateral
+axis y, and a fore-aft axis X is defined by the forward
+direction of motion of the vehicle. The plane defined by the
+Vertical axis Z and the lateral axis y will Sometimes be
+referred to as the “lateral plane”, and the plane defined by the
+fore-aft axis X and the vertical axis Z will Sometimes be
+referred to as the “fore-aft plane”. Directions parallel to the
+axes X and y are called the fore-aft and lateral directions
+respectively. It can be seen that the vehicle, when relying on
+the pair of wheels 20 for contacting the ground, is inherently
+unstable with respect to a vertical in the fore-aft direction,
+but is relatively stable with respect to a vertical in the lateral
+direction. In other embodiments of the invention described
+below, the vehicle may also be unstable with respect to yaw
+about the X axis.
+The axes may also be defined with respect to platform 12
+in cases such as where the ground-contacting member is a
+uniball, as described below with reference to FIG. 15.
+
+10
+A simplified control algorithm for achieving balance in
+the embodiment of the invention according to FIG. 1 when
+the wheels are active for locomotion is shown in the block
+diagram of FIG. 3. The plant 61 is equivalent to the
+equations of motion of a system with a ground contacting
+module driven by a single motor, before the control loop is
+applied. Tidentifies the wheel torque. The remaining portion
+of the figure is the control used to achieve balance. The
+boxes 62 and 63 indicate differentiation. To achieve dynamic
+control to insure stability of the system, and to keep the
+System in the neighborhood of a reference point on the
+Surface, the wheel torque T in this embodiment is governed
+by the following simplified control equation:
+15
+where:
+T denotes a torque applied to a ground-contacting element
+about its axis of rotation;
+0 is a quantity corresponding to the lean of the entire
+System about the ground contact, with 0 representing
+the magnitude of a system pitch offset, all as discussed
+in detail below;
+X identifies the fore-aft displacement along the Surface
+relative to a fiducial reference point, with X represent
+25 ing the magnitude of a specified fiducial reference
+offset;
+a dot over a character denotes a variable differentiated
+with respect to time, and
+a Subscripted variable denotes a specified offset that may
+be input into the system as described below; and
+K, K, K, and K are gain coefficients that may be
+configured, either in design of the system or in real
+time, on the basis of a current operating mode and
+35 operating conditions as well as preferences of a user.
+The gain coefficients may be of a positive, negative, or
+Zero magnitude, affecting thereby the mode of opera
+tion of the vehicle, as discussed below. The gains K,
+K2, K, and K are dependent upon the physical param
+40 eters of the system and other effects such as gravity.
+The simplified control algorithm of FIG. 3 maintains
+balance and also proximity to the reference point on the
+Surface in the presence of disturbances such as changes
+to the System&apos;s center of mass with respect to the
+reference point on the surface due to body motion of the 45
+Subject or contact with other perSons or objects.
+The effect of 0 in the above control equation (Eqn. 4) is
+to produce a specified offset -6 from the non-pitched
+position where 0=0. Adjustment of 0 will adjust the vehi
+50 cles offset from a non-pitched position. AS discussed in
+further detail below, in various embodiments, pitch offset
+may be adjusted by the user, for example, by means of a
+thumb wheel 32, shown in FIG.1. An adjustable pitch offset
+is useful under a variety of circumstances. For example,
+55 when operating the vehicle on an incline, it may be desirable
+for the operator to Stand erect with respect to gravity when
+the vehicle is stationary or moving at a uniform rate. On an
+upward incline, a forward torque on the wheels is required
+in order to keep the wheels in place. This requires that the
+60 user push the handle further forward, requiring that the user
+assume an awkward position. Conversely, on a downward
+incline, the handle must be drawn back in order to remain
+Stationary. Under these circumstances, 0 may advanta
+geously be manually offset to allow control with respect to
+a stationary pitch comfortable to the user. 65
+The size of K will determine the extent to which the
+vehicle will seek to return to a given location. With a
+
+--- REVIEWED TRANSCRIPTION PAGE 25 OF 29 ---
+
+11
+non-Zero K, the effect of X is to produce a specified offset
+-X from the fiducial reference by which X is measured.
+When K is Zero, the vehicle has no bias to return to a given
+location. The consequence of this is that if the vehicle is
+caused to lean in a forward direction, the vehicle will move
+in a forward direction, thereby maintaining balance. such a
+configuration is discussed further below.
+The term “lean” is often used with respect to a system
+balanced on a single point of a perfectly rigid member. In
+that case, the point (or line) of contact between the member
+and the underlying surface has Zero theoretical width. In that
+case, furthermore, lean may refer to a quantity that expresses
+the orientation with respect to the vertical (i.e., an imaginary
+line passing through the center of the earth) of a line from
+the center of gravity (CG) of the system through the theo
+retical line of ground contact of the wheel. While
+recognizing, as discussed above, that an actual ground
+contacting member is not perfectly rigid, the term &quot;lean&apos; is
+used herein in the common Sense of a theoretical limit of a
+rigid ground-contacting member. The term &quot;system” refers
+to all mass caused to move due to motion of the ground
+contacting elements with respect to the surface over which
+the vehicle is moving.
+&quot;Stability” as used in this description and in any appended
+claims refers to the mechanical condition of an operating
+position with respect to which the system will naturally
+return if the system is perturbed away from the operating
+position in any respect.
+In order to accommodate two wheels instead of the
+one-wheel system illustrated for simplicity in FIG. 3, sepa
+rate motors may be provided for left and right wheels of the
+vehicle and the torque desired from the left motor and the
+torque desired from the right motor can be calculated
+Separately in the general manner described below in con
+nection with FIG. 7. Additionally, tracking both the left
+wheel motion and the right wheel motion permits adjust
+ments to be made to prevent unwanted turning of the vehicle
+and to account for performance variations between the two
+drive motors.
+In cases where gain K is Zero, a user control input Such
+as a joystick may be used to adjust the torqueS of each motor.
+The joystick has axes indicated in FIG. 4. In operation of this
+embodiment, forward motion of the joystick is used to cause
+forward motion of the vehicle, and reverse motion of the
+joystick causes backward motion of the vehicle. A left turn
+Similarly is accomplished by leftward motion of the joystick.
+For a right turn, the joystick is moved to the right. The
+configuration used here permits the vehicle to turn in place
+when the joystick is moved to the left or to the right, by
+causing rotation of left and right motors, and hence left and
+right wheels, at equal rates in opposite Senses of rotation.
+With respect to forward and reverse motion an alternative to
+the joystick is simply leaning forward or backward (in a case
+where K is Zero), Since the pitch sensor (measuring 0)
+would identify a pitch change that the system would respond
+to, leading to forward or reverse motion, depending on the
+direction of lean. Alternatively, control Strategies based on
+fuZZy logic can be implemented.
+It can be seen that the approach of adjusting motor torques
+when in the balance mode permits fore-aft stability to be
+achieved without the necessity of additional Stabilizing
+wheels or Struts (although such aids to stability may also be
+provided). In other words, stability is achieved dynamically,
+by motion of the components of the vehicle (in this case
+constituting the entire vehicle) relative to the ground.
+In the block diagram of FIG. 5 it can be seen that a control
+System 51 is used to control the motor drives and actuators
+
+12
+of the embodiment of FIGS. 1-3 to achieve locomotion and
+balance. These include motor drives 531 and 532 for left and
+right wheels respectively. If clusters are present as in the
+embodiment of FIG. 2, actuators 541 and 542 for left and
+right clusters respectively. The control system has data
+inputs including user interface 561, pitch sensor 562 for
+Sensing fore-aft pitch, and wheel rotation sensors 563, and
+pitch rate sensor 564. Pitch rate and pitch may be derived
+through the use of gyroscopes or inclinometers, for example,
+alone or in combination.
+A grip 14 (shown in FIG. 1) may be conveniently pro
+vided with a thumb wheel 32 (shown in FIG. 1) or thumb
+operated joystick for directional control, although other
+methods of control may also be used. Thumb wheel 32 may
+15 Serve multiple control purposes as will now be described.
+In accordance with other embodiments of the invention,
+handle 16 and grip 14 may be absent altogether, and the
+platform 12 may be equipped with sensors, such as force
+plate 8, for example, to detect leaning of the subject. Indeed,
+as described in connection with FIG. 5 and as further
+described below, the pitch of the vehicle is sensed and may
+be used to govern operation of the control loop, So that if the
+subject leans forward, the vehicle will move forward to
+maintain a desired velocity or to provide desired accelera
+tion. Accordingly, a forward lean of the subject will cause 25
+the vehicle to pitch forward and produce forward movement;
+a backward lean will cause the vehicle to pitchbackward and
+produce backward movement. Appropriate force transducers
+may be provided to Sense leftward and rightward leaning
+and related controls provided to cause left and right turning
+as a result of the sensed leaning.
+Learning may also be detected using proximity sensors.
+Additionally, operation of the vehicle may be governed on
+the basis of the orientation of the user with respect to the
+35 platform.
+In a further embodiment, the vehicle may be equipped
+with a foot- (or force-) actuated switch sensitive to the
+presence of a user on the vehicle. Thus, for example, the
+vehicle may be powered automatically upon ascent of a user
+40 onto the platform. Conversely, when the user alights from
+the vehicle, power can be removed and the vehicle disabled.
+Alternatively, the vehicle may be programmed to enter a
+dynamic “kickstand” mode in which the vehicle remains
+balanced in place when the user alights. Thus, the vehicle is
+ready for the user to resume travel by reboarding the vehicle. 45
+Furthermore, the vehicle is thus safely parked while not
+actively operated by a user aboard the vehicle.
+FIG. 6 is a block diagram providing detail of a driver
+interface assembly 273. A peripheral microcomputer board
+50 291 receives an input from joystick 292 as well as from
+inclinometer 293 or another tilt-determining arrangement.
+The inclinometer provides information signals as to pitch
+and pitch rate. (The term “inclinometer” as used in this
+context throughout this description and in the accompanying
+55 claims means any device providing an output indicative of
+pitch or pitch rate, regardless of the arrangement used to
+achieve the output; if only one of the pitch and pitch rate
+variables is provided as an output, the other variable can be
+obtained by suitable differentiation or integration with
+60 respect to time.) To permit controlled banking into turns by
+the vehicle (thereby to increase stability while turning) it is
+also feasible to utilize a second inclinometer to provide
+information as to roll and roll rate or, alternatively, the
+resultant of system weight and centrifugal force. Other
+inputs 294 may also be desirably provided as an input to the 65
+peripheral micro controller board 291. such other inputs
+may include signals gated by Switches (knobs and buttons)
+
+--- REVIEWED TRANSCRIPTION PAGE 26 OF 29 ---
+
+13
+for platform adjustment and for determining the mode of
+operation. The peripheral micro controller board 291 also
+has inputs for receiving signals from the battery Stack 271 as
+to battery Voltage, battery current, and battery temperature.
+The peripheral micro controller board 291 is in communi
+cation over bus 279 with a central micro controller board
+that may be used to control the wheel motors as described
+below in connection with FIG. 7.
+FIG. 7 is a block diagram showing control algorithms,
+Suitable for use in conjunction with the control assemblies of
+FIG. 6 to provide stability for a vehicle according to the
+embodiment of FIGS. 1-2 and other embodiments in which
+the vehicle and payload are balanced on two ground
+contacting members, both during locomotion and in a fixed
+position.
+The following conventions are used in connection with the
+description below:
+1. Variables defined in World coordinates are named using
+a single Subscript in capital letters. World coordinates
+are coordinates fixed to the earth (inertial).
+2. A non-Subscripted r identifies a wheel radius.
+3. Lower case Subscripts are used to indicate other
+attributes, e.g., right/left, etc.: r=right; 1 =left, ref=
+reference, f=finish; S=Start.
+4. All angles are positive in the clockwise direction, where
+positive travel is in the positive X direction.
+5. A dot over a variable indicates differentiation in time,
+e.g., 6.
+FIG. 7 shows the control arrangement for the motors of
+the right and left wheels. The arrangement has inputs of 0,
+6, r0, (linear velocity of the left wheel relative to the world
+coordinate system) and r0,r. (linear velocity of the right
+wheel), in addition to directional inputs 3300 determined by
+joystick position along X and Y axes of a reference coor
+dinate system. Inputs 0, 0, and error signals X and x
+(described below), subject to gains K, K, K, and K
+respectively, become inputs to Summer 3319, which pro
+duces the basic balancing torque command for the wheels,
+in the general manner described above in connection with
+FIG.3 above. The output of Summer 3319 is combined with
+the output of yaw PID loop 3316 (described below) in
+Summer 3320, then divided in divider 3322 and limited in
+saturation limiter 3324, to produce the left wheel torque
+command. Similarly, the output of Summer 3319 is com
+bined with the output of PID loop 3316 in summer 3321,
+then divided in divider 3323 and limited in Saturation limiter
+3325, to produce the right wheel torque command.
+In FIG. 7, a directional input along the X axis moves the
+reference coordinate system along its X axis relative to the
+world coordinate system (which represents the traveled
+Surface), at a velocity proportional to the displacement of the
+joystick. A directional input along the Y axis rotates the
+reference coordinate system about its Z axis at an angular
+Velocity proportional to the displacement of the joystick. It
+will be appreciated that motion of the joystick in the positive
+X direction is here interpreted to mean forward motion;
+motion of the joystick in the negative X direction means
+reverse motion. Similarly, motion of the joystick in the
+positive Y direction means leftward turning, counter
+clockwise as viewed from above; motion of the joystick in
+the negative Y direction means rightward turning clockwise
+as viewed from above. Hence the directional inputs Y and X
+are given deadband via deadband blocks 3301 and 3302
+respectively, to widen the neutral position of the joystick,
+then subject to gains K11 and K10, then rate-limited by
+limiters 3303 and 3304 respectively, which limit the angular
+
+14
+and linear accelerations respectively of the reference coor
+dinate system. The Sum of these outputs achieved through
+summer 3305 becomes the reference velocity x&apos;, whereas
+the difference of these outputs achieved through Summer
+3306 becomes the reference velocity X These reference
+velocities are Subtracted in Summers 3308 and 3307 from
+compensated linear velocity input signals re), and re), for
+left and right wheels to obtain velocity error signals x, and
+X, for left and right wheels within the reference coordinate
+System. In turn the average of these signals, determined via
+Summer 3317 and divider 3318, produces a linear velocity
+error signal X. Displacement error signal X is derived by
+integrating re), and re), in integrators 3310 and 3309,
+limiting the results in Saturation limiters 3312 and 3311, and
+15 then averaging their outputs via Summer 3313 and divider
+3315. The difference between these displacements, deter
+mined via Summer 3314, produces the yaw error signal .
+The yaw error signal is run through a Standard
+proportional-plus-integral-plus-derivative (PID) control
+loop 3316, the output of which is combined with the output
+of the basic balancing torque command of Summer 3319, to
+produce the individual wheel torque commands, which
+cause the wheels to maintain fore-aft stability and also cause
+the vehicle to align itself with the axes of, and follow the
+origin of, the reference coordinate system as directed by 25
+directional input 3300.
+Let us now consider how this control causes the vehicle
+to start. The the directional input 3300 (which may be a
+joystick) which will provide a positive X for forward motion.
+The signal is divided and Summed in Summers 3308 and
+3307, and subtracted from the right and left wheel velocity
+X and x, providing a negative correction; this correction
+leads ultimately to a negative torque contribution at Summer
+3319, causing the wheels to move backward, so as to create
+35 a torque due to gravity that causes the vehicle to lean
+forward. This forward lean leads to changing 0 and 6, which
+leads to positive corrections in Summer 3319, causing the
+vehicle to move forward. Thus, moving the joystick forward
+or backward will cause the vehicle to lean forward or
+40 backward, as the case may be, and to move in the direction
+of the lean. This is a property of the control of FIG. 7. An
+equivalent result can be achieved by leaning, where K is
+ZCO.
+Anytime acceleration of the vehicle is desired, it is
+necessary to establish system lean. For example, to achieve 45
+forward acceleration of the vehicle, there must be forward
+System lean; the center of gravity of the system (vehicle and
+payload) must be placed forward of the center of the
+preSSure distribution of the contact region where the wheels
+50 contact the ground. The more the lean, the more the accel
+eration. Thus, furthermore, it can be seen that leaning, in
+conjunction with gravity and friction, determines accelera
+tion (positive or negative) of the system. In this manner, if
+the vehicle is moving forward, pitching the system back will
+55 achieve braking. Because the vehicle must overcome
+friction, there must even be Some system lean when the
+vehicle is moving at constant velocity over level ground. In
+other words, looking at the torque on the vehicle caused by
+gravity and the torque caused by all other external forces, the
+60 torque applied by the motorized drive is adjusted So that the
+net torque from all these Sources produces a desired accel
+eration.
+In a further embodiment, any of the foregoing embodi
+ments of a vehicle in accordance with the present invention
+may be provided with speed limiting to maintain balance 65
+and control, which may otherwise be lost if the wheels
+(arcuate elements, or other ground-contacting members)
+
+--- REVIEWED TRANSCRIPTION PAGE 27 OF 29 ---
+
+15
+were permitted to reach the maximum speed of which they
+are currently capable of being driven.
+Speed limiting is accomplished by pitching the vehicle
+back in the direction opposite from the current direction of
+travel, which causes the vehicle to slow down. (AS discussed
+above, the extent and direction of system lean determine the
+vehicle&apos;s acceleration.) In this embodiment, the vehicle is
+pitched back by adding a pitch modification to the incli
+nometer pitch value. speed limiting occurs whenever the
+vehicle velocity of the vehicle exceeds a threshold that is the
+determined speed limit of the vehicle. The pitch modifica
+tion is determined by looking at the difference between the
+vehicle velocity and the determined speed limit, integrated
+over time.
+Alternatively, the balancing margin between a specified
+maximum power output and the current power output of the
+motorS may be monitored. In response to the balancing
+margin falling below a specified limit, an alarm may be
+generated to warn the user to reduce the speed of the vehicle.
+The alarm may be audible, Visual, or, alternatively the alarm
+may be tactile or may be provided by modulation of the
+motor drives, providing a rumbling ride that is readily
+perceived by the user.
+The automatic pitch modification Sequence, in response to
+a detected speed at a specified speed limit, is maintained
+until the vehicle slows to the desired dropout speed (some
+Speed slightly below the speed limit), and then the pitch
+angle is Smoothly returned to its original value.
+One method for determining the speed limit of the vehicle
+is to monitor the battery Voltage, which is then used to
+estimate the maximum velocity the vehicle is currently
+capable of maintaining. Another method is to measure the
+voltages of the battery and the motor and to monitor the
+difference between the two; the difference provides an
+estimate of the amount of velocity margin (or balancing
+margin) currently available to the vehicle.
+Leaning of the user may additionally be limited, in
+accordance with a further embodiment of the invention, by
+a physical constraint such as a vertical member coupled to
+the platform, thus preventing leaning, in any Specified
+direction, beyond the physical constraint.
+The pitch offset, allowing modification of 0, as discussed
+above in reference to Equation 4, may be adjusted by the
+user by means of thumb-wheel 32 (shown in FIG. 1).
+Additionally, a secondary control 34 (shown in FIG. 1) may
+be provided, in accordance with embodiments of the
+invention, for changing the control architecture or function
+of the thumb-wheel. Thus, thumb-wheel 32 can also be put
+into a mode that operates to drive both wheels in the same
+direction. This allows a personal mobility vehicle such as
+vehicle 18 to be used as sort of a powered handcart that the
+user trails behind her or pushes ahead of her. This is
+especially useful when such a personal transporter has to be
+carried up stairs because the motors 531 and 534 (shown in
+FIG. 5) are used to lift the vehicle to the next riser so that
+the user does not have to use as much force as would
+otherwise be required. This mode of operation of the vehicle
+is referred to as “drive mode.” Additionally, upon designa
+tion by the secondary selector 34, thumb wheel 32 may be
+used by the user for purposes of steering the vehicle.
+The present invention may also be implemented in a
+number of further embodiments. We have found that a
+vehicle in accordance with the invention may act Suitably as
+a prosthetic device for perSons who have an impairment,
+caused by disease (such as Parkinson&apos;s Disease or ear
+disorders) or defect, in their ability to maintain balance or to
+achieve locomotion.
+
+16
+A control loop, as employed in accordance with an
+embodiment of the present invention, may advantageously
+be used for ameliorating the Symptoms of balance-impairing
+diseases. A traditional approach to treatment of Parkinson&apos;s
+Disease is the administration of drugs. such as levodopa to
+alleviate Symptoms of progressive tremor, bradykinesia and
+rigidity, however, in most patients the disease is incom
+pletely controlled. D. Calne, “Drug Therapy: Treatment of
+Parkinson&apos;s Disease,” New England J. Medicine, vol. 329,
+1O pp. 1021-2, (1993). Additionally, prolonged use of antipar
+kinsonian drugs leads to progressively adverse reactions to
+the drugs. Id.
+A person Suffering from Parkinson&apos;s disease is neither a
+passive nor cooperative load, but rather, Since the perSon
+15 Suffers from impaired powers of Voluntary movement, the
+perSon has difficulty controlling his or her own balance,
+whether on a platform or on the ground. The tremors of Such
+a person cause additional forces on the platform or vehicle
+upon which the person is Seated or standing, not necessarily
+oriented in a balance-restoring direction.
+The prosthetic device achieved by the vehicle functions as
+an extension of the person&apos;s own balance system and
+locomotion system, Since the vehicle has a feedback loop
+that takes into account changes in the vehicle&apos;s center of
+25 gravity attributable to motion of the person relative to the
+vehicle. Providing a vehicle to such a handicapped person is
+thus a method of fitting a prosthesis that permits locomotion
+and balance control when these would otherwise be unavail
+able. We have observed a dramatic restoration of balance
+and locomotion control to a person Suffering from Parkin
+Son&apos;s Disease who utilized a vehicle in accordance with
+embodiments of the present invention. Surprisingly, the
+effect on a Parkinson&apos;s patient who is using the vehicle is to
+Substantially reduce tremors. Apparently, the inclusion of the
+35 Parkinson&apos;s patient in the feedback loop of the combined
+vehicle-passenger system creates an environment permitting
+alleviation of Symptoms experienced by a Parkinson&apos;s
+patient.
+In addition to the embodiments of FIGS. 1-2, many other
+40 configurations of the personal mobility vehicles that are the
+subject of the present invention may be provided. The
+personal mobility vehicle may alternatively be provided
+with other configurations of ground-contacting members,
+Some of which are now described.
+The width of the ground-contacting members may advan 45
+tageously be increased, in accordance with certain alternate
+embodiments of the invention, for traversing thin ice or
+other terrain where pressure of the vehicle exerted on the
+ground may pose a danger.
+50 Referring to FIG. 8, an alternate embodiment of the
+invention is shown in which ground contact is provided by
+a single wheel 44. A characteristic common to many of the
+embodiments of the present invention is the platform 12 on
+which subject 10 stands to operate the vehicle. Handle 16 is
+55 provided in certain embodiments of the invention, as is grip
+18 on handle 16 for subject 12 to grip. In one embodiment
+of the invention, shown in FIG. 8, handle 16 is rigidly
+attached to platform 12, in this case, without limitation, via
+cowling 40. In an alternate embodiment of the invention,
+60 shown in FIG. 9, handle 16 may be articulated at pivot 46
+with respect to a base 48 fixed to platform 12. Articulation
+of handle 16 at pivot 46 makes it easy for subject 10 to shift
+his weight forward or aft while maintaining one or both
+hands on grip 14. Platform 12 locomotes with respect to the
+ground by motion of at least one wheel 20, or other 65
+ground-contacting element. AS with respect to earlier
+described embodiments, other ground-contacting elements
+
+--- REVIEWED TRANSCRIPTION PAGE 28 OF 29 ---
+
+17
+Such as arcuate members and clusters of wheels are
+described in the prior applications incorporated herein by
+reference, and the term “wheel&apos; is used herein to refer to any
+Such ground-contacting element without limitation.
+The single wheel 44 of unicycle embodiments of FIGS. 8
+and 9 may be supplemented, as shown in FIG. 10, by a
+nearby wheel providing a pair of adjacent and coaxial
+wheels 20. It can be seen that the vehicle of FIG. 10, like
+vehicles of various other embodiments disclosed in this
+description, when relying on wheels 20 for contacting the
+ground, is inherently unstable in the fore-aft direction with
+respect to a vertical Z. While the vehicle of FIG. 10 is
+relatively stable in the lateral direction, vehicles of some
+other embodiments are unstable in both lateral and fore-aft
+directions. The motion of vehicle 18 may be controlled by
+Subject 10 shifting his weight, and thus the center of mass
+(CG) of the loaded vehicle, in accordance with teachings
+described above.
+Also, as described above, in addition to the direct effect,
+of subject leaning, on the variables governing the torque
+applied to a motor for directing the vehicle, or as an alternate
+control strategy, user input may be separately incorporated
+into the control loop in a manner equivalent to variation of
+one or more of the input variables. Thus, for example, the
+user may provide an input, by means of a user interface of
+any Sort, the input being treated by the control System
+equivalently to a change, for example, in vehicle tilt. Such
+an interface may include, for example, a thumb wheel or a
+joystick mounted on the grip 14.
+Referring again to FIG. 10, steering of vehicle 18 may be
+provided by user 10 shifting his weight laterally (in the Y-Y
+direction) with respect to wheels 20. The change in position
+of user 10 relative to the platform 12, and/or the consequen
+tial lateral shift of the CG of the combination of user 10 and
+vehicle 18 may be sensed using any strategy. One example
+is the use of one or more forceplates disposed on the upper
+Surface of platform 14 to Sense differential pressure exerted
+by a first leg 52 of user 10 with respect to a second leg 54
+of the user. Alternatively, a seat (not shown) may be pro
+Vided on platform 12 for supporting user 10, and one or more
+forceplates mounted on the seat may sense a shift in the
+weight of the user and thus generate a signal for controlling
+the velocity vector of the vehicle in response to user leaning.
+AS an alternate example, a tilt of platform 12 relative to the
+axis (Y-Y) of rotation of wheel 20 may be sensed using an
+inclinometer, or one or more gyroscopes. Corrections may
+be applied to the measured tilt of differential pressure to
+account for irregularities in the surface being traversed by
+vehicle 18, as determined by the measured tilt, with respect
+to a plane perpendicular to gravity, of the axis (Y-Y) of
+rotation of wheel 20. In accordance with yet further alternate
+embodiments of the invention, a force sensor may be pro
+vided within handle 16 or a rotation sensor may be provided
+at pivot 46, either stratagem for sensing leaning by the user
+and applying the sensed leaning as a user input in the control
+loop for governing vehicle operation.
+In accordance with other embodiments of the present
+invention, leaning by user 12 may be used solely for
+governing fore-aft motion of vehicle 10, or, alternatively,
+leaning may be used solely for governing steering of the
+vehicle, or, for both functions.
+A front perspective view of an alternate embodiment of
+the invention is shown in FIG. 11 where vehicle 10 has a
+Single wheel 24 and user 12 Stands, during normal operation
+of the vehicle, on platform 14 astride wheel 24. An embodi
+ment is shown wherein handle 16 is rigidly attached to
+platform 14, in this case, via cowling 40.
+
+18
+FIG. 11 shows an embodiment of the invention wherein a
+vehicle 50 is controlled by leaning, as described above with
+respect to other embodiments, and no handle is provided,
+Such that the entire support of user 10 is by standing on
+platform 12. Within the scope of the present invention, as
+described herein and as claimed in any appended claims,
+user 10 may be supported on platform 12 by standing with
+feet positioned along axis 56 of rotation of wheel 44, as
+shown in FIG. 11, or, alternatively, with feet positioned
+astride axis 52 of rotation of wheel 44, as shown in FIG. 12
+and FIG. 13. A handle 16 may also be provided in the case
+of a configuration of the invention in which wheel 44 is
+mounted transversely to the direction faced by user 10, with
+handle 16 coupled to platform 12 via cowling 40, as shown
+15 in FIG. 14.
+FIG. 15 shows an embodiment of a vehicle wherein the
+ground-contacting element is a uniball 151. such a ball may
+be separately driven in the X and y directions and the vehicle
+stabilized in one or both of these directions in the manner
+described above.
+In addition to the personal mobility vehicles described
+and claimed above, in accordance with alternate embodi
+ments of the invention, scaled down versions of any of the
+embodiments heretofore described may be employed for
+25 recreational or educational purposes, whether or not human
+Subjects are conveyed thereupon. such toy versions may
+travel over various terrains while maintaining balance in the
+fore-aft plane.
+The described embodiments of the invention are intended
+to be merely exemplary and numerous variations and modi
+fications will be apparent to those skilled in the art. All Such
+variations and modifications are intended to be within the
+Scope of the present invention as defined in the appended
+claims.
+What is claimed is:
+1. A vehicle for carrying a payload including a user, the vehicle comprising:
+a. a platform which supports the user;
+b. a ground-contacting module, to which the platform is mounted, which propels the user in desired motion over an underlying surface;
+c. a motorized drive arrangement, coupled to the ground-contacting module, the drive arrangement, ground-contacting module and payload comprising a system being unstable with respect to tipping when the motorized drive is not powered; the motorized drive arrangement causing, when powered, automatically balanced operation of the system wherein the vehicle has a present velocity and a maximum operating velocity, determined by a requirement of acceleration to maintain balance and, in operation, has a balancing margin determined by the difference between the maximum operating velocity and the present velocity of the vehicle;
+d. a balancing margin monitor, coupled to the ground-contacting module, for generating a signal characterizing the balancing margin; and
+e. an alarm, coupled to the balancing margin monitor, for receiving the signal characterizing the balancing margin and for warning when the balancing margin falls below a specified limit.
+2. A device according to claim 1, wherein the alarm includes ripple modulation of the power output of the motorized drive arrangement.
+3. A device according to claim 1, wherein the alarm is audible.
+
+--- REVIEWED TRANSCRIPTION PAGE 29 OF 29 ---
+
+4. A device according to claim 1, wherein the ground-contacting module includes a plurality of laterally disposed ground-contacting members.
+5. A method for using a vehicle to carry a payload including a user, the method comprising:
+a) supporting the user on a platform, the platform mounted to a ground-contacting module, for propelling the vehicle in desired motion over an underlying surface;
+b) operating a motorized drive arrangement to provide automatically balanced operation of the vehicle, the vehicle being unstable with respect to tipping when the motorized drive is not powered, the vehicle having a present velocity and a maximum operating velocity, determined to maintain acceleration potential to ensure balance, and, in operation, has a balancing margin determined by the difference between the maximum operating velocity and the present velocity of the vehicle;
+c) monitoring the balancing margin;
+d) generating a signal characterizing the balancing margin; and
+e) generating an alarm based on the signal to warn when the balancing margin falls below a specified limit.
+6. A method according to claim 5, wherein the step of generating the alarm includes modulating the power output of the motorized drive arrangement in a ripple fashion.
+7. A method according to claim 5, wherein the step of generating the alarm includes producing an audible warning.

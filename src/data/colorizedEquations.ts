@@ -529,9 +529,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       title: "High-Resistance Carbon Filament & Parallel Distribution Law",
       category: "Thermodynamics & Electrical Distribution",
       rawLatex:
-        "R_{\\text{filament}} = \\rho_{\\text{carbon}} \\frac{L}{A} = \\rho_{\\text{carbon}} \\frac{4 L}{\\pi d^2} = \\frac{V_{\\text{grid}}^2}{P_{\\text{lamp}}} \\approx 100\\,\\Omega",
+        "R_{\\text{filament}} = \\rho_{\\text{carbon}} \\frac{L}{A} = \\rho_{\\text{carbon}} \\frac{4 L}{\\pi d^2} = \\frac{V_{\\text{declared}}^2}{P_{\\text{electric}}}",
       colorizedLatex:
-        "\\textcolor{#059669}{R_{\\text{filament}}} = \\textcolor{#9333ea}{\\rho_{\\text{carbon}}} \\frac{\\textcolor{#2563eb}{L}}{\\textcolor{#ea580c}{A}} = \\textcolor{#9333ea}{\\rho_{\\text{carbon}}} \\frac{4 \\textcolor{#2563eb}{L}}{\\pi \\textcolor{#ea580c}{d^2}} = \\frac{\\textcolor{#dc2626}{V_{\\text{grid}}^2}}{\\textcolor{#0891b2}{P_{\\text{lamp}}}} \\approx 100\\,\\Omega",
+        "\\textcolor{#059669}{R_{\\text{filament}}} = \\textcolor{#9333ea}{\\rho_{\\text{carbon}}} \\frac{\\textcolor{#2563eb}{L}}{\\textcolor{#ea580c}{A}} = \\textcolor{#9333ea}{\\rho_{\\text{carbon}}} \\frac{4 \\textcolor{#2563eb}{L}}{\\pi \\textcolor{#ea580c}{d^2}} = \\frac{\\textcolor{#dc2626}{V_{\\text{declared}}^2}}{\\textcolor{#0891b2}{P_{\\text{electric}}}}",
       plainEnglishSentence: [
         {
           text: "The ",
@@ -562,17 +562,17 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           variableId: "diam_d",
         },
         {
-          text: ", engineered to match ",
+          text: ". At a declared operating point it also equals ",
         },
         {
-          text: "distribution grid voltage squared",
+          text: "declared exhibit voltage squared",
           variableId: "v_grid",
         },
         {
-          text: " over ",
+          text: " divided by ",
         },
         {
-          text: "lamp power rating",
+          text: "computed electrical input",
           variableId: "p_lamp",
         },
         {
@@ -585,30 +585,30 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "R_{\\text{filament}}",
           name: "Hot Filament Electrical Resistance",
           color: "emerald",
-          role: "Ohmic resistance of the incandescent carbon horseshoe thread at $1900\\text{ K}$ ($~100\\,\\Omega$)",
+          role: "The source reports 100 to 500 ohms for one carbonized-thread example and up to 2,000 ohms for a compact spiral",
           unit: "Ohms (\\Omega)",
           dimension: "[M L^2 T^-3 I^-2]",
           explanation:
-            "Edison's genius insight: other inventors used thick rods ($1\\,\\Omega$) requiring massive copper cables; Edison engineered high-resistance ($100\\,\\Omega$) filaments requiring only $1\\text{ A}$ at $110\\text{ V}$.",
+            "The patent contrasts its high-resistance filament with reported prior practice of one-to-four-ohm carbon rods because low-resistance lamps in multiple arc demand enormous main conductors.",
           telemetryMetricLabel: "Filament Resistance",
         },
         {
           id: "rho_carbon",
           symbol: "\\rho_{\\text{carbon}}",
-          name: "Carbonized Cellulose Resistivity",
+          name: "Carbon-Form Resistivity",
           color: "amethyst",
-          role: "Specific resistivity of carbonized cotton or Japanese bamboo fiber ($~4 \\times 10^{-5}\\,\\Omega\\cdot\\text{m}$)",
+          role: "Material property in the modern geometry relation; the grant supplies no numerical carbon resistivity",
           unit: "\\Omega * m",
           dimension: "[M L^3 T^-3 I^-2]",
           explanation:
-            "Carbon maintains high electrical resistance and withstands temperatures exceeding $2,000^\\circ\\text{C}$ without melting.",
+            "The source reports resistance for finished carbon forms rather than enough material data to infer a universal resistivity or operating temperature.",
         },
         {
           id: "len_l",
           symbol: "L",
-          name: "Filament Horseshoe Length",
+          name: "Filament Path Length",
           color: "sapphire",
-          role: "Total length of the looping carbon thread ($10 - 15\\text{ cm}$)",
+          role: "The source's rolled-wire example is over one foot long; the thermal-area model instead declares a fixed 22 cm display length",
           unit: "cm or meters",
           dimension: "[L]",
           explanation: "Longer thread increases resistance and radiating surface area.",
@@ -618,7 +618,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "d",
           name: "Filament Wire Diameter",
           color: "coral",
-          role: "Cross-sectional diameter of carbonized filament ($0.15 - 0.25\\text{ mm}$)",
+          role: "The source says its rolled plastic stock may be as small as seven one-thousandths of an inch ($0.1778\\text{ mm}$)",
           unit: "mm or meters",
           dimension: "[L]",
           explanation:
@@ -626,36 +626,36 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
         },
         {
           id: "v_grid",
-          symbol: "V_{\\text{grid}}",
-          name: "Central Station Distribution Voltage",
+          symbol: "V_{\\text{declared}}",
+          name: "Declared Exhibit Voltage",
           color: "crimson",
-          role: "Standardized DC electrical distribution potential ($110\\text{ V}$)",
+          role: "The simulator declares $110\\text{ V}$ as an interpretive operating input; US 223,898 states no supply voltage",
           unit: "Volts (V)",
           dimension: "[M L^2 T^-3 I^-1]",
           explanation:
-            "High voltage minimized $I^2 R$ transmission losses across neighborhood street mains.",
+            "Voltage is required to evaluate an operating point, so the interface labels it as a model input instead of attributing it to the patent.",
         },
         {
           id: "p_lamp",
-          symbol: "P_{\\text{lamp}}",
-          name: "Lamp Thermal Power Consumption",
+          symbol: "P_{\\text{electric}}",
+          name: "Computed Electrical Input",
           color: "cyan",
-          role: "Power consumed to produce 16 candlepower illumination ($~100\\text{ W}$ at $1\\text{ A}$)",
+          role: "Electrical input computed from the declared voltage and hot-resistance operating point",
           unit: "Watts (W)",
           dimension: "[M L^2 T^-3]",
           explanation: "Electrical energy converted to incandescent radiant heat and light.",
         },
       ],
       pedagogicalNote:
-        "The 'subdivision of electric light' was deemed mathematically impossible by British scientists until Edison realized Joule heating losses ($P_{\\text{loss}} = I^2 R_{\\text{wire}}$) drop with the square of current. By multiplying lamp resistance by 100x, line current dropped by 10x and copper cable weight dropped by 100x.",
+        "The source's network argument is precise but qualitative: one-to-four-ohm lamps in multiple arc require enormous main conductors, while a much higher-resistance light-giver permits finer leads. The simulator computes one declared operating point without turning that comparison into an unsupported percentage claim.",
       claimRef: 1,
       historicalSignificance:
-        "US 223,898 established the commercial electric power grid, making domestic electric lighting economically viable.",
+        "US 223,898 connects the internal resistance of the lamp to the practical subdivision of electric light across many parallel branches.",
     },
     {
       id: "edison-vacuum-mean-free-path",
       patentId: "us-223898-edison-lightbulb",
-      title: "Sprengel High-Vacuum Mean Free Path & Oxidation Suppression",
+      title: "Source Vacuum Level, Mean Free Path & Oxidation Suppression",
       category: "Thermodynamics & Vacuum Physics",
       rawLatex:
         "\\lambda_{\\text{mfp}} = \\frac{k_B \\cdot T}{\\sqrt{2} \\pi d_{\\text{mol}}^2 \\cdot P_{\\text{vac}}} \\gg r_{\\text{bulb}}",
@@ -714,11 +714,11 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "\\lambda_{\\text{mfp}}",
           name: "Molecular Mean Free Path",
           color: "emerald",
-          role: "Average distance a residual gas molecule travels before colliding with another molecule ($> 10\\text{ cm}$ in high vacuum)",
+          role: "Modern hard-sphere estimate of roughly $7$ to $11\\text{ cm}$ at the source pressure and a declared 300-to-500-K gas range",
           unit: "meters (m)",
           dimension: "[L]",
           explanation:
-            "When $\\lambda_{\\text{mfp}}$ exceeds bulb radius ($r_{\\text{bulb}} \\approx 3\\text{ cm}$), gas thermal convection ceases entirely.",
+            "When $\\lambda_{\\text{mfp}}$ approaches or exceeds the receiver scale, continuum convection is strongly suppressed; the equation does not prove a perfectly collisionless enclosure.",
           telemetryMetricLabel: "Mean Free Path",
         },
         {
@@ -736,7 +736,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "T",
           name: "Enclosure Absolute Temperature",
           color: "crimson",
-          role: "Temperature of residual gas molecules inside the glass globe ($~300 - 500\\text{ K}$)",
+          role: "Declared 300-to-500-K range used only for the modern mean-free-path interpretation",
           unit: "Kelvin (K)",
           dimension: "[\\Theta]",
           explanation: "Heated by radiation from the incandescent filament.",
@@ -746,7 +746,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "d_{\\text{mol}}",
           name: "Gas Molecular Collision Diameter",
           color: "amethyst",
-          role: "Effective diameter of oxygen and nitrogen molecules ($~0.37\\text{ nm}$)",
+          role: "Declared modern hard-sphere collision diameter ($~0.37\\text{ nm}$)",
           unit: "meters (m)",
           dimension: "[L]",
           explanation: "Determines hard-sphere scattering cross-section.",
@@ -756,28 +756,28 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "P_{\\text{vac}}",
           name: "Residual Vacuum Pressure",
           color: "sapphire",
-          role: "Pressure achieved by Sprengel mercury fall-pumps ($< 10^{-6}\\text{ atm} \\approx 0.1\\text{ Pa}$)",
+          role: "The source reports a bulb exhausted to one-millionth of an atmosphere ($\\approx 0.101\\text{ Pa}$ or $7.6\\times10^{-4}\\text{ Torr}$)",
           unit: "Pascals (Pa) / Torr",
           dimension: "[M L^-1 T^-2]",
           explanation:
-            "Eliminating oxygen stops the white-hot carbon filament from combusting, extending operating lifespan to over 1,200 hours.",
+            "Reducing the residual atmosphere suppresses oxidation and the source-described atmospheric injury; the grant gives no lamp-life figure.",
         },
         {
           id: "r_bulb",
           symbol: "r_{\\text{bulb}}",
           name: "Glass Bulb Inner Radius",
           color: "cyan",
-          role: "Radius of the sealed spherical glass envelope ($~3.5\\text{ cm}$)",
+          role: "Illustrative receiver radius needed for the modern scale comparison; the grant gives no bulb radius",
           unit: "meters (m)",
           dimension: "[L]",
           explanation: "All-glass one-piece envelope sealed with fused platinum lead-in wires.",
         },
       ],
       pedagogicalNote:
-        "Earlier vacuum bulbs failed because multi-piece glass-and-brass joints leaked. Edison used all-glass hermetic fusion with platinum leads (which match glass's thermal expansion coefficient) evacuated to one-millionth of an atmosphere.",
+        "The source contrasts its all-glass receiver with prior vessels made of glass cemented to a metallic base, then says platina is suitable because its expansion is nearly the same as glass. The mean-free-path calculation is a modern interpretation of the reported one-millionth-atmosphere pressure.",
       claimRef: 2,
       historicalSignificance:
-        "Demonstrated the necessity of ultra-high vacuum techniques that later enabled vacuum tubes, X-ray tubes, and cathode ray tubes.",
+        "The claimed combination makes the exhausted all-glass receiver and conductors passing through its glass wall part of the lamp rather than incidental laboratory equipment.",
     },
     {
       id: "edison-blackbody-radiation",
@@ -785,23 +785,23 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       title: "Stefan-Boltzmann Thermal Radiation & High Resistance Law",
       category: "Thermodynamics & Vacuum Physics",
       rawLatex:
-        "P_{\\text{rad}} = \\varepsilon \\cdot \\sigma \\cdot A \\cdot T^4 \\quad \\text{and} \\quad P = \\frac{V^2}{R}",
+        "P_{\\text{rad}} = \\varepsilon \\sigma A (T^4 - T_{\\text{ambient}}^4) \\quad \\text{and} \\quad P_{\\text{electric}} = \\frac{V^2}{R}",
       colorizedLatex:
-        "\\textcolor{#ea580c}{P_{\\text{rad}}} = \\textcolor{#0891b2}{\\varepsilon} \\cdot \\textcolor{#d97706}{\\sigma} \\cdot \\textcolor{#9333ea}{A} \\cdot \\textcolor{#dc2626}{T^4} \\quad \\text{and} \\quad P = \\frac{\\textcolor{#2563eb}{V^2}}{\\textcolor{#059669}{R}}",
+        "\\textcolor{#ea580c}{P_{\\text{rad}}} = \\textcolor{#0891b2}{\\varepsilon} \\textcolor{#d97706}{\\sigma} \\textcolor{#9333ea}{A} (\\textcolor{#dc2626}{T^4} - T_{\\text{ambient}}^4) \\quad \\text{and} \\quad P_{\\text{electric}} = \\frac{\\textcolor{#2563eb}{V^2}}{\\textcolor{#059669}{R}}",
       plainEnglishSentence: [
         { text: "The " },
-        { text: "radiant optical power", variableId: "p_rad" },
+        { text: "net radiant thermal power", variableId: "p_rad" },
         { text: " emitted by the filament scales with " },
         { text: "material emissivity", variableId: "epsilon" },
         { text: ", " },
         { text: "filament surface area", variableId: "area" },
         { text: ", and the " },
         { text: "fourth power of absolute temperature", variableId: "t4" },
-        { text: "; parallel distribution requires " },
+        { text: "; at a " },
+        { text: "declared exhibit voltage", variableId: "voltage" },
+        { text: ", " },
         { text: "high filament resistance", variableId: "res" },
-        { text: " to avoid melting " },
-        { text: "mains voltage feeder wires", variableId: "voltage" },
-        { text: "." },
+        { text: " limits the current demanded by a parallel branch." },
       ],
       variables: [
         {
@@ -809,11 +809,11 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "P_{\\text{rad}}",
           name: "Radiant Thermal Power",
           color: "coral",
-          role: "Total electromagnetic radiation emitted per second across the blackbody spectrum",
+          role: "Net electromagnetic radiation emitted above the declared ambient-temperature background",
           unit: "Watts (W)",
           dimension: "[M L^2 T^-3]",
           explanation:
-            "At 2,200 Kelvin, a carbon filament glows with warm incandescent luminescence, converting electrical input power into visible photons and infrared heat.",
+            "The narrow FrankenSim owner solves the steady operating point where declared electrical input equals net gray-body radiation; it does not infer visible efficacy or lamp life.",
           telemetryMetricLabel: "Radiant Power",
         },
         {
@@ -821,11 +821,11 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "\\varepsilon",
           name: "Filament Emissivity",
           color: "cyan",
-          role: "Surface radiative efficiency compared to a theoretical ideal blackbody (0.82 for carbonized cotton/bamboo)",
+          role: "Declared gray-body factor of 0.8 for this exhibit; the patent does not provide emissivity",
           unit: "Dimensionless fraction",
           dimension: "[1]",
           explanation:
-            "Carbonized organic fibers possess high emissivity (approx 0.82), producing rich blackbody emission without early reflective dissipation.",
+            "Emissivity is an explicit model input used to close the radiative balance, not a hidden material property attributed to the historical specimen.",
         },
         {
           id: "area",
@@ -836,7 +836,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           unit: "Square meters (m^2)",
           dimension: "[L^2]",
           explanation:
-            "By making the filament microscopic in cross-section (a hair-like thread) with minimal surface area, heat loss is minimized and resistance maximized.",
+            "The source-derived seven-thousandths-inch diameter and the illustrative length define the cylindrical area supplied explicitly to the gray-body balance.",
         },
         {
           id: "t4",
@@ -847,19 +847,19 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           unit: "Kelvin^4 (K^4)",
           dimension: "[\\Theta^4]",
           explanation:
-            "Doubling filament temperature multiplies radiated light by 16 ($2^4$). To prevent rapid carbon sublimation at 2,200 K, Edison evacuated the globe to one-millionth of an atmosphere (high vacuum).",
-          telemetryMetricLabel: "Color Temp",
+            "At fixed area and emissivity, net thermal radiation rises approximately with the fourth power of absolute temperature above ambient. The solved temperature is a model result, not a value printed in the grant.",
+          telemetryMetricLabel: "Filament Temperature",
         },
         {
           id: "voltage",
           symbol: "V^2",
-          name: "Supply Line Voltage",
+          name: "Declared Exhibit Voltage",
           color: "sapphire",
-          role: "Central electrical station parallel distribution potential (110 Volts DC)",
+          role: "Visitor-controlled exhibit input, initialized to 110 volts; US 223,898 states no operating voltage",
           unit: "Volts (V)",
           dimension: "[M L^2 T^-3 I^-1]",
           explanation:
-            "Edison selected 110 Volts as the optimal standard balancing insulation safety against copper wire mass.",
+            "The operating voltage is declared in the interface so the radiative balance has a reproducible electrical input without presenting it as source text.",
           telemetryKey: "voltage",
         },
         {
@@ -867,19 +867,19 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "R",
           name: "High Filament Resistance",
           color: "emerald",
-          role: "Electrical resistance of carbonized thread filament (100 Ohms vs 1 Ohm for arc lamps)",
+          role: "Visitor-controlled declared hot resistance, bounded to the source's reported 100-to-500-ohm example range",
           unit: "Ohms (\\Omega)",
           dimension: "[M L^2 T^-3 I^-2]",
           explanation:
-            "Edison's core insight was that low-resistance arc lights required enormous copper conductors ($I = V/R$). High resistance ($100\\ \\Omega$) slashed current, allowing hundreds of lamps to run in parallel on thin copper lines.",
+            "The source contrasts its high-resistance carbon thread with reported one-to-four-ohm prior-practice carbon rods and explains the resulting main-conductor problem.",
           telemetryMetricLabel: "Hot Resistance",
         },
       ],
       pedagogicalNote:
-        "Every other inventor attempted to make low-resistance electric lamps ($1\\ \\Omega$), which caused copper transmission lines to melt. Edison understood the $P = I^2 R = V^2 / R$ tradeoff and engineered high-resistance filaments in a sealed vacuum globe.",
+        "This card separates source facts from model assumptions. The grant supplies the high-resistance ranges, carbon geometry example, nearly perfect vacuum, and multiple-arc motivation; the simulator declares voltage, emissivity, ambient temperature, and illustrative length, then asks FrankenSim to close only the gray-body power balance.",
       claimRef: 1,
       historicalSignificance:
-        "US 223,898 laid the mathematical and commercial foundation for the global electric utility grid.",
+        "The equation makes the patent's electrical-distribution argument inspectable while keeping the thermal operating point explicitly interpretive.",
     },
   ],
 
@@ -5261,6 +5261,166 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
+  "us-1219881-sundback-zipper": [
+    {
+      id: "sundback-cam-wedge-force",
+      patentId: "us-1219881-sundback-zipper",
+      title: "Cam Wedge Normal Force Resolution",
+      category: "Wedge Cam Kinematics",
+      rawLatex: "F_{\\text{engage}} = \\frac{F_{\\text{pull}}}{2 \\sin\\theta + \\mu}",
+      colorizedLatex:
+        "\\textcolor{#059669}{F_{\\text{engage}}} = \\frac{\\textcolor{#2563eb}{F_{\\text{pull}}}}{2\\sin\\textcolor{#d97706}{\\theta} + \\textcolor{#0d9488}{\\mu}}",
+      plainEnglishSentence: [
+        { text: "The lateral " },
+        { text: "engagement normal force", variableId: "engage_force" },
+        { text: " exerted on the scoops scales with the " },
+        { text: "slider pull force", variableId: "pull_force" },
+        { text: " divided by twice the sine of the " },
+        { text: "wedge convergence half-angle", variableId: "wedge_angle" },
+        { text: " plus the " },
+        { text: "friction coefficient", variableId: "friction_coeff" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "engage_force",
+          symbol: "F_{\\text{engage}}",
+          name: "Lateral Engagement Normal Force",
+          color: "emerald",
+          role: "Compressive force squeezing opposing scoops into nested alignment",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "The converging wedge side walls of the Y-slider act as inclined planes, multiplying pull tab force into high lateral compressive force that drives the rounded scoops together.",
+          telemetryMetricLabel: "Cam Wedge Force",
+        },
+        {
+          id: "pull_force",
+          symbol: "F_{\\text{pull}}",
+          name: "Slider Pull Force",
+          color: "sapphire",
+          role: "User-applied longitudinal pull force on slider tab ring",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation: "Force exerted by fingers when sliding the fastener closed.",
+          telemetryKey: "pullForceN",
+        },
+        {
+          id: "wedge_angle",
+          symbol: "\\theta",
+          name: "Wedge Convergence Half-Angle",
+          color: "amber",
+          role: "Internal angle of slider guide channels (θ ≈ 18°)",
+          unit: "Degrees (°)",
+          dimension: "[1]",
+          explanation:
+            "Optimal wedge angle balances mechanical advantage against jam-free smooth sliding.",
+        },
+        {
+          id: "friction_coeff",
+          symbol: "\\mu",
+          name: "Dry Friction Coefficient",
+          color: "teal",
+          role: "Sliding friction coefficient between stamped brass scoops and slider flanges (μ ≈ 0.18)",
+          unit: "Dimensionless",
+          dimension: "[1]",
+          explanation: "Low friction ensures effortless one-handed opening and closing.",
+        },
+      ],
+      pedagogicalNote:
+        "Sundback's Y-channel slider converts axial pull into transverse squeeze, seating each projection into its mating hollow socket without requiring manual alignment.",
+      claimRef: 5,
+      historicalSignificance:
+        "Claim 5 protects the dual-plate slider with diverging guide channels and central diamond wedge.",
+    },
+    {
+      id: "sundback-burst-resistance",
+      patentId: "us-1219881-sundback-zipper",
+      title: "Interlocking Scoop Burst Resistance",
+      category: "Mechanical Fastener Strength",
+      rawLatex:
+        "F_{\\text{burst}} = 2 N_{\\text{teeth}} A_{\\text{shear}} \\tau_{\\text{max}} \\cos\\left(\\frac{\\theta_{\\text{flex}}}{2}\\right)",
+      colorizedLatex:
+        "\\textcolor{#059669}{F_{\\text{burst}}} = 2\\,\\textcolor{#2563eb}{N_{\\text{teeth}}}\\,\\textcolor{#d97706}{A_{\\text{shear}}}\\,\\textcolor{#9333ea}{\\tau_{\\text{max}}}\\,\\cos\\left(\\frac{\\textcolor{#0d9488}{\\theta_{\\text{flex}}}}{2}\\right)",
+      plainEnglishSentence: [
+        { text: "Total transverse " },
+        { text: "burst resistance force", variableId: "burst_force" },
+        { text: " equals twice the number of " },
+        { text: "engaged teeth", variableId: "num_teeth" },
+        { text: " multiplied by the single tooth " },
+        { text: "shear contact area", variableId: "shear_area" },
+        { text: ", the " },
+        { text: "metal shear strength", variableId: "shear_strength" },
+        { text: ", and the " },
+        { text: "transverse flex cosine factor", variableId: "flex_factor" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "burst_force",
+          symbol: "F_{\\text{burst}}",
+          name: "Total Chain Burst Resistance",
+          color: "emerald",
+          role: "Maximum transverse tensile pull load across the closed zipper before tooth pop-out or cord tear",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Because each nested cup projection overlaps behind the shoulder of the adjacent scoop, transverse loads put the metal scoops into pure mechanical shear.",
+          telemetryMetricLabel: "Burst Resistance",
+        },
+        {
+          id: "num_teeth",
+          symbol: "N_{\\text{teeth}}",
+          name: "Engaged Tooth Count",
+          color: "sapphire",
+          role: "Number of interlocked scoops in the closed portion of the chain",
+          unit: "Teeth",
+          dimension: "[1]",
+          explanation:
+            "Higher tooth density (11 TPI) distributes the lateral load across dozens of contact shoulders.",
+          telemetryMetricLabel: "Engaged Scoops",
+        },
+        {
+          id: "shear_area",
+          symbol: "A_{\\text{shear}}",
+          name: "Tooth Contact Shear Area",
+          color: "amber",
+          role: "Overlapping shear contact shoulder area per scoop (A ≈ 1.45 mm²)",
+          unit: "Square millimeters (mm^2)",
+          dimension: "[L^2]",
+          explanation: "Transversely elongated cup geometry maximizes shear contact area.",
+        },
+        {
+          id: "shear_strength",
+          symbol: "\\tau_{\\text{max}}",
+          name: "Brass Yield Shear Strength",
+          color: "amethyst",
+          role: "Ultimate shear strength of stamped cartridge brass (τ ≈ 220 MPa)",
+          unit: "Megapascals (MPa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation: "Stamping and work-hardening increase scoop yield strength.",
+        },
+        {
+          id: "flex_factor",
+          symbol: "\\theta_{\\text{flex}}",
+          name: "Transverse Bending Angle",
+          color: "teal",
+          role: "Angle at which the closed zipper chain is bent or folded across its length",
+          unit: "Degrees (°)",
+          dimension: "[1]",
+          explanation:
+            "Rounded cup profiles allow the scoops to oscillate inside their sockets without unmeshing when clothing flexes.",
+          telemetryKey: "flexAngleDeg",
+        },
+      ],
+      pedagogicalNote:
+        "Unlike Judson's rigid hooks that popped open when folded, Sundback's cup sockets let adjacent teeth pivot like ball-and-socket joints while maintaining full shear engagement.",
+      claimRef: 2,
+      historicalSignificance:
+        "Claim 2 and the 1932 disclaimer protect the thin, transversely elongated scoops that enable sharp bending without automatic opening.",
+    },
+  ],
+
   "us-1102653-goddard-rocket": [
     {
       id: "goddard-source-tapered-tube-minimum",
@@ -5310,87 +5470,101 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   "us-593138-tesla-coil": [
     {
-      id: "tesla-voltage-grading",
+      id: "tesla-adjacent-turn-grading",
       patentId: "us-593138-tesla-coil",
-      title: "Inter-Turn Voltage Gradient & Dielectric Stress Grading",
+      title: "Claimed Common Node & Adjacent-Turn Grading",
       category: "High-Voltage Electromagnetics",
-      rawLatex: "\\Delta V_{\\text{turn}} = \\frac{V_{\\text{max}}}{N}",
+      rawLatex:
+        "V(B_0)=V(C_0)=V_{\\mathrm{earth}},\\qquad |V(B_{i+1})-V(B_i)| \\ll |V(B_N)-V_{\\mathrm{earth}}|",
       colorizedLatex:
-        "\\textcolor{#059669}{\\Delta V_{\\text{turn}}} = \\frac{\\textcolor{#ef4444}{V_{\\text{max}}}}{\\textcolor{#2563eb}{N}}",
+        "\\textcolor{#059669}{V(B_0)}=\\textcolor{#2563eb}{V(C_0)}=\\textcolor{#0d9488}{V_{\\mathrm{earth}}},\\qquad \\textcolor{#9333ea}{|V(B_{i+1})-V(B_i)|} \\ll \\textcolor{#ef4444}{|V(B_N)-V_{\\mathrm{earth}}|}",
       plainEnglishSentence: [
         { text: "The " },
-        { text: "inter-turn potential gradient", variableId: "dv_turn" },
-        { text: " is minimized by distributing the " },
-        { text: "terminal high voltage", variableId: "v_max" },
-        { text: " uniformly across " },
-        { text: "total secondary turns", variableId: "turn_count" },
-        { text: " wound in a flat spiral." },
+        { text: "secondary end nearest the primary", variableId: "secondary_low" },
+        { text: ", the " },
+        { text: "adjacent primary end", variableId: "primary_low" },
+        { text: ", and " },
+        { text: "earth", variableId: "earth" },
+        { text: " share one node; the graded winding keeps the " },
+        { text: "difference between neighboring turns", variableId: "adjacent_difference" },
+        { text: " small relative to the total terminal-to-earth difference." },
       ],
       variables: [
         {
-          id: "dv_turn",
-          symbol: "\\Delta V_{\\text{turn}}",
-          name: "Inter-Turn Potential Difference",
+          id: "secondary_low",
+          symbol: "V(B_0)",
+          name: "Adjacent Secondary-End Potential",
           color: "emerald",
-          role: "Voltage drop between adjacent concentric winding turns",
+          role: "Potential at the secondary terminal physically adjacent to the primary",
           unit: "Volts (V)",
           dimension: "[M L^2 T^-3 I^-1]",
           explanation:
-            "By winding the high-voltage secondary as a flat spiral, Tesla keeps adjacent convolutions at minimal voltage differences, preventing insulation puncture.",
+            "Claims 1 through 3 electrically connect this terminal to the adjacent primary terminal and, in use, to earth.",
         },
         {
-          id: "v_max",
-          symbol: "V_{\\text{max}}",
-          name: "Peak Secondary Terminal Potential",
-          color: "crimson",
-          role: "Maximum output potential developed at the outer elevated secondary terminal",
-          unit: "Volts (V)",
-          dimension: "[M L^2 T^-3 I^-1]",
-          explanation:
-            "The outermost convolution attains several hundred thousand to millions of volts relative to earth.",
-        },
-        {
-          id: "turn_count",
-          symbol: "N",
-          name: "Total Secondary Winding Turns",
+          id: "primary_low",
+          symbol: "V(C_0)",
+          name: "Adjacent Primary-End Potential",
           color: "sapphire",
-          role: "Number of helical or spiral convolutions comprising the secondary inductor",
-          unit: "Turns (dimensionless)",
-          dimension: "[1]",
+          role: "Potential at the primary terminal named in the claimed common connection",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
           explanation:
-            "A large number of finely spaced turns progressively steps up voltage without allowing concentrated dielectric stress.",
+            "This is a topology identity from the claimed connection, not a numerical primary-voltage estimate.",
+        },
+        {
+          id: "earth",
+          symbol: "V_{\\mathrm{earth}}",
+          name: "Earth Reference Potential",
+          color: "teal",
+          role: "The earth connection required while the transformer is in use",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
+          explanation:
+            "The schematic and 3D model render a continuous conductor from the common node to an earth terminal.",
+        },
+        {
+          id: "adjacent_difference",
+          symbol: "|V(B_{i+1})-V(B_i)|",
+          name: "Adjacent-Turn Potential Difference",
+          color: "amethyst",
+          role: "Local potential difference between neighboring secondary convolutions",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
+          explanation:
+            "The source describes this difference as comparatively small; it does not print a uniform volts-per-turn value or a turn count from which one could be invented.",
         },
       ],
       pedagogicalNote:
-        "In US Patent 593,138, Tesla solves high-voltage insulation by geometry: the inner end near the primary is grounded, while potential climbs radially outward away from ground and the primary coil.",
-      claimRef: 2,
+        "This relation separates what the grant fixes exactly (the common electrical node) from what it describes qualitatively (small adjacent-turn differences). Absolute voltages remain underdetermined.",
+      claimRef: 1,
       historicalSignificance:
-        "Claim 2 explicitly protects the flat spiral geometry with the inner terminal connected to the primary and to earth.",
+        "Claim 1 establishes the common-node connection; Claims 2 and 3 add the flat or nested spiral geometry that moves the remote high-potential terminal away from the primary.",
     },
     {
       id: "tesla-quarter-wave-standing-wave",
       patentId: "us-593138-tesla-coil",
-      title: "Quarter-Wave Resonant Standing Wave Distribution",
+      title: "Quarter-Wave Stationary-Wave Distribution",
       category: "High-Frequency Resonance",
       rawLatex: "\\ell \\approx \\frac{\\lambda}{4} = \\frac{v_p}{4 f_0}",
       colorizedLatex:
         "\\textcolor{#059669}{\\ell} \\approx \\frac{\\textcolor{#9333ea}{\\lambda}}{4} = \\frac{\\textcolor{#0d9488}{v_p}}{4 \\textcolor{#2563eb}{f_0}}",
       plainEnglishSentence: [
         { text: "The " },
-        { text: "physical secondary wire length", variableId: "wire_len" },
+        { text: "developed secondary wire length", variableId: "wire_len" },
         { text: " is tuned to approximately one-quarter of the " },
         { text: "electrical disturbance wavelength", variableId: "wavelength" },
         { text: ", equal to the " },
         { text: "wave phase propagation velocity", variableId: "phase_vel" },
         { text: " divided by four times the " },
-        { text: "fundamental resonant frequency", variableId: "res_freq" },
+        { text: "electrical-disturbance frequency", variableId: "res_freq" },
         { text: "." },
       ],
       variables: [
         {
           id: "wire_len",
           symbol: "\\ell",
-          name: "Secondary Wire Axial Length",
+          name: "Developed Secondary Wire Length",
           color: "emerald",
           role: "Total developed wire length of the secondary spiral",
           unit: "Meters (m)",
@@ -5406,35 +5580,37 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           role: "Spatial wavelength of the oscillatory electrical impulse",
           unit: "Meters (m)",
           dimension: "[L]",
-          explanation: "Governed by the LC resonant period of the primary tank discharge.",
+          explanation:
+            "Tesla's printed example gives a 200-mile electrical-disturbance wavelength; the source does not provide a primary LC model from which to reconstruct it.",
         },
         {
           id: "phase_vel",
           symbol: "v_p",
           name: "Phase Propagation Velocity",
           color: "teal",
-          role: "Velocity of electromagnetic wave propagation along the helical conductor",
+          role: "Velocity of electrical-disturbance propagation through the secondary circuit",
           unit: "Meters per second (m/s)",
           dimension: "[L T^-1]",
           explanation:
-            "Close to the speed of light ($c \\approx 3 \\times 10^8\\text{ m/s}$) modified by coil geometry and dielectric loading.",
+            "Tesla's numerical example uses 185,000 miles per second. The shared kernel preserves that printed value rather than substituting a modern coil-velocity estimate.",
         },
         {
           id: "res_freq",
           symbol: "f_0",
-          name: "Fundamental Resonant Frequency",
+          name: "Electrical Disturbance Frequency",
           color: "sapphire",
-          role: "Natural oscillatory frequency of the tuned transformer",
+          role: "Frequency used in the source's printed stationary-wave example",
           unit: "Hertz (Hz)",
           dimension: "[T^-1]",
-          explanation: "Typically 50 kHz to 500 kHz in Tesla's high-power experimental stations.",
+          explanation:
+            "Tesla's worked example uses 925 disturbances per second. The model varies this source variable without relabelling it as a later experimental station's tank frequency.",
         },
       ],
       pedagogicalNote:
-        "Under quarter-wave resonance, a standing wave forms: a current antinode and voltage node exist at the grounded base, while a voltage antinode and zero current exist at the elevated terminal.",
+        "The source fixes the terminal-potential endpoints: zero at the common primary / earth end and maximum at the remote end. It does not print current magnitude, impedance, loss, or load data.",
       claimRef: 1,
       historicalSignificance:
-        "The quarter-wave resonance principle formed the basis of Tesla's Colorado Springs magnifying transmitter experiments in 1899.",
+        "The grant prints a directly checkable example: 925 disturbances per second at 185,000 miles per second gives a 200-mile wavelength and a 50-mile quarter-wave secondary.",
     },
   ],
 
@@ -8497,208 +8673,159 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 30. Elias Howe Sewing Machine (US 4,750)
   "us-4750-howe-sewing-machine": [
     {
-      id: "howe-lockstitch-tension-equilibrium",
+      id: "howe-source-printed-local-dimensions",
       patentId: "us-4750-howe-sewing-machine",
-      title: "Two-Thread Lockstitch Tension Equilibrium & Seam Interlock",
-      category: "Kinematics & Textile Mechanics",
+      title: "The Two Local Dimensions Printed by US 4,750",
+      category: "Source Geometry",
       rawLatex:
-        "T_{\\text{needle}} \\cdot \\sin(\\theta_{\\text{upper}}) = T_{\\text{shuttle}} \\cdot \\sin(\\theta_{\\text{lower}})",
+        "d_{\\text{eye}} \\approx \\frac{1}{8}\\,\\mathrm{in}=3.175\\,\\mathrm{mm},\\qquad p_H \\approx \\frac{3}{4}\\,\\mathrm{in}=19.05\\,\\mathrm{mm}",
       colorizedLatex:
-        "\\textcolor{#059669}{T_{\\text{needle}}} \\cdot \\sin(\\textcolor{#2563eb}{\\theta_{\\text{upper}}}) = \\textcolor{#dc2626}{T_{\\text{shuttle}}} \\cdot \\sin(\\textcolor{#d97706}{\\theta_{\\text{lower}}})",
+        "\\textcolor{#2563eb}{d_{\\text{eye}}} \\approx \\frac{1}{8}\\,\\mathrm{in}=3.175\\,\\mathrm{mm},\\qquad \\textcolor{#d97706}{p_H} \\approx \\frac{3}{4}\\,\\mathrm{in}=19.05\\,\\mathrm{mm}",
       plainEnglishSentence: [
+        { text: "The grant places the " },
+        { text: "needle eye about one eighth inch from the point", variableId: "d_eye" },
+        { text: " and spaces the " },
+        { text: "baster-plate points about three quarters inch apart", variableId: "p_h" },
         {
-          text: "The ",
-        },
-        {
-          text: "upper needle thread tension force",
-          variableId: "t_needle",
-        },
-        {
-          text: " resolved at ",
-        },
-        {
-          text: "upper fabric entry angle",
-          variableId: "theta_upper",
-        },
-        {
-          text: " must balance ",
-        },
-        {
-          text: "lower shuttle thread tension force",
-          variableId: "t_shuttle",
-        },
-        {
-          text: " at ",
-        },
-        {
-          text: "lower fabric exit angle",
-          variableId: "theta_lower",
-        },
-        {
-          text: " to lock the stitch knot precisely in the fabric core.",
+          text: "; it does not print an overall machine size, needle stroke, shuttle throw, speed, force, or power.",
         },
       ],
       variables: [
         {
-          id: "t_needle",
-          symbol: "T_{\\text{needle}}",
-          name: "Upper Needle Thread Tension",
-          color: "emerald",
-          role: "Tension regulated by spring friction disks on the upper spool thread ($2.0 - 5.0\\text{ N}$)",
-          unit: "Newtons (N)",
-          dimension: "[M L T^-2]",
-          explanation:
-            "Must be balanced with the shuttle tension: too high pulls the knot to the top surface, too low leaves loose loops below.",
-          telemetryMetricLabel: "Needle Tension",
-        },
-        {
-          id: "theta_upper",
-          symbol: "\\theta_{\\text{upper}}",
-          name: "Upper Thread Fabric Angle",
+          id: "d_eye",
+          symbol: "d_{\\text{eye}}",
+          name: "Needle Eye Offset",
           color: "sapphire",
-          role: "Entry angle of needle thread into the punched needle hole",
-          unit: "degrees / radians",
-          dimension: "[1]",
-          explanation: "Geometry of thread passage.",
+          role: "Approximate point-to-eye distance stated on specification page 1",
+          unit: "Inches (in) / millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "The eye lies near the pointed end so the needle can carry a loop through the cloth without pulling the whole thread supply through.",
         },
         {
-          id: "t_shuttle",
-          symbol: "T_{\\text{shuttle}}",
-          name: "Lower Shuttle Bobbin Tension",
-          color: "crimson",
-          role: "Tension exerted by the reciprocating shuttle bobbin spring leaf ($2.0 - 5.0\\text{ N}$)",
-          unit: "Newtons (N)",
-          dimension: "[M L T^-2]",
-          explanation: "The shuttle carries the second thread through the needle loop.",
-        },
-        {
-          id: "theta_lower",
-          symbol: "\\theta_{\\text{lower}}",
-          name: "Lower Thread Fabric Angle",
+          id: "p_h",
+          symbol: "p_H",
+          name: "Baster-Plate Point Pitch",
           color: "amber",
-          role: "Exit angle of shuttle thread from the underside of the seam",
-          unit: "degrees / radians",
-          dimension: "[1]",
-          explanation: "Underside lockstitch geometry.",
+          role: "Approximate spacing of the cloth-holding points stated on specification page 2",
+          unit: "Inches (in) / millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "The pointed plate H holds the cloth while its rack holes let the feed mechanism advance that same supported plate.",
         },
       ],
       pedagogicalNote:
-        "Howe's breakthrough was using an eye-pointed needle (with the eye at the point rather than the tail) combined with a reciprocating shuttle carrying a second thread, locking both threads inside the fabric to form a seam that would not unravel.",
+        "These are source dimensions, not calibration of the normalized studio reconstruction. Every other visible length is a proportion chosen to make the printed topology legible.",
       claimRef: 1,
       historicalSignificance:
-        "US 4,750 established the lockstitch mechanism found in every domestic and industrial sewing machine manufactured to this day.",
+        "The near-point eye and pinned feed plate made Howe's non-hand-sewing topology mechanically explicit and reproducible.",
     },
     {
-      id: "howe-lockstitch-capstan-tension",
+      id: "howe-one-shaft-source-order-kinematics",
       patentId: "us-4750-howe-sewing-machine",
-      title: "Two-Thread Lockstitch Capstan Friction Equilibrium & Seam Throughput",
-      category: "Precision Mechanics & Textile Automation",
+      title: "One-Shaft Needle, Loop, Shuttle, and Feed Ordering",
+      category: "Multibody Kinematics",
       rawLatex:
-        "T_{\\text{upper}} \\cdot e^{\\mu \\pi} = T_{\\text{lower}} \\cdot e^{\\mu \\pi} \\quad \\text{and} \\quad v_{\\text{seam}} = \\frac{\\text{SPM}}{60} \\cdot p_{\\text{pitch}}",
+        "q_G(\\theta_C)=\\frac{1-\\cos\\theta_C}{2},\\quad x_K(\\theta_C)=-A_K\\cos\\theta_C,\\quad \\mathcal{P}_{\\text{pass}}=(\\lambda_{\\text{loop}}\\ge\\lambda_{\\min})\\land(K\\subset I)",
       colorizedLatex:
-        "\\textcolor{#2563eb}{T_{\\text{upper}}} \\cdot e^{\\textcolor{#dc2626}{\\mu} \\pi} = \\textcolor{#059669}{T_{\\text{lower}}} \\cdot e^{\\textcolor{#dc2626}{\\mu} \\pi} \\quad \\text{and} \\quad \\textcolor{#d97706}{v_{\\text{seam}}} = \\frac{\\textcolor{#9333ea}{\\text{SPM}}}{60} \\cdot \\textcolor{#ea580c}{p_{\\text{pitch}}}",
+        "\\textcolor{#9333ea}{q_G}(\\textcolor{#2563eb}{\\theta_C})=\\frac{1-\\cos\\textcolor{#2563eb}{\\theta_C}}{2},\\quad \\textcolor{#059669}{x_K}(\\textcolor{#2563eb}{\\theta_C})=-\\textcolor{#d97706}{A_K}\\cos\\textcolor{#2563eb}{\\theta_C},\\quad \\textcolor{#dc2626}{\\mathcal{P}_{\\text{pass}}}=(\\textcolor{#0891b2}{\\lambda_{\\text{loop}}}\\ge\\lambda_{\\min})\\land(K\\subset I)",
       plainEnglishSentence: [
-        { text: "The two-thread lockstitch knot is centered at fabric equilibrium by balancing " },
-        { text: "upper needle thread tension", variableId: "t_upper" },
-        { text: " and " },
-        { text: "lower shuttle thread tension", variableId: "t_lower" },
-        { text: " over " },
-        { text: "fabric capstan friction coefficient", variableId: "mu" },
-        { text: ", delivering " },
-        { text: "continuous linear seam throughput", variableId: "v_seam" },
-        { text: " determined by " },
-        { text: "sewing cadence SPM", variableId: "spm" },
-        { text: " and " },
-        { text: "stitch feed pitch", variableId: "p_pitch" },
+        { text: "A single " },
+        { text: "main-shaft angle", variableId: "theta_c" },
+        { text: " prescribes the normalized " },
+        { text: "needle-arm penetration", variableId: "q_g" },
+        { text: ", the reciprocating " },
+        { text: "boat shuttle displacement", variableId: "x_k" },
+        { text: " inside guide trough I, the " },
+        { text: "displayed shuttle amplitude", variableId: "a_k" },
+        { text: ", and the " },
+        { text: "loop slack clearance", variableId: "lambda_loop" },
+        { text: " required for the " },
+        { text: "Claim 1 loop-passage predicate", variableId: "p_pass" },
         { text: "." },
       ],
       variables: [
         {
-          id: "t_upper",
-          symbol: "T_{\\text{upper}}",
-          name: "Upper Needle Thread Tension",
+          id: "theta_c",
+          symbol: "\\theta_C",
+          name: "Main Drive Crank Angle",
           color: "sapphire",
-          role: "Tensile force applied to top spool thread by the dynamic take-up lever (approx 1.5 to 3.0 N)",
-          unit: "Newtons (N)",
-          dimension: "[M L T^-2]",
-          explanation:
-            "Cinched tight as the needle ascends, pulling the interloop knot into the center of the cloth thickness.",
-          telemetryMetricLabel: "Upper Tension",
-        },
-        {
-          id: "t_lower",
-          symbol: "T_{\\text{lower}}",
-          name: "Lower Shuttle Bobbin Tension",
-          color: "emerald",
-          role: "Restraining friction tension on bobbin thread passing through the shuttle body (approx 1.5 to 3.0 N)",
-          unit: "Newtons (N)",
-          dimension: "[M L T^-2]",
-          explanation:
-            "Regulated by a small leaf spring on the shuttle casing to match upper tension exactly.",
-          telemetryMetricLabel: "Shuttle Tension",
-        },
-        {
-          id: "mu",
-          symbol: "\\mu",
-          name: "Capstan Thread-Fabric Friction",
-          color: "crimson",
-          role: "Friction coefficient of thread wrapping around fabric fibers ($\\mu \\approx 0.20\\text{ to }0.35$)",
-          unit: "Dimensionless friction factor",
+          role: "Continuous rotation of the central drive shaft driven by hand or power",
+          unit: "Radians (rad) / degrees (°)",
           dimension: "[1]",
           explanation:
-            "Locks the interlocked knot stationary once drawn into the fabric, preventing unraveling if adjacent stitches are cut.",
+            "Howe drives needle arm G, baster-feed lifting rod W, and shuttle carrier lever through cams and eccentrics on this single shaft.",
         },
         {
-          id: "v_seam",
-          symbol: "v_{\\text{seam}}",
-          name: "Linear Seam Throughput Velocity",
-          color: "amber",
-          role: "Finished linear sewing speed along the fabric joint (over 0.0125 m/s = 75 cm/min)",
-          unit: "Meters / second (m/s)",
-          dimension: "[L T^-1]",
-          explanation:
-            "Produced finished garments 10 to 14 times faster than experienced hand seamstresses.",
-          telemetryKey: "sewingSpeedMpm",
-        },
-        {
-          id: "spm",
-          symbol: "\\text{SPM}",
-          name: "Crankshaft Sewing Cadence",
+          id: "q_g",
+          symbol: "q_G",
+          name: "Needle-Arm Penetration Fraction",
           color: "amethyst",
-          role: "Reciprocating cycles executed per minute by curved needle arm and shuttle (250 to 350 SPM)",
-          unit: "Stitches per minute (SPM)",
-          dimension: "[T^-1]",
+          role: "Normalized cam lift driving the curved needle through the cloth plane ($0\\le q_G\\le 1$)",
+          unit: "Normalized fraction",
+          dimension: "[1]",
           explanation:
-            "Driven smoothly by a hand wheel or foot treadle via internal harmonic face cams.",
-          telemetryKey: "stitchesPerMin",
+            "Reaches peak depth when the eye carries the upper thread completely through the vertical seam plane.",
         },
         {
-          id: "p_pitch",
-          symbol: "p_{\\text{pitch}}",
-          name: "Stitch Feed Pitch Spacing",
-          color: "coral",
-          role: "Linear advance distance of the fabric baster plate per needle cycle (2.0 to 3.5 mm)",
-          unit: "Millimeters (mm)",
-          dimension: "[L]",
+          id: "x_k",
+          symbol: "x_K",
+          name: "Reciprocating Shuttle Stroke",
+          color: "emerald",
+          role: "Normalized linear displacement of shuttle K along guide trough I",
+          unit: "Normalized displacement",
+          dimension: "[1]",
           explanation:
-            "Set by the ratchet feed mechanism advancing the fabric toothed plate between stitches.",
+            "Passes through the needle-thread loop while the needle pauses near bottom dead center.",
+        },
+        {
+          id: "a_k",
+          symbol: "A_K",
+          name: "Displayed Shuttle Throw",
+          color: "amber",
+          role: "Normalized studio amplitude; the grant prints no dimensional shuttle travel",
+          unit: "Studio units",
+          dimension: "[1]",
+          explanation:
+            "This presentation scale controls legibility only and is never exposed as measured inches or SI travel.",
+        },
+        {
+          id: "lambda_loop",
+          symbol: "\\lambda_{\\text{loop}}",
+          name: "Displayed Loop Slack",
+          color: "cyan",
+          role: "Normalized lifting-rod W loop opening used for the explicit clearance refusal",
+          unit: "Percent (%)",
+          dimension: "[1]",
+          explanation:
+            "If the loop does not clear the displayed shuttle section, the kernel refuses to report the Claim 1 interlock.",
+          telemetryKey: "loopSlackPct",
+        },
+        {
+          id: "p_pass",
+          symbol: "\\mathcal{P}_{\\text{pass}}",
+          name: "Claim 1 Passage Predicate",
+          color: "crimson",
+          role: "True only during the source-order phase where K passes between the needle and upper thread",
+          unit: "Boolean",
+          dimension: "[1]",
+          explanation:
+            "This predicate describes topology and timing; it is not a seam-strength, productivity, or safety measurement.",
         },
       ],
       pedagogicalNote:
-        "Previous inventors tried to replicate hand sewing by pushing an entire needle all the way through cloth, which required constantly unthreading and rethreading. Howe placed the eye at the needle tip, passed a loop of thread through the cloth, and shot a shuttle with a second bobbin thread through that loop, inventing the two-thread lockstitch.",
+        "The sinusoidal display law is an admitted normalized cam profile because the grant supplies topology but no cam lift table. The physically important fact is the shared drive and enforced order, not a fabricated speed or force.",
       claimRef: 1,
       historicalSignificance:
-        "US 4750 mechanized the global garment industry and created the modern 'Sewing Machine Combination' (1856), the first patent pool in commercial history.",
+        "Howe's claims bind the curved needle, vibrating arm, thread loop, shuttle, and feed apparatus into one repeatable machine sequence.",
     },
   ],
-
-  // 31. Richard Gatling Revolving Battery Gun (US 36,836)
   "us-36836-gatling-gun": [
     {
-      id: "gatling-cyclic-rate-cam-kinematics",
+      id: "gatling-gun-fire-rate",
       patentId: "us-36836-gatling-gun",
-      title: "Multi-Barrel Cluster Firing Rate & Cylindrical Cam Lock Geometry",
-      category: "Ballistics & Rapid-Fire Mechanism",
+      title: "Gatling Rotary Multi-Barrel Fire Rate & Cam Bolt Motion",
+      category: "Armament & Mechanical Kinematics",
       rawLatex:
         "\\text{Rate}_{\\text{fire}} = N_{\\text{barrels}} \\cdot \\Omega_{\\text{crank}} \\cdot \\left(\\frac{Z_{\\text{crank}}}{Z_{\\text{cluster}}}\\right) \\quad \\text{and} \\quad z_{\\text{bolt}}(\\theta) = R_{\\text{cam}} \\tan\\alpha_{\\text{groove}} \\cdot \\theta",
       colorizedLatex:
@@ -11618,7 +11745,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           unit: "m (meters)",
           dimension: "[L]",
           explanation:
-            "Standard typewriter escapements provide 10 characters per inch (pica pitch, 2.54 mm) or 12 characters per inch (elite pitch, 2.12 mm).",
+            "The specification describes ratchet teeth equidistant apart for regular character spacing along the platen carriage.",
         },
         {
           id: "pinion_diam",
@@ -11640,14 +11767,14 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           unit: "teeth",
           dimension: "[]",
           explanation:
-            "A bifurcated pallet oscillates with each keypress, catching and releasing one tooth at a time under spring barrel tension.",
+            "A bifurcated pallet oscillates with each keypress, catching and releasing one tooth at a time under cord and weight tension.",
         },
       ],
       pedagogicalNote:
         "Sholes' escapement mechanism decoupled key striking speed from paper carriage advance, guaranteeing crisp character spacing regardless of operator typing cadence.",
       claimRef: 1,
       historicalSignificance:
-        "US 79,265 established the mechanical typewriter architecture, introducing the QWERTY keyboard, type basket, and escapement advance that standardized text creation for over a century.",
+        "US 79,265 established the radial type-basket and bifurcated-lever escapement advance, combining discrete character spacing, transverse line spacing, and ribbon feed into one coordinated mechanical writing machine.",
     },
     {
       id: "sholes-typewriter-escapement-kinematics",
@@ -11655,9 +11782,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       title: "Radial Typebar Striking Kinematics & Escapement Ratchet Pitch",
       category: "Precision Mechanics & Office Automation",
       rawLatex:
-        "\\omega_{\\text{bar}} = \\frac{v_{\\text{key}}}{L_{\\text{key}}} \\cdot \\text{MA}_{\\text{linkage}} \\quad \\text{and} \\quad \\Delta x_{\\text{platen}} = p_{\\text{ratchet}} = \\frac{1}{\\text{CPI}}",
+        "\\omega_{\\text{bar}} = \\frac{v_{\\text{key}}}{L_{\\text{key}}} \\cdot \\text{MA}_{\\text{linkage}} \\quad \\text{and} \\quad \\Delta x_{\\text{platen}} = p_{\\text{ratchet}}",
       colorizedLatex:
-        "\\textcolor{#059669}{\\omega_{\\text{bar}}} = \\frac{\\textcolor{#2563eb}{v_{\\text{key}}}}{\\textcolor{#d97706}{L_{\\text{key}}}} \\cdot \\textcolor{#dc2626}{\\text{MA}_{\\text{linkage}}} \\quad \\text{and} \\quad \\textcolor{#0891b2}{\\Delta x_{\\text{platen}}} = \\textcolor{#9333ea}{p_{\\text{ratchet}}} = \\frac{1}{\\textcolor{#ea580c}{\\text{CPI}}}",
+        "\\textcolor{#059669}{\\omega_{\\text{bar}}} = \\frac{\\textcolor{#2563eb}{v_{\\text{key}}}}{\\textcolor{#d97706}{L_{\\text{key}}}} \\cdot \\textcolor{#dc2626}{\\text{MA}_{\\text{linkage}}} \\quad \\text{and} \\quad \\textcolor{#0891b2}{\\Delta x_{\\text{platen}}} = \\textcolor{#9333ea}{p_{\\text{ratchet}}}",
       plainEnglishSentence: [
         { text: "Radial " },
         { text: "typebar striking angular velocity", variableId: "omega_bar" },
@@ -11671,8 +11798,6 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
         { text: "platen step displacement", variableId: "dx_plat" },
         { text: " equals " },
         { text: "escapement ratchet pitch", variableId: "p_ratchet" },
-        { text: " set by standard " },
-        { text: "characters-per-inch density", variableId: "cpi" },
         { text: "." },
       ],
       variables: [
@@ -11738,29 +11863,18 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "p_{\\text{ratchet}}",
           name: "Escapement Ratchet Pitch",
           color: "amethyst",
-          role: "Linear tooth pitch spacing machined onto the longitudinal carriage ratchet bar ($2.54\\text{ mm} = 0.10\\text{ inches}$)",
+          role: "Linear tooth pitch spacing machined onto the longitudinal carriage ratchet bar",
           unit: "Millimeters (mm)",
           dimension: "[L]",
           explanation:
-            "Guarantees perfectly uniform typographical letter spacing across the full line width.",
-        },
-        {
-          id: "cpi",
-          symbol: "\\text{CPI}",
-          name: "Characters Per Inch Density",
-          color: "coral",
-          role: "Standard typographic character frequency ($10\\text{ CPI} = \\text{Pica font}$)",
-          unit: "Characters / inch",
-          dimension: "[L^-1]",
-          explanation:
-            "Universal standard format adopted across business correspondence, legal contracts, and publishing.",
+            "Equidistant saw-tooth notches on ratchet I match the letter spacing along the line.",
         },
       ],
       pedagogicalNote:
-        "Christopher Sholes, Carlos Glidden, and Samuel Soulé designed a machine where typebars arranged in a circular basket pivoted upward to strike a common center point beneath a rubber platen. To prevent typebars from clashing when adjacent letters were struck in rapid sequence, Sholes tested common letter digraph frequencies in English and developed the QWERTY keyboard layout, combined with an escapement ratchet that advanced the paper carriage by exactly one character pitch per keystroke.",
+        "Christopher Sholes, Carlos Glidden, and Samuel Soulé designed a machine where type-bars arranged around a circular disk pivot upward to strike a common center point beneath a self-adjusting platen, combined with an escapement ratchet that advances the paper carriage by one notch per keystroke.",
       claimRef: 2,
       historicalSignificance:
-        "US 79265 created the modern typewriter, established the universal QWERTY layout used on billions of keyboards and smartphones today, and opened clerical work and corporate offices to millions of women worldwide.",
+        "US 79,265 established the radial type-basket and bifurcated escapement, coordinating key striking, paper carriage advance, and inking-ribbon feed in an integrated mechanical writing machine.",
     },
   ],
 
@@ -16053,7 +16167,6 @@ ALL_COLORIZED_EQUATIONS["us-542846-diesel-engine"] = [
       "The card identifies the legal sequence printed in Claim 1 rather than presenting a later-engine performance narrative as if it were a measurement in US 542,846.",
   },
 ];
-
 /**
  * Universal fallback builder that constructs a valid ColorizedEquation from
  * a patent's PATENT_PHYSICS_REGISTRY definition or scientific principles.
@@ -16065,7 +16178,7 @@ function _buildGeneratedColorizedEquation(patentId: string): ColorizedEquation[]
   const rawLatex = reg.governingEquation || "F = m \\cdot a";
 
   // Build variables from registry controls
-  const variables = reg.controls.map((c, idx) => {
+  const variables: EquationVariable[] = reg.controls.map((c, idx) => {
     const colors: Array<
       "crimson" | "sapphire" | "emerald" | "amber" | "amethyst" | "cyan" | "coral" | "rose" | "teal"
     > = ["sapphire", "emerald", "amber", "crimson", "amethyst", "cyan", "coral", "rose", "teal"];
@@ -16079,7 +16192,7 @@ function _buildGeneratedColorizedEquation(patentId: string): ColorizedEquation[]
       unit: c.unit || "SI Units",
       explanation: `Adjusting ${c.label} modulates real-time physical telemetry states and governing forces in the simulated mechanism.`,
       telemetryKey: c.id,
-      formatValue: (v: number) => `${v.toFixed(2)} ${c.unit}`,
+      valueFormat: { style: "fixed", fractionDigits: 2, suffix: ` ${c.unit}` },
     };
   });
 
@@ -21233,77 +21346,560 @@ ALL_COLORIZED_EQUATIONS["us-6331181-davinci"] = [
   },
 ];
 
-ALL_COLORIZED_EQUATIONS["us-6594844-roomba"] = [
+ALL_COLORIZED_EQUATIONS["us-2988237-devol-programmed-transfer"] = [
   {
-    id: "roomba-spiral-coverage",
-    patentId: "us-6594844-roomba",
-    title: "Archimedean Spiral Coverage & Differential Kinematics",
-    category: "Autonomous Mobile Robotics & Coverage Algorithms",
-    rawLatex: "r(\\theta) = r_0 + \\frac{w_{\\text{brush}}}{2\\pi} \\theta",
+    id: "devol-code-coincidence",
+    patentId: "us-2988237-devol-programmed-transfer",
+    title: "Program Code and Encoder Coincidence",
+    category: "Source-Bounded Programmed Transfer Control",
+    rawLatex: "d_H(c_p,c_s)=0",
     colorizedLatex:
-      "\\textcolor{#059669}{r(\\theta)} = \\textcolor{#2563eb}{r_0} + \\frac{\\textcolor{#ef4444}{w_{\\text{brush}}}}{2\\pi} \\textcolor{#d97706}{\\theta}",
+      "\\textcolor{#9333ea}{d_H}(\\textcolor{#0891b2}{c_p},\\textcolor{#059669}{c_s})=\\textcolor{#d97706}{0}",
     plainEnglishSentence: [
-      { text: "The expanding " },
-      { text: "cleaning radius", variableId: "spiral_radius" },
-      { text: " grows linearly from an " },
-      { text: "initial radius", variableId: "initial_radius" },
-      { text: " proportional to " },
-      { text: "brush cleaning swath width", variableId: "brush_width" },
-      { text: " and cumulative " },
-      { text: "angular wheel rotation", variableId: "turn_angle" },
+      { text: "The program " },
+      { text: "code", variableId: "program_code" },
+      { text: " and the coupled encoder " },
+      { text: "code", variableId: "encoder_code" },
+      { text: " reach coincidence when the " },
+      { text: "unequal-bit count", variableId: "hamming_distance" },
+      { text: " is zero." },
+    ],
+    variables: [
+      {
+        id: "program_code",
+        symbol: "c_p",
+        name: "Selected Program Slot Code",
+        color: "cyan",
+        role: "Combinational position symbol selected from the program controller",
+        unit: "coded position",
+        dimension: "[1]",
+        explanation:
+          "The source stores position-representing symbols in the program controller. This display uses a compact binary teaching code; it does not claim a modern digital storage representation.",
+        telemetryKey: "recordedSlot",
+      },
+      {
+        id: "encoder_code",
+        symbol: "c_s",
+        name: "Mechanically Coupled Encoder Code",
+        color: "emerald",
+        role: "Code sensed by the position representation that moves with the transfer head",
+        unit: "coded position",
+        dimension: "[1]",
+        explanation:
+          "The apparatus couples its sensing head to the transfer head, then compares its code against the selected program code. The source does not provide a general arm-coordinate transform.",
+        telemetryKey: "sensedSlot",
+      },
+      {
+        id: "hamming_distance",
+        symbol: "d_H",
+        name: "Unequal Code Portions",
+        color: "amber",
+        role: "Modern count of unlike corresponding code channels in the teaching projection",
+        unit: "unequal bits",
+        dimension: "[1]",
+        explanation:
+          "This is a modern explanatory notation for the source's individual coincidence detectors. It makes match and mismatch legible without asserting that the grant printed a Hamming-distance equation.",
+        telemetryMetricLabel: "Hamming Distance",
+      },
+    ],
+    pedagogicalNote:
+      "The equality is a modern logic reading of the grant's coincidence condition. It binds only to discrete source-bounded code state and intentionally carries no fictional distance, speed, force, or timing value.",
+    claimRef: 1,
+    historicalSignificance:
+      "Claim 1 makes the comparison architecture concrete: coupled sensing units, unique position codes, stored symbols, and individually related coincidence detectors.",
+  },
+  {
+    id: "devol-anticipatory-sensing",
+    patentId: "us-2988237-devol-programmed-transfer",
+    title: "Advance Sensing Before the True Stop",
+    category: "Programmed Rate-Control State",
+    rawLatex:
+      "\\mathrm{advance\\ match}\\rightarrow\\mathrm{slow\\ search}\\rightarrow\\mathrm{true\\ match}",
+    colorizedLatex:
+      "\\textcolor{#0891b2}{\\mathrm{advance\\ match}}\\rightarrow\\textcolor{#d97706}{\\mathrm{slow\\ search}}\\rightarrow\\textcolor{#059669}{\\mathrm{true\\ match}}",
+    plainEnglishSentence: [
+      { text: "Claim 8 changes from " },
+      { text: "advance sensing", variableId: "advance_sensing" },
+      { text: " to " },
+      { text: "true-position sensing", variableId: "true_sensing" },
+      { text: " after an early match, making the coded " },
+      { text: "traversal state", variableId: "traversal_state" },
+      { text: " explicit without inventing a braking curve." },
+    ],
+    variables: [
+      {
+        id: "advance_sensing",
+        symbol: "\\mathrm{advance}",
+        name: "Advance-Sensing Relationship",
+        color: "cyan",
+        role: "The early sensing relationship claimed before the final true-position comparison",
+        unit: "control state",
+        dimension: "[1]",
+        explanation:
+          "The grant describes an anticipator that detects approaching coincidence and then returns toward a centered relation for the final comparison. It does not print a physical advance offset.",
+        telemetryKey: "anticipationEnabled",
+      },
+      {
+        id: "true_sensing",
+        symbol: "\\mathrm{true}",
+        name: "True-Position Sensing Relationship",
+        color: "emerald",
+        role: "The final comparison relationship used to recognize the required programmed position",
+        unit: "control state",
+        dimension: "[1]",
+        explanation:
+          "This state is the legal counterpart of the final match. The model represents only its discrete sequence and expressly refuses unprovided rate or stopping-distance computation.",
+      },
+      {
+        id: "traversal_state",
+        symbol: "s",
+        name: "Coded Traversal State",
+        color: "amber",
+        role: "Seeking, progressive rate reduction as corresponding channels agree, or true-position hold",
+        unit: "coded control",
+        dimension: "[1]",
+        explanation:
+          "The named states communicate the source's causal sequence. They are not measurements of actuator velocity, acceleration, fluid flow, or impact.",
+        telemetryMetricLabel: "Traversal State",
+      },
+    ],
+    pedagogicalNote:
+      "The sequence comes from the anticipator discussion and Claim 8. It is a state diagram, not a numerical deceleration formula.",
+    claimRef: 8,
+    historicalSignificance:
+      "Claim 8 makes an early sensing relation and a true-position sensing relation part of the article-transfer combination.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-4341502-makino-scara"] = [
+  {
+    id: "makino-four-link-loop-closure",
+    patentId: "us-4341502-makino-scara",
+    title: "Four-Link Loop Closure and Tool Configuration",
+    category: "Source-Bounded Robot Kinematics",
+    rawLatex:
+      "\\sum_{i=1}^{4}\\mathbf{r}_i=\\mathbf{0},\\qquad\\mathbf{p}_{tool}=f(\\theta_1,\\theta_2;\\mathcal{T})",
+    colorizedLatex:
+      "\\sum_{i=1}^{4}\\textcolor{#059669}{\\mathbf{r}_i}=\\mathbf{0},\\qquad\\textcolor{#9333ea}{\\mathbf{p}_{tool}}=f(\\textcolor{#0891b2}{\\theta_1},\\textcolor{#d97706}{\\theta_2};\\textcolor{#0d9488}{\\mathcal{T}})",
+    plainEnglishSentence: [
+      { text: "A closed four-link chain returns to its start; the normalized " },
+      { text: "tool configuration", variableId: "tool_position" },
+      { text: " follows the two driven source angles " },
+      { text: "θ₁", variableId: "theta_one" },
+      { text: " and " },
+      { text: "θ₂", variableId: "theta_two" },
+      { text: " under the selected claim " },
+      { text: "topology", variableId: "topology" },
       { text: "." },
     ],
     variables: [
       {
-        id: "spiral_radius",
-        symbol: "r(\\theta)",
-        name: "Instantaneous Spiral Trajectory Radius",
-        color: "emerald",
-        role: "Radial distance from the spiral initiation center to the robot's center of mass",
-        unit: "m",
-        dimension: "L",
+        id: "tool_position",
+        symbol: "\\mathbf{p}_{tool}",
+        name: "Assembly-Tool Configuration",
+        color: "amethyst",
+        role: "Display-only normalized position of the tool joint opposite the base drives",
+        unit: "normalized exhibit coordinate",
+        dimension: "[1]",
         explanation:
-          "Differential wheel speed modulation continuously expands this radius during open floor sweeping.",
+          "The patent names the tool and linkage but prints no link lengths, so this coordinate is intentionally not represented as metres or a physical reach claim.",
+        telemetryMetricLabel: "Tool Projection",
       },
       {
-        id: "initial_radius",
-        symbol: "r_0",
-        name: "Initial Turning Radius",
-        color: "sapphire",
-        role: "Starting spiral radius at beginning of cleaning cycle (typically ~0.15 m)",
-        unit: "m",
-        dimension: "L",
+        id: "theta_one",
+        symbol: "\\theta_1",
+        name: "First-Link Drive Angle",
+        color: "cyan",
+        role: "Angle of the first link driven by the first base motor in the source drawing",
+        unit: "degrees",
+        dimension: "[1]",
         explanation:
-          "Prevents tire scrubbing while initiating outward rotational sweep from a resting point.",
+          "Figure 2 identifies θ1 as a rotating angle determined by the first motor; the slider controls a configuration, not a historical operating schedule.",
+        telemetryKey: "firstLinkAngleDeg",
       },
       {
-        id: "brush_width",
-        symbol: "w_{\\text{brush}}",
-        name: "Effective Cleaning Brush Width",
-        color: "crimson",
-        role: "Linear track width covered by counter-rotating brush rollers (w ≈ 0.20–0.25 m)",
-        unit: "m",
-        dimension: "L",
-        explanation:
-          "Track-to-track pitch equals brush width, ensuring complete floor coverage without uncleaned gaps.",
-      },
-      {
-        id: "turn_angle",
-        symbol: "\\theta",
-        name: "Cumulative Heading Angle",
+        id: "theta_two",
+        symbol: "\\theta_2",
+        name: "Fourth-Link Drive Angle",
         color: "amber",
-        role: "Total integrated angular rotation around the spiral center",
-        unit: "radians",
-        dimension: "1",
+        role: "Angle of the fourth link driven by the second base motor in the source drawing",
+        unit: "degrees",
+        dimension: "[1]",
         explanation:
-          "Controlled by differential wheel velocities: omega = (v_right - v_left) / wheelbase.",
+          "Figure 2 identifies θ2 as the second motor-determined configuration angle; no source controller gain, acceleration, or velocity is inferred.",
+        telemetryKey: "fourthLinkAngleDeg",
+      },
+      {
+        id: "topology",
+        symbol: "\\mathcal{T}",
+        name: "Claim Topology Form",
+        color: "teal",
+        role: "Concentric, nonconcentric, or Y-shaped claimed linkage construction",
+        unit: "claim form",
+        dimension: "[1]",
+        explanation:
+          "The selector maps only to independent claims 1, 3, and 6, keeping the visual tied to the alternative linkage structures actually printed in the grant.",
+        telemetryKey: "topologyVariant",
       },
     ],
     pedagogicalNote:
-      "Combining deterministic Archimedean spirals with pseudo-random collision turns achieves statistically complete floor coverage without internal map memory.",
+      "This is a topological kinematics relation, not an SI performance equation. US 4,341,502 supplies the closed-chain mechanism and source-named angles, but no numerical geometry, payload, torque, stiffness, clearance, or servo law.",
     claimRef: 1,
     historicalSignificance:
-      "Created the consumer domestic mobile robotics industry, selling over 40 million Roomba units.",
+      "Makes the legal core visible: the patent claims specific four-link and Y-link arrangements, not the broad abstract idea of a factory robot arm.",
+  },
+  {
+    id: "makino-independent-tool-attitude",
+    patentId: "us-4341502-makino-scara",
+    title: "Independent Tool-Attitude Coordinate",
+    category: "Belt-Driven Assembly-Tool Orientation",
+    rawLatex: "q=[\\theta_1,\\theta_2,\\phi]^T",
+    colorizedLatex:
+      "q=[\\textcolor{#0891b2}{\\theta_1},\\textcolor{#d97706}{\\theta_2},\\textcolor{#059669}{\\phi}]^T",
+    plainEnglishSentence: [
+      { text: "The two base angles form planar configuration, while a separate " },
+      { text: "tool-attitude coordinate", variableId: "tool_attitude" },
+      { text: " represents the third motor and belt arrangement of claims 2 and 5." },
+    ],
+    variables: [
+      {
+        id: "tool_attitude",
+        symbol: "\\phi",
+        name: "Tool Attitude",
+        color: "emerald",
+        role: "Assembly-tool rotational coordinate transmitted by the source-described third motor and belt devices",
+        unit: "degrees",
+        dimension: "[1]",
+        explanation:
+          "The patent says the third motor can rotate the assembly tool independently of horizontal position. It does not print the belt ratio, angle range, or motor performance.",
+        telemetryKey: "toolAttitudeDeg",
+      },
+    ],
+    pedagogicalNote:
+      "The vector names coordinates rather than simulating an unprinted control law. It separates the position-setting links from the source's optional belt-driven tool rotation.",
+    claimRef: 2,
+    historicalSignificance:
+      "Claims 2 and 5 make independent orientation a concrete linkage-and-belt combination rather than a vague promise of robot dexterity.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-4765668-robot-end-effector"] = [
+  {
+    id: "robot-end-effector-symmetric-gap",
+    patentId: "us-4765668-robot-end-effector",
+    title: "Opposed-Thread Screw Gap and Fixed Midpoint",
+    category: "Source-Bounded End-Effector Kinematics",
+    rawLatex: "g=\\ell\\theta/\\pi,\\qquad x_L=+g/2,\\quad x_R=-g/2,\\quad m=(x_L+x_R)/2=0",
+    colorizedLatex:
+      "\\textcolor{#9333ea}{g}=\\textcolor{#059669}{\\ell}\\textcolor{#0891b2}{\\theta}/\\pi,\\qquad\\textcolor{#0891b2}{x_L}=+\\textcolor{#9333ea}{g}/2,\\quad\\textcolor{#d97706}{x_R}=-\\textcolor{#9333ea}{g}/2,\\quad\\textcolor{#0d9488}{m}=0",
+    plainEnglishSentence: [
+      { text: "The live " },
+      { text: "jaw gap", variableId: "jaw_gap" },
+      { text: " follows the disclosed " },
+      { text: "screw lead", variableId: "screw_lead" },
+      { text: " and screw rotation; left and right hands move equally in opposite directions so the ideal " },
+      { text: "midpoint", variableId: "midpoint" },
+      { text: " stays fixed." },
+    ],
+    variables: [
+      {
+        id: "jaw_gap",
+        symbol: "g",
+        name: "Jaw Opening",
+        color: "amethyst",
+        role: "Distance between the opposed fingers in the source-bounded teaching model",
+        unit: "mm",
+        dimension: "[L]",
+        explanation:
+          "The preferred embodiment says a jaw opening can typically be 6 inches. The control scales that printed 0.1524 m value; it is not an unqualified capability of every claimed gripper.",
+        telemetryMetricLabel: "Jaw Opening",
+      },
+      {
+        id: "screw_lead",
+        symbol: "\\ell",
+        name: "Ball-Screw Lead",
+        color: "emerald",
+        role: "Linear travel per screw revolution in the disclosed prototype",
+        unit: "m/rev",
+        dimension: "[L]",
+        explanation:
+          "The source prints a 5 mm left/right-hand thread lead in the prototype. It supplies the kinematic conversion only, not backlash, stiffness, or a complete motion controller.",
+      },
+      {
+        id: "midpoint",
+        symbol: "m",
+        name: "Ideal Gripping Midpoint",
+        color: "teal",
+        role: "Mean of the equal-and-opposite hand displacements",
+        unit: "m",
+        dimension: "[L]",
+        explanation:
+          "The equation explains the source's repeatable center point in ideal kinematics. Real backlash, compliance, and contact loading are not modeled from the grant's incomplete dimensional data.",
+      },
+    ],
+    pedagogicalNote:
+      "This is a direct kinematic reading of the printed 5 mm opposed-thread prototype. It intentionally does not treat the reported force or repeatability as a derived contact, payload, stiffness, or pneumatic calculation.",
+    claimRef: 1,
+    historicalSignificance:
+      "Claim 1 makes symmetric hand motion around a screw midpoint and removable fingers the legal core of the gripper combination.",
+  },
+  {
+    id: "robot-end-effector-eight-peg-encoder",
+    patentId: "us-4765668-robot-end-effector",
+    title: "Eight-Peg Gear Encoder Quantization",
+    category: "Source-Bounded Rotation Sensing",
+    rawLatex: "\\Delta\\theta_m=2\\pi/8,\\qquad n=8N_m",
+    colorizedLatex:
+      "\\textcolor{#d97706}{\\Delta\\theta_m}=2\\pi/\\textcolor{#0891b2}{8},\\qquad\\textcolor{#9333ea}{n}=\\textcolor{#0891b2}{8}\\textcolor{#059669}{N_m}",
+    plainEnglishSentence: [
+      { text: "Eight source-described pegs make the " },
+      { text: "motor-gear encoder phase", variableId: "encoder_phase" },
+      { text: " advance in eighth-turn events; this indicates gear rotation without claiming that it alone created the printed " },
+      { text: "repeatability", variableId: "repeatability" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "encoder_phase",
+        symbol: "n\\bmod 8",
+        name: "Encoder Peg Phase",
+        color: "sapphire",
+        role: "Continuous teaching phase of the eight pegs mounted on the motor spur gear",
+        unit: "of 8 pegs",
+        dimension: "[1]",
+        explanation:
+          "The specification says the inductive switch senses eight pressed-in pegs to provide an 8-count encoder. It does not state interpolation, controller bandwidth, or a complete feedback chain.",
+        telemetryMetricLabel: "Encoder Phase",
+      },
+      {
+        id: "repeatability",
+        symbol: "\\delta_r",
+        name: "Reported System Repeatability",
+        color: "amethyst",
+        role: "Source-reported variation over the grip-force range for one design",
+        unit: "mm",
+        dimension: "[L]",
+        explanation:
+          "The grant reports no more than 0.05 mm (0.002 in.) over the range of grip forces. It does not assign that result to one sensor, or give test conditions sufficient to derive it.",
+        telemetryMetricLabel: "Reported Repeatability",
+      },
+    ],
+    pedagogicalNote:
+      "The relation renders the source's eight-pulse encoder count, not a modern high-resolution servo. The reported repeatability remains a printed result rather than an inferred consequence of peg count.",
+    claimRef: 8,
+    historicalSignificance:
+      "Claim 8 brings a spur-gear rotation signal into the mechanically driven end-effector combination.",
+  },
+];
+
+// The legacy catalogue block above described a generic modern Otto cycle and
+// attached it to the wrong printed claim. This active set follows the reviewed
+// US 194,047 edition: Claim 1 owns the graded charge and Claim 3 owns the
+// four-stroke sequence. Numerical pressure and power remain source-refused.
+ALL_COLORIZED_EQUATIONS["us-194047-otto-engine"] = [
+  {
+    id: "otto-graded-charge",
+    patentId: "us-194047-otto-engine",
+    title: "Claim 1 Spatial Charge Gradient",
+    category: "Combustion & Charge Preparation",
+    rawLatex: "\\phi(0)>\\phi(x)>\\phi(L),\\qquad \\frac{d\\phi}{dx}<0",
+    colorizedLatex:
+      "\\textcolor{#059669}{\\phi(0)}>\\textcolor{#2563eb}{\\phi(x)}>\\textcolor{#9333ea}{\\phi(L)},\\qquad \\textcolor{#d97706}{\\frac{d\\phi}{dx}}<0",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "combustible-mixture concentration", variableId: "mixture_fraction" },
+      { text: " is greatest beside the " },
+      { text: "ignition point", variableId: "ignition_end" },
+      { text: " and becomes progressively smaller through the separate air charge toward the " },
+      { text: "forward end", variableId: "forward_end" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "mixture_fraction",
+        symbol: "\\phi(x)",
+        name: "Local Combustible-Mixture Concentration",
+        color: "sapphire",
+        role: "Qualitative concentration along the compressed cylinder charge",
+        unit: "Source gives no numerical fraction",
+        dimension: "[1]",
+        explanation:
+          "Otto describes particle spacing and ordering qualitatively; the model must not invent a stoichiometric profile.",
+      },
+      {
+        id: "ignition_end",
+        symbol: "x=0",
+        name: "Ignition End",
+        color: "emerald",
+        role: "Cylinder end where combustible particles are described as close together",
+        unit: "Display coordinate",
+        dimension: "[L]",
+        explanation: "This is the high-concentration end of the source-described ordering.",
+      },
+      {
+        id: "forward_end",
+        symbol: "x=L",
+        name: "Forward Charge End",
+        color: "amethyst",
+        role: "Direction in which combustible particles become increasingly dispersed",
+        unit: "Display coordinate",
+        dimension: "[L]",
+        explanation:
+          "The patent connects this increasing dispersion to gradual heat development and pressure rise without printing either rate.",
+      },
+    ],
+    pedagogicalNote:
+      "This is a qualitative source topology, not a calibrated mixture field. Claim 1 requires the ordering and its gradual-combustion purpose; pressure, flame speed, and efficiency are not numerically reconstructed.",
+    claimRef: 1,
+    historicalSignificance:
+      "It keeps the legal center of US 194,047 on the deliberately graded charge instead of mislabeling Claim 1 as a generic four-stroke monopoly.",
+  },
+  {
+    id: "otto-four-stroke-shaft-timing",
+    patentId: "us-194047-otto-engine",
+    title: "Claim 3 Four-Stroke Sequence & Source Shaft Ratio",
+    category: "Mechanism Kinematics",
+    rawLatex:
+      "\\theta_K=\\frac{1}{2}\\theta_I,\\qquad 4\\;\\text{strokes}=2\\;\\text{crank revolutions}",
+    colorizedLatex:
+      "\\textcolor{#059669}{\\theta_K}=\\frac{1}{2}\\textcolor{#2563eb}{\\theta_I},\\qquad \\textcolor{#d97706}{4\\;\\text{strokes}}=\\textcolor{#9333ea}{2\\;\\text{crank revolutions}}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "counter-shaft", variableId: "counter_shaft" },
+      { text: " makes one revolution while the " },
+      { text: "engine shaft", variableId: "engine_shaft" },
+      { text: " makes two, coordinating " },
+      { text: "four piston strokes", variableId: "stroke_sequence" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "counter_shaft",
+        symbol: "\\theta_K",
+        name: "Counter-Shaft K Angle",
+        color: "emerald",
+        role: "Source-named shaft carrying the slide crank and valve cams",
+        unit: "Radians",
+        dimension: "[1]",
+        explanation: "The procedural model derives this coordinate at exactly half crank angle.",
+      },
+      {
+        id: "engine_shaft",
+        symbol: "\\theta_I",
+        name: "Engine-Shaft I Angle",
+        color: "sapphire",
+        role: "Single independent crank coordinate that drives the connected mechanism",
+        unit: "Radians",
+        dimension: "[1]",
+        explanation:
+          "The displayed RPM is a declared presentation input because the grant prints no operating speed.",
+        telemetryKey: "engineRpm",
+      },
+      {
+        id: "stroke_sequence",
+        symbol: "4\\;\\text{strokes}",
+        name: "Complete Operating Sequence",
+        color: "amber",
+        role: "Admission, compression, working expansion, and exhaust",
+        unit: "Four piston strokes",
+        dimension: "[1]",
+        explanation:
+          "Claim 3 combines this sequence with the separately introduced air and combustible charges.",
+      },
+    ],
+    pedagogicalNote:
+      "The one-to-two shaft ratio is source-fixed and is shared by the 2D and 3D poses. It does not imply a historical RPM, torque, pressure, or power value.",
+    claimRef: 3,
+    historicalSignificance:
+      "This separates the source's actual four-stroke machinery from later ideal-cycle performance equations that require unprinted dimensions and operating data.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-6594844-roomba"] = [
+  {
+    id: "roomba-finite-optical-region",
+    patentId: "us-6594844-roomba",
+    title: "Finite Emitter / Detector Intersection & Redirect Condition",
+    category: "Optical Obstacle Detection",
+    rawLatex:
+      "\\mathcal{R}=\\Omega_{e}\\cap\\Omega_{d},\\qquad u_{redirect}=\\mathbf{1}[\\mathcal{S}\\cap\\mathcal{R}=\\varnothing]",
+    colorizedLatex:
+      "\\textcolor{#059669}{\\mathcal{R}}=\\textcolor{#2563eb}{\\Omega_e}\\cap\\textcolor{#9333ea}{\\Omega_d},\\qquad \\textcolor{#ef4444}{u_{redirect}}=\\mathbf{1}[\\textcolor{#d97706}{\\mathcal{S}}\\cap\\textcolor{#059669}{\\mathcal{R}}=\\varnothing]",
+    plainEnglishSentence: [
+      { text: "The finite " },
+      { text: "test region", variableId: "test_region" },
+      { text: " is where the directed " },
+      { text: "emitter field", variableId: "emitter_field" },
+      { text: " overlaps the " },
+      { text: "detector field", variableId: "detector_field" },
+      { text: "; the circuit commands a " },
+      { text: "redirect", variableId: "redirect" },
+      { text: " when the expected " },
+      { text: "surface", variableId: "surface" },
+      { text: " does not occupy that region." },
+    ],
+    variables: [
+      {
+        id: "test_region",
+        symbol: "\\mathcal{R}",
+        name: "Finite Optical Test Region",
+        color: "emerald",
+        role: "Geometric intersection of the emitter and detector fields",
+        unit: "Region",
+        dimension: "L^3",
+        explanation:
+          "The claim makes this finite overlap region the place where the circuit tests for the expected floor, wall, or obstacle surface.",
+      },
+      {
+        id: "emitter_field",
+        symbol: "\\Omega_e",
+        name: "Directed Emission Field",
+        color: "sapphire",
+        role: "Photon field projected from the chassis-mounted emitter",
+        unit: "Region",
+        dimension: "L^3",
+        explanation:
+          "The 2D and 3D instruments begin this field at the visible emitter aperture rather than drawing an untethered beam.",
+      },
+      {
+        id: "detector_field",
+        symbol: "\\Omega_d",
+        name: "Detector Field of View",
+        color: "amethyst",
+        role: "Directed region observed by the chassis-mounted photon detector",
+        unit: "Region",
+        dimension: "L^3",
+        explanation:
+          "The detector field is modeled as a second attached ray that intersects the emitter field at the finite test region.",
+      },
+      {
+        id: "surface",
+        symbol: "\\mathcal{S}",
+        name: "Expected Surface",
+        color: "amber",
+        role: "Floor, wall, or obstacle surface tested inside the overlap region",
+        unit: "Surface",
+        dimension: "L^2",
+        explanation:
+          "Presence or absence of this surface changes the detector response; no map or coverage estimate is required by the claim.",
+      },
+      {
+        id: "redirect",
+        symbol: "u_{redirect}",
+        name: "Redirect Command",
+        color: "crimson",
+        role: "Circuit output that redirects the robot when the expected surface is absent",
+        unit: "Boolean",
+        dimension: "1",
+        explanation:
+          "The indicator expresses the claim's logical condition only. The contextual kernel owns the subsequent differential-drive turn rate.",
+      },
+    ],
+    pedagogicalNote:
+      "US 6,594,844 claims the optical geometry and its redirect circuit. The surrounding room path is useful context but is not presented as a patented global-coverage law.",
+    claimRef: 1,
+    historicalSignificance:
+      "The grant makes a low-cost finite optical intersection do the obstacle discrimination that more elaborate ranging hardware would otherwise perform.",
   },
 ];
 
@@ -21598,5 +22194,2723 @@ ALL_COLORIZED_EQUATIONS["us-3353115-maiman-ruby-laser"] = [
           "Consists of hundreds of micro-spikes generated by coupled population-photon relaxation oscillations.",
       },
     ],
+  },
+];
+
+// US 31,128 supplies a connected mechanism and discrete interlocks, but no
+// historical dimensions, load, spring rate, force, timing, stopping distance,
+// or power. These cards deliberately replace the older invented dynamics.
+ALL_COLORIZED_EQUATIONS["us-31128-otis-elevator"] = [
+  {
+    id: "otis-claim-one-hook-lock-topology",
+    patentId: "us-31128-otis-elevator",
+    title: "Claim 1: Platform-Weight Hook Lock",
+    category: "Source-Bound Multibody Topology",
+    rawLatex: "\\neg G_{\\text{taut}} \\land C_1 \\Rightarrow f \\hookrightarrow C",
+    colorizedLatex:
+      "\\neg \\textcolor{#2563eb}{G_{\\text{taut}}} \\land \\textcolor{#d97706}{C_1} \\Rightarrow \\textcolor{#059669}{f} \\hookrightarrow \\textcolor{#9333ea}{C}",
+    plainEnglishSentence: [
+      { text: "When " },
+      { text: "lifting rope G is no longer taut", variableId: "rope_g" },
+      { text: " and " },
+      { text: "Claim 1's hook geometry is present", variableId: "claim_one" },
+      { text: ", platform weight turns " },
+      { text: "pawls f", variableId: "pawls_f" },
+      { text: " into hook-form " },
+      { text: "racks C", variableId: "racks_c" },
+      { text: " so their geometry resists separation." },
+    ],
+    variables: [
+      {
+        id: "rope_g",
+        symbol: "G_{\\text{taut}}",
+        name: "Lifting Rope G State",
+        color: "sapphire",
+        role: "Boolean source state: intact/tension-supporting or broken",
+        unit: "state",
+        dimension: "[1]",
+        explanation:
+          "The grant describes the consequence of breaking rope G, not its force, elongation, or failure time.",
+        telemetryKey: "ropeGIntegrityPct",
+      },
+      {
+        id: "claim_one",
+        symbol: "C_1",
+        name: "Claim 1 Geometry",
+        color: "amber",
+        role: "Hook-form pawls and rack teeth arranged to self-lock under platform weight",
+        unit: "predicate",
+        dimension: "[1]",
+        explanation:
+          "Turning this constraint off is an explicit counterfactual, not a statement about the historical machine.",
+      },
+      {
+        id: "pawls_f",
+        symbol: "f",
+        name: "Hook Pawls f",
+        color: "emerald",
+        role: "Paired pawls carried by platform D through levers E",
+        unit: "component",
+        dimension: "[1]",
+        explanation: "Their inner ends remain linked through E to eye c on safety bar F.",
+      },
+      {
+        id: "racks_c",
+        symbol: "C",
+        name: "Fixed Hook Racks C",
+        color: "amethyst",
+        role: "Hook-form teeth fixed along uprights B",
+        unit: "component",
+        dimension: "[1]",
+        explanation:
+          "The claimed interlock depends on complementary hook form, not an unsupported tooth angle or spring force.",
+      },
+    ],
+    pedagogicalNote:
+      "Claim 1 is a load-directed geometric lock. The visualization therefore reports a discrete satisfied/refused predicate and does not invent quantitative dynamics.",
+    claimRef: 1,
+    historicalSignificance:
+      "This grant expresses the safety as a claimed hook-rack relationship inside a complete powered hoisting apparatus.",
+  },
+  {
+    id: "otis-claim-three-stop-interlock",
+    patentId: "us-31128-otis-elevator",
+    title: "Claim 3: Simultaneous Belt Idle and Brake Application",
+    category: "Source-Bound Control Interlock",
+    rawLatex: "\\text{stop}(T,S) \\Rightarrow (O,P) \\to (J,K) \\land Z \\dashv L",
+    colorizedLatex:
+      "\\textcolor{#d97706}{\\text{stop}(T,S)} \\Rightarrow \\textcolor{#2563eb}{(O,P) \\to (J,K)} \\land \\textcolor{#dc2626}{Z \\dashv L}",
+    plainEnglishSentence: [
+      { text: "A " },
+      { text: "stop command through rope T and shipper S", variableId: "stop_chain" },
+      { text: " moves " },
+      { text: "belts O and P onto idle pulleys J and K", variableId: "belt_idle" },
+      { text: " while applying " },
+      { text: "brake shoe Z to working pulley L", variableId: "brake_z" },
+      { text: " in the same connected linkage." },
+    ],
+    variables: [
+      {
+        id: "stop_chain",
+        symbol: "\\text{stop}(T,S)",
+        name: "Stop Command Chain",
+        color: "amber",
+        role: "Hand rope T moves the belt-shipper slide S",
+        unit: "state",
+        dimension: "[1]",
+        explanation: "Stop rope U and branch V act upon the same hand-rope control path.",
+        telemetryKey: "stopRopePulled",
+      },
+      {
+        id: "belt_idle",
+        symbol: "(O,P) \\to (J,K)",
+        name: "Reversing Belts Idled",
+        color: "sapphire",
+        role: "Straight belt O and crossed belt P leave working pulley L for idle pulleys",
+        unit: "topology",
+        dimension: "[1]",
+        explanation: "O raises and P lowers; the middle shipper state idles both.",
+        telemetryKey: "driveCommand",
+      },
+      {
+        id: "brake_z",
+        symbol: "Z \\dashv L",
+        name: "Brake Shoe Z on Pulley L",
+        color: "crimson",
+        role: "Mechanical brake applied with the belt shift",
+        unit: "state",
+        dimension: "[1]",
+        explanation:
+          "The patent claims simultaneous application, but gives no braking torque or stopping time.",
+      },
+    ],
+    pedagogicalNote:
+      "Claim 3 is valuable because one operator action both removes drive and applies the brake. The model preserves that causal linkage rather than animating an isolated brake shoe.",
+    claimRef: 3,
+    historicalSignificance:
+      "The linked shipper-and-brake arrangement makes powered ascent, descent, and stopping parts of one controlled apparatus.",
+  },
+  {
+    id: "otis-claim-four-opposite-counterpoise",
+    patentId: "us-31128-otis-elevator",
+    title: "Claim 4: Opposite-Wound Counterpoise",
+    category: "Source-Bound Kinematic Constraint",
+    rawLatex: "dq_R = -dq_D",
+    colorizedLatex: "d\\textcolor{#0891b2}{q_R} = -d\\textcolor{#d97706}{q_D}",
+    plainEnglishSentence: [
+      { text: "Because counterpoise rope Q is attached to the opposite side of drum H, the " },
+      { text: "counterpoise coordinate", variableId: "counterpoise_r" },
+      { text: " changes opposite the " },
+      { text: "platform coordinate", variableId: "platform_d" },
+      { text: " without interfering with safety mechanism E-e-f." },
+    ],
+    variables: [
+      {
+        id: "counterpoise_r",
+        symbol: "q_R",
+        name: "Counterpoise R Coordinate",
+        color: "cyan",
+        role: "Normalized display coordinate of counterpoise R on rope Q",
+        unit: "normalized display coordinate",
+        dimension: "[1]",
+        explanation:
+          "Only opposition of motion is asserted; the source does not provide counterweight mass or travel.",
+      },
+      {
+        id: "platform_d",
+        symbol: "q_D",
+        name: "Platform D Coordinate",
+        color: "amber",
+        role: "Normalized display coordinate of the guided platform",
+        unit: "normalized display coordinate",
+        dimension: "[1]",
+        explanation:
+          "Platform D remains captured between its grooved uprights a and the fixed guide frame.",
+      },
+    ],
+    pedagogicalNote:
+      "The relation is kinematic and dimensionless because the grant describes opposite winding but supplies no drum diameter, rope length, or travel dimension.",
+    claimRef: 4,
+    historicalSignificance:
+      "The opposite winding balances platform motion while preserving the separate hook-rack safety path.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-5701965-kamen-transporter"] = [
+  {
+    id: "kamen-inverted-pendulum-torque",
+    patentId: "us-5701965-kamen-transporter",
+    title: "Inverted Pendulum Dynamic Equilibrium & Motor Torque",
+    category: "Robotics & Dynamic Stabilization",
+    rawLatex:
+      "\\tau_{\\text{motor}} = K_p \\theta + K_d \\dot{\\theta} + K_v (v_{\\text{cmd}} - v) \\quad \\text{and} \\quad I \\ddot{\\theta} = m g h \\sin\\theta - \\tau_{\\text{motor}}",
+    colorizedLatex:
+      "\\textcolor{#9333ea}{\\tau_{\\text{motor}}} = \\textcolor{#0891b2}{K_p} \\textcolor{#dc2626}{\\theta} + \\textcolor{#059669}{K_d} \\textcolor{#d97706}{\\dot{\\theta}} + \\textcolor{#2563eb}{K_v} (\\textcolor{#ea580c}{v_{\\text{cmd}}} - \\textcolor{#4f46e5}{v}) \\quad \\text{and} \\quad \\textcolor{#7c3aed}{I \\ddot{\\theta}} = \\textcolor{#16a34a}{m g h \\sin\\theta} - \\textcolor{#9333ea}{\\tau_{\\text{motor}}}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "restoring motor torque", variableId: "motor_torque" },
+      { text: " is computed from proportional feedback of " },
+      { text: "pitch angle deviation", variableId: "pitch_angle" },
+      { text: ", derivative damping of " },
+      { text: "pitch rate", variableId: "pitch_rate" },
+      { text: ", and velocity error between " },
+      { text: "command speed", variableId: "v_cmd" },
+      { text: " and " },
+      { text: "actual speed", variableId: "v_actual" },
+      { text: " to counteract " },
+      { text: "gravitational overturning moment", variableId: "grav_moment" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "motor_torque",
+        symbol: "\\tau_{\\text{motor}}",
+        name: "Restorative Motor Drive Torque",
+        color: "amethyst",
+        role: "Net torque delivered by wheel servomotors to ground contact patch",
+        unit: "Newton-meters (N·m)",
+        dimension: "[M L^2 T^-2]",
+        explanation:
+          "Drives the wheel axles forward or backward underneath the rider center of gravity to maintain vertical balance.",
+      },
+      {
+        id: "pitch_angle",
+        symbol: "\\theta",
+        name: "Pitch Tilt Angle",
+        color: "rose",
+        role: "Angular deviation from vertical gravito-inertial plumbline ($0^\\circ = \\text{vertical}$)",
+        unit: "Radians (rad) / Degrees (°)",
+        dimension: "[1]",
+        explanation: "Measured continuously by solid-state accelerometers and gyroscopes.",
+      },
+      {
+        id: "pitch_rate",
+        symbol: "\\dot{\\theta}",
+        name: "Pitch Angular Velocity",
+        color: "amber",
+        role: "Rate of change of pitch angle ($d\\theta / dt$)",
+        unit: "Radians per second (rad/s)",
+        dimension: "[T^-1]",
+        explanation:
+          "Supplied by vibrating tuning-fork rate gyroscopes to provide derivative damping against oscillations.",
+      },
+      {
+        id: "grav_moment",
+        symbol: "m g h \\sin\\theta",
+        name: "Gravitational Overturning Moment",
+        color: "emerald",
+        role: "Destabilizing torque exerted by gravity when center of mass tilts away from vertical",
+        unit: "Newton-meters (N·m)",
+        dimension: "[M L^2 T^-2]",
+        explanation:
+          "Increases with rider payload mass and center of gravity height ($h \\approx 0.90\\text{ m}$).",
+      },
+      {
+        id: "v_cmd",
+        symbol: "v_{\\text{cmd}}",
+        name: "Commanded Forward Velocity",
+        color: "coral",
+        role: "Target travel speed commanded by rider body pitch lean",
+        unit: "Meters per second (m/s)",
+        dimension: "[L T^-1]",
+        explanation:
+          "Derived directly from rider pitch lean angle offset ($v_{\\text{cmd}} = K_{\\text{lean}} \\theta$).",
+      },
+      {
+        id: "v_actual",
+        symbol: "v",
+        name: "Actual Ground Velocity",
+        color: "amethyst",
+        role: "Measured linear velocity of the transporter over ground",
+        unit: "Meters per second (m/s)",
+        dimension: "[L T^-1]",
+        explanation: "Calculated from wheel optical encoder angular velocities ($v = \\omega r$).",
+      },
+    ],
+    pedagogicalNote:
+      "Dean Kamen's human transporter replaces passive static stability (wide 4-wheel wheelbases) with active algorithmic stabilization, modeling the passenger as an inverted pendulum and commanding restorative wheel torque to follow user body lean.",
+    claimRef: 1,
+    historicalSignificance:
+      "US 5,701,965 established the legal foundation for the iBOT mobility system, Segway PT, and modern self-balancing robotics.",
+  },
+  {
+    id: "kamen-cluster-stair-kinematics",
+    patentId: "us-5701965-kamen-transporter",
+    title: "Planetary Cluster Wheel Stair-Climbing Kinematics",
+    category: "Robotics & Dynamic Stabilization",
+    rawLatex:
+      "H_{\\text{step, max}} \\le 2 R_{\\text{cluster}} \\cos\\left(\\frac{\\pi}{N_{\\text{wheels}}}\\right) \\quad \\text{and} \\quad \\tau_{\\text{cluster}} = m_{\\text{total}} g R_{\\text{cluster}} \\cos\\phi",
+    colorizedLatex:
+      "\\textcolor{#0891b2}{H_{\\text{step, max}}} \\le 2 \\textcolor{#2563eb}{R_{\\text{cluster}}} \\cos\\left(\\frac{\\pi}{\\textcolor{#d97706}{N_{\\text{wheels}}}}\\right) \\quad \\text{and} \\quad \\textcolor{#9333ea}{\\tau_{\\text{cluster}}} = \\textcolor{#16a34a}{m_{\\text{total}} g} \\textcolor{#2563eb}{R_{\\text{cluster}}} \\cos\\textcolor{#dc2626}{\\phi}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "maximum stair step height", variableId: "step_height" },
+      { text: " is determined by the " },
+      { text: "cluster pitch radius", variableId: "cluster_radius" },
+      { text: " and " },
+      { text: "number of planetary wheels", variableId: "wheel_count" },
+      { text: ", requiring " },
+      { text: "cluster lift torque", variableId: "cluster_torque" },
+      { text: " to hoist total vehicle mass over the riser at cluster angle " },
+      { text: "phi", variableId: "phi_angle" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "step_height",
+        symbol: "H_{\\text{step, max}}",
+        name: "Maximum Climbable Riser Height",
+        color: "cyan",
+        role: "Vertical step clearance that can be surmounted in one cluster rotation cycle",
+        unit: "Meters (m)",
+        dimension: "[L]",
+        explanation:
+          "Geometrically bounded by the planetary cluster diameter ($H \\le 0.22\\text{ m}$).",
+      },
+      {
+        id: "cluster_radius",
+        symbol: "R_{\\text{cluster}}",
+        name: "Planetary Cluster Arm Radius",
+        color: "sapphire",
+        role: "Distance from central cluster rotation axis to planetary wheel centers ($0.18\\text{ m}$)",
+        unit: "Meters (m)",
+        dimension: "[L]",
+        explanation:
+          "Determines step clearance and torque leverage during weight transfer sequence.",
+      },
+      {
+        id: "wheel_count",
+        symbol: "N_{\\text{wheels}}",
+        name: "Number of Planetary Wheels per Cluster",
+        color: "amber",
+        role: "Count of ground-contact wheels arranged symmetrically on each cluster carrier ($N = 2$ or $3$)",
+        unit: "integer count",
+        dimension: "[1]",
+        explanation:
+          "A 2-wheel cluster requires $180^\\circ$ rotation per step; a 3-wheel cluster requires $120^\\circ$ rotation.",
+      },
+      {
+        id: "phi_angle",
+        symbol: "\\phi",
+        name: "Cluster Carrier Angular Position",
+        color: "crimson",
+        role: "Current rotation angle of the planetary carrier arm relative to horizontal ($0^\\circ = \\text{horizontal}$)",
+        unit: "Degrees (°)",
+        dimension: "[1]",
+        explanation: "Modulates gravitational moment arm during stair-climbing rotation cycle.",
+      },
+      {
+        id: "cluster_torque",
+        symbol: "\\tau_{\\text{cluster}}",
+        name: "Cluster Rotation Motor Torque",
+        color: "amethyst",
+        role: "Torque applied to rotate cluster carrier about central axle during stair climbing",
+        unit: "Newton-meters (N·m)",
+        dimension: "[M L^2 T^-2]",
+        explanation:
+          "Carries total vehicle weight while individual ground wheels drive against step tread.",
+      },
+    ],
+    pedagogicalNote:
+      "By rotating planetary multi-wheel cluster arms, the transporter transfers passenger weight smoothly between step edges while maintaining active 2-wheel dynamic balance on the upper tread.",
+    claimRef: 16,
+    historicalSignificance:
+      "Enabled the iBOT mobility system to conquer standard architectural staircases without external ramps or helpers.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-6302230-kamen-segway"] = [
+  {
+    id: "kamen-segway-dynamic-balance-margin",
+    patentId: "us-6302230-kamen-segway",
+    title: "Inverted Pendulum Dynamic Balancing & Balancing Margin Headroom",
+    category: "Robotics & Personal Mechatronics",
+    rawLatex:
+      "\\tau_{\\text{motor}} = M g L \\sin\\theta + K_v v \\quad \\text{and} \\quad \\text{Margin} = 1 - \\frac{|v|}{v_{\\text{max}}} - \\frac{|\\tau|}{\\tau_{\\text{max}}}",
+    colorizedLatex:
+      "\\textcolor{#2563eb}{\\tau_{\\text{motor}}} = \\textcolor{#16a34a}{M g L} \\sin\\textcolor{#dc2626}{\\theta} + \\textcolor{#d97706}{K_v v} \\quad \\text{and} \\quad \\textcolor{#0891b2}{\\text{Margin}} = 1 - \\frac{\\textcolor{#9333ea}{|v|}}{\\textcolor{#059669}{v_{\\text{max}}}} - \\frac{\\textcolor{#2563eb}{|\\tau|}}{\\textcolor{#ea580c}{\\tau_{\\text{max}}}}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "restoring motor torque", variableId: "motor_torque" },
+      { text: " balances the " },
+      { text: "gravitational overturning moment", variableId: "grav_moment" },
+      { text: " generated by " },
+      { text: "rider pitch lean", variableId: "pitch_lean" },
+      { text: " while preserving a supervisory " },
+      { text: "balancing margin", variableId: "margin_ratio" },
+      { text: " computed from the difference between " },
+      { text: "present velocity", variableId: "current_vel" },
+      { text: " and " },
+      { text: "maximum operating speed", variableId: "max_vel" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "motor_torque",
+        symbol: "\\tau_{\\text{motor}}",
+        name: "Restoring Motor Drive Torque",
+        color: "sapphire",
+        role: "Net torque applied by dual brushless DC motors to drive wheels beneath the center of gravity",
+        unit: "Newton-meters (N·m)",
+        dimension: "[M L^2 T^-2]",
+        explanation:
+          "Provides the horizontal acceleration required to outrun gravity and maintain dynamic balance.",
+      },
+      {
+        id: "grav_moment",
+        symbol: "M g L",
+        name: "Gravitational Overturning Coefficient",
+        color: "emerald",
+        role: "Total system weight multiplied by center of mass height above wheel axle (~1060 N·m/rad)",
+        unit: "Newton-meters (N·m)",
+        dimension: "[M L^2 T^-2]",
+        explanation:
+          "The destabilizing pendulum moment that attempts to pull the rider downward when leaning.",
+      },
+      {
+        id: "pitch_lean",
+        symbol: "\\theta",
+        name: "Rider Pitch Lean Angle",
+        color: "coral",
+        role: "User body lean angle relative to true gravity vertical",
+        unit: "Radians (rad) or Degrees (°)",
+        dimension: "[1]",
+        explanation:
+          "Measured by rate gyroscopes and accelerometers to determine user acceleration command.",
+      },
+      {
+        id: "margin_ratio",
+        symbol: "\\text{Margin}",
+        name: "Balancing Margin Headroom Ratio",
+        color: "cyan",
+        role: "Dimensionless ratio characterizing remaining acceleration torque headroom (0.0 to 1.0)",
+        unit: "Dimensionless ratio",
+        dimension: "[1]",
+        explanation:
+          "When this ratio falls below 0.22, the controller activates tactile ripple shudder and pitch pushback.",
+      },
+      {
+        id: "current_vel",
+        symbol: "v",
+        name: "Present Vehicle Velocity",
+        color: "amethyst",
+        role: "Forward rolling velocity of the transporter",
+        unit: "Meters per second (m/s)",
+        dimension: "[L T^-1]",
+        explanation:
+          "Proportional to rider lean angle during steady-state cruising.",
+      },
+      {
+        id: "max_vel",
+        symbol: "v_{\\text{max}}",
+        name: "Maximum Allowable Operating Speed",
+        color: "emerald",
+        role: "Governor limit ensuring adequate motor voltage reserve for emergency deceleration (~5.5 m/s)",
+        unit: "Meters per second (m/s)",
+        dimension: "[L T^-1]",
+        explanation:
+          "The upper speed boundary beyond which active pitch pushback is enforced.",
+      },
+    ],
+    pedagogicalNote:
+      "Dean Kamen's key safety insight in US 6,302,230 was that an inverted pendulum vehicle must never reach motor saturation; the balancing margin monitor enforces a reserve acceleration buffer, warning the rider through haptic platform vibration before stability is lost.",
+    claimRef: 1,
+    historicalSignificance:
+      "Defined the fundamental dynamic balancing margin architecture for the Segway HT and all subsequent self-balancing robotic mobility vehicles.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-4098001-watson-remote-center-compliance"] = [
+  {
+    id: "watson-rcc-remote-center-geometry",
+    patentId: "us-4098001-watson-remote-center-compliance",
+    title: "Remote-Center Radius Geometry & Small-Rotation Teaching Relation",
+    category: "Robotics & Mechanisms",
+    rawLatex:
+      "\\mathbf{r}_{24},\\mathbf{r}_{26},\\mathbf{r}_{28} \\rightarrow O_{remote}; \\quad \\Delta\\mathbf{x}_{tip} \\approx \\boldsymbol{\\theta} \\times \\mathbf{r}_{tip}",
+    colorizedLatex:
+      "\\textcolor{#2563eb}{\\mathbf{r}_{24},\\mathbf{r}_{26},\\mathbf{r}_{28}} \\rightarrow \\textcolor{#0891b2}{O_{remote}}; \\quad \\textcolor{#16a34a}{\\Delta\\mathbf{x}_{tip}} \\approx \\textcolor{#d97706}{\\boldsymbol{\\theta}} \\times \\textcolor{#9333ea}{\\mathbf{r}_{tip}}",
+    plainEnglishSentence: [
+      { text: "The three " },
+      { text: "printed radial-element directions", variableId: "radial_vectors" },
+      { text: " converge on the " },
+      { text: "remote center", variableId: "remote_center" },
+      { text: "; for a small illustrative " },
+      { text: "rotation", variableId: "rotation" },
+      { text: ", the " },
+      { text: "tool-tip displacement", variableId: "tip_displacement" },
+      { text: " follows from its vector from that center, " },
+      { text: "r-tip", variableId: "tip_radius" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "radial_vectors",
+        symbol: "\\mathbf{r}_{24},\\mathbf{r}_{26},\\mathbf{r}_{28}",
+        name: "Rotational-Element Radius Directions",
+        color: "sapphire",
+        role: "Directions of the three numbered elements that the specification places along spherical radii",
+        unit: "Direction vectors",
+        dimension: "[1]",
+        explanation:
+          "This is the patent's source geometry. The exhibit visualizes the directions but does not assign unreported lengths or stiffnesses.",
+      },
+      {
+        id: "remote_center",
+        symbol: "O_{remote}",
+        name: "Remote Center 50",
+        color: "cyan",
+        role: "Virtual point at, near, or beyond the free end of the operator tool",
+        unit: "Geometric point",
+        dimension: "[L]",
+        explanation:
+          "The claimed rotational elements lie along portions of spherical radii emanating from this point.",
+        telemetryMetricLabel: "Remote Center",
+      },
+      {
+        id: "tip_displacement",
+        symbol: "\\Delta\\mathbf{x}_{tip}",
+        name: "Illustrative Tool-Tip Displacement",
+        color: "emerald",
+        role: "Small-displacement teaching cue for the tool point under a change of orientation",
+        unit: "Normalized display displacement",
+        dimension: "[L]",
+        explanation:
+          "The public exhibit keeps this normalized because the grant supplies no dimensions, loads, material properties, or calibrated response.",
+        telemetryMetricLabel: "Illustrated Translation",
+      },
+      {
+        id: "rotation",
+        symbol: "\\boldsymbol{\\theta}",
+        name: "Small Orientation Change",
+        color: "amber",
+        role: "Infinitesimal rotation used to explain motion about a virtual point",
+        unit: "Radians in the general teaching relation",
+        dimension: "[1]",
+        explanation:
+          "This is a general small-rotation kinematic relation, not a source-backed compliance coefficient or a predicted response rate.",
+      },
+      {
+        id: "tip_radius",
+        symbol: "\\mathbf{r}_{tip}",
+        name: "Center-to-Tip Vector",
+        color: "amethyst",
+        role: "Vector from the illustrated virtual center to the point whose motion is being explained",
+        unit: "Normalized display length",
+        dimension: "[L]",
+        explanation:
+          "Its displayed length is illustrative; the source locates the remote center relationally but does not prescribe a universal tool length.",
+      },
+    ],
+    pedagogicalNote:
+      "The equation separates what the grant actually supplies—the radial elements' convergence on a remote point—from a general small-rotation relation used to explain the geometry. Quantitative force, stiffness, clearance, friction, and success predictions are deliberately refused.",
+    claimRef: 1,
+    historicalSignificance:
+      "US 4,098,001 made a particular passive remote-center and translational-flexure architecture available as a concrete industrial-robotics teaching example.",
+  },
+];
+ALL_COLORIZED_EQUATIONS["us-4098001-watson-rcc"] = ALL_COLORIZED_EQUATIONS[
+  "us-4098001-watson-remote-center-compliance"
+].map((eq) => ({
+  ...eq,
+  patentId: "us-4098001-watson-rcc",
+}));
+
+ALL_COLORIZED_EQUATIONS["us-3119501-lemelson-automatic-warehousing"] = [
+  {
+    id: "lemelson-predetermining-downcount",
+    patentId: "us-3119501-lemelson-automatic-warehousing",
+    title: "Preset-Count Marker Event Sequence",
+    category: "Industrial Automation & Control",
+    rawLatex: "c_{next}=c_{now}-1; \\quad c=0 \\Rightarrow \\text{change motor state}",
+    colorizedLatex:
+      "\\textcolor{#0891b2}{c_{next}}=\\textcolor{#2563eb}{c_{now}}-\\textcolor{#16a34a}{1}; \\quad \\textcolor{#0891b2}{c}=0 \\Rightarrow \\textcolor{#dc2626}{\\text{change motor state}}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "remaining count accumulator", variableId: "counter_c" },
+      { text: " decrements from the " },
+      { text: "preset address count", variableId: "preset_n" },
+      { text: " with each " },
+      { text: "position-marker event", variableId: "marker_impulse" },
+      { text: " until zero changes the " },
+      { text: "source-described motor state", variableId: "trip_relay" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "counter_c",
+        symbol: "c",
+        name: "Remaining Down-Count",
+        color: "cyan",
+        role: "State variable of the source-described preset counting relay",
+        unit: "Position events",
+        dimension: "[1]",
+        explanation:
+          "The grant describes a counter that uncounts as the scanner sees identifiers, then changes control state at the selected count. It does not state a count frequency or event timing.",
+        telemetryMetricLabel: "Addressing State",
+      },
+      {
+        id: "preset_n",
+        symbol: "N_{\\text{preset}}",
+        name: "Preset Target Address",
+        color: "sapphire",
+        role: "Selected source-described marker count before motion begins",
+        unit: "Position events",
+        dimension: "[1]",
+        explanation:
+          "The source permits local or remote presetting of counters for travel, lift, and transfer. It gives no prescribed bay count, rack dimensions, or mapping to physical distance.",
+      },
+      {
+        id: "marker_impulse",
+        symbol: "e_k",
+        name: "Position-Marker Event",
+        color: "emerald",
+        role: "A discrete source-described scanning event associated with a rack or guide marker",
+        unit: "Event",
+        dimension: "[1]",
+        explanation:
+          "Claims 1–5 permit marker scanning, including reflective and ambient-light alternatives; Claim 6 describes a limit-switch and protrusion alternative. No sensor rate is supplied.",
+      },
+      {
+        id: "trip_relay",
+        symbol: "\\text{state}_{motor}",
+        name: "Motor-State Transition",
+        color: "crimson",
+        role: "Source control change after a preset count has been received",
+        unit: "State",
+        dimension: "[1]",
+        explanation:
+          "The specification describes stopping one motion and beginning another in its sequence. It does not provide braking distance, positioning tolerance, velocity, or motor electrical values.",
+        telemetryMetricLabel: "Quantitative Performance",
+      },
+    ],
+    pedagogicalNote:
+      "The equation is a symbolic reading of the printed preset-count sequence. It intentionally omits numerical warehouse scale, payload, speed, motor, timing, and sensor-performance assumptions absent from the facsimile.",
+    claimRef: 1,
+    historicalSignificance:
+      "The issued claims show a physical warehouse address formed by guide travel, vertical movement, transfer, marker sensing, and a preset count; they do not justify a claim to all later automated storage systems.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-3313014-lemelson-automatic-production"] = [
+  {
+    id: "lemelson-marker-coupling-release-interlock",
+    patentId: "us-3313014-lemelson-automatic-production",
+    title: "Marker, Retention, Coupling, and Release Interlock",
+    category: "Source-Bounded Industrial Automation",
+    rawLatex:
+      "m_{recognized}\\land r_{retained}\\land c_{coupled}\\Rightarrow u_{machine};\\quad p_{cycle}\\geq0.8\\Rightarrow u_{release}",
+    colorizedLatex:
+      "\\textcolor{#f59e0b}{m_{recognized}}\\land\\textcolor{#16a34a}{r_{retained}}\\land\\textcolor{#0891b2}{c_{coupled}}\\Rightarrow\\textcolor{#7c3aed}{u_{machine}};\\quad\\textcolor{#2563eb}{p_{cycle}}\\geq0.8\\Rightarrow\\textcolor{#dc2626}{u_{release}}",
+    plainEnglishSentence: [
+      { text: "A recognised station " },
+      { text: "marker event", variableId: "marker_event" },
+      { text: ", retained carrier, and closed " },
+      { text: "station coupling", variableId: "station_coupling" },
+      { text: " are the source-topology conditions that authorize the displayed " },
+      { text: "machine command", variableId: "machine_command" },
+      { text: ". At the selected display " },
+      { text: "release stage", variableId: "release_stage" },
+      { text: ", the sequence releases and departs rather than claiming a measured cycle time." },
+    ],
+    variables: [
+      {
+        id: "marker_event",
+        symbol: "m_{recognized}",
+        name: "Recognised Station Marker",
+        color: "amber",
+        role: "Claim-linked sensing event that begins the illustrated carrier-to-station sequence",
+        unit: "off/on topology state",
+        dimension: "[1]",
+        explanation:
+          "The patent identifies markers, switches, scanners, and relay signals as selection and control events. It provides no sensor precision, latency, or event frequency for a numerical model.",
+        telemetryKey: "stationDetected",
+      },
+      {
+        id: "station_coupling",
+        symbol: "c_{coupled}",
+        name: "Portable-to-Station Controller Coupling",
+        color: "cyan",
+        role: "Claim 7-style contact/coupling condition between the carrier-mounted controller and a work station",
+        unit: "off/on topology state",
+        dimension: "[1]",
+        explanation:
+          "The source describes electrical contacts and alternative coupling arrangements after positioning. The public switch means only the logical connection is present; it does not represent voltage, current, impedance, or signal integrity.",
+        telemetryKey: "stationCoupled",
+      },
+      {
+        id: "machine_command",
+        symbol: "u_{machine}",
+        name: "Authorized Machine Command",
+        color: "amethyst",
+        role: "Displayed permission for a selected station operation after the named topology conditions hold",
+        unit: "source interlock",
+        dimension: "[1]",
+        explanation:
+          "This logical output makes the claim sequence inspectable. It is not a motor-control voltage, a production-rate prediction, or evidence that a particular workpiece operation succeeds.",
+        telemetryMetricLabel: "Machine Command",
+      },
+      {
+        id: "release_stage",
+        symbol: "p_{cycle}",
+        name: "Selected Release-and-Departure Stage",
+        color: "sapphire",
+        role: "Normalized exhibit cue for the source-described reversal, release, and next-station transition",
+        unit: "normalized display state",
+        dimension: "[1]",
+        explanation:
+          "The threshold is a display ordering boundary, not a time, distance, stopping tolerance, or production-cycle measurement supplied by the patent.",
+        telemetryKey: "cycleProgress",
+      },
+    ],
+    pedagogicalNote:
+      "This is a modern boolean reading of the patent's sequence: sensing leads to positioning and retention, the portable controller couples to the station, then the station may operate; after the cycle, the carrier is released and moves on. The source does not supply an exact Boolean formula, a timing law, or the numbers needed for a performance simulation.",
+    historicalSignificance:
+      "The issued claims make the carrier, record/controller, sensing event, retaining means, and selected production station legible as one physical control architecture rather than a free-floating automation slogan.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-3858581-kamen-medication-injection-device"] = [
+  {
+    id: "kamen-rotation-event-count",
+    patentId: "us-3858581-kamen-medication-injection-device",
+    title: "Lead-Screw Rotation and Pulse-Count Relation (Nonclinical)",
+    category: "Mechatronics & Historical Control",
+    rawLatex: "N_{pulse}=n_{turns}; \\quad x=n p",
+    colorizedLatex:
+      "\\textcolor{#0891b2}{N_{pulse}}=\\textcolor{#2563eb}{n_{turns}}; \\quad \\textcolor{#16a34a}{x}=\\textcolor{#2563eb}{n}\\textcolor{#9333ea}{p}",
+    plainEnglishSentence: [
+      { text: "The source ties a " },
+      { text: "pulse count", variableId: "pulse_count" },
+      { text: " to lead-screw " },
+      { text: "turns", variableId: "turn_count" },
+      { text: ", while the screw's symbolic " },
+      { text: "pitch", variableId: "pitch" },
+      { text: " relates those turns to a displayed follower " },
+      { text: "position", variableId: "position" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "pulse_count",
+        symbol: "N_{pulse}",
+        name: "Rotation-Event Count",
+        color: "cyan",
+        role: "Count of striker-triggered electrical events in the Claim 1 mechanism",
+        unit: "Events",
+        dimension: "[1]",
+        explanation:
+          "Claim 1 says the radially oriented striker reaches the pulse-emitting switch during each lead-screw rotation. The grant does not give a pulse frequency or a clinical setting.",
+        telemetryMetricLabel: "Counter Progress",
+      },
+      {
+        id: "turn_count",
+        symbol: "n_{turns}",
+        name: "Lead-Screw Turns",
+        color: "sapphire",
+        role: "Source-described rotational traverses of the motor-driven screw",
+        unit: "Turns",
+        dimension: "[1]",
+        explanation:
+          "The source connects repeated screw turns to repeated striker/switch events, but supplies no rotational speed, motor power, friction value, or precision specification.",
+      },
+      {
+        id: "pitch",
+        symbol: "p",
+        name: "Uniform Thread Pitch",
+        color: "amethyst",
+        role: "Constant advance per ideal screw turn in the source description",
+        unit: "Unreported",
+        dimension: "[L]",
+        explanation:
+          "The patent calls the threads uniform pitch but does not print a numerical pitch. The museum therefore keeps $p$ symbolic and does not compute a volume, flow, dose, or clinical schedule.",
+      },
+      {
+        id: "position",
+        symbol: "x",
+        name: "Follower Position",
+        color: "emerald",
+        role: "Normalized displayed position of the source-described lead-screw follower",
+        unit: "Normalized display",
+        dimension: "[L]",
+        explanation:
+          "The interactive exhibit makes the mechanical position relationship visible without converting the 1975 apparatus into a medical-device instruction or prediction.",
+        telemetryMetricLabel: "Lead-Screw Position",
+      },
+    ],
+    pedagogicalNote:
+      "This is a historical kinematic and event-count relation only. The source does not provide any dose, concentration, pressure, patient condition, safe delivery rate, clinical outcome, or medical recommendation.",
+    claimRef: 1,
+    historicalSignificance:
+      "The claim links a familiar mechanical actuator to countable electrical events and motor-state control; its archival value is the mechatronic architecture, not a present-day clinical protocol.",
+  },
+];
+
+// Withdrawn research equations retained under a non-catalogue key for audit
+// history. The draft assumed exact 45° geometry and undisclosed performance.
+ALL_COLORIZED_EQUATIONS["_legacy-unpublished-us-4068536-stackhouse-manipulator"] = [
+  {
+    id: "stackhouse-spherical-orientation",
+    patentId: "us-4068536-stackhouse-manipulator",
+    title: "3-Roll Intersecting Axis Forward Kinematic Composition",
+    category: "Spherical Kinematics",
+    rawLatex:
+      "\\mathbf{R} = \\mathbf{R}_z(\\theta_1) \\mathbf{R}_y(45^\\circ) \\mathbf{R}_z(\\theta_2) \\mathbf{R}_y(45^\\circ) \\mathbf{R}_z(\\theta_3)",
+    colorizedLatex:
+      "\\mathbf{R} = \\textcolor{#059669}{\\mathbf{R}_z(\\theta_1)} \\textcolor{#d97706}{\\mathbf{R}_y(45^\\circ)} \\textcolor{#2563eb}{\\mathbf{R}_z(\\theta_2)} \\textcolor{#d97706}{\\mathbf{R}_y(45^\\circ)} \\textcolor{#9333ea}{\\mathbf{R}_z(\\theta_3)}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "total tool orientation matrix", variableId: "total_orientation" },
+      { text: " is the sequential product of the " },
+      { text: "forearm roll rotation", variableId: "forearm_roll" },
+      { text: ", the " },
+      { text: "dual 45° oblique joint intersections", variableId: "oblique_tilt" },
+      { text: ", the " },
+      { text: "intermediate link roll", variableId: "intermediate_roll" },
+      { text: ", and the " },
+      { text: "terminal tool spin", variableId: "tool_roll" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "total_orientation",
+        symbol: "\\mathbf{R}",
+        name: "Total Tool Orientation Matrix",
+        color: "amber",
+        role: "3x3 special orthogonal matrix SO(3) defining tool attitude relative to forearm base",
+        unit: "Dimensionless matrix",
+        dimension: "[1]",
+        explanation:
+          "Relates the local end-effector coordinate system directly to the robot arm forearm.",
+      },
+      {
+        id: "forearm_roll",
+        symbol: "\\mathbf{R}_z(\\theta_1)",
+        name: "Forearm Roll Rotation",
+        color: "emerald",
+        role: "Rotation of intermediate housing 28 about forearm longitudinal axis 22 by angle θ₁",
+        unit: "Radians (rad)",
+        dimension: "[1]",
+        explanation: "Sweeps the oblique intermediate roll axis in a 90° conical surface.",
+      },
+      {
+        id: "oblique_tilt",
+        symbol: "\\mathbf{R}_y(45^\\circ)",
+        name: "45° Oblique Intersecting Joint Angle",
+        color: "amber",
+        role: "Fixed oblique bevel gear intersection angle canted at exactly α = 45°",
+        unit: "Degrees (°)",
+        dimension: "[1]",
+        explanation:
+          "Dual 45° joints add constructively from 0° (collinear) to 90° (perpendicular) pitch bend.",
+      },
+      {
+        id: "intermediate_roll",
+        symbol: "\\mathbf{R}_z(\\theta_2)",
+        name: "Intermediate Link Roll",
+        color: "sapphire",
+        role: "Rotation of intermediate shaft 32 within housing 28 by angle θ₂",
+        unit: "Radians (rad)",
+        dimension: "[1]",
+        explanation:
+          "Controls the effective pitch deflection angle of the tool flange from 0° to 90°.",
+      },
+      {
+        id: "tool_roll",
+        symbol: "\\mathbf{R}_z(\\theta_3)",
+        name: "Terminal Tool Spin",
+        color: "amethyst",
+        role: "Final continuous spin of tool mounting flange 46 about tool axis 44 by angle θ₃",
+        unit: "Radians (rad)",
+        dimension: "[1]",
+        explanation:
+          "Provides full continuous rotation for welding torches, paint guns, or milling heads.",
+      },
+    ],
+    pedagogicalNote:
+      "Because all three roll axes intersect at a single geometric point, the 3-roll wrist provides pure spherical reorientation without unwanted translation of the tool center point.",
+    claimRef: 1,
+    historicalSignificance:
+      "Stackhouse's 3-roll intersecting formulation eliminated bulky exterior motors and became the industry standard on the Cincinnati Milacron T3 robot.",
+  },
+  {
+    id: "stackhouse-jacobian-determinant",
+    patentId: "us-4068536-stackhouse-manipulator",
+    title: "Wrist Jacobian Determinant & Singularity Metric",
+    category: "Kinematic Dexterity",
+    rawLatex:
+      "|\\det(\\mathbf{J})| = \\sin(\\alpha_1) \\sin(\\alpha_2) |\\sin(\\theta_2)| = 0.5 |\\sin(\\theta_2)|",
+    colorizedLatex:
+      "\\textcolor{#059669}{|\\det(\\mathbf{J})|} = \\textcolor{#d97706}{\\sin(\\alpha_1) \\sin(\\alpha_2)} \\textcolor{#2563eb}{|\\sin(\\theta_2)|} = \\textcolor{#9333ea}{0.5 |\\sin(\\theta_2)|}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "wrist Jacobian determinant", variableId: "jacobian_det" },
+      { text: " depends on the " },
+      { text: "product of oblique joint sines", variableId: "oblique_sines" },
+      { text: " and the " },
+      { text: "sine of intermediate roll angle", variableId: "intermediate_sine" },
+      { text: ", reaching maximum dexterity of " },
+      { text: "0.5 at a 90° intermediate bend", variableId: "max_dexterity" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "jacobian_det",
+        symbol: "|\\det(\\mathbf{J})|",
+        name: "Jacobian Determinant Magnitude",
+        color: "emerald",
+        role: "Kinematic dexterity index measuring volume of the velocity ellipsoid",
+        unit: "Dimensionless index",
+        dimension: "[1]",
+        explanation:
+          "Measures proximity to kinematic singularities; vanishes only at θ₂ = 0° or 180°.",
+      },
+      {
+        id: "oblique_sines",
+        symbol: "\\sin(\\alpha_1) \\sin(\\alpha_2)",
+        name: "Oblique Angle Geometric Factor",
+        color: "amber",
+        role: "Product of joint sine factors: $\\sin(45^\\circ) \\cdot \\sin(45^\\circ) = 0.5$",
+        unit: "Ratio",
+        dimension: "[1]",
+        explanation:
+          "Constant geometric scale factor determined by the 45° bevel gear housing angles.",
+      },
+      {
+        id: "intermediate_sine",
+        symbol: "|\\sin(\\theta_2)|",
+        name: "Intermediate Roll Sine Factor",
+        color: "sapphire",
+        role: "Modulation factor determined by the intermediate joint rotation θ₂",
+        unit: "Dimensionless factor",
+        dimension: "[1]",
+        explanation: "Provides smooth, predictable dexterity across the entire working hemisphere.",
+      },
+      {
+        id: "max_dexterity",
+        symbol: "0.5 |\\sin(\\theta_2)|",
+        name: "Maximum Wrist Dexterity Index",
+        color: "amethyst",
+        role: "Peak normalized dexterity value of 0.5 achieved at $\\theta_2 = 90^\\circ$",
+        unit: "Peak index",
+        dimension: "[1]",
+        explanation:
+          "At peak dexterity, the wrist generates maximum angular velocity with minimal motor effort.",
+      },
+    ],
+    pedagogicalNote:
+      "The 3-roll wrist confines singularities strictly to the outer boundary of the workspace, eliminating internal gimbal lock dead zones that plague conventional roll-pitch-yaw wrists.",
+    claimRef: 14,
+    historicalSignificance:
+      "Enabled high-speed continuous path contouring in automotive manufacturing without controller algorithmic stalls.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-4068536-stackhouse-manipulator"] = [
+  {
+    id: "stackhouse-source-bounded-axis-composition",
+    patentId: "us-4068536-stackhouse-manipulator",
+    title: "Selected Intersecting-Axis Display Composition",
+    category: "Source-Bounded Mechanism Geometry",
+    rawLatex:
+      "\\mathbf{R}_{display}=\\mathbf{R}_{z}(q_A)\\,\\mathbf{R}_{y}(\\alpha_{AB})\\,\\mathbf{R}_{z}(q_B)\\,\\mathbf{R}_{y}(-\\alpha_{BC})\\,\\mathbf{R}_{z}(q_C),\\quad \\alpha_{AB},\\alpha_{BC}>45^\\circ",
+    colorizedLatex:
+      "\\textcolor{#059669}{\\mathbf{R}_{display}}=\\textcolor{#0284c7}{\\mathbf{R}_{z}(q_A)}\\,\\textcolor{#d97706}{\\mathbf{R}_{y}(\\alpha_{AB})}\\,\\textcolor{#2563eb}{\\mathbf{R}_{z}(q_B)}\\,\\textcolor{#d97706}{\\mathbf{R}_{y}(-\\alpha_{BC})}\\,\\textcolor{#9333ea}{\\mathbf{R}_{z}(q_C)},\\quad \\textcolor{#d97706}{\\alpha_{AB},\\alpha_{BC}>45^\\circ}",
+    plainEnglishSentence: [
+      { text: "The modern teaching " },
+      { text: "display orientation", variableId: "display_orientation" },
+      { text: " composes the selected rolls about source axes " },
+      { text: "A–A′", variableId: "axis_a" },
+      { text: ", " },
+      { text: "B–B′", variableId: "axis_b" },
+      { text: ", and " },
+      { text: "C–C′", variableId: "axis_c" },
+      { text: " with two selected oblique angles satisfying the printed " },
+      { text: ">45° conditions", variableId: "oblique_condition" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "display_orientation",
+        symbol: "\\mathbf{R}_{display}",
+        name: "Selected Display Orientation",
+        color: "emerald",
+        role: "Drawing-space orientation shared by the connected 2D and 3D exhibits",
+        unit: "Dimensionless display",
+        dimension: "[1]",
+        explanation:
+          "This is a modern serial-rotation teaching construction, not a motor calibration or equation printed in the grant.",
+      },
+      {
+        id: "axis_a",
+        symbol: "\\mathbf{R}_{z}(q_A)",
+        name: "Forearm-Axis Roll",
+        color: "cyan",
+        role: "Selected rotation about the source's forearm axis A–A′",
+        unit: "Selected degrees",
+        dimension: "[1]",
+        explanation:
+          "Outer forearm shaft 15 rotates housing 14 about A–A′. No speed or motor-to-joint ratio is inferred.",
+      },
+      {
+        id: "axis_b",
+        symbol: "\\mathbf{R}_{z}(q_B)",
+        name: "Housing-Shaft Roll",
+        color: "sapphire",
+        role: "Selected rotation about oblique axis B–B′",
+        unit: "Selected degrees",
+        dimension: "[1]",
+        explanation:
+          "Shaft 16 and bevel gears 17/18 rotate housing shaft 14a about B–B′ in the preferred embodiment.",
+      },
+      {
+        id: "axis_c",
+        symbol: "\\mathbf{R}_{z}(q_C)",
+        name: "Terminal-Shaft Roll",
+        color: "amethyst",
+        role: "Selected rotation of terminal shaft 26 about C–C′",
+        unit: "Selected degrees",
+        dimension: "[1]",
+        explanation:
+          "Shafts 19/20, shaft 23, and bevel gears 21/22 and 24/25 carry the third input to terminal shaft 26.",
+      },
+      {
+        id: "oblique_condition",
+        symbol: "\\alpha_{AB},\\alpha_{BC}>45^\\circ",
+        name: "Printed Oblique-Angle Conditions",
+        color: "amber",
+        role: "The only quantitative geometry stated for the illustrated oblique axes",
+        unit: "Inequalities",
+        dimension: "[1]",
+        explanation:
+          "The patent says both fixed angles are greater than 45 degrees. It does not print exact values, so the exhibit lets readers choose source-consistent display angles and labels them as selections.",
+      },
+    ],
+    pedagogicalNote:
+      "The composition makes the serial topology legible while refusing undisclosed dimensions, gear ratios, hydraulic dynamics, loads, power, precision, Jacobian, and singularity performance. Exact intersection at P is the preferred embodiment; the source also allows small deviations and warns that they create small orientation holes.",
+    historicalSignificance:
+      "The grant documents a compact remotely driven industrial-robot wrist built from nested shafts, bevel gears, a preferred common orientation point.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-4512709-milacron-robot-toolchanger"] = [
+  {
+    id: "milacron-admission-and-capture-state",
+    patentId: "us-4512709-milacron-robot-toolchanger",
+    title: "Admission, Registration, and Claim 4 Capture State",
+    category: "Source-Bounded Toolchanger Topology",
+    rawLatex:
+      "\\mathrm{captured}=\\mathrm{basePresent}\\land\\mathrm{registered}\\land\\mathrm{slideLocked}\\land\\mathrm{TMember}",
+    colorizedLatex:
+      "\\textcolor{#2563eb}{\\mathrm{captured}}=\\textcolor{#059669}{\\mathrm{basePresent}}\\land\\textcolor{#d97706}{\\mathrm{registered}}\\land\\textcolor{#9333ea}{\\mathrm{slideLocked}}\\land\\textcolor{#dc2626}{\\mathrm{TMember}}",
+    plainEnglishSentence: [
+      { text: "The exhibit marks the tool as " },
+      { text: "captured", variableId: "captured" },
+      { text: " only after a " },
+      { text: "tool base is present", variableId: "base_present" },
+      { text: ", its bushings are " },
+      { text: "registered on the locating pair", variableId: "registered" },
+      { text: ", the " },
+      { text: "locking slide is shifted", variableId: "slide_locked" },
+      { text: ", and the Claim 4 " },
+      { text: "T-member form is selected", variableId: "t_member" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "captured",
+        symbol: "\\mathrm{captured}",
+        name: "Claim 4 Capture State",
+        color: "sapphire",
+        role: "Boolean source-topology state for the selected T-member/ramp form",
+        unit: "true / false",
+        dimension: "[1]",
+        explanation:
+          "This is an authored teaching predicate, not a holding-force, reliability, or performance value.",
+        telemetryMetricLabel: "Engagement State",
+      },
+      {
+        id: "base_present",
+        symbol: "\\mathrm{basePresent}",
+        name: "Common Tool Base Present",
+        color: "emerald",
+        role: "Whether a source-described common base is at the adapter",
+        unit: "true / false",
+        dimension: "[1]",
+        explanation:
+          "The source identifies a common base across tools but does not quantify its mass, dimensions, or approach speed.",
+      },
+      {
+        id: "registered",
+        symbol: "\\mathrm{registered}",
+        name: "Pin-and-Bushing Registration",
+        color: "amber",
+        role: "Base seated on the cylindrical and diamond-profile locating pair",
+        unit: "true / false",
+        dimension: "[1]",
+        explanation:
+          "The grant states accurate registration before clamping but does not provide a dimensional tolerance or repeatability figure.",
+      },
+      {
+        id: "slide_locked",
+        symbol: "\\mathrm{slideLocked}",
+        name: "Offset Locking Slide",
+        color: "amethyst",
+        role: "Aperture shifted away from the central opening in the capture configuration",
+        unit: "true / false",
+        dimension: "[1]",
+        explanation:
+          "The normalised slider represents alignment versus capture only; it is not a source-provided actuator stroke.",
+      },
+      {
+        id: "t_member",
+        symbol: "\\mathrm{TMember}",
+        name: "Claim 4 T-Member Form",
+        color: "crimson",
+        role: "The source's T-shaped crossbar/stem and bifurcated slide-ramp arrangement",
+        unit: "true / false",
+        dimension: "[1]",
+        explanation:
+          "This activates the dependent-claim geometry only; neither ramp angle nor friction is printed or calculated.",
+      },
+    ],
+    pedagogicalNote:
+      "The relation is a source-bound state predicate. US 4,512,709 supplies no pressure, bore, ramp angle, friction, actuator stroke, force, load, or timing input from which a wedge-force equation could honestly be evaluated.",
+    historicalSignificance:
+      "The grant makes a durable industrial interface legible: locate a common base first, then capture its retention member through a controlled release path.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-4575330-hull-stereolithography"] = [
+  {
+    id: "hull-beer-lambert-cure-depth",
+    patentId: "us-4575330-hull-stereolithography",
+    title: "Beer-Lambert Photopolymerization Curing Depth Law",
+    category: "Photopolymer Reaction Kinetics & Depth Control",
+    rawLatex: "C_d = D_p \\ln\\left( \\frac{E_{\\text{max}}}{E_c} \\right)",
+    colorizedLatex:
+      "\\textcolor{#2563eb}{C_d} = \\textcolor{#059669}{D_p} \\ln\\left( \\frac{\\textcolor{#d97706}{E_{\\text{max}}}}{\\textcolor{#9333ea}{E_c}} \\right)",
+    plainEnglishSentence: [
+      { text: "The cross-linked " },
+      { text: "cure depth", variableId: "cure_depth" },
+      { text: " equals the resin " },
+      { text: "optical penetration depth", variableId: "penetration_depth" },
+      { text: " multiplied by the natural logarithm of " },
+      { text: "peak laser exposure", variableId: "peak_exposure" },
+      { text: " divided by the " },
+      { text: "critical gelation threshold", variableId: "critical_exposure" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "cure_depth",
+        symbol: "C_d",
+        name: "Polymerization Curing Depth",
+        color: "sapphire",
+        role: "Total depth of solid gelled polymer formed beneath the liquid surface",
+        unit: "micrometres (µm)",
+        dimension: "[L]",
+        explanation:
+          "Cure depth must exceed the sliced elevator layer step Δz (typically by 20–40%) to ensure rigid cross-linked chemical adhesion between adjacent laminar layers.",
+        telemetryMetricLabel: "Curing Depth C_d",
+      },
+      {
+        id: "penetration_depth",
+        symbol: "D_p",
+        name: "Optical Penetration Depth",
+        color: "emerald",
+        role: "Depth at which UV radiant intensity attenuates to 1/e (36.8%) of surface value",
+        unit: "micrometres (µm)",
+        dimension: "[L]",
+        explanation:
+          "Governed by the concentration and molar extinction coefficient of UV photoinitiators and absorbers formulated into the liquid resin.",
+      },
+      {
+        id: "peak_exposure",
+        symbol: "E_{\\text{max}}",
+        name: "Peak Centerline Radiant Exposure",
+        color: "amber",
+        role: "Maximum actinic UV energy delivered per unit area along the laser beam scan axis",
+        unit: "millijoules per cm² (mJ/cm²)",
+        dimension: "[M T⁻²]",
+        explanation:
+          "Determined by laser power, galvanometer scan velocity, and Gaussian optical spot radius.",
+        telemetryMetricLabel: "Peak Centerline Exposure E_max",
+      },
+      {
+        id: "critical_exposure",
+        symbol: "E_c",
+        name: "Critical Exposure Threshold",
+        color: "amethyst",
+        role: "Minimum radiant energy required to reach the resin gel point",
+        unit: "millijoules per cm² (mJ/cm²)",
+        dimension: "[M T⁻²]",
+        explanation:
+          "Below this exposure threshold, monomer radical recombination inhibits chain cross-linking and the resin remains completely liquid.",
+      },
+    ],
+    pedagogicalNote:
+      "Hull's mathematical formulation allows 3D printer controllers to dynamically regulate laser scan speed across complex contours to maintain an exact, uniform curing depth.",
+    historicalSignificance:
+      "The Beer-Lambert working curve remains the fundamental governing equation taught in additive manufacturing engineering curricula worldwide.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-4921293-salisbury-robot-hand"] = [
+  {
+    id: "salisbury-figure-3-torque-map",
+    patentId: "us-4921293-salisbury-robot-hand",
+    title: "Figure 3 One-Digit Four-Tension / Three-Torque Map",
+    category: "Source-Bounded Robotic Cable Transmission",
+    rawLatex:
+      "\\begin{aligned}\\tau_1&=-T_1R_1+T_2R_2+T_3R_2-T_4R_1\\\\\\tau_2&=T_1R_3+T_2R_2-T_3R_2-T_4R_3\\\\\\tau_3&=T_2R_2-T_3R_2\\end{aligned}",
+    colorizedLatex:
+      "\\begin{aligned}\\textcolor{#2563eb}{\\tau_1}&=-\\textcolor{#0891b2}{T_1}\\textcolor{#9333ea}{R_1}+\\textcolor{#16a34a}{T_2}\\textcolor{#9333ea}{R_2}+\\textcolor{#e11d48}{T_3}\\textcolor{#9333ea}{R_2}-\\textcolor{#ea580c}{T_4}\\textcolor{#9333ea}{R_1}\\\\\\textcolor{#16a34a}{\\tau_2}&=\\textcolor{#0891b2}{T_1}\\textcolor{#9333ea}{R_3}+\\textcolor{#16a34a}{T_2}\\textcolor{#9333ea}{R_2}-\\textcolor{#e11d48}{T_3}\\textcolor{#9333ea}{R_2}-\\textcolor{#ea580c}{T_4}\\textcolor{#9333ea}{R_3}\\\\\\textcolor{#d97706}{\\tau_3}&=\\textcolor{#16a34a}{T_2}\\textcolor{#9333ea}{R_2}-\\textcolor{#e11d48}{T_3}\\textcolor{#9333ea}{R_2}\\end{aligned}",
+    plainEnglishSentence: [
+      { text: "The three " },
+      { text: "joint torques", variableId: "torque_1" },
+      { text: " are the signed sums of " },
+      { text: "one digit's four measured cable tensions", variableId: "tension_1" },
+      { text: " multiplied by the " },
+      { text: "selected pulley radii", variableId: "radii" },
+      { text: " in the Figure 3 route." },
+    ],
+    variables: [
+      {
+        id: "torque_1",
+        symbol: "\\tau_1",
+        name: "Axis 1 Source Torque",
+        color: "sapphire",
+        role: "Signed moment about the first joint axis for the Figure 3 cable route",
+        unit: "Newton-metres (N·m)",
+        dimension: "[M L² T⁻²]",
+        explanation:
+          "T₂ and T₃ contribute with one sign, while T₁ and T₄ contribute through R₁ with the opposite sign.",
+        telemetryMetricLabel: "Axis 1 source torque",
+      },
+      {
+        id: "torque_2",
+        symbol: "\\tau_2",
+        name: "Axis 2 Source Torque",
+        color: "emerald",
+        role: "Signed moment about the second joint axis for the Figure 3 cable route",
+        unit: "Newton-metres (N·m)",
+        dimension: "[M L² T⁻²]",
+        explanation:
+          "The second equation combines T₁ and T₄ through R₃ with the opposed T₂ and T₃ terms through R₂.",
+        telemetryMetricLabel: "Axis 2 source torque",
+      },
+      {
+        id: "torque_3",
+        symbol: "\\tau_3",
+        name: "Axis 3 Source Torque",
+        color: "amber",
+        role: "Signed moment about the third joint axis for the Figure 3 cable route",
+        unit: "Newton-metres (N·m)",
+        dimension: "[M L² T⁻²]",
+        explanation:
+          "Only the opposed T₂ and T₃ terms appear in the third equation printed by the grant.",
+        telemetryMetricLabel: "Axis 3 source torque",
+      },
+      {
+        id: "tension_1",
+        symbol: "T_1",
+        name: "Cable-End Tension T₁",
+        color: "cyan",
+        role: "Visitor-declared tension in the first labelled cable end",
+        unit: "Newtons (N)",
+        dimension: "[M L T⁻²]",
+        explanation:
+          "T₁ appears in the first and second source equations; the patent prints no historical operating value.",
+        telemetryKey: "tensionT1N",
+      },
+      {
+        id: "tension_2",
+        symbol: "T_2",
+        name: "Cable-End Tension T₂",
+        color: "emerald",
+        role: "Visitor-declared tension in the second labelled cable end",
+        unit: "Newtons (N)",
+        dimension: "[M L T⁻²]",
+        explanation:
+          "T₂ contributes to all three printed equations; the patent describes strain-based sensing but gives no calibration range.",
+        telemetryKey: "tensionT2N",
+      },
+      {
+        id: "tension_3",
+        symbol: "T_3",
+        name: "Cable-End Tension T₃",
+        color: "rose",
+        role: "Visitor-declared tension in the third labelled cable end",
+        unit: "Newtons (N)",
+        dimension: "[M L T⁻²]",
+        explanation:
+          "T₃ opposes T₂ in the second and third torque expressions for the illustrated route.",
+        telemetryKey: "tensionT3N",
+      },
+      {
+        id: "tension_4",
+        symbol: "T_4",
+        name: "Cable-End Tension T₄",
+        color: "coral",
+        role: "Visitor-declared tension in the fourth labelled cable end",
+        unit: "Newtons (N)",
+        dimension: "[M L T⁻²]",
+        explanation:
+          "T₄ appears in the first and second source equations with the signs printed in the specification.",
+        telemetryKey: "tensionT4N",
+      },
+      {
+        id: "radii",
+        symbol: "R_1,R_2,R_3",
+        name: "Illustrative Pulley Radii",
+        color: "amethyst",
+        role: "Lever arms selected for the Figure 3 teaching study",
+        unit: "Metres (m)",
+        dimension: "[L]",
+        explanation:
+          "The source shows R₃ larger than R₁ and R₁ larger than R₂ for its exploded illustration, but warns that actual routing may use four different radii. The control declares R₂; the exhibit uses R₁=1.2R₂ and R₃=1.4R₂ only as labelled study ratios.",
+        telemetryKey: "radiusScaleMm",
+      },
+    ],
+    pedagogicalNote:
+      "These are the three equations printed for one digit beside Figure 3, not a generic force-closure or dynamic hand model. The physical hand routes twelve cable ends; the exhibit mirrors this representative four-tension pose across its three connected digit chains. The source does not supply a cable pretension, contact law, motor limit, link inertia, or stability result.",
+    claimRef: 1,
+    historicalSignificance:
+      "The grant makes its preferred cable route unusually inspectable by printing the signed torque contributions directly; it also states that other rigging may use four different radii.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-5121329-crump-fdm"] = [
+  {
+    id: "crump-fdm-volumetric-flow-rate",
+    patentId: "us-5121329-crump-fdm",
+    title: "Volumetric Extrusion Flow Rate & Filament Feed Kinematics",
+    category: "Extrusion Fluid Dynamics & Kinematics",
+    rawLatex: "Q = w \\cdot h \\cdot v_{\\text{head}} = \\frac{\\pi D_{\\text{filament}}^2}{4} v_{\\text{feed}}",
+    colorizedLatex:
+      "\\textcolor{#0891b2}{Q} = \\textcolor{#2563eb}{w} \\cdot \\textcolor{#16a34a}{h} \\cdot \\textcolor{#ea580c}{v_{\\text{head}}} = \\frac{\\pi \\textcolor{#9333ea}{D_{\\text{filament}}^2}}{4} \\textcolor{#d97706}{v_{\\text{feed}}}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "volumetric extrusion flow rate", variableId: "volumetric_flow" },
+      { text: " equals the product of " },
+      { text: "flattened road width", variableId: "road_width" },
+      { text: ", " },
+      { text: "layer height", variableId: "layer_height" },
+      { text: ", and " },
+      { text: "toolpath velocity", variableId: "head_velocity" },
+      { text: ", which must match the " },
+      { text: "filament cross-section", variableId: "filament_diam" },
+      { text: " multiplied by the " },
+      { text: "feed drive speed", variableId: "feed_velocity" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "volumetric_flow",
+        symbol: "Q",
+        name: "Volumetric Flow Rate",
+        color: "cyan",
+        role: "Total rate of molten polymer volume discharged from the nozzle tip",
+        unit: "Cubic millimetres per second (mm³/s)",
+        dimension: "[L³ T⁻¹]",
+        explanation:
+          "Enforces conservation of mass between solid feedstock inflow and extruded road bead deposition.",
+        telemetryMetricLabel: "Volumetric Flow Rate (Q)",
+      },
+      {
+        id: "road_width",
+        symbol: "w",
+        name: "Deposited Road Width",
+        color: "sapphire",
+        role: "Transverse width of the flattened bead pressed onto the substrate",
+        unit: "Millimetres (mm)",
+        dimension: "[L]",
+        explanation:
+          "Determined by nozzle orifice diameter and planar ironing land clearance.",
+        telemetryKey: "roadWidthMm",
+      },
+      {
+        id: "layer_height",
+        symbol: "h",
+        name: "Layer Thickness",
+        color: "emerald",
+        role: "Vertical distance stepped by the Z-axis table between successive slices",
+        unit: "Millimetres (mm)",
+        dimension: "[L]",
+        explanation:
+          "Controls vertical resolution and characteristic cooling time constant.",
+        telemetryKey: "layerHeightMm",
+      },
+      {
+        id: "head_velocity",
+        symbol: "v_{\\text{head}}",
+        name: "Toolhead Print Velocity",
+        color: "coral",
+        role: "Linear speed of the dispensing head across the X-Y plane",
+        unit: "Millimetres per second (mm/s)",
+        dimension: "[L T⁻¹]",
+        explanation:
+          "Directly determines production speed and shear rate within the nozzle capillary.",
+        telemetryKey: "printSpeedMmS",
+      },
+      {
+        id: "filament_diam",
+        symbol: "D_{\\text{filament}}",
+        name: "Feedstock Filament Diameter",
+        color: "amethyst",
+        role: "Calibrated diameter of the incoming solid polymer strand",
+        unit: "Millimetres (mm)",
+        dimension: "[L]",
+        explanation:
+          "Specifies the cross-sectional area of the solid piston driving melt flow.",
+        telemetryKey: "filamentDiameterMm",
+      },
+      {
+        id: "feed_velocity",
+        symbol: "v_{\\text{feed}}",
+        name: "Filament Feed Speed",
+        color: "amber",
+        role: "Linear velocity of solid filament driven into the liquefier by pinch rollers",
+        unit: "Millimetres per second (mm/s)",
+        dimension: "[L T⁻¹]",
+        explanation:
+          "Motorized drive speed synchronized with X-Y toolhead motion.",
+        telemetryMetricLabel: "Filament Feed Speed (v_feed)",
+      },
+    ],
+    pedagogicalNote:
+      "Conservation of mass requires exact synchronization between filament feed motor pulses and Cartesian gantry toolpath speed to maintain uniform road width without under- or over-extrusion.",
+    claimRef: 1,
+    historicalSignificance:
+      "Crump's Claim 1 established the volumetric metering link between motorized filament feed and relative 3-axis motion.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-2717437-mestral-velcro"] = [
+  {
+      id: "mestral-hook-deflection",
+      patentId: "us-2717437-mestral-velcro",
+      title: "Euler-Bernoulli Elastic Micro-Hook Deflection",
+      category: "Polymer Beam Mechanics",
+      rawLatex: "\\delta = \\frac{F L^3}{3 E I} = \\frac{64 F L^3}{3 \\pi E d^4}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\delta} = \\frac{64 \\textcolor{#2563eb}{F} \\textcolor{#d97706}{L^3}}{3 \\pi \\textcolor{#9333ea}{E} \\textcolor{#0d9488}{d^4}}",
+      plainEnglishSentence: [
+        { text: "The elastic " },
+        { text: "hook tip deflection", variableId: "delta" },
+        { text: " scales proportionally with the applied " },
+        { text: "disengagement force", variableId: "disengagement_force" },
+        { text: " and " },
+        { text: "cantilever length cubed", variableId: "hook_length" },
+        { text: ", and inversely with the nylon " },
+        { text: "elastic modulus", variableId: "elastic_modulus" },
+        { text: " and " },
+        { text: "monofilament diameter to the fourth power", variableId: "filament_diameter" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "delta",
+          symbol: "\\delta",
+          name: "Hook Tip Deflection",
+          color: "emerald",
+          role: "Transverse displacement of the hook tip as it flexes open to clear the opposing loop",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Under peel traction, each hook acts as a curved cantilever beam, deflecting elastically until the loop slips free over the hook apex.",
+          telemetryKey: "hookDeflectionMm",
+          telemetryMetricLabel: "Hook Deflection",
+        },
+        {
+          id: "disengagement_force",
+          symbol: "F",
+          name: "Disengagement Force",
+          color: "sapphire",
+          role: "Normal tensile pull force applied to a single hook by an escaping loop",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Typical disengagement release forces range from 0.02 N to 0.08 N per individual micro-hook.",
+          telemetryKey: "singleHookReleaseForceN",
+          telemetryMetricLabel: "Single Hook Force",
+        },
+        {
+          id: "hook_length",
+          symbol: "L",
+          name: "Cantilever Hook Length",
+          color: "amber",
+          role: "Free standing length of the raised pile monofilament from root to hook apex",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Determined by the height of the metallic lancet bar on the velvet loom during weaving.",
+        },
+        {
+          id: "elastic_modulus",
+          symbol: "E",
+          name: "Polyamide Young's Modulus",
+          color: "amethyst",
+          role: "Tensile stiffness of drawn polyamide-6,6 monofilament (~2.8 GPa)",
+          unit: "Pascals (Pa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "Axial drawing of the nylon filament aligns polymer chains, maximizing spring recovery and fatigue endurance.",
+        },
+        {
+          id: "filament_diameter",
+          symbol: "d",
+          name: "Monofilament Diameter",
+          color: "teal",
+          role: "Cross-sectional diameter of the synthetic pile yarn (~0.15–0.30 mm)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Because stiffness scales with d^4, a slight increase in filament diameter creates significantly stiffer, more aggressive hooks.",
+        },
+      ],
+      pedagogicalNote:
+        "De Mestral's hook acts as an elastic spring: it flexes open nondestructively when peeled, then snaps back into its curved profile due to thermal setting memory.",
+      claimRef: 1,
+      historicalSignificance:
+        "Proved that synthetic thermoplastic fibers could replace rigid metal hardware by exploiting elasticity and micro-scale geometry.",
+    },
+    {
+      id: "mestral-peeling-anisotropy",
+      patentId: "us-2717437-mestral-velcro",
+      title: "Fracture Mechanics of Peeling Anisotropy",
+      category: "Adhesion & Fracture Mechanics",
+      rawLatex: "F_{\\text{peel}} = \\frac{w G_c}{1 - \\cos\\theta}",
+      colorizedLatex:
+        "\\textcolor{#059669}{F_{\\text{peel}}} = \\frac{\\textcolor{#2563eb}{w} \\textcolor{#d97706}{G_c}}{1 - \\cos\\textcolor{#9333ea}{\\theta}}",
+      plainEnglishSentence: [
+        { text: "Total steady-state " },
+        { text: "peeling force", variableId: "peel_force" },
+        { text: " is determined by " },
+        { text: "fastener tape width", variableId: "tape_width" },
+        { text: " and " },
+        { text: "critical hook adhesion energy", variableId: "adhesion_energy" },
+        { text: ", modulated by the geometric " },
+        { text: "peeling angle", variableId: "peel_angle" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "peel_force",
+          symbol: "F_{\\text{peel}}",
+          name: "Steady-State Peeling Force",
+          color: "emerald",
+          role: "Total force required to propagate the peeling front along the fastener tape",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Peeling force remains low because only one row of hooks at the peel front experiences load at any instant.",
+          telemetryKey: "totalPeelForceN",
+          telemetryMetricLabel: "Peel Force (1-in Tape)",
+        },
+        {
+          id: "tape_width",
+          symbol: "w",
+          name: "Fastener Tape Width",
+          color: "sapphire",
+          role: "Transverse width of the hook-and-loop strip (typically 25 mm / 1 inch)",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation:
+            "Peel resistance scales linearly with tape width along the 1D peeling front line.",
+        },
+        {
+          id: "adhesion_energy",
+          symbol: "G_c",
+          name: "Critical Hook Fracture Energy",
+          color: "amber",
+          role: "Mechanical energy required to disengage one unit area of engaged hook-loop bonds",
+          unit: "Joules per square meter (J/m^2)",
+          dimension: "[M T^-2]",
+          explanation:
+            "Equals the cumulative bending strain energy of all hooks disengaging across the unit crack advance.",
+        },
+        {
+          id: "peel_angle",
+          symbol: "\\theta",
+          name: "Peeling Angle",
+          color: "amethyst",
+          role: "Angle between the peeled tape strip and the substrate plane (typically 90° or 180°)",
+          unit: "Degrees (°)",
+          dimension: "[1]",
+          explanation:
+            "As theta increases towards 180° (T-peel), the denominator (1 - cos theta) approaches 2, minimizing the pull force required to open the fastener.",
+        },
+      ],
+      pedagogicalNote:
+        "The extreme force anisotropy of Velcro (shear resistance / peel resistance > 10) arises because shear loads engage all N hooks in parallel, whereas peeling unzips them sequentially one line at a time.",
+      claimRef: 3,
+      historicalSignificance:
+        "Established the universal biomimetic principle of peeling anisotropy used across modern aerospace, medical, and consumer fasteners.",
+    },
+  ];
+
+ALL_COLORIZED_EQUATIONS["us-2846084-goertz-electronic-master-slave-manipulator"] = [
+  {
+    id: "goertz-synchro-position-error",
+    patentId: "us-2846084-goertz-electronic-master-slave-manipulator",
+    title: "Synchro Position-Error Correspondence",
+    category: "Source-Bounded Bilateral Teleoperation",
+    rawLatex: "E\\propto q_m-q_s",
+    colorizedLatex:
+      "\\textcolor{#f59e0b}{E}\\propto\\textcolor{#06b6d4}{q_m}-\\textcolor{#8b5cf6}{q_s}",
+    plainEnglishSentence: [
+      { text: "The source-described synchro pair makes an " },
+      { text: "error signal", variableId: "position_error" },
+      { text: " from the difference between the normalized master " },
+      { text: "channel position", variableId: "master_position" },
+      { text: " and its corresponding slave " },
+      { text: "channel position", variableId: "slave_position" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "position_error",
+        symbol: "E",
+        name: "Synchro Position-Error Signal",
+        color: "amber",
+        role: "The source’s directional alternating error signal between corresponding positions",
+        unit: "normalized source topology",
+        dimension: "[1]",
+        explanation:
+          "The grant says amplitude is proportional to the difference and phase records the direction of mechanical error. It does not publish a volts-per-degree conversion or loop gain.",
+        telemetryMetricLabel: "Largest Channel Mismatch",
+      },
+      {
+        id: "master_position",
+        symbol: "q_m",
+        name: "Master-Channel Position",
+        color: "cyan",
+        role: "A normalized configuration of one source-described master movement",
+        unit: "normalized channel coordinate",
+        dimension: "[1]",
+        explanation:
+          "The interactive exhibit maps the authored slider to one of the seven named movements. The grant supplies no common coordinate scale or arm geometry in metres.",
+        telemetryKey: "horizontalArmPivot",
+      },
+      {
+        id: "slave_position",
+        symbol: "q_s",
+        name: "Slave-Channel Position",
+        color: "amethyst",
+        role: "The corresponding normalized remote movement that the servo tends to reproduce",
+        unit: "normalized channel coordinate",
+        dimension: "[1]",
+        explanation:
+          "The patent describes corresponding movement, not a measured Cartesian workspace. Remote contact is represented only as an explicitly illustrative normalized mismatch.",
+        telemetryKey: "contactResistance",
+      },
+    ],
+    pedagogicalNote:
+      "This is a source-level proportionality statement, not a fabricated controller equation. The visitor can vary a named master channel and an illustrative contact state, but the document does not justify numerical voltage, gain, speed, force, or bandwidth output.",
+    claimRef: 9,
+    historicalSignificance:
+      "Claim 9 makes position difference the bridge between remote obstruction and a response on both members of a bilateral master–slave system.",
+  },
+  {
+    id: "goertz-reflected-resistance",
+    patentId: "us-2846084-goertz-electronic-master-slave-manipulator",
+    title: "Claim 9 Reflected-Resistance Relationship",
+    category: "Source-Bounded Bilateral Teleoperation",
+    rawLatex: "r_{\\text{display}}\\propto |E|",
+    colorizedLatex:
+      "\\textcolor{#059669}{r_{\\text{display}}}\\propto|\\textcolor{#f59e0b}{E}|",
+    plainEnglishSentence: [
+      { text: "When the remote mechanism meets an illustrative " },
+      { text: "contact resistance state", variableId: "remote_contact" },
+      { text: ", the rising mismatch produces a normalized " },
+      { text: "reflected-resistance display", variableId: "reflected_resistance" },
+      { text: " when Claim 9 force reflection is enabled." },
+    ],
+    variables: [
+      {
+        id: "reflected_resistance",
+        symbol: "r_{\\text{display}}",
+        name: "Reflected-Resistance Display",
+        color: "emerald",
+        role: "Normalized visual indicator of the source-described resistance returning to the master",
+        unit: "normalized display relation",
+        dimension: "[1]",
+        explanation:
+          "It is deliberately not labelled newtons or torque. The historical patent says resistance can appear at the master but does not give a force calibration, impedance, or contact model.",
+        telemetryMetricLabel: "Reflected Resistance",
+      },
+      {
+        id: "remote_contact",
+        symbol: "c",
+        name: "Illustrative Remote Contact State",
+        color: "coral",
+        role: "Visitor-controlled normalized obstruction scenario used to expose the source’s causal chain",
+        unit: "illustrative normalized state",
+        dimension: "[1]",
+        explanation:
+          "This control is an educational scenario selector, not a claim that the patent measures material stiffness or predicts contact force.",
+        telemetryKey: "contactResistance",
+      },
+      {
+        id: "force_reflection",
+        symbol: "\\mathcal{R}_9",
+        name: "Claim 9 Bilateral Reflection Path",
+        color: "sapphire",
+        role: "On/off probe for the issued force-reflection topology",
+        unit: "claim probe",
+        dimension: "[1]",
+        explanation:
+          "Claim 9 directs force on both corresponding movable elements in a manner tending toward correspondence. The control reveals that topology without converting it into a modern haptic performance specification.",
+        telemetryKey: "forceReflectionEnabled",
+      },
+    ],
+    pedagogicalNote:
+      "The equation intentionally uses a display relation rather than a force law. It makes the beaker example legible while preserving the boundary between a historical bilateral-servo claim and an unprovided Newton-for-Newton haptic calibration.",
+    claimRef: 9,
+    historicalSignificance:
+      "The issued language is an early clear statement that remote mechanical resistance can be returned to a human operator through a paired electrical servo arrangement.",
+  },
+  {
+    id: "goertz-tachometer-limiter-path",
+    patentId: "us-2846084-goertz-electronic-master-slave-manipulator",
+    title: "Relative-Speed Feedback and Limited Error Path",
+    category: "Source-Bounded Bilateral Teleoperation",
+    rawLatex:
+      "V_t\\propto\\dot q_m-\\dot q_s,\\qquad E_{\\text{drive}}=\\operatorname{limit}(E-V_t)",
+    colorizedLatex:
+      "\\textcolor{#9333ea}{V_t}\\propto\\dot{\\textcolor{#06b6d4}{q_m}}-\\dot{\\textcolor{#8b5cf6}{q_s}},\\qquad\\textcolor{#f59e0b}{E_{\\text{drive}}}=\\operatorname{limit}(\\textcolor{#f59e0b}{E}-\\textcolor{#9333ea}{V_t})",
+    plainEnglishSentence: [
+      { text: "The source’s tachometer path opposes a " },
+      { text: "relative-speed signal", variableId: "tachometer_signal" },
+      { text: " against the position error, while its " },
+      { text: "signal limiter", variableId: "limiter_path" },
+      { text: " bounds abnormal-condition command amplitude." },
+    ],
+    variables: [
+      {
+        id: "tachometer_signal",
+        symbol: "V_t",
+        name: "Relative-Speed Feedback Signal",
+        color: "amethyst",
+        role: "Source-described tachometer bridge output responsive to a difference in motor speeds",
+        unit: "topology state",
+        dimension: "[1]",
+        explanation:
+          "The patent says the path opposes the error-signal path to reduce oscillation. It supplies neither a calibrated velocity measurement nor a frequency-response model.",
+        telemetryKey: "tachometerDampingEnabled",
+      },
+      {
+        id: "limiter_path",
+        symbol: "\\operatorname{limit}(\\cdot)",
+        name: "Abnormal-Condition Signal Limiter",
+        color: "amber",
+        role: "Claims 10 and 12’s source-described bounded-error refinement",
+        unit: "claim probe",
+        dimension: "[1]",
+        explanation:
+          "The host kernel clips only a normalized display command. It never asserts an actual motor voltage, safety certification, or operating speed from an unprovided threshold.",
+        telemetryKey: "limiterEnabled",
+      },
+      {
+        id: "drive_error",
+        symbol: "E_{\\text{drive}}",
+        name: "Limited Correction Display",
+        color: "amber",
+        role: "Illustrative source-topology correction path after the damping and limiter probes",
+        unit: "normalized display relation",
+        dimension: "[1]",
+        explanation:
+          "The notation condenses the stated opposing and limiting relationships. It is not a claim that the patent publishes this exact modern algebraic controller form.",
+        telemetryMetricLabel: "Servo State",
+      },
+    ],
+    pedagogicalNote:
+      "Claims 10–12 add real control-architecture ideas—limiting and speed-difference opposition—without providing the numbers needed to simulate a physical motor loop. The live system labels those boundaries rather than creating false dynamics.",
+    claimRef: 12,
+    historicalSignificance:
+      "These dependent claims capture a historically early combination of bilateral position correspondence, bounded abnormal-condition response, and relative-speed damping.",
+  },
+];
+
+
+ALL_COLORIZED_EQUATIONS["us-3212649-amf-versatran"] = [
+  {
+    id: "versatran-resolver-tape-phase-topology",
+    patentId: "us-3212649-amf-versatran",
+    title: "Resolver–Tape Phase Difference",
+    category: "Source-Bounded Feedback Topology",
+    rawLatex: "e_i = \\operatorname{wrap}(\\phi_{T,i} - \\phi_{R,i})",
+    colorizedLatex:
+      "\\textcolor{#059669}{e_i} = \\operatorname{wrap}(\\textcolor{#d97706}{\\phi_{T,i}} - \\textcolor{#2563eb}{\\phi_{R,i}})",
+    plainEnglishSentence: [
+      { text: "The normalized exhibit " },
+      { text: "phase-difference display", variableId: "phase_error" },
+      { text: " is the wrapped difference between the tape " },
+      { text: "command phase", variableId: "tape_phase" },
+      { text: " and resolver " },
+      { text: "feedback phase", variableId: "resolver_phase" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "phase_error",
+        symbol: "e_i",
+        name: "Normalized Phase Difference",
+        color: "emerald",
+        role: "Display-only signed comparison between one tape command and its resolver feedback",
+        unit: "normalized phase",
+        dimension: "[1]",
+        explanation:
+          "Figure 49 says its output is approximately proportional to phase difference. This exhibit value has no claimed voltage calibration, controller gain, or tracking-accuracy interpretation.",
+        telemetryMetricLabel: "Signed Phase Error",
+      },
+      {
+        id: "tape_phase",
+        symbol: "\\phi_{T,i}",
+        name: "Tape Command Phase",
+        color: "amber",
+        role: "Normalized command representation from the recorded tape path",
+        unit: "normalized phase",
+        dimension: "[1]",
+        explanation:
+          "The grant records resolver-related signals on tape channels and uses them during playback. It does not publish a phase-to-position or tape-speed calibration.",
+        telemetryMetricLabel: "Tape Command Phase",
+      },
+      {
+        id: "resolver_phase",
+        symbol: "\\phi_{R,i}",
+        name: "Resolver Feedback Phase",
+        color: "sapphire",
+        role: "Normalized representation of the source-described resolver signal",
+        unit: "normalized phase",
+        dimension: "[1]",
+        explanation:
+          "Resolvers are described as variable transformers with rotor and stator. The source establishes a comparison path, not a measurement scale in volts, degrees, or metres.",
+        telemetryMetricLabel: "Resolver Feedback Phase",
+      },
+    ],
+    pedagogicalNote:
+      "This is a normalized exhibit notation for the Figure 49 phase comparison, not a claim that US 3,212,649 prints a modern closed-loop transfer function or the numbers needed for an SI dynamics model.",
+    claimRef: 8,
+    historicalSignificance:
+      "Claims 8 and 9 couple sensing, recording, and repetitive playback to the stated hydraulic machine; the source face makes the feedback relationship inspectable without inflating it into an unprinted performance claim.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-3081379-lemelson-machine-vision"] = [
+  {
+    id: "lemelson-vidicon-line-scan-dimension",
+    patentId: "us-3081379-lemelson-machine-vision",
+    title: "Television Raster Scan & Dimensional Pulse Slicing",
+    category: "Optical Electronics & Signal Processing",
+    rawLatex:
+      "L_{\\text{meas}} = v_{\\text{scan}} \\cdot \\tau_{\\text{pulse}} = \\frac{W_{\\text{target}}}{T_{\\text{active}}} \\cdot \\tau_{\\text{pulse}}",
+    colorizedLatex:
+      "\\textcolor{#059669}{L_{\\text{meas}}} = \\textcolor{#2563eb}{v_{\\text{scan}}} \\cdot \\textcolor{#d97706}{\\tau_{\\text{pulse}}} = \\frac{\\textcolor{#0891b2}{W_{\\text{target}}}}{\\textcolor{#9333ea}{T_{\\text{active}}}} \\cdot \\textcolor{#d97706}{\\tau_{\\text{pulse}}}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "measured physical dimension", variableId: "meas_dim" },
+      { text: " equals the " },
+      { text: "optical beam scanning velocity", variableId: "scan_vel" },
+      { text: " multiplied by the " },
+      { text: "detected video pulse width duration", variableId: "pulse_width" },
+      { text: ", where scan velocity is the ratio of " },
+      { text: "target image field width", variableId: "field_width" },
+      { text: " to " },
+      { text: "active horizontal sweep time", variableId: "active_sweep" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "meas_dim",
+        symbol: "L_{\\text{meas}}",
+        name: "Measured Physical Dimension",
+        color: "emerald",
+        role: "Calculated geometric width of the inspected manufactured article",
+        unit: "metres (m)",
+        dimension: "[L]",
+        explanation:
+          "The linear size of the workpiece derived electronically by counting clock cycles or integrating video voltage during beam transit across the part.",
+        telemetryKey: "measuredPartWidthMm",
+        telemetryMetricLabel: "Measured Width",
+      },
+      {
+        id: "scan_vel",
+        symbol: "v_{\\text{scan}}",
+        name: "Beam Scanning Velocity",
+        color: "sapphire",
+        role: "Linear speed of the electron beam spot traversing the optical image plane",
+        unit: "metres per second (m/s)",
+        dimension: "[L T^-1]",
+        explanation:
+          "The speed at which the deflected cathode ray sweeps across the target area, determined by horizontal deflection frequency.",
+        telemetryKey: "scanBeamVelocityMPerS",
+        telemetryMetricLabel: "Beam Scan Velocity",
+      },
+      {
+        id: "pulse_width",
+        symbol: "\\tau_{\\text{pulse}}",
+        name: "Video Pulse Duration",
+        color: "amber",
+        role: "Time duration during which the sliced video signal exceeds comparator threshold",
+        unit: "seconds (s)",
+        dimension: "[T]",
+        explanation:
+          "The temporal width of the electrical pulse generated as the electron beam traverses the reflective or dark boundary of the article.",
+        telemetryKey: "pulseWidthUs",
+        telemetryMetricLabel: "Detected Pulse Width",
+      },
+      {
+        id: "field_width",
+        symbol: "W_{\\text{target}}",
+        name: "Target Field Width",
+        color: "cyan",
+        role: "Total horizontal physical width of the camera optical field of view",
+        unit: "metres (m)",
+        dimension: "[L]",
+        explanation:
+          "The physical distance across the conveyor belt covered by the camera objective lens.",
+      },
+      {
+        id: "active_sweep",
+        symbol: "T_{\\text{active}}",
+        name: "Active Sweep Time",
+        color: "amethyst",
+        role: "Active forward scan duration excluding horizontal retrace blanking",
+        unit: "seconds (s)",
+        dimension: "[T]",
+        explanation:
+          "The forward sweep duration of one horizontal raster line (~53.3 microseconds in NTSC standard).",
+      },
+    ],
+    pedagogicalNote:
+      "Lemelson's breakthrough was converting spatial dimensions on a factory conveyor into temporal durations in a video waveform, allowing microsecond electronic circuits to perform precision metrology.",
+    claimRef: 1,
+    historicalSignificance:
+      "Claim 1 defines the synchronization between electron beam sweeping, gating circuits, and waveform analyzing circuits.",
+  },
+  {
+    id: "lemelson-solenoid-rejection-force",
+    patentId: "us-3081379-lemelson-machine-vision",
+    title: "Electromagnetic Defect Ejection Solenoid Force",
+    category: "Electromagnetics & Actuator Dynamics",
+    rawLatex:
+      "F_{\\text{mag}} = \\frac{(N \\cdot I)^2 \\mu_0 A_p}{2 g^2}",
+    colorizedLatex:
+      "\\textcolor{#059669}{F_{\\text{mag}}} = \\frac{(\\textcolor{#2563eb}{N} \\cdot \\textcolor{#d97706}{I})^2 \\textcolor{#0891b2}{\\mu_0} \\textcolor{#9333ea}{A_p}}{2 \\textcolor{#dc2626}{g^2}}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "electromagnetic actuation force", variableId: "mag_force" },
+      { text: " driving the rejection diverter gate scales with " },
+      { text: "coil turn count squared", variableId: "coil_turns" },
+      { text: ", " },
+      { text: "excitation current squared", variableId: "coil_current" },
+      { text: ", " },
+      { text: "magnetic permeability of free space", variableId: "permeability" },
+      { text: ", " },
+      { text: "pole piece surface area", variableId: "pole_area" },
+      { text: ", and the inverse square of the " },
+      { text: "air gap distance", variableId: "air_gap" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "mag_force",
+        symbol: "F_{\\text{mag}}",
+        name: "Magnetic Solenoid Actuation Force",
+        color: "emerald",
+        role: "Tractive force accelerating the diverter gate across the conveyor",
+        unit: "Newtons (N)",
+        dimension: "[M L T^-2]",
+        explanation:
+          "The mechanical force developed in the solenoid plunger to deflect defective parts into a rejection bin within milliseconds.",
+        telemetryKey: "solenoidForceN",
+        telemetryMetricLabel: "Reject Solenoid Force",
+      },
+      {
+        id: "coil_turns",
+        symbol: "N",
+        name: "Solenoid Coil Turns",
+        color: "sapphire",
+        role: "Number of wire turns wound on the actuator bobbin",
+        unit: "dimensionless count",
+        dimension: "[1]",
+        explanation: "The total number of electromagnetic coil turns producing magnetomotive force.",
+      },
+      {
+        id: "coil_current",
+        symbol: "I",
+        name: "Excitation Current",
+        color: "amber",
+        role: "Electrical drive current through the solenoid winding",
+        unit: "Amperes (A)",
+        dimension: "[I]",
+        explanation: "Current switched on by the defect trigger relay or thyratron tube.",
+      },
+      {
+        id: "permeability",
+        symbol: "\\mu_0",
+        name: "Permeability of Free Space",
+        color: "cyan",
+        role: "Fundamental physical magnetic constant",
+        unit: "Henries per metre (H/m)",
+        dimension: "[M L T^-2 I^-2]",
+        explanation: "Standard physical constant 4*pi*1e-7 H/m.",
+      },
+      {
+        id: "pole_area",
+        symbol: "A_p",
+        name: "Plunger Pole Cross-Sectional Area",
+        color: "amethyst",
+        role: "Magnetic flux interface area of the plunger core",
+        unit: "square metres (m^2)",
+        dimension: "[L^2]",
+        explanation: "The working face area where magnetic flux crosses the armature gap.",
+      },
+      {
+        id: "air_gap",
+        symbol: "g",
+        name: "Armature Air Gap",
+        color: "rose",
+        role: "Stroke distance between plunger and stationary core",
+        unit: "metres (m)",
+        dimension: "[L]",
+        explanation: "The initial mechanical gap traversed by the plunger when energized.",
+      },
+    ],
+    pedagogicalNote:
+      "Rapid defect rejection requires high peak tractive forces to overcome mechanical gate inertia before the moving conveyor carries the part past the diverter station.",
+    claimRef: 1,
+    historicalSignificance:
+      "Lemelson described automated sorting gates actuated by video analysis signals to eliminate human sorting labor.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-3260375-lemelson-adjustable-manipulator"] = [
+  {
+    id: "lemelson-manipulator-serial-kinematics",
+    patentId: "us-3260375-lemelson-adjustable-manipulator",
+    title: "Normalized Kinematic Topology & Display Pose",
+    category: "Source-Bounded Manipulator Topology",
+    rawLatex: "\\mathbf{p}_{\\text{tool}} = \\mathbf{p}_{\\text{carriage}} + \\mathbf{R}_z(\\theta) \\left[ \\mathbf{d}_{\\text{column}} + \\mathbf{R}_y(\\alpha) \\mathbf{l}_{\\text{arm}} \\right]",
+    colorizedLatex:
+      "\\textcolor{#059669}{\\mathbf{p}_{\\text{tool}}} = \\textcolor{#2563eb}{\\mathbf{p}_{\\text{carriage}}} + \\textcolor{#d97706}{\\mathbf{R}_z(\\theta)} \\left[ \\textcolor{#0891b2}{\\mathbf{d}_{\\text{column}}} + \\textcolor{#dc2626}{\\mathbf{R}_y(\\alpha)} \\textcolor{#7c3aed}{\\mathbf{l}_{\\text{arm}}} \\right]",
+    plainEnglishSentence: [
+      { text: "The normalized " },
+      { text: "tool-end display pose", variableId: "tool_pos" },
+      { text: " equals the " },
+      { text: "carriage display coordinate", variableId: "carriage_pos" },
+      { text: " plus the column azimuth rotation of the sum of " },
+      { text: "column display coordinate", variableId: "col_disp" },
+      { text: " and the pitch-rotated " },
+      { text: "illustrative arm vector", variableId: "arm_vec" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "tool_pos",
+        symbol: "\\mathbf{p}_{\\text{tool}}",
+        name: "Tool-End Display Coordinates",
+        color: "emerald",
+        role: "Normalized procedural display coordinate of the illustrated end member",
+        unit: "normalized display coordinate",
+        dimension: "[1]",
+        explanation: "A procedural display point showing how the selected controls change the illustrated pose; it is not a measured factory coordinate.",
+      },
+      {
+        id: "carriage_pos",
+        symbol: "\\mathbf{p}_{\\text{carriage}}",
+        name: "Carriage Display Coordinate",
+        color: "sapphire",
+        role: "Normalized position along the illustrated track relationship",
+        unit: "normalized travel",
+        dimension: "[1]",
+        explanation: "A source-bounded display control for the carriage relationship; the grant provides no track length or metre scale.",
+      },
+      {
+        id: "col_disp",
+        symbol: "\\mathbf{d}_{\\text{column}}",
+        name: "Column Display Coordinate",
+        color: "cyan",
+        role: "Normalized vertical-member position in the illustrated arrangement",
+        unit: "normalized stroke",
+        dimension: "[1]",
+        explanation: "A source-bounded display coordinate; the grant describes chain or belt motion but provides no travel length.",
+      },
+      {
+        id: "arm_vec",
+        symbol: "\\mathbf{l}_{\\text{arm}}",
+        name: "Illustrative Arm Vector",
+        color: "amethyst",
+        role: "Procedural visual link joining the displayed pivot and end member",
+        unit: "normalized display length",
+        dimension: "[1]",
+        explanation: "The model uses an illustrative length only to make the documented joint topology visible; no arm dimension is inferred from the grant.",
+      },
+    ],
+    pedagogicalNote:
+      "This normalized expression makes the pictured guide, vertical member, rotary relation, and pivot relation legible together. It is not a dimensional kinematic calibration or a statement of degrees of freedom beyond the claimed combinations.",
+    claimRef: 1,
+    historicalSignificance:
+      "Claim 1 links a guided carriage, rotational coupling, power means, and selected limit-switch/actuator relationships in one combination.",
+  },
+  {
+    id: "lemelson-limit-switch-trip-condition",
+    patentId: "us-3260375-lemelson-adjustable-manipulator",
+    title: "Limit-Switch Actuation & Relay Handoff Condition",
+    category: "Electromechanical Automation & Relay Logic",
+    rawLatex: "\\text{Trip}(\\theta) = \\mathbb{I}\\left( |\\theta - \\theta_{\\text{stop}}| < \\epsilon \\right) \\implies S_{\\text{motor}} = \\text{STOP} \\wedge F_{\\text{next}} = \\text{PULSE}",
+    colorizedLatex:
+      "\\textcolor{#059669}{\\text{Trip}(\\theta)} = \\mathbb{I}\\left( |\\textcolor{#2563eb}{\\theta} - \\textcolor{#d97706}{\\theta_{\\text{stop}}}| < \\textcolor{#0891b2}{\\epsilon} \\right) \\implies \\textcolor{#dc2626}{S_{\\text{motor}}} = \\text{STOP} \\wedge \\textcolor{#7c3aed}{F_{\\text{next}}} = \\text{PULSE}",
+    plainEnglishSentence: [
+      { text: "When normalized joint " },
+      { text: "display position", variableId: "joint_angle" },
+      { text: " contacts the " },
+      { text: "adjustable limit stop", variableId: "stop_angle" },
+      { text: " within the exhibit's normalized event band " },
+      { text: "epsilon", variableId: "switch_eps" },
+      { text: ", the exhibit treats the limit switch as actuated and shows the active control as " },
+      { text: "stop", variableId: "motor_stop" },
+      { text: " and the next selected control as " },
+      { text: "available", variableId: "next_start" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "joint_angle",
+        symbol: "\\theta",
+        name: "Normalized Joint Coordinate",
+        color: "sapphire",
+        role: "Normalized coordinate selected in the source-bounded display",
+        unit: "normalized angle",
+        dimension: "[1]",
+        explanation: "A display coordinate for a rotary or other relatively moving member; the source does not furnish a calibrated angular scale.",
+      },
+      {
+        id: "stop_angle",
+        symbol: "\\theta_{\\text{stop}}",
+        name: "Normalized Stop Setting",
+        color: "amber",
+        role: "Selected display position for a disclosed actuator/limit-switch relationship",
+        unit: "normalized limit position",
+        dimension: "[1]",
+        explanation: "A visual representation of an adjustable actuator position; its adjustment method and scale vary across the described arrangements.",
+      },
+      {
+        id: "switch_eps",
+        symbol: "\\epsilon",
+        name: "Exhibit Event Band",
+        color: "cyan",
+        role: "Deterministic tolerance used only to make a discrete display event visible",
+        unit: "normalized tolerance",
+        dimension: "[1]",
+        explanation: "The historical document describes an actuator arm but does not give its travel, overtravel, hysteresis, or contact tolerance.",
+      },
+      {
+        id: "motor_stop",
+        symbol: "S_{\\text{motor}}",
+        name: "Active Motor Stop Relay",
+        color: "crimson",
+        role: "Displayed stopped-control state",
+        unit: "state",
+        dimension: "[1]",
+        explanation: "A state label representing the patent's described control relationship; no switching time or electrical circuit response is inferred.",
+      },
+      {
+        id: "next_start",
+        symbol: "F_{\\text{next}}",
+        name: "Subsequent Motor Start Pulse",
+        color: "amethyst",
+        role: "Displayed availability of the next selected control relationship",
+        unit: "state",
+        dimension: "[1]",
+        explanation: "A state label used to show the described start/stop sequence without asserting an unprinted relay topology or timing law.",
+      },
+    ],
+    pedagogicalNote:
+      "The Boolean expression is a display abstraction of selected switch-actuator events described in the specification and Claims 8 and 15. It does not model contact dynamics, relay wiring, safety interlocks, or collision avoidance.",
+    claimRef: 15,
+    historicalSignificance:
+      "Claim 15 recites selected-position switching that causes one servo means to stop and another to start in a repetitive conveying cycle.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-3728480-baer-odyssey"] = [
+  {
+    id: "baer-rc-delay-positioning",
+    patentId: "us-3728480-baer-odyssey",
+    title: "Monostable RC Time-Delay Coordinate Positioning",
+    category: "Cathode Ray Timing & Pulse Electronics",
+    rawLatex: "\\tau_H = R_X C_H \\ln\\left(\\frac{V_{cc}}{V_{cc} - V_{\\text{th}}}\\right)",
+    colorizedLatex:
+      "\\textcolor{#059669}{\\tau_H} = \\textcolor{#2563eb}{R_X} \\textcolor{#d97706}{C_H} \\ln\\left(\\frac{\\textcolor{#9333ea}{V_{cc}}}{\\textcolor{#9333ea}{V_{cc}} - \\textcolor{#e11d48}{V_{\\text{th}}}}\\right)",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "horizontal spot delay time", variableId: "delay_time" },
+      { text: " equals the " },
+      { text: "player potentiometer resistance", variableId: "pot_res" },
+      { text: " times the " },
+      { text: "timing capacitance", variableId: "timing_cap" },
+      { text: " scaled by the natural log of " },
+      { text: "supply voltage", variableId: "supply_v" },
+      { text: " over the difference with " },
+      { text: "transistor threshold voltage", variableId: "thresh_v" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "delay_time",
+        symbol: "\\tau_H",
+        name: "Horizontal Line Delay Time",
+        color: "emerald",
+        role: "Pulse delay interval determining horizontal X coordinate on CRT",
+        unit: "microseconds (µs)",
+        dimension: "[T]",
+        explanation:
+          "Variable time interval elapsed from the horizontal sync pulse before triggering the dot pulse shaper, spanning 9 µs to 57 µs across the active line.",
+        telemetryKey: "p1DelayHMicrosec",
+        telemetryMetricLabel: "P1 Horizontal Delay",
+      },
+      {
+        id: "pot_res",
+        symbol: "R_X",
+        name: "Player Potentiometer Resistance",
+        color: "sapphire",
+        role: "Manually adjusted participant control resistance",
+        unit: "ohms (Ω)",
+        dimension: "[M L² T⁻³ I⁻²]",
+        explanation:
+          "Turning the hand-held controller knob varies resistance, dynamically altering the RC charge rate and shifting the dot across the screen.",
+      },
+      {
+        id: "timing_cap",
+        symbol: "C_H",
+        name: "Monostable Timing Capacitor",
+        color: "amber",
+        role: "Fixed timing capacitance in dot generator multivibrator",
+        unit: "farads (F)",
+        dimension: "[M⁻¹ L⁻² T⁴ I²]",
+        explanation:
+          "Standard mica/ceramic capacitor in the monostable base circuit charged through the player potentiometer.",
+      },
+      {
+        id: "supply_v",
+        symbol: "V_{cc}",
+        name: "Collector DC Supply Voltage",
+        color: "amethyst",
+        role: "Master DC bias rail potential",
+        unit: "volts (V)",
+        dimension: "[M L² T⁻³ I⁻¹]",
+        explanation:
+          "Nominal +9V or +12V battery rail powering the discrete bipolar transistor multivibrator stages.",
+      },
+      {
+        id: "thresh_v",
+        symbol: "V_{\\text{th}}",
+        name: "Base-Emitter Turn-On Threshold",
+        color: "rose",
+        role: "Transistor conduction threshold voltage",
+        unit: "volts (V)",
+        dimension: "[M L² T⁻³ I⁻¹]",
+        explanation:
+          "Forward bias potential (~0.7V for silicon) required to switch the pulse-forming transistor into conduction.",
+      },
+    ],
+    pedagogicalNote:
+      "Ralph Baer's breakthrough was realizing that 2D coordinates on a raster-scanned cathode ray tube map 1:1 to microsecond time delays: horizontal position is governed by a 15.75 kHz RC clock and vertical position by a 60 Hz RC clock.",
+    claimRef: 1,
+    historicalSignificance:
+      "Claim 1 covers generating video dots synchronized with television raster scan and manipulating their positions via participant controls.",
+  },
+  {
+    id: "baer-coincidence-gating",
+    patentId: "us-3728480-baer-odyssey",
+    title: "Diode AND-Gate Spot Collision & Hit Coincidence",
+    category: "Digital Logic & Collision Mechanics",
+    rawLatex: "V_{\\text{hit}}(t) = V_{\\text{paddle}}(t) \\cdot V_{\\text{ball}}(t)",
+    colorizedLatex:
+      "\\textcolor{#059669}{V_{\\text{hit}}(t)} = \\textcolor{#2563eb}{V_{\\text{paddle}}(t)} \\cdot \\textcolor{#d97706}{V_{\\text{ball}}(t)}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "coincidence collision voltage pulse", variableId: "v_hit" },
+      { text: " is high only when the " },
+      { text: "paddle video pulse", variableId: "v_paddle" },
+      { text: " and " },
+      { text: "ball video pulse", variableId: "v_ball" },
+      { text: " simultaneously overlap in time and raster scan space." },
+    ],
+    variables: [
+      {
+        id: "v_hit",
+        symbol: "V_{\\text{hit}}(t)",
+        name: "Coincidence Output Pulse Voltage",
+        color: "emerald",
+        role: "Output pulse indicating geometric intersection on CRT",
+        unit: "volts (V)",
+        dimension: "[M L² T⁻³ I⁻¹]",
+        explanation:
+          "A positive voltage pulse produced when the electron beam paints both paddle and ball in the same microsecond raster interval.",
+        telemetryKey: "coincidenceActive",
+        telemetryMetricLabel: "Coincidence Active",
+      },
+      {
+        id: "v_paddle",
+        symbol: "V_{\\text{paddle}}(t)",
+        name: "Paddle Symbol Video Pulse",
+        color: "sapphire",
+        role: "Luminance pulse from player 1 or 2 dot generator",
+        unit: "volts (V)",
+        dimension: "[M L² T⁻³ I⁻¹]",
+        explanation:
+          "Video pulse gated by ANDing the player's horizontal delay pulse and vertical delay pulse.",
+      },
+      {
+        id: "v_ball",
+        symbol: "V_{\\text{ball}}(t)",
+        name: "Ball / Target Video Pulse",
+        color: "amber",
+        role: "Luminance pulse from ball generator or light gun target",
+        unit: "volts (V)",
+        dimension: "[M L² T⁻³ I⁻¹]",
+        explanation:
+          "Video pulse representing the moving ball dot or light gun target spot on the cathode ray phosphor.",
+      },
+    ],
+    pedagogicalNote:
+      "Because the television electron beam scans one pixel at a time, two on-screen objects collide if and only if their video pulses occur at the exact same instant in time. A simple two-diode AND gate performs real-time collision detection with zero computational overhead.",
+    claimRef: 13,
+    historicalSignificance:
+      "Coincidence detection allowed the Magnavox Odyssey to execute dynamic interactive gameplay (tennis rallies, target shooting, wall bounces) entirely with analog and RTL discrete circuitry.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-4063220-metcalfe-ethernet"] = [
+  {
+    id: "metcalfe-wave-propagation",
+    patentId: "us-4063220-metcalfe-ethernet",
+    title: "Coaxial Cable Electromagnetic Wave Propagation & Delay",
+    category: "Electrodynamics & Transmission Lines",
+    rawLatex: "v = \\frac{c}{\\sqrt{\\epsilon_r}}, \\quad \\tau_{\\text{prop}} = \\frac{L}{v}",
+    colorizedLatex:
+      "\\textcolor{#2563eb}{v} = \\frac{\\textcolor{#d97706}{c}}{\\sqrt{\\textcolor{#059669}{\\epsilon_r}}}, \\quad \\textcolor{#dc2626}{\\tau_{\\text{prop}}} = \\frac{\\textcolor{#9333ea}{L}}{\\textcolor{#2563eb}{v}}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "signal propagation velocity", variableId: "v_prop" },
+      { text: " through the coaxial cable depends on the " },
+      { text: "speed of light in vacuum", variableId: "c_light" },
+      { text: " divided by the square root of the dielectric " },
+      { text: "relative permittivity", variableId: "eps_r" },
+      { text: ", producing a total " },
+      { text: "one-way cable propagation delay", variableId: "tau_prop" },
+      { text: " proportional to " },
+      { text: "cable length", variableId: "length_m" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "v_prop",
+        symbol: "v",
+        name: "Electromagnetic Propagation Velocity",
+        color: "sapphire",
+        role: "Wave speed along coaxial transmission line (~0.66c)",
+        unit: "meters/second (m/s)",
+        dimension: "[L T⁻¹]",
+        explanation:
+          "The speed at which electrical signals propagate down the coaxial transmission line, reduced by the dielectric material to approximately 200,000 km/s (5 ns per meter).",
+        telemetryKey: "propVelocityMps",
+        telemetryMetricLabel: "Wave Velocity",
+        valueFormat: {
+          style: "fixed",
+          fractionDigits: 1,
+          scale: 1e-6,
+          suffix: " ×10⁶ m/s",
+        },
+      },
+      {
+        id: "c_light",
+        symbol: "c",
+        name: "Speed of Light in Vacuum",
+        color: "amber",
+        role: "Universal fundamental speed of light",
+        unit: "meters/second (m/s)",
+        dimension: "[L T⁻¹]",
+        explanation: "Physical constant equal to 299,792,458 m/s.",
+      },
+      {
+        id: "eps_r",
+        symbol: "\\epsilon_r",
+        name: "Dielectric Relative Permittivity",
+        color: "emerald",
+        role: "Dielectric constant of polyethylene insulator",
+        unit: "dimensionless",
+        dimension: "[1]",
+        explanation:
+          "Solid or foamed polyethylene dielectric insulation surrounding the central copper conductor (typically 2.25).",
+      },
+      {
+        id: "tau_prop",
+        symbol: "\\tau_{\\text{prop}}",
+        name: "One-Way Propagation Delay",
+        color: "crimson",
+        role: "End-to-end signal flight time across the bus",
+        unit: "nanoseconds (ns)",
+        dimension: "[T]",
+        explanation:
+          "The time required for an electromagnetic wavefront to travel from one end of the cable segment to the opposite transceiver.",
+        telemetryKey: "oneWayPropDelayNs",
+        telemetryMetricLabel: "One-Way Cable Delay",
+        valueFormat: { style: "fixed", fractionDigits: 1, suffix: " ns" },
+      },
+      {
+        id: "length_m",
+        symbol: "L",
+        name: "Coaxial Cable Bus Length",
+        color: "amethyst",
+        role: "Physical end-to-end length of the shared medium",
+        unit: "meters (m)",
+        dimension: "[L]",
+        explanation:
+          "Total physical distance along the shared 50-ohm coaxial cable bus between terminal termination resistors.",
+      },
+    ],
+    pedagogicalNote:
+      "Because electricity does not propagate instantaneously, a station at one end of a 500-meter cable cannot know another station began transmitting until 2.5 microseconds later. This propagation latency creates the vulnerability window in which collisions can occur.",
+    claimRef: 1,
+    historicalSignificance:
+      "Understanding propagation delay led Metcalfe and Boggs to define the slot time as twice the maximum round-trip propagation time, guaranteeing that any collision anywhere on the cable is detected by all transmitting nodes.",
+  },
+  {
+    id: "metcalfe-exponential-backoff",
+    patentId: "us-4063220-metcalfe-ethernet",
+    title: "Truncated Binary Exponential Backoff Retransmission Algorithm",
+    category: "Distributed Algorithms & Network Protocol Dynamics",
+    rawLatex:
+      "T_{\\text{backoff}} = r \\cdot T_{\\text{slot}}, \\quad r \\in \\left[0, 2^{\\min(n, 10)} - 1\\right]",
+    colorizedLatex:
+      "\\textcolor{#059669}{T_{\\text{backoff}}} = \\textcolor{#2563eb}{r} \\cdot \\textcolor{#d97706}{T_{\\text{slot}}}, \\quad \\textcolor{#2563eb}{r} \\in \\left[0, 2^{\\min(\\textcolor{#dc2626}{n}, 10)} - 1\\right]",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "randomized backoff retransmission delay", variableId: "t_backoff" },
+      { text: " equals a pseudo-random integer " },
+      { text: "slot multiplier", variableId: "r_slot" },
+      { text: " multiplied by the " },
+      { text: "contention slot time", variableId: "t_slot" },
+      { text: ", where the random range doubles exponentially with each successive " },
+      { text: "collision count", variableId: "col_count" },
+      { text: " up to 10 attempts." },
+    ],
+    variables: [
+      {
+        id: "t_backoff",
+        symbol: "T_{\\text{backoff}}",
+        name: "Retransmission Backoff Delay",
+        color: "emerald",
+        role: "Calculated waiting interval before next transmission attempt",
+        unit: "microseconds (µs)",
+        dimension: "[T]",
+        explanation:
+          "The duration a station must remain silent before attempting to retransmit a packet that previously suffered a collision.",
+        telemetryKey: "backoffMeanDelayMicrosec",
+        telemetryMetricLabel: "Mean Backoff Delay",
+        valueFormat: { style: "fixed", fractionDigits: 2, suffix: " µs" },
+      },
+      {
+        id: "r_slot",
+        symbol: "r",
+        name: "Random Slot Choice Integer",
+        color: "sapphire",
+        role: "Uniformly distributed pseudo-random integer",
+        unit: "integer",
+        dimension: "[1]",
+        explanation:
+          "A random integer selected uniformly from the range [0, 2^k - 1], generated by comparing an asynchronous fast clock to the transmitter bit clock.",
+      },
+      {
+        id: "t_slot",
+        symbol: "T_{\\text{slot}}",
+        name: "Contention Slot Time",
+        color: "amber",
+        role: "Fundamental time slot quantum (2τ_prop + 2t_turnaround)",
+        unit: "microseconds (µs)",
+        dimension: "[T]",
+        explanation:
+          "The minimum time required to guarantee that all stations on the network detect a collision event (nominal 5.12 µs or 51.2 µs).",
+        telemetryKey: "slotTimeMicrosec",
+        telemetryMetricLabel: "Slot Time",
+        valueFormat: { style: "fixed", fractionDigits: 2, suffix: " µs" },
+      },
+      {
+        id: "col_count",
+        symbol: "n",
+        name: "Repeated Collision Count",
+        color: "crimson",
+        role: "Number of consecutive collisions experienced by the current packet",
+        unit: "count",
+        dimension: "[1]",
+        explanation:
+          "The integer tally of collisions suffered by a packet, stored in the collision counter and capped at 10 for exponential scaling (and 16 for packet discard).",
+      },
+    ],
+    pedagogicalNote:
+      "If two stations pick the same delay after a collision, they will collide again forever. By doubling the delay pool after each collision (1 slot -> 2 -> 4 -> 8 -> ... -> 1024), the probability of repeated collisions rapidly approaches zero, automatically adapting to varying network loads.",
+    claimRef: 12,
+    historicalSignificance:
+      "Binary Exponential Backoff is one of the most celebrated algorithms in computer science history. It enabled decentralized local area networks to achieve over 95% channel throughput under heavy load without needing any central traffic arbiter.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-2318259-sikorsky-helicopter"] = [
+  {
+    id: "sikorsky-anti-torque-equilibrium",
+    patentId: "us-2318259-sikorsky-helicopter",
+    title: "Anti-Torque Tail Rotor Equilibrium & Moment Balance",
+    category: "Rotary-Wing Aerodynamics & Flight Mechanics",
+    rawLatex:
+      "T_{\\text{tail}} \\cdot L_{\\text{boom}} = Q_{\\text{main}} = \\frac{P_{\\text{main}}}{\\Omega_{\\text{main}}}",
+    colorizedLatex:
+      "\\textcolor{#059669}{T_{\\text{tail}}} \\cdot \\textcolor{#2563eb}{L_{\\text{boom}}} = \\textcolor{#dc2626}{Q_{\\text{main}}} = \\frac{\\textcolor{#7c3aed}{P_{\\text{main}}}}{\\textcolor{#d97706}{\\Omega_{\\text{main}}}}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "anti-torque lateral thrust", variableId: "t_tail" },
+      { text: " generated by the tail rotor multiplied by the " },
+      { text: "tail boom moment arm", variableId: "l_boom" },
+      { text: " precisely cancels the " },
+      { text: "main rotor torque reaction", variableId: "q_main" },
+      { text: ", which equals total " },
+      { text: "aerodynamic shaft power", variableId: "p_main" },
+      { text: " divided by " },
+      { text: "rotor angular velocity", variableId: "omega_main" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "t_tail",
+        symbol: "T_{\\text{tail}}",
+        name: "Tail Rotor Anti-Torque Thrust",
+        color: "emerald",
+        role: "Horizontal lateral force generated by auxiliary vertical tail propeller",
+        unit: "newtons (N)",
+        dimension: "[M L T^-2]",
+        explanation:
+          "The lateral aerodynamic force produced by the variable-pitch tail rotor to counteract main rotor reaction torque.",
+        telemetryKey: "tailRotorThrustNewtons",
+        telemetryMetricLabel: "Tail Rotor Thrust",
+        valueFormat: { style: "fixed", fractionDigits: 1, suffix: " N" },
+      },
+      {
+        id: "l_boom",
+        symbol: "L_{\\text{boom}}",
+        name: "Tail Boom Moment Arm",
+        color: "sapphire",
+        role: "Perpendicular distance from main rotor mast to tail rotor hub",
+        unit: "meters (m)",
+        dimension: "[L]",
+        explanation:
+          "The moment arm leverage distance separating the main mast from the auxiliary anti-torque propeller (nominal 4.8 m on VS-300).",
+      },
+      {
+        id: "q_main",
+        symbol: "Q_{\\text{main}}",
+        name: "Main Rotor Aerodynamic Torque Reaction",
+        color: "crimson",
+        role: "Newtonian reactive torque exerted by rotating blades on fuselage",
+        unit: "newton-meters (N·m)",
+        dimension: "[M L^2 T^-2]",
+        explanation:
+          "The rotational resistance opposing main rotor spin that tends to spin the aircraft fuselage in the opposite direction.",
+        telemetryKey: "mainRotorTorqueNm",
+        telemetryMetricLabel: "Main Rotor Torque",
+        valueFormat: { style: "fixed", fractionDigits: 1, suffix: " N·m" },
+      },
+      {
+        id: "p_main",
+        symbol: "P_{\\text{main}}",
+        name: "Main Rotor Aerodynamic Shaft Power",
+        color: "amethyst",
+        role: "Total mechanical engine power delivered to main rotor shaft",
+        unit: "watts (W)",
+        dimension: "[M L^2 T^-3]",
+        explanation:
+          "The sum of induced downwash power and blade profile drag power required to sustain vertical hover.",
+        telemetryKey: "mainRotorPowerWatts",
+        telemetryMetricLabel: "Main Rotor Power",
+        valueFormat: { style: "fixed", fractionDigits: 1, scale: 1e-3, suffix: " kW" },
+      },
+      {
+        id: "omega_main",
+        symbol: "\\Omega_{\\text{main}}",
+        name: "Main Rotor Angular Velocity",
+        color: "amber",
+        role: "Rotational speed of main lifting rotor",
+        unit: "radians per second (rad/s)",
+        dimension: "[T^-1]",
+        explanation:
+          "The rotational rate of the main rotor hub (nominal 260 RPM = 27.2 rad/s).",
+        telemetryKey: "tipSpeedMs",
+        telemetryMetricLabel: "Blade Tip Speed",
+        valueFormat: { style: "fixed", fractionDigits: 1, suffix: " m/s" },
+      },
+    ],
+    pedagogicalNote:
+      "Newton's third law dictates that turning a 28-foot rotor disk against air resistance creates a violent reactive twist on the airframe. Sikorsky's breakthrough was proving that a single small variable-pitch tail propeller on a long tail boom could eliminate this torque while simultaneously providing precise, instantaneous yaw rudder steering.",
+    claimRef: 2,
+    historicalSignificance:
+      "US 2,318,259 established the single-main-rotor plus vertical anti-torque tail rotor configuration as the universal standard for direct-lift helicopters, obsoleting fragile multi-rotor and lateral twin-rotor layouts.",
+  },
+  {
+    id: "sikorsky-rankine-froude-thrust",
+    patentId: "us-2318259-sikorsky-helicopter",
+    title: "Rankine-Froude Momentum & Blade Element Lift Equation",
+    category: "Rotor Disk Aerodynamics & Induced Flow",
+    rawLatex:
+      "T_{\\text{main}} = 2 \\rho A v_i^2 = C_T \\rho A (\\Omega R)^2",
+    colorizedLatex:
+      "\\textcolor{#059669}{T_{\\text{main}}} = 2 \\textcolor{#2563eb}{\\rho} \\textcolor{#7c3aed}{A} \\textcolor{#dc2626}{v_i}^2 = \\textcolor{#d97706}{C_T} \\textcolor{#2563eb}{\\rho} \\textcolor{#7c3aed}{A} (\\textcolor{#0891b2}{\\Omega} \\textcolor{#ea580c}{R})^2",
+    plainEnglishSentence: [
+      { text: "Total " },
+      { text: "main rotor vertical thrust", variableId: "t_main" },
+      { text: " equals twice the " },
+      { text: "air density", variableId: "rho_air" },
+      { text: " multiplied by " },
+      { text: "rotor disk area", variableId: "a_disk" },
+      { text: " and squared " },
+      { text: "induced downwash velocity", variableId: "v_induced" },
+      { text: ", parameterized by " },
+      { text: "thrust coefficient", variableId: "c_t" },
+      { text: " and blade tip speed " },
+      { text: "Ω", variableId: "omega_r" },
+      { text: "·" },
+      { text: "R", variableId: "r_radius" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "t_main",
+        symbol: "T_{\\text{main}}",
+        name: "Main Rotor Total Aerodynamic Thrust",
+        color: "emerald",
+        role: "Net vertical sustaining lift force",
+        unit: "newtons (N)",
+        dimension: "[M L T^-2]",
+        explanation:
+          "The total upward aerodynamic force generated by accelerating air downward through the rotor disk.",
+        telemetryKey: "mainRotorThrustNewtons",
+        telemetryMetricLabel: "Main Rotor Thrust",
+        valueFormat: { style: "fixed", fractionDigits: 1, suffix: " N" },
+      },
+      {
+        id: "rho_air",
+        symbol: "\\rho",
+        name: "Ambient Air Density",
+        color: "sapphire",
+        role: "Atmospheric fluid density at sea level",
+        unit: "kg/m³",
+        dimension: "[M L^-3]",
+        explanation: "Standard atmospheric density (1.225 kg/m³ at sea level).",
+      },
+      {
+        id: "a_disk",
+        symbol: "A",
+        name: "Rotor Disk Swept Area",
+        color: "amethyst",
+        role: "Circular swept area of rotating blades (π·R²)",
+        unit: "square meters (m²)",
+        dimension: "[L^2]",
+        explanation:
+          "The total area swept by the 28-foot diameter rotor disk (57.28 m²).",
+      },
+      {
+        id: "v_induced",
+        symbol: "v_i",
+        name: "Induced Downwash Flow Velocity",
+        color: "crimson",
+        role: "Mean vertical velocity of air driven through rotor disk",
+        unit: "meters per second (m/s)",
+        dimension: "[L T^-1]",
+        explanation:
+          "The downward airflow velocity induced at the rotor plane required to produce momentum thrust.",
+        telemetryKey: "inducedVelocityMs",
+        telemetryMetricLabel: "Downwash Velocity",
+        valueFormat: { style: "fixed", fractionDigits: 2, suffix: " m/s" },
+      },
+      {
+        id: "c_t",
+        symbol: "C_T",
+        name: "Dimensionless Thrust Coefficient",
+        color: "amber",
+        role: "Blade element lift parameter proportional to collective pitch",
+        unit: "dimensionless",
+        dimension: "[1]",
+        explanation:
+          "A dimensionless ratio determined by blade chord, airfoil profile, and collective pitch angle.",
+      },
+      {
+        id: "omega_r",
+        symbol: "\\Omega",
+        name: "Rotor Angular Velocity",
+        color: "cyan",
+        role: "Rotational rate of main rotor",
+        unit: "rad/s",
+        dimension: "[T^-1]",
+        explanation: "Main rotor rotational speed (260 RPM = 27.2 rad/s).",
+      },
+      {
+        id: "r_radius",
+        symbol: "R",
+        name: "Main Rotor Blade Radius",
+        color: "amber",
+        role: "Span length from mast center to blade tip",
+        unit: "meters (m)",
+        dimension: "[L]",
+        explanation: "Radius of the main rotor blades (4.27 m).",
+      },
+    ],
+    pedagogicalNote:
+      "A helicopter hovers by continuously pushing a cylindrical column of air downward. In ground effect (IGE), the proximity of the earth cushions the downwash, reducing induced velocity and requiring less engine power to hover.",
+    claimRef: 1,
+    historicalSignificance:
+      "Sikorsky's mathematical application of momentum theory and swashplate cyclic pitch control allowed the VS-300 to achieve stable, controlled vertical flight where dozens of previous direct-lift designs had failed.",
   },
 ];

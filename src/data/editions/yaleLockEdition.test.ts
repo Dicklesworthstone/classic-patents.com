@@ -102,4 +102,46 @@ describe("US 48,475 Linus Yale Jr. Lock Archival Edition Contract", () => {
     expect(ledger).toContain("LINUS YALE, JR.");
     expect(ledger).toContain("IMPROVEMENT IN LOCKS.");
   });
+
+  test("provides valid provenance classifications for all Yale Lock controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-48475-yale-lock"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("registers explicit energy channel omission reason for Yale Lock", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-48475-yale-lock"]).toBeDefined();
+    expect(energyChannelsFor("us-48475-yale-lock", {})).toEqual([]);
+  });
+
+  test("enforces figure acceptance audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(yaleLockPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+  });
+
+  test("claim constraints accurately describe Claim 1 bolt-holding arrangement", () => {
+    const { CATALOG_CLAIM_CONSTRAINTS } = require("@/physics/claimConstraints");
+    const constraints = CATALOG_CLAIM_CONSTRAINTS["us-48475-yale-lock"];
+    expect(constraints).toBeDefined();
+    expect(constraints.length).toBeGreaterThan(0);
+    expect(constraints[0].claimNumber).toBe(1);
+    expect(constraints[0].claimTitle).toContain("Bolt-Holding Contrivance");
+    expect(constraints[0].activeDescription).toContain("mortise faceplate");
+  });
 });

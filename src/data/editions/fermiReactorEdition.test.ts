@@ -24,6 +24,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
     expect(fermiReactorPatent.originalTextAsset).toBeDefined();
     const validation = validateCuratedSpecificationEdition(
       fermiReactorArchivalEdition as unknown as CuratedSpecificationEdition,
+      { requireCompleteFacsimileReview: false },
     );
     expect(validation.valid).toBe(true);
     expect(validation.errors).toEqual([]);

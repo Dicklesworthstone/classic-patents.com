@@ -1,10 +1,21 @@
 "use client";
 
 import { Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
-import { ROOMBA_FURNITURE, ROOMBA_ROOM, stepRoomba } from "@/physics/roombaKernel";
+import { useEffect, useId, useRef } from "react";
+import {
+  createRoombaTransportUpdater,
+  getRoombaTapeState,
+  initialRoombaState,
+  ROOMBA_ENVIRONMENT_PARTS,
+  ROOMBA_FURNITURE,
+  ROOMBA_ROOM,
+  resetRoombaTapeState,
+} from "@/physics/roombaKernel";
+import { roombaPoseHudPresentation } from "@/physics/roombaWasm";
+import { globalTransportBus, useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -23,9 +34,42 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const wheelSpeed = params.wheelSpeedMps ?? initialWheelSpeed;
   const turnRate = params.turnRateRadSec ?? initialTurnRate;
+  const opticalSensorEnabled = (params.opticalSensorEnabled ?? 1) >= 0.5;
+  const claimStates = { 1: opticalSensorEnabled };
+  const isPlaying = (params.isRunning ?? 1) >= 0.5;
+  const liveControls = useRef({ wheelSpeed, turnRate, isPlaying, opticalSensorEnabled });
+  liveControls.current = { wheelSpeed, turnRate, isPlaying, opticalSensorEnabled };
 
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [cleanedAreaPct, setCleanedAreaPct] = useState<number>(12);
+  useFrankenSimPhysics("us-6594844-roomba", {
+    domain: "solid_mechanics",
+    refusal: {
+      isRefused: !opticalSensorEnabled,
+      reason: !opticalSensorEnabled
+        ? "Claim 1 optical emitter/detector and surface-absence redirect circuit are disabled."
+        : undefined,
+    },
+    machine: {
+      poseXMeters: 0,
+      poseYMeters: 0,
+      headingRad: 0,
+      modeLabel: "spiral",
+      wheelSpeedMps: wheelSpeed,
+    },
+  });
+  useEffect(() => {
+    return globalTransportBus.registerUpdater(
+      "us-6594844-roomba",
+      createRoombaTransportUpdater(() => ({
+        wheelSpeedMps: liveControls.current.wheelSpeed,
+        turnRateRadSec: liveControls.current.turnRate,
+        roomWidth: ROOMBA_ROOM.width,
+        roomHeight: ROOMBA_ROOM.height,
+        opticalSensorEnabled: liveControls.current.opticalSensorEnabled,
+        running: liveControls.current.isPlaying && onscreenRef.current,
+      })),
+      "TS_FALLBACK",
+    );
+  }, [onscreenRef]);
 
   // Path history for breadcrumbs trail
   const trailRef = useRef<Array<{ x: number; y: number }>>([]);
@@ -35,32 +79,27 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    const transport = globalTransportBus.getTransport("us-6594844-roomba");
 
     let animId: number;
-    let state = stepRoomba({
-      wheelSpeedMps: wheelSpeed,
-      turnRateRadSec: turnRate,
-      roomWidth: ROOMBA_ROOM.width,
-      roomHeight: ROOMBA_ROOM.height,
-    });
+    const initialState = initialRoombaState();
+    let lastTrailX = Number.NaN;
+    let lastTrailY = Number.NaN;
 
     const render = () => {
       animId = requestAnimationFrame(render);
       if (!onscreenRef.current) return;
-      if (isPlaying) {
-        state = stepRoomba(
-          {
-            wheelSpeedMps: wheelSpeed,
-            turnRateRadSec: turnRate,
-            roomWidth: ROOMBA_ROOM.width,
-            roomHeight: ROOMBA_ROOM.height,
-          },
-          state,
-          1 / 60,
-        );
-
-        // Add trail point
+      const state = getRoombaTapeState() ?? initialState;
+      if (
+        isPlaying &&
+        (!Number.isFinite(lastTrailX) ||
+          !Number.isFinite(lastTrailY) ||
+          Math.abs(state.x - lastTrailX) > 1e-5 ||
+          Math.abs(state.y - lastTrailY) > 1e-5)
+      ) {
         trailRef.current.push({ x: state.x, y: state.y });
+        lastTrailX = state.x;
+        lastTrailY = state.y;
         if (trailRef.current.length > 500) {
           trailRef.current.shift();
         }
@@ -92,11 +131,13 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
       // Title & Masthead
       ctx.fillStyle = "#38bdf8";
       ctx.font = "bold 13px system-ui, -apple-system, sans-serif";
-      ctx.fillText("IROBOT ROOMBA AUTONOMOUS COVERAGE & ESCAPE SIMULATOR", 20, 26);
+      ctx.fillText("IROBOT ROOMBA SENSOR-DRIVEN PATH & REDIRECT MODEL", 20, 26);
       ctx.font = "11px monospace";
       ctx.fillStyle = "#94a3b8";
+      const owner = roombaPoseHudPresentation(transport.lastFrame.provenance);
+      const chassisSpeed = (state.leftWheelSpeedMps + state.rightWheelSpeedMps) / 2;
       ctx.fillText(
-        `US 6,594,844 • Subsumption Architecture • Mode: ${state.mode.toUpperCase()} • Speed: ${wheelSpeed.toFixed(2)} m/s • Coverage: ~${cleanedAreaPct}%`,
+        `US 6,594,844 • ${owner.value} • Mode: ${state.mode.toUpperCase()} • Chassis: ${chassisSpeed.toFixed(2)} m/s`,
         20,
         42,
       );
@@ -123,7 +164,7 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
       const toScreenX = (rx: number) => aX + aW / 2 + (rx / halfW) * (aW / 2 - 12);
       const toScreenY = (ry: number) => aY + aH / 2 - (ry / halfH) * (aH / 2 - 12);
 
-      // Cleaned Vacuum Trail Ribbon (Light blue swath)
+      // Travel path ribbon (not a claimed coverage percentage).
       if (trailRef.current.length > 1) {
         ctx.strokeStyle = "rgba(56, 189, 248, 0.28)";
         ctx.lineWidth = 18;
@@ -137,23 +178,28 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
         ctx.stroke();
       }
 
-      // Draw Furniture Obstacles
-      for (const obs of ROOMBA_FURNITURE) {
-        const ox = toScreenX(obs.x);
-        const oy = toScreenY(obs.y);
-        const ow = (obs.w / ROOMBA_ROOM.width) * aW;
-        const oh = (obs.h / ROOMBA_ROOM.height) * aH;
+      // Draw the same supported solids used by the 3D room and collision
+      // kernel. Elevated tops/seats remain visually distinct from low legs.
+      for (const part of ROOMBA_ENVIRONMENT_PARTS) {
+        const ox = toScreenX(part.x);
+        const oy = toScreenY(part.y);
+        const ow = (part.w / ROOMBA_ROOM.width) * aW;
+        const oh = (part.h / ROOMBA_ROOM.height) * aH;
 
-        ctx.fillStyle = "#334155";
+        ctx.fillStyle = part.collidesWithRobot ? "#334155" : "rgba(120, 53, 15, 0.5)";
         ctx.fillRect(ox - ow / 2, oy - oh / 2, ow, oh);
-        ctx.strokeStyle = "#f59e0b";
+        ctx.strokeStyle = part.collidesWithRobot ? "#f59e0b" : "#92400e";
         ctx.lineWidth = 1.5;
         ctx.strokeRect(ox - ow / 2, oy - oh / 2, ow, oh);
+      }
 
+      for (const assembly of ROOMBA_FURNITURE) {
+        const ox = toScreenX(assembly.x);
+        const oy = toScreenY(assembly.y);
         ctx.fillStyle = "#fde68a";
         ctx.font = "bold 9px monospace";
         ctx.textAlign = "center";
-        ctx.fillText(obs.label, ox, oy + 3);
+        ctx.fillText(assembly.label, ox, oy + 3);
         ctx.textAlign = "left";
       }
 
@@ -198,10 +244,26 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
       ctx.lineTo(rRadius + 4, 0);
       ctx.stroke();
 
+      // Claim 1 emitter and detector are mounted to the chassis; their two
+      // directed fields meet at one finite region ahead of the sensor pair.
+      const sensorTone = state.opticalSensorEnabled ? "#38bdf8" : "#64748b";
+      ctx.fillStyle = sensorTone;
+      ctx.fillRect(rRadius - 5, -6, 3, 3);
+      ctx.fillStyle = state.opticalSensorEnabled ? "#a78bfa" : "#64748b";
+      ctx.fillRect(rRadius - 5, 3, 3, 3);
+      ctx.strokeStyle = sensorTone;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(rRadius - 2, -4.5);
+      ctx.lineTo(rRadius + 7, 0);
+      ctx.moveTo(rRadius - 2, 4.5);
+      ctx.lineTo(rRadius + 7, 0);
+      ctx.stroke();
+
       ctx.restore();
 
       // ========================================================
-      // 2. SUBSUMPTION BEHAVIOR TELEMETRY (Right Pane: x: 540 to 740, y: 65 to 325)
+      // 2. SHARED KERNEL MOTION TELEMETRY (Right Pane: x: 540 to 740, y: 65 to 325)
       // ========================================================
       const tX = 540;
       const tY = 65;
@@ -218,7 +280,7 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
 
       ctx.fillStyle = "#f8fafc";
       ctx.font = "bold 11px system-ui, sans-serif";
-      ctx.fillText("SUBSUMPTION STATE", tX + 12, tY + 22);
+      ctx.fillText("KERNEL MOTION STATE", tX + 12, tY + 22);
 
       // Mode Indicators
       const modes: Array<{ id: string; label: string; active: boolean; color: string }> = [
@@ -276,25 +338,21 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
 
       ctx.fillStyle = "#94a3b8";
       ctx.font = "10px monospace";
-      ctx.fillText("Active Mode Time:", tX + 12, statY + 68);
-      ctx.fillStyle = "#38bdf8";
+      ctx.fillText("Optical Field Overlap:", tX + 12, statY + 68);
+      ctx.fillStyle = state.opticalSensorEnabled ? "#38bdf8" : "#f87171";
       ctx.font = "bold 10px monospace";
-      ctx.fillText(`${state.timeInMode.toFixed(2)} sec`, tX + 12, statY + 82);
+      ctx.fillText(
+        state.opticalSensorEnabled
+          ? `${(state.surfaceOverlapFraction * 100).toFixed(0)}% • ${state.redirectReason}`
+          : "CLAIM 1 SUBSYSTEM ABSENT",
+        tX + 12,
+        statY + 82,
+      );
     };
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [wheelSpeed, turnRate, isPlaying, cleanedAreaPct, onscreenRef.current]);
-
-  // Increment cleaned area slowly while active
-  useEffect(() => {
-    if (!isPlaying) return;
-    const interval = setInterval(() => {
-      if (!onscreenRef.current) return;
-      setCleanedAreaPct((p) => Math.min(96, p + 1));
-    }, 1200);
-    return () => clearInterval(interval);
-  }, [isPlaying, onscreenRef.current]);
+  }, [isPlaying, onscreenRef]);
 
   return (
     <div
@@ -308,8 +366,8 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
             Robotic Autonomous Vacuum Cleaner (US 6,594,844)
           </h3>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Autonomous mobile robot floor cleaning apparatus: spiral coverage, wall-following bumper
-            detection, and obstacle deflection heuristics.
+            Patented optical cliff/wall response inside a contextual differential-drive cleaning
+            path. The path is not presented as a coverage guarantee.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -328,7 +386,7 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
           <button
             type="button"
             onClick={() => {
-              setIsPlaying(!isPlaying);
+              updateParam("isRunning", isPlaying ? 0 : 1);
               soundEngine.playSwitchClick();
             }}
             aria-label={isPlaying ? "Pause Simulation" : "Play Simulation"}
@@ -345,8 +403,8 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
             type="button"
             onClick={() => {
               resetParams();
+              resetRoombaTapeState();
               trailRef.current = [];
-              setCleanedAreaPct(5);
               soundEngine.playSwitchClick();
             }}
             aria-label="Reset Simulation"
@@ -381,9 +439,9 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
           <input
             id={speedId}
             type="range"
-            min="0.15"
-            max="0.60"
-            step="0.02"
+            min="0.1"
+            max="1.0"
+            step="0.1"
             value={wheelSpeed}
             onChange={(e) => updateParam("wheelSpeedMps", parseFloat(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
@@ -404,9 +462,9 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
           <input
             id={turnId}
             type="range"
-            min="1.0"
-            max="4.0"
-            step="0.2"
+            min="0.5"
+            max="3.0"
+            step="0.5"
             value={turnRate}
             onChange={(e) => updateParam("turnRateRadSec", parseFloat(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
@@ -417,6 +475,12 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
         </div>
       </div>
 
+      <ClaimConstraintToggle
+        patentId="us-6594844-roomba"
+        claimStates={claimStates}
+        onToggleClaim={(_claimNo, active) => updateParam("opticalSensorEnabled", active ? 1 : 0)}
+      />
+
       {/* Action Buttons */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
         <div className="flex items-center gap-2">
@@ -424,20 +488,16 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
             type="button"
             onClick={() => {
               trailRef.current = [];
-              setCleanedAreaPct(5);
               soundEngine.playSwitchClick();
             }}
             className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-parchment-100 dark:bg-ink-900 border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-neutral-800 hover:text-ink-900 dark:hover:text-white transition-all"
           >
-            🧹 Clear Trail Ribbon
+            Clear Path Ribbon
           </button>
         </div>
 
         <span className="text-[11px] font-mono text-ink-500 dark:text-ink-400">
-          Navigation:{" "}
-          <span className="text-indigo-600 dark:text-indigo-400">
-            Brooks Subsumption Architecture
-          </span>
+          One shared fixed-step motion tape • runtime source shown in the instrument masthead
         </span>
       </div>
     </div>

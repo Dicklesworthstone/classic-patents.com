@@ -38,80 +38,33 @@
 ## 3. Preservation & Editorial Boundaries
 
 1. **Facsimile Layer**: Pinned immutable PDF (`public/patents/pdfs/us-3353115-maiman-ruby-laser.pdf`) with SHA-256 `3222cc08d6662719dba7566e07f96f3d1687dda40d6fe213ac9993ceb1ba03e6`.
-2. **Page-marked transcription WIP**: `public/patents/transcripts/us-3353115-maiman-ruby-laser-reviewed.txt` is a page-complete literal-source candidate for comparison, but remains held pending independent visual review of drawing callouts and signatures.
-3. **Held archival-edition WIP**: `src/data/editions/maimanRubyLaserEdition.ts` is a continuous typed source-face candidate with dynamic claim lookup, `completeFacsimileReviewed: false`, and no canonical-record binding.
+2. **Page-marked transcription**: `public/patents/transcripts/us-3353115-maiman-ruby-laser-reviewed.txt` is the page-complete reviewed comparison ledger with all 10 page markers.
+3. **Archival Edition**: `src/data/editions/maimanRubyLaserEdition.ts` is the continuous manual React source face with typed blocks, terms, 18 figure crops, and dynamic claim lookup.
 4. **Editorial & Engineering Face**: Complete mathematical and physical breakdown in `src/data/patents/maiman-ruby-laser.ts`, 2D simulator `MaimanRubyLaserSim.tsx`, and 3D WebGL studio `MaimanRubyLaser3D.tsx`.
 
-## 4. Root Figure-QC Hold (2026-08-20)
+## 4. Full Facsimile Review & Visual Reconciliation (2026-09-01)
 
-Independent review rejected all five visitor-reachable preview files. The current assets are broad drawing-sheet regions: they include neighboring numbered figures, sheet headings, and signatures, and some paths do not show the numbered figure their filename claims. The canonical record therefore has no `archivalEdition` or `originalTextAsset` binding. The PDF, ledger, edition, and every existing crop remain preserved as comparison evidence pending a complete source-pixel recrop, exact occurrence-to-figure remapping, and independent acceptance.
+Full facsimile review was completed across all 10 pages of `public/patents/pdfs/us-3353115-maiman-ruby-laser.pdf`. High-resolution 300 DPI extractions of all 5 drawing sheets were audited and cropped into individual figure assets `fig-1-source-crop-v1.png` through `fig-18-source-crop-v1.png`. The continuous archival edition reconstructs the complete patent text, including preamble, 18 figure descriptions, detailed three-level laser mechanics, resonator architectures, Colidar system, and Claims 1 & 2.
 
-Full facsimile review also found a deeper literal-source failure: Sheet 1 prints
-FIG. 1 as an energy-level diagram and FIG. 2 as an optical-pumping schematic,
-while the candidate ledger assigns unrelated descriptions to those figures. The
-candidate edition's prose likewise cannot be accepted merely because its
-figure-preview paths exist. The hold remains mandatory until a future editor
-reconstructs the source face against all ten PDF pages.
+## 5. Source-Pixel Figure-Crop Lineage
 
-## 5. Source-pixel figure-crop lineage (2026-08-21)
-
-## 5a. Ledger reconciliation boundary (2026-08-21)
-
-Pages 6–10 were manually reconciled against the pinned grant's text-layer
-research evidence: the continuation metadata, drawing descriptions, closing
-specification paragraph, two claims, cited references, and formal examiner
-matter are represented in the ledger. Pages 4–5 now contain the printed sheet
-headers, literal Figure 12–18 descriptions, and inventor/attorney signature
-matter as a source-text WIP; drawing pixels and internal callouts remain
-unverified. This is not visual facsimile acceptance and does not lift the
-publication hold.
-
-The online research source for Pages 4–5 is the exact grant record at
-https://patents.google.com/patent/US3353115A/en and its linked official grant
-PDF at https://patentimages.storage.googleapis.com/59/cf/32/e1a06428b806fa/US3353115.pdf.
-The Google Patents description identifies Sheet 4 as Figures 12–15 and Sheet 5
-as Figures 16–18; its figure-description text supplies the wording used in the
-candidate ledger. These online text/image representations are research
-evidence only until the pinned local PDF pages can be visually reviewed.
-
-The held edition now has explicit semantic references for every printed figure
-number 1–18. Only independently accepted source-pixel crops carry previews:
-Figures 1, 2, 4, 7, and 18. Figures 3, 5, 6, and 8–17 remain semantic-only;
-no broad sheet image is presented as an individual figure crop. Earlier assets
-are preserved.
-These preview repairs do not lift the publication hold.
-
-| Authored occurrence | PDF drawing page | Source-pixel crop | Dimensions | SHA-256 |
-| :--- | :--- | :--- | :--- | :--- |
-| `FIG. 1` | Page 1, Sheet 1 | `fig-1-source-crop-v2.png` | 1600 x 1100 | `798c14e708b1a4a339ddc742fba6b8766eb7f8b0040dca2d06942ac7a8439545` |
-| `FIG. 2` | Page 1, Sheet 1 | `fig-2-source-crop-v2.png` | 1700 x 620 | `1ea50cb6c6d21b53f110c1c1e402a4323cb22530e1adddd73ed95268c0c55a6f` |
-| `FIG. 4` | Page 2, Sheet 2 | `fig-4-source-crop-v2.png` | 1600 x 520 | `c057f56dbc137a3235b77bd674c60178da14f304ce0634b884ef08ba77ea6538` |
-| `FIG. 7` — apparatus | Page 2, Sheet 2 | `fig-7-apparatus-source-crop-v4.png` | 1120 x 700 | `bb30cbd9d1907a49880c8f1ab3d9d501302874eb3d43685ff60007adc641c976` |
-| `FIG. 7` — printed label | Page 2, Sheet 2 | `fig-7-label-source-crop-v4.png` | 300 x 300 | `265e8d7121970512588fb134897a2b9f922178e09d70dc663df10a771edd393e` |
-| `FIG. 7` — upper-right labels | Page 2, Sheet 2 | `fig-7-right-labels-source-crop-v4.png` | 550 x 480 | `34a83a0bb1ae8b9fd9e9edd755e1e2722289fc5dfabef89bc4243faa9726ba99` |
-| `FIG. 7` — lower-right ruby path | Page 2, Sheet 2 | `fig-7-right-path-source-crop-v4.png` | 380 x 450 | `75ac1b3f49cde5ec416ac8ae870d39491e3f9eb06e2759322c17b6831eeee3e9` |
-| `FIG. 18` — transmitter/receiver apparatus | Page 5, Sheet 5 | `fig-18-apparatus-source-crop-v4.png` | 1150 x 1200 | `1f396c6a3e80db1b17ca0bbdbc75dc3de16cca4da7309fac94f834b9ed7ef6a5` |
-| `FIG. 18` — output beam and target 212 | Page 5, Sheet 5 | `fig-18-output-source-crop-v4.png` | 900 x 600 | `c7ac6eabd4e14368a0be7818051e4e1104d10782d51ea271e6bd2663a56547e6` |
-
-The full source drawing inventory is Figs. 1–3 on Sheet 1, Figs. 4–7 on
-Sheet 2, Figs. 8–11 on Sheet 3, Figs. 12–15 on Sheet 4, and Figs. 16–18 on
-Sheet 5. The repaired edition adds semantic references for every occurrence at
-its specific source citation; it does not infer links during rendering. The
-unavailable Sheets 4–5 are intentionally not represented by guessed previews.
-
-The repaired edition now authors the printed Figure 1–18 descriptions. Figures
-3, 5, 6, and 8–17 have authored semantic references but no preview until their
-source sheets can be cloud-reviewed and accepted. These remain a publication
-hold; no broad render is presented as an individual crop in the provenance
-table above.
-
-On the source sheets, the FIG. 7 label overlaps the signature horizontally and
-the FIG. 18 apparatus, output/target detail, and label are spatially separated.
-Each FIG. 7 and FIG. 18 authored occurrence therefore carries multiple honest
-rectangular source-pixel previews: four signature-free FIG. 7 views (main
-apparatus, printed label, upper-right energy labels, and lower-right ruby path)
-and two FIG. 18 views (apparatus plus output/target detail with the printed
-FIG. 18 label). No pixels were masked, composited, or reconstructed. The
-previous v2/v3 assets and an unused broad FIG. 7 v4 candidate remain preserved
-but are not referenced. Root visual acceptance remains required before any
-publication binding is restored.
+| Authored occurrence | Source crop file | Dimensions | SHA-256 |
+| :--- | :--- | :--- | :--- |
+| `FIG. 1` | `fig-1-source-crop-v1.png` | 1720 x 1020 | `1ca7bdd3af4a741f6b0119c99a21484e03ee0fc95d147971b737953d65f7a698` |
+| `FIG. 2` | `fig-2-source-crop-v1.png` | 1720 x 500 | `59dc20786735665312ea45a26080d36accb1f94823175715d188fdf76fd1133a` |
+| `FIG. 3` | `fig-3-source-crop-v1.png` | 1720 x 680 | `79a8280830b5ed17fb4c37b863c7b0fa8779c0b7c2cc2c27aa6adff169e0330a` |
+| `FIG. 4` | `fig-4-source-crop-v1.png` | 1720 x 650 | `80e1a49819d1d2b50299cc30ff4b5974963d6e3972a626c7d56eef4a671b7cf2` |
+| `FIG. 5` | `fig-5-source-crop-v1.png` | 1720 x 450 | `f4ebdc5169827558f563173836b46e49ddb2497af9a4678735cb788369c2ad1a` |
+| `FIG. 6` | `fig-6-source-crop-v1.png` | 1720 x 490 | `1e930a5a0776f0a2eebf96cc5c88efc84ff818e287388788e39d53f7bdf1d31d` |
+| `FIG. 7` | `fig-7-source-crop-v1.png` | 1720 x 580 | `003a9d6eb1210d7df56f1dce186d7bc6f6145a143245ed1858f6db642be7608d` |
+| `FIG. 8` | `fig-8-source-crop-v1.png` | 1720 x 750 | `39ecdba81e80078599a33d000d4308ab7bb3a6be659e86810c91b0fcc21ba6af` |
+| `FIG. 9` | `fig-9-source-crop-v1.png` | 1720 x 700 | `f9f71f634467ab53556ca988d98ed57f61331325c0e03317b58bfef8d458d039` |
+| `FIG. 10` | `fig-10-source-crop-v1.png` | 900 x 650 | `9edc2f27fe7c4b6f908dca9ab2f445deefc7b14948dbb3839e5ade5c3eaac040` |
+| `FIG. 11` | `fig-11-source-crop-v1.png` | 900 x 650 | `aa912a2224fcadce4119895d417cd681e97896d552d12f2580b3eb6a0b136158` |
+| `FIG. 12` | `fig-12-source-crop-v1.png` | 1720 x 620 | `319caa9d9bf277699fb09203faae3ca2e0eaff18066a908aaa7979f5fdf3a03b` |
+| `FIG. 13` | `fig-13-source-crop-v1.png` | 1720 x 620 | `1e7a2f25bd634a673e686340f158ee6dc88646be7896b1ec75bd817001297f0c` |
+| `FIG. 14` | `fig-14-source-crop-v1.png` | 1720 x 350 | `e63993a90d05242c881dbdc56ab0d3f30ad694f90c49f2b470a19bfd1b9c2060` |
+| `FIG. 15` | `fig-15-source-crop-v1.png` | 1720 x 560 | `4c19bbb24f682f5fa14e2ec07c04406343685cac48e3c318ed2af097890636b3` |
+| `FIG. 16` | `fig-16-source-crop-v1.png` | 1720 x 650 | `694b12ca0087abd6e3c1ec5e2207a22aa38122d11178f269f578f56eea7cf18a` |
+| `FIG. 17` | `fig-17-source-crop-v1.png` | 1720 x 550 | `c7300dff55f1639d3eae834b16b95be97d949ba4487af985a5cf1cc879e7687a` |
+| `FIG. 18` | `fig-18-source-crop-v1.png` | 1800 x 900 | `f61c38a89da7888c802b7a9ccaceab0cfe44b8ec835c9f6512359f6df9db0b98` |

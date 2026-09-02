@@ -24,10 +24,10 @@ type FigurePreview = {
 
 const FIGURE_PREVIEWS: Readonly<Record<number, FigurePreview>> = {
   1: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-1-source-crop-v5.png",
-    alt: "US 347,140, Fig. 1: Thomson's pivoted electric-welding clamp and spring-pressure arrangement.",
-    width: 830,
-    height: 1050,
+    src: "/patents/figures/us-347140-thomson-welding/fig-1-source-crop-v1.png",
+    alt: "US 347,140 drawing sheet 1 containing Fig. 1; an isolated Fig. 1 crop is withheld because safe isolation would clip neighboring source matter.",
+    width: 2321,
+    height: 3409,
   },
   2: {
     src: "/patents/figures/us-347140-thomson-welding/figure-2-source-crop-v5.png",
@@ -36,10 +36,10 @@ const FIGURE_PREVIEWS: Readonly<Record<number, FigurePreview>> = {
     height: 1050,
   },
   3: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-3-source-crop-v5.png",
-    alt: "US 347,140, Fig. 3: wires in the clamps before abutment.",
-    width: 650,
-    height: 260,
+    src: "/patents/figures/us-347140-thomson-welding/fig-1-source-crop-v1.png",
+    alt: "US 347,140 drawing sheet 1 containing Fig. 3; an isolated Fig. 3 crop is withheld because safe isolation would clip neighboring source matter.",
+    width: 2321,
+    height: 3409,
   },
   4: {
     src: "/patents/figures/us-347140-thomson-welding/figure-4-source-crop-v2.png",
@@ -48,16 +48,16 @@ const FIGURE_PREVIEWS: Readonly<Record<number, FigurePreview>> = {
     height: 300,
   },
   5: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-5-source-crop-v5.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-5-source-crop-v6.png",
     alt: "US 347,140, Fig. 5: removable clamp for a selected wire size.",
-    width: 340,
-    height: 400,
+    width: 260,
+    height: 330,
   },
   6: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-6-source-crop-v5.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-6-source-crop-v6.png",
     alt: "US 347,140, Fig. 6: compound clamp with three wire grooves.",
-    width: 270,
-    height: 380,
+    width: 250,
+    height: 350,
   },
   7: {
     src: "/patents/figures/us-347140-thomson-welding/figure-7-source-crop-v1.png",
@@ -66,16 +66,16 @@ const FIGURE_PREVIEWS: Readonly<Record<number, FigurePreview>> = {
     height: 400,
   },
   8: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-8-source-crop-v5.png",
-    alt: "US 347,140, Fig. 8: gravity-pressure arrangement with an adjustable weight.",
-    width: 780,
-    height: 310,
+    src: "/patents/figures/us-347140-thomson-welding/fig-1-source-crop-v1.png",
+    alt: "US 347,140 drawing sheet 1 containing Fig. 8; an isolated Fig. 8 crop is withheld because safe isolation would include neighboring source matter.",
+    width: 2321,
+    height: 3409,
   },
   9: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-9-source-crop-v5.png",
-    alt: "US 347,140, Fig. 9: modified pressure arrangement for the welding apparatus.",
-    width: 450,
-    height: 560,
+    src: "/patents/figures/us-347140-thomson-welding/fig-1-source-crop-v1.png",
+    alt: "US 347,140 drawing sheet 1 containing Fig. 9; an isolated Fig. 9 crop is withheld because its conductors continue into adjacent source space.",
+    width: 2321,
+    height: 3409,
   },
   10: {
     src: "/patents/figures/us-347140-thomson-welding/figure-10-source-crop-v2.png",
@@ -136,10 +136,21 @@ const FIGURE_PREVIEWS: Readonly<Record<number, FigurePreview>> = {
 const SHEET_ONE = 1 as const;
 const SHEET_TWO = 2 as const;
 
-// Root visual QC rejected these candidate rectangles. Keep their files for
-// evidence, but fail closed by withholding them from authored references until
-// a source-aware replacement or explicit split preview is accepted.
-const WITHHELD_FIGURES = new Set([1, 3, 5, 6, 8, 9]);
+const SOURCE_SHEET_PREVIEWS: Readonly<Record<typeof SHEET_ONE | typeof SHEET_TWO, FigurePreview>> =
+  {
+    [SHEET_ONE]: {
+      src: "/patents/figures/us-347140-thomson-welding/fig-1-source-crop-v1.png",
+      alt: "US 347,140 source drawing sheet 1 containing Figs. 1 through 9.",
+      width: 2321,
+      height: 3409,
+    },
+    [SHEET_TWO]: {
+      src: "/patents/figures/us-347140-thomson-welding/fig-2-source-crop-v1.png",
+      alt: "US 347,140 source drawing sheet 2 containing Figs. 10 through 18.",
+      width: 2321,
+      height: 3409,
+    },
+  };
 
 /** Each source label is manually bound to its own local crop(s); no prose is parsed. */
 const FIGURE_REFERENCE_PREVIEWS: Readonly<Record<string, readonly number[]>> = {
@@ -169,16 +180,17 @@ const FIGURE_REFERENCE_PREVIEWS: Readonly<Record<string, readonly number[]>> = {
 
 const figure = (
   text: keyof typeof FIGURE_REFERENCE_PREVIEWS,
-  _sourceSheet: typeof SHEET_ONE | typeof SHEET_TWO,
+  sourceSheet: typeof SHEET_ONE | typeof SHEET_TWO,
 ): CuratedSpecificationInline => ({
   kind: "reference",
   text,
   href: "#",
   referenceType: "figure",
   label: `Preview the source drawing for ${text}`,
-  figurePreviews: FIGURE_REFERENCE_PREVIEWS[text]
-    .filter((number) => !WITHHELD_FIGURES.has(number))
-    .map((number) => FIGURE_PREVIEWS[number]),
+  figurePreviews:
+    text === "Figs. 1 through 9" || text === "Figs. 10 through 18"
+      ? [SOURCE_SHEET_PREVIEWS[sourceSheet]]
+      : FIGURE_REFERENCE_PREVIEWS[text].map((number) => FIGURE_PREVIEWS[number]),
 });
 
 const term = (text: string, definition: string): CuratedSpecificationInline => ({

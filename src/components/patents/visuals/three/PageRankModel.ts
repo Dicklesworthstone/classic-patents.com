@@ -78,6 +78,47 @@ export function buildPageRankModel(): PageRankModel {
     }),
   );
 
+  const baseMat = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0x1e293b,
+      roughness: 0.5,
+      metalness: 0.7,
+    }),
+  );
+
+  const gridMat = trackMat(
+    new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.35,
+      wireframe: true,
+    }),
+  );
+
+  // Architectural Presentation Dais & Base Plinth
+  const daisGroup = new THREE.Group();
+  daisGroup.position.set(0, -3.2, 0);
+  root.add(daisGroup);
+
+  const baseDais = new THREE.Mesh(trackGeo(new THREE.CylinderGeometry(4.2, 4.4, 0.4, 36)), baseMat);
+  baseDais.receiveShadow = true;
+  daisGroup.add(baseDais);
+
+  const daisGrid = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(4.15, 4.15, 0.05, 36, 4)),
+    gridMat,
+  );
+  daisGrid.position.y = 0.22;
+  daisGroup.add(daisGrid);
+
+  // Vertical Matrix Central Column Pillar supporting the graph structure
+  const centerColumn = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.18, 0.24, 2.4, 16)),
+    baseMat,
+  );
+  centerColumn.position.set(0, -1.8, 0);
+  root.add(centerColumn);
+
   const sphereGeo = trackGeo(new THREE.SphereGeometry(0.85, 32, 32));
   const ringGeo = trackGeo(new THREE.TorusGeometry(1.2, 0.04, 12, 32));
 
@@ -85,7 +126,7 @@ export function buildPageRankModel(): PageRankModel {
   const positions = [
     new THREE.Vector3(0, 2.2, 0), // Node A (Hub)
     new THREE.Vector3(2.4, 0.4, 0.4), // Node B
-    new THREE.Vector3(0, -2.0, 0), // Node C (Target authority)
+    new THREE.Vector3(0, -0.6, 0), // Node C (Target authority)
   ];
 
   const nodes: THREE.Mesh[] = [];

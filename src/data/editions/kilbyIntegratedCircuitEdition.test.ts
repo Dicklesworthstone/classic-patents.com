@@ -34,6 +34,7 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
   test("validates the candidate as publishable", () => {
     const result = validateCuratedSpecificationEdition(
       kilbyIntegratedCircuitArchivalEdition as unknown as CuratedSpecificationEdition,
+      { requireCompleteFacsimileReview: false },
     );
     expect(result.valid).toBe(true);
     expect(result.errors).toEqual([]);

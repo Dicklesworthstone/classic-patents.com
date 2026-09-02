@@ -27,7 +27,7 @@ function figureAssetPath(number: number): string {
 
 function makePreview(
   surfaceText: string,
-  figureNumbers: number[],
+  figureNumbers: readonly [number, ...number[]],
   altText: string,
 ): CuratedSpecificationInline {
   return {
@@ -41,6 +41,27 @@ function makePreview(
       alt: `${surfaceText}: ${altText}`,
       width: DAVINCI_FIGURE_DIMS[num]?.width ?? 1200,
       height: DAVINCI_FIGURE_DIMS[num]?.height ?? 1600,
+    })),
+  };
+}
+
+const DAVINCI_SOURCE_SHEET_DIMS = { width: 928, height: 1364 } as const;
+
+function makeSourceSheetPreview(
+  surfaceText: string,
+  sheetNumbers: readonly [number, ...number[]],
+  altText: string,
+): CuratedSpecificationInline {
+  return {
+    kind: "reference",
+    text: surfaceText,
+    href: `#davinci-source-sheet-${sheetNumbers[0]}`,
+    referenceType: "figure",
+    label: altText,
+    figurePreviews: sheetNumbers.map((sheetNumber) => ({
+      src: `/patents/figures/us-6331181-davinci/sheet-${sheetNumber}-source-crop-v1.png`,
+      alt: `${surfaceText}: ${altText} (source drawing sheet ${sheetNumber} of 22)`,
+      ...DAVINCI_SOURCE_SHEET_DIMS,
     })),
   };
 }
@@ -100,9 +121,11 @@ export const davinciParallelReadings: Readonly<Record<number, readonly string[]>
 export const davinciArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "ff8eef36d94ec5ec3ec01038b7145030caf617ea018fcde9f00df6380beb3d91",
-  preparedBy: "Classic Patents Editorial Team",
+  preparedBy: "Classic Patents source-audit draft",
   preparedAt: "2026-08-20",
-  completeFacsimileReviewed: true,
+  // Claims and figure-sheet mappings are source-bound, but the selected body
+  // paragraphs do not yet constitute the complete 16-page specification.
+  completeFacsimileReviewed: false,
   blocks: [
     {
       kind: "masthead",
@@ -175,7 +198,45 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
       ),
       " is a perspective view of a robotic surgical workstation and patient cart;\n",
       makePreview("FIG. 2", [2], "Perspective view of the robotic surgical arm cart system"),
-      " is a perspective view of a robotic surgical arm cart system; FIGS. 2A-C show a manipulator and its remote-center linkage; FIGS. 3 and 3A show exemplary cart structures; FIG. 4 shows an exemplary tool; FIGS. 4A-B show alternative drive systems; FIGS. 5A-H show different end-effectors; FIG. 6 shows the tool interface; FIGS. 7A-E and 7G-L show adapters, holders, drives, and contacts; FIG. 8 shows wiring; FIGS. 8A-B show the master console; FIGS. 9-10 show tool-change signal and software paths; FIGS. 11-13 show engagement state logic; FIGS. 14A-C show mounting; and FIG. 15 shows compatibility verification.",
+      " is a perspective view of a robotic surgical arm cart system; ",
+      makePreview("FIGS. 2A-C", [3], "Manipulator linkage and remote-center construction"),
+      " show a manipulator and its remote-center linkage; ",
+      makeSourceSheetPreview("FIGS. 3 and 3A", [5, 6], "Exemplary robotic-arm cart structures"),
+      " show exemplary cart structures; ",
+      makeSourceSheetPreview("FIG. 4", [7], "Exemplary detachable surgical tool"),
+      " shows an exemplary tool; ",
+      makeSourceSheetPreview("FIGS. 4A-B", [7, 8], "Alternative tool-drive systems"),
+      " show alternative drive systems; ",
+      makeSourceSheetPreview("FIGS. 5A-H", [9, 10], "Alternative surgical end effectors"),
+      " show different end-effectors; ",
+      makeSourceSheetPreview("FIG. 6", [11], "Mechanical and electrical tool interface"),
+      " shows the tool interface; ",
+      makeSourceSheetPreview(
+        "FIGS. 7A-E and 7G-L",
+        [11, 12, 13],
+        "Adapters, holders, driven elements, and electrical contacts",
+      ),
+      " show adapters, holders, drives, and contacts; ",
+      makeSourceSheetPreview("FIG. 8", [14], "Tool-interface wiring schematic"),
+      " shows wiring; ",
+      makeSourceSheetPreview(
+        "FIGS. 8A-B",
+        [15],
+        "Master console view (FIG. 8A is present; FIG. 8B is cited by the specification but absent from the pinned drawing sheets)",
+      ),
+      " identify the cited master-console material; ",
+      makeSourceSheetPreview("FIGS. 9-10", [16, 17], "Tool-change signal path and software flow"),
+      " show tool-change signal and software paths; ",
+      makeSourceSheetPreview(
+        "FIGS. 11-13",
+        [18, 19, 20],
+        "Tool-engagement sensing and operating-state logic",
+      ),
+      " show engagement state logic; ",
+      makeSourceSheetPreview("FIGS. 14A-C", [21], "Sterile-adapter and tool mounting sequence"),
+      " show mounting; and ",
+      makeSourceSheetPreview("FIG. 15", [22], "Tool-compatibility verification algorithm"),
+      " shows compatibility verification.",
     ),
     {
       kind: "heading",
@@ -401,7 +462,7 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "A robotic surgical tool for use with a robotic manipulator having a tool holder, the tool holder having magnetically actuatable circuitry, the tool comprising; a probe having a proximal end and a distal end; a surgical end effector adjacent the distal end of the probe; an interface adjacent the proximal end of the probe, the interface releasably coupleable with the holder, the interface comprising a magnet positioned so as to actuate the circuitry of the holder.",
+          text: "A robotic surgical tool for use with a robotic manipulator having a tool holder, the tool holder having magnetically actuatable circuitry, the tool comprising: a probe having a proximal end and a distal end; a surgical end effector adjacent the distal end of the probe; an interface adjacent the proximal end of the probe, the interface releasably coupleable with the holder, the interface comprising a magnet positioned so as to actuate the circuitry of the holder.",
         },
       ],
     },

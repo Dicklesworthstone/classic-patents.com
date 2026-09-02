@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "l
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepEinsteinRefrigerator } from "@/physics/catalogKernels";
+import { ensureGenericWasm } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { ThermodynamicsState } from "@/physics/types";
 import {
@@ -65,6 +66,10 @@ export function EinsteinRefrigerator3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+
+  useEffect(() => {
+    void ensureGenericWasm();
+  }, []);
 
   const frige = stepEinsteinRefrigerator({
     heatInput: heatInputWatts,
@@ -355,6 +360,35 @@ export function EinsteinRefrigerator3D() {
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="ABSORPTION REFRIGERATION THERMODYNAMICS"
+          chips={[
+            {
+              label: "T_evap",
+              value: `${evaporatorTemperatureCelsius.toFixed(1)}`,
+              unit: "°C",
+              tone: "ok",
+            },
+            {
+              label: "Q_cooling",
+              value: `${coolingPowerWatts.toFixed(0)}`,
+              unit: "W",
+            },
+            { label: "COP", value: copEfficiency },
+            { label: "Q_heat", value: `${heatInputWatts.toFixed(0)}`, unit: "W" },
+            {
+              label: "P_total",
+              value: `${systemPressureAtm.toFixed(1)}`,
+              unit: "atm",
+            },
+            { label: "Working Fluid", value: "Butane + NH₃ + H₂O" },
+            { label: "Mechanism", value: "Zero Moving Parts / Hermetic" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -418,34 +452,6 @@ export function EinsteinRefrigerator3D() {
           className="mt-3"
         />
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="ABSORPTION REFRIGERATION THERMODYNAMICS"
-        chips={[
-          {
-            label: "T_evap",
-            value: `${evaporatorTemperatureCelsius.toFixed(1)}`,
-            unit: "°C",
-            tone: "ok",
-          },
-          {
-            label: "Q_cooling",
-            value: `${coolingPowerWatts.toFixed(0)}`,
-            unit: "W",
-          },
-          { label: "COP", value: copEfficiency },
-          { label: "Q_heat", value: `${heatInputWatts.toFixed(0)}`, unit: "W" },
-          {
-            label: "P_total",
-            value: `${systemPressureAtm.toFixed(1)}`,
-            unit: "atm",
-          },
-          { label: "Working Fluid", value: "Butane + NH₃ + H₂O" },
-          { label: "Mechanism", value: "Zero Moving Parts / Hermetic" },
-        ]}
-      />
     </div>
   );
 }

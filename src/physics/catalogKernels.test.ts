@@ -77,26 +77,38 @@ import {
   sliderStrokeSvg,
   spencerPopcornSvg,
   spencerSchematicCavity,
+  stepBaekelandBakelite,
   stepBardeenTransistor,
   stepBellTelephone,
+  stepBoyleSmithCcd,
+  stepCarlsonElectrophotography,
   stepColtRevolver,
   stepCorlissEngine,
-  stepDaimlerEngine,
   stepDavenportMotor,
+  stepDeForestAudion,
   stepDeLavalSeparator,
   stepEdisonBulb,
+  stepEdisonIndicator,
   stepEdisonPhonograph,
   stepEinsteinRefrigerator,
   stepEngelbartMouse,
   stepEricssonPropeller,
+  stepFessendenWireless,
   stepGatlingGun,
   stepGliddenBarbedWire,
   stepGoodyearRubber,
   stepGrammeDynamo,
+  stepHaberAmmonia,
+  stepHallAluminium,
+  stepHewittMercuryLamp,
   stepHollerithTabulating,
   stepHyattCelluloid,
   stepKevlarContinuum,
+  stepKilbyIntegratedCircuit,
+  stepLandPolaroidInstantFilm,
+  stepLegacyDaimlerEngineUS349983,
   stepLincolnBuoy,
+  stepMaimanRubyLaser,
   stepMarconiRadio,
   stepMaximMachineGun,
   stepMcCormickReaper,
@@ -108,7 +120,9 @@ import {
   stepPasteurFermentation,
   stepPeltonWheel,
   stepSpencerMicrowave,
+  stepTeslaTeleautomaton,
   stepThomsonWelding,
+  stepTownesLaser,
   stepWhitneyCottonGin,
   stepWozniakApple,
   stepZeppelinAirship,
@@ -521,8 +535,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.gasCellSvgPitch).toBe(27);
   });
 
-  test("Daimler internal combustion engine computes hot-tube ignition timing and brake power", () => {
-    const res = stepDaimlerEngine({ engineRpm: 750, hotTubeTempC: 850 });
+  test("legacy US 349,983 illustration remains isolated from the US 361,931 marine model", () => {
+    const res = stepLegacyDaimlerEngineUS349983({ engineRpm: 750, hotTubeTempC: 850 });
     expect(res.brakeHorsepower).toBeGreaterThan(0);
     expect(res.isRunning).toBe(true);
     expect(res.schematicFlywheelR).toBe(50);
@@ -569,16 +583,26 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(noyceSchematicContactX(2)).toBe(275);
   });
 
-  test("Edison incandescent bulb computes Stefan-Boltzmann radiation, filament temperature, and lumen output", () => {
-    const res = stepEdisonBulb({ voltage: 110, filamentLength: 22 });
+  test("Edison incandescent bulb composes the declared fs-conduction radiative balance", () => {
+    const res = stepEdisonBulb({
+      voltage: 110,
+      hotResistanceOhm: 145,
+      filamentLength: 22,
+    });
     expect(res.filamentTempK).toBeGreaterThan(1800);
     expect(res.radiantWatts).toBeGreaterThan(0);
     expect(res.schematicTerminalR).toBe(4);
-    expect(edisonSchematicTerminal(0).cx).toBe(185);
-    expect(edisonSchematicTerminal(1).cx).toBe(215);
+    expect(edisonSchematicTerminal(0, res.schematicTerminalXs).cx).toBe(188);
+    expect(edisonSchematicTerminal(1, res.schematicTerminalXs).cx).toBe(212);
     expect(res.glowThreshold).toBe(0.05);
     expect(res.gasPhaseOmega).toBe(2);
     expect(res.gasYOmega).toBe(1.3);
+    const highResistance = stepEdisonBulb({ voltage: 110, hotResistanceOhm: 500 });
+    expect(highResistance.radiantWatts).toBeLessThan(res.radiantWatts);
+    expect(highResistance.incandescenceIntensity).toBeLessThan(res.incandescenceIntensity);
+    expect(stepEdisonBulb({ voltage: 40, hotResistanceOhm: 145 }).hotResistanceOhm).toBe(145);
+    expect(stepEdisonBulb({ voltage: 130, hotResistanceOhm: 145 }).hotResistanceOhm).toBe(145);
+    expect(() => stepEdisonBulb({ voltage: 110, hotResistanceOhm: 99 })).toThrow();
   });
 
   test("Bell telephone computes liquid transmitter resistance modulation and acoustic current", () => {
@@ -781,20 +805,154 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(lincolnInflationNorm(-10)).toBe(0);
   });
 
-  test("Maxim recoil machine gun computes muzzle gas recoil impulse and automatic toggle cycling", () => {
-    const res = stepMaximMachineGun({ firingRateRpm: 600, recoilStrokeMm: 19 });
-    expect(res.recoilVelocityMps).toBeGreaterThan(0);
-    expect(res.toggleUnlockForceN).toBeGreaterThan(0);
-    expect(res.heatGeneratedWatts).toBe(Math.round((600 / 60) * 45 * 1000 * 0.28));
-    expect(res.schematicToggleCx).toBe(280);
-    expect(res.schematicToggleR).toBe(4);
-    expect(res.schematicJacketW).toBe(180);
-    expect(res.schematicBreechW).toBe(140);
-    expect(res.fireCycleWrapRad).toBeCloseTo(Math.PI * 2, 10);
-    expect(res.firingWindowRad).toBe(0.6);
-    expect(res.toggleLiftAmp).toBe(0.32);
-    expect(res.toggleHomeY).toBe(0.12);
-    expect(res.toggleRecoilCoupling).toBe(1.8);
-    expect(res.crankThrowAmp).toBe(0.75);
+  test("Maxim US 319,596 machine gun computes muzzle gas sleeve expansion, reversing levers, and Scotch-yoke breech travel", () => {
+    const atRest = stepMaximMachineGun({ cyclePhaseDeg: 0 });
+    expect(atRest.sleeveForwardMm).toBe(0);
+    expect(atRest.breechOpenMm).toBe(0);
+    expect(atRest.leverAngleDeg).toBe(0);
+    expect(atRest.springWoundPct).toBe(0);
+    expect(atRest.isBreechOpen).toBe(false);
+
+    const midStroke = stepMaximMachineGun({ cyclePhaseDeg: 180 });
+    expect(midStroke.sleeveForwardMm).toBe(24);
+    expect(midStroke.breechOpenMm).toBe(48);
+    expect(midStroke.leverAngleDeg).toBe(18);
+    expect(midStroke.springWoundPct).toBe(100);
+    expect(midStroke.isBreechOpen).toBe(true);
+    expect(midStroke.extractorState).toBe("EXTRACTING");
+    expect(midStroke.schematicBarrelX1).toBe(40);
+    expect(midStroke.schematicBarrelX2).toBe(320);
+    expect(midStroke.fireCycleWrapRad).toBeCloseTo(Math.PI * 2, 10);
+  });
+
+  test("Hall-Héroult aluminium smelting computes Faraday yield and bath voltage", () => {
+    const res = stepHallAluminium({
+      currentAmperes: 300000,
+      bathTemperatureCelsius: 960,
+      aluminaConcentrationPct: 5.5,
+    });
+    expect(res.currentEfficiencyPct).toBeGreaterThan(80);
+    expect(res.aluminiumProductionRateKgPerHour).toBeGreaterThan(0);
+    expect(res.electricalPowerKw).toBeGreaterThan(0);
+    expect(res.totalCellVoltage).toBeGreaterThan(1.5);
+  });
+
+  test("Edison indicator computes thermionic emission and galvanometer deflection", () => {
+    const resPos = stepEdisonIndicator({ mainsVoltageV: 110, plateBiasPolarity: "positive" });
+    expect(resPos.filamentPowerW).toBeGreaterThan(0);
+    expect(resPos.emissionCurrentMicroAmps).toBeGreaterThan(0);
+    expect(resPos.regulatorState).toBe("nominal");
+
+    const resNeg = stepEdisonIndicator({ mainsVoltageV: 110, plateBiasPolarity: "negative" });
+    expect(resNeg.emissionCurrentMicroAmps).toBeLessThan(resPos.emissionCurrentMicroAmps);
+    expect(resNeg.galvoDeflectionDeg).toBeLessThan(0);
+  });
+
+  test("De Forest audion computes triode voltage amplification and plate current", () => {
+    const res = stepDeForestAudion({
+      filamentCurrentA: 1.0,
+      gridBiasVoltageV: -1.5,
+      plateVoltageV: 45,
+    });
+    expect(res.voltageGain).toBeGreaterThan(1);
+    expect(res.plateCurrentMa).toBeGreaterThan(0);
+    expect(res.amplificationFactorMu).toBe(12);
+  });
+
+  test("Townes laser computes threshold inversion and optical power extraction", () => {
+    const res = stepTownesLaser({ pumpPowerWatts: 350, cavityLengthCm: 25 });
+    expect(res.thresholdGainPerCm).toBeGreaterThan(0);
+    expect(res.laserOutputPowerWatts).toBeGreaterThan(0);
+    expect(res.cavityQFactor).toBeGreaterThan(0);
+  });
+
+  test("Carlson electrophotography computes photoconductive discharge and optical density", () => {
+    const res = stepCarlsonElectrophotography({
+      coronaVoltageKv: 6.0,
+      exposureLuxSec: 15,
+      fuserTemperatureC: 185,
+    });
+    expect(res.exposedSurfacePotentialV).toBeGreaterThan(0);
+    expect(res.opticalDensity).toBeGreaterThan(0);
+    expect(res.copiesPerMin).toBeGreaterThan(0);
+  });
+
+  test("Baekeland Bakelite computes condensation kinetics, gel point, and void suppression", () => {
+    const res = stepBaekelandBakelite(130, 75, 1.5, 60, 45);
+    expect(res.conversionP).toBeGreaterThan(0.667);
+    expect(res.isGelled).toBe(true);
+    expect(res.isFoamingSuppressed).toBe(true);
+    expect(res.tensileStrengthMpa).toBeGreaterThan(20);
+  });
+
+  test("Fessenden continuous wireless computes antenna resonance and voice modulation", () => {
+    const res = stepFessendenWireless({ carrierFrequencyKhz: 75, audioModulationPct: 65 });
+    expect(res.antennaResonantFreqKhz).toBeGreaterThan(0);
+    expect(res.radiationEfficiencyPct).toBeGreaterThan(0);
+  });
+
+  test("Haber ammonia synthesis computes equilibrium yield and exothermic heat", () => {
+    const res = stepHaberAmmonia({ pressureAtm: 175, temperatureCelsius: 530 });
+    expect(res.ammoniaYieldPct).toBeGreaterThan(0);
+    expect(res.reactionHeatGeneratedKw).toBeGreaterThan(0);
+    expect(res.recycleRatio).toBeGreaterThan(0);
+  });
+
+  test("Hewitt mercury arc lamp computes negative dynamic resistance and luminous efficacy", () => {
+    const res = stepHewittMercuryLamp({ mainsVoltageV: 110, tubeLengthCm: 100 });
+    expect(res.arcCurrentAmperes).toBeGreaterThan(0);
+    expect(res.dynamicArcResistanceOhms).toBeLessThan(0);
+    expect(res.luminousFluxLumens).toBeGreaterThan(0);
+    expect(res.isStable).toBe(true);
+  });
+
+  test("Tesla teleautomaton computes radio resonance, coherer latching, and rudder angle", () => {
+    const res = stepTeslaTeleautomaton({ rfFrequency: 150, cohererTapped: false, rudderAngle: 15 });
+    expect(res.isResonant).toBe(true);
+    expect(res.relayEnergized).toBe(true);
+    expect(res.propellerRpm).toBeGreaterThan(0);
+    expect(res.turningRadiusM).toBeLessThan(100);
+  });
+
+  test("Kilby integrated circuit computes sheet resistance and p-n transition capacitance", () => {
+    const res = stepKilbyIntegratedCircuit({
+      substrateMaterial: "germanium",
+      supplyVoltageV: 6.0,
+      resistorWidthUm: 50.0,
+      resistorLengthUm: 500.0,
+    });
+    expect(res.sheetResistanceOhmSq).toBeGreaterThan(0);
+    expect(res.collectorLoadResistanceOhms).toBeGreaterThan(0);
+    expect(res.junctionCapacitancePf).toBeGreaterThan(0);
+    expect(res.maxClockFrequencyMhz).toBeGreaterThan(0);
+  });
+
+  test("Land Polaroid diffusion transfer computes silver densities and transfer efficiency", () => {
+    const res = stepLandPolaroidInstantFilm({
+      reagentViscosityCp: 25000,
+      rollerGapUm: 25,
+      exposureFraction: 0.6,
+      developmentTimeSec: 30,
+    });
+    expect(res.negativeSilverDensity).toBeGreaterThan(0);
+    expect(res.positiveSilverDensity).toBeGreaterThan(0);
+    expect(res.transferEfficiencyPercent).toBeGreaterThan(50);
+  });
+
+  test("Maiman ruby laser computes 3-level population inversion and pulse energy", () => {
+    const res = stepMaimanRubyLaser({ pumpEnergyJoules: 150, rodLengthCm: 5.0 });
+    expect(res.thresholdPumpEnergyJoules).toBeGreaterThan(0);
+    expect(res.isLasing).toBe(true);
+    expect(res.laserPulseEnergyJoules).toBeGreaterThan(0);
+    expect(res.emissionWavelengthNm).toBeCloseTo(694.3, 1);
+  });
+
+  test("Boyle & Smith CCD computes deep-depletion potential, well capacity, and CTE", () => {
+    const res = stepBoyleSmithCcd({ gateVoltageV: 10, clockFrequencyMhz: 5.0, incidentLux: 250 });
+    expect(res.surfacePotentialV).toBeGreaterThan(0);
+    expect(res.fullWellCapacityElectrons).toBeGreaterThan(10000);
+    expect(res.totalCollectedElectrons).toBeGreaterThan(0);
+    expect(res.ctePct).toBeGreaterThan(99.0);
+    expect(res.snrDb).toBeGreaterThan(0);
   });
 });
