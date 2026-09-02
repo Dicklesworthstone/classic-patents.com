@@ -2,66 +2,98 @@
 
 United States Patent [19]
 Hull
+
 [11] Patent Number: 4,575,330
 [45] Date of Patent: Mar. 11, 1986
+
 [54] APPARATUS FOR PRODUCTION OF THREE-DIMENSIONAL OBJECTS BY STEREOLITHOGRAPHY
 [75] Inventor: Charles W. Hull, Arcadia, Calif.
 [73] Assignee: UVP, Inc., San Gabriel, Calif.
 [21] Appl. No.: 638,905
 [22] Filed: Aug. 8, 1984
+[51] Int. Cl.4: B29C 35/08; G03C 9/08
+[52] U.S. Cl.: 425/174.4; 118/423; 118/428; 118/429; 118/500; 156/58; 156/242; 156/272.8; 156/273.3; 156/273.5; 156/275.5; 156/307.1; 250/432 R; 250/492.1; 260/DIG. 43; 264/22; 264/40.1; 264/236; 264/255; 264/308; 365/107; 365/119; 365/120; 365/126; 365/127; 425/135; 425/162; 425/375; 425/435; 427/53.1; 427/54.1; 430/269; 430/327; 522/910
+[58] Field of Search: 425/162, 174, 174.4, 425; 264/22, 40.1, 219, 183, 250, 255, 298, 308; 365/107, 119, 127, 106, 120; 156/58, 246, 273.3, 273.5, 275.5; 250/432 R, 433, 492.3, 492.1, 558; 522/910; 430/269, 296, 942; 342/179; 427/53.1, 54.1
 
-ABSTRACT
+[56] References Cited
+U.S. PATENT DOCUMENTS
+2,381,234 8/1945 Symmes .............................. 430/294
+2,525,532 10/1950 Dreywood .......................... 430/419
+2,708,617 5/1955 Magat et al. .................... 264/183 X
+2,775,758 12/1956 Munz ................................. 342/179
+2,908,545 10/1959 Teja .................................. 264/22 X
+3,306,835 2/1967 Magnus ............................ 425/174.4 X
+3,428,503 2/1969 Beckerle ............................. 430/269
+3,609,707 9/1971 Lewis et al. ........................ 365/119
+3,635,625 1/1972 Voss ................................ 425/162 X
+3,723,120 3/1973 Hummel ............................. 522/90 X
+3,775,036 11/1973 Winning ........................... 425/174.4
+3,866,052 2/1975 Di Matteo ........................... 250/558
+3,932,923 1/1976 Di Matteo ........................... 29/407
+3,974,248 8/1976 Atkinson ........................... 425/162 X
+4,041,476 8/1977 Swainson ............................ 365/119
+4,078,229 3/1978 Swainson et al. ................... 365/107
+4,081,276 3/1978 Crivello ............................. 430/269
+4,100,141 7/1978 O'Sullivan ......................... 526/301
+4,238,840 12/1980 Swainson ............................ 365/119
+4,252,514 2/1981 Gates ............................... 425/162 X
+4,288,861 9/1981 Swainson et al. ................... 365/127
+4,292,015 9/1981 Hritz ............................... 425/62 X
+4,329,135 5/1982 Beck ................................ 425/174
+4,333,165 6/1982 Swainson et al. ................... 365/127 X
+4,374,077 2/1983 Kerfeld ............................. 264/22
+4,466,080 8/1984 Swainson et al. ................... 365/127 X
+4,471,470 9/1984 Swainson et al. ................... 365/127
+
+FOREIGN PATENT DOCUMENTS
+1917294 4/1969 Fed. Rep. of Germany .
+2553039 4/1985 France .
+144478 11/1981 Japan .
+58-211413 12/1983 Japan .
+566795 1/1945 United Kingdom .
+1556451 11/1979 United Kingdom .
+2035602 6/1980 United Kingdom .
+
+OTHER PUBLICATIONS
+H. Kodama, "Automatic Method for Fabricating a Three-Dimensional Plastic Model with Photo-Hardening Polymer," Review of Scientific Instruments, vol. 52, No. 11, Nov. 1981, pp. 1770-1773.
+A. J. Herbert, "Solid Object Generation," Journal of Applied Photographic Engineering, 8(4), Aug. 1982, pp. 185-188.
+H. Kodama, "A Scheme for Three-Dimensional Display by Automatic Fabrication of Three-Dimensional Model," IECE, vol. J64-C, No. 4, Apr. 1981, pp. 237-241.
+
+Primary Examiner—J. Howard Flint, Jr.
+Attorney, Agent, or Firm—Fulwider, Patton, Rieber, Lee & Utecht
+
+[57] ABSTRACT
 A system for generating three-dimensional objects by creating a cross-sectional pattern of the object to be formed at a selected surface of a fluid medium capable of altering its physical state in response to appropriate synergistic stimulation by impinging radiation, particle bombardment or chemical reaction, successive adjacent laminae, representing corresponding successive adjacent cross-sections of the object, being automatically formed and integrated together to provide a step-wise laminar buildup of the desired object, whereby a three-dimensional object is formed and drawn from a substantially planar surface of the fluid medium during the forming process.
 
-47 Claims, 8 Drawing Figures.
-
+47 Claims, 8 Drawing Figures
 
 --- REVIEWED TRANSCRIPTION PAGE 2 OF 16 ---
 
 U.S. Patent Mar. 11, 1986 — Sheet 1 of 4 — 4,575,330
 
 FIG. 1
-GENERATE INDIVIDUAL SOLID LAMINAE REPRESENTING CROSS-SECTIONS OF OBJECT TO BE FORMED.
-COMBINE SUCCESSIVELY FORMED ADJACENT LAMINAE TO FORM THREE-DIMENSIONAL OBJECT.
-
 FIG. 2
-CONTAIN A FLUID MEDIUM CAPABLE OF SOLIDIFICATION IN RESPONSE TO PRESCRIBED REACTIVE STIMULATION.
-APPLY STIMULATION AS A GRAPHIC PATTERN AT A DESIGNATED FLUID SURFACE TO FORM THIN, SOLID, INDIVIDUAL LAYERS.
-SUPERIMPOSE SUCCESSIVE ADJACENT LAYERS OR LAMINAE TO INTEGRATE THE LAYERS AND DEFINE THE DESIRED THREE-DIMENSIONAL OBJECT.
-
 
 --- REVIEWED TRANSCRIPTION PAGE 3 OF 16 ---
 
 U.S. Patent Mar. 11, 1986 — Sheet 2 of 4 — 4,575,330
 
 FIG. 3
-Container 21; UV curable liquid 22; working surface 23; ultraviolet light source 26; spot 27; computer 28; elevator platform 29; three-dimensional object 30; integrated laminae 30a, 30b, and 30c.
-
 
 --- REVIEWED TRANSCRIPTION PAGE 4 OF 16 ---
 
 U.S. Patent Mar. 11, 1986 — Sheet 3 of 4 — 4,575,330
 
 FIG. 4
-Container 21; UV curable liquid 22; non-miscible liquid layer 32; ultraviolet-transparent window 33; ultraviolet light source 26; spot 27; elevator platform 29; object 30.
-
 FIG. 5
-Collimated broad ultraviolet light source 35; apertured mask 36; working surface 23; elevator platform 29; object 30.
-
 
 --- REVIEWED TRANSCRIPTION PAGE 5 OF 16 ---
 
 U.S. Patent Mar. 11, 1986 — Sheet 4 of 4 — 4,575,330
 
 FIG. 6
-Cathode ray tube 38; fiber optic faceplate 39; water (or other) release layer 40.
-
 FIG. 7
-Adjustable elevator platform 29a in the conventional position.
-
 FIG. 8
-Adjustable elevator platform 29a rotated 90°; supplementary stereolithographically formed structure 41; pivot pin or hinge member 42.
-
 
 --- REVIEWED TRANSCRIPTION PAGE 6 OF 16 ---
 
@@ -79,20 +111,19 @@ Yet there continues to be a long existing need in the design and production arts
 
 Accordingly, those concerned with the development and production of three-dimensional plastic objects and the like have long recognized the desirability for further improvement in more rapid, reliable, economical and automatic means which would facilitate quickly moving from a design stage to the prototype stage and to production, while avoiding the complicated focusing, alignment and exposure problems of the prior art three dimensional production systems. The present invention clearly fulfills all of these needs.
 
-Briefly, and in general terms, the present invention provides a new and improved system for generating a three-dimensional object by forming successive, adjacent, cross-sectional laminae of that object at the surface of a fluid medium capable of altering its physical state in response to appropriate synergistic stimulation, the successive laminae being automatically integrated as they are formed to define the desired three-dimensional object.
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 16 ---
 
-In a presently preferred embodiment, by way of example and not necessarily by way of limitation, the present invention harnesses the principles of computer generated graphics in combination with stereolithography, i.e., the application of lithographic techniques to the production of three dimensional objects, to simultaneously execute computer aided design (CAD) and computer aided manufacturing (CAM) in producing three-dimensional objects directly from computer instructions. The invention can be applied for the purposes of sculpturing models and prototypes in a design phase of product development, or as a manufacturing system, or even as a pure art form.
+SUMMARY OF THE INVENTION (continued)
+
+SUMMARY OF THE INVENTION
+
+Briefly, and in general terms, the present invention provides a new and improved system for generating a three-dimensional object by forming successive, adjacent, cross-sectional laminae of that object at the surface of a fluid medium capable of altering its physical state in response to appropriate synergistic stimulation, the successive laminae being automatically integrated as they are formed to define the desired three-dimensional object.
 
 "Stereolithography" is a method and apparatus for making solid objects by successively "printing" thin layers of a curable material, e.g., a UV curable material, one on top of the other. A programmed movable spot beam of UV light shining on a surface or layer of UV curable liquid is used to form a solid cross-section of the object at the surface of the liquid. The object is then moved, in a programmed manner, away from the liquid surface by the thickness of one layer, and the next cross-section is then formed and adhered to the immediately preceding layer defining the object. This process is continued until the entire object is formed.
 
 Essentially all types of object forms can be created with the technique of the present invention. Complex forms are more easily created by using the functions of a computer to help generate the programmed commands and to then send the program signals to the stereolithographic object forming subsystem.
 
 Of course, it will be appreciated that other forms of appropriate synergistic stimulation for a curable fluid medium, such as particle bombardment (electron beams and the like), chemical reactions by spraying materials through a mask or by ink jets, or impinging radiation other than ultraviolet light, may be used in the practice of the invention without departing from the spirit and scope of the invention.
-
-
---- REVIEWED TRANSCRIPTION PAGE 7 OF 16 ---
-
-SUMMARY OF THE INVENTION (continued)
 
 By way of example, in the practice of the present invention, a body of a fluid medium capable of solidification in response to prescribed stimulation is first appropriately contained in any suitable vessel to define a designated working surface of the fluid medium at which successive cross-sectional laminae can be generated. Thereafter, an appropriate form of synergistic stimulation, such as a spot of UV light or the like, is applied as a graphic pattern at the specified working surface of the fluid medium to form thin, solid, individual layers at that surface, each layer representing an adjacent cross-section of the three-dimensional object to be produced. Superposition of successive adjacent layers on each other is automatically accomplished, as they are formed, to integrate the layers and define the desired three-dimensional object. In this regard, as the fluid medium cures and solid material forms as a thin lamina at the working surface, a suitable platform to which the first lamina is secured is moved away from the working surface in a programmed manner by any appropriate actuator, typically all under the control of a micro-computer of the like. In this way, the solid material that was initially formed at the working surface is moved away from that surface and new liquid flows into the working surface position. A portion of this new liquid is, in turn, converted to solid material by the programmed UV light spot to define a new lamina, and this new lamina adhesively connects to the material adjacent to it, i.e., the immediately preceding lamina. This process continues until the entire three-dimensional object has been formed. The formed object is then removed from the container and the apparatus is ready to produce another object, either identical to the first object or an entirely new object generated by a computer or the like.
 
@@ -104,28 +135,19 @@ Hence, the stereolithographic apparatus of the present invention satisfies a lon
 
 The above and other objects and advantages of this invention will be apparent from the following more detailed description when taken in conjunction with the accompanying drawings of illustrative embodiments.
 
+In a presently preferred embodiment, by way of example and not necessarily by way of limitation, the present invention harnesses the principles of computer generated graphics in combination with stereolithography, i.e., the application of lithographic techniques to the production of three dimensional objects, to simultaneously execute computer aided design (CAD) and computer aided manufacturing (CAM) in producing three-dimensional objects directly from computer instructions. The invention can be applied for the purposes of sculpturing models and prototypes in a design phase of product development, or as a manufacturing system, or even as a pure art form.
+
 BRIEF DESCRIPTION OF THE DRAWINGS
 
-FIG. 1 and FIG. 2 are flow charts illustrating the basic concepts employed in practicing the method of stereolithography of the present invention;
-
-FIG. 3 is a combined block diagram, schematic and elevational sectional view of a presently preferred embodiment of a system for practicing the invention;
-
-FIG. 4 is an elevational sectional view of a second embodiment of a stereolithography system for the practice of the invention;
-
-FIG. 5 is an elevational sectional view, illustrating a third embodiment of the present invention;
-
-FIG. 6 is an elevational sectional view illustrating still another embodiment of the present invention; and
-
-FIG. 7 and FIG. 8 are partial, elevational sectional views, illustrating a modification of the stereolithographic system of FIG. 3 to incorporate an elevator platform with multiple degrees of freedom.
-
+FIG. 1 and FIG. 2 are flow charts illustrating the basic concepts employed in practicing the method of stereolithography of the present invention; FIG. 3 is a combined block diagram, schematic and elevational sectional view of a presently preferred embodiment of a system for practicing the invention; FIG. 4 is an elevational sectional view of a second embodiment of a stereolithography system for the practice of the invention; FIG. 5 is an elevational sectional view, illustrating a third embodiment of the present invention; FIG. 6 is an elevational sectional view illustrating still another embodiment of the present invention; and FIG. 7 and FIG. 8 are partial, elevational sectional views, illustrating a modification of the stereolithographic system of FIG. 3 to incorporate an elevator platform with multiple degrees of freedom.
 
 --- REVIEWED TRANSCRIPTION PAGE 8 OF 16 ---
 
 DESCRIPTION OF THE PREFERRED EMBODIMENT
 
-Referring now to the drawings, FIGS. 1 and 2 are flow charts illustrating the basic system of the present invention for generating three-dimensional objects by means of stereolithography.
+DETAILED DESCRIPTION OF THE PREFERRED EMBODIMENTS
 
-Many liquid state chemicals are known which can be induced to change to solid state polymer plastic by irradiation with ultraviolet light (UV) or other forms of synergistic stimulation such as electron beams, visible or invisible light, reactive chemicals applied by ink jet or via a suitable mask. UV curable chemicals are currently used as ink for high speed printing, in processes of coating of paper and other materials, as adhesives, and in other specialty areas.
+Referring now to the drawings, FIGS. 1 and 2 are flow charts illustrating the basic system of the present invention for generating three-dimensional objects by means of stereolithography. Many liquid state chemicals are known which can be induced to change to solid state polymer plastic by irradiation with ultraviolet light (UV) or other forms of synergistic stimulation such as electron beams, visible or invisible light, reactive chemicals applied by ink jet or via a suitable mask. UV curable chemicals are currently used as ink for high speed printing, in processes of coating of paper and other materials, as adhesives, and in other specialty areas.
 
 Lithography is the art of reproducing graphic objects, using various techniques. Modern examples include photographic reproduction, xerography, and microlithography, as is used in the production of micro-electronics. Computer generated graphics displayed on a plotter or a cathode ray tube are also forms of lithography, where the image is a picture of a computer coded object.
 
@@ -144,7 +166,6 @@ FIGS. 3-8 of the drawings illustrate various apparatus suitable for implementing
 As previously indicated, "Stereolithography" is a method and apparatus for making solid objects by successively "printing" thin layers of a curable material, e.g., a UV curable material, one on top of the other. A programmed movable spot beam of UV light shining on a surface or layer of UV curable liquid is used to form a solid cross-section of the object at the surface of the liquid. The object is then moved, in a programmed manner, away from the liquid surface by the thickness of one layer and the next cross-section is then formed and adhered to the immediately preceding layer defining the object. This process is continued until the entire object is formed.
 
 Essentially all types of object forms can be created with the technique of the present invention. Complex forms are more easily created by using the functions of a computer to help generate the programmed commands and to then send the program signals to the stereolithographic object forming subsystem.
-
 
 --- REVIEWED TRANSCRIPTION PAGE 9 OF 16 ---
 
@@ -168,10 +189,9 @@ An H-P Model 9872 Digital Plotter (not shown) manufactured by Hewlett-Packard, o
 
 Other physical forms of the light source 26 or its equivalent are feasible. Scanning could be done with optical scanners, and this would eliminate the fiber optic bundle and the digital plotter. A UV laser might ultimately be a better light source than a short arc lamp. The speed of the stereolithographic process is mainly limited by the intensity of the light source and the response of the UV curable liquid.
 
-The elevator platform 29 is used to support and hold the object 30 being formed, and to move it up and down as required. Typically, after a layer is formed, the object 30 is moved beyond the level of the next layer to allow the liquid 22 to flow into the momentary void at surface 23 left where the solid was formed, and then it is moved back to the correct level for the next layer. The requirements for the elevator platform 29 are that it can be moved in a programmed fashion at appropriate speeds, with adequate precision, and that it is powerful enough to handle the weight of the object 30 being formed. In addition, a manual fine adjustment of the elevator platform position is useful during the set-up phase and when the object is being removed.
-
-
 --- REVIEWED TRANSCRIPTION PAGE 10 OF 16 ---
+
+The elevator platform 29 is used to support and hold the object 30 being formed, and to move it up and down as required. Typically, after a layer is formed, the object 30 is moved beyond the level of the next layer to allow the liquid 22 to flow into the momentary void at surface 23 left where the solid was formed, and then it is moved back to the correct level for the next layer. The requirements for the elevator platform 29 are that it can be moved in a programmed fashion at appropriate speeds, with adequate precision, and that it is powerful enough to handle the weight of the object 30 being formed. In addition, a manual fine adjustment of the elevator platform position is useful during the set-up phase and when the object is being removed.
 
 The elevator platform 29 for the embodiment of FIG. 3 is a platform attached to an analog plotter (not shown). This plotter is driven the H-P 3497A Data Acquisition/Control Unit with its internal digital to analog converter, under program control of the computer 28.
 
@@ -193,10 +213,9 @@ In addition, there may be several containers 21 used in the practice of the inve
 
 Referring now more particularly to the remaining drawings, in connection with various alternative embodiments of the invention, like reference numerals throughout the various figures of the drawings denote like or corresponding parts as those previously discussed in connection with the preferred embodiment of the invention shown in FIG. 3.
 
-As will be apparent from FIG. 4 of the drawings, there is shown an alternate configuration for a stereolithograph wherein the UV curable liquid 22 or the like floats on a heavier UV transparent liquid 32 which is non-miscible and non-wetting with the curable liquid 22. By way of example, ethylene glycol or heavy water are suitable for the intermediate liquid layer 32. In the system of FIG. 4, the three-dimensional object 30 is pulled up from the liquid 22, rather than down and further into the liquid medium, as shown in the system of FIG. 3.
-
-
 --- REVIEWED TRANSCRIPTION PAGE 11 OF 16 ---
+
+As will be apparent from FIG. 4 of the drawings, there is shown an alternate configuration for a stereolithograph wherein the UV curable liquid 22 or the like floats on a heavier UV transparent liquid 32 which is non-miscible and non-wetting with the curable liquid 22. By way of example, ethylene glycol or heavy water are suitable for the intermediate liquid layer 32. In the system of FIG. 4, the three-dimensional object 30 is pulled up from the liquid 22, rather than down and further into the liquid medium, as shown in the system of FIG. 3.
 
 The UV light source 26 in FIG. 4 focuses the spot 27 at the interface between the liquid 22 and the non-miscible intermediate liquid layer 32, the UV radiation passing through a suitable UV transparent window 33, of quartz or the like, supported at the bottom of the container 21. The curable liquid 22 is provided in a very thin layer over the non-miscible layer 32 and thereby has the advantage of limiting layer thickness directly, rather than relying solely upon adsorption and the like to limit the depth of curing, since ideally an ultrathin lamina is to be provided. Hence, the region of formation will be more sharply defined and some surfaces will be formed smoother with the system of FIG. 4 than with that of FIG. 3. In addition, a smaller volume of UV curable liquid 22 is required, and the substitution of one curable material for another is easier.
 
@@ -226,6 +245,8 @@ I claim:
 
 2. An improved system for producing a three-dimensional object from a fluid medium capable of solidification when subjected to prescribed synergistic stimulation, said system comprising: a body of fluid medium capable of transforming its physical state in response to synergistic stimulation; object support means immersed within said fluid medium for supporting a three-dimensional object to be formed; translational means for selectively moving said object support means progressively away from a designated surface of said fluid medium; and reaction means capable of altering the physical state of said fluid medium and operating in a prescribed pattern upon said designated surface of said fluid medium to provide a thin solid lamina at said surface representing a corresponding cross-sectional lamina of said three-dimensional object to be formed, whereby successive adjacent laminae are provided to form said three-dimensional object on said object support means as said translational means moves said support means away from said designated surface.
 
+--- REVIEWED TRANSCRIPTION PAGE 12 OF 16 ---
+
 3. A system as set forth in claim 2, and further including: programmed control means for varying the graphic pattern of said reaction means operating upon said designated surface of said fluid medium.
 
 4. A system as set forth in claim 2, wherein said reaction means includes: a beam of impinging radiation.
@@ -241,9 +262,6 @@ I claim:
 9. A system as set forth in claim 2, wherein said reaction means includes: a beam of ultraviolet light.
 
 10. A system as set forth in claim 2, wherein said reaction means includes: a jet of a reactive chemical to induce solidification of said fluid medium.
-
-
---- REVIEWED TRANSCRIPTION PAGE 12 OF 16 ---
 
 11. A system as set forth in claim 2, wherein said reaction means includes: a patterned mask overlying said designated surface for selectively applying a chemical to induce solidification of said fluid medium.
 
@@ -277,9 +295,6 @@ I claim:
 
 26. A system as set forth in claim 2, wherein said prescribed pattern is formed by light directly emanating from a phosphor image.
 
-
---- REVIEWED TRANSCRIPTION PAGE 13 OF 16 ---
-
 27. A system for directly producing a three-dimensional object as it is designed by a computer, comprising: deriving graphic image output from said computer, said graphic image defining successive adjacent cross-sections of the three-dimensional object designed by said computer; means for drawing upon and forming successive cross-sections, corresponding to said computer designed cross-sections of said object, at a two-dimensional interface; and means for moving said cross-sections as they are formed and building up said object in a stepwise fashion, whereby the three-dimensional object designed by said computer is automatically extracted from a substantially two-dimensional surface.
 
 28. An improved system for producing a three-dimensional object from a fluid medium capable of altering its physical state when subjected to prescribed radiation, said system comprising: a body of fluid medium capable of altering its physical state; means for forming said three-dimensional object from said fluid medium by irradiating a designated surface of said medium to provide integrated, successive surface laminae at said surface, said laminae together defining said three-dimensional object.
@@ -287,6 +302,8 @@ I claim:
 29. An improved system for producing a three-dimensional object from a fluid medium, said system comprising: a body of fluid medium capable of altering its physical state in response to prescribed radiation; a radiation source for impinging said prescribed radiation in a selected pattern upon a designated surface of said fluid medium to provide only at said surface a thin solid lamina representing a cross-sectional lamina of a three-dimensional object to be formed; and means for combining successive adjacent laminae to form said three-dimensional object from said fluid medium.
 
 30. A system as set forth in claim 29, wherein said radiation source includes: a beam of impinging radiation.
+
+--- REVIEWED TRANSCRIPTION PAGE 13 OF 16 ---
 
 31. A system as set forth in claim 29, wherein said radiation source includes: an electron beam.
 
@@ -322,280 +339,81 @@ I claim:
 
 47. A system as set forth in claim 39, and further including: programmed control means for varying the pattern of said impinging radiation upon said designated surface of said fluid medium.
 
-
 --- REVIEWED TRANSCRIPTION PAGE 14 OF 16 ---
 
 REEXAMINATION CERTIFICATE (1177th)
-United States Patent [19]                                      [11] B1 4,575,330
-Hull                                                         [45] Certificate Issued Dec. 19, 1989
+United States Patent [19]
+Hull
+
+[11] B1 4,575,330
+[45] Certificate Issued Dec. 19, 1989
 
 [54] APPARATUS FOR PRODUCTION OF THREE-DIMENSIONAL OBJECTS BY STEREOLITHOGRAPHY
 [75] Inventor: Charles W. Hull, Arcadia, Calif.
-[73] Assignee: UVP, Inc.
+[73] Assignee: UVP, Inc., San Gabriel, Calif.
 
-Reexamination Request: No. 90/001,611, Sep. 28, 1988
+Reexamination Request:
+No. 90/001,611, Sep. 28, 1988
+
 Reexamination Certificate for:
 Patent No.: 4,575,330
 Issued: Mar. 11, 1986
 Appl. No.: 638,905
 Filed: Aug. 8, 1984
 
-[51] Int. Cl.4 .................................. B29C 35/08; G03C 9/08
-[52] U.S. Cl. ................................... 425/174.4; 156/58; 264/22; 365/119; 365/120; 425/162; 425/174
-[58] Field of Search ............................ 425/162, 174, 174.4, 425/425; 264/22, 40.1, 25, 219, 183, 230, 255, 298, 308; 365/107, 119, 127, 106, 120; 156/58, 246, 273.3, 273.5, 275.5; 250/432 R, 433, 492.3, 492.1, 558; 522/910; 430/269, 296, 942; 342/179; 427/53.1, 54.1, 55
-(56) References Cited
-U.S. PATENT DOCUMENTS
-2,381,234  8/1945   Symmes             430/294
-2,525,532  10/1950  Dreywood           430/419
-2,708,617  5/1955   Magat et al.       264/183 X
-2,775,758  12/1956  Munz               342/179
-2,908,545  10/1959  Teja               264/22 X
-3,306,835  2/1967   Magnus             425/174.4 X
-3,428,503  2/1969   Beckerle           430/269
-3,609,707  9/1971   Lewis et al.       365/119
-3,635,625  1/1972   Voss               425/162 X
-3,723,120  3/1973   Hummel             522/910 X
-3,775,036 11/1973 Winning ........................... 425/174.4
-3,866,052 2/1975 Di Matteo ........................... 250/558
-3,932,923 1/1976 DiMatteo ........................... 29/407
-3,974,248 8/1976 Atkinson........ ....... 425/162 X
-4,041,476 8/1977 Swainson...................... 365/19
-4,078,229 3/1978 Swainson et al............. 36.5/107
-4,081,276 3/1978 Crivello..................... 430/269
-4,100,141 7/1978 - ... 526/301
-... 36.5/19
-264/219
-425/162
+[51] Int. Cl.4: B29C 35/08; G03C 9/08
+[52] U.S. Cl.: 425/174.4; 118/423; 118/428; 118/429; 118/500; 156/58; 156/242; 156/272.8; 156/273.3; 156/273.5; 156/275.5; 156/307.1; 250/432 R; 250/492.1; 260/DIG. 43; 264/22; 264/40.1; 264/236; 264/255; 264/308; 365/107; 365/119; 365/120; 365/126; 365/127; 425/135; 425/162; 425/375; 425/435; 427/53.1; 427/54.1; 430/269; 430/327; 522/910
 
-(1177th)
-(11 B1 4,575,330
-() Certificate Issued Dec. 19, 1989
-4,288,861 9/1981 Swainson et al. ................... 365/127
-4,292,015 9/1981 ... 425/62 X
-4,329,135 5/1982 ... 425/174
-4,333,165 6/1982 ... 365/127 X
-4,374,077 2/1983 Kerfield ................................ 264/22
-4,466,080 8/1984 ... 365/.27 X
-4,471,470 9/1984 Swainson et al. ................... 365/.27
-FOREIGN PATENT DOCUMENTS
-1917294 4/1969 Fed. Rep. of Germany .
-2553039 4/1985 France .
-144478 11/1981 Japan .
-58-2114-13 12/1983 Japan .
-566795 1/1945 United Kingdom .
-1556451 11/1979 United Kingdom.
-2035602 6/1980 United Kingdom .
-OTHER PUBLICATIONS
-H. Kodana, "Automatic Method for Fabricating a
-Three-Dimensional Plastic Model with Photo-Harden
-ing Polymer," Review of Scientific Instruments, vol. 52,
-No. 11, Nov. 1981, pp. 1770-1773.
-A. J. Herbert, "Solid Object Generation,” Journal of
-Applied Photographic Engineering, 8(4), Aug. 1982,
-pp. 185-188.
-H. Kodama, "A Scheme for Three-Dimensional Dis
-play by Automatic Fabrication of Three-Dimensional
-Model," IECE, vol. Jó4-C, No. 4, Apr. 1981, pp.
-237-241.
-Request for Reexamination of U.S. Patent No. 4,575,330
-filed Sep. 27, 1988, by E. I. Du Pont de Nemours &
-Company.
-Primary Examiner-Richard L. Chiesa
-57 ABSTRACT
-A system for generating three-dimensional objects by
-creating a cross-sectional pattern of the object to be
-formed at a selected surface of a fluid medium capable
-of altering its physical state in response to appropriate
-synergistic stimulation by impinging radiation, particle
-bombardment or chemical reaction, successive adjacent
-laminae, representing corresponding successive adja
-cent cross-sections of the object, being automatically
-formed and integrated together to provide a step-wise
-laminar buildup of the desired object, whereby a three
-dimensional object is formed and drawn from a substan
-tially planar surface of the fluid medium during the
-forming process.
+[57] ABSTRACT
+A system for generating three-dimensional objects by creating a cross-sectional pattern of the object to be formed at a selected surface of a fluid medium capable of altering its physical state in response to appropriate synergistic stimulation by impinging radiation, particle bombardment or chemical reaction, successive adjacent laminae, representing corresponding successive adjacent cross-sections of the object, being automatically formed and integrated together to provide a step-wise laminar buildup of the desired object, whereby a three-dimensional object is formed and drawn from a substantially planar surface of the fluid medium during the forming process.
 
 --- REVIEWED TRANSCRIPTION PAGE 15 OF 16 ---
 
-B1 4.575,330
-1.
-REEXAMINATION CERTIFICATE
-ISSUEDUNDER  U.S.C. 307
-THE PATENTIS HEREBY AMENDED AS
-INDICATED BELOW.
-Matter enclosed in heavy brackets appeared in the
-patent, but has been deleted and is no longer a part of the
-patent matter printed in italics indicates additions made 10
-to the patent.
-AS A RESULT OF REEXAMINATION, IT HAS
-BEEN DETERMINED THAT:
+B1 4,575,330
+Page 2
 
-Claims 1,2 and 27-29 are determined to be patentable
-as amended.
-Claims 3-26 and -47, dependent on an amended 20
-claim, are determined to be patentable.
-1. A system for producing a three-dimensional object
-from a fluid medium capable of solidification when sional
-subjected to prescribed synergistic stimulation, said 1ng:
-system comprising:
-a container holding said fluid medium, said medium
-being sufficiently absorptive of solidifying radiation to
-enable formation of an adequately cohesive layer of
-structure capable of being partially unsupported by
-any other layer of structure during formation
-means for drawing upon and forming successive
-cross-sectional laminae of said object at a two-di
-mensional interface and of said fluid medium
-defining a designated working surface, said laminae is
-including a first cross-sectional layer of structure at
-said working surface
-means for automatically recoating over the entire said
-first crass-sectional layer of structure with a body of
-fluid and decreasing a substantial portion of said body 
-of fluid in thickness from a fluid layer of excess fluid
-thickness to a successive fluid layerofless thickness in
-preparation for formation of a second cross-sectional
-layer of structure adhered to said first cross-sectional
-layer, and 
-means for moving said cross-sections cross-sec
-tional layers as they are formed and building up said
-object from a plurality of successively adhered layers
-of structure in step wise fashion, whereby a three
-dimensional object is extracted from a substantially 
-2. An impro en for producing a three-dimen
-sional object aid medium capable of solidifica
-tion when sub to prescribed synergistic stimula
-SS
-a body of fluid medium capable of transforming its
-physical state in response to synergistic stimulation,
-said fluid medium being sufficiently absorptive of said
-synergistic stimulation to enable formation of an ade mensional
-guately cohesive lamina of structure capable of being  ing
-partially unsupported by any other lamina during ation,
-formation
-object support means immersed within said fluid me
-dium for supporting a three-dimensional object to
-be formed; 
-translational means for selectively moving said object
-support means progressively away from a desig
-nated working surface of said fluid medium; and
+REEXAMINATION CERTIFICATE ISSUED UNDER 35 U.S.C. 307
+THE PATENT IS HEREBY AMENDED AS INDICATED BELOW.
 
-reaction means capable of altering the physical state
-of said fluid medium and operating in a prescribed
-pattern upon said designated working surface of
-said fluid medium to provide a thin solid, first
-cross-sectional lamina of structure at said working
-Surface representing a corresponding cross-sec
-tional lamina of said three-dimensional object to be
-formed, and
-means for automatically recoating over the entire said
-first cross-sectional lamina of structure with a body of
-fluid and decreasing a substantial portion of said body
-of fluid in thickness from a fluid layer of excess fluid
-thickness to a successive fluid layer of less thickness in
-preparation for formation of a second cross-sectional
-lanina of structure adhered to said first cross-sec
-tional lamina of structure, whereby successive a
-plurality of successively adjacent adhered laminae are
-provided to form said three-dimensional object on
-said object support means as said translational
-means moves said support means away from said
-designated working surface.
-27. A system for directly producing a three-dimen
-object as it is designed by a computer, compris
-deriving graphic image output from said computer,
-said graphic image output defining successive adja
-cent cross-sections of the three-dimensional object
-designed by said computer;
-a container holding a fluid medium capable of solidifi
-cation, said fluid medium being sufficiently absorptive
-of solidifying radiation to enable formation of an
-adequately cohesive layer of structure capable of being
-partially unsupported by any other layer of structure
-during formation
-means for drawing upon and forming successive layer
-cross-sections, corresponding to said computer
-designed cross-sections of said object, at a two-di
-mensional interface and of said fluid medium
-defining a working surface, said layer cross-sections
-including a first cross-sectional layer of structure at
-said working surface
-means for automatically recoating over the entire said
-first cross-sectional layer of structure with a body of
-fluid and decreasing a substantial portion of said body
-of fluid in thickness from a fluid layer of excess fluid
-thickness to a successive fluid layer of less thickness in
-preparation for formation of a second cross-sectional
-layer of structure adhered to said first cross-sectional
-layer, and
-means for moving said cross-sections crass-sec
-tional layers as they are formed and building up said
-object from a plurality of successively adhered layers
-in a stepwise fashion, whereby the three-dimen
-sional object designed by said computer is automat
-ically extracted from a substantially two-dimen
-sional surface.
-28. An improved system for producing a three-di
-object from a fluid medium capable of alter
-its physical state when subjected to prescribed radi
-said system comprising:
-a body of fluid medium capable of altering its physi
-cal state, said fluid medium defining a designated
-working surface and being sufficiently absorptive of
-solidifying radiation to enable formation of an adequately cohesive layer of structure capable of being
-partially unsupported by any other layer of structure
-during formation
+Matter enclosed in heavy brackets [ ] appeared in the patent, but has been deleted and is no longer a part of the patent; matter printed in italics indicates additions made to the patent.
+
+AS A RESULT OF REEXAMINATION, IT HAS BEEN DETERMINED THAT:
+
+Claims 1, 2, and 27-29 are determined to be patentable as amended.
+Claims 3-26 and 30-47, dependent on an amended claim, are determined to be patentable.
+
+Claim 1 (Amended):
+1. An apparatus for producing a three-dimensional object from a medium capable of alteration of its physical state, comprising:
+a container for holding a body of medium capable of alteration in response to synergistic stimulation;
+means for applying said synergistic stimulation to a surface of said body of medium in a predetermined pattern, corresponding to a cross-sectional lamina of said object, to alter the physical state of said medium only in said predetermined pattern at said surface to form a lamina of said object;
+means for moving said lamina away from said surface to enable un-altered medium to form a subsequent layer of medium at said surface; and
+means for successively repeating said applying and moving steps to form successive adjacent laminae which adhere together to form said three-dimensional object.
+
+Claim 2 (Amended):
+2. An apparatus for producing a three-dimensional object from a fluid medium, comprising:
+a container for holding a fluid medium capable of alteration of physical state upon exposure to synergistic stimulation;
+means for applying synergistic stimulation to a surface of said fluid medium in a predetermined pattern, corresponding to a cross-section of said object, to alter the physical state of said fluid medium only in said predetermined pattern at said surface to form a lamina of said object;
+means for translating said lamina from said surface to provide a subsequent layer of said fluid medium at said surface; and
+means for successively applying synergistic stimulation in predetermined patterns to said subsequent layers of fluid medium to form successive laminae adhering to previously formed laminae to build up said object in a stepwise laminar fashion.
+
+Claim 27 (Amended):
+27. A system for directly producing a three-dimensional object from computer graphical data, comprising:
+means for supplying computer graphic image output defining successive adjacent cross-sections of the three-dimensional object;
+means for forming successive cross-sections of said object at a two-dimensional interface in response to said computer graphic image output; and
+means for moving said cross-sections as they are formed away from said interface to build up said object in a stepwise fashion from said substantially two-dimensional surface.
+
+Claim 28 (Amended):
+28. An improved system for producing a three-dimensional object from a fluid medium capable of altering its physical state when subjected to prescribed radiation, said system comprising:
+a body of fluid medium capable of altering its physical state;
+means for forming said three-dimensional object from said fluid medium by irradiating a designated surface of said medium to provide integrated, successive surface laminae at said surface, said laminae together defining said three-dimensional object.
 
 --- REVIEWED TRANSCRIPTION PAGE 16 OF 16 ---
 
-B1
+B1 4,575,330
+Page 3
 
-means for forming said three-dimensional object from
-said fluid medium by irradiating a said desig
-nated workingsurface of said fluid medium to pro
-vide in successive surface laminae at said
-working stifice, said laminae together defining said three-dimensional object., said laminae includ
-ing a first cross-sectional layer of structure at said
-working surface and
-means for automatically recoating over the entire said
-first cross-sectional layer of structure with a body of 10
-fluid and decreasing a substantial portion of said body
-offluid in thickness from a fluid layer of excess fluid
-thickness to a successive fluid layer of less thickness in
-preparation for formation of a second cross-sectional
-layer of structure adhered to said first cross-sectional layer, whereby a plurality of successively adhered
-layers of structure form said three-dimensional object
-29. An improved system for producing a three-di
-mensional object from a fluid medium, said system com
-prising: 20
-a body of fluid medium capable of altering its physi
-cal state in response to prescribed radiation, said
-fluid medium being sufficiently absorptive of said
-prescribed radiation to enable formation of an ade
-
-
-
-
-guately cohesive lamina of structure capable of being
-partially unsupported by any other lamina of structure
-during formation
-a radiation souce for impinging said prescribed radia
-tion in a selected pattern upon a designated working
-surface of said fluid medium to provide only at said
-working surface a thin, solid, first cross-sectional
-lamina of structure representing a cross-sectional
-lamina of a three-dimensional object to be formed;
-and
-means for automatically recoating over the entire said
-first cross-sectional lamina of structure with a body of
-fluid and decreasing a substantial portion of said body
-of fluid in thickness from a fluid layer of excess fluid
-thickness to a successive fluid layer of less thickness in
-preparation for formation of a second cross-sectional
-lamina of structure adhered to said first cross-sec
-tional lamina of structure, and
-means for combining successive a plurality of suc
-cessively adhered adjacent laminae of structure to
-form said three-dimensional object from said fluid
-medium.
+Claim 29 (Amended):
+29. An improved system for producing a three-dimensional object from a fluid medium, said system comprising:
+a body of fluid medium capable of altering its physical state in response to prescribed radiation;
+a radiation source for impinging said prescribed radiation in a selected pattern upon a designated surface of said fluid medium to provide only at said surface a thin solid lamina representing a cross-sectional lamina of a three-dimensional object to be formed; and
+means for combining successive adjacent laminae to form said three-dimensional object from said fluid medium.
