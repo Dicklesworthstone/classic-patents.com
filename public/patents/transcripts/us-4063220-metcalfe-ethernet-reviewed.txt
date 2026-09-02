@@ -3,67 +3,80 @@
 United States Patent [19]             [11]   4,063,220
 Metcalfe et al.                       [45]   Dec. 13, 1977
 
-[54]  MULTIPOINT DATA COMMUNICATION SYSTEM WITH COLLISION DETECTION
-[75]  Inventors: Robert M. Metcalfe; David R. Boggs; Charles P. Thacker; Butler W. Lampson, all of Palo Alto, Calif.
-[73]  Assignee:  Xerox Corporation, Stamford, Conn.
-[21]  Appl. No.: 563,828
-[22]  Filed:     Mar. 31, 1975
-[51]  Int. Cl.²: G06F 3/04; H04J 3/02
-[52]  U.S. Cl.:  340/147 R; 178/69 R; 179/15 AL; 340/147 T
-[58]  Field of Search: 340/147 R, 147 T, 151; 178/69 R, 69 B; 179/15 AL, 15 R, 15 BA
+[54] MULTIPOINT DATA COMMUNICATION SYSTEM WITH COLLISION DETECTION
+[75] Inventors: Robert M. Metcalfe, Woodside; David R. Boggs; Charles P. Thacker, both of Palo Alto; Butler W. Lampson, Portola Valley, all of Calif.
+[73] Assignee:  Xerox Corporation, Stamford, Conn.
+[21] Appl. No.: 563,741
+[22] Filed:     Mar. 31, 1975
+[51] Int. Cl.²: H04Q 9/00
+[52] U.S. Cl.:  340/147 LP; 178/58 A; 340/147 R; 340/163; 340/346
+[58] Field of Search: 340/147 R, 147 LP, 163, 340/151, 152 R, 152 T, 346; 325/22, 57; 178/58 A; 179/2 DP, 15 AS, 17 B, 30; 343/177, 180
+[56] References Cited
+U.S. PATENT DOCUMENTS
+3,350,687 10/1967 Gabrielson et al. 340/163
+3,496,293 2/1970 Avery et al. 340/346
+3,509,538 4/1970 Holden et al. 340/147 R
+3,725,870 4/1973 Felcheck 340/152 R
+3,742,450 6/1973 Weller 340/147 R
+3,745,462 7/1973 Trimble 325/22
+3,819,932 6/1974 Auer et al. 340/163
+3,825,897 7/1974 Lawton 340/147 R
+3,942,116 3/1976 Ferguson 325/22
+3,967,059 6/1976 Moore et al. 178/58 A
+FOREIGN PATENT DOCUMENTS
+1,168,476 10/1969 United Kingdom
+1,365,838 9/1974 United Kingdom
+1,382,133 1/1975 United Kingdom
+Primary Examiner: John W. Caldwell, Sr.
+Assistant Examiner: James J. Groody
+Attorney, Agent, or Firm: J. E. Beck; T. J. Anderson; B. P. Smith
 
-[57]  ABSTRACT
-A multipoint data communication system is disclosed which includes a communicating medium and a plurality of transceivers connected to the medium. Each transceiver has a transmitting means and a receiving means. Collision detecting means is connected to the transmitting and receiving means for producing a collision signal when a signal produced by the transmitting means and a signal received by the receiving means are unequal. In response to the collision signal, the transmission of the signal onto the medium is interrupted and after a randomized time delay is attempted again.
+[57] ABSTRACT
+Apparatus for enabling communications between two or more data processing stations comprising a communication cable arranged in branched segments including taps distributed thereover. Tied to each tap is a transceiver which on the other side connects to an associated interface stage. Each transceiver includes, in addition to the usual transmitter and receiver sections, a gate which compares the data from the interface stage with the data on the cable and indicates whether such are equal. Should such be unequal, an interference between the transceiver and the cable is indicated, disabling the associated transmitter section. Each interface stage tied to such transceiver also includes an input and an output buffer on the other end thereof interfacing with a using device, such input and output buffers storing both the incoming and outgoing data. The output buffer is connected to a clock-driven shift register which converts the buffered data to a serial stream, feeds such data to a phase encoder, which then connects to the transmitter or driver section of the transceiver. The input buffer is loaded by an input shift register which derives its clock from a phase decoder, the shift register and the phase decoder both connecting to the receiver section. When the station is to start transmitting, the phase decoder detects the presence of other transmissions on the cable and detains the output shift register until no other transmissions are sensed. Once a transmission has begun, if interference is detected and the transmitter section is disabled, a random number generator is used to select an interval of time at the completion of which the next attempted transmission will take place. Concurrently, a counter counts the number of interferences, or collisions, which recur in the attempted transmissions of one data packet and weights the mean of the random number generator accordingly. The input shift register is also connected to an address decoder which enables data transfer to the input buffer only during those times when the data is preceded by an appropriate address.
 
-Claims, 10 Drawing Figures
+22 Claims, 7 Drawing Figures
 
 --- REVIEWED TRANSCRIPTION PAGE 2 OF 19 ---
 
 U.S. Patent   Dec. 13, 1977   Sheet 1 of 6   4,063,220
 
 FIG. 1
-100 110 111 112 115 116 120 121 125 126
 
 --- REVIEWED TRANSCRIPTION PAGE 3 OF 19 ---
 
 U.S. Patent   Dec. 13, 1977   Sheet 2 of 6   4,063,220
 
 FIG. 2
-1000 1002 1004 1006 1008 1010
 
 --- REVIEWED TRANSCRIPTION PAGE 4 OF 19 ---
 
 U.S. Patent   Dec. 13, 1977   Sheet 3 of 6   4,063,220
 
 FIG. 3
-111 115 302 304 306 310 312 314 320 322 324 326 330 340 341 350 352 360 370 380 390 391 392
 
 --- REVIEWED TRANSCRIPTION PAGE 5 OF 19 ---
 
 U.S. Patent   Dec. 13, 1977   Sheet 4 of 6   4,063,220
 
 FIG. 4
-402 404 406 408 410 412 414 416 418 420 422 424 426 428 430
 
 --- REVIEWED TRANSCRIPTION PAGE 6 OF 19 ---
 
 U.S. Patent   Dec. 13, 1977   Sheet 5 of 6   4,063,220
 
-FIG. 5
-502 504 506 508 510 512 514 516 518 520 522 524 526 528 530 532 534
+FIG.
 
 --- REVIEWED TRANSCRIPTION PAGE 7 OF 19 ---
 
 U.S. Patent   Dec. 13, 1977   Sheet 6 of 6   4,063,220
 
-FIG. 6, FIG. 7, FIG. 8, FIG. 9
-602 604 606 702 704 706 708 710 712 714 802 804 806 808 810 812 814 902 904 906 908
+FIG. 6, FIG. 7
 
 --- REVIEWED TRANSCRIPTION PAGE 8 OF 19 ---
 
-MULTIPOINT DATA‘ COMMUNICATION SYSTEM
+MULTIPOINT DATA COMMUNICATION SYSTEM
 WITH COLLISION DETECTION
-BACKGROUND OF. THE INVENTION
+BACKGROUND OF THE INVENTION
 1. Field of the Invention
 The present invention relates to data communication
 systems, and more particularly to data communication
@@ -74,10 +87,10 @@ to computers to allow various remotely located users
 access to the computer. As computer processing times
 became faster, the need for allowing more users access
 to the computer further increased, in order to fully
-utilize the computer facility. Generally, access to suc
+utilize the computer facility. Generally, access to such
 central computer was made by way of remote consoles,
 each tying to the central computer. As the number of
-computer facilities grew, users, began to notice their
+computer facilities grew, users began to notice their
 heavier investments in software, and the often occur
 ring duplication of software, and for those reasons com
 munications among users increased to facilitate sharing
@@ -96,23 +109,22 @@ small, inexpensive computers, such as microprocessors,
 which because of their low cost have acquired a wide
 acceptance. The owner of such a small computer, how
 ever, often does not desire to concurrently assume the
-cost of various peripheral devices, as for example a hi
-speed printing station, and for that reason such device
+cost of various peripheral devices, as for example a high
+speed printing station, and for that reason such devices
 are increasingly used on a shared basis. Again, the ne
 cessity of communicating between the small computer
-and the shared facility increased the load on any com
-municating system. In addition, with the advent of such
+and the shared facility increased the load on any communicating system. In addition, with the advent of such
 small computers, and particularly their associated algo
 rithmic simplicity and convenience in use, the old tech
 niques of central computer process supervision are now
 being abandoned in favor of distributed control.
-More speci?cally, the original large and complex
+More specifically, the original large and complex
 computer facilities were generally provided with a su
 pervisory system for the purpose of scheduling and
 directing jobs, sampling input and‘ output devices and
 otherwise controlling the order of operations within a
 relatively complex computer. Such supervisory systems
-also accommodated, by way of the loader function and
+also accommodated, by way of the loader function and 55 a
 the linking function for example, problem solutions
 which in their entirety would saturate the computer
 memory and which, however, by use of this system,
@@ -120,13 +132,14 @@ could be broken up and handled serially on one central
 processing facility. Such tasks assigned to the supervi
 sory system, together with the increasing task of tying
 and correlating various, increasing in number, periph
-eral stations to the central processor has led to a gro
+eral stations to the central processor has led to a growt
 of supervisory systems which are now typically so com
 plex that a large part of the computer down time can be
 attributed to failures thereof. Accordingly, the recent
 trend has been towards less centralized control in any
 one computer facility.
 
+With the advent of the aforementioned small comput
 ers, and particularly their ease and simplicity in opera
 tion, the user himself can assume more control over the
 sequence of operations in the processor. Accordingly, a
@@ -135,13 +148,13 @@ control is therefore shared, or distributed, amongst
 users.
 The residual problem, however, is in the communica
 tions themselves between the various computing de
-10 vices. Where more than one computer is shared in solv
+vices. Where more than one computer is shared in solv
 ing a particular problem, or where smaller problems are
 handled on a time shared basis, the speed of communi
 cation and the capacity of the communicating network
 quickly becomes the dominant aspect of the problem.
 Communications between such computing devices
-h    are carried out by way of two generic techniques. One
+are carried out by way of two generic techniques. One
 such technique is generally referred to as a circuit
 switching technique, while the second technique is gen
 erally referred to as a packet switching technique. Cir
@@ -159,72 +172,72 @@ can be analogized to letter handling by the postal sys
 tem, except that the letters are computer data packets
 sorted and transmitted very quickly by increasingly
 inexpensive computers. Short communications can be
-carried ef?ciently in a single data packet and bursty
+carried efficiently in a single data packet and bursty
 communications can be handled with a series of packets,
 none of which occupy communication resources during
 the frequent idle periods between bursts.
 Accordingly, there exists a present requirement for a
-gh   packet switching communication system which is effi
-s    cient and reliable while requiring minimum hardware.
+packet switching communication system which is effi
+cient and reliable while requiring minimum hardware.
 Additional requirements are to provide a communica
 tion system capable of effecting communications be
 tween various computers and peripherals without the
 aid of central control and with a high level of probabil
-45 ity of completion. In addition, there is a further require
+ity of completion. In addition, there is a further require
 ment to provide a communication network which is
 simple to produce, requires simple parts in its attach
 ments and is generally of low complexity.
 SUMMARY OF THE INVENTION
-Brie?y, the above and other requirements are met
+Briefly, the above and other requirements are met
 within the present invention by providing a bit-serial
 receiver-transmitter network continuously connected
-to all communicating devices. More speci?cally, such is
-accomplished by forming a network of any one or a
+to all communicating devices. More specifically, such is
+ccomplished by forming a network of any one or a
 plurality of transmitting media, such as coaxial cable,
 optical ?ber or others, connected together into one
 branched network by constantly active devices, like
 repeaters, by which communications necessarily
-60 adapted to one medium are translated into the other
+adapted to one medium are translated into the other
 medium.
 The above communication network is constantly tied
-wth across a plurality of transceivers and associated inter
+h across a plurality of transceivers and associated inter
 face stages to a plurality of using devices, such devices
-65 being either various general purpose computers, special
+being either various general purpose computers, special
 purpose computers (microprocessors), devices like in
 put-output stations, or remote terminals, and various
 other peripherals. The common characteristic of each
 
 --- REVIEWED TRANSCRIPTION PAGE 9 OF 19 ---
 
+transceiver and interface stage combination is that it
 constantly senses the data stream passing through the
-network, the interface stage constantly looking for dat
+network, the interface stage constantly looking for data
 packets addressed to it. The sensing is accomplished by
 a receiver included in the transceiver associated with
 each interface stage, connecting the interface stage to
 the network. In addition to the normal transmitting and
 receiving functions, the transceiver provides a further
 control function for blocking transmission of data pack
-ets from the using device, in a self-controlled manner,
+ets from the using device, in a self-controlled manner, t
 avoid interference or collision with data on the cable
 passing between two other using devices. When a pe
-riod of quiscent state in the cable is sensed by the tr
-ceiver and communicated to the interface stage, the
-interface stage issues a transmission and, if after a p
-termined interval of time no collisions are detected, t
-interface stage acquires the network and all other usin
-devices, by way of their interface stages, will defer i
+riod of quiscent state in the cable is sensed by the transceiver and communicated to the interface stage, the
+interface stage issues a transmission and, if after a pre
+termined interval of time no collisions are detected, that
+interface stage acquires the network and all other using
+devices, by way of their interface stages, will defer in
 the same manner.
 Because of propagation delays, however, one remote
-station may be already transmitting into the cable whil
-another still senses a quiscent cable. Thus, essentiall
+station may be already transmitting into the cable while
+another still senses a quiscent cable. Thus, essentially
 concurrent attempts at transmission by two or more
 using devices may occur with resulting data collision.
 This particular contingency is accommodated by incor
 porating within each transceiver collision detection
 logic which, concurrent with the transmission, also
 monitors the cable, compares the cable contents bit by
-bit against the locally transmitted contents, and if di
-ences or collisions are discovered, directs the interfa
+bit against the locally transmitted contents, and if diff
+ences or collisions are discovered, directs the interface
 stage to abort the transmission. Once such occurs, both
 con?icting sending devices abort the transmission and
 will not retransmit unil each one waits for a predeter
@@ -234,7 +247,7 @@ tional logic is provided by which the above increment
 of time, or retransmission interval, in each interface
 stage is distributed according to a weighted random
 number generator. The weighting of the number from
-the random number generator is performed by further
+the random number generator is performed by further 40 da
 logic elements which, based on the past number of re
 peated aborts for the packet selected for present trans
 mission, determines a heavier present usage density of
@@ -242,15 +255,15 @@ the communicating network and therefore weights the
 random number to a larger mean time interval.
 By way of the above summary, a communication
 system is described comprising the elemental blocks of
-a transceiver incorporating an interference or collisio
-detector, an interface stage including an address ?lter
-tied to an input shift register which also includes at
-input a phase decoder. The address ?lter identi?es the
+a transceiver incorporating an interference or collision
+detector, an interface stage including an address filter
+tied to an input shift register which also includes at its
+input a phase decoder. The address filter identi?es the
 particular address assigned to any one station. In addi
-tion, a collision counter tied to the collision detecto
+tion, a collision counter tied to the collision detector
 the transceiver is provided for counting up the number
 of collisions for each new packet, the count from the
-collision counter being used as a weighting function fo
+collision counter being used as a weighting function for
 each number generated by a random number generator.
 The weighted numbers so developed are then fed to a
 clock-driven counter to set a time interval for retrans
@@ -261,38 +274,37 @@ line losses, and since segments thereof may extend over
 large geographic ranges, various coax losses occur, and
 for that reason sections of the coax cable network are
 tied across repeaters.
-Reference to repeaters in this disclosure is only fo
+Reference to repeaters in this disclosure is only for
 purposes of completing the embodiment and are not
 
+necessary to practice the invention where short com
 munication links are contemplated and line losses are
-a           taken out by selective design of the cable and the trans
-ceiver.
+taken out by selective design of the cable and the transceiver.
 Distributed along the communicating cable network
 are a plurality of stations, each including a using device
 generally categorized as either a computer, an auxiliary
 memory, or an input-output terminal. Each using de
-to O vice, whether it be a computer or a remote terminal, is
+o O vice, whether it be a computer or a remote terminal, is
 tied to the coaxial cable by way of a T-connector, or
 tap, connecting to a transceiver in series with an inter
-ans    face stage which in turn connects to the using device.
+face stage which in turn connects to the using device.
 The transceiver is conventional, including a transmitter
-rede 5 or driver section, and a receiver section. In addition, the
-hat    transceiver is modi?ed to include a circuit connecting
-g           the output of the driver across a delay to an input of an
-n           exclusive OR gate which at the other input receives the
+de 5 or driver section, and a receiver section. In addition, the
+transceiver is modified to include a circuit connecting
+the output of the driver across a delay to an input of an
+exclusive OR gate which at the other input receives the
 output of the receiver section. The output of the exclu
 sive OR gate indicates interference and is connected to
-e           enable an output shift register which in turn controls an
-y           output buffer tied to the output terminals of the using
+enable an output shift register which in turn controls an
+output buffer tied to the output terminals of the using
 device. In addition to the input from the exclusive OR
 gate, the output shift register also receives a station
-25   control signal.
+control signal.
 The data outputs of the output buffer are connected
 in parallel to the input terminals of the output shift
 register which is clocked by a transmitter clock to trans
-ffer
+er
 fer serially into a phase, or data-clock, encoder. The
-ce
 data-clock encoder in turn outputs by way of a serial
 data stream to the driver section of the transceiver.
 On the input side, the transceiver feeds to a phase, or
@@ -300,218 +312,216 @@ data-clock, decoder. The data-clock decoder conven
 tionally supplies a stream of serial data to an input shift
 register and also provides the clock input therefor. The
 input shift register furthermore feeds, in parallel, se
-lected bit positions thereof to an address ?ltering net
+lected bit positions thereof to an address filtering net
 work which identi?es an address code at the front of the
-data packets received to enable the transfer of the rest of
+ta packets received to enable the transfer of the rest of
 the selected packets to an input buffer which in turn is
 connected to the input terminals of the using device.
 Further included within the interface stage is a restart
 circuit comprising a continuous running clock counter
-45 having the outputs thereof connected in a Boolean
+having the outputs thereof connected in a Boolean
 AND to the outputs of a collision shift register. Since
 the continuous running clock counter is essentially inde
-n      pendent of any of the internal clocks of the using de
+pendent of any of the internal clocks of the using de
 vices, and since any data packet transmission attempt
-its    depends on the internal clock of the using device, an
+depends on the internal clock of the using device, an
 asynchronous, or essentially random, relationship is
 ' formed by way of the above combination of the clock
-r of
+of
 counter and the incidents of collision. This relationship
-5 is weighted by the collision count shifted into the colli
-r    sion shift register. In this manner a collision count
+is weighted by the collision count shifted into the colli
+sion shift register. In this manner a collision count
 weighted random number generator is essentially
 formed which in turn controls, through an up-down
 counter, the output shift register for transmission re
-60 start.
+start.
 By way of the foregoing general summary, a system
 is described which by virtue of its arrangement of parts
 reduces the incidence of collisions between transmitted
 data packets to a low level of probability.
 The objects and advantages of the present invention
 will become apparent from a consideration of the fol
-r  lowing detailed description when taken in conjunction
+lowing detailed description when taken in conjunction
 with the accompanying drawings.
 
 --- REVIEWED TRANSCRIPTION PAGE 10 OF 19 ---
 
+BRIEF DESCRIPTION OF THE DRAWINGS,
 FIG. 1 is a generalized diagram of a communication
 system constructed according to the present invention;
 FIG. 2 is a block diagram illustrating one implemen
-tation of a transceiver and interface stage adapted fo
+tation of a transceiver and interface stage adapted for
 use with the system described in FIG. 1;
 FIG. 3 is a block diagram illustrating yet another
 implementation of said transceiver and interface stage
 adapted for use with the system described in FIG. 1;
 FIG. 4 is a flow chart of a computer program operat
 ing in a manner of a random number generator adapted
-for use with the interface stage illustrated in FIG.
-FIG. 5 is a“ circuit schematic illustrating one pra
+for use with the interface stage illustrated in FIG. 3;
+FIG. 5 is a circuit schematic illustrating one pract
 implementation of a transceiver adapted for use with
 ' the block diagrams shown in FIGS. 2 and 3;
-FIG. 6 is a circuit schematic illustrating one prac
+FIG. 6 is a circuit schematic illustrating one practical
 implementation of the interface stage useful with the
 block diagrams shown in FIGS. 2 and 3; and
-FIG. 7 is a signal wave form envelope illustrating
+FIG. 7 is a signal wave form envelope illustrating a
 packet of data communicated by the present invention.
 DESCRIPTION OF THE SPECIFIC
 EMBODIMENTS
-In an effort to deliver the inventive concept here
-with the least amount of ambiguity, a set of de?nitio
+In an effort to deliver the inventive concept herein
+with the least amount of ambiguity, a set of definitions
 is initially set forth as follows:
 The communication medium illustrated herein by
-way of an arrangement of coaxial cables is a logicall
+way of an arrangement of coaxial cables is a logically
 passive serial data transmission medium, or a single
-channel medium, generically referred to hereinafter a
+channel medium, generically referred to hereinafter as a
 cable.          '
 A plurality of communicating data processing de
 vices, such as general purpose computers, microproces
 sors, and remote consoles are generically referred to
-hereinafter as using devices.                  _
-Each using device is tied across an interface stage
-a transceiver stage, the combination of the transceiv
-the interface stage, and the using device being herei
+hereinafter as using devices.
+Each using device is tied across an interface stageto
+a transceiver stage, the combination of the transceiver,
+the interface stage, and the using device being hereinaf
 ter referred to as a station.              ‘
 The transceiver connects to the cable by way of a
 coax T-connector hereinafter referred to as a tap.
-Each tap is totally passive and the selection of th
-receiving station, or the data path established betwe
+Each tap is totally passive and the selection of the
+receiving station, or the data path established between
 two communicating stations,‘ is by way of an address
-rather than network switching, hereinafter referred t
-as address ?ltering.                               '
-Thus, a sending station broadcasts and receives di
-tal signals in serial stream carried on the cable, su
-digital signals including an address,'each set of sig
-associated with a particular address being hereinafte
+rather than network switching, hereinafter referred to
+as address filtering.                               '
+Thus, a sending station broadcasts and receives digi-
+tal signals in serial stream carried on the cable, such
+digital signals including an address,'each set of signa
+associated with a particular address being hereinafter
 referred to as a data packet.
-In order to avoid interfering with the data sent to
-other stations, each station is provided with an inte
+In order to avoid interfering with the data sent to»
+other stations, each station is provided with an interf
 stage and a transceiver stage which, amongst other
 functions, determine whether the cable is presently
-occupied by other data and wait for the cable to beco
-silent before transmission is initiated, this functio
+occupied by other data and wait for the cable to become ’
+silent before transmission is initiated, this function
 interface and transceiver stages being hereinafter re
-ferred to as deference.     1       _
+ferred to as deference.     1
 When the cable is found to be silent and a station
 therefore begins transmitting a data packet" onto the
-cable, all other stations defer and the status of the
-mitting interface stage is hereinafter referred to as
+cable, all other stations defer and the status of the transmitting interface stage is hereinafter referred to as ac- ‘
 quisition.
-In instances where an‘ interference is detected by
+In instances where an‘ interference is detected by the
 sending transceiver with transmissions sent ‘by‘other
-stations, a data interference state is determined, su
+stations, a data interference state is determined, such
 
+state being hereinafter referred to as a data packet colli
+sion.   >   .
 Upon the occurrence of a packet collision, the trans
 mission into the cable is terminated by the station and is
 rescheduled for some randomly chosen later time, here
-r                       inafter referred to as randomized retransmission.
+inafter referred to as randomized retransmission.
 Since the attempt at retransmission is dependent on
 the presently existing usage of the cable by other sta
 tions, each interface stage includes additional logic by
 which recent packet collision history is remembered for
 each packet to be transmitted and is utilized to weight
 the randomized retransmission to intervals weighted
-3;     according to the cable usage rate, such weighting being
-ctical hereinafter referred to as statistical coordination.
-15
+according to the cable usage rate, such weighting being
+ical hereinafter referred to as statistical coordination.
 SYSTEM DESCRIPTION
-tical    As shown in FIG. 1, the communicating network is
+As shown in FIG. 1, the communicating network is
 illustrated by way of two intersecting cables, respec
 tively designated by the numerals 10 and 20. Cables'10
-a 20 and 20 are isolated relative each other, each cable termi
+and 20 are isolated relative each other, each cable termi
 nating at either end in a terminator designated by the
 numeral 30. For purposes of illustrating this invention,
 cables 10 and 20 are conventional high frequency coax
 ial cables and terminators 30‘are therefore conventional
-in 25 impedance matching devices, such as resistors, selected
-ns    to limit reflections. ‘Surrounding cables 10 and 20 are
+impedance matching devices, such as resistors, selected
+to limit reflections. ‘Surrounding cables 10 and 20 are
 shields 21 and 31, commonly tied to a single ground to
-avoid ground loops. Distributed alongcable 10 are a
-y     plurality of taps shown as conventional T-connectors
-30 101 and 102. Tap 101 connects both at the shield and the
-s a   center lead to a transceiver 111, the center lead connect
-'
+avoid ground loops. Distributed along cable 10 are a
+plurality of taps shown as conventional T-connectors
+101 and 102. Tap 101 connects both at the shield and the
+center lead to a transceiver 111, the center lead connect
 ing both to the output of a driver 301 and a receiver 302.
 The transceiver 111 forms the front end of a station 125,
-transceiver 111 connecting at the other side byan input
-35
-signal lead .“I‘’ from receiver 302 and an ‘output signal
-to                      lead “0” to driver 301 with an interface stage 115.
-er,                     Within the transceiver 111, leads “1” and “0” are further
-naf                     branched off to a collision detector 113. Within the
+transceiver 111 connecting at the other side by an input
+signal lead  "I" from receiver 302 and an output signal
+lead "O" to driver 301 with an interface stage 115.
+Within the transceiver 111, leads "1" and "O" are further
+branched off to a collision detector 113. Within the
 ' i
-interface stage 115, leads “0” and “1'” respectively con
+interface stage 115, leads "O" and “1'” respectively con
 nect to. a transmitter logic stage 117 and receiver logic
-.
 stage 119, which are, in turn, respectively connected on
-e                       the other end to an output buffer 121 and an input buffer
-en ,123. Buffers 121 and 123 on the other side connect ‘to the
-45 output and input terminals of a using device 127. Using
-o  ,device127, interface stage 115 and transceiver 111 thus
+the other end to an output buffer 121 and an input buffer
+,123. Buffers 121 and 123 on the other side connect ‘to the
+output and input terminals of a using device 127. Using
+,device127, interface stage 115 and transceiver 111 thus
 'comprise the communicating station 125.
-gi-        In addition to the above structure, interface stage 115
-ch      includes a random number generator 451 which outputs
-nals 50 to a weighting circuit 453, weighting circuit 453 also
-r        receiving the output of a collision counter 455 receiving
-. at the input thereof an output signal “0” from the colli
-»       sion detector 113. The output signal, shown as signal
-rface a ‘.‘r”, from the weighting circuit 453 is in turn connected
+In addition to the above structure, interface stage 115
+includes a random number generator 451 which outputs
+ls 50 to a weighting circuit 453, weighting circuit 453 also
+receiving the output of a collision counter 455 receiving
+. at the input thereof an output signal "O" from the colli
+sion detector 113. The output signal, shown as signal
+ace a ‘.‘r”, from the weighting circuit 453 is in turn connected
 to the enable terminal of the transmitter stage 117.
 In a like manner, tap 102 tiesacross a similarly con
-me ’         structed transceiver 112 to an interface stage 116, trans
-n of the ' » ceiver 112 similarly including, connected between sig
-' nal leads “I” and “0”, a collision detector 114, leads
--       -
+structed transceiver 112 to an interface stage 116, trans
+of the ' » ceiver 112 similarly including, connected between sig
+' nal leads "I" and "O", a collision detector 114, leads
 and “a” similarly passing to the interior of the interface
 stage 116 to respectively connect to a receiver logic
 stage 120 and a transmitter logic stage 118. Receiver
-trans                   and transmitter stages 120 and 118 then connect across
-ac- ‘                   an inputbuffer. 124 and an output buffer 122 to the
+and transmitter stages 120 and 118 then connect across
+an inputbuffer. 124 and an output buffer 122 to the
 ‘         I            respective input and output connections of yet another
-the                      using device 128. Agaimtransceiver 112, interface stage
+using device 128. Agaimtransceiver 112, interface stage
 116 and using device 128 comprisea communicating
-ch                       station 126. .
+station 126. .
 
 --- REVIEWED TRANSCRIPTION PAGE 11 OF 19 ---
 
+In station 126, the functions of the random number
 generator, collision counter and weighting circuit are
 all performed within the using device 128 by a method
 described hereinbelow. Thus, device 128 is shown pro
-viding the signal lead “r” to the enabling terminals of
-the transmitter logic stage 118 and further receiving t
-signal lead “0” from the collision detector 114.
+viding the signal lead "r" to the enabling terminals of
+the transmitter logic stage 118 and further receiving the
+signal lead "O" from the collision detector 114.
 Cable 20 is similarly shown communicating with a
 plurality of stations, illustrated again by way of two
 stations 225 and 226 which include corresponding, simi
-larly constructed interface circuits 215 and 216 betwee
+larly constructed interface circuits 215 and 216 between
 using devices 227 and 228 and respective transceivers
 211 and 212. Transistors 211 and 212 communicate
 across taps 201 and 202 with the cable 20.
 While designated by separate numerals, the structure
-of stations 225 and 226 can be similar to either statio
+of stations 225 and 226 can be similar to either station
 125 or station 126. Stations 125 and 126, however, are
-distinct only in the manner of obtaining signal “r”. In
+distinct only in the manner of obtaining signal "r". In11
 station 126 the using device 128 comprises a general
-purpose computer which therefore can perform inter 20 t
+purpose computer which therefore can perform inter 20 tio
 nally the weighting and random number generation
-functions. Station 125 is intended to comprise a micro
+functions. Station 125 is intended to comprise a micro a
 processor, for example, as the using device 127 and
 therefore requires the additional logic shown in stage
 115. Stations 225 and 226 may connect any other using
 device including devices having internal capability sim
-ilar to device 128. Thus the internal structure of stat
-225 and 226, and particularly the structure of the inte
-face stages 215 and 216 therein, is either similar to s
+ilar to device 128. Thus the internal structure of statio
+225 and 226, and particularly the structure of the inter
+face stages 215 and 216 therein, is either similar to sta
 tion 125 or to station 126, depending on the using de
 vice.
-Proximate the intersection of cables 10 and 20 there
+Proximate the intersection of cables 10 and 20 there i
 a repeater circuit generally designated by the numeral
-50 communicating on one side between a tap 103 on
-cable 10. On the interior of the repeater 50, the cente
-lead of tap 103 is tied to a transceiver 243 across a r
+communicating on one side between a tap 103 on
+cable 10. On the interior of the repeater 50, the center
+lead of tap 103 is tied to a transceiver 243 across a re
 peater logic section 60 to a transceiver 245 which then
-connects to cable 20 by way of a tap 203. In this manne
+connects to cable 20 by way of a tap 203. In this manner,
 a communicating network is formed by which two
-network segments, or cables 10 and 20, are tied togethe
+network segments, or cables 10 and 20, are tied together
 across repeater 50 which matches up the signals be
 tween the cables.
 While stations 125 and 126, and 225 and 226 are
@@ -524,7 +534,7 @@ processor. Device 227 may, for example, represent a
 remote console, while device 228 represents an auxil
 iary memory.
 With these exemplary devices, microprocessor 127
-typically entails a lower packet size while the auxilia
+typically entails a lower packet size while the auxiliary
 memory 228 normally entails large packet sizes trans
 ferred across interface stage at relatively low rates.
 Station 126, incorporating a general purpose computer
@@ -540,50 +550,50 @@ of the various sections thereof. It is noted that while
 there are various data rates associated with each using
 device, the transceiver associated with each station is
 
+effectively decoupled from such data rates by the inter
 face stage and therefore is essentially independent in its
-rate from the station. More speci?cally, by conven
+rate from the station. More specifically, by conven
 tional design practices, each transceiver 111, 112, 211
 and 212 is constructed to approximately match the
-he     bandpass characteristics of the cable itself.
+bandpass characteristics of the cable itself.
 The structure of transceivers 111, 112, 211 and 212 is
 therefore essentially identical for the above reasons and
 the description of one is therefore common to all of the
 transceivers. Thus, in FIG. 2 transceiver 111 is illus
-n      trated, it being understood that all other transceivers
+trated, it being understood that all other transceivers
 conform to the same description.
 As previously described, transceiver 111 includes the
 transmitter or driver 301 and the receiver 302. Driver
-5 301, at its output, is connected to the center lead of tap
+301, at its output, is connected to the center lead of tap
 101. On the input side, the driver receives serial data on
-the signal lead “0” from the associated interface stage
-115.
+the signal lead "O" from the associated interface stage
 Also included in the transceiver 111 is the aforemen
-ioned collision detector 113. Collision detector 113
+ned collision detector 113. Collision detector 113
 includes a delay circuit 307, which may take the form of
-a delay line segment, delay circuit 307 connecting be
-tween the signal lead “0” and one input terminal of an
+delay line segment, delay circuit 307 connecting be
+tween the signal lead "O" and one input terminal of an
 exclusive OR gate 308. The other input terminal of gate
-5 308 connects directly to signal lead “1”. Thus, by appro
+308 connects directly to signal lead "1". Thus, by appro
 priately matching the delay time constant with the
-ions switching delays of the driver 301 and the receiver 302,
-r    the exclusive OR gate 308 will receive nearly identical
-ta   input signals at both terminals if no other data is present
-0 on the cable. When the input signals to gate 308 cease to
+ns switching delays of the driver 301 and the receiver 302,
+the exclusive OR gate 308 will receive nearly identical
+input signals at both terminals if no other data is present
+on the cable. When the input signals to gate 308 cease to
 be identical, a data collision is detected during the in
-is  stances of inequality. Gate 308 therefore checks for
-collisions, providing the output signal lead “0” which
-upon turning high indicates a collision. In order to ?lter
-r 35 various high frequency noise components from trigger
-e    ing a collision, signal lead “c” is tied to ground by a
+stances of inequality. Gate 308 therefore checks for
+collisions, providing the output signal lead "O" which
+upon turning high indicates a collision. In order to filter
+various high frequency noise components from trigger
+ing a collision, signal lead "c" is tied to ground by a
 capacitor 311.
-r,      While the above description of the inventively modi
-?ed transceiver functionally calls for circuit or chip
-r 40 elements which are essentially conventional, one other
+While the above description of the inventively modi
+fied transceiver functionally calls for circuit or chip
+elements which are essentially conventional, one other
 implementation thereof is further disclosed hereinbe-'
 low. As a further note, it is hereby observed that al
 though the implementing circuits disclosed herein are
 considered to be successful implementations, other chip
-45 selections are possible. In particular. it is noted that the
+selections are possible. In particular. it is noted that the
 transceiver switching rates have been chosen for inter
 facing simplicity. A slower rate would be insufficient to
 carry anticipated network loads and a faster rate would
@@ -591,7 +601,7 @@ require larger and expensive input/output buffers. The
 chosen rate determines the selection of chips having
 either higher or lower switching rate capabilities. For
 the purpose that the present invention is utilized, the
-ry   peak bandwidth of the cable is roughly three million
+peak bandwidth of the cable is roughly three million
 bits per second. Accordingly, the alternative embodi
 ment shown below includes elements having appropri
 ate switching times.                               '
@@ -609,6 +619,7 @@ of the further logic in FIG. 2.
 
 --- REVIEWED TRANSCRIPTION PAGE 12 OF 19 ---
 
+Signals "I", "O" and "c" from transceiver 111 are in
 turn connected to the interface stage 115. Interface
 stage 115 includes the above-mentioned transmitter and
 receiver logic stages, respectively 117 and 119, which
@@ -617,152 +628,152 @@ device 127.
 Device 127 is shown generating data in parallel form
 by way of a data output bus 325. Data bus 325 inputs to
 the buffer 121, shown by way of a conventional buffer
-register, which in turn outputs, again by way of a para
-lel data bus 327, to the transmitter stage 117 wherein
-is connected to the data terminals of a transmitter shi
-register 328. A clock 330 shifts the data out of the sh
+register, which in turn outputs, again by way of a paral
+lel data bus 327, to the transmitter stage 117 wherein it
+is connected to the data terminals of a transmitter shift
+register 328. A clock 330 shifts the data out of the shift
 register 328 in serial form to a phase, or data-clock,
 encoder 331 which is further described hereinbelow.
 Encoder 331 in turn provides the bit-serial stream on
-signal lead “0” to driver 301. Shift register 328 'and
+signal lead "O" to driver 301. Shift register 328 'and
 encoder 331 furthermore are enabled by a transmitter
 control circuit 335, to be further described, which com
-bines the-signal lead “c” with several other signals.
-Speci?cally, collected with signal “0” in transmitter
+bines the-signal lead "c" with several other signals.
+Specifically, collected with signal "O" in transmitter
 control circuit 335 is a signal “u” which originates
 within the using device 127, allowing for selective or
 external control over the transmissions. Also, a buffer
 signal “b” is connected thereto from buffer 121. Signal
-“b” is a two-way signal, indicating in one direction th
-the buffer is ready to transmit and in the other direct
+“b” is a two-way signal, indicating in one direction that
+the buffer is ready to transmit and in the other direction
 the command for transmission of the next word in the
 buffer.
-On the input side, signal “1” connects, from the tra
-ceiver 111, to a phase, or data-clock, decoder 332. De
+On the input side, signal "1" connects, from the transceiver 111, to a phase, or data-clock, decoder 332. De
 coder 332 then transmits two separate signals, i.e., a
 serial data signal 333 and a received clock signal 334.
 Signal 334 is connected to the clock terminals of a re
-ceiver shift register 340 which on its more signi?cant
-positions is connected in parallel to an address ?lteri
-circuit, or a decoder, 341. Thus, as the data is serial
-shifted in into the shift register 340, a particular co
+ceiver shift register 340 which on its more significant bit
+positions is connected in parallel to an address filtering
+circuit, or a decoder, 341. Thus, as the data is serially
+shifted in into the shift register 340, a particular coded
 combination of the address leader appears at one point
-in time on the more signi?cant bit terminals of the shi
+in time on the more significant bit terminals of the shift
 register which when meeting the decoding require
 ments of decoder 341 identi?es whether this particular
-set of data is addressed to this particular station. Wh
-a proper address is thus identi?ed in the ?rst word of
-packet, decoder 341 generates a signal “j” which en
-ables buffer 123 to accept the parallel data on a bus
-from register 340, for the ?rst word and all subsequent
-words in the packet. The highest bit position of regist
+set of data is addressed to this particular station. When
+a proper address is thus identified in the first word of a
+packet, decoder 341 generates a signal “j” which en 45 co
+ables buffer 123 to accept the parallel data on a bus 343,
+from register 340, for the first word and all subsequent
+words in the packet. The highest bit position of register
 340 is connected to strobe the buffer 123. Thus, as the
-data words are advanced through the shift register,
-when the highest bit position is reached the contents o
-the shift register are transferred to the buffer 123. B
-123 then outputs on a parallel lead bus 345 to the devi
-127.
+data words are advanced through the shift register, 50 ge
+when the highest bit position is reached the contents of
+the shift register are transferred to the buffer 123. Buf
+123 then outputs on a parallel lead bus 345 to the device
 One additional function of the data-clock decoder
-332 is to generate a cable busy signal, or signal lead
-to circuit 335. More speci?cally, the data-clock decode
+332 is to generate a cable busy signal, or signal lead “d
+to circuit 335. More specifically, the data-clock decoder
 332, conventionally with every transmission sensed,
 identi?es the clock from the data on the cable. The
-presence of a clock rate therefore is indicative of ot
-data transmissions presently carried on the cable. Thi
-clock signal is brought out as the signal “d” to the c
+presence of a clock rate therefore is indicative of othe
+data transmissions presently carried on the cable. This
+clock signal is brought out as the signal "d" to the con
 trol circuit 335 which then controls the transmission.
 By way of the foregoing description, an inventive
 system is disclosed wherein a single channel network
 comprising cables transmits data packets between vari
-ous communicating stations. For example, station 125 i
+ous communicating stations. For example, station 125 in
 FIG. 1, which includes a microprocessor, periodically
 
+requires the services of an auxiliary memory located at
 station 225. Thus a request is sent in the form of a data
 packet from station 125 to station 225, broadcast into
 the cable. The addressing, or the routing, of the data
 packet between station 125 and station 225 is performed
-by way of the address ?ltering circuit provided therein.
+by way of the address filtering circuit provided therein.
 Both cables 10 and 20, at that instant of time, will carry
 the serial contents of the requesting data packet. If
 within the time interval that it takes the data packet to
-l     propagate from tap 101 to another tap, as for example
-it    the tap 202, station 226 elects to communicate also, two
-ft    data packets will simultaneously exist on the same cable.
-ift   In each station the transceiver circuit, by way of the
+propagate from tap 101 to another tap, as for example
+the tap 202, station 226 elects to communicate also, two
+data packets will simultaneously exist on the same cable.
+In each station the transceiver circuit, by way of the
 exclusive OR gate 308, will therefore identify a data
-packet collision. When such a collision is identi?ed,
+packet collision. When such a collision is identified,
 both sending stations immediately cease their transmis
 sions.
 Furthermore, each transceiver is limited in its trans
-missions by the signal lead “d” which will block inputs
+missions by the signal lead "d" which will block inputs
 to driver 301 whenever other data is presently commu
-nicated along the cables. This feature identi?ed herein
-above as deference is ?xed in every interface stage and
+nicated along the cables. This feature identified herein
+above as deference is fixed in every interface stage and
 therefore every station will defer to existing communi
 cation. Thus, it is only during the quiscent periods on
 the cable that colliding data packet transmissions can be
-at    initiated. Where cable length is large and therefore the
-ion   propagation or the delay times of packet propagation
+initiated. Where cable length is large and therefore the
+propagation or the delay times of packet propagation
 along the cable are large, the incidence of contempora
 neous   transmission start ups increases. Thus, packet
-ns 30 collision is signi?cant statistically to any large system.
+collision is significant statistically to any large system.
 In the case that two transmissions are being deferred for
 a third, when the third transmission completes, the two
 will immediately collide, abort, and retry until one is
 able to acquire with the other deferring.
-bit      Each transceiver is coupled to generically similar
-ng    devices, i.e., either microprocessors or general purpose
-ly    computers, which operate in ‘time domains that are
-ded   similar. Thus, after a collision is identi?ed by way of the
+Each transceiver is coupled to generically similar
+devices, i.e., either microprocessors or general purpose
+computers, which operate in ‘time domains that are
+similar. Thus, after a collision is identified by way of the
 exclusive OR gate 308 and all sending stations defer, a
-ft 40 normal restart would occur at some ‘integer value of
+normal restart would occur at some ‘integer value of
 their internal clocks. Since those clocks are very often
 similar, the simultaneous restart, or a restart within the
-en     delay time of cable propagation, would again collide.
-a      Thus, repeated collisions can occur within a system
-communicating over relatively long cables connecting
-43,   similarly structured devices.
+delay time of cable propagation, would again collide.
+Thus, repeated collisions can occur within a system
+mmunicating over relatively long cables connecting
+similarly structured devices.
 In order to avoid the possibility of repeatedly collid
-er    ing transmission restarts, there is provided in the inter
+ing transmission restarts, there is provided in the inter
 face stage 115 the above-described random number
-generator 451, collision counter 455 and weighting cir
-f     cuit 453 which combine to statistically coordinate re
-uffer transmissions.
-ce       While there are many techniques for performing the
+nerator 451, collision counter 455 and weighting cir
+cuit 453 which combine to statistically coordinate re
+fer transmissions.
+While there are many techniques for performing the
 functions of coordinated retransmission, one particular
 arrangement adapted for use with the present invention
-“d”.  is shown by way of the additional logic in FIG. 2. More
-r     speci?cally, generator 451 is formed by an 8-bit counter
+”.  is shown by way of the additional logic in FIG. 2. More
+specifically, generator 451 is formed by an 8-bit counter
 461 which is clocked by a fast clock 462 operating at
 rates much faster than any other clock in the system.
-her 60 Thus, counter 461 runs as a continually running clock
-s      counter. The eight data outputs from counter 461 are
-on     connected to one of the terminals of a corresponding set
+r 60 Thus, counter 461 runs as a continually running clock
+counter. The eight data outputs from counter 461 are
+connected to one of the terminals of a corresponding set
 of eight AND gates 464 forming the input side of the
 weighting circuit 453. The other input terminals of
 AND gates 464 receive the data outputs of an 8-bit shift
 register 465 forming the collision counter 455. Shift
-n register 465 is clocked by the signal “c” each time a
+register 465 is clocked by the signal "c" each time a
 collision occurs and the serial input thereof is, in turn,
 
 --- REVIEWED TRANSCRIPTION PAGE 13 OF 19 ---
 
+connected to the signal "17". Thus shift register 465
 counts up the number of collisions occurring during
 those times when a packet is ready for transmission.
 The outputs of gates 464 are connected to the data
-inputs of an up-down counter 467 which is clocked by
-a restart clock 468 and which is loaded by the signal “
+inputs of an up-down counter 467 which is clocked by 5 wh
+a restart clock 468 and which is loaded by the signal "O"
 to begin a down count. When the count reaches zero, a
-signal “r” is sent to the transmitter control 335 to in
+signal "r" is sent to the transmitter control 335 to initiate
 retransmission of the data packet.
 In addition to the above structure, the most signi?
-cant data bit from shift register 465 is brought out as
-error signal “e” which is returned to the using device
+cant data bit from shift register 465 is brought out as an
+error signal “e” which is returned to the using device to
 indicate an abnormal condition.
 The above description of the retransmission logic in
 stage 115 provides an external implementation of a func
 tion which may be carried out, in various alternative
-forms, internally within the using device itself. In th
+forms, internally within the using device itself. In the
 communicating arrangement shown in FIG. 1, using
 devices 127, 227 and 228 are all devices with limited
 data processing capability. Device 128, however, is a
@@ -770,426 +781,422 @@ general purpose computer which therefore can take on
 the functions of generator 451, circuit 453 and counter
 455. The internal implementation of these functions,
 however, is necessarily adapted to the mode of opera
-tion of the computer itself, and will therefore vary fr
+tion of the computer itself, and will therefore vary from
 the implementation shown in FIG. 2.
 Accordingly, the general structure of the interface
-stage shown in FIG. 2 is typical of the interface stage
+stage shown in FIG. 2 is typical of the interface stages
 115, 215 and 216. Interface stage 116 is shown sepa
 rately in FIG. 3.
-As shown in FIG. 3, interface stage 116, behind tran
-ceiver 112, similarly includes a receiver logic stage
-which is tied on one end to the signal lead “I”. On the
+As shown in FIG. 3, interface stage 116, behind transceiver 112, similarly includes a receiver logic stage 120
+which is tied on one end to the signal lead "I". On the
 other end stage 120 communicates across an input buf
 fer 124 with the using device 128, shown as a general
 purpose computer. While there are many computer
 con?gurations, the most typical ones generally all con
-tain a central data bus comprising a plurality of paral
-data leads tied to the input buffer 124 by way of a dat
-input bus 346. The output buffer 122 is similarly tied
+tain a central data bus comprising a plurality of parallel
+data leads tied to the input buffer 124 by way of a data
+input bus 346. The output buffer 122 is similarly tied by
 the bus 327 to the transmitter 118 and to device 128 by
 a bus 326.
 The implementation of the receiver stage 120 is sub
-stantially identical to the receiver stage 119 in FIG.
+stantially identical to the receiver stage 119 in FIG. 2.
 For that reason, like numerals are used for like compo
-nents thereof. Accordingly, signal lead “I” is once aga
+nents thereof. Accordingly, signal lead "I" is once again
 received at the input of the phase decoder 332 which at
 its output provides signals 333 and 334 to the receiver
-shift register 340. The parallel outputs of shift regis
-340 are again tied to an address ?lter 341 and to the d
-343.
+shift register 340. The parallel outputs of shift register
+340 are again tied to an address filter 341 and to the data
+bus 343.
 On the transmitter side, transmitter logic stage 118
 again includes control 335, phase encoder 331, transmit
-ter clock 330 and the transmitter shift register 328 co
-nected in a manner similar to stage 117. Signal “r”,
+ter clock 330 and the transmitter shift register 328 con
+nected in a manner similar to stage 117. Signal "r", 55 t
 however, originates at the using device 128 which also
-receives signal “c”.
+receives signal "c".
 While there are many possible ways of implementing
 the randomized retransmission feature, one alternative
 implementation thereof is by way of a subroutine incor
 porated within the communicating computer device.
 Since such randomization would necessarily have to be
 local, only those communicating stations which have
-processing capability could implement such by way of a
+processing capability could implement such by way of a  “
 subroutine. Stations including devices like a remote
 console or the auxiliary memory station are better
-served by the hardwired system described above for the
+served by the hardwired system described above for the  p
 same function. Accordingly, two manners of accom
 
+plishing the randomization of the retransmission inci
 dents are shown herein.
 A general description of such a subroutine is shown
 by way of FIG. 4, wherein a ?ow chart is illustrated
-which can be speci?cally implemented in any general
-0” purpose device by those “skilled in the art.” The sub
+ich can be specifically implemented in any general
+purpose device by those “skilled in the art.” The sub
 routine is called and started through entry 530 by signal
-itiate   “0”. The routine starts with step 531 identi?ed as a data
+"O". The routine starts with step 531 identified as a data
 input block “start with packet” corresponding to each
 packet, which identi?es that there is a packet at the
-an      output registers of the station which is ready for trans
-to       mission. The next step in sequence is a conditional
+output registers of the station which is ready for trans
+mission. The next step in sequence is a conditional
 branching step 532 which checks the number of at
 tempts made for each packet, similar to the function of
-15 signal “e”. The number of collisions previously having
+signal “e”. The number of collisions previously having
 occurred is thus tested in step 532 to see whether the
-e     total number of failures has exceeded a preselected
+total number of failures has exceeded a preselected
 number, and if exceeded the error signal “2” is gener
 ated on output 537. If the total number has not been
 exceeded, branch instruction 532 flows down to a step
-533.
 Step 533 performs a random number look up, select
 ing the next number in a random number series in a
 manner similar to random number generator 451. The
-om 25 random number generated by step 533 is then entered
+random number generated by step 533 is then entered
 into a weighting step 534 which performs a weighted
 mean sequential count down similar to weighting cir
-s     cuit 453.
+cuit 453.
 When the random number is counted down to zero,
 or when step 534 is completed, the local station is ready
-s     to retransmit. This occurs in the step, or instruction, 535
-20    which essentially waits for the cable to be silent by
-looking at signal “d”. This instruction is again a
+to retransmit. This occurs in the step, or instruction, 535
+which essentially waits for the cable to be silent by
+looking at signal "d". This instruction is again a
 branched instruction and if the cables are not silent
-5 within a selected interval, the above sequence should
+within a selected interval, the above sequence should
 not be followed. Accordingly, there is a time-out func
 tion included in step 535 which, if exceeded, indicates a
-lel   system failure through output 537. Similarly, step 532
-a     indicates a system failure if a load estimate has been
-by    exceeded. Both branch instructions therefore are pulled,
+system failure through output 537. Similarly, step 532
+indicates a system failure if a load estimate has been
+exceeded. Both branch instructions therefore are pulled,
 out on an indicator panel to alert the operator of the
 system. In the alternative, in step 535 if the cable goes
 silent within the time-out function, the driver is opened
-2.    and the transceiver is therefore ready to transmit the
-45 packet by executing step 538. While the packet is trans
-in    mitted, there is concurrent monitoring by way of the
+and the transceiver is therefore ready to transmit the
+packet by executing step 538. While the packet is trans
+mitted, there is concurrent monitoring by way of the
 OR gate 308 and if a collision is detected during the
 transmission of the packet, the load is updated in step
-ter   539 and the loop is returned to the juncture between
-ata   steps 531 and 532. If no collision is detected, a packet
+539 and the loop is returned to the juncture between
+steps 531 and 532. If no collision is detected, a packet
 transmission is completed by output 540.
 SELECTED IMPLEMENTATION
-n  With the foregoing description of the inventive sys
-tem, selected sections thereof are now described in
+With the foregoing description of the inventive sys
+em, selected sections thereof are now described in
 terms of integrated circuit chips. Thus, devices like the
 receiver shift register 340 may be formed by combining
 various chips to obtain the desired bit level outputs and
 the selection thereof including the bit capacity is there
 fore wholly within the options of the designer. Simi
-larly, buffers 121 and 123 depend on the input and out
-put bandwidths and data rate of the using device, and
+larly, buffers 121 and 123 depend on the input and output bandwidths and data rate of the using device, and
 are therefore again within the design selection of one
-“skilled in the art.”
-FIG. 5 illustrates one implementation of the trans
-ceiver 111 which, in addition to the above functions,
-provides isolation between the cable and the local sta
+skilled in the art.”
+FIG. 5 illustrates one implementation of the transceiver 111 which, in addition to the above functions,
+rovides isolation between the cable and the local sta
 tion. Thus, a local failure will not damage the cable and
 
 --- REVIEWED TRANSCRIPTION PAGE 14 OF 19 ---
 
+any other communicating devices tied thereto. The
 localground for each station is furthermore isolated
-from cable ground to provide complete isolation of th
+from cable ground to provide complete isolation of the
 cable.
-More speci?cally, the signal lead “0” is tied to th
-division‘point of a terminating network formed by a
+More specifically, the signal lead "O" is tied to the
+division point of a terminating network formed by a
 voltage divider 501 tied between a signal +V and
-ground. That same division point is tied to drive a l
-receiver 502 which at its output connects to one end
+ground. That same division point is tied to drive a line
+receiver 502 which at its output connects to one end of
 the primary of a transformer T1. The primary of trans
-former T1 is also tied between signal +V and ground a
+former T1 is also tied between signal +V and ground at
 both ends across resistors 504 and 505 to load the re
 ceiver 502. It is to be noted that ground for voltage
-divider 501 and resistors 504 and 505 are all station
+divider 501 and resistors 504 and 505 are all station local
 grounds and are therefore hereinafter referred to as
 station grounds.
 The secondary of transformer T1 is in turn refer
-enced to the cable ground at one end. A resistor 506
+enced to the cable ground at one end. A resistor 506 is
 tied across the secondary to provide the terminating
 load thereacross. Connected to the high side of the
 secondary is a DC. restorer circuit comprising a cou
-pling capacitor 507 tied to the cathode of a diode
-which at the anode connects to the cable ground, diod
-508.being shunted on the other side by a resistor 509
-This circuit arrangement provides for transformer iso
+pling capacitor 507 tied to the cathode of a diode 508
+which at the anode connects to the cable ground, diode
+508.being shunted on the other side by a resistor 509.
+This circuit arrangement provides for transformer isola
 tion between the station and the cable to protect the
 cable from local failures.
-The output of the DC. restorer circuit, or the hig
+The output of the DC. restorer circuit, or the high
 ‘ side of the resistor 509, drives an inverter 511. The
-output of inverter 511 then drives the base, across a
+output of inverter 511 then drives the base, across a base
 resistor 519, of an NPN transistor 521 connected in
-common emitter circuit to cable ground. Transistor
+common emitter circuit to cable ground. Transistor 521
 is connected in common emitter mode to the cable
 ground, including a collector load resistor 522 and a
-base circuit comprising a resistor 518 connected acro
-the base-emitter junction. The collector output of tr
-sistor 521 drives the bases of two emitter follower t
-sistors 551 and 552. Transistors 551 and 552 are dire
-tied to the top end of resistor 522 at their collecto
-transistor 551 connecting to an emitter circuit compr
-ing a series connection of resistors 561 and 564 tied
-cable ground. An emitter load resistor 562 is tied be
-tween transistor 552 and the junction between resisto
-561 and 564. The signal developed across resistors
+base circuit comprising a resistor 518 connected across
+the base-emitter junction. The collector output of tran
+sistor 521 drives the bases of two emitter follower tran
+sistors 551 and 552. Transistors 551 and 552 are directly
+tied to the top end of resistor 522 at their collectors,
+transistor 551 connecting to an emitter circuit comprising a series connection of resistors 561 and 564 tied to
+cable ground. An emitter load resistor 562 is tied be         75222:
+tween transistor 552 and the junction between resistors
+561 and 564. The signal developed across resistors 564
 then connected, across a protection diode 563, to the
 cable 10.
-In addition to the above functions, a cable protec
-circuit 600 is provided, tied to the emitters of tran
+In addition to the above functions, a cable protecti
+circuit 600 is provided, tied to the emitters of transi
 551 and 552 across corresponding diodes 606 and 607.
-Diodes 606 and 607 are tied in common at their output
-or at their cathodes, to one end of resistors 602 and
-Resistor 602 connects at the other end to the top sid
-a capacitor 608, capacitor 608 and resistor 603 tying
-cable ground at the other ends. Capacitor 608 include
+Diodes 606 and 607 are tied in common at their outputs,
+or at their cathodes, to one end of resistors 602 and 603.
+Resistor 602 connects at the other end to the top side of
+a capacitor 608, capacitor 608 and resistor 603 tying to
+cable ground at the other ends. Capacitor 608 includes
 a shunt resistor 609 setting its discharge rate. The
-charge developed on capacitor 608 is then connected t
-the input of an ampli?er 610 which includes a feedbac
+charge developed on capacitor 608 is then connected to
+the input of an ampli?er 610 which includes a feedback
 loop comprising a diode 605 and a resistor 604. Thus
 when the turn on threshold of ampli?er 610 is reached
-the ampli?er circuit is latched on. The output of amp
+the ampli?er circuit is latched on. The output of ampli
 ?er 610 then connects to the cathode of a diode 526
-connected in series with a diode 525 and resistor 527
-the base of a PNP transistor 523. The collector of tr
-sistor 523 is tied to the upper end of resistor 522 w
-the emitter thereof is tied to the ?oating signal sou
+connected in series with a diode 525 and resistor 527 to
+the base of a PNP transistor 523. The collector of tran
+sistor 523 is tied to the upper end of resistor 522 while
+the emitter thereof is tied to the ?oating signal sourc
 +F and to a base biasing resistor 524.
-Thus, if either transistor 551 or 552 is on for an e
-sive period, relative a bit interval, the OR gate for
+Thus, if either transistor 551 or 552 is on for an exces
+sive period, relative a bit interval, the OR gate formed
 
+by diodes 606 and 607 will charge up capacitor 608 to a
 signal level latching on the ampli?er 610. Ampli?er 610,
-e         once latched on, turns off transistor 523 pulling transis
+once latched on, turns off transistor 523 pulling transis
 tors 551 and 552 off the line. In this manner an inopera
-e         tive transmitter stage is pulled off the line.
+tive transmitter stage is pulled off the line.
 ~ The input to the station is developed by connecting
 again a PNP transistor 620 to the cable 10 by its base
-ine       and to the cable shield 21 by its collector. The emitter of
-of        transistor 620 is connected again in an emitter follower
+and to the cable shield 21 by its collector. The emitter of
+transistor 620 is connected again in an emitter follower
 circuit both to one input of a Schmitt trigger inverter
-t         622 and across a resistor 623 to the isolated, or ?oating,
+622 and across a resistor 623 to the isolated, or ?oating,
 signal +F. The output of inverter 622 then connects to
 one end of the primary of a transformer T2 connected
-local    between signal +F and cable ground across load resis
+between signal +F and cable ground across load resis
 tors 628 and 631 in a manner similar to transformer T1,
 .      the secondary thereof again driving a DC. restorer
 circuit including a coupling capacitor 625 between re
-is        sistors 633 and 634 and a diode 632. Capacitor 625 then
+sistors 633 and 634 and a diode 632. Capacitor 625 then
 ‘connects to the inputs of an inverting line driver 626
-0 which produces the signal “I”.                             -
+which produces the signal "I".                             -
 Thus transformers T1 and T2 effectively isolate the
-8       cable from the station, the cable driver section being
-e       furthermore powered by a floating power supply.
-.          In order to provide the function of the collision de
-la 25 tector 113, the output of driver 626, or signal “I”, is
+cable from the station, the cable driver section being
+furthermore powered by a floating power supply.
+In order to provide the function of the collision de
+tector 113, the output of driver 626, or signal "I", is
 furthermore connected to one input of an exclusive
-NOR gate 650. Signal “0” in turn drives a buffer 655,
-h       terminated by a network 656, which in turn drives a
+NOR gate 650. Signal "O" in turn drives a buffer 655,
+terminated by a network 656, which in turn drives a
 Schmitt trigger buffer 653. Buffer 653 includes a series
-base   circuit comprising a'capacitor 651 and a resistor 652 in
-feedback which together delay signal “0” by a delay
-1       constant equal to propagation delay of signal “0”. The
+circuit comprising a'capacitor 651 and a resistor 652 in
+feedback which together delay signal "O" by a delay
+constant equal to propagation delay of signal "O". The
 output of buffer 653 is then tied to the input of the NOR
-650. NOR gate 650 at its output is connected to
-ss 35 ground ‘across a capacitor 671 and to an inverting line
-an       driver 680 which produces'the signal “0”.
-ran        While all of the circuit elements referred to above are
-ctly     conventional, in order to assist one skilled in the art, the
-rs,      following list of chip models can be incorporated when
-is 40 practicing the invention and obtained from Texas In
-to      struments, Inc., PO. Box 5012, M5. 84, Dallas, Texas
-75222:                          '
-rs
-4 is
+gate 650. NOR gate 650 at its output is connected to
+ground ‘across a capacitor 671 and to an inverting line
+driver 680 which produces'the signal "O".
+While all of the circuit elements referred to above are
+conventional, in order to assist one skilled in the art, the
+following list of chip models can be incorporated when
+practicing the invention and obtained from Texas In
+struments, Inc., PO. Box 5012, M5. 84, Dallas, Texas
+is
 Schmitt trigger buffers       SN75l40
 Line drivers                  SN7438
 NOR gate                      SN74LS266
-tion
-sistors
+on
+stors
 The selected implementations of the elements of the
-s,       interface stage 115 are shown in FIG. 6. It is noted that
-603.    while the ‘elements of stage 115 can be implemented by
-e of     conventional techniques, the detail implementation de
-to      pends on the code used and is therefore subject to de
-s        sign choice of one skilled in the art. In addition, many
-55 other functions, like parity checking or error checking,
-o        and various logical packet sequencing arrangements
-k        may be desired when applying this invention to a spe
+interface stage 115 are shown in FIG. 6. It is noted that
+while the ‘elements of stage 115 can be implemented by
+conventional techniques, the detail implementation de
+pends on the code used and is therefore subject to de
+sign choice of one skilled in the art. In addition, many
+other functions, like parity checking or error checking,
+and various logical packet sequencing arrangements
+may be desired when applying this invention to a spe
 ci?c use.
 In FIG. 6 signal “1" from transceiver 111 is connected
-li 60 to the D input of a D-type ?ip-?op 701 forming the
+to the D input of a D-type flip-flop 701 forming the
 front end of a transition detector 700, and is also fed to
-to       an exclusive OR gate 702, ?ip-?op 701 and gate 702
-an        comprising the input sections of the phase decoder 332.
-hile   The output of gate 702 is fed back to the clock input of
-rce 65 the ?ip-?op 701. The other input of gate 702 is the Q
->       output of ?ip-?op 701, resulting in a short, positive
-xces      pulse of a duration equal to the propagation delay of
-med       flip-?op 701 and gate 702 for each transition on the
+an exclusive OR gate 702, flip-flop 701 and gate 702
+comprising the input sections of the phase decoder 332.
+The output of gate 702 is fed back to the clock input of
+e 65 the flip-flop 701. The other input of gate 702 is the Q
+>       output of flip-flop 701, resulting in a short, positive
+pulse of a duration equal to the propagation delay of
+flip-?op 701 and gate 702 for each transition on the
 
 --- REVIEWED TRANSCRIPTION PAGE 15 OF 19 ---
 
-high level, or B, input of a monostable multivibrator,
-one-shot, 703 forming a clock recovery circuit 730. Mul
+signal "i". The output of gate 702 is furthermore tied to the
+high level, or B, input of a monostable multivibrator, or
+one-shot, 703 forming a clock recovery circuit 730. Multivi
 brator 703 can be a Model SN74123 one-shot, as pro
 duced by Texas Instruments, Inc., PO. Box 5012, Dal
-las, Texas. The Q output of the one-shot 703 is fed bac
+las, Texas. The Q output of the one-shot 703 is fed back
 to the low level, or A, input thereof to prevent retrig
 gering once triggered. The Q output of the one-shot 703
 is furthermore connected to the clock input of yet an
 other D-type flip-?op 704 which again is tied by its D
-inputs to the signal “1”. Detector 700, recovery circui
-730 and ?ip-?op 704 thus form the phase decoder 332.
+inputs to the signal "1". Detector 700, recovery circuit
+730 and flip-flop 704 thus form the phase decoder 332.
 The output of gate 702 further connects to a similar
 one-shot 713 which at its Q output provides the signal
-“d”. One-shot 713 is retriggered conventionally before
+"d". One-shot 713 is retriggered conventionally before
 going low by the transition train from gate 702. Flip
 flop 704, therefore, operates as the input stage to the
 shift register 340.
 Shift register 340 may comprise two series connected
 shift registers 705 and 706, such as Model No. SN74164
-shift registers, again by Texas Instruments, Inc., havi
-the Q output of ?ip-?op 704 collected with the second
-most signi?cant bit level of shift register 706 at the
+shift registers, again by Texas Instruments, Inc., having
+the Q output of flip-flop 704 collected with the second
+most significant bit level of shift register 706 at the
 inputs of an OR gate 707 which by its output drives the
-D input of a ?ip-?op 708. The clock to ?ip-?op 708 is
+D input of a flip-flop 708. The clock to flip-flop 708 is
 again the Q output of one-shot 703. Thus, the function
-of ?ip-?op 708 is to recycle a mark bit while shift reg
-ters 705 and 706 are being cleared in preparation for t
+of flip-flop 708 is to recycle a mark bit while shift regis
+ters 705 and 706 are being cleared in preparation for the
 next word. At the completion of each word the most
-signi?cant bit of shift register 706 is recirculated to
+significant bit of shift register 706 is recirculated to
 trigger yet another similarly constructed one-shot 709
-which in turn is returned to clear both shift registers
-706. The second most signi?cant bit of shift regist
+which in turn is returned to clear both shift registers 705
+and 706. The second most significant bit of shift register
 706, in addition to the above connections, strobes the
 data from the shift register to the buffer 123.
 On the output side, output buffer 121 periodically
-loads, in parallel, the transmitter shift register 328
+loads, in parallel, the transmitter shift register 328 under
 the commands from the control 335. In speci?c illustra
-tion, control 335 includes an S-R ?ip-?op 741 as its
-input stage, receiving at the S input, across an OR gat
-744, a pulse signal “u” from the using device indicatin
-that the device is ready to transmit, or the “r” signal
-The R, or the reset, input of ?ip-?op 741 is driven by
-signal “c” from transceiver 111, indicating a collision
+tion, control 335 includes an S-R flip-flop 741 as its
+input stage, receiving at the S input, across an OR gate
+744, a pulse signal “u” from the using device indicating
+that the device is ready to transmit, or the "r" signal.
+The R, or the reset, input of flip-flop 741 is driven by
+signal "c" from transceiver 111, indicating a collision.
 Flip-flop 741 outputs from its Q output to one input of
 an AND gate 742 which collects, in addition thereto,
-signals “b” and “d”. Gate 742 in turn drives the set, o
-S, input of yet another S-R ?ip-?op 743 reset by the
-signal “c” in a similar manner, and the Q output of
-?ip-?op 743 enables shift register 328 and phase en
-coder 31. Thus the Q output of ?ip-flop 741 indicates -
-the using station’s desire to transmit and the Q output
+signals “b” and "d". Gate 742 in turn drives the set, or
+S, input of yet another S-R flip-flop 743 reset by the
+signal "c" in a similar manner, and the Q output of
+flip-flop 743 enables shift register 328 and phase en 50 in
+coder 31. Thus the Q output of ?ip-flop 741 indicates - t
+the using station’s desire to transmit and the Q output o
 ?ip-flop 743 indicates that all conditions for transmis
-sion are satis?ed.
+sion are satisfied.
 Shift register 328 is again shown by way of a speci?c
 implementation formed by a 16-bit series connection of
 two 8-bit Model No. SN74165 shift registers by Texas
 Instruments, Inc.. respectively designated 751 and 752,
 which provide the parallel-to-serial conversion of six
-teen bit words from the buffer by shifting out at a clo
+teen bit words from the buffer by shifting out at a clock
 rate of clock 330.
-The Q signal from ?ip-?op 743 is furthermore con
+The Q signal from flip-flop 743 is furthermore con
 nected to the phase encoder 331 where it is received at
-the clear terminals of a flip-flop 801 and a 4-bit coun
-802, such as a Texas Instruments, Inc. Model No. 65 pro
+the clear terminals of a flip-flop 801 and a 4-bit counter
+802, such as a Texas Instruments, Inc. Model No. 65 provi
 SN74161 counter. That same signal is also connected as
 one input to an AND gate 803 which generates the
-signal “0” at its output. The other input to gate 803 i
+signal "O" at its output. The other input to gate 803 is
 
-or          of a phase encoding flip-flop 804 which is clockedby
-tivi        the transmitter clock 330 and receives a shift register
+the phase encoded data from shift register 328 by way
+of a phase encoding flip-flop 804 which is clockedby
+the transmitter clock 330 and receives a shift register
 serial output across a NOR gate 805. The other input to
-gate 805 is a data clock signal originating at the Q out
-k           put of ?ip-?op 801 and therefore has a period twice that
+gate 805 is a data clock signal originating at the Q output of flip-flop 801 and therefore has a period twice that
 of the transmitter clo'ck. Flip-?op 801 is a J —K operating
-as a toggle by virtue of the logical “l” at the J input and
-a logical “0” at the K input.
+as a toggle by virtue of the logical "1" at the J input and
+a logical "O" at the K input.
 Shift register 328 is loaded in parallel from output
-t           buffer 121 when the carry output of counter 802 goes
+buffer 121 when the carry output of counter 802 goes
 high to indicate that sixteen bits of data have been previ
 ously shifted out of the shift register. While generally
 described as an n-bit shift register, the series connection
-5
 of registers 751 and 752 forms a 16-bit combination,
 each register requiring a low true load signal and there
 fore the carry output of counter 802 is inverted by an
 inverter 806. Flip-?ops 801 and 804 and gate 805 form
 the phase encoder 331. In addition to the above func
-20 tions, the carry output from counter 802 may be pulled
-ng  off to conventionally advance the buffer to the next
+tions, the carry output from counter 802 may be pulled
+off to conventionally advance the buffer to the next
 word. As has been previously stated, the selection of the
 buffer is particular to the data rate mismatch between
-5   the using  device and the inventive communication sys
+the using  device and the inventive communication sys
 tem. Thus,   the buffer can take many forms, including
-is  the form of the using device main memory and in such
-he  form the carry output from counter 802 would there
+the form of the using device main memory and in such
+form the carry output from counter 802 would there
 fore provide the conventional function of a memory
-30 ?eld pointer, selecting sequentially the next word.
+?eld pointer, selecting sequentially the next word.
 Where the device does not provide a main memory,
-705     external buffer or buffer registers may be provided. The
-er       sequence of ?eld selection from an external buffer is
+external buffer or buffer registers may be provided. The
+sequence of ?eld selection from an external buffer is
 again conventional and is described on Pages 12.80,
 13.43 and 14.28 of Digital Computer Technology and
 Design, Vol. II, by Willis H. Ware, John Wiley and
-under    Sons, Inc., 1963.
+Sons, Inc., 1963.
 In FIG. 7, a bit stream chart is shown illustrating a
 data packet. While there are many codes possible, the
-e           use of Manchester code has been contemplated in the
-g           speci?c implementation of the encoder and decoder
-.   shown in FIG. 6. Accordingly, the packet, generally
+use of Manchester code has been contemplated in the
+speci?c implementation of the encoder and decoder
+shown in FIG. 6. Accordingly, the packet, generally
 designated 1000, begins with a preamble in the form of
-.   either a single synchronization or mark hit 1001, or
-45 alternatively a string of bits as is conventionally prac
+either a single synchronization or mark hit 1001, or
+alternatively a string of bits as is conventionally prac
 ticed in the phase encoded magnetic tape art. Mark bit
-r   1001 is followed by a series of bits 1002 designating the
+1001 is followed by a series of bits 1002 designating the
 destination commonly referred to as an address leader.
-This address leader is then ?ltered by the address ?lter
-in order to permit transfer to the proper device. Behind
-the leader 1002 is a source bit series 1003 followed by a
-of data bit series 1004. The source bit series, however, is
+This address leader is then filtered by the address filter
+order to permit transfer to the proper device. Behind
+he leader 1002 is a source bit series 1003 followed by a
+f data bit series 1004. The source bit series, however, is
 not essential to the operation of the inventive system,
 providing only a convenient manner for identifying
-55 within the receiving using device the source or the
+within the receiving using device the source or the
 originating address of the sending device. Data series
 1004 may include, at the end thereof, various redundant
 error checks and information on linking of this data
 with subsequent data.             '
-ck            As one skilled in the art will observe, a longer pream
+As one skilled in the art will observe, a longer pream
 ble will allow for more sensitive transceivers by permit
 ting gain control while in the preamble and will also
 provide that most collisions occur in the preamble.
-ter   The mark bit 1001 shown in the foregoing example is
-vided by presetting flip-?op 804 by again the Q
-output of ?ip-?op 743 which therefore will result in a
+The mark bit 1001 shown in the foregoing example is
+ded by presetting flip-?op 804 by again the Q
+output of flip-flop 743 which therefore will result in a
 ont bit preceding the transfer of data from the phase
-s   encoder.
+encoder.
 
 --- REVIEWED TRANSCRIPTION PAGE 16 OF 19 ---
 
-the ‘one-shot 713, is connected to the J input of yet
-another J -K ?ip-?op 810 which is clocked by the clock
+Referring back to FIG. 6, signal "d", as produced by
+the one-shot 713, is connected to the J input of yet
+another J -K flip-flop 810 which is clocked by the clock
 330 for convenience and receives at the K input the
 output of a NAND gate 811. Gate 811 collects the Q
 and the Q outputs respectively from ?ip-flops 812 and
-813. Flip-?op 812 is again a J-K ?ip-?op receiving at
-the J input the second most signi?cant bit from shift
+813. Flip-?op 812 is again a J-K flip-flop receiving at
+the J input the second most significant bit from shift
 register 706 and is clocked by the output of one-shot
-703. The K input is unused and is tied to a logical “l”
-Flip-?op 813 is similarly a J-K ?ip-?op connected as a
-D-type ?ip-?op and clocked by signal “d” from one
-shot 713 to record the trailing edge of the carrier sig
+703. The K input is unused and is tied to a logical "1".
+Flip-?op 813 is similarly a J-K flip-flop connected as a
+D-type flip-flop and clocked by signal "d" from one
+shot 713 to record the trailing edge of the carrier signal
 (or the rising edge of the Q output of one-shot 713).
 Thus, ?ip—?op 812 records the receipt of an entire
 16-bit word and therefore indicates that a packet, com
-prising more than one word, is in progress. The Q ‘out
-put of ?ip-?op 810 indicates the lack of the carrier
-signal and that the input shift register is ready to ac
-the next packet. If ?ip-?op 813 goes true before ?ip-?o
-812~is true, then a packet less than sixteen bits has b
+prising more than one word, is in progress. The Q output of flip-flop 810 indicates the lack of the carrier
+signal and that the input shift register is ready to accept
+the next packet. If flip-flop 813 goes true before flip-flop
+812~is true, then a packet less than sixteen bits has bee
 entered into shift register 340. Such packet may result
 from incomplete transmissions due to collision and
 should be discarded. The discarding function is pro
 vided by the combination of NAND gate 811 clearing a
-?ip-?op 810 which in turn clears shift register 340.
+flip-flop 810 which in turn clears shift register 340.
 The latter description provides a convenient way for
-rejecting incomplete packets which are not translated t
-the most signi?cant bit position in the shift register.
-Within the buffer itself, the address register 391 a
+rejecting incomplete packets which are not translated to
+the most significant bit position in the shift register.
+Within the buffer itself, the address register 391 and
 the word counter 392 maintain chronological order in a
 manner conventional in the art.
 OPERATION
@@ -1208,135 +1215,370 @@ codes, may be used within the present invention. Ac
 cordingly, the structure of FIG. 6 is exemplary only,
 and no intent to limit the invention thereby is contem
 plated.
-The bit-serial packet 1000 is sent on the cable unti
-leader 1002 thereof is properly identi?ed by the addres
-?lter or decoder 341. Again, more than one code combi
-nation can be decoded in ?lter 341 and an arrangement
+The bit-serial packet 1000 is sent on the cable until the
+leader 1002 thereof is properly identified by the address
+filter or decoder 341. Again, more than one code combi
+nation can be decoded in filter 341 and an arrangement
 whereby all receiving stations are addressed can be
 accommodated. In this manner various communication
 source-destination arrangements are accommodated by
 use of a single communicating medium or cable. When
-a destination is thus identi?ed, the rest of the packet
+a destination is thus identified, the rest of the packet is
 transferred, in 16-bit words, to the input buffer. When
 the cable goes silent, as indicated by the absence of
-signal “d” at the most signi?cant bit position of the
+signal "d" at the most significant bit position of the
 receiver shift register an end of packet condition is
-identi?ed. Any other absence of the carrier signal “d”
-indicates a packet failure. The register is then cleare
-Obviously, many modi?cations and variations of the
+identified. Any other absence of the carrier signal "d"
+indicates a packet failure. The register is then cleared.
+Obviously, many modi?cations and variations of the 65 w
 present invention may be made with regard to the fore
 going detailed description without departing from the
 spirit of the invention.
 
+We claim:                          .
 1. A data communication system comprising:
 a communicating medium;
-a plurality of transceivers connected to said medium, each transceiver including transmitting means for transmitting a signal onto said medium, and receiving means for receiving a signal communicated on said medium by another transceiver;
-collision detecting means coupled to the transmitting means and the receiving means of each transceiver for generating a collision signal whenever a signal communicated on said medium by another transceiver is received by said receiving means during the time said transmitting means is transmitting a signal onto said communicating medium; and
-means connected to each transceiver and responsive to the presence of said collision signal for interrupting the transmission of a signal onto said medium by said transmitting means.
-
-2. The data communication system of claim 1, wherein said collision detecting means is included in each transceiver.
-
-3. The data communication system of claim 1, further comprising:
-interface means connected to each transceiver, said interface means including said means for interrupting therein, and also including means responsive to the absence of said collision signal for transmitting an output signal to said transmitting means, and means responsive to the receipt of a signal by said receiving means for generating an input signal; and
-using means connected to said interface means for supplying data thereto and receiving data therefrom.
-
-4. The data communication system of claim 3, wherein said interface means further includes buffer means for generating said output signal and for receiving said input signal.
-
-5. The data communication system of claim 1, further comprising:
-signal detecting means coupled to said receiving means for generating a carrier signal whenever a signal communicated on said medium by another transceiver is received by said receiving means prior to said transmitting means transmitting a signal onto said communicating medium; and
-means connected to each transceiver and responsive to the presence of said carrier signal for preventing the transmission of a signal by said transmitting means.
-
-6. The data communication system of claim 5, further comprising:
-interface means connected to each transceiver, said interface means including said means for interrupting and said means for preventing therein, and also including means responsive to the absence of said collision and carrier signals for transmitting an output signal to said transmitting means, and means responsive to the receipt of a signal by said receiving means for generating an input signal; and
-using means connected to said interface means for supplying data thereto and receiving data therefrom.
-
-7. The data communication system of claim 6, wherein said interface means further includes buffer means for generating said output signal and for receiving said input signal.
-
+a plurality of transceivers connected to said medium,
+each transceiver including transmitting means for
+transmitting a signal onto said medium, and receiving means for receiving a signal communicated on
+said medium by another transceiver;
+collision detecting means coupled to the transmitting
+means and the receiving means of each transceiver
+for generating a collision signal whenever a signal
+communicated on said medium by another transceiver is received by said receiving means during
+the time said transmitting means is transmitting a
+signal onto said communicating medium; and
+means connected to each transceiver and responsive
+to the presence of said collision signal for interrupting the transmission of a signal onto said medium
+by said transmitting means.
+2. The data communication system of claim 1,
+n  wherein said collision detecting means is included in
+each transceiver.
+3. The data communication system of claim 1, further
+comprising:
+interface means connected to each transceiver, said
+interface means including said means for interrupting therein, and also including means responsive to
+the absence of said collision signal for transmitting
+an output signal to said transmitting means, and
+means responsive to the receipt of a signal by said
+receiving means for generating an input signal; and
+using means connected to said interface means for
+supplying data thereto and receiving data there
+from.
+4. The data communication system of claim 3,
+wherein said interface means further includes buffer
+means for generating said output signal and for receiv
+ing said input signal.
+5. The data communication system of claim 1, further
+comprising:
+signal detecting means coupled to said receiving
+means for generating a carrier signal whenever a
+signal communicated on said medium by another
+transceiver is received by said receiving means
+prior to said transmitting means transmitting a sig
+nal onto said communicating medium; and
+means connected to each transceiver and responsive
+to the presence of said carrier signal for preventing
+the transmission of a signal by said transmitting
+means.
+6. The data communication system of claim 5, further
+comprising:
+interface means connected to each transceiver, said
+interface means including said means for interrupting and said means for preventing therein, and also
+including means responsive to the absence of said
+collision and carrier signals for transmitting an
+output signal to said transmitting means, and means
+responsive to the receipt of a signal by said receiv
+ing means for generating an input signal; and
+using means connected to said interface means for
+supplying data thereto and receiving data there
+from.
+7. The data communication system of claim 6,
+herein said interface means further includes buffer
+means for generating said output signal and for receiv
+ing said input signal.
 8. A system according to claim 4, wherein:
-said medium is a bit-serial medium; and
-said interface means includes a first shift register connected for bit-serial receipt of said input signal from said receiving means and for parallel output of said input signal to said buffer means, an address filter connected to selected parallel outputs of said first shift register for enabling the transfer of said input signal upon a preselected combination thereof, a second shift register connected for parallel receipt of said output signal for converting said output signal to a bit-serial output signal, and a transmitter clock connected to said second shift register for controlling the rate of said bit-serial output signal.
 
 --- REVIEWED TRANSCRIPTION PAGE 17 OF 19 ---
 
+said medium is a bit-serial medium; and
+said interface means includes a first shift register con
+nected for bit-serial receipt of said input signal
+from said receiving means and for parallel output
+of said input signal to said buffer means, an address
+filter connected to selected parallel outputs of said
+first shift register for enabling the transfer of said
+input signal upon a preselected combination
+thereof, a second shift register connected for paral
+lel receipt of said output signal for converting said
+output signal to a bit-serial output signal, and a
+transmitter clock connected to said second shift
+register for controlling the rate of said bit-serial
+output signal.
 9. A system according to claim 8, wherein:
-said collision detecting means includes an exclusive OR gate means connected at one input thereof to the output side of said receiving means and at the other input thereof across delay means to the input side of said transmitting means, said delay means providing a signal delay substantially equal to the signal propagation delays through said transmitting and receiving means, the output of said OR gate means providing said collision signal.
-
+said collision detecting means includes an exclusive
+OR gate means connected at one input thereof to
+the output side of said receiving means and at the
+other input thereof across delay means to the input
+side of said transmitting means, said delay means
+providing a signal delay substantially equal to the
+signal propagation delays through said transmitting
+and receiving means, the output of said OR gate
+means providing said collision signal.
 10. A system according to claim 7, wherein:
 said medium is a bit-serial medium; and
-said interface means includes a first shift register connected for bit-serial receipt of said input signal from said receiving means and for parallel output of said input signal to said buffer means, an address filter connected to selected parallel outputs of said first shift register for enabling the transfer of said input signal upon a preselected combination thereof, a second shift register connected for parallel receipt of said output signal for converting said output signal to a bit-serial output signal, and a transmitter clock connected to said second shift register for controlling the rate of said bit-serial output signal.
-
-11. A system according to claim 10, wherein: said collision detecting means includes an exclusive OR gate means connected at one input thereof to the output side of said receiving means and at the other input thereof across delay means to the input side of said transmitting means, said delay means providing a signal delay substantially equal to the signal propagation delays through said transmitting and receiving means, the output of said OR gate means providing said collision signal.
-
+said interface means includes a first shift register con
+nected for bit-serial receipt of said input signal
+from said receiving means and for parallel output
+of said input signal to said buffer means, an address
+filter connected to selected parallel outputs of said
+first shift register for enabling the transfer of said
+input signal upon a preselected combination
+thereof, a second shift reigster connected for paral
+lel receipt of said output signal for converting said
+output signal to a bit-serial output signal, and a
+transmitter clock connected to said second shift
+reigster for controlling the rate of said bit-serial
+output signal.
+11. A system according to claim 10, wherein: said
+collision detecting means includes an exclusive OR gate
+means connected at one input thereof to the output side
+of said receiving means and at the other input thereof
+across delay means to the input side of said transmitting
+means, said delay means providing a signal delay sub
+stantially equal to the signal propagation delays through
+said transmitting and receiving means, the output of said
+OR gate means providing said collision signal.
 12. A data communicating system comprising:
 a bit serial communicating medium;
-a plurality of transceivers connected to said medium, each transceiver including transmitting means and receiving means;
-collision detecting means connected to said transmitting and receiving means for producing a collision signal when a signal produced by said transmitting means and a signal received by said receiving means are unequal;
-interface means connected to said transmitting and receiving means to receive said collision signal and for transmitting an output signal to said transmitting means in the absence of said collision signal and for receiving signals from said receiving means to produce an input signal, said interface means including buffer means for producing said output signal and for receiving said input signal, a first shift register connected for bit-serial receipt of said input signal from said receiving means and for parallel output of said input signal to said buffer means, an address filter connected to selected parallel outputs of said first shift register for enabling the transfer of said input signal upon a preselected combination thereof, a second shift register connected for parallel receipt of said output signal for converting said output signal to a bit-serial output signal, and a transmitter clock connected to said second shift register for controlling the rate of said bit-serial output signal;
-random number generating means operatively connected to said transmitter clock and including a fast clock for producing a random number signal according to the asynchronous relationship between said fast clock and said transmitter clock;
-collision counting means connected to receive said collision signal for accumulating the repetition of said collision signal and for producing a count signal indicative thereof;
-weighting means connected to receive said random number signal and said count signal for adjusting the mean value of said random number signal according to said count signal to produce an enabling signal to said second shift register; and
-using means connected to transmit data to and receive data from said buffer means.
+a plurality of transceivers connected to said medium,
+each transceiver including transmitting means and
+receiving means;
+collision detecting means connected to said transmit
+ting and receiving means for producing a collision
+signal when a signal produced by said transmitting
+means and a signal received by said receiving
+means are unequal;
+interface means connected to said transmitting and
+receiving means to receive said collision signal and
+for transmitting an output signal to said transmit
+ting means in the absence of said collision signal
+and for receiving signals from said receiving means
+to produce an input signal, said interface means
+including buffer means for producing said output
+signal and for receiving said input signal, a first
+shift register connected for bit-serial receipt of said
+input signal from said receiving means and for
 
+parallel output of said input signal to said buffer
+means, an address filter connected to selected par
+allel outputs of said first shift register for enabling
+the transfer of said input signal upon a preselected
+combination thereof, a second shift register con
+nected for parallel receipt of said output signal for
+converting said output signal to a bit-serial output
+signal, and a transmitter clock connected to said
+second shift register for controlling the rate of said
+bit-serial output signal;
+random number generating means operatively con
+nected to said transmitter clock and including a fast
+clock for producing a random number signal ac
+cording to the asynchronous relationship between
+said fast clock and said transmitter clock;
+collision counting means connected to receive said
+collision signal for accumulating the repetition of
+said collision signal and for producing a count
+signal indicative thereof;
+weighting means connected to receive said random
+number signal and said count signal for adjusting
+the mean value of said random number signal ac
+cording to said count signal to produce an enabling
+signal to said second shift register; and
+using means connected to transmit data to and re
+ceive data from said buffer means.
 13. A system according to claim 12, further including:
-overflow detecting means connected to receive said count signal for producing an error signal when said count signal exceeds a predetermined count.
-
+overflow detecting means connected to receive said
+count signal for producing an error signal when
+said count signal exceeds a predetermined count.
 14. A system according to claim 13, wherein:
-said random number generating means includes a first counter connected to said fast clock;
-said collision counting means includes a third shift register enabled by said buffer means and shifting out said collision signals;
-said weighting means includes a plurality of first AND gates each receiving a selected signal from said first counter and said third shift register, an up-down counter loaded in parallel by the outputs of said AND gates and gated to count down by said collision signal; and
-said overflow detecting means includes means connected to receive predetermined ones of the signals from said third shift register to produce said error signal.
-
+said random number generating means includes a first
+counter connected to said fast clock;
+said collision counting means includes a third shift
+register enabled by said buffer means and shifting
+out said collision signals;
+said weighting means includes a plurality of first
+AND gates each receiving a selected signal from
+said first counter and said third shift register, an.
+up-down counter loaded in parallel by the outputs
+of said AND gates and gated to count down by said
+collision signal; and
+said overflow detecting means includes means con
+nected to receive predetermined ones of the signals
+from said third shift register to produce said error
+signal.
 15. A system according to claim 14, further comprising:
-signal detecting means connected to the output of said receiving means for producing a carrier signal indicative of the presence of a signal on said medium; and
-control means connected to receive said carrier, said collision and said weighting means output signals for preventing the transmission of said output signal in the presence of said carrier signal, for interrupting the transmission of said output signal upon the occurrence of said collision signal and for enabling said second shift register upon the occurrence of said weighting means output signal.
-
+signal detecting means connected to the output of
+said receiving means for producing a carrier signal
+indicative of the presence of a signal on said me
+dium; and
+control means connected to receive said carrier, said
+collision and said weighting means output signals
+for preventing the transmission of said output sig
+nal in the presence of said carrier signal, for inter
+rupting the transmission of said output signal upon
+the occurrence of said collision signal and for en
+abling said second shift register upon the occur
+rence of said weighting means output signal.
 16. A system according to claim 15, further comprising:
-isolation means included in said transceiver for isolating said interface means from said medium.
+isolation means included in said transceiver for isolat
+ing said interface means from said medium.
+17. A data communication system comprising:
+a bit-serial communicating medium;
 
 --- REVIEWED TRANSCRIPTION PAGE 18 OF 19 ---
 
-17. A data communication system comprising:
-a bit-serial communicating medium;
-a plurality of transceivers connected to said medium, each transceiver including transmitting means and receiving means;
-collision detecting means connected to said transmitting and receiving means for producing a collision signal when a signal produced by said transmitting means and a signal received by said receiving means are unequal;
-interface means connected to said transmitting and receiving means to receive said collision signal and for transmitting an output signal to said transmitting means in the absence of said collision signal and for receiving signals from said receiving means to produce an input signal;
-said interface means includes a first shift register connected for bit-serial receipt of signals from said receiving means and for parallel output of said input signal to said buffer means, an address filter connected to selected parallel outputs of said first shift register for enabling the transfer of said input signal upon a preselected combination thereof, a second shift register connected for parallel receipt of said output signal for converting said output signal to a bit-serial output signal, and a transmitter clock connected to said second shift register for controlling the rate of said bit-serial output signal;
-said interface means including buffer means for producing said output signal and for receiving said input signal;
-random number generating means operatively connected to said transmitter clock and including a fast clock for producing a random number signal according to the asynchronous relationship between said fast clock and said transmitter clock;
-collision counting means connected to receive said collision signal for accumulating the repetition of said collision signal and producing a count signal indicative thereof;
-weighting means connected to receive said random number signal and said count signal for adjusting the mean value of said random number signal according to said count signal to produce an enabling signal to said second shift register;
-overflow detecting means connected to receive said count signal for producing an error signal when said count signal exceeds a predetermined count; and
-using means connected to transmit data to and receive data from said buffer means.
-
+a plurality of transceivers connected to said medium,
+each transceiver including transmitting means and
+receiving means;         2     it.   .   -   v   -
+collision detecting means connected to said transmit
+ting and receiving means for producing a collision
+signal when a signal produced by said transmitting
+means and a signal received by said receiving
+means are unequal;
+interface means connected to said transmitting and
+receiving means to receive said collision signal and l
+for transmitting an output signal to said transmit
+ting means in the absence of said collision signal
+and for receiving signals from said receiving means
+to produce an input signal;
+said interface means includes a first shift register con
+nected for bit-serial receipt of signals from said
+receiving means and for parallel output of said
+input signal to said buffer means, an address filter
+connected to selected parallel outputs of said first
+shift register for enabling the transfer of said input
+signal upon a preselected combination thereof, a
+second shift register connected for parallel receipt
+of said output signal for converting said output
+signal to a bit-serial output signal, and a transmitter
+clock connected to said second shift register for
+controlling the rate of said bit-serial output signal;
+said interface means including buffer means for pro
+ducing said output signal and for receiving said
+input signal;
+random number generating means operatively con
+nected to said transmitter clock and including a fast
+clock for producing a random number signal ac
+cording to the asynchronous relationship between
+said fast clock and said transmitter clock;
+collision counting means connected to receive said
+collision signal for accumulating the repetition of
+said collision signal and producing a count signal
+indicative thereof;
+weighting means connected to receive said random
+number signal and said count signal for adjusting
+the mean value of said random number signal ac
+cording to said count signal to produce an enabling
+signal to said second shift register;
+overflow detecting means connected to receive said
+count signal for producing an error signal when
+said count signal exceeds a predetermined count;
+and
+using means connected to transmit data to and re
+ceive data from said buffer means.
 18. A system according to claim 17, wherein:
-said collision means includes an exclusive OR gate means connected at one input thereof to the output side of said receiving means and at the other input thereof across delay means to the input side of said transmitting means, said delay means providing a signal delay substantially equal to the signal propagation delays through said transmitting and receiving means, the output of said OR gate means providing said collision signal.
-
+said collision means includes an exclusive OR gate
+means connected at one input thereof to the output
+side of said receiving means and at the other input
+thereof across delay means to the input side of said
+transmitting means, said delay means providing a
+signal delay substantially equal to the signal propa
+gation delays through said transmitting and receiv
+ing means, the output of said OR gate means pro
+viding said collision signal.
 19. A system according to claim 18, wherein:
-said random number generating means includes a first counter connected to said fast clock;
-said collision counting means includes a third shift register enabled by said buffer means and shifting out said collision signals;
-said weighting means includes a plurality of first AND gates each receiving a selected signal from said first counter and said third shift register, an up-down counter loaded in parallel by the outputs of said AND gates and gated to count down by said collision signal; and
-said overflow detecting means includes means connected to receive predetermined ones of the signals from said third shift register to produce said error signal.
-
+said random number generating means includes a first
+counter connected to said fast clock;
+said collision counting means includes a third shift
+register enabled by said buffer means and shifting
+out said collision signals;
+said weighting means includes a plurality of first
+AND gates each receiving a selected signal from
+said first counter and said third shift register, an up-down counter loaded in parallel by the outputs
+of said AND gates and gated to count down by said
+collision signal; and said overflow detecting means includes means connected to receive predetermined ones of the signals
+from said third shift register to produce said error
+signal.
 20. A system according to claim 19, further comprising:
-signal detecting means connected to the output of said receiving means for producing a carrier signal indicative of the presence of a signal on said medium; and
-control means connected to receive said carrier, said collision and said weighting means output signals for preventing the transmission of said output signal in the presence of said carrier signal, for interrupting the transmission of said output signal upon the occurrence of said collision signal and for enabling said second shift register upon the occurrence of said weighting means output signal.
-
+signal detecting means connected to the output of
+said receiving means for producing a carrier signal
+indicative of the presence of a signal on said me
+dium; and
+control means connected to receive said carrier, said
+collision and said weighting means output signals
+for preventing the transmission of said output sig
+nal in the presence of said carrier signal, for inter
+rupting the transmission of said output signal upon
+the occurrence of said collision signal and for en
+abling said second shift register upon the occur
+rence of said weighting means output signal.
 21. A system according to claim 18, further comprising:
-filtering means connected to said OR gate for smoothing the output thereof.
-
+filtering means connected to said OR gate for
+smoothing the output thereof.
 22. A data communication system comprising:
 a bit-serial data communication system;
-a plurality of transceivers connected for communication with said medium, each transceiver including transmitting means and receiving means communicating with said medium;
-communication sensing means operatively connected to said receiving means for detecting the presence of communications on said medium and for preventing transmissions from said transmitting means to said medium upon detecting the presence of other communications on said medium;
-collision detecting means connected to said transmitting and receiving means for producing a collision signal when a signal produced by said transmitting means and a signal received by said receiving means are unequal;
-interface means connected to said transmitting and receiving means to receive said collision signal and for transmitting an output signal to said transmitting means in the absence of said collision signal and for receiving signals from said receiving means to produce an input signal, said interface means including buffer means for producing said output signal and for receiving said input signal, a first shift register connected for bit-serial receipt of said input signal from said receiving means and for parallel output of said input signal to said buffer means, an address filter connected to selected parallel outputs of said first shift register for enabling the transfer of said input signal upon a preselected combination thereof, a second shift register connected for parallel receipt of said output signal for converting said output signal to a bit-serial output signal, and a transmitter clock connected to said second shift register for controlling the rate of said bit-serial output signal;
-random number generating means operatively connected to said transmitter clock and including a fast clock for producing a random number signal according to the asynchronous relationship between said fast clock and said transmitter clock;
-collision counting means connected to receive said collision signal for accumulating the repetition of said collision signal and producing a count signal indicative thereof;
-weighting means connected to receive said random number signal and said count signal for adjusting the mean value of said random number signal according to said count signal to produce an enabling signal to said second shift register; and
-using means connected to transmit data to and receive data from said buffer means.
+a plurality of transceivers connected for communica
+tion with said medium, each transceiver including
+transmitting means and receiving means communi
+cating with said medium;
+communication sensing means operatively connected
+to said receiving means for detecting the presence
+of communications on said medium and for pre
+venting transmissions from said transmitting means
+to said medium upon detecting the presence of
+other communications on said medium;
+collision detecting means connected to said transmit
+ting and receiving means for producing a collision
+signal when a signal produced by said transmitting
+means and a signal received by said receiving
+means are unequal;
+interface means connected to said transmitting and
+receiving means to receive said collision signal and
+for transmitting an output signal to said transmit
+ting means in the absence of said collision signal
+and for receiving signals from said receiving means
+to produce an input signal, said interface means
+including buffer means for producing said output
+signal and for receiving said input signal, a first
+shift register connected for bit-serial receipt of said
+input signal from said receiving means and for
+parallel output of said input signal to said buffer
+means, an address filter connected to selected par
+allel outputs of said first shift register for enabling
+the transfer of said input signal upon a preselected
+combination thereof, a second shift register con
+nected for parallel receipt of said output signal for
+converting said output signal to a bit-serial output
+signal, and a transmitter clock connected to said
+second shift register for controlling the rate of said
+bit-serial output signal;
+random number generating means operatively con
+nected to said transmitter clock and including a fast
+clock for producing a random number signal ac
+cording to the asynchronous relationship between
+said fast clock and said transmitter clock;
 
 --- REVIEWED TRANSCRIPTION PAGE 19 OF 19 ---
 
-Attorneys: James J. Ralabate; Franklyn C. Weiss.
-Examiner: Donald J. Yusko.
+collision counting means connected to receive said
+collision signal for accumulating the repetition of
+said collision signal and producing a count signal
+indicative thereof; and
+weighting means connected to receive said random
+number signal and said count signal for adjusting
+
+the mean value of said random number signal ac
+cording to said count signal to produce an enabling
+signal to said second shift register; and
+using means connected to transmit data to and receive data from said buffer means.
 

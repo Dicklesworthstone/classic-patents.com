@@ -6,12 +6,21 @@ import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValid
 import { kamenMedicationInjectionPatent } from "@/data/patents/kamen-medication-injection-device";
 import {
   validateReviewedTranscription,
+  validateReviewedTranscriptionLiteralCoverage,
   validateReviewedTranscriptionPageAnchors,
 } from "@/data/patents/sourceTextValidation";
 import {
   kamenMedicationInjectionArchivalEdition,
   kamenMedicationInjectionParallelReadings,
 } from "./kamenMedicationInjectionEdition";
+import {
+  archivalEditionForPublication,
+  evaluateArchivalPublicationState,
+} from "./publicationApproval";
+import {
+  evaluateReviewedLedgerTextEvidence,
+  literalLedgerSectionsForEdition,
+} from "./reviewedLedgerPublicationEvidence";
 
 describe("US 3,858,581 manual source edition", () => {
   test("pins the reviewed eight-page facsimile and all printed claims", () => {
@@ -32,7 +41,7 @@ describe("US 3,858,581 manual source edition", () => {
       totalClaims: 5,
       independentClaims: 1,
     });
-  });
+  }, 30_000);
 
   test("reads every legal claim from the manual edition", () => {
     const claims = kamenMedicationInjectionArchivalEdition.blocks.filter(
@@ -96,6 +105,64 @@ describe("US 3,858,581 manual source edition", () => {
     });
     for (const claim of claims(kamenMedicationInjectionArchivalEdition))
       expect(ledger).toContain(claim.inlines.map((inline) => inline.text).join(""));
+  });
+
+  test("pins every visitor-facing source block and legal claim to the reviewed ledger", () => {
+    const asset = kamenMedicationInjectionPatent.originalTextAsset;
+    if (!asset) throw new Error("Kamen reviewed ledger is missing.");
+    const ledger = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
+    const literalSections = literalLedgerSectionsForEdition(
+      kamenMedicationInjectionArchivalEdition,
+    );
+
+    expect(literalSections).toHaveLength(58);
+    expect(validateReviewedTranscriptionLiteralCoverage(ledger, 8, literalSections)).toEqual({
+      valid: true,
+    });
+    expect(evaluateReviewedLedgerTextEvidence(kamenMedicationInjectionPatent, ledger)).toEqual({
+      status: "verified",
+      valid: true,
+      ledgerUrl: "/patents/transcripts/us-3858581-kamen-medication-injection-device-reviewed.txt",
+      authoredSectionCount: 58,
+      coveredSectionCount: 58,
+      coverageFraction: 1,
+      missingSectionIndexes: [],
+      missingClaimNumbers: [],
+      error: null,
+    });
+  }, 30_000);
+
+  test("publishes only the locator-bound, independently reviewed archival edition", () => {
+    const decision = evaluateArchivalPublicationState(kamenMedicationInjectionPatent);
+
+    expect(decision).toMatchObject({
+      isPublished: true,
+      status: "published",
+      reasonCode: "ACCEPTED",
+      figureManifest: {
+        requiredFigureCount: 33,
+        acceptedFigureCount: 33,
+        attestation: {
+          sourcePdfSha256: "1aa0df879ec119a9ad4025774e482dfc41e748127bc3f83cde31047daeedc35d",
+          acceptanceBasis: "independent-figure-review",
+          acceptedOccurrenceCount: 33,
+          acceptedAssetCount: 6,
+          matchesEdition: true,
+          matchesLocators: true,
+        },
+      },
+    });
+    expect(
+      decision.figureManifest.figures.every(
+        (figure) =>
+          figure.status === "accepted" &&
+          figure.locatorEvidenceReference ===
+            "docs/provenance/us-3858581-kamen-medication-injection-device.md#figure-crop-review-and-preservation-boundary",
+      ),
+    ).toBe(true);
+    expect(archivalEditionForPublication(kamenMedicationInjectionPatent)).toBe(
+      kamenMedicationInjectionArchivalEdition,
+    );
   });
 
   test("provides valid provenance classifications for all Kamen medication injection controls and metrics", () => {

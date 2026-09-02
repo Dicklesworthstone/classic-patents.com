@@ -16,8 +16,7 @@ export const hullStereolithographyPatent: Patent = {
   patentNumber: "US 4,575,330",
   title: "Apparatus for Production of Three-Dimensional Objects by Stereolithography",
   shortTitle: "Chuck Hull 3D Printing / Stereolithography (SLA)",
-  subtitle:
-    "Ultraviolet Photopolymer Cross-Linking, Galvanometer Laser Vector Scanning, and Layer-by-Layer Additive Build Platform",
+  subtitle: "Programmed Surface Curing and Layer-by-Layer Formation of a Three-Dimensional Object",
   inventors: ["Charles W. Hull"],
   inventorLocation: "Arcadia, California",
   grantDate: "1986-03-11",
@@ -26,9 +25,9 @@ export const hullStereolithographyPatent: Patent = {
   category: "computing",
   categoryLabel: "Additive Manufacturing & 3D Printing",
   summary:
-    "Charles W. (Chuck) Hull's landmark 1986 patent launched the entire modern 3D printing and additive manufacturing industry: an apparatus that generates solid three-dimensional plastic parts directly from computer slice data by scanning a focused ultraviolet laser spot across a vat of liquid photopolymer resin to cure successive laminar cross-sections upon an elevator build platform.",
+    "Charles W. Hull's 1986 grant describes a system that forms a three-dimensional object by creating and integrating successive cross-sectional laminae at the surface of a curable fluid medium. Its preferred embodiment uses a computer-programmed ultraviolet spot and an elevator platform; the claims also reach other prescribed forms of stimulation and object-support arrangements.",
   heroQuote:
-    "Stereolithography provides an automated bridge between computer-aided design (CAD) and physical component manufacturing, replacing weeks of manual machining with direct additive fabrication in hours.",
+    '"Stereolithography" is a method and apparatus for making solid objects by successively "printing" thin layers of a curable material, e.g., a UV curable material, one on top of the other.',
   originalPdfUrl: "/patents/pdfs/us-4575330-hull-stereolithography.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US4575330A/en",
   usptoClassification: "425/174.4",
@@ -37,49 +36,49 @@ export const hullStereolithographyPatent: Patent = {
     url: "/patents/transcripts/us-4575330-hull-stereolithography-reviewed.txt",
     pageCount: 16,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (Gemini 3.7 Flash)",
-    reviewedAt: "2026-09-01",
+    reviewedBy: "Classic Patents editorial agent (GPT-5 Codex)",
+    reviewedAt: "2026-09-02",
     sourcePdfSha256: "5dc2211b18f88883ee92394917154d57d102b73c26a4744332cbf0d89b1db1c7",
   },
 
   archivalEdition: hullStereolithographyArchivalEdition,
 
-  originalText: `This invention relates generally to improvements in methods and apparatus for forming three-dimensional objects from a fluid medium and, more particularly, to a new and improved system for stereolithography involving the application of synergistic stimulation, such as ultraviolet light, to a fluid medium to successively solidify thin cross-sectional laminae of the object, each lamina being integrated with the previous lamina to build up the desired three-dimensional object in a step-wise laminar fashion.
+  originalText: `This invention relates generally to improvements in apparatus for forming three-dimensional objects from a fluid medium and, more particularly, to stereolithography involving the application of lithographic techniques to production of three-dimensional objects, whereby such objects can be formed rapidly, reliably, accurately and economically.
 
-It is common practice in the production of more desirable products to design, build and test various prototypes before finalizing manufacturing specifications. However, the production of such prototypes has traditionally been extremely slow, tedious and expensive, requiring skilled craftsmen to machine, cast or fabricate models by hand over weeks or months. Prior attempts to generate solid objects from photopolymer resins (such as Swainson U.S. Pat. Nos. 4,041,476 and 4,238,840) required the simultaneous intersection of two laser beams deep within a transparent body, suffering from severe positioning instability, long exposure times, and poor spatial resolution.`,
+It is common practice in the production of plastic parts and the like to first design such a part and then painstakingly produce a prototype of the part, all involving considerable time, effort and expense. The design is then reviewed and, oftentimes, the laborious process is again and again repeated until the design has been optimized. After design optimization, the next step is production. Most production plastic parts are injection molded.`,
 
   plainEnglishExplanation: {
     overview:
-      "Before Chuck Hull invented stereolithography in 1983–1984, fabricating a physical prototype of a new mechanical part took weeks or months of expensive tooling, manual clay/wood sculpting, or subtractive CNC machining. Hull conceived the revolutionary concept of additive manufacturing: building a part layer-by-layer from a liquid vat. In stereolithography (SLA), a computer slices a 3D digital CAD model into hundreds of thin horizontal cross-sections (typically 0.05–0.25 mm thick). A computer-directed ultraviolet (UV) laser beam traces each slice pattern across the surface of a vat containing liquid photopolymer resin. Where the UV light strikes the resin, photosensitive monomers undergo rapid cross-linking into a rigid solid acrylic or epoxy plastic. An elevator platform beneath the surface then drops by one layer thickness, allowing unreacted liquid resin to recoat the top surface before the laser draws the subsequent layer, chemically bonding it to the layer beneath.",
+      "Hull identifies the practical problem as the slow, tooling-heavy loop between a plastic-part design, its prototype, and production. The grant's move is not a particular modern printer: it is to make a cross-section at a selected fluid surface, join it to the prior cross-section, and repeat. The preferred working apparatus uses a programmed ultraviolet spot and an elevator platform. The grant says a computer can prepare and deliver the commands; it also claims other forms of stimulation, including particle bombardment and chemical application. Modern SLA machines often use different optics and mechanics, so those later implementations must not be read back into the 1986 preferred embodiment.",
     coreMechanism:
-      "The stereolithography apparatus comprises four integrated subsystems: (1) a vat holding liquid acrylic/epoxy photopolymer; (2) an elevator platform submerged in the vat and actuated by a precision z-axis lead screw; (3) a continuous-wave UV laser (e.g. HeCd at 325 nm or solid-state at 355 nm) directed by orthogonal X-Y galvanometer mirrors; and (4) a computer control unit that parses sliced CAD vector boundaries. Laser exposure E(x,y) follows a Gaussian irradiance profile modulated by scan velocity v_s. According to the Beer-Lambert photopolymerization law, curing depth C_d = D_p * ln(E_max / E_c), where D_p is resin penetration depth and E_c is critical exposure threshold. Regulating laser scan speed ensures that C_d exceeds the elevator slice step delta_z, creating parabolic cross-sectional cure profiles with strong interlaminar molecular bonding.",
+      "In the printed Figure 3 embodiment, container 21 holds UV-curable liquid 22 and defines working surface 23. Computer 28 controls the position of ultraviolet spot 27 from source 26 and moves elevator platform 29. The source draws one solid pattern at the surface; the platform moves the growing object away so fresh liquid occupies that surface; the next pattern adheres to the prior solid layer. Hull's working source is a 350-watt mercury short-arc lamp coupled to a 1 mm ultraviolet-transmitting fiber-optic bundle, shutter, lens tube, and H-P digital plotter. The patent says that a UV laser might ultimately be a better source—it does not describe a laser or galvanometer scanner as its working embodiment.",
     mechanicalBreakdown: [
       {
-        title: "UV Laser & Galvanometer Optical Scanning Engine",
+        title: "Programmed Ultraviolet Spot Source",
         summary:
-          "High-speed dual-axis optical galvanometer mirrors deflecting a focused UV laser beam across the liquid resin surface.",
+          "The printed working source is a mercury short-arc lamp, fiber-optic bundle, shutter, lens tube, and plotter that moves a focused ultraviolet spot.",
         technicalDetails:
-          "A continuous-wave ultraviolet laser beam (spot diameter 2w_0 = 0.20–0.25 mm) passes through an acousto-optic shutter and beam expander before reflecting off two high-bandwidth moving-magnet galvanometer mirrors (X and Y axes). The scanning mirrors deflect the beam across the vat surface at linear velocities up to 5.0 m/s with sub-micron repeatability, controlled via closed-loop PID servo boards receiving vector coordinate lists from the sliced CAD slice compiler.",
+          "Hull specifies a 350 W mercury short-arc lamp focused into a 1 mm ultraviolet-transmitting fiber-optic bundle. A water-cooled bundle end, electronically controlled shutter blade, and quartz lens tube produce a spot somewhat less than 1 mm in diameter, with about $1 \\mathrm{W/cm^2}$ long-wave UV intensity. An H-P Model 9872 digital plotter moves the lens tube; an H-P 3497A unit controls the shutter. The source is intentionally programmed on and off while the spot moves across working surface 23.",
         archaicTerm:
           "reaction means for selectively applying synergistic stimulation in a prescribed pattern",
-        modernEquivalent: "galvanometer laser optical scanning engine",
+        modernEquivalent: "programmed ultraviolet exposure head",
       },
       {
         title: "Submerged Elevator Build Platform",
         summary:
-          "Precision z-axis stepper/servo elevator translating the perforated build plate downward into the resin vat.",
+          "A platform supports the forming object and is moved away from the working surface between laminae.",
         technicalDetails:
-          "An anodized perforated aluminium platform is suspended inside the resin vat on a precision ground ball screw with anti-backlash nut. After a layer is cured, the elevator descends by delta_z (typically 50 to 150 um). A motorized recoater blade sweeps across the surface to level viscous resin, establishing a flat, uniform fluid meniscus across the build area within seconds.",
+          "After a layer forms, Hull moves the object beyond the next-layer level to let liquid flow into the momentary void, then returns it to the correct level for the next layer. The printed requirements are programmed, sufficiently precise motion and enough force to carry the forming object; manual fine adjustment is useful during setup and removal. The Figure 3 platform is attached to an analog plotter driven by the H-P 3497A unit. The grant does not specify a ball screw, perforated plate, recoater blade, or a numerical layer thickness.",
         archaicTerm:
           "translational means for moving said object as it is formed away from said designated surface",
-        modernEquivalent: "z-axis elevator build platform and recoater blade",
+        modernEquivalent: "z-axis build platform",
       },
       {
         title: "Photopolymer Resin Vat & Chemistry",
         summary:
-          "Liquid resin formulation containing liquid acrylate/epoxy oligomers, cross-linking monomers, and UV photoinitiators.",
+          "The curable fluid must form a thin cohesive layer, adhere to adjacent layers, and remain practical to handle and clean.",
         technicalDetails:
-          "The vat holds a fluid medium with optical penetration depth D_p = 0.12–0.18 mm and critical exposure threshold E_c = 8.5–12.0 mJ/cm^2. Under actinic UV irradiation (lambda = 325–355 nm), photoinitiators generate free radicals or cations that trigger cascade chain-growth polymerization, transforming the liquid into a cross-linked polymer network in milliseconds while unexposed resin remains fluid.",
+          "Hull lists six properties: curing fast enough for practical formation time; adhesion between layers; low enough viscosity to flow after elevator movement; UV absorption for a reasonably thin film; liquid-state solubility with solid-state insolubility in a cleaning solvent; and low toxicity/irritation. The working-material example is Potting Compound 363, a modified acrylate made by Locktite Corporation. The grant does not print penetration-depth, threshold-dose, wavelength, or millisecond-cure values.",
         archaicTerm:
           "fluid medium capable of altering its physical state in response to synergistic stimulation",
         modernEquivalent: "UV-curable photopolymer resin vat",
@@ -87,9 +86,9 @@ It is common practice in the production of more desirable products to design, bu
       {
         title: "Bottom-Up Immiscible Fluid Interface",
         summary:
-          "Alternative inverted stereolithography apparatus exposing through an optically clear vat bottom.",
+          "An alternative arrangement forms the object at the interface above a heavier ultraviolet-transparent, non-miscible liquid.",
         technicalDetails:
-          "In the bottom-up configuration (FIG. 4 & 5), UV radiation enters through a transparent glass/quartz container base. An immiscible, dense non-reactive liquid layer (such as fluorocarbon fluid or heavy water) provides an inert boundary that prevents the curing plastic from adhering to the container window, allowing the elevator to pull the newly solidified part upward out of the vat.",
+          "In Figure 4, curable liquid 22 floats on heavier UV-transparent liquid 32 that is non-miscible and non-wetting with it. Hull gives ethylene glycol and heavy water as examples. The source focuses at their interface through a quartz (or similar) window 33 at the container bottom, and object 30 is pulled up from liquid 22. The thin upper layer directly limits layer thickness. Figure 5 is a different alternative: a collimated broad UV source and apertured mask form constant-shape cross-sections until a new mask is substituted.",
         archaicTerm:
           "container wherein exposure is through the bottom and a second non-reactive medium",
         modernEquivalent:
@@ -98,29 +97,26 @@ It is common practice in the production of more desirable products to design, bu
     ],
     scientificPrinciples: [
       {
-        principle: "Beer-Lambert Law of Photopolymerization Curing Depth",
-        formula:
-          "C_d = D_p \\ln\\left( \\frac{E_{\\text{max}}}{E_c} \\right) \\quad \\text{with} \\quad E_{\\text{max}} = \\sqrt{\\frac{2}{\\pi}} \\frac{P_L}{w_0 v_s}",
+        principle: "Optical attenuation in a curable fluid (modern engineering interpretation)",
+        formula: "E(z) = E_0 e^{-z/D_p}",
         explanation:
-          "Actinic UV radiant energy decays exponentially with resin depth z according to the Beer-Lambert absorption law: E(z) = E_max * exp(-z / D_p). A gelled polymer network forms only where exposure exceeds the critical threshold E_c. The resulting cure depth C_d must be tuned via laser power P_L and scan speed v_s to exceed layer thickness delta_z by 20–40% to guarantee interlaminar adhesion.",
+          "This is a modern explanatory model, not an equation printed in the grant. It says radiant exposure E decreases with depth z in an absorbing fluid, with D_p as a material penetration scale. Hull's source-level observation is narrower: the liquid should absorb UV so the cured film is reasonably thin. The record does not assert a particular D_p, threshold, or layer-overcure margin.",
       },
       {
-        principle: "Gaussian Laser Beam Radiant Exposure Distribution",
-        formula:
-          "E(x,y) = \\sqrt{\\frac{2}{\\pi}} \\frac{P_L}{w_0 v_s} \\exp\\left( -\\frac{2 y^2}{w_0^2} \\right)",
+        principle: "Dose and motion at the working surface (modern engineering interpretation)",
+        formula: "H = \\int_0^t I(t)\\,dt",
         explanation:
-          "A fundamental TEM_00 laser beam possesses a Gaussian intensity profile with beam radius w_0. Moving the beam in the x-direction at constant velocity v_s integrates radiant exposure along y, yielding a parabolic cured line cross-section with width L_w = w_0 * sqrt(2 * ln(E_max / E_c)).",
+          "Here H is radiant exposure and I is irradiance over time. Hull's preferred system must make a spot small and intense enough for practical detail, then move it in a programmed pattern. The integral describes why shutter timing, source intensity, spot size, and motion all affect the cured pattern; it does not imply the unprinted laser-beam profile or numerical scanning performance formerly shown here.",
       },
       {
-        principle: "Interlaminar Chemical Cross-Linking & Gel Point Conversion",
-        formula:
-          "W_{\\text{interlayer}} = \\int_0^{C_d - \\Delta z} G_{\\text{shear}}(\\alpha_{\\text{conversion}}) \\, dz \\quad \\text{where} \\quad \\alpha \\ge \\alpha_{\\text{gel}} \\approx 0.55",
+        principle: "Layer continuity by adhesion",
+        formula: "z_{n+1} = z_n + \\Delta z",
         explanation:
-          "Polymer cross-link density grows monotonically with radiant dose above the gel point alpha_gel. Overcuring each layer past its step depth delta_z allows reactive acrylate/epoxy functional groups to bridge across the layer interface, chemically integrating successive laminae into a monolithic solid part.",
+          "The discrete layer index n emphasizes the patent's essential sequence: form one lamina, move the object, and form an adjacent lamina that adheres to the prior one. The grant requires the fluid to be adhesive, but it does not state a gel-conversion fraction, an interlayer-strength integral, or a particular numerical step size.",
       },
     ],
     whyItMattersToday:
-      "Chuck Hull's invention of stereolithography created the $30+ billion global additive manufacturing and 3D printing industry. Hull co-founded 3D Systems, created the universal STL (.stl) file format used by all 3D printers, and established the layer-by-layer paradigm that underlies subsequent technologies including SLS (Selective Laser Sintering), FDM (Fused Deposition Modeling), and metal SLM (Selective Laser Melting). SLA is used in aerospace manufacturing, medical prosthetics, dental aligners (Invisalign), automotive prototyping, hearing aids, and micro-fluidics.",
+      "The durable idea is the explicit engineering chain from a computer-defined cross-section, to a patterned change at a material surface, to a joined stack of layers. That chain is recognizable across later additive-manufacturing families, even when their energy source, feedstock, motion system, and post-processing differ. The distinction matters: this grant describes a curable fluid and surface formation; it should not be treated as a literal specification for every later 3D-printing process.",
   },
 
   claims: [

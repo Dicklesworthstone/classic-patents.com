@@ -57,3 +57,13 @@
 - **Reviewed Comparison Ledger**: [`public/patents/transcripts/us-6302230-kamen-segway-reviewed.txt`](file:///Users/jemanuel/projects/classic-patents.com/public/patents/transcripts/us-6302230-kamen-segway-reviewed.txt).
 - **Figure Crops**: Preserved full-sheet renderings are stored under `public/patents/figures/us-6302230-kamen-segway/` (`fig-1-source-crop-v1.png` to `fig-16-source-crop-v1.png`). They remain research evidence; the edition cites only the figure previews it actually needs. No asset is represented as an independently accepted isolated crop without a separate crop receipt.
 - **Printed Claims**: Exactly 7 printed claims (Claims 1 and 5 are independent; Claims 2, 3, 4 depend on Claim 1; Claims 6 and 7 depend on Claim 5).
+
+---
+
+## Figure Crop Review and Preservation Boundary
+
+1. **Source PDF Pinned Facsimile**: `public/patents/pdfs/us-6302230-kamen-segway.pdf` (29 pages, SHA-256 `bcda272e161a0b973db9d64090f8102447e9aa35914a9a73e70a38736b7934db`).
+2. **Drawing Sheets 1 to 16**: Facsimile pages 4 through 19 contain Drawing Sheets 1 to 16, corresponding to Figures 1 through 16.
+3. **Figure Crops on Disk**: Full drawing sheets rendered at 2088x2930 resolution in `public/patents/figures/us-6302230-kamen-segway/` (`fig-1-source-crop-v1.png` through `fig-16-source-crop-v1.png`).
+4. **Occurrences in Archival Edition**: Exactly 25 figure occurrence citations across 16 figures registered and verified with source page locators in `src/data/editions/figureOccurrenceSourceLocators.ts`.
+

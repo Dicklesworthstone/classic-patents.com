@@ -44,9 +44,272 @@ export const kamenTransporterPatent: Patent = {
     url: "/patents/transcripts/us-5701965-kamen-transporter-reviewed.txt",
     pageCount: 48,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (Gemini 3.7 Flash)",
-    reviewedAt: "2026-09-01",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-09-02",
     sourcePdfSha256: "b1dac639b2b9905914433d27fd9b6cad82382239bc291d10ca3e1ac1ffe05f65",
+    pageAnchors: [
+      {
+        page: 1,
+        exactSourceText:
+          "USOO570 1965A\nUnited States Patent (19)                                                             11) Patent Number:                             5,701,965",
+        sourceRelationship: "Title page masthead and bibliographic data",
+      },
+      {
+        page: 2,
+        exactSourceText: "5,701,965\nPage 2",
+        sourceRelationship: "References cited continuation",
+      },
+      {
+        page: 3,
+        exactSourceText: "U.S. Patent   Dec. 30, 1997   Sheet 1 of 34   5,701,965\nZ",
+        sourceRelationship: "Drawing sheet 1 of 34",
+      },
+      {
+        page: 4,
+        exactSourceText: "U.S. Patent   Dec. 30, 1997   Sheet 2 of 34   5,701,965",
+        sourceRelationship: "Drawing sheet 2 of 34",
+      },
+      {
+        page: 5,
+        exactSourceText:
+          "U.S. Patent             Dec. 30, 1997       Sheet 3 of 34        5,701,965\n12",
+        sourceRelationship: "Drawing sheet 3 of 34",
+      },
+      {
+        page: 6,
+        exactSourceText: "U.S. Patent   Dec. 30, 1997   Sheet 4 of 34   5,701,965",
+        sourceRelationship: "Drawing sheet 4 of 34",
+      },
+      {
+        page: 7,
+        exactSourceText:
+          "U.S. Patent          Dec. 30, 1997        Sheet 5 of 34               5,701,965\n51",
+        sourceRelationship: "Drawing sheet 5 of 34",
+      },
+      {
+        page: 8,
+        exactSourceText: "U.S. Patent   Dec. 30, 1997   Sheet 6 of 34   5,701,965",
+        sourceRelationship: "Drawing sheet 6 of 34",
+      },
+      {
+        page: 9,
+        exactSourceText: "U.S. Patent    Dec. 30, 1997        Sheet 7 of 34   5,701,965\nFORWARD",
+        sourceRelationship: "Drawing sheet 7 of 34",
+      },
+      {
+        page: 10,
+        exactSourceText:
+          "U.S. Patent           Dec. 30, 1997        Sheet 8 of 34         5,701,965\nREAD SENSOR",
+        sourceRelationship: "Drawing sheet 8 of 34",
+      },
+      {
+        page: 11,
+        exactSourceText: "U.S. Patent   Dec. 30, 1997   Sheet 9 of 34   5,701,965",
+        sourceRelationship: "Drawing sheet 9 of 34",
+      },
+      {
+        page: 12,
+        exactSourceText: "U.S. Patent   5,701,965",
+        sourceRelationship: "Drawing sheet 10 of 34",
+      },
+      {
+        page: 13,
+        exactSourceText: "U.S. Patent   Dec. 30, 1997   Sheet 11 of 34   5,701,965",
+        sourceRelationship: "Drawing sheet 11 of 34",
+      },
+      {
+        page: 14,
+        exactSourceText: "U.S. Patent   Dec. 30, 1997   Sheet 12 of 34   5,701,965",
+        sourceRelationship: "Drawing sheet 12 of 34",
+      },
+      {
+        page: 15,
+        exactSourceText: "U.S. Patent       Dec. 30, 1997   Sheet 13 of 34   5,701,965\n&",
+        sourceRelationship: "Drawing sheet 13 of 34",
+      },
+      {
+        page: 16,
+        exactSourceText: "U.S. Patent   Dec. 30, 1997   Sheet 14 of 34   5,701,965",
+        sourceRelationship: "Drawing sheet 14 of 34",
+      },
+      {
+        page: 17,
+        exactSourceText: "U.S. Patent   Dec. 30, 1997   Sheet 15 of 34   5,701,965",
+        sourceRelationship: "Drawing sheet 15 of 34",
+      },
+      {
+        page: 18,
+        exactSourceText: "U.S. Patent   Dec. 30, 1997   Sheet 16 of 34   5,701,965",
+        sourceRelationship: "Drawing sheet 16 of 34",
+      },
+      {
+        page: 19,
+        exactSourceText: "U.S. Patent   Dec. 30, 1997   Sheet 17 of 34   5,701,965\nFG. 26",
+        sourceRelationship: "Drawing sheet 17 of 34",
+      },
+      {
+        page: 20,
+        exactSourceText:
+          "U.S. Patent          Dec. 30, 1997        Sheet 18 of 34              5,701,965\nCENTRA",
+        sourceRelationship: "Drawing sheet 18 of 34",
+      },
+      {
+        page: 21,
+        exactSourceText: "U.S. Patent   Dec. 30, 1997   Sheet 19 of 34   5,701,965",
+        sourceRelationship: "Drawing sheet 19 of 34",
+      },
+      {
+        page: 22,
+        exactSourceText:
+          "U.S. Patent   Dec. 30, 1997               Sheet 20 of 34     5,701,965\n617                         T57",
+        sourceRelationship: "Drawing sheet 20 of 34",
+      },
+      {
+        page: 23,
+        exactSourceText:
+          "U.S. Patent                Dec. 30, 1997                Sheet 21 of 34                 5,701,965\n30      CET TECHNICAN'S",
+        sourceRelationship: "Drawing sheet 21 of 34",
+      },
+      {
+        page: 24,
+        exactSourceText: "U.S. Patent   Dec. 30, 1997   Sheet 22 of 34   5,701,965",
+        sourceRelationship: "Drawing sheet 22 of 34",
+      },
+      {
+        page: 25,
+        exactSourceText:
+          'U.S. Patent   Dec. 30, 1997   Sheet 23 of 34                          5,701,965\n"0||99',
+        sourceRelationship: "Drawing sheet 23 of 34",
+      },
+      {
+        page: 26,
+        exactSourceText:
+          "U.S. Patent          Dec. 30, 1997   Sheet 24 of 34   5,701,965\nJIS11L/?.TO80IIZ?ON",
+        sourceRelationship: "Drawing sheet 24 of 34",
+      },
+      {
+        page: 27,
+        exactSourceText:
+          "U.S. Patent           Dec. 30, 1997                   Sheet 25 of 34   5,701,965\nN",
+        sourceRelationship: "Drawing sheet 25 of 34",
+      },
+      {
+        page: 28,
+        exactSourceText: "U.S. Patent       Dec. 30, 1997   Sheet 26 of 34   5,701,965\n|",
+        sourceRelationship: "Drawing sheet 26 of 34",
+      },
+      {
+        page: 29,
+        exactSourceText: "U.S. Patent   Dec. 30, 1997   Sheet 27 of 34   5,701,965",
+        sourceRelationship: "Drawing sheet 27 of 34",
+      },
+      {
+        page: 30,
+        exactSourceText:
+          "U.S. Patent   Dec. 30, 1997          Sheet 28 of 34             5,701,965\n3801    BEGIN",
+        sourceRelationship: "Drawing sheet 28 of 34",
+      },
+      {
+        page: 31,
+        exactSourceText: "U.S. Patent         5,701,965\n0d0",
+        sourceRelationship: "Drawing sheet 29 of 34",
+      },
+      {
+        page: 32,
+        exactSourceText:
+          "U.S. Patent            Dec. 30, 1997   Sheet 30 of 34   5,701,965\nuz=#182-ºde                        ±",
+        sourceRelationship: "Drawing sheet 30 of 34",
+      },
+      {
+        page: 33,
+        exactSourceText: "U.S. Patent   Dec. 30, 1997          Sheet 31 of 34   5,701,965\n181°",
+        sourceRelationship: "Drawing sheet 31 of 34",
+      },
+      {
+        page: 34,
+        exactSourceText: "U.S. Patent   Dec. 30, 1997   Sheet 32 of 34   5,701,965",
+        sourceRelationship: "Drawing sheet 32 of 34",
+      },
+      {
+        page: 35,
+        exactSourceText:
+          "U.S. Patent                   Dec. 30, 1997                     5,701,965\nLyy   8TL0E/?J1OHW)MIlONOIZ?",
+        sourceRelationship: "Drawing sheet 33 of 34",
+      },
+      {
+        page: 36,
+        exactSourceText: "U.S. Patent   Dec. 30, 1997   Sheet 34 of 34   5,701,965",
+        sourceRelationship: "Drawing sheet 34 of 34",
+      },
+      {
+        page: 37,
+        exactSourceText: "1\nHUMAN TRANSPORTER",
+        sourceRelationship: "Specification columns 1-2",
+      },
+      {
+        page: 38,
+        exactSourceText:
+          "FIG. 38 is a block diagram of the state of the device,\nutilizing the first embodiment permitting climbing, for mov",
+        sourceRelationship: "Specification columns 3-4",
+      },
+      {
+        page: 39,
+        exactSourceText: "S\nof the embodiment of FIGS. 1-4 to achieve locomotion and",
+        sourceRelationship: "Specification columns 5-6",
+      },
+      {
+        page: 40,
+        exactSourceText:
+          "contacting members in lieu of the pair of wheels used in the\nembodiment of FIG. 1.",
+        sourceRelationship: "Specification columns 7-8",
+      },
+      {
+        page: 41,
+        exactSourceText:
+          "right wheel clusters 214 operated in the manner of the\nclusters of FIGS. 13-20, the transporter may be alternatively",
+        sourceRelationship: "Specification columns 9-10",
+      },
+      {
+        page: 42,
+        exactSourceText:
+          "microcontroller board 283 is in turn in communication with\nthe central microcontroller board 272 over bus 279.",
+        sourceRelationship: "Specification columns 11-12",
+      },
+      {
+        page: 43,
+        exactSourceText: "TABLE 2-continued\nAngle and Motion Wariables.",
+        sourceRelationship: "Specification columns 13-14",
+      },
+      {
+        page: 44,
+        exactSourceText:
+          "to pitch rate signal 6, which is supplied by summer 3519,\nyielding the corrected output 8.",
+        sourceRelationship: "Specification columns 15-16",
+      },
+      {
+        page: 45,
+        exactSourceText: "17\nweight), and 45 (climb). (No motion is involved in the reset",
+        sourceRelationship: "Specification columns 17-18",
+      },
+      {
+        page: 46,
+        exactSourceText:
+          "and occupying only a portion of the entire angular\ndistance around the axis; the support and the support",
+        sourceRelationship: "Specification columns 19-20",
+      },
+      {
+        page: 47,
+        exactSourceText:
+          "from the slave mode to the balance mode, operative\nprevent entering the balance mode until a zero crossing",
+        sourceRelationship: "Specification columns 21-22",
+      },
+      {
+        page: 48,
+        exactSourceText:
+          "distance around the axis; the support and the support\nmembers being parts of an assembly;",
+        sourceRelationship: "Specification columns 23-24",
+      },
+    ],
   },
 
   archivalEdition: kamenTransporterArchivalEdition,

@@ -30,6 +30,21 @@ describe("reviewed-ledger literal comparison", () => {
     );
   });
 
+  it("bridges a repeated patent-number/page-number header across a source-page split", () => {
+    const ledger = [
+      "--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---",
+      "The circuit is laid out on the printed circuit",
+      "--- REVIEWED TRANSCRIPTION PAGE 2 OF 2 ---",
+      "3,858,581",
+      "7",
+      "board.",
+    ].join("\n");
+
+    expect(normalizeReviewedLedgerText(ledger)).toBe(
+      normalizeReviewedLedgerText("The circuit is laid out on the printed circuit board."),
+    );
+  });
+
   it("does not erase punctuation or ordinary words while normalizing layout noise", () => {
     expect(normalizeReviewedLedgerText("Claim: first field; second field.")).toBe(
       "Claim: first field; second field.",

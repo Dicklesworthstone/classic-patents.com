@@ -33,7 +33,7 @@ export const metcalfeEthernetPatent: Patent = {
     pageCount: 19,
     kind: "reviewed-transcription",
     reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-09-01",
+    reviewedAt: "2026-09-02",
     sourcePdfSha256: PDF_SHA256,
     pageAnchors: [
       {
@@ -44,42 +44,92 @@ export const metcalfeEthernetPatent: Patent = {
       {
         page: 2,
         exactSourceText: "U.S. Patent   Dec. 13, 1977   Sheet 1 of 6   4,063,220",
-        sourceRelationship: "Sheet 1 FIG. 1 system diagram",
+        sourceRelationship: "Drawing Sheet 1",
       },
       {
         page: 3,
         exactSourceText: "U.S. Patent   Dec. 13, 1977   Sheet 2 of 6   4,063,220",
-        sourceRelationship: "Sheet 2 FIG. 2 packet layout",
+        sourceRelationship: "Drawing Sheet 2",
       },
       {
         page: 4,
         exactSourceText: "U.S. Patent   Dec. 13, 1977   Sheet 3 of 6   4,063,220",
-        sourceRelationship: "Sheet 3 FIG. 3 interface block diagram",
+        sourceRelationship: "Drawing Sheet 3",
       },
       {
         page: 5,
         exactSourceText: "U.S. Patent   Dec. 13, 1977   Sheet 4 of 6   4,063,220",
-        sourceRelationship: "Sheet 4 FIG. 4 transceiver schematic",
+        sourceRelationship: "Drawing Sheet 4",
       },
       {
         page: 6,
         exactSourceText: "U.S. Patent   Dec. 13, 1977   Sheet 5 of 6   4,063,220",
-        sourceRelationship: "Sheet 5 FIG. 5 backoff logic",
+        sourceRelationship: "Drawing Sheet 5",
       },
       {
         page: 7,
         exactSourceText: "U.S. Patent   Dec. 13, 1977   Sheet 6 of 6   4,063,220",
-        sourceRelationship: "Sheet 6 FIGS. 6-9 waveforms",
+        sourceRelationship: "Drawing Sheet 6",
       },
       {
         page: 8,
-        exactSourceText: "MULTIPOINT DATA‘ COMMUNICATION SYSTEM",
-        sourceRelationship: "Specification column 1 opening",
+        exactSourceText: "MULTIPOINT DATA COMMUNICATION SYSTEM",
+        sourceRelationship: "Specification column 1-2 background",
+      },
+      {
+        page: 9,
+        exactSourceText: "transceiver and interface stage combination is that it",
+        sourceRelationship: "Facsimile page 9",
+      },
+      {
+        page: 10,
+        exactSourceText: "BRIEF DESCRIPTION OF THE DRAWINGS,",
+        sourceRelationship: "Specification column 5-6 system description",
+      },
+      {
+        page: 11,
+        exactSourceText: "In station 126, the functions of the random number",
+        sourceRelationship: "Facsimile page 11",
+      },
+      {
+        page: 12,
+        exactSourceText: 'Signals "I", "O" and "c" from transceiver 111 are in',
+        sourceRelationship: "Facsimile page 12",
+      },
+      {
+        page: 13,
+        exactSourceText: 'connected to the signal "17". Thus shift register 465',
+        sourceRelationship: "Facsimile page 13",
+      },
+      {
+        page: 14,
+        exactSourceText: "any other communicating devices tied thereto. The",
+        sourceRelationship: "Facsimile page 14",
+      },
+      {
+        page: 15,
+        exactSourceText: 'signal "i". The output of gate 702 is furthermore tied to the',
+        sourceRelationship: "Facsimile page 15",
+      },
+      {
+        page: 16,
+        exactSourceText: 'Referring back to FIG. 6, signal "d", as produced by',
+        sourceRelationship: "Specification column 17-18 claims opening",
+      },
+      {
+        page: 17,
+        exactSourceText: "said medium is a bit-serial medium; and",
+        sourceRelationship: "Facsimile page 17",
       },
       {
         page: 18,
-        exactSourceText: "17. A data communication system comprising:",
-        sourceRelationship: "Specification column 21 claims",
+        exactSourceText: "a plurality of transceivers connected to said medium,",
+        sourceRelationship: "Facsimile page 18",
+      },
+      {
+        page: 19,
+        exactSourceText: "collision counting means connected to receive said",
+        sourceRelationship: "Specification column 23-24 concluding claims",
       },
     ],
   },

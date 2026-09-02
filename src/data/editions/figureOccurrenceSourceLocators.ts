@@ -315,7 +315,672 @@ function coltRevolverLocator(args: {
   };
 }
 
+const KAMEN_MEDICATION_INJECTION_SOURCE_RASTER = { width: 9667, height: 14200 } as const;
+const KAMEN_MEDICATION_INJECTION_EVIDENCE_REFERENCE =
+  "docs/provenance/us-3858581-kamen-medication-injection-device.md#figure-crop-review-and-preservation-boundary";
+const KAMEN_MEDICATION_INJECTION_CROPS = {
+  1: {
+    activeAsset:
+      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-1-source-crop-v2.png",
+    sourcePdfPage: 2,
+    sourceRectPixels: { x: 500, y: 1850, width: 8700, height: 3400 },
+  },
+  2: {
+    activeAsset:
+      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-2-source-crop-v2.png",
+    sourcePdfPage: 2,
+    sourceRectPixels: { x: 350, y: 5100, width: 9000, height: 3250 },
+  },
+  3: {
+    activeAsset:
+      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-3-source-crop-v2.png",
+    sourcePdfPage: 2,
+    sourceRectPixels: { x: 500, y: 9000, width: 8700, height: 4200 },
+  },
+  4: {
+    activeAsset:
+      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-4-source-crop-v2.png",
+    sourcePdfPage: 3,
+    sourceRectPixels: { x: 600, y: 1700, width: 4000, height: 4200 },
+  },
+  5: {
+    activeAsset:
+      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-5-source-crop-v2.png",
+    sourcePdfPage: 3,
+    sourceRectPixels: { x: 4000, y: 3400, width: 4300, height: 3200 },
+  },
+  6: {
+    activeAsset:
+      "/patents/figures/us-3858581-kamen-medication-injection-device/fig-6-source-crop-v2.png",
+    sourcePdfPage: 3,
+    sourceRectPixels: { x: 600, y: 6000, width: 8500, height: 7300 },
+  },
+} as const;
+
+function kamenMedicationInjectionLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  figure: keyof typeof KAMEN_MEDICATION_INJECTION_CROPS;
+}): FigureOccurrenceSourceLocator {
+  const crop = KAMEN_MEDICATION_INJECTION_CROPS[args.figure];
+  return {
+    occurrenceKey: args.occurrenceKey,
+    activeAsset: crop.activeAsset,
+    sourcePdfPage: crop.sourcePdfPage,
+    sourceRaster: KAMEN_MEDICATION_INJECTION_SOURCE_RASTER,
+    sourceRectPixels: crop.sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      crop.sourceRectPixels,
+      KAMEN_MEDICATION_INJECTION_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-09-02",
+    evidenceReference: KAMEN_MEDICATION_INJECTION_EVIDENCE_REFERENCE,
+  };
+}
+
+const SIKORSKY_HELICOPTER_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const SIKORSKY_HELICOPTER_EVIDENCE_REFERENCE =
+  "docs/provenance/us-2318259-sikorsky-helicopter.md#figure-crop-review-and-preservation-boundary";
+
+function sikorskyHelicopterLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  activeAsset: string;
+  sourcePdfPage: number;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: SIKORSKY_HELICOPTER_SOURCE_RASTER.width,
+    height: SIKORSKY_HELICOPTER_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    sourceRaster: SIKORSKY_HELICOPTER_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      SIKORSKY_HELICOPTER_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-09-02",
+    evidenceReference: SIKORSKY_HELICOPTER_EVIDENCE_REFERENCE,
+  };
+}
+
+const METCALFE_ETHERNET_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const METCALFE_ETHERNET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-4063220-metcalfe-ethernet.md#figure-crop-review-and-preservation-boundary";
+
+function metcalfeEthernetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  activeAsset: string;
+  sourcePdfPage: number;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: METCALFE_ETHERNET_SOURCE_RASTER.width,
+    height: METCALFE_ETHERNET_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    sourceRaster: METCALFE_ETHERNET_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      METCALFE_ETHERNET_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-09-02",
+    evidenceReference: METCALFE_ETHERNET_EVIDENCE_REFERENCE,
+  };
+}
+
+const PAGERANK_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const PAGERANK_EVIDENCE_REFERENCE =
+  "docs/provenance/us-6285999-pagerank.md#figure-crop-review-and-preservation-boundary";
+
+function pagerankLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  activeAsset: string;
+  sourcePdfPage: 3 | 4 | 5;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels =
+    args.sourcePdfPage === 3
+      ? { x: 387, y: 272, width: 1681, height: 2580 }
+      : args.sourcePdfPage === 4
+        ? { x: 302, y: 272, width: 1783, height: 2598 }
+        : { x: 393, y: 272, width: 1659, height: 2859 };
+  return {
+    ...args,
+    sourceRaster: PAGERANK_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(sourceRectPixels, PAGERANK_SOURCE_RASTER),
+    reviewer: "Classic Patents editorial agent (GPT-5 Codex)",
+    reviewedAt: "2026-09-02",
+    evidenceReference: PAGERANK_EVIDENCE_REFERENCE,
+  };
+}
+
+const KAMEN_TRANSPORTER_SOURCE_RASTER = { width: 1440, height: 2040 } as const;
+const KAMEN_TRANSPORTER_EVIDENCE_REFERENCE =
+  "docs/provenance/us-5701965-kamen-transporter.md#figure-crop-review-and-preservation-boundary";
+
+function kamenTransporterLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  activeAsset: string;
+  sourcePdfPage: number;
+  sourceRectPixels: SourcePixelRectangle;
+}): FigureOccurrenceSourceLocator {
+  return {
+    ...args,
+    sourceRaster: KAMEN_TRANSPORTER_SOURCE_RASTER,
+    normalizedSourceRect: normalizeSourceRectangle(
+      args.sourceRectPixels,
+      KAMEN_TRANSPORTER_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-09-02",
+    evidenceReference: KAMEN_TRANSPORTER_EVIDENCE_REFERENCE,
+  };
+}
+
+const KAMEN_SEGWAY_SOURCE_RASTER = { width: 2088, height: 2930 } as const;
+const KAMEN_SEGWAY_EVIDENCE_REFERENCE =
+  "docs/provenance/us-6302230-kamen-segway.md#figure-crop-review-and-preservation-boundary";
+
+function kamenSegwayLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  activeAsset: string;
+  sourcePdfPage: number;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: KAMEN_SEGWAY_SOURCE_RASTER.width,
+    height: KAMEN_SEGWAY_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    sourceRaster: KAMEN_SEGWAY_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(sourceRectPixels, KAMEN_SEGWAY_SOURCE_RASTER),
+    reviewer: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-09-02",
+    evidenceReference: KAMEN_SEGWAY_EVIDENCE_REFERENCE,
+  };
+}
+
 export const FIGURE_OCCURRENCE_SOURCE_LOCATORS = {
+  "us-5701965-kamen-transporter": [
+    kamenTransporterLocator({
+      occurrenceKey: figureOccurrenceKey(11, 0, 1),
+      activeAsset: "/patents/figures/us-5701965-kamen-transporter/fig-1-source-crop-v1.png",
+      sourcePdfPage: 3,
+      sourceRectPixels: { x: 63, y: 43, width: 1306, height: 1363 },
+    }),
+    kamenTransporterLocator({
+      occurrenceKey: figureOccurrenceKey(11, 0, 3),
+      activeAsset: "/patents/figures/us-5701965-kamen-transporter/fig-2-source-crop-v1.png",
+      sourcePdfPage: 4,
+      sourceRectPixels: { x: 65, y: 28, width: 1287, height: 1903 },
+    }),
+    kamenTransporterLocator({
+      occurrenceKey: figureOccurrenceKey(11, 0, 5),
+      activeAsset: "/patents/figures/us-5701965-kamen-transporter/fig-1-source-crop-v1.png",
+      sourcePdfPage: 3,
+      sourceRectPixels: { x: 63, y: 43, width: 1306, height: 1363 },
+    }),
+    kamenTransporterLocator({
+      occurrenceKey: figureOccurrenceKey(11, 0, 7),
+      activeAsset: "/patents/figures/us-5701965-kamen-transporter/fig-3-source-crop-v1.png",
+      sourcePdfPage: 5,
+      sourceRectPixels: { x: 63, y: 28, width: 1289, height: 1908 },
+    }),
+    kamenTransporterLocator({
+      occurrenceKey: figureOccurrenceKey(11, 0, 9),
+      activeAsset: "/patents/figures/us-5701965-kamen-transporter/fig-1-source-crop-v1.png",
+      sourcePdfPage: 3,
+      sourceRectPixels: { x: 63, y: 43, width: 1306, height: 1363 },
+    }),
+    kamenTransporterLocator({
+      occurrenceKey: figureOccurrenceKey(11, 0, 11),
+      activeAsset: "/patents/figures/us-5701965-kamen-transporter/fig-4-source-crop-v1.png",
+      sourcePdfPage: 6,
+      sourceRectPixels: { x: 39, y: 26, width: 1313, height: 1627 },
+    }),
+    kamenTransporterLocator({
+      occurrenceKey: figureOccurrenceKey(11, 0, 13),
+      activeAsset: "/patents/figures/us-5701965-kamen-transporter/fig-1-source-crop-v1.png",
+      sourcePdfPage: 3,
+      sourceRectPixels: { x: 63, y: 43, width: 1306, height: 1363 },
+    }),
+    kamenTransporterLocator({
+      occurrenceKey: figureOccurrenceKey(11, 0, 15),
+      activeAsset: "/patents/figures/us-5701965-kamen-transporter/fig-5-source-crop-v1.png",
+      sourcePdfPage: 7,
+      sourceRectPixels: { x: 63, y: 26, width: 1295, height: 1992 },
+    }),
+    kamenTransporterLocator({
+      occurrenceKey: figureOccurrenceKey(11, 0, 17),
+      activeAsset: "/patents/figures/us-5701965-kamen-transporter/fig-1-source-crop-v1.png",
+      sourcePdfPage: 3,
+      sourceRectPixels: { x: 63, y: 43, width: 1306, height: 1363 },
+    }),
+    kamenTransporterLocator({
+      occurrenceKey: figureOccurrenceKey(11, 0, 19),
+      activeAsset: "/patents/figures/us-5701965-kamen-transporter/fig-6-source-crop-v1.png",
+      sourcePdfPage: 8,
+      sourceRectPixels: { x: 63, y: 26, width: 1287, height: 1554 },
+    }),
+    kamenTransporterLocator({
+      occurrenceKey: figureOccurrenceKey(11, 0, 21),
+      activeAsset: "/patents/figures/us-5701965-kamen-transporter/fig-1-source-crop-v1.png",
+      sourcePdfPage: 3,
+      sourceRectPixels: { x: 63, y: 43, width: 1306, height: 1363 },
+    }),
+  ],
+  "us-6302230-kamen-segway": [
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 1),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-1-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 3),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-2-source-crop-v1.png",
+      sourcePdfPage: 5,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 5),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-3-source-crop-v1.png",
+      sourcePdfPage: 6,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 7),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-1-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 9),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-4-source-crop-v1.png",
+      sourcePdfPage: 7,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 11),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-1-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 13),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-5-source-crop-v1.png",
+      sourcePdfPage: 8,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 15),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-1-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 17),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-6-source-crop-v1.png",
+      sourcePdfPage: 9,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 19),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-7-source-crop-v1.png",
+      sourcePdfPage: 10,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 21),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-8-source-crop-v1.png",
+      sourcePdfPage: 11,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 23),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-9-source-crop-v1.png",
+      sourcePdfPage: 12,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 25),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-10-source-crop-v1.png",
+      sourcePdfPage: 13,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 27),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-11-source-crop-v1.png",
+      sourcePdfPage: 14,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 29),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-12-source-crop-v1.png",
+      sourcePdfPage: 15,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 31),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-13-source-crop-v1.png",
+      sourcePdfPage: 16,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 33),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-14-source-crop-v1.png",
+      sourcePdfPage: 17,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 35),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-15-source-crop-v1.png",
+      sourcePdfPage: 18,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 37),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-16-source-crop-v1.png",
+      sourcePdfPage: 19,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(20, 0, 1),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-1-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(20, 0, 3),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-3-source-crop-v1.png",
+      sourcePdfPage: 6,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(22, 0, 1),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-7-source-crop-v1.png",
+      sourcePdfPage: 10,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(25, 0, 1),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-10-source-crop-v1.png",
+      sourcePdfPage: 13,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(26, 0, 1),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-11-source-crop-v1.png",
+      sourcePdfPage: 14,
+    }),
+    kamenSegwayLocator({
+      occurrenceKey: figureOccurrenceKey(27, 0, 0),
+      activeAsset: "/patents/figures/us-6302230-kamen-segway/fig-15-source-crop-v1.png",
+      sourcePdfPage: 18,
+    }),
+  ],
+  "us-3858581-kamen-medication-injection-device": [
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(3, 0, 1), figure: 1 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(3, 0, 3), figure: 2 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(3, 0, 5), figure: 3 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(4, 0, 1), figure: 4 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(4, 0, 3), figure: 5 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(4, 0, 5), figure: 6 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(12, 0, 0), figure: 1 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(12, 0, 2), figure: 2 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(12, 0, 4), figure: 3 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(12, 0, 6), figure: 4 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(12, 0, 8), figure: 3 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(12, 0, 10), figure: 5 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(12, 0, 12), figure: 3 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(12, 0, 14), figure: 6 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(13, 0, 1), figure: 1 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(15, 0, 1), figure: 1 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(15, 0, 3), figure: 3 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(18, 0, 1), figure: 2 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(18, 0, 3), figure: 2 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(19, 0, 1), figure: 2 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(21, 0, 1), figure: 4 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(21, 0, 3), figure: 1 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(21, 0, 5), figure: 4 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(21, 0, 7), figure: 3 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(22, 0, 1), figure: 6 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(24, 0, 1), figure: 5 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(27, 0, 1), figure: 3 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(28, 0, 1), figure: 6 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(28, 0, 3), figure: 6 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(28, 0, 5), figure: 6 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(29, 0, 1), figure: 6 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(31, 0, 1), figure: 6 }),
+    kamenMedicationInjectionLocator({ occurrenceKey: figureOccurrenceKey(32, 0, 1), figure: 6 }),
+  ],
+  "us-2318259-sikorsky-helicopter": [
+    sikorskyHelicopterLocator({
+      occurrenceKey: figureOccurrenceKey(11, 0, 0),
+      activeAsset: "/patents/figures/us-2318259-sikorsky-helicopter/fig-1-source-crop-v1.png",
+      sourcePdfPage: 1,
+    }),
+    sikorskyHelicopterLocator({
+      occurrenceKey: figureOccurrenceKey(12, 0, 0),
+      activeAsset: "/patents/figures/us-2318259-sikorsky-helicopter/fig-1-source-crop-v1.png",
+      sourcePdfPage: 1,
+    }),
+    sikorskyHelicopterLocator({
+      occurrenceKey: figureOccurrenceKey(13, 0, 0),
+      activeAsset: "/patents/figures/us-2318259-sikorsky-helicopter/fig-2-source-crop-v1.png",
+      sourcePdfPage: 2,
+    }),
+    sikorskyHelicopterLocator({
+      occurrenceKey: figureOccurrenceKey(14, 0, 0),
+      activeAsset: "/patents/figures/us-2318259-sikorsky-helicopter/fig-3-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    sikorskyHelicopterLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 0),
+      activeAsset: "/patents/figures/us-2318259-sikorsky-helicopter/fig-4-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    sikorskyHelicopterLocator({
+      occurrenceKey: figureOccurrenceKey(16, 0, 0),
+      activeAsset: "/patents/figures/us-2318259-sikorsky-helicopter/fig-4-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    sikorskyHelicopterLocator({
+      occurrenceKey: figureOccurrenceKey(17, 0, 0),
+      activeAsset: "/patents/figures/us-2318259-sikorsky-helicopter/fig-4-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    sikorskyHelicopterLocator({
+      occurrenceKey: figureOccurrenceKey(18, 0, 0),
+      activeAsset: "/patents/figures/us-2318259-sikorsky-helicopter/fig-5-source-crop-v1.png",
+      sourcePdfPage: 5,
+    }),
+    sikorskyHelicopterLocator({
+      occurrenceKey: figureOccurrenceKey(19, 0, 0),
+      activeAsset: "/patents/figures/us-2318259-sikorsky-helicopter/fig-6-source-crop-v1.png",
+      sourcePdfPage: 6,
+    }),
+    sikorskyHelicopterLocator({
+      occurrenceKey: figureOccurrenceKey(20, 0, 0),
+      activeAsset: "/patents/figures/us-2318259-sikorsky-helicopter/fig-6-source-crop-v1.png",
+      sourcePdfPage: 6,
+    }),
+    sikorskyHelicopterLocator({
+      occurrenceKey: figureOccurrenceKey(21, 0, 0),
+      activeAsset: "/patents/figures/us-2318259-sikorsky-helicopter/fig-7-source-crop-v1.png",
+      sourcePdfPage: 7,
+    }),
+    sikorskyHelicopterLocator({
+      occurrenceKey: figureOccurrenceKey(22, 0, 0),
+      activeAsset: "/patents/figures/us-2318259-sikorsky-helicopter/fig-7-source-crop-v1.png",
+      sourcePdfPage: 7,
+    }),
+    sikorskyHelicopterLocator({
+      occurrenceKey: figureOccurrenceKey(23, 0, 1),
+      activeAsset: "/patents/figures/us-2318259-sikorsky-helicopter/fig-1-source-crop-v1.png",
+      sourcePdfPage: 1,
+    }),
+    sikorskyHelicopterLocator({
+      occurrenceKey: figureOccurrenceKey(30, 0, 1),
+      activeAsset: "/patents/figures/us-2318259-sikorsky-helicopter/fig-1-source-crop-v1.png",
+      sourcePdfPage: 1,
+    }),
+    sikorskyHelicopterLocator({
+      occurrenceKey: figureOccurrenceKey(30, 0, 3),
+      activeAsset: "/patents/figures/us-2318259-sikorsky-helicopter/fig-4-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+  ],
+  "us-4063220-metcalfe-ethernet": [
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(9, 0, 0),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-1-source-crop-v1.png",
+      sourcePdfPage: 2,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(10, 0, 0),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(10, 0, 2),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-1-source-crop-v1.png",
+      sourcePdfPage: 2,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(11, 0, 0),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-3-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(11, 0, 2),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-1-source-crop-v1.png",
+      sourcePdfPage: 2,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(12, 0, 0),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-4-source-crop-v1.png",
+      sourcePdfPage: 5,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(12, 0, 2),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-3-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(13, 0, 0),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-5-source-crop-v1.png",
+      sourcePdfPage: 6,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(13, 0, 2),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(14, 0, 0),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+      sourcePdfPage: 7,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(14, 0, 2),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(15, 0, 0),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+      sourcePdfPage: 7,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(19, 0, 1),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-1-source-crop-v1.png",
+      sourcePdfPage: 2,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(21, 0, 1),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(23, 0, 1),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(23, 0, 3),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-1-source-crop-v1.png",
+      sourcePdfPage: 2,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(23, 0, 5),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(23, 0, 7),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-1-source-crop-v1.png",
+      sourcePdfPage: 2,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(23, 0, 9),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(23, 0, 11),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(23, 0, 13),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-3-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(23, 0, 15),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-3-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(23, 0, 17),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(23, 0, 19),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-4-source-crop-v1.png",
+      sourcePdfPage: 5,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(25, 0, 1),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-5-source-crop-v1.png",
+      sourcePdfPage: 6,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(25, 0, 3),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+      sourcePdfPage: 7,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(25, 0, 5),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+      sourcePdfPage: 7,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(25, 0, 7),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+      sourcePdfPage: 7,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(25, 0, 9),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+      sourcePdfPage: 7,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(25, 0, 11),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+      sourcePdfPage: 7,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(27, 0, 1),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+      sourcePdfPage: 7,
+    }),
+    metcalfeEthernetLocator({
+      occurrenceKey: figureOccurrenceKey(27, 0, 3),
+      activeAsset: "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+      sourcePdfPage: 7,
+    }),
+  ],
   "us-135245-pasteur-fermentation": [
     pasteurLocator({
       occurrenceKey: figureOccurrenceKey(6, 0, 1),
@@ -764,6 +1429,38 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS = {
       occurrenceKey: figureOccurrenceKey(33, 0, 1),
       activeAsset: "/patents/figures/us-4976582-clavel-delta-robot/fig-1-source-crop-v1.png",
       sourcePdfPage: 2,
+    }),
+  ],
+  "us-6285999-pagerank": [
+    pagerankLocator({
+      occurrenceKey: figureOccurrenceKey(20, 0, 0),
+      activeAsset: "/patents/figures/us-6285999-pagerank/fig-1-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    pagerankLocator({
+      occurrenceKey: figureOccurrenceKey(20, 0, 2),
+      activeAsset: "/patents/figures/us-6285999-pagerank/fig-2-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    pagerankLocator({
+      occurrenceKey: figureOccurrenceKey(20, 0, 4),
+      activeAsset: "/patents/figures/us-6285999-pagerank/fig-3-source-crop-v1.png",
+      sourcePdfPage: 5,
+    }),
+    pagerankLocator({
+      occurrenceKey: figureOccurrenceKey(23, 0, 1),
+      activeAsset: "/patents/figures/us-6285999-pagerank/fig-1-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    pagerankLocator({
+      occurrenceKey: figureOccurrenceKey(27, 0, 1),
+      activeAsset: "/patents/figures/us-6285999-pagerank/fig-2-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    pagerankLocator({
+      occurrenceKey: figureOccurrenceKey(34, 0, 1),
+      activeAsset: "/patents/figures/us-6285999-pagerank/fig-3-source-crop-v1.png",
+      sourcePdfPage: 5,
     }),
   ],
 } as const satisfies FigureOccurrenceSourceLocatorRegistry;

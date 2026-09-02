@@ -789,12 +789,12 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       patentId: "us-3858581-kamen-medication-injection-device",
       claimTitle: "Lead Screw Striker & Pulse-Counted Syringe Advance",
       activeDescription:
-        "Claim 1 couples a drive motor to a uniform-pitch lead screw with a radial striker that trips a pulse switch once per revolution to count turns and control plunger displacement.",
+        "Claim 1 couples a drive motor to a uniform-pitch lead screw with a radial striker that trips a pulse switch once per revolution, preserving the source-described turn-counting link to plunger motion.",
       invertedDescription:
-        "Open-loop timed injection: without pulse counting from the lead-screw striker, variations in motor speed cause erratic plunger advance and inaccurate dosing.",
-      failureModeName: "Uncounted Open-Loop Plunger Advance",
+        "Withheld rotation-counting topology: without pulses from the lead-screw striker, this normalized exhibit no longer represents Claim 1's link between screw turns and motor control.",
+      failureModeName: "Withheld Rotation-Counting Topology",
       historicalPriorArt:
-        "Early automated infusion pumps used unregulated clockwork or analog motor timers that drifted under varying mechanical friction.",
+        "The source describes earlier motor-driven syringe devices and presents its rotation-linked counting arrangement as the improvement; this exhibit makes no broader prior-art or clinical-performance claim.",
     },
   ],
   "us-2495429-spencer-microwave": [
@@ -2249,7 +2249,7 @@ export function applyClaimConstraintModifications(
           "Claim 1 pulse-counted lead-screw advance withheld: open-loop drive cannot track turn count or control plunger displacement.",
         );
         refusalWarning =
-          "NONCLINICAL MECHANISM REFUSAL: withholding pulse-switch counting breaks the turn-counting loop; the grant provides no open-loop timing or dosing model.";
+          "NONCLINICAL MECHANISM REFUSAL: withholding pulse-switch counting breaks the turn-counting loop; the grant provides no source-bounded alternative timing or clinical-delivery model.";
       }
       break;
     }

@@ -180,7 +180,7 @@ describe("US 6,302,230 Dean Kamen Segway Human Transporter Archival Edition Cont
     );
     expect(provenance).toContain("Sheet 1 of 16 (FIG. 1)");
     expect(provenance).not.toContain("FIGS. 1A, 1B");
-    expect(kamenSegwayParallelReadings[12]?.join(" ")).toContain("Figures 1 and 2");
+    expect(kamenSegwayParallelReadings[15]?.join(" ")).toContain("Figures 1 and 2");
 
     expect(kamenSegwayPatent.historicalContext.patentWars).toEqual([]);
     const publicCopy = JSON.stringify(kamenSegwayPatent).toLowerCase();

@@ -43,7 +43,13 @@ const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
   "us-105338-hyatt-celluloid",
   "us-135245-pasteur-fermentation",
   "us-971501-haber-ammonia",
+  "us-2318259-sikorsky-helicopter",
+  "us-3858581-kamen-medication-injection-device",
+  "us-4063220-metcalfe-ethernet",
   "us-4976582-clavel-delta-robot",
+  "us-5701965-kamen-transporter",
+  "us-6285999-pagerank",
+  "us-6302230-kamen-segway",
 ]);
 
 const EXPECTED_MANUAL_EDITION_GAPS = allPatents

@@ -46,14 +46,32 @@ const BARE_FIGURE_CITATION = /\b(?:Fig(?:s)?\.?|Figures?)\s+(?:\d+|[IVXLC]+)\b/i
  * source PDF.
  */
 describe("manual-edition publication contract", () => {
-  test("fails closed on records with incomplete ledger coverage", () => {
+  test("accepts Metcalfe Ethernet after full facsimile and reviewed ledger repair", () => {
     const metcalfe = allPatents.find((patent) => patent.id === "us-4063220-metcalfe-ethernet");
 
     expect(metcalfe).toBeDefined();
     expect(isArchivalEditionExplicitlyWithheld("us-4063220-metcalfe-ethernet")).toBe(false);
-    expect(metcalfe && archivalEditionForPublication(metcalfe)).toBeUndefined();
-    expect(metcalfe && evaluateArchivalPublicationState(metcalfe).reasonCode).toBe(
-      "LEDGER_CONTENT_COVERAGE_INCOMPLETE",
+    expect(metcalfe && archivalEditionForPublication(metcalfe)).toBeDefined();
+    expect(metcalfe && evaluateArchivalPublicationState(metcalfe).reasonCode).toBe("ACCEPTED");
+  });
+
+  test("accepts Kamen Segway after full facsimile and reviewed ledger repair", () => {
+    const segway = allPatents.find((patent) => patent.id === "us-6302230-kamen-segway");
+
+    expect(segway).toBeDefined();
+    expect(isArchivalEditionExplicitlyWithheld("us-6302230-kamen-segway")).toBe(false);
+    expect(segway && archivalEditionForPublication(segway)).toBeDefined();
+    expect(segway && evaluateArchivalPublicationState(segway).reasonCode).toBe("ACCEPTED");
+  });
+
+  test("accepts Kamen Transporter after full facsimile and reviewed ledger repair", () => {
+    const transporter = allPatents.find((patent) => patent.id === "us-5701965-kamen-transporter");
+
+    expect(transporter).toBeDefined();
+    expect(isArchivalEditionExplicitlyWithheld("us-5701965-kamen-transporter")).toBe(false);
+    expect(transporter && archivalEditionForPublication(transporter)).toBeDefined();
+    expect(transporter && evaluateArchivalPublicationState(transporter).reasonCode).toBe(
+      "ACCEPTED",
     );
   });
 

@@ -51,9 +51,162 @@ export const kamenSegwayPatent: Patent = {
     url: "/patents/transcripts/us-6302230-kamen-segway-reviewed.txt",
     kind: "reviewed-transcription",
     reviewedBy: "Classic Patents Research Team",
-    reviewedAt: "2026-09-01",
+    reviewedAt: "2026-09-02",
     sourcePdfSha256: EXPECTED_PDF_SHA256,
     pageCount: 29,
+    pageAnchors: [
+      {
+        page: 1,
+        exactSourceText: "US 6,302,230 B1\n\n(12) United States Patent",
+        sourceRelationship: "Title page masthead",
+      },
+      {
+        page: 2,
+        exactSourceText: "US 6,302,230 B1\nPage 2",
+        sourceRelationship: "Facsimile page 2 references cited",
+      },
+      {
+        page: 3,
+        exactSourceText: "US 6,302,230 B1\nPage 3",
+        sourceRelationship: "Facsimile page 3 references cited",
+      },
+      {
+        page: 4,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 1 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 1 of 16 (FIG. 1)",
+      },
+      {
+        page: 5,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 2 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 2 of 16 (FIG. 2)",
+      },
+      {
+        page: 6,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 3 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 3 of 16 (FIG. 3)",
+      },
+      {
+        page: 7,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 4 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 4 of 16 (FIG. 4)",
+      },
+      {
+        page: 8,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 5 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 5 of 16 (FIG. 5)",
+      },
+      {
+        page: 9,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 6 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 6 of 16 (FIG. 6)",
+      },
+      {
+        page: 10,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 7 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 7 of 16 (FIG. 7)",
+      },
+      {
+        page: 11,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 8 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 8 of 16 (FIG. 8)",
+      },
+      {
+        page: 12,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 9 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 9 of 16 (FIG. 9)",
+      },
+      {
+        page: 13,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 10 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 10 of 16 (FIG. 10)",
+      },
+      {
+        page: 14,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 11 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 11 of 16 (FIG. 11)",
+      },
+      {
+        page: 15,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 12 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 12 of 16 (FIG. 12)",
+      },
+      {
+        page: 16,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 13 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 13 of 16 (FIG. 13)",
+      },
+      {
+        page: 17,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 14 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 14 of 16 (FIG. 14)",
+      },
+      {
+        page: 18,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 15 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 15 of 16 (FIG. 15)",
+      },
+      {
+        page: 19,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 16 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 16 of 16 (FIG. 16)",
+      },
+      {
+        page: 20,
+        exactSourceText: "PERSONAL MOBILITY VEHICLES AND\nMETHODS\nTECHNICAL FIELD",
+        sourceRelationship:
+          "Specification columns 1-2 (Technical Field, Background Art, Summary of the Invention)",
+      },
+      {
+        page: 21,
+        exactSourceText: "ment provides a device for carrying a payload including a",
+        sourceRelationship: "Specification columns 3-4 (Summary of the Invention)",
+      },
+      {
+        page: 22,
+        exactSourceText: "b. operating a motorized drive arrangement, coupled to",
+        sourceRelationship:
+          "Specification columns 5-6 (Summary of the Invention, Brief Description of Drawings)",
+      },
+      {
+        page: 23,
+        exactSourceText: "user, as in the case of a bicycle or motorcycle or Scooter, or,",
+        sourceRelationship:
+          "Specification columns 7-8 (Description of Specific Embodiments, Dynamic Stability)",
+      },
+      {
+        page: 24,
+        exactSourceText: "to maintain dynamic stability, subject 10 will no longer be",
+        sourceRelationship: "Specification columns 9-10 (Control loop equations and wheel torque)",
+      },
+      {
+        page: 25,
+        exactSourceText: "non-Zero K, the effect of X is to produce a specified offset",
+        sourceRelationship: "Specification columns 11-12 (Pitch and lean orientation)",
+      },
+      {
+        page: 26,
+        exactSourceText: "for platform adjustment and for determining the mode of",
+        sourceRelationship:
+          "Specification columns 13-14 (Microcontroller architecture and sensor processing)",
+      },
+      {
+        page: 27,
+        exactSourceText: "were permitted to reach the maximum speed of which they",
+        sourceRelationship:
+          "Specification columns 15-16 (Headroom and balancing margin monitoring)",
+      },
+      {
+        page: 28,
+        exactSourceText: "Such as arcuate members and clusters of wheels are",
+        sourceRelationship:
+          "Specification columns 17-18 (Steering, alternative ground contact, Claims 1-3)",
+      },
+      {
+        page: 29,
+        exactSourceText: "4. A device according to claim 1, wherein the ground",
+        sourceRelationship: "Specification columns 19-20 (Claims 4-7 conclusion)",
+      },
+    ],
   },
 
   archivalEdition: kamenSegwayArchivalEdition,

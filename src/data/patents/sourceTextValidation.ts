@@ -2,6 +2,9 @@ import type { ReviewedTranscriptionPageAnchor } from "@/types/patent";
 
 const SOURCE_PAGE_MARKER = /^--- SOURCE PDF PAGE (\d+) OF (\d+) ---$/gm;
 const REVIEWED_PAGE_MARKER = /^--- REVIEWED TRANSCRIPTION PAGE (\d+) OF (\d+) ---$/gm;
+/** A repeated patent-number/page-number pair printed as page furniture, not source prose. */
+const REVIEWED_PATENT_PAGE_HEADER =
+  /^[^\S\r\n]*(?:US\s+)?\d{1,3}(?:,\d{3})+(?:\s+[A-Z]\d?)?[^\S\r\n]*\r?\n[^\S\r\n]*\d+[^\S\r\n]*$/gim;
 const REVIEWED_BLANK_FACSIMILE_PAGE = "[BLANK FACSIMILE PAGE: no printed content]";
 
 const REVIEWED_EDITORIAL_SUMMARY_PATTERNS: readonly RegExp[] = [
@@ -48,6 +51,7 @@ export function normalizeLiteralSourceText(value: string): string {
 export function normalizeReviewedLedgerText(value: string): string {
   return value
     .replace(/--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---/g, "")
+    .replace(REVIEWED_PATENT_PAGE_HEADER, "")
     .replace(/^\s*Column \d+\s*$/gim, "")
     .replace(/^\s*\d+\s*$/gm, "")
     .replace(/([\p{L}])-\s+([\p{Ll}])/gu, "$1$2")

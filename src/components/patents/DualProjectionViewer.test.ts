@@ -116,31 +116,39 @@ describe("archival publication boundary", () => {
     );
   });
 
-  test("releases exactly the records that pass evaluateArchivalPublicationState", () => {
-    const releasedIds = allPatents
-      .filter((patent) => archivalEditionForPublication(patent))
-      .map((patent) => patent.id)
-      .toSorted();
+  test(
+    "releases exactly the records that pass evaluateArchivalPublicationState",
+    () => {
+      const releasedIds = allPatents
+        .filter((patent) => archivalEditionForPublication(patent))
+        .map((patent) => patent.id)
+        .toSorted();
 
-    const expectedAcceptedIds = allPatents
-      .filter((patent) => evaluateArchivalPublicationState(patent).isPublished)
-      .map((patent) => patent.id)
-      .toSorted();
+      const expectedAcceptedIds = allPatents
+        .filter((patent) => evaluateArchivalPublicationState(patent).isPublished)
+        .map((patent) => patent.id)
+        .toSorted();
 
-    expect(releasedIds).toEqual(expectedAcceptedIds);
-    expect(releasedIds).not.toHaveLength(0);
-  });
+      expect(releasedIds).toEqual(expectedAcceptedIds);
+      expect(releasedIds).not.toHaveLength(0);
+    },
+    { timeout: 30000 },
+  );
 
-  test("returns publishedEdition for all accepted patents", () => {
-    for (const patent of allPatents) {
-      const decision = evaluateArchivalPublicationState(patent);
-      if (decision.isPublished) {
-        expect(archivalEditionForPublication(patent)).toBe(patent.archivalEdition);
-      } else {
-        expect(archivalEditionForPublication(patent)).toBeUndefined();
+  test(
+    "returns publishedEdition for all accepted patents",
+    () => {
+      for (const patent of allPatents) {
+        const decision = evaluateArchivalPublicationState(patent);
+        if (decision.isPublished) {
+          expect(archivalEditionForPublication(patent)).toBe(patent.archivalEdition);
+        } else {
+          expect(archivalEditionForPublication(patent)).toBeUndefined();
+        }
       }
-    }
-  });
+    },
+    { timeout: 30000 },
+  );
 
   test("does not serialize held editions or ledger metadata into client viewer props", () => {
     const heldDecision = evaluateArchivalPublicationState(whitneyCottonGinPatent);

@@ -19,7 +19,10 @@ export interface ArchivalFigureAcceptanceAttestation {
   sourcePdfSha256: string;
   reviewer: string;
   reviewedAt: string;
-  acceptanceBasis: "migrated-reviewed-edition-attestation" | "independent-figure-review";
+  acceptanceBasis:
+    | "direct-facsimile-crop-review"
+    | "migrated-reviewed-edition-attestation"
+    | "independent-figure-review";
   acceptedOccurrenceCount: number;
   assets: Readonly<Record<string, AcceptedFigureAssetEvidence>>;
 }
@@ -28,8 +31,8 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
   "us-1219881-sundback-zipper": {
     sourcePdfSha256: "8b73a4db400d449ec6349a07c05b38df6f5bed609562a2c96ba893890a41a3b9",
     reviewer: "Classic Patents editorial agent (Gemini 3.7 Flash)",
-    reviewedAt: "2026-09-01",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewedAt: "2026-09-02",
+    acceptanceBasis: "independent-figure-review",
     acceptedOccurrenceCount: 25,
     assets: {
       "/patents/figures/us-1219881-sundback-zipper/fig-1-source-crop-v1.png": {
@@ -430,17 +433,12 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
   "us-2318259-sikorsky-helicopter": {
     sourcePdfSha256: "7ab2b9b23907b26bff0afd37e2630b73b15c2c429c603a73cb841c8a2b4e114c",
     reviewer: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-09-01",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
-    acceptedOccurrenceCount: 13,
+    reviewedAt: "2026-09-02",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 15,
     assets: {
       "/patents/figures/us-2318259-sikorsky-helicopter/fig-1-source-crop-v1.png": {
         sha256: "6ad42ad8c7be4168787d108283f35e620cac0e2da424a7d3429ddf5c74c58beb",
-        width: 2320,
-        height: 3408,
-      },
-      "/patents/figures/us-2318259-sikorsky-helicopter/fig-10-source-crop-v1.png": {
-        sha256: "882d56c0e6165f9bb5152456df501421c383781889b85549496469b1610b69e6",
         width: 2320,
         height: 3408,
       },
@@ -471,16 +469,6 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
       },
       "/patents/figures/us-2318259-sikorsky-helicopter/fig-7-source-crop-v1.png": {
         sha256: "59b4cd1faee6e2533af96d1d44acc0d30b53f50d3ebd1a3a34961aa1111c5a91",
-        width: 2320,
-        height: 3408,
-      },
-      "/patents/figures/us-2318259-sikorsky-helicopter/fig-8-source-crop-v1.png": {
-        sha256: "ed82d6b8cb7271fd45135f92236b7733180c64b42c8a7245c1499cecbb71e1e1",
-        width: 2320,
-        height: 3408,
-      },
-      "/patents/figures/us-2318259-sikorsky-helicopter/fig-9-source-crop-v1.png": {
-        sha256: "a57de2f1337c74f63c33f38f46a208cfc8bb7bad4608613c09a1afaf3f720489",
         width: 2320,
         height: 3408,
       },
@@ -1210,8 +1198,8 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
   "us-3858581-kamen-medication-injection-device": {
     sourcePdfSha256: "1aa0df879ec119a9ad4025774e482dfc41e748127bc3f83cde31047daeedc35d",
     reviewer: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-09-01",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewedAt: "2026-09-02",
+    acceptanceBasis: "independent-figure-review",
     acceptedOccurrenceCount: 33,
     assets: {
       "/patents/figures/us-3858581-kamen-medication-injection-device/fig-1-source-crop-v2.png": {
@@ -1313,9 +1301,9 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
   "us-4063220-metcalfe-ethernet": {
     sourcePdfSha256: "3bd400ad08a604c1911f554f3bda8ddc4a64923170760736fde6bd481e5ec928",
     reviewer: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-09-01",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
-    acceptedOccurrenceCount: 11,
+    reviewedAt: "2026-09-02",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 32,
     assets: {
       "/patents/figures/us-4063220-metcalfe-ethernet/fig-1-source-crop-v1.png": {
         sha256: "0fe079191dc76a22b32e43f070d601231e338385cac1f26da776075f9877e679",
@@ -1565,7 +1553,7 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
     reviewer: "Classic Patents editorial agent (Gemini 3.7 Flash)",
     reviewedAt: "2026-09-01",
     acceptanceBasis: "migrated-reviewed-edition-attestation",
-    acceptedOccurrenceCount: 21,
+    acceptedOccurrenceCount: 17,
     assets: {
       "/patents/figures/us-4575330-hull-stereolithography/fig-1-source-crop-v1.png": {
         sha256: "a28128050ae41ea9bd296d117434b34ee23e8cfc608098d10ea3fb59e7e65054",
@@ -1821,10 +1809,10 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
   },
   "us-5701965-kamen-transporter": {
     sourcePdfSha256: "b1dac639b2b9905914433d27fd9b6cad82382239bc291d10ca3e1ac1ffe05f65",
-    reviewer: "Classic Patents editorial agent (Gemini 3.7 Flash)",
-    reviewedAt: "2026-09-01",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
-    acceptedOccurrenceCount: 13,
+    reviewer: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-09-02",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 11,
     assets: {
       "/patents/figures/us-5701965-kamen-transporter/fig-1-source-crop-v1.png": {
         sha256: "c0320ac3f49889e2de341c809290862b6eb870f26c144cbe91b8ac6c9a0ece31",
@@ -1948,9 +1936,9 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
   "us-6285999-pagerank": {
     sourcePdfSha256: "c2e024116b9411385aa9cb5d51d3eb34b99f59db190c2bb9298d9d6d6eeed2e4",
     reviewer: "Classic Patents editorial agent (GPT-5 Codex)",
-    reviewedAt: "2026-08-21",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
-    acceptedOccurrenceCount: 7,
+    reviewedAt: "2026-09-02",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 6,
     assets: {
       "/patents/figures/us-6285999-pagerank/fig-1-source-crop-v1.png": {
         sha256: "c2007445f8422221f695288978787b6f6178c07e03ac9445981ec3820c7e837d",
@@ -1971,10 +1959,10 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
   },
   "us-6302230-kamen-segway": {
     sourcePdfSha256: "bcda272e161a0b973db9d64090f8102447e9aa35914a9a73e70a38736b7934db",
-    reviewer: "Classic Patents editorial agent (Gemini 3.7 Flash)",
-    reviewedAt: "2026-09-01",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
-    acceptedOccurrenceCount: 10,
+    reviewer: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-09-02",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 25,
     assets: {
       "/patents/figures/us-6302230-kamen-segway/fig-1-source-crop-v1.png": {
         sha256: "d761af697602b6723625bfaabd7241aa5a2b94ee22bdce3860fb37bdedbd7d31",
@@ -2008,6 +1996,51 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
       },
       "/patents/figures/us-6302230-kamen-segway/fig-7-source-crop-v1.png": {
         sha256: "5d844ca239383d01606a7b9f8459d36bc2d8595854d5f22cfd25f7a1ed9ad26e",
+        width: 2088,
+        height: 2930,
+      },
+      "/patents/figures/us-6302230-kamen-segway/fig-8-source-crop-v1.png": {
+        sha256: "4aef909643b3d360efe295b1cac6de648f451944624ebd101eaef6be99c580bd",
+        width: 2088,
+        height: 2930,
+      },
+      "/patents/figures/us-6302230-kamen-segway/fig-9-source-crop-v1.png": {
+        sha256: "14500ac42dc12be5fc7765fd0dd84430b23ff5c0b382d14960117d18a4f23029",
+        width: 2088,
+        height: 2930,
+      },
+      "/patents/figures/us-6302230-kamen-segway/fig-10-source-crop-v1.png": {
+        sha256: "d0313f42d180ee882f89b0af7a86889a94deaba1f85ea73c7d22ffc5fd5ad9c6",
+        width: 2088,
+        height: 2930,
+      },
+      "/patents/figures/us-6302230-kamen-segway/fig-11-source-crop-v1.png": {
+        sha256: "b85b4574b393fbdcd949d525c7f3e537734786fad5d10e650faa1742eb5f4a13",
+        width: 2088,
+        height: 2930,
+      },
+      "/patents/figures/us-6302230-kamen-segway/fig-12-source-crop-v1.png": {
+        sha256: "2f954a3cfd880ea5764b9d426dd8542601e2093854f4bc61740e163b6bae04c4",
+        width: 2088,
+        height: 2930,
+      },
+      "/patents/figures/us-6302230-kamen-segway/fig-13-source-crop-v1.png": {
+        sha256: "34df43594e9ea2864dc932cafa176435b96cbca14c7db768d40621dc20e7da8d",
+        width: 2088,
+        height: 2930,
+      },
+      "/patents/figures/us-6302230-kamen-segway/fig-14-source-crop-v1.png": {
+        sha256: "f5a83e42d7baa45bb7f1aaaf6b17051938857b7b25b3aeb7d40a06757b7909a1",
+        width: 2088,
+        height: 2930,
+      },
+      "/patents/figures/us-6302230-kamen-segway/fig-15-source-crop-v1.png": {
+        sha256: "720902747ddf2cae69309550d6f105df5c4898964ac10b4c1b82a4e5c7c19a5e",
+        width: 2088,
+        height: 2930,
+      },
+      "/patents/figures/us-6302230-kamen-segway/fig-16-source-crop-v1.png": {
+        sha256: "1c59f70fc1f3cbea9d1ef4589072e6eef86522bf32b7ad7e11d39cd659597b57",
         width: 2088,
         height: 2930,
       },

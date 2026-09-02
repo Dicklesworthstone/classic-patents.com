@@ -1,7 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { readWattRotaryControls, stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
+import {
+  readWattRotaryControls,
+  stepWattRotaryEngine,
+  WATT_ROTARY_KINEMATIC_GEOMETRY,
+} from "@/physics/wattRotaryKernel";
 import { buildWattRotaryEngineModel } from "./wattRotaryEngineModel";
 
 describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
@@ -15,7 +19,8 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
     expect(studioSource).not.toContain("new THREE.WebGLRenderer");
     expect(studioSource).toContain("controls.setView");
     expect(studioSource).toContain("readWattRotaryControls");
-    expect(studioSource).toContain("planetOrbitAngleDeg");
+    expect(studioSource).toContain("updateAnimation(out)");
+    expect(studioSource).toContain("telemetry.shaftRpm");
     expect(studioSource).not.toContain("p.strokeRateSpm, p.gearRatioNpOverNs");
   });
 
@@ -25,6 +30,7 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
     expect(model.root).toBeDefined();
     expect(model.beamGroup).toBeDefined();
     expect(model.pistonGroup).toBeDefined();
+    expect(model.pistonLinkGroup).toBeDefined();
     expect(model.connectingRodGroup).toBeDefined();
     expect(model.sunGearGroup).toBeDefined();
     expect(model.planetGearGroup).toBeDefined();
@@ -79,42 +85,56 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
     model.dispose();
   });
 
-  test("maintains exact geometric seating and epicyclic tooth meshing through full 360-degree orbit", () => {
+  test("maintains rod closure, pitch-circle contact, and one epicyclic constraint across every ratio", () => {
     const model = buildWattRotaryEngineModel();
-    const controls = readWattRotaryControls({ strokeRateSpm: 20, gearRatioNpOverNs: 1.0 });
+    for (const ratio of [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]) {
+      const controls = readWattRotaryControls({ strokeRateSpm: 20, gearRatioNpOverNs: ratio });
 
-    for (let sec = 0; sec <= 3.0; sec += 0.25) {
-      const telemetry = stepWattRotaryEngine(controls, sec);
-      model.updateAnimation(telemetry);
+      for (let sec = 0; sec <= 3; sec += 0.125) {
+        const telemetry = stepWattRotaryEngine(controls, sec);
+        model.updateAnimation(telemetry);
 
-      const beamAngleRad = (telemetry.beamAngleDeg * Math.PI) / 180;
-      const rightBeamEndX = Math.cos(beamAngleRad) * 2.2;
-      const rightBeamEndY = 3.2 + Math.sin(beamAngleRad) * 2.2;
+        expect(Math.abs(telemetry.connectingRodConstraintResidualM)).toBeLessThan(1e-10);
+        expect(Math.abs(telemetry.gearMeshConstraintResidualRad)).toBeLessThan(1e-10);
+        expect(telemetry.sunPitchRadiusM + telemetry.planetPitchRadiusM).toBeCloseTo(
+          WATT_ROTARY_KINEMATIC_GEOMETRY.gearCenterDistanceM,
+          10,
+        );
+        expect(telemetry.planetPitchRadiusM / telemetry.sunPitchRadiusM).toBeCloseTo(ratio, 10);
 
-      // Connecting rod top matches right beam end
-      expect(model.connectingRodGroup.position.x).toBeCloseTo(rightBeamEndX, 5);
-      expect(model.connectingRodGroup.position.y).toBeCloseTo(rightBeamEndY, 5);
+        // The fixed-length rod starts at the beam pin and lands at the planet bearing.
+        expect(model.connectingRodGroup.position.x).toBeCloseTo(telemetry.rightBeamEndX, 10);
+        expect(model.connectingRodGroup.position.y).toBeCloseTo(telemetry.rightBeamEndY, 10);
+        expect(model.connectingRodGroup.scale.y).toBe(1);
+        const computedBottomX =
+          telemetry.rightBeamEndX +
+          telemetry.connectingRodLengthM * Math.sin(model.connectingRodGroup.rotation.z);
+        const computedBottomY =
+          telemetry.rightBeamEndY -
+          telemetry.connectingRodLengthM * Math.cos(model.connectingRodGroup.rotation.z);
+        expect(computedBottomX).toBeCloseTo(model.planetGearGroup.position.x, 10);
+        expect(computedBottomY).toBeCloseTo(model.planetGearGroup.position.y, 10);
 
-      // Planet gear rotation matches connecting rod sway angle
-      expect(model.planetGearGroup.rotation.z).toBeCloseTo(model.connectingRodGroup.rotation.z, 5);
+        // The restrained planet does not spin; sun and flywheel share one keyed shaft angle.
+        expect(model.planetGearGroup.rotation.z).toBeCloseTo(telemetry.planetBodyAngleRad, 12);
+        expect(model.sunGearGroup.rotation.z).toBeCloseTo(telemetry.sunShaftAngleRad, 12);
+        expect(model.flywheelGroup.rotation.z).toBeCloseTo(telemetry.sunShaftAngleRad, 12);
 
-      // Connecting rod bottom reaches planet center
-      const rodAngle = model.connectingRodGroup.rotation.z;
-      const rodLength = Math.hypot(
-        model.planetGearGroup.position.x - rightBeamEndX,
-        model.planetGearGroup.position.y - rightBeamEndY,
-      );
-      const computedBottomX = rightBeamEndX + rodLength * Math.sin(rodAngle);
-      const computedBottomY = rightBeamEndY - rodLength * Math.cos(rodAngle);
-      expect(computedBottomX).toBeCloseTo(model.planetGearGroup.position.x, 5);
-      expect(computedBottomY).toBeCloseTo(model.planetGearGroup.position.y, 5);
-
-      // Sun gear rotates at conjugate rolling angle 2*theta - rodAngle
-      const phase = (telemetry.planetOrbitAngleDeg * Math.PI) / 180;
-      const expectedSunAngle = 2 * phase - rodAngle;
-      expect(model.sunGearGroup.rotation.z).toBeCloseTo(expectedSunAngle, 5);
-      expect(model.flywheelGroup.rotation.z).toBeCloseTo(expectedSunAngle, 5);
+        const activeGear = model.getActiveGearGeometry();
+        expect(activeGear.ratio).toBe(ratio);
+        expect(activeGear.sunTeeth).toBe(telemetry.sunTeeth);
+        expect(activeGear.planetTeeth).toBe(telemetry.planetTeeth);
+        expect(activeGear.sunPitchRadiusM).toBeCloseTo(telemetry.sunPitchRadiusM, 12);
+        expect(activeGear.planetPitchRadiusM).toBeCloseTo(telemetry.planetPitchRadiusM, 12);
+      }
     }
+
+    const modelSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/wattRotaryEngineModel.ts"),
+      "utf8",
+    );
+    expect(modelSource).not.toContain("2 * phase - rodAngle");
+    expect(modelSource).not.toContain("rodLength / 2.3");
 
     model.dispose();
   });

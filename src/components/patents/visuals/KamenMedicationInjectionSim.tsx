@@ -2,6 +2,8 @@
 
 import { RotateCcw } from "lucide-react";
 import { useId, useMemo } from "react";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { stepKamenInjectionMechanism } from "@/physics/kamenInjectionKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
@@ -16,8 +18,9 @@ export function KamenMedicationInjectionSim() {
   const targetId = useId();
   const motorId = useId();
   const reliefId = useId();
-  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
-  const pose = useMemo(() => stepKamenInjectionMechanism(params), [params]);
+  const { effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(PATENT_ID);
+  const pose = useMemo(() => stepKamenInjectionMechanism(effectiveParams), [effectiveParams]);
   const turn = pose.leadScrewTurnFraction;
   const target = pose.counterTargetFraction;
   const motor = Number(pose.motorCircuitClosed);
@@ -312,6 +315,32 @@ export function KamenMedicationInjectionSim() {
               <option value="1">Relief / clutch path shown</option>
             </select>
           </label>
+          <div className="rounded-lg border border-slate-700 bg-slate-900/70 p-3">
+            <p className="mb-2 font-mono text-[10px] tracking-[0.14em] text-cyan-300">
+              CLAIM 1 MECHANISM PROBE
+            </p>
+            <ClaimConstraintToggle
+              patentId={PATENT_ID}
+              claimStates={claimStates}
+              onToggleClaim={(claimNumber, active) =>
+                updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
+              }
+            />
+          </div>
+          {claimConstraintResult.activeFailures.length > 0 && (
+            <div role="status" className="rounded-lg border border-rose-800 bg-rose-950/70 p-3">
+              {claimConstraintResult.activeFailures.map((failure) => (
+                <p key={failure} className="text-[11px] leading-5 text-rose-100">
+                  {failure}
+                </p>
+              ))}
+              {claimConstraintResult.refusalWarning && (
+                <p className="mt-1 text-[10px] leading-4 text-rose-200">
+                  {claimConstraintResult.refusalWarning}
+                </p>
+              )}
+            </div>
+          )}
           <p className="rounded-lg border border-rose-900/70 bg-rose-950/40 p-3 text-xs leading-5 text-rose-100">
             {pose.refusal.reason}
           </p>

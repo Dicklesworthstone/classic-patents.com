@@ -2,57 +2,74 @@
 
 US006285999B1
 
-(12) United States Patent                                                                  (10) Patent No.:     US 6,285,999 B1
-       Page                                                                                (45) Date of Patent:      Sep. 4, 2001
+(12) United States Patent
+Page
 
-(54)     METHOD FOR NODE RANKING IN A                                                   Craig Boyle “To link or not to link: An empirical comparison
-         LINKED DATABASE                                                                of Hypertext linking strategies”. ACM 1992, pp. 221—231.*
-                                                                                        L. Katz, “A new status index derived from sociometric
-(75) Inventor: Lawrence Page, Stanford, CA (US)                                         analysis,” 1953, Psychometricka, vol. 18, pp. 39—43.
-(73) Assignee: The Board of Trustees of the Leland                                      C.H. Hubbell, “An input—output approach to clique identi
-                         Stanford Junior University, Stanford,                          fication sociometry,” 1965, pp. 377—399.
-                         CA (US)                                                        Mizruchi et al., “Techniques for disaggregating centrality
-                                                                                        scores in social networks,” 1996, Sociological Methodology,
-(*)      Notice:         Subject to any disclaimer, the term of this                    pp. 26—48.
-                         patent is extended or adjusted under 35                        E. Garfield, “Citation analysis as a tool in journal evalua
-                         U.S.C. 154(b) by 0 days.                                       tion,” 1972, Science, vol. 178, pp. 471—479.
-                                                                                        Pinski et al., “Citation influence for journal aggregates of
-(21) Appl. No.: 09/004,827                                                              scientific publications: Theory, with application to the lit
-(22) Filed:              Jan. 9, 1998                                                   erature of physics,” 1976, Inf. Proc. And Management, vol.
-                                                                                        12, pp. 297—312.
-                   Related US. Application Data                                         N. Geller, “On the citation influence methodology of Pinski
-(60)     Provisional application No. 60/035,205, filed on Jan. 10,                       and Narin,” 1978, Inf. Proc. And Management, vol. 14, pp.
-         1997.                                                                          93—95.
-(51)     Int. Cl.7 .................................................... .. G06F 17/30   P. Doreian, “Measuring the relative standing of disciplinary
-(52)     US. Cl. .................................. .. 707/5; 707/7; 707/501            journals,” 1988, Inf. Proc. And Management, vol. 24, pp.
-(58)     Field of Search .................................. .. 707/100, 5, 7,           45—56.
-                 707/513, 1—3, 10, 104, 501; 345/440; 382/226,
-                                                                   229, 230, 231                      (List continued on next page.)
+(10) Patent No.: US 6,285,999 B1
+(45) Date of Patent: Sep. 4, 2001
 
-(56)                         References Cited                                           Primary Examiner—Thomas Black
-                    U.S. PATENT DOCUMENTS
-                                                                                        Assistant Examiner—Uyen Le
-                                                                                        (74) Attorney, Agent, or Firm—Harrity & Snyder L.L.P.
-       4,953,106 *       8/1990     Gansner et al. ................... .. 345/440
-       5,450,535 *       9/1995     North .............. ..               395/140       (57)                   ABSTRACT
-       5,748,954         5/1998 Mauldin                                   395/610
-       5,752,241    *    5/1998     Cohen ......... ..                       707/3
-                                                                                        A method assigns importance ranks to nodes in a linked
-       5,832,494 * 11/1998 Egger et al. .... ..                           707/102       database, such as any database of documents containing
-       5,848,407 * 12/1998          Ishikawa et al. .                 ..... .. 707/2    citations, the World Wide Web or any other hypermedia
-       6,014,678 *       1/2000     Inoue et al. ........................ .. 707/501    database. The rank assigned to a document is calculated
-                                                                                        from the ranks of documents citing it. In addition, the rank
-                        OTHER PUBLICATIONS                                              of a document is calculated from a constant representing the
-S. Jeromy Carriere et al, “Web Query: Searching and Visu                                probability that a browser through the database will ran
-alizing the Web through Connectivity”, Computer Networks                                domly jump to the document. The method is particularly
-and ISDN Systems 29 (1997). pp. 1257—1267.*                                             useful in enhancing the performance of search engine results
-Wang et al “Prefetching in Worl Wide Web”, IEEE 1996, pp.                               for hypermedia databases, such as the World Wide Web,
-28—32.*                                                                                 whose documents have a large variation in quality.
-Ramer et al “Similarity, Probability and Database Organi
-sation: Extended Abstract”, 1996, pp. 272.276.*                                                       29 Claims, 3 Drawing Sheets
+(54) METHOD FOR NODE RANKING IN A
+LINKED DATABASE
 
-                                                              A      B
-                                                             0.4
+(75) Inventor: Lawrence Page, Stanford, CA (US)
+
+(73) Assignee: The Board of Trustees of the Leland Stanford Junior University, Stanford, CA (US)
+
+(*) Notice: Subject to any disclaimer, the term of this patent is extended or adjusted under 35 U.S.C. 154(b) by 0 days.
+
+Appl. No.: 09/004,827 Filed: Jan. 9, 1998
+
+Related U.S. Application Data
+
+(60) Provisional application No. 60/035,205, filed on Jan. 10, 1997.
+
+(51) Int. Cl.⁷ G06F 17/30
+(52) U.S. Cl. 707/5; 707/7; 707/501
+(58) Field of Search 707/100, 5, 7, 707/513, 1–3, 10, 104, 501; 345/440; 382/226, 229, 230, 231
+
+(56) References Cited
+
+U.S. PATENT DOCUMENTS
+4,953,106 * 8/1990 Gansner et al. 345/440
+5,450,535 * 9/1995 North 395/140
+5,748,954 5/1998 Mauldin 395/610
+5,752,241 * 5/1998 Cohen 707/3
+5,832,494 * 11/1998 Egger et al. 707/102
+5,848,407 * 12/1998 Ishikawa et al. 707/2
+6,014,678 * 1/2000 Inoue et al. 707/501
+
+OTHER PUBLICATIONS
+
+S. Jeromy Carriere et al., “Web Query: Searching and Visualizing the Web through Connectivity”, Computer Networks and ISDN Systems 29 (1997), pp. 1257–1267.*
+Wang et al., “Prefetching in Worl Wide Web”, IEEE 1996, pp. 28–32.*
+Ramer et al., “Similarity, Probability and Database Organisation: Extended Abstract”, 1996, pp. 272–276.*
+Craig Boyle, “To link or not to link: An empirical comparison of Hypertext linking strategies”. ACM 1992, pp. 221–231.*
+L. Katz, “A new status index derived from sociometric analysis,” 1953, Psychometricka, vol. 18, pp. 39–43.
+C.H. Hubbell, “An input-output approach to clique identification sociometry,” 1965, pp. 377–399.
+Mizruchi et al., “Techniques for disaggregating centrality scores in social networks,” 1996, Sociological Methodology, pp. 26–48.
+E. Garfield, “Citation analysis as a tool in journal evaluation,” 1972, Science, vol. 178, pp. 471–479.
+Pinski et al., “Citation influence for journal aggregates of scientific publications: Theory, with application to the literature of physics,” 1976, Inf. Proc. And Management, vol. 12, pp. 297–312.
+N. Geller, “On the citation influence methodology of Pinski and Narin,” 1978, Inf. Proc. And Management, vol. 14, pp. 93–95.
+P. Doreian, “Measuring the relative standing of disciplinary journals,” 1988, Inf. Proc. And Management, vol. 24, pp. 45–56.
+
+(List continued on next page.)
+
+Primary Examiner—Thomas Black
+Assistant Examiner—Uyen Le
+(74) Attorney, Agent, or Firm—Harrity & Snyder L.L.P.
+
+(57) ABSTRACT
+
+A method assigns importance ranks to nodes in a linked database, such as any database of documents containing citations, the World Wide Web or any other hypermedia database. The rank assigned to a document is calculated from the ranks of documents citing it. In addition, the rank of a document is calculated from a constant representing the probability that a browser through the database will randomly jump to the document. The method is particularly useful in enhancing the performance of search engine results for hypermedia databases, such as the World Wide Web, whose documents have a large variation in quality.
+
+29 Claims, 3 Drawing Sheets
+
+A
+0.4
+B
+0.2
+C
+0.4
 
 --- REVIEWED TRANSCRIPTION PAGE 2 OF 12 ---
 
@@ -81,553 +98,162 @@ Wold Wide Web Conference, pp. 1—13.                                * cited by 
 
 --- REVIEWED TRANSCRIPTION PAGE 3 OF 12 ---
 
-Sheet 1 of 3 (FIG. 1)
+U.S. Patent                         Sep. 4, 2001                         Sheet 1 of 3                         US 6,285,999 B1
+
+B
+
+C
+
+A
+
+FIG. 1
 
 --- REVIEWED TRANSCRIPTION PAGE 4 OF 12 ---
 
-Sheet 2 of 3 (FIG. 2)
+U.S. Patent                         Sep. 4, 2001                         Sheet 2 of 3                         US 6,285,999 B1
+
+A
+0.4
+
+0.2
+
+B
+0.2
+
+0.2
+
+C
+0.4
+
+0.4
+
+FIG. 2
 
 --- REVIEWED TRANSCRIPTION PAGE 5 OF 12 ---
 
-Sheet 3 of 3 (FIG. 3)
+U.S. Patent                         Sep. 4, 2001                         Sheet 3 of 3                         US 6,285,999 B1
+
+START
+
+101
+SELECT AN INITIAL N-DIMENSIONAL VECTOR p₀
+
+103
+COMPUTE AN APPROXIMATION pₙ TO A STEADY-STATE PROBABILITY p∞ IN ACCORDANCE WITH THE EQUATION pₙ = Aⁿp₀
+
+105
+DETERMINE A RANK r[k] FOR NODE k FROM A kᵗʰ COMPONENT OF pₙ
+
+DONE
+
+FIG. 3
 
 --- REVIEWED TRANSCRIPTION PAGE 6 OF 12 ---
 
+US 6,285,999 B1
+
 METHOD FOR NODE RANKING IN A
-             LINKED DATABASE
+LINKED DATABASE
 
-          CROSS-REFERENCES TO RELATED
-                  APPLICATIONS
+CROSS-REFERENCES TO RELATED APPLICATIONS
 
-   This application claims priority from US. provisional
-patent application Ser. No. 60/035,205 filed Jan. 10, 1997,
-which is incorporated herein by reference.
-      STATEMENT REGARDING GOVERNMENT
+This application claims priority from U.S. provisional patent application Ser. No. 60/035,205 filed Jan. 10, 1997, which is incorporated herein by reference.
 
-                  SUPPORT
+STATEMENT REGARDING GOVERNMENT SUPPORT
 
-  This invention was supported in part by the National    The Hyp
-Science Foundation grant number IRI-9411306-4. The Gov    in dete
-ernment has certain rights in the invention.           15 search
+This invention was supported in part by the National Science Foundation grant number IRI-9411306-4. The Government has certain rights in the invention.
 
-              FIELD OF THE INVENTION
+FIELD OF THE INVENTION
 
-  This invention relates generally to techniques for analyz
-ing linked databases. More particularly, it relates to methods
-                                                               20
-for assigning ranks to nodes in a linked database, such as any
-database of documents containing citations, the World Wide
-Web or any other hypermedia database.
+This invention relates generally to techniques for analyzing linked databases. More particularly, it relates to methods for assigning ranks to nodes in a linked database, such as any database of documents containing citations, the World Wide Web or any other hypermedia database.
 
-         BACKGROUND OF THE INVENTION
+BACKGROUND OF THE INVENTION
 
-  Due to the developments in computer technology and its
+Due to the developments in computer technology and its increase in popularity, large numbers of people have recently started to frequently search huge databases. For example, internet search engines are frequently used to search the entire World Wide Web. Currently, a popular search engine might execute over 30 million searches per day of the indexable part of the Web, which has a size in excess of 500 Gigabytes. Information retrieval systems are traditionally judged by their precision and recall. What is often neglected, however, is the quality of the results produced by these search engines. Large databases of documents such as the Web contain many low quality documents. As a result, searches typically return hundreds of irrelevant or unwanted documents which camouflage the few relevant ones. In order to improve the selectivity of the results, common techniques allow the user to constrain the scope of the search to a specified subset of the database, or to provide additional search terms. These techniques are most effective in cases where the database is homogeneous and already classified into subsets, or in cases where the user is searching for well known and specific information. In other cases, however, these techniques are often not effective because each constraint introduced by the user increases the chances that the desired information will be inadvertently eliminated from the search results.
 
-increase in popularity, large numbers of people have recently
+Search engines presently use various techniques that attempt to present more relevant documents. Typically, documents are ranked according to variations of a standard vector space model. These variations could include (a) how recently the document was updated, and/or (b) how close the search terms are to the beginning of the document. Although this strategy provides search results that are better than with no ranking at all, the results still have relatively low quality.
 
-started to frequently search huge databases. For example,
+Moreover, when searching the highly competitive Web, this measure of relevancy is vulnerable to “spamming” techniques that authors can use to artificially inflate their document’s relevance in order to draw attention to it or its advertisements. For this reason search results often contain commercial appeals that should not be considered a match to the query. Although search engines are designed to avoid such ruses, poorly conceived mechanisms can result in disappointing failures to retrieve desired information.
 
-internet search engines are frequently used to search the
-entire World Wide Web. Currently, a popular search engine 30
-might execute over 30 million searches per day of the
-indexable part of the Web, which has a size in excess of 500
-Gigabytes. Information retrieval systems are traditionally     si
-                                                               ra
-judged by their precision and recall. What is often neglected,
-however, is the quality of the results produced by these 35 to a
-search engines. Large databases of documents such as the        h
-Web contain many low quality documents. As a result,
-searches typically return hundreds of irrelevant or unwanted
-documents which camouflage the few relevant ones. In order
-to improve the selectivity of the results, common techniques 40 a
-allow the user to constrain the scope of the search to a        O
-specified subset of the database, or to provide additional       r
-search terms. These techniques are most effective in cases      i
-where the database is homogeneous and already classified
-into subsets, or in cases where the user is searching for well 45
-known and specific information. In other cases, however,
-these techniques are often not effective because each con
-straint introduced by the user increases the chances that the
-desired information will be inadvertently eliminated from
-the search results.
-   Search engines presently use various techniques that
-attempt to present more relevant documents. Typically,
-documents are ranked according to variations of a standard
-vector space model. These variations could include (a) how
-recently the document was updated, and/or (b) how close the 55 th
-search terms are to the beginning of the document. Although
-this strategy provides search results that are better than with
-no ranking at all, the results still have relatively low quality.
-Moreover, when searching the highly competitive Web, this
-measure of relevancy is vulnerable to “spamming” tech 60 (regardl
-niques that authors can use to artificially inflate their docu
-ment’s relevance in order to draw attention to it or its
-advertisements. For this reason search results often containmore
-commercial appeals that should not be considered a match to docum
-the query. Although search engines are designed to avoid 65 rank
-such ruses, poorly conceived mechanisms can result in       citat
-disappointing failures to retrieve desired information.     ments
+Hyperlink Search Engine, developed by IDD Information Services, (http://rankdex.gari.com/) uses backlink information (i.e., information from pages that contain links to the current page) to assist in identifying relevant Web documents. Rather than using the content of a document to determine relevance, the technique uses the anchor text of links to the document to characterize the relevance of a document. The idea of associating anchor text with the page the text points to was first implemented in the World Wide Web Worm (Oliver A. McBryan, GENVL and WWWW: Tools for Taming the Web, First International Conference on the World Wide Web, CERN, Geneva, May 25—27, 1994). The Hyperlink Search Engine has applied this idea to assist in determining document relevance in a search. In particular, search query terms are compared to a collection of anchor text descriptions that point to the page, rather than to a keyword index of the page content. A rank is then assigned to a document based on the degree to which the search terms match the anchor descriptions in its backlink documents.
 
-       Hyperlink Search Engine, developed by IDD Information
-     Services, (http://rankdex.gari.com/) uses backlink informa
-     tion (i.e., information from pages that contain links to the
-     current page) to assist in identifying relevant Web docu
-     ments. Rather than using the content of a document to
-     determine relevance, the technique uses the anchor text of
-     links to the document to characterize the relevance of a
-     document. The idea of associating anchor text with the page
-     the text points to was first implemented in the World Wide
-10   Web Worm (Oliver A. McBryan, GENVL and WWWW:
-     Tools for Taming the Web, First International Conference on
-     the World Wide Web, CERN, Geneva, May 25—27, 1994).
-erlink Search Engine has applied this idea to assist
-rmining document relevance in a search. In particular,
-query terms are compared to a collection of anchor
-     text descriptions that point to the page, rather than to a
-     keyword index of the page content. A rank is then assigned
-     to a document based on the degree to which the search terms
- match the anchor descriptions in its backlink documents.
-   The well known idea of citation counting is a simple
- method for determining the importance of a document by
- counting its number of citations, or backlinks. The citation
-     rank r(A) of a document which has n backlink pages is
-     simply
-25
-       In the case of databases whose content is of relatively
-     uniform quality and importance it is valid to assume that a
-     highly cited document should be of greater interest than a
-     document with only one or two citations. Many databases,
-     however, have extreme variations in the quality and impor
-     tance of documents. In these cases, citation ranking is overly
-mplistic. For example, citation ranking will give the same
-nk to a document that is cited once on an obscure page as
-similar document that is cited once on a well-known and
-ighly respected page.
-                       SUMMARY
-  Various aspects of the present invention provide systems
-nd methods for ranking documents in a linked database.
-ne aspect provides an objective ranking based on the
-elationship between documents. Another aspect of the
-nvention is directed to a technique for ranking documents
- within a database whose content has a large variation in
- quality and importance. Another aspect of the present inven
-     tion is to provide a document ranking method that is scalable
-     and can be applied to extremely large databases such as the
-     World Wide Web. Additional aspects of the invention will
-    become apparent in view of the following description and
- 50 associated figures.
-      One aspect of the present invention is directed to taking
-    advantage of the linked structure of a database to assign a
-    rank to each document in the database, where the document
-    rank is a measure of the importance of a document. Rather
-an determining relevance only from the intrinsic content of
-    a document, or from the anchor text of backlinks to the
-    document, a method consistent with the invention deter
-    mines importance from the extrinsic relationships between
-    documents. Intuitively, a document should be important
-ess of its content) if it is highly cited by other
-    documents. Not all citations, however, are necessarily of
-    equal significance. A citation from an important document is
-important than a citation from a relatively unimportant
-ent. Thus, the importance of a page, and hence the
-assigned to it, should depend not just on the number of
-ions it has, but on the importance of the citing docu
- as well. This implies a recursive definition of rank: the
+The well known idea of citation counting is a simple method for determining the importance of a document by counting its number of citations, or backlinks. The citation rank r(A) of a document which has n backlink pages is simply r(A)=n. In the case of databases whose content is of relatively uniform quality and importance it is valid to assume that a highly cited document should be of greater interest than a document with only one or two citations. Many databases, however, have extreme variations in the quality and importance of documents. In these cases, citation ranking is overly simplistic. For example, citation ranking will give the same rank to a document that is cited once on an obscure page as to a similar document that is cited once on a well-known and highly respected page.
+
+SUMMARY
+
+Various aspects of the present invention provide systems and methods for ranking documents in a linked database. One aspect provides an objective ranking based on the relationship between documents. Another aspect of the invention is directed to a technique for ranking documents within a database whose content has a large variation in quality and importance. Another aspect of the present invention is to provide a document ranking method that is scalable and can be applied to extremely large databases such as the World Wide Web. Additional aspects of the invention will become apparent in view of the following description and associated figures.
+
+One aspect of the present invention is directed to taking advantage of the linked structure of a database to assign a rank to each document in the database, where the document rank is a measure of the importance of a document. Rather than determining relevance only from the intrinsic content of a document, or from the anchor text of backlinks to the document, a method consistent with the invention determines importance from the extrinsic relationships between documents. Intuitively, a document should be important (regardless of its content) if it is highly cited by other documents. Not all citations, however, are necessarily of equal significance. A citation from an important document is more important than a citation from a relatively unimportant document. Thus, the importance of a page, and hence the rank assigned to it, should depend not just on the number of citations it has, but on the importance of the citing documents as well. This implies a recursive definition of rank: the
 
 --- REVIEWED TRANSCRIPTION PAGE 7 OF 12 ---
 
-rank of a document is a function of the ranks of the
-documents which cite it. The ranks of documents may be
-calculated by an iterative procedure on a linked database.
-   Because citations, or links, are ways of directing
-attention, the important documents correspond to those
-documents to which the most attention is directed. Thus, a
-high rank indicates that a document is considered valuable
-by many people or by important people. Most likely, these
-are the pages to which someone performing a search would
-like to direct his or her attention. Looked at another way, the
-importance of a page is directly related to the steady-state
-probability that a random Web surfer ends up at the page
-after following a large number of links. Because there is a
-larger probability that a surfer will end up at an important
-page than at an unimportant page, this method of ranking          1
-pages assigns higher ranks to the more important pages.
-  In one aspect of the invention, a computer implemented
-method is provided for scoring linked database documents.
-The method comprises the steps of:
-  obtaining a plurality of documents, at least some of the
-     documents being linked documents, at least some of the
-     documents being linking documents, and at least some
-     of the documents being both linked documents and
-        linking documents, each of the linked documents being 25 N
-        pointed to by a link in one or more of the linking       cl
-        documents; assigning a score to each of the linked
-        documents based on scores of the one or more linking
-        documents; and processing the linked documents
-        according to their scores.
-  Additional aspects, applications and advantages will         rank
-become apparent in view of the following description and       link
-associated figures.                                             In t
-                                                               docu
-      BRIEF DESCRIPTION OF THE DRAWINGS
-                                                            35 page
-   FIG. 1 is a diagram of the relationship between three       many
-linked hypertext documents according to the invention.         the
-                                                                  T
-   FIG. 2 is a diagram of a three-document Web illustrating
-                                                               so t
-the rank associated with each document in accordance with
-                                                               of a
-the present invention.                                         will
-  FIG. 3 is a flowchart of one embodiment of the invention.
+rank of a document is a function of the ranks of the documents which cite it. The ranks of documents may be calculated by an iterative procedure on a linked database.
 
-                  DETAILED DESCRIPTION
-  Although the following detailed description contains 45 ranks for
-many specifics for the purposes of illustration, anyone of iterative
-ordinary skill in the art will appreciate that many variations
-and alterations to the following details are within the scope
-of the invention. Accordingly, the following embodiments of
-the invention are set forth without any loss of generality to,
-and without imposing limitations upon, the claimed inven
-tion. For support in reducing the present invention to
-practice, the inventor acknowledges Sergey Brin, Scott
-Hassan, Rajeev Motwani,Alan Steremberg, and Terry Wino
-grad.                                                             5
-   A linked database (i.e. any database of documents con
-taining mutual citations, such as the World Wide Web or other
-hypermedia archive, a dictionary or thesaurus, and a data
-base of academic articles, patents, or court cases) can be
-represented as a directed graph of N nodes, where each node
-corresponds to a Web page document and where the directed
-connections between nodes correspond to links from one
-document to another. A given node has a set of forward links
-that connect it to children nodes, and a set of backward links
-that connect it to parent nodes. FIG. 1 shows a typical           6
-relationship between three hypertext documents A, B, and C.
-As shown in this particular figure, the first links in docu
+Because citations, or links, are ways of directing attention, the important documents correspond to those documents to which the most attention is directed. Thus, a high rank indicates that a document is considered valuable by many people or by important people. Most likely, these are the pages to which someone performing a search would like to direct his or her attention. Looked at another way, the importance of a page is directly related to the steady-state probability that a random Web surfer ends up at the page after following a large number of links. Because there is a larger probability that a surfer will end up at an important page than at an unimportant page, this method of ranking pages assigns higher ranks to the more important pages.
 
-    ments B and C are pointers to document A. In this case We
-    say that B and C are backlinks of A, and that A is a forward
-    link of B and of C. Documents B and C also have other
-    forward links to documents that are not shown.
-      Although the ranking method of the present invention is
-    superficially similar to the well known idea of citation
-    counting, the present method is more subtle and complex
-    than citation counting and gives far superior results. In a
-    simple citation ranking, the rank of a document Awhich has
-    n backlink pages is simply
-     According to one embodiment of the present method of
-  ranking, the backlinks from different pages are weighted
-  differently and the number of links on each page is normal
-5 ized. More precisely, the rank of a page A is defined
-  according to the present invention as
-    where B1, . . . , B” are the backlink pages of A, r(Bl), . . . ,
-    r(Bn) are their ranks, |B1|, . . . , |Bn| are their numbers of
-    forward links, and alpha is a constant in the interval [0,1], and
-is the total number of pages in the Web. This definition is
-early more complicated and subtle than the simple citation
-    rank. Like the citation rank, this definition yields a page rank
-    that increases as the number of backlinks increases. But the
-    present method considers a citation from a highly ranked
-    backlink as more important than a citation from a lowly
-ed backlink (provided both citations come from back
- documents that have an equal number of forward links).
-he present invention, it is possible, therefore, for a
-ment with only one backlink (from a very highly ranked
-) to have a higher rank than another document with
- backlinks (from very low ranked pages). This is not
-case with simple citation ranking.
-he ranks form a probability distribution over Web pages,
-hat the sum of ranks over all Web pages is unity. The rank
- page can be interpreted as the probability that a surfer
- be at the page after following a large number of forward
-    links. The constant alpha in the formula is interpreted as the
-    probability that the Web surfer will jump randomly to any
-    Web page instead of following a forward link. The page
- all the pages can be calculated using a simple
- algorithm, and corresponds to the principal eigen
-    vector of the normalized link matrix of the Web, as will be
-    discussed in more detail below.
-       In order to illustrate the present method of ranking,
-    consider the simple Web of three documents shown in FIG.
-    2. For simplicity of illustration, we assume in this example
-    that r=0. Document A has a single backlink to document C,
-    and this is the only forward link of document C, so
-5     Document B has a single backlink to document A, but this
-    is one of two forward links of document A, so
-      Document C has two backlinks. One backlink is to
-    document B, and this is the only forward link of document
-    B. The other backlink is to document A via the other of the
-    two forward links from A. Thus
-      In this simple illustrative case we can see by inspection
-    that r(A)=0.4, r(B)=0.2, and r(C)=0.4. Although a typical
-5   value for alpha is ~0.1, if for simplicity we set alpha=0.5 (which
-    corresponds to a 50% chance that a surfer will randomly
-    jump to one of the three pages rather than following a
+In one aspect of the invention, a computer implemented method is provided for scoring linked database documents. The method comprises the steps of: obtaining a plurality of documents, at least some of the documents being linked documents, at least some of the documents being linking documents, and at least some of the documents being both linked documents and linking documents, each of the linked documents being pointed to by a link in one or more of the linking documents; assigning a score to each of the linked documents based on scores of the one or more linking documents; and processing the linked documents according to their scores. Additional aspects, applications and advantages will become apparent in view of the following description and associated figures.
+
+BRIEF DESCRIPTION OF THE DRAWINGS
+
+FIG. 1 is a diagram of the relationship between three linked hypertext documents according to the invention.
+
+FIG. 2 is a diagram of a three-document Web illustrating the rank associated with each document in accordance with the present invention.
+
+FIG. 3 is a flowchart of one embodiment of the invention.
+
+DETAILED DESCRIPTION
+
+Although the following detailed description contains many specifics for the purposes of illustration, anyone of ordinary skill in the art will appreciate that many variations and alterations to the following details are within the scope of the invention. Accordingly, the following embodiments of the invention are set forth without any loss of generality to, and without imposing limitations upon, the claimed invention. For support in reducing the present invention to practice, the inventor acknowledges Sergey Brin, Scott Hassan, Rajeev Motwani, Alan Steremberg, and Terry Winograd.
+
+A linked database (i.e. any database of documents containing mutual citations, such as the World Wide Web or other hypermedia archive, a dictionary or thesaurus, and a database of academic articles, patents, or court cases) can be represented as a directed graph of N nodes, where each node corresponds to a Web page document and where the directed connections between nodes correspond to links from one document to another. A given node has a set of forward links that connect it to children nodes, and a set of backward links that connect it to parent nodes. FIG. 1 shows a typical relationship between three hypertext documents A, B, and C. As shown in this particular figure, the first links in documents B and C are pointers to document A. In this case we say that B and C are backlinks of A, and that A is a forward link of B and of C. Documents B and C also have other forward links to documents that are not shown.
+
+Although the ranking method of the present invention is superficially similar to the well known idea of citation counting, the present method is more subtle and complex than citation counting and gives far superior results. In a simple citation ranking, the rank of a document A which has n backlink pages is simply r(A)=n.
+
+According to one embodiment of the present method of ranking, the backlinks from different pages are weighted differently and the number of links on each page is normalized. More precisely, the rank of a page A is defined according to the present invention as r(A) = α/N + (1 − α)(r(B₁)/|B₁| + ··· + r(Bₙ)/|Bₙ|), where B₁, . . . , Bₙ are the backlink pages of A, r(B₁), . . . , r(Bₙ) are their ranks, |B₁|, . . . , |Bₙ| are their numbers of forward links, and α is a constant in the interval [0,1], and N is the total number of pages in the Web. This definition is clearly more complicated and subtle than the simple citation rank. Like the citation rank, this definition yields a page rank that increases as the number of backlinks increases. But the present method considers a citation from a highly ranked backlink as more important than a citation from a lowly ranked backlink (provided both citations come from backlink documents that have an equal number of forward links). In the present invention, it is possible, therefore, for a document with only one backlink (from a very highly ranked page) to have a higher rank than another document with many backlinks (from very low ranked pages). This is not the case with simple citation ranking.
+
+The ranks form a probability distribution over Web pages, so that the sum of ranks over all Web pages is unity. The rank of a page can be interpreted as the probability that a surfer will be at the page after following a large number of forward links. The constant α in the formula is interpreted as the probability that the Web surfer will jump randomly to any Web page instead of following a forward link. The page ranks for all the pages can be calculated using a simple iterative algorithm, and corresponds to the principal eigenvector of the normalized link matrix of the Web, as will be discussed in more detail below.
+
+In order to illustrate the present method of ranking, consider the simple Web of three documents shown in FIG. 2. For simplicity of illustration, we assume in this example that α=0. Document A has a single backlink to document C, and this is the only forward link of document C, so r(A)=r(C). Document B has a single backlink to document A, but this is one of two forward links of document A, so r(B)=r(A)/2. Document C has two backlinks. One backlink is to document B, and this is the only forward link of document B. The other backlink is to document A via the other of the two forward links from A. Thus r(C)=r(B)+r(A)/2.
 
 --- REVIEWED TRANSCRIPTION PAGE 8 OF 12 ---
 
-forward link), then the mathematical relationships between
-the ranks become more complicated. In particular, we then
-have
+In this simple illustrative case we can see by inspection that r(A)=0.4, r(B)=0.2, and r(C)=0.4. Although a typical value for α is ~0.1, if for simplicity we set α=0.5 (which corresponds to a 50% chance that a surfer will randomly jump to one of the three pages rather than following a forward link), then the mathematical relationships between the ranks become more complicated. In particular, we then have r(A)=1/6+r(C)/2, r(B)=1/6+r(A)/4, and r(C)=1/6+r(A)/4+r(B)/2. The solution in this case is r(A)=14/39, r(B)=10/39, and r(C)=15/39.
 
+In practice, there are millions of documents and it is not possible to find the solution to a million equations by inspection. Accordingly, in the preferred embodiment a simple iterative procedure is used. As the initial state we may simply set all the ranks equal to 1/N. The formulas are then used to calculate a new set of ranks based on the existing ranks. In the case of millions of documents, sufficient convergence typically takes on the order of 100 iterations. It is not always necessary or even desirable, however, to calculate the rank of every page with high precision. Even approximate rank values, using two or more iterations, can provide very valuable, or even superior, information.
 
+The iteration process can be understood as a steady-state probability distribution calculated from a model of a random surfer. This model is mathematically equivalent to the explanation described above, but provides a more direct and concise characterization of the procedure.
 
-  The solution in this case is r(A)=14/39, r(B)=10/39, and
-r(C)=15/39.
-   In practice, there are millions of documents and it is not
-                                                              which a
-possible to find the solution to a million equations by 10 increases b
-inspection. Accordingly, in the preferred embodiment a
-simple iterative procedure is used. As the initial state We
-may simply set all the ranks equal to 1/N. The formulas are
-then used to calculate a new set of ranks based on the
-existing ranks. In the case of millions of documents, suffi 15 N-dimen
-cient convergence typically takes on the order of 100 itera    a stea
-tions. It is not always necessary or even desirable, however,  pn=A"p
-to calculate the rank of every page with high precision. Even  transi
-approximate rank values, using two or more iterations, can     sentin
-provide very valuable, or even superior, information.          step 1
-   The iteration process can be understood as a steady-state   is det
-probability distribution calculated from a model of a random      In
-surfer. This model is mathematically equivalent to the expla   tions
-nation described above, but provides a more direct and         bution
-concise characterization of the procedure. The model 25 uniform distr
-includes (a) an initial N-dimensional probability distribution to 1/N
-vector p0 where each component p0[i] gives the initial
-probability that a random surfer will start at a node i, and (b)
-an N×N transition probability matrix A where each compo
-nent         gives the probability that the surfer will move
-from node i to node j. The probability distribution of the
-graph after the surfer follows one link is p1=Ap0, and after
-two links the probability distribution is p2=Ap1=A2p0.
-Assuming this iteration converges, it will converge to a
-steady-state probability                                           35
+The model includes (a) an initial N-dimensional probability distribution vector p₀ where each component p₀[i] gives the initial probability that a random surfer will start at a node i, and (b) an N×N transition probability matrix A where each component A[i][j] gives the probability that the surfer will move from node i to node j. The probability distribution of the graph after the surfer follows one link is p₁=Ap₀, and after two links the probability distribution is p₂=Ap₁=A²p₀.
 
-                         PM = lim Anpo,
-                              "H00
+Assuming this iteration converges, it will converge to a steady-state probability p∞ = lim(n→∞) Aⁿp₀, which is a dominant eigenvector of A. The iteration circulates the probability through the linked nodes like energy flows through a circuit and accumulates in important places. Because pages with no links occur in significant numbers and bleed off energy, they cause some complication with computing the ranking. This complication is caused by the fact they can add huge amounts to the “random jump” factor.
 
+This, in turn, causes loops in the graph to be highly emphasized which is not generally a desirable property of the model. In order to address this problem, these childless pages can simply be removed from the model during the iterative stages, and added back in after the iteration is complete. After the childless pages are added back in, however, the same number of iterations that was required to remove them should be done to make sure they all receive a value. (Note that in order to ensure convergence, the norm of pᵢ must be made equal to 1 after each iteration.) An alternate method to control the contribution of the childless nodes is to only estimate the steady state by iterating a small number of times.
 
+The rank r[i] of a node i can then be defined as a function of this steady-state probability distribution. For example, the rank can be defined simply by r[i]=p∞[i]. This method of calculating rank is mathematically equivalent to the iterative method described first. Those skilled in the art will appreciate that this same method can be characterized in various different ways that are mathematically equivalent. Such characterizations are obviously within the scope of the present invention. Because the rank of various different documents can vary by orders of magnitude, it is convenient to define a logarithmic rank r[i] = log(p∞[i]/minₖ∈[1,N]{p∞[k]}) which assigns a rank of 0 to the lowest ranked node and increases by 1 for each order of magnitude in importance higher than the lowest ranked node.
 
+“FIG. 3 shows one embodiment of a computer implemented method for calculating an importance rank for N linked nodes of a linked database. At a step 101, an initial N-dimensional vector p₀ is selected. An approximation pₙ to a steady-state probability p∞ in accordance with the equation pₙ=Aⁿp₀ is computed at a step 103. Matrix A can be an N×N transition probability matrix having elements A[i][j] representing a probability of moving from node i to node j. At a step 105, a rank r[k] for node k from a kᵗʰ component of pₙ is determined.”.
 
+In one particular embodiment, a finite number of iterations are performed to approximate p∞. The initial distribution can be selected to be uniform or non-uniform. A uniform distribution would set each component of p₀ equal to 1/N. A non-uniform distribution, for example, can divide the initial probability among a few nodes which are known a priori to have relatively large importance. This non-uniform distribution decreases the number of iterations required to obtain a close approximation to p∞ and also is one way to reduce the effect of artificially inflating relevance by adding unrelated terms.
 
-which is a dominant eigenvector of A. The iteration circu
-lates the probability through the linked nodes like energy
-flows through a circuit and accumulates in important places.
-Because pages with no links occur in significant numbers
-and bleed off energy, they cause some complication with
-computing the ranking. This complication is caused by the 45
+In another particular embodiment, the transition matrix A is given by A = α/N · 1 + (1 − α)B, where 1 is an N×N matrix consisting of all 1s, α is the probability that a surfer will jump randomly to any one of the N nodes, and B is a matrix whose elements B[i][j] are given by 1/nᵢ if node i points to node j, and 0 otherwise, where nᵢ is the total number of forward links from node i. The (1−α) factor acts as a damping factor that limits the extent to which a document’s rank can be inherited by children documents. This models the fact that users typically jump to a different place in the Web after following a few links. The value of α is typically around 15%. Including this damping is important when many iterations are used to calculate the rank so that there is no artificial concentration of rank importance within loops of the Web. Alternatively, one may set α=0 and only iterate a few times in the calculation.
 
-
-
-fact they can add huge amounts to the “random jump” factor.
-This, in turn, causes loops in the graph to be highly empha
-sized which is not generally a desirable property of the
-model. In order to address this problem, these childless
-pages can simply be removed from the model during the
-iterative stages, and added back in after the iteration is
-complete. After the childless pages are added back in,
-however, the same number of iterations that was required to
-remove them should be done to make sure they all receive
-a value. (Note that in order to ensure convergence, the norm 55
-of pi must be made equal to 1 after each iteration.) An
-alternate method to control the contribution of the childless
-nodes is to only estimate the steady state by iterating a small
-number of times.
-  The rank r[i] of a node i can then be defined as a function
-of this steady-state probability distribution. For example, the
-rank can be defined simply by r[i]=p-infinity[i]. This method of
-calculating rank is mathematically equivalent to the iterative
-method described first. Those skilled in the art will appre
-ciate that this same method can be characterized in various 65 it can
-different ways that are mathematically equivalent. Such
-characterizations are obviously within the scope of the
-
-   present invention. Because the rank of various different
-   documents can vary by orders of magnitude, it is convenient
-   to define a logarithmic rank
-                                   ke [1,N]
-ssigns a rank of 0 to the lowest ranked node and
-y 1 for each order of magnitude in importance
-   higher than the lowest ranked node.
-     “FIG. 3 shows one embodiment of a computer imple
-   mented method for calculating an importance rank for N
-   linked nodes of a linked database. At a step 101, an initial
-sional vector p0 is selected. An approximation pn to
-dy-state probability poo in accordance with the equation
-O is computed at a step 103. Matrix A can be an N×N
-tion probability matrix having elements           repre
-g a probability of moving from node i to node j. At a
-05, a rank r[k] for node k from a kth component of pn
-ermined.”.
-one particular embodiment, a finite number of itera
-are performed to approximate p∞. The initial distri
- can be selected to be uniform or non-uniform. A
-ibution would set each component of p0 equal
-. A non-uniform distribution, for example, can divide
-   the initial probability among a few nodes which are known
-   a priori to have relatively large importance. This non
-   uniform distribution decreases the number of iterations
-   required to obtain a close approximation to p∞ and also is
-   one way to reduce the effect of artificially inflating relevance
-   by adding unrelated terms.
-     In another particular embodiment, the transition matrix A
-   is given by
-     where 1 is an N×N matrix consisting of all 1s, alpha is the
-       probability that a surfer will jump randomly to any one
-       of the N nodes, and B is a matrix whose elements
-                 are given by
-                              l
-                    _
-                  BlllI/T =
-                              — ifnode i points to node j
-                              "i
-                              0 otherwise,
-        where ni is the total number of forward links from node
-          i. The (1-ot) factor acts as a damping factor that
-          limits the extent to which a document’s rank can be
-          inherited by children documents. This models the
-          fact that users typically jump to a different place in
-          the Web after following a few links. The value of alpha
-          is typically around 15%. Including this damping is
-          important when many iterations are used to calculate
-          the rank so that there is no artificial concentration of
-          rank importance within loops of the Web.
-          Alternatively, one may set alpha=0 and only iterate a few
-          times in the calculation.
-     Consistent with the present invention, there are several
-   ways that this method can be adapted or altered for various
-   purposes. As already mentioned above, rather than including
-   the random linking probability alpha equally among all nodes,
- be divided in various ways among all the sites by
-   changing the 1 matrix to another matrix. For example, it
-   could be distributed so that a random jump takes the surfer
+Consistent with the present invention, there are several ways that this method can be adapted or altered for various purposes. As already mentioned above, rather than including the random linking probability α equally among all nodes, it can be divided in various ways among all the sites by changing the 1 matrix to another matrix. For example, it could be distributed so that a random jump takes the surfer to one of a few nodes that have a high importance, and will not take the surfer to any of the other nodes. This can be very effective in preventing deceptively tagged documents from receiving artificially inflated relevance. Alternatively, the random linking probability could be distributed so that random jumps do not happen from high importance nodes, and only happen from other nodes.
 
 --- REVIEWED TRANSCRIPTION PAGE 9 OF 12 ---
 
-to one of a few nodes that have a high importance, and will
-not take the surfer to any of the other nodes. This can be very
-effective in preventing deceptively tagged documents from
-receiving artificially inflated relevance. Alternatively, the
-random linking probability could be distributed so that
-random jumps do not happen from high importance nodes,          An
-and only happen from other nodes. This distribution would    prese
-model a surfer who is more likely to make random jumps       resul
-from unimportant sites and follow forward links from         prese
-important sites. A modification to avoid drawing warrant 10
-                                                             tion
-                                                             far s
-ranted attention to pages with artificially inflated relevance A sea
-is to ignore local links between documents and only consider inven
-links between separate domains. Because the links from       parab
-other sites to the document are not directly under the control
-of a typical Web site designer, it is then difficult for the
-designer to artificially inflate the ranking. A simpler
-approach is to weight links from pages contained on the
-same Web server less than links from other servers. Also, in
-addition to servers, internet domains and any general mea
-sure of the distance between links could be used to deter
-mine such a weighting.
-  Additional modifications can further improve the perfor
-mance of this method.Rank can be increased for documents
-whose backlinks are maintained by different institutions and the a
-authors in various geographic locations. Or it can be 25 approach
-increased if links come from unusually important Web         ancho
-locations such as the root page of a domain.
+This distribution would model a surfer who is more likely to make random jumps from unimportant sites and follow forward links from important sites. A modification to avoid drawing unwarranted attention to pages with artificially inflated relevance is to ignore local links between documents and only consider links between separate domains. Because the links from other sites to the document are not directly under the control of a typical Web site designer, it is then difficult for the designer to artificially inflate the ranking. A simpler approach is to weight links from pages contained on the same Web server less than links from other servers. Also, in addition to servers, internet domains and any general measure of the distance between links could be used to determine such a weighting.
 
-  Links can also be weighted by their relative importance
+Additional modifications can further improve the performance of this method. Rank can be increased for documents whose backlinks are maintained by different institutions and authors in various geographic locations. Or it can be increased if links come from unusually important Web locations such as the root page of a domain. Links can also be weighted by their relative importance within a document. For example, highly visible links that are near the top of a document can be given more weight. Also, links that are in large fonts or emphasized in other ways can be given more weight. In this way, the model better approximates human usage and authors’ intentions. In many cases it is appropriate to assign higher value to links coming from pages that have been modified recently since such information is less likely to be obsolete.
 
-within a document. For example, highly visible links that are
-near the top of a document can be given more weight. Also,
-links that are in large fonts or emphasized in other ways can
-be given more weight. In this way, the model better approxi
-mates human usage and authors’ intentions. In many cases
-it is appropriate to assign higher value to links coming from thou
-pages that have been modified recently since such informa 35 search
-tion is less likely to be obsolete.
-   Various implementations of the invention have the advan
-tage that the convergence is very fast (a few hours using
-current processors) and it is much less expensive than
+Various implementations of the invention have the advantage that the convergence is very fast (a few hours using current processors) and it is much less expensive than building a full-text index. This speed allows the ranking to be customized or personalized for specific users. For example, a user’s home page and/or bookmarks can be given a large initial importance, and/or a high probability of a random jump returning to it. This high rating essentially indicates to the system that the person’s homepage and/or bookmarks does indeed contain subjects of importance that should be highly ranked. This procedure essentially trains the system to recognize pages related to the person’s interests. The present method of determining the rank of a document can also be used to enhance the display of documents. In particular, each link in a document can be annotated with an icon, text, or other indicator of the rank of the document that each link points to. Anyone viewing the document can then easily see the relative importance of various links in the document.
 
-building a full-text index. This speed allows the ranking to
-be customized or personalized for specific users. For
-example, a user’s home page and/or bookmarks can be given
-a large initial importance, and/or a high probability of a
-random jump returning to it. This high rating essentially
-indicates to the system that the person’s homepage and/or 45 ing i
-bookmarks does indeed contain subjects of importance that    facto
-should be highly ranked. This procedure essentially trains   If de
-the system to recognize pages related to the person’s inter  well.
-ests. The present method of determining the rank of a
-document can also be used to enhance the display of
-documents. In particular, each link in a document can be
-annotated with an icon, text, or other indicator of the rank of
-the document that each link points to. Anyone viewing the
-document can then easily see the relative importance of
-various links in the document.                                55
-  The present method of ranking documents in a database          o
-can also be useful for estimating the amount of attention any
-document receives on the Web since it models human
-behavior when surfing the Web. Estimating the importance
-of each backlink to a page can be useful for many purposes
-including site design, business arrangements with the
-backlinkers, and marketing. The effect of potential changes
-to the hypertext structure can be evaluated by adding them
-to the link structure and recomputing the ranking.
-  Real usage data, when available, can be used as a starting
-point for the model and as the distribution for the alpha
-factor.
+The present method of ranking documents in a database can also be useful for estimating the amount of attention any document receives on the Web since it models human behavior when surfing the Web. Estimating the importance of each backlink to a page can be useful for many purposes including site design, business arrangements with the backlinkers, and marketing. The effect of potential changes to the hypertext structure can be evaluated by adding them to the link structure and recomputing the ranking. Real usage data, when available, can be used as a starting point for the model and as the distribution for the alpha factor. This can allow this ranking model to fill holes in the usage data, and provide a more accurate or comprehensive picture. Thus, although this method of ranking does not necessarily match the actual traffic, it nevertheless measures the degree of exposure a document has throughout the Web.
 
-        This can allow this ranking model to fill holes in the usage
-     data, and provide a more accurate or comprehensive picture.
-        Thus, although this method of ranking does not necessar
-     ily match the actual traffic, it nevertheless measures the
-     degree of exposure a document has throughout the Web.
-other important application and embodiment of the
-nt invention is directed to enhancing the quality of
-ts from Web search engines. In this application of the
-nt invention, a ranking method according to the inven
-is integrated into a Web search engine to produce results
-uperior to existing methods in quality and performance.
-rch engine employing a ranking method of the present
-tion provides automation While producing results com
-le to a human maintained categorized system. In this
-     approach, a Web crawler explores the Web and creates an
-15   index of the Web content, as well as a directed graph of
-     nodes corresponding to the structure of hyperlinks. The
-     nodes of the graph (i.e. pages of the Web) are then ranked
-     according to importance as described above in connection
-     with various exemplary embodiments of the present inven
-     tion.
-        The search engine is used to locate documents that match
-     the specified search criteria, either by searching full text, or
-     by searching titles only. In addition, the search can include
-nchor text associated with backlinks to the page. This
-has several advantages in this context. First,
-rs often provide more accurate descriptions of Web
-     pages than the pages themselves. Second, anchors may exist
-     for images, programs, and other objects that cannot be
-     indexed by a text-based search engine. This also makes it
-     possible to return Web pages which have not actually been
-     crawled. In addition, the engine can compare the search
-     terms with a list of its backlink document titles. Thus, even
-gh the text of the document itself may not match the
- terms, if the document is cited by documents whose
-     titles or backlink anchor text match the search terms, the
-     document will be considered a match. In addition to or
-     instead of the anchor text, the text in the immediate vicinity
-     of the backlink anchor text can also be compared to the
-     search terms in order to improve the search.
-       Once a set of documents is identified that match the search
-     terms, the list of documents is then sorted with high ranking
-     documents first and low ranking documents last. The rank
-n this case is a function which combines all of the above
-rs such as the objective ranking and textual matching.
-       It will be clear to one skilled in the art that the above
-     embodiments may be altered in many ways without depart
-     ing from the scope of the invention. Accordingly, the scope
-     of the invention should be determined by the following
-     claims and their legal equivalents.
+Another important application and embodiment of the present invention is directed to enhancing the quality of results from Web search engines. In this application of the present invention, a ranking method according to the invention is integrated into a Web search engine to produce results far superior to existing methods in quality and performance. A search engine employing a ranking method of the present invention provides automation while producing results comparable to a human maintained categorized system. In this approach, a Web crawler explores the Web and creates an index of the Web content, as well as a directed graph of nodes corresponding to the structure of hyperlinks. The nodes of the graph (i.e. pages of the Web) are then ranked according to importance as described above in connection with various exemplary embodiments of the present invention.
+
+The search engine is used to locate documents that match the specified search criteria, either by searching full text, or by searching titles only. In addition, the search can include the anchor text associated with backlinks to the page. This approach has several advantages in this context. First, anchors often provide more accurate descriptions of Web pages than the pages themselves. Second, anchors may exist for images, programs, and other objects that cannot be indexed by a text-based search engine. This also makes it possible to return Web pages which have not actually been crawled. In addition, the engine can compare the search terms with a list of its backlink document titles. Thus, even though the text of the document itself may not match the search terms, if the document is cited by documents whose titles or backlink anchor text match the search terms, the document will be considered a match. In addition to or instead of the anchor text, the text in the immediate vicinity of the backlink anchor text can also be compared to the search terms in order to improve the search. Once a set of documents is identified that match the search terms, the list of documents is then sorted with high ranking documents first and low ranking documents last. The ranking in this case is a function which combines all of the above factors such as the objective ranking and textual matching. If desired, the results can be grouped by category or site as well.
+
+It will be clear to one skilled in the art that the above embodiments may be altered in many ways without departing from the scope of the invention. Accordingly, the scope of the invention should be determined by the following claims and their legal equivalents.
 
 What is claimed is:
 

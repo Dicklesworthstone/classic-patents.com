@@ -146,11 +146,7 @@ export function WattRotaryEngine3D() {
         // Bus-owned kernel step: read the latest shared-tape gear poses.
         const out = wattStepRef.current;
         if (out) {
-          modelRef.current.updateAnimation({
-            beamAngleDeg: out.beamAngleDeg,
-            planetOrbitAngleDeg: out.planetOrbitAngleDeg,
-            sunShaftAngleDeg: out.sunShaftAngleDeg,
-          });
+          modelRef.current.updateAnimation(out);
         }
         modelRef.current.setCutaway(cutawayRef.current);
         modelRef.current.setShowCallouts(showCalloutsRef.current);
@@ -316,7 +312,8 @@ export function WattRotaryEngine3D() {
                 Shaft Multiplier:
               </span>
               <span className="text-emerald-700 dark:text-emerald-400 font-bold">
-                {telemetry.speedMultiplier.toFixed(1)}× (2:1 Ratio)
+                {telemetry.speedMultiplier.toFixed(2)}× ({telemetry.planetTeeth}:
+                {telemetry.sunTeeth} teeth)
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
@@ -360,14 +357,14 @@ export function WattRotaryEngine3D() {
             },
             {
               label: "Shaft Speed",
-              value: `${(strokeRateSpm * gearRatioNpOverNs).toFixed(0)}`,
+              value: `${telemetry.shaftRpm.toFixed(0)}`,
               unit: "RPM",
               tone: "hot",
             },
             {
               label: "Gear Ratio",
-              value: `${gearRatioNpOverNs.toFixed(1)}:1`,
-              unit: "Sun/Planet",
+              value: `${telemetry.gearRatioNpOverNs.toFixed(2)}:1`,
+              unit: "Planet/Sun",
             },
             {
               label: "Flywheel Mass",
@@ -381,7 +378,7 @@ export function WattRotaryEngine3D() {
 
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Boiler Pressure</span>
@@ -415,6 +412,27 @@ export function WattRotaryEngine3D() {
               value={strokeRateSpm}
               onChange={(e) => updateParam("strokeRateSpm", Number.parseFloat(e.target.value))}
               className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Planet / Sun Teeth</span>
+              <span className="text-sky-700 dark:text-sky-400 font-mono font-bold">
+                {telemetry.planetTeeth}:{telemetry.sunTeeth}
+              </span>
+            </div>
+            <input
+              aria-label="Planet to sun gear ratio"
+              type="range"
+              min="0.5"
+              max="2"
+              step="0.25"
+              value={gearRatioNpOverNs}
+              onChange={(event) =>
+                updateParam("gearRatioNpOverNs", Number.parseFloat(event.target.value))
+              }
+              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-sky-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-sky-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
             />
           </div>
 

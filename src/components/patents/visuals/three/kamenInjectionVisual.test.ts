@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type * as THREE from "three";
+import { applyClaimConstraintModifications } from "@/physics/claimConstraints";
 import { stepKamenInjectionMechanism } from "@/physics/kamenInjectionKernel";
 import { buildKamenInjectionModel } from "./kamenInjectionModel";
 
@@ -34,6 +35,26 @@ describe("US 3,858,581 medication injection device visual", () => {
     expect(stopped.motorState).toBe("open");
     expect(stopped.plungerPosition).toBeCloseTo(0.73, 8);
     expect(stopped.pulseProgress).toBeCloseTo(0.6, 8);
+  });
+
+  test("renders the shared Claim 1 probe and confines its inversion to the nonclinical topology", () => {
+    const constrained = applyClaimConstraintModifications(
+      "us-3858581-kamen-medication-injection-device",
+      { motorCircuitClosed: 1 },
+      { 1: false },
+    );
+    expect(constrained.modifiedParams.motorCircuitClosed).toBe(0);
+    expect(constrained.refusalWarning).toContain("NONCLINICAL MECHANISM REFUSAL");
+
+    for (const relativePath of [
+      "src/components/patents/visuals/KamenMedicationInjectionSim.tsx",
+      "src/components/patents/visuals/three/KamenMedicationInjection3D.tsx",
+    ]) {
+      const source = readFileSync(join(process.cwd(), relativePath), "utf8");
+      expect(source).toContain("ClaimConstraintToggle");
+      expect(source).toContain("claimConstraintStateParamId");
+      expect(source).toContain("effectiveParams");
+    }
   });
   test("builds and updates a procedural Three.js mechanism without external assets", () => {
     const model = buildKamenInjectionModel();

@@ -9,6 +9,16 @@ import {
   pagerankParallelReadings,
 } from "@/data/editions/pagerankEdition";
 import { pagerankPatent } from "@/data/patents/pagerank";
+import {
+  validateReviewedTranscription,
+  validateReviewedTranscriptionLiteralCoverage,
+  validateReviewedTranscriptionPageAnchors,
+} from "@/data/patents/sourceTextValidation";
+import { evaluateArchivalPublicationState } from "./publicationApproval";
+import {
+  evaluateReviewedLedgerTextEvidence,
+  literalLedgerSectionsForEdition,
+} from "./reviewedLedgerPublicationEvidence";
 
 const PINNED_SHA256 = "c2e024116b9411385aa9cb5d51d3eb34b99f59db190c2bb9298d9d6d6eeed2e4";
 
@@ -35,6 +45,7 @@ describe("US 6,285,999 Google PageRank Archival Edition Contract", () => {
     expect(fs.existsSync(pdfPath)).toBe(true);
     const diskSha = createHash("sha256").update(fs.readFileSync(pdfPath)).digest("hex");
     expect(diskSha).toBe(PINNED_SHA256);
+    expect(pagerankPatent.originalTextAsset?.sourcePdfSha256).toBe(PINNED_SHA256);
   });
 
   test("contains all 29 printed claims exactly matching manual claim text", () => {
@@ -99,14 +110,123 @@ describe("US 6,285,999 Google PageRank Archival Edition Contract", () => {
     );
     expect(fs.existsSync(transcriptPath)).toBe(true);
     const content = fs.readFileSync(transcriptPath, "utf-8");
-    const matches = content.match(/--- REVIEWED TRANSCRIPTION PAGE \d+ OF 12 ---/g);
-    expect(matches).toBeDefined();
-    expect(matches?.length).toBe(12);
+    expect(validateReviewedTranscription(content, 12)).toEqual({ valid: true });
+    expect(
+      validateReviewedTranscriptionPageAnchors(
+        content,
+        12,
+        pagerankPatent.originalTextAsset?.pageAnchors,
+      ),
+    ).toEqual({ valid: true });
     expect(content).toContain("US 6,285,999 B1");
     expect(content).toContain("29 Claims, 3 Drawing Sheets");
     expect(content).toContain("CERTIFICATE OF CORRECTION");
     expect(content).toContain(
       "This invention was made with Government support under contract 9411306",
     );
+  });
+
+  test("pins all visitor-facing source blocks to the reviewed ledger", () => {
+    const transcriptPath = path.join(
+      process.cwd(),
+      "public",
+      "patents",
+      "transcripts",
+      "us-6285999-pagerank-reviewed.txt",
+    );
+    const transcript = fs.readFileSync(transcriptPath, "utf8");
+    const sections = literalLedgerSectionsForEdition(pagerankArchivalEdition);
+
+    expect(validateReviewedTranscriptionLiteralCoverage(transcript, 12, sections)).toEqual({
+      valid: true,
+    });
+    expect(evaluateReviewedLedgerTextEvidence(pagerankPatent, transcript)).toMatchObject({
+      status: "verified",
+      valid: true,
+      authoredSectionCount: 77,
+      coveredSectionCount: 77,
+      coverageFraction: 1,
+      missingSectionIndexes: [],
+      missingClaimNumbers: [],
+    });
+
+    const corrupted = transcript.replace(
+      "29. The method of claim 1",
+      "29. [corrupted source section]",
+    );
+    expect(evaluateReviewedLedgerTextEvidence(pagerankPatent, corrupted)).toMatchObject({
+      valid: false,
+      status: "literal-coverage-incomplete",
+      missingClaimNumbers: [29],
+    });
+  });
+
+  test("accepts only locator-bound direct facsimile crops", () => {
+    const decision = evaluateArchivalPublicationState(pagerankPatent);
+
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.isPublished).toBe(true);
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 6,
+      acceptedFigureCount: 6,
+      attestation: {
+        acceptanceBasis: "independent-figure-review",
+        acceptedOccurrenceCount: 6,
+        matchesEdition: true,
+        matchesLocators: true,
+      },
+    });
+    expect(
+      decision.figureManifest.figures.map((figure) => ({
+        occurrence: figure.occurrence,
+        sourcePdfPage: figure.sourcePdfPage,
+        sourceRaster: figure.sourceRaster,
+        sourceRectPixels: figure.sourceRectPixels,
+        status: figure.status,
+      })),
+    ).toEqual([
+      {
+        occurrence: "edition-block-20-group-0-inline-0",
+        sourcePdfPage: 3,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 387, y: 272, width: 1681, height: 2580 },
+        status: "accepted",
+      },
+      {
+        occurrence: "edition-block-20-group-0-inline-2",
+        sourcePdfPage: 4,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 302, y: 272, width: 1783, height: 2598 },
+        status: "accepted",
+      },
+      {
+        occurrence: "edition-block-20-group-0-inline-4",
+        sourcePdfPage: 5,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 393, y: 272, width: 1659, height: 2859 },
+        status: "accepted",
+      },
+      {
+        occurrence: "edition-block-23-group-0-inline-1",
+        sourcePdfPage: 3,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 387, y: 272, width: 1681, height: 2580 },
+        status: "accepted",
+      },
+      {
+        occurrence: "edition-block-27-group-0-inline-1",
+        sourcePdfPage: 4,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 302, y: 272, width: 1783, height: 2598 },
+        status: "accepted",
+      },
+      {
+        occurrence: "edition-block-34-group-0-inline-1",
+        sourcePdfPage: 5,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 393, y: 272, width: 1659, height: 2859 },
+        status: "accepted",
+      },
+    ]);
   });
 });

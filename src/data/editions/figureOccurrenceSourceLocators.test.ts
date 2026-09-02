@@ -182,27 +182,283 @@ const COLT_REVOLVER_OCCURRENCES = {
     "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
 } as const;
 
+const SIKORSKY_ID = "us-2318259-sikorsky-helicopter";
+const SIKORSKY_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[SIKORSKY_ID].assets);
+const SIKORSKY_OCCURRENCES = {
+  "edition-block-11-group-0-inline-0":
+    "/patents/figures/us-2318259-sikorsky-helicopter/fig-1-source-crop-v1.png",
+  "edition-block-12-group-0-inline-0":
+    "/patents/figures/us-2318259-sikorsky-helicopter/fig-1-source-crop-v1.png",
+  "edition-block-13-group-0-inline-0":
+    "/patents/figures/us-2318259-sikorsky-helicopter/fig-2-source-crop-v1.png",
+  "edition-block-14-group-0-inline-0":
+    "/patents/figures/us-2318259-sikorsky-helicopter/fig-3-source-crop-v1.png",
+  "edition-block-15-group-0-inline-0":
+    "/patents/figures/us-2318259-sikorsky-helicopter/fig-4-source-crop-v1.png",
+  "edition-block-16-group-0-inline-0":
+    "/patents/figures/us-2318259-sikorsky-helicopter/fig-4-source-crop-v1.png",
+  "edition-block-17-group-0-inline-0":
+    "/patents/figures/us-2318259-sikorsky-helicopter/fig-4-source-crop-v1.png",
+  "edition-block-18-group-0-inline-0":
+    "/patents/figures/us-2318259-sikorsky-helicopter/fig-5-source-crop-v1.png",
+  "edition-block-19-group-0-inline-0":
+    "/patents/figures/us-2318259-sikorsky-helicopter/fig-6-source-crop-v1.png",
+  "edition-block-20-group-0-inline-0":
+    "/patents/figures/us-2318259-sikorsky-helicopter/fig-6-source-crop-v1.png",
+  "edition-block-21-group-0-inline-0":
+    "/patents/figures/us-2318259-sikorsky-helicopter/fig-7-source-crop-v1.png",
+  "edition-block-22-group-0-inline-0":
+    "/patents/figures/us-2318259-sikorsky-helicopter/fig-7-source-crop-v1.png",
+  "edition-block-23-group-0-inline-1":
+    "/patents/figures/us-2318259-sikorsky-helicopter/fig-1-source-crop-v1.png",
+  "edition-block-30-group-0-inline-1":
+    "/patents/figures/us-2318259-sikorsky-helicopter/fig-1-source-crop-v1.png",
+  "edition-block-30-group-0-inline-3":
+    "/patents/figures/us-2318259-sikorsky-helicopter/fig-4-source-crop-v1.png",
+} as const;
+
+const METCALFE_ID = "us-4063220-metcalfe-ethernet";
+const METCALFE_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[METCALFE_ID].assets);
+const METCALFE_OCCURRENCES = {
+  "edition-block-9-group-0-inline-0":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-1-source-crop-v1.png",
+  "edition-block-10-group-0-inline-0":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+  "edition-block-10-group-0-inline-2":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-1-source-crop-v1.png",
+  "edition-block-11-group-0-inline-0":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-3-source-crop-v1.png",
+  "edition-block-11-group-0-inline-2":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-1-source-crop-v1.png",
+  "edition-block-12-group-0-inline-0":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-4-source-crop-v1.png",
+  "edition-block-12-group-0-inline-2":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-3-source-crop-v1.png",
+  "edition-block-13-group-0-inline-0":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-5-source-crop-v1.png",
+  "edition-block-13-group-0-inline-2":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+  "edition-block-14-group-0-inline-0":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+  "edition-block-14-group-0-inline-2":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+  "edition-block-15-group-0-inline-0":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+  "edition-block-19-group-0-inline-1":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-1-source-crop-v1.png",
+  "edition-block-21-group-0-inline-1":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+  "edition-block-23-group-0-inline-1":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+  "edition-block-23-group-0-inline-3":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-1-source-crop-v1.png",
+  "edition-block-23-group-0-inline-5":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+  "edition-block-23-group-0-inline-7":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-1-source-crop-v1.png",
+  "edition-block-23-group-0-inline-9":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+  "edition-block-23-group-0-inline-11":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+  "edition-block-23-group-0-inline-13":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-3-source-crop-v1.png",
+  "edition-block-23-group-0-inline-15":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-3-source-crop-v1.png",
+  "edition-block-23-group-0-inline-17":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-2-source-crop-v1.png",
+  "edition-block-23-group-0-inline-19":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-4-source-crop-v1.png",
+  "edition-block-25-group-0-inline-1":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-5-source-crop-v1.png",
+  "edition-block-25-group-0-inline-3":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+  "edition-block-25-group-0-inline-5":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+  "edition-block-25-group-0-inline-7":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+  "edition-block-25-group-0-inline-9":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+  "edition-block-25-group-0-inline-11":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+  "edition-block-27-group-0-inline-1":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+  "edition-block-27-group-0-inline-3":
+    "/patents/figures/us-4063220-metcalfe-ethernet/fig-6-source-crop-v1.png",
+} as const;
+
+const KAMEN_MEDICATION_INJECTION_ID = "us-3858581-kamen-medication-injection-device";
+const KAMEN_MEDICATION_INJECTION_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[KAMEN_MEDICATION_INJECTION_ID].assets,
+);
+const KAMEN_MEDICATION_INJECTION_OCCURRENCES = {
+  "edition-block-3-group-0-inline-1":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-1-source-crop-v2.png",
+  "edition-block-3-group-0-inline-3":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-2-source-crop-v2.png",
+  "edition-block-3-group-0-inline-5":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-3-source-crop-v2.png",
+  "edition-block-4-group-0-inline-1":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-4-source-crop-v2.png",
+  "edition-block-4-group-0-inline-3":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-5-source-crop-v2.png",
+  "edition-block-4-group-0-inline-5":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-6-source-crop-v2.png",
+  "edition-block-12-group-0-inline-0":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-1-source-crop-v2.png",
+  "edition-block-12-group-0-inline-2":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-2-source-crop-v2.png",
+  "edition-block-12-group-0-inline-4":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-3-source-crop-v2.png",
+  "edition-block-12-group-0-inline-6":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-4-source-crop-v2.png",
+  "edition-block-12-group-0-inline-8":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-3-source-crop-v2.png",
+  "edition-block-12-group-0-inline-10":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-5-source-crop-v2.png",
+  "edition-block-12-group-0-inline-12":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-3-source-crop-v2.png",
+  "edition-block-12-group-0-inline-14":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-6-source-crop-v2.png",
+  "edition-block-13-group-0-inline-1":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-1-source-crop-v2.png",
+  "edition-block-15-group-0-inline-1":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-1-source-crop-v2.png",
+  "edition-block-15-group-0-inline-3":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-3-source-crop-v2.png",
+  "edition-block-18-group-0-inline-1":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-2-source-crop-v2.png",
+  "edition-block-18-group-0-inline-3":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-2-source-crop-v2.png",
+  "edition-block-19-group-0-inline-1":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-2-source-crop-v2.png",
+  "edition-block-21-group-0-inline-1":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-4-source-crop-v2.png",
+  "edition-block-21-group-0-inline-3":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-1-source-crop-v2.png",
+  "edition-block-21-group-0-inline-5":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-4-source-crop-v2.png",
+  "edition-block-21-group-0-inline-7":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-3-source-crop-v2.png",
+  "edition-block-22-group-0-inline-1":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-6-source-crop-v2.png",
+  "edition-block-24-group-0-inline-1":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-5-source-crop-v2.png",
+  "edition-block-27-group-0-inline-1":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-3-source-crop-v2.png",
+  "edition-block-28-group-0-inline-1":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-6-source-crop-v2.png",
+  "edition-block-28-group-0-inline-3":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-6-source-crop-v2.png",
+  "edition-block-28-group-0-inline-5":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-6-source-crop-v2.png",
+  "edition-block-29-group-0-inline-1":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-6-source-crop-v2.png",
+  "edition-block-31-group-0-inline-1":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-6-source-crop-v2.png",
+  "edition-block-32-group-0-inline-1":
+    "/patents/figures/us-3858581-kamen-medication-injection-device/fig-6-source-crop-v2.png",
+} as const;
+const KAMEN_MEDICATION_INJECTION_CROP_EVIDENCE = {
+  "/patents/figures/us-3858581-kamen-medication-injection-device/fig-1-source-crop-v2.png": {
+    sourcePdfPage: 2,
+    sourceRectPixels: { x: 500, y: 1850, width: 8700, height: 3400 },
+  },
+  "/patents/figures/us-3858581-kamen-medication-injection-device/fig-2-source-crop-v2.png": {
+    sourcePdfPage: 2,
+    sourceRectPixels: { x: 350, y: 5100, width: 9000, height: 3250 },
+  },
+  "/patents/figures/us-3858581-kamen-medication-injection-device/fig-3-source-crop-v2.png": {
+    sourcePdfPage: 2,
+    sourceRectPixels: { x: 500, y: 9000, width: 8700, height: 4200 },
+  },
+  "/patents/figures/us-3858581-kamen-medication-injection-device/fig-4-source-crop-v2.png": {
+    sourcePdfPage: 3,
+    sourceRectPixels: { x: 600, y: 1700, width: 4000, height: 4200 },
+  },
+  "/patents/figures/us-3858581-kamen-medication-injection-device/fig-5-source-crop-v2.png": {
+    sourcePdfPage: 3,
+    sourceRectPixels: { x: 4000, y: 3400, width: 4300, height: 3200 },
+  },
+  "/patents/figures/us-3858581-kamen-medication-injection-device/fig-6-source-crop-v2.png": {
+    sourcePdfPage: 3,
+    sourceRectPixels: { x: 600, y: 6000, width: 8500, height: 7300 },
+  },
+} as const;
+
+const PAGERANK_ID = "us-6285999-pagerank";
+const PAGERANK_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[PAGERANK_ID].assets);
+const PAGERANK_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[PAGERANK_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
+);
+
+const KAMEN_TRANSPORTER_ID = "us-5701965-kamen-transporter";
+const KAMEN_TRANSPORTER_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[KAMEN_TRANSPORTER_ID].assets,
+);
+const KAMEN_TRANSPORTER_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[KAMEN_TRANSPORTER_ID].map((l) => [
+    l.occurrenceKey,
+    l.activeAsset,
+  ]),
+);
+
+const KAMEN_SEGWAY_ID = "us-6302230-kamen-segway";
+const KAMEN_SEGWAY_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[KAMEN_SEGWAY_ID].assets,
+);
+const KAMEN_SEGWAY_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[KAMEN_SEGWAY_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
+);
+
 const VALIDATION_OPTIONS = {
   canonicalAssetsByPatent: {
+    [KAMEN_TRANSPORTER_ID]: KAMEN_TRANSPORTER_ASSETS,
+    [KAMEN_SEGWAY_ID]: KAMEN_SEGWAY_ASSETS,
+    [KAMEN_MEDICATION_INJECTION_ID]: KAMEN_MEDICATION_INJECTION_ASSETS,
+    [SIKORSKY_ID]: SIKORSKY_ASSETS,
+    [METCALFE_ID]: METCALFE_ASSETS,
     [PASTEUR_ID]: PASTEUR_ASSETS,
-    [CLAVEL_DELTA_ROBOT_ID]: CLAVEL_DELTA_ROBOT_ASSETS,
     [COLT_ID]: COLT_ASSETS,
+    [CLAVEL_DELTA_ROBOT_ID]: CLAVEL_DELTA_ROBOT_ASSETS,
+    [PAGERANK_ID]: PAGERANK_ASSETS,
   },
   canonicalOccurrencesByPatent: {
+    [KAMEN_TRANSPORTER_ID]: KAMEN_TRANSPORTER_OCCURRENCES,
+    [KAMEN_SEGWAY_ID]: KAMEN_SEGWAY_OCCURRENCES,
+    [KAMEN_MEDICATION_INJECTION_ID]: KAMEN_MEDICATION_INJECTION_OCCURRENCES,
+    [SIKORSKY_ID]: SIKORSKY_OCCURRENCES,
+    [METCALFE_ID]: METCALFE_OCCURRENCES,
     [PASTEUR_ID]: PASTEUR_OCCURRENCES,
-    [CLAVEL_DELTA_ROBOT_ID]: CLAVEL_DELTA_ROBOT_OCCURRENCES,
     [COLT_ID]: COLT_REVOLVER_OCCURRENCES,
+    [CLAVEL_DELTA_ROBOT_ID]: CLAVEL_DELTA_ROBOT_OCCURRENCES,
+    [PAGERANK_ID]: PAGERANK_OCCURRENCES,
   },
-  sourcePdfPageCountsByPatent: { [PASTEUR_ID]: 3, [CLAVEL_DELTA_ROBOT_ID]: 11, [COLT_ID]: 7 },
+  sourcePdfPageCountsByPatent: {
+    [KAMEN_TRANSPORTER_ID]: 48,
+    [KAMEN_SEGWAY_ID]: 29,
+    [KAMEN_MEDICATION_INJECTION_ID]: 8,
+    [SIKORSKY_ID]: 15,
+    [METCALFE_ID]: 19,
+    [PASTEUR_ID]: 3,
+    [COLT_ID]: 7,
+    [CLAVEL_DELTA_ROBOT_ID]: 11,
+    [PAGERANK_ID]: 15,
+  },
 } as const;
 
 describe("figure occurrence source locators", () => {
   test("seeds all three receipt-backed Pasteur figure occurrences", () => {
     const locators = FIGURE_OCCURRENCE_SOURCE_LOCATORS[PASTEUR_ID];
     expect(Object.keys(FIGURE_OCCURRENCE_SOURCE_LOCATORS)).toEqual([
+      KAMEN_TRANSPORTER_ID,
+      KAMEN_SEGWAY_ID,
+      KAMEN_MEDICATION_INJECTION_ID,
+      SIKORSKY_ID,
+      METCALFE_ID,
       PASTEUR_ID,
       COLT_ID,
       CLAVEL_DELTA_ROBOT_ID,
+      PAGERANK_ID,
     ]);
     expect(locators).toHaveLength(3);
     expect(new Set(locators.map((locator) => locator.activeAsset))).toEqual(
@@ -245,6 +501,37 @@ describe("figure occurrence source locators", () => {
           locator.evidenceReference.endsWith("#figure-crop-review-and-preservation-boundary"),
       ),
     ).toBe(true);
+  });
+
+  test("binds every Kamen figure citation to its independently reviewed source pixels", () => {
+    const locators = FIGURE_OCCURRENCE_SOURCE_LOCATORS[KAMEN_MEDICATION_INJECTION_ID];
+    expect(locators).toHaveLength(33);
+    expect(locators.map((locator) => locator.occurrenceKey)).toEqual(
+      Object.keys(KAMEN_MEDICATION_INJECTION_OCCURRENCES) as FigureOccurrenceKey[],
+    );
+    expect(
+      Object.fromEntries(locators.map((locator) => [locator.occurrenceKey, locator.activeAsset])),
+    ).toEqual(KAMEN_MEDICATION_INJECTION_OCCURRENCES);
+    expect(new Set(locators.map((locator) => locator.activeAsset))).toEqual(
+      new Set(KAMEN_MEDICATION_INJECTION_ASSETS),
+    );
+
+    for (const locator of locators) {
+      const expected =
+        KAMEN_MEDICATION_INJECTION_CROP_EVIDENCE[
+          locator.activeAsset as keyof typeof KAMEN_MEDICATION_INJECTION_CROP_EVIDENCE
+        ];
+      expect(expected).toBeDefined();
+      expect(locator.sourcePdfPage).toBe(expected.sourcePdfPage);
+      expect(locator.sourceRaster).toEqual({ width: 9667, height: 14200 });
+      expect(locator.sourceRectPixels).toEqual(expected.sourceRectPixels);
+      expect(locator.normalizedSourceRect).toEqual(
+        normalizeSourceRectangle(expected.sourceRectPixels, locator.sourceRaster),
+      );
+      expect(locator.evidenceReference).toBe(
+        "docs/provenance/us-3858581-kamen-medication-injection-device.md#figure-crop-review-and-preservation-boundary",
+      );
+    }
   });
 
   test("derives normalized rectangles from the exact source pixels", () => {

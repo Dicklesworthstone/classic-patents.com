@@ -6,17 +6,44 @@
  */
 
 import * as THREE from "three";
+import {
+  canonicalWattGearRatio,
+  WATT_ROTARY_KINEMATIC_GEOMETRY,
+  type WattRotaryTelemetry,
+} from "@/physics/wattRotaryKernel";
 
-export type WattRotaryPose = {
-  beamAngleDeg: number;
-  planetOrbitAngleDeg: number;
-  sunShaftAngleDeg: number;
-};
+export type WattRotaryPose = Pick<
+  WattRotaryTelemetry,
+  | "beamAngleDeg"
+  | "beamAngleRad"
+  | "connectingRodAngleRad"
+  | "gearRatioNpOverNs"
+  | "leftBeamEndX"
+  | "leftBeamEndY"
+  | "planetBodyAngleRad"
+  | "planetOrbitAngleDeg"
+  | "planetOrbitAngleRad"
+  | "planetPosX"
+  | "planetPosY"
+  | "rightBeamEndX"
+  | "rightBeamEndY"
+  | "sunShaftAngleDeg"
+  | "sunShaftAngleRad"
+>;
+
+export interface WattGearGeometrySnapshot {
+  ratio: number;
+  sunPitchRadiusM: number;
+  planetPitchRadiusM: number;
+  sunTeeth: number;
+  planetTeeth: number;
+}
 
 export interface WattRotaryModelNodes {
   root: THREE.Group;
   beamGroup: THREE.Group;
   pistonGroup: THREE.Group;
+  pistonLinkGroup: THREE.Group;
   connectingRodGroup: THREE.Group;
   sunGearGroup: THREE.Group;
   planetGearGroup: THREE.Group;
@@ -27,11 +54,13 @@ export interface WattRotaryModelNodes {
   calloutSprites: THREE.Sprite[];
   setCutaway: (cutaway: boolean) => void;
   setShowCallouts: (show: boolean) => void;
+  getActiveGearGeometry: () => WattGearGeometrySnapshot;
   updateAnimation: (pose: WattRotaryPose) => void;
   dispose: () => void;
 }
 
 export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
+  const geometry = WATT_ROTARY_KINEMATIC_GEOMETRY;
   const root = new THREE.Group();
   root.name = "WattRotaryEngineRoot";
 
@@ -166,13 +195,22 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
   pistonGroup.add(pistonRodMesh);
   root.add(pistonGroup);
 
+  // Short flexible attachment between the arched beam head and the vertical
+  // piston rod. It closes the visible mechanism while allowing the beam end
+  // to follow an arc instead of forcing the piston sideways in its cylinder.
+  const pistonLinkGroup = new THREE.Group();
+  const pistonLinkGeom = track(new THREE.CylinderGeometry(0.035, 0.035, 1, 10));
+  const pistonLinkMesh = new THREE.Mesh(pistonLinkGeom, polishedIronMat);
+  pistonLinkGroup.add(pistonLinkMesh);
+  root.add(pistonLinkGroup);
+
   // ==========================================
   // 3. GREAT WALKING BEAM (Pivot at (0, 3.2, 0))
   // ==========================================
   const beamGroup = new THREE.Group();
-  beamGroup.position.set(0, 3.2, 0);
+  beamGroup.position.set(geometry.beamPivotX, geometry.beamPivotY, 0);
 
-  const beamLength = 4.4;
+  const beamLength = geometry.beamHalfLengthM * 2;
   const beamGeom = track(new THREE.BoxGeometry(beamLength, 0.35, 0.25));
   const beamBody = new THREE.Mesh(beamGeom, timberMat);
   beamGroup.add(beamBody);
@@ -185,10 +223,10 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
   // Arched Heads (Left & Right)
   const archGeom = track(new THREE.CylinderGeometry(0.35, 0.35, 0.26, 16, 1, false, 0, Math.PI));
   const leftArch = new THREE.Mesh(archGeom, castIronMat);
-  leftArch.position.set(-2.2, 0, 0);
+  leftArch.position.set(-geometry.beamHalfLengthM, 0, 0);
   leftArch.rotation.z = Math.PI / 2;
   const rightArch = new THREE.Mesh(archGeom, castIronMat);
-  rightArch.position.set(2.2, 0, 0);
+  rightArch.position.set(geometry.beamHalfLengthM, 0, 0);
   rightArch.rotation.z = -Math.PI / 2;
   beamGroup.add(leftArch, rightArch);
 
@@ -198,22 +236,24 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
   // 4. CONNECTING SPEAR / ROD (Suspended from X = 2.2)
   // ==========================================
   const connectingRodGroup = new THREE.Group();
-  connectingRodGroup.position.set(2.2, 3.2, 0);
+  connectingRodGroup.position.set(
+    geometry.beamPivotX + geometry.beamHalfLengthM,
+    geometry.beamPivotY,
+    0,
+  );
 
-  const rodGeom = track(new THREE.CylinderGeometry(0.07, 0.07, 2.3, 16));
+  const rodGeom = track(new THREE.CylinderGeometry(0.07, 0.07, geometry.connectingRodLengthM, 16));
   const rodMesh = new THREE.Mesh(rodGeom, polishedIronMat);
-  rodMesh.position.set(0, -1.15, 0);
+  rodMesh.position.set(0, -geometry.connectingRodLengthM / 2, 0);
   connectingRodGroup.add(rodMesh);
   root.add(connectingRodGroup);
 
   // ==========================================
   // 5. SUN & PLANET EPICYCLIC GEARS & FLYWHEEL (Right side at X = 2.2, Y = 0.9)
   // ==========================================
-  const sunPosX = 2.2;
-  const sunPosY = 0.9;
-  const rSun = 0.45;
-  const rPlanet = 0.45;
-  const rOrbit = rSun + rPlanet; // 0.9 m
+  const sunPosX = geometry.sunCenterX;
+  const sunPosY = geometry.sunCenterY;
+  const rOrbit = geometry.gearCenterDistanceM;
 
   // Central Sun Driveshaft & Bearings
   const shaftGeom = track(new THREE.CylinderGeometry(0.1, 0.1, 2.6, 20));
@@ -222,51 +262,113 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
   shaftMesh.position.set(sunPosX, sunPosY, 0.5);
   root.add(shaftMesh);
 
-  // Sun Gear Group (rotates on shaft axis Z)
+  // The seven supported gear ratios are discrete, physically compatible gear
+  // pairs. Each pair has one module shared by its sun and planet; inactive
+  // pairs stay hidden so a ratio change does not allocate during animation.
   const sunGearGroup = new THREE.Group();
   sunGearGroup.position.set(sunPosX, sunPosY, 0);
-
-  const sunDiscGeom = track(new THREE.CylinderGeometry(rSun, rSun, 0.14, 32));
-  const sunDiscMesh = new THREE.Mesh(sunDiscGeom, sunGearMat);
-  sunDiscMesh.rotation.x = Math.PI / 2;
-  sunGearGroup.add(sunDiscMesh);
-
-  // Sun Gear Teeth
-  const toothGeom = track(new THREE.BoxGeometry(0.05, 0.08, 0.15));
-  for (let i = 0; i < 20; i++) {
-    const ang = (i / 20) * Math.PI * 2;
-    const tooth = new THREE.Mesh(toothGeom, sunGearMat);
-    tooth.position.set(Math.cos(ang) * rSun, Math.sin(ang) * rSun, 0);
-    tooth.rotation.z = ang;
-    sunGearGroup.add(tooth);
-  }
-  root.add(sunGearGroup);
-
-  // Planet Gear Group (orbits around Sun, orientation fixed by connecting rod)
   const planetGearGroup = new THREE.Group();
   planetGearGroup.position.set(sunPosX, sunPosY - rOrbit, 0);
 
-  const planetDiscGeom = track(new THREE.CylinderGeometry(rPlanet, rPlanet, 0.14, 32));
-  const planetDiscMesh = new THREE.Mesh(planetDiscGeom, planetGearMat);
-  planetDiscMesh.rotation.x = Math.PI / 2;
-  planetGearGroup.add(planetDiscMesh);
+  const supportedRatios = Array.from(
+    {
+      length: Math.round((geometry.ratioMax - geometry.ratioMin) / geometry.ratioStep) + 1,
+    },
+    (_, index) => geometry.ratioMin + index * geometry.ratioStep,
+  );
 
-  // Planet Gear Teeth (offset by half-pitch Math.PI / 20 to mesh cleanly between Sun teeth)
-  for (let i = 0; i < 20; i++) {
-    const ang = (i / 20) * Math.PI * 2 + Math.PI / 20;
-    const tooth = new THREE.Mesh(toothGeom, planetGearMat);
-    tooth.position.set(Math.cos(ang) * rPlanet, Math.sin(ang) * rPlanet, 0);
-    tooth.rotation.z = ang;
-    planetGearGroup.add(tooth);
-  }
+  const createSpurGear = (
+    pitchRadius: number,
+    toothCount: number,
+    material: THREE.MeshStandardMaterial,
+    phaseOffset: number,
+  ): THREE.Group => {
+    const gear = new THREE.Group();
+    const module = (2 * pitchRadius) / toothCount;
+    const toothDepth = Math.max(0.025, module * 0.72);
+    const bodyRadius = pitchRadius - toothDepth * 0.38;
+    const discGeom = track(new THREE.CylinderGeometry(bodyRadius, bodyRadius, 0.14, 48));
+    const discMesh = new THREE.Mesh(discGeom, material);
+    discMesh.rotation.x = Math.PI / 2;
+    gear.add(discMesh);
 
-  // Rigid mounting bracket connecting Planet to Connecting Rod
-  const bracketGeom = track(new THREE.BoxGeometry(0.16, 0.6, 0.16));
-  const bracketMesh = new THREE.Mesh(bracketGeom, castIronMat);
-  bracketMesh.position.set(0, 0.3, 0);
-  planetGearGroup.add(bracketMesh);
+    const toothGeom = track(
+      new THREE.BoxGeometry(Math.max(0.018, module * 0.56), toothDepth, 0.15),
+    );
+    for (let toothIndex = 0; toothIndex < toothCount; toothIndex += 1) {
+      const angle = phaseOffset + (toothIndex / toothCount) * Math.PI * 2;
+      const tooth = new THREE.Mesh(toothGeom, material);
+      const toothCenterRadius = bodyRadius + toothDepth / 2;
+      tooth.position.set(
+        Math.cos(angle) * toothCenterRadius,
+        Math.sin(angle) * toothCenterRadius,
+        0,
+      );
+      tooth.rotation.z = angle - Math.PI / 2;
+      gear.add(tooth);
+    }
+    return gear;
+  };
 
-  root.add(planetGearGroup);
+  const gearVariants = supportedRatios.map((rawRatio) => {
+    const ratio = canonicalWattGearRatio(rawRatio);
+    const sunTeeth = geometry.nominalSunTeeth;
+    const planetTeeth = Math.round(sunTeeth * ratio);
+    const sunPitchRadiusM = rOrbit / (1 + ratio);
+    const planetPitchRadiusM = rOrbit - sunPitchRadiusM;
+    const sunNode = createSpurGear(sunPitchRadiusM, sunTeeth, sunGearMat, 0);
+    const planetNode = createSpurGear(
+      planetPitchRadiusM,
+      planetTeeth,
+      planetGearMat,
+      (Math.PI / 2 + Math.PI / planetTeeth) % ((2 * Math.PI) / planetTeeth),
+    );
+    sunNode.visible = ratio === 1;
+    planetNode.visible = ratio === 1;
+    sunGearGroup.add(sunNode);
+    planetGearGroup.add(planetNode);
+    return {
+      ratio,
+      sunPitchRadiusM,
+      planetPitchRadiusM,
+      sunTeeth,
+      planetTeeth,
+      sunNode,
+      planetNode,
+    };
+  });
+
+  // The centre pin is a bearing attachment. It connects the rod to the
+  // planet centre without pretending that the rod is a gear tooth or a
+  // stretchy member.
+  const planetPinGeom = track(new THREE.CylinderGeometry(0.12, 0.12, 0.22, 20));
+  const planetPin = new THREE.Mesh(planetPinGeom, brassMat);
+  planetPin.rotation.x = Math.PI / 2;
+  planetPin.position.z = 0.02;
+  planetGearGroup.add(planetPin);
+
+  root.add(sunGearGroup, planetGearGroup);
+
+  let activeGearVariant = gearVariants.find((variant) => variant.ratio === 1) ?? gearVariants[0];
+  const setGearRatio = (rawRatio: number) => {
+    const ratio = canonicalWattGearRatio(rawRatio);
+    const next =
+      gearVariants.find((variant) => Math.abs(variant.ratio - ratio) < 1e-9) ?? gearVariants[0];
+    if (next === activeGearVariant) return;
+    activeGearVariant.sunNode.visible = false;
+    activeGearVariant.planetNode.visible = false;
+    next.sunNode.visible = true;
+    next.planetNode.visible = true;
+    activeGearVariant = next;
+  };
+
+  const getActiveGearGeometry = (): WattGearGeometrySnapshot => ({
+    ratio: activeGearVariant.ratio,
+    sunPitchRadiusM: activeGearVariant.sunPitchRadiusM,
+    planetPitchRadiusM: activeGearVariant.planetPitchRadiusM,
+    sunTeeth: activeGearVariant.sunTeeth,
+    planetTeeth: activeGearVariant.planetTeeth,
+  });
 
   // Radius Guide Link connecting Sun Center to Planet Center
   const radiusLinkGroup = new THREE.Group();
@@ -323,7 +425,7 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
 
   function createTextSprite(message: string): THREE.Sprite {
     if (typeof document === "undefined") {
-      const spriteMat = new THREE.SpriteMaterial({ depthTest: false });
+      const spriteMat = track(new THREE.SpriteMaterial({ depthTest: false }));
       const sprite = new THREE.Sprite(spriteMat);
       sprite.scale.set(0.8, 0.2, 1);
       return sprite;
@@ -348,8 +450,8 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
       ctx.textBaseline = "middle";
       ctx.fillText(message, 128, 32);
     }
-    const texture = new THREE.CanvasTexture(canvas);
-    const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: false });
+    const texture = track(new THREE.CanvasTexture(canvas));
+    const spriteMat = track(new THREE.SpriteMaterial({ map: texture, depthTest: false }));
     const sprite = new THREE.Sprite(spriteMat);
     sprite.scale.set(0.8, 0.2, 1);
     return sprite;
@@ -378,40 +480,51 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
   };
 
   const updateAnimation = (pose: WattRotaryPose) => {
-    const beamAngle = (pose.beamAngleDeg * Math.PI) / 180;
-    const phase = (pose.planetOrbitAngleDeg * Math.PI) / 180;
+    setGearRatio(pose.gearRatioNpOverNs);
+    beamGroup.rotation.z = pose.beamAngleRad;
 
-    beamGroup.rotation.z = beamAngle;
+    pistonGroup.position.set(cylPosX, pose.leftBeamEndY - 2, 0);
+    const pistonRodTopX = cylPosX;
+    const pistonRodTopY = pistonGroup.position.y + 2.1;
+    const pistonLinkDx = pistonRodTopX - pose.leftBeamEndX;
+    const pistonLinkDy = pistonRodTopY - pose.leftBeamEndY;
+    const pistonLinkLength = Math.max(0.001, Math.hypot(pistonLinkDx, pistonLinkDy));
+    pistonLinkGroup.position.set(
+      (pose.leftBeamEndX + pistonRodTopX) / 2,
+      (pose.leftBeamEndY + pistonRodTopY) / 2,
+      0,
+    );
+    pistonLinkGroup.rotation.z = Math.atan2(-pistonLinkDx, pistonLinkDy);
+    pistonLinkGroup.scale.set(1, pistonLinkLength, 1);
 
-    const leftBeamEndY = 3.2 - Math.sin(beamAngle) * 2.2;
-    pistonGroup.position.set(cylPosX, leftBeamEndY - 2.0, 0);
-
-    const planetX = sunPosX + rOrbit * Math.sin(phase);
-    const planetY = sunPosY - rOrbit * Math.cos(phase);
+    const planetX = sunPosX + pose.planetPosX;
+    const planetY = sunPosY + pose.planetPosY;
     planetGearGroup.position.set(planetX, planetY, 0);
 
-    const rightBeamEndX = Math.cos(beamAngle) * 2.2;
-    const rightBeamEndY = 3.2 + Math.sin(beamAngle) * 2.2;
-    connectingRodGroup.position.set(rightBeamEndX, rightBeamEndY, 0);
-    const rodDx = planetX - rightBeamEndX;
-    const rodDy = planetY - rightBeamEndY;
-    const rodAngle = Math.atan2(rodDx, -rodDy);
-    connectingRodGroup.rotation.z = rodAngle;
+    // This is a fixed-length member: animation may translate and rotate it,
+    // but never stretch it to conceal a closure error.
+    connectingRodGroup.position.set(pose.rightBeamEndX, pose.rightBeamEndY, 0);
+    connectingRodGroup.rotation.z = pose.connectingRodAngleRad;
+    connectingRodGroup.scale.set(1, 1, 1);
 
-    // Scale connecting rod to seamlessly seat from right beam end to planet center
-    const rodLength = Math.hypot(rodDx, rodDy);
-    connectingRodGroup.scale.set(1, rodLength / 2.3, 1);
-
-    // Planet gear is rigidly bolted/keyed to the connecting rod in Watt's design
-    planetGearGroup.rotation.z = rodAngle;
+    // The planet orbits but is restrained from accumulating an axial turn.
+    planetGearGroup.rotation.z = pose.planetBodyAngleRad;
 
     // Radius link guide bar pivots at sun center and rotates with phase
-    radiusLinkGroup.rotation.z = phase;
+    radiusLinkGroup.rotation.z = pose.planetOrbitAngleRad;
 
-    // Sun gear and flywheel rotate at conjugate rolling tooth angle (2:1 speed multiplication)
-    const sunAngle = 2 * phase - rodAngle;
-    sunGearGroup.rotation.z = sunAngle;
-    flywheelGroup.rotation.z = sunAngle;
+    // Both keyed bodies consume the exact shaft angle authored by the kernel.
+    sunGearGroup.rotation.z = pose.sunShaftAngleRad;
+    flywheelGroup.rotation.z = pose.sunShaftAngleRad;
+
+    // Dynamic labels stay attached to the assemblies they identify.
+    calloutSprites[1]?.position.set(
+      (pose.rightBeamEndX + planetX) / 2 + 0.25,
+      (pose.rightBeamEndY + planetY) / 2,
+      0,
+    );
+    calloutSprites[2]?.position.set(planetX + 0.45, planetY, 0);
+    calloutSprites[6]?.position.set((sunPosX + planetX) / 2, (sunPosY + planetY) / 2, 0.3);
   };
 
   const dispose = () => {
@@ -424,6 +537,7 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
     root,
     beamGroup,
     pistonGroup,
+    pistonLinkGroup,
     connectingRodGroup,
     sunGearGroup,
     planetGearGroup,
@@ -434,6 +548,7 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
     calloutSprites,
     setCutaway,
     setShowCallouts,
+    getActiveGearGeometry,
     updateAnimation,
     dispose,
   };
