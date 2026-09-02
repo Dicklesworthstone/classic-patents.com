@@ -4,12 +4,10 @@ import type {
   CuratedSpecificationInlines,
 } from "@/types/patent";
 
-const text = (value: string): CuratedSpecificationInlines => [{ kind: "text", text: value }];
 const paragraph = (inlines: CuratedSpecificationInlines) => ({
   kind: "paragraph" as const,
   inlines,
 });
-const p = (value: string) => paragraph(text(value));
 
 const term = (value: string, definition: string, label?: string): CuratedSpecificationInline => ({
   kind: "term",

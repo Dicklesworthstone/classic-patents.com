@@ -24,6 +24,7 @@ export interface SalisburyWasmStep {
   axis_1: [0, 1, 0];
   axis_2: [1, 0, 0];
   axis_3: [1, 0, 0];
+  /** One digit's four admitted tensions; the topology receipt still owns 12 cable ends. */
   tendon_tensions_n: [number, number, number, number];
   pulley_radii_m: [number, number, number];
   joint_torques_nm: [number, number, number];

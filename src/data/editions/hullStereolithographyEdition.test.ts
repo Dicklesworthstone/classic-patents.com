@@ -24,7 +24,9 @@ describe("US 4,575,330 Charles W. Hull Stereolithography manual source edition",
       valid: true,
       errors: [],
     });
-    const pdf = readFileSync(`${process.cwd()}/public${hullStereolithographyPatent.originalPdfUrl}`);
+    const pdf = readFileSync(
+      `${process.cwd()}/public${hullStereolithographyPatent.originalPdfUrl}`,
+    );
     expect(createHash("sha256").update(pdf).digest("hex")).toBe(
       hullStereolithographyArchivalEdition.sourcePdfSha256,
     );

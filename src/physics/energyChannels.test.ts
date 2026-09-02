@@ -52,6 +52,7 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-4921293-salisbury-robot-hand",
       "us-2988237-devol-programmed-transfer",
       "us-3119501-lemelson-automatic-warehousing",
+      "us-3313014-lemelson-automatic-production",
       "us-4098001-watson-rcc",
       "us-4098001-watson-remote-center-compliance",
       "us-3858581-kamen-medication-injection-device",

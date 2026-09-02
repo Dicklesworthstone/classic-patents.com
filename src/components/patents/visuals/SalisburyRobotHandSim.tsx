@@ -78,7 +78,8 @@ export function SalisburyRobotHandSim({
             Salisbury Hand Source-Law Transmission Studio
           </h3>
           <p className="text-xs text-slate-400">
-            US 4,921,293 • connected arm, wrist, palm, and digits • four tensions → three torques
+            US 4,921,293 • connected arm, wrist, palm, and digits • representative digit: four
+            tensions → three torques
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -563,6 +564,14 @@ export function SalisburyRobotHandSim({
             ⚠️ {tel.refusalReason}
           </div>
         )}
+      </div>
+
+      <div className="rounded-lg border border-amber-500/30 bg-amber-950/20 px-3 py-2 text-xs leading-relaxed text-amber-100/90">
+        The moving pose is a normalized diagram of one digit’s signed torque output, mirrored across
+        the three connected digits for comparison. The physical hand has twelve separately routed
+        cable ends. The grant supplies the cable topology and three static equations, but not
+        dimensions, inertia, damping, contact properties, grasp force, force closure, speed, or
+        stability.
       </div>
 
       {/* Physics Sliders Controls Grid */}

@@ -81,6 +81,7 @@ import { FrankenSimEngine, lamarrSchematicHop, lamarrSchematicStaffY } from "@/p
 import { fermiSchematicSlug, stepFermiKinetics } from "@/physics/fermiKinetics";
 import { stepGoertzMasterSlaveTopology } from "@/physics/goertzElectronicMasterSlaveManipulatorKernel";
 import { stepKamenInjectionMechanism } from "@/physics/kamenInjectionKernel";
+import { stepLemelsonAutomaticProductionTopology } from "@/physics/lemelsonAutomaticProductionKernel";
 import { stepLemelsonWarehouseTopology } from "@/physics/lemelsonWarehouseKernel";
 import {
   ccdSchematicGateX,
@@ -278,6 +279,7 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "hollerith-tabulating": true,
   "howe-sewing": true,
   "hyatt-celluloid": true,
+  "hull-stereolithography": true,
   "kilby-ic-components": true,
   "kilby-ic-multivibrator": true,
   "kilby-ic-transistor": true,
@@ -289,6 +291,7 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "robot-end-effector": true,
   "salisbury-robot-hand": true,
   "linde-air-liquefaction": true,
+  "lemelson-automatic-production": true,
   "marconi-radio": true,
   "maxim-machine-gun": true,
   "mccormick-reaper": true,
@@ -7287,6 +7290,91 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
+    case "lemelson-automatic-production": {
+      const state = stepLemelsonAutomaticProductionTopology(params ?? {});
+      const carriageX = 62 + state.carrierAddressFraction * 270;
+      const liftY = 128 + (1 - state.liftFraction) * 52;
+      const reach = 20 + state.reachFraction * 42;
+      const flowColor = state.controllerCoupled ? "#34d399" : "#fb7185";
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            CARRIER / MARKER / COUPLING · SOURCE-BOUNDED TOPOLOGY
+          </text>
+          <line x1="48" y1="52" x2="352" y2="52" stroke="#94a3b8" strokeWidth="4" />
+          <text x="50" y="44" fill="#cbd5e1" fontSize="7">
+            guideway 21
+          </text>
+          {[122, 200, 278].map((x, index) => (
+            <g key={x}>
+              <line x1={x} y1="57" x2={x} y2="222" stroke="#334155" strokeDasharray="3 3" />
+              <circle
+                cx={x}
+                cy="66"
+                r="4"
+                fill={state.markerMatched && Math.abs(carriageX - x) < 48 ? "#fbbf24" : "#334155"}
+              />
+              <rect
+                x={x - 24}
+                y="202"
+                width="48"
+                height="37"
+                rx="4"
+                fill={
+                  state.machineCommandAuthorized && Math.abs(carriageX - x) < 48
+                    ? "#34d399"
+                    : "#172554"
+                }
+                stroke={flowColor}
+              />
+              <text x={x} y="226" textAnchor="middle" fill="#bfdbfe" fontSize="7">
+                MT {index + 1}
+              </text>
+            </g>
+          ))}
+          <g transform={`translate(${carriageX} 0)`}>
+            <rect x="-15" y="38" width="30" height="20" rx="3" fill="#0f766e" />
+            <text x="0" y="52" textAnchor="middle" fill="#ccfbf1" fontSize="7">
+              22 / Mx
+            </text>
+            <line x1="0" y1="58" x2="0" y2={liftY} stroke="#0f766e" strokeWidth="8" />
+            <rect x="-18" y={liftY - 7} width="36" height="14" rx="2" fill="#0e7490" />
+            <line x1="18" y1={liftY} x2={18 + reach} y2={liftY} stroke="#7c3aed" strokeWidth="7" />
+            <rect
+              x={14 + reach}
+              y={liftY - 12}
+              width="12"
+              height="24"
+              rx="2"
+              fill={state.carrierLocked ? "#f59e0b" : "#64748b"}
+            />
+            <rect x="-15" y="96" width="30" height="16" rx="2" fill="#1d4ed8" />
+            <text x="0" y="107" textAnchor="middle" fill="#dbeafe" fontSize="7">
+              47
+            </text>
+          </g>
+          <path
+            d={`M${carriageX + reach + 24} ${liftY} V196`}
+            stroke={flowColor}
+            strokeWidth="3"
+            strokeDasharray={state.controllerCoupled ? undefined : "4 3"}
+          />
+          <text x="50" y="267" fill="#a7f3d0" fontSize="7">
+            marker → retain → position → couple → operate → release → travel
+          </text>
+          <text x="200" y="284" textAnchor="middle" fill="#fda4af" fontSize="7">
+            {state.phase}; normalized display only — no dimensions, speed, payload, force, or time
+          </text>
+        </g>
+      );
+    }
     case "stackhouse-manipulator": {
       const pose = stepStackhouseSourceTopology(params ?? {});
       const pointP = { x: 180, y: 150 };
@@ -7493,6 +7581,112 @@ function _renderHistoricalSchematic(
           />
           <text x="150" y="120" fill="#fbbf24" fontSize="8" fontWeight="bold">
             4
+          </text>
+        </g>
+      );
+    }
+    case "hull-stereolithography": {
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            STEREOLITHOGRAPHY APPARATUS (FIG. 1 / FIG. 3)
+          </text>
+          {/* Vat Container 21 */}
+          <rect
+            x="60"
+            y="140"
+            width="280"
+            height="130"
+            rx="4"
+            stroke="#78716c"
+            strokeWidth="2"
+            fill="#1c1917"
+          />
+          {/* Liquid Resin 22 */}
+          <rect x="65" y="155" width="270" height="110" fill="#0284c7" opacity="0.4" />
+          <line
+            x1="65"
+            y1="155"
+            x2="335"
+            y2="155"
+            stroke="#38bdf8"
+            strokeWidth="1.5"
+            strokeDasharray="4 2"
+          />
+          <text x="75" y="150" fill="#7dd3fc" fontSize="8" fontFamily="monospace">
+            22 RESIN SURFACE
+          </text>
+          {/* Elevator 29 & Shaft 30 */}
+          <rect
+            x="195"
+            y="195"
+            width="10"
+            height="85"
+            fill="#475569"
+            stroke="#94a3b8"
+            strokeWidth="1"
+          />
+          <rect
+            x="120"
+            y="195"
+            width="160"
+            height="8"
+            rx="2"
+            fill="#64748b"
+            stroke="#cbd5e1"
+            strokeWidth="1"
+          />
+          <text x="130" y="215" fill="#e2e8f0" fontSize="8" fontFamily="monospace">
+            29 PLATFORM
+          </text>
+          {/* Cured Part 30 */}
+          <rect
+            x="150"
+            y="180"
+            width="100"
+            height="15"
+            rx="1"
+            fill="#d97706"
+            stroke="#fbbf24"
+            strokeWidth="1"
+          />
+          <text x="165" y="191" fill="#fef3c7" fontSize="8" fontFamily="monospace">
+            30 CURED PART
+          </text>
+          {/* UV Laser 26 & Galvo Scanner */}
+          <rect
+            x="160"
+            y="45"
+            width="80"
+            height="25"
+            rx="3"
+            fill="#292524"
+            stroke="#c084fc"
+            strokeWidth="1.5"
+          />
+          <text x="175" y="61" fill="#d8b4fe" fontSize="8" fontFamily="monospace" fontWeight="bold">
+            26 LASER
+          </text>
+          {/* Laser Beam Spot 27 */}
+          <line
+            x1="200"
+            y1="70"
+            x2="200"
+            y2="155"
+            stroke="#c084fc"
+            strokeWidth="1.5"
+            strokeDasharray="3 1"
+          />
+          <circle cx="200" cy="155" r="3" fill="#fbbf24" stroke="#f59e0b" strokeWidth="1" />
+          <text x="210" y="145" fill="#facc15" fontSize="8" fontFamily="monospace">
+            27 SPOT
           </text>
         </g>
       );

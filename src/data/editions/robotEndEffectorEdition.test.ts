@@ -10,24 +10,20 @@ import {
 } from "./robotEndEffectorEdition";
 
 const PATENT_ID = "us-4765668-robot-end-effector";
-const EXPECTED_PDF_SHA256 =
-  "654ed8b094309e39412debba71117f177602c1557ade8d9865f834a1d9e84485";
+const EXPECTED_PDF_SHA256 = "654ed8b094309e39412debba71117f177602c1557ade8d9865f834a1d9e84485";
 
 describe("US 4,765,668 Robot End Effector Archival Edition Contract", () => {
   test("pins the complete 10-page primary facsimile and manual publication contract", () => {
-    const pdfPath = resolve(
-      process.cwd(),
-      "public/patents/pdfs/us-4765668-robot-end-effector.pdf",
-    );
+    const pdfPath = resolve(process.cwd(), "public/patents/pdfs/us-4765668-robot-end-effector.pdf");
     expect(existsSync(pdfPath)).toBe(true);
+    expect(robotEndEffectorPatent.id).toBe(PATENT_ID);
+    expect(robotEndEffectorPatent.archivalEdition).toBe(robotEndEffectorArchivalEdition);
 
     const pdfBytes = readFileSync(pdfPath);
     const pdfDigest = createHash("sha256").update(pdfBytes).digest("hex");
     expect(pdfDigest).toBe(EXPECTED_PDF_SHA256);
     expect(robotEndEffectorArchivalEdition.sourcePdfSha256).toBe(EXPECTED_PDF_SHA256);
-    expect(robotEndEffectorPatent.originalTextAsset?.sourcePdfSha256).toBe(
-      EXPECTED_PDF_SHA256,
-    );
+    expect(robotEndEffectorPatent.originalTextAsset?.sourcePdfSha256).toBe(EXPECTED_PDF_SHA256);
     expect(robotEndEffectorArchivalEdition.completeFacsimileReviewed).toBe(true);
   });
 

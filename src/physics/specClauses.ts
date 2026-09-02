@@ -3,6 +3,7 @@
  * Highlighted on the spec face so an interaction lights the clause it tests.
  */
 
+import { readCrumpFdmControls, stepCrumpFdmSi } from "./crumpFdmKernel";
 import { stepDevolProgrammedTransfer } from "./devolProgrammedTransferKernel";
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
@@ -12,8 +13,13 @@ import {
   stepHullStereolithographySi,
 } from "./hullStereolithographyKernel";
 import { readKamenTransporterControls, stepKamenTransporterSi } from "./kamenTransporterKernel";
+import { stepLemelsonAutomaticProductionTopology } from "./lemelsonAutomaticProductionKernel";
 import { stepHoweSewingMachine } from "./machineKernels";
 import { readMestralVelcroControls, stepMestralVelcroSi } from "./mestralVelcroKernel";
+import {
+  readMilacronToolchangerControls,
+  stepMilacronRobotToolchangerSi,
+} from "./milacronRobotToolchangerKernel";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { stepRobotEndEffector } from "./robotEndEffectorKernel";
 import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
@@ -2566,6 +2572,48 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
     ];
   }
 
+  if (patentId === "us-3313014-lemelson-automatic-production") {
+    const state = stepLemelsonAutomaticProductionTopology(params);
+    return [
+      {
+        id: "carrier-sensing",
+        phrase: "means for sensing the presence of a carrier at a work station",
+        active: state.markerMatched,
+        tone: state.markerMatched ? "live" : "broken",
+        caption: state.markerMatched
+          ? "Claim 1 probe: the marker/sensing event is present, allowing the display to enter the selected-station sequence. No sensor precision or timing is asserted."
+          : "Without the sensed-station event, the source-bounded display remains in travel and refuses retention or station command.",
+      },
+      {
+        id: "prepositioning-retention",
+        phrase: "prepositioning and retention of a carrier at a work station",
+        active: state.carrierLocked,
+        tone: state.carrierLocked ? "held" : "broken",
+        caption: state.carrierLocked
+          ? "The carrier is shown retained at a selected station after the marker event; lift and reach remain normalized display poses rather than measured travel or tolerance."
+          : "The carrier is not retained: the source sequence has not reached its post-sensing positioning condition.",
+      },
+      {
+        id: "coupling-means",
+        phrase: "means for coupling said program controller with said machine means",
+        active: state.controllerCoupled,
+        tone: state.controllerCoupled ? "live" : "broken",
+        caption: state.controllerCoupled
+          ? "Claim 7 probe: the portable controller-to-station interface is closed; the display may authorize a machine command only after this source-described condition."
+          : "The coupling probe is open, so an arriving carrier never becomes an authorized source-topology station command.",
+      },
+      {
+        id: "release-and-departure",
+        phrase: "cause said securing means to release work held at said machine",
+        active: state.releaseAuthorized,
+        tone: state.releaseAuthorized ? "live" : "held",
+        caption: state.releaseAuthorized
+          ? "Claim 20 probe: the display has reached release-before-departure. The threshold is an ordering cue, not a source-derived time."
+          : "Release remains pending until the selected display cycle reaches its final source-described stage.",
+      },
+    ];
+  }
+
   if (
     patentId === "us-4098001-watson-rcc" ||
     patentId === "us-4098001-watson-remote-center-compliance"
@@ -2740,7 +2788,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: tel.claim1RoutingProbe,
         tone: tel.claim1RoutingProbe ? "live" : "broken",
         caption: tel.claim1RoutingProbe
-          ? `The admitted source topology has 4 cable ends per digit and 12 across the three-digit hand; peak visitor-declared tension is ${Math.max(...tel.tendonTensionsN).toFixed(1)} N.`
+          ? `The admitted source topology has 4 cable ends per digit and 12 across the three-digit hand; the representative digit's peak visitor-declared tension is ${Math.max(...tel.tendonTensionsN).toFixed(1)} N.`
           : "The four-cable/three-joint source route was not admitted.",
       },
       {
@@ -2779,6 +2827,43 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
     ];
   }
 
+  if (patentId === "us-4512709-milacron-robot-toolchanger") {
+    const controls = readMilacronToolchangerControls(params);
+    const tel = stepMilacronRobotToolchangerSi(controls);
+
+    return [
+      {
+        id: "milacron-locking-slide",
+        phrase: "locking slide carried in said slideway and affixed to said rod",
+        active: tel.isLocked,
+        tone: tel.isLocked ? "held" : "broken",
+        caption: `Locking slide is at stroke ${controls.slideStrokeMm} mm (actuator thrust: ${tel.actuatorThrustN.toFixed(0)} N at ${controls.airPressureMpa} MPa). Clamping status: ${tel.isLocked ? "engaged" : "retracted"}.`,
+      },
+      {
+        id: "milacron-wedge-ramps",
+        phrase: "slide ramp surface is bifurcated to form a clearance slot for said stem",
+        active: tel.clampingForceN > 0,
+        tone: tel.clampingForceN > 0 ? "live" : "broken",
+        caption: `Ramp angle θ = ${controls.wedgeAngleDeg}° generates ${tel.clampingForceN.toFixed(0)} N normal clamping force on T-member crossbar (mechanical advantage: ${(tel.clampingForceN / Math.max(1, tel.actuatorThrustN)).toFixed(2)}x).`,
+      },
+      {
+        id: "milacron-bistable-failsafe",
+        phrase:
+          "mechanism should remain in either the locked or unlocked position, in the event of a power failure",
+        active: tel.isSelfLocking,
+        tone: tel.isSelfLocking ? "held" : "broken",
+        caption: `Bistable friction condition tan(${controls.wedgeAngleDeg}°) ≤ ${controls.frictionCoeff} is ${tel.isSelfLocking ? "satisfied" : "violated"}. Fail-safe power-loss retention force: ${tel.holdingForceWithoutPowerN.toFixed(0)} N.`,
+      },
+      {
+        id: "milacron-locating-pins",
+        phrase: "pair of locating pins 43,44 secured to and extending from, the front plate 26",
+        active: tel.isToolSeated,
+        tone: tel.isToolSeated ? "live" : "broken",
+        caption: `Cylindrical and diamond locating pin pair achieves ${(tel.positionalRepeatabilityMm * 1000).toFixed(1)} µm repeatability when tool is flush-seated (gap: ${controls.dockingGapMm.toFixed(2)} mm, proximity sensor: ${tel.proximitySensorActive ? "ON" : "OFF"}).`,
+      },
+    ];
+  }
+
   if (patentId === "us-4575330-hull-stereolithography") {
     const controls = readHullStereolithographyControls(params);
     const tel = stepHullStereolithographySi(controls);
@@ -2786,14 +2871,16 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
     return [
       {
         id: "hull-layer-by-layer-buildup",
-        phrase: "each lamina being integrated with the previous lamina to build up the desired three-dimensional object",
+        phrase:
+          "each lamina being integrated with the previous lamina to build up the desired three-dimensional object",
         active: tel.isCured && tel.interlayerAdhesionRatio >= 1.0,
         tone: tel.isCured && tel.interlayerAdhesionRatio >= 1.0 ? "held" : "broken",
         caption: `Cure depth is ${tel.cureDepthUm.toFixed(1)} µm vs layer step ${controls.layerThicknessUm} µm (interlayer ratio ${tel.interlayerAdhesionRatio.toFixed(2)}x). Monolithic interlayer adhesion is ${tel.interlayerAdhesionRatio >= 1.0 ? "active" : "delaminated"}.`,
       },
       {
         id: "hull-synergistic-stimulation",
-        phrase: "application of synergistic stimulation, such as ultraviolet light, to a fluid medium",
+        phrase:
+          "application of synergistic stimulation, such as ultraviolet light, to a fluid medium",
         active: tel.isCured,
         tone: tel.isCured ? "live" : "broken",
         caption: `Peak UV exposure E_max is ${tel.peakExposureMJCm2.toFixed(2)} mJ/cm² (critical threshold E_c = ${controls.criticalExposureMJCm2} mJ/cm²). Photopolymerization conversion is ${tel.polymerizationConversionPct.toFixed(1)}%.`,
@@ -2811,6 +2898,45 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: !tel.recoatDelayRefusal,
         tone: !tel.recoatDelayRefusal ? "live" : "broken",
         caption: `Elevator steps ${controls.layerThicknessUm} µm at ${controls.elevatorDipSpeedMmS} mm/s. Resin viscosity (${controls.resinViscosityCp} cP) yields meniscus settling time of ${tel.recoatMeniscusSettlingTimeSec.toFixed(2)} s.`,
+      },
+    ];
+  }
+
+  if (patentId === "us-5121329-crump-fdm") {
+    const controls = readCrumpFdmControls(params);
+    const tel = stepCrumpFdmSi(controls);
+
+    return [
+      {
+        id: "crump-filament-pinch-feed",
+        phrase:
+          "flexible strand 12 is drawn from supply reel 14 by motor-driven pinch feed rollers",
+        active: !tel.filamentGrindingRefusal,
+        tone: !tel.filamentGrindingRefusal ? "live" : "broken",
+        caption: `Pinch drive applies ${controls.pinchRollerForceN} N normal force yielding ${tel.maxTractionForceN.toFixed(1)} N traction. Required feed force is ${tel.feedDriveForceN.toFixed(1)} N (status: ${tel.filamentGrindingRefusal ? "slipping / grinding" : "positive engagement"}).`,
+      },
+      {
+        id: "crump-heated-liquefier",
+        phrase: "temperature-controlled flow passage 20",
+        active: !tel.coldNozzleJamRefusal,
+        tone: !tel.coldNozzleJamRefusal ? "live" : "broken",
+        caption: `Liquefier operates at ${controls.nozzleTempC.toFixed(0)} °C with apparent melt viscosity ${tel.apparentViscosityPaS.toFixed(0)} Pa·s, developing ${tel.nozzlePressureDropMPa.toFixed(3)} MPa capillary pressure drop.`,
+      },
+      {
+        id: "crump-planar-shearing-tip",
+        phrase:
+          "planar bottom surface of said tip being maintained substantially parallel to said first layer",
+        active: controls.layerHeightMm <= controls.nozzleDiameterMm * 0.85,
+        tone: controls.layerHeightMm <= controls.nozzleDiameterMm * 0.85 ? "held" : "broken",
+        caption: `Gap clearance is ${controls.layerHeightMm} mm below nozzle land (orifice d = ${controls.nozzleDiameterMm} mm). Planar shearing irons bead into aspect ratio ${tel.beadAspectRatio.toFixed(2)}x (road width w = ${controls.roadWidthMm} mm).`,
+      },
+      {
+        id: "crump-interlayer-weld",
+        phrase:
+          "successive layers of said material of predetermined thickness which build up on each other sequentially as they solidify",
+        active: tel.weldQualityRatio >= 0.95,
+        tone: tel.weldQualityRatio >= 0.95 ? "held" : "broken",
+        caption: `Interface contact temperature is ${tel.interfaceTempC.toFixed(1)} °C (Tg = 105 °C, ratio ${tel.weldQualityRatio.toFixed(2)}x). Cooling time constant is ${(tel.coolingTimeConstantSec * 1000).toFixed(0)} ms.`,
       },
     ];
   }

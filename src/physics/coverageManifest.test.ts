@@ -53,11 +53,11 @@ const summary = summarizePatentCoverage(manifest);
 
 describe("executable project coverage manifest", () => {
   test("contains one evidence row per catalogue record", () => {
-    expect(manifest).toHaveLength(91);
-    expect(new Set(manifest.map((row) => row.patentId)).size).toBe(91);
+    expect(manifest).toHaveLength(94);
+    expect(new Set(manifest.map((row) => row.patentId)).size).toBe(94);
     expect(manifest.every((row) => row.source.pinnedFacsimile)).toBe(true);
-    expect(manifest.filter((row) => row.source.reviewedLedger)).toHaveLength(88);
-    expect(manifest.filter((row) => row.source.archivalEdition === "published")).toHaveLength(77);
+    expect(manifest.filter((row) => row.source.reviewedLedger)).toHaveLength(91);
+    expect(manifest.filter((row) => row.source.archivalEdition === "published")).toHaveLength(80);
     expect(manifest.every((row) => row.presentation.explicitVisualDispatch)).toBe(true);
     expect(manifest.every((row) => row.presentation.defaultTelemetryOwner === "typescript")).toBe(
       true,
@@ -73,7 +73,7 @@ describe("executable project coverage manifest", () => {
       0,
     );
     expect(manifest.filter((row) => row.runtime.wasmSurface === "generic-wasm")).toHaveLength(40);
-    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(48);
+    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(51);
 
     for (const patentId of [
       "us-x9430-colt-revolver",
@@ -166,7 +166,7 @@ describe("executable project coverage manifest", () => {
 
   test("all 3D studios now have an updater or a typed snapshot path", () => {
     expect(manifest.filter((row) => row.runtime.sharedBus === "updater")).toHaveLength(47);
-    expect(manifest.filter((row) => row.runtime.sharedBus === "snapshot")).toHaveLength(44);
+    expect(manifest.filter((row) => row.runtime.sharedBus === "snapshot")).toHaveLength(47);
     expect(manifest.filter((row) => row.runtime.sharedBus === "missing")).toHaveLength(0);
     for (const patentId of ["us-194047-otto-engine", "us-6594844-roomba"]) {
       const promotedOwner = manifest.find((row) => row.patentId === patentId);

@@ -44,6 +44,7 @@ import {
   stepWozniakApple,
   stepZeppelinAirship,
 } from "./catalogKernels";
+import { stepCrumpFdmSi } from "./crumpFdmKernel";
 import { tryDaimlerMarineWasmStep } from "./daimlerWasm";
 import {
   type DaVinciControls,
@@ -53,6 +54,7 @@ import {
 import { stepDieselEngine as kernelStepDieselEngine } from "./dieselEngineKernel";
 import { stepFermiKinetics } from "./fermiKinetics";
 import { tryGoddardApparatusWasmStep, tryGoddardWasmStep } from "./goddardWasm";
+import { stepHullStereolithographySi } from "./hullStereolithographyKernel";
 import {
   type KamenTransporterControls,
   type KamenTransporterTelemetry,
@@ -78,11 +80,8 @@ import {
   type MestralVelcroTelemetry,
   stepMestralVelcroSi,
 } from "./mestralVelcroKernel";
-import {
-  type RobotEndEffectorControls,
-  type RobotEndEffectorTelemetry,
-  stepRobotEndEffectorSi,
-} from "./robotEndEffectorKernel";
+import { stepMilacronRobotToolchangerSi } from "./milacronRobotToolchangerKernel";
+import { stepRobotEndEffectorSi } from "./robotEndEffectorKernel";
 import type { SalisburyRobotHandControls } from "./salisburyRobotHandKernel";
 import { type SalisburyMechanismState, stepSalisburyTopology } from "./salisburyWasm";
 import {
@@ -283,7 +282,10 @@ export const FrankenSimEngine = {
   stepMorseTelegraph,
   stepEngelbartMouse,
   stepWozniakApple,
+  stepMilacronRobotToolchanger: stepMilacronRobotToolchangerSi,
   stepRobotEndEffector: stepRobotEndEffectorSi,
+  stepHullStereolithography: stepHullStereolithographySi,
+  stepCrumpFdm: stepCrumpFdmSi,
 
   stepTeslaMotorFig9,
 

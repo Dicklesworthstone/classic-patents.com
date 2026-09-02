@@ -22744,6 +22744,84 @@ ALL_COLORIZED_EQUATIONS["us-3119501-lemelson-automatic-warehousing"] = [
   },
 ];
 
+ALL_COLORIZED_EQUATIONS["us-3313014-lemelson-automatic-production"] = [
+  {
+    id: "lemelson-marker-coupling-release-interlock",
+    patentId: "us-3313014-lemelson-automatic-production",
+    title: "Marker, Retention, Coupling, and Release Interlock",
+    category: "Source-Bounded Industrial Automation",
+    rawLatex:
+      "m_{recognized}\\land r_{retained}\\land c_{coupled}\\Rightarrow u_{machine};\\quad p_{cycle}\\geq0.8\\Rightarrow u_{release}",
+    colorizedLatex:
+      "\\textcolor{#f59e0b}{m_{recognized}}\\land\\textcolor{#16a34a}{r_{retained}}\\land\\textcolor{#0891b2}{c_{coupled}}\\Rightarrow\\textcolor{#7c3aed}{u_{machine}};\\quad\\textcolor{#2563eb}{p_{cycle}}\\geq0.8\\Rightarrow\\textcolor{#dc2626}{u_{release}}",
+    plainEnglishSentence: [
+      { text: "A recognised station " },
+      { text: "marker event", variableId: "marker_event" },
+      { text: ", retained carrier, and closed " },
+      { text: "station coupling", variableId: "station_coupling" },
+      { text: " are the source-topology conditions that authorize the displayed " },
+      { text: "machine command", variableId: "machine_command" },
+      { text: ". At the selected display " },
+      { text: "release stage", variableId: "release_stage" },
+      { text: ", the sequence releases and departs rather than claiming a measured cycle time." },
+    ],
+    variables: [
+      {
+        id: "marker_event",
+        symbol: "m_{recognized}",
+        name: "Recognised Station Marker",
+        color: "amber",
+        role: "Claim-linked sensing event that begins the illustrated carrier-to-station sequence",
+        unit: "off/on topology state",
+        dimension: "[1]",
+        explanation:
+          "The patent identifies markers, switches, scanners, and relay signals as selection and control events. It provides no sensor precision, latency, or event frequency for a numerical model.",
+        telemetryKey: "stationDetected",
+      },
+      {
+        id: "station_coupling",
+        symbol: "c_{coupled}",
+        name: "Portable-to-Station Controller Coupling",
+        color: "cyan",
+        role: "Claim 7-style contact/coupling condition between the carrier-mounted controller and a work station",
+        unit: "off/on topology state",
+        dimension: "[1]",
+        explanation:
+          "The source describes electrical contacts and alternative coupling arrangements after positioning. The public switch means only the logical connection is present; it does not represent voltage, current, impedance, or signal integrity.",
+        telemetryKey: "stationCoupled",
+      },
+      {
+        id: "machine_command",
+        symbol: "u_{machine}",
+        name: "Authorized Machine Command",
+        color: "amethyst",
+        role: "Displayed permission for a selected station operation after the named topology conditions hold",
+        unit: "source interlock",
+        dimension: "[1]",
+        explanation:
+          "This logical output makes the claim sequence inspectable. It is not a motor-control voltage, a production-rate prediction, or evidence that a particular workpiece operation succeeds.",
+        telemetryMetricLabel: "Machine Command",
+      },
+      {
+        id: "release_stage",
+        symbol: "p_{cycle}",
+        name: "Selected Release-and-Departure Stage",
+        color: "sapphire",
+        role: "Normalized exhibit cue for the source-described reversal, release, and next-station transition",
+        unit: "normalized display state",
+        dimension: "[1]",
+        explanation:
+          "The threshold is a display ordering boundary, not a time, distance, stopping tolerance, or production-cycle measurement supplied by the patent.",
+        telemetryKey: "cycleProgress",
+      },
+    ],
+    pedagogicalNote:
+      "This is a modern boolean reading of the patent's sequence: sensing leads to positioning and retention, the portable controller couples to the station, then the station may operate; after the cycle, the carrier is released and moves on. The source does not supply an exact Boolean formula, a timing law, or the numbers needed for a performance simulation.",
+    historicalSignificance:
+      "The issued claims make the carrier, record/controller, sensing event, retaining means, and selected production station legible as one physical control architecture rather than a free-floating automation slogan.",
+  },
+];
+
 ALL_COLORIZED_EQUATIONS["us-3858581-kamen-medication-injection-device"] = [
   {
     id: "kamen-rotation-event-count",
@@ -23067,6 +23145,93 @@ ALL_COLORIZED_EQUATIONS["us-4068536-stackhouse-manipulator"] = [
   },
 ];
 
+ALL_COLORIZED_EQUATIONS["us-4512709-milacron-robot-toolchanger"] = [
+  {
+    id: "milacron-wedge-clamping-force",
+    patentId: "us-4512709-milacron-robot-toolchanger",
+    title: "Pneumatic Radial Wedge Clamping Force Relation",
+    category: "Wedge Mechanical Advantage & Clamping Force",
+    rawLatex: "F_{\\text{clamp}} = \\frac{p_{\\text{air}} \\cdot \\frac{\\pi}{4} D_{\\text{cyl}}^2}{\\tan(\\theta + \\phi)}",
+    colorizedLatex:
+      "\\textcolor{#2563eb}{F_{\\text{clamp}}} = \\frac{\\textcolor{#059669}{p_{\\text{air}}} \\cdot \\frac{\\pi}{4} \\textcolor{#d97706}{D_{\\text{cyl}}}^2}{\\tan(\\textcolor{#9333ea}{\\theta} + \\textcolor{#dc2626}{\\phi})}",
+    plainEnglishSentence: [
+      { text: "The normal " },
+      { text: "clamping force", variableId: "clamping_force" },
+      { text: " equals the " },
+      { text: "pneumatic supply pressure", variableId: "air_pressure" },
+      { text: " multiplied by the " },
+      { text: "piston area", variableId: "cylinder_bore" },
+      { text: " divided by the tangent of the sum of the " },
+      { text: "wedge taper angle", variableId: "wedge_angle" },
+      { text: " and the " },
+      { text: "friction angle", variableId: "friction_angle" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "clamping_force",
+        symbol: "F_{\\text{clamp}}",
+        name: "Normal Tool Clamping Force",
+        color: "sapphire",
+        role: "Axial retention force holding tool base flush against adapter front plate",
+        unit: "newtons (N)",
+        dimension: "[M L T⁻²]",
+        explanation:
+          "Normal clamping force multiplies actuator thrust to securely hold heavy end effectors through extreme robot accelerations.",
+        telemetryMetricLabel: "Normal Clamping Force",
+      },
+      {
+        id: "air_pressure",
+        symbol: "p_{\\text{air}}",
+        name: "Pneumatic Supply Pressure",
+        color: "emerald",
+        role: "Compressed air pressure supplied to the double-acting actuator cylinder",
+        unit: "megapascals (MPa)",
+        dimension: "[M L⁻¹ T⁻²]",
+        explanation:
+          "Standard industrial pneumatic supply (0.4–0.8 MPa) powering the transverse locking slide stroke.",
+      },
+      {
+        id: "cylinder_bore",
+        symbol: "D_{\\text{cyl}}",
+        name: "Pneumatic Cylinder Bore Diameter",
+        color: "amber",
+        role: "Internal diameter of the actuator cylinder bore",
+        unit: "millimetres (mm)",
+        dimension: "[L]",
+        explanation:
+          "Determines the effective piston surface area converting compressed air pressure into axial rod thrust.",
+      },
+      {
+        id: "wedge_angle",
+        symbol: "\\theta",
+        name: "Wedge Ramp Taper Angle",
+        color: "amethyst",
+        role: "Inclination angle of the cooperating slide and T-member ramp surfaces",
+        unit: "degrees (°)",
+        dimension: "[1]",
+        explanation:
+          "A shallow taper angle (~7°) provides high mechanical force multiplication while remaining inside the friction cone.",
+      },
+      {
+        id: "friction_angle",
+        symbol: "\\phi",
+        name: "Static Friction Angle",
+        color: "ruby",
+        role: "Friction cone angle defined as arctan(μ_s) for boundary-lubricated hardened steel",
+        unit: "degrees (°)",
+        dimension: "[1]",
+        explanation:
+          "When θ ≤ φ, the wedge mechanism is strictly self-locking, preventing backdrive and tool dropping upon pressure loss.",
+      },
+    ],
+    pedagogicalNote:
+      "The shallow wedge angle provides dual benefits: it multiplies modest cylinder thrust into thousands of newtons of axial clamping force, while guaranteeing bistable fail-safe retention without continuous pneumatic power.",
+    historicalSignificance:
+      "Cincinnati Milacron's wedge-locked toolchanger provided the safety reliability required for widespread adoption of robotic tool interchange in high-speed automotive assembly lines.",
+  },
+];
+
 ALL_COLORIZED_EQUATIONS["us-4575330-hull-stereolithography"] = [
   {
     id: "hull-beer-lambert-cure-depth",
@@ -23146,7 +23311,7 @@ ALL_COLORIZED_EQUATIONS["us-4921293-salisbury-robot-hand"] = [
   {
     id: "salisbury-figure-3-torque-map",
     patentId: "us-4921293-salisbury-robot-hand",
-    title: "Figure 3 Four-Tension / Three-Torque Map",
+    title: "Figure 3 One-Digit Four-Tension / Three-Torque Map",
     category: "Source-Bounded Robotic Cable Transmission",
     rawLatex:
       "\\begin{aligned}\\tau_1&=-T_1R_1+T_2R_2+T_3R_2-T_4R_1\\\\\\tau_2&=T_1R_3+T_2R_2-T_3R_2-T_4R_3\\\\\\tau_3&=T_2R_2-T_3R_2\\end{aligned}",
@@ -23156,7 +23321,7 @@ ALL_COLORIZED_EQUATIONS["us-4921293-salisbury-robot-hand"] = [
       { text: "The three " },
       { text: "joint torques", variableId: "torque_1" },
       { text: " are the signed sums of " },
-      { text: "four measured cable tensions", variableId: "tension_1" },
+      { text: "one digit's four measured cable tensions", variableId: "tension_1" },
       { text: " multiplied by the " },
       { text: "selected pulley radii", variableId: "radii" },
       { text: " in the Figure 3 route." },
@@ -23260,10 +23425,116 @@ ALL_COLORIZED_EQUATIONS["us-4921293-salisbury-robot-hand"] = [
       },
     ],
     pedagogicalNote:
-      "These are the three equations printed beside Figure 3, not a generic force-closure or dynamic hand model. The source does not supply a cable pretension, contact law, motor limit, link inertia, or stability result.",
+      "These are the three equations printed for one digit beside Figure 3, not a generic force-closure or dynamic hand model. The physical hand routes twelve cable ends; the exhibit mirrors this representative four-tension pose across its three connected digit chains. The source does not supply a cable pretension, contact law, motor limit, link inertia, or stability result.",
     claimRef: 1,
     historicalSignificance:
       "The grant makes its preferred cable route unusually inspectable by printing the signed torque contributions directly; it also states that other rigging may use four different radii.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-5121329-crump-fdm"] = [
+  {
+    id: "crump-fdm-volumetric-flow-rate",
+    patentId: "us-5121329-crump-fdm",
+    title: "Volumetric Extrusion Flow Rate & Filament Feed Kinematics",
+    category: "Extrusion Fluid Dynamics & Kinematics",
+    rawLatex: "Q = w \\cdot h \\cdot v_{\\text{head}} = \\frac{\\pi D_{\\text{filament}}^2}{4} v_{\\text{feed}}",
+    colorizedLatex:
+      "\\textcolor{#0891b2}{Q} = \\textcolor{#2563eb}{w} \\cdot \\textcolor{#16a34a}{h} \\cdot \\textcolor{#ea580c}{v_{\\text{head}}} = \\frac{\\pi \\textcolor{#9333ea}{D_{\\text{filament}}^2}}{4} \\textcolor{#d97706}{v_{\\text{feed}}}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "volumetric extrusion flow rate", variableId: "volumetric_flow" },
+      { text: " equals the product of " },
+      { text: "flattened road width", variableId: "road_width" },
+      { text: ", " },
+      { text: "layer height", variableId: "layer_height" },
+      { text: ", and " },
+      { text: "toolpath velocity", variableId: "head_velocity" },
+      { text: ", which must match the " },
+      { text: "filament cross-section", variableId: "filament_diam" },
+      { text: " multiplied by the " },
+      { text: "feed drive speed", variableId: "feed_velocity" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "volumetric_flow",
+        symbol: "Q",
+        name: "Volumetric Flow Rate",
+        color: "cyan",
+        role: "Total rate of molten polymer volume discharged from the nozzle tip",
+        unit: "Cubic millimetres per second (mm³/s)",
+        dimension: "[L³ T⁻¹]",
+        explanation:
+          "Enforces conservation of mass between solid feedstock inflow and extruded road bead deposition.",
+        telemetryMetricLabel: "Volumetric Flow Rate (Q)",
+      },
+      {
+        id: "road_width",
+        symbol: "w",
+        name: "Deposited Road Width",
+        color: "sapphire",
+        role: "Transverse width of the flattened bead pressed onto the substrate",
+        unit: "Millimetres (mm)",
+        dimension: "[L]",
+        explanation:
+          "Determined by nozzle orifice diameter and planar ironing land clearance.",
+        telemetryKey: "roadWidthMm",
+      },
+      {
+        id: "layer_height",
+        symbol: "h",
+        name: "Layer Thickness",
+        color: "emerald",
+        role: "Vertical distance stepped by the Z-axis table between successive slices",
+        unit: "Millimetres (mm)",
+        dimension: "[L]",
+        explanation:
+          "Controls vertical resolution and characteristic cooling time constant.",
+        telemetryKey: "layerHeightMm",
+      },
+      {
+        id: "head_velocity",
+        symbol: "v_{\\text{head}}",
+        name: "Toolhead Print Velocity",
+        color: "coral",
+        role: "Linear speed of the dispensing head across the X-Y plane",
+        unit: "Millimetres per second (mm/s)",
+        dimension: "[L T⁻¹]",
+        explanation:
+          "Directly determines production speed and shear rate within the nozzle capillary.",
+        telemetryKey: "printSpeedMmS",
+      },
+      {
+        id: "filament_diam",
+        symbol: "D_{\\text{filament}}",
+        name: "Feedstock Filament Diameter",
+        color: "amethyst",
+        role: "Calibrated diameter of the incoming solid polymer strand",
+        unit: "Millimetres (mm)",
+        dimension: "[L]",
+        explanation:
+          "Specifies the cross-sectional area of the solid piston driving melt flow.",
+        telemetryKey: "filamentDiameterMm",
+      },
+      {
+        id: "feed_velocity",
+        symbol: "v_{\\text{feed}}",
+        name: "Filament Feed Speed",
+        color: "amber",
+        role: "Linear velocity of solid filament driven into the liquefier by pinch rollers",
+        unit: "Millimetres per second (mm/s)",
+        dimension: "[L T⁻¹]",
+        explanation:
+          "Motorized drive speed synchronized with X-Y toolhead motion.",
+        telemetryMetricLabel: "Filament Feed Speed (v_feed)",
+      },
+    ],
+    pedagogicalNote:
+      "Conservation of mass requires exact synchronization between filament feed motor pulses and Cartesian gantry toolpath speed to maintain uniform road width without under- or over-extrusion.",
+    claimRef: 1,
+    historicalSignificance:
+      "Crump's Claim 1 established the volumetric metering link between motorized filament feed and relative 3-axis motion.",
   },
 ];
 

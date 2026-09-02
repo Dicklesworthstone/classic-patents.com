@@ -76,6 +76,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 2,988,237 prints coded-position, program-controller, hydraulic-actuator, transfer-head, and gripper relationships but no reusable hydraulic pressure, flow, actuator dimensions, payload, mass, speed, efficiency, or power datum from which an SI energy channel can be derived.",
   "us-3119501-lemelson-automatic-warehousing":
     "US 3,119,501 prints 3-axis carriage, mast, hoist, and fork transfer topology but no motor horsepower, electrical current, friction coefficients, travel speeds, or thermal dissipation datum from which an SI energy channel can be derived.",
+  "us-3313014-lemelson-automatic-production":
+    "US 3,313,014 prints guided carrier, lift, platform reach, marker sensing, controller coupling, retention, and machine-station topology but no dimensions, payload, motor rating, voltage, current, pressure, flow, travel speed, timing, friction, force, or thermal-loss datum from which an SI energy channel can be derived.",
   "us-4098001-watson-rcc":
     "US 4,098,001 prints passive radial and generally axial flexure topology but no dimensions, material, stiffness, load, motion rate, continuous drive power, motor torque, or thermal dissipation datum from which an SI energy channel can be derived.",
   "us-4098001-watson-remote-center-compliance":
@@ -997,6 +999,74 @@ export function energyChannelsFor(
       {
         name: "Polyamide Viscoelastic Hysteresis & Fiber Friction Loss",
         watts: totalPeelW * 0.18,
+        tone: "loss",
+      },
+    ];
+  }
+
+  if (patentId === "us-4512709-milacron-robot-toolchanger") {
+    const pMpa = typeof params.airPressureMpa === "number" ? params.airPressureMpa : 0.60;
+    const pPa = pMpa * 1e6;
+    const boreMm = typeof params.cylinderBoreMm === "number" ? params.cylinderBoreMm : 32.0;
+    const areaM2 = (Math.PI / 4) * (boreMm * 1e-3) ** 2;
+    const strokeSpeedM_s = 0.08; // 80 mm/s average pneumatic slide speed
+    const pneumaticPowerW = pPa * areaM2 * strokeSpeedM_s;
+    const mechanicalClampingW = pneumaticPowerW * 0.82;
+    const slidingFrictionLossW = pneumaticPowerW * 0.18;
+
+    return [
+      { name: "Pneumatic Cylinder Compressed-Air Power Input", watts: pneumaticPowerW, tone: "in" },
+      {
+        name: "Wedge Ramp Elastic Preload & Tool Clamping Strain Energy",
+        watts: mechanicalClampingW,
+        tone: "useful",
+      },
+      {
+        name: "Slideway Guide & Wedge Boundary Sliding Friction Loss",
+        watts: slidingFrictionLossW,
+        tone: "loss",
+      },
+    ];
+  }
+
+  if (patentId === "us-4575330-hull-stereolithography") {
+    const laserMw = typeof params.laserPowerMw === "number" ? params.laserPowerMw : 45.0;
+    const laserW = Math.max(0.005, laserMw * 1e-3);
+    const photochemicalW = laserW * 0.68;
+    const thermalDissipationW = laserW * 0.32;
+    return [
+      { name: "UV Laser Radiant Optical Beam Input", watts: laserW, tone: "in" },
+      {
+        name: "Photochemical Cross-Linking & Gel Network Formation",
+        watts: photochemicalW,
+        tone: "useful",
+      },
+      {
+        name: "Exothermic Reaction & Fluid Thermal Dissipation to Vat",
+        watts: thermalDissipationW,
+        tone: "loss",
+      },
+    ];
+  }
+
+  if (patentId === "us-5121329-crump-fdm") {
+    const nozzleTemp = typeof params.nozzleTempC === "number" ? params.nozzleTempC : 225.0;
+    const printSpeed = typeof params.printSpeedMmS === "number" ? params.printSpeedMmS : 45.0;
+    const heaterPowerW = Math.max(10.0, 35.0 * ((nozzleTemp - 25.0) / 200.0));
+    const polymerMeltingW = heaterPowerW * 0.65;
+    const thermalLossW = heaterPowerW * 0.35;
+    const mechanicalFeedW = 0.8 + (printSpeed / 50.0) * 0.6;
+    return [
+      { name: "Liquefier Electrical Heating Input", watts: heaterPowerW, tone: "in" },
+      { name: "Extruder Stepper Mechanical Drive Power", watts: mechanicalFeedW, tone: "in" },
+      {
+        name: "Thermoplastic Polymer Sensible Heating & Latent Fusion",
+        watts: polymerMeltingW,
+        tone: "useful",
+      },
+      {
+        name: "Heater Block Convective & Radiative Thermal Loss",
+        watts: thermalLossW,
         tone: "loss",
       },
     ];

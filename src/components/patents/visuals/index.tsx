@@ -71,6 +71,10 @@ const CortPuddlingRollingSim = dynamic(
   () => import("./CortPuddlingRollingSim").then((m) => m.CortPuddlingRollingSim),
   { ssr: false, loading: SimLoading },
 );
+const CrumpFdmSim = dynamic(() => import("./CrumpFdmSim").then((m) => m.CrumpFdmSim), {
+  ssr: false,
+  loading: SimLoading,
+});
 const DaimlerEngineSim = dynamic(
   () => import("./DaimlerEngineSim").then((m) => m.DaimlerEngineSim),
   { ssr: false, loading: SimLoading },
@@ -190,6 +194,10 @@ const HoweSewingMachineSim = dynamic(
   () => import("./HoweSewingMachineSim").then((m) => m.HoweSewingMachineSim),
   { ssr: false, loading: SimLoading },
 );
+const HullStereolithographySim = dynamic(
+  () => import("./HullStereolithographySim").then((m) => m.HullStereolithographySim),
+  { ssr: false, loading: SimLoading },
+);
 const HyattCelluloidSim = dynamic(
   () => import("./HyattCelluloidSim").then((m) => m.HyattCelluloidSim),
   { ssr: false, loading: SimLoading },
@@ -234,6 +242,10 @@ const MakinoScaraSim = dynamic(() => import("./MakinoScaraSim").then((m) => m.Ma
   ssr: false,
   loading: SimLoading,
 });
+const MilacronRobotToolchangerSim = dynamic(
+  () => import("./MilacronRobotToolchangerSim").then((m) => m.MilacronRobotToolchangerSim),
+  { ssr: false, loading: SimLoading },
+);
 const RobotEndEffectorSim = dynamic(
   () => import("./RobotEndEffectorSim").then((m) => m.RobotEndEffectorSim),
   { ssr: false, loading: SimLoading },
@@ -354,6 +366,10 @@ const LemelsonAutomaticWarehousingSim = dynamic(
   () => import("./LemelsonAutomaticWarehousingSim").then((m) => m.LemelsonAutomaticWarehousingSim),
   { ssr: false, loading: SimLoading },
 );
+const LemelsonAutomaticProductionSim = dynamic(
+  () => import("./LemelsonAutomaticProductionSim").then((m) => m.LemelsonAutomaticProductionSim),
+  { ssr: false, loading: SimLoading },
+);
 const WatsonRemoteCenterComplianceSim = dynamic(
   () => import("./WatsonRemoteCenterComplianceSim").then((m) => m.WatsonRemoteCenterComplianceSim),
   { ssr: false, loading: SimLoading },
@@ -456,6 +472,10 @@ const CortPuddlingRolling3D = dynamic(
   () => import("./three/CortPuddlingRolling3D").then((mod) => mod.CortPuddlingRolling3D),
   { ssr: false, loading: ThreeLoading },
 );
+const CrumpFdm3D = dynamic(() => import("./three/CrumpFdm3D").then((mod) => mod.CrumpFdm3D), {
+  ssr: false,
+  loading: ThreeLoading,
+});
 const DaimlerEngine3D = dynamic(
   () => import("./three/DaimlerEngine3D").then((mod) => mod.DaimlerEngine3D),
   { ssr: false, loading: ThreeLoading },
@@ -549,6 +569,10 @@ const HopkinsPotash3D = dynamic(
 );
 const HoweSewingMachine3D = dynamic(
   () => import("./three/HoweSewingMachine3D").then((mod) => mod.HoweSewingMachine3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const HullStereolithography3D = dynamic(
+  () => import("./three/HullStereolithography3D").then((mod) => mod.HullStereolithography3D),
   { ssr: false, loading: ThreeLoading },
 );
 const HyattCelluloid3D = dynamic(
@@ -663,6 +687,10 @@ const MakinoScara3D = dynamic(() => import("./three/MakinoScara3D").then((m) => 
   ssr: false,
   loading: ThreeLoading,
 });
+const MilacronRobotToolchanger3D = dynamic(
+  () => import("./three/MilacronRobotToolchanger3D").then((m) => m.MilacronRobotToolchanger3D),
+  { ssr: false, loading: ThreeLoading },
+);
 const RobotEndEffector3D = dynamic(
   () => import("./three/RobotEndEffector3D").then((m) => m.RobotEndEffector3D),
   { ssr: false, loading: ThreeLoading },
@@ -708,6 +736,13 @@ const LemelsonAutomaticWarehousing3D = dynamic(
   () =>
     import("./three/LemelsonAutomaticWarehousing3D").then(
       (mod) => mod.LemelsonAutomaticWarehousing3D,
+    ),
+  { ssr: false, loading: ThreeLoading },
+);
+const LemelsonAutomaticProduction3D = dynamic(
+  () =>
+    import("./three/LemelsonAutomaticProduction3D").then(
+      (mod) => mod.LemelsonAutomaticProduction3D,
     ),
   { ssr: false, loading: ThreeLoading },
 );
@@ -1064,6 +1099,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             ) : (
               <LemelsonAutomaticWarehousingSim />
             );
+          case "us-3313014-lemelson-automatic-production":
+            return renderMode === "3d-physics" ? (
+              <LemelsonAutomaticProduction3D />
+            ) : (
+              <LemelsonAutomaticProductionSim />
+            );
           case "us-3541541-engelbart-mouse":
             return renderMode === "3d-physics" ? <EngelbartMouse3D /> : <EngelbartMouseSim />;
           case "us-3671542-kwolek-kevlar":
@@ -1100,6 +1141,18 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             );
           case "us-4341502-makino-scara":
             return renderMode === "3d-physics" ? <MakinoScara3D /> : <MakinoScaraSim />;
+          case "us-4512709-milacron-robot-toolchanger":
+            return renderMode === "3d-physics" ? (
+              <MilacronRobotToolchanger3D />
+            ) : (
+              <MilacronRobotToolchangerSim />
+            );
+          case "us-4575330-hull-stereolithography":
+            return renderMode === "3d-physics" ? (
+              <HullStereolithography3D />
+            ) : (
+              <HullStereolithographySim />
+            );
           case "us-4765668-robot-end-effector":
             return renderMode === "3d-physics" ? <RobotEndEffector3D /> : <RobotEndEffectorSim />;
           case "us-4921293-salisbury-robot-hand":
@@ -1107,6 +1160,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
               <SalisburyRobotHand3D patentId={patentId} />
             ) : (
               <SalisburyRobotHandSim patentId={patentId} />
+            );
+          case "us-5121329-crump-fdm":
+            return renderMode === "3d-physics" ? (
+              <CrumpFdm3D patentId={patentId} />
+            ) : (
+              <CrumpFdmSim />
             );
           case "us-5701965-kamen-transporter":
             return renderMode === "3d-physics" ? (

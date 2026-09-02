@@ -73,7 +73,7 @@ One solution of this problem has been an attempt to use robot manipulators havin
         archaicTerm:
           "means for guiding and attaching first, second, third, and fourth control cables",
         modernEquivalent:
-          "underactuated tendon routing with four cable ends for three joint torques",
+          "antagonistic, redundantly actuated tendon routing with four cable ends for three joint torques",
       },
       {
         title: "Palm-Mounted Cable-Tension Sensors",
@@ -431,6 +431,7 @@ One solution of this problem has been an attempt to use robot manipulators havin
     sideNotes: [
       "The patent offers hard rubber only as an example fingertip covering; it does not print a material grade or friction coefficient.",
       "The torque equations are tied to Figure 3’s routing and radii, and the inventors explicitly allow other pulley sizes and rigging.",
+      "The interactive study exposes one digit’s four-tension vector and mirrors its normalized pose across all three digits for comparison; the physical hand has twelve separately routed cable ends.",
     ],
   },
 

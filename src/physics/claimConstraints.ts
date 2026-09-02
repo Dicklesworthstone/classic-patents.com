@@ -429,6 +429,32 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Decorative upholstery velvets provided silky softness but zero mechanical retention force.",
     },
   ],
+  "us-4512709-milacron-robot-toolchanger": [
+    {
+      claimNumber: 1,
+      patentId: "us-4512709-milacron-robot-toolchanger",
+      claimTitle: "Transverse Pneumatic Locking Slide in Dual-Plate Housing",
+      activeDescription:
+        "Claim 1 positions a transverse locking slide driven across the adapter central opening to engage an insertable tool retention member.",
+      invertedDescription:
+        "Without transverse slide engagement: axial retention relies on passive detents, causing tool detachment under dynamic robot accelerations.",
+      failureModeName: "Dynamic Tool Ejection Under Inertial Acceleration",
+      historicalPriorArt:
+        "Early tool changers used spring-loaded balls or axial pull-studs that slipped or jammed under heavy canted payloads.",
+    },
+    {
+      claimNumber: 4,
+      patentId: "us-4512709-milacron-robot-toolchanger",
+      claimTitle: "Bifurcated Wedge Ramp T-Member Self-Locking Clamping",
+      activeDescription:
+        "Claim 4 forms bifurcated ramp surfaces on the slide matching beveled crossbar ramps on the T-member to create a self-locking wedging clamp.",
+      invertedDescription:
+        "Without self-locking wedge ramps: loss of shop air pressure releases the clamping force, dropping the tool payload during power failure.",
+      failureModeName: "Catastrophic Tool Drop on Pneumatic Line Depressurization",
+      historicalPriorArt:
+        "Direct cylinder push-locks without shallow wedging angles backdrive and unclamp the instant line pressure drops below holding threshold.",
+    },
+  ],
   "us-4575330-hull-stereolithography": [
     {
       claimNumber: 1,
@@ -453,6 +479,32 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       failureModeName: "Excessive Deep-Cure Z-Distortion",
       historicalPriorArt:
         "Magat (US 2,708,617) irradiated unconfined bulk monomers, causing uncontrolled polymerization throughout the fluid container.",
+    },
+  ],
+  "us-5121329-crump-fdm": [
+    {
+      claimNumber: 1,
+      patentId: "us-5121329-crump-fdm",
+      claimTitle: "Heated Liquefier & Synchronized Filament Extrusion",
+      activeDescription:
+        "Claim 1 advances solid feedstock into a heated liquefier under positive mechanical pressure, metered synchronously with 3-axis Cartesian motion.",
+      invertedDescription:
+        "Unsynchronized or unheated extrusion: solid filament jams cold in nozzle capillary or over-extrudes uncontrolled bulk blobs.",
+      failureModeName: "Extrusion Feedrate Decoupling & Cold Jam",
+      historicalPriorArt:
+        "Prior art relied on liquid photo-vats or high-power laser powder sintering without direct mechanical feedstock metering.",
+    },
+    {
+      claimNumber: 39,
+      patentId: "us-5121329-crump-fdm",
+      claimTitle: "Planar Shearing Nozzle Land & Gap Height Control",
+      activeDescription:
+        "Claim 39 maintains the planar bottom surface of the tip parallel to the substrate, ironing and shearing each bead into a flattened road to eliminate accumulative Z errors.",
+      invertedDescription:
+        "Excessive nozzle clearance: cylindrical bead is deposited without flattening, causing severe delamination, dimensional warping, and accumulative layer height errors.",
+      failureModeName: "Loss of Planar Ironing & Interlayer Delamination",
+      historicalPriorArt:
+        "Uncontrolled bead deposition without planar shearing caused round cross-sections with poor interlayer contact area.",
     },
   ],
   "us-4921293-salisbury-robot-hand": [
@@ -1301,6 +1353,32 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "The specification presents photoelectric markers and a mechanical limit-switch alternative as position-event sources for its preset counting control.",
     },
   ],
+  "us-3313014-lemelson-automatic-production": [
+    {
+      claimNumber: 1,
+      patentId: "us-3313014-lemelson-automatic-production",
+      claimTitle: "Carrier Sensing, Retention, Record Reading, and Selected Station Control",
+      activeDescription:
+        "Claim 1 joins guided carriers, selected work stations, sensing, powered retaining means, a recorded programme, and record reading initiated when a carrier reaches a station.",
+      invertedDescription:
+        "Claim-topology probe: removing the sensing-and-retention chain leaves a carrier and machines but removes Claim 1's specified selected-station positioning and record-reading condition; no throughput or safety result is inferred.",
+      failureModeName: "Claim 1 Selected-Station Feedback Chain Omitted",
+      historicalPriorArt:
+        "The specification contrasts fixed, repetitive transfer lines with a carrier-and-programme system intended to accommodate different work and operations without a new machine set-up.",
+    },
+    {
+      claimNumber: 7,
+      patentId: "us-3313014-lemelson-automatic-production",
+      claimTitle: "Portable Programme Coupled to the Positioned Machine",
+      activeDescription:
+        "Claim 7 ties a prepositioned work holder to a multi-circuit programme controller, coupling it to the machine means before generated signals control the selected operation and release sequence.",
+      invertedDescription:
+        "Claim-topology probe: omitting the controller-to-station coupling leaves motion and a nearby machine but removes the issued portable-control interface condition; no electrical, process, or performance prediction is inferred.",
+      failureModeName: "Claim 7 Portable Controller Coupling Omitted",
+      historicalPriorArt:
+        "The description presents the carrier-mounted controller and station contacts as a way to select and control work-station operations after positional alignment, rather than a generic assertion about all automation.",
+    },
+  ],
   "us-4098001-watson-rcc": [
     {
       claimNumber: 1,
@@ -2027,6 +2105,50 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "STAGGER ALIGNMENT LOSS: Claim 1 half-pitch offset required for progressive nested interlock.";
+      }
+      break;
+    }
+
+    case "us-4575330-hull-stereolithography": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim2Active = claimStates[2] ?? true;
+      if (!claim1Active) {
+        modified.layerThicknessUm = 0;
+        activeFailures.push(
+          "Layer Translation Disabled: Without stepwise Z-axis elevator index, exposure causes bulk gelation without distinct 3D slices",
+        );
+        refusalWarning =
+          "BULK GELATION REFUSAL: Stepwise 2D laminar extraction is fundamental to stereolithography.";
+      }
+      if (!claim2Active) {
+        modified.penetrationDepthUm = 800; // Unconfined deep radiation
+        activeFailures.push(
+          "Surface Confinement Lost: Radiation penetrates entire vat depth, solidifying bulk resin into an unusable monolithic brick",
+        );
+        refusalWarning =
+          "OVERPENETRATION DISTORTION: Surface confinement of synergistic stimulation is required.";
+      }
+      break;
+    }
+
+    case "us-5121329-crump-fdm": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim39Active = claimStates[39] ?? true;
+      if (!claim1Active) {
+        modified.nozzleTempC = 120; // Cold unheated liquefier
+        activeFailures.push(
+          "Liquefier Heating Inactive: Solid feedstock cannot melt, resulting in solid capillary nozzle jam and zero extrusion",
+        );
+        refusalWarning =
+          "COLD NOZZLE JAM REFUSAL: Positive thermal liquefaction required to extrude flowable polymer.";
+      }
+      if (!claim39Active) {
+        modified.layerHeightMm = 0.9; // Excessive gap clearance
+        activeFailures.push(
+          "Planar Shearing Lost: Nozzle tip clearance too high to flatten bead, causing uncompressed cylindrical strands and delamination",
+        );
+        refusalWarning =
+          "DELAMINATION REFUSAL: Planar nozzle land ironing required to flatten beads and eliminate accumulative Z errors.";
       }
       break;
     }

@@ -21,6 +21,8 @@ const PATENT_ID = "us-2846084-goertz-electronic-master-slave-manipulator";
 const PDF_PATH = join(ROOT, "public", "patents", "pdfs", `${PATENT_ID}.pdf`);
 const LEDGER_PATH = join(ROOT, "public", "patents", "transcripts", `${PATENT_ID}-reviewed.txt`);
 const DIGEST = "0e5ceed27b4cf8fc72a9144851a9c58e0342cae111fd932519828171550a6d64";
+const BARE_SOURCE_REFERENCE =
+  /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|(?:section|division)\s+\d+)\b/i;
 
 function sourceInlines(
   block: (typeof goertzElectronicMasterSlaveManipulatorArchivalEdition.blocks)[number],
@@ -123,6 +125,20 @@ describe("US 2,846,084 Electronic Master Slave Manipulator archival edition", ()
   });
 
   test("pins source crops, period terms, and a non-lossy reading for every source paragraph", () => {
+    const allInlines =
+      goertzElectronicMasterSlaveManipulatorArchivalEdition.blocks.flatMap(sourceInlines);
+    for (const inline of allInlines) {
+      if (inline.kind === "text") expect(inline.text).not.toMatch(BARE_SOURCE_REFERENCE);
+    }
+
+    const sourceReferences = allInlines.filter(
+      (inline): inline is Extract<SourceInline, { kind: "reference" }> =>
+        inline.kind === "reference",
+    );
+    expect(
+      sourceReferences.filter((reference) => BARE_SOURCE_REFERENCE.test(reference.text)),
+    ).not.toHaveLength(0);
+
     const references = goertzElectronicMasterSlaveManipulatorArchivalEdition.blocks.flatMap(
       (block) =>
         sourceInlines(block).filter(

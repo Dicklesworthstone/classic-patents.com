@@ -500,219 +500,109 @@ lamina is to be provided. Hence, the region of formation it is being formed. Com
                                                                                           12
 means for controlling ozone and noxious fumes, as well Accordingly, it is not intended that the invention be
 as conventional high voltage safety protection and in limited, except as by the appended claims.
-terlocks. Such commercial units will also have means to        I claim:
-effectively shield the sensitive electronics from elec         1. A system for producing a three-dimensional object
-tronic noise sources.                                     5 from a fluid medium capable of solidification when
-   As previously mentioned, a number of other possible subjected to prescribed synergistic stimulation, said
-apparatus may be utilized to practice the stereolitho system comprising:
-graphic method. For example, an electron source, a             means for drawing upon and forming successive
-visible light source, or an x-ray source or other radia           cross-sectional laminae of said object at a two-di
-tion source could be substituted for the UV light source 10       mensional interface; and
-26, along with appropriate fluid media which are cured         means for moving said cross-sections as they are
-in response to these particular forms of reactive stimula         formed and building up said object in step wise
-tion. For example, alphaoctadecylacrylic acid that has            fashion, whereby a three-dimensional object is
-been slightly prepolymerized with UV light can be 15              extracted from a substantially two-dimensional
-polymerized with an electron beam. Similarly, poly(2,3-           surface.
-dichloro-1-propyl acrylate) can be polymerized with an        2. An improved system for producing a three-dimen
-X-ray beam.                                                 sional object from a fluid medium capable of solidifica
-   The stereolithographic method and apparatus has tion when subjected to prescribed synergistic stimula
-many advantages over currently used methods for pro 20 tion, said system comprising:
-ducing plastic objects. The method avoids the need of         a body of fluid medium capable of transforming its
-producing design layouts and drawings, and of produc              physical state in response to synergistic stimulation;
-ing tooling drawings and tooling. The designer can            object support means immersed within said fluid me
-work directly with the computer and a stereolitho                 dium for supporting a three-dimensional object to
-graphic device, and when he is satisfied with the design          be formed;
-as displayed on the output screen of the computer, he 25 translational       means for selectively moving said object
-                                                                 support means progressively away from a desig
-can fabricate a part for direct examination. If the design        nated surface of said fluid medium; and
-has to be modified, it can be easily done through the           reaction means capable of altering the physical state
- computer, and then another part can be made to verify            of said fluid medium and operating in a prescribed
- that the change was correct. If the design calls for sev 30      pattern upon said designated surface of said fluid
- eral parts with interacting design parameters, the
- method becomes even more useful because all of the               medium to provide a thin solid lamina at said sur
- part designs can be quickly changed and made again so            face representing a corresponding cross-sectional
- that the total assembly can be made and examined, re             lamina of said three-dimensional object to be
- peatedly if necessary.                                           formed,
-   After the design is complete, part production can 35         whereby successive adjacent laminae are provided to
-begin immediately, so that the weeks and months be                form said three-dimensional object on said object
-tween design and production are avoided. Ultimate                 support means as said translational means moves
-production rates and parts costs should be similar to             said support means away from said designated
-                                                                  surface.
-current injection molding costs for short run produc 40 3. A
-tion, with even lower labor costs than those associated 1ng: system as set forth in claim 2, and further includ
-with injection molding. Injection molding is economi          programmed control means for varying the graphic
-cal only when large numbers of identical parts are re             pattern of said reaction means operating upon said
-quired. Stereolithography is useful for short run pro
-duction because the need for tooling is eliminated and 45 4. designated
-                                                                  A  system
-                                                                              surface of said fluid medium.
-                                                                             as set forth in claim 2, wherein said reac
-production set-up time is minimal. Likewise, design tion means includes:
-changes and custom parts are easily provided using the        a beam of impinging radiation.
-technique. Because of the ease of making parts, stereoli
-thography can allow plastic parts to be used in many tion A   5.     system as set forth in claim 2, wherein said reac
-                                                                  means includes:
-places where metal or other material parts are now 50 an electron beam.
-used. Moreover, it allows plastic models of objects to be
-quickly and economically provided, prior to the deci tion6. A        system as set forth in claim 2, wherein said reac
-                                                                  means includes:
-sion to make more expensive metal or other material          a beam of high energy particles.
-parts.
-   It will be apparent from the foregoing that, while a 55 tion7. A  system as set forth in claim 2, wherein said reac
-                                                                  means includes:
-variety of stereolithographic systems have been dis          a beam of light.
-closed for the practice of the present invention, they all   8. A system as set forth in claim 2, wherein said reac
-have in common the concept of drawing upon a sub tion means includes:
-stantially two-dimensional surface and extracting a          X-rays.
-three-dimensional object from that surface.                  9. A system as set forth in claim 2, wherein said reac
-   The present invention satisfies a long existing need in tion means includes:
-the art for a CAD and CAM system capable of rapidly,         a beam of ultraviolet light.
-reliably, accurately and economically designing and          10. A system as set forth in claim 2, wherein said
-fabricating three-dimensional plastic parts and the like. reaction means includes:
-   It will be apparent from the foregoing that, while 65 a jet of a reactive chemical to induce solidification of
-particular forms of the invention have been illustrated           said fluid medium.
-and described, various modifications can be made with        11. A system as set forth in claim 2, wherein said
-out departing from the spirit and scope of the invention. reaction means includes:
+terlocks. Such commercial units will also have means to
+
+
+I claim:
+1. A system for producing a three-dimensional object from a fluid medium capable of solidification when subjected to prescribed synergistic stimulation, said system comprising: means for drawing upon and forming successive cross-sectional laminae of said object at a two-dimensional interface; and means for moving said cross-sections as they are formed and building up said object in step wise fashion, whereby a three-dimensional object is extracted from a substantially two-dimensional surface.
+
+2. A system for producing a three-dimensional object from a fluid medium capable of altering its physical state in response to appropriate synergistic stimulation, said system comprising: a container which holds a body of said fluid medium, said fluid medium having a designated surface at which solidification of said fluid medium takes place; reaction means for selectively applying synergistic stimulation in a prescribed pattern to said fluid medium at said designated surface to provide a thin solid lamina representing a cross-section of said three-dimensional object, said reaction means applying said synergistic stimulation to only a thin surface layer of said fluid medium at said designated surface; and translational means for moving said object as it is formed away from said designated surface, to provide a newly formed surface of said fluid medium at said designated surface, whereby successive laminae are formed and integrated together to provide a step-wise laminar buildup of said three-dimensional object from a substantially two-dimensional surface.
+
+3. A system as set forth in claim 2, wherein said reaction means includes: a source of impinging radiation.
+
+4. A system as set forth in claim 2, wherein said reaction means includes: a beam of impinging radiation.
+
+5. A system as set forth in claim 2, wherein said reaction means includes: an electron beam.
+
+6. A system as set forth in claim 2, wherein said reaction means includes: a beam of high energy particles.
+
+7. A system as set forth in claim 2, wherein said reaction means includes: a beam of light.
+
+8. A system as set forth in claim 2, wherein said reaction means includes: X-rays.
+
+9. A system as set forth in claim 2, wherein said reaction means includes: a beam of ultraviolet light.
+
+10. A system as set forth in claim 2, wherein said reaction means includes: a jet of a reactive chemical to induce solidification of said fluid medium.
+
+11. A system as set forth in claim 2, wherein said reaction means includes: a patterned mask overlying said designated surface for selectively applying a chemical to induce solidification of said fluid medium.
 
 --- REVIEWED TRANSCRIPTION PAGE 12 OF 16 ---
 
-13
-                                                     4,575,330
-                                                                                            14
-  a patterned mask overlying said designated surface                designed cross-sections of said object, at a two-di
-    for selectively applying a chemical to induce solidi             mensional interface; and
-       fication of said fluid medium.                            means for moving said cross-sections as they are
-    12. A system as set forth in claim 2, wherein said               formed and building up said object in a stepwise
-reaction means includes:                                     5       fashion, whereby the three-dimensional object de
-    a patterned mask overlying said designated surface               signed by said computer is automatically extracted
-       for selectively exposing said surface to synergistic         from a substantially two-dimensional surface.
-       stimulation.                                              28. An improved system for producing a three-di
-    13. A system as set forth in claim 2, wherein said mensional object from a fluid medium capable of alter
- reaction means includes:                                   10 ing its physical state when subjected to prescribed radi
-   a patterned mask overlying said designated surface ation, said system comprising:
-      for selectively exposing said surface to radiation.        a body of fluid medium capable of altering its physi
-    14. A system as set forth in claim 2, wherein said              cal state;                         -
-translational means moves said object as it is formed 15 means for forming said three-dimensional object from
-away from said designated surface and further into said             said fluid medium by irradiating a designated sur
-fluid medium.                                                        face of said medium to provide integrated, succes
-    15. A system as set forth in claim 2, wherein said              sive surface laminae at said surface, said laminae
-translational means moves said object, as it is formed              together defining said three-dimensional object.
-away from said surface and out of said fluid medium. 20 29. An improved system for producing a three-di
-    16. A system as set forth in claim 2, wherein exposure mensional object from a fluid medium, said system com
-to said reaction means at said designated surface is prising:
-through a second non-reactive medium.                            a body of fluid medium capable of altering its physi
-    17. A system as set forth in claim 2, and further in            cal state in response to prescribed radiation;
-cluding:                                                         a  radiation  source for impinging said prescribed radi
-   a container for said fluid medium, wherein exposure 25           ation in a selected pattern upon a designated sur
-      of said designated surface to said reaction means is          face of said fluid medium to provide only at said
-      through the bottom of said container and a second             surface a thin solid lamina representing a cross-sec
-       non-reactive medium adjacent said designated sur             tional lamina of a three-dimensional object to be
-      face.                                                 30      formed; and
-   18. A system as set forth in claim 17, wherein said           means for combining successive adjacent laminae to
-second non-reactive medium is heavy water.                          form said three-dimensional object from said fluid
-   19. A system as set forth in claim 17, wherein said              medium.
-second non-reactive medium is ethylene glycol.                   30. A system as set forth in claim 29, wherein said
-   20. A system as set forth in claim 2, and further in 35 radiation source includes:
-cluding:                                                         a beam of impinging radiation.
-   rotational means, supplementing said translational            31. A system as set forth in claim 29, wherein said
-      means for altering the orientation of said object radiation source includes:
-      relative to said designated surface at which laminae       an electron beam.
-      are being formed.                                          32. A system as set forth in claim 29, wherein said
-   21. A system as set forth in claim 2, wherein the level radiation source includes:
-of said fluid medium locating said designated surface is         a beam of high energy particles.
-variable.                                                        33. A system as set forth in claim 29, wherein said
-   22. A system as set forth in claim 2, wherein the level radiation source includes:
-of said fluid medium locating said designated surface is 45 a beam of light.
-maintained constant.                                             34. A system as set forth in claim 29, wherein said
-   23. A system as set forth in claim 2, wherein said radiation source includes:
-translational means has multiple degrees of freedom of           a beam of ultraviolet light.
-movement.                                                        35. A system as set forth in claim 29, wherein said
-   24. A system as set forth in claim 4, wherein precise 50 radiation source includes:
-focus of said beam of impinging radiation upon said              X-rays.
-designated surface is maintained.                                36. A system as set forth in claim 29, wherein said
-   25. A system as set forth in claim 2, wherein said radiation source and pattern includes:
-prescribed pattern is formed upon said designated sur            a patterned mask overlying said designated surface
-face by radiation emanating from the face of a cathode 55           for selectively exposing said surface to synergistic
-ray tube.                                                           stimulation.
-   26. A system as set forth in claim 2, wherein said            37. A system as set forth in claim 29, wherein said
-prescribed pattern is formed by light directly emanating radiation source and pattern includes:
-from a phosphor image.                                           a patterned mask overlying said designated surface
-   27. A system for directly producing a three-dimen                selectively exposing said surface to radiation.
-sional object as it is designed by a computer, compris           38. A system as set forth in claim 29, wherein expo
-ling:                                                          sure to said prescribed radiation at said designated sur
-   deriving graphic image output from said computer, face is through a second non-reactive medium.
-      said graphic image defining successive adjacent            39. A system as set forth in claim 29, and further
-      cross-sections of the three-dimensional object de 65 including:
-      signed by said computer;                                   a container for said fluid medium, wherein exposure
-   means for drawing upon and forming successive                    of said designated surface to said prescribed radia
-      cross-sections, corresponding to said computer                tion is through the bottom of said container and a
+
+12. A system as set forth in claim 2, wherein said reaction means includes: a patterned mask overlying said designated surface for selectively exposing said surface to synergistic stimulation.
+
+13. A system as set forth in claim 2, wherein said reaction means includes: a patterned mask overlying said designated surface for selectively exposing said surface to radiation.
+
+14. A system as set forth in claim 2, wherein said translational means moves said object as it is formed away from said designated surface and further into said fluid medium.
+
+15. A system as set forth in claim 2, wherein said translational means moves said object, as it is formed away from said surface and out of said fluid medium.
+
+16. A system as set forth in claim 2, wherein exposure to said reaction means at said designated surface is through a second non-reactive medium.
+
+17. A system as set forth in claim 2, and further including: a container for said fluid medium, wherein exposure of said designated surface to said reaction means is through the bottom of said container and a second non-reactive medium adjacent said designated surface.
+
+18. A system as set forth in claim 17, wherein said second non-reactive medium is heavy water.
+
+19. A system as set forth in claim 17, wherein said second non-reactive medium is ethylene glycol.
+
+20. A system as set forth in claim 2, and further including: rotational means, supplementing said translational means for altering the orientation of said object relative to said designated surface at which laminae are being formed.
+
+21. A system as set forth in claim 2, wherein the level of said fluid medium locating said designated surface is variable.
+
+22. A system as set forth in claim 2, wherein the level of said fluid medium locating said designated surface is maintained constant.
+
+23. A system as set forth in claim 2, wherein said translational means has multiple degrees of freedom of movement.
+
+24. A system as set forth in claim 4, wherein precise focus of said beam of impinging radiation upon said designated surface is maintained.
+
+25. A system as set forth in claim 2, wherein said prescribed pattern is formed upon said designated surface by radiation emanating from the face of a cathode ray tube.
+
+26. A system as set forth in claim 2, wherein said prescribed pattern is formed by light directly emanating from a phosphor image.
+
+27. A system for directly producing a three-dimensional object as it is designed by a computer, comprising: deriving graphic image output from said computer, said graphic image defining successive adjacent cross-sections of the three-dimensional object designed by said computer; means for drawing upon and forming successive cross-sections, corresponding to said computer designed cross-sections of said object, at a two-dimensional interface; and means for moving said cross-sections as they are formed and building up said object in a stepwise fashion, whereby the three-dimensional object designed by said computer is automatically extracted from a substantially two-dimensional surface.
+
+28. An improved system for producing a three-dimensional object from a fluid medium capable of altering its physical state when subjected to prescribed radiation, said system comprising: a body of fluid medium capable of altering its physical state; means for forming said three-dimensional object from said fluid medium by irradiating a designated surface of said medium to provide integrated, successive surface laminae at said surface, said laminae together defining said three-dimensional object.
+
+29. An improved system for producing a three-dimensional object from a fluid medium, said system comprising: a body of fluid medium capable of altering its physical state in response to prescribed radiation; a radiation source for impinging said prescribed radiation in a selected pattern upon a designated surface of said fluid medium to provide only at said surface a thin solid lamina representing a cross-sectional lamina of a three-dimensional object to be formed; and means for combining successive adjacent laminae to form said three-dimensional object from said fluid medium.
+
+30. A system as set forth in claim 29, wherein said radiation source includes: a beam of impinging radiation.
+
+31. A system as set forth in claim 29, wherein said radiation source includes: an electron beam.
+
+32. A system as set forth in claim 29, wherein said radiation source includes: a beam of high energy particles.
+
+33. A system as set forth in claim 29, wherein said radiation source includes: a beam of light.
+
+34. A system as set forth in claim 29, wherein said radiation source includes: a beam of ultraviolet light.
+
+35. A system as set forth in claim 29, wherein said radiation source includes: X-rays.
+
+36. A system as set forth in claim 29, wherein said radiation source and pattern includes: a patterned mask overlying said designated surface for selectively exposing said surface to synergistic stimulation.
+
+37. A system as set forth in claim 29, wherein said radiation source and pattern includes: a patterned mask overlying said designated surface selectively exposing said surface to radiation.
+
+38. A system as set forth in claim 29, wherein exposure to said prescribed radiation at said designated surface is through a second non-reactive medium.
+
+39. A system as set forth in claim 29, and further including: a container for said fluid medium, wherein exposure of said designated surface to said prescribed radiation is through the bottom of said container and a second non-reactive medium adjacent said designated surface.
 
 --- REVIEWED TRANSCRIPTION PAGE 13 OF 16 ---
 
-15
-                                                  4,575,330
-                                                                                       16
-    second non-reactive medium adjacent said desig            44. A system as set forth in claim 39, wherein precise
-    nated surface.                                          focus of said prescribed radiation upon said designated
-                                                            surface is maintained.
-  40. A system as set forth in claim 39, wherein said     45. A system as set forth in claim 39, wherein said
-second non-reactive medium is heavy water.              selected pattern is formed upon said designited surface
-  41. A system as set forth in claim 39, wherein said by    radiation emanating from the face of a cathode ray
-                                                        tube.
-second non-reactive medium is ethylene glycol.            46. A system as set forth in claim 39, wherein said
-  42. A system as set forth in claim 39, wherein the 10 selected pattern is formed by light directly emanating
-level of said fluid medium locating said designated sur from  a phosphor image.
-                                                          47. A system as set forth in claim 39, and further
-face is maintained constant.                            including:
-  43. A system as set forth in claim 39, wherein said     programmed control means for varying the pattern of
-                                                             said impinging radiation upon said designated sur
-translational means has multiple degrees of freedom of 15       face of said fluid medium.
-movement.                                                                       k    s       k   k
 
+40. A system as set forth in claim 39, wherein said second non-reactive medium is heavy water.
 
+41. A system as set forth in claim 39, wherein said second non-reactive medium is ethylene glycol.
 
+42. A system as set forth in claim 39, wherein the level of said fluid medium locating said designated surface is maintained constant.
 
-                                                      20
+43. A system as set forth in claim 39, wherein said translational means has multiple degrees of freedom of movement.
 
+44. A system as set forth in claim 39, wherein precise focus of said prescribed radiation upon said designated surface is maintained.
 
+45. A system as set forth in claim 39, wherein said selected pattern is formed upon said designated surface by radiation emanating from the face of a cathode ray tube.
 
+46. A system as set forth in claim 39, wherein said selected pattern is formed by light directly emanating from a phosphor image.
 
-                                                      25
-
-
-
-
-                                                      30
-
-
-
-
-                                                      35
-
-
-
-
-                                                      45
-
-
-
-
-                                                      SO
-
-
-
-
-                                                      55
-
-
-
-
-                                                      60
-
-
-
-
-                                                      65
+47. A system as set forth in claim 39, and further including: programmed control means for varying the pattern of said impinging radiation upon said designated surface of said fluid medium.
 
 --- REVIEWED TRANSCRIPTION PAGE 14 OF 16 ---
 

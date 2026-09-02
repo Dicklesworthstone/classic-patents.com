@@ -54,43 +54,45 @@ export const HULL_SLA_DEFAULT_CONTROLS: HullStereolithographyControls = {
 };
 
 export function readHullStereolithographyControls(
-  params: Record<string, number | boolean | string>,
+  params?:
+    | Partial<HullStereolithographyControls>
+    | Record<string, number | boolean | string | undefined>,
 ): HullStereolithographyControls {
   return {
     laserPowerMw:
-      typeof params.laserPowerMw === "number"
+      typeof params?.laserPowerMw === "number"
         ? Math.max(5, Math.min(200, params.laserPowerMw))
         : HULL_SLA_DEFAULT_CONTROLS.laserPowerMw,
     laserScanSpeedMmS:
-      typeof params.laserScanSpeedMmS === "number"
+      typeof params?.laserScanSpeedMmS === "number"
         ? Math.max(20, Math.min(2000, params.laserScanSpeedMmS))
         : HULL_SLA_DEFAULT_CONTROLS.laserScanSpeedMmS,
     beamWaistRadiusUm:
-      typeof params.beamWaistRadiusUm === "number"
+      typeof params?.beamWaistRadiusUm === "number"
         ? Math.max(40, Math.min(400, params.beamWaistRadiusUm))
         : HULL_SLA_DEFAULT_CONTROLS.beamWaistRadiusUm,
     layerThicknessUm:
-      typeof params.layerThicknessUm === "number"
+      typeof params?.layerThicknessUm === "number"
         ? Math.max(10, Math.min(400, params.layerThicknessUm))
         : HULL_SLA_DEFAULT_CONTROLS.layerThicknessUm,
     penetrationDepthUm:
-      typeof params.penetrationDepthUm === "number"
+      typeof params?.penetrationDepthUm === "number"
         ? Math.max(40, Math.min(400, params.penetrationDepthUm))
         : HULL_SLA_DEFAULT_CONTROLS.penetrationDepthUm,
     criticalExposureMJCm2:
-      typeof params.criticalExposureMJCm2 === "number"
+      typeof params?.criticalExposureMJCm2 === "number"
         ? Math.max(2, Math.min(50, params.criticalExposureMJCm2))
         : HULL_SLA_DEFAULT_CONTROLS.criticalExposureMJCm2,
     resinViscosityCp:
-      typeof params.resinViscosityCp === "number"
+      typeof params?.resinViscosityCp === "number"
         ? Math.max(50, Math.min(8000, params.resinViscosityCp))
         : HULL_SLA_DEFAULT_CONTROLS.resinViscosityCp,
     elevatorDipSpeedMmS:
-      typeof params.elevatorDipSpeedMmS === "number"
+      typeof params?.elevatorDipSpeedMmS === "number"
         ? Math.max(0.5, Math.min(40, params.elevatorDipSpeedMmS))
         : HULL_SLA_DEFAULT_CONTROLS.elevatorDipSpeedMmS,
     partLayersCount:
-      typeof params.partLayersCount === "number"
+      typeof params?.partLayersCount === "number"
         ? Math.max(1, Math.min(500, Math.round(params.partLayersCount)))
         : HULL_SLA_DEFAULT_CONTROLS.partLayersCount,
   };
@@ -171,4 +173,13 @@ export function stepHullStereolithographySi(
     recoatDelayRefusal,
     refusalReason,
   };
+}
+
+export function stepHullStereolithography(
+  params: Record<
+    string,
+    number | boolean | string
+  > = HULL_SLA_DEFAULT_CONTROLS as unknown as Record<string, number | boolean | string>,
+): HullStereolithographyTelemetry {
+  return stepHullStereolithographySi(readHullStereolithographyControls(params));
 }

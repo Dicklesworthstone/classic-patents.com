@@ -30,6 +30,7 @@ export type SalisburyPullPattern =
   | "mixed cable loading";
 
 export interface SalisburyRobotHandTelemetry {
+  /** One digit's four admitted tensions; the full hand has three such cable groups. */
   tendonTensionsN: [number, number, number, number];
   pulleyRadiiM: [number, number, number];
   jointTorquesNm: [number, number, number];
@@ -88,6 +89,9 @@ export function stepSalisburyRobotHandSi(
   _dt = 1 / 60,
 ): SalisburyRobotHandTelemetry {
   const { tensionT1N: t1, tensionT2N: t2, tensionT3N: t3, tensionT4N: t4 } = controls;
+  // Figure 3 prints the law for one representative digit. The visual mirrors
+  // that digit-level study across all three connected chains; it does not
+  // collapse the physical hand's twelve separately routed cable ends to four.
   const tensions: [number, number, number, number] = [t1, t2, t3, t4];
   const invalidTensionIndex = tensions.findIndex((value) => !isValidTension(value));
 

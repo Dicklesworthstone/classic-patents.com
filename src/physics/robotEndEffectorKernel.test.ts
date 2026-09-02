@@ -6,7 +6,6 @@ import {
   ROBOT_END_EFFECTOR_DEFAULTS,
   SCREW_EFFICIENCY,
   SCREW_LEAD_M,
-  readRobotEndEffectorControls,
   stepRobotEndEffectorSi,
 } from "./robotEndEffectorKernel";
 

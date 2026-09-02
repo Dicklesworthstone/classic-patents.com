@@ -10,6 +10,7 @@ import { carrierAirConditionerPatent } from "./carrier-air-conditioner";
 import { coltRevolverPatent } from "./colt-revolver";
 import { corlissSteamEnginePatent } from "./corliss-steam-engine";
 import { cortPuddlingRollingPatent } from "./cort-puddling-rolling";
+import { crumpFdmPatent } from "./crump-fdm";
 import { daimlerEnginePatent } from "./daimler-engine";
 import { davenportElectricMotorPatent } from "./davenport-electric-motor";
 import { daVinciPatent } from "./davinci";
@@ -40,6 +41,7 @@ import { hewittMercuryLampPatent } from "./hewitt-mercury-lamp";
 import { hollerithTabulatingPatent } from "./hollerith-tabulating";
 import { hopkinsPotashPatent } from "./hopkins-potash";
 import { howeSewingMachinePatent } from "./howe-sewing-machine";
+import { hullStereolithographyPatent } from "./hull-stereolithography";
 import { hyattCelluloidPatent } from "./hyatt-celluloid";
 import { kamenMedicationInjectionPatent } from "./kamen-medication-injection-device";
 import { kamenTransporterPatent } from "./kamen-transporter";
@@ -47,6 +49,7 @@ import { kilbyIntegratedCircuitPatent } from "./kilby-integrated-circuit";
 import { kwolekKevlarPatent } from "./kwolek-kevlar";
 import { lamarrPatent as lamarrFrequencyHoppingPatent } from "./lamarr-frequency-hopping";
 import { landPolaroidPatent } from "./land-polaroid";
+import { lemelsonAutomaticProductionPatent } from "./lemelson-automatic-production";
 import { lemelsonAutomaticWarehousingPatent } from "./lemelson-automatic-warehousing";
 import { lincolnBuoyPatent } from "./lincoln-buoy";
 import { lindeAirLiquefactionPatent } from "./linde-air-liquefaction";
@@ -94,12 +97,14 @@ import { zeppelinAirshipPatent } from "./zeppelin-airship";
 
 export {
   carlsonElectrophotographyPatent,
+  crumpFdmPatent,
   daVinciPatent,
   eInkPatent,
   fessendenWirelessPatent,
   goertzElectronicMasterSlaveManipulatorPatent,
   haberAmmoniaPatent,
   hewittMercuryLampPatent,
+  hullStereolithographyPatent,
   mestralVelcroPatent,
   multiTouchPatent,
   pagerankPatent,
@@ -185,6 +190,7 @@ export const allPatents: Patent[] = parsePatentCatalog([
   devolProgrammedTransferPatent,
   lemelsonAutomaticWarehousingPatent, // 1964-01-28
   kilbyIntegratedCircuitPatent, // 1964-06-23
+  lemelsonAutomaticProductionPatent, // 1967-04-11
   maimanRubyLaserPatent, // 1967-11-14
   engelbartMousePatent,
   kwolekKevlarPatent,
@@ -194,8 +200,10 @@ export const allPatents: Patent[] = parsePatentCatalog([
   watsonRccPatent, // 1978-07-04
   wozniakApplePatent,
   makinoScaraPatent, // 1982-07-27
+  hullStereolithographyPatent, // 1986-03-11
   robotEndEffectorPatent, // 1988-08-23
   salisburyRobotHandPatent, // 1990-05-01
+  crumpFdmPatent, // 1992-06-09
   kamenTransporterPatent, // 1997-12-30
   eInkPatent, // 2000-09-19
   pagerankPatent, // 2001-09-04

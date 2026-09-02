@@ -30,6 +30,12 @@ describe("US 4,921,293 Salisbury hand full physics weave", () => {
       "radiusScaleMm",
       "firstIdlerFixed",
     ]);
+    expect(
+      entry.controls
+        .slice(0, 4)
+        .every((control) => control.label.startsWith("Representative digit")),
+    ).toBe(true);
+    expect(entry.pedagogicalInsight).toContain("mirrors the representative digit pose");
 
     const metrics = entry.computeMetrics(DEFAULT_PARAMS);
     expect(metrics.map((metric) => metric.label)).toEqual([

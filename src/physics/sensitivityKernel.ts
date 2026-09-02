@@ -10,12 +10,18 @@
  * use automatic differentiation; the unused Dual class was removed.
  */
 
+import { readCrumpFdmControls } from "./crumpFdmKernel";
 import {
   readGoertzMasterSlaveControls,
   stepGoertzMasterSlaveTopology,
 } from "./goertzElectronicMasterSlaveManipulatorKernel";
+import {
+  readHullStereolithographyControls,
+  stepHullStereolithographySi,
+} from "./hullStereolithographyKernel";
 import { stepLemelsonWarehouseTopology } from "./lemelsonWarehouseKernel";
 import { readMestralVelcroControls, stepMestralVelcroSi } from "./mestralVelcroKernel";
+import { readMilacronToolchangerControls } from "./milacronRobotToolchangerKernel";
 import { OTIS_DECLARED_MAX_DISPLAY_TRAVEL_PER_S } from "./otisKernel";
 import { ROBOT_END_EFFECTOR_TYPICAL_JAW_OPENING_M } from "./robotEndEffectorKernel";
 import { readSalisburyRobotHandControls } from "./salisburyRobotHandKernel";
@@ -1862,6 +1868,126 @@ export function computeParameterSensitivity(
           derivativeUnit: "display deg / selected deg",
           interpretation:
             "Central difference of the same normalized display composition used by the 2D and 3D exhibits. It is not an SI dexterity, velocity, motor, or manufacturing-performance derivative.",
+        };
+      }
+      break;
+    }
+
+    case "us-4512709-milacron-robot-toolchanger": {
+      const controls = readMilacronToolchangerControls(params);
+      const thetaRad = (controls.wedgeAngleDeg * Math.PI) / 180;
+      const phiRad = Math.atan(controls.frictionCoeff);
+      const tanSum = Math.tan(thetaRad + phiRad);
+
+      if (controlKey === "airPressureMpa") {
+        const boreM = controls.cylinderBoreMm * 1e-3;
+        const areaM2 = (Math.PI / 4) * boreM * boreM;
+        // dF_clamp / dp_MPa = (area * 1e6) / tanSum
+        const dF_dp = (areaM2 * 1e6) / Math.max(0.05, tanSum);
+        return {
+          metricName: "Normal Tool Clamping Force",
+          derivativeSymbol: "∂F_clamp / ∂p_air",
+          derivativeValue: Number(dF_dp.toFixed(1)),
+          derivativeUnit: "N / MPa",
+          interpretation:
+            "Linear clamping force scaling with pneumatic supply pressure, amplified by the shallow-angle wedge slide mechanical advantage.",
+        };
+      }
+      if (controlKey === "cylinderBoreMm") {
+        const pPa = controls.airPressureMpa * 1e6;
+        const boreM = controls.cylinderBoreMm * 1e-3;
+        // dF_clamp / dD_mm = (pPa * (pi/2) * boreM * 1e-3) / tanSum
+        const dF_dBore = (pPa * (Math.PI / 2) * boreM * 1e-3) / Math.max(0.05, tanSum);
+        return {
+          metricName: "Normal Tool Clamping Force",
+          derivativeSymbol: "∂F_clamp / ∂D_cyl",
+          derivativeValue: Number(dF_dBore.toFixed(1)),
+          derivativeUnit: "N / mm",
+          interpretation:
+            "Quadratic piston area growth with cylinder bore diameter, multiplying normal clamping force delivered to the T-member crossbar.",
+        };
+      }
+      break;
+    }
+
+    case "us-4575330-hull-stereolithography": {
+      const controls = readHullStereolithographyControls(params);
+      if (controlKey === "laserPowerMw") {
+        // dC_d / dP_L = D_p / P_L
+        const dCd_dP = controls.penetrationDepthUm / Math.max(1, controls.laserPowerMw);
+        return {
+          metricName: "Polymerization Curing Depth",
+          derivativeSymbol: "∂C_d / ∂P_L",
+          derivativeValue: Number(dCd_dP.toFixed(3)),
+          derivativeUnit: "µm / mW",
+          interpretation:
+            "Logarithmic sensitivity from Beer-Lambert law: increasing laser power expands cure depth with diminishing returns (scaling inversely with operating power P_L).",
+        };
+      }
+      if (controlKey === "laserScanSpeedMmS") {
+        // dC_d / dv_s = -D_p / v_s
+        const dCd_dVs = -controls.penetrationDepthUm / Math.max(1, controls.laserScanSpeedMmS);
+        return {
+          metricName: "Polymerization Curing Depth",
+          derivativeSymbol: "∂C_d / ∂v_s",
+          derivativeValue: Number(dCd_dVs.toFixed(3)),
+          derivativeUnit: "µm / (mm/s)",
+          interpretation:
+            "Increasing galvanometer vector scan velocity reduces dwell time, exponentially thinning the cured cross-sectional lamina.",
+        };
+      }
+      if (controlKey === "layerThicknessUm") {
+        const tel = stepHullStereolithographySi(controls);
+        const dAdhesion_dZ = -tel.cureDepthUm / Math.max(1, controls.layerThicknessUm) ** 2;
+        return {
+          metricName: "Interlayer Adhesion Ratio",
+          derivativeSymbol: "∂(C_d / Δz) / ∂Δz",
+          derivativeValue: Number(dAdhesion_dZ.toFixed(4)),
+          derivativeUnit: "1 / µm",
+          interpretation:
+            "Increasing layer step height reduces relative overlap cure margin; step height must remain below cure depth C_d to prevent catastrophic part delamination.",
+        };
+      }
+      break;
+    }
+
+    case "us-5121329-crump-fdm": {
+      const controls = readCrumpFdmControls(params);
+      if (controlKey === "printSpeedMmS") {
+        // dQ / dv_head = w * h
+        const dQ_dVs = controls.roadWidthMm * controls.layerHeightMm;
+        return {
+          metricName: "Volumetric Extrusion Flow Rate",
+          derivativeSymbol: "∂Q / ∂v_{\\text{head}}",
+          derivativeValue: Number(dQ_dVs.toFixed(3)),
+          derivativeUnit: "mm³/s / (mm/s)",
+          interpretation:
+            "Volumetric extrusion demand scales linearly with toolhead print velocity, requiring proportional filament feed motor stepping.",
+        };
+      }
+      if (controlKey === "nozzleTempC") {
+        // dmu / dT ~ -Ea/(R*T^2) * mu
+        const T_K = controls.nozzleTempC + 273.15;
+        const dMu_dT = -(48.0 / (8.314e-3 * T_K * T_K)) * 280.0;
+        return {
+          metricName: "Apparent Melt Viscosity",
+          derivativeSymbol: "∂μ / ∂T",
+          derivativeValue: Number(dMu_dT.toFixed(2)),
+          derivativeUnit: "Pa·s / °C",
+          interpretation:
+            "Negative exponential sensitivity from Arrhenius polymer rheology: heating liquefier thins molten polymer and sharply reduces required axial feed force.",
+        };
+      }
+      if (controlKey === "layerHeightMm") {
+        // dtau / dh = 2h / (pi^2 * alpha)
+        const dTau_dh = (2 * controls.layerHeightMm) / (Math.PI * Math.PI * 0.082);
+        return {
+          metricName: "Road Thermal Cooling Time Constant",
+          derivativeSymbol: "∂τ / ∂h",
+          derivativeValue: Number(dTau_dh.toFixed(3)),
+          derivativeUnit: "s / mm",
+          interpretation:
+            "Cooling time scales quadratically with layer thickness: thicker slices retain thermal energy longer before freezing below Tg.",
         };
       }
       break;

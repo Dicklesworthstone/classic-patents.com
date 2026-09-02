@@ -47,7 +47,7 @@ describe("US 4,921,293 Salisbury & Ruoff Multi-Fingered Robotic Hand manual sour
       authoredClaims.map((claim) => claim.inlines.map((inline) => inline.text).join("")),
     );
     for (const claim of salisburyRobotHandPatent.claims) {
-      expect(claim.plainEnglish.split(/\s+/).length).toBeGreaterThan(20);
+      expect(claim.plainEnglish.split(/\s+/).length).toBeGreaterThan(30);
       expect(claim.keyInnovations).not.toHaveLength(0);
     }
   });
@@ -100,7 +100,7 @@ describe("US 4,921,293 Salisbury & Ruoff Multi-Fingered Robotic Hand manual sour
     for (const idx of paragraphIndices) {
       const reading = salisburyRobotHandParallelReadings[idx];
       expect(reading).toBeDefined();
-      expect(reading?.join(" ").length).toBeGreaterThan(30);
+      expect(reading?.join(" ").length).toBeGreaterThan(40);
     }
   });
 

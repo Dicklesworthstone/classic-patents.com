@@ -52,6 +52,7 @@ import {
   voltsToKv,
 } from "./catalogKernels";
 import { stepCortPuddlingRolling } from "./cortKernel";
+import { CRUMP_FDM_DEFAULT_CONTROLS, readCrumpFdmControls, stepCrumpFdmSi } from "./crumpFdmKernel";
 import { readDaVinciControls } from "./daVinciKernel";
 import { stepDevolProgrammedTransfer } from "./devolProgrammedTransferKernel";
 import { stepEInk } from "./eInkKernel";
@@ -64,6 +65,11 @@ import {
 } from "./goertzElectronicMasterSlaveManipulatorKernel";
 import { stepHopkinsPotash } from "./hopkinsPotashKernel";
 import {
+  HULL_SLA_DEFAULT_CONTROLS,
+  readHullStereolithographyControls,
+  stepHullStereolithographySi,
+} from "./hullStereolithographyKernel";
+import {
   KAMEN_INJECTION_DEFAULT_CONTROLS,
   readKamenInjectionControls,
   stepKamenInjectionMechanism,
@@ -73,6 +79,11 @@ import {
   readKamenTransporterControls,
   stepKamenTransporterSi,
 } from "./kamenTransporterKernel";
+import {
+  LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS,
+  readLemelsonAutomaticProductionControls,
+  stepLemelsonAutomaticProductionTopology,
+} from "./lemelsonAutomaticProductionKernel";
 import {
   LEMELSON_WAREHOUSE_DEFAULT_CONTROLS,
   readLemelsonWarehouseControls,
@@ -90,16 +101,16 @@ import {
   readMestralVelcroControls,
   stepMestralVelcroSi,
 } from "./mestralVelcroKernel";
+import {
+  MILACRON_TOOLCHANGER_DEFAULT_CONTROLS,
+  readMilacronToolchangerControls,
+  stepMilacronRobotToolchangerSi,
+} from "./milacronRobotToolchangerKernel";
 import { stepMultiTouch } from "./multiTouchKernel";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { stepPageRank } from "./pageRankKernel";
 import { stepRobotEndEffector } from "./robotEndEffectorKernel";
 import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
-import {
-  HULL_SLA_DEFAULT_CONTROLS,
-  readHullStereolithographyControls,
-  stepHullStereolithographySi,
-} from "./hullStereolithographyKernel";
 import {
   readSalisburyRobotHandControls,
   SALISBURY_HAND_DEFAULT_CONTROLS,
@@ -7429,6 +7440,106 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "US 6,331,181 centers tool-boundary data: compatibility, tool type, measured calibration offsets, life information, and engagement signals are transmitted to a processor before or during tool exchange.",
   },
+  "us-4512709-milacron-robot-toolchanger": {
+    domain: "mechanics",
+    domainTitle: "Pneumatic Radial Wedging & Bistable Tool Clamping",
+    equationName: "Wedge Mechanical Advantage & Friction-Cone Self-Locking",
+    governingEquation:
+      "F_{\\text{clamp}} = \\frac{p_{\\text{air}} \\cdot \\frac{\\pi}{4} D_{\\text{cyl}}^2}{\\tan(\\theta + \\arctan\\mu_s)} \\quad \\text{with bistable condition } \\tan\\theta \\le \\mu_s",
+    engineMethod: "FrankenSimEngine.stepMilacronRobotToolchanger",
+    controls: [
+      {
+        id: "airPressureMpa",
+        label: "Supply Air Pressure",
+        min: 0.2,
+        max: 1.0,
+        step: 0.05,
+        defaultValue: MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.airPressureMpa,
+        unit: "MPa",
+      },
+      {
+        id: "cylinderBoreMm",
+        label: "Pneumatic Cylinder Bore",
+        min: 20,
+        max: 50,
+        step: 2,
+        defaultValue: MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.cylinderBoreMm,
+        unit: "mm",
+      },
+      {
+        id: "wedgeAngleDeg",
+        label: "Ramp Taper Angle",
+        min: 4,
+        max: 15,
+        step: 0.5,
+        defaultValue: MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.wedgeAngleDeg,
+        unit: "°",
+      },
+      {
+        id: "frictionCoeff",
+        label: "Static Friction Coeff",
+        min: 0.08,
+        max: 0.30,
+        step: 0.01,
+        defaultValue: MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.frictionCoeff,
+        unit: "",
+      },
+      {
+        id: "slideStrokeMm",
+        label: "Slide Stroke Position",
+        min: 0,
+        max: 25,
+        step: 1,
+        defaultValue: MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.slideStrokeMm,
+        unit: "mm",
+      },
+      {
+        id: "toolMassKg",
+        label: "Tool Payload Mass",
+        min: 2,
+        max: 40,
+        step: 1,
+        defaultValue: MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.toolMassKg,
+        unit: "kg",
+      },
+    ],
+    computeMetrics: (rawParams) => {
+      const controls = readMilacronToolchangerControls(rawParams);
+      const tel = stepMilacronRobotToolchangerSi(controls);
+      return [
+        {
+          label: "Actuator Piston Thrust",
+          value: tel.actuatorThrustN.toFixed(0),
+          unit: "N",
+          badgeColor: "sky",
+          progressPct: clampProgress((tel.actuatorThrustN / 1200) * 100),
+        },
+        {
+          label: "Normal Clamping Force",
+          value: tel.clampingForceN.toFixed(0),
+          unit: "N",
+          badgeColor: "amber",
+          progressPct: clampProgress((tel.clampingForceN / 5000) * 100),
+        },
+        {
+          label: "Fail-Safe Holding Force",
+          value: tel.holdingForceWithoutPowerN.toFixed(0),
+          unit: "N",
+          badgeColor: tel.isSelfLocking ? "emerald" : "rose",
+          progressPct: clampProgress((tel.holdingForceWithoutPowerN / 2000) * 100),
+        },
+        {
+          label: "Locating Repeatability",
+          value: (tel.positionalRepeatabilityMm * 1000).toFixed(1),
+          unit: "µm",
+          badgeColor: "emerald",
+          progressPct: clampProgress((0.025 / Math.max(0.01, tel.positionalRepeatabilityMm)) * 100),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "US 4,512,709 converts linear actuator stroke into high-force normal clamping through a shallow-angle wedge slide. The taper angle is selected within the material friction cone (tan θ ≤ μ), ensuring that the tool remains rigidly clamped during catastrophic loss of shop-air pressure.",
+  },
   "us-4575330-hull-stereolithography": {
     domain: "additive_manufacturing",
     domainTitle: "Ultraviolet Photopolymerization Kinetics & Laser Galvanometer Slicing",
@@ -7552,7 +7663,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     controls: [
       {
         id: "tensionT1N",
-        label: "Cable tension T₁",
+        label: "Representative digit tension T₁",
         min: 0,
         max: 40,
         step: 1,
@@ -7561,7 +7672,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "tensionT2N",
-        label: "Cable tension T₂",
+        label: "Representative digit tension T₂",
         min: 0,
         max: 40,
         step: 1,
@@ -7570,7 +7681,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "tensionT3N",
-        label: "Cable tension T₃",
+        label: "Representative digit tension T₃",
         min: 0,
         max: 40,
         step: 1,
@@ -7579,7 +7690,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "tensionT4N",
-        label: "Cable tension T₄",
+        label: "Representative digit tension T₄",
         min: 0,
         max: 40,
         step: 1,
@@ -7643,7 +7754,97 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       ];
     },
     pedagogicalInsight:
-      "Ruoff and Salisbury print three static equations for the Figure 3 route: four measured cable tensions and selected pulley radii combine into three joint torques. The hand has three articulated digits, nine joint coordinates, and twelve cable ends, but the grant supplies no historic dimensions, dynamics, contact law, grasp force, force-closure result, or stability margin.",
+      "Ruoff and Salisbury print three static equations for one digit's Figure 3 route: four measured cable tensions and selected pulley radii combine into three joint torques. The physical hand has three articulated digits, nine joint coordinates, and twelve separately routed cable ends; the exhibit mirrors the representative digit pose across all three. The grant supplies no historic dimensions, dynamics, contact law, grasp force, force-closure result, or stability margin.",
+  },
+  "us-5121329-crump-fdm": {
+    domain: "thermodynamics",
+    domainTitle: "Fused Deposition Modeling (FDM) Melt Flow & Thermal Solidification",
+    equationName: "Poiseuille Capillary Flow, Feed Kinematics, & Thermal Cooling",
+    governingEquation:
+      "Q = w h v_{\\text{head}}, \\quad \\Delta P = \\frac{8 \\mu L Q}{\\pi R^4}, \\quad \\tau = \\frac{h^2}{\\pi^2 \\alpha}",
+    engineMethod: "FrankenSimEngine.stepCrumpFdm",
+    controls: [
+      {
+        id: "nozzleTempC",
+        label: "Liquefier Nozzle Temperature",
+        min: 160,
+        max: 290,
+        step: 5,
+        defaultValue: CRUMP_FDM_DEFAULT_CONTROLS.nozzleTempC,
+        unit: "°C",
+      },
+      {
+        id: "printSpeedMmS",
+        label: "Toolhead Print Speed",
+        min: 10,
+        max: 150,
+        step: 5,
+        defaultValue: CRUMP_FDM_DEFAULT_CONTROLS.printSpeedMmS,
+        unit: "mm/s",
+      },
+      {
+        id: "layerHeightMm",
+        label: "Layer Height (h)",
+        min: 0.05,
+        max: 0.5,
+        step: 0.05,
+        defaultValue: CRUMP_FDM_DEFAULT_CONTROLS.layerHeightMm,
+        unit: "mm",
+      },
+      {
+        id: "roadWidthMm",
+        label: "Extruded Road Width (w)",
+        min: 0.2,
+        max: 1.0,
+        step: 0.05,
+        defaultValue: CRUMP_FDM_DEFAULT_CONTROLS.roadWidthMm,
+        unit: "mm",
+      },
+    ],
+    computeMetrics: (params) => {
+      const controls = readCrumpFdmControls(params);
+      const tel = stepCrumpFdmSi(controls);
+      return [
+        {
+          label: "Volumetric Flow Rate (Q)",
+          value: tel.volumetricFlowRateMm3S.toFixed(2),
+          unit: "mm³/s",
+          badgeColor: "cyan",
+        },
+        {
+          label: "Filament Feed Speed (v_feed)",
+          value: tel.filamentFeedSpeedMmS.toFixed(2),
+          unit: "mm/s",
+          badgeColor: "emerald",
+        },
+        {
+          label: "Nozzle Pressure Drop (ΔP)",
+          value: tel.nozzlePressureDropMPa.toFixed(3),
+          unit: "MPa",
+          badgeColor: "amber",
+        },
+        {
+          label: "Axial Feed Drive Force",
+          value: tel.feedDriveForceN.toFixed(1),
+          unit: "N",
+          badgeColor: tel.filamentGrindingRefusal ? "rose" : "emerald",
+        },
+        {
+          label: "Cooling Time Constant (τ)",
+          value: (tel.coolingTimeConstantSec * 1000).toFixed(0),
+          unit: "ms",
+          badgeColor: "cyan",
+        },
+        {
+          label: "Interlayer Weld Quality (T_int/Tg)",
+          value: tel.weldQualityRatio.toFixed(2),
+          unit: "x",
+          badgeColor: tel.poorAdhesionRefusal ? "rose" : "emerald",
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "US 5,121,329 established that FDM extrusion relies on using solid filament as a piston pump into a heated liquefier, where the flat nozzle tip irons extruded beads into a planar road (w/h ≈ 2.25) while conducting heat into the substrate to freeze dimensions in ~50 ms.",
   },
   "us-5701965-kamen-transporter": {
     domain: "robotics_locomotion",
@@ -8390,6 +8591,110 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     },
     pedagogicalInsight:
       "US 3,119,501 joins rail travel, vertical position, lateral transfer, bay markers, scanning relays, and preset counting relays. The facsimile does not state geometry, payload, speed, motor power, timing, or sensor precision, so the public model remains a normalized source topology rather than a performance simulation.",
+  },
+  "us-3313014-lemelson-automatic-production": {
+    domain: "industrial_automation",
+    domainTitle: "Carrier-to-Station Production-Control Topology",
+    equationName: "Marker, Retention, Coupling, and Release Interlock",
+    governingEquation:
+      "m_{recognized}\\land r_{retained}\\land c_{coupled}\\Rightarrow u_{machine};\\quad p_{cycle}\\geq0.8\\Rightarrow u_{release}",
+    engineMethod:
+      "stepLemelsonAutomaticProductionTopology (deterministic TypeScript source-bounded topology; no FrankenSim WASM module stepped)",
+    controls: [
+      {
+        id: "carrierAddressFraction",
+        label: "Carrier Address",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.carrierAddressFraction,
+        unit: "normalized",
+      },
+      {
+        id: "liftFraction",
+        label: "Mz Lift Pose",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.liftFraction,
+        unit: "normalized",
+      },
+      {
+        id: "reachFraction",
+        label: "My Platform Reach",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.reachFraction,
+        unit: "normalized",
+      },
+      {
+        id: "stationDetected",
+        label: "Marker Sensed",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.stationDetected,
+        unit: "off/on",
+      },
+      {
+        id: "stationCoupled",
+        label: "Station Contacts Coupled",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.stationCoupled,
+        unit: "off/on",
+      },
+      {
+        id: "cycleProgress",
+        label: "Ordered Cycle",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.cycleProgress,
+        unit: "normalized",
+      },
+    ],
+    computeMetrics: (params) => {
+      const controls = readLemelsonAutomaticProductionControls(params);
+      const state = stepLemelsonAutomaticProductionTopology(controls);
+      return [
+        {
+          label: "Carrier Address",
+          value: (state.carrierAddressFraction * 100).toFixed(0),
+          unit: "% normalized",
+          badgeColor: "cyan",
+          progressPct: clampProgress(state.carrierAddressFraction * 100),
+        },
+        {
+          label: "Cycle Phase",
+          value: state.phase.toUpperCase(),
+          unit: "source topology",
+          badgeColor: state.releaseAuthorized ? "amber" : "indigo",
+        },
+        {
+          label: "Station Coupling",
+          value: state.controllerCoupled ? "CLOSED" : "OPEN",
+          unit: "claim probe",
+          badgeColor: state.controllerCoupled ? "emerald" : "rose",
+        },
+        {
+          label: "Machine Command",
+          value: state.machineCommandAuthorized ? "AUTHORIZED" : "REFUSED",
+          unit: "source interlock",
+          badgeColor: state.machineCommandAuthorized ? "emerald" : "amber",
+        },
+        {
+          label: "Quantitative Performance",
+          value: "REFUSED",
+          unit: "missing source inputs",
+          badgeColor: "rose",
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "US 3,313,014 binds a guided work carrier to marker sensing, retention, portable programme control, station coupling, machine operation, release, and departure. The facsimile does not state dimensions, payload, speed, force, timing, tolerance, motor rating, or process model, so the public exhibit reports only its deterministic normalized topology and interlock.",
   },
   "us-3858581-kamen-medication-injection-device": {
     domain: "mechatronics",

@@ -83,7 +83,7 @@ export const GEAR_RATIO = 48.3 / 35.6; // ~1.35674
 export const SCREW_LEAD_M = 0.005; // 5 mm
 
 /** Ball screw forward transmission efficiency (disclosed ~90%) */
-export const SCREW_EFFICIENCY = 0.90;
+export const SCREW_EFFICIENCY = 0.9;
 
 /** Maximum reported gripping force in Newtons */
 export const MAX_RATED_GRIP_FORCE_N = 2000.0;
@@ -95,7 +95,9 @@ export function readRobotEndEffectorControls(
   raw: Record<string, number | undefined>,
 ): RobotEndEffectorControls {
   return {
-    motorRpm: Number.isFinite(raw.motorRpm) ? (raw.motorRpm as number) : ROBOT_END_EFFECTOR_DEFAULTS.motorRpm,
+    motorRpm: Number.isFinite(raw.motorRpm)
+      ? (raw.motorRpm as number)
+      : ROBOT_END_EFFECTOR_DEFAULTS.motorRpm,
     motorTorqueNm: Number.isFinite(raw.motorTorqueNm)
       ? Math.max(0, raw.motorTorqueNm as number)
       : ROBOT_END_EFFECTOR_DEFAULTS.motorTorqueNm,
@@ -128,10 +130,7 @@ export function stepRobotEndEffectorSi(
   // Linear speed of each hand (mm/s)
   const singleHandVelocityMmS = (Math.abs(screwRpm) * (SCREW_LEAD_M * 1000)) / 60;
   // Relative closing/opening speed is 2x single hand speed
-  const relativeClosingSpeedMmS = Math.min(
-    MAX_TRAVEL_SPEED_MM_S,
-    2 * singleHandVelocityMmS,
-  );
+  const relativeClosingSpeedMmS = Math.min(MAX_TRAVEL_SPEED_MM_S, 2 * singleHandVelocityMmS);
 
   // Torque at screw shaft
   const tauMotor = Math.max(0, controls.motorTorqueNm);
@@ -161,7 +160,8 @@ export function stepRobotEndEffectorSi(
   // Back-driving threshold holding torque
   // Since eta = 0.90 > 0.50, back-drive efficiency eta_back ~ 2 - 1/eta ~ 0.888
   const etaBack = Math.max(0.1, 2 - 1 / SCREW_EFFICIENCY);
-  const backDriveHoldingTorqueNm = (clampingForceN * SCREW_LEAD_M) / (2 * Math.PI * etaBack * GEAR_RATIO);
+  const backDriveHoldingTorqueNm =
+    (clampingForceN * SCREW_LEAD_M) / (2 * Math.PI * etaBack * GEAR_RATIO);
 
   // 50 mm stroke travel time
   const stroke50mmTimeSec = relativeClosingSpeedMmS > 0 ? 50 / relativeClosingSpeedMmS : 999.0;

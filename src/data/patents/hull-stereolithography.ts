@@ -16,7 +16,8 @@ export const hullStereolithographyPatent: Patent = {
   patentNumber: "US 4,575,330",
   title: "Apparatus for Production of Three-Dimensional Objects by Stereolithography",
   shortTitle: "Chuck Hull 3D Printing / Stereolithography (SLA)",
-  subtitle: "Ultraviolet Photopolymer Cross-Linking, Galvanometer Laser Vector Scanning, and Layer-by-Layer Additive Build Platform",
+  subtitle:
+    "Ultraviolet Photopolymer Cross-Linking, Galvanometer Laser Vector Scanning, and Layer-by-Layer Additive Build Platform",
   inventors: ["Charles W. Hull"],
   inventorLocation: "Arcadia, California",
   grantDate: "1986-03-11",
@@ -59,7 +60,8 @@ It is common practice in the production of more desirable products to design, bu
           "High-speed dual-axis optical galvanometer mirrors deflecting a focused UV laser beam across the liquid resin surface.",
         technicalDetails:
           "A continuous-wave ultraviolet laser beam (spot diameter 2w_0 = 0.20–0.25 mm) passes through an acousto-optic shutter and beam expander before reflecting off two high-bandwidth moving-magnet galvanometer mirrors (X and Y axes). The scanning mirrors deflect the beam across the vat surface at linear velocities up to 5.0 m/s with sub-micron repeatability, controlled via closed-loop PID servo boards receiving vector coordinate lists from the sliced CAD slice compiler.",
-        archaicTerm: "reaction means for selectively applying synergistic stimulation in a prescribed pattern",
+        archaicTerm:
+          "reaction means for selectively applying synergistic stimulation in a prescribed pattern",
         modernEquivalent: "galvanometer laser optical scanning engine",
       },
       {
@@ -68,7 +70,8 @@ It is common practice in the production of more desirable products to design, bu
           "Precision z-axis stepper/servo elevator translating the perforated build plate downward into the resin vat.",
         technicalDetails:
           "An anodized perforated aluminium platform is suspended inside the resin vat on a precision ground ball screw with anti-backlash nut. After a layer is cured, the elevator descends by delta_z (typically 50 to 150 um). A motorized recoater blade sweeps across the surface to level viscous resin, establishing a flat, uniform fluid meniscus across the build area within seconds.",
-        archaicTerm: "translational means for moving said object as it is formed away from said designated surface",
+        archaicTerm:
+          "translational means for moving said object as it is formed away from said designated surface",
         modernEquivalent: "z-axis elevator build platform and recoater blade",
       },
       {
@@ -77,7 +80,8 @@ It is common practice in the production of more desirable products to design, bu
           "Liquid resin formulation containing liquid acrylate/epoxy oligomers, cross-linking monomers, and UV photoinitiators.",
         technicalDetails:
           "The vat holds a fluid medium with optical penetration depth D_p = 0.12–0.18 mm and critical exposure threshold E_c = 8.5–12.0 mJ/cm^2. Under actinic UV irradiation (lambda = 325–355 nm), photoinitiators generate free radicals or cations that trigger cascade chain-growth polymerization, transforming the liquid into a cross-linked polymer network in milliseconds while unexposed resin remains fluid.",
-        archaicTerm: "fluid medium capable of altering its physical state in response to synergistic stimulation",
+        archaicTerm:
+          "fluid medium capable of altering its physical state in response to synergistic stimulation",
         modernEquivalent: "UV-curable photopolymer resin vat",
       },
       {
@@ -86,26 +90,31 @@ It is common practice in the production of more desirable products to design, bu
           "Alternative inverted stereolithography apparatus exposing through an optically clear vat bottom.",
         technicalDetails:
           "In the bottom-up configuration (FIG. 4 & 5), UV radiation enters through a transparent glass/quartz container base. An immiscible, dense non-reactive liquid layer (such as fluorocarbon fluid or heavy water) provides an inert boundary that prevents the curing plastic from adhering to the container window, allowing the elevator to pull the newly solidified part upward out of the vat.",
-        archaicTerm: "container wherein exposure is through the bottom and a second non-reactive medium",
-        modernEquivalent: "inverted bottom-up vat photopolymerization with non-stick release interface",
+        archaicTerm:
+          "container wherein exposure is through the bottom and a second non-reactive medium",
+        modernEquivalent:
+          "inverted bottom-up vat photopolymerization with non-stick release interface",
       },
     ],
     scientificPrinciples: [
       {
         principle: "Beer-Lambert Law of Photopolymerization Curing Depth",
-        formula: "C_d = D_p \\ln\\left( \\frac{E_{\\text{max}}}{E_c} \\right) \\quad \\text{with} \\quad E_{\\text{max}} = \\sqrt{\\frac{2}{\\pi}} \\frac{P_L}{w_0 v_s}",
+        formula:
+          "C_d = D_p \\ln\\left( \\frac{E_{\\text{max}}}{E_c} \\right) \\quad \\text{with} \\quad E_{\\text{max}} = \\sqrt{\\frac{2}{\\pi}} \\frac{P_L}{w_0 v_s}",
         explanation:
           "Actinic UV radiant energy decays exponentially with resin depth z according to the Beer-Lambert absorption law: E(z) = E_max * exp(-z / D_p). A gelled polymer network forms only where exposure exceeds the critical threshold E_c. The resulting cure depth C_d must be tuned via laser power P_L and scan speed v_s to exceed layer thickness delta_z by 20–40% to guarantee interlaminar adhesion.",
       },
       {
         principle: "Gaussian Laser Beam Radiant Exposure Distribution",
-        formula: "E(x,y) = \\sqrt{\\frac{2}{\\pi}} \\frac{P_L}{w_0 v_s} \\exp\\left( -\\frac{2 y^2}{w_0^2} \\right)",
+        formula:
+          "E(x,y) = \\sqrt{\\frac{2}{\\pi}} \\frac{P_L}{w_0 v_s} \\exp\\left( -\\frac{2 y^2}{w_0^2} \\right)",
         explanation:
           "A fundamental TEM_00 laser beam possesses a Gaussian intensity profile with beam radius w_0. Moving the beam in the x-direction at constant velocity v_s integrates radiant exposure along y, yielding a parabolic cured line cross-section with width L_w = w_0 * sqrt(2 * ln(E_max / E_c)).",
       },
       {
         principle: "Interlaminar Chemical Cross-Linking & Gel Point Conversion",
-        formula: "W_{\\text{interlayer}} = \\int_0^{C_d - \\Delta z} G_{\\text{shear}}(\\alpha_{\\text{conversion}}) \\, dz \\quad \\text{where} \\quad \\alpha \\ge \\alpha_{\\text{gel}} \\approx 0.55",
+        formula:
+          "W_{\\text{interlayer}} = \\int_0^{C_d - \\Delta z} G_{\\text{shear}}(\\alpha_{\\text{conversion}}) \\, dz \\quad \\text{where} \\quad \\alpha \\ge \\alpha_{\\text{gel}} \\approx 0.55",
         explanation:
           "Polymer cross-link density grows monotonically with radiant dose above the gel point alpha_gel. Overcuring each layer past its step depth delta_z allows reactive acrylate/epoxy functional groups to bridge across the layer interface, chemically integrating successive laminae into a monolithic solid part.",
       },
@@ -166,8 +175,7 @@ It is common practice in the production of more desirable products to design, bu
       isIndependent: false,
       dependsOn: [2],
       originalText: manualClaimText(5),
-      plainEnglish:
-        "The system of claim 2 wherein the reaction means is an electron beam.",
+      plainEnglish: "The system of claim 2 wherein the reaction means is an electron beam.",
       keyInnovations: ["Electron beam stimulation"],
     },
     {
@@ -184,8 +192,7 @@ It is common practice in the production of more desirable products to design, bu
       isIndependent: false,
       dependsOn: [2],
       originalText: manualClaimText(7),
-      plainEnglish:
-        "The system of claim 2 wherein the reaction means is a beam of light.",
+      plainEnglish: "The system of claim 2 wherein the reaction means is a beam of light.",
       keyInnovations: ["Optical light beam"],
     },
     {
@@ -193,9 +200,8 @@ It is common practice in the production of more desirable products to design, bu
       isIndependent: false,
       dependsOn: [2],
       originalText: manualClaimText(8),
-      plainEnglish:
-        "The system of claim 2 wherein the reaction means uses X-rays.",
-      keyInnovations: ["X-ray radiation source"],
+      plainEnglish: "The system of claim 2 wherein the reaction means uses X-rays.",
+      keyInnovations: ["X-ray photocurable reaction means"],
     },
     {
       number: 9,
@@ -252,8 +258,7 @@ It is common practice in the production of more desirable products to design, bu
       plainEnglish:
         "The system of claim 2 wherein the elevator translates the object downward into the liquid medium as layers are formed.",
       keyInnovations: ["Top-down dipping elevator mechanism"],
-      legalSignificance:
-        "Protects the classic top-down SLA dipping elevator motion.",
+      legalSignificance: "Protects the classic top-down SLA dipping elevator motion.",
     },
     {
       number: 15,
@@ -438,8 +443,7 @@ It is common practice in the production of more desirable products to design, bu
       isIndependent: false,
       dependsOn: [29],
       originalText: manualClaimText(33),
-      plainEnglish:
-        "The system of claim 29 wherein the radiation source includes a beam of light.",
+      plainEnglish: "The system of claim 29 wherein the radiation source includes a beam of light.",
       keyInnovations: ["Light beam radiation source"],
     },
     {
@@ -456,8 +460,7 @@ It is common practice in the production of more desirable products to design, bu
       isIndependent: false,
       dependsOn: [29],
       originalText: manualClaimText(35),
-      plainEnglish:
-        "The system of claim 29 wherein the radiation source includes X-rays.",
+      plainEnglish: "The system of claim 29 wherein the radiation source includes X-rays.",
       keyInnovations: ["X-ray radiation source"],
     },
     {
@@ -501,8 +504,7 @@ It is common practice in the production of more desirable products to design, bu
       isIndependent: false,
       dependsOn: [39],
       originalText: manualClaimText(40),
-      plainEnglish:
-        "The system of claim 39 wherein the second non-reactive medium is heavy water.",
+      plainEnglish: "The system of claim 39 wherein the second non-reactive medium is heavy water.",
       keyInnovations: ["Heavy water release medium"],
     },
     {
