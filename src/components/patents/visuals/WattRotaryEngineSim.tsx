@@ -14,7 +14,10 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
+import {
+  INITIAL_WATT_CONNECTING_ROD_ANGLE_RAD,
+  stepWattRotaryEngine,
+} from "@/physics/wattRotaryKernel";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
@@ -91,7 +94,10 @@ export function WattRotaryEngineSim() {
   );
   const planetToothAngles = Array.from(
     { length: telemetry.planetTeeth },
-    (_, index) => (index / telemetry.planetTeeth) * 360 + 180 / telemetry.planetTeeth,
+    (_, index) =>
+      (index / telemetry.planetTeeth) * 360 +
+      180 / telemetry.planetTeeth -
+      (INITIAL_WATT_CONNECTING_ROD_ANGLE_RAD * 180) / Math.PI,
   );
   const pistonY = 400 - (telemetry.pistonPositionM / 1.8) * 100;
 

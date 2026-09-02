@@ -325,30 +325,24 @@ I claim:
 
 --- REVIEWED TRANSCRIPTION PAGE 14 OF 16 ---
 
-REEXAMINATION CERTIFICATE
-United States Patent [19]
-Hull
-(54) APPA its FOR PRODUCTION OF
-THREEpMENSIONAL OBJECTS BY
-STEREO LTHOGRAPHY
-(75) Inventor: Charles W. Hull, Arcadia, Calif.
-(73 Assignee: UVP, Inc.
-Reexamination Request:
-No. 90/001,611, Sep. 28, 1988
-Reexamination Certificate for
-Patent No.: 4.575,330
+REEXAMINATION CERTIFICATE (1177th)
+United States Patent [19]                                      [11] B1 4,575,330
+Hull                                                         [45] Certificate Issued Dec. 19, 1989
+
+[54] APPARATUS FOR PRODUCTION OF THREE-DIMENSIONAL OBJECTS BY STEREOLITHOGRAPHY
+[75] Inventor: Charles W. Hull, Arcadia, Calif.
+[73] Assignee: UVP, Inc.
+
+Reexamination Request: No. 90/001,611, Sep. 28, 1988
+Reexamination Certificate for:
+Patent No.: 4,575,330
 Issued: Mar. 11, 1986
 Appl. No.: 638,905
 Filed: Aug. 8, 1984
-51) Int. Cl'......................... B29C35/0s; G03C9/08
-52 U.S. C. .................................. 425/1744; 156/58;
-264/22; 36.5/119; 365/120, 425/162; 425/174
-58 Field of Search ..................... 425/162, 174, 1744,
-425/425; 264/22, .1, , 219, 183,250, 255,
-298,308; 36.5/107, 119, 127, 106, 120, 156/58,
-246,273.3,273.5,275.5; 250/432 R, 433,492.3,
-492.1, 558; 522/910; 430/269,296, 942;
-342/179; 427/53.1, 54.1, 
+
+[51] Int. Cl.4 .................................. B29C 35/08; G03C 9/08
+[52] U.S. Cl. ................................... 425/174.4; 156/58; 264/22; 365/119; 365/120; 425/162; 425/174
+[58] Field of Search ............................ 425/162, 174, 174.4, 425/425; 264/22, 40.1, 25, 219, 183, 230, 255, 298, 308; 365/107, 119, 127, 106, 120; 156/58, 246, 273.3, 273.5, 275.5; 250/432 R, 433, 492.3, 492.1, 558; 522/910; 430/269, 296, 942; 342/179; 427/53.1, 54.1, 55
 (56) References Cited
 U.S. PATENT DOCUMENTS
 2,381,234 8/1945 Symmes .............................. 430/294

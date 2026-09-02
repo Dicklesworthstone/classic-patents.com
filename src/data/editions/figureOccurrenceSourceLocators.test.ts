@@ -411,9 +411,7 @@ const KAMEN_SEGWAY_OCCURRENCES = Object.fromEntries(
 );
 
 const HULL_ID = "us-4575330-hull-stereolithography";
-const HULL_ASSETS = Object.keys(
-  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[HULL_ID].assets,
-);
+const HULL_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[HULL_ID].assets);
 const HULL_OCCURRENCES = Object.fromEntries(
   FIGURE_OCCURRENCE_SOURCE_LOCATORS[HULL_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
 );
