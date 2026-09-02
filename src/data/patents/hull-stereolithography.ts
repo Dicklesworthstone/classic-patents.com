@@ -40,23 +40,87 @@ export const hullStereolithographyPatent: Patent = {
     reviewedAt: "2026-09-02",
     sourcePdfSha256: "5dc2211b18f88883ee92394917154d57d102b73c26a4744332cbf0d89b1db1c7",
     pageAnchors: [
-      { pageNumber: 1, label: "Title page and abstract (US 4,575,330, Mar. 11, 1986)" },
-      { pageNumber: 2, label: "Drawing sheet 1: FIGS. 1 and 2 (flowcharts)" },
-      { pageNumber: 3, label: "Drawing sheet 2: FIG. 3 (stereolithography system schematic)" },
-      { pageNumber: 4, label: "Drawing sheet 3: FIGS. 4 and 5 (bottom-up and mask systems)" },
-      { pageNumber: 5, label: "Drawing sheet 4: FIGS. 6, 7, and 8 (CRT and multi-axis platform)" },
-      { pageNumber: 6, label: "Columns 1–2: Background of the invention" },
-      { pageNumber: 7, label: "Columns 3–4: Summary of the invention and Brief Description" },
-      { pageNumber: 8, label: "Columns 5–6: Detailed description: lithography and CAD/CAM" },
-      { pageNumber: 9, label: "Columns 7–8: Detailed description: UV curable liquid and light source" },
-      { pageNumber: 10, label: "Columns 9–10: Detailed description: elevator platform and computer control" },
-      { pageNumber: 11, label: "Columns 11–12: Alternate embodiments and Claims 1–10" },
-      { pageNumber: 12, label: "Columns 13–14: Claims 11–38" },
-      { pageNumber: 13, label: "Columns 15–16: Claims 39–47" },
-      { pageNumber: 14, label: "Reexamination Certificate B1 4,575,330 title page (Dec. 19, 1989)" },
-      { pageNumber: 15, label: "Reexamination Columns 1–2: Amended Claims 1, 2, 28" },
-      { pageNumber: 16, label: "Reexamination Columns 3–4: Amended Claim 29 and Added Claims 46, 47" },
-    ],
+    {
+        "page": 1,
+        "exactSourceText": "United States Patent [19]",
+        "sourceRelationship": "Title page and abstract"
+    },
+    {
+        "page": 2,
+        "exactSourceText": "U.S. Patent Mar. 11, 1986 — Sheet 1 of 4 — 4,575,330",
+        "sourceRelationship": "Drawing sheet 1 of 4 (FIGS. 1 and 2 flowcharts)"
+    },
+    {
+        "page": 3,
+        "exactSourceText": "U.S. Patent Mar. 11, 1986 — Sheet 2 of 4 — 4,575,330",
+        "sourceRelationship": "Drawing sheet 2 of 4 (FIG. 3 stereolithography system)"
+    },
+    {
+        "page": 4,
+        "exactSourceText": "U.S. Patent Mar. 11, 1986 — Sheet 3 of 4 — 4,575,330",
+        "sourceRelationship": "Drawing sheet 3 of 4 (FIGS. 4 and 5 bottom-up and mask systems)"
+    },
+    {
+        "page": 5,
+        "exactSourceText": "U.S. Patent Mar. 11, 1986 — Sheet 4 of 4 — 4,575,330",
+        "sourceRelationship": "Drawing sheet 4 of 4 (FIGS. 6, 7, and 8 CRT and multi-axis platform)"
+    },
+    {
+        "page": 6,
+        "exactSourceText": "APPARATUS FOR PRODUCTION OF THREE-DIMENSIONAL OBJECTS BY STEREOLITHOGRAPHY",
+        "sourceRelationship": "Specification columns 1–2 (Background of the invention)"
+    },
+    {
+        "page": 7,
+        "exactSourceText": "SUMMARY OF THE INVENTION (continued)",
+        "sourceRelationship": "Specification columns 3–4 (Summary of the invention and Brief Description of Drawings)"
+    },
+    {
+        "page": 8,
+        "exactSourceText": "DESCRIPTION OF THE PREFERRED EMBODIMENT",
+        "sourceRelationship": "Specification columns 5–6 (Detailed Description: lithography and CAD/CAM)"
+    },
+    {
+        "page": 9,
+        "exactSourceText": "A presently preferred embodiment of the stereolithographic system is shown in elevational cross-section in FIG. 3. A container 21 is filled with a UV curable liquid 22 or the like, to provide a designated working surface 23. A programmable source of ultraviolet light 26 or the like produces a spot of ultraviolet light 27 in the plane of surface 23. The spot 27 is movable across the surface 23 by the motion of mirrors or other optical or mechanical elements (not shown) that are a part of light source 26. The position of the spot 27 on surface 23 is controlled by a computer or other programming device 28. A movable elevator platform 29 inside container 21 can be moved up and down selectively, the position of the platform being controlled by the computer 28. As the device operates, it produces a three-dimensional object 30 by step-wise buildup of integrated laminae such as 30a, 30b, 30c.",
+        "sourceRelationship": "Specification columns 7–8 (Detailed Description: curable liquid properties and light source)"
+    },
+    {
+        "page": 10,
+        "exactSourceText": "The elevator platform 29 for the embodiment of FIG. 3 is a platform attached to an analog plotter (not shown). This plotter is driven the H-P 3497A Data Acquisition/Control Unit with its internal digital to analog converter, under program control of the computer 28.",
+        "sourceRelationship": "Specification columns 9–10 (Detailed Description: elevator platform and computer control)"
+    },
+    {
+        "page": 11,
+        "exactSourceText": "The UV light source 26 in FIG. 4 focuses the spot 27 at the interface between the liquid 22 and the non-miscible intermediate liquid layer 32, the UV radiation passing through a suitable UV transparent window 33, of quartz or the like, supported at the bottom of the container 21. The curable liquid 22 is provided in a very thin layer over the non-miscible layer 32 and thereby has the advantage of limiting layer thickness directly, rather than relying solely upon adsorption and the like to limit the depth of curing, since ideally an ultrathin lamina is to be provided. Hence, the region of formation will be more sharply defined and some surfaces will be formed smoother with the system of FIG. 4 than with that of FIG. 3. In addition, a smaller volume of UV curable liquid 22 is required, and the substitution of one curable material for another is easier.",
+        "sourceRelationship": "Specification columns 11–12 (Commercial embodiments and Claims 1–10)"
+    },
+    {
+        "page": 12,
+        "exactSourceText": "11. A system as set forth in claim 2, wherein said reaction means includes: a patterned mask overlying said designated surface for selectively applying a chemical to induce solidification of said fluid medium.",
+        "sourceRelationship": "Specification columns 13–14 (Claims 11–38)"
+    },
+    {
+        "page": 13,
+        "exactSourceText": "27. A system for directly producing a three-dimensional object as it is designed by a computer, comprising: deriving graphic image output from said computer, said graphic image defining successive adjacent cross-sections of the three-dimensional object designed by said computer; means for drawing upon and forming successive cross-sections, corresponding to said computer designed cross-sections of said object, at a two-dimensional interface; and means for moving said cross-sections as they are formed and building up said object in a stepwise fashion, whereby the three-dimensional object designed by said computer is automatically extracted from a substantially two-dimensional surface.",
+        "sourceRelationship": "Specification columns 15–16 (Claims 39–47)"
+    },
+    {
+        "page": 14,
+        "exactSourceText": "REEXAMINATION CERTIFICATE",
+        "sourceRelationship": "Reexamination Certificate B1 4,575,330 title page"
+    },
+    {
+        "page": 15,
+        "exactSourceText": "B1 4.575,330",
+        "sourceRelationship": "Reexamination Columns 1–2 (Amended Claims 1, 2, 27, 28)"
+    },
+    {
+        "page": 16,
+        "exactSourceText": "B1",
+        "sourceRelationship": "Reexamination Columns 3–4 (Amended Claim 29 and Added Claims 46, 47)"
+    }
+],
   },
 
   archivalEdition: hullStereolithographyArchivalEdition,
