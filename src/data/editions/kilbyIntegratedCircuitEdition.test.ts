@@ -190,4 +190,27 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
       expect(readings?.[0].trim().length).toBeGreaterThan(40);
     }
   });
+
+  test("provides valid provenance classifications for all Kilby controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-3138743-kilby-integrated-circuit"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("enforces figure acceptance pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(kilbyIntegratedCircuitPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+  });
 });

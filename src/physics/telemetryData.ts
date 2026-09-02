@@ -331,6 +331,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: 6.0,
         unit: "V",
+        provenance: "scenario-modern",
       },
       {
         id: "resistorLengthUm",
@@ -340,6 +341,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 50,
         defaultValue: 500,
         unit: "µm",
+        provenance: "scenario-modern",
       },
       {
         id: "resistorWidthUm",
@@ -349,6 +351,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 50,
         unit: "µm",
+        provenance: "scenario-modern",
       },
       {
         id: "reverseBiasVoltageV",
@@ -358,6 +361,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: 3.0,
         unit: "V",
+        provenance: "scenario-modern",
       },
       {
         id: "baseDriveCurrentUa",
@@ -367,6 +371,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 40,
         unit: "µA",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (controls) => {
@@ -387,6 +392,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "indigo",
           description:
             "Bulk semiconductor resistance calculated from aspect ratio and sheet resistivity",
+          provenance: "scenario-modern",
         },
         {
           label: "P-N Junction Capacitance",
@@ -394,6 +400,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "pF",
           badgeColor: "rose",
           description: "Depletion layer transition capacitance under applied reverse bias",
+          provenance: "scenario-modern",
         },
         {
           label: "Collector Current",
@@ -401,6 +408,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "mA",
           badgeColor: "emerald",
           description: "Bipolar transistor amplified collector switching current",
+          provenance: "scenario-modern",
         },
         {
           label: "Propagation Delay",
@@ -408,6 +416,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "ns",
           badgeColor: "cyan",
           description: "Monolithic solid circuit RC switching propagation delay",
+          provenance: "scenario-modern",
         },
         {
           label: "Phase-Shift Osc. Frequency",
@@ -415,6 +424,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "kHz",
           badgeColor: "amber",
           description: "Resonant sinusoidal frequency of the integrated RC feedback oscillator",
+          provenance: "scenario-modern",
         },
         {
           label: "Packing Density",
@@ -422,6 +432,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "M parts/ft³",
           badgeColor: "amber",
           description: "Calculated volumetric component packing density",
+          provenance: "scenario-modern",
         },
       ];
     },
