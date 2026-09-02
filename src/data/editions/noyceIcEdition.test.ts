@@ -404,4 +404,27 @@ describe("US 2,981,877 manual source edition", () => {
     expect(visitorCopy).toContain("surface-reaching P-N junction");
     expect(visitorCopy).toContain("reverse-biased junctions 18 and 22");
   });
+
+  test("provides valid provenance classifications for all Noyce controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-2981877-noyce-ic"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBe("scenario-modern");
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBe("scenario-modern");
+    }
+  });
+
+  test("enforces figure acceptance audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(noyceIcPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+  });
 });

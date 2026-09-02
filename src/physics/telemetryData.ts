@@ -2472,6 +2472,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: 5.0,
         unit: "V",
+        provenance: "scenario-modern",
       },
       {
         id: "oxideThickness",
@@ -2481,6 +2482,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.05,
         defaultValue: 0.5,
         unit: "µm",
+        provenance: "scenario-modern",
       },
       {
         id: "clockFrequencyMhz",
@@ -2490,6 +2492,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 10,
         unit: "MHz",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (p) => {
@@ -2509,6 +2512,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "µm",
           badgeColor: "cyan",
           progressPct: (Number(w) / 2.5) * 100,
+          provenance: "scenario-modern",
         },
         {
           label: "Junction Capacitance",
@@ -2516,6 +2520,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "pF/mm²",
           badgeColor: "amber",
           progressPct: (Number(cap) / 60) * 100,
+          provenance: "scenario-modern",
         },
         {
           label: "Propagation Delay (tpd)",
@@ -2523,6 +2528,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "ns",
           badgeColor: "emerald",
           progressPct: (Number(propDelay) / 3.0) * 100,
+          provenance: "scenario-modern",
         },
         {
           label: "Breakdown Margin",
@@ -2530,6 +2536,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "V",
           badgeColor: "indigo",
           progressPct: (ic.breakdownMarginV / 35) * 100,
+          provenance: "scenario-modern",
         },
       ];
     },
