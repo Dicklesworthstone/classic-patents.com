@@ -1554,8 +1554,6 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
     reviewedAt: "2026-09-02",
     acceptanceBasis: "independent-figure-review",
     acceptedOccurrenceCount: 36,
-    evidenceReference:
-      "docs/provenance/us-4575330-hull-stereolithography.md#section-4-figure-crop-review-and-preservation-boundary",
     assets: {
       "/patents/figures/us-4575330-hull-stereolithography/fig-1-source-crop-v1.png": {
         sha256: "a28128050ae41ea9bd296d117434b34ee23e8cfc608098d10ea3fb59e7e65054",
