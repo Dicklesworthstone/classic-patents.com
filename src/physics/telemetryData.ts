@@ -4976,6 +4976,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 2,
         defaultValue: 150,
         unit: "kHz",
+        provenance: "scenario-modern",
       },
       {
         id: "rudderAngle",
@@ -4985,6 +4986,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 15,
         unit: "°",
+        provenance: "scenario-modern",
       },
       {
         id: "pulseCount",
@@ -4994,6 +4996,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 3,
         unit: "pulses",
+        provenance: "scenario-modern",
       },
       {
         id: "propellerThrottlePct",
@@ -5003,6 +5006,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 75,
         unit: "%",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (p) => {
@@ -5021,6 +5025,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "R_det",
           badgeColor: tele.isResonant ? "emerald" : "amber",
           progressPct: clampProgress(tele.isResonant ? 95 : 10),
+          provenance: "scenario-modern",
         },
         {
           label: "Propulsion Motor",
@@ -5028,6 +5033,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: `${Math.round(tele.propellerRpm)} rpm`,
           badgeColor: tele.relayEnergized ? "cyan" : "purple",
           progressPct: clampProgress(tele.motorThrustN),
+          provenance: "scenario-modern",
         },
         {
           label: "Turning Radius",
@@ -5035,6 +5041,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "R_turn",
           badgeColor: "indigo",
           progressPct: clampProgress(Math.abs(tele.rudderAngleDeg) > 0 ? 70 : 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Carrier Resonance",
@@ -5042,6 +5049,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "resonance",
           badgeColor: tele.isResonant ? "emerald" : "rose",
           progressPct: clampProgress(tele.isResonant ? 100 : 20),
+          provenance: "topology-normalized",
         },
       ];
     },

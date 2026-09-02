@@ -57,4 +57,36 @@ describe("US 613,809 Nikola Tesla Teleautomaton manual archival edition", () => 
     const validation = validateReviewedTranscription(transcript, 13);
     expect(validation.valid).toBe(true);
   });
+
+  test("provides valid provenance classifications for all Tesla Teleautomaton controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-613809-tesla-teleautomaton"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("registers explicit energy channel omission reason for Tesla Teleautomaton", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-613809-tesla-teleautomaton"]).toBeDefined();
+    expect(energyChannelsFor("us-613809-tesla-teleautomaton", {})).toEqual([]);
+  });
+
+  test("enforces facsimile review pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(teslaTeleautomatonPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
+  });
 });

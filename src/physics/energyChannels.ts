@@ -127,6 +127,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 48,475 specifies the mechanical kinematics of pin-tumbler chambers, split-pin pieces I and J, keyway slot t, screw plate F, and lazy-arm E, but supplies no continuous key insertion velocity, manual torque rate, spring constants, or power datum from which an authentic SI energy channel can be derived.",
   "us-120057-gramme-dynamo":
     "US 120,057 describes the construction and continuous winding topology of the soft-iron ring armature and bobbin junctions, but supplies no operational rotational speed, magnetic flux density, coil resistance, terminal voltage, or shaft horsepower datum from which an authentic SI energy channel can be derived.",
+  "us-613809-tesla-teleautomaton":
+    "US 613,809 specifies the electrical logic and mechanical topology of coherer sensitive device A', relays, stepping commutator, propulsion motor D, and steering motor F, but supplies no battery voltage, motor horsepower, hydrodynamic thrust force, or continuous wattage datum from which an authentic SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -779,15 +781,6 @@ export function energyChannelsFor(
 
   if (patentId === "us-593138-tesla-coil") {
     return [];
-  }
-
-  if (patentId === "us-613809-tesla-teleautomaton") {
-    const rkW = 180;
-    return [
-      { name: "Propulsion & Steering Motor Battery", watts: rkW, tone: "in" },
-      { name: "Rudder & Screw Propeller Hydrodynamic Work", watts: rkW * 0.72, tone: "useful" },
-      { name: "Coherer Relay & Commutator Resistance", watts: rkW * 0.28, tone: "loss" },
-    ];
   }
 
   if (patentId === "us-2292387-lamarr-frequency-hopping") {
