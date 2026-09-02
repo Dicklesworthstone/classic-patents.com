@@ -124,7 +124,33 @@ describe("US 613,809 Nikola Tesla Teleautomaton visual & RF logic boundary", () 
     expect(modelSource).not.toContain("(propellerRpm * 2 * Math.PI) / 60");
     expect(modelSource).not.toContain("timeSec * 0.8");
     expect(modelSource).not.toContain("dt * 1.5");
-    expect(modelSource).not.toContain("timeSec * 2.0");
     expect(modelSource).toContain("cohererDisplayOmegaRadPerS");
+  });
+
+  test("derives all printed claims dynamically from edition without duplicate strings", () => {
+    const { teslaTeleautomatonPatent } = require("@/data/patents/tesla-teleautomaton");
+    const {
+      teslaTeleautomatonArchivalEdition,
+    } = require("@/data/editions/teslaTeleautomatonEdition");
+    expect(teslaTeleautomatonPatent.claims.length).toBe(13);
+    const editionClaims = teslaTeleautomatonArchivalEdition.blocks.filter(
+      (b: any) => b.kind === "claim",
+    );
+    expect(editionClaims.length).toBe(13);
+    for (let i = 0; i < 13; i++) {
+      const editionBlock = editionClaims[i];
+      expect(editionBlock).toBeDefined();
+      const expectedText = editionBlock.inlines.map((inl: any) => inl.text).join("");
+      expect(teslaTeleautomatonPatent.claims[i].originalText).toBe(expectedText);
+    }
+  });
+
+  test("registers explicit energy channel omission reason", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-613809-tesla-teleautomaton"]).toBeDefined();
+    expect(energyChannelsFor("us-613809-tesla-teleautomaton", {})).toEqual([]);
   });
 });

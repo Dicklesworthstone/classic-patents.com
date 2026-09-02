@@ -17,7 +17,6 @@ import {
   stepMarconiRadio,
   stepMorseTelegraph,
   stepNoyceIC,
-  stepParsonsTurbine,
   stepThomsonWelding,
   stepTownesLaser,
   stepWattCondenser,
@@ -130,6 +129,10 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 613,809 specifies the electrical logic and mechanical topology of coherer sensitive device A', relays, stepping commutator, propulsion motor D, and steering motor F, but supplies no battery voltage, motor horsepower, hydrodynamic thrust force, or continuous wattage datum from which an authentic SI energy channel can be derived.",
   "us-942699-baekeland-bakelite":
     "US 942,699 specifies reacting a phenolic body with formaldehyde and heating under pressure (110–140 °C) in a closed vessel, but supplies no continuous autoclave heating power, thermal flux, or electrical wattage datum from which an authentic SI energy channel can be derived.",
+  "us-608969-parsons-turbine":
+    "US 608,969 specifies multi-shaft marine piping combinations, serial/parallel valving, and vacuum reversing turbines, but supplies no continuous boiler steam mass flow, shaft horsepower, or electrical wattage datum from which an authentic SI energy channel can be derived.",
+  "us-2292387-lamarr-frequency-hopping":
+    "US 2,292,387 specifies the mechanical and electrical coordination of slotted record strips, pneumatic sensing head 45, motors, and radio tuning circuits, but supplies no motor power, suction wattage, vacuum pressure, RF radiation power, or continuous wattage datum from which an authentic SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -197,13 +200,6 @@ export function energyChannelsFor(
       params.moderatorPurity ?? 99.5,
     );
     return [{ name: "Fission heat", watts: kinetics.thermalPowerWatts, tone: "in" }];
-  }
-  if (patentId === "us-608969-parsons-turbine") {
-    const parsons = stepParsonsTurbine({
-      rotorRpm: params.rotorRpm,
-      inletPressurePsi: params.inletPressurePsi ?? (params.steamPressureBar ?? 12.4) * 14.5038,
-    });
-    return [{ name: "Shaft", watts: parsons.shaftPowerKw * 1000, tone: "useful" }];
   }
   if (patentId === "us-1781541-einstein-refrigerator") {
     const e = stepEinsteinRefrigerator({
@@ -765,15 +761,6 @@ export function energyChannelsFor(
 
   if (patentId === "us-593138-tesla-coil") {
     return [];
-  }
-
-  if (patentId === "us-2292387-lamarr-frequency-hopping") {
-    const hopW = 65;
-    return [
-      { name: "Pneumatic Player-Piano Slotted Tape Drive", watts: hopW, tone: "in" },
-      { name: "Carrier Frequency Hop Synchronization", watts: hopW * 0.7, tone: "useful" },
-      { name: "Bellows Suction Air Loss", watts: hopW * 0.3, tone: "loss" },
-    ];
   }
 
   if (patentId === "us-2495429-spencer-microwave") {

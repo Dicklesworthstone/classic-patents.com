@@ -82,6 +82,8 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-120057-gramme-dynamo",
       "us-613809-tesla-teleautomaton",
       "us-942699-baekeland-bakelite",
+      "us-608969-parsons-turbine",
+      "us-2292387-lamarr-frequency-hopping",
     ]);
   });
 

@@ -188,7 +188,11 @@ describe("carrierAirConditionerArchivalEdition", () => {
     for (const ctrl of entry.controls) {
       expect(ctrl.provenance).toBeDefined();
     }
-    const metrics = entry.computeMetrics({ airflowCfm: 15000, sprayRatePct: 60, separatorFaces: 6 });
+    const metrics = entry.computeMetrics({
+      airflowCfm: 15000,
+      sprayRatePct: 60,
+      separatorFaces: 6,
+    });
     for (const m of metrics) {
       expect(m.provenance).toBeDefined();
     }

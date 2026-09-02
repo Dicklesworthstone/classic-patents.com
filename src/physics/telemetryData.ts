@@ -3449,6 +3449,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 0,
         unit: "row",
+        provenance: "source-disclosed",
       },
       {
         id: "commandTone",
@@ -3458,6 +3459,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 400,
         defaultValue: 100,
         unit: "cycles",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics: (p) => {
@@ -3473,6 +3475,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "A–G",
           badgeColor: "indigo",
           progressPct: clampProgress((position / 6) * 100),
+          provenance: "source-disclosed",
         },
         {
           label: "Receiver match",
@@ -3480,6 +3483,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "channels",
           badgeColor: "emerald",
           progressPct: receiverTuned ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
           label: "Command label",
@@ -3487,6 +3491,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "cycles",
           badgeColor: "cyan",
           progressPct: tone === "500" ? 100 : 20,
+          provenance: "source-disclosed",
         },
         {
           label: "Warning lamp 43",
@@ -3494,6 +3499,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "row H",
           badgeColor: "amber",
           progressPct: receiverTuned ? 0 : 100,
+          provenance: "source-disclosed",
         },
       ];
     },
@@ -4994,10 +5000,22 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     governingEquation:
       "f_0 = \\frac{1}{2\\pi \\sqrt{L C}} \\quad \\text{and} \\quad R_{\\text{coherer}} \\xrightarrow{E_{\\text{RF}}} 50\\,\\Omega",
     engineMethod: "FrankenSimEngine.stepTeslaTeleautomaton",
+    pedagogicalInsight:
+      "US 613,809 describes sending electrical disturbances through natural media to a sensitive particle receptacle, relay, anchor escapement, and contact cylinder to step local propulsion, steering, and signaling circuits without intermediate wires.",
     controls: [
       {
+        id: "pulseCount",
+        label: "Transmitter Command Pulses",
+        min: 0,
+        max: 20,
+        step: 1,
+        defaultValue: 3,
+        unit: "pulses",
+        provenance: "source-disclosed",
+      },
+      {
         id: "rfFrequency",
-        label: "RF Transmitter Frequency",
+        label: "Illustrative Carrier Frequency",
         min: 120,
         max: 180,
         step: 2,
@@ -5007,7 +5025,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "rudderAngle",
-        label: "Rudder Steering Angle",
+        label: "Illustrative Rudder Steering Angle",
         min: -35,
         max: 35,
         step: 5,
@@ -5016,18 +5034,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         provenance: "scenario-modern",
       },
       {
-        id: "pulseCount",
-        label: "RF Pulse Count",
-        min: 0,
-        max: 20,
-        step: 1,
-        defaultValue: 3,
-        unit: "pulses",
-        provenance: "scenario-modern",
-      },
-      {
         id: "propellerThrottlePct",
-        label: "Electric Motor Throttle",
+        label: "Illustrative Motor Throttle",
         min: 0,
         max: 100,
         step: 5,
@@ -5046,6 +5054,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const turnRadiusM = tele.turningRadiusM < 900 ? `${tele.turningRadiusM} m` : "Straight";
 
       return [
+        {
+          label: "Command State",
+          value: "COMMAND-STEPPED CONTROLLER",
+          unit: "topology",
+          badgeColor: "emerald",
+          primary: true,
+          provenance: "source-disclosed",
+        },
         {
           label: "Coherer Resistance",
           value: tele.isResonant ? `${tele.cohererOhms} Ω (Conducting)` : "100 kΩ (Open)",
@@ -5080,8 +5096,6 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
       ];
     },
-    pedagogicalInsight:
-      "Tuned RF waves trigger metal filings in the coherer to fuse and drop resistance, stepping a motorized rotary commutator drum that decodes commands into propulsion and steering.",
   },
   "us-621195-zeppelin-airship": {
     domain: "aerodynamics_mbd",
@@ -10319,8 +10333,6 @@ PATENT_PHYSICS_REGISTRY["us-7479949"] = PATENT_PHYSICS_REGISTRY["us-7479949-mult
 
 // Catalog page ids share the same kernel seats as their leftover/legacy keys.
 // The 3D/2D instruments write these ids; the badge must not stay on sourceFocus.
-PATENT_PHYSICS_REGISTRY["us-608969-parsons-turbine"] =
-  PATENT_PHYSICS_REGISTRY["us-328710-parsons-turbine"];
 PATENT_PHYSICS_REGISTRY["us-3923554-boyle-smith-ccd"] =
   PATENT_PHYSICS_REGISTRY["us-3858232-boyle-smith-ccd"];
 PATENT_PHYSICS_REGISTRY["us-3671542-kwolek-kevlar"] =

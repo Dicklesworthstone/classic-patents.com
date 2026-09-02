@@ -123,4 +123,37 @@ describe("US 608,969 manual source edition", () => {
     expect(JSON.stringify(parsonsTurbineArchivalEdition)).not.toContain("SOURCE PDF PAGE");
     expect(JSON.stringify(parsonsTurbineArchivalEdition)).not.toContain("source-pdf-text-layer");
   });
+
+  test("provides valid provenance classifications for all Parsons controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-608969-parsons-turbine"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({ routing: 0, reversing: 0, throttle: 1 });
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("registers explicit energy channel omission reason for US 608,969", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-608969-parsons-turbine"]).toBeDefined();
+    expect(energyChannelsFor("us-608969-parsons-turbine", {})).toEqual([]);
+  });
+
+  test("enforces figure acceptance pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const { parsonsTurbinePatent } = require("@/data/patents/parsons-turbine");
+    const decision = evaluateTypedArchivalPublicationState(parsonsTurbinePatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+  });
 });
