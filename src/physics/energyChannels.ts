@@ -2,7 +2,6 @@ import type { EnergyChannel } from "@/components/patents/EnergyFlowStrip";
 import { stepArkwrightWaterFrame } from "./arkwrightKernel";
 import { stepBellPhotophone } from "./bellPhotophoneKernel";
 import {
-  stepBaekelandBakelite,
   stepBellTelephone,
   stepBoyleSmithCcd,
   stepCarlsonElectrophotography,
@@ -129,6 +128,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 120,057 describes the construction and continuous winding topology of the soft-iron ring armature and bobbin junctions, but supplies no operational rotational speed, magnetic flux density, coil resistance, terminal voltage, or shaft horsepower datum from which an authentic SI energy channel can be derived.",
   "us-613809-tesla-teleautomaton":
     "US 613,809 specifies the electrical logic and mechanical topology of coherer sensitive device A', relays, stepping commutator, propulsion motor D, and steering motor F, but supplies no battery voltage, motor horsepower, hydrodynamic thrust force, or continuous wattage datum from which an authentic SI energy channel can be derived.",
+  "us-942699-baekeland-bakelite":
+    "US 942,699 specifies reacting a phenolic body with formaldehyde and heating under pressure (110–140 °C) in a closed vessel, but supplies no continuous autoclave heating power, thermal flux, or electrical wattage datum from which an authentic SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -481,23 +482,6 @@ export function energyChannelsFor(
         tone: "loss",
       },
     ];
-  }
-
-  if (patentId === "us-942699-baekeland-bakelite") {
-    const _bake = stepBaekelandBakelite(
-      params.curingTempC ?? 150,
-      params.autoclavePressurePsi ?? 80,
-      params.catalystPct ?? 1,
-    );
-    return [
-      { name: "Autoclave Steam", watts: 1800, tone: "in" },
-      { name: "Crosslink Condensation", watts: 1250, tone: "useful" },
-      { name: "Mold Wall Heat Leak", watts: 550, tone: "loss" },
-    ];
-  }
-
-  if (patentId === "us-971501-haber-ammonia") {
-    return [];
   }
 
   if (patentId === "us-2297691-carlson-electrophotography") {

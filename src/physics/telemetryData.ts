@@ -2265,6 +2265,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.1,
         defaultValue: 1.5,
         unit: "mA",
+        provenance: "scenario-modern",
       },
       {
         id: "collectorBias",
@@ -2274,6 +2275,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: -40,
         unit: "V",
+        provenance: "scenario-modern",
       },
       {
         id: "pointSpacing",
@@ -2283,6 +2285,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 50,
         unit: "µm",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (p) => {
@@ -2301,6 +2304,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "ratio",
           badgeColor: alpha >= 1.0 ? "emerald" : "amber",
           progressPct: Math.min(100, (alpha / 2.5) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Hole Transit Time",
@@ -2308,6 +2312,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "ns",
           badgeColor: "cyan",
           progressPct: Math.min(100, (transitTimeNs / 30) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Collector Current",
@@ -2315,6 +2320,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "mA",
           badgeColor: "purple",
           progressPct: Math.min(100, (Number(ic) / 10) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Power Amplification",
@@ -2322,6 +2328,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "dB",
           badgeColor: "indigo",
           progressPct: Math.min(100, (Number(powerGainDb) / 25) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },
@@ -5251,110 +5258,104 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "The grant sends compressed air from C through cooler K and the inner tube of G′ to regulating valve R′ in vessel V′. The returning low-pressure gas travels through the outer annular channel of G′ to the compressor suction, so it cools the incoming stream. The stated 75-atmosphere and 25-atmosphere example is historical source data, not a visitor-adjustable plant model.",
   },
   "us-808897-carrier-air-conditioner": {
-    domain: "thermodynamics_transport",
-    domainTitle: "Wet-Spray Dew-Point Separation and Sensible Reheat",
-    equationName: "Magnus dew point and spray-limited humidity ratio",
+    domain: "thermo_fluid",
+    domainTitle: "Wet-Plate Sinuous Air Washer and Droplet Separator",
+    equationName: "Inertial Impaction and Sinuous Droplet Separation",
     governingEquation:
-      "T_{dp} = \\frac{b\\,\\alpha}{a-\\alpha},\\quad \\alpha=\\frac{a T}{b+T}+\\ln(\\mathrm{RH})",
+      "\\eta_{\\text{sep}} = 1 - \\exp\\left(-N_{\\text{turns}} \\cdot \\mathrm{Stk}\\right) \\quad \\text{and} \\quad \\Delta P = \\frac{1}{2} \\rho v^2 \\sum K_{\\text{loss}}",
     engineMethod: "FrankenSimEngine.stepCarrierAirConditioner",
+    pedagogicalInsight:
+      "US 808,897 claims fine liquid spray wetting suspended impurities, and repeated turns across upright sinuous plates i to capture dirt and droplets, with rear gutters b and c trapping and draining liquid without carryover.",
     controls: [
       {
-        id: "inletTempC",
-        label: "Inlet dry-bulb",
-        min: 25,
-        max: 42,
-        step: 1,
-        defaultValue: 35,
-        unit: "°C",
-      },
-      {
-        id: "inletRhPct",
-        label: "Inlet relative humidity",
-        min: 40,
-        max: 95,
-        step: 5,
-        defaultValue: 75,
-        unit: "%",
-      },
-      {
-        id: "sprayWaterTempC",
-        label: "Spray-water temperature",
-        min: 4,
-        max: 18,
-        step: 1,
-        defaultValue: 8,
-        unit: "°C",
-      },
-      {
-        id: "reheatTempC",
-        label: "Reheat supply temperature",
-        min: 18,
-        max: 26,
-        step: 1,
-        defaultValue: 22,
-        unit: "°C",
-      },
-      {
         id: "airflowCfm",
-        label: "Treated airflow",
+        label: "Treated Airflow",
         min: 2000,
         max: 30000,
         step: 500,
         defaultValue: 15000,
         unit: "cfm",
+        provenance: "source-disclosed",
+      },
+      {
+        id: "sprayRatePct",
+        label: "Spray Nozzle Rate",
+        min: 10,
+        max: 100,
+        step: 5,
+        defaultValue: 60,
+        unit: "%",
+        provenance: "source-disclosed",
+      },
+      {
+        id: "separatorFaces",
+        label: "Sinuous Plate Faces / Turns",
+        min: 2,
+        max: 12,
+        step: 1,
+        defaultValue: 6,
+        unit: "faces",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics: (p) => {
       const carrier = FrankenSimEngine.stepCarrierAirConditioner({
-        inletTempC: p.inletTempC,
-        inletRhPct: p.inletRhPct,
-        sprayWaterTempC: p.sprayWaterTempC,
-        reheatTempC: p.reheatTempC,
         airflowCfm: p.airflowCfm,
+        sprayRatePct: p.sprayRatePct,
+        separatorFaces: p.separatorFaces,
       });
-      const c = carrier as {
-        dewPointInC?: number;
-        moistureRemovedGPerKg?: number;
-        finalRhPct?: number;
-        coolingWatts?: number;
-      };
-      const dewPoint = c.dewPointInC ?? 15.0;
-      const moistureRemoved = c.moistureRemovedGPerKg ?? 0;
-      const finalRh = c.finalRhPct ?? 50;
-      const coolingWatts = c.coolingWatts ?? 0;
+
       return [
         {
-          label: "Inlet dew point",
-          value: dewPoint.toFixed(1),
-          unit: "°C",
+          label: "Separator State",
+          value: "WET-SURFACE REMOVAL",
+          unit: "topology",
           badgeColor: "cyan",
-          progressPct: clampProgress((dewPoint / 30) * 100),
+          primary: true,
+          provenance: "source-disclosed",
         },
         {
-          label: "Moisture extracted",
-          value: moistureRemoved.toFixed(1),
-          unit: "g/kg",
-          badgeColor: "amber",
-          progressPct: clampProgress((moistureRemoved / 20) * 100),
-        },
-        {
-          label: "Leaving RH",
-          value: `${finalRh}`,
+          label: "Droplet Separation",
+          value: `${carrier.dropletSeparationPct}%`,
           unit: "%",
           badgeColor: "emerald",
-          progressPct: finalRh,
+          progressPct: carrier.dropletSeparationPct,
+          provenance: "scenario-modern",
         },
         {
-          label: "Latent sink",
-          value: coolingWatts.toLocaleString(),
-          unit: "W",
+          label: "Impurity Capture",
+          value: `${carrier.particleCapturePct}%`,
+          unit: "%",
+          badgeColor: "amber",
+          progressPct: carrier.particleCapturePct,
+          provenance: "scenario-modern",
+        },
+        {
+          label: "Wet-Film Coverage",
+          value: `${carrier.wetFilmCoveragePct}%`,
+          unit: "%",
           badgeColor: "indigo",
-          progressPct: clampProgress((coolingWatts / 200000) * 100),
+          progressPct: carrier.wetFilmCoveragePct,
+          provenance: "scenario-modern",
+        },
+        {
+          label: "Separator Pressure Loss",
+          value: `${carrier.pressureDropPa} Pa`,
+          unit: "Pa",
+          badgeColor: "rose",
+          progressPct: clampProgress((carrier.pressureDropPa / 120) * 100),
+          provenance: "scenario-modern",
+        },
+        {
+          label: "Air Flow Power",
+          value: `${carrier.airMovementWatts} W`,
+          unit: "W",
+          badgeColor: "emerald",
+          progressPct: clampProgress((carrier.airMovementWatts / 800) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },
-    pedagogicalInsight:
-      "A spray colder than the inlet dew point condenses water on the wet plate faces; rear gutters keep that liquid out of the leaving stream. Reheat then sets the dry-bulb without adding moisture, so leaving RH is spray saturation referred to the reheat temperature.",
   },
   "us-124404-westinghouse-air-brake": {
     domain: "thermo_fluid",
