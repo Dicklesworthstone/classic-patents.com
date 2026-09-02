@@ -2161,6 +2161,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.1,
         defaultValue: 4.5,
         unit: "L/D",
+        provenance: "source-disclosed",
       },
       {
         id: "primarySpinRpm",
@@ -2170,6 +2171,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 120,
         unit: "rpm",
+        provenance: "scenario-modern",
       },
       {
         id: "gyroSpinRpm",
@@ -2179,6 +2181,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 250,
         defaultValue: 6_000,
         unit: "rpm",
+        provenance: "scenario-modern",
       },
       {
         id: "auxiliaryReleaseFraction",
@@ -2188,6 +2191,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.02,
         defaultValue: 0,
         unit: "fraction",
+        provenance: "topology-normalized",
       },
       {
         id: "primaryChargeConsumed",
@@ -2197,6 +2201,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 0,
         unit: "state",
+        provenance: "source-disclosed",
       },
       {
         id: "gyroEnabled",
@@ -2206,6 +2211,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 1,
         unit: "state",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics: (p) => {
@@ -2225,6 +2231,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: result.claim2Satisfied ? "L/D · PASS" : "L/D · FAIL",
           badgeColor: result.claim2Satisfied ? "emerald" : "rose",
           progressPct: clampProgress((result.tubeLengthRatio / 6) * 100),
+          provenance: "source-disclosed",
         },
         {
           label: "Claim 1 Firing Sequence",
@@ -2232,6 +2239,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: result.auxiliaryNested ? "nested" : "released",
           badgeColor: result.claim1SequenceSatisfied ? "emerald" : "rose",
           progressPct: result.claim1SequenceSatisfied ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
           label: "Primary Angular Velocity",
@@ -2239,6 +2247,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "rad/s",
           badgeColor: "amber",
           progressPct: clampProgress(((p.primarySpinRpm ?? 120) / 300) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Gyroscope Angular Velocity",
@@ -2246,6 +2255,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "rad/s",
           badgeColor: "purple",
           progressPct: clampProgress(((p.gyroSpinRpm ?? 6_000) / 12_000) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Instrument Support World Rate",
@@ -2257,6 +2267,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
               Math.max(1, result.primaryAngularVelocityRadPerSec)) *
               100,
           ),
+          provenance: "scenario-modern",
         },
       ];
     },
