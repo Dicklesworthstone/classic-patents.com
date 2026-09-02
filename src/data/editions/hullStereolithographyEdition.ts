@@ -339,8 +339,10 @@ const blocks: CuratedSpecificationBlock[] = [
     inlines: [
       text("Referring now to "),
       sourceFigure(1, "FIG. 1"),
+      text(", the stereolithographic method is broadly outlined. Step 10 in "),
+      sourceFigure(1, "FIG. 1"),
       text(
-        ", the stereolithographic method is broadly outlined. Step 10 in FIG. 1 calls for the generation of individual solid laminae representing cross-sections of a three-dimensional object to be formed. Step 11, which inherently occurs if Step 10 is performed properly, combines the successively formed adjacent laminae to form the desired three-dimensional object which has been programmed into the system for selective curing. Hence, the stereolithographic system of the present invention generates three-dimensional objects by creating a cross-sectional pattern of the object to be formed at a selected surface of a fluid medium, e.g., a UV curable liquid or the like, capable of altering its physical state in response to appropriate synergistic stimulation such as impinging radiation, electron beam or other particle bombardment, or applied chemicals (as by ink jet or spraying over a mask adjacent the fluid surface), successive adjacent laminae, representing corresponding successive adjacent cross-sections of the object, being automatically formed and integrated together to provide a step-wise laminar or thin layer buildup of the object, whereby a three-dimensional object is formed and drawn from a substantially planar or sheet-like surface of the fluid medium during the forming process.",
+        " calls for the generation of individual solid laminae representing cross-sections of a three-dimensional object to be formed. Step 11, which inherently occurs if Step 10 is performed properly, combines the successively formed adjacent laminae to form the desired three-dimensional object which has been programmed into the system for selective curing. Hence, the stereolithographic system of the present invention generates three-dimensional objects by creating a cross-sectional pattern of the object to be formed at a selected surface of a fluid medium, e.g., a UV curable liquid or the like, capable of altering its physical state in response to appropriate synergistic stimulation such as impinging radiation, electron beam or other particle bombardment, or applied chemicals (as by ink jet or spraying over a mask adjacent the fluid surface), successive adjacent laminae, representing corresponding successive adjacent cross-sections of the object, being automatically formed and integrated together to provide a step-wise laminar or thin layer buildup of the object, whereby a three-dimensional object is formed and drawn from a substantially planar or sheet-like surface of the fluid medium during the forming process.",
       ),
     ],
   },
@@ -595,7 +597,13 @@ const blocks: CuratedSpecificationBlock[] = [
       text("The UV light source 26 in "),
       sourceFigure(4, "FIG. 4"),
       text(
-        " focuses the spot 27 at the interface between the liquid 22 and the non-miscible intermediate liquid layer 32, the UV radiation passing through a suitable UV transparent window 33, of quartz or the like, supported at the bottom of the container 21. The curable liquid 22 is provided in a very thin layer over the non-miscible layer 32 and thereby has the advantage of limiting layer thickness directly, rather than relying solely upon adsorption and the like to limit the depth of curing, since ideally an ultrathin lamina is to be provided. Hence, the region of formation will be more sharply defined and some surfaces will be formed smoother with the system of FIG. 4 than with that of FIG. 3. In addition, a smaller volume of UV curable liquid 22 is required, and the substitution of one curable material for another is easier.",
+        " focuses the spot 27 at the interface between the liquid 22 and the non-miscible intermediate liquid layer 32, the UV radiation passing through a suitable UV transparent window 33, of quartz or the like, supported at the bottom of the container 21. The curable liquid 22 is provided in a very thin layer over the non-miscible layer 32 and thereby has the advantage of limiting layer thickness directly, rather than relying solely upon adsorption and the like to limit the depth of curing, since ideally an ultrathin lamina is to be provided. Hence, the region of formation will be more sharply defined and some surfaces will be formed smoother with the system of ",
+      ),
+      sourceFigure(4, "FIG. 4"),
+      text(" than with that of "),
+      sourceFigure(3, "FIG. 3"),
+      text(
+        ". In addition, a smaller volume of UV curable liquid 22 is required, and the substitution of one curable material for another is easier.",
       ),
     ],
   },
@@ -604,8 +612,14 @@ const blocks: CuratedSpecificationBlock[] = [
     inlines: [
       text("The system of "),
       sourceFigure(5, "FIG. 5"),
+      text(" is similar to that of "),
+      sourceFigure(3, "FIG. 3"),
       text(
-        " is similar to that of FIG. 3, but the movable UV light source 26 is eliminated and a collimated, broad UV light source 35 and suitable apertured mask 36 is substituted for the programmed source 26 and focused spot 27. The apertured mask 36 is placed as close as possible to the working surface 23, and collimated light from the UV source 35 passes through the mask 36 to expose the working surface 23, thereby creating successive adjacent laminae, as in the embodiments of FIGS. 3 and 4. However, the use of a fixed mask 36 provides three-dimensional objects with a constant cross-sectional shape. Whenever that cross-sectional shape is to be changed, a new mask 36 for that particular cross-sectional shape must be substituted and properly aligned. Of course, the masks can be automatically changed by providing a web of masks (not shown) which are successively moved into alignment with with the surface 23.",
+        ", but the movable UV light source 26 is eliminated and a collimated, broad UV light source 35 and suitable apertured mask 36 is substituted for the programmed source 26 and focused spot 27. The apertured mask 36 is placed as close as possible to the working surface 23, and collimated light from the UV source 35 passes through the mask 36 to expose the working surface 23, thereby creating successive adjacent laminae, as in the embodiments of ",
+      ),
+      sourceFigure([3, 4], "FIGS. 3 and 4"),
+      text(
+        ". However, the use of a fixed mask 36 provides three-dimensional objects with a constant cross-sectional shape. Whenever that cross-sectional shape is to be changed, a new mask 36 for that particular cross-sectional shape must be substituted and properly aligned. Of course, the masks can be automatically changed by providing a web of masks (not shown) which are successively moved into alignment with with the surface 23.",
       ),
     ],
   },
@@ -614,7 +628,15 @@ const blocks: CuratedSpecificationBlock[] = [
     inlines: [
       sourceFigure(6, "FIG. 6"),
       text(
-        " of the drawings again provides a stereolithographic system configuration similar to that previously described in connection with FIG. 3. However, a cathode ray tube (CRT) 38, fiber optic faceplate 39 and water (or other) release layer 40 are provided as a substitute for the light source 26 and focus spot 27. Hence, the graphic image provided by a computer 28 to the CRT 38 produces the forming image upon the UV emitting phosphor face of the tube where it passes through the fiber optic layer 39 and release layer 40 to the working surface 23 of the fluid medium 22. In all other respects, the system of FIG. 6 forms successive cross-sectional laminae defining the desired three-dimensional object to be formed, in exactly the same way as the embodiments of the invention previously discussed.",
+        " of the drawings again provides a stereolithographic system configuration similar to that previously described in connection with ",
+      ),
+      sourceFigure(3, "FIG. 3"),
+      text(
+        ". However, a cathode ray tube (CRT) 38, fiber optic faceplate 39 and water (or other) release layer 40 are provided as a substitute for the light source 26 and focus spot 27. Hence, the graphic image provided by a computer 28 to the CRT 38 produces the forming image upon the UV emitting phosphor face of the tube where it passes through the fiber optic layer 39 and release layer 40 to the working surface 23 of the fluid medium 22. In all other respects, the system of ",
+      ),
+      sourceFigure(6, "FIG. 6"),
+      text(
+        " forms successive cross-sectional laminae defining the desired three-dimensional object to be formed, in exactly the same way as the embodiments of the invention previously discussed.",
       ),
     ],
   },
@@ -623,7 +645,21 @@ const blocks: CuratedSpecificationBlock[] = [
     inlines: [
       sourceFigure([7, 8], "FIGS. 7 and 8"),
       text(
-        ' illustrate an embodiment of a stereolithographic system wherein the elevator platform 29 has additional degrees of freedom, so that different faces of the object 30 may be exposed for alternate methods of construction. Similarly, the stereolithography process may be utilized as an "add on" process where the elevator platform 29 will be used to pick up and locate another part for supplementary stereolithographic processing. In this regard, the systems shown in FIGS. 7 and 8 are identical to that of FIG. 3 with the exception of the elevator platform 29 which, in the systems of FIGS. 7 and 8 have a second degree of freedom via manual or automatically controlled rotation about a pivot pin or hinge member 42. In this regard, FIG. 7 illustrates an adjustable elevator platform 29a in the conventional position, while FIG. 8 shows the platform 29a rotated 90° so that a supplementary, stereolithographically formed structure 41 can be selectively formed as an addition to one side of the three-dimensional object 30.',
+        ' illustrate an embodiment of a stereolithographic system wherein the elevator platform 29 has additional degrees of freedom, so that different faces of the object 30 may be exposed for alternate methods of construction. Similarly, the stereolithography process may be utilized as an "add on" process where the elevator platform 29 will be used to pick up and locate another part for supplementary stereolithographic processing. In this regard, the systems shown in ',
+      ),
+      sourceFigure([7, 8], "FIGS. 7 and 8"),
+      text(" are identical to that of "),
+      sourceFigure(3, "FIG. 3"),
+      text(" with the exception of the elevator platform 29 which, in the systems of "),
+      sourceFigure([7, 8], "FIGS. 7 and 8"),
+      text(
+        " have a second degree of freedom via manual or automatically controlled rotation about a pivot pin or hinge member 42. In this regard, ",
+      ),
+      sourceFigure(7, "FIG. 7"),
+      text(" illustrates an adjustable elevator platform 29a in the conventional position, while "),
+      sourceFigure(8, "FIG. 8"),
+      text(
+        " shows the platform 29a rotated 90° so that a supplementary, stereolithographically formed structure 41 can be selectively formed as an addition to one side of the three-dimensional object 30.",
       ),
     ],
   },

@@ -183,6 +183,7 @@ export default function HaberAmmonia3D({
   if (sourceBoundedVisualOnly) {
     return (
       <section
+        data-testid="three-d-source-boundary"
         role="status"
         aria-labelledby="haber-3d-source-boundary-heading"
         className="flex min-h-[380px] flex-col justify-center gap-4 rounded-2xl border border-amber-300 bg-amber-50 p-6 text-slate-900 shadow-md dark:border-amber-800 dark:bg-slate-950 dark:text-slate-100"

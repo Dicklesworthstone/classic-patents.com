@@ -161,6 +161,67 @@ async function auditPatent(page: Page, patentId: string, viewport: ViewportName)
       throw new Error(`Expected 3d-physics surface, received ${mode}.`);
     }
 
+    const sourceBoundary = surface.getByTestId("three-d-source-boundary");
+    if ((await sourceBoundary.count()) > 0) {
+      const boundaryScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.source-boundary.png`,
+      );
+      await dispatcher.screenshot({ path: boundaryScreenshotPath });
+      screenshotPath = boundaryScreenshotPath;
+
+      const beforeTick = Number((await dispatcher.getAttribute("data-physics-tick")) ?? 0);
+      const claimToggle = sourceBoundary.locator("button[aria-pressed]").first();
+      const beforePressed = await claimToggle.getAttribute("aria-pressed");
+      await claimToggle.click();
+      const invertedPressed = await claimToggle.getAttribute("aria-pressed");
+      await claimToggle.click();
+      const restoredPressed = await claimToggle.getAttribute("aria-pressed");
+      const afterTick = Number((await dispatcher.getAttribute("data-physics-tick")) ?? 0);
+      const canvasCount = await surface.locator("canvas").count();
+      const heading = await sourceBoundary
+        .locator("#haber-3d-source-boundary-heading")
+        .textContent();
+      const errors =
+        diagnostics.consoleErrors.length +
+        diagnostics.pageErrors.length +
+        diagnostics.networkErrors.length;
+      const valid =
+        canvasCount === 0 &&
+        heading?.includes("no drawing") === true &&
+        invertedPressed !== beforePressed &&
+        restoredPressed === beforePressed &&
+        afterTick > beforeTick &&
+        errors === 0;
+      emit({
+        patentId,
+        route,
+        viewport,
+        action: "source-bounded-refusal",
+        status: valid ? "pass" : "fail",
+        durationMs: Math.round(performance.now() - startedAt),
+        expected: {
+          explicitSourceBoundary: true,
+          inventedCanvas: false,
+          claimToggleRestores: true,
+          sharedPhysicsTickAdvances: true,
+          runtimeErrors: 0,
+        },
+        actual: {
+          heading,
+          canvasCount,
+          beforePressed,
+          invertedPressed,
+          restoredPressed,
+          beforeTick,
+          afterTick,
+        },
+        screenshotPath,
+        diagnostics,
+      });
+      return;
+    }
+
     const canvas = surface.locator("canvas").first();
     await canvas.waitFor({ state: "visible", timeout: 20_000 });
     await page.waitForFunction(
