@@ -102,4 +102,28 @@ describe("US 3,081,379 Automatic Measurement Apparatus (Machine Vision) archival
     expect(war.rivalName).toContain("Symbol Technologies");
     expect(war.resolution).toContain("Federal Circuit");
   });
+
+  test("provides valid provenance classifications for all Machine Vision controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-3081379-lemelson-machine-vision"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("wires claim 1 constraint in claimConstraints", () => {
+    const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
+    const r1 = applyClaimConstraintModifications(
+      "us-3081379-lemelson-machine-vision",
+      {},
+      { 1: false },
+    );
+    expect(r1.modifiedParams.gateWindowWidthUs).toBe(60.0);
+    expect(r1.refusalWarning).toContain("REGION OF INTEREST GATING COLLAPSE");
+  });
 });

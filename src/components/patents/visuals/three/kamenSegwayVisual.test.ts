@@ -1,4 +1,6 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { KAMEN_SEGWAY_DEFAULT_CONTROLS, stepKamenSegwaySi } from "@/physics/kamenSegwayKernel";
 import { createKamenSegwayModel } from "./kamenSegwayModel";
 
@@ -31,5 +33,25 @@ describe("US 6,302,230 Dean Kamen Segway Transporter 3D WebGL Model", () => {
     // Wheels spun
     expect(segway.leftWheelGroup.rotation.x).not.toBe(0);
     expect(segway.rightWheelGroup.rotation.x).not.toBe(0);
+  });
+
+  test("connects both visual faces to the shared claim probes and source boundary", () => {
+    const twoD = readFileSync(
+      resolve(process.cwd(), "src/components/patents/visuals/KamenSegwaySim.tsx"),
+      "utf8",
+    );
+    const threeD = readFileSync(
+      resolve(process.cwd(), "src/components/patents/visuals/three/KamenSegway3D.tsx"),
+      "utf8",
+    );
+
+    for (const visualSource of [twoD, threeD]) {
+      expect(visualSource).toContain("usePatentPhysics");
+      expect(visualSource).toContain("ClaimConstraintToggle");
+      expect(visualSource).toContain("claim1BalanceEnabled");
+      expect(visualSource).toContain("claim2RippleEnabled");
+      expect(visualSource).toContain("modern illustrative");
+      expect(visualSource).not.toContain("18 Hz");
+    }
   });
 });

@@ -3,6 +3,7 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
 import {
   readLemelsonAutomaticProductionControls,
@@ -37,6 +38,7 @@ export function LemelsonAutomaticProduction3D() {
   const studioRef = useRef<StudioContext | null>(null);
   const modelRef = useRef<LemelsonAutomaticProductionModel | null>(null);
   const [view, setView] = useState<keyof typeof VIEWS>("overview");
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 7: true });
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
   const controls = useMemo(() => readLemelsonAutomaticProductionControls(params), [params]);
   const state = useMemo(() => stepLemelsonAutomaticProductionTopology(controls), [controls]);
@@ -189,6 +191,14 @@ export function LemelsonAutomaticProduction3D() {
       <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs leading-relaxed text-amber-950 dark:text-amber-100">
         <strong>Quantitative refusal:</strong> {state.sourceBoundary.reason}
       </p>
+
+      <div className="rounded-lg border border-border/60 bg-card/60 p-3">
+        <ClaimConstraintToggle
+          patentId={PATENT_ID}
+          claimStates={claimStates}
+          onClaimStateChange={(num, active) => setClaimStates((prev) => ({ ...prev, [num]: active }))}
+        />
+      </div>
     </section>
   );
 }

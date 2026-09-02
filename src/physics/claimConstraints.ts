@@ -2665,6 +2665,29 @@ export function applyClaimConstraintModifications(
       break;
     }
 
+    case "us-3313014-lemelson-automatic-production": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim7Active = claimStates[7] ?? true;
+
+      if (!claim1Active) {
+        modified.markerSensed = 0;
+        activeFailures.push(
+          "Claim 1 Selected-Station Feedback Chain Omitted: Without marker sensing and powered retention means, carrier bypasses station without record reading.",
+        );
+        refusalWarning =
+          "STATION SENSING COLLAPSE: Claim 1 marker sensing and station retention required for automated positioning.";
+      }
+      if (!claim7Active) {
+        modified.contactsEngaged = 0;
+        activeFailures.push(
+          "Claim 7 Portable Controller Coupling Omitted: Without multi-circuit controller-to-station electrical contact coupling, station operation cannot be triggered.",
+        );
+        refusalWarning =
+          "PORTABLE CONTROLLER DISCONNECTED: Claim 7 station contact coupling required for operation sequencing.";
+      }
+      break;
+    }
+
     case "us-3728480-baer-odyssey": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {

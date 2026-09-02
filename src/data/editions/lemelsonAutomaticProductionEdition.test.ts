@@ -100,6 +100,38 @@ describe("US 3,313,014 manual source edition", () => {
   test("keeps the historical record free of an unsupported patent-war narrative", () => {
     expect(lemelsonAutomaticProductionPatent.historicalContext.patentWars).toEqual([]);
   });
+
+  test("provides valid provenance classifications for all Automatic Production controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-3313014-lemelson-automatic-production"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("wires claim 1 and claim 7 constraints in claimConstraints", () => {
+    const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
+    const r1 = applyClaimConstraintModifications(
+      "us-3313014-lemelson-automatic-production",
+      {},
+      { 1: false, 7: true },
+    );
+    expect(r1.modifiedParams.markerSensed).toBe(0);
+    expect(r1.refusalWarning).toContain("STATION SENSING COLLAPSE");
+
+    const r7 = applyClaimConstraintModifications(
+      "us-3313014-lemelson-automatic-production",
+      {},
+      { 1: true, 7: false },
+    );
+    expect(r7.modifiedParams.contactsEngaged).toBe(0);
+    expect(r7.refusalWarning).toContain("PORTABLE CONTROLLER DISCONNECTED");
+  });
 });
 
 function claims(edition: typeof lemelsonAutomaticProductionArchivalEdition) {

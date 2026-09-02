@@ -22,7 +22,9 @@ describe("DualProjectionViewer component", () => {
       <DualProjectionViewer
         patent={wrightFlyerPatent}
         archivalPublication={evaluateArchivalPublicationState(wrightFlyerPatent)}
+        archivalParallelReadings={undefined}
         colorizedEquations={getColorizedEquationsForPatent(wrightFlyerPatent.id)}
+        hasRawSourceText={false}
         initialView="plain-english"
       />,
     );
@@ -43,7 +45,9 @@ describe("DualProjectionViewer component", () => {
       <DualProjectionViewer
         patent={wrightFlyerPatent}
         archivalPublication={evaluateArchivalPublicationState(wrightFlyerPatent)}
+        archivalParallelReadings={undefined}
         colorizedEquations={getColorizedEquationsForPatent(wrightFlyerPatent.id)}
+        hasRawSourceText={false}
         initialView="original-spec"
       />,
     );

@@ -8288,6 +8288,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 25,
         defaultValue: 525,
         unit: "lines",
+        provenance: "scenario-reader",
       },
       {
         id: "frameRateHz",
@@ -8297,6 +8298,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 30,
         unit: "Hz",
+        provenance: "scenario-reader",
       },
       {
         id: "targetWidthM",
@@ -8306,6 +8308,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: 0.2,
         unit: "m",
+        provenance: "scenario-reader",
       },
       {
         id: "illuminationLux",
@@ -8315,6 +8318,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 100,
         defaultValue: 1500,
         unit: "lux",
+        provenance: "scenario-reader",
       },
       {
         id: "thresholdVoltage",
@@ -8324,6 +8328,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.05,
         defaultValue: 0.45,
         unit: "V",
+        provenance: "scenario-reader",
       },
       {
         id: "nominalPartWidthM",
@@ -8333,6 +8338,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.005,
         defaultValue: 0.08,
         unit: "m",
+        provenance: "scenario-reader",
       },
       {
         id: "actualPartWidthM",
@@ -8342,6 +8348,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.001,
         defaultValue: 0.082,
         unit: "m",
+        provenance: "scenario-reader",
       },
       {
         id: "conveyorSpeedMPerS",
@@ -8351,6 +8358,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.05,
         defaultValue: 0.25,
         unit: "m/s",
+        provenance: "scenario-reader",
       },
       {
         id: "gateSolenoidCurrentA",
@@ -8360,6 +8368,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.1,
         defaultValue: 2.5,
         unit: "A",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics(rawParams) {
@@ -8373,6 +8382,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "Hz",
           precision: 0,
           badgeColor: "emerald",
+          provenance: "scenario-modern",
         },
         {
           id: "linePeriodUs",
@@ -8381,6 +8391,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "µs",
           precision: 2,
           badgeColor: "cyan",
+          provenance: "scenario-modern",
         },
         {
           id: "scanBeamVelocityMPerS",
@@ -8389,6 +8400,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "m/s",
           precision: 1,
           badgeColor: "indigo",
+          provenance: "scenario-modern",
         },
         {
           id: "pulseWidthUs",
@@ -8397,6 +8409,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "µs",
           precision: 2,
           badgeColor: "amber",
+          provenance: "scenario-modern",
         },
         {
           id: "measuredPartWidthMm",
@@ -8405,6 +8418,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "mm",
           precision: 1,
           badgeColor: "emerald",
+          provenance: "scenario-modern",
         },
         {
           id: "dimensionalErrorMm",
@@ -8413,6 +8427,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "mm",
           precision: 2,
           badgeColor: state.defectDetected ? "rose" : "indigo",
+          provenance: "scenario-modern",
         },
         {
           id: "solenoidForceN",
@@ -8421,6 +8436,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "N",
           precision: 2,
           badgeColor: "purple",
+          provenance: "scenario-modern",
         },
         {
           id: "gateResponseTimeMs",
@@ -8428,7 +8444,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: state.metrics.gateResponseTimeMs.toFixed(1),
           unit: "ms",
           precision: 1,
-          badgeColor: "cyan",
+          badgeColor: "amber",
+          provenance: "scenario-modern",
         },
       ];
     },
@@ -10282,6 +10299,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.carrierAddressFraction,
         unit: "normalized",
+        provenance: "scenario-reader",
       },
       {
         id: "liftFraction",
@@ -10291,6 +10309,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.liftFraction,
         unit: "normalized",
+        provenance: "scenario-reader",
       },
       {
         id: "reachFraction",
@@ -10300,6 +10319,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.reachFraction,
         unit: "normalized",
+        provenance: "scenario-reader",
       },
       {
         id: "stationDetected",
@@ -10309,6 +10329,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.stationDetected,
         unit: "off/on",
+        provenance: "scenario-reader",
       },
       {
         id: "stationCoupled",
@@ -10318,6 +10339,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.stationCoupled,
         unit: "off/on",
+        provenance: "scenario-reader",
       },
       {
         id: "cycleProgress",
@@ -10327,6 +10349,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS.cycleProgress,
         unit: "normalized",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics: (params) => {
@@ -10339,30 +10362,35 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "% normalized",
           badgeColor: "cyan",
           progressPct: clampProgress(state.carrierAddressFraction * 100),
+          provenance: "source-disclosed",
         },
         {
           label: "Cycle Phase",
           value: state.phase.toUpperCase(),
           unit: "source topology",
           badgeColor: state.releaseAuthorized ? "amber" : "indigo",
+          provenance: "source-disclosed",
         },
         {
           label: "Station Coupling",
           value: state.controllerCoupled ? "CLOSED" : "OPEN",
           unit: "claim probe",
           badgeColor: state.controllerCoupled ? "emerald" : "rose",
+          provenance: "source-disclosed",
         },
         {
           label: "Machine Command",
           value: state.machineCommandAuthorized ? "AUTHORIZED" : "REFUSED",
           unit: "source interlock",
           badgeColor: state.machineCommandAuthorized ? "emerald" : "amber",
+          provenance: "source-disclosed",
         },
         {
           label: "Quantitative Performance",
           value: "REFUSED",
           unit: "missing source inputs",
           badgeColor: "rose",
+          provenance: "refusal-bounded",
         },
       ];
     },

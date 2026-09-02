@@ -68,3 +68,19 @@ export function archivalEditionForPublication(
   const decision = evaluateArchivalPublicationState(patent);
   return decision.isPublished ? decision.publishedEdition : undefined;
 }
+
+/**
+ * Project a canonical record across the server/client boundary without
+ * serializing research-only source assets. Accepted editions remain available
+ * to the renderer; held editions and all ledger metadata stay server-side.
+ */
+export function patentForPublicationViewer(
+  patent: Patent,
+  decision: ArchivalPublicationDecision,
+): Patent {
+  return {
+    ...patent,
+    archivalEdition: decision.publishedEdition,
+    originalTextAsset: undefined,
+  };
+}

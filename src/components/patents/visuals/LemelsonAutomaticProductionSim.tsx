@@ -1,6 +1,8 @@
 "use client";
 
 import { RotateCcw } from "lucide-react";
+import { useState } from "react";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import {
   readLemelsonAutomaticProductionControls,
   stepLemelsonAutomaticProductionTopology,
@@ -17,6 +19,7 @@ function statusColor(active: boolean, enabled: boolean) {
 
 export function LemelsonAutomaticProductionSim() {
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 7: true });
   const controls = readLemelsonAutomaticProductionControls(params);
   const state = stepLemson(controls);
   const carrierX = 72 + controls.carrierAddressFraction * 545;
@@ -285,6 +288,14 @@ export function LemelsonAutomaticProductionSim() {
         <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 leading-relaxed text-amber-950 dark:text-amber-100">
           <strong>Quantitative refusal:</strong> {state.sourceBoundary.reason}
         </p>
+      </div>
+
+      <div className="rounded-lg border border-border/40 bg-background/55 p-3">
+        <ClaimConstraintToggle
+          patentId={PATENT_ID}
+          claimStates={claimStates}
+          onClaimStateChange={(num, active) => setClaimStates((prev) => ({ ...prev, [num]: active }))}
+        />
       </div>
     </section>
   );

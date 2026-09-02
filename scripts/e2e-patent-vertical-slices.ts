@@ -291,7 +291,7 @@ async function runFailureEvidenceSelfTest(args: {
     sourceReasonCode: "SELF_TEST_FAILURE",
     sourceDecision: {
       completeFacsimileReviewed: false,
-      ledgerKind: undefined,
+      ledgerKind: null,
       ledgerReviewer: null,
       ledgerReviewedAt: null,
       digestParity: "unavailable",

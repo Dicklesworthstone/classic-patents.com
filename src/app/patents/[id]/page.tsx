@@ -7,7 +7,11 @@ import { LegacyPatentRedirect } from "@/components/patents/LegacyPatentRedirect"
 import { PatentHeader } from "@/components/patents/PatentHeader";
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
 import { archivalPublicationDiagnostics } from "@/data/editions/archivalPublicationState";
-import { evaluateArchivalPublicationState } from "@/data/editions/publicationApproval";
+import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
+import {
+  evaluateArchivalPublicationState,
+  patentForPublicationViewer,
+} from "@/data/editions/publicationApproval";
 import {
   allPatents,
   getAdjacentPatents,
@@ -79,6 +83,11 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
   const archivalPublication = evaluateArchivalPublicationState(patent);
   const archivalEdition = archivalPublication.publishedEdition;
   const archivalDiagnostics = archivalPublicationDiagnostics(archivalPublication);
+  const viewerPatent = patentForPublicationViewer(patent, archivalPublication);
+  const archivalParallelReadings = archivalEdition
+    ? archivalParallelReadingsFor(patent.id)
+    : undefined;
+  const hasRawSourceText = patent.originalTextAsset?.kind === "source-pdf-text-layer";
   const archivalPublicationView = {
     isPublished: archivalPublication.isPublished,
     reasonCode: archivalPublication.reasonCode,
@@ -130,9 +139,11 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
         data-archival-publication-evidence={JSON.stringify(archivalDiagnostics)}
       >
         <DualProjectionViewer
-          patent={patent}
+          patent={viewerPatent}
           archivalPublication={archivalPublicationView}
+          archivalParallelReadings={archivalParallelReadings}
           colorizedEquations={colorizedEquations}
+          hasRawSourceText={hasRawSourceText}
         />
       </div>
 

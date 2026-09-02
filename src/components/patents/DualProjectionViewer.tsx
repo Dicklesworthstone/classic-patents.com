@@ -19,7 +19,6 @@ import type {
   ArchivalPublicationReasonCode,
   ArchivalPublicationStateKind,
 } from "@/data/editions/archivalPublicationState";
-import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { ColorizedEquation as ColorizedEquationType } from "@/types/equation";
 import type { Patent } from "@/types/patent";
@@ -38,10 +37,14 @@ interface DualProjectionViewerProps {
   /** Evaluated on the server so the complete cross-catalogue acceptance
    * registry and asset digests never enter the client bundle. */
   archivalPublication: ArchivalPublicationViewState;
+  /** One server-resolved companion map; never import the all-patent registry here. */
+  archivalParallelReadings?: Readonly<Record<number, readonly string[]>>;
   initialView?: string;
   /** Per-patent colorized equations, resolved on the server (colorizedEquations.ts is
    * a 976KB all-patents record that must never enter the client bundle wholesale). */
   colorizedEquations: ColorizedEquationType[];
+  /** Server-derived flag; research-asset metadata itself never crosses into the client. */
+  hasRawSourceText: boolean;
 }
 
 interface ArchivalPublicationViewState {
@@ -165,8 +168,10 @@ function TranscriptUnavailable({
 export function DualProjectionViewer({
   patent,
   archivalPublication,
+  archivalParallelReadings,
   initialView,
   colorizedEquations,
+  hasRawSourceText,
 }: DualProjectionViewerProps) {
   const { tick, lastChange } = usePatentPhysics(patent.id);
   const [viewMode, setViewModeState] = useState<PatentViewMode>(
@@ -185,17 +190,13 @@ export function DualProjectionViewer({
   // A raw PDF text layer is private comparison evidence, never a public
   // publication source. The optional edition is already hand-authored in
   // semantic nodes; this component intentionally performs no text cleanup.
-  const rawSourceTextAsset =
-    patent.originalTextAsset?.kind === "source-pdf-text-layer"
-      ? patent.originalTextAsset
-      : undefined;
   // A semantic edition becomes visitor-facing only together with its explicit
   // paragraph companions. Treat an accidentally bound draft as withheld rather
   // than calling the fail-closed lookup during render and crashing the route.
   const archivalEdition = archivalPublication.isPublished ? patent.archivalEdition : undefined;
   const originalTextLabel = archivalEdition
     ? `Complete manually prepared edition · facsimile reviewed ${archivalEdition.preparedAt}`
-    : rawSourceTextAsset
+    : hasRawSourceText
       ? "Raw source-PDF text layer retained privately · manual edition pending"
       : "Complete archival edition unavailable";
 
@@ -545,14 +546,14 @@ export function DualProjectionViewer({
               {archivalEdition ? (
                 <CuratedSpecificationEdition
                   edition={archivalEdition}
-                  paragraphReadings={archivalParallelReadingsFor(patent.id)}
+                  paragraphReadings={archivalParallelReadings}
                   claimDecoders={patent.claims}
                   className="text-ink-950 select-text dark:text-parchment-100"
                 />
               ) : (
                 <TranscriptUnavailable
                   patent={patent}
-                  hasRawSourceText={Boolean(rawSourceTextAsset)}
+                  hasRawSourceText={hasRawSourceText}
                   decision={archivalPublication}
                 />
               )}
@@ -769,7 +770,7 @@ export function DualProjectionViewer({
                 <span className="text-xs sm:text-sm font-mono text-amber-700 dark:text-amber-400 font-bold uppercase tracking-widest block">
                   {archivalEdition
                     ? "Complete Manually Prepared Archival Edition"
-                    : rawSourceTextAsset
+                    : hasRawSourceText
                       ? "Raw Source Layer Withheld From Publication"
                       : "Original Patent Text"}
                 </span>
@@ -795,14 +796,14 @@ export function DualProjectionViewer({
             {archivalEdition ? (
               <CuratedSpecificationEdition
                 edition={archivalEdition}
-                paragraphReadings={archivalParallelReadingsFor(patent.id)}
+                paragraphReadings={archivalParallelReadings}
                 claimDecoders={patent.claims}
                 className="rounded-2xl border border-parchment-300 bg-parchment-100/80 p-6 text-ink-950 shadow-xs select-text dark:border-ink-800 dark:bg-ink-900/80 dark:text-parchment-100 sm:p-10"
               />
             ) : (
               <TranscriptUnavailable
                 patent={patent}
-                hasRawSourceText={Boolean(rawSourceTextAsset)}
+                hasRawSourceText={hasRawSourceText}
                 decision={archivalPublication}
               />
             )}

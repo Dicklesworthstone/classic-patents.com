@@ -7,7 +7,9 @@ import {
   kamenSegwayParallelReadings,
 } from "@/data/editions/kamenSegwayEdition";
 import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
+import { kamenSegwayPatent } from "@/data/patents/kamen-segway";
 import { normalizeReviewedLedgerText } from "@/data/patents/sourceTextValidation";
+import { PATENT_PHYSICS_REGISTRY } from "@/physics/telemetryData";
 import type { CuratedSpecificationBlock, CuratedSpecificationInline } from "@/types/patent";
 
 const PATENT_ID = "us-6302230-kamen-segway";
@@ -154,5 +156,45 @@ describe("US 6,302,230 Dean Kamen Segway Human Transporter Archival Edition Cont
     });
     expect(tel2.tactileAlarmActive).toBe(false);
     expect(tel2.claim2RippleWithheld).toBe(true);
+  });
+
+  test("keeps figure identity and historical context faithful to the reviewed source", () => {
+    const firstDrawing = kamenSegwayPatent.drawings[0];
+    expect(firstDrawing?.figureNumber).toBe("1");
+    expect(firstDrawing?.title).toStartWith("FIG. 1:");
+    expect(firstDrawing?.callouts.every((callout) => callout.figureRef === "Fig. 1")).toBe(true);
+
+    for (const drawing of kamenSegwayPatent.drawings) {
+      expect(drawing.callouts.every((callout) => callout.figureRef === `Fig. ${drawing.figureNumber}`)).toBe(
+        true,
+      );
+    }
+
+    const provenance = readFileSync(
+      resolve(process.cwd(), "docs/provenance/us-6302230-kamen-segway.md"),
+      "utf8",
+    );
+    expect(provenance).toContain("Sheet 1 of 16 (FIG. 1)");
+    expect(provenance).not.toContain("FIGS. 1A, 1B");
+    expect(kamenSegwayParallelReadings[12]?.join(" ")).toContain("Figures 1 and 2");
+
+    expect(kamenSegwayPatent.historicalContext.patentWars).toEqual([]);
+    const publicCopy = JSON.stringify(kamenSegwayPatent).toLowerCase();
+    for (const unsupportedAssertion of ["18 hz", "ninebot", "usitc", "five solid-state"]) {
+      expect(publicCopy).not.toContain(unsupportedAssertion);
+    }
+  });
+
+  test("classifies the interactive model as modern and preserves its source boundary", () => {
+    const registry = PATENT_PHYSICS_REGISTRY[PATENT_ID];
+    expect(registry?.provenance).toBe("scenario-modern");
+    for (const control of registry?.controls ?? []) {
+      expect(control.provenance).toBeDefined();
+      expect(control.provenanceCitation).toBeTruthy();
+    }
+    for (const metric of registry?.computeMetrics({}) ?? []) {
+      expect(metric.provenance).toBeDefined();
+      expect(metric.provenanceCitation).toBeTruthy();
+    }
   });
 });

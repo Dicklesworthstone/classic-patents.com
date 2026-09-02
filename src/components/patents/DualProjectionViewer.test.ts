@@ -4,6 +4,7 @@ import { join } from "node:path";
 import {
   archivalEditionForPublication,
   evaluateArchivalPublicationState,
+  patentForPublicationViewer,
 } from "@/data/editions/publicationApproval";
 import { allPatents } from "@/data/patents";
 import { goodyearRubberPatent } from "@/data/patents/goodyear-rubber";
@@ -66,6 +67,7 @@ describe("patent view URL state", () => {
     expect(VIEWER_SOURCE).not.toMatch(
       /const setViewMode = \(mode: PatentViewMode\) => \{\s*setViewModeState\(mode\);\s*\};/,
     );
+    expect(PATENT_PAGE_SOURCE).toContain("patent={viewerPatent}");
     expect(PATENT_PAGE_SOURCE).toContain("archivalPublication={archivalPublicationView}");
     expect(PATENT_PAGE_SOURCE).toContain(
       "data-archival-publication-evidence={JSON.stringify(archivalDiagnostics)}",
@@ -74,6 +76,7 @@ describe("patent view URL state", () => {
       "const archivalEdition = archivalPublication.isPublished ? patent.archivalEdition : undefined",
     );
     expect(VIEWER_SOURCE).not.toContain("evaluateArchivalPublicationState(patent)");
+    expect(VIEWER_SOURCE).not.toContain("archivalParallelReadingsFor");
     expect(PATENT_PAGE_SOURCE).not.toContain("searchParams");
     expect(E2E_AUDIT_SOURCE).toContain('searchParams.get("view") === "original-spec"');
     expect(E2E_AUDIT_SOURCE).toContain('searchParams.get("view") === view');
@@ -135,5 +138,19 @@ describe("archival publication boundary", () => {
         expect(archivalEditionForPublication(patent)).toBeUndefined();
       }
     }
+  });
+
+  test("does not serialize held editions or ledger metadata into client viewer props", () => {
+    const heldDecision = evaluateArchivalPublicationState(whitneyCottonGinPatent);
+    const heldProjection = patentForPublicationViewer(whitneyCottonGinPatent, heldDecision);
+    expect(heldDecision.isPublished).toBe(false);
+    expect(heldProjection.archivalEdition).toBeUndefined();
+    expect(heldProjection.originalTextAsset).toBeUndefined();
+
+    const acceptedDecision = evaluateArchivalPublicationState(goodyearRubberPatent);
+    const acceptedProjection = patentForPublicationViewer(goodyearRubberPatent, acceptedDecision);
+    expect(acceptedDecision.isPublished).toBe(true);
+    expect(acceptedProjection.archivalEdition).toBe(goodyearRubberPatent.archivalEdition);
+    expect(acceptedProjection.originalTextAsset).toBeUndefined();
   });
 });
