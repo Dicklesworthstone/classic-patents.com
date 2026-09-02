@@ -70,20 +70,29 @@ const term = (text: string, label: string, definition: string): CuratedSpecifica
 export const milacronRobotToolchangerParallelReadings: Readonly<
   Record<number, readonly string[]>
 > = {
-  12: [
+  2: [
+    "The abstract gives the complete visitor-level idea: a robot-side adapter receives a common tool base and a T-shaped member, then a reversing slide locks or unlocks it. The claims specify the exact required elements.",
+  ],
+  10: [
     "The field is a robot-side interface for changing the tool at the wrist, rather than a general-purpose robot arm. The source distinguishes the arm, wrist, end effector, and attached working tool so their roles do not blur.",
   ],
-  13: [
-    "The stated bottleneck is changeover: a programmable robot still carries only one special tool until a person replaces it. The invention tries to make the tool interface itself part of the robot's working sequence.",
+  11: [
+    "The stated bottleneck is changeover: a programmable robot still carries one special tool until a person replaces it. The invention tries to make the tool interface itself part of the robot's working sequence.",
   ],
-  14: [
+  12: [
     "The applicants frame automatic exchange as a way to use several tool types during one workpiece cycle. That is an objective of this disclosed arrangement, not a guarantee of a particular production rate or economic result.",
   ],
-  15: [
+  13: [
     "Bistable here means the retention mechanism is intended to remain in either of its two terminal conditions after loss of actuator power. The source supplies topology, not a force, friction, shock, or certification calculation for that behavior.",
   ],
-  17: [
+  15: [
     "The summary names the reusable interface: an adapter fixed to the end effector, a common base attached to each tool, and a retention member that couples them. The claims, rather than this summary, define the legal combinations.",
+  ],
+  16: [
+    "The first object is storage-side interchange: the common base lets several tools wait in a rack while one adapter remains fixed to the robot. It is an objective statement rather than a throughput or availability guarantee.",
+  ],
+  17: [
+    "The second object is the stated tendency to retain a tool after loss of power. The text does not supply the quantitative conditions needed to turn that aspiration into a specified holding-force or impact-survival result.",
   ],
   19: [
     "The drawing list is archival navigation. It establishes that the open and closed locking states, electrical alternate, locating pins, and toolbase are actual source figures rather than modern reconstructions.",

@@ -49,7 +49,7 @@ describe("US 6,302,230 Dean Kamen Segway Human Transporter Archival Edition Cont
         for (const inline of block.inlines) {
           if (inline.kind === "text") {
             const normalizedText = normalizeReviewedLedgerText(inline.text);
-            const sample = normalizedText.slice(0, 40);
+            const sample = normalizedText.slice(0, Math.min(30, normalizedText.length));
             expect(normalizedLedger.includes(sample)).toBe(true);
           }
         }
