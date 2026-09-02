@@ -4174,6 +4174,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 0,
         unit: "state",
+        provenance: "scenario-reader",
       },
       {
         id: "displayRatePct",
@@ -4183,6 +4184,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 60,
         unit: "%",
+        provenance: "scenario-reader",
       },
       {
         id: "ropeGIntegrityPct",
@@ -4192,6 +4194,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 100,
         defaultValue: 100,
         unit: "%",
+        provenance: "scenario-reader",
       },
       {
         id: "stopRopePulled",
@@ -4201,6 +4204,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 0,
         unit: "%",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics: (p) => {
@@ -4212,6 +4216,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "state",
           badgeColor: otis.freeFallCounterfactual ? "rose" : "emerald",
           progressPct: otis.freeFallCounterfactual ? 0 : 100,
+          provenance: "source-disclosed",
         },
         {
           label: "Belt O / P",
@@ -4223,6 +4228,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "topology",
           badgeColor: "cyan",
           progressPct: otis.bothBeltsIdle ? 0 : 100,
+          provenance: "source-disclosed",
         },
         {
           label: "Brake Shoe Z",
@@ -4230,6 +4236,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "interlock",
           badgeColor: otis.brakeZEngaged ? "emerald" : "purple",
           progressPct: otis.brakeZEngaged ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
           label: "Hooks f / Racks C",
@@ -4237,6 +4244,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "Claim 1",
           badgeColor: otis.pawlsFEngaged ? "amber" : "emerald",
           progressPct: otis.pawlsFEngaged ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
           label: "Counterpoise Q / R",
@@ -4244,6 +4252,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "Claim 4",
           badgeColor: otis.claim4CounterpoiseTopologySatisfied ? "emerald" : "rose",
           progressPct: otis.claim4CounterpoiseTopologySatisfied ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
           label: "Platform D",
@@ -4251,6 +4260,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "declared display coordinate",
           badgeColor: "cyan",
           progressPct: clampProgress(otis.platformPositionNormalized * 100),
+          provenance: "topology-normalized",
         },
       ];
     },
@@ -5141,6 +5151,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 75,
         unit: "atm",
+        provenance: "source-disclosed",
       },
       {
         id: "coolerOutletC",
@@ -5150,6 +5161,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 10,
         unit: "°C",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics: (p) => {
@@ -5164,6 +5176,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "p",
           badgeColor: "cyan",
           progressPct: clampProgress(((pHigh - 50) / 150) * 100),
+          provenance: "source-disclosed",
         },
         {
           label: "Low-pressure p′",
@@ -5171,6 +5184,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "p′",
           badgeColor: "indigo",
           progressPct: clampProgress((pLow / 50) * 100),
+          provenance: "source-disclosed",
         },
         {
           label: "Pre-cooler Outlet t³",
@@ -5178,6 +5192,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "t³",
           badgeColor: "amber",
           progressPct: clampProgress(((tCooler + 10) / 35) * 100),
+          provenance: "source-disclosed",
         },
         {
           label: "Expansion Drop Δp",
@@ -5185,6 +5200,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "Δp",
           badgeColor: "emerald",
           progressPct: clampProgress((deltaP / 150) * 100),
+          provenance: "source-disclosed",
         },
       ];
     },

@@ -17,6 +17,16 @@ export type PatentE2EViewportName = keyof typeof PATENT_E2E_VIEWPORTS;
 export type PatentE2EEventStatus = "info" | "pass" | "fail";
 export type PatentE2ESourceState = "published" | "withheld";
 
+export interface PatentE2EControl {
+  id: string;
+  label: string;
+  min: number;
+  max: number;
+  step: number;
+  defaultValue: number;
+  unit: string;
+}
+
 export interface PatentE2EScenario {
   patentId: string;
   patentNumber: string;
@@ -44,6 +54,7 @@ export interface PatentE2EScenario {
   equationIds: readonly string[];
   claimProbeCount: number;
   hasEnergyChannels: boolean;
+  controls: readonly PatentE2EControl[];
 }
 
 export interface PatentE2EEvent {
@@ -86,6 +97,20 @@ export interface PatentE2ESummary {
   failedActions: number;
   failedPatents: readonly string[];
   artifactDirectory: string;
+  actionGroups: readonly PatentE2EActionGroup[];
+}
+
+export interface PatentE2EActionGroup {
+  patentId: string;
+  viewport: PatentE2EViewportName | "run";
+  face: string;
+  action: string;
+  eventCount: number;
+  passedActions: number;
+  failedActions: number;
+  artifactPaths: readonly string[];
+  kernelSources: readonly string[];
+  refusalReasons: readonly string[];
 }
 
 export interface PatentE2EOptions {
@@ -107,6 +132,7 @@ interface ScenarioFacts {
   equationIdsForPatent?: (patent: Patent) => readonly string[];
   claimProbeCountForPatent?: (patent: Patent) => number;
   hasEnergyChannelsForPatent?: (patent: Patent) => boolean;
+  controlsForPatent?: (patent: Patent) => readonly PatentE2EControl[];
 }
 
 const DEFAULT_OPTIONS: PatentE2EOptions = {
@@ -183,6 +209,7 @@ export function buildPatentE2EScenarios(
       equationIds: [...(facts.equationIdsForPatent?.(patent) ?? [])],
       claimProbeCount: facts.claimProbeCountForPatent?.(patent) ?? 0,
       hasEnergyChannels: facts.hasEnergyChannelsForPatent?.(patent) ?? false,
+      controls: facts.controlsForPatent?.(patent) ?? [],
     };
   });
 }
@@ -331,6 +358,38 @@ export function summarizePatentE2EEvents(args: {
   events: readonly PatentE2EEvent[];
 }): PatentE2ESummary {
   const failed = args.events.filter((event) => event.status === "fail");
+  const grouped = new Map<string, PatentE2EEvent[]>();
+  for (const event of args.events) {
+    const key = [event.patentId, event.viewport, event.face, event.action].join("\u0000");
+    const events = grouped.get(key) ?? [];
+    events.push(event);
+    grouped.set(key, events);
+  }
+  const actionGroups: PatentE2EActionGroup[] = [...grouped.values()]
+    .map((events) => {
+      const [first] = events;
+      return {
+        patentId: first.patentId,
+        viewport: first.viewport,
+        face: first.face,
+        action: first.action,
+        eventCount: events.length,
+        passedActions: events.filter((event) => event.status === "pass").length,
+        failedActions: events.filter((event) => event.status === "fail").length,
+        artifactPaths: uniqueStrings(events.flatMap((event) => event.artifactPaths ?? [])),
+        kernelSources: uniqueStrings(
+          events.flatMap((event) => (event.kernelSource ? [event.kernelSource] : [])),
+        ),
+        refusalReasons: uniqueStrings(
+          events.flatMap((event) => (event.refusal ? [event.refusal] : [])),
+        ),
+      };
+    })
+    .sort((left, right) =>
+      [left.patentId, left.viewport, left.face, left.action]
+        .join("\u0000")
+        .localeCompare([right.patentId, right.viewport, right.face, right.action].join("\u0000")),
+    );
   return {
     schemaVersion: PATENT_E2E_SUMMARY_SCHEMA,
     runId: args.runId,
@@ -344,6 +403,7 @@ export function summarizePatentE2EEvents(args: {
     failedActions: failed.length,
     failedPatents: [...new Set(failed.map((event) => event.patentId))].sort(),
     artifactDirectory: args.artifactDirectory,
+    actionGroups,
   };
 }
 
@@ -471,6 +531,10 @@ function isSharedPatentSurface(path: string): boolean {
 
 function finiteDuration(value: number): number {
   return Number.isFinite(value) && value >= 0 ? Math.round(value) : 0;
+}
+
+function uniqueStrings(values: readonly string[]): string[] {
+  return [...new Set(values.filter(Boolean))].sort();
 }
 
 function figurePreviewUrlsForPatent(patent: Patent): string[] {

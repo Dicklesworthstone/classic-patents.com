@@ -84,6 +84,17 @@ describe("patent E2E scenario contract", () => {
         equationIdsForPatent: () => ["equation-1"],
         claimProbeCountForPatent: () => 2,
         hasEnergyChannelsForPatent: () => true,
+        controlsForPatent: () => [
+          {
+            id: "input-rate",
+            label: "Input Rate",
+            min: 0,
+            max: 10,
+            step: 1,
+            defaultValue: 5,
+            unit: "Hz",
+          },
+        ],
       },
     );
 
@@ -102,6 +113,17 @@ describe("patent E2E scenario contract", () => {
       equationIds: ["equation-1"],
       claimProbeCount: 2,
       hasEnergyChannels: true,
+      controls: [
+        {
+          id: "input-rate",
+          label: "Input Rate",
+          min: 0,
+          max: 10,
+          step: 1,
+          defaultValue: 5,
+          unit: "Hz",
+        },
+      ],
     });
     expect(scenarios[1]?.sourceState).toBe("withheld");
   });
@@ -175,6 +197,7 @@ describe("patent E2E scenario contract", () => {
     expect(scenarios.some((scenario) => scenario.claimProbeCount > 0)).toBe(true);
     expect(scenarios.some((scenario) => scenario.hasEnergyChannels)).toBe(true);
     expect(scenarios.some((scenario) => !scenario.hasEnergyChannels)).toBe(true);
+    expect(scenarios.some((scenario) => scenario.controls.length > 0)).toBe(true);
 
     for (const scenario of scenarios) {
       for (const previewUrl of scenario.figurePreviewUrls) {
@@ -288,6 +311,24 @@ describe("structured E2E diagnostics", () => {
     });
     expect(summary).toMatchObject({ eventCount: 2, passedActions: 1, failedActions: 1 });
     expect(summary.failedPatents).toEqual(["us-2"]);
+    expect(summary.actionGroups).toEqual([
+      expect.objectContaining({
+        patentId: "us-1",
+        viewport: "desktop",
+        face: "route",
+        action: "http-200",
+        passedActions: 1,
+        failedActions: 0,
+      }),
+      expect.objectContaining({
+        patentId: "us-2",
+        viewport: "phone",
+        face: "source",
+        action: "publication-state",
+        passedActions: 0,
+        failedActions: 1,
+      }),
+    ]);
     expect(patentE2EExitCode(summary)).toBe(1);
   });
 

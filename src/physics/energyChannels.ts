@@ -16,7 +16,6 @@ import {
   stepHewittMercuryLamp,
   stepMaimanRubyLaser,
   stepMarconiRadio,
-  stepMcCormickReaper,
   stepMorseTelegraph,
   stepNoyceIC,
   stepParsonsTurbine,
@@ -120,6 +119,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 6,469 specifies expansible buoyant side chambers, sliding spars D, and main shaft C with ropes and pulleys for vessel draft reduction, but supplies no shaft horsepower, steam engine wattage, manual cranking rate, or continuous power datum from which an SI energy channel can be derived.",
   "us-x8277-mccormick-reaper":
     "US X8277 specifies the mechanical kinematic gear train (30:9 and 27:9 tooth ratios), ground-wheel diameter, reel pulley, and cutting blades, but supplies no draft horse pull force, sickle cutting resistance, ground rolling resistance, or continuous power consumption datum from which an authentic SI energy channel can be derived.",
+  "us-727650-linde-air-liquefaction":
+    "US 727,650 specifies the regenerative counter-current heat exchanger G', throttling valve R', and vessel V' operating across a stated 75 atm to 25 atm expansion, but supplies no compressor shaft power, mass flow rate, motor wattage, or cooling kilowattage from which an authentic SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -684,16 +685,6 @@ export function energyChannelsFor(
       { name: "Alternator Shaft", watts: rfW, tone: "in" },
       { name: "Continuous Wave RF", watts: rfW * 0.64, tone: "useful" },
       { name: "Antenna Tuning Loss", watts: rfW * 0.36, tone: "loss" },
-    ];
-  }
-
-  if (patentId === "us-727650-linde-air-liquefaction") {
-    const pIn = params.inletPressureAtm ?? 200;
-    const compW = (pIn / 200) * 45000;
-    return [
-      { name: "Compressor Shaft", watts: compW, tone: "in" },
-      { name: "Joule-Thomson Cooling", watts: compW * 0.38, tone: "useful" },
-      { name: "Intercooler Heat Loss", watts: compW * 0.62, tone: "loss" },
     ];
   }
 

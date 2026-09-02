@@ -117,13 +117,13 @@ describe("mccormickReaperArchivalEdition", () => {
   test("derives all printed claims dynamically from edition without duplicate strings", () => {
     expect(mccormickReaperPatent.claims.length).toBe(2);
     const editionClaims = mccormickReaperArchivalEdition.blocks.filter(
-      (b: any) => b.kind === "claim",
+      (b): b is Extract<typeof b, { kind: "claim" }> => b.kind === "claim",
     );
     expect(editionClaims.length).toBe(2);
 
     for (let i = 0; i < 2; i++) {
       const editionBlock = editionClaims[i];
-      const expectedText = editionBlock.inlines.map((inl: any) => inl.text).join("");
+      const expectedText = editionBlock.inlines.map((inl) => inl.text).join("");
       expect(mccormickReaperPatent.claims[i].originalText).toBe(expectedText);
     }
   });
@@ -131,9 +131,7 @@ describe("mccormickReaperArchivalEdition", () => {
   test("binds canonical reviewed ledger with complete ordered page markers", () => {
     const sourceAsset = mccormickReaperPatent.originalTextAsset;
     expect(sourceAsset).toBeDefined();
-    expect(sourceAsset?.url).toBe(
-      "/patents/transcripts/us-x8277-mccormick-reaper-reviewed.txt",
-    );
+    expect(sourceAsset?.url).toBe("/patents/transcripts/us-x8277-mccormick-reaper-reviewed.txt");
     const ledgerPath = join(process.cwd(), `public${sourceAsset?.url}`);
     expect(existsSync(ledgerPath)).toBe(true);
     const ledger = readFileSync(ledgerPath, "utf8");

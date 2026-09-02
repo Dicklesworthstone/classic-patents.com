@@ -76,6 +76,7 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-2495429-spencer-microwave",
       "us-6469-lincoln-buoy",
       "us-x8277-mccormick-reaper",
+      "us-727650-linde-air-liquefaction",
     ]);
   });
 

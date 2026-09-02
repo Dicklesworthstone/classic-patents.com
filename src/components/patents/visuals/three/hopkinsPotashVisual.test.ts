@@ -60,10 +60,8 @@ describe("US X1 Samuel Hopkins Potash 3D Visual & Shared Physics Contract", () =
     expect(model.nodes.evapPot).toBeDefined();
     expect(model.nodes.ashBed).toBeDefined();
 
-    const pot = stepHopkinsPotash(HOPKINS_DEFAULT_CONTROLS);
-    expect(() =>
-      animateHopkinsPotashModel(model, { roastTempC: 750, ashBatchKg: 80 }, 1.0),
-    ).not.toThrow();
+    const _pot = stepHopkinsPotash(HOPKINS_DEFAULT_CONTROLS);
+    expect(() => animateHopkinsPotashModel(model, 1.0, 750, 80, 70, 25)).not.toThrow();
 
     model.materials.brickMasonry.dispose();
     model.materials.oakWood.dispose();

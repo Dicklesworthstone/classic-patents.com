@@ -70,6 +70,7 @@ class RunRecorder {
   readonly events: PatentE2EEvent[] = [];
   readonly runDirectory: string;
   readonly eventPath: string;
+  private readonly diagnosticsByScenario = new Map<string, ScenarioDiagnostics>();
 
   constructor(
     readonly runId: string,
@@ -80,8 +81,23 @@ class RunRecorder {
     fs.mkdirSync(this.runDirectory, { recursive: true });
   }
 
+  registerDiagnostics(
+    patentId: string,
+    viewport: PatentE2EViewportName,
+    diagnostics: ScenarioDiagnostics,
+  ) {
+    this.diagnosticsByScenario.set(`${patentId}\u0000${viewport}`, diagnostics);
+  }
+
   emit(event: Omit<PatentE2EEvent, "schemaVersion" | "sequence" | "timestamp">): PatentE2EEvent {
-    const complete = createPatentE2EEvent({ ...event, sequence: this.events.length + 1 });
+    const diagnostics = this.diagnosticsByScenario.get(`${event.patentId}\u0000${event.viewport}`);
+    const complete = createPatentE2EEvent({
+      ...event,
+      sequence: this.events.length + 1,
+      consoleErrors: event.consoleErrors ?? diagnostics?.consoleErrors ?? [],
+      pageErrors: event.pageErrors ?? diagnostics?.pageErrors ?? [],
+      networkErrors: event.networkErrors ?? diagnostics?.networkErrors ?? [],
+    });
     this.events.push(complete);
     fs.appendFileSync(this.eventPath, `${serializePatentE2EEvent(complete)}\n`, "utf8");
     const marker =
@@ -134,6 +150,16 @@ async function main() {
         );
         return energyChannelsFor(patent.id, defaults).length > 0;
       },
+      controlsForPatent: (patent) =>
+        (PATENT_PHYSICS_REGISTRY[patent.id]?.controls ?? []).map((control) => ({
+          id: control.id,
+          label: control.label,
+          min: control.min,
+          max: control.max,
+          step: control.step,
+          defaultValue: control.defaultValue,
+          unit: control.unit ?? "",
+        })),
     });
   } catch (error) {
     recordRunConfigurationFailure(recorder, error);
@@ -280,6 +306,7 @@ async function runFailureEvidenceSelfTest(args: {
     equationIds: [],
     claimProbeCount: 0,
     hasEnergyChannels: false,
+    controls: [],
   };
   const viewport = "desktop" as const;
   const context = await args.browser.newContext({
@@ -299,6 +326,7 @@ async function runFailureEvidenceSelfTest(args: {
     networkErrors: [],
   };
   installDiagnostics(page, diagnostics);
+  args.recorder.registerDiagnostics(args.scenario.patentId, args.viewport, diagnostics);
   const started = performance.now();
   let traceStopped = false;
 
@@ -316,6 +344,7 @@ async function runFailureEvidenceSelfTest(args: {
       viewport,
       diagnostics,
     });
+    const evidenceIntegrity = inspectFailureEvidence(artifactPaths);
     traceStopped = true;
     args.recorder.emit({
       runId: args.recorder.runId,
@@ -330,12 +359,26 @@ async function runFailureEvidenceSelfTest(args: {
         result: "intentional nonzero exit",
         evidenceKinds: ["screenshot", "DOM", "diagnostics", "trace"],
       },
-      actual: { responseStatus, url: page.url(), artifactCount: artifactPaths.length },
+      actual: { responseStatus, url: page.url(), artifactCount: artifactPaths.length, evidenceIntegrity },
       responseStatus,
       errors: ["Synthetic failure requested by --self-test-failure."],
       consoleErrors: diagnostics.consoleErrors,
       pageErrors: diagnostics.pageErrors,
       networkErrors: diagnostics.networkErrors,
+      artifactPaths,
+    });
+    args.recorder.emit({
+      runId: args.recorder.runId,
+      patentId: scenario.patentId,
+      route: scenario.route,
+      viewport,
+      face: "self-test",
+      action: "failure-evidence-integrity",
+      status: evidenceIntegrity.valid ? "info" : "fail",
+      durationMs: 0,
+      expected: "nonempty screenshot, DOM, diagnostics, and trace artifacts",
+      actual: evidenceIntegrity,
+      errors: evidenceIntegrity.valid ? undefined : evidenceIntegrity.problems,
       artifactPaths,
     });
   } finally {
@@ -679,13 +722,34 @@ async function verifyClaimNavigation(
         .first()
         .waitFor({ state: "visible" });
       if (scenario.claimCount > 1) {
+        const claimSelector = page.getByRole("button", { name: /^Claim #\d+/ });
+        const before = await selectedClaimNumber(claimSelector);
         const next = page.getByRole("button", { name: "Next Claim" });
         await next.waitFor({ state: "visible" });
         await next.click();
+        await page.waitForFunction((previous) => {
+          const selected = [...document.querySelectorAll('button[aria-pressed="true"]')].find(
+            (button) => /^Claim #\d+/.test(button.textContent?.trim() ?? ""),
+          );
+          return selected?.textContent?.match(/^Claim #(\d+)/)?.[1] !== previous;
+        }, before);
+        const after = await selectedClaimNumber(claimSelector);
+        if (after === before) throw new Error(`Next Claim left Claim #${before} selected.`);
+        await page
+          .getByText(`Claim #${after}`, { exact: true })
+          .last()
+          .waitFor({ state: "visible" });
+        return {
+          claimCount: scenario.claimCount,
+          navigation: "advanced",
+          selectedBefore: before,
+          selectedAfter: after,
+          decodedClaimVisible: after,
+        };
       }
       return {
         claimCount: scenario.claimCount,
-        navigation: scenario.claimCount > 1 ? "advanced" : "single",
+        navigation: "single",
       };
     },
   );
@@ -772,21 +836,39 @@ async function verifyVisualAndTelemetry(
   await checked(
     recorder,
     meta(scenario, viewport, "interactive-sim", "shared-control-telemetry"),
-    "one control persists across both visual modes",
+    {
+      contract: "one declared control changes the shared bus and persists across both visual modes",
+      declaredControls: scenario.controls.map((control) => control.id),
+    },
     async () => {
       await telemetry.waitFor({ state: "visible" });
-      const control = telemetry
-        .locator('input[type="range"]:not([disabled]), input[type="checkbox"]:not([disabled])')
-        .first();
+      const declaredControl = scenario.controls.find((candidate) => candidate.max > candidate.min);
+      const control = declaredControl
+        ? telemetry.locator(`[data-physics-control-id="${declaredControl.id}"]:not([disabled])`)
+        : telemetry
+            .locator('input[type="range"]:not([disabled]), input[type="checkbox"]:not([disabled])')
+            .first();
       if ((await control.count()) === 0) {
-        throw new Error("Telemetry badge exposes no enabled accessible control.");
+        throw new Error(
+          declaredControl
+            ? `Telemetry badge does not expose the scenario control '${declaredControl.id}'.`
+            : "Telemetry badge exposes no enabled accessible control.",
+        );
       }
       const label =
         (await control.getAttribute("aria-label")) ?? (await control.evaluate(labelForControl));
       if (!label) throw new Error("The selected shared telemetry control has no accessible name.");
+      if (declaredControl && label !== declaredControl.label) {
+        throw new Error(
+          `Scenario control '${declaredControl.id}' should be labelled '${declaredControl.label}', received '${label}'.`,
+        );
+      }
       const before = await controlState(control);
       const envelopeBeforeKeyboard =
         (await telemetry.getAttribute("data-telemetry-envelope")) ?? "";
+      const dispatcherTickBeforeKeyboard = Number(
+        (await dispatcher.getAttribute("data-physics-tick")) ?? "0",
+      );
       await control.focus();
       const keyboardAction = await keyboardActionForControl(control);
       await control.press(keyboardAction);
@@ -805,8 +887,31 @@ async function verifyVisualAndTelemetry(
           `Shared control '${label}' changed from ${before} to ${afterKeyboard}, but its telemetry envelope did not change.`,
         );
       }
+      await page.waitForFunction(
+        ({ patentId, priorTick, controlId }) => {
+          const visual = document.querySelector(
+            `[data-testid="patent-visual-dispatcher"][data-patent-id="${patentId}"]`,
+          );
+          return (
+            Number(visual?.getAttribute("data-physics-tick")) > priorTick &&
+            visual?.getAttribute("data-physics-last-change") === controlId
+          );
+        },
+        {
+          patentId: scenario.patentId,
+          priorTick: dispatcherTickBeforeKeyboard,
+          controlId:
+            declaredControl?.id ?? (await control.getAttribute("data-physics-control-id")) ?? "",
+        },
+      );
+      const dispatcherTickAfterKeyboard = Number(
+        (await dispatcher.getAttribute("data-physics-tick")) ?? "0",
+      );
 
       const envelopeBeforePointer = (await telemetry.getAttribute("data-telemetry-envelope")) ?? "";
+      const dispatcherTickBeforePointer = Number(
+        (await dispatcher.getAttribute("data-physics-tick")) ?? "0",
+      );
       await operateControlByPointer(control, viewport);
       const afterPointer = await controlState(control);
       if (afterPointer === afterKeyboard)
@@ -817,6 +922,20 @@ async function verifyVisualAndTelemetry(
             .querySelector(`[data-testid="physics-telemetry-badge"][data-patent-id="${patentId}"]`)
             ?.getAttribute("data-telemetry-envelope") ?? "") !== previous,
         [scenario.patentId, envelopeBeforePointer],
+      );
+      await page.waitForFunction(
+        ({ patentId, priorTick }) =>
+          Number(
+            document
+              .querySelector(
+                `[data-testid="patent-visual-dispatcher"][data-patent-id="${patentId}"]`,
+              )
+              ?.getAttribute("data-physics-tick"),
+          ) > priorTick,
+        { patentId: scenario.patentId, priorTick: dispatcherTickBeforePointer },
+      );
+      const dispatcherTickAfterPointer = Number(
+        (await dispatcher.getAttribute("data-physics-tick")) ?? "0",
       );
 
       await dispatcher.getByRole("button", { name: "3D Physics Simulation" }).click();
@@ -830,6 +949,14 @@ async function verifyVisualAndTelemetry(
       const persisted = await controlState(control);
       if (persisted !== afterPointer)
         throw new Error("Shared control changed when switching visual modes.");
+      const threeDimensionalTick = Number(
+        (await dispatcher.getAttribute("data-physics-tick")) ?? "0",
+      );
+      if (threeDimensionalTick !== dispatcherTickAfterPointer) {
+        throw new Error(
+          `3D visual boundary observed tick ${threeDimensionalTick}, expected shared tick ${dispatcherTickAfterPointer}.`,
+        );
+      }
 
       const envelope = (await telemetry.getAttribute("data-telemetry-envelope")) ?? "";
       if (!envelope || /\b(?:NaN|Infinity|-Infinity)\b/.test(envelope)) {
@@ -847,6 +974,11 @@ async function verifyVisualAndTelemetry(
         afterKeyboard,
         afterPointer,
         persisted,
+        controlId: declaredControl?.id ?? (await control.getAttribute("data-physics-control-id")),
+        dispatcherTickBeforeKeyboard,
+        dispatcherTickAfterKeyboard,
+        dispatcherTickAfterPointer,
+        threeDimensionalTick,
         kernelSource: await telemetry.getAttribute("data-kernel-method"),
         telemetry: envelope,
         refusal,
@@ -1149,7 +1281,22 @@ async function verifyThemeAndResponsiveState(
         )
         .count();
       if (focusableCount === 0) throw new Error("Route exposes no keyboard-focusable controls.");
-      return { ...state, focusableCount };
+      const focusable = page
+        .locator(
+          "button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled])",
+        )
+        .first();
+      await focusable.focus();
+      await page.keyboard.press("Tab");
+      const keyboardFocus = await page.evaluate(() => {
+        const active = document.activeElement;
+        if (!(active instanceof HTMLElement)) return { tagName: null, focusVisible: false };
+        return { tagName: active.tagName, focusVisible: active.matches(":focus-visible") };
+      });
+      if (!keyboardFocus.focusVisible) {
+        throw new Error("Keyboard navigation did not expose a :focus-visible element.");
+      }
+      return { ...state, focusableCount, keyboardFocus };
     },
   );
 }
@@ -1270,12 +1417,32 @@ async function waitForVisualSurface(
       ? surface.locator('canvas, [role="status"]')
       : surface.locator('canvas, svg, [role="status"]');
   await readyContent.first().waitFor({ state: "visible" });
+  const canvasOrVectorCount = await surface.locator("canvas, svg").count();
+  if (canvasOrVectorCount === 0) {
+    const fallback = surface.locator('[role="status"]').first();
+    const text = (await fallback.innerText()).trim();
+    if (text.length < 24) {
+      throw new Error(
+        `${expectedMode} rendered no visual surface and its fallback is not an explanatory text alternative.`,
+      );
+    }
+  }
 }
 
 async function controlState(control: Locator): Promise<string> {
   return (await control.getAttribute("type")) === "checkbox"
     ? String(await control.isChecked())
     : await control.inputValue();
+}
+
+async function selectedClaimNumber(claimSelector: Locator): Promise<string> {
+  const selected = await claimSelector.evaluateAll((buttons) =>
+    buttons.find((button) => button.getAttribute("aria-pressed") === "true")?.textContent?.trim(),
+  );
+  const number = selected?.match(/^Claim #(\d+)/)?.[1];
+  if (!number)
+    throw new Error(`Could not identify the selected claim from '${selected ?? "none"}'.`);
+  return number;
 }
 
 async function keyboardActionForControl(
@@ -1368,6 +1535,33 @@ async function captureFailureEvidence(args: {
     paths.push(tracePath);
   }
   return paths;
+}
+
+function inspectFailureEvidence(paths: readonly string[]) {
+  const expected = {
+    screenshot: /\.png$/,
+    domSnapshot: /\.html$/,
+    diagnostics: /\.diagnostics\.json$/,
+    trace: /\.trace\.zip$/,
+  } as const;
+  const artifacts = Object.fromEntries(
+    Object.entries(expected).map(([kind, matcher]) => {
+      const artifactPath = paths.find((candidate) => matcher.test(candidate));
+      let bytes = 0;
+      if (artifactPath) {
+        try {
+          bytes = fs.statSync(artifactPath).size;
+        } catch {
+          bytes = 0;
+        }
+      }
+      return [kind, { path: artifactPath ?? null, bytes, nonempty: bytes > 0 }];
+    }),
+  );
+  const problems = Object.entries(artifacts)
+    .filter(([, artifact]) => !artifact.nonempty)
+    .map(([kind]) => `Missing or empty ${kind} failure artifact.`);
+  return { valid: problems.length === 0, artifacts, problems };
 }
 
 async function preflightServer(baseUrl: string, recorder: RunRecorder) {
@@ -1474,6 +1668,14 @@ function finishRun(
     `  Completed: ${summary.passedActions} passed actions, ${summary.failedActions} failed actions`,
   );
   console.log(`  Failed patents: ${summary.failedPatents.join(", ") || "none"}`);
+  for (const group of summary.actionGroups.filter((entry) => entry.failedActions > 0)) {
+    console.log(
+      `  Failure group: ${group.patentId} ${group.viewport} ${group.face}/${group.action} (${group.failedActions}/${group.eventCount})`,
+    );
+    if (group.artifactPaths.length > 0) {
+      console.log(`    Evidence: ${group.artifactPaths.join(", ")}`);
+    }
+  }
   console.log(`  JSONL events: ${recorder.eventPath}`);
   console.log(`  Summary: ${summaryPath}`);
   console.log("=======================================================================");

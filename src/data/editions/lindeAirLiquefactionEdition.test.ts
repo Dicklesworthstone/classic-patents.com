@@ -95,4 +95,26 @@ describe("US 727,650 Carl Linde Air Liquefaction manual archival edition", () =>
     const ledger = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
     expect(validateReviewedTranscription(ledger, 5)).toEqual({ valid: true });
   });
+
+  test("provides valid provenance classifications for all Linde controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-727650-linde-air-liquefaction"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({ inletPressureAtm: 75, coolerOutletC: 10 });
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("registers explicit energy channel omission reason and avoids unsupported 45 kW plant model", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-727650-linde-air-liquefaction"]).toBeDefined();
+    expect(energyChannelsFor("us-727650-linde-air-liquefaction", {})).toEqual([]);
+  });
 });

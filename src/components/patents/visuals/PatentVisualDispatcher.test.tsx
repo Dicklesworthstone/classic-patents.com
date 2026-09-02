@@ -11,6 +11,7 @@ describe("PatentVisualDispatcher Component", () => {
     expect(html).toContain('data-testid="patent-visual-dispatcher"');
     expect(html).toContain('data-patent-id="us-821393-wright-flyer"');
     expect(html).toContain('data-render-mode="3d-physics"');
+    expect(html).toMatch(/data-physics-tick="\d+"/);
     expect(html).toContain('data-testid="patent-visual-surface"');
   });
 
