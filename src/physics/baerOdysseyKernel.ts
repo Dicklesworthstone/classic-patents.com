@@ -145,6 +145,29 @@ const PADDLE_HALF_WIDTH = 0.025;
 const PADDLE_HALF_HEIGHT = 0.08;
 const BALL_HALF_SIZE = 0.02;
 
+/**
+ * The original Odyssey has no stochastic game controller. The reader-facing
+ * ball serve is therefore a deterministic display convention: it derives a
+ * small vertical deflection from the post-score game state instead of taking
+ * entropy from the browser. That keeps identical replay tapes bit-for-bit
+ * repeatable while still avoiding an identical horizontal return after every
+ * point.
+ */
+function deterministicServeVerticalVelocity(
+  scoreP1: number,
+  scoreP2: number,
+  scoringPlayer: 1 | 2,
+): number {
+  const stateSeed =
+    (Math.imul(scoreP1 + 1, 1103515245) ^
+      Math.imul(scoreP2 + 1, 214013) ^
+      Math.imul(scoringPlayer, 2531011) ^
+      0x0372_8480) >>
+    0;
+  const nextSeed = (Math.imul(stateSeed, 1664525) + 1013904223) >>> 0;
+  return (nextSeed / 0x1_0000_0000 - 0.5) * 0.3;
+}
+
 export function readBaerControls(raw?: Partial<BaerOdysseyControls>): BaerOdysseyControls {
   return {
     player1PotX: Math.max(
@@ -279,13 +302,13 @@ export function stepBaerOdysseySi(
     ballX = 0.5;
     ballY = 0.5;
     ballVx = 0.45;
-    ballVy = (Math.random() - 0.5) * 0.3;
+    ballVy = deterministicServeVerticalVelocity(scoreP1, scoreP2, 2);
   } else if (ballX > 1.0) {
     scoreP1 += 1;
     ballX = 0.5;
     ballY = 0.5;
     ballVx = -0.45;
-    ballVy = (Math.random() - 0.5) * 0.3;
+    ballVy = deterministicServeVerticalVelocity(scoreP1, scoreP2, 1);
   }
 
   // Light Gun Optical Target Coincidence

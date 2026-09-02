@@ -221,30 +221,30 @@ export function WattRotaryEngine3D() {
 
         {/* Top-Left Camera Preset Toolbar */}
         <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 hidden sm:flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-28rem)] gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
-            </span>
-            {(
-              [
-                ["overview", "Overview"],
-                ["gear-mesh", "Gear Mesh"],
-                ["beam", "Beam"],
-                ["cylinder", "Cylinder"],
-              ] as const
-            ).map(([preset, label]) => (
-              <button
-                key={preset}
-                type="button"
-                onClick={() => handleCameraPreset(preset)}
-                className={`min-h-9 px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                  cameraPreset === preset
-                    ? "bg-amber-600 text-white shadow-xs font-semibold"
-                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+          <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+            <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+          </span>
+          {(
+            [
+              ["overview", "Overview"],
+              ["gear-mesh", "Gear Mesh"],
+              ["beam", "Beam"],
+              ["cylinder", "Cylinder"],
+            ] as const
+          ).map(([preset, label]) => (
+            <button
+              key={preset}
+              type="button"
+              onClick={() => handleCameraPreset(preset)}
+              className={`min-h-9 px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                cameraPreset === preset
+                  ? "bg-amber-600 text-white shadow-xs font-semibold"
+                  : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
         <div className="absolute top-3 left-3 z-10 sm:hidden">

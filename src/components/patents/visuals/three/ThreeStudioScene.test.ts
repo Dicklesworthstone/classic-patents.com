@@ -63,8 +63,10 @@ describe("ThreeStudioScene Visual Foundation", () => {
     const source = readFileSync(join(THREE_DIRECTORY, "ThreeStudioScene.ts"), "utf8");
 
     expect(source).toContain('touchAction = "pan-y"');
+    expect(source).not.toContain('touchAction = "none"');
     expect(source).toContain("classifySingleTouchGesture");
     expect(source).toContain('touchGesture === "orbit"');
+    expect(source).toContain("touchPointers.length >= 2");
     expect(source).toContain('touchGesture !== "pinch"');
     expect(source).toContain("gesturestart");
   });
