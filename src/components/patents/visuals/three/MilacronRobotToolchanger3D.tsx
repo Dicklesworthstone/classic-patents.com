@@ -138,53 +138,49 @@ export function MilacronRobotToolchanger3D() {
         className="grid gap-3 border-t border-slate-700/80 bg-slate-950/90 p-3 lg:grid-cols-[minmax(0,1fr)_auto]"
       >
         <div className="grid gap-2 sm:grid-cols-3">
-            <label className="text-xs text-slate-200">
-              Registration{" "}
-              <span className="float-right font-mono text-cyan-300">
-                {Math.round((params.registrationFraction ?? 1) * 100)}%
-              </span>
-              <input
-                className="mt-1 w-full accent-cyan-400"
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={params.registrationFraction ?? 1}
-                aria-label="Tool-base registration fraction"
-                onChange={(event) =>
-                  updateParam("registrationFraction", Number(event.target.value))
-                }
-              />
-            </label>
-            <label className="text-xs text-slate-200">
-              Locking slide{" "}
-              <span className="float-right font-mono text-amber-300">
-                {Math.round((params.lockingSlideFraction ?? 1) * 100)}%
-              </span>
-              <input
-                className="mt-1 w-full accent-amber-400"
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={params.lockingSlideFraction ?? 1}
-                aria-label="Locking slide fraction"
-                onChange={(event) =>
-                  updateParam("lockingSlideFraction", Number(event.target.value))
-                }
-              />
-            </label>
-            <label className="flex items-center justify-between gap-2 text-xs text-slate-200">
-              Tool base present
-              <input
-                className="h-4 w-4 accent-cyan-400"
-                type="checkbox"
-                checked={state.toolBasePresent}
-                aria-label="Tool base present"
-                onChange={(event) => updateParam("toolBasePresent", event.target.checked ? 1 : 0)}
-              />
-            </label>
-          </div>
+          <label className="text-xs text-slate-200">
+            Registration{" "}
+            <span className="float-right font-mono text-cyan-300">
+              {Math.round((params.registrationFraction ?? 1) * 100)}%
+            </span>
+            <input
+              className="mt-1 w-full accent-cyan-400"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={params.registrationFraction ?? 1}
+              aria-label="Tool-base registration fraction"
+              onChange={(event) => updateParam("registrationFraction", Number(event.target.value))}
+            />
+          </label>
+          <label className="text-xs text-slate-200">
+            Locking slide{" "}
+            <span className="float-right font-mono text-amber-300">
+              {Math.round((params.lockingSlideFraction ?? 1) * 100)}%
+            </span>
+            <input
+              className="mt-1 w-full accent-amber-400"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={params.lockingSlideFraction ?? 1}
+              aria-label="Locking slide fraction"
+              onChange={(event) => updateParam("lockingSlideFraction", Number(event.target.value))}
+            />
+          </label>
+          <label className="flex items-center justify-between gap-2 text-xs text-slate-200">
+            Tool base present
+            <input
+              className="h-4 w-4 accent-cyan-400"
+              type="checkbox"
+              checked={state.toolBasePresent}
+              aria-label="Tool base present"
+              onChange={(event) => updateParam("toolBasePresent", event.target.checked ? 1 : 0)}
+            />
+          </label>
+        </div>
         <div className="flex flex-wrap items-end gap-2">
           {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((candidate) => (
             <button
@@ -206,7 +202,6 @@ export function MilacronRobotToolchanger3D() {
             Reset
           </button>
         </div>
-      </div>
       </div>
     </section>
   );

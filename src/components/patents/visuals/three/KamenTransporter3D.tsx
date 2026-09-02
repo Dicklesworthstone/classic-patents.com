@@ -131,7 +131,7 @@ export default function KamenTransporter3D({
   };
 
   return (
-    <div className="w-full bg-parchment-50 dark:bg-ink-950 rounded-2xl border border-parchment-300 dark:border-ink-800 p-6 flex flex-col items-center space-y-6 shadow-patent">
+    <div className="flex w-full flex-col items-center space-y-4 rounded-2xl border border-parchment-300 bg-parchment-50 p-3 shadow-patent dark:border-ink-800 dark:bg-ink-950 sm:space-y-6 sm:p-6">
       {/* 3D Visual Header */}
       <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
@@ -147,10 +147,12 @@ export default function KamenTransporter3D({
             Dynamic Balancing Transporter & Stair-Climbing Robotics Studio
           </h3>
         </div>
-        <PhysicsTelemetryBadge
-          patentId={patentId}
-          equations={ALL_COLORIZED_EQUATIONS[patentId] ?? []}
-        />
+        <div className="hidden sm:block">
+          <PhysicsTelemetryBadge
+            patentId={patentId}
+            equations={ALL_COLORIZED_EQUATIONS[patentId] ?? []}
+          />
+        </div>
       </div>
 
       {/* 3D WebGL Canvas Container */}
@@ -158,7 +160,26 @@ export default function KamenTransporter3D({
         <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
         {/* Camera Presets Overlay */}
-        <div className="absolute top-3 left-3 flex gap-1.5 z-10 bg-ink-900/80 backdrop-blur-sm p-1 rounded-lg border border-ink-700">
+        <label className="sr-only" htmlFor="kamen-transporter-camera-view">
+          Camera view
+        </label>
+        <select
+          id="kamen-transporter-camera-view"
+          aria-label="Camera view"
+          className="absolute right-3 top-3 z-10 max-w-[calc(100%-1.5rem)] rounded-lg border border-ink-700 bg-ink-900/90 px-2.5 py-2 text-[11px] font-mono font-bold text-ink-200 backdrop-blur-sm sm:hidden"
+          value={cameraPreset}
+          onChange={(event) =>
+            handleCameraPreset(
+              event.target.value as "perspective" | "side" | "balance" | "stairs",
+            )
+          }
+        >
+          <option value="perspective">PERSPECTIVE</option>
+          <option value="side">SIDE</option>
+          <option value="balance">BALANCE</option>
+          <option value="stairs">STAIRS</option>
+        </select>
+        <div className="absolute left-3 top-3 z-10 hidden gap-1.5 rounded-lg border border-ink-700 bg-ink-900/80 p-1 backdrop-blur-sm sm:flex">
           {(["perspective", "side", "balance", "stairs"] as const).map((p) => (
             <button
               key={p}
@@ -176,7 +197,7 @@ export default function KamenTransporter3D({
         </div>
 
         {/* HUD Overlay Chip */}
-        <div className="absolute bottom-3 left-3 z-10 bg-ink-900/85 backdrop-blur-sm p-3 rounded-lg border border-ink-700 text-ink-200 font-mono text-xs space-y-1">
+        <div className="absolute bottom-3 left-3 z-10 hidden space-y-1 rounded-lg border border-ink-700 bg-ink-900/85 p-3 font-mono text-xs text-ink-200 backdrop-blur-sm sm:block">
           <div className="flex items-center gap-2">
             <span className="text-cyan-400 font-bold">PITCH TILT:</span>
             <span>{tel.pitchAngleDeg.toFixed(1)}°</span>
@@ -200,8 +221,15 @@ export default function KamenTransporter3D({
         </div>
       </div>
 
+      <div data-mobile-layout="telemetry-after-canvas" className="w-full sm:hidden">
+        <PhysicsTelemetryBadge patentId={patentId} equations={ALL_COLORIZED_EQUATIONS[patentId] ?? []} />
+      </div>
+
       {/* Control Sliders */}
-      <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+      <div
+        data-mobile-layout="controls-after-canvas"
+        className="grid w-full grid-cols-1 gap-4 font-mono text-xs md:grid-cols-3"
+      >
         <div className="p-3 bg-parchment-100 dark:bg-ink-900 rounded-lg border border-parchment-200 dark:border-ink-800 space-y-2">
           <div className="flex justify-between items-center text-ink-700 dark:text-parchment-200">
             <label htmlFor="rider-lean-3d">Rider Body Lean</label>
