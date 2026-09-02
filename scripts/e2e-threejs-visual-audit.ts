@@ -226,7 +226,13 @@ async function auditPatent(page: Page, patentId: string, viewport: ViewportName)
         )
         .then(() => true)
         .catch(() => false);
-      const changedValue = await range.inputValue();
+      // Controlled inputs may be replaced during React reconciliation. Query
+      // the live element again so the audit does not read a detached handle's
+      // stale pre-interaction value.
+      const changedValue = await surface
+        .locator('input[type="range"]:not([disabled])')
+        .first()
+        .inputValue();
       const changedTick = Number((await dispatcher.getAttribute("data-physics-tick")) ?? 0);
       const changedLastControl = await dispatcher.getAttribute("data-physics-last-change");
       const changedScreenshotPath = path.join(

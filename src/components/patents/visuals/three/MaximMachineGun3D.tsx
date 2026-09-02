@@ -168,9 +168,9 @@ export function MaximMachineGun3D() {
 
   return (
     <div
-      ref={containerRef}
       className="relative w-full aspect-[4/3] sm:aspect-[16/9] max-h-[640px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl select-none"
     >
+      <div ref={containerRef} className="absolute inset-0" />
       <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
         <div className="bg-ink-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-800/50 shadow-lg flex items-center gap-2.5">
           <Layers className="w-4 h-4 text-amber-500" />

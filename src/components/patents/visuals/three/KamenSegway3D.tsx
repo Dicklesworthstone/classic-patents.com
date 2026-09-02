@@ -64,7 +64,11 @@ export function KamenSegway3D({ patentId = PATENT_ID }: { patentId?: string }) {
 
     const loop = (nowMs: number) => {
       const { simTimeSec } = clock.pump(nowMs);
-      segway3D.update(controlsRef.current, telRef.current, simTimeSec);
+      if (studio.isVisible()) {
+        segway3D.update(controlsRef.current, telRef.current, simTimeSec);
+        studio.controls.update();
+        studio.renderer.render(studio.scene, studio.camera);
+      }
       animId = requestAnimationFrame(loop);
     };
 

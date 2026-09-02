@@ -114,6 +114,11 @@ export default function HaberAmmonia3D({
   };
 
   useEffect(() => {
+    // The published patent explicitly says "No Drawing". The source-bounded
+    // fallback below must not mount (or even construct) the retained,
+    // interpretive apparatus draft behind that refusal boundary.
+    if (sourceBoundedVisualOnly) return;
+
     const container = containerRef.current;
     if (!container) return;
 
