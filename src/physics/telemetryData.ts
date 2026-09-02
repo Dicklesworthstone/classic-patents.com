@@ -1560,50 +1560,56 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     equationName: "Arrhenius Gelation & Crosslink Density Kinetics",
     governingEquation:
       "k = A \\exp\\left(-\\frac{E_a}{R T}\\right) \\quad \\text{and} \\quad \\sigma_t = \\sigma_0 \\cdot \\rho_x^{1/2}",
-    engineMethod: "Bakelizer High-Pressure Condensation & Three-Dimensional Resite Crosslinking",
+    engineMethod:
+      "Phenol-Formaldehyde Thermal Polycondensation Kinetics (Modern Illustrative Scenario)",
     pedagogicalInsight:
-      "By applying 100+ psi pneumatic counter-pressure inside the Bakelizer autoclave, Baekeland prevented volatile reaction water and formaldehyde from boiling into foam, curing the first fully synthetic thermosetting resin.",
+      "US 942,699 specifies reacting a phenolic body with formaldehyde, separating water, and heating in a closed vessel under pressure (110–140 °C) to prevent vapor foaming; apparatus names like 'Bakelizer' and numerical kinetics/strength values are modern chemical interpretations.",
     controls: [
       {
         id: "curingTempC",
-        label: "Autoclave Temperature",
+        label: "Curing Temperature",
         min: 100,
         max: 200,
         step: 5,
-        defaultValue: 150,
+        defaultValue: 130,
         unit: "°C",
+        provenance: "source-disclosed",
       },
       {
         id: "autoclavePressurePsi",
-        label: "Autoclave Pressure",
+        label: "Illustrative Autoclave Pressure",
         min: 20,
         max: 200,
         step: 5,
         defaultValue: 100,
         unit: "psi",
+        provenance: "scenario-modern",
       },
       {
         id: "catalystPct",
-        label: "Base Catalyst",
+        label: "Illustrative Condensing Agent Dose",
         min: 0.5,
         max: 5.0,
         step: 0.5,
         defaultValue: 2.0,
         unit: "%",
+        provenance: "scenario-modern",
       },
       {
         id: "curingTimeMin",
-        label: "Cure Duration",
+        label: "Illustrative Curing Duration",
         min: 10,
         max: 120,
         step: 5,
         defaultValue: 45,
         unit: "min",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (params) => {
+      const curingTemp = params.curingTempC ?? 130;
       const res = stepBaekelandBakelite(
-        params.curingTempC ?? 150,
+        curingTemp,
         params.autoclavePressurePsi ?? 100,
         params.catalystPct ?? 2.0,
         params.curingTimeMin ?? 45,
@@ -1611,30 +1617,43 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
 
       return [
         {
+          label: "Temperature Operating State",
+          value:
+            curingTemp >= 110 && curingTemp <= 140
+              ? "PRINTED RANGE (110–140 °C)"
+              : "OUTSIDE PRINTED RANGE",
+          unit: "regime",
+          badgeColor: curingTemp >= 110 && curingTemp <= 140 ? "emerald" : "amber",
+          primary: true,
+          provenance: "source-disclosed",
+        },
+        {
           label: "Polymer State",
           value: res.resinStage,
           unit: "",
           badgeColor: "emerald",
-          primary: true,
+          provenance: "scenario-modern",
         },
         {
           label: "Crosslink Conversion",
           value: `${Math.round(res.conversionP * 100)}%`,
           unit: "%",
           badgeColor: "cyan",
-          primary: true,
+          provenance: "scenario-modern",
         },
         {
           label: "Tensile Strength",
           value: `${res.tensileStrengthMpa} MPa`,
           unit: "MPa",
           badgeColor: "amber",
+          provenance: "scenario-modern",
         },
         {
           label: "Dielectric Strength",
           value: `${res.dielectricBreakdownKvPerMm} kV/mm`,
           unit: "kV/mm",
           badgeColor: "purple",
+          provenance: "scenario-modern",
         },
       ];
     },
