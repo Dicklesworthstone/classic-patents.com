@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { createCrumpFdmModel } from "@/components/patents/visuals/three/crumpFdmModel";
 import {
   createThreeStudioScene,
@@ -18,6 +19,7 @@ const PATENT_ID = "us-5121329-crump-fdm";
 export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 39: true });
 
   const { params, updateParam } = usePatentPhysics(patentId);
   const liveParams = useRef(params);
@@ -231,6 +233,14 @@ export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
             className="mt-1 w-full accent-amber-500"
           />
         </div>
+      </div>
+
+      <div className="p-4 bg-stone-950 border-t border-stone-800">
+        <ClaimConstraintToggle
+          patentId={patentId}
+          claimStates={claimStates}
+          onClaimStateChange={(num, active) => setClaimStates((prev) => ({ ...prev, [num]: active }))}
+        />
       </div>
     </div>
   );

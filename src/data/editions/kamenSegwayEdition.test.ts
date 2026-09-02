@@ -127,10 +127,14 @@ describe("US 6,302,230 Dean Kamen Segway Human Transporter Archival Edition Cont
     const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
     const { stepKamenSegwaySi } = require("@/physics/kamenSegwayKernel");
 
-    const invertedClaim1 = applyClaimConstraintModifications("us-6302230-kamen-segway", {}, {
-      1: false,
-      2: true,
-    });
+    const invertedClaim1 = applyClaimConstraintModifications(
+      "us-6302230-kamen-segway",
+      {},
+      {
+        1: false,
+        2: true,
+      },
+    );
     expect(invertedClaim1.refusalWarning).toContain("SOURCE-BOUND REFUSAL");
     expect(invertedClaim1.modifiedParams.claim1BalanceEnabled).toBe(0);
     const tel1 = stepKamenSegwaySi({
@@ -165,9 +169,9 @@ describe("US 6,302,230 Dean Kamen Segway Human Transporter Archival Edition Cont
     expect(firstDrawing?.callouts.every((callout) => callout.figureRef === "Fig. 1")).toBe(true);
 
     for (const drawing of kamenSegwayPatent.drawings) {
-      expect(drawing.callouts.every((callout) => callout.figureRef === `Fig. ${drawing.figureNumber}`)).toBe(
-        true,
-      );
+      expect(
+        drawing.callouts.every((callout) => callout.figureRef === `Fig. ${drawing.figureNumber}`),
+      ).toBe(true);
     }
 
     const provenance = readFileSync(
