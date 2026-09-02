@@ -123,6 +123,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 727,650 specifies the regenerative counter-current heat exchanger G', throttling valve R', and vessel V' operating across a stated 75 atm to 25 atm expansion, but supplies no compressor shaft power, mass flow rate, motor wattage, or cooling kilowattage from which an authentic SI energy channel can be derived.",
   "us-307031-edison-indicator":
     "US 307,031 specifies placing an internal terminal within an incandescent lamp globe and connecting it externally to indicate or regulate the circuit, but prints no filament wattage, lamp voltage, vacuum pressure, thermionic current, or sensitivity from which an authentic SI energy channel can be derived.",
+  "us-48475-yale-lock":
+    "US 48,475 specifies the mechanical kinematics of pin-tumbler chambers, split-pin pieces I and J, keyway slot t, screw plate F, and lazy-arm E, but supplies no continuous key insertion velocity, manual torque rate, spring constants, or power datum from which an authentic SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -712,15 +714,6 @@ export function energyChannelsFor(
       { name: "Autoclave Steam Heat", watts: steamW, tone: "in" },
       { name: "Polymer Crosslinking Enthalpy", watts: steamW * 0.65, tone: "useful" },
       { name: "Vessel Thermal Radiation", watts: steamW * 0.35, tone: "loss" },
-    ];
-  }
-
-  if (patentId === "us-48475-yale-lock") {
-    const keyW = 1.2;
-    return [
-      { name: "Key Insertion Force", watts: keyW, tone: "in" },
-      { name: "Pin Tumbler Shear Lift", watts: keyW * 0.78, tone: "useful" },
-      { name: "Keyway Sliding Friction", watts: keyW * 0.22, tone: "loss" },
     ];
   }
 

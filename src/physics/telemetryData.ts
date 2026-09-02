@@ -5862,6 +5862,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.05,
         defaultValue: 1.0,
         unit: "fraction",
+        provenance: "scenario-reader",
       },
       {
         id: "appliedTorqueNm",
@@ -5871,6 +5872,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.02,
         defaultValue: 0.15,
         unit: "N·m",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (p) => {
@@ -5887,6 +5889,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: yale.isUnlocked
             ? 100
             : clampProgress(100 - (yale.maxShearErrorMm / 4.0) * 100),
+          provenance: "topology-normalized",
         },
         {
           label: "Max Pin Shear Error",
@@ -5894,6 +5897,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "Δy_max",
           badgeColor: yale.maxShearErrorMm < 0.1 ? "emerald" : "rose",
           progressPct: clampProgress(Math.max(0, 100 - (yale.maxShearErrorMm / 3.0) * 100)),
+          provenance: "scenario-modern",
         },
         {
           label: "Plug Rotation Angle",
@@ -5901,6 +5905,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "θ_plug",
           badgeColor: "cyan",
           progressPct: clampProgress((yale.plugAngleDeg / 360) * 100),
+          provenance: "topology-normalized",
         },
         {
           label: "Bolt Extension / Deadlock",
@@ -5908,6 +5913,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "x_bolt",
           badgeColor: yale.isDeadlocked ? "emerald" : "amber",
           progressPct: clampProgress((yale.boltExtensionMm / 18.0) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Pin Spring Force",
@@ -5915,6 +5921,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "F_spring",
           badgeColor: "amber",
           progressPct: clampProgress((yale.totalSpringForceN / 5.0) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Theoretical Combinations",
@@ -5922,6 +5929,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "perms",
           badgeColor: "indigo",
           progressPct: 92,
+          provenance: "scenario-modern",
         },
       ];
     },

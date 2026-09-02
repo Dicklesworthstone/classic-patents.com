@@ -1269,14 +1269,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-48475-yale-lock",
-      claimTitle: "Pin-Tumbler Cylinder with Differential-Length Split Pins & Flat Key Shear Line",
+      claimTitle: "Bolt-Holding Contrivance with Elastic Spring Plate & Faceplate Retention",
       activeDescription:
-        "Claim 1 aligns split pin pairs along the plug shear line using a flat bitted key, permitting rotation while resisting picking.",
+        "Claim 1 secures the sliding deadbolt in the lock case via the described spring plate and retaining screw arrangement, allowing bolt insertion and retention through the mortise faceplate.",
       invertedDescription:
-        "Warded lock: simple skeleton key or bent wire picks past fixed interior wards without pin tumbler height decoding, opening the lock effortlessly.",
-      failureModeName: "Skeleton Key Ward Bypass & Trivial Lock Picking",
+        "Rigid captive bolt casing: replacing the elastic spring-plate contrivance prevents faceplate insertion and requires taking apart the entire mortise case to service the bolt.",
+      failureModeName: "Rigid Bolt Captivity & Disassembly Requirement",
       historicalPriorArt:
-        "Large, heavy warded and lever locks used cumbersome iron keys and were easily bypassed by simple picks.",
+        "Conventional mortise locks enclosed the bolt rigidly between case plates, requiring complete lock case dismantling to remove or service the bolt.",
     },
   ],
   "us-78317-nobel-dynamite": [
