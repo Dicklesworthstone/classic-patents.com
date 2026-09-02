@@ -1,0 +1,50 @@
+[
+  {
+    "id": "us-31128-otis-elevator",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-36836-gatling-gun",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-48475-yale-lock",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-78317-nobel-dynamite",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-79265-sholes-typewriter",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-105338-hyatt-celluloid",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-120057-gramme-dynamo",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-124404-westinghouse-air-brake",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  }
+]

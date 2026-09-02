@@ -6,7 +6,23 @@ import {
 } from "@/physics/metcalfeEthernetKernel";
 import { buildMetcalfeEthernetModel } from "./metcalfeEthernetModel";
 
+const readSource = async (relativePath: string): Promise<string> =>
+  Bun.file(new URL(relativePath, import.meta.url)).text();
+
 describe("US 4,063,220 Metcalfe Ethernet 3D Procedural Model", () => {
+  test("keeps ambient randomness out of the shared kernel and both visual faces", async () => {
+    const [kernelSource, twoDimensionalSource, threeDimensionalSource] = await Promise.all([
+      readSource("../../../../physics/metcalfeEthernetKernel.ts"),
+      readSource("../MetcalfeEthernetSim.tsx"),
+      readSource("./MetcalfeEthernet3D.tsx"),
+    ]);
+
+    expect(kernelSource).not.toContain("Math.random");
+    expect(twoDimensionalSource).toContain("stepMetcalfeEthernetSi");
+    expect(threeDimensionalSource).toContain("stepMetcalfeEthernetSi");
+    expect(threeDimensionalSource).toContain("simStateRef");
+  });
+
   test("instantiates full procedural 3D hierarchy: coaxial bus, terminators, vampire taps, Alto stations", () => {
     const model = buildMetcalfeEthernetModel();
     expect(model.root.name).toBe("US 4,063,220 Ethernet 3D Studio Model");

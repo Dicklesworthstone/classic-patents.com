@@ -67,6 +67,11 @@ describe("US 4,063,220 Metcalfe Ethernet CSMA/CD Physics Kernel", () => {
     expect(colResult.state.totalCollisionCount).toBeGreaterThan(0);
     expect(colResult.state.station1State).toBe("jamming");
     expect(colResult.state.station1BackoffRemainingSec).toBeGreaterThan(0);
+    expect(colResult.state.station1BackoffSlot).toBeGreaterThanOrEqual(0);
+    expect(colResult.state.station1BackoffSlot).toBeLessThanOrEqual(1);
+    expect(colResult.state.station2BackoffSlot).toBeGreaterThanOrEqual(0);
+    expect(colResult.state.station2BackoffSlot).toBeLessThanOrEqual(1);
+    expect(colResult.state.rngCounter).toBe(2);
   });
 
   test("models RF power dissipation in 50-ohm terminator resistors", () => {
@@ -76,23 +81,65 @@ describe("US 4,063,220 Metcalfe Ethernet CSMA/CD Physics Kernel", () => {
     expect(metrics.terminatorDissipationMw).toBe(20.0);
   });
 
-  test("replays packet-completion trials exactly without ambient randomness", () => {
+  test("replays an identical event tape exactly from an explicit seed and state", () => {
     const controls = readEthernetControls({
-      dataRateMbps: 0.5,
-      packetSizeBytes: 1518,
+      station1Transmitting: true,
+      station2Transmitting: true,
+      triggerCollision: true,
+    });
+    const initial = { ...INITIAL_ETHERNET_STATE, rngSeed: 0xdecafbad };
+
+    const replay = () => {
+      let state = initial;
+      return [0.001, 0.002, 0.004, 0.008, 0.016].map((dt) => {
+        const frame = stepMetcalfeEthernetSi(state, controls, dt);
+        state = frame.state;
+        return frame;
+      });
+    };
+
+    expect(replay()).toEqual(replay());
+  });
+
+  test("uses the explicit seed for bounded backoff variation", () => {
+    const controls = readEthernetControls({
+      station1Transmitting: true,
+      station2Transmitting: true,
+      triggerCollision: true,
+    });
+    const slotPairs = new Set<string>();
+
+    for (const rngSeed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+      const { state } = stepMetcalfeEthernetSi(
+        { ...INITIAL_ETHERNET_STATE, rngSeed },
+        controls,
+        0.001,
+      );
+      expect(state.station1BackoffSlot).toBeGreaterThanOrEqual(0);
+      expect(state.station1BackoffSlot).toBeLessThanOrEqual(1);
+      expect(state.station2BackoffSlot).toBeGreaterThanOrEqual(0);
+      expect(state.station2BackoffSlot).toBeLessThanOrEqual(1);
+      slotPairs.add(`${state.station1BackoffSlot}:${state.station2BackoffSlot}`);
+    }
+
+    expect(slotPairs.size).toBeGreaterThan(1);
+  });
+
+  test("counts serialized packet completion without frame-rate dependence", () => {
+    const controls = readEthernetControls({
+      dataRateMbps: 1,
+      packetSizeBytes: 1_000,
       station1Transmitting: true,
       station2Transmitting: false,
     });
-    let replayA = INITIAL_ETHERNET_STATE;
-    let replayB = INITIAL_ETHERNET_STATE;
+    const oneStep = stepMetcalfeEthernetSi(INITIAL_ETHERNET_STATE, controls, 0.016).state;
 
-    for (let frame = 0; frame < 64; frame += 1) {
-      const resultA = stepMetcalfeEthernetSi(replayA, controls, 0.0001);
-      const resultB = stepMetcalfeEthernetSi(replayB, controls, 0.0001);
-
-      expect(resultA).toEqual(resultB);
-      replayA = resultA.state;
-      replayB = resultB.state;
+    let splitState = INITIAL_ETHERNET_STATE;
+    for (let frame = 0; frame < 4; frame += 1) {
+      splitState = stepMetcalfeEthernetSi(splitState, controls, 0.004).state;
     }
+
+    expect(splitState.packetSuccessCount).toBe(oneStep.packetSuccessCount);
+    expect(splitState.station1PacketProgressSec).toBeCloseTo(oneStep.station1PacketProgressSec, 12);
   });
 });

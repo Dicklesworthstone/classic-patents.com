@@ -148,11 +148,11 @@ function conflictingBuilds(): string[] {
 }
 
 function assertNoConflictingBuilds(stage: string) {
-  for (let attempt = 0; attempt < 6; attempt++) {
+  for (let attempt = 0; attempt < 120; attempt++) {
     const conflicts = conflictingBuilds();
     if (conflicts.length === 0) return;
-    if (attempt < 5) {
-      spawnSync("sleep", ["0.5"]);
+    if (attempt < 119) {
+      spawnSync("sleep", ["1"]);
       continue;
     }
     throw new Error(

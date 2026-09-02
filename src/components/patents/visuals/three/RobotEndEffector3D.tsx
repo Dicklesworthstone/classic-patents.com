@@ -111,7 +111,7 @@ export function RobotEndEffector3D() {
     <section className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl">
       <div className="relative min-h-[440px] sm:min-h-[540px]">
         <div ref={containerRef} className="absolute inset-0" />
-        <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-3 sm:inset-x-5 sm:top-5">
+        <div className="pointer-events-none absolute inset-x-3 top-3 hidden items-start justify-between gap-3 sm:flex sm:inset-x-5 sm:top-5">
           <div className="rounded-xl border border-cyan-700/70 bg-slate-950/85 px-3 py-2 backdrop-blur">
             <p className="font-mono text-[10px] tracking-[0.16em] text-cyan-300">
               US 4,765,668 · PROCEDURAL 3D
@@ -125,7 +125,7 @@ export function RobotEndEffector3D() {
           </div>
         </div>
 
-        <div className="pointer-events-none absolute left-3 top-24 rounded-xl border border-slate-700/80 bg-slate-950/85 p-2.5 font-mono text-[11px] text-slate-200 backdrop-blur sm:left-5">
+        <div className="pointer-events-none absolute left-3 top-24 hidden rounded-xl border border-slate-700/80 bg-slate-950/85 p-2.5 font-mono text-[11px] text-slate-200 backdrop-blur sm:block sm:left-5">
           <p>
             GAP <span className="text-cyan-300">{(state.jawOpeningM * 1000).toFixed(1)} mm</span>
           </p>
@@ -138,8 +138,12 @@ export function RobotEndEffector3D() {
           </p>
         </div>
 
-        <div className="absolute bottom-3 left-3 right-3 grid gap-3 rounded-xl border border-slate-700/80 bg-slate-950/90 p-3 backdrop-blur sm:bottom-5 sm:left-5 sm:right-5 lg:grid-cols-[minmax(0,1fr)_auto]">
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+      </div>
+      <div
+        data-mobile-layout="controls-below-canvas"
+        className="grid gap-3 border-t border-slate-700/80 bg-slate-950/90 p-3 lg:grid-cols-[minmax(0,1fr)_auto]"
+      >
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             <label className="text-xs text-slate-200">
               Jaw opening
               <span className="float-right font-mono text-cyan-300">
@@ -207,37 +211,36 @@ export function RobotEndEffector3D() {
               />
             </label>
           </div>
-          <div className="flex flex-wrap items-end gap-2">
-            {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((candidate) => (
-              <button
-                key={candidate}
-                type="button"
-                onClick={() => selectView(candidate)}
-                className={`min-h-9 rounded-lg border px-2.5 text-xs capitalize ${view === candidate ? "border-cyan-400 bg-cyan-500 text-slate-950" : "border-slate-600 bg-slate-900 text-slate-200 hover:bg-slate-800"}`}
-              >
-                <Eye className="mr-1 inline h-3.5 w-3.5" />
-                {candidate}
-              </button>
-            ))}
+        <div className="flex flex-wrap items-end gap-2">
+          {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((candidate) => (
             <button
+              key={candidate}
               type="button"
-              onClick={resetParams}
-              className="min-h-9 rounded-lg border border-slate-600 bg-slate-900 px-2.5 text-xs text-slate-200 hover:bg-slate-800"
+              onClick={() => selectView(candidate)}
+              className={`min-h-9 rounded-lg border px-2.5 text-xs capitalize ${view === candidate ? "border-cyan-400 bg-cyan-500 text-slate-950" : "border-slate-600 bg-slate-900 text-slate-200 hover:bg-slate-800"}`}
             >
-              <RotateCcw className="mr-1 inline h-3.5 w-3.5" />
-              Reset
+              <Eye className="mr-1 inline h-3.5 w-3.5" />
+              {candidate}
             </button>
-          </div>
+          ))}
+          <button
+            type="button"
+            onClick={resetParams}
+            className="min-h-9 rounded-lg border border-slate-600 bg-slate-900 px-2.5 text-xs text-slate-200 hover:bg-slate-800"
+          >
+            <RotateCcw className="mr-1 inline h-3.5 w-3.5" />
+            Reset
+          </button>
+        </div>
 
-          <div className="pt-2 border-t border-slate-800">
-            <ClaimConstraintToggle
-              patentId={PATENT_ID}
-              claimStates={claimStates}
-              onClaimStateChange={(num, active) =>
-                setClaimStates((prev) => ({ ...prev, [num]: active }))
-              }
-            />
-          </div>
+        <div className="border-t border-slate-800 pt-2">
+          <ClaimConstraintToggle
+            patentId={PATENT_ID}
+            claimStates={claimStates}
+            onClaimStateChange={(num, active) =>
+              setClaimStates((prev) => ({ ...prev, [num]: active }))
+            }
+          />
         </div>
       </div>
     </section>
