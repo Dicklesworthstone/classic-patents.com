@@ -14,10 +14,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import {
-  INITIAL_WATT_CONNECTING_ROD_ANGLE_RAD,
-  stepWattRotaryEngine,
-} from "@/physics/wattRotaryKernel";
+import { stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
@@ -86,18 +83,17 @@ export function WattRotaryEngineSim() {
   const orbitAngleRad = telemetry.planetOrbitAngleRad;
   const planetCenterX = sunCenterX + telemetry.planetPosX * pixelsPerMeter;
   const planetCenterY = sunCenterY - telemetry.planetPosY * pixelsPerMeter;
-  const planetAngleDeg = telemetry.planetBodyAngleDeg;
-  const sunAngleDeg = telemetry.sunShaftAngleDeg;
+  // SVG's downward-positive Y axis mirrors the kernel's world coordinates, so
+  // a positive physical shaft angle must render as a negative SVG rotation.
+  const planetAngleDeg = -telemetry.planetBodyAngleDeg;
+  const sunAngleDeg = -telemetry.sunShaftAngleDeg;
   const sunToothAngles = Array.from(
     { length: telemetry.sunTeeth },
     (_, index) => (index / telemetry.sunTeeth) * 360,
   );
   const planetToothAngles = Array.from(
     { length: telemetry.planetTeeth },
-    (_, index) =>
-      (index / telemetry.planetTeeth) * 360 +
-      180 / telemetry.planetTeeth -
-      (INITIAL_WATT_CONNECTING_ROD_ANGLE_RAD * 180) / Math.PI,
+    (_, index) => (index / telemetry.planetTeeth) * 360 + 180 / telemetry.planetTeeth,
   );
   const pistonY = 400 - (telemetry.pistonPositionM / 1.8) * 100;
 

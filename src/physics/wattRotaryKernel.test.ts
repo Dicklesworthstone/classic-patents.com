@@ -71,12 +71,37 @@ describe("James Watt 1781 Sun & Planet Epicyclic Physics Kernel (GB 1306)", () =
         expect(Number.isFinite(telemetry.beamAngleRad)).toBe(true);
         expect(Math.abs(telemetry.connectingRodConstraintResidualM)).toBeLessThan(1e-10);
         expect(Math.abs(telemetry.gearMeshConstraintResidualRad)).toBeLessThan(1e-10);
-        expect(telemetry.planetBodyAngleRad).toBe(telemetry.connectingRodAngleRad);
+        expect(telemetry.planetBodyAngleRad).toBe(0);
+        expect(telemetry.sunShaftAngleRad).toBeCloseTo(
+          telemetry.speedMultiplier * telemetry.planetOrbitAngleRad,
+          12,
+        );
         expect(telemetry.sunPitchRadiusM + telemetry.planetPitchRadiusM).toBeCloseTo(
           WATT_ROTARY_KINEMATIC_GEOMETRY.gearCenterDistanceM,
           12,
         );
         expect(telemetry.planetTeeth / telemetry.sunTeeth).toBe(ratio);
+      }
+    }
+  });
+
+  test("keeps the restrained planet fixed and the output shaft at the mesh-required angular speed", () => {
+    const dt = 1e-5;
+    for (const ratio of [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]) {
+      const controls = readWattRotaryControls({ strokeRateSpm: 20, gearRatioNpOverNs: ratio });
+      for (const timeSec of [0.2, 0.8, 1.4, 2.2]) {
+        const pose = stepWattRotaryEngine(controls, timeSec);
+        const next = stepWattRotaryEngine(controls, timeSec + dt);
+
+        expect(pose.planetBodyAngleRad).toBe(0);
+        expect(pose.sunShaftAngleRad).toBeCloseTo(
+          pose.speedMultiplier * pose.planetOrbitAngleRad,
+          12,
+        );
+        expect((next.sunShaftAngleRad - pose.sunShaftAngleRad) / dt).toBeCloseTo(
+          pose.shaftAngularVelocityRadS,
+          8,
+        );
       }
     }
   });

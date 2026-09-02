@@ -11,6 +11,7 @@ import type {
   KamenTransporterControls,
   KamenTransporterTelemetry,
 } from "@/physics/kamenTransporterKernel";
+import { KAMEN_TRANSPORTER_SCENARIO_WHEEL_RADIUS_M } from "@/physics/kamenTransporterKernel";
 
 export interface KamenTransporterModel {
   root: THREE.Group;
@@ -173,14 +174,20 @@ export function buildKamenTransporterModel(): KamenTransporterModel {
     cluster.add(capMesh);
 
     // Wheel 1
-    const tireGeom = new THREE.TorusGeometry(0.13, 0.04, 16, 24);
+    const tireTubeRadius = 0.04;
+    const tireGeom = new THREE.TorusGeometry(
+      KAMEN_TRANSPORTER_SCENARIO_WHEEL_RADIUS_M - tireTubeRadius,
+      tireTubeRadius,
+      16,
+      24,
+    );
     geometriesToDispose.push(tireGeom);
     const wheel1 = new THREE.Mesh(tireGeom, tireMat);
     wheel1.position.set(-0.18, 0, 0);
     wheel1.castShadow = true;
     cluster.add(wheel1);
 
-    const rimGeom = new THREE.CylinderGeometry(0.11, 0.11, 0.04, 16);
+    const rimGeom = new THREE.CylinderGeometry(0.09, 0.09, 0.04, 16);
     rimGeom.rotateX(Math.PI / 2);
     geometriesToDispose.push(rimGeom);
     const rim1 = new THREE.Mesh(rimGeom, rimMat);
@@ -244,7 +251,7 @@ export function updateKamenTransporterKinematics(
   model: KamenTransporterModel,
   controls: KamenTransporterControls,
   tel: KamenTransporterTelemetry,
-  timeS: number,
+  wheelRollAngleRad: number,
 ) {
   // 1. Chassis Pitch Orientation (Inverted Pendulum Tilt)
   const pitchRad = tel.pitchAngleRad;
@@ -282,13 +289,12 @@ export function updateKamenTransporterKinematics(
   model.leftCluster.rotation.z = clusterRad;
   model.rightCluster.rotation.z = clusterRad;
 
-  // 4. Individual Wheel Roll Kinematics (Rolling around axle Z axis in direction of travel)
-  const wheelSpinSpeed = tel.forwardVelocityMs / 0.15;
-  const wheelSpinAngle = wheelSpinSpeed * timeS;
-  model.leftWheel1.rotation.z = -wheelSpinAngle;
-  model.leftWheel2.rotation.z = -wheelSpinAngle;
-  model.rightWheel1.rotation.z = -wheelSpinAngle;
-  model.rightWheel2.rotation.z = -wheelSpinAngle;
+  // 4. The fixed-step physics kernel owns the integrated rolling phase. The
+  // model is a projection and must not multiply by speed or time a second time.
+  model.leftWheel1.rotation.z = -wheelRollAngleRad;
+  model.leftWheel2.rotation.z = -wheelRollAngleRad;
+  model.rightWheel1.rotation.z = -wheelRollAngleRad;
+  model.rightWheel2.rotation.z = -wheelRollAngleRad;
 
   // 5. Center of Gravity Marker Color Feedback
   const cgMat = model.cgMarker.material as THREE.MeshStandardMaterial;

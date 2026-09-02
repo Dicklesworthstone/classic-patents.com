@@ -8,7 +8,6 @@
 import * as THREE from "three";
 import {
   canonicalWattGearRatio,
-  INITIAL_WATT_CONNECTING_ROD_ANGLE_RAD,
   WATT_ROTARY_KINEMATIC_GEOMETRY,
   type WattRotaryTelemetry,
 } from "@/physics/wattRotaryKernel";
@@ -322,7 +321,7 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
       planetPitchRadiusM,
       planetTeeth,
       planetGearMat,
-      Math.PI / 2 - INITIAL_WATT_CONNECTING_ROD_ANGLE_RAD + Math.PI / planetTeeth,
+      Math.PI / 2 + Math.PI / planetTeeth,
     );
     sunNode.visible = ratio === 1;
     planetNode.visible = ratio === 1;
@@ -508,7 +507,8 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
     connectingRodGroup.rotation.z = pose.connectingRodAngleRad;
     connectingRodGroup.scale.set(1, 1, 1);
 
-    // The planet orbits but is restrained from accumulating an axial turn.
+    // The planet centre orbits while the restrained wheel keeps its fixed
+    // orientation; the spear only positions the bearing at its centre.
     planetGearGroup.rotation.z = pose.planetBodyAngleRad;
 
     // Radius link guide bar pivots at sun center and rotates with phase

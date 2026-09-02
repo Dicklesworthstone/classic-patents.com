@@ -1,3 +1,5 @@
+import type { TapeUpdater } from "./useFrankenSimPhysics";
+
 /**
  * kamenTransporterKernel.ts
  *
@@ -62,6 +64,18 @@ export interface KamenTransporterTelemetry {
   refusalReason?: string;
 }
 
+/**
+ * Dynamic pose state owned by the fixed-step transport tape. It is separate
+ * from the stateless operating-point telemetry so badges and static diagrams
+ * can still request a deterministic instantaneous solution.
+ */
+export interface KamenTransporterMotionState {
+  controls: KamenTransporterControls;
+  telemetry: KamenTransporterTelemetry;
+  wheelRollAngleRad: number;
+  travelMeters: number;
+}
+
 export const KAMEN_TRANSPORTER_DEFAULT_CONTROLS: KamenTransporterControls = {
   riderPitchLeanDeg: 0,
   velocityCommandMs: 0,
@@ -74,7 +88,8 @@ export const KAMEN_TRANSPORTER_DEFAULT_CONTROLS: KamenTransporterControls = {
 // Physical Constants for Transporter
 const TRANSPORTER_UNLADEN_MASS_KG = 65.0; // Chassis, batteries, cluster drives
 const GRAVITY_M_S2 = 9.80665;
-const WHEEL_RADIUS_M = 0.15; // 300 mm diameter wheels
+/** Normalized display scenario radius; not asserted to be a patent measurement. */
+export const KAMEN_TRANSPORTER_SCENARIO_WHEEL_RADIUS_M = 0.15;
 const _CLUSTER_ARM_RADIUS_M = 0.18; // 360 mm cluster pitch circle
 const _TRACK_WIDTH_M = 0.6; // 600 mm lateral wheelbase
 const MAX_MOTOR_TORQUE_NM = 120.0;
@@ -153,10 +168,11 @@ export function stepKamenTransporterSi(
       Math.min(MAX_MOTOR_TORQUE_NM, gravTorque + restorativeTorque + velocityTorque),
     );
 
-    forwardAccelerationMs2 = balanceTorqueNm / (totalMassKg * WHEEL_RADIUS_M);
+    forwardAccelerationMs2 =
+      balanceTorqueNm / (totalMassKg * KAMEN_TRANSPORTER_SCENARIO_WHEEL_RADIUS_M);
     forwardVelocityMs =
       controls.velocityCommandMs + pitchAngleRad * naturalFrequencyRadS * cgHeightM;
-    groundTractionForceN = balanceTorqueNm / WHEEL_RADIUS_M;
+    groundTractionForceN = balanceTorqueNm / KAMEN_TRANSPORTER_SCENARIO_WHEEL_RADIUS_M;
   } else if (!pitchRefusal) {
     // 4-wheel mode: direct drive
     forwardVelocityMs = controls.velocityCommandMs;
@@ -232,5 +248,78 @@ export function readKamenTransporterControls(
       typeof params.riderMassKg === "number"
         ? params.riderMassKg
         : ((params.riderMass as number) ?? KAMEN_TRANSPORTER_DEFAULT_CONTROLS.riderMassKg),
+  };
+}
+
+export function createKamenTransporterMotionState(
+  controls: KamenTransporterControls = KAMEN_TRANSPORTER_DEFAULT_CONTROLS,
+): KamenTransporterMotionState {
+  return {
+    controls,
+    telemetry: stepKamenTransporterSi(controls),
+    wheelRollAngleRad: 0,
+    travelMeters: 0,
+  };
+}
+
+/**
+ * Advance the single display scenario by one fixed bus tick. The rolling law
+ * is theta_next = theta + (v / R) dt: angle is integrated here exactly once,
+ * and renderers receive the terminal angle without reapplying wheel speed.
+ */
+export function advanceKamenTransporterMotion(
+  controls: KamenTransporterControls,
+  previous: KamenTransporterMotionState = createKamenTransporterMotionState(controls),
+  dt: number = 1 / 60,
+): KamenTransporterMotionState {
+  const safeDt = Number.isFinite(dt) ? Math.max(0, Math.min(dt, 0.1)) : 0;
+  const telemetry = stepKamenTransporterSi(controls);
+  // A refused state holds the last legal visual pose rather than multiplying
+  // the retained phase by a newly-zero speed and snapping the wheels backward.
+  const legalVelocityMs = telemetry.pitchRefusal ? 0 : telemetry.forwardVelocityMs;
+
+  return {
+    controls,
+    telemetry,
+    wheelRollAngleRad:
+      previous.wheelRollAngleRad +
+      (legalVelocityMs / KAMEN_TRANSPORTER_SCENARIO_WHEEL_RADIUS_M) * safeDt,
+    travelMeters: previous.travelMeters + legalVelocityMs * safeDt,
+  };
+}
+
+let kamenTransporterTapeState: KamenTransporterMotionState | undefined;
+
+export function getKamenTransporterTapeState(): KamenTransporterMotionState | undefined {
+  return kamenTransporterTapeState;
+}
+
+export function resetKamenTransporterTapeState(): void {
+  kamenTransporterTapeState = undefined;
+}
+
+/** One shared fixed-step tape for the transporter 2D/3D teaching faces. */
+export function createKamenTransporterTransportUpdater(
+  getControls: () => KamenTransporterControls,
+): TapeUpdater {
+  return (_previousTelemetry, dt) => {
+    const next = advanceKamenTransporterMotion(getControls(), kamenTransporterTapeState, dt);
+    kamenTransporterTapeState = next;
+
+    return {
+      refusal: {
+        isRefused: next.telemetry.pitchRefusal,
+        reason: next.telemetry.refusalReason,
+      },
+      machine: {
+        poseXMeters: next.travelMeters,
+        poseYMeters: 0,
+        headingRad: 0,
+        modeLabel: next.controls.operatingMode,
+        wheelSpeedMps: next.telemetry.forwardVelocityMs,
+        wheelRollAngleRad: next.wheelRollAngleRad,
+        travelMeters: next.travelMeters,
+      },
+    };
   };
 }

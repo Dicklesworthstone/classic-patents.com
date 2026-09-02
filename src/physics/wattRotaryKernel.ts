@@ -25,7 +25,7 @@ export interface WattRotaryTelemetry {
   pistonVelocityMps: number; // Piston instantaneous velocity (m/s)
   planetOrbitAngleDeg: number; // Planet center orbital angle (0 - 360 deg)
   planetOrbitAngleRad: number;
-  planetBodyAngleDeg: number; // Planet is restrained from completing an axial revolution
+  planetBodyAngleDeg: number; // Planet has a fixed orientation while its centre orbits
   planetBodyAngleRad: number;
   planetPosX: number; // Planet center X coordinate (m)
   planetPosY: number; // Planet center Y coordinate (m)
@@ -117,16 +117,6 @@ function solveBeamAngleRad(planetX: number, planetY: number): number {
   return Math.atan2(qy, qx) + Math.acos(closureCosine);
 }
 
-export const INITIAL_WATT_CONNECTING_ROD_ANGLE_RAD = (() => {
-  const geom = WATT_ROTARY_KINEMATIC_GEOMETRY;
-  const pX = geom.sunCenterX;
-  const pY = geom.sunCenterY - geom.gearCenterDistanceM;
-  const beamAngle = solveBeamAngleRad(pX, pY);
-  const rEndX = geom.beamPivotX + geom.beamHalfLengthM * Math.cos(beamAngle);
-  const rEndY = geom.beamPivotY + geom.beamHalfLengthM * Math.sin(beamAngle);
-  return Math.atan2(pX - rEndX, -(pY - rEndY));
-})();
-
 export function readWattRotaryControls(
   raw: Partial<WattRotaryControls> | Record<string, number | undefined>,
 ): WattRotaryControls {
@@ -193,25 +183,20 @@ export function stepWattRotaryEngine(
   const connectingRodLength = Math.hypot(rodDx, rodDy);
   const connectingRodAngleRad = Math.atan2(rodDx, -rodDy);
 
-  // In James Watt's GB 1306 engine, the planet gear is rigidly affixed to the
-  // lower end of the connecting rod ("spear"). As the walking beam rocks, the
-  // rod oscillates, causing the planet gear to rock by connectingRodAngleRad.
-  // Willis' external epicyclic rolling relation with no slip at the pitch line:
-  // Rs * (theta_s - theta_s0) + Rp * (theta_p - theta_p0) = (Rs + Rp) * theta_c
-  // gives:
-  // theta_s = (1 + Np/Ns) * theta_c - (Np/Ns) * (connectingRodAngleRad - initialRodAngle)
-  const planetBodyAngleRad = connectingRodAngleRad;
+  // Watt's planet wheel travels around the sun but is restrained from turning
+  // about its own centre. The connecting spear therefore supplies a moving
+  // bearing position, not the wheel's axial orientation. For an external
+  // epicyclic mesh, Ns(theta_s - theta_c) + Np(theta_p - theta_c) = 0. With
+  // theta_p fixed at zero, theta_s = (1 + Np/Ns) * theta_c.
+  const planetBodyAngleRad = 0;
   const planetBodyAngleDeg = (planetBodyAngleRad * 180) / Math.PI;
   const shaftRpm = spm * speedMultiplier;
   const shaftAngularVelocityRadS = (shaftRpm * 2 * Math.PI) / 60;
-  const sunShaftAngleRad =
-    speedMultiplier * carrierAngleRad -
-    ratio * (connectingRodAngleRad - INITIAL_WATT_CONNECTING_ROD_ANGLE_RAD);
+  const sunShaftAngleRad = speedMultiplier * carrierAngleRad;
   const sunShaftAngleDeg = positiveModulo((sunShaftAngleRad * 180) / Math.PI, 360);
   const gearMeshConstraintResidualRad =
-    sunTeeth * sunShaftAngleRad +
-    planetTeeth * (planetBodyAngleRad - INITIAL_WATT_CONNECTING_ROD_ANGLE_RAD) -
-    (sunTeeth + planetTeeth) * carrierAngleRad;
+    sunTeeth * (sunShaftAngleRad - carrierAngleRad) +
+    planetTeeth * (planetBodyAngleRad - carrierAngleRad);
 
   // The piston follows the left beam end. Differentiate the four-bar closure
   // analytically so velocity and rendered position remain the same mechanism.

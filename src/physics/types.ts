@@ -160,6 +160,10 @@ export interface MachineState {
   headingRad: number;
   modeLabel: string;
   wheelSpeedMps: number;
+  /** Integrated wheel phase from the shared fixed-step tape (rad). */
+  wheelRollAngleRad?: number;
+  /** Integrated ground-path distance from the shared fixed-step tape (m). */
+  travelMeters?: number;
 }
 
 export interface UniversalPatentPhysicsTelemetry {

@@ -115,8 +115,10 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
         expect(computedBottomX).toBeCloseTo(model.planetGearGroup.position.x, 10);
         expect(computedBottomY).toBeCloseTo(model.planetGearGroup.position.y, 10);
 
-        // The restrained planet does not spin; sun and flywheel share one keyed shaft angle.
+        // The restrained planet has a fixed world orientation; sun and
+        // flywheel share the source-required keyed shaft angle.
         expect(model.planetGearGroup.rotation.z).toBeCloseTo(telemetry.planetBodyAngleRad, 12);
+        expect(model.planetGearGroup.rotation.z).toBe(0);
         expect(model.sunGearGroup.rotation.z).toBeCloseTo(telemetry.sunShaftAngleRad, 12);
         expect(model.flywheelGroup.rotation.z).toBeCloseTo(telemetry.sunShaftAngleRad, 12);
 
@@ -135,6 +137,14 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
     );
     expect(modelSource).not.toContain("2 * phase - rodAngle");
     expect(modelSource).not.toContain("rodLength / 2.3");
+
+    const svgSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/WattRotaryEngineSim.tsx"),
+      "utf8",
+    );
+    expect(svgSource).toContain("const sunAngleDeg = -telemetry.sunShaftAngleDeg;");
+    expect(svgSource).toContain("const planetAngleDeg = -telemetry.planetBodyAngleDeg;");
+    expect(svgSource).not.toContain("INITIAL_WATT_CONNECTING_ROD_ANGLE_RAD");
 
     model.dispose();
   });
