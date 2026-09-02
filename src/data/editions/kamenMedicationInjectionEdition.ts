@@ -19,44 +19,46 @@ const term = (text: string, definition: string): CuratedSpecificationInline => (
   text,
   definition,
 });
-type FigurePreview = {
-  src: string;
-  alt: string;
-  width: number;
-  height: number;
-};
-const figurePreview = (
-  label: "FIG. 1" | "FIG. 2" | "FIG. 3" | "FIG. 4" | "FIG. 5" | "FIG. 6",
-  width: number,
-  height: number,
-): FigurePreview => ({
-  src: `/patents/figures/us-3858581-kamen-medication-injection-device/${label.toLowerCase().replace(".", "").replace(" ", "-")}-source-crop-v1.png`,
-  alt: `Source-facsimile crop of ${label} from US 3,858,581.`,
+type FigureNumber = 1 | 2 | 3 | 4 | 5 | 6;
+
+const figurePreview = (number: FigureNumber, width: number, height: number) => ({
+  src: `/patents/figures/us-3858581-kamen-medication-injection-device/fig-${number}-source-crop-v2.png`,
+  alt: `Source-facsimile crop of FIG. ${number} from US 3,858,581.`,
   width,
   height,
 });
+
+const FIGURES = {
+  1: figurePreview(1, 8700, 3400),
+  2: figurePreview(2, 9000, 3250),
+  3: figurePreview(3, 8700, 4200),
+  4: figurePreview(4, 4000, 4200),
+  5: figurePreview(5, 4300, 3200),
+  6: figurePreview(6, 8500, 7300),
+} as const;
+
 const figure = (
-  label: "FIG. 1" | "FIG. 2" | "FIG. 3" | "FIG. 4" | "FIG. 5" | "FIG. 6",
-  width: number,
-  height: number,
+  number: FigureNumber,
+  sourceText: string = `FIG. ${number}`,
 ): CuratedSpecificationInline => ({
   kind: "reference",
-  text: label,
+  text: sourceText,
   href: "#",
   referenceType: "figure",
-  label: `Open the source-facsimile crop for ${label} in US 3,858,581`,
-  figurePreviews: [figurePreview(label, width, height)],
+  label: `Open the source-facsimile crop for FIG. ${number} in US 3,858,581`,
+  figurePreviews: [FIGURES[number]],
 });
+
 const figureGroup = (
-  label: "FIGS. 1-3",
-  previews: readonly [FigurePreview, FigurePreview, FigurePreview],
+  sourceText: string,
+  numbers: readonly FigureNumber[],
 ): CuratedSpecificationInline => ({
   kind: "reference",
-  text: label,
+  text: sourceText,
   href: "#",
   referenceType: "figure",
-  label: `Open the source-facsimile crops for ${label} in US 3,858,581`,
-  figurePreviews: previews,
+  label: `Open the source-facsimile crops for ${sourceText} in US 3,858,581`,
+  figurePreviews: numbers.map((number) => FIGURES[number]),
 });
 
 /** A continuous manual edition checked against the eight-page US 3,858,581 facsimile. */
@@ -70,42 +72,50 @@ export const kamenMedicationInjectionArchivalEdition: CuratedSpecificationEditio
     {
       kind: "masthead",
       lines: [
-        "UNITED STATES PATENT",
-        "DEAN KAMEN, OF ROCKVILLE CENTRE, NEW YORK.",
-        "MEDICATION INJECTION DEVICE.",
-        "Patent No. 3,858,581. Filed July 2, 1973. Patented Jan. 7, 1975. Application No. 375,955.",
+        "United States Patent [19]",
+        "[11] 3,858,581",
+        "Kamen [45] Jan. 7, 1975",
+        "[54] MEDICATION INJECTION DEVICE",
+        "[76] Inventor: Dean Kamen, 99 Bulsar Rd., Rockville Centre, N.Y. 11570",
+        "[22] Filed: July 2, 1973",
+        "[21] Appl. No.: 375,955",
+        "[52] U.S. Cl. 128/218 A, 128/DIG. 1",
+        "[51] Int. Cl. A61m 5/20",
+        "[58] Field of Search 128/2 R, 2.05 R, 218 R, 128/218 A, 214 E, 214 F, DIG. 1, 234, 236",
+        "[56] References Cited",
+        "Primary Examiner—Dalton L. Truluck",
+        "Attorney, Agent, or Firm—Bauer & Amer",
+        "[57] ABSTRACT",
+      ],
+    },
+    paragraph(
+      words(
+        "A medication-administering device controlled for repetitive delivery, by intravenous injection or otherwise, of predetermined syringe volumes of said medication at present time intervals, wherein the syringe plunger medication injection stroke is achieved using a powering motor, and the control exercised over the mode of operation of the device is related to the rotational traverses of said motor. This minimizes non-uniform performance and other shortcomings which characterize prior art medication injection devices in which the performance of the powering motors are vulnerable to variances due to varying line voltage, changing work loads (i.e. medication with different viscosities) and the like.",
+      ),
+    ),
+    paragraph(words("5 Claims, 6 Drawing Figures")),
+    {
+      kind: "figure-sheet",
+      figureLabel: "SHEET 1 OF 2",
+      description: [
+        { kind: "text", text: "PATENTED JAN 7 1975  3,858,581  " },
+        figure(1, "FIG.1"),
+        { kind: "text", text: "  " },
+        figure(2, "FIG.2"),
+        { kind: "text", text: "  " },
+        figure(3, "FIG.3"),
       ],
     },
     {
       kind: "figure-sheet",
-      figureLabel: "SHEET 1",
-      title: "Device perspective, plan, and longitudinal section",
+      figureLabel: "SHEET 2 OF 2",
       description: [
-        figure("FIG. 1", 2800, 1350),
-        { kind: "text", text: ", " },
-        figure("FIG. 2", 2800, 1000),
-        { kind: "text", text: ", and " },
-        figure("FIG. 3", 3000, 1350),
-        {
-          kind: "text",
-          text: " show the source device, its pulse-scale presentation, and its internal longitudinal arrangement.",
-        },
-      ],
-    },
-    {
-      kind: "figure-sheet",
-      figureLabel: "SHEET 2",
-      title: "Pulse generator, coupling, and control circuit",
-      description: [
-        figure("FIG. 4", 1000, 800),
-        { kind: "text", text: ", " },
-        figure("FIG. 5", 1200, 750),
-        { kind: "text", text: ", and " },
-        figure("FIG. 6", 2800, 2700),
-        {
-          kind: "text",
-          text: " show the pulse generator, further mechanical structure, and the block diagram of electrical components.",
-        },
+        { kind: "text", text: "PATENTED JAN 7 1975  3,858,581  " },
+        figure(4, "FIG.4"),
+        { kind: "text", text: "  " },
+        figure(5, "FIG.5"),
+        { kind: "text", text: "  " },
+        figure(6, "FIG.6"),
       ],
     },
     { kind: "heading", level: 2, text: "MEDICATION INJECTION DEVICE" },
@@ -115,11 +125,7 @@ export const kamenMedicationInjectionArchivalEdition: CuratedSpecificationEditio
       ),
     ),
     paragraph([
-      figureGroup("FIGS. 1-3", [
-        figurePreview("FIG. 1", 2800, 1350),
-        figurePreview("FIG. 2", 2800, 1000),
-        figurePreview("FIG. 3", 3000, 1350),
-      ]),
+      figureGroup("FIGS. 1-3", [1, 2, 3]),
       {
         kind: "text",
         text: " show the general organization of the mechanical parts of a medication injection device, generally designated 10. The device includes a syringe 12 of the type having a plunger 14, the linear displacement of which dictates the amount dispensed from the syringe chamber through tubing 15. Arranged to cause linear displacement of the plunger 14 is an upstanding head 16 of a follower 18, which has a threaded member mounted on a lead screw 22 powered in rotation by a motor 24.",
@@ -138,7 +144,7 @@ export const kamenMedicationInjectionArchivalEdition: CuratedSpecificationEditio
     ]),
     paragraph([
       { kind: "text", text: "As illustrated in " },
-      figure("FIG. 2", 2800, 1000),
+      figure(2, "FIG. 2"),
       {
         kind: "text",
         text: ", scale 62 is laid out in ascending numbers corresponding to distances of advancement produced by the uniform thread pitch 26. The source uses the scale to relate a selected number of rotational traverses to the linear position of the follower; it is not a current clinical instruction.",
@@ -163,7 +169,7 @@ export const kamenMedicationInjectionArchivalEdition: CuratedSpecificationEditio
         kind: "text",
         text: "The electrical components provide resetting of the motor-on timer, termination of the powering motor, and starting of the motor-off timer. ",
       },
-      figure("FIG. 6", 2800, 2700),
+      figure(6, "FIG. 6"),
       {
         kind: "text",
         text: " illustrates an exemplary circuit with pulse counters whose outputs are activated in succession. During motor operation, the striker's contact with switch 84 produces the pulses counted by the motor-on timer.",

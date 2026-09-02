@@ -44,13 +44,13 @@ export const kamenMedicationInjectionPatent: Patent = {
       },
       {
         page: 2,
-        exactSourceText: "FIG. 1 is a perspective view",
-        sourceRelationship: "source figure sheet",
+        exactSourceText: "SHEET 1 OF 2",
+        sourceRelationship: "source figure sheet 1",
       },
       {
         page: 3,
-        exactSourceText: "FIG. 4 is an end elevational view",
-        sourceRelationship: "source figure sheet",
+        exactSourceText: "SHEET 2 OF 2",
+        sourceRelationship: "source figure sheet 2",
       },
       {
         page: 4,
@@ -69,7 +69,7 @@ export const kamenMedicationInjectionPatent: Patent = {
       },
       {
         page: 7,
-        exactSourceText: "FIG. 6 illustrates",
+        exactSourceText: "The circuit of FIG. 6 will further be understood",
         sourceRelationship: "printed control description",
       },
       {
