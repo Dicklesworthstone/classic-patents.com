@@ -13,12 +13,16 @@ import {
   type StudioContext,
 } from "@/components/patents/visuals/three/ThreeStudioScene";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import {
+  createKamenTransporterTransportUpdater,
+  getKamenTransporterTapeState,
   readKamenTransporterControls,
   stepKamenTransporterSi,
 } from "@/physics/kamenTransporterKernel";
-import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
+import { globalTransportBus, useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export default function KamenTransporter3D({
   patentId = "us-5701965-kamen-transporter",
@@ -29,20 +33,22 @@ export default function KamenTransporter3D({
   const studioRef = useRef<StudioContext | null>(null);
   const modelRef = useRef<KamenTransporterModel | null>(null);
 
-  const { params, updateParam } = usePatentPhysics(patentId);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 16: true });
-  const controls = useMemo(() => readKamenTransporterControls(params), [params]);
+  const { effectiveParams, claimStates, updateParam } = usePatentPhysics(patentId);
+  const controls = useMemo(() => readKamenTransporterControls(effectiveParams), [effectiveParams]);
   const tel = useMemo(() => stepKamenTransporterSi(controls), [controls]);
 
   useFrankenSimPhysics(patentId);
+  const liveControls = useLiveSimParams(controls);
 
-  // Live ref for rAF loop to avoid canvas remounting
-  const liveControlsRef = useRef(controls);
-  const liveTelRef = useRef(tel);
+  // The bus owns fixed-step rolling state. The scene loop only projects the
+  // terminal kernel pose, so velocity is never applied a second time in rAF.
   useEffect(() => {
-    liveControlsRef.current = controls;
-    liveTelRef.current = tel;
-  }, [controls, tel]);
+    return globalTransportBus.registerUpdater(
+      patentId,
+      createKamenTransporterTransportUpdater(() => liveControls.current),
+      "TS_FALLBACK",
+    );
+  }, [liveControls, patentId]);
 
   const [cameraPreset, setCameraPreset] = useState<"perspective" | "side" | "balance" | "stairs">(
     "perspective",
@@ -67,22 +73,23 @@ export default function KamenTransporter3D({
     modelRef.current = model;
     studio.scene.add(model.root);
 
-    let wheelRollAngle = 0;
-
     const loop = () => {
       if (destroyed) return;
-      wheelRollAngle += (liveTelRef.current.forwardVelocityMs / 0.15) * 0.016;
+      animFrameId = requestAnimationFrame(loop);
+      if (!studio.isVisible()) return;
 
-      updateKamenTransporterKinematics(
-        model,
-        liveControlsRef.current,
-        liveTelRef.current,
-        wheelRollAngle,
-      );
+      const tape = getKamenTransporterTapeState();
+      if (tape) {
+        updateKamenTransporterKinematics(
+          model,
+          tape.controls,
+          tape.telemetry,
+          tape.wheelRollAngleRad,
+        );
+      }
 
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
-      animFrameId = requestAnimationFrame(loop);
     };
     loop();
 
@@ -271,7 +278,7 @@ export default function KamenTransporter3D({
             patentId={patentId}
             claimStates={claimStates}
             onClaimStateChange={(num, active) =>
-              setClaimStates((prev) => ({ ...prev, [num]: active }))
+              updateParam(claimConstraintStateParamId(num), active ? 1 : 0)
             }
           />
         </div>

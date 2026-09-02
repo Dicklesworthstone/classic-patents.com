@@ -8,6 +8,7 @@ import {
   readKamenTransporterControls,
   stepKamenTransporterSi,
 } from "@/physics/kamenTransporterKernel";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function KamenTransporterSim({
@@ -15,9 +16,8 @@ export function KamenTransporterSim({
 }: {
   patentId?: string;
 }) {
-  const { params, updateParam } = usePatentPhysics(patentId);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 16: true });
-  const controls = useMemo(() => readKamenTransporterControls(params), [params]);
+  const { effectiveParams, claimStates, updateParam } = usePatentPhysics(patentId);
+  const controls = useMemo(() => readKamenTransporterControls(effectiveParams), [effectiveParams]);
   const tel = useMemo(() => stepKamenTransporterSi(controls), [controls]);
   const equations = useMemo(() => ALL_COLORIZED_EQUATIONS[patentId] ?? [], [patentId]);
 
@@ -388,7 +388,7 @@ export function KamenTransporterSim({
             patentId={patentId}
             claimStates={claimStates}
             onClaimStateChange={(num, active) =>
-              setClaimStates((prev) => ({ ...prev, [num]: active }))
+              updateParam(claimConstraintStateParamId(num), active ? 1 : 0)
             }
           />
         </div>

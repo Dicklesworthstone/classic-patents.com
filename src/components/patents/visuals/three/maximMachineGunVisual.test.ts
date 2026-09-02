@@ -90,6 +90,7 @@ describe("US 319,596 Hiram Maxim Muzzle-Gas Machine-Gun visual & mechanism bound
     expect(model.fixedBarrelGroup).toBeDefined();
     expect(model.muzzleSleeveGroup).toBeDefined();
     expect(model.reversingLeversGroup).toBeDefined();
+    expect(model.reversingLeverPivots).toHaveLength(2);
     expect(model.operatingRodsGroup).toBeDefined();
     expect(model.crankshaftGroup).toBeDefined();
     expect(model.crossHeadBreechGroup).toBeDefined();
@@ -129,6 +130,11 @@ describe("US 319,596 Hiram Maxim Muzzle-Gas Machine-Gun visual & mechanism bound
     expect(model.materials.gunmetal.transparent).toBe(true);
     expect(model.muzzleSleeveGroup.position.z).toBeGreaterThan(0.01);
     expect(model.crossHeadBreechGroup.position.z).toBeLessThan(-0.01);
+    expect(model.reversingLeversGroup.rotation.x).toBe(0);
+    for (const pivot of model.reversingLeverPivots) {
+      expect(pivot.rotation.x).toBeLessThan(0);
+      expect(pivot.getObjectByName(pivot.name.replace("Pivot", "Pin"))).toBeDefined();
+    }
 
     model.dispose();
   });
