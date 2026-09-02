@@ -1553,7 +1553,7 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS = {
     reviewer: "Classic Patents editorial agent (GPT-5.6)",
     reviewedAt: "2026-09-02",
     acceptanceBasis: "independent-figure-review",
-    acceptedOccurrenceCount: 31,
+    acceptedOccurrenceCount: 36,
     evidenceReference:
       "docs/provenance/us-4575330-hull-stereolithography.md#section-4-figure-crop-review-and-preservation-boundary",
     assets: {

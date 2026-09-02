@@ -615,6 +615,11 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS = {
       sourcePdfPage: 5,
     }),
     hullStereolithographyLocator({
+      occurrenceKey: "edition-block-20-group-0-inline-16",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-3-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    hullStereolithographyLocator({
       occurrenceKey: "edition-block-22-group-0-inline-1",
       activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-1-source-crop-v1.png",
       sourcePdfPage: 2,
@@ -638,6 +643,11 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS = {
       occurrenceKey: "edition-block-29-group-0-inline-0",
       activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-3-source-crop-v1.png",
       sourcePdfPage: 3,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-29-group-0-inline-2",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-1-source-crop-v1.png",
+      sourcePdfPage: 2,
     }),
     hullStereolithographyLocator({
       occurrenceKey: "edition-block-32-group-0-inline-1",
@@ -670,6 +680,16 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS = {
       sourcePdfPage: 4,
     }),
     hullStereolithographyLocator({
+      occurrenceKey: "edition-block-53-group-0-inline-3",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-4-source-crop-v1.png",
+      sourcePdfPage: 4,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-53-group-0-inline-5",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-3-source-crop-v1.png",
+      sourcePdfPage: 3,
+    }),
+    hullStereolithographyLocator({
       occurrenceKey: "edition-block-54-group-0-inline-1",
       activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-4-source-crop-v1.png",
       sourcePdfPage: 4,
@@ -688,6 +708,11 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS = {
       occurrenceKey: "edition-block-57-group-0-inline-0",
       activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-7-source-crop-v1.png",
       sourcePdfPage: 5,
+    }),
+    hullStereolithographyLocator({
+      occurrenceKey: "edition-block-58-group-0-inline-1",
+      activeAsset: "/patents/figures/us-4575330-hull-stereolithography/fig-3-source-crop-v1.png",
+      sourcePdfPage: 3,
     }),
   ],
   "us-5701965-kamen-transporter": [

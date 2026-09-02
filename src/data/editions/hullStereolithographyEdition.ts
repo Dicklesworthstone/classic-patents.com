@@ -244,7 +244,7 @@ const blocks: CuratedSpecificationBlock[] = [
       sourceFigure(7, "FIG. 7"),
       text(" and "),
       sourceFigure(8, "FIG. 8"),
-      text(" are partial, elevational sectional views, illustrating a modification of the stereolithographic system of FIG. 3 to incorporate an elevator platform with multiple degrees of freedom."),
+      text(" are partial, elevational sectional views, illustrating a modification of the stereolithographic system of "), sourceFigure(3, "FIG. 3"), text(" to incorporate an elevator platform with multiple degrees of freedom."),
     ],
   },
   {
@@ -306,7 +306,7 @@ const blocks: CuratedSpecificationBlock[] = [
     kind: "paragraph",
     inlines: [
       sourceFigure([3, 4, 5, 6, 7, 8], "FIGS. 3-8"),
-      text(" of the drawings illustrate various apparatus suitable for implementing the stereolithographic methods illustrated and described by the flow charts of FIGS. 1 and 2."),
+      text(" of the drawings illustrate various apparatus suitable for implementing the stereolithographic methods illustrated and described by the flow charts of "), sourceFigure([1, 2], "FIGS. 1 and 2"), text("."),
     ],
   },
   {
@@ -462,7 +462,7 @@ const blocks: CuratedSpecificationBlock[] = [
     inlines: [
       text("As will be apparent from "),
       sourceFigure(4, "FIG. 4"),
-      text(" of the drawings, there is shown an alternate configuration for a stereolithograph wherein the UV curable liquid 22 or the like floats on a heavier UV transparent liquid 32 which is non-miscible and non-wetting with the curable liquid 22. By way of example, ethylene glycol or heavy water are suitable for the intermediate liquid layer 32. In the system of FIG. 4, the three-dimensional object 30 is pulled up from the liquid 22, rather than down and further into the liquid medium, as shown in the system of FIG. 3."),
+      text(" of the drawings, there is shown an alternate configuration for a stereolithograph wherein the UV curable liquid 22 or the like floats on a heavier UV transparent liquid 32 which is non-miscible and non-wetting with the curable liquid 22. By way of example, ethylene glycol or heavy water are suitable for the intermediate liquid layer 32. In the system of "), sourceFigure(4, "FIG. 4"), text(", the three-dimensional object 30 is pulled up from the liquid 22, rather than down and further into the liquid medium, as shown in the system of "), sourceFigure(3, "FIG. 3"), text("."),
     ],
   },
   {
@@ -498,7 +498,7 @@ const blocks: CuratedSpecificationBlock[] = [
   {
     kind: "paragraph",
     inlines: [
-      text("A commercial stereolithography system will have additional components and subsystems besides those previously shown in connection with the schematically depicted systems of FIGS. 3-8. For example, the commercial system would also have a frame and housing, and a control panel. It should have means to shield the operator from excess UV and visible light, and it may also have means to allow viewing of the object 30 while it is being formed. Commercial units will provide safety means for controlling ozone and noxious fumes, as well as conventional high voltage safety protection and interlocks. Such commercial units will also have means to effectively shield the sensitive electronics from electronic noise sources."),
+      text("A commercial stereolithography system will have additional components and subsystems besides those previously shown in connection with the schematically depicted systems of "), sourceFigure([3, 4, 5, 6, 7, 8], "FIGS. 3-8"), text(". For example, the commercial system would also have a frame and housing, and a control panel. It should have means to shield the operator from excess UV and visible light, and it may also have means to allow viewing of the object 30 while it is being formed. Commercial units will provide safety means for controlling ozone and noxious fumes, as well as conventional high voltage safety protection and interlocks. Such commercial units will also have means to effectively shield the sensitive electronics from electronic noise sources."),
     ],
   },
   {
