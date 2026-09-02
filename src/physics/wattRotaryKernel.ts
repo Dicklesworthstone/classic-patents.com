@@ -260,7 +260,7 @@ export function stepWattRotaryEngine(
     pistonVelocityMps,
     planetOrbitAngleDeg,
     planetOrbitAngleRad: carrierAngleRad,
-    planetBodyAngleDeg: 0,
+    planetBodyAngleDeg,
     planetBodyAngleRad,
     planetPosX,
     planetPosY,
