@@ -96,6 +96,30 @@ describe("US 3,858,581 manual source edition", () => {
     for (const claim of claims(kamenMedicationInjectionArchivalEdition))
       expect(ledger).toContain(claim.inlines.map((inline) => inline.text).join(""));
   });
+
+  test("provides valid provenance classifications for all Kamen medication injection controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-3858581-kamen-medication-injection-device"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("registers explicit energy channel omission reason for Kamen medication injection", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(
+      ENERGY_CHANNEL_OMISSION_REASONS["us-3858581-kamen-medication-injection-device"],
+    ).toBeDefined();
+    expect(energyChannelsFor("us-3858581-kamen-medication-injection-device", {})).toEqual([]);
+  });
 });
 
 function claims(edition: typeof kamenMedicationInjectionArchivalEdition) {

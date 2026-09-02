@@ -61,6 +61,9 @@ describe("patent view URL state", () => {
     expect(VIEWER_SOURCE).toContain('addEventListener("popstate"');
     expect(VIEWER_SOURCE).toContain("viewModeFromSearch");
     expect(VIEWER_SOURCE).toContain("syncFromLocation");
+    expect(VIEWER_SOURCE).toContain('data-testid="dual-projection-viewer"');
+    expect(VIEWER_SOURCE).toContain("data-hydrated={hydrated}");
+    expect(VIEWER_SOURCE).toContain("setHydrated(true)");
     expect(VIEWER_SOURCE).not.toMatch(
       /const setViewMode = \(mode: PatentViewMode\) => \{\s*setViewModeState\(mode\);\s*\};/,
     );

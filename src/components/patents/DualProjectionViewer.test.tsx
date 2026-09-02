@@ -32,6 +32,8 @@ describe("DualProjectionViewer component", () => {
     expect(html).toContain("Full Original PDF");
     expect(html).toContain("Dual Split-Screen");
     expect(html).toContain("Print Broadside");
+    expect(html).toContain('data-testid="dual-projection-viewer"');
+    expect(html).toContain('data-hydrated="false"');
   });
 
   test("renders placeholder when archival edition is held in original-spec view mode", () => {

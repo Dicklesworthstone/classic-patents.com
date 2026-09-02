@@ -9151,6 +9151,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.lateralContactFraction,
         unit: "normalized",
+        provenance: "scenario-reader",
       },
       {
         id: "axisMismatchFraction",
@@ -9160,6 +9161,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.axisMismatchFraction,
         unit: "normalized",
+        provenance: "scenario-reader",
       },
       {
         id: "remoteCenterTopology",
@@ -9169,6 +9171,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.remoteCenterTopology,
         unit: "off/on",
+        provenance: "source-disclosed",
       },
       {
         id: "antiTwistConstraint",
@@ -9178,6 +9181,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.antiTwistConstraint,
         unit: "off/on",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics: (p) => {
@@ -9190,6 +9194,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "% display",
           badgeColor: "cyan",
           progressPct: clampProgress(pose.translationOffset * 100),
+          provenance: "topology-normalized",
         },
         {
           label: "Remaining Axis Mismatch",
@@ -9197,18 +9202,21 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "% normalized",
           badgeColor: "amber",
           progressPct: clampProgress(pose.remainingAxisMismatch * 100),
+          provenance: "topology-normalized",
         },
         {
           label: "Remote Center",
           value: pose.remoteCenterTopology ? "AT TOOL END" : "LOCAL CONTRAST",
           unit: "source geometry",
           badgeColor: pose.remoteCenterTopology ? "emerald" : "amber",
+          provenance: "source-disclosed",
         },
         {
           label: "Quantitative SI Prediction",
           value: "REFUSED",
           unit: "missing source inputs",
           badgeColor: "rose",
+          provenance: "refusal-bounded",
         },
       ];
     },
@@ -9232,6 +9240,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.lateralContactFraction,
         unit: "normalized",
+        provenance: "scenario-reader",
       },
       {
         id: "axisMismatchFraction",
@@ -9241,6 +9250,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.axisMismatchFraction,
         unit: "normalized",
+        provenance: "scenario-reader",
       },
       {
         id: "remoteCenterTopology",
@@ -9250,6 +9260,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.remoteCenterTopology,
         unit: "off/on",
+        provenance: "source-disclosed",
       },
       {
         id: "antiTwistConstraint",
@@ -9259,6 +9270,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: WATSON_REMOTE_CENTER_COMPLIANCE_DEFAULT_CONTROLS.antiTwistConstraint,
         unit: "off/on",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics: (p) => {
@@ -9271,6 +9283,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "% display",
           badgeColor: "cyan",
           progressPct: clampProgress(pose.translationOffset * 100),
+          provenance: "topology-normalized",
         },
         {
           label: "Remaining Axis Mismatch",
@@ -9278,18 +9291,21 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "% normalized",
           badgeColor: "amber",
           progressPct: clampProgress(pose.remainingAxisMismatch * 100),
+          provenance: "topology-normalized",
         },
         {
           label: "Remote Center",
           value: pose.remoteCenterTopology ? "AT TOOL END" : "LOCAL CONTRAST",
           unit: "source geometry",
           badgeColor: pose.remoteCenterTopology ? "emerald" : "amber",
+          provenance: "source-disclosed",
         },
         {
           label: "Quantitative SI Prediction",
           value: "REFUSED",
           unit: "missing source inputs",
           badgeColor: "rose",
+          provenance: "refusal-bounded",
         },
       ];
     },
@@ -9724,6 +9740,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: LEMELSON_WAREHOUSE_DEFAULT_CONTROLS.railAddressFraction,
         unit: "normalized",
+        provenance: "scenario-reader",
       },
       {
         id: "levelAddressFraction",
@@ -9733,6 +9750,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: LEMELSON_WAREHOUSE_DEFAULT_CONTROLS.levelAddressFraction,
         unit: "normalized",
+        provenance: "scenario-reader",
       },
       {
         id: "shuttleExtensionFraction",
@@ -9742,6 +9760,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: LEMELSON_WAREHOUSE_DEFAULT_CONTROLS.shuttleExtensionFraction,
         unit: "normalized",
+        provenance: "scenario-reader",
       },
       {
         id: "automaticAddressing",
@@ -9751,6 +9770,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: LEMELSON_WAREHOUSE_DEFAULT_CONTROLS.automaticAddressing,
         unit: "off/on",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics: (p) => {
@@ -9763,6 +9783,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "% normalized",
           badgeColor: "cyan",
           progressPct: clampProgress(pose.carrierX * 100),
+          provenance: "topology-normalized",
         },
         {
           label: "Vertical Address",
@@ -9770,6 +9791,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "% normalized",
           badgeColor: "emerald",
           progressPct: clampProgress(pose.carrierY * 100),
+          provenance: "topology-normalized",
         },
         {
           label: "Shuttle Extension",
@@ -9777,18 +9799,21 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "% normalized",
           badgeColor: "purple",
           progressPct: clampProgress(pose.shuttleZ * 100),
+          provenance: "topology-normalized",
         },
         {
           label: "Addressing State",
           value: pose.addressState.toUpperCase(),
           unit: "source topology",
           badgeColor: pose.automaticAddressing ? "amber" : "indigo",
+          provenance: "source-disclosed",
         },
         {
           label: "Quantitative Performance",
           value: "REFUSED",
           unit: "missing source inputs",
           badgeColor: "rose",
+          provenance: "refusal-bounded",
         },
       ];
     },
@@ -9916,6 +9941,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: KAMEN_INJECTION_DEFAULT_CONTROLS.leadScrewTurnFraction,
         unit: "normalized",
+        provenance: "scenario-reader",
       },
       {
         id: "counterTargetFraction",
@@ -9925,6 +9951,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: KAMEN_INJECTION_DEFAULT_CONTROLS.counterTargetFraction,
         unit: "normalized",
+        provenance: "scenario-reader",
       },
       {
         id: "motorCircuitClosed",
@@ -9934,6 +9961,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: KAMEN_INJECTION_DEFAULT_CONTROLS.motorCircuitClosed,
         unit: "open/closed",
+        provenance: "source-disclosed",
       },
       {
         id: "reliefPathShown",
@@ -9943,6 +9971,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: KAMEN_INJECTION_DEFAULT_CONTROLS.reliefPathShown,
         unit: "hidden/shown",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics: (p) => {
@@ -9955,6 +9984,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "% normalized",
           badgeColor: "cyan",
           progressPct: clampProgress(pose.plungerPosition * 100),
+          provenance: "topology-normalized",
         },
         {
           label: "Counter Progress",
@@ -9962,6 +9992,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "% normalized",
           badgeColor: "amber",
           progressPct: clampProgress(pose.pulseProgress * 100),
+          provenance: "topology-normalized",
         },
         {
           label: "Mechanism State",
@@ -9972,18 +10003,21 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
             : pose.motorCircuitClosed
               ? "emerald"
               : "indigo",
+          provenance: "source-disclosed",
         },
         {
           label: "Claim Probe",
           value: `CLAIM ${pose.activeClaim}`,
           unit: "source claim",
           badgeColor: "purple",
+          provenance: "source-disclosed",
         },
         {
           label: "Clinical Delivery Prediction",
           value: "REFUSED",
           unit: "not in source",
           badgeColor: "rose",
+          provenance: "refusal-bounded",
         },
       ];
     },

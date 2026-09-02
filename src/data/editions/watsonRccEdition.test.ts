@@ -105,4 +105,28 @@ describe("US 4,098,001 manual source edition", () => {
       );
     }
   });
+
+  test("provides valid provenance classifications for all Watson RCC controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    for (const key of ["us-4098001-watson-rcc", "us-4098001-watson-remote-center-compliance"]) {
+      const entry = PATENT_PHYSICS_REGISTRY[key];
+      expect(entry).toBeDefined();
+      for (const ctrl of entry.controls) {
+        expect(ctrl.provenance).toBeDefined();
+      }
+      const metrics = entry.computeMetrics({});
+      for (const m of metrics) {
+        expect(m.provenance).toBeDefined();
+      }
+    }
+  });
+
+  test("registers explicit energy channel omission reason for Watson RCC", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-4098001-watson-rcc"]).toBeDefined();
+    expect(energyChannelsFor("us-4098001-watson-rcc", {})).toEqual([]);
+  });
 });

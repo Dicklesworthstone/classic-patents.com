@@ -95,6 +95,30 @@ describe("US 3,119,501 manual source edition", () => {
       expect(ledger).toContain(block.inlines.map((inline) => inline.text).join(""));
     }
   });
+
+  test("provides valid provenance classifications for all Lemelson automatic warehousing controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-3119501-lemelson-automatic-warehousing"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("registers explicit energy channel omission reason for Lemelson automatic warehousing", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(
+      ENERGY_CHANNEL_OMISSION_REASONS["us-3119501-lemelson-automatic-warehousing"],
+    ).toBeDefined();
+    expect(energyChannelsFor("us-3119501-lemelson-automatic-warehousing", {})).toEqual([]);
+  });
 });
 
 function claims(edition: typeof lemelsonAutomaticWarehousingArchivalEdition) {

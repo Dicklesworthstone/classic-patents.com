@@ -172,6 +172,16 @@ describe("patent E2E scenario contract", () => {
         );
         return energyChannelsFor(entry.id, defaults).length > 0;
       },
+      controlsForPatent: (entry) =>
+        (PATENT_PHYSICS_REGISTRY[entry.id]?.controls ?? []).map((control) => ({
+          id: control.id,
+          label: control.label,
+          min: control.min,
+          max: control.max,
+          step: control.step,
+          defaultValue: control.defaultValue,
+          unit: control.unit ?? "",
+        })),
     });
 
     expect(scenarios).toHaveLength(allPatents.length);

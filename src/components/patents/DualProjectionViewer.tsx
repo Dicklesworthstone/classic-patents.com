@@ -164,6 +164,7 @@ export function DualProjectionViewer({
   const [viewMode, setViewModeState] = useState<PatentViewMode>(
     isPatentViewMode(initialView) ? initialView : "plain-english",
   );
+  const [hydrated, setHydrated] = useState(false);
   // iOS Safari renders no inline plugin for <object type="application/pdf">,
   // so the facsimile face swaps the empty frame for a purpose-built panel.
   const [pdfEmbedUnsupported, setPdfEmbedUnsupported] = useState(false);
@@ -204,6 +205,10 @@ export function DualProjectionViewer({
     return () => window.removeEventListener("popstate", syncFromLocation);
   }, []);
 
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
   const setViewMode = useCallback((mode: PatentViewMode) => {
     setViewModeState(mode);
     const next = applyPatentViewToUrl(window.location.href, mode);
@@ -236,6 +241,8 @@ export function DualProjectionViewer({
   return (
     <div
       className="space-y-8 print:space-y-4"
+      data-testid="dual-projection-viewer"
+      data-hydrated={hydrated}
       data-archival-edition={archivalEdition?.kind ?? "withheld"}
       data-archival-publication-state={archivalPublication.state.kind}
       data-archival-publication-reason={archivalPublication.reasonCode}

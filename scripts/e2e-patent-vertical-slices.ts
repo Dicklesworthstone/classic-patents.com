@@ -326,7 +326,6 @@ async function runFailureEvidenceSelfTest(args: {
     networkErrors: [],
   };
   installDiagnostics(page, diagnostics);
-  args.recorder.registerDiagnostics(args.scenario.patentId, args.viewport, diagnostics);
   const started = performance.now();
   let traceStopped = false;
 
@@ -359,7 +358,12 @@ async function runFailureEvidenceSelfTest(args: {
         result: "intentional nonzero exit",
         evidenceKinds: ["screenshot", "DOM", "diagnostics", "trace"],
       },
-      actual: { responseStatus, url: page.url(), artifactCount: artifactPaths.length, evidenceIntegrity },
+      actual: {
+        responseStatus,
+        url: page.url(),
+        artifactCount: artifactPaths.length,
+        evidenceIntegrity,
+      },
       responseStatus,
       errors: ["Synthetic failure requested by --self-test-failure."],
       consoleErrors: diagnostics.consoleErrors,
@@ -416,6 +420,7 @@ async function runPatentViewport(args: {
     networkErrors: [],
   };
   installDiagnostics(page, diagnostics);
+  args.recorder.registerDiagnostics(args.scenario.patentId, args.viewport, diagnostics);
   let traceStopped = false;
 
   try {
@@ -459,6 +464,16 @@ async function runPatentViewport(args: {
         return actual;
       },
       routeResponse,
+    );
+
+    await checked(
+      args.recorder,
+      meta(args.scenario, args.viewport, "route", "client-hydration"),
+      "dual projection controls are hydrated",
+      async () => {
+        await waitForPatentViewerHydration(page);
+        return { hydrated: true };
+      },
     );
 
     await verifyPinnedPdf(context, args.baseUrl, args.scenario, args.viewport, args.recorder);
@@ -1313,6 +1328,7 @@ async function openAndRestoreFace(
     meta(scenario, viewport, face.face, "url-state-and-reload"),
     face.expectedView,
     async () => {
+      await waitForPatentViewerHydration(page);
       const button = page.locator(`button[title="${face.title}"]`);
       await button.waitFor({ state: "visible" });
       await button.click();
@@ -1321,6 +1337,7 @@ async function openAndRestoreFace(
         face.expectedView,
       );
       await page.reload({ waitUntil: "domcontentloaded" });
+      await waitForPatentViewerHydration(page);
       const restored = page.locator(`button[title="${face.title}"]`);
       await restored.waitFor({ state: "visible" });
       const pressed = await restored.getAttribute("aria-pressed");
@@ -1330,6 +1347,20 @@ async function openAndRestoreFace(
       }
       return { view, pressed };
     },
+  );
+}
+
+async function waitForPatentViewerHydration(page: Page) {
+  await page
+    .getByTestId("dual-projection-viewer")
+    .waitFor({ state: "visible", timeout: ACTION_TIMEOUT_MS });
+  await page.waitForFunction(
+    () =>
+      document
+        .querySelector('[data-testid="dual-projection-viewer"]')
+        ?.getAttribute("data-hydrated") === "true",
+    undefined,
+    { timeout: ACTION_TIMEOUT_MS },
   );
 }
 
