@@ -2197,6 +2197,19 @@ export function applyClaimConstraintModifications(
       break;
     }
 
+    case "us-3858581-kamen-medication-injection-device": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.motorCircuitClosed = 0;
+        activeFailures.push(
+          "Claim 1 pulse-counted lead-screw advance withheld: open-loop drive cannot track turn count or control plunger displacement.",
+        );
+        refusalWarning =
+          "NONCLINICAL MECHANISM REFUSAL: withholding pulse-switch counting breaks the turn-counting loop; the grant provides no open-loop timing or dosing model.";
+      }
+      break;
+    }
+
     case "us-307031-edison-indicator": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {

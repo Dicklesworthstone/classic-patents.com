@@ -120,6 +120,23 @@ describe("US 3,858,581 manual source edition", () => {
     ).toBeDefined();
     expect(energyChannelsFor("us-3858581-kamen-medication-injection-device", {})).toEqual([]);
   });
+
+  test("wires claim 1 inversion probe to open the motor circuit and report nonclinical refusal", () => {
+    const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
+    const { stepKamenInjectionMechanism } = require("@/physics/kamenInjectionKernel");
+
+    const result = applyClaimConstraintModifications(
+      "us-3858581-kamen-medication-injection-device",
+      { motorCircuitClosed: 1 },
+      { 1: false },
+    );
+    expect(result.modifiedParams.motorCircuitClosed).toBe(0);
+    expect(result.refusalWarning).toContain("NONCLINICAL MECHANISM REFUSAL");
+
+    const pose = stepKamenInjectionMechanism(result.modifiedParams);
+    expect(pose.motorCircuitClosed).toBe(false);
+    expect(pose.motorState).toBe("open");
+  });
 });
 
 function claims(edition: typeof kamenMedicationInjectionArchivalEdition) {
