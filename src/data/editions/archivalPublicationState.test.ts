@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
+import { createHash } from "node:crypto";
+import { join } from "node:path";
+import sharp from "sharp";
 import { allPatents } from "@/data/patents";
 import type { CuratedSpecificationEdition } from "@/types/patent";
+import { ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS } from "./archivalFigureAcceptance";
 import {
   ARCHIVAL_PUBLICATION_STATE_OVERRIDES,
   evaluateTypedArchivalPublicationState,
@@ -107,5 +111,134 @@ describe("typed archival publication state", () => {
     expect(decision.isPublished).toBe(false);
     expect(decision.state.kind).toBe("held");
     expect(decision.reasonCode).toBe("SOURCE_DIGEST_MISMATCH");
+  });
+
+  test("does not infer figure acceptance from a plausible preview path and dimensions", () => {
+    const unacceptedFigureEdition: CuratedSpecificationEdition = {
+      ...noClaimsOrDrawingsEdition,
+      drawingStatus: undefined,
+      blocks: [
+        { kind: "masthead", lines: ["TEST PATENT"] },
+        {
+          kind: "paragraph",
+          inlines: [
+            { kind: "text", text: "The mechanism appears in " },
+            {
+              kind: "reference",
+              text: "Fig. 1",
+              href: "#figure-1",
+              referenceType: "figure",
+              label: "Test figure",
+              figurePreviews: [
+                {
+                  src: "/patents/figures/test/fig-1-source-crop-v1.png",
+                  alt: "A plausible but unaccepted source crop",
+                  width: 800,
+                  height: 600,
+                },
+              ],
+            },
+            { kind: "text", text: "." },
+          ],
+        },
+      ],
+    };
+    const decision = evaluateTypedArchivalPublicationState(
+      {
+        id: "test-unaccepted-figure",
+        archivalEdition: unacceptedFigureEdition,
+        originalTextAsset: {
+          url: "/patents/transcripts/test-reviewed.txt",
+          pageCount: 1,
+          kind: "reviewed-transcription",
+          reviewedBy: "Classic Patents editorial review",
+          reviewedAt: "2026-09-02",
+          sourcePdfSha256: DIGEST,
+        },
+      },
+      { hasCompanionReadings: true },
+    );
+
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("candidate");
+    expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 1,
+      acceptedFigureCount: 0,
+    });
+    expect(decision.figureManifest.figures[0]).toMatchObject({
+      status: "pending",
+      assetSha256: null,
+      reviewer: null,
+      reviewedAt: null,
+      rejectionReason:
+        "This figure occurrence has no explicit digest-pinned acceptance attestation.",
+    });
+  });
+
+  test("fails closed when an accepted edition changes its active crop path", () => {
+    const teslaMotor = allPatents.find((patent) => patent.id === "us-381968-tesla-motor");
+    if (!teslaMotor?.archivalEdition) throw new Error("Tesla motor edition not found");
+    const changedPatent = structuredClone(teslaMotor);
+    const reference = changedPatent.archivalEdition?.blocks
+      .flatMap((block) => ("inlines" in block ? block.inlines : []))
+      .find(
+        (inline) =>
+          inline.kind === "reference" &&
+          inline.referenceType === "figure" &&
+          inline.figurePreviews?.length,
+      );
+    if (reference?.kind !== "reference" || !reference.figurePreviews?.[0]) {
+      throw new Error("Tesla motor accepted figure reference not found");
+    }
+    reference.figurePreviews[0].src =
+      "/patents/figures/us-381968-tesla-motor/unreviewed-replacement.png";
+
+    const decision = evaluateTypedArchivalPublicationState(changedPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+    expect(decision.figureManifest.acceptedFigureCount).toBe(0);
+  });
+
+  test("pins every explicitly accepted active asset by bytes and dimensions", async () => {
+    const catalogueIds = new Set(allPatents.map((patent) => patent.id));
+    let assetCount = 0;
+
+    for (const [patentId, attestation] of Object.entries(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS)) {
+      expect(catalogueIds.has(patentId), `stale figure attestation for ${patentId}`).toBe(true);
+      const patent = allPatents.find((candidate) => candidate.id === patentId);
+      expect(patent?.archivalEdition?.sourcePdfSha256).toBe(attestation.sourcePdfSha256);
+      const decision = patent ? evaluateArchivalPublicationState(patent) : undefined;
+      expect(decision?.isPublished, `accepted figure attestation is held for ${patentId}`).toBe(
+        true,
+      );
+      expect(decision?.figureManifest.acceptedFigureCount).toBe(
+        attestation.acceptedOccurrenceCount,
+      );
+      expect(
+        decision?.figureManifest.figures.every(
+          (figure) =>
+            figure.status === "accepted" &&
+            figure.reviewer === attestation.reviewer &&
+            figure.reviewedAt === attestation.reviewedAt &&
+            figure.assetSha256 !== null,
+        ),
+      ).toBe(true);
+
+      for (const [publicUrl, asset] of Object.entries(attestation.assets)) {
+        assetCount += 1;
+        const path = join(process.cwd(), "public", publicUrl.replace(/^\//, ""));
+        const bytes = new Uint8Array(await Bun.file(path).arrayBuffer());
+        expect(createHash("sha256").update(bytes).digest("hex"), publicUrl).toBe(asset.sha256);
+        const metadata = await sharp(path).metadata();
+        expect(metadata.width, publicUrl).toBe(asset.width);
+        expect(metadata.height, publicUrl).toBe(asset.height);
+      }
+    }
+
+    expect(Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS)).toHaveLength(46);
+    expect(assetCount).toBe(314);
   });
 });

@@ -475,7 +475,9 @@ function figureManifestForEdition(
   );
 
   const activeAssetPaths = [
-    ...new Set(candidates.flatMap((candidate) => (candidate.preview ? [candidate.preview.src] : []))),
+    ...new Set(
+      candidates.flatMap((candidate) => (candidate.preview ? [candidate.preview.src] : [])),
+    ),
   ].sort();
   const attestedAssetPaths = attestation ? Object.keys(attestation.assets).sort() : [];
   const attestationMatches = Boolean(
@@ -497,7 +499,9 @@ function figureManifestForEdition(
   );
 
   const figures: ArchivalFigureEvidence[] = candidates.map((candidate) => {
-    const assetEvidence = candidate.preview ? attestation?.assets[candidate.preview.src] : undefined;
+    const assetEvidence = candidate.preview
+      ? attestation?.assets[candidate.preview.src]
+      : undefined;
     const accepted = Boolean(attestationMatches && assetEvidence);
     return {
       occurrence: candidate.occurrence,
@@ -509,8 +513,8 @@ function figureManifestForEdition(
       assetSha256: assetEvidence?.sha256 ?? null,
       dimensions: candidate.dimensions,
       status: accepted ? "accepted" : "pending",
-      reviewer: accepted ? attestation?.reviewer ?? null : null,
-      reviewedAt: accepted ? attestation?.reviewedAt ?? null : null,
+      reviewer: accepted ? (attestation?.reviewer ?? null) : null,
+      reviewedAt: accepted ? (attestation?.reviewedAt ?? null) : null,
       rejectionReason: accepted
         ? null
         : attestation

@@ -1414,6 +1414,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 75,
         unit: "kHz",
+        provenance: "scenario-modern",
       },
       {
         id: "audioModulationPct",
@@ -1423,6 +1424,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 65,
         unit: "%",
+        provenance: "scenario-modern",
       },
       {
         id: "antennaTuningUh",
@@ -1432,6 +1434,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 25,
         defaultValue: 450,
         unit: "µH",
+        provenance: "scenario-modern",
       },
       {
         id: "transmissionDistanceKm",
@@ -1441,6 +1444,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 25,
         unit: "km",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (params) => {
@@ -1458,6 +1462,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "W",
           badgeColor: "cyan",
           primary: true,
+          provenance: "scenario-modern",
         },
         {
           label: "Audio Signal Current",
@@ -1465,18 +1470,21 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "µA",
           badgeColor: "emerald",
           primary: true,
+          provenance: "scenario-modern",
         },
         {
           label: "Radiation Resistance",
           value: `${res.radiationResistanceOhms} Ω`,
           unit: "Ω",
           badgeColor: "amber",
+          provenance: "scenario-modern",
         },
         {
           label: "Signal-to-Noise Ratio",
           value: `${res.audioSnrDb} dB`,
           unit: "dB",
           badgeColor: "purple",
+          provenance: "scenario-modern",
         },
       ];
     },

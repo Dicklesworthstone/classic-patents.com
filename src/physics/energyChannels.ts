@@ -145,6 +145,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 3,541,541 specifies the mechanical construction of perpendicular knife-edge wheels, potentiometer shafts, and housing, but supplies no hand translation velocity, rolling friction, potentiometer power dissipation, or continuous mechanical/electrical wattage datum from which an authentic SI energy channel can be derived.",
   "us-395781-hollerith-tabulating":
     "US 395,781 describes an electro-mechanical tabulating system with sensing pins, mercury cups, and magnet-actuated counting registers, but supplies no operational battery voltage, coil resistance, circuit current, pulse duty cycle, or continuous electrical power datum from which an authentic SI energy channel can be derived.",
+  "us-706737-fessenden-wireless":
+    "US 706,737 describes continuous-wave wireless signalling using a high-frequency alternator, sending conductor, and low-resistance tuned antenna circuit, but supplies no operational alternator drive power, RF radiating efficiency, antenna field current, or continuous wattage datum from which an authentic SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -660,15 +662,6 @@ export function energyChannelsFor(
       { name: "Strand Tensioner", watts: tensionW, tone: "in" },
       { name: "Barb Interlock Clamping", watts: tensionW * 0.8, tone: "useful" },
       { name: "Coiling Torsion Loss", watts: tensionW * 0.2, tone: "loss" },
-    ];
-  }
-
-  if (patentId === "us-706737-fessenden-wireless") {
-    const rfW = 1200;
-    return [
-      { name: "Alternator Shaft", watts: rfW, tone: "in" },
-      { name: "Continuous Wave RF", watts: rfW * 0.64, tone: "useful" },
-      { name: "Antenna Tuning Loss", watts: rfW * 0.36, tone: "loss" },
     ];
   }
 
