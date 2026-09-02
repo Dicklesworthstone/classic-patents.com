@@ -12,8 +12,8 @@ import {
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { buildSikorskyHelicopterModel } from "./sikorskyHelicopterModel";
 import { useResponsiveStudioHud } from "./StudioKernelChips";
+import { buildSikorskyHelicopterModel } from "./sikorskyHelicopterModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 
 const PATENT_ID = "us-2318259-sikorsky-helicopter";

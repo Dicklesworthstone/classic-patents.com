@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import * as THREE from "three";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import * as THREE from "three";
 import {
   DEFAULT_SIKORSKY_CONTROLS,
   INITIAL_SIKORSKY_STATE,
