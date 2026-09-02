@@ -171,6 +171,7 @@ export function DeLavalSeparator3D() {
           ?.headingRad ?? bowlAngleRef.current;
       model.spindleGroup.rotation.y = bowlAngle;
       model.bowlGroup.rotation.y = bowlAngle;
+      model.pulleyGroup.rotation.y = bowlAngle;
 
       // Animate Milk/Cream Stream Particles
       const dropCount = model.creamDrops.length;

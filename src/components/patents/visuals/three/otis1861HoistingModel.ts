@@ -578,7 +578,7 @@ export function updateOtis1861Kinematics(model: Otis1861Model, state: OtisMechan
   nodes.rightPawlF.rotation.z = state.pawlsFEngaged ? 0.38 : -0.16;
 
   nodes.windingDrumH.rotation.z = -state.drivePhaseRad;
-  nodes.shaftI.rotation.z = state.drivePhaseRad;
+  nodes.shaftI.rotation.z = state.drivePhaseRad * (GEAR_J_RADIUS / GEAR_K_RADIUS);
   nodes.powerDrumN.rotation.z = state.drivePhaseRad;
   nodes.shipperS.position.x = -3.1 + state.shipperPositionNormalized * 0.46;
   nodes.pinionP.rotation.z = -state.shipperPositionNormalized * 0.72;

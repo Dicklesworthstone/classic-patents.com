@@ -101,7 +101,11 @@ describe("US 31,128 Elisha Otis Safety Hoisting Apparatus visual & mechanics bou
       model.nodes.gearK.getWorldPosition(model.nodes.gearK.position.clone()).z,
       6,
     );
-    expect(model.nodes.windingDrumH.rotation.z).toBe(-model.nodes.shaftI.rotation.z);
+    expect(model.nodes.windingDrumH.rotation.z).toBe(-1);
+    expect(model.nodes.shaftI.rotation.z).toBeCloseTo(
+      0.78 / (model.nodes.windingDrumH.position.distanceTo(model.nodes.shaftI.position) - 0.78),
+      6,
+    );
     expect(model.nodes.lowerStopArm.parent).toBe(model.nodes.platformD);
     expect(model.nodes.armW.parent).toBe(model.nodes.brakeLinkageWXY);
     expect(model.nodes.ropeGIntact.visible).toBe(true);

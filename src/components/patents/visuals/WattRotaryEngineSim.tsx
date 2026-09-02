@@ -520,7 +520,10 @@ export function WattRotaryEngineSim() {
                   stroke="#f59e0b"
                   strokeWidth="2.5"
                 />
-                {[0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180, 202.5, 225, 247.5, 270, 292.5, 315, 337.5].map((deg) => (
+                {[
+                  0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180, 202.5, 225, 247.5, 270, 292.5, 315,
+                  337.5,
+                ].map((deg) => (
                   <rect
                     key={deg}
                     x={180 - 3}
@@ -575,7 +578,10 @@ export function WattRotaryEngineSim() {
                         stroke="#38bdf8"
                         strokeWidth="2.5"
                       />
-                      {[11.25, 33.75, 56.25, 78.75, 101.25, 123.75, 146.25, 168.75, 191.25, 213.75, 236.25, 258.75, 281.25, 303.75, 326.25, 348.75].map((deg) => (
+                      {[
+                        11.25, 33.75, 56.25, 78.75, 101.25, 123.75, 146.25, 168.75, 191.25, 213.75,
+                        236.25, 258.75, 281.25, 303.75, 326.25, 348.75,
+                      ].map((deg) => (
                         <rect
                           key={deg}
                           x={meshPlanetX - 3}
@@ -586,7 +592,14 @@ export function WattRotaryEngineSim() {
                           transform={`rotate(${deg}, ${meshPlanetX}, ${meshPlanetY})`}
                         />
                       ))}
-                      <circle cx={meshPlanetX} cy={meshPlanetY} r="12" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
+                      <circle
+                        cx={meshPlanetX}
+                        cy={meshPlanetY}
+                        r="12"
+                        fill="#1e293b"
+                        stroke="#38bdf8"
+                        strokeWidth="2"
+                      />
                       <text
                         x={meshPlanetX}
                         y={meshPlanetY + 5}

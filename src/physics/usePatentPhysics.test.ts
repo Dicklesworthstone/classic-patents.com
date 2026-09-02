@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { claimConstraintStateParamId } from "./claimConstraints";
 import {
   getEffectivePatentPhysicsParams,
   getLastParamChange,
@@ -8,7 +9,6 @@ import {
   setPatentPhysicsParam,
   subscribePatentPhysics,
 } from "./usePatentPhysics";
-import { claimConstraintStateParamId } from "./claimConstraints";
 
 describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", () => {
   const testPatentId = "us-821393-wright-flyer";
