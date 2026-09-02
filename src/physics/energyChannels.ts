@@ -131,8 +131,12 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 942,699 specifies reacting a phenolic body with formaldehyde and heating under pressure (110–140 °C) in a closed vessel, but supplies no continuous autoclave heating power, thermal flux, or electrical wattage datum from which an authentic SI energy channel can be derived.",
   "us-608969-parsons-turbine":
     "US 608,969 specifies multi-shaft marine piping combinations, serial/parallel valving, and vacuum reversing turbines, but supplies no continuous boiler steam mass flow, shaft horsepower, or electrical wattage datum from which an authentic SI energy channel can be derived.",
+  "us-621195-zeppelin-airship":
+    "US 621,195 specifies a rigid compartmented framework, main and auxiliary gas bags, independent cars with separated motors, and a movable running weight, but supplies no engine power, fuel consumption, aerodynamic drag force, or continuous wattage datum from which an authentic SI energy channel can be derived.",
   "us-2292387-lamarr-frequency-hopping":
     "US 2,292,387 specifies the mechanical and electrical coordination of slotted record strips, pneumatic sensing head 45, motors, and radio tuning circuits, but supplies no motor power, suction wattage, vacuum pressure, RF radiation power, or continuous wattage datum from which an authentic SI energy channel can be derived.",
+  "us-3671542-kwolek-kevlar":
+    "US 3,671,542 specifies anisotropic liquid-crystalline polyamide dopes, polymer compositions, and optical properties across 83 examples, but supplies no extrusion pump power, coagulation bath wattage, spinning motor energy, or continuous wattage datum from which an authentic SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -447,19 +451,6 @@ export function energyChannelsFor(
 
   if (patentId === "us-31128-otis-elevator") {
     return [];
-  }
-
-  if (patentId === "us-621195-zeppelin-airship") {
-    const zep = stepZeppelinAirship({
-      flightSpeedKnots: params.flightSpeedKnots,
-      trimWeight: params.trimWeight,
-    });
-    const thrustW = zep.propellerOmegaRadPerS * 65;
-    return [
-      { name: "Daimler Engines", watts: thrustW, tone: "in" },
-      { name: "Aerodynamic Thrust", watts: thrustW * 0.76, tone: "useful" },
-      { name: "Parasite Form Drag", watts: thrustW * 0.24, tone: "loss" },
-    ];
   }
 
   if (patentId === "us-682690-hewitt-mercury-lamp") {
@@ -782,15 +773,6 @@ export function energyChannelsFor(
       { name: "Hand Desktop Drag Kinetic Input", watts: dragW, tone: "in" },
       { name: "Orthogonal Potentiometer Resolver Work", watts: dragW * 0.8, tone: "useful" },
       { name: "Wheel Contact Rolling Slip", watts: dragW * 0.2, tone: "loss" },
-    ];
-  }
-
-  if (patentId === "us-3671542-kwolek-kevlar") {
-    const spinW = 1600;
-    return [
-      { name: "Spin-Dope Hydraulic Extrusion Pump", watts: spinW, tone: "in" },
-      { name: "Liquid-Crystalline Aramid Fiber Alignment", watts: spinW * 0.78, tone: "useful" },
-      { name: "Sulfuric Acid Coagulation Bath Dissipation", watts: spinW * 0.22, tone: "loss" },
     ];
   }
 

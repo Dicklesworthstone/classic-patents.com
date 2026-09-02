@@ -19,7 +19,7 @@ const _legacyKwolekKevlarPatentDraft: Patent = {
   inventors: ["Stephanie L. Kwolek"],
   inventorLocation: "Wilmington, Delaware",
   grantDate: "1972-06-20",
-  filingDate: "1968-06-18",
+  filingDate: "1969-05-23",
   era: "Information Age (1960–1990)",
   category: "materials",
   categoryLabel: "Polymer Chemistry & Advanced Materials",

@@ -2985,6 +2985,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.2,
         defaultValue: 6.5,
         unit: "ratio",
+        provenance: "scenario-modern",
       },
       {
         id: "polymerConcentrationPct",
@@ -2994,6 +2995,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: 18.5,
         unit: "wt%",
+        provenance: "scenario-modern",
       },
       {
         id: "temperatureCelsius",
@@ -3003,6 +3005,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 85,
         unit: "°C",
+        provenance: "scenario-modern",
       },
       {
         id: "showHydrogenBonds",
@@ -3012,6 +3015,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 1,
         unit: "",
+        provenance: "topology-normalized",
       },
       {
         id: "isImpactTesting",
@@ -3021,6 +3025,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 0,
         unit: "trigger",
+        provenance: "scenario-modern",
       },
       {
         id: "impactVelocity",
@@ -3030,6 +3035,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 25,
         defaultValue: 450,
         unit: "m/s",
+        provenance: "scenario-modern",
       },
       {
         id: "appliedTension",
@@ -3039,6 +3045,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 30,
         unit: "%",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (p) => {
@@ -3059,6 +3066,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "GPa",
           badgeColor: "cyan",
           progressPct: clampProgress((eGpa / 150) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Sonic Shock Velocity",
@@ -3066,6 +3074,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "m/s",
           badgeColor: "emerald",
           progressPct: clampProgress((vSonic / 12000) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Tensile Stress",
@@ -3073,6 +3082,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "MPa",
           badgeColor: stressMpa < 3600 ? "indigo" : "rose",
           progressPct: clampProgress((stressMpa / 4000) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Elastic Strain",
@@ -3080,6 +3090,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "%",
           badgeColor: Number(strainPct) < 3.5 ? "amber" : "rose",
           progressPct: clampProgress((Number(strainPct) / 4.0) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Fiber Strength",
@@ -3087,6 +3098,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "σ_ult",
           badgeColor: "emerald",
           progressPct: clampProgress((kevlar.tensileStrengthGpa / 3.6) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Residual Strength",
@@ -3094,6 +3106,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "σ_res",
           badgeColor: kevlar.residualStrengthGpa < 1.6 ? "rose" : "emerald",
           progressPct: clampProgress((kevlar.residualStrengthGpa / 3.6) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Chain Alignment",
@@ -3101,6 +3114,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "align",
           badgeColor: "purple",
           progressPct: clampProgress(kevlar.alignmentPct),
+          provenance: "scenario-modern",
         },
       ];
     },
@@ -5104,25 +5118,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     governingEquation:
       "L_{\\text{buoyant}} = V_{\\text{gas}} g (\\rho_{\\text{air}} - \\rho_{\\text{H}_2}) - W_{\\text{struct}}",
     engineMethod: "FrankenSimEngine.stepZeppelinAirship",
+    pedagogicalInsight:
+      "US 621,195 claims a rigid compartmented framework with main gas bags, auxiliary maneuvering bags, independent cars with separated motors, rudders, and a movable running weight suspended beneath to adjust longitudinal pitch attitude.",
     controls: [
-      {
-        id: "gasInflation",
-        label: "Hydrogen Cell Inflation",
-        min: 75,
-        max: 100,
-        step: 1,
-        defaultValue: 95,
-        unit: "%",
-      },
-      {
-        id: "flightAlt",
-        label: "Flight Altitude",
-        min: 0,
-        max: 2000,
-        step: 50,
-        defaultValue: 300,
-        unit: "m",
-      },
       {
         id: "trimWeight",
         label: "Keel Sliding Ballast Position",
@@ -5131,15 +5129,37 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 5,
         unit: "m",
+        provenance: "source-disclosed",
+      },
+      {
+        id: "gasInflation",
+        label: "Illustrative Gas Cell Inflation",
+        min: 75,
+        max: 100,
+        step: 1,
+        defaultValue: 95,
+        unit: "%",
+        provenance: "scenario-modern",
+      },
+      {
+        id: "flightAlt",
+        label: "Illustrative Flight Altitude",
+        min: 0,
+        max: 2000,
+        step: 50,
+        defaultValue: 300,
+        unit: "m",
+        provenance: "scenario-modern",
       },
       {
         id: "flightSpeedKnots",
-        label: "Cruising Airspeed",
+        label: "Illustrative Cruising Airspeed",
         min: 10,
         max: 45,
         step: 1,
         defaultValue: 28,
         unit: "knots",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (p) => {
@@ -5155,11 +5175,20 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
 
       return [
         {
+          label: "Compartment Trim",
+          value: "COMPARTMENTED RIGID HULL",
+          unit: "topology",
+          badgeColor: "emerald",
+          primary: true,
+          provenance: "source-disclosed",
+        },
+        {
           label: "Net Aerostatic Lift",
           value: `${netKn} kN`,
           unit: "L_net",
           badgeColor: Number(netKn) > 0 ? "emerald" : "rose",
           progressPct: clampProgress((Number(netKn) / 40) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Gross Buoyancy",
@@ -5167,6 +5196,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "L_gross",
           badgeColor: "cyan",
           progressPct: clampProgress((Number(grossKn) / 140) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Airspeed",
@@ -5174,6 +5204,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "v",
           badgeColor: "amber",
           progressPct: clampProgress((zep.flightSpeedMph / 80) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Pitch Trim Angle",
@@ -5181,6 +5212,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "α_trim",
           badgeColor: "indigo",
           progressPct: clampProgress((Math.abs(Number(pitchDeg)) / 10) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Useful Payload",
@@ -5188,6 +5220,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "m_pay",
           badgeColor: "amber",
           progressPct: clampProgress((zep.usefulPayloadKg / 5000) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Air Density",
@@ -5195,11 +5228,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "ρ_air",
           badgeColor: "purple",
           progressPct: clampProgress((zep.ambientAirDensityKgM3 / 1.225) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },
-    pedagogicalInsight:
-      "Seventeen independent hydrogen gas cells enclosed inside a rigid duralumin space-frame provide 125 kN of aerostatic lift, protected from solar radiation and wind deformation.",
   },
   "us-727650-linde-air-liquefaction": {
     domain: "thermodynamics_transport",

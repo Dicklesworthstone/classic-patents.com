@@ -59,4 +59,36 @@ describe("US 3,671,542 Stephanie Kwolek source-authoring boundary", () => {
     expect(ledger).toContain("1. Optically anisotropic dope consisting essentially of:");
     expect(ledger).toContain("2. Dope of claim 1 wherein said liquid medium is concentrated");
   });
+
+  test("provides valid provenance classifications for all Kwolek controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-3671542-kwolek-kevlar"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("registers explicit energy channel omission reason for Kwolek", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-3671542-kwolek-kevlar"]).toBeDefined();
+    expect(energyChannelsFor("us-3671542-kwolek-kevlar", {})).toEqual([]);
+  });
+
+  test("enforces primary facsimile pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(kwolekKevlarPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("facsimile-only");
+    expect(decision.reasonCode).toBe("AUDIT_PRIMARY_FACSIMILE_PENDING");
+  });
 });

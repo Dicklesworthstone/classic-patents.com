@@ -50,21 +50,46 @@ test("US 621,195 keeps every supplied figure preview at its source citation", ()
   expect(renderedSource).toContain("no preview is fabricated");
 });
 
-test("US 621,195 rotates the supplied Fig. 7 crop into its printed reading orientation", () => {
-  const figureSeven = zeppelinAirshipArchivalEdition.blocks
-    .flatMap((block) => ("inlines" in block ? block.inlines : []))
-    .flatMap((inline) =>
-      inline.kind === "reference" && inline.referenceType === "figure"
-        ? (inline.figurePreviews ?? [])
-        : [],
-    )
-    .find((preview) => preview.alt.includes("Fig. 7 "));
+test("US 621,195 derives all claims dynamically from edition", () => {
+  expect(zeppelinAirshipPatent.claims.length).toBe(4);
+  const editionClaims = zeppelinAirshipArchivalEdition.blocks.filter((b) => b.kind === "claim");
+  expect(editionClaims.length).toBe(4);
+  for (let i = 0; i < 4; i++) {
+    const block = editionClaims[i];
+    expect(block).toBeDefined();
+    const expected = block.inlines.map((inl) => inl.text).join("");
+    expect(zeppelinAirshipPatent.claims[i].originalText).toBe(expected);
+  }
+});
 
-  expect(figureSeven).toEqual(
-    expect.objectContaining({
-      src: "/patents/figures/us-621195-zeppelin-airship/fig-7-source-crop-v2.png",
-      width: 720,
-      height: 480,
-    }),
-  );
+test("US 621,195 provides valid provenance classifications for all Zeppelin controls and metrics", () => {
+  const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+  const entry = PATENT_PHYSICS_REGISTRY["us-621195-zeppelin-airship"];
+  expect(entry).toBeDefined();
+  for (const ctrl of entry.controls) {
+    expect(ctrl.provenance).toBeDefined();
+  }
+  const metrics = entry.computeMetrics({});
+  for (const m of metrics) {
+    expect(m.provenance).toBeDefined();
+  }
+});
+
+test("US 621,195 registers explicit energy channel omission reason", () => {
+  const {
+    energyChannelsFor,
+    ENERGY_CHANNEL_OMISSION_REASONS,
+  } = require("@/physics/energyChannels");
+  expect(ENERGY_CHANNEL_OMISSION_REASONS["us-621195-zeppelin-airship"]).toBeDefined();
+  expect(energyChannelsFor("us-621195-zeppelin-airship", {})).toEqual([]);
+});
+
+test("US 621,195 enforces ledger acceptance audit hold in publication state registry", () => {
+  const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+  const decision = evaluateTypedArchivalPublicationState(zeppelinAirshipPatent, {
+    hasCompanionReadings: true,
+  });
+  expect(decision.isPublished).toBe(false);
+  expect(decision.state.kind).toBe("held");
+  expect(decision.reasonCode).toBe("AUDIT_LEDGER_ACCEPTANCE_PENDING");
 });

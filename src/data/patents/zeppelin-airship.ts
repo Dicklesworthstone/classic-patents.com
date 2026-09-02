@@ -1,6 +1,16 @@
 import type { Patent } from "@/types/patent";
 
 import { zeppelinAirshipArchivalEdition } from "../editions/zeppelinAirshipEdition";
+function manualClaimText(number: number): string {
+  const block = zeppelinAirshipArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Zeppelin manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const zeppelinAirshipPatent: Patent = {
   id: "us-621195-zeppelin-airship",
   patentNumber: "US 621,195",
@@ -129,54 +139,36 @@ This invention relates to a navigable balloon which is characterized essentially
       },
     ],
     whyItMattersToday:
-      "The source itself shows a late-nineteenth-century design problem: manage gas volume, trim, propulsion, steering, and connected load craft in one written system. This edition does not use this single facsimile to claim later passenger-service records, material choices, performance figures, or legal outcomes.",
+      "This patent lays out early engineering choices for a rigid compartmented airship: internal gas-bag cells, auxiliary volume management, a gangway and cars, and a movable trim weight. The historical document is preserved here as printed, without modern aerodynamic coefficients or alloy assertions.",
   },
   drawings: [
     {
       figureNumber: "Fig. 1",
-      title: "Side Elevation of Rigid Navigable Balloon",
-      caption:
-        "Side elevation showing rigid aluminum lattice framework, subdivided gas cells, suspended gondolas, and movable trim weight.",
+      description: "Elevation view of the navigable balloon and cars",
       svgType: "zeppelin-airship",
       callouts: [
         {
-          id: "z-hull",
-          figureRef: "Fig. 1",
-          label: "A",
-          element: "Rigid framework hull",
-          description:
-            "Longitudinal and transverse lattice ring framework maintaining cylindrical hull shape.",
-          x: 50,
+          label: "r",
+          description: "Rigid frame longitudinal tubes",
+          x: 45,
           y: 35,
         },
         {
-          id: "z-gas",
-          figureRef: "Fig. 1",
-          label: "B",
-          element: "Separated gas-bag cells",
-          description:
-            "Plurality of distinct gas-tight cells housed in independent hull compartments.",
-          x: 45,
-          y: 30,
+          label: "a",
+          description: "Partition walls dividing hull into chambers",
+          x: 30,
+          y: 40,
         },
         {
-          id: "z-cars",
-          figureRef: "Fig. 1",
-          label: "C, D",
-          element: "Forward and aft engine gondolas",
-          description:
-            "Suspended gondolas housing Daimler internal-combustion engines and prop shafts.",
-          x: 40,
-          y: 70,
+          label: "k",
+          description: "Cars carrying crew and propulsion machinery",
+          x: 35,
+          y: 75,
         },
         {
-          id: "z-trim",
-          figureRef: "Fig. 1",
-          label: "E",
-          element: "Sliding trim weight",
-          description:
-            "Movable ballast weight shifting along longitudinal keel cable for pitch trim.",
-          x: 55,
+          label: "l",
+          description: "Lateral air-screws / propellers",
+          x: 38,
           y: 65,
         },
       ],
@@ -200,8 +192,7 @@ This invention relates to a navigable balloon which is characterized essentially
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "In a balloon, the combination of a framework divided into separate compartments, with a main gas-bag in each compartment, adapted to expand and fill the same when permitted, and auxiliary gas-bags in the compartments for maneuvering, to permit the main gas-bags to retain their full quantity of gas unaffected by the admission of air, substantially as set forth.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "In a balloon, the combination of a framework divided into separate compartments, each containing an independent gas-bag.",
       keyInnovations: [
@@ -213,8 +204,7 @@ This invention relates to a navigable balloon which is characterized essentially
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "The combination of a balloon, with a running-weight suspended beneath the same, rotary drums provided with fusees, and a rope stretched from the weight to and around each fusee, substantially as and for the purpose set forth.",
+      originalText: manualClaimText(2),
       plainEnglish:
         "The combination of a balloon with a running-weight suspended beneath to adjust longitudinal inclination.",
       keyInnovations: [
@@ -226,8 +216,7 @@ This invention relates to a navigable balloon which is characterized essentially
     {
       number: 3,
       isIndependent: true,
-      originalText:
-        "The combination of a balloon, with a weight suspended beneath the same, and adjustable in height, a movable carriage supporting the weight, rotary drums to which the carriage is connected and which are provided with fusees and a rope stretched from the weight to and around each fusee, substantially as and for the purpose set forth.",
+      originalText: manualClaimText(3),
       plainEnglish:
         "The combination of a balloon with a weight suspended beneath and adjustable towing or trailing ropes.",
       keyInnovations: ["Suspended stabilizing weight", "Trailing rope trim control"],
@@ -235,8 +224,7 @@ This invention relates to a navigable balloon which is characterized essentially
     {
       number: 4,
       isIndependent: true,
-      originalText:
-        "An air-craft comprising a series of balloons coupled together and provided with rigid casings, the foremost of said balloons being provided with driving mechanism, and the remainder adapted to carry the load or freight, and extensible covers secured to the rigid casings and covering the intermediate spaces between two adjacent balloons.",
+      originalText: manualClaimText(4),
       plainEnglish: "An air-craft comprising a series of balloons coupled together in a train.",
       keyInnovations: [
         "Articulated airship train",
