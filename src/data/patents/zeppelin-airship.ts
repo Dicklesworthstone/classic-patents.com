@@ -1,6 +1,7 @@
 import type { Patent } from "@/types/patent";
 
 import { zeppelinAirshipArchivalEdition } from "../editions/zeppelinAirshipEdition";
+
 function manualClaimText(number: number): string {
   const block = zeppelinAirshipArchivalEdition.blocks.find(
     (candidate) => candidate.kind === "claim" && candidate.number === number,
@@ -144,30 +145,44 @@ This invention relates to a navigable balloon which is characterized essentially
   drawings: [
     {
       figureNumber: "Fig. 1",
-      description: "Elevation view of the navigable balloon and cars",
+      title: "Elevation View of the Navigable Balloon and Cars",
+      caption:
+        "Side elevation showing rigid compartmented framework, internal gas bags, suspended cars, and running-weight trim.",
       svgType: "zeppelin-airship",
       callouts: [
         {
+          id: "z-r",
+          figureRef: "Fig. 1",
           label: "r",
-          description: "Rigid frame longitudinal tubes",
+          element: "Longitudinal frame tubes",
+          description: "Rigid frame longitudinal tubes maintaining cylindrical hull shape.",
           x: 45,
           y: 35,
         },
         {
+          id: "z-a",
+          figureRef: "Fig. 1",
           label: "a",
-          description: "Partition walls dividing hull into chambers",
+          element: "Transverse partition walls",
+          description: "Partition walls dividing hull into independent chambers.",
           x: 30,
           y: 40,
         },
         {
+          id: "z-k",
+          figureRef: "Fig. 1",
           label: "k",
-          description: "Cars carrying crew and propulsion machinery",
+          element: "Suspended engine and crew cars",
+          description: "Cars carrying crew and propulsion machinery.",
           x: 35,
           y: 75,
         },
         {
+          id: "zeppelin-fig-1-l",
+          figureRef: "Fig. 1",
           label: "l",
-          description: "Lateral air-screws / propellers",
+          element: "Lateral air-screws",
+          description: "Lateral air-screws and propulsion propellers.",
           x: 38,
           y: 65,
         },

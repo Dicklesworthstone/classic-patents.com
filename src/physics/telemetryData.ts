@@ -3760,6 +3760,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 50,
         defaultValue: 1500,
         unit: "V",
+        provenance: "scenario-modern",
       },
       {
         id: "coilCurrent",
@@ -3769,6 +3770,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.02,
         defaultValue: 0.42,
         unit: "A",
+        provenance: "scenario-modern",
       },
       {
         id: "lightIntensityLux",
@@ -3778,6 +3780,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 50,
         defaultValue: 500,
         unit: "Lux",
+        provenance: "scenario-modern",
       },
       {
         id: "horizontalFreqKhz",
@@ -3787,6 +3790,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.25,
         defaultValue: 15.75,
         unit: "kHz",
+        provenance: "scenario-modern",
       },
       {
         id: "verticalFreqHz",
@@ -3796,6 +3800,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 60,
         unit: "Hz",
+        provenance: "scenario-modern",
       },
       {
         id: "scanLines",
@@ -3805,6 +3810,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 10,
         defaultValue: 60,
         unit: "Lines",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (p) => {
@@ -3826,6 +3832,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "m/s",
           badgeColor: "cyan",
           progressPct: clampProgress((Number(beamVelocity) / 35) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Gyro Radius",
@@ -3833,6 +3840,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "mm",
           badgeColor: "emerald",
           progressPct: Math.min(100, (beam.gyroRadiusMm / 40) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Derived Raster Lines",
@@ -3840,6 +3848,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "lines",
           badgeColor: "indigo",
           progressPct: clampProgress((derivedScanLines / 600) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Photocathode Current",
@@ -3847,6 +3856,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "µA",
           badgeColor: "purple",
           progressPct: Math.min(100, (Number(photoUa) / 90) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },
@@ -6579,6 +6589,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 1,
         unit: "off / on",
+        provenance: "source-disclosed",
       },
       {
         id: "claim1Active",
@@ -6588,6 +6599,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 1,
         unit: "absent / present",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics: (p) => {
@@ -6600,6 +6612,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "reader control",
           badgeColor: "cyan",
           progressPct: sourceFlowVisible ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
           label: "Stream Division",
@@ -6607,6 +6620,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "source label",
           badgeColor: "amber",
           progressPct: claim1Active ? 100 : 0,
+          primary: true,
+          provenance: "source-disclosed",
         },
         {
           label: "Curved Bottoms",
@@ -6614,6 +6629,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "source label",
           badgeColor: "emerald",
           progressPct: 100,
+          provenance: "source-disclosed",
         },
         {
           label: "Discharge",
@@ -6621,6 +6637,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "source label",
           badgeColor: "purple",
           progressPct: 100,
+          provenance: "source-disclosed",
         },
       ];
     },

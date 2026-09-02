@@ -76,14 +76,19 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-1102653-goddard-rocket"]).toContain("no burn rate");
     expect(energyChannelsFor("us-2981877-noyce-ic", {})[0]?.name).toBe("DC Power Supply");
     expect(energyChannelsFor("us-808897-carrier-air-conditioner", {})[0]?.name).toBe("Fan work");
-    expect(energyChannelsFor("us-608969-parsons-turbine", {})[0]?.name).toBe("Shaft");
+    expect(energyChannelsFor("us-608969-parsons-turbine", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-608969-parsons-turbine"]).toContain(
+      "marine piping combinations",
+    );
     expect(energyChannelsFor("us-3858232-boyle-smith-ccd", {})[0]?.name).toBe("Clock Gate Drive");
-    expect(energyChannelsFor("us-3671542-kwolek-kevlar", {})[0]?.name).toBe(
-      "Spin-Dope Hydraulic Extrusion Pump",
+    expect(energyChannelsFor("us-3671542-kwolek-kevlar", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-3671542-kwolek-kevlar"]).toContain(
+      "anisotropic liquid-crystalline polyamide dopes",
     );
     expect(energyChannelsFor("us-586193-marconi-radio", {})[0]?.name).toBe("Spark RF");
-    expect(energyChannelsFor("us-2292387-lamarr-frequency-hopping", {})[0]?.name).toBe(
-      "Pneumatic Player-Piano Slotted Tape Drive",
+    expect(energyChannelsFor("us-2292387-lamarr-frequency-hopping", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-2292387-lamarr-frequency-hopping"]).toContain(
+      "slotted record strips",
     );
     expect(energyChannelsFor("us-2708656-fermi-reactor", {})[0]?.name).toBe("Fission heat");
     expect(energyChannelsFor("us-313224-mergenthaler-linotype", {})[0]?.name).toBe(
@@ -122,8 +127,9 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     );
     expect(energyChannelsFor("us-6331181-davinci", {})).toEqual([]);
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-6331181-davinci"]).toContain("no motor torque");
-    expect(energyChannelsFor("us-233692-pelton-water-wheel", {})[0]?.name).toBe(
-      "Hydrodynamic Water Jet",
+    expect(energyChannelsFor("us-233692-pelton-water-wheel", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-233692-pelton-water-wheel"]).toContain(
+      "bucket geometry",
     );
     expect(energyChannelsFor("us-470918-reno-escalator", {})[0]?.name).toBe("Motor");
     expect(energyChannelsFor("us-319596-maxim-machine-gun", {})).toEqual([]);

@@ -86,6 +86,8 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-621195-zeppelin-airship",
       "us-2292387-lamarr-frequency-hopping",
       "us-3671542-kwolek-kevlar",
+      "us-1773980-farnsworth-tv",
+      "us-233692-pelton-water-wheel",
     ]);
   });
 

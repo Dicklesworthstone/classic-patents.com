@@ -1900,14 +1900,14 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-233692-pelton-water-wheel") {
-    const rpm = params.runnerRpm ?? 650;
     return [
       {
         id: "buckets",
         phrase: "buckets",
-        active: rpm > 0,
+        active: true,
         tone: "live",
-        caption: `Runner Speed=${rpm} RPM: Double hemispherical cups reverse water flow 180° to extract maximum kinetic impulse.`,
+        caption:
+          "Claimed bucket geometry with curved bottoms c and sloped face b admits the jet without obstruction.",
       },
       {
         id: "apex",
@@ -1915,7 +1915,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: true,
         tone: "held",
         caption:
-          "Central wedge apex splits incoming high-velocity water jet cleanly without splash shock.",
+          "Central wedge apex d divides the incoming water jet into two equal discharge streams.",
       },
     ];
   }

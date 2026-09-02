@@ -17,12 +17,12 @@ import {
   stepMarconiRadio,
   stepMorseTelegraph,
   stepNoyceIC,
+  stepParsonsTurbine,
   stepThomsonWelding,
   stepTownesLaser,
   stepWattCondenser,
   stepWhitneyCottonGin,
   stepWozniakApple,
-  stepZeppelinAirship,
 } from "./catalogKernels";
 import { stepCortPuddlingRolling } from "./cortKernel";
 import { FrankenSimEngine } from "./engine";
@@ -137,6 +137,10 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 2,292,387 specifies the mechanical and electrical coordination of slotted record strips, pneumatic sensing head 45, motors, and radio tuning circuits, but supplies no motor power, suction wattage, vacuum pressure, RF radiation power, or continuous wattage datum from which an authentic SI energy channel can be derived.",
   "us-3671542-kwolek-kevlar":
     "US 3,671,542 specifies anisotropic liquid-crystalline polyamide dopes, polymer compositions, and optical properties across 83 examples, but supplies no extrusion pump power, coagulation bath wattage, spinning motor energy, or continuous wattage datum from which an authentic SI energy channel can be derived.",
+  "us-1773980-farnsworth-tv":
+    "US 1,773,980 describes an electrical image dissector using a photoelectric cathode, accelerating anode, electrostatic deflection plates, collector aperture, and quartz oscillograph light valve, but supplies no operational beam current, deflection voltage power, RF carrier wattage, or continuous wattage datum from which an authentic SI energy channel can be derived.",
+  "us-233692-pelton-water-wheel":
+    "US 233,692 describes the bucket geometry (curved bottoms c, central apex d, inclined sides e, and sloping face b) for dividing a water jet, but supplies no hydraulic head, volumetric flow rate, runner RPM, efficiency, or continuous mechanical power datum from which an authentic SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -204,6 +208,13 @@ export function energyChannelsFor(
       params.moderatorPurity ?? 99.5,
     );
     return [{ name: "Fission heat", watts: kinetics.thermalPowerWatts, tone: "in" }];
+  }
+  if (patentId === "us-328710-parsons-turbine") {
+    const parsons = stepParsonsTurbine({
+      rotorRpm: params.rotorRpm,
+      inletPressurePsi: params.inletPressurePsi ?? (params.steamPressureBar ?? 12.4) * 14.5038,
+    });
+    return [{ name: "Shaft", watts: parsons.shaftPowerKw * 1000, tone: "useful" }];
   }
   if (patentId === "us-1781541-einstein-refrigerator") {
     const e = stepEinsteinRefrigerator({
@@ -588,16 +599,6 @@ export function energyChannelsFor(
     ];
   }
 
-  if (patentId === "us-1773980-farnsworth-tv") {
-    const vAnode = params.anodeVoltage ?? 1200;
-    const beamW = vAnode * 25e-6; // 25 uA beam current
-    return [
-      { name: "High Voltage Anode", watts: beamW * 1000, tone: "in" },
-      { name: "Photo-Dissector Beam", watts: beamW * 650, tone: "useful" },
-      { name: "Magnetic Deflection I²R", watts: beamW * 350, tone: "loss" },
-    ];
-  }
-
   if (patentId === "us-2524035-bardeen-transistor") {
     const iE = (params.emitterCurrent ?? 0.6) * 1e-3;
     const biasW = iE * 0.7 + 0.035;
@@ -689,15 +690,6 @@ export function energyChannelsFor(
       { name: "Autoclave Steam Heat", watts: steamW, tone: "in" },
       { name: "Polymer Crosslinking Enthalpy", watts: steamW * 0.65, tone: "useful" },
       { name: "Vessel Thermal Radiation", watts: steamW * 0.35, tone: "loss" },
-    ];
-  }
-
-  if (patentId === "us-233692-pelton-water-wheel") {
-    const jetW = (params.headMeters ?? 60) * (params.flowLps ?? 25) * 9.81;
-    return [
-      { name: "Hydrodynamic Water Jet", watts: jetW, tone: "in" },
-      { name: "Splitter Bucket Impulse Torque", watts: jetW * 0.88, tone: "useful" },
-      { name: "Discharge Residual Kinetic Loss", watts: jetW * 0.12, tone: "loss" },
     ];
   }
 

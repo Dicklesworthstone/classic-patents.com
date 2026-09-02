@@ -2,6 +2,7 @@ import { expect, test } from "bun:test";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { patentSchema } from "@/data/patents/schema";
 import { zeppelinAirshipPatent } from "@/data/patents/zeppelin-airship";
 import {
   zeppelinAirshipArchivalEdition,
@@ -59,6 +60,28 @@ test("US 621,195 derives all claims dynamically from edition", () => {
     expect(block).toBeDefined();
     const expected = block.inlines.map((inl) => inl.text).join("");
     expect(zeppelinAirshipPatent.claims[i].originalText).toBe(expected);
+  }
+});
+
+test("US 621,195 keeps its catalogue drawing inside the typed drawing contract", () => {
+  const parsed = patentSchema.safeParse(zeppelinAirshipPatent);
+  expect(parsed.success).toBe(true);
+  expect(zeppelinAirshipPatent.drawings).toHaveLength(1);
+
+  const drawing = zeppelinAirshipPatent.drawings[0];
+  expect(drawing.figureNumber).toBe("Fig. 1");
+  expect(drawing.title).toBe("Elevation View of the Navigable Balloon and Cars");
+  expect(drawing.caption.length).toBeGreaterThan(40);
+  expect(drawing.svgType).toBe("zeppelin-airship");
+  expect(drawing.callouts).toHaveLength(4);
+  expect(new Set(drawing.callouts.map((callout) => callout.id)).size).toBe(4);
+  for (const callout of drawing.callouts) {
+    expect(callout.figureRef).toBe(drawing.figureNumber);
+    expect(callout.label.length).toBeGreaterThan(0);
+    expect(callout.element.length).toBeGreaterThan(1);
+    expect(callout.description.length).toBeGreaterThan(20);
+    expect(callout.x).toBeWithin(0, 100);
+    expect(callout.y).toBeWithin(0, 100);
   }
 });
 

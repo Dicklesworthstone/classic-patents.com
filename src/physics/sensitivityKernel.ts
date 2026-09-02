@@ -397,6 +397,40 @@ export function computeParameterSensitivity(
     }
 
     case "us-608969-parsons-turbine": {
+      if (controlKey === "routing" || controlKey === "pipingMode") {
+        return {
+          metricName: "Steam Flow Path & Staged Expansion",
+          derivativeSymbol: "∂Route / ∂Piping",
+          derivativeValue: 1.0,
+          derivativeUnit: "topology",
+          interpretation:
+            "Selecting series routing extends the expansion train for cruising, while compound-parallel divides steam flow across multi-shaft turbines for full power.",
+        };
+      }
+      if (controlKey === "reversing" || controlKey === "astern") {
+        return {
+          metricName: "Propulsion Direction",
+          derivativeSymbol: "∂Dir / ∂Valve",
+          derivativeValue: 1.0,
+          derivativeUnit: "mode",
+          interpretation:
+            "Reversing valve routes steam to astern turbines X and Y while forward turbines turn in condenser vacuum.",
+        };
+      }
+      if (controlKey === "throttle") {
+        return {
+          metricName: "Relative Steam Flow",
+          derivativeSymbol: "∂m_dot / ∂Throttle",
+          derivativeValue: 1.0,
+          derivativeUnit: "% / throttle",
+          interpretation:
+            "Steam flow delivery scaling linearly with throttle setting across active turbine shafts.",
+        };
+      }
+      break;
+    }
+
+    case "us-328710-parsons-turbine": {
       if (controlKey === "rotorRpm" || controlKey === "turbineRpm" || controlKey === "rpm") {
         return {
           metricName: "Shaft Reaction Power",
@@ -527,27 +561,34 @@ export function computeParameterSensitivity(
     }
 
     case "us-808897-carrier-air-conditioner": {
-      if (
-        controlKey === "sprayWaterTempC" ||
-        controlKey === "dewPointTempC" ||
-        controlKey === "dewPoint"
-      ) {
-        return {
-          metricName: "Moisture Extraction Rate",
-          derivativeSymbol: "∂W / ∂T_dew",
-          derivativeValue: -0.42,
-          derivativeUnit: "g/kg / °C",
-          interpretation:
-            "Saturation psychrometric moisture reduction per degree of spray chilling.",
-        };
-      }
       if (controlKey === "airflowCfm" || controlKey === "airFlowCfm") {
         return {
-          metricName: "Sensible Heat Transfer",
-          derivativeSymbol: "∂Q_dot / ∂CFM",
-          derivativeValue: 1.08,
-          derivativeUnit: "BTU/hr / CFM",
-          interpretation: "Sensible cooling capacity scaling with volumetric airflow rate.",
+          metricName: "Separator Air Velocity & Pressure Loss",
+          derivativeSymbol: "∂ΔP / ∂CFM",
+          derivativeValue: 0.008,
+          derivativeUnit: "Pa / cfm",
+          interpretation:
+            "Dynamic pressure drop across sinuous separator plates scaling quadratically with airflow.",
+        };
+      }
+      if (controlKey === "sprayRatePct") {
+        return {
+          metricName: "Wet-Film Coverage",
+          derivativeSymbol: "∂Film / ∂Spray",
+          derivativeValue: 0.85,
+          derivativeUnit: "% / %",
+          interpretation:
+            "Nozzle spray wetting upright plate faces to trap airborne particulate matter.",
+        };
+      }
+      if (controlKey === "separatorFaces") {
+        return {
+          metricName: "Droplet Separation Efficiency",
+          derivativeSymbol: "∂η / ∂Faces",
+          derivativeValue: 8.5,
+          derivativeUnit: "% / face",
+          interpretation:
+            "Inertial droplet impact and capture per sinuous plate turn and drainage gutter.",
         };
       }
       break;

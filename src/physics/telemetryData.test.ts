@@ -345,25 +345,21 @@ describe("Physics Telemetry Data Registry", () => {
     expect(metrics[3]?.value).toBe("SELF-IGNITING");
   });
 
-  test("routes Carrier US 808,897 telemetry through the spray-dew-point kernel", () => {
+  test("routes Carrier US 808,897 telemetry through the wet-plate separator apparatus kernel", () => {
     const carrier = PATENT_PHYSICS_REGISTRY["us-808897-carrier-air-conditioner"];
     expect(carrier.engineMethod).toContain("stepCarrierAirConditioner");
     expect(carrier.controls.map((control) => control.id)).toEqual([
-      "inletTempC",
-      "inletRhPct",
-      "sprayWaterTempC",
-      "reheatTempC",
       "airflowCfm",
+      "sprayRatePct",
+      "separatorFaces",
     ]);
     const metrics = carrier.computeMetrics({
-      inletTempC: 35,
-      inletRhPct: 75,
-      sprayWaterTempC: 8,
-      reheatTempC: 22,
       airflowCfm: 15000,
+      sprayRatePct: 60,
+      separatorFaces: 6,
     });
-    expect(metrics[0]?.label).toBe("Inlet dew point");
-    expect(metrics.some((metric) => metric.unit === "g/kg")).toBe(true);
+    expect(metrics[0]?.label).toBe("Separator State");
+    expect(metrics.some((metric) => metric.unit === "%")).toBe(true);
     expect(metrics.some((metric) => metric.unit === "W")).toBe(true);
   });
 
@@ -459,7 +455,7 @@ describe("Physics Telemetry Data Registry", () => {
 
   test("routes Parsons, CCD, Kevlar, Marconi, Lamarr, Fermi, Engelbart, Linotype, and Hollerith onto their shared kernels", () => {
     const routed: Array<[string, string]> = [
-      ["us-608969-parsons-turbine", "stepParsonsTurbine"],
+      ["us-608969-parsons-turbine", "stepParsonsMarine"],
       ["us-3858232-boyle-smith-ccd", "stepBoyleSmithCcd"],
       ["us-3923554-boyle-smith-ccd", "stepBoyleSmithCcd"],
       ["us-3671542-kwolek-kevlar", "stepKevlarContinuum"],
