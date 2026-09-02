@@ -290,4 +290,27 @@ describe("US 542,846 manual source edition", () => {
       expect(dieselEngineParallelReadings[index]?.join(" ")).not.toContain("source paragraph");
     }
   });
+
+  test("provides valid provenance classifications for all Diesel controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-542846-diesel-engine"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("enforces facsimile review pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(dieselEnginePatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
+  });
 });

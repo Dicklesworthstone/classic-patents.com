@@ -4870,6 +4870,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: 18,
         unit: ":1",
+        provenance: "scenario-modern",
       },
       {
         id: "blastAirPressure",
@@ -4879,6 +4880,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 2,
         defaultValue: 65,
         unit: "bar",
+        provenance: "scenario-modern",
       },
       {
         id: "cutoffRatio",
@@ -4888,6 +4890,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.1,
         defaultValue: 1.6,
         unit: "ratio",
+        provenance: "scenario-modern",
       },
       {
         id: "engineRpm",
@@ -4897,6 +4900,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 10,
         defaultValue: 150,
         unit: "RPM",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (p) => {
@@ -4917,6 +4921,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "T_comp",
           badgeColor: tCompC > 210 ? "emerald" : "amber",
           progressPct: clampProgress((tCompC / 800) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Peak Cylinder Pressure",
@@ -4924,6 +4929,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "P_comp",
           badgeColor: "cyan",
           progressPct: clampProgress((Number(pComp) / 80) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Brake Thermal Efficiency",
@@ -4931,6 +4937,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "η_brake",
           badgeColor: "emerald",
           progressPct: clampProgress((Number(brakeEff) / 50) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Auto-Ignition State",
@@ -4938,6 +4945,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "state",
           badgeColor: diesel.isAutoIgnition ? "emerald" : "rose",
           progressPct: clampProgress(diesel.isAutoIgnition ? 100 : 0),
+          provenance: "topology-normalized",
         },
         {
           label: "Crank ω",
@@ -4945,6 +4953,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "rad/s",
           badgeColor: "cyan",
           progressPct: Math.min(100, (diesel.crankOmegaRadPerS / 30) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },
