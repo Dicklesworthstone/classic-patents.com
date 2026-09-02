@@ -75,4 +75,24 @@ describe("US 4,063,220 Metcalfe Ethernet CSMA/CD Physics Kernel", () => {
     // P = V^2 / R = (-1.0)^2 / 50 = 20 mW
     expect(metrics.terminatorDissipationMw).toBe(20.0);
   });
+
+  test("replays packet-completion trials exactly without ambient randomness", () => {
+    const controls = readEthernetControls({
+      dataRateMbps: 0.5,
+      packetSizeBytes: 1518,
+      station1Transmitting: true,
+      station2Transmitting: false,
+    });
+    let replayA = INITIAL_ETHERNET_STATE;
+    let replayB = INITIAL_ETHERNET_STATE;
+
+    for (let frame = 0; frame < 64; frame += 1) {
+      const resultA = stepMetcalfeEthernetSi(replayA, controls, 0.0001);
+      const resultB = stepMetcalfeEthernetSi(replayB, controls, 0.0001);
+
+      expect(resultA).toEqual(resultB);
+      replayA = resultA.state;
+      replayB = resultB.state;
+    }
+  });
 });

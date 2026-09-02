@@ -1,0 +1,98 @@
+[
+  {
+    "id": "gb-913-watt-separate-condenser",
+    "status": "captured",
+    "canvasCount": 1,
+    "canvasBox": {
+      "x": 113,
+      "y": 440,
+      "width": 1214,
+      "height": 460
+    },
+    "errors": []
+  },
+  {
+    "id": "gb-931-arkwright-water-frame",
+    "status": "captured",
+    "canvasCount": 1,
+    "canvasBox": {
+      "x": 150,
+      "y": 260,
+      "width": 1140,
+      "height": 460
+    },
+    "errors": []
+  },
+  {
+    "id": "gb-1306-watt-rotary-engine",
+    "status": "captured",
+    "canvasCount": 1,
+    "canvasBox": {
+      "x": 150,
+      "y": 260,
+      "width": 1140,
+      "height": 460
+    },
+    "errors": []
+  },
+  {
+    "id": "gb-1420-cort-puddling-rolling",
+    "status": "captured",
+    "canvasCount": 1,
+    "canvasBox": {
+      "x": 150,
+      "y": 260,
+      "width": 1140,
+      "height": 460
+    },
+    "errors": []
+  },
+  {
+    "id": "us-x1-hopkins-potash",
+    "status": "captured",
+    "canvasCount": 1,
+    "canvasBox": {
+      "x": 150,
+      "y": 260,
+      "width": 1140,
+      "height": 460
+    },
+    "errors": []
+  },
+  {
+    "id": "us-x72-whitney-cotton-gin",
+    "status": "captured",
+    "canvasCount": 1,
+    "canvasBox": {
+      "x": 150,
+      "y": 260,
+      "width": 1140,
+      "height": 460
+    },
+    "errors": []
+  },
+  {
+    "id": "us-x8277-mccormick-reaper",
+    "status": "captured",
+    "canvasCount": 1,
+    "canvasBox": {
+      "x": 150,
+      "y": 260,
+      "width": 1140,
+      "height": 460
+    },
+    "errors": []
+  },
+  {
+    "id": "us-x9430-colt-revolver",
+    "status": "captured",
+    "canvasCount": 1,
+    "canvasBox": {
+      "x": 150,
+      "y": 240,
+      "width": 1140,
+      "height": 500
+    },
+    "errors": []
+  }
+]

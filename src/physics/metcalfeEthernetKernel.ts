@@ -10,6 +10,8 @@
  * truncated binary exponential backoff (BEB) dynamics.
  */
 
+import { createLcg } from "@/utils/lcg";
+
 export interface MetcalfeEthernetControls {
   readonly cableLengthMeters: number; // 10 to 1000 m (nominal 500m segment)
   readonly dataRateMbps: number; // 1.0 to 10.0 Mbps (nominal 2.94 to 10.0)
@@ -82,6 +84,25 @@ const PROPAGATION_VELOCITY = SPEED_OF_LIGHT / Math.sqrt(DIELECTRIC_PERMITTIVITY)
 const COAX_IMPEDANCE_OHMS = 50.0; // Standard RG-8 coaxial cable
 const SINGLE_TX_VOLTAGE = -1.0; // Volts into 25 ohms
 const COLLISION_VOLTAGE_THRESHOLD = -1.5; // Volts threshold for collision detection
+
+/**
+ * A packet-completion trial must be part of the replayable kernel state, not
+ * ambient browser randomness. Deriving a one-shot LCG seed from the incoming
+ * state gives each station an independent, deterministic trial while keeping
+ * the kernel pure: identical state, controls, and dt yield identical output.
+ */
+function packetCompletionUnit(state: MetcalfeEthernetState, stationId: 1 | 2): number {
+  const timeTicks = Math.floor(state.simTimeSec * 1e9);
+  const stationCollisions =
+    stationId === 1 ? state.station1CollisionCount : state.station2CollisionCount;
+  const seed =
+    Math.imul(timeTicks, 0x9e3779b1) ^
+    Math.imul(state.packetSuccessCount + 1, 0x85ebca6b) ^
+    Math.imul(stationCollisions + 1, 0xc2b2ae35) ^
+    stationId;
+
+  return createLcg(seed)();
+}
 
 export function readEthernetControls(
   raw?: Partial<MetcalfeEthernetControls>,
@@ -203,12 +224,12 @@ export function stepMetcalfeEthernetSi(
     st2 = "jamming";
   } else if (tx1Active && !tx2Active) {
     // Transmitting cleanly
-    if (Math.random() < safeDt / packetDurationSec) {
+    if (packetCompletionUnit(prevState, 1) < safeDt / packetDurationSec) {
       successPackets += 1;
       st1ColCount = 0;
     }
   } else if (tx2Active && !tx1Active) {
-    if (Math.random() < safeDt / packetDurationSec) {
+    if (packetCompletionUnit(prevState, 2) < safeDt / packetDurationSec) {
       successPackets += 1;
       st2ColCount = 0;
     }
