@@ -347,9 +347,7 @@ export const hullStereolithographyArchivalEdition: CuratedSpecificationEdition =
         kind: "text",
         text: " is an elevational sectional view illustrating still another embodiment of the present invention; and ",
       },
-      figure("FIG. 7", [7]),
-      { kind: "text", text: " and " },
-      figure("FIG. 8", [8]),
+      figure("FIGS. 7 and 8", [7, 8]),
       {
         kind: "text",
         text: " are partial, elevational sectional views, illustrating a modification of the stereolithographic system of FIG. 3 to incorporate an elevator platform with multiple degrees of freedom.",

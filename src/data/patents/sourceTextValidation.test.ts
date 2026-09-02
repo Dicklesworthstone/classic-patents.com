@@ -45,6 +45,21 @@ describe("reviewed-ledger literal comparison", () => {
     );
   });
 
+  it("preserves a patent-number citation when it occurs in source prose", () => {
+    const ledger = [
+      "--- REVIEWED TRANSCRIPTION PAGE 1 OF 1 ---",
+      "The cited record is US 3,858,581.",
+      "7",
+      "The following sentence is still part of the source text.",
+    ].join("\n");
+
+    expect(normalizeReviewedLedgerText(ledger)).toBe(
+      normalizeReviewedLedgerText(
+        "The cited record is US 3,858,581. The following sentence is still part of the source text.",
+      ),
+    );
+  });
+
   it("does not erase punctuation or ordinary words while normalizing layout noise", () => {
     expect(normalizeReviewedLedgerText("Claim: first field; second field.")).toBe(
       "Claim: first field; second field.",
