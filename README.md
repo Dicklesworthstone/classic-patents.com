@@ -32,7 +32,7 @@
 
 ## Curated Historical Patents (29 Highlighted — 103 in the Live Catalogue)
 
-The live, searchable catalogue at [classic-patents.com](https://classic-patents.com) holds 103 records. All 103 have pinned facsimiles, explicit interactive-visual routes, default TypeScript telemetry owners, and live equation sets; 100 have reviewed ledgers. **6 of 103** currently cross the typed reviewed-edition publication boundary. The other 97 records are explicitly classified as candidates, held, rejected, facsimile-only, or source-bounded: their pinned PDFs and independently supportable educational material remain available, but a short excerpt, draft, ledger, or crop is never represented as an accepted complete source face. This table highlights 29 foundational entries; search (⌘K) and the timeline cover the full registry.
+The live, searchable catalogue at [classic-patents.com](https://classic-patents.com) holds 103 records. All 103 have pinned facsimiles, explicit interactive-visual routes, default TypeScript telemetry owners, and live equation sets; 100 have reviewed ledgers. **7 of 103** currently cross the typed reviewed-edition publication boundary. The other 96 records are explicitly classified as candidates, held, rejected, facsimile-only, or source-bounded: their pinned PDFs and independently supportable educational material remain available, but a short excerpt, draft, ledger, or crop is never represented as an accepted complete source face. This table highlights 29 foundational entries; search (⌘K) and the timeline cover the full registry.
 
 | Patent | Title | Inventors | Grant Date | Key Breakthrough | Interactive 3D Sim |
 |---|---|---|---|---|---|

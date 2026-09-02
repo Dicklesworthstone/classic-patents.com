@@ -245,7 +245,9 @@ describe("InteractiveDiagramViewer React rendering", () => {
       expect(source).toContain("ACTUATOR HOUSINGS 13 · TRANSLATING MEMBERS 24");
 
       const renderOnlyFigure = (figureNumber: string) => {
-        const drawing = patent.drawings.find((candidate) => candidate.figureNumber === figureNumber);
+        const drawing = patent.drawings.find(
+          (candidate) => candidate.figureNumber === figureNumber,
+        );
         if (!drawing) throw new Error(`Clavel Figure ${figureNumber} fixture is missing`);
         return renderToStaticMarkup(
           React.createElement(InteractiveDiagramViewer, {

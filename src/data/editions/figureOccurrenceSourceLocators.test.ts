@@ -58,67 +58,128 @@ const CLAVEL_DELTA_ROBOT_OCCURRENCES = {
 const COLT_ID = "us-x9430-colt-revolver";
 const COLT_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[COLT_ID].assets);
 const COLT_REVOLVER_OCCURRENCES = {
-  "edition-block-1-group-0-inline-1": "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
-  "edition-block-7-group-0-inline-0": "/patents/figures/us-x9430-colt-revolver/division-1-pistol-source-crop-v2.png",
-  "edition-block-7-group-0-inline-2": "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
-  "edition-block-7-group-0-inline-4": "/patents/figures/us-x9430-colt-revolver/division-1-pistol-source-crop-v2.png",
-  "edition-block-7-group-0-inline-6": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-7-group-0-inline-8": "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
-  "edition-block-7-group-0-inline-10": "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
-  "edition-block-7-group-0-inline-12": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
-  "edition-block-7-group-0-inline-14": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
-  "edition-block-7-group-0-inline-16": "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
-  "edition-block-7-group-0-inline-18": "/patents/figures/us-x9430-colt-revolver/division-5-combination-source-crop-v2.png",
-  "edition-block-8-group-0-inline-0": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-8-group-0-inline-2": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-9-group-0-inline-0": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-10-group-0-inline-0": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-10-group-0-inline-2": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-11-group-0-inline-0": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-11-group-0-inline-2": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-12-group-0-inline-0": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-12-group-0-inline-2": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-12-group-0-inline-4": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-12-group-0-inline-6": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-12-group-0-inline-8": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-12-group-0-inline-10": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-12-group-0-inline-12": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-12-group-0-inline-14": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-12-group-0-inline-16": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-12-group-0-inline-18": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-13-group-0-inline-0": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
-  "edition-block-13-group-0-inline-2": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
-  "edition-block-13-group-0-inline-4": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
-  "edition-block-13-group-0-inline-6": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
-  "edition-block-13-group-0-inline-8": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
-  "edition-block-13-group-0-inline-10": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
-  "edition-block-13-group-0-inline-12": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
-  "edition-block-13-group-0-inline-14": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
-  "edition-block-13-group-0-inline-16": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
-  "edition-block-13-group-0-inline-18": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
-  "edition-block-13-group-0-inline-20": "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
-  "edition-block-14-group-0-inline-0": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
-  "edition-block-15-group-0-inline-0": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
-  "edition-block-15-group-0-inline-2": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
-  "edition-block-15-group-0-inline-4": "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
-  "edition-block-15-group-0-inline-6": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-15-group-0-inline-8": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
-  "edition-block-15-group-0-inline-10": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
-  "edition-block-15-group-0-inline-12": "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
-  "edition-block-16-group-0-inline-1": "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
-  "edition-block-16-group-0-inline-3": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
-  "edition-block-16-group-0-inline-5": "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
-  "edition-block-17-group-0-inline-1": "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
-  "edition-block-20-group-0-inline-0": "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
-  "edition-block-20-group-0-inline-2": "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
-  "edition-block-20-group-0-inline-4": "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
-  "edition-block-20-group-0-inline-6": "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
-  "edition-block-20-group-0-inline-8": "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
-  "edition-block-20-group-0-inline-10": "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
-  "edition-block-20-group-0-inline-12": "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
-  "edition-block-20-group-0-inline-14": "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
-  "edition-block-20-group-0-inline-16": "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
-  "edition-block-21-group-0-inline-1": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-1-group-0-inline-1":
+    "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+  "edition-block-7-group-0-inline-0":
+    "/patents/figures/us-x9430-colt-revolver/division-1-pistol-source-crop-v2.png",
+  "edition-block-7-group-0-inline-2":
+    "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+  "edition-block-7-group-0-inline-4":
+    "/patents/figures/us-x9430-colt-revolver/division-1-pistol-source-crop-v2.png",
+  "edition-block-7-group-0-inline-6":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-7-group-0-inline-8":
+    "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+  "edition-block-7-group-0-inline-10":
+    "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+  "edition-block-7-group-0-inline-12":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-7-group-0-inline-14":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-7-group-0-inline-16":
+    "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+  "edition-block-7-group-0-inline-18":
+    "/patents/figures/us-x9430-colt-revolver/division-5-combination-source-crop-v2.png",
+  "edition-block-8-group-0-inline-0":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-8-group-0-inline-2":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-9-group-0-inline-0":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-10-group-0-inline-0":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-10-group-0-inline-2":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-11-group-0-inline-0":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-11-group-0-inline-2":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-12-group-0-inline-0":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-12-group-0-inline-2":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-12-group-0-inline-4":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-12-group-0-inline-6":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-12-group-0-inline-8":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-12-group-0-inline-10":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-12-group-0-inline-12":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-12-group-0-inline-14":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-12-group-0-inline-16":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-12-group-0-inline-18":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-13-group-0-inline-0":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-13-group-0-inline-2":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-13-group-0-inline-4":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-13-group-0-inline-6":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-13-group-0-inline-8":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-13-group-0-inline-10":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-13-group-0-inline-12":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-13-group-0-inline-14":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-13-group-0-inline-16":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-13-group-0-inline-18":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-13-group-0-inline-20":
+    "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+  "edition-block-14-group-0-inline-0":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-15-group-0-inline-0":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-15-group-0-inline-2":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-15-group-0-inline-4":
+    "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+  "edition-block-15-group-0-inline-6":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-15-group-0-inline-8":
+    "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+  "edition-block-15-group-0-inline-10":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-15-group-0-inline-12":
+    "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+  "edition-block-16-group-0-inline-1":
+    "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+  "edition-block-16-group-0-inline-3":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+  "edition-block-16-group-0-inline-5":
+    "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+  "edition-block-17-group-0-inline-1":
+    "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+  "edition-block-20-group-0-inline-0":
+    "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+  "edition-block-20-group-0-inline-2":
+    "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+  "edition-block-20-group-0-inline-4":
+    "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+  "edition-block-20-group-0-inline-6":
+    "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+  "edition-block-20-group-0-inline-8":
+    "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+  "edition-block-20-group-0-inline-10":
+    "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+  "edition-block-20-group-0-inline-12":
+    "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+  "edition-block-20-group-0-inline-14":
+    "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+  "edition-block-20-group-0-inline-16":
+    "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+  "edition-block-21-group-0-inline-1":
+    "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
 } as const;
 
 const VALIDATION_OPTIONS = {
@@ -132,8 +193,7 @@ const VALIDATION_OPTIONS = {
     [CLAVEL_DELTA_ROBOT_ID]: CLAVEL_DELTA_ROBOT_OCCURRENCES,
     [COLT_ID]: COLT_REVOLVER_OCCURRENCES,
   },
-  sourcePdfPageCountsByPatent: { [PASTEUR_ID]: 3, [CLAVEL_DELTA_ROBOT_ID]: 11,
-    [COLT_ID]: 7 },
+  sourcePdfPageCountsByPatent: { [PASTEUR_ID]: 3, [CLAVEL_DELTA_ROBOT_ID]: 11, [COLT_ID]: 7 },
 } as const;
 
 describe("figure occurrence source locators", () => {

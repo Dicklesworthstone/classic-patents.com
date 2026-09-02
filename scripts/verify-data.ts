@@ -37,6 +37,7 @@ const MAX_PDF_TEXT_BUFFER_BYTES = 64 * 1024 * 1024;
 const BARE_DRAWING_REFERENCE =
   /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|(?:section|division)\s+\d+)\b/i;
 const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
+  "us-x9430-colt-revolver",
   "us-3633-goodyear-rubber",
   "us-78317-nobel-dynamite",
   "us-105338-hyatt-celluloid",
