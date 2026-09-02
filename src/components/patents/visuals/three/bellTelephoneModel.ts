@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { bellWaveProgress, type BellTelephoneState } from "@/physics/catalogKernels";
+import { type BellTelephoneState, bellWaveProgress } from "@/physics/catalogKernels";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
 export interface BellTelephoneModel {
