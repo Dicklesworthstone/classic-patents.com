@@ -57,12 +57,14 @@ export const milacronRobotToolchangerPatent: Patent = {
       {
         page: 1,
         exactSourceText: "ROBOT TOOLCHANGER SYSTEM",
-        sourceRelationship: "Printed masthead, bibliographic data, abstract, and claim/figure count.",
+        sourceRelationship:
+          "Printed masthead, bibliographic data, abstract, and claim/figure count.",
       },
       {
         page: 2,
         exactSourceText: "Sheet 1 of 6",
-        sourceRelationship: "Printed drawing sheet containing the robot, rack, and adapter overview in Figure 1.",
+        sourceRelationship:
+          "Printed drawing sheet containing the robot, rack, and adapter overview in Figure 1.",
       },
       {
         page: 3,
@@ -77,7 +79,8 @@ export const milacronRobotToolchangerPatent: Patent = {
       {
         page: 5,
         exactSourceText: "Sheet 4 of 6",
-        sourceRelationship: "Printed drawing sheet containing the locking plan section in Figure 6.",
+        sourceRelationship:
+          "Printed drawing sheet containing the locking plan section in Figure 6.",
       },
       {
         page: 6,
@@ -87,17 +90,20 @@ export const milacronRobotToolchangerPatent: Patent = {
       {
         page: 7,
         exactSourceText: "Sheet 6 of 6",
-        sourceRelationship: "Printed drawing sheet containing the common tool base in Figures 9 and 10.",
+        sourceRelationship:
+          "Printed drawing sheet containing the common tool base in Figures 9 and 10.",
       },
       {
         page: 8,
-        exactSourceText: "The tool retention system should tend to be bistable",
-        sourceRelationship: "Background, summary, figure list, and opening preferred-embodiment description.",
+        exactSourceText: "tool retention system should tend to be bistable",
+        sourceRelationship:
+          "Background, summary, figure list, and opening preferred-embodiment description.",
       },
       {
         page: 9,
         exactSourceText: "The locking slide 33 has a central slot 40",
-        sourceRelationship: "Detailed adapter, registration, slide, and optional utility-connection description.",
+        sourceRelationship:
+          "Detailed adapter, registration, slide, and optional utility-connection description.",
       },
       {
         page: 10,
@@ -117,7 +123,7 @@ The invention is shown embodied in a robot having a movable end effector, wherei
     overview:
       "A robot is programmable, but its wrist cannot do a new physical job until it has the appropriate physical tool. This patent makes the tool interface a repeatable mechanism: the robot carries an adapter; every candidate tool carries the same base. The base first lands on two locating pins, then its retention member passes through an open aperture. A linear actuator shifts the locking slide sideways so that the crossbar is captured by mating ramps. The legal scope is this organized housing–slide–retention–positioning combination, not the broad idea of swapping robot tools.",
     coreMechanism:
-      "The source describes an ordered geometric state machine, not a source-measured force calculation: an unloaded adapter has its aperture aligned; a base may enter only in that opening state; bushings seat on the cylindrical and diamond-profile pins; the T-member crossbar passes the aperture; and a transverse slide moves so its aperture is no longer aligned. In the Claim 4 form, the slide's bifurcated ramp surfaces meet ramps on the T crossbar, making withdrawal geometrically blocked. The live relation is deliberately Boolean: $\mathrm{captured}=\mathrm{basePresent}\land\mathrm{registered}\land\mathrm{slideLocked}\land\mathrm{TMember}$; it identifies the claimed engagement topology but does not fabricate actuator pressure, ramp angle, friction, clamp force, load capacity, or time.",
+      "The source describes an ordered geometric state machine, not a source-measured force calculation: an unloaded adapter has its aperture aligned; a base may enter only in that opening state; bushings seat on the cylindrical and diamond-profile pins; the T-member crossbar passes the aperture; and a transverse slide moves so its aperture is no longer aligned. In the Claim 4 form, the slide's bifurcated ramp surfaces meet ramps on the T crossbar, making withdrawal geometrically blocked. The live relation is deliberately Boolean: $\\mathrm{captured}=\\mathrm{basePresent}\\land\\mathrm{registered}\\land\\mathrm{slideLocked}\\land\\mathrm{TMember}$; it identifies the claimed engagement topology but does not fabricate actuator pressure, ramp angle, friction, clamp force, load capacity, or time.",
     mechanicalBreakdown: [
       {
         title: "Adapter Housing and Central Opening",
@@ -168,19 +174,20 @@ The invention is shown embodied in a robot having a movable end effector, wherei
     scientificPrinciples: [
       {
         principle: "Geometric constraint and registration",
-        formula: "$\mathrm{registered}=\mathrm{basePresent}\land\mathrm{bushingsOnPins}$",
+        formula: "$\\mathrm{registered}=\\mathrm{basePresent}\\land\\mathrm{bushingsOnPins}$",
         explanation:
           "The equation is an editorial state relation that binds the live diagram to the source's stated order: the base is positioned on its pin-and-bushing pair before clamping. It is not a tolerance or stiffness equation, because the grant supplies none of the needed dimensions or material data.",
       },
       {
         principle: "Interference-based retention",
-        formula: "$\mathrm{withdrawalBlocked}=\mathrm{slideOffset}\land\mathrm{crossbarCaptured}$",
+        formula:
+          "$\\mathrm{withdrawalBlocked}=\\mathrm{slideOffset}\\land\\mathrm{crossbarCaptured}$",
         explanation:
           "An aligned aperture admits the T-member; an offset slide brings its ramp surfaces into engagement with the wider crossbar. The intended lock is physical interference. This source-based relation says nothing about the magnitude of load the interface withstands.",
       },
       {
         principle: "Wedge contact requires missing data for a force result",
-        formula: "$F_{axial}\ \text{is not evaluated}$",
+        formula: "$F_{axial}\\ \\text{is not evaluated}$",
         explanation:
           "A wedge force calculation would require ramp angle, normal force, friction, actuator output, preload, material stiffness, and applied tool load. None are printed in the grant. The physics boundary therefore refuses a numerical clamp/holding-force display rather than assigning plausible values.",
       },

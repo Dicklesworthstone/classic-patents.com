@@ -1,462 +1,371 @@
 "use client";
 
-import { useId, useState } from "react";
-import {
-  MILACRON_TOOLCHANGER_DEFAULT_CONTROLS,
-  type MilacronToolchangerControls,
-  readMilacronToolchangerControls,
-  stepMilacronRobotToolchangerSi,
-} from "@/physics/milacronRobotToolchangerKernel";
+import { RotateCcw } from "lucide-react";
+import { useMemo } from "react";
+import { stepMilacronRobotToolchanger } from "@/physics/milacronRobotToolchangerKernel";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+
+const PATENT_ID = "us-4512709-milacron-robot-toolchanger";
 
 export function MilacronRobotToolchangerSim() {
-  const [controls, setControls] = useState<MilacronToolchangerControls>(
-    MILACRON_TOOLCHANGER_DEFAULT_CONTROLS,
-  );
-  const [activeTab, setActiveTab] = useState<"adapter" | "kinematics" | "rack">("adapter");
-  const baseId = useId();
-
-  const tel = stepMilacronRobotToolchangerSi(controls);
-
-  const update = <K extends keyof MilacronToolchangerControls>(
-    key: K,
-    value: MilacronToolchangerControls[K],
-  ) => {
-    setControls((prev) =>
-      readMilacronToolchangerControls({
-        ...prev,
-        [key]: value,
-      }),
-    );
-  };
+  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
+  const state = useMemo(() => stepMilacronRobotToolchanger(params), [params]);
+  const slide = state.lockingSlideFraction;
+  const slideX = 270 + slide * 96;
+  const baseY = state.toolBasePresent ? 220 - state.registrationFraction * 36 : 310;
+  const tMemberVisible = state.toolBasePresent && state.registrationComplete;
 
   return (
-    <div className="flex flex-col gap-6 rounded-2xl border border-amber-900/30 bg-stone-950 p-6 text-stone-200 shadow-2xl backdrop-blur-md">
-      {/* Masthead */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-amber-900/40 pb-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="rounded bg-amber-500/20 px-2.5 py-0.5 font-mono text-xs font-semibold text-amber-300">
-              US 4,512,709
-            </span>
-            <span className="text-xs uppercase tracking-widest text-stone-400">
-              Cincinnati Milacron Inc. • Robot Toolchanger System
-            </span>
-          </div>
-          <h2 className="mt-1 font-serif text-2xl font-bold tracking-tight text-amber-100">
-            Bistable Radial Locking Slide & Kinematic Coupling
-          </h2>
-        </div>
+    <section className="overflow-hidden rounded-2xl border border-cyan-800/50 bg-slate-950 text-slate-100 shadow-2xl">
+      <header className="border-b border-cyan-900/70 bg-slate-900/80 px-4 py-3 sm:px-6">
+        <p className="font-mono text-[11px] tracking-[0.16em] text-cyan-300">
+          US 4,512,709 · REGISTRATION → ADMISSION → CAPTURE
+        </p>
+        <h3 className="mt-1 font-serif text-xl text-white">
+          Milacron toolchanger engagement instrument
+        </h3>
+        <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-300">
+          Seat the common base on its locating pair, align the aperture, then shift the locking
+          slide. This is a source-bound engagement topology: the grant gives no stroke, pressure,
+          ramp angle, force, timing, or alignment tolerance.
+        </p>
+      </header>
 
-        {/* View Mode Tabs */}
-        <div className="flex rounded-lg bg-stone-900/90 p-1 border border-stone-800">
-          <button
-            type="button"
-            onClick={() => setActiveTab("adapter")}
-            className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-              activeTab === "adapter"
-                ? "bg-amber-600 text-white shadow-sm"
-                : "text-stone-400 hover:text-stone-200"
-            }`}
+      <div className="grid lg:grid-cols-[minmax(0,1fr)_19rem]">
+        <div className="min-w-0 border-b border-cyan-900/70 p-3 lg:border-b-0 lg:border-r sm:p-5">
+          <svg
+            viewBox="0 0 680 430"
+            role="img"
+            aria-label="Interactive source-bounded robot toolchanger engagement diagram"
+            className="h-auto w-full rounded-xl border border-slate-700 bg-[radial-gradient(circle_at_50%_30%,_#164e63,_#020617_67%)]"
           >
-            Locking Wedge (Fig. 6)
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("kinematics")}
-            className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-              activeTab === "kinematics"
-                ? "bg-amber-600 text-white shadow-sm"
-                : "text-stone-400 hover:text-stone-200"
-            }`}
-          >
-            Locating Pins (Figs. 7–8)
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("rack")}
-            className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-              activeTab === "rack"
-                ? "bg-amber-600 text-white shadow-sm"
-                : "text-stone-400 hover:text-stone-200"
-            }`}
-          >
-            Tool Storage Rack (Fig. 1)
-          </button>
-        </div>
-      </div>
+            <defs>
+              <pattern
+                id="milacron-toolchanger-grid"
+                width="28"
+                height="28"
+                patternUnits="userSpaceOnUse"
+              >
+                <path d="M28 0H0V28" fill="none" stroke="#164e63" strokeWidth="1" />
+              </pattern>
+              <marker
+                id="milacron-toolchanger-arrow"
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerWidth="5"
+                markerHeight="5"
+                orient="auto"
+              >
+                <path d="M0 0L10 5L0 10z" fill="#fbbf24" />
+              </marker>
+            </defs>
+            <rect width="680" height="430" fill="url(#milacron-toolchanger-grid)" />
+            <text x="24" y="30" fill="#a5f3fc" fontFamily="monospace" fontSize="12">
+              NORMALIZED SOURCE TOPOLOGY · NOT A DIMENSIONED ADAPTER
+            </text>
 
-      {/* Refusal Banner if physical constraint violated */}
-      {(tel.insufficientPressureRefusal || tel.wedgeBackdriveRefusal || tel.toolUnseatedRefusal) && (
-        <div className="rounded-xl border border-rose-500/40 bg-rose-950/40 p-4 text-rose-200">
-          <div className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-rose-400">
-            <span>⚠️ Physical Constraint Refusal</span>
-          </div>
-          <p className="mt-1 text-sm font-medium">{tel.refusalReason}</p>
-        </div>
-      )}
-
-      {/* Main Visual SVG Simulation Canvas */}
-      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-stone-800 bg-stone-900/50 shadow-inner">
-        <svg
-          viewBox="0 0 800 450"
-          className="h-full w-full"
-          preserveAspectRatio="xMidYMid meet"
-          role="img"
-          aria-label="Cincinnati Milacron Robot Toolchanger Simulation"
-        >
-          <defs>
-            <linearGradient id={`${baseId}-metal-steel`} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#64748b" />
-              <stop offset="100%" stopColor="#334155" />
-            </linearGradient>
-            <linearGradient id={`${baseId}-slide-gold`} x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#f59e0b" />
-              <stop offset="100%" stopColor="#d97706" />
-            </linearGradient>
-            <linearGradient id={`${baseId}-piston-cyan`} x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#0284c7" />
-              <stop offset="100%" stopColor="#0369a1" />
-            </linearGradient>
-          </defs>
-
-          {activeTab === "adapter" && (
-            <g id="adapter-cross-section">
-              {/* Adapter Master Housing (Plates 26 and 27) */}
-              <rect x="80" y="80" width="30" height="280" rx="4" fill="#1e293b" stroke="#475569" strokeWidth="2" />
-              <text x="95" y="70" fill="#94a3b8" fontSize="10" fontFamily="monospace" textAnchor="middle">
-                REAR 27
+            <g transform="translate(95 68)">
+              <rect
+                x="105"
+                y="34"
+                width="310"
+                height="168"
+                rx="18"
+                fill="#0f172a"
+                stroke="#64748b"
+                strokeWidth="5"
+              />
+              <rect
+                x="123"
+                y="52"
+                width="274"
+                height="132"
+                rx="14"
+                fill="#172554"
+                stroke="#22d3ee"
+                strokeWidth="2"
+              />
+              <circle cx="260" cy="118" r="48" fill="#020617" stroke="#67e8f9" strokeWidth="4" />
+              <text
+                x="260"
+                y="124"
+                textAnchor="middle"
+                fill="#a5f3fc"
+                fontFamily="monospace"
+                fontSize="12"
+              >
+                OPENING 30
               </text>
 
-              <rect x="360" y="80" width="30" height="280" rx="4" fill="#1e293b" stroke="#475569" strokeWidth="2" />
-              <text x="375" y="70" fill="#94a3b8" fontSize="10" fontFamily="monospace" textAnchor="middle">
-                FRONT 26
+              <path d="M112 78H408" stroke="#334155" strokeWidth="33" strokeLinecap="round" />
+              <path d="M112 78H408" stroke="#475569" strokeWidth="4" strokeDasharray="8 8" />
+              <g transform={`translate(${slideX - 270} 0)`}>
+                <rect
+                  x="215"
+                  y="46"
+                  width="92"
+                  height="64"
+                  rx="8"
+                  fill="#0e7490"
+                  stroke="#a5f3fc"
+                  strokeWidth="3"
+                />
+                <rect
+                  x="243"
+                  y="62"
+                  width="36"
+                  height="32"
+                  rx="3"
+                  fill="#020617"
+                  stroke="#f8fafc"
+                  strokeWidth="2"
+                />
+                <path
+                  d="M222 105L239 89M300 105L283 89"
+                  stroke="#fbbf24"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                />
+                <text
+                  x="261"
+                  y="38"
+                  textAnchor="middle"
+                  fill="#a5f3fc"
+                  fontFamily="monospace"
+                  fontSize="11"
+                >
+                  SLIDE 33
+                </text>
+              </g>
+
+              <circle cx="206" cy="158" r="10" fill="#f59e0b" stroke="#fef3c7" strokeWidth="2" />
+              <rect
+                x="324"
+                y="149"
+                width="20"
+                height="18"
+                transform="rotate(45 334 158)"
+                fill="#f59e0b"
+                stroke="#fef3c7"
+                strokeWidth="2"
+              />
+              <text x="190" y="184" fill="#fcd34d" fontFamily="monospace" fontSize="10">
+                PIN 43
               </text>
-
-              {/* Spacer Blocks 28, 29 */}
-              <rect x="110" y="80" width="250" height="30" fill="#334155" stroke="#64748b" strokeWidth="1" />
-              <rect x="110" y="330" width="250" height="30" fill="#334155" stroke="#64748b" strokeWidth="1" />
-
-              {/* Pneumatic Cylinder 47 */}
-              <rect x="130" y="180" width="130" height="80" rx="4" fill={`url(#${baseId}-metal-steel)`} stroke="#94a3b8" strokeWidth="1.5" />
-              <text x="195" y="225" fill="#f8fafc" fontSize="11" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
-                CYLINDER 47
+              <text x="319" y="184" fill="#fcd34d" fontFamily="monospace" fontSize="10">
+                PIN 44
               </text>
+              <text
+                x="260"
+                y="222"
+                textAnchor="middle"
+                fill="#cbd5e1"
+                fontFamily="monospace"
+                fontSize="11"
+              >
+                ADAPTER 17 · FRONT PLATE 26
+              </text>
+            </g>
 
-              {/* Piston Rod 46 & Yoke 45 */}
-              {(() => {
-                const strokeOffset = (controls.slideStrokeMm / 25) * 40;
-                const yokeX = 260 + strokeOffset;
-                const slideY = 150 - (controls.slideStrokeMm / 25) * 35;
-                const gapOffset = (controls.dockingGapMm / 5) * 60;
-                const toolBaseX = 400 + gapOffset;
-
-                return (
+            {state.toolBasePresent && (
+              <g transform={`translate(355 ${baseY})`}>
+                <ellipse
+                  cx="0"
+                  cy="58"
+                  rx="118"
+                  ry="36"
+                  fill="#713f12"
+                  stroke="#fde68a"
+                  strokeWidth="4"
+                />
+                <ellipse
+                  cx="0"
+                  cy="51"
+                  rx="104"
+                  ry="28"
+                  fill="#a16207"
+                  stroke="#fcd34d"
+                  strokeWidth="2"
+                />
+                <circle cx="-55" cy="47" r="11" fill="#1e293b" stroke="#fef3c7" strokeWidth="3" />
+                <rect
+                  x="42"
+                  y="36"
+                  width="20"
+                  height="20"
+                  transform="rotate(45 52 46)"
+                  fill="#1e293b"
+                  stroke="#fef3c7"
+                  strokeWidth="3"
+                />
+                {tMemberVisible && (
                   <g>
-                    {/* Rod 46 */}
-                    <rect x="260" y="212" width={strokeOffset + 10} height="16" fill="#cbd5e1" stroke="#475569" strokeWidth="1" />
-                    {/* Yoke 45 */}
-                    <rect x={yokeX} y="195" width="25" height="50" rx="3" fill="#64748b" stroke="#94a3b8" strokeWidth="1.5" />
-                    <circle cx={yokeX + 12} cy="220" r="4" fill="#fbbf24" />
-
-                    {/* Locking Slide 33 (Moving Vertically/Radially across Front Plate) */}
-                    <rect x="362" y={slideY} width="26" height="140" rx="2" fill={`url(#${baseId}-slide-gold)`} stroke="#f59e0b" strokeWidth="1.5" />
-                    <text x="375" y={slideY + 45} fill="#fef3c7" fontSize="9" fontFamily="monospace" textAnchor="middle">
-                      33
-                    </text>
-                    {/* Slide Wedge Ramps 41 */}
-                    <polygon
-                      points={`370,${slideY + 70} 385,${slideY + 70} 385,${slideY + 85} 370,${slideY + 80}`}
-                      fill="#b45309"
-                      stroke="#fef08a"
-                      strokeWidth="1"
+                    <rect
+                      x="-12"
+                      y="-17"
+                      width="24"
+                      height="54"
+                      rx="4"
+                      fill="#f43f5e"
+                      stroke="#fecdd3"
+                      strokeWidth="2"
                     />
-
-                    {/* Universal Tool Base 18 */}
-                    <rect x={toolBaseX} y="80" width="30" height="280" rx="4" fill="#334155" stroke="#94a3b8" strokeWidth="2" />
-                    <text x={toolBaseX + 15} y="70" fill="#38bdf8" fontSize="10" fontFamily="monospace" textAnchor="middle">
-                      TOOL BASE 18
-                    </text>
-
-                    {/* T-Member Retention Lug 35 */}
-                    <g transform={`translate(${toolBaseX}, 200)`}>
-                      {/* Stem 37 */}
-                      <rect x="-35" y="10" width="35" height="20" fill="#cbd5e1" stroke="#64748b" strokeWidth="1" />
-                      {/* Crossbar 38 with Beveled Ramps 39 */}
-                      <polygon points="-50,-10 -35,-10 -35,50 -50,50 -50,40 -40,30 -40,10 -50,0" fill="#e2e8f0" stroke="#f59e0b" strokeWidth="1.5" />
-                      <text x="-43" y="24" fill="#1e293b" fontSize="8" fontFamily="monospace" fontWeight="bold">
-                        35
-                      </text>
-                    </g>
-
-                    {/* Attached Tool 19 (e.g. Welding Gun / Gripper) */}
-                    <rect x={toolBaseX + 30} y="130" width="140" height="180" rx="6" fill="#1c1917" stroke="#78716c" strokeWidth="1.5" />
-                    <path d={`M ${toolBaseX + 170},180 L ${toolBaseX + 260},140 L ${toolBaseX + 260},280 L ${toolBaseX + 170},240 Z`} fill="#292524" stroke="#d97706" strokeWidth="1.5" />
-                    <text x={toolBaseX + 100} y="225" fill="#facc15" fontSize="11" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
-                      TOOL HEAD 19
-                    </text>
-
-                    {/* Proximity Switch 58 */}
-                    <rect x="335" y="120" width="25" height="14" rx="2" fill="#0284c7" stroke="#38bdf8" strokeWidth="1" />
-                    <circle cx="360" cy="127" r="3" fill={tel.proximitySensorActive ? "#10b981" : "#ef4444"} />
-                    <text x="325" y="115" fill="#7dd3fc" fontSize="9" fontFamily="monospace">
-                      PROX 58 [{tel.proximitySensorActive ? "SEATED" : "OPEN"}]
+                    <path d="M-56 -19H56V5H-56Z" fill="#e11d48" stroke="#fecdd3" strokeWidth="3" />
+                    <path d="M-48 4L-28 -18M48 4L28 -18" stroke="#fbbf24" strokeWidth="4" />
+                    <text
+                      x="0"
+                      y="-32"
+                      textAnchor="middle"
+                      fill="#fecdd3"
+                      fontFamily="monospace"
+                      fontSize="11"
+                    >
+                      T-MEMBER 35
                     </text>
                   </g>
-                );
-              })()}
-
-              {/* Telemetry Callout Box */}
-              <g transform="translate(560, 30)">
-                <rect width="210" height="95" rx="6" fill="#0c0a09" stroke="#d97706" strokeWidth="1" opacity="0.9" />
-                <text x="12" y="24" fill="#fbbf24" fontSize="11" fontFamily="monospace" fontWeight="bold">
-                  MILACRON CLAMP TELEMETRY
-                </text>
-                <text x="12" y="44" fill="#e7e5e4" fontSize="10" fontFamily="monospace">
-                  Actuator Thrust: {tel.actuatorThrustN.toFixed(0)} N
-                </text>
-                <text x="12" y="62" fill="#e7e5e4" fontSize="10" fontFamily="monospace">
-                  Clamp Force: {tel.clampingForceN.toFixed(0)} N
-                </text>
-                <text x="12" y="80" fill={tel.isSelfLocking ? "#34d399" : "#f87171"} fontSize="10" fontFamily="monospace">
-                  Bistable Holding: {tel.holdingForceWithoutPowerN.toFixed(0)} N
+                )}
+                <text
+                  x="0"
+                  y="106"
+                  textAnchor="middle"
+                  fill="#fde68a"
+                  fontFamily="monospace"
+                  fontSize="12"
+                >
+                  COMMON TOOL BASE 18
                 </text>
               </g>
-            </g>
-          )}
+            )}
 
-          {activeTab === "kinematics" && (
-            <g id="kinematic-locating-pins">
-              <rect x="60" y="40" width="680" height="360" rx="8" fill="#141210" stroke="#44403c" strokeWidth="1.5" />
-              <text x="80" y="70" fill="#f59e0b" fontSize="14" fontFamily="serif" fontWeight="bold">
-                Kinematic 3-2-1 Locating Pin Interface (Figures 7 & 8)
-              </text>
-
-              {/* Front Plate Face View */}
-              <circle cx="260" cy="220" r="140" fill="#1e293b" stroke="#64748b" strokeWidth="2" />
-              <rect x="235" y="160" width="50" height="120" rx="4" fill="#0f172a" stroke="#fbbf24" strokeWidth="1.5" />
-              <text x="260" y="150" fill="#fef08a" fontSize="10" fontFamily="monospace" textAnchor="middle">
-                SLIDE OPENING 30
-              </text>
-
-              {/* Cylindrical Pin 43 (Fixes X and Y) */}
-              <circle cx="260" cy="105" r="14" fill="#38bdf8" stroke="#0284c7" strokeWidth="2" />
-              <circle cx="260" cy="105" r="6" fill="#0f172a" />
-              <text x="285" y="110" fill="#38bdf8" fontSize="11" fontFamily="monospace" fontWeight="bold">
-                PIN 43 (CYLINDRICAL: FIXES X, Y)
-              </text>
-
-              {/* Diamond Pin 44 (Fixes Rotation Yaw θz) */}
-              <polygon points="260,320 274,335 260,350 246,335" fill="#f59e0b" stroke="#b45309" strokeWidth="2" />
-              <circle cx="260" cy="335" r="4" fill="#0f172a" />
-              <text x="285" y="340" fill="#fbbf24" fontSize="11" fontFamily="monospace" fontWeight="bold">
-                PIN 44 (DIAMOND: FIXES θz, PREVENTS BINDING)
-              </text>
-
-              {/* Fluid Pass-Through Port 50 */}
-              <circle cx="160" cy="220" r="12" fill="#0284c7" stroke="#38bdf8" strokeWidth="1.5" />
-              <circle cx="160" cy="220" r="18" fill="none" stroke="#f59e0b" strokeWidth="2" strokeDasharray="3 2" />
-              <text x="110" y="255" fill="#7dd3fc" fontSize="10" fontFamily="monospace">
-                PORT 50 + O-RING 80
-              </text>
-
-              {/* Explanation Card */}
-              <g transform="translate(480, 110)">
-                <rect width="240" height="180" rx="6" fill="#0c0a09" stroke="#57534e" strokeWidth="1" />
-                <text x="14" y="28" fill="#fbbf24" fontSize="11" fontFamily="monospace" fontWeight="bold">
-                  KINEMATIC RESOLUTION
-                </text>
-                <text x="14" y="52" fill="#e7e5e4" fontSize="10" fontFamily="monospace">
-                  • 3 DOFs: Flat Face Contact (Z, Pitch, Roll)
-                </text>
-                <text x="14" y="74" fill="#e7e5e4" fontSize="10" fontFamily="monospace">
-                  • 2 DOFs: Cylindrical Pin 43 (X, Y Origin)
-                </text>
-                <text x="14" y="96" fill="#e7e5e4" fontSize="10" fontFamily="monospace">
-                  • 1 DOF: Diamond Pin 44 (Yaw Rotation)
-                </text>
-                <text x="14" y="122" fill="#34d399" fontSize="10" fontFamily="monospace">
-                  Repeatability: {(tel.positionalRepeatabilityMm * 1000).toFixed(1)} µm
-                </text>
-                <text x="14" y="144" fill="#a8a29e" fontSize="9" fontFamily="monospace">
-                  Relieved diamond flats prevent thermal over-constraint.
-                </text>
-              </g>
-            </g>
-          )}
-
-          {activeTab === "rack" && (
-            <g id="passive-tool-rack">
-              <rect x="60" y="40" width="680" height="360" rx="8" fill="#141210" stroke="#44403c" strokeWidth="1.5" />
-              <text x="80" y="70" fill="#f59e0b" fontSize="14" fontFamily="serif" fontWeight="bold">
-                Automated Multi-Tool Storage Rack Sequence (Figure 1)
-              </text>
-
-              {/* Storage Rack Structure 20 */}
-              <rect x="120" y="240" width="560" height="20" rx="3" fill="#475569" stroke="#94a3b8" strokeWidth="1.5" />
-              <rect x="140" y="260" width="20" height="120" fill="#334155" />
-              <rect x="640" y="260" width="20" height="120" fill="#334155" />
-
-              {/* Tool 1 (Spot Welder in Bay 1) */}
-              <rect x="180" y="180" width="80" height="60" rx="4" fill="#292524" stroke="#d97706" strokeWidth="1.5" />
-              <text x="220" y="215" fill="#fcd34d" fontSize="9" fontFamily="monospace" textAnchor="middle">
-                SPOT WELD
-              </text>
-
-              {/* Tool 2 (Gripper in Bay 2) */}
-              <rect x="360" y="180" width="80" height="60" rx="4" fill="#292524" stroke="#0284c7" strokeWidth="1.5" />
-              <text x="400" y="215" fill="#7dd3fc" fontSize="9" fontFamily="monospace" textAnchor="middle">
-                GRIPPER
-              </text>
-
-              {/* Tool 3 (Sealant Dispenser in Bay 3) */}
-              <rect x="540" y="180" width="80" height="60" rx="4" fill="#292524" stroke="#10b981" strokeWidth="1.5" />
-              <text x="580" y="215" fill="#6ee7b7" fontSize="9" fontFamily="monospace" textAnchor="middle">
-                DISPENSER
-              </text>
-
-              {/* Robot Arm Docking Trajectory Vector */}
-              <path d="M 120,90 Q 220,110 220,165" fill="none" stroke="#fbbf24" strokeWidth="2.5" strokeDasharray="5 3" />
-              <text x="235" y="130" fill="#fbbf24" fontSize="11" fontFamily="monospace">
-                AUTONOMOUS DOCKING PATH
-              </text>
-
-              <rect x="120" y="300" width="560" height="70" rx="4" fill="#1c1917" stroke="#57534e" strokeWidth="1" />
-              <text x="140" y="325" fill="#fbbf24" fontSize="11" fontFamily="monospace">
-                CYCLE SEQUENCE: (1) Approach Rack → (2) Engage Locating Pins → (3) Actuate Slide → (4) Verify Proximity → (5) Extract Tool
-              </text>
-              <text x="140" y="350" fill="#cbd5e1" fontSize="10" fontFamily="monospace">
-                Enables a single 6-axis robot to perform welding, sealant dispensing, and part transfer in one production cycle.
-              </text>
-            </g>
-          )}
-        </svg>
-      </div>
-
-      {/* Sliders Panel */}
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        {/* Column 1: Pneumatic Supply */}
-        <div className="space-y-4 rounded-xl border border-stone-800 bg-stone-900/60 p-4">
-          <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-amber-400">
-            Pneumatics & Actuator
-          </h3>
-
-          <div>
-            <div className="flex justify-between text-xs text-stone-300">
-              <label htmlFor={`${baseId}-air-pressure`}>Air Pressure (MPa)</label>
-              <span className="font-mono text-amber-300">{controls.airPressureMpa.toFixed(2)} MPa</span>
-            </div>
-            <input
-              id={`${baseId}-air-pressure`}
-              type="range"
-              min="0.2"
-              max="1.0"
-              step="0.05"
-              value={controls.airPressureMpa}
-              onChange={(e) => update("airPressureMpa", Number(e.target.value))}
-              className="mt-1 w-full accent-amber-500"
+            <path
+              d="M594 82V166"
+              stroke="#fbbf24"
+              strokeWidth="3"
+              markerEnd="url(#milacron-toolchanger-arrow)"
             />
-          </div>
+            <text x="610" y="120" fill="#fde68a" fontFamily="monospace" fontSize="11">
+              ACTUATOR 60
+            </text>
+            <text x="610" y="139" fill="#94a3b8" fontFamily="monospace" fontSize="10">
+              state only
+            </text>
 
-          <div>
-            <div className="flex justify-between text-xs text-stone-300">
-              <label htmlFor={`${baseId}-cyl-bore`}>Cylinder Bore D_cyl (mm)</label>
-              <span className="font-mono text-amber-300">{controls.cylinderBoreMm} mm</span>
+            <g transform="translate(24 350)">
+              <rect
+                width="632"
+                height="54"
+                rx="10"
+                fill="#020617"
+                stroke={state.toolRetained ? "#34d399" : "#334155"}
+                strokeWidth="2"
+              />
+              <text x="18" y="24" fill="#94a3b8" fontFamily="monospace" fontSize="11">
+                ENGAGEMENT STATE
+              </text>
+              <text
+                x="18"
+                y="42"
+                fill={state.claimFourRampCaptured ? "#6ee7b7" : "#fcd34d"}
+                fontFamily="monospace"
+                fontSize="16"
+              >
+                {state.phase.toUpperCase().replaceAll("-", " ")}
+              </text>
+              <text x="338" y="24" fill="#94a3b8" fontFamily="monospace" fontSize="11">
+                SOURCE CONSTRAINT
+              </text>
+              <text x="338" y="42" fill="#fda4af" fontFamily="monospace" fontSize="12">
+                NO FORCE / STROKE / TIME RESULT
+              </text>
+            </g>
+          </svg>
+          <div className="mt-3 grid gap-2 text-xs sm:grid-cols-3">
+            <div className="rounded-lg border border-cyan-800/70 bg-cyan-950/35 p-2.5">
+              <span className="text-cyan-300">Registration</span>
+              <span className="float-right font-mono">
+                {state.registrationComplete ? "seated" : "not seated"}
+              </span>
             </div>
-            <input
-              id={`${baseId}-cyl-bore`}
-              type="range"
-              min="20"
-              max="50"
-              step="2"
-              value={controls.cylinderBoreMm}
-              onChange={(e) => update("cylinderBoreMm", Number(e.target.value))}
-              className="mt-1 w-full accent-amber-500"
-            />
+            <div className="rounded-lg border border-amber-800/70 bg-amber-950/35 p-2.5">
+              <span className="text-amber-300">Aperture</span>
+              <span className="float-right font-mono">
+                {state.apertureAligned ? "aligned" : "offset"}
+              </span>
+            </div>
+            <div className="rounded-lg border border-emerald-800/70 bg-emerald-950/35 p-2.5">
+              <span className="text-emerald-300">Claim 4</span>
+              <span className="float-right font-mono">
+                {state.claimFourRampCaptured ? "ramp captured" : "not selected"}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Column 2: Wedging & Friction Mechanics */}
-        <div className="space-y-4 rounded-xl border border-stone-800 bg-stone-900/60 p-4">
-          <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-amber-400">
-            Wedge Ramp Friction
-          </h3>
-
-          <div>
-            <div className="flex justify-between text-xs text-stone-300">
-              <label htmlFor={`${baseId}-wedge-angle`}>Ramp Taper Angle θ (°)</label>
-              <span className="font-mono text-amber-300">{controls.wedgeAngleDeg}°</span>
-            </div>
+        <aside className="space-y-4 bg-slate-950/70 p-4">
+          <label className="flex cursor-pointer items-center justify-between gap-3 text-sm text-slate-200">
+            Tool base at adapter
             <input
-              id={`${baseId}-wedge-angle`}
-              type="range"
-              min="4"
-              max="15"
-              step="0.5"
-              value={controls.wedgeAngleDeg}
-              onChange={(e) => update("wedgeAngleDeg", Number(e.target.value))}
-              className="mt-1 w-full accent-amber-500"
+              type="checkbox"
+              checked={state.toolBasePresent}
+              onChange={(event) => updateParam("toolBasePresent", event.target.checked ? 1 : 0)}
+              className="h-5 w-5 accent-cyan-400"
             />
-          </div>
-
-          <div>
-            <div className="flex justify-between text-xs text-stone-300">
-              <label htmlFor={`${baseId}-friction-coeff`}>Friction Coeff µ_s</label>
-              <span className="font-mono text-amber-300">{controls.frictionCoeff.toFixed(2)}</span>
-            </div>
+          </label>
+          <label className="block text-sm text-slate-200">
+            Pin / bushing registration{" "}
+            <span className="float-right font-mono text-cyan-300">
+              {Math.round((params.registrationFraction ?? 1) * 100)}%
+            </span>
             <input
-              id={`${baseId}-friction-coeff`}
+              className="mt-2 w-full accent-cyan-400"
               type="range"
-              min="0.08"
-              max="0.30"
+              min="0"
+              max="1"
               step="0.01"
-              value={controls.frictionCoeff}
-              onChange={(e) => update("frictionCoeff", Number(e.target.value))}
-              className="mt-1 w-full accent-amber-500"
+              value={params.registrationFraction ?? 1}
+              aria-label="Tool-base registration fraction"
+              onChange={(event) => updateParam("registrationFraction", Number(event.target.value))}
             />
-          </div>
-        </div>
-
-        {/* Column 3: Slide Stroke & Docking Gap */}
-        <div className="space-y-4 rounded-xl border border-stone-800 bg-stone-900/60 p-4">
-          <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-amber-400">
-            Stroke & Docking
-          </h3>
-
-          <div>
-            <div className="flex justify-between text-xs text-stone-300">
-              <label htmlFor={`${baseId}-slide-stroke`}>Slide Stroke (mm)</label>
-              <span className="font-mono text-amber-300">{controls.slideStrokeMm} mm</span>
-            </div>
+          </label>
+          <label className="block text-sm text-slate-200">
+            Locking-slide position{" "}
+            <span className="float-right font-mono text-amber-300">
+              {Math.round((params.lockingSlideFraction ?? 1) * 100)}%
+            </span>
             <input
-              id={`${baseId}-slide-stroke`}
+              className="mt-2 w-full accent-amber-400"
               type="range"
               min="0"
-              max="25"
-              step="1"
-              value={controls.slideStrokeMm}
-              onChange={(e) => update("slideStrokeMm", Number(e.target.value))}
-              className="mt-1 w-full accent-amber-500"
+              max="1"
+              step="0.01"
+              value={params.lockingSlideFraction ?? 1}
+              aria-label="Locking slide fraction"
+              onChange={(event) => updateParam("lockingSlideFraction", Number(event.target.value))}
             />
-          </div>
-
-          <div>
-            <div className="flex justify-between text-xs text-stone-300">
-              <label htmlFor={`${baseId}-docking-gap`}>Docking Clearance Gap (mm)</label>
-              <span className="font-mono text-amber-300">{controls.dockingGapMm.toFixed(1)} mm</span>
-            </div>
+          </label>
+          <label className="flex cursor-pointer items-center justify-between gap-3 text-sm text-slate-200">
+            Claim 4 T-member form
             <input
-              id={`${baseId}-docking-gap`}
-              type="range"
-              min="0"
-              max="5"
-              step="0.2"
-              value={controls.dockingGapMm}
-              onChange={(e) => update("dockingGapMm", Number(e.target.value))}
-              className="mt-1 w-full accent-amber-500"
+              type="checkbox"
+              checked={(params.claimFourTMember ?? 1) >= 0.5}
+              onChange={(event) => updateParam("claimFourTMember", event.target.checked ? 1 : 0)}
+              className="h-5 w-5 accent-rose-400"
             />
-          </div>
-        </div>
+          </label>
+          <p className="rounded-lg border border-rose-900/70 bg-rose-950/35 p-3 text-xs leading-5 text-rose-100">
+            {state.sourceBoundary.note}
+          </p>
+          <button
+            type="button"
+            onClick={resetParams}
+            className="flex min-h-10 w-full items-center justify-center gap-2 rounded-lg border border-slate-600 bg-slate-900 px-3 text-sm text-slate-100 hover:bg-slate-800"
+          >
+            <RotateCcw className="h-4 w-4" />
+            Reset source state
+          </button>
+        </aside>
       </div>
-    </div>
+    </section>
   );
 }

@@ -37,6 +37,7 @@ import {
 import { stepCortPuddlingRolling } from "./cortKernel";
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
+import { readKamenSegwayControls, stepKamenSegwaySi } from "./kamenSegwayKernel";
 import { readKamenTransporterControls, stepKamenTransporterSi } from "./kamenTransporterKernel";
 import { stepRenoEscalator } from "./machineKernels";
 import { stepRillieuxEvaporator } from "./rillieuxEvaporatorKernel";
@@ -66,6 +67,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 31,128 prints the hoist, reversing-belt, brake, stop-rope, counterpoise, and hook-rack topology but no load, force, speed, torque, friction, travel, timing, or power datum from which an SI energy channel can be derived.",
   "us-4341502-makino-scara":
     "US 4,341,502 prints link topology and joint angle relationships but no link lengths, motor torque, payload mass, velocity, friction, or power datum from which an SI energy channel can be derived.",
+  "us-4512709-milacron-robot-toolchanger":
+    "US 4,512,709 prints a fluid-powered linear actuator, slideway, T-member ramps, locating pins, and optional fluid/electrical interfaces but no pressure, cylinder bore, stroke, flow, speed, force, ramp angle, friction, payload, mass, duty cycle, or power datum from which a source-faithful SI energy channel can be derived.",
   "us-4765668-robot-end-effector":
     "US 4,765,668 prints prototype screw lead, gear diameters, an air-motor rating, hand-travel, and force figures, but does not supply a consistent torque-to-grip/contact chain, finger/workpiece geometry, friction, pneumatic flow, duty cycle, connector stroke, or verified mechanical power datum from which a source-faithful SI energy channel can be derived.",
   "us-2846084-goertz-electronic-master-slave-manipulator":
@@ -74,8 +77,14 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 4,921,293 prints four cable tensions, pulley-radius symbols, three static torque equations, and remote-drive topology but no cable speed, motor current, voltage, torque constant, friction, efficiency, duty cycle, contact work, or time response from which a source-faithful SI power-flow channel can be derived.",
   "us-2988237-devol-programmed-transfer":
     "US 2,988,237 prints coded-position, program-controller, hydraulic-actuator, transfer-head, and gripper relationships but no reusable hydraulic pressure, flow, actuator dimensions, payload, mass, speed, efficiency, or power datum from which an SI energy channel can be derived.",
+  "us-3212649-amf-versatran":
+    "US 3,212,649 prints hydraulic topology, safety and cooling arrangements, actuator relationships, resolver feedback, and tape playback, but no calibrated pressure, flow, cylinder area, speed, payload, mass, efficiency, duty cycle, or power datum from which a source-faithful SI energy channel can be derived.",
+  "us-3081379-lemelson-machine-vision":
+    "US 3,081,379 prints video raster scanning, camera pickup, pulse clipping, threshold comparator, and solenoid gating topology but no continuous electrical grid power, camera tube filament wattages, or thermal loss datum from which an SI energy channel can be derived.",
   "us-3119501-lemelson-automatic-warehousing":
     "US 3,119,501 prints 3-axis carriage, mast, hoist, and fork transfer topology but no motor horsepower, electrical current, friction coefficients, travel speeds, or thermal dissipation datum from which an SI energy channel can be derived.",
+  "us-3260375-lemelson-adjustable-manipulator":
+    "US 3,260,375 prints overhead carriage, rotating column, wrist pivot, and limit-switch circuit topology but no motor horsepower, voltage, current, gear ratios, travel velocities, payload mass, jaw clamping force, or thermal dissipation datum from which an SI energy channel can be derived.",
   "us-3313014-lemelson-automatic-production":
     "US 3,313,014 prints guided carrier, lift, platform reach, marker sensing, controller coupling, retention, and machine-station topology but no dimensions, payload, motor rating, voltage, current, pressure, flow, travel speed, timing, friction, force, or thermal-loss datum from which an SI energy channel can be derived.",
   "us-4098001-watson-rcc":
@@ -633,6 +642,31 @@ export function energyChannelsFor(
     ];
   }
 
+  if (patentId === "us-3728480-baer-odyssey") {
+    return [
+      { name: "DC Battery Supply (9V)", watts: 1.8, tone: "in" },
+      { name: "Multivibrators & RF Modulator", watts: 1.45, tone: "useful" },
+      { name: "Resistive Thermal Dissipation", watts: 0.35, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-4063220-metcalfe-ethernet") {
+    return [
+      { name: "Transceiver Driver DC Power (+12V/-5V)", watts: 0.95, tone: "in" },
+      { name: "Coaxial RF Signal Transmission", watts: 0.45, tone: "useful" },
+      { name: "50-Ohm Terminator & Cable Resistive Loss", watts: 0.5, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-2318259-sikorsky-helicopter") {
+    return [
+      { name: "Engine Fuel Chemical Combustion", watts: 55000.0, tone: "in" },
+      { name: "Main Rotor Lift & Induced Power", watts: 44000.0, tone: "useful" },
+      { name: "Tail Rotor Anti-Torque Thrust Power", watts: 4500.0, tone: "useful" },
+      { name: "Blade Profile Drag & Transmission Losses", watts: 6500.0, tone: "loss" },
+    ];
+  }
+
   if (patentId === "us-4136359-wozniak-apple") {
     const _woz = stepWozniakApple({
       crystalFreq: params.crystalFreq,
@@ -985,6 +1019,37 @@ export function energyChannelsFor(
     ];
   }
 
+  if (patentId === "us-6302230-kamen-segway") {
+    const controls = readKamenSegwayControls(params);
+    const tel = stepKamenSegwaySi(controls);
+    const mechanicalThrustW = Math.abs(tel.driveThrustForceN * tel.velocityMS);
+    const motorElecW = Math.max(
+      35,
+      mechanicalThrustW * 1.25 + Math.abs(tel.motorTorqueNm) * 2.2 + 25,
+    );
+    const hapticRippleW = tel.tactileAlarmActive ? 18.0 : 0.0;
+    const electricalOhmicLossW = Math.max(10, motorElecW - mechanicalThrustW - hapticRippleW);
+
+    return [
+      { name: "Dual Saphion Li-Ion Battery Power", watts: motorElecW, tone: "in" },
+      {
+        name: "Inverted Pendulum Ground Thrust & Kinetic Propulsion",
+        watts: mechanicalThrustW,
+        tone: "useful",
+      },
+      {
+        name: "18 Hz Tactile Ripple Alarm Shudder Dissipation",
+        watts: hapticRippleW,
+        tone: tel.tactileAlarmActive ? "useful" : "loss",
+      },
+      {
+        name: "Brushless Servomotor Copper I²R & Planetary Gear Friction Loss",
+        watts: electricalOhmicLossW,
+        tone: "loss",
+      },
+    ];
+  }
+
   if (patentId === "us-2717437-mestral-velcro") {
     const peelRateMmS = params.appliedPeelRateMmS ?? 10.0;
     const totalPeelN = params.totalPeelForceN ?? 2.1;
@@ -999,31 +1064,6 @@ export function energyChannelsFor(
       {
         name: "Polyamide Viscoelastic Hysteresis & Fiber Friction Loss",
         watts: totalPeelW * 0.18,
-        tone: "loss",
-      },
-    ];
-  }
-
-  if (patentId === "us-4512709-milacron-robot-toolchanger") {
-    const pMpa = typeof params.airPressureMpa === "number" ? params.airPressureMpa : 0.60;
-    const pPa = pMpa * 1e6;
-    const boreMm = typeof params.cylinderBoreMm === "number" ? params.cylinderBoreMm : 32.0;
-    const areaM2 = (Math.PI / 4) * (boreMm * 1e-3) ** 2;
-    const strokeSpeedM_s = 0.08; // 80 mm/s average pneumatic slide speed
-    const pneumaticPowerW = pPa * areaM2 * strokeSpeedM_s;
-    const mechanicalClampingW = pneumaticPowerW * 0.82;
-    const slidingFrictionLossW = pneumaticPowerW * 0.18;
-
-    return [
-      { name: "Pneumatic Cylinder Compressed-Air Power Input", watts: pneumaticPowerW, tone: "in" },
-      {
-        name: "Wedge Ramp Elastic Preload & Tool Clamping Strain Energy",
-        watts: mechanicalClampingW,
-        tone: "useful",
-      },
-      {
-        name: "Slideway Guide & Wedge Boundary Sliding Friction Loss",
-        watts: slidingFrictionLossW,
         tone: "loss",
       },
     ];

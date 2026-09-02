@@ -97,6 +97,7 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
       "us-3858581-kamen-medication-injection-device",
       "us-4098001-watson-remote-center-compliance",
       "us-4098001-watson-rcc",
+      "us-4512709-milacron-robot-toolchanger",
     ]);
 
     for (const patent of allPatents) {

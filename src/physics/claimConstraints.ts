@@ -433,26 +433,26 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-4512709-milacron-robot-toolchanger",
-      claimTitle: "Transverse Pneumatic Locking Slide in Dual-Plate Housing",
+      claimTitle: "Transverse Locking Slide in Dual-Plate Housing",
       activeDescription:
-        "Claim 1 positions a transverse locking slide driven across the adapter central opening to engage an insertable tool retention member.",
+        "Claim 1 requires a two-plate housing, central opening, actuator-driven transverse slideway, alignable slide aperture, tool-base retention member, and positioning relationships to the robot member.",
       invertedDescription:
-        "Without transverse slide engagement: axial retention relies on passive detents, causing tool detachment under dynamic robot accelerations.",
-      failureModeName: "Dynamic Tool Ejection Under Inertial Acceleration",
+        "With the slide aperture left aligned, the source-described tool-base member remains in its admission/release path instead of the claim's shifted capture configuration.",
+      failureModeName: "Open-Aperture Release State",
       historicalPriorArt:
-        "Early tool changers used spring-loaded balls or axial pull-studs that slipped or jammed under heavy canted payloads.",
+        "The grant's own background identifies manual replacement of a robot's one special tool during job reprogramming; it does not establish a general performance comparison with other retention systems.",
     },
     {
       claimNumber: 4,
       patentId: "us-4512709-milacron-robot-toolchanger",
-      claimTitle: "Bifurcated Wedge Ramp T-Member Self-Locking Clamping",
+      claimTitle: "Bifurcated Slide Ramp and T-Member Form",
       activeDescription:
-        "Claim 4 forms bifurcated ramp surfaces on the slide matching beveled crossbar ramps on the T-member to create a self-locking wedging clamp.",
+        "Claim 4 narrows Claim 3 to a T-shaped member whose crossbar ramp cooperates with a bifurcated slide ramp while leaving clearance for the stem.",
       invertedDescription:
-        "Without self-locking wedge ramps: loss of shop air pressure releases the clamping force, dropping the tool payload during power failure.",
-      failureModeName: "Catastrophic Tool Drop on Pneumatic Line Depressurization",
+        "Without the selected Claim 4 T-member/ramp arrangement, the display can still represent Claim 3 slide retention but cannot assert the dependent claim's particular crossbar-and-clearance geometry.",
+      failureModeName: "Claim 4 Geometry Not Selected",
       historicalPriorArt:
-        "Direct cylinder push-locks without shallow wedging angles backdrive and unclamp the instant line pressure drops below holding threshold.",
+        "The specification says the illustrated slide/T-member engagement tends to remain in a terminal state after power failure, but prints no ramp angle, friction, force, payload, or reliability condition from which a self-locking performance calculation can be made.",
     },
   ],
   "us-4575330-hull-stereolithography": [
@@ -1327,6 +1327,49 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Conventional light sources relied on thermal incandescence or gas discharge with incoherent, multi-directional emission.",
     },
   ],
+  "us-3081379-lemelson-machine-vision": [
+    {
+      claimNumber: 1,
+      patentId: "us-3081379-lemelson-machine-vision",
+      claimTitle: "Synchronized Video Beam Gating, Pulse Duration Measurement & Defect Diverter",
+      activeDescription:
+        "Claim 1 combines electron beam raster scanning, synchronized gating means, and an analyzing circuit that measures video pulse duration across the scanned field to detect dimensional variations and actuate an automatic workpiece rejector.",
+      invertedDescription:
+        "Without the claimed synchronized gating means and pulse duration analyzing circuit, the raster video signal cannot isolate the predetermined object boundaries or gauge part dimensions in real time, rendering automated defect rejection impossible.",
+      failureModeName: "Ungated Optical Metrology Loss & Dimensional Inspection Failure",
+      historicalPriorArt:
+        "Prior industrial inspection required human operators to manually position and visually read optical comparators or calipers, with no capability for high-speed automated raster-scan dimensional sorting.",
+    },
+  ],
+  "us-3728480-baer-odyssey": [
+    {
+      claimNumber: 1,
+      patentId: "us-3728480-baer-odyssey",
+      claimTitle: "Standard TV Receiver Coupling, Raster Sync, and Participant Dot Manipulation",
+      activeDescription:
+        "Claim 1 generates participant-manipulated video dots synchronized with TV raster scan and directly couples the modulated signals only to a standard unmodified television receiver.",
+      invertedDescription:
+        "Passive Broadcast TV Only: Standard commercial television receivers function strictly as passive display instruments with zero participant control or local symbol generation.",
+      failureModeName: "Passive Broadcast Receiver Lock & Unresponsive Video Raster",
+      historicalPriorArt:
+        "Prior to Baer's 1968 invention, cathode ray tubes in home receivers were solely passive broadcast receivers whose presentation was dictated entirely by transmission studios.",
+    },
+  ],
+  "us-4063220-metcalfe-ethernet": [
+    {
+      claimNumber: 1,
+      patentId: "us-4063220-metcalfe-ethernet",
+      claimTitle:
+        "Multipoint Communicating Medium, Transceivers, and Collision-Triggered Transmission Interruption",
+      activeDescription:
+        "Claim 1 couples a plurality of transceivers to a shared medium, generates a collision signal whenever concurrent transmission is detected, and immediately interrupts transmission upon collision presence.",
+      invertedDescription:
+        "Uncoordinated ALOHA-Style Blind Transmission: Disabling instantaneous collision detection and transmission abort causes colliding packets to continue transmitting across their full length, wasting channel airtime and degrading network throughput.",
+      failureModeName: "Blind Collision Contention & Channel Saturation Collapse",
+      historicalPriorArt:
+        "Prior ALOHA radio networks lacked collision detection, causing whole overlapping packets to be destroyed and capping theoretical maximum channel utilization to 18.4%.",
+    },
+  ],
   "us-3119501-lemelson-automatic-warehousing": [
     {
       claimNumber: 1,
@@ -1351,6 +1394,44 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       failureModeName: "Claim 3 Reflective-Marker Feedback Omitted",
       historicalPriorArt:
         "The specification presents photoelectric markers and a mechanical limit-switch alternative as position-event sources for its preset counting control.",
+    },
+  ],
+  "us-3260375-lemelson-adjustable-manipulator": [
+    {
+      claimNumber: 1,
+      patentId: "us-3260375-lemelson-adjustable-manipulator",
+      claimTitle: "Guided Carriage, Rotational Coupling, and Selected Limit Switches",
+      activeDescription:
+        "Claim 1 joins guided carriage travel, rotational coupling, power means, and first and second limit-switch/actuator relationships at selected positions.",
+      invertedDescription:
+        "Claim-topology probe: omitting either selected switch/actuator relationship removes the corresponding positional condition recited by Claim 1; no safety, speed, or collision result is inferred.",
+      failureModeName: "Claim 1 Selected Switch Relationship Omitted",
+      historicalPriorArt:
+        "The specification describes earlier article-manipulation equipment as specialized and inflexible, while identifying adjustable control as an object of this grant.",
+    },
+    {
+      claimNumber: 8,
+      patentId: "us-3260375-lemelson-adjustable-manipulator",
+      claimTitle: "Rotatable Assembly with a Bi-Stable Limit Switch",
+      activeDescription:
+        "Claim 8 recites a bi-stable limit switch whose actuator arm engages first and further actuator means at selected relative rotary positions, producing contact closures and stopping relationships.",
+      invertedDescription:
+        "Claim-topology probe: omitting the bi-stable switch or its selected actuator relationships removes the contact-set arrangement recited by Claim 8; no positioning accuracy is inferred.",
+      failureModeName: "Claim 8 Bi-Stable Switch Relationship Omitted",
+      historicalPriorArt:
+        "The specification describes limit-switch and adjustable-actuation means for selected cyclic movement; it does not supply a comparative survey of rotary fixtures.",
+    },
+    {
+      claimNumber: 15,
+      patentId: "us-3260375-lemelson-adjustable-manipulator",
+      claimTitle: "Selected-Position Servo Stop/Start in a Repetitive Cycle",
+      activeDescription:
+        "Claim 15 recites adjustable switching means that, at a predetermined position, cause one servo means to stop and another to start as part of a repeatable conveying cycle.",
+      invertedDescription:
+        "Claim-topology probe: omitting the selected-position stop/start relationship removes the conveying-cycle control relationship recited by Claim 15; no concurrent-motion or collision result is inferred.",
+      failureModeName: "Claim 15 Selected-Position Handoff Omitted",
+      historicalPriorArt:
+        "The specification calls other programmable apparatus relatively complex and costly because of the controls it lists, while proposing a limit-switch-controlled cycle.",
     },
   ],
   "us-3313014-lemelson-automatic-production": [
@@ -1525,6 +1606,58 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       failureModeName: "Obstacle / Stair Riser Immobilization",
       historicalPriorArt:
         "Tracked or legged stair climbers were excessively heavy, mechanically complex, and prone to slipping.",
+    },
+  ],
+  "us-6302230-kamen-segway": [
+    {
+      claimNumber: 1,
+      patentId: "us-6302230-kamen-segway",
+      claimTitle: "Inverted Pendulum Dynamic Balancing & Balancing Margin Alarm",
+      activeDescription:
+        "Claim 1 maintains closed-loop dynamic balance on coaxial wheels while continuously evaluating reserve acceleration potential to warn the user before balancing failure.",
+      invertedDescription:
+        "Disabled balance loop: inverted pendulum transporter immediately falls forward/backward under gravitational torque, or saturates motors without rider warning.",
+      failureModeName: "Inverted Pendulum Gravitational Overturn / Torque Saturation",
+      historicalPriorArt:
+        "Prior vehicles relied on static multi-wheel stability or passive gyroscopes, lacking active lean balancing and dynamic acceleration margin safety supervision.",
+    },
+    {
+      claimNumber: 2,
+      patentId: "us-6302230-kamen-segway",
+      claimTitle: "Tactile Motor Ripple Vibration Alarm",
+      activeDescription:
+        "Claim 2 modulates motor drive power output with an 18 Hz torque ripple to transmit physical shudder feedback through the platform to the rider's feet.",
+      invertedDescription:
+        "No tactile feedback: rider receives no physical vibration warning when approaching motor torque limits, increasing risk of sudden loss of balance.",
+      failureModeName: "Loss of Haptic Speed/Torque Margin Feedback",
+      historicalPriorArt:
+        "Visual or audible dashboard warnings were easily missed in noisy outdoor environments or when rider focus was on the path ahead.",
+    },
+  ],
+  "us-3212649-amf-versatran": [
+    {
+      claimNumber: 1,
+      patentId: "us-3212649-amf-versatran",
+      claimTitle: "Six-Actuator Hydraulic Machine Combination",
+      activeDescription:
+        "Claim 1 combines six hydraulic actuators, fluid conduits, servo-valve means, electrical control, and the stated column, arm, wrist, and work-handling structure.",
+      invertedDescription:
+        "Without this claim's combination, the exhibit no longer represents the stated coordinated hydraulic machine; no physical failure mode is inferred from missing source parameters.",
+      failureModeName: "Claim 1 Machine Topology Withheld",
+      historicalPriorArt:
+        "Single-purpose fixed transfer lines could only execute one unalterable mechanical stroke.",
+    },
+    {
+      claimNumber: 8,
+      patentId: "us-3212649-amf-versatran",
+      claimTitle: "Manual Programming, Recording, and Playback",
+      activeDescription:
+        "Claim 8 combines the programming arm, generated signals, sensing, recording, and repetitive playback to the servo valves.",
+      invertedDescription:
+        "Without this claim's record/playback combination, the exhibit does not depict a source-supported automatic replay path; no trajectory quality or alternative programming method is inferred.",
+      failureModeName: "Claim 8 Record/Playback Topology Withheld",
+      historicalPriorArt:
+        "Point-to-point step drums or discrete patchboards were slow and incapable of continuous contouring.",
     },
   ],
 };
@@ -2264,6 +2397,130 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "INVERTED PENDULUM INSTABILITY: Claim 1 active feedback control loop required to counteract gravitational overturning moment.";
+      }
+      break;
+    }
+
+    case "us-6302230-kamen-segway": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim2Active = claimStates[2] ?? true;
+
+      if (!claim1Active) {
+        modified.riderPitchDeg = 22; // Overturn lean beyond recovery envelope
+        activeFailures.push(
+          "Dynamic Balancing Failure: Without Claim 1 closed-loop dynamic balancing, inverted pendulum platform collapses under gravitational torque.",
+        );
+        refusalWarning =
+          "INVERTED PENDULUM INSTABILITY: Claim 1 active motor torque balancing required to prevent forward/rearward tipover.";
+      }
+      if (!claim2Active) {
+        activeFailures.push(
+          "Tactile Ripple Omitted: Haptic platform shudder alarm disabled; rider receives no physical footplate vibration upon approaching torque limits.",
+        );
+      }
+      break;
+    }
+
+    case "us-3212649-amf-versatran": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim8Active = claimStates[8] ?? true;
+
+      if (!claim1Active) {
+        activeFailures.push(
+          "Claim 1 topology withheld: the display no longer represents the six-actuator hydraulic/servo-valve combination.",
+        );
+        refusalWarning =
+          "SOURCE BOUNDARY: the grant supplies no pressure, cylinder area, mass, payload, or failure dynamics from which a physical actuator outcome can be calculated.";
+      }
+      if (!claim8Active) {
+        activeFailures.push(
+          "Claim 8 topology withheld: the display no longer represents the source-described programming-arm, recording, and repetitive-playback path.",
+        );
+      }
+      break;
+    }
+
+    case "us-3081379-lemelson-machine-vision": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.gateWindowWidthUs = 60.0;
+        modified.thresholdVoltage = 0.05;
+        activeFailures.push(
+          "Ungated Video Noise: Lack of synchronized gating causes background clutter to trigger continuous false defect states",
+        );
+        refusalWarning =
+          "REGION OF INTEREST GATING COLLAPSE: Synchronized electronic gating required to isolate workpiece measurement zone.";
+      }
+      break;
+    }
+
+    case "us-3728480-baer-odyssey": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.ballSpeedMultiplier = 0.0;
+        activeFailures.push(
+          "Passive Broadcast Mode: Participant manipulation disabled; television functions solely as passive receiver with zero local dot generation.",
+        );
+        refusalWarning = "PASSIVE BROADCAST LOCK: Active interactive symbol generation disengaged.";
+      }
+      break;
+    }
+
+    case "us-4063220-metcalfe-ethernet": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.triggerCollision = 1;
+        activeFailures.push(
+          "Blind Transmission Mode: Listen-while-talk collision detection disabled; overlapping transmissions continue blindly without abortion, collapsing channel throughput.",
+        );
+        refusalWarning = "CONTENTION COLLAPSE: Collision detection and abort mechanism disengaged.";
+      }
+      break;
+    }
+
+    case "us-2318259-sikorsky-helicopter": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim2Active = claimStates[2] ?? true;
+
+      if (!claim2Active) {
+        modified.tailRotorPedalPercent = -100.0;
+        activeFailures.push(
+          "Uncompensated Torque Reaction: Auxiliary anti-torque tail rotor disengaged; aircraft spins uncontrollably about main rotor axis due to uncancelled torque reaction.",
+        );
+        refusalWarning = "TORQUE EQUILIBRIUM VIOLATION: Anti-torque tail rotor compensation disengaged.";
+      }
+
+      if (!claim1Active) {
+        modified.engineThrottlePercent = 20.0;
+        activeFailures.push(
+          "Engine Droop / Stall Mode: Collective pitch-throttle correlator disengaged; engine lacks automatic power compensation when pulling collective pitch, leading to severe RPM decay.",
+        );
+        refusalWarning = "THROTTLE CORRELATION FAILURE: Synchronized pitch-power linkage disengaged.";
+      }
+      break;
+    }
+
+    case "us-3260375-lemelson-adjustable-manipulator": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim8Active = claimStates[8] ?? true;
+      const claim15Active = claimStates[15] ?? true;
+
+      if (!claim1Active) {
+        activeFailures.push(
+          "Claim 1 topology omitted: the display no longer represents its first and second selected switch/actuator relationships.",
+        );
+        refusalWarning =
+          "POSITIONAL REFUSAL: no travel limit, stopping accuracy, or safety behavior is inferred.";
+      }
+      if (!claim8Active) {
+        activeFailures.push(
+          "Claim 8 topology omitted: the display no longer represents its bi-stable switch contact-set relationship.",
+        );
+      }
+      if (!claim15Active) {
+        activeFailures.push(
+          "Claim 15 topology omitted: the display no longer represents its selected-position servo stop/start relationship.",
+        );
       }
       break;
     }

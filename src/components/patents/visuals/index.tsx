@@ -27,6 +27,10 @@ const SimLoading = () => (
 );
 // 2D sims are lazy: the dispatcher defaults to the 3D face, so each page only
 // downloads the vector-diagram code when the visitor actually toggles it.
+const AmfVersatranSim = dynamic(() => import("./AMFVersatranSim").then((m) => m.AmfVersatranSim), {
+  ssr: false,
+  loading: SimLoading,
+});
 const ArkwrightWaterFrameSim = dynamic(
   () => import("./ArkwrightWaterFrameSim").then((m) => m.ArkwrightWaterFrameSim),
   { ssr: false, loading: SimLoading },
@@ -35,6 +39,10 @@ const BaekelandBakeliteSim = dynamic(
   () => import("./BaekelandBakeliteSim").then((m) => m.BaekelandBakeliteSim),
   { ssr: false, loading: SimLoading },
 );
+const BaerOdysseySim = dynamic(() => import("./BaerOdysseySim").then((m) => m.BaerOdysseySim), {
+  ssr: false,
+  loading: SimLoading,
+});
 const BardeenTransistorSim = dynamic(
   () => import("./BardeenTransistorSim").then((m) => m.BardeenTransistorSim),
   { ssr: false, loading: SimLoading },
@@ -210,6 +218,10 @@ const KamenTransporterSim = dynamic(
   () => import("./KamenTransporterSim").then((m) => m.KamenTransporterSim),
   { ssr: false, loading: SimLoading },
 );
+const KamenSegwaySim = dynamic(() => import("./KamenSegwaySim").then((m) => m.KamenSegwaySim), {
+  ssr: false,
+  loading: SimLoading,
+});
 const KamenMedicationInjectionSim = dynamic(
   () => import("./KamenMedicationInjectionSim").then((m) => m.KamenMedicationInjectionSim),
   { ssr: false, loading: SimLoading },
@@ -270,6 +282,10 @@ const MestralVelcroSim = dynamic(
   () => import("./MestralVelcroSim").then((m) => m.MestralVelcroSim),
   { ssr: false, loading: SimLoading },
 );
+const MetcalfeEthernetSim = dynamic(
+  () => import("./MetcalfeEthernetSim").then((m) => m.MetcalfeEthernetSim),
+  { ssr: false, loading: SimLoading },
+);
 const MorseTelegraphSim = dynamic(
   () => import("./MorseTelegraphSim").then((m) => m.MorseTelegraphSim),
   { ssr: false, loading: SimLoading },
@@ -326,6 +342,10 @@ const SholesTypewriterSim = dynamic(
   () => import("./SholesTypewriterSim").then((m) => m.SholesTypewriterSim),
   { ssr: false, loading: SimLoading },
 );
+const SikorskyHelicopterSim = dynamic(
+  () => import("./SikorskyHelicopterSim").then((m) => m.SikorskyHelicopterSim),
+  { ssr: false, loading: SimLoading },
+);
 const SpencerMicrowaveSim = dynamic(
   () => import("./SpencerMicrowaveSim").then((m) => m.SpencerMicrowaveSim),
   { ssr: false, loading: SimLoading },
@@ -368,6 +388,15 @@ const LemelsonAutomaticWarehousingSim = dynamic(
 );
 const LemelsonAutomaticProductionSim = dynamic(
   () => import("./LemelsonAutomaticProductionSim").then((m) => m.LemelsonAutomaticProductionSim),
+  { ssr: false, loading: SimLoading },
+);
+const LemelsonAdjustableManipulatorSim = dynamic(
+  () =>
+    import("./LemelsonAdjustableManipulatorSim").then((m) => m.LemelsonAdjustableManipulatorSim),
+  { ssr: false, loading: SimLoading },
+);
+const LemelsonMachineVisionSim = dynamic(
+  () => import("./LemelsonMachineVisionSim").then((m) => m.LemelsonMachineVisionSim),
   { ssr: false, loading: SimLoading },
 );
 const WatsonRemoteCenterComplianceSim = dynamic(
@@ -433,6 +462,10 @@ const HaberAmmonia3D = dynamic(() => import("./three/HaberAmmonia3D"), {
 });
 const BaekelandBakelite3D = dynamic(
   () => import("./three/BaekelandBakelite3D").then((m) => m.BaekelandBakelite3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const BaerOdyssey3D = dynamic(
+  () => import("./three/BaerOdyssey3D").then((mod) => mod.BaerOdyssey3D),
   { ssr: false, loading: ThreeLoading },
 );
 const BardeenTransistor3D = dynamic(
@@ -583,6 +616,10 @@ const KamenTransporter3D = dynamic(() => import("./three/KamenTransporter3D"), {
   ssr: false,
   loading: ThreeLoading,
 });
+const KamenSegway3D = dynamic(() => import("./three/KamenSegway3D").then((m) => m.KamenSegway3D), {
+  ssr: false,
+  loading: ThreeLoading,
+});
 const KamenMedicationInjection3D = dynamic(
   () => import("./three/KamenMedicationInjection3D").then((m) => m.KamenMedicationInjection3D),
   { ssr: false, loading: ThreeLoading },
@@ -623,6 +660,14 @@ const MestralVelcro3D = dynamic(() => import("./three/MestralVelcro3D"), {
   ssr: false,
   loading: ThreeLoading,
 });
+const MetcalfeEthernet3D = dynamic(
+  () => import("./three/MetcalfeEthernet3D").then((m) => m.MetcalfeEthernet3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const SikorskyHelicopter3D = dynamic(
+  () => import("./three/SikorskyHelicopter3D").then((m) => m.SikorskyHelicopter3D),
+  { ssr: false, loading: ThreeLoading },
+);
 const MorseTelegraph3D = dynamic(
   () => import("./three/MorseTelegraph3D").then((mod) => mod.MorseTelegraph3D),
   { ssr: false, loading: ThreeLoading },
@@ -699,6 +744,10 @@ const DevolProgrammedTransfer3D = dynamic(
   () => import("./three/DevolProgrammedTransfer3D").then((m) => m.DevolProgrammedTransfer3D),
   { ssr: false, loading: ThreeLoading },
 );
+const AmfVersatran3D = dynamic(
+  () => import("./three/AMFVersatran3D").then((m) => m.AmfVersatran3D),
+  { ssr: false, loading: ThreeLoading },
+);
 const MaimanRubyLaser3D = dynamic(
   () => import("./three/MaimanRubyLaser3D").then((m) => m.MaimanRubyLaser3D),
   { ssr: false, loading: ThreeLoading },
@@ -744,6 +793,17 @@ const LemelsonAutomaticProduction3D = dynamic(
     import("./three/LemelsonAutomaticProduction3D").then(
       (mod) => mod.LemelsonAutomaticProduction3D,
     ),
+  { ssr: false, loading: ThreeLoading },
+);
+const LemelsonAdjustableManipulator3D = dynamic(
+  () =>
+    import("./three/LemelsonAdjustableManipulator3D").then(
+      (mod) => mod.LemelsonAdjustableManipulator3D,
+    ),
+  { ssr: false, loading: ThreeLoading },
+);
+const LemelsonMachineVision3D = dynamic(
+  () => import("./three/LemelsonMachineVision3D").then((mod) => mod.LemelsonMachineVision3D),
   { ssr: false, loading: ThreeLoading },
 );
 const WatsonRemoteCenterCompliance3D = dynamic(
@@ -1093,11 +1153,23 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
 
           case "us-2981877-noyce-ic":
             return renderMode === "3d-physics" ? <NoycePlanarIC3D /> : <NoycePlanarICSim />;
+          case "us-3081379-lemelson-machine-vision":
+            return renderMode === "3d-physics" ? (
+              <LemelsonMachineVision3D />
+            ) : (
+              <LemelsonMachineVisionSim />
+            );
           case "us-3119501-lemelson-automatic-warehousing":
             return renderMode === "3d-physics" ? (
               <LemelsonAutomaticWarehousing3D />
             ) : (
               <LemelsonAutomaticWarehousingSim />
+            );
+          case "us-3260375-lemelson-adjustable-manipulator":
+            return renderMode === "3d-physics" ? (
+              <LemelsonAdjustableManipulator3D />
+            ) : (
+              <LemelsonAdjustableManipulatorSim />
             );
           case "us-3313014-lemelson-automatic-production":
             return renderMode === "3d-physics" ? (
@@ -1109,6 +1181,8 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             return renderMode === "3d-physics" ? <EngelbartMouse3D /> : <EngelbartMouseSim />;
           case "us-3671542-kwolek-kevlar":
             return renderMode === "3d-physics" ? <KwolekKevlar3D /> : <KwolekKevlarSim />;
+          case "us-3728480-baer-odyssey":
+            return renderMode === "3d-physics" ? <BaerOdyssey3D /> : <BaerOdysseySim />;
           case "us-3923554-boyle-smith-ccd":
           case "us-3858232-boyle-smith-ccd":
             return renderMode === "3d-physics" ? <BoyleSmithCcd3D /> : <BoyleSmithCcdSim />;
@@ -1131,6 +1205,14 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             ) : (
               <StackhouseManipulatorSim />
             );
+          case "us-4063220-metcalfe-ethernet":
+            return renderMode === "3d-physics" ? <MetcalfeEthernet3D /> : <MetcalfeEthernetSim />;
+          case "us-2318259-sikorsky-helicopter":
+            return renderMode === "3d-physics" ? (
+              <SikorskyHelicopter3D />
+            ) : (
+              <SikorskyHelicopterSim />
+            );
           case "us-4136359-wozniak-apple":
             return renderMode === "3d-physics" ? <WozniakApple3D /> : <WozniakAppleSim />;
           case "us-2988237-devol-programmed-transfer":
@@ -1139,6 +1221,8 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             ) : (
               <DevolProgrammedTransferSim />
             );
+          case "us-3212649-amf-versatran":
+            return renderMode === "3d-physics" ? <AmfVersatran3D /> : <AmfVersatranSim />;
           case "us-4341502-makino-scara":
             return renderMode === "3d-physics" ? <MakinoScara3D /> : <MakinoScaraSim />;
           case "us-4512709-milacron-robot-toolchanger":
@@ -1172,6 +1256,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
               <KamenTransporter3D patentId={patentId} />
             ) : (
               <KamenTransporterSim patentId={patentId} />
+            );
+          case "us-6302230-kamen-segway":
+            return renderMode === "3d-physics" ? (
+              <KamenSegway3D patentId={patentId} />
+            ) : (
+              <KamenSegwaySim patentId={patentId} />
             );
           case "us-6120588-eink":
             return renderMode === "3d-physics" ? <EInk3D /> : <EInkSim />;

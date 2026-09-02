@@ -12,6 +12,7 @@ import {
   stepTownesLaser,
   stepYaleLock,
 } from "./catalogKernels";
+
 /**
  * telemetryData.ts
  *
@@ -20,7 +21,9 @@ import {
  * interactive parameter controllers, and 60-FPS computed telemetry states for every classic patent.
  */
 
+import { stepAmfVersatranTopology } from "./amfVersatranKernel";
 import { stepArkwrightWaterFrame } from "./arkwrightKernel";
+import { INITIAL_BAER_STATE, readBaerControls, stepBaerOdysseySi } from "./baerOdysseyKernel";
 import {
   stepBellTelephone,
   stepBoyleSmithCcd,
@@ -75,15 +78,25 @@ import {
   stepKamenInjectionMechanism,
 } from "./kamenInjectionKernel";
 import {
+  KAMEN_SEGWAY_DEFAULT_CONTROLS,
+  readKamenSegwayControls,
+  stepKamenSegwaySi,
+} from "./kamenSegwayKernel";
+import {
   KAMEN_TRANSPORTER_DEFAULT_CONTROLS,
   readKamenTransporterControls,
   stepKamenTransporterSi,
 } from "./kamenTransporterKernel";
+import { stepLemelsonManipulatorTopology } from "./lemelsonAdjustableManipulatorKernel";
 import {
   LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS,
   readLemelsonAutomaticProductionControls,
   stepLemelsonAutomaticProductionTopology,
 } from "./lemelsonAutomaticProductionKernel";
+import {
+  readLemelsonMachineVisionControls,
+  stepLemelsonMachineVisionSi,
+} from "./lemelsonMachineVisionKernel";
 import {
   LEMELSON_WAREHOUSE_DEFAULT_CONTROLS,
   readLemelsonWarehouseControls,
@@ -102,10 +115,11 @@ import {
   stepMestralVelcroSi,
 } from "./mestralVelcroKernel";
 import {
-  MILACRON_TOOLCHANGER_DEFAULT_CONTROLS,
-  readMilacronToolchangerControls,
-  stepMilacronRobotToolchangerSi,
-} from "./milacronRobotToolchangerKernel";
+  INITIAL_ETHERNET_STATE,
+  readEthernetControls,
+  stepMetcalfeEthernetSi,
+} from "./metcalfeEthernetKernel";
+import { stepMilacronRobotToolchanger } from "./milacronRobotToolchangerKernel";
 import { stepMultiTouch } from "./multiTouchKernel";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { stepPageRank } from "./pageRankKernel";
@@ -120,6 +134,11 @@ import {
   STACKHOUSE_SOURCE_DEFAULT_CONTROLS,
   stepStackhouseSourceTopology,
 } from "./stackhouseSourceKernel";
+import {
+  INITIAL_SIKORSKY_STATE,
+  readSikorskyControls,
+  stepSikorskyHelicopterSi,
+} from "./sikorskyHelicopterKernel";
 import {
   readSundbackZipperControls,
   SUNDBACK_ZIPPER_DEFAULT_CONTROLS,
@@ -394,6 +413,138 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       ];
     },
   },
+  "us-3728480-baer-odyssey": {
+    domain: "video_electronics",
+    domainTitle: "Television Gaming & Raster Coincidence",
+    equationName: "NTSC Raster Timing, Monostable RC Spot Delay & Coincidence Gating",
+    governingEquation:
+      "\\tau_H = R_X C_H \\ln(2),\\quad \\tau_V = R_Y C_V \\ln(2),\\quad V_{\\text{hit}} = V_1(t) \\cdot V_2(t),\\quad s(t) = [A_c + m \\cdot v_{\\text{comp}}(t)] \\cos(2\\pi f_c t)",
+    engineMethod: "stepBaerOdysseySi (NTSC sync synthesis, RC pulse timing, collision logic)",
+    pedagogicalInsight:
+      "Ralph Baer synthesizes television raster dots without a computer: astable multivibrators establish horizontal/vertical sync, variable RC delays slice position pulses through AND gates, and diode coincidence detects player-ball contact in real time.",
+    controls: [
+      {
+        id: "player1PotX",
+        label: "Player 1 Horizontal Pos",
+        min: 0.05,
+        max: 0.45,
+        step: 0.01,
+        defaultValue: 0.15,
+        unit: "norm",
+      },
+      {
+        id: "player1PotY",
+        label: "Player 1 Vertical Pos",
+        min: 0.05,
+        max: 0.95,
+        step: 0.01,
+        defaultValue: 0.5,
+        unit: "norm",
+      },
+      {
+        id: "player2PotX",
+        label: "Player 2 Horizontal Pos",
+        min: 0.55,
+        max: 0.95,
+        step: 0.01,
+        defaultValue: 0.85,
+        unit: "norm",
+      },
+      {
+        id: "player2PotY",
+        label: "Player 2 Vertical Pos",
+        min: 0.05,
+        max: 0.95,
+        step: 0.01,
+        defaultValue: 0.5,
+        unit: "norm",
+      },
+      {
+        id: "englishControl",
+        label: "English / Ball Spin",
+        min: -1.0,
+        max: 1.0,
+        step: 0.05,
+        defaultValue: 0.0,
+        unit: "spin",
+      },
+      {
+        id: "ballSpeedMultiplier",
+        label: "Ball Speed Multiplier",
+        min: 0.5,
+        max: 2.5,
+        step: 0.1,
+        defaultValue: 1.0,
+        unit: "x",
+      },
+      {
+        id: "rfChannel",
+        label: "VHF RF Channel",
+        min: 3,
+        max: 4,
+        step: 1,
+        defaultValue: 3,
+        unit: "ch",
+      },
+      {
+        id: "chromaPhaseDeg",
+        label: "Chroma Phase Dial",
+        min: 0,
+        max: 180,
+        step: 5,
+        defaultValue: 45,
+        unit: "deg",
+      },
+    ],
+    computeMetrics(rawParams) {
+      const controls = readBaerControls(rawParams as any);
+      const { metrics } = stepBaerOdysseySi(INITIAL_BAER_STATE, controls, 0.016);
+      return [
+        {
+          label: "Horizontal Sync",
+          value: metrics.horizontalSyncFreqHz.toFixed(0),
+          unit: "Hz",
+          badgeColor: "emerald",
+          description: "Astable multivibrator NTSC horizontal line frequency (15.75 kHz)",
+        },
+        {
+          label: "Vertical Field Freq",
+          value: metrics.verticalFreqHz.toFixed(1),
+          unit: "Hz",
+          badgeColor: "cyan",
+          description: "Vertical sync oscillator field sweep rate (60 Hz)",
+        },
+        {
+          label: "P1 Horizontal Delay",
+          value: metrics.p1DelayHMicrosec.toFixed(1),
+          unit: "µs",
+          badgeColor: "indigo",
+          description: "Monostable RC delay time controlling player 1 horizontal position",
+        },
+        {
+          label: "P1 Vertical Delay",
+          value: metrics.p1DelayVMs.toFixed(2),
+          unit: "ms",
+          badgeColor: "purple",
+          description: "Monostable RC delay time controlling player 1 vertical position",
+        },
+        {
+          label: "RF Carrier Freq",
+          value: metrics.rfCarrierFreqMHz.toFixed(2),
+          unit: "MHz",
+          badgeColor: "amber",
+          description: "VHF television channel RF carrier frequency modulated with composite video",
+        },
+        {
+          label: "Antenna RF Power",
+          value: metrics.rfAntennaPowerNanoWatts.toFixed(1),
+          unit: "nW",
+          badgeColor: "rose",
+          description: "Incidental radiation power coupled to 300-ohm television antenna terminals",
+        },
+      ];
+    },
+  },
   "us-3858232-boyle-smith-ccd": {
     domain: "solid_state_optoelectronics",
     domainTitle: "Charge-Coupled Device MOS Potential Wells & Serial Charge Translation",
@@ -516,6 +667,272 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "um",
           badgeColor: "cyan",
           progressPct: clampProgress((res.depletionDepthUm / 10) * 100),
+        },
+      ];
+    },
+  },
+  "us-4063220-metcalfe-ethernet": {
+    domain: "networking_electrodynamics",
+    domainTitle: "Ethernet Coaxial CSMA/CD & Binary Exponential Backoff",
+    equationName:
+      "Electromagnetic Wave Propagation, CSMA/CD Channel Efficiency & Exponential Backoff Delay",
+    governingEquation:
+      "v = \\frac{c}{\\sqrt{\\epsilon_r}},\\quad T_{\\text{slot}} = \\frac{2L}{v} + 2 t_{\\text{tx}},\\quad \\eta = \\frac{1}{1 + 2 a e G},\\quad T_{\\text{backoff}} = r \\cdot T_{\\text{slot}},\\quad r \\in [0, 2^{\\min(n, 10)} - 1]",
+    engineMethod:
+      "stepMetcalfeEthernetSi (coaxial wave delay, analog collision voltage, BEB timer)",
+    pedagogicalInsight:
+      "Ethernet treats the shared coaxial cable as an ether: transceivers sense carrier before sending, compare transmitted vs received voltage instantaneously via XOR gates to detect collisions during transmission, and execute truncated binary exponential backoff to dynamically stabilize network contention.",
+    controls: [
+      {
+        id: "cableLengthMeters",
+        label: "Coaxial Cable Length",
+        min: 10,
+        max: 1000,
+        step: 10,
+        defaultValue: 500,
+        unit: "m",
+      },
+      {
+        id: "dataRateMbps",
+        label: "Data Transmission Rate",
+        min: 1.0,
+        max: 10.0,
+        step: 0.1,
+        defaultValue: 2.94,
+        unit: "Mbps",
+      },
+      {
+        id: "stationCount",
+        label: "Active Contending Stations",
+        min: 2,
+        max: 32,
+        step: 1,
+        defaultValue: 8,
+        unit: "nodes",
+      },
+      {
+        id: "offeredLoad",
+        label: "Offered Traffic Load (G)",
+        min: 0.05,
+        max: 2.5,
+        step: 0.05,
+        defaultValue: 0.6,
+        unit: "norm",
+      },
+      {
+        id: "packetSizeBytes",
+        label: "Packet Frame Size",
+        min: 64,
+        max: 1518,
+        step: 32,
+        defaultValue: 256,
+        unit: "bytes",
+      },
+      {
+        id: "triggerCollision",
+        label: "Simulate Packet Collision",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 0,
+        unit: "flag",
+      },
+    ],
+    computeMetrics: (controls: Record<string, number>) => {
+      const parsedControls = readEthernetControls(controls as any);
+      const { metrics } = stepMetcalfeEthernetSi(INITIAL_ETHERNET_STATE, parsedControls, 0.016);
+
+      return [
+        {
+          label: "Electromagnetic Wave Speed",
+          value: (metrics.propVelocityMps / 1e6).toFixed(1),
+          unit: "×10⁶ m/s",
+          badgeColor: "cyan",
+          description: "Wave velocity in polyethylene dielectric coax (0.66c)",
+        },
+        {
+          label: "One-Way Cable Delay",
+          value: metrics.oneWayPropDelayNs.toFixed(1),
+          unit: "ns",
+          badgeColor: "indigo",
+          description: "End-to-end signal propagation latency along coaxial bus",
+        },
+        {
+          label: "Collision Slot Time",
+          value: metrics.slotTimeMicrosec.toFixed(2),
+          unit: "µs",
+          badgeColor: "purple",
+          description: "Round-trip collision detection window (2τ + 2t_tx)",
+        },
+        {
+          label: "Manchester Bit Period",
+          value: metrics.bitPeriodNs.toFixed(1),
+          unit: "ns",
+          badgeColor: "amber",
+          description: "Clock period for self-clocking phase transitions",
+        },
+        {
+          label: "Bus Analog Voltage",
+          value: metrics.busVoltageVolts.toFixed(2),
+          unit: "V",
+          badgeColor: metrics.collisionDetected ? "rose" : "emerald",
+          description: "Analog superposition voltage (normal -1.0V, collision -2.0V)",
+        },
+        {
+          label: "Channel Utilization Efficiency",
+          value: `${metrics.channelEfficiencyPct.toFixed(1)}%`,
+          unit: "",
+          badgeColor: metrics.channelEfficiencyPct > 50 ? "emerald" : "amber",
+          description: "CSMA/CD protocol transmission efficiency",
+        },
+        {
+          label: "Useful Data Throughput",
+          value: metrics.throughputMbps.toFixed(2),
+          unit: "Mbps",
+          badgeColor: "emerald",
+          description: "Actual delivered bandwidth after backoff and contention",
+        },
+        {
+          label: "Terminator Power Dissipation",
+          value: metrics.terminatorDissipationMw.toFixed(1),
+          unit: "mW",
+          badgeColor: "rose",
+          description: "Thermal dissipation in 50-ohm end termination resistors",
+        },
+      ];
+    },
+  },
+  "us-2318259-sikorsky-helicopter": {
+    domain: "rotary_wing_aerodynamics",
+    domainTitle: "Direct-Lift Helicopter Aerodynamics & Anti-Torque Equilibrium",
+    equationName:
+      "Rankine-Froude Momentum Thrust, Torque Balance & Collective-Throttle Correlation",
+    governingEquation:
+      "T_{\\text{main}} = C_T \\rho A (\\Omega R)^2,\\quad v_i = \\sqrt{\\frac{T}{2\\rho A}},\\quad Q_{\\text{main}} = \\frac{T v_i + P_{\\text{profile}}}{\\Omega},\\quad M_{\\text{yaw}} = Q_{\\text{main}} - T_{\\text{tail}} L_{\\text{boom}}",
+    engineMethod:
+      "stepSikorskyHelicopterSi (blade element aerodynamics, swashplate feathering, tail anti-torque equilibrium)",
+    pedagogicalInsight:
+      "A helicopter's overhead main rotor produces vertical lift and horizontal propulsion via cyclic blade pitch tilting, while generating a strong reactive torque that would spin the fuselage. The vertical tail rotor generates an opposing lateral thrust moment that precisely counterbalances main rotor torque and provides directional yaw maneuvering.",
+    controls: [
+      {
+        id: "collectivePitchDeg",
+        label: "Collective Blade Pitch",
+        min: 2.0,
+        max: 16.0,
+        step: 0.5,
+        defaultValue: 9.5,
+        unit: "deg",
+      },
+      {
+        id: "cyclicPitchForwardDeg",
+        label: "Longitudinal Cyclic Stick (Pitch)",
+        min: -10.0,
+        max: 10.0,
+        step: 0.5,
+        defaultValue: 0.0,
+        unit: "deg",
+      },
+      {
+        id: "cyclicRollRightDeg",
+        label: "Lateral Cyclic Stick (Roll)",
+        min: -10.0,
+        max: 10.0,
+        step: 0.5,
+        defaultValue: 0.0,
+        unit: "deg",
+      },
+      {
+        id: "tailRotorPedalPercent",
+        label: "Anti-Torque Rudder Pedals",
+        min: -100.0,
+        max: 100.0,
+        step: 5.0,
+        defaultValue: 0.0,
+        unit: "%",
+      },
+      {
+        id: "engineThrottlePercent",
+        label: "Engine Throttle Setting",
+        min: 0.0,
+        max: 100.0,
+        step: 1.0,
+        defaultValue: 85.0,
+        unit: "%",
+      },
+      {
+        id: "engineRunning",
+        label: "Engine Ignition / Drive State",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "flag",
+      },
+    ],
+    computeMetrics: (controls: Record<string, number>) => {
+      const parsedControls = readSikorskyControls(controls as any);
+      const { metrics } = stepSikorskyHelicopterSi(
+        INITIAL_SIKORSKY_STATE,
+        parsedControls,
+        0.016,
+      );
+
+      return [
+        {
+          label: "Main Rotor Thrust",
+          value: metrics.mainRotorThrustNewtons.toFixed(1),
+          unit: "N",
+          badgeColor: "emerald",
+          description: "Total aerodynamic vertical lift generated by main rotor blades",
+        },
+        {
+          label: "Main Rotor Torque Reaction",
+          value: metrics.mainRotorTorqueNm.toFixed(1),
+          unit: "N·m",
+          badgeColor: "amber",
+          description: "Newtonian aerodynamic torque reaction acting on fuselage",
+        },
+        {
+          label: "Tail Rotor Anti-Torque Thrust",
+          value: metrics.tailRotorThrustNewtons.toFixed(1),
+          unit: "N",
+          badgeColor: "cyan",
+          description: "Lateral thrust force generated by vertical tail rotor",
+        },
+        {
+          label: "Net Unbalanced Yaw Moment",
+          value: metrics.netYawMomentNm.toFixed(1),
+          unit: "N·m",
+          badgeColor: Math.abs(metrics.netYawMomentNm) < 20 ? "emerald" : "rose",
+          description: "Residual yaw torque driving fuselage angular acceleration",
+        },
+        {
+          label: "Blade Tip Speed",
+          value: metrics.tipSpeedMs.toFixed(1),
+          unit: "m/s",
+          badgeColor: "indigo",
+          description: "Linear velocity at main blade tips (Mach number)",
+        },
+        {
+          label: "Main Rotor Power",
+          value: (metrics.mainRotorPowerWatts / 1000.0).toFixed(1),
+          unit: "kW",
+          badgeColor: "purple",
+          description: "Total aerodynamic shaft power required for hover",
+        },
+        {
+          label: "Induced Downwash Velocity",
+          value: metrics.inducedVelocityMs.toFixed(2),
+          unit: "m/s",
+          badgeColor: "blue",
+          description: "Rankine-Froude momentum downwash through rotor disk",
+        },
+        {
+          label: "Correlated Engine Throttle",
+          value: metrics.effectiveThrottlePercent.toFixed(1),
+          unit: "%",
+          badgeColor: "teal",
+          description: "Mechanical linkage automatic throttle compensation",
         },
       ];
     },
@@ -7102,6 +7519,443 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "US 2,988,237 claims a program controller, a mechanically coupled position representation, and coincidence-based control, plus record/replay and anticipatory sensing forms. It supplies an illustrative one-sixteenth-inch code increment but no transfer-head geometry, payload, hydraulic pressure, speed, braking law, or controller gain. This shared instrument deliberately reports discrete code state and refuses SI kinematics, forces, rates, and contact performance.",
   },
+  "us-3212649-amf-versatran": {
+    domain: "source_bounded_robot_kinematics",
+    domainTitle: "Hydraulic Manipulator & Resolver–Tape Replay",
+    equationName: "Normalized Resolver–Tape Phase Comparison",
+    governingEquation: "e_i = \\operatorname{wrap}(\\phi_{T,i} - \\phi_{R,i})",
+    engineMethod:
+      "stepAmfVersatranTopology (source-bounded TypeScript topology; no FrankenSim/WASM module)",
+    controls: [
+      {
+        id: "columnRotation",
+        label: "Column rotation",
+        min: -1,
+        max: 1,
+        step: 0.05,
+        defaultValue: 0,
+        unit: "normalized turn",
+      },
+      {
+        id: "carriageLift",
+        label: "Vertical carriage lift",
+        min: 0,
+        max: 1,
+        step: 0.05,
+        defaultValue: 0.55,
+        unit: "normalized travel",
+      },
+      {
+        id: "armTravel",
+        label: "Horizontal arm travel",
+        min: 0,
+        max: 1,
+        step: 0.05,
+        defaultValue: 0.55,
+        unit: "normalized travel",
+      },
+      {
+        id: "wristRotation",
+        label: "Wrist rotation about arm axis",
+        min: -1,
+        max: 1,
+        step: 0.05,
+        defaultValue: 0,
+        unit: "normalized rotation",
+      },
+      {
+        id: "wristSwing",
+        label: "Wrist swing about central vertical axis",
+        min: -1,
+        max: 1,
+        step: 0.05,
+        defaultValue: 0,
+        unit: "normalized swing",
+      },
+      {
+        id: "gripperOperation",
+        label: "Gripper operation",
+        min: 0,
+        max: 1,
+        step: 0.05,
+        defaultValue: 0.25,
+        unit: "open..closed",
+      },
+      {
+        id: "teachReplayMode",
+        label: "Mode (0=Teach, 1=Replay)",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 0,
+        unit: "teach/replay",
+      },
+      {
+        id: "resolverPhaseOffset",
+        label: "Resolver phase offset",
+        min: -1,
+        max: 1,
+        step: 0.05,
+        defaultValue: 0,
+        unit: "normalized phase",
+      },
+    ],
+    computeMetrics: (params) => {
+      const state = stepAmfVersatranTopology(params);
+      return [
+        {
+          label: "Program Mode",
+          value:
+            state.programMode === "automatic-recorded-signal-playback"
+              ? "TAPE REPLAY"
+              : "MANUAL TEACH",
+          unit: "operational state",
+          badgeColor:
+            state.programMode === "automatic-recorded-signal-playback" ? "emerald" : "cyan",
+        },
+        {
+          label: "Arm Travel",
+          value: state.controls.armTravel.toFixed(2),
+          unit: "normalized travel",
+          badgeColor: "indigo",
+          progressPct: clampProgress(state.controls.armTravel * 100),
+        },
+        {
+          label: "Tracking State",
+          value: state.trackingState.toUpperCase(),
+          unit: "phase sync",
+          badgeColor: state.maximumNormalizedPhaseError === 0 ? "emerald" : "amber",
+        },
+        {
+          label: "Max Phase Error",
+          value: state.maximumNormalizedPhaseError.toFixed(3),
+          unit: "normalized phase",
+          badgeColor: state.maximumNormalizedPhaseError > 0.1 ? "rose" : "indigo",
+        },
+        {
+          label: "Active Claim Scope",
+          value: `Claim ${state.activeClaim}`,
+          unit: "legal boundary",
+          badgeColor: "purple",
+        },
+        {
+          label: "Hydraulic Refusal",
+          value: "REFUSED",
+          unit: "boundary active",
+          badgeColor: "purple",
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "US 3,212,649 discloses a column, carriage, arm, wrist rotation, wrist swing, gripper operation, tape recording/playback, and resolver/error-detector paths. This shared instrument reports only normalized exhibit topology and phase comparison; it refuses unprinted dimensions, pressure, flow, payload, gain, timing, and performance values.",
+  },
+  "us-3081379-lemelson-machine-vision": {
+    domain: "optical_electronics",
+    domainTitle: "Television Raster Scanning & Machine Vision",
+    equationName: "Video Line Scan Dimensional Slicing & Defect Detection",
+    governingEquation:
+      "f_H = N_L \\cdot f_F,\\quad v_{\\text{scan}} = \\frac{W_{\\text{target}}}{T_{\\text{active}}},\\quad L_{\\text{meas}} = v_{\\text{scan}} \\cdot \\tau_{\\text{pulse}},\\quad F_{\\text{mag}} = \\frac{(N I)^2 \\mu_0 A_p}{2 g^2}",
+    engineMethod: "stepLemelsonMachineVisionSi (analytical SI optical signal & solenoid dynamics)",
+    controls: [
+      {
+        id: "scanLineCount",
+        label: "Raster scan lines",
+        min: 100,
+        max: 1200,
+        step: 25,
+        defaultValue: 525,
+        unit: "lines",
+      },
+      {
+        id: "frameRateHz",
+        label: "Frame rate",
+        min: 10,
+        max: 120,
+        step: 5,
+        defaultValue: 30,
+        unit: "Hz",
+      },
+      {
+        id: "targetWidthM",
+        label: "Field of view width",
+        min: 0.05,
+        max: 1.0,
+        step: 0.01,
+        defaultValue: 0.2,
+        unit: "m",
+      },
+      {
+        id: "illuminationLux",
+        label: "Illumination level",
+        min: 100,
+        max: 10000,
+        step: 100,
+        defaultValue: 1500,
+        unit: "lux",
+      },
+      {
+        id: "thresholdVoltage",
+        label: "Threshold comparator level",
+        min: 0.05,
+        max: 1.0,
+        step: 0.05,
+        defaultValue: 0.45,
+        unit: "V",
+      },
+      {
+        id: "nominalPartWidthM",
+        label: "Nominal part width",
+        min: 0.01,
+        max: 0.5,
+        step: 0.005,
+        defaultValue: 0.08,
+        unit: "m",
+      },
+      {
+        id: "actualPartWidthM",
+        label: "Actual part width",
+        min: 0.01,
+        max: 0.5,
+        step: 0.001,
+        defaultValue: 0.082,
+        unit: "m",
+      },
+      {
+        id: "conveyorSpeedMPerS",
+        label: "Conveyor speed",
+        min: 0.01,
+        max: 2.0,
+        step: 0.05,
+        defaultValue: 0.25,
+        unit: "m/s",
+      },
+      {
+        id: "gateSolenoidCurrentA",
+        label: "Solenoid coil current",
+        min: 0.1,
+        max: 10.0,
+        step: 0.1,
+        defaultValue: 2.5,
+        unit: "A",
+      },
+    ],
+    computeMetrics(rawParams) {
+      const controls = readLemelsonMachineVisionControls(rawParams);
+      const state = stepLemelsonMachineVisionSi(controls);
+      return [
+        {
+          id: "horizontalScanFreqHz",
+          label: "Horizontal Scan Freq (f_H)",
+          value: state.metrics.horizontalScanFreqHz.toFixed(0),
+          unit: "Hz",
+          precision: 0,
+          badgeColor: "emerald",
+        },
+        {
+          id: "linePeriodUs",
+          label: "Line Duration (T_H)",
+          value: state.metrics.linePeriodUs.toFixed(2),
+          unit: "µs",
+          precision: 2,
+          badgeColor: "cyan",
+        },
+        {
+          id: "scanBeamVelocityMPerS",
+          label: "Beam Scan Velocity (v_scan)",
+          value: state.metrics.scanBeamVelocityMPerS.toFixed(1),
+          unit: "m/s",
+          precision: 1,
+          badgeColor: "indigo",
+        },
+        {
+          id: "pulseWidthUs",
+          label: "Detected Pulse Width (τ)",
+          value: state.metrics.pulseWidthUs.toFixed(2),
+          unit: "µs",
+          precision: 2,
+          badgeColor: "amber",
+        },
+        {
+          id: "measuredPartWidthMm",
+          label: "Measured Width (L_meas)",
+          value: state.metrics.measuredPartWidthMm.toFixed(1),
+          unit: "mm",
+          precision: 1,
+          badgeColor: "emerald",
+        },
+        {
+          id: "dimensionalErrorMm",
+          label: "Dimensional Deviation (ΔL)",
+          value: state.metrics.dimensionalErrorMm.toFixed(2),
+          unit: "mm",
+          precision: 2,
+          badgeColor: state.defectDetected ? "rose" : "indigo",
+        },
+        {
+          id: "solenoidForceN",
+          label: "Reject Solenoid Force (F_mag)",
+          value: state.metrics.solenoidForceN.toFixed(2),
+          unit: "N",
+          precision: 2,
+          badgeColor: "purple",
+        },
+        {
+          id: "gateResponseTimeMs",
+          label: "Gate Trip Response (t_act)",
+          value: state.metrics.gateResponseTimeMs.toFixed(1),
+          unit: "ms",
+          precision: 1,
+          badgeColor: "cyan",
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "US 3,081,379 discloses using television raster lines to scan manufactured parts on a conveyor, converting photometric light patterns into electrical video waveforms, slicing with threshold gates, and converting pulse duration into dimension metrics to trigger high-speed sorting gates.",
+  },
+  "us-3260375-lemelson-adjustable-manipulator": {
+    domain: "source_bounded_robot_kinematics",
+    domainTitle: "Overhead Adjustable Manipulator Topology",
+    equationName: "Sequential Limit-Switch Position Control",
+    governingEquation:
+      "\\mathbf{p}^{*}_{tool}=\\mathbf{p}^{*}_{carriage}+\\mathbf{R}_z(\\theta^{*})(\\mathbf{d}^{*}_{column}+\\mathbf{R}_y(\\phi^{*})\\mathbf{l}^{*}_{arm});\\quad\\text{tripped}^{*}=\\mathbb{I}(|q^{*}-q^{*}_{stop}|<\\epsilon^{*})\\;\\text{(all starred quantities are normalized display values)}",
+    engineMethod: "stepLemelsonManipulatorTopology (source-bounded TypeScript topology)",
+    controls: [
+      {
+        id: "carriagePosition",
+        label: "Carriage position x",
+        min: -1,
+        max: 1,
+        step: 0.05,
+        defaultValue: 0.15,
+        unit: "normalized travel",
+      },
+      {
+        id: "columnElevation",
+        label: "Column elevation z",
+        min: 0,
+        max: 1,
+        step: 0.05,
+        defaultValue: 0.65,
+        unit: "normalized stroke",
+      },
+      {
+        id: "columnAzimuth",
+        label: "Column azimuth θ",
+        min: -1,
+        max: 1,
+        step: 0.05,
+        defaultValue: 0.25,
+        unit: "normalized angle",
+      },
+      {
+        id: "wristPivot",
+        label: "Wrist pivot φ",
+        min: -1,
+        max: 1,
+        step: 0.05,
+        defaultValue: -0.2,
+        unit: "normalized angle",
+      },
+      {
+        id: "jawClosure",
+        label: "Jaw closure",
+        min: 0,
+        max: 1,
+        step: 0.05,
+        defaultValue: 0.45,
+        unit: "closure fraction",
+      },
+      {
+        id: "cyclePhase",
+        label: "Sequential phase",
+        min: 0,
+        max: 5,
+        step: 1,
+        defaultValue: 2,
+        unit: "relay state",
+      },
+      {
+        id: "stop1Azimuth",
+        label: "Stop 1 azimuth limit",
+        min: -1,
+        max: 1,
+        step: 0.05,
+        defaultValue: -0.75,
+        unit: "limit position",
+      },
+      {
+        id: "stop2Azimuth",
+        label: "Stop 2 azimuth limit",
+        min: -1,
+        max: 1,
+        step: 0.05,
+        defaultValue: 0.75,
+        unit: "limit position",
+      },
+      {
+        id: "stop1Elevation",
+        label: "Stop 1 vertical limit",
+        min: 0,
+        max: 1,
+        step: 0.05,
+        defaultValue: 0.15,
+        unit: "normalized limit position",
+      },
+      {
+        id: "stop2Elevation",
+        label: "Stop 2 vertical limit",
+        min: 0,
+        max: 1,
+        step: 0.05,
+        defaultValue: 0.85,
+        unit: "normalized limit position",
+      },
+    ],
+    computeMetrics: (params) => {
+      const state = stepLemelsonManipulatorTopology(params);
+      return [
+        {
+          label: "Active Relay Phase",
+          value: state.sequencer.phaseName.toUpperCase(),
+          unit: "state",
+          badgeColor: "cyan",
+        },
+        {
+          label: "Active Drive Motor",
+          value: state.sequencer.activeMotor.toUpperCase(),
+          unit: "actuator",
+          badgeColor: state.sequencer.activeMotor === "idle" ? "amber" : "emerald",
+        },
+        {
+          label: "Limit Switches Tripped",
+          value: `${state.sequencer.trippedLimitSwitches.length} TRIPPED`,
+          unit: "switches",
+          badgeColor: state.sequencer.trippedLimitSwitches.length > 0 ? "rose" : "indigo",
+        },
+        {
+          label: "Gripper State",
+          value: state.displayPose.gripperState.toUpperCase(),
+          unit: "end effector",
+          badgeColor: state.displayPose.gripperState === "gripping" ? "emerald" : "indigo",
+          progressPct: clampProgress((1 - state.displayPose.jawOpeningFraction) * 100),
+        },
+        {
+          label: "Active Claim Scope",
+          value: `Claim ${state.activeClaim}`,
+          unit: "legal boundary",
+          badgeColor: "purple",
+        },
+        {
+          label: "Kinematic Refusal",
+          value: "REFUSED",
+          unit: "boundary active",
+          badgeColor: "purple",
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "US 3,260,375 describes a track-guided manipulator, relatively movable columns and arms, article-seizing means, and adjustable limit-switch control. The shared kernel makes only a deterministic normalized display topology and selected switch-event states; it explicitly refuses unprinted dimensions, motor dynamics, forces, speeds, timing, and controller performance.",
+  },
   "us-4341502-makino-scara": {
     domain: "source_bounded_robot_kinematics",
     domainTitle: "Four-Link Assembly-Robot Topology",
@@ -7441,104 +8295,84 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "US 6,331,181 centers tool-boundary data: compatibility, tool type, measured calibration offsets, life information, and engagement signals are transmitted to a processor before or during tool exchange.",
   },
   "us-4512709-milacron-robot-toolchanger": {
-    domain: "mechanics",
-    domainTitle: "Pneumatic Radial Wedging & Bistable Tool Clamping",
-    equationName: "Wedge Mechanical Advantage & Friction-Cone Self-Locking",
+    domain: "source_bounded_toolchanger_topology",
+    domainTitle: "Registration and Slide-Ramp Capture",
+    equationName: "Admission and Capture State Relation",
     governingEquation:
-      "F_{\\text{clamp}} = \\frac{p_{\\text{air}} \\cdot \\frac{\\pi}{4} D_{\\text{cyl}}^2}{\\tan(\\theta + \\arctan\\mu_s)} \\quad \\text{with bistable condition } \\tan\\theta \\le \\mu_s",
-    engineMethod: "FrankenSimEngine.stepMilacronRobotToolchanger",
+      "\\mathrm{captured}=\\mathrm{basePresent}\\land\\mathrm{registered}\\land\\mathrm{slideLocked}\\land\\mathrm{TMember}",
+    engineMethod: "stepMilacronRobotToolchanger (source-bounded TypeScript topology)",
     controls: [
       {
-        id: "airPressureMpa",
-        label: "Supply Air Pressure",
-        min: 0.2,
-        max: 1.0,
-        step: 0.05,
-        defaultValue: MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.airPressureMpa,
-        unit: "MPa",
-      },
-      {
-        id: "cylinderBoreMm",
-        label: "Pneumatic Cylinder Bore",
-        min: 20,
-        max: 50,
-        step: 2,
-        defaultValue: MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.cylinderBoreMm,
-        unit: "mm",
-      },
-      {
-        id: "wedgeAngleDeg",
-        label: "Ramp Taper Angle",
-        min: 4,
-        max: 15,
-        step: 0.5,
-        defaultValue: MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.wedgeAngleDeg,
-        unit: "°",
-      },
-      {
-        id: "frictionCoeff",
-        label: "Static Friction Coeff",
-        min: 0.08,
-        max: 0.30,
-        step: 0.01,
-        defaultValue: MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.frictionCoeff,
-        unit: "",
-      },
-      {
-        id: "slideStrokeMm",
-        label: "Slide Stroke Position",
+        id: "toolBasePresent",
+        label: "Tool base at adapter",
         min: 0,
-        max: 25,
+        max: 1,
         step: 1,
-        defaultValue: MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.slideStrokeMm,
-        unit: "mm",
+        defaultValue: 1,
+        unit: "absent / present",
       },
       {
-        id: "toolMassKg",
-        label: "Tool Payload Mass",
-        min: 2,
-        max: 40,
+        id: "registrationFraction",
+        label: "Pin / bushing registration",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: 1,
+        unit: "normalized state",
+      },
+      {
+        id: "lockingSlideFraction",
+        label: "Locking-slide position",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: 1,
+        unit: "aligned → capture",
+      },
+      {
+        id: "claimFourTMember",
+        label: "Claim 4 T-member form",
+        min: 0,
+        max: 1,
         step: 1,
-        defaultValue: MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.toolMassKg,
-        unit: "kg",
+        defaultValue: 1,
+        unit: "generic → Claim 4",
       },
     ],
     computeMetrics: (rawParams) => {
-      const controls = readMilacronToolchangerControls(rawParams);
-      const tel = stepMilacronRobotToolchangerSi(controls);
+      const state = stepMilacronRobotToolchanger(rawParams);
       return [
         {
-          label: "Actuator Piston Thrust",
-          value: tel.actuatorThrustN.toFixed(0),
-          unit: "N",
-          badgeColor: "sky",
-          progressPct: clampProgress((tel.actuatorThrustN / 1200) * 100),
+          label: "Engagement State",
+          value: state.phase.replaceAll("-", " "),
+          unit: "source topology",
+          badgeColor: "cyan",
+          progressPct: state.toolRetained ? 100 : state.registrationComplete ? 60 : 20,
         },
         {
-          label: "Normal Clamping Force",
-          value: tel.clampingForceN.toFixed(0),
-          unit: "N",
+          label: "Pin Registration",
+          value: state.registrationComplete ? "seated" : "pending",
+          unit: "cylindrical + diamond",
           badgeColor: "amber",
-          progressPct: clampProgress((tel.clampingForceN / 5000) * 100),
+          progressPct: state.registrationFraction * 100,
         },
         {
-          label: "Fail-Safe Holding Force",
-          value: tel.holdingForceWithoutPowerN.toFixed(0),
-          unit: "N",
-          badgeColor: tel.isSelfLocking ? "emerald" : "rose",
-          progressPct: clampProgress((tel.holdingForceWithoutPowerN / 2000) * 100),
+          label: "Slide Aperture",
+          value: state.apertureAligned ? "aligned" : "offset",
+          unit: state.apertureAligned ? "admission / release" : "retention path",
+          badgeColor: state.apertureAligned ? "amber" : "emerald",
+          progressPct: state.lockingSlideFraction * 100,
         },
         {
-          label: "Locating Repeatability",
-          value: (tel.positionalRepeatabilityMm * 1000).toFixed(1),
-          unit: "µm",
-          badgeColor: "emerald",
-          progressPct: clampProgress((0.025 / Math.max(0.01, tel.positionalRepeatabilityMm)) * 100),
+          label: "Quantitative Mechanics",
+          value: "refused",
+          unit: "no force / stroke / time data",
+          badgeColor: "rose",
         },
       ];
     },
     pedagogicalInsight:
-      "US 4,512,709 converts linear actuator stroke into high-force normal clamping through a shallow-angle wedge slide. The taper angle is selected within the material friction cone (tan θ ≤ μ), ensuring that the tool remains rigidly clamped during catastrophic loss of shop-air pressure.",
+      "US 4,512,709 documents registration on a cylindrical/diamond pin pair, admission through an aligned slide aperture, and capture when the shifted slide ramps bear on a T-member crossbar. The grant supplies no pressure, bore, stroke, ramp angle, friction, load, or time datum, so the shared instrument reports only that source-supported state sequence and refuses performance telemetry.",
   },
   "us-4575330-hull-stereolithography": {
     domain: "additive_manufacturing",
@@ -7944,6 +8778,138 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     },
     pedagogicalInsight:
       "Dean Kamen's dynamic stabilization continuously drives the wheels underneath the vehicle center of gravity in response to detected pitch tilt $\\theta$ and pitch angular rate $\\dot{\\theta}$. When the rider leans forward, the inverted pendulum equation commands restorative motor torque $\\tau = K_p \\theta + K_d \\dot{\\theta}$ that balances the vehicle while creating smooth forward acceleration.",
+  },
+  "us-6302230-kamen-segway": {
+    domain: "robotics_locomotion",
+    domainTitle: "Inverted Pendulum Dynamic Balancing & Balancing Margin Supervision",
+    equationName: "Euler-Lagrange Dynamic Balance, State Feedback, & Acceleration Margin",
+    governingEquation:
+      "\\tau_{\\text{motor}} = M g L \\sin\\theta + M L \\ddot{x} \\cos\\theta, \\quad \\text{Margin} = 1 - \\frac{|v|}{v_{\\text{max}}} - \\frac{|\\tau|}{\\tau_{\\text{max}}}",
+    engineMethod: "FrankenSimEngine.stepKamenSegway",
+    controls: [
+      {
+        id: "riderPitchDeg",
+        label: "Rider Pitch Lean",
+        min: -15,
+        max: 15,
+        step: 0.5,
+        defaultValue: KAMEN_SEGWAY_DEFAULT_CONTROLS.riderPitchDeg,
+        unit: "°",
+      },
+      {
+        id: "steeringInput",
+        label: "Handlebar Steering Yaw",
+        min: -1.0,
+        max: 1.0,
+        step: 0.1,
+        defaultValue: KAMEN_SEGWAY_DEFAULT_CONTROLS.steeringInput,
+        unit: "yaw",
+      },
+      {
+        id: "riderMassKg",
+        label: "Rider Body Mass",
+        min: 40,
+        max: 120,
+        step: 5,
+        defaultValue: KAMEN_SEGWAY_DEFAULT_CONTROLS.riderMassKg,
+        unit: "kg",
+      },
+      {
+        id: "groundFrictionCoeff",
+        label: "Ground Traction (μ)",
+        min: 0.15,
+        max: 0.95,
+        step: 0.05,
+        defaultValue: KAMEN_SEGWAY_DEFAULT_CONTROLS.groundFrictionCoeff,
+        unit: "μ",
+      },
+      {
+        id: "speedLimitMS",
+        label: "Speed Governor Limit",
+        min: 2.0,
+        max: 6.0,
+        step: 0.5,
+        defaultValue: KAMEN_SEGWAY_DEFAULT_CONTROLS.speedLimitMS,
+        unit: "m/s",
+      },
+    ],
+    computeMetrics: (controls) => {
+      const parsed = readKamenSegwayControls(controls);
+      const tel = stepKamenSegwaySi(parsed);
+
+      if (tel.refusalReason) {
+        return [
+          {
+            label: "Physical Refusal",
+            value: tel.refusalReason,
+            unit: "",
+            badgeColor: "rose",
+            progressPct: 0,
+          },
+          {
+            label: "Pitch Angle",
+            value: parsed.riderPitchDeg.toFixed(1),
+            unit: "°",
+            badgeColor: "rose",
+          },
+          {
+            label: "Demanded Thrust",
+            value: Math.abs(tel.driveThrustForceN).toFixed(0),
+            unit: "N",
+            badgeColor: "rose",
+          },
+          {
+            label: "Max Grip Limit",
+            value: tel.maxTractionForceN.toFixed(0),
+            unit: "N",
+            badgeColor: "amber",
+          },
+        ];
+      }
+
+      return [
+        {
+          label: "Forward Velocity",
+          value: tel.velocityKmh.toFixed(1),
+          unit: "km/h",
+          badgeColor: tel.speedPushbackActive ? "amber" : "cyan",
+          progressPct: clampProgress((Math.abs(tel.velocityMS) / parsed.speedLimitMS) * 100),
+        },
+        {
+          label: "Restoring Motor Torque",
+          value: tel.motorTorqueNm.toFixed(1),
+          unit: "N·m",
+          badgeColor: Math.abs(tel.motorTorqueNm) > 100 ? "amber" : "indigo",
+          progressPct: clampProgress((Math.abs(tel.motorTorqueNm) / 160.0) * 100),
+        },
+        {
+          label: "Balancing Margin",
+          value: (tel.balancingMarginRatio * 100).toFixed(0),
+          unit: "%",
+          badgeColor:
+            tel.balancingMarginRatio > 0.45
+              ? "emerald"
+              : tel.balancingMarginRatio > 0.22
+                ? "amber"
+                : "rose",
+          progressPct: clampProgress(tel.balancingMarginRatio * 100),
+        },
+        {
+          label: "Tactile Ripple Alarm",
+          value: tel.tactileAlarmActive ? "ACTIVE (18 Hz)" : "STANDBY",
+          unit: "haptic",
+          badgeColor: tel.tactileAlarmActive ? "rose" : "indigo",
+        },
+        {
+          label: "Pitch Pushback",
+          value: tel.speedPushbackActive ? `+${tel.pitchPushbackDeg.toFixed(1)}° LIMIT` : "OFF",
+          unit: "speed limiter",
+          badgeColor: tel.speedPushbackActive ? "amber" : "emerald",
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Dean Kamen's Segway (US 6,302,230) stabilizes an inverted pendulum by continuously accelerating two coaxial drive wheels forward beneath the rider's center of gravity. Crucially, the balancing margin monitor tracks available acceleration headroom, triggering speed tiltback and 18 Hz tactile motor ripple vibration through the platform before torque saturation occurs.",
   },
   "us-4098001-watson-remote-center-compliance": {
     domain: "robotics_mechanisms",

@@ -67,70 +67,69 @@ const term = (text: string, label: string, definition: string): CuratedSpecifica
 });
 
 /** Paragraph-indexed, source-specific engineering readings; never OCR cleanup. */
-export const milacronRobotToolchangerParallelReadings: Readonly<
-  Record<number, readonly string[]>
-> = {
-  2: [
-    "The abstract gives the complete visitor-level idea: a robot-side adapter receives a common tool base and a T-shaped member, then a reversing slide locks or unlocks it. The claims specify the exact required elements.",
-  ],
-  10: [
-    "The field is a robot-side interface for changing the tool at the wrist, rather than a general-purpose robot arm. The source distinguishes the arm, wrist, end effector, and attached working tool so their roles do not blur.",
-  ],
-  11: [
-    "The stated bottleneck is changeover: a programmable robot still carries one special tool until a person replaces it. The invention tries to make the tool interface itself part of the robot's working sequence.",
-  ],
-  12: [
-    "The applicants frame automatic exchange as a way to use several tool types during one workpiece cycle. That is an objective of this disclosed arrangement, not a guarantee of a particular production rate or economic result.",
-  ],
-  13: [
-    "Bistable here means the retention mechanism is intended to remain in either of its two terminal conditions after loss of actuator power. The source supplies topology, not a force, friction, shock, or certification calculation for that behavior.",
-  ],
-  15: [
-    "The summary names the reusable interface: an adapter fixed to the end effector, a common base attached to each tool, and a retention member that couples them. The claims, rather than this summary, define the legal combinations.",
-  ],
-  16: [
-    "The first object is storage-side interchange: the common base lets several tools wait in a rack while one adapter remains fixed to the robot. It is an objective statement rather than a throughput or availability guarantee.",
-  ],
-  17: [
-    "The second object is the stated tendency to retain a tool after loss of power. The text does not supply the quantitative conditions needed to turn that aspiration into a specified holding-force or impact-survival result.",
-  ],
-  19: [
-    "The drawing list is archival navigation. It establishes that the open and closed locking states, electrical alternate, locating pins, and toolbase are actual source figures rather than modern reconstructions.",
-  ],
-  21: [
-    "Figure 1 separates the robot's motion system from the change interface. A wrist-mounted adapter meets any of several tool bases on a rack, so the exhibit models the claimed interface rather than pretending to reproduce a particular arm's kinematics.",
-  ],
-  22: [
-    "The adapter receives actuator fluid through the robot and can pass a separate utility connection to a selected tool. Because no pressure, bore, flow, or duty-cycle figure is printed, the visual shows only whether the source-described interface is present.",
-  ],
-  23: [
-    "Two plates and two spacer blocks form the adapter housing. The essential sequence is geometric: open aperture admits the T-member, then a transverse slide shifts so the aperture no longer aligns and its ramps bear on the crossbar.",
-  ],
-  24: [
-    "The source calls the pin-and-bushing reception accurate registration before clamping. A cylindrical pin and a diamond-profile pin are a locating pair; the museum model shows the registration prerequisite but refuses an unprinted positional tolerance.",
-  ],
-  25: [
-    "The actuator's rod, yoke, and slide are mechanically coupled, while an optional front fitting passes a utility to a seated tool. Neither the claim nor the description gives actuator stroke or output force, so the slider is normalized state rather than measured travel.",
-  ],
-  26: [
-    "The alternate embodiment changes the optional utility connection from a fluid fitting to an electrical connector. It does not alter the core mechanical capture path, which is why the simulation treats utilities as a source-described option rather than an energy model.",
-  ],
-  27: [
-    "The side view explains the guidance: a rectangular slide fits slots in the front plate and moves together with the actuator yoke. A proximity switch detects a base's presence, but the grant does not specify a sensing range, signal protocol, or controller.",
-  ],
-  28: [
-    "At the locked position, the aperture has moved out of line with the opening and the two ramp surfaces engage. That physical interference is the pedagogical heart of the exhibit: a base cannot withdraw while the crossbar is captured by the shifted slide.",
-  ],
-  29: [
-    "The two locating pins intentionally have different cross sections, while their mating bushings sit in the tool base. This supplies a repeatable geometric datum before the retention feature takes load; no numerical repeatability should be inferred from the description.",
-  ],
-  30: [
-    "The base can expose either a fluid port, electrical connector, or neither, according to the attached tool. The document consequently describes an interface family, but it does not supply a universal electrical or pneumatic specification.",
-  ],
-  31: [
-    "The closing paragraph preserves the ordinary patent boundary: the illustrated embodiment is preferred, while the claims select what is legally required. It is not license to add unprinted dimensions, loads, reliability claims, or robot performance figures.",
-  ],
-};
+export const milacronRobotToolchangerParallelReadings: Readonly<Record<number, readonly string[]>> =
+  {
+    2: [
+      "The abstract gives the complete visitor-level idea: a robot-side adapter receives a common tool base and a T-shaped member, then a reversing slide locks or unlocks it. The claims specify the exact required elements.",
+    ],
+    9: [
+      "The field is a robot-side interface for changing the tool at the wrist, rather than a general-purpose robot arm. The source distinguishes the arm, wrist, end effector, and attached working tool so their roles do not blur.",
+    ],
+    10: [
+      "The stated bottleneck is changeover: a programmable robot still carries one special tool until a person replaces it. The invention tries to make the tool interface itself part of the robot's working sequence.",
+    ],
+    11: [
+      "The applicants frame automatic exchange as a way to use several tool types during one workpiece cycle. That is an objective of this disclosed arrangement, not a guarantee of a particular production rate or economic result.",
+    ],
+    12: [
+      "Bistable here means the retention mechanism is intended to remain in either of its two terminal conditions after loss of actuator power. The source supplies topology, not a force, friction, shock, or certification calculation for that behavior.",
+    ],
+    14: [
+      "The summary names the reusable interface: an adapter fixed to the end effector, a common base attached to each tool, and a retention member that couples them. The claims, rather than this summary, define the legal combinations.",
+    ],
+    15: [
+      "The first object is storage-side interchange: the common base lets several tools wait in a rack while one adapter remains fixed to the robot. It is an objective statement rather than a throughput or availability guarantee.",
+    ],
+    16: [
+      "The second object is the stated tendency to retain a tool after loss of power. The text does not supply the quantitative conditions needed to turn that aspiration into a specified holding-force or impact-survival result.",
+    ],
+    18: [
+      "The drawing list is archival navigation. It establishes that the open and closed locking states, electrical alternate, locating pins, and toolbase are actual source figures rather than modern reconstructions.",
+    ],
+    20: [
+      "Figure 1 separates the robot's motion system from the change interface. A wrist-mounted adapter meets any of several tool bases on a rack, so the exhibit models the claimed interface rather than pretending to reproduce a particular arm's kinematics.",
+    ],
+    21: [
+      "The adapter receives actuator fluid through the robot and can pass a separate utility connection to a selected tool. Because no pressure, bore, flow, or duty-cycle figure is printed, the visual shows only whether the source-described interface is present.",
+    ],
+    22: [
+      "Two plates and two spacer blocks form the adapter housing. The essential sequence is geometric: open aperture admits the T-member, then a transverse slide shifts so the aperture no longer aligns and its ramps bear on the crossbar.",
+    ],
+    23: [
+      "The source calls the pin-and-bushing reception accurate registration before clamping. A cylindrical pin and a diamond-profile pin are a locating pair; the museum model shows the registration prerequisite but refuses an unprinted positional tolerance.",
+    ],
+    24: [
+      "The actuator's rod, yoke, and slide are mechanically coupled, while an optional front fitting passes a utility to a seated tool. Neither the claim nor the description gives actuator stroke or output force, so the slider is normalized state rather than measured travel.",
+    ],
+    25: [
+      "The alternate embodiment changes the optional utility connection from a fluid fitting to an electrical connector. It does not alter the core mechanical capture path, which is why the simulation treats utilities as a source-described option rather than an energy model.",
+    ],
+    26: [
+      "The side view explains the guidance: a rectangular slide fits slots in the front plate and moves together with the actuator yoke. A proximity switch detects a base's presence, but the grant does not specify a sensing range, signal protocol, or controller.",
+    ],
+    27: [
+      "At the locked position, the aperture has moved out of line with the opening and the two ramp surfaces engage. That physical interference is the pedagogical heart of the exhibit: a base cannot withdraw while the crossbar is captured by the shifted slide.",
+    ],
+    28: [
+      "The two locating pins intentionally have different cross sections, while their mating bushings sit in the tool base. This supplies a repeatable geometric datum before the retention feature takes load; no numerical repeatability should be inferred from the description.",
+    ],
+    29: [
+      "The base can expose either a fluid port, electrical connector, or neither, according to the attached tool. The document consequently describes an interface family, but it does not supply a universal electrical or pneumatic specification.",
+    ],
+    30: [
+      "The closing paragraph preserves the ordinary patent boundary: the illustrated embodiment is preferred, while the claims select what is legally required. It is not license to add unprinted dimensions, loads, reliability claims, or robot performance figures.",
+    ],
+  };
 
 export const milacronRobotToolchangerArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
@@ -160,7 +159,10 @@ export const milacronRobotToolchangerArchivalEdition: CuratedSpecificationEditio
       kind: "figure-sheet",
       figureLabel: "FIG. 1",
       title: "Robot, adapter, tool bases, and rack",
-      description: [figure(1), { kind: "text", text: ", perspective source drawing on sheet 1 of 6." }],
+      description: [
+        figure(1),
+        { kind: "text", text: ", perspective source drawing on sheet 1 of 6." },
+      ],
     },
     {
       kind: "figure-sheet",
@@ -231,8 +233,12 @@ export const milacronRobotToolchangerArchivalEdition: CuratedSpecificationEditio
     p(
       "The invention is shown embodied in a robot having a movable end effector, wherein a toolchanger comprises, in part, an adapter unit affixed to the end effector. The adapter unit has a housing with means for locating and securing the housing on the end effector, and a means for locating and releasably retaining a tool base on the housing is embodied therein. A common tool base is affixed to a plurality of tools to be releasably retained with the adapter unit, and a retention member affixed to the tool base cooperates with the adapter unit for holding the tool base and tool in position with the adapter unit.",
     ),
-    p("It is an object of the invention to provide a robot toolchanger which will releasably retain a plurality of tools which may be interchanged with a tool storage module."),
-    p("It is another object of the invention to provide a robot toolchanger which will tend to retain the tool in the event of a power failure."),
+    p(
+      "It is an object of the invention to provide a robot toolchanger which will releasably retain a plurality of tools which may be interchanged with a tool storage module.",
+    ),
+    p(
+      "It is another object of the invention to provide a robot toolchanger which will tend to retain the tool in the event of a power failure.",
+    ),
     { kind: "heading", level: 2, text: "BRIEF DESCRIPTION OF THE DRAWINGS" },
     p(
       figure(1),
@@ -240,21 +246,35 @@ export const milacronRobotToolchangerArchivalEdition: CuratedSpecificationEditio
       figure(2),
       " is a perspective view in partial section of a toolchanger adapter unit, illustrating the locking slide in the open position, and the tool retention member separated from the adapter unit. ",
       figure(3),
-      " is a perspective view of the adapter unit of FIG. 2, illustrating the locking slide in the closed position, and the tool retention member secured by the locking slide. ",
+      " is a perspective view of the adapter unit of ",
+      figure(2),
+      ", illustrating the locking slide in the closed position, and the tool retention member secured by the locking slide. ",
       figure(4),
-      " is an alternate embodiment of the adapter unit of FIG. 2, illustrating that a separable electrical connection unit may be affixed to both the adapter unit and the releasable tool. ",
+      " is an alternate embodiment of the adapter unit of ",
+      figure(2),
+      ", illustrating that a separable electrical connection unit may be affixed to both the adapter unit and the releasable tool. ",
       figure(5),
-      " is a side elevation view of the adapter unit of FIG. 2. ",
+      " is a side elevation view of the adapter unit of ",
+      figure(2),
+      ". ",
       figure(6),
-      " is a plan section of the toolchanger unit taken along the line 6—6 of FIG. 5. ",
+      " is a plan section of the toolchanger unit taken along the line 6—6 of ",
+      figure(5),
+      ". ",
       figure(7),
-      " is a front elevation view taken in the direction of arrow 7 of FIG. 6, depicting the tool retention member in partial section. ",
+      " is a front elevation view taken in the direction of arrow 7 of ",
+      figure(6),
+      ", depicting the tool retention member in partial section. ",
       figure(8),
-      " is a section through the adapter locating pin taken along the line 8—8 of FIG. 7. ",
+      " is a section through the adapter locating pin taken along the line 8—8 of ",
+      figure(7),
+      ". ",
       figure(9),
       " is a front elevation view of the tool base with the tool removed for clarity. ",
       figure(10),
-      " is a plan view of the tool base of FIG. 9.",
+      " is a plan view of the tool base of ",
+      figure(9),
+      ".",
     ),
     { kind: "heading", level: 2, text: "DESCRIPTION OF THE PREFERRED EMBODIMENT" },
     p(
@@ -287,39 +307,53 @@ export const milacronRobotToolchangerArchivalEdition: CuratedSpecificationEditio
     p(
       figure(3),
       " illustrates that the locking slide 33 is provided with yoke block 45, extending transversely from its rear surface toward the rear plate 27, and the yoke block 45 is affixed to the piston rod 46 of the linear actuator 60 (see ",
-      figure(5),
+      figure(5, "FIGS. 5"),
       " and ",
-      figure(6),
+      figure(6, "6"),
       "). The cylinder 47 of the actuator 60 is affixed to the rear plate 27 of the adapter unit 17. Once the tool base 18 is registered on the front plate 26 of the adapter unit 17, and the cross bar 38 of the T-member 35 is received through the central aperture 34 of the locking slide 33, the slide 33 is moved in a radial direction relative to the front plate 26, and the tool 19 is retained in position on the adapter unit 17. A pair of pipes 48 extend from the cylinder 47 of the linear actuator 60, to connect the fluid lines 23,24. A fluid fitting 49 is received in the front plate 26, and interdrilling connects the fitting 49 to a front hole 50 which is aligned with a mating fluid port (not shown) in the tool base 18 to provide fluid power for a tool, when desired.",
     ),
     p(
       figure(4),
-      " depicts the elements of FIG. 2, with the exception that the fluid fitting 49 is replaced by an electrical connector 51 on the front plate 26 of the adapter unit 17, and a mating electrical connector 52 is provided on the tool base 18 for conducting electrical signals, if desired, to the tool 19 when the tool base 18 is clamped in position on the adapter unit 17.",
+      " depicts the elements of ",
+      figure(2),
+      ", with the exception that the fluid fitting 49 is replaced by an electrical connector 51 on the front plate 26 of the adapter unit 17, and a mating electrical connector 52 is provided on the tool base 18 for conducting electrical signals, if desired, to the tool 19 when the tool base 18 is clamped in position on the adapter unit 17.",
     ),
     p(
       figure(5),
-      " depicts the adapter unit 17 and tool base 18 in assembly. The rear plate 27 of the adapter unit 17 is located by a pilot diameter 53 and secured by screws 54 to the end effector 15. The front and rear plates 26,27 of the unit are tied together by screws 55 extending through the parallel spaced-apart blocks 28,29, to form a rigid structure. The linear actuator 60 is centrally located between the blocks 28,29, and is mounted to a pad 55 on the rear plate 27. The locking slide 33 is generally rectangular in cross-section, having accurate edges, machined to a close fit in guide slots 31,32 provided in the front plate 26. The yoke block 45 is secured to the locking slide 33 by a pair of screws 56 so that movement of the linear actuator 60 will cause the yoke block 45 and slide 33 to move in unison, in a radial direction, relative to the circular front plate 26. The tool base 18 is shown clamped to the front plate 26 of the adapter unit 17, and the tool base 18 carries any one of a variety of tools 19. A proximity switch 58 is threadably received through the back face 59 of the front plate 26 and secured by a locknut 61. The tip 62 of the proximity switch 58 is recessed into the front plate 26 a slight amount, and is capable of sensing the presence or absence of a tool base 18.",
+      " depicts the adapter unit 17 and tool base 18 in assembly. The rear plate 27 of the adapter unit 17 is located by a pilot diameter 53 and secured by screws 54 to the end effector 15. The front and rear plates 26,27 of the unit are tied together by screws 55 extending through the parallel spaced-apart blocks 28,29, to form a rigid structure. The linear actuator 60 is centrally located between the blocks 28,29, and is mounted to a pad 55 on the rear plate 27. The locking slide 33 is generally rectangular in cross-section, having accurate edges, machined to a close fit in guide slots 31,32 provided in the front plate 26. The yoke block 45 is secured to the locking slide 33 by a pair of screws 56 so that movement of the linear actuator 60 will cause the yoke block 45 and slide 33 to move in unison, in a radial direction, relative to the circular front plate 26. The rigid fluid pipes 48 extend from the linear actuator 60, with one pipe 48 extending through a clearance hole 57 in the top block 28. The tool base 18 is shown clamped to the front plate 26 of the adapter unit 17, and the tool base 18 carries any one of a variety of tools 19. A proximity switch 58 is threadably received through the back face 59 of the front plate 26 and secured by a locknut 61. The tip 62 of the proximity switch 58 is recessed into the front plate 26 a slight amount, and is capable of sensing the presence or absence of a tool base 18.",
     ),
     p(
       "The plan section of ",
       figure(6),
-      " illustrates the adapter unit 17 having its locking slide 33 moved to the locked position. At such position, the T-member 35 is securely held within the central opening 30 of the front plate 26 by a wedging action on the cross bar 38. The tool base 18 is received on the front plate 26 of the adapter unit 17. The T-member 35 extends through the central opening 30 of the plate 26 and the aperture 34 of the locking slide 33 is shifted out of alignment with the opening 30. In the position shown, the ramp surfaces 41 of the locking slide 33 are engaged with the ramp surfaces 39 of the T-member 35, so that the tool base 18 may not be withdrawn and separated from the adapter unit 17.",
+      " illustrates the adapter unit 17 having its locking slide 33 moved to the locked position. At such position, the T-member 35 is securely held within the central opening 30 of the front plate 26 by a wedging action on the cross bar 38. The tool base 18 is received on the front plate 26 of the adapter unit 17. The T-member 35 extends through the central opening 30 of the plate 26 and the aperture 34 of the locking slide 33 is shifted out of alignment with the opening 30. The locking slide 33 is aligned with the yoke block 45 by a roll pin 63 extending into both 33,45. The linear actuator 60 has a cylinder 47 affixed to the rear plate 27 by cap screws 64, and the piston rod 46, extending from the cylinder 47, has a threaded end hole 65 which threadably receives a rod adapter 66. The adapter 66 has a threaded portion 67, and a cylindrical body portion 68 having machined wrench flats 69. An integral pilot diameter 70 extends through a bore 71 in the yoke block 45 and a cap screw 72 and washer 73 affix the adapter 66 to the yoke block 45. The pilot diameter 53 of the rear plate 27 is a cylindrical ring, pressed into a blind bore 74 in the plate 27. The T-member 35 is located with its stem 37 in a machined recess 75 in the tool base 18, and a pair of cap screws 76 hold the T-member 35 to the base 18. In the position shown, the ramp surfaces 41 of the locking slide 33 are engaged with the ramp surfaces 39 of the T-member 35, so that the tool base 18 may not be withdrawn and separated from the adapter unit 17.",
     ),
     p(
       "Referring to ",
       figure(7),
-      ", the slide 33 must be shifted to the phantom position shown in order to align the slide aperture 34 with the T-member 35 for tool separation to occur. The pair of locating pins 43,44 are provided on the front plate 26, one pin 43 being cylindrical, and the other pin 44 being diamond-shaped in cross section. The section of ",
-      figure(8),
-      " is typical for both pins 43,44, as both receive a hardened steel bushing 42 of the tool base 18.",
-    ),
-    p(
-      figure(9),
-      " and ",
+      ", the slide 33 must be shifted to the phantom position shown in order to align the slide aperture 34 with the T-member 35 for tool separation to occur. The proximity switch 58 (",
+      figure(5),
+      ") is shown extending into a relief portion 77 in the front plate 26 and held in position by the locknut 61. The fluid fitting 49 is received in a pipe-threaded hole 78 in the circumference of the front plate 26, and the hole 78 is ported into a front hole 50 and counterbore 79, which receives an O-ring 80 for sealing purposes (see ",
       figure(10),
-      " depict the tool base 18 with the tool 19 removed, for clarity of viewing. The tool base 18 is a cylindrical plate, having the T-member 35 secured to it by locking screws 76, and a fluid port 89 is drilled through, in line with the O-ring 80 and front hole 50 of the adapter unit front plate 26. The tool base 18 has a pair of hardened, shouldered, bushings 42 received in mating bores 90 and counterbores 91 so the base 18 can be located on the locating pins 43,44 of the adapter unit 17. Tapped holes 92 are provided on the tool base 18 in a predetermined pattern so that a selected tool 19 may be affixed thereto.",
+      "). The pair of locating pins 43,44 are provided on the front plate 26, one pin 43 being cylindrical, and the other pin 44 being diamond-shaped in cross section. The section of ",
+      figure(8),
+      " is typical for both pins 43,44, as both receive a hardened steel bushing 42 of the tool base 18. ",
+      figure(8),
+      " shows that the locating pin 43 has a flange 81 seated against a milled counterbore 82, and a pilot diameter 83 of the pin 43 extends into a pilot hole 84 in the front plate 26. The locating pin 43 is restrained from axial movement by a captivating screw 85, which has a shoulder diameter 86 adjacent the pin flange 81, and the larger head 87 of the screw 85 is received in a notch 88 in the flange 81. The screw 85 is threadably received in the front plate 26 to secure the locating pin 43.",
     ),
     p(
-      "As previously stated, the fluid ports 50 of the adapter unit 17 and tool base 18 are provided only for those tools 19 which need pressurized fluid for a motive source. FIG. 4 illustrates as an example electrical connectors 51,52 which might be employed when an electrical motive power source is needed. It may be appreciated that certain tools may need no power supplied to them and, in such case, the electrical and fluid connectors shown would be omitted.",
+      figure(9, "FIGS. 9"),
+      " and ",
+      figure(10, "10"),
+      " depict the tool base 18 with the tool 19 removed, for clarity of viewing. The tool base 18 is a cylindrical plate, having the T-member 35 secured to it by locking screws 76, and a fluid port 89 is drilled through, in line with the O-ring 80 and front hole 50 of the adapter unit front plate 26. The tool base 18 has a pair of hardened, shouldered, bushings 42 received in mating bores 90 and counterbores 91 so the base 18 can be located on the locating pins 43,44 of the adapter unit 17 (see ",
+      figure(7, "FIGS. 7"),
+      " and ",
+      figure(8, "8"),
+      "). Tapped holes 92 are provided on the tool base 18 in a predetermined pattern so that a selected tool 19 may be affixed thereto.",
+    ),
+    p(
+      "As previously stated, the fluid ports 50 of the adapter unit 17 and tool base 18 are provided only for those tools 19 which need pressurized fluid for a motive source. ",
+      figure(4),
+      " illustrates as an example electrical connectors 51,52 which might be employed when an electrical motive power source is needed. It may be appreciated that certain tools may need no power supplied to them and, in such case, the electrical and fluid connectors shown would be omitted.",
     ),
     p(
       "While the invention has been shown in connection with a preferred embodiment, the invention is not limited to such embodiment, but rather extends to all such designs and modifications as come within the scope of the appended claims.",

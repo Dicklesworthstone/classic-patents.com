@@ -81,6 +81,7 @@ import { FrankenSimEngine, lamarrSchematicHop, lamarrSchematicStaffY } from "@/p
 import { fermiSchematicSlug, stepFermiKinetics } from "@/physics/fermiKinetics";
 import { stepGoertzMasterSlaveTopology } from "@/physics/goertzElectronicMasterSlaveManipulatorKernel";
 import { stepKamenInjectionMechanism } from "@/physics/kamenInjectionKernel";
+import { stepLemelsonManipulatorTopology } from "@/physics/lemelsonAdjustableManipulatorKernel";
 import { stepLemelsonAutomaticProductionTopology } from "@/physics/lemelsonAutomaticProductionKernel";
 import { stepLemelsonWarehouseTopology } from "@/physics/lemelsonWarehouseKernel";
 import {
@@ -95,6 +96,7 @@ import {
   stepSholesTypewriter,
 } from "@/physics/machineKernels";
 import { stepMakinoScaraTopology } from "@/physics/makinoScaraKernel";
+import { stepMilacronRobotToolchanger } from "@/physics/milacronRobotToolchangerKernel";
 import { readOtisTopologyControls, stepOtis1861Topology } from "@/physics/otisKernel";
 import { stepParsonsMarine } from "@/physics/parsonsMarineKernel";
 import { stepRobotEndEffector } from "@/physics/robotEndEffectorKernel";
@@ -167,7 +169,10 @@ interface InteractiveDiagramViewerProps {
 }
 
 const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
+  [/versatran|3212649|3,212,649/, "amf-versatran"],
   [/salisbury|4921293|4,921,293/, "salisbury-robot-hand"],
+  [/milacron|4512709|4,512,709/, "milacron-robot-toolchanger"],
+  [/segway|6302230|6,302,230/, "kamen-segway"],
   [/devol|programmed[- ]transfer|2988.?237/, "devol-programmed-transfer"],
   [/wright|821.?393/, "wright-flyer"],
   [/tesla[- ]coil|533.?367|593.?138/, "tesla-coil"],
@@ -284,6 +289,7 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "kilby-ic-multivibrator": true,
   "kilby-ic-transistor": true,
   "kamen-injection-device": true,
+  "kamen-segway": true,
   "kwolek-kevlar": true,
   "lamarr-frequency-hopping": true,
   "lincoln-buoy": true,
@@ -292,11 +298,15 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "salisbury-robot-hand": true,
   "linde-air-liquefaction": true,
   "lemelson-automatic-production": true,
+  "lemelson-adjustable-manipulator": true,
+  "lemelson-adjustable-manipulator-side": true,
+  "lemelson-adjustable-manipulator-control": true,
   "marconi-radio": true,
   "maxim-machine-gun": true,
   "mccormick-reaper": true,
   "mergenthaler-linotype": true,
   "mestral-velcro": true,
+  "milacron-robot-toolchanger": true,
   "morse-telegraph": true,
   "nobel-dynamite": true,
   "noyce-ic": true,
@@ -7375,6 +7385,120 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
+    case "lemelson-adjustable-manipulator":
+    case "lemelson-adjustable-manipulator-side":
+    case "lemelson-adjustable-manipulator-control": {
+      const state = stepLemelsonManipulatorTopology(params ?? {});
+      const carriageX = 200 + state.controls.carriagePosition * 80;
+      const mastY = 80 + state.controls.columnElevation * 60;
+      const armAngleRad = state.displayPose.pivotRad;
+      const wristX =
+        carriageX + Math.cos(state.displayPose.azimuthRad) * 45 * Math.cos(armAngleRad);
+      const wristY = mastY + Math.sin(armAngleRad) * 25 + 15;
+      const jawGap = 4 + state.displayPose.jawOpeningFraction * 8;
+
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            US 3,260,375 · RECONFIGURABLE GANTRY & LIMIT-STOP TOPOLOGY
+          </text>
+          {/* Overhead Track */}
+          <line x1="60" y1="50" x2="340" y2="50" stroke="#94a3b8" strokeWidth="3" />
+          <line x1="60" y1="42" x2="340" y2="42" stroke="#f59e0b" strokeWidth="1.5" />
+          <text x="65" y="38" fill="#f59e0b" fontSize="6">
+            bus 28
+          </text>
+
+          {/* Carriage 22 & Motor Mx */}
+          <rect
+            x={carriageX - 20}
+            y="44"
+            width="40"
+            height="18"
+            rx="2"
+            fill="#1e293b"
+            stroke="#38bdf8"
+          />
+          <text x={carriageX - 6} y="56" fill="#38bdf8" fontSize="7" fontWeight="bold">
+            Mx
+          </text>
+
+          {/* Vertical Column 23 & Telescoping Mast 23' */}
+          <line x1={carriageX} y1="62" x2={carriageX} y2={mastY} stroke="#64748b" strokeWidth="6" />
+          <line x1={carriageX} y1="62" x2={carriageX} y2={mastY} stroke="#38bdf8" strokeWidth="2" />
+          {/* Stop block 59' */}
+          <rect
+            x={carriageX + 4}
+            y={70 + state.controls.stop2Elevation * 40}
+            width="6"
+            height="8"
+            rx="1"
+            fill="#ef4444"
+          />
+
+          {/* Turntable Base 43 & Articulated Arm 35 */}
+          <ellipse
+            cx={carriageX}
+            cy={mastY}
+            rx="16"
+            ry="5"
+            fill="#0f172a"
+            stroke="#f59e0b"
+            strokeWidth="1"
+          />
+          <line
+            x1={carriageX}
+            y1={mastY}
+            x2={wristX}
+            y2={wristY}
+            stroke="#10b981"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+
+          {/* Gripper Jaws 87a / 87b */}
+          <circle cx={wristX} cy={wristY} r="3" fill="#0284c7" />
+          <line
+            x1={wristX}
+            y1={wristY - 2}
+            x2={wristX + 12}
+            y2={wristY - jawGap}
+            stroke="#f43f5e"
+            strokeWidth="1.5"
+          />
+          <line
+            x1={wristX}
+            y1={wristY + 2}
+            x2={wristX + 12}
+            y2={wristY + jawGap}
+            stroke="#f43f5e"
+            strokeWidth="1.5"
+          />
+
+          {/* Relay State Display */}
+          <text x="60" y="240" fill="#a7f3d0" fontSize="7" fontFamily="monospace">
+            Phase: {state.sequencer.phaseName} | Active Motor:{" "}
+            {state.sequencer.activeMotor.toUpperCase()}
+          </text>
+          <text x="60" y="252" fill="#38bdf8" fontSize="7">
+            Limit Switches:{" "}
+            {state.sequencer.trippedLimitSwitches.length > 0
+              ? state.sequencer.trippedLimitSwitches.join(", ")
+              : "Scanning"}
+          </text>
+          <text x="200" y="278" textAnchor="middle" fill="#fda4af" fontSize="7">
+            normalized topology only; no source dimensions, speed, motor power, or jaw force
+          </text>
+        </g>
+      );
+    }
     case "stackhouse-manipulator": {
       const pose = stepStackhouseSourceTopology(params ?? {});
       const pointP = { x: 180, y: 150 };
@@ -7581,6 +7705,516 @@ function _renderHistoricalSchematic(
           />
           <text x="150" y="120" fill="#fbbf24" fontSize="8" fontWeight="bold">
             4
+          </text>
+        </g>
+      );
+    }
+    case "milacron-robot-toolchanger": {
+      const state = stepMilacronRobotToolchanger(params ?? {});
+      const slideOffset = state.lockingSlideFraction * 30;
+      const toolBaseX = state.toolBasePresent ? 250 : 318;
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            ROBOT TOOLCHANGER ADAPTER & WEDGING CLAMP (FIGS. 2, 3, 6)
+          </text>
+          {/* Rear Plate 27 & Front Plate 26 */}
+          <rect
+            x="70"
+            y="60"
+            width="18"
+            height="180"
+            rx="3"
+            fill="#1e293b"
+            stroke="#64748b"
+            strokeWidth="1.5"
+          />
+          <text
+            x="79"
+            y="52"
+            fill="#94a3b8"
+            fontSize="7"
+            textAnchor="middle"
+            fontFamily="monospace"
+          >
+            27
+          </text>
+          <rect
+            x="220"
+            y="60"
+            width="18"
+            height="180"
+            rx="3"
+            fill="#1e293b"
+            stroke="#64748b"
+            strokeWidth="1.5"
+          />
+          <text
+            x="229"
+            y="52"
+            fill="#94a3b8"
+            fontSize="7"
+            textAnchor="middle"
+            fontFamily="monospace"
+          >
+            26
+          </text>
+          {/* Spacer Blocks 28, 29 */}
+          <rect
+            x="88"
+            y="60"
+            width="132"
+            height="22"
+            fill="#334155"
+            stroke="#475569"
+            strokeWidth="1"
+          />
+          <rect
+            x="88"
+            y="218"
+            width="132"
+            height="22"
+            fill="#334155"
+            stroke="#475569"
+            strokeWidth="1"
+          />
+          {/* Pneumatic Cylinder 47 */}
+          <rect
+            x="98"
+            y="125"
+            width="65"
+            height="50"
+            rx="3"
+            fill="#0284c7"
+            stroke="#38bdf8"
+            strokeWidth="1.2"
+            opacity="0.6"
+          />
+          <text
+            x="130"
+            y="154"
+            fill="#e0f2fe"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            47
+          </text>
+          {/* Piston Rod 46 & Yoke 45 */}
+          <rect
+            x="163"
+            y="145"
+            width="22"
+            height="10"
+            fill="#cbd5e1"
+            stroke="#64748b"
+            strokeWidth="1"
+          />
+          <rect
+            x="185"
+            y="135"
+            width="14"
+            height="30"
+            rx="2"
+            fill="#64748b"
+            stroke="#94a3b8"
+            strokeWidth="1"
+          />
+          {/* Locking Slide 33 & Wedging Ramps 41 */}
+          <rect
+            x={222 + slideOffset}
+            y="100"
+            width="14"
+            height="100"
+            rx="2"
+            fill={state.lockingSlideEngaged ? "#d97706" : "#0e7490"}
+            stroke="#fbbf24"
+            strokeWidth="1.2"
+          />
+          <text
+            x={229 + slideOffset}
+            y="120"
+            fill="#fef3c7"
+            fontSize="7"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            33
+          </text>
+          {/* Tool Base Plate 18 */}
+          <rect
+            x={toolBaseX}
+            y="60"
+            width="18"
+            height="180"
+            rx="3"
+            fill="#334155"
+            stroke="#94a3b8"
+            strokeWidth="1.5"
+            opacity={state.toolBasePresent ? 1 : 0.3}
+          />
+          <text
+            x={toolBaseX + 9}
+            y="52"
+            fill="#38bdf8"
+            fontSize="7"
+            textAnchor="middle"
+            fontFamily="monospace"
+          >
+            18
+          </text>
+          {/* T-Member 35 */}
+          <polygon
+            points={`215,140 220,135 ${toolBaseX},140 ${toolBaseX},160 220,165 215,160`}
+            fill={state.claimFourRampCaptured ? "#f43f5e" : "#e2e8f0"}
+            stroke="#f59e0b"
+            strokeWidth="1.2"
+            opacity={state.toolBasePresent ? 1 : 0.3}
+          />
+          <text
+            x={toolBaseX - 12}
+            y="153"
+            fill="#1e293b"
+            fontSize="7"
+            fontFamily="monospace"
+            fontWeight="bold"
+          >
+            35
+          </text>
+          {/* Cylindrical Pin 43 & Diamond Pin 44 */}
+          <circle cx="229" cy="80" r="5" fill="#38bdf8" stroke="#0284c7" strokeWidth="1.2" />
+          <text x="210" y="83" fill="#38bdf8" fontSize="7" fontFamily="monospace">
+            43
+          </text>
+          <polygon
+            points="229,210 234,215 229,220 224,215"
+            fill="#f59e0b"
+            stroke="#b45309"
+            strokeWidth="1.2"
+          />
+          <text x="210" y="218" fill="#fbbf24" fontSize="7" fontFamily="monospace">
+            44
+          </text>
+          {/* Proximity Switch 58 */}
+          <rect
+            x="205"
+            y="95"
+            width="15"
+            height="8"
+            rx="1"
+            fill="#0284c7"
+            stroke="#38bdf8"
+            strokeWidth="1"
+          />
+          <circle cx="220" cy="99" r="2" fill="#10b981" />
+          <text x="185" y="92" fill="#7dd3fc" fontSize="6" fontFamily="monospace">
+            58
+          </text>
+          {/* Tool Head 19 */}
+          <rect
+            x="268"
+            y="90"
+            width="80"
+            height="120"
+            rx="4"
+            fill="#1c1917"
+            stroke="#78716c"
+            strokeWidth="1.2"
+          />
+          <text
+            x="308"
+            y="155"
+            fill="#fcd34d"
+            fontSize="9"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            {state.toolRetained ? "CAPTURED TOOL 19" : "TOOL 19"}
+          </text>
+        </g>
+      );
+    }
+    case "amf-versatran": {
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            AMF VERSATRAN MECHANISM & CONTROL TOPOLOGY (FIGS. 1, 37, 42, 46, 49)
+          </text>
+          {/* Base Bed Plate 70 & Housing 72 */}
+          <rect
+            x="80"
+            y="240"
+            width="240"
+            height="20"
+            rx="3"
+            fill="#1e293b"
+            stroke="#475569"
+            strokeWidth="1.5"
+          />
+          <rect
+            x="120"
+            y="215"
+            width="160"
+            height="25"
+            rx="2"
+            fill="#334155"
+            stroke="#64748b"
+            strokeWidth="1.5"
+          />
+          <text x="140" y="232" fill="#94a3b8" fontSize="8" fontFamily="monospace">
+            HOUSING 72 / SPROCKET 80
+          </text>
+          {/* Vertical Column B */}
+          <rect
+            x="175"
+            y="70"
+            width="50"
+            height="145"
+            rx="3"
+            fill="#1e293b"
+            stroke="#38bdf8"
+            strokeWidth="2"
+          />
+          <text x="185" y="85" fill="#38bdf8" fontSize="8" fontFamily="monospace">
+            COL B
+          </text>
+          {/* Elevation Carriage C & Stroke Doubler 150/154 */}
+          <rect
+            x="160"
+            y="125"
+            width="80"
+            height="35"
+            rx="3"
+            fill="#334155"
+            stroke="#f59e0b"
+            strokeWidth="2"
+          />
+          <circle cx="200" cy="142" r="8" fill="#d97706" stroke="#fef3c7" strokeWidth="1.5" />
+          <text x="165" y="118" fill="#f59e0b" fontSize="8" fontFamily="monospace">
+            CARRIAGE C (2:1)
+          </text>
+          {/* Horizontal Arm A and source rack 234 */}
+          <rect
+            x="210"
+            y="132"
+            width="130"
+            height="20"
+            rx="2"
+            fill="#475569"
+            stroke="#94a3b8"
+            strokeWidth="1.5"
+          />
+          <line
+            x1="210"
+            y1="150"
+            x2="335"
+            y2="150"
+            stroke="#cbd5e1"
+            strokeWidth="1.5"
+            strokeDasharray="3 2"
+          />
+          <text x="240" y="145" fill="#cbd5e1" fontSize="8" fontFamily="monospace">
+            ARM A / RACK 234
+          </text>
+          {/* Wrist G & Gripper Fingers 324/326 */}
+          <circle cx="345" cy="142" r="9" fill="#0284c7" stroke="#38bdf8" strokeWidth="1.5" />
+          <path
+            d="M 354 135 L 375 132 L 375 137 Z"
+            fill="#e2e8f0"
+            stroke="#0f172a"
+            strokeWidth="1"
+          />
+          <path
+            d="M 354 149 L 375 152 L 375 147 Z"
+            fill="#e2e8f0"
+            stroke="#0f172a"
+            strokeWidth="1"
+          />
+          <text x="345" y="125" fill="#a855f7" fontSize="8" fontFamily="monospace">
+            WRIST G
+          </text>
+          {/* Separate programming arm H */}
+          <line x1="270" y1="132" x2="250" y2="105" stroke="#d97706" strokeWidth="2" />
+          <circle cx="250" cy="105" r="4" fill="#b45309" stroke="#fef3c7" />
+          <text x="235" y="100" fill="#d97706" fontSize="7" fontFamily="monospace">
+            PROGRAMMING ARM H
+          </text>
+        </g>
+      );
+    }
+    case "kamen-segway": {
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            SEGWAY DYNAMIC BALANCING & HEADROOM CONTROL (FIGS. 1–4)
+          </text>
+          {/* Ground Contact Line */}
+          <line
+            x1="40"
+            y1="260"
+            x2="360"
+            y2="260"
+            stroke="#475569"
+            strokeWidth="2"
+            strokeDasharray="4 2"
+          />
+          {/* Left & Right Coaxial Wheels 20 */}
+          <circle cx="200" cy="225" r="35" fill="#0f172a" stroke="#38bdf8" strokeWidth="2.5" />
+          <circle cx="200" cy="225" r="14" fill="#1e293b" stroke="#0284c7" strokeWidth="1.5" />
+          <circle cx="200" cy="225" r="4" fill="#fbbf24" />
+          <text x="160" y="235" fill="#7dd3fc" fontSize="8" fontFamily="monospace">
+            20
+          </text>
+          {/* Foot Platform / Chassis 12 */}
+          <rect
+            x="150"
+            y="185"
+            width="100"
+            height="12"
+            rx="3"
+            fill="#334155"
+            stroke="#94a3b8"
+            strokeWidth="1.5"
+          />
+          <text x="260" y="194" fill="#cbd5e1" fontSize="8" fontFamily="monospace">
+            12
+          </text>
+          {/* Vertical Handlebar Mast 16 */}
+          <line x1="195" y1="185" x2="185" y2="70" stroke="#94a3b8" strokeWidth="2.5" />
+          <rect
+            x="170"
+            y="65"
+            width="30"
+            height="6"
+            rx="2"
+            fill="#d97706"
+            stroke="#fbbf24"
+            strokeWidth="1.2"
+          />
+          <text x="155" y="72" fill="#fbbf24" fontSize="8" fontFamily="monospace">
+            14
+          </text>
+          <text x="170" y="125" fill="#94a3b8" fontSize="8" fontFamily="monospace">
+            16
+          </text>
+          {/* Inertial Measurement Cluster 30 & DSP Controller 32 */}
+          <rect
+            x="175"
+            y="165"
+            width="50"
+            height="18"
+            rx="2"
+            fill="#0284c7"
+            stroke="#38bdf8"
+            strokeWidth="1.2"
+            opacity="0.8"
+          />
+          <text
+            x="200"
+            y="177"
+            fill="#f0f9ff"
+            fontSize="7"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            IMU 30 / DSP 32
+          </text>
+          {/* Balancing Margin Monitor 34 */}
+          <rect
+            x="70"
+            y="90"
+            width="80"
+            height="45"
+            rx="3"
+            fill="#1e1b4b"
+            stroke="#818cf8"
+            strokeWidth="1.2"
+          />
+          <text
+            x="110"
+            y="105"
+            fill="#c7d2fe"
+            fontSize="7"
+            fontFamily="monospace"
+            textAnchor="middle"
+            fontWeight="bold"
+          >
+            MARGIN MONITOR 34
+          </text>
+          <text
+            x="110"
+            y="120"
+            fill="#a5b4fc"
+            fontSize="6"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            Δv = v_max - |v|
+          </text>
+          {/* Alarm Transducer 36 (Haptic Ripple + Tone) */}
+          <path
+            d="M 70 112 Q 50 112 50 140 Q 50 170 150 190"
+            stroke="#f43f5e"
+            strokeWidth="1.5"
+            strokeDasharray="3 2"
+            fill="none"
+          />
+          <circle cx="50" cy="140" r="10" fill="#881337" stroke="#f43f5e" strokeWidth="1.5" />
+          <text
+            x="50"
+            y="143"
+            fill="#ffe4e6"
+            fontSize="6"
+            fontFamily="monospace"
+            textAnchor="middle"
+            fontWeight="bold"
+          >
+            ALARM 36
+          </text>
+          {/* CG and Inverted Pendulum Vector */}
+          <circle cx="215" cy="110" r="5" fill="#ef4444" stroke="#fee2e2" strokeWidth="1.2" />
+          <text
+            x="225"
+            y="113"
+            fill="#ef4444"
+            fontSize="8"
+            fontFamily="monospace"
+            fontWeight="bold"
+          >
+            CG
+          </text>
+          <line
+            x1="200"
+            y1="225"
+            x2="215"
+            y2="110"
+            stroke="#ef4444"
+            strokeWidth="1.2"
+            strokeDasharray="4 2"
+          />
+          <text x="210" y="150" fill="#f87171" fontSize="7" fontFamily="monospace">
+            θ (lean)
           </text>
         </g>
       );

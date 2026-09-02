@@ -43,7 +43,6 @@ const EXPECTED_MANUAL_EDITION_GAPS = [
   "us-2708656-fermi-reactor",
   "us-313224-mergenthaler-linotype",
   "us-3138743-kilby-integrated-circuit",
-  "us-3353115-maiman-ruby-laser",
   "us-400766-hall-aluminium",
   "us-4068536-stackhouse-manipulator",
   "us-6120588-eink",

@@ -48,6 +48,7 @@ export function normalizeLiteralSourceText(value: string): string {
 export function normalizeReviewedLedgerText(value: string): string {
   return value
     .replace(/--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---/g, "")
+    .replace(/^\s*Column \d+\s*$/gim, "")
     .replace(/^\s*\d+\s*$/gm, "")
     .replace(/([\p{L}])-\s+([\p{Ll}])/gu, "$1$2")
     .replace(/([\p{L}])-(?=[\p{L}])/gu, "$1")
@@ -202,7 +203,9 @@ export function validateReviewedTranscriptionPageAnchors(
     };
   }
 
-  const markers = [...text.matchAll(reviewedMarkerPattern)];
+  const markers = [
+    ...text.matchAll(new RegExp(REVIEWED_PAGE_MARKER.source, REVIEWED_PAGE_MARKER.flags)),
+  ];
   for (const [index, anchor] of anchors.entries()) {
     const expectedPage = index + 1;
     if (!Number.isSafeInteger(anchor.page) || anchor.page !== expectedPage) {
@@ -296,7 +299,7 @@ export function validateReviewedTranscriptionLiteralCoverage(
   const ledger = validateReviewedTranscription(text, expectedPageCount);
   if (!ledger.valid) return ledger;
 
-  const normalizedLedger = normalizeLiteralSourceText(text.replace(reviewedMarkerPattern, ""));
+  const normalizedLedger = normalizeLiteralSourceText(normalizeReviewedLedgerText(text));
   for (const [index, section] of authoredSections.entries()) {
     const normalizedSection = normalizeLiteralSourceText(section);
     if (!normalizedSection) {

@@ -1,172 +1,127 @@
 /**
- * milacronRobotToolchangerKernel.ts
+ * Claim-topology kernel for Cincinnati Milacron's Robot Toolchanger System
+ * (US 4,512,709, granted 1985-04-23).
  *
- * SI computational physics kernel for Cincinnati Milacron's Robot Toolchanger System (US Patent 4,512,709).
- *
- * Models the mechanical clamping, pneumatic actuation, and kinematic location mechanics:
- * 1. Pneumatic cylinder piston thrust: F_act = p_air * (pi/4) * D_cyl^2
- * 2. Wedging mechanical advantage: F_clamp = F_act / tan(theta + phi)
- * 3. Self-locking bistable retention: tan(theta) <= mu_s
- * 4. Dual cylindrical / diamond locating pin alignment & radial repeatability (<= 0.025 mm)
- * 5. Inductive proximity sensor tool-seating verification
- * 6. Typed physical refusal boundaries for low supply pressure, excessive payload moment, or unseated tool base.
+ * The grant identifies the parts and their sequence—locating pins and bushings,
+ * an aligned aperture for admission/release, then a shifted locking slide whose
+ * ramp captures a retention member. It prints no pressure, bore, stroke, ramp
+ * angle, friction, load, or time value. This kernel therefore models only that
+ * discrete source-supported topology and deliberately refuses quantitative
+ * mechanics.
  */
 
-export interface MilacronToolchangerControls {
-  airPressureMpa: number; // Supply pneumatic pressure [0.2..1.0 MPa]
-  cylinderBoreMm: number; // Actuator cylinder bore D_cyl [20..60 mm]
-  wedgeAngleDeg: number; // Ramp taper angle theta [4..15 deg]
-  frictionCoeff: number; // Static friction coefficient mu_s [0.08..0.30]
-  slideStrokeMm: number; // Locking slide position [0..25 mm] (0=open, 25=locked)
-  toolMassKg: number; // Mass of attached end effector tool [1..50 kg]
-  dockingGapMm: number; // Clearance gap between adapter and tool base [0..5 mm]
+export interface MilacronRobotToolchangerControls {
+  /** Whether a common tool base is presented to the adapter. */
+  toolBasePresent: number;
+  /** Normalized display progress of the disclosed pin-and-bushing registration. */
+  registrationFraction: number;
+  /** Normalized display position of the disclosed locking slide. */
+  lockingSlideFraction: number;
+  /** Selects the dependent Claim 4 T-member/ramp form. */
+  claimFourTMember: number;
+  [key: string]: number | boolean | string | undefined;
 }
 
-export interface MilacronToolchangerTelemetry {
-  actuatorThrustN: number;
-  clampingForceN: number;
-  holdingForceWithoutPowerN: number;
-  isSelfLocking: boolean;
-  isLocked: boolean;
-  isToolSeated: boolean;
-  proximitySensorActive: boolean;
-  positionalRepeatabilityMm: number;
-  payloadCapacitySafetyFactor: number;
-  insufficientPressureRefusal: boolean;
-  wedgeBackdriveRefusal: boolean;
-  toolUnseatedRefusal: boolean;
-  refusalReason?: string;
+export type MilacronToolchangerControls = MilacronRobotToolchangerControls;
+
+export type MilacronToolchangerPhase =
+  | "adapter-open"
+  | "base-present"
+  | "registered"
+  | "locked"
+  | "captured-t-member";
+
+export interface MilacronRobotToolchangerState {
+  phase: MilacronToolchangerPhase;
+  toolBasePresent: boolean;
+  registrationComplete: boolean;
+  apertureAligned: boolean;
+  admissionPermitted: boolean;
+  lockingSlideEngaged: boolean;
+  retentionMemberAdmitted: boolean;
+  toolRetained: boolean;
+  claimFourRampCaptured: boolean;
+  releasePermitted: boolean;
+  lockingSlideFraction: number;
+  registrationFraction: number;
+  quantitativeMechanicsRefused: true;
+  sourceBoundary: {
+    note: string;
+    isRefused: true;
+  };
 }
 
-export const MILACRON_TOOLCHANGER_DEFAULT_CONTROLS: MilacronToolchangerControls = {
-  airPressureMpa: 0.60, // 0.6 MPa (6 bar / 87 psi) standard shop air
-  cylinderBoreMm: 32.0, // 32 mm bore pneumatic cylinder
-  wedgeAngleDeg: 7.0, // 7 degree self-locking wedge ramp
-  frictionCoeff: 0.15, // 0.15 steel-on-steel boundary lubricated friction
-  slideStrokeMm: 25.0, // Fully locked stroke position
-  toolMassKg: 15.0, // 15 kg end effector (e.g. spot welding gun)
-  dockingGapMm: 0.0, // Flush seated docking
+export const MILACRON_ROBOT_TOOLCHANGER_DEFAULTS: MilacronRobotToolchangerControls = {
+  toolBasePresent: 1,
+  registrationFraction: 1,
+  lockingSlideFraction: 1,
+  claimFourTMember: 1,
 };
 
-export function readMilacronToolchangerControls(
-  params: Record<string, number | boolean | string>,
-): MilacronToolchangerControls {
+const SOURCE_BOUNDARY_NOTE =
+  "US 4,512,709 supplies registration-and-ramp-capture topology but no actuator pressure, cylinder bore, stroke, ramp angle, friction, preload, mass, holding load, cycle time, or positional tolerance. The shared kernel refuses force, energy, timing, and reliability results.";
+
+function clampFraction(value: unknown, fallback: number): number {
+  return typeof value === "number" && Number.isFinite(value)
+    ? Math.min(1, Math.max(0, value))
+    : fallback;
+}
+
+/**
+ * Converts visitor controls to bounded, unitless teaching states. Fractions are
+ * display coordinates, not historic dimensions or distances.
+ */
+export function readMilacronRobotToolchangerControls(
+  raw: Record<string, number | boolean | string | undefined>,
+): MilacronRobotToolchangerControls {
   return {
-    airPressureMpa:
-      typeof params.airPressureMpa === "number"
-        ? Math.max(0.1, Math.min(1.2, params.airPressureMpa))
-        : MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.airPressureMpa,
-    cylinderBoreMm:
-      typeof params.cylinderBoreMm === "number"
-        ? Math.max(15, Math.min(80, params.cylinderBoreMm))
-        : MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.cylinderBoreMm,
-    wedgeAngleDeg:
-      typeof params.wedgeAngleDeg === "number"
-        ? Math.max(2, Math.min(20, params.wedgeAngleDeg))
-        : MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.wedgeAngleDeg,
-    frictionCoeff:
-      typeof params.frictionCoeff === "number"
-        ? Math.max(0.05, Math.min(0.40, params.frictionCoeff))
-        : MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.frictionCoeff,
-    slideStrokeMm:
-      typeof params.slideStrokeMm === "number"
-        ? Math.max(0, Math.min(25, params.slideStrokeMm))
-        : MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.slideStrokeMm,
-    toolMassKg:
-      typeof params.toolMassKg === "number"
-        ? Math.max(0.5, Math.min(100, params.toolMassKg))
-        : MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.toolMassKg,
-    dockingGapMm:
-      typeof params.dockingGapMm === "number"
-        ? Math.max(0, Math.min(10, params.dockingGapMm))
-        : MILACRON_TOOLCHANGER_DEFAULT_CONTROLS.dockingGapMm,
+    toolBasePresent: clampFraction(raw.toolBasePresent, 1),
+    registrationFraction: clampFraction(raw.registrationFraction, 1),
+    lockingSlideFraction: clampFraction(raw.lockingSlideFraction, 1),
+    claimFourTMember: clampFraction(raw.claimFourTMember, 1),
   };
 }
 
-export function stepMilacronRobotToolchangerSi(
-  controls: MilacronToolchangerControls,
-): MilacronToolchangerTelemetry {
-  const p_Pa = controls.airPressureMpa * 1e6;
-  const bore_m = controls.cylinderBoreMm * 1e-3;
-  const cylinderArea_m2 = (Math.PI / 4) * bore_m * bore_m;
-
-  // 1. Actuator Thrust
-  const actuatorThrustN = p_Pa * cylinderArea_m2;
-
-  // 2. Wedging Clamping Force
-  const thetaRad = (controls.wedgeAngleDeg * Math.PI) / 180;
-  const phiRad = Math.atan(controls.frictionCoeff);
-  const tanSum = Math.tan(thetaRad + phiRad);
-
-  const isLocked = controls.slideStrokeMm >= 20.0 && controls.dockingGapMm <= 0.5;
-  const clampingForceN = isLocked ? actuatorThrustN / Math.max(0.05, tanSum) : 0;
-
-  // 3. Self-Locking & Holding Force in Power Failure
-  const isSelfLocking = Math.tan(thetaRad) <= controls.frictionCoeff;
-  let holdingForceWithoutPowerN = 0;
-  if (isLocked && isSelfLocking) {
-    const cosTheta = Math.cos(thetaRad);
-    const sinTheta = Math.sin(thetaRad);
-    holdingForceWithoutPowerN =
-      clampingForceN *
-      Math.max(
-        0,
-        (controls.frictionCoeff * cosTheta - sinTheta) /
-          (cosTheta + controls.frictionCoeff * sinTheta),
-      );
-  }
-
-  // 4. Proximity Sensor & Tool Seating State
-  const isToolSeated = controls.dockingGapMm <= 0.4;
-  const proximitySensorActive = controls.dockingGapMm <= 0.8;
-
-  // 5. Kinematic Positional Repeatability
-  // Precision ground locating pins achieve <= 0.025 mm when seated
-  const positionalRepeatabilityMm = isToolSeated
-    ? 0.015 + 0.010 * (controls.dockingGapMm / 0.4)
-    : 1.0 + controls.dockingGapMm;
-
-  // 6. Payload Safety Factor
-  const toolWeightN = controls.toolMassKg * 9.80665;
-  const payloadCapacitySafetyFactor =
-    toolWeightN > 0 ? (clampingForceN * controls.frictionCoeff) / toolWeightN : 10;
-
-  // 7. Refusal Boundaries
-  let insufficientPressureRefusal = false;
-  let wedgeBackdriveRefusal = false;
-  let toolUnseatedRefusal = false;
-  let refusalReason: string | undefined;
-
-  if (controls.airPressureMpa < 0.30) {
-    insufficientPressureRefusal = true;
-    refusalReason = `Insufficient pneumatic pressure (${controls.airPressureMpa.toFixed(2)} MPa < 0.30 MPa). Tool clamp force inadequate for dynamic robot acceleration.`;
-  } else if (!isSelfLocking) {
-    wedgeBackdriveRefusal = true;
-    refusalReason = `Non-bistable wedge geometry: Ramp angle (${controls.wedgeAngleDeg}°) exceeds friction cone angle (${((phiRad * 180) / Math.PI).toFixed(1)}°). Tool will drop during power failure.`;
-  } else if (controls.slideStrokeMm > 10 && !isToolSeated) {
-    toolUnseatedRefusal = true;
-    refusalReason = `Tool unseated fault: Docking gap (${controls.dockingGapMm.toFixed(2)} mm) exceeds proximity threshold. Locking slide cannot engage T-member.`;
-  }
-
-  return {
-    actuatorThrustN,
-    clampingForceN,
-    holdingForceWithoutPowerN,
-    isSelfLocking,
-    isLocked,
-    isToolSeated,
-    proximitySensorActive,
-    positionalRepeatabilityMm,
-    payloadCapacitySafetyFactor,
-    insufficientPressureRefusal,
-    wedgeBackdriveRefusal,
-    toolUnseatedRefusal,
-    refusalReason,
-  };
-}
-
+/**
+ * Evaluates the single shared claim-topology state used by the badge, 2D
+ * instrument, 3D studio, schematic, and specification-clause weave.
+ */
 export function stepMilacronRobotToolchanger(
-  params: Record<string, number | boolean | string> = MILACRON_TOOLCHANGER_DEFAULT_CONTROLS as unknown as Record<string, number | boolean | string>,
-): MilacronToolchangerTelemetry {
-  return stepMilacronRobotToolchangerSi(readMilacronToolchangerControls(params));
+  raw: Record<string, number | boolean | string | undefined> = MILACRON_ROBOT_TOOLCHANGER_DEFAULTS,
+): MilacronRobotToolchangerState {
+  const controls = readMilacronRobotToolchangerControls(raw);
+  const toolBasePresent = controls.toolBasePresent >= 0.5;
+  const registrationComplete = toolBasePresent && controls.registrationFraction === 1;
+  const apertureAligned = controls.lockingSlideFraction === 0;
+  const lockingSlideEngaged = controls.lockingSlideFraction === 1;
+  const retentionMemberAdmitted = registrationComplete && apertureAligned;
+  const toolRetained = registrationComplete && lockingSlideEngaged;
+  const claimFourRampCaptured = toolRetained && controls.claimFourTMember >= 0.5;
+
+  const phase: MilacronToolchangerPhase = !toolBasePresent
+    ? "adapter-open"
+    : claimFourRampCaptured
+      ? "captured-t-member"
+      : toolRetained
+        ? "locked"
+        : registrationComplete
+          ? "registered"
+          : "base-present";
+
+  return {
+    phase,
+    toolBasePresent,
+    registrationComplete,
+    apertureAligned,
+    admissionPermitted: retentionMemberAdmitted,
+    lockingSlideEngaged,
+    retentionMemberAdmitted,
+    toolRetained,
+    claimFourRampCaptured,
+    releasePermitted: toolBasePresent && apertureAligned,
+    lockingSlideFraction: controls.lockingSlideFraction,
+    registrationFraction: controls.registrationFraction,
+    quantitativeMechanicsRefused: true,
+    sourceBoundary: { note: SOURCE_BOUNDARY_NOTE, isRefused: true },
+  };
 }

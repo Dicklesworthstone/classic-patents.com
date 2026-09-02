@@ -130,7 +130,7 @@ export function stepKamenSegwaySi(controls: KamenSegwayControls): KamenSegwayTel
 
   // Restoring torque required to balance the inverted pendulum
   // tau_motor = M*g*L*sin(theta) + K_v * v
-  let motorTorqueNm = gravityOverturningTorqueNm + KV_SPEED * nominalVelocityMS;
+  const motorTorqueNm = gravityOverturningTorqueNm + KV_SPEED * nominalVelocityMS;
 
   // Differential steering torque
   const steeringDeltaTorque = controls.steeringInput * 18.0;

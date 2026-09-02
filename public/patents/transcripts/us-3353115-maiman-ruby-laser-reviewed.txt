@@ -97,22 +97,23 @@ ATTORNEY.
 BEST AVAILABLE COPY
 
 Nov. 14, 1967                         T. H. MAIMAN                         3,353,115
-
                                       RUBY LASER SYSTEMS
+Original Filed April 13, 1961                                      5 Sheets-Sheet 4
 
-Original Filed April 13, 1961                                      5 Sheets—Sheet 4
+FIG. 12.
+126       128       130
 
-FIG. 12 is a diagram of a segment of laser material which is surrounded by a
-coolant having a high index of refraction.
-FIG. 13 is a schematic diagram of a portion of a laser system illustrating the
-use of an interferometer.
+FIG. 13.
+132       134       136       138       140
 
-FIGS. 14 and 15 are schematic diagrams illustrating additional types of
-interferometers.
+FIG. 14.
+142       144       146       148       150
 
+FIG. 15.
+152       154       156       158
+
+INVENTOR.
 THEODORE H. MAIMAN,
-Inventor.
-
 BY
 DANIEL T. CHUBB,
 ATTORNEY.
@@ -123,17 +124,25 @@ BEST AVAILABLE COPY
 
 Nov. 14, 1967                         T. H. MAIMAN                         3,353,115
                                       RUBY LASER SYSTEMS
-Original Filed April 13, 1961                                      5 Sheets—Sheet 5
+Original Filed April 13, 1961                                      5 Sheets-Sheet 5
 
-FIGS. 16 and 17 are diagrams of a laser system in which the optical pump
-utilizes an exploding wire.
+FIG. 16.
+160       162       164       166
+POWER SUPPLY
 
-FIG. 18 is a schematic diagram of a practical colidar system utilizing a
-laser.
+FIG. 17.
+168       170       172
 
+FIG. 18.
+174       176       178       180       182       184       186       188
+190       192       194       196       198       200       202       204
+206       208       210       212
+RECEIVER
+TRANSMITTER
+DISPLAY
+
+INVENTOR.
 THEODORE H. MAIMAN,
-Inventor.
-
 BY
 DANIEL T. CHUBB,
 ATTORNEY.
@@ -159,7 +168,7 @@ poration of Delaware
 Continuation of application Ser. No. 102,698, Apr. 13,
 1961. This application Nov. 29, 1965, Ser. No. 516,830
 
-2 Claims, (C1. 331—94.5)
+2 Claims. (Cl. 331—94.5)
 
 This application is a continuation of my copending
 application Ser. No, 102,698 entitled, Laser Systems,
@@ -345,7 +354,7 @@ laser material by a fluorescent material;
 
 --- REVIEWED TRANSCRIPTION PAGE 7 OF 10 ---
 
-3,358,115
+3,353,115
 
 FIG. 7 is an energy level diagram illustrating the
 method of operation of the embodiment of FIG. 6;
@@ -553,11 +562,11 @@ approximately 10 percent reflection is adequate. One end
 
 --- REVIEWED TRANSCRIPTION PAGE 8 OF 10 ---
 
-BEST AVAILABLE COpy
+BEST AVAILABLE COPY
 
-3,303,115
+3,353,115
 
-of the tod 30 has a nonrefiective opening 32 in the end
+of the rod 30 has a nonreflective opening 32 in the end
 plating to provide unobstructed passage of the coherent
 monochromatic beam 34 as shown, A power supply 36
 provides the flashing energy for the tube 28. An outer en-
@@ -744,7 +753,7 @@ substance is dependent upon temperature. This need not
 
 --- REVIEWED TRANSCRIPTION PAGE 9 OF 10 ---
 
-8,353,115
+3,353,115
 
 be a disadvantage since it affords a highly useful means
 for tuning the device over a relatively broad range, that
@@ -852,14 +861,14 @@ rection parallel to the axis of the rod. In FIG. 16 two
 
 76
 
-BEST AVAILABLE Copy
+BEST AVAILABLE COPY
 
 8
 
 parabolic reflectors 189 and 190 are directed toward each
 other so that the light source 184 at the focal point of
 reflector 189 emits a substantially parallel beam of pump-
-ing light 188 which is collected by the parabolic refiec-
+ing light 188 which is collected by the parabolic reflec-
 tor 190 and focused to pass through the laser segment:
 182. The parabolic surfaces 189 and 190 may be para-
 bolic cylindrical surfaces as shown or they may be para-
@@ -883,7 +892,7 @@ a wire thereby exploding and vaporizing it. The light en-
 ergy emitted by this phenomena may be extremely in-
 tense “white” light. Alternatively, the source 184 may
 be other conventional light sources such as gas-filled flash
-tubes, or carbon arc Jamps. An advantage of the systems
+tubes, or carbon arc lamps. An advantage of the systems
 depicted in FIGS, 16 and 17 is that the light source and
 the active laser material may be independently handled
 and cooled due to their spacing from each other.

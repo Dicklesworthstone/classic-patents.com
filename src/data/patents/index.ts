@@ -1,6 +1,8 @@
 import type { Patent } from "@/types/patent";
+import { amfVersatranPatent } from "./amf-versatran";
 import { arkwrightWaterFramePatent } from "./arkwright-water-frame";
 import { baekelandBakelitePatent } from "./baekeland-bakelite";
+import { baerOdysseyPatent } from "./baer-odyssey";
 import { bardeenTransistor2524035Patent } from "./bardeen-transistor-2524035";
 import { bellPhotophonePatent } from "./bell-photophone";
 import { bellTelephonePatent } from "./bell-telephone";
@@ -44,13 +46,16 @@ import { howeSewingMachinePatent } from "./howe-sewing-machine";
 import { hullStereolithographyPatent } from "./hull-stereolithography";
 import { hyattCelluloidPatent } from "./hyatt-celluloid";
 import { kamenMedicationInjectionPatent } from "./kamen-medication-injection-device";
+import { kamenSegwayPatent } from "./kamen-segway";
 import { kamenTransporterPatent } from "./kamen-transporter";
 import { kilbyIntegratedCircuitPatent } from "./kilby-integrated-circuit";
 import { kwolekKevlarPatent } from "./kwolek-kevlar";
 import { lamarrPatent as lamarrFrequencyHoppingPatent } from "./lamarr-frequency-hopping";
 import { landPolaroidPatent } from "./land-polaroid";
+import { lemelsonAdjustableManipulatorPatent } from "./lemelson-adjustable-manipulator";
 import { lemelsonAutomaticProductionPatent } from "./lemelson-automatic-production";
 import { lemelsonAutomaticWarehousingPatent } from "./lemelson-automatic-warehousing";
+import { lemelsonMachineVisionPatent } from "./lemelson-machine-vision";
 import { lincolnBuoyPatent } from "./lincoln-buoy";
 import { lindeAirLiquefactionPatent } from "./linde-air-liquefaction";
 import { maimanRubyLaserPatent } from "./maiman-ruby-laser";
@@ -60,6 +65,8 @@ import { maximMachineGunPatent } from "./maxim-machine-gun";
 import { mccormickReaperPatent } from "./mccormick-reaper";
 import { mergenthalerLinotypePatent } from "./mergenthaler-linotype";
 import { mestralVelcroPatent } from "./mestral-velcro";
+import { metcalfeEthernetPatent } from "./metcalfe-ethernet";
+import { milacronRobotToolchangerPatent } from "./milacron-robot-toolchanger";
 import { morseTelegraphPatent } from "./morse-telegraph";
 import { multiTouchPatent } from "./multitouch";
 import { nobelDynamitePatent } from "./nobel-dynamite";
@@ -77,6 +84,7 @@ import { roombaPatent } from "./roomba";
 import { salisburyRobotHandPatent } from "./salisbury-robot-hand";
 import { parsePatentCatalog } from "./schema";
 import { sholesTypewriterPatent } from "./sholes-typewriter";
+import { sikorskyHelicopterPatent } from "./sikorsky-helicopter";
 import { spencerMicrowavePatent } from "./spencer-microwave";
 import { stackhouseManipulatorPatent } from "./stackhouse-manipulator-source-bounded";
 import { sundbackZipperPatent } from "./sundback-zipper";
@@ -105,7 +113,11 @@ export {
   haberAmmoniaPatent,
   hewittMercuryLampPatent,
   hullStereolithographyPatent,
+  kamenSegwayPatent,
+  lemelsonAdjustableManipulatorPatent,
+  lemelsonMachineVisionPatent,
   mestralVelcroPatent,
+  milacronRobotToolchangerPatent,
   multiTouchPatent,
   pagerankPatent,
   roombaPatent,
@@ -179,6 +191,7 @@ export const allPatents: Patent[] = parsePatentCatalog([
   einsteinRefrigeratorPatent,
   lamarrFrequencyHoppingPatent,
   carlsonElectrophotographyPatent, // 1942-10-06
+  sikorskyHelicopterPatent, // 1943-05-04
   spencerMicrowavePatent,
   bardeenTransistor2524035Patent,
   landPolaroidPatent, // 1951-02-27
@@ -188,18 +201,24 @@ export const allPatents: Patent[] = parsePatentCatalog([
   townesLaserPatent, // 1960-03-22
   noyceIcPatent,
   devolProgrammedTransferPatent,
+  lemelsonMachineVisionPatent, // 1963-03-12
   lemelsonAutomaticWarehousingPatent, // 1964-01-28
   kilbyIntegratedCircuitPatent, // 1964-06-23
+  amfVersatranPatent, // 1965-10-19
+  lemelsonAdjustableManipulatorPatent, // 1966-07-12
   lemelsonAutomaticProductionPatent, // 1967-04-11
   maimanRubyLaserPatent, // 1967-11-14
   engelbartMousePatent,
   kwolekKevlarPatent,
+  baerOdysseyPatent, // 1973-04-17
   boyleSmithCcdPatent,
   kamenMedicationInjectionPatent, // 1975-01-07
+  metcalfeEthernetPatent, // 1977-12-13
   stackhouseManipulatorPatent, // 1978-01-17
   watsonRccPatent, // 1978-07-04
   wozniakApplePatent,
   makinoScaraPatent, // 1982-07-27
+  milacronRobotToolchangerPatent, // 1985-04-23
   hullStereolithographyPatent, // 1986-03-11
   robotEndEffectorPatent, // 1988-08-23
   salisburyRobotHandPatent, // 1990-05-01
@@ -207,6 +226,7 @@ export const allPatents: Patent[] = parsePatentCatalog([
   kamenTransporterPatent, // 1997-12-30
   eInkPatent, // 2000-09-19
   pagerankPatent, // 2001-09-04
+  kamenSegwayPatent, // 2001-10-16
   daVinciPatent, // 2001-12-18
   roombaPatent, // 2003-07-22
   multiTouchPatent, // 2009-01-20

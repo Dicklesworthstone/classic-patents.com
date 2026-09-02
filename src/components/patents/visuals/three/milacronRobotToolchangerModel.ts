@@ -1,207 +1,199 @@
 import * as THREE from "three";
-import type {
-  MilacronToolchangerControls,
-  MilacronToolchangerTelemetry,
-} from "@/physics/milacronRobotToolchangerKernel";
+import type { MilacronRobotToolchangerState } from "@/physics/milacronRobotToolchangerKernel";
 
-export interface MilacronToolchanger3DObjects {
+export interface MilacronRobotToolchangerModel {
   root: THREE.Group;
-  adapterGroup: THREE.Group;
-  toolBaseGroup: THREE.Group;
-  lockingSlideMesh: THREE.Mesh;
-  pistonRodMesh: THREE.Mesh;
-  cylindricalPinMesh: THREE.Mesh;
-  diamondPinMesh: THREE.Mesh;
-  tMemberMesh: THREE.Mesh;
-  toolHeadMesh: THREE.Mesh;
-  update: (
-    controls: MilacronToolchangerControls,
-    tel: MilacronToolchangerTelemetry,
-    simTimeSec: number,
-  ) => void;
+  updateState: (state: MilacronRobotToolchangerState) => void;
   dispose: () => void;
 }
 
-export function createMilacronRobotToolchangerModel(): MilacronToolchanger3DObjects {
+/**
+ * Procedural exhibit based on the named front/rear plates, locking slide,
+ * T-member, locator pins, and common base in US 4,512,709. The source omits
+ * dimensions, so all fixed geometry is explicitly normalized display form.
+ */
+export function buildMilacronRobotToolchangerModel(): MilacronRobotToolchangerModel {
   const root = new THREE.Group();
-  root.name = "MilacronRobotToolchangerModel";
+  root.name = "US 4,512,709 normalized robot toolchanger exhibit";
+  const materials: THREE.Material[] = [];
+  const geometries: THREE.BufferGeometry[] = [];
+  const material = <T extends THREE.Material>(value: T): T => {
+    materials.push(value);
+    return value;
+  };
+  const geometry = <T extends THREE.BufferGeometry>(value: T): T => {
+    geometries.push(value);
+    return value;
+  };
 
-  // Materials
-  const housingMaterial = new THREE.MeshStandardMaterial({
-    color: 0x334155,
-    metalness: 0.85,
-    roughness: 0.25,
-  });
+  const housingMat = material(
+    new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.24 }),
+  );
+  const faceMat = material(
+    new THREE.MeshStandardMaterial({ color: 0x0e7490, metalness: 0.7, roughness: 0.22 }),
+  );
+  const slideMat = material(
+    new THREE.MeshStandardMaterial({ color: 0x0891b2, metalness: 0.66, roughness: 0.2 }),
+  );
+  const baseMat = material(
+    new THREE.MeshStandardMaterial({ color: 0xa16207, metalness: 0.7, roughness: 0.24 }),
+  );
+  const tMat = material(
+    new THREE.MeshStandardMaterial({ color: 0xe11d48, metalness: 0.55, roughness: 0.24 }),
+  );
+  const locatorMat = material(
+    new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.82, roughness: 0.16 }),
+  );
+  const utilityMat = material(
+    new THREE.MeshStandardMaterial({ color: 0xa78bfa, metalness: 0.35, roughness: 0.3 }),
+  );
 
-  const slideMaterial = new THREE.MeshStandardMaterial({
-    color: 0xd97706,
-    metalness: 0.75,
-    roughness: 0.3,
-  });
+  const robotFlange = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(1.05, 1.05, 0.25, 48)),
+    housingMat,
+  );
+  robotFlange.name = "Normalized robot end-effector flange";
+  robotFlange.rotation.x = Math.PI / 2;
+  robotFlange.position.z = -0.98;
+  root.add(robotFlange);
 
-  const chromePinMaterial = new THREE.MeshStandardMaterial({
-    color: 0xe2e8f0,
-    metalness: 0.95,
-    roughness: 0.15,
-  });
+  const rearPlate = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(1.08, 1.08, 0.15, 48)),
+    housingMat,
+  );
+  rearPlate.name = "Rear plate 27";
+  rearPlate.rotation.x = Math.PI / 2;
+  rearPlate.position.z = -0.68;
+  const frontPlate = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(1.1, 1.1, 0.17, 48)),
+    faceMat,
+  );
+  frontPlate.name = "Front plate 26 and central opening 30";
+  frontPlate.rotation.x = Math.PI / 2;
+  frontPlate.position.z = 0.18;
+  root.add(rearPlate, frontPlate);
 
-  const cylinderMaterial = new THREE.MeshStandardMaterial({
-    color: 0x0284c7,
-    metalness: 0.8,
-    roughness: 0.2,
-  });
-
-  const toolMaterial = new THREE.MeshStandardMaterial({
-    color: 0x292524,
-    metalness: 0.6,
-    roughness: 0.4,
-  });
-
-  // 1. Adapter Master Unit Group
-  const adapterGroup = new THREE.Group();
-  adapterGroup.name = "AdapterMasterUnit";
-
-  // Rear Robot Mounting Plate 27
-  const rearPlateGeo = new THREE.CylinderGeometry(1.2, 1.2, 0.15, 32);
-  const rearPlateMesh = new THREE.Mesh(rearPlateGeo, housingMaterial);
-  rearPlateMesh.rotation.x = Math.PI / 2;
-  rearPlateMesh.position.z = -0.8;
-  adapterGroup.add(rearPlateMesh);
-
-  // Front Plate 26 (with central clearance opening)
-  const frontPlateGeo = new THREE.CylinderGeometry(1.2, 1.2, 0.15, 32);
-  const frontPlateMesh = new THREE.Mesh(frontPlateGeo, housingMaterial);
-  frontPlateMesh.rotation.x = Math.PI / 2;
-  frontPlateMesh.position.z = 0.0;
-  adapterGroup.add(frontPlateMesh);
-
-  // Spacer Blocks 28 & 29
-  const spacerTop = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.25, 0.7), housingMaterial);
-  spacerTop.position.set(0, 0.75, -0.4);
-  adapterGroup.add(spacerTop);
-
-  const spacerBottom = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.25, 0.7), housingMaterial);
-  spacerBottom.position.set(0, -0.75, -0.4);
-  adapterGroup.add(spacerBottom);
-
-  // Internal Pneumatic Cylinder 47
-  const cylinderGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.65, 24);
-  const cylinderMesh = new THREE.Mesh(cylinderGeo, cylinderMaterial);
-  cylinderMesh.rotation.z = Math.PI / 2;
-  cylinderMesh.position.set(-0.25, 0, -0.4);
-  adapterGroup.add(cylinderMesh);
-
-  // Piston Rod 46 & Yoke
-  const rodGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.5, 16);
-  const pistonRodMesh = new THREE.Mesh(rodGeo, chromePinMaterial);
-  pistonRodMesh.rotation.z = Math.PI / 2;
-  pistonRodMesh.position.set(0.15, 0, -0.4);
-  adapterGroup.add(pistonRodMesh);
-
-  // Transverse Locking Slide 33
-  const slideGeo = new THREE.BoxGeometry(0.35, 1.3, 0.12);
-  const lockingSlideMesh = new THREE.Mesh(slideGeo, slideMaterial);
-  lockingSlideMesh.position.set(0.15, 0, 0.02);
-  adapterGroup.add(lockingSlideMesh);
-
-  // Locating Pins on Front Plate 26
-  // Cylindrical Pin 43 (Top)
-  const cylPinGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.3, 24);
-  const cylindricalPinMesh = new THREE.Mesh(cylPinGeo, chromePinMaterial);
-  cylindricalPinMesh.rotation.x = Math.PI / 2;
-  cylindricalPinMesh.position.set(0, 0.65, 0.15);
-  adapterGroup.add(cylindricalPinMesh);
-
-  // Diamond Pin 44 (Bottom)
-  const diamondPinGeo = new THREE.BoxGeometry(0.12, 0.2, 0.3);
-  const diamondPinMesh = new THREE.Mesh(diamondPinGeo, chromePinMaterial);
-  diamondPinMesh.rotation.z = Math.PI / 4;
-  diamondPinMesh.position.set(0, -0.65, 0.15);
-  adapterGroup.add(diamondPinMesh);
-
-  root.add(adapterGroup);
-
-  // 2. Tool Base & End Effector Group
-  const toolBaseGroup = new THREE.Group();
-  toolBaseGroup.name = "ToolBaseAssembly";
-  toolBaseGroup.position.z = 0.3; // Default docked gap position
-
-  // Universal Tool Base Plate 18
-  const toolBasePlateGeo = new THREE.CylinderGeometry(1.2, 1.2, 0.15, 32);
-  const toolBasePlateMesh = new THREE.Mesh(toolBasePlateGeo, housingMaterial);
-  toolBasePlateMesh.rotation.x = Math.PI / 2;
-  toolBasePlateMesh.position.z = 0.08;
-  toolBaseGroup.add(toolBasePlateMesh);
-
-  // T-Shaped Retention Member 35
-  const tMemberGroup = new THREE.Group();
-  tMemberGroup.name = "TMemberRetentionLug";
-
-  const stemMesh = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.25, 0.35), chromePinMaterial);
-  stemMesh.position.z = -0.1;
-  tMemberGroup.add(stemMesh);
-
-  const crossbarMesh = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.65, 0.15), slideMaterial);
-  crossbarMesh.position.z = -0.28;
-  tMemberGroup.add(crossbarMesh);
-
-  toolBaseGroup.add(tMemberGroup);
-
-  // Tool Head 19 (e.g. Dual-Tip Spot Welding Gun)
-  const toolHeadGroup = new THREE.Group();
-  toolHeadGroup.name = "IndustrialToolHead";
-
-  const toolBody = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.9, 1.1), toolMaterial);
-  toolBody.position.set(0, 0, 0.7);
-  toolHeadGroup.add(toolBody);
-
-  // Electrode Arms
-  const armTop = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.8, 16), chromePinMaterial);
-  armTop.rotation.x = Math.PI / 2;
-  armTop.position.set(0, 0.25, 1.4);
-  toolHeadGroup.add(armTop);
-
-  const armBottom = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.8, 16), chromePinMaterial);
-  armBottom.rotation.x = Math.PI / 2;
-  armBottom.position.set(0, -0.25, 1.4);
-  toolHeadGroup.add(armBottom);
-
-  toolBaseGroup.add(toolHeadGroup);
-  root.add(toolBaseGroup);
-
-  function update(
-    controls: MilacronToolchangerControls,
-    _tel: MilacronToolchangerTelemetry,
-    _simTimeSec: number,
-  ) {
-    // 1. Tool Base Docking Gap translation
-    toolBaseGroup.position.z = 0.15 + (controls.dockingGapMm / 5) * 1.5;
-
-    // 2. Locking slide radial displacement
-    const strokeNorm = controls.slideStrokeMm / 25;
-    lockingSlideMesh.position.y = -0.3 + strokeNorm * 0.3;
-    pistonRodMesh.position.x = 0.05 + strokeNorm * 0.2;
+  for (const [x, y] of [
+    [-0.62, -0.52],
+    [0.62, -0.52],
+    [-0.62, 0.52],
+    [0.62, 0.52],
+  ] as const) {
+    const spacer = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.2, 0.2, 0.9)), housingMat);
+    spacer.name = "Spacer block 28 / 29";
+    spacer.position.set(x, y, -0.25);
+    root.add(spacer);
   }
 
-  function dispose() {
-    housingMaterial.dispose();
-    slideMaterial.dispose();
-    chromePinMaterial.dispose();
-    cylinderMaterial.dispose();
-    toolMaterial.dispose();
+  const actuator = new THREE.Group();
+  actuator.name = "Linear actuator 60, cylinder 47, rod 46, and yoke 45";
+  const cylinder = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.2, 0.2, 1.15, 28)),
+    utilityMat,
+  );
+  cylinder.rotation.z = Math.PI / 2;
+  cylinder.position.z = -0.37;
+  const rod = new THREE.Mesh(geometry(new THREE.CylinderGeometry(0.07, 0.07, 1.7, 20)), locatorMat);
+  rod.rotation.z = Math.PI / 2;
+  rod.position.z = -0.17;
+  actuator.add(cylinder, rod);
+  root.add(actuator);
+
+  const slideGroup = new THREE.Group();
+  slideGroup.name = "Locking slide 33 with aperture 34 and bifurcated ramp 41";
+  const slideBody = new THREE.Mesh(geometry(new THREE.BoxGeometry(1.32, 0.5, 0.14)), slideMat);
+  const slideClearance = new THREE.Mesh(
+    geometry(new THREE.BoxGeometry(0.22, 0.58, 0.18)),
+    housingMat,
+  );
+  slideClearance.name = "Normalized clearance slot 40";
+  slideClearance.position.z = 0.12;
+  const rampLeft = new THREE.Mesh(geometry(new THREE.ConeGeometry(0.15, 0.32, 4)), locatorMat);
+  rampLeft.name = "Slide ramp surface 41 left";
+  rampLeft.rotation.z = -Math.PI / 2;
+  rampLeft.position.set(-0.28, -0.18, 0.12);
+  const rampRight = rampLeft.clone();
+  rampRight.name = "Slide ramp surface 41 right";
+  rampRight.rotation.z = Math.PI / 2;
+  rampRight.position.x = 0.28;
+  slideGroup.add(slideBody, slideClearance, rampLeft, rampRight);
+  slideGroup.position.z = 0.34;
+  root.add(slideGroup);
+
+  const locatorGroup = new THREE.Group();
+  locatorGroup.name = "Locating pins 43 and 44";
+  const roundPin = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.09, 0.09, 0.36, 20)),
+    locatorMat,
+  );
+  roundPin.position.set(-0.46, -0.42, 0.42);
+  const diamondPin = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.12, 0.12, 0.36, 4)),
+    locatorMat,
+  );
+  diamondPin.rotation.z = Math.PI / 4;
+  diamondPin.position.set(0.46, -0.42, 0.42);
+  locatorGroup.add(roundPin, diamondPin);
+  root.add(locatorGroup);
+
+  const toolBase = new THREE.Group();
+  toolBase.name = "Common tool base 18 with T-member 35";
+  const basePlate = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.88, 0.88, 0.2, 44)),
+    baseMat,
+  );
+  basePlate.rotation.x = Math.PI / 2;
+  const bushingA = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.14, 0.14, 0.22, 20)),
+    housingMat,
+  );
+  bushingA.rotation.x = Math.PI / 2;
+  bushingA.position.set(-0.46, -0.42, -0.12);
+  const bushingB = bushingA.clone();
+  bushingB.position.x = 0.46;
+  const stem = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.22, 0.34, 0.58)), tMat);
+  stem.position.z = -0.37;
+  const crossbar = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.82, 0.27, 0.17)), tMat);
+  crossbar.name = "T-member 35 crossbar 38 and display ramp 39";
+  crossbar.position.z = -0.67;
+  toolBase.add(basePlate, bushingA, bushingB, stem, crossbar);
+  root.add(toolBase);
+
+  const rack = new THREE.Group();
+  rack.name = "Representative tool rack 20";
+  rack.position.set(-2.2, -0.4, 0.2);
+  const rackRail = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.22, 1.7, 0.34)), housingMat);
+  rackRail.position.y = 0.22;
+  rack.add(rackRail);
+  for (const y of [-0.52, 0.05, 0.62]) {
+    const parkedBase = new THREE.Mesh(
+      geometry(new THREE.CylinderGeometry(0.29, 0.29, 0.15, 20)),
+      baseMat,
+    );
+    parkedBase.rotation.x = Math.PI / 2;
+    parkedBase.position.set(0.18, y, 0);
+    rack.add(parkedBase);
   }
+  root.add(rack);
+
+  const updateState = (state: MilacronRobotToolchangerState) => {
+    // Normalized display positions; no source length, speed, or trajectory is asserted.
+    toolBase.visible = state.toolBasePresent;
+    toolBase.position.z = 1.26 - state.registrationFraction * 1.08;
+    slideGroup.position.x = state.lockingSlideFraction * 0.58;
+    const captured = state.claimFourRampCaptured;
+    tMat.emissive.setHex(captured ? 0x5f0f2c : 0x000000);
+    tMat.emissiveIntensity = captured ? 0.35 : 0;
+    slideMat.emissive.setHex(state.lockingSlideEngaged ? 0x075985 : 0x000000);
+    slideMat.emissiveIntensity = state.lockingSlideEngaged ? 0.22 : 0;
+  };
 
   return {
     root,
-    adapterGroup,
-    toolBaseGroup,
-    lockingSlideMesh,
-    pistonRodMesh,
-    cylindricalPinMesh,
-    diamondPinMesh,
-    tMemberMesh: crossbarMesh,
-    toolHeadMesh: toolBody,
-    update,
-    dispose,
+    updateState,
+    dispose: () => {
+      for (const item of geometries) item.dispose();
+      for (const item of materials) item.dispose();
+    },
   };
 }

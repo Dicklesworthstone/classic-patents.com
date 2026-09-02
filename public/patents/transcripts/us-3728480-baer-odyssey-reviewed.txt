@@ -1,0 +1,1299 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 21 ---
+
+United States Patent (19)
+Baer
+54) TELEVISION GAMING AND TRAINING
+APPARATUS
+75 Inventor: Ralph H. Baer, Manchester, N.H.
+73 Assignee: Sanders Associates, Inc., Nashua,
+N.H.
+22 Filed: Mar. 22, 1971
+(21) Appl. No.: 126,966
+Related U.S. Application Data
+63 Continuation of Ser. No. 697,798, Jan. 15, 1968,
+abandoned.
+52 U.S. Cl..................... 178/6.8, 178/6, 178/DIG. 1
+(51 int.C. ............................................... H04n 7/18
+58 Field of Search........................ 273/101.1, 101.2;
+315/22, 26, 30, 10, 18; 178/DIG. 4, 7.83,
+DIG. 6
+(56) References Cited
+UNITED STATES PATENTS
+2,489,883 l if 949 Hecht............................. 250/217 CR
+2,552,022 5/1951 Watson et al........................... 315/26
+2,595,646 6/1952 Doba, Jr. et al...................... 328/187
+2,648,724 8/1953 Enslein............................... 178/6 TT
+2,956, 11 6 10/1960 Singleman.......................... 178/6 TT
+3,014,724 12/1961 Cryder et al......................... 178/7.83
+3,046,676 6/1962 Hermann et al.......................... 35/25
+3, 151,248 9/1964 Glaser et al....................... 273/101.1
+3,401,331 9/1968 Mussulman......................... 178/6 TT
+2,621,246 12/1952 Clayden et al................... 178/DIG. 6
+1,180,470 6/1959 France
+
+ABSTRACT
+
+(11 3,728,480
+(45) Apr. 17, 1973
+FOREIGN PATENTS OR APPLICATIONS
+OTHER PUBLICATIONS
+Radio and Television News; August 1956, pp. 63.
+Radio Electronics, May 1956, pp. 38.
+Primary Examiner-Richard Murray
+Attorney-Louis Etlinger
+57 ABSTRACT
+The present invention pertains to an apparatus and
+method, in conjunction with standard monochrome
+and color television receivers, for the generation, dis
+play, manipulation, and use of symbols or geometric
+figures upon the screen of the television receivers for
+the purpose of training simulation, for playing games,
+and for engaging in other activities by one or more
+participants. The invention comprises in one embodi
+ment a control unit, connecting means and in some
+applications a television screen overlay mask utilized
+in conjunction with a standard television receiver. The
+control unit includes the control means, switches and
+electronic circuitry for the generation, manipulation
+and control of video signals which are to be displayed
+on the television screen. The connecting means cou
+ples the video signals to the receiver antenna terminals
+thereby using existing electronic circuits within the
+receiver to process and display the signals. An overlay
+mask which may be removably attached to the televi
+sion screen may determine the nature of the game to
+be played or the training simulated. Control units are
+provided for each of the participants. Alternatively,
+games, training simulations and other activities may be
+carried out in conjunction with background and other
+pictorial information originated in the television
+receiver by commercial TV, closed-circuit TV or a
+CATV station.
+46 Claims, 26 Drawing Figures
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 21 ---
+
+PATENTED APR 17 1973 | 3,728,480 | SHEET 01 OF 11
+
+FIG. 1
+
+INVENTOR: RALPH H. BAER
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 21 ---
+
+PATENTED APR 17 1973 | 3,728,480 | SHEET 02 OF 11
+
+FIG. 1A, FIG. 1B, FIG. 1C, FIG. 1D, FIG. 1E
+
+INVENTOR: RALPH H. BAER
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 21 ---
+
+PATENTED APR 17 1973 | 3,728,480 | SHEET 03 OF 11
+
+FIG. 2, FIG. 3
+
+INVENTOR: RALPH H. BAER
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 21 ---
+
+PATENTED APR 17 1973 | 3,728,480 | SHEET 04 OF 11
+
+FIG. 4
+
+INVENTOR: RALPH H. BAER
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 21 ---
+
+PATENTED APR 17 1973 | 3,728,480 | SHEET 05 OF 11
+
+FIG. 5A, FIG. 5B, FIG. 5C
+
+INVENTOR: RALPH H. BAER
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 21 ---
+
+PATENTED APR 17 1973 | 3,728,480 | SHEET 06 OF 11
+
+FIG. 5D, FIG. 5E
+
+INVENTOR: RALPH H. BAER
+
+--- REVIEWED TRANSCRIPTION PAGE 8 OF 21 ---
+
+PATENTED APR 17 1973 | 3,728,480 | SHEET 07 OF 11
+
+FIG. 5F, FIG. 5G
+
+INVENTOR: RALPH H. BAER
+
+--- REVIEWED TRANSCRIPTION PAGE 9 OF 21 ---
+
+PATENTED APR 17 1973 | 3,728,480 | SHEET 08 OF 11
+
+FIG. 6A, FIG. 6B, FIG. 6C
+
+INVENTOR: RALPH H. BAER
+
+--- REVIEWED TRANSCRIPTION PAGE 10 OF 21 ---
+
+PATENTED APR 17 1973 | 3,728,480 | SHEET 09 OF 11
+
+FIG. 6D, FIG. 6E, FIG. 6F
+
+INVENTOR: RALPH H. BAER
+
+--- REVIEWED TRANSCRIPTION PAGE 11 OF 21 ---
+
+PATENTED APR 17 1973 | 3,728,480 | SHEET 10 OF 11
+
+FIG. 7, FIG. 8
+
+INVENTOR: RALPH H. BAER
+
+--- REVIEWED TRANSCRIPTION PAGE 12 OF 21 ---
+
+PATENTED APR 17 1973 | 3,728,480 | SHEET 11 OF 11
+
+FIG. 9, FIG. 10
+
+INVENTOR: RALPH H. BAER
+
+--- REVIEWED TRANSCRIPTION PAGE 13 OF 21 ---
+
+Column 1
+
+3,728,480
+TELEVISION GAMING AND TRAINING
+APPARATUS
+This is a continuation of application Ser. No.
+697,798 filed Jan. 15, 1968 now abandoned.
+BACKGROUND OF THE INVENTION
+The invention relates to an apparatus and method by
+means of which standard television receivers can be
+utilized as active rather than passive instruments. This
+is accomplished by certain embodiments having par
+ticipants manipulate controls of a control unit con
+nected to the television receiver to cause a symbol,
+such as a rectangle, bar, "dot" or a pair of dots to be
+displayed upon the television screen by means of which
+the participants can play a variety of games, participate
+in simulated training programs, as well as carry out
+other activities. By way of example, modified versions
+of the well-known game of checkers may be played by
+two participants by placing an appropriate mask
+representing the checker board upon the screen of the
+television receiver. For a simulated training program,
+"dots' displayed on the TV screen could represent
+ships which would be maneuvered by operating
+manipulating controls.
+Heretofore, color and monochrome television
+receivers have been used by the home and other
+viewers only as passive devices; i.e., the television
+receiver is used only as a display means for pro
+gramming originating at a studio. The viewer is limited
+to selecting the presentations available for viewing and
+is not a participant to the extent that he can control or
+influence the nature of, or add to the presentation dis
+played on the receiver screen. A standard receiver is
+employed with auxiliary equipment to provide an ac
+tive form of home entertainment. Since most homes are
+equipped with television receivers, the only expense
+required to provide added family enjoyment is the ex
+pense of a control unit of one type or another.
+It is, therefore the primary object of the present in
+vention to provide an apparatus and methods for dis
+playing video signals upon the screen of a television
+receiver, where some or all of the video signals are both
+generated and controlled by the viewer.
+It is another object of the present invention to pro
+vide an apparatus and method wherein a standard color
+or monochrome television receiver is utilized as an ac
+tive instrument for simulated training programs and to
+play various types of games involving one or more par
+ticipants.
+It is a further object of the present invention to pro
+vide a device whereby an individual may pit his alert
+ness, skill, manual dexterity and visual acuity on auto
+matically controlled video displays.
+It is still another object of the present invention to
+provide an apparatus which will also provide visual in
+dication of the results of the games played and the
+simulated training programs.
+It is yet a further object of the present invention to
+provide an apparatus which will generate "dots' or
+other geometric figures such as squares, rectangles,
+bars, stripes, etc. Which may be controlled by one or
+more participants for playing various types of games
+and for training simulation by the display and utiliza
+tion of the "dots.'
+It is yet another object of the present invention to
+provide an apparatus which may allow one or more
+
+Column 2
+
+2
+participants to use a standard television set while
+receiving background and other pertinent pictorial in
+formation from a cooperative commercial TV, closed
+circuit TV, or CATV station, thus combining or alter
+nating studio and home-generated information on the
+TV screen.
+It is still another object of the present invention to
+allow the use of a standard TV set for gaming or other
+activities without the need for any kind of internal elec
+trical connection to the TV set for the introduction of
+video and/or chroma signals, connections being
+required to be made only to the externally accessible
+antenna terminals.
+It is still another object of the present invention to
+provide for interrogating a standard TV receiver
+through an optical photosensor in a manner allowing
+the identification of a suitably time-or frequency-coded
+message, not interpretable by the unaided eye, such
+message having been originated in the TV viewers
+equipment by a cooperative commercial TV, closed
+circuit TV or CATV station.
+It is still a further object of the present invention to
+provide apparatus for decoding messages on a TV
+screen.
+SUMMARY OF THE INVENTION
+In accordance with one embodiment of the present
+invention a television gaming apparatus is provided for
+generating video signals in accordance with the stan
+dardized television format, which signals may be con
+trolled by an individual operator by means of a joystick
+or other manually operative means. The television
+gaming apparatus comprises a control box having en
+closed therein all the necessary electronic circuits to
+produce video signals which are compatible with stan
+dard television receivers, both monochrome and color.
+The control box has video signal control means
+mounted thereon for easy access and connecting means
+are provided for coupling the video signals generated
+within the control box to the television receiver. There
+is also provided suitable overlay masks which are
+adapted to be removably secured upon the television
+screen. These masks permit playing of games and train
+ing simulation which are adaptable to display upon a
+television screen.
+By way of illustration, the television gaming ap
+paratus can be used for electronic target shooting by
+providing a gun having a photo-electric cell which is ac
+tivated when a trigger is depressed. Thus, when the gun
+is aimed at a "dot" displayed on the television screen,
+which "dot" serves as the target, and the trigger is
+depressed, a hit will be indicated directly on the televi
+sion screen by a visual display when the photoelectric
+cell is in alignment with the "dot." The "dot" which
+serves as the target may be either fixed or moveable
+and can be swept across the screen in a predetermined
+or random fashion, at either a fixed or variable rate,
+either manually or automatically.
+By way of further illustration, games may be played
+in which a cooperative TV station (commercial,
+closed-circuit or CATV) provides background data
+such as scenery for a simulated turkey-shoot game, or
+such as checkerboard game backgrounds, time-left-to
+play-clocks and innumerable others designed to
+enhance the appeal of the activity. A cooperative TV
+
+--- REVIEWED TRANSCRIPTION PAGE 14 OF 21 ---
+
+Column 3
+
+3,728,480
+3
+station can also provide, targets for a target shooting
+game as well as messages to be decoded. For example,
+tests questions could be displayed on the TV screen
+with a multiple set of answers whereby the correct
+answer is coded in such a manner that a photocell cir
+cuit would detect the coding signifying selection of the
+correct answer.
+From the above illustrations it will be apparent to
+those skilled in the art, that the present invention ex
+hibits a great latitude of versatility. 1
+BRIEF DESCRIPTION OF THE DRAWINGS
+The aforementioned and other objects, features and
+advantages of the present invention will become more
+apparent from the following detailed description
+thereof when considered in conjunction with the
+drawings wherein: -
+FIG. 1 is a pictorial view illustrating the principal
+components of one embodiment of the invention;
+FIG. 1A is a sketch illustrating the manner in which
+the components of the embodiment of FIG. 1 are con
+nected;
+FIG. 1B is a pictorial view illustrating an alternate
+embodiment for the control unit of FIG. 1;
+FIG. 1C is a sketch showing a "light-gun' containing
+a photocell and electronic circuits.
+FIGS. 1D and 1E are sketches illustrating the manner
+in which the components of the embodiment of FIG. 1
+may be connected when used with a cooperative TV.
+station.
+FIG. 2 is a sketch illustrating a TV screen and over
+lay mask as employed in the embodiment of FIG. 1;
+FIG. 3 is a block diagram of the control unit of FIG.
+1;
+FIG. 4 is a schematic illustrating the electronics for a
+target shooting game;
+FIGS.5A-5G are schematics of the blocks of FIG. 3;
+FIGS. 6A-6F are waveforms (not drawn to scale) ill
+lustrating operation of the schematics of FIG. 5;
+FIG. 7 is a schematic illustrating the method of ex
+tracting horizontal and vertical synchronization pulses
+from a TV receiver without making internal connec
+tions, when using a signal broadcast by a cooperative
+TV station;
+FIG. 8 is a sketch illustrating apparatus for modulat
+ing a received TV signal by a video and/or chroma
+signal generated by the control unit of FIG. 1;
+FIG. 9 is a sketch illustrating the TV screen of a
+receiver employed in a coded information mode; and
+FIG. 10 is a schematic of a decoder used to decode
+the information present on the TV screen of FIG. 9.
+DESCRIPTION OF PREFERREDEMBODIMENTS
+The principal components of one embodiment of a
+television gaming system configured according to the
+invention are illustrated in FIG. 1 which is a pictorial
+view showing a television receiver 10, a control unit 14
+and means 12 for connecting control unit. 14 to
+receiver 10. The television receiver 10 employed can
+be any of the standard commercially available models
+that are generally used for home entertainment. Either
+a monochrome or color television set may be used with
+the present invention since the basic principles of the
+invention apply to both types. The connection means
+12 is in this embodiment a shielded cable, for example,
+
+Column 4
+
+4
+shielded twin lead and is attached to the antenna ter
+minals of receiver 10 in conventional fashion (see FIG.
+1A).
+Control unit 14 generates video signals shown as "-
+dots' 20, and 20 which are positioned on the receiver
+screen 18 by knobs 16, 17, and 16, 17, respectively.
+In this embodiment the "dots' 20 are squares or
+rectangles. However, any geometric shape is applica
+ble. Knob 16 controls the vertical position of dot 20
+O while knob 17 controls the horizontal position thereof.
+Thus, it can be seen that the dot 20, may be positioned
+at any point on the screen by the proper manipulation
+of knobs 16 and 17. Dot 20, is positioned in like
+manner by knob 16, 17. A reset switch 26 is shown on
+the control unit 14 and is used to reset the picture on
+the television screen. For example, a game may be
+played in which one dot is to be positioned over the
+other and when this is accomplished one dot will disap
+pear when a monochrome set is used, while in a color
+set, the dot will disappear and the background will
+change color. When games of this nature are played, a
+reset means is required before play can be resumed.
+Reset switch 26 performs this function.
+A knob 15 controls background color for color TV
+receiver applications. Alternatively, control unit 14
+may be broken up into a master control unit containing
+the electronic circuits and individual control units con
+taining control knobs 16, 17 and 16, 171, whereby
+each participant may operate from a position not proxi
+mate the other and so not to interfere with other
+players. This is illustrated in FIG. 1B wherein control
+unit 14 is broken up into a master control unit 21 and
+individual control units 22 and 23. The master control
+unit 21 contains the electronic circuitry found in con
+trol unit 14 and controls 26 and 15. Knobs 16, 17 and
+16, 17 which position the dots 20 and 20, are situ
+ated on individual control units 22 and 23 respectively.
+The knobs 16, 17 may be combined into a single
+joystick permitting control of the horizontal and verti
+cal dot positioning by a single control means.
+Rather than provide a separate control unit, the con
+trol unit could be built into the television receiver as a
+constituent part thereof and the receiver sold as both
+an active and passive home entertainment system.
+A typical sequence of steps to play a game using the
+present invention would be as follows: 1. Attach con
+nection means 12 to TV set 10 at antenna terminals 19
+if not already attached; 2. turn TV set on; 3. select the
+proper channel on the set for the control unit being
+used; 4. apply power to the control unit; 5. attach a
+mask on the face of the TV screen, if required for the
+game to be played; 6. begin the game.
+Referring now to FIG. 2, a television screen 18 is il
+lustrated having two "dots' 20 and 20, displayed. An
+overlay mask 30 of some type of transparent material
+such as plastic or the like, having some type of pattern,
+picture or other illustration pertaining to the particular
+game to be played is shown in a lifted position. Prior to
+engaging in a game, the overlay mask 30 would be tem
+porarily attached to television screen 18 and in such
+close, proximity to it as not to create any distortion
+when viewed with reference to the dots 20. One type of
+overlay mask could be a checkerboard pattern to be
+used for playing a modified game of checkers. Still
+another pattern could be a maze type, with the object
+
+--- REVIEWED TRANSCRIPTION PAGE 15 OF 21 ---
+
+Column 5
+
+3,728,480
+S
+of the game being to escape within a specified time.
+These are but a few of the many games that can be
+adapted for use with the present invention.
+Alternatively, rather than employ overlay mask 30,
+the pattern to be provided could be displayed directly
+on the screen 18. The pattern could be broadcast by
+TV stations or alternatively could be sent to a non-used
+channel over closed-circuit or CATV lines. This em
+bodiment is described in greater detail hereinafter with
+respect to FIGS. 7 and 8.
+The control unit 14 will now be described in detail by
+referring to the block diagram shown in FIG. 3. The
+timing for the television gaming system is established
+within the control unit by a horizontal sync generator
+31 and a vertical sync generator 32.
+The horizontal sync generator 31 employed in this
+embodiment is a multivibrator whose output is a series
+of pulses rather than a square wave. The repetition rate
+of these pulses is the standard horizontal scanning
+frequency used in commercial television receivers. The
+positive sync pulse output 81 of the horizontal sync
+generator 31 is simultaneously applied to a first "dot'
+generator 34, a second "dot' generator 35 and a
+chroma generator 33 (in color TV applications). The
+negative sync pulse output 82 of the horizontal sync
+generator 31 is applied directly to a summing amplifier
+modulator 37. The "dot" generators 34 and 35 when
+triggered by horizontal sync generator 31 generate a
+pulse which is the horizontal video information portion
+of the television composite signal that forms the "dots'
+20 on the television receiver screen 18. The manual
+control knobs 16, 17 and 16, 17 on the control unit
+are attached to the shafts of potentiometers 86,92 and
+95, 99 in the dot generator circuits of the "dot' genera
+tors 34 and 35 respectively (see FIGS. 5C and 5D). Al
+ternatively, a single control such as a joystick could be
+coupled to knobs 16, 17 and a second joystick coupled
+to knobs 16, 17. Adjustment of these potentiometers
+establishes the position of the "dots' on the television
+Screen.
+The vertical sync generator 32 is coupled to the first
+and second symbol or "dot' generators 34 and 35 and
+triggers the "dot' generators to generate a pulse which
+is the vertical video information portion of the com
+posite television signal. The combination of the
+horizontal and vertical signals form a 'dot' on the
+television receiver screen. There are two manual con
+trol knobs for each "dot'. One of the knobs controls
+the horizontal pulse position while the other controls
+the vertical pulse position. The output of the "dot"
+generator which is the delayed horizontal pulses that
+are gated by the delayed vertical pulse, describes the
+location of the "dots' on the television screen. The
+horizontal and vertical video information from the first
+and second "dot' generators 34 and 35 is summed
+together in the summing network. of summing amplifi
+er-modulator 37. The summing network is a resistor
+matrix which sums all the signals presented to one
+point. Thus the composite video information is formed.
+The composite video information is then coupled to the
+modulator portion of summing amplifier-modulator 37
+and to r-f oscillator 38 which modulates the video in
+formation with the carrier to generate the modulated
+RF signal. The RF signal is then coupled to the televi
+sion antenna terminals 19. The RF signal that is present
+
+Column 6
+
+6
+at the antenna terminals is detected and processed by
+the television receiver in the standard manner and is
+displayed upon the screen. The two controllable "dots'
+are the means by which games may be played.
+Alternatively the video signal could be applied inter
+nally to the receiver without rf carrier modulation.
+The "dot' coincidence detector and crowbar circuit
+receives an input from both the first and second '-
+dot' generators 34 and 35 taken at outputs 94 and 98
+thereof, respectively (see FIG. 5). When the "dots' 20
+and 20 are coincident, the first "dot' generator 34 is
+turned off by the "dot' coincidence detector and crow
+bar circuit 40. Thus, when one "dot' is superimposed
+upon the other, one of the "dots' will disappear.
+A variety of games may be adapted to use this par
+ticular aspect of the television gaming system. For ex
+ample, a game of fox and hounds may be played with
+one "dot" representing the fox and other the hounds.
+When the hounds catch the fox, the fox's "dot' disap
+pears indicating a catch. Any game requiring an indica
+tion of when contact is made between two objects may
+be adapted to this concept.
+The chroma generator 33 is used when the control
+unit 14 is coupled to a color television receiver.
+Chroma generator 33 may be omitted for monochrome
+applications. The gaming system for color operation is
+the same as that for monochrome sets with the excep
+tion that the background color in the color receivers
+may be controlled. A color control knob 15 (see FIG.
+1) is provided on control unit 14 and is coupled to a
+potentiometer within the chroma generator 33 by
+which means the background color may be varied
+throughout its entire color spectrum. The horizontal
+sync generator 31 provides the trigger signal to the
+chroma generator 33 whose output is then summed in
+the summing network of the summing amplifier-modu
+lator 37 with the other portions of video information.
+The resultant composite video information is then
+modulated with the carrier in the modulator and r-f
+oscillator 38. The RF signal is then coupled as before to
+the television receiver antenna terminals 19 and is de
+tected, processed and displayed in the standard
+26.
+One game which may be played employing the con
+cepts of this invention is target shooting. A "toy" gun
+containing a photocell is electrically coupled to the
+control unit.
+When a game is played using the target gun, also
+called a "light-gun,' hits are shown on the screen by
+having one of the "dots' disappear. Signals detected by
+a target gun circuit 36 are used to trigger the crowbar
+circuit portion of "dot" coincidence detector and
+crowbar circuit 40, which turns off the first dot genera
+tor 34. Thus, one of the dots will disappear indicating a
+hit. The operation of the target gun circuits will be
+described in greater detail with reference to FIG. 4.
+The power source 41 is preferably a battery and pro
+vides the necessary power to operate the various cir
+cuits.
+Referring now to FIG. 5, there is illustrated thereby
+schematics of the blocks of FIG. 3. The schematics are
+described in conjunction with the waveforms of FIG. 6.
+Note that the circled capital letters A, B . . . designate
+connection points, that is A is coupled to A, B to B, etc.
+The horizontal oscillator 31 of FIG. 5A is an astable
+
+--- REVIEWED TRANSCRIPTION PAGE 16 OF 21 ---
+
+Column 7
+
+3,728,480
+7
+multivibrator that operates at approximately 15.75
+KHz and generates the horizontal sync and timing pull
+ses that are used within the control unit and the televi
+sion receiver. One output signal taken at point 81 is a
+positive sync pulse which in one embodiment is approx
+imately 8 volts in amplitude and has a pulse width of 4
+microseconds. A second output signal taken at point 82
+is a negative sync pulse which also is approximately 8
+volts in amplitude and has a pulse width of 4
+microseconds.
+The vertical oscillator 32 of FIG. SB is an astable
+multivibrator that operates at 60 Hz and provides posi
+tive 89 and negative 90 vertical sync pulses of approxi
+mately 8 volts amplitude and 1 millisecond duration.
+The first "dot' generator 34 is illustrated in FIG. 5C
+and is comprised of an "and" gate, and horizontal and
+vertical delay and pulse-forming circuits. The delayed
+horizontal and vertical pulses (positive sync pulses) are
+AND-gated together to form the video information
+which produces one "dot" on the television screen.
+Both delay and pulse-forming circuits utilize the posi
+tive sync pulse transistor of their respective oscillators
+as its input transistor. The positive sync pulse from
+point 81 of the horizontal oscillator is used to trigger
+the horizontal delay and pulse-forming circuits portion
+of the first dot generator. When the positive sync pulse,
+taken at point 81, is applied at point 84, the pulse that
+appears at the output of the delay and pulse-forming
+circuit point 85 is delayed by the time constant
+established by the setting of potentiometer 86 and
+capacitor 87. The delay and pulse-forming circuit out
+put passes through a pulse shaper having an R-C time
+constant of very short duration relative to the horizon
+tal oscillator frequency. The output of the pulse shaper
+is taken at a point 150. The time delay may be varied
+from 9 microseconds to 57 microseconds which is sub
+stantially the entire range of the horizontal sweep
+period. The pulses which are generated by the horizon
+tal oscillator, the horizontal delay and pulse-forming
+circuit and the pulse shaper, are shown in FIG. 6A as
+waveforms 60, 61, 62 and 63. Waveform 60 represents
+the negative horizontal sync pulses taken at point 82;
+waveform 61 represents the positive horizontal sync
+pulses taken at point 81; waveform 62 represents the
+output from the delay and pulse-forming circuit taken
+at point 85 and waveform 63 represents the output
+from the pulse shaper taken at point 150.
+The positive sync pulse taken at point 89 of vertical
+oscillator 32 is used to trigger the vertical delay and
+pulse-forming circuit portion of the first dot generator.
+The output signal appears at point 91 after a time delay
+which is determined by the setting of potentiometer 92
+and capacitor 93. The delay and pulse-forming circuit
+output passes through a pulse shaper having an R-C
+time constant of very short duration relative to the ver
+tical oscillator frequency. The output of the pulse
+shaper is taken at point 151. The time delay may be
+varied from 1.5 milliseconds to 15.5 milliseconds which
+is substantially the entire range of the vertical sweep
+period. The pulses which are generated by the vertical
+oscillator, the vertical delay and pulse-forming circuit,
+and the pulse shaper are shown in FIG. 6B as
+waveforms 64, 65,66, and 67. Waveform 64 represents
+the negative vertical sync pulses taken at point 90;
+waveform 65 represents the positive vertical sync pull
+
+Column 8
+
+8
+ses taken at point 89; waveform 66 represents the out
+put from the delay and pulse-forming circuit taken at
+point 91; and waveform 67 represents the output from
+the pulse shaper taken at point 151.
+The video information that will be displayed on the
+television screen 18 as a "dot' 20 is the summation of
+the outputs of the horizontal and vertical delay and
+pulse-forming circuit. When the delayed vertical pulse
+is at point 151, the delayed horizontal pulses at point
+150 will be gated through to the first "dot" generator
+output 94. The waveforms of FIG. 6C illustrate the
+signals 63 and 67 taken at points 150 and 151 respec
+tively in expanded form and the output signal from the
+first "dot" generator 68 taken at point 94. The signal
+68 which is present at the first "dot' generator output
+94 contains the horizontal and vertical data that will be
+processed by the television receiver and displayed as a
+"dot"20 on the screen.
+The settings of potentiometers 86 and 92 control the
+horizontal and vertical position of the "dot' 20 on
+screen 18.
+The second "dot" generator 35 (see FIG. 5D) is con
+figured exactly as the first "dot' generator and
+operates in the same manner to provide video informa
+tion for the second "dot" 20,. The input to the horizon
+tal delay and pulse-forming circuit portion of the
+second "dot" generator is provided at a point 96. The
+input to the vertical delay and pulse-forming circuit
+portion of the "dot" generator is provided at a point
+97. The output of the second "dot" generator is taken
+at a point 98.
+The 'dot' coincidence and crowbar circuit 40 illus
+trated in Fig. 5E is connected to the outputs of the first
+and second "dot' generators. The cathode end of a
+diode 101 is connected to the output 94 of the first "-
+dot' generator while the cathode end of a diode 102 is
+connected to the output 98 of the second "dot" genera
+tor. When the outputs of both "dot" generators coin
+cide, a positive signal will be applied to the gate 103 of
+a silicon controlled rectifier (SCR) 104. The cathode
+of SCR 104 is tied to ground, while the anode thereof is
+connected at a point 106 to point 105 in the first “dot'
+generator. The SCR 104 will turn on and clamp point
+105 of the first "dot' generator to ground. Thus, the
+output of the first "dot" generator will become zero as
+long as SCR 104 is conducting, causing the first "dot'
+on the television screen to disappear. After the "dots'
+are made non-coincident, the SCR 104 may be reset by
+momentarily depressing reset switch 26, which
+removes the ground from point 105 of the first "dot'
+generator, allowing the first "dot" to reappear on the
+television screen.
+The modulator and r-foscillator illustrated schemati
+cally in FIG. SF is coupled by a resistive network com
+prising resistive element 108-111 (see FIGS. 5A-5D)
+to the negative sync pulses of the horizontal and verti
+cal oscillators and the output signals of the first and
+second "dot' generators. The r-f oscillator which
+operates at the selected television channel carrier
+frequency is collector-modulated by the output of the
+summing amplifier taken at point 112. The composite
+video signal which is inductively coupled to pickup coil
+113 is coupled to the television receiver antenna ter
+minals 19. The composite video signal is shown in FIG.
+6D.
+
+--- REVIEWED TRANSCRIPTION PAGE 17 OF 21 ---
+
+Column 9
+
+3,728,480
+9
+The chroma generator 33 illustrated in FIG. 5G is
+used only when the control unit 14 is coupled to a color
+television receiver and is comprised of a crystal-con
+trolled oscillator, a variable phase shifter and an OR
+gate. The output of the crystal-controlled oscillator
+which operates at 3.579545 MHz is taken at point 115.
+The phase shifter is variable over the approximate
+range of 0- 180 by a potentiometer 16. The
+reference phase signal (0) 70 is coupled to point 117.
+The variable phase signal 71 is coupled to point 118.
+These signals are shown in FIG. 6E and are displaced
+with respect to one another by the amount set in the
+phase shifter by potentiometer 116. The output signal
+of the chroma generator developed at point 119 is com
+prised of a chroma sync burst and the chroma signal.
+The composite chroma signal 72 which is the output of
+the chroma generator is shown in FIG. 6F. The chroma
+sync burst is the 0 phase reference signal. The chroma
+signal is the variable phase signal whose phase is con-
+pared by the television receiver against the chroma
+sync burst. The phase difference between the two
+signals determines the color to be displayed on the
+screen. The positive sync pulse from point 81 of the
+horizontal oscillator is used to gate 0 phase reference
+signal to point 119. The trailing edge of the positive
+going pulse at point 120 gates approximately 3-5
+microseconds of the 0° phase referenced to point 119
+to become the chroma sync burst. The composite color
+information is summed to the modulator input 114 by
+capacitor 121. The total composite video signal includ
+ing the color information is then modulated, as ex
+plained before for the monochrome signal, with the
+carrier and coupled to the television antenna terminals
+19.
+Alternately the video and/or chroma signals may be
+applied to the crowbar modulator 126 of FIG. 8. (This
+will be described hereinafter).
+When the gaming system is being used in either the
+target gun or "dot" coincident mode with a color TV
+receiver, the background color will change when the "-
+dot' disappears from the television screen. The anode
+of SCR 104 of the coincidence detector and crowbar
+circuit 40 which is connected to point 105 of the first "-
+dot' generator to make the "dot' disappear is also con
+nected to point 122 of the chroma generator. When the
+chroma generator is adjusted for a red background, the
+background will change to blue when point 122 is
+clamped to ground by SCR 104. The SCR 104 will be
+fired either by coincidence of the "dots' or by align
+ment of the photo cell in the target gun with the target
+'dot'.
+Turning now to FIG. 4, the target gun circuits 36 are
+shown schematically. When the target gun is pointed at
+the target "dot' on the television screen, a photocell
+mounted at the end of the target gun barrel will detect
+the intensity modulated "dot." The detected signal is
+amplified by transistors 51 and 52. When the gun
+trigger switch 53 is closed, the amplified detected
+signal is applied to the gate electrode of a silicon con
+trolled rectifier (SCR) 104, which will file SCR 104.
+The SCR 104 now clamps the output of the "dot"
+generator 34 to ground and the "dot' 20 will disap
+pear. Whether the first or the second "dot' is used as a
+target does not matter, since a hit will be indicated by
+the disappearance of the first "dot'. If only one "dot'
+
+Column 10
+
+AC)
+is to be displayed on the screen as a target, the first "-
+dot' would be used. A reset button 26 is provided to
+make the target reappear after a hit has been scored.
+The portion of the circuit appearing within the dashed
+lines 56 is part of the "dot' coincidence and crowbar
+circuit 40.
+An adjustment is provided by means of potentiome
+ter 57 whereby the threshold level of photo cell 50 may
+be adjusted such that only when the gun is properly
+aligned with the target will the "dot" disappear. This
+procedure assures that false hits due to stray or scat
+tered light from the room will not be scored. The
+setting should be made so that SCR 104 will now be
+triggered by the brightness of the room but only the in
+tensity of the displayed "dot."
+As previously mentioned, this invention may be em
+ployed in conjunction with information originating
+from a cooperative station such as a commercial TV, a
+closed-circuit TV or a CATV station. In these embodi
+ments means are necessary for extracting the horizon
+tal and vertical synchronization pulses from the TV
+receiver which is receiving a signal from a cooperative
+station. The horizontal and vertical synchronization
+pulses could be obtained from within the TV receiver
+directly. However, this necessitates making electrical
+connections to the internal circuitry of the TV receiver.
+Preferably, the apparatus illustrated in FIG. 7 is used to
+derive the synchronization pulses.
+A device 129 is positioned in front of the receiver
+and attached to it by, for example, a suction cup at ap
+proximately the center bottom edge of the CRT glass
+face (see FIG. 1D). Device 129 contains both a
+photocell 128 and a pickup coil 123 responding
+broadly to 15,570 Hz. These devices pick up a 60 cycle
+signal component provided by a white stripe at the bot
+tom of the CRT, (generated by the cooperative station)
+and a radiated 15,570 horizontal scan signal, respec
+tively. These signals are applied via a cable 130 to a
+pair of amplifiers 127 (vertical) and 124 (horizontal)
+and fed to a pair of pulse shapers 125 (vertical) and
+125 (horizontal). This yields synchronization pulses
+which duplicate in rate and phase those transmitted.
+Applying these pulses to points 82 and 90 in FIGS. 5A
+and 5B allows locking the horizontal and vertical oscil
+lators into sync with the transmitted signals. Con
+sequently, all of the functions previously described,
+such as the generation of "dots' for checker type
+games, target shooting, chase games and all other func
+tions available to control by the “viewer,' may now be
+overlaid the transmitted TV picture. Modulation in this
+mode of operation is accomplished by the “crowbar'
+modulation circuit 126 of FIG. 8.
+In this Figure, use is made of an attenuator consisting
+of two series resistors i32 and 133 and a transistor 134
+acting as a variable shunt resistor. Biasing this
+transistor sufficiently into conduction by applying
+modulation to its base, saturates the transistor, momen
+tarily reducing the RF signal going from the antenna to
+the TV receiver antenna terminals 19. This cor
+responds to carrier reduction, which is negative modu
+lation and is equivalent to generating a video signal
+going from black to white and back to the black level.
+Chroma signals can also be applied to the crowbar
+transistor modulator in the same fashion.
+
+--- REVIEWED TRANSCRIPTION PAGE 18 OF 21 ---
+
+Column 11
+
+3,728,480
+11
+Note that the combination of apparatus described in
+FIGS. 7 and 8 describe a mode of interacting with a
+transmitted TV signal without requiring the attachment
+of connections to the internal circuitry of the TV
+receiver.
+As mentioned above, the invention may be employed
+in conjunction with a cooperative TV station such as
+commercial TV, closed-circuit TV and CATV (com
+munity antenna television). In this mode the invention
+may be employed for target shooting or for decoding O
+messages on a TV screen, such messages being the
+result of transmission from the cooperative station, as
+for example testing with coded answer supplied. Other
+transmissions can be transmissions from organizations
+offering services to the equipped viewer where the ser
+vices offered may be typically Consumer Products Buy
+ing Recommendations, Stock "Buy-Sell-Hold' recom
+mendations and others involving the presentation of
+valuable information available to the viewer equipped
+in accordance with this invention.
+In FIG. 10 there is illustrated a combination target
+shooting and decoding apparatus. The decoding por
+tion thereof is described in connection with the sketch
+of FIG. 9. Although the circuit shown is used for both
+decoding and target shooting it will be obvious that cer
+tain of the components can be eliminated to provide
+either of the functions alone.
+The information is presented on the TV screen in
+such a manner that a portion thereof is coded. For ex
+ample, FIG. 9 illustrates using the presentation for test
+ing. The question and a group of possible answers is
+presented on TV screen 18 as illustrated with symbols
+152-155 shown next to each answer. One of the sym
+bols (in the example shown 153) is coded in such a
+manner that it will trigger the decoder of FIG. 10. For
+example, symbols 152, 154 and 155 may flash 60 times
+whereas the correct answer symbol 153, will flash 61
+times. The decoder of FIG. 10 is arranged to respond to
+the odd number of flashes.
+The electronics of FIG. 10 can be inserted into a "-
+gun' or other suitable configuration and therefore be
+easily handled.
+Referring now to FIG. 10, initially pressing a reset
+switch 142 sets the equipment. Reset switch 142 is a
+double pole single throw. switch. The modulation from
+the coded symbol incident at a photocell 136 is sup
+plied via a buffer amplifier 137, and an amplifier and
+pulse shaper 138 to a flip-flop 139 which is triggered.
+The output from flip 139 is applied via a buffer amplifi
+er 141 to a lamp 140 which will light with a steady glow
+until reset indicating the correct answer was chosen.
+If an incorrect answer was chosen, the lamp will
+flicker for a time equal to the time the symbol (152,
+154, 155) is being modulated and then will go out.
+To go to the next question, the decoder is returned to
+its starting position by operating reset switch 142.
+Note: initially reset switch had to be depressed so that
+the flip-flop would be in the proper state to provide a
+steady output to the lamp when photocell 139 receives
+an odd number of cycles.
+To operate the circuit of FIG. 10 in its target shoot
+ing mode, a switch 145 is switched to the alternate con
+tacts 146, 147.
+In this mode, (see FIG. 1C) a "target" dot 148 is sup
+plied by the cooperative station which also could
+
+Column 12
+
+12
+supply background scenery for asthetic purposes.
+When the “gun' 27 (FIG. 1C) is aimed at the target
+148 and the trigger (switch 144 FIG. 10) is depressed,
+photocell 136 will supply an output via buffer amplifier
+137 and buffer amplifier and pulse shaper 138 to the
+gate electrode of a silicon controlled rectifier 149
+which causes SCR 149 to fire and light lamp 140.
+Switch 142 also resets SCR 149 turning off lamp 140.
+FIG. 1E illustrates an alternate embodiment to that
+described above. The output from the target shooter is
+applied to a crowbar circuit 24 the output of which is
+applied to antenna terminals 19 such that the screen 18
+will also flash white when a 'hit' is made.
+The principles hereinabove set forth apply with equal
+strength to both monochrome and color applications.
+While the system that has been described has been
+basically for monochrome television sets, the provi
+sions for color operation have been described and may
+be applied to games utilizing the aspects of the ability
+to adjust or change the background color. Thus, it can
+be seen that a game such as roulette may be played hav
+ing for its object the guessing of the color that will ap
+pear when the wheel stops spinning. Very readily the
+system can be used to indicate a hit in the target game
+both by the disappearance of the square and by the
+change in background color. These are but a few of the
+countless variations that may be applied to this con
+cept.
+The number and variations of games which may be
+played are limited only by the imagination of the
+players. Some of the games which may be played are
+overlay games, target shooting games, chase games and
+color games.
+FIG. 2 illustrates one type of overlay games, namely
+a modified checkerboard game. One player tries to
+move his "dot" 20, from A to B while the other player
+tries to move his "dot' 20, from B to A. The "dots'
+may be moved orthonogally only and only one square
+at a time. It is one object of this game to avoid
+checkmate. Other overlay games will be readily ap
+parent.
+Another type game is a chase game. For example, a
+fox hunt can be simulated. This requires 3 players, a
+hunter, a fox and a score keeper. The hunter tries to
+catch the fox (indicated by the fox's "dot" disappear
+ing within a specified time. Numerous variations on this
+game are also possible with and without overlay pat
+ters.
+If the receiver employed is a color receiver then
+color games may be played. For example, an inertia
+wheel may be put on the shaft of potentiometer 116 in
+the chroma generator. The object of the game is for a
+player to guess the color which will appear when the
+wheel is spun.
+The target shooting game is yet another game which
+is applicable to this invention. One player may
+manually move a "dot" while another tries to "hit' the
+"dot" with the photocell gun. Alternatively, the target
+may be automatically moved by, for example, driving
+the biasing voltage for the delay and pulse-forming cir
+cuit in a "dot" generator with a variable voltage source.
+It should also be understood that the principles are
+not to be limited only to the gaming aspects but may be
+applied in the areas of scientific, educational, clinical
+and other applications. Hence, it is to be understood
+
+--- REVIEWED TRANSCRIPTION PAGE 19 OF 21 ---
+
+Column 13
+
+3,728,480
+13
+that the embodiments shown are to be regarded as illus
+trative only, and that many variations and modifica
+tions may be made without departing from the princi
+ples of the invention herein disclosed and defined by
+the appended claims.
+I claim:
+1. In combination with a standard television receiver,
+apparatus for generating "dots' upon the screen of the
+receiver to be manipulated by a participant, compris
+1ng:
+a control unit for generating signals representing the
+"dots' to be displayed, said control unit further in
+cluding means for generating synchronizing signal
+to synchronize the television raster scan of said
+receiver and means for manipulating the position
+of the "dots' on the screen of said receiver; and
+means for directly coupling the generated signals
+only to said television receiver whereby said "-
+dots' are displayed only upon the screen of said
+receiver being viewed by the participant.
+2. The combination of claim 1 wherein said control
+unit includes:
+a horizontal sync generator;
+a vertical sync generator;
+at least one dot generator coupled to said horizontal
+and vertical sync generators;
+means for generating an rf signal; and
+means for modulating said rf signal with an output
+signal from said dot generator, said modulated rf
+signal being coupled to said television receiver.
+3. The combination of claim 2 wherein said horizon
+tal sync generator includes an astable multivibrator and
+said vertical sync generator includes as astable mul
+tivibrator.
+4. The combination of claim 2 wherein said "dot'
+generator includes horizontal and vertical delays and
+an AND gate coupling the outputs from said delays.
+5. The combination of claim 2 wherein said means
+for generating a modulated rf signal includes:
+means for summing the signal outputs from said
+horizontal sync generator, said vertical sync
+generator and said dot generator to provide a
+video signal; and
+means for modulating the video signal with a carrier
+signal the frequency of which is selected in ac
+cordance with which channel of the television
+receiver the "dots' are to be displayed.
+6. The combination of claim 2 wherein said dot
+generator includes means for varying the position of
+the generated "dots' on the television receiver screen.
+7. The combination of claim 2 wherein said control
+unit includes first and second dot generators coupled to
+said vertical sync generator and said horizontal sync
+generator.
+8. The combination of claim 7 wherein said means
+for generating a modulated rf signal includes:
+means for summing the signal outputs from said
+horizontal sync generator, said vertical sync
+generator and said first and second dot generators
+to provide a video signal; and
+means for modulating the video signal with a carrier
+signal the frequency of which is selected in ac wheel
+cordance with which channel of the television color
+receives the "dots' are to be displayed. to
+
+Column 14
+
+9. The combination of claim 8 wherein each of said
+dot generators includes means for varying the position
+of the generated "dots' on the television receiver
+SCeel.
+10. The combination of claim 9 wherein said position
+varying means includes a control for varying the verti
+cal position of each generated "dot' and a control for
+varying the horizontal position of each generated "-
+dot'.
+11. The combination of claim 9 wherein said position
+varying means includes one control for varying the
+horizontal and vertical position of each generated "-
+dot.'
+12. The combination of claim 11, said control being
+a joystick.
+13. The combination of claim 9, further including
+means for denoting coincidence when a "dot'
+generated by one of said dot generators is located in the
+same position on the television screen as a "dot'
+generated by another of said dot generators.
+14. The combination of claim 13 wherein said coin
+cidence denoting means includes a coincidence detec
+tor and crowbar circuit coupled to said first and second
+dot generators such that coincidence of position of said
+"dots' will be indicated by having said first dot genera
+tor turned off causing disappearance on the screen of
+the television receiver of its respective "dot.'
+15. The combination of claim 14 wherein said coin
+cidence detector and crowbar circuit includes a
+semiconductor switch and means for turning on said
+switch when a signal is received simultaneously from
+said first and second dot generators.
+16. The combination of claim 14, further including
+means for resetting said coincidence denoting means
+after the "dots' are made noncoincident.
+17. The combination of claim 14, further including
+means operatively responsive to a displayed "dot.'
+18. The combination of claim 17, wherein said
+means responsive includes:
+means for sensing light; and
+means for actuating said coincidence denoting
+means when said light sensing means detects a "-
+dot' displayed on the television receiver screen.
+19. The combination of claim 18 wherein said ac
+tuating means includes a switch which couples the out
+put from said light sensing means to said coincidence
+denoting means.
+20. The combination of claim 19 wherein said light
+sensing means is a photosensitive element arranged
+within the barrel of a toy gun.
+21. The combination of claim 14 in which said televi
+sion receiver is a color receiver, said combination
+further including a chroma generator having inputs
+from said horizontal sync generator and said coin
+cidence denoting means and an output to said signal
+summing means, such that coincidence will also be in
+dicated by a changing of background color of said
+television receiver screen.
+22. The combination of claim 21 wherein said
+chroma generator includes a control for varying the
+background color of the television receiver screen.
+23. The combination of claim 22 further including a
+coupled to said control for varying background
+which when spun will cause the background color
+be of non-predetermined selection.
+
+--- REVIEWED TRANSCRIPTION PAGE 20 OF 21 ---
+
+Column 15
+
+3,728,480
+15
+24. The combination of claim 1, further including an
+overlay mask attached to the television receiver screen,
+said overlay mask having a predetermined pattern
+thereon. ..
+25. The combination of claim 1, further including
+means for automatically moving said "dots' about said
+television screen.
+26. The combination of claim 25, further including
+means for "shooting' at said moving "dots', said
+"shooting' means including light responsive means
+responsive to a displayed "dot'.
+27. The combination of claim 1, further including
+means for “shooting" at said “dots," said "shooting"
+means including light responsive means responsive to a
+displayed "dot' when aligned therewith.
+28. Television gaming apparatus as defined in claim
+27, further including means for causing one of said "-
+dots' to disappear when said "shooting' means
+receives light from a displayed "dot".
+29. Television gaming apparatus as defined in claim
+27 in which said television receiver is a color receiver,
+further including means for causing the background
+color of said television screen to change color when a
+'hit' is made.
+30. The combination of claim 27 wherein said light
+responsive means includes a photocell.
+31. The combination of claim 1, further including
+means for receiving background information generated
+on the television receiver screen by a cooperative
+television station.
+32. In combination with a standard television
+receiver including horizontal and vertical deflection
+circuitry which is synchronized with horizontal and ver
+tical synchronization signals, apparatus for generating
+"dots' upon the screen of the receiver to be manipu
+lated by a participant, comprising:
+a control unit responsive to the horizontal and verti
+cal synchronization signals for generating signals
+representing "dots' to be displayed, including
+means for manipulating the position of the "dots'
+on the screen of the receiver; and
+means for directly coupling the generated signals
+only to said television receiver whereby said "-
+dots' are displayed only upon the screen of said
+receiver being viewed by the participant.
+33. The combination of claim 32, further including:
+means for receiving information generated by a
+cooperative television station; and
+means for applying the received information to said
+television receiver to be displayed thereby.
+34. The combination of claim 33 wherein said apply tion
+ing means includes means for modulating said received vertical
+information by said generated signals.
+means
+35. The combination of claim 34 wherein said modu receiver
+lating means includes means for momentarily causing a ing:
+reduction of signal strength of said received informa
+tion when generated signals are being applied, whereby
+the generated "dots' are displayed at their particular
+position of the screen in place of the received informa
+tion.
+36. The combination of claim 33, further including
+means synchronizing the generated signals with the
+received information.
+37. The combination of claim 36 wherein said
+synchronizing means includes: and
+television
+
+Column 16
+
+16
+means for receiving a horizontal scan signal
+generated by the television station; and
+means for detecting a vertical synchronizing com
+ponent provided on the screen of the television
+receiver.
+38. The combination of claim 37 wherein said means
+for receiving a horizontal scan signal includes a pickup
+coil and said means for detecting a vertical synchroniz
+ing component includes a photocell.
+O
+39. The combination of claim 36 wherein said
+synchronizing means is mechanically coupled to the
+television screen.
+40. Apparatus for generating "dots' upon the screen
+of a television receiver to be manipulated by a partici
+pant, comprising:
+a control unit for generating signals representing the
+"dots' to be displayed, said control unit further in
+cluding means for generating synchronizing signals
+to synchronize a television raster scan of a receiver
+and means for manipulating the position of the "-
+dots" on the screen; and
+means for directly coupling the generated signals
+only to a single television receiver whereby said "-
+dots' are displayed only upon the screen of the
+single receiver being viewed by the participant.
+41. Apparatus as in claim 40, further including
+means for "shooting' at said "dots,' said means includ
+ing light responsive means responsive to a displayed "-
+dot.'
+42. The combination of claim 1 wherein said control
+unit includes
+means for providing horizontal sync signals;
+means for providing vertical sync signals;
+a first RC network coupled to said means for provid
+ing horizontal sync signals;
+a second RC network coupled to said means for
+providing vertical sync signals;
+a first transistor coupled to said first RC network;
+a second transistor coupled to said second RC net
+work;
+first pulse shaping means coupled to the output of
+said first transistor;
+second pulse shaping means coupled to the output of
+said second transistor; and
+an AND gate coupled to said first and second pulse
+shaping means.
+43. The combination of claim 1 wherein at least two
+'dots' are displayed on the screen of said receiver.
+44. Apparatus for use within a television receiver,
+which receiver includes horizontal and vertical deflec
+circuitry which is synchronized with horizontal and
+synchronizing signals, said apparatus including
+for generating "dots' upon the screen of said
+to be manipulated by a participant, compris
+a control unit responsive to the horizontal and verti
+cal synchronizing signals for generating signals
+representing "dots' to be displayed, including
+means for manipulating the position of the "dots'
+on the screen of said receiver whereby said "dots'
+are displayed only upon the screen of said
+receiver.
+45. Apparatus as in claim 44 wherein said horizontal
+vertical synchronization signals are received from a
+station.
+
+--- REVIEWED TRANSCRIPTION PAGE 21 OF 21 ---
+
+Column 17
+
+3,728,480
+17
+46. Apparatus as in claim 45 wherein said received
+synchronization signals are the standard synchroniza
+tion signals generated by the television station.
+ck k i k k
+
+Column 18
+
+
+

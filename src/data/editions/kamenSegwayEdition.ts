@@ -2,7 +2,7 @@ import type {
   CuratedSpecificationEdition,
   CuratedSpecificationInline,
   CuratedSpecificationInlines,
-} from "@/types/curatedSpecification";
+} from "@/types/patent";
 
 const SHA256 = "bcda272e161a0b973db9d64090f8102447e9aa35914a9a73e70a38736b7934db";
 
@@ -10,74 +10,74 @@ const FIGURES = {
   1: {
     src: "/patents/figures/us-6302230-kamen-segway/fig-1-source-crop-v1.png",
     alt: "Figure 1 from US 6,302,230: side view of a personal vehicle lacking a stable static position for supporting a subject in a standing position.",
-    width: 2200,
-    height: 1600,
+    width: 2088,
+    height: 2930,
   },
   2: {
     src: "/patents/figures/us-6302230-kamen-segway/fig-2-source-crop-v1.png",
     alt: "Figure 2 from US 6,302,230: perspective view of a further personal vehicle lacking a stable static position.",
-    width: 2200,
-    height: 1600,
+    width: 2088,
+    height: 2930,
   },
   3: {
     src: "/patents/figures/us-6302230-kamen-segway/fig-3-source-crop-v1.png",
     alt: "Figure 3 from US 6,302,230: control strategy for achieving balance using wheel torque.",
-    width: 2200,
-    height: 1600,
+    width: 2088,
+    height: 2930,
   },
   4: {
     src: "/patents/figures/us-6302230-kamen-segway/fig-4-source-crop-v1.png",
     alt: "Figure 4 from US 6,302,230: operation of joystick control of the wheels of the personal vehicle.",
-    width: 2200,
-    height: 1600,
+    width: 2088,
+    height: 2930,
   },
   5: {
     src: "/patents/figures/us-6302230-kamen-segway/fig-5-source-crop-v1.png",
     alt: "Figure 5 from US 6,302,230: block diagram showing sensors, power, and control.",
-    width: 2200,
-    height: 1600,
+    width: 2088,
+    height: 2930,
   },
   6: {
     src: "/patents/figures/us-6302230-kamen-segway/fig-6-source-crop-v1.png",
     alt: "Figure 6 from US 6,302,230: block diagram providing detail of a driver interface assembly.",
-    width: 2200,
-    height: 1600,
+    width: 2088,
+    height: 2930,
   },
   7: {
     src: "/patents/figures/us-6302230-kamen-segway/fig-7-source-crop-v1.png",
     alt: "Figure 7 from US 6,302,230: schematic of wheel motor control during balancing and normal locomotion.",
-    width: 2200,
-    height: 1600,
+    width: 2088,
+    height: 2930,
   },
   8: {
     src: "/patents/figures/us-6302230-kamen-segway/fig-8-source-crop-v1.png",
     alt: "Figure 8 from US 6,302,230: balancing vehicle with a single wheel central to the support platform.",
-    width: 2200,
-    height: 1600,
+    width: 2088,
+    height: 2930,
   },
   9: {
     src: "/patents/figures/us-6302230-kamen-segway/fig-9-source-crop-v1.png",
     alt: "Figure 9 from US 6,302,230: balancing vehicle with a single wheel and handle.",
-    width: 2200,
-    height: 1600,
+    width: 2088,
+    height: 2930,
   },
   10: {
     src: "/patents/figures/us-6302230-kamen-segway/fig-10-source-crop-v1.png",
     alt: "Figure 10 from US 6,302,230: balancing vehicle with two coaxial wheels central to the support platform.",
-    width: 2200,
-    height: 1600,
+    width: 2088,
+    height: 2930,
   },
   11: {
     src: "/patents/figures/us-6302230-kamen-segway/fig-11-source-crop-v1.png",
     alt: "Figure 11 from US 6,302,230: balancing vehicle with a single wheel and no handle.",
-    width: 2200,
-    height: 1600,
+    width: 2088,
+    height: 2930,
   },
   12: {
     src: "/patents/figures/us-6302230-kamen-segway/fig-12-source-crop-v1.png",
     alt: "Figure 12 from US 6,302,230: alternate embodiment of a balancing vehicle with a single wheel.",
-    width: 2200,
-    height: 1600,
+    width: 2088,
+    height: 2930,
   },
 } as const;
 
@@ -120,7 +120,8 @@ export const kamenSegwayArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "figure-sheet",
       figureLabel: "Figures 1–12",
-      title: "Personal Mobility Vehicles, Inverted Pendulum Balancing Dynamics, and Balancing Margin Monitoring",
+      title:
+        "Personal Mobility Vehicles, Inverted Pendulum Balancing Dynamics, and Balancing Margin Monitoring",
       description: [
         {
           kind: "text",
@@ -224,17 +225,32 @@ export const kamenSegwayArchivalEdition: CuratedSpecificationEdition = {
         figure("FIG. 3", [3]),
         {
           kind: "text",
-          text: " illustrates the control strategy for a simplified version of FIG. 1 to achieve balance using wheel torque; ",
+          text: " illustrates the control strategy for a simplified version of ",
+        },
+        figure("FIG. 1", [1]),
+        {
+          kind: "text",
+          text: " to achieve balance using wheel torque; ",
         },
         figure("FIG. 4", [4]),
         {
           kind: "text",
-          text: " illustrates diagrammatically the operation of joystick control of the wheels of the embodiment of FIG. 1; ",
+          text: " illustrates diagrammatically the operation of joystick control of the wheels of the embodiment of ",
+        },
+        figure("FIG. 1", [1]),
+        {
+          kind: "text",
+          text: "; ",
         },
         figure("FIG. 5", [5]),
         {
           kind: "text",
-          text: " is a block diagram showing generally the nature of sensors, power and control with the embodiment of FIG. 1; ",
+          text: " is a block diagram showing generally the nature of sensors, power and control with the embodiment of ",
+        },
+        figure("FIG. 1", [1]),
+        {
+          kind: "text",
+          text: "; ",
         },
         figure("FIG. 6", [6]),
         {

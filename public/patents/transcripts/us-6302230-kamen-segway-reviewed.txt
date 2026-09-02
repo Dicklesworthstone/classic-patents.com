@@ -173,14 +173,22 @@ U.S. Patent   Oct. 16, 2001      Sheet 4 of 16   US 6,302,230 B1
 
 --- REVIEWED TRANSCRIPTION PAGE 8 OF 29 ---
 
+U.S. Patent   Oct. 16, 2001   Sheet 5 of 16   US 6,302,230 B1
+
+FIG. 5A
+FIG. 5B
 
 --- REVIEWED TRANSCRIPTION PAGE 9 OF 29 ---
 
+U.S. Patent   Oct. 16, 2001   Sheet 6 of 16   US 6,302,230 B1
+
+FIG. 6
 
 --- REVIEWED TRANSCRIPTION PAGE 10 OF 29 ---
 
-U.S. Patent   Oct. 16, 2001   Sheet 7 of 16                              US 6,302,230 B1
-                                              B3W10W}IS} IRMM?JAN„OYHAY.SN.}(0)
+U.S. Patent   Oct. 16, 2001   Sheet 7 of 16   US 6,302,230 B1
+
+FIG. 7
 
 --- REVIEWED TRANSCRIPTION PAGE 11 OF 29 ---
 
@@ -1429,72 +1437,24 @@ fications will be apparent to those skilled in the art. All Such
 variations and modifications are intended to be within the
 Scope of the present invention as defined in the appended
 claims.
-35 What is claimed is:
-1. A vehicle for carrying a payload including a user, the
-vehicle comprising:
+What is claimed is:
+1. A vehicle for carrying a payload including a user, the vehicle comprising:
 a. a platform which supports the user;
-b. a ground-contacting module, to which the platform is
-40 mounted, which propels the user in desired motion over
-an underlying surface,
-c. a motorized drive arrangement, coupled to the ground
-contacting module, the drive arrangement, ground
-contacting module and payload comprising a System
-45 being unstable with respect to tipping when the motor
-ized drive is not powered; the motorized drive arrange
-ment causing, when powered, automatically balanced
-operation of the system wherein the vehicle has a
-present velocity and a maximum operating velocity,
-50 determined by a requirement of acceleration to main
-tain balance and, in operation, has a balancing margin
-determined by the difference between the maximum
-operating velocity and the present velocity of the
-55
-vehicle;
-d. a balancing margin monitor, coupled to the ground
-contacting module, for generating a signal characteriz
-ing the balancing margin; and
-e. an alarm, coupled to the balancing margin monitor, for
-60 receiving the signal characterizing the balancing mar
-gin and for warning when the balancing margin falls
-below a specified limit.
-2. A device according to claim 1, wherein the alarm
-includes ripple modulation of the power output of the
-motorized drive arrangement. 65
-3. A device according to claim 1, wherein the alarm is
-audible.
+b. a ground-contacting module, to which the platform is mounted, which propels the user in desired motion over an underlying surface;
+c. a motorized drive arrangement, coupled to the ground-contacting module, the drive arrangement, ground-contacting module and payload comprising a system being unstable with respect to tipping when the motorized drive is not powered; the motorized drive arrangement causing, when powered, automatically balanced operation of the system wherein the vehicle has a present velocity and a maximum operating velocity, determined by a requirement of acceleration to maintain balance and, in operation, has a balancing margin determined by the difference between the maximum operating velocity and the present velocity of the vehicle;
+d. a balancing margin monitor, coupled to the ground-contacting module, for generating a signal characterizing the balancing margin; and
+e. an alarm, coupled to the balancing margin monitor, for receiving the signal characterizing the balancing margin and for warning when the balancing margin falls below a specified limit.
+2. A device according to claim 1, wherein the alarm includes ripple modulation of the power output of the motorized drive arrangement.
+3. A device according to claim 1, wherein the alarm is audible.
 
 --- REVIEWED TRANSCRIPTION PAGE 29 OF 29 ---
 
-19
-4. A device according to claim 1, wherein the ground
-contacting module includes a plurality of laterally disposed
-ground-contacting members.
-5. A method for using a vehicle to carry a payload
-including a user, the method comprising:
-a) supporting the user on a platform, the platform
-mounted to a ground-contacting module, for propelling
-the vehicle in desired motion over an underlying Sur
-face;
-b) operating a motorized drive arrangement to provide
-automatically balanced operation of the vehicle, the
-vehicle being unstable with respect to tipping when the
-motorized drive is not powered, the vehicle having a
-present velocity and a maximum operating velocity,
-determined to maintain acceleration potential to ensure
-balance, and, in operation, has a balancing margin
-
-20
-determined by the difference between the maximum
-operating velocity and the present velocity of the
-vehicle;
+4. A device according to claim 1, wherein the ground-contacting module includes a plurality of laterally disposed ground-contacting members.
+5. A method for using a vehicle to carry a payload including a user, the method comprising:
+a) supporting the user on a platform, the platform mounted to a ground-contacting module, for propelling the vehicle in desired motion over an underlying surface;
+b) operating a motorized drive arrangement to provide automatically balanced operation of the vehicle, the vehicle being unstable with respect to tipping when the motorized drive is not powered, the vehicle having a present velocity and a maximum operating velocity, determined to maintain acceleration potential to ensure balance, and, in operation, has a balancing margin determined by the difference between the maximum operating velocity and the present velocity of the vehicle;
 c) monitoring the balancing margin;
-d) generating a signal characterizing the balancing mar
-gin, and
-e) generating an alarm based on the signal to warn when
-the balancing margin falls below a specified limit.
-6. A method according to claim 5, wherein the step of
-generating the alarm includes modulating the power output
-of the motorized drive arrangement in a ripple fashion.
-7. A method according to claim 5, wherein the step of
-generating the alarm includes producing an audible warning.
-k k k k k
+d) generating a signal characterizing the balancing margin; and
+e) generating an alarm based on the signal to warn when the balancing margin falls below a specified limit.
+6. A method according to claim 5, wherein the step of generating the alarm includes modulating the power output of the motorized drive arrangement in a ripple fashion.
+7. A method according to claim 5, wherein the step of generating the alarm includes producing an audible warning.

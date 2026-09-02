@@ -55,11 +55,21 @@ import { stepDieselEngine as kernelStepDieselEngine } from "./dieselEngineKernel
 import { stepFermiKinetics } from "./fermiKinetics";
 import { tryGoddardApparatusWasmStep, tryGoddardWasmStep } from "./goddardWasm";
 import { stepHullStereolithographySi } from "./hullStereolithographyKernel";
+import { stepKamenSegwaySi } from "./kamenSegwayKernel";
 import {
   type KamenTransporterControls,
   type KamenTransporterTelemetry,
   stepKamenTransporterSi,
 } from "./kamenTransporterKernel";
+import {
+  type LemelsonAdjustableManipulatorParams,
+  stepLemelsonAdjustableManipulator,
+} from "./lemelsonAdjustableManipulatorKernel";
+import {
+  type LemelsonMachineVisionControls,
+  type LemelsonMachineVisionState,
+  stepLemelsonMachineVisionSi,
+} from "./lemelsonMachineVisionKernel";
 import {
   type LemelsonWarehouseControls,
   type LemelsonWarehousePose,
@@ -80,7 +90,6 @@ import {
   type MestralVelcroTelemetry,
   stepMestralVelcroSi,
 } from "./mestralVelcroKernel";
-import { stepMilacronRobotToolchangerSi } from "./milacronRobotToolchangerKernel";
 import { stepRobotEndEffectorSi } from "./robotEndEffectorKernel";
 import type { SalisburyRobotHandControls } from "./salisburyRobotHandKernel";
 import { type SalisburyMechanismState, stepSalisburyTopology } from "./salisburyWasm";
@@ -282,10 +291,10 @@ export const FrankenSimEngine = {
   stepMorseTelegraph,
   stepEngelbartMouse,
   stepWozniakApple,
-  stepMilacronRobotToolchanger: stepMilacronRobotToolchangerSi,
   stepRobotEndEffector: stepRobotEndEffectorSi,
   stepHullStereolithography: stepHullStereolithographySi,
   stepCrumpFdm: stepCrumpFdmSi,
+  stepKamenSegway: stepKamenSegwaySi,
 
   stepTeslaMotorFig9,
 
@@ -1265,6 +1274,16 @@ export const FrankenSimEngine = {
 
   stepMestralVelcro(controls: MestralVelcroControls, timeSec = 0): MestralVelcroTelemetry {
     return stepMestralVelcroSi(controls, timeSec);
+  },
+
+  /** US 3,081,379 Lemelson automatic measurement & machine vision apparatus. */
+  stepLemelsonMachineVision(controls: LemelsonMachineVisionControls): LemelsonMachineVisionState {
+    return stepLemelsonMachineVisionSi(controls);
+  },
+
+  /** US 3,260,375 Lemelson adjustable limit-switch industrial manipulator. */
+  stepLemelsonAdjustableManipulator(rawParams: LemelsonAdjustableManipulatorParams = {}) {
+    return stepLemelsonAdjustableManipulator(rawParams);
   },
 
   /** US 4,921,293 nine-joint/12-cable topology and source-printed static torque law. */

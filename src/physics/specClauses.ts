@@ -3,6 +3,8 @@
  * Highlighted on the spec face so an interaction lights the clause it tests.
  */
 
+import { stepAmfVersatranTopology } from "./amfVersatranKernel";
+import { INITIAL_BAER_STATE, readBaerControls, stepBaerOdysseySi } from "./baerOdysseyKernel";
 import { readCrumpFdmControls, stepCrumpFdmSi } from "./crumpFdmKernel";
 import { stepDevolProgrammedTransfer } from "./devolProgrammedTransferKernel";
 import { FrankenSimEngine } from "./engine";
@@ -12,18 +14,31 @@ import {
   readHullStereolithographyControls,
   stepHullStereolithographySi,
 } from "./hullStereolithographyKernel";
+import { readKamenSegwayControls, stepKamenSegwaySi } from "./kamenSegwayKernel";
 import { readKamenTransporterControls, stepKamenTransporterSi } from "./kamenTransporterKernel";
+import { stepLemelsonManipulatorTopology } from "./lemelsonAdjustableManipulatorKernel";
 import { stepLemelsonAutomaticProductionTopology } from "./lemelsonAutomaticProductionKernel";
+import {
+  readLemelsonMachineVisionControls,
+  stepLemelsonMachineVisionSi,
+} from "./lemelsonMachineVisionKernel";
 import { stepHoweSewingMachine } from "./machineKernels";
 import { readMestralVelcroControls, stepMestralVelcroSi } from "./mestralVelcroKernel";
 import {
-  readMilacronToolchangerControls,
-  stepMilacronRobotToolchangerSi,
-} from "./milacronRobotToolchangerKernel";
+  INITIAL_ETHERNET_STATE,
+  readEthernetControls,
+  stepMetcalfeEthernetSi,
+} from "./metcalfeEthernetKernel";
+import { stepMilacronRobotToolchanger } from "./milacronRobotToolchangerKernel";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { stepRobotEndEffector } from "./robotEndEffectorKernel";
 import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
 import { readSalisburyRobotHandControls } from "./salisburyRobotHandKernel";
+import {
+  INITIAL_SIKORSKY_STATE,
+  readSikorskyControls,
+  stepSikorskyHelicopterSi,
+} from "./sikorskyHelicopterKernel";
 import { stepStackhouseSourceTopology } from "./stackhouseSourceKernel";
 import { readSundbackZipperControls, stepSundbackZipperSi } from "./sundbackZipperKernel";
 import { stepTeslaMotorFig9, teslaMotorPhaseHz } from "./teslaKernel";
@@ -78,6 +93,7 @@ const PARSONS_TURBINE_ID = "us-608969-parsons-turbine";
 const TESLA_COIL_ID = "us-593138-tesla-coil";
 const TESLA_TELEAUTOMATON_ID = "us-613809-tesla-teleautomaton";
 const GOERTZ_MASTER_SLAVE_ID = "us-2846084-goertz-electronic-master-slave-manipulator";
+const AMF_VERSATRAN_ID = "us-3212649-amf-versatran";
 
 export function specClausesFor(patentId: string, params: Record<string, number>): SpecClause[] {
   if (patentId === WATT_ROTARY_ID) {
@@ -2572,6 +2588,214 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
     ];
   }
 
+  if (patentId === "us-3081379-lemelson-machine-vision") {
+    const controls = readLemelsonMachineVisionControls(params);
+    const state = stepLemelsonMachineVisionSi(controls);
+    return [
+      {
+        id: "electron-beam-scanning",
+        phrase:
+          "means for causing an electron beam to scan an area of an image field in a single frame sweep",
+        active: true,
+        tone: "live",
+        caption: `Raster scan frequency: ${state.metrics.horizontalScanFreqHz} Hz (${controls.scanLineCount} lines @ ${controls.frameRateHz} fps, line duration ${state.metrics.linePeriodUs.toFixed(2)} µs).`,
+      },
+      {
+        id: "gated-analyzing-circuit",
+        phrase:
+          "analyzing circuit connected to a gating means in the output of a circuit in which said picture signal is generated",
+        active: true,
+        tone: "live",
+        caption: `Threshold comparator level: ${controls.thresholdVoltage.toFixed(2)} V slicing video peak (${state.metrics.videoPeakVoltageV.toFixed(2)} V), pulse width ${state.metrics.pulseWidthUs.toFixed(2)} µs.`,
+      },
+      {
+        id: "dimensional-measurement-slicing",
+        phrase:
+          "inspecting a predetermined area of said image field by the analysis of that portion of the picture signal",
+        active: true,
+        tone: state.metrics.isDefective ? "broken" : "live",
+        caption: `Measured dimension: ${state.metrics.measuredPartWidthMm.toFixed(1)} mm (nominal ${(controls.nominalPartWidthM * 1000).toFixed(1)} mm, deviation ${state.metrics.dimensionalErrorMm.toFixed(2)} mm, status: ${state.metrics.isDefective ? "DEFECT DETECTED" : "WITHIN TOLERANCE"}).`,
+      },
+      {
+        id: "solenoid-rejection-gate",
+        phrase:
+          "programming means being synchronized in its operation for automatically operating said gating means",
+        active: state.metrics.isDefective,
+        tone: state.metrics.isDefective ? "live" : "held",
+        caption: `Solenoid reject force: ${state.metrics.solenoidForceN.toFixed(2)} N (response ${state.metrics.gateResponseTimeMs.toFixed(1)} ms, coil current ${controls.gateSolenoidCurrentA.toFixed(1)} A).`,
+      },
+    ];
+  }
+
+  if (patentId === "us-3728480-baer-odyssey") {
+    const controls = readBaerControls(params as any);
+    const { metrics } = stepBaerOdysseySi(INITIAL_BAER_STATE, controls, 0.016);
+    return [
+      {
+        id: "raster-sync-generation",
+        phrase:
+          "means for generating synchronizing signals to synchronize the television raster scan",
+        active: true,
+        tone: "live",
+        caption: `NTSC horizontal sweep: ${metrics.horizontalSyncFreqHz} Hz (line period ${metrics.horizontalPeriodMicrosec.toFixed(1)} µs), vertical field: ${metrics.verticalFreqHz} Hz (${metrics.verticalPeriodMs.toFixed(1)} ms).`,
+      },
+      {
+        id: "rc-delay-manipulation",
+        phrase: "means for manipulating the position of the 'dots' on the screen of said receiver",
+        active: true,
+        tone: "live",
+        caption: `Player 1 RC delay: ${metrics.p1DelayHMicrosec.toFixed(1)} µs horizontal, ${metrics.p1DelayVMs.toFixed(2)} ms vertical; Player 2: ${metrics.p2DelayHMicrosec.toFixed(1)} µs, ${metrics.p2DelayVMs.toFixed(2)} ms.`,
+      },
+      {
+        id: "coincidence-gating",
+        phrase:
+          "means for denoting coincidence when a 'dot' generated by said first generator is positioned over a 'dot'",
+        active: metrics.coincidenceActive || metrics.lightGunCoincidence,
+        tone: metrics.coincidenceActive || metrics.lightGunCoincidence ? "live" : "held",
+        caption: metrics.coincidenceActive
+          ? `PADDLE-BALL COINCIDENCE ACTIVE: Diode AND gate triggered, horizontal velocity reflected (v_x = ${metrics.ballVx.toFixed(2)} screen/s, English spin = ${controls.englishControl.toFixed(2)}).`
+          : `Coincidence gate monitoring scan overlap (Ball at [${metrics.ballX.toFixed(2)}, ${metrics.ballY.toFixed(2)}]).`,
+      },
+      {
+        id: "rf-carrier-coupling",
+        phrase:
+          "means for directly coupling the generated signals only to said television receiver",
+        active: true,
+        tone: "live",
+        caption: `Modulated VHF Channel ${controls.rfChannel} carrier at ${metrics.rfCarrierFreqMHz.toFixed(2)} MHz, output power ${metrics.rfAntennaPowerNanoWatts.toFixed(1)} nW into 300-ohm antenna twin lead.`,
+      },
+    ];
+  }
+
+  if (patentId === "us-4063220-metcalfe-ethernet") {
+    const controls = readEthernetControls(params as any);
+    const { metrics } = stepMetcalfeEthernetSi(INITIAL_ETHERNET_STATE, controls, 0.016);
+    return [
+      {
+        id: "carrier-sense-detection",
+        phrase:
+          "signal detecting means coupled to said receiving means for generating a carrier signal",
+        active: metrics.carrierSensed,
+        tone: metrics.carrierSensed ? "live" : "held",
+        caption: metrics.carrierSensed
+          ? `CARRIER SENSED: Coaxial medium busy, deferring transmission (bus voltage: ${metrics.busVoltageVolts.toFixed(1)} V).`
+          : `Medium idle (0.0 V quiescent); station clear to transmit Manchester bit frames.`,
+      },
+      {
+        id: "listen-while-talk-collision",
+        phrase:
+          "collision detecting means coupled to the transmitting means and the receiving means",
+        active: metrics.collisionDetected,
+        tone: metrics.collisionDetected ? "live" : "held",
+        caption: metrics.collisionDetected
+          ? `COLLISION DETECTED: Analog superposition voltage ${metrics.busVoltageVolts.toFixed(1)} V <= -1.5 V threshold; differential XOR gate asserted.`
+          : `Transceiver monitor clear: transmitted signal matches received line level (${metrics.busVoltageVolts.toFixed(1)} V).`,
+      },
+      {
+        id: "transmission-interruption",
+        phrase:
+          "means connected to each transceiver and responsive to the presence of said collision signal for interrupting the transmission",
+        active: metrics.collisionDetected,
+        tone: metrics.collisionDetected ? "live" : "held",
+        caption: `Instantaneous transmission abort triggered; broadcasting ${metrics.jamDurationMicrosec.toFixed(1)} µs jam signal across coaxial bus.`,
+      },
+      {
+        id: "binary-exponential-backoff",
+        phrase:
+          "weighting means connected to receive said random number signal and said count signal for adjusting the mean value of said random number signal",
+        active: true,
+        tone: "live",
+        caption: `Binary Exponential Backoff slot time: ${metrics.slotTimeMicrosec.toFixed(2)} µs (2τ = ${metrics.oneWayPropDelayNs.toFixed(0)} ns round trip delay for ${controls.cableLengthMeters}m coax).`,
+      },
+    ];
+  }
+
+  if (patentId === "us-2318259-sikorsky-helicopter") {
+    const controls = readSikorskyControls(params as any);
+    const { metrics } = stepSikorskyHelicopterSi(INITIAL_SIKORSKY_STATE, controls, 0.016);
+    return [
+      {
+        id: "collective-throttle-coupling",
+        phrase:
+          "simultaneously and positively varying the rotor pitch and the power output of said engine",
+        active: controls.engineRunning === 1,
+        tone: controls.engineRunning === 1 ? "live" : "held",
+        caption: controls.engineRunning === 1
+          ? `COLLECTIVE-THROTTLE CORRELATION ACTIVE: Blade pitch ${controls.collectivePitchDeg.toFixed(1)}° mechanically commands ${metrics.effectiveThrottlePercent.toFixed(1)}% engine throttle, delivering ${(metrics.mainRotorPowerWatts / 1000.0).toFixed(1)} kW.`
+          : `Engine stopped (autorotation state); freewheeling sprag clutch disengaged.`,
+      },
+      {
+        id: "anti-torque-tail-rotor",
+        phrase:
+          "auxiliary rotor having a plane of rotation at right angles to the plane of rotation of said main rotor",
+        active: metrics.tailRotorThrustNewtons > 50,
+        tone: metrics.tailRotorThrustNewtons > 50 ? "live" : "held",
+        caption: `ANTI-TORQUE EQUILIBRIUM: Tail rotor generating ${metrics.tailRotorThrustNewtons.toFixed(1)} N thrust across 4.8m tail boom, balancing ${metrics.mainRotorTorqueNm.toFixed(1)} N·m main rotor torque (net yaw: ${metrics.netYawMomentNm.toFixed(1)} N·m).`,
+      },
+      {
+        id: "universal-blade-connection",
+        phrase:
+          "universal connection between the inner end of each blade and said shaft",
+        active: metrics.tipSpeedMs > 50,
+        tone: "live",
+        caption: `Flapping and hunting hinges active; main blade tip velocity ${metrics.tipSpeedMs.toFixed(1)} m/s (Mach ${metrics.tipMachNumber.toFixed(2)}), vertical lift ${metrics.mainRotorThrustNewtons.toFixed(1)} N.`,
+      },
+      {
+        id: "resilient-torque-links",
+        phrase:
+          "resilient torque transmitting links pivotally secured to said blades and said shaft",
+        active: metrics.mainRotorTorqueNm > 50,
+        tone: "live",
+        caption: `Lead-lag dampers constraining in-plane hunting motions under ${metrics.mainRotorTorqueNm.toFixed(1)} N·m driving torque.`,
+      },
+    ];
+  }
+
+  if (patentId === "us-3260375-lemelson-adjustable-manipulator") {
+    const state = stepLemelsonManipulatorTopology(params);
+    return [
+      {
+        id: "overhead-carriage-motion",
+        phrase: "carriage movable along a predetermined path",
+        active: true,
+        tone: "held",
+        caption:
+          "The specification depicts a carriage guided along the illustrated track relationship; the display supplies no unprinted travel length or positioning accuracy.",
+      },
+      {
+        id: "adjustable-limit-stop",
+        phrase: "limit switch means mounted on one of said assemblies",
+        active: state.sequencer.stop1Tripped || state.sequencer.stop2Tripped,
+        tone: state.sequencer.stop1Tripped || state.sequencer.stop2Tripped ? "live" : "held",
+        caption:
+          state.sequencer.stop1Tripped || state.sequencer.stop2Tripped
+            ? `Normalized switch event: ${state.sequencer.trippedLimitSwitches.join(", ")}. The display makes the selected stop/start relationship visible without inferring relay timing.`
+            : "The display is awaiting its selected normalized actuator/limit-switch event; source contact travel and tolerance are not stated.",
+      },
+      {
+        id: "rotational-azimuth-joint",
+        phrase: "power means for rotating said first assembly on said second assembly",
+        active: state.sequencer.phaseIndex === 2,
+        tone: state.sequencer.phaseIndex === 2 ? "live" : "held",
+        caption: `Normalized azimuth display coordinate: ${state.controls.columnAzimuth.toFixed(2)}. The procedural ${state.displayPose.azimuthRad.toFixed(2)}-rad scene transform is not a source-measured angle.`,
+      },
+      {
+        id: "pivoting-wrist-joint",
+        phrase: "second joint member pivotally secured to said first joint member",
+        active: state.sequencer.phaseIndex === 3,
+        tone: state.sequencer.phaseIndex === 3 ? "live" : "held",
+        caption: `Normalized pivot display coordinate: ${state.controls.wristPivot.toFixed(2)}. The scene transform is illustrative; the grant does not supply a calibrated joint range.`,
+      },
+      {
+        id: "workpiece-seizing-gripper",
+        phrase: "article seizing means mounted on said arm assembly",
+        active: state.displayPose.gripperState !== "open",
+        tone: state.displayPose.gripperState !== "open" ? "live" : "held",
+        caption: `The illustrated end member is ${state.displayPose.gripperState.toUpperCase()} in the normalized display. This is not a statement of jaw opening distance, force, or a successful grasp.`,
+      },
+    ];
+  }
+
   if (patentId === "us-3313014-lemelson-automatic-production") {
     const state = stepLemelsonAutomaticProductionTopology(params);
     return [
@@ -2828,38 +3052,44 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-4512709-milacron-robot-toolchanger") {
-    const controls = readMilacronToolchangerControls(params);
-    const tel = stepMilacronRobotToolchangerSi(controls);
+    const state = stepMilacronRobotToolchanger(params);
 
     return [
       {
         id: "milacron-locking-slide",
         phrase: "locking slide carried in said slideway and affixed to said rod",
-        active: tel.isLocked,
-        tone: tel.isLocked ? "held" : "broken",
-        caption: `Locking slide is at stroke ${controls.slideStrokeMm} mm (actuator thrust: ${tel.actuatorThrustN.toFixed(0)} N at ${controls.airPressureMpa} MPa). Clamping status: ${tel.isLocked ? "engaged" : "retracted"}.`,
+        active: state.lockingSlideEngaged,
+        tone: state.lockingSlideEngaged ? "held" : "broken",
+        caption: state.lockingSlideEngaged
+          ? "The shared source-topology kernel has shifted the slide to its capture state; no historical stroke is asserted."
+          : "The aperture remains aligned for admission/release, so the slide has not entered its source-described capture state.",
       },
       {
         id: "milacron-wedge-ramps",
         phrase: "slide ramp surface is bifurcated to form a clearance slot for said stem",
-        active: tel.clampingForceN > 0,
-        tone: tel.clampingForceN > 0 ? "live" : "broken",
-        caption: `Ramp angle θ = ${controls.wedgeAngleDeg}° generates ${tel.clampingForceN.toFixed(0)} N normal clamping force on T-member crossbar (mechanical advantage: ${(tel.clampingForceN / Math.max(1, tel.actuatorThrustN)).toFixed(2)}x).`,
+        active: state.claimFourRampCaptured,
+        tone: state.claimFourRampCaptured ? "live" : "broken",
+        caption: state.claimFourRampCaptured
+          ? "Claim 4 probe: the selected T-member crossbar and bifurcated slide are in the documented capture geometry."
+          : "Claim 4 is not currently in its selected ramp-and-T capture state; no clamping-force result is inferred.",
       },
       {
         id: "milacron-bistable-failsafe",
         phrase:
           "mechanism should remain in either the locked or unlocked position, in the event of a power failure",
-        active: tel.isSelfLocking,
-        tone: tel.isSelfLocking ? "held" : "broken",
-        caption: `Bistable friction condition tan(${controls.wedgeAngleDeg}°) ≤ ${controls.frictionCoeff} is ${tel.isSelfLocking ? "satisfied" : "violated"}. Fail-safe power-loss retention force: ${tel.holdingForceWithoutPowerN.toFixed(0)} N.`,
+        active: state.toolRetained || state.apertureAligned,
+        tone: state.toolRetained || state.apertureAligned ? "held" : "broken",
+        caption:
+          "The grant states an intended terminal-state tendency after power failure. The exhibit shows only its locked or aperture-aligned configuration and refuses a force, friction, or reliability result.",
       },
       {
         id: "milacron-locating-pins",
         phrase: "pair of locating pins 43,44 secured to and extending from, the front plate 26",
-        active: tel.isToolSeated,
-        tone: tel.isToolSeated ? "live" : "broken",
-        caption: `Cylindrical and diamond locating pin pair achieves ${(tel.positionalRepeatabilityMm * 1000).toFixed(1)} µm repeatability when tool is flush-seated (gap: ${controls.dockingGapMm.toFixed(2)} mm, proximity sensor: ${tel.proximitySensorActive ? "ON" : "OFF"}).`,
+        active: state.registrationComplete,
+        tone: state.registrationComplete ? "live" : "broken",
+        caption: state.registrationComplete
+          ? "The base is seated on the source-described cylindrical and diamond locating pair before retention is tested."
+          : "The tool base is not yet registered on its locating pair; no positional tolerance is supplied by the grant.",
       },
     ];
   }
@@ -2937,6 +3167,104 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: tel.weldQualityRatio >= 0.95,
         tone: tel.weldQualityRatio >= 0.95 ? "held" : "broken",
         caption: `Interface contact temperature is ${tel.interfaceTempC.toFixed(1)} °C (Tg = 105 °C, ratio ${tel.weldQualityRatio.toFixed(2)}x). Cooling time constant is ${(tel.coolingTimeConstantSec * 1000).toFixed(0)} ms.`,
+      },
+    ];
+  }
+
+  if (patentId === "us-6302230-kamen-segway") {
+    const controls = readKamenSegwayControls(params);
+    const tel = stepKamenSegwaySi(controls);
+
+    return [
+      {
+        id: "kamen-segway-dynamic-balance",
+        phrase:
+          "motorized drive arrangement causing, when powered, automatically balanced operation",
+        active: !tel.pitchOverturnRefusal && !tel.tractionLossRefusal,
+        tone: !tel.pitchOverturnRefusal && !tel.tractionLossRefusal ? "live" : "broken",
+        caption: `Dynamic balance active at lean ${controls.riderPitchDeg.toFixed(1)}° (speed ${tel.velocityKmh.toFixed(1)} km/h, restoring torque ${tel.motorTorqueNm.toFixed(1)} N·m). Overturning gravity moment is ${tel.gravityOverturningTorqueNm.toFixed(1)} N·m.`,
+      },
+      {
+        id: "kamen-segway-balancing-margin",
+        phrase:
+          "balancing margin determined by the difference between the maximum operating velocity and the present velocity",
+        active: tel.balancingMarginRatio >= 0.22,
+        tone: tel.balancingMarginRatio >= 0.22 ? "held" : "broken",
+        caption: `Balancing margin headroom is ${(tel.balancingMarginRatio * 100).toFixed(0)}% (governor limit ${controls.speedLimitMS.toFixed(1)} m/s vs present velocity ${tel.velocityMS.toFixed(2)} m/s).`,
+      },
+      {
+        id: "kamen-segway-ripple-alarm",
+        phrase: "ripple modulation of the power output of the motorized drive arrangement",
+        active: tel.tactileAlarmActive,
+        tone: tel.tactileAlarmActive ? "live" : "held",
+        caption: `18 Hz torque ripple modulation is ${tel.tactileAlarmActive ? `ACTIVE (${tel.rippleAlarmAmplitudeNm} N·m haptic shudder amplitude)` : "STANDBY (sufficient margin reserve)"}.`,
+      },
+      {
+        id: "kamen-segway-ground-traction",
+        phrase: "propels the user in desired motion over an underlying surface",
+        active: !tel.tractionLossRefusal,
+        tone: !tel.tractionLossRefusal ? "live" : "broken",
+        caption: `Ground friction coefficient μ = ${controls.groundFrictionCoeff.toFixed(2)} provides ${tel.maxTractionForceN.toFixed(0)} N grip vs demanded thrust ${Math.abs(tel.driveThrustForceN).toFixed(0)} N (${tel.tractionLossRefusal ? "WHEEL SLIP REFUSAL" : "firm traction"}).`,
+      },
+    ];
+  }
+
+  if (patentId === AMF_VERSATRAN_ID) {
+    const topology = stepAmfVersatranTopology(params);
+    const active = true;
+
+    return [
+      {
+        id: "versatran-primary-and-supplemental-motions",
+        phrase:
+          "vertical, horizontal and rotary motion as well as three dimensional diagonal movements",
+        active,
+        tone: active ? "live" : "broken",
+        caption:
+          "Normalized primary motions: column " +
+          (topology.controls.columnRotation ?? 0).toFixed(2) +
+          ", carriage " +
+          (topology.controls.carriageLift ?? 0.55).toFixed(2) +
+          ", arm " +
+          (topology.controls.armTravel ?? 0.55).toFixed(2) +
+          ". The grant identifies three basic and three supplemental motions, not a calibrated workspace.",
+      },
+      {
+        id: "versatran-continuous-path",
+        phrase:
+          "programmed, it is capable of carrying out not only simple, but also complex movements and operations",
+        active: topology.programMode === "automatic-recorded-signal-playback",
+        tone: topology.programMode === "automatic-recorded-signal-playback" ? "live" : "held",
+        caption:
+          "Mode: " +
+          topology.programMode.toUpperCase() +
+          " (maximum normalized phase difference: " +
+          topology.maximumNormalizedPhaseError.toFixed(3) +
+          ").",
+      },
+      {
+        id: "versatran-teach-in-programming",
+        phrase:
+          "means for manually operating the prime actuators of the machine through prescribed paths of travel",
+        active: topology.programMode === "manual-teach-and-record",
+        tone: "live",
+        caption:
+          "Separate programming arm and stick provide the source-described manual signal path used while recording the desired sequence.",
+      },
+      {
+        id: "versatran-wrist-and-gripper",
+        phrase:
+          "work tool or piece. This latter may take the form of a pair of grippers which in accordance with a preferred embodiment of the invention has three degrees of movement, including a wrist action",
+        active: true,
+        tone: "live",
+        caption:
+          "Normalized supplemental motions: wrist rotation " +
+          (topology.controls.wristRotation ?? 0).toFixed(2) +
+          ", wrist swing " +
+          (topology.controls.wristSwing ?? 0).toFixed(2) +
+          ", gripper open fraction " +
+          topology.displayPose.gripperOpenFraction.toFixed(2) +
+          ".",
       },
     ];
   }

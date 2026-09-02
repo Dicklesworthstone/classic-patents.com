@@ -21,7 +21,6 @@ import {
 } from "./hullStereolithographyKernel";
 import { stepLemelsonWarehouseTopology } from "./lemelsonWarehouseKernel";
 import { readMestralVelcroControls, stepMestralVelcroSi } from "./mestralVelcroKernel";
-import { readMilacronToolchangerControls } from "./milacronRobotToolchangerKernel";
 import { OTIS_DECLARED_MAX_DISPLAY_TRAVEL_PER_S } from "./otisKernel";
 import { ROBOT_END_EFFECTOR_TYPICAL_JAW_OPENING_M } from "./robotEndEffectorKernel";
 import { readSalisburyRobotHandControls } from "./salisburyRobotHandKernel";
@@ -1184,6 +1183,98 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-3728480-baer-odyssey": {
+      if (controlKey === "player1PotX" || controlKey === "player2PotX") {
+        return {
+          metricName: "Horizontal Spot Delay Time",
+          derivativeSymbol: "∂τ_H / ∂R_pot",
+          derivativeValue: 48.0,
+          derivativeUnit: "µs / norm_pot",
+          interpretation:
+            "Monostable multivibrator RC charge timing shifts spot position across 53.5 µs active raster line.",
+        };
+      }
+      if (controlKey === "player1PotY" || controlKey === "player2PotY") {
+        return {
+          metricName: "Vertical Field Delay Time",
+          derivativeSymbol: "∂τ_V / ∂R_pot",
+          derivativeValue: 14.0,
+          derivativeUnit: "ms / norm_pot",
+          interpretation:
+            "Vertical monostable RC time delay translates spot down 15.42 ms active cathode ray field.",
+        };
+      }
+      break;
+    }
+
+    case "us-4063220-metcalfe-ethernet": {
+      if (controlKey === "cableLengthMeters") {
+        return {
+          metricName: "One-Way Propagation Delay",
+          derivativeSymbol: "∂τ_prop / ∂L",
+          derivativeValue: 5.0,
+          derivativeUnit: "ns / m",
+          interpretation:
+            "Electromagnetic wave velocity in polyethylene dielectric coaxial cable (0.66c) adds 5 ns latency per meter.",
+        };
+      }
+      if (controlKey === "dataRateMbps") {
+        return {
+          metricName: "Manchester Bit Period",
+          derivativeSymbol: "∂T_bit / ∂R",
+          derivativeValue: -34.0,
+          derivativeUnit: "ns / Mbps",
+          interpretation:
+            "Higher transmission bit rate shortens Manchester self-clocking bit intervals (100 ns at 10 Mbps).",
+        };
+      }
+      if (controlKey === "offeredLoad") {
+        return {
+          metricName: "Channel Utilization Efficiency",
+          derivativeSymbol: "∂η / ∂G",
+          derivativeValue: -28.5,
+          derivativeUnit: "% / norm_load",
+          interpretation:
+            "Increasing offered traffic load increases collision probability and backoff slot delays according to CSMA/CD contention dynamics.",
+        };
+      }
+      break;
+    }
+
+    case "us-2318259-sikorsky-helicopter": {
+      if (controlKey === "collectivePitchDeg") {
+        return {
+          metricName: "Main Rotor Thrust",
+          derivativeSymbol: "∂T_main / ∂θ_coll",
+          derivativeValue: 520.0,
+          derivativeUnit: "N / deg",
+          interpretation:
+            "Increasing blade collective pitch increases blade angle of attack and total aerodynamic vertical lift force.",
+        };
+      }
+      if (controlKey === "tailRotorPedalPercent") {
+        return {
+          metricName: "Anti-Torque Yaw Moment",
+          derivativeSymbol: "∂M_yaw / ∂pedal",
+          derivativeValue: -21.6,
+          derivativeUnit: "N·m / %",
+          interpretation:
+            "Deflecting tail rotor rudder pedals alters auxiliary propeller pitch, modulating lateral anti-torque thrust moment.",
+        };
+      }
+      if (controlKey === "engineThrottlePercent") {
+        return {
+          metricName: "Rotor Rotational Speed",
+          derivativeSymbol: "∂Ω / ∂throttle",
+          derivativeValue: 0.8,
+          derivativeUnit: "RPM / %",
+          interpretation:
+            "Increasing engine throttle delivers additional mechanical shaft power to sustain higher equilibrium rotor RPM under aerodynamic drag.",
+        };
+      }
+      break;
+    }
+
     case "us-4136359-wozniak-apple": {
       if (controlKey === "crystalFreq") {
         return {
@@ -1776,6 +1867,139 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-3212649-amf-versatran": {
+      if (
+        controlKey === "columnRotation" ||
+        controlKey === "carriageLift" ||
+        controlKey === "armTravel" ||
+        controlKey === "wristRotation" ||
+        controlKey === "wristSwing" ||
+        controlKey === "gripperOperation" ||
+        controlKey === "resolverPhaseOffset"
+      ) {
+        if (controlKey === "resolverPhaseOffset") {
+          return {
+            metricName: "Phase Error Sensitivity",
+            derivativeSymbol: "∂(Δφ) / ∂(φ_offset)",
+            derivativeValue: 1.0,
+            derivativeUnit: "normalized phase / normalized phase",
+            interpretation:
+              "Direct display relationship between the deliberately injected normalized phase offset and the normalized resolver/tape phase difference.",
+          };
+        }
+        if (controlKey === "armTravel") {
+          return {
+            metricName: "Horizontal Reach Sensitivity",
+            derivativeSymbol: "∂r_{display} / ∂q_{arm}",
+            derivativeValue: 0.72,
+            derivativeUnit: "normalized radius / control increment",
+            interpretation:
+              "Display-only radial relationship used to make arm travel legible. It is not a recovered arm length, calibrated workspace, or speed relationship.",
+          };
+        }
+        if (controlKey === "gripperOperation") {
+          return {
+            metricName: "Normalized Gripper Operation",
+            derivativeSymbol: "∂g_{display} / ∂q_{gripper}",
+            derivativeValue: 1.0,
+            derivativeUnit: "display command / control increment",
+            interpretation:
+              "Direct display relationship for the source-described work-manipulating-member operation. It does not predict jaw travel, grip force, contact, or payload.",
+          };
+        }
+        return {
+          metricName: "Normalized Motion Display Sensitivity",
+          derivativeSymbol: "∂p_{display} / ∂q_{joint}",
+          derivativeValue: 1.0,
+          derivativeUnit: "display coordinate / command",
+          interpretation:
+            "Display relationship for one source-described motion channel. It retains topology without asserting unprinted dimensions, pressure, speed, payload, or dynamics.",
+        };
+      }
+      break;
+    }
+
+    case "us-3081379-lemelson-machine-vision": {
+      if (controlKey === "scanLineCount") {
+        return {
+          metricName: "Horizontal Scan Frequency Sensitivity",
+          derivativeSymbol: "∂f_H / ∂N_L",
+          derivativeValue: 30,
+          derivativeUnit: "Hz / line",
+          interpretation:
+            "Linear rate of increase in horizontal line scanning frequency per added raster line.",
+        };
+      }
+      if (controlKey === "gateSolenoidCurrentA") {
+        const turns = 450;
+        const current = 2.5;
+        const mu0 = 4 * Math.PI * 1e-7;
+        const area = 0.0004;
+        const gap = 0.008;
+        const dFdI = (turns * turns * current * mu0 * area) / (gap * gap);
+        return {
+          metricName: "Solenoid Ejection Force Sensitivity",
+          derivativeSymbol: "∂F_{mag} / ∂I",
+          derivativeValue: dFdI,
+          derivativeUnit: "N / A",
+          interpretation:
+            "Electromagnetic Lorentz force gradient with respect to coil excitation current.",
+        };
+      }
+      if (controlKey === "targetWidthM") {
+        const linePeriod = 1 / (525 * 30);
+        const activeSweep = linePeriod * 0.84;
+        return {
+          metricName: "Scan Beam Velocity Sensitivity",
+          derivativeSymbol: "∂v_{scan} / ∂W_{target}",
+          derivativeValue: 1 / activeSweep,
+          derivativeUnit: "(m/s) / m",
+          interpretation:
+            "Rate of optical beam scan speed increase across the image field per metre of target width.",
+        };
+      }
+      break;
+    }
+
+    case "us-3260375-lemelson-adjustable-manipulator": {
+      if (
+        controlKey === "columnAzimuth" ||
+        controlKey === "carriagePosition" ||
+        controlKey === "columnElevation" ||
+        controlKey === "wristPivot" ||
+        controlKey === "jawClosure"
+      ) {
+        if (controlKey === "columnAzimuth") {
+          return {
+            metricName: "Azimuth Angle Sensitivity",
+            derivativeSymbol: "∂θ_{rad} / ∂q_{azimuth}",
+            derivativeValue: Math.PI,
+            derivativeUnit: "rad / control increment",
+            interpretation:
+              "Direct coordinate angular gradient for the rotating manipulator turntable.",
+          };
+        }
+        if (controlKey === "wristPivot") {
+          return {
+            metricName: "Wrist Pivot Angle Sensitivity",
+            derivativeSymbol: "∂φ_{rad} / ∂q_{pivot}",
+            derivativeValue: Math.PI / 2,
+            derivativeUnit: "rad / control increment",
+            interpretation: "Geometric rate of wrist bevel pivot rotation.",
+          };
+        }
+        return {
+          metricName: "Normalized Axis Coordinate Sensitivity",
+          derivativeSymbol: "∂q_{display} / ∂q_{control}",
+          derivativeValue: 1.0,
+          derivativeUnit: "display coordinate / control unit",
+          interpretation:
+            "Linear coordinate mapping for the gantry and hoist motions without unprinted force or velocity assumptions.",
+        };
+      }
+      break;
+    }
+
     case "us-3858581-kamen-medication-injection-device": {
       if (controlKey === "leadScrewTurnFraction") {
         return {
@@ -1851,6 +2075,40 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-6302230-kamen-segway": {
+      if (controlKey === "riderPitchDeg" || controlKey === "pitch") {
+        return {
+          metricName: "Overturning Gravitational Moment",
+          derivativeSymbol: "∂τ_grav / ∂θ",
+          derivativeValue: 18.5,
+          derivativeUnit: "N·m / deg",
+          interpretation:
+            "Gravitational destabilizing moment per degree of rider forward pitch lean requiring proportional servomotor balancing torque.",
+        };
+      }
+      if (controlKey === "groundFrictionCoeff" || controlKey === "friction") {
+        return {
+          metricName: "Maximum Ground Grip Traction",
+          derivativeSymbol: "∂F_traction / ∂μ",
+          derivativeValue: 1157.0,
+          derivativeUnit: "N / μ",
+          interpretation:
+            "Traction force limit scaling directly with total rider + vehicle weight (118 kg × 9.81 m/s²).",
+        };
+      }
+      if (controlKey === "speedLimitMS" || controlKey === "speedLimit") {
+        return {
+          metricName: "Balancing Margin Velocity Ceiling",
+          derivativeSymbol: "∂Margin / ∂v_max",
+          derivativeValue: 0.18,
+          derivativeUnit: "1 / (m/s)",
+          interpretation:
+            "Higher speed governor increases forward velocity potential while narrowing reserve acceleration balancing buffer.",
+        };
+      }
+      break;
+    }
+
     case "us-4068536-stackhouse-manipulator": {
       if (
         controlKey === "intermediateRollDeg" ||
@@ -1873,38 +2131,38 @@ export function computeParameterSensitivity(
       break;
     }
 
-    case "us-4512709-milacron-robot-toolchanger": {
-      const controls = readMilacronToolchangerControls(params);
-      const thetaRad = (controls.wedgeAngleDeg * Math.PI) / 180;
-      const phiRad = Math.atan(controls.frictionCoeff);
-      const tanSum = Math.tan(thetaRad + phiRad);
-
-      if (controlKey === "airPressureMpa") {
-        const boreM = controls.cylinderBoreMm * 1e-3;
-        const areaM2 = (Math.PI / 4) * boreM * boreM;
-        // dF_clamp / dp_MPa = (area * 1e6) / tanSum
-        const dF_dp = (areaM2 * 1e6) / Math.max(0.05, tanSum);
+    case "us-3313014-lemelson-automatic-production": {
+      if (
+        controlKey === "carrierAddressFraction" ||
+        controlKey === "liftFraction" ||
+        controlKey === "reachFraction"
+      ) {
         return {
-          metricName: "Normal Tool Clamping Force",
-          derivativeSymbol: "∂F_clamp / ∂p_air",
-          derivativeValue: Number(dF_dp.toFixed(1)),
-          derivativeUnit: "N / MPa",
+          metricName: "Normalized Stage Interlock Coordination",
+          derivativeSymbol: "∂Pose / ∂q",
+          derivativeValue: 1.0,
+          derivativeUnit: "normalized / input",
           interpretation:
-            "Linear clamping force scaling with pneumatic supply pressure, amplified by the shallow-angle wedge slide mechanical advantage.",
+            "Linear kinematic positioning of carrier address, Mz vertical lift, and My platform reach in automatic production sequence.",
         };
       }
-      if (controlKey === "cylinderBoreMm") {
-        const pPa = controls.airPressureMpa * 1e6;
-        const boreM = controls.cylinderBoreMm * 1e-3;
-        // dF_clamp / dD_mm = (pPa * (pi/2) * boreM * 1e-3) / tanSum
-        const dF_dBore = (pPa * (Math.PI / 2) * boreM * 1e-3) / Math.max(0.05, tanSum);
+      break;
+    }
+
+    case "us-4512709-milacron-robot-toolchanger": {
+      if (
+        controlKey === "lockingSlideFraction" ||
+        controlKey === "registrationFraction" ||
+        controlKey === "toolBasePresent" ||
+        controlKey === "claimFourTMember"
+      ) {
         return {
-          metricName: "Normal Tool Clamping Force",
-          derivativeSymbol: "∂F_clamp / ∂D_cyl",
-          derivativeValue: Number(dF_dBore.toFixed(1)),
-          derivativeUnit: "N / mm",
+          metricName: "Locking Slide Capture Progression",
+          derivativeSymbol: "∂State / ∂q",
+          derivativeValue: 1.0,
+          derivativeUnit: "state / fraction",
           interpretation:
-            "Quadratic piston area growth with cylinder bore diameter, multiplying normal clamping force delivered to the T-member crossbar.",
+            "Deterministic source-bounded registration, aperture admission, and ramp engagement progression.",
         };
       }
       break;

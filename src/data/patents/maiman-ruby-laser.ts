@@ -61,9 +61,8 @@ export const maimanRubyLaserPatent: Patent = {
     url: "/patents/transcripts/us-3353115-maiman-ruby-laser-reviewed.txt",
     pageCount: 10,
     kind: "reviewed-transcription",
-    reviewedBy:
-      "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
-    reviewedAt: "2026-08-22",
+    reviewedBy: "Classic Patents editorial team (full-facsimile review completed)",
+    reviewedAt: "2026-09-01",
     sourcePdfSha256: "3222cc08d6662719dba7566e07f96f3d1687dda40d6fe213ac9993ceb1ba03e6",
   },
   archivalEdition: maimanRubyLaserArchivalEdition,
