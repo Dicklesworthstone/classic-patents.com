@@ -74,6 +74,15 @@ export interface ArchivalFigureEvidence {
 export interface ArchivalFigureManifest {
   requiredFigureCount: number;
   acceptedFigureCount: number;
+  attestation: {
+    sourcePdfSha256: string;
+    reviewer: string;
+    reviewedAt: string;
+    acceptanceBasis: ArchivalFigureAcceptanceAttestation["acceptanceBasis"];
+    acceptedOccurrenceCount: number;
+    acceptedAssetCount: number;
+    matchesEdition: boolean;
+  } | null;
   figures: readonly ArchivalFigureEvidence[];
 }
 
@@ -442,7 +451,9 @@ function figureManifestForEdition(
   patentId: string,
   edition: CuratedSpecificationEdition | undefined,
 ): ArchivalFigureManifest {
-  if (!edition) return { requiredFigureCount: 0, acceptedFigureCount: 0, figures: [] };
+  if (!edition) {
+    return { requiredFigureCount: 0, acceptedFigureCount: 0, attestation: null, figures: [] };
+  }
   const attestation = (
     ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS as Readonly<
       Record<string, ArchivalFigureAcceptanceAttestation>
@@ -526,6 +537,17 @@ function figureManifestForEdition(
   return {
     requiredFigureCount: figures.length,
     acceptedFigureCount: figures.filter((figure) => figure.status === "accepted").length,
+    attestation: attestation
+      ? {
+          sourcePdfSha256: attestation.sourcePdfSha256,
+          reviewer: attestation.reviewer,
+          reviewedAt: attestation.reviewedAt,
+          acceptanceBasis: attestation.acceptanceBasis,
+          acceptedOccurrenceCount: attestation.acceptedOccurrenceCount,
+          acceptedAssetCount: Object.keys(attestation.assets).length,
+          matchesEdition: attestationMatches,
+        }
+      : null,
     figures,
   };
 }

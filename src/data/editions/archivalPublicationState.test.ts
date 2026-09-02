@@ -87,6 +87,7 @@ describe("typed archival publication state", () => {
     expect(decision.figureManifest).toEqual({
       requiredFigureCount: 0,
       acceptedFigureCount: 0,
+      attestation: null,
       figures: [],
     });
   });
@@ -174,6 +175,7 @@ describe("typed archival publication state", () => {
       rejectionReason:
         "This figure occurrence has no explicit digest-pinned acceptance attestation.",
     });
+    expect(decision.figureManifest.attestation).toBeNull();
   });
 
   test("fails closed when an accepted edition changes its active crop path", () => {
@@ -217,6 +219,15 @@ describe("typed archival publication state", () => {
       expect(decision?.figureManifest.acceptedFigureCount).toBe(
         attestation.acceptedOccurrenceCount,
       );
+      expect(decision?.figureManifest.attestation).toEqual({
+        sourcePdfSha256: attestation.sourcePdfSha256,
+        reviewer: attestation.reviewer,
+        reviewedAt: attestation.reviewedAt,
+        acceptanceBasis: attestation.acceptanceBasis,
+        acceptedOccurrenceCount: attestation.acceptedOccurrenceCount,
+        acceptedAssetCount: Object.keys(attestation.assets).length,
+        matchesEdition: true,
+      });
       expect(
         decision?.figureManifest.figures.every(
           (figure) =>

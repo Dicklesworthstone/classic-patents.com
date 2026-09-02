@@ -107,4 +107,52 @@ describe("US 6,302,230 Dean Kamen Segway Human Transporter Archival Edition Cont
       expect(kamenSegwayParallelReadings[index]?.join(" ").length).toBeGreaterThan(30);
     }
   });
+
+  test("provides valid provenance classifications for all Segway controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-6302230-kamen-segway"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("wires claim 1 and claim 2 inversion probes through the balance/alarm kernel", () => {
+    const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
+    const { stepKamenSegwaySi } = require("@/physics/kamenSegwayKernel");
+
+    const invertedClaim1 = applyClaimConstraintModifications("us-6302230-kamen-segway", {}, {
+      1: false,
+      2: true,
+    });
+    expect(invertedClaim1.refusalWarning).toContain("SOURCE-BOUND REFUSAL");
+    expect(invertedClaim1.modifiedParams.claim1BalanceEnabled).toBe(0);
+    const tel1 = stepKamenSegwaySi({
+      riderPitchDeg: 4.5,
+      steeringInput: 0,
+      riderMassKg: 75,
+      groundFrictionCoeff: 0.85,
+      speedLimitMS: 5.5,
+      claim1BalanceEnabled: false,
+      claim2RippleEnabled: true,
+    });
+    expect(tel1.pitchOverturnRefusal).toBe(true);
+    expect(tel1.claim1BalanceWithheld).toBe(true);
+
+    const tel2 = stepKamenSegwaySi({
+      riderPitchDeg: 4.5,
+      steeringInput: 0,
+      riderMassKg: 75,
+      groundFrictionCoeff: 0.85,
+      speedLimitMS: 5.5,
+      claim1BalanceEnabled: true,
+      claim2RippleEnabled: false,
+    });
+    expect(tel2.tactileAlarmActive).toBe(false);
+    expect(tel2.claim2RippleWithheld).toBe(true);
+  });
 });

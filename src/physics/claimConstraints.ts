@@ -1764,24 +1764,24 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       patentId: "us-6302230-kamen-segway",
       claimTitle: "Inverted Pendulum Dynamic Balancing & Balancing Margin Alarm",
       activeDescription:
-        "Claim 1 maintains closed-loop dynamic balance on coaxial wheels while continuously evaluating reserve acceleration potential to warn the user before balancing failure.",
+        "Claim 1 recites a powered, automatically balanced vehicle, a balancing margin defined from present and maximum operating velocity, a monitor, and an alarm when that margin falls below a specified limit.",
       invertedDescription:
-        "Disabled balance loop: inverted pendulum transporter immediately falls forward/backward under gravitational torque, or saturates motors without rider warning.",
-      failureModeName: "Inverted Pendulum Gravitational Overturn / Torque Saturation",
+        "Claim-topology probe: withholding the powered automatic-balance combination leaves the source-described unpowered instability. The grant does not supply a fall time, motor rating, or other quantitative failure prediction.",
+      failureModeName: "Claim 1 Powered Automatic-Balance Topology Withheld",
       historicalPriorArt:
-        "Prior vehicles relied on static multi-wheel stability or passive gyroscopes, lacking active lean balancing and dynamic acceleration margin safety supervision.",
+        "The specification contrasts the claimed active control loop with statically stable vehicles and user-maintained dynamic stability such as a bicycle, motorcycle, or scooter.",
     },
     {
       claimNumber: 2,
       patentId: "us-6302230-kamen-segway",
       claimTitle: "Tactile Motor Ripple Vibration Alarm",
       activeDescription:
-        "Claim 2 modulates motor drive power output with an 18 Hz torque ripple to transmit physical shudder feedback through the platform to the rider's feet.",
+        "Claim 2 adds ripple modulation of the motorized drive arrangement's power output as the alarm path.",
       invertedDescription:
-        "No tactile feedback: rider receives no physical vibration warning when approaching motor torque limits, increasing risk of sudden loss of balance.",
-      failureModeName: "Loss of Haptic Speed/Torque Margin Feedback",
+        "Claim-topology probe: withholding the ripple-modulation path removes that dependent-claim alarm form. The grant does not print a vibration frequency, torque amplitude, or comparative safety outcome.",
+      failureModeName: "Claim 2 Ripple-Modulation Alarm Path Withheld",
       historicalPriorArt:
-        "Visual or audible dashboard warnings were easily missed in noisy outdoor environments or when rider focus was on the path ahead.",
+        "The specification lists audible, visual, tactile, and ripple-modulated alarm forms; it does not provide a comparative human-factors study of them.",
     },
   ],
   "us-3212649-amf-versatran": [
@@ -2597,16 +2597,17 @@ export function applyClaimConstraintModifications(
       const claim2Active = claimStates[2] ?? true;
 
       if (!claim1Active) {
-        modified.riderPitchDeg = 22; // Overturn lean beyond recovery envelope
+        modified.claim1BalanceEnabled = 0;
         activeFailures.push(
-          "Dynamic Balancing Failure: Without Claim 1 closed-loop dynamic balancing, inverted pendulum platform collapses under gravitational torque.",
+          "Claim 1 powered automatic-balance topology withheld: the source describes the unpowered system as unstable with respect to tipping.",
         );
         refusalWarning =
-          "INVERTED PENDULUM INSTABILITY: Claim 1 active motor torque balancing required to prevent forward/rearward tipover.";
+          "SOURCE-BOUND REFUSAL: the grant establishes unpowered tipping instability but supplies no fall-time, motor-rating, or performance law for this counterfactual.";
       }
       if (!claim2Active) {
+        modified.claim2RippleEnabled = 0;
         activeFailures.push(
-          "Tactile Ripple Omitted: Haptic platform shudder alarm disabled; rider receives no physical footplate vibration upon approaching torque limits.",
+          "Claim 2 ripple-modulation alarm path withheld: no vibration frequency, amplitude, or comparative warning performance is inferred.",
         );
       }
       break;

@@ -44,6 +44,15 @@ export interface PatentE2EScenario {
     digestParity: "matching" | "mismatched" | "unavailable";
     requiredFigureCount: number;
     acceptedFigureCount: number;
+    figureAttestation: {
+      reviewer: string;
+      reviewedAt: string;
+      acceptanceBasis: string;
+      sourcePdfSha256: string;
+      acceptedOccurrenceCount: number;
+      acceptedAssetCount: number;
+      matchesEdition: boolean;
+    } | null;
     evidenceReferences: readonly string[];
   };
   claimCount: number;
@@ -199,6 +208,7 @@ export function buildPatentE2EScenarios(
         digestParity: decision?.state.evidence.digestParity ?? "unavailable",
         requiredFigureCount: decision?.figureManifest.requiredFigureCount ?? 0,
         acceptedFigureCount: decision?.figureManifest.acceptedFigureCount ?? 0,
+        figureAttestation: decision?.figureManifest.attestation ?? null,
         evidenceReferences: decision?.state.evidence.evidenceReferences ?? [patent.id],
       },
       claimCount: patent.claims.length,

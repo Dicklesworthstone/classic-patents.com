@@ -296,6 +296,7 @@ async function runFailureEvidenceSelfTest(args: {
       digestParity: "unavailable",
       requiredFigureCount: 0,
       acceptedFigureCount: 0,
+      figureAttestation: null,
       evidenceReferences: ["self-test"],
     },
     claimCount: 0,

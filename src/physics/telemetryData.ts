@@ -9400,6 +9400,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: KAMEN_SEGWAY_DEFAULT_CONTROLS.riderPitchDeg,
         unit: "°",
+        provenance: "scenario-modern",
       },
       {
         id: "steeringInput",
@@ -9409,6 +9410,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.1,
         defaultValue: KAMEN_SEGWAY_DEFAULT_CONTROLS.steeringInput,
         unit: "yaw",
+        provenance: "scenario-modern",
       },
       {
         id: "riderMassKg",
@@ -9418,6 +9420,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: KAMEN_SEGWAY_DEFAULT_CONTROLS.riderMassKg,
         unit: "kg",
+        provenance: "scenario-modern",
       },
       {
         id: "groundFrictionCoeff",
@@ -9427,6 +9430,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.05,
         defaultValue: KAMEN_SEGWAY_DEFAULT_CONTROLS.groundFrictionCoeff,
         unit: "μ",
+        provenance: "scenario-modern",
       },
       {
         id: "speedLimitMS",
@@ -9436,6 +9440,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: KAMEN_SEGWAY_DEFAULT_CONTROLS.speedLimitMS,
         unit: "m/s",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (controls) => {
@@ -9450,24 +9455,28 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
             unit: "",
             badgeColor: "rose",
             progressPct: 0,
+            provenance: "refusal-bounded",
           },
           {
             label: "Pitch Angle",
             value: parsed.riderPitchDeg.toFixed(1),
             unit: "°",
             badgeColor: "rose",
+            provenance: "scenario-modern",
           },
           {
             label: "Demanded Thrust",
             value: Math.abs(tel.driveThrustForceN).toFixed(0),
             unit: "N",
             badgeColor: "rose",
+            provenance: "scenario-modern",
           },
           {
             label: "Max Grip Limit",
             value: tel.maxTractionForceN.toFixed(0),
             unit: "N",
             badgeColor: "amber",
+            provenance: "scenario-modern",
           },
         ];
       }
@@ -9479,6 +9488,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "km/h",
           badgeColor: tel.speedPushbackActive ? "amber" : "cyan",
           progressPct: clampProgress((Math.abs(tel.velocityMS) / parsed.speedLimitMS) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Restoring Motor Torque",
@@ -9486,6 +9496,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "N·m",
           badgeColor: Math.abs(tel.motorTorqueNm) > 100 ? "amber" : "indigo",
           progressPct: clampProgress((Math.abs(tel.motorTorqueNm) / 160.0) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Balancing Margin",
@@ -9498,18 +9509,21 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
                 ? "amber"
                 : "rose",
           progressPct: clampProgress(tel.balancingMarginRatio * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Tactile Ripple Alarm",
           value: tel.tactileAlarmActive ? "ACTIVE (18 Hz)" : "STANDBY",
           unit: "haptic",
           badgeColor: tel.tactileAlarmActive ? "rose" : "indigo",
+          provenance: "scenario-modern",
         },
         {
           label: "Pitch Pushback",
           value: tel.speedPushbackActive ? `+${tel.pitchPushbackDeg.toFixed(1)}° LIMIT` : "OFF",
           unit: "speed limiter",
           badgeColor: tel.speedPushbackActive ? "amber" : "emerald",
+          provenance: "scenario-modern",
         },
       ];
     },
