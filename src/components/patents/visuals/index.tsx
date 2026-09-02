@@ -155,6 +155,13 @@ const GoodyearRubberSim = dynamic(
   () => import("./GoodyearRubberSim").then((m) => m.GoodyearRubberSim),
   { ssr: false, loading: SimLoading },
 );
+const GoertzElectronicMasterSlaveManipulatorSim = dynamic(
+  () =>
+    import("./GoertzElectronicMasterSlaveManipulatorSim").then(
+      (m) => m.GoertzElectronicMasterSlaveManipulatorSim,
+    ),
+  { ssr: false, loading: SimLoading },
+);
 const GrammeDynamoSim = dynamic(() => import("./GrammeDynamoSim").then((m) => m.GrammeDynamoSim), {
   ssr: false,
   loading: SimLoading,
@@ -227,6 +234,10 @@ const MakinoScaraSim = dynamic(() => import("./MakinoScaraSim").then((m) => m.Ma
   ssr: false,
   loading: SimLoading,
 });
+const RobotEndEffectorSim = dynamic(
+  () => import("./RobotEndEffectorSim").then((m) => m.RobotEndEffectorSim),
+  { ssr: false, loading: SimLoading },
+);
 const MarconiRadioSim = dynamic(() => import("./MarconiRadioSim").then((m) => m.MarconiRadioSim), {
   ssr: false,
   loading: SimLoading,
@@ -241,6 +252,10 @@ const McCormickReaperSim = dynamic(
 );
 const MergenthalerLinotypeSim = dynamic(
   () => import("./MergenthalerLinotypeSim").then((m) => m.MergenthalerLinotypeSim),
+  { ssr: false, loading: SimLoading },
+);
+const MestralVelcroSim = dynamic(
+  () => import("./MestralVelcroSim").then((m) => m.MestralVelcroSim),
   { ssr: false, loading: SimLoading },
 );
 const MorseTelegraphSim = dynamic(
@@ -305,6 +320,10 @@ const SpencerMicrowaveSim = dynamic(
 );
 const StackhouseManipulatorSim = dynamic(
   () => import("./StackhouseSourceBoundedSim").then((m) => m.StackhouseSourceBoundedSim),
+  { ssr: false, loading: SimLoading },
+);
+const SalisburyRobotHandSim = dynamic(
+  () => import("./SalisburyRobotHandSim").then((m) => m.SalisburyRobotHandSim),
   { ssr: false, loading: SimLoading },
 );
 const SundbackZipperSim = dynamic(
@@ -505,6 +524,13 @@ const GoodyearRubber3D = dynamic(
   () => import("./three/GoodyearRubber3D").then((mod) => mod.GoodyearRubber3D),
   { ssr: false, loading: ThreeLoading },
 );
+const GoertzElectronicMasterSlaveManipulator3D = dynamic(
+  () =>
+    import("./three/GoertzElectronicMasterSlaveManipulator3D").then(
+      (mod) => mod.GoertzElectronicMasterSlaveManipulator3D,
+    ),
+  { ssr: false, loading: ThreeLoading },
+);
 const GrammeDynamo3D = dynamic(
   () => import("./three/GrammeDynamo3D").then((mod) => mod.GrammeDynamo3D),
   { ssr: false, loading: ThreeLoading },
@@ -569,6 +595,10 @@ const MergenthalerLinotype3D = dynamic(
   () => import("./three/MergenthalerLinotype3D").then((mod) => mod.MergenthalerLinotype3D),
   { ssr: false, loading: ThreeLoading },
 );
+const MestralVelcro3D = dynamic(() => import("./three/MestralVelcro3D"), {
+  ssr: false,
+  loading: ThreeLoading,
+});
 const MorseTelegraph3D = dynamic(
   () => import("./three/MorseTelegraph3D").then((mod) => mod.MorseTelegraph3D),
   { ssr: false, loading: ThreeLoading },
@@ -621,6 +651,10 @@ const SundbackZipper3D = dynamic(() => import("./three/SundbackZipper3D"), {
   ssr: false,
   loading: ThreeLoading,
 });
+const SalisburyRobotHand3D = dynamic(() => import("./three/SalisburyRobotHand3D"), {
+  ssr: false,
+  loading: ThreeLoading,
+});
 const StackhouseManipulator3D = dynamic(() => import("./three/StackhouseSourceBounded3D"), {
   ssr: false,
   loading: ThreeLoading,
@@ -629,6 +663,10 @@ const MakinoScara3D = dynamic(() => import("./three/MakinoScara3D").then((m) => 
   ssr: false,
   loading: ThreeLoading,
 });
+const RobotEndEffector3D = dynamic(
+  () => import("./three/RobotEndEffector3D").then((m) => m.RobotEndEffector3D),
+  { ssr: false, loading: ThreeLoading },
+);
 const DevolProgrammedTransfer3D = dynamic(
   () => import("./three/DevolProgrammedTransfer3D").then((m) => m.DevolProgrammedTransfer3D),
   { ssr: false, loading: ThreeLoading },
@@ -993,6 +1031,18 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             return renderMode === "3d-physics" ? <BardeenTransistor3D /> : <BardeenTransistorSim />;
           case "us-2708656-fermi-reactor":
             return renderMode === "3d-physics" ? <FermiReactor3D /> : <FermiReactorSim />;
+          case "us-2717437-mestral-velcro":
+            return renderMode === "3d-physics" ? (
+              <MestralVelcro3D patentId={patentId} />
+            ) : (
+              <MestralVelcroSim />
+            );
+          case "us-2846084-goertz-electronic-master-slave-manipulator":
+            return renderMode === "3d-physics" ? (
+              <GoertzElectronicMasterSlaveManipulator3D />
+            ) : (
+              <GoertzElectronicMasterSlaveManipulatorSim />
+            );
           case "us-3353115-maiman-ruby-laser":
             return renderMode === "3d-physics" ? <MaimanRubyLaser3D /> : <MaimanRubyLaserSim />;
           case "us-2929922-townes-laser":
@@ -1050,6 +1100,14 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             );
           case "us-4341502-makino-scara":
             return renderMode === "3d-physics" ? <MakinoScara3D /> : <MakinoScaraSim />;
+          case "us-4765668-robot-end-effector":
+            return renderMode === "3d-physics" ? <RobotEndEffector3D /> : <RobotEndEffectorSim />;
+          case "us-4921293-salisbury-robot-hand":
+            return renderMode === "3d-physics" ? (
+              <SalisburyRobotHand3D patentId={patentId} />
+            ) : (
+              <SalisburyRobotHandSim patentId={patentId} />
+            );
           case "us-5701965-kamen-transporter":
             return renderMode === "3d-physics" ? (
               <KamenTransporter3D patentId={patentId} />

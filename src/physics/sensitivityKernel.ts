@@ -10,8 +10,15 @@
  * use automatic differentiation; the unused Dual class was removed.
  */
 
+import {
+  readGoertzMasterSlaveControls,
+  stepGoertzMasterSlaveTopology,
+} from "./goertzElectronicMasterSlaveManipulatorKernel";
 import { stepLemelsonWarehouseTopology } from "./lemelsonWarehouseKernel";
+import { readMestralVelcroControls, stepMestralVelcroSi } from "./mestralVelcroKernel";
 import { OTIS_DECLARED_MAX_DISPLAY_TRAVEL_PER_S } from "./otisKernel";
+import { ROBOT_END_EFFECTOR_TYPICAL_JAW_OPENING_M } from "./robotEndEffectorKernel";
+import { readSalisburyRobotHandControls } from "./salisburyRobotHandKernel";
 import { stepStackhouseSourceTopology } from "./stackhouseSourceKernel";
 import { stepWatsonRemoteCenterComplianceTopology } from "./watsonRemoteCenterComplianceKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
@@ -115,6 +122,58 @@ export function computeParameterSensitivity(
           derivativeUnit: "Gauss / V",
           interpretation:
             "Magnetic field threshold required to maintain magnetron electron wheel cutoff.",
+        };
+      }
+      if (controlKey === "rfPowerSetting") {
+        return {
+          metricName: "Waveguide Energy-Path Display",
+          derivativeSymbol: "∂q_{path} / ∂u_{reader}",
+          derivativeValue: 1,
+          derivativeUnit: "display fraction / reader-control fraction",
+          interpretation:
+            "This is only the source-diagram path visibility state for oscillators 10 and 11, common guide 23, and conveyor 28. US 2,495,429 prints no RF wattage, tube voltage, or food-heating rate.",
+        };
+      }
+      break;
+    }
+
+    case "us-135245-pasteur-fermentation": {
+      if (controlKey === "co2SweepPct" || controlKey === "sprayCoveragePct") {
+        return {
+          metricName:
+            controlKey === "co2SweepPct" ? "CO₂ Sweep Reader State" : "Spray Reader State",
+          derivativeSymbol: "∂q_{reader} / ∂u_{reader}",
+          derivativeValue: 1,
+          derivativeUnit: "% displayed / % reader control",
+          interpretation:
+            "Identity slope of the source-sequence reader aid. It is not a fermentation, heat-transfer, gas-flow, or cooling-rate derivative because US 135,245 does not print the needed operating quantities.",
+        };
+      }
+      if (controlKey === "wortTempC") {
+        return {
+          metricName: "Printed Yeast-Addition Temperature",
+          derivativeSymbol: "∂T_{display} / ∂T_{reader}",
+          derivativeValue: 1,
+          derivativeUnit: "°C displayed / °C reader control",
+          interpretation:
+            "Identity display relation over Pasteur's printed 20–22.5 °C yeast-addition band; it does not assert a process temperature trajectory.",
+        };
+      }
+      break;
+    }
+
+    case "us-233692-pelton-water-wheel": {
+      if (controlKey === "sourceFlowVisible" || controlKey === "claim1Active") {
+        return {
+          metricName:
+            controlKey === "sourceFlowVisible"
+              ? "Source Water-Path Visibility"
+              : "Claim 1 Geometry Visibility",
+          derivativeSymbol: "∂q_{diagram} / ∂u_{reader}",
+          derivativeValue: 1,
+          derivativeUnit: "display fraction / reader-control fraction",
+          interpretation:
+            "Identity slope for a source-diagram state only. The grant prints no head, flow, speed, force, efficiency, or output from which turbine performance sensitivity could be derived.",
         };
       }
       break;
@@ -462,14 +521,6 @@ export function computeParameterSensitivity(
       break;
     }
 
-    case "us-233692-pelton-water-wheel":
-    case "us-233692-pelton-wheel": {
-      // The grant supplies no head, flow, efficiency, speed, or power values.
-      // Its only visitor control reveals the described water path, so a
-      // numerical sensitivity would manufacture evidence the source lacks.
-      break;
-    }
-
     case "us-808897-carrier-air-conditioner": {
       if (
         controlKey === "sprayWaterTempC" ||
@@ -668,9 +719,40 @@ export function computeParameterSensitivity(
     }
 
     case "us-361931-daimler-engine": {
-      // The source controls select ahead/neutral/astern coupling and reveal
-      // the cooling-water path. Neither state has a source-stated numerical
-      // output whose derivative could be reported honestly.
+      if (controlKey === "shaftPosition") {
+        return {
+          metricName: "Sliding-Shaft Diagram Coordinate",
+          derivativeSymbol: "∂q_{shaft} / ∂u_{selector}",
+          derivativeValue: 1,
+          derivativeUnit: "normalized display coordinate / selector unit",
+          interpretation:
+            "Identity slope for the source-described ahead/neutral/astern contact display. It is not a propeller speed, thrust, torque, or vessel-performance derivative.",
+        };
+      }
+      if (controlKey === "coolingPumpEnabled") {
+        return {
+          metricName: "Cooling-Pump Path Visibility",
+          derivativeSymbol: "∂q_{path} / ∂u_{selector}",
+          derivativeValue: 1,
+          derivativeUnit: "display fraction / selector fraction",
+          interpretation:
+            "Identity slope for the optional source-described pump path only. US 361,931 gives no cooling flow, temperature, hydraulic head, or heat-rejection data.",
+        };
+      }
+      break;
+    }
+
+    case "us-307031-edison-indicator": {
+      if (controlKey === "plateBiasPolarity") {
+        return {
+          metricName: "External-Connection Reader State",
+          derivativeSymbol: "∂q_{circuit} / ∂u_{polarity}",
+          derivativeValue: 1,
+          derivativeUnit: "display selector / source-polarity selector",
+          interpretation:
+            "Identity relation for the historical circuit-side comparison. US 307,031 does not state voltage, current, temperature, vacuum pressure, or indicator sensitivity.",
+        };
+      }
       break;
     }
 
@@ -1512,6 +1594,108 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-2717437-mestral-velcro": {
+      const controls = readMestralVelcroControls(params);
+      if (controlKey === "filamentDiameterMm") {
+        const d0 = controls.filamentDiameterMm;
+        const probePlus = stepMestralVelcroSi({ ...controls, filamentDiameterMm: d0 + 0.01 });
+        const probeMinus = stepMestralVelcroSi({
+          ...controls,
+          filamentDiameterMm: Math.max(0.05, d0 - 0.01),
+        });
+        const dTauDd =
+          (probePlus.shearStressCapacityN_Cm2 - probeMinus.shearStressCapacityN_Cm2) / 0.02;
+        return {
+          metricName: "Shear Stress Capacity",
+          derivativeSymbol: "∂τ_shear / ∂d",
+          derivativeValue: Number(dTauDd.toFixed(1)),
+          derivativeUnit: "N/cm² / mm",
+          interpretation:
+            "Central difference of hook shear capacity showing steep d⁴ fourth-power stiffness dependence on monofilament diameter.",
+        };
+      }
+      if (controlKey === "heatSettingTempC") {
+        const t0 = controls.heatSettingTempC;
+        const probePlus = stepMestralVelcroSi({ ...controls, heatSettingTempC: t0 + 2 });
+        const probeMinus = stepMestralVelcroSi({ ...controls, heatSettingTempC: t0 - 2 });
+        const dPhiDt =
+          ((probePlus.thermalRetentionFraction - probeMinus.thermalRetentionFraction) / 4) * 100;
+        return {
+          metricName: "Thermal Shape Retention",
+          derivativeSymbol: "∂ϕ_set / ∂T",
+          derivativeValue: Number(dPhiDt.toFixed(2)),
+          derivativeUnit: "% / °C",
+          interpretation:
+            "Rate of polymer chain crystallization annealing per degree Celsius across the lancet bar heating threshold.",
+        };
+      }
+      if (controlKey === "peelAngleDeg") {
+        const a0 = controls.peelAngleDeg;
+        const probePlus = stepMestralVelcroSi({ ...controls, peelAngleDeg: Math.min(170, a0 + 2) });
+        const probeMinus = stepMestralVelcroSi({ ...controls, peelAngleDeg: Math.max(10, a0 - 2) });
+        const dFdTheta = (probePlus.totalPeelForceN - probeMinus.totalPeelForceN) / 4;
+        return {
+          metricName: "Steady Peeling Force",
+          derivativeSymbol: "∂F_peel / ∂θ",
+          derivativeValue: Number(dFdTheta.toFixed(3)),
+          derivativeUnit: "N / deg",
+          interpretation:
+            "Kendall peeling gradient demonstrating reduced disengagement force requirement as peeling angle approaches 180° (T-peel).",
+        };
+      }
+      break;
+    }
+
+    case "us-2846084-goertz-electronic-master-slave-manipulator": {
+      const controls = readGoertzMasterSlaveControls(params);
+      const h = 0.01;
+      if (controlKey === "contactResistance") {
+        const contact = controls.contactResistance;
+        const plus = stepGoertzMasterSlaveTopology({
+          ...controls,
+          contactResistance: Math.min(1, contact + h),
+        });
+        const minus = stepGoertzMasterSlaveTopology({
+          ...controls,
+          contactResistance: Math.max(0, contact - h),
+        });
+        const derivative =
+          (plus.reflectedResistance - minus.reflectedResistance) /
+          (Math.min(1, contact + h) - Math.max(0, contact - h));
+        return {
+          metricName: "Reflected-Resistance Display",
+          derivativeSymbol: "∂r_display / ∂u_contact",
+          derivativeValue: Number(derivative.toFixed(3)),
+          derivativeUnit: "normalized display / normalized scenario",
+          interpretation:
+            "Central difference of the shared source-topology kernel. It shows how the illustrative remote-obstruction selector affects the normalized Claim 9 reflection cue; it is not a contact force or a servo-performance measurement.",
+        };
+      }
+      if (controlKey === "horizontalArmPivot") {
+        const pivot = controls.horizontalArmPivot;
+        const plus = stepGoertzMasterSlaveTopology({
+          ...controls,
+          horizontalArmPivot: Math.min(1, pivot + h),
+        });
+        const minus = stepGoertzMasterSlaveTopology({
+          ...controls,
+          horizontalArmPivot: Math.max(-1, pivot - h),
+        });
+        const derivative =
+          (plus.positionErrors[0] - minus.positionErrors[0]) /
+          (Math.min(1, pivot + h) - Math.max(-1, pivot - h));
+        return {
+          metricName: "Axis 113b Mismatch Display",
+          derivativeSymbol: "∂e_113b / ∂q_m",
+          derivativeValue: Number(derivative.toFixed(3)),
+          derivativeUnit: "normalized mismatch / normalized master coordinate",
+          interpretation:
+            "Central difference of the normalized correspondence display for one printed motion channel. The historical source supplies the proportional-error topology, not an SI arm displacement, gain, velocity, or force law.",
+        };
+      }
+      break;
+    }
+
     case "us-4341502-makino-scara": {
       if (controlKey === "firstLinkAngleDeg" || controlKey === "theta1") {
         return {
@@ -1566,6 +1750,35 @@ export function computeParameterSensitivity(
           derivativeUnit: "display fraction / extension fraction",
           interpretation:
             "The normalized exhibit maps the control directly to the transverse transfer pose; no reach, speed, or payload is asserted.",
+        };
+      }
+      break;
+    }
+
+    case "us-2988237-devol-programmed-transfer": {
+      if (controlKey === "recordedSlot" || controlKey === "sensedSlot") {
+        return {
+          metricName:
+            controlKey === "recordedSlot" ? "Recorded Position Symbol" : "Sensed Position Symbol",
+          derivativeSymbol: "∂c_{display} / ∂c_{input}",
+          derivativeValue: 1,
+          derivativeUnit: "code value / code value",
+          interpretation:
+            "Identity relation for the patent's recorded-versus-sensed code comparison. It does not infer actuator travel, controller latency, hydraulic power, payload, or transfer throughput.",
+        };
+      }
+      break;
+    }
+
+    case "us-3858581-kamen-medication-injection-device": {
+      if (controlKey === "leadScrewTurnFraction") {
+        return {
+          metricName: "Normalized Lead-Screw Display Position",
+          derivativeSymbol: "∂q_{plunger} / ∂q_{turn}",
+          derivativeValue: 1,
+          derivativeUnit: "normalized display fraction / normalized turn fraction",
+          interpretation:
+            "Identity slope of the nonclinical source-topology exhibit. The grant does not provide a screw pitch, reservoir geometry, dose, pressure, or delivery-rate datum, so no clinical or physical output is inferred.",
         };
       }
       break;
@@ -1649,6 +1862,66 @@ export function computeParameterSensitivity(
           derivativeUnit: "display deg / selected deg",
           interpretation:
             "Central difference of the same normalized display composition used by the 2D and 3D exhibits. It is not an SI dexterity, velocity, motor, or manufacturing-performance derivative.",
+        };
+      }
+      break;
+    }
+
+    case "us-4921293-salisbury-robot-hand": {
+      if (controlKey === "tensionT1N") {
+        const controls = readSalisburyRobotHandControls(params);
+        const r1M = (controls.radiusScaleMm * 1.2) / 1000;
+        return {
+          metricName: "Figure 3 First-Joint Torque",
+          derivativeSymbol: "∂τ₁ / ∂T₁",
+          derivativeValue: Number((-r1M).toFixed(6)),
+          derivativeUnit: "N·m / N",
+          interpretation:
+            "Exact static derivative of Figure 3’s printed first-joint equation, τ₁ = −T₁R₁ + T₂R₂ + T₃R₂ − T₄R₁, evaluated at the visitor-declared R₁ study scale. It is a tendon-to-torque relation only; the grant does not disclose dynamic finger motion, contact force, or grasp stability.",
+        };
+      }
+      break;
+    }
+
+    case "us-4765668-robot-end-effector": {
+      if (controlKey === "jawOpeningFraction") {
+        return {
+          metricName: "Symmetric Jaw Opening",
+          derivativeSymbol: "∂g / ∂u_{jaw}",
+          derivativeValue: ROBOT_END_EFFECTOR_TYPICAL_JAW_OPENING_M * 1000,
+          derivativeUnit: "mm / opening fraction",
+          interpretation:
+            "Exact slope of the source's typical 152.4 mm opening under the shared opposed-thread kinematic relation. It is not a force, payload, contact, or stiffness sensitivity.",
+        };
+      }
+      if (controlKey === "gripForceSetpointN") {
+        return {
+          metricName: "Source-Labelled Grip Setpoint",
+          derivativeSymbol: "∂F_{set} / ∂u_{set}",
+          derivativeValue: 1,
+          derivativeUnit: "N setpoint / N control",
+          interpretation:
+            "Identity of the bounded source-labelled command. The grant's incomplete pneumatic, finger, workpiece, and friction data prohibit treating it as a calculated contact force or payload result.",
+        };
+      }
+      if (controlKey === "frameRotationDeg") {
+        return {
+          metricName: "Frame Orientation",
+          derivativeSymbol: "∂θ / ∂u_{rot}",
+          derivativeValue: Math.PI / 180,
+          derivativeUnit: "rad / deg",
+          interpretation:
+            "Exact degree-to-radian conversion for Claim 17's source-described longitudinal-axis rotation; no connector stroke or robot-arm dynamics are inferred.",
+        };
+      }
+      if (controlKey === "fingerChangeFraction") {
+        return {
+          metricName: "Illustrated Finger Retention",
+          derivativeSymbol: "∂r_{finger} / ∂u_{change}",
+          derivativeValue: -1,
+          derivativeUnit: "retained fraction / fixture-change fraction",
+          interpretation:
+            "The shared reader state defines retained fraction as one minus the source-described finger-change fraction. It does not assert an automatic change time or gripping outcome.",
         };
       }
       break;

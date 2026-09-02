@@ -66,6 +66,12 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 31,128 prints the hoist, reversing-belt, brake, stop-rope, counterpoise, and hook-rack topology but no load, force, speed, torque, friction, travel, timing, or power datum from which an SI energy channel can be derived.",
   "us-4341502-makino-scara":
     "US 4,341,502 prints link topology and joint angle relationships but no link lengths, motor torque, payload mass, velocity, friction, or power datum from which an SI energy channel can be derived.",
+  "us-4765668-robot-end-effector":
+    "US 4,765,668 prints prototype screw lead, gear diameters, an air-motor rating, hand-travel, and force figures, but does not supply a consistent torque-to-grip/contact chain, finger/workpiece geometry, friction, pneumatic flow, duty cycle, connector stroke, or verified mechanical power datum from which a source-faithful SI energy channel can be derived.",
+  "us-2846084-goertz-electronic-master-slave-manipulator":
+    "US 2,846,084 prints a seven-channel electrical master–slave topology, sample servo components, an error-signal relationship, limiter, and tachometer feedback, but no arm dimensions, mass, payload, motor torque constants, current, voltage, gain, speed, force calibration, contact model, or duty cycle from which a source-faithful SI power-flow channel can be derived.",
+  "us-4921293-salisbury-robot-hand":
+    "US 4,921,293 prints four cable tensions, pulley-radius symbols, three static torque equations, and remote-drive topology but no cable speed, motor current, voltage, torque constant, friction, efficiency, duty cycle, contact work, or time response from which a source-faithful SI power-flow channel can be derived.",
   "us-2988237-devol-programmed-transfer":
     "US 2,988,237 prints coded-position, program-controller, hydraulic-actuator, transfer-head, and gripper relationships but no reusable hydraulic pressure, flow, actuator dimensions, payload, mass, speed, efficiency, or power datum from which an SI energy channel can be derived.",
   "us-3119501-lemelson-automatic-warehousing":
@@ -972,6 +978,25 @@ export function energyChannelsFor(
       {
         name: "Servomotor Copper I²R & Planetary Gearbox Heat Loss",
         watts: heatLossW,
+        tone: "loss",
+      },
+    ];
+  }
+
+  if (patentId === "us-2717437-mestral-velcro") {
+    const peelRateMmS = params.appliedPeelRateMmS ?? 10.0;
+    const totalPeelN = params.totalPeelForceN ?? 2.1;
+    const totalPeelW = Math.max(0.005, totalPeelN * (peelRateMmS / 1000));
+    return [
+      { name: "Manual Peeling Traction Input", watts: totalPeelW, tone: "in" },
+      {
+        name: "Micro-Hook Elastic Bending & Disengagement Work",
+        watts: totalPeelW * 0.82,
+        tone: "useful",
+      },
+      {
+        name: "Polyamide Viscoelastic Hysteresis & Fiber Friction Loss",
+        watts: totalPeelW * 0.18,
         tone: "loss",
       },
     ];

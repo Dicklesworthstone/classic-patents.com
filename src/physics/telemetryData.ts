@@ -57,6 +57,11 @@ import { stepDevolProgrammedTransfer } from "./devolProgrammedTransferKernel";
 import { stepEInk } from "./eInkKernel";
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
+import {
+  GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS,
+  readGoertzMasterSlaveControls,
+  stepGoertzMasterSlaveTopology,
+} from "./goertzElectronicMasterSlaveManipulatorKernel";
 import { stepHopkinsPotash } from "./hopkinsPotashKernel";
 import {
   KAMEN_INJECTION_DEFAULT_CONTROLS,
@@ -80,10 +85,25 @@ import {
   stepSholesTypewriter,
 } from "./machineKernels";
 import { stepMakinoScaraTopology } from "./makinoScaraKernel";
+import {
+  MESTRAL_VELCRO_DEFAULTS,
+  readMestralVelcroControls,
+  stepMestralVelcroSi,
+} from "./mestralVelcroKernel";
 import { stepMultiTouch } from "./multiTouchKernel";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { stepPageRank } from "./pageRankKernel";
+import { stepRobotEndEffector } from "./robotEndEffectorKernel";
 import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
+import {
+  HULL_SLA_DEFAULT_CONTROLS,
+  readHullStereolithographyControls,
+  stepHullStereolithographySi,
+} from "./hullStereolithographyKernel";
+import {
+  readSalisburyRobotHandControls,
+  SALISBURY_HAND_DEFAULT_CONTROLS,
+} from "./salisburyRobotHandKernel";
 import {
   readStackhouseSourceControls,
   STACKHOUSE_SOURCE_DEFAULT_CONTROLS,
@@ -7161,6 +7181,100 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       topologyVariant: Math.max(1, Math.min(3, Math.round(params.topologyVariant ?? 1))),
     }),
   },
+  "us-4765668-robot-end-effector": {
+    domain: "source_bounded_end_effector_kinematics",
+    domainTitle: "Opposed-Thread Gripper Kinematics",
+    equationName: "Symmetric Ball-Screw Jaw Opening",
+    governingEquation: "g=\\ell\\theta/\\pi;\\quad x_L=+g/2;\\quad x_R=-g/2",
+    engineMethod: "stepRobotEndEffector (source-bounded TypeScript kinematics)",
+    controls: [
+      {
+        id: "jawOpeningFraction",
+        label: "Typical jaw-opening fraction",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: 0.52,
+        unit: "of 152.4 mm",
+      },
+      {
+        id: "gripForceSetpointN",
+        label: "Source-labelled grip setpoint",
+        min: 0,
+        max: 2000,
+        step: 25,
+        defaultValue: 900,
+        unit: "N (not contact force)",
+      },
+      {
+        id: "frameRotationDeg",
+        label: "Claim 17 frame rotation",
+        min: -180,
+        max: 180,
+        step: 1,
+        defaultValue: 0,
+        unit: "°",
+      },
+      {
+        id: "fingerChangeFraction",
+        label: "Claims 13–15 finger change",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: 0,
+        unit: "retained → fixture",
+      },
+    ],
+    computeMetrics: (params) => {
+      const state = stepRobotEndEffector(params);
+      return [
+        {
+          label: "Jaw Opening",
+          value: (state.jawOpeningM * 1000).toFixed(1),
+          unit: "mm · source typical",
+          badgeColor: "cyan",
+          progressPct: (state.jawOpeningM / 0.1524) * 100,
+        },
+        {
+          label: "Per-Hand Offset",
+          value: (state.perHandOffsetM * 1000).toFixed(1),
+          unit: "mm · 5 mm/rev lead",
+          badgeColor: "emerald",
+          progressPct: (state.perHandOffsetM / 0.0762) * 100,
+        },
+        {
+          label: "Encoder Phase",
+          value: state.encoderCountModulo.toFixed(2),
+          unit: "of 8 pegs",
+          badgeColor: "amber",
+          progressPct: (state.encoderCountModulo / 8) * 100,
+        },
+        {
+          label: "Requested Grip",
+          value: state.requestedGripForceN.toFixed(0),
+          unit: "N · setpoint only",
+          badgeColor: "purple",
+          progressPct: (state.requestedGripForceN / state.sourceReportedGripForceN) * 100,
+        },
+        {
+          label: "Reported Repeatability",
+          value: (state.sourceRepeatabilityM * 1000).toFixed(2),
+          unit: "mm · source report",
+          badgeColor: "indigo",
+          progressPct: clampProgress((1 - state.sourceRepeatabilityM / 0.1524) * 100),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "US 4,765,668 prints an opposed 5 mm-lead ball screw, a typical 6-inch jaw opening, a 43 mm/s maximum hand-travel figure, eight encoder pegs, and 0.05 mm reported repeatability. The shared instrument calculates only the symmetric screw and encoder relationships. Its grip field is deliberately a bounded source-labelled setpoint: the grant does not supply workpiece/finger geometry, friction, pneumatic transfer, payload, or connector stroke for contact, pressure, or robot-arm dynamics.",
+    enforceConstraints: (params) => ({
+      ...params,
+      jawOpeningFraction: Math.max(0, Math.min(1, params.jawOpeningFraction ?? 0.52)),
+      gripForceSetpointN: Math.max(0, Math.min(2000, params.gripForceSetpointN ?? 900)),
+      frameRotationDeg: Math.max(-180, Math.min(180, params.frameRotationDeg ?? 0)),
+      fingerChangeFraction: Math.max(0, Math.min(1, params.fingerChangeFraction ?? 0)),
+    }),
+  },
   "us-6594844-roomba": {
     domain: "autonomous_robotics",
     domainTitle: "Finite-Region Optical Obstacle Detection",
@@ -7314,6 +7428,222 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     },
     pedagogicalInsight:
       "US 6,331,181 centers tool-boundary data: compatibility, tool type, measured calibration offsets, life information, and engagement signals are transmitted to a processor before or during tool exchange.",
+  },
+  "us-4575330-hull-stereolithography": {
+    domain: "additive_manufacturing",
+    domainTitle: "Ultraviolet Photopolymerization Kinetics & Laser Galvanometer Slicing",
+    equationName: "Beer-Lambert Curing Depth & Gaussian Exposure Law",
+    governingEquation:
+      "C_d = D_p \\ln\\left( \\frac{E_{\\text{max}}}{E_c} \\right) \\quad \\text{with} \\quad E_{\\text{max}} = \\sqrt{\\frac{2}{\\pi}} \\frac{P_L}{w_0 v_s}",
+    engineMethod: "FrankenSimEngine.stepHullStereolithography",
+    controls: [
+      {
+        id: "laserPowerMw",
+        label: "Laser Radiant Power",
+        min: 10,
+        max: 120,
+        step: 5,
+        defaultValue: HULL_SLA_DEFAULT_CONTROLS.laserPowerMw,
+        unit: "mW",
+      },
+      {
+        id: "laserScanSpeedMmS",
+        label: "Galvo Vector Scan Speed",
+        min: 50,
+        max: 1000,
+        step: 25,
+        defaultValue: HULL_SLA_DEFAULT_CONTROLS.laserScanSpeedMmS,
+        unit: "mm/s",
+      },
+      {
+        id: "layerThicknessUm",
+        label: "Elevator Layer Step Δz",
+        min: 25,
+        max: 200,
+        step: 5,
+        defaultValue: HULL_SLA_DEFAULT_CONTROLS.layerThicknessUm,
+        unit: "µm",
+      },
+      {
+        id: "beamWaistRadiusUm",
+        label: "Gaussian Spot Radius w₀",
+        min: 50,
+        max: 200,
+        step: 5,
+        defaultValue: HULL_SLA_DEFAULT_CONTROLS.beamWaistRadiusUm,
+        unit: "µm",
+      },
+      {
+        id: "resinViscosityCp",
+        label: "Resin Dynamic Viscosity",
+        min: 100,
+        max: 2500,
+        step: 50,
+        defaultValue: HULL_SLA_DEFAULT_CONTROLS.resinViscosityCp,
+        unit: "cP",
+      },
+    ],
+    computeMetrics: (p) => {
+      const controls = readHullStereolithographyControls(p);
+      const state = stepHullStereolithographySi(controls);
+      return [
+        {
+          label: "Peak Centerline Exposure E_max",
+          value: state.peakExposureMJCm2.toFixed(2),
+          unit: "mJ/cm²",
+          badgeColor: state.isCured ? "emerald" : "rose",
+          progressPct: clampProgress((state.peakExposureMJCm2 / 30) * 100),
+        },
+        {
+          label: "Curing Depth C_d",
+          value: state.cureDepthUm.toFixed(1),
+          unit: "µm",
+          badgeColor:
+            state.interlayerAdhesionRatio >= 1.0 && state.interlayerAdhesionRatio <= 2.2
+              ? "emerald"
+              : state.interlayerAdhesionRatio < 1.0
+                ? "rose"
+                : "amber",
+          progressPct: clampProgress((state.cureDepthUm / 300) * 100),
+        },
+        {
+          label: "Cured Line Width L_w",
+          value: state.curedLineWidthUm.toFixed(1),
+          unit: "µm",
+          badgeColor: "cyan",
+          progressPct: clampProgress((state.curedLineWidthUm / 400) * 100),
+        },
+        {
+          label: "Interlayer Adhesion Ratio",
+          value: state.interlayerAdhesionRatio.toFixed(2),
+          unit: "x",
+          badgeColor:
+            state.interlayerAdhesionRatio >= 1.15 && state.interlayerAdhesionRatio <= 1.8
+              ? "emerald"
+              : "amber",
+          progressPct: clampProgress((state.interlayerAdhesionRatio / 2.5) * 100),
+        },
+        {
+          label: "Gel Conversion Degree α",
+          value: state.polymerizationConversionPct.toFixed(1),
+          unit: "%",
+          badgeColor: state.polymerizationConversionPct >= 70 ? "emerald" : "amber",
+          progressPct: clampProgress(state.polymerizationConversionPct),
+        },
+        {
+          label: "Layer Recoat Settling Time",
+          value: state.recoatMeniscusSettlingTimeSec.toFixed(2),
+          unit: "s",
+          badgeColor: state.recoatMeniscusSettlingTimeSec <= 4 ? "emerald" : "amber",
+          progressPct: clampProgress((state.recoatMeniscusSettlingTimeSec / 10) * 100),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "US 4,575,330 established that 3D additive manufacturing relies on controlling radiant exposure E(x,y) to exceed critical threshold E_c while tuning cure depth C_d to exceed layer step Δz for monolithic interlayer polymer cross-linking.",
+  },
+  "us-4921293-salisbury-robot-hand": {
+    domain: "robotics_manipulation",
+    domainTitle: "Source-Bounded Cable Transmission & Articulated-Joint Topology",
+    equationName: "Figure 3 Four-Tension / Three-Torque Map",
+    governingEquation:
+      "\\tau_1=-T_1R_1+T_2R_2+T_3R_2-T_4R_1,\\quad \\tau_2=T_1R_3+T_2R_2-T_3R_2-T_4R_3,\\quad \\tau_3=T_2R_2-T_3R_2",
+    engineMethod: "FrankenSimEngine.stepSalisburyRobotHand",
+    controls: [
+      {
+        id: "tensionT1N",
+        label: "Cable tension T₁",
+        min: 0,
+        max: 40,
+        step: 1,
+        defaultValue: SALISBURY_HAND_DEFAULT_CONTROLS.tensionT1N,
+        unit: "N",
+      },
+      {
+        id: "tensionT2N",
+        label: "Cable tension T₂",
+        min: 0,
+        max: 40,
+        step: 1,
+        defaultValue: SALISBURY_HAND_DEFAULT_CONTROLS.tensionT2N,
+        unit: "N",
+      },
+      {
+        id: "tensionT3N",
+        label: "Cable tension T₃",
+        min: 0,
+        max: 40,
+        step: 1,
+        defaultValue: SALISBURY_HAND_DEFAULT_CONTROLS.tensionT3N,
+        unit: "N",
+      },
+      {
+        id: "tensionT4N",
+        label: "Cable tension T₄",
+        min: 0,
+        max: 40,
+        step: 1,
+        defaultValue: SALISBURY_HAND_DEFAULT_CONTROLS.tensionT4N,
+        unit: "N",
+      },
+      {
+        id: "radiusScaleMm",
+        label: "Illustrative R₂ scale",
+        min: 4,
+        max: 20,
+        step: 1,
+        defaultValue: SALISBURY_HAND_DEFAULT_CONTROLS.radiusScaleMm,
+        unit: "mm",
+      },
+      {
+        id: "firstIdlerFixed",
+        label: "Claim 2 first idler held",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: SALISBURY_HAND_DEFAULT_CONTROLS.firstIdlerFixed ? 1 : 0,
+        unit: "0/1",
+      },
+    ],
+    computeMetrics: (p) => {
+      const controls = readSalisburyRobotHandControls(p);
+      const tel = FrankenSimEngine.stepSalisburyRobotHand(controls);
+      return [
+        {
+          label: "Axis 1 source torque",
+          value: tel.jointTorquesNm[0].toFixed(3),
+          unit: "N·m",
+          badgeColor: "indigo",
+        },
+        {
+          label: "Axis 2 source torque",
+          value: tel.jointTorquesNm[1].toFixed(3),
+          unit: "N·m",
+          badgeColor: "emerald",
+        },
+        {
+          label: "Axis 3 source torque",
+          value: tel.jointTorquesNm[2].toFixed(3),
+          unit: "N·m",
+          badgeColor: "amber",
+        },
+        {
+          label: "Connected source topology",
+          value: `${tel.digitCount} palm-rooted digits / ${tel.scalarJointCoordinates} joints / ${tel.cableEndCount} cable ends`,
+          unit: "",
+          badgeColor: tel.claim1RoutingProbe ? "emerald" : "rose",
+          progressPct: tel.claim1RoutingProbe ? 100 : 0,
+        },
+        {
+          label: "Historic dynamics",
+          value: "not disclosed",
+          unit: "",
+          badgeColor: "amber",
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Ruoff and Salisbury print three static equations for the Figure 3 route: four measured cable tensions and selected pulley radii combine into three joint torques. The hand has three articulated digits, nine joint coordinates, and twelve cable ends, but the grant supplies no historic dimensions, dynamics, contact law, grasp force, force-closure result, or stability margin.",
   },
   "us-5701965-kamen-transporter": {
     domain: "robotics_locomotion",
@@ -7690,6 +8020,288 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     },
     pedagogicalInsight:
       "The iPhone multi-touch architecture converts multi-point mutual capacitance drops into real-time affine transformations, enabling fluid pinch-to-zoom magnification and geometric gesture recognition.",
+  },
+  "us-2717437-mestral-velcro": {
+    domain: "materials_mechanics",
+    domainTitle: "Thermoplastic Polyamide Cantilever Mechanics & Peeling Anisotropy",
+    equationName: "Euler-Bernoulli Monofilament Bending & Kendall Peeling Anisotropy",
+    governingEquation:
+      "\\delta = \\frac{F L^3}{3 E I}, \\qquad F_{\\text{peel}} = \\frac{w G_c}{1 - \\cos\\theta}, \\qquad \\frac{F_{\\text{shear}}}{F_{\\text{peel}}} \\gg 10",
+    engineMethod: "FrankenSimEngine.stepMestralVelcro",
+    controls: [
+      {
+        id: "filamentDiameterMm",
+        label: "Monofilament Diameter",
+        min: 0.1,
+        max: 0.35,
+        step: 0.01,
+        defaultValue: MESTRAL_VELCRO_DEFAULTS.filamentDiameterMm,
+        unit: "mm",
+      },
+      {
+        id: "hookLengthMm",
+        label: "Hook Length",
+        min: 1.0,
+        max: 3.0,
+        step: 0.1,
+        defaultValue: MESTRAL_VELCRO_DEFAULTS.hookLengthMm,
+        unit: "mm",
+      },
+      {
+        id: "hookDensityPerCm2",
+        label: "Hook Density",
+        min: 20,
+        max: 120,
+        step: 4,
+        defaultValue: MESTRAL_VELCRO_DEFAULTS.hookDensityPerCm2,
+        unit: "cm⁻²",
+      },
+      {
+        id: "peelAngleDeg",
+        label: "Peeling Angle",
+        min: 15,
+        max: 165,
+        step: 5,
+        defaultValue: MESTRAL_VELCRO_DEFAULTS.peelAngleDeg,
+        unit: "deg",
+      },
+      {
+        id: "heatSettingTempC",
+        label: "Lancet Bar Temp",
+        min: 100,
+        max: 200,
+        step: 5,
+        defaultValue: MESTRAL_VELCRO_DEFAULTS.heatSettingTempC,
+        unit: "°C",
+      },
+      {
+        id: "appliedShearForceN",
+        label: "Shear Load",
+        min: 0,
+        max: 100,
+        step: 5,
+        defaultValue: MESTRAL_VELCRO_DEFAULTS.appliedShearForceN,
+        unit: "N",
+      },
+      {
+        id: "appliedPeelRateMmS",
+        label: "Peel Rate",
+        min: 2,
+        max: 40,
+        step: 2,
+        defaultValue: MESTRAL_VELCRO_DEFAULTS.appliedPeelRateMmS,
+        unit: "mm/s",
+      },
+      {
+        id: "engagementRatio",
+        label: "Engagement Ratio",
+        min: 0.2,
+        max: 1.0,
+        step: 0.05,
+        defaultValue: MESTRAL_VELCRO_DEFAULTS.engagementRatio,
+        unit: "ratio",
+      },
+    ],
+    computeMetrics: (params: Record<string, number>) => {
+      const controls = readMestralVelcroControls(params);
+      const tel = stepMestralVelcroSi(controls);
+      return [
+        {
+          label: "Single Hook Force",
+          value: `${(tel.singleHookReleaseForceN * 1000).toFixed(1)} mN`,
+          unit: "F_hook",
+          badgeColor: "cyan",
+          progressPct: clampProgress((tel.singleHookReleaseForceN / 0.1) * 100),
+        },
+        {
+          label: "In-Plane Shear Capacity",
+          value: `${tel.shearStressCapacityN_Cm2.toFixed(1)} N/cm²`,
+          unit: "τ_max",
+          badgeColor: "emerald",
+          progressPct: clampProgress((tel.shearStressCapacityN_Cm2 / 80) * 100),
+        },
+        {
+          label: "Peel Force (1-in Tape)",
+          value: `${tel.totalPeelForceN.toFixed(2)} N`,
+          unit: "F_peel",
+          badgeColor: "amber",
+          progressPct: clampProgress((tel.totalPeelForceN / 8) * 100),
+        },
+        {
+          label: "Shear/Peel Anisotropy",
+          value: `${tel.forceAnisotropyRatio.toFixed(1)}x`,
+          unit: "α_aniso",
+          badgeColor: "purple",
+          progressPct: clampProgress((tel.forceAnisotropyRatio / 40) * 100),
+        },
+        {
+          label: "Shape Retention",
+          value: `${(tel.thermalRetentionFraction * 100).toFixed(1)}%`,
+          unit: "ϕ_set",
+          badgeColor: "indigo",
+          progressPct: clampProgress(tel.thermalRetentionFraction * 100),
+        },
+        {
+          label: "Peeling Power",
+          value: `${(tel.peelDisengagementPowerWatts * 1000).toFixed(1)} mW`,
+          unit: "P_peel",
+          badgeColor: "rose",
+          progressPct: clampProgress((tel.peelDisengagementPowerWatts / 0.1) * 100),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "George de Mestral's hook-and-loop fastener achieves extreme mechanical anisotropy: thousands of microscopic cantilever hooks act in parallel to resist massive in-plane shear sliding, yet peel open effortlessly with minimal force because fracture energy localizes along a single line of deflecting hooks.",
+  },
+  "us-2846084-goertz-electronic-master-slave-manipulator": {
+    domain: "robotics_teleoperation",
+    domainTitle: "Bilateral Teleoperation & Force-Reflecting Servo Topology",
+    equationName: "Synchro Position Error with Relative-Speed Feedback",
+    governingEquation:
+      "E \\propto q_m-q_s, \\qquad V_t\\propto\\dot q_m-\\dot q_s, \\qquad E_{drive}=\\operatorname{limit}(E-kV_t)",
+    engineMethod:
+      "stepGoertzMasterSlaveTopology (deterministic TypeScript source-bound topology; no FrankenSim WASM module stepped)",
+    controls: [
+      {
+        id: "horizontalArmPivot",
+        label: "Horizontal Arm Pivot · Axis 113b",
+        min: -1,
+        max: 1,
+        step: 0.01,
+        defaultValue: GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.horizontalArmPivot,
+        unit: "normalized",
+      },
+      {
+        id: "horizontalArmRoll",
+        label: "Horizontal Arm Roll",
+        min: -1,
+        max: 1,
+        step: 0.01,
+        defaultValue: GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.horizontalArmRoll,
+        unit: "normalized",
+      },
+      {
+        id: "verticalArmPivot",
+        label: "Vertical Arm Pivot · Axis 126",
+        min: -1,
+        max: 1,
+        step: 0.01,
+        defaultValue: GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.verticalArmPivot,
+        unit: "normalized",
+      },
+      {
+        id: "verticalArmRoll",
+        label: "Vertical Arm Roll",
+        min: -1,
+        max: 1,
+        step: 0.01,
+        defaultValue: GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.verticalArmRoll,
+        unit: "normalized",
+      },
+      {
+        id: "toolAxis171",
+        label: "Tool Pivot · Axis 171",
+        min: -1,
+        max: 1,
+        step: 0.01,
+        defaultValue: GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.toolAxis171,
+        unit: "normalized",
+      },
+      {
+        id: "toolAxis172",
+        label: "Tool Pivot · Axis 172",
+        min: -1,
+        max: 1,
+        step: 0.01,
+        defaultValue: GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.toolAxis172,
+        unit: "normalized",
+      },
+      {
+        id: "gripperClosure",
+        label: "Tool Closure",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.gripperClosure,
+        unit: "normalized",
+      },
+      {
+        id: "contactResistance",
+        label: "Remote Contact Resistance",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.contactResistance,
+        unit: "illustrative normalized state",
+      },
+      {
+        id: "forceReflectionEnabled",
+        label: "Claim 9 Force Reflection",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.forceReflectionEnabled,
+        unit: "off/on",
+      },
+      {
+        id: "tachometerDampingEnabled",
+        label: "Claim 11 Tachometer Path",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.tachometerDampingEnabled,
+        unit: "off/on",
+      },
+      {
+        id: "limiterEnabled",
+        label: "Claims 10/12 Limiter",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS.limiterEnabled,
+        unit: "off/on",
+      },
+    ],
+    computeMetrics: (params) => {
+      const controls = readGoertzMasterSlaveControls(params);
+      const pose = stepGoertzMasterSlaveTopology(controls);
+      return [
+        {
+          label: "Largest Channel Mismatch",
+          value: (pose.errorMagnitude * 100).toFixed(0),
+          unit: "% normalized",
+          badgeColor: pose.errorMagnitude > 0.45 ? "amber" : "cyan",
+          progressPct: clampProgress(pose.errorMagnitude * 100),
+        },
+        {
+          label: "Reflected Resistance",
+          value: (pose.reflectedResistance * 100).toFixed(0),
+          unit: "% normalized",
+          badgeColor: pose.forceReflectionEnabled ? "emerald" : "indigo",
+          progressPct: clampProgress(pose.reflectedResistance * 100),
+        },
+        {
+          label: "Servo State",
+          value: pose.state.toUpperCase(),
+          unit: "source topology",
+          badgeColor: pose.limiterActive ? "amber" : "purple",
+        },
+        {
+          label: "Claim Probe",
+          value: `CLAIM ${pose.activeClaim}`,
+          unit: "issued text",
+          badgeColor: "cyan",
+        },
+        {
+          label: "Quantitative SI Prediction",
+          value: "REFUSED",
+          unit: "missing source inputs",
+          badgeColor: "rose",
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "US 2,846,084 gives a seven-channel bilateral teleoperation topology: a synchro error signal is proportional to the mismatch between corresponding master and slave positions, motors act to reduce that mismatch, and remote resistance can return to the master handle. The facsimile does not establish arm dimensions, force calibration, payload, motor constants, controller gains, or bandwidth, so the exhibit explicitly remains normalized and does not claim a WASM or SI performance step.",
   },
   "us-3119501-lemelson-automatic-warehousing": {
     domain: "industrial_automation",

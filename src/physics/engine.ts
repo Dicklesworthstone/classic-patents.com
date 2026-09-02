@@ -74,6 +74,18 @@ import {
   stepSholesTypewriter,
 } from "./machineKernels";
 import {
+  type MestralVelcroControls,
+  type MestralVelcroTelemetry,
+  stepMestralVelcroSi,
+} from "./mestralVelcroKernel";
+import {
+  type RobotEndEffectorControls,
+  type RobotEndEffectorTelemetry,
+  stepRobotEndEffectorSi,
+} from "./robotEndEffectorKernel";
+import type { SalisburyRobotHandControls } from "./salisburyRobotHandKernel";
+import { type SalisburyMechanismState, stepSalisburyTopology } from "./salisburyWasm";
+import {
   type StackhouseSourceControls,
   type StackhouseSourcePose,
   stepStackhouseSourceTopology,
@@ -271,6 +283,7 @@ export const FrankenSimEngine = {
   stepMorseTelegraph,
   stepEngelbartMouse,
   stepWozniakApple,
+  stepRobotEndEffector: stepRobotEndEffectorSi,
 
   stepTeslaMotorFig9,
 
@@ -1246,6 +1259,15 @@ export const FrankenSimEngine = {
 
   stepStackhouseManipulator(controls: StackhouseSourceControls): StackhouseSourcePose {
     return stepStackhouseSourceTopology(controls);
+  },
+
+  stepMestralVelcro(controls: MestralVelcroControls, timeSec = 0): MestralVelcroTelemetry {
+    return stepMestralVelcroSi(controls, timeSec);
+  },
+
+  /** US 4,921,293 nine-joint/12-cable topology and source-printed static torque law. */
+  stepSalisburyRobotHand(controls: SalisburyRobotHandControls): SalisburyMechanismState {
+    return stepSalisburyTopology(controls);
   },
 
   createTelemetryEnvelope(

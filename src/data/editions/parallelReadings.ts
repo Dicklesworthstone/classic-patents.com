@@ -37,6 +37,7 @@ import { fessendenWirelessParallelReadings } from "./fessendenWirelessEdition";
 import { gatlingGunParallelReadings } from "./gatlingGunEdition";
 import { gliddenBarbedWireParallelReadings } from "./gliddenBarbedWireEdition";
 import { goddardRocketParallelReadings } from "./goddardRocketEdition";
+import { goertzElectronicMasterSlaveManipulatorParallelReadings } from "./goertzElectronicMasterSlaveManipulatorEdition";
 import { goodyearRubberParallelReadings } from "./goodyearRubberEdition";
 import { grammeDynamoParallelReadings } from "./grammeDynamoEdition";
 import { haberAmmoniaParallelReadings } from "./haberAmmoniaEdition";
@@ -44,6 +45,7 @@ import { HALL_ALUMINIUM_PARALLEL_READINGS } from "./hallAluminiumEdition";
 import { hewittMercuryLampParallelReadings } from "./hewittMercuryLampEdition";
 import { hollerithTabulatingParallelReadings } from "./hollerithTabulatingEdition";
 import { HOPKINS_PARALLEL_READINGS as hopkinsPotashParallelReadings } from "./hopkinsPotashEdition";
+import { hullStereolithographyParallelReadings } from "./hullStereolithographyEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
 import { kamenMedicationInjectionParallelReadings } from "./kamenMedicationInjectionEdition";
 import { kamenTransporterParallelReadings } from "./kamenTransporterEdition";
@@ -60,6 +62,7 @@ import { marconiRadioParallelReadings } from "./marconiRadioEdition";
 import { maximMachineGunParallelReadings } from "./maximMachineGunEdition";
 import { mccormickReaperParallelReadings } from "./mccormickReaperEdition";
 import { mergenthalerLinotypeParallelReadings } from "./mergenthalerLinotypeEdition";
+import { mestralVelcroParallelReadings } from "./mestralVelcroEdition";
 import { morseTelegraphParallelReadings } from "./morseTelegraphEdition";
 import { multiTouchParallelReadings } from "./multiTouchEdition";
 import { nobelDynamiteParallelReadings } from "./nobelDynamiteEdition";
@@ -72,7 +75,9 @@ import { pasteurFermentationParallelReadings } from "./pasteurFermentationParall
 import { peltonWaterWheelParallelReadings } from "./peltonWaterWheelEdition";
 import { renoEscalatorParallelReadings } from "./renoEscalatorEdition";
 import { rillieuxEvaporatorParallelReadings } from "./rillieuxEvaporatorEdition";
+import { robotEndEffectorParallelReadings } from "./robotEndEffectorEdition";
 import { roombaParallelReadings } from "./roombaEdition";
+import { salisburyRobotHandParallelReadings } from "./salisburyRobotHandEdition";
 import { sholesTypewriterParallelReadings } from "./sholesTypewriterEdition";
 import { spencerMicrowaveParallelReadings } from "./spencerMicrowaveEdition";
 import { stackhouseManipulatorParallelReadings } from "./stackhouseManipulatorEdition";
@@ -163,6 +168,9 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-2524035-bardeen-transistor": bardeenTransistorParallelReadings,
   "us-2543181-land-polaroid": landPolaroidParallelReadings,
   "us-2708656-fermi-reactor": fermiReactorParallelReadings,
+  "us-2717437-mestral-velcro": mestralVelcroParallelReadings,
+  "us-2846084-goertz-electronic-master-slave-manipulator":
+    goertzElectronicMasterSlaveManipulatorParallelReadings,
   "us-2988237-devol-programmed-transfer": devolProgrammedTransferParallelReadings,
   "us-2981877-noyce-ic": noyceIcParallelReadings,
   "us-3119501-lemelson-automatic-warehousing": lemelsonAutomaticWarehousingParallelReadings,
@@ -178,6 +186,9 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-3858581-kamen-medication-injection-device": kamenMedicationInjectionParallelReadings,
   "us-4136359-wozniak-apple": wozniakAppleParallelReadings,
   "us-4341502-makino-scara": makinoScaraParallelReadings,
+  "us-4575330-hull-stereolithography": hullStereolithographyParallelReadings,
+  "us-4765668-robot-end-effector": robotEndEffectorParallelReadings,
+  "us-4921293-salisbury-robot-hand": salisburyRobotHandParallelReadings,
   "us-5701965-kamen-transporter": kamenTransporterParallelReadings,
   "us-6120588-eink": einkParallelReadings,
   "us-6285999-pagerank": pagerankParallelReadings,

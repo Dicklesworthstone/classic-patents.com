@@ -403,6 +403,84 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Judson's 1905 C-curity fastener popped open unexpectedly whenever clothing was flexed across the knee or torso.",
     },
   ],
+  "us-2717437-mestral-velcro": [
+    {
+      claimNumber: 1,
+      patentId: "us-2717437-mestral-velcro",
+      claimTitle: "Thermal Shape Setting of Synthetic Monofilament Loops",
+      activeDescription:
+        "Claim 1 subjects auxiliary synthetic warp loops to thermal heat setting before cutting, permanently freezing hook shape memory.",
+      invertedDescription:
+        "Without thermal heat setting, cut monofilament strands relax into straight vertical bristles without retaining hook curvature.",
+      failureModeName: "Hook Shape Relaxation & Zero Fastening Adhesion",
+      historicalPriorArt:
+        "Traditional velvet pile looms cut unheated natural fibers (silk/cotton) which lacked spring recovery and hook geometry.",
+    },
+    {
+      claimNumber: 3,
+      patentId: "us-2717437-mestral-velcro",
+      claimTitle: "Synthetic Raised Hook Pile Foundation Fabric",
+      activeDescription:
+        "Claim 3 claims foundation weave with raised synthetic resin pile threads terminating in material-engaging hooks.",
+      invertedDescription:
+        "Reverting to unhooked velvet pile, eliminating in-plane shear holding capacity.",
+      failureModeName: "Soft Velvet Pile Slippage",
+      historicalPriorArt:
+        "Decorative upholstery velvets provided silky softness but zero mechanical retention force.",
+    },
+  ],
+  "us-4575330-hull-stereolithography": [
+    {
+      claimNumber: 1,
+      patentId: "us-4575330-hull-stereolithography",
+      claimTitle: "Stepwise Layer-by-Layer Additive Build Platform",
+      activeDescription:
+        "Claim 1 draws cross-sectional laminae at a 2D interface and moves the object away stepwise to build up a 3D solid part.",
+      invertedDescription:
+        "Without layer-by-layer slicing and translation: attempt bulk curing in 3D volume, leading to uncontrolled polymer gelation and thermal runaway.",
+      failureModeName: "Uncontrolled Bulk Photopolymer Gelation",
+      historicalPriorArt:
+        "Prior art (Swainson US 4,041,476) attempted two-laser beam intersecting points in 3D liquid volumes, suffering catastrophic positioning instability and bulk clouding.",
+    },
+    {
+      claimNumber: 2,
+      patentId: "us-4575330-hull-stereolithography",
+      claimTitle: "Thin Surface Layer Restricted Reaction",
+      activeDescription:
+        "Claim 2 restricts synergistic stimulation to only a thin surface layer at the designated working interface.",
+      invertedDescription:
+        "Without surface-depth confinement: actinic light penetrates deeply into the vat, solidifying the entire resin pool into an unusable block.",
+      failureModeName: "Excessive Deep-Cure Z-Distortion",
+      historicalPriorArt:
+        "Magat (US 2,708,617) irradiated unconfined bulk monomers, causing uncontrolled polymerization throughout the fluid container.",
+    },
+  ],
+  "us-4921293-salisbury-robot-hand": [
+    {
+      claimNumber: 1,
+      patentId: "us-4921293-salisbury-robot-hand",
+      claimTitle: "Three-Joint, Four-Cable Pull Sequence",
+      activeDescription:
+        "Claim 1 specifies three serial revolute joints, four control cables, and the opposed or paired cable pulls that rotate each joint in either direction.",
+      invertedDescription:
+        "Remove that routing combination. The three printed torque equations no longer describe the comparison state, so the exhibit zeros their outputs instead of predicting a mechanical failure.",
+      failureModeName: "Claimed Cable Routing Absent",
+      historicalPriorArt:
+        "The specification contrasts its hand with Okada’s 22-cable system and with remote-actuator arrangements whose bare cables crowded the wrist gimbals; it also acknowledges Moreki’s earlier n+1 cable result.",
+    },
+    {
+      claimNumber: 2,
+      patentId: "us-4921293-salisbury-robot-hand",
+      claimTitle: "Fixable First-Axis Idler and Outboard Drive Pulley",
+      activeDescription:
+        "Claim 2 specifies an idler concentric with the first axis, a drive pulley at the second axis, one cable drive engaging both, and means to hold the idler while cable motion articulates the first joint.",
+      invertedDescription:
+        "Release the first idler in the teaching comparison. This removes the claim predicate but does not alter the separate Figure 3 torque equation or invent a decoupling error.",
+      failureModeName: "First-Idler Holding Predicate Absent",
+      historicalPriorArt:
+        "The grant describes the idler and drive-pulley relationship as part of its articulated-finger routing; it does not provide measured comparative performance for a released idler.",
+    },
+  ],
   "us-400766-hall-aluminium": [
     {
       claimNumber: 1,
@@ -1281,6 +1359,70 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Cartesian and articulated robots suffered from high moving inertia and lack of selective horizontal compliance for peg-in-hole insertion.",
     },
   ],
+  "us-2846084-goertz-electronic-master-slave-manipulator": [
+    {
+      claimNumber: 9,
+      patentId: "us-2846084-goertz-electronic-master-slave-manipulator",
+      claimTitle: "Force-Reflecting Position-Error Servo",
+      activeDescription:
+        "Claim 9 couples corresponding master and slave elements so their positional difference creates an electrical signal that acts on both, allowing resistance encountered remotely to be reflected to the master.",
+      invertedDescription:
+        "Topology comparison: removing Claim 9 force reflection leaves a displayed master/slave positional mismatch but no source-described resistance path back to the master handle; it does not predict a force, payload, or contact outcome.",
+      failureModeName: "Force-Reflection Path Omitted",
+      historicalPriorArt:
+        "The specification identifies the absence of a direct mechanical connection as the reason that electrical correspondence and a transmitted sense of feel had to be established between the paired units.",
+    },
+    {
+      claimNumber: 10,
+      patentId: "us-2846084-goertz-electronic-master-slave-manipulator",
+      claimTitle: "Abnormal-Condition Error-Signal Limiter",
+      activeDescription:
+        "Claim 10 adds a limiter to the Claim 9 signal path, limiting the electrical signal and therefore the source-described speed of operation under abnormal conditions.",
+      invertedDescription:
+        "Topology comparison: bypassing the limiter removes the claimed clipping predicate while retaining only normalized correspondence channels; the grant does not provide a modern voltage, acceleration, or injury threshold to calculate.",
+      failureModeName: "Limiter Predicate Omitted",
+      historicalPriorArt:
+        "The specification discusses a large initial positional mismatch or removal of an obstacle as conditions that can produce a large error signal, motivating the limiter path.",
+    },
+    {
+      claimNumber: 11,
+      patentId: "us-2846084-goertz-electronic-master-slave-manipulator",
+      claimTitle: "Relative-Speed Tachometer Feedback",
+      activeDescription:
+        "Claim 11 forms a signal proportional to the speed difference of corresponding master and slave members and opposes it against the position-error signal.",
+      invertedDescription:
+        "Topology comparison: disconnecting the tachometer branch removes the claimed relative-speed feedback path; no damping ratio, bandwidth, inertia, or oscillation amplitude is inferred from the historical source.",
+      failureModeName: "Relative-Speed Feedback Path Omitted",
+      historicalPriorArt:
+        "The specification says the derivative or tachometer signal damps the system and prevents hunting, while also improving the initial response of the slave channel.",
+    },
+    {
+      claimNumber: 12,
+      patentId: "us-2846084-goertz-electronic-master-slave-manipulator",
+      claimTitle: "Limited Error Signal with Relative-Speed Feedback",
+      activeDescription:
+        "Claim 12 combines the Claim 10 limiting path with the Claim 11 opposing relative-speed signal in the force-reflecting servo arrangement.",
+      invertedDescription:
+        "Topology comparison: removing the combined claim predicate bypasses both source-described protection branches without turning the illustration into an unsupported speed, force, or safety forecast.",
+      failureModeName: "Combined Limiter and Feedback Topology Omitted",
+      historicalPriorArt:
+        "The specification places the derivative signal after the limiter so that abnormal, rapidly decreasing error is damped while normal following can still receive the available limiter voltage.",
+    },
+  ],
+  "us-4765668-robot-end-effector": [
+    {
+      claimNumber: 1,
+      patentId: "us-4765668-robot-end-effector",
+      claimTitle: "Symmetric Opposed-Thread Hands and Removable Fingers",
+      activeDescription:
+        "Claim 1 combines left- and right-hand ball-screw portions, symmetric paired-hand travel about the screw midpoint, and removable fingers on the corresponding hands.",
+      invertedDescription:
+        "Comparison state: suppressing Claim 1's opposed-thread/finger combination removes the illustrated symmetric, removable grasp-interface topology; the source does not support a contact-force, payload, or productivity prediction.",
+      failureModeName: "Claim 1 Symmetric Removable-Hand Topology Omitted",
+      historicalPriorArt:
+        "The specification identifies earlier opposed-screw manipulators, then presents the narrow double hand, removable fingers, and associated axes as the machine-tool end-effector combination at issue.",
+    },
+  ],
   "us-5701965-kamen-transporter": [
     {
       claimNumber: 1,
@@ -1885,6 +2027,108 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "STAGGER ALIGNMENT LOSS: Claim 1 half-pitch offset required for progressive nested interlock.";
+      }
+      break;
+    }
+
+    case "us-4921293-salisbury-robot-hand": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim2Active = claimStates[2] ?? true;
+      if (!claim1Active) {
+        modified.tensionT1N = 0;
+        modified.tensionT2N = 0;
+        modified.tensionT3N = 0;
+        modified.tensionT4N = 0;
+        activeFailures.push(
+          "Claim 1 routing absent: the comparison removes the four source-law cable inputs and makes no derailment, collapse, or force-performance prediction",
+        );
+        refusalWarning =
+          "SOURCE BOUNDARY: Claim 1 inversion is a topology comparison; US 4,921,293 supplies no historic cable pretension, dimensions, inertia, damping, contact, or failure measurements.";
+      }
+      if (!claim2Active) {
+        modified.firstIdlerFixed = 0;
+        activeFailures.push(
+          "Claim 2 first-idler holding predicate absent: the printed Figure 3 torque map remains a separate source relation",
+        );
+        refusalWarning =
+          "SOURCE BOUNDARY: Releasing the Claim 2 idler does not authorize a fabricated decoupling error or dynamic failure result.";
+      }
+      break;
+    }
+
+    case "us-2717437-mestral-velcro": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim3Active = claimStates[3] ?? true;
+      if (!claim1Active) {
+        modified.heatSettingTempC = 25; // Cold un-set
+        activeFailures.push(
+          "Hook Shape Relaxation: Without thermal heat setting, cut loops relax into straight bristles with 0% hook retention",
+        );
+        refusalWarning =
+          "THERMAL SETTING LOSS: Claim 1 in-situ heat setting required to lock nylon monofilament curvature.";
+      }
+      if (!claim3Active) {
+        modified.engagementRatio = 0.05;
+        activeFailures.push(
+          "Uncut Smooth Pile: Without raised material-engaging hooks, velvet fabric cannot interlock or sustain shear load",
+        );
+        refusalWarning =
+          "HOOK GEOMETRY LOSS: Claim 3 synthetic hook pile required for reversible multi-hook fastening.";
+      }
+      break;
+    }
+
+    case "us-2846084-goertz-electronic-master-slave-manipulator": {
+      const claim9Active = claimStates[9] ?? true;
+      const claim10Active = claimStates[10] ?? true;
+      const claim11Active = claimStates[11] ?? true;
+      const claim12Active = claimStates[12] ?? true;
+      if (!claim9Active) {
+        modified.forceReflectionEnabled = 0;
+        activeFailures.push(
+          "Claim 9 force-reflection path omitted: displayed position correspondence has no source-described resistance return to the master handle",
+        );
+        refusalWarning =
+          "SOURCE BOUNDARY: this is a bilateral-servo topology comparison only; US 2,846,084 does not publish a force calibration, contact stiffness, payload, motor constant, arm inertia, or performance result.";
+      }
+      if (!claim10Active) {
+        modified.limiterEnabled = 0;
+        activeFailures.push(
+          "Claim 10 limiter predicate omitted: the normalized display bypasses the source-described error-signal clipping path",
+        );
+        refusalWarning =
+          "SOURCE BOUNDARY: bypassing the limiter does not establish a voltage, speed, acceleration, injury, or damage prediction.";
+      }
+      if (!claim11Active) {
+        modified.tachometerDampingEnabled = 0;
+        activeFailures.push(
+          "Claim 11 relative-speed feedback path omitted: the normalized display removes the opposing tachometer branch",
+        );
+        refusalWarning =
+          "SOURCE BOUNDARY: disconnecting the tachometer path does not authorize an invented damping ratio, hunting amplitude, bandwidth, or settling time.";
+      }
+      if (!claim12Active) {
+        modified.limiterEnabled = 0;
+        modified.tachometerDampingEnabled = 0;
+        activeFailures.push(
+          "Claim 12 combined limiter and relative-speed-feedback topology omitted",
+        );
+        refusalWarning =
+          "SOURCE BOUNDARY: the combined-claim comparison removes source-described topology only; it supplies no quantitative safety or servo-performance outcome.";
+      }
+      break;
+    }
+
+    case "us-4765668-robot-end-effector": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.jawOpeningFraction = 0;
+        modified.fingerChangeFraction = 1;
+        activeFailures.push(
+          "Claim 1 Symmetric Removable-Hand Topology Omitted: the comparison state removes the illustrated opposed-thread opening and releases the source-described removable fingers.",
+        );
+        refusalWarning =
+          "SOURCE BOUNDARY: Claim 1 inversion is a topology comparison only; US 4,765,668 supplies no workpiece, contact, friction, payload, pneumatic, or throughput result to predict.";
       }
       break;
     }

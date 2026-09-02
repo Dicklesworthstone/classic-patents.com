@@ -31,6 +31,7 @@ import { fessendenWirelessPatent } from "./fessenden-wireless";
 import { gatlingGunPatent } from "./gatling-gun";
 import { gliddenBarbedWirePatent } from "./glidden-barbed-wire";
 import { goddardRocketPatent } from "./goddard-rocket";
+import { goertzElectronicMasterSlaveManipulatorPatent } from "./goertz-electronic-master-slave-manipulator";
 import { goodyearRubberPatent } from "./goodyear-rubber";
 import { grammeDynamoPatent } from "./gramme-dynamo";
 import { haberAmmoniaPatent } from "./haber-ammonia";
@@ -55,6 +56,7 @@ import { marconiRadioPatent } from "./marconi-radio";
 import { maximMachineGunPatent } from "./maxim-machine-gun";
 import { mccormickReaperPatent } from "./mccormick-reaper";
 import { mergenthalerLinotypePatent } from "./mergenthaler-linotype";
+import { mestralVelcroPatent } from "./mestral-velcro";
 import { morseTelegraphPatent } from "./morse-telegraph";
 import { multiTouchPatent } from "./multitouch";
 import { nobelDynamitePatent } from "./nobel-dynamite";
@@ -67,7 +69,9 @@ import { pasteurFermentationPatent } from "./pasteur-fermentation";
 import { peltonWaterWheelPatent } from "./pelton-water-wheel";
 import { renoEscalatorPatent } from "./reno-escalator";
 import { rillieuxEvaporatorPatent } from "./rillieux-evaporator";
+import { robotEndEffectorPatent } from "./robot-end-effector";
 import { roombaPatent } from "./roomba";
+import { salisburyRobotHandPatent } from "./salisbury-robot-hand";
 import { parsePatentCatalog } from "./schema";
 import { sholesTypewriterPatent } from "./sholes-typewriter";
 import { spencerMicrowavePatent } from "./spencer-microwave";
@@ -93,11 +97,14 @@ export {
   daVinciPatent,
   eInkPatent,
   fessendenWirelessPatent,
+  goertzElectronicMasterSlaveManipulatorPatent,
   haberAmmoniaPatent,
   hewittMercuryLampPatent,
+  mestralVelcroPatent,
   multiTouchPatent,
   pagerankPatent,
   roombaPatent,
+  salisburyRobotHandPatent,
   stackhouseManipulatorPatent,
   sundbackZipperPatent,
   watsonRccPatent,
@@ -171,6 +178,8 @@ export const allPatents: Patent[] = parsePatentCatalog([
   bardeenTransistor2524035Patent,
   landPolaroidPatent, // 1951-02-27
   fermiReactorPatent,
+  mestralVelcroPatent, // 1955-09-13
+  goertzElectronicMasterSlaveManipulatorPatent, // 1958-08-05
   townesLaserPatent, // 1960-03-22
   noyceIcPatent,
   devolProgrammedTransferPatent,
@@ -184,7 +193,9 @@ export const allPatents: Patent[] = parsePatentCatalog([
   stackhouseManipulatorPatent, // 1978-01-17
   watsonRccPatent, // 1978-07-04
   wozniakApplePatent,
-  makinoScaraPatent,
+  makinoScaraPatent, // 1982-07-27
+  robotEndEffectorPatent, // 1988-08-23
+  salisburyRobotHandPatent, // 1990-05-01
   kamenTransporterPatent, // 1997-12-30
   eInkPatent, // 2000-09-19
   pagerankPatent, // 2001-09-04

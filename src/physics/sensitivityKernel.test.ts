@@ -69,6 +69,22 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
     expect(computeParameterSensitivity("us-31128-otis-elevator", "cabPayload", {})).toBeNull();
   });
 
+  test("Salisbury differentiates the printed Figure 3 tendon-to-torque map", () => {
+    const sens = computeParameterSensitivity("us-4921293-salisbury-robot-hand", "tensionT1N", {
+      radiusScaleMm: 10,
+    });
+    expect(sens).toMatchObject({
+      metricName: "Figure 3 First-Joint Torque",
+      derivativeSymbol: "∂τ₁ / ∂T₁",
+      derivativeValue: -0.012,
+      derivativeUnit: "N·m / N",
+    });
+    expect(sens?.interpretation).toContain("printed first-joint equation");
+    expect(
+      computeParameterSensitivity("us-4921293-salisbury-robot-hand", "graspForceN", {}),
+    ).toBeNull();
+  });
+
   test("all non-refused patents in registry with valid controls return non-null sensitivities", () => {
     const refused = new Set([
       "us-135245-pasteur-fermentation",

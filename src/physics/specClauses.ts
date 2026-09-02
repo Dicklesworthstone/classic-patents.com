@@ -4,11 +4,20 @@
  */
 
 import { stepDevolProgrammedTransfer } from "./devolProgrammedTransferKernel";
+import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
+import { stepGoertzMasterSlaveTopology } from "./goertzElectronicMasterSlaveManipulatorKernel";
+import {
+  readHullStereolithographyControls,
+  stepHullStereolithographySi,
+} from "./hullStereolithographyKernel";
 import { readKamenTransporterControls, stepKamenTransporterSi } from "./kamenTransporterKernel";
 import { stepHoweSewingMachine } from "./machineKernels";
+import { readMestralVelcroControls, stepMestralVelcroSi } from "./mestralVelcroKernel";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
+import { stepRobotEndEffector } from "./robotEndEffectorKernel";
 import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
+import { readSalisburyRobotHandControls } from "./salisburyRobotHandKernel";
 import { stepStackhouseSourceTopology } from "./stackhouseSourceKernel";
 import { readSundbackZipperControls, stepSundbackZipperSi } from "./sundbackZipperKernel";
 import { stepTeslaMotorFig9, teslaMotorPhaseHz } from "./teslaKernel";
@@ -50,6 +59,7 @@ const WESTINGHOUSE_BRAKE_ID = "us-124404-westinghouse-air-brake";
 const OTTO_ENGINE_ID = "us-194047-otto-engine";
 const GODDARD_ROCKET_ID = "us-1102653-goddard-rocket";
 const SUNDBACK_ZIPPER_ID = "us-1219881-sundback-zipper";
+const MESTRAL_VELCRO_ID = "us-2717437-mestral-velcro";
 const KAMEN_TRANSPORTER_ID = "us-5701965-kamen-transporter";
 const FARNSWORTH_TV_ID = "us-1773980-farnsworth-tv";
 const EINSTEIN_REFRIGERATOR_ID = "us-1781541-einstein-refrigerator";
@@ -61,6 +71,7 @@ const KWOLEK_KEVLAR_ID = "us-3671542-kwolek-kevlar";
 const PARSONS_TURBINE_ID = "us-608969-parsons-turbine";
 const TESLA_COIL_ID = "us-593138-tesla-coil";
 const TESLA_TELEAUTOMATON_ID = "us-613809-tesla-teleautomaton";
+const GOERTZ_MASTER_SLAVE_ID = "us-2846084-goertz-electronic-master-slave-manipulator";
 
 export function specClausesFor(patentId: string, params: Record<string, number>): SpecClause[] {
   if (patentId === WATT_ROTARY_ID) {
@@ -999,6 +1010,55 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         caption: !tel.burstRefusal
           ? `Transversely elongated cup geometry holds secure under ${controls.flexAngleDeg}° flex angle (burst limit: ${tel.burstResistanceN.toFixed(1)} N).`
           : `Burst rupture: lateral load exceeds chain limit (${tel.burstResistanceN.toFixed(1)} N).`,
+      },
+    ];
+  }
+
+  if (patentId === MESTRAL_VELCRO_ID) {
+    const controls = readMestralVelcroControls(params);
+    const tel = stepMestralVelcroSi(controls);
+    const isThermallySet = tel.thermalRetentionFraction >= 0.7;
+    const isEngaged = controls.engagementRatio > 0.3;
+    const isWithinShearLimit = controls.appliedShearForceN <= tel.maxShearCapacity5cm2N;
+
+    return [
+      {
+        id: "synthetic-raised-pile",
+        phrase:
+          "raised pile is made of artificial material, while at least part of the threads in said pile is provided near its end with material-engaging means",
+        active: isEngaged,
+        tone: isEngaged ? "held" : "broken",
+        caption: isEngaged
+          ? `Synthetic monofilament pile (${controls.hookDensityPerCm2} hooks/cm², d=${controls.filamentDiameterMm} mm) maintains upright elastic spring geometry.`
+          : "Engagement ratio too low to establish continuous multi-hook pile contact.",
+      },
+      {
+        id: "thermal-shape-setting",
+        phrase:
+          "heat the bar 5 before the cutting of the loops 6, so that the thread extending over the bar may assume and retain the shape imparted to it by the latter",
+        active: isThermallySet,
+        tone: isThermallySet ? "held" : "broken",
+        caption: isThermallySet
+          ? `Lancet bar temperature (${controls.heatSettingTempC}°C) has thermoformed nylon loops with ${(tel.thermalRetentionFraction * 100).toFixed(1)}% permanent elastic shape memory.`
+          : `Insufficient thermal energy (${controls.heatSettingTempC}°C < 135°C): amorphous chains fail to freeze hook curvature upon cutting.`,
+      },
+      {
+        id: "superposed-90-engagement",
+        phrase:
+          "superpose two pieces of fabric of the type illustrated in Fig. 1, after having imparted to one of the two pieces a 90° angular displacement in respect to the other piece and after turning them so that their pile surfaces face each other, the pile threads 9 of one piece engaging the pile threads 9 of the other piece through the co-operating hooks 4",
+        active: isWithinShearLimit,
+        tone: isWithinShearLimit ? "held" : "broken",
+        caption: isWithinShearLimit
+          ? `90° cross-array interlock sustains applied shear (${controls.appliedShearForceN} N <= ${tel.maxShearCapacity5cm2N.toFixed(1)} N max limit; shear stress: ${tel.shearStressCapacityN_Cm2.toFixed(1)} N/cm²).`
+          : `Shear slippage: applied load (${controls.appliedShearForceN} N) exceeds maximum friction-hook capacity (${tel.maxShearCapacity5cm2N.toFixed(1)} N).`,
+      },
+      {
+        id: "peeling-anisotropy-yield",
+        phrase:
+          "in the case of any straining, the fastening arrangement will yield before any damage is inflicted on the fabric",
+        active: tel.forceAnisotropyRatio > 5,
+        tone: tel.forceAnisotropyRatio > 5 ? "held" : "live",
+        caption: `Peel fracture anisotropy active: steady peel requires only ${tel.totalPeelForceN.toFixed(2)} N (anisotropy ratio: ${tel.forceAnisotropyRatio.toFixed(1)}x over shear), peeling cleanly without fiber damage.`,
       },
     ];
   }
@@ -2380,6 +2440,93 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
     ];
   }
 
+  if (patentId === "us-4765668-robot-end-effector") {
+    const state = stepRobotEndEffector(params);
+    const fingersRetained = state.fingerRetainedFraction > 0.5;
+    return [
+      {
+        id: "left-and-right-hand-threaded",
+        phrase: "left and right hand threaded ball screw",
+        active: true,
+        tone: "live",
+        caption: `The shared 5 mm-lead kernel gives a ${(state.jawOpeningM * 1000).toFixed(1)} mm source-typical jaw gap while equal-and-opposite hands preserve the ideal midpoint.`,
+      },
+      {
+        id: "substantially-symmetrical",
+        phrase: "substantially symmetrical to said screw mid portion",
+        active: Math.abs(state.symmetricMidpointM) < 1e-12,
+        tone: "held",
+        caption:
+          "The display enforces ideal symmetric kinematics only. The source reports repeatability but withholds backlash, stiffness, and loading measurements needed for a physical error budget.",
+      },
+      {
+        id: "removably-mounting-finger",
+        phrase: "removably mounting each said finger",
+        active: fingersRetained,
+        tone: fingersRetained ? "held" : "broken",
+        caption: fingersRetained
+          ? "Claims 13–15's rail/channel, dovetail, and catch arrangement is represented as a retained finger interface."
+          : "Finger-change probe: the source's auxiliary-fixture sequence has released the illustrative fingers; no grasp or contact result is asserted.",
+      },
+      {
+        id: "rotation-signal",
+        phrase: "signal indicative of the rotation",
+        active: true,
+        tone: "live",
+        caption: `The source's eight pegs yield an encoder teaching phase of ${state.encoderCountModulo.toFixed(2)} of 8. It is not promoted to a complete servo or repeatability model.`,
+      },
+    ];
+  }
+
+  if (patentId === GOERTZ_MASTER_SLAVE_ID) {
+    const pose = stepGoertzMasterSlaveTopology(params);
+    const mismatchActive = pose.errorMagnitude > 0.01;
+    return [
+      {
+        id: "seven-types-of-motion",
+        phrase: "seven types of motion occurring in one unit are reproduced in the other unit",
+        active: true,
+        tone: "held",
+        caption:
+          "The exhibit keeps all seven source-enumerated movements as separate correspondence channels; it does not convert them into an unprovided Cartesian reach, scale, or speed model.",
+      },
+      {
+        id: "error-signal-e",
+        phrase: "error signal E proportional in amplitude",
+        active: mismatchActive,
+        tone: mismatchActive ? "live" : "held",
+        caption: `The visible mismatch is ${(pose.errorMagnitude * 100).toFixed(0)}% in a normalized source topology. Its direction is represented structurally, not as an invented voltage or gain.`,
+      },
+      {
+        id: "sense-of-feel",
+        phrase: "sense of feel",
+        active: pose.forceReflectionEnabled && mismatchActive,
+        tone: pose.forceReflectionEnabled && mismatchActive ? "live" : "broken",
+        caption: pose.forceReflectionEnabled
+          ? "Claim 9 probe: a remote obstruction is shown returning an explicitly normalized resistance cue to the master handle. No force calibration is asserted."
+          : "The bilateral reflection probe is off, so remote mismatch is not returned to the master display.",
+      },
+      {
+        id: "tachometers-205",
+        phrase: "tachometers 205 are connected in a bridge circuit",
+        active: pose.tachometerDampingEnabled,
+        tone: pose.tachometerDampingEnabled ? "held" : "broken",
+        caption: pose.tachometerDampingEnabled
+          ? "Claim 11 probe: the source-described relative-speed path is enabled as a damping topology, without a numerical speed or stability prediction."
+          : "The relative-speed damping probe is off; the source’s tachometer bridge relationship is not applied to the normalized display.",
+      },
+      {
+        id: "limiter-210",
+        phrase: "limiter 210",
+        active: pose.limiterActive,
+        tone: pose.limiterActive ? "live" : "held",
+        caption: pose.limiterActive
+          ? "Claims 10 and 12 probe: the normalized command is clipped at the exhibit boundary, not at a source-derived voltage or motor-speed value."
+          : "The source describes limiter 210; it remains inactive until the illustrative mismatch exceeds the normalized display limit.",
+      },
+    ];
+  }
+
   if (patentId === "us-3119501-lemelson-automatic-warehousing") {
     const railAddress = params.railAddressFraction ?? 0.55;
     const levelAddress = params.levelAddressFraction ?? 0.42;
@@ -2570,6 +2717,100 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         caption: preferredPointP
           ? "The preferred point-P topology is selected."
           : "The source says small deviations from coincidence may be used but inherently reduce the full orientation range by creating small holes.",
+      },
+    ];
+  }
+
+  if (patentId === "us-4921293-salisbury-robot-hand") {
+    const controls = readSalisburyRobotHandControls(params);
+    const tel = FrankenSimEngine.stepSalisburyRobotHand(controls);
+
+    return [
+      {
+        id: "salisbury-connected-arm-hand",
+        phrase: "the hand 10 is attached to the terminal end of a robot manipulator arm 12",
+        active: true,
+        tone: "held",
+        caption:
+          "Figure 1 supplies a continuous source path: arm 12, end bracket 14, two-axis wrist 16/18, palm 20/24, and three palm-anchored articulated digits.",
+      },
+      {
+        id: "salisbury-four-contiguous-pulleys",
+        phrase: "all four pulley sheaves 30′, 30″, 30‴, 30⁗ contiguously on Axis 1",
+        active: tel.claim1RoutingProbe,
+        tone: tel.claim1RoutingProbe ? "live" : "broken",
+        caption: tel.claim1RoutingProbe
+          ? `The admitted source topology has 4 cable ends per digit and 12 across the three-digit hand; peak visitor-declared tension is ${Math.max(...tel.tendonTensionsN).toFixed(1)} N.`
+          : "The four-cable/three-joint source route was not admitted.",
+      },
+      {
+        id: "salisbury-base-paired-pull",
+        phrase: "There is no direct cable connection to the base joint 40 at Axis 1.",
+        active: !tel.refused,
+        tone: "live",
+        caption: `${tel.pullPattern}. The Figure 3 equations currently return τ₁=${tel.jointTorquesNm[0].toFixed(3)}, τ₂=${tel.jointTorquesNm[1].toFixed(3)}, and τ₃=${tel.jointTorquesNm[2].toFixed(3)} N·m.`,
+      },
+      {
+        id: "salisbury-strain-tension",
+        phrase:
+          "measure the strain on the deflecting member 64, which is a function of the tension on the cable 33",
+        active: !tel.refused,
+        tone: "live",
+        caption:
+          "The source discloses two strain-gauge layouts and one sensor per cable, but no calibration curve, range, accuracy, or bandwidth from which to fabricate sensor telemetry.",
+      },
+      {
+        id: "salisbury-radius-boundary",
+        phrase:
+          "these relations depend upon the actual pulley sizes selected for routing the various cables T₁ through T₄",
+        active: true,
+        tone: "held",
+        caption: `R₂=${(tel.pulleyRadiiM[1] * 1000).toFixed(1)} mm is a visitor-declared study scale. R₁=1.2R₂ and R₃=1.4R₂ preserve the illustrated ordering only; they are not historic dimensions.`,
+      },
+      {
+        id: "salisbury-claim-2-idler",
+        phrase: "means to fix the position of said first idler pulley",
+        active: tel.claim2IdlerProbe,
+        tone: tel.claim2IdlerProbe ? "live" : "broken",
+        caption: tel.claim2IdlerProbe
+          ? "The Claim 2 teaching predicate holds the first-axis idler while the cable drive engages both it and the outboard drive pulley."
+          : "The comparison releases the first idler. This changes only the Claim 2 predicate; it does not fabricate a decoupling error or dynamic failure.",
+      },
+    ];
+  }
+
+  if (patentId === "us-4575330-hull-stereolithography") {
+    const controls = readHullStereolithographyControls(params);
+    const tel = stepHullStereolithographySi(controls);
+
+    return [
+      {
+        id: "hull-layer-by-layer-buildup",
+        phrase: "each lamina being integrated with the previous lamina to build up the desired three-dimensional object",
+        active: tel.isCured && tel.interlayerAdhesionRatio >= 1.0,
+        tone: tel.isCured && tel.interlayerAdhesionRatio >= 1.0 ? "held" : "broken",
+        caption: `Cure depth is ${tel.cureDepthUm.toFixed(1)} µm vs layer step ${controls.layerThicknessUm} µm (interlayer ratio ${tel.interlayerAdhesionRatio.toFixed(2)}x). Monolithic interlayer adhesion is ${tel.interlayerAdhesionRatio >= 1.0 ? "active" : "delaminated"}.`,
+      },
+      {
+        id: "hull-synergistic-stimulation",
+        phrase: "application of synergistic stimulation, such as ultraviolet light, to a fluid medium",
+        active: tel.isCured,
+        tone: tel.isCured ? "live" : "broken",
+        caption: `Peak UV exposure E_max is ${tel.peakExposureMJCm2.toFixed(2)} mJ/cm² (critical threshold E_c = ${controls.criticalExposureMJCm2} mJ/cm²). Photopolymerization conversion is ${tel.polymerizationConversionPct.toFixed(1)}%.`,
+      },
+      {
+        id: "hull-galvo-laser-scan",
+        phrase: "spot of ultraviolet light 27 generated by source 26 is moved across the surface",
+        active: !tel.underexposureRefusal && !tel.overpenetrationRefusal,
+        tone: !tel.underexposureRefusal && !tel.overpenetrationRefusal ? "live" : "broken",
+        caption: `Scanning vector velocity is ${controls.laserScanSpeedMmS} mm/s with Gaussian beam radius w₀ = ${controls.beamWaistRadiusUm} µm, generating cured line width L_w = ${tel.curedLineWidthUm.toFixed(1)} µm.`,
+      },
+      {
+        id: "hull-elevator-stepping",
+        phrase: "elevator 29 then moves down by a predetermined layer thickness",
+        active: !tel.recoatDelayRefusal,
+        tone: !tel.recoatDelayRefusal ? "live" : "broken",
+        caption: `Elevator steps ${controls.layerThicknessUm} µm at ${controls.elevatorDipSpeedMmS} mm/s. Resin viscosity (${controls.resinViscosityCp} cP) yields meniscus settling time of ${tel.recoatMeniscusSettlingTimeSec.toFixed(2)} s.`,
       },
     ];
   }

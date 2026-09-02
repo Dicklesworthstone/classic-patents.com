@@ -21596,6 +21596,115 @@ ALL_COLORIZED_EQUATIONS["us-4341502-makino-scara"] = [
   },
 ];
 
+ALL_COLORIZED_EQUATIONS["us-4765668-robot-end-effector"] = [
+  {
+    id: "robot-end-effector-symmetric-gap",
+    patentId: "us-4765668-robot-end-effector",
+    title: "Opposed-Thread Screw Gap and Fixed Midpoint",
+    category: "Source-Bounded End-Effector Kinematics",
+    rawLatex: "g=\\ell\\theta/\\pi,\\qquad x_L=+g/2,\\quad x_R=-g/2,\\quad m=(x_L+x_R)/2=0",
+    colorizedLatex:
+      "\\textcolor{#9333ea}{g}=\\textcolor{#059669}{\\ell}\\textcolor{#0891b2}{\\theta}/\\pi,\\qquad\\textcolor{#0891b2}{x_L}=+\\textcolor{#9333ea}{g}/2,\\quad\\textcolor{#d97706}{x_R}=-\\textcolor{#9333ea}{g}/2,\\quad\\textcolor{#0d9488}{m}=0",
+    plainEnglishSentence: [
+      { text: "The live " },
+      { text: "jaw gap", variableId: "jaw_gap" },
+      { text: " follows the disclosed " },
+      { text: "screw lead", variableId: "screw_lead" },
+      { text: " and screw rotation; left and right hands move equally in opposite directions so the ideal " },
+      { text: "midpoint", variableId: "midpoint" },
+      { text: " stays fixed." },
+    ],
+    variables: [
+      {
+        id: "jaw_gap",
+        symbol: "g",
+        name: "Jaw Opening",
+        color: "amethyst",
+        role: "Distance between the opposed fingers in the source-bounded teaching model",
+        unit: "mm",
+        dimension: "[L]",
+        explanation:
+          "The preferred embodiment says a jaw opening can typically be 6 inches. The control scales that printed 0.1524 m value; it is not an unqualified capability of every claimed gripper.",
+        telemetryMetricLabel: "Jaw Opening",
+      },
+      {
+        id: "screw_lead",
+        symbol: "\\ell",
+        name: "Ball-Screw Lead",
+        color: "emerald",
+        role: "Linear travel per screw revolution in the disclosed prototype",
+        unit: "m/rev",
+        dimension: "[L]",
+        explanation:
+          "The source prints a 5 mm left/right-hand thread lead in the prototype. It supplies the kinematic conversion only, not backlash, stiffness, or a complete motion controller.",
+      },
+      {
+        id: "midpoint",
+        symbol: "m",
+        name: "Ideal Gripping Midpoint",
+        color: "teal",
+        role: "Mean of the equal-and-opposite hand displacements",
+        unit: "m",
+        dimension: "[L]",
+        explanation:
+          "The equation explains the source's repeatable center point in ideal kinematics. Real backlash, compliance, and contact loading are not modeled from the grant's incomplete dimensional data.",
+      },
+    ],
+    pedagogicalNote:
+      "This is a direct kinematic reading of the printed 5 mm opposed-thread prototype. It intentionally does not treat the reported force or repeatability as a derived contact, payload, stiffness, or pneumatic calculation.",
+    claimRef: 1,
+    historicalSignificance:
+      "Claim 1 makes symmetric hand motion around a screw midpoint and removable fingers the legal core of the gripper combination.",
+  },
+  {
+    id: "robot-end-effector-eight-peg-encoder",
+    patentId: "us-4765668-robot-end-effector",
+    title: "Eight-Peg Gear Encoder Quantization",
+    category: "Source-Bounded Rotation Sensing",
+    rawLatex: "\\Delta\\theta_m=2\\pi/8,\\qquad n=8N_m",
+    colorizedLatex:
+      "\\textcolor{#d97706}{\\Delta\\theta_m}=2\\pi/\\textcolor{#0891b2}{8},\\qquad\\textcolor{#9333ea}{n}=\\textcolor{#0891b2}{8}\\textcolor{#059669}{N_m}",
+    plainEnglishSentence: [
+      { text: "Eight source-described pegs make the " },
+      { text: "motor-gear encoder phase", variableId: "encoder_phase" },
+      { text: " advance in eighth-turn events; this indicates gear rotation without claiming that it alone created the printed " },
+      { text: "repeatability", variableId: "repeatability" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "encoder_phase",
+        symbol: "n\\bmod 8",
+        name: "Encoder Peg Phase",
+        color: "sapphire",
+        role: "Continuous teaching phase of the eight pegs mounted on the motor spur gear",
+        unit: "of 8 pegs",
+        dimension: "[1]",
+        explanation:
+          "The specification says the inductive switch senses eight pressed-in pegs to provide an 8-count encoder. It does not state interpolation, controller bandwidth, or a complete feedback chain.",
+        telemetryMetricLabel: "Encoder Phase",
+      },
+      {
+        id: "repeatability",
+        symbol: "\\delta_r",
+        name: "Reported System Repeatability",
+        color: "amethyst",
+        role: "Source-reported variation over the grip-force range for one design",
+        unit: "mm",
+        dimension: "[L]",
+        explanation:
+          "The grant reports no more than 0.05 mm (0.002 in.) over the range of grip forces. It does not assign that result to one sensor, or give test conditions sufficient to derive it.",
+        telemetryMetricLabel: "Reported Repeatability",
+      },
+    ],
+    pedagogicalNote:
+      "The relation renders the source's eight-pulse encoder count, not a modern high-resolution servo. The reported repeatability remains a printed result rather than an inferred consequence of peg count.",
+    claimRef: 8,
+    historicalSignificance:
+      "Claim 8 brings a spur-gear rotation signal into the mechanically driven end-effector combination.",
+  },
+];
+
 // The legacy catalogue block above described a generic modern Otto cycle and
 // attached it to the wrong printed claim. This active set follows the reviewed
 // US 194,047 edition: Claim 1 owns the graded charge and Claim 3 owns the
@@ -22954,6 +23063,553 @@ ALL_COLORIZED_EQUATIONS["us-4068536-stackhouse-manipulator"] = [
     pedagogicalNote:
       "The composition makes the serial topology legible while refusing undisclosed dimensions, gear ratios, hydraulic dynamics, loads, power, precision, Jacobian, and singularity performance. Exact intersection at P is the preferred embodiment; the source also allows small deviations and warns that they create small orientation holes.",
     historicalSignificance:
-      "The grant documents a compact remotely driven industrial-robot wrist built from nested shafts, bevel gears, and a preferred common orientation point.",
+      "The grant documents a compact remotely driven industrial-robot wrist built from nested shafts, bevel gears, a preferred common orientation point.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-4575330-hull-stereolithography"] = [
+  {
+    id: "hull-beer-lambert-cure-depth",
+    patentId: "us-4575330-hull-stereolithography",
+    title: "Beer-Lambert Photopolymerization Curing Depth Law",
+    category: "Photopolymer Reaction Kinetics & Depth Control",
+    rawLatex: "C_d = D_p \\ln\\left( \\frac{E_{\\text{max}}}{E_c} \\right)",
+    colorizedLatex:
+      "\\textcolor{#2563eb}{C_d} = \\textcolor{#059669}{D_p} \\ln\\left( \\frac{\\textcolor{#d97706}{E_{\\text{max}}}}{\\textcolor{#9333ea}{E_c}} \\right)",
+    plainEnglishSentence: [
+      { text: "The cross-linked " },
+      { text: "cure depth", variableId: "cure_depth" },
+      { text: " equals the resin " },
+      { text: "optical penetration depth", variableId: "penetration_depth" },
+      { text: " multiplied by the natural logarithm of " },
+      { text: "peak laser exposure", variableId: "peak_exposure" },
+      { text: " divided by the " },
+      { text: "critical gelation threshold", variableId: "critical_exposure" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "cure_depth",
+        symbol: "C_d",
+        name: "Polymerization Curing Depth",
+        color: "sapphire",
+        role: "Total depth of solid gelled polymer formed beneath the liquid surface",
+        unit: "micrometres (µm)",
+        dimension: "[L]",
+        explanation:
+          "Cure depth must exceed the sliced elevator layer step Δz (typically by 20–40%) to ensure rigid cross-linked chemical adhesion between adjacent laminar layers.",
+        telemetryMetricLabel: "Curing Depth C_d",
+      },
+      {
+        id: "penetration_depth",
+        symbol: "D_p",
+        name: "Optical Penetration Depth",
+        color: "emerald",
+        role: "Depth at which UV radiant intensity attenuates to 1/e (36.8%) of surface value",
+        unit: "micrometres (µm)",
+        dimension: "[L]",
+        explanation:
+          "Governed by the concentration and molar extinction coefficient of UV photoinitiators and absorbers formulated into the liquid resin.",
+      },
+      {
+        id: "peak_exposure",
+        symbol: "E_{\\text{max}}",
+        name: "Peak Centerline Radiant Exposure",
+        color: "amber",
+        role: "Maximum actinic UV energy delivered per unit area along the laser beam scan axis",
+        unit: "millijoules per cm² (mJ/cm²)",
+        dimension: "[M T⁻²]",
+        explanation:
+          "Determined by laser power, galvanometer scan velocity, and Gaussian optical spot radius.",
+        telemetryMetricLabel: "Peak Centerline Exposure E_max",
+      },
+      {
+        id: "critical_exposure",
+        symbol: "E_c",
+        name: "Critical Exposure Threshold",
+        color: "amethyst",
+        role: "Minimum radiant energy required to reach the resin gel point",
+        unit: "millijoules per cm² (mJ/cm²)",
+        dimension: "[M T⁻²]",
+        explanation:
+          "Below this exposure threshold, monomer radical recombination inhibits chain cross-linking and the resin remains completely liquid.",
+      },
+    ],
+    pedagogicalNote:
+      "Hull's mathematical formulation allows 3D printer controllers to dynamically regulate laser scan speed across complex contours to maintain an exact, uniform curing depth.",
+    historicalSignificance:
+      "The Beer-Lambert working curve remains the fundamental governing equation taught in additive manufacturing engineering curricula worldwide.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-4921293-salisbury-robot-hand"] = [
+  {
+    id: "salisbury-figure-3-torque-map",
+    patentId: "us-4921293-salisbury-robot-hand",
+    title: "Figure 3 Four-Tension / Three-Torque Map",
+    category: "Source-Bounded Robotic Cable Transmission",
+    rawLatex:
+      "\\begin{aligned}\\tau_1&=-T_1R_1+T_2R_2+T_3R_2-T_4R_1\\\\\\tau_2&=T_1R_3+T_2R_2-T_3R_2-T_4R_3\\\\\\tau_3&=T_2R_2-T_3R_2\\end{aligned}",
+    colorizedLatex:
+      "\\begin{aligned}\\textcolor{#2563eb}{\\tau_1}&=-\\textcolor{#0891b2}{T_1}\\textcolor{#9333ea}{R_1}+\\textcolor{#16a34a}{T_2}\\textcolor{#9333ea}{R_2}+\\textcolor{#e11d48}{T_3}\\textcolor{#9333ea}{R_2}-\\textcolor{#ea580c}{T_4}\\textcolor{#9333ea}{R_1}\\\\\\textcolor{#16a34a}{\\tau_2}&=\\textcolor{#0891b2}{T_1}\\textcolor{#9333ea}{R_3}+\\textcolor{#16a34a}{T_2}\\textcolor{#9333ea}{R_2}-\\textcolor{#e11d48}{T_3}\\textcolor{#9333ea}{R_2}-\\textcolor{#ea580c}{T_4}\\textcolor{#9333ea}{R_3}\\\\\\textcolor{#d97706}{\\tau_3}&=\\textcolor{#16a34a}{T_2}\\textcolor{#9333ea}{R_2}-\\textcolor{#e11d48}{T_3}\\textcolor{#9333ea}{R_2}\\end{aligned}",
+    plainEnglishSentence: [
+      { text: "The three " },
+      { text: "joint torques", variableId: "torque_1" },
+      { text: " are the signed sums of " },
+      { text: "four measured cable tensions", variableId: "tension_1" },
+      { text: " multiplied by the " },
+      { text: "selected pulley radii", variableId: "radii" },
+      { text: " in the Figure 3 route." },
+    ],
+    variables: [
+      {
+        id: "torque_1",
+        symbol: "\\tau_1",
+        name: "Axis 1 Source Torque",
+        color: "sapphire",
+        role: "Signed moment about the first joint axis for the Figure 3 cable route",
+        unit: "Newton-metres (N·m)",
+        dimension: "[M L² T⁻²]",
+        explanation:
+          "T₂ and T₃ contribute with one sign, while T₁ and T₄ contribute through R₁ with the opposite sign.",
+        telemetryMetricLabel: "Axis 1 source torque",
+      },
+      {
+        id: "torque_2",
+        symbol: "\\tau_2",
+        name: "Axis 2 Source Torque",
+        color: "emerald",
+        role: "Signed moment about the second joint axis for the Figure 3 cable route",
+        unit: "Newton-metres (N·m)",
+        dimension: "[M L² T⁻²]",
+        explanation:
+          "The second equation combines T₁ and T₄ through R₃ with the opposed T₂ and T₃ terms through R₂.",
+        telemetryMetricLabel: "Axis 2 source torque",
+      },
+      {
+        id: "torque_3",
+        symbol: "\\tau_3",
+        name: "Axis 3 Source Torque",
+        color: "amber",
+        role: "Signed moment about the third joint axis for the Figure 3 cable route",
+        unit: "Newton-metres (N·m)",
+        dimension: "[M L² T⁻²]",
+        explanation:
+          "Only the opposed T₂ and T₃ terms appear in the third equation printed by the grant.",
+        telemetryMetricLabel: "Axis 3 source torque",
+      },
+      {
+        id: "tension_1",
+        symbol: "T_1",
+        name: "Cable-End Tension T₁",
+        color: "cyan",
+        role: "Visitor-declared tension in the first labelled cable end",
+        unit: "Newtons (N)",
+        dimension: "[M L T⁻²]",
+        explanation:
+          "T₁ appears in the first and second source equations; the patent prints no historical operating value.",
+        telemetryKey: "tensionT1N",
+      },
+      {
+        id: "tension_2",
+        symbol: "T_2",
+        name: "Cable-End Tension T₂",
+        color: "emerald",
+        role: "Visitor-declared tension in the second labelled cable end",
+        unit: "Newtons (N)",
+        dimension: "[M L T⁻²]",
+        explanation:
+          "T₂ contributes to all three printed equations; the patent describes strain-based sensing but gives no calibration range.",
+        telemetryKey: "tensionT2N",
+      },
+      {
+        id: "tension_3",
+        symbol: "T_3",
+        name: "Cable-End Tension T₃",
+        color: "rose",
+        role: "Visitor-declared tension in the third labelled cable end",
+        unit: "Newtons (N)",
+        dimension: "[M L T⁻²]",
+        explanation:
+          "T₃ opposes T₂ in the second and third torque expressions for the illustrated route.",
+        telemetryKey: "tensionT3N",
+      },
+      {
+        id: "tension_4",
+        symbol: "T_4",
+        name: "Cable-End Tension T₄",
+        color: "coral",
+        role: "Visitor-declared tension in the fourth labelled cable end",
+        unit: "Newtons (N)",
+        dimension: "[M L T⁻²]",
+        explanation:
+          "T₄ appears in the first and second source equations with the signs printed in the specification.",
+        telemetryKey: "tensionT4N",
+      },
+      {
+        id: "radii",
+        symbol: "R_1,R_2,R_3",
+        name: "Illustrative Pulley Radii",
+        color: "amethyst",
+        role: "Lever arms selected for the Figure 3 teaching study",
+        unit: "Metres (m)",
+        dimension: "[L]",
+        explanation:
+          "The source shows R₃ larger than R₁ and R₁ larger than R₂ for its exploded illustration, but warns that actual routing may use four different radii. The control declares R₂; the exhibit uses R₁=1.2R₂ and R₃=1.4R₂ only as labelled study ratios.",
+        telemetryKey: "radiusScaleMm",
+      },
+    ],
+    pedagogicalNote:
+      "These are the three equations printed beside Figure 3, not a generic force-closure or dynamic hand model. The source does not supply a cable pretension, contact law, motor limit, link inertia, or stability result.",
+    claimRef: 1,
+    historicalSignificance:
+      "The grant makes its preferred cable route unusually inspectable by printing the signed torque contributions directly; it also states that other rigging may use four different radii.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-2717437-mestral-velcro"] = [
+  {
+      id: "mestral-hook-deflection",
+      patentId: "us-2717437-mestral-velcro",
+      title: "Euler-Bernoulli Elastic Micro-Hook Deflection",
+      category: "Polymer Beam Mechanics",
+      rawLatex: "\\delta = \\frac{F L^3}{3 E I} = \\frac{64 F L^3}{3 \\pi E d^4}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\delta} = \\frac{64 \\textcolor{#2563eb}{F} \\textcolor{#d97706}{L^3}}{3 \\pi \\textcolor{#9333ea}{E} \\textcolor{#0d9488}{d^4}}",
+      plainEnglishSentence: [
+        { text: "The elastic " },
+        { text: "hook tip deflection", variableId: "delta" },
+        { text: " scales proportionally with the applied " },
+        { text: "disengagement force", variableId: "disengagement_force" },
+        { text: " and " },
+        { text: "cantilever length cubed", variableId: "hook_length" },
+        { text: ", and inversely with the nylon " },
+        { text: "elastic modulus", variableId: "elastic_modulus" },
+        { text: " and " },
+        { text: "monofilament diameter to the fourth power", variableId: "filament_diameter" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "delta",
+          symbol: "\\delta",
+          name: "Hook Tip Deflection",
+          color: "emerald",
+          role: "Transverse displacement of the hook tip as it flexes open to clear the opposing loop",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Under peel traction, each hook acts as a curved cantilever beam, deflecting elastically until the loop slips free over the hook apex.",
+          telemetryKey: "hookDeflectionMm",
+          telemetryMetricLabel: "Hook Deflection",
+        },
+        {
+          id: "disengagement_force",
+          symbol: "F",
+          name: "Disengagement Force",
+          color: "sapphire",
+          role: "Normal tensile pull force applied to a single hook by an escaping loop",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Typical disengagement release forces range from 0.02 N to 0.08 N per individual micro-hook.",
+          telemetryKey: "singleHookReleaseForceN",
+          telemetryMetricLabel: "Single Hook Force",
+        },
+        {
+          id: "hook_length",
+          symbol: "L",
+          name: "Cantilever Hook Length",
+          color: "amber",
+          role: "Free standing length of the raised pile monofilament from root to hook apex",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Determined by the height of the metallic lancet bar on the velvet loom during weaving.",
+        },
+        {
+          id: "elastic_modulus",
+          symbol: "E",
+          name: "Polyamide Young's Modulus",
+          color: "amethyst",
+          role: "Tensile stiffness of drawn polyamide-6,6 monofilament (~2.8 GPa)",
+          unit: "Pascals (Pa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "Axial drawing of the nylon filament aligns polymer chains, maximizing spring recovery and fatigue endurance.",
+        },
+        {
+          id: "filament_diameter",
+          symbol: "d",
+          name: "Monofilament Diameter",
+          color: "teal",
+          role: "Cross-sectional diameter of the synthetic pile yarn (~0.15–0.30 mm)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Because stiffness scales with d^4, a slight increase in filament diameter creates significantly stiffer, more aggressive hooks.",
+        },
+      ],
+      pedagogicalNote:
+        "De Mestral's hook acts as an elastic spring: it flexes open nondestructively when peeled, then snaps back into its curved profile due to thermal setting memory.",
+      claimRef: 1,
+      historicalSignificance:
+        "Proved that synthetic thermoplastic fibers could replace rigid metal hardware by exploiting elasticity and micro-scale geometry.",
+    },
+    {
+      id: "mestral-peeling-anisotropy",
+      patentId: "us-2717437-mestral-velcro",
+      title: "Fracture Mechanics of Peeling Anisotropy",
+      category: "Adhesion & Fracture Mechanics",
+      rawLatex: "F_{\\text{peel}} = \\frac{w G_c}{1 - \\cos\\theta}",
+      colorizedLatex:
+        "\\textcolor{#059669}{F_{\\text{peel}}} = \\frac{\\textcolor{#2563eb}{w} \\textcolor{#d97706}{G_c}}{1 - \\cos\\textcolor{#9333ea}{\\theta}}",
+      plainEnglishSentence: [
+        { text: "Total steady-state " },
+        { text: "peeling force", variableId: "peel_force" },
+        { text: " is determined by " },
+        { text: "fastener tape width", variableId: "tape_width" },
+        { text: " and " },
+        { text: "critical hook adhesion energy", variableId: "adhesion_energy" },
+        { text: ", modulated by the geometric " },
+        { text: "peeling angle", variableId: "peel_angle" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "peel_force",
+          symbol: "F_{\\text{peel}}",
+          name: "Steady-State Peeling Force",
+          color: "emerald",
+          role: "Total force required to propagate the peeling front along the fastener tape",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Peeling force remains low because only one row of hooks at the peel front experiences load at any instant.",
+          telemetryKey: "totalPeelForceN",
+          telemetryMetricLabel: "Peel Force (1-in Tape)",
+        },
+        {
+          id: "tape_width",
+          symbol: "w",
+          name: "Fastener Tape Width",
+          color: "sapphire",
+          role: "Transverse width of the hook-and-loop strip (typically 25 mm / 1 inch)",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation:
+            "Peel resistance scales linearly with tape width along the 1D peeling front line.",
+        },
+        {
+          id: "adhesion_energy",
+          symbol: "G_c",
+          name: "Critical Hook Fracture Energy",
+          color: "amber",
+          role: "Mechanical energy required to disengage one unit area of engaged hook-loop bonds",
+          unit: "Joules per square meter (J/m^2)",
+          dimension: "[M T^-2]",
+          explanation:
+            "Equals the cumulative bending strain energy of all hooks disengaging across the unit crack advance.",
+        },
+        {
+          id: "peel_angle",
+          symbol: "\\theta",
+          name: "Peeling Angle",
+          color: "amethyst",
+          role: "Angle between the peeled tape strip and the substrate plane (typically 90° or 180°)",
+          unit: "Degrees (°)",
+          dimension: "[1]",
+          explanation:
+            "As theta increases towards 180° (T-peel), the denominator (1 - cos theta) approaches 2, minimizing the pull force required to open the fastener.",
+        },
+      ],
+      pedagogicalNote:
+        "The extreme force anisotropy of Velcro (shear resistance / peel resistance > 10) arises because shear loads engage all N hooks in parallel, whereas peeling unzips them sequentially one line at a time.",
+      claimRef: 3,
+      historicalSignificance:
+        "Established the universal biomimetic principle of peeling anisotropy used across modern aerospace, medical, and consumer fasteners.",
+    },
+  ];
+
+ALL_COLORIZED_EQUATIONS["us-2846084-goertz-electronic-master-slave-manipulator"] = [
+  {
+    id: "goertz-synchro-position-error",
+    patentId: "us-2846084-goertz-electronic-master-slave-manipulator",
+    title: "Synchro Position-Error Correspondence",
+    category: "Source-Bounded Bilateral Teleoperation",
+    rawLatex: "E\\propto q_m-q_s",
+    colorizedLatex:
+      "\\textcolor{#f59e0b}{E}\\propto\\textcolor{#06b6d4}{q_m}-\\textcolor{#8b5cf6}{q_s}",
+    plainEnglishSentence: [
+      { text: "The source-described synchro pair makes an " },
+      { text: "error signal", variableId: "position_error" },
+      { text: " from the difference between the normalized master " },
+      { text: "channel position", variableId: "master_position" },
+      { text: " and its corresponding slave " },
+      { text: "channel position", variableId: "slave_position" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "position_error",
+        symbol: "E",
+        name: "Synchro Position-Error Signal",
+        color: "amber",
+        role: "The source’s directional alternating error signal between corresponding positions",
+        unit: "normalized source topology",
+        dimension: "[1]",
+        explanation:
+          "The grant says amplitude is proportional to the difference and phase records the direction of mechanical error. It does not publish a volts-per-degree conversion or loop gain.",
+        telemetryMetricLabel: "Largest Channel Mismatch",
+      },
+      {
+        id: "master_position",
+        symbol: "q_m",
+        name: "Master-Channel Position",
+        color: "cyan",
+        role: "A normalized configuration of one source-described master movement",
+        unit: "normalized channel coordinate",
+        dimension: "[1]",
+        explanation:
+          "The interactive exhibit maps the authored slider to one of the seven named movements. The grant supplies no common coordinate scale or arm geometry in metres.",
+        telemetryKey: "horizontalArmPivot",
+      },
+      {
+        id: "slave_position",
+        symbol: "q_s",
+        name: "Slave-Channel Position",
+        color: "amethyst",
+        role: "The corresponding normalized remote movement that the servo tends to reproduce",
+        unit: "normalized channel coordinate",
+        dimension: "[1]",
+        explanation:
+          "The patent describes corresponding movement, not a measured Cartesian workspace. Remote contact is represented only as an explicitly illustrative normalized mismatch.",
+        telemetryKey: "contactResistance",
+      },
+    ],
+    pedagogicalNote:
+      "This is a source-level proportionality statement, not a fabricated controller equation. The visitor can vary a named master channel and an illustrative contact state, but the document does not justify numerical voltage, gain, speed, force, or bandwidth output.",
+    claimRef: 9,
+    historicalSignificance:
+      "Claim 9 makes position difference the bridge between remote obstruction and a response on both members of a bilateral master–slave system.",
+  },
+  {
+    id: "goertz-reflected-resistance",
+    patentId: "us-2846084-goertz-electronic-master-slave-manipulator",
+    title: "Claim 9 Reflected-Resistance Relationship",
+    category: "Source-Bounded Bilateral Teleoperation",
+    rawLatex: "r_{\\text{display}}\\propto |E|",
+    colorizedLatex:
+      "\\textcolor{#059669}{r_{\\text{display}}}\\propto|\\textcolor{#f59e0b}{E}|",
+    plainEnglishSentence: [
+      { text: "When the remote mechanism meets an illustrative " },
+      { text: "contact resistance state", variableId: "remote_contact" },
+      { text: ", the rising mismatch produces a normalized " },
+      { text: "reflected-resistance display", variableId: "reflected_resistance" },
+      { text: " when Claim 9 force reflection is enabled." },
+    ],
+    variables: [
+      {
+        id: "reflected_resistance",
+        symbol: "r_{\\text{display}}",
+        name: "Reflected-Resistance Display",
+        color: "emerald",
+        role: "Normalized visual indicator of the source-described resistance returning to the master",
+        unit: "normalized display relation",
+        dimension: "[1]",
+        explanation:
+          "It is deliberately not labelled newtons or torque. The historical patent says resistance can appear at the master but does not give a force calibration, impedance, or contact model.",
+        telemetryMetricLabel: "Reflected Resistance",
+      },
+      {
+        id: "remote_contact",
+        symbol: "c",
+        name: "Illustrative Remote Contact State",
+        color: "coral",
+        role: "Visitor-controlled normalized obstruction scenario used to expose the source’s causal chain",
+        unit: "illustrative normalized state",
+        dimension: "[1]",
+        explanation:
+          "This control is an educational scenario selector, not a claim that the patent measures material stiffness or predicts contact force.",
+        telemetryKey: "contactResistance",
+      },
+      {
+        id: "force_reflection",
+        symbol: "\\mathcal{R}_9",
+        name: "Claim 9 Bilateral Reflection Path",
+        color: "sapphire",
+        role: "On/off probe for the issued force-reflection topology",
+        unit: "claim probe",
+        dimension: "[1]",
+        explanation:
+          "Claim 9 directs force on both corresponding movable elements in a manner tending toward correspondence. The control reveals that topology without converting it into a modern haptic performance specification.",
+        telemetryKey: "forceReflectionEnabled",
+      },
+    ],
+    pedagogicalNote:
+      "The equation intentionally uses a display relation rather than a force law. It makes the beaker example legible while preserving the boundary between a historical bilateral-servo claim and an unprovided Newton-for-Newton haptic calibration.",
+    claimRef: 9,
+    historicalSignificance:
+      "The issued language is an early clear statement that remote mechanical resistance can be returned to a human operator through a paired electrical servo arrangement.",
+  },
+  {
+    id: "goertz-tachometer-limiter-path",
+    patentId: "us-2846084-goertz-electronic-master-slave-manipulator",
+    title: "Relative-Speed Feedback and Limited Error Path",
+    category: "Source-Bounded Bilateral Teleoperation",
+    rawLatex:
+      "V_t\\propto\\dot q_m-\\dot q_s,\\qquad E_{\\text{drive}}=\\operatorname{limit}(E-V_t)",
+    colorizedLatex:
+      "\\textcolor{#9333ea}{V_t}\\propto\\dot{\\textcolor{#06b6d4}{q_m}}-\\dot{\\textcolor{#8b5cf6}{q_s}},\\qquad\\textcolor{#f59e0b}{E_{\\text{drive}}}=\\operatorname{limit}(\\textcolor{#f59e0b}{E}-\\textcolor{#9333ea}{V_t})",
+    plainEnglishSentence: [
+      { text: "The source’s tachometer path opposes a " },
+      { text: "relative-speed signal", variableId: "tachometer_signal" },
+      { text: " against the position error, while its " },
+      { text: "signal limiter", variableId: "limiter_path" },
+      { text: " bounds abnormal-condition command amplitude." },
+    ],
+    variables: [
+      {
+        id: "tachometer_signal",
+        symbol: "V_t",
+        name: "Relative-Speed Feedback Signal",
+        color: "amethyst",
+        role: "Source-described tachometer bridge output responsive to a difference in motor speeds",
+        unit: "topology state",
+        dimension: "[1]",
+        explanation:
+          "The patent says the path opposes the error-signal path to reduce oscillation. It supplies neither a calibrated velocity measurement nor a frequency-response model.",
+        telemetryKey: "tachometerDampingEnabled",
+      },
+      {
+        id: "limiter_path",
+        symbol: "\\operatorname{limit}(\\cdot)",
+        name: "Abnormal-Condition Signal Limiter",
+        color: "amber",
+        role: "Claims 10 and 12’s source-described bounded-error refinement",
+        unit: "claim probe",
+        dimension: "[1]",
+        explanation:
+          "The host kernel clips only a normalized display command. It never asserts an actual motor voltage, safety certification, or operating speed from an unprovided threshold.",
+        telemetryKey: "limiterEnabled",
+      },
+      {
+        id: "drive_error",
+        symbol: "E_{\\text{drive}}",
+        name: "Limited Correction Display",
+        color: "amber",
+        role: "Illustrative source-topology correction path after the damping and limiter probes",
+        unit: "normalized display relation",
+        dimension: "[1]",
+        explanation:
+          "The notation condenses the stated opposing and limiting relationships. It is not a claim that the patent publishes this exact modern algebraic controller form.",
+        telemetryMetricLabel: "Servo State",
+      },
+    ],
+    pedagogicalNote:
+      "Claims 10–12 add real control-architecture ideas—limiting and speed-difference opposition—without providing the numbers needed to simulate a physical motor loop. The live system labels those boundaries rather than creating false dynamics.",
+    claimRef: 12,
+    historicalSignificance:
+      "These dependent claims capture a historically early combination of bilateral position correspondence, bounded abnormal-condition response, and relative-speed damping.",
   },
 ];

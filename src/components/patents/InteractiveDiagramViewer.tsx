@@ -79,6 +79,7 @@ import {
 import { stepDevolProgrammedTransfer } from "@/physics/devolProgrammedTransferKernel";
 import { FrankenSimEngine, lamarrSchematicHop, lamarrSchematicStaffY } from "@/physics/engine";
 import { fermiSchematicSlug, stepFermiKinetics } from "@/physics/fermiKinetics";
+import { stepGoertzMasterSlaveTopology } from "@/physics/goertzElectronicMasterSlaveManipulatorKernel";
 import { stepKamenInjectionMechanism } from "@/physics/kamenInjectionKernel";
 import { stepLemelsonWarehouseTopology } from "@/physics/lemelsonWarehouseKernel";
 import {
@@ -95,6 +96,8 @@ import {
 import { stepMakinoScaraTopology } from "@/physics/makinoScaraKernel";
 import { readOtisTopologyControls, stepOtis1861Topology } from "@/physics/otisKernel";
 import { stepParsonsMarine } from "@/physics/parsonsMarineKernel";
+import { stepRobotEndEffector } from "@/physics/robotEndEffectorKernel";
+import { readSalisburyRobotHandControls } from "@/physics/salisburyRobotHandKernel";
 import { stepStackhouseSourceTopology } from "@/physics/stackhouseSourceKernel";
 import {
   stepTeslaMotorFig9,
@@ -163,6 +166,7 @@ interface InteractiveDiagramViewerProps {
 }
 
 const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
+  [/salisbury|4921293|4,921,293/, "salisbury-robot-hand"],
   [/devol|programmed[- ]transfer|2988.?237/, "devol-programmed-transfer"],
   [/wright|821.?393/, "wright-flyer"],
   [/tesla[- ]coil|533.?367|593.?138/, "tesla-coil"],
@@ -266,6 +270,7 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "gatling-gun": true,
   "glidden-barbed-wire": true,
   "goddard-rocket": true,
+  "goertz-master-slave": true,
   "goodyear-rubber": true,
   "gramme-dynamo": true,
   "haber-ammonia": true,
@@ -281,11 +286,14 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "lamarr-frequency-hopping": true,
   "lincoln-buoy": true,
   "makino-scara": true,
+  "robot-end-effector": true,
+  "salisbury-robot-hand": true,
   "linde-air-liquefaction": true,
   "marconi-radio": true,
   "maxim-machine-gun": true,
   "mccormick-reaper": true,
   "mergenthaler-linotype": true,
+  "mestral-velcro": true,
   "morse-telegraph": true,
   "nobel-dynamite": true,
   "noyce-ic": true,
@@ -6362,6 +6370,343 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
+    case "salisbury-robot-hand": {
+      const state = FrankenSimEngine.stepSalisburyRobotHand(
+        readSalisburyRobotHandControls(params ?? {}),
+      );
+      const sourceFigure = Number.parseInt(figureNumber.match(/\d+/)?.[0] ?? "1", 10);
+      const cableColors = ["#38bdf8", "#34d399", "#fbbf24", "#fb7185"];
+
+      if (sourceFigure === 4 || sourceFigure === 5) {
+        const isCantilever = sourceFigure === 4;
+        return (
+          <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+            <text x="200" y="24" textAnchor="middle" fill="#bae6fd" fontSize="9">
+              {isCantilever
+                ? "FIG. 4 · CANTILEVER TENSION SENSOR"
+                : "FIG. 5 · DEFLECTING-MEMBER SENSOR"}
+            </text>
+            <rect x="55" y="62" width="290" height="180" rx="10" fill="#0f172a" stroke="#475569" />
+            <path d="M72 154 H142" stroke="#38bdf8" strokeWidth="4" />
+            <path d="M258 154 H328" stroke="#38bdf8" strokeWidth="4" />
+            {isCantilever ? (
+              <g>
+                <path d="M142 154 Q200 82 258 154" stroke="#67e8f9" strokeWidth="4" />
+                <path d="M178 198 V116 H221" stroke="#94a3b8" strokeWidth="10" />
+                <circle cx="221" cy="116" r="24" fill="#78350f" stroke="#fbbf24" strokeWidth="3" />
+                <rect x="174" y="168" width="20" height="12" fill="#34d399" stroke="none" />
+                <text x="204" y="220" fill="#cbd5e1" fontSize="8" textAnchor="middle">
+                  pulley 59 · cantilever 58 · gauges 56
+                </text>
+              </g>
+            ) : (
+              <g>
+                <rect
+                  x="142"
+                  y="98"
+                  width="116"
+                  height="112"
+                  rx="8"
+                  fill="#1e293b"
+                  stroke="#94a3b8"
+                />
+                <path d="M142 154 H186 Q200 112 214 154 H258" stroke="#67e8f9" strokeWidth="4" />
+                <line x1="200" y1="116" x2="200" y2="172" stroke="#fbbf24" strokeWidth="10" />
+                <rect x="218" y="134" width="18" height="9" fill="#34d399" stroke="none" />
+                <rect x="218" y="166" width="18" height="9" fill="#34d399" stroke="none" />
+                <text x="200" y="226" fill="#cbd5e1" fontSize="8" textAnchor="middle">
+                  member 64 · strut 54 · gauges 56
+                </text>
+              </g>
+            )}
+            <text x="200" y="266" fill="#fda4af" fontSize="8" textAnchor="middle">
+              source supplies no calibration curve, range, accuracy, or bandwidth
+            </text>
+          </g>
+        );
+      }
+
+      if (sourceFigure === 3 || sourceFigure === 6 || sourceFigure === 7) {
+        const radiiMm = state.pulleyRadiiM.map((radius) => radius * 1000);
+        return (
+          <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+            <text x="200" y="22" textAnchor="middle" fill="#bae6fd" fontSize="9">
+              FOUR CONNECTED CABLE ENDS · THREE JOINT AXES
+            </text>
+            {[0, 1, 2, 3].map((index) => (
+              <g key={`salisbury-route-${index}`}>
+                <path
+                  d={`M28 ${72 + index * 34} C98 ${72 + index * 34}, 112 ${92 + index * 18}, 176 ${100 + index * 18} S276 ${90 + index * 24}, 344 ${112 + index * 18}`}
+                  stroke={cableColors[index]}
+                  strokeWidth={2 + Math.min(3, state.tendonTensionsN[index] / 16)}
+                />
+                <text x="14" y={76 + index * 34} fill={cableColors[index]} fontSize="8">
+                  T{index + 1}
+                </text>
+              </g>
+            ))}
+            <g fill="#1e293b" stroke="#fbbf24" strokeWidth="2">
+              {[76, 102, 128, 154].map((y) => (
+                <circle key={y} cx="105" cy={y} r="13" />
+              ))}
+              <circle cx="210" cy="132" r="23" />
+              <circle cx="318" cy="166" r="20" />
+            </g>
+            <g fill="#fde68a" stroke="none" fontSize="8" textAnchor="middle">
+              <text x="105" y="210">
+                Axis 1 · four contiguous sheaves
+              </text>
+              <text x="210" y="174">
+                Axis 2
+              </text>
+              <text x="318" y="198">
+                Axis 3
+              </text>
+              <text x="105" y="224">
+                R₁/R₂
+              </text>
+              <text x="210" y="188">
+                R₂/R₃
+              </text>
+              <text x="318" y="212">
+                R₂
+              </text>
+            </g>
+            <rect x="46" y="242" width="308" height="38" rx="6" fill="#0f172a" stroke="#475569" />
+            <text x="200" y="257" textAnchor="middle" fill="#cbd5e1" fontSize="8">
+              τ₁ {state.jointTorquesNm[0].toFixed(3)} · τ₂ {state.jointTorquesNm[1].toFixed(3)} · τ₃{" "}
+              {state.jointTorquesNm[2].toFixed(3)} N·m
+            </text>
+            <text x="200" y="271" textAnchor="middle" fill="#94a3b8" fontSize="7">
+              visitor scale R₁/R₂/R₃ = {radiiMm.map((radius) => radius.toFixed(1)).join("/")} mm ·
+              no historic dimensions
+            </text>
+          </g>
+        );
+      }
+
+      const [axis1Deg, axis2Deg, axis3Deg] = state.displayJointAnglesDeg;
+      const renderDigit = (
+        key: string,
+        baseX: number,
+        baseY: number,
+        baseRotation: number,
+        mirror: number,
+      ) => (
+        <g
+          key={key}
+          transform={`translate(${baseX} ${baseY}) rotate(${baseRotation + mirror * axis1Deg})`}
+        >
+          <circle cx="0" cy="0" r="8" fill="#0f172a" stroke="#38bdf8" strokeWidth="2" />
+          <line
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="-34"
+            stroke="#94a3b8"
+            strokeWidth="10"
+            strokeLinecap="round"
+          />
+          <g transform={`translate(0 -34) rotate(${-axis2Deg})`}>
+            <circle cx="0" cy="0" r="7" fill="#0f172a" stroke="#34d399" strokeWidth="2" />
+            <line
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="-42"
+              stroke="#cbd5e1"
+              strokeWidth="8"
+              strokeLinecap="round"
+            />
+            <g transform={`translate(0 -42) rotate(${-axis3Deg})`}>
+              <circle cx="0" cy="0" r="6" fill="#0f172a" stroke="#fbbf24" strokeWidth="2" />
+              <line
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="-36"
+                stroke="#e2e8f0"
+                strokeWidth="7"
+                strokeLinecap="round"
+              />
+              <circle cx="0" cy="-41" r="10" fill="#78350f" stroke="#f59e0b" strokeWidth="2" />
+            </g>
+          </g>
+        </g>
+      );
+
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text x="200" y="20" textAnchor="middle" fill="#bae6fd" fontSize="9">
+            FIG. 1/2 · CONNECTED ARM, WRIST, PALM, AND THREE DIGITS
+          </text>
+          <rect
+            x="132"
+            y="126"
+            width="136"
+            height="62"
+            rx="12"
+            fill="#1e293b"
+            stroke="#64748b"
+            strokeWidth="2"
+          />
+          <rect x="160" y="184" width="80" height="18" rx="5" fill="#334155" stroke="#94a3b8" />
+          <line
+            x1="154"
+            y1="194"
+            x2="246"
+            y2="194"
+            stroke="#fbbf24"
+            strokeWidth="6"
+            strokeLinecap="round"
+          />
+          <line
+            x1="200"
+            y1="190"
+            x2="200"
+            y2="220"
+            stroke="#f59e0b"
+            strokeWidth="6"
+            strokeLinecap="round"
+          />
+          <rect
+            x="176"
+            y="214"
+            width="48"
+            height="70"
+            rx="6"
+            fill="#1e293b"
+            stroke="#64748b"
+            strokeWidth="2"
+          />
+          <rect
+            x="292"
+            y="220"
+            width="88"
+            height="54"
+            rx="7"
+            fill="#0f172a"
+            stroke="#64748b"
+            strokeWidth="2"
+          />
+          <text x="336" y="242" textAnchor="middle" fill="#cbd5e1" fontSize="7">
+            REMOTE DRIVE 35
+          </text>
+          <text x="200" y="240" textAnchor="middle" fill="#cbd5e1" fontSize="7">
+            ARM 12
+          </text>
+          {cableColors.map((color, index) => (
+            <path
+              key={`salisbury-external-${color}`}
+              d={`M292 ${238 + index * 8} C260 ${238 + index * 7}, 246 ${250 - index * 5}, ${224 - index * 6} ${232 - index * 9} S ${225 - index * 4} 188, ${238 - index * 8} 162`}
+              stroke={color}
+              strokeWidth="2"
+            />
+          ))}
+          {renderDigit("left", 164, 132, -22, 1)}
+          {renderDigit("right", 228, 132, 22, -1)}
+          {renderDigit("thumb", 262, 168, 112, 1)}
+          <text x="200" y="296" textAnchor="middle" fill="#fda4af" fontSize="7">
+            normalized pose from printed torque signs · no historic dynamics/contact claim
+          </text>
+        </g>
+      );
+    }
+    case "robot-end-effector": {
+      const state = stepRobotEndEffector(params ?? {});
+      const offset = state.perHandOffsetM * 900;
+      const leftX = 200 - offset;
+      const rightX = 200 + offset;
+      const fingerVisible = state.fingerRetainedFraction > 0.03;
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#bae6fd"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            CLAIM 1 · OPPOSED-THREAD SYMMETRIC HANDS
+          </text>
+          <rect x="45" y="102" width="310" height="112" rx="12" fill="#0f172a" stroke="#475569" />
+          <rect x="45" y="153" width="310" height="12" rx="4" fill="#334155" stroke="#64748b" />
+          <text x="200" y="148" textAnchor="middle" fill="#bae6fd" fontSize="8">
+            WEB 28 · FIXED IDEAL MIDPOINT
+          </text>
+          <line x1="200" y1="67" x2="200" y2="255" stroke="#34d399" strokeDasharray="4 4" />
+          {[128, 190].map((y, index) => (
+            <g key={y}>
+              <line x1="72" y1={y} x2="328" y2={y} stroke="#cbd5e1" strokeWidth="7" />
+              {Array.from({ length: 12 }, (_, tooth) => (
+                <line
+                  key={tooth}
+                  x1={92 + tooth * 18}
+                  y1={y - 8}
+                  x2={103 + tooth * 18}
+                  y2={y + 8}
+                  stroke="#0f172a"
+                  strokeWidth="1.5"
+                />
+              ))}
+              {[leftX, rightX].map((x, hand) => (
+                <g key={`${y}-${x}`} transform={`translate(${x} ${y})`}>
+                  <rect
+                    x="-14"
+                    y="-18"
+                    width="28"
+                    height="36"
+                    rx="4"
+                    fill="#0e7490"
+                    stroke="#67e8f9"
+                  />
+                  {fingerVisible && (
+                    <path
+                      d={
+                        hand === 0
+                          ? "M -16 -12 L -31 -24 L -31 24 L -16 12"
+                          : "M 16 -12 L 31 -24 L 31 24 L 16 12"
+                      }
+                      stroke="#fbbf24"
+                      strokeWidth="5"
+                    />
+                  )}
+                </g>
+              ))}
+              <text x="54" y={y + 3} fill="#94a3b8" fontSize="7">
+                {index === 0 ? "14/16" : "18/20"}
+              </text>
+            </g>
+          ))}
+          <line x1={leftX} y1="250" x2={rightX} y2="250" stroke="#fbbf24" />
+          <text x="200" y="269" textAnchor="middle" fill="#fde68a" fontSize="9">
+            g = {(state.jawOpeningM * 1000).toFixed(1)} mm · 5 mm/rev source lead
+          </text>
+          <circle cx="370" cy="158" r="22" fill="#92400e" stroke="#fbbf24" strokeWidth="2" />
+          {Array.from({ length: 8 }, (_, peg) => {
+            const angle = (peg * Math.PI * 2) / 8 + state.encoderCountModulo * (Math.PI / 4);
+            return (
+              <circle
+                key={peg}
+                cx={370 + Math.cos(angle) * 17}
+                cy={158 + Math.sin(angle) * 17}
+                r="2.5"
+                fill="#67e8f9"
+                stroke="none"
+              />
+            );
+          })}
+          <text x="370" y="193" textAnchor="middle" fill="#bae6fd" fontSize="7">
+            72 / 74 · 8 count
+          </text>
+          <text x="200" y="292" textAnchor="middle" fill="#fda4af" fontSize="8">
+            force is a source-labelled setpoint; no contact, pressure, payload, or arm model is
+            inferred
+          </text>
+        </g>
+      );
+    }
     case "kamen-injection-device": {
       const pose = stepKamenInjectionMechanism(params ?? {});
       const plungerX = 132 + pose.plungerPosition * 142;
@@ -6558,6 +6903,265 @@ function _renderHistoricalSchematic(
           )}
           <text x="200" y="278" textAnchor="middle" fill="#fda4af" fontSize="8">
             normalized geometry only; SI force, stiffness, clearance, and timing refused
+          </text>
+        </g>
+      );
+    }
+    case "goertz-master-slave": {
+      const pose = stepGoertzMasterSlaveTopology(params ?? {});
+      const master = pose.masterChannels;
+      const slave = pose.slaveChannels;
+      const masterShoulder = { x: 82, y: 187 };
+      const masterElbow = {
+        x: masterShoulder.x + 47 + (master[0] ?? 0) * 23,
+        y: masterShoulder.y - 25 - (master[2] ?? 0) * 20,
+      };
+      const masterTool = {
+        x: masterElbow.x + 28 + (master[4] ?? 0) * 13,
+        y: masterElbow.y + 34 + (master[5] ?? 0) * 12,
+      };
+      const slaveShoulder = { x: 318, y: 187 };
+      const slaveElbow = {
+        x: slaveShoulder.x - 47 - (slave[0] ?? 0) * 23,
+        y: slaveShoulder.y - 25 - (slave[2] ?? 0) * 20,
+      };
+      const slaveTool = {
+        x: slaveElbow.x - 28 - (slave[4] ?? 0) * 13,
+        y: slaveElbow.y + 34 + (slave[5] ?? 0) * 12,
+      };
+      const contactVisible = pose.errorMagnitude > 0.01;
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.45" fill="none">
+          <defs>
+            <marker
+              id="goertz-schematic-arrow"
+              viewBox="0 0 10 10"
+              refX="8"
+              refY="5"
+              markerWidth="4"
+              markerHeight="4"
+              orient="auto"
+            >
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#fbbf24" stroke="none" />
+            </marker>
+          </defs>
+          <text
+            x="200"
+            y="22"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            FIGS. 1 / 15 · MASTER–SLAVE ELECTRONIC CORRESPONDENCE
+          </text>
+          <line x1="200" y1="32" x2="200" y2="260" stroke="#64748b" strokeDasharray="5 4" />
+          <text
+            x="94"
+            y="39"
+            textAnchor="middle"
+            fill="#67e8f9"
+            fontSize="7"
+            fontFamily="monospace"
+          >
+            MASTER / HANDLE
+          </text>
+          <text
+            x="306"
+            y="39"
+            textAnchor="middle"
+            fill="#c4b5fd"
+            fontSize="7"
+            fontFamily="monospace"
+          >
+            SLAVE / GRASPER
+          </text>
+
+          {Array.from({ length: 7 }, (_, index) => {
+            const y = 54 + index * 13;
+            const error = Math.abs(pose.positionErrors[index] ?? 0);
+            return (
+              <g key={index}>
+                <text x="164" y={y + 3} textAnchor="end" fill="#94a3b8" fontSize="6">
+                  {index === 0
+                    ? "113b"
+                    : index === 1 || index === 3
+                      ? "roll"
+                      : index === 2
+                        ? "126"
+                        : index === 4
+                          ? "171"
+                          : index === 5
+                            ? "172"
+                            : "grip"}
+                </text>
+                <line x1="171" y1={y} x2="229" y2={y} stroke="#155e75" strokeWidth="3" />
+                <line
+                  x1="171"
+                  y1={y}
+                  x2={171 + (1 - error) * 58}
+                  y2={y}
+                  stroke="#22d3ee"
+                  strokeWidth="2"
+                />
+                <circle cx="171" cy={y} r="2.4" fill="#67e8f9" />
+                <circle cx="229" cy={y} r="2.4" fill="#c4b5fd" />
+              </g>
+            );
+          })}
+          <text x="200" y="154" textAnchor="middle" fill="#94a3b8" fontSize="6">
+            seven duplicate electrical systems 54–60
+          </text>
+
+          <rect x="40" y="218" width="86" height="9" rx="2" fill="#0f172a" stroke="#64748b" />
+          <rect x="274" y="218" width="86" height="9" rx="2" fill="#0f172a" stroke="#64748b" />
+          <text x="83" y="238" textAnchor="middle" fill="#94a3b8" fontSize="6">
+            support 50
+          </text>
+          <text x="317" y="238" textAnchor="middle" fill="#94a3b8" fontSize="6">
+            sealed remote side
+          </text>
+
+          <line
+            x1={masterShoulder.x}
+            y1={masterShoulder.y}
+            x2={masterElbow.x}
+            y2={masterElbow.y}
+            stroke="#22d3ee"
+            strokeWidth="7"
+            strokeLinecap="round"
+          />
+          <line
+            x1={masterElbow.x}
+            y1={masterElbow.y}
+            x2={masterTool.x}
+            y2={masterTool.y}
+            stroke="#0ea5e9"
+            strokeWidth="6"
+            strokeLinecap="round"
+          />
+          <line
+            x1={masterTool.x}
+            y1={masterTool.y}
+            x2={masterTool.x + 12}
+            y2={masterTool.y + 8}
+            stroke="#fbbf24"
+            strokeWidth="4"
+            strokeLinecap="round"
+          />
+          <circle cx={masterShoulder.x} cy={masterShoulder.y} r="6" fill="#082f49" />
+          <circle cx={masterElbow.x} cy={masterElbow.y} r="5" fill="#082f49" />
+          <text x="56" y="177" fill="#bae6fd" fontSize="6">
+            arm 51
+          </text>
+          <text x={masterElbow.x + 6} y={masterElbow.y - 8} fill="#bae6fd" fontSize="6">
+            arm 52
+          </text>
+          <text x={masterTool.x - 8} y={masterTool.y + 20} fill="#fde68a" fontSize="6">
+            handle 53
+          </text>
+
+          <line
+            x1={slaveShoulder.x}
+            y1={slaveShoulder.y}
+            x2={slaveElbow.x}
+            y2={slaveElbow.y}
+            stroke="#a78bfa"
+            strokeWidth="7"
+            strokeLinecap="round"
+          />
+          <line
+            x1={slaveElbow.x}
+            y1={slaveElbow.y}
+            x2={slaveTool.x}
+            y2={slaveTool.y}
+            stroke="#8b5cf6"
+            strokeWidth="6"
+            strokeLinecap="round"
+          />
+          <path
+            d={`M ${slaveTool.x - 4} ${slaveTool.y + 5 - (slave[6] ?? 0) * 4} L ${slaveTool.x - 18} ${slaveTool.y + 15} L ${slaveTool.x - 4} ${slaveTool.y + 23 + (slave[6] ?? 0) * 4}`}
+            stroke="#fbbf24"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx={slaveShoulder.x} cy={slaveShoulder.y} r="6" fill="#2e1065" />
+          <circle cx={slaveElbow.x} cy={slaveElbow.y} r="5" fill="#2e1065" />
+          <text x="325" y="177" fill="#ddd6fe" fontSize="6">
+            arm 51
+          </text>
+          <text x={slaveElbow.x - 31} y={slaveElbow.y - 8} fill="#ddd6fe" fontSize="6">
+            arm 52
+          </text>
+          <text x={slaveTool.x - 34} y={slaveTool.y + 30} fill="#fde68a" fontSize="6">
+            grasper 53
+          </text>
+
+          <rect x="118" y="257" width="37" height="19" rx="2" fill="#0f172a" stroke="#67e8f9" />
+          <text x="136.5" y="266" textAnchor="middle" fill="#bae6fd" fontSize="6">
+            209
+          </text>
+          <text x="136.5" y="273" textAnchor="middle" fill="#94a3b8" fontSize="5">
+            synchro
+          </text>
+          <path d="M 156 266 H 177" stroke="#fbbf24" markerEnd="url(#goertz-schematic-arrow)" />
+          <text x="166" y="261" textAnchor="middle" fill="#fde68a" fontSize="6">
+            E
+          </text>
+          <rect x="178" y="257" width="31" height="19" rx="2" fill="#0f172a" stroke="#fbbf24" />
+          <text x="193.5" y="269" textAnchor="middle" fill="#fde68a" fontSize="6">
+            210
+          </text>
+          <rect x="212" y="257" width="31" height="19" rx="2" fill="#0f172a" stroke="#38bdf8" />
+          <text x="227.5" y="269" textAnchor="middle" fill="#bae6fd" fontSize="6">
+            211
+          </text>
+          <path d="M 244 266 H 265" stroke="#fbbf24" markerEnd="url(#goertz-schematic-arrow)" />
+          <rect x="266" y="257" width="35" height="19" rx="2" fill="#0f172a" stroke="#c4b5fd" />
+          <text x="283.5" y="266" textAnchor="middle" fill="#ddd6fe" fontSize="6">
+            204
+          </text>
+          <text x="283.5" y="273" textAnchor="middle" fill="#94a3b8" fontSize="5">
+            motor
+          </text>
+          <text x="318" y="266" fill="#94a3b8" fontSize="6">
+            205 tachometer
+          </text>
+
+          {contactVisible && (
+            <g>
+              <line
+                x1={slaveTool.x - 18}
+                y1={slaveTool.y + 14}
+                x2={slaveTool.x - 39}
+                y2={slaveTool.y + 14}
+                stroke="#fb7185"
+                strokeWidth="3"
+              />
+              <text
+                x={slaveTool.x - 42}
+                y={slaveTool.y + 9}
+                textAnchor="end"
+                fill="#fda4af"
+                fontSize="6"
+              >
+                remote resistance
+              </text>
+            </g>
+          )}
+          {pose.forceReflectionEnabled && contactVisible && (
+            <path
+              d="M 280 245 C 250 225 151 225 120 245"
+              stroke="#fbbf24"
+              strokeWidth="2"
+              strokeDasharray="4 3"
+              markerEnd="url(#goertz-schematic-arrow)"
+            />
+          )}
+          <text x="200" y="291" textAnchor="middle" fill="#fda4af" fontSize="7">
+            Claim {pose.activeClaim} · {pose.state} · normalized topology; SI force and speed
+            refused
           </text>
         </g>
       );
@@ -6782,6 +7386,113 @@ function _renderHistoricalSchematic(
           </text>
           <text x="200" y="278" textAnchor="middle" fill="#fda4af" fontSize="8">
             normalized pose; SI dynamics and performance refused
+          </text>
+        </g>
+      );
+    }
+    case "mestral-velcro": {
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <text
+            x="200"
+            y="24"
+            textAnchor="middle"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+          >
+            VELVET WEAVE & THERMAL HOOK FORMATION (FIG. 1 / FIG. 2)
+          </text>
+          {/* Foundation Weave Line */}
+          <line
+            x1="60"
+            y1="240"
+            x2="340"
+            y2="240"
+            stroke="#64748b"
+            strokeWidth="8"
+            strokeLinecap="round"
+          />
+          {/* Weft Picks 1 */}
+          {[80, 120, 160, 200, 240, 280, 320].map((wx) => (
+            <circle
+              key={`mv-weft-${wx}`}
+              cx={wx}
+              cy="240"
+              r="5"
+              fill="#475569"
+              stroke="#94a3b8"
+              strokeWidth="1.5"
+            />
+          ))}
+          {/* Lancet Bar 5 */}
+          <rect
+            x="250"
+            y="110"
+            width="28"
+            height="125"
+            rx="4"
+            fill="#991b1b"
+            stroke="#ef4444"
+            strokeWidth="1.5"
+          />
+          <line x1="268" y1="120" x2="268" y2="225" stroke="#1e293b" strokeWidth="3" />
+          <text x="264" y="170" fill="#fef08a" fontSize="7" fontWeight="bold" textAnchor="middle">
+            5
+          </text>
+          {/* Knife 8 */}
+          <polygon
+            points="280,95 295,65 305,70 290,100"
+            fill="#e2e8f0"
+            stroke="#38bdf8"
+            strokeWidth="1"
+          />
+          <text x="310" y="80" fill="#f87171" fontSize="8" fontWeight="bold">
+            8
+          </text>
+          {/* Loop over bar */}
+          <path
+            d="M 238,240 L 238,125 Q 264,75 290,125 L 290,240"
+            stroke="#f59e0b"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+          />
+          {/* Cut Hooks 9 and Strands 10 */}
+          <line
+            x1="110"
+            y1="240"
+            x2="110"
+            y2="170"
+            stroke="#78716c"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+          <path
+            d="M 95,240 L 95,145 Q 95,115 75,130"
+            stroke="#fbbf24"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+          />
+          <text x="70" y="120" fill="#fbbf24" fontSize="8" fontWeight="bold">
+            4
+          </text>
+          <line
+            x1="190"
+            y1="240"
+            x2="190"
+            y2="170"
+            stroke="#78716c"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+          <path
+            d="M 175,240 L 175,145 Q 175,115 155,130"
+            stroke="#fbbf24"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+          />
+          <text x="150" y="120" fill="#fbbf24" fontSize="8" fontWeight="bold">
+            4
           </text>
         </g>
       );
