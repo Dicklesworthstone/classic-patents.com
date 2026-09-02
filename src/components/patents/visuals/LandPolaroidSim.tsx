@@ -21,14 +21,22 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
   const { params, updateParam, resetParams } = usePatentPhysics("us-2543181-land-polaroid");
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [internalTime, setInternalTime] = useState<number>(params.developmentTimeSec ?? 30);
+  const developmentTimeSec = params.developmentTimeSec ?? 30;
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [internalTime, setInternalTime] = useState<number>(developmentTimeSec);
   const [viewMode, setViewMode] = useState<"sandwich" | "diffusion" | "print">("diffusion");
 
   const exposure = params.exposureFraction ?? 0.6;
   const viscosity = params.reagentViscosityCp ?? 25000;
   const rollerGap = params.rollerGapUm ?? 25;
   const alkaliPh = params.alkaliPh ?? 12.6;
+
+  // The shared control is authoritative while the visitor has not explicitly
+  // started the process timer. This keeps keyboard/pointer input stable across
+  // 2D/3D mode changes instead of letting a default animation overwrite it.
+  useEffect(() => {
+    if (!isPlaying) setInternalTime(developmentTimeSec);
+  }, [developmentTimeSec, isPlaying]);
 
   // Sync internal timer
   useEffect(() => {
@@ -364,9 +372,9 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
               setIsPlaying(!isPlaying);
               soundEngine.playSwitchClick();
             }}
-            aria-label={isPlaying ? "Pause Timer" : "Resume Timer"}
+            aria-label={isPlaying ? "Pause Timer" : "Start Timer"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title={isPlaying ? "Pause Timer" : "Resume Timer"}
+            title={isPlaying ? "Pause Timer" : "Start Timer"}
           >
             {isPlaying ? (
               <Pause className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
@@ -391,7 +399,7 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
             onClick={() => {
               resetParams();
               setInternalTime(30);
-              setIsPlaying(true);
+              setIsPlaying(false);
               setViewMode("diffusion");
               soundEngine.playSwitchClick();
             }}

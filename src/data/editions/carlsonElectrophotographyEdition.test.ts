@@ -42,21 +42,25 @@ describe("US 2,297,691 Chester F. Carlson Electrophotography Archival Edition Pu
     expect(transcript).toContain("signature glyphs");
   });
 
-  test("records only versioned source-crop targets while the crop lane is withheld", () => {
+  test("keeps rejected candidates and reserved v2 paths off the visitor preview surface", () => {
     let references = 0;
     for (const block of carlsonElectrophotographyArchivalEdition.blocks) {
       if (block.kind === "paragraph" || block.kind === "claim") {
         for (const inline of block.inlines) {
-          if (inline.kind === "reference" && inline.figurePreviews) {
-            for (const prev of inline.figurePreviews) {
-              references += 1;
-              expect(prev.src).toMatch(/source-crop-v[0-9]+\.png$/);
-            }
+          if (inline.kind === "reference" && inline.referenceType === "figure") {
+            references += 1;
+            expect(inline.figurePreviews).toBeUndefined();
           }
         }
       }
     }
     expect(references).toBeGreaterThan(0);
+    const editionSource = readFileSync(
+      join(rootDir, "src/data/editions/carlsonElectrophotographyEdition.ts"),
+      "utf8",
+    );
+    expect(editionSource).toContain("fig-1-source-crop-v2.png");
+    expect(editionSource).toContain("ATTACH_ACCEPTED_FIGURE_PREVIEWS = false");
   });
 
   test("exposes all 27 printed claims via dynamic single-source lookup", () => {

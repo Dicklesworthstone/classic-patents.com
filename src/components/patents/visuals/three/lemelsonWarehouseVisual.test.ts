@@ -63,4 +63,27 @@ describe("US 3,119,501 automatic warehousing visual", () => {
     expect(source).not.toContain("params?.targetShelfZ");
     expect(source).not.toContain("Relay: Pulses OK");
   });
+
+  test("mounts mode-stable claim probes and visible source-bound failures on both faces", () => {
+    const simSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/LemelsonAutomaticWarehousingSim.tsx"),
+      "utf8",
+    );
+    const studioSource = readFileSync(
+      join(
+        process.cwd(),
+        "src/components/patents/visuals/three/LemelsonAutomaticWarehousing3D.tsx",
+      ),
+      "utf8",
+    );
+
+    for (const source of [simSource, studioSource]) {
+      expect(source).toContain("ClaimConstraintToggle");
+      expect(source).toContain("claimConstraintStateParamId");
+      expect(source).toContain("effectiveParams");
+      expect(source).toContain('role="status"');
+    }
+    expect(studioSource).toContain("liveParams.current = effectiveParams");
+    expect(studioSource).toContain("claimConstraintResult.refusalWarning");
+  });
 });

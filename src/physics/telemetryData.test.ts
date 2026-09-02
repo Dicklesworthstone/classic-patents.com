@@ -116,6 +116,78 @@ describe("Physics Telemetry Data Registry", () => {
     ).not.toBe(before.map((metric) => `${metric.label} ${metric.value} ${metric.unit}`).join("; "));
   });
 
+  test("Maxim's smallest phase step changes a source-bounded normalized readout", () => {
+    const maxim = PATENT_PHYSICS_REGISTRY["us-319596-maxim-machine-gun"];
+    const common = { gasImpulsePct: 75 };
+    const before = maxim.computeMetrics({ ...common, cyclePhase: 0 });
+    const after = maxim.computeMetrics({ ...common, cyclePhase: 5 });
+    const beforeTravel = before.find((metric) => metric.label === "Normalized Breech Travel");
+    const afterTravel = after.find((metric) => metric.label === "Normalized Breech Travel");
+
+    expect(beforeTravel).toMatchObject({
+      value: "0.0%",
+      unit: "of illustrated cycle",
+      provenance: "topology-normalized",
+    });
+    expect(afterTravel).toMatchObject({
+      value: "0.2%",
+      unit: "of illustrated cycle",
+      provenance: "topology-normalized",
+    });
+    expect(afterTravel?.value).not.toBe(beforeTravel?.value);
+    expect(afterTravel?.provenanceCitation).toContain("does not print a numerical breech stroke");
+    expect(
+      after.map((metric) => `${metric.label} ${metric.value} ${metric.unit}`).join("; "),
+    ).not.toBe(before.map((metric) => `${metric.label} ${metric.value} ${metric.unit}`).join("; "));
+  });
+
+  test("Bell Photophone keeps reader inputs visible while refusing an invented link budget", () => {
+    const bell = PATENT_PHYSICS_REGISTRY["us-235199-bell-photophone"];
+    const defaults = Object.fromEntries(
+      bell.controls.map((control) => [control.id, control.defaultValue]),
+    );
+    const baseline = bell.computeMetrics(defaults);
+    const baselineEnvelope = baseline
+      .map((metric) => `${metric.label} ${metric.value} ${metric.unit}`)
+      .join("; ");
+
+    for (const control of bell.controls) {
+      const nextValue =
+        control.defaultValue === control.max
+          ? control.defaultValue - control.step
+          : control.defaultValue + control.step;
+      const changed = bell.computeMetrics({ ...defaults, [control.id]: nextValue });
+      expect(
+        changed.map((metric) => `${metric.label} ${metric.value} ${metric.unit}`).join("; "),
+        `Bell reader input ${control.id} must remain observable at the refusal boundary`,
+      ).not.toBe(baselineEnvelope);
+    }
+
+    expect(baseline.find((metric) => metric.label === "Quantitative Link Budget")).toMatchObject({
+      value: "WITHHELD — SOURCE INPUTS ABSENT",
+      provenance: "refusal-bounded",
+    });
+    expect(baseline.some((metric) => metric.value.includes("0.00 mW"))).toBe(false);
+    expect(baseline.some((metric) => metric.unit === "SNR")).toBe(false);
+  });
+
+  test("Tesla Teleautomaton exposes its source-described command-step sequence", () => {
+    const teleautomaton = PATENT_PHYSICS_REGISTRY["us-613809-tesla-teleautomaton"];
+    const common = { rfFrequency: 150, rudderAngle: 15, propellerThrottlePct: 75 };
+    const before = teleautomaton.computeMetrics({ ...common, pulseCount: 3 });
+    const after = teleautomaton.computeMetrics({ ...common, pulseCount: 4 });
+    const beforeSequence = before.find((metric) => metric.label === "Normalized Command Sequence");
+    const afterSequence = after.find((metric) => metric.label === "Normalized Command Sequence");
+
+    expect(beforeSequence).toMatchObject({
+      value: "3",
+      unit: "of 8 illustrated positions",
+      provenance: "topology-normalized",
+    });
+    expect(afterSequence?.value).toBe("4");
+    expect(afterSequence?.provenanceCitation).toContain("not a count printed in US 613,809");
+  });
+
   test("Wright Flyer exemplar registers Prandtl induced drag and 3-axis flight controls", () => {
     const wright = PATENT_PHYSICS_REGISTRY["us-821393-wright-flyer"];
     expect(wright).toBeDefined();

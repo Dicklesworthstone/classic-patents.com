@@ -79,6 +79,19 @@ describe("US 971,501 Fritz Haber Ammonia Synthesis Visual Boundary", () => {
     expect(() => buildHaberAmmoniaModel()).toThrow(HABER_3D_SOURCE_BOUNDARY);
   });
 
+  test("retains the printed-claim probe on the honest no-drawing fallback", () => {
+    const studioSource = readFileSync(studioPath, "utf-8");
+    const fallbackIndex = studioSource.indexOf("if (sourceBoundedVisualOnly)");
+    const probeIndex = studioSource.indexOf(
+      '<ClaimConstraintToggle\n          patentId="us-971501-haber-ammonia"',
+      fallbackIndex,
+    );
+    const fallbackEnd = studioSource.indexOf("return (", probeIndex + 1);
+    expect(fallbackIndex).toBeGreaterThan(0);
+    expect(probeIndex).toBeGreaterThan(fallbackIndex);
+    expect(fallbackEnd).toBeGreaterThan(probeIndex);
+  });
+
   test("derives all 6 printed claims dynamically from edition without duplicate strings", () => {
     const { haberAmmoniaPatent } = require("@/data/patents/haber-ammonia");
     const { haberAmmoniaArchivalEdition } = require("@/data/editions/haberAmmoniaEdition");

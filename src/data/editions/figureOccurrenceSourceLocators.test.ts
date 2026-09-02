@@ -311,4 +311,103 @@ describe("figure occurrence source locators", () => {
       "source PDF page exceeds the reviewed facsimile page count",
     );
   });
+
+  test("refuses duplicate and independently wrong block, group, or inline coordinates", () => {
+    const mutations: readonly [
+      string,
+      (registry: Record<string, FigureOccurrenceSourceLocator[]>) => void,
+    ][] = [
+      [
+        "duplicate",
+        (registry) => {
+          registry[PASTEUR_ID][1].occurrenceKey = registry[PASTEUR_ID][0].occurrenceKey;
+        },
+      ],
+      [
+        "block",
+        (registry) => {
+          registry[PASTEUR_ID][0].occurrenceKey = figureOccurrenceKey(7, 0, 1);
+        },
+      ],
+      [
+        "group",
+        (registry) => {
+          registry[PASTEUR_ID][0].occurrenceKey = figureOccurrenceKey(6, 1, 1);
+        },
+      ],
+      [
+        "inline",
+        (registry) => {
+          registry[PASTEUR_ID][0].occurrenceKey = figureOccurrenceKey(6, 0, 2);
+        },
+      ],
+    ];
+
+    for (const [name, mutate] of mutations) {
+      const malformed = structuredClone(FIGURE_OCCURRENCE_SOURCE_LOCATORS) as unknown as Record<
+        string,
+        FigureOccurrenceSourceLocator[]
+      >;
+      mutate(malformed);
+      const result = validateFigureOccurrenceSourceLocators(malformed, VALIDATION_OPTIONS);
+      const diagnostic = `${name}: ${result.errors.join("\n")}`;
+
+      expect(result.valid, diagnostic).toBe(false);
+      if (name === "duplicate") {
+        expect(diagnostic).toContain("duplicate occurrence key");
+      } else {
+        expect(diagnostic).toContain("locator is not bound to an active edition occurrence");
+      }
+      expect(diagnostic).toContain("active edition occurrence has no locator");
+    }
+  });
+
+  test("refuses zero-area crops and incomplete independent-review evidence", () => {
+    const malformed = structuredClone(FIGURE_OCCURRENCE_SOURCE_LOCATORS) as unknown as Record<
+      string,
+      FigureOccurrenceSourceLocator[]
+    >;
+    const locator = malformed[PASTEUR_ID][0];
+    locator.sourceRectPixels.width = 0;
+    locator.normalizedSourceRect = normalizeSourceRectangle(
+      locator.sourceRectPixels,
+      locator.sourceRaster,
+    );
+    locator.reviewer = " ";
+    locator.reviewedAt = "2026-9-2";
+    locator.evidenceReference = "docs/provenance/another-patent.md#figure-review";
+
+    const result = validateFigureOccurrenceSourceLocators(malformed, VALIDATION_OPTIONS);
+    const diagnostic = result.errors.join("\n");
+    expect(result.valid, diagnostic).toBe(false);
+    expect(diagnostic).toContain(
+      "source pixel rectangle must use non-negative origin and positive integers",
+    );
+    expect(diagnostic).toContain("reviewer is required");
+    expect(diagnostic).toContain("reviewedAt must be an ISO date");
+    expect(diagnostic).toContain(
+      "evidence reference must identify this patent's provenance receipt",
+    );
+  });
+
+  test("refuses absent canonical asset evidence and invalid raster geometry", () => {
+    const malformed = structuredClone(FIGURE_OCCURRENCE_SOURCE_LOCATORS) as unknown as Record<
+      string,
+      FigureOccurrenceSourceLocator[]
+    >;
+    malformed[PASTEUR_ID][0].sourceRaster.width = 0;
+
+    const result = validateFigureOccurrenceSourceLocators(malformed, {
+      canonicalAssetsByPatent: {
+        [CLAVEL_DELTA_ROBOT_ID]: CLAVEL_DELTA_ROBOT_ASSETS,
+        [COLT_ID]: COLT_ASSETS,
+      },
+      canonicalOccurrencesByPatent: VALIDATION_OPTIONS.canonicalOccurrencesByPatent,
+      sourcePdfPageCountsByPatent: VALIDATION_OPTIONS.sourcePdfPageCountsByPatent,
+    });
+    const diagnostic = result.errors.join("\n");
+    expect(result.valid, diagnostic).toBe(false);
+    expect(diagnostic).toContain("canonical active-asset evidence is required");
+    expect(diagnostic).toContain("source raster dimensions must be positive integers");
+  });
 });

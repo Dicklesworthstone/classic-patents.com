@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { allPatents } from "@/data/patents";
 import { PATENT_PHYSICS_REGISTRY } from "./telemetryData";
 import {
   getLastParamChange,
@@ -26,7 +27,34 @@ function metricEnvelope(
   );
 }
 
+function liveMetricEnvelope(patentId: string, params: Record<string, number>) {
+  return PATENT_PHYSICS_REGISTRY[patentId]
+    .computeMetrics(params)
+    .map((metric) => `${metric.label} ${metric.value} ${metric.unit}`)
+    .join("; ");
+}
+
 describe("shared-control telemetry sensitivity", () => {
+  test("every catalogue patent's primary declared control changes the live telemetry envelope", () => {
+    for (const patent of allPatents) {
+      const registry = PATENT_PHYSICS_REGISTRY[patent.id];
+      const control = registry.controls[0];
+      if (!control) continue;
+      const defaults = Object.fromEntries(
+        registry.controls.map((candidate) => [candidate.id, candidate.defaultValue]),
+      );
+      const nextValue =
+        control.defaultValue === control.max
+          ? control.defaultValue - control.step
+          : control.defaultValue + control.step;
+
+      expect(
+        liveMetricEnvelope(patent.id, { ...defaults, [control.id]: nextValue }),
+        `${patent.id} ${control.id} must affect the exact value/unit envelope rendered by PhysicsTelemetryBadge`,
+      ).not.toBe(liveMetricEnvelope(patent.id, defaults));
+    }
+  });
+
   test("every declared control changes the canonical telemetry envelope by one legal step", () => {
     for (const patentId of SHARED_CONTROL_PATENT_IDS) {
       const registry = PATENT_PHYSICS_REGISTRY[patentId];

@@ -7,6 +7,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  applySharedClaimConstraintModifications,
+  readSharedClaimConstraintStates,
+} from "./claimConstraints";
 import { canonicalizeParam, expandParamAliases } from "./paramAliases";
 import { PATENT_PHYSICS_REGISTRY, type PhysicsMetric } from "./telemetryData";
 
@@ -62,6 +66,11 @@ function publishParams(patentId: string, raw: Record<string, number>) {
 
 export function getPatentPhysicsParams(patentId: string): Record<string, number> {
   return expandParamAliases(patentId, getRawPatentPhysicsParams(patentId));
+}
+
+export function getEffectivePatentPhysicsParams(patentId: string): Record<string, number> {
+  const params = getPatentPhysicsParams(patentId);
+  return applySharedClaimConstraintModifications(patentId, params).modifiedParams;
 }
 
 export function subscribePatentPhysics(patentId: string, listener: Listener): () => void {
@@ -132,6 +141,15 @@ export function usePatentPhysics(patentId: string) {
   );
   const meta = PATENT_PHYSICS_REGISTRY[patentId];
 
+  const claimStates = useMemo(
+    () => readSharedClaimConstraintStates(patentId, params),
+    [params, patentId],
+  );
+  const claimConstraintResult = useMemo(
+    () => applySharedClaimConstraintModifications(patentId, params),
+    [params, patentId],
+  );
+
   useEffect(() => {
     setParams(getPatentPhysicsParams(patentId));
     setTick(getPhysicsTick(patentId));
@@ -154,8 +172,8 @@ export function usePatentPhysics(patentId: string) {
 
   const metrics: PhysicsMetric[] = useMemo(() => {
     if (!meta) return [];
-    return meta.computeMetrics(params);
-  }, [meta, params]);
+    return meta.computeMetrics(claimConstraintResult.modifiedParams);
+  }, [claimConstraintResult.modifiedParams, meta]);
 
   const updateParam = useCallback(
     (id: string, value: number) => {
@@ -171,6 +189,9 @@ export function usePatentPhysics(patentId: string) {
   return {
     meta,
     params,
+    effectiveParams: claimConstraintResult.modifiedParams,
+    claimStates,
+    claimConstraintResult,
     metrics,
     tick,
     lastChange,

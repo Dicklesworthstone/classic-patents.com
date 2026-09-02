@@ -53,7 +53,9 @@ const p = (
 
 /**
  * Candidate-only source edition. It remains structurally typed but is
- * deliberately not publishable while the v2 facsimile crops are absent.
+ * deliberately not publishable while independently accepted replacement
+ * facsimile crops are absent. References stay on the preserved v1 research
+ * assets instead of advertising planned files that do not exist.
  */
 type HallAluminiumEditionCandidate = Omit<
   CuratedSpecificationEdition,
@@ -88,14 +90,14 @@ export const hallAluminiumArchivalEdition: HallAluminiumEditionCandidate = {
         preview(
           "Fig. 1",
           1,
-          "/patents/figures/us-400766-hall-aluminium/fig-1-source-crop-v2.png",
+          "/patents/figures/us-400766-hall-aluminium/fig-1-source-crop-v1.png",
           "Source-facsimile crop for Fig. 1, sectional elevation of Hall's apparatus.",
         ),
         { kind: "text", text: ", a sectional elevation, and " },
         preview(
           "Fig. 2",
           2,
-          "/patents/figures/us-400766-hall-aluminium/fig-2-source-crop-v2.png",
+          "/patents/figures/us-400766-hall-aluminium/fig-2-source-crop-v1.png",
           "Source-facsimile crop for Fig. 2, modified apparatus in elevation and section.",
         ),
         {
@@ -127,14 +129,14 @@ export const hallAluminiumArchivalEdition: HallAluminiumEditionCandidate = {
       preview(
         "Figure 1",
         1,
-        "/patents/figures/us-400766-hall-aluminium/fig-1-source-crop-v2.png",
+        "/patents/figures/us-400766-hall-aluminium/fig-1-source-crop-v1.png",
         "Source-facsimile crop for Figure 1, sectional elevation.",
       ),
       " is a sectional elevation of a form of apparatus applicable in the practice of my invention; and ",
       preview(
         "Fig. 2",
         2,
-        "/patents/figures/us-400766-hall-aluminium/fig-2-source-crop-v2.png",
+        "/patents/figures/us-400766-hall-aluminium/fig-2-source-crop-v1.png",
         "Source-facsimile crop for Fig. 2, modified apparatus.",
       ),
       " is a view, partly in elevation and partly in section, of a modified form of apparatus.",
@@ -183,14 +185,14 @@ export const hallAluminiumArchivalEdition: HallAluminiumEditionCandidate = {
       preview(
         "Fig. 1",
         1,
-        "/patents/figures/us-400766-hall-aluminium/fig-1-source-crop-v2.png",
+        "/patents/figures/us-400766-hall-aluminium/fig-1-source-crop-v1.png",
         "Source-facsimile crop for Fig. 1, electrode D and carbon-lined crucible.",
       ),
       ", the carbon lining A′ may be employed as the negative electrode, as shown in ",
       preview(
         "Fig. 2",
         2,
-        "/patents/figures/us-400766-hall-aluminium/fig-2-source-crop-v2.png",
+        "/patents/figures/us-400766-hall-aluminium/fig-2-source-crop-v1.png",
         "Source-facsimile crop for Fig. 2, carbon lining A-prime as negative electrode.",
       ),
       ", the conductor from the negative pole of the electric generator being suitably connected, as shown at N′, to such lining.",

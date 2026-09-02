@@ -1,6 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { allPatents } from "@/data/patents";
-import { applyClaimConstraintModifications, CATALOG_CLAIM_CONSTRAINTS } from "./claimConstraints";
+import {
+  applyClaimConstraintModifications,
+  applySharedClaimConstraintModifications,
+  CATALOG_CLAIM_CONSTRAINTS,
+  claimConstraintStateParamId,
+  readSharedClaimConstraintStates,
+} from "./claimConstraints";
 
 describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
   test("every numbered constraint names a claim that actually exists in the catalogue record", () => {
@@ -147,5 +153,77 @@ describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
     expect(res.activeFailures[0]).toContain("intersecting emitter/detector field");
     expect(res.refusalWarning).toContain("mechanical bumper behavior is not a substitute");
     expect(res.modifiedParams.coveragePct).toBeUndefined();
+  });
+
+  test("reads missing shared claim keys as active and explicit hidden keys as inverted", () => {
+    const patentId = "us-2846084-goertz-electronic-master-slave-manipulator";
+    expect(readSharedClaimConstraintStates(patentId, {})).toEqual({
+      9: true,
+      10: true,
+      11: true,
+      12: true,
+    });
+    expect(
+      readSharedClaimConstraintStates(patentId, {
+        [claimConstraintStateParamId(9)]: 0,
+        [claimConstraintStateParamId(10)]: 0.49,
+        [claimConstraintStateParamId(11)]: 0.5,
+      }),
+    ).toEqual({ 9: false, 10: false, 11: true, 12: true });
+  });
+
+  test("derives Goertz claim predicates without overwriting raw component controls", () => {
+    const raw = {
+      forceReflectionEnabled: 1,
+      limiterEnabled: 1,
+      tachometerDampingEnabled: 1,
+      [claimConstraintStateParamId(9)]: 0,
+      [claimConstraintStateParamId(12)]: 0,
+    };
+    const result = applySharedClaimConstraintModifications(
+      "us-2846084-goertz-electronic-master-slave-manipulator",
+      raw,
+    );
+
+    expect(raw.forceReflectionEnabled).toBe(1);
+    expect(raw.limiterEnabled).toBe(1);
+    expect(result.modifiedParams.forceReflectionEnabled).toBe(0);
+    expect(result.modifiedParams.limiterEnabled).toBe(0);
+    expect(result.modifiedParams.tachometerDampingEnabled).toBe(0);
+    expect(result.activeFailures).toHaveLength(2);
+    expect(result.refusalWarning).toContain("no quantitative safety");
+  });
+
+  test("warehouse inversions withhold automatic addressing and Claim 1 bay transfer only", () => {
+    const claimOne = applyClaimConstraintModifications(
+      "us-3119501-lemelson-automatic-warehousing",
+      { automaticAddressing: 1, shuttleExtensionFraction: 0.8, railAddressFraction: 0.4 },
+      { 1: false, 3: true },
+    );
+    expect(claimOne.modifiedParams.automaticAddressing).toBe(0);
+    expect(claimOne.modifiedParams.shuttleExtensionFraction).toBe(0);
+    expect(claimOne.modifiedParams.railAddressFraction).toBe(0.4);
+    expect(claimOne.refusalWarning).toContain("establishes no speed");
+
+    const claimThree = applyClaimConstraintModifications(
+      "us-3119501-lemelson-automatic-warehousing",
+      { automaticAddressing: 1, shuttleExtensionFraction: 0.8 },
+      { 1: true, 3: false },
+    );
+    expect(claimThree.modifiedParams.automaticAddressing).toBe(0);
+    expect(claimThree.modifiedParams.shuttleExtensionFraction).toBe(0.8);
+  });
+
+  test("adjustable-manipulator inversions map every registered claim to a kernel predicate", () => {
+    const result = applyClaimConstraintModifications(
+      "us-3260375-lemelson-adjustable-manipulator",
+      { cyclePhase: 2 },
+      { 1: false, 8: false, 15: false },
+    );
+    expect(result.modifiedParams.claim1SelectedSwitchesEnabled).toBe(0);
+    expect(result.modifiedParams.claim8BistableSwitchEnabled).toBe(0);
+    expect(result.modifiedParams.claim15ServoHandoffEnabled).toBe(0);
+    expect(result.activeFailures).toHaveLength(3);
+    expect(result.refusalWarning).toContain("no travel limit");
   });
 });

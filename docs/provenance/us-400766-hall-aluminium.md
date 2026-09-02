@@ -34,7 +34,7 @@
 1. **Facsimile**: Pinned immutable source PDF at `public/patents/pdfs/us-400766-hall-aluminium.pdf` (SHA-256 `8a9cda34caaa0426bc62d75ca3910cab636c9f0329cb2f6193019c95c5d94791`).
 2. **Reviewed Ledger**: Full page-complete transcription ledger at `public/patents/transcripts/us-400766-hall-aluminium-reviewed.txt`.
 3. **Archival Edition**: Hand-authored interactive React edition at `src/data/editions/hallAluminiumEdition.ts` with inline term definitions, figure previews, and dynamic claim text lookup.
-4. **Figure Crops**: Existing v1 crops are preserved at `public/patents/figures/us-400766-hall-aluminium/`. The candidate edition plans new source-derived files `fig-1-source-crop-v2.png` and `fig-2-source-crop-v2.png` (with matching preview paths) but remains withheld from the served record until those files exist and are independently viewed. No existing crop is overwritten.
+4. **Figure Crops**: Existing v1 crops are preserved at `public/patents/figures/us-400766-hall-aluminium/` and remain the candidate edition's explicitly unaccepted research previews. Planned source-derived replacements `fig-1-source-crop-v2.png` and `fig-2-source-crop-v2.png` are not referenced as if they exist. The candidate remains withheld from the served record until replacement files are actually generated, independently viewed, and accepted. No existing crop is overwritten.
 5. **Claims Count**: Exactly 3 printed claims, all dynamically read from the candidate archival edition and decoded in the canonical record.
 
 ## 4. Editorial and publication status

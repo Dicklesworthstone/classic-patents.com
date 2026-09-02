@@ -54,7 +54,7 @@ describe("Charles Martin Hall US 400,766 Archival Edition Contract", () => {
     }
   });
 
-  test("preserves superseded v1 crops while publishing the v2 figure previews", () => {
+  test("keeps the held candidate on preserved v1 crops until reviewed replacements exist", () => {
     const figures = [
       {
         path: "public/patents/figures/us-400766-hall-aluminium/fig-1-source-crop-v1.png",
@@ -83,10 +83,11 @@ describe("Charles Martin Hall US 400,766 Archival Edition Contract", () => {
     expect(
       figureReferences.every((reference) =>
         reference.figurePreviews?.every((preview: { src: string }) =>
-          /-v2\.png$/.test(preview.src),
+          /-v1\.png$/.test(preview.src),
         ),
       ),
     ).toBe(true);
+    expect(JSON.stringify(hallAluminiumArchivalEdition)).not.toContain("source-crop-v2.png");
   });
 
   test("confirms reviewed transcript ledger exists and contains page markers", () => {

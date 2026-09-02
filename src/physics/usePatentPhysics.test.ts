@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import {
+  getEffectivePatentPhysicsParams,
   getLastParamChange,
   getPatentPhysicsParams,
   getPhysicsTick,
@@ -7,6 +8,7 @@ import {
   setPatentPhysicsParam,
   subscribePatentPhysics,
 } from "./usePatentPhysics";
+import { claimConstraintStateParamId } from "./claimConstraints";
 
 describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", () => {
   const testPatentId = "us-821393-wright-flyer";
@@ -66,5 +68,44 @@ describe("Physics Bus & Reactive Parameter Subscriptions (usePatentPhysics)", ()
     const params = getPatentPhysicsParams(maximId);
     expect(params.firingRate).toBe(700);
     expect(params.fireRateRpm).toBe(700);
+  });
+
+  test("shares claim state across subscribers while retaining raw controls and deriving effective topology", () => {
+    const goertzId = "us-2846084-goertz-electronic-master-slave-manipulator";
+    resetPatentPhysicsParams(goertzId);
+    const claim9Param = claimConstraintStateParamId(9);
+    const observations: number[] = [];
+    const unsubscribeA = subscribePatentPhysics(goertzId, (params) => {
+      observations.push(params[claim9Param] ?? -1);
+    });
+    const unsubscribeB = subscribePatentPhysics(goertzId, (params) => {
+      observations.push((params[claim9Param] ?? -1) * 10);
+    });
+
+    setPatentPhysicsParam(goertzId, claim9Param, 0);
+
+    expect(observations).toEqual([0, 0]);
+    expect(getPatentPhysicsParams(goertzId)[claim9Param]).toBe(0);
+    expect(getPatentPhysicsParams(goertzId).forceReflectionEnabled).toBe(1);
+    expect(getEffectivePatentPhysicsParams(goertzId).forceReflectionEnabled).toBe(0);
+
+    unsubscribeA();
+    unsubscribeB();
+    resetPatentPhysicsParams(goertzId);
+    expect(getPatentPhysicsParams(goertzId)[claim9Param]).toBeUndefined();
+    expect(getEffectivePatentPhysicsParams(goertzId).forceReflectionEnabled).toBe(1);
+  });
+
+  test("preserves hidden claim state when an ordinary aliased control is updated", () => {
+    const maximId = "us-319596-maxim-machine-gun";
+    const claim1Param = claimConstraintStateParamId(1);
+    resetPatentPhysicsParams(maximId);
+    setPatentPhysicsParam(maximId, claim1Param, 0);
+    setPatentPhysicsParam(maximId, "fireRateRpm", 680);
+
+    const params = getPatentPhysicsParams(maximId);
+    expect(params[claim1Param]).toBe(0);
+    expect(params.firingRate).toBe(680);
+    resetPatentPhysicsParams(maximId);
   });
 });

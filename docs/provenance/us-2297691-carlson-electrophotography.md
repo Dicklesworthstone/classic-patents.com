@@ -43,7 +43,7 @@
 
 1. **Source Face**: The draft in `src/data/editions/carlsonElectrophotographyEdition.ts` is retained as evidence but is under a root editorial hold and is not approved for visitor publication.
 2. **Reviewed Ledger**: `public/patents/transcripts/us-2297691-carlson-electrophotography-reviewed.txt` carries the corrected one-sheet inventory and the literal pages 2–10 packet, but remains unaccepted as a page-complete reviewed transcription until Luna confirms the drawing labels, signature/formal glyphs, and pixel-sensitive punctuation.
-3. **Figure Crops**: Existing files under `public/patents/figures/us-2297691-carlson-electrophotography/` are preserved but untrusted pending source-by-source recropping. The file currently named for Figure 9 contains the specification masthead, not Figure 9.
+3. **Figure Crops**: Existing files under `public/patents/figures/us-2297691-carlson-electrophotography/` are preserved but untrusted pending source-by-source recropping. The file currently named for Figure 9 contains the specification masthead, not Figure 9. The edition reserves accepted `v2` names and dimensions for the repair, but exposes no figure-preview URL until those files exist and pass independent acceptance; rejected `v1` evidence and nonexistent `v2` targets must never become broken visitor links.
 4. **Claim Count**: The facsimile prints 27 claims across PDF pages 7–10. The current packet carries all 27 literal claim blocks; independent Luna comparison remains required before release.
 5. **Release boundary**: The edition must remain withheld until the ledger, every edition block, every figure identity, and every paragraph companion have been rebuilt and independently compared with the pinned PDF.
 

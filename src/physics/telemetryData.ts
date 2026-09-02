@@ -4683,6 +4683,16 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           provenance: "source-disclosed",
         },
         {
+          label: "Normalized Breech Travel",
+          value: `${((maxim.breechOpenMm / 48) * 100).toFixed(1)}%`,
+          unit: "of illustrated cycle",
+          badgeColor: "indigo",
+          progressPct: clampProgress((maxim.breechOpenMm / 48) * 100),
+          provenance: "topology-normalized",
+          provenanceCitation:
+            "Dimensionless travel through the illustrated linkage cycle; US 319,596 does not print a numerical breech stroke.",
+        },
+        {
           label: "Muzzle Sleeve State",
           value:
             maxim.sleeveForwardMm > 1
@@ -5300,6 +5310,16 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "emerald",
           primary: true,
           provenance: "source-disclosed",
+        },
+        {
+          label: "Normalized Command Sequence",
+          value: tele.steppingDiskIndex.toString(),
+          unit: "of 8 illustrated positions",
+          badgeColor: "indigo",
+          progressPct: clampProgress((tele.steppingDiskIndex / 7) * 100),
+          provenance: "topology-normalized",
+          provenanceCitation:
+            "Illustrative eight-position normalization of the source-described pulse, escapement, and contact-cylinder sequence; not a count printed in US 613,809.",
         },
         {
           label: "Coherer Resistance",
@@ -6955,7 +6975,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 10,
         defaultValue: 213,
         unit: "m",
-        provenance: "scenario-modern",
+        provenance: "scenario-reader",
+        provenanceCitation:
+          "Reader-supplied exploratory input; US 235,199 prints no measured range or atmospheric-loss model.",
       },
       {
         id: "voiceSplDb",
@@ -6965,7 +6987,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 75,
         unit: "dB SPL",
-        provenance: "scenario-modern",
+        provenance: "scenario-reader",
+        provenanceCitation:
+          "Reader-supplied exploratory input; US 235,199 prints no sound-pressure calibration.",
       },
       {
         id: "solarIrradianceWPerM2",
@@ -6975,7 +6999,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 50,
         defaultValue: 950,
         unit: "W/m²",
-        provenance: "scenario-modern",
+        provenance: "scenario-reader",
+        provenanceCitation:
+          "Reader-supplied exploratory input; US 235,199 prints no source-irradiance measurement.",
       },
       {
         id: "collectorDiameterM",
@@ -6985,7 +7011,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.05,
         defaultValue: 0.5,
         unit: "m",
-        provenance: "scenario-modern",
+        provenance: "scenario-reader",
+        provenanceCitation:
+          "Reader-supplied exploratory input; US 235,199 prints no collector diameter or aperture efficiency.",
       },
     ],
     computeMetrics: (p) => {
@@ -6995,56 +7023,38 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         solarIrradianceWPerM2: p.solarIrradianceWPerM2,
         collectorDiameterM: p.collectorDiameterM,
       });
+      const scenarioRequest = [
+        `${p.transmissionDistanceM ?? 213} m`,
+        `${p.voiceSplDb ?? 75} dB SPL`,
+        `${p.solarIrradianceWPerM2 ?? 950} W/m²`,
+        `${p.collectorDiameterM ?? 0.5} m collector`,
+      ].join(" · ");
       return [
         {
-          label: "Concentrated Optical Power",
-          value: `${photo.concentratedPowerMw.toFixed(2)} mW`,
-          unit: "P_cell",
-          badgeColor: "amber",
-          progressPct: clampProgress((photo.concentratedPowerMw / 50.0) * 100),
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Selenium Cell Resistance",
-          value: `${photo.seleniumOperatingResistanceKOhms.toFixed(1)} kΩ`,
-          unit: "R_se",
+          label: "Source Causal Chain",
+          value: photo.beamVariationActive ? "VARIED BEAM → SENSITIVE RECEIVER" : "STEADY BEAM",
+          unit: "US 235,199 topology",
           badgeColor: "emerald",
-          progressPct: clampProgress(
-            Math.max(0, 100 - (photo.seleniumOperatingResistanceKOhms / 180.0) * 100),
-          ),
-          provenance: "scenario-modern",
+          progressPct: clampProgress(photo.beamVariationActive ? 100 : 0),
+          provenance: "source-disclosed",
         },
         {
-          label: "Audio AC Signal Current",
-          value: `${photo.audioSignalCurrentUa.toFixed(2)} µA`,
-          unit: "i_audio",
-          badgeColor: "cyan",
-          progressPct: clampProgress((photo.audioSignalCurrentUa / 15.0) * 100),
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Reproduced Sound Level",
-          value: `${photo.reproducedAudioSplDb.toFixed(1)} dB SPL`,
-          unit: "SPL_out",
-          badgeColor: photo.reproducedAudioSplDb >= 45 ? "emerald" : "amber",
-          progressPct: clampProgress((photo.reproducedAudioSplDb / 85.0) * 100),
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Optical Modulation Depth",
-          value: `${(photo.modulationDepth * 100).toFixed(1)}%`,
-          unit: "m_opt",
+          label: "Reader Scenario Request",
+          value: scenarioRequest,
+          unit: "not a patent measurement",
           badgeColor: "indigo",
-          progressPct: clampProgress(photo.modulationDepth * 100),
-          provenance: "scenario-modern",
+          progressPct: 50,
+          provenance: "scenario-reader",
+          provenanceCitation: photo.sourceBoundary,
         },
         {
-          label: "Optical Link SNR",
-          value: `${photo.linkSnrDb.toFixed(1)} dB`,
-          unit: "SNR",
-          badgeColor: photo.linkSnrDb >= 20 ? "emerald" : "rose",
-          progressPct: clampProgress((photo.linkSnrDb / 50.0) * 100),
-          provenance: "scenario-modern",
+          label: "Quantitative Link Budget",
+          value: "WITHHELD — SOURCE INPUTS ABSENT",
+          unit: "typed refusal",
+          badgeColor: "amber",
+          progressPct: 0,
+          provenance: "refusal-bounded",
+          provenanceCitation: photo.sourceBoundary,
         },
       ];
     },
@@ -8801,9 +8811,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Active Claim Scope",
-          value: `Claim ${state.activeClaim}`,
+          value: `Claim ${state.activeClaim} ${state.activeClaimStatus}`,
           unit: "legal boundary",
-          badgeColor: "purple",
+          badgeColor: state.activeClaimStatus === "withheld" ? "rose" : "purple",
           provenance: "source-disclosed",
         },
         {
@@ -10100,7 +10110,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       return [
         {
           label: "Illustrated Translation",
-          value: (pose.translationOffset * 100).toFixed(0),
+          value: (pose.translationOffset * 100).toFixed(1),
           unit: "% display",
           badgeColor: "cyan",
           progressPct: clampProgress(pose.translationOffset * 100),
@@ -10189,7 +10199,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       return [
         {
           label: "Illustrated Translation",
-          value: (pose.translationOffset * 100).toFixed(0),
+          value: (pose.translationOffset * 100).toFixed(1),
           unit: "% display",
           badgeColor: "cyan",
           progressPct: clampProgress(pose.translationOffset * 100),

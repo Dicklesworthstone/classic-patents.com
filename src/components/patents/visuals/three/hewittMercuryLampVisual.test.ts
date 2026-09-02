@@ -52,6 +52,16 @@ describe("US 682,690 Peter Cooper Hewitt Mercury-Vapor Arc Lamp Visual Boundary"
     expect(studioSource).not.toContain("performance.now");
   });
 
+  test("keeps the registered claim probe outside optional responsive HUD chrome", () => {
+    const studioSource = readFileSync(studioPath, "utf-8");
+    const probeIndex = studioSource.indexOf(
+      '<ClaimConstraintToggle\n            patentId="us-682690-hewitt-mercury-lamp"',
+    );
+    const optionalHudIndex = studioSource.indexOf("{/* Top-Left Camera Preset Toolbar */}");
+    expect(probeIndex).toBeGreaterThan(0);
+    expect(optionalHudIndex).toBeGreaterThan(probeIndex);
+  });
+
   test("computes genuine plasma breakdown, negative resistance, and luminous efficacy in SI units", () => {
     const res = stepHewittMercuryLamp({
       mainsVoltageV: 110,
