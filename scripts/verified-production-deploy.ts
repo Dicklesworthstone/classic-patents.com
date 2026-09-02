@@ -125,9 +125,17 @@ function conflictingBuilds(): string[] {
     const pid = parts[0];
     const ppid = parts[1];
     if (pid === currentPid || ppid === currentPid) return false;
+    const commandStr = parts.slice(3).join(" ");
+    if (
+      /\b(?:SkyComputerUseClient|Codex Computer Use|Google Chrome|Electron|Antigravity)\b/i.test(
+        commandStr,
+      )
+    ) {
+      return false;
+    }
     if (
       !/\b(?:next\s+(?:build|dev)|vercel\s+(?:build|deploy)|bun\s+(?:run\s+(?:build|dev)|scripts\/build\.ts))\b/.test(
-        line,
+        commandStr,
       )
     ) {
       return false;
