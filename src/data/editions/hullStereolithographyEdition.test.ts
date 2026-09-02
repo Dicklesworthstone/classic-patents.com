@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { evaluateReviewedLedgerTextEvidence } from "@/data/editions/reviewedLedgerPublicationEvidence";
 import { hullStereolithographyPatent } from "@/data/patents/hull-stereolithography";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import {
@@ -101,7 +102,7 @@ describe("US 4,575,330 Charles W. Hull Stereolithography manual source edition",
     }
   });
 
-  test("validates the reviewed transcription ledger across all 16 pages", () => {
+  test("pins a page-complete literal ledger and rejects a missing printed claim", () => {
     const ledgerPath = resolve(
       process.cwd(),
       `public${hullStereolithographyPatent.originalTextAsset?.url}`,
@@ -111,10 +112,48 @@ describe("US 4,575,330 Charles W. Hull Stereolithography manual source edition",
     const validation = validateReviewedTranscription(ledgerText, 16);
     expect(validation.valid).toBe(true);
 
+    const evidence = evaluateReviewedLedgerTextEvidence(hullStereolithographyPatent, ledgerText);
+    expect(evidence).toMatchObject({
+      status: "verified",
+      valid: true,
+      coverageFraction: 1,
+      missingSectionIndexes: [],
+      missingClaimNumbers: [],
+    });
+
+    const pageAnchors = hullStereolithographyPatent.originalTextAsset?.pageAnchors ?? [];
+    expect(pageAnchors).toHaveLength(16);
+    for (const anchor of pageAnchors) {
+      const marker = `--- REVIEWED TRANSCRIPTION PAGE ${anchor.page} OF 16 ---`;
+      const start = ledgerText.indexOf(marker);
+      const nextMarker = `--- REVIEWED TRANSCRIPTION PAGE ${anchor.page + 1} OF 16 ---`;
+      const end = ledgerText.indexOf(nextMarker, start + marker.length);
+      const pageText = ledgerText.slice(start, end === -1 ? undefined : end);
+      expect(start).toBeGreaterThanOrEqual(0);
+      if (!anchor.isBlank) {
+        expect(pageText).toContain(anchor.exactSourceText);
+      }
+    }
+
     const normalizedLedger = normalizeSourceText(ledgerText);
     for (let c = 1; c <= 47; c++) {
       expect(normalizedLedger.includes(`${c}.`)).toBe(true);
     }
+
+    const finalPrintedClaim = hullStereolithographyPatent.claims.find(
+      (claim) => claim.number === 47,
+    );
+    expect(finalPrintedClaim).toBeDefined();
+    const missingClaimLedger = ledgerText.replace(
+      finalPrintedClaim?.originalText ?? "",
+      "47. [Intentionally removed for mutation test.]",
+    );
+    const missingClaimEvidence = evaluateReviewedLedgerTextEvidence(
+      hullStereolithographyPatent,
+      missingClaimLedger,
+    );
+    expect(missingClaimEvidence.valid).toBe(false);
+    expect(missingClaimEvidence.missingClaimNumbers).toContain(47);
   });
 
   test("provides valid provenance classifications for all Hull controls and metrics", () => {

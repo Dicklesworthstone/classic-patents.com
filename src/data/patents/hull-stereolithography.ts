@@ -112,8 +112,8 @@ export const hullStereolithographyPatent: Patent = {
       {
         page: 13,
         exactSourceText:
-          "27. A system for directly producing a three-dimensional object as it is designed by a computer, comprising: deriving graphic image output from said computer, said graphic image defining successive adjacent cross-sections of the three-dimensional object designed by said computer; means for drawing upon and forming successive cross-sections, corresponding to said computer designed cross-sections of said object, at a two-dimensional interface; and means for moving said cross-sections as they are formed and building up said object in a stepwise fashion, whereby the three-dimensional object designed by said computer is automatically extracted from a substantially two-dimensional surface.",
-        sourceRelationship: "Specification columns 15–16 (Claims 39–47)",
+          "40. A system as set forth in claim 39, wherein said second non-reactive medium is heavy water.",
+        sourceRelationship: "Specification columns 15–16 (Claims 40–47)",
       },
       {
         page: 14,
@@ -122,13 +122,13 @@ export const hullStereolithographyPatent: Patent = {
       },
       {
         page: 15,
-        exactSourceText: "B1 4.575,330",
+        exactSourceText: "B1 4,575,330",
         sourceRelationship: "Reexamination Columns 1–2 (Amended Claims 1, 2, 27, 28)",
       },
       {
         page: 16,
         exactSourceText: "B1",
-        sourceRelationship: "Reexamination Columns 3–4 (Amended Claim 29 and Added Claims 46, 47)",
+        sourceRelationship: "Reexamination certificate page 3 (amended Claim 29)",
       },
     ],
   },

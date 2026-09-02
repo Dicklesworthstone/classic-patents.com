@@ -108,7 +108,7 @@ export function buildMaximMachineGunModel(): MaximMachineGunModel {
       -0.79,
       Math.cos(legAngle) * 0.58,
     );
-    const legEnd = footCenter.clone().setY(-0.75);
+    const legEnd = footCenter.clone().setY(-0.76);
     const legDirection = legEnd.clone().sub(legStart);
     const legGeo = new THREE.CylinderGeometry(0.025, 0.032, legDirection.length(), 12);
     const legMesh = new THREE.Mesh(legGeo, iron);
