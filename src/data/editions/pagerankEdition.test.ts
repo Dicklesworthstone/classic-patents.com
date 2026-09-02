@@ -10,10 +10,16 @@ import {
 } from "@/data/editions/pagerankEdition";
 import { pagerankPatent } from "@/data/patents/pagerank";
 import {
+  normalizeLiteralSourceText,
   validateReviewedTranscription,
   validateReviewedTranscriptionLiteralCoverage,
   validateReviewedTranscriptionPageAnchors,
 } from "@/data/patents/sourceTextValidation";
+import { ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS } from "./archivalFigureAcceptance";
+import {
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS,
+  validateFigureOccurrenceSourceLocators,
+} from "./figureOccurrenceSourceLocators";
 import { evaluateArchivalPublicationState } from "./publicationApproval";
 import {
   evaluateReviewedLedgerTextEvidence,
@@ -124,6 +130,39 @@ describe("US 6,285,999 Google PageRank Archival Edition Contract", () => {
     expect(content).toContain(
       "This invention was made with Government support under contract 9411306",
     );
+
+    expect(
+      validateReviewedTranscription(
+        content.replace(
+          "--- REVIEWED TRANSCRIPTION PAGE 6 OF 12 ---",
+          "--- REVIEWED TRANSCRIPTION PAGE 6 OF 11 ---",
+        ),
+        12,
+      ),
+    ).toEqual({
+      valid: false,
+      error:
+        "The reviewed transcription page ledger is invalid at marker 6; expected page 6 of 12.",
+    });
+  });
+
+  test("keeps source mastheads, headings, and paragraphs literal rather than editorial summaries", () => {
+    const transcriptPath = path.join(
+      process.cwd(),
+      "public",
+      "patents",
+      "transcripts",
+      "us-6285999-pagerank-reviewed.txt",
+    );
+    const normalizedLedger = normalizeLiteralSourceText(fs.readFileSync(transcriptPath, "utf8"));
+    const sourceHeadings = pagerankArchivalEdition.blocks
+      .filter((block) => block.kind === "heading")
+      .map((block) => block.text);
+
+    expect(sourceHeadings.length).toBeGreaterThan(0);
+    for (const heading of sourceHeadings) {
+      expect(normalizedLedger).toContain(normalizeLiteralSourceText(heading));
+    }
   });
 
   test("pins all visitor-facing source blocks to the reviewed ledger", () => {
@@ -159,6 +198,50 @@ describe("US 6,285,999 Google PageRank Archival Edition Contract", () => {
       status: "literal-coverage-incomplete",
       missingClaimNumbers: [29],
     });
+
+    const missingMasthead = transcript.replace(
+      "Appl. No.: 09/004,827 Filed: Jan. 9, 1998",
+      "[missing source masthead line]",
+    );
+    expect(evaluateReviewedLedgerTextEvidence(pagerankPatent, missingMasthead)).toMatchObject({
+      valid: false,
+      status: "literal-coverage-incomplete",
+      missingSectionIndexes: expect.arrayContaining([7]),
+    });
+
+    const missingParagraph = transcript.replace(
+      "This invention was supported in part by the National Science Foundation grant number IRI-9411306-4. The Government has certain rights in the invention.",
+      "[missing source paragraph]",
+    );
+    expect(evaluateReviewedLedgerTextEvidence(pagerankPatent, missingParagraph)).toMatchObject({
+      valid: false,
+      status: "literal-coverage-incomplete",
+      missingSectionIndexes: expect.arrayContaining([10]),
+    });
+  });
+
+  test("fails closed for missing ledger accountability and divergent source digest", () => {
+    const asset = pagerankPatent.originalTextAsset;
+    if (!asset) throw new Error("PageRank must bind a reviewed source ledger.");
+
+    expect(
+      evaluateArchivalPublicationState({
+        ...pagerankPatent,
+        originalTextAsset: { ...asset, reviewedBy: "" },
+      }).reasonCode,
+    ).toBe("MISSING_LEDGER_REVIEWER");
+    expect(
+      evaluateArchivalPublicationState({
+        ...pagerankPatent,
+        originalTextAsset: { ...asset, reviewedAt: "" },
+      }).reasonCode,
+    ).toBe("MISSING_LEDGER_REVIEW_DATE");
+    expect(
+      evaluateArchivalPublicationState({
+        ...pagerankPatent,
+        originalTextAsset: { ...asset, sourcePdfSha256: "0".repeat(64) },
+      }).reasonCode,
+    ).toBe("SOURCE_DIGEST_MISMATCH");
   });
 
   test("accepts only locator-bound direct facsimile crops", () => {
@@ -228,5 +311,28 @@ describe("US 6,285,999 Google PageRank Archival Edition Contract", () => {
         status: "accepted",
       },
     ]);
+
+    const patentId = "us-6285999-pagerank";
+    const activeOccurrences = Object.fromEntries(
+      decision.figureManifest.figures.map((figure) => [figure.occurrence, figure.activeAsset]),
+    );
+    expect(
+      validateFigureOccurrenceSourceLocators(
+        { [patentId]: FIGURE_OCCURRENCE_SOURCE_LOCATORS[patentId].slice(1) },
+        {
+          canonicalAssetsByPatent: {
+            [patentId]: Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[patentId].assets),
+          },
+          canonicalOccurrencesByPatent: { [patentId]: activeOccurrences },
+          sourcePdfPageCountsByPatent: { [patentId]: 12 },
+        },
+      ),
+    ).toEqual({
+      valid: false,
+      errors: [
+        "us-6285999-pagerank: locator count does not equal the active edition figure-occurrence count.",
+        "us-6285999-pagerank edition-block-20-group-0-inline-0: active edition occurrence has no locator.",
+      ],
+    });
   });
 });

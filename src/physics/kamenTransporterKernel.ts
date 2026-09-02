@@ -272,7 +272,7 @@ export function advanceKamenTransporterMotion(
   previous: KamenTransporterMotionState = createKamenTransporterMotionState(controls),
   dt: number = 1 / 60,
 ): KamenTransporterMotionState {
-  const safeDt = Number.isFinite(dt) ? Math.max(0, Math.min(dt, 0.1)) : 0;
+  const safeDt = Number.isFinite(dt) ? Math.max(0, dt) : 0;
   const telemetry = stepKamenTransporterSi(controls);
   // A refused state holds the last legal visual pose rather than multiplying
   // the retained phase by a newly-zero speed and snapping the wheels backward.
