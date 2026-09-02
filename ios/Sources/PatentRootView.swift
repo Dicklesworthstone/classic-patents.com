@@ -6,7 +6,7 @@ struct PatentRootView: View {
 
     private var launchPatent: PatentRecord? {
 #if DEBUG
-        guard let marker = ProcessInfo.processInfo.arguments.firstIndex(of: "-uiPatent"),
+        guard let marker = ProcessInfo.processInfo.arguments.firstIndex(of: "-FrankenPatentsUITestPatent"),
               ProcessInfo.processInfo.arguments.indices.contains(marker + 1) else { return nil }
         return library.records.first(where: { $0.id == ProcessInfo.processInfo.arguments[marker + 1] })
 #else
@@ -16,7 +16,7 @@ struct PatentRootView: View {
 
     private var launchRoot: String? {
 #if DEBUG
-        guard let marker = ProcessInfo.processInfo.arguments.firstIndex(of: "-uiRoot"),
+        guard let marker = ProcessInfo.processInfo.arguments.firstIndex(of: "-FrankenPatentsUITestRoot"),
               ProcessInfo.processInfo.arguments.indices.contains(marker + 1) else { return nil }
         return ProcessInfo.processInfo.arguments[marker + 1].lowercased()
 #else

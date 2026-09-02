@@ -200,7 +200,6 @@ private struct PatentSceneRepresentable: UIViewRepresentable {
         func install(patentID: String, in view: SCNView) {
             self.patentID = patentID
             animatedNodes = []
-            isPrepared.wrappedValue = false
             let scene = SCNScene()
             view.scene = scene
 

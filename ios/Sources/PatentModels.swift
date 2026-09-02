@@ -21,6 +21,7 @@ struct PatentRecord: Codable, Identifiable, Hashable {
     let originalText: String
     let originalTextAsset: OriginalTextAsset?
     let archivalEdition: CuratedSpecificationEdition?
+    let archivalPublication: ArchivalPublicationSummary
     let archivalParallelReadings: [String: [String]]
     let plainEnglish: PlainEnglish
     let claims: [PatentClaim]
@@ -33,6 +34,17 @@ struct PatentRecord: Codable, Identifiable, Hashable {
     let sourceVisualization: PatentSourceVisualization
     let bundledAssets: [String]
     let withheldAssets: [String]
+}
+
+struct ArchivalPublicationSummary: Codable, Hashable {
+    let status: String
+    let isPublished: Bool
+    let reasonCode: String
+    let explanation: String
+
+    var isReconstructionQuarantined: Bool {
+        reasonCode == "FABRICATION_OR_RECONSTRUCTION_QUARANTINE"
+    }
 }
 
 struct PatentSourceVisualization: Codable, Hashable {

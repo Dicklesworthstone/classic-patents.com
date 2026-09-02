@@ -122,8 +122,8 @@
     "builder": "buildHoweSewingMachineModel",
     "spatialComponent": "HoweSewingMachine3D",
     "vectorComponent": "HoweSewingMachineSim",
-    "meshCount": 43,
-    "namedNodeCount": 9
+    "meshCount": 68,
+    "namedNodeCount": 79
   },
   {
     "id": "us-6162-corliss-steam-engine",
@@ -248,8 +248,8 @@
     "builder": "buildOttoEngineModel",
     "spatialComponent": "OttoEngine3D",
     "vectorComponent": "OttoEngineSim",
-    "meshCount": 80,
-    "namedNodeCount": 20
+    "meshCount": 89,
+    "namedNodeCount": 35
   },
   {
     "id": "us-200521-edison-phonograph",
@@ -263,11 +263,11 @@
   {
     "id": "us-223898-edison-lightbulb",
     "asset": "NativeModels/us-223898-edison-lightbulb.usdz",
-    "builder": "buildEdisonBulbModel",
+    "builder": "buildEdison223898Model",
     "spatialComponent": "EdisonBulb3D",
     "vectorComponent": "EdisonBulbSim",
-    "meshCount": 19,
-    "namedNodeCount": 6
+    "meshCount": 35,
+    "namedNodeCount": 40
   },
   {
     "id": "us-233692-pelton-water-wheel",
@@ -320,8 +320,8 @@
     "builder": "buildMaximMachineGunModel",
     "spatialComponent": "MaximMachineGun3D",
     "vectorComponent": "MaximMachineGunSim",
-    "meshCount": 59,
-    "namedNodeCount": 11
+    "meshCount": 26,
+    "namedNodeCount": 12
   },
   {
     "id": "us-347140-thomson-welding",
@@ -335,11 +335,11 @@
   {
     "id": "us-361931-daimler-engine",
     "asset": "NativeModels/us-361931-daimler-engine.usdz",
-    "builder": "buildDaimlerMarineEngineModel",
+    "builder": "buildDaimlerMarineInstallationModel",
     "spatialComponent": "DaimlerEngine3D",
     "vectorComponent": "DaimlerEngineSim",
-    "meshCount": 48,
-    "namedNodeCount": 8
+    "meshCount": 85,
+    "namedNodeCount": 97
   },
   {
     "id": "us-381968-tesla-motor",
@@ -410,8 +410,8 @@
     "builder": "buildTeslaCoilModel",
     "spatialComponent": "TeslaCoil3D",
     "vectorComponent": "TeslaCoilSim",
-    "meshCount": 26,
-    "namedNodeCount": 15
+    "meshCount": 37,
+    "namedNodeCount": 38
   },
   {
     "id": "us-608969-parsons-turbine",
@@ -523,6 +523,15 @@
     "namedNodeCount": 6
   },
   {
+    "id": "us-1219881-sundback-zipper",
+    "asset": "NativeModels/us-1219881-sundback-zipper.usdz",
+    "builder": "buildSundbackZipperModel",
+    "spatialComponent": "SundbackZipper3D",
+    "vectorComponent": "SundbackZipperSim",
+    "meshCount": 201,
+    "namedNodeCount": 69
+  },
+  {
     "id": "us-1773980-farnsworth-tv",
     "asset": "NativeModels/us-1773980-farnsworth-tv.usdz",
     "builder": "buildFarnsworthTvModel",
@@ -557,6 +566,15 @@
     "vectorComponent": "CarlsonElectrophotographySim",
     "meshCount": 20,
     "namedNodeCount": 14
+  },
+  {
+    "id": "us-2318259-sikorsky-helicopter",
+    "asset": "NativeModels/us-2318259-sikorsky-helicopter.usdz",
+    "builder": "buildSikorskyHelicopterModel",
+    "spatialComponent": "SikorskyHelicopter3D",
+    "vectorComponent": "SikorskyHelicopterSim",
+    "meshCount": 49,
+    "namedNodeCount": 2
   },
   {
     "id": "us-2495429-spencer-microwave",
@@ -595,6 +613,24 @@
     "namedNodeCount": 7
   },
   {
+    "id": "us-2717437-mestral-velcro",
+    "asset": "NativeModels/us-2717437-mestral-velcro.usdz",
+    "builder": "createMestralVelcroModel",
+    "spatialComponent": "MestralVelcro3D",
+    "vectorComponent": "MestralVelcroSim",
+    "meshCount": 164,
+    "namedNodeCount": 164
+  },
+  {
+    "id": "us-2846084-goertz-electronic-master-slave-manipulator",
+    "asset": "NativeModels/us-2846084-goertz-electronic-master-slave-manipulator.usdz",
+    "builder": "buildGoertzElectronicMasterSlaveManipulatorModel",
+    "spatialComponent": "GoertzElectronicMasterSlaveManipulator3D",
+    "vectorComponent": "GoertzElectronicMasterSlaveManipulatorSim",
+    "meshCount": 24,
+    "namedNodeCount": 29
+  },
+  {
     "id": "us-2929922-townes-laser",
     "asset": "NativeModels/us-2929922-townes-laser.usdz",
     "builder": "buildTownesLaserModel",
@@ -613,6 +649,33 @@
     "namedNodeCount": 22
   },
   {
+    "id": "us-2988237-devol-programmed-transfer",
+    "asset": "NativeModels/us-2988237-devol-programmed-transfer.usdz",
+    "builder": "buildDevolProgrammedTransferModel",
+    "spatialComponent": "DevolProgrammedTransfer3D",
+    "vectorComponent": "DevolProgrammedTransferSim",
+    "meshCount": 14,
+    "namedNodeCount": 8
+  },
+  {
+    "id": "us-3081379-lemelson-machine-vision",
+    "asset": "NativeModels/us-3081379-lemelson-machine-vision.usdz",
+    "builder": "createLemelsonMachineVisionModel",
+    "spatialComponent": "LemelsonMachineVision3D",
+    "vectorComponent": "LemelsonMachineVisionSim",
+    "meshCount": 26,
+    "namedNodeCount": 10
+  },
+  {
+    "id": "us-3119501-lemelson-automatic-warehousing",
+    "asset": "NativeModels/us-3119501-lemelson-automatic-warehousing.usdz",
+    "builder": "buildLemelsonWarehouseModel",
+    "spatialComponent": "LemelsonAutomaticWarehousing3D",
+    "vectorComponent": "LemelsonAutomaticWarehousingSim",
+    "meshCount": 27,
+    "namedNodeCount": 30
+  },
+  {
     "id": "us-3138743-kilby-integrated-circuit",
     "asset": "NativeModels/us-3138743-kilby-integrated-circuit.usdz",
     "builder": "createKilbyIntegratedCircuitModel",
@@ -620,6 +683,33 @@
     "vectorComponent": "KilbyIntegratedCircuitSim",
     "meshCount": 35,
     "namedNodeCount": 8
+  },
+  {
+    "id": "us-3212649-amf-versatran",
+    "asset": "NativeModels/us-3212649-amf-versatran.usdz",
+    "builder": "buildAmfVersatranModel",
+    "spatialComponent": "AmfVersatran3D",
+    "vectorComponent": "AmfVersatranSim",
+    "meshCount": 23,
+    "namedNodeCount": 31
+  },
+  {
+    "id": "us-3260375-lemelson-adjustable-manipulator",
+    "asset": "NativeModels/us-3260375-lemelson-adjustable-manipulator.usdz",
+    "builder": "buildLemelsonAdjustableManipulatorModel",
+    "spatialComponent": "LemelsonAdjustableManipulator3D",
+    "vectorComponent": "LemelsonAdjustableManipulatorSim",
+    "meshCount": 28,
+    "namedNodeCount": 1
+  },
+  {
+    "id": "us-3313014-lemelson-automatic-production",
+    "asset": "NativeModels/us-3313014-lemelson-automatic-production.usdz",
+    "builder": "buildLemelsonAutomaticProductionModel",
+    "spatialComponent": "LemelsonAutomaticProduction3D",
+    "vectorComponent": "LemelsonAutomaticProductionSim",
+    "meshCount": 32,
+    "namedNodeCount": 32
   },
   {
     "id": "us-3353115-maiman-ruby-laser",
@@ -649,6 +739,15 @@
     "namedNodeCount": 10
   },
   {
+    "id": "us-3728480-baer-odyssey",
+    "asset": "NativeModels/us-3728480-baer-odyssey.usdz",
+    "builder": "buildBaerOdysseyModel",
+    "spatialComponent": "BaerOdyssey3D",
+    "vectorComponent": "BaerOdysseySim",
+    "meshCount": 32,
+    "namedNodeCount": 6
+  },
+  {
     "id": "us-3858232-boyle-smith-ccd",
     "asset": "NativeModels/us-3858232-boyle-smith-ccd.usdz",
     "builder": "createBoyleSmithCcdModel",
@@ -658,6 +757,42 @@
     "namedNodeCount": 11
   },
   {
+    "id": "us-3858581-kamen-medication-injection-device",
+    "asset": "NativeModels/us-3858581-kamen-medication-injection-device.usdz",
+    "builder": "buildKamenInjectionModel",
+    "spatialComponent": "KamenMedicationInjection3D",
+    "vectorComponent": "KamenMedicationInjectionSim",
+    "meshCount": 10,
+    "namedNodeCount": 10
+  },
+  {
+    "id": "us-4063220-metcalfe-ethernet",
+    "asset": "NativeModels/us-4063220-metcalfe-ethernet.usdz",
+    "builder": "buildMetcalfeEthernetModel",
+    "spatialComponent": "MetcalfeEthernet3D",
+    "vectorComponent": "MetcalfeEthernetSim",
+    "meshCount": 20,
+    "namedNodeCount": 1
+  },
+  {
+    "id": "us-4068536-stackhouse-manipulator",
+    "asset": "NativeModels/us-4068536-stackhouse-manipulator.usdz",
+    "builder": "buildStackhouseManipulatorModel",
+    "spatialComponent": "StackhouseManipulator3D",
+    "vectorComponent": "StackhouseManipulatorSim",
+    "meshCount": 9,
+    "namedNodeCount": 7
+  },
+  {
+    "id": "us-4098001-watson-rcc",
+    "asset": "NativeModels/us-4098001-watson-rcc.usdz",
+    "builder": "buildWatsonRemoteCenterComplianceModel",
+    "spatialComponent": "WatsonRemoteCenterCompliance3D",
+    "vectorComponent": "WatsonRemoteCenterComplianceSim",
+    "meshCount": 14,
+    "namedNodeCount": 19
+  },
+  {
     "id": "us-4136359-wozniak-apple",
     "asset": "NativeModels/us-4136359-wozniak-apple.usdz",
     "builder": "buildWozniakAppleModel",
@@ -665,6 +800,69 @@
     "vectorComponent": "WozniakAppleSim",
     "meshCount": 86,
     "namedNodeCount": 10
+  },
+  {
+    "id": "us-4341502-makino-scara",
+    "asset": "NativeModels/us-4341502-makino-scara.usdz",
+    "builder": "buildMakinoScaraModel",
+    "spatialComponent": "MakinoScara3D",
+    "vectorComponent": "MakinoScaraSim",
+    "meshCount": 16,
+    "namedNodeCount": 13
+  },
+  {
+    "id": "us-4512709-milacron-robot-toolchanger",
+    "asset": "NativeModels/us-4512709-milacron-robot-toolchanger.usdz",
+    "builder": "buildMilacronRobotToolchangerModel",
+    "spatialComponent": "MilacronRobotToolchanger3D",
+    "vectorComponent": "MilacronRobotToolchangerSim",
+    "meshCount": 24,
+    "namedNodeCount": 17
+  },
+  {
+    "id": "us-4575330-hull-stereolithography",
+    "asset": "NativeModels/us-4575330-hull-stereolithography.usdz",
+    "builder": "createHullStereolithographyModel",
+    "spatialComponent": "HullStereolithography3D",
+    "vectorComponent": "HullStereolithographySim",
+    "meshCount": 12,
+    "namedNodeCount": 11
+  },
+  {
+    "id": "us-4765668-robot-end-effector",
+    "asset": "NativeModels/us-4765668-robot-end-effector.usdz",
+    "builder": "buildRobotEndEffectorModel",
+    "spatialComponent": "RobotEndEffector3D",
+    "vectorComponent": "RobotEndEffectorSim",
+    "meshCount": 28,
+    "namedNodeCount": 33
+  },
+  {
+    "id": "us-4921293-salisbury-robot-hand",
+    "asset": "NativeModels/us-4921293-salisbury-robot-hand.usdz",
+    "builder": "buildSalisburyRobotHandModel",
+    "spatialComponent": "SalisburyRobotHand3D",
+    "vectorComponent": "SalisburyRobotHandSim",
+    "meshCount": 64,
+    "namedNodeCount": 75
+  },
+  {
+    "id": "us-5121329-crump-fdm",
+    "asset": "NativeModels/us-5121329-crump-fdm.usdz",
+    "builder": "createCrumpFdmModel",
+    "spatialComponent": "CrumpFdm3D",
+    "vectorComponent": "CrumpFdmSim",
+    "meshCount": 52,
+    "namedNodeCount": 13
+  },
+  {
+    "id": "us-5701965-kamen-transporter",
+    "asset": "NativeModels/us-5701965-kamen-transporter.usdz",
+    "builder": "buildKamenTransporterModel",
+    "spatialComponent": "KamenTransporter3D",
+    "vectorComponent": "KamenTransporterSim",
+    "meshCount": 23,
+    "namedNodeCount": 13
   },
   {
     "id": "us-6120588-eink",
@@ -685,13 +883,22 @@
     "namedNodeCount": 10
   },
   {
+    "id": "us-6302230-kamen-segway",
+    "asset": "NativeModels/us-6302230-kamen-segway.usdz",
+    "builder": "createKamenSegwayModel",
+    "spatialComponent": "KamenSegway3D",
+    "vectorComponent": "KamenSegwaySim",
+    "meshCount": 18,
+    "namedNodeCount": 7
+  },
+  {
     "id": "us-6331181-davinci",
     "asset": "NativeModels/us-6331181-davinci.usdz",
     "builder": "buildDaVinciModel",
     "spatialComponent": "DaVinci3D",
     "vectorComponent": "DaVinciSim",
-    "meshCount": 14,
-    "namedNodeCount": 11
+    "meshCount": 25,
+    "namedNodeCount": 24
   },
   {
     "id": "us-6594844-roomba",
@@ -699,8 +906,8 @@
     "builder": "buildRoombaModel",
     "spatialComponent": "Roomba3D",
     "vectorComponent": "RoombaSim",
-    "meshCount": 25,
-    "namedNodeCount": 6
+    "meshCount": 39,
+    "namedNodeCount": 31
   },
   {
     "id": "us-7479949-multitouch",

@@ -84,13 +84,14 @@ enum NativeMathFormatter {
             "\\varepsilon": "ε", "\\epsilon": "ε", "\\sum": "∑", "\\prod": "∏", "\\int": "∫",
             "\\oint": "∮", "\\circ": "∘", "\\in": "∈", "\\perp": "⊥", "\\sqrt": "√",
             "\\sim": "∼", "\\pm": "±", "\\propto": "∝", "\\cap": "∩",
-            "\\land": "∧", "\\subset": "⊂", "\\neg": "¬", "\\varnothing": "∅",
-            "\\dots": "…", "\\uparrow": "↑", "\\downarrow": "↓",
-            "\\sin": "sin", "\\cos": "cos", "\\tan": "tan", "\\ln": "ln",
+            "\\land": "∧", "\\wedge": "∧", "\\subset": "⊂", "\\neg": "¬", "\\varnothing": "∅",
+            "\\dots": "…", "\\ldots": "…", "\\uparrow": "↑", "\\downarrow": "↓",
+            "\\sin": "sin", "\\cos": "cos", "\\tan": "tan", "\\cot": "cot", "\\arcsin": "arcsin", "\\ln": "ln",
             "\\log": "log", "\\exp": "exp", "\\min": "min",
             "\\dot": "˙", "\\ddot": "¨", "\\vec": "→", "\\lfloor": "⌊",
             "\\rfloor": "⌋", "\\text": "", "\\mathrm": "", "\\mathbf": "",
-            "\\mathcal": "", "\\operatorname": "", "\\mbox": "", "\\left": "", "\\right": "",
+            "\\mathcal": "", "\\mathbb": "", "\\boldsymbol": "", "\\operatorname": "", "\\mbox": "", "\\left": "", "\\right": "",
+            "\\bmod": " mod ",
             "\\bigl": "", "\\bigr": "",
             "\\,": " ", "\\;": " ", "\\|": "‖", "\\": "",
         ]
@@ -386,8 +387,10 @@ struct CuratedSpecificationReader: View {
                     if let status = edition.claimStatus { statusPanel("Claims", status) }
                     if let status = edition.drawingStatus { statusPanel("Drawings", status) }
                 }
-            } else {
+            } else if patent.originalTextAsset != nil {
                 BundledSourceTranscriptionReader(patent: patent)
+            } else {
+                SourceBoundaryReader(patent: patent)
             }
         }
         .sheet(item: $selectedPreview) { preview in
@@ -398,7 +401,11 @@ struct CuratedSpecificationReader: View {
     private func editionProvenance(_ edition: CuratedSpecificationEdition) -> some View {
         MuseumPanel {
             VStack(alignment: .leading, spacing: 7) {
-                MuseumLabel(text: "Verified archival edition")
+                MuseumLabel(
+                    text: patent.archivalPublication.isPublished
+                        ? "Verified archival edition"
+                        : "Archival edition · source review status"
+                )
                 Label(
                     edition.completeFacsimileReviewed == true ? "Complete facsimile reviewed" : "Facsimile review in progress",
                     systemImage: edition.completeFacsimileReviewed == true ? "checkmark.seal.fill" : "hourglass"
@@ -415,6 +422,11 @@ struct CuratedSpecificationReader: View {
                     .foregroundStyle(Lab.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                     .textSelection(.enabled)
+                if !patent.archivalPublication.isPublished {
+                    Label(patent.archivalPublication.explanation, systemImage: "exclamationmark.shield")
+                        .font(.system(size: Lab.size(10.5), design: .rounded))
+                        .foregroundStyle(Lab.brass)
+                }
                 if !patent.withheldAssets.isEmpty {
                     Label(
                         "\(patent.withheldAssets.count) source crop\(patent.withheldAssets.count == 1 ? "" : "s") withheld by the upstream review gate; the complete bundled source sheet is shown instead.",
@@ -616,6 +628,31 @@ struct CuratedSpecificationReader: View {
             VStack(alignment: .leading, spacing: 7) {
                 MuseumLabel(text: "\(name) source status")
                 Text(status.evidence).foregroundStyle(Lab.text).textSelection(.enabled)
+            }
+        }
+    }
+}
+
+/// Honest native state for records whose source face was rejected by the
+/// editorial provenance gate. Educational material remains available in the
+/// other workstation tabs; this reader never substitutes reconstructed prose
+/// for missing primary-source bytes.
+private struct SourceBoundaryReader: View {
+    let patent: PatentRecord
+
+    var body: some View {
+        MuseumPanel {
+            VStack(alignment: .leading, spacing: 12) {
+                Label("Primary-source edition quarantined", systemImage: "exclamationmark.shield.fill")
+                    .font(.system(size: Lab.size(17), weight: .bold, design: .rounded))
+                    .foregroundStyle(Lab.brass)
+                Text(patent.archivalPublication.explanation)
+                    .font(.system(size: Lab.size(13), design: .serif))
+                    .foregroundStyle(Lab.text)
+                    .textSelection(.enabled)
+                Text("The app deliberately does not present reconstructed material as patent text. The educational explanation and native mechanism exhibit remain available, and the pinned PDF can be downloaded only when you request it.")
+                    .font(.system(size: Lab.size(11.5), design: .rounded))
+                    .foregroundStyle(Lab.secondary)
             }
         }
     }

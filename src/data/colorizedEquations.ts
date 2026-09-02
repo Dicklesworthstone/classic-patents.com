@@ -24520,7 +24520,6 @@ ALL_COLORIZED_EQUATIONS["us-3728480-baer-odyssey"] = [
     ],
     pedagogicalNote:
       "Because the television electron beam scans one pixel at a time, two on-screen objects collide if and only if their video pulses occur at the exact same instant in time. A simple two-diode AND gate performs real-time collision detection with zero computational overhead.",
-    claimRef: 13,
     historicalSignificance:
       "Coincidence detection allowed the Magnavox Odyssey to execute dynamic interactive gameplay (tennis rallies, target shooting, wall bounces) entirely with analog and RTL discrete circuitry.",
   },

@@ -1,5 +1,6 @@
 import { ALL_COLORIZED_EQUATIONS } from "../src/data/colorizedEquations";
 import { ARCHIVAL_PARALLEL_READINGS } from "../src/data/editions/parallelReadings";
+import { evaluateArchivalPublicationState } from "../src/data/editions/publicationApproval";
 import { allPatents } from "../src/data/patents/index";
 import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
 
@@ -37,10 +38,13 @@ const supportedTeXCommands = new Set([
   "beta",
   "bigl",
   "bigr",
+  "bmod",
+  "boldsymbol",
   "cap",
   "cdot",
   "circ",
   "cos",
+  "cot",
   "ddot",
   "delta",
   "dot",
@@ -55,6 +59,7 @@ const supportedTeXCommands = new Set([
   "frac",
   "gamma",
   "ge",
+  "geq",
   "gg",
   "hat",
   "hookrightarrow",
@@ -75,6 +80,8 @@ const supportedTeXCommands = new Set([
   "ln",
   "log",
   "longrightarrow",
+  "ldots",
+  "mathbb",
   "mathbf",
   "mathcal",
   "mathrm",
@@ -86,6 +93,7 @@ const supportedTeXCommands = new Set([
   "nu",
   "oint",
   "omega",
+  "operatorname",
   "partial",
   "perp",
   "phi",
@@ -120,9 +128,11 @@ const supportedTeXCommands = new Set([
   "varnothing",
   "varepsilon",
   "vec",
+  "wedge",
   "xi",
   "xrightarrow",
   "zeta",
+  "arcsin",
 ]);
 
 const collectTeXCommands = (value: unknown, commands = new Set<string>()): Set<string> => {
@@ -259,6 +269,17 @@ for (const patent of allPatents) {
   same(record.originalText, patent.originalText, `${patent.id}: original text drifted`);
   same(record.originalTextAsset, patent.originalTextAsset, `${patent.id}: text provenance drifted`);
   same(record.archivalEdition, patent.archivalEdition, `${patent.id}: archival edition drifted`);
+  const publication = evaluateArchivalPublicationState(patent);
+  same(
+    record.archivalPublication,
+    {
+      status: publication.status,
+      isPublished: publication.isPublished,
+      reasonCode: publication.reasonCode,
+      explanation: publication.explanation,
+    },
+    `${patent.id}: archival publication state drifted`,
+  );
   same(
     record.archivalParallelReadings,
     ARCHIVAL_PARALLEL_READINGS[patent.id] ?? {},
@@ -275,9 +296,12 @@ for (const patent of allPatents) {
     record.originalPdfURL === `https://classic-patents.com${patent.originalPdfUrl}`,
     `${patent.id}: PDF URL is not the canonical first-party URL`,
   );
+  const reconstructionQuarantined =
+    record.archivalPublication?.reasonCode === "FABRICATION_OR_RECONSTRUCTION_QUARANTINE";
   assert(
-    /^[0-9a-f]{64}$/i.test(record.originalTextAsset?.sourcePdfSha256 ?? ""),
-    `${patent.id}: canonical PDF SHA-256 is missing or malformed`,
+    reconstructionQuarantined ||
+      /^[0-9a-f]{64}$/i.test(record.originalTextAsset?.sourcePdfSha256 ?? ""),
+    `${patent.id}: canonical PDF SHA-256 is missing or malformed outside an explicit reconstruction quarantine`,
   );
   assert(
     record.sourceVisualization?.spatialComponent,
@@ -433,11 +457,14 @@ for (const record of records) {
   }
   if (!record.archivalEdition) {
     const sourceTextPath = record.originalTextAsset?.url?.replace(/^\//, "");
-    assert(
+    const hasCompleteBundledSourceReader =
       typeof sourceTextPath === "string" &&
-        sourceTextPath.endsWith(".txt") &&
-        record.bundledAssets.includes(sourceTextPath),
-      `${record.id}: record without an archival edition has no complete bundled source reader`,
+      sourceTextPath.endsWith(".txt") &&
+      record.bundledAssets.includes(sourceTextPath);
+    assert(
+      hasCompleteBundledSourceReader ||
+        record.archivalPublication?.reasonCode === "FABRICATION_OR_RECONSTRUCTION_QUARANTINE",
+      `${record.id}: record without an archival edition has neither a complete bundled source reader nor an explicit reconstruction quarantine`,
     );
     if (typeof sourceTextPath === "string" && manifestSet.has(sourceTextPath)) {
       const transcription = await Bun.file(

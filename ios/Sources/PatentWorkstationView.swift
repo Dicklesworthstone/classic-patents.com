@@ -31,12 +31,16 @@ struct PatentWorkstationView: View {
     @State private var showsPDF = false
 #if DEBUG
     private let debugInitialSection: WorkstationSection?
+
+    private var displayedSection: WorkstationSection { debugInitialSection ?? section }
+#else
+    private var displayedSection: WorkstationSection { section }
 #endif
 
     init(patent: PatentRecord) {
         self.patent = patent
 #if DEBUG
-        if let marker = ProcessInfo.processInfo.arguments.firstIndex(of: "-uiSection"),
+        if let marker = ProcessInfo.processInfo.arguments.firstIndex(of: "-FrankenPatentsUITestSection"),
            ProcessInfo.processInfo.arguments.indices.contains(marker + 1),
            let requested = WorkstationSection.allCases.first(where: {
                $0.rawValue.caseInsensitiveCompare(ProcessInfo.processInfo.arguments[marker + 1]) == .orderedSame
@@ -63,12 +67,12 @@ struct PatentWorkstationView: View {
                         // two-letter fragments. Use the explicit 4×2 rail
                         // anywhere below a genuinely wide desktop workspace.
                         sectionRail(compact: proxy.size.width < 980)
-                        if section == .story {
+                        if displayedSection == .story {
                             hero(compact: proxy.size.width < 600)
                         }
                         sectionContent
                     }
-                    .frame(maxWidth: section == .specification ? 1_240 : 1_080)
+                    .frame(maxWidth: displayedSection == .specification ? 1_240 : 1_080)
                     .padding(proxy.size.width < 620 ? 14 : 24)
                     .frame(maxWidth: .infinity)
                 }
@@ -81,22 +85,12 @@ struct PatentWorkstationView: View {
             }
             .background(MuseumBackground())
         }
-        // The complete title already appears in the workstation hero. Patent
-        // numbers remain legible in the compact iPhone navigation bar instead
-        // of truncating a long invention title into an ambiguous fragment.
-        .navigationTitle(patent.patentNumber)
+        // Keep the system bar solely for native back-navigation and spacing:
+        // an inline title otherwise ghosts beneath PatentRootView's persistent
+        // masthead on iPhone. A single space preserves the bar geometry.
+        .navigationTitle(" ")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showsPDF) { PatentPDFReader(patent: patent) }
-        .task {
-#if DEBUG
-            // Catalyst restores SwiftUI scene state asynchronously. Reapply an
-            // explicit visual-test route after that restoration window so the
-            // test cannot silently inspect a previously selected section.
-            guard let debugInitialSection else { return }
-            try? await Task.sleep(for: .milliseconds(250))
-            section = debugInitialSection
-#endif
-        }
     }
 
     private func hero(compact: Bool) -> some View {
@@ -157,7 +151,7 @@ struct PatentWorkstationView: View {
         Button { section = .simulation } label: {
             Label("Explore 3D model", systemImage: "cube.transparent")
         }
-        .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.emerald, filled: section == .specification))
+        .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.emerald, filled: displayedSection == .specification))
         Button { showsPDF = true } label: {
             Label("Original PDF", systemImage: "doc.richtext")
         }
@@ -202,20 +196,20 @@ struct PatentWorkstationView: View {
             }
             .lineLimit(1)
             .minimumScaleFactor(0.72)
-            .foregroundStyle(section == candidate ? Lab.background : Lab.brass)
+            .foregroundStyle(displayedSection == candidate ? Lab.background : Lab.brass)
             .frame(maxWidth: compact ? .infinity : nil, minHeight: compact ? 52 : 44)
             .padding(.horizontal, compact ? 4 : 13)
-            .background(section == candidate ? Lab.brass : Lab.brass.opacity(0.05), in: RoundedRectangle(cornerRadius: compact ? 13 : 22))
-            .overlay(RoundedRectangle(cornerRadius: compact ? 13 : 22).stroke(Lab.brass.opacity(section == candidate ? 0 : 0.34)))
+            .background(displayedSection == candidate ? Lab.brass : Lab.brass.opacity(0.05), in: RoundedRectangle(cornerRadius: compact ? 13 : 22))
+            .overlay(RoundedRectangle(cornerRadius: compact ? 13 : 22).stroke(Lab.brass.opacity(displayedSection == candidate ? 0 : 0.34)))
         }
         .buttonStyle(.plain)
         .accessibilityLabel(candidate.rawValue)
-        .accessibilityAddTraits(section == candidate ? .isSelected : [])
+        .accessibilityAddTraits(displayedSection == candidate ? .isSelected : [])
     }
 
     @ViewBuilder
     private var sectionContent: some View {
-        switch section {
+        switch displayedSection {
         case .story: story
         case .simulation: NativePatentVisualization(patent: patent)
         case .equations: equations
@@ -351,6 +345,7 @@ struct PatentWorkstationView: View {
             MuseumPanel {
                 VStack(alignment: .leading, spacing: 5) {
                     MuseumLabel(text: "Interactive equation atlas")
+                        .accessibilityIdentifier("patent-equation-atlas-heading")
                     Text("\(patent.equations.count) authored equations · tap a colored variable to trace its physical role, units, and interpretation.")
                         .foregroundStyle(Lab.secondary)
                 }

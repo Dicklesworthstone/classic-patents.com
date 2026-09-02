@@ -1,43 +1,18 @@
 import { ALL_COLORIZED_EQUATIONS } from "../src/data/colorizedEquations";
 import { ARCHIVAL_PARALLEL_READINGS } from "../src/data/editions/parallelReadings";
+import { evaluateArchivalPublicationState } from "../src/data/editions/publicationApproval";
 import { allPatents } from "../src/data/patents/index";
 import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
-
-type SourceVisualizationRoute = {
-  spatialComponent: string;
-  vectorComponent: string;
-};
+import {
+  parseSourceVisualizationRoutes,
+  type SourceVisualizationRoute,
+} from "./native-visualization-routes";
 
 async function sourceVisualizationRoutes(): Promise<Map<string, SourceVisualizationRoute>> {
   const source = await Bun.file(
     new URL("../src/components/patents/visuals/index.tsx", import.meta.url),
   ).text();
-  const switchStart = source.indexOf("switch (patentId)");
-  const switchEnd = source.indexOf("\n          default:", switchStart);
-  if (switchStart < 0 || switchEnd < 0) {
-    throw new Error("Could not locate the canonical PatentVisualDispatcher switch");
-  }
-  const dispatcher = source.slice(switchStart, switchEnd);
-  const cases = [...dispatcher.matchAll(/case "([^"]+)":/g)];
-  const routes = new Map<string, SourceVisualizationRoute>();
-  let pendingIds: string[] = [];
-  for (const [index, match] of cases.entries()) {
-    pendingIds.push(match[1]);
-    const segmentStart = (match.index ?? 0) + match[0].length;
-    const segmentEnd = cases[index + 1]?.index ?? dispatcher.length;
-    const segment = dispatcher.slice(segmentStart, segmentEnd);
-    const spatialComponent = segment.match(/<([A-Z][A-Za-z0-9]*3D)\b/)?.[1];
-    const vectorComponent = segment.match(/<([A-Z][A-Za-z0-9]*Sim)\b/)?.[1];
-    if (!spatialComponent || !vectorComponent) continue;
-    for (const id of pendingIds) {
-      routes.set(id, { spatialComponent, vectorComponent });
-    }
-    pendingIds = [];
-  }
-  if (pendingIds.length > 0) {
-    throw new Error(`Patent visual routes have no component pair: ${pendingIds.join(", ")}`);
-  }
-  return routes;
+  return parseSourceVisualizationRoutes(source);
 }
 
 const visualizationRoutes = await sourceVisualizationRoutes();
@@ -81,6 +56,7 @@ function referencedEditionAssets(value: unknown): string[] {
 }
 
 const exported = allPatents.map((patent) => {
+  const publication = evaluateArchivalPublicationState(patent);
   const editionAssets = referencedEditionAssets(patent.archivalEdition);
   const availableEditionAssets = editionAssets.filter((path) => bundledAssetSet.has(path));
   const withheldAssets = editionAssets.filter((path) => !bundledAssetSet.has(path));
@@ -105,6 +81,12 @@ const exported = allPatents.map((patent) => {
     originalText: patent.originalText,
     originalTextAsset: patent.originalTextAsset,
     archivalEdition: patent.archivalEdition,
+    archivalPublication: {
+      status: publication.status,
+      isPublished: publication.isPublished,
+      reasonCode: publication.reasonCode,
+      explanation: publication.explanation,
+    },
     archivalParallelReadings: ARCHIVAL_PARALLEL_READINGS[patent.id] ?? {},
     plainEnglish: patent.plainEnglishExplanation,
     claims: patent.claims,

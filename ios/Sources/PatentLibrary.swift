@@ -174,6 +174,18 @@ private enum PatentCatalogValidator {
                     "\(patent.id) source transcription is not in the bundled asset ledger"
                 )
             }
+            if patent.archivalEdition == nil && patent.originalTextAsset == nil {
+                try require(
+                    patent.archivalPublication.isReconstructionQuarantined,
+                    "\(patent.id) has no local source reader and no explicit reconstruction quarantine"
+                )
+            }
+            if patent.archivalPublication.isPublished {
+                try require(
+                    patent.archivalEdition != nil,
+                    "\(patent.id) claims a published archival edition without bundling one"
+                )
+            }
 
             try validateAssetPaths(patent.bundledAssets, context: "\(patent.id) bundled assets")
             try validateAssetPaths(patent.withheldAssets, context: "\(patent.id) withheld assets")
