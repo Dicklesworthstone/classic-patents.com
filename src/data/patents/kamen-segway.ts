@@ -255,15 +255,15 @@ export const kamenSegwayPatent: Patent = {
 
   drawings: [
     {
-      figureNumber: "1",
-      title: "FIG. 1: Side Elevation of Self-Balancing Personal Transporter",
+      figureNumber: "1A",
+      title: "FIG. 1A: Side Elevation of Self-Balancing Personal Transporter",
       caption:
         "Side view showing a human rider standing upright on base platform 12 supported on two coaxial wheels 20 with vertical handlebar 16.",
       svgType: "kamen-segway",
       callouts: [
         {
           id: "callout-1-user",
-          figureRef: "Fig. 1",
+          figureRef: "Fig. 1A",
           label: "Human Rider",
           element: "10",
           description: "Human user / rider standing on the platform",
@@ -272,7 +272,7 @@ export const kamenSegwayPatent: Patent = {
         },
         {
           id: "callout-1-chassis",
-          figureRef: "Fig. 1",
+          figureRef: "Fig. 1A",
           label: "Base Platform",
           element: "12",
           description: "Base platform / chassis supporting the user",
@@ -281,7 +281,7 @@ export const kamenSegwayPatent: Patent = {
         },
         {
           id: "callout-1-mast",
-          figureRef: "Fig. 1",
+          figureRef: "Fig. 1A",
           label: "Handlebar Mast",
           element: "16",
           description: "Vertical handlebar mast with handgrips 14",
@@ -290,7 +290,7 @@ export const kamenSegwayPatent: Patent = {
         },
         {
           id: "callout-1-wheels",
-          figureRef: "Fig. 1",
+          figureRef: "Fig. 1A",
           label: "Coaxial Wheels",
           element: "20",
           description: "Coaxial ground-contacting drive wheels",

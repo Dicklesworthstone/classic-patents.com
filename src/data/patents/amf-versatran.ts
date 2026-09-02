@@ -178,7 +178,7 @@ export const amfVersatranPatent: Patent = {
       {
         page: 24,
         exactSourceText:
-          "contact with a suitable disc 456 secured within the forward end of a stationary ",
+          "contact with a suitable disc 466 secured within the forward end of a stationary ",
         sourceRelationship: "Specification columns for page 24 of 31",
       },
       {

@@ -1370,6 +1370,34 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Prior ALOHA radio networks lacked collision detection, causing whole overlapping packets to be destroyed and capping theoretical maximum channel utilization to 18.4%.",
     },
   ],
+  "us-2318259-sikorsky-helicopter": [
+    {
+      claimNumber: 1,
+      patentId: "us-2318259-sikorsky-helicopter",
+      claimTitle:
+        "Positive Synchronized Linkage Between Rotor Collective Pitch and Engine Power Output",
+      activeDescription:
+        "Claim 1 permanently and positively connects the manual collective pitch control with the engine throttle to simultaneously increase power output on every pitch increase, preventing engine stall.",
+      invertedDescription:
+        "Uncorrelated Manual Throttle Mode: Raising rotor blade pitch without automatic engine throttle compensation rapidly bogs down the engine under aerodynamic drag, triggering severe RPM droop and rotor decay.",
+      failureModeName: "Engine RPM Droop & Power Stall Under Collective Load",
+      historicalPriorArt:
+        "Prior rotary-wing designs required separate, uncoordinated pilot throttle handling, frequently causing engine stalls or fatal overspeeds during rapid pitch maneuvers.",
+    },
+    {
+      claimNumber: 2,
+      patentId: "us-2318259-sikorsky-helicopter",
+      claimTitle:
+        "Direct-Lift Main Rotor Combined with Orthogonal Variable-Pitch Anti-Torque Auxiliary Rotor",
+      activeDescription:
+        "Claim 2 combines a direct-lift main rotor with a variable-pitch auxiliary rotor rotating in an orthogonal vertical plane to produce counterbalancing lateral thrust and maintain aircraft heading.",
+      invertedDescription:
+        "Uncompensated Torque Reaction Spin: Disabling the tail anti-torque rotor leaves the main rotor reaction torque uncountered, causing the fuselage to spin violently in the opposite direction.",
+      failureModeName: "Uncontrolled Fuselage Yaw Spin from Main Rotor Torque Reaction",
+      historicalPriorArt:
+        "Early direct-lift experiments attempted heavy counter-rotating coaxial or lateral twin rotors to cancel torque, which were aerodynamically inefficient and mechanically complex.",
+    },
+  ],
   "us-3119501-lemelson-automatic-warehousing": [
     {
       claimNumber: 1,

@@ -393,52 +393,52 @@ export const sikorskyHelicopterParallelReadings: Record<number, string[]> = {
   5: [
     "Auxiliary rotor directional stabilization: establishes automatic and manual pitch modulation of the tail rotor in response to aircraft rotational yaw movements.",
   ],
-  6: [
+  7: [
     "Brief description introduction: introduces Figures 1 through 18 of the patent drawings.",
   ],
-  7: [
+  8: [
     "FIG. 1: side elevation view of the VS-300 direct-lift helicopter configuration showing main lifting rotor, transmission, engine, and tail anti-torque propeller.",
   ],
-  8: [
+  9: [
     "FIG. 2: schematic vector plan view showing main rotor counter-clockwise torque reaction Q and tail rotor anti-torque thrust T × L.",
   ],
-  9: [
+  10: [
     "FIG. 3: plan view showing fuselage structure, engine mount, drive shafts, and control rod routing.",
   ],
-  10: [
+  11: [
     "FIG. 4: perspective view of main rotor hub, flapping hinge pins, pitch sleeve, and swashplate pitch horn links.",
   ],
-  11: [
+  12: [
     "FIGS. 5-7: sectional views of flapping hinge, drag hinge, and resilient lead-lag dampers.",
   ],
-  12: [
+  13: [
     "FIG. 8: main transmission gearbox with bevel reduction gears and overrunning sprag clutch for autorotation.",
   ],
-  13: [
+  14: [
     "FIGS. 9-10: collective pitch control lever with integrated throttle correlator linkage.",
   ],
-  14: [
+  15: [
     "FIGS. 11-12: variable-pitch tail rotor hub and push-pull pitch crosshead.",
   ],
-  15: [
+  16: [
     "FIG. 13: pilot flight controls schematic: cyclic stick, collective lever with twist-grip throttle, and anti-torque pedals.",
   ],
-  16: [
+  17: [
     "FIGS. 14-16: aerodynamic yaw stabilizing vane and feedback damper mechanism.",
   ],
-  17: [
+  18: [
     "FIGS. 17-18: alternative orthogonal auxiliary rotor arrangement for simultaneous pitch and yaw trim.",
   ],
-  18: [
+  20: [
     "Detailed description: explains airframe configuration, engine transmission, and vertical tail rotor orientation.",
   ],
-  19: [
+  21: [
     "Anti-torque physics: derives the equilibrium between engine shaft torque reaction on the airframe and tail rotor lateral thrust moment.",
   ],
-  20: [
+  22: [
     "Main rotor kinematics: details flapping hinges, drag hinges, and pitch control push-pull rods.",
   ],
-  21: [
+  23: [
     "Pilot control coordination: describes cyclic pitch stick, collective lever with throttle correlation, and rudder pedals.",
   ],
 };
