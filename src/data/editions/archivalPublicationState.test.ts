@@ -239,6 +239,6 @@ describe("typed archival publication state", () => {
     }
 
     expect(Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS)).toHaveLength(46);
-    expect(assetCount).toBe(314);
+    expect(assetCount).toBe(325);
   });
 });

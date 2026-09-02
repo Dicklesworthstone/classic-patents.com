@@ -147,6 +147,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 395,781 describes an electro-mechanical tabulating system with sensing pins, mercury cups, and magnet-actuated counting registers, but supplies no operational battery voltage, coil resistance, circuit current, pulse duty cycle, or continuous electrical power datum from which an authentic SI energy channel can be derived.",
   "us-706737-fessenden-wireless":
     "US 706,737 describes continuous-wave wireless signalling using a high-frequency alternator, sending conductor, and low-resistance tuned antenna circuit, but supplies no operational alternator drive power, RF radiating efficiency, antenna field current, or continuous wattage datum from which an authentic SI energy channel can be derived.",
+  "us-2543181-land-polaroid":
+    "US 2,543,181 describes a photographic product and process employing a viscous reagent pod, spreading rollers, and diffusion-transfer reversal chemistry between negative and positive layers, but supplies no mechanical pull force, translation speed, roller drive wattage, or continuous SI power datum from which an authentic energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -736,15 +738,6 @@ export function energyChannelsFor(
 
   if (patentId === "us-2495429-spencer-microwave") {
     return [];
-  }
-
-  if (patentId === "us-2543181-land-polaroid") {
-    const rollW = 4.2;
-    return [
-      { name: "Film Pull Mechanical Roller Work", watts: rollW, tone: "in" },
-      { name: "Reagent Pod Rupture & Diffusion Transfer", watts: rollW * 0.76, tone: "useful" },
-      { name: "Spreading Viscous Layer Shear Friction", watts: rollW * 0.24, tone: "loss" },
-    ];
   }
 
   if (patentId === "us-6285999-pagerank") {

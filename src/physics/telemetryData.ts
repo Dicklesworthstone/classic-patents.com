@@ -226,6 +226,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 30,
         unit: "s",
+        provenance: "scenario-modern",
       },
       {
         id: "exposureFraction",
@@ -235,6 +236,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.05,
         defaultValue: 0.6,
         unit: "fraction",
+        provenance: "topology-normalized",
       },
       {
         id: "reagentViscosityCp",
@@ -244,6 +246,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1000,
         defaultValue: 25000,
         unit: "cP",
+        provenance: "scenario-modern",
       },
       {
         id: "rollerGapUm",
@@ -253,6 +256,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 2,
         defaultValue: 25,
         unit: "µm",
+        provenance: "scenario-modern",
       },
       {
         id: "alkaliPh",
@@ -262,6 +266,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.1,
         defaultValue: 12.6,
         unit: "pH",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (controls) => {
@@ -279,36 +284,43 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: `${state.positiveSilverDensity.toFixed(2)}`,
           unit: "D",
           badgeColor: "emerald",
+          provenance: "scenario-modern",
         },
         {
           label: "Negative Silver Density",
           value: `${state.negativeSilverDensity.toFixed(2)}`,
           unit: "D",
           badgeColor: "indigo",
+          provenance: "scenario-modern",
         },
         {
           label: "Transfer Efficiency",
           value: `${state.transferEfficiencyPercent.toFixed(1)}`,
           unit: "%",
           badgeColor: "cyan",
+          provenance: "scenario-modern",
         },
         {
           label: "Diffusion Flux",
           value: `${state.diffusionFluxMolPerM2S.toFixed(4)}`,
           unit: "mol/m²s",
           badgeColor: "amber",
+          provenance: "scenario-modern",
         },
         {
           label: "Meniscus Uniformity",
           value: `${state.meniscusSpreadUniformityPercent.toFixed(1)}`,
           unit: "%",
           badgeColor: "rose",
+          provenance: "scenario-modern",
         },
         {
           label: "Print Progress",
           value: `${state.printCompletionPercent.toFixed(0)}`,
           unit: "%",
-          badgeColor: "emerald",
+          badgeColor: "cyan",
+          progressPct: state.printCompletionPercent,
+          provenance: "topology-normalized",
         },
       ];
     },

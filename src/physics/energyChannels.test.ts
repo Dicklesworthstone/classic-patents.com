@@ -91,6 +91,7 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-3541541-engelbart-mouse",
       "us-395781-hollerith-tabulating",
       "us-706737-fessenden-wireless",
+      "us-2543181-land-polaroid",
     ]);
   });
 
