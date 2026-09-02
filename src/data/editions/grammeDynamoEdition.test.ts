@@ -267,4 +267,36 @@ describe("grammeDynamoArchivalEdition", () => {
     expect(grammeDynamoParallelReadings[51][0]).toContain("first to beginning of third");
     expect(grammeDynamoParallelReadings[59][0]).toContain("inside or outside");
   });
+
+  test("provides valid provenance classifications for all Gramme Dynamo controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-120057-gramme-dynamo"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("registers explicit energy channel omission reason for Gramme Dynamo", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-120057-gramme-dynamo"]).toBeDefined();
+    expect(energyChannelsFor("us-120057-gramme-dynamo", {})).toEqual([]);
+  });
+
+  test("enforces figure acceptance audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(grammeDynamoPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+  });
 });

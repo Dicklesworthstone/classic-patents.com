@@ -79,6 +79,7 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-727650-linde-air-liquefaction",
       "us-307031-edison-indicator",
       "us-48475-yale-lock",
+      "us-120057-gramme-dynamo",
     ]);
   });
 

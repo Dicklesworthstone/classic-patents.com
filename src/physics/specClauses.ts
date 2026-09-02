@@ -1816,14 +1816,14 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-120057-gramme-dynamo") {
-    const rpm = params.shaftRpm ?? 900;
+    const rate = params.shaftRate ?? 1;
     return [
       {
         id: "ring",
         phrase: "ring",
-        active: rpm > 0,
+        active: rate > 0,
         tone: "live",
-        caption: `Armature Speed=${rpm} RPM: Continuous toroidal iron ring armature generates non-pulsating DC voltage.`,
+        caption: `Shaft Rate Factor=${rate.toFixed(1)}: Continuous toroidal iron ring armature provides continuous sequential bobbin collection.`,
       },
       {
         id: "conductors",
@@ -1831,7 +1831,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: true,
         tone: "held",
         caption:
-          "Helically wound copper conductor coils connect at regular intervals to commutator bars.",
+          "Helically wound copper conductor coils connect in series at regular intervals to commutator junctions.",
       },
     ];
   }

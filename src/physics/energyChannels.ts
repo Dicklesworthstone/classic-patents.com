@@ -125,6 +125,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 307,031 specifies placing an internal terminal within an incandescent lamp globe and connecting it externally to indicate or regulate the circuit, but prints no filament wattage, lamp voltage, vacuum pressure, thermionic current, or sensitivity from which an authentic SI energy channel can be derived.",
   "us-48475-yale-lock":
     "US 48,475 specifies the mechanical kinematics of pin-tumbler chambers, split-pin pieces I and J, keyway slot t, screw plate F, and lazy-arm E, but supplies no continuous key insertion velocity, manual torque rate, spring constants, or power datum from which an authentic SI energy channel can be derived.",
+  "us-120057-gramme-dynamo":
+    "US 120,057 describes the construction and continuous winding topology of the soft-iron ring armature and bobbin junctions, but supplies no operational rotational speed, magnetic flux density, coil resistance, terminal voltage, or shaft horsepower datum from which an authentic SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -714,15 +716,6 @@ export function energyChannelsFor(
       { name: "Autoclave Steam Heat", watts: steamW, tone: "in" },
       { name: "Polymer Crosslinking Enthalpy", watts: steamW * 0.65, tone: "useful" },
       { name: "Vessel Thermal Radiation", watts: steamW * 0.35, tone: "loss" },
-    ];
-  }
-
-  if (patentId === "us-120057-gramme-dynamo") {
-    const driveW = 1800;
-    return [
-      { name: "Shaft Drive Input", watts: driveW, tone: "in" },
-      { name: "Ring Armature Electrical Output", watts: driveW * 0.84, tone: "useful" },
-      { name: "Copper Joule & Core Eddy Loss", watts: driveW * 0.16, tone: "loss" },
     ];
   }
 

@@ -6155,6 +6155,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.1,
         defaultValue: 1,
         unit: "relative",
+        provenance: "topology-normalized",
       },
     ],
     computeMetrics: (p) => {
@@ -6166,6 +6167,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "relative index",
           badgeColor: "cyan",
           progressPct: clampProgress((gramme.inducedEmfIndex / 160) * 100),
+          provenance: "topology-normalized",
         },
         {
           label: "Printed joined bobbins",
@@ -6173,6 +6175,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "junctions",
           badgeColor: "amber",
           progressPct: clampProgress(100),
+          provenance: "source-disclosed",
         },
         {
           label: "Collection continuity (idealized)",
@@ -6180,6 +6183,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "overlap",
           badgeColor: "emerald",
           progressPct: clampProgress(gramme.collectionContinuityPct),
+          provenance: "topology-normalized",
         },
       ];
     },
