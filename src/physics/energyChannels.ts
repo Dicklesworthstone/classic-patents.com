@@ -143,6 +143,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 233,692 describes the bucket geometry (curved bottoms c, central apex d, inclined sides e, and sloping face b) for dividing a water jet, but supplies no hydraulic head, volumetric flow rate, runner RPM, efficiency, or continuous mechanical power datum from which an authentic SI energy channel can be derived.",
   "us-3541541-engelbart-mouse":
     "US 3,541,541 specifies the mechanical construction of perpendicular knife-edge wheels, potentiometer shafts, and housing, but supplies no hand translation velocity, rolling friction, potentiometer power dissipation, or continuous mechanical/electrical wattage datum from which an authentic SI energy channel can be derived.",
+  "us-395781-hollerith-tabulating":
+    "US 395,781 describes an electro-mechanical tabulating system with sensing pins, mercury cups, and magnet-actuated counting registers, but supplies no operational battery voltage, coil resistance, circuit current, pulse duty cycle, or continuous electrical power datum from which an authentic SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -723,15 +725,6 @@ export function energyChannelsFor(
       { name: "Shutter Winding Spring Potential", watts: shutterW, tone: "in" },
       { name: "Rotary Barrel Aperture Exposure", watts: shutterW * 0.75, tone: "useful" },
       { name: "Barrel Escapement Friction", watts: shutterW * 0.25, tone: "loss" },
-    ];
-  }
-
-  if (patentId === "us-395781-hollerith-tabulating") {
-    const pulseW = 24;
-    return [
-      { name: "Battery Solenoid Pulse", watts: pulseW, tone: "in" },
-      { name: "Counter Dial Magnet Actuation", watts: pulseW * 0.78, tone: "useful" },
-      { name: "Mercury Cup Contact Resistance", watts: pulseW * 0.22, tone: "loss" },
     ];
   }
 

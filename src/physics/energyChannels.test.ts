@@ -89,6 +89,7 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-1773980-farnsworth-tv",
       "us-233692-pelton-water-wheel",
       "us-3541541-engelbart-mouse",
+      "us-395781-hollerith-tabulating",
     ]);
   });
 

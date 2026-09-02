@@ -94,14 +94,16 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(energyChannelsFor("us-313224-mergenthaler-linotype", {})[0]?.name).toBe(
       "Crucible Heating & Main Cam Drive",
     );
-    expect(energyChannelsFor("us-395781-hollerith-tabulating", {})[0]?.name).toBe(
-      "Battery Solenoid Pulse",
+    expect(energyChannelsFor("us-395781-hollerith-tabulating", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-395781-hollerith-tabulating"]).toContain(
+      "mercury cups",
     );
     expect(energyChannelsFor("us-542846-diesel-engine", {})[0]?.name).toBe(
       "Injected Heavy Oil Combustion",
     );
-    expect(energyChannelsFor("us-3541541-engelbart-mouse", {})[0]?.name).toBe(
-      "Hand Desktop Drag Kinetic Input",
+    expect(energyChannelsFor("us-3541541-engelbart-mouse", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-3541541-engelbart-mouse"]).toContain(
+      "perpendicular knife-edge wheels",
     );
     expect(energyChannelsFor("us-381968-tesla-motor", {})[0]?.name).toBe(
       "Polyphase AC Stator Input",

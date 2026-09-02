@@ -4787,6 +4787,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 60,
         unit: "cards/min",
+        provenance: "scenario-modern",
       },
       {
         id: "batteryVolts",
@@ -4796,6 +4797,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 12,
         unit: "V",
+        provenance: "scenario-modern",
       },
       {
         id: "activeRelays",
@@ -4805,6 +4807,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 16,
         unit: "relays",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (p) => {
@@ -4825,6 +4828,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "t_cycle",
           badgeColor: "cyan",
           progressPct: clampProgress((cycleMs / 3000) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Solenoid Pull Force",
@@ -4832,6 +4836,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "F_mag",
           badgeColor: "emerald",
           progressPct: Math.min(100, (Number(forceN) / 5) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Circuit Time Constant",
@@ -4839,6 +4844,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "τ",
           badgeColor: "amber",
           progressPct: clampProgress((Number(tauMs) / 30) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Active Relays",
@@ -4846,6 +4852,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "relays",
           badgeColor: "purple",
           progressPct: clampProgress((relays / hol.registerDialCount) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Sensing Pins",
@@ -4853,6 +4860,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "pins",
           badgeColor: "indigo",
           progressPct: clampProgress(100),
+          provenance: "source-disclosed",
         },
         {
           label: "Census Register Bank",
@@ -4860,6 +4868,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "dials",
           badgeColor: "cyan",
           progressPct: clampProgress(100),
+          provenance: "source-disclosed",
         },
         {
           label: "7-hour Day",
@@ -4867,6 +4876,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "cards",
           badgeColor: "amber",
           progressPct: clampProgress((hol.cardsPerDay / 30000) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },
