@@ -253,6 +253,16 @@ export const delavalSeparatorParallelReadings: Readonly<Record<number, readonly 
   30: ["Oscar Lamm, Jr., and Gustaf Ulff are listed as witnesses to execution."],
 };
 
+export function manualClaimText(number: number): string {
+  const block = delavalSeparatorArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`De Laval manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const delavalSeparatorRecordCorrections: Pick<
   Patent,
   | "title"
@@ -318,34 +328,26 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
         summary:
           "Outer nozzle l and inner nozzle n send the separated portions to annular receivers G and H.",
         technicalDetails:
-          "Curved pipe X takes fluid from the inner periphery of D to l and vessel G. The lighter portion rises through n to H. Claim 3 is narrower: it requires a closed chamber, double concentric central discharge tubes or nozzles, and stationary central annular receiving compartments through whose hollow center the tubes project.",
-        archaicTerm: "concentric",
-        modernEquivalent: "Sharing the same centerline",
+          "Outer nozzle l discharges into stationary vessel G; inner nozzle n discharges into stationary vessel H. The nested arrangement lets two streams leave through the same central region without remixing, and each receiver has its own spout y.",
+        archaicTerm: "annular compartments",
+        modernEquivalent: "Ring-shaped receiving vessels with a central opening",
       },
       {
-        title: "Flexible drive support",
-        summary:
-          "Shaft i turns the chamber, while elastic and friction elements permit limited motion at its supports.",
+        title: "Curved outer-fluid pipe",
+        summary: "Pipe X draws the heavier portion from near the chamber wall.",
         technicalDetails:
-          "The upper bearing r is retained by elastic ring o and gland p so the shaft's upper end can vibrate slightly. At the lower support, i rests on e through friction plate z, which may be cork, wood, or another suitable material. Pulley a and belt d are the displayed power path. No claimed speed, critical-speed calculation, or gear train appears in this patent.",
-        archaicTerm: "friction-plate",
-        modernEquivalent: "A friction interface between the two shafts",
+          "Claim 2 and claim 4 name the curved pipe (called X in the description and x in claim 4). It runs from outer nozzle l down and outward nearly to the chamber's periphery, picking up the heavier separated fluid where centrifugal force concentrates it.",
+        archaicTerm: "curved pipe X",
+        modernEquivalent: "Periphery pickup tube for the denser separated phase",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Radial separation in a rotating liquid",
+        principle: "Centrifugal Separation of Immiscible Phases",
         formula:
-          "v_{\\text{terminal}} = \\frac{d^2 (\\rho_{\\text{skim}} - \\rho_{\\text{fat}}) \\omega^2 r}{18 \\mu_{\\text{fluid}}}",
+          "r_{\\text{heavy}} > r_{\\text{light}} \\quad (\\text{when } \\rho_{\\text{heavy}} > \\rho_{\\text{light}})",
         explanation:
-          "The source uses relative density rather than a numerical model. In a rotating chamber, the greater-specific-gravity portion is described as tending toward the outer circumference, while the lighter portion remains closer to the center. The nested outlets turn those different radial locations into separate discharge streams.",
-      },
-      {
-        principle: "Continuous displacement and overflow",
-        formula:
-          "Q_{\\text{total}} = Q_{\\text{cream}} + Q_{\\text{skim}}, \\quad \\Delta P = \\frac{1}{2} \\rho \\omega^2 (r_{\\text{outer}}^2 - r_{\\text{inner}}^2)",
-        explanation:
-          "Continuous feed through q displaces material already in the chamber. De Laval describes the heavier portion reaching G through X and l, while cream or another light portion reaches H through n. For a finite charge, he adds a restart-and-displacement step to push the final light portion through the inner tube.",
+          "Centrifugal acceleration forces the denser fluid toward the outer radius of the rotating chamber while displacing the lighter fluid toward the center. The patent gives the qualitative physical principle without asserting a specific G-force or separation velocity.",
       },
     ],
     whyItMattersToday:
@@ -355,8 +357,7 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "The combination, with a hollow chamber rotating upon a vertical axis, of a pipe concentric with said axis for the admission of a compound fluid, and two or more nozzles, also concentric with said axis, for the delivery of the separated fluids, substantially as specified.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "Claim 1 protects the basic apparatus combination: a vertical-axis rotating hollow chamber, a centerline inlet for mixed liquid, and at least two centerline outlets for the separated streams.",
       keyInnovations: [
@@ -368,8 +369,7 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "The combination, with a hollow chamber rotating upon its vertical axis, of a pipe concentric with said axis for the admission of a compound fluid, two or more nozzles, also concentric with said axis, for the delivery of the separated fluids, and a curved pipe extending from the outermost of said nozzles down and outwardly within said chamber, nearly to the periphery thereof, substantially as specified.",
+      originalText: manualClaimText(2),
       plainEnglish:
         "Claim 2 adds a curved pipe inside the chamber. It runs from the outermost nozzle down and outward nearly to the chamber's periphery, so it connects that outlet to the outer liquid region.",
       keyInnovations: [
@@ -381,8 +381,7 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
     {
       number: 3,
       isIndependent: true,
-      originalText:
-        "A closed centrifugal chamber provided with a double set of concentric and central vertical discharge tubes or nozzles, in combination with a stationary receiver consisting of the central annular compartments, G H, through the hollow center of which the double tubes or nozzles project, substantially as specified.",
+      originalText: manualClaimText(3),
       plainEnglish:
         "Claim 3 protects a closed rotating chamber with double nested vertical outlets plus stationary annular receiving compartments G and H surrounding them. The outlets project through the receivers' central opening.",
       keyInnovations: [
@@ -394,8 +393,7 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
     {
       number: 4,
       isIndependent: true,
-      originalText:
-        "The combination of the rotary chamber D, inlet pipe or passage q, radial passages s, extending therefrom, nozzles l n, and curved pipe x, substantially as specified.",
+      originalText: manualClaimText(4),
       plainEnglish:
         "Claim 4 names the illustrated flow route as a single combination: chamber D, feed q, radial passages s, nested nozzles l and n, and curved pipe x. The description calls the pipe X; this claim prints the letter in lower case.",
       keyInnovations: ["Radial feed passages", "Nested nozzles l and n", "Curved pipe x"],

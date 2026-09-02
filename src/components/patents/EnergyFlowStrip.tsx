@@ -14,7 +14,11 @@ interface EnergyFlowStripProps {
 export function EnergyFlowStrip({ title, channels }: EnergyFlowStripProps) {
   const max = Math.max(1, ...channels.map((c) => Math.abs(c.watts)));
   return (
-    <div className="rounded-xl border border-parchment-300 dark:border-ink-800 bg-white/70 dark:bg-ink-900/70 p-3 space-y-2">
+    <div
+      data-testid="energy-flow-strip"
+      data-energy-channel-count={channels.length}
+      className="rounded-xl border border-parchment-300 dark:border-ink-800 bg-white/70 dark:bg-ink-900/70 p-3 space-y-2"
+    >
       <div className="text-[10px] font-mono uppercase tracking-wider text-ink-500 dark:text-ink-400">
         Energy · {title}
       </div>

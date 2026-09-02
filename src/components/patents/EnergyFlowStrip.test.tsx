@@ -16,6 +16,8 @@ describe("EnergyFlowStrip component", () => {
     );
 
     expect(html).toContain("Energy · Wright Flyer Propulsive Power Budget");
+    expect(html).toContain('data-testid="energy-flow-strip"');
+    expect(html).toContain('data-energy-channel-count="3"');
     expect(html).toContain("Engine Power");
     expect(html).toContain("8,950 W");
     expect(html).toContain("Thrust Power");

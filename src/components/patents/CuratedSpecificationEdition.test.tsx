@@ -26,6 +26,14 @@ const edition: CuratedSpecificationEditionData = {
           href: "?view=pdf-facsimile",
           referenceType: "figure",
           label: "Open Fig. 1 in the primary facsimile",
+          figurePreviews: [
+            {
+              src: "/patents/figures/us-1/fig-1-source-crop-v1.png",
+              alt: "Source crop of Fig. 1",
+              width: 800,
+              height: 600,
+            },
+          ],
         },
         { kind: "text", text: " " },
         {
@@ -83,6 +91,9 @@ describe("CuratedSpecificationEdition", () => {
     expect(html).toContain('role="tooltip"');
     expect(html).toContain("Fig. 1");
     expect(html).toContain("Open Fig. 1 in the primary facsimile");
+    expect(html).toContain('data-testid="source-figure-reference"');
+    expect(html).toContain('data-figure-preview-count="1"');
+    expect(html).toContain("/patents/figures/us-1/fig-1-source-crop-v1.png");
     expect(html).toContain("Plain English");
     expect(html).toContain("A source-specific explanation prepared by an editor.");
     expect(html).toContain("A second authored paragraph retains another material detail.");

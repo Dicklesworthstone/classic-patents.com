@@ -6,6 +6,11 @@
  */
 
 import {
+  type AmfVersatranParams,
+  type AmfVersatranTopologyState,
+  stepAmfVersatranTopology as stepAmfVersatranTopologyKernel,
+} from "./amfVersatranKernel";
+import {
   stepBardeenTransistor as catalogStepBardeen,
   stepColtRevolver as catalogStepColt,
   stepHollerithTabulating as catalogStepHollerith,
@@ -295,6 +300,16 @@ export const FrankenSimEngine = {
   stepHullStereolithography: stepHullStereolithographySi,
   stepCrumpFdm: stepCrumpFdmSi,
   stepKamenSegway: stepKamenSegwaySi,
+
+  /**
+   * US 3,212,649 AMF Versatran host-only topology step.
+   *
+   * This delegates to the typed source-bounded TypeScript kernel. It does not
+   * initialize, step, or advertise a WASM module.
+   */
+  stepAmfVersatranTopology(rawParams: AmfVersatranParams = {}): AmfVersatranTopologyState {
+    return stepAmfVersatranTopologyKernel(rawParams);
+  },
 
   stepTeslaMotorFig9,
 
@@ -790,8 +805,8 @@ export const FrankenSimEngine = {
     carMassTonnes?: number; // 20 to 60 tonnes
     approachSpeedMph?: number;
   }) {
-    const pipePsi = params.trainPipePressurePsi ?? 70;
-    const resPipePsi = params.reservoirPipePressurePsi ?? 90;
+    const pipePsi = params.trainPipePressurePsi ?? 0;
+    const resPipePsi = params.reservoirPipePressurePsi ?? 0;
     const carMass = params.carMassTonnes ?? 35;
     const approachSpeedMph = params.approachSpeedMph ?? 45;
     const isReversed = params.selectingCockState === "reversed";

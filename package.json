@@ -15,6 +15,10 @@
     "pipeline:ocr": "bun scripts/ocr-patents.ts",
     "pipeline:source-text": "bun scripts/generate-pdf-text-transcripts.ts",
     "pipeline:verify": "bun scripts/verify-data.ts",
+    "e2e:patent": "bun scripts/e2e-patent-vertical-slices.ts",
+    "e2e:patents": "bun scripts/e2e-patent-vertical-slices.ts --all",
+    "test:e2e-contract": "bun test scripts/patent-e2e-contract.test.ts",
+    "test:e2e": "bun scripts/e2e-vertical-slice-audit.ts",
     "smoke-test": "bun scripts/smoke-test-deployment.ts"
   },
   "dependencies": {

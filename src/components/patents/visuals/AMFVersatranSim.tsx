@@ -2,7 +2,13 @@
 
 import { RotateCcw } from "lucide-react";
 import { useId, useMemo } from "react";
-import { stepAmfVersatranTopology } from "@/physics/amfVersatranKernel";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import {
+  AMF_VERSATRAN_CLAIM_PROBE_PARAMS,
+  readAmfVersatranClaimStates,
+  stepAmfVersatranTopology,
+} from "@/physics/amfVersatranKernel";
+import { applyClaimConstraintModifications } from "@/physics/claimConstraints";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 const PATENT_ID = "us-3212649-amf-versatran";
@@ -83,7 +89,17 @@ export function AmfVersatranSim() {
   const gridId = useId().replace(/:/g, "");
   const arrowId = useId().replace(/:/g, "");
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
-  const state = useMemo(() => stepAmfVersatranTopology(params), [params]);
+  const claimStates = useMemo(() => readAmfVersatranClaimStates(params), [params]);
+  const claimResult = useMemo(
+    () => applyClaimConstraintModifications(PATENT_ID, params, claimStates),
+    [params, claimStates],
+  );
+  const state = useMemo(
+    () => stepAmfVersatranTopology(claimResult.modifiedParams),
+    [claimResult.modifiedParams],
+  );
+  const claim8Active = claimStates[8] ?? true;
+  const claim12Active = claimStates[12] ?? true;
   const { controls, displayPose } = state;
 
   const columnX = 206;
@@ -95,6 +111,8 @@ export function AmfVersatranSim() {
   const wristIndexLength = 12;
   const wristIndexX = wristX + Math.cos(displayPose.wristRotationDisplayRad) * wristIndexLength;
   const wristIndexY = carriageY + Math.sin(displayPose.wristRotationDisplayRad) * wristIndexLength;
+  const pinionAngleDeg = (displayPose.gripperPinionRotationDisplayRad * 180) / Math.PI;
+  const rackOffset = (displayPose.gripperRackTravelFraction - 0.5) * 18;
 
   const planCenterX = 636;
   const planCenterY = 239;
@@ -248,24 +266,79 @@ export function AmfVersatranSim() {
                 strokeWidth="2"
                 markerEnd={`url(#${arrowId})`}
               />
-              <rect
-                x={wristX + 18}
-                y={carriageY - 10}
-                width="30"
-                height="20"
-                rx="4"
-                fill="#b45309"
-                stroke="#fde68a"
-                strokeWidth="2"
-              />
-              <path
-                d={gripperPath}
-                fill="none"
-                stroke="#fbbf24"
-                strokeWidth="5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+              {displayPose.pinionGripperTopologyEnabled ? (
+                <g aria-label="Claim 12 paired pinions and Claim 13 racks">
+                  <rect
+                    x={wristX + 18}
+                    y={carriageY - 10}
+                    width="30"
+                    height="20"
+                    rx="4"
+                    fill="#b45309"
+                    stroke="#fde68a"
+                    strokeWidth="2"
+                  />
+                  {[carriageY - 9, carriageY + 9].map((pinionY, index) => (
+                    <g
+                      key={pinionY}
+                      transform={`rotate(${index === 0 ? pinionAngleDeg : -pinionAngleDeg} ${wristX + 49} ${pinionY})`}
+                    >
+                      <circle cx={wristX + 49} cy={pinionY} r="6" fill="#f59e0b" stroke="#fef3c7" />
+                      <path
+                        d={`M${wristX + 43} ${pinionY}H${wristX + 55}M${wristX + 49} ${pinionY - 6}V${pinionY + 6}`}
+                        stroke="#451a03"
+                        strokeWidth="1.5"
+                      />
+                    </g>
+                  ))}
+                  <path
+                    d={gripperPath}
+                    fill="none"
+                    stroke="#fbbf24"
+                    strokeWidth="5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d={`M${wristX + 26 + rackOffset} ${carriageY - 20}H${wristX + 50 + rackOffset}M${wristX + 26 - rackOffset} ${carriageY + 20}H${wristX + 50 - rackOffset}`}
+                    stroke="#fef3c7"
+                    strokeWidth="2"
+                    strokeDasharray="3 2"
+                  />
+                  <text
+                    x={wristX + 55}
+                    y={carriageY - 24}
+                    fill="#fde68a"
+                    fontFamily="monospace"
+                    fontSize="8"
+                  >
+                    334 / 346 · racks
+                  </text>
+                </g>
+              ) : (
+                <g aria-label="Claim 12 pinion gripper topology withheld" opacity="0.75">
+                  <rect
+                    x={wristX + 18}
+                    y={carriageY - 10}
+                    width="40"
+                    height="20"
+                    rx="4"
+                    fill="#334155"
+                    stroke="#fb7185"
+                    strokeDasharray="4 3"
+                    strokeWidth="2"
+                  />
+                  <text
+                    x={wristX + 22}
+                    y={carriageY + 4}
+                    fill="#fecdd3"
+                    fontFamily="monospace"
+                    fontSize="7"
+                  >
+                    C12 withheld
+                  </text>
+                </g>
+              )}
               <path
                 d={liftArrow}
                 stroke="#a78bfa"
@@ -549,6 +622,11 @@ export function AmfVersatranSim() {
                   </g>
                 );
               })}
+              {!state.claimProbeStates[8] && (
+                <text x="48" y="505" fill="#fda4af" fontFamily="monospace" fontSize="11">
+                  CLAIM 8 RECORD / PLAYBACK PATH WITHHELD ON THE SHARED BUS
+                </text>
+              )}
               <text x="282" y="566" fill="#67e8f9" fontFamily="monospace" fontSize="9">
                 recorded command
               </text>
@@ -556,6 +634,41 @@ export function AmfVersatranSim() {
                 feedback position signal
               </text>
             </g>
+            {!state.claimProbeStates[1] && (
+              <g aria-label="Claim 1 six-motion topology withheld">
+                <rect
+                  x="28"
+                  y="84"
+                  width="824"
+                  height="325"
+                  rx="16"
+                  fill="#020617"
+                  fillOpacity="0.82"
+                  stroke="#fb7185"
+                  strokeWidth="2"
+                />
+                <text
+                  x="440"
+                  y="230"
+                  textAnchor="middle"
+                  fill="#fecdd3"
+                  fontFamily="monospace"
+                  fontSize="16"
+                >
+                  CLAIM 1 SIX-MOTION TOPOLOGY WITHHELD
+                </text>
+                <text
+                  x="440"
+                  y="252"
+                  textAnchor="middle"
+                  fill="#fda4af"
+                  fontFamily="monospace"
+                  fontSize="10"
+                >
+                  No unsupported physical failure is inferred from the absent source combination.
+                </text>
+              </g>
+            )}
           </svg>
 
           <div className="mt-3 grid gap-2 rounded-xl border border-cyan-950 bg-slate-900/70 p-3 sm:grid-cols-3">
@@ -577,6 +690,35 @@ export function AmfVersatranSim() {
         </div>
 
         <aside className="space-y-4 bg-slate-950/70 p-4">
+          <ClaimConstraintToggle
+            patentId={PATENT_ID}
+            claimStates={claimStates}
+            onToggleClaim={(claimNumber, active) => {
+              const claimProbeParam =
+                AMF_VERSATRAN_CLAIM_PROBE_PARAMS[
+                  claimNumber as keyof typeof AMF_VERSATRAN_CLAIM_PROBE_PARAMS
+                ];
+              if (claimProbeParam) updateParam(claimProbeParam, active ? 1 : 0);
+              if (claimNumber === 8 && !active) updateParam("teachReplayMode", 0);
+            }}
+          />
+          {claimResult.activeFailures.length > 0 && (
+            <div role="status" className="rounded-xl border border-rose-800 bg-rose-950/70 p-3">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-rose-300">
+                Source topology withheld
+              </p>
+              {claimResult.activeFailures.map((failure) => (
+                <p key={failure} className="mt-1 text-xs leading-5 text-rose-100">
+                  {failure}
+                </p>
+              ))}
+              {claimResult.refusalWarning && (
+                <p className="mt-2 text-[11px] leading-4 text-rose-200">
+                  {claimResult.refusalWarning}
+                </p>
+              )}
+            </div>
+          )}
           <div>
             <p className="font-mono text-[10px] tracking-[0.12em] text-cyan-300">
               CLAIM 1 · SIX DISCLOSED MOTIONS
@@ -590,6 +732,12 @@ export function AmfVersatranSim() {
                 </li>
               ))}
             </ol>
+            {!state.claimProbeStates[1] && (
+              <p className="mt-2 text-xs leading-5 text-rose-200">
+                Claim 1 is withheld on the shared bus, so this face does not represent its
+                six-actuator combination.
+              </p>
+            )}
           </div>
 
           {MOTION_CONTROLS.map((control) => {
@@ -611,17 +759,33 @@ export function AmfVersatranSim() {
               </label>
             );
           })}
-          <label className="flex cursor-pointer items-center justify-between gap-3 text-sm text-slate-200">
+          <label
+            className={`flex items-center justify-between gap-3 text-sm text-slate-200 ${
+              claim8Active ? "cursor-pointer" : "cursor-not-allowed opacity-60"
+            }`}
+          >
             Recorded-signal playback
             <input
               type="checkbox"
               checked={(params.teachReplayMode ?? 0) >= 0.5}
               className="h-5 w-5 accent-emerald-400"
+              disabled={!claim8Active}
               aria-label="Automatic recorded-signal playback"
               onChange={(event) => updateParam("teachReplayMode", event.target.checked ? 1 : 0)}
             />
           </label>
-          <label className="block text-sm text-slate-200">
+          <p className="rounded-lg border border-amber-900/70 bg-amber-950/25 p-3 text-xs leading-5 text-amber-100">
+            Claim 12 probe: paired engaging pinions counter-rotate for finger opening/closing while
+            their shared member can swing.{" "}
+            {claim12Active
+              ? "The normalized rack-and-pinion topology is live."
+              : "That topology is withheld on the shared bus."}
+          </p>
+          <label
+            className={`block text-sm text-slate-200 ${
+              claim8Active ? "" : "cursor-not-allowed opacity-60"
+            }`}
+          >
             Illustrative record/feedback offset
             <span className="float-right font-mono text-rose-300">
               {normalized(params.resolverPhaseOffset ?? 0)}
@@ -632,6 +796,7 @@ export function AmfVersatranSim() {
               min="-1"
               max="1"
               step="0.05"
+              disabled={!claim8Active}
               value={params.resolverPhaseOffset ?? 0}
               aria-label="Illustrative normalized record and feedback phase offset"
               onChange={(event) => updateParam("resolverPhaseOffset", Number(event.target.value))}

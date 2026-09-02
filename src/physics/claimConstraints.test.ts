@@ -79,6 +79,29 @@ describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
     expect(res.modifiedParams.resonantQ).toBeUndefined();
   });
 
+  test("AMF Versatran claim inversions withhold only their source-described topology", () => {
+    const claim1 = applyClaimConstraintModifications(
+      "us-3212649-amf-versatran",
+      { columnRotation: 0.4, teachReplayMode: 1 },
+      { 1: false, 8: true },
+    );
+    expect(claim1.activeFailures).toEqual([
+      "Claim 1 topology withheld: the display no longer represents the six-actuator hydraulic/servo-valve combination.",
+    ]);
+    expect(claim1.refusalWarning).toContain("supplies no pressure");
+    expect(claim1.modifiedParams).toEqual({ columnRotation: 0.4, teachReplayMode: 1 });
+
+    const claim8 = applyClaimConstraintModifications(
+      "us-3212649-amf-versatran",
+      { columnRotation: 0.4, teachReplayMode: 0 },
+      { 1: true, 8: false },
+    );
+    expect(claim8.activeFailures).toEqual([
+      "Claim 8 topology withheld: the display no longer represents the source-described programming-arm, recording, and repetitive-playback path.",
+    ]);
+    expect(claim8.modifiedParams).toEqual({ columnRotation: 0.4, teachReplayMode: 0 });
+  });
+
   test("Otto Claim 1 inversion removes only the source-described charge grading", () => {
     const res = applyClaimConstraintModifications(
       "us-194047-otto-engine",

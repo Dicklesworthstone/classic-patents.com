@@ -132,7 +132,10 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
     vStrutR.position.set(0.35, 0.55, z);
     fuselageGroup.add(vStrutR);
 
-    const crossStrut = new THREE.Mesh(geometry(new THREE.CylinderGeometry(0.018, 0.018, 0.7, 8)), steelTruss);
+    const crossStrut = new THREE.Mesh(
+      geometry(new THREE.CylinderGeometry(0.018, 0.018, 0.7, 8)),
+      steelTruss,
+    );
     crossStrut.rotation.z = Math.PI / 2;
     crossStrut.position.set(0, 0.2, z);
     fuselageGroup.add(crossStrut);
@@ -153,11 +156,17 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
   fuselageGroup.add(seatGroup);
 
   // Cyclic Stick & Collective Lever
-  const cyclicStick = new THREE.Mesh(geometry(new THREE.CylinderGeometry(0.012, 0.012, 0.4, 8)), bronzeBrass);
+  const cyclicStick = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.012, 0.012, 0.4, 8)),
+    bronzeBrass,
+  );
   cyclicStick.position.set(0, 0.45, 0.75);
   fuselageGroup.add(cyclicStick);
 
-  const collectiveLever = new THREE.Mesh(geometry(new THREE.CylinderGeometry(0.012, 0.012, 0.35, 8)), bronzeBrass);
+  const collectiveLever = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.012, 0.012, 0.35, 8)),
+    bronzeBrass,
+  );
   collectiveLever.rotation.x = Math.PI / 4;
   collectiveLever.position.set(-0.25, 0.4, 0.6);
   fuselageGroup.add(collectiveLever);
@@ -171,7 +180,10 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
   leftWheel.position.set(-0.7, -0.1, 0.4);
   const rightWheel = new THREE.Mesh(wheelGeo, rubberTire);
   rightWheel.position.set(0.7, -0.1, 0.4);
-  const tailWheel = new THREE.Mesh(geometry(new THREE.CylinderGeometry(0.08, 0.08, 0.04, 12)).rotateZ(Math.PI / 2), rubberTire);
+  const tailWheel = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.08, 0.08, 0.04, 12)).rotateZ(Math.PI / 2),
+    rubberTire,
+  );
   tailWheel.position.set(0, -0.1, -1.8);
 
   const lgStrutGeo = geometry(new THREE.CylinderGeometry(0.02, 0.02, 0.6, 8));
@@ -197,7 +209,10 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
   tailBoomGroup.add(tailBoomMesh);
 
   // Tail Vertical Pylon
-  const tailPylon = new THREE.Mesh(geometry(new THREE.CylinderGeometry(0.025, 0.025, 0.6, 8)), steelTruss);
+  const tailPylon = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.025, 0.025, 0.6, 8)),
+    steelTruss,
+  );
   tailPylon.position.set(0, 0.25, -3.6);
   tailBoomGroup.add(tailPylon);
 
@@ -207,7 +222,10 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
   tailBoomGroup.add(tailRotorHub);
 
   // Tail Rotor Shaft (lateral horizontal)
-  const tailShaft = new THREE.Mesh(geometry(new THREE.CylinderGeometry(0.015, 0.015, 0.1, 8)).rotateZ(Math.PI / 2), bronzeBrass);
+  const tailShaft = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.015, 0.015, 0.1, 8)).rotateZ(Math.PI / 2),
+    bronzeBrass,
+  );
   tailRotorHub.add(tailShaft);
 
   // 2-Blade Tail Rotor
@@ -227,7 +245,10 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
   fuselageGroup.add(mainMastGroup);
 
   // Stationary Mast Tube
-  const mastShaft = new THREE.Mesh(geometry(new THREE.CylinderGeometry(0.04, 0.04, 0.9, 12)), steelTruss);
+  const mastShaft = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.04, 0.04, 0.9, 12)),
+    steelTruss,
+  );
   mastShaft.position.set(0, 0.45, 0);
   mainMastGroup.add(mastShaft);
 
@@ -245,7 +266,10 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
   mainRotorHead.position.set(0, 0.9, 0);
   mainMastGroup.add(mainRotorHead);
 
-  const hubCasting = new THREE.Mesh(geometry(new THREE.CylinderGeometry(0.12, 0.12, 0.1, 12)), steelTruss);
+  const hubCasting = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.12, 0.12, 0.1, 12)),
+    steelTruss,
+  );
   mainRotorHead.add(hubCasting);
 
   // 3 Articulated Blade Assemblies (120 deg separation)
@@ -259,7 +283,10 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
     mainRotorHead.add(bladeArmGroup);
 
     // Flapping Hinge Pin
-    const flapHinge = new THREE.Mesh(geometry(new THREE.CylinderGeometry(0.02, 0.02, 0.08, 8)).rotateZ(Math.PI / 2), bronzeBrass);
+    const flapHinge = new THREE.Mesh(
+      geometry(new THREE.CylinderGeometry(0.02, 0.02, 0.08, 8)).rotateZ(Math.PI / 2),
+      bronzeBrass,
+    );
     flapHinge.position.set(0.15, 0, 0);
     bladeArmGroup.add(flapHinge);
 
@@ -270,17 +297,26 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
     blades.push(bladeSpanGroup);
 
     // Blade Airfoil (Fabric covered tapered wing)
-    const bladeAirfoil = new THREE.Mesh(geometry(new THREE.BoxGeometry(bladeRadius, 0.02, 0.18)), fabricWing);
+    const bladeAirfoil = new THREE.Mesh(
+      geometry(new THREE.BoxGeometry(bladeRadius, 0.02, 0.18)),
+      fabricWing,
+    );
     bladeAirfoil.position.set(bladeRadius / 2, 0, 0);
     bladeSpanGroup.add(bladeAirfoil);
 
     // Yellow Tip Marker
-    const tipMarker = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.35, 0.022, 0.182)), yellowTip);
+    const tipMarker = new THREE.Mesh(
+      geometry(new THREE.BoxGeometry(0.35, 0.022, 0.182)),
+      yellowTip,
+    );
     tipMarker.position.set(bladeRadius - 0.175, 0, 0);
     bladeSpanGroup.add(tipMarker);
 
     // Pitch Horn & Link
-    const pitchHorn = new THREE.Mesh(geometry(new THREE.CylinderGeometry(0.01, 0.01, 0.12, 8)), bronzeBrass);
+    const pitchHorn = new THREE.Mesh(
+      geometry(new THREE.CylinderGeometry(0.01, 0.01, 0.12, 8)),
+      bronzeBrass,
+    );
     pitchHorn.position.set(0.1, -0.05, 0.08);
     bladeSpanGroup.add(pitchHorn);
   }
@@ -318,9 +354,7 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
     blades.forEach((bladeGroup, idx) => {
       const bladeAzimuth = -state.rotorPhaseRad + (idx * 2 * Math.PI) / 3;
       const featherAngle =
-        collRad +
-        cyclicPitchRad * Math.cos(bladeAzimuth) +
-        cyclicRollRad * Math.sin(bladeAzimuth);
+        collRad + cyclicPitchRad * Math.cos(bladeAzimuth) + cyclicRollRad * Math.sin(bladeAzimuth);
       bladeGroup.rotation.x = featherAngle;
       // Slight coning / flapping angle under thrust
       const coningAngle = 0.04 + (controls.collectivePitchDeg / 16.0) * 0.05;
@@ -340,8 +374,12 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
   };
 
   const dispose = () => {
-    geometries.forEach((g) => g.dispose());
-    materials.forEach((m) => m.dispose());
+    geometries.forEach((g) => {
+      g.dispose();
+    });
+    materials.forEach((m) => {
+      m.dispose();
+    });
   };
 
   return { root, updateState, dispose };

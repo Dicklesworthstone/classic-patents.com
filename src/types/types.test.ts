@@ -49,11 +49,11 @@ describe("Core Domain Types & Contracts", () => {
       dimension: "L/T",
       explanation: "True airspeed relative to oncoming airflow",
       telemetryKey: "airspeed",
-      formatValue: (v) => `${v.toFixed(1)} m/s`,
+      valueFormat: { style: "fixed", fractionDigits: 1, suffix: " m/s" },
     };
 
     expect(variable.id).toBe("v");
-    expect(variable.formatValue?.(12.5)).toBe("12.5 m/s");
+    expect(variable.valueFormat).toEqual({ style: "fixed", fractionDigits: 1, suffix: " m/s" });
 
     const equation: ColorizedEquation = {
       id: "wright-lift",

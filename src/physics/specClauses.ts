@@ -1933,7 +1933,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         phrase: "hollow chamber",
         active: rpm > 2000,
         tone: "live",
-        caption: `Rotor Speed=${rpm} RPM: Spinning centrifugal bowl subjects whole milk to 4,000 g radial acceleration.`,
+        caption: `Rotor Speed=${rpm} RPM: Rotating hollow chamber D spins upon vertical shaft i to separate fluids by centrifugal action.`,
       },
       {
         id: "separated-fluids",
@@ -1987,22 +1987,39 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-319596-maxim-machine-gun") {
-    const rate = params.firingRate ?? 600;
+    const stroke = params.cyclePhaseDeg !== undefined || params.cyclePhase !== undefined;
     return [
       {
-        id: "sliding-breech-block",
-        phrase: "sliding breech-block",
-        active: rate > 0,
-        tone: "live",
-        caption: `Rate of Fire=${rate} RPM: Recoil forces slide breech-block rearward to extract and chamber cartridges automatically.`,
-      },
-      {
         id: "tubular-piece",
-        phrase: "tubular piece",
+        phrase: "sliding tubular piece",
         active: true,
         tone: "held",
         caption:
-          "Muzzle booster cup captures expanding propellant gas to accelerate barrel recoil cycle.",
+          "Expanding propellant gases push internal shoulders of sliding tubular piece l forward along fixed barrel B.",
+      },
+      {
+        id: "sliding-breech-block",
+        phrase: "sliding breech-block",
+        active: stroke,
+        tone: "live",
+        caption:
+          "Cross-head d and crankshaft e draw sliding breech-block C rearward to open the chamber and extract the spent cartridge.",
+      },
+      {
+        id: "crank-shaft",
+        phrase: "crank-shaft",
+        active: true,
+        tone: "held",
+        caption:
+          "Transverse crankshaft e converts operating rod translation into rotary torque, winding volute return spring k.",
+      },
+      {
+        id: "volute-spring",
+        phrase: "spring k",
+        active: true,
+        tone: "held",
+        caption:
+          "Frame-anchored volute spring k stores mechanical energy to drive the forward closing and chambering stroke.",
       },
     ];
   }
@@ -2720,9 +2737,10 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
           "simultaneously and positively varying the rotor pitch and the power output of said engine",
         active: controls.engineRunning === 1,
         tone: controls.engineRunning === 1 ? "live" : "held",
-        caption: controls.engineRunning === 1
-          ? `COLLECTIVE-THROTTLE CORRELATION ACTIVE: Blade pitch ${controls.collectivePitchDeg.toFixed(1)}° mechanically commands ${metrics.effectiveThrottlePercent.toFixed(1)}% engine throttle, delivering ${(metrics.mainRotorPowerWatts / 1000.0).toFixed(1)} kW.`
-          : `Engine stopped (autorotation state); freewheeling sprag clutch disengaged.`,
+        caption:
+          controls.engineRunning === 1
+            ? `COLLECTIVE-THROTTLE CORRELATION ACTIVE: Blade pitch ${controls.collectivePitchDeg.toFixed(1)}° mechanically commands ${metrics.effectiveThrottlePercent.toFixed(1)}% engine throttle, delivering ${(metrics.mainRotorPowerWatts / 1000.0).toFixed(1)} kW.`
+            : `Engine stopped (autorotation state); freewheeling sprag clutch disengaged.`,
       },
       {
         id: "anti-torque-tail-rotor",
@@ -2734,8 +2752,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
       },
       {
         id: "universal-blade-connection",
-        phrase:
-          "universal connection between the inner end of each blade and said shaft",
+        phrase: "universal connection between the inner end of each blade and said shaft",
         active: metrics.tipSpeedMs > 50,
         tone: "live",
         caption: `Flapping and hunting hinges active; main blade tip velocity ${metrics.tipSpeedMs.toFixed(1)} m/s (Mach ${metrics.tipMachNumber.toFixed(2)}), vertical lift ${metrics.mainRotorThrustNewtons.toFixed(1)} N.`,
@@ -3211,60 +3228,80 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
 
   if (patentId === AMF_VERSATRAN_ID) {
     const topology = stepAmfVersatranTopology(params);
-    const active = true;
+    const claim1Active = topology.claimProbeStates[1];
+    const claim8Active = topology.claimProbeStates[8];
+    const claim12Active = topology.claimProbeStates[12];
 
     return [
       {
         id: "versatran-primary-and-supplemental-motions",
         phrase:
           "vertical, horizontal and rotary motion as well as three dimensional diagonal movements",
-        active,
-        tone: active ? "live" : "broken",
-        caption:
-          "Normalized primary motions: column " +
-          (topology.controls.columnRotation ?? 0).toFixed(2) +
-          ", carriage " +
-          (topology.controls.carriageLift ?? 0.55).toFixed(2) +
-          ", arm " +
-          (topology.controls.armTravel ?? 0.55).toFixed(2) +
-          ". The grant identifies three basic and three supplemental motions, not a calibrated workspace.",
+        active: claim1Active,
+        tone: claim1Active ? "live" : "broken",
+        caption: claim1Active
+          ? "Normalized primary motions: column " +
+            (topology.controls.columnRotation ?? 0).toFixed(2) +
+            ", carriage " +
+            (topology.controls.carriageLift ?? 0.55).toFixed(2) +
+            ", arm " +
+            (topology.controls.armTravel ?? 0.55).toFixed(2) +
+            ". The grant identifies three basic and three supplemental motions, not a calibrated workspace."
+          : "Claim 1's six-actuator combination is withheld on the shared bus, so this exhibit does not represent its complete primary-and-supplemental motion topology.",
       },
       {
         id: "versatran-continuous-path",
         phrase:
           "programmed, it is capable of carrying out not only simple, but also complex movements and operations",
-        active: topology.programMode === "automatic-recorded-signal-playback",
-        tone: topology.programMode === "automatic-recorded-signal-playback" ? "live" : "held",
-        caption:
-          "Mode: " +
-          topology.programMode.toUpperCase() +
-          " (maximum normalized phase difference: " +
-          topology.maximumNormalizedPhaseError.toFixed(3) +
-          ").",
+        active: claim8Active && topology.programMode === "automatic-recorded-signal-playback",
+        tone: !claim8Active
+          ? "broken"
+          : topology.programMode === "automatic-recorded-signal-playback"
+            ? "live"
+            : "held",
+        caption: claim8Active
+          ? "Mode: " +
+            topology.programMode.toUpperCase() +
+            " (maximum normalized phase difference: " +
+            topology.maximumNormalizedPhaseError.toFixed(3) +
+            ")."
+          : "Claim 8's programming, recording, and repetitive-playback path is withheld; no automatic replay topology is represented.",
       },
       {
         id: "versatran-teach-in-programming",
         phrase:
           "means for manually operating the prime actuators of the machine through prescribed paths of travel",
-        active: topology.programMode === "manual-teach-and-record",
-        tone: "live",
-        caption:
-          "Separate programming arm and stick provide the source-described manual signal path used while recording the desired sequence.",
+        active: claim1Active && topology.programMode === "manual-teach-and-record",
+        tone: claim1Active ? "live" : "broken",
+        caption: claim1Active
+          ? "Separate programming arm and stick provide the source-described manual signal path used while recording the desired sequence."
+          : "With Claim 1 withheld, this face does not represent the six-actuator machine that the programming arm is intended to direct.",
       },
       {
         id: "versatran-wrist-and-gripper",
         phrase:
           "work tool or piece. This latter may take the form of a pair of grippers which in accordance with a preferred embodiment of the invention has three degrees of movement, including a wrist action",
-        active: true,
-        tone: "live",
-        caption:
-          "Normalized supplemental motions: wrist rotation " +
-          (topology.controls.wristRotation ?? 0).toFixed(2) +
-          ", wrist swing " +
-          (topology.controls.wristSwing ?? 0).toFixed(2) +
-          ", gripper open fraction " +
-          topology.displayPose.gripperOpenFraction.toFixed(2) +
-          ".",
+        active: claim1Active,
+        tone: claim1Active ? "live" : "broken",
+        caption: claim1Active
+          ? "Normalized supplemental motions: wrist rotation " +
+            (topology.controls.wristRotation ?? 0).toFixed(2) +
+            ", wrist swing " +
+            (topology.controls.wristSwing ?? 0).toFixed(2) +
+            ", gripper open fraction " +
+            topology.displayPose.gripperOpenFraction.toFixed(2) +
+            "."
+          : "The supporting Claim 1 machine topology is withheld, so no gripper or wrist motion is asserted by this exhibit.",
+      },
+      {
+        id: "versatran-coupled-pinion-gripper",
+        phrase:
+          "pinions being cooperatively rotatable in opposite directions and conjointly movable about a vertical axis",
+        active: claim12Active,
+        tone: claim12Active ? "live" : "broken",
+        caption: claim12Active
+          ? "Claim 12's normalized probe shows paired engaging pinions counter-rotating for finger opening or closing, with their common member available for the specified conjoint swing; it does not assert a dimensional jaw angle or gripping force."
+          : "Claim 12's paired engaging-pinion and conjoint-swing construction is withheld; the remaining generic work tool is not presented as that claimed gripper.",
       },
     ];
   }

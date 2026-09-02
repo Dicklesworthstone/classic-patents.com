@@ -31,6 +31,12 @@ export interface AmfVersatranControls {
    * historic voltage, shaft angle, rate, or tracking measurement.
    */
   resolverPhaseOffset: number;
+  /** Shared live probe for Claim 1's six-actuator machine combination. */
+  claim1TopologyEnabled: number;
+  /** Shared live probe for Claim 8's record-and-replay control path. */
+  claim8RecordPlaybackEnabled: number;
+  /** Shared live probe for Claim 12's coupled pinion gripper topology. */
+  claim12PinionGripperEnabled: number;
 }
 
 export type AmfVersatranParams = Partial<AmfVersatranControls> & Record<string, number | undefined>;
@@ -44,9 +50,20 @@ export const AMF_VERSATRAN_DEFAULT_CONTROLS: AmfVersatranControls = {
   gripperOperation: 0.25,
   teachReplayMode: 0,
   resolverPhaseOffset: 0,
+  claim1TopologyEnabled: 1,
+  claim8RecordPlaybackEnabled: 1,
+  claim12PinionGripperEnabled: 1,
 };
 
 export const DEFAULT_VERSATRAN_CONTROLS = AMF_VERSATRAN_DEFAULT_CONTROLS;
+
+export const AMF_VERSATRAN_CLAIM_PROBE_PARAMS = {
+  1: "claim1TopologyEnabled",
+  8: "claim8RecordPlaybackEnabled",
+  12: "claim12PinionGripperEnabled",
+} as const;
+
+export type AmfVersatranClaimStates = Readonly<Record<1 | 8 | 12, boolean>>;
 
 export type AmfVersatranProgramMode =
   | "manual-teach-and-record"
@@ -54,6 +71,8 @@ export type AmfVersatranProgramMode =
 
 export type AmfVersatranTrackingState =
   | "manual-teach-and-record"
+  | "claim-1-topology-withheld"
+  | "record-playback-path-withheld"
   | "playback-in-correspondence"
   | "playback-with-illustrative-comparison-offset";
 
@@ -151,6 +170,12 @@ export interface AmfVersatranDisplayPose {
   readonly wristRotationDisplayRad: number;
   readonly wristSwingDisplayRad: number;
   readonly gripperOpenFraction: number;
+  /** Normalized Claim 12 pinion rotation, not a recovered jaw angle. */
+  readonly gripperPinionRotationDisplayRad: number;
+  /** Normalized Claim 13 rack travel coupled to the pictured pinions. */
+  readonly gripperRackTravelFraction: number;
+  /** False when the Claim 12 mechanism is deliberately withheld. */
+  readonly pinionGripperTopologyEnabled: boolean;
 }
 
 export interface AmfVersatranTopologyState {
@@ -166,6 +191,7 @@ export interface AmfVersatranTopologyState {
   readonly comparisonChannels: readonly AmfVersatranComparisonChannel[];
   readonly maximumNormalizedPhaseError: number;
   readonly displayPose: AmfVersatranDisplayPose;
+  readonly claimProbeStates: AmfVersatranClaimStates;
   readonly activeClaim: 1 | 8 | 12;
   readonly phaseComparisonLaw: string;
   readonly positionLaw: string;
@@ -176,7 +202,7 @@ export interface AmfVersatranTopologyState {
 }
 
 const SOURCE_BOUNDARY_REASON =
-  "US 3,212,649 supplies a six-motion manipulator topology, hydraulic/servo architecture, recorded-signal playback, and a position-signal comparison path, but not calibrated link dimensions, cylinder bore or stroke, pressure, flow, payload, mass, inertia, valve coefficients, gear ratios, controller gains, timing, or measured accuracy. This shared kernel reports unitless configuration and comparison topology only and refuses SI position, velocity, force, energy, pressure, and performance prediction.";
+  "US 3,212,649 supplies a six-motion manipulator topology, hydraulic/servo architecture, recorded-signal playback, a position-signal comparison path, and some dimensionless gear relationships, but not calibrated link dimensions, cylinder bore or stroke, pressure, flow, payload, mass, inertia, valve coefficients, controller gains, timing, or measured accuracy. The published gear ratios do not recover SI geometry. This shared kernel reports unitless configuration and comparison topology only and refuses SI position, velocity, force, energy, pressure, and performance prediction.";
 
 function finite(value: number | undefined, fallback: number): number {
   return typeof value === "number" && Number.isFinite(value) ? value : fallback;
@@ -231,10 +257,33 @@ export function readAmfVersatranControls(params: AmfVersatranParams = {}): AmfVe
       params.resolverPhaseOffset,
       AMF_VERSATRAN_DEFAULT_CONTROLS.resolverPhaseOffset,
     ),
+    claim1TopologyEnabled: binary(
+      params.claim1TopologyEnabled,
+      AMF_VERSATRAN_DEFAULT_CONTROLS.claim1TopologyEnabled,
+    ),
+    claim8RecordPlaybackEnabled: binary(
+      params.claim8RecordPlaybackEnabled,
+      AMF_VERSATRAN_DEFAULT_CONTROLS.claim8RecordPlaybackEnabled,
+    ),
+    claim12PinionGripperEnabled: binary(
+      params.claim12PinionGripperEnabled,
+      AMF_VERSATRAN_DEFAULT_CONTROLS.claim12PinionGripperEnabled,
+    ),
   };
 }
 
 export const readAMFVersatranControls = readAmfVersatranControls;
+
+export function readAmfVersatranClaimStates(
+  params: AmfVersatranParams = {},
+): AmfVersatranClaimStates {
+  const controls = readAmfVersatranControls(params);
+  return {
+    1: controls.claim1TopologyEnabled === 1,
+    8: controls.claim8RecordPlaybackEnabled === 1,
+    12: controls.claim12PinionGripperEnabled === 1,
+  };
+}
 
 /**
  * One deterministic source-bound state for every Versatran face. In manual
@@ -246,27 +295,35 @@ export function stepAmfVersatranTopology(
   params: AmfVersatranParams = {},
 ): AmfVersatranTopologyState {
   const controls = readAmfVersatranControls(params);
+  const claimProbeStates: AmfVersatranClaimStates = {
+    1: controls.claim1TopologyEnabled === 1,
+    8: controls.claim8RecordPlaybackEnabled === 1,
+    12: controls.claim12PinionGripperEnabled === 1,
+  };
   const programMode: AmfVersatranProgramMode =
-    controls.teachReplayMode === 1
+    claimProbeStates[8] && controls.teachReplayMode === 1
       ? "automatic-recorded-signal-playback"
       : "manual-teach-and-record";
-  const basicMotionInputs = [
-    {
-      motion: "column-rotation" as const,
-      label: "Column rotation position signal",
-      normalizedValue: (controls.columnRotation + 1) / 2,
-    },
-    {
-      motion: "carriage-lift" as const,
-      label: "Carriage lift position signal",
-      normalizedValue: controls.carriageLift,
-    },
-    {
-      motion: "arm-travel" as const,
-      label: "Arm travel position signal",
-      normalizedValue: controls.armTravel,
-    },
-  ] as const;
+  const basicMotionInputs =
+    claimProbeStates[1] && claimProbeStates[8]
+      ? ([
+          {
+            motion: "column-rotation" as const,
+            label: "Column rotation position signal",
+            normalizedValue: (controls.columnRotation + 1) / 2,
+          },
+          {
+            motion: "carriage-lift" as const,
+            label: "Carriage lift position signal",
+            normalizedValue: controls.carriageLift,
+          },
+          {
+            motion: "arm-travel" as const,
+            label: "Arm travel position signal",
+            normalizedValue: controls.armTravel,
+          },
+        ] as const)
+      : ([] as const);
   const comparisonChannels = basicMotionInputs.map((input) => {
     const recordedSignalPhase = wrapAmfVersatranPhase(input.normalizedValue);
     const feedbackSignalPhase =
@@ -288,12 +345,15 @@ export function stepAmfVersatranTopology(
     0,
     ...comparisonChannels.map((channel) => Math.abs(channel.normalizedPhaseError)),
   );
-  const trackingState: AmfVersatranTrackingState =
-    programMode === "manual-teach-and-record"
-      ? "manual-teach-and-record"
-      : maximumNormalizedPhaseError === 0
-        ? "playback-in-correspondence"
-        : "playback-with-illustrative-comparison-offset";
+  const trackingState: AmfVersatranTrackingState = !claimProbeStates[1]
+    ? "claim-1-topology-withheld"
+    : !claimProbeStates[8]
+      ? "record-playback-path-withheld"
+      : programMode === "manual-teach-and-record"
+        ? "manual-teach-and-record"
+        : maximumNormalizedPhaseError === 0
+          ? "playback-in-correspondence"
+          : "playback-with-illustrative-comparison-offset";
 
   // These anchors are a shared drawing convention only. They make the three
   // basic movements legible without presenting a historical dimension table.
@@ -310,23 +370,35 @@ export function stepAmfVersatranTopology(
     columnRotationDisplayRad,
     wristRotationDisplayRad: controls.wristRotation * Math.PI * 0.72,
     wristSwingDisplayRad: controls.wristSwing * Math.PI * 0.58,
-    gripperOpenFraction: 1 - controls.gripperOperation,
+    gripperOpenFraction: claimProbeStates[12] ? 1 - controls.gripperOperation : 0.5,
+    gripperPinionRotationDisplayRad: claimProbeStates[12]
+      ? (0.5 - controls.gripperOperation) * 0.9
+      : 0,
+    gripperRackTravelFraction: claimProbeStates[12] ? controls.gripperOperation : 0.5,
+    pinionGripperTopologyEnabled: claimProbeStates[12],
   };
+  // Select the exact claim boundary currently being tested. A withdrawn
+  // Claim 1 wins over narrower subassemblies because without its machine
+  // combination the shared exhibit must not imply that the complete apparatus
+  // remains represented.
+  const activeClaim: 1 | 8 | 12 = !claimProbeStates[1]
+    ? 1
+    : controls.gripperOperation >= 0.5
+      ? 12
+      : controls.teachReplayMode === 1
+        ? 8
+        : 1;
 
   return {
     controls,
     programMode,
     trackingState,
-    disclosedMotions: AMF_VERSATRAN_MOTION_CHANNELS,
+    disclosedMotions: claimProbeStates[1] ? AMF_VERSATRAN_MOTION_CHANNELS : [],
     comparisonChannels,
     maximumNormalizedPhaseError,
     displayPose,
-    activeClaim:
-      controls.gripperOperation >= 0.5
-        ? 12
-        : programMode === "automatic-recorded-signal-playback"
-          ? 8
-          : 1,
+    claimProbeStates,
+    activeClaim,
     phaseComparisonLaw:
       "e_display = wrap(phi_recorded - phi_feedback), unitless comparison display",
     positionLaw:
@@ -352,6 +424,12 @@ export function computeAmfVersatranMetrics(
     normalizedComparisonErrorColumn: state.comparisonChannels[0]?.normalizedPhaseError ?? 0,
     normalizedComparisonErrorCarriage: state.comparisonChannels[1]?.normalizedPhaseError ?? 0,
     normalizedComparisonErrorArm: state.comparisonChannels[2]?.normalizedPhaseError ?? 0,
+    recordedCommandPhaseColumn: state.comparisonChannels[0]?.recordedSignalPhase ?? 0,
+    recordedCommandPhaseCarriage: state.comparisonChannels[1]?.recordedSignalPhase ?? 0,
+    recordedCommandPhaseArm: state.comparisonChannels[2]?.recordedSignalPhase ?? 0,
+    resolverFeedbackPhaseColumn: state.comparisonChannels[0]?.feedbackSignalPhase ?? 0,
+    resolverFeedbackPhaseCarriage: state.comparisonChannels[1]?.feedbackSignalPhase ?? 0,
+    resolverFeedbackPhaseArm: state.comparisonChannels[2]?.feedbackSignalPhase ?? 0,
     maximumNormalizedPhaseError: state.maximumNormalizedPhaseError,
     normalizedGripperOpenFraction: state.displayPose.gripperOpenFraction,
   };

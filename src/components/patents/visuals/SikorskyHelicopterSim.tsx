@@ -58,7 +58,14 @@ export const SikorskyHelicopterSim: React.FC = () => {
       if (canvas) {
         const ctx = canvas.getContext("2d");
         if (ctx) {
-          renderHelicopterSim(ctx, canvas.width, canvas.height, simState, metrics, controlsRef.current);
+          renderHelicopterSim(
+            ctx,
+            canvas.width,
+            canvas.height,
+            simState,
+            metrics,
+            controlsRef.current,
+          );
         }
       }
 
@@ -78,7 +85,8 @@ export const SikorskyHelicopterSim: React.FC = () => {
             Sikorsky VS-300 Aerodynamic Rotorcraft Simulator
           </h3>
           <p className="text-xs text-stone-400">
-            US 2,318,259: Single Main Rotor Cyclic/Collective Feathering & Tail Anti-Torque Equilibrium
+            US 2,318,259: Single Main Rotor Cyclic/Collective Feathering & Tail Anti-Torque
+            Equilibrium
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -119,7 +127,9 @@ export const SikorskyHelicopterSim: React.FC = () => {
         <div className="space-y-3 bg-stone-950/60 p-3 rounded-lg border border-stone-800/80">
           <div className="font-semibold text-amber-400 uppercase tracking-wider flex justify-between">
             <span>Collective & Engine Power</span>
-            <span className="font-mono text-emerald-400">{controls.collectivePitchDeg.toFixed(1)}°</span>
+            <span className="font-mono text-emerald-400">
+              {controls.collectivePitchDeg.toFixed(1)}°
+            </span>
           </div>
 
           <div>
@@ -179,7 +189,8 @@ export const SikorskyHelicopterSim: React.FC = () => {
           <div className="font-semibold text-amber-400 uppercase tracking-wider flex justify-between">
             <span>Flight Controls (Cyclic & Yaw)</span>
             <span className="font-mono text-cyan-400">
-              P:{controls.cyclicPitchForwardDeg.toFixed(1)}° R:{controls.cyclicRollRightDeg.toFixed(1)}°
+              P:{controls.cyclicPitchForwardDeg.toFixed(1)}° R:
+              {controls.cyclicRollRightDeg.toFixed(1)}°
             </span>
           </div>
 
@@ -240,15 +251,25 @@ export const SikorskyHelicopterSim: React.FC = () => {
 
           <div className="flex justify-between border-b border-stone-800/50 pb-1">
             <span className="text-stone-400">Main Rotor Lift:</span>
-            <span className={metrics.mainRotorThrustNewtons >= 5100 ? "text-emerald-400 font-bold" : "text-amber-400"}>
-              {metrics.mainRotorThrustNewtons.toFixed(1)} N <span className="text-[10px] text-stone-500">/ 5,100 N Wt</span>
+            <span
+              className={
+                metrics.mainRotorThrustNewtons >= 5100
+                  ? "text-emerald-400 font-bold"
+                  : "text-amber-400"
+              }
+            >
+              {metrics.mainRotorThrustNewtons.toFixed(1)} N{" "}
+              <span className="text-[10px] text-stone-500">/ 5,100 N Wt</span>
             </span>
           </div>
 
           <div className="flex justify-between border-b border-stone-800/50 pb-1">
             <span className="text-stone-400">Main Rotor RPM:</span>
             <span className="text-stone-200">
-              {simState.rotorRpm.toFixed(1)} RPM <span className="text-[10px] text-stone-500">(Tip M {metrics.tipMachNumber.toFixed(2)})</span>
+              {simState.rotorRpm.toFixed(1)} RPM{" "}
+              <span className="text-[10px] text-stone-500">
+                (Tip M {metrics.tipMachNumber.toFixed(2)})
+              </span>
             </span>
           </div>
 
@@ -264,7 +285,11 @@ export const SikorskyHelicopterSim: React.FC = () => {
 
           <div className="flex justify-between border-b border-stone-800/50 pb-1">
             <span className="text-stone-400">Net Yaw Moment:</span>
-            <span className={Math.abs(metrics.netYawMomentNm) < 20 ? "text-emerald-400" : "text-rose-400"}>
+            <span
+              className={
+                Math.abs(metrics.netYawMomentNm) < 20 ? "text-emerald-400" : "text-rose-400"
+              }
+            >
               {metrics.netYawMomentNm.toFixed(1)} N·m
             </span>
           </div>
@@ -351,9 +376,9 @@ function renderHelicopterSim(
       ctx.beginPath();
       ctx.moveTo(startX, startY);
       ctx.quadraticCurveTo(
-        startX + (i * 0.2),
+        startX + i * 0.2,
         startY + flowLen * 0.6,
-        startX + (i * 0.5),
+        startX + i * 0.5,
         startY + flowLen,
       );
       ctx.stroke();
@@ -438,8 +463,6 @@ function renderHelicopterSim(
 
   const phase = state.rotorPhaseRad;
   const blade1X = Math.cos(phase) * bladeRadius;
-  const blade2X = Math.cos(phase + (2 * Math.PI) / 3) * bladeRadius;
-  const blade3X = Math.cos(phase + (4 * Math.PI) / 3) * bladeRadius;
 
   ctx.strokeStyle = state.rotorRpm > 50 ? "rgba(251, 191, 36, 0.85)" : "#f59e0b";
   ctx.lineWidth = 3;
@@ -482,7 +505,11 @@ function renderHelicopterSim(
 
   ctx.fillStyle = "#a8a29e";
   ctx.font = "10px system-ui, sans-serif";
-  ctx.fillText(`Alt: ${state.altitudeMeters.toFixed(1)}m | Downwash v_i: ${metrics.inducedVelocityMs.toFixed(1)} m/s`, 14, 38);
+  ctx.fillText(
+    `Alt: ${state.altitudeMeters.toFixed(1)}m | Downwash v_i: ${metrics.inducedVelocityMs.toFixed(1)} m/s`,
+    14,
+    38,
+  );
 
   ctx.restore();
 
@@ -598,13 +625,25 @@ function renderHelicopterSim(
 
   ctx.font = "10px monospace";
   ctx.fillStyle = "#fbbf24";
-  ctx.fillText(`Main Q: ${metrics.mainRotorTorqueNm.toFixed(0)} N·m (CCW reaction)`, boxX + 8, boxY + 18);
+  ctx.fillText(
+    `Main Q: ${metrics.mainRotorTorqueNm.toFixed(0)} N·m (CCW reaction)`,
+    boxX + 8,
+    boxY + 18,
+  );
 
   ctx.fillStyle = "#38bdf8";
-  ctx.fillText(`Tail T×L: ${(metrics.tailRotorThrustNewtons * 4.8).toFixed(0)} N·m (CW balance)`, boxX + 8, boxY + 36);
+  ctx.fillText(
+    `Tail T×L: ${(metrics.tailRotorThrustNewtons * 4.8).toFixed(0)} N·m (CW balance)`,
+    boxX + 8,
+    boxY + 36,
+  );
 
   ctx.fillStyle = Math.abs(metrics.netYawMomentNm) < 20 ? "#34d399" : "#f43f5e";
-  ctx.fillText(`Net ΔM: ${metrics.netYawMomentNm.toFixed(1)} N·m (${Math.abs(metrics.netYawMomentNm) < 20 ? "STABLE" : "SPINNING"})`, boxX + 8, boxY + 54);
+  ctx.fillText(
+    `Net ΔM: ${metrics.netYawMomentNm.toFixed(1)} N·m (${Math.abs(metrics.netYawMomentNm) < 20 ? "STABLE" : "SPINNING"})`,
+    boxX + 8,
+    boxY + 54,
+  );
 
   ctx.restore();
 }

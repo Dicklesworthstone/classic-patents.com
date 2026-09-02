@@ -1,9 +1,15 @@
 "use client";
 
 import { Eye, EyeOff, RotateCcw } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import { stepAmfVersatranTopology } from "@/physics/amfVersatranKernel";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import {
+  AMF_VERSATRAN_CLAIM_PROBE_PARAMS,
+  readAmfVersatranClaimStates,
+  stepAmfVersatranTopology,
+} from "@/physics/amfVersatranKernel";
+import { applyClaimConstraintModifications } from "@/physics/claimConstraints";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -89,9 +95,16 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
   const [view, setView] = useState<keyof typeof VIEWS>("overview");
   const [interfaceVisible, setInterfaceVisible] = useState(true);
   const { params, updateParam, resetParams } = usePatentPhysics(patentId);
-  const liveParams = useRef(params);
-  liveParams.current = params;
-  const state = stepAmfVersatranTopology(params);
+  const claimStates = useMemo(() => readAmfVersatranClaimStates(params), [params]);
+  const claimResult = useMemo(
+    () => applyClaimConstraintModifications(PATENT_ID, params, claimStates),
+    [params, claimStates],
+  );
+  const liveParams = useRef(claimResult.modifiedParams);
+  liveParams.current = claimResult.modifiedParams;
+  const state = stepAmfVersatranTopology(claimResult.modifiedParams);
+  const claim8Active = claimStates[8] ?? true;
+  const claim12Active = claimStates[12] ?? true;
 
   useFrankenSimPhysics(patentId, {
     domain: "solid_mechanics",
@@ -217,6 +230,32 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
             </p>
 
             <div className="absolute bottom-3 left-3 right-3 grid gap-3 rounded-xl border border-slate-700/90 bg-slate-950/92 p-3 backdrop-blur sm:bottom-5 sm:left-5 sm:right-5">
+              <ClaimConstraintToggle
+                patentId={PATENT_ID}
+                claimStates={claimStates}
+                onToggleClaim={(claimNumber, active) => {
+                  const claimProbeParam =
+                    AMF_VERSATRAN_CLAIM_PROBE_PARAMS[
+                      claimNumber as keyof typeof AMF_VERSATRAN_CLAIM_PROBE_PARAMS
+                    ];
+                  if (claimProbeParam) updateParam(claimProbeParam, active ? 1 : 0);
+                  if (claimNumber === 8 && !active) updateParam("teachReplayMode", 0);
+                }}
+              />
+              {claimResult.activeFailures.length > 0 && (
+                <div role="status" className="rounded-lg border border-rose-800 bg-rose-950/80 p-2">
+                  {claimResult.activeFailures.map((failure) => (
+                    <p key={failure} className="text-[11px] leading-4 text-rose-100">
+                      {failure}
+                    </p>
+                  ))}
+                  {claimResult.refusalWarning && (
+                    <p className="mt-1 text-[10px] leading-4 text-rose-200">
+                      {claimResult.refusalWarning}
+                    </p>
+                  )}
+                </div>
+              )}
               <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
                 {POSE_CONTROLS.map((control) => {
                   const value = params[control.id] ?? control.defaultValue;
@@ -239,11 +278,16 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
                     </label>
                   );
                 })}
-                <label className="flex items-center justify-between gap-2 text-[11px] text-slate-200">
+                <label
+                  className={`flex items-center justify-between gap-2 text-[11px] text-slate-200 ${
+                    claim8Active ? "" : "cursor-not-allowed opacity-60"
+                  }`}
+                >
                   Recorded-signal playback
                   <input
                     className="h-4 w-4 accent-emerald-400"
                     type="checkbox"
+                    disabled={!claim8Active}
                     checked={(params.teachReplayMode ?? 0) >= 0.5}
                     aria-label="Automatic recorded-signal playback"
                     onChange={(event) =>
@@ -251,7 +295,11 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
                     }
                   />
                 </label>
-                <label className="text-[11px] text-slate-200">
+                <label
+                  className={`text-[11px] text-slate-200 ${
+                    claim8Active ? "" : "cursor-not-allowed opacity-60"
+                  }`}
+                >
                   Illustrative record/feedback offset
                   <span className="float-right font-mono text-rose-300">
                     {(params.resolverPhaseOffset ?? 0).toFixed(2)}
@@ -262,6 +310,7 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
                     min="-1"
                     max="1"
                     step="0.05"
+                    disabled={!claim8Active}
                     value={params.resolverPhaseOffset ?? 0}
                     aria-label="Illustrative normalized record and feedback phase offset"
                     onChange={(event) =>
@@ -270,6 +319,21 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
                   />
                 </label>
               </div>
+
+              {!state.claimProbeStates[1] && (
+                <p
+                  role="status"
+                  className="rounded-lg border border-rose-800 bg-rose-950/80 p-2 text-[11px] leading-4 text-rose-100"
+                >
+                  Claim 1 is withheld on the shared bus, so the six-actuator model is intentionally
+                  removed rather than treated as a physical failure prediction.
+                </p>
+              )}
+              <p className="rounded-lg border border-amber-900/70 bg-amber-950/25 p-2 text-[11px] leading-4 text-amber-100">
+                Claim 12 probe: the procedural model shows paired engaging pinions and opposed rack
+                motion only while the source-described gripper topology is live.{" "}
+                {claim12Active ? "Pinion/rack topology live." : "Pinion/rack topology withheld."}
+              </p>
 
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="max-w-2xl text-[11px] leading-4 text-slate-300">

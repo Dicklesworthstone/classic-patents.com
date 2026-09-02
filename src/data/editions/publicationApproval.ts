@@ -1,32 +1,28 @@
 /**
- * Historical root-QA roster retained as an audit record and compatibility
- * export. Despite the legacy constant name, membership here is not an active
- * publication veto: several entries were subsequently repaired and released.
+ * publicationApproval.ts
  *
- * A stored edition is not automatically a published edition. Publication
- * requires an authored companion map and a positive full-facsimile review
- * attestation. This preserves useful WIP source material without presenting it
- * to visitors as reviewed historical text.
+ * Typed, fail-closed publication state machine for Classic Patents archival editions.
  *
- * At the time each id entered the roster, one or more of these conditions held:
- *  - the source edition was not bound yet (no edition object), or
- *  - the companion-reading map is not authored yet (publishing would crash
- *    the fail-closed renderer), or
- *  - the reviewed ledger substantively diverges from the edition (under
- *    ~70% literal coverage), meaning the text is not yet verbatim-reviewed, or
- *  - the record was found to fabricate facsimile content.
+ * A stored edition is not automatically a published edition. Publication requires:
+ * 1. An authored companion map (parallel readings),
+ * 2. Positive full-facsimile review attestation (completeFacsimileReviewed === true),
+ * 3. Structural validation without fatal schema errors,
+ * 4. Zero fabrication / reconstruction quarantine holds.
  *
- * Microscopic gaps — a thin companion sentence, a sub-floor decoder, an
- * imperfect figure crop — no longer justify hiding an entire document.
- *
- * The active boundary is executable below: a positive full-facsimile review,
- * a companion reading map, structural validation, and no fabrication hold.
- * Releasing a repaired edition does not rewrite this historical roster.
+ * Visitors still receive the pinned facsimile and all independently supportable educational
+ * functionality with a clear review-status explanation when an edition is withheld.
  */
 
-import type { Patent } from "@/types/patent";
-import { validateCuratedSpecificationEdition } from "../archivalEditionValidation";
+import type { CuratedSpecificationEdition, Patent } from "@/types/patent";
+import {
+  ARCHIVAL_PUBLICATION_STATE_OVERRIDES,
+  evaluateTypedArchivalPublicationState,
+  type ArchivalPublicationDecision,
+  type ArchivalPublicationStatus,
+} from "./archivalPublicationState";
 import { ARCHIVAL_PARALLEL_READINGS } from "./parallelReadings";
+
+export type { ArchivalPublicationDecision, ArchivalPublicationStatus };
 
 export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
   // --- Historical reason: no edition object was bound at entry time ---
@@ -53,23 +49,22 @@ export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
 ] as const;
 
 export function isArchivalEditionExplicitlyWithheld(patentId: string): boolean {
-  // Fabrication holds are an additional hard stop. Review attestation and
-  // companion-map checks are enforced separately below.
-  return FABRICATED_CONTENT_HOLD_IDS.has(patentId);
+  const override = ARCHIVAL_PUBLICATION_STATE_OVERRIDES[patentId];
+  return override?.reasonCode === "FABRICATION_OR_RECONSTRUCTION_QUARANTINE";
 }
 
-// us-x1-hopkins-potash was repaired 2026-08-22: its invented kiln/vat/kettle
-// callouts and schematic were removed. GB 931 remains held because its pinned
-// PDF is a 2026 Typst reconstruction rather than a historical facsimile.
-const FABRICATED_CONTENT_HOLD_IDS = new Set<string>([
-  "gb-931-arkwright-water-frame",
-  "us-4068536-stackhouse-manipulator",
-]);
+export function evaluateArchivalPublicationState(
+  patent: Pick<Patent, "id" | "archivalEdition" | "originalTextAsset">,
+): ArchivalPublicationDecision {
+  return evaluateTypedArchivalPublicationState(patent, {
+    hasCompanionReadings: Boolean(ARCHIVAL_PARALLEL_READINGS[patent.id]),
+    isQuarantined: isArchivalEditionExplicitlyWithheld(patent.id),
+  });
+}
 
-export function archivalEditionForPublication(patent: Pick<Patent, "id" | "archivalEdition">) {
-  if (isArchivalEditionExplicitlyWithheld(patent.id)) return undefined;
-  if (!ARCHIVAL_PARALLEL_READINGS[patent.id]) return undefined;
-  if (!patent.archivalEdition) return undefined;
-  if (!validateCuratedSpecificationEdition(patent.archivalEdition).valid) return undefined;
-  return patent.archivalEdition;
+export function archivalEditionForPublication(
+  patent: Pick<Patent, "id" | "archivalEdition" | "originalTextAsset">,
+): CuratedSpecificationEdition | undefined {
+  const decision = evaluateArchivalPublicationState(patent);
+  return decision.isPublished ? decision.publishedEdition : undefined;
 }

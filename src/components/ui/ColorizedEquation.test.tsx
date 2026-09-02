@@ -20,6 +20,9 @@ describe("ColorizedEquation Component", () => {
     expect(eq).toBeDefined();
 
     const html = renderToString(<ColorizedEquation equation={eq} />);
+    expect(html).toContain('data-testid="colorized-equation"');
+    expect(html).toContain(`data-equation-id="${eq.id}"`);
+    expect(html).toContain(`data-patent-id="${eq.patentId}"`);
     expect(html).toContain("Prandtl Induced Drag");
     expect(html).toContain("Aerodynamics");
     expect(html).toContain("Plain English Decoder");
@@ -35,6 +38,18 @@ describe("ColorizedEquation Component", () => {
 
     const html = renderToString(<ColorizedEquation equation={eq} />);
     expect(html).toContain("Figure 9 Progressive Pole Shift");
+  });
+
+  test("renders serializable custom-format Ethernet and mechanical equations", () => {
+    const ethernet = ALL_COLORIZED_EQUATIONS["us-4063220-metcalfe-ethernet"][0];
+    const helicopter = ALL_COLORIZED_EQUATIONS["us-2318259-sikorsky-helicopter"][0];
+
+    const ethernetHtml = renderToString(<ColorizedEquation equation={ethernet} />);
+    const helicopterHtml = renderToString(<ColorizedEquation equation={helicopter} />);
+
+    expect(ethernetHtml).toContain("Coaxial Cable Electromagnetic Wave Propagation");
+    expect(helicopterHtml).toContain("Anti-Torque Tail Rotor Equilibrium");
+    expect(JSON.stringify([ethernet, helicopter])).not.toContain("formatValue");
   });
 
   test("color palette helper produces correct KaTeX color tags", () => {

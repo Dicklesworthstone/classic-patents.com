@@ -593,26 +593,38 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-x9430-colt-revolver",
-      claimTitle: "Mechanical Lifter Hand Pawl & Ratchet Indexing",
+      claimTitle: "Application of Percussion Caps at the Cylinder End",
       activeDescription:
-        "Claim 1 indexes the cylinder exactly one chamber pitch (72°) as the hammer is cocked, locking positive chamber-to-bore alignment.",
+        "Claim 1 places percussion caps directly on nipples at the rear end of the rotating cylinder, aligning cap strike with the axial line of fire.",
       invertedDescription:
-        "Manual cylinder indexing: shooter must rotate cylinder by hand between shots, causing out-of-battery bore misalignment and chamber shaving.",
-      failureModeName: "Manual Cylinder Misalignment & Lead Shaving",
+        "Without end-mounted percussion caps, external priming troughs or lateral nipples cause ignition hang-fires and off-axis hammer jars deviating from the line of sight.",
+      failureModeName: "Off-Axis Ignition Jar & Priming Failure",
       historicalPriorArt:
-        "Collier and Pepperbox revolvers required manual hand rotation, leading to frequent off-center strikes and misaligned bore discharge.",
+        "Flintlock and external primer repeaters suffered slow ignition, priming loss from moisture, and lateral hammer strike that threw off aim.",
     },
     {
       claimNumber: 2,
       patentId: "us-x9430-colt-revolver",
-      claimTitle: "Radial Flash-Isolating Partition Walls Between Nipples",
+      claimTitle: "Radial Flash-Isolating Partitions Between Caps",
       activeDescription:
-        "Claim 2 interposes solid steel partition walls between percussion nipples to prevent cap flashover.",
+        "Claim 2 forms solid partition walls between adjoining percussion caps at the cylinder end to isolate exploding primer flash.",
       invertedDescription:
-        "Unshielded shared nipple wells: ignition flame from fired percussion cap enters adjacent chambers, causing simultaneous catastrophic multi-cylinder discharge.",
+        "Unshielded adjacent percussion caps allow burning primer gas to flash over to adjoining nipples, causing simultaneous catastrophic multi-cylinder chain fire.",
       failureModeName: "Catastrophic Multi-Chamber Chain Fire",
       historicalPriorArt:
-        "Early multi-chamber pistols suffered frequent chain fires that ruptured cylinders and injured shooters' hands.",
+        "Early multi-chamber arms lacked physical barriers between percussion nipples, leading to chain fires that ruptured cylinders and injured hands.",
+    },
+    {
+      claimNumber: 6,
+      patentId: "us-x9430-colt-revolver",
+      claimTitle: "Mechanically Coupled Locking and Turning of Cylinder",
+      activeDescription:
+        "Claim 6 mechanically couples hammer cocking to cylinder rotation via the pawl-ratchet shackle and locks the cylinder in battery prior to discharge.",
+      invertedDescription:
+        "Manual cylinder rotation without positive mechanical locking causes chamber-to-barrel misalignment, lead shaving, and dangerous pressure blowback.",
+      failureModeName: "Manual Cylinder Misalignment & Lead Shaving",
+      historicalPriorArt:
+        "Collier and Pepperbox arms required manual hand rotation, leading to frequent off-center strikes and misaligned bore discharge.",
     },
   ],
   "us-124404-westinghouse-air-brake": [
@@ -801,14 +813,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-247804-delaval-separator",
-      claimTitle: "Continuous Centrifugal Liquid Density Separation",
+      claimTitle: "Rotating Chamber with Concentric Feed Pipe and Concentric Delivery Nozzles",
       activeDescription:
-        "Claim 1 subjects continuous milk flow to high centrifugal acceleration (>4,000 G), separating lighter butterfat cream inward and heavier skim milk outward.",
+        "Claim 1 combines a hollow chamber rotating upon a vertical axis, a pipe concentric with said axis for fluid admission, and two or more nozzles concentric with said axis for delivery of separated fluids.",
       invertedDescription:
-        "Gravitational settling: without high-speed centrifugal acceleration, Stokes buoyancy separation takes 24–36 hours, risking spoilage.",
-      failureModeName: "Gravity Settling Stagnation & Emulsion Retention",
+        "Without the concentric feed pipe and concentric delivery nozzles, fluid cannot be introduced and discharged continuously along the vertical axis of the rotating chamber.",
+      failureModeName: "Loss of Continuous Concentric Inflow/Outflow Path",
       historicalPriorArt:
-        "Dairy creaming required shallow pans sitting for days in cold water tanks with high butterfat loss.",
+        "Intermittent settling or batch drums required stopping rotation to draw off products, lacking the continuous concentric delivery path of the claimed creamer.",
     },
   ],
   "us-361931-daimler-engine": [
@@ -857,14 +869,50 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-319596-maxim-machine-gun",
-      claimTitle: "Barrel Recoil-Operated Automatic Breech Action & Belt Feed",
+      claimTitle: "Sliding Tubular Muzzle Piece and Intermediate Breech Connections",
       activeDescription:
-        "Claim 1 harnesses the kinetic recoil impulse of the discharging barrel to unlock the toggle lock, extract/eject the cartridge case, advance the ammunition belt, and recock the firing pin.",
+        "Claim 1 captures expanding propellant gas in a sliding sleeve surrounding the muzzle to operate the sliding breech-block through intermediate mechanical connections.",
       invertedDescription:
-        "Manual bolt cycling / fixed barrel: recoil energy is absorbed by the mounting rather than operating the mechanism, reducing rate of fire from 600 RPM to ~15 RPM manual cycling.",
-      failureModeName: "Manual Bolt-Action Cycling Bottleneck",
+        "Without a muzzle gas sleeve, muzzle gases vent to atmosphere without performing mechanical work, requiring external manual cranking to cycle the breech.",
+      failureModeName: "Vented Muzzle Energy & Loss of Automatic Cycling",
       historicalPriorArt:
-        "Prior repeating arms (Gardner, Nordenfelt, manual Gatling) required continuous manual hand-cranking or lever manipulation by human operators.",
+        "Prior rapid-fire arms (Gatling, Gardner) relied on continuous manual hand-cranking by human operators.",
+    },
+    {
+      claimNumber: 2,
+      patentId: "us-319596-maxim-machine-gun",
+      claimTitle: "Direction-Reversing Levers and Connecting-Rods",
+      activeDescription:
+        "Claim 2 couples the muzzle sleeve to the breech mechanism via pivoted reversing levers and connecting rods so that forward sleeve displacement produces rearward breech-block movement.",
+      invertedDescription:
+        "Direct unreversed coupling drives the breech-block forward into the chamber during muzzle gas expansion, jamming the mechanism and preventing extraction.",
+      failureModeName: "Direct-Coupling Breech Jam & Extraction Failure",
+      historicalPriorArt:
+        "Early gas-operated proposals lacked kinematic motion-reversal linkages to convert forward gas blast into rearward breech opening.",
+    },
+    {
+      claimNumber: 3,
+      patentId: "us-319596-maxim-machine-gun",
+      claimTitle: "Socketed Muzzle Sleeve and Connecting Bars on Fixed Barrel",
+      activeDescription:
+        "Claim 3 mounts the sliding tubular piece in a fixed rear socket along fixed barrel B, transmitting drive force through bars m and c′.",
+      invertedDescription:
+        "Unsocketed or unguided muzzle sleeves allow high-pressure gas blowby and eccentric binding along the barrel.",
+      failureModeName: "Muzzle Sleeve Gas Blowby & Angular Binding",
+      historicalPriorArt:
+        "Loose gas cups suffered severe gas leakage and asymmetrical cocking forces that bound on the barrel exterior.",
+    },
+    {
+      claimNumber: 4,
+      patentId: "us-319596-maxim-machine-gun",
+      claimTitle: "Crankshaft with Slotted Cross-Head and Frame-Anchored Volute Spring",
+      activeDescription:
+        "Claim 4 drives transverse crankshaft e through cross-head d to open the breech while winding frame-anchored volute spring k to power the return closing stroke.",
+      invertedDescription:
+        "Without a crankshaft-coupled volute return spring, the breech remains stuck in the open rearward position after firing with no closing or chambering force.",
+      failureModeName: "Unpowered Return Stroke & Open Breech Hang-Up",
+      historicalPriorArt:
+        "Reciprocating mechanisms without positive elastic return storage stalled after initial gas expansion.",
     },
   ],
   "us-36836-gatling-gun": [
@@ -1067,14 +1115,38 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-588-ericsson-propeller",
-      claimTitle: "Submerged Multi-Bladed Screw Propeller on In-Line Propeller Shaft",
+      claimTitle: "Metallic Hoops and Spiral Arms with Entire Immersion",
       activeDescription:
-        "Claim 1 propels vessels through water via submerged helical propeller blades keyed directly to an underwater shaft at high efficiency.",
+        "Claim 1 supports short spiral plates on broad metallic hoops via spiral spokes, maintaining entire immersion to employ the whole active plate area continuously.",
       invertedDescription:
-        "Side paddle-wheels: rolling sea waves expose paddle wheels above the surface, destroying propulsion symmetry, and are vulnerable to combat fire.",
-      failureModeName: "Wave Decoupling & Vulnerable Paddle Wheel Asymmetry",
+        "Partial surface immersion or unhooped long spiral planes suffer cyclic blade slap, wave emergence, and lost propulsive force under changing vessel draft.",
+      failureModeName: "Draft-Induced Emergence & Cyclic Blade Slap",
       historicalPriorArt:
-        "Side and stern paddle-wheel steamships suffered severe wave immersion variance and fragile machinery exposure.",
+        "Early long-spiral screws and paddle wheels emerged from the water as vessel draft changed with cargo, causing intermittent thrust and severe hydrodynamic slapping.",
+    },
+    {
+      claimNumber: 2,
+      patentId: "us-588-ericsson-propeller",
+      claimTitle: "Increased Speed of Outer Series Moving in Inner Current",
+      activeDescription:
+        "Claim 2 drives the outer series of spiral plates at greater rotational velocity in the accelerated water current generated by the preceding series.",
+      invertedDescription:
+        "Equal-speed counter-rotation fails to account for induced fluid velocity, reducing relative hydrodynamic angle of attack on the secondary stage.",
+      failureModeName: "Induced Wake Degradation & Stage Stall",
+      historicalPriorArt:
+        "Single-stage propellers and equal-geared contrarotating pairs suffered severe slip losses in the accelerated slipstream.",
+    },
+    {
+      claimNumber: 3,
+      patentId: "us-588-ericsson-propeller",
+      claimTitle: "Retractable Upright Stem, Conical Gear Fairing, and Coupling Box",
+      activeDescription:
+        "Claim 3 provides a hollow upright stem to hoist or immerse the propeller, a conical gear casing, and a sliding disconnect coupling box.",
+      invertedDescription:
+        "Fixed unshielded submerged gear installations create massive drag during unpowered sailing and prevent propeller retrieval for maintenance.",
+      failureModeName: "Fixed Submerged Gear Drag & Inability to Sail",
+      historicalPriorArt:
+        "Fixed steam-propeller installations severely retarded vessel speed under sail alone and left underwater gears exposed to fouling and corrosion.",
     },
   ],
   "us-3237-rillieux-evaporator": [
@@ -1161,14 +1233,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-78317-nobel-dynamite",
-      claimTitle: "Kieselguhr Porous Earth Absorbent for Stable Nitroglycerin Solidification",
+      claimTitle: "Porous Earth Absorbent and Nitro-Glycerine Explosive Powder",
       activeDescription:
-        "Claim 1 absorbs liquid nitroglycerin into porous diatomaceous earth (kieselguhr), converting an ultrasensitive liquid explosive into a safe solid paste.",
+        "The sole claim recites the composition of matter made substantially of liquid nitro-glycerine absorbed in porous silicious earth in the proportions and manner set forth, forming a compressible explosive powder.",
       invertedDescription:
-        "Liquid nitroglycerin transport: slight mechanical shocks, vibrations, or temperature fluctuations trigger spontaneous detonation during handling.",
-      failureModeName: "Spontaneous Shock-Induced Liquid Nitroglycerin Detonation",
+        "Without the porous silicious earth absorbent, the liquid nitro-glycerine remains an unconfined fluid subject to leakage and poor bore-hole charging.",
+      failureModeName: "Unabsorbed Liquid Nitro-Glycerine Leakage & Voiding",
       historicalPriorArt:
-        "Pure liquid nitroglycerin was so violently shock-sensitive that fatal factory and transport explosions plagued mining.",
+        "Unabsorbed liquid nitro-glycerine was difficult to retain in bore-holes and lacked the compressibility and handling properties of an absorbent powder.",
     },
   ],
   "us-79265-sholes-typewriter": [
@@ -1687,6 +1759,18 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       historicalPriorArt:
         "Point-to-point step drums or discrete patchboards were slow and incapable of continuous contouring.",
     },
+    {
+      claimNumber: 12,
+      patentId: "us-3212649-amf-versatran",
+      claimTitle: "Coupled Pinion Work-Handling Device",
+      activeDescription:
+        "Claim 12 combines two gripping fingers, engaging pinions, counter-rotation for opening/closing, and conjoint movement about the central vertical axis.",
+      invertedDescription:
+        "Without Claim 12's coupled pinion construction, the exhibit withholds the finger/rack mechanism rather than passing a generic clamp off as the claimed device.",
+      failureModeName: "Claim 12 Pinion-Gripper Topology Withheld",
+      historicalPriorArt:
+        "Simple single-axis clamps could close a jaw pair but did not necessarily provide the claim's coupled counter-rotation and conjoint swing arrangement.",
+    },
   ],
 };
 
@@ -2096,14 +2180,29 @@ export function applyClaimConstraintModifications(
 
     case "us-319596-maxim-machine-gun": {
       const claim1Active = claimStates[1] ?? true;
+      const claim2Active = claimStates[2] ?? true;
+      const claim4Active = claimStates[4] ?? true;
       if (!claim1Active) {
-        modified.rateOfFireRpm = 15.0; // Manual bolt cycling
-        modified.recoilOperatingJ = 0.0; // Rigid non-recoiling barrel
+        modified.sleeveForwardMm = 0;
+        modified.isBreechOpen = 0;
         activeFailures.push(
-          "Manual Bolt Bottleneck: Recoil energy is absorbed into fixed mount without automatic feeding cycle",
+          "Uncaptured Muzzle Gas: Gas vents freely to atmosphere without driving the forward muzzle sleeve",
         );
         refusalWarning =
-          "RECOIL DISCONNECT: Automatic cycling requires floating barrel recoil to actuate toggle lock and belt feed.";
+          "MUZZLE SLEEVE DISCONNECT: Direct muzzle-gas automatic operation requires the sliding sleeve to capture escaping propellant gases.";
+      } else if (!claim2Active) {
+        activeFailures.push(
+          "Direct-Coupling Jam: Forward sleeve motion cannot be reversed into rearward breech extraction without reversing levers",
+        );
+        refusalWarning =
+          "LINKAGE REVERSAL FAILURE: Reversing levers and connecting rods are required to invert forward sleeve stroke into rearward breech opening.";
+      } else if (!claim4Active) {
+        modified.springWoundPct = 0;
+        activeFailures.push(
+          "Unpowered Return Stroke: Missing crankshaft-coupled volute spring leaves breech open without chambering force",
+        );
+        refusalWarning =
+          "VOLUTE RETURN SPRING FAILURE: Return closing and chambering stroke requires elastic strain energy stored in frame-anchored volute spring k.";
       }
       break;
     }
@@ -2452,6 +2551,7 @@ export function applyClaimConstraintModifications(
     case "us-3212649-amf-versatran": {
       const claim1Active = claimStates[1] ?? true;
       const claim8Active = claimStates[8] ?? true;
+      const claim12Active = claimStates[12] ?? true;
 
       if (!claim1Active) {
         activeFailures.push(
@@ -2463,6 +2563,11 @@ export function applyClaimConstraintModifications(
       if (!claim8Active) {
         activeFailures.push(
           "Claim 8 topology withheld: the display no longer represents the source-described programming-arm, recording, and repetitive-playback path.",
+        );
+      }
+      if (!claim12Active) {
+        activeFailures.push(
+          "Claim 12 topology withheld: the display no longer represents the paired engaging pinions, counter-rotation, and conjoint gripper swing.",
         );
       }
       break;
@@ -2515,7 +2620,8 @@ export function applyClaimConstraintModifications(
         activeFailures.push(
           "Uncompensated Torque Reaction: Auxiliary anti-torque tail rotor disengaged; aircraft spins uncontrollably about main rotor axis due to uncancelled torque reaction.",
         );
-        refusalWarning = "TORQUE EQUILIBRIUM VIOLATION: Anti-torque tail rotor compensation disengaged.";
+        refusalWarning =
+          "TORQUE EQUILIBRIUM VIOLATION: Anti-torque tail rotor compensation disengaged.";
       }
 
       if (!claim1Active) {
@@ -2523,7 +2629,8 @@ export function applyClaimConstraintModifications(
         activeFailures.push(
           "Engine Droop / Stall Mode: Collective pitch-throttle correlator disengaged; engine lacks automatic power compensation when pulling collective pitch, leading to severe RPM decay.",
         );
-        refusalWarning = "THROTTLE CORRELATION FAILURE: Synchronized pitch-power linkage disengaged.";
+        refusalWarning =
+          "THROTTLE CORRELATION FAILURE: Synchronized pitch-power linkage disengaged.";
       }
       break;
     }

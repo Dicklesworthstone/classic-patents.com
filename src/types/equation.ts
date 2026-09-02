@@ -16,6 +16,24 @@ export type ColorVariant =
   | "rose" // Vivid pink / magenta: time intervals, rates of change, decay
   | "teal"; // Deep blue-green: materials, cross-sections, permeability
 
+/**
+ * JSON-serializable formatting instructions for live equation telemetry.
+ *
+ * Equations are assembled in a Server Component and consumed by a Client
+ * Component, so executable callbacks are not valid catalogue data. A closed,
+ * declarative format preserves custom precision and unit scaling while
+ * remaining safe to transport through the React Server Component boundary.
+ */
+export interface EquationValueFormat {
+  style: "fixed";
+  /** Decimal places accepted by Number.toFixed (0 through 20). */
+  fractionDigits: number;
+  /** Multiplier applied before formatting; for example 1e-3 converts W to kW. */
+  scale?: number;
+  prefix?: string;
+  suffix?: string;
+}
+
 export interface EquationVariable {
   id: string;
   symbol: string;
@@ -27,7 +45,7 @@ export interface EquationVariable {
   explanation: string;
   telemetryKey?: string;
   telemetryMetricLabel?: string;
-  formatValue?: (val: number) => string;
+  valueFormat?: EquationValueFormat;
 }
 
 export interface SentenceFragment {

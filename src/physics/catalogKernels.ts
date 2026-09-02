@@ -3080,72 +3080,84 @@ export function lincolnSchematicChamber(index: number, xs = [80, 250], y = 140) 
 }
 
 export function stepMaximMachineGun(params: {
+  cyclePhaseDeg?: number;
+  cyclePhaseRad?: number;
+  gasImpulsePct?: number;
+  cycleRpm?: number;
+  // Compatibility parameter aliases
   firingRateRpm?: number;
-  waterJacketLiters?: number;
-  recoilStrokeMm?: number;
+  firingRate?: number;
+  fireRateRpm?: number;
+  cyclePhase?: number;
 }) {
-  const rpm = params.firingRateRpm ?? 600;
-  const water = params.waterJacketLiters ?? 4.0;
-  const stroke = params.recoilStrokeMm ?? 19;
-  const bulletMassKg = 0.014;
-  const bulletVelMps = 740;
-  const recoilMassKg = 3.2;
-  const recoilVelocityMps = Number(((bulletMassKg * bulletVelMps) / recoilMassKg).toFixed(2));
-  const recoilMomentumNs = Number((recoilMassKg * recoilVelocityMps).toFixed(2));
-  const toggleUnlockForceN = Math.round(180 * (19 / Math.max(5, stroke)));
-  const heatGeneratedWatts = Math.round((rpm / 60) * 45 * 1000 * 0.28);
-  const waterEvapRateGs = Number(((heatGeneratedWatts / 2260) * (water > 0 ? 1 : 0)).toFixed(2));
-  const barrelTempC = water > 0.5 ? 100 : Math.min(450, Math.round(100 + (rpm / 600) * 280));
-  const muzzleEnergyJoules = Math.round(0.5 * bulletMassKg * bulletVelMps ** 2);
-  const cycleIntervalMs = Math.round(60000 / Math.max(1, rpm));
+  const rpm =
+    params.cycleRpm ?? params.firingRateRpm ?? params.firingRate ?? params.fireRateRpm ?? 60;
+  let phaseRad = params.cyclePhaseRad ?? 0;
+  if (params.cyclePhaseDeg !== undefined) {
+    phaseRad = (params.cyclePhaseDeg * Math.PI) / 180;
+  } else if (params.cyclePhase !== undefined) {
+    phaseRad = (params.cyclePhase * Math.PI) / 180;
+  }
+
+  const normPhase = ((phaseRad % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+  const strokeFactor = Math.sin(normPhase / 2) ** 2; // 0 to 1 smooth cycle
+
+  const sleeveForwardMm = Number((24 * strokeFactor).toFixed(2));
+  const sleeveForwardM = Number((0.024 * strokeFactor).toFixed(4));
+  const leverAngleDeg = Number((18 * strokeFactor).toFixed(2));
+  const connectingRodRearMm = Number((24 * strokeFactor).toFixed(2));
+  const crankAngleDeg = Number((180 * strokeFactor).toFixed(2));
+  const breechOpenMm = Number((48 * strokeFactor).toFixed(2));
+  const breechOpenM = Number((0.048 * strokeFactor).toFixed(4));
+  const springWoundPct = Number((100 * strokeFactor).toFixed(1));
+  const isBreechOpen = strokeFactor > 0.1;
+  const isMuzzleFiring = normPhase < 0.45;
+  const isFiring = isMuzzleFiring ? 1 : 0;
+  const extractorState = strokeFactor > 0.5 ? "EXTRACTING" : "ENGAGED";
+  const searState = strokeFactor > 0.85 ? "COCKED" : "SEATED";
+  const feedWheelIndexing = strokeFactor > 0.6;
+
+  const omega = rpmToOmega(rpm);
 
   return {
-    recoilVelocityMps,
-    recoilMomentumNs,
-    toggleUnlockForceN,
-    heatGeneratedWatts,
-    waterEvapRateGs,
-    barrelTempC,
-    muzzleEnergyJoules,
-    cycleIntervalMs,
-    recoilStrokeMm: stroke,
-    recoilStrokeM: Number((stroke / 1000).toFixed(5)),
-    recoilStudioStroke: Number(Math.max(0.06, (stroke / 1000) * 5.0).toFixed(4)),
-    recoilSvgAmp: Number((stroke / 2).toFixed(2)),
-    fireOmegaRadPerS: rpmToOmega(rpm).omegaRadPerS,
-    fireOmegaDegPerS: rpmToOmega(rpm).omegaDegPerS,
+    sleeveForwardMm,
+    sleeveForwardM,
+    leverAngleDeg,
+    connectingRodRearMm,
+    crankAngleDeg,
+    breechOpenMm,
+    breechOpenM,
+    springWoundPct,
+    isBreechOpen,
+    isMuzzleFiring,
+    isFiring,
+    extractorState,
+    searState,
+    feedWheelIndexing,
+    fireOmegaRadPerS: omega.omegaRadPerS,
+    fireOmegaDegPerS: omega.omegaDegPerS,
     fireCycleWrapRad: Math.PI * 2,
-    firingWindowRad: 0.6,
-    muzzleFlashSinThreshold: 0.82,
-    toggleLiftAmp: 0.32,
-    toggleHomeY: 0.12,
-    toggleHomeX: -0.8,
-    toggleRecoilCoupling: 1.8,
-    crankThrowAmp: 0.75,
-    steamOpacity:
-      barrelTempC >= 95 ? Number(Math.min(0.85, (waterEvapRateGs / 15) * 0.75).toFixed(3)) : 0,
-    ...jacketHeatCrate(barrelTempC),
-    schematicToggleCx: 280,
-    schematicToggleCy: 105,
-    schematicToggleR: 4,
-    schematicJacketX: 40,
-    schematicJacketY: 90,
-    schematicJacketW: 180,
-    schematicJacketH: 60,
-    schematicBarrelX1: 20,
-    schematicBarrelX2: 240,
+    firingWindowRad: 0.45,
+    muzzleFlashSinThreshold: 0.85,
+    sleeveStudioStroke: sleeveForwardM,
+    breechStudioStroke: breechOpenM,
+    schematicBarrelX1: 40,
+    schematicBarrelX2: 320,
     schematicBarrelY: 120,
-    schematicBreechX: 220,
-    schematicBreechY: 80,
-    schematicBreechW: 140,
-    schematicBreechH: 80,
-    schematicToggleX0: 240,
-    schematicToggleY0: 120,
-    schematicToggleX1: 280,
-    schematicToggleY1: 105,
-    schematicToggleX2: 330,
-    schematicToggleY2: 120,
-    schematicFuseeD: "M 330 140 Q 350 150, 330 160 T 310 170",
+    schematicSleeveX: Number((300 + 20 * strokeFactor).toFixed(1)),
+    schematicSleeveY: 105,
+    schematicSleeveW: 40,
+    schematicSleeveH: 30,
+    schematicLeverPivotX: 260,
+    schematicLeverPivotY: 145,
+    schematicBreechX: Number((160 - 35 * strokeFactor).toFixed(1)),
+    schematicBreechY: 100,
+    schematicBreechW: 70,
+    schematicBreechH: 40,
+    schematicCrankCx: 100,
+    schematicCrankCy: 120,
+    schematicCrankR: 20,
+    schematicSpringR: 28,
   };
 }
 

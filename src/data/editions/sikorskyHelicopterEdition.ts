@@ -139,12 +139,16 @@ const blocks: CuratedSpecificationBlock[] = [
         "main sustaining rotor",
         "Horizontal overhead multi-blade rotor providing vertical lift and directional propulsion.",
       ),
-      text(" and auxiliary rotors or propellers with a positive driving connection between the main rotor and the "),
+      text(
+        " and auxiliary rotors or propellers with a positive driving connection between the main rotor and the ",
+      ),
       term(
         "auxiliary rotor",
         "Vertical tail rotor mounted at the tail boom providing anti-torque thrust and directional yaw control.",
       ),
-      text(" and an automatic one-way driving connection (free-wheeling clutch) between the engine and the rotors."),
+      text(
+        " and an automatic one-way driving connection (free-wheeling clutch) between the engine and the rotors.",
+      ),
     ],
   },
   {
@@ -393,9 +397,7 @@ export const sikorskyHelicopterParallelReadings: Record<number, string[]> = {
   5: [
     "Auxiliary rotor directional stabilization: establishes automatic and manual pitch modulation of the tail rotor in response to aircraft rotational yaw movements.",
   ],
-  7: [
-    "Brief description introduction: introduces Figures 1 through 18 of the patent drawings.",
-  ],
+  7: ["Brief description introduction: introduces Figures 1 through 18 of the patent drawings."],
   8: [
     "FIG. 1: side elevation view of the VS-300 direct-lift helicopter configuration showing main lifting rotor, transmission, engine, and tail anti-torque propeller.",
   ],
@@ -408,24 +410,16 @@ export const sikorskyHelicopterParallelReadings: Record<number, string[]> = {
   11: [
     "FIG. 4: perspective view of main rotor hub, flapping hinge pins, pitch sleeve, and swashplate pitch horn links.",
   ],
-  12: [
-    "FIGS. 5-7: sectional views of flapping hinge, drag hinge, and resilient lead-lag dampers.",
-  ],
+  12: ["FIGS. 5-7: sectional views of flapping hinge, drag hinge, and resilient lead-lag dampers."],
   13: [
     "FIG. 8: main transmission gearbox with bevel reduction gears and overrunning sprag clutch for autorotation.",
   ],
-  14: [
-    "FIGS. 9-10: collective pitch control lever with integrated throttle correlator linkage.",
-  ],
-  15: [
-    "FIGS. 11-12: variable-pitch tail rotor hub and push-pull pitch crosshead.",
-  ],
+  14: ["FIGS. 9-10: collective pitch control lever with integrated throttle correlator linkage."],
+  15: ["FIGS. 11-12: variable-pitch tail rotor hub and push-pull pitch crosshead."],
   16: [
     "FIG. 13: pilot flight controls schematic: cyclic stick, collective lever with twist-grip throttle, and anti-torque pedals.",
   ],
-  17: [
-    "FIGS. 14-16: aerodynamic yaw stabilizing vane and feedback damper mechanism.",
-  ],
+  17: ["FIGS. 14-16: aerodynamic yaw stabilizing vane and feedback damper mechanism."],
   18: [
     "FIGS. 17-18: alternative orthogonal auxiliary rotor arrangement for simultaneous pitch and yaw trim.",
   ],
@@ -444,7 +438,6 @@ export const sikorskyHelicopterParallelReadings: Record<number, string[]> = {
 };
 
 export const sikorskyHelicopterArchivalEdition: CuratedSpecificationEdition = {
-  catalogueId: "us-2318259-sikorsky-helicopter",
   kind: "manual-react-edition",
   sourcePdfSha256: PDF_SHA256,
   preparedBy: "Classic Patents editorial agent (GPT-5.6)",

@@ -11745,7 +11745,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           unit: "m (meters)",
           dimension: "[L]",
           explanation:
-            "Standard typewriter escapements provide 10 characters per inch (pica pitch, 2.54 mm) or 12 characters per inch (elite pitch, 2.12 mm).",
+            "The specification describes ratchet teeth equidistant apart for regular character spacing along the platen carriage.",
         },
         {
           id: "pinion_diam",
@@ -11767,14 +11767,14 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           unit: "teeth",
           dimension: "[]",
           explanation:
-            "A bifurcated pallet oscillates with each keypress, catching and releasing one tooth at a time under spring barrel tension.",
+            "A bifurcated pallet oscillates with each keypress, catching and releasing one tooth at a time under cord and weight tension.",
         },
       ],
       pedagogicalNote:
         "Sholes' escapement mechanism decoupled key striking speed from paper carriage advance, guaranteeing crisp character spacing regardless of operator typing cadence.",
       claimRef: 1,
       historicalSignificance:
-        "US 79,265 established the mechanical typewriter architecture, introducing the QWERTY keyboard, type basket, and escapement advance that standardized text creation for over a century.",
+        "US 79,265 established the radial type-basket and bifurcated-lever escapement advance, combining discrete character spacing, transverse line spacing, and ribbon feed into one coordinated mechanical writing machine.",
     },
     {
       id: "sholes-typewriter-escapement-kinematics",
@@ -11782,9 +11782,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       title: "Radial Typebar Striking Kinematics & Escapement Ratchet Pitch",
       category: "Precision Mechanics & Office Automation",
       rawLatex:
-        "\\omega_{\\text{bar}} = \\frac{v_{\\text{key}}}{L_{\\text{key}}} \\cdot \\text{MA}_{\\text{linkage}} \\quad \\text{and} \\quad \\Delta x_{\\text{platen}} = p_{\\text{ratchet}} = \\frac{1}{\\text{CPI}}",
+        "\\omega_{\\text{bar}} = \\frac{v_{\\text{key}}}{L_{\\text{key}}} \\cdot \\text{MA}_{\\text{linkage}} \\quad \\text{and} \\quad \\Delta x_{\\text{platen}} = p_{\\text{ratchet}}",
       colorizedLatex:
-        "\\textcolor{#059669}{\\omega_{\\text{bar}}} = \\frac{\\textcolor{#2563eb}{v_{\\text{key}}}}{\\textcolor{#d97706}{L_{\\text{key}}}} \\cdot \\textcolor{#dc2626}{\\text{MA}_{\\text{linkage}}} \\quad \\text{and} \\quad \\textcolor{#0891b2}{\\Delta x_{\\text{platen}}} = \\textcolor{#9333ea}{p_{\\text{ratchet}}} = \\frac{1}{\\textcolor{#ea580c}{\\text{CPI}}}",
+        "\\textcolor{#059669}{\\omega_{\\text{bar}}} = \\frac{\\textcolor{#2563eb}{v_{\\text{key}}}}{\\textcolor{#d97706}{L_{\\text{key}}}} \\cdot \\textcolor{#dc2626}{\\text{MA}_{\\text{linkage}}} \\quad \\text{and} \\quad \\textcolor{#0891b2}{\\Delta x_{\\text{platen}}} = \\textcolor{#9333ea}{p_{\\text{ratchet}}}",
       plainEnglishSentence: [
         { text: "Radial " },
         { text: "typebar striking angular velocity", variableId: "omega_bar" },
@@ -11798,8 +11798,6 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
         { text: "platen step displacement", variableId: "dx_plat" },
         { text: " equals " },
         { text: "escapement ratchet pitch", variableId: "p_ratchet" },
-        { text: " set by standard " },
-        { text: "characters-per-inch density", variableId: "cpi" },
         { text: "." },
       ],
       variables: [
@@ -11865,29 +11863,18 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           symbol: "p_{\\text{ratchet}}",
           name: "Escapement Ratchet Pitch",
           color: "amethyst",
-          role: "Linear tooth pitch spacing machined onto the longitudinal carriage ratchet bar ($2.54\\text{ mm} = 0.10\\text{ inches}$)",
+          role: "Linear tooth pitch spacing machined onto the longitudinal carriage ratchet bar",
           unit: "Millimeters (mm)",
           dimension: "[L]",
           explanation:
-            "Guarantees perfectly uniform typographical letter spacing across the full line width.",
-        },
-        {
-          id: "cpi",
-          symbol: "\\text{CPI}",
-          name: "Characters Per Inch Density",
-          color: "coral",
-          role: "Standard typographic character frequency ($10\\text{ CPI} = \\text{Pica font}$)",
-          unit: "Characters / inch",
-          dimension: "[L^-1]",
-          explanation:
-            "Universal standard format adopted across business correspondence, legal contracts, and publishing.",
+            "Equidistant saw-tooth notches on ratchet I match the letter spacing along the line.",
         },
       ],
       pedagogicalNote:
-        "Christopher Sholes, Carlos Glidden, and Samuel Soulé designed a machine where typebars arranged in a circular basket pivoted upward to strike a common center point beneath a rubber platen. To prevent typebars from clashing when adjacent letters were struck in rapid sequence, Sholes tested common letter digraph frequencies in English and developed the QWERTY keyboard layout, combined with an escapement ratchet that advanced the paper carriage by exactly one character pitch per keystroke.",
+        "Christopher Sholes, Carlos Glidden, and Samuel Soulé designed a machine where type-bars arranged around a circular disk pivot upward to strike a common center point beneath a self-adjusting platen, combined with an escapement ratchet that advances the paper carriage by one notch per keystroke.",
       claimRef: 2,
       historicalSignificance:
-        "US 79265 created the modern typewriter, established the universal QWERTY layout used on billions of keyboards and smartphones today, and opened clerical work and corporate offices to millions of women worldwide.",
+        "US 79,265 established the radial type-basket and bifurcated escapement, coordinating key striking, paper carriage advance, and inking-ribbon feed in an integrated mechanical writing machine.",
     },
   ],
 
@@ -16191,7 +16178,7 @@ function _buildGeneratedColorizedEquation(patentId: string): ColorizedEquation[]
   const rawLatex = reg.governingEquation || "F = m \\cdot a";
 
   // Build variables from registry controls
-  const variables = reg.controls.map((c, idx) => {
+  const variables: EquationVariable[] = reg.controls.map((c, idx) => {
     const colors: Array<
       "crimson" | "sapphire" | "emerald" | "amber" | "amethyst" | "cyan" | "coral" | "rose" | "teal"
     > = ["sapphire", "emerald", "amber", "crimson", "amethyst", "cyan", "coral", "rose", "teal"];
@@ -16205,7 +16192,7 @@ function _buildGeneratedColorizedEquation(patentId: string): ColorizedEquation[]
       unit: c.unit || "SI Units",
       explanation: `Adjusting ${c.label} modulates real-time physical telemetry states and governing forces in the simulated mechanism.`,
       telemetryKey: c.id,
-      formatValue: (v: number) => `${v.toFixed(2)} ${c.unit}`,
+      valueFormat: { style: "fixed", fractionDigits: 2, suffix: ` ${c.unit}` },
     };
   });
 
@@ -23987,229 +23974,6 @@ ALL_COLORIZED_EQUATIONS["us-2846084-goertz-electronic-master-slave-manipulator"]
   },
 ];
 
-/*
-ALL_COLORIZED_EQUATIONS["us-3212649-amf-versatran"] = [
-  {
-    id: "versatran-cylindrical-kinematics",
-    patentId: "us-3212649-amf-versatran",
-    title: "Cylindrical Coordinate Kinematic Transformation",
-    category: "Robotic Kinematics & Spatial Geometry",
-    rawLatex:
-      "\\begin{bmatrix} x \\\\ y \\\\ z \\end{bmatrix} = \\begin{bmatrix} R \\cos(\\theta + \\psi) \\\\ R \\sin(\\theta + \\psi) \\\\ Z \\end{bmatrix}",
-    colorizedLatex:
-      "\\begin{bmatrix} \\textcolor{#059669}{x} \\\\ \\textcolor{#0d9488}{y} \\\\ \\textcolor{#2563eb}{z} \\end{bmatrix} = \\begin{bmatrix} \\textcolor{#d97706}{R} \\cos(\\textcolor{#9333ea}{\\theta} + \\textcolor{#dc2626}{\\psi}) \\\\ \\textcolor{#d97706}{R} \\sin(\\textcolor{#9333ea}{\\theta} + \\textcolor{#dc2626}{\\psi}) \\\\ \\textcolor{#2563eb}{Z} \\end{bmatrix}",
-    plainEnglishSentence: [
-      { text: "The end-effector position " },
-      { text: "x", variableId: "pos_x" },
-      { text: ", " },
-      { text: "y", variableId: "pos_y" },
-      { text: ", and " },
-      { text: "z", variableId: "pos_z" },
-      { text: " is determined by the radial arm " },
-      { text: "reach R", variableId: "reach_r" },
-      { text: ", column slew " },
-      { text: "angle θ", variableId: "slew_theta" },
-      { text: ", wrist " },
-      { text: "yaw ψ", variableId: "wrist_psi" },
-      { text: ", and vertical carriage " },
-      { text: "elevation Z", variableId: "elevation_z" },
-      { text: "." },
-    ],
-    variables: [
-      {
-        id: "pos_x",
-        symbol: "x",
-        name: "Cartesian X Position",
-        color: "emerald",
-        role: "Output horizontal position coordinate",
-        unit: "m",
-        dimension: "[L]",
-        explanation: "Forward horizontal position relative to base center.",
-        telemetryKey: "endEffectorX_M",
-      },
-      {
-        id: "pos_y",
-        symbol: "y",
-        name: "Cartesian Y Position",
-        color: "teal",
-        role: "Output lateral position coordinate",
-        unit: "m",
-        dimension: "[L]",
-        explanation: "Lateral horizontal position relative to base center.",
-        telemetryKey: "endEffectorY_M",
-      },
-      {
-        id: "pos_z",
-        symbol: "z",
-        name: "Cartesian Z Position",
-        color: "sapphire",
-        role: "Output vertical elevation coordinate",
-        unit: "m",
-        dimension: "[L]",
-        explanation: "Height of the end-effector above base floor level.",
-        telemetryKey: "endEffectorZ_M",
-      },
-      {
-        id: "reach_r",
-        symbol: "R",
-        name: "Horizontal Radial Reach",
-        color: "amber",
-        role: "Radial extension distance of boom arm",
-        unit: "m",
-        dimension: "[L]",
-        explanation: "Extension of the horizontal tubular boom from vertical column.",
-        telemetryKey: "horizontalReachMm",
-      },
-      {
-        id: "slew_theta",
-        symbol: "\\theta",
-        name: "Rotary Column Slew Angle",
-        color: "amethyst",
-        role: "Base rotational angle",
-        unit: "deg",
-        dimension: "[1]",
-        explanation: "Azimuthal rotation angle of the vertical column about base axis.",
-        telemetryKey: "columnRotationDeg",
-      },
-      {
-        id: "wrist_psi",
-        symbol: "\\psi",
-        name: "Wrist Yaw Angle",
-        color: "rose",
-        role: "Articulated wrist yaw orientation",
-        unit: "deg",
-        dimension: "[1]",
-        explanation: "Angular swing of the end-effector gripper about wrist vertical axis.",
-        telemetryKey: "wristYawDeg",
-      },
-      {
-        id: "elevation_z",
-        symbol: "Z",
-        name: "Carriage Elevation",
-        color: "sapphire",
-        role: "Vertical height of elevation carriage",
-        unit: "m",
-        dimension: "[L]",
-        explanation: "Linear elevation driven by the 2:1 stroke-doubling yoke mechanism.",
-        telemetryKey: "verticalElevationMm",
-      },
-    ],
-    pedagogicalNote:
-      "Cylindrical coordinate kinematics provide decoupled orthogonal motions: pure rotation, pure vertical translation, and pure radial extension, drastically simplifying mechanical design and teach-in trajectory interpolation.",
-    claimRef: 1,
-    historicalSignificance:
-      "Claim 1 established the cylindrical coordinate robotic geometry that became an industry standard for material handling, forging, and heavy machine tending.",
-  },
-  {
-    id: "versatran-hydraulic-flow-force",
-    patentId: "us-3212649-amf-versatran",
-    title: "Electrohydraulic Servo Valve Flow & Actuator Force",
-    category: "Fluid Power & Servo Dynamics",
-    rawLatex:
-      "Q_L = C_d A_v \\sqrt{\\frac{2}{\\rho}(P_s - P_L)}, \\quad F_{\\text{act}} = P_L A_{\\text{piston}}",
-    colorizedLatex:
-      "\\textcolor{#059669}{Q_L} = \\textcolor{#0d9488}{C_d} \\textcolor{#2563eb}{A_v} \\sqrt{\\frac{2}{\\textcolor{#d97706}{\\rho}}(\\textcolor{#9333ea}{P_s} - \\textcolor{#dc2626}{P_L})}, \\quad \\textcolor{#059669}{F_{\\text{act}}} = \\textcolor{#dc2626}{P_L} \\textcolor{#2563eb}{A_{\\text{piston}}}",
-    plainEnglishSentence: [
-      { text: "Hydraulic load flow " },
-      { text: "Q_L", variableId: "flow_rate" },
-      { text: " through the Moog servo valve is governed by the discharge coefficient " },
-      { text: "C_d", variableId: "discharge_coeff" },
-      { text: ", valve orifice area " },
-      { text: "A_v", variableId: "orifice_area" },
-      { text: ", fluid density " },
-      { text: "ρ", variableId: "fluid_density" },
-      { text: ", supply pressure " },
-      { text: "P_s", variableId: "supply_press" },
-      { text: ", and actuator load pressure " },
-      { text: "P_L", variableId: "load_press" },
-      { text: ", generating actuator thrust " },
-      { text: "F_act", variableId: "actuator_force" },
-      { text: "." },
-    ],
-    variables: [
-      {
-        id: "flow_rate",
-        symbol: "Q_L",
-        name: "Hydraulic Volumetric Flow Rate",
-        color: "emerald",
-        role: "Fluid volume delivered per unit time",
-        unit: "L/min",
-        dimension: "[L^3 T^-1]",
-        explanation: "Hydraulic fluid flow rate metered by the electrohydraulic servo valve.",
-        telemetryKey: "servoValveFlowLpm",
-      },
-      {
-        id: "discharge_coeff",
-        symbol: "C_d",
-        name: "Valve Orifice Discharge Coefficient",
-        color: "teal",
-        role: "Hydraulic orifice discharge efficiency",
-        unit: "dimensionless",
-        dimension: "[1]",
-        explanation: "Empirical flow coefficient of the precision servo valve metering edges (~0.62).",
-      },
-      {
-        id: "orifice_area",
-        symbol: "A_v",
-        name: "Servo Valve Orifice Area",
-        color: "sapphire",
-        role: "Proportional spool opening area",
-        unit: "mm²",
-        dimension: "[L^2]",
-        explanation: "Variable orifice flow area opened by torque motor current command.",
-      },
-      {
-        id: "fluid_density",
-        symbol: "\\rho",
-        name: "Hydraulic Oil Density",
-        color: "amber",
-        role: "Mass density of working fluid",
-        unit: "kg/m³",
-        dimension: "[M L^-3]",
-        explanation: "Density of petroleum-based hydraulic fluid (~870 kg/m³).",
-      },
-      {
-        id: "supply_press",
-        symbol: "P_s",
-        name: "System Supply Pressure",
-        color: "amethyst",
-        role: "Regulated high-pressure line level",
-        unit: "MPa",
-        dimension: "[M L^-1 T^-2]",
-        explanation: "Main line pressure generated by hydraulic pump P and accumulator D (7.0 MPa / 1000 psi).",
-        telemetryKey: "hydraulicPressureMpa",
-      },
-      {
-        id: "load_press",
-        symbol: "P_L",
-        name: "Actuator Load Pressure",
-        color: "rose",
-        role: "Differential pressure across actuator piston",
-        unit: "MPa",
-        dimension: "[M L^-1 T^-2]",
-        explanation: "Pressure differential developed in the cylinder overcoming friction, inertia, and payload.",
-      },
-      {
-        id: "actuator_force",
-        symbol: "F_{\\text{act}}",
-        name: "Actuator Output Thrust Force",
-        color: "emerald",
-        role: "Mechanical thrust force delivered to joint",
-        unit: "N",
-        dimension: "[M L T^-2]",
-        explanation: "Direct linear thrust force developed by the hydraulic piston.",
-        telemetryKey: "horizontalThrustForceN",
-      },
-    ],
-    pedagogicalNote:
-      "High supply pressure (7.0 MPa / 1000 psi) coupled with fast-responding Moog flapper-nozzle torque-motor servo valves provided the high power density and rapid acceleration essential for industrial cycle times.",
-    claimRef: 1,
-    historicalSignificance:
-      "The combination of electrohydraulic servo valves with closed-loop feedback in Claim 1 enabled smooth continuous motion under variable heavy payloads.",
-  },
-];
-
-*/
 
 ALL_COLORIZED_EQUATIONS["us-3212649-amf-versatran"] = [
   {
@@ -24240,8 +24004,7 @@ ALL_COLORIZED_EQUATIONS["us-3212649-amf-versatran"] = [
         dimension: "[1]",
         explanation:
           "Figure 49 says its output is approximately proportional to phase difference. This exhibit value has no claimed voltage calibration, controller gain, or tracking-accuracy interpretation.",
-        telemetryKey: "maximumNormalizedPhaseError",
-        telemetryMetricLabel: "Max Phase Error",
+        telemetryMetricLabel: "Signed Phase Error",
       },
       {
         id: "tape_phase",
@@ -24253,6 +24016,7 @@ ALL_COLORIZED_EQUATIONS["us-3212649-amf-versatran"] = [
         dimension: "[1]",
         explanation:
           "The grant records resolver-related signals on tape channels and uses them during playback. It does not publish a phase-to-position or tape-speed calibration.",
+        telemetryMetricLabel: "Tape Command Phase",
       },
       {
         id: "resolver_phase",
@@ -24264,6 +24028,7 @@ ALL_COLORIZED_EQUATIONS["us-3212649-amf-versatran"] = [
         dimension: "[1]",
         explanation:
           "Resolvers are described as variable transformers with rotor and stator. The source establishes a comparison path, not a measurement scale in volts, degrees, or metres.",
+        telemetryMetricLabel: "Resolver Feedback Phase",
       },
     ],
     pedagogicalNote:
@@ -24796,7 +24561,12 @@ ALL_COLORIZED_EQUATIONS["us-4063220-metcalfe-ethernet"] = [
           "The speed at which electrical signals propagate down the coaxial transmission line, reduced by the dielectric material to approximately 200,000 km/s (5 ns per meter).",
         telemetryKey: "propVelocityMps",
         telemetryMetricLabel: "Wave Velocity",
-        formatValue: (val) => `${(val / 1e6).toFixed(1)} ×10⁶ m/s`,
+        valueFormat: {
+          style: "fixed",
+          fractionDigits: 1,
+          scale: 1e-6,
+          suffix: " ×10⁶ m/s",
+        },
       },
       {
         id: "c_light",
@@ -24831,7 +24601,7 @@ ALL_COLORIZED_EQUATIONS["us-4063220-metcalfe-ethernet"] = [
           "The time required for an electromagnetic wavefront to travel from one end of the cable segment to the opposite transceiver.",
         telemetryKey: "oneWayPropDelayNs",
         telemetryMetricLabel: "One-Way Cable Delay",
-        formatValue: (val) => `${val.toFixed(1)} ns`,
+        valueFormat: { style: "fixed", fractionDigits: 1, suffix: " ns" },
       },
       {
         id: "length_m",
@@ -24884,7 +24654,7 @@ ALL_COLORIZED_EQUATIONS["us-4063220-metcalfe-ethernet"] = [
           "The duration a station must remain silent before attempting to retransmit a packet that previously suffered a collision.",
         telemetryKey: "backoffMeanDelayMicrosec",
         telemetryMetricLabel: "Mean Backoff Delay",
-        formatValue: (val) => `${val.toFixed(2)} µs`,
+        valueFormat: { style: "fixed", fractionDigits: 2, suffix: " µs" },
       },
       {
         id: "r_slot",
@@ -24909,7 +24679,7 @@ ALL_COLORIZED_EQUATIONS["us-4063220-metcalfe-ethernet"] = [
           "The minimum time required to guarantee that all stations on the network detect a collision event (nominal 5.12 µs or 51.2 µs).",
         telemetryKey: "slotTimeMicrosec",
         telemetryMetricLabel: "Slot Time",
-        formatValue: (val) => `${val.toFixed(2)} µs`,
+        valueFormat: { style: "fixed", fractionDigits: 2, suffix: " µs" },
       },
       {
         id: "col_count",
@@ -24967,7 +24737,7 @@ ALL_COLORIZED_EQUATIONS["us-2318259-sikorsky-helicopter"] = [
           "The lateral aerodynamic force produced by the variable-pitch tail rotor to counteract main rotor reaction torque.",
         telemetryKey: "tailRotorThrustNewtons",
         telemetryMetricLabel: "Tail Rotor Thrust",
-        formatValue: (val) => `${val.toFixed(1)} N`,
+        valueFormat: { style: "fixed", fractionDigits: 1, suffix: " N" },
       },
       {
         id: "l_boom",
@@ -24992,7 +24762,7 @@ ALL_COLORIZED_EQUATIONS["us-2318259-sikorsky-helicopter"] = [
           "The rotational resistance opposing main rotor spin that tends to spin the aircraft fuselage in the opposite direction.",
         telemetryKey: "mainRotorTorqueNm",
         telemetryMetricLabel: "Main Rotor Torque",
-        formatValue: (val) => `${val.toFixed(1)} N·m`,
+        valueFormat: { style: "fixed", fractionDigits: 1, suffix: " N·m" },
       },
       {
         id: "p_main",
@@ -25006,7 +24776,7 @@ ALL_COLORIZED_EQUATIONS["us-2318259-sikorsky-helicopter"] = [
           "The sum of induced downwash power and blade profile drag power required to sustain vertical hover.",
         telemetryKey: "mainRotorPowerWatts",
         telemetryMetricLabel: "Main Rotor Power",
-        formatValue: (val) => `${(val / 1000).toFixed(1)} kW`,
+        valueFormat: { style: "fixed", fractionDigits: 1, scale: 1e-3, suffix: " kW" },
       },
       {
         id: "omega_main",
@@ -25020,7 +24790,7 @@ ALL_COLORIZED_EQUATIONS["us-2318259-sikorsky-helicopter"] = [
           "The rotational rate of the main rotor hub (nominal 260 RPM = 27.2 rad/s).",
         telemetryKey: "tipSpeedMs",
         telemetryMetricLabel: "Blade Tip Speed",
-        formatValue: (val) => `${val.toFixed(1)} m/s`,
+        valueFormat: { style: "fixed", fractionDigits: 1, suffix: " m/s" },
       },
     ],
     pedagogicalNote:
@@ -25068,7 +24838,7 @@ ALL_COLORIZED_EQUATIONS["us-2318259-sikorsky-helicopter"] = [
           "The total upward aerodynamic force generated by accelerating air downward through the rotor disk.",
         telemetryKey: "mainRotorThrustNewtons",
         telemetryMetricLabel: "Main Rotor Thrust",
-        formatValue: (val) => `${val.toFixed(1)} N`,
+        valueFormat: { style: "fixed", fractionDigits: 1, suffix: " N" },
       },
       {
         id: "rho_air",
@@ -25103,7 +24873,7 @@ ALL_COLORIZED_EQUATIONS["us-2318259-sikorsky-helicopter"] = [
           "The downward airflow velocity induced at the rotor plane required to produce momentum thrust.",
         telemetryKey: "inducedVelocityMs",
         telemetryMetricLabel: "Downwash Velocity",
-        formatValue: (val) => `${val.toFixed(2)} m/s`,
+        valueFormat: { style: "fixed", fractionDigits: 2, suffix: " m/s" },
       },
       {
         id: "c_t",
@@ -25130,7 +24900,7 @@ ALL_COLORIZED_EQUATIONS["us-2318259-sikorsky-helicopter"] = [
         id: "r_radius",
         symbol: "R",
         name: "Main Rotor Blade Radius",
-        color: "tangerine",
+        color: "amber",
         role: "Span length from mast center to blade tip",
         unit: "meters (m)",
         dimension: "[L]",
@@ -25144,5 +24914,3 @@ ALL_COLORIZED_EQUATIONS["us-2318259-sikorsky-helicopter"] = [
       "Sikorsky's mathematical application of momentum theory and swashplate cyclic pitch control allowed the VS-300 to achieve stable, controlled vertical flight where dozens of previous direct-lift designs had failed.",
   },
 ];
-
-

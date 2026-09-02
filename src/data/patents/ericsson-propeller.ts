@@ -1,6 +1,16 @@
 import type { Patent } from "@/types/patent";
 import { ericssonPropellerArchivalEdition } from "../editions/ericssonPropellerEdition";
 
+function manualClaimText(number: number): string {
+  const block = ericssonPropellerArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`US 588 is missing claim ${number} in its archival edition.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const ericssonPropellerPatent: Patent = {
   id: "us-588-ericsson-propeller",
   patentNumber: "US 588",
@@ -13,7 +23,7 @@ export const ericssonPropellerPatent: Patent = {
   // Neither the reviewed grant nor the primary public record supplies a filing date.
   filingDate: null,
   era: "Early Industrial Navigation (1830–1850)",
-  category: "aviation",
+  category: "consumer",
   categoryLabel: "Marine Propulsion & Hydrodynamics",
   summary:
     "John Ericsson's specification describes two submerged broad hoops carrying short spiral plates. Concentric shafts and unequal gearing drive the hoops in contrary directions; the third claim covers a removable upright-stem installation with a protected gear casing.",
@@ -140,8 +150,7 @@ export const ericssonPropellerPatent: Patent = {
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "The metallic hoops or cylinders and the spiral arms or spokes hereinbefore described together with the entire immersion of the propeller by which means I am enabled to employ the whole surface of all the spiral plates at one time and whereby the beneficial result of a great propelling force will be obtained by a propeller of much less dimensions than heretofore.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "Claims the hoop-and-spoke construction together with complete immersion, so all of the short spiral plates can work in water at once and a smaller propeller can produce substantial thrust.",
       keyInnovations: ["Metallic hoop", "Spiral spoke", "Complete immersion"],
@@ -151,8 +160,7 @@ export const ericssonPropellerPatent: Patent = {
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "And I also claim as my invention the giving a greater speed to the outer series of spiral plates which move in the current produced by the motion of the other series and by which greater speed the beneficial result of saving of power and increased propelling force will be obtained.",
+      originalText: manualClaimText(2),
       plainEnglish:
         "Claims making the outer series faster, where it runs in the water current made by the other series, to save power and increase propelling force.",
       keyInnovations: ["Outer spiral series", "Higher speed", "Current from inner series"],
@@ -162,8 +170,7 @@ export const ericssonPropellerPatent: Patent = {
     {
       number: 3,
       isIndependent: true,
-      originalText:
-        "And I further claim as my invention the application of the propeller as described in drawing No. 2—that is to say: 1stly, I claim the upright hollow stem with its arms or branches for carrying the propeller by means of which stem the propeller may be either suspended and immersed under the water when required to be used, or on other occasions lifted out of the water so as not to interfere with the sailing of the vessel; 2ndly, I claim the drum or conical casing for protecting the bevel wheels and for diminishing the resistance in passing through the water; 3rdly, I claim the attaching the propeller to or detaching it from the engine or other power employed on board the vessel by means of a coupling box at the upper end of the upright shaft of the bevel wheels.",
+      originalText: manualClaimText(3),
       plainEnglish:
         "Claims the Figure 4–6 installation as three features: a hollow upright stem that can lower or raise the propeller, a fairing around the bevel gears, and a coupling box that connects or disconnects the propeller from shipboard power.",
       keyInnovations: ["Upright hollow stem", "Conical gear casing", "Sliding coupling box"],

@@ -58,20 +58,27 @@ export function SikorskyHelicopter3D({ patentId = PATENT_ID }: { patentId?: stri
     const container = containerRef.current;
     if (!container) return;
 
-    const initialCamera = VIEWS[view];
+    const initialCamera = VIEWS.overview;
     const studio = createThreeStudioScene({
       container,
-      cameraPosition: initialCamera.position,
-      cameraTarget: initialCamera.target,
-      toneMappingExposure: 1.15,
+      cameraPos: initialCamera.position,
+      targetPos: initialCamera.target,
+      environmentStyle: "studio",
+      enableClouds: false,
+      ambientIntensity: 2.2,
+      sunIntensity: 2.8,
     });
     studioRef.current = studio;
+    const { scene, camera, renderer, controls: studioControls } = studio;
 
     const model = buildSikorskyHelicopterModel();
-    studio.scene.add(model.root);
+    scene.add(model.root);
 
-    const clock = createStudioClock((dt) => {
-      const controls = readSikorskyControls(liveParams.current);
+    const clock = createStudioClock();
+
+    const loop = (timeNow: number) => {
+      const dt = Math.min(clock.pump(timeNow).dt, 0.05);
+      const controls = readSikorskyControls(liveParams.current as any);
       const { state: nextState, metrics } = stepSikorskyHelicopterSi(
         simStateRef.current,
         controls,
@@ -80,25 +87,29 @@ export function SikorskyHelicopter3D({ patentId = PATENT_ID }: { patentId?: stri
       simStateRef.current = nextState;
 
       model.updateState(metrics, controls, nextState);
-      studio.render();
-    });
+      studioControls.update();
+      renderer.render(scene, camera);
+    };
 
-    clock.start();
+    renderer.setAnimationLoop(loop);
 
     return () => {
-      clock.stop();
-      studio.scene.remove(model.root);
+      renderer.setAnimationLoop(null);
       model.dispose();
       studio.dispose();
       studioRef.current = null;
     };
   }, []);
 
-  const collective = typeof params.collectivePitchDeg === "number" ? params.collectivePitchDeg : 9.5;
-  const cyclicPitch = typeof params.cyclicPitchForwardDeg === "number" ? params.cyclicPitchForwardDeg : 0.0;
-  const cyclicRoll = typeof params.cyclicRollRightDeg === "number" ? params.cyclicRollRightDeg : 0.0;
-  const pedals = typeof params.tailRotorPedalPercent === "number" ? params.tailRotorPedalPercent : 0.0;
-  const engineRunning = params.engineRunning !== 0 && params.engineRunning !== false;
+  const collective =
+    typeof params.collectivePitchDeg === "number" ? params.collectivePitchDeg : 9.5;
+  const cyclicPitch =
+    typeof params.cyclicPitchForwardDeg === "number" ? params.cyclicPitchForwardDeg : 0.0;
+  const cyclicRoll =
+    typeof params.cyclicRollRightDeg === "number" ? params.cyclicRollRightDeg : 0.0;
+  const pedals =
+    typeof params.tailRotorPedalPercent === "number" ? params.tailRotorPedalPercent : 0.0;
+  const engineRunning = params.engineRunning !== 0;
 
   return (
     <div className="relative w-full aspect-[4/3] max-h-[680px] bg-stone-950 rounded-xl overflow-hidden border border-stone-800 shadow-2xl">
@@ -177,6 +188,22 @@ export function SikorskyHelicopter3D({ patentId = PATENT_ID }: { patentId?: stri
               value={cyclicPitch}
               onChange={(e) => updateParam("cyclicPitchForwardDeg", parseFloat(e.target.value))}
               className="w-full accent-cyan-500 bg-stone-800 rounded h-1.5 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex-1 w-full space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-sky-400">Lateral Cyclic Roll</span>
+              <span className="font-mono text-sky-400">{cyclicRoll.toFixed(1)}°</span>
+            </div>
+            <input
+              type="range"
+              min={-10.0}
+              max={10.0}
+              step={0.5}
+              value={cyclicRoll}
+              onChange={(e) => updateParam("cyclicRollRightDeg", parseFloat(e.target.value))}
+              className="w-full accent-sky-500 bg-stone-800 rounded h-1.5 cursor-pointer"
             />
           </div>
 

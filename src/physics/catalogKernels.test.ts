@@ -805,21 +805,24 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(lincolnInflationNorm(-10)).toBe(0);
   });
 
-  test("Maxim recoil machine gun computes muzzle gas recoil impulse and automatic toggle cycling", () => {
-    const res = stepMaximMachineGun({ firingRateRpm: 600, recoilStrokeMm: 19 });
-    expect(res.recoilVelocityMps).toBeGreaterThan(0);
-    expect(res.toggleUnlockForceN).toBeGreaterThan(0);
-    expect(res.heatGeneratedWatts).toBe(Math.round((600 / 60) * 45 * 1000 * 0.28));
-    expect(res.schematicToggleCx).toBe(280);
-    expect(res.schematicToggleR).toBe(4);
-    expect(res.schematicJacketW).toBe(180);
-    expect(res.schematicBreechW).toBe(140);
-    expect(res.fireCycleWrapRad).toBeCloseTo(Math.PI * 2, 10);
-    expect(res.firingWindowRad).toBe(0.6);
-    expect(res.toggleLiftAmp).toBe(0.32);
-    expect(res.toggleHomeY).toBe(0.12);
-    expect(res.toggleRecoilCoupling).toBe(1.8);
-    expect(res.crankThrowAmp).toBe(0.75);
+  test("Maxim US 319,596 machine gun computes muzzle gas sleeve expansion, reversing levers, and Scotch-yoke breech travel", () => {
+    const atRest = stepMaximMachineGun({ cyclePhaseDeg: 0 });
+    expect(atRest.sleeveForwardMm).toBe(0);
+    expect(atRest.breechOpenMm).toBe(0);
+    expect(atRest.leverAngleDeg).toBe(0);
+    expect(atRest.springWoundPct).toBe(0);
+    expect(atRest.isBreechOpen).toBe(false);
+
+    const midStroke = stepMaximMachineGun({ cyclePhaseDeg: 180 });
+    expect(midStroke.sleeveForwardMm).toBe(24);
+    expect(midStroke.breechOpenMm).toBe(48);
+    expect(midStroke.leverAngleDeg).toBe(18);
+    expect(midStroke.springWoundPct).toBe(100);
+    expect(midStroke.isBreechOpen).toBe(true);
+    expect(midStroke.extractorState).toBe("EXTRACTING");
+    expect(midStroke.schematicBarrelX1).toBe(40);
+    expect(midStroke.schematicBarrelX2).toBe(320);
+    expect(midStroke.fireCycleWrapRad).toBeCloseTo(Math.PI * 2, 10);
   });
 
   test("Hall-Héroult aluminium smelting computes Faraday yield and bath voltage", () => {

@@ -6,25 +6,20 @@ import {
   stepBellTelephone,
   stepBoyleSmithCcd,
   stepCarlsonElectrophotography,
-  stepColtRevolver,
   stepCorlissEngine,
   stepDavenportMotor,
   stepDeForestAudion,
-  stepDeLavalSeparator,
   stepEdisonBulb,
   stepEdisonPhonograph,
   stepEinsteinRefrigerator,
-  stepEricssonPropeller,
   stepGatlingGun,
   stepHaberAmmonia,
   stepHallAluminium,
   stepHewittMercuryLamp,
   stepMaimanRubyLaser,
   stepMarconiRadio,
-  stepMaximMachineGun,
   stepMcCormickReaper,
   stepMorseTelegraph,
-  stepNobelDynamite,
   stepNoyceIC,
   stepParsonsTurbine,
   stepThomsonWelding,
@@ -95,6 +90,24 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 3,858,581 prints a motor-driven lead screw and pulse switch mechanism but no motor electrical input wattage, coil resistance, torque curve, battery discharge rate, or thermal loss datum from which an SI energy channel can be derived.",
   "us-4068536-stackhouse-manipulator":
     "US 4,068,536 prints hydraulic-motor, concentric-shaft, bevel-gear, and intersecting-axis topology but no pressure, flow, torque, speed, dimensions, gear ratios, friction, efficiency, payload, or power datum from which an SI energy channel can be derived.",
+  "us-135245-pasteur-fermentation":
+    "US 135,245 prints closed-vessel wort boiling, cooling, and pure-air aeration methods, but supplies no gas flow rate, pressure, water flow, cooling time, vessel dimensions, heat transfer coefficients, or quantitative power datum from which an SI energy channel can be derived.",
+  "us-124404-westinghouse-air-brake":
+    "US 124,404 prints double-pipe routing, air-receiver charging, cock d-prime selection, accident-operated cock e tripping, and signal-gauge graduation, but supplies no compressor horsepower, reservoir volume, pipe flow rate, leakage rate, friction loss, or continuous power datum from which an SI energy channel can be derived.",
+  "us-78317-nobel-dynamite":
+    "US 78,317 covers explosive composition and porous earth absorption; it does not specify a continuous thermodynamic cycle or electrical power channel.",
+  "us-x9430-colt-revolver":
+    "US X9430 covers firearm lock, revolving cylinder, and percussion cap partition mechanisms; it discloses transient impulse ballistics rather than a continuous steady-state power flow.",
+  "us-105338-hyatt-celluloid":
+    "US 105,338 prints process temperatures (150° to 300° Fahrenheit), grinding, mixing, and heavy hydraulic pressure sequence, but supplies no hydraulic ram force, pressure value, mold volume, thermal power, cycle duration, or mechanical power datum from which an SI energy channel can be derived.",
+  "us-79265-sholes-typewriter":
+    "US 79,265 prints key-lever, bifurcated-pallet escapement, carriage cord-and-weight pull, line-spacing pawl, and ribbon-feed mechanism topology, but supplies no keystroke force, platen impact energy, friction, carriage mass, or continuous power datum from which an SI energy channel can be derived.",
+  "us-247804-delaval-separator":
+    "US 247,804 prints rotating chamber D, concentric inlet q, radial passages s, nested nozzles l and n, and curved pipe x, but supplies no bowl RPM, motor horsepower, fluid flow rate, drag torque, bearing friction, or quantitative power datum from which an SI energy channel can be derived.",
+  "us-588-ericsson-propeller":
+    "US 588 specifies the geometry of submerged metallic hoops with spiral plates and gearing; it supplies no measured ship thrust, engine shaft horsepower, hull resistance, or vessel speed datum from which an SI energy channel can be derived.",
+  "us-319596-maxim-machine-gun":
+    "US 319,596 prints a direct muzzle-gas sleeve, reversing linkage, cross-head, and volute clock spring; it supplies no continuous firing rate, gas pressure, powder mass, thermodynamic heat transfer, or continuous electrical/thermal power datum from which an SI energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -229,22 +242,6 @@ export function energyChannelsFor(
     });
     return [{ name: "Motor", watts: reno.motorPowerKw * 1000, tone: "in" }];
   }
-  if (patentId === "us-319596-maxim-machine-gun") {
-    const maxim = stepMaximMachineGun({
-      firingRateRpm: params.firingRate ?? params.fireRateRpm ?? 600,
-      waterJacketLiters: params.waterLevel ?? 4,
-      recoilStrokeMm: params.recoilStroke ?? 19,
-    });
-    return [{ name: "Jacket heat", watts: maxim.heatGeneratedWatts, tone: "loss" }];
-  }
-  if (patentId === "us-588-ericsson-propeller") {
-    const screw = stepEricssonPropeller({
-      shaftRpm: params.shaftRpm,
-      bladePitchAngleDeg: params.bladePitchAngleDeg,
-    });
-    const v = screw.shipSpeedKnots * 0.514444;
-    return [{ name: "Thrust · v", watts: screw.thrustKn * 1000 * v, tone: "useful" }];
-  }
   if (patentId === "us-400766-hall-aluminium") {
     const hall = stepHallAluminium({
       currentAmperes: params.currentAmperes,
@@ -354,22 +351,6 @@ export function energyChannelsFor(
     ];
   }
 
-  if (patentId === "us-x9430-colt-revolver") {
-    const colt = stepColtRevolver({
-      chamberPressureMpa: params.chamberPressure ?? params.chamberPressureMpa,
-      cockingAngleDeg: params.cockingAngle ?? params.cockingAngleDeg,
-    });
-    return [
-      { name: "Deflagration", watts: colt.muzzleEnergyJoules / 0.0015, tone: "in" },
-      { name: "Muzzle KE", watts: (colt.muzzleEnergyJoules * 0.32) / 0.0015, tone: "useful" },
-      {
-        name: "Barrel Friction & Blast",
-        watts: (colt.muzzleEnergyJoules * 0.68) / 0.0015,
-        tone: "loss",
-      },
-    ];
-  }
-
   if (patentId === "us-1647-morse-telegraph") {
     const _morse = stepMorseTelegraph({
       currentMa: params.currentMa,
@@ -434,19 +415,6 @@ export function energyChannelsFor(
     ];
   }
 
-  if (patentId === "us-247804-delaval-separator") {
-    const sep = stepDeLavalSeparator({
-      bowlRpm: params.bowlRpm,
-      rawMilkFlowLph: params.rawMilkFlowLph,
-    });
-    const totalW = sep.bowlOmegaRadPerS * 2.8;
-    return [
-      { name: "Drive Belt", watts: totalW, tone: "in" },
-      { name: "Centrifugal Separation", watts: totalW * 0.74, tone: "useful" },
-      { name: "Fluid Viscous Drag", watts: totalW * 0.26, tone: "loss" },
-    ];
-  }
-
   if (patentId === "us-3237-rillieux-evaporator") {
     const rillieux = stepRillieuxEvaporator({
       numberOfEffects: params.numberOfEffects,
@@ -480,19 +448,6 @@ export function energyChannelsFor(
       { name: "Manual Crank", watts: crankW, tone: "in" },
       { name: "Cluster Rotation", watts: crankW * 0.68, tone: "useful" },
       { name: "Cam Track Friction", watts: crankW * 0.32, tone: "loss" },
-    ];
-  }
-
-  if (patentId === "us-78317-nobel-dynamite") {
-    const dyn = stepNobelDynamite({
-      ngConcentrationPct: params.ngConcentrationPct,
-      capEnergyJoules: params.capEnergyJoules,
-    });
-    const blastW = dyn.energyMjPerKg * 1e6 * 0.05; // 50g blast packet rate
-    return [
-      { name: "Detonation Chemical", watts: blastW, tone: "in" },
-      { name: "Shock Front Propagation", watts: blastW * 0.42, tone: "useful" },
-      { name: "Seismic & Heat Dissipation", watts: blastW * 0.58, tone: "loss" },
     ];
   }
 
@@ -679,16 +634,6 @@ export function energyChannelsFor(
     ];
   }
 
-  if (patentId === "us-124404-westinghouse-air-brake") {
-    const pipeP = params.trainPipePressure ?? 70;
-    const pWatts = (pipeP / 70) * 850;
-    return [
-      { name: "Pneumatic Reservoir", watts: pWatts, tone: "in" },
-      { name: "Brake Clamping Force", watts: pWatts * 0.72, tone: "useful" },
-      { name: "Exhaust Venting", watts: pWatts * 0.28, tone: "loss" },
-    ];
-  }
-
   if (patentId === "us-1773980-farnsworth-tv") {
     const vAnode = params.anodeVoltage ?? 1200;
     const beamW = vAnode * 25e-6; // 25 uA beam current
@@ -748,15 +693,6 @@ export function energyChannelsFor(
 
   if (patentId === "us-4750-howe-sewing-machine") {
     return [];
-  }
-
-  if (patentId === "us-105338-hyatt-celluloid") {
-    const hydW = (params.hydraulicPressureMpa ?? 12) * 120;
-    return [
-      { name: "Hydraulic Ram", watts: hydW, tone: "in" },
-      { name: "Thermoplastic Gelation", watts: hydW * 0.75, tone: "useful" },
-      { name: "Mold Friction Loss", watts: hydW * 0.25, tone: "loss" },
-    ];
   }
 
   if (patentId === "us-157124-glidden-barbed-wire") {
@@ -823,30 +759,12 @@ export function energyChannelsFor(
     ];
   }
 
-  if (patentId === "us-79265-sholes-typewriter") {
-    const strikeW = 3.5;
-    return [
-      { name: "Keystroke Kinetic Work", watts: strikeW, tone: "in" },
-      { name: "Platen Ribbon Impression", watts: strikeW * 0.72, tone: "useful" },
-      { name: "Linkage Pivot Friction", watts: strikeW * 0.28, tone: "loss" },
-    ];
-  }
-
   if (patentId === "us-120057-gramme-dynamo") {
     const driveW = 1800;
     return [
       { name: "Shaft Drive Input", watts: driveW, tone: "in" },
       { name: "Ring Armature Electrical Output", watts: driveW * 0.84, tone: "useful" },
       { name: "Copper Joule & Core Eddy Loss", watts: driveW * 0.16, tone: "loss" },
-    ];
-  }
-
-  if (patentId === "us-135245-pasteur-fermentation") {
-    const fermW = 420;
-    return [
-      { name: "Wort Biochemical Enthalpy", watts: fermW, tone: "in" },
-      { name: "Yeast Cellular Respiration", watts: fermW * 0.74, tone: "useful" },
-      { name: "Vat Thermal Convection Loss", watts: fermW * 0.26, tone: "loss" },
     ];
   }
 

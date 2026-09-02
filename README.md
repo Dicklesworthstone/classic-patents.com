@@ -140,6 +140,10 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Verification & Deployment
 
+For per-patent and full-catalogue production-browser acceptance, including the
+exact 320 px route, structured JSONL diagnostics, and retained failure traces,
+see [Patent vertical-slice browser acceptance](./docs/PATENT_E2E_HARNESS.md).
+
 ```bash
 # Verified production release. This serializes shared builds, runs the quality
 # gates, validates a full prebuilt artifact and critical live routes, then

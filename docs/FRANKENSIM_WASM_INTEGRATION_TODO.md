@@ -16,6 +16,7 @@ The bullets below preserve mechanism requirements and design ideas. A bullet mea
 - [ ] Promote a visual from `TS_FALLBACK` to `WASM` bus provenance only when the stepped WASM result owns the published frame.
 - [ ] Replace snapshot-only participation with a time-advancing owner where the claimed mechanism actually evolves over time.
 - [ ] Validate each proposed weave against the facsimile, the shared SI state, and an executable test before claiming it is shipped.
+- [ ] **AMF Versatran (`fs-versatran-wasm`) build gate — attempted 2026-09-02.** The exact standalone-package command, `wasm-pack build --dev --target web -- --locked`, reached the remote `wasm32-unknown-unknown` build after an initial source-authority-lock retry. It failed with Rust `E0308` in the shared generic owner, `fs-mbd/src/salisbury.rs:111-113`: `JointModel::revolute` now expects `fs_ga::Vec3`, while that unrelated Salisbury module supplies the crate-local `Vec3`. Cargo exited 101 before `fs-versatran-wasm` could emit a browser package. No glue, `.wasm`, digest, loader, coverage-manifest entry, or `WASM` provenance has been added to Classic Patents; US 3,212,649 remains a typed TypeScript, source-bounded topology. Repair the shared `fs-mbd` vector-type boundary, rerun that exact command, then independently validate the generated package and an accepted typed receipt before promotion.
 
 ---
 

@@ -38,7 +38,8 @@ export const sikorskyHelicopterPatent: Patent = {
     pageAnchors: [
       {
         page: 1,
-        exactSourceText: "May 4, 1943. I. I. SIKORSKY 2,318,259 DIRECT-LIFT AIRCRAFT 10 Sheets-Sheet 1",
+        exactSourceText:
+          "May 4, 1943. I. I. SIKORSKY 2,318,259 DIRECT-LIFT AIRCRAFT 10 Sheets-Sheet 1",
         sourceRelationship: "Sheet 1 FIG. 1 side elevation view",
       },
       {
@@ -186,9 +187,7 @@ export const sikorskyHelicopterPatent: Patent = {
       originalText: sikorskyHelicopterClaimText(10),
       plainEnglish:
         "Independent claim covering the integrated engine power and rotor pitch correlation system for direct-lift aircraft, ensuring simultaneous variation of pitch and engine power across the full flight envelope.",
-      keyInnovations: [
-        "Full-envelope rotor pitch and engine power output synchronization",
-      ],
+      keyInnovations: ["Full-envelope rotor pitch and engine power output synchronization"],
     },
   ],
   drawings: [
@@ -204,7 +203,8 @@ export const sikorskyHelicopterPatent: Patent = {
           figureRef: "Fig. 1",
           label: "68",
           element: "68",
-          description: "Overhead 3-blade main sustaining rotor providing vertical lift and directional propulsion.",
+          description:
+            "Overhead 3-blade main sustaining rotor providing vertical lift and directional propulsion.",
           x: 45,
           y: 20,
         },
@@ -213,7 +213,8 @@ export const sikorskyHelicopterPatent: Patent = {
           figureRef: "Fig. 1",
           label: "70",
           element: "70",
-          description: "Vertical anti-torque tail rotor generating lateral thrust to cancel main rotor torque.",
+          description:
+            "Vertical anti-torque tail rotor generating lateral thrust to cancel main rotor torque.",
           x: 90,
           y: 40,
         },
@@ -222,7 +223,8 @@ export const sikorskyHelicopterPatent: Patent = {
           figureRef: "Fig. 1",
           label: "60",
           element: "60",
-          description: "Internal combustion engine driving main and auxiliary rotors through reduction gearbox.",
+          description:
+            "Internal combustion engine driving main and auxiliary rotors through reduction gearbox.",
           x: 45,
           y: 55,
         },
@@ -249,7 +251,8 @@ export const sikorskyHelicopterPatent: Patent = {
           figureRef: "Fig. 2",
           label: "72",
           element: "72",
-          description: "Main rotor counter-clockwise rotation and reactive torque (Q) acting on airframe.",
+          description:
+            "Main rotor counter-clockwise rotation and reactive torque (Q) acting on airframe.",
           x: 40,
           y: 50,
         },
@@ -285,7 +288,8 @@ export const sikorskyHelicopterPatent: Patent = {
           figureRef: "Fig. 4",
           label: "126",
           element: "126",
-          description: "Rigid push-pull pitch horn link connecting swashplate to blade pitch sleeve.",
+          description:
+            "Rigid push-pull pitch horn link connecting swashplate to blade pitch sleeve.",
           x: 65,
           y: 45,
         },
@@ -339,7 +343,8 @@ export const sikorskyHelicopterPatent: Patent = {
           figureRef: "Fig. 13",
           label: "220",
           element: "220",
-          description: "Azimuth cyclic pitch control stick for longitudinal pitch and lateral roll.",
+          description:
+            "Azimuth cyclic pitch control stick for longitudinal pitch and lateral roll.",
           x: 45,
           y: 35,
         },
@@ -425,7 +430,8 @@ export const sikorskyHelicopterPatent: Patent = {
       },
       {
         principle: "Anti-Torque Equilibrium and Angular Momentum Conservation",
-        formula: "\\sum M_z = Q_{\\text{main}} - T_{\\text{tail}} L_{\\text{boom}} = I_{zz} \\ddot{\\psi}",
+        formula:
+          "\\sum M_z = Q_{\\text{main}} - T_{\\text{tail}} L_{\\text{boom}} = I_{zz} \\ddot{\\psi}",
         explanation:
           "By Newton's third law, the engine applies torque Q_main to turn the main rotor, creating an equal reactive torque on the fuselage. The vertical tail rotor at distance L_boom produces a lateral thrust moment T_tail * L_boom. When these moments balance, net yaw angular acceleration is zero, maintaining steady aircraft heading.",
       },

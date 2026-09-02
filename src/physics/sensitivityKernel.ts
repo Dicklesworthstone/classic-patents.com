@@ -762,32 +762,24 @@ export function computeParameterSensitivity(
     }
 
     case "us-319596-maxim-machine-gun": {
-      if (
-        controlKey === "recoilStroke" ||
-        controlKey === "recoilTravelMm" ||
-        controlKey === "recoilTravel"
-      ) {
+      if (controlKey === "cyclePhase" || controlKey === "cyclePhaseDeg") {
         return {
-          metricName: "Toggle Unlock Timing",
-          derivativeSymbol: "∂t_unlock / ∂x_recoil",
-          derivativeValue: 0.85,
-          derivativeUnit: "ms / mm",
+          metricName: "Breech-Block Linear Travel",
+          derivativeSymbol: "∂x_breech / ∂θ_crank",
+          derivativeValue: 0.133,
+          derivativeUnit: "mm / deg",
           interpretation:
-            "Short-recoil delayed unlocking buffer protecting barrel pressure drop before chamber opens.",
+            "Scotch-yoke cross-head linear translation driven by transverse crankshaft rotation.",
         };
       }
-      if (
-        controlKey === "firingRate" ||
-        controlKey === "firingRateRpm" ||
-        controlKey === "rateOfFireRpm" ||
-        controlKey === "rpm"
-      ) {
+      if (controlKey === "gasImpulsePct" || controlKey === "muzzleGasPressure") {
         return {
-          metricName: "Water Jacket Heat Rejection",
-          derivativeSymbol: "∂Q_jacket / ∂RPM",
-          derivativeValue: 10.5,
-          derivativeUnit: "W / RPM",
-          interpretation: "Propellant heat flux rejected into 4.2-liter evaporating water jacket.",
+          metricName: "Muzzle Sleeve Forward Impulse",
+          derivativeSymbol: "∂p_sleeve / ∂P_gas",
+          derivativeValue: 0.24,
+          derivativeUnit: "mm / %",
+          interpretation:
+            "Forward thrust imparted to sliding sleeve l by expanding muzzle propellant gases.",
         };
       }
       break;

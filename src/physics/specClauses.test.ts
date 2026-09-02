@@ -181,6 +181,54 @@ describe("Specification Clauses & Interactive Telemetry Weave", () => {
     expect(brokenBond?.caption).toContain("without inventing a voltage or damage result");
   });
 
+  test("AMF Versatran claim probes light and withhold their exact source clauses on the shared kernel state", () => {
+    const live = specClausesFor("us-3212649-amf-versatran", {
+      teachReplayMode: 1,
+      gripperOperation: 0.8,
+      claim1TopologyEnabled: 1,
+      claim8RecordPlaybackEnabled: 1,
+      claim12PinionGripperEnabled: 1,
+    });
+    expect(
+      live.find((clause) => clause.id === "versatran-primary-and-supplemental-motions"),
+    ).toMatchObject({
+      active: true,
+      tone: "live",
+    });
+    expect(live.find((clause) => clause.id === "versatran-continuous-path")).toMatchObject({
+      active: true,
+      tone: "live",
+    });
+    expect(live.find((clause) => clause.id === "versatran-coupled-pinion-gripper")).toMatchObject({
+      active: true,
+      tone: "live",
+    });
+
+    const withheld = specClausesFor("us-3212649-amf-versatran", {
+      teachReplayMode: 1,
+      gripperOperation: 0.8,
+      claim1TopologyEnabled: 0,
+      claim8RecordPlaybackEnabled: 0,
+      claim12PinionGripperEnabled: 0,
+    });
+    expect(
+      withheld.find((clause) => clause.id === "versatran-primary-and-supplemental-motions"),
+    ).toMatchObject({
+      active: false,
+      tone: "broken",
+    });
+    expect(withheld.find((clause) => clause.id === "versatran-continuous-path")).toMatchObject({
+      active: false,
+      tone: "broken",
+    });
+    expect(
+      withheld.find((clause) => clause.id === "versatran-coupled-pinion-gripper"),
+    ).toMatchObject({
+      active: false,
+      tone: "broken",
+    });
+  });
+
   test("every patent in allPatents has at least one authored spec clause with valid SI metadata", async () => {
     const { allPatents } = await import("@/data/patents");
     expect(allPatents.length).toBeGreaterThanOrEqual(85);

@@ -246,6 +246,7 @@ const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
  * Phonograph to the bulb (/edison/), and Kilby to Colt (/138/).
  */
 const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
+  "amf-versatran": true,
   "arkwright-water-frame": true,
   "baekeland-bakelite": true,
   "bardeen-transistor": true,
@@ -2548,30 +2549,32 @@ function _renderHistoricalSchematic(
     }
     case "maxim-machine-gun": {
       const maxim = stepMaximMachineGun({
-        firingRateRpm: params?.firingRate ?? params?.fireRateRpm,
-        waterJacketLiters: params?.waterLevel,
-        recoilStrokeMm: params?.recoilStroke,
+        cyclePhaseDeg: params?.cyclePhase ?? 0,
+        gasImpulsePct: params?.gasImpulsePct ?? 75,
       });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          <rect
-            x={maxim.schematicJacketX}
-            y={maxim.schematicJacketY}
-            width={maxim.schematicJacketW}
-            height={maxim.schematicJacketH}
-            rx="4"
-            stroke="#60a5fa"
-            fill="#0284c7"
-            fillOpacity="0.25"
-          />
+          {/* Fixed Barrel B */}
           <line
             x1={maxim.schematicBarrelX1}
             y1={maxim.schematicBarrelY}
             x2={maxim.schematicBarrelX2}
             y2={maxim.schematicBarrelY}
             stroke="#e2e8f0"
-            strokeWidth="3"
+            strokeWidth="4"
           />
+          {/* Sliding Muzzle Sleeve l */}
+          <rect
+            x={maxim.schematicSleeveX}
+            y={maxim.schematicSleeveY}
+            width={maxim.schematicSleeveW}
+            height={maxim.schematicSleeveH}
+            rx="3"
+            stroke="#fbbf24"
+            fill="#d97706"
+            fillOpacity="0.3"
+          />
+          {/* Sliding Breech Block C */}
           <rect
             x={maxim.schematicBreechX}
             y={maxim.schematicBreechY}
@@ -2579,37 +2582,46 @@ function _renderHistoricalSchematic(
             height={maxim.schematicBreechH}
             rx="3"
             stroke="#94a3b8"
+            fill="#334155"
+            fillOpacity="0.4"
+          />
+          {/* Reversing Lever Pivot & Bar */}
+          <circle
+            cx={maxim.schematicLeverPivotX}
+            cy={maxim.schematicLeverPivotY}
+            r="4"
+            fill="#38bdf8"
           />
           <line
-            x1={maxim.schematicToggleX0}
-            y1={maxim.schematicToggleY0}
-            x2={maxim.schematicToggleX1}
-            y2={maxim.schematicToggleY1}
+            x1={maxim.schematicSleeveX}
+            y1={maxim.schematicSleeveY + 15}
+            x2={maxim.schematicLeverPivotX}
+            y2={maxim.schematicLeverPivotY}
             stroke="#fbbf24"
-            strokeWidth="4"
+            strokeWidth="3"
             strokeLinecap="round"
           />
-          <line
-            x1={maxim.schematicToggleX1}
-            y1={maxim.schematicToggleY1}
-            x2={maxim.schematicToggleX2}
-            y2={maxim.schematicToggleY2}
+          {/* Crankshaft e & Volute Spring k */}
+          <circle
+            cx={maxim.schematicCrankCx}
+            cy={maxim.schematicCrankCy}
+            r={maxim.schematicCrankR}
             stroke="#fbbf24"
-            strokeWidth="4"
-            strokeLinecap="round"
+            strokeWidth="2"
           />
           <circle
-            cx={maxim.schematicToggleCx}
-            cy={maxim.schematicToggleCy}
-            r={maxim.schematicToggleR}
-            fill="#fbbf24"
+            cx={maxim.schematicCrankCx}
+            cy={maxim.schematicCrankCy}
+            r={maxim.schematicSpringR}
+            stroke="#4ade80"
+            strokeWidth="1.5"
+            strokeDasharray="4 2"
           />
-          <path d={maxim.schematicFuseeD} stroke="#4ade80" strokeWidth="2" strokeDasharray="3 2" />
-          <text x="130" y="110" fill="#93c5fd" fontSize="9" textAnchor="middle">
-            Water Jacket (4L)
+          <text x="320" y="90" fill="#fbbf24" fontSize="9" textAnchor="middle">
+            Sleeve l (Forward)
           </text>
-          <text x="280" y="70" fill="#fbbf24" fontSize="9" textAnchor="middle">
-            Toggle-Lock Linkage
+          <text x="100" y="80" fill="#4ade80" fontSize="9" textAnchor="middle">
+            Volute Spring k & Crank e
           </text>
         </g>
       );
@@ -7942,8 +7954,39 @@ function _renderHistoricalSchematic(
       );
     }
     case "amf-versatran": {
+      const state = FrankenSimEngine.stepAmfVersatranTopology(params);
+      const { controls, displayPose } = state;
+      const [toolX, toolY, toolZ] = displayPose.normalizedToolPosition;
+      const columnX = 200;
+      const carriageY = 224 - (toolY - 0.36) * 92;
+      const wristX = columnX + toolX * 88;
+      const wristY = carriageY - toolZ * 28;
+      const armLabelX = (columnX + wristX) / 2;
+      const armLabelY = (carriageY + wristY) / 2 - 14;
+      const wristSwingDegrees = (displayPose.wristSwingDisplayRad * 180) / Math.PI;
+      const wristRotationDegrees = (displayPose.wristRotationDisplayRad * 180) / Math.PI;
+      const gripperGap = 4 + displayPose.gripperOpenFraction * 11;
+      const pinionAngleDegrees = (displayPose.gripperPinionRotationDisplayRad * 180) / Math.PI;
+      const rackOffset = (displayPose.gripperRackTravelFraction - 0.5) * 9;
       return (
-        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+        <g
+          stroke="#38bdf8"
+          strokeWidth="1.5"
+          fill="none"
+          data-amf-versatran-topology="typed-ts-source-bounded"
+          data-amf-versatran-active-claim={state.activeClaim}
+          data-amf-versatran-program-mode={state.programMode}
+          data-amf-versatran-claim-1={state.claimProbeStates[1] ? "live" : "withheld"}
+          data-amf-versatran-claim-8={state.claimProbeStates[8] ? "live" : "withheld"}
+          data-amf-versatran-claim-12={state.claimProbeStates[12] ? "live" : "withheld"}
+          data-amf-versatran-carriage-y={carriageY.toFixed(3)}
+          data-amf-versatran-wrist-x={wristX.toFixed(3)}
+          data-amf-versatran-wrist-y={wristY.toFixed(3)}
+        >
+          <title>
+            Source-bounded AMF Versatran topology frame: unitless configuration only; SI motion and
+            hydraulic performance are refused.
+          </title>
           <text
             x="200"
             y="24"
@@ -7978,9 +8021,40 @@ function _renderHistoricalSchematic(
           <text x="140" y="232" fill="#94a3b8" fontSize="8" fontFamily="monospace">
             HOUSING 72 / SPROCKET 80
           </text>
+          <g aria-label="Live source-bounded topology state">
+            <rect
+              x="18"
+              y="38"
+              width="144"
+              height="42"
+              rx="3"
+              fill="#0f172a"
+              stroke="#475569"
+              strokeWidth="1"
+            />
+            <text x="25" y="52" fill="#7dd3fc" fontSize="6.5" fontFamily="monospace">
+              CLAIM {state.activeClaim} ·{" "}
+              {!state.claimProbeStates[8]
+                ? "REPLAY WITHHELD"
+                : controls.teachReplayMode === 1
+                  ? "PLAYBACK"
+                  : "TEACH"}
+            </text>
+            <text x="25" y="64" fill="#fbbf24" fontSize="6.5" fontFamily="monospace">
+              max |e_i| = {state.maximumNormalizedPhaseError.toFixed(2)} · unitless
+            </text>
+            <text x="25" y="75" fill="#94a3b8" fontSize="5.5" fontFamily="monospace">
+              TS topology frame · SI motion refused
+            </text>
+            {!state.claimProbeStates[8] && (
+              <text x="25" y="85" fill="#fda4af" fontSize="5.5" fontFamily="monospace">
+                CLAIM 8 RECORD / PLAYBACK PATH WITHHELD
+              </text>
+            )}
+          </g>
           {/* Vertical Column B */}
           <rect
-            x="175"
+            x={columnX - 25}
             y="70"
             width="50"
             height="145"
@@ -7989,13 +8063,13 @@ function _renderHistoricalSchematic(
             stroke="#38bdf8"
             strokeWidth="2"
           />
-          <text x="185" y="85" fill="#38bdf8" fontSize="8" fontFamily="monospace">
+          <text x={columnX - 15} y="85" fill="#38bdf8" fontSize="8" fontFamily="monospace">
             COL B
           </text>
           {/* Elevation Carriage C & Stroke Doubler 150/154 */}
           <rect
-            x="160"
-            y="125"
+            x={columnX - 40}
+            y={carriageY - 18}
             width="80"
             height="35"
             rx="3"
@@ -8003,56 +8077,186 @@ function _renderHistoricalSchematic(
             stroke="#f59e0b"
             strokeWidth="2"
           />
-          <circle cx="200" cy="142" r="8" fill="#d97706" stroke="#fef3c7" strokeWidth="1.5" />
-          <text x="165" y="118" fill="#f59e0b" fontSize="8" fontFamily="monospace">
+          <circle
+            cx={columnX}
+            cy={carriageY}
+            r="8"
+            fill="#d97706"
+            stroke="#fef3c7"
+            strokeWidth="1.5"
+          />
+          <text
+            x={columnX - 35}
+            y={carriageY - 25}
+            fill="#f59e0b"
+            fontSize="8"
+            fontFamily="monospace"
+          >
             CARRIAGE C (2:1)
           </text>
           {/* Horizontal Arm A and source rack 234 */}
-          <rect
-            x="210"
-            y="132"
-            width="130"
-            height="20"
-            rx="2"
-            fill="#475569"
-            stroke="#94a3b8"
-            strokeWidth="1.5"
+          <line
+            x1={columnX}
+            y1={carriageY}
+            x2={wristX}
+            y2={wristY}
+            stroke="#475569"
+            strokeWidth="20"
+            strokeLinecap="round"
           />
           <line
-            x1="210"
-            y1="150"
-            x2="335"
-            y2="150"
+            x1={columnX}
+            y1={carriageY + 8}
+            x2={wristX}
+            y2={wristY + 8}
             stroke="#cbd5e1"
             strokeWidth="1.5"
             strokeDasharray="3 2"
           />
-          <text x="240" y="145" fill="#cbd5e1" fontSize="8" fontFamily="monospace">
+          <text
+            x={armLabelX}
+            y={armLabelY}
+            fill="#cbd5e1"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
             ARM A / RACK 234
           </text>
           {/* Wrist G & Gripper Fingers 324/326 */}
-          <circle cx="345" cy="142" r="9" fill="#0284c7" stroke="#38bdf8" strokeWidth="1.5" />
-          <path
-            d="M 354 135 L 375 132 L 375 137 Z"
-            fill="#e2e8f0"
-            stroke="#0f172a"
-            strokeWidth="1"
-          />
-          <path
-            d="M 354 149 L 375 152 L 375 147 Z"
-            fill="#e2e8f0"
-            stroke="#0f172a"
-            strokeWidth="1"
-          />
-          <text x="345" y="125" fill="#a855f7" fontSize="8" fontFamily="monospace">
+          <g transform={`translate(${wristX} ${wristY}) rotate(${wristSwingDegrees})`}>
+            <circle cx="0" cy="0" r="9" fill="#0284c7" stroke="#38bdf8" strokeWidth="1.5" />
+            <g transform={`rotate(${wristRotationDegrees})`}>
+              <line x1="-6" y1="0" x2="6" y2="0" stroke="#e9d5ff" strokeWidth="2" />
+              <line x1="0" y1="-6" x2="0" y2="6" stroke="#e9d5ff" strokeWidth="1" />
+            </g>
+            {displayPose.pinionGripperTopologyEnabled ? (
+              <g aria-label="Claim 12 paired pinions and Claim 13 racks">
+                {[
+                  [-gripperGap, 1],
+                  [gripperGap, -1],
+                ].map(([pinionY, direction]) => (
+                  <g
+                    key={`${pinionY}`}
+                    transform={`rotate(${pinionAngleDegrees * direction} 11 ${pinionY})`}
+                  >
+                    <circle
+                      cx="11"
+                      cy={pinionY}
+                      r="4"
+                      fill="#f59e0b"
+                      stroke="#fef3c7"
+                      strokeWidth="0.8"
+                    />
+                    <path
+                      d={`M 7 ${pinionY} H 15 M 11 ${pinionY - 4} V ${pinionY + 4}`}
+                      stroke="#451a03"
+                      strokeWidth="0.8"
+                    />
+                  </g>
+                ))}
+                <line
+                  x1={-5 + rackOffset}
+                  y1={-gripperGap - 7}
+                  x2={13 + rackOffset}
+                  y2={-gripperGap - 7}
+                  stroke="#fde68a"
+                  strokeWidth="1.5"
+                  strokeDasharray="2 1"
+                />
+                <line
+                  x1={-5 - rackOffset}
+                  y1={gripperGap + 7}
+                  x2={13 - rackOffset}
+                  y2={gripperGap + 7}
+                  stroke="#fde68a"
+                  strokeWidth="1.5"
+                  strokeDasharray="2 1"
+                />
+                <path
+                  d={`M 9 ${-gripperGap} L 30 ${-gripperGap - 3} L 30 ${-gripperGap + 2} Z`}
+                  fill="#e2e8f0"
+                  stroke="#0f172a"
+                  strokeWidth="1"
+                />
+                <path
+                  d={`M 9 ${gripperGap} L 30 ${gripperGap + 3} L 30 ${gripperGap - 2} Z`}
+                  fill="#e2e8f0"
+                  stroke="#0f172a"
+                  strokeWidth="1"
+                />
+              </g>
+            ) : (
+              <rect
+                x="9"
+                y="-5"
+                width="25"
+                height="10"
+                rx="2"
+                fill="#334155"
+                stroke="#fb7185"
+                strokeDasharray="2 1"
+              />
+            )}
+          </g>
+          <text
+            x={wristX}
+            y={wristY - 17}
+            fill="#a855f7"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
             WRIST G
           </text>
           {/* Separate programming arm H */}
-          <line x1="270" y1="132" x2="250" y2="105" stroke="#d97706" strokeWidth="2" />
+          <line
+            x1={columnX + 24}
+            y1={carriageY - 18}
+            x2="250"
+            y2="105"
+            stroke="#d97706"
+            strokeWidth="2"
+          />
           <circle cx="250" cy="105" r="4" fill="#b45309" stroke="#fef3c7" />
           <text x="235" y="100" fill="#d97706" fontSize="7" fontFamily="monospace">
             PROGRAMMING ARM H
           </text>
+          {!state.claimProbeStates[1] && (
+            <g aria-label="Claim 1 six-motion topology withheld">
+              <rect
+                x="52"
+                y="92"
+                width="296"
+                height="126"
+                rx="6"
+                fill="#020617"
+                fillOpacity="0.88"
+                stroke="#fb7185"
+                strokeWidth="1.5"
+              />
+              <text
+                x="200"
+                y="147"
+                textAnchor="middle"
+                fill="#fecdd3"
+                fontSize="11"
+                fontFamily="monospace"
+              >
+                CLAIM 1 SIX-MOTION TOPOLOGY WITHHELD
+              </text>
+              <text
+                x="200"
+                y="165"
+                textAnchor="middle"
+                fill="#fda4af"
+                fontSize="6.5"
+                fontFamily="monospace"
+              >
+                Source topology omitted; no unsupported physical failure inferred.
+              </text>
+            </g>
+          )}
         </g>
       );
     }

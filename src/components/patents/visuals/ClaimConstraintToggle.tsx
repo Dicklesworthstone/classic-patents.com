@@ -25,7 +25,11 @@ export const ClaimConstraintToggle: React.FC<ClaimConstraintToggleProps> = ({
   if (constraints.length === 0) return null;
 
   return (
-    <div className={`flex flex-wrap items-center gap-2 ${className}`}>
+    <div
+      data-testid="claim-constraint-toggle"
+      data-claim-constraint-count={constraints.length}
+      className={`flex flex-wrap items-center gap-2 ${className}`}
+    >
       {constraints.map((c: ClaimConstraintDefinition) => {
         const isActive = claimStates[c.claimNumber] ?? true;
 
@@ -33,6 +37,8 @@ export const ClaimConstraintToggle: React.FC<ClaimConstraintToggleProps> = ({
           <button
             key={c.claimNumber}
             type="button"
+            data-claim-number={c.claimNumber}
+            data-claim-active={isActive ? "true" : "false"}
             onClick={() => {
               soundEngine.playSwitchClick();
               onToggleClaim(c.claimNumber, !isActive);

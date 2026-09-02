@@ -61,6 +61,15 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-4098001-watson-remote-center-compliance",
       "us-3858581-kamen-medication-injection-device",
       "us-4068536-stackhouse-manipulator",
+      "us-135245-pasteur-fermentation",
+      "us-124404-westinghouse-air-brake",
+      "us-78317-nobel-dynamite",
+      "us-x9430-colt-revolver",
+      "us-105338-hyatt-celluloid",
+      "us-79265-sholes-typewriter",
+      "us-247804-delaval-separator",
+      "us-588-ericsson-propeller",
+      "us-319596-maxim-machine-gun",
     ]);
   });
 

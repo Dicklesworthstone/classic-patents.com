@@ -1,6 +1,16 @@
 import type { Patent } from "@/types/patent";
 import { sholesTypewriterArchivalEdition } from "../editions/sholesTypewriterEdition";
 
+function manualClaimText(number: number): string {
+  const block = sholesTypewriterArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Sholes manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const sholesTypewriterPatent: Patent = {
   id: "us-79265-sholes-typewriter",
   patentNumber: "US 79,265",
@@ -106,8 +116,7 @@ This invention is of improvements to an invention of a type-writing machine, an 
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "The key-levers L, vibrating on the fulcrum M, with the inner ends or fingers w reaching under the type-bars, so that the keys will act directly on the types, substantially as and for the purpose described.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "Claim 1 is narrowly about direct actuation: keys L pivot on beam M and their inner fingers w reach under type-bars, so pressing a key acts directly on a type-bar.",
       keyInnovations: ["Key-levers L", "Fulcrum M", "Direct fingers w beneath type-bars"],
@@ -117,8 +126,7 @@ This invention is of improvements to an invention of a type-writing machine, an 
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "The spacer or ratchet I, combined with the bifurcated lever H, connected with the bar T, pivoted at s and resting on and across the arms of the keys L behind the fulcrum M, so that striking the faces of the keys will work the teeth of the forks of the lever up and down and into the notches of the spaces and give a certain uniform and regular space movement to the paper-carriage in line of the types, when made substantially as described.",
+      originalText: manualClaimText(2),
       plainEnglish:
         "Claim 2 protects the detailed spacing train. A key raises cross-bar T; that moves the two-forked lever H against ratchet I, and the alternating fork teeth permit a regular one-notch movement of the carriage along the line of type.",
       keyInnovations: [
@@ -133,8 +141,7 @@ This invention is of improvements to an invention of a type-writing machine, an 
     {
       number: 3,
       isIndependent: true,
-      originalText:
-        "The pins e, fastened to the table A′, combined with the pawl h and the spring l, to give the paper-carriage a certain and regular cross-line movement at a right angle to the space movement from line to line, when made substantially as described.",
+      originalText: manualClaimText(3),
       plainEnglish:
         "Claim 3 covers the separate line-to-line mechanism: pins e on table A′ cooperate with pawl h and spring l to move the carriage across the writing direction by a regular amount.",
       keyInnovations: ["Line-spacing pins e", "Pawl h", "Spring l", "Cross-line carriage movement"],
@@ -144,8 +151,7 @@ This invention is of improvements to an invention of a type-writing machine, an 
     {
       number: 4,
       isIndependent: true,
-      originalText:
-        "The clasps or springs b, attached to the bars C′ and C² on a line through the middle of the platen G, combined with the springs a, attached to the bar E, to hold the paper to the carriage and press it down smooth and tight in passing under the platen, when made substantially as described.",
+      originalText: manualClaimText(4),
       plainEnglish:
         "Claim 4 covers the paper-holding arrangement: springs or clasps b on the primary frame work with springs a on the secondary frame so paper stays smooth and tight as it passes beneath platen G.",
       keyInnovations: [
@@ -158,8 +164,7 @@ This invention is of improvements to an invention of a type-writing machine, an 
     {
       number: 5,
       isIndependent: true,
-      originalText:
-        "The spools m, combined with the gudgeon s′, the shaft l, the pulleys k and R, the band v′, the cord v, the weight W, the ratchet-wheel V, the pawl t, and the bar P, pivoted to the back of the case A² to feed a fresh part of the inking-ribbon under the platen to each type successively, when made substantially as described.",
+      originalText: manualClaimText(5),
       plainEnglish:
         "Claim 5 is the complete ribbon-feed train. The carriage pull and its pulleys drive a shaft and spools while a ratchet, pawl, and weighted pivoted bar preserve direction and belt tension, bringing a fresh ribbon portion under the platen.",
       keyInnovations: [

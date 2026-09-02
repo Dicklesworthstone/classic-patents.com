@@ -9,6 +9,7 @@ import { coupleEdgesFor } from "@/physics/coupleGraph";
 import { energyChannelsFor } from "@/physics/energyChannels";
 import { qtyDimension } from "@/physics/qty";
 import { computeParameterSensitivity } from "@/physics/sensitivityKernel";
+import { getProvenanceLabel } from "@/physics/telemetryProvenance";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { ColorizedEquation as ColorizedEquationType } from "@/types/equation";
 import { soundEngine } from "@/utils/soundEngine";
@@ -62,7 +63,14 @@ export function PhysicsTelemetryBadge({
   if (!data) return null;
 
   return (
-    <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950/90 p-4 sm:p-5 text-xs font-sans text-ink-800 dark:text-parchment-200 shadow-sm space-y-4">
+    <div
+      className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950/90 p-4 sm:p-5 text-xs font-sans text-ink-800 dark:text-parchment-200 shadow-sm space-y-4"
+      data-testid="physics-telemetry-badge"
+      data-patent-id={patentId}
+      data-kernel-method={data.engineMethod}
+      data-last-change={lastChange?.id ?? ""}
+      data-telemetry-envelope={liveEnvelope}
+    >
       <div className="sr-only" aria-live="polite" aria-atomic="true">
         {data.domainTitle}. {announcedEnvelope}
       </div>
@@ -141,11 +149,21 @@ export function PhysicsTelemetryBadge({
               key={metric.label}
               className="p-3.5 rounded-xl border border-parchment-300/80 dark:border-ink-800 bg-white dark:bg-ink-900/90 text-ink-900 dark:text-parchment-100 flex flex-col justify-between shadow-2xs hover:border-amber-700/30 dark:hover:border-ink-700 transition-colors"
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-1">
                 <span className="text-[10px] uppercase font-mono tracking-wider font-semibold text-ink-500 dark:text-ink-400 truncate">
                   {metric.label}
                 </span>
-                <Gauge className="w-3.5 h-3.5 text-amber-700/60 dark:text-amber-400/60" />
+                <div className="flex items-center gap-1">
+                  {metric.provenance && (
+                    <span
+                      className={`inline-block px-1 py-0.2 rounded text-[8px] font-mono border leading-none ${getProvenanceLabel(metric.provenance).badgeClass}`}
+                      title={getProvenanceLabel(metric.provenance).description}
+                    >
+                      {getProvenanceLabel(metric.provenance).shortLabel}
+                    </span>
+                  )}
+                  <Gauge className="w-3.5 h-3.5 text-amber-700/60 dark:text-amber-400/60 shrink-0" />
+                </div>
               </div>
 
               <div className="flex items-baseline gap-1.5 my-2">

@@ -9,6 +9,7 @@ import {
   stepAmfVersatranTopology,
   wrapAmfVersatranPhase,
 } from "./amfVersatranKernel";
+import { FrankenSimEngine } from "./engine";
 
 const ROOT = process.cwd();
 
@@ -121,6 +122,11 @@ describe("US 3,212,649 AMF Versatran source-bounded six-motion topology", () => 
     expect(state.refusal.refused).toBe(true);
     expect(state.refusal.reason).toContain("cylinder bore or stroke");
     expect(state.refusal.reason).toContain("payload");
+    expect(state.refusal.reason).toContain("some dimensionless gear relationships");
+    expect(state.refusal.reason).toContain("do not recover SI geometry");
+    expect(state.refusal.reason).not.toContain(
+      "not calibrated link dimensions, cylinder bore or stroke, pressure, flow, payload, mass, inertia, valve coefficients, gear ratios",
+    );
     expect(state.refusal.reason).toContain("SI position, velocity, force");
     expect(state.positionLaw).toContain("normalized");
     expect(state.displayPose.normalizedArmSpan).toBeGreaterThan(0);
@@ -135,5 +141,32 @@ describe("US 3,212,649 AMF Versatran source-bounded six-motion topology", () => 
     expect(source).not.toContain("hydraulicPressureMpa");
     expect(source).not.toContain("verticalElevationMm");
     expect(source).not.toContain("horizontalReachMm");
+  });
+
+  test("keeps the FrankenSimEngine host wrapper identical to the typed source-bounded step", () => {
+    const params = {
+      columnRotation: -0.4,
+      carriageLift: 0.8,
+      armTravel: 0.2,
+      wristRotation: 0.3,
+      wristSwing: -0.2,
+      gripperOperation: 0.25,
+      teachReplayMode: 1,
+      resolverPhaseOffset: 0.15,
+    };
+
+    expect(FrankenSimEngine.stepAmfVersatranTopology(params)).toEqual(
+      stepAmfVersatranTopology(params),
+    );
+    expect(FrankenSimEngine.stepAmfVersatranTopology(params).refusal.reason).toContain(
+      "SI position, velocity, force, energy, pressure, and performance prediction",
+    );
+  });
+
+  test("removes the obsolete fabricated AMF hydraulic equation set", () => {
+    const equationsSource = readFileSync(join(ROOT, "src/data/colorizedEquations.ts"), "utf8");
+
+    expect(equationsSource).not.toContain("versatran-cylindrical-kinematics");
+    expect(equationsSource).not.toContain("versatran-hydraulic-flow-force");
   });
 });

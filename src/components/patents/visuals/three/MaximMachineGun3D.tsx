@@ -22,18 +22,24 @@ import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "toggle_lock" | "water_jacket" | "belt_feed" | "spade_grips" | "top";
+type CameraPreset =
+  | "iso"
+  | "muzzle_sleeve"
+  | "reversing_linkage"
+  | "breech_crosshead"
+  | "volute_spring"
+  | "top";
 
 const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [8.5, 5.5, 9.5], target: [0.5, 0.2, 0] },
-  toggle_lock: { pos: [-0.8, 1.8, 2.6], target: [-0.6, 0.4, 0] },
-  water_jacket: { pos: [2.2, 1.8, 3.2], target: [1.8, 0.4, 0] },
-  belt_feed: { pos: [-0.3, 1.6, 2.4], target: [-0.3, 0.5, 0] },
-  spade_grips: { pos: [-3.5, 1.2, 1.8], target: [-1.8, 0.4, 0] },
-  top: { pos: [0.5, 11.5, 0.1], target: [0.5, 0.2, 0] },
+  iso: { pos: [2.5, 1.8, 2.5], target: [0, 0, 0.4] },
+  muzzle_sleeve: { pos: [0.8, 0.5, 1.6], target: [0, 0.1, 0.9] },
+  reversing_linkage: { pos: [1.1, 0.5, 0.7], target: [0, 0.08, 0.5] },
+  breech_crosshead: { pos: [-0.6, 0.6, -0.2], target: [0, 0.1, -0.1] },
+  volute_spring: { pos: [0.8, 0.5, -0.3], target: [0.1, 0.1, -0.2] },
+  top: { pos: [0, 3.5, 0.4], target: [0, 0, 0.4] },
 };
 
 export function MaximMachineGun3D() {
@@ -42,54 +48,43 @@ export function MaximMachineGun3D() {
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
-  // Automatic Recoil Ballistics Parameters
-  const { params, updateParam } = usePatentPhysics("us-319596-maxim-machine-gun");
-  const fireRateRpm = (params.firingRate as number) ?? (params.fireRateRpm as number) ?? 600;
-  const waterLevelLiters =
-    (params.waterLevel as number) ?? (params.waterLevelLiters as number) ?? 4;
-  const recoilStrokeMm = (params.recoilStroke as number) ?? (params.recoilStrokeMm as number) ?? 19;
+  const { params, updateParam, resetParams } = usePatentPhysics("us-319596-maxim-machine-gun");
+  const gasImpulsePct = (params.gasImpulsePct as number) ?? 75;
+  const cyclePhaseDeg = (params.cyclePhase as number) ?? 0;
 
   const maxim = FrankenSimEngine.stepMaximMachineGun({
-    firingRateRpm: fireRateRpm,
-    waterJacketLiters: waterLevelLiters,
-    recoilStrokeMm,
+    cyclePhaseDeg,
+    gasImpulsePct,
+    cycleRpm: 60,
   });
 
-  // Shared transport tape envelope: jacket-water thermodynamics publish to
-  // the patentId-keyed bus so badges and sibling faces read one honest state.
   useFrankenSimPhysics("us-319596-maxim-machine-gun", {
-    domain: "thermo_fluid",
+    domain: "multibody_topology",
     refusal: { isRefused: false },
-    thermo: {
-      temperatureCelsius: maxim.barrelTempC,
-      temperatureKelvin: maxim.barrelTempC + 273.15,
-      pressureAtm: 0,
-      partialPressureButaneAtm: 0,
-      heatInputWatts: 0,
-      coolingPowerWatts: 0,
-      coefficientOfPerformance: 0,
-      blackbodyRadiantPowerWatts: 0,
-      fluidFlowVelocityMps: 0,
+    mbd: {
+      position: [0, 0, maxim.sleeveStudioStroke],
+      velocity: [0, 0, 0],
+      angularVelocity: [maxim.fireOmegaRadPerS, 0, 0],
+      quaternion: [0, 0, 0, 1],
+      kineticEnergyJoules: 0,
+      potentialEnergyJoules: 0,
+      generalizedCoordinates: [maxim.sleeveForwardMm, maxim.breechOpenMm],
+      constraintResidualNorm: 0,
     },
   });
-  const [showMuzzleFlash] = useState<boolean>(true);
+
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
-    fireRateRpm,
-    showMuzzleFlash,
     isAudioMuted,
     isCutaway,
-    recoilStudioStroke: maxim.recoilStudioStroke,
-    barrelTempC: maxim.barrelTempC,
-    waterEvapRateGs: maxim.waterEvapRateGs,
-    recoilMomentumNs: maxim.recoilMomentumNs,
+    gasImpulsePct,
+    sleeveForwardMm: maxim.sleeveForwardMm,
+    breechOpenMm: maxim.breechOpenMm,
     fireOmegaRadPerS: maxim.fireOmegaRadPerS,
-    steamOpacity: maxim.steamOpacity,
     fireCycleWrapRad: maxim.fireCycleWrapRad,
-    muzzleFlashSinThreshold: maxim.muzzleFlashSinThreshold,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -125,292 +120,189 @@ export function MaximMachineGun3D() {
 
     const { scene, camera, renderer, controls } = studio;
 
-    // Build procedural 3D model
     const model = buildMaximMachineGunModel();
     modelRef.current = model;
     scene.add(model.rootGroup);
 
-    // Dynamic Muzzle Flash PointLight
-    const flashLight = new THREE.PointLight(0xf97316, 0, 7.0);
-    flashLight.position.set(4.65, 0.45, 0);
+    const flashLight = new THREE.PointLight(0xf97316, 0, 5.0);
+    flashLight.position.set(0, 0.1, 1.25);
     scene.add(flashLight);
 
-    // Animation Loop
     let reqId: number;
     let timeSec = 0;
-    let renderedSteps = 0;
-    let lastAudioShot = 0;
-
     const clock = createStudioClock();
 
-    const animate = (now: number) => {
+    const animate = () => {
       reqId = requestAnimationFrame(animate);
-      if (!studio.isVisible()) return;
-      const { dt } = clock.pump(now);
+      const dt = clock.getDelta();
       timeSec += dt;
-      renderedSteps += 1;
+
       const p = live.current;
+      const cyclePhase = (timeSec * p.fireOmegaRadPerS) % p.fireCycleWrapRad;
 
       const { isMuzzleFlash } = updateMaximMachineGunKinematics(
         model,
         dt,
-        timeSec,
+        cyclePhase,
         p.fireOmegaRadPerS,
-        p.recoilStudioStroke,
-        p.barrelTempC,
-        p.steamOpacity,
-        p.showMuzzleFlash,
+        p.gasImpulsePct,
+        true,
         p.isCutaway,
-        p.fireCycleWrapRad,
-        p.muzzleFlashSinThreshold,
-        p.fireRateRpm,
       );
 
-      flashLight.intensity = isMuzzleFlash ? 4.8 : 0;
-
-      // Sound transducer trigger
-      if (isMuzzleFlash && Math.floor(renderedSteps / 6) !== lastAudioShot) {
-        lastAudioShot = Math.floor(renderedSteps / 6);
-        if (!p.isAudioMuted) {
-          soundEngine.playGunshot();
-        }
-      }
-
+      flashLight.intensity = isMuzzleFlash ? 4.5 : 0;
       controls.update();
       renderer.render(scene, camera);
     };
 
-    reqId = requestAnimationFrame(animate);
+    animate();
 
     return () => {
       cancelAnimationFrame(reqId);
+      scene.remove(model.rootGroup);
+      scene.remove(flashLight);
+      flashLight.dispose();
       model.dispose();
-      studio.cleanup();
+      studio.dispose();
       studioRef.current = null;
+      modelRef.current = null;
     };
   }, [live]);
 
   return (
-    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <div className="sr-only">Maxim Machine Gun 3D</div>
-      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
-        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
-
-        {/* Top-Left Camera Preset Toolbar */}
-        {/* Camera Preset Toolbar & Claim Inversion Toggle */}
-        {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-2 max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-28rem)] pointer-events-auto">
-            <ClaimConstraintToggle
-              patentId="us-319596-maxim-machine-gun"
-              claimStates={claimStates}
-              onToggleClaim={(num, active) =>
-                setClaimStates((prev) => ({ ...prev, [num]: active }))
-              }
-            />
-            <div className="flex flex-nowrap overflow-x-auto scrollbar-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
-              <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-                <Camera className="w-3.5 h-3.5" /> View:
-              </span>
-              {(
-                [
-                  ["iso", "Isometric"],
-                  ["toggle_lock", "Toggle Lock"],
-                  ["water_jacket", "Water Jacket"],
-                  ["belt_feed", "Belt Feed"],
-                  ["spade_grips", "Spade Grips"],
-                  ["top", "Plan View"],
-                ] as [CameraPreset, string][]
-              ).map(([preset, label]) => (
-                <button
-                  key={preset}
-                  type="button"
-                  onClick={() => applyCameraPreset(preset)}
-                  className={`min-h-9 px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                    activeCamera === preset
-                      ? "bg-amber-600 text-white shadow-xs font-semibold"
-                      : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Top Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
-          <button
-            type="button"
-            onClick={() => setIsCutaway(!isCutaway)}
-            title={isCutaway ? "Solid Receiver" : "Cutaway Interior"}
-            className={`min-h-9 p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm text-xs font-sans flex items-center gap-1 ${
-              isCutaway
-                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={toggleSound}
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="min-h-9 p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`min-h-9 p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showUiOverlay
-                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-            }`}
-            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
-            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
-          >
-            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
-
-          <button
-            aria-label="Reset camera view"
-            type="button"
-            onClick={() => applyCameraPreset("iso")}
-            className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
+    <div
+      ref={containerRef}
+      className="relative w-full aspect-[4/3] sm:aspect-[16/9] max-h-[640px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl select-none"
+    >
+      <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
+        <div className="bg-ink-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-800/50 shadow-lg flex items-center gap-2.5">
+          <Layers className="w-4 h-4 text-amber-500" />
+          <span className="font-serif text-xs font-semibold tracking-wide text-parchment-100">
+            Maxim Machine Gun 3D (US 319,596)
+          </span>
+          <StudioKernelChips kernel={crateSource} solver="FrankenSim (WASM SI)" />
         </div>
-
-        {/* Bottom-Left Telemetry HUD */}
-        {showUiOverlay && (
-          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
-            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
-                Cyclic Rate:
-              </span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">
-                {Math.round(fireRateRpm)} rds/min
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Recoil Stroke:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">
-                {maxim.recoilStrokeMm} mm
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Toggle Unlock Force:</span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">
-                {maxim.toggleUnlockForceN} N
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Barrel Temp:</span>
-              <span
-                className={`font-bold ${maxim.barrelTempC > 200 ? "text-rose-700 dark:text-rose-400" : "text-purple-800 dark:text-purple-400"}`}
-              >
-                {maxim.barrelTempC} °C
-              </span>
-            </div>
-          </div>
-        )}
-
-        <StudioKernelChips
-          visible={showUiOverlay}
-          side="right"
-          title="Maxim recoil ballistics"
-          chips={[
-            { label: "Cyclic Rate", value: String(Math.round(fireRateRpm)), unit: "rds/min" },
-            { label: "Recoil Stroke", value: String(Math.round(maxim.recoilStrokeMm)), unit: "mm" },
-            { label: "Toggle Unlock", value: String(maxim.toggleUnlockForceN), unit: "N" },
-            { label: "Recoil p", value: String(maxim.recoilMomentumNs), unit: "N·s" },
-            {
-              label: "Barrel Temp",
-              value: String(maxim.barrelTempC),
-              unit: "°C",
-              tone: maxim.barrelTempC > 200 ? "warn" : "ok",
-            },
-            { label: "Steam Evap", value: String(maxim.waterEvapRateGs), unit: "g/s" },
-            { label: "Muzzle Energy", value: String(maxim.muzzleEnergyJoules), unit: "J" },
-            { label: "ω_fire", value: maxim.fireOmegaRadPerS.toFixed(1), unit: "rad/s" },
-            {
-              label: "Steam crate",
-              value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
-            },
-          ]}
-        />
       </div>
 
-      {/* Interactive Controls Bar */}
-      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <SensitivitySlider
-            id="firingRate"
-            patentId="us-319596-maxim-machine-gun"
-            paramKey="firingRateRpm"
-            label="Cyclic Firing Rate"
-            value={fireRateRpm}
-            min={300}
-            max={750}
-            step={25}
-            onChange={(val) => updateParam("firingRate", val)}
-            allParams={params}
-          />
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 bg-ink-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-800/50 shadow-lg">
+        <button
+          type="button"
+          onClick={() => {
+            setIsCutaway(!isCutaway);
+            soundEngine.playSwitchClick();
+          }}
+          aria-label={isCutaway ? "Disable Mechanism Cutaway" : "Enable Mechanism Cutaway"}
+          className={`px-2.5 py-1 rounded-lg text-xs font-sans transition-all flex items-center gap-1 ${
+            isCutaway
+              ? "bg-amber-600 text-parchment-900 font-bold shadow-sm"
+              : "text-parchment-300 hover:text-parchment-100 hover:bg-parchment-800/40"
+          }`}
+        >
+          <Layers className="w-3.5 h-3.5" />
+          <span>Cutaway</span>
+        </button>
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Water Jacket Fill</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {waterLevelLiters.toFixed(1)} L
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="4.0"
-              step="0.2"
-              value={waterLevelLiters}
-              onChange={(e) => updateParam("waterLevel", Number.parseFloat(e.target.value))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
+        <button
+          type="button"
+          onClick={() => {
+            setShowUiOverlay(!showUiOverlay);
+            soundEngine.playSwitchClick();
+          }}
+          aria-label={showUiOverlay ? "Hide Telemetry Overlay" : "Show Telemetry Overlay"}
+          className="p-1.5 rounded-lg text-parchment-400 hover:text-parchment-100 hover:bg-parchment-800/40 transition-colors"
+        >
+          {showUiOverlay ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+        </button>
+
+        <button
+          type="button"
+          onClick={toggleSound}
+          aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          className="p-1.5 rounded-lg text-parchment-400 hover:text-parchment-100 hover:bg-parchment-800/40 transition-colors"
+        >
+          {isAudioMuted ? (
+            <VolumeX className="w-4 h-4" />
+          ) : (
+            <Volume2 className="w-4 h-4 text-amber-400" />
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            resetParams();
+            applyCameraPreset("iso");
+            soundEngine.playSwitchClick();
+          }}
+          aria-label="Reset Camera and Controls"
+          className="p-1.5 rounded-lg text-parchment-400 hover:text-parchment-100 hover:bg-parchment-800/40 transition-colors"
+        >
+          <RotateCcw className="w-4 h-4" />
+        </button>
+      </div>
+
+      <div className="absolute bottom-4 left-4 z-10 hidden sm:flex items-center gap-1 bg-ink-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-800/50 shadow-lg">
+        <Camera className="w-3.5 h-3.5 text-parchment-400 ml-1.5 mr-0.5" />
+        {(
+          [
+            ["iso", "ISO"],
+            ["muzzle_sleeve", "Muzzle Sleeve"],
+            ["reversing_linkage", "Rocker Linkage"],
+            ["breech_crosshead", "Crosshead / Breech"],
+            ["volute_spring", "Volute Spring"],
+            ["top", "Plan (Fig. 2)"],
+          ] as const
+        ).map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => {
+              applyCameraPreset(key);
+              soundEngine.playSwitchClick();
+            }}
+            className={`px-2 py-1 rounded-lg text-[11px] font-sans transition-all ${
+              activeCamera === key
+                ? "bg-amber-600 text-parchment-900 font-bold shadow-sm"
+                : "text-parchment-300 hover:text-parchment-100 hover:bg-parchment-800/40"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {showUiOverlay && (
+        <div className="absolute bottom-4 right-4 z-10 w-72 bg-ink-950/90 backdrop-blur-md p-3.5 rounded-xl border border-parchment-800/50 shadow-xl flex flex-col gap-3">
+          <div className="flex items-center justify-between border-b border-parchment-800/60 pb-2">
+            <span className="font-serif text-xs font-semibold text-parchment-200">
+              Muzzle-Gas Kinematics
+            </span>
+            <span className="font-mono text-[10px] text-amber-400">US 319,596</span>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <SensitivitySlider
+              label="Muzzle Gas Expansion Pressure"
+              value={gasImpulsePct}
+              min={25}
+              max={100}
+              step={5}
+              unit="%"
+              onChange={(val) => updateParam("gasImpulsePct", val)}
             />
           </div>
 
-          <SensitivitySlider
-            id="recoilStroke"
+          <PortHamiltonianEnergyStrip patentId="us-319596-maxim-machine-gun" params={params} />
+
+          <ClaimConstraintToggle
             patentId="us-319596-maxim-machine-gun"
-            paramKey="recoilTravelMm"
-            label="Short-Recoil Stroke"
-            value={recoilStrokeMm}
-            min={12}
-            max={25}
-            step={1}
-            onChange={(val) => updateParam("recoilStroke", val)}
-            allParams={params}
+            claimNumber={1}
+            claimTitle="Sliding Muzzle Sleeve & Breech Linkage"
+            active={claimStates[1] ?? true}
+            onChange={(active) => setClaimStates((prev) => ({ ...prev, 1: active }))}
           />
         </div>
-
-        <ClaimConstraintToggle
-          patentId="us-319596-maxim-machine-gun"
-          claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
-          className="mt-2"
-        />
-
-        <PortHamiltonianEnergyStrip
-          patentId="us-319596-maxim-machine-gun"
-          params={params}
-          className="mt-3"
-        />
-      </div>
+      )}
     </div>
   );
 }

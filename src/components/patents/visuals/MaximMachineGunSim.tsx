@@ -10,23 +10,18 @@ import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
 export function MaximMachineGunSim() {
-  const { params, updateParam, resetParams } = usePatentPhysics("us-319596-maxim-machine-gun");
+  const { params, resetParams } = usePatentPhysics("us-319596-maxim-machine-gun");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const cyclicRateRpm = params.firingRate ?? 600;
-  const jacketWaterLiters = params.waterLevel ?? 4.0;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [recoilPhase, setRecoilPhase] = useState<number>(0);
+  const [cyclePhase, setCyclePhase] = useState<number>(0);
   const animRef = useRef<number | null>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const maxim = FrankenSimEngine.stepMaximMachineGun({
-    firingRateRpm: cyclicRateRpm,
-    waterJacketLiters: jacketWaterLiters,
-    recoilStrokeMm: params.recoilStroke ?? 19,
+    cyclePhaseRad: cyclePhase,
+    gasImpulsePct: params.gasImpulsePct ?? 75,
+    cycleRpm: 60,
   });
-  const barrelTempC = maxim.barrelTempC;
-  const muzzleEnergyJoules = maxim.muzzleEnergyJoules;
-  const cycleTimeMs = maxim.cycleIntervalMs;
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -39,7 +34,7 @@ export function MaximMachineGunSim() {
       const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
       lastTime = time;
 
-      setRecoilPhase((prev) =>
+      setCyclePhase((prev) =>
         wrapCycleRad(prev + maxim.fireOmegaRadPerS * dt, maxim.fireCycleWrapRad),
       );
     };
@@ -50,9 +45,11 @@ export function MaximMachineGunSim() {
     };
   }, [isPlaying, maxim.fireOmegaRadPerS, maxim.fireCycleWrapRad, onscreenRef.current]);
 
-  // Recoil displacement of barrel & breech
-  const recoilX = (Math.cos(recoilPhase) + 1) * maxim.recoilSvgAmp;
-  const isMuzzleFiring = recoilPhase < maxim.firingWindowRad;
+  const strokePct = maxim.sleeveForwardMm / 24; // 0 to 1
+  const sleeveX = 390 + 30 * strokePct;
+  const rodX = 240 - 25 * strokePct;
+  const breechX = 210 - 45 * strokePct;
+  const crankAngle = strokePct * Math.PI;
 
   return (
     <div
@@ -64,12 +61,12 @@ export function MaximMachineGunSim() {
           <div className="flex items-center gap-2">
             <Target className="w-5 h-5 text-amber-600 dark:text-amber-400" />
             <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-              Hiram Maxim Automatic Recoil Machine Gun (US 319,596)
+              Hiram Maxim Muzzle-Gas Machine Gun (US 319,596)
             </h3>
           </div>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
-            Short-recoil barrel unlocking, toggle-joint lock, canvas belt feed, and water cooling
-            jacket.
+            Direct forward muzzle-gas sleeve, direction-reversing rocker linkage, Scotch-yoke
+            cross-head, and volute return spring.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -107,7 +104,7 @@ export function MaximMachineGunSim() {
             type="button"
             onClick={() => {
               resetParams();
-              setRecoilPhase(0);
+              setCyclePhase(0);
               soundEngine.playSwitchClick();
             }}
             aria-label="Reset Simulation"
@@ -123,188 +120,232 @@ export function MaximMachineGunSim() {
         <svg
           viewBox="0 0 600 340"
           role="img"
-          aria-label={`Maxim machine gun simulation: ${isPlaying ? (isMuzzleFiring ? "firing" : "recoil cycle running") : "stopped"}, water jacket at ${jacketWaterLiters.toFixed(1)} liters`}
+          aria-label={`Maxim US 319,596 muzzle-gas machine gun simulation: ${isPlaying ? (maxim.isMuzzleFiring ? "firing" : "cycling") : "stopped"}`}
           className="w-full h-full"
         >
-          {/* Rectangular Steel Breech Casing */}
+          {/* Main Structural Frame A */}
           <rect
-            x="60"
-            y="110"
-            width="220"
-            height="90"
+            x="50"
+            y="90"
+            width="280"
+            height="130"
             rx="4"
             fill="#2D3748"
             stroke="#1A202C"
             strokeWidth="2"
           />
 
-          {/* Brass/Bronze Water Jacket Cylinder surrounding barrel */}
+          {/* Fixed Barrel B */}
           <rect
-            x="280"
-            y="125"
-            width="220"
-            height="60"
-            rx="10"
-            fill="#B87333"
-            stroke="#8B5A2B"
+            x="240"
+            y="135"
+            width="200"
+            height="20"
+            fill="#4A5568"
+            stroke="#2D3748"
             strokeWidth="2"
-            opacity={maxim.steamOpacity > 0 ? Math.min(1, 0.55 + maxim.jacketHeatSample) : 0.45}
           />
-          <text
-            x="330"
-            y="160"
-            fill="#FFFFFF"
-            fontWeight="bold"
-            fontSize="11"
-            fontFamily="sans-serif"
-          >
-            Water Jacket ({jacketWaterLiters} L)
-          </text>
+          {/* Barrel bore centerline */}
+          <line
+            x1="240"
+            y1="145"
+            x2="440"
+            y2="145"
+            stroke="#718096"
+            strokeDasharray="4 4"
+            strokeWidth="1"
+          />
 
-          {/* Recoiling Barrel Tube & Muzzle Booster */}
-          <g transform={`translate(${-recoilX}, 0)`}>
+          {/* Fixed Muzzle Socket Guide */}
+          <rect
+            x="370"
+            y="130"
+            width="30"
+            height="30"
+            fill="#319795"
+            stroke="#234E52"
+            strokeWidth="1.5"
+            opacity="0.8"
+          />
+
+          {/* Sliding Muzzle Sleeve l & Socket l' (Moves Forward) */}
+          <g transform={`translate(${sleeveX - 390}, 0)`}>
             <rect
-              x="180"
-              y="150"
-              width="340"
-              height="12"
-              fill="#718096"
-              stroke="#1A202C"
-              strokeWidth="1"
+              x="390"
+              y="126"
+              width="55"
+              height="38"
+              rx="4"
+              fill="#D69E2E"
+              stroke="#975A16"
+              strokeWidth="2"
             />
-            {/* Muzzle Booster Cap */}
-            <rect x="520" y="146" width="25" height="20" rx="3" fill="#2D3748" />
+            {/* Internal gas shoulder indicator */}
+            <line x1="435" y1="128" x2="435" y2="162" stroke="#744210" strokeWidth="2" />
+            <text x="400" y="150" fill="#1A202C" fontSize="10" fontWeight="bold">
+              Sleeve l
+            </text>
           </g>
 
-          {/* Muzzle Flash if firing */}
-          {isMuzzleFiring && (
-            <polygon
-              points="545,156 590,140 570,156 600,158 570,162 590,175"
-              fill="#ECC94B"
-              stroke="#DD6B20"
-              strokeWidth="1.5"
-            />
+          {/* Muzzle Gas Blast Cloud when firing */}
+          {maxim.isMuzzleFiring && (
+            <g transform={`translate(${sleeveX + 55}, 145)`}>
+              <ellipse cx="15" cy="0" rx="20" ry="12" fill="#ECC94B" opacity="0.9" />
+              <ellipse cx="25" cy="0" rx="14" ry="8" fill="#DD6B20" opacity="0.85" />
+              <polygon points="0,-8 18,0 0,8" fill="#E53E3E" />
+            </g>
           )}
 
-          {/* Internal Toggle Joint Lock Linkage */}
-          <g transform={`translate(${140 - recoilX}, 155)`}>
-            {/* Toggle Joint Links */}
+          {/* Reversing Levers n (Pivots at x=340, y=180) */}
+          <g>
+            <circle cx="340" cy="180" r="4" fill="#E2E8F0" stroke="#1A202C" strokeWidth="1.5" />
+            {/* Lever bar */}
+            <line
+              x1={390 + 30 * strokePct - 20}
+              y1="145"
+              x2={rodX + 70}
+              y2="200"
+              stroke="#D69E2E"
+              strokeWidth="4"
+              strokeLinecap="round"
+            />
+            <text x="330" y="215" fill="#A0AEC0" fontSize="10">
+              Lever n
+            </text>
+          </g>
+
+          {/* Connecting Operating Rods c' (Pulls Rearward) */}
+          <g>
+            <line
+              x1={rodX}
+              y1="200"
+              x2={rodX + 70}
+              y2="200"
+              stroke="#E2E8F0"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+            />
+            <text x={rodX + 15} y="195" fill="#CBD5E0" fontSize="9">
+              Rod c′
+            </text>
+          </g>
+
+          {/* Transverse Crankshaft e (Center at x=100, y=155) */}
+          <g transform="translate(100, 155)">
+            <circle cx="0" cy="0" r="24" fill="#1A202C" stroke="#4A5568" strokeWidth="2" />
+            {/* Crank arm f & pin e² */}
             <line
               x1="0"
               y1="0"
-              x2="35"
-              y2={recoilX > 6 ? -22 : 0}
-              stroke="#D4AF37"
-              strokeWidth="6"
+              x2={20 * Math.cos(crankAngle)}
+              y2={20 * Math.sin(crankAngle)}
+              stroke="#ECC94B"
+              strokeWidth="4"
               strokeLinecap="round"
             />
-            <line
-              x1="35"
-              y1={recoilX > 6 ? -22 : 0}
-              x2="70"
-              y2="0"
-              stroke="#D4AF37"
-              strokeWidth="6"
-              strokeLinecap="round"
+            <circle
+              cx={20 * Math.cos(crankAngle)}
+              cy={20 * Math.sin(crankAngle)}
+              r="4"
+              fill="#E53E3E"
             />
-            <circle cx="35" cy={recoilX > 6 ? -22 : 0} r="4.5" fill="#1A202C" />
-          </g>
-
-          {/* Woven Fabric Ammo Belt Feeding from Side */}
-          <g transform="translate(190, 80)">
-            <rect
-              x="0"
-              y="0"
-              width="18"
-              height="60"
-              fill="#C2B280"
-              stroke="#8B5A2B"
-              strokeWidth="1"
+            {/* Volute Spring k Indicator */}
+            <circle
+              cx="0"
+              cy="0"
+              r="16"
+              fill="none"
+              stroke="#ED8936"
+              strokeWidth="2"
+              strokeDasharray="4 2"
             />
-            <circle cx="9" cy="15" r="4" fill="#D4AF37" />
-            <circle cx="9" cy="35" r="4" fill="#D4AF37" />
-            <circle cx="9" cy="55" r="4" fill="#D4AF37" />
-            <text
-              x="-45"
-              y="25"
-              fill="#8B5A2B"
-              fontSize="9"
-              fontWeight="bold"
-              fontFamily="sans-serif"
-            >
-              Fabric Belt
+            <text x="-18" y="-28" fill="#ECC94B" fontSize="10" fontWeight="bold">
+              Crank e / Spring k
             </text>
           </g>
+
+          {/* Scotch-Yoke Cross-Head d & Breech-Block C (Slides Rearward) */}
+          <g transform={`translate(${breechX - 210}, 0)`}>
+            {/* Breech block C */}
+            <rect
+              x="160"
+              y="125"
+              width="65"
+              height="40"
+              rx="2"
+              fill="#4A5568"
+              stroke="#CBD5E0"
+              strokeWidth="1.5"
+            />
+            {/* Scotch-Yoke Vertical Slot */}
+            <rect
+              x="95"
+              y="125"
+              width="12"
+              height="60"
+              rx="3"
+              fill="#2D3748"
+              stroke="#E2E8F0"
+              strokeWidth="1"
+            />
+            <text x="165" y="148" fill="#F7FAFC" fontSize="10" fontWeight="bold">
+              Breech C
+            </text>
+            <text x="85" y="195" fill="#E2E8F0" fontSize="9">
+              Cross-Head d
+            </text>
+          </g>
+
+          {/* Cartridge Feed Starwheels Q, Q' */}
+          <g transform="translate(190, 80)">
+            <circle cx="0" cy="0" r="14" fill="#D69E2E" stroke="#744210" strokeWidth="1.5" />
+            <circle cx="25" cy="0" r="14" fill="#D69E2E" stroke="#744210" strokeWidth="1.5" />
+            <text x="-5" y="-18" fill="#ECC94B" fontSize="9">
+              Feed Q, Q′
+            </text>
+          </g>
+
+          {/* Explanatory Annotations */}
+          <text x="60" y="320" fill="#718096" fontSize="10">
+            Fixed Barrel B • Forward Sleeve l • Reversing Levers n • Operating Rods c′ • Crankshaft
+            e • Volute Spring k
+          </text>
         </svg>
       </div>
 
-      {/* Telemetry Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Cyclic Fire Rate
+      {/* Live Readout Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+        <div className="p-3 bg-parchment-100 dark:bg-ink-900 rounded-xl border border-parchment-200 dark:border-ink-800">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-ink-500 dark:text-ink-400 block">
+            Muzzle Sleeve
           </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {cyclicRateRpm} rounds/min
-          </span>
-        </div>
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Cycle Interval
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            {cycleTimeMs} ms
+          <span className="font-mono text-sm sm:text-base font-semibold text-amber-600 dark:text-amber-400">
+            {maxim.sleeveForwardMm > 1 ? `+${maxim.sleeveForwardMm.toFixed(1)} mm` : "IN BATTERY"}
           </span>
         </div>
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Barrel Temperature
+        <div className="p-3 bg-parchment-100 dark:bg-ink-900 rounded-xl border border-parchment-200 dark:border-ink-800">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-ink-500 dark:text-ink-400 block">
+            Breech Block C
           </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {barrelTempC}°C
-          </span>
-        </div>
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Muzzle Energy
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {muzzleEnergyJoules} J
+          <span className="font-mono text-sm sm:text-base font-semibold text-cyan-600 dark:text-cyan-400">
+            {maxim.breechOpenMm > 2 ? `-${maxim.breechOpenMm.toFixed(1)} mm` : "CLOSED"}
           </span>
         </div>
-      </div>
-
-      {/* Sliders */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Recoil Spring Tension (Fire Rate)</span>
-            <span className="font-mono">{cyclicRateRpm} RPM</span>
-          </div>
-          <input
-            type="range"
-            min="300"
-            max="750"
-            step="25"
-            value={cyclicRateRpm}
-            onChange={(e) => updateParam("firingRate", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
+        <div className="p-3 bg-parchment-100 dark:bg-ink-900 rounded-xl border border-parchment-200 dark:border-ink-800">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-ink-500 dark:text-ink-400 block">
+            Reversing Levers
+          </span>
+          <span className="font-mono text-sm sm:text-base font-semibold text-purple-600 dark:text-purple-400">
+            {maxim.leverAngleDeg.toFixed(1)}°
+          </span>
         </div>
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Water Cooling Jacket Reserve</span>
-            <span className="font-mono">{jacketWaterLiters} Liters</span>
-          </div>
-          <input
-            type="range"
-            min="0"
-            max="4.0"
-            step="0.2"
-            value={jacketWaterLiters}
-            onChange={(e) => updateParam("waterLevel", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
+        <div className="p-3 bg-parchment-100 dark:bg-ink-900 rounded-xl border border-parchment-200 dark:border-ink-800">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-ink-500 dark:text-ink-400 block">
+            Volute Spring k
+          </span>
+          <span className="font-mono text-sm sm:text-base font-semibold text-emerald-600 dark:text-emerald-400">
+            {maxim.springWoundPct > 5 ? `WOUND (${maxim.springWoundPct.toFixed(0)}%)` : "UNWOUND"}
+          </span>
         </div>
       </div>
     </div>

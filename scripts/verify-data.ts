@@ -10,6 +10,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { validateCuratedSpecificationEdition } from "../src/data/archivalEditionValidation";
 import { ALL_COLORIZED_EQUATIONS } from "../src/data/colorizedEquations";
+import { validateColorizedEquationCatalogue } from "../src/data/colorizedEquationValidation";
 import { archivalParallelReadingsFor } from "../src/data/editions/parallelReadings";
 import {
   archivalEditionForPublication,
@@ -154,6 +155,12 @@ async function main() {
       .filter((filename) => filename.endsWith("Kernel.ts"))
       .map((filename) => fs.readFileSync(path.join(physicsDirectory, filename), "utf8")),
   ];
+
+  const equationSerialization = validateColorizedEquationCatalogue(ALL_COLORIZED_EQUATIONS);
+  for (const error of equationSerialization.errors) {
+    console.error(`❌ Colorized-equation transport contract: ${error}`);
+    errorCount++;
+  }
 
   for (const patent of allPatents) {
     const prefix = `[${patent.patentNumber} - ${patent.id}]`;

@@ -87,14 +87,11 @@ const AIRCRAFT_MASS_KG = 520.0; // VS-300 gross weight ~1,150 lbs = 520 kg
 const AIRCRAFT_WEIGHT_N = AIRCRAFT_MASS_KG * GRAVITY; // ~5,099.5 N
 const MAIN_ROTOR_RADIUS_M = 4.27; // 28 ft diameter = 14 ft radius = 4.27 m
 const MAIN_ROTOR_DISK_AREA = Math.PI * MAIN_ROTOR_RADIUS_M * MAIN_ROTOR_RADIUS_M; // ~57.28 m^2
-const MAIN_BLADE_CHORD_M = 0.22; // Blade mean chord
-const NUM_MAIN_BLADES = 3;
 const TAIL_BOOM_LENGTH_M = 4.8; // Distance from main shaft to tail rotor shaft
 const TAIL_ROTOR_RADIUS_M = 0.65; // 1.3 m diameter
 const TAIL_ROTOR_DISK_AREA = Math.PI * TAIL_ROTOR_RADIUS_M * TAIL_ROTOR_RADIUS_M; // ~1.327 m^2
 const TAIL_GEAR_RATIO = 5.0; // Tail rotor spins 5x main rotor
 const YAW_MOMENT_OF_INERTIA = 450.0; // kg·m^2
-const ENGINE_MAX_POWER_WATTS = 74570.0; // 100 HP Franklin air-cooled engine = 74.57 kW
 const THROTTLE_CORRELATOR_GAIN = 4.5; // Throttle % increase per degree of collective pitch
 
 export function readSikorskyControls(
@@ -103,7 +100,10 @@ export function readSikorskyControls(
   return {
     collectivePitchDeg: Math.max(
       2.0,
-      Math.min(16.0, Number(raw.collectivePitchDeg ?? DEFAULT_SIKORSKY_CONTROLS.collectivePitchDeg)),
+      Math.min(
+        16.0,
+        Number(raw.collectivePitchDeg ?? DEFAULT_SIKORSKY_CONTROLS.collectivePitchDeg),
+      ),
     ),
     cyclicPitchForwardDeg: Math.max(
       -10.0,
@@ -183,7 +183,7 @@ export function stepSikorskyHelicopterSi(
   const tipMach = tipSpeed / SPEED_OF_SOUND;
 
   // Dimensionless thrust coefficient: C_T = (sigma * a / 2) * (theta / 3 - lambda / 2)
-  const cT = 0.0010 + 0.00055 * controls.collectivePitchDeg;
+  const cT = 0.001 + 0.00055 * controls.collectivePitchDeg;
   let thrustN = cT * AIR_DENSITY * MAIN_ROTOR_DISK_AREA * (tipSpeed * tipSpeed);
 
   // Ground effect multiplier (IGE): increases thrust when altitude < 1.0 rotor diameter (8.5m)
@@ -209,15 +209,13 @@ export function stepSikorskyHelicopterSi(
   const trimTailThrustNeeded = mainRotorTorqueNm / TAIL_BOOM_LENGTH_M;
   // Pedal deflection changes tail rotor pitch: ±100% maps to ±400 N
   const pedalThrustDelta = (controls.tailRotorPedalPercent / 100.0) * 450.0;
-  const tailRotorThrustN = Math.max(
-    0.0,
-    trimTailThrustNeeded + pedalThrustDelta,
-  );
+  const tailRotorThrustN = Math.max(0.0, trimTailThrustNeeded + pedalThrustDelta);
   const tailTipSpeed = tailOmegaRadSec * TAIL_ROTOR_RADIUS_M;
   const tailInducedVelocity = Math.sqrt(
     Math.max(0.0, tailRotorThrustN) / (2.0 * AIR_DENSITY * TAIL_ROTOR_DISK_AREA),
   );
-  const tailRotorPower = tailRotorThrustN * tailInducedVelocity + 0.01 * tailTipSpeed * tailTipSpeed;
+  const tailRotorPower =
+    tailRotorThrustN * tailInducedVelocity + 0.01 * tailTipSpeed * tailTipSpeed;
   const tailRotorTorqueNm = tailOmegaRadSec > 0.1 ? tailRotorPower / tailOmegaRadSec : 0.0;
 
   // Net Yaw Moment: M_yaw = Q_main - T_tail * L_boom
@@ -227,21 +225,23 @@ export function stepSikorskyHelicopterSi(
   // 5. Flight Kinematics & Attitude Integration
   // Yaw dynamics
   const yawAccelDegSec2 = (netYawMomentNm / YAW_MOMENT_OF_INERTIA) * (180.0 / Math.PI);
-  let yawRate = (prevState.yawRateDegPerSec + yawAccelDegSec2 * safeDt) * 0.92; // Aero damping
+  const yawRate = (prevState.yawRateDegPerSec + yawAccelDegSec2 * safeDt) * 0.92; // Aero damping
   let yawAngle = (prevState.yawAngleDeg + yawRate * safeDt) % 360.0;
   if (yawAngle < 0) yawAngle += 360.0;
 
   // Pitch & Roll tilt from cyclic swashplate
   const targetPitchAngle = -controls.cyclicPitchForwardDeg * 1.2; // Forward stick pitches nose down
   const targetRollAngle = controls.cyclicRollRightDeg * 1.2; // Right stick rolls right
-  const pitchAngle = prevState.pitchAngleDeg + (targetPitchAngle - prevState.pitchAngleDeg) * Math.min(1.0, safeDt * 4.0);
-  const rollAngle = prevState.rollAngleDeg + (targetRollAngle - prevState.rollAngleDeg) * Math.min(1.0, safeDt * 4.0);
+  const pitchAngle =
+    prevState.pitchAngleDeg +
+    (targetPitchAngle - prevState.pitchAngleDeg) * Math.min(1.0, safeDt * 4.0);
+  const rollAngle =
+    prevState.rollAngleDeg +
+    (targetRollAngle - prevState.rollAngleDeg) * Math.min(1.0, safeDt * 4.0);
 
   // Vertical dynamics: F_net = T * cos(pitch) * cos(roll) - Weight
   const verticalThrust =
-    thrustN *
-    Math.cos((pitchAngle * Math.PI) / 180.0) *
-    Math.cos((rollAngle * Math.PI) / 180.0);
+    thrustN * Math.cos((pitchAngle * Math.PI) / 180.0) * Math.cos((rollAngle * Math.PI) / 180.0);
   const netVerticalForce = verticalThrust - AIRCRAFT_WEIGHT_N;
   const verticalAccel = netVerticalForce / AIRCRAFT_MASS_KG;
   let verticalVel = prevState.verticalVelocityMs + verticalAccel * safeDt;
@@ -256,13 +256,15 @@ export function stepSikorskyHelicopterSi(
   // Forward & Lateral velocities
   const pitchRad = (pitchAngle * Math.PI) / 180.0;
   const forwardThrust = -thrustN * Math.sin(pitchRad); // Pitch down gives positive forward thrust
-  const forwardDrag = 0.5 * AIR_DENSITY * 1.2 * (prevState.forwardVelocityMs * Math.abs(prevState.forwardVelocityMs));
+  const forwardDrag =
+    0.5 * AIR_DENSITY * 1.2 * (prevState.forwardVelocityMs * Math.abs(prevState.forwardVelocityMs));
   const forwardAccel = (forwardThrust - forwardDrag) / AIRCRAFT_MASS_KG;
   const forwardVel = Math.max(0.0, prevState.forwardVelocityMs + forwardAccel * safeDt);
 
   const rollRad = (rollAngle * Math.PI) / 180.0;
   const lateralThrust = thrustN * Math.sin(rollRad);
-  const lateralDrag = 0.5 * AIR_DENSITY * 1.5 * (prevState.lateralVelocityMs * Math.abs(prevState.lateralVelocityMs));
+  const lateralDrag =
+    0.5 * AIR_DENSITY * 1.5 * (prevState.lateralVelocityMs * Math.abs(prevState.lateralVelocityMs));
   const lateralAccel = (lateralThrust - lateralDrag) / AIRCRAFT_MASS_KG;
   const lateralVel = prevState.lateralVelocityMs + lateralAccel * safeDt;
 

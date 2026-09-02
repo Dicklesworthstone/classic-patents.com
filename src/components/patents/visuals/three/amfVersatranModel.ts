@@ -149,14 +149,49 @@ export function buildAmfVersatranModel(): AmfVersatranModel {
   wristRotationStage.add(wristHub);
 
   const gripper = new THREE.Group();
-  gripper.name = "Work manipulating member with gripping fingers";
+  gripper.name = "Claim 12 work manipulating member with coupled gripping fingers";
+  const pinionGripper = new THREE.Group();
+  pinionGripper.name = "Claim 12 engaging pinions and Claim 13 rack topology";
+  const upperPinion = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.075, 0.075, 0.045, 18)),
+    gripperPaint,
+  );
+  upperPinion.name = "Gear 334 / Claim 12 engaging pinion";
+  upperPinion.rotation.x = Math.PI / 2;
+  upperPinion.position.set(0.1, 0.105, 0.01);
+  const lowerPinion = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.075, 0.075, 0.045, 18)),
+    gripperPaint,
+  );
+  lowerPinion.name = "Gear 346 / Claim 12 engaging pinion";
+  lowerPinion.rotation.x = Math.PI / 2;
+  lowerPinion.position.set(0.1, -0.105, 0.01);
+  const upperJawPivot = new THREE.Group();
+  upperJawPivot.name = "Upper gripping-finger pivot";
+  upperJawPivot.position.set(0.1, 0.105, 0);
   const jawA = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.28, 0.045, 0.07)), gripperPaint);
-  jawA.name = "Gripping finger 1";
-  jawA.position.set(0.18, 0.08, 0);
+  jawA.name = "Gripping finger 324";
+  jawA.position.set(0.18, 0, 0);
+  upperJawPivot.add(jawA);
+  const lowerJawPivot = new THREE.Group();
+  lowerJawPivot.name = "Lower gripping-finger pivot";
+  lowerJawPivot.position.set(0.1, -0.105, 0);
   const jawB = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.28, 0.045, 0.07)), gripperPaint);
-  jawB.name = "Gripping finger 2";
-  jawB.position.set(0.18, -0.08, 0);
-  gripper.add(jawA, jawB);
+  jawB.name = "Gripping finger 326";
+  jawB.position.set(0.18, 0, 0);
+  lowerJawPivot.add(jawB);
+  const upperRack = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.36, 0.04, 0.035)), darkSteel);
+  upperRack.name = "Claim 13 upper linearly movable rack";
+  upperRack.position.set(-0.09, 0.19, 0);
+  const lowerRack = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.36, 0.04, 0.035)), darkSteel);
+  lowerRack.name = "Claim 13 lower linearly movable rack";
+  lowerRack.position.set(-0.09, -0.19, 0);
+  const genericTool = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.38, 0.22, 0.14)), wristPaint);
+  genericTool.name = "Generic work tool when Claim 12 topology is withheld";
+  genericTool.position.set(0.22, 0, 0);
+  genericTool.visible = false;
+  pinionGripper.add(upperPinion, lowerPinion, upperJawPivot, lowerJawPivot, upperRack, lowerRack);
+  gripper.add(pinionGripper, genericTool);
   wristRotationStage.add(gripper);
   wristSwingStage.add(wristRotationStage);
   armRoot.add(wristSwingStage);
@@ -206,6 +241,7 @@ export function buildAmfVersatranModel(): AmfVersatranModel {
 
   const updateState = (state: AmfVersatranTopologyState) => {
     const { controls, displayPose } = state;
+    root.visible = state.claimProbeStates[1];
     columnAssembly.rotation.y = displayPose.columnRotationDisplayRad;
     carriage.position.y = -0.42 + controls.carriageLift * 1.18;
 
@@ -221,9 +257,16 @@ export function buildAmfVersatranModel(): AmfVersatranModel {
     wristSwingStage.position.x = wristX;
     wristSwingStage.rotation.y = displayPose.wristSwingDisplayRad;
     wristRotationStage.rotation.x = displayPose.wristRotationDisplayRad;
-    const jawGap = 0.055 + displayPose.gripperOpenFraction * 0.18;
-    jawA.position.y = jawGap;
-    jawB.position.y = -jawGap;
+    const pinionRotation = displayPose.gripperPinionRotationDisplayRad;
+    upperPinion.rotation.z = pinionRotation;
+    lowerPinion.rotation.z = -pinionRotation;
+    upperJawPivot.rotation.z = pinionRotation;
+    lowerJawPivot.rotation.z = -pinionRotation;
+    const rackTravel = (displayPose.gripperRackTravelFraction - 0.5) * 0.16;
+    upperRack.position.x = -0.09 + rackTravel;
+    lowerRack.position.x = -0.09 - rackTravel;
+    pinionGripper.visible = displayPose.pinionGripperTopologyEnabled;
+    genericTool.visible = !displayPose.pinionGripperTopologyEnabled;
 
     const armStart = new THREE.Vector3(-0.36, 1.55, 0);
     const armEnd = new THREE.Vector3(-0.92, 1.35 + controls.carriageLift * 0.36, 0.08);
@@ -236,6 +279,10 @@ export function buildAmfVersatranModel(): AmfVersatranModel {
 
     recordedDial.rotation.z = (state.comparisonChannels[0]?.recordedSignalPhase ?? 0) * Math.PI * 2;
     feedbackDial.rotation.z = (state.comparisonChannels[0]?.feedbackSignalPhase ?? 0) * Math.PI * 2;
+    // Claim 8 is the source-described recording / repetitive-playback path.
+    // When that independent topology is withheld, do not leave a decorative
+    // comparator cabinet standing in for the omitted relationship.
+    signalDisplay.visible = state.claimProbeStates[8];
     signalPaint.emissive.setHex(
       state.programMode === "automatic-recorded-signal-playback" ? 0x0e7490 : 0x082f49,
     );

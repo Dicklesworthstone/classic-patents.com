@@ -126,12 +126,14 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
       "Hydrodynamic Water Jet",
     );
     expect(energyChannelsFor("us-470918-reno-escalator", {})[0]?.name).toBe("Motor");
-    expect(energyChannelsFor("us-319596-maxim-machine-gun", {})[0]).toMatchObject({
-      name: "Jacket heat",
-      tone: "loss",
-    });
-    expect(energyChannelsFor("us-319596-maxim-machine-gun", {})[0]?.watts).toBeGreaterThan(0);
-    expect(energyChannelsFor("us-588-ericsson-propeller", {})[0]?.name).toBe("Thrust · v");
+    expect(energyChannelsFor("us-319596-maxim-machine-gun", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-319596-maxim-machine-gun"]).toContain(
+      "no continuous firing rate",
+    );
+    expect(energyChannelsFor("us-588-ericsson-propeller", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-588-ericsson-propeller"]).toContain(
+      "no measured ship thrust",
+    );
     expect(energyChannelsFor("us-400766-hall-aluminium", {})[0]).toMatchObject({
       name: "Cell",
       tone: "in",

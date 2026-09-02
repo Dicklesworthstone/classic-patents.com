@@ -130,15 +130,15 @@ import {
   SALISBURY_HAND_DEFAULT_CONTROLS,
 } from "./salisburyRobotHandKernel";
 import {
-  readStackhouseSourceControls,
-  STACKHOUSE_SOURCE_DEFAULT_CONTROLS,
-  stepStackhouseSourceTopology,
-} from "./stackhouseSourceKernel";
-import {
   INITIAL_SIKORSKY_STATE,
   readSikorskyControls,
   stepSikorskyHelicopterSi,
 } from "./sikorskyHelicopterKernel";
+import {
+  readStackhouseSourceControls,
+  STACKHOUSE_SOURCE_DEFAULT_CONTROLS,
+  stepStackhouseSourceTopology,
+} from "./stackhouseSourceKernel";
 import {
   readSundbackZipperControls,
   SUNDBACK_ZIPPER_DEFAULT_CONTROLS,
@@ -156,6 +156,13 @@ import { stepWattCondenser } from "./wattCondenserKernel";
 import { stepWattRotaryEngine } from "./wattRotaryKernel";
 import { readWrightControls, stepWrightFlyerSi, WRIGHT_COUPLING } from "./wrightKernel";
 
+export type MetricProvenanceClassification =
+  | "source-disclosed"
+  | "scenario-modern"
+  | "scenario-reader"
+  | "topology-normalized"
+  | "refusal-bounded";
+
 export interface PhysicsControl {
   id: string;
   label: string;
@@ -164,6 +171,8 @@ export interface PhysicsControl {
   step: number;
   defaultValue: number;
   unit: string;
+  provenance?: MetricProvenanceClassification;
+  provenanceCitation?: string;
 }
 
 export interface PhysicsMetric {
@@ -172,6 +181,8 @@ export interface PhysicsMetric {
   unit: string;
   badgeColor: "cyan" | "emerald" | "amber" | "indigo" | "rose" | "purple";
   progressPct?: number; // 0 to 100 for live graphic meter
+  provenance?: MetricProvenanceClassification;
+  provenanceCitation?: string;
 }
 
 export function clampProgress(pct: number): number {
@@ -187,6 +198,7 @@ export interface PatentPhysicsMetadata {
   controls: PhysicsControl[];
   computeMetrics: (params: Record<string, number>) => PhysicsMetric[];
   pedagogicalInsight: string;
+  provenance?: MetricProvenanceClassification;
   enforceConstraints?: (
     params: Record<string, number>,
     key: string,
@@ -871,11 +883,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     ],
     computeMetrics: (controls: Record<string, number>) => {
       const parsedControls = readSikorskyControls(controls as any);
-      const { metrics } = stepSikorskyHelicopterSi(
-        INITIAL_SIKORSKY_STATE,
-        parsedControls,
-        0.016,
-      );
+      const { metrics } = stepSikorskyHelicopterSi(INITIAL_SIKORSKY_STATE, parsedControls, 0.016);
 
       return [
         {
@@ -924,14 +932,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           label: "Induced Downwash Velocity",
           value: metrics.inducedVelocityMs.toFixed(2),
           unit: "m/s",
-          badgeColor: "blue",
+          badgeColor: "indigo",
           description: "Rankine-Froude momentum downwash through rotor disk",
         },
         {
           label: "Correlated Engine Throttle",
           value: metrics.effectiveThrottlePercent.toFixed(1),
           unit: "%",
-          badgeColor: "teal",
+          badgeColor: "emerald",
           description: "Mechanical linkage automatic throttle compensation",
         },
       ];
@@ -3188,53 +3196,53 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
 
       return [
         {
-          label: "Cross-Link Density",
+          label: "Process Thermal Stability",
+          value: rubber.isStickyOrBrittle ? "Uncured / Plastic" : "Cured Resilient",
+          unit: "state",
+          badgeColor: rubber.isStickyOrBrittle ? "rose" : "emerald",
+          progressPct: clampProgress(rubber.isStickyOrBrittle ? 30 : 95),
+          provenance: "source-disclosed",
+        },
+        {
+          label: "Cross-Link Density (Model)",
           value: crossLink,
           unit: "mol/cm³",
           badgeColor: "emerald",
           progressPct: clampProgress((Number(crossLink) / 1.5) * 100),
+          provenance: "scenario-modern",
+          provenanceCitation: "Modern sulfur crosslink kinetics model.",
         },
         {
-          label: "Tensile Strength",
+          label: "Tensile Strength (Model)",
           value: tensilePsi.toLocaleString(),
           unit: "psi",
           badgeColor: "cyan",
           progressPct: clampProgress((tensilePsi / 3500) * 100),
+          provenance: "scenario-modern",
         },
         {
-          label: "Elastic Return",
+          label: "Elastic Return (Model)",
           value: returnPct.toString(),
           unit: "%",
           badgeColor: "indigo",
           progressPct: clampProgress(returnPct),
+          provenance: "scenario-modern",
         },
         {
-          label: "Thermal Stability",
-          value: rubber.isStickyOrBrittle ? "Brittle / Plastic" : "Resilient",
-          unit: "state",
-          badgeColor: rubber.isStickyOrBrittle ? "rose" : "emerald",
-          progressPct: clampProgress(rubber.isStickyOrBrittle ? 30 : 95),
-        },
-        {
-          label: "Glass Transition",
+          label: "Glass Transition (Model)",
           value: `${rubber.glassTransitionTempC} °C`,
-          unit: "Tg",
+          unit: "°C",
           badgeColor: "amber",
-          progressPct: clampProgress(((rubber.glassTransitionTempC + 80) / 50) * 100),
+          progressPct: clampProgress(((rubber.glassTransitionTempC + 60) / 120) * 100),
+          provenance: "scenario-modern",
         },
         {
-          label: "Cure Rate",
-          value: `${rubber.rateRel}`,
-          unit: rubber.regime,
-          badgeColor: rubber.regime === "cure" ? "emerald" : "amber",
-          progressPct: Math.min(100, rubber.rateRel * 50),
-        },
-        {
-          label: "True Stress",
+          label: "True Stress (Model)",
           value: `${rubber.trueStressMpa}`,
           unit: "MPa",
           badgeColor: "indigo",
           progressPct: Math.min(100, (rubber.trueStressMpa / 30) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },
@@ -4031,11 +4039,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
 
       return [
         {
-          label: "Cylinder Hoop Stress",
+          label: "Cylinder Hoop Stress (Model)",
           value: hoopStressMpa,
           unit: "MPa",
           badgeColor: Number(hoopStressMpa) < 180 ? "emerald" : "amber",
           progressPct: clampProgress((Number(hoopStressMpa) / 250) * 100),
+          provenance: "scenario-modern",
+          provenanceCitation:
+            "Modern thin-walled cylinder hoop stress equation under black powder combustion.",
         },
         {
           label: "Cylinder Index Rotation",
@@ -4043,34 +4054,40 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "deg (72° step)",
           badgeColor: "cyan",
           progressPct: clampProgress((Number(indexAngleDeg) / 72) * 100),
+          provenance: "source-disclosed",
         },
         {
-          label: "Muzzle Exit Velocity",
+          label: "Muzzle Exit Velocity (Model)",
           value: muzzleVelocityMps.toString(),
           unit: "m/s",
           badgeColor: "amber",
           progressPct: clampProgress((muzzleVelocityMps / 360) * 100),
+          provenance: "scenario-modern",
+          provenanceCitation: "Internal ballistics expansion estimate.",
         },
         {
           label: "Cylinder Bolt Lock",
-          value: isLocked ? "LOCKED (0.02 mm)" : "INDEXING (72°)",
+          value: isLocked ? "LOCKED" : "INDEXING",
           unit: "detent",
           badgeColor: isLocked ? "emerald" : "amber",
           progressPct: clampProgress(isLocked ? 100 : 30),
+          provenance: "source-disclosed",
         },
         {
-          label: "Muzzle Energy",
+          label: "Muzzle Energy (Model)",
           value: `${colt.muzzleEnergyJoules} J`,
-          unit: "E_k",
+          unit: "J",
           badgeColor: "purple",
           progressPct: clampProgress((colt.muzzleEnergyJoules / 400) * 100),
+          provenance: "scenario-modern",
         },
         {
-          label: "Powder Charge",
+          label: "Powder Charge (Scenario)",
           value: `${powderGrains} gr`,
           unit: "grains",
           badgeColor: "amber",
           progressPct: clampProgress((powderGrains / 60) * 100),
+          provenance: "scenario-reader",
         },
       ];
     },
@@ -4285,90 +4302,97 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "Wedge-shaped two-part spacebands expand between words until the composed line locks tightly against fixed column jaws, while a binary keyway rail sorts recirculating brass matrices back into 90 magazine channels.",
   },
   "us-319596-maxim-machine-gun": {
-    domain: "continuum_elasticity",
-    domainTitle: "Short-Recoil Momentum Conservation & Toggle-Lock Kinematics",
-    equationName: "Conservation of Linear Recoil Momentum",
+    domain: "multibody_topology",
+    domainTitle: "Muzzle-Gas Expansion Sleeve & Direction-Reversing Breech Linkage",
+    equationName: "Muzzle Gas Impulse & Crankshaft Cross-Head Kinematics",
     governingEquation:
-      "m_{\\text{recoil}} v_{\\text{recoil}} = m_{\\text{bullet}} v_{\\text{bullet}} + m_{\\text{gas}} v_{\\text{gas}} \\quad \\text{and} \\quad F_{\\text{breech}} = \\frac{F_{\\text{toggle}}}{\\tan\\theta} \\to \\infty",
+      "x_{\\text{breech}}(\\theta) = r_{\\text{crank}} (1 - \\cos\\theta), \\quad \\dot{x}_{\\text{rods}} = -\\left(\\frac{L_2}{L_1}\\right) \\dot{x}_{\\text{sleeve}}, \\quad U_{\\text{spring}} = \\frac{1}{2} k_\\theta \\theta_{\\text{wind}}^2",
     engineMethod: "FrankenSimEngine.stepMaximMachineGun",
     controls: [
       {
-        id: "firingRate",
-        label: "Cyclic Firing Rate",
-        min: 300,
-        max: 750,
-        step: 25,
-        defaultValue: 600,
-        unit: "RPM",
-      },
-      {
-        id: "waterLevel",
-        label: "Water Jacket Fill",
+        id: "cyclePhase",
+        label: "Kinematic Mechanism Phase",
         min: 0,
-        max: 4.0,
-        step: 0.2,
-        defaultValue: 4.0,
-        unit: "liters",
+        max: 360,
+        step: 5,
+        defaultValue: 0,
+        unit: "deg",
+        provenance: "scenario-reader",
       },
       {
-        id: "recoilStroke",
-        label: "Short-Recoil Stroke",
-        min: 12,
-        max: 25,
-        step: 1,
-        defaultValue: 19,
-        unit: "mm",
+        id: "gasImpulsePct",
+        label: "Muzzle Gas Expansion Pressure (Scenario)",
+        min: 0,
+        max: 100,
+        step: 5,
+        defaultValue: 75,
+        unit: "%",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics: (p) => {
       const maxim = FrankenSimEngine.stepMaximMachineGun({
-        firingRateRpm: p.firingRate ?? 600,
-        waterJacketLiters: p.waterLevel ?? 4.0,
-        recoilStrokeMm: p.recoilStroke ?? 19,
+        cyclePhaseDeg: p.cyclePhase ?? (p.firingRate !== undefined ? 0 : 0),
+        gasImpulsePct: p.gasImpulsePct ?? 75,
       });
-      const barrelTemp = maxim.barrelTempC;
-      const boilRate = maxim.waterEvapRateGs.toFixed(1);
 
       return [
         {
-          label: "Toggle Unlock",
-          value: `${maxim.toggleUnlockForceN}`,
-          unit: "N",
+          label: "Barrel Mounting",
+          value: "FIXED BARREL B",
+          unit: "mount",
           badgeColor: "emerald",
-          progressPct: clampProgress((maxim.toggleUnlockForceN / 280) * 100),
+          progressPct: clampProgress(100),
+          provenance: "source-disclosed",
         },
         {
-          label: "Recoil Momentum",
-          value: `${maxim.recoilMomentumNs} N·s`,
-          unit: "p_rec",
-          badgeColor: "cyan",
-          progressPct: clampProgress((maxim.recoilMomentumNs / 15) * 100),
+          label: "Muzzle Sleeve State",
+          value:
+            maxim.sleeveForwardMm > 1
+              ? `FORWARD (${maxim.sleeveForwardMm.toFixed(1)} mm)`
+              : "IN BATTERY",
+          unit: "sleeve l",
+          badgeColor: maxim.sleeveForwardMm > 1 ? "amber" : "emerald",
+          progressPct: clampProgress((maxim.sleeveForwardMm / 24) * 100),
+          provenance: "source-disclosed",
         },
         {
-          label: "Barrel Temperature",
-          value: `${barrelTemp} °C`,
-          unit: "T_barrel",
-          badgeColor: barrelTemp <= 100 ? "emerald" : "rose",
-          progressPct: clampProgress((barrelTemp / 450) * 100),
+          label: "Breech-Block Position",
+          value: maxim.breechOpenMm > 2 ? `OPEN (${maxim.breechOpenMm.toFixed(1)} mm)` : "CLOSED",
+          unit: "block C",
+          badgeColor: maxim.breechOpenMm > 2 ? "cyan" : "emerald",
+          progressPct: clampProgress((maxim.breechOpenMm / 48) * 100),
+          provenance: "source-disclosed",
         },
         {
-          label: "Muzzle Energy",
-          value: `${maxim.muzzleEnergyJoules} J`,
-          unit: "E_k",
-          badgeColor: "amber",
-          progressPct: clampProgress((maxim.muzzleEnergyJoules / 4000) * 100),
-        },
-        {
-          label: "Steam Vaporization",
-          value: `${boilRate} g/s`,
-          unit: "dm/dt",
+          label: "Reversing Levers",
+          value: `${maxim.leverAngleDeg.toFixed(1)}°`,
+          unit: "deg",
           badgeColor: "purple",
-          progressPct: clampProgress((Number(boilRate) / 80) * 100),
+          progressPct: clampProgress((maxim.leverAngleDeg / 18) * 100),
+          provenance: "source-disclosed",
+        },
+        {
+          label: "Volute Return Spring",
+          value:
+            maxim.springWoundPct > 5 ? `WOUND (${maxim.springWoundPct.toFixed(0)}%)` : "UNWOUND",
+          unit: "spring k",
+          badgeColor: maxim.springWoundPct > 5 ? "amber" : "emerald",
+          progressPct: clampProgress(maxim.springWoundPct),
+          provenance: "source-disclosed",
+        },
+        {
+          label: "Firing & Sear Mechanism",
+          value: maxim.searState,
+          unit: "sear h",
+          badgeColor: maxim.searState === "COCKED" ? "amber" : "emerald",
+          progressPct: clampProgress(maxim.searState === "COCKED" ? 100 : 30),
+          provenance: "source-disclosed",
         },
       ];
     },
     pedagogicalInsight:
-      "The exploding cartridge drives the barrel and breech block rearward; breaking the collinear toggle linkage unlocks the breech, ejects the casing, indexes a fresh cartridge from the cloth belt, and returns under spring tension.",
+      "Expanding muzzle gases push sleeve l forward along fixed barrel B. Reversing levers n and rods c′ invert this forward displacement into rearward travel of cross-head d and breech-block C, winding volute spring k to power the forward return stroke.",
   },
   "us-361931-daimler-engine": {
     domain: "mechanical_transport",
@@ -5531,6 +5555,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 10,
         defaultValue: 120,
         unit: "model RPM",
+        provenance: "scenario-reader",
       },
       {
         id: "bladePitchAngleDeg",
@@ -5540,6 +5565,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 35,
         unit: "model degrees",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics: (_p) => {
@@ -5550,6 +5576,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "diameters per turn",
           badgeColor: "emerald",
           progressPct: clampProgress(100),
+          provenance: "source-disclosed",
         },
         {
           label: "Source Shaft Relation",
@@ -5557,6 +5584,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "lower stated speed",
           badgeColor: "purple",
           progressPct: clampProgress(100),
+          provenance: "source-disclosed",
         },
         {
           label: "Source Casing Clearance",
@@ -5564,6 +5592,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "inch",
           badgeColor: "amber",
           progressPct: clampProgress(100),
+          provenance: "source-disclosed",
         },
       ];
     },
@@ -5870,7 +5899,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       ];
     },
     pedagogicalInsight:
-      "Inert porous kieselguhr absorbs liquid nitroglycerin like a sponge, rendering the explosive insensitive to shock while the fulminate of mercury cap delivers the shockwave necessary for full detonation.",
+      "Porous silicious earth absorbs liquid nitro-glycerine to form a compressible powder, retaining the explosive charge in the bore-hole while the percussion-cap explosion provides the initial shock required to explode the powder.",
   },
   "us-79265-sholes-typewriter": {
     domain: "mechanism_kinematics",
@@ -6560,7 +6589,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       ];
     },
     pedagogicalInsight:
-      "Rotating at 6,000 RPM on a self-centering flexible spindle, the conical disc stack forces dense skim milk to the bowl perimeter while light butterfat concentrates along the central axis.",
+      "Mounted upon a flexible upper bearing spindle, rotating hollow chamber D separates compound fluid by centrifugal action, discharging the denser fluid through outer curved pipe X and nozzle l while the lighter fluid overflows through central nozzle n into separate annular receivers G and H.",
   },
   "us-347140-thomson-welding": {
     domain: "electromagnetics_flux",
@@ -7599,19 +7628,63 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 0,
         unit: "normalized phase",
       },
+      {
+        id: "claim1TopologyEnabled",
+        label: "Claim 1 six-motion topology",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "claim probe",
+      },
+      {
+        id: "claim8RecordPlaybackEnabled",
+        label: "Claim 8 record/playback path",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "claim probe",
+      },
+      {
+        id: "claim12PinionGripperEnabled",
+        label: "Claim 12 pinion gripper",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "claim probe",
+      },
     ],
     computeMetrics: (params) => {
       const state = stepAmfVersatranTopology(params);
+      const comparison = state.comparisonChannels[2];
       return [
         {
           label: "Program Mode",
-          value:
-            state.programMode === "automatic-recorded-signal-playback"
+          value: !state.claimProbeStates[8]
+            ? "REPLAY PATH WITHHELD"
+            : state.programMode === "automatic-recorded-signal-playback"
               ? "TAPE REPLAY"
               : "MANUAL TEACH",
           unit: "operational state",
           badgeColor:
             state.programMode === "automatic-recorded-signal-playback" ? "emerald" : "cyan",
+        },
+        {
+          label: "Six-Motion Pose",
+          value: state.claimProbeStates[1]
+            ? [
+                `C ${state.controls.columnRotation.toFixed(2)}`,
+                `V ${state.controls.carriageLift.toFixed(2)}`,
+                `A ${state.controls.armTravel.toFixed(2)}`,
+                `R ${state.controls.wristRotation.toFixed(2)}`,
+                `S ${state.controls.wristSwing.toFixed(2)}`,
+                `G ${state.controls.gripperOperation.toFixed(2)}`,
+              ].join(" · ")
+            : "CLAIM 1 TOPOLOGY WITHHELD",
+          unit: "normalized display",
+          badgeColor: state.claimProbeStates[1] ? "cyan" : "rose",
         },
         {
           label: "Arm Travel",
@@ -7633,8 +7706,29 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: state.maximumNormalizedPhaseError > 0.1 ? "rose" : "indigo",
         },
         {
+          label: "Tape Command Phase",
+          value: comparison ? comparison.recordedSignalPhase.toFixed(3) : "WITHHELD",
+          unit: "normalized phase · arm channel",
+          badgeColor: comparison ? "amber" : "purple",
+        },
+        {
+          label: "Resolver Feedback Phase",
+          value: comparison ? comparison.feedbackSignalPhase.toFixed(3) : "WITHHELD",
+          unit: "normalized phase · arm channel",
+          badgeColor: comparison ? "cyan" : "purple",
+        },
+        {
+          label: "Signed Phase Error",
+          value: comparison ? comparison.normalizedPhaseError.toFixed(3) : "WITHHELD",
+          unit: "normalized phase · arm channel",
+          badgeColor:
+            comparison && Math.abs(comparison.normalizedPhaseError) > 0.1 ? "rose" : "indigo",
+        },
+        {
           label: "Active Claim Scope",
-          value: `Claim ${state.activeClaim}`,
+          value: state.claimProbeStates[state.activeClaim]
+            ? `Claim ${state.activeClaim}`
+            : `Claim ${state.activeClaim} withheld`,
           unit: "legal boundary",
           badgeColor: "purple",
         },

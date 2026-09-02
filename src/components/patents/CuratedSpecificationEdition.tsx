@@ -143,6 +143,8 @@ function FigureReference({
     <span className="group relative inline" onBlur={closeWhenFocusLeavesPreview}>
       <button
         type="button"
+        data-testid="source-figure-reference"
+        data-figure-preview-count={inline.figurePreviews?.length ?? 0}
         aria-controls={tooltipId}
         aria-expanded={touchOpen}
         aria-label={inline.label}

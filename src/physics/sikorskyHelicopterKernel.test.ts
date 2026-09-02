@@ -29,7 +29,10 @@ describe("US 2,318,259 Igor Sikorsky Helicopter SI Physics Kernel", () => {
   test("demonstrates collective-throttle mechanical correlation (Claim 1 & 9)", () => {
     // Low collective (5 deg) vs High collective (12 deg)
     const lowColl = readSikorskyControls({ collectivePitchDeg: 5.0, engineThrottlePercent: 70.0 });
-    const highColl = readSikorskyControls({ collectivePitchDeg: 12.0, engineThrottlePercent: 70.0 });
+    const highColl = readSikorskyControls({
+      collectivePitchDeg: 12.0,
+      engineThrottlePercent: 70.0,
+    });
 
     const resLow = stepSikorskyHelicopterSi(INITIAL_SIKORSKY_STATE, lowColl, 0.05);
     const resHigh = stepSikorskyHelicopterSi(INITIAL_SIKORSKY_STATE, highColl, 0.05);
@@ -40,9 +43,7 @@ describe("US 2,318,259 Igor Sikorsky Helicopter SI Physics Kernel", () => {
     expect(resHigh.metrics.mainRotorThrustNewtons).toBeGreaterThan(
       resLow.metrics.mainRotorThrustNewtons,
     );
-    expect(resHigh.metrics.mainRotorTorqueNm).toBeGreaterThan(
-      resLow.metrics.mainRotorTorqueNm,
-    );
+    expect(resHigh.metrics.mainRotorTorqueNm).toBeGreaterThan(resLow.metrics.mainRotorTorqueNm);
   });
 
   test("tail rotor rudder pedal modulates yaw acceleration and anti-torque (Claim 2 & 3)", () => {
@@ -55,9 +56,7 @@ describe("US 2,318,259 Igor Sikorsky Helicopter SI Physics Kernel", () => {
     expect(resRight.metrics.tailRotorThrustNewtons).toBeGreaterThan(
       resLeft.metrics.tailRotorThrustNewtons,
     );
-    expect(resLeft.metrics.netYawMomentNm).toBeGreaterThan(
-      resRight.metrics.netYawMomentNm,
-    );
+    expect(resLeft.metrics.netYawMomentNm).toBeGreaterThan(resRight.metrics.netYawMomentNm);
   });
 
   test("sprag overrunning clutch disengages on engine shutdown for autorotation (Fig. 8)", () => {

@@ -104,6 +104,63 @@ describe("Physics Telemetry Data Registry", () => {
     expect(metrics.some((m) => m.label.includes("Drag"))).toBe(true);
   });
 
+  test("AMF Versatran exposes every normalized pose control on the shared telemetry bus", () => {
+    const versatran = PATENT_PHYSICS_REGISTRY["us-3212649-amf-versatran"];
+    const defaults = Object.fromEntries(
+      versatran.controls.map((control) => [control.id, control.defaultValue]),
+    );
+    const baseline = versatran.computeMetrics(defaults);
+    const moved = versatran.computeMetrics({ ...defaults, columnRotation: 0.05 });
+    const baselinePose = baseline.find((metric) => metric.label === "Six-Motion Pose");
+    const movedPose = moved.find((metric) => metric.label === "Six-Motion Pose");
+
+    expect(baselinePose).toMatchObject({
+      value: "C 0.00 · V 0.55 · A 0.55 · R 0.00 · S 0.00 · G 0.25",
+      unit: "normalized display",
+    });
+    expect(movedPose).toMatchObject({
+      value: "C 0.05 · V 0.55 · A 0.55 · R 0.00 · S 0.00 · G 0.25",
+      unit: "normalized display",
+    });
+    expect(movedPose?.value).not.toBe(baselinePose?.value);
+    expect(JSON.stringify(movedPose)).not.toMatch(/\b(?:m|N|Pa|W)\b/);
+  });
+
+  test("AMF Versatran exposes live signed tape/resolver terms and withholds them with Claim 8", () => {
+    const versatran = PATENT_PHYSICS_REGISTRY["us-3212649-amf-versatran"];
+    const playback = versatran.computeMetrics({
+      teachReplayMode: 1,
+      resolverPhaseOffset: 0.25,
+      armTravel: 0.55,
+    });
+    expect(playback.find((metric) => metric.label === "Tape Command Phase")).toMatchObject({
+      value: "0.550",
+      unit: "normalized phase · arm channel",
+    });
+    expect(playback.find((metric) => metric.label === "Resolver Feedback Phase")).toMatchObject({
+      value: "0.300",
+      unit: "normalized phase · arm channel",
+    });
+    expect(playback.find((metric) => metric.label === "Signed Phase Error")).toMatchObject({
+      value: "0.250",
+      unit: "normalized phase · arm channel",
+    });
+
+    const withheld = versatran.computeMetrics({
+      teachReplayMode: 1,
+      claim8RecordPlaybackEnabled: 0,
+    });
+    expect(withheld.find((metric) => metric.label === "Program Mode")).toMatchObject({
+      value: "REPLAY PATH WITHHELD",
+    });
+    expect(withheld.find((metric) => metric.label === "Tape Command Phase")).toMatchObject({
+      value: "WITHHELD",
+    });
+    expect(withheld.find((metric) => metric.label === "Signed Phase Error")).toMatchObject({
+      value: "WITHHELD",
+    });
+  });
+
   test("routes Da Vinci telemetry through the executable shared contact kernel", () => {
     const daVinci = PATENT_PHYSICS_REGISTRY["us-6331181-davinci"];
     expect(daVinciRegistryEntry).toBe(daVinci);
