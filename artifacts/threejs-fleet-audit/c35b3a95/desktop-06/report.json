@@ -1,0 +1,50 @@
+[
+  {
+    "id": "us-395781-hollerith-tabulating",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-400766-hall-aluminium",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-470918-reno-escalator",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-542846-diesel-engine",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-586193-marconi-radio",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-593138-tesla-coil",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-608969-parsons-turbine",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-613809-tesla-teleautomaton",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  }
+]
