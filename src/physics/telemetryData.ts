@@ -7544,6 +7544,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 25,
         defaultValue: 1350,
         unit: "°C",
+        provenance: "scenario-modern",
       },
       {
         id: "initialCarbonPercent",
@@ -7553,6 +7554,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.1,
         defaultValue: 3.8,
         unit: "% C",
+        provenance: "scenario-modern",
       },
       {
         id: "rabbleStirringRpm",
@@ -7562,6 +7564,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 15,
         unit: "RPM",
+        provenance: "scenario-modern",
       },
       {
         id: "puddlingDurationMinutes",
@@ -7571,6 +7574,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 10,
         defaultValue: 90,
         unit: "min",
+        provenance: "scenario-modern",
       },
       {
         id: "rollerPassCount",
@@ -7580,15 +7584,16 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 5,
         unit: "passes",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (p) => {
       const cort = stepCortPuddlingRolling({
-        furnaceTemperatureCelsius: p.furnaceTemperatureCelsius,
-        initialCarbonPercent: p.initialCarbonPercent,
-        rabbleStirringRpm: p.rabbleStirringRpm,
-        puddlingDurationMinutes: p.puddlingDurationMinutes,
-        rollerPassCount: p.rollerPassCount,
+        furnaceTemperatureCelsius: p.furnaceTemperatureCelsius ?? 1350,
+        initialCarbonPercent: p.initialCarbonPercent ?? 3.8,
+        rabbleStirringRpm: p.rabbleStirringRpm ?? 15,
+        puddlingDurationMinutes: p.puddlingDurationMinutes ?? 90,
+        rollerPassCount: p.rollerPassCount ?? 5,
       });
 
       return [
@@ -7598,6 +7603,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: cort.isPastyNatureState ? "Decarburized Wrought" : "Liquid Pig Iron",
           badgeColor: cort.isPastyNatureState ? "emerald" : "amber",
           progressPct: Math.min(100, (cort.residualCarbonPercent / 4.0) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Iron Melting Point",
@@ -7605,6 +7611,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: `Solidus (+${cort.ironMeltingPointCelsius - 1147} °C rise)`,
           badgeColor: "rose",
           progressPct: Math.min(100, ((cort.ironMeltingPointCelsius - 1100) / 450) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "State of Charge",
@@ -7615,6 +7622,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
             100,
             (cort.carbonRemovedPercent / (p.initialCarbonPercent ?? 3.8)) * 100,
           ),
+          provenance: "scenario-modern",
         },
         {
           label: "Residual Slag Content",
@@ -7622,6 +7630,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: `Expelled ${cort.slagExpelledKg.toFixed(1)} kg`,
           badgeColor: "indigo",
           progressPct: Math.min(100, (cort.residualSlagVolumeFractionPercent / 16.0) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Tensile Strength",
@@ -7629,6 +7638,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: `${cort.ductilityElongationPercent.toFixed(0)}% Elongation`,
           badgeColor: "emerald",
           progressPct: Math.min(100, (cort.tensileStrengthMpa / 380.0) * 100),
+          provenance: "scenario-modern",
+        },
+        {
+          label: "Roll Squeeze Pressure",
+          value: `${cort.hydrostaticSqueezePressureMpa.toFixed(0)} MPa`,
+          unit: `Separation ${cort.rollSeparationForceKn.toFixed(0)} kN`,
+          badgeColor: "amber",
+          progressPct: Math.min(100, (cort.hydrostaticSqueezePressureMpa / 300) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Industrial Speedup",
@@ -7636,6 +7654,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: `${cort.hourlyIronOutputKg} kg/h vs hammer`,
           badgeColor: "purple",
           progressPct: 100,
+          provenance: "scenario-modern",
         },
       ];
     },

@@ -59,4 +59,35 @@ describe("Henry Cort GB 1420 source-identity hold", () => {
       expect(readings[0].length).toBeGreaterThan(20);
     }
   });
+
+  test("provides valid provenance classifications for all Cort controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["gb-1420-cort-puddling-rolling"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("verifies telemetry sensitivity to furnace temperature", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["gb-1420-cort-puddling-rolling"];
+    const m1 = entry.computeMetrics({ furnaceTemperatureCelsius: 1350 });
+    const m2 = entry.computeMetrics({ furnaceTemperatureCelsius: 1375 });
+    expect(m1).not.toEqual(m2);
+  });
+
+  test("enforces facsimile review pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(cortPuddlingRollingPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("source-bounded");
+    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
+  });
 });
