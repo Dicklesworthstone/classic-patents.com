@@ -577,6 +577,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: 10,
         unit: "V",
+        provenance: "scenario-modern",
       },
       {
         id: "clockFrequencyMhz",
@@ -586,6 +587,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: 5.0,
         unit: "MHz",
+        provenance: "scenario-modern",
       },
       {
         id: "incidentLux",
@@ -595,6 +597,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 10,
         defaultValue: 250,
         unit: "lux",
+        provenance: "scenario-modern",
       },
       {
         id: "integrationTimeMs",
@@ -604,6 +607,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1.0,
         defaultValue: 16.7,
         unit: "ms",
+        provenance: "scenario-modern",
       },
       {
         id: "temperatureKelvin",
@@ -613,6 +617,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 300,
         unit: "K",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (controls: Record<string, number>) => {
@@ -631,6 +636,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "V",
           badgeColor: "cyan",
           progressPct: clampProgress((res.surfacePotentialV / 15) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Full Well Storage Capacity",
@@ -638,6 +644,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "e-",
           badgeColor: "indigo",
           progressPct: clampProgress((res.fullWellCapacityElectrons / 300000) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Stored Photoelectron Packet",
@@ -645,6 +652,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "e-",
           badgeColor: res.totalCollectedElectrons > 0 ? "emerald" : "indigo",
           progressPct: clampProgress(res.wellFillPercentage),
+          provenance: "scenario-modern",
         },
         {
           label: "Well Fill Factor",
@@ -652,6 +660,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "",
           badgeColor: res.isSaturated ? "rose" : "emerald",
           progressPct: clampProgress(res.wellFillPercentage),
+          provenance: "scenario-modern",
         },
         {
           label: "Charge Transfer Efficiency (CTE)",
@@ -659,6 +668,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "",
           badgeColor: res.ctePct > 99.99 ? "emerald" : "amber",
           progressPct: clampProgress(res.ctePct),
+          provenance: "scenario-modern",
         },
         {
           label: "Signal-to-Noise Ratio (SNR)",
@@ -666,6 +676,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "dB",
           badgeColor: res.snrDb > 20 ? "emerald" : "amber",
           progressPct: clampProgress((res.snrDb / 60) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Thermal Dark Electrons",
@@ -673,6 +684,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "e-",
           badgeColor: "amber",
           progressPct: clampProgress((res.darkElectrons / 5000) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Depletion Depth",
@@ -680,6 +692,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "um",
           badgeColor: "cyan",
           progressPct: clampProgress((res.depletionDepthUm / 10) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },
