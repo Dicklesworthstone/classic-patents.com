@@ -123,6 +123,7 @@ import { stepMilacronRobotToolchanger } from "./milacronRobotToolchangerKernel";
 import { stepMultiTouch } from "./multiTouchKernel";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { stepPageRank } from "./pageRankKernel";
+import { stepParsonsMarine } from "./parsonsMarineKernel";
 import { stepRobotEndEffector } from "./robotEndEffectorKernel";
 import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
 import {
@@ -6927,6 +6928,102 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "Parsons divided high-pressure steam expansion across multiple expanding annular rows of reaction blades, keeping tip velocity manageable while directly driving high-speed electrical alternators.",
   },
+  "us-608969-parsons-turbine": {
+    domain: "thermo_fluid",
+    domainTitle: "Marine Steam-Turbine Multi-Shaft Piping & Valve Routing",
+    equationName: "Staged Pressure Drop & Multi-Shaft Flow Continuity",
+    governingEquation:
+      "\\Delta H_{\\text{total}} = \\sum_{i=1}^N \\Delta H_i \\quad \\text{and} \\quad \\dot{m}_{\\text{total}} = \\sum_{k=1}^M \\dot{m}_k",
+    engineMethod: "stepParsonsMarine",
+    pedagogicalInsight:
+      "US 608,969 claims selectable pipe-and-valve combinations to route steam in series at cruising speed or parallel at full power across multiple shafts, with reversing turbines X and Y turning in condenser vacuum during forward motion.",
+    controls: [
+      {
+        id: "routing",
+        label: "Piping Configuration",
+        min: 0,
+        max: 2,
+        step: 1,
+        defaultValue: 0,
+        unit: "mode",
+        provenance: "source-disclosed",
+      },
+      {
+        id: "reversing",
+        label: "Reversing Valve State",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 0,
+        unit: "binary",
+        provenance: "source-disclosed",
+      },
+      {
+        id: "throttle",
+        label: "Throttle Setting",
+        min: 0,
+        max: 1,
+        step: 0.05,
+        defaultValue: 1,
+        unit: "ratio",
+        provenance: "source-disclosed",
+      },
+    ],
+    computeMetrics: (p) => {
+      const routingModes: ("series" | "compound-parallel" | "simple-parallel")[] = [
+        "series",
+        "compound-parallel",
+        "simple-parallel",
+      ];
+      const routing = routingModes[Math.round(p.routing ?? 0)] ?? "series";
+      const reversing = Boolean(p.reversing);
+      const throttle = p.throttle ?? 1;
+      const state = stepParsonsMarine({ routing, reversing, throttle });
+
+      return [
+        {
+          label: "Operating Route",
+          value: state.routeLabel,
+          unit: "topology",
+          badgeColor: "cyan",
+          primary: true,
+          provenance: "source-disclosed",
+        },
+        {
+          label: "Propulsion Direction",
+          value: state.directionLabel.toUpperCase(),
+          unit: "mode",
+          badgeColor: state.directionLabel === "ahead" ? "emerald" : "amber",
+          primary: true,
+          provenance: "source-disclosed",
+        },
+        {
+          label: "Active Shafts",
+          value: `${state.activeShafts}`,
+          unit: "shafts",
+          badgeColor: "indigo",
+          progressPct: (state.activeShafts / 4) * 100,
+          provenance: "source-disclosed",
+        },
+        {
+          label: "Active Turbines",
+          value: `${state.activeTurbines.length}`,
+          unit: "units",
+          badgeColor: "emerald",
+          progressPct: (state.activeTurbines.length / 8) * 100,
+          provenance: "source-disclosed",
+        },
+        {
+          label: "Relative Steam Flow",
+          value: `${(state.flowRateRelative * 100).toFixed(0)}%`,
+          unit: "%",
+          badgeColor: "cyan",
+          progressPct: Math.min(100, state.flowRateRelative * 100),
+          provenance: "scenario-modern",
+        },
+      ];
+    },
+  },
   "gb-913-watt-separate-condenser": {
     domain: "thermodynamics",
     domainTitle: "Thermodynamic Steam Cycles & Separate Condenser",
@@ -7485,6 +7582,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 10000,
         defaultValue: 300000,
         unit: "A",
+        provenance: "scenario-modern",
       },
       {
         id: "bathTemperatureCelsius",
@@ -7494,6 +7592,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 960,
         unit: "°C",
+        provenance: "scenario-modern",
       },
       {
         id: "aluminaConcentrationPct",
@@ -7503,6 +7602,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: 5.5,
         unit: "%",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (p) => {
@@ -7518,6 +7618,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "m_Al",
           badgeColor: "cyan",
           progressPct: clampProgress((hall.aluminiumProductionRateKgPerHour / 160) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Current Efficiency",
@@ -7525,6 +7626,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "η_curr",
           badgeColor: "emerald",
           progressPct: clampProgress(hall.currentEfficiencyPct),
+          provenance: "scenario-modern",
         },
         {
           label: "Total Cell Voltage",
@@ -7532,6 +7634,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "V_cell",
           badgeColor: "amber",
           progressPct: clampProgress((hall.totalCellVoltage / 6) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Specific Energy",
@@ -7539,6 +7642,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "E_spec",
           badgeColor: "purple",
           progressPct: clampProgress((hall.specificEnergyKwhPerKg / 20) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },

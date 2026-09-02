@@ -150,4 +150,27 @@ describe("Charles Martin Hall US 400,766 Archival Edition Contract", () => {
       expect(reading[0].trim().length).toBeGreaterThan(20);
     }
   });
+
+  test("provides valid provenance classifications for all Hall Aluminium controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-400766-hall-aluminium"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBe("scenario-modern");
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBe("scenario-modern");
+    }
+  });
+
+  test("enforces figure acceptance pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(hallAluminiumPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("candidate");
+    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+  });
 });

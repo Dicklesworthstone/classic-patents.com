@@ -180,4 +180,32 @@ describe("carrierAirConditionerArchivalEdition", () => {
     ).toEqual(paragraphIndexes);
     expect(carrierAirConditionerParallelReadings[9]?.join(" ")).toContain("trap J");
   });
+
+  test("provides valid provenance classifications for all Carrier controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-808897-carrier-air-conditioner"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({ airflowCfm: 15000, sprayRatePct: 60, separatorFaces: 6 });
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("derives valid mechanical fan and separator energy channels", () => {
+    const { energyChannelsFor } = require("@/physics/energyChannels");
+    const channels = energyChannelsFor("us-808897-carrier-air-conditioner", {
+      airflowCfm: 15000,
+      sprayRatePct: 60,
+      separatorFaces: 6,
+    });
+    expect(channels.length).toBe(2);
+    expect(channels[0].name).toBe("Fan work");
+    expect(channels[1].name).toBe("Separator resistance");
+    for (const ch of channels) {
+      expect(ch.watts).toBeGreaterThan(0);
+    }
+  });
 });
