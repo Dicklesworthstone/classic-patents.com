@@ -118,8 +118,8 @@ export function readKamenSegwayControls(params: Record<string, number>): KamenSe
         ? params.speedLimitMS
         : KAMEN_SEGWAY_DEFAULT_CONTROLS.speedLimitMS,
     claim1BalanceEnabled:
-      (params.claim1BalanceEnabled ?? (KAMEN_SEGWAY_DEFAULT_CONTROLS.claim1BalanceEnabled ? 1 : 0)) >=
-      0.5,
+      (params.claim1BalanceEnabled ??
+        (KAMEN_SEGWAY_DEFAULT_CONTROLS.claim1BalanceEnabled ? 1 : 0)) >= 0.5,
     claim2RippleEnabled:
       (params.claim2RippleEnabled ?? (KAMEN_SEGWAY_DEFAULT_CONTROLS.claim2RippleEnabled ? 1 : 0)) >=
       0.5,

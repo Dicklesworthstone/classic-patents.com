@@ -93,8 +93,8 @@ export function KamenSegway3D({ patentId = PATENT_ID }: { patentId?: string }) {
             </h3>
           </div>
           <p className="text-xs text-slate-400 mt-0.5">
-            Source-disclosed automatic-balance and ripple-alarm topology with modern illustrative
-            3D kinematics
+            Source-disclosed automatic-balance and ripple-alarm topology with modern illustrative 3D
+            kinematics
           </p>
           <ClaimConstraintToggle
             patentId={PATENT_ID}

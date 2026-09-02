@@ -7,21 +7,35 @@ import {
 } from "./publicationApproval";
 
 describe("Publication Approval State Machine", () => {
-  it("authorizes publication for a verified, non-held exemplar", () => {
-    const teslaMotor = allPatents.find((p) => p.id === "us-381968-tesla-motor");
-    if (!teslaMotor) throw new Error("Tesla motor patent not found");
-    expect(teslaMotor).toBeDefined();
+  it("authorizes publication for a verified, non-held text-only exemplar", () => {
+    const nobel = allPatents.find((p) => p.id === "us-78317-nobel-dynamite");
+    if (!nobel) throw new Error("Nobel dynamite patent not found");
 
-    const decision = evaluateArchivalPublicationState(teslaMotor);
+    const decision = evaluateArchivalPublicationState(nobel);
     expect(decision.status).toBe("published");
     expect(decision.isPublished).toBe(true);
-    expect(decision.publishedEdition).toBe(teslaMotor.archivalEdition);
+    expect(decision.publishedEdition).toBe(nobel.archivalEdition);
     expect(decision.reviewerAttestation.completeFacsimileReviewed).toBe(true);
     expect(decision.reviewerAttestation.hasCompanionReadings).toBe(true);
     expect(decision.reviewerAttestation.structuralValidationPassed).toBe(true);
-    expect(decision.figureManifest.acceptedFigureCount).toBe(
-      decision.figureManifest.requiredFigureCount,
-    );
+    expect(decision.figureManifest.requiredFigureCount).toBe(0);
+    expect(decision.figureManifest.acceptedFigureCount).toBe(0);
+  });
+
+  it("withholds a crop-attested edition until every occurrence has a source locator", () => {
+    const teslaMotor = allPatents.find((p) => p.id === "us-381968-tesla-motor");
+    if (!teslaMotor) throw new Error("Tesla motor patent not found");
+
+    const decision = evaluateArchivalPublicationState(teslaMotor);
+    expect(decision.status).toBe("withheld-pending-review");
+    expect(decision.isPublished).toBe(false);
+    expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+    expect(decision.figureManifest.requiredFigureCount).toBeGreaterThan(0);
+    expect(decision.figureManifest.acceptedFigureCount).toBe(0);
+    expect(decision.figureManifest.attestation).toMatchObject({
+      matchesEdition: true,
+      matchesLocators: false,
+    });
   });
 
   it("fail-closes and isolates quarantined patents (e.g. GB 931 Arkwright)", () => {
@@ -38,7 +52,12 @@ describe("Publication Approval State Machine", () => {
   });
 
   it("identifies facsimile-only records without bound editions", () => {
-    const fakePatent = { id: "test-facsimile-only", archivalEdition: undefined };
+    const fakePatent = {
+      id: "test-facsimile-only",
+      archivalEdition: undefined,
+      originalPdfUrl: "/patents/pdfs/test-facsimile-only.pdf",
+      claims: [],
+    };
     const decision = evaluateArchivalPublicationState(fakePatent);
     expect(decision.status).toBe("facsimile-only");
     expect(decision.isPublished).toBe(false);
@@ -56,7 +75,12 @@ describe("Publication Approval State Machine", () => {
       attorneyOrAgentSignatures: [],
       inventorSignatures: [],
     };
-    const fakePatent = { id: "test-unreviewed", archivalEdition: unreviewedEdition };
+    const fakePatent = {
+      id: "test-unreviewed",
+      archivalEdition: unreviewedEdition,
+      originalPdfUrl: "/patents/pdfs/test-unreviewed.pdf",
+      claims: [],
+    };
     const decision = evaluateArchivalPublicationState(fakePatent);
     expect(decision.status).toBe("withheld-pending-review");
     expect(decision.isPublished).toBe(false);

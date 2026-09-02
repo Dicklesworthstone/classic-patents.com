@@ -251,9 +251,8 @@ export default function SundbackZipper3D({
 
       <div className="p-4 bg-parchment-100 dark:bg-ink-900 rounded-lg border border-parchment-200 dark:border-ink-800">
         <PortHamiltonianEnergyStrip
-          inputPowerWatts={tel.sliderPullForceN * 0.1}
-          dissipatedPowerWatts={tel.sliderPullForceN * 0.1 * 0.8}
-          storedEnergyJoules={0.5 * controls.lateralTensionN * 0.001}
+          patentId={patentId}
+          params={controls as unknown as Record<string, number>}
         />
       </div>
 
@@ -261,7 +260,9 @@ export default function SundbackZipper3D({
         <ClaimConstraintToggle
           patentId={patentId}
           claimStates={claimStates}
-          onClaimStateChange={(num, active) => setClaimStates((prev) => ({ ...prev, [num]: active }))}
+          onClaimStateChange={(num, active) =>
+            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          }
         />
       </div>
     </div>

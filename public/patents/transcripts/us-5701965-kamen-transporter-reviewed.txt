@@ -719,8 +719,6 @@ FIG.27
 
 U.S. Patent Dec. 30, 1997 Sheet 19 of 34 5,701,965
 
-[Drawing Sheet 19 of 34: US Patent 5,701,965; Figures 28, 29, 30: Detailed schematic views of the cluster wheel assembly, gear train, and harmonic drive coupling components.]
-
 FIG. 28
 FIG. 29
 FIG. 30
@@ -1037,8 +1035,6 @@ Dec. 30, 1997
 
 U.S. Patent Dec. 30, 1997 Sheet 32 of 34 5,701,965
 
-[Drawing Sheet 32 of 34: US Patent 5,701,965; Figures 56, 57: Block diagrams of the feedback sensor processing, rate gyro filter, and pitch controller architecture.]
-
 FIG. 56
 FIG. 57
 
@@ -1046,16 +1042,12 @@ FIG. 57
 
 U.S. Patent Dec. 30, 1997 Sheet 33 of 34 5,701,965
 
-[Drawing Sheet 33 of 34: US Patent 5,701,965; Figures 58, 59: Electrical schematic diagrams of the motor drive amplifier and feedback control circuits.]
-
 FIG. 58
 FIG. 59
 
 --- REVIEWED TRANSCRIPTION PAGE 36 OF 48 ---
 
 U.S. Patent Dec. 30, 1997 Sheet 34 of 34 5,701,965
-
-[Drawing Sheet 34 of 34: US Patent 5,701,965; Figures 60, 61: State transition flowcharts and control logic for user balance mode, lean detection, and obstacle negotiation.]
 
 FIG. 60
 FIG. 61

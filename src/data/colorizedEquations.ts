@@ -24039,6 +24039,109 @@ ALL_COLORIZED_EQUATIONS["us-3212649-amf-versatran"] = [
   },
 ];
 
+ALL_COLORIZED_EQUATIONS["us-4976582-clavel-delta-robot"] = [
+  {
+    id: "clavel-delta-paired-bar-attitude-invariant",
+    patentId: "us-4976582-clavel-delta-robot",
+    title: "Paired-Bar Displacement and Fixed-Attitude Constraint",
+    category: "Source-Bounded Parallel-Robot Topology",
+    rawLatex:
+      "\\mathbf{p}^{*}+\\mathbf{a}_i^{*}=\\mathbf{e}_i^{*}+\\mathbf{l}_{i,j}^{*},\\qquad\\lVert\\mathbf{l}_{i,a}^{*}\\rVert=\\lVert\\mathbf{l}_{i,b}^{*}\\rVert=L^{*},\\qquad\\mathbf{l}_{i,a}^{*}-\\mathbf{l}_{i,b}^{*}=\\mathbf{d}_i^{*}",
+    colorizedLatex:
+      "\\textcolor{#9333ea}{\\mathbf{p}^{*}}+\\textcolor{#0d9488}{\\mathbf{a}_i^{*}}=\\textcolor{#0891b2}{\\mathbf{e}_i^{*}}+\\textcolor{#059669}{\\mathbf{l}_{i,j}^{*}},\\qquad\\lVert\\textcolor{#059669}{\\mathbf{l}_{i,a}^{*}}\\rVert=\\lVert\\textcolor{#059669}{\\mathbf{l}_{i,b}^{*}}\\rVert=\\textcolor{#7c3aed}{L^{*}},\\qquad\\textcolor{#059669}{\\mathbf{l}_{i,a}^{*}}-\\textcolor{#059669}{\\mathbf{l}_{i,b}^{*}}=\\textcolor{#dc2626}{\\mathbf{d}_i^{*}}",
+    plainEnglishSentence: [
+      { text: "For each leg, the normalized " },
+      { text: "platform attachment", variableId: "platform_center" },
+      { text: " can be reached through either of two lower bars with one declared " },
+      { text: "rigid normalized length", variableId: "bar_length" },
+      { text: ". The " },
+      { text: "rigid-link closure residual", variableId: "closure_residual" },
+      { text: " and shared " },
+      { text: "pair-vector residual", variableId: "pair_residual" },
+      { text: " remains zero in the source-bounded construction when Claim 2 keeps both parallel bars present." },
+    ],
+    variables: [
+      {
+        id: "platform_center",
+        symbol: "\\mathbf{p}^{*}",
+        name: "Movable-Member Display Center",
+        color: "amethyst",
+        role: "Normalized display coordinate of movable member 8",
+        unit: "normalized exhibit coordinate",
+        dimension: "[1]",
+        explanation:
+          "The asterisk marks a teaching coordinate, not metres. US 4,976,582 names a movable member and its orientation constraint but prints no link dimensions or calibrated workspace from which an SI platform position could be reconstructed.",
+        telemetryMetricLabel: "Platform center",
+      },
+      {
+        id: "bar_length",
+        symbol: "L^{*}",
+        name: "Declared Normalized Lower-Bar Length",
+        color: "amethyst",
+        role: "One display-only length shared by every lower bar in the closed-chain construction",
+        unit: "normalized exhibit length",
+        dimension: "[1]",
+        explanation:
+          "This is an explicitly declared teaching dimension chosen to close the symmetric display pose, not a length printed in US 4,976,582 or a recovered manufacturing dimension.",
+        telemetryMetricLabel: "Declared bar length",
+      },
+      {
+        id: "closure_residual",
+        symbol: "\\epsilon_{\\mathrm{closure}}^{*}",
+        name: "Rigid-Link Closure Residual",
+        color: "emerald",
+        role: "Largest difference between a displayed lower-bar norm and the declared normalized length",
+        unit: "normalized construction residual",
+        dimension: "[1]",
+        explanation:
+          "The kernel intersects three equal-radius normalized spheres before rendering the platform. This residual reports numerical closure of that display construction; it is not a measured machine positioning error.",
+        telemetryMetricLabel: "Rigid-link closure residual",
+      },
+      {
+        id: "pair_residual",
+        symbol: "\\mathbf{d}_i^{*}",
+        name: "Paired-Bar Displacement Difference",
+        color: "crimson",
+        role: "Difference between the two lower-bar translation vectors for one display leg",
+        unit: "normalized construction residual",
+        dimension: "[1]",
+        explanation:
+          "Figure 1 and Claim 2 identify two parallel bars. The kernel constructs both bars with the same endpoint displacement vector, making their idealized parallelogram relation inspectable without assigning stiffness, backlash, or accuracy.",
+        telemetryMetricLabel: "Pair-vector residual",
+      },
+      {
+        id: "actuator_input",
+        symbol: "q_i^{*}",
+        name: "Control-Arm Display Input",
+        color: "cyan",
+        role: "Unitless input that moves one source-labelled control arm in the exhibit",
+        unit: "normalized input",
+        dimension: "[1]",
+        explanation:
+          "The grant shows rotary actuator arms in Figure 1 but gives no historic angular range, servo schedule, or motor data. This control is a bounded visual configuration input only.",
+        telemetryKey: "armOneInput",
+      },
+      {
+        id: "paired_bar_claim",
+        symbol: "\\mathcal{C}_2",
+        name: "Claim 2 Paired-Bar State",
+        color: "emerald",
+        role: "Whether the live exhibit retains both lower bars per leg",
+        unit: "claim probe",
+        dimension: "[1]",
+        explanation:
+          "Turning the Claim 2 probe off deliberately withholds the second bar in every leg. The platform is then not presented as the source-backed paired-bar topology described by the dependent claim.",
+        telemetryMetricLabel: "Paired Bars",
+      },
+    ],
+    pedagogicalNote:
+      "This equation is a normalized topology statement. It makes the paired-bar displacement and rigid-link closure construction readable without asserting a historical link length, SI machine solution, stiffness, payload, speed, or FrankenSim/WASM dynamics result.",
+    claimRef: 2,
+    historicalSignificance:
+      "Claim 2 makes the two parallel bars a concrete structural limit within Clavel's broader orientation-preserving positioning device; the exhibit keeps that legal distinction visible.",
+  },
+];
+
 ALL_COLORIZED_EQUATIONS["us-3081379-lemelson-machine-vision"] = [
   {
     id: "lemelson-vidicon-line-scan-dimension",

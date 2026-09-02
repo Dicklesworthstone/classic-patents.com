@@ -11,7 +11,8 @@ import { soundEngine } from "@/utils/soundEngine";
 interface ClaimConstraintToggleProps {
   patentId: string;
   claimStates: Record<number, boolean>;
-  onToggleClaim: (claimNumber: number, isActive: boolean) => void;
+  onToggleClaim?: (claimNumber: number, isActive: boolean) => void;
+  onClaimStateChange?: (claimNumber: number, isActive: boolean) => void;
   className?: string;
 }
 
@@ -19,8 +20,10 @@ export const ClaimConstraintToggle: React.FC<ClaimConstraintToggleProps> = ({
   patentId,
   claimStates,
   onToggleClaim,
+  onClaimStateChange,
   className = "",
 }) => {
+  const handleToggle = onToggleClaim ?? onClaimStateChange;
   const constraints = CATALOG_CLAIM_CONSTRAINTS[patentId] ?? [];
   if (constraints.length === 0) return null;
 
@@ -41,7 +44,7 @@ export const ClaimConstraintToggle: React.FC<ClaimConstraintToggleProps> = ({
             data-claim-active={isActive ? "true" : "false"}
             onClick={() => {
               soundEngine.playSwitchClick();
-              onToggleClaim(c.claimNumber, !isActive);
+              handleToggle?.(c.claimNumber, !isActive);
             }}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-sans font-medium transition-all shadow-xs border ${
               isActive

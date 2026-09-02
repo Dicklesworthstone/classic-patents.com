@@ -51,6 +51,7 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-4765668-robot-end-effector",
       "us-2846084-goertz-electronic-master-slave-manipulator",
       "us-4921293-salisbury-robot-hand",
+      "us-4976582-clavel-delta-robot",
       "us-2988237-devol-programmed-transfer",
       "us-3212649-amf-versatran",
       "us-3081379-lemelson-machine-vision",

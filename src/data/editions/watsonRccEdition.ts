@@ -65,10 +65,15 @@ export const watsonRccArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "masthead",
       lines: [
-        "UNITED STATES PATENT",
-        "PAUL C. WATSON, OF ARLINGTON, MASSACHUSETTS, ASSIGNOR TO THE CHARLES STARK DRAPER LABORATORY, INC., OF CAMBRIDGE, MASSACHUSETTS.",
-        "REMOTE CENTER COMPLIANCE SYSTEM.",
-        "Patent No. 4,098,001. Filed October 13, 1976. Patented July 4, 1978. Application No. 732,286.",
+        "United States Patent [19]",
+        "Watson",
+        "[11] 4,098,001",
+        "[45] Jul. 4, 1978",
+        "[54] REMOTE CENTER COMPLIANCE SYSTEM",
+        "[75] Inventor: Paul C. Watson, Arlington, Mass.",
+        "[73] Assignee: The Charles Stark Draper Laboratory, Inc., Cambridge, Mass.",
+        "[21] Appl. No.: 732,286",
+        "[22] Filed: Oct. 13, 1976",
       ],
     },
     {

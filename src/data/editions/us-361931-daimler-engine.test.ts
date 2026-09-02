@@ -159,4 +159,26 @@ describe("US 361,931 Daimler manual marine-engine edition", () => {
       }
     }
   });
+
+  test("provides valid provenance classifications for all Daimler controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-361931-daimler-engine"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("wires claim 1 constraint in claimConstraints", () => {
+    const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
+    const r1 = applyClaimConstraintModifications("us-361931-daimler-engine", {}, { 1: false });
+    expect(r1.modifiedParams.claim1Active).toBe(0);
+    expect(r1.modifiedParams.aheadCouplingEngaged).toBe(0);
+    expect(r1.modifiedParams.asternGearingEngaged).toBe(0);
+    expect(r1.refusalWarning).toContain("CLAIM 1 INVERSION");
+  });
 });

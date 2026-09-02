@@ -4,7 +4,11 @@ April 11, 1967. J. H. LEMELSON. 3,313,014.
 AUTOMATIC PRODUCTION APPARATUS AND METHOD.
 Filed April 8, 1965. 6 Sheets-Sheet 1.
 
-Drawing sheet 1 contains FIG. 1, a plan of a production line and overhead carrier; FIG. 2, the vertical-column work carrier; and FIG. 3, the carrier's rotating and positioning arrangement. The numbered source elements include track 21, carriage 22, column 23, wheels 24, motor Mx, gear 34, platform 35, clamp 36, and the work W.
+FIG. 1
+FIG. 2
+FIG. 3
+
+INVENTOR: Jerome H. Lemelson
 
 --- REVIEWED TRANSCRIPTION PAGE 2 OF 15 ---
 
@@ -12,7 +16,11 @@ April 11, 1967. J. H. LEMELSON. 3,313,014.
 AUTOMATIC PRODUCTION APPARATUS AND METHOD.
 Filed April 8, 1965. 6 Sheets-Sheet 2.
 
-Drawing sheet 2 contains FIG. 4, a bi-rail conveyor bridge and telescoping carrier; FIG. 5, a mono-rail traveling carrier with scanning and locking means; and FIG. 6, a related side view. The sheet labels the overhead rails, carriage, motors Mx, My and Mz, platform, limit-switch positions, and marker-scanning parts.
+FIG. 4
+FIG. 5
+FIG. 6
+
+INVENTOR: Jerome H. Lemelson
 
 --- REVIEWED TRANSCRIPTION PAGE 3 OF 15 ---
 
@@ -20,7 +28,10 @@ April 11, 1967. J. H. LEMELSON. 3,313,014.
 AUTOMATIC PRODUCTION APPARATUS AND METHOD.
 Filed April 8, 1965. 6 Sheets-Sheet 3.
 
-Drawing sheet 3 contains FIG. 7, an isometric work-transfer carrier with means for scanning the guide means for prepositioning the carrier, and FIG. 8, a carrier whose scanner reads location-sensing means at a work station.
+FIG. 7
+FIG. 8
+
+INVENTOR: Jerome H. Lemelson
 
 --- REVIEWED TRANSCRIPTION PAGE 4 OF 15 ---
 
@@ -28,7 +39,12 @@ April 11, 1967. J. H. LEMELSON. 3,313,014.
 AUTOMATIC PRODUCTION APPARATUS AND METHOD.
 Filed April 8, 1965. 6 Sheets-Sheet 4.
 
-Drawing sheet 4 contains FIG. 9, a carrier at a typical work station; FIG. 10, a single-track carrier supported by machine frames; FIG. 11, a V-block and station alignment arrangement; and FIG. 12, the V-block and V-way detail.
+FIG. 9
+FIG. 10
+FIG. 11
+FIG. 12
+
+INVENTOR: Jerome H. Lemelson
 
 --- REVIEWED TRANSCRIPTION PAGE 5 OF 15 ---
 
@@ -36,7 +52,9 @@ April 11, 1967. J. H. LEMELSON. 3,313,014.
 AUTOMATIC PRODUCTION APPARATUS AND METHOD.
 Filed April 8, 1965. 6 Sheets-Sheet 5.
 
-Drawing sheet 5 contains FIG. 13, the automatic control system. Its source labels include the program controller 47, control outputs 46, carrier motors Mx, My and Mz, machine-tool motors MTx, MTy, MTz and MTr, the coupling contacts 86 and 87, and inspection/control devices.
+FIG. 13
+
+INVENTOR: Jerome H. Lemelson
 
 --- REVIEWED TRANSCRIPTION PAGE 6 OF 15 ---
 
@@ -44,7 +62,10 @@ April 11, 1967. J. H. LEMELSON. 3,313,014.
 AUTOMATIC PRODUCTION APPARATUS AND METHOD.
 Filed April 8, 1965. 6 Sheets-Sheet 6.
 
-Drawing sheet 6 contains FIG. 14, a carrier 100 on a flight conveyor 107, a branch conveyor 109, photoelectric scanning housing 68, reflective marker 70, coupling connectors 84 and 87, and station clamp 73; and FIG. 15, a carrier transfer and clamping variant.
+FIG. 14
+FIG. 15
+
+INVENTOR: Jerome H. Lemelson
 
 --- REVIEWED TRANSCRIPTION PAGE 7 OF 15 ---
 

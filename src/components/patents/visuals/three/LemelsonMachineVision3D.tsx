@@ -174,7 +174,9 @@ export function LemelsonMachineVision3D({ patentId = PATENT_ID }: { patentId?: s
         <ClaimConstraintToggle
           patentId={patentId}
           claimStates={claimStates}
-          onClaimStateChange={(num, active) => setClaimStates((prev) => ({ ...prev, [num]: active }))}
+          onClaimStateChange={(num, active) =>
+            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          }
         />
       </div>
     </div>

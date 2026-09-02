@@ -68,6 +68,10 @@ const CarrierAirConditionerSim = dynamic(
   () => import("./CarrierAirConditionerSim").then((m) => m.CarrierAirConditionerSim),
   { ssr: false, loading: SimLoading },
 );
+const ClavelDeltaRobotSim = dynamic(
+  () => import("./ClavelDeltaRobotSim").then((m) => m.ClavelDeltaRobotSim),
+  { ssr: false, loading: SimLoading },
+);
 const ColtRevolverSim = dynamic(() => import("./ColtRevolverSim").then((m) => m.ColtRevolverSim), {
   ssr: false,
   loading: SimLoading,
@@ -492,6 +496,10 @@ const CarlsonElectrophotography3D = dynamic(
 );
 const CarrierAirConditioner3D = dynamic(
   () => import("./three/CarrierAirConditioner3D").then((mod) => mod.CarrierAirConditioner3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const ClavelDeltaRobot3D = dynamic(
+  () => import("./three/ClavelDeltaRobot3D").then((mod) => mod.ClavelDeltaRobot3D),
   { ssr: false, loading: ThreeLoading },
 );
 const ColtRevolver3D = dynamic(
@@ -1287,6 +1295,8 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
               ) : (
                 <SalisburyRobotHandSim patentId={patentId} />
               );
+            case "us-4976582-clavel-delta-robot":
+              return renderMode === "3d-physics" ? <ClavelDeltaRobot3D /> : <ClavelDeltaRobotSim />;
             case "us-5121329-crump-fdm":
               return renderMode === "3d-physics" ? (
                 <CrumpFdm3D patentId={patentId} />

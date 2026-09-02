@@ -627,7 +627,10 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
           claimStates={claimStates}
           onClaimStateChange={(num, state) => setClaimStates((prev) => ({ ...prev, [num]: state }))}
         />
-        <PortHamiltonianEnergyStrip patentId="us-2717437-mestral-velcro" params={controls as unknown as Record<string, number>} />
+        <PortHamiltonianEnergyStrip
+          patentId="us-2717437-mestral-velcro"
+          params={controls as unknown as Record<string, number>}
+        />
       </div>
     </div>
   );

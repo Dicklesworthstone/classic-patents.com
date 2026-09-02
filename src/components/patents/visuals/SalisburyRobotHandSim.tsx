@@ -2,6 +2,7 @@
 
 import { useId, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
 import { FrankenSimEngine } from "@/physics/engine";
 import { readSalisburyRobotHandControls } from "@/physics/salisburyRobotHandKernel";
@@ -13,6 +14,7 @@ export function SalisburyRobotHandSim({
   patentId?: string;
 }) {
   const { params, updateParam } = usePatentPhysics(patentId);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
   const controls = useMemo(() => readSalisburyRobotHandControls(params), [params]);
   const tel = useMemo(() => FrankenSimEngine.stepSalisburyRobotHand(controls), [controls]);
   const equations = useMemo(() => ALL_COLORIZED_EQUATIONS[patentId] ?? [], [patentId]);
@@ -686,6 +688,16 @@ export function SalisburyRobotHandSim({
             Claim predicate only; torque law remains separate
           </span>
         </div>
+      </div>
+
+      <div className="pt-2 border-t border-slate-800">
+        <ClaimConstraintToggle
+          patentId={patentId}
+          claimStates={claimStates}
+          onClaimStateChange={(num, active) =>
+            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          }
+        />
       </div>
 
       {/* Embedded Physics Telemetry Live HUD */}

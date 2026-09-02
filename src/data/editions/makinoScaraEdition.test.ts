@@ -115,4 +115,45 @@ describe("US 4,341,502 Makino Assembly Robot archival edition", () => {
     expect(terms.length).toBeGreaterThanOrEqual(3);
     for (const annotation of terms) expect(annotation.definition.length).toBeGreaterThan(80);
   });
+
+  test("provides valid provenance classifications for all Makino controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const config = PATENT_PHYSICS_REGISTRY["us-4341502-makino-scara"];
+    expect(config).toBeDefined();
+
+    for (const ctrl of config.controls) {
+      expect(["source-disclosed", "scenario-reader"]).toContain(ctrl.provenance);
+    }
+
+    const defaultMetrics = config.computeMetrics({});
+    for (const metric of defaultMetrics) {
+      expect(["source-disclosed", "scenario-reader"]).toContain(metric.provenance);
+    }
+  });
+
+  test("wires claim 1 constraint in claimConstraints", () => {
+    const {
+      CATALOG_CLAIM_CONSTRAINTS,
+      applyClaimConstraintModifications,
+    } = require("@/physics/claimConstraints");
+    const constraints = CATALOG_CLAIM_CONSTRAINTS["us-4341502-makino-scara"];
+    expect(constraints).toBeDefined();
+    expect(constraints.length).toBeGreaterThanOrEqual(1);
+
+    const claim1 = constraints.find((c: any) => c.claimNumber === 1);
+    expect(claim1).toBeDefined();
+    expect(claim1?.claimTitle).toBe("Concentric Base Four-Link SCARA Mechanism");
+
+    const activeRes = applyClaimConstraintModifications("us-4341502-makino-scara", {}, { 1: true });
+    expect(activeRes.activeFailures.length).toBe(0);
+
+    const invertedRes = applyClaimConstraintModifications(
+      "us-4341502-makino-scara",
+      {},
+      { 1: false },
+    );
+    expect(invertedRes.activeFailures.length).toBeGreaterThan(0);
+    expect(invertedRes.modifiedParams.topologyVariant).toBe(2);
+    expect(invertedRes.refusalWarning).toContain("SOURCE BOUNDARY");
+  });
 });

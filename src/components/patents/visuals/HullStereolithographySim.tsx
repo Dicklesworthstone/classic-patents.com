@@ -628,9 +628,8 @@ export function HullStereolithographySim() {
 
       <div className="rounded-xl border border-stone-800 bg-stone-900/60 p-4">
         <PortHamiltonianEnergyStrip
-          inputPowerWatts={tel.laserPowerMw * 0.001}
-          dissipatedPowerWatts={tel.laserPowerMw * 0.001 * 0.95}
-          storedEnergyJoules={tel.actualDoseMJCm2 * 0.001}
+          patentId={PATENT_ID}
+          params={controls as unknown as Record<string, number>}
         />
       </div>
 
@@ -638,7 +637,9 @@ export function HullStereolithographySim() {
         <ClaimConstraintToggle
           patentId={PATENT_ID}
           claimStates={claimStates}
-          onClaimStateChange={(num, active) => setClaimStates((prev) => ({ ...prev, [num]: active }))}
+          onClaimStateChange={(num, active) =>
+            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          }
         />
       </div>
     </div>

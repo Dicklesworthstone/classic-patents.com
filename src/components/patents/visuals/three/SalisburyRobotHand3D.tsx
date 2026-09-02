@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import {
   buildSalisburyRobotHandModel,
   type SalisburyRobotHandModel,
@@ -34,6 +35,7 @@ export default function SalisburyRobotHand3D({
   const modelRef = useRef<SalisburyRobotHandModel | null>(null);
 
   const { params, updateParam } = usePatentPhysics(patentId);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
   const controls = useMemo(() => readSalisburyRobotHandControls(params), [params]);
   const [, setKernelSource] = useState<SalisburyKernelSource>(salisburyKernelSource());
   const tel = FrankenSimEngine.stepSalisburyRobotHand(controls);
@@ -367,6 +369,16 @@ export default function SalisburyRobotHand3D({
             Claim predicate; torque law stays separate
           </span>
         </div>
+      </div>
+
+      <div className="pt-2 border-t border-slate-800">
+        <ClaimConstraintToggle
+          patentId={patentId}
+          claimStates={claimStates}
+          onClaimStateChange={(num, active) =>
+            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          }
+        />
       </div>
 
       <PhysicsTelemetryBadge patentId={patentId} equations={equations} />

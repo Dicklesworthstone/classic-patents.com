@@ -533,6 +533,44 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "The grant describes the idler and drive-pulley relationship as part of its articulated-finger routing; it does not provide measured comparative performance for a released idler.",
     },
   ],
+  "us-4976582-clavel-delta-robot": [
+    {
+      claimNumber: 1,
+      patentId: "us-4976582-clavel-delta-robot",
+      claimTitle: "Three-Actuator Attitude-Preserving Parallel Topology",
+      activeDescription:
+        "Claim 1 combines a base, movable member, at least three single-degree-of-freedom actuators, and articulated linking means that fix the movable member's inclination and orientation through their stated motions.",
+      invertedDescription:
+        "Withhold the Claim 1 construction. The exhibit no longer represents the source-described attitude-preserving parallel device and does not invent a falling, inaccurate, or dynamically unstable platform.",
+      failureModeName: "Claim 1 Parallel Topology Withheld",
+      historicalPriorArt:
+        "The specification contrasts serial arrangements with a parallel arrangement whose actuators are fixed to the base; it supplies no measured counterfactual performance for removing that topology.",
+    },
+    {
+      claimNumber: 2,
+      patentId: "us-4976582-clavel-delta-robot",
+      claimTitle: "Paired Parallel Linking Bars",
+      activeDescription:
+        "Claim 2 narrows Claim 1 to a linking means made of two parallel bars, each articulated at the actuator-side and movable-member-side ends.",
+      invertedDescription:
+        "Withhold the paired-bar construction while leaving the normalized teaching pose otherwise unscored. The grant does not state an accuracy, stiffness, force, or failure law for a single-bar comparison.",
+      failureModeName: "Claim 2 Paired Bars Withheld",
+      historicalPriorArt:
+        "The patent presents alternative single-bar/cardanic arrangements separately; it does not quantify a comparative orientation or payload result for replacing the claimed paired bars.",
+    },
+    {
+      claimNumber: 8,
+      patentId: "us-4976582-clavel-delta-robot",
+      claimTitle: "Base-Mounted Supplementary Tool-Axis Motor",
+      activeDescription:
+        "Claim 8 adds a rotatable working member and a supplementary motor mounted on the base for rotation about the working member's longitudinal axis.",
+      invertedDescription:
+        "Withhold only the Claim 8 base-mounted supplementary-drive form. The exhibit does not replace it with an invented transmission torque, speed, or tool performance prediction.",
+      failureModeName: "Claim 8 Base Tool-Motor Form Withheld",
+      historicalPriorArt:
+        "The grant separately claims a movable-member-mounted motor in Claim 9, so removal of Claim 8 is displayed as a legal-topology boundary rather than a claim that all tool rotation is impossible.",
+    },
+  ],
   "us-400766-hall-aluminium": [
     {
       claimNumber: 1,
@@ -2524,6 +2562,34 @@ export function applyClaimConstraintModifications(
       break;
     }
 
+    case "us-4976582-clavel-delta-robot": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim2Active = claimStates[2] ?? true;
+      const claim8Active = claimStates[8] ?? true;
+
+      if (!claim1Active) {
+        modified.claim1TopologyEnabled = 0;
+        activeFailures.push(
+          "Claim 1 topology withheld: the display no longer represents the three-actuator, attitude-preserving parallel device.",
+        );
+        refusalWarning =
+          "SOURCE BOUNDARY: US 4,976,582 supplies no dimensions, mass, payload, actuator data, stiffness, accuracy, or dynamic law from which a counterfactual platform outcome can be calculated.";
+      }
+      if (!claim2Active) {
+        modified.claim2PairedBarsEnabled = 0;
+        activeFailures.push(
+          "Claim 2 topology withheld: the display no longer represents the source-described paired parallel linking bars.",
+        );
+      }
+      if (!claim8Active) {
+        modified.claim8BaseMotorEnabled = 0;
+        activeFailures.push(
+          "Claim 8 topology withheld: the display no longer represents the base-mounted supplementary working-member motor form.",
+        );
+      }
+      break;
+    }
+
     case "us-2717437-mestral-velcro": {
       const claim1Active = claimStates[1] ?? true;
       const claim3Active = claimStates[3] ?? true;
@@ -2583,6 +2649,19 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "SOURCE BOUNDARY: the combined-claim comparison removes source-described topology only; it supplies no quantitative safety or servo-performance outcome.";
+      }
+      break;
+    }
+
+    case "us-4341502-makino-scara": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.topologyVariant = 2; // Invert to non-concentric offset embodiment
+        activeFailures.push(
+          "Claim 1 Concentric Base Four-Link SCARA Mechanism Omitted: the comparison state displaces the common base axis into a non-concentric offset linkage.",
+        );
+        refusalWarning =
+          "SOURCE BOUNDARY: Claim 1 inversion is a kinematic topology comparison only; US 4,341,502 supplies no historical link lengths, inertias, torques, or cycle times to calculate.";
       }
       break;
     }
@@ -2793,8 +2872,7 @@ export function applyClaimConstraintModifications(
         activeFailures.push(
           "Fixed Submerged Gear Drag: Without retractable upright stem and conical casing, underwater installation cannot be hoisted for maintenance or sailing.",
         );
-        refusalWarning =
-          "RETRACTABLE STEM DISENGAGED: Claim 3 removable stem and fairing omitted.";
+        refusalWarning = "RETRACTABLE STEM DISENGAGED: Claim 3 removable stem and fairing omitted.";
       }
       break;
     }

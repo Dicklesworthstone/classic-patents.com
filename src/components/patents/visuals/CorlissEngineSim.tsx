@@ -5,15 +5,18 @@ import { useEffect, useRef, useState } from "react";
 import { corlissConnectingRod, sliderStrokeSvg, stepCorlissEngine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "./PortHamiltonianEnergyStrip";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
 export function CorlissEngineSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-6162-corliss-steam-engine");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const boilerPressurePsi = params.steamPressurePsi ?? params.boilerPressurePsi ?? 100;
-  const cutoffFractionPct = params.cutoffPct ?? params.cutoffRatioPct ?? 25;
-  const engineRpm = params.engineRpm ?? params.rpm ?? 65;
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+  const boilerPressurePsi = params.steamPressurePsi ?? 100;
+  const cutoffFractionPct = params.cutoffPct ?? 25;
+  const engineRpm = params.engineRpm ?? 65;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [crankAngleDeg, setCrankAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
@@ -336,7 +339,7 @@ export function CorlissEngineSim() {
       </div>
 
       {/* Sliders */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
             <span>Boiler Steam Pressure</span>
@@ -347,14 +350,31 @@ export function CorlissEngineSim() {
             min="40"
             max="180"
             step="5"
+            aria-label="Boiler Steam Pressure"
             value={boilerPressurePsi}
-            onChange={(e) => updateParam("boilerPressurePsi", Number(e.target.value))}
+            onChange={(e) => updateParam("steamPressurePsi", Number(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
         </div>
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Cut-Off Stroke Ratio (Governor)</span>
+            <span>Engine Speed</span>
+            <span className="font-mono">{engineRpm} RPM</span>
+          </div>
+          <input
+            type="range"
+            min="30"
+            max="120"
+            step="5"
+            aria-label="Engine Speed"
+            value={engineRpm}
+            onChange={(e) => updateParam("engineRpm", Number(e.target.value))}
+            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
+          />
+        </div>
+        <div>
+          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
+            <span>Cut-Off Stroke Ratio</span>
             <span className="font-mono">{cutoffFractionPct}%</span>
           </div>
           <input
@@ -362,11 +382,23 @@ export function CorlissEngineSim() {
             min="10"
             max="60"
             step="2"
+            aria-label="Cut-Off Stroke Ratio"
             value={cutoffFractionPct}
-            onChange={(e) => updateParam("cutoffRatioPct", Number(e.target.value))}
+            onChange={(e) => updateParam("cutoffPct", Number(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
         </div>
+      </div>
+
+      <div className="mt-4 pt-3 border-t border-parchment-200 dark:border-ink-800 space-y-3">
+        <ClaimConstraintToggle
+          patentId="us-6162-corliss-steam-engine"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+        />
+        <PortHamiltonianEnergyStrip patentId="us-6162-corliss-steam-engine" params={params} />
       </div>
     </div>
   );

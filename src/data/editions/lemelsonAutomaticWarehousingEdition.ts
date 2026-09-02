@@ -50,10 +50,12 @@ export const lemelsonAutomaticWarehousingArchivalEdition: CuratedSpecificationEd
     {
       kind: "masthead",
       lines: [
-        "UNITED STATES PATENT OFFICE",
-        "JEROME H. LEMELSON, OF METUCHEN, NEW JERSEY.",
-        "AUTOMATIC WAREHOUSING SYSTEM.",
-        "Patent No. 3,119,501. Continuation filed October 10, 1961. Patented January 28, 1964. Application No. 145,013.",
+        "United States Patent Office",
+        "3,119,501",
+        "Jerome H. Lemelson, 8B Garfield Apts., Metuchen, N.J.",
+        "AUTOMATIC WAREHOUSING SYSTEM",
+        "Continuation of application Ser. No. 449,874, July 28, 1954. This application Oct. 10, 1961, Ser. No. 145,013",
+        "6 Claims. (Cl. 214—16.4)",
       ],
     },
     {

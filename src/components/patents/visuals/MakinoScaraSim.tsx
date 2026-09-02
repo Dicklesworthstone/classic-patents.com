@@ -1,7 +1,8 @@
 "use client";
 
 import { RotateCcw } from "lucide-react";
-import { useId, useMemo } from "react";
+import { useId, useMemo, useState } from "react";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { stepMakinoScaraTopology } from "@/physics/makinoScaraKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
@@ -26,6 +27,7 @@ export function MakinoScaraSim() {
   const toolId = useId();
   const topologyId = useId();
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const pose = useMemo(() => stepMakinoScaraTopology(params), [params]);
   const firstAngle = params.firstLinkAngleDeg ?? 32;
   const fourthAngle = params.fourthLinkAngleDeg ?? -38;
@@ -380,6 +382,16 @@ export function MakinoScaraSim() {
           >
             <RotateCcw className="h-4 w-4" /> Reset source exhibit
           </button>
+
+          <div className="pt-2 border-t border-slate-800">
+            <ClaimConstraintToggle
+              patentId={PATENT_ID}
+              claimStates={claimStates}
+              onClaimStateChange={(num, active) =>
+                setClaimStates((prev) => ({ ...prev, [num]: active }))
+              }
+            />
+          </div>
         </aside>
       </div>
     </section>

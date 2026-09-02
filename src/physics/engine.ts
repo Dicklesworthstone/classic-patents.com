@@ -49,6 +49,11 @@ import {
   stepWozniakApple,
   stepZeppelinAirship,
 } from "./catalogKernels";
+import {
+  type ClavelDeltaRobotParams,
+  type ClavelDeltaRobotTopologyState,
+  stepClavelDeltaRobotTopology as stepClavelDeltaRobotTopologyKernel,
+} from "./clavelDeltaRobotKernel";
 import { stepCrumpFdmSi } from "./crumpFdmKernel";
 import { tryDaimlerMarineWasmStep } from "./daimlerWasm";
 import {
@@ -309,6 +314,18 @@ export const FrankenSimEngine = {
    */
   stepAmfVersatranTopology(rawParams: AmfVersatranParams = {}): AmfVersatranTopologyState {
     return stepAmfVersatranTopologyKernel(rawParams);
+  },
+
+  /**
+   * US 4,976,582 Clavel Delta host-only topology step.
+   *
+   * This delegates to the deterministic, source-bounded TypeScript kernel. It
+   * neither initializes nor steps a FrankenSim/WASM closed-loop solver.
+   */
+  stepClavelDeltaRobotTopology(
+    rawParams: ClavelDeltaRobotParams = {},
+  ): ClavelDeltaRobotTopologyState {
+    return stepClavelDeltaRobotTopologyKernel(rawParams);
   },
 
   stepTeslaMotorFig9,

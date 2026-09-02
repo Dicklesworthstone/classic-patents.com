@@ -102,6 +102,32 @@ describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
     expect(claim8.modifiedParams).toEqual({ columnRotation: 0.4, teachReplayMode: 0 });
   });
 
+  test("Clavel Delta Robot claim inversions withhold only source-described topology", () => {
+    const claimOne = applyClaimConstraintModifications(
+      "us-4976582-clavel-delta-robot",
+      { armOneInput: 0.2, armTwoInput: -0.1, armThreeInput: 0.3 },
+      { 1: false, 2: true, 8: true },
+    );
+    expect(claimOne.modifiedParams.claim1TopologyEnabled).toBe(0);
+    expect(claimOne.activeFailures).toEqual([
+      "Claim 1 topology withheld: the display no longer represents the three-actuator, attitude-preserving parallel device.",
+    ]);
+    expect(claimOne.refusalWarning).toContain("no dimensions");
+
+    const narrowerClaims = applyClaimConstraintModifications(
+      "us-4976582-clavel-delta-robot",
+      { armOneInput: 0.2 },
+      { 1: true, 2: false, 8: false },
+    );
+    expect(narrowerClaims.modifiedParams.claim2PairedBarsEnabled).toBe(0);
+    expect(narrowerClaims.modifiedParams.claim8BaseMotorEnabled).toBe(0);
+    expect(narrowerClaims.activeFailures).toEqual([
+      "Claim 2 topology withheld: the display no longer represents the source-described paired parallel linking bars.",
+      "Claim 8 topology withheld: the display no longer represents the base-mounted supplementary working-member motor form.",
+    ]);
+    expect(narrowerClaims.refusalWarning).toBeNull();
+  });
+
   test("Otto Claim 1 inversion removes only the source-described charge grading", () => {
     const res = applyClaimConstraintModifications(
       "us-194047-otto-engine",

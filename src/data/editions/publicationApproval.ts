@@ -16,11 +16,14 @@
 import type { CuratedSpecificationEdition, Patent } from "@/types/patent";
 import {
   ARCHIVAL_PUBLICATION_STATE_OVERRIDES,
+  type ArchivalPinnedPdfByteEvidence,
   type ArchivalPublicationDecision,
   type ArchivalPublicationStatus,
   evaluateTypedArchivalPublicationState,
 } from "./archivalPublicationState";
 import { ARCHIVAL_PARALLEL_READINGS } from "./parallelReadings";
+import { verifyPinnedPdfBytesSync } from "./pinnedPdfByteVerification.server";
+import { reviewedLedgerPublicationEvidenceFor } from "./reviewedLedgerPublicationEvidence.server";
 
 export type { ArchivalPublicationDecision, ArchivalPublicationStatus };
 
@@ -54,16 +57,40 @@ export function isArchivalEditionExplicitlyWithheld(patentId: string): boolean {
 }
 
 export function evaluateArchivalPublicationState(
-  patent: Pick<Patent, "id" | "archivalEdition" | "originalTextAsset">,
+  patent: Pick<
+    Patent,
+    "id" | "archivalEdition" | "originalTextAsset" | "originalPdfUrl" | "claims"
+  >,
 ): ArchivalPublicationDecision {
+  const expectedSha256 =
+    patent.archivalEdition?.sourcePdfSha256 ?? patent.originalTextAsset?.sourcePdfSha256 ?? "";
+  const byteVerification = verifyPinnedPdfBytesSync({
+    patentId: patent.id,
+    expectedSha256,
+    publicPdfUrl: patent.originalPdfUrl,
+  });
+  const pinnedPdfBytes: ArchivalPinnedPdfByteEvidence = {
+    canonicalPublicPdfUrl: byteVerification.canonicalPublicPdfUrl,
+    expectedSha256: byteVerification.expectedSha256,
+    actualSha256: byteVerification.actualSha256,
+    availability: byteVerification.availability,
+    matchesExpected: byteVerification.matchesExpected,
+    reason: byteVerification.reason,
+  };
+
   return evaluateTypedArchivalPublicationState(patent, {
     hasCompanionReadings: Boolean(ARCHIVAL_PARALLEL_READINGS[patent.id]),
     isQuarantined: isArchivalEditionExplicitlyWithheld(patent.id),
+    ledgerContent: reviewedLedgerPublicationEvidenceFor(patent),
+    pinnedPdfBytes,
   });
 }
 
 export function archivalEditionForPublication(
-  patent: Pick<Patent, "id" | "archivalEdition" | "originalTextAsset">,
+  patent: Pick<
+    Patent,
+    "id" | "archivalEdition" | "originalTextAsset" | "originalPdfUrl" | "claims"
+  >,
 ): CuratedSpecificationEdition | undefined {
   const decision = evaluateArchivalPublicationState(patent);
   return decision.isPublished ? decision.publishedEdition : undefined;

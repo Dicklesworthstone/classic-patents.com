@@ -24,14 +24,17 @@ const crop = (file: string, width: number, height: number, label: string) => ({
 });
 
 const FIGURES = {
-  "FIG. 1": [crop("fig-1-source-crop-v1", 640, 310, "Fig. 1")],
-  "FIG. 2": [crop("fig-2-source-crop-v1", 580, 280, "Fig. 2")],
+  "Fig. 1": [crop("fig-1-source-crop-v1", 640, 310, "Fig. 1")],
+  "Fig. 2": [crop("fig-2-source-crop-v1", 580, 280, "Fig. 2")],
 };
 
-const figure = (label: "FIG. 1" | "FIG. 2"): CuratedSpecificationInline => ({
+const figure = (
+  label: "Fig. 1" | "Fig. 2",
+  sourceText: string = label,
+): CuratedSpecificationInline => ({
   kind: "reference",
-  text: label,
-  href: `#fig-${label === "FIG. 1" ? "1" : "2"}`,
+  text: sourceText,
+  href: `#fig-${label === "Fig. 1" ? "1" : "2"}`,
   referenceType: "figure",
   label,
   figurePreviews: FIGURES[label],
@@ -51,11 +54,13 @@ export const mestralVelcroArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "masthead",
       lines: [
-        "UNITED STATES PATENT OFFICE",
-        "GEORGE DE MESTRAL, OF PRANGINS, VAUD, SWITZERLAND, ASSIGNOR TO VELCRO S. A., OF FRIBOURG, SWITZERLAND, A CORPORATION OF SWITZERLAND.",
-        "VELVET TYPE FABRIC AND METHOD OF PRODUCING SAME.",
-        "Patent No. 2,717,437. Filed October 15, 1952. Patented September 13, 1955. Application Serial No. 314,933.",
-        "Claims priority, application Switzerland October 22, 1951.",
+        "United States Patent Office",
+        "2,717,437",
+        "Patented Sept. 13, 1955",
+        "VELVET TYPE FABRIC AND METHOD OF PRODUCING SAME",
+        "George de Mestral, Prangins, Vaud, Switzerland, assignor to Velcro S. A., Fribourg, Switzerland, a corporation of Switzerland",
+        "Application October 15, 1952, Serial No. 314,933",
+        "Claims priority, application Switzerland October 22, 1951",
       ],
     },
     {
@@ -63,9 +68,9 @@ export const mestralVelcroArchivalEdition: CuratedSpecificationEdition = {
       figureLabel: "SHEET 1 OF 1",
       title: "Velvet Pile Weave, Thermal Setting Lancet Bar, and Interengaging Fastening Array",
       description: [
-        figure("FIG. 1"),
+        figure("Fig. 1"),
         { kind: "text", text: " and " },
-        figure("FIG. 2"),
+        figure("Fig. 2"),
         {
           kind: "text",
           text: " show the foundation weave, auxiliary loop warp over heated lancet bar 5 with cutting blade 8 forming resilient hooks 4 and straight strands 10, and two superposed 90°-crossed fabric pieces adhering together.",
@@ -117,12 +122,12 @@ export const mestralVelcroArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "I have illustrated diagrammatically and by way of example in accompanying drawings various embodiments of the fabric according to my invention. In said drawings: ",
       },
-      figure("FIG. 1"),
+      figure("Fig. 1"),
       {
         kind: "text",
         text: " is an explanatory diagram of a preferred method of production of such a fabric. ",
       },
-      figure("FIG. 2"),
+      figure("Fig. 2"),
       {
         kind: "text",
         text: " shows two pieces of fabric executed according to a first embodiment of my invention and laid over each other so as to interengage and to adhere to each other.",
@@ -133,7 +138,7 @@ export const mestralVelcroArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "Turning to ",
       },
-      figure("FIG. 1"),
+      figure("Fig. 1"),
       {
         kind: "text",
         text: ", it is apparent that the velvet fabric, illustrated in the making, includes a foundation structure constituted by a weft 1 and by a warp 2.",
@@ -170,7 +175,7 @@ export const mestralVelcroArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "When producing a fabric of the type illustrated in ",
       },
-      figure("FIG. 1"),
+      figure("Fig. 1"),
       {
         kind: "text",
         text: ", I proceed in the same manner as for the production of the special velvet made on ",
@@ -183,7 +188,7 @@ export const mestralVelcroArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: ". As a matter of fact, it is possible to use for the formation of the pile, small transverse metal bars (",
       },
-      figure("FIG. 1"),
+      figure("Fig. 1"),
       {
         kind: "text",
         text: ") round which the additional warp threads are caused to pass so as to form loops 6. Each small bar 5 is provided with a longitudinal groove 7 in which is guided a knife 8 adapted to cut the loop 6 open and to form thus the raised pile threads. However, with a view to obtaining the hooks 4, I heat the bar 5 before the cutting of the loops 6, so that the thread extending over the bar may assume and retain the shape imparted to it by the latter. The heating of the bars may be obtained by making an electric current flow through them. Obviously, the carrier bars 5 for the loop may be heated as well through any means other than an electric current, e. g. the carrier bars may be hollow and heated by steam.",
@@ -200,12 +205,12 @@ export const mestralVelcroArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "As apparent from inspection of ",
       },
-      figure("FIG. 2"),
+      figure("Fig. 2"),
       {
         kind: "text",
         text: ", it is possible to superpose two pieces of fabric of the type illustrated in ",
       },
-      figure("FIG. 1"),
+      figure("Fig. 1"),
       {
         kind: "text",
         text: ", after having imparted to one of the two pieces a 90° angular displacement in respect to the other piece and after turning them so that their pile surfaces face each other, the pile threads 9 of one piece engaging the pile threads 9 of the other piece through the co-operating hooks 4. Thus, as the number of hooks 4 per surface unit, say per square inch, may be high, the two pieces of fabric adhere together perfectly, and it is necessary to draw them away from each other with some energy, when it is desired to separate them. After separation of the two pieces, the hooks 4 return into their original shape.",
@@ -228,12 +233,12 @@ export const mestralVelcroArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "It should be remarked that the velvet fabrics according to my invention and more particularly those illustrated in ",
       },
-      figure("FIG. 1"),
+      figure("Fig. 1", "Figs. 1"),
       {
         kind: "text",
         text: " and ",
       },
-      figure("FIG. 2"),
+      figure("Fig. 2", "2"),
       {
         kind: "text",
         text: ", may serve advantageously for the execution of household implements, such as clothes brushes, shoe brushes and the like cleaning or scouring means. Obviously, in such a case, the size of the threads and more particularly their thickness and their rigidity may be selected according to the purpose intended for the pieces of fabric that are to be executed.",

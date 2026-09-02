@@ -95,7 +95,9 @@ describe("US 2,297,691 Chester F. Carlson Electrophotography Archival Edition Pu
 
   test("enforces figure acceptance pending audit hold in publication state registry", () => {
     const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const { carlsonElectrophotographyPatent } = require("@/data/patents/carlson-electrophotography");
+    const {
+      carlsonElectrophotographyPatent,
+    } = require("@/data/patents/carlson-electrophotography");
     const decision = evaluateTypedArchivalPublicationState(carlsonElectrophotographyPatent, {
       hasCompanionReadings: true,
     });

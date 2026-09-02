@@ -87,6 +87,35 @@ describe("Physics Telemetry Data Registry", () => {
     }
   });
 
+  test("Goodyear's primary shared control changes an honestly labelled telemetry value", () => {
+    const goodyear = PATENT_PHYSICS_REGISTRY["us-3633-goodyear-rubber"];
+    const common = {
+      sulfurPct: 8,
+      specimenTempC: 35,
+      appliedTensileStretch: 1.8,
+    };
+    const before = goodyear.computeMetrics({ ...common, vulcanTemp: 146 });
+    const after = goodyear.computeMetrics({ ...common, vulcanTemp: 148 });
+    const beforeRate = before.find((metric) => metric.label === "Cure Rate (Modern Model)");
+    const afterRate = after.find((metric) => metric.label === "Cure Rate (Modern Model)");
+
+    expect(beforeRate).toMatchObject({
+      value: "1.04",
+      unit: "× 145 °C / 8% S baseline",
+      provenance: "scenario-modern",
+    });
+    expect(afterRate).toMatchObject({
+      value: "1.12",
+      unit: "× 145 °C / 8% S baseline",
+      provenance: "scenario-modern",
+    });
+    expect(afterRate?.value).not.toBe(beforeRate?.value);
+    expect(afterRate?.provenanceCitation).toContain("not a value printed in US 3,633");
+    expect(
+      after.map((metric) => `${metric.label} ${metric.value} ${metric.unit}`).join("; "),
+    ).not.toBe(before.map((metric) => `${metric.label} ${metric.value} ${metric.unit}`).join("; "));
+  });
+
   test("Wright Flyer exemplar registers Prandtl induced drag and 3-axis flight controls", () => {
     const wright = PATENT_PHYSICS_REGISTRY["us-821393-wright-flyer"];
     expect(wright).toBeDefined();
@@ -184,7 +213,7 @@ describe("Physics Telemetry Data Registry", () => {
     const edison = PATENT_PHYSICS_REGISTRY["us-200521-edison-phonograph"];
     expect(edison.engineMethod).toContain("illustrative display motion only");
     expect(edison.controls.map((control) => control.unit)).toEqual(["model RPM", "model dB"]);
-    expect(edison.computeMetrics({})).toMatchObject([
+    expect(edison.computeMetrics({}).slice(0, 3)).toMatchObject([
       { label: "Source Helical Groove Pitch", value: "10", unit: "grooves/in" },
       { label: "Source Shaft Thread Pitch", value: "10", unit: "threads/in" },
       { label: "Named Drive", value: "Clock-work M or other power", unit: "source text" },
@@ -202,7 +231,7 @@ describe("Physics Telemetry Data Registry", () => {
       "model RPM",
       "model degrees",
     ]);
-    expect(ericsson.computeMetrics({})).toMatchObject([
+    expect(ericsson.computeMetrics({}).slice(0, 3)).toMatchObject([
       { label: "Source Spiral Advance", value: "3", unit: "diameters per turn" },
       { label: "Source Shaft Relation", value: "b opposite a", unit: "lower stated speed" },
       { label: "Source Casing Clearance", value: "about 1/8", unit: "inch" },

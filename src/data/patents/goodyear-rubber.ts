@@ -33,7 +33,7 @@ export const goodyearRubberPatent: Patent = {
   usptoClassification:
     "Historical grant; modern Google Patents classifications include B32B and C08F8/34",
   originalTextAsset: {
-    url: "/patents/transcripts/us-3633-goodyear-rubber.txt",
+    url: "/patents/transcripts/us-3633-goodyear-rubber-reviewed.txt",
     pageCount: 2,
     kind: "reviewed-transcription",
     reviewedBy: "Classic Patents editorial agent (SunnySpring)",

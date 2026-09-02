@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import {
   buildKamenTransporterModel,
   type KamenTransporterModel,
@@ -29,6 +30,7 @@ export default function KamenTransporter3D({
   const modelRef = useRef<KamenTransporterModel | null>(null);
 
   const { params, updateParam } = usePatentPhysics(patentId);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 16: true });
   const controls = useMemo(() => readKamenTransporterControls(params), [params]);
   const tel = useMemo(() => stepKamenTransporterSi(controls), [controls]);
 
@@ -262,6 +264,16 @@ export default function KamenTransporter3D({
               STAIRS
             </button>
           </div>
+        </div>
+
+        <div className="pt-2 border-t border-parchment-200 dark:border-ink-800">
+          <ClaimConstraintToggle
+            patentId={patentId}
+            claimStates={claimStates}
+            onClaimStateChange={(num, active) =>
+              setClaimStates((prev) => ({ ...prev, [num]: active }))
+            }
+          />
         </div>
       </div>
     </div>

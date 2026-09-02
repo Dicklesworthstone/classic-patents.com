@@ -7,7 +7,6 @@ import {
   patentForPublicationViewer,
 } from "@/data/editions/publicationApproval";
 import { allPatents } from "@/data/patents";
-import { goodyearRubberPatent } from "@/data/patents/goodyear-rubber";
 import { whitneyCottonGinPatent } from "@/data/patents/whitney-cotton-gin";
 import type { Patent } from "@/types/patent";
 import { applyPatentViewToUrl, viewModeFromSearch } from "./DualProjectionViewer";
@@ -72,8 +71,9 @@ describe("patent view URL state", () => {
     expect(PATENT_PAGE_SOURCE).toContain(
       "data-archival-publication-evidence={JSON.stringify(archivalDiagnostics)}",
     );
+    expect(VIEWER_SOURCE).toContain("const archivalSource =");
     expect(VIEWER_SOURCE).toContain(
-      "const archivalEdition = archivalPublication.isPublished ? patent.archivalEdition : undefined",
+      "archivalPublication.isPublished && patent.archivalEdition && archivalParallelReadings",
     );
     expect(VIEWER_SOURCE).not.toContain("evaluateArchivalPublicationState(patent)");
     expect(VIEWER_SOURCE).not.toContain("archivalParallelReadingsFor");
@@ -85,32 +85,34 @@ describe("patent view URL state", () => {
 
 describe("archival publication boundary", () => {
   test("publishes accepted editions and withholds held audit records", () => {
-    expect(archivalEditionForPublication(goodyearRubberPatent)).toBe(
-      goodyearRubberPatent.archivalEdition,
-    );
+    const acceptedPatent = allPatents.find((patent) => patent.id === "us-78317-nobel-dynamite");
+    if (!acceptedPatent) throw new Error("Nobel dynamite patent not found");
+    expect(archivalEditionForPublication(acceptedPatent)).toBe(acceptedPatent.archivalEdition);
     // Whitney has an audit hold in ARCHIVAL_PUBLICATION_STATE_OVERRIDES (classic-patentscom-hi0)
     expect(archivalEditionForPublication(whitneyCottonGinPatent)).toBeUndefined();
 
     const unmappedPatent: Patent = {
-      ...goodyearRubberPatent,
+      ...acceptedPatent,
       id: "us-unmapped-draft-test",
     };
     expect(archivalEditionForPublication(unmappedPatent)).toBeUndefined();
   });
 
   test("does not make optional reviewed-ledger page anchors a publication condition", () => {
-    const asset = goodyearRubberPatent.originalTextAsset;
+    const acceptedPatent = allPatents.find((patent) => patent.id === "us-78317-nobel-dynamite");
+    if (!acceptedPatent) throw new Error("Nobel dynamite patent not found");
+    const asset = acceptedPatent.originalTextAsset;
     if (!asset) {
-      throw new Error("Goodyear publication fixture requires a reviewed source asset.");
+      throw new Error("Publication fixture requires a reviewed source asset.");
     }
 
     const withoutOptionalPageAnchors: Patent = {
-      ...goodyearRubberPatent,
+      ...acceptedPatent,
       originalTextAsset: { ...asset, pageAnchors: undefined },
     };
 
     expect(archivalEditionForPublication(withoutOptionalPageAnchors)).toBe(
-      goodyearRubberPatent.archivalEdition,
+      acceptedPatent.archivalEdition,
     );
   });
 
@@ -147,10 +149,12 @@ describe("archival publication boundary", () => {
     expect(heldProjection.archivalEdition).toBeUndefined();
     expect(heldProjection.originalTextAsset).toBeUndefined();
 
-    const acceptedDecision = evaluateArchivalPublicationState(goodyearRubberPatent);
-    const acceptedProjection = patentForPublicationViewer(goodyearRubberPatent, acceptedDecision);
+    const acceptedPatent = allPatents.find((patent) => patent.id === "us-78317-nobel-dynamite");
+    if (!acceptedPatent) throw new Error("Nobel dynamite patent not found");
+    const acceptedDecision = evaluateArchivalPublicationState(acceptedPatent);
+    const acceptedProjection = patentForPublicationViewer(acceptedPatent, acceptedDecision);
     expect(acceptedDecision.isPublished).toBe(true);
-    expect(acceptedProjection.archivalEdition).toBe(goodyearRubberPatent.archivalEdition);
+    expect(acceptedProjection.archivalEdition).toBe(acceptedPatent.archivalEdition);
     expect(acceptedProjection.originalTextAsset).toBeUndefined();
   });
 });

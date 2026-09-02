@@ -249,7 +249,10 @@ export default function MestralVelcro3D({
           claimStates={claimStates}
           onClaimStateChange={(num, state) => setClaimStates((prev) => ({ ...prev, [num]: state }))}
         />
-        <PortHamiltonianEnergyStrip patentId={patentId} params={controls as unknown as Record<string, number>} />
+        <PortHamiltonianEnergyStrip
+          patentId={patentId}
+          params={controls as unknown as Record<string, number>}
+        />
       </div>
     </div>
   );

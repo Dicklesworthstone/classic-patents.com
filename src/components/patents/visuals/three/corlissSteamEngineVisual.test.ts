@@ -114,4 +114,51 @@ describe("US 6,162 George Corliss Steam Engine visual & kinematics boundary", ()
 
     model.dispose();
   });
+
+  test("provides valid provenance classifications for all Corliss controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-6162-corliss-steam-engine"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({ steamPressurePsi: 100, engineRpm: 65, cutoffPct: 25 });
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("modifies thermal efficiency when Claim 1 is inverted", () => {
+    const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
+    const normal = applyClaimConstraintModifications(
+      "us-6162-corliss-steam-engine",
+      {},
+      { 1: true },
+    );
+    expect(normal.activeFailures.length).toBe(0);
+
+    const inverted = applyClaimConstraintModifications(
+      "us-6162-corliss-steam-engine",
+      {},
+      { 1: false },
+    );
+    expect(inverted.activeFailures.length).toBeGreaterThan(0);
+    expect(inverted.modifiedParams.thermalEfficiencyPct).toBe(8.5);
+    expect(inverted.refusalWarning).toContain("CUT-OFF DISENGAGEMENT FAILURE");
+  });
+
+  test("produces distinct telemetry envelopes when controls change", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-6162-corliss-steam-engine"];
+    const m100 = entry.computeMetrics({ steamPressurePsi: 100, engineRpm: 65, cutoffPct: 25 });
+    const m120 = entry.computeMetrics({ steamPressurePsi: 120, engineRpm: 65, cutoffPct: 25 });
+    const mCutoff = entry.computeMetrics({ steamPressurePsi: 100, engineRpm: 65, cutoffPct: 35 });
+
+    const env100 = m100.map((m: any) => `${m.label} ${m.value}`).join("; ");
+    const env120 = m120.map((m: any) => `${m.label} ${m.value}`).join("; ");
+    const envCutoff = mCutoff.map((m: any) => `${m.label} ${m.value}`).join("; ");
+
+    expect(env100).not.toBe(env120);
+    expect(env100).not.toBe(envCutoff);
+  });
 });

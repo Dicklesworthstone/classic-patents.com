@@ -98,4 +98,42 @@ describe("US 4,765,668 Robot End Effector Archival Edition Contract", () => {
       expect(reading?.[0].trim().length).toBeGreaterThan(20);
     }
   });
+
+  test("provides valid provenance classifications for all Robot End Effector controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const config = PATENT_PHYSICS_REGISTRY[PATENT_ID];
+    expect(config).toBeDefined();
+
+    for (const ctrl of config.controls) {
+      expect(["source-disclosed", "scenario-reader"]).toContain(ctrl.provenance);
+    }
+
+    const defaultMetrics = config.computeMetrics({});
+    for (const metric of defaultMetrics) {
+      expect(["source-disclosed", "scenario-reader"]).toContain(metric.provenance);
+    }
+  });
+
+  test("wires claim 1 constraint in claimConstraints", () => {
+    const {
+      CATALOG_CLAIM_CONSTRAINTS,
+      applyClaimConstraintModifications,
+    } = require("@/physics/claimConstraints");
+    const constraints = CATALOG_CLAIM_CONSTRAINTS[PATENT_ID];
+    expect(constraints).toBeDefined();
+    expect(constraints.length).toBeGreaterThanOrEqual(1);
+
+    const claim1 = constraints.find((c: any) => c.claimNumber === 1);
+    expect(claim1).toBeDefined();
+    expect(claim1?.claimTitle).toBe("Symmetric Opposed-Thread Hands and Removable Fingers");
+
+    const activeRes = applyClaimConstraintModifications(PATENT_ID, {}, { 1: true });
+    expect(activeRes.activeFailures.length).toBe(0);
+
+    const invertedRes = applyClaimConstraintModifications(PATENT_ID, {}, { 1: false });
+    expect(invertedRes.activeFailures.length).toBeGreaterThan(0);
+    expect(invertedRes.modifiedParams.jawOpeningFraction).toBe(0);
+    expect(invertedRes.modifiedParams.fingerChangeFraction).toBe(1);
+    expect(invertedRes.refusalWarning).toContain("SOURCE BOUNDARY");
+  });
 });

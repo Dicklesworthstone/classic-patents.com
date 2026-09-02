@@ -3,6 +3,7 @@
 import { Eye, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { stepMakinoScaraTopology } from "@/physics/makinoScaraKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -32,6 +33,7 @@ export function MakinoScara3D() {
   const studioRef = useRef<StudioContext | null>(null);
   const [view, setView] = useState<keyof typeof VIEWS>("overview");
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const liveParams = useRef(params);
   liveParams.current = params;
   const pose = stepMakinoScaraTopology(params);
@@ -192,6 +194,16 @@ export function MakinoScara3D() {
               <RotateCcw className="mr-1 inline h-3.5 w-3.5" />
               Reset
             </button>
+          </div>
+
+          <div className="pt-2 border-t border-slate-800">
+            <ClaimConstraintToggle
+              patentId={PATENT_ID}
+              claimStates={claimStates}
+              onClaimStateChange={(num, active) =>
+                setClaimStates((prev) => ({ ...prev, [num]: active }))
+              }
+            />
           </div>
         </div>
       </div>

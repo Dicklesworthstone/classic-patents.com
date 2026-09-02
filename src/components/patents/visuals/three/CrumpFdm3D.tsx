@@ -239,7 +239,9 @@ export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
         <ClaimConstraintToggle
           patentId={patentId}
           claimStates={claimStates}
-          onClaimStateChange={(num, active) => setClaimStates((prev) => ({ ...prev, [num]: active }))}
+          onClaimStateChange={(num, active) =>
+            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          }
         />
       </div>
     </div>

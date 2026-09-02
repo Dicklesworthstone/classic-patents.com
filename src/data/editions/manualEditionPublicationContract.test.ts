@@ -5,15 +5,15 @@ import { join } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { allPatents } from "@/data/patents";
 import {
-  normalizeLiteralSourceText,
   validateReviewedTranscription,
-  validateReviewedTranscriptionCoverage,
   validateReviewedTranscriptionPageAnchors,
 } from "@/data/patents/sourceTextValidation";
 import {
   archivalEditionForPublication,
+  evaluateArchivalPublicationState,
   isArchivalEditionExplicitlyWithheld,
 } from "./publicationApproval";
+import { reviewedLedgerPublicationEvidenceFor } from "./reviewedLedgerPublicationEvidence.server";
 
 const publicPath = (url: string) => join(process.cwd(), "public", url.replace(/^\//, ""));
 
@@ -38,38 +38,6 @@ const GENERIC_CLAIM_EDITORIAL_PATTERNS: readonly RegExp[] = [
 
 const BARE_FIGURE_CITATION = /\b(?:Fig(?:s)?\.?|Figures?)\s+(?:\d+|[IVXLC]+)\b/i;
 
-function sourceTextFromEdition(patent: (typeof allPatents)[number]): string {
-  const edition = patent.archivalEdition;
-  if (!edition) return "";
-
-  const inlineText = (
-    inlines: readonly { kind: string; label?: string; text?: string }[],
-  ): string => inlines.map((inline) => inline.text ?? "").join("");
-
-  return edition.blocks
-    .flatMap((block) => {
-      if (block.kind === "masthead") return block.lines;
-      if (block.kind === "heading" || block.kind === "equation") return [block.text];
-      if (block.kind === "paragraph" || block.kind === "claim") return [inlineText(block.inlines)];
-      if (block.kind === "figure-sheet") return [inlineText(block.description)];
-      return [inlineText(block.headers.flat()), inlineText(block.rows.flat(2))];
-    })
-    .join(" ");
-}
-
-function literalSectionsFromEdition(patent: (typeof allPatents)[number]): readonly string[] {
-  const edition = patent.archivalEdition;
-  if (!edition) return [];
-
-  return edition.blocks.flatMap((block) => {
-    if (block.kind === "masthead") return block.lines;
-    if (block.kind === "paragraph" || block.kind === "claim") {
-      return [block.inlines.map((inline) => inline.text).join("")];
-    }
-    return [];
-  });
-}
-
 /**
  * This is deliberately independent from the older editorial convenience
  * audits. It examines every manual edition the visitor-facing renderer
@@ -78,14 +46,23 @@ function literalSectionsFromEdition(patent: (typeof allPatents)[number]): readon
  * source PDF.
  */
 describe("manual-edition publication contract", () => {
-  test("publishes Pasteur now that its ledger covers the authored source face", () => {
+  test("fails closed on records with incomplete ledger coverage", () => {
+    const metcalfe = allPatents.find((patent) => patent.id === "us-4063220-metcalfe-ethernet");
+
+    expect(metcalfe).toBeDefined();
+    expect(isArchivalEditionExplicitlyWithheld("us-4063220-metcalfe-ethernet")).toBe(false);
+    expect(metcalfe && archivalEditionForPublication(metcalfe)).toBeUndefined();
+    expect(metcalfe && evaluateArchivalPublicationState(metcalfe).reasonCode).toBe(
+      "LEDGER_CONTENT_COVERAGE_INCOMPLETE",
+    );
+  });
+
+  test("accepts Pasteur after full facsimile and reviewed ledger repair", () => {
     const pasteur = allPatents.find((patent) => patent.id === "us-135245-pasteur-fermentation");
 
     expect(pasteur).toBeDefined();
-    // Editorial calibration (root decision, 2026-08-22): a 96%-covered
-    // reviewed ledger is no longer a withholding offense.
-    expect(isArchivalEditionExplicitlyWithheld("us-135245-pasteur-fermentation")).toBe(false);
-    expect(pasteur && archivalEditionForPublication(pasteur)).toBe(pasteur?.archivalEdition);
+    expect(pasteur && archivalEditionForPublication(pasteur)).toBeDefined();
+    expect(pasteur && evaluateArchivalPublicationState(pasteur).reasonCode).toBe("ACCEPTED");
   });
 
   test("keeps withheld source editions type-safe without publication-state casts", () => {
@@ -136,7 +113,6 @@ describe("manual-edition publication contract", () => {
     expect(manualPatents.length).toBeGreaterThan(0);
 
     const violations: string[] = [];
-    const coverageShortfalls: string[] = [];
     for (const patent of manualPatents) {
       const publishedEdition = archivalEditionForPublication(patent);
       if (!publishedEdition) continue;
@@ -174,31 +150,10 @@ describe("manual-edition publication contract", () => {
         );
       }
 
-      const coverage = validateReviewedTranscriptionCoverage(
-        transcript,
-        asset.pageCount,
-        sourceTextFromEdition(patent),
-      );
-      if (!coverage.valid) {
-        // Editorial calibration (root decision, 2026-08-22): thin ledgers are
-        // tracked verification work, not takedowns.
-        coverageShortfalls.push(`${patent.id}: ${coverage.error ?? "coverage invalid."}`);
-      }
-
-      // Editorial calibration (root decision, 2026-08-22): ledger-side
-      // placeholder hygiene and literal-coverage shortfalls no longer block
-      // publication — absence of the full text costs the visitor more than
-      // imperfect review coverage. The shortfall inventory is tracked here
-      // so the remaining verification work stays visible and bounded.
-      const sections = literalSectionsFromEdition(patent);
-      const normalizedLedger = normalizeLiteralSourceText(transcript);
-      const coveredSections = sections.filter((section) =>
-        normalizedLedger.includes(normalizeLiteralSourceText(section)),
-      ).length;
-      const coverageFraction = sections.length ? coveredSections / sections.length : 1;
-      if (coverageFraction < 0.7) {
-        coverageShortfalls.push(
-          `${patent.id}: reviewed transcript literally covers only ${Math.round(coverageFraction * 100)}% of ${sections.length} authored sections.`,
+      const contentEvidence = reviewedLedgerPublicationEvidenceFor(patent);
+      if (!contentEvidence.valid) {
+        violations.push(
+          `${patent.id}: ${contentEvidence.error ?? "reviewed-ledger content coverage is invalid."}`,
         );
       }
 
@@ -231,9 +186,6 @@ describe("manual-edition publication contract", () => {
     }
 
     expect(violations).toEqual([]);
-    // Tracked, not blocking: every entry is a remaining ledger-verification
-    // task for the edition's source face.
-    expect(coverageShortfalls.length).toBeLessThan(60);
   });
 
   test("rejects page-summary boilerplate masquerading as a reviewed transcription", () => {

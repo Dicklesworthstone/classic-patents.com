@@ -183,9 +183,7 @@ describe("ericssonPropellerArchivalEdition", () => {
 
   test("derives all printed claims dynamically from edition without duplicate strings", () => {
     expect(ericssonPropellerPatent.claims.length).toBe(3);
-    const editionClaims = ericssonPropellerArchivalEdition.blocks.filter(
-      (b) => b.kind === "claim",
-    );
+    const editionClaims = ericssonPropellerArchivalEdition.blocks.filter((b) => b.kind === "claim");
     expect(editionClaims.length).toBe(3);
 
     for (const claim of ericssonPropellerPatent.claims) {

@@ -2,6 +2,7 @@
 
 import { Eye, EyeOff, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import {
   INITIAL_BAER_STATE,
   readBaerControls,
@@ -39,6 +40,7 @@ export function BaerOdyssey3D({ patentId = PATENT_ID }: { patentId?: string } = 
   const studioRef = useRef<StudioContext | null>(null);
   const [view, setView] = useState<keyof typeof VIEWS>("overview");
   const [interfaceVisible, setInterfaceVisible] = useState(true);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const { params, updateParam, resetParams } = usePatentPhysics(patentId);
   const liveParams = useRef(params);
@@ -222,6 +224,16 @@ export function BaerOdyssey3D({ patentId = PATENT_ID }: { patentId?: string } = 
           </div>
         </div>
       )}
+
+      <div className="p-4 bg-stone-950 border-t border-stone-800">
+        <ClaimConstraintToggle
+          patentId={patentId}
+          claimStates={claimStates}
+          onClaimStateChange={(num, active) =>
+            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          }
+        />
+      </div>
     </div>
   );
 }

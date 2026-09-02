@@ -5,6 +5,7 @@
 
 import { stepAmfVersatranTopology } from "./amfVersatranKernel";
 import { INITIAL_BAER_STATE, readBaerControls, stepBaerOdysseySi } from "./baerOdysseyKernel";
+import { stepClavelDeltaRobotTopology } from "./clavelDeltaRobotKernel";
 import { readCrumpFdmControls, stepCrumpFdmSi } from "./crumpFdmKernel";
 import { stepDevolProgrammedTransfer } from "./devolProgrammedTransferKernel";
 import { FrankenSimEngine } from "./engine";
@@ -94,6 +95,7 @@ const TESLA_COIL_ID = "us-593138-tesla-coil";
 const TESLA_TELEAUTOMATON_ID = "us-613809-tesla-teleautomaton";
 const GOERTZ_MASTER_SLAVE_ID = "us-2846084-goertz-electronic-master-slave-manipulator";
 const AMF_VERSATRAN_ID = "us-3212649-amf-versatran";
+const CLAVEL_DELTA_ROBOT_ID = "us-4976582-clavel-delta-robot";
 
 export function specClausesFor(patentId: string, params: Record<string, number>): SpecClause[] {
   if (patentId === WATT_ROTARY_ID) {
@@ -3222,7 +3224,9 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         caption: tel.claim1BalanceWithheld
           ? "Claim 1 topology is withheld: the grant states the unpowered system is unstable with respect to tipping; no quantitative fall behavior is asserted."
           : `Modern illustrative scenario: dynamic balance is ${
-              tel.pitchOverturnRefusal || tel.tractionLossRefusal ? "outside its modeled boundary" : "available"
+              tel.pitchOverturnRefusal || tel.tractionLossRefusal
+                ? "outside its modeled boundary"
+                : "available"
             } at the selected reader inputs.`,
       },
       {
@@ -3252,6 +3256,44 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: !tel.tractionLossRefusal,
         tone: !tel.tractionLossRefusal ? "live" : "broken",
         caption: `Modern illustrative tire-contact boundary: selected μ=${controls.groundFrictionCoeff.toFixed(2)} is ${tel.tractionLossRefusal ? "outside" : "inside"} the model's traction boundary. The grant prints no friction coefficient or grip force.`,
+      },
+    ];
+  }
+
+  if (patentId === CLAVEL_DELTA_ROBOT_ID) {
+    const topology = stepClavelDeltaRobotTopology(params);
+    const maximumPairError = Math.max(...topology.legs.map((leg) => leg.pairedBarVectorError));
+    return [
+      {
+        id: "clavel-delta-fixed-orientation",
+        phrase:
+          "The inclination and the orientation in space of the movable element remain unchanged",
+        active: topology.topologyVisible && topology.platformAttitudeDeviation === 0,
+        tone: topology.topologyVisible ? "live" : "broken",
+        caption: topology.topologyVisible
+          ? "Claim 1 topology is live: the normalized construction preserves a fixed platform normal while its three source-labelled control-arm inputs change."
+          : "Claim 1's three-actuator orientation-preserving topology is withheld; this exhibit does not represent a fixed-attitude moving member.",
+      },
+      {
+        id: "clavel-delta-two-parallel-bars",
+        phrase: "two parallel bars",
+        active: topology.pairedBarsVisible && maximumPairError < 1e-9,
+        tone: topology.pairedBarsVisible ? "held" : "broken",
+        caption: topology.pairedBarsVisible
+          ? "Claim 2 topology is live: every display leg retains both bars, with a normalized pair-vector residual of " +
+            maximumPairError.toFixed(3) +
+            "."
+          : "Claim 2's paired parallel bars are withheld. A lone lower member is not presented as the source-backed parallelogram construction.",
+      },
+      {
+        id: "clavel-delta-supplementary-motor",
+        phrase:
+          "a supplementary motor intended for controlling the rotation of the working member about its longitudinal axis",
+        active: topology.toolAxisVisible,
+        tone: topology.toolAxisVisible ? "held" : "broken",
+        caption: topology.toolAxisVisible
+          ? "Claim 8's base-mounted supplementary motor form is present as a normalized tool-axis topology; no torque, speed, ratio, or motor performance is asserted."
+          : "Claim 8's base-mounted supplementary motor form is withheld, so the exhibit does not represent its source-described tool-axis drive.",
       },
     ];
   }

@@ -181,8 +181,7 @@ export const kamenSegwayPatent: Patent = {
       },
       {
         title: "Haptic Torque Ripple & Platform Shudder Alarm",
-        summary:
-          "Claim 2 specifies ripple modulation of motorized-drive power as an alarm form.",
+        summary: "Claim 2 specifies ripple modulation of motorized-drive power as an alarm form.",
         technicalDetails:
           "The source says that ripple modulation can provide an alarm perceived as a rumbling ride. It does not disclose a waveform, frequency, torque amplitude, platform acceleration, or human-factors result. The exhibit therefore signals ripple state without presenting those unprinted quantities as patent facts.",
         archaicTerm: "ripple modulation of the power output",

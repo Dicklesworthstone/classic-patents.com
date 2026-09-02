@@ -106,7 +106,9 @@ export const sundbackZipperArchivalEdition: CuratedSpecificationEdition = {
         "UNITED STATES PATENT OFFICE.",
         "GIDEON SUNDBACK, OF MEADVILLE, PENNSYLVANIA, ASSIGNOR TO HOOKLESS FASTENER COMPANY, A CORPORATION OF PENNSYLVANIA.",
         "SEPARABLE FASTENER.",
-        "SPECIFICATION forming part of Letters Patent No. 1,219,881, dated March 20, 1917. Application filed August 27, 1914. Serial No. 858,848.",
+        "1,219,881.",
+        "Specification of Letters Patent. Patented Mar. 20, 1917.",
+        "Application filed August 27, 1914. Serial No. 858,848.",
       ],
     },
     {

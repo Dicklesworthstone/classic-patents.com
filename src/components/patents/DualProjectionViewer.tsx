@@ -193,9 +193,12 @@ export function DualProjectionViewer({
   // A semantic edition becomes visitor-facing only together with its explicit
   // paragraph companions. Treat an accidentally bound draft as withheld rather
   // than calling the fail-closed lookup during render and crashing the route.
-  const archivalEdition = archivalPublication.isPublished ? patent.archivalEdition : undefined;
-  const originalTextLabel = archivalEdition
-    ? `Complete manually prepared edition · facsimile reviewed ${archivalEdition.preparedAt}`
+  const archivalSource =
+    archivalPublication.isPublished && patent.archivalEdition && archivalParallelReadings
+      ? { edition: patent.archivalEdition, paragraphReadings: archivalParallelReadings }
+      : undefined;
+  const originalTextLabel = archivalSource
+    ? `Complete manually prepared edition · facsimile reviewed ${archivalSource.edition.preparedAt}`
     : hasRawSourceText
       ? "Raw source-PDF text layer retained privately · manual edition pending"
       : "Complete archival edition unavailable";
@@ -251,7 +254,7 @@ export function DualProjectionViewer({
       className="space-y-8 print:space-y-4"
       data-testid="dual-projection-viewer"
       data-hydrated={hydrated}
-      data-archival-edition={archivalEdition?.kind ?? "withheld"}
+      data-archival-edition={archivalSource?.edition.kind ?? "withheld"}
       data-archival-publication-state={archivalPublication.state.kind}
       data-archival-publication-reason={archivalPublication.reasonCode}
     >
@@ -481,13 +484,13 @@ export function DualProjectionViewer({
       {/* VIEW MODE: SCHEMATIC SHEET & NUMBERED CALLOUTS */}
       {viewMode === "schematic-sheet" && (
         <div className="space-y-6">
-          {archivalEdition?.drawingStatus?.kind === "no-drawings-in-facsimile" ? (
+          {archivalSource?.edition.drawingStatus?.kind === "no-drawings-in-facsimile" ? (
             <div className="rounded-2xl border border-amber-300 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-950/20 p-6 text-ink-900 dark:text-parchment-100">
               <h4 className="font-serif text-xl font-bold">
                 Historical Text-Only Instrument (No Drawing Sheets)
               </h4>
               <p className="mt-2 font-sans text-sm leading-relaxed">
-                {archivalEdition.drawingStatus.evidence}
+                {archivalSource.edition.drawingStatus.evidence}
               </p>
             </div>
           ) : (
@@ -543,10 +546,10 @@ export function DualProjectionViewer({
               <p className="text-[11px] font-mono uppercase tracking-wider text-amber-800 dark:text-amber-400">
                 {originalTextLabel}
               </p>
-              {archivalEdition ? (
+              {archivalSource ? (
                 <CuratedSpecificationEdition
-                  edition={archivalEdition}
-                  paragraphReadings={archivalParallelReadings}
+                  edition={archivalSource.edition}
+                  paragraphReadings={archivalSource.paragraphReadings}
                   claimDecoders={patent.claims}
                   className="text-ink-950 select-text dark:text-parchment-100"
                 />
@@ -753,7 +756,7 @@ export function DualProjectionViewer({
           <ClaimsDecoder
             claims={patent.claims}
             patentId={patent.id}
-            claimStatus={archivalEdition?.claimStatus}
+            claimStatus={archivalSource?.edition.claimStatus}
           />
 
           {/* Historical Context & Patent Wars */}
@@ -768,7 +771,7 @@ export function DualProjectionViewer({
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
               <div>
                 <span className="text-xs sm:text-sm font-mono text-amber-700 dark:text-amber-400 font-bold uppercase tracking-widest block">
-                  {archivalEdition
+                  {archivalSource
                     ? "Complete Manually Prepared Archival Edition"
                     : hasRawSourceText
                       ? "Raw Source Layer Withheld From Publication"
@@ -793,10 +796,10 @@ export function DualProjectionViewer({
               </div>
             </div>
 
-            {archivalEdition ? (
+            {archivalSource ? (
               <CuratedSpecificationEdition
-                edition={archivalEdition}
-                paragraphReadings={archivalParallelReadings}
+                edition={archivalSource.edition}
+                paragraphReadings={archivalSource.paragraphReadings}
                 claimDecoders={patent.claims}
                 className="rounded-2xl border border-parchment-300 bg-parchment-100/80 p-6 text-ink-950 shadow-xs select-text dark:border-ink-800 dark:bg-ink-900/80 dark:text-parchment-100 sm:p-10"
               />

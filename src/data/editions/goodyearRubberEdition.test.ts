@@ -39,7 +39,7 @@ describe("goodyearRubberArchivalEdition", () => {
   test("pins the record to the reviewed transcription and complete authored claim nodes", () => {
     expect(goodyearRubberPatent.archivalEdition).toBe(goodyearRubberArchivalEdition);
     expect(goodyearRubberPatent.originalTextAsset).toMatchObject({
-      url: "/patents/transcripts/us-3633-goodyear-rubber.txt",
+      url: "/patents/transcripts/us-3633-goodyear-rubber-reviewed.txt",
       pageCount: 2,
       kind: "reviewed-transcription",
       sourcePdfSha256: goodyearRubberArchivalEdition.sourcePdfSha256,

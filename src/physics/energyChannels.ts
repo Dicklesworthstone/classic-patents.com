@@ -67,6 +67,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 2,846,084 prints a seven-channel electrical master–slave topology, sample servo components, an error-signal relationship, limiter, and tachometer feedback, but no arm dimensions, mass, payload, motor torque constants, current, voltage, gain, speed, force calibration, contact model, or duty cycle from which a source-faithful SI power-flow channel can be derived.",
   "us-4921293-salisbury-robot-hand":
     "US 4,921,293 prints four cable tensions, pulley-radius symbols, three static torque equations, and remote-drive topology but no cable speed, motor current, voltage, torque constant, friction, efficiency, duty cycle, contact work, or time response from which a source-faithful SI power-flow channel can be derived.",
+  "us-4976582-clavel-delta-robot":
+    "US 4,976,582 prints three actuator/linking-member topologies, paired bars, a movable platform, and an optional working-member motor, but no dimensions, mass, inertia, payload, actuator torque or pressure, voltage or current, speed, duty cycle, friction, efficiency, or power datum from which a source-faithful SI energy channel can be derived.",
   "us-2988237-devol-programmed-transfer":
     "US 2,988,237 prints coded-position, program-controller, hydraulic-actuator, transfer-head, and gripper relationships but no reusable hydraulic pressure, flow, actuator dimensions, payload, mass, speed, efficiency, or power datum from which an SI energy channel can be derived.",
   "us-3212649-amf-versatran":

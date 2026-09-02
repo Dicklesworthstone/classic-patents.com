@@ -2,6 +2,7 @@
 
 import { useId, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
 import {
   readKamenTransporterControls,
@@ -15,8 +16,10 @@ export function KamenTransporterSim({
   patentId?: string;
 }) {
   const { params, updateParam } = usePatentPhysics(patentId);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 16: true });
   const controls = useMemo(() => readKamenTransporterControls(params), [params]);
   const tel = useMemo(() => stepKamenTransporterSi(controls), [controls]);
+  const equations = useMemo(() => ALL_COLORIZED_EQUATIONS[patentId] ?? [], [patentId]);
 
   const clipId = useId();
   const [isDraggingTilt, setIsDraggingTilt] = useState(false);
@@ -379,7 +382,19 @@ export function KamenTransporterSim({
             </button>
           </div>
         </div>
+
+        <div className="col-span-full pt-2 border-t border-parchment-200 dark:border-ink-800">
+          <ClaimConstraintToggle
+            patentId={patentId}
+            claimStates={claimStates}
+            onClaimStateChange={(num, active) =>
+              setClaimStates((prev) => ({ ...prev, [num]: active }))
+            }
+          />
+        </div>
       </div>
+
+      <PhysicsTelemetryBadge patentId={patentId} equations={equations} />
     </div>
   );
 }

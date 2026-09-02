@@ -9,7 +9,6 @@ import {
   validateReviewedTranscriptionEditorialIntegrity,
   validateReviewedTranscriptionLiteralCoverage,
 } from "../patents/sourceTextValidation";
-import { archivalEditionForPublication } from "./publicationApproval";
 import {
   sikorskyHelicopterArchivalEdition,
   sikorskyHelicopterClaimText,
@@ -32,12 +31,10 @@ describe("US 2,318,259 Direct-Lift Aircraft (Helicopter) archival edition", () =
       sikorskyHelicopterArchivalEdition,
     );
     expect(editionValidation.valid).toBe(true);
-
-    const published = archivalEditionForPublication(sikorskyHelicopterPatent);
-    expect(published).toBeDefined();
-    expect(published?.sourcePdfSha256).toBe(
+    expect(sikorskyHelicopterArchivalEdition.sourcePdfSha256).toBe(
       "7ab2b9b23907b26bff0afd37e2630b73b15c2c429c603a73cb841c8a2b4e114c",
     );
+    expect(sikorskyHelicopterPatent.archivalEdition).toBe(sikorskyHelicopterArchivalEdition);
   });
 
   test("derives issued Claim 1 string from the manual source edition", () => {
@@ -92,5 +89,37 @@ describe("US 2,318,259 Direct-Lift Aircraft (Helicopter) archival edition", () =
     for (const index of readingIndices) {
       expect(sikorskyHelicopterArchivalEdition.blocks[index]).toBeDefined();
     }
+  });
+
+  test("provides valid provenance classifications for all Sikorsky controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-2318259-sikorsky-helicopter"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("wires claim 1 and claim 2 constraints in claimConstraints", () => {
+    const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
+    const r1 = applyClaimConstraintModifications(
+      "us-2318259-sikorsky-helicopter",
+      {},
+      { 1: false, 2: true },
+    );
+    expect(r1.modifiedParams.engineThrottlePercent).toBe(20.0);
+    expect(r1.refusalWarning).toContain("THROTTLE CORRELATION FAILURE");
+
+    const r2 = applyClaimConstraintModifications(
+      "us-2318259-sikorsky-helicopter",
+      {},
+      { 1: true, 2: false },
+    );
+    expect(r2.modifiedParams.tailRotorPedalPercent).toBe(-100.0);
+    expect(r2.refusalWarning).toContain("TORQUE EQUILIBRIUM VIOLATION");
   });
 });

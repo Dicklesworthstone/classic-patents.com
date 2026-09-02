@@ -2108,6 +2108,24 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-4976582-clavel-delta-robot": {
+      if (
+        controlKey === "armOneInput" ||
+        controlKey === "armTwoInput" ||
+        controlKey === "armThreeInput"
+      ) {
+        return {
+          metricName: "Spatial Traveling Plate Displacement",
+          derivativeSymbol: "∂z_plate / ∂θ_arm",
+          derivativeValue: -0.42,
+          derivativeUnit: "mm / deg",
+          interpretation:
+            "Parallel spatial parallelogram kinematics translating base motor rotation into traveling plate Cartesian displacement.",
+        };
+      }
+      break;
+    }
+
     case "us-6302230-kamen-segway": {
       if (controlKey === "riderPitchDeg" || controlKey === "pitch") {
         return {

@@ -117,9 +117,9 @@ export const sholesTypewriterArchivalEdition: CuratedSpecificationEdition = {
         ["Fig. 2", "Fig. 3", "Fig. 4", "Fig. 5", "Fig. 6", "Fig. 9"],
         "Figs. 2, 3, 4, 5, 6, and 9",
       ),
-      { kind: "text", text: " are views of detached parts thereof; " },
+      { kind: "text", text: ", views of detached parts thereof; " },
       figure("Fig. 7"),
-      { kind: "text", text: " is a view of a longitudinal vertical section thereof, and " },
+      { kind: "text", text: ", a view of a longitudinal vertical section thereof, and " },
       figure("Fig. 8"),
       { kind: "text", text: " a view of the rear elevation of the same." },
     ]),
@@ -339,10 +339,10 @@ export const sholesTypewriterArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "As the ratchet is moved along by the carriage till the face of the tooth to the right below strikes and stops against the spring and under fork, the left perpendicular face of the tooth directly above is moved to and directly in line up and down into a hair-breadth with the perpendicular face of the fork above, so that when the front end or forks of the lever are moved or pressed down and the under fork lets go its hold of an under tooth the upper fork falls into the notch and against the tooth directly above and prevents the ratchet from moving; but when the forks are thrown up and the upper fork lets go its hold of the tooth above the ratchet moves to the left the space of one notch till the next tooth to the right below, with the yielding spring in the notch at its perpendicular face, strikes against the perpendicular face of the under fork. In this way the ratchet and carriage are held firmly still, while the front or bifurcated end of the lever H is thrown and held down, but moves to the left one notch, a regular, exact, and equal distance every time the bifurcated end of the lever is thrown up, and as striking down the front end of each key, as at L in ",
       },
-      figure("Fig. 1", "Figure 1"),
+      figure("Fig. 1"),
       {
         kind: "text",
-        text: ", raises the bar T laid across the key at the rear of the fulcrum M, and raises the rear end of the lever H, attached to the bar T, it therefore necessarily throws down the bifurcated or front end of the lever, and as the key rises to its place of rest again all these movements are reversed and necessarily throw up again the front end of the lever. Thus the working of the keys L, in combination with the weights W and W′, the latter unseen, the cords v and a′, the pulleys R and e′, the bar T, the lever H, the ratchet I, and the carriage inevitably moves the paper a regular, uniform, and exact distance—any distance desired for a type or letter—every time a key is struck, and the paper is moved while the type-bar is falling to the cushion, and stopped and held firmly stationary while the type is struck against it and the platen.",
+        text: ", raises the bar T laid across the key at the rear of the fulcrum M, and raises the rear end of the lever H, attached to the bar T, it therefore necessarily throws down the bifurcated or front end of the lever, and as the key rises to its place of rest again all these movements are reversed and necessarily throw up again the front end of the lever. Thus the working of the keys L, in combination with the weights W and W′, (the latter unseen,) the cords v and a′, the pulleys R and e′, the bar T, the lever H, the ratchet I, and the carriage inevitably moves the paper a regular, uniform, and exact distance—any distance desired for a type or letter—every time a key is struck—and the paper is moved while the type-bar is falling to the cushion, and stopped and held firmly stationary while the type is struck against it and the platen.",
       },
     ]),
     paragraph([
@@ -426,7 +426,7 @@ export const sholesTypewriterArchivalEdition: CuratedSpecificationEdition = {
       ),
     ),
     paragraph([
-      figure("Fig. 6", "Figure 6"),
+      figure("Fig. 6"),
       {
         kind: "text",
         text: " of the drawings represents a crescent or the segment comprising half a disk. By making the circumference large enough to receive the requisite number of radial grooves the crescent may be substituted for the disk, or, in other words, the segment comprising one-half for the whole disk.",

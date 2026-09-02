@@ -1,15 +1,17 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import {
   DEFAULT_ETHERNET_CONTROLS,
   INITIAL_ETHERNET_STATE,
   type MetcalfeEthernetControls,
-  type MetcalfeEthernetMetrics,
-  type MetcalfeEthernetState,
   stepMetcalfeEthernetSi,
 } from "@/physics/metcalfeEthernetKernel";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+
+const PATENT_ID = "us-4063220-metcalfe-ethernet";
 
 interface WavePacket {
   id: number;
@@ -22,23 +24,25 @@ interface WavePacket {
 }
 
 export const MetcalfeEthernetSim: React.FC = () => {
-  const [controls, setControls] = useState<MetcalfeEthernetControls>(DEFAULT_ETHERNET_CONTROLS);
-  const [simState, setSimState] = useState<MetcalfeEthernetState>(INITIAL_ETHERNET_STATE);
-  const [metrics, setMetrics] = useState<MetcalfeEthernetMetrics>(() => {
-    return stepMetcalfeEthernetSi(INITIAL_ETHERNET_STATE, DEFAULT_ETHERNET_CONTROLS, 0.016).metrics;
-  });
+  const { params, updateParam } = usePatentPhysics(PATENT_ID);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+  const controls = useMemo<MetcalfeEthernetControls>(
+    () => ({
+      ...DEFAULT_ETHERNET_CONTROLS,
+      ...params,
+    }),
+    [params],
+  );
+
+  const metrics = useMemo(() => {
+    return stepMetcalfeEthernetSi(INITIAL_ETHERNET_STATE, controls, 0.016).metrics;
+  }, [controls]);
 
   const setControl = <K extends keyof MetcalfeEthernetControls>(
     key: K,
     value: MetcalfeEthernetControls[K],
   ) => {
-    setControls((prev) => {
-      const next = { ...prev, [key]: value };
-      const res = stepMetcalfeEthernetSi(simState, next, 0.016);
-      setSimState(res.state);
-      setMetrics(res.metrics);
-      return next;
-    });
+    updateParam(key, value as number);
   };
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -416,6 +420,16 @@ export const MetcalfeEthernetSim: React.FC = () => {
             Slot time: {metrics?.slotTimeMicrosec?.toFixed(2) ?? "5.04"} µs
           </span>
         </div>
+      </div>
+
+      <div className="p-4 bg-slate-900/60 rounded-lg border border-slate-800">
+        <ClaimConstraintToggle
+          patentId={PATENT_ID}
+          claimStates={claimStates}
+          onClaimStateChange={(num, active) =>
+            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          }
+        />
       </div>
     </div>
   );

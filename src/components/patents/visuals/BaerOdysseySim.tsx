@@ -1,7 +1,8 @@
 "use client";
 
 import { Crosshair, Play, RotateCcw, ShieldCheck, Sparkles, Tv, Zap } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import {
   type BaerOdysseyControls,
   type BaerOdysseyMetrics,
@@ -10,6 +11,9 @@ import {
   INITIAL_BAER_STATE,
   stepBaerOdysseySi,
 } from "@/physics/baerOdysseyKernel";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+
+const PATENT_ID = "us-3728480-baer-odyssey";
 
 interface BaerOdysseySimProps {
   initialControls?: Partial<BaerOdysseyControls>;
@@ -18,10 +22,16 @@ interface BaerOdysseySimProps {
 type OverlayType = "none" | "tennis" | "target" | "roulette";
 
 export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
-  const [controls, setControls] = useState<BaerOdysseyControls>({
-    ...DEFAULT_BAER_CONTROLS,
-    ...initialControls,
-  });
+  const { params, updateParam } = usePatentPhysics(PATENT_ID);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+  const controls = useMemo<BaerOdysseyControls>(
+    () => ({
+      ...DEFAULT_BAER_CONTROLS,
+      ...initialControls,
+      ...params,
+    }),
+    [initialControls, params],
+  );
 
   const [simState, setSimState] = useState<BaerOdysseyState>(INITIAL_BAER_STATE);
   const [metrics, setMetrics] = useState<BaerOdysseyMetrics>(() => {
@@ -63,16 +73,16 @@ export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
 
   const handleResetGame = () => {
     setSimState(INITIAL_BAER_STATE);
-    setControls((prev) => ({ ...prev, resetButton: true }));
+    updateParam("resetButton", 1);
     setTimeout(() => {
-      setControls((prev) => ({ ...prev, resetButton: false }));
+      updateParam("resetButton", 0);
     }, 150);
   };
 
   const handleFireLightGun = () => {
-    setControls((prev) => ({ ...prev, lightGunTrigger: true }));
+    updateParam("lightGunTrigger", 1);
     setTimeout(() => {
-      setControls((prev) => ({ ...prev, lightGunTrigger: false }));
+      updateParam("lightGunTrigger", 0);
     }, 200);
   };
 
@@ -577,9 +587,7 @@ export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
                     max="1"
                     step="0.02"
                     value={controls.lightGunAimX}
-                    onChange={(e) =>
-                      setControls({ ...controls, lightGunAimX: parseFloat(e.target.value) })
-                    }
+                    onChange={(e) => updateParam("lightGunAimX", parseFloat(e.target.value))}
                     className="w-full accent-amber-500 mt-1"
                   />
                 </label>
@@ -591,9 +599,7 @@ export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
                     max="1"
                     step="0.02"
                     value={controls.lightGunAimY}
-                    onChange={(e) =>
-                      setControls({ ...controls, lightGunAimY: parseFloat(e.target.value) })
-                    }
+                    onChange={(e) => updateParam("lightGunAimY", parseFloat(e.target.value))}
                     className="w-full accent-amber-500 mt-1"
                   />
                 </label>
@@ -631,9 +637,7 @@ export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
                 max="0.45"
                 step="0.01"
                 value={controls.player1PotX}
-                onChange={(e) =>
-                  setControls({ ...controls, player1PotX: parseFloat(e.target.value) })
-                }
+                onChange={(e) => updateParam("player1PotX", parseFloat(e.target.value))}
                 className="w-full accent-sky-400 mt-1.5"
               />
               <span className="text-[10px] text-stone-500 font-mono">
@@ -648,9 +652,7 @@ export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
                 max="0.95"
                 step="0.01"
                 value={controls.player1PotY}
-                onChange={(e) =>
-                  setControls({ ...controls, player1PotY: parseFloat(e.target.value) })
-                }
+                onChange={(e) => updateParam("player1PotY", parseFloat(e.target.value))}
                 className="w-full accent-sky-400 mt-1.5"
               />
               <span className="text-[10px] text-stone-500 font-mono">
@@ -677,9 +679,7 @@ export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
                 max="0.95"
                 step="0.01"
                 value={controls.player2PotX}
-                onChange={(e) =>
-                  setControls({ ...controls, player2PotX: parseFloat(e.target.value) })
-                }
+                onChange={(e) => updateParam("player2PotX", parseFloat(e.target.value))}
                 className="w-full accent-pink-400 mt-1.5"
               />
               <span className="text-[10px] text-stone-500 font-mono">
@@ -694,9 +694,7 @@ export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
                 max="0.95"
                 step="0.01"
                 value={controls.player2PotY}
-                onChange={(e) =>
-                  setControls({ ...controls, player2PotY: parseFloat(e.target.value) })
-                }
+                onChange={(e) => updateParam("player2PotY", parseFloat(e.target.value))}
                 className="w-full accent-pink-400 mt-1.5"
               />
               <span className="text-[10px] text-stone-500 font-mono">
@@ -717,9 +715,7 @@ export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
             max="1"
             step="0.05"
             value={controls.englishControl}
-            onChange={(e) =>
-              setControls({ ...controls, englishControl: parseFloat(e.target.value) })
-            }
+            onChange={(e) => updateParam("englishControl", parseFloat(e.target.value))}
             className="w-full accent-amber-500 mt-1"
           />
           <span className="text-[10px] text-stone-500 font-mono">
@@ -738,9 +734,7 @@ export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
             max="2.5"
             step="0.1"
             value={controls.ballSpeedMultiplier}
-            onChange={(e) =>
-              setControls({ ...controls, ballSpeedMultiplier: parseFloat(e.target.value) })
-            }
+            onChange={(e) => updateParam("ballSpeedMultiplier", parseFloat(e.target.value))}
             className="w-full accent-amber-500 mt-1"
           />
           <span className="text-[10px] text-stone-500 font-mono">
@@ -752,9 +746,7 @@ export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
           VHF Carrier RF Channel:
           <select
             value={controls.rfChannel}
-            onChange={(e) =>
-              setControls({ ...controls, rfChannel: parseInt(e.target.value, 10) as 3 | 4 })
-            }
+            onChange={(e) => updateParam("rfChannel", parseInt(e.target.value, 10))}
             className="w-full rounded border border-stone-700 bg-stone-900 px-2 py-1 mt-1 text-xs text-amber-300"
           >
             <option value={3}>Channel 3 (61.25 MHz)</option>
@@ -764,6 +756,16 @@ export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
             P_RF = {metrics.rfAntennaPowerNanoWatts.toFixed(1)} nW (300Ω)
           </span>
         </label>
+      </div>
+
+      <div className="p-4 bg-stone-900/60 rounded-lg border border-stone-800">
+        <ClaimConstraintToggle
+          patentId={PATENT_ID}
+          claimStates={claimStates}
+          onClaimStateChange={(num, active) =>
+            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          }
+        />
       </div>
     </div>
   );

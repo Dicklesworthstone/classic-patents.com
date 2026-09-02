@@ -216,10 +216,64 @@ describe("patent E2E scenario contract", () => {
       acceptanceBasis: expect.any(String),
       sourcePdfSha256: expect.stringMatching(/^[a-f0-9]{64}$/),
       matchesEdition: true,
+      matchesLocators: false,
     });
     expect(teslaMotor?.sourceDecision.figureAttestation?.acceptedOccurrenceCount).toBe(
       teslaMotor?.sourceDecision.requiredFigureCount,
     );
+    expect(teslaMotor?.sourceState).toBe("withheld");
+    expect(teslaMotor?.sourceReasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+    expect(teslaMotor?.sourceDecision.acceptedFigureCount).toBe(0);
+    expect(
+      teslaMotor?.sourceDecision.figures.every(
+        (figure) =>
+          figure.status === "pending" &&
+          figure.sourcePdfPage === null &&
+          figure.sourceRegion === null,
+      ),
+    ).toBe(true);
+    expect(teslaMotor?.sourceDecision.ledgerContent).toMatchObject({
+      status: "verified",
+      valid: true,
+      coverageFraction: 1,
+      missingSectionIndexes: [],
+      missingClaimNumbers: [],
+    });
+    expect(teslaMotor?.sourceDecision.pinnedPdfBytes).toMatchObject({
+      canonicalPublicPdfUrl: "/patents/pdfs/us-381968-tesla-motor.pdf",
+      availability: "verified",
+      matchesExpected: true,
+      reason: "VERIFIED",
+    });
+    expect(teslaMotor?.sourceDecision.pinnedPdfBytes.expectedSha256).toMatch(/^[a-f0-9]{64}$/);
+    expect(teslaMotor?.sourceDecision.pinnedPdfBytes.actualSha256).toMatch(/^[a-f0-9]{64}$/);
+    expect(teslaMotor?.sourceDecision.pinnedPdfBytes.actualSha256).toBe(
+      teslaMotor?.sourceDecision.pinnedPdfBytes.expectedSha256,
+    );
+
+    const pasteur = scenarios.find(
+      (scenario) => scenario.patentId === "us-135245-pasteur-fermentation",
+    );
+    expect(pasteur?.sourceDecision.figureAttestation).toMatchObject({
+      matchesEdition: true,
+      matchesLocators: true,
+      acceptedOccurrenceCount: 3,
+    });
+    expect(pasteur?.sourceDecision.acceptedFigureCount).toBe(3);
+    expect(
+      pasteur?.sourceDecision.figures.every(
+        (figure) =>
+          figure.status === "accepted" &&
+          figure.sourcePdfPage === 1 &&
+          figure.sourceRaster?.width === 2320 &&
+          figure.sourceRaster.height === 3408 &&
+          figure.sourceRectPixels !== null &&
+          figure.sourceRegion !== null &&
+          figure.locatorEvidenceReference?.startsWith(
+            "docs/provenance/us-135245-pasteur-fermentation.md#",
+          ),
+      ),
+    ).toBe(true);
 
     for (const scenario of scenarios) {
       for (const previewUrl of scenario.figurePreviewUrls) {

@@ -217,7 +217,9 @@ export function HullStereolithography3D() {
         <ClaimConstraintToggle
           patentId={PATENT_ID}
           claimStates={claimStates}
-          onClaimStateChange={(num, active) => setClaimStates((prev) => ({ ...prev, [num]: active }))}
+          onClaimStateChange={(num, active) =>
+            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          }
         />
       </div>
     </div>
