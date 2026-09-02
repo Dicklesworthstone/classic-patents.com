@@ -15,12 +15,8 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
+import type { ArchivalPublicationDecision } from "@/data/editions/archivalPublicationState";
 import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
-import {
-  type ArchivalPublicationDecision,
-  archivalEditionForPublication,
-  evaluateArchivalPublicationState,
-} from "@/data/editions/publicationApproval";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { ColorizedEquation as ColorizedEquationType } from "@/types/equation";
 import type { Patent } from "@/types/patent";
@@ -36,6 +32,9 @@ import { WeaveInstrument } from "./WeaveInstrument";
 
 interface DualProjectionViewerProps {
   patent: Patent;
+  /** Evaluated on the server so the complete cross-catalogue acceptance
+   * registry and asset digests never enter the client bundle. */
+  archivalPublication: ArchivalPublicationDecision;
   initialView?: string;
   /** Per-patent colorized equations, resolved on the server (colorizedEquations.ts is
    * a 976KB all-patents record that must never enter the client bundle wholesale). */
@@ -101,8 +100,6 @@ export function applyPatentViewToUrl(href: string, mode: PatentViewMode): string
   return `${url.pathname}${url.search}${url.hash}`;
 }
 
-export { archivalEditionForPublication };
-
 function viewModeFromLocation(): PatentViewMode | undefined {
   return viewModeFromSearch(window.location.search);
 }
@@ -157,6 +154,7 @@ function TranscriptUnavailable({
 
 export function DualProjectionViewer({
   patent,
+  archivalPublication,
   initialView,
   colorizedEquations,
 }: DualProjectionViewerProps) {
@@ -184,8 +182,7 @@ export function DualProjectionViewer({
   // A semantic edition becomes visitor-facing only together with its explicit
   // paragraph companions. Treat an accidentally bound draft as withheld rather
   // than calling the fail-closed lookup during render and crashing the route.
-  const archivalPublication = evaluateArchivalPublicationState(patent);
-  const archivalEdition = archivalEditionForPublication(patent);
+  const archivalEdition = archivalPublication.publishedEdition;
   const originalTextLabel = archivalEdition
     ? `Complete manually prepared edition · facsimile reviewed ${archivalEdition.preparedAt}`
     : rawSourceTextAsset

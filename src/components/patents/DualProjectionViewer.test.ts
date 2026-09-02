@@ -1,16 +1,15 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { evaluateArchivalPublicationState } from "@/data/editions/publicationApproval";
+import {
+  archivalEditionForPublication,
+  evaluateArchivalPublicationState,
+} from "@/data/editions/publicationApproval";
 import { allPatents } from "@/data/patents";
 import { goodyearRubberPatent } from "@/data/patents/goodyear-rubber";
 import { whitneyCottonGinPatent } from "@/data/patents/whitney-cotton-gin";
 import type { Patent } from "@/types/patent";
-import {
-  applyPatentViewToUrl,
-  archivalEditionForPublication,
-  viewModeFromSearch,
-} from "./DualProjectionViewer";
+import { applyPatentViewToUrl, viewModeFromSearch } from "./DualProjectionViewer";
 
 const VIEWER_SOURCE = readFileSync(
   join(process.cwd(), "src/components/patents/DualProjectionViewer.tsx"),
@@ -67,9 +66,9 @@ describe("patent view URL state", () => {
     expect(VIEWER_SOURCE).not.toMatch(
       /const setViewMode = \(mode: PatentViewMode\) => \{\s*setViewModeState\(mode\);\s*\};/,
     );
-    expect(PATENT_PAGE_SOURCE).toContain(
-      "<DualProjectionViewer patent={patent} colorizedEquations={colorizedEquations} />",
-    );
+    expect(PATENT_PAGE_SOURCE).toContain("archivalPublication={archivalPublication}");
+    expect(VIEWER_SOURCE).toContain("const archivalEdition = archivalPublication.publishedEdition");
+    expect(VIEWER_SOURCE).not.toContain("evaluateArchivalPublicationState(patent)");
     expect(PATENT_PAGE_SOURCE).not.toContain("searchParams");
     expect(E2E_AUDIT_SOURCE).toContain('searchParams.get("view") === "original-spec"');
     expect(E2E_AUDIT_SOURCE).toContain('searchParams.get("view") === view');

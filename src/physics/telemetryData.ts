@@ -1995,6 +1995,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: 83.5,
         unit: "%",
+        provenance: "topology-normalized",
       },
       {
         id: "moderatorPurity",
@@ -2004,6 +2005,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: 99.5,
         unit: "%",
+        provenance: "scenario-modern",
       },
       {
         id: "fuelEnrichmentPct",
@@ -2013,6 +2015,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: 0.72,
         unit: "%",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics: (p) => {
@@ -2032,6 +2035,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "critical",
           badgeColor: keff > 1.005 ? "rose" : keff >= 0.998 ? "emerald" : "amber",
           progressPct: Math.min(100, (keff / 1.05) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Reactivity (ρ)",
@@ -2039,6 +2043,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "$",
           badgeColor: rhoDollars > 1 ? "rose" : "amber",
           progressPct: Math.min(100, Math.max(0, (rhoDollars + 2) * 25)),
+          provenance: "scenario-modern",
         },
         {
           label: "Reactor Period",
@@ -2052,6 +2057,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
             kinetics.reactorPeriodSeconds > 0
               ? Math.min(100, 100 / kinetics.reactorPeriodSeconds)
               : 0,
+          provenance: "scenario-modern",
         },
         {
           label: "Geiger Interval",
@@ -2059,6 +2065,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "Δt",
           badgeColor: "purple",
           progressPct: clampProgress((kinetics.geigerIntervalMs / 800) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Neutron Display",
@@ -2066,6 +2073,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "u/s",
           badgeColor: "cyan",
           progressPct: Math.min(100, (kinetics.neutronDisplaySpeed / 6) * 100),
+          provenance: "topology-normalized",
         },
         {
           label: "Thermal Power",
@@ -2073,6 +2081,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "W",
           badgeColor: "purple",
           progressPct: Math.min(100, (thermalPower / 1000) * 100),
+          provenance: "scenario-modern",
         },
         {
           label: "Thermal Flux",
@@ -2080,6 +2089,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "n/(cm²·s)",
           badgeColor: "cyan",
           progressPct: Math.min(100, (thermalPower / 500) * 100),
+          provenance: "scenario-modern",
         },
       ];
     },
