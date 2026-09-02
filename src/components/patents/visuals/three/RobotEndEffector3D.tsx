@@ -137,80 +137,77 @@ export function RobotEndEffector3D() {
             <span className="text-amber-300">{state.encoderCountModulo.toFixed(2)} / 8</span>
           </p>
         </div>
-
       </div>
       <div
         data-mobile-layout="controls-below-canvas"
         className="grid gap-3 border-t border-slate-700/80 bg-slate-950/90 p-3 lg:grid-cols-[minmax(0,1fr)_auto]"
       >
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            <label className="text-xs text-slate-200">
-              Jaw opening
-              <span className="float-right font-mono text-cyan-300">
-                {((params.jawOpeningFraction ?? 0.52) * 100).toFixed(0)}%
-              </span>
-              <input
-                className="mt-1 w-full accent-cyan-400"
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={params.jawOpeningFraction ?? 0.52}
-                aria-label="Jaw opening fraction"
-                onChange={(event) => updateParam("jawOpeningFraction", Number(event.target.value))}
-              />
-            </label>
-            <label className="text-xs text-slate-200">
-              Source-labelled grip setpoint
-              <span className="float-right font-mono text-amber-300">
-                {(params.gripForceSetpointN ?? 900).toFixed(0)} N
-              </span>
-              <input
-                className="mt-1 w-full accent-amber-400"
-                type="range"
-                min="0"
-                max="2000"
-                step="25"
-                value={params.gripForceSetpointN ?? 900}
-                aria-label="Grip-force setpoint"
-                onChange={(event) => updateParam("gripForceSetpointN", Number(event.target.value))}
-              />
-            </label>
-            <label className="text-xs text-slate-200">
-              Claim 17 frame rotation
-              <span className="float-right font-mono text-violet-300">
-                {(params.frameRotationDeg ?? 0).toFixed(0)}°
-              </span>
-              <input
-                className="mt-1 w-full accent-violet-400"
-                type="range"
-                min="-180"
-                max="180"
-                step="1"
-                value={params.frameRotationDeg ?? 0}
-                aria-label="Longitudinal-axis frame rotation"
-                onChange={(event) => updateParam("frameRotationDeg", Number(event.target.value))}
-              />
-            </label>
-            <label className="text-xs text-slate-200">
-              Finger change sequence
-              <span className="float-right font-mono text-rose-300">
-                {((params.fingerChangeFraction ?? 0) * 100).toFixed(0)}%
-              </span>
-              <input
-                className="mt-1 w-full accent-rose-400"
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={params.fingerChangeFraction ?? 0}
-                aria-label="Finger-change sequence"
-                onChange={(event) =>
-                  updateParam("fingerChangeFraction", Number(event.target.value))
-                }
-              />
-            </label>
-          </div>
+          <label className="text-xs text-slate-200">
+            Jaw opening
+            <span className="float-right font-mono text-cyan-300">
+              {((params.jawOpeningFraction ?? 0.52) * 100).toFixed(0)}%
+            </span>
+            <input
+              className="mt-1 w-full accent-cyan-400"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={params.jawOpeningFraction ?? 0.52}
+              aria-label="Jaw opening fraction"
+              onChange={(event) => updateParam("jawOpeningFraction", Number(event.target.value))}
+            />
+          </label>
+          <label className="text-xs text-slate-200">
+            Source-labelled grip setpoint
+            <span className="float-right font-mono text-amber-300">
+              {(params.gripForceSetpointN ?? 900).toFixed(0)} N
+            </span>
+            <input
+              className="mt-1 w-full accent-amber-400"
+              type="range"
+              min="0"
+              max="2000"
+              step="25"
+              value={params.gripForceSetpointN ?? 900}
+              aria-label="Grip-force setpoint"
+              onChange={(event) => updateParam("gripForceSetpointN", Number(event.target.value))}
+            />
+          </label>
+          <label className="text-xs text-slate-200">
+            Claim 17 frame rotation
+            <span className="float-right font-mono text-violet-300">
+              {(params.frameRotationDeg ?? 0).toFixed(0)}°
+            </span>
+            <input
+              className="mt-1 w-full accent-violet-400"
+              type="range"
+              min="-180"
+              max="180"
+              step="1"
+              value={params.frameRotationDeg ?? 0}
+              aria-label="Longitudinal-axis frame rotation"
+              onChange={(event) => updateParam("frameRotationDeg", Number(event.target.value))}
+            />
+          </label>
+          <label className="text-xs text-slate-200">
+            Finger change sequence
+            <span className="float-right font-mono text-rose-300">
+              {((params.fingerChangeFraction ?? 0) * 100).toFixed(0)}%
+            </span>
+            <input
+              className="mt-1 w-full accent-rose-400"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={params.fingerChangeFraction ?? 0}
+              aria-label="Finger-change sequence"
+              onChange={(event) => updateParam("fingerChangeFraction", Number(event.target.value))}
+            />
+          </label>
+        </div>
         <div className="flex flex-wrap items-end gap-2">
           {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((candidate) => (
             <button

@@ -107,4 +107,20 @@ describe("US 5,701,965 Dean Kamen Human Transporter Visual & Dynamic Stabilizati
 
     model.dispose();
   });
+
+  test("places phone telemetry and controls after the transporter canvas", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/KamenTransporter3D.tsx"),
+      "utf8",
+    );
+    const canvasIndex = source.indexOf("ref={containerRef}");
+    const telemetryIndex = source.indexOf('data-mobile-layout="telemetry-after-canvas"');
+    const controlsIndex = source.indexOf('data-mobile-layout="controls-after-canvas"');
+
+    expect(canvasIndex).toBeGreaterThan(-1);
+    expect(telemetryIndex).toBeGreaterThan(canvasIndex);
+    expect(controlsIndex).toBeGreaterThan(telemetryIndex);
+    expect(source).toContain('id="kamen-transporter-camera-view"');
+    expect(source).toContain("hidden space-y-1");
+  });
 });

@@ -20,4 +20,15 @@ describe("US 4,512,709 toolchanger visual source contract", () => {
     expect(model).not.toContain("Math.random");
     expect(model).not.toContain("GLTFLoader");
   });
+
+  test("keeps the phone canvas clear by placing controls after it", () => {
+    const threeD = source("src/components/patents/visuals/three/MilacronRobotToolchanger3D.tsx");
+    const canvasIndex = threeD.indexOf("ref={containerRef}");
+    const controlsIndex = threeD.indexOf('data-mobile-layout="controls-below-canvas"');
+
+    expect(canvasIndex).toBeGreaterThan(-1);
+    expect(controlsIndex).toBeGreaterThan(canvasIndex);
+    expect(threeD).toContain("hidden items-start justify-between");
+    expect(threeD).toContain("hidden rounded-xl");
+  });
 });

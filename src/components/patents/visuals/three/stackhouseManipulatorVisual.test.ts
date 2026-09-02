@@ -83,4 +83,16 @@ describe("Stackhouse source-bounded connected wrist", () => {
     expect(source).not.toContain("Center 36");
     expect(source).not.toContain("Tool 46");
   });
+
+  test("gives the wrist a full-height phone viewport and a compact camera selector", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/StackhouseManipulator3D.tsx"),
+      "utf8",
+    );
+
+    expect(source).toContain('id="stackhouse-camera-view"');
+    expect(source).toContain("sm:hidden");
+    expect(source).toContain("min-h-[320px]");
+    expect(source).toContain("sm:min-h-0 sm:aspect-video");
+  });
 });
