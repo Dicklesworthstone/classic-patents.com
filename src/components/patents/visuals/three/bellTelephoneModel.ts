@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { bellWaveProgress, stepBellTelephone } from "@/physics/catalogKernels";
+import { bellWaveProgress, type BellTelephoneState } from "@/physics/catalogKernels";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
 export interface BellTelephoneModel {
@@ -506,17 +506,12 @@ export function updateBellTelephoneKinematics(
   model: BellTelephoneModel,
   dt: number,
   timeSec: number,
-  acousticDisplayOmegaRadPerS: number,
-  diaphragmStudioScale: number,
-  electronStudioSpeed: number,
+  bell: BellTelephoneState,
   showAcousticWaves: boolean,
   isCutaway: boolean,
-  voiceAmplitude = 75,
-  acousticFrequencyHz = 440,
 ) {
-  const bell = stepBellTelephone({ voiceAmplitude, acousticFrequencyHz });
-  const acousticVibe = Math.sin(timeSec * acousticDisplayOmegaRadPerS);
-  const displScale = diaphragmStudioScale;
+  const acousticVibe = Math.sin(timeSec * bell.acousticDisplayOmegaRadPerS);
+  const displScale = bell.diaphragmStudioScale;
 
   // Diaphragm vibration
   model.diaphragmMesh.position.x = -1.35 + acousticVibe * displScale;
@@ -549,7 +544,7 @@ export function updateBellTelephoneKinematics(
 
   // Flowing Electron Drift Current
   const ePos = model.electronPositions;
-  const drift = electronStudioSpeed * dt;
+  const drift = bell.electronStudioSpeed * dt;
   for (let i = 0; i < model.electronCount; i++) {
     const idx = i * 3;
     ePos[idx] += drift;

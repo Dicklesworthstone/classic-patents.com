@@ -2071,6 +2071,8 @@ export function stepBellTelephone(params: {
   };
 }
 
+export type BellTelephoneState = ReturnType<typeof stepBellTelephone>;
+
 /** Acoustic-ring progress on the 3D horn. Shared by 3D. */
 export function bellWaveProgress(
   timeSec: number,

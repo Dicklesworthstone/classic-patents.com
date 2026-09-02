@@ -22,9 +22,10 @@ describe("US 174,465 Alexander Graham Bell Telephone visual & acoustics boundary
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildBellTelephoneModel");
     expect(modelSource).toContain("updateBellTelephoneKinematics");
-    expect(modelSource).not.toContain("stepBellTelephone({})");
-    expect(threeSource).toContain("p.voiceAmplitudeDb");
-    expect(threeSource).toContain("p.acousticFrequencyHz");
+    expect(modelSource).not.toContain("stepBellTelephone");
+    expect(threeSource).toContain("p.bell");
+    expect(threeSource).toContain("voiceAmplitudeDb");
+    expect(threeSource).toContain("acousticFrequencyHz");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -97,6 +98,60 @@ describe("US 174,465 Alexander Graham Bell Telephone visual & acoustics boundary
     expect(threeSource).not.toContain("currentBaselineAmps * 1000");
   });
 
+  test("keeps every physical control observable in the complete kernel state", () => {
+    const baseline = stepBellTelephone({
+      voiceAmplitude: 75,
+      airGap: 0.35,
+      batteryVoltage: 6,
+      liquidConductivity: 1.2,
+      acousticFrequencyHz: 440,
+    });
+    const louder = stepBellTelephone({
+      voiceAmplitude: 90,
+      airGap: 0.35,
+      batteryVoltage: 6,
+      liquidConductivity: 1.2,
+      acousticFrequencyHz: 440,
+    });
+    const narrowerGap = stepBellTelephone({
+      voiceAmplitude: 75,
+      airGap: 0.1,
+      batteryVoltage: 6,
+      liquidConductivity: 1.2,
+      acousticFrequencyHz: 440,
+    });
+    const higherVoltage = stepBellTelephone({
+      voiceAmplitude: 75,
+      airGap: 0.35,
+      batteryVoltage: 12,
+      liquidConductivity: 1.2,
+      acousticFrequencyHz: 440,
+    });
+    const higherConductivity = stepBellTelephone({
+      voiceAmplitude: 75,
+      airGap: 0.35,
+      batteryVoltage: 6,
+      liquidConductivity: 2.4,
+      acousticFrequencyHz: 440,
+    });
+    const higherFrequency = stepBellTelephone({
+      voiceAmplitude: 75,
+      airGap: 0.35,
+      batteryVoltage: 6,
+      liquidConductivity: 1.2,
+      acousticFrequencyHz: 880,
+    });
+
+    expect(louder.diaphragmUm).toBeGreaterThan(baseline.diaphragmUm);
+    expect(narrowerGap.modulatedMa).toBeGreaterThan(baseline.modulatedMa);
+    expect(higherVoltage.currentBaselineAmps).toBeGreaterThan(baseline.currentBaselineAmps);
+    expect(higherConductivity.baseResistanceOhms).toBeLessThan(baseline.baseResistanceOhms);
+    expect(higherConductivity.electronStudioSpeed).toBeGreaterThan(baseline.electronStudioSpeed);
+    expect(higherFrequency.acousticDisplayOmegaRadPerS).toBeGreaterThan(
+      baseline.acousticDisplayOmegaRadPerS,
+    );
+  });
+
   test("builds and articulates procedural walnut baseboard, speaking cone, parchment diaphragm, and liquid cup correctly", () => {
     const model = buildBellTelephoneModel();
     expect(model.rootGroup.children.length).toBeGreaterThan(0);
@@ -113,16 +168,7 @@ describe("US 174,465 Alexander Graham Bell Telephone visual & acoustics boundary
       liquidConductivity: 1.2,
       acousticFrequencyHz: 440,
     });
-    updateBellTelephoneKinematics(
-      model,
-      0.016,
-      0.5,
-      bell.acousticDisplayOmegaRadPerS,
-      bell.diaphragmStudioScale,
-      bell.electronStudioSpeed,
-      true,
-      true,
-    );
+    updateBellTelephoneKinematics(model, 0.016, 0.5, bell, true, true);
     expect(model.materials.brass.opacity).toBe(0.35);
     expect(model.materials.glassCupMat.opacity).toBe(0.25);
 

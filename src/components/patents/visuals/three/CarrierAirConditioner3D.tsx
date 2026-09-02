@@ -50,9 +50,7 @@ export function CarrierAirConditioner3D() {
     separatorFaces,
   });
   const live = useLiveSimParams({
-    airflowCfm,
-    sprayRatePct,
-    separatorFaces,
+    animation: carrier.animation,
     cutawayMode,
     showSpray,
   });
@@ -113,9 +111,7 @@ export function CarrierAirConditioner3D() {
         nodes,
         materials,
         dt,
-        p.airflowCfm,
-        p.sprayRatePct,
-        p.separatorFaces,
+        p.animation,
         p.cutawayMode,
         p.showSpray,
       );

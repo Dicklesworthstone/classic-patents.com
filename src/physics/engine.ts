@@ -235,6 +235,13 @@ export function lamarrSchematicHop(
   };
 }
 
+export interface CarrierAirWasherAnimationState {
+  readonly fanDisplayAngularVelocityRadPerSec: number;
+  readonly dropletDisplayAdvectionUnitsPerSec: number;
+  readonly dropletDisplayOpacity: number;
+  readonly activeSeparatorPlateCount: number;
+}
+
 export const FrankenSimEngine = {
   /**
    * Wright Flyer (US 821,393) - 6-DoF Aerodynamics & Coupled Yaw/Roll
@@ -1192,6 +1199,15 @@ export const FrankenSimEngine = {
       (0.5 * 1.2 * airCurrentMps ** 2 * (0.08 * separatorFaces)).toFixed(2),
     );
     const airMovementWatts = Number((pressureDropPa * airflowCfm * 0.00047194745).toFixed(2));
+    const boundedDisplayFlowRatio = Math.min(2, airflowCfm / 15000);
+    const animation: CarrierAirWasherAnimationState = {
+      // These two rates are explicit studio mappings from the SI flow state,
+      // not claimed dimensions or measured fan/droplet velocities.
+      fanDisplayAngularVelocityRadPerSec: Number((2.5 * boundedDisplayFlowRatio).toFixed(4)),
+      dropletDisplayAdvectionUnitsPerSec: Number((1.8 * boundedDisplayFlowRatio).toFixed(4)),
+      dropletDisplayOpacity: Number(Math.min(0.85, 0.15 + sprayRatePct / 140).toFixed(4)),
+      activeSeparatorPlateCount: Math.max(2, Math.min(6, Math.round(separatorFaces / 2))),
+    };
 
     const hasThermal =
       params.inletTempC !== undefined ||
@@ -1210,6 +1226,7 @@ export const FrankenSimEngine = {
         pressureDropPa,
         airMovementWatts,
         airflowCfm,
+        animation,
         modelBoundary:
           "The source gives no thermal setpoint, secondary heating stage, or measured efficiency; those quantities are intentionally not modeled.",
       };
@@ -1257,6 +1274,7 @@ export const FrankenSimEngine = {
       pressureDropPa,
       airMovementWatts,
       airflowCfm,
+      animation,
       dewPointInC,
       moistureRemovedGPerKg,
       finalRhPct,

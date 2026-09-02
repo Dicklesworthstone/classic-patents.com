@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import type { CarrierAirWasherAnimationState } from "@/physics/engine";
 
 /** Procedural reconstruction of the source-named Carrier air washer. */
 export interface CarrierAirConditionerModelNodes {
@@ -296,22 +297,20 @@ export function updateCarrierAirConditionerKinematics(
   nodes: CarrierAirConditionerModelNodes,
   materials: CarrierAirConditionerMaterials,
   dt: number,
-  airflowCfm: number,
-  sprayRatePct: number,
-  separatorFaces: number,
+  animation: CarrierAirWasherAnimationState,
   cutawayMode: boolean,
   showSpray: boolean,
 ) {
   nodes.solidCasingMesh.visible = !cutawayMode;
   nodes.cutawayCasingGroup.visible = cutawayMode;
-  nodes.fanRotor.rotation.z -= (airflowCfm / 15000) * dt * 2.5;
+  nodes.fanRotor.rotation.z -= animation.fanDisplayAngularVelocityRadPerSec * dt;
   nodes.separatorPlates.forEach((plate, index) => {
     plate.visible =
-      index < Math.max(2, Math.min(nodes.separatorPlates.length, Math.round(separatorFaces / 2)));
+      index < Math.min(nodes.separatorPlates.length, animation.activeSeparatorPlateCount);
   });
-  materials.droplet.opacity = showSpray ? Math.min(0.85, 0.15 + sprayRatePct / 140) : 0;
+  materials.droplet.opacity = showSpray ? animation.dropletDisplayOpacity : 0;
   const positions = nodes.airDroplets.geometry.attributes.position.array as Float32Array;
-  const speed = (airflowCfm / 15000) * dt * 1.8;
+  const speed = animation.dropletDisplayAdvectionUnitsPerSec * dt;
   for (let i = 0; i < DROPLET_COUNT; i += 1) {
     const offset = i * 3;
     positions[offset] += speed;

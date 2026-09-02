@@ -40,6 +40,12 @@ describe("US 808,897 Carrier wet air washer visual boundary", () => {
     expect(result.particleCapturePct).toBeGreaterThan(0);
     expect(result.dropletSeparationPct).toBeGreaterThan(0);
     expect(result.pressureDropPa).toBeGreaterThan(0);
+    expect(result.animation).toEqual({
+      fanDisplayAngularVelocityRadPerSec: 2.5,
+      dropletDisplayAdvectionUnitsPerSec: 1.8,
+      dropletDisplayOpacity: 0.5786,
+      activeSeparatorPlateCount: 3,
+    });
     expect("dewPointInC" in result).toBe(false);
     expect("finalRhPct" in result).toBe(false);
     expect("coolingWatts" in result).toBe(false);
@@ -50,10 +56,37 @@ describe("US 808,897 Carrier wet air washer visual boundary", () => {
     expect(root.children.length).toBeGreaterThan(5);
     expect(nodes.sprayNozzles.length).toBe(5);
     const initialRotation = nodes.fanRotor.rotation.z;
-    updateCarrierAirConditionerKinematics(nodes, materials, 0.1, 15000, 60, 6, true, true);
-    expect(nodes.fanRotor.rotation.z).not.toBe(initialRotation);
+    const state = FrankenSimEngine.stepCarrierAirConditioner({
+      airflowCfm: 15000,
+      sprayRatePct: 60,
+      separatorFaces: 6,
+    });
+    updateCarrierAirConditionerKinematics(nodes, materials, 0.1, state.animation, true, true);
+    expect(nodes.fanRotor.rotation.z).toBeCloseTo(initialRotation - 0.25, 10);
     expect(nodes.solidCasingMesh.visible).toBe(false);
     expect(nodes.cutawayCasingGroup.visible).toBe(true);
-    expect(materials.droplet.opacity).toBeGreaterThan(0);
+    expect(materials.droplet.opacity).toBe(state.animation.dropletDisplayOpacity);
+    expect(nodes.separatorPlates.filter((plate) => plate.visible)).toHaveLength(
+      state.animation.activeSeparatorPlateCount,
+    );
+  });
+
+  test("forbids raw control formulas in the renderer update boundary", () => {
+    const modelSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "carrierAirConditionerModel.ts"),
+      "utf8",
+    );
+    const updateSource = modelSource.slice(
+      modelSource.indexOf("export function updateCarrierAirConditionerKinematics"),
+    );
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "CarrierAirConditioner3D.tsx"),
+      "utf8",
+    );
+
+    expect(updateSource).not.toContain("airflowCfm");
+    expect(updateSource).not.toContain("sprayRatePct");
+    expect(updateSource).not.toContain("separatorFaces");
+    expect(threeSource).toContain("animation: carrier.animation");
   });
 });

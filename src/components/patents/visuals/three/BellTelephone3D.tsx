@@ -66,6 +66,7 @@ export const BellTelephone3D = memo(() => {
   });
 
   const live = useLiveSimParams({
+    bell,
     voiceAmplitudeDb,
     airGapMm: params.airGap ?? 0.35,
     acousticFrequencyHz,
@@ -180,13 +181,9 @@ export const BellTelephone3D = memo(() => {
         model,
         1 / 60,
         acousticTimeRef.current,
-        p.acousticDisplayOmegaRadPerS,
-        p.diaphragmStudioScale,
-        p.electronStudioSpeed,
+        p.bell,
         p.showAcousticWaves,
         p.isCutaway,
-        p.voiceAmplitudeDb,
-        p.acousticFrequencyHz,
       );
 
       controls.update();
