@@ -15,7 +15,10 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
-import type { ArchivalPublicationDecision } from "@/data/editions/archivalPublicationState";
+import type {
+  ArchivalPublicationReasonCode,
+  ArchivalPublicationStateKind,
+} from "@/data/editions/archivalPublicationState";
 import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { ColorizedEquation as ColorizedEquationType } from "@/types/equation";
@@ -34,11 +37,18 @@ interface DualProjectionViewerProps {
   patent: Patent;
   /** Evaluated on the server so the complete cross-catalogue acceptance
    * registry and asset digests never enter the client bundle. */
-  archivalPublication: ArchivalPublicationDecision;
+  archivalPublication: ArchivalPublicationViewState;
   initialView?: string;
   /** Per-patent colorized equations, resolved on the server (colorizedEquations.ts is
    * a 976KB all-patents record that must never enter the client bundle wholesale). */
   colorizedEquations: ColorizedEquationType[];
+}
+
+interface ArchivalPublicationViewState {
+  isPublished: boolean;
+  reasonCode: ArchivalPublicationReasonCode;
+  explanation: string;
+  state: { kind: ArchivalPublicationStateKind };
 }
 
 export type PatentViewMode =
@@ -117,7 +127,7 @@ function TranscriptUnavailable({
 }: {
   patent: Patent;
   hasRawSourceText: boolean;
-  decision: ArchivalPublicationDecision;
+  decision: ArchivalPublicationViewState;
 }) {
   return (
     <div
@@ -182,7 +192,7 @@ export function DualProjectionViewer({
   // A semantic edition becomes visitor-facing only together with its explicit
   // paragraph companions. Treat an accidentally bound draft as withheld rather
   // than calling the fail-closed lookup during render and crashing the route.
-  const archivalEdition = archivalPublication.publishedEdition;
+  const archivalEdition = archivalPublication.isPublished ? patent.archivalEdition : undefined;
   const originalTextLabel = archivalEdition
     ? `Complete manually prepared edition · facsimile reviewed ${archivalEdition.preparedAt}`
     : rawSourceTextAsset

@@ -66,8 +66,10 @@ describe("patent view URL state", () => {
     expect(VIEWER_SOURCE).not.toMatch(
       /const setViewMode = \(mode: PatentViewMode\) => \{\s*setViewModeState\(mode\);\s*\};/,
     );
-    expect(PATENT_PAGE_SOURCE).toContain("archivalPublication={archivalPublication}");
-    expect(VIEWER_SOURCE).toContain("const archivalEdition = archivalPublication.publishedEdition");
+    expect(PATENT_PAGE_SOURCE).toContain("archivalPublication={archivalPublicationView}");
+    expect(VIEWER_SOURCE).toContain(
+      "const archivalEdition = archivalPublication.isPublished ? patent.archivalEdition : undefined",
+    );
     expect(VIEWER_SOURCE).not.toContain("evaluateArchivalPublicationState(patent)");
     expect(PATENT_PAGE_SOURCE).not.toContain("searchParams");
     expect(E2E_AUDIT_SOURCE).toContain('searchParams.get("view") === "original-spec"');

@@ -77,6 +77,12 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
   const colorizedEquations = getColorizedEquationsForPatent(id);
   const archivalPublication = evaluateArchivalPublicationState(patent);
   const archivalEdition = archivalPublication.publishedEdition;
+  const archivalPublicationView = {
+    isPublished: archivalPublication.isPublished,
+    reasonCode: archivalPublication.reasonCode,
+    explanation: archivalPublication.explanation,
+    state: { kind: archivalPublication.state.kind },
+  };
   const { prev, next } = getAdjacentPatents(id);
 
   const jsonLd = {
@@ -122,7 +128,7 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
       >
         <DualProjectionViewer
           patent={patent}
-          archivalPublication={archivalPublication}
+          archivalPublication={archivalPublicationView}
           colorizedEquations={colorizedEquations}
         />
       </div>

@@ -1141,6 +1141,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 25,
         defaultValue: 350,
         unit: "W",
+        provenance: "scenario-modern",
       },
       {
         id: "cavityLengthCm",
@@ -1150,6 +1151,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 25,
         unit: "cm",
+        provenance: "scenario-modern",
       },
       {
         id: "mirror2ReflectivityPct",
@@ -1159,6 +1161,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.5,
         defaultValue: 94,
         unit: "%",
+        provenance: "scenario-modern",
       },
       {
         id: "beamDiameterMm",
@@ -1168,6 +1171,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 8,
         unit: "mm",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (params) => {
@@ -1185,6 +1189,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "W",
           badgeColor: "cyan",
           primary: true,
+          provenance: "scenario-modern",
         },
         {
           label: "Threshold Gain",
@@ -1192,24 +1197,28 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "cm⁻¹",
           badgeColor: "emerald",
           primary: true,
+          provenance: "scenario-modern",
         },
         {
           label: "Intracavity Power",
           value: `${res.intraCavityPowerWatts} W`,
           unit: "W",
           badgeColor: "amber",
+          provenance: "scenario-modern",
         },
         {
           label: "Beam Divergence",
           value: `${res.beamDivergenceMrad} mrad`,
           unit: "mrad",
           badgeColor: "purple",
+          provenance: "scenario-modern",
         },
         {
           label: "Fresnel Number",
           value: `${res.fresnelNumber}`,
           unit: "",
           badgeColor: "rose",
+          provenance: "scenario-modern",
         },
       ];
     },
