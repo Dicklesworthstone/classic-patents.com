@@ -3,6 +3,8 @@
 import type React from "react";
 import { useId, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "@/components/patents/visuals/PortHamiltonianEnergyStrip";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
 import { readSundbackZipperControls, stepSundbackZipperSi } from "@/physics/sundbackZipperKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -13,6 +15,7 @@ export function SundbackZipperSim({
   patentId?: string;
 }) {
   const { params, updateParam } = usePatentPhysics(patentId);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
   const controls = useMemo(() => readSundbackZipperControls(params), [params]);
   const tel = useMemo(() => stepSundbackZipperSi(controls), [controls]);
 
@@ -480,6 +483,22 @@ export function SundbackZipperSim({
             {controls.staggerAligned ? "STAGGERED" : "COLLISION"}
           </button>
         </div>
+      </div>
+
+      <div className="p-4 bg-parchment-100 dark:bg-ink-900 rounded-lg border border-parchment-200 dark:border-ink-800">
+        <PortHamiltonianEnergyStrip
+          inputPowerWatts={tel.sliderPullForceN * 0.1}
+          dissipatedPowerWatts={tel.sliderPullForceN * 0.1 * 0.8}
+          storedEnergyJoules={0.5 * controls.lateralTensionN * 0.001}
+        />
+      </div>
+
+      <div className="p-4 bg-parchment-100 dark:bg-ink-900 rounded-lg border border-parchment-200 dark:border-ink-800">
+        <ClaimConstraintToggle
+          patentId={patentId}
+          claimStates={claimStates}
+          onClaimStateChange={(num, active) => setClaimStates((prev) => ({ ...prev, [num]: active }))}
+        />
       </div>
     </div>
   );

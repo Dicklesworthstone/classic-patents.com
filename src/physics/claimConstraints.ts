@@ -2435,6 +2435,7 @@ export function applyClaimConstraintModifications(
 
     case "us-1219881-sundback-zipper": {
       const claim1Active = claimStates[1] ?? true;
+      const claim2Active = claimStates[2] ?? true;
       if (!claim1Active) {
         modified.staggerAligned = 0;
         activeFailures.push(
@@ -2442,6 +2443,14 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "STAGGER ALIGNMENT LOSS: Claim 1 half-pitch offset required for progressive nested interlock.";
+      }
+      if (!claim2Active) {
+        modified.socketOverlapRatio = 0.1;
+        activeFailures.push(
+          "Flexion Pop-Out: Reduced tooth socket overlap causes lateral unmeshing under bending load",
+        );
+        refusalWarning =
+          "SOCKET NESTING COLLAPSE: Claim 2 elongated projections and sockets required to prevent lateral flexion pop-out.";
       }
       break;
     }

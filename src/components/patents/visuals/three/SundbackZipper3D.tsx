@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "@/components/patents/visuals/PortHamiltonianEnergyStrip";
 import {
   buildSundbackZipperModel,
   type SundbackZipperModel,
@@ -24,6 +26,7 @@ export default function SundbackZipper3D({
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
   const modelRef = useRef<SundbackZipperModel | null>(null);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
 
   const { params, updateParam } = usePatentPhysics(patentId);
   const controls = useMemo(() => readSundbackZipperControls(params), [params]);
@@ -244,6 +247,22 @@ export default function SundbackZipper3D({
             className="w-full accent-amber-600"
           />
         </div>
+      </div>
+
+      <div className="p-4 bg-parchment-100 dark:bg-ink-900 rounded-lg border border-parchment-200 dark:border-ink-800">
+        <PortHamiltonianEnergyStrip
+          inputPowerWatts={tel.sliderPullForceN * 0.1}
+          dissipatedPowerWatts={tel.sliderPullForceN * 0.1 * 0.8}
+          storedEnergyJoules={0.5 * controls.lateralTensionN * 0.001}
+        />
+      </div>
+
+      <div className="p-4 bg-parchment-100 dark:bg-ink-900 rounded-lg border border-parchment-200 dark:border-ink-800">
+        <ClaimConstraintToggle
+          patentId={patentId}
+          claimStates={claimStates}
+          onClaimStateChange={(num, active) => setClaimStates((prev) => ({ ...prev, [num]: active }))}
+        />
       </div>
     </div>
   );
