@@ -79,4 +79,28 @@ describe("US 2,297,691 Chester F. Carlson Electrophotography Archival Edition Pu
       expect(readings?.[0].trim().length).toBeGreaterThan(40);
     }
   });
+
+  test("provides valid provenance classifications for all Carlson controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-2297691-carlson-electrophotography"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("enforces figure acceptance pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const { carlsonElectrophotographyPatent } = require("@/data/patents/carlson-electrophotography");
+    const decision = evaluateTypedArchivalPublicationState(carlsonElectrophotographyPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+  });
 });

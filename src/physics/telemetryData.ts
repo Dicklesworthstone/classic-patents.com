@@ -1208,6 +1208,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.25,
         defaultValue: 6.5,
         unit: "kV",
+        provenance: "scenario-modern",
       },
       {
         id: "exposureLuxSec",
@@ -1217,6 +1218,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 12,
         unit: "lx·s",
+        provenance: "scenario-modern",
       },
       {
         id: "layerThicknessUm",
@@ -1226,6 +1228,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 30,
         unit: "µm",
+        provenance: "scenario-modern",
       },
       {
         id: "fuserTemperatureC",
@@ -1235,6 +1238,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 185,
         unit: "°C",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (params) => {
@@ -1252,6 +1256,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "V",
           badgeColor: "emerald",
           primary: true,
+          provenance: "scenario-modern",
         },
         {
           label: "Developed Optical Density",
@@ -1259,24 +1264,28 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "OD",
           badgeColor: "cyan",
           primary: true,
+          provenance: "scenario-modern",
         },
         {
           label: "Initial Surface Charge",
           value: `+${res.initialSurfacePotentialV} V`,
           unit: "V",
           badgeColor: "amber",
+          provenance: "scenario-modern",
         },
         {
           label: "Toner Mass Density",
           value: `${res.tonerMassDensityMgPerCm2} mg/cm²`,
           unit: "mg/cm²",
           badgeColor: "purple",
+          provenance: "scenario-modern",
         },
         {
           label: "Thermal Fusing Quality",
           value: `${res.fuserBondQualityPct}%`,
           unit: "%",
           badgeColor: "rose",
+          provenance: "scenario-modern",
         },
       ];
     },
