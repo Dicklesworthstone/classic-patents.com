@@ -2,6 +2,8 @@
 
 import { RotateCcw } from "lucide-react";
 import { useId, useMemo } from "react";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { stepLemelsonWarehouseTopology } from "@/physics/lemelsonWarehouseKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
@@ -16,8 +18,9 @@ export function LemelsonAutomaticWarehousingSim() {
   const levelId = useId();
   const shuttleId = useId();
   const autoId = useId();
-  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
-  const pose = useMemo(() => stepLemelsonWarehouseTopology(params), [params]);
+  const { effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(PATENT_ID);
+  const pose = useMemo(() => stepLemelsonWarehouseTopology(effectiveParams), [effectiveParams]);
   const rail = pose.railAddressFraction;
   const level = pose.levelAddressFraction;
   const shuttle = pose.shuttleExtensionFraction;
@@ -315,6 +318,27 @@ export function LemelsonAutomaticWarehousingSim() {
               <option value="0">Manual display comparison</option>
             </select>
           </label>
+          <ClaimConstraintToggle
+            patentId={PATENT_ID}
+            claimStates={claimStates}
+            onToggleClaim={(claimNumber, active) =>
+              updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
+            }
+          />
+          {claimConstraintResult.activeFailures.length > 0 && (
+            <div role="status" className="rounded-lg border border-rose-800 bg-rose-950/70 p-3">
+              {claimConstraintResult.activeFailures.map((failure: string) => (
+                <p key={failure} className="text-[11px] leading-5 text-rose-100">
+                  {failure}
+                </p>
+              ))}
+              {claimConstraintResult.refusalWarning && (
+                <p className="mt-1 text-[10px] leading-4 text-rose-200">
+                  {claimConstraintResult.refusalWarning}
+                </p>
+              )}
+            </div>
+          )}
           <p className="rounded-lg border border-rose-900/70 bg-rose-950/40 p-3 text-xs leading-5 text-rose-100">
             {pose.refusal.reason}
           </p>

@@ -2,6 +2,8 @@
 
 import { RotateCcw } from "lucide-react";
 import { useId, useMemo } from "react";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { stepGoertzMasterSlaveTopology } from "@/physics/goertzElectronicMasterSlaveManipulatorKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
@@ -75,8 +77,9 @@ export function GoertzElectronicMasterSlaveManipulatorSim() {
   const axis172Id = useId();
   const gripperId = useId();
   const contactId = useId();
-  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
-  const pose = useMemo(() => stepGoertzMasterSlaveTopology(params), [params]);
+  const { params, effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(PATENT_ID);
+  const pose = useMemo(() => stepGoertzMasterSlaveTopology(effectiveParams), [effectiveParams]);
   const master = armPoints(
     158,
     302,
@@ -448,35 +451,27 @@ export function GoertzElectronicMasterSlaveManipulatorSim() {
               onChange={(event) => updateParam("contactResistance", Number(event.target.value))}
             />
           </label>
-          <div className="grid grid-cols-3 gap-2 text-xs">
-            <Toggle
-              label="Claim 9\nreflection"
-              active={(params.forceReflectionEnabled ?? 0) >= 0.5}
-              onClick={() =>
-                updateParam(
-                  "forceReflectionEnabled",
-                  (params.forceReflectionEnabled ?? 0) >= 0.5 ? 0 : 1,
-                )
-              }
-            />
-            <Toggle
-              label="Claim 11\ndamping"
-              active={(params.tachometerDampingEnabled ?? 0) >= 0.5}
-              onClick={() =>
-                updateParam(
-                  "tachometerDampingEnabled",
-                  (params.tachometerDampingEnabled ?? 0) >= 0.5 ? 0 : 1,
-                )
-              }
-            />
-            <Toggle
-              label="Claims 10/12\nlimiter"
-              active={(params.limiterEnabled ?? 0) >= 0.5}
-              onClick={() =>
-                updateParam("limiterEnabled", (params.limiterEnabled ?? 0) >= 0.5 ? 0 : 1)
-              }
-            />
-          </div>
+          <ClaimConstraintToggle
+            patentId={PATENT_ID}
+            claimStates={claimStates}
+            onToggleClaim={(claimNumber, active) =>
+              updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
+            }
+          />
+          {claimConstraintResult.activeFailures.length > 0 && (
+            <div role="status" className="rounded-lg border border-rose-800 bg-rose-950/70 p-3">
+              {claimConstraintResult.activeFailures.map((failure: string) => (
+                <p key={failure} className="text-[11px] leading-5 text-rose-100">
+                  {failure}
+                </p>
+              ))}
+              {claimConstraintResult.refusalWarning && (
+                <p className="mt-1 text-[10px] leading-4 text-rose-200">
+                  {claimConstraintResult.refusalWarning}
+                </p>
+              )}
+            </div>
+          )}
           <button
             type="button"
             onClick={resetParams}
@@ -494,23 +489,3 @@ export function GoertzElectronicMasterSlaveManipulatorSim() {
 }
 
 const GOERTZ_CHANNEL_LABELS = ["113b", "arm roll", "126", "arm roll", "171", "172", "grip"];
-
-function Toggle({
-  label,
-  active,
-  onClick,
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`min-h-12 whitespace-pre-line rounded-lg border px-2 py-1.5 text-[10px] leading-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 ${active ? "border-cyan-400 bg-cyan-400 text-slate-950" : "border-slate-600 bg-slate-900 text-slate-300 hover:bg-slate-800"}`}
-    >
-      {label}
-    </button>
-  );
-}

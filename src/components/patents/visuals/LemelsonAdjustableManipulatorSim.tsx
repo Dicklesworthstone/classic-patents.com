@@ -2,6 +2,8 @@
 
 import { RotateCcw } from "lucide-react";
 import { useId, useMemo } from "react";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import {
   LEMELSON_DEFAULT_CONTROLS,
   stepLemelsonManipulatorTopology,
@@ -88,8 +90,9 @@ const PRIMARY_CONTROLS = [
 export function LemelsonAdjustableManipulatorSim() {
   const gridId = useId().replace(/:/g, "");
   const arrowId = useId().replace(/:/g, "");
-  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
-  const state = useMemo(() => stepLemelsonManipulatorTopology(params), [params]);
+  const { params, effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(PATENT_ID);
+  const state = useMemo(() => stepLemelsonManipulatorTopology(effectiveParams), [effectiveParams]);
   const { controls, displayPose, sequencer } = state;
 
   // Visual layout constants
@@ -514,6 +517,27 @@ export function LemelsonAdjustableManipulatorSim() {
         {/* Sidebar Controls & Step Sequencer */}
         <aside className="flex flex-col justify-between p-4 sm:p-5">
           <div className="space-y-4">
+            <ClaimConstraintToggle
+              patentId={PATENT_ID}
+              claimStates={claimStates}
+              onToggleClaim={(claimNumber, active) =>
+                updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
+              }
+            />
+            {claimConstraintResult.activeFailures.length > 0 && (
+              <div role="status" className="rounded-lg border border-rose-800 bg-rose-950/70 p-3">
+                {claimConstraintResult.activeFailures.map((failure: string) => (
+                  <p key={failure} className="text-[11px] leading-5 text-rose-100">
+                    {failure}
+                  </p>
+                ))}
+                {claimConstraintResult.refusalWarning && (
+                  <p className="mt-1 text-[10px] leading-4 text-rose-200">
+                    {claimConstraintResult.refusalWarning}
+                  </p>
+                )}
+              </div>
+            )}
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-cyan-400">
                 Normalized Display Controls
@@ -584,6 +608,9 @@ export function LemelsonAdjustableManipulatorSim() {
           </div>
 
           <div className="mt-4 rounded-lg border border-cyan-900/50 bg-slate-900/60 p-3 text-[11px] text-slate-400">
+            <p className="mb-2 font-mono text-cyan-300">
+              {state.activeClaimScope}: {state.activeClaimStatus.toUpperCase()}
+            </p>
             <span className="font-bold text-cyan-300">Archival Boundary Note:</span> In strict
             accordance with US 3,260,375, this display maps the described motion relationships to
             normalized coordinates and discrete switch events. It refuses unprinted dimensions,

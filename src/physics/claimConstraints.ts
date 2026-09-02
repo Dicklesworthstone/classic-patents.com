@@ -17,6 +17,12 @@ export interface ClaimConstraintDefinition {
   historicalPriorArt: string;
 }
 
+export interface ClaimConstraintResult {
+  modifiedParams: Record<string, number>;
+  activeFailures: string[];
+  refusalWarning: string | null;
+}
+
 export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition[]> = {
   "us-821393-wright-flyer": [
     {
@@ -2653,6 +2659,29 @@ export function applyClaimConstraintModifications(
       break;
     }
 
+    case "us-3119501-lemelson-automatic-warehousing": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim3Active = claimStates[3] ?? true;
+      if (!claim1Active) {
+        modified.automaticAddressing = 0;
+        modified.shuttleExtensionFraction = 0;
+        activeFailures.push(
+          "Claim 1 position-feedback chain omitted: the normalized carrier remains manually positionable, but automatic scan/count stopping and selected-bay transfer are disabled.",
+        );
+        refusalWarning =
+          "SOURCE BOUNDARY: omitting the Claim 1 scan-and-count relationship establishes no speed, drift, collision, or payload outcome.";
+      }
+      if (!claim3Active) {
+        modified.automaticAddressing = 0;
+        activeFailures.push(
+          "Claim 3 reflective-marker feedback omitted: the display cannot represent automatic coordinate selection from the claimed optical feedback signals.",
+        );
+        refusalWarning =
+          "SOURCE BOUNDARY: the grant supplies topology for marker feedback, not sensor precision or positioning-error dynamics.";
+      }
+      break;
+    }
+
     case "us-4341502-makino-scara": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
@@ -2830,6 +2859,7 @@ export function applyClaimConstraintModifications(
       const claim15Active = claimStates[15] ?? true;
 
       if (!claim1Active) {
+        modified.claim1SelectedSwitchesEnabled = 0;
         activeFailures.push(
           "Claim 1 topology omitted: the display no longer represents its first and second selected switch/actuator relationships.",
         );
@@ -2837,11 +2867,13 @@ export function applyClaimConstraintModifications(
           "POSITIONAL REFUSAL: no travel limit, stopping accuracy, or safety behavior is inferred.";
       }
       if (!claim8Active) {
+        modified.claim8BistableSwitchEnabled = 0;
         activeFailures.push(
           "Claim 8 topology omitted: the display no longer represents its bi-stable switch contact-set relationship.",
         );
       }
       if (!claim15Active) {
+        modified.claim15ServoHandoffEnabled = 0;
         activeFailures.push(
           "Claim 15 topology omitted: the display no longer represents its selected-position servo stop/start relationship.",
         );
@@ -2907,6 +2939,42 @@ export function applyClaimConstraintModifications(
     activeFailures,
     refusalWarning,
   };
+}
+
+export function claimConstraintStateParamId(claimNumber: number): string {
+  return `claim${claimNumber}ConstraintActive`;
+}
+
+/**
+ * Read claim state from the same patent-keyed parameter store used by both
+ * visual modes. Missing keys mean the issued claim is active by default.
+ */
+export function readSharedClaimConstraintStates(
+  patentId: string,
+  params: Record<string, number>,
+): Record<number, boolean> {
+  return Object.fromEntries(
+    (CATALOG_CLAIM_CONSTRAINTS[patentId] ?? []).map(({ claimNumber }) => [
+      claimNumber,
+      (params[claimConstraintStateParamId(claimNumber)] ?? 1) >= 0.5,
+    ]),
+  );
+}
+
+/**
+ * Derive the claim-constrained view of a patent's shared controls without
+ * overwriting the visitor's raw slider choices. That distinction is what lets
+ * a claim be restored without losing the pre-inversion pose.
+ */
+export function applySharedClaimConstraintModifications(
+  patentId: string,
+  params: Record<string, number>,
+): ClaimConstraintResult {
+  return applyClaimConstraintModifications(
+    patentId,
+    params,
+    readSharedClaimConstraintStates(patentId, params),
+  );
 }
 
 CATALOG_CLAIM_CONSTRAINTS["us-4098001-watson-remote-center-compliance"] = CATALOG_CLAIM_CONSTRAINTS[
