@@ -2738,6 +2738,35 @@ export function applyClaimConstraintModifications(
       break;
     }
 
+    case "us-588-ericsson-propeller": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim2Active = claimStates[2] ?? true;
+      const claim3Active = claimStates[3] ?? true;
+
+      if (!claim1Active) {
+        activeFailures.push(
+          "Draft-Induced Emergence & Cyclic Blade Slap: Without metallic hoops, spiral spokes, and entire immersion, partial immersion causes cyclic blade slap.",
+        );
+        refusalWarning =
+          "ENTIRE IMMERSION LOSS: Claim 1 hoop and spoke immersion required to employ full plate area.";
+      }
+      if (!claim2Active) {
+        activeFailures.push(
+          "Induced Wake Degradation: Outer series fails to turn at greater speed in the accelerated inner current.",
+        );
+        refusalWarning =
+          "UNEQUAL SPEED DIFFERENTIAL LOSS: Claim 2 higher speed in accelerated current disengaged.";
+      }
+      if (!claim3Active) {
+        activeFailures.push(
+          "Fixed Submerged Gear Drag: Without retractable upright stem and conical casing, underwater installation cannot be hoisted for maintenance or sailing.",
+        );
+        refusalWarning =
+          "RETRACTABLE STEM DISENGAGED: Claim 3 removable stem and fairing omitted.";
+      }
+      break;
+    }
+
     default:
       break;
   }

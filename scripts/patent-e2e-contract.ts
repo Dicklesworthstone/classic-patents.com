@@ -1,6 +1,6 @@
 import type {
-  ArchivalPublicationDiagnostics,
   ArchivalPublicationDecision,
+  ArchivalPublicationDiagnostics,
   ArchivalPublicationStateKind,
 } from "../src/data/editions/archivalPublicationState";
 import { archivalPublicationDiagnostics } from "../src/data/editions/archivalPublicationState";
@@ -185,8 +185,7 @@ export function buildPatentE2EScenarios(
       sourceDecision: decision
         ? archivalPublicationDiagnostics(decision)
         : {
-            completeFacsimileReviewed:
-              patent.archivalEdition?.completeFacsimileReviewed === true,
+            completeFacsimileReviewed: patent.archivalEdition?.completeFacsimileReviewed === true,
             ledgerKind: patent.originalTextAsset?.kind ?? null,
             ledgerReviewer: patent.originalTextAsset?.reviewedBy ?? null,
             ledgerReviewedAt: patent.originalTextAsset?.reviewedAt ?? null,

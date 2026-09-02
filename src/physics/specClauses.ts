@@ -3214,31 +3214,44 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         id: "kamen-segway-dynamic-balance",
         phrase:
           "motorized drive arrangement causing, when powered, automatically balanced operation",
-        active: !tel.pitchOverturnRefusal && !tel.tractionLossRefusal,
-        tone: !tel.pitchOverturnRefusal && !tel.tractionLossRefusal ? "live" : "broken",
-        caption: `Dynamic balance active at lean ${controls.riderPitchDeg.toFixed(1)}° (speed ${tel.velocityKmh.toFixed(1)} km/h, restoring torque ${tel.motorTorqueNm.toFixed(1)} N·m). Overturning gravity moment is ${tel.gravityOverturningTorqueNm.toFixed(1)} N·m.`,
+        active: !tel.claim1BalanceWithheld && !tel.pitchOverturnRefusal && !tel.tractionLossRefusal,
+        tone:
+          !tel.claim1BalanceWithheld && !tel.pitchOverturnRefusal && !tel.tractionLossRefusal
+            ? "live"
+            : "broken",
+        caption: tel.claim1BalanceWithheld
+          ? "Claim 1 topology is withheld: the grant states the unpowered system is unstable with respect to tipping; no quantitative fall behavior is asserted."
+          : `Modern illustrative scenario: dynamic balance is ${
+              tel.pitchOverturnRefusal || tel.tractionLossRefusal ? "outside its modeled boundary" : "available"
+            } at the selected reader inputs.`,
       },
       {
         id: "kamen-segway-balancing-margin",
         phrase:
           "balancing margin determined by the difference between the maximum operating velocity and the present velocity",
-        active: tel.balancingMarginRatio >= 0.22,
-        tone: tel.balancingMarginRatio >= 0.22 ? "held" : "broken",
-        caption: `Balancing margin headroom is ${(tel.balancingMarginRatio * 100).toFixed(0)}% (governor limit ${controls.speedLimitMS.toFixed(1)} m/s vs present velocity ${tel.velocityMS.toFixed(2)} m/s).`,
+        active: !tel.claim1BalanceWithheld && tel.balancingMarginRatio >= 0.22,
+        tone: !tel.claim1BalanceWithheld && tel.balancingMarginRatio >= 0.22 ? "held" : "broken",
+        caption: tel.claim1BalanceWithheld
+          ? "Claim 1's powered automatic-balance topology is withheld, so no balancing-margin calculation is represented."
+          : `Claim 1 supplies the present- versus maximum-velocity relationship. The displayed ${(tel.balancingMarginRatio * 100).toFixed(0)}% reserve is a modern illustrative normalization.`,
       },
       {
         id: "kamen-segway-ripple-alarm",
         phrase: "ripple modulation of the power output of the motorized drive arrangement",
-        active: tel.tactileAlarmActive,
-        tone: tel.tactileAlarmActive ? "live" : "held",
-        caption: `18 Hz torque ripple modulation is ${tel.tactileAlarmActive ? `ACTIVE (${tel.rippleAlarmAmplitudeNm} N·m haptic shudder amplitude)` : "STANDBY (sufficient margin reserve)"}.`,
+        active: !tel.claim2RippleWithheld && tel.tactileAlarmActive,
+        tone: !tel.claim2RippleWithheld && tel.tactileAlarmActive ? "live" : "held",
+        caption: tel.claim2RippleWithheld
+          ? "Claim 2 ripple-modulation path is withheld; no substitute vibration behavior is inferred."
+          : tel.tactileAlarmActive
+            ? "Claim 2 ripple-modulation alarm path is active. The source prints no waveform, frequency, or amplitude."
+            : "Claim 2 ripple-modulation alarm path is available but not active in the illustrative scenario.",
       },
       {
         id: "kamen-segway-ground-traction",
         phrase: "propels the user in desired motion over an underlying surface",
         active: !tel.tractionLossRefusal,
         tone: !tel.tractionLossRefusal ? "live" : "broken",
-        caption: `Ground friction coefficient μ = ${controls.groundFrictionCoeff.toFixed(2)} provides ${tel.maxTractionForceN.toFixed(0)} N grip vs demanded thrust ${Math.abs(tel.driveThrustForceN).toFixed(0)} N (${tel.tractionLossRefusal ? "WHEEL SLIP REFUSAL" : "firm traction"}).`,
+        caption: `Modern illustrative tire-contact boundary: selected μ=${controls.groundFrictionCoeff.toFixed(2)} is ${tel.tractionLossRefusal ? "outside" : "inside"} the model's traction boundary. The grant prints no friction coefficient or grip force.`,
       },
     ];
   }

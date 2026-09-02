@@ -785,23 +785,25 @@ export function energyChannelsFor(
       35,
       mechanicalThrustW * 1.25 + Math.abs(tel.motorTorqueNm) * 2.2 + 25,
     );
+    // The patent names ripple modulation but gives neither an electrical power nor
+    // a waveform. This retained teaching channel is deliberately illustrative.
     const hapticRippleW = tel.tactileAlarmActive ? 18.0 : 0.0;
     const electricalOhmicLossW = Math.max(10, motorElecW - mechanicalThrustW - hapticRippleW);
 
     return [
-      { name: "Dual Saphion Li-Ion Battery Power", watts: motorElecW, tone: "in" },
+      { name: "Illustrative Electrical Input", watts: motorElecW, tone: "in" },
       {
-        name: "Inverted Pendulum Ground Thrust & Kinetic Propulsion",
+        name: "Illustrative Ground Thrust & Kinetic Propulsion",
         watts: mechanicalThrustW,
         tone: "useful",
       },
       {
-        name: "18 Hz Tactile Ripple Alarm Shudder Dissipation",
+        name: "Illustrative Ripple-Alarm Dissipation",
         watts: hapticRippleW,
         tone: tel.tactileAlarmActive ? "useful" : "loss",
       },
       {
-        name: "Brushless Servomotor Copper I²R & Planetary Gear Friction Loss",
+        name: "Illustrative Drive-Train Electrical and Friction Loss",
         watts: electricalOhmicLossW,
         tone: "loss",
       },

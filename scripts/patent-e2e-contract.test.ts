@@ -209,9 +209,7 @@ describe("patent E2E scenario contract", () => {
     expect(scenarios.some((scenario) => !scenario.hasEnergyChannels)).toBe(true);
     expect(scenarios.some((scenario) => scenario.controls.length > 0)).toBe(true);
 
-    const teslaMotor = scenarios.find(
-      (scenario) => scenario.patentId === "us-381968-tesla-motor",
-    );
+    const teslaMotor = scenarios.find((scenario) => scenario.patentId === "us-381968-tesla-motor");
     expect(teslaMotor?.sourceDecision.figureAttestation).toMatchObject({
       reviewer: expect.any(String),
       reviewedAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),

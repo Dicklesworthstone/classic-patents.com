@@ -5895,8 +5895,26 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         provenance: "scenario-reader",
       },
     ],
-    computeMetrics: (_p) => {
+    computeMetrics: (p) => {
+      const rpm = p.shaftRpm ?? 120;
+      const angle = p.bladePitchAngleDeg ?? 35;
       return [
+        {
+          label: "Illustrative Shaft Motion",
+          value: `${rpm} RPM`,
+          unit: "model RPM",
+          badgeColor: "cyan",
+          progressPct: clampProgress(((rpm - 40) / 200) * 100),
+          provenance: "scenario-reader",
+        },
+        {
+          label: "Illustrative Plate Angle",
+          value: `${angle}°`,
+          unit: "model degrees",
+          badgeColor: "purple",
+          progressPct: clampProgress(((angle - 20) / 35) * 100),
+          provenance: "scenario-reader",
+        },
         {
           label: "Source Spiral Advance",
           value: "3",
@@ -9462,6 +9480,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
             badgeColor: "rose",
             progressPct: 0,
             provenance: "refusal-bounded",
+            provenanceCitation:
+              "Claim 1 states unpowered tipping instability; the kernel deliberately refuses a quantitative counterfactual beyond that source boundary.",
           },
           {
             label: "Pitch Angle",
@@ -9469,6 +9489,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
             unit: "°",
             badgeColor: "rose",
             provenance: "scenario-modern",
+            provenanceCitation: "Modern illustrative lean input, not a patent measurement.",
           },
           {
             label: "Demanded Thrust",
@@ -9476,6 +9497,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
             unit: "N",
             badgeColor: "rose",
             provenance: "scenario-modern",
+            provenanceCitation: "Modern illustrative mechanics calculation, not a patent measurement.",
           },
           {
             label: "Max Grip Limit",
@@ -9483,6 +9505,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
             unit: "N",
             badgeColor: "amber",
             provenance: "scenario-modern",
+            provenanceCitation: "Modern illustrative tire-contact calculation, not a patent measurement.",
           },
         ];
       }
@@ -9495,6 +9518,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: tel.speedPushbackActive ? "amber" : "cyan",
           progressPct: clampProgress((Math.abs(tel.velocityMS) / parsed.speedLimitMS) * 100),
           provenance: "scenario-modern",
+          provenanceCitation: "Modern illustrative speed result; Claim 1 gives no numerical speed.",
         },
         {
           label: "Restoring Motor Torque",
@@ -9503,6 +9527,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: Math.abs(tel.motorTorqueNm) > 100 ? "amber" : "indigo",
           progressPct: clampProgress((Math.abs(tel.motorTorqueNm) / 160.0) * 100),
           provenance: "scenario-modern",
+          provenanceCitation: "Modern illustrative torque result; the grant gives no motor rating.",
         },
         {
           label: "Balancing Margin",
@@ -9516,13 +9541,21 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
                 : "rose",
           progressPct: clampProgress(tel.balancingMarginRatio * 100),
           provenance: "scenario-modern",
+          provenanceCitation:
+            "Claim 1 discloses the velocity-difference relationship; this normalized percentage and threshold are modern illustrative values.",
         },
         {
           label: "Tactile Ripple Alarm",
-          value: tel.tactileAlarmActive ? "ACTIVE (18 Hz)" : "STANDBY",
+          value: tel.claim2RippleWithheld
+            ? "CLAIM 2 PATH WITHHELD"
+            : tel.tactileAlarmActive
+              ? "RIPPLE ACTIVE"
+              : "STANDBY",
           unit: "haptic",
-          badgeColor: tel.tactileAlarmActive ? "rose" : "indigo",
-          provenance: "scenario-modern",
+          badgeColor: tel.claim2RippleWithheld ? "rose" : tel.tactileAlarmActive ? "rose" : "indigo",
+          provenance: "source-disclosed",
+          provenanceCitation:
+            "US 6,302,230 Claim 2: the alarm includes ripple modulation of motorized-drive power output; no frequency or amplitude is printed.",
         },
         {
           label: "Pitch Pushback",
@@ -9530,11 +9563,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "speed limiter",
           badgeColor: tel.speedPushbackActive ? "amber" : "emerald",
           provenance: "scenario-modern",
+          provenanceCitation:
+            "Modern illustrative speed-limiting behavior; the source does not print a tilt angle or response law.",
         },
       ];
     },
     pedagogicalInsight:
-      "Dean Kamen's Segway (US 6,302,230) stabilizes an inverted pendulum by continuously accelerating two coaxial drive wheels forward beneath the rider's center of gravity. Crucially, the balancing margin monitor tracks available acceleration headroom, triggering speed tiltback and 18 Hz tactile motor ripple vibration through the platform before torque saturation occurs.",
+      "US 6,302,230 claims powered automatic balance, a balancing-margin monitor, and an alarm; Claim 2 adds ripple modulation of drive power. The numbers and dynamics shown here are a modern illustrative SI scenario, not performance values reported in the grant.",
   },
   "us-4098001-watson-remote-center-compliance": {
     domain: "robotics_mechanisms",
