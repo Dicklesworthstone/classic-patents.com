@@ -1334,6 +1334,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 110,
         unit: "V",
+        provenance: "scenario-modern",
       },
       {
         id: "ballastResistanceOhms",
@@ -1343,6 +1344,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 12,
         unit: "Ω",
+        provenance: "scenario-modern",
       },
       {
         id: "tubeLengthCm",
@@ -1352,6 +1354,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 100,
         unit: "cm",
+        provenance: "scenario-modern",
       },
       {
         id: "tubeDiameterMm",
@@ -1361,6 +1364,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 5,
         defaultValue: 25,
         unit: "mm",
+        provenance: "scenario-modern",
       },
     ],
     computeMetrics: (params) => {
@@ -1378,6 +1382,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "A",
           badgeColor: "cyan",
           primary: true,
+          provenance: "scenario-modern",
         },
         {
           label: "Luminous Efficacy",
@@ -1385,24 +1390,28 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "lm/W",
           badgeColor: "emerald",
           primary: true,
+          provenance: "scenario-modern",
         },
         {
           label: "Arc Tube Voltage",
           value: `${res.arcOperatingVoltageV} V`,
           unit: "V",
           badgeColor: "amber",
+          provenance: "scenario-modern",
         },
         {
           label: "Vapor Pressure",
           value: `${res.mercuryVaporPressureMmHg} mmHg`,
           unit: "mmHg",
           badgeColor: "purple",
+          provenance: "scenario-modern",
         },
         {
           label: "Total Luminous Flux",
           value: `${res.luminousFluxLumens} lm`,
           unit: "lm",
           badgeColor: "cyan",
+          provenance: "scenario-modern",
         },
       ];
     },
