@@ -116,6 +116,7 @@ struct NativePatentVisualization: View {
                     .frame(minHeight: 300, idealHeight: 420, maxHeight: 520)
                     .background(Lab.panelStrong, in: RoundedRectangle(cornerRadius: 16))
                     .overlay(RoundedRectangle(cornerRadius: 16).stroke(Lab.blueprint.opacity(0.24)))
+                    .accessibilityIdentifier("patent-native-visualization")
                     .accessibilityLabel(
                         isSourceBoundPDFOnly
                             ? "Source-bound PDF-only state for \(patent.shortTitle)"

@@ -1,6 +1,8 @@
 import { createHash } from "node:crypto";
 import * as THREE from "three";
 import { USDZExporter } from "three/examples/jsm/exporters/USDZExporter.js";
+import { nativeModelSpecifiers } from "./native-model-specifiers";
+import { canonicalizeUSDZArchive, usdzArchivesHaveEquivalentPayload } from "./native-usdz-archive";
 
 const exportArguments = process.argv.slice(2);
 const manifestOnly = exportArguments.includes("--manifest-only");
@@ -102,19 +104,12 @@ const objectCandidates = (value: unknown, seen = new Set<unknown>()): THREE.Obje
     .flatMap(([, child]) => objectCandidates(child, seen));
 };
 
-const modelModuleSpecifiers = (source: string): string[] => {
-  const matches = source.matchAll(
-    /from\s+["'](?:\.\/|@\/components\/patents\/visuals\/three\/)([A-Za-z0-9_-]*(?:Model|model|Airframe|airframe))["']/g,
-  );
-  return [...new Set([...matches].map((match) => match[1]))];
-};
-
 const modelBuilder = async (
   component: string,
 ): Promise<{ name: string; result: unknown; root: THREE.Object3D }> => {
   const componentURL = new URL(`${component}.tsx`, threeSourceURL);
   const componentSource = await Bun.file(componentURL).text();
-  const moduleSpecifiers = modelModuleSpecifiers(componentSource);
+  const moduleSpecifiers = nativeModelSpecifiers(componentSource);
   if (moduleSpecifiers.length === 0) {
     throw new Error(`${component}: no model module import found`);
   }
@@ -144,6 +139,8 @@ const modelBuilder = async (
 
 const exporter = new USDZExporter();
 const manifest: NativeVisualizationManifestEntry[] = [];
+let preservedAssetCount = 0;
+let writtenAssetCount = 0;
 
 const sourceBoundManifestEntry = (
   id: string,
@@ -258,7 +255,17 @@ if (manifestOnly) {
 
     const asset = `NativeModels/${record.id}.usdz`;
     const bytes = await exporter.parseAsync(root, { quickLookCompatible: true });
-    await Bun.write(new URL(asset, resourcesURL), bytes);
+    const assetURL = new URL(asset, resourcesURL);
+    const generatedBytes = new Uint8Array(bytes);
+    const existingFile = Bun.file(assetURL);
+    const existingBytes =
+      existingFile.size > 0 ? new Uint8Array(await existingFile.arrayBuffer()) : null;
+    if (existingBytes && usdzArchivesHaveEquivalentPayload(existingBytes, generatedBytes)) {
+      preservedAssetCount += 1;
+    } else {
+      await Bun.write(assetURL, canonicalizeUSDZArchive(generatedBytes));
+      writtenAssetCount += 1;
+    }
     manifest.push({
       id: record.id,
       kind: "model",
@@ -288,5 +295,8 @@ if (nativeModelDigestsBefore) {
 }
 
 console.log(
-  `${manifestOnly ? "Exported native visualization manifest for" : "Exported"} ${manifest.length} native patent exhibits.`,
+  manifestOnly
+    ? `Exported native visualization manifest for ${manifest.length} native patent exhibits.`
+    : `Exported ${manifest.length} native patent exhibits: ${writtenAssetCount} USDZ assets written, ` +
+        `${preservedAssetCount} byte-stable assets preserved.`,
 );

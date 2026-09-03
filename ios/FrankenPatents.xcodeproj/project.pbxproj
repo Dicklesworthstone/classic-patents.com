@@ -9,19 +9,24 @@
 /* Begin PBXBuildFile section */
 		00961B8A4ECA7357B0924030 /* us-124404-westinghouse-air-brake.usdz in Resources */ = {isa = PBXBuildFile; fileRef = B2AA3CCE4FC4A837B20435FD /* us-124404-westinghouse-air-brake.usdz */; };
 		020ED7C5849FF211660C69EA /* us-1781541-einstein-refrigerator.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 3FFBB6750FFC47C9FA5B5EC7 /* us-1781541-einstein-refrigerator.usdz */; };
+		03B81E7424BEF9325F59A5E4 /* us-5701965-kamen-transporter.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 090400774C6B2292B1370A17 /* us-5701965-kamen-transporter.usdz */; };
 		0714A6B70E4AE4297244C3FA /* us-2543181-land-polaroid.usdz in Resources */ = {isa = PBXBuildFile; fileRef = BCA49173D79E0BBDD9C7E989 /* us-2543181-land-polaroid.usdz */; };
 		076F3A976CFE16E66CDB007B /* us-2297691-carlson-electrophotography.usdz in Resources */ = {isa = PBXBuildFile; fileRef = EA83756919AC852EAC5EA8B4 /* us-2297691-carlson-electrophotography.usdz */; };
 		0AAF4E4B34B067577B021262 /* us-3858232-boyle-smith-ccd.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6D9F3EED269BFB26359DBEFA /* us-3858232-boyle-smith-ccd.usdz */; };
 		0FFA2920D0181BBE39AFE80A /* us-400766-hall-aluminium.usdz in Resources */ = {isa = PBXBuildFile; fileRef = E2FC396ACF79D438AD5DAB7D /* us-400766-hall-aluminium.usdz */; };
 		12CA61ED1D78876CF052AFA2 /* gb-931-arkwright-water-frame.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 91426F670E92064F47881C6B /* gb-931-arkwright-water-frame.usdz */; };
+		138A43E66C3503EF4318D91C /* us-4765668-robot-end-effector.usdz in Resources */ = {isa = PBXBuildFile; fileRef = BBABFD6A7B5497B68EAF5C68 /* us-4765668-robot-end-effector.usdz */; };
 		1518E3449A91519323763C47 /* us-2929922-townes-laser.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 04AE9B5CC635577D2CF6BF0A /* us-2929922-townes-laser.usdz */; };
+		170D4837B7C62EDDCFE45820 /* FrankenPatentsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA689C73A22AFBD690BCA450 /* FrankenPatentsUITests.swift */; };
 		180C163CEDD13270E462927B /* us-588-ericsson-propeller.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 528B8B598C6DD1CEB9C560AE /* us-588-ericsson-propeller.usdz */; };
+		189E62695190E576B4B6F80A /* us-4575330-hull-stereolithography.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A45EA94BD1402F1E12E09602 /* us-4575330-hull-stereolithography.usdz */; };
 		1E2E0C28903B1CC866B9E53D /* us-593138-tesla-coil.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 52FEDB5936CE7A8F158FE408 /* us-593138-tesla-coil.usdz */; };
 		209CD7BE616553034B109105 /* us-x1-hopkins-potash.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 64AC6BEB5BDF0C5FFF1B5607 /* us-x1-hopkins-potash.usdz */; };
 		225B6923C9A0C3909D9095CC /* us-808897-carrier-air-conditioner.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 68D133722183295AF5A2AA87 /* us-808897-carrier-air-conditioner.usdz */; };
 		275083CEE7D7720B448A8C62 /* us-6120588-eink.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 63889AA711C5A7FEB57D4D05 /* us-6120588-eink.usdz */; };
 		2ADAE7261BB522A271A8365F /* us-542846-diesel-engine.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 79BE64CE23BB70D0853911B6 /* us-542846-diesel-engine.usdz */; };
 		2B07D0F41C8210664DE170CD /* PatentMuseumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8D62ECED5F2FD890A1EE260 /* PatentMuseumView.swift */; };
+		2C1B2E8F765021B561D01573 /* us-2717437-mestral-velcro.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6DA31732D4456F5D19DED180 /* us-2717437-mestral-velcro.usdz */; };
 		2F5D52B312C7D98639C45424 /* PatentRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6205E15F45075AFE8EDAA1CA /* PatentRootView.swift */; };
 		3337F58BC7DBDD8463D1C05B /* us-2708656-fermi-reactor.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 951B511C45951DD7A90DC903 /* us-2708656-fermi-reactor.usdz */; };
 		333838B840125832A7D9F00B /* us-2981877-noyce-ic.usdz in Resources */ = {isa = PBXBuildFile; fileRef = B119FC142B1996B0FB98CFB8 /* us-2981877-noyce-ic.usdz */; };
@@ -30,10 +35,13 @@
 		3A1B252021F36335A1959808 /* us-706737-fessenden-wireless.usdz in Resources */ = {isa = PBXBuildFile; fileRef = B2448622AFE3E1DB658DCCA6 /* us-706737-fessenden-wireless.usdz */; };
 		3B119595B9B100DF7875BB41 /* us-3633-goodyear-rubber.usdz in Resources */ = {isa = PBXBuildFile; fileRef = CF41CE6C79F783FC30DCB580 /* us-3633-goodyear-rubber.usdz */; };
 		3BF57C37DA94277D1E6680A1 /* us-235199-bell-photophone.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 9ABA1B3A3663AFA402D4C615 /* us-235199-bell-photophone.usdz */; };
+		40DA758B3CF19F3CDC4FDEAB /* us-2988237-devol-programmed-transfer.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 71DF469188200F814E953410 /* us-2988237-devol-programmed-transfer.usdz */; };
 		41D92CE92FAA0D1E9E6CC22A /* us-388850-eastman-kodak.usdz in Resources */ = {isa = PBXBuildFile; fileRef = C3B813846723C568753A62CA /* us-388850-eastman-kodak.usdz */; };
 		446A4955BE520AC068B4DFE5 /* PatentPDFReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31E3789492674087EEAAE801 /* PatentPDFReader.swift */; };
 		44AA1D5486CE1DB532226F5C /* gb-913-watt-separate-condenser.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 300F2CC7BC7927DB62BC2A8B /* gb-913-watt-separate-condenser.usdz */; };
+		476731278F1047C713310D0E /* us-2318259-sikorsky-helicopter.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 5DEE00066296A63C3959C327 /* us-2318259-sikorsky-helicopter.usdz */; };
 		478D48D2D8DA5F0660C33C19 /* us-1647-morse-telegraph.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 801259222616BA37A1ED777E /* us-1647-morse-telegraph.usdz */; };
+		47FABAE59CC168038F6D522F /* us-4068536-stackhouse-manipulator.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 217891993F739469E4642654 /* us-4068536-stackhouse-manipulator.usdz */; };
 		4E8B1D27E806C3A5A49C9E2B /* us-613809-tesla-teleautomaton.usdz in Resources */ = {isa = PBXBuildFile; fileRef = FEA2A8AB50A17D09C46C5AD4 /* us-613809-tesla-teleautomaton.usdz */; };
 		4EA8E93C8BCA37721BD4475E /* us-1773980-farnsworth-tv.usdz in Resources */ = {isa = PBXBuildFile; fileRef = FAC62086D10B786013CF465B /* us-1773980-farnsworth-tv.usdz */; };
 		4FC8EB71858038455C68B4CF /* us-2292387-lamarr-frequency-hopping.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F85748EB729D3166DE2FEAEE /* us-2292387-lamarr-frequency-hopping.usdz */; };
@@ -43,21 +51,29 @@
 		533D739F2447383843F01D5C /* us-307031-edison-indicator.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0DEB801E3E9C2A2C2422B2EB /* us-307031-edison-indicator.usdz */; };
 		568F4FAD6943A1E28272CD0F /* us-821393-wright-flyer.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 659FFCE09C0A981E3F6DBDC6 /* us-821393-wright-flyer.usdz */; };
 		56E6A5FD797D350A92A64A97 /* us-200521-edison-phonograph.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 33AE8089DDF3B6462D66C29C /* us-200521-edison-phonograph.usdz */; };
+		580F6C272CA723E826D1038A /* us-3858581-kamen-medication-injection-device.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 46289DA682343E8405C914E1 /* us-3858581-kamen-medication-injection-device.usdz */; };
 		58F176E03A91B6AA7159AA85 /* us-470918-reno-escalator.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F3E73A4B0A498DE6EC34FD5A /* us-470918-reno-escalator.usdz */; };
+		60C4E5AA26E164A881CEAAAC /* us-4921293-salisbury-robot-hand.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 26D04B558896891ED8644458 /* us-4921293-salisbury-robot-hand.usdz */; };
 		628845CEA7A1CB01EC2461FA /* us-132-davenport-electric-motor.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 88905470519EC5EC9D6667FB /* us-132-davenport-electric-motor.usdz */; };
 		62CAF0BCF05D1C50D77EFCC9 /* patents.json in Resources */ = {isa = PBXBuildFile; fileRef = F5483F5E9EA79B64FDBB110F /* patents.json */; };
 		647B78767EBE7554D95EE2BF /* us-6331181-davinci.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 8B3B2F6C482E8CE56560ACEE /* us-6331181-davinci.usdz */; };
 		68E730AEF7D28B78328E2026 /* us-3138743-kilby-integrated-circuit.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 1816F80AF57D08C2283ABFFD /* us-3138743-kilby-integrated-circuit.usdz */; };
+		6A018081195CDC1ABA015055 /* us-4098001-watson-rcc.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 3D037AA34C22115D24F9A0D0 /* us-4098001-watson-rcc.usdz */; };
+		6A13D12BEF99BDA5A42609D4 /* us-6302230-kamen-segway.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 38065D837760E78E6BBF2C11 /* us-6302230-kamen-segway.usdz */; };
 		6A2EBD5B72786B93D74EA03A /* us-1102653-goddard-rocket.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6641FC9F623B5694F4137AA1 /* us-1102653-goddard-rocket.usdz */; };
 		6B05BA9C6CF072D304FEDA14 /* us-6285999-pagerank.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 5F0DC677D1F5871977469FE0 /* us-6285999-pagerank.usdz */; };
 		6C0F31A83053B70537340FF2 /* us-727650-linde-air-liquefaction.usdz in Resources */ = {isa = PBXBuildFile; fileRef = EF2C1766DF91E4ADD3427983 /* us-727650-linde-air-liquefaction.usdz */; };
 		6CCCA56BC0FEEAA80E79D4CB /* us-105338-hyatt-celluloid.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 75209640AF2CB33B13C27DA4 /* us-105338-hyatt-celluloid.usdz */; };
 		6E324ADBAF031262DFCA1931 /* us-4136359-wozniak-apple.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 4C40DDFDF87D7CB98DA59148 /* us-4136359-wozniak-apple.usdz */; };
+		6F0D45AE478C53A1B3799DA9 /* PatentCollectionStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFAED83AD16E353D492E3125 /* PatentCollectionStoreTests.swift */; };
+		72564482876768A4A0352367 /* PatentCollectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2393F7248B81AA2942257AA1 /* PatentCollectionStore.swift */; };
 		746F5A6F82E8741FE76A2447 /* us-194047-otto-engine.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 61C14FF5FF577DDFFCC96533 /* us-194047-otto-engine.usdz */; };
 		798358235AA036E1FF959F0C /* us-586193-marconi-radio.usdz in Resources */ = {isa = PBXBuildFile; fileRef = C35386A4A543ECAD34CEBEFB /* us-586193-marconi-radio.usdz */; };
 		7C7FEC952E6D8CCC69243259 /* PatentPDFStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F9C6CE3C3AA63115989A99F /* PatentPDFStoreTests.swift */; };
 		8117AB03CF8835A20E831DF0 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 652BFF6DEAD8C5CD76D13B0B /* PrivacyInfo.xcprivacy */; };
 		89693EEBF504AE7B6857D313 /* us-942699-baekeland-bakelite.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 7A2C1369ACEDF710DE95CD7C /* us-942699-baekeland-bakelite.usdz */; };
+		896C2AC1458E5F9AE801B774 /* us-4341502-makino-scara.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 3A2C8AA28225E07F1B71EA23 /* us-4341502-makino-scara.usdz */; };
+		898011BABB64E5847F9DCFB3 /* us-3313014-lemelson-automatic-production.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 3997BBDA0C7C7D618036B0BF /* us-3313014-lemelson-automatic-production.usdz */; };
 		8AFE5A748855947BD7762CC6 /* us-319596-maxim-machine-gun.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 8F15DF0D0E1A459224CC2EA1 /* us-319596-maxim-machine-gun.usdz */; };
 		8B601B91BA0C8596385C343D /* us-223898-edison-lightbulb.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 228270F4892BBA07DDD2CEAA /* us-223898-edison-lightbulb.usdz */; };
 		8BF004FEC96A6ACA2BDAE56E /* us-x8277-mccormick-reaper.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 529534C2873A3B4F0F121801 /* us-x8277-mccormick-reaper.usdz */; };
@@ -68,10 +84,13 @@
 		93BA8591AACB27C6D0E0DF63 /* us-2524035-bardeen-transistor.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A502EF01EECF3FD1F4852846 /* us-2524035-bardeen-transistor.usdz */; };
 		97F878A9E2A0B020F9C0D177 /* us-233692-pelton-water-wheel.usdz in Resources */ = {isa = PBXBuildFile; fileRef = E1D23EE874C4ABC3EF9D226A /* us-233692-pelton-water-wheel.usdz */; };
 		98ECADFD8B35CE78BB4871E9 /* us-2495429-spencer-microwave.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 2ECBABAB440FFDF9A699B6F9 /* us-2495429-spencer-microwave.usdz */; };
+		999097D84E893C31388037EB /* us-3081379-lemelson-machine-vision.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 7F4E889BFB2C03D83E68FC0B /* us-3081379-lemelson-machine-vision.usdz */; };
 		9B802B09F83949C09A3D8285 /* us-621195-zeppelin-airship.usdz in Resources */ = {isa = PBXBuildFile; fileRef = DC17819EBC5AC1582A7BF15D /* us-621195-zeppelin-airship.usdz */; };
 		9BD228092F78F9578758FA28 /* us-3541541-engelbart-mouse.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 36F390D5D33B68606B8D7F93 /* us-3541541-engelbart-mouse.usdz */; };
 		A140C51F8E282581F3C45D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 470E78F059E8FF16D5AF3206 /* Assets.xcassets */; };
 		A151C6AC8DDA7773E2E5D411 /* us-120057-gramme-dynamo.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 12A410215EF4A43693F867E8 /* us-120057-gramme-dynamo.usdz */; };
+		A2EDC2252B93080981CD1F34 /* us-1219881-sundback-zipper.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 2956FD31EAAA9C42F1AE5A93 /* us-1219881-sundback-zipper.usdz */; };
+		A52CE5358E9A82B0651DC6A3 /* us-3260375-lemelson-adjustable-manipulator.usdz in Resources */ = {isa = PBXBuildFile; fileRef = D46DE8B7176ACEBA983AEEDB /* us-3260375-lemelson-adjustable-manipulator.usdz */; };
 		A5FABCC541156AB1FAF8FD9C /* us-361931-daimler-engine.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 3B993CFD759416BDEC02FD98 /* us-361931-daimler-engine.usdz */; };
 		A6ED058363454DD326D6722A /* us-608969-parsons-turbine.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0959C4C45B9978E52DF14AA1 /* us-608969-parsons-turbine.usdz */; };
 		A7AA29EC530B210CAD859ED0 /* us-6469-lincoln-buoy.usdz in Resources */ = {isa = PBXBuildFile; fileRef = E335D7EAA8D609D506855882 /* us-6469-lincoln-buoy.usdz */; };
@@ -88,18 +107,27 @@
 		CB68338144F38F31C066F115 /* us-x72-whitney-cotton-gin.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 375E1A3A26BC0233F9B8CDDA /* us-x72-whitney-cotton-gin.usdz */; };
 		CCB7CB0456312C1329F1D2A8 /* us-313224-mergenthaler-linotype.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 5E497D5D5D32C91C444D8DDE /* us-313224-mergenthaler-linotype.usdz */; };
 		CF071F521FF9C2292090EF4A /* us-3353115-maiman-ruby-laser.usdz in Resources */ = {isa = PBXBuildFile; fileRef = EED29199D2983A857CA99568 /* us-3353115-maiman-ruby-laser.usdz */; };
+		D67BC58ADE61B59ED928914C /* us-3212649-amf-versatran.usdz in Resources */ = {isa = PBXBuildFile; fileRef = D4103430F5B260E8F850C3BF /* us-3212649-amf-versatran.usdz */; };
 		D6B9491371EA5B409C6295E1 /* us-682690-hewitt-mercury-lamp.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 02A3D267A68FA0FC43B7CC96 /* us-682690-hewitt-mercury-lamp.usdz */; };
 		D70B1993B601126E2F60B88E /* us-x9430-colt-revolver.usdz in Resources */ = {isa = PBXBuildFile; fileRef = F88C2900E8C3FFC70D02C359 /* us-x9430-colt-revolver.usdz */; };
 		D9FDD32486EECD83AB7DFD14 /* us-157124-glidden-barbed-wire.usdz in Resources */ = {isa = PBXBuildFile; fileRef = DC74C1587C8027333E1229EF /* us-157124-glidden-barbed-wire.usdz */; };
 		DA901178A31C549D4B3A052C /* PatentLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6B4C11EF40A0363E909EE9 /* PatentLibrary.swift */; };
 		DB0AF74930810A3513A679BE /* us-174465-bell-telephone.usdz in Resources */ = {isa = PBXBuildFile; fileRef = BB24BD1214144C0954BF7EB3 /* us-174465-bell-telephone.usdz */; };
 		DB168D51987E628F2A87C631 /* us-247804-delaval-separator.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 13751976CF9593D2B19BCE1B /* us-247804-delaval-separator.usdz */; };
+		DC822C730C907F361DEFF2EB /* us-3728480-baer-odyssey.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 3124F3F39F1E87911E2A7BC7 /* us-3728480-baer-odyssey.usdz */; };
+		DCC5426031F68C6C9DEA4CA6 /* us-4063220-metcalfe-ethernet.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 7FD9E36840B0EDCA7AFB3DAB /* us-4063220-metcalfe-ethernet.usdz */; };
+		DFB1910122BD09BC3541A543 /* us-4512709-milacron-robot-toolchanger.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 566D9ACA08DB039226A8DCA5 /* us-4512709-milacron-robot-toolchanger.usdz */; };
 		DFC3E58CA9376622CD441D9C /* us-6594844-roomba.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 9DEEF52EEBE7E2065306FDBB /* us-6594844-roomba.usdz */; };
+		E0E3DEFAB3681671407017B9 /* us-4976582-clavel-delta-robot.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 0041259CD0A3B03F97542716 /* us-4976582-clavel-delta-robot.usdz */; };
+		E19F3AE4643587B5594CE213 /* us-2846084-goertz-electronic-master-slave-manipulator.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 3B02D81A762B5B415ABB5D70 /* us-2846084-goertz-electronic-master-slave-manipulator.usdz */; };
 		E4C4C51D5BBB9248EB039283 /* NativeMathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208821AD1F723D6B2BA123DC /* NativeMathView.swift */; };
+		E5A4C1429B7D10B233E3D9A4 /* us-5121329-crump-fdm.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 2F81FC588C65120F2E595145 /* us-5121329-crump-fdm.usdz */; };
+		E74ED97622DF95A682117EC3 /* us-3119501-lemelson-automatic-warehousing.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 7B4A91D98316B37A84439230 /* us-3119501-lemelson-automatic-warehousing.usdz */; };
 		EDB5729B4FA830E8796474C4 /* us-48475-yale-lock.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 35A9018CF366CE464B97F986 /* us-48475-yale-lock.usdz */; };
 		F0665294F6F08EC2070462B4 /* native-visualizations.json in Resources */ = {isa = PBXBuildFile; fileRef = 223FEBB699A1D739C994B450 /* native-visualizations.json */; };
 		F1503F8CFC13D77CED3CAA4F /* us-79265-sholes-typewriter.usdz in Resources */ = {isa = PBXBuildFile; fileRef = BCD6B789D55D18D2CBB99F90 /* us-79265-sholes-typewriter.usdz */; };
 		F568D981D52B76AB39BBEB8D /* PatentVisualizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B4A0EFE3EBA3FB0122D944 /* PatentVisualizationView.swift */; };
+		F88B3DA0DC77DB62097C3BB6 /* AppearanceUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D21B6C917CD3C1B0943A754 /* AppearanceUITests.swift */; };
 		F8ABE3DC10983E14CCC17AEB /* gb-1306-watt-rotary-engine.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A5D0A970216D62BCA604C641 /* gb-1306-watt-rotary-engine.usdz */; };
 		F9F281DD5160D664359F4182 /* IOSProfileRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9EBC608751CC3AA65E9EB69 /* IOSProfileRunner.swift */; };
 		FEFD9D935A36F043DAEFB6BA /* us-347140-thomson-welding.usdz in Resources */ = {isa = PBXBuildFile; fileRef = FC470A1D81DB4D8ECBF77144 /* us-347140-thomson-welding.usdz */; };
@@ -114,12 +142,21 @@
 			remoteGlobalIDString = 6830C513C55C4B5D2BD388B3;
 			remoteInfo = FrankenPatents;
 		};
+		2A194566ED6CA3E2ADE05CD9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 05CE45275036951626C5623C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6830C513C55C4B5D2BD388B3;
+			remoteInfo = FrankenPatents;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0041259CD0A3B03F97542716 /* us-4976582-clavel-delta-robot.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-4976582-clavel-delta-robot.usdz"; sourceTree = "<group>"; };
 		02A3D267A68FA0FC43B7CC96 /* us-682690-hewitt-mercury-lamp.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-682690-hewitt-mercury-lamp.usdz"; sourceTree = "<group>"; };
 		04AE9B5CC635577D2CF6BF0A /* us-2929922-townes-laser.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-2929922-townes-laser.usdz"; sourceTree = "<group>"; };
 		0834EF9153F4B30E02704C55 /* FrankenPatents.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FrankenPatents.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		090400774C6B2292B1370A17 /* us-5701965-kamen-transporter.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-5701965-kamen-transporter.usdz"; sourceTree = "<group>"; };
 		0959C4C45B9978E52DF14AA1 /* us-608969-parsons-turbine.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-608969-parsons-turbine.usdz"; sourceTree = "<group>"; };
 		0A6B4C11EF40A0363E909EE9 /* PatentLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentLibrary.swift; sourceTree = "<group>"; };
 		0DEB801E3E9C2A2C2422B2EB /* us-307031-edison-indicator.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-307031-edison-indicator.usdz"; sourceTree = "<group>"; };
@@ -129,19 +166,32 @@
 		13751976CF9593D2B19BCE1B /* us-247804-delaval-separator.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-247804-delaval-separator.usdz"; sourceTree = "<group>"; };
 		1816F80AF57D08C2283ABFFD /* us-3138743-kilby-integrated-circuit.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-3138743-kilby-integrated-circuit.usdz"; sourceTree = "<group>"; };
 		208821AD1F723D6B2BA123DC /* NativeMathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeMathView.swift; sourceTree = "<group>"; };
+		217891993F739469E4642654 /* us-4068536-stackhouse-manipulator.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-4068536-stackhouse-manipulator.usdz"; sourceTree = "<group>"; };
 		223FEBB699A1D739C994B450 /* native-visualizations.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "native-visualizations.json"; sourceTree = "<group>"; };
 		228270F4892BBA07DDD2CEAA /* us-223898-edison-lightbulb.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-223898-edison-lightbulb.usdz"; sourceTree = "<group>"; };
+		2393F7248B81AA2942257AA1 /* PatentCollectionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentCollectionStore.swift; sourceTree = "<group>"; };
+		26D04B558896891ED8644458 /* us-4921293-salisbury-robot-hand.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-4921293-salisbury-robot-hand.usdz"; sourceTree = "<group>"; };
+		2956FD31EAAA9C42F1AE5A93 /* us-1219881-sundback-zipper.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-1219881-sundback-zipper.usdz"; sourceTree = "<group>"; };
+		2D21B6C917CD3C1B0943A754 /* AppearanceUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceUITests.swift; sourceTree = "<group>"; };
 		2ECBABAB440FFDF9A699B6F9 /* us-2495429-spencer-microwave.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-2495429-spencer-microwave.usdz"; sourceTree = "<group>"; };
+		2F81FC588C65120F2E595145 /* us-5121329-crump-fdm.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-5121329-crump-fdm.usdz"; sourceTree = "<group>"; };
 		300F2CC7BC7927DB62BC2A8B /* gb-913-watt-separate-condenser.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "gb-913-watt-separate-condenser.usdz"; sourceTree = "<group>"; };
+		3124F3F39F1E87911E2A7BC7 /* us-3728480-baer-odyssey.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-3728480-baer-odyssey.usdz"; sourceTree = "<group>"; };
 		31E3789492674087EEAAE801 /* PatentPDFReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentPDFReader.swift; sourceTree = "<group>"; };
 		33AE8089DDF3B6462D66C29C /* us-200521-edison-phonograph.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-200521-edison-phonograph.usdz"; sourceTree = "<group>"; };
 		35A9018CF366CE464B97F986 /* us-48475-yale-lock.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-48475-yale-lock.usdz"; sourceTree = "<group>"; };
 		36BF4079470701C6D357CC80 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		36F390D5D33B68606B8D7F93 /* us-3541541-engelbart-mouse.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-3541541-engelbart-mouse.usdz"; sourceTree = "<group>"; };
 		375E1A3A26BC0233F9B8CDDA /* us-x72-whitney-cotton-gin.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-x72-whitney-cotton-gin.usdz"; sourceTree = "<group>"; };
+		38065D837760E78E6BBF2C11 /* us-6302230-kamen-segway.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-6302230-kamen-segway.usdz"; sourceTree = "<group>"; };
+		3997BBDA0C7C7D618036B0BF /* us-3313014-lemelson-automatic-production.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-3313014-lemelson-automatic-production.usdz"; sourceTree = "<group>"; };
+		3A2C8AA28225E07F1B71EA23 /* us-4341502-makino-scara.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-4341502-makino-scara.usdz"; sourceTree = "<group>"; };
+		3B02D81A762B5B415ABB5D70 /* us-2846084-goertz-electronic-master-slave-manipulator.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-2846084-goertz-electronic-master-slave-manipulator.usdz"; sourceTree = "<group>"; };
 		3B993CFD759416BDEC02FD98 /* us-361931-daimler-engine.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-361931-daimler-engine.usdz"; sourceTree = "<group>"; };
+		3D037AA34C22115D24F9A0D0 /* us-4098001-watson-rcc.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-4098001-watson-rcc.usdz"; sourceTree = "<group>"; };
 		3FFBB6750FFC47C9FA5B5EC7 /* us-1781541-einstein-refrigerator.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-1781541-einstein-refrigerator.usdz"; sourceTree = "<group>"; };
 		42E807B5470E4F6879C9BCAE /* FrankenPatentsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrankenPatentsApp.swift; sourceTree = "<group>"; };
+		46289DA682343E8405C914E1 /* us-3858581-kamen-medication-injection-device.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-3858581-kamen-medication-injection-device.usdz"; sourceTree = "<group>"; };
 		470E78F059E8FF16D5AF3206 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4C40DDFDF87D7CB98DA59148 /* us-4136359-wozniak-apple.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-4136359-wozniak-apple.usdz"; sourceTree = "<group>"; };
 		4C8CBEAE6DBA11D07376A78F /* us-135245-pasteur-fermentation.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-135245-pasteur-fermentation.usdz"; sourceTree = "<group>"; };
@@ -150,6 +200,8 @@
 		529534C2873A3B4F0F121801 /* us-x8277-mccormick-reaper.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-x8277-mccormick-reaper.usdz"; sourceTree = "<group>"; };
 		52FEDB5936CE7A8F158FE408 /* us-593138-tesla-coil.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-593138-tesla-coil.usdz"; sourceTree = "<group>"; };
 		55153ED970A9B9997DB52B89 /* us-31128-otis-elevator.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-31128-otis-elevator.usdz"; sourceTree = "<group>"; };
+		566D9ACA08DB039226A8DCA5 /* us-4512709-milacron-robot-toolchanger.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-4512709-milacron-robot-toolchanger.usdz"; sourceTree = "<group>"; };
+		5DEE00066296A63C3959C327 /* us-2318259-sikorsky-helicopter.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-2318259-sikorsky-helicopter.usdz"; sourceTree = "<group>"; };
 		5E497D5D5D32C91C444D8DDE /* us-313224-mergenthaler-linotype.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-313224-mergenthaler-linotype.usdz"; sourceTree = "<group>"; };
 		5F0DC677D1F5871977469FE0 /* us-6285999-pagerank.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-6285999-pagerank.usdz"; sourceTree = "<group>"; };
 		61C14FF5FF577DDFFCC96533 /* us-194047-otto-engine.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-194047-otto-engine.usdz"; sourceTree = "<group>"; };
@@ -163,13 +215,18 @@
 		68D133722183295AF5A2AA87 /* us-808897-carrier-air-conditioner.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-808897-carrier-air-conditioner.usdz"; sourceTree = "<group>"; };
 		6C2FDE9DF94455B246A28519 /* us-381968-tesla-motor.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-381968-tesla-motor.usdz"; sourceTree = "<group>"; };
 		6D9F3EED269BFB26359DBEFA /* us-3858232-boyle-smith-ccd.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-3858232-boyle-smith-ccd.usdz"; sourceTree = "<group>"; };
+		6DA31732D4456F5D19DED180 /* us-2717437-mestral-velcro.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-2717437-mestral-velcro.usdz"; sourceTree = "<group>"; };
 		6DD8F5C45785092239E500FA /* PatentWorkstationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentWorkstationView.swift; sourceTree = "<group>"; };
 		6F1AD0F44FF84094197E64AB /* NativePatentSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativePatentSceneView.swift; sourceTree = "<group>"; };
 		6F8F0697BE45739CA1A3F3FF /* us-36836-gatling-gun.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-36836-gatling-gun.usdz"; sourceTree = "<group>"; };
+		71DF469188200F814E953410 /* us-2988237-devol-programmed-transfer.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-2988237-devol-programmed-transfer.usdz"; sourceTree = "<group>"; };
 		75209640AF2CB33B13C27DA4 /* us-105338-hyatt-celluloid.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-105338-hyatt-celluloid.usdz"; sourceTree = "<group>"; };
 		79BE64CE23BB70D0853911B6 /* us-542846-diesel-engine.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-542846-diesel-engine.usdz"; sourceTree = "<group>"; };
 		7A2C1369ACEDF710DE95CD7C /* us-942699-baekeland-bakelite.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-942699-baekeland-bakelite.usdz"; sourceTree = "<group>"; };
+		7B4A91D98316B37A84439230 /* us-3119501-lemelson-automatic-warehousing.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-3119501-lemelson-automatic-warehousing.usdz"; sourceTree = "<group>"; };
+		7F4E889BFB2C03D83E68FC0B /* us-3081379-lemelson-machine-vision.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-3081379-lemelson-machine-vision.usdz"; sourceTree = "<group>"; };
 		7F9D3BE19109ACC323239ABF /* us-395781-hollerith-tabulating.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-395781-hollerith-tabulating.usdz"; sourceTree = "<group>"; };
+		7FD9E36840B0EDCA7AFB3DAB /* us-4063220-metcalfe-ethernet.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-4063220-metcalfe-ethernet.usdz"; sourceTree = "<group>"; };
 		801259222616BA37A1ED777E /* us-1647-morse-telegraph.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-1647-morse-telegraph.usdz"; sourceTree = "<group>"; };
 		819FB8ABA7DF8A985F989BB9 /* us-7479949-multitouch.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-7479949-multitouch.usdz"; sourceTree = "<group>"; };
 		82AEB1D62A2DEDD33C56C536 /* us-78317-nobel-dynamite.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-78317-nobel-dynamite.usdz"; sourceTree = "<group>"; };
@@ -177,10 +234,12 @@
 		8B3B2F6C482E8CE56560ACEE /* us-6331181-davinci.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-6331181-davinci.usdz"; sourceTree = "<group>"; };
 		8F15DF0D0E1A459224CC2EA1 /* us-319596-maxim-machine-gun.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-319596-maxim-machine-gun.usdz"; sourceTree = "<group>"; };
 		91426F670E92064F47881C6B /* gb-931-arkwright-water-frame.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "gb-931-arkwright-water-frame.usdz"; sourceTree = "<group>"; };
+		9237868955069ED817EC8E66 /* FrankenPatentsUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FrankenPatentsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		951B511C45951DD7A90DC903 /* us-2708656-fermi-reactor.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-2708656-fermi-reactor.usdz"; sourceTree = "<group>"; };
 		9ABA1B3A3663AFA402D4C615 /* us-235199-bell-photophone.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-235199-bell-photophone.usdz"; sourceTree = "<group>"; };
 		9AD7D14B2B56A90402716AAB /* gb-1420-cort-puddling-rolling.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "gb-1420-cort-puddling-rolling.usdz"; sourceTree = "<group>"; };
 		9DEEF52EEBE7E2065306FDBB /* us-6594844-roomba.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-6594844-roomba.usdz"; sourceTree = "<group>"; };
+		A45EA94BD1402F1E12E09602 /* us-4575330-hull-stereolithography.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-4575330-hull-stereolithography.usdz"; sourceTree = "<group>"; };
 		A502EF01EECF3FD1F4852846 /* us-2524035-bardeen-transistor.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-2524035-bardeen-transistor.usdz"; sourceTree = "<group>"; };
 		A5D0A970216D62BCA604C641 /* gb-1306-watt-rotary-engine.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "gb-1306-watt-rotary-engine.usdz"; sourceTree = "<group>"; };
 		ACD672FA52AE0B0AA6B685CC /* patent-assets.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "patent-assets.json"; sourceTree = "<group>"; };
@@ -189,14 +248,18 @@
 		B2AA3CCE4FC4A837B20435FD /* us-124404-westinghouse-air-brake.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-124404-westinghouse-air-brake.usdz"; sourceTree = "<group>"; };
 		B824BB03EC9AAE21303FF7F2 /* us-6162-corliss-steam-engine.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-6162-corliss-steam-engine.usdz"; sourceTree = "<group>"; };
 		BB24BD1214144C0954BF7EB3 /* us-174465-bell-telephone.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-174465-bell-telephone.usdz"; sourceTree = "<group>"; };
+		BBABFD6A7B5497B68EAF5C68 /* us-4765668-robot-end-effector.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-4765668-robot-end-effector.usdz"; sourceTree = "<group>"; };
 		BCA49173D79E0BBDD9C7E989 /* us-2543181-land-polaroid.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-2543181-land-polaroid.usdz"; sourceTree = "<group>"; };
 		BCCE257DEE2FB77FA5A7566B /* NativeDocumentKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeDocumentKit.swift; sourceTree = "<group>"; };
 		BCD6B789D55D18D2CBB99F90 /* us-79265-sholes-typewriter.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-79265-sholes-typewriter.usdz"; sourceTree = "<group>"; };
 		BE462E30D6932C7473CC5257 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		BFAED83AD16E353D492E3125 /* PatentCollectionStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentCollectionStoreTests.swift; sourceTree = "<group>"; };
 		C35386A4A543ECAD34CEBEFB /* us-586193-marconi-radio.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-586193-marconi-radio.usdz"; sourceTree = "<group>"; };
 		C3B813846723C568753A62CA /* us-388850-eastman-kodak.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-388850-eastman-kodak.usdz"; sourceTree = "<group>"; };
 		C561AFAB0032EB2B23CEA356 /* PatentModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentModels.swift; sourceTree = "<group>"; };
 		CF41CE6C79F783FC30DCB580 /* us-3633-goodyear-rubber.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-3633-goodyear-rubber.usdz"; sourceTree = "<group>"; };
+		D4103430F5B260E8F850C3BF /* us-3212649-amf-versatran.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-3212649-amf-versatran.usdz"; sourceTree = "<group>"; };
+		D46DE8B7176ACEBA983AEEDB /* us-3260375-lemelson-adjustable-manipulator.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-3260375-lemelson-adjustable-manipulator.usdz"; sourceTree = "<group>"; };
 		DC17819EBC5AC1582A7BF15D /* us-621195-zeppelin-airship.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-621195-zeppelin-airship.usdz"; sourceTree = "<group>"; };
 		DC74C1587C8027333E1229EF /* us-157124-glidden-barbed-wire.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-157124-glidden-barbed-wire.usdz"; sourceTree = "<group>"; };
 		E1D23EE874C4ABC3EF9D226A /* us-233692-pelton-water-wheel.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-233692-pelton-water-wheel.usdz"; sourceTree = "<group>"; };
@@ -214,6 +277,7 @@
 		F8D62ECED5F2FD890A1EE260 /* PatentMuseumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentMuseumView.swift; sourceTree = "<group>"; };
 		F9EBC608751CC3AA65E9EB69 /* IOSProfileRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSProfileRunner.swift; sourceTree = "<group>"; };
 		FA5DAC0D39800C8FB4C68C91 /* PatentFigureAtlasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentFigureAtlasView.swift; sourceTree = "<group>"; };
+		FA689C73A22AFBD690BCA450 /* FrankenPatentsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrankenPatentsUITests.swift; sourceTree = "<group>"; };
 		FAC62086D10B786013CF465B /* us-1773980-farnsworth-tv.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-1773980-farnsworth-tv.usdz"; sourceTree = "<group>"; };
 		FC470A1D81DB4D8ECBF77144 /* us-347140-thomson-welding.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-347140-thomson-welding.usdz"; sourceTree = "<group>"; };
 		FEA2A8AB50A17D09C46C5AD4 /* us-613809-tesla-teleautomaton.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-613809-tesla-teleautomaton.usdz"; sourceTree = "<group>"; };
@@ -227,6 +291,7 @@
 				BCDBD3BB94994C64221457A3 /* Resources */,
 				9A7AF7545199E099CC6A9B8D /* Sources */,
 				EBF6332A38766C590B29E4DF /* Tests */,
+				9B3708170E83D590B0D4EC21 /* UITests */,
 				2774EF9D0D8EE33E01D9BA14 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -236,6 +301,7 @@
 			children = (
 				0834EF9153F4B30E02704C55 /* FrankenPatents.app */,
 				6718979E2B2C38CB4462CF18 /* FrankenPatentsTests.xctest */,
+				9237868955069ED817EC8E66 /* FrankenPatentsUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -249,6 +315,7 @@
 				BCCE257DEE2FB77FA5A7566B /* NativeDocumentKit.swift */,
 				208821AD1F723D6B2BA123DC /* NativeMathView.swift */,
 				6F1AD0F44FF84094197E64AB /* NativePatentSceneView.swift */,
+				2393F7248B81AA2942257AA1 /* PatentCollectionStore.swift */,
 				FA5DAC0D39800C8FB4C68C91 /* PatentFigureAtlasView.swift */,
 				0A6B4C11EF40A0363E909EE9 /* PatentLibrary.swift */,
 				C561AFAB0032EB2B23CEA356 /* PatentModels.swift */,
@@ -261,6 +328,15 @@
 				BE462E30D6932C7473CC5257 /* Theme.swift */,
 			);
 			path = Sources;
+			sourceTree = "<group>";
+		};
+		9B3708170E83D590B0D4EC21 /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+				2D21B6C917CD3C1B0943A754 /* AppearanceUITests.swift */,
+				FA689C73A22AFBD690BCA450 /* FrankenPatentsUITests.swift */,
+			);
+			path = UITests;
 			sourceTree = "<group>";
 		};
 		BCDBD3BB94994C64221457A3 /* Resources */ = {
@@ -277,6 +353,7 @@
 		EBF6332A38766C590B29E4DF /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				BFAED83AD16E353D492E3125 /* PatentCollectionStoreTests.swift */,
 				4F9C6CE3C3AA63115989A99F /* PatentPDFStoreTests.swift */,
 			);
 			path = Tests;
@@ -338,23 +415,47 @@
 				EB22DCFC5563B2D4D4C1219C /* us-879532-de-forest-audion.usdz */,
 				7A2C1369ACEDF710DE95CD7C /* us-942699-baekeland-bakelite.usdz */,
 				6641FC9F623B5694F4137AA1 /* us-1102653-goddard-rocket.usdz */,
+				2956FD31EAAA9C42F1AE5A93 /* us-1219881-sundback-zipper.usdz */,
 				FAC62086D10B786013CF465B /* us-1773980-farnsworth-tv.usdz */,
 				3FFBB6750FFC47C9FA5B5EC7 /* us-1781541-einstein-refrigerator.usdz */,
 				F85748EB729D3166DE2FEAEE /* us-2292387-lamarr-frequency-hopping.usdz */,
 				EA83756919AC852EAC5EA8B4 /* us-2297691-carlson-electrophotography.usdz */,
+				5DEE00066296A63C3959C327 /* us-2318259-sikorsky-helicopter.usdz */,
 				2ECBABAB440FFDF9A699B6F9 /* us-2495429-spencer-microwave.usdz */,
 				A502EF01EECF3FD1F4852846 /* us-2524035-bardeen-transistor.usdz */,
 				BCA49173D79E0BBDD9C7E989 /* us-2543181-land-polaroid.usdz */,
 				951B511C45951DD7A90DC903 /* us-2708656-fermi-reactor.usdz */,
+				6DA31732D4456F5D19DED180 /* us-2717437-mestral-velcro.usdz */,
+				3B02D81A762B5B415ABB5D70 /* us-2846084-goertz-electronic-master-slave-manipulator.usdz */,
 				04AE9B5CC635577D2CF6BF0A /* us-2929922-townes-laser.usdz */,
 				B119FC142B1996B0FB98CFB8 /* us-2981877-noyce-ic.usdz */,
+				71DF469188200F814E953410 /* us-2988237-devol-programmed-transfer.usdz */,
+				7F4E889BFB2C03D83E68FC0B /* us-3081379-lemelson-machine-vision.usdz */,
+				7B4A91D98316B37A84439230 /* us-3119501-lemelson-automatic-warehousing.usdz */,
 				1816F80AF57D08C2283ABFFD /* us-3138743-kilby-integrated-circuit.usdz */,
+				D4103430F5B260E8F850C3BF /* us-3212649-amf-versatran.usdz */,
+				D46DE8B7176ACEBA983AEEDB /* us-3260375-lemelson-adjustable-manipulator.usdz */,
+				3997BBDA0C7C7D618036B0BF /* us-3313014-lemelson-automatic-production.usdz */,
 				EED29199D2983A857CA99568 /* us-3353115-maiman-ruby-laser.usdz */,
 				36F390D5D33B68606B8D7F93 /* us-3541541-engelbart-mouse.usdz */,
+				3124F3F39F1E87911E2A7BC7 /* us-3728480-baer-odyssey.usdz */,
 				6D9F3EED269BFB26359DBEFA /* us-3858232-boyle-smith-ccd.usdz */,
+				46289DA682343E8405C914E1 /* us-3858581-kamen-medication-injection-device.usdz */,
+				7FD9E36840B0EDCA7AFB3DAB /* us-4063220-metcalfe-ethernet.usdz */,
+				217891993F739469E4642654 /* us-4068536-stackhouse-manipulator.usdz */,
+				3D037AA34C22115D24F9A0D0 /* us-4098001-watson-rcc.usdz */,
 				4C40DDFDF87D7CB98DA59148 /* us-4136359-wozniak-apple.usdz */,
+				3A2C8AA28225E07F1B71EA23 /* us-4341502-makino-scara.usdz */,
+				566D9ACA08DB039226A8DCA5 /* us-4512709-milacron-robot-toolchanger.usdz */,
+				A45EA94BD1402F1E12E09602 /* us-4575330-hull-stereolithography.usdz */,
+				BBABFD6A7B5497B68EAF5C68 /* us-4765668-robot-end-effector.usdz */,
+				26D04B558896891ED8644458 /* us-4921293-salisbury-robot-hand.usdz */,
+				0041259CD0A3B03F97542716 /* us-4976582-clavel-delta-robot.usdz */,
+				2F81FC588C65120F2E595145 /* us-5121329-crump-fdm.usdz */,
+				090400774C6B2292B1370A17 /* us-5701965-kamen-transporter.usdz */,
 				63889AA711C5A7FEB57D4D05 /* us-6120588-eink.usdz */,
 				5F0DC677D1F5871977469FE0 /* us-6285999-pagerank.usdz */,
+				38065D837760E78E6BBF2C11 /* us-6302230-kamen-segway.usdz */,
 				8B3B2F6C482E8CE56560ACEE /* us-6331181-davinci.usdz */,
 				9DEEF52EEBE7E2065306FDBB /* us-6594844-roomba.usdz */,
 				819FB8ABA7DF8A985F989BB9 /* us-7479949-multitouch.usdz */,
@@ -406,6 +507,24 @@
 			productReference = 0834EF9153F4B30E02704C55 /* FrankenPatents.app */;
 			productType = "com.apple.product-type.application";
 		};
+		7B6541FF3E79D65F021BD9EA /* FrankenPatentsUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AB7235B5CD9F81C2CAD21DA1 /* Build configuration list for PBXNativeTarget "FrankenPatentsUITests" */;
+			buildPhases = (
+				974DE89323B6995CACFA29B2 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6D3E949631508BC0B6D06276 /* PBXTargetDependency */,
+			);
+			name = FrankenPatentsUITests;
+			packageProductDependencies = (
+			);
+			productName = FrankenPatentsUITests;
+			productReference = 9237868955069ED817EC8E66 /* FrankenPatentsUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -422,6 +541,11 @@
 					6830C513C55C4B5D2BD388B3 = {
 						DevelopmentTeam = AU8V2Z6NKY;
 						ProvisioningStyle = Automatic;
+					};
+					7B6541FF3E79D65F021BD9EA = {
+						DevelopmentTeam = AU8V2Z6NKY;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 6830C513C55C4B5D2BD388B3;
 					};
 				};
 			};
@@ -441,6 +565,7 @@
 			targets = (
 				6830C513C55C4B5D2BD388B3 /* FrankenPatents */,
 				21193873A1E5A388E37A3E28 /* FrankenPatentsTests */,
+				7B6541FF3E79D65F021BD9EA /* FrankenPatentsUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -462,6 +587,7 @@
 				6CCCA56BC0FEEAA80E79D4CB /* us-105338-hyatt-celluloid.usdz in Resources */,
 				6A2EBD5B72786B93D74EA03A /* us-1102653-goddard-rocket.usdz in Resources */,
 				A151C6AC8DDA7773E2E5D411 /* us-120057-gramme-dynamo.usdz in Resources */,
+				A2EDC2252B93080981CD1F34 /* us-1219881-sundback-zipper.usdz in Resources */,
 				00961B8A4ECA7357B0924030 /* us-124404-westinghouse-air-brake.usdz in Resources */,
 				628845CEA7A1CB01EC2461FA /* us-132-davenport-electric-motor.usdz in Resources */,
 				BCCA028BBE5736CA32845495 /* us-135245-pasteur-fermentation.usdz in Resources */,
@@ -475,6 +601,7 @@
 				8B601B91BA0C8596385C343D /* us-223898-edison-lightbulb.usdz in Resources */,
 				4FC8EB71858038455C68B4CF /* us-2292387-lamarr-frequency-hopping.usdz in Resources */,
 				076F3A976CFE16E66CDB007B /* us-2297691-carlson-electrophotography.usdz in Resources */,
+				476731278F1047C713310D0E /* us-2318259-sikorsky-helicopter.usdz in Resources */,
 				97F878A9E2A0B020F9C0D177 /* us-233692-pelton-water-wheel.usdz in Resources */,
 				3BF57C37DA94277D1E6680A1 /* us-235199-bell-photophone.usdz in Resources */,
 				DB168D51987E628F2A87C631 /* us-247804-delaval-separator.usdz in Resources */,
@@ -482,30 +609,51 @@
 				93BA8591AACB27C6D0E0DF63 /* us-2524035-bardeen-transistor.usdz in Resources */,
 				0714A6B70E4AE4297244C3FA /* us-2543181-land-polaroid.usdz in Resources */,
 				3337F58BC7DBDD8463D1C05B /* us-2708656-fermi-reactor.usdz in Resources */,
+				2C1B2E8F765021B561D01573 /* us-2717437-mestral-velcro.usdz in Resources */,
+				E19F3AE4643587B5594CE213 /* us-2846084-goertz-electronic-master-slave-manipulator.usdz in Resources */,
 				1518E3449A91519323763C47 /* us-2929922-townes-laser.usdz in Resources */,
 				333838B840125832A7D9F00B /* us-2981877-noyce-ic.usdz in Resources */,
+				40DA758B3CF19F3CDC4FDEAB /* us-2988237-devol-programmed-transfer.usdz in Resources */,
 				533D739F2447383843F01D5C /* us-307031-edison-indicator.usdz in Resources */,
+				999097D84E893C31388037EB /* us-3081379-lemelson-machine-vision.usdz in Resources */,
 				B38ED1A5B9082B71504E6512 /* us-31128-otis-elevator.usdz in Resources */,
+				E74ED97622DF95A682117EC3 /* us-3119501-lemelson-automatic-warehousing.usdz in Resources */,
 				CCB7CB0456312C1329F1D2A8 /* us-313224-mergenthaler-linotype.usdz in Resources */,
 				68E730AEF7D28B78328E2026 /* us-3138743-kilby-integrated-circuit.usdz in Resources */,
 				8AFE5A748855947BD7762CC6 /* us-319596-maxim-machine-gun.usdz in Resources */,
+				D67BC58ADE61B59ED928914C /* us-3212649-amf-versatran.usdz in Resources */,
 				8C7854DC6B4168F9010ACBC8 /* us-3237-rillieux-evaporator.usdz in Resources */,
+				A52CE5358E9A82B0651DC6A3 /* us-3260375-lemelson-adjustable-manipulator.usdz in Resources */,
+				898011BABB64E5847F9DCFB3 /* us-3313014-lemelson-automatic-production.usdz in Resources */,
 				CF071F521FF9C2292090EF4A /* us-3353115-maiman-ruby-laser.usdz in Resources */,
 				FEFD9D935A36F043DAEFB6BA /* us-347140-thomson-welding.usdz in Resources */,
 				9BD228092F78F9578758FA28 /* us-3541541-engelbart-mouse.usdz in Resources */,
 				A5FABCC541156AB1FAF8FD9C /* us-361931-daimler-engine.usdz in Resources */,
 				3B119595B9B100DF7875BB41 /* us-3633-goodyear-rubber.usdz in Resources */,
 				52AAF0211AB36F1D53B7531A /* us-36836-gatling-gun.usdz in Resources */,
+				DC822C730C907F361DEFF2EB /* us-3728480-baer-odyssey.usdz in Resources */,
 				BB85A65E646BB87BBABCC6CA /* us-381968-tesla-motor.usdz in Resources */,
 				0AAF4E4B34B067577B021262 /* us-3858232-boyle-smith-ccd.usdz in Resources */,
+				580F6C272CA723E826D1038A /* us-3858581-kamen-medication-injection-device.usdz in Resources */,
 				41D92CE92FAA0D1E9E6CC22A /* us-388850-eastman-kodak.usdz in Resources */,
 				919B816706C201CBDF5D9152 /* us-395781-hollerith-tabulating.usdz in Resources */,
 				0FFA2920D0181BBE39AFE80A /* us-400766-hall-aluminium.usdz in Resources */,
+				DCC5426031F68C6C9DEA4CA6 /* us-4063220-metcalfe-ethernet.usdz in Resources */,
+				47FABAE59CC168038F6D522F /* us-4068536-stackhouse-manipulator.usdz in Resources */,
+				6A018081195CDC1ABA015055 /* us-4098001-watson-rcc.usdz in Resources */,
 				6E324ADBAF031262DFCA1931 /* us-4136359-wozniak-apple.usdz in Resources */,
+				896C2AC1458E5F9AE801B774 /* us-4341502-makino-scara.usdz in Resources */,
+				DFB1910122BD09BC3541A543 /* us-4512709-milacron-robot-toolchanger.usdz in Resources */,
+				189E62695190E576B4B6F80A /* us-4575330-hull-stereolithography.usdz in Resources */,
 				58F176E03A91B6AA7159AA85 /* us-470918-reno-escalator.usdz in Resources */,
 				C76A877D45D431E8D969D925 /* us-4750-howe-sewing-machine.usdz in Resources */,
+				138A43E66C3503EF4318D91C /* us-4765668-robot-end-effector.usdz in Resources */,
 				EDB5729B4FA830E8796474C4 /* us-48475-yale-lock.usdz in Resources */,
+				60C4E5AA26E164A881CEAAAC /* us-4921293-salisbury-robot-hand.usdz in Resources */,
+				E0E3DEFAB3681671407017B9 /* us-4976582-clavel-delta-robot.usdz in Resources */,
+				E5A4C1429B7D10B233E3D9A4 /* us-5121329-crump-fdm.usdz in Resources */,
 				2ADAE7261BB522A271A8365F /* us-542846-diesel-engine.usdz in Resources */,
+				03B81E7424BEF9325F59A5E4 /* us-5701965-kamen-transporter.usdz in Resources */,
 				798358235AA036E1FF959F0C /* us-586193-marconi-radio.usdz in Resources */,
 				180C163CEDD13270E462927B /* us-588-ericsson-propeller.usdz in Resources */,
 				1E2E0C28903B1CC866B9E53D /* us-593138-tesla-coil.usdz in Resources */,
@@ -515,6 +663,7 @@
 				367BD42E9792CA13F280CF86 /* us-6162-corliss-steam-engine.usdz in Resources */,
 				9B802B09F83949C09A3D8285 /* us-621195-zeppelin-airship.usdz in Resources */,
 				6B05BA9C6CF072D304FEDA14 /* us-6285999-pagerank.usdz in Resources */,
+				6A13D12BEF99BDA5A42609D4 /* us-6302230-kamen-segway.usdz in Resources */,
 				647B78767EBE7554D95EE2BF /* us-6331181-davinci.usdz in Resources */,
 				A7AA29EC530B210CAD859ED0 /* us-6469-lincoln-buoy.usdz in Resources */,
 				DFC3E58CA9376622CD441D9C /* us-6594844-roomba.usdz in Resources */,
@@ -565,7 +714,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6F0D45AE478C53A1B3799DA9 /* PatentCollectionStoreTests.swift in Sources */,
 				7C7FEC952E6D8CCC69243259 /* PatentPDFStoreTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		974DE89323B6995CACFA29B2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F88B3DA0DC77DB62097C3BB6 /* AppearanceUITests.swift in Sources */,
+				170D4837B7C62EDDCFE45820 /* FrankenPatentsUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -578,6 +737,7 @@
 				ABF5A49283B377976C6EE06D /* NativeDocumentKit.swift in Sources */,
 				E4C4C51D5BBB9248EB039283 /* NativeMathView.swift in Sources */,
 				8FEB24E57B5FEBF1EDAE2D28 /* NativePatentSceneView.swift in Sources */,
+				72564482876768A4A0352367 /* PatentCollectionStore.swift in Sources */,
 				515172E318CD8B31F98EBDD7 /* PatentFigureAtlasView.swift in Sources */,
 				DA901178A31C549D4B3A052C /* PatentLibrary.swift in Sources */,
 				A89EDBDCAFD41CFAE21F1997 /* PatentModels.swift in Sources */,
@@ -593,6 +753,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		6D3E949631508BC0B6D06276 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6830C513C55C4B5D2BD388B3 /* FrankenPatents */;
+			targetProxy = 2A194566ED6CA3E2ADE05CD9 /* PBXContainerItemProxy */;
+		};
 		802768BC3F9F2BED797A21A2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 6830C513C55C4B5D2BD388B3 /* FrankenPatents */;
@@ -601,6 +766,23 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		018ACD3CE7922DA99C56A4B9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.frankenpatents.FrankenPatentsUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = FrankenPatents;
+			};
+			name = Debug;
+		};
 		21033DA507DE217667B19C3A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -739,6 +921,23 @@
 			};
 			name = Release;
 		};
+		E736F8B87272F760E64FF7D4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.frankenpatents.FrankenPatentsUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = FrankenPatents;
+			};
+			name = Release;
+		};
 		EE1EC040CC76B8C8179569E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -811,6 +1010,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		AB7235B5CD9F81C2CAD21DA1 /* Build configuration list for PBXNativeTarget "FrankenPatentsUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				018ACD3CE7922DA99C56A4B9 /* Debug */,
+				E736F8B87272F760E64FF7D4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		DEC274C4CE7676461AD748D2 /* Build configuration list for PBXNativeTarget "FrankenPatents" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

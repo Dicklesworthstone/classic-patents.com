@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { ALL_COLORIZED_EQUATIONS } from "../src/data/colorizedEquations";
 import { ARCHIVAL_PARALLEL_READINGS } from "../src/data/editions/parallelReadings";
+import { evaluateArchivalPublicationState } from "../src/data/editions/publicationApproval";
 import { allPatents } from "../src/data/patents/index";
 import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
 
@@ -33,6 +34,7 @@ const supportedTeXCommands = new Set([
   "Delta",
   "Gamma",
   "Lambda",
+  "Longleftrightarrow",
   "Omega",
   "Phi",
   "Pi",
@@ -47,10 +49,13 @@ const supportedTeXCommands = new Set([
   "beta",
   "bigl",
   "bigr",
+  "bmod",
+  "boldsymbol",
   "cap",
   "cdot",
   "circ",
   "cos",
+  "cot",
   "ddot",
   "delta",
   "dot",
@@ -65,6 +70,7 @@ const supportedTeXCommands = new Set([
   "frac",
   "gamma",
   "ge",
+  "geq",
   "gg",
   "hat",
   "hookrightarrow",
@@ -81,10 +87,13 @@ const supportedTeXCommands = new Set([
   "leq",
   "lesssim",
   "lfloor",
+  "lVert",
   "ll",
   "ln",
   "log",
   "longrightarrow",
+  "ldots",
+  "mathbb",
   "mathbf",
   "mathcal",
   "mathrm",
@@ -96,6 +105,7 @@ const supportedTeXCommands = new Set([
   "nu",
   "oint",
   "omega",
+  "operatorname",
   "partial",
   "perp",
   "phi",
@@ -109,6 +119,7 @@ const supportedTeXCommands = new Set([
   "qquad",
   "quad",
   "rfloor",
+  "rVert",
   "rho",
   "right",
   "rightarrow",
@@ -130,9 +141,11 @@ const supportedTeXCommands = new Set([
   "varnothing",
   "varepsilon",
   "vec",
+  "wedge",
   "xi",
   "xrightarrow",
   "zeta",
+  "arcsin",
 ]);
 
 const collectTeXCommands = (value: unknown, commands = new Set<string>()): Set<string> => {
@@ -462,11 +475,11 @@ for (const excludedKwolekSourcePath of [
     `the Kwolek source-bound build copy does not exclude ${excludedKwolekSourcePath}`,
   );
 }
-const nativeProject = await Bun.file(
+const generatedProject = await Bun.file(
   new URL("./FrankenPatents.xcodeproj/project.pbxproj", import.meta.url),
 ).text();
 assert(
-  !nativeProject.includes(`${KWOLEK_ID}.usdz`),
+  !generatedProject.includes(`${KWOLEK_ID}.usdz`),
   "the Kwolek USDZ is still included by the checked-in native project",
 );
 const preservedKwolekUSDZ = Bun.file(
@@ -540,6 +553,17 @@ for (const patent of allPatents) {
       `${patent.id}: parallel readings drifted`,
     );
   }
+  const publication = evaluateArchivalPublicationState(patent);
+  same(
+    record.archivalPublication,
+    {
+      status: publication.status,
+      isPublished: publication.isPublished,
+      reasonCode: publication.reasonCode,
+      explanation: publication.explanation,
+    },
+    `${patent.id}: archival publication state drifted`,
+  );
   same(record.plainEnglish, patent.plainEnglishExplanation, `${patent.id}: explanation drifted`);
   same(record.claims, patent.claims, `${patent.id}: claims drifted`);
   same(record.drawings, patent.drawings, `${patent.id}: drawings drifted`);
@@ -551,13 +575,16 @@ for (const patent of allPatents) {
     record.originalPdfURL === `https://classic-patents.com${patent.originalPdfUrl}`,
     `${patent.id}: PDF URL is not the canonical first-party URL`,
   );
+  const reconstructionQuarantined =
+    record.archivalPublication?.reasonCode === "FABRICATION_OR_RECONSTRUCTION_QUARANTINE";
   assert(
-    /^[0-9a-f]{64}$/i.test(
-      sourceBounded
-        ? (record.pinnedPdfSha256 ?? "")
-        : (record.originalTextAsset?.sourcePdfSha256 ?? ""),
-    ),
-    `${patent.id}: canonical PDF SHA-256 is missing or malformed`,
+    reconstructionQuarantined ||
+      /^[0-9a-f]{64}$/i.test(
+        sourceBounded
+          ? (record.pinnedPdfSha256 ?? "")
+          : (record.originalTextAsset?.sourcePdfSha256 ?? ""),
+      ),
+    `${patent.id}: canonical PDF SHA-256 is missing or malformed outside an explicit reconstruction quarantine`,
   );
   if (sourceBounded) {
     assert(
@@ -786,17 +813,27 @@ for (const record of records) {
     );
   } else if (!record.archivalEdition) {
     const sourceTextPath = record.originalTextAsset?.url?.replace(/^\//, "");
-    assert(
+    const hasCompleteBundledSourceReader =
       typeof sourceTextPath === "string" &&
-        sourceTextPath.endsWith(".txt") &&
-        record.bundledAssets.includes(sourceTextPath),
-      `${record.id}: record without an archival edition has no complete bundled source reader`,
+      sourceTextPath.endsWith(".txt") &&
+      record.bundledAssets.includes(sourceTextPath);
+    assert(
+      hasCompleteBundledSourceReader ||
+        record.archivalPublication?.reasonCode === "FABRICATION_OR_RECONSTRUCTION_QUARANTINE",
+      `${record.id}: record without an archival edition has neither a complete bundled source reader nor an explicit reconstruction quarantine`,
     );
     if (typeof sourceTextPath === "string" && manifestSet.has(sourceTextPath)) {
       const transcription = await Bun.file(
         new URL(`../public/${sourceTextPath}`, import.meta.url),
       ).text();
-      const pageMarkers = transcription.match(/--- SOURCE PDF PAGE /g)?.length ?? 0;
+      // A machine text layer is page-marked `--- SOURCE PDF PAGE n OF N ---`;
+      // a human-reviewed ledger uses `--- REVIEWED TRANSCRIPTION PAGE n OF N ---`.
+      // The native reader pages either convention, so the parity gate counts
+      // whichever marker the bundled ledger actually carries.
+      const pageMarkers = Math.max(
+        transcription.match(/--- SOURCE PDF PAGE /g)?.length ?? 0,
+        transcription.match(/--- REVIEWED TRANSCRIPTION PAGE /g)?.length ?? 0,
+      );
       assert(
         pageMarkers === record.originalTextAsset?.pageCount,
         `${record.id}: bundled source reader exposes ${pageMarkers} pages, expected ${record.originalTextAsset?.pageCount}`,
@@ -982,6 +1019,10 @@ for (const record of records) {
       const asset = Bun.file(new URL(`./Resources/${visual.asset}`, import.meta.url));
       assert(await asset.exists(), `${record.id}: native model asset is absent`);
       assert(asset.size > 1_000, `${record.id}: native model asset is implausibly small`);
+      assert(
+        generatedProject.includes(`${record.id}.usdz in Resources`),
+        `${record.id}: native model exists but the generated Xcode project does not bundle it`,
+      );
     }
   }
 }

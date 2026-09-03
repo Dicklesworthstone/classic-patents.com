@@ -106,13 +106,15 @@ private struct NativeTeXParser {
             return .colored(color, parseRequiredGroup())
         case "text", "textrm", "mathrm", "operatorname", "mbox": return .upright(parseRequiredGroup())
         case "mathbf", "boldsymbol": return .bold(parseRequiredGroup())
+        case "mathbb": return .upright(.glyph(Self.blackboardGlyphs(in: parseRawGroup())))
         case "mathit", "mathcal": return parseRequiredGroup()
         case "dot": return .accent("·", parseRequiredGroup())
         case "ddot": return .accent("··", parseRequiredGroup())
         case "vec": return .accent("→", parseRequiredGroup())
         case "bar", "overline": return .accent("―", parseRequiredGroup())
         case "hat", "widehat": return .accent("ˆ", parseRequiredGroup())
-        case "sin", "cos", "tan", "ln", "log", "exp", "min", "max": return .upright(.glyph(command))
+        case "sin", "cos", "tan", "cot", "arcsin", "ln", "log", "exp", "min", "max":
+            return .upright(.glyph(command))
         case "xrightarrow":
             let label = parseRequiredGroup()
             return .sequence([.glyph("→"), .scripted(base: .space(0), subscriptNode: label, superscriptNode: nil)])
@@ -135,6 +137,8 @@ private struct NativeTeXParser {
             return .space(0)
         case "pmod":
             return .sequence([.glyph("("), .upright(parseRequiredGroup()), .glyph(")")])
+        case "bmod":
+            return .sequence([.space(4), .upright(.glyph("mod")), .space(4)])
         default:
             if let glyph = Self.commandGlyphs[command] { return .glyph(glyph) }
             return .glyph(command)
@@ -173,6 +177,17 @@ private struct NativeTeXParser {
 
     private mutating func skipWhitespace() {
         while cursor < characters.count, characters[cursor].isWhitespace { cursor += 1 }
+    }
+
+    /// TeX blackboard bold has no direct SwiftUI font trait. Map the symbols
+    /// used by scientific notation to their Unicode mathematical forms so the
+    /// authored distinction remains visible without HTML or image snapshots.
+    private static func blackboardGlyphs(in source: String) -> String {
+        let glyphs: [Character: Character] = [
+            "C": "ℂ", "H": "ℍ", "N": "ℕ", "P": "ℙ", "Q": "ℚ",
+            "R": "ℝ", "Z": "ℤ", "I": "𝕀",
+        ]
+        return String(source.map { glyphs[$0] ?? $0 })
     }
 
     private mutating func parseCasesEnvironment() -> MathExpression {
@@ -251,12 +266,14 @@ private struct NativeTeXParser {
         "equiv": "≡", "propto": "∝", "rightarrow": "→", "leftarrow": "←",
         "hookrightarrow": "↪", "dashv": "⊣",
         "to": "→", "longrightarrow": "⟶", "Rightarrow": "⇒", "Leftarrow": "⇐", "leftrightarrow": "↔", "rightleftharpoons": "⇌",
+        "Longleftrightarrow": "⟺",
         "mapsto": "↦", "in": "∈", "notin": "∉", "subset": "⊂", "subseteq": "⊆",
         "varnothing": "∅",
         "cup": "∪", "cap": "∩", "forall": "∀", "exists": "∃", "neg": "¬",
-        "land": "∧", "lor": "∨", "perp": "⊥", "parallel": "∥", "angle": "∠",
+        "land": "∧", "wedge": "∧", "lor": "∨", "perp": "⊥", "parallel": "∥", "angle": "∠",
         "circ": "∘", "bullet": "•", "ell": "ℓ", "hbar": "ℏ", "Re": "ℜ", "Im": "ℑ",
-        "lfloor": "⌊", "rfloor": "⌋", "lesssim": "≲", "ll": "≪", "gg": "≫", "sim": "∼",
+        "lfloor": "⌊", "rfloor": "⌋", "lVert": "‖", "rVert": "‖",
+        "lesssim": "≲", "ll": "≪", "gg": "≫", "sim": "∼",
         "prime": "′", "implies": "⇒",
         "|": "‖",
         "dots": "…", "ldots": "…", "cdots": "⋯", "vdots": "⋮", "ddots": "⋱",

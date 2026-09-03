@@ -21,9 +21,11 @@ schemes:
       targets:
         FrankenPatents: all
         FrankenPatentsTests: [test]
+        FrankenPatentsUITests: [test]
     test:
       targets:
         - FrankenPatentsTests
+        - FrankenPatentsUITests
 
 targets:
   FrankenPatents:
@@ -100,5 +102,17 @@ targets:
         GENERATE_INFOPLIST_FILE: true
     sources:
       - path: Tests
+    dependencies:
+      - target: FrankenPatents
+
+  FrankenPatentsUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.frankenpatents.FrankenPatentsUITests
+        GENERATE_INFOPLIST_FILE: true
+    sources:
+      - path: UITests
     dependencies:
       - target: FrankenPatents

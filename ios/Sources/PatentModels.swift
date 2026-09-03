@@ -25,6 +25,7 @@ struct PatentRecord: Codable, Identifiable, Hashable {
     /// misrepresenting an unreviewed transcript as its integrity receipt.
     let pinnedPdfSha256: String?
     let archivalEdition: CuratedSpecificationEdition?
+    let archivalPublication: ArchivalPublicationSummary
     let archivalParallelReadings: [String: [String]]
     let plainEnglish: PlainEnglish
     let claims: [PatentClaim]
@@ -40,6 +41,17 @@ struct PatentRecord: Codable, Identifiable, Hashable {
 
     var expectedSourcePDFSHA256: String? {
         originalTextAsset?.sourcePdfSha256 ?? pinnedPdfSha256
+    }
+}
+
+struct ArchivalPublicationSummary: Codable, Hashable {
+    let status: String
+    let isPublished: Bool
+    let reasonCode: String
+    let explanation: String
+
+    var isReconstructionQuarantined: Bool {
+        reasonCode == "FABRICATION_OR_RECONSTRUCTION_QUARANTINE"
     }
 }
 

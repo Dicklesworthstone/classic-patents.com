@@ -61,6 +61,11 @@ describe("US 4,976,582 Clavel Delta procedural visual boundary", () => {
       model.root.getObjectByName("Actuator 3, axis 2, fixed portion 3, control arm 4"),
     ).toBeDefined();
 
+    const defaultSize = new THREE.Box3()
+      .setFromObject(model.root)
+      .getSize(new THREE.Vector3());
+    expect(defaultSize.y).toBeGreaterThan(1.5);
+
     const lowerBarB = model.root.getObjectByName("Linking bar 5b");
     const topologyGroup = model.root.getObjectByName("Claim 1 three-actuator parallel topology");
     const toolGroup = model.root.getObjectByName("Working member 9 and longitudinal axis 10");

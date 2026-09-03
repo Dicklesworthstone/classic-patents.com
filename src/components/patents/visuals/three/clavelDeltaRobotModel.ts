@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { stepClavelDeltaRobotTopology } from "@/physics/clavelDeltaRobotKernel";
 import type {
   ClavelDeltaRobotTopologyState,
   ClavelDeltaVec3,
@@ -248,6 +249,13 @@ export function buildClavelDeltaRobotModel(): ClavelDeltaRobotModel {
       setBeamBetween(transmission, start, end);
     }
   };
+
+  // Keep the model valid immediately after construction. The web scene applies
+  // live controls on its next line, but native USDZ export consumes the root
+  // returned by the builder directly. Without a default pose, every mechanism
+  // component remains collapsed at the origin and only the triangular base is
+  // visible in SceneKit.
+  updatePose(stepClavelDeltaRobotTopology());
 
   return {
     root,

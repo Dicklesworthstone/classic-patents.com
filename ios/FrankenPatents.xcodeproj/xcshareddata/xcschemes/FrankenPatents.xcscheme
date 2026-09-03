@@ -35,6 +35,20 @@
                ReferencedContainer = "container:FrankenPatents.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "7B6541FF3E79D65F021BD9EA"
+               BuildableName = "FrankenPatentsUITests.xctest"
+               BlueprintName = "FrankenPatentsUITests"
+               ReferencedContainer = "container:FrankenPatents.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -61,6 +75,17 @@
                BlueprintIdentifier = "21193873A1E5A388E37A3E28"
                BuildableName = "FrankenPatentsTests.xctest"
                BlueprintName = "FrankenPatentsTests"
+               ReferencedContainer = "container:FrankenPatents.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "7B6541FF3E79D65F021BD9EA"
+               BuildableName = "FrankenPatentsUITests.xctest"
+               BlueprintName = "FrankenPatentsUITests"
                ReferencedContainer = "container:FrankenPatents.xcodeproj">
             </BuildableReference>
          </TestableReference>

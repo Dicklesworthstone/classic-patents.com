@@ -1,62 +1,20 @@
 import { createHash } from "node:crypto";
 import { ALL_COLORIZED_EQUATIONS } from "../src/data/colorizedEquations";
 import { ARCHIVAL_PARALLEL_READINGS } from "../src/data/editions/parallelReadings";
+import { evaluateArchivalPublicationState } from "../src/data/editions/publicationApproval";
 import { allPatents } from "../src/data/patents/index";
 import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
 import type { Patent } from "../src/types/patent";
-
-type SourceVisualizationRoute =
-  | {
-      kind: "model";
-      spatialComponent: string;
-      vectorComponent: string;
-    }
-  | {
-      kind: "source-bound-pdf-only";
-      sourceBoundary: string;
-    };
-
-const SOURCE_BOUNDARY_PDF_ONLY =
-  "The public record is limited to the pinned facsimile and checked claim reading. No reviewed transcription, archival edition, model, controls, quantitative metrics, or USDZ asset is shipped in the native app.";
+import {
+  parseSourceVisualizationRoutes,
+  type SourceVisualizationRoute,
+} from "./native-visualization-routes";
 
 async function sourceVisualizationRoutes(): Promise<Map<string, SourceVisualizationRoute>> {
   const source = await Bun.file(
     new URL("../src/components/patents/visuals/index.tsx", import.meta.url),
   ).text();
-  const switchStart = source.indexOf("switch (patentId)");
-  const defaultMatch = /\n\s*default:\s*\n\s*return\s*\(/.exec(source.slice(switchStart));
-  const switchEnd = defaultMatch?.index === undefined ? -1 : switchStart + defaultMatch.index;
-  if (switchStart < 0 || switchEnd < 0) {
-    throw new Error("Could not locate the canonical PatentVisualDispatcher switch");
-  }
-  const dispatcher = source.slice(switchStart, switchEnd);
-  const cases = [...dispatcher.matchAll(/case "([^"]+)":/g)];
-  const routes = new Map<string, SourceVisualizationRoute>();
-  let pendingIds: string[] = [];
-  for (const [index, match] of cases.entries()) {
-    pendingIds.push(match[1]);
-    const segmentStart = (match.index ?? 0) + match[0].length;
-    const segmentEnd = cases[index + 1]?.index ?? dispatcher.length;
-    const segment = dispatcher.slice(segmentStart, segmentEnd);
-    const spatialComponent = segment.match(/<([A-Z][A-Za-z0-9]*3D)\b/)?.[1];
-    const vectorComponent = segment.match(/<([A-Z][A-Za-z0-9]*Sim)\b/)?.[1];
-    if (segment.includes("<SourceVisualUnavailable")) {
-      for (const id of pendingIds) {
-        routes.set(id, { kind: "source-bound-pdf-only", sourceBoundary: SOURCE_BOUNDARY_PDF_ONLY });
-      }
-      pendingIds = [];
-      continue;
-    }
-    if (!spatialComponent || !vectorComponent) continue;
-    for (const id of pendingIds) {
-      routes.set(id, { kind: "model", spatialComponent, vectorComponent });
-    }
-    pendingIds = [];
-  }
-  if (pendingIds.length > 0) {
-    throw new Error(`Patent visual routes have no component pair: ${pendingIds.join(", ")}`);
-  }
-  return routes;
+  return parseSourceVisualizationRoutes(source);
 }
 
 const visualizationRoutes = await sourceVisualizationRoutes();
@@ -129,6 +87,7 @@ const exported = await Promise.all(
     const availableEditionAssets = editionAssets.filter((path) => bundledAssetSet.has(path));
     const withheldAssets = editionAssets.filter((path) => !bundledAssetSet.has(path));
     const physics = PATENT_PHYSICS_REGISTRY[patent.id];
+    const publication = evaluateArchivalPublicationState(patent);
     return {
       id: patent.id,
       patentNumber: patent.patentNumber,
@@ -151,6 +110,12 @@ const exported = await Promise.all(
       originalTextAsset: isSourceBounded ? undefined : patent.originalTextAsset,
       pinnedPdfSha256: await pinnedPdfSha256For(patent),
       archivalEdition: isSourceBounded ? undefined : patent.archivalEdition,
+      archivalPublication: {
+        status: publication.status,
+        isPublished: publication.isPublished,
+        reasonCode: publication.reasonCode,
+        explanation: publication.explanation,
+      },
       archivalParallelReadings: isSourceBounded
         ? {}
         : (ARCHIVAL_PARALLEL_READINGS[patent.id] ?? {}),

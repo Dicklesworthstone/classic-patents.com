@@ -2,11 +2,20 @@ import SwiftUI
 
 struct PatentRootView: View {
     @AppStorage(LabAppearance.storageKey) private var appearance = LabAppearance.dark.rawValue
-    @StateObject private var library = PatentLibrary()
+    @StateObject private var library: PatentLibrary
+    @StateObject private var collection: PatentCollectionStore
+
+    init() {
+        let library = PatentLibrary()
+        _library = StateObject(wrappedValue: library)
+        _collection = StateObject(wrappedValue: PatentCollectionStore(
+            validIDs: Set(library.records.map(\.id))
+        ))
+    }
 
     private var launchPatent: PatentRecord? {
 #if DEBUG
-        guard let marker = ProcessInfo.processInfo.arguments.firstIndex(of: "-uiPatent"),
+        guard let marker = ProcessInfo.processInfo.arguments.firstIndex(of: "-FrankenPatentsUITestPatent"),
               ProcessInfo.processInfo.arguments.indices.contains(marker + 1) else { return nil }
         return library.records.first(where: { $0.id == ProcessInfo.processInfo.arguments[marker + 1] })
 #else
@@ -16,7 +25,7 @@ struct PatentRootView: View {
 
     private var launchRoot: String? {
 #if DEBUG
-        guard let marker = ProcessInfo.processInfo.arguments.firstIndex(of: "-uiRoot"),
+        guard let marker = ProcessInfo.processInfo.arguments.firstIndex(of: "-FrankenPatentsUITestRoot"),
               ProcessInfo.processInfo.arguments.indices.contains(marker + 1) else { return nil }
         return ProcessInfo.processInfo.arguments[marker + 1].lowercased()
 #else
@@ -38,6 +47,8 @@ struct PatentRootView: View {
                         .tabItem { Label("Archive", systemImage: "books.vertical.fill") }
                     NativePatentTimelineView(library: library)
                         .tabItem { Label("Timeline", systemImage: "timeline.selection") }
+                    SavedPatentsView(library: library)
+                        .tabItem { Label("Saved", systemImage: "bookmark.fill") }
                     PatentMethodologyView()
                         .tabItem { Label("Method", systemImage: "compass.drawing") }
                 }
@@ -46,6 +57,7 @@ struct PatentRootView: View {
                 .toolbarBackground(.visible, for: .tabBar)
             }
         }
+        .environmentObject(collection)
         .safeAreaInset(edge: .top, spacing: 0) {
             HStack(spacing: 9) {
                 Image("MonsterIcon")
@@ -100,6 +112,100 @@ struct PatentRootView: View {
         .buttonStyle(.plain)
         .foregroundStyle(Lab.brass)
         .accessibilityLabel("Filter patent category")
+    }
+}
+
+struct SavedPatentsView: View {
+    @ObservedObject var library: PatentLibrary
+    @EnvironmentObject private var collection: PatentCollectionStore
+
+    private var recordsByID: [String: PatentRecord] {
+        Dictionary(uniqueKeysWithValues: library.records.map { ($0.id, $0) })
+    }
+
+    private var saved: [PatentRecord] {
+        collection.savedIDs.compactMap { recordsByID[$0] }
+    }
+
+    private var recent: [PatentRecord] {
+        collection.recentIDs.compactMap { recordsByID[$0] }
+    }
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if saved.isEmpty && recent.isEmpty {
+                    ContentUnavailableView {
+                        Label("Build your invention shelf", systemImage: "bookmark")
+                    } description: {
+                        Text("Save patents from any workstation. Recently opened exhibits also appear here automatically and stay only on this device.")
+                    }
+                } else {
+                    List {
+                        if !saved.isEmpty {
+                            Section("Saved inventions") {
+                                ForEach(saved) { patent in
+                                    savedPatentLink(patent, showsBookmark: true)
+                                }
+                            }
+                        }
+                        if !recent.isEmpty {
+                            Section("Recently viewed") {
+                                ForEach(recent) { patent in
+                                    savedPatentLink(patent, showsBookmark: collection.isSaved(patent.id))
+                                }
+                            }
+                        }
+                    }
+                    .listStyle(.insetGrouped)
+                    .scrollContentBackground(.hidden)
+                }
+            }
+            .background(MuseumBackground())
+            .navigationTitle("Your invention shelf")
+            .navigationDestination(for: PatentRecord.self) { patent in
+                PatentWorkstationView(patent: patent)
+            }
+        }
+        .tint(Lab.brass)
+    }
+
+    private func savedPatentLink(_ patent: PatentRecord, showsBookmark: Bool) -> some View {
+        NavigationLink(value: patent) {
+            HStack(spacing: 12) {
+                Image(systemName: Lab.categorySymbol(patent.category))
+                    .foregroundStyle(Lab.categoryColor(patent.category))
+                    .frame(width: 32)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(patent.shortTitle)
+                        .font(.system(size: Lab.size(14), weight: .bold, design: .serif))
+                        .foregroundStyle(Lab.parchment)
+                    Text("\(patent.patentNumber) · \(patent.inventors.joined(separator: " & "))")
+                        .font(.system(size: Lab.size(10), design: .rounded))
+                        .foregroundStyle(Lab.secondary)
+                        .lineLimit(1)
+                }
+                Spacer()
+                if showsBookmark {
+                    Image(systemName: "bookmark.fill")
+                        .foregroundStyle(Lab.brass)
+                        .accessibilityHidden(true)
+                }
+            }
+            .padding(.vertical, 4)
+            .accessibilityElement(children: .combine)
+        }
+        .swipeActions(edge: .trailing) {
+            Button {
+                collection.toggleSaved(patent.id)
+            } label: {
+                Label(
+                    collection.isSaved(patent.id) ? "Remove" : "Save",
+                    systemImage: collection.isSaved(patent.id) ? "bookmark.slash" : "bookmark"
+                )
+            }
+            .tint(Lab.brass)
+        }
     }
 }
 
