@@ -1,7 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import { stepPasteurFermentation } from "@/physics/catalogKernels";
+import { pasteurFermentationCameraForViewport } from "./pasteurFermentationCamera";
 import {
   buildPasteurFermentationModel,
   updatePasteurFermentationKinematics,
@@ -9,6 +11,30 @@ import {
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 const PHYSICS_DIRECTORY = join(process.cwd(), "src/physics");
+
+function projectedObjectBounds(root: THREE.Object3D, camera: THREE.PerspectiveCamera) {
+  const projected: THREE.Vector3[] = [];
+  root.traverse((node) => {
+    const positions = (node as THREE.Mesh).geometry?.getAttribute("position");
+    if (!positions) return;
+    const point = new THREE.Vector3();
+    for (let index = 0; index < positions.count; index += 1) {
+      projected.push(
+        point
+          .fromBufferAttribute(positions, index)
+          .applyMatrix4(node.matrixWorld)
+          .project(camera)
+          .clone(),
+      );
+    }
+  });
+  return {
+    minX: Math.min(...projected.map((projectedPoint) => projectedPoint.x)),
+    maxX: Math.max(...projected.map((projectedPoint) => projectedPoint.x)),
+    minY: Math.min(...projected.map((projectedPoint) => projectedPoint.y)),
+    maxY: Math.max(...projected.map((projectedPoint) => projectedPoint.y)),
+  };
+}
 
 describe("US 135,245 Pasteur closed-vessel process visual boundary", () => {
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
@@ -76,6 +102,44 @@ describe("US 135,245 Pasteur closed-vessel process visual boundary", () => {
     expect(threeSource).not.toContain("camera.position.set");
     expect(threeSource).not.toContain("ensureGenericWasm");
     expect(threeSource).not.toContain("genericKernelSource");
+  });
+
+  test("frames Pipe E, Nozzle P, Generator M M, vessel A, and exit cup v in the default overview", () => {
+    const { rootGroup, dispose } = buildPasteurFermentationModel();
+    try {
+      rootGroup.updateMatrixWorld(true);
+      const desktop = pasteurFermentationCameraForViewport("iso", 1216);
+      const phone375 = pasteurFermentationCameraForViewport("iso", 341);
+      const phone = pasteurFermentationCameraForViewport("iso", 286);
+
+      expect(desktop).toEqual({ pos: [11, 7.5, 12], target: [0, 0.8, 0] });
+      expect(phone375).toEqual({ pos: [11.5, 7.8, 12.7], target: [0, 0.8, 0] });
+      expect(phone).toEqual(phone375);
+
+      for (const [layout, view, width, height] of [
+        ["desktop", desktop, 1216, 460],
+        // The visual audit's actual compact canvas dimensions, rather than its
+        // browser viewport widths, keep the portrait envelope meaningful.
+        ["phone375", phone375, 341, 380],
+        ["phone", phone, 286, 380],
+      ] as const) {
+        const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 1000);
+        camera.position.set(...view.pos);
+        camera.lookAt(...view.target);
+        camera.updateProjectionMatrix();
+        camera.updateMatrixWorld();
+        const frame = projectedObjectBounds(rootGroup, camera);
+
+        // NDC +/-1 is the canvas edge. This meaningful margin catches the
+        // reported desktop top crop instead of accepting a one-pixel move.
+        expect(frame.minX, `${layout} apparatus left edge`).toBeGreaterThan(-0.85);
+        expect(frame.maxX, `${layout} apparatus right edge`).toBeLessThan(0.85);
+        expect(frame.minY, `${layout} apparatus lower edge`).toBeGreaterThan(-0.85);
+        expect(frame.maxY, `${layout} apparatus upper edge`).toBeLessThan(0.85);
+      }
+    } finally {
+      dispose();
+    }
   });
 
   test("computes only the source sequence and its explicitly labelled reader controls", () => {

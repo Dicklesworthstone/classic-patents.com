@@ -103,8 +103,8 @@ describe("executable project coverage manifest", () => {
     expect(manifest.filter((row) => row.runtime.wasmSurface === "interpretive-wasm")).toHaveLength(
       0,
     );
-    expect(manifest.filter((row) => row.runtime.wasmSurface === "generic-wasm")).toHaveLength(37);
-    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(63);
+    expect(manifest.filter((row) => row.runtime.wasmSurface === "generic-wasm")).toHaveLength(38);
+    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(62);
 
     for (const patentId of [
       "us-x9430-colt-revolver",
@@ -115,6 +115,7 @@ describe("executable project coverage manifest", () => {
       "us-2708656-fermi-reactor",
       "us-4136359-wozniak-apple",
       "us-4921293-salisbury-robot-hand",
+      "us-5121329-crump-fdm",
     ]) {
       expect(wasmSurfaceForPatent(patentId)?.kind).toBe("generic-wasm");
     }
@@ -193,7 +194,7 @@ describe("executable project coverage manifest", () => {
         surface.artifactSha256,
       );
     }
-    expect(checkedArtifacts.size).toBe(12);
+    expect(checkedArtifacts.size).toBe(13);
   });
 
   test("all 3D studios now have an updater or a typed snapshot path", () => {
