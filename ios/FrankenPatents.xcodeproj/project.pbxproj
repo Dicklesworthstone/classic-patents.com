@@ -57,6 +57,7 @@
 		628845CEA7A1CB01EC2461FA /* us-132-davenport-electric-motor.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 88905470519EC5EC9D6667FB /* us-132-davenport-electric-motor.usdz */; };
 		62CAF0BCF05D1C50D77EFCC9 /* patents.json in Resources */ = {isa = PBXBuildFile; fileRef = F5483F5E9EA79B64FDBB110F /* patents.json */; };
 		647B78767EBE7554D95EE2BF /* us-6331181-davinci.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 8B3B2F6C482E8CE56560ACEE /* us-6331181-davinci.usdz */; };
+		64E01B33FCA720632F1F5771 /* PatentLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CAF78E6C693376B310473F /* PatentLibraryTests.swift */; };
 		68E730AEF7D28B78328E2026 /* us-3138743-kilby-integrated-circuit.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 1816F80AF57D08C2283ABFFD /* us-3138743-kilby-integrated-circuit.usdz */; };
 		6A018081195CDC1ABA015055 /* us-4098001-watson-rcc.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 3D037AA34C22115D24F9A0D0 /* us-4098001-watson-rcc.usdz */; };
 		6A13D12BEF99BDA5A42609D4 /* us-6302230-kamen-segway.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 38065D837760E78E6BBF2C11 /* us-6302230-kamen-segway.usdz */; };
@@ -154,6 +155,7 @@
 /* Begin PBXFileReference section */
 		0041259CD0A3B03F97542716 /* us-4976582-clavel-delta-robot.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-4976582-clavel-delta-robot.usdz"; sourceTree = "<group>"; };
 		02A3D267A68FA0FC43B7CC96 /* us-682690-hewitt-mercury-lamp.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-682690-hewitt-mercury-lamp.usdz"; sourceTree = "<group>"; };
+		03CAF78E6C693376B310473F /* PatentLibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentLibraryTests.swift; sourceTree = "<group>"; };
 		04AE9B5CC635577D2CF6BF0A /* us-2929922-townes-laser.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-2929922-townes-laser.usdz"; sourceTree = "<group>"; };
 		0834EF9153F4B30E02704C55 /* FrankenPatents.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FrankenPatents.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		090400774C6B2292B1370A17 /* us-5701965-kamen-transporter.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-5701965-kamen-transporter.usdz"; sourceTree = "<group>"; };
@@ -354,6 +356,7 @@
 			isa = PBXGroup;
 			children = (
 				BFAED83AD16E353D492E3125 /* PatentCollectionStoreTests.swift */,
+				03CAF78E6C693376B310473F /* PatentLibraryTests.swift */,
 				4F9C6CE3C3AA63115989A99F /* PatentPDFStoreTests.swift */,
 			);
 			path = Tests;
@@ -705,7 +708,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -euo pipefail\nSOURCE_ARCHIVE=\"${SRCROOT}/../public/patents/\"\nBUNDLE_ARCHIVE=\"${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/patents/\"\nmkdir -p \"${BUNDLE_ARCHIVE}\"\nrsync -a --exclude='*.pdf' \"${SOURCE_ARCHIVE}\" \"${BUNDLE_ARCHIVE}\"\n";
+			shellScript = "set -euo pipefail\nSOURCE_ARCHIVE=\"${SRCROOT}/../public/patents/\"\nBUNDLE_ARCHIVE=\"${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/patents/\"\nmkdir -p \"${BUNDLE_ARCHIVE}\"\nrsync -a --exclude='*.pdf' \\\n  --exclude='figures/us-3671542-kwolek-kevlar/' \\\n  --exclude='source-text/us-3671542-kwolek-kevlar.txt' \\\n  --exclude='transcripts/us-3671542-kwolek-kevlar.txt' \\\n  --exclude='transcripts/us-3671542-kwolek-kevlar-reviewed.txt' \\\n  \"${SOURCE_ARCHIVE}\" \"${BUNDLE_ARCHIVE}\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -715,6 +718,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6F0D45AE478C53A1B3799DA9 /* PatentCollectionStoreTests.swift in Sources */,
+				64E01B33FCA720632F1F5771 /* PatentLibraryTests.swift in Sources */,
 				7C7FEC952E6D8CCC69243259 /* PatentPDFStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

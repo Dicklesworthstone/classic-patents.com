@@ -212,7 +212,15 @@ private enum PatentCatalogValidator {
                     "\(patent.id) source transcription is not in the bundled asset ledger"
                 )
             }
-            if patent.archivalEdition == nil && patent.originalTextAsset == nil {
+            // A source-bounded record deliberately ships only its pinned PDF
+            // and checked claim reading. It has already passed the stricter
+            // `.sourceBoundPDFOnly` contract above, so do not incorrectly
+            // require a local transcript or reconstruction quarantine here.
+            // This mirrors the exporter/parity gate's mutually exclusive
+            // source-bounded versus authored-model branches.
+            if patent.sourceVisualization.kind != .sourceBoundPDFOnly
+                && patent.archivalEdition == nil
+                && patent.originalTextAsset == nil {
                 try require(
                     patent.archivalPublication.isReconstructionQuarantined,
                     "\(patent.id) has no local source reader and no explicit reconstruction quarantine"
