@@ -16,7 +16,7 @@ export type KamenTransporterKernelSource = "wasm" | "ts-fallback" | "unloaded";
 type KamenTransporterStepFn = (stateIndex: number) => string;
 
 const KAMEN_WASM_BOUNDARY =
-  "rigid-planar-three-equal-wheels-horizontal-tread-contact-no-force-friction-compliance-impact-or-riser-side-contact";
+  "rigid-planar-three-equal-wheels-horizontal-support-and-finite-riser-clearance-no-force-friction-compliance-impact-motor-controller-or-sensor";
 const KAMEN_WASM_SOURCE_RECEIPT = "us-5701965-table-1-figures-39-through-42";
 
 export interface KamenTransporterWasmStep {
@@ -31,7 +31,7 @@ export interface KamenTransporterWasmStep {
   wheel_radius_m: number;
   stair_rise_m: number;
   stair_tread_m: number;
-  riser_to_lower_contact_m: number;
+  riser_to_upper_contact_m: number;
   axle_x_m: number;
   axle_y_m: number;
   carrier_rotation_rad: number;
@@ -42,6 +42,10 @@ export interface KamenTransporterWasmStep {
   contact_mask: [boolean, boolean, boolean];
   contact_count: number;
   minimum_gap_m: number;
+  signed_riser_clearances_m: [number | null, number | null, number | null];
+  riser_contact_mask: [boolean, boolean, boolean];
+  riser_contact_count: number;
+  minimum_riser_clearance_m: number | null;
 }
 
 export interface KamenTransporterRuntimeTelemetry extends KamenTransporterTelemetry {
@@ -81,6 +85,10 @@ function finiteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
+function nullableFiniteNumber(value: unknown): value is number | null {
+  return value === null || finiteNumber(value);
+}
+
 /** Validate the complete generic rigid-contact receipt before admitting WASM provenance. */
 export function decodeKamenTransporterWasmStep(raw: string): KamenTransporterWasmStep | null {
   try {
@@ -105,13 +113,15 @@ export function decodeKamenTransporterWasmStep(raw: string): KamenTransporterWas
       !finiteNumber(result.wheel_radius_m) ||
       !finiteNumber(result.stair_rise_m) ||
       !finiteNumber(result.stair_tread_m) ||
-      !finiteNumber(result.riser_to_lower_contact_m) ||
+      !finiteNumber(result.riser_to_upper_contact_m) ||
       !finiteNumber(result.axle_x_m) ||
       !finiteNumber(result.axle_y_m) ||
       !finiteNumber(result.carrier_rotation_rad) ||
       !finiteNumber(result.chassis_pitch_rad) ||
       !finiteNumber(result.contact_count) ||
-      !finiteNumber(result.minimum_gap_m)
+      !finiteNumber(result.minimum_gap_m) ||
+      !finiteNumber(result.riser_contact_count) ||
+      !nullableFiniteNumber(result.minimum_riser_clearance_m)
     ) {
       return null;
     }
@@ -127,7 +137,14 @@ export function decodeKamenTransporterWasmStep(raw: string): KamenTransporterWas
       !result.contact_mask.every((candidate) => typeof candidate === "boolean") ||
       result.contact_count !== result.contact_mask.filter(Boolean).length ||
       result.contact_count < 1 ||
-      result.minimum_gap_m < -1e-8
+      result.minimum_gap_m < -1e-8 ||
+      !Array.isArray(result.signed_riser_clearances_m) ||
+      result.signed_riser_clearances_m.length !== 3 ||
+      !result.signed_riser_clearances_m.every(nullableFiniteNumber) ||
+      !Array.isArray(result.riser_contact_mask) ||
+      result.riser_contact_mask.length !== 3 ||
+      !result.riser_contact_mask.every((candidate) => typeof candidate === "boolean") ||
+      result.riser_contact_count !== result.riser_contact_mask.filter(Boolean).length
     ) {
       return null;
     }
@@ -143,7 +160,22 @@ export function decodeKamenTransporterWasmStep(raw: string): KamenTransporterWas
       !closeEnough(result.wheel_radius_m, geometry.wheelRadiusM) ||
       !closeEnough(result.stair_rise_m, geometry.stairRiseM) ||
       !closeEnough(result.stair_tread_m, geometry.stairTreadM) ||
-      !closeEnough(result.riser_to_lower_contact_m, geometry.riserToLowerContactM)
+      !closeEnough(result.riser_to_upper_contact_m, geometry.riserToUpperContactM)
+    ) {
+      return null;
+    }
+    if (result.stair_active) {
+      if (
+        result.signed_riser_clearances_m.some((clearance) => clearance === null) ||
+        result.minimum_riser_clearance_m === null ||
+        result.minimum_riser_clearance_m < -1e-8
+      ) {
+        return null;
+      }
+    } else if (
+      result.signed_riser_clearances_m.some((clearance) => clearance !== null) ||
+      result.minimum_riser_clearance_m !== null ||
+      result.riser_contact_count !== 0
     ) {
       return null;
     }
@@ -235,7 +267,13 @@ export function stepKamenTransporterPhysics(
         !closeEnough(wasmCenter[0], hostWheel.centerXM) ||
         !closeEnough(wasmCenter[1], hostWheel.centerYM) ||
         !closeEnough(wasmGap, hostWheel.signedVerticalGapM) ||
-        decoded.contact_mask[index] !== hostWheel.touching
+        decoded.contact_mask[index] !== hostWheel.touching ||
+        decoded.riser_contact_mask[index] !== hostWheel.touchingRiser ||
+        (decoded.signed_riser_clearances_m[index] === null) !==
+          (hostWheel.signedRiserClearanceM === null) ||
+        (decoded.signed_riser_clearances_m[index] !== null &&
+          hostWheel.signedRiserClearanceM !== null &&
+          !closeEnough(decoded.signed_riser_clearances_m[index], hostWheel.signedRiserClearanceM))
       ) {
         return fallback;
       }
@@ -243,6 +281,7 @@ export function stepKamenTransporterPhysics(
 
     const wheelContacts = decoded.wheel_centres_m.map(([centerXM, centerYM], index) => {
       const signedVerticalGapM = decoded.signed_vertical_gaps_m[index];
+      const signedRiserClearanceM = decoded.signed_riser_clearances_m[index];
       if (signedVerticalGapM === undefined) throw new Error("missing Kamen WASM gap");
       return {
         id: (["a", "b", "c"] as const)[index],
@@ -251,10 +290,15 @@ export function stepKamenTransporterPhysics(
         supportHeightM: kamenHorizontalSupportHeightM(centerXM, decoded.stair_active),
         signedVerticalGapM,
         touching: decoded.contact_mask[index] ?? false,
+        signedRiserClearanceM: signedRiserClearanceM ?? null,
+        touchingRiser: decoded.riser_contact_mask[index] ?? false,
       } satisfies KamenTransporterWheelContact;
     });
     const contactWheelIds = wheelContacts
       .filter((wheel) => wheel.touching)
+      .map((wheel) => wheel.id);
+    const riserContactWheelIds = wheelContacts
+      .filter((wheel) => wheel.touchingRiser)
       .map((wheel) => wheel.id);
 
     return {
@@ -271,6 +315,9 @@ export function stepKamenTransporterPhysics(
         contactWheelIds,
         contactCount: decoded.contact_count,
         minimumGapM: decoded.minimum_gap_m,
+        riserContactWheelIds,
+        riserContactCount: decoded.riser_contact_count,
+        minimumRiserClearanceM: decoded.minimum_riser_clearance_m,
       },
       sourceGeometryReceipt: KAMEN_TRANSPORTER_GEOMETRY_RECEIPT,
       genericOwner: decoded.owner,

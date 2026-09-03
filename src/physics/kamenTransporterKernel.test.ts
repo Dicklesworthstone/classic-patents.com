@@ -36,7 +36,7 @@ describe("Kamen transporter source-bound topology tape", () => {
     );
     expect(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairTreadM).toBeCloseTo(0.27686, 12);
     expect(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairRiseM).toBeCloseTo(0.17399, 12);
-    expect(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.riserToLowerContactM).toBeCloseTo(0.0764794, 12);
+    expect(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.riserToUpperContactM).toBeCloseTo(0.0764794, 12);
     expect(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.wheelRadiusM).toBeCloseTo(0.096774, 12);
     expect(
       Math.abs(
@@ -44,9 +44,19 @@ describe("Kamen transporter source-bound topology tape", () => {
           Math.sqrt(3) * KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.clusterRadiusM,
       ),
     ).toBeLessThan(2e-5);
+    expect(
+      Math.abs(
+        Math.sqrt(
+          KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.adjacentWheelCentreDistanceM ** 2 -
+            KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairRiseM ** 2,
+        ) -
+          KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.wheelRadiusM -
+          KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.riserToUpperContactM,
+      ),
+    ).toBeLessThan(2e-5);
   });
 
-  test("keeps every source pose supported without horizontal-surface penetration", () => {
+  test("keeps every source pose supported without tread or finite-riser penetration", () => {
     const expectedContacts = {
       ground_support: ["a", "b"],
       balance: ["a"],
@@ -55,6 +65,14 @@ describe("Kamen transporter source-bound topology tape", () => {
       climb: ["b", "c"],
       transition: ["c"],
     } as const;
+    const expectedRiserContacts = {
+      ground_support: [],
+      balance: [],
+      stair_start: ["a"],
+      weight_transfer: ["a"],
+      climb: ["b"],
+      transition: [],
+    } as const;
 
     for (const state of KAMEN_TRANSPORTER_TOPOLOGY_STATES) {
       const pose = resolveKamenTransporterDisplayPose(state);
@@ -62,6 +80,20 @@ describe("Kamen transporter source-bound topology tape", () => {
       expect(pose.contactCount).toBe(expectedContacts[state].length);
       expect(pose.minimumGapM).toBeGreaterThanOrEqual(-1e-8);
       expect(pose.wheelContacts.every((wheel) => wheel.signedVerticalGapM >= -1e-8)).toBe(true);
+      expect(pose.riserContactWheelIds).toEqual(expectedRiserContacts[state]);
+      expect(pose.riserContactCount).toBe(expectedRiserContacts[state].length);
+      if (pose.stairActive) {
+        expect(pose.minimumRiserClearanceM).not.toBeNull();
+        expect(pose.minimumRiserClearanceM ?? -1).toBeGreaterThanOrEqual(-1e-8);
+        expect(
+          pose.wheelContacts.every(
+            (wheel) =>
+              wheel.signedRiserClearanceM !== null && wheel.signedRiserClearanceM >= -1e-8,
+          ),
+        ).toBe(true);
+      } else {
+        expect(pose.minimumRiserClearanceM).toBeNull();
+      }
     }
 
     const start = resolveKamenTransporterDisplayPose("stair_start");
@@ -70,6 +102,25 @@ describe("Kamen transporter source-bound topology tape", () => {
     expect(transfer.axleYM).toBe(start.axleYM);
     expect(transfer.carrierRotationRad).toBe(start.carrierRotationRad);
     expect(transfer.chassisPitchRad).not.toBe(start.chassisPitchRad);
+    expect(start.wheelContacts[0]?.centerXM).toBeCloseTo(
+      -KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.wheelRadiusM,
+      10,
+    );
+    expect(start.wheelContacts[1]?.centerXM).toBeCloseTo(
+      KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.riserToUpperContactM,
+      4,
+    );
+    const climb = resolveKamenTransporterDisplayPose("climb");
+    expect(climb.wheelContacts[1]?.centerXM).toBeCloseTo(
+      KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairTreadM -
+        KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.wheelRadiusM,
+      10,
+    );
+    expect(climb.wheelContacts[2]?.centerXM).toBeCloseTo(
+      KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairTreadM +
+        KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.riserToUpperContactM,
+      4,
+    );
   });
 
   test("withholds a cluster-dependent topology when Claim 16 is withdrawn", () => {
@@ -84,6 +135,7 @@ describe("Kamen transporter source-bound topology tape", () => {
     expect(topology.wheelControlMode).toBe("topology-withheld");
     expect(topology.displayPose.contactWheelIds).toEqual(["direct"]);
     expect(topology.displayPose.minimumGapM).toBe(0);
+    expect(topology.displayPose.minimumRiserClearanceM).toBeNull();
   });
 
   test("maps old saved mode labels only to their nearest qualitative state", () => {

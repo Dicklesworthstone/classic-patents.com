@@ -44,7 +44,8 @@ export const KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M = Object.freeze({
   adjacentWheelCentreDistanceM: 9.667 * INCH_M,
   stairTreadM: 10.9 * INCH_M,
   stairRiseM: 6.85 * INCH_M,
-  riserToLowerContactM: 3.011 * INCH_M,
+  /** Table 1 z: upper-wheel tread contact offset beyond a riser edge. */
+  riserToUpperContactM: 3.011 * INCH_M,
   wheelRadiusM: 3.81 * INCH_M,
 });
 
@@ -60,7 +61,7 @@ export const KAMEN_TRANSPORTER_GENERIC_OWNER =
   "fs-mbd::tri_wheel_cluster::step_tri_wheel_stair_contact";
 
 export const KAMEN_TRANSPORTER_CONTACT_BOUNDARY =
-  "Rigid planar three-equal-wheel kinematics with horizontal ground/tread gap checks; no force, friction, tire compliance, impact, motor, controller, sensor, or riser-side contact result.";
+  "Rigid planar three-equal-wheel kinematics with horizontal-support and finite-riser clearance/contact checks; no force, friction, tire compliance, impact, motor, controller, or sensor result.";
 
 export type KamenTransporterWheelId = "a" | "b" | "c" | "direct";
 
@@ -71,6 +72,9 @@ export interface KamenTransporterWheelContact {
   supportHeightM: number;
   signedVerticalGapM: number;
   touching: boolean;
+  /** Clearance to the nearest finite vertical riser; null on level ground [m]. */
+  signedRiserClearanceM: number | null;
+  touchingRiser: boolean;
 }
 
 export interface KamenTransporterDisplayPose {
@@ -88,6 +92,10 @@ export interface KamenTransporterDisplayPose {
   contactWheelIds: readonly KamenTransporterWheelId[];
   contactCount: number;
   minimumGapM: number;
+  riserContactWheelIds: readonly KamenTransporterWheelId[];
+  riserContactCount: number;
+  /** Minimum finite-riser clearance; null when the stair profile is inactive [m]. */
+  minimumRiserClearanceM: number | null;
 }
 
 export interface KamenTransporterControls {
@@ -419,6 +427,35 @@ export function kamenHorizontalSupportHeightM(xM: number, stairActive: boolean):
   return 2 * KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairRiseM;
 }
 
+/** Signed clearance between a rigid wheel circle and a finite vertical segment [m]. */
+export function kamenWheelToVerticalSegmentClearanceM(
+  wheelXM: number,
+  wheelYM: number,
+  wheelRadiusM: number,
+  segmentXM: number,
+  segmentYMinM: number,
+  segmentYMaxM: number,
+): number {
+  const closestYM = Math.max(segmentYMinM, Math.min(segmentYMaxM, wheelYM));
+  return Math.hypot(wheelXM - segmentXM, wheelYM - closestYM) - wheelRadiusM;
+}
+
+/** Minimum wheel-circle clearance to either Table 1 stair riser [m]. */
+export function kamenMinimumRiserClearanceM(wheelXM: number, wheelYM: number): number {
+  const { stairRiseM, stairTreadM, wheelRadiusM } = KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M;
+  return Math.min(
+    kamenWheelToVerticalSegmentClearanceM(wheelXM, wheelYM, wheelRadiusM, 0, 0, stairRiseM),
+    kamenWheelToVerticalSegmentClearanceM(
+      wheelXM,
+      wheelYM,
+      wheelRadiusM,
+      stairTreadM,
+      stairRiseM,
+      2 * stairRiseM,
+    ),
+  );
+}
+
 /**
  * Resolve one source-dimensioned side-elevation pose. Figures 39A/39B,
  * 41A/41B, and 42A–42C provide the state geometry; the exact carrier angle
@@ -437,6 +474,8 @@ export function resolveKamenTransporterDisplayPose(
       supportHeightM: 0,
       signedVerticalGapM: 0,
       touching: true,
+      signedRiserClearanceM: null,
+      touchingRiser: false,
     };
     return {
       axleXM: 0,
@@ -449,6 +488,9 @@ export function resolveKamenTransporterDisplayPose(
       contactWheelIds: ["direct"],
       contactCount: 1,
       minimumGapM: 0,
+      riserContactWheelIds: [],
+      riserContactCount: 0,
+      minimumRiserClearanceM: null,
     };
   }
 
@@ -459,7 +501,7 @@ export function resolveKamenTransporterDisplayPose(
   );
   const startWheelAAngleRad = KAMEN_WHEEL_PHASES_RAD[0] + sourceStartRotationRad;
   const startAxleXM =
-    -geometry.riserToLowerContactM - geometry.clusterRadiusM * Math.cos(startWheelAAngleRad);
+    -geometry.wheelRadiusM - geometry.clusterRadiusM * Math.cos(startWheelAAngleRad);
   const startAxleYM =
     geometry.wheelRadiusM - geometry.clusterRadiusM * Math.sin(startWheelAAngleRad);
   const startPitchRad = startWheelAAngleRad + (2 * Math.PI - 2.814) - Math.PI / 2;
@@ -470,7 +512,7 @@ export function resolveKamenTransporterDisplayPose(
   const climbWheelBAngleRad = KAMEN_WHEEL_PHASES_RAD[1] + climbRotationRad;
   const climbAxleXM =
     geometry.stairTreadM -
-    geometry.riserToLowerContactM -
+    geometry.wheelRadiusM -
     geometry.clusterRadiusM * Math.cos(climbWheelBAngleRad);
   const climbAxleYM =
     geometry.stairRiseM +
@@ -480,7 +522,13 @@ export function resolveKamenTransporterDisplayPose(
 
   let pose: Omit<
     KamenTransporterDisplayPose,
-    "wheelContacts" | "contactWheelIds" | "contactCount" | "minimumGapM"
+    | "wheelContacts"
+    | "contactWheelIds"
+    | "contactCount"
+    | "minimumGapM"
+    | "riserContactWheelIds"
+    | "riserContactCount"
+    | "minimumRiserClearanceM"
   >;
   switch (topologyState) {
     case "ground_support":
@@ -556,6 +604,17 @@ export function resolveKamenTransporterDisplayPose(
         `Kamen ${topologyState} wheel ${KAMEN_WHEEL_IDS[index]} penetrates its support by ${signedVerticalGapM} m.`,
       );
     }
+    const signedRiserClearanceM = pose.stairActive
+      ? kamenMinimumRiserClearanceM(centerXM, centerYM)
+      : null;
+    if (
+      signedRiserClearanceM !== null &&
+      signedRiserClearanceM < -KAMEN_CONTACT_TOLERANCE_M
+    ) {
+      throw new Error(
+        `Kamen ${topologyState} wheel ${KAMEN_WHEEL_IDS[index]} penetrates a vertical riser by ${signedRiserClearanceM} m.`,
+      );
+    }
     return {
       id: KAMEN_WHEEL_IDS[index],
       centerXM,
@@ -563,12 +622,22 @@ export function resolveKamenTransporterDisplayPose(
       supportHeightM,
       signedVerticalGapM,
       touching: Math.abs(signedVerticalGapM) <= KAMEN_CONTACT_TOLERANCE_M,
+      signedRiserClearanceM,
+      touchingRiser:
+        signedRiserClearanceM !== null &&
+        Math.abs(signedRiserClearanceM) <= KAMEN_CONTACT_TOLERANCE_M,
     } satisfies KamenTransporterWheelContact;
   });
   const contactWheelIds = wheelContacts.filter((wheel) => wheel.touching).map((wheel) => wheel.id);
   if (contactWheelIds.length === 0) {
     throw new Error(`Kamen ${topologyState} source pose has no horizontal support contact.`);
   }
+  const riserContactWheelIds = wheelContacts
+    .filter((wheel) => wheel.touchingRiser)
+    .map((wheel) => wheel.id);
+  const finiteRiserClearances = wheelContacts
+    .map((wheel) => wheel.signedRiserClearanceM)
+    .filter((clearance): clearance is number => clearance !== null);
 
   return {
     ...pose,
@@ -576,6 +645,10 @@ export function resolveKamenTransporterDisplayPose(
     contactWheelIds,
     contactCount: contactWheelIds.length,
     minimumGapM: Math.min(...wheelContacts.map((wheel) => wheel.signedVerticalGapM)),
+    riserContactWheelIds,
+    riserContactCount: riserContactWheelIds.length,
+    minimumRiserClearanceM:
+      finiteRiserClearances.length > 0 ? Math.min(...finiteRiserClearances) : null,
   };
 }
 
