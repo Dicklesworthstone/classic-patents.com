@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "runId": "2026-09-03T01-42-18.393Z__94126",
+  "baseUrl": "http://127.0.0.1:3428",
+  "patentCount": 1,
+  "viewportCount": 3,
+  "eventCount": 3,
+  "failureCount": 0,
+  "eventPath": "/Users/jemanuel/projects/classic-patents.com/artifacts/eink-motion-vision-after-fix/2026-09-03T01-42-18.393Z__94126/events.jsonl",
+  "screenshotDirectory": "/Users/jemanuel/projects/classic-patents.com/artifacts/eink-motion-vision-after-fix/2026-09-03T01-42-18.393Z__94126/screenshots",
+  "performanceSampleCount": 0,
+  "performanceSummaryPath": null
+}

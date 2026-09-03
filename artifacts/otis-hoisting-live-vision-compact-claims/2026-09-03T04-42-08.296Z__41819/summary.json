@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "runId": "2026-09-03T04-42-08.296Z__41819",
+  "baseUrl": "http://127.0.0.1:3428",
+  "patentCount": 1,
+  "viewportCount": 3,
+  "eventCount": 3,
+  "failureCount": 0,
+  "eventPath": "/Users/jemanuel/projects/classic-patents.com/artifacts/otis-hoisting-live-vision-compact-claims/2026-09-03T04-42-08.296Z__41819/events.jsonl",
+  "screenshotDirectory": "/Users/jemanuel/projects/classic-patents.com/artifacts/otis-hoisting-live-vision-compact-claims/2026-09-03T04-42-08.296Z__41819/screenshots",
+  "performanceSampleCount": 0,
+  "performanceSummaryPath": null
+}

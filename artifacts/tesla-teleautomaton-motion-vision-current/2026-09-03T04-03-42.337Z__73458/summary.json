@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "runId": "2026-09-03T04-03-42.337Z__73458",
+  "baseUrl": "http://127.0.0.1:3428",
+  "patentCount": 1,
+  "viewportCount": 3,
+  "eventCount": 3,
+  "failureCount": 0,
+  "eventPath": "/Users/jemanuel/projects/classic-patents.com/artifacts/tesla-teleautomaton-motion-vision-current/2026-09-03T04-03-42.337Z__73458/events.jsonl",
+  "screenshotDirectory": "/Users/jemanuel/projects/classic-patents.com/artifacts/tesla-teleautomaton-motion-vision-current/2026-09-03T04-03-42.337Z__73458/screenshots",
+  "performanceSampleCount": 0,
+  "performanceSummaryPath": null
+}
