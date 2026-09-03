@@ -115,7 +115,7 @@ export default function SundbackZipper3D({
   };
 
   return (
-    <div className="w-full bg-parchment-50 dark:bg-ink-950 rounded-2xl border border-parchment-300 dark:border-ink-800 p-6 flex flex-col items-center space-y-6 shadow-patent">
+    <div className="flex w-full flex-col items-center space-y-4 rounded-2xl border border-parchment-300 bg-parchment-50 p-3 shadow-patent dark:border-ink-800 dark:bg-ink-950 sm:space-y-6 sm:p-6">
       {/* 3D Header */}
       <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
@@ -131,10 +131,12 @@ export default function SundbackZipper3D({
             Separable Fastener 3D Interlocking Scoop Kinematics
           </h3>
         </div>
-        <PhysicsTelemetryBadge
-          patentId={patentId}
-          equations={ALL_COLORIZED_EQUATIONS[patentId] ?? []}
-        />
+        <div className="hidden lg:block">
+          <PhysicsTelemetryBadge
+            patentId={patentId}
+            equations={ALL_COLORIZED_EQUATIONS[patentId] ?? []}
+          />
+        </div>
       </div>
 
       {/* 3D WebGL Canvas Container */}
@@ -142,13 +144,13 @@ export default function SundbackZipper3D({
         <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
         {/* Camera Presets Overlay */}
-        <div className="absolute top-3 left-3 flex gap-1.5 z-10 bg-ink-900/80 backdrop-blur-sm p-1 rounded-lg border border-ink-700">
+        <div className="scrollbar-none absolute left-3 top-3 z-10 flex max-w-[calc(100%-1.5rem)] gap-1.5 overflow-x-auto rounded-lg border border-ink-700 bg-ink-900/80 p-1 backdrop-blur-sm">
           {(["perspective", "front", "detail", "top"] as const).map((p) => (
             <button
               key={p}
               type="button"
               onClick={() => handleCameraPreset(p)}
-              className={`px-2.5 py-1 text-[11px] font-mono font-bold rounded transition-colors ${
+              className={`shrink-0 px-2.5 py-1 text-[11px] font-mono font-bold rounded transition-colors ${
                 cameraPreset === p
                   ? "bg-amber-600 text-white"
                   : "text-ink-300 hover:text-white hover:bg-ink-800"
@@ -192,6 +194,13 @@ export default function SundbackZipper3D({
         </div>
       </div>
 
+      <div data-mobile-layout="telemetry-after-canvas" className="w-full lg:hidden">
+        <PhysicsTelemetryBadge
+          patentId={patentId}
+          equations={ALL_COLORIZED_EQUATIONS[patentId] ?? []}
+        />
+      </div>
+
       {/* Control Sliders */}
       <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
         <div className="p-3 bg-parchment-100 dark:bg-ink-900 rounded-lg border border-parchment-200 dark:border-ink-800 space-y-2">
@@ -203,6 +212,7 @@ export default function SundbackZipper3D({
           </div>
           <input
             id="slider-pos-3d"
+            data-audit-primary-control="true"
             type="range"
             min="0"
             max="100"

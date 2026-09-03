@@ -11,6 +11,7 @@ import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildKamenInjectionModel } from "./kamenInjectionModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-3858581-kamen-medication-injection-device";
 const VIEWS = {
@@ -37,8 +38,7 @@ export function KamenMedicationInjection3D() {
   const [view, setView] = useState<keyof typeof VIEWS>("overview");
   const { effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
     usePatentPhysics(PATENT_ID);
-  const liveParams = useRef(effectiveParams);
-  liveParams.current = effectiveParams;
+  const liveParams = useLiveSimParams(effectiveParams);
   const pose = useMemo(() => stepKamenInjectionMechanism(effectiveParams), [effectiveParams]);
   useFrankenSimPhysics(PATENT_ID, {
     domain: "solid_mechanics",
@@ -52,6 +52,7 @@ export function KamenMedicationInjection3D() {
     const camera = VIEWS[next];
     studioRef.current?.controls.setView(camera.position, camera.target);
   };
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;

@@ -4,9 +4,14 @@ import { Camera, Eye, EyeOff, Layers, Pause, Play, RotateCcw, Zap } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
-import { ensureGoddardWasm, goddardKernelSource } from "@/physics/goddardWasm";
+import {
+  ensureGoddardWasm,
+  goddardKernelSource,
+  subscribeGoddardKernelSource,
+} from "@/physics/goddardWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { useWasmKernelSource } from "@/physics/useWasmKernelSource";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import {
   buildGoddard1914ApparatusModel,
@@ -33,7 +38,11 @@ const CAMERA_PRESETS: Record<
 export function GoddardRocket3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const [kernelSource, setKernelSource] = useState(goddardKernelSource());
+  const kernelSource = useWasmKernelSource(
+    goddardKernelSource,
+    subscribeGoddardKernelSource,
+    ensureGoddardWasm,
+  );
   const { params, updateParam, resetParams } = usePatentPhysics("us-1102653-goddard-rocket");
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -47,16 +56,6 @@ export function GoddardRocket3D() {
     3: true,
     7: true,
   });
-
-  useEffect(() => {
-    let active = true;
-    void ensureGoddardWasm().then((nextSource) => {
-      if (active) setKernelSource(nextSource);
-    });
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const primarySpinRpm = params.primarySpinRpm ?? 120;
   const gyroSpinRpm = params.gyroSpinRpm ?? 6_000;

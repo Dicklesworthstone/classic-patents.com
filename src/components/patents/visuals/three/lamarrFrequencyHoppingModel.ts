@@ -20,6 +20,14 @@ export interface LamarrFrequencyHoppingModel {
   drum2: THREE.Mesh;
   paperWeb: THREE.Mesh;
   comb: THREE.Mesh;
+  receiverDrum1: THREE.Mesh;
+  receiverDrum2: THREE.Mesh;
+  receiverPaperWeb: THREE.Mesh;
+  receiverComb: THREE.Mesh;
+  recordLink: THREE.Line;
+  bulkheadRings: THREE.Mesh[];
+  sidePlates: THREE.Mesh[];
+  frontDrumFlanges: THREE.Mesh[];
   spectrumBarsGroup: THREE.Group;
   barMeshes: THREE.Mesh[];
   hopPoints: THREE.Points;
@@ -33,9 +41,7 @@ export interface LamarrFrequencyHoppingModel {
     aluminumBayMat?: THREE.MeshStandardMaterial;
   };
   updateKinematics: (
-    delta: number,
     activeChan: number,
-    liveChannels: number,
     receiverTuned: boolean,
     lampOn: boolean,
     isCutaway?: boolean,
@@ -169,6 +175,7 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
   apparatusGroup.add(torpedoBay);
 
   // Bulkhead Ring Ribs
+  const bulkheadRings: THREE.Mesh[] = [];
   [-3.8, 3.8].forEach((rx) => {
     const ringGeo = new THREE.TorusGeometry(4.22, 0.08, 12, 36);
     disposables.push(ringGeo);
@@ -176,9 +183,11 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
     ring.rotation.y = Math.PI / 2;
     ring.position.set(rx, 0.5, 0);
     apparatusGroup.add(ring);
+    bulkheadRings.push(ring);
   });
 
   // Brass Framework Sideplates with Weight-Reduction Cutouts
+  const sidePlates: THREE.Mesh[] = [];
   [-2.6, 2.6].forEach((zPos) => {
     const plateGeo = new THREE.BoxGeometry(7.2, 2.8, 0.15);
     disposables.push(plateGeo);
@@ -186,6 +195,7 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
     sidePlate.position.set(0, 0.4, zPos);
     sidePlate.castShadow = true;
     apparatusGroup.add(sidePlate);
+    sidePlates.push(sidePlate);
   });
 
   // Supply and Take-Up Piano Roll Drums with Flanges
@@ -205,6 +215,7 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
   apparatusGroup.add(drum2);
 
   // Drum Brass End Flanges
+  const frontDrumFlanges: THREE.Mesh[] = [];
   [
     [-1.8, -2.5],
     [-1.8, 2.5],
@@ -217,6 +228,7 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
     flange.rotation.x = Math.PI / 2;
     flange.position.set(dx, 0.6, dz);
     apparatusGroup.add(flange);
+    if (dz > 0) frontDrumFlanges.push(flange);
   });
 
   // Slotted perforated paper web
@@ -242,9 +254,88 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
     const pinGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.35, 8);
     disposables.push(pinGeo);
     const pin = new THREE.Mesh(pinGeo, pinMat);
-    pin.position.set(0, 1.4, (p - 10.5) * 0.22);
+    pin.name = `transmitter_record_contact_${String.fromCharCode(65 + p)}`;
+    pin.position.set(0, 1.4, (p - 3) * 0.55);
     apparatusGroup.add(pin);
   }
+
+  // The receiver carries a distinct copy of the punched record (37′), not a
+  // decorative duplicate of the transmitter web.  It is positioned below the
+  // transmitter train in this cutaway so the matched supply/take-up path,
+  // sensing comb, and the causal link can all be inspected together.
+  const receiverTrain = new THREE.Group();
+  receiverTrain.name = "receiver_record_train_37_prime";
+  receiverTrain.position.y = -1.55;
+  apparatusGroup.add(receiverTrain);
+
+  const receiverDrum1 = new THREE.Mesh(drumGeo, brassMat);
+  receiverDrum1.name = "receiver_supply_drum";
+  receiverDrum1.rotation.x = Math.PI / 2;
+  receiverDrum1.position.set(-1.8, 0.6, 0);
+  receiverTrain.add(receiverDrum1);
+  const receiverDrum2 = new THREE.Mesh(drumGeo, brassMat);
+  receiverDrum2.name = "receiver_takeup_drum";
+  receiverDrum2.rotation.x = Math.PI / 2;
+  receiverDrum2.position.set(1.8, 0.6, 0);
+  receiverTrain.add(receiverDrum2);
+
+  // Each receiver drum axis terminates in the existing structural sideplates;
+  // these collars make those bearings visible instead of leaving both rolls
+  // apparently suspended in the bay.
+  for (const x of [-1.8, 1.8]) {
+    for (const z of [-2.5, 2.5]) {
+      const collar = new THREE.Mesh(new THREE.CylinderGeometry(0.23, 0.23, 0.16, 16), brassMat);
+      disposables.push(collar.geometry);
+      collar.name = "receiver_drum_bearing_collar";
+      collar.rotation.x = Math.PI / 2;
+      collar.position.set(x, 0.6, z);
+      receiverTrain.add(collar);
+    }
+  }
+
+  const receiverPaperWeb = new THREE.Mesh(webGeo, pianoRollPaperMat);
+  receiverPaperWeb.name = "receiver_perforated_record_37_prime";
+  receiverPaperWeb.rotation.x = -Math.PI / 2;
+  receiverPaperWeb.position.set(0, 1.35, 0);
+  receiverTrain.add(receiverPaperWeb);
+  const receiverComb = new THREE.Mesh(combGeo, goldCombMat);
+  receiverComb.name = "receiver_sensing_comb";
+  receiverComb.position.set(0, 1.6, 0);
+  receiverTrain.add(receiverComb);
+
+  for (let p = 3; p < 7; p++) {
+    const receiverPin = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.35, 8), pinMat);
+    disposables.push(receiverPin.geometry);
+    receiverPin.name = `receiver_record_contact_${String.fromCharCode(65 + p)}`;
+    receiverPin.position.set(0, 1.4, (p - 3) * 0.55);
+    receiverTrain.add(receiverPin);
+  }
+
+  // Dashed museum overlay: the geographically separated records share phase,
+  // but the patent does not put a physical shaft or cable between stations.
+  const recordLinkGeometry = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(1.8, 0.6, 0),
+    new THREE.Vector3(2.35, 0.6, 0),
+    new THREE.Vector3(2.35, -0.95, 0),
+    new THREE.Vector3(1.8, -0.95, 0),
+  ]);
+  disposables.push(recordLinkGeometry);
+  const recordLink = new THREE.Line(
+    recordLinkGeometry,
+    new THREE.LineDashedMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.85,
+      dashSize: 0.16,
+      gapSize: 0.12,
+    }),
+  );
+  recordLink.name = "matched_record_timing_link";
+  recordLink.userData.pedagogicalOverlay = "synchronized records; not a physical conductor";
+  recordLink.computeLineDistances();
+  const recordLinkMaterial = recordLink.material as THREE.LineDashedMaterial;
+  disposables.push(recordLinkMaterial);
+  apparatusGroup.add(recordLink);
 
   // ==========================================
   // Seven transmitter tuning positions; D–G are receiver-effective
@@ -307,24 +398,12 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
   root.add(hopPoints);
 
   const updateKinematics = (
-    delta: number,
     activeChan: number,
-    liveChannels: number,
     receiverTuned: boolean,
     lampOn: boolean,
     isCutaway = false,
-    drumDisplayOmegaRadPerS = 0,
   ) => {
-    updateLamarrFrequencyHoppingKinematics(
-      model,
-      delta,
-      activeChan,
-      liveChannels,
-      receiverTuned,
-      lampOn,
-      isCutaway,
-      drumDisplayOmegaRadPerS,
-    );
+    updateLamarrFrequencyHoppingKinematics(model, activeChan, receiverTuned, lampOn, isCutaway);
   };
 
   const dispose = () => {
@@ -340,6 +419,14 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
     drum2,
     paperWeb,
     comb,
+    receiverDrum1,
+    receiverDrum2,
+    receiverPaperWeb,
+    receiverComb,
+    recordLink,
+    bulkheadRings,
+    sidePlates,
+    frontDrumFlanges,
     spectrumBarsGroup,
     barMeshes,
     hopPoints,
@@ -363,26 +450,29 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
  */
 export function updateLamarrFrequencyHoppingKinematics(
   model: LamarrFrequencyHoppingModel,
-  _delta: number,
   activeChan: number,
-  liveChannels: number,
   receiverTuned: boolean,
   lampOn: boolean,
   isCutaway = false,
-  drumDisplayOmegaRadPerS = 0,
 ): void {
-  // Use the renderer's elapsed timestamp for a deterministic visual clock;
-  // it is not a claimed motor speed or RF hop rate.
-  model.drum1.rotation.y = drumDisplayOmegaRadPerS * 0.5;
-  model.drum2.rotation.y = drumDisplayOmegaRadPerS * 0.5;
+  const recordIndex = Math.max(0, Math.min(6, Math.round(activeChan)));
+  const indexAngle = (recordIndex * Math.PI * 2) / 7;
+  // Both source-named records index by the exact same discrete position. No
+  // wall-clock spin is presented as a claimed tape speed.
+  // The web is tangent to the top of both drums, so a forward paper step has
+  // the same surface-velocity sign at both rollers.
+  model.drum1.rotation.y = -indexAngle;
+  model.drum2.rotation.y = -indexAngle;
+  model.receiverDrum1.rotation.y = -indexAngle;
+  model.receiverDrum2.rotation.y = -indexAngle;
+  model.paperWeb.position.x = (recordIndex - 3) * 0.05;
+  model.receiverPaperWeb.position.x = (recordIndex - 3) * 0.05;
+  model.comb.position.y = 1.6 + (recordIndex - 3) * 0.012;
+  model.receiverComb.position.y = 1.6 + (recordIndex - 3) * 0.012;
 
   const maxDisplayChannels = model.barMeshes.length;
   for (let c = 0; c < maxDisplayChannels; c++) {
     const bar = model.barMeshes[c];
-    if (c >= liveChannels) {
-      bar.visible = false;
-      continue;
-    }
     bar.visible = true;
 
     const mat = bar.material as THREE.MeshStandardMaterial;
@@ -409,6 +499,15 @@ export function updateLamarrFrequencyHoppingKinematics(
   }
 
   // Cutaway mode: make torpedo outer aluminum shell translucent
-  model.materials.torpedoBayMat.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.torpedoBayMat.opacity = isCutaway ? 0.16 : 1.0;
   model.materials.torpedoBayMat.transparent = isCutaway;
+  for (const ring of model.bulkheadRings) ring.visible = !isCutaway;
+  // The default camera looks through +Z. A real section removes only that
+  // facing wall while retaining the rear plate as structural context.
+  model.sidePlates[0].visible = true;
+  model.sidePlates[1].visible = !isCutaway;
+  for (const flange of model.frontDrumFlanges) flange.visible = !isCutaway;
+  (model.recordLink.material as THREE.LineBasicMaterial).color.setHex(
+    receiverTuned ? 0x38bdf8 : 0xf59e0b,
+  );
 }

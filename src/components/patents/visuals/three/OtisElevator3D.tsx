@@ -2,10 +2,10 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Scissors, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepOtisElevator } from "@/physics/machineKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -44,7 +44,7 @@ export function OtisElevator3D() {
   const cabWeightLbs = otis.cabPayloadLbs;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const pawlEngagementMs = otis.pawlEngagementMs;
@@ -59,8 +59,7 @@ export function OtisElevator3D() {
   });
 
   // Shared transport tape: stepOtisElevator is a statics safety calculation,
-  // so the kernel's arrest state publishes as the initial machine envelope;
-  // the local rAF keeps the fall/arrest interpolation as-is.
+  // so the kernel publishes the supported suspended/arrest envelope.
   useFrankenSimPhysics("us-31128-otis-elevator", {
     domain: "solid_mechanics",
     refusal: { isRefused: false },
@@ -96,10 +95,6 @@ export function OtisElevator3D() {
   };
 
   useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
-
-  useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
@@ -123,7 +118,7 @@ export function OtisElevator3D() {
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
-      const { dt: delta, simTimeSec: timeSec } = clock.pump(now);
+      const { dt: delta } = clock.pump(now);
       const p = live.current;
 
       const currentOtis = stepOtisElevator({
@@ -135,10 +130,12 @@ export function OtisElevator3D() {
         nodes,
         materials,
         delta,
-        timeSec,
-        p.isRopeSevered,
+        currentOtis.isSnapped,
         currentOtis.springBowY,
+        currentOtis.isPawlEngaged,
         p.isCutaway,
+        p.cabPayloadKg,
+        p.cableTensionPct,
       );
 
       controls.update();

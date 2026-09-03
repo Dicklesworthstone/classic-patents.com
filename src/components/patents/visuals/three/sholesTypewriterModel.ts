@@ -22,7 +22,7 @@
 import * as THREE from "three";
 import { sholesBasketCrate } from "@/physics/genericWasm";
 import {
-  sholesCarriageStudioX,
+  sholesCarriageStudioXAtDisplayStep,
   sholesKeyStudioY,
   sholesTypebarYawSign,
   stepSholesTypewriter,
@@ -43,7 +43,10 @@ export interface SholesTypewriterModelNodes {
   paper: THREE.Mesh;
   escapement: THREE.Mesh;
   keyboardGroup: THREE.Group;
-  keys: THREE.Mesh[];
+  keys: THREE.Object3D[];
+  keyBezels: THREE.Object3D[];
+  keyCapsMesh: THREE.InstancedMesh;
+  keyBezelsMesh: THREE.InstancedMesh;
   restBarRot: Array<{ x: number; z: number }>;
   // Enhanced museum sub-assemblies
   chassisGroup?: THREE.Group;
@@ -52,8 +55,8 @@ export interface SholesTypewriterModelNodes {
   escapementRack?: THREE.Mesh;
   warningBell?: THREE.Mesh;
   spaceBar?: THREE.Mesh;
-  keyLevers?: THREE.Mesh[];
-  pullWires?: THREE.Mesh[];
+  keyLevers?: THREE.InstancedMesh;
+  pullWires?: THREE.InstancedMesh;
 }
 
 export interface SholesTypewriterMaterials {
@@ -421,11 +424,13 @@ export function buildSholesTypewriterModel(): SholesTypewriterModelResult {
 
   // 24 Radial Type-Bars with articulated hammer heads
   const typeBars: THREE.Mesh[] = [];
-  const pullWires: THREE.Mesh[] = [];
   const barCount = 24;
   const barShankGeo = trackGeo(new THREE.CylinderGeometry(0.024, 0.032, 1.45, 8));
   const hammerHeadGeo = trackGeo(new THREE.BoxGeometry(0.07, 0.12, 0.09));
   const pullWireGeo = trackGeo(new THREE.CylinderGeometry(0.012, 0.012, 0.85, 6));
+  const pullWires = new THREE.InstancedMesh(pullWireGeo, materials.brass, barCount);
+  pullWires.instanceMatrix.setUsage(THREE.StaticDrawUsage);
+  const instanceTransform = new THREE.Object3D();
 
   for (let t = 0; t < barCount; t++) {
     const tAngle = (t * Math.PI * 2) / barCount;
@@ -452,11 +457,14 @@ export function buildSholesTypewriterModel(): SholesTypewriterModelResult {
     typeBars.push(barShank);
 
     // Connecting vertical brass pull-wire to key-lever
-    const wire = new THREE.Mesh(pullWireGeo, materials.brass);
-    wire.position.set(Math.cos(tAngle) * 1.55, -1.05, Math.sin(tAngle) * 1.55);
-    basketGroup.add(wire);
-    pullWires.push(wire);
+    instanceTransform.position.set(Math.cos(tAngle) * 1.55, -1.05, Math.sin(tAngle) * 1.55);
+    instanceTransform.rotation.set(0, 0, 0);
+    instanceTransform.scale.setScalar(1);
+    instanceTransform.updateMatrix();
+    pullWires.setMatrixAt(t, instanceTransform.matrix);
   }
+  pullWires.instanceMatrix.needsUpdate = true;
+  basketGroup.add(pullWires);
 
   // Active key-actuated test hammer
   const activeHammer = new THREE.Mesh(
@@ -623,14 +631,23 @@ export function buildSholesTypewriterModel(): SholesTypewriterModelResult {
   keyboardGroup.add(keyboardApron);
 
   // 4 Tiers of circular ivory keys
-  const keys: THREE.Mesh[] = [];
-  const keyLevers: THREE.Mesh[] = [];
+  const keys: THREE.Object3D[] = [];
+  const keyBezels: THREE.Object3D[] = [];
   const keyGeo = trackGeo(new THREE.CylinderGeometry(0.13, 0.13, 0.16, 16));
   const keyBezelGeo = trackGeo(new THREE.TorusGeometry(0.14, 0.02, 8, 16));
   const leverGeo = trackGeo(new THREE.BoxGeometry(0.04, 0.06, 2.2));
 
   const rows = 4;
   const keysPerRow = 10;
+  const keyCount = rows * keysPerRow;
+  const keyCapsMesh = new THREE.InstancedMesh(keyGeo, materials.agedIvory, keyCount);
+  const keyBezelsMesh = new THREE.InstancedMesh(keyBezelGeo, materials.brass, keyCount);
+  const keyLevers = new THREE.InstancedMesh(leverGeo, materials.blackJapanned, keyCount);
+  keyCapsMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  keyBezelsMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  keyLevers.instanceMatrix.setUsage(THREE.StaticDrawUsage);
+  keyCapsMesh.castShadow = true;
+  let keyIndex = 0;
   for (let r = 0; r < rows; r++) {
     const rowZ = -0.55 + r * 0.42;
     const rowY = 0.25 - r * 0.12;
@@ -638,24 +655,31 @@ export function buildSholesTypewriterModel(): SholesTypewriterModelResult {
 
     for (let c = 0; c < keysPerRow; c++) {
       const keyX = -2.1 + c * 0.46 + xOffset;
-      const keyStem = new THREE.Mesh(keyGeo, materials.agedIvory);
-      keyStem.position.set(keyX, rowY, rowZ);
-      keyStem.castShadow = true;
-      keyboardGroup.add(keyStem);
+      const keyPose = new THREE.Object3D();
+      keyPose.position.set(keyX, rowY, rowZ);
+      keyPose.updateMatrix();
+      keyCapsMesh.setMatrixAt(keyIndex, keyPose.matrix);
+      keys.push(keyPose);
 
-      const bezel = new THREE.Mesh(keyBezelGeo, materials.brass);
-      bezel.rotation.x = Math.PI / 2;
-      bezel.position.set(keyX, rowY + 0.08, rowZ);
-      keyboardGroup.add(bezel);
-      keys.push(keyStem);
+      const bezelPose = new THREE.Object3D();
+      bezelPose.rotation.x = Math.PI / 2;
+      bezelPose.position.set(keyX, rowY + 0.08, rowZ);
+      bezelPose.updateMatrix();
+      keyBezelsMesh.setMatrixAt(keyIndex, bezelPose.matrix);
+      keyBezels.push(bezelPose);
 
       // Horizontal fulcrum key lever running under type basket
-      const lever = new THREE.Mesh(leverGeo, materials.blackJapanned);
-      lever.position.set(keyX, rowY - 0.25, rowZ - 1.1);
-      keyboardGroup.add(lever);
-      keyLevers.push(lever);
+      instanceTransform.position.set(keyX, rowY - 0.25, rowZ - 1.1);
+      instanceTransform.rotation.set(0, 0, 0);
+      instanceTransform.updateMatrix();
+      keyLevers.setMatrixAt(keyIndex, instanceTransform.matrix);
+      keyIndex += 1;
     }
   }
+  keyCapsMesh.instanceMatrix.needsUpdate = true;
+  keyBezelsMesh.instanceMatrix.needsUpdate = true;
+  keyLevers.instanceMatrix.needsUpdate = true;
+  keyboardGroup.add(keyLevers, keyCapsMesh, keyBezelsMesh);
 
   // Front wooden space bar
   const spaceBar = new THREE.Mesh(
@@ -687,6 +711,9 @@ export function buildSholesTypewriterModel(): SholesTypewriterModelResult {
     escapement,
     keyboardGroup,
     keys,
+    keyBezels,
+    keyCapsMesh,
+    keyBezelsMesh,
     restBarRot,
     chassisGroup,
     ribbonSpoolLeft,
@@ -713,50 +740,67 @@ export function buildSholesTypewriterModel(): SholesTypewriterModelResult {
 export function updateSholesTypewriterKinematics(
   nodes: SholesTypewriterModelNodes,
   materials: SholesTypewriterMaterials,
-  ratchetReleasePct: number,
+  typebarStrokePct: number,
   displayTypebarIndex: number,
   isCutaway: boolean,
   typingSpeedWpm = 40,
+  totalEscapementSteps = 0,
+  displayCarriageSteps = totalEscapementSteps,
 ) {
   const sholes = stepSholesTypewriter(typingSpeedWpm, 0);
   const strikeFlex = sholesBasketCrate(nodes.typeBars.length, displayTypebarIndex).strikeFlex;
-  nodes.activeHammer.rotation.x = -ratchetReleasePct * sholes.hammerPitchAmp * strikeFlex;
+  const stroke = Math.min(1, Math.max(0, typebarStrokePct));
+  nodes.activeHammer.rotation.x = -stroke * sholes.hammerPitchAmp * strikeFlex;
 
   nodes.typeBars.forEach((bar, i) => {
     const targetGroup = bar.parent || bar;
     const rest = nodes.restBarRot[i] || { x: 0, z: 0 };
-    const striking = i === displayTypebarIndex && ratchetReleasePct > 0;
-    targetGroup.rotation.x = rest.x + (striking ? -ratchetReleasePct * sholes.typebarPitchAmp : 0);
+    const striking = i === displayTypebarIndex && stroke > 0;
+    targetGroup.rotation.x = rest.x + (striking ? -stroke * sholes.typebarPitchAmp : 0);
     targetGroup.rotation.z =
-      rest.z + (striking ? sholesTypebarYawSign(i) * sholes.typebarYawAmp * ratchetReleasePct : 0);
+      rest.z + (striking ? sholesTypebarYawSign(i) * sholes.typebarYawAmp * stroke : 0);
   });
 
   nodes.keys.forEach((key, kIndex) => {
-    const keyActive = kIndex === displayTypebarIndex && ratchetReleasePct > 0;
+    const keyStroke = kIndex === displayTypebarIndex ? stroke : 0;
     key.position.y = sholesKeyStudioY(
       kIndex,
-      keyActive,
+      keyStroke,
       sholes.keyHomeY,
       sholes.keyRowPitch,
       sholes.keysPerRow,
       sholes.keyDip,
     );
+    key.updateMatrix();
+    nodes.keyCapsMesh.setMatrixAt(kIndex, key.matrix);
+
+    const bezel = nodes.keyBezels[kIndex];
+    bezel.position.y = key.position.y + 0.08;
+    bezel.updateMatrix();
+    nodes.keyBezelsMesh.setMatrixAt(kIndex, bezel.matrix);
   });
+  nodes.keyCapsMesh.instanceMatrix.needsUpdate = true;
+  nodes.keyBezelsMesh.instanceMatrix.needsUpdate = true;
 
   if (nodes.spaceBar) {
-    const spaceActive = displayTypebarIndex === 0 && ratchetReleasePct > sholes.spaceBarThreshold;
-    nodes.spaceBar.position.y = spaceActive ? sholes.spaceBarActiveY : sholes.spaceBarHomeY;
+    const spaceStroke = displayTypebarIndex === 0 ? stroke : 0;
+    nodes.spaceBar.position.y =
+      sholes.spaceBarHomeY + (sholes.spaceBarActiveY - sholes.spaceBarHomeY) * spaceStroke;
   }
 
-  // Stepped carriage motion and escapement wheel rotation
-  nodes.escapement.rotation.x += ratchetReleasePct * sholes.escapementStepRad;
+  // A held ratchet position is an absolute pose, not a per-render increment:
+  // repeat renders are idempotent and a released tooth never unwinds backwards.
+  const heldEscapementSteps = Math.max(0, totalEscapementSteps);
+  nodes.escapement.rotation.x = heldEscapementSteps * sholes.escapementStepRad;
   if (nodes.ribbonSpoolLeft && nodes.ribbonSpoolRight) {
-    nodes.ribbonSpoolLeft.rotation.y += ratchetReleasePct * sholes.ribbonStepRad;
-    nodes.ribbonSpoolRight.rotation.y += ratchetReleasePct * sholes.ribbonStepRad;
+    // The left spool supplies ribbon as the right spool takes it up. Their
+    // same-oriented spindles therefore turn with opposite signed angles.
+    nodes.ribbonSpoolLeft.rotation.y = -heldEscapementSteps * sholes.ribbonStepRad;
+    nodes.ribbonSpoolRight.rotation.y = heldEscapementSteps * sholes.ribbonStepRad;
   }
 
-  nodes.carriageGroup.position.x = sholesCarriageStudioX(
-    displayTypebarIndex,
+  nodes.carriageGroup.position.x = sholesCarriageStudioXAtDisplayStep(
+    displayCarriageSteps,
     sholes.displayColumnWrap,
     sholes.carriagePitchStudio,
   );

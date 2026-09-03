@@ -6,6 +6,7 @@ import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { stepBoyleSmithCcd } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -33,7 +34,17 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
     integrationTimeMs: integrationTime,
     temperatureKelvin: temperature,
   });
+  const live = useLiveSimParams({
+    gateVoltage,
+    clockFreq,
+    incidentLux,
+    temperature,
+    isRunning,
+    metrics,
+  });
 
+  // The layout-effect bridge keeps current controls and kernel telemetry visible
+  // to this long-lived canvas loop without resetting its clock phase.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -46,6 +57,7 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
     const render = () => {
       animId = requestAnimationFrame(render);
       if (!onscreenRef.current) return;
+      const { gateVoltage, clockFreq, incidentLux, temperature, isRunning, metrics } = live.current;
       if (isRunning) {
         clockPhase = (clockPhase + 0.05 * (clockFreq / 5.0)) % (Math.PI * 2);
       }
@@ -290,7 +302,7 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
 
     render();
     return () => cancelAnimationFrame(animId);
-  }, [gateVoltage, clockFreq, incidentLux, temperature, isRunning, metrics, onscreenRef.current]);
+  }, [live, onscreenRef]);
 
   return (
     <div

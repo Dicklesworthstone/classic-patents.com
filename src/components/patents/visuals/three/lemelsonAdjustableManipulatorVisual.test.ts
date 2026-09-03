@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import {
   LEMELSON_MANIPULATOR_DEFAULT_CONTROLS,
   stepLemelsonManipulatorTopology,
@@ -32,6 +33,66 @@ describe("US 3,260,375 Lemelson Adjustable Manipulator procedural visual boundar
     model.dispose();
   });
 
+  test("grounds the overhead track and tethers both source bus bars", () => {
+    const model = buildLemelsonAdjustableManipulatorModel();
+    try {
+      model.root.updateMatrixWorld(true);
+      const bounds = (name: string) => {
+        const part = model.root.getObjectByName(name);
+        expect(part).toBeInstanceOf(THREE.Object3D);
+        return new THREE.Box3().setFromObject(part as THREE.Object3D);
+      };
+      const lowerFlange = bounds("Trackway 21 bottom flange");
+      for (let index = 1; index <= 2; index += 1) {
+        const leg = bounds(`Normalized exhibit gantry support ${index}`);
+        expect(leg.max.y).toBeCloseTo(lowerFlange.min.y, 6);
+        expect(leg.min.y).toBeCloseTo(-0.5, 6);
+      }
+
+      const web = bounds("Trackway 21 web");
+      for (const x of [-2.5, 0, 2.5]) {
+        for (const side of ["positive", "negative"] as const) {
+          const standoff = bounds(`Insulated ${side} bus-bar standoff at ${x}`);
+          const bus = bounds(`Power bus bar 28 ${side} side`);
+          expect(standoff.intersectsBox(web)).toBe(true);
+          expect(standoff.intersectsBox(bus)).toBe(true);
+        }
+      }
+    } finally {
+      model.dispose();
+    }
+  });
+
+  test("keeps the complete carriage-to-jaw load path in contact", () => {
+    const model = buildLemelsonAdjustableManipulatorModel();
+    try {
+      model.updateState(stepLemelsonManipulatorTopology(LEMELSON_MANIPULATOR_DEFAULT_CONTROLS));
+      model.root.updateMatrixWorld(true);
+      const intersects = (first: string, second: string) => {
+        const a = model.root.getObjectByName(first);
+        const b = model.root.getObjectByName(second);
+        expect(a).toBeInstanceOf(THREE.Object3D);
+        expect(b).toBeInstanceOf(THREE.Object3D);
+        return new THREE.Box3()
+          .setFromObject(a as THREE.Object3D)
+          .intersectsBox(new THREE.Box3().setFromObject(b as THREE.Object3D));
+      };
+      expect(intersects("Carriage 22 body", "Outer guide mast 23")).toBe(true);
+      expect(intersects("Outer guide mast 23", "Inner vertical member 23 prime")).toBe(true);
+      expect(intersects("Inner vertical member 23 prime", "Turntable plate 43")).toBe(true);
+      const turntable = model.root.getObjectByName("Turntable plate 43");
+      const rotatingColumn = model.root.getObjectByName("Rotating column 23 prime a");
+      const turntableBounds = new THREE.Box3().setFromObject(turntable as THREE.Object3D);
+      const columnBounds = new THREE.Box3().setFromObject(rotatingColumn as THREE.Object3D);
+      expect(Math.abs(turntableBounds.min.y - columnBounds.max.y)).toBeLessThan(1e-8);
+      expect(intersects("Pivoting manipulator arm 35 prime", "Article-seizing base 83")).toBe(true);
+      expect(intersects("Article-seizing base 83", "Seizing jaw 87a")).toBe(true);
+      expect(intersects("Article-seizing base 83", "Seizing jaw 87b")).toBe(true);
+    } finally {
+      model.dispose();
+    }
+  });
+
   test("keeps both visual faces on the shared topology bus and records the typed refusal", () => {
     const kernel = source("src/physics/lemelsonAdjustableManipulatorKernel.ts");
     const sim2d = source("src/components/patents/visuals/LemelsonAdjustableManipulatorSim.tsx");
@@ -52,9 +113,19 @@ describe("US 3,260,375 Lemelson Adjustable Manipulator procedural visual boundar
     expect(studio3d).toContain("usePatentPhysics(PATENT_ID)");
     expect(studio3d).toContain("createStudioClock");
     expect(studio3d).toContain("ClaimConstraintToggle");
-    expect(studio3d).toContain("liveParams.current = effectiveParams");
+    expect(studio3d).toContain("useLiveSimParams(effectiveParams)");
+    expect(studio3d).not.toContain("liveParams.current = effectiveParams");
     expect(studio3d).toContain("claimConstraintResult.refusalWarning");
     expect(studio3d).toContain('role="status"');
+    expect(studio3d).toContain('data-mobile-layout="controls-below-canvas"');
+    expect(studio3d.indexOf('data-mobile-layout="controls-below-canvas"')).toBeGreaterThan(
+      studio3d.indexOf("ref={containerRef}"),
+    );
+    expect(studio3d).not.toContain("absolute right-3 bottom-3");
+    expect(studio3d).toContain("const PHONE_OVERVIEW");
+    expect(studio3d).toContain("const PHONE_WRIST");
+    expect(studio3d).toContain('container.clientWidth < 640 ? "wrist" : "overview"');
+    expect(studio3d).toContain("viewForViewport(initialView, container.clientWidth)");
     expect(telemetry).toContain('"us-3260375-lemelson-adjustable-manipulator"');
   });
 });

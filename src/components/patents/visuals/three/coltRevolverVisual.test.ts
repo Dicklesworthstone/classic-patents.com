@@ -36,6 +36,18 @@ describe("US X9430 Colt Paterson Revolver visual & physics boundary", () => {
     }
   });
 
+  test("limits control-deck animation to the properties that actually change", () => {
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "ColtRevolver3D.tsx"),
+      "utf8",
+    );
+
+    expect(threeSource).not.toContain("transition-all");
+    expect(threeSource).toContain("transition-colors");
+    expect(threeSource).toContain("transition-[background-color,transform]");
+    expect(threeSource).toContain("transition-[background-color,color,border-color,transform]");
+  });
+
   test("exposes all 6 authentic camera presets and 8 historical patent callouts", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "ColtRevolver3D.tsx"),
@@ -54,6 +66,20 @@ describe("US X9430 Colt Paterson Revolver visual & physics boundary", () => {
     expect(threeSource).toContain("6. Creeping Loading Lever & Rammer");
     expect(threeSource).toContain("7. Transverse Takedown Wedge");
     expect(threeSource).toContain("8. Recoil Shield & Capping Channel");
+  });
+
+  test("keeps the complete Paterson profile in a portrait overview without remounting on pins", () => {
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "ColtRevolver3D.tsx"),
+      "utf8",
+    );
+
+    expect(threeSource).toContain("function cameraPresetForViewport");
+    expect(threeSource).toContain('cameraPresetForViewport("iso", window.innerWidth)');
+    expect(threeSource).toContain("mobileDistanceMultiplier = 1.9");
+    expect(threeSource).toContain("showCalloutPins,");
+    expect(threeSource).toContain("pinGroup.visible = p.showCalloutPins");
+    expect(threeSource).not.toContain("}, [showCalloutPins, live]);");
   });
 
   test("computes solid mechanics hoop stress and ballistics in reproducible SI units", () => {

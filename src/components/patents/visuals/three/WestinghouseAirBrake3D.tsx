@@ -127,12 +127,12 @@ export function WestinghouseAirBrake3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater(
+    const unregister = globalTransportBus.registerUpdater(
       "us-124404-westinghouse-air-brake",
       integrate,
       "TS_FALLBACK",
     );
-    return () => globalTransportBus.unregisterUpdater("us-124404-westinghouse-air-brake");
+    return unregister;
   }, [live]);
 
   const studioRef = useRef<StudioContext | null>(null);

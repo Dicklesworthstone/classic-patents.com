@@ -1,7 +1,6 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { voltsToKv } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import {
@@ -37,13 +36,30 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [8, 6, 9], target: [0, 0, 0] },
+  iso: { pos: [10.5, 8, 12], target: [0, 0, 0] },
   cavity_resonator: { pos: [0, 2.5, 3.5], target: [0, 0, 0] },
   electron_spokes: { pos: [0, 4.5, 0.1], target: [0, 0, 0] },
   waveguide_launch: { pos: [2.5, 1.8, 3.0], target: [1.2, 0, 0] },
   strapping_rings: { pos: [0, 1.2, 2.5], target: [0, 0, 0] },
   top: { pos: [0, 10.0, 0.1], target: [0, 0, 0] },
 };
+
+export const SPENCER_3D_SOURCE_BOUNDARY =
+  "US 2,495,429 establishes the connected dual-oscillator treatment path and a wavelength region, but supplies no tube voltage, magnetic field, RF power, or quantitative magnetron model. The displayed numerical operating point is a modern illustrative scenario only.";
+
+export function spencerViewForViewport(preset: CameraPreset, viewportWidth: number) {
+  const config = CAMERA_PRESETS[preset];
+  const multiplier =
+    viewportWidth < 480 ? (preset === "iso" ? 2.15 : 1.5) : viewportWidth < 900 ? 1.55 : 1;
+  return {
+    pos: [
+      config.target[0] + (config.pos[0] - config.target[0]) * multiplier,
+      config.target[1] + (config.pos[1] - config.target[1]) * multiplier,
+      config.target[2] + (config.pos[2] - config.target[2]) * multiplier,
+    ] as [number, number, number],
+    target: config.target,
+  };
+}
 
 export function SpencerMicrowave3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -53,10 +69,14 @@ export function SpencerMicrowave3D() {
   const { params, updateParam } = usePatentPhysics("us-2495429-spencer-microwave");
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
-  const anodeVoltageVolts = params.anodeVoltage ?? 2200;
+  const energyPathActive = (params.rfPowerSetting ?? 1) >= 0.5;
+  // The grant defines the connected apparatus and wavelength region, not a
+  // quantitative tube operating point. These fixed values are a disclosed
+  // modern teaching scenario; the only source-bounded control is path on/off.
+  const anodeVoltageVolts = 2200;
   const anodeVoltageKv = voltsToKv(anodeVoltageVolts);
-  const magneticFieldGauss = params.magneticFieldGauss ?? 1450;
-  const rfPowerWatts = params.rfPowerSetting ?? 800;
+  const magneticFieldGauss = 1450;
+  const rfPowerWatts = energyPathActive ? 800 : 0;
   const [showSpokeWheel, _setShowSpokeWheel] = useState<boolean>(true);
   const [showWaterDipoles, _setShowWaterDipoles] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
@@ -76,27 +96,10 @@ export function SpencerMicrowave3D() {
     domain: "electromagnetics_flux",
     timestampMs: 0,
     timeStepDt: 0.016,
-    refusal: { isRefused: false },
-    em: {
-      frequencyHz: rfPhysics.microwaveFreqHz,
-      magneticFluxDensityTesla: rfPhysics.magneticFluxDensityTesla,
-      electricFieldVpm: rfPhysics.electricFieldVpm,
-      phaseAngleRad: 0,
-      inductanceHenry: 0,
-      capacitanceFarad: 0,
-      currentAmperes: 0,
-      voltageVolts: rfPhysics.voltageVolts,
-      powerFactor: 0,
-      efficiencyPct: 0,
-      synchronousRpm: 0,
-      slipFraction: 0,
-      rotorRpm: 0,
-      shaftPowerWatts: 0,
-      electricalInputWatts: 0,
-    },
+    refusal: { isRefused: true, reason: SPENCER_3D_SOURCE_BOUNDARY },
   });
   const hullCutoffGauss = rfPhysics.hullCutoffGauss;
-  const isOscillating = rfPhysics.isOscillating;
+  const isOscillating = energyPathActive && rfPhysics.isOscillating;
   const waterDielectricLossDensity = rfPhysics.dielectricLossWattsPerDm3.toFixed(1);
 
   const live = useLiveSimParams({
@@ -113,7 +116,7 @@ export function SpencerMicrowave3D() {
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = spencerViewForViewport(preset, containerRef.current?.clientWidth ?? 1000);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -125,7 +128,7 @@ export function SpencerMicrowave3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = spencerViewForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -145,7 +148,7 @@ export function SpencerMicrowave3D() {
       fieldGrid,
     );
     const fieldPlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(3.2, 3.2),
+      new THREE.PlaneGeometry(4.0, 2.4),
       new THREE.MeshBasicMaterial({
         map: fieldTex,
         transparent: true,
@@ -154,7 +157,9 @@ export function SpencerMicrowave3D() {
       }),
     );
     fieldPlane.rotation.x = -Math.PI / 2;
-    fieldPlane.position.y = 0.04;
+    // The field belongs over the conveyor treatment region, downstream of
+    // the joined guide—not at an unconnected scene-origin display plane.
+    fieldPlane.position.set(0, -2.25, 1.3);
     scene.add(fieldPlane);
     const fieldRgba = fieldTex.image.data as Uint8Array;
 
@@ -222,6 +227,17 @@ export function SpencerMicrowave3D() {
     };
   }, [live]);
 
+  useEffect(() => {
+    const restoreResponsiveView = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const config = spencerViewForViewport(activeCamera, container.clientWidth);
+      studioRef.current?.controls.setView(config.pos, config.target);
+    };
+    window.addEventListener("resize", restoreResponsiveView);
+    return () => window.removeEventListener("resize", restoreResponsiveView);
+  }, [activeCamera]);
+
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
       <PortHamiltonianEnergyStrip
@@ -274,7 +290,7 @@ export function SpencerMicrowave3D() {
             claimStates={claimStates}
             onToggleClaim={(c: number, active: boolean) => {
               setClaimStates((prev) => ({ ...prev, [c]: active }));
-              updateParam("rfPowerSetting", active ? 800 : 0);
+              updateParam("rfPowerSetting", active ? 1 : 0);
             }}
           />
           <button
@@ -357,26 +373,26 @@ export function SpencerMicrowave3D() {
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
               <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
-                RF Frequency:
+                Modern-scenario frequency:
               </span>
               <span className="font-bold text-amber-700 dark:text-amber-400">
                 {rfPhysics.microwaveFreqMhz.toLocaleString()} MHz (λ = {rfPhysics.wavelengthCm} cm)
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">RF Output:</span>
+              <span className="text-ink-600 dark:text-ink-400">Scenario RF output:</span>
               <span className="text-purple-800 dark:text-purple-400 font-bold">
                 {rfPowerWatts} W CW
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Hull Cutoff:</span>
+              <span className="text-ink-600 dark:text-ink-400">Scenario Hull cutoff:</span>
               <span className="text-emerald-800 dark:text-emerald-400 font-bold">
                 {hullCutoffGauss} G ({magneticFieldGauss} G Active)
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Dielectric Loss:</span>
+              <span className="text-ink-600 dark:text-ink-400">Scenario dielectric loss:</span>
               <span className="text-cyan-800 dark:text-cyan-400 font-bold">
                 {waterDielectricLossDensity} W/dm³
               </span>
@@ -387,14 +403,18 @@ export function SpencerMicrowave3D() {
         <StudioKernelChips
           side="right"
           visible={showUiOverlay}
-          title="Spencer cavity magnetron"
+          title="Illustrative modern magnetron scenario"
           chips={[
-            { label: "Anode", value: String(anodeVoltageKv), unit: "kV" },
-            { label: "B", value: String(magneticFieldGauss), unit: "G" },
-            { label: "RF", value: String(rfPowerWatts), unit: "W" },
-            { label: "f", value: String(rfPhysics.microwaveFreqMhz), unit: "MHz" },
+            { label: "Illustrative anode", value: String(anodeVoltageKv), unit: "kV" },
+            { label: "Illustrative B", value: String(magneticFieldGauss), unit: "G" },
+            { label: "Illustrative RF", value: String(rfPowerWatts), unit: "W" },
             {
-              label: "Spoke crate",
+              label: "Illustrative f",
+              value: String(rfPhysics.microwaveFreqMhz),
+              unit: "MHz",
+            },
+            {
+              label: "Field helper",
               value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
             },
           ]}
@@ -403,48 +423,27 @@ export function SpencerMicrowave3D() {
 
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <SensitivitySlider
-            id="anodeVoltage"
-            patentId="us-2495429-spencer-microwave"
-            paramKey="anodeVoltage"
-            label="Anode Potential"
-            value={anodeVoltageVolts}
-            min={1000}
-            max={4000}
-            step={50}
-            unit="V"
-            onChange={(val: number) => updateParam("anodeVoltage", val)}
-            allParams={params}
-          />
-
-          <SensitivitySlider
-            id="magneticField"
-            patentId="us-2495429-spencer-microwave"
-            paramKey="magneticFieldGauss"
-            label="Axial Magnetic Field"
-            value={magneticFieldGauss}
-            min={800}
-            max={2500}
-            step={25}
-            unit="G"
-            onChange={(val: number) => updateParam("magneticFieldGauss", val)}
-            allParams={params}
-          />
-
-          <SensitivitySlider
-            id="rfPower"
-            patentId="us-2495429-spencer-microwave"
-            paramKey="rfPowerSetting"
-            label="RF Power Rating"
-            value={rfPowerWatts}
-            min={200}
-            max={1500}
-            step={50}
-            unit="W"
-            onChange={(val: number) => updateParam("rfPowerSetting", val)}
-            allParams={params}
-          />
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-ink-900 dark:text-parchment-100">
+              Source-bounded energy path
+            </p>
+            <p className="mt-1 max-w-3xl text-xs leading-relaxed text-ink-600 dark:text-ink-300">
+              {SPENCER_3D_SOURCE_BOUNDARY}
+            </p>
+          </div>
+          <button
+            type="button"
+            aria-pressed={energyPathActive}
+            onClick={() => updateParam("rfPowerSetting", energyPathActive ? 0 : 1)}
+            className={`min-h-11 shrink-0 rounded-lg border px-4 text-sm font-semibold ${
+              energyPathActive
+                ? "border-emerald-700 bg-emerald-700 text-white"
+                : "border-ink-400 bg-parchment-50 text-ink-800 dark:border-ink-600 dark:bg-ink-900 dark:text-parchment-200"
+            }`}
+          >
+            Energy path {energyPathActive ? "enabled" : "disabled"}
+          </button>
         </div>
 
         <PortHamiltonianEnergyStrip

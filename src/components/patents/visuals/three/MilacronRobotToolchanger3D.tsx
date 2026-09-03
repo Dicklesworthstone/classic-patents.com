@@ -7,8 +7,12 @@ import { stepMilacronRobotToolchanger } from "@/physics/milacronRobotToolchanger
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { buildMilacronRobotToolchangerModel } from "./milacronRobotToolchangerModel";
+import {
+  buildMilacronRobotToolchangerModel,
+  type MilacronRobotToolchangerModel,
+} from "./milacronRobotToolchangerModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-4512709-milacron-robot-toolchanger";
 const VIEWS = {
@@ -26,12 +30,31 @@ const VIEWS = {
   },
 } as const;
 
+const PHONE_VIEWS = {
+  adapter: {
+    position: [7.0, 4.8, 8.8] as [number, number, number],
+    target: [-0.3, -0.05, 0] as [number, number, number],
+  },
+  lock: {
+    position: [3.9, 2.5, 5.5] as [number, number, number],
+    target: [0.1, -0.1, 0.05] as [number, number, number],
+  },
+  rack: {
+    position: [-7.2, 4.0, 7.6] as [number, number, number],
+    target: [-1.15, -0.1, 0] as [number, number, number],
+  },
+} as const;
+
+function viewForViewport(view: keyof typeof VIEWS, viewportWidth: number) {
+  return viewportWidth < 640 ? PHONE_VIEWS[view] : VIEWS[view];
+}
+
 export function MilacronRobotToolchanger3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
+  const modelRef = useRef<MilacronRobotToolchangerModel | null>(null);
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
-  const liveParams = useRef(params);
-  liveParams.current = params;
+  const liveParams = useLiveSimParams(params);
   const state = useMemo(() => stepMilacronRobotToolchanger(params), [params]);
   const [view, setView] = useState<keyof typeof VIEWS>("adapter");
 
@@ -42,16 +65,22 @@ export function MilacronRobotToolchanger3D() {
 
   const selectView = (next: keyof typeof VIEWS) => {
     setView(next);
-    studioRef.current?.controls.setView(VIEWS[next].position, VIEWS[next].target);
+    const selected = viewForViewport(next, containerRef.current?.clientWidth ?? 640);
+    studioRef.current?.controls.setView(selected.position, selected.target);
+    modelRef.current?.setInspectionMode(next);
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+    const initialView = container.clientWidth < 640 ? "lock" : "adapter";
+    const initialCamera = viewForViewport(initialView, container.clientWidth);
+    setView(initialView);
     const studio = createThreeStudioScene({
       container,
-      cameraPos: VIEWS.adapter.position,
-      targetPos: VIEWS.adapter.target,
+      cameraPos: initialCamera.position,
+      targetPos: initialCamera.target,
       environmentStyle: "studio",
       enableClouds: false,
       ambientIntensity: 2.7,
@@ -72,6 +101,8 @@ export function MilacronRobotToolchanger3D() {
     floor.receiveShadow = true;
     scene.add(floor);
     const model = buildMilacronRobotToolchangerModel();
+    model.setInspectionMode(initialView);
+    modelRef.current = model;
     scene.add(model.root);
     const axes = new THREE.AxesHelper(0.65);
     axes.position.set(-2.75, -1.18, -1.2);
@@ -95,6 +126,7 @@ export function MilacronRobotToolchanger3D() {
       floorMat.dispose();
       studio.cleanup();
       studioRef.current = null;
+      modelRef.current = null;
     };
   }, []);
 
@@ -128,7 +160,11 @@ export function MilacronRobotToolchanger3D() {
           <p>
             CLAIM 4{" "}
             <span className="text-emerald-300">
-              {state.claimFourRampCaptured ? "CAPTURED" : "NOT ACTIVE"}
+              {state.claimFourTMemberSelected
+                ? state.claimFourRampCaptured
+                  ? "T-MEMBER CAPTURED"
+                  : "T-MEMBER SELECTED"
+                : "CLAIM 3 GENERIC MEMBER"}
             </span>
           </p>
         </div>
@@ -137,7 +173,7 @@ export function MilacronRobotToolchanger3D() {
         data-mobile-layout="controls-below-canvas"
         className="grid gap-3 border-t border-slate-700/80 bg-slate-950/90 p-3 lg:grid-cols-[minmax(0,1fr)_auto]"
       >
-        <div className="grid gap-2 sm:grid-cols-3">
+        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
           <label className="text-xs text-slate-200">
             Registration{" "}
             <span className="float-right font-mono text-cyan-300">
@@ -180,6 +216,16 @@ export function MilacronRobotToolchanger3D() {
               onChange={(event) => updateParam("toolBasePresent", event.target.checked ? 1 : 0)}
             />
           </label>
+          <label className="flex items-center justify-between gap-2 text-xs text-slate-200">
+            Claim 4 T-member form
+            <input
+              className="h-4 w-4 accent-rose-400"
+              type="checkbox"
+              checked={state.claimFourTMemberSelected}
+              aria-label="Claim 4 T-member form"
+              onChange={(event) => updateParam("claimFourTMember", event.target.checked ? 1 : 0)}
+            />
+          </label>
         </div>
         <div className="flex flex-wrap items-end gap-2">
           {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((candidate) => (
@@ -202,6 +248,11 @@ export function MilacronRobotToolchanger3D() {
             Reset
           </button>
         </div>
+        <p className="text-[11px] leading-4 text-slate-400 lg:col-span-2">
+          {view === "lock"
+            ? "Lock inspection uses a transparent cutaway of common base 18 so aperture 34, slide 33, and the selected retention member remain visible. Transparency is an inspection aid, not source material."
+            : "Adapter and rack views keep all source-described plates opaque; select Lock to inspect the otherwise enclosed capture geometry."}
+        </p>
       </div>
     </section>
   );

@@ -20,7 +20,9 @@ export function SundbackZipperSim({
   const tel = useMemo(() => stepSundbackZipperSi(controls), [controls]);
 
   const clipId = useId();
-  const [isDraggingSlider, setIsDraggingSlider] = useState(false);
+  // This only gates pointer-move updates and is never rendered. A ref keeps
+  // dragging responsive without scheduling redundant React renders.
+  const isDraggingSliderRef = useRef(false);
   const svgRef = useRef<SVGSVGElement>(null);
 
   const toothCount = 28;
@@ -97,11 +99,11 @@ export function SundbackZipperSim({
   }, [sliderY, chainLength, centerX, controls.staggerAligned]);
 
   const handlePointerDown = () => {
-    setIsDraggingSlider(true);
+    isDraggingSliderRef.current = true;
   };
 
   const handlePointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
-    if (!isDraggingSlider || !svgRef.current) return;
+    if (!isDraggingSliderRef.current || !svgRef.current) return;
     const rect = svgRef.current.getBoundingClientRect();
     const y = e.clientY - rect.top;
     const clampedY = Math.max(startY, Math.min(endY, (y / rect.height) * height));
@@ -110,7 +112,7 @@ export function SundbackZipperSim({
   };
 
   const handlePointerUp = () => {
-    setIsDraggingSlider(false);
+    isDraggingSliderRef.current = false;
   };
 
   return (

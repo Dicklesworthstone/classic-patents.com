@@ -12,9 +12,12 @@ import {
   type SikorskyHelicopterState,
   stepSikorskyHelicopterSi,
 } from "@/physics/sikorskyHelicopterKernel";
+import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 
 const PATENT_ID = "us-2318259-sikorsky-helicopter";
+const UI_REFRESH_INTERVAL_MS = 80;
 
 export const SikorskyHelicopterSim: React.FC = () => {
   const { params, updateParam } = usePatentPhysics(PATENT_ID);
@@ -32,8 +35,9 @@ export const SikorskyHelicopterSim: React.FC = () => {
       .metrics;
   });
 
-  const controlsRef = useRef(controls);
-  controlsRef.current = controls;
+  const controlsRef = useLiveSimParams(controls);
+  const simStateRef = useRef<SikorskyHelicopterState>(INITIAL_SIKORSKY_STATE);
+  const metricsRef = useRef<SikorskyHelicopterMetrics>(metrics);
 
   const setControl = <K extends keyof SikorskyHelicopterControls>(
     key: K,
@@ -44,26 +48,22 @@ export const SikorskyHelicopterSim: React.FC = () => {
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Animation & simulation loop (60 FPS)
+  // Keep the physical law on a bounded fixed-step scheduler while the canvas
+  // paints every frame. React only receives the readout snapshot at 12.5 Hz;
+  // restarting an rAF effect for every simulation tick previously caused
+  // visible jank and allowed more than one loop to contend during updates.
   useEffect(() => {
     let animId: number;
-    let lastTime = performance.now();
+    const scheduler = new TickScheduler(1 / 60, performance.now() / 1000);
+    let nextUiRefreshMs = 0;
 
     const frame = (now: number) => {
-      const dt = Math.min(0.05, (now - lastTime) / 1000);
-      lastTime = now;
-
-      setSimState((prevState) => {
-        const { state: nextState, metrics: nextMetrics } = stepSikorskyHelicopterSi(
-          prevState,
-          controlsRef.current,
-          dt,
-        );
-        setMetrics(nextMetrics);
-        return nextState;
+      scheduler.pump(now / 1000, () => {
+        const next = stepSikorskyHelicopterSi(simStateRef.current, controlsRef.current, 1 / 60);
+        simStateRef.current = next.state;
+        metricsRef.current = next.metrics;
       });
 
-      // Render Canvas
       const canvas = canvasRef.current;
       if (canvas) {
         const ctx = canvas.getContext("2d");
@@ -72,11 +72,17 @@ export const SikorskyHelicopterSim: React.FC = () => {
             ctx,
             canvas.width,
             canvas.height,
-            simState,
-            metrics,
+            simStateRef.current,
+            metricsRef.current,
             controlsRef.current,
           );
         }
+      }
+
+      if (now >= nextUiRefreshMs) {
+        nextUiRefreshMs = now + UI_REFRESH_INTERVAL_MS;
+        setSimState(simStateRef.current);
+        setMetrics(metricsRef.current);
       }
 
       animId = requestAnimationFrame(frame);
@@ -84,7 +90,7 @@ export const SikorskyHelicopterSim: React.FC = () => {
 
     animId = requestAnimationFrame(frame);
     return () => cancelAnimationFrame(animId);
-  }, [simState, metrics]);
+  }, [controlsRef]);
 
   return (
     <div className="w-full bg-stone-900 border border-stone-800 rounded-xl overflow-hidden shadow-2xl p-4 sm:p-6 text-stone-100 font-sans">

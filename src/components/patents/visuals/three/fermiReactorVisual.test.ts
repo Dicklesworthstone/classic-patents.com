@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { computeFermiNeutronFluxField } from "@/physics/fieldTextures";
 import { buildFermiReactorModel, updateFermiReactorKinematics } from "./fermiReactorModel";
@@ -130,5 +131,54 @@ describe("US 2,708,656 Enrico Fermi Chicago Pile-1 Nuclear Reactor visual & kine
     expect(model.graphiteMat.opacity).toBe(0.35);
 
     model.dispose();
+  });
+
+  test("instances the repeated graphite and uranium lattices instead of constructing thousands of draw objects", () => {
+    const model = buildFermiReactorModel();
+    const graphite = model.pileGroup.getObjectByName("Graphite moderator brick lattice");
+    const fuel = model.fuelGroup.getObjectByName("Natural uranium fuel slug lattice");
+    let meshCount = 0;
+    let instancedMeshCount = 0;
+
+    model.root.traverse((object) => {
+      if (object.type === "Mesh") meshCount += 1;
+      if (object instanceof THREE.InstancedMesh) instancedMeshCount += 1;
+    });
+
+    expect(graphite).toBeInstanceOf(THREE.InstancedMesh);
+    expect(fuel).toBeInstanceOf(THREE.InstancedMesh);
+    expect((graphite as THREE.InstancedMesh).count).toBeGreaterThan(2_500);
+    expect((fuel as THREE.InstancedMesh).count).toBeGreaterThan(50);
+    expect(model.graphiteBricks.material).toBe(model.graphiteMat);
+    expect(model.fuelSlugs.material).toBe(model.uraniumFuelMat);
+
+    const matrix = new THREE.Matrix4();
+    const position = new THREE.Vector3();
+    const expectInstancePosition = (
+      lattice: THREE.InstancedMesh,
+      index: number,
+      expected: readonly [number, number, number],
+    ) => {
+      lattice.getMatrixAt(index, matrix);
+      position.setFromMatrixPosition(matrix);
+      expect(position.x).toBeCloseTo(expected[0], 6);
+      expect(position.y).toBeCloseTo(expected[1], 6);
+      expect(position.z).toBeCloseTo(expected[2], 6);
+    };
+    expectInstancePosition(model.graphiteBricks, 0, [-1.05, -2.2, -0.7]);
+    expectInstancePosition(
+      model.graphiteBricks,
+      Math.floor(model.graphiteBricks.count / 2),
+      [-2.8, 0.04, -2.1],
+    );
+    expectInstancePosition(model.graphiteBricks, model.graphiteBricks.count - 1, [1.05, 1.96, 0.7]);
+    expectInstancePosition(model.fuelSlugs, 0, [-1.4, -1.56, -1.4]);
+    expectInstancePosition(model.fuelSlugs, Math.floor(model.fuelSlugs.count / 2), [0, -0.28, 0]);
+    expectInstancePosition(model.fuelSlugs, model.fuelSlugs.count - 1, [1.4, 1, 1.4]);
+    expect(instancedMeshCount).toBe(2);
+    expect(meshCount).toBeLessThan(32);
+
+    model.dispose();
+    expect(model.root.children).toHaveLength(0);
   });
 });

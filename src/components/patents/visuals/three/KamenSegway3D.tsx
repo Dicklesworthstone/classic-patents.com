@@ -13,6 +13,7 @@ import { readKamenSegwayControls, stepKamenSegwaySi } from "@/physics/kamenSegwa
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-6302230-kamen-segway";
 
@@ -39,11 +40,10 @@ export function KamenSegway3D({ patentId = PATENT_ID }: { patentId?: string }) {
   );
 
   // Dynamic references for the render loop
-  const controlsRef = useRef(effectiveControls);
-  controlsRef.current = effectiveControls;
-  const telRef = useRef(tel);
-  telRef.current = tel;
+  const controlsRef = useLiveSimParams(effectiveControls);
+  const telRef = useLiveSimParams(tel);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted render loop reads stable, layout-effect-synchronized refs; depending on their current values would rebuild the Three.js scene.
   useEffect(() => {
     if (!containerRef.current) return;
 

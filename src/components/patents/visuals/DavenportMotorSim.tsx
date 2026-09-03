@@ -8,6 +8,8 @@ import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
+const UI_SNAPSHOT_INTERVAL_MS = 80;
+
 export function DavenportMotorSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-132-davenport-electric-motor");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -16,6 +18,9 @@ export function DavenportMotorSim() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [rotorAngleDeg, setRotorAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const rotorAngleRef = useRef(0);
+  const rotorGroupRef = useRef<SVGGElement>(null);
+  const motorRef = useRef<ReturnType<typeof stepDavenportMotor> | null>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const motor = stepDavenportMotor({ batteryVoltage: batteryVoltageV, loadTorque: loadTorqueNm });
@@ -25,24 +30,44 @@ export function DavenportMotorSim() {
   const efficiencyPct = motor.efficiencyPct;
 
   useEffect(() => {
-    if (!isPlaying || actualRpm <= 0) return;
+    motorRef.current = motor;
+  }, [motor]);
+
+  useEffect(() => {
+    if (!isPlaying) return;
 
     let lastTime = performance.now();
+    let lastUiSnapshot = 0;
 
     const loop = (time: number) => {
       animRef.current = requestAnimationFrame(loop);
-      if (!onscreenRef.current) return;
+      if (!onscreenRef.current) {
+        lastTime = time;
+        return;
+      }
       const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
       lastTime = time;
+      const liveMotor = motorRef.current;
+      if (!liveMotor) return;
 
-      setRotorAngleDeg((prev) => (prev + motor.shaftOmegaDegPerS * dt) % motor.displayWrapDeg);
+      const nextAngle =
+        (rotorAngleRef.current + liveMotor.shaftOmegaDegPerS * dt) % liveMotor.displayWrapDeg;
+      rotorAngleRef.current = nextAngle;
+      rotorGroupRef.current?.setAttribute("transform", `translate(300, 170) rotate(${nextAngle})`);
+
+      // The SVG pose is projected imperatively each frame. React only receives an
+      // accessible/readout snapshot at 12.5 Hz, avoiding a full card re-render per frame.
+      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = time;
+        setRotorAngleDeg(nextAngle);
+      }
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, actualRpm, motor.shaftOmegaDegPerS, motor.displayWrapDeg, onscreenRef.current]);
+  }, [isPlaying, onscreenRef]);
 
   const isPolarityReversed = davenportPolarityReversed(
     rotorAngleDeg,
@@ -102,6 +127,8 @@ export function DavenportMotorSim() {
             type="button"
             onClick={() => {
               resetParams();
+              rotorAngleRef.current = 0;
+              rotorGroupRef.current?.setAttribute("transform", "translate(300, 170) rotate(0)");
               setRotorAngleDeg(0);
               soundEngine.playSwitchClick();
             }}
@@ -170,7 +197,7 @@ export function DavenportMotorSim() {
           </g>
 
           {/* Rotating Rotor Armature with 4 Electromagnet Coils */}
-          <g transform={`translate(300, 170) rotate(${rotorAngleDeg})`}>
+          <g ref={rotorGroupRef} transform={`translate(300, 170) rotate(${rotorAngleDeg})`}>
             {/* Iron Cross Core */}
             <rect
               x="-85"

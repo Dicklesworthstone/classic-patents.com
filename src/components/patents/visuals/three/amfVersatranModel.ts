@@ -201,9 +201,11 @@ export function buildAmfVersatranModel(): AmfVersatranModel {
     teachPaint,
   );
   teachLink.name = "Manual programming arm";
+  const teachPivot = new THREE.Mesh(geometry(new THREE.SphereGeometry(0.075, 16, 12)), teachPaint);
+  teachPivot.name = "Manual programming pivot anchored to column B";
   const teachHandle = new THREE.Mesh(geometry(new THREE.SphereGeometry(0.09, 16, 12)), teachPaint);
   teachHandle.name = "Manual programming handle";
-  columnAssembly.add(teachLink, teachHandle);
+  columnAssembly.add(teachPivot, teachLink, teachHandle);
 
   const signalDisplay = new THREE.Group();
   signalDisplay.name = "Recorded-signal and feedback comparison display";
@@ -268,8 +270,12 @@ export function buildAmfVersatranModel(): AmfVersatranModel {
     pinionGripper.visible = displayPose.pinionGripperTopologyEnabled;
     genericTool.visible = !displayPose.pinionGripperTopologyEnabled;
 
-    const armStart = new THREE.Vector3(-0.36, 1.55, 0);
+    // Sink the programming-arm pivot into the column skin. The former
+    // x=-0.36 endpoint stopped short of the r=0.24 column and made this
+    // source-named linkage look (and geometrically be) unsupported.
+    const armStart = new THREE.Vector3(-0.2, 1.55, 0);
     const armEnd = new THREE.Vector3(-0.92, 1.35 + controls.carriageLift * 0.36, 0.08);
+    teachPivot.position.copy(armStart);
     setRodBetween(teachLink, armStart, armEnd);
     teachHandle.position.copy(armEnd).add(new THREE.Vector3(-0.08, -0.06, 0));
     teachPaint.emissive.setHex(

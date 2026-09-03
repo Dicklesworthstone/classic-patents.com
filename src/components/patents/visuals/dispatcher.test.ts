@@ -28,16 +28,24 @@ describe("PatentVisualDispatcher coverage", () => {
     expect(indexSource).not.toContain('case "us-2569347-bardeen-transistor":');
   });
 
-  test("never routes the public interactive-sim tab to a facsimile crop or withheld placeholder", () => {
+  test("routes only the source-held Kwolek record to an explicit visual refusal", () => {
     const switchBody = indexSource.split("switch (patentId)")[1] ?? "";
-    expect(switchBody).not.toContain("SourceVisual");
-    expect(switchBody).not.toContain("source-crop");
-    expect(switchBody).not.toContain("Pinned facsimile");
-    expect(switchBody).not.toContain("SourceVisualUnavailable");
+    const kwolekCase = switchBody.match(
+      /case "us-3671542-kwolek-kevlar":([\s\S]*?)case "us-3728480-baer-odyssey":/,
+    )?.[1];
+    expect(kwolekCase).toContain("SourceVisualUnavailable");
+    expect(kwolekCase).not.toContain("KwolekKevlar3D");
+    expect(kwolekCase).not.toContain("KwolekKevlarSim");
+
+    const interactiveCases = switchBody.replace(kwolekCase ?? "", "");
+    expect(interactiveCases).not.toContain("source-crop");
+    expect(interactiveCases).not.toContain("Pinned facsimile");
+    expect(interactiveCases).not.toContain("SourceVisualUnavailable");
 
     const groups = switchBody.split(/case "/).slice(1);
     const incomplete: string[] = [];
     for (const group of groups) {
+      if (group.startsWith('us-3671542-kwolek-kevlar"')) continue;
       if (group.includes("No interactive physics module")) continue;
       // Fall-through aliases share the next case's 3D/2D return.
       if (!group.includes("return ")) continue;

@@ -4,16 +4,15 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "l
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
-import { voltsToKv } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
+import { readFarnsworthTvControls, readFarnsworthTvTapeFrame } from "@/physics/farnsworthTvKernel";
 import {
   computeFarnsworthRasterField,
   createColormappedFieldTexture,
   writeColormappedField,
 } from "@/physics/fieldTextures";
 import { ensureGenericWasm } from "@/physics/genericWasm";
-import { createStudioClock } from "@/physics/tickScheduler";
-import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
+import { usePatentRuntimeTick } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -39,20 +38,37 @@ const CAMERA_PRESETS: Record<
   top: { pos: [0, 9, 0.1], target: [0, 0, 0] },
 };
 
+function cameraPresetForViewport(
+  preset: CameraPreset,
+  viewportWidth: number,
+): { pos: [number, number, number]; target: [number, number, number] } {
+  const config = CAMERA_PRESETS[preset];
+  if (viewportWidth >= 640) return config;
+
+  const distanceMultiplier = preset === "iso" ? 2.15 : 1.55;
+  return {
+    pos: [
+      config.target[0] + (config.pos[0] - config.target[0]) * distanceMultiplier,
+      config.target[1] + (config.pos[1] - config.target[1]) * distanceMultiplier,
+      config.target[2] + (config.pos[2] - config.target[2]) * distanceMultiplier,
+    ],
+    target: config.target,
+  };
+}
+
 export function FarnsworthTV3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
 
   // Dissector Tube State Controls
-  const { params, updateParam } = usePatentPhysics("us-1773980-farnsworth-tv");
+  const patentId = "us-1773980-farnsworth-tv";
+  const { params, effectiveParams, updateParam } = usePatentPhysics(patentId);
+  const runtimeTick = usePatentRuntimeTick(patentId, 6);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const anodeVoltageVolts = params.anodeVoltage ?? 1500;
-  const acceleratingVoltageKv = voltsToKv(anodeVoltageVolts);
   const coilCurrentA = params.coilCurrent ?? 0.42;
   const deflectionGauss = FrankenSimEngine.farnsworthDeflectionGauss(coilCurrentA);
-  const horizontalFreqKhz = params.horizontalFreqKhz ?? 15.75;
-  const verticalFreqHz = params.verticalFreqHz ?? 60;
   const lightIntensityLux = params.lightIntensityLux ?? 500;
   const [showElectronBeam, _setShowElectronBeam] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
@@ -64,50 +80,24 @@ export function FarnsworthTV3D() {
     void ensureGenericWasm();
   }, []);
 
-  // Electron Optics Physics (FrankenSim Relativistic Electron Beam)
-  const beamState = FrankenSimEngine.stepFarnsworthTv(
-    acceleratingVoltageKv,
-    deflectionGauss,
-    lightIntensityLux,
-  );
+  void runtimeTick;
+  const tapeFrame = readFarnsworthTvTapeFrame(readFarnsworthTvControls(effectiveParams as any));
+  const beamState = tapeFrame.beamState;
   const velocityMps = beamState.electronVelocityMps;
   const velocityFractionC = beamState.relativisticPct.toFixed(1);
   const photocathodeCurrentUa = beamState.photocathodeCurrentUa.toFixed(1);
 
-  useFrankenSimPhysics("us-1773980-farnsworth-tv", {
-    domain: "semiconductor_microarch",
-    refusal: { isRefused: false },
-    semi: {
-      biasVoltageVolts: beamState.acceleratingVoltageVolts,
-      currentGainAlpha: 0,
-      holeDiffusionCoefficientCm2ps: 0,
-      chargeTransferEfficiencyPct: 0,
-      clockPeriodNs: 0,
-      busBandwidthMbps: 0,
-      electronVelocityMps: velocityMps,
-      relativisticFractionC: Number(velocityFractionC),
-      voltageGain: 1.0,
-      powerGainDb: 0,
-      collectorCurrentMa: 0,
-    },
-  });
-
   const live = useLiveSimParams({
-    acceleratingVoltageKv,
-    horizontalFreqKhz,
-    verticalFreqHz,
+    effectiveParams,
     showElectronBeam,
     isCutaway,
     isAudioMuted,
     velocityMps,
-    electronDisplaySpeed: beamState.electronDisplaySpeed,
-    lightIntensityLux,
-    gyroRadiusMm: beamState.gyroRadiusMm,
   });
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = cameraPresetForViewport(preset, containerRef.current?.clientWidth ?? 1000);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -121,7 +111,7 @@ export function FarnsworthTV3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = cameraPresetForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -135,13 +125,23 @@ export function FarnsworthTV3D() {
     scene.add(model.root);
 
     const fieldGrid = 32;
+    const fieldValues = new Float32Array(fieldGrid * fieldGrid);
+    const initial = readFarnsworthTvTapeFrame(
+      readFarnsworthTvControls(live.current.effectiveParams as any),
+    );
+    const initialScanFrame = initial.scanFrame;
     const fieldTex = createColormappedFieldTexture(
-      computeFarnsworthRasterField(0.4, fieldGrid),
+      computeFarnsworthRasterField(
+        initialScanFrame.beamFraction,
+        fieldGrid,
+        fieldValues,
+        initialScanFrame.rasterYPercent / 100,
+      ),
       fieldGrid,
       fieldGrid,
     );
-    const fieldPlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(2.8, 2.8),
+    const photocathodeField = new THREE.Mesh(
+      new THREE.CircleGeometry(1.55, 64),
       new THREE.MeshBasicMaterial({
         map: fieldTex,
         transparent: true,
@@ -149,34 +149,34 @@ export function FarnsworthTV3D() {
         depthWrite: false,
       }),
     );
-    fieldPlane.position.set(0, 0.9, 0.02);
-    scene.add(fieldPlane);
+    photocathodeField.position.z = 0.02;
+    model.photocathode.add(photocathodeField);
     const fieldRgba = fieldTex.image.data as Uint8Array;
 
     let reqId: number;
-    const clock = createStudioClock();
-
-    const animate = (now: number) => {
+    const animate = () => {
       reqId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
-      const { dt, simTimeSec } = clock.pump(now);
       const p = live.current;
+      const current = readFarnsworthTvTapeFrame(readFarnsworthTvControls(p.effectiveParams as any));
+      const { beamState: currentBeam, scanFrame } = current;
 
       updateFarnsworthTvKinematics(
         model,
-        dt,
-        simTimeSec,
-        p.electronDisplaySpeed,
-        p.horizontalFreqKhz,
-        p.verticalFreqHz,
-        p.showElectronBeam,
+        currentBeam,
+        scanFrame,
+        p.showElectronBeam && !scanFrame.inHorizontalRetrace,
         p.isCutaway,
       );
 
-      const beamFrac = (Math.sin(simTimeSec * Math.max(0.2, p.horizontalFreqKhz) * 0.08) + 1) / 2;
       writeColormappedField(
         fieldRgba,
-        computeFarnsworthRasterField(beamFrac, fieldGrid),
+        computeFarnsworthRasterField(
+          scanFrame.beamFraction,
+          fieldGrid,
+          fieldValues,
+          scanFrame.rasterYPercent / 100,
+        ),
         fieldGrid,
         fieldGrid,
       );
@@ -191,16 +191,32 @@ export function FarnsworthTV3D() {
     return () => {
       cancelAnimationFrame(reqId);
       fieldTex.dispose();
-      fieldPlane.geometry.dispose();
-      (fieldPlane.material as THREE.MeshBasicMaterial).dispose();
+      photocathodeField.geometry.dispose();
+      (photocathodeField.material as THREE.MeshBasicMaterial).dispose();
       model.dispose();
       studio.cleanup();
       studioRef.current = null;
     };
   }, [live]);
 
+  useEffect(() => {
+    const restoreResponsiveFraming = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const config = cameraPresetForViewport(activeCamera, container.clientWidth);
+      studioRef.current?.controls.setView(config.pos, config.target);
+    };
+
+    window.addEventListener("resize", restoreResponsiveFraming);
+    return () => window.removeEventListener("resize", restoreResponsiveFraming);
+  }, [activeCamera]);
+
   return (
-    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+    <div
+      className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent"
+      data-runtime-tick={runtimeTick}
+      data-raster-line={tapeFrame.scanFrame.rasterLineIndex}
+    >
       <div className="sr-only">Philo T. Farnsworth Image Dissector Tube 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />

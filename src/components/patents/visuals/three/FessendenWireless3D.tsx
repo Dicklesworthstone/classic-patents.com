@@ -149,9 +149,13 @@ export function FessendenWireless3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-706737-fessenden-wireless", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-706737-fessenden-wireless");
-  }, [live.current.carrierFreqKhz, live.current.claim1Active, live.current.rfTraceOmegaRadPerS]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-706737-fessenden-wireless",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
@@ -181,8 +185,8 @@ export function FessendenWireless3D() {
 
     const clock = createStudioClock();
     const animate = (now: number) => {
+      animFrameRef.current = requestAnimationFrame(animate);
       if (!studio.isVisible()) {
-        animFrameRef.current = requestAnimationFrame(animate);
         return;
       }
       const { dt, simTimeSec } = clock.pump(now);

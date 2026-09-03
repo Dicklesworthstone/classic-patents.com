@@ -24,7 +24,15 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
     expect(studioSource).not.toContain("p.strokeRateSpm, p.gearRatioNpOverNs");
     expect(studioSource).toContain("useResponsiveStudioHud(false)");
     expect(studioSource).toContain('id="watt-camera-view"');
+    expect(studioSource).toContain('className="absolute top-14 right-3 sm:top-4 sm:right-4');
     expect(studioSource).toContain("cameraPresetForViewport");
+    expect(studioSource).not.toContain("typeof window");
+    expect(studioSource).not.toContain("isPlayingRef.current =");
+    expect(studioSource).not.toContain("cutawayRef.current =");
+    expect(studioSource).not.toContain("showCalloutsRef.current =");
+    expect(studioSource).toContain("live.current.isPlaying");
+    expect(studioSource).toContain("live.current.cutaway");
+    expect(studioSource).toContain("live.current.showCallouts");
   });
 
   test("builds complete procedural node graph with all authentic engine assemblies", () => {

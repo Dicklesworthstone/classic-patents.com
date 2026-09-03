@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { Vector3 } from "three";
+import { Box3, type CylinderGeometry, Mesh, MeshStandardMaterial, Vector3 } from "three";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
 import {
   readStackhouseSourceControls,
@@ -23,6 +23,83 @@ describe("Stackhouse source-bounded connected wrist", () => {
     expect(model.toolFlangeMesh.parent).toBe(model.toolRollGroup);
     expect(model.toolTipMesh.parent).toBe(model.toolRollGroup);
     model.dispose();
+  });
+
+  test("exposes both concentric shaft sets through source-honest cutaway shells", () => {
+    const model = buildStackhouseSourceModel();
+    try {
+      const housing = model.root.getObjectByName("ForearmSection6");
+      const forearmShafts = [
+        "OuterForearmShaft15",
+        "IntermediateForearmShaft16",
+        "InnerForearmShaft19",
+      ].map((name) => model.root.getObjectByName(name));
+      const housingShaft = model.root.getObjectByName("RotatableHousingShaft14a");
+      const internalShaft = model.root.getObjectByName("InternalDriveShaft23");
+
+      expect(housing).toBeInstanceOf(Mesh);
+      expect(forearmShafts.every((shaft) => shaft instanceof Mesh)).toBe(true);
+      expect(housingShaft).toBeInstanceOf(Mesh);
+      expect(internalShaft).toBeInstanceOf(Mesh);
+      if (!(housing instanceof Mesh) || !(housing.material instanceof MeshStandardMaterial)) {
+        throw new Error("Stackhouse cutaway housing is missing.");
+      }
+      expect(housing.material.transparent).toBe(true);
+      expect(housing.material.opacity).toBeLessThan(0.5);
+      expect((housing.geometry as CylinderGeometry).parameters.openEnded).toBe(true);
+      expect((housing.geometry as CylinderGeometry).parameters.thetaLength).toBeLessThan(
+        Math.PI * 2,
+      );
+
+      model.update(
+        stepStackhouseSourceTopology(STACKHOUSE_SOURCE_DEFAULT_CONTROLS),
+        STACKHOUSE_SOURCE_DEFAULT_CONTROLS,
+      );
+      model.root.updateMatrixWorld(true);
+      expect(
+        new Box3()
+          .setFromObject(housingShaft as Mesh)
+          .intersectsBox(new Box3().setFromObject(internalShaft as Mesh)),
+      ).toBe(true);
+    } finally {
+      model.dispose();
+    }
+  });
+
+  test("includes all three disclosed bevel paths and keeps the terminal stack connected", () => {
+    const model = buildStackhouseSourceModel();
+    try {
+      for (const name of [
+        "BevelGear17 on intermediate forearm shaft 16",
+        "BevelGear18 on housing shaft 14a",
+        "BevelGear21 on inner forearm shaft 20",
+        "BevelGear22 on internal shaft 23",
+        "BevelGear24 on internal shaft 23",
+        "BevelGear25 on terminal shaft 26",
+      ]) {
+        expect(model.root.getObjectByName(name)).toBeInstanceOf(Mesh);
+      }
+
+      model.update(
+        stepStackhouseSourceTopology(STACKHOUSE_SOURCE_DEFAULT_CONTROLS),
+        STACKHOUSE_SOURCE_DEFAULT_CONTROLS,
+      );
+      model.root.updateMatrixWorld(true);
+      const terminalShaft = model.root.getObjectByName("TerminalShaft26");
+      expect(terminalShaft).toBeInstanceOf(Mesh);
+      expect(
+        new Box3()
+          .setFromObject(terminalShaft as Mesh)
+          .intersectsBox(new Box3().setFromObject(model.toolFlangeMesh)),
+      ).toBe(true);
+      expect(
+        new Box3()
+          .setFromObject(model.toolFlangeMesh)
+          .intersectsBox(new Box3().setFromObject(model.toolTipMesh)),
+      ).toBe(true);
+    } finally {
+      model.dispose();
+    }
   });
 
   test("produces a deterministic unit direction and explicit quantitative refusal", () => {
@@ -94,5 +171,15 @@ describe("Stackhouse source-bounded connected wrist", () => {
     expect(source).toContain("sm:hidden");
     expect(source).toContain("min-h-[320px]");
     expect(source).toContain("sm:min-h-0 sm:aspect-video");
+  });
+
+  test("keeps the source-bounded telemetry inspector stacked until a true wide viewport", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/StackhouseSourceBounded3D.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("2xl:grid-cols-[minmax(0,2fr)_minmax(24rem,1fr)]");
+    expect(source).toContain("partially translucent museum cutaways");
+    expect(source).not.toContain("xl:grid-cols-[minmax(0,2fr)_minmax(20rem,1fr)]");
   });
 });

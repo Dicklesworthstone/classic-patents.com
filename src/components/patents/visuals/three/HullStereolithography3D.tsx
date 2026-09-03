@@ -17,6 +17,7 @@ import {
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-4575330-hull-stereolithography";
 
@@ -40,8 +41,7 @@ export function HullStereolithography3D() {
   const studioRef = useRef<StudioContext | null>(null);
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
   const { params, updateParam } = usePatentPhysics(PATENT_ID);
-  const liveParams = useRef(params);
-  liveParams.current = params;
+  const liveParams = useLiveSimParams(params);
 
   const controls = useMemo(() => readHullStereolithographyControls(params), [params]);
   const telemetry = useMemo(() => stepHullStereolithographySi(controls), [controls]);
@@ -65,6 +65,7 @@ export function HullStereolithography3D() {
     studioRef.current?.controls.setView(VIEWS[preset].position, VIEWS[preset].target);
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;

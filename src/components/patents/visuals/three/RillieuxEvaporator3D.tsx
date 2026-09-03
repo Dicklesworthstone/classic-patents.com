@@ -132,8 +132,11 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
 
     const clock = createStudioClock();
     const animate = (now: number) => {
+      // Keep the lifecycle alive whether the studio is currently intersecting
+      // the viewport or not. Scheduling only in the hidden branch froze the
+      // model after its first visible frame.
+      animFrameRef.current = requestAnimationFrame(animate);
       if (!studio.isVisible()) {
-        animFrameRef.current = requestAnimationFrame(animate);
         return;
       }
       const { simTimeSec } = clock.pump(now);

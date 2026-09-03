@@ -62,6 +62,8 @@ export function BaekelandBakelite3D() {
     catalystPct: catPct,
     curingTimeMin: timeMin,
     fillerPct: filler,
+    cutaway,
+    showCallouts,
   });
 
   // Shared transport tape: the curing kernel is steady-state in the controls
@@ -102,11 +104,6 @@ export function BaekelandBakelite3D() {
     continuum: curedContinuum,
   });
 
-  const cutawayRef = useRef(cutaway);
-  cutawayRef.current = cutaway;
-  const calloutsRef = useRef(showCallouts);
-  calloutsRef.current = showCallouts;
-
   const studioRef = useRef<ReturnType<typeof createThreeStudioScene> | null>(null);
 
   useEffect(() => {
@@ -132,9 +129,19 @@ export function BaekelandBakelite3D() {
       if (!studio.isVisible()) return;
       const { simTimeSec: virtualTime } = clock.pump(now);
 
-      model.update(live.current, virtualTime);
-      model.setCutaway(cutawayRef.current);
-      model.setCalloutsVisible(calloutsRef.current);
+      const p = live.current;
+      model.update(
+        {
+          curingTempC: p.curingTempC,
+          autoclavePressurePsi: p.autoclavePressurePsi,
+          catalystPct: p.catalystPct,
+          curingTimeMin: p.curingTimeMin,
+          fillerPct: p.fillerPct,
+        },
+        virtualTime,
+      );
+      model.setCutaway(p.cutaway);
+      model.setCalloutsVisible(p.showCallouts);
 
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);

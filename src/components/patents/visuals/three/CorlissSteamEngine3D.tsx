@@ -4,7 +4,6 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepCorlissEngine } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { MachineState } from "@/physics/types";
 import {
@@ -12,6 +11,7 @@ import {
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -49,7 +49,7 @@ export function CorlissSteamEngine3D() {
   const cutoffPct = params.cutoffPct ?? 25;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const corliss = stepCorlissEngine({ steamPressurePsi, engineRpm, cutoffPct });
@@ -96,9 +96,13 @@ export function CorlissSteamEngine3D() {
       };
       return { machine };
     };
-    globalTransportBus.registerUpdater("us-6162-corliss-steam-engine", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-6162-corliss-steam-engine");
-  }, [live.current.crankOmegaRadPerS, live.current.crankWrapRad]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-6162-corliss-steam-engine",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
@@ -110,10 +114,6 @@ export function CorlissSteamEngine3D() {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;

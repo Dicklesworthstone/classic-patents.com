@@ -1,54 +1,36 @@
 "use client";
 
 import { Radio, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
-import { useEffect, useState } from "react";
-import { SparkWaterfall } from "@/components/patents/visuals/SparkWaterfall";
-import { stepMarconiRadio } from "@/physics/catalogKernels";
-import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import {
+  readMarconiRuntimeControls,
+  readMarconiTapeFrame,
+  resetMarconiTape,
+} from "@/physics/marconiSharedKernel";
+import { usePatentRuntimeTick } from "@/physics/useFrankenSimPhysics";
+import { getPatentPhysicsParams, usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
-import { useOffscreenGate } from "./useOffscreenGate";
 
 export function MarconiRadioSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-586193-marconi-radio");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const antennaHeightMeters = params.aerialHeight ?? 88;
-  const sparkPowerKv = params.sparkVoltage ?? 28;
-  const [isSparking, setIsSparking] = useState<boolean>(false);
-  const [waveRingRadius, setWaveRingRadius] = useState<number>(0);
-  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
-
-  const radio = stepMarconiRadio(antennaHeightMeters, params.sparkGapMm ?? 10, sparkPowerKv);
-  const estimatedRangeMiles = radio.maxRangeMiles;
-  const waveAdvancePx = radio.waveAdvancePx;
-
-  useEffect(() => {
-    let timer: any;
-    if (isSparking) {
-      timer = setInterval(() => {
-        if (!onscreenRef.current) return;
-        setWaveRingRadius((r) => (r + waveAdvancePx) % radio.waveRingWrapPx);
-      }, 40);
-    } else {
-      setWaveRingRadius(0);
-    }
-    return () => clearInterval(timer);
-  }, [isSparking, waveAdvancePx, radio.waveRingWrapPx, onscreenRef.current]);
+  const runtimeControls = readMarconiRuntimeControls(params);
+  usePatentRuntimeTick("us-586193-marconi-radio", 30, true);
+  const tapeFrame = readMarconiTapeFrame(runtimeControls);
+  const display = tapeFrame.display;
+  const antennaHeightMeters = runtimeControls.aerialHeightMeters;
+  const sparkPowerKv = runtimeControls.inductionCoilKv;
+  const waveRingRadius = tapeFrame.wavefrontProgress * 240;
 
   const triggerSpark = () => {
-    setIsSparking(true);
-    if (!isAudioMuted) {
-      soundEngine.playContinuousTone(800, "sawtooth", 0.08);
-    }
-    setTimeout(() => {
-      setIsSparking(false);
-      soundEngine.stopContinuousTone();
-    }, radio.sparkDisplayMs);
+    const current = readMarconiRuntimeControls(getPatentPhysicsParams("us-586193-marconi-radio"));
+    updateParam("sparkPulseSequence", current.sparkPulseSequence + 1);
+    if (!isAudioMuted) soundEngine.playSparkDischarge(0.12);
   };
 
   return (
     <div
-      ref={rootRef}
+      data-marconi-receiver-stage={tapeFrame.receiverStage}
       className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6"
     >
       {/* Header */}
@@ -91,8 +73,7 @@ export function MarconiRadioSim() {
             type="button"
             onClick={() => {
               resetParams();
-              setIsSparking(false);
-              soundEngine.stopContinuousTone();
+              resetMarconiTape();
               soundEngine.playSwitchClick();
             }}
             aria-label="Reset Simulation"
@@ -114,7 +95,7 @@ export function MarconiRadioSim() {
           <svg
             viewBox="0 0 460 260"
             role="img"
-            aria-label={`Radio transmission simulation: ${isSparking ? "spark gap discharging" : "spark gap idle"}, vertical aerial ${antennaHeightMeters} meters high with wavefronts radiating`}
+            aria-label={`Radio transmission simulation: ${tapeFrame.receiverStage.replaceAll("-", " ")}, vertical aerial ${antennaHeightMeters} meters high`}
             className="w-full max-w-md h-auto select-none relative z-10"
           >
             {/* Ground Plane (Conductive Earth) */}
@@ -141,7 +122,7 @@ export function MarconiRadioSim() {
               x1="120"
               y1="210"
               x2="120"
-              y2={radio.mastSvgY}
+              y2={display.mastSvgY}
               stroke="#fbbf24"
               strokeWidth="3.5"
               strokeLinecap="round"
@@ -150,7 +131,7 @@ export function MarconiRadioSim() {
             {/* Antenna Top Capacity Sphere */}
             <circle
               cx="120"
-              cy={radio.mastSvgY}
+              cy={display.mastSvgY}
               r="8"
               fill="#f59e0b"
               stroke="#fef08a"
@@ -158,7 +139,7 @@ export function MarconiRadioSim() {
             />
             <text
               x="120"
-              y={radio.mastSvgY - 12}
+              y={display.mastSvgY - 12}
               fill="#fde68a"
               fontSize="10"
               textAnchor="middle"
@@ -179,13 +160,23 @@ export function MarconiRadioSim() {
               stroke="#64748b"
               strokeWidth="1.5"
             />
-            <circle cx="87" cy="185" r="4" fill={isSparking ? "#60a5fa" : "#94a3b8"} />
-            <circle cx="103" cy="185" r="4" fill={isSparking ? "#60a5fa" : "#94a3b8"} />
-            {isSparking && (
+            <circle
+              cx={95 - display.sparkGapSvgHalfSpan}
+              cy="185"
+              r="4"
+              fill={tapeFrame.sparkActive ? "#60a5fa" : "#94a3b8"}
+            />
+            <circle
+              cx={95 + display.sparkGapSvgHalfSpan}
+              cy="185"
+              r="4"
+              fill={tapeFrame.sparkActive ? "#60a5fa" : "#94a3b8"}
+            />
+            {tapeFrame.sparkActive && (
               <line
-                x1="91"
+                x1={99 - display.sparkGapSvgHalfSpan}
                 y1="185"
-                x2="99"
+                x2={91 + display.sparkGapSvgHalfSpan}
                 y2="185"
                 stroke="#93c5fd"
                 strokeWidth="3"
@@ -194,20 +185,12 @@ export function MarconiRadioSim() {
             )}
 
             {/* Radiating Transverse Electromagnetic Wavefronts */}
-            {isSparking && (
-              <g
-                fill="none"
-                stroke="#f59e0b"
-                strokeWidth="2.5"
-                opacity={Math.min(
-                  1,
-                  radio.waveOpacityBase * (0.45 + (radio.sparkOddHarmonicPower ?? 0.5)),
-                )}
-              >
-                <circle cx="120" cy={radio.mastSvgY} r={waveRingRadius} />
-                <circle cx="120" cy={radio.mastSvgY} r={Math.max(0, waveRingRadius - 30)} />
-                <circle cx="120" cy={radio.mastSvgY} r={Math.max(0, waveRingRadius - 60)} />
-                <circle cx="120" cy={radio.mastSvgY} r={Math.max(0, waveRingRadius - 90)} />
+            {tapeFrame.waveActive && (
+              <g fill="none" stroke="#f59e0b" strokeWidth="2.5" opacity={display.waveStrokeOpacity}>
+                <circle cx="120" cy={display.mastSvgY} r={waveRingRadius} />
+                <circle cx="120" cy={display.mastSvgY} r={Math.max(0, waveRingRadius - 30)} />
+                <circle cx="120" cy={display.mastSvgY} r={Math.max(0, waveRingRadius - 60)} />
+                <circle cx="120" cy={display.mastSvgY} r={Math.max(0, waveRingRadius - 90)} />
               </g>
             )}
 
@@ -220,9 +203,9 @@ export function MarconiRadioSim() {
                 width="30"
                 height="14"
                 rx="2"
-                fill="#0f172a"
+                fill={tapeFrame.receiverConducting ? "#155e75" : "#0f172a"}
                 stroke="#0ea5e9"
-                strokeWidth="1"
+                strokeWidth={tapeFrame.receiverConducting ? 2.5 : 1}
               />
               <text
                 x="0"
@@ -245,37 +228,72 @@ export function MarconiRadioSim() {
               >
                 Receiver
               </text>
+              <line
+                x1="15"
+                y1="27"
+                x2="35"
+                y2="27"
+                stroke={tapeFrame.relayActive ? "#fbbf24" : "#64748b"}
+                strokeWidth="2"
+              />
+              <circle
+                cx="42"
+                cy="27"
+                r="6"
+                fill={tapeFrame.relayActive ? "#f59e0b" : "#334155"}
+                stroke="#fbbf24"
+              />
+              <line
+                x1="-16"
+                y1="38"
+                x2={tapeFrame.resetActive ? -24 : -20}
+                y2={tapeFrame.resetActive ? 27 : 32}
+                stroke={tapeFrame.resetActive ? "#fb7185" : "#64748b"}
+                strokeWidth="2"
+              />
             </g>
           </svg>
 
-          {/* Telemetry Footer */}
+          {/* Source-bounded causal state: the grant discloses topology and local limits,
+              but not enough RF parameters for an honest frequency, power, or range result. */}
           <div className="w-full grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs font-mono pt-3 border-t border-ink-800 text-ink-300">
             <div>
-              <span className="text-ink-500 block text-[10px]">f₀</span>
-              <span className="text-amber-400 font-bold">{radio.resonantFreqKhz} kHz</span>
+              <span className="text-ink-500 block text-[10px]">TRANSMITTER</span>
+              <span className="text-amber-400 font-bold">
+                {tapeFrame.sparkActive ? "spark discharge" : "ready"}
+              </span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">R_rad</span>
-              <span className="text-blue-400 font-bold">{radio.radiationResistanceOhms} Ω</span>
+              <span className="text-ink-500 block text-[10px]">RECEIVED CONTACT</span>
+              <span className="text-blue-400 font-bold">
+                {tapeFrame.receiverConducting ? "conducting" : "open"}
+              </span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">PEAK RF</span>
-              <span className="text-purple-400 font-bold">{radio.peakRfPowerKw} kW</span>
+              <span className="text-ink-500 block text-[10px]">LOCAL RELAY</span>
+              <span className="text-purple-400 font-bold">
+                {tapeFrame.relayActive ? "energized" : "idle"}
+              </span>
             </div>
             <div>
-              <span className="text-ink-500 block text-[10px]">PREDICTED RANGE</span>
-              <span className="text-emerald-400 font-bold">{estimatedRangeMiles} Miles</span>
+              <span className="text-ink-500 block text-[10px]">RECEIVER SEQUENCE</span>
+              <span className="text-emerald-400 font-bold">
+                {tapeFrame.receiverStage.replaceAll("-", " ")}
+              </span>
             </div>
           </div>
         </div>
 
         {/* Controls Sidebar */}
         <div className="lg:col-span-4 space-y-4">
-          <SparkWaterfall
-            fundamentalHz={radio.fundamentalHz}
-            energy={radio.toneEnergy}
-            firing={isSparking}
-          />
+          <div className="rounded-xl border border-rose-800/50 bg-rose-950/20 p-3 text-xs leading-relaxed text-ink-700 dark:text-ink-300">
+            <span className="block font-mono font-bold text-rose-700 dark:text-rose-300">
+              SOURCE BOUNDARY
+            </span>
+            These reader-scenario controls change the apparatus display. US 586,193 does not give
+            the inductance, capacitance, antenna-current distribution, loss, or propagation inputs
+            needed to calculate an RF frequency, radiated power, or range.
+          </div>
           <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/60 p-5 space-y-4">
             <span className="font-serif font-bold text-sm text-ink-900 dark:text-parchment-100 block">
               Transmitter Tuning Controls
@@ -285,7 +303,7 @@ export function MarconiRadioSim() {
             <div className="space-y-1">
               <div className="flex justify-between text-xs font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Aerial Mast Height
+                  Illustrative Aerial Height
                 </span>
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
                   {antennaHeightMeters} m
@@ -294,7 +312,7 @@ export function MarconiRadioSim() {
               <input
                 type="range"
                 aria-label="Vertical Aerial Height"
-                min="30"
+                min="10"
                 max="120"
                 step="2"
                 value={antennaHeightMeters}
@@ -302,8 +320,8 @@ export function MarconiRadioSim() {
                 className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
               />
               <div className="flex justify-between text-[10px] text-ink-500 font-mono">
-                <span>30m (Local)</span>
-                <span>120m (Transatlantic Poldhu Mast)</span>
+                <span>10m</span>
+                <span>120m</span>
               </div>
             </div>
 
@@ -311,7 +329,7 @@ export function MarconiRadioSim() {
             <div className="space-y-1">
               <div className="flex justify-between text-xs font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Induction Coil Potential
+                  Illustrative Coil Potential
                 </span>
                 <span className="text-blue-600 dark:text-blue-400 font-bold">
                   {sparkPowerKv} kV
@@ -326,6 +344,27 @@ export function MarconiRadioSim() {
                 value={sparkPowerKv}
                 onChange={(e) => updateParam("sparkVoltage", Number(e.target.value))}
                 className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-blue-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs font-mono">
+                <span className="font-semibold text-ink-800 dark:text-parchment-200">
+                  Illustrative Spark-Gap Spacing
+                </span>
+                <span className="font-bold text-cyan-700 dark:text-cyan-400">
+                  {runtimeControls.sparkGapMm} mm
+                </span>
+              </div>
+              <input
+                type="range"
+                aria-label="Illustrative Spark Gap Spacing"
+                min="2"
+                max="25"
+                step="1"
+                value={runtimeControls.sparkGapMm}
+                onChange={(event) => updateParam("sparkGapMm", Number(event.target.value))}
+                className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
               />
             </div>
           </div>

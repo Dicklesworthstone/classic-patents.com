@@ -1,495 +1,397 @@
 "use client";
 
-import { AlertTriangle, CheckCircle2 } from "lucide-react";
-import { useId, useMemo, useState } from "react";
+import { RotateCcw } from "lucide-react";
+import { useId, useMemo } from "react";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import {
-  LEMELSON_MACHINE_VISION_DEFAULT_CONTROLS,
   type LemelsonMachineVisionControls,
-  stepLemelsonMachineVisionSi,
+  stepLemelsonMachineVisionTopology,
 } from "@/physics/lemelsonMachineVisionKernel";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
-interface LemelsonMachineVisionSimProps {
-  initialControls?: Partial<LemelsonMachineVisionControls>;
+const PATENT_ID = "us-3081379-lemelson-machine-vision";
+
+const CONTROL_COPY: readonly {
+  readonly id: keyof LemelsonMachineVisionControls;
+  readonly label: string;
+  readonly explanation: string;
+}[] = [
+  {
+    id: "scanPathEnabled",
+    label: "Electron-beam scan path",
+    explanation: "Shows whether the claimed image-field scan path is available.",
+  },
+  {
+    id: "synchronizedGateEnabled",
+    label: "Synchronized programming gate",
+    explanation: "Shows the time-related gate named by Claim 1, without a pulse-width model.",
+  },
+  {
+    id: "analyzingCircuitEnabled",
+    label: "Analyzing circuit",
+    explanation: "Shows whether the selected picture-signal path reaches analysis.",
+  },
+  {
+    id: "inspectionSignalPresent",
+    label: "Picture signal present",
+    explanation: "A normalized signal-presence state, not an amplitude or noise measurement.",
+  },
+  {
+    id: "referenceSignalMatches",
+    label: "Reference comparison",
+    explanation:
+      "Shows the logical relation of a test and reference signal; it does not label a part pass or reject.",
+  },
+];
+
+function stateColor(active: boolean): string {
+  return active ? "#34d399" : "#475569";
 }
 
-export function LemelsonMachineVisionSim({ initialControls }: LemelsonMachineVisionSimProps) {
-  const [controls, setControls] = useState<LemelsonMachineVisionControls>({
-    ...LEMELSON_MACHINE_VISION_DEFAULT_CONTROLS,
-    ...initialControls,
-  });
+function stateLabel(active: boolean, activeLabel: string): string {
+  return active ? activeLabel : "WITHHELD";
+}
 
-  const state = useMemo(() => stepLemelsonMachineVisionSi(controls), [controls]);
-
-  const clipId = useId();
-  const screenGradientId = useId();
-  const beamGlowId = useId();
-
-  // Normalized visual positions
-  const beamScanX = 200; // Center of field of view
-  const partWidthPx = (controls.actualPartWidthM / controls.targetWidthM) * 180;
-  const partLeft = beamScanX - partWidthPx / 2;
-  const partRight = beamScanX + partWidthPx / 2;
-
-  // Waveform plot generation
-  const waveformPath = useMemo(() => {
-    const baselineY = 85;
-    const peakY = 85 - (state.metrics.videoPeakVoltageV / 1.2) * 55;
-    const path = `M 30 ${baselineY} L ${partLeft} ${baselineY} L ${partLeft} ${peakY} L ${partRight} ${peakY} L ${partRight} ${baselineY} L 370 ${baselineY}`;
-    return path;
-  }, [partLeft, partRight, state.metrics.videoPeakVoltageV]);
-
-  const thresholdY = 85 - (controls.thresholdVoltage / 1.2) * 55;
+export function LemelsonMachineVisionSim() {
+  const arrowId = useId();
+  const { effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(PATENT_ID);
+  const state = useMemo(
+    () => stepLemelsonMachineVisionTopology(effectiveParams),
+    [effectiveParams],
+  );
+  const comparisonLabel =
+    state.referenceComparison === "match"
+      ? "MATCH"
+      : state.referenceComparison === "difference"
+        ? "DIFFERENCE"
+        : "WITHHELD";
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-slate-700/80 bg-slate-900 p-5 text-slate-100 shadow-2xl">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
-        <div>
-          <h3 className="text-lg font-bold tracking-tight text-emerald-400">
-            US 3,081,379 — Vidicon Line-Scan & Video Defect Slicer
-          </h3>
-          <p className="text-xs text-slate-400">
-            Television Raster Scanning, Sliced Pulse Duration Gauging & Automated Solenoid Sortation
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {state.metrics.isDefective ? (
-            <span className="flex items-center gap-1.5 rounded-full border border-red-500/40 bg-red-950/80 px-3 py-1 text-xs font-semibold text-red-400">
-              <AlertTriangle className="h-3.5 w-3.5 text-red-400" />
-              DEFECT FLAGGED (REJECT)
-            </span>
-          ) : (
-            <span className="flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-950/80 px-3 py-1 text-xs font-semibold text-emerald-400">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-              DIMENSION ACCEPTED (PASS)
-            </span>
-          )}
-        </div>
-      </div>
+    <section className="overflow-hidden rounded-2xl border border-cyan-800/60 bg-slate-950 text-slate-100 shadow-2xl">
+      <header className="border-b border-cyan-900/70 bg-slate-900/80 px-4 py-3 sm:px-6">
+        <p className="font-mono text-[11px] tracking-[0.16em] text-cyan-300">
+          US 3,081,379 · CLAIM 1 SIGNAL-PATH TOPOLOGY
+        </p>
+        <h3 className="mt-1 font-serif text-xl text-white">
+          Lemelson scan, gate, and analysis exhibit
+        </h3>
+        <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-300">
+          The grant describes a scan path, a programmed gate, and an analyzing circuit that receives
+          only the selected portion of a picture signal. This is a normalized signal topology: it
+          deliberately makes no claim about beam velocity, optical response, signal scale, timing,
+          force, or actuator response.
+        </p>
+      </header>
 
-      {/* SVG Pedagogical Instrument */}
-      <div className="relative overflow-hidden rounded-lg border border-slate-800 bg-slate-950 p-2">
-        <svg
-          viewBox="0 0 600 320"
-          className="w-full h-auto select-none"
-          aria-label="Lemelson Machine Vision Inspection Station Diagram"
-        >
-          <defs>
-            <linearGradient id={screenGradientId} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#064e3b" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#022c22" stopOpacity="0.8" />
-            </linearGradient>
-            <filter id={beamGlowId} x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
-            <clipPath id={clipId}>
-              <rect x="20" y="20" width="360" height="90" rx="4" />
-            </clipPath>
-          </defs>
-
-          {/* BACKGROUND GRID */}
-          <rect x="0" y="0" width="600" height="320" fill="#030712" />
-
-          {/* LEFT PANEL: CRT OSCILLOSCOPE & VIDEO SIGNAL MONITOR */}
-          <g transform="translate(10, 10)">
-            {/* Monitor Bezel */}
-            <rect
-              x="10"
-              y="10"
-              width="380"
-              height="110"
-              rx="6"
-              fill="#0f172a"
-              stroke="#334155"
-              strokeWidth="2"
-            />
-            {/* Phosphor Screen */}
-            <rect
-              x="20"
-              y="20"
-              width="360"
-              height="90"
-              rx="4"
-              fill={`url(#${screenGradientId})`}
-              stroke="#10b981"
-              strokeWidth="0.8"
-            />
-
-            {/* Oscilloscope Reticle Graticule */}
-            <g opacity="0.3" stroke="#34d399" strokeWidth="0.5" strokeDasharray="2,2">
-              <line x1="20" y1="35" x2="380" y2="35" />
-              <line x1="20" y1="50" x2="380" y2="50" />
-              <line x1="20" y1="65" x2="380" y2="65" />
-              <line x1="20" y1="80" x2="380" y2="80" />
-              <line x1="20" y1="95" x2="380" y2="95" />
-
-              <line x1="80" y1="20" x2="80" y2="110" />
-              <line x1="140" y1="20" x2="140" y2="110" />
-              <line x1="200" y1="20" x2="200" y2="110" />
-              <line x1="260" y1="20" x2="260" y2="110" />
-              <line x1="320" y1="20" x2="320" y2="110" />
-            </g>
-
-            {/* Threshold Reference Line */}
-            <line
-              x1="20"
-              y1={thresholdY}
-              x2="380"
-              y2={thresholdY}
-              stroke="#f59e0b"
-              strokeWidth="1.5"
-              strokeDasharray="4,3"
-            />
-            <text x="25" y={thresholdY - 4} fill="#f59e0b" fontSize="8" fontFamily="monospace">
-              V_thresh = {controls.thresholdVoltage.toFixed(2)} V
+      <div className="grid lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className="min-w-0 border-b border-cyan-900/70 p-3 lg:border-b-0 lg:border-r sm:p-5">
+          <svg
+            viewBox="0 0 760 430"
+            role="img"
+            aria-label="Normalized Claim 1 topology showing image-field scan, synchronized signal gate, analyzing circuit, reference comparison, and control output"
+            className="h-auto w-full rounded-xl border border-slate-700 bg-[radial-gradient(circle_at_28%_18%,_#12365b,_#020617_68%)]"
+          >
+            <defs>
+              <pattern
+                id="lemelson-signal-grid"
+                width="24"
+                height="24"
+                patternUnits="userSpaceOnUse"
+              >
+                <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#173b5d" strokeWidth="1" />
+              </pattern>
+              <marker
+                id={arrowId}
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerWidth="5"
+                markerHeight="5"
+                orient="auto"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#67e8f9" />
+              </marker>
+            </defs>
+            <rect width="760" height="430" fill="url(#lemelson-signal-grid)" />
+            <text x="24" y="31" fill="#67e8f9" fontSize="12" fontFamily="monospace">
+              FIGS. 1 / 3 · NORMALIZED VIDEO-SIGNAL RELATIONSHIP
+            </text>
+            <text x="24" y="411" fill="#fda4af" fontSize="10" fontFamily="monospace">
+              source topology only — no recovered distance, rate, amplitude, force, or response time
             </text>
 
-            {/* Sliced Pulse Indicator */}
-            <rect
-              x={partLeft}
-              y={thresholdY}
-              width={partWidthPx}
-              height={85 - thresholdY}
-              fill="#10b981"
-              opacity="0.25"
-            />
-
-            {/* Live Video Waveform */}
-            <path
-              d={waveformPath}
-              fill="none"
-              stroke="#10b981"
-              strokeWidth="2.5"
-              filter={`url(#${beamGlowId})`}
-            />
-
-            {/* Pulse Width Dimension Tag */}
-            <line
-              x1={partLeft}
-              y1="28"
-              x2={partRight}
-              y2="28"
-              stroke="#38bdf8"
-              strokeWidth="1.2"
-              markerEnd="url(#arrow)"
-            />
-            <line x1={partLeft} y1="24" x2={partLeft} y2="32" stroke="#38bdf8" strokeWidth="1.2" />
-            <line
-              x1={partRight}
-              y1="24"
-              x2={partRight}
-              y2="32"
-              stroke="#38bdf8"
-              strokeWidth="1.2"
-            />
-            <text
-              x={(partLeft + partRight) / 2}
-              y="25"
-              fill="#38bdf8"
-              fontSize="8.5"
-              fontFamily="monospace"
-              textAnchor="middle"
-              fontWeight="bold"
-            >
-              τ = {state.metrics.pulseWidthUs.toFixed(1)} µs → L ={" "}
-              {state.metrics.measuredPartWidthMm.toFixed(1)} mm
-            </text>
-          </g>
-
-          {/* RIGHT PANEL: TELEMETRY HUD & GATING STATUS */}
-          <g transform="translate(405, 20)">
-            <rect
-              x="0"
-              y="0"
-              width="180"
-              height="100"
-              rx="6"
-              fill="#0f172a"
-              stroke="#1e293b"
-              strokeWidth="1.5"
-            />
-            <text
-              x="12"
-              y="20"
-              fill="#94a3b8"
-              fontSize="9"
-              fontWeight="bold"
-              fontFamily="sans-serif"
-            >
-              SIGNAL METROLOGY HUD
-            </text>
-            <text x="12" y="38" fill="#cbd5e1" fontSize="9" fontFamily="monospace">
-              f_H: {state.metrics.horizontalScanFreqHz} Hz
-            </text>
-            <text x="12" y="52" fill="#cbd5e1" fontSize="9" fontFamily="monospace">
-              v_scan: {state.metrics.scanBeamVelocityMPerS.toFixed(0)} m/s
-            </text>
-            <text x="12" y="66" fill="#cbd5e1" fontSize="9" fontFamily="monospace">
-              Dev: ΔL = {state.metrics.dimensionalErrorMm.toFixed(2)} mm
-            </text>
-            <text
-              x="12"
-              y="84"
-              fill={state.metrics.isDefective ? "#ef4444" : "#10b981"}
-              fontSize="10"
-              fontWeight="bold"
-              fontFamily="monospace"
-            >
-              GATE: {state.metrics.isDefective ? "REJECT (PULSE)" : "ALLOW (PASS)"}
-            </text>
-          </g>
-
-          {/* LOWER SECTION: CONVEYOR, VIDICON SCANNER & REJECT SOLENOID */}
-          <g transform="translate(20, 140)">
-            {/* Vidicon Camera Housing */}
-            <g transform="translate(180, 0)">
-              {/* Mounting Bracket */}
-              <rect x="15" y="-10" width="10" height="20" fill="#475569" />
-              {/* Camera Body */}
+            <g transform="translate(38 83)">
               <rect
-                x="0"
-                y="10"
-                width="40"
-                height="50"
-                rx="3"
-                fill="#1e293b"
-                stroke="#475569"
-                strokeWidth="1.5"
-              />
-              {/* Lens Barrel */}
-              <rect
-                x="10"
-                y="60"
-                width="20"
-                height="15"
-                rx="1"
-                fill="#334155"
-                stroke="#64748b"
-                strokeWidth="1"
-              />
-              {/* Lens Glass */}
-              <ellipse cx="20" cy="75" rx="8" ry="2" fill="#0284c7" opacity="0.8" />
-              <text x="20" y="38" fill="#94a3b8" fontSize="7" textAnchor="middle" fontWeight="bold">
-                VIDICON
-              </text>
-
-              {/* Optical Scan Beam Cone */}
-              <polygon
-                points={`20,75 ${partLeft - 180 + 20},130 ${partRight - 180 + 20},130`}
-                fill="#38bdf8"
-                opacity="0.2"
-              />
-              <line
-                x1="20"
-                y1="75"
-                x2={20}
-                y2="130"
+                width="184"
+                height="132"
+                rx="10"
+                fill="#0f172a"
                 stroke="#38bdf8"
-                strokeWidth="1.5"
-                strokeDasharray="2,2"
+                strokeWidth="2"
               />
+              <text x="16" y="25" fill="#7dd3fc" fontSize="12" fontFamily="monospace">
+                IMAGE FIELD
+              </text>
+              <rect x="18" y="42" width="148" height="62" rx="5" fill="#082f49" stroke="#0e7490" />
+              <path
+                d="M 35 57 H 149 M 35 73 H 149 M 35 89 H 149"
+                fill="none"
+                stroke={stateColor(state.scanPathActive)}
+                strokeWidth="3"
+                strokeDasharray="10 6"
+              />
+              <text
+                x="18"
+                y="121"
+                fill={stateColor(state.scanPathActive)}
+                fontSize="10"
+                fontFamily="monospace"
+              >
+                {stateLabel(state.scanPathActive, "SCAN PATH ACTIVE")}
+              </text>
             </g>
 
-            {/* Inspection Illumination Lamps */}
-            <g transform="translate(110, 20)">
-              <circle cx="10" cy="10" r="8" fill="#f59e0b" opacity="0.8" />
-              <polygon points="10,18 0,60 40,60" fill="#fef08a" opacity="0.15" />
-            </g>
-            <g transform="translate(260, 20)">
-              <circle cx="10" cy="10" r="8" fill="#f59e0b" opacity="0.8" />
-              <polygon points="10,18 -20,60 20,60" fill="#fef08a" opacity="0.15" />
-            </g>
+            <line
+              x1="224"
+              y1="149"
+              x2="300"
+              y2="149"
+              stroke={stateColor(state.inspectionSignalPresent)}
+              strokeWidth="4"
+              markerEnd={`url(#${arrowId})`}
+            />
+            <text x="236" y="136" fill="#cbd5e1" fontSize="10" fontFamily="monospace">
+              picture signal
+            </text>
 
-            {/* Conveyor Belt System */}
-            <g transform="translate(0, 125)">
-              {/* Belt Base */}
+            <g transform="translate(304 96)">
               <rect
-                x="10"
-                y="5"
-                width="540"
-                height="18"
-                fill="#1e293b"
-                stroke="#334155"
-                strokeWidth="1.5"
+                width="154"
+                height="106"
+                rx="10"
+                fill="#0f172a"
+                stroke={stateColor(state.synchronizedGateActive)}
+                strokeWidth="2"
               />
-              {/* Rollers */}
-              <circle cx="20" cy="14" r="9" fill="#475569" stroke="#64748b" strokeWidth="1" />
-              <circle cx="540" cy="14" r="9" fill="#475569" stroke="#64748b" strokeWidth="1" />
-
-              {/* Workpiece on Belt */}
-              <g transform={`translate(${partLeft}, -16)`}>
-                <rect
-                  x="0"
-                  y="0"
-                  width={partWidthPx}
-                  height="20"
-                  rx="2"
-                  fill={state.metrics.isDefective ? "#f87171" : "#34d399"}
-                  stroke={state.metrics.isDefective ? "#b91c1c" : "#059669"}
-                  strokeWidth="1.5"
-                />
-                <text
-                  x={partWidthPx / 2}
-                  y="13"
-                  fill="#0f172a"
-                  fontSize="8"
-                  fontWeight="bold"
-                  textAnchor="middle"
-                >
-                  {state.metrics.measuredPartWidthMm.toFixed(1)}mm
-                </text>
-              </g>
-
-              {/* Solenoid Rejection Diverter Gate */}
-              <g transform="translate(380, -25)">
-                {/* Solenoid Coil Body */}
-                <rect
-                  x="0"
-                  y="0"
-                  width="30"
-                  height="35"
-                  rx="3"
-                  fill="#334155"
-                  stroke="#64748b"
-                  strokeWidth="1.5"
-                />
-                <rect
-                  x="6"
-                  y="6"
-                  width="18"
-                  height="23"
-                  fill="#b45309"
-                  stroke="#d97706"
-                  strokeWidth="1"
-                />
-                <text
-                  x="15"
-                  y="20"
-                  fill="#fef08a"
-                  fontSize="7"
-                  fontWeight="bold"
-                  textAnchor="middle"
-                >
-                  SOL
-                </text>
-
-                {/* Plunger & Armature Paddle */}
-                <g
-                  transform={`translate(15, ${state.metrics.isDefective ? "28" : "15"})`}
-                  className="transition-transform duration-200"
-                >
-                  <line x1="0" y1="0" x2="0" y2="25" stroke="#94a3b8" strokeWidth="3" />
-                  <polygon
-                    points="-12,25 12,25 0,35"
-                    fill={state.metrics.isDefective ? "#ef4444" : "#64748b"}
-                  />
-                </g>
-
-                {/* Reject Bin */}
-                <path
-                  d="M -15 65 L -10 95 L 40 95 L 45 65"
-                  fill="none"
-                  stroke="#ef4444"
-                  strokeWidth="1.5"
-                  strokeDasharray="3,2"
-                />
-                <text
-                  x="15"
-                  y="85"
-                  fill="#ef4444"
-                  fontSize="7"
-                  textAnchor="middle"
-                  fontWeight="bold"
-                >
-                  REJECT BIN
-                </text>
-              </g>
+              <path
+                d="M 28 72 V 46 H 63 V 72 H 99 V 46 H 126"
+                fill="none"
+                stroke={stateColor(state.synchronizedGateActive)}
+                strokeWidth="4"
+              />
+              <text x="14" y="24" fill="#c4b5fd" fontSize="11" fontFamily="monospace">
+                PROGRAMMING GATE
+              </text>
+              <text
+                x="14"
+                y="94"
+                fill={stateColor(state.gatedPictureSignal)}
+                fontSize="10"
+                fontFamily="monospace"
+              >
+                {stateLabel(state.gatedPictureSignal, "SELECTED SIGNAL")}
+              </text>
             </g>
-          </g>
-        </svg>
+
+            <line
+              x1="460"
+              y1="149"
+              x2="536"
+              y2="149"
+              stroke={stateColor(state.gatedPictureSignal)}
+              strokeWidth="4"
+              markerEnd={`url(#${arrowId})`}
+            />
+            <g transform="translate(540 96)">
+              <rect
+                width="170"
+                height="106"
+                rx="10"
+                fill="#0f172a"
+                stroke={stateColor(state.analyzingCircuitActive)}
+                strokeWidth="2"
+              />
+              <circle cx="48" cy="57" r="21" fill="#172554" stroke="#a78bfa" strokeWidth="2" />
+              <path d="M 39 58 L 46 65 L 61 46" fill="none" stroke="#c4b5fd" strokeWidth="3" />
+              <text x="82" y="54" fill="#e9d5ff" fontSize="11" fontFamily="monospace">
+                ANALYZING
+              </text>
+              <text x="82" y="70" fill="#e9d5ff" fontSize="11" fontFamily="monospace">
+                CIRCUIT
+              </text>
+              <text
+                x="16"
+                y="94"
+                fill={stateColor(state.analyzingCircuitActive)}
+                fontSize="10"
+                fontFamily="monospace"
+              >
+                {stateLabel(state.analyzingCircuitActive, "ANALYSIS AVAILABLE")}
+              </text>
+            </g>
+
+            <g transform="translate(95 268)">
+              <rect
+                width="191"
+                height="88"
+                rx="10"
+                fill="#0f172a"
+                stroke="#fbbf24"
+                strokeWidth="2"
+              />
+              <text x="16" y="25" fill="#fde68a" fontSize="11" fontFamily="monospace">
+                REFERENCE SIGNAL
+              </text>
+              <path
+                d="M 18 51 H 60 L 74 39 L 88 62 L 105 44 L 121 55 L 137 48 L 168 48"
+                fill="none"
+                stroke="#fbbf24"
+                strokeWidth="2"
+              />
+              <text x="16" y="76" fill="#cbd5e1" fontSize="10" fontFamily="monospace">
+                comparison: {comparisonLabel}
+              </text>
+            </g>
+            <line
+              x1="286"
+              y1="312"
+              x2="538"
+              y2="312"
+              stroke={stateColor(state.inspectionSignalPresent)}
+              strokeWidth="3"
+              strokeDasharray="7 5"
+              markerEnd={`url(#${arrowId})`}
+            />
+            <text x="340" y="300" fill="#cbd5e1" fontSize="10" fontFamily="monospace">
+              logical comparison only
+            </text>
+            <g transform="translate(542 265)">
+              <rect
+                width="168"
+                height="94"
+                rx="10"
+                fill="#0f172a"
+                stroke={stateColor(state.controlOutputReady)}
+                strokeWidth="2"
+              />
+              <path
+                d="M 21 61 H 72 M 72 61 L 103 43 M 72 61 L 103 79"
+                stroke="#cbd5e1"
+                strokeWidth="3"
+              />
+              <circle cx="116" cy="43" r="9" fill={stateColor(state.controlOutputReady)} />
+              <circle cx="116" cy="79" r="9" fill="#475569" />
+              <text x="17" y="25" fill="#99f6e4" fontSize="11" fontFamily="monospace">
+                CONTROL PATH
+              </text>
+              <text
+                x="17"
+                y="85"
+                fill={stateColor(state.controlOutputReady)}
+                fontSize="10"
+                fontFamily="monospace"
+              >
+                {stateLabel(state.controlOutputReady, "READY")}
+              </text>
+            </g>
+
+            <text x="304" y="237" fill="#e2e8f0" fontSize="13" fontFamily="monospace">
+              S ∧ G ∧ A ∧ I → C
+            </text>
+            <text x="304" y="253" fill="#94a3b8" fontSize="9" fontFamily="monospace">
+              scan · gate · analysis · picture signal → control path
+            </text>
+          </svg>
+
+          <div className="mt-3 grid gap-2 text-xs sm:grid-cols-3">
+            <div className="rounded-lg border border-slate-700 bg-slate-900/70 p-2">
+              <p className="font-mono text-cyan-300">PICTURE SIGNAL</p>
+              <p className="mt-1 text-slate-200">
+                {stateLabel(state.gatedPictureSignal, "SELECTED")}
+              </p>
+            </div>
+            <div className="rounded-lg border border-slate-700 bg-slate-900/70 p-2">
+              <p className="font-mono text-purple-300">ANALYZER</p>
+              <p className="mt-1 text-slate-200">
+                {stateLabel(state.analyzingCircuitActive, "INSPECTING")}
+              </p>
+            </div>
+            <div className="rounded-lg border border-slate-700 bg-slate-900/70 p-2">
+              <p className="font-mono text-amber-300">COMPARISON</p>
+              <p className="mt-1 text-slate-200">{comparisonLabel}</p>
+            </div>
+          </div>
+        </div>
+
+        <form className="space-y-4 p-4 sm:p-5" onSubmit={(event) => event.preventDefault()}>
+          <div>
+            <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-cyan-400">
+              Normalized source states
+            </h4>
+            <p className="mt-1 text-[11px] leading-4 text-slate-400">
+              These switches alter logical availability only. They are not engineering setpoints.
+            </p>
+          </div>
+          <div className="space-y-2">
+            {CONTROL_COPY.map((control) => {
+              const checked = state.controls[control.id] >= 0.5;
+              return (
+                <label
+                  key={control.id}
+                  className="flex cursor-pointer items-start gap-2 rounded-lg border border-slate-700 bg-slate-900/60 p-2.5 text-xs"
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    className="mt-0.5 h-4 w-4 accent-cyan-400"
+                    onChange={(event) => updateParam(control.id, event.target.checked ? 1 : 0)}
+                  />
+                  <span>
+                    <span className="block font-medium text-slate-100">{control.label}</span>
+                    <span className="mt-0.5 block leading-4 text-slate-400">
+                      {control.explanation}
+                    </span>
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+          <ClaimConstraintToggle
+            patentId={PATENT_ID}
+            claimStates={claimStates}
+            onToggleClaim={(claimNumber, active) =>
+              updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
+            }
+          />
+          {claimConstraintResult.activeFailures.length > 0 && (
+            <div role="status" className="rounded-lg border border-rose-800 bg-rose-950/70 p-3">
+              {claimConstraintResult.activeFailures.map((failure: string) => (
+                <p key={failure} className="text-[11px] leading-5 text-rose-100">
+                  {failure}
+                </p>
+              ))}
+              {claimConstraintResult.refusalWarning && (
+                <p className="mt-1 text-[10px] leading-4 text-rose-200">
+                  {claimConstraintResult.refusalWarning}
+                </p>
+              )}
+            </div>
+          )}
+          <p className="rounded-lg border border-rose-900/70 bg-rose-950/40 p-3 text-xs leading-5 text-rose-100">
+            {state.sourceBoundary.reason}
+          </p>
+          <button
+            type="button"
+            onClick={resetParams}
+            className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-600 bg-slate-900 px-3 text-sm text-slate-100 hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
+          >
+            <RotateCcw className="h-4 w-4" />
+            Reset source exhibit
+          </button>
+        </form>
       </div>
-
-      {/* Interactive Controls Panel */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 rounded-lg bg-slate-950/60 p-4 border border-slate-800">
-        <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between text-xs">
-            <span className="text-slate-300 font-medium">Actual Part Width</span>
-            <span className="font-mono text-emerald-400">
-              {(controls.actualPartWidthM * 1000).toFixed(1)} mm
-            </span>
-          </div>
-          <input
-            type="range"
-            min="60"
-            max="100"
-            step="0.5"
-            value={controls.actualPartWidthM * 1000}
-            onChange={(e) =>
-              setControls((prev) => ({
-                ...prev,
-                actualPartWidthM: parseFloat(e.target.value) / 1000,
-              }))
-            }
-            className="accent-emerald-500"
-          />
-          <span className="text-[10px] text-slate-400">
-            Nominal is 80.0 mm (±2.0 mm tolerance threshold)
-          </span>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between text-xs">
-            <span className="text-slate-300 font-medium">Comparator Slicing Threshold</span>
-            <span className="font-mono text-amber-400">
-              {controls.thresholdVoltage.toFixed(2)} V
-            </span>
-          </div>
-          <input
-            type="range"
-            min="0.1"
-            max="0.9"
-            step="0.02"
-            value={controls.thresholdVoltage}
-            onChange={(e) =>
-              setControls((prev) => ({
-                ...prev,
-                thresholdVoltage: parseFloat(e.target.value),
-              }))
-            }
-            className="accent-amber-500"
-          />
-          <span className="text-[10px] text-slate-400">
-            Voltage slicing level isolating workpiece edges
-          </span>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between text-xs">
-            <span className="text-slate-300 font-medium">Solenoid Actuator Current</span>
-            <span className="font-mono text-cyan-400">
-              {controls.gateSolenoidCurrentA.toFixed(1)} A
-            </span>
-          </div>
-          <input
-            type="range"
-            min="0.5"
-            max="6.0"
-            step="0.1"
-            value={controls.gateSolenoidCurrentA}
-            onChange={(e) =>
-              setControls((prev) => ({
-                ...prev,
-                gateSolenoidCurrentA: parseFloat(e.target.value),
-              }))
-            }
-            className="accent-cyan-500"
-          />
-          <span className="text-[10px] text-slate-400">
-            Diverter force: {state.metrics.solenoidForceN.toFixed(2)} N (
-            {state.metrics.gateResponseTimeMs.toFixed(1)} ms trip)
-          </span>
-        </div>
-      </div>
-    </div>
+    </section>
   );
 }

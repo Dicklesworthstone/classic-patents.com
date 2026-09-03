@@ -37,10 +37,10 @@ export function SourceVisualUnavailable({ title, detail }: SourceVisualUnavailab
       <div className="mt-5 flex items-start gap-3 rounded-xl border border-amber-200 bg-white/70 p-4 text-sm leading-6 text-ink-800 dark:border-amber-900/70 dark:bg-ink-950/50 dark:text-ink-200">
         <FileSearch className="mt-0.5 h-5 w-5 shrink-0 text-amber-700 dark:text-amber-400" />
         <p>
-          The original facsimile and its source text remain available elsewhere on this page. This
-          temporary refusal prevents an inherited model from being presented as evidence for the
-          wrong invention. A new visual must be authored from the pinned source before this panel is
-          replaced.
+          The original facsimile remains available elsewhere on this page. A public source edition
+          is shown only after review. This temporary refusal prevents an inherited model from being
+          presented as evidence for the wrong invention. A new visual must be authored from the
+          pinned source before this panel is replaced.
         </p>
       </div>
     </section>

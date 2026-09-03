@@ -122,15 +122,13 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
         },
       };
     };
-    globalTransportBus.registerUpdater("us-2543181-land-polaroid", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-2543181-land-polaroid");
-  }, [
-    live.current.alkaliPh,
-    live.current.developmentTimeSec,
-    live.current.exposureFraction,
-    live.current.reagentViscosityCp,
-    live.current.rollerGapUm,
-  ]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-2543181-land-polaroid",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
@@ -156,8 +154,8 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
 
     const clock = createStudioClock();
     const animate = (now: number) => {
+      animFrameRef.current = requestAnimationFrame(animate);
       if (!studio.isVisible()) {
-        animFrameRef.current = requestAnimationFrame(animate);
         return;
       }
       const { simTimeSec } = clock.pump(now);

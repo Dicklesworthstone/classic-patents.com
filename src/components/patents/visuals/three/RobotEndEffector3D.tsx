@@ -10,6 +10,7 @@ import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildRobotEndEffectorModel } from "./robotEndEffectorModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-4765668-robot-end-effector";
 
@@ -28,13 +29,25 @@ const VIEWS = {
   },
 } as const;
 
+function viewForViewport(view: keyof typeof VIEWS, viewportWidth: number) {
+  const configured = VIEWS[view];
+  if (viewportWidth >= 640) return configured;
+  const distanceScale = 1.55;
+  return {
+    position: configured.position.map(
+      (coordinate, index) =>
+        configured.target[index] + (coordinate - configured.target[index]) * distanceScale,
+    ) as [number, number, number],
+    target: configured.target,
+  };
+}
+
 export function RobotEndEffector3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-  const liveParams = useRef(params);
-  liveParams.current = params;
+  const liveParams = useLiveSimParams(params);
   const state = useMemo(() => stepRobotEndEffector(params), [params]);
   const [view, setView] = useState<keyof typeof VIEWS>("perspective");
 
@@ -48,16 +61,19 @@ export function RobotEndEffector3D() {
 
   const selectView = (next: keyof typeof VIEWS) => {
     setView(next);
-    studioRef.current?.controls.setView(VIEWS[next].position, VIEWS[next].target);
+    const selected = viewForViewport(next, containerRef.current?.clientWidth ?? 640);
+    studioRef.current?.controls.setView(selected.position, selected.target);
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+    const initialView = viewForViewport("perspective", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
-      cameraPos: VIEWS.perspective.position,
-      targetPos: VIEWS.perspective.target,
+      cameraPos: initialView.position,
+      targetPos: initialView.target,
       environmentStyle: "studio",
       enableClouds: false,
       ambientIntensity: 2.6,
@@ -75,14 +91,14 @@ export function RobotEndEffector3D() {
     });
     const floor = new THREE.Mesh(new THREE.CircleGeometry(4.6, 64), floorMaterial);
     floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -1.14;
+    floor.position.y = -1.7;
     floor.receiveShadow = true;
     scene.add(floor);
 
     const model = buildRobotEndEffectorModel();
     scene.add(model.root);
     const axes = new THREE.AxesHelper(0.65);
-    axes.position.set(-2.15, -1.05, -1.28);
+    axes.position.set(-2.15, -1.6, -1.28);
     scene.add(axes);
 
     let frame = 0;
@@ -136,6 +152,12 @@ export function RobotEndEffector3D() {
             ENCODER{" "}
             <span className="text-amber-300">{state.encoderCountModulo.toFixed(2)} / 8</span>
           </p>
+          <p>
+            GRIP REQUEST{" "}
+            <span className="text-amber-300">
+              {state.requestedGripForceN.toFixed(0)} N · command only
+            </span>
+          </p>
         </div>
       </div>
       <div
@@ -160,7 +182,7 @@ export function RobotEndEffector3D() {
             />
           </label>
           <label className="text-xs text-slate-200">
-            Source-labelled grip setpoint
+            Requested grip command
             <span className="float-right font-mono text-amber-300">
               {(params.gripForceSetpointN ?? 900).toFixed(0)} N
             </span>
@@ -171,7 +193,7 @@ export function RobotEndEffector3D() {
               max="2000"
               step="25"
               value={params.gripForceSetpointN ?? 900}
-              aria-label="Grip-force setpoint"
+              aria-label="Requested grip command bounded by source maximum"
               onChange={(event) => updateParam("gripForceSetpointN", Number(event.target.value))}
             />
           </label>
@@ -192,7 +214,7 @@ export function RobotEndEffector3D() {
             />
           </label>
           <label className="text-xs text-slate-200">
-            Finger change sequence
+            Finger change · fixture omitted
             <span className="float-right font-mono text-rose-300">
               {((params.fingerChangeFraction ?? 0) * 100).toFixed(0)}%
             </span>
@@ -229,6 +251,13 @@ export function RobotEndEffector3D() {
             Reset
           </button>
         </div>
+
+        <p className="text-[11px] leading-4 text-slate-400 lg:col-span-2">
+          Finger change is axial dovetail withdrawal. At full travel the removed fingers enter the
+          source-mentioned stationary fixture, whose geometry the grant does not draw, and leave
+          this normalized view. Amber arrows visualize the requested grip command only; without a
+          workpiece/contact model they are not force vectors or achieved contact force.
+        </p>
 
         <div className="border-t border-slate-800 pt-2">
           <ClaimConstraintToggle

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import * as THREE from "three";
-import { stepDaVinci } from "@/physics/daVinciKernel";
+import { DA_VINCI_TABLE_SURFACE_Y_M, stepDaVinci } from "@/physics/daVinciKernel";
 import { stepEInk } from "@/physics/eInkKernel";
 import { stepMultiTouch } from "@/physics/multiTouchKernel";
 import { stepPageRank } from "@/physics/pageRankKernel";
@@ -284,6 +284,39 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
       expect(() => model.dispose()).not.toThrow();
     });
 
+    test("seats the table, drape, abdomen, guide ring, cup, and pad in one world frame", () => {
+      const model = buildDaVinciModel();
+      try {
+        model.root.updateMatrixWorld(true);
+        const table = model.root.getObjectByName("Kernel-aligned surgical table");
+        const drape = model.root.getObjectByName("Sterile drape at kernel table surface");
+        const abdomen = model.root.getObjectByName("Convex patient abdomen training form");
+        const guideRing = model.root.getObjectByName("Seated illustrative incision guide ring");
+        const cup = model.root.getObjectByName("Cup body seated on kernel table surface");
+        const pad = model.root.getObjectByName("Training pad seated on kernel table surface");
+        for (const part of [table, drape, abdomen, guideRing, cup, pad]) {
+          expect(part).toBeInstanceOf(THREE.Mesh);
+        }
+        const bounds = (part: THREE.Object3D | undefined) =>
+          new THREE.Box3().setFromObject(part as THREE.Object3D);
+        expect(bounds(table).max.y).toBeCloseTo(DA_VINCI_TABLE_SURFACE_Y_M, 8);
+        expect(bounds(drape).max.y).toBeCloseTo(DA_VINCI_TABLE_SURFACE_Y_M, 8);
+        expect(bounds(cup).min.y).toBeCloseTo(DA_VINCI_TABLE_SURFACE_Y_M, 8);
+        expect(bounds(pad).min.y).toBeCloseTo(DA_VINCI_TABLE_SURFACE_Y_M - 0.0005, 8);
+        expect(bounds(guideRing).intersectsBox(bounds(abdomen))).toBe(true);
+        expect(guideRing?.userData.constraintMode).toBe("visual-guide-only");
+
+        const tableBounds = bounds(table);
+        for (let index = 1; index <= 4; index += 1) {
+          const leg = model.root.getObjectByName(`Surgical table support leg ${index}`);
+          expect(leg).toBeInstanceOf(THREE.Mesh);
+          expect(bounds(leg).max.y).toBeCloseTo(tableBounds.min.y, 8);
+        }
+      } finally {
+        model.dispose();
+      }
+    });
+
     test("keeps every cart-to-jaw interface connected across the control envelope", () => {
       const model = buildDaVinciModel();
       for (const motionScaleRatio of [1, 3, 10]) {
@@ -345,6 +378,9 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
     test("2D capsule particles drain kernel Y without Math.random in the frame loop", async () => {
       const simSource = await Bun.file(new URL("../EInkSim.tsx", import.meta.url)).text();
       expect(simSource).not.toContain("Math.random(");
+      expect(simSource).not.toContain("createStudioClock");
+      expect(simSource).not.toContain("requestAnimationFrame");
+      expect(simSource).toContain("readEInkTapeFrame");
       expect(simSource).toContain("whiteParticleNormY");
       expect(simSource).toContain("blackParticleNormY");
       expect(simSource).toContain("particleChargeCoupled");
@@ -354,6 +390,7 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
       const modelSource = await Bun.file(new URL("./EInkModel.ts", import.meta.url)).text();
       expect(modelSource).not.toContain("timeSec * 2 +");
       expect(modelSource).toContain("jitterOmega");
+      expect(modelSource).toContain("THREE.InstancedMesh");
     });
 
     test("Stokes-Einstein thermal jitter slows in thicker fluid", () => {
@@ -367,9 +404,20 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
     test("builds transparent microcapsule, particle arrays, and ITO electrode plates", () => {
       const model = buildEInkModel();
       expect(model.root).toBeDefined();
-      expect(model.whiteParticleMeshes.length).toBe(48);
-      expect(model.blackParticleMeshes.length).toBe(48);
+      expect(model.whiteParticleInstances).toBeInstanceOf(THREE.InstancedMesh);
+      expect(model.blackParticleInstances).toBeInstanceOf(THREE.InstancedMesh);
+      expect(model.whiteParticleInstances.count).toBe(48);
+      expect(model.blackParticleInstances.count).toBe(48);
+      expect(model.whiteParticleInstances.geometry).toBe(model.blackParticleInstances.geometry);
       expect(model.eFieldArrows.length).toBe(4);
+      const whiteVersion = model.whiteParticleInstances.instanceMatrix.version;
+      const blackVersion = model.blackParticleInstances.instanceMatrix.version;
+      model.updateElectrophoresis(
+        stepEInk({ electrodeVoltageVolts: -15, fluidViscosityCp: 2 }, 0.25),
+        0.25,
+      );
+      expect(model.whiteParticleInstances.instanceMatrix.version).toBeGreaterThan(whiteVersion);
+      expect(model.blackParticleInstances.instanceMatrix.version).toBeGreaterThan(blackVersion);
       expect(() => model.dispose()).not.toThrow();
     });
   });

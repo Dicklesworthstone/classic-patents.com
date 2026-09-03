@@ -8,6 +8,8 @@ import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
+const UI_SNAPSHOT_INTERVAL_MS = 80;
+
 export function EricssonPropellerSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-588-ericsson-propeller");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -16,29 +18,48 @@ export function EricssonPropellerSim() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [angleDeg, setAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const angleRef = useRef(0);
+  const screwRef = useRef<ReturnType<typeof stepEricssonPropeller> | null>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const screw = stepEricssonPropeller({ shaftRpm, bladePitchAngleDeg });
 
   useEffect(() => {
+    screwRef.current = screw;
+  }, [screw]);
+
+  useEffect(() => {
     if (!isPlaying) return;
 
     let lastTime = performance.now();
+    let lastUiSnapshot = 0;
 
     const loop = (time: number) => {
       animRef.current = requestAnimationFrame(loop);
-      if (!onscreenRef.current) return;
+      if (!onscreenRef.current) {
+        lastTime = time;
+        return;
+      }
       const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
       lastTime = time;
+      const liveScrew = screwRef.current;
+      if (!liveScrew) return;
 
-      setAngleDeg((prev) => (prev + screw.shaftOmegaDegPerS * dt) % screw.displayWrapDeg);
+      angleRef.current =
+        (angleRef.current + liveScrew.shaftOmegaDegPerS * dt) % liveScrew.displayWrapDeg;
+      // The source-faithful blade paths change their projected profile rather than
+      // sharing a single rigid transform, so this is a bounded presentation snapshot.
+      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = time;
+        setAngleDeg(angleRef.current);
+      }
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, screw.shaftOmegaDegPerS, screw.displayWrapDeg, onscreenRef.current]);
+  }, [isPlaying, onscreenRef]);
 
   return (
     <div
@@ -92,6 +113,7 @@ export function EricssonPropellerSim() {
             type="button"
             onClick={() => {
               resetParams();
+              angleRef.current = 0;
               setAngleDeg(0);
               soundEngine.playSwitchClick();
             }}

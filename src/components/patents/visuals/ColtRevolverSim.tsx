@@ -210,7 +210,7 @@ export function ColtRevolverSim() {
             type="button"
             onClick={handlePullTrigger}
             disabled={!isFullCock || isFiring}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold text-white transition-all shadow-sm cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold text-white transition-[background-color,color,opacity] shadow-sm cursor-pointer ${
               isFullCock && !isFiring
                 ? "bg-amber-600 hover:bg-amber-700 ring-2 ring-amber-400/50"
                 : "bg-amber-800/40 text-amber-200/40 cursor-not-allowed"
@@ -757,7 +757,7 @@ export function ColtRevolverSim() {
           <button
             type="button"
             onClick={handleCockHammer}
-            className="flex-1 min-w-[130px] flex items-center justify-center gap-1.5 px-3 py-2 bg-amber-600 hover:bg-amber-700 active:scale-98 text-white font-mono text-xs font-bold rounded-lg shadow-xs transition-all cursor-pointer"
+            className="flex-1 min-w-[130px] flex items-center justify-center gap-1.5 px-3 py-2 bg-amber-600 hover:bg-amber-700 active:scale-98 text-white font-mono text-xs font-bold rounded-lg shadow-xs transition-[background-color,transform] cursor-pointer"
           >
             <Activity className="w-3.5 h-3.5" />
             1. Cock (45°)
@@ -766,7 +766,7 @@ export function ColtRevolverSim() {
             type="button"
             onClick={handlePullTrigger}
             disabled={!isFullCock || isFiring}
-            className={`flex-1 min-w-[140px] flex items-center justify-center gap-1.5 px-3.5 py-2 font-mono text-xs font-bold rounded-lg shadow-xs transition-all cursor-pointer ${
+            className={`flex-1 min-w-[140px] flex items-center justify-center gap-1.5 px-3.5 py-2 font-mono text-xs font-bold rounded-lg shadow-xs transition-[background-color,color,border-color,transform] cursor-pointer ${
               isFullCock && !isFiring
                 ? "bg-red-600 hover:bg-red-700 active:scale-98 text-white ring-2 ring-red-400/50"
                 : "bg-parchment-300 dark:bg-ink-800 text-ink-400 dark:text-ink-600 cursor-not-allowed border border-parchment-400 dark:border-ink-700"

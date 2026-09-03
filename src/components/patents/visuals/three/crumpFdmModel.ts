@@ -4,15 +4,21 @@ import type { CrumpFdmControls, CrumpFdmTelemetry } from "@/physics/crumpFdmKern
 export interface CrumpFdm3DObjects {
   root: THREE.Group;
   gantryGroup: THREE.Group;
+  xBridgeGroup: THREE.Group;
   carriageGroup: THREE.Group;
   bedGroup: THREE.Group;
+  zLiftSupportGroup: THREE.Group;
   partGroup: THREE.Group;
   filamentLine: THREE.Line;
+  filamentSegmentMeshes: readonly [THREE.Mesh, THREE.Mesh, THREE.Mesh];
   nozzleMesh: THREE.Mesh;
   heaterBlockMesh: THREE.Mesh;
   driveRollerMesh: THREE.Mesh;
   pinchRollerMesh: THREE.Mesh;
   activeBeadMesh: THREE.Mesh;
+  filamentGuideMesh: THREE.Mesh;
+  spoolGroup: THREE.Group;
+  spoolSupportGroup: THREE.Group;
   update: (controls: CrumpFdmControls, tel: CrumpFdmTelemetry, simTimeSec: number) => void;
   dispose: () => void;
 }
@@ -53,7 +59,9 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
   });
 
   const filamentMaterial = new THREE.MeshStandardMaterial({
-    color: 0x0284c7,
+    color: 0x22d3ee,
+    emissive: 0x083344,
+    emissiveIntensity: 0.7,
     roughness: 0.3,
   });
 
@@ -67,6 +75,10 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
     color: 0xf59e0b,
   });
 
+  const filamentLineMaterial = new THREE.LineBasicMaterial({
+    color: 0x22d3ee,
+  });
+
   // 1. Base Frame & Vertical Upright Posts
   const frameGroup = new THREE.Group();
   frameGroup.name = "ChassisFrame";
@@ -78,17 +90,22 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
   // 4 Vertical corner posts
   const postGeo = new THREE.CylinderGeometry(0.04, 0.04, 2.8, 16);
   const p1 = new THREE.Mesh(postGeo, rodMaterial);
+  p1.name = "Chassis post rear left";
   p1.position.set(-1.4, 1.4, -1.2);
   const p2 = new THREE.Mesh(postGeo, rodMaterial);
+  p2.name = "Chassis post rear right";
   p2.position.set(1.4, 1.4, -1.2);
   const p3 = new THREE.Mesh(postGeo, rodMaterial);
+  p3.name = "Chassis post front left";
   p3.position.set(-1.4, 1.4, 1.2);
   const p4 = new THREE.Mesh(postGeo, rodMaterial);
+  p4.name = "Chassis post front right";
   p4.position.set(1.4, 1.4, 1.2);
   frameGroup.add(p1, p2, p3, p4);
 
   // Top Frame Crown
   const topCrown = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.08, 2.8), frameMaterial);
+  topCrown.name = "Chassis top crown";
   topCrown.position.y = 2.8;
   frameGroup.add(topCrown);
 
@@ -100,7 +117,33 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
   bedGroup.position.set(0, 0.5, 0);
 
   const bedPlate = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.06, 1.8), bedMaterial);
+  bedPlate.name = "Heated build plate";
   bedGroup.add(bedPlate);
+
+  // Two fixed lead screws rise from pillow blocks on the chassis base. Nuts
+  // carried by the bed overlap both the plate and each screw, making its Z
+  // translation an explicit constrained carriage rather than levitation.
+  const zLiftSupportGroup = new THREE.Group();
+  zLiftSupportGroup.name = "Base-anchored build-platform Z lift";
+  for (const x of [-0.78, 0.78]) {
+    const side = x < 0 ? "left" : "right";
+    const screw = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 1.55, 14), rodMaterial);
+    screw.name = `Build-platform Z lead screw ${side}`;
+    screw.position.set(x, 0.775, -0.78);
+    const pillowBlock = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.12, 0.18), frameMaterial);
+    pillowBlock.name = `Z lead-screw base bearing ${side}`;
+    pillowBlock.position.set(x, 0.06, -0.78);
+    zLiftSupportGroup.add(screw, pillowBlock);
+
+    const carriageNut = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.075, 0.075, 0.15, 18),
+      brassMaterial,
+    );
+    carriageNut.name = `Build-platform Z carriage nut ${side}`;
+    carriageNut.position.set(x, 0, -0.78);
+    bedGroup.add(carriageNut);
+  }
+  root.add(zLiftSupportGroup);
 
   // 3. 3D Printed Object (attached to bed)
   const partGroup = new THREE.Group();
@@ -130,22 +173,50 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
   // Dual Y-Rods
   const yRodGeo = new THREE.CylinderGeometry(0.025, 0.025, 2.6, 16);
   const yRodLeft = new THREE.Mesh(yRodGeo, rodMaterial);
+  yRodLeft.name = "Fixed Y rail left";
   yRodLeft.rotation.x = Math.PI / 2;
   yRodLeft.position.set(-1.1, 0, 0);
   const yRodRight = new THREE.Mesh(yRodGeo, rodMaterial);
+  yRodRight.name = "Fixed Y rail right";
   yRodRight.rotation.x = Math.PI / 2;
   yRodRight.position.set(1.1, 0, 0);
   gantryGroup.add(yRodLeft, yRodRight);
 
+  // Fixed front/rear cross-members clamp both Y rails into the upright frame.
+  // Their ends overlap the vertical posts, eliminating another visually subtle
+  // free-floating subassembly.
+  for (const z of [-1.22, 1.22]) {
+    const support = new THREE.Mesh(new THREE.BoxGeometry(2.92, 0.08, 0.08), frameMaterial);
+    support.name = `Frame-connected Y-rail support ${z < 0 ? "rear" : "front"}`;
+    support.position.set(0, 0, z);
+    gantryGroup.add(support);
+  }
+
+  // The X rods and toolhead form one bridge that translates along the fixed
+  // Y rails. Previously the rods stayed at z=0 while the toolhead traced an
+  // independent circle through empty space.
+  const xBridgeGroup = new THREE.Group();
+  xBridgeGroup.name = "X-axis bridge riding on Y rails";
+
   // Dual X-Rods
   const xRodGeo = new THREE.CylinderGeometry(0.025, 0.025, 2.2, 16);
   const xRodFront = new THREE.Mesh(xRodGeo, rodMaterial);
+  xRodFront.name = "Moving X rail front";
   xRodFront.rotation.z = Math.PI / 2;
   xRodFront.position.set(0, 0.08, 0.1);
   const xRodBack = new THREE.Mesh(xRodGeo, rodMaterial);
+  xRodBack.name = "Moving X rail rear";
   xRodBack.rotation.z = Math.PI / 2;
   xRodBack.position.set(0, 0.08, -0.1);
-  gantryGroup.add(xRodFront, xRodBack);
+  xBridgeGroup.add(xRodFront, xRodBack);
+
+  for (const x of [-1.1, 1.1]) {
+    const bearing = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.18, 0.32), frameMaterial);
+    bearing.name = `X-bridge Y-rail bearing ${x < 0 ? "left" : "right"}`;
+    bearing.position.set(x, 0.08, 0);
+    xBridgeGroup.add(bearing);
+  }
+  gantryGroup.add(xBridgeGroup);
 
   // 5. Extruder Toolhead Carriage (X-Axis Movement)
   const carriageGroup = new THREE.Group();
@@ -172,6 +243,12 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
   pinchRollerMesh.rotation.x = Math.PI / 2;
   pinchRollerMesh.position.set(0.08, 0.28, 0.12);
   carriageGroup.add(pinchRollerMesh);
+  const rollerBaseQuaternion = new THREE.Quaternion().setFromAxisAngle(
+    new THREE.Vector3(1, 0, 0),
+    Math.PI / 2,
+  );
+  const rollerSpinAxis = new THREE.Vector3(0, 1, 0);
+  const rollerSpinQuaternion = new THREE.Quaternion();
 
   // Cold end Heatsink fins
   const heatsinkMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.2, 16), rodMaterial);
@@ -191,26 +268,14 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
 
   // Active Extrusion Bead
   const activeBeadMesh = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.02, 0.02, 0.12, 16),
+    // Unit height: update() scales and centers this bridge so it exactly
+    // spans the live nozzle-to-part gap as the build platform moves.
+    new THREE.CylinderGeometry(0.02, 0.02, 1, 16),
     activeBeadMaterial,
   );
-  activeBeadMesh.position.set(0, -0.34, 0);
   carriageGroup.add(activeBeadMesh);
 
-  // Filament path line
-  const filamentPoints = [
-    new THREE.Vector3(0, 1.2, 0),
-    new THREE.Vector3(0, 0.28, 0.12),
-    new THREE.Vector3(0, -0.25, 0),
-  ];
-  const filamentGeo = new THREE.BufferGeometry().setFromPoints(filamentPoints);
-  const filamentLine = new THREE.Line(
-    filamentGeo,
-    new THREE.LineBasicMaterial({ color: 0x0284c7, linewidth: 2 }),
-  );
-  carriageGroup.add(filamentLine);
-
-  gantryGroup.add(carriageGroup);
+  xBridgeGroup.add(carriageGroup);
   root.add(gantryGroup);
 
   // 6. Filament Spool mounted on top frame
@@ -238,33 +303,137 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
   spoolGroup.add(spoolFlange1, spoolFlange2, spoolCore);
   root.add(spoolGroup);
 
-  function update(controls: CrumpFdmControls, tel: CrumpFdmTelemetry, simTimeSec: number) {
-    if (!tel.isExtruding) {
-      activeBeadMesh.visible = false;
-      return;
-    }
-    activeBeadMesh.visible = true;
+  const spoolSupportGroup = new THREE.Group();
+  spoolSupportGroup.name = "Top-frame spool axle and yoke support";
+  const spoolAxle = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.82, 16), rodMaterial);
+  spoolAxle.name = "Filament spool axle";
+  spoolAxle.rotation.z = Math.PI / 2;
+  spoolAxle.position.set(0, 3.2, 0);
+  spoolSupportGroup.add(spoolAxle);
+  for (const x of [-0.36, 0.36]) {
+    const yoke = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.42, 0.1), frameMaterial);
+    yoke.name = `Spool axle yoke ${x < 0 ? "left" : "right"}`;
+    yoke.position.set(x, 3.01, 0);
+    spoolSupportGroup.add(yoke);
+  }
+  root.add(spoolSupportGroup);
 
+  // A frame-mounted guide prevents the feed path from bending around an
+  // imaginary point in space. The line itself lives in root coordinates:
+  // its spool endpoint stays fixed while its toolhead endpoint follows the
+  // X/Y carriage, just as a flexible filament path must.
+  const filamentGuideMesh = new THREE.Mesh(
+    new THREE.TorusGeometry(0.075, 0.018, 10, 24),
+    brassMaterial,
+  );
+  filamentGuideMesh.name = "Frame-mounted filament guide eyelet";
+  filamentGuideMesh.position.set(0.45, 2.74, 0.43);
+  filamentGuideMesh.rotation.x = Math.PI / 2;
+  root.add(filamentGuideMesh);
+
+  const filamentPoints = [
+    new THREE.Vector3(0, 2.84, 0.36),
+    filamentGuideMesh.position.clone(),
+    new THREE.Vector3(0, 2.08, 0.12),
+    new THREE.Vector3(0, 1.55, 0),
+  ];
+  const filamentGeo = new THREE.BufferGeometry().setFromPoints(filamentPoints);
+  const filamentLine = new THREE.Line(filamentGeo, filamentLineMaterial);
+  filamentLine.name = "Continuous spool-to-liquefier filament path";
+  root.add(filamentLine);
+
+  // WebGL ignores LineBasicMaterial.linewidth on most platforms. Give the
+  // feedstock real cylindrical volume as well as a mathematical centreline,
+  // so the continuous spool -> guide -> pinch rollers -> liquefier path stays
+  // legible and physically accountable from every camera.
+  const filamentSegmentGeometry = new THREE.CylinderGeometry(0.022, 0.022, 1, 10);
+  function createFilamentSegment(index: number) {
+    const segment = new THREE.Mesh(filamentSegmentGeometry, filamentMaterial);
+    segment.name = `Filament feed segment ${index + 1}`;
+    root.add(segment);
+    return segment;
+  }
+  const filamentSegmentMeshes: [THREE.Mesh, THREE.Mesh, THREE.Mesh] = [
+    createFilamentSegment(0),
+    createFilamentSegment(1),
+    createFilamentSegment(2),
+  ];
+  const segmentMidpoint = new THREE.Vector3();
+  const segmentDirection = new THREE.Vector3();
+  const segmentUp = new THREE.Vector3(0, 1, 0);
+
+  function setSegmentBetween(mesh: THREE.Mesh, start: THREE.Vector3, end: THREE.Vector3) {
+    segmentDirection.subVectors(end, start);
+    const length = segmentDirection.length();
+    segmentMidpoint.copy(start).add(end).multiplyScalar(0.5);
+    mesh.position.copy(segmentMidpoint);
+    mesh.scale.set(1, length, 1);
+    mesh.quaternion.setFromUnitVectors(segmentUp, segmentDirection.normalize());
+  }
+
+  filamentSegmentMeshes.forEach((segment, index) => {
+    setSegmentBetween(segment, filamentPoints[index], filamentPoints[index + 1]);
+  });
+
+  function update(controls: CrumpFdmControls, tel: CrumpFdmTelemetry, simTimeSec: number) {
     // Toolhead circular/raster motion
-    const radius = 0.35;
+    // Stay inside the top layer's 0.333-unit radius so the live bead always
+    // lands on material instead of orbiting just outside the vessel wall.
+    const radius = 0.31;
     const omega = (controls.printSpeedMmS / 45.0) * 1.5;
     const xPos = radius * Math.cos(simTimeSec * omega);
     const zPos = radius * Math.sin(simTimeSec * omega);
 
-    carriageGroup.position.set(xPos, 0, zPos);
+    xBridgeGroup.position.z = zPos;
+    carriageGroup.position.set(xPos, 0, 0);
+
+    const filamentPositions = filamentLine.geometry.getAttribute(
+      "position",
+    ) as THREE.BufferAttribute;
+    filamentPositions.setXYZ(0, 0, 2.84, 0.36);
+    filamentPositions.setXYZ(
+      1,
+      filamentGuideMesh.position.x,
+      filamentGuideMesh.position.y,
+      filamentGuideMesh.position.z,
+    );
+    filamentPositions.setXYZ(2, xPos, 2.08, zPos + 0.12);
+    filamentPositions.setXYZ(3, xPos, 1.55, zPos);
+    filamentPositions.needsUpdate = true;
+    for (let index = 0; index < filamentSegmentMeshes.length; index += 1) {
+      filamentPoints[index].fromBufferAttribute(filamentPositions, index);
+      filamentPoints[index + 1].fromBufferAttribute(filamentPositions, index + 1);
+      setSegmentBetween(
+        filamentSegmentMeshes[index],
+        filamentPoints[index],
+        filamentPoints[index + 1],
+      );
+    }
+
+    activeBeadMesh.visible = tel.isExtruding;
 
     // Rotate pinch rollers
     const rollerSpeed = tel.filamentFeedSpeedMmS * 2.0;
-    driveRollerMesh.rotation.z = simTimeSec * rollerSpeed;
-    pinchRollerMesh.rotation.z = -simTimeSec * rollerSpeed;
+    if (tel.isExtruding) {
+      rollerSpinQuaternion.setFromAxisAngle(rollerSpinAxis, simTimeSec * rollerSpeed);
+      driveRollerMesh.quaternion.copy(rollerBaseQuaternion).multiply(rollerSpinQuaternion);
+      rollerSpinQuaternion.setFromAxisAngle(rollerSpinAxis, -simTimeSec * rollerSpeed);
+      pinchRollerMesh.quaternion.copy(rollerBaseQuaternion).multiply(rollerSpinQuaternion);
+    }
 
     // Bed Z position follows build height
     const currentZHeight = 0.5 - controls.layerHeightMm * 0.5;
     bedGroup.position.y = currentZHeight;
 
-    // Scale active bead width
+    // Join the brass nozzle tip to the actual top of the layered part. This
+    // is a geometric constraint, not a decorative fixed-length extrusion.
+    const nozzleTipWorldY = gantryGroup.position.y + carriageGroup.position.y - 0.33;
+    const partTopWorldY = bedGroup.position.y + partGroup.position.y + layerCount * 0.02;
+    const beadLength = Math.max(0.02, nozzleTipWorldY - partTopWorldY);
     const beadScaleX = controls.roadWidthMm / 0.45;
-    activeBeadMesh.scale.set(beadScaleX, 1, beadScaleX);
+    activeBeadMesh.position.y =
+      (nozzleTipWorldY + partTopWorldY) / 2 - gantryGroup.position.y - carriageGroup.position.y;
+    activeBeadMesh.scale.set(beadScaleX, beadLength, beadScaleX);
   }
 
   function dispose() {
@@ -276,20 +445,36 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
     filamentMaterial.dispose();
     printedPartMaterial.dispose();
     activeBeadMaterial.dispose();
+    filamentLineMaterial.dispose();
+    const disposedGeometries = new Set<THREE.BufferGeometry>();
+    root.traverse((object) => {
+      if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
+        if (!disposedGeometries.has(object.geometry)) {
+          disposedGeometries.add(object.geometry);
+          object.geometry.dispose();
+        }
+      }
+    });
   }
 
   return {
     root,
     gantryGroup,
+    xBridgeGroup,
     carriageGroup,
     bedGroup,
+    zLiftSupportGroup,
     partGroup,
     filamentLine,
+    filamentSegmentMeshes,
     nozzleMesh,
     heaterBlockMesh,
     driveRollerMesh,
     pinchRollerMesh,
     activeBeadMesh,
+    filamentGuideMesh,
+    spoolGroup,
+    spoolSupportGroup,
     update,
     dispose,
   };

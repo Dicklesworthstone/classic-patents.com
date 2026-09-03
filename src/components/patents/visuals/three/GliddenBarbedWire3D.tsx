@@ -3,7 +3,6 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { stepGliddenBarbedWire } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { ContinuumState, MachineState } from "@/physics/types";
 import {
@@ -11,6 +10,7 @@ import {
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -75,7 +75,7 @@ export const GliddenBarbedWire3D = memo(() => {
   });
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const live = useLiveSimParams({
@@ -140,15 +140,13 @@ export const GliddenBarbedWire3D = memo(() => {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-157124-glidden-barbed-wire", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-157124-glidden-barbed-wire");
-  }, [
-    live.current.claim1Active,
-    live.current.feedVelocityMmPs,
-    live.current.flyerOmegaRadPerS,
-    live.current.isLocked,
-    live.current.stitchFrequencyHz,
-  ]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-157124-glidden-barbed-wire",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const studioRef = useRef<StudioContext | null>(null);
 
@@ -163,10 +161,6 @@ export const GliddenBarbedWire3D = memo(() => {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;

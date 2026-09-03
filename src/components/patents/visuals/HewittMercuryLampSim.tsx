@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { stepHewittMercuryLamp } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -44,8 +45,11 @@ export function HewittMercuryLampSim({
     condenserCoolingLevel,
     ballastResistanceOhms,
   });
+  const live = useLiveSimParams({ isLit, physics, strikePulseTime, tubeDiameterMm });
+  const animationTimeRef = useRef(0);
 
   const handleStrike = () => {
+    animationTimeRef.current = 0;
     setIsLit(true);
     setStrikePulseTime(1.0);
   };
@@ -57,12 +61,13 @@ export function HewittMercuryLampSim({
     if (!ctx) return;
 
     let animId: number;
-    let time = 0;
 
     const render = () => {
       animId = requestAnimationFrame(render);
       if (!onscreenRef.current) return;
-      time += 0.025;
+      animationTimeRef.current += 0.025;
+      const { isLit, physics, strikePulseTime, tubeDiameterMm } = live.current;
+      const time = animationTimeRef.current;
 
       const w = canvas.width;
       const h = canvas.height;
@@ -336,7 +341,7 @@ export function HewittMercuryLampSim({
     return () => {
       cancelAnimationFrame(animId);
     };
-  }, [tubeDiameterMm, isLit, strikePulseTime, physics, onscreenRef.current]);
+  }, [live, onscreenRef]);
 
   return (
     <div

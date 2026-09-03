@@ -56,13 +56,27 @@ export function buildLemelsonAdjustableManipulatorModel(): LemelsonAdjustableMan
 
   // 1. Static Overhead Trackway (21)
   const trackGroup = new THREE.Group();
+  trackGroup.name = "Supported overhead trackway 21";
   const iBeamTop = new THREE.Mesh(geometry(new THREE.BoxGeometry(7.0, 0.08, 0.4)), trackSteel);
+  iBeamTop.name = "Trackway 21 top flange";
   iBeamTop.position.set(0, 3.0, 0);
   const iBeamWeb = new THREE.Mesh(geometry(new THREE.BoxGeometry(7.0, 0.32, 0.06)), trackSteel);
+  iBeamWeb.name = "Trackway 21 web";
   iBeamWeb.position.set(0, 2.82, 0);
   const iBeamBottom = new THREE.Mesh(geometry(new THREE.BoxGeometry(7.0, 0.08, 0.4)), trackSteel);
+  iBeamBottom.name = "Trackway 21 bottom flange";
   iBeamBottom.position.set(0, 2.64, 0);
   trackGroup.add(iBeamTop, iBeamWeb, iBeamBottom);
+
+  // Exhibit-only gantry legs carry the otherwise overhead source track down to
+  // the studio floor. They are supports, not claimed manipulator elements.
+  const gantryLegGeometry = geometry(new THREE.BoxGeometry(0.18, 3.1, 0.55));
+  for (const [index, x] of [-3.35, 3.35].entries()) {
+    const leg = new THREE.Mesh(gantryLegGeometry, trackSteel);
+    leg.name = `Normalized exhibit gantry support ${index + 1}`;
+    leg.position.set(x, 1.05, 0);
+    trackGroup.add(leg);
+  }
 
   // Power Bus Bars (28)
   const busBar1 = new THREE.Mesh(
@@ -70,24 +84,40 @@ export function buildLemelsonAdjustableManipulatorModel(): LemelsonAdjustableMan
     turntableBrass,
   );
   busBar1.rotation.z = Math.PI / 2;
+  busBar1.name = "Power bus bar 28 positive side";
   busBar1.position.set(0, 2.75, 0.18);
   const busBar2 = new THREE.Mesh(
     geometry(new THREE.CylinderGeometry(0.015, 0.015, 7.0, 8)),
     turntableBrass,
   );
   busBar2.rotation.z = Math.PI / 2;
+  busBar2.name = "Power bus bar 28 negative side";
   busBar2.position.set(0, 2.75, -0.18);
   trackGroup.add(busBar1, busBar2);
+  const busStandoffGeometry = geometry(new THREE.BoxGeometry(0.05, 0.04, 0.18));
+  for (const x of [-2.5, 0, 2.5]) {
+    for (const [side, z] of [
+      ["positive", 0.105],
+      ["negative", -0.105],
+    ] as const) {
+      const standoff = new THREE.Mesh(busStandoffGeometry, switchArmMaterial);
+      standoff.name = `Insulated ${side} bus-bar standoff at ${x}`;
+      standoff.position.set(x, 2.775, z);
+      trackGroup.add(standoff);
+    }
+  }
   root.add(trackGroup);
 
   // 2. Movable Carriage (22)
   const carriageGroup = new THREE.Group();
+  carriageGroup.name = "Movable carriage 22 and suspended manipulator";
   carriageGroup.position.set(0, 2.5, 0);
 
   const carriageBody = new THREE.Mesh(
     geometry(new THREE.BoxGeometry(0.9, 0.24, 0.55)),
     carriagePaint,
   );
+  carriageBody.name = "Carriage 22 body";
   carriageGroup.add(carriageBody);
 
   // Wheels (24)
@@ -97,6 +127,7 @@ export function buildLemelsonAdjustableManipulatorModel(): LemelsonAdjustableMan
         geometry(new THREE.CylinderGeometry(0.06, 0.06, 0.04, 16)),
         trackSteel,
       );
+      wheel.name = `Carriage wheel 24 at ${dx},${dz}`;
       wheel.rotation.x = Math.PI / 2;
       wheel.position.set(dx, 0.14, dz);
       carriageGroup.add(wheel);
@@ -117,6 +148,7 @@ export function buildLemelsonAdjustableManipulatorModel(): LemelsonAdjustableMan
     geometry(new THREE.BoxGeometry(0.32, 1.2, 0.32)),
     outerMastSteel,
   );
+  outerMast.name = "Outer guide mast 23";
   outerMast.position.set(0, -0.65, 0);
   carriageGroup.add(outerMast);
 
@@ -130,23 +162,27 @@ export function buildLemelsonAdjustableManipulatorModel(): LemelsonAdjustableMan
 
   // 3. Inner Telescoping Mast (23')
   const innerMastGroup = new THREE.Group();
+  innerMastGroup.name = "Telescoping inner mast 23 prime";
   innerMastGroup.position.set(0, -0.65, 0);
 
   const innerMast = new THREE.Mesh(
     geometry(new THREE.BoxGeometry(0.24, 1.2, 0.24)),
     innerMastSteel,
   );
+  innerMast.name = "Inner vertical member 23 prime";
   innerMast.position.set(0, -0.5, 0);
   innerMastGroup.add(innerMast);
 
   // 4. Turntable Assembly (43' & 45)
   const turntableGroup = new THREE.Group();
+  turntableGroup.name = "Turntable 43 and concentric stop channel 45";
   turntableGroup.position.set(0, -1.1, 0);
 
   const turntablePlate = new THREE.Mesh(
     geometry(new THREE.CylinderGeometry(0.32, 0.32, 0.06, 32)),
     turntableBrass,
   );
+  turntablePlate.name = "Turntable plate 43";
   turntableGroup.add(turntablePlate);
 
   // Concentric Channel (45)
@@ -177,7 +213,8 @@ export function buildLemelsonAdjustableManipulatorModel(): LemelsonAdjustableMan
     geometry(new THREE.BoxGeometry(0.2, 0.5, 0.2)),
     outerMastSteel,
   );
-  rotatingColumn.position.set(0, -0.25, 0);
+  rotatingColumn.name = "Rotating column 23 prime a";
+  rotatingColumn.position.set(0, -0.23, 0);
   azimuthGroup.add(rotatingColumn);
 
   // Limit Switch Arm (54')
@@ -190,6 +227,7 @@ export function buildLemelsonAdjustableManipulatorModel(): LemelsonAdjustableMan
 
   // 5. Wrist Joint (50) & Yoke (51)
   const wristYokeGroup = new THREE.Group();
+  wristYokeGroup.name = "Wrist yoke 51";
   wristYokeGroup.position.set(0, -0.5, 0);
 
   const yokeFork1 = new THREE.Mesh(
@@ -215,6 +253,7 @@ export function buildLemelsonAdjustableManipulatorModel(): LemelsonAdjustableMan
 
   // 6. Pitch Articulated Arm (35')
   const pitchGroup = new THREE.Group();
+  pitchGroup.name = "Pivoting arm assembly 35 prime";
   pitchGroup.position.set(0, -0.1, 0);
 
   const bevelGearSector = new THREE.Mesh(
@@ -228,19 +267,24 @@ export function buildLemelsonAdjustableManipulatorModel(): LemelsonAdjustableMan
     geometry(new THREE.CylinderGeometry(0.05, 0.04, 0.7, 16)),
     wristPaint,
   );
+  forearm.name = "Pivoting manipulator arm 35 prime";
   forearm.position.set(0, -0.38, 0);
   pitchGroup.add(forearm);
 
   // 7. Gripper Assembly (80 & 87)
   const gripperGroup = new THREE.Group();
+  gripperGroup.name = "Article-seizing assembly 80 and jaws 87";
   gripperGroup.position.set(0, -0.75, 0);
 
   const gripperBase = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.14, 0.08, 0.1)), jawSteel);
+  gripperBase.name = "Article-seizing base 83";
   gripperGroup.add(gripperBase);
 
   const jaw1 = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.03, 0.18, 0.04)), jawSteel);
+  jaw1.name = "Seizing jaw 87a";
   jaw1.position.set(-0.06, -0.1, 0);
   const jaw2 = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.03, 0.18, 0.04)), jawSteel);
+  jaw2.name = "Seizing jaw 87b";
   jaw2.position.set(0.06, -0.1, 0);
   gripperGroup.add(jaw1, jaw2);
 

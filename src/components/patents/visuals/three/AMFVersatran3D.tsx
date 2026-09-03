@@ -1,7 +1,7 @@
 "use client";
 
 import { Eye, EyeOff, RotateCcw } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import {
@@ -15,8 +15,11 @@ import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildAmfVersatranModel } from "./amfVersatranModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-3212649-amf-versatran";
+const SOURCE_BOUNDARY_MESSAGE =
+  "Normalized topology only. The grant does not publish a dimension table, payload, pressure, flow, timing, force, or performance calibration.";
 
 const VIEWS = {
   overview: {
@@ -32,6 +35,26 @@ const VIEWS = {
     target: [0.15, -0.35, -0.45] as [number, number, number],
   },
 } as const;
+
+export function amfVersatranViewForViewport(
+  view: keyof typeof VIEWS,
+  viewportWidth: number,
+): { position: [number, number, number]; target: [number, number, number] } {
+  const config = VIEWS[view];
+  const multiplier = viewportWidth < 480 ? (view === "overview" ? 1.55 : 1.25) : 1;
+  const target =
+    viewportWidth < 480 && view === "overview"
+      ? ([0, -0.65, 0] as [number, number, number])
+      : config.target;
+  return {
+    position: [
+      target[0] + (config.position[0] - config.target[0]) * multiplier,
+      target[1] + (config.position[1] - config.target[1]) * multiplier,
+      target[2] + (config.position[2] - config.target[2]) * multiplier,
+    ],
+    target,
+  };
+}
 
 const POSE_CONTROLS = [
   {
@@ -101,8 +124,7 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
     () => applyClaimConstraintModifications(PATENT_ID, params, claimStates),
     [params, claimStates],
   );
-  const liveParams = useRef(claimResult.modifiedParams);
-  liveParams.current = claimResult.modifiedParams;
+  const liveParams = useLiveSimParams(claimResult.modifiedParams);
   const state = stepAmfVersatranTopology(claimResult.modifiedParams);
   const claim8Active = claimStates[8] ?? true;
   const claim12Active = claimStates[12] ?? true;
@@ -114,19 +136,22 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
 
   const selectView = (nextView: keyof typeof VIEWS) => {
     setView(nextView);
-    const camera = VIEWS[nextView];
+    const camera = amfVersatranViewForViewport(nextView, containerRef.current?.clientWidth ?? 1000);
     studioRef.current?.controls.setView(camera.position, camera.target);
   };
 
-  useEffect(() => {
+  // Resolve the WebGL fallback before the browser paints: a passive effect can
+  // briefly show an empty canvas and controls when WebGL creation fails.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The persistent WebGL scene reads the stable layout-effect-synchronized control ref; depending on `.current` would recreate and flash the studio.
+  useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     let studio: StudioContext;
     try {
       studio = createThreeStudioScene({
         container,
-        cameraPos: VIEWS.overview.position,
-        targetPos: VIEWS.overview.target,
+        cameraPos: amfVersatranViewForViewport("overview", container.clientWidth).position,
+        targetPos: amfVersatranViewForViewport("overview", container.clientWidth).target,
         environmentStyle: "studio",
         enableClouds: false,
         ambientIntensity: 2.7,
@@ -184,13 +209,28 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
     };
   }, []);
 
+  useEffect(() => {
+    const restoreResponsiveView = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const camera = amfVersatranViewForViewport(view, container.clientWidth);
+      studioRef.current?.controls.setView(camera.position, camera.target);
+    };
+    window.addEventListener("resize", restoreResponsiveView);
+    return () => window.removeEventListener("resize", restoreResponsiveView);
+  }, [view]);
+
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl">
-      <div className="relative min-h-[500px] sm:min-h-[630px]">
-        <div ref={containerRef} className="absolute inset-0" />
+      <div className="relative min-h-[500px] pt-[432px] lg:pt-[642px]">
+        <div
+          ref={containerRef}
+          className="absolute inset-x-0 top-0 h-[420px] lg:h-[630px]"
+          data-mobile-layout="dedicated-model-viewport"
+        />
         {webglUnavailable && (
           <div
-            className="absolute inset-0 z-10 grid place-items-center bg-slate-950/95 p-6 text-center"
+            className="absolute inset-x-0 top-0 z-10 grid h-[420px] place-items-center bg-slate-950/95 p-6 text-center lg:h-[630px]"
             role="status"
             aria-live="polite"
             data-amf-versatran-webgl-fallback="true"
@@ -254,12 +294,17 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
                 </span>
               </p>
             </div>
-            <p className="pointer-events-none absolute right-3 top-24 max-w-[15rem] rounded-xl border border-rose-900/70 bg-rose-950/88 px-3 py-2 text-right text-[10px] leading-4 text-rose-100 backdrop-blur sm:right-5">
-              Normalized topology only. The grant does not publish a dimension table, payload,
-              pressure, flow, timing, force, or performance calibration.
+            <p className="pointer-events-none absolute right-3 top-24 hidden max-w-[15rem] rounded-xl border border-rose-900/70 bg-rose-950/88 px-3 py-2 text-right text-[10px] leading-4 text-rose-100 backdrop-blur sm:right-5 sm:block">
+              {SOURCE_BOUNDARY_MESSAGE}
             </p>
 
-            <div className="absolute bottom-3 left-3 right-3 grid gap-3 rounded-xl border border-slate-700/90 bg-slate-950/92 p-3 backdrop-blur sm:bottom-5 sm:left-5 sm:right-5">
+            <div
+              className="relative z-20 mx-3 grid scroll-mt-24 gap-3 rounded-xl border border-slate-700/90 bg-slate-950/92 p-3 backdrop-blur"
+              data-mobile-layout="controls-after-canvas"
+            >
+              <p className="rounded-lg border border-rose-900/70 bg-rose-950/60 p-2 text-[11px] leading-4 text-rose-100 sm:hidden">
+                {SOURCE_BOUNDARY_MESSAGE}
+              </p>
               <ClaimConstraintToggle
                 patentId={PATENT_ID}
                 claimStates={claimStates}

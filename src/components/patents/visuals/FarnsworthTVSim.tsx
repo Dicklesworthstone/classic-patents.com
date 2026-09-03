@@ -1,59 +1,40 @@
 "use client";
 
 import { Pause, Play, RotateCcw, Tv, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useState } from "react";
-import { voltsToKv } from "@/physics/catalogKernels";
-import { FrankenSimEngine } from "@/physics/engine";
+import { useMemo, useState } from "react";
+import {
+  type FarnsworthTvControls,
+  readFarnsworthTvControls,
+  readFarnsworthTvTapeFrame,
+  resetFarnsworthTvTape,
+} from "@/physics/farnsworthTvKernel";
+import { usePatentRuntimeTick } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
-import { useOffscreenGate } from "./useOffscreenGate";
+
+const PATENT_ID = "us-1773980-farnsworth-tv";
 
 export function FarnsworthTVSim() {
-  const { params, updateParam, resetParams } = usePatentPhysics("us-1773980-farnsworth-tv");
+  const { effectiveParams, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const anodeVoltage = params.anodeVoltage ?? 1500;
-  const coilCurrent = params.coilCurrent ?? 0.42;
-  const scanLines = params.scanLines ?? 60;
+  const controls = useMemo<FarnsworthTvControls>(
+    () => readFarnsworthTvControls(effectiveParams as any),
+    [effectiveParams],
+  );
+  const runtimeTick = usePatentRuntimeTick(PATENT_ID, 1);
+  const { beamState: beam, scanFrame } = readFarnsworthTvTapeFrame(controls);
+  const scanLines = controls.scanLines;
   const [mode, setMode] = useState<"electronic-farnsworth" | "mechanical-nipkow">(
     "electronic-farnsworth",
   );
-  const [isScanning, setIsScanning] = useState<boolean>(true);
-  const [beamPos, setBeamPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
-
-  const deflectionGauss = FrankenSimEngine.farnsworthDeflectionGauss(coilCurrent);
-  const beam = FrankenSimEngine.stepFarnsworthTv(
-    voltsToKv(anodeVoltage),
-    deflectionGauss,
-    params.lightIntensityLux ?? 500,
-    scanLines,
-  );
-  const speedMultiplier = beam.rasterAdvance;
-
-  useEffect(() => {
-    if (!isScanning) return;
-    const interval = setInterval(() => {
-      if (!onscreenRef.current) return;
-      setBeamPos((pos) => {
-        const nextX = (pos.x + speedMultiplier) % beam.rasterLineWrapPct;
-        const nextY = nextX < pos.x ? (pos.y + beam.rasterLinePct) % beam.rasterLineWrapPct : pos.y;
-        return { x: nextX, y: nextY };
-      });
-    }, 30);
-    return () => clearInterval(interval);
-  }, [
-    isScanning,
-    speedMultiplier,
-    beam.rasterLinePct,
-    beam.rasterLineWrapPct,
-    onscreenRef.current,
-  ]);
+  const isScanning = controls.running;
 
   return (
     <div
-      ref={rootRef}
       className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
+      data-runtime-tick={runtimeTick}
+      data-raster-line={scanFrame.rasterLineIndex}
     >
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
@@ -85,7 +66,7 @@ export function FarnsworthTVSim() {
           <button
             type="button"
             onClick={() => {
-              setIsScanning(!isScanning);
+              updateParam("running", isScanning ? 0 : 1);
               soundEngine.playSwitchClick();
             }}
             className="p-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-sm"
@@ -110,8 +91,8 @@ export function FarnsworthTVSim() {
             type="button"
             onClick={() => {
               resetParams();
+              resetFarnsworthTvTape();
               setMode("electronic-farnsworth");
-              setIsScanning(true);
               soundEngine.playSwitchClick();
             }}
             aria-label="Reset Simulation"
@@ -150,8 +131,9 @@ export function FarnsworthTVSim() {
             <div
               className="absolute w-3 h-3 rounded-full bg-emerald-300 shadow-[0_0_12px_#34d399] transition-colors duration-75"
               style={{
-                left: `${beamPos.x}%`,
-                top: `${beamPos.y}%`,
+                left: `${scanFrame.rasterXPercent}%`,
+                top: `${scanFrame.rasterYPercent}%`,
+                opacity: scanFrame.inHorizontalRetrace ? 0 : 1,
                 transform: "translate(-50%, -50%)",
               }}
             />

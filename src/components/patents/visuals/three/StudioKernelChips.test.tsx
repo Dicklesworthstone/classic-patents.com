@@ -1,4 +1,6 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { type KernelChip, StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 
@@ -80,5 +82,15 @@ describe("StudioKernelChips Component", () => {
 
   test("useResponsiveStudioHud exports a valid hook function", () => {
     expect(typeof useResponsiveStudioHud).toBe("function");
+  });
+
+  test("limits chip affordance animation to its changing visual properties", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/StudioKernelChips.tsx"),
+      "utf8",
+    );
+
+    expect(source).not.toContain("transition-all");
+    expect(source).toContain("transition-[background-color,transform]");
   });
 });

@@ -3,13 +3,13 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepZeppelinAirship } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import {
   globalTransportBus,
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -69,7 +69,7 @@ export function ZeppelinAirship3D() {
   });
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
 
   const live = useLiveSimParams({
     airspeedKmh: zep.flightSpeedKmh,
@@ -129,8 +129,12 @@ export function ZeppelinAirship3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-621195-zeppelin-airship", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-621195-zeppelin-airship");
+    const unregister = globalTransportBus.registerUpdater(
+      "us-621195-zeppelin-airship",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
   }, [live]);
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -146,10 +150,6 @@ export function ZeppelinAirship3D() {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -176,7 +176,7 @@ export function ZeppelinAirship3D() {
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
-      const { dt, simTimeSec: timeSec } = clock.pump(now);
+      const { dt } = clock.pump(now);
       const p = live.current;
 
       // Bus-owned kernel step: prefer the latest shared-tape aerostatic state.
@@ -185,7 +185,6 @@ export function ZeppelinAirship3D() {
         nodes,
         materials,
         dt,
-        timeSec,
         z ? z.hullStudioY : p.hullStudioY,
         z ? z.pitchTrimDeg : p.pitchTrimDeg,
         z ? z.propellerDisplayOmegaRadPerS : p.propellerOmegaRadPerS,

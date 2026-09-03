@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { stepLandPolaroidInstantFilm } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -16,6 +17,7 @@ interface LandPolaroidSimProps {
 export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = "" }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animFrameRef = useRef<number | null>(null);
+  const animationTimeRef = useRef(0);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const { params, updateParam, resetParams } = usePatentPhysics("us-2543181-land-polaroid");
@@ -52,7 +54,7 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
       }, 50);
     }
     return () => clearInterval(timer);
-  }, [isPlaying, updateParam, onscreenRef.current]);
+  }, [isPlaying, updateParam, onscreenRef]);
 
   const state = stepLandPolaroidInstantFilm({
     developmentTimeSec: internalTime,
@@ -61,6 +63,15 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
     rollerGapUm: rollerGap,
     alkaliPh: alkaliPh,
   });
+  const live = useLiveSimParams({
+    alkaliPh,
+    exposure,
+    internalTime,
+    rollerGap,
+    state,
+    viewMode,
+    viscosity,
+  });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -68,12 +79,13 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let animTime = 0;
-
     const render = () => {
       animFrameRef.current = requestAnimationFrame(render);
       if (!onscreenRef.current) return;
-      animTime += 0.02;
+      animationTimeRef.current += 0.02;
+      const { alkaliPh, exposure, internalTime, rollerGap, state, viewMode, viscosity } =
+        live.current;
+      const animTime = animationTimeRef.current;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const w = canvas.width;
@@ -309,16 +321,7 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, [
-    internalTime,
-    exposure,
-    viscosity,
-    rollerGap,
-    alkaliPh,
-    state,
-    viewMode,
-    onscreenRef.current,
-  ]);
+  }, [live, onscreenRef]);
 
   return (
     <div
@@ -397,6 +400,7 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
           <button
             type="button"
             onClick={() => {
+              animationTimeRef.current = 0;
               resetParams();
               setInternalTime(30);
               setIsPlaying(false);

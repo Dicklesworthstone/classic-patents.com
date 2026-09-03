@@ -1,8 +1,5 @@
 import * as THREE from "three";
-import type {
-  LemelsonMachineVisionControls,
-  LemelsonMachineVisionMetrics,
-} from "@/physics/lemelsonMachineVisionKernel";
+import type { LemelsonMachineVisionState } from "@/physics/lemelsonMachineVisionKernel";
 
 export interface LemelsonMachineVision3DObjects {
   root: THREE.Group;
@@ -15,11 +12,8 @@ export interface LemelsonMachineVision3DObjects {
   scanConeMesh: THREE.Mesh;
   diverterBladeMesh: THREE.Mesh;
   oscilloscopeLine: THREE.Line;
-  update: (
-    controls: LemelsonMachineVisionControls,
-    metrics: LemelsonMachineVisionMetrics,
-    simTimeSec: number,
-  ) => void;
+  /** Source-bounded signal state; geometry is display proportion, never SI reconstruction. */
+  update: (state: LemelsonMachineVisionState) => void;
   dispose: () => void;
 }
 
@@ -59,16 +53,30 @@ export function createLemelsonMachineVisionModel(): LemelsonMachineVision3DObjec
     roughness: 0.3,
   });
 
-  const partPassMaterial = new THREE.MeshStandardMaterial({
+  const partSignalMaterial = new THREE.MeshStandardMaterial({
     color: 0x10b981,
     metalness: 0.3,
     roughness: 0.4,
   });
 
-  const partFailMaterial = new THREE.MeshStandardMaterial({
-    color: 0xef4444,
+  const partWithheldMaterial = new THREE.MeshStandardMaterial({
+    color: 0x475569,
     metalness: 0.3,
     roughness: 0.4,
+  });
+
+  const partDifferenceMaterial = new THREE.MeshStandardMaterial({
+    color: 0xf59e0b,
+    metalness: 0.3,
+    roughness: 0.4,
+  });
+
+  const controlPathMaterial = new THREE.MeshStandardMaterial({
+    color: 0x059669,
+    emissive: 0x064e3b,
+    emissiveIntensity: 0.42,
+    metalness: 0.48,
+    roughness: 0.34,
   });
 
   const scanConeMaterial = new THREE.MeshBasicMaterial({
@@ -96,7 +104,7 @@ export function createLemelsonMachineVisionModel(): LemelsonMachineVision3DObjec
   const conveyorGroup = new THREE.Group();
   conveyorGroup.name = "ConveyorSystem";
 
-  // Main conveyor bed (length 3.0 m, width 0.45 m)
+  // Display-proportion inspection bed. The grant's figures do not establish an overall scale.
   const bedGeo = new THREE.BoxGeometry(3.0, 0.08, 0.45);
   const bedMesh = new THREE.Mesh(bedGeo, metalFrameMaterial);
   bedMesh.position.y = 0.5;
@@ -194,7 +202,7 @@ export function createLemelsonMachineVisionModel(): LemelsonMachineVision3DObjec
   lampGroup.add(lamp1, bulb1, lamp2, bulb2);
   root.add(lampGroup);
 
-  // 4. SOLENOID DEFECT EJECTION DIVERTER (at x = 0.6 m downstream)
+  // 4. Illustrated sorting/control station. Its display location is not a recovered distance.
   const diverterGroup = new THREE.Group();
   diverterGroup.name = "SolenoidDiverterGate";
   diverterGroup.position.set(0.6, 0.55, 0.22);
@@ -236,15 +244,15 @@ export function createLemelsonMachineVisionModel(): LemelsonMachineVision3DObjec
     wavePoints.push(new THREE.Vector3(u, 0, 0.142));
   }
   const waveGeo = new THREE.BufferGeometry().setFromPoints(wavePoints);
-  const waveMat = new THREE.LineBasicMaterial({ color: 0x34d399, linewidth: 2 });
+  const waveMat = new THREE.LineBasicMaterial({ color: 0x34d399, linewidth: 1 });
   const oscilloscopeLine = new THREE.Line(waveGeo, waveMat);
   crtMonitorGroup.add(oscilloscopeLine);
 
   root.add(crtMonitorGroup);
 
-  // 6. WORKPIECE PART ON CONVEYOR
+  // 6. Image-field workpiece token, drawn at a stable display proportion.
   const partGeo = new THREE.BoxGeometry(0.08, 0.06, 0.082);
-  const partMesh = new THREE.Mesh(partGeo, partPassMaterial);
+  const partMesh = new THREE.Mesh(partGeo, partSignalMaterial);
   partMesh.position.set(0, 0.59, 0);
   root.add(partMesh);
 
@@ -260,53 +268,31 @@ export function createLemelsonMachineVisionModel(): LemelsonMachineVision3DObjec
     diverterBladeMesh,
     oscilloscopeLine,
 
-    update(
-      controls: LemelsonMachineVisionControls,
-      metrics: LemelsonMachineVisionMetrics,
-      simTimeSec: number,
-    ) {
-      // Animate conveyor workpiece motion
-      const speed = controls.conveyorSpeedMPerS;
-      const cyclePos = ((simTimeSec * speed) % 2.6) - 1.3;
-      partMesh.position.x = cyclePos;
+    update(state: LemelsonMachineVisionState) {
+      // The workpiece token stays fixed: the facsimile provides no conveyor speed or scale.
+      partMesh.position.x = 0;
+      partMesh.scale.set(1, 1, 1);
+      partMesh.material = !state.inspectionSignalPresent
+        ? partWithheldMaterial
+        : state.referenceComparison === "difference"
+          ? partDifferenceMaterial
+          : partSignalMaterial;
 
-      // Update part geometry based on actual width
-      partMesh.scale.set(1.0, 1.0, controls.actualPartWidthM / 0.08);
+      // State coloring shows the control-path relationship without pretending that a
+      // particular coil, force, stroke, or response has been modeled.
+      diverterBladeMesh.material = state.controlOutputReady
+        ? controlPathMaterial
+        : metalFrameMaterial;
+      scanConeMesh.visible = state.scanPathActive;
+      scanConeMaterial.opacity = state.scanPathActive ? 0.18 : 0.03;
+      crtScreenMaterial.emissiveIntensity = state.gatedPictureSignal ? 0.78 : 0.14;
 
-      // Color part green if accepted, red if defective
-      if (metrics.isDefective) {
-        partMesh.material = partFailMaterial;
-      } else {
-        partMesh.material = partPassMaterial;
-      }
-
-      // Animate solenoid diverter gate when defective part reaches x ≈ 0.6 m
-      const nearDiverter = Math.abs(cyclePos - 0.6) < 0.25;
-      if (metrics.isDefective && nearDiverter) {
-        diverterBladeMesh.rotation.y = THREE.MathUtils.lerp(
-          diverterBladeMesh.rotation.y,
-          Math.PI / 4,
-          0.2,
-        );
-      } else {
-        diverterBladeMesh.rotation.y = THREE.MathUtils.lerp(diverterBladeMesh.rotation.y, 0, 0.1);
-      }
-
-      // Optical scan beam sweep wobble
-      const sweepPhase = Math.sin(simTimeSec * 40) * 0.08;
-      scanConeMesh.rotation.z = sweepPhase;
-
-      // Update oscilloscope CRT waveform
+      // A binary normalized trace only distinguishes "gated picture signal present"
+      // from held. It has no amplitude, time, or spatial-width scale.
       const positions = waveGeo.attributes.position;
       const arr = positions.array as Float32Array;
       for (let i = 0; i < numPts; i++) {
-        const u = (i / (numPts - 1)) * 0.26 - 0.13;
-        let y = -0.04;
-        const partRadius = (controls.actualPartWidthM / 2) * 0.8;
-        if (Math.abs(u) < partRadius) {
-          y = 0.04 * (metrics.videoPeakVoltageV / 1.2);
-        }
-        arr[i * 3 + 1] = y;
+        arr[i * 3 + 1] = state.gatedPictureSignal ? 0.035 : -0.035;
       }
       positions.needsUpdate = true;
     },
@@ -317,8 +303,10 @@ export function createLemelsonMachineVisionModel(): LemelsonMachineVision3DObjec
       cameraBodyMaterial.dispose();
       lensGlassMaterial.dispose();
       brassSolenoidMaterial.dispose();
-      partPassMaterial.dispose();
-      partFailMaterial.dispose();
+      partSignalMaterial.dispose();
+      partWithheldMaterial.dispose();
+      partDifferenceMaterial.dispose();
+      controlPathMaterial.dispose();
       scanConeMaterial.dispose();
       crtBezelMaterial.dispose();
       crtScreenMaterial.dispose();

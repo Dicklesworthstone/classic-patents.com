@@ -15,6 +15,8 @@ import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
+const UI_SNAPSHOT_INTERVAL_MS = 80;
+
 export function McCormickReaperSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-x8277-mccormick-reaper");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -23,26 +25,59 @@ export function McCormickReaperSim() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [phase, setPhase] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const phaseRef = useRef(0);
+  const reaperRef = useRef<ReturnType<typeof stepMcCormickReaper> | null>(null);
+  const sickleRef = useRef<SVGGElement>(null);
+  const reelRef = useRef<SVGGElement>(null);
+  const pitmanRef = useRef<SVGLineElement>(null);
+  const crankPinRef = useRef<SVGCircleElement>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const groundSpeedMps = reaper.groundSpeedMps;
   const reelRpm = reaper.reelRpm;
 
   useEffect(() => {
+    reaperRef.current = reaper;
+  }, [reaper]);
+
+  useEffect(() => {
     if (!isPlaying) return;
-    const loop = () => {
+    let lastUiSnapshot = 0;
+    const loop = (time: number) => {
       animRef.current = requestAnimationFrame(loop);
       if (!onscreenRef.current) return;
+      const liveReaper = reaperRef.current;
+      if (!liveReaper) return;
       // Fixed presentation steps make the visual reproducible from the same
       // shared control state. They do not claim to be a physical time solver.
-      setPhase((prev) => (prev + reaper.cutterDisplayRadPerFrame) % reaper.phaseWrapRad);
+      const nextPhase =
+        (phaseRef.current + liveReaper.cutterDisplayRadPerFrame) % liveReaper.phaseWrapRad;
+      phaseRef.current = nextPhase;
+
+      const cutterX = Math.sin(nextPhase) * liveReaper.cutterSvgAmp;
+      const reelAngleDeg = mccormickReelAngleDeg(nextPhase, liveReaper.reelToCutterRatio);
+      const crankPin = mccormickCrankPinSvg(
+        nextPhase,
+        liveReaper.crankPinHubX,
+        liveReaper.crankPinOrbitPx,
+      );
+      sickleRef.current?.setAttribute("transform", `translate(${180 + cutterX}, 205)`);
+      reelRef.current?.setAttribute("transform", `translate(220, 110) rotate(${reelAngleDeg})`);
+      pitmanRef.current?.setAttribute("x2", String(cutterX + liveReaper.pitmanCutterPad));
+      crankPinRef.current?.setAttribute("cx", String(crankPin.cx));
+      crankPinRef.current?.setAttribute("cy", String(crankPin.cy));
+
+      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = time;
+        setPhase(nextPhase);
+      }
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, reaper.cutterDisplayRadPerFrame, reaper.phaseWrapRad, onscreenRef.current]);
+  }, [isPlaying, onscreenRef]);
 
   const cutterX = Math.sin(phase) * reaper.cutterSvgAmp;
   const reelAngleDeg = mccormickReelAngleDeg(phase, reaper.reelToCutterRatio);
@@ -98,6 +133,16 @@ export function McCormickReaperSim() {
             type="button"
             onClick={() => {
               resetParams();
+              phaseRef.current = 0;
+              sickleRef.current?.setAttribute("transform", "translate(180, 205)");
+              reelRef.current?.setAttribute("transform", "translate(220, 110) rotate(0)");
+              pitmanRef.current?.setAttribute("x2", String(reaper.pitmanCutterPad));
+              crankPinRef.current?.setAttribute(
+                "cx",
+                String(reaper.crankPinHubX + reaper.crankPinOrbitPx),
+              );
+              crankPinRef.current?.setAttribute("cy", "0");
+              setPhase(0);
               setIsPlaying(true);
               soundEngine.playSwitchClick();
             }}
@@ -161,7 +206,7 @@ export function McCormickReaperSim() {
           </g>
 
           {/* Reciprocating Serrated Sickle Blade */}
-          <g id="sickle-blade" transform={`translate(${180 + cutterX}, 205)`}>
+          <g ref={sickleRef} id="sickle-blade" transform={`translate(${180 + cutterX}, 205)`}>
             <rect x="0" y="0" width="280" height="6" fill="#C5A059" stroke="#888" strokeWidth="1" />
             {Array.from({ length: reaper.sickleToothCount }).map((_, i) => (
               <polygon
@@ -175,7 +220,7 @@ export function McCormickReaperSim() {
           </g>
 
           {/* 4-Vane Rotating Reel */}
-          <g transform={`translate(220, 110) rotate(${reelAngleDeg})`}>
+          <g ref={reelRef} transform={`translate(220, 110) rotate(${reelAngleDeg})`}>
             <circle cx="0" cy="0" r="8" fill="#1A1A1A" />
             {/* 4 Reel Arms & Slats */}
             {Array.from({ length: reaper.reelArmCount }).map((_, i) => {
@@ -208,6 +253,7 @@ export function McCormickReaperSim() {
           {/* Pitman Rod & Crank Drive */}
           <g transform="translate(130, 208)">
             <line
+              ref={pitmanRef}
               x1="-50"
               y1="0"
               x2={cutterX + reaper.pitmanCutterPad}
@@ -218,6 +264,7 @@ export function McCormickReaperSim() {
             />
             <circle cx="-50" cy="0" r="14" fill="#666666" stroke="#222" strokeWidth="2" />
             <circle
+              ref={crankPinRef}
               cx={mccormickCrankPinSvg(phase, reaper.crankPinHubX, reaper.crankPinOrbitPx).cx}
               cy={mccormickCrankPinSvg(phase, reaper.crankPinHubX, reaper.crankPinOrbitPx).cy}
               r="5"

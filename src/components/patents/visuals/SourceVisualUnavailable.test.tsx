@@ -14,6 +14,7 @@ describe("SourceVisualUnavailable Component", () => {
     expect(html).toContain("Source-integrity hold");
     expect(html).toContain("Boyle &amp; Smith CCD Visual Refusal");
     expect(html).toContain("Awaiting full figure-sheet synchronization.");
-    expect(html).toContain("The original facsimile and its source text remain available");
+    expect(html).toContain("The original facsimile remains available elsewhere on this page.");
+    expect(html).toContain("A public source edition is shown only after review.");
   });
 });

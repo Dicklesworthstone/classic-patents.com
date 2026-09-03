@@ -17,12 +17,13 @@ import {
 } from "@/physics/stackhouseSourceKernel";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-4068536-stackhouse-manipulator";
 const VIEWS = {
   overview: {
-    position: [2.9, 2.0, 3.2] as [number, number, number],
-    target: [0, 0, -0.35] as [number, number, number],
+    position: [1.75, 1.15, 1.8] as [number, number, number],
+    target: [0, -0.03, -0.45] as [number, number, number],
   },
   shafts: {
     position: [2.0, 0.6, -1.35] as [number, number, number],
@@ -46,16 +47,15 @@ export default function StackhouseSourceBounded3D() {
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
   const controls = useMemo(() => readStackhouseSourceControls(params), [params]);
   const pose = useMemo(() => stepStackhouseSourceTopology(controls), [controls]);
-  const livePose = useRef(pose);
-  const liveControls = useRef(controls);
-  livePose.current = pose;
-  liveControls.current = controls;
+  const livePose = useLiveSimParams(pose);
+  const liveControls = useLiveSimParams(controls);
 
   useFrankenSimPhysics(PATENT_ID, {
     domain: "solid_mechanics",
     refusal: { isRefused: true, reason: pose.refusal.reason },
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The persistent WebGL scene reads stable layout-effect-synchronized pose and control refs; depending on `.current` would recreate and flash the studio.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -117,7 +117,9 @@ export default function StackhouseSourceBounded3D() {
           <p className="max-w-3xl text-xs leading-relaxed text-muted-foreground">
             The distal assemblies inherit every upstream transform. The elbow motors meet the
             concentric forearm shafts; the shafts meet bevel-gear housings; the terminal shaft and
-            end effector remain attached through the entire pose.
+            end effector remain attached through the entire pose. Housing and outer-tube quadrants
+            are partially translucent museum cutaways so the nested shafts remain inspectable; that
+            transparency is not attributed to the patent hardware.
           </p>
         </div>
         <div className="flex flex-wrap gap-1 rounded-lg border border-border/50 bg-background/50 p-1">
@@ -138,7 +140,7 @@ export default function StackhouseSourceBounded3D() {
         </div>
       </header>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(20rem,1fr)]">
+      <div className="grid gap-4 2xl:grid-cols-[minmax(0,2fr)_minmax(24rem,1fr)]">
         <div className="relative min-h-[28rem] overflow-hidden rounded-lg border border-border/30 bg-slate-950">
           <div ref={containerRef} className="absolute inset-0" />
           <div className="pointer-events-none absolute bottom-3 left-3 max-w-sm rounded bg-black/70 px-3 py-2 font-mono text-[10px] leading-relaxed text-white backdrop-blur">

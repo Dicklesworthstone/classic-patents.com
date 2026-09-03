@@ -25,8 +25,10 @@ export interface HewittMercuryLampModelNodes {
   pullCord: THREE.Mesh;
   startingCoil: THREE.Mesh;
   dropletParticles: THREE.Points;
+  initialDropletPositions: Float32Array;
   materials: THREE.Material[];
   setCutaway?: (cutaway: boolean) => void;
+  dispose: () => void;
 }
 
 export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
@@ -108,53 +110,68 @@ export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
   // 1. MOUNTING FRAME & WALL BRACKETS
   // ==========================================
   const bracketGroup = new THREE.Group();
+  bracketGroup.name = "Floor-anchored wall mounting frame";
   root.add(bracketGroup);
 
-  // Main mounting spine
-  const spineGeo = new THREE.BoxGeometry(0.12, 0.12, 4.4);
-  const spineMesh = new THREE.Mesh(spineGeo, wallBracketMat);
-  spineMesh.position.set(0, 1.8, -0.4);
-  bracketGroup.add(spineMesh);
+  // A visible backplate reaches the exhibit floor, so the source-style wall
+  // bracket is not represented as a collection of rods hovering in space.
+  const wallBackplate = new THREE.Mesh(new THREE.BoxGeometry(4.4, 3.2, 0.12), wallBracketMat);
+  wallBackplate.name = "Floor-reaching mounting backplate";
+  wallBackplate.position.set(0, 1.55, -0.82);
+  bracketGroup.add(wallBackplate);
 
-  // Left & Right Wall Attachment Arms
-  const arm1Geo = new THREE.CylinderGeometry(0.04, 0.04, 0.5, 12);
-  const arm1 = new THREE.Mesh(arm1Geo, wallBracketMat);
-  arm1.rotation.x = Math.PI / 2;
-  arm1.position.set(0, 1.8, -0.65);
-  bracketGroup.add(arm1);
+  const pivotSupport = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.07, 0.07, 0.72, 16),
+    wallBracketMat,
+  );
+  pivotSupport.name = "Backplate-to-cradle pivot support";
+  pivotSupport.rotation.x = Math.PI / 2;
+  pivotSupport.position.set(0, 1.5, -0.43);
+  bracketGroup.add(pivotSupport);
 
-  // Ceramic Insulators
-  const insGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.16, 16);
-  const ins1 = new THREE.Mesh(insGeo, brassMat);
-  ins1.position.set(0, 1.8, -0.2);
-  bracketGroup.add(ins1);
-
-  // Inductive Starting Choke Coil on spine
+  // Inductive starting choke coil fixed to the backplate
   const ballastGeo = new THREE.TorusGeometry(0.2, 0.06, 12, 24);
   const startingCoil = new THREE.Mesh(ballastGeo, copperMat);
-  startingCoil.position.set(0, 2.3, -0.4);
+  startingCoil.name = "Backplate-mounted inductive starting choke";
+  startingCoil.position.set(0.72, 2.45, -0.72);
   bracketGroup.add(startingCoil);
+
+  const starterMount = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.08, 0.08), wallBracketMat);
+  starterMount.name = "Starting choke mounting strap";
+  starterMount.position.set(0.72, 2.45, -0.78);
+  bracketGroup.add(starterMount);
 
   // ==========================================
   // 2. TILTING SUSPENSION CRADLE
   // ==========================================
   const tiltingCradle = new THREE.Group();
-  tiltingCradle.position.set(0, 1.8, 0);
+  tiltingCradle.name = "Tilting lamp cradle and trunnion";
+  tiltingCradle.position.set(0, 1.5, 0);
+  tiltingCradle.rotation.z = -0.22;
 
-  // Trunnion Pivot Brackets
-  const pivotGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.3, 12);
-  const pivotL = new THREE.Mesh(pivotGeo, brassMat);
-  pivotL.position.set(-1.0, 0, 0);
-  tiltingCradle.add(pivotL);
+  const pivotGeo = new THREE.CylinderGeometry(0.11, 0.11, 0.24, 18);
+  const centralPivot = new THREE.Mesh(pivotGeo, brassMat);
+  centralPivot.name = "Central cradle trunnion anchored to bracket";
+  centralPivot.rotation.x = Math.PI / 2;
+  centralPivot.position.z = -0.08;
+  tiltingCradle.add(centralPivot);
 
-  const pivotR = new THREE.Mesh(pivotGeo, brassMat);
-  pivotR.position.set(1.0, 0, 0);
-  tiltingCradle.add(pivotR);
+  const cradleRail = new THREE.Mesh(new THREE.BoxGeometry(3.35, 0.08, 0.1), ironMat);
+  cradleRail.name = "Continuous lamp support rail";
+  cradleRail.position.y = -0.29;
+  tiltingCradle.add(cradleRail);
+
+  for (const x of [-1.45, 1.45]) {
+    const hanger = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.3, 0.08), ironMat);
+    hanger.name = `Cradle end hanger ${x < 0 ? "cathode" : "anode"}`;
+    hanger.position.set(x, -0.15, 0);
+    tiltingCradle.add(hanger);
+  }
 
   // Starting Tilt Pull Cord / Chain
-  const cordGeo = new THREE.CylinderGeometry(0.015, 0.015, 2.5, 8);
+  const cordGeo = new THREE.CylinderGeometry(0.015, 0.015, 1.55, 8);
   const pullCord = new THREE.Mesh(cordGeo, cordMat);
-  pullCord.position.set(-1.6, -1.2, 0);
+  pullCord.position.set(-1.55, -1.0, 0);
   tiltingCradle.add(pullCord);
 
   root.add(tiltingCradle);
@@ -163,9 +180,8 @@ export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
   // 3. DISCHARGE LAMP ASSEMBLY (Tilted at 15°)
   // ==========================================
   const lampGroup = new THREE.Group();
-  lampGroup.position.set(0, 1.5, 0);
-  lampGroup.rotation.z = -0.22; // ~12.6° tilt for gravity mercury return
-  root.add(lampGroup);
+  lampGroup.name = "Complete discharge tube attached to tilting cradle";
+  tiltingCradle.add(lampGroup);
 
   // Heavy Glass Discharge Tube (1.0m scale in WebGL: 3.2 units)
   const tubeLength = 3.2;
@@ -243,6 +259,25 @@ export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
   cap2.position.set(0.82, 0.25, 0);
   anodeGroup.add(cap2);
 
+  // The starting choke is fixed to the backplate, while this insulated lead
+  // follows the tilted cradle to the cathode terminal. It makes the electrical
+  // path legible without pretending that a floating torus is a circuit.
+  const cathodeTerminalWorld = new THREE.Vector3(-1.85, 0, 0)
+    .applyAxisAngle(new THREE.Vector3(0, 0, 1), tiltingCradle.rotation.z)
+    .add(tiltingCradle.position);
+  const starterLeadCurve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0.52, 2.45, -0.7),
+    new THREE.Vector3(-0.35, 2.25, -0.58),
+    new THREE.Vector3(cathodeTerminalWorld.x, cathodeTerminalWorld.y, -0.16),
+    cathodeTerminalWorld,
+  ]);
+  const starterLead = new THREE.Mesh(
+    new THREE.TubeGeometry(starterLeadCurve, 36, 0.018, 8, false),
+    copperMat,
+  );
+  starterLead.name = "Starting-choke lead connected to cathode terminal";
+  root.add(starterLead);
+
   // ==========================================
   // 6. CONDENSED MERCURY DROPLETS PARTICLES
   // ==========================================
@@ -259,6 +294,7 @@ export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
     dropPositions[i * 3 + 1] = -0.1 + (Math.abs(ry) - 0.5) * 0.08;
     dropPositions[i * 3 + 2] = (Math.abs(rz) - 0.5) * 0.12;
   }
+  const initialDropPositions = dropPositions.slice();
 
   dropGeo.setAttribute("position", new THREE.BufferAttribute(dropPositions, 3));
   const dropMat = new THREE.PointsMaterial({
@@ -277,6 +313,19 @@ export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
     glassMat.needsUpdate = true;
   };
 
+  const dispose = () => {
+    const disposedGeometries = new Set<THREE.BufferGeometry>();
+    root.traverse((object) => {
+      if (object instanceof THREE.Mesh || object instanceof THREE.Points) {
+        if (!disposedGeometries.has(object.geometry)) {
+          disposedGeometries.add(object.geometry);
+          object.geometry.dispose();
+        }
+      }
+    });
+    for (const item of materials) item.dispose();
+  };
+
   return {
     root,
     lampGroup,
@@ -290,8 +339,10 @@ export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
     pullCord,
     startingCoil,
     dropletParticles,
+    initialDropletPositions: initialDropPositions,
     materials,
     setCutaway,
+    dispose,
   };
 }
 
@@ -328,17 +379,21 @@ export function articulateHewittMercuryLampModel(
   const spotY = 0.1 + Math.cos(timeSec * cathodeSpotOmegaYRadPerS) * 0.04;
   nodes.cathodeSpotMesh.position.set(spotX, spotY, 0);
 
-  // 3. Trickling Mercury Droplets along bottom wall toward cathode
+  // 3. Trickling mercury droplets along the bottom wall toward the cathode.
+  // Derive every position from absolute simulation time and the immutable
+  // seeded layout. Incrementing once per rendered frame made playback speed
+  // depend on refresh rate and prevented deterministic replay/scrubbing.
   const posAttr = nodes.dropletParticles.geometry.getAttribute("position") as THREE.BufferAttribute;
   const posArr = posAttr.array as Float32Array;
   const count = posArr.length / 3;
+  const travelMinX = -1.5;
+  const travelSpanX = 3.0;
+  const flowSpeedUnitsPerSecond = 0.45;
 
   for (let i = 0; i < count; i++) {
-    // Flow leftward toward cathode (-1.5)
-    posArr[i * 3] -= 0.015;
-    if (posArr[i * 3] < -1.5) {
-      posArr[i * 3] = 1.5;
-    }
+    const unwrappedX = nodes.initialDropletPositions[i * 3] - flowSpeedUnitsPerSecond * timeSec;
+    posArr[i * 3] =
+      ((((unwrappedX - travelMinX) % travelSpanX) + travelSpanX) % travelSpanX) + travelMinX;
   }
   posAttr.needsUpdate = true;
 }

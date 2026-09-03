@@ -2,11 +2,44 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepMorseTelegraph } from "@/physics/catalogKernels";
+import { morseCameraPresetForViewport } from "./MorseTelegraph3D";
 import { buildMorseTelegraphModel, updateMorseTelegraphKinematics } from "./morseTelegraphModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
+function visualState(
+  morse: ReturnType<typeof stepMorseTelegraph>,
+  overrides: Partial<{ keyIsDown: boolean; isCutaway: boolean }> = {},
+) {
+  return {
+    keyIsDown: false,
+    isCutaway: false,
+    armatureStrikeM: morse.armatureStrikeM,
+    tapeAdvanceRadPerS: morse.tapeAdvanceRadPerS,
+    electronDisplaySpeed: morse.electronDisplaySpeed,
+    lineWaveRms: morse.lineWaveRms,
+    electronOriginX: morse.electronOriginX,
+    electronWrapX: morse.electronWrapX,
+    keyTiltRad: morse.keyTiltRad,
+    armatureHomeY: morse.armatureHomeY,
+    governorRatio: morse.governorRatio,
+    gearRatio: morse.gearRatio,
+    ...overrides,
+  };
+}
+
 describe("US 1,647 Samuel Morse Electro-Magnetic Telegraph visual & circuitry boundary", () => {
+  test("widens the isometric overview to keep the full apparatus in a portrait viewport", () => {
+    expect(morseCameraPresetForViewport("iso", 342)).toEqual({
+      pos: [15, 11, 20],
+      target: [0, -0.5, 0],
+    });
+    expect(morseCameraPresetForViewport("iso", 768)).toEqual({
+      pos: [11, 8, 13],
+      target: [0, 0, 0],
+    });
+  });
+
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "MorseTelegraph3D.tsx"),
@@ -23,9 +56,9 @@ describe("US 1,647 Samuel Morse Electro-Magnetic Telegraph visual & circuitry bo
     expect(modelSource).toContain("buildMorseTelegraphModel");
     expect(modelSource).toContain("updateMorseTelegraphKinematics");
     expect(modelSource).not.toContain("stepMorseTelegraph({})");
-    expect(threeSource).toContain("p.lineVoltageV");
-    expect(threeSource).toContain("p.lineLengthMiles");
-    expect(threeSource).toContain("p.wpmSpeed");
+    expect(threeSource).toContain("lineVoltageV");
+    expect(threeSource).toContain("lineLengthMiles");
+    expect(threeSource).toContain("wpmSpeed");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -42,6 +75,9 @@ describe("US 1,647 Samuel Morse Electro-Magnetic Telegraph visual & circuitry bo
       expect(threeSource).not.toContain(forbidden);
       expect(modelSource).not.toContain(forbidden);
     }
+    expect(threeSource).not.toContain("cycle >");
+    expect(modelSource).not.toContain("Math.sin(timeSec");
+    expect(modelSource).not.toContain("stepMorseTelegraph");
   });
 
   test("exposes authentic camera presets and cutaway mode for telegraph observation", () => {
@@ -105,16 +141,31 @@ describe("US 1,647 Samuel Morse Electro-Magnetic Telegraph visual & circuitry bo
       nodes,
       materials,
       0.016,
-      0.5,
-      morse.keyOscillationRadPerS,
-      morse.armatureStrikeM,
-      morse.tapeAdvanceRadPerS,
-      morse.electronDisplaySpeed,
-      true,
-      true,
+      visualState(morse, { keyIsDown: true, isCutaway: true }),
     );
     expect(materials.mahogany.transparent).toBe(true);
 
+    dispose();
+  });
+
+  test("only energizes the mechanical and electrical chain while the shared key state is down", () => {
+    const { nodes, materials, dispose } = buildMorseTelegraphModel();
+    const morse = stepMorseTelegraph({ lineVoltageV: 24, lineLengthMiles: 44, wpmSpeed: 20 });
+    const electronPositionsAtRest = [...nodes.electronPositions];
+
+    updateMorseTelegraphKinematics(nodes, materials, 0.5, visualState(morse));
+    expect(nodes.keyLeverGroup.rotation.z).toBe(0);
+    expect(nodes.armatureGroup.position.y).toBe(morse.armatureHomeY);
+    expect(nodes.tapeSpool.rotation.y).toBe(0);
+    expect(nodes.electronPoints.visible).toBe(false);
+    expect([...nodes.electronPositions]).toEqual(electronPositionsAtRest);
+
+    updateMorseTelegraphKinematics(nodes, materials, 0.5, visualState(morse, { keyIsDown: true }));
+    expect(nodes.keyLeverGroup.rotation.z).toBe(morse.keyTiltRad);
+    expect(nodes.armatureGroup.position.y).toBeLessThan(morse.armatureHomeY);
+    expect(nodes.tapeSpool.rotation.y).toBeGreaterThan(0);
+    expect(nodes.electronPoints.visible).toBe(true);
+    expect([...nodes.electronPositions]).not.toEqual(electronPositionsAtRest);
     dispose();
   });
 });

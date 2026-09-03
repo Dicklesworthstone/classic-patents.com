@@ -74,6 +74,7 @@ export function DeForestAudion3D() {
   });
 
   const live = useLiveSimParams({
+    gridBiasVoltageV,
     filamentTemperatureK: sim.filamentTemperatureK,
     plateCurrentMa: sim.plateCurrentMa,
     voltageGain: sim.voltageGain,
@@ -103,15 +104,19 @@ export function DeForestAudion3D() {
         refusal: { isRefused: false },
         semi: {
           ...(prev.semi ?? IDLE_SEMI),
-          biasVoltageVolts: gridBiasVoltageV,
+          biasVoltageVolts: live.current.gridBiasVoltageV,
           voltageGain: live.current.voltageGain,
           collectorCurrentMa: live.current.plateCurrentMa,
         },
       };
     };
-    globalTransportBus.registerUpdater("us-879532-de-forest-audion", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-879532-de-forest-audion");
-  }, [live.current.voltageGain, live.current.plateCurrentMa, gridBiasVoltageV]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-879532-de-forest-audion",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);

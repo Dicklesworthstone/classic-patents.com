@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { morseElectronLaneZ, stepMorseTelegraph } from "@/physics/catalogKernels";
+import { MORSE_ELECTRON_DISPLAY_LAYOUT, morseElectronLaneZ } from "@/physics/catalogKernels";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
 export interface MorseTelegraphModelNodes {
@@ -37,6 +37,26 @@ export interface MorseTelegraphModelResult {
   nodes: MorseTelegraphModelNodes;
   materials: MorseTelegraphMaterials;
   dispose: () => void;
+}
+
+/**
+ * The 3D projection consumes this already-stepped state from the patent bus.
+ * It intentionally owns no independent signal oscillator or partial physics
+ * calculation: an idle key leaves the whole electrical/mechanical chain idle.
+ */
+export interface MorseTelegraphVisualState {
+  keyIsDown: boolean;
+  isCutaway: boolean;
+  armatureStrikeM: number;
+  tapeAdvanceRadPerS: number;
+  electronDisplaySpeed: number;
+  lineWaveRms: number;
+  electronOriginX: number;
+  electronWrapX: number;
+  keyTiltRad: number;
+  armatureHomeY: number;
+  governorRatio: number;
+  gearRatio: number;
 }
 
 const ELECTRON_COUNT = 50;
@@ -744,16 +764,15 @@ export function buildMorseTelegraphModel(): MorseTelegraphModelResult {
   // ==========================================
   const electronGeo = trackGeo(new THREE.BufferGeometry());
   const electronPositions = new Float32Array(ELECTRON_COUNT * 3);
-  const morseSeats = stepMorseTelegraph({
-    lineVoltageV: 24,
-    lineLengthMiles: 44,
-    wpmSpeed: 20,
-  });
   for (let i = 0; i < ELECTRON_COUNT; i++) {
     electronPositions[i * 3] =
-      morseSeats.electronOriginX + (i / ELECTRON_COUNT) * morseSeats.electronSpanX;
+      MORSE_ELECTRON_DISPLAY_LAYOUT.electronOriginX +
+      (i / ELECTRON_COUNT) * MORSE_ELECTRON_DISPLAY_LAYOUT.electronSpanX;
     electronPositions[i * 3 + 1] = -1.95;
-    electronPositions[i * 3 + 2] = morseElectronLaneZ(i, morseSeats.electronLaneZ);
+    electronPositions[i * 3 + 2] = morseElectronLaneZ(
+      i,
+      MORSE_ELECTRON_DISPLAY_LAYOUT.electronLaneZ,
+    );
   }
   electronGeo.setAttribute("position", new THREE.BufferAttribute(electronPositions, 3));
   const electronPoints = new THREE.Points(electronGeo, materials.electronMat);
@@ -799,47 +818,36 @@ export function updateMorseTelegraphKinematics(
   nodes: MorseTelegraphModelNodes,
   materials: MorseTelegraphMaterials,
   dt: number,
-  timeSec: number,
-  keyOscillationRadPerS: number,
-  armatureStrikeM: number,
-  tapeAdvanceRadPerS: number,
-  electronDisplaySpeed: number,
-  keyIsDown: boolean,
-  isCutaway: boolean,
-  lineVoltageV = 24,
-  lineLengthMiles = 44,
-  wpmSpeed = 20,
+  state: MorseTelegraphVisualState,
 ) {
-  // 1. Key Action (manual or rhythmic Morse oscillation)
-  const morse = stepMorseTelegraph({ lineVoltageV, lineLengthMiles, wpmSpeed });
-  const isKeyActive =
-    keyIsDown || Math.sin(timeSec * keyOscillationRadPerS) > morse.keySinThreshold;
-  nodes.keyLeverGroup.rotation.z = isKeyActive ? morse.keyTiltRad : 0;
+  // 1. Key action. A real circuit only closes when the operator closes it;
+  // there is no decorative free-running pulse in the model.
+  const isKeyActive = state.keyIsDown;
+  nodes.keyLeverGroup.rotation.z = isKeyActive ? state.keyTiltRad : 0;
 
   // 2. Sounder Armature Strike
-  const strike = isKeyActive ? -armatureStrikeM : 0;
-  nodes.armatureGroup.position.y = morse.armatureHomeY + strike;
+  const strike = isKeyActive ? -state.armatureStrikeM : 0;
+  nodes.armatureGroup.position.y = state.armatureHomeY + strike;
 
   // 3. Paper Tape & Clockwork Governor Advance
   if (isKeyActive) {
-    nodes.tapeSpool.rotation.y += dt * tapeAdvanceRadPerS;
+    nodes.tapeSpool.rotation.y += dt * state.tapeAdvanceRadPerS;
     if (nodes.flyGovernor) {
-      nodes.flyGovernor.rotation.z += dt * tapeAdvanceRadPerS * morse.governorRatio;
+      nodes.flyGovernor.rotation.z += dt * state.tapeAdvanceRadPerS * state.governorRatio;
     }
     if (nodes.gearTrain) {
-      nodes.gearTrain.rotation.x += dt * tapeAdvanceRadPerS * morse.gearRatio;
+      nodes.gearTrain.rotation.x += dt * state.tapeAdvanceRadPerS * state.gearRatio;
     }
   }
 
   // 4. Flowing Circuit Electrons
   const pos = nodes.electronPositions;
-  const rms = morse.lineWaveRms;
   for (let i = 0; i < nodes.electronCount; i++) {
     const idx = i * 3;
     if (isKeyActive) {
-      pos[idx] += dt * electronDisplaySpeed * (1 + rms);
-      if (pos[idx] > morse.electronWrapX) {
-        pos[idx] = morse.electronOriginX;
+      pos[idx] += dt * state.electronDisplaySpeed * (1 + state.lineWaveRms);
+      if (pos[idx] > state.electronWrapX) {
+        pos[idx] = state.electronOriginX;
       }
     }
   }
@@ -847,6 +855,6 @@ export function updateMorseTelegraphKinematics(
   nodes.electronPoints.visible = isKeyActive;
 
   // 5. Cutaway Mode
-  materials.mahogany.opacity = isCutaway ? 0.35 : 1.0;
-  materials.mahogany.transparent = isCutaway;
+  materials.mahogany.opacity = state.isCutaway ? 0.35 : 1.0;
+  materials.mahogany.transparent = state.isCutaway;
 }

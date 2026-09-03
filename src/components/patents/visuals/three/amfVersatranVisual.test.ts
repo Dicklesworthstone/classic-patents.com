@@ -7,12 +7,40 @@ import {
   readAmfVersatranClaimStates,
   stepAmfVersatranTopology,
 } from "@/physics/amfVersatranKernel";
+import { amfVersatranViewForViewport } from "./AMFVersatran3D";
 import { buildAmfVersatranModel } from "./amfVersatranModel";
 
 const ROOT = process.cwd();
 const source = (path: string) => readFileSync(join(ROOT, path), "utf8");
 
 describe("US 3,212,649 AMF Versatran procedural visual boundary", () => {
+  test("reserves a phone model viewport before reachable normal-flow controls", () => {
+    const desktop = amfVersatranViewForViewport("overview", 1200);
+    const phone = amfVersatranViewForViewport("overview", 320);
+    const distance = (view: typeof desktop) =>
+      Math.hypot(
+        view.position[0] - view.target[0],
+        view.position[1] - view.target[1],
+        view.position[2] - view.target[2],
+      );
+    expect(distance(phone) / distance(desktop)).toBeCloseTo(1.55, 8);
+    expect(phone.target).toEqual([0, -0.65, 0]);
+
+    const threeD = source("src/components/patents/visuals/three/AMFVersatran3D.tsx");
+    const modelViewport = threeD.indexOf('data-mobile-layout="dedicated-model-viewport"');
+    const controls = threeD.indexOf('data-mobile-layout="controls-after-canvas"');
+    expect(modelViewport).toBeGreaterThan(0);
+    expect(controls).toBeGreaterThan(modelViewport);
+    expect(threeD).toContain("pt-[432px]");
+    expect(threeD).toContain("lg:pt-[642px]");
+    expect(threeD).toContain("lg:h-[630px]");
+    expect(threeD).not.toContain("lg:absolute lg:bottom-5");
+    expect(threeD).toContain("sm:hidden");
+    expect(threeD).not.toContain("mt-[432px]");
+    expect(threeD).not.toContain("sm:absolute sm:bottom-5");
+    expect(threeD).toContain("scroll-mt-24");
+  });
+
   test("builds the source-named machine and keeps the two disclosed wrist motions separate", () => {
     const model = buildAmfVersatranModel();
     const column = model.root.getObjectByName("Rotating column B assembly");
@@ -25,6 +53,7 @@ describe("US 3,212,649 AMF Versatran procedural visual boundary", () => {
       "Wrist assembly G rotation about horizontal arm axis",
     );
     const teach = model.root.getObjectByName("Manual programming arm");
+    const teachPivot = model.root.getObjectByName("Manual programming pivot anchored to column B");
     const signalDisplay = model.root.getObjectByName(
       "Recorded-signal and feedback comparison display",
     );
@@ -48,6 +77,8 @@ describe("US 3,212,649 AMF Versatran procedural visual boundary", () => {
     expect(wristSwing).toBeDefined();
     expect(wristRotation).toBeDefined();
     expect(teach).toBeDefined();
+    expect(teachPivot).toBeDefined();
+    expect(teachPivot?.parent).toBe(column);
     expect(signalDisplay).toBeDefined();
     expect(upperJawPivot).toBeDefined();
     expect(finger).toBeDefined();
@@ -68,6 +99,10 @@ describe("US 3,212,649 AMF Versatran procedural visual boundary", () => {
       gripperOperation: 0.1,
     });
     model.updateState(openState);
+    // The programming linkage must originate inside the rotating column's
+    // r=0.24 envelope instead of terminating in open air beside it.
+    expect(teachPivot?.position.x).toBeCloseTo(-0.2, 12);
+    expect(Math.hypot(teachPivot?.position.x ?? 1, teachPivot?.position.z ?? 1)).toBeLessThan(0.24);
     const openPivotZ = upperJawPivot?.rotation.z ?? 0;
     const openRackX = upperRack?.position.x ?? 0;
     expect(column?.rotation.y).toBeCloseTo(openState.displayPose.columnRotationDisplayRad, 12);

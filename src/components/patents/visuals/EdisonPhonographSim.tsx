@@ -13,6 +13,33 @@ import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
+const UI_SNAPSHOT_INTERVAL_MS = 80;
+
+function projectPhonographPose(
+  cylinder: SVGGElement | null,
+  driveArm: SVGLineElement | null,
+  drivePin: SVGCircleElement | null,
+  angleDeg: number,
+  phono: ReturnType<typeof stepEdisonPhonograph>,
+) {
+  const axialTravelMm = phonographAxialTravelMm(
+    angleDeg,
+    phono.leadScrewPitchMm,
+    phono.axialDisplayWrapMm,
+  );
+  cylinder?.setAttribute(
+    "transform",
+    `translate(${phono.cylinderSvgX + axialTravelMm * phono.axialSvgPxPerMm}, ${phono.cylinderSvgY})`,
+  );
+  const angleRad = (angleDeg * Math.PI) / 180;
+  const x = Math.cos(angleRad) * phono.driveIndicatorSvgR;
+  const y = Math.sin(angleRad) * phono.driveIndicatorSvgR;
+  driveArm?.setAttribute("x2", String(x));
+  driveArm?.setAttribute("y2", String(y));
+  drivePin?.setAttribute("cx", String(x));
+  drivePin?.setAttribute("cy", String(y));
+}
+
 export function EdisonPhonographSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-200521-edison-phonograph");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -21,6 +48,11 @@ export function EdisonPhonographSim() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [cylinderAngleDeg, setCylinderAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const cylinderAngleRef = useRef(0);
+  const phonoRef = useRef<ReturnType<typeof stepEdisonPhonograph> | null>(null);
+  const cylinderRef = useRef<SVGGElement>(null);
+  const driveArmRef = useRef<SVGLineElement>(null);
+  const drivePinRef = useRef<SVGCircleElement>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const phono = stepEdisonPhonograph({ mandrelRpm, voiceVolumeDb });
@@ -32,24 +64,45 @@ export function EdisonPhonographSim() {
   );
 
   useEffect(() => {
+    phonoRef.current = phono;
+  }, [phono]);
+
+  useEffect(() => {
     if (!isPlaying) return;
 
     let lastTime = performance.now();
+    let lastUiSnapshot = 0;
 
     const loop = (time: number) => {
       animRef.current = requestAnimationFrame(loop);
-      if (!onscreenRef.current) return;
+      if (!onscreenRef.current) {
+        lastTime = time;
+        return;
+      }
       const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
       lastTime = time;
+      const livePhono = phonoRef.current;
+      if (!livePhono) return;
 
-      setCylinderAngleDeg((prev) => prev + phono.mandrelOmegaDegPerS * dt);
+      cylinderAngleRef.current += livePhono.mandrelOmegaDegPerS * dt;
+      projectPhonographPose(
+        cylinderRef.current,
+        driveArmRef.current,
+        drivePinRef.current,
+        cylinderAngleRef.current,
+        livePhono,
+      );
+      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = time;
+        setCylinderAngleDeg(cylinderAngleRef.current);
+      }
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, phono.mandrelOmegaDegPerS, onscreenRef.current]);
+  }, [isPlaying, onscreenRef]);
 
   return (
     <div
@@ -103,6 +156,14 @@ export function EdisonPhonographSim() {
             type="button"
             onClick={() => {
               resetParams();
+              cylinderAngleRef.current = 0;
+              projectPhonographPose(
+                cylinderRef.current,
+                driveArmRef.current,
+                drivePinRef.current,
+                0,
+                phono,
+              );
               setCylinderAngleDeg(0);
               soundEngine.playSwitchClick();
             }}
@@ -166,6 +227,7 @@ export function EdisonPhonographSim() {
 
           {/* Cylinder A and its metal-foil recording surface, translated by the source-specified thread. */}
           <g
+            ref={cylinderRef}
             transform={`translate(${phono.cylinderSvgX + axialTravelMm * phono.axialSvgPxPerMm}, ${phono.cylinderSvgY})`}
           >
             <rect
@@ -248,6 +310,7 @@ export function EdisonPhonographSim() {
             <circle cx="0" cy="0" r="50" fill="none" stroke="#2D3748" strokeWidth="10" />
             <circle cx="0" cy="0" r="8" fill="#111" />
             <line
+              ref={driveArmRef}
               x1="0"
               y1="0"
               x2={Math.cos((cylinderAngleDeg * Math.PI) / 180) * phono.driveIndicatorSvgR}
@@ -256,6 +319,7 @@ export function EdisonPhonographSim() {
               strokeWidth="3"
             />
             <circle
+              ref={drivePinRef}
               cx={Math.cos((cylinderAngleDeg * Math.PI) / 180) * phono.driveIndicatorSvgR}
               cy={Math.sin((cylinderAngleDeg * Math.PI) / 180) * phono.driveIndicatorSvgR}
               r="5"

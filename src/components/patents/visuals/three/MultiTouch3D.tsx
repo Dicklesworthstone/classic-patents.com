@@ -108,14 +108,8 @@ export function MultiTouch3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater(EXHIBIT_ID, integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater(EXHIBIT_ID);
-  }, [
-    live.current.fingerCount,
-    live.current.fingerSeparationMm,
-    live.current.touchPressureGrams,
-    live.current.gestureVelocityMmS,
-  ]);
+    return globalTransportBus.registerUpdater(EXHIBIT_ID, integrate, "TS_FALLBACK");
+  }, [live]);
 
   const studioRef = useRef<StudioContext | null>(null);
 
@@ -138,21 +132,12 @@ export function MultiTouch3D() {
     const model = buildMultiTouchModel();
     studio.scene.add(model.root);
 
-    let _renderedSteps = 0;
     let hudCounter = 0;
     let rafId = 0;
-    let timeSec = 0;
-    let lastFrameTimeMs: number | undefined;
 
-    const animate = (frameTimeMs: number) => {
+    const animate = () => {
       rafId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
-      const delta =
-        lastFrameTimeMs !== undefined ? Math.min((frameTimeMs - lastFrameTimeMs) / 1000, 0.1) : 0;
-      lastFrameTimeMs = frameTimeMs;
-      timeSec += delta;
-
-      _renderedSteps += 1;
       const p = live.current;
 
       // Pure consumer of the shared transport tape: the bus updater owns the
@@ -177,9 +162,6 @@ export function MultiTouch3D() {
           model.docGroup.position.x = currentState.touch1X * 0.5;
           model.docGroup.position.y = currentState.touch1Y * 0.5;
         }
-
-        model.mainGroup.rotation.x = Math.sin(timeSec * 0.5) * 0.08 + 0.1;
-        model.mainGroup.rotation.y = Math.cos(timeSec * 0.4) * 0.08;
 
         hudCounter += 1;
         if (hudCounter % 10 === 0) {

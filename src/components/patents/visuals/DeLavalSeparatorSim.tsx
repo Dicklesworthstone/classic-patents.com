@@ -8,6 +8,8 @@ import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
+const UI_SNAPSHOT_INTERVAL_MS = 80;
+
 export function DeLavalSeparatorSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-247804-delaval-separator");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -16,6 +18,9 @@ export function DeLavalSeparatorSim() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [angleDeg, setAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const angleRef = useRef(0);
+  const separatorRef = useRef<ReturnType<typeof stepDeLavalSeparator> | null>(null);
+  const vanesRef = useRef<SVGGElement>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const sep = stepDeLavalSeparator({ bowlRpm, rawMilkFlowLph });
@@ -25,24 +30,40 @@ export function DeLavalSeparatorSim() {
   const separationEfficiencyPct = sep.fatYieldPct;
 
   useEffect(() => {
+    separatorRef.current = sep;
+  }, [sep]);
+
+  useEffect(() => {
     if (!isPlaying) return;
 
     let lastTime = performance.now();
+    let lastUiSnapshot = 0;
 
     const loop = (time: number) => {
       animRef.current = requestAnimationFrame(loop);
-      if (!onscreenRef.current) return;
+      if (!onscreenRef.current) {
+        lastTime = time;
+        return;
+      }
       const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
       lastTime = time;
+      const liveSeparator = separatorRef.current;
+      if (!liveSeparator) return;
 
-      setAngleDeg((prev) => (prev + sep.displayOmegaDegPerS * dt) % sep.displayWrapDeg);
+      angleRef.current =
+        (angleRef.current + liveSeparator.displayOmegaDegPerS * dt) % liveSeparator.displayWrapDeg;
+      vanesRef.current?.setAttribute("transform", `rotate(${angleRef.current})`);
+      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = time;
+        setAngleDeg(angleRef.current);
+      }
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, sep.displayOmegaDegPerS, sep.displayWrapDeg, onscreenRef.current]);
+  }, [isPlaying, onscreenRef]);
 
   return (
     <div
@@ -97,6 +118,8 @@ export function DeLavalSeparatorSim() {
             type="button"
             onClick={() => {
               resetParams();
+              angleRef.current = 0;
+              vanesRef.current?.setAttribute("transform", "rotate(0)");
               setAngleDeg(0);
               soundEngine.playSwitchClick();
             }}
@@ -142,7 +165,7 @@ export function DeLavalSeparatorSim() {
             />
 
             {/* Nested disc vanes — display ω, not leftover rpm×6 */}
-            <g transform={`rotate(${angleDeg})`}>
+            <g ref={vanesRef} transform={`rotate(${angleDeg})`}>
               {[0, 45, 90, 135].map((a) => (
                 <line
                   key={`disc-vane-${a}`}

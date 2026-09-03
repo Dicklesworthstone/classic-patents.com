@@ -1,11 +1,14 @@
 "use client";
 
-import React, { useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   readStackhouseManipulatorControls,
   stepStackhouseManipulatorSi,
 } from "@/physics/stackhouseManipulatorKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { useOffscreenGate } from "./useOffscreenGate";
+
+const UI_SNAPSHOT_INTERVAL_MS = 80;
 
 interface StackhouseManipulatorSimProps {
   readonly patentId?: string;
@@ -18,21 +21,35 @@ export function StackhouseManipulatorSim({
   const { params, updateParam, resetParams } = usePatentPhysics(patentId);
   const [isPlaying, setIsPlaying] = useState(false);
   const [animTime, setAnimTime] = useState(0);
+  const animTimeRef = useRef(0);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isPlaying) return;
     let animFrame: number;
     let lastT = performance.now();
+    let lastUiSnapshot = 0;
 
     const loop = (now: number) => {
-      const dt = (now - lastT) / 1000;
-      lastT = now;
-      setAnimTime((t) => t + dt);
       animFrame = requestAnimationFrame(loop);
+      if (!onscreenRef.current) {
+        lastT = now;
+        return;
+      }
+      const dt = Math.max(0, Math.min(0.1, (now - lastT) / 1000));
+      lastT = now;
+      animTimeRef.current += dt;
+      // Every visible robot link and the telemetry box derive from the same
+      // coupled Jacobian step, so retain a bounded coherent snapshot rather
+      // than independently mutating individual SVG pieces.
+      if (now - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = now;
+        setAnimTime(animTimeRef.current);
+      }
     };
     animFrame = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animFrame);
-  }, [isPlaying]);
+  }, [isPlaying, onscreenRef]);
 
   const controls = useMemo(() => {
     const raw = readStackhouseManipulatorControls(params);
@@ -77,7 +94,10 @@ export function StackhouseManipulatorSim({
   const toolY = cy - (linkLength + toolLengthPx) * Math.sin(totalBendRad);
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-border/40 bg-card/60 p-4 backdrop-blur">
+    <div
+      ref={rootRef}
+      className="flex flex-col gap-4 rounded-xl border border-border/40 bg-card/60 p-4 backdrop-blur"
+    >
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/30 pb-3">
         <div>
           <h3 className="text-base font-semibold text-foreground">
@@ -97,7 +117,11 @@ export function StackhouseManipulatorSim({
           </button>
           <button
             type="button"
-            onClick={() => resetParams()}
+            onClick={() => {
+              resetParams();
+              animTimeRef.current = 0;
+              setAnimTime(0);
+            }}
             className="rounded-md border border-border/60 bg-background px-3 py-1 text-xs font-medium text-foreground hover:bg-muted"
           >
             Reset

@@ -115,8 +115,12 @@ export function WozniakApple3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-4136359-wozniak-apple", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-4136359-wozniak-apple");
+    const unregister = globalTransportBus.registerUpdater(
+      "us-4136359-wozniak-apple",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
   }, [live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {

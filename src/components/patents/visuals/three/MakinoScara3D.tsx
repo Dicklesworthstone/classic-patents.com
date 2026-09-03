@@ -1,22 +1,24 @@
 "use client";
 
 import { Eye, RotateCcw } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { stepMakinoScaraTopology } from "@/physics/makinoScaraKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildMakinoScaraModel } from "./makinoScaraModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-4341502-makino-scara";
 
 const VIEWS = {
   overview: {
-    position: [5.2, 4.0, 5.8] as [number, number, number],
-    target: [0, -3.85, 0] as [number, number, number],
+    position: [4.0, 1.0, 4.6] as [number, number, number],
+    target: [0, -4.05, 0] as [number, number, number],
   },
   plan: {
     position: [0, 8.5, 0.01] as [number, number, number],
@@ -32,12 +34,12 @@ export function MakinoScara3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
   const [view, setView] = useState<keyof typeof VIEWS>("overview");
-  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-  const liveParams = useRef(params);
-  liveParams.current = params;
-  const pose = stepMakinoScaraTopology(params);
+  const { params, effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(PATENT_ID);
+  const liveParams = useLiveSimParams(effectiveParams);
+  const pose = useMemo(() => stepMakinoScaraTopology(effectiveParams), [effectiveParams]);
   const topology = params.topologyVariant ?? 1;
+  const effectiveTopology = effectiveParams.topologyVariant ?? topology;
 
   // The source-bounded refusal is itself a first-class physics status. No
   // FrankenSim/WASM badge is shown because no source-supported SI body model
@@ -53,6 +55,7 @@ export function MakinoScara3D() {
     studioRef.current?.controls.setView(camera.position, camera.target);
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -167,7 +170,8 @@ export function MakinoScara3D() {
             Claim form
             <select
               className="mt-1 w-full rounded border border-slate-600 bg-slate-900 p-1 text-xs"
-              value={topology}
+              value={effectiveTopology}
+              disabled={claimStates[1] === false}
               aria-label="Claim topology"
               onChange={(event) => updateParam("topologyVariant", Number(event.target.value))}
             >
@@ -203,10 +207,18 @@ export function MakinoScara3D() {
           <ClaimConstraintToggle
             patentId={PATENT_ID}
             claimStates={claimStates}
-            onClaimStateChange={(num, active) =>
-              setClaimStates((prev) => ({ ...prev, [num]: active }))
+            onToggleClaim={(claimNumber, active) =>
+              updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
             }
           />
+          {claimConstraintResult.activeFailures.length > 0 && (
+            <div
+              role="status"
+              className="mt-2 rounded-lg border border-rose-800 bg-rose-950/70 p-2 text-[11px] leading-4 text-rose-100"
+            >
+              {claimConstraintResult.activeFailures.join(" ")}
+            </div>
+          )}
         </div>
       </div>
     </section>

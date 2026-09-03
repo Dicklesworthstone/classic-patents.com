@@ -48,6 +48,23 @@ describe("ThreeStudioScene Visual Foundation", () => {
     expect(source).toContain("setRadius");
     expect(source).toContain("updateEnvironment");
     expect(source).toContain("forceContextLoss");
+    expect(source).toContain("threeFirstRenderMs");
+    expect(source).toContain("threeCpuSubmitMs");
+    expect(source).not.toContain("threeLastRenderMs");
+    expect(source).toContain("threeDrawCalls");
+    expect(source).toContain("threeTriangles");
+    expect(source).toContain("renderer.info.memory.geometries");
+    expect(source).toContain("nextFrameCount === 5");
+    expect(source).toContain("nextFrameCount % 30");
+  });
+
+  test("publishes a renderer-owned frame receipt only after a completed render", () => {
+    const source = readFileSync(join(THREE_DIRECTORY, "ThreeStudioScene.ts"), "utf8");
+
+    expect(source).toContain('canvas.dataset.threeFrameCount = "0"');
+    expect(source).toMatch(
+      /renderWithoutDiagnostics\(renderScene, renderCamera\);\s+renderedFrameCount = nextFrameCount;\s+canvas\.dataset\.threeFrameCount = String\(renderedFrameCount\);/,
+    );
   });
 
   test("keeps a one-finger vertical swipe available to the document while recognizing a deliberate horizontal orbit", () => {

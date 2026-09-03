@@ -9,12 +9,16 @@ import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
+const UI_SNAPSHOT_INTERVAL_MS = 80;
+
 export function MaximMachineGunSim() {
   const { params, resetParams } = usePatentPhysics("us-319596-maxim-machine-gun");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [cyclePhase, setCyclePhase] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const cyclePhaseRef = useRef(0);
+  const maximRef = useRef<ReturnType<typeof FrankenSimEngine.stepMaximMachineGun> | null>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const maxim = FrankenSimEngine.stepMaximMachineGun({
@@ -24,26 +28,41 @@ export function MaximMachineGunSim() {
   });
 
   useEffect(() => {
+    maximRef.current = maxim;
+  }, [maxim]);
+
+  useEffect(() => {
     if (!isPlaying) return;
 
     let lastTime = performance.now();
+    let lastUiSnapshot = 0;
 
     const loop = (time: number) => {
       animRef.current = requestAnimationFrame(loop);
-      if (!onscreenRef.current) return;
+      if (!onscreenRef.current) {
+        lastTime = time;
+        return;
+      }
       const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
       lastTime = time;
+      const liveMaxim = maximRef.current;
+      if (!liveMaxim) return;
 
-      setCyclePhase((prev) =>
-        wrapCycleRad(prev + maxim.fireOmegaRadPerS * dt, maxim.fireCycleWrapRad),
+      cyclePhaseRef.current = wrapCycleRad(
+        cyclePhaseRef.current + liveMaxim.fireOmegaRadPerS * dt,
+        liveMaxim.fireCycleWrapRad,
       );
+      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = time;
+        setCyclePhase(cyclePhaseRef.current);
+      }
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, maxim.fireOmegaRadPerS, maxim.fireCycleWrapRad, onscreenRef.current]);
+  }, [isPlaying, onscreenRef]);
 
   const strokePct = maxim.sleeveForwardMm / 24; // 0 to 1
   const sleeveX = 390 + 30 * strokePct;
@@ -104,6 +123,7 @@ export function MaximMachineGunSim() {
             type="button"
             onClick={() => {
               resetParams();
+              cyclePhaseRef.current = 0;
               setCyclePhase(0);
               soundEngine.playSwitchClick();
             }}

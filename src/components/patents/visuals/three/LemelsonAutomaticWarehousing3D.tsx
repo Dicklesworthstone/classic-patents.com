@@ -11,6 +11,7 @@ import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildLemelsonWarehouseModel } from "./lemelsonWarehouseModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-3119501-lemelson-automatic-warehousing";
 const VIEWS = {
@@ -28,6 +29,20 @@ const VIEWS = {
   },
 } as const;
 
+function viewForViewport(view: keyof typeof VIEWS, viewportWidth: number) {
+  const config = VIEWS[view];
+  if (viewportWidth >= 640) return config;
+
+  const distanceMultiplier = view === "overview" ? 1.45 : 1.25;
+  return {
+    position: config.position.map(
+      (coordinate, index) =>
+        config.target[index] + (coordinate - config.target[index]) * distanceMultiplier,
+    ) as [number, number, number],
+    target: config.target,
+  };
+}
+
 function percent(value: number): string {
   return `${Math.round(value * 100)}%`;
 }
@@ -38,8 +53,7 @@ export function LemelsonAutomaticWarehousing3D() {
   const [view, setView] = useState<keyof typeof VIEWS>("overview");
   const { effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
     usePatentPhysics(PATENT_ID);
-  const liveParams = useRef(effectiveParams);
-  liveParams.current = effectiveParams;
+  const liveParams = useLiveSimParams(effectiveParams);
   const pose = stepLemelsonWarehouseTopology(effectiveParams);
   useFrankenSimPhysics(PATENT_ID, {
     domain: "solid_mechanics",
@@ -50,23 +64,25 @@ export function LemelsonAutomaticWarehousing3D() {
   });
   const selectView = (next: keyof typeof VIEWS) => {
     setView(next);
-    const camera = VIEWS[next];
+    const camera = viewForViewport(next, containerRef.current?.clientWidth ?? 1000);
     studioRef.current?.controls.setView(camera.position, camera.target);
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The persistent WebGL scene reads the stable layout-effect-synchronized control ref; depending on `.current` would recreate and flash the studio.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+    const initialView = viewForViewport("overview", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
-      cameraPos: VIEWS.overview.position,
-      targetPos: VIEWS.overview.target,
+      cameraPos: initialView.position,
+      targetPos: initialView.target,
       environmentStyle: "studio",
       enableClouds: false,
       ambientIntensity: 2.4,
       sunIntensity: 2.7,
       cameraMinDistance: 3.2,
-      cameraMaxDistance: 14,
+      cameraMaxDistance: 22,
     });
     studioRef.current = studio;
     const { scene, camera, renderer, controls } = studio;
@@ -106,8 +122,8 @@ export function LemelsonAutomaticWarehousing3D() {
 
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl">
-      <div className="relative min-h-[430px] sm:min-h-[540px]">
-        <div ref={containerRef} className="absolute inset-0" />
+      <div className="relative min-h-[740px] sm:min-h-[540px]">
+        <div ref={containerRef} className="absolute inset-x-0 top-0 bottom-[350px] sm:inset-0" />
         <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-3 sm:inset-x-5 sm:top-5">
           <div className="rounded-xl border border-cyan-700/70 bg-slate-950/90 px-3 py-2 backdrop-blur">
             <p className="font-mono text-[10px] tracking-[0.16em] text-cyan-300">
@@ -117,11 +133,11 @@ export function LemelsonAutomaticWarehousing3D() {
               Rail, elevator, shuttle, and bay topology
             </p>
           </div>
-          <div className="max-w-xs rounded-xl border border-rose-800/70 bg-rose-950/90 px-3 py-2 text-right text-[11px] leading-4 text-rose-100 backdrop-blur">
+          <div className="hidden max-w-xs rounded-xl border border-rose-800/70 bg-rose-950/90 px-3 py-2 text-right text-[11px] leading-4 text-rose-100 backdrop-blur sm:block">
             Normalized host geometry only. No source-backed warehouse scale or performance model.
           </div>
         </div>
-        <div className="absolute bottom-3 left-3 right-3 z-10 grid max-h-[calc(100%-7rem)] gap-3 overflow-y-auto rounded-xl border border-slate-700/80 bg-slate-950/90 p-3 backdrop-blur sm:bottom-5 sm:left-5 sm:right-5">
+        <div className="absolute bottom-3 left-3 right-3 z-10 grid max-h-[340px] gap-3 overflow-y-auto rounded-xl border border-slate-700/80 bg-slate-950/90 p-3 backdrop-blur sm:bottom-5 sm:left-5 sm:right-5 sm:max-h-[calc(100%-7rem)]">
           <ClaimConstraintToggle
             patentId={PATENT_ID}
             claimStates={claimStates}

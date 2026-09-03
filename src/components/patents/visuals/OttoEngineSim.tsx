@@ -1,7 +1,7 @@
 "use client";
 
 import { Flame, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { stepOttoEngine } from "@/physics/catalogKernels";
 import {
   createOttoTransportUpdater,
@@ -15,6 +15,7 @@ import { globalTransportBus, useFrankenSimPhysics } from "@/physics/useFrankenSi
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -28,8 +29,7 @@ export function OttoEngineSim() {
   const otto = stepOttoEngine({ engineRpm, compressionRatio });
   const isPlaying = (params.isRunning ?? 1) >= 0.5;
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
-  const liveControls = useRef({ engineRpm, isPlaying, claim1ChargeGradingPresent });
-  liveControls.current = { engineRpm, isPlaying, claim1ChargeGradingPresent };
+  const liveControls = useLiveSimParams({ engineRpm, isPlaying, claim1ChargeGradingPresent });
 
   const { frame } = useFrankenSimPhysics("us-194047-otto-engine", {
     domain: "thermodynamics_transport",
@@ -48,6 +48,7 @@ export function OttoEngineSim() {
     },
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The registered transport intentionally stays mounted while this layout-effect-synchronized ref supplies latest controls.
   useEffect(() => {
     return globalTransportBus.registerUpdater(
       "us-194047-otto-engine",

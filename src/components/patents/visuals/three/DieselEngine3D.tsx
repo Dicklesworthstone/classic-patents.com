@@ -136,9 +136,12 @@ export function DieselEngine3D() {
   // param-derived op point into the updater without re-running it per tick.
   const crankAngleRef = useRef(0);
   const lastLegalAngleRef = useRef(0);
-  const kernelSnapshotRef = useRef({ pCompBar: peakPressureBar, tCompressionC: peakTempC });
-  kernelSnapshotRef.current = { pCompBar: peakPressureBar, tCompressionC: peakTempC };
+  const kernelSnapshotRef = useLiveSimParams({
+    pCompBar: peakPressureBar,
+    tCompressionC: peakTempC,
+  });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The transport updater reads a stable layout-effect-synchronized kernel snapshot; depending on `.current` would repeatedly unregister and restart the engine.
   useEffect(() => {
     const integrate: TapeUpdater = (prev, dt) => {
       if (!live.current.isPlaying) return null;
@@ -177,15 +180,13 @@ export function DieselEngine3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-542846-diesel-engine", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-542846-diesel-engine");
-  }, [
-    live.current.isPlaying,
-    live.current.crankOmegaRadPerS,
-    live.current.cycleWrapRad,
-    live.current.isAutoIgnition,
-    live.current.claim1Active,
-  ]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-542846-diesel-engine",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -218,8 +219,8 @@ export function DieselEngine3D() {
     const transport = globalTransportBus.getTransport("us-542846-diesel-engine");
 
     const renderLoop = (now: number) => {
+      animRef.current = requestAnimationFrame(renderLoop);
       if (!studio.isVisible()) {
-        animRef.current = requestAnimationFrame(renderLoop);
         return;
       }
       clock.pump(now);

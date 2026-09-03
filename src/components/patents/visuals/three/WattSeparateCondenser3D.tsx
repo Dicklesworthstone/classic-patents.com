@@ -71,6 +71,8 @@ export function WattSeparateCondenser3D() {
     strokesPerMinute,
     hasSeparateCondenser: (params.hasSeparateCondenser ?? 1) > 0.5,
     hasSteamJacket: (params.hasSteamJacket ?? 1) > 0.5,
+    cutaway,
+    showCallouts,
   });
 
   // Shared transport tape: condenser cycle publishes to the patentId-keyed bus.
@@ -113,15 +115,11 @@ export function WattSeparateCondenser3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater(EXHIBIT_ID, integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater(EXHIBIT_ID);
+    const unregister = globalTransportBus.registerUpdater(EXHIBIT_ID, integrate, "TS_FALLBACK");
+    return unregister;
   }, [live]);
 
-  const cutawayRef = useRef(cutaway);
-  cutawayRef.current = cutaway;
-  const calloutsRef = useRef(showCallouts);
-  calloutsRef.current = showCallouts;
-
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The persistent WebGL scene consumes the stable layout-effect-synchronized control ref so toggles do not rebuild and flash the studio.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -152,8 +150,8 @@ export function WattSeparateCondenser3D() {
       model.pistonGroup.position.y = 2.6 + pistonPos * 0.5;
       model.airPumpRodGroup.position.y = 2.5 - pistonPos * 0.35;
       model.pitworkRodGroup.position.y = 2.5 - pistonPos * 0.55;
-      model.setCutaway(cutawayRef.current);
-      model.setCalloutsVisible(calloutsRef.current);
+      model.setCutaway(live.current.cutaway);
+      model.setCalloutsVisible(live.current.showCallouts);
 
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);

@@ -16,6 +16,7 @@ import {
   type LemelsonAutomaticProductionModel,
 } from "./lemelsonAutomaticProductionModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-3313014-lemelson-automatic-production";
 const VIEWS = {
@@ -42,14 +43,14 @@ export function LemelsonAutomaticProduction3D() {
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
   const controls = useMemo(() => readLemelsonAutomaticProductionControls(params), [params]);
   const state = useMemo(() => stepLemelsonAutomaticProductionTopology(controls), [controls]);
-  const liveState = useRef(state);
-  liveState.current = state;
+  const liveState = useLiveSimParams(state);
 
   useFrankenSimPhysics(PATENT_ID, {
     domain: "solid_mechanics",
     refusal: { isRefused: true, reason: state.sourceBoundary.reason },
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;

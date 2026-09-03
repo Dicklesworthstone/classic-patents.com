@@ -34,7 +34,8 @@ export function WestinghouseAirBrakeSim() {
   const selectingCockState = selectingCockPos === 1 ? "reversed" : "normal";
 
   const [activeClaimProbe, setActiveClaimProbe] = useState<number | null>(null);
-  const [pulseAnim, setPulseAnim] = useState<number>(0);
+  const pulseRef = useRef(0);
+  const operatingPipePulseRef = useRef<SVGLineElement>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const wh = FrankenSimEngine.stepWestinghouseAirBrake({
@@ -58,13 +59,17 @@ export function WestinghouseAirBrakeSim() {
       animRef.current = requestAnimationFrame(loop);
       if (!onscreenRef.current) return;
       frame += 0.05;
-      setPulseAnim(frame);
+      pulseRef.current = frame;
+      operatingPipePulseRef.current?.setAttribute(
+        "stroke-dasharray",
+        `${6 + Math.sin(pulseRef.current) * 2},4`,
+      );
     };
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [onscreenRef.current]);
+  }, [onscreenRef]);
 
   const handleToggleSelectingCock = () => {
     const nextPos = selectingCockPos === 0 ? 1 : 0;
@@ -106,6 +111,8 @@ export function WestinghouseAirBrakeSim() {
 
   const resetRunning = () => {
     resetParams();
+    pulseRef.current = 0;
+    operatingPipePulseRef.current?.setAttribute("stroke-dasharray", "6,4");
     if (!isAudioMuted) soundEngine.playTone(520, 0.15, "sine", 0.2);
   };
 
@@ -320,13 +327,14 @@ export function WestinghouseAirBrakeSim() {
                 strokeLinecap="round"
               />
               <line
+                ref={operatingPipePulseRef}
                 x1="10"
                 y1="140"
                 x2="750"
                 y2="140"
                 stroke="#0f172a"
                 strokeWidth="2"
-                strokeDasharray={`${6 + Math.sin(pulseAnim) * 2},4`}
+                strokeDasharray="6,4"
               />
               <text
                 x="80"

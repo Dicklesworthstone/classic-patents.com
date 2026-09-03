@@ -3,7 +3,6 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { stepHyattCelluloid } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { ThermodynamicsState } from "@/physics/types";
 import {
@@ -11,6 +10,7 @@ import {
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -70,7 +70,7 @@ export const HyattCelluloid3D = memo(() => {
         : 10;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const hyatt = stepHyattCelluloid({
@@ -118,9 +118,13 @@ export const HyattCelluloid3D = memo(() => {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-105338-hyatt-celluloid", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-105338-hyatt-celluloid");
-  }, [live.current.hydraulicPressureMpa, live.current.steamTempC]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-105338-hyatt-celluloid",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
     const cfg = CAMERA_PRESETS[preset];
@@ -132,10 +136,6 @@ export const HyattCelluloid3D = memo(() => {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;

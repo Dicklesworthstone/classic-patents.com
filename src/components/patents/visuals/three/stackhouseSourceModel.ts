@@ -25,12 +25,44 @@ function cylinderAlongZ(
   length: number,
   material: THREE.Material,
   geometries: THREE.BufferGeometry[],
+  options: {
+    radialSegments?: number;
+    openEnded?: boolean;
+    thetaStart?: number;
+    thetaLength?: number;
+  } = {},
 ): THREE.Mesh {
-  const geometry = new THREE.CylinderGeometry(radius, radius, length, 24);
+  const geometry = new THREE.CylinderGeometry(
+    radius,
+    radius,
+    length,
+    options.radialSegments ?? 24,
+    1,
+    options.openEnded ?? false,
+    options.thetaStart ?? 0,
+    options.thetaLength ?? Math.PI * 2,
+  );
   geometries.push(geometry);
   const mesh = new THREE.Mesh(geometry, material);
   mesh.rotation.x = Math.PI / 2;
   return mesh;
+}
+
+function cutawayShellAlongZ(
+  radius: number,
+  length: number,
+  material: THREE.Material,
+  geometries: THREE.BufferGeometry[],
+): THREE.Mesh {
+  return cylinderAlongZ(radius, length, material, geometries, {
+    radialSegments: 36,
+    openEnded: true,
+    // The missing quadrant faces the default camera. This geometry and its
+    // partial translucency are explicit museum cutaway conventions, not
+    // properties attributed to the source housing.
+    thetaStart: Math.PI * 0.94,
+    thetaLength: Math.PI * 1.5,
+  });
 }
 
 function axisGuide(
@@ -68,11 +100,39 @@ export function buildStackhouseSourceModel(): StackhouseSourceModel {
     materials.push(value);
     return value;
   };
-  const housingMaterial = material({ color: 0x334155, roughness: 0.42, metalness: 0.72 });
-  const outerShaftMaterial = material({ color: 0x0369a1, roughness: 0.28, metalness: 0.85 });
-  const middleShaftMaterial = material({ color: 0x0ea5e9, roughness: 0.25, metalness: 0.82 });
+  const housingMaterial = material({
+    color: 0x334155,
+    roughness: 0.42,
+    metalness: 0.72,
+    transparent: true,
+    opacity: 0.3,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
+  housingMaterial.name = "Normalized cutaway housing material";
+  const motorHousingMaterial = material({ color: 0x334155, roughness: 0.42, metalness: 0.72 });
+  const outerShaftMaterial = material({
+    color: 0x0369a1,
+    roughness: 0.28,
+    metalness: 0.85,
+    transparent: true,
+    opacity: 0.78,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
+  const middleShaftMaterial = material({
+    color: 0x0ea5e9,
+    roughness: 0.25,
+    metalness: 0.82,
+    transparent: true,
+    opacity: 0.86,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
   const innerShaftMaterial = material({ color: 0x7dd3fc, roughness: 0.2, metalness: 0.78 });
   const gearMaterial = material({ color: 0xd97706, roughness: 0.3, metalness: 0.84 });
+  const innerGearMaterial = material({ color: 0xfacc15, roughness: 0.28, metalness: 0.8 });
+  const terminalGearMaterial = material({ color: 0xfb7185, roughness: 0.3, metalness: 0.76 });
   const toolMaterial = material({ color: 0x7e22ce, roughness: 0.32, metalness: 0.76 });
   const pointMaterial = material({
     color: 0xef4444,
@@ -89,7 +149,7 @@ export function buildStackhouseSourceModel(): StackhouseSourceModel {
   fixedForearmGroup.name = "FixedForearmAndElbowMotors";
   root.add(fixedForearmGroup);
 
-  const forearmHousing = cylinderAlongZ(0.2, 1.5, housingMaterial, geometries);
+  const forearmHousing = cutawayShellAlongZ(0.2, 1.5, housingMaterial, geometries);
   forearmHousing.name = "ForearmSection6";
   forearmHousing.position.z = -0.75;
   fixedForearmGroup.add(forearmHousing);
@@ -98,7 +158,10 @@ export function buildStackhouseSourceModel(): StackhouseSourceModel {
   const shaftMaterials = [outerShaftMaterial, middleShaftMaterial, innerShaftMaterial] as const;
   const shaftNames = ["OuterForearmShaft15", "IntermediateForearmShaft16", "InnerForearmShaft19"];
   shaftRadii.forEach((radius, index) => {
-    const shaft = cylinderAlongZ(radius, 1.4 + index * 0.025, shaftMaterials[index], geometries);
+    const shaft =
+      index < 2
+        ? cutawayShellAlongZ(radius, 1.4 + index * 0.025, shaftMaterials[index], geometries)
+        : cylinderAlongZ(radius, 1.4 + index * 0.025, shaftMaterials[index], geometries);
     shaft.name = shaftNames[index];
     shaft.position.z = -0.69;
     shaft.renderOrder = index;
@@ -107,7 +170,7 @@ export function buildStackhouseSourceModel(): StackhouseSourceModel {
 
   const motorPlateGeometry = new THREE.BoxGeometry(0.72, 0.34, 0.12);
   geometries.push(motorPlateGeometry);
-  const motorPlate = new THREE.Mesh(motorPlateGeometry, housingMaterial);
+  const motorPlate = new THREE.Mesh(motorPlateGeometry, motorHousingMaterial);
   motorPlate.name = "ElbowMotorHousing9d";
   motorPlate.position.z = -1.48;
   fixedForearmGroup.add(motorPlate);
@@ -126,7 +189,7 @@ export function buildStackhouseSourceModel(): StackhouseSourceModel {
   const firstGearGeometry = new THREE.ConeGeometry(0.18, 0.12, 28);
   geometries.push(firstGearGeometry);
   const firstGear = new THREE.Mesh(firstGearGeometry, gearMaterial);
-  firstGear.name = "BevelGear17";
+  firstGear.name = "BevelGear17 on intermediate forearm shaft 16";
   firstGear.rotation.x = Math.PI / 2;
   firstGear.position.z = -0.015;
   forearmRollGroup.add(firstGear);
@@ -141,15 +204,39 @@ export function buildStackhouseSourceModel(): StackhouseSourceModel {
   intermediateRollGroup.add(axisGuide("AxisBB", 0xf59e0b, geometries, materials));
 
   const secondGear = new THREE.Mesh(firstGearGeometry, gearMaterial);
-  secondGear.name = "BevelGear18AndHousing14a";
+  secondGear.name = "BevelGear18 on housing shaft 14a";
   secondGear.rotation.x = -Math.PI / 2;
   secondGear.position.z = 0.035;
   intermediateRollGroup.add(secondGear);
 
-  const intermediateHousing = cylinderAlongZ(0.145, 0.72, outerShaftMaterial, geometries);
+  const intermediateHousing = cutawayShellAlongZ(0.145, 0.72, outerShaftMaterial, geometries);
   intermediateHousing.name = "RotatableHousingShaft14a";
   intermediateHousing.position.z = 0.34;
   intermediateRollGroup.add(intermediateHousing);
+
+  const intermediateDriveShaft = cylinderAlongZ(0.055, 0.72, innerShaftMaterial, geometries);
+  intermediateDriveShaft.name = "InternalDriveShaft23";
+  intermediateDriveShaft.position.z = 0.34;
+  intermediateRollGroup.add(intermediateDriveShaft);
+
+  const innerInputGear = new THREE.Mesh(
+    (() => {
+      const value = new THREE.ConeGeometry(0.115, 0.08, 28);
+      geometries.push(value);
+      return value;
+    })(),
+    innerGearMaterial,
+  );
+  innerInputGear.name = "BevelGear21 on inner forearm shaft 20";
+  innerInputGear.rotation.x = Math.PI / 2;
+  innerInputGear.position.z = 0.045;
+  forearmRollGroup.add(innerInputGear);
+
+  const innerDrivenGear = new THREE.Mesh(innerInputGear.geometry, innerGearMaterial);
+  innerDrivenGear.name = "BevelGear22 on internal shaft 23";
+  innerDrivenGear.rotation.x = -Math.PI / 2;
+  innerDrivenGear.position.z = 0.085;
+  intermediateRollGroup.add(innerDrivenGear);
 
   const secondObliqueTiltGroup = new THREE.Group();
   secondObliqueTiltGroup.name = "AxisCCFixedObliqueMount";
@@ -171,6 +258,19 @@ export function buildStackhouseSourceModel(): StackhouseSourceModel {
   terminalShaft.name = "TerminalShaft26";
   terminalShaft.position.z = 0.25;
   toolRollGroup.add(terminalShaft);
+
+  const terminalInputGearGeometry = new THREE.ConeGeometry(0.095, 0.07, 28);
+  geometries.push(terminalInputGearGeometry);
+  const terminalInputGear = new THREE.Mesh(terminalInputGearGeometry, terminalGearMaterial);
+  terminalInputGear.name = "BevelGear24 on internal shaft 23";
+  terminalInputGear.rotation.x = Math.PI / 2;
+  terminalInputGear.position.z = 0.075;
+  intermediateRollGroup.add(terminalInputGear);
+  const terminalDrivenGear = new THREE.Mesh(terminalInputGearGeometry, terminalGearMaterial);
+  terminalDrivenGear.name = "BevelGear25 on terminal shaft 26";
+  terminalDrivenGear.rotation.x = -Math.PI / 2;
+  terminalDrivenGear.position.z = 0.055;
+  toolRollGroup.add(terminalDrivenGear);
 
   const flangeGeometry = new THREE.CylinderGeometry(0.17, 0.17, 0.08, 32);
   geometries.push(flangeGeometry);

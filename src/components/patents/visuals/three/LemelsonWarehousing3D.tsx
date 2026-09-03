@@ -7,6 +7,7 @@ import {
   readLemelsonWarehousingControls,
   stepLemelsonWarehousingSi,
 } from "@/physics/lemelsonWarehousingKernel";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import {
@@ -14,6 +15,7 @@ import {
   type LemelsonWarehousingModel,
 } from "./lemelsonWarehousingModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 export function LemelsonWarehousing3D({
   patentId = "us-3119501-lemelson-automatic-warehousing",
@@ -23,19 +25,24 @@ export function LemelsonWarehousing3D({
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
   const modelRef = useRef<LemelsonWarehousingModel | null>(null);
+  const clockRef = useRef<ReturnType<typeof createStudioClock> | null>(null);
+  const resetEpochRef = useRef(0);
+  const simTimeRef = useRef(0);
+  const cycleStageRef = useRef<HTMLSpanElement>(null);
+  const activeDriveRef = useRef<HTMLSpanElement>(null);
+  const aisleCounterRef = useRef<HTMLSpanElement>(null);
+  const shelfCounterRef = useRef<HTMLSpanElement>(null);
 
   useFrankenSimPhysics(patentId);
   const { params, updateParam } = usePatentPhysics(patentId);
 
   const controls: LemelsonWarehousingControls = readLemelsonWarehousingControls(params);
 
-  const liveControlsRef = useRef<LemelsonWarehousingControls>(controls);
-  liveControlsRef.current = controls;
+  const liveControlsRef = useLiveSimParams<LemelsonWarehousingControls>(controls);
 
   const [cameraPreset, setCameraPreset] = useState<"aisle" | "overhead" | "forks" | "bay">("aisle");
 
-  const [simTime, setSimTime] = useState(0);
-
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The persistent WebGL scene reads the stable layout-effect-synchronized control ref; depending on `.current` would recreate and flash the studio.
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -55,24 +62,30 @@ export function LemelsonWarehousing3D({
     modelRef.current = model;
     studio.scene.add(model.group);
 
-    let lastTime = 0;
+    const clock = createStudioClock();
+    clockRef.current = clock;
 
     const loop = (timeMs: number) => {
       if (destroyed) return;
-      const dt = lastTime === 0 ? 0.016 : Math.min(0.05, (timeMs - lastTime) / 1000);
-      lastTime = timeMs;
+      animFrameId = requestAnimationFrame(loop);
+      if (!studio.isVisible()) return;
 
-      setSimTime((prev) => {
-        const next = prev + dt;
-        const currentControls = liveControlsRef.current;
-        const currentTel = stepLemelsonWarehousingSi(currentControls, next);
-        model.update(currentTel);
-        return next;
-      });
+      const { simTimeSec } = clock.pump(timeMs);
+      const next = Math.max(0, simTimeSec - resetEpochRef.current);
+      simTimeRef.current = next;
+      const currentTel = stepLemelsonWarehousingSi(liveControlsRef.current, next);
+      model.update(currentTel);
+      if (cycleStageRef.current) cycleStageRef.current.textContent = currentTel.cyclePhaseName;
+      if (activeDriveRef.current) activeDriveRef.current.textContent = currentTel.activeMotor;
+      if (aisleCounterRef.current) {
+        aisleCounterRef.current.textContent = `${currentTel.counterPrCx} counts`;
+      }
+      if (shelfCounterRef.current) {
+        shelfCounterRef.current.textContent = `${currentTel.counterPrCz} counts`;
+      }
 
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
-      animFrameId = requestAnimationFrame(loop);
     };
 
     animFrameId = requestAnimationFrame(loop);
@@ -82,9 +95,10 @@ export function LemelsonWarehousing3D({
       cancelAnimationFrame(animFrameId);
       studio.scene.remove(model.group);
       model.dispose();
-      studio.dispose();
+      studio.cleanup();
       studioRef.current = null;
       modelRef.current = null;
+      clockRef.current = null;
     };
   }, []);
 
@@ -114,7 +128,7 @@ export function LemelsonWarehousing3D({
     studio.controls.update();
   };
 
-  const currentTel = stepLemelsonWarehousingSi(controls, simTime);
+  const currentTel = stepLemelsonWarehousingSi(controls, simTimeRef.current);
 
   return (
     <div className="flex flex-col w-full bg-stone-950 text-stone-100 rounded-xl border border-stone-800 p-6 shadow-2xl space-y-6">
@@ -149,7 +163,24 @@ export function LemelsonWarehousing3D({
           ))}
           <button
             type="button"
-            onClick={() => setSimTime(0)}
+            onClick={() => {
+              resetEpochRef.current = clockRef.current?.simTimeSec ?? 0;
+              simTimeRef.current = 0;
+              const resetTelemetry = stepLemelsonWarehousingSi(liveControlsRef.current, 0);
+              modelRef.current?.update(resetTelemetry);
+              if (cycleStageRef.current) {
+                cycleStageRef.current.textContent = resetTelemetry.cyclePhaseName;
+              }
+              if (activeDriveRef.current) {
+                activeDriveRef.current.textContent = resetTelemetry.activeMotor;
+              }
+              if (aisleCounterRef.current) {
+                aisleCounterRef.current.textContent = `${resetTelemetry.counterPrCx} counts`;
+              }
+              if (shelfCounterRef.current) {
+                shelfCounterRef.current.textContent = `${resetTelemetry.counterPrCz} counts`;
+              }
+            }}
             className="flex items-center gap-1 px-3 py-1.5 bg-stone-900 hover:bg-stone-800 border border-stone-700 rounded text-xs font-mono text-stone-300 transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" /> Reset
@@ -165,19 +196,27 @@ export function LemelsonWarehousing3D({
         <div className="absolute bottom-4 left-4 bg-stone-950/90 border border-stone-800 rounded-lg p-3 backdrop-blur-sm space-y-1 font-mono text-xs">
           <div className="flex justify-between gap-6 text-stone-400">
             <span>Cycle Stage:</span>
-            <span className="text-amber-400 font-bold">{currentTel.cyclePhaseName}</span>
+            <span ref={cycleStageRef} className="text-amber-400 font-bold">
+              {currentTel.cyclePhaseName}
+            </span>
           </div>
           <div className="flex justify-between gap-6 text-stone-400">
             <span>Active Drive:</span>
-            <span className="text-cyan-400 font-bold">{currentTel.activeMotor}</span>
+            <span ref={activeDriveRef} className="text-cyan-400 font-bold">
+              {currentTel.activeMotor}
+            </span>
           </div>
           <div className="flex justify-between gap-6 text-stone-400">
             <span>PrCx (Aisle):</span>
-            <span className="text-emerald-400 font-bold">{currentTel.counterPrCx} counts</span>
+            <span ref={aisleCounterRef} className="text-emerald-400 font-bold">
+              {currentTel.counterPrCx} counts
+            </span>
           </div>
           <div className="flex justify-between gap-6 text-stone-400">
             <span>PrCz (Shelf):</span>
-            <span className="text-purple-400 font-bold">{currentTel.counterPrCz} counts</span>
+            <span ref={shelfCounterRef} className="text-purple-400 font-bold">
+              {currentTel.counterPrCz} counts
+            </span>
           </div>
         </div>
       </div>

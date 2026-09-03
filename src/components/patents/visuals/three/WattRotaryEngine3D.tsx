@@ -45,12 +45,15 @@ const CAMERA_PRESETS: Record<
   cylinder: { pos: [-3.8, 2.5, 3.2], target: [-2.2, 1.5, 0] },
 };
 
-function cameraPresetForViewport(preset: CameraPreset): {
+function cameraPresetForViewport(
+  preset: CameraPreset,
+  viewportWidth: number,
+): {
   pos: [number, number, number];
   target: [number, number, number];
 } {
   const config = CAMERA_PRESETS[preset];
-  if (typeof window === "undefined" || window.innerWidth >= 640) return config;
+  if (viewportWidth >= 640) return config;
 
   // A portrait viewport has far less horizontal field of view than the
   // desktop studio. Preserve the same target but move the camera outward so
@@ -89,20 +92,14 @@ export function WattRotaryEngine3D() {
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
-  const isPlayingRef = useRef(isPlaying);
-  isPlayingRef.current = isPlaying;
-
-  const cutawayRef = useRef(cutaway);
-  cutawayRef.current = cutaway;
-
-  const showCalloutsRef = useRef(showCallouts);
-  showCalloutsRef.current = showCallouts;
-
   const live = useLiveSimParams({
     strokeRateSpm,
     boilerPressureKpa,
     gearRatioNpOverNs,
     flywheelMassKg,
+    isPlaying,
+    cutaway,
+    showCallouts,
   });
 
   // Shared transport tape: sun-and-planet kinematics publish to the patentId-keyed bus.
@@ -115,7 +112,7 @@ export function WattRotaryEngine3D() {
 
   useEffect(() => {
     const integrate: TapeUpdater = (_prev, dt) => {
-      if (!isPlayingRef.current) return null;
+      if (!live.current.isPlaying) return null;
       wattTimeRef.current += dt;
       const out = stepWattRotaryEngine(readWattRotaryControls(live.current), wattTimeRef.current);
       wattStepRef.current = out;
@@ -130,21 +127,26 @@ export function WattRotaryEngine3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("gb-1306-watt-rotary-engine", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("gb-1306-watt-rotary-engine");
+    const unregister = globalTransportBus.registerUpdater(
+      "gb-1306-watt-rotary-engine",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
   }, [live]);
 
   const handleCameraPreset = (preset: CameraPreset) => {
     setCameraPreset(preset);
-    const cfg = cameraPresetForViewport(preset);
+    const cfg = cameraPresetForViewport(preset, window.innerWidth);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted rAF loop deliberately reads this stable, layout-effect-synchronized ref so a control change never tears down and flashes the WebGL scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const initialPreset = cameraPresetForViewport("overview");
+    const initialPreset = cameraPresetForViewport("overview", window.innerWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: initialPreset.pos,
@@ -171,8 +173,8 @@ export function WattRotaryEngine3D() {
         if (out) {
           modelRef.current.updateAnimation(out);
         }
-        modelRef.current.setCutaway(cutawayRef.current);
-        modelRef.current.setShowCallouts(showCalloutsRef.current);
+        modelRef.current.setCutaway(live.current.cutaway);
+        modelRef.current.setShowCallouts(live.current.showCallouts);
       }
 
       studio.renderer.render(studio.scene, studio.camera);
@@ -194,7 +196,7 @@ export function WattRotaryEngine3D() {
   useEffect(() => {
     const restoreMobileFraming = () => {
       if (window.innerWidth >= 640) return;
-      const config = cameraPresetForViewport(cameraPreset);
+      const config = cameraPresetForViewport(cameraPreset, window.innerWidth);
       studioRef.current?.controls.setView(config.pos, config.target);
     };
 
@@ -266,7 +268,7 @@ export function WattRotaryEngine3D() {
         </div>
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[min(90%,26rem)] sm:max-w-[26rem]">
+        <div className="absolute top-14 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[calc(100%-1.5rem)] sm:max-w-[26rem]">
           <button
             type="button"
             onClick={() => {

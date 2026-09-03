@@ -36,6 +36,20 @@ const CAMERA_PRESETS: Record<
   top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
 };
 
+const MORSE_NARROW_VIEWPORT_MAX_WIDTH_PX = 480;
+
+export function morseCameraPresetForViewport(
+  preset: CameraPreset,
+  viewportWidth: number,
+): { pos: [number, number, number]; target: [number, number, number] } {
+  if (preset === "iso" && viewportWidth < MORSE_NARROW_VIEWPORT_MAX_WIDTH_PX) {
+    // The complete baseboard spans almost fourteen studio units. Give a
+    // portrait viewport enough radius to show its key, sounder, and register.
+    return { pos: [15, 11, 20], target: [0, -0.5, 0] };
+  }
+  return CAMERA_PRESETS[preset];
+}
+
 export function MorseTelegraph3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
@@ -47,7 +61,7 @@ export function MorseTelegraph3D() {
   const lineVoltageV = params.lineVoltageV ?? 24;
   const lineLengthMiles = params.lineLengthMiles ?? 44;
   const wpmSpeed = params.wpmSpeed ?? 20;
-  const [keyIsDown, setKeyIsDown] = useState<boolean>(false);
+  const keyIsDown = (params.keyIsDown ?? 0) >= 0.5;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -94,16 +108,22 @@ export function MorseTelegraph3D() {
     ampereTurns: morse.ampereTurns,
     tapeAdvanceRadPerS: morse.tapeAdvanceRadPerS,
     unitDurationMs: morse.unitDurationMs,
-    keyOscillationRadPerS: morse.keyOscillationRadPerS,
     armatureStrikeM: morse.armatureStrikeM,
     electronDisplaySpeed: morse.electronDisplaySpeed,
+    lineWaveRms: morse.lineWaveRms,
+    electronOriginX: morse.electronOriginX,
+    electronWrapX: morse.electronWrapX,
+    keyTiltRad: morse.keyTiltRad,
+    armatureHomeY: morse.armatureHomeY,
+    governorRatio: morse.governorRatio,
+    gearRatio: morse.gearRatio,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = morseCameraPresetForViewport(preset, containerRef.current?.clientWidth ?? Infinity);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -117,7 +137,7 @@ export function MorseTelegraph3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = morseCameraPresetForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -132,41 +152,23 @@ export function MorseTelegraph3D() {
 
     // Animation Loop
     let reqId: number;
-    let clickCooldown = 0;
+    let wasKeyDown = false;
     const clock = createStudioClock();
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
-      const { dt: delta, simTimeSec: timeSec } = clock.pump(now);
+      const { dt: delta } = clock.pump(now);
       const p = live.current;
 
-      const cycle = Math.sin(timeSec * p.keyOscillationRadPerS);
-      const isDown = p.keyIsDown || cycle > 0.4;
-
-      clickCooldown += delta;
-      if (isDown && clickCooldown >= 0.12) {
-        clickCooldown = 0;
+      if (p.keyIsDown !== wasKeyDown) {
         if (!p.isAudioMuted) {
           soundEngine.playMorseClick();
         }
+        wasKeyDown = p.keyIsDown;
       }
 
-      updateMorseTelegraphKinematics(
-        nodes,
-        materials,
-        delta,
-        timeSec,
-        p.keyOscillationRadPerS,
-        p.armatureStrikeM,
-        p.tapeAdvanceRadPerS,
-        p.electronDisplaySpeed,
-        isDown,
-        p.isCutaway,
-        p.lineVoltageV,
-        p.lineLengthMiles,
-        p.wpmSpeed,
-      );
+      updateMorseTelegraphKinematics(nodes, materials, delta, p);
 
       controls.update();
       renderer.render(scene, camera);
@@ -232,9 +234,23 @@ export function MorseTelegraph3D() {
           />
           <button
             type="button"
-            onPointerDown={() => setKeyIsDown(true)}
-            onPointerUp={() => setKeyIsDown(false)}
-            onPointerLeave={() => setKeyIsDown(false)}
+            onPointerDown={() => updateParam("keyIsDown", 1)}
+            onPointerUp={() => updateParam("keyIsDown", 0)}
+            onPointerLeave={() => updateParam("keyIsDown", 0)}
+            onPointerCancel={() => updateParam("keyIsDown", 0)}
+            onKeyDown={(event) => {
+              if (event.key === " " || event.key === "Enter") {
+                event.preventDefault();
+                updateParam("keyIsDown", 1);
+              }
+            }}
+            onKeyUp={(event) => {
+              if (event.key === " " || event.key === "Enter") {
+                event.preventDefault();
+                updateParam("keyIsDown", 0);
+              }
+            }}
+            onBlur={() => updateParam("keyIsDown", 0)}
             className={`min-h-9 p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm text-xs font-sans flex items-center gap-1 ${
               keyIsDown
                 ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"

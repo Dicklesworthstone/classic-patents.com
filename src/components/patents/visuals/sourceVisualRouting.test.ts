@@ -15,7 +15,7 @@ describe("complete patent visual dispatcher routing", () => {
     }
   });
 
-  test("routes every patent to its interactive 3D and 2D simulations", () => {
+  test("routes every patent to its appropriate public visual face", () => {
     expect(dispatcherSource).toContain('case "us-2981877-noyce-ic":');
     expect(dispatcherSource).toContain("NoycePlanarIC3D");
     expect(dispatcherSource).toContain("NoycePlanarICSim");
@@ -61,8 +61,10 @@ describe("complete patent visual dispatcher routing", () => {
     expect(dispatcherSource).toContain("CarrierAirConditionerSim");
 
     expect(dispatcherSource).toContain('case "us-3671542-kwolek-kevlar":');
-    expect(dispatcherSource).toContain("KwolekKevlar3D");
-    expect(dispatcherSource).toContain("KwolekKevlarSim");
+    expect(dispatcherSource).toContain("SourceVisualUnavailable");
+    expect(dispatcherSource).toContain("nine checked drawing sheets");
+    expect(dispatcherSource).not.toContain("KwolekKevlar3D");
+    expect(dispatcherSource).not.toContain("KwolekKevlarSim");
 
     expect(dispatcherSource).toContain('case "us-3858232-boyle-smith-ccd":');
     expect(dispatcherSource).toContain("BoyleSmithCcd3D");

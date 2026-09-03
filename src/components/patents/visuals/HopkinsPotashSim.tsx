@@ -11,12 +11,14 @@ import {
   VolumeX,
   Waves,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { stepHopkinsPotash } from "@/physics/hopkinsPotashKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
+
+const UI_SNAPSHOT_INTERVAL_MS = 80;
 
 export function HopkinsPotashSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-x1-hopkins-potash");
@@ -29,6 +31,8 @@ export function HopkinsPotashSim() {
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [cycleProgress, setCycleProgress] = useState<number>(0);
+  const cycleProgressRef = useRef(0);
+  const roastTimeHoursRef = useRef(roastTimeHours);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const pot = stepHopkinsPotash({
@@ -39,22 +43,36 @@ export function HopkinsPotashSim() {
   });
 
   useEffect(() => {
+    roastTimeHoursRef.current = roastTimeHours;
+  }, [roastTimeHours]);
+
+  useEffect(() => {
     if (!isPlaying) return;
     let animId: number;
     let lastTime = performance.now();
+    let lastUiSnapshot = 0;
 
     const loop = (now: number) => {
       animId = requestAnimationFrame(loop);
-      if (!onscreenRef.current) return;
+      if (!onscreenRef.current) {
+        lastTime = now;
+        return;
+      }
       const dt = Math.max(0, Math.min(0.1, (now - lastTime) / 1000));
       lastTime = now;
-      const cycleRate = 0.2 * (2.5 / Math.max(0.2, roastTimeHours));
-      setCycleProgress((prev) => (prev + dt * cycleRate) % 1.0);
+      const cycleRate = 0.2 * (2.5 / Math.max(0.2, roastTimeHoursRef.current));
+      cycleProgressRef.current = (cycleProgressRef.current + dt * cycleRate) % 1.0;
+      // Flame, smoke, drops, and vapor paths are coupled paths rather than a rigid
+      // transform, so publish a bounded SVG snapshot instead of a full rAF re-render.
+      if (now - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = now;
+        setCycleProgress(cycleProgressRef.current);
+      }
     };
 
     animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
-  }, [isPlaying, roastTimeHours, onscreenRef.current]);
+  }, [isPlaying, onscreenRef]);
 
   // Dynamic colors based on temperature
   const flameHue = Math.min(50, Math.max(10, (roastTempC - 500) * 0.08));
@@ -115,6 +133,7 @@ export function HopkinsPotashSim() {
             type="button"
             onClick={() => {
               resetParams();
+              cycleProgressRef.current = 0;
               setCycleProgress(0);
               soundEngine.playSwitchClick();
             }}

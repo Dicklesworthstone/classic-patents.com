@@ -25,6 +25,9 @@ import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-31128-otis-elevator";
+const NARROW_VIEWPORT_MAX_WIDTH_PX = 480;
+const OTIS_DESKTOP_OVERVIEW_RADIUS = 13;
+const OTIS_NARROW_OVERVIEW_RADIUS = 22;
 
 type CameraPreset = "overview" | "safety" | "drive" | "interlock" | "counterpoise" | "top";
 
@@ -39,6 +42,12 @@ const CAMERA_PRESETS: Record<
   counterpoise: { pos: [8.0, 3.6, 5.8], target: [4.35, 0.2, 0] },
   top: { pos: [0, 13.6, 0.1], target: [0, 0, 0] },
 };
+
+export function otisOverviewRadiusForViewport(viewportWidthPx: number): number {
+  return viewportWidthPx < NARROW_VIEWPORT_MAX_WIDTH_PX
+    ? OTIS_NARROW_OVERVIEW_RADIUS
+    : OTIS_DESKTOP_OVERVIEW_RADIUS;
+}
 
 function initialState(): OtisMechanismState {
   return {
@@ -110,7 +119,13 @@ export function OtisHoistingApparatus3D() {
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
     const camera = CAMERA_PRESETS[preset];
-    studioRef.current?.controls.setView(camera.pos, camera.target);
+    const studio = studioRef.current;
+    studio?.controls.setView(camera.pos, camera.target);
+    if (preset === "overview") {
+      studio?.controls.setRadius(
+        otisOverviewRadiusForViewport(containerRef.current?.clientWidth ?? 0),
+      );
+    }
   };
 
   useEffect(() => {
@@ -136,7 +151,7 @@ export function OtisHoistingApparatus3D() {
       fov: 39,
     });
     studioRef.current = studio;
-    studio.controls.setRadius(13);
+    studio.controls.setRadius(otisOverviewRadiusForViewport(container.clientWidth));
     const model = buildOtis1861HoistingModel();
     studio.scene.add(model.root);
 
@@ -254,6 +269,7 @@ export function OtisHoistingApparatus3D() {
           <ClaimConstraintToggle
             patentId={PATENT_ID}
             claimStates={claimStates}
+            className="max-[480px]:flex-nowrap max-[480px]:gap-1 max-[480px]:[&>button]:min-h-9 max-[480px]:[&>button]:px-2 max-[480px]:[&>button>span]:sr-only"
             onToggleClaim={(claimNumber, active) =>
               setClaimStates((previous) => ({ ...previous, [claimNumber]: active }))
             }

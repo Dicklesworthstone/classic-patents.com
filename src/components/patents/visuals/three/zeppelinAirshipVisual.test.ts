@@ -102,7 +102,6 @@ describe("US 621,195 Ferdinand von Zeppelin Rigid Airship visual & aerostatics b
       nodes,
       materials,
       0.016,
-      0.5,
       zep.hullStudioY,
       zep.pitchTrimDeg,
       zep.propellerDisplayOmegaRadPerS,

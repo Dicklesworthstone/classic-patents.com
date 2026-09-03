@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { otisSheaveCrate } from "@/physics/genericWasm";
 import { stepOtisElevator } from "@/physics/machineKernels";
 
 export interface OtisElevatorModelNodes {
@@ -465,16 +464,17 @@ export function buildOtisElevatorModel(): OtisElevatorModelResult {
 }
 
 /**
- * Updates leaf-spring arch deflection, pawl engagement angle, and cab position.
+ * Updates the statics-kernel safety state. The model has no hoist-speed or
+ * fall-dynamics input, so it does not fabricate cyclical cab or sheave motion.
  */
 export function updateOtisElevatorKinematics(
   nodes: OtisElevatorModelNodes,
   _materials: OtisElevatorMaterials,
   dt: number,
-  timeSec: number,
   isRopeSevered: boolean,
   springBowStudioY: number,
   isPawlEngaged: boolean,
+  isCutaway = false,
   cabPayloadKg = 650,
   cableTensionPct = 100,
 ) {
@@ -484,7 +484,6 @@ export function updateOtisElevatorKinematics(
   nodes.severedCableBottom.visible = isRopeSevered;
 
   const otis = stepOtisElevator({ cabPayloadKg, cableTensionPct });
-  const sheaveFlex = otisSheaveCrate().sheaveFlex;
 
   // 2. Leaf Spring Elastic Deflection
   // Under tension (100%), spring bows upward in the center (+0.25m)
@@ -501,18 +500,16 @@ export function updateOtisElevatorKinematics(
   nodes.leftPawlGroup.rotation.z += (targetPawlRotZ - nodes.leftPawlGroup.rotation.z) * pawlLerp;
   nodes.rightPawlGroup.rotation.z += (-targetPawlRotZ - nodes.rightPawlGroup.rotation.z) * pawlLerp;
 
-  // 4. Cab Hoist Motion / Catch Settling
+  // 4. Cab support state. The source-backed kernel describes the caught state,
+  // not a free-fall trajectory or a commanded hoist velocity.
   if (isRopeSevered) {
-    // Stopped / locked on safety rack tooth with slight damped settle
+    // Stopped and locked on a safety-rack tooth.
     nodes.cabGroup.position.y = otis.cabCaughtY;
   } else {
-    // Gentle hoisting float oscillation
-    nodes.cabGroup.position.y = Math.sin(timeSec * otis.hoistOmega) * otis.hoistAmp * sheaveFlex;
+    nodes.cabGroup.position.y = 0;
   }
+  nodes.crownSheave.rotation.z = 0;
 
-  // Rotate crown sheave with cable motion
-  if (!isRopeSevered) {
-    nodes.crownSheave.rotation.z =
-      Math.sin(timeSec * otis.hoistOmega) * otis.sheaveAmp * sheaveFlex;
-  }
+  // 5. Cutaway is a view-only operation; it must not alter the pawl state.
+  nodes.cabRailings.visible = !isCutaway;
 }

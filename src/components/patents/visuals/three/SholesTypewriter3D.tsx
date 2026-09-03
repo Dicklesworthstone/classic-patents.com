@@ -2,14 +2,19 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
-import { sholesCarriageStudioX, stepSholesTypewriter } from "@/physics/machineKernels";
+import {
+  advanceSholesTypewriterCycle,
+  sholesCarriageStudioXAtDisplayStep,
+  stepSholesTypewriter,
+  stepSholesTypewriterAtCycle,
+} from "@/physics/machineKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import {
   globalTransportBus,
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -48,6 +53,11 @@ interface SholesStepPose {
   eventsPerSecond: number;
   completedSteps: number;
   keyCyclePct: number;
+  ratchetReleasePct: number;
+  typebarStrokePct: number;
+  totalEscapementSteps: number;
+  displayCarriageSteps: number;
+  requiresManualCarriageReturn: boolean;
   displayTypebarIndex: number;
   escapementStepRad: number;
 }
@@ -65,7 +75,7 @@ export const SholesTypewriter3D = memo(() => {
   const eventsPerSecond = sholesIdle.eventsPerSecond.toFixed(1);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const live = useLiveSimParams({
@@ -86,29 +96,40 @@ export const SholesTypewriter3D = memo(() => {
     },
   });
   const sholesStepRef = useRef<SholesStepPose | null>(null);
-  const sholesElapsedSRef = useRef(0);
+  const sholesCycleCountRef = useRef(0);
 
   useEffect(() => {
     const integrate: TapeUpdater = (_prev, dt) => {
-      sholesElapsedSRef.current += dt;
-      const step = stepSholesTypewriter(
+      sholesCycleCountRef.current = advanceSholesTypewriterCycle(
+        sholesCycleCountRef.current,
         live.current.demonstrationCadence,
-        sholesElapsedSRef.current,
+        dt,
+      );
+      const step = stepSholesTypewriterAtCycle(
+        live.current.demonstrationCadence,
+        sholesCycleCountRef.current,
       );
       sholesStepRef.current = step;
       return {
         machine: {
           // Escapement carriage advance and platen ratchet rotation on the tape.
-          poseXMeters: sholesCarriageStudioX(step.displayTypebarIndex),
+          poseXMeters: sholesCarriageStudioXAtDisplayStep(step.displayCarriageSteps),
           poseYMeters: 0,
-          headingRad: step.completedSteps * step.escapementStepRad,
-          modeLabel: step.keyCyclePct < 0.35 ? "typebar strike" : "carriage feed",
+          headingRad: step.totalEscapementSteps * step.escapementStepRad,
+          modeLabel: step.requiresManualCarriageReturn
+            ? "manual carriage return required"
+            : step.typebarStrokePct > 0
+              ? "typebar stroke"
+              : "carriage feed",
           wheelSpeedMps: 0,
         },
       };
     };
-    globalTransportBus.registerUpdater("us-79265-sholes-typewriter", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-79265-sholes-typewriter");
+    return globalTransportBus.registerUpdater(
+      "us-79265-sholes-typewriter",
+      integrate,
+      "TS_FALLBACK",
+    );
   }, [live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
@@ -122,10 +143,6 @@ export const SholesTypewriter3D = memo(() => {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -158,9 +175,12 @@ export const SholesTypewriter3D = memo(() => {
         updateSholesTypewriterKinematics(
           nodes,
           materials,
-          step.keyCyclePct,
+          step.typebarStrokePct,
           step.displayTypebarIndex,
           p.isCutaway,
+          p.demonstrationCadence,
+          step.totalEscapementSteps,
+          step.displayCarriageSteps,
         );
       }
 
@@ -292,7 +312,7 @@ export const SholesTypewriter3D = memo(() => {
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Platen Feed:</span>
               <span className="font-bold text-purple-800 dark:text-purple-400">
-                Transverse Auto
+                Transverse Step
               </span>
             </div>
           </div>
@@ -307,7 +327,8 @@ export const SholesTypewriter3D = memo(() => {
             { label: "Strike Rate", value: eventsPerSecond, unit: "Hz" },
             { label: "Typebars", value: "12", unit: "sample" },
             { label: "Escapement", value: "Ratchet I", unit: "step" },
-            { label: "Platen Feed", value: "Line Space", unit: "auto" },
+            { label: "Platen Feed", value: "Transverse", unit: "step" },
+            { label: "Line End", value: "Manual", unit: "return" },
             {
               label: "Basket crate",
               value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",

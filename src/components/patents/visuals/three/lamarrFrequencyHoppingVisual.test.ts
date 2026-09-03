@@ -1,6 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
+import { stepLamarrRecordControl } from "@/physics/catalogKernels";
 import {
   FrankenSimEngine,
   lamarrChannelFrequencyMhz,
@@ -11,6 +13,12 @@ import {
   lamarrSchematicHop,
   lamarrSchematicStaffY,
 } from "@/physics/engine";
+import {
+  createLamarrTransportUpdater,
+  readLamarrRuntimeControls,
+  resetLamarrTape,
+} from "@/physics/lamarrSharedKernel";
+import { lamarrViewForViewport } from "./LamarrFrequencyHopping3D";
 import {
   buildLamarrFrequencyHoppingModel,
   updateLamarrFrequencyHoppingKinematics,
@@ -62,6 +70,13 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
       expect(threeSource).toContain(preset);
     }
     expect(threeSource).toContain("isCutaway");
+
+    const desktop = lamarrViewForViewport("iso", 1200);
+    const tablet = lamarrViewForViewport("iso", 768);
+    const phone = lamarrViewForViewport("iso", 320);
+    const distance = (view: typeof desktop) => Math.hypot(...view.pos);
+    expect(distance(tablet) / distance(desktop)).toBeCloseTo(1.15, 8);
+    expect(distance(phone) / distance(desktop)).toBeCloseTo(1.55, 8);
   });
 
   test("keeps telemetry bounded to the illustrated seven-row record system", () => {
@@ -97,7 +112,8 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
       "utf8",
     );
     expect(threeSource).toContain("recordPosition");
-    expect(threeSource).toContain("elapsed");
+    expect(threeSource).toContain("readLamarrTapeFrame");
+    expect(threeSource).not.toContain("useState(() =>");
     expect(threeSource).not.toContain("Date.now()");
     expect(threeSource).not.toContain("0.016");
     const modelSource = readFileSync(
@@ -116,7 +132,46 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
     expect(schematicSource).not.toContain("80 + i * 30");
   });
 
-  test("builds and articulates procedural torpedo bay, twin reels, paper roll web, sensing comb, and waterfall correctly", () => {
+  test("owns A–G matching and accepted commands in one source-bounded deterministic kernel", () => {
+    const falseRow = stepLamarrRecordControl({
+      recordPosition: 2,
+      commandTone: 100,
+      issueCommand: true,
+    });
+    const matchedRow = stepLamarrRecordControl({
+      recordPosition: 3,
+      commandTone: 500,
+      issueCommand: true,
+    });
+    expect(falseRow).toMatchObject({
+      transmitterRow: "C",
+      receiverRow: null,
+      receiverEffective: false,
+      warningLampOn: true,
+      commandAccepted: false,
+    });
+    expect(matchedRow).toMatchObject({
+      transmitterRow: "D",
+      receiverRow: "D",
+      receiverEffective: true,
+      warningLampOn: false,
+      commandAccepted: true,
+      rudderStep: 1,
+    });
+    expect(matchedRow.recordIndexAngleRad).toBeCloseTo((3 * Math.PI * 2) / 7, 10);
+
+    resetLamarrTape();
+    const updater = createLamarrTransportUpdater(() =>
+      readLamarrRuntimeControls({ recordPosition: 3, commandTone: 500 }),
+    );
+    const firstTapeUpdate = updater({} as never, 1 / 60);
+    expect(firstTapeUpdate?.machine?.poseXMeters).toBe(3);
+    expect(firstTapeUpdate?.machine?.modeLabel).toBe("matched row D");
+    expect(updater({} as never, 1 / 60)).toBeNull();
+    resetLamarrTape();
+  });
+
+  test("builds two supported record trains and indexes both from the shared record state", () => {
     const model = buildLamarrFrequencyHoppingModel();
     expect(model.root.children.length).toBeGreaterThan(0);
     expect(model.apparatusGroup).toBeDefined();
@@ -124,15 +179,40 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
     expect(model.drum2).toBeDefined();
     expect(model.paperWeb).toBeDefined();
     expect(model.comb).toBeDefined();
+    expect(model.receiverDrum1).toBeDefined();
+    expect(model.receiverDrum2).toBeDefined();
+    expect(model.receiverPaperWeb).toBeDefined();
+    expect(model.receiverComb).toBeDefined();
+    expect(model.root.getObjectByName("receiver_record_train_37_prime")).toBeDefined();
+    const timingOverlay = model.root.getObjectByName("matched_record_timing_link") as THREE.Line;
+    expect(timingOverlay).toBeDefined();
+    expect(timingOverlay.material).toBeInstanceOf(THREE.LineDashedMaterial);
+    expect(timingOverlay.userData.pedagogicalOverlay).toContain("not a physical conductor");
+    expect(model.root.getObjectsByProperty("name", "receiver_drum_bearing_collar")).toHaveLength(4);
+    for (const row of "ABCDEFG") {
+      expect(model.root.getObjectByName(`transmitter_record_contact_${row}`)).toBeDefined();
+    }
+    for (const row of "DEFG") {
+      expect(model.root.getObjectByName(`receiver_record_contact_${row}`)).toBeDefined();
+    }
+    expect(model.bulkheadRings).toHaveLength(2);
+    expect(model.sidePlates).toHaveLength(2);
+    expect(model.frontDrumFlanges).toHaveLength(2);
     expect(model.spectrumBarsGroup).toBeDefined();
     expect(model.barMeshes.length).toBe(7);
     expect(model.hopPoints).toBeDefined();
 
     // Test kinematics update & cutaway
-    updateLamarrFrequencyHoppingKinematics(model, 1 / 60, 3, 7, true, false, true, 1.5);
+    updateLamarrFrequencyHoppingKinematics(model, 3, true, false, true);
     expect(model.barMeshes[3].scale.y).toBeGreaterThan(1.0);
-    expect(model.drum1.rotation.y).toBeCloseTo(0.75, 5);
-    expect(model.materials.torpedoBayMat.opacity).toBe(0.35);
+    expect(model.drum1.rotation.y).toBeCloseTo((-3 * Math.PI * 2) / 7, 5);
+    expect(model.drum2.rotation.y).toBeCloseTo(model.drum1.rotation.y, 10);
+    expect(model.receiverDrum1.rotation.y).toBeCloseTo(model.drum1.rotation.y, 10);
+    expect(model.receiverDrum2.rotation.y).toBeCloseTo(model.drum2.rotation.y, 10);
+    expect(model.materials.torpedoBayMat.opacity).toBe(0.16);
+    expect(model.bulkheadRings.every((ring) => !ring.visible)).toBe(true);
+    expect(model.sidePlates.map((plate) => plate.visible)).toEqual([true, false]);
+    expect(model.frontDrumFlanges.every((flange) => !flange.visible)).toBe(true);
 
     model.dispose();
   });

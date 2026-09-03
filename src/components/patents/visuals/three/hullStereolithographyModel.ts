@@ -10,6 +10,9 @@ export interface HullStereolithography3DObjects {
   resinMesh: THREE.Mesh;
   platformGroup: THREE.Group;
   partGroup: THREE.Group;
+  platformCarriageNut: THREE.Mesh;
+  scannerGroup: THREE.Group;
+  scannerSupportGroup: THREE.Group;
   laserBeamLine: THREE.Line;
   laserSpotMesh: THREE.Mesh;
   galvoMirrorMesh: THREE.Mesh;
@@ -119,6 +122,23 @@ export function createHullStereolithographyModel(): HullStereolithography3DObjec
   platformMesh.position.set(0, 0, 0);
   platformGroup.add(platformMesh);
 
+  // The platform cannot hover independently of its lead screw. A carriage
+  // nut rides around the screw and a short rear bracket joins that nut to the
+  // platform edge, so every elevator pose remains one connected mechanism.
+  const platformCarriageNut = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.09, 0.09, 0.16, 20),
+    platformMaterial,
+  );
+  platformCarriageNut.name = "Lead-screw carriage nut attached to build platform";
+  platformCarriageNut.position.set(0, 0, -0.85);
+  const platformRearBracket = new THREE.Mesh(
+    new THREE.BoxGeometry(0.22, 0.08, 0.31),
+    platformMaterial,
+  );
+  platformRearBracket.name = "Build-platform-to-carriage support bracket";
+  platformRearBracket.position.set(0, 0, -0.725);
+  platformGroup.add(platformCarriageNut, platformRearBracket);
+
   // 4. Cured 3D Object Group (anchored to platform)
   const partGroup = new THREE.Group();
   partGroup.name = "CuredObjectPart";
@@ -150,12 +170,33 @@ export function createHullStereolithographyModel(): HullStereolithography3DObjec
 
   root.add(scannerGroup);
 
+  // Rear optical gantry: two uprights terminate on the vat's back wall, a
+  // crossbeam joins them, and a forward boom overlaps the scanner housing.
+  // The previous housing was literally suspended at y=2.4 with no parent
+  // structure, which contradicted the otherwise physical apparatus.
+  const scannerSupportGroup = new THREE.Group();
+  scannerSupportGroup.name = "Vat-anchored optical scanner gantry";
+  for (const x of [-0.95, 0.95]) {
+    const upright = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.1, 0.08), platformMaterial);
+    upright.name = `Optical gantry upright ${x < 0 ? "left" : "right"}`;
+    upright.position.set(x, 1.93, -0.9);
+    scannerSupportGroup.add(upright);
+  }
+  const scannerCrossbeam = new THREE.Mesh(new THREE.BoxGeometry(1.98, 0.1, 0.1), platformMaterial);
+  scannerCrossbeam.name = "Optical gantry crossbeam";
+  scannerCrossbeam.position.set(0, 2.43, -0.9);
+  const scannerBoom = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.1, 0.9), platformMaterial);
+  scannerBoom.name = "Scanner-housing support boom";
+  scannerBoom.position.set(0, 2.43, -0.48);
+  scannerSupportGroup.add(scannerCrossbeam, scannerBoom);
+  root.add(scannerSupportGroup);
+
   // 6. Active Laser Beam and Curing Spot on resin surface (Z = 1.2 in world)
   const laserBeamGeo = new THREE.BufferGeometry().setFromPoints([
     new THREE.Vector3(0, 2.25, 0),
     new THREE.Vector3(0, 1.2, 0),
   ]);
-  const laserBeamMat = new THREE.LineBasicMaterial({ color: 0xc084fc, linewidth: 2 });
+  const laserBeamMat = new THREE.LineBasicMaterial({ color: 0xc084fc, linewidth: 1 });
   const laserBeamLine = new THREE.Line(laserBeamGeo, laserBeamMat);
   root.add(laserBeamLine);
 
@@ -199,6 +240,15 @@ export function createHullStereolithographyModel(): HullStereolithography3DObjec
     curedPartMaterial.dispose();
     laserSpotMaterial.dispose();
     laserBeamMat.dispose();
+    const disposedGeometries = new Set<THREE.BufferGeometry>();
+    root.traverse((object) => {
+      if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
+        if (!disposedGeometries.has(object.geometry)) {
+          disposedGeometries.add(object.geometry);
+          object.geometry.dispose();
+        }
+      }
+    });
   }
 
   return {
@@ -207,6 +257,9 @@ export function createHullStereolithographyModel(): HullStereolithography3DObjec
     resinMesh,
     platformGroup,
     partGroup,
+    platformCarriageNut,
+    scannerGroup,
+    scannerSupportGroup,
     laserBeamLine,
     laserSpotMesh,
     galvoMirrorMesh,

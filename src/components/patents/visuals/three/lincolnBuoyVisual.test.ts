@@ -2,11 +2,26 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepLincolnBuoy } from "@/physics/catalogKernels";
+import { lincolnBuoyViewForViewport } from "./LincolnBuoy3D";
 import { buildLincolnBuoyModel, updateLincolnBuoyKinematics } from "./lincolnBuoyModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
 describe("US 6,469 Abraham Lincoln Buoying Vessels Over Shoals visual & hydrostatics boundary", () => {
+  test("frames the complete hull and seven-unit smokestack envelope", () => {
+    const desktop = lincolnBuoyViewForViewport("iso", 1200);
+    const phone = lincolnBuoyViewForViewport("iso", 320);
+    const distance = (camera: typeof desktop) =>
+      Math.hypot(
+        camera.pos[0] - camera.target[0],
+        camera.pos[1] - camera.target[1],
+        camera.pos[2] - camera.target[2],
+      );
+
+    expect(desktop.target).toEqual([0, 2.2, 0]);
+    expect(distance(phone) / distance(desktop)).toBeCloseTo(1.2, 8);
+  });
+
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
     const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "LincolnBuoy3D.tsx"), "utf8");
     const modelSource = readFileSync(

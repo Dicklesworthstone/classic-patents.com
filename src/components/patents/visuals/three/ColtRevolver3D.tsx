@@ -51,6 +51,30 @@ const CAMERA_PRESETS: Record<
   top: { pos: [1.2, 9.5, 0.05], target: [1.2, 0.0, 0] },
 };
 
+function cameraPresetForViewport(
+  preset: CameraPreset,
+  viewportWidth: number,
+): {
+  pos: [number, number, number];
+  target: [number, number, number];
+} {
+  const config = CAMERA_PRESETS[preset];
+  if (viewportWidth >= 640 || preset !== "iso") return config;
+
+  // The long Paterson profile fits the desktop's landscape field of view but
+  // clips at portrait width. Pull only the overview camera back, preserving
+  // the deliberately close teaching views for cylinder and lockwork details.
+  const mobileDistanceMultiplier = 1.9;
+  return {
+    pos: [
+      config.target[0] + (config.pos[0] - config.target[0]) * mobileDistanceMultiplier,
+      config.target[1] + (config.pos[1] - config.target[1]) * mobileDistanceMultiplier,
+      config.target[2] + (config.pos[2] - config.target[2]) * mobileDistanceMultiplier,
+    ],
+    target: config.target,
+  };
+}
+
 export function ColtRevolver3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
@@ -110,6 +134,7 @@ export function ColtRevolver3D() {
     currentChamberIndex,
     isFiring,
     showLockworkCutaway,
+    showCalloutPins,
     isAudioMuted,
     muzzleVelocityMps,
     recoilKick: coltMech.recoilKick,
@@ -130,7 +155,7 @@ export function ColtRevolver3D() {
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = cameraPresetForViewport(preset, window.innerWidth);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -186,11 +211,12 @@ export function ColtRevolver3D() {
   ]);
 
   // 3D Scene Initialization
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted scene reads the stable, layout-effect-synchronized live ref so toggling visual controls never destroys and flashes the WebGL canvas.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = cameraPresetForViewport("iso", window.innerWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -209,7 +235,7 @@ export function ColtRevolver3D() {
 
     // Callout Pins & Historical Markers
     const pinGroup = new THREE.Group();
-    pinGroup.visible = showCalloutPins;
+    pinGroup.visible = live.current.showCalloutPins;
 
     const callouts = [
       { pos: [4.8, 0.82, 0], text: "1. Octagonal Rifled Barrel (.36 Caliber)" },
@@ -291,7 +317,7 @@ export function ColtRevolver3D() {
         model.group.position.x *= 0.82;
       }
 
-      pinGroup.visible = showCalloutPins;
+      pinGroup.visible = p.showCalloutPins;
 
       controls.update();
       renderer.render(scene, camera);
@@ -305,7 +331,7 @@ export function ColtRevolver3D() {
       studio.dispose();
       studioRef.current = null;
     };
-  }, [showCalloutPins, live]);
+  }, []);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
@@ -331,7 +357,7 @@ export function ColtRevolver3D() {
                 key={preset}
                 type="button"
                 onClick={() => applyCameraPreset(preset)}
-                className={`min-h-9 px-2.5 py-1 text-xs font-mono rounded-lg shrink-0 whitespace-nowrap transition-all border shadow-2xs ${
+                className={`min-h-9 px-2.5 py-1 text-xs font-mono rounded-lg shrink-0 whitespace-nowrap transition-colors border shadow-2xs ${
                   activeCamera === preset
                     ? "bg-amber-600 text-white font-bold border-amber-500 shadow-sm"
                     : "text-ink-700 dark:text-parchment-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 dark:hover:bg-ink-800"
@@ -348,7 +374,7 @@ export function ColtRevolver3D() {
           <button
             type="button"
             onClick={() => setShowLockworkCutaway(!showLockworkCutaway)}
-            className={`p-2 rounded-xl backdrop-blur-md border transition-all ${
+            className={`p-2 rounded-xl backdrop-blur-md border transition-colors ${
               showLockworkCutaway
                 ? "bg-amber-600 text-white border-amber-500 shadow-sm"
                 : "bg-white/85 dark:bg-ink-900/85 text-ink-700 dark:text-parchment-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 dark:hover:bg-ink-800"
@@ -362,7 +388,7 @@ export function ColtRevolver3D() {
           <button
             type="button"
             onClick={() => setShowCalloutPins(!showCalloutPins)}
-            className={`p-2 rounded-xl backdrop-blur-md border transition-all ${
+            className={`p-2 rounded-xl backdrop-blur-md border transition-colors ${
               showCalloutPins
                 ? "bg-amber-600 text-white border-amber-500 shadow-sm"
                 : "bg-white/85 dark:bg-ink-900/85 text-ink-700 dark:text-parchment-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 dark:hover:bg-ink-800"
@@ -500,7 +526,7 @@ export function ColtRevolver3D() {
           <button
             type="button"
             onClick={handleCockHammer}
-            className="flex-1 min-w-[140px] flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-600 hover:bg-amber-700 active:scale-98 text-white font-mono text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-all cursor-pointer"
+            className="flex-1 min-w-[140px] flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-600 hover:bg-amber-700 active:scale-98 text-white font-mono text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-[background-color,transform] cursor-pointer"
           >
             <Activity className="w-4 h-4" />
             Cock Hammer (45°)
@@ -510,7 +536,7 @@ export function ColtRevolver3D() {
             type="button"
             onClick={handlePullTrigger}
             disabled={!isFullCock || isFiring}
-            className={`flex-1 min-w-[160px] flex items-center justify-center gap-2 px-4 py-2.5 font-mono text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-all cursor-pointer ${
+            className={`flex-1 min-w-[160px] flex items-center justify-center gap-2 px-4 py-2.5 font-mono text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-[background-color,color,border-color,transform] cursor-pointer ${
               isFullCock && !isFiring
                 ? "bg-red-600 hover:bg-red-700 active:scale-98 text-white ring-2 ring-red-400/50 animate-pulse"
                 : "bg-parchment-300 dark:bg-ink-800 text-ink-400 dark:text-ink-600 cursor-not-allowed border border-parchment-400 dark:border-ink-700"

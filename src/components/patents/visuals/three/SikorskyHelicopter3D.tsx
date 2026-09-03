@@ -15,6 +15,7 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { useResponsiveStudioHud } from "./StudioKernelChips";
 import { buildSikorskyHelicopterModel } from "./sikorskyHelicopterModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-2318259-sikorsky-helicopter";
 
@@ -50,8 +51,7 @@ export function SikorskyHelicopter3D({ patentId = PATENT_ID }: { patentId?: stri
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
 
   const { params, updateParam, resetParams } = usePatentPhysics(patentId);
-  const liveParams = useRef(params);
-  liveParams.current = params;
+  const liveParams = useLiveSimParams(params);
 
   const simStateRef = useRef(INITIAL_SIKORSKY_STATE);
 
@@ -66,6 +66,7 @@ export function SikorskyHelicopter3D({ patentId = PATENT_ID }: { patentId?: stri
     studioRef.current?.controls.setView(camera.position, camera.target);
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;

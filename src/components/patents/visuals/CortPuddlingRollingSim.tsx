@@ -154,8 +154,8 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             <text
               x="710"
               y="70"
-              font-family="monospace"
-              font-size="11"
+              fontFamily="monospace"
+              fontSize="11"
               fill="#a8a29e"
               textAnchor="middle"
             >
@@ -191,9 +191,9 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             <text
               x="150"
               y="365"
-              font-family="sans-serif"
-              font-size="11"
-              font-weight="bold"
+              fontFamily="sans-serif"
+              fontSize="11"
+              fontWeight="bold"
               fill="#fef08a"
               textAnchor="middle"
             >
@@ -213,8 +213,8 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             <text
               x="240"
               y="210"
-              font-family="monospace"
-              font-size="10"
+              fontFamily="monospace"
+              fontSize="10"
               fill="#d6d3d1"
               textAnchor="middle"
             >
@@ -231,9 +231,9 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             <text
               x="420"
               y="125"
-              font-family="sans-serif"
-              font-size="12"
-              font-weight="bold"
+              fontFamily="sans-serif"
+              fontSize="12"
+              fontWeight="bold"
               fill="#fed7aa"
               textAnchor="middle"
             >
@@ -268,9 +268,9 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             <text
               x="460"
               y="335"
-              font-family="monospace"
-              font-size="11"
-              font-weight="bold"
+              fontFamily="monospace"
+              fontSize="11"
+              fontWeight="bold"
               fill="#fef3c7"
               textAnchor="middle"
             >
@@ -299,8 +299,8 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             <text
               x="330"
               y="210"
-              font-family="monospace"
-              font-size="10"
+              fontFamily="monospace"
+              fontSize="10"
               fill="#fde68a"
               textAnchor="middle"
             >
@@ -320,7 +320,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             <circle cx="410" cy="265" r="4" fill="#fef08a" opacity="0.8" />
             <circle cx="440" cy="255" r="5" fill="#fef08a" opacity="0.8" />
             <circle cx="490" cy="260" r="3.5" fill="#fef08a" opacity="0.8" />
-            <text x="490" y="245" font-family="sans-serif" font-size="10" fill="#fde047">
+            <text x="490" y="245" fontFamily="sans-serif" fontSize="10" fill="#fde047">
               CO (g) ↑
             </text>
           </svg>
@@ -500,7 +500,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             <circle cx="270" cy="275" r="4" fill="#451a03" />
             <circle cx="290" cy="290" r="5" fill="#451a03" />
             <circle cx="310" cy="270" r="3.5" fill="#451a03" />
-            <text x="320" y="315" font-family="monospace" font-size="10" fill="#fdba74">
+            <text x="320" y="315" fontFamily="monospace" fontSize="10" fill="#fdba74">
               Liquid Slag Squeezed Out ↓
             </text>
 
@@ -524,9 +524,9 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             <text
               x="450"
               y="80"
-              font-family="sans-serif"
-              font-size="12"
-              font-weight="bold"
+              fontFamily="sans-serif"
+              fontSize="12"
+              fontWeight="bold"
               fill="#e7e5e4"
               textAnchor="middle"
             >
@@ -535,8 +535,8 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             <text
               x="450"
               y="450"
-              font-family="monospace"
-              font-size="11"
+              fontFamily="monospace"
+              fontSize="11"
               fill="#a8a29e"
               textAnchor="middle"
             >

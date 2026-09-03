@@ -2,7 +2,6 @@
 
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepMergenthalerLinotype } from "@/physics/machineKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import {
@@ -10,6 +9,7 @@ import {
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -64,7 +64,7 @@ export function MergenthalerLinotype3D() {
   const charsPerHour = linotypeIdle.charsPerHour;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
 
   const live = useLiveSimParams({
     matrixRate,
@@ -119,9 +119,13 @@ export function MergenthalerLinotype3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-313224-mergenthaler-linotype", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-313224-mergenthaler-linotype");
-  }, [live.current.matrixRate, live.current.spacebandWedge, live.current.potTempC]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-313224-mergenthaler-linotype",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
@@ -134,10 +138,6 @@ export function MergenthalerLinotype3D() {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;

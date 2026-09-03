@@ -12,6 +12,7 @@ import { type DaVinciState, readDaVinciControls, stepDaVinci } from "@/physics/d
 import {
   daVinciTopologyKernelSource,
   ensureDaVinciTopologyWasm,
+  subscribeDaVinciTopologyKernelSource,
   tryDaVinciTopologyWasmStep,
 } from "@/physics/daVinciWasm";
 import {
@@ -20,6 +21,7 @@ import {
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { useWasmKernelSource } from "@/physics/useWasmKernelSource";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { buildDaVinciModel } from "./DaVinciModel";
@@ -64,7 +66,11 @@ export function DaVinci3D() {
   });
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-  const [topologyKernelSource, setTopologyKernelSource] = useState(daVinciTopologyKernelSource());
+  const topologyKernelSource = useWasmKernelSource(
+    daVinciTopologyKernelSource,
+    subscribeDaVinciTopologyKernelSource,
+    ensureDaVinciTopologyWasm,
+  );
   const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
   const motionScaleRatio = (params.motionScaleRatio as number) ?? 3.0;
   const tremorFilterEnabled = (params.tremorFilterEnabled as number) ?? 1;
@@ -90,16 +96,6 @@ export function DaVinci3D() {
   });
 
   const studioRef = useRef<StudioContext | null>(null);
-
-  useEffect(() => {
-    let active = true;
-    void ensureDaVinciTopologyWasm().then((nextSource) => {
-      if (active) setTopologyKernelSource(nextSource);
-    });
-    return () => {
-      active = false;
-    };
-  }, []);
 
   // One tape-bound stepper (br-ixl.3): the registered updater owns the
   // per-tick daVinciKernel integration (two 1/120 sub-steps per 1/60 bus tick,
@@ -142,14 +138,13 @@ export function DaVinci3D() {
           }
         : null;
     };
-    globalTransportBus.registerUpdater("us-6331181-davinci", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-6331181-davinci");
-  }, [
-    live.current.motionScaleRatio,
-    live.current.tremorFilterEnabled,
-    live.current.masterInputSpeedMps,
-    live.current.gripAngleDeg,
-  ]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-6331181-davinci",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
@@ -482,7 +477,8 @@ export function DaVinci3D() {
 
         <p className="mt-3 text-[10px] text-ink-500 dark:text-ink-400">
           Source boundary: linkage scale, trajectory, contact stiffness, and cup mechanics are
-          illustrative. The grant supplies no motor-power or friction data, so no SI energy strip is
+          illustrative. The seated incision ring is a visual guide, not a claimed collision or pivot
+          constraint. The grant supplies no motor-power or friction data, so no SI energy strip is
           shown.
         </p>
       </div>

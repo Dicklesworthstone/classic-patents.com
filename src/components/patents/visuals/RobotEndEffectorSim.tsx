@@ -293,7 +293,7 @@ export function RobotEndEffectorSim() {
           />
         </label>
         <label className="text-xs text-slate-200">
-          Grip setpoint{" "}
+          Requested grip command{" "}
           <span className="float-right font-mono text-amber-300">
             {(params.gripForceSetpointN ?? 900).toFixed(0)} N
           </span>
@@ -304,7 +304,7 @@ export function RobotEndEffectorSim() {
             max="2000"
             step="25"
             value={params.gripForceSetpointN ?? 900}
-            aria-label="Source-labelled grip setpoint"
+            aria-label="Requested grip command bounded by source maximum"
             onChange={(event) => updateParam("gripForceSetpointN", Number(event.target.value))}
           />
         </label>

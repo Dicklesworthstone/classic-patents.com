@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import { useLiveSimParams } from "./three/useLiveSimParams";
 import { useOffscreenGate } from "./useOffscreenGate";
 
 interface SparkWaterfallProps {
@@ -37,9 +38,8 @@ function sparkSpectrum(fundamentalHz: number, energy: number): Float32Array {
 export function SparkWaterfall({ fundamentalHz, energy, firing, className }: SparkWaterfallProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
-  const rowsRef = useRef<Float32Array[]>(
-    Array.from({ length: ROWS }, () => new Float32Array(BINS)),
-  );
+  const live = useLiveSimParams({ fundamentalHz, energy, firing });
+  const [rows] = useState(() => Array.from({ length: ROWS }, () => new Float32Array(BINS)));
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -56,9 +56,13 @@ export function SparkWaterfall({ fundamentalHz, energy, firing, className }: Spa
       if (now - last < 50) return;
       last = now;
 
-      const rows = rowsRef.current;
-      const injected = firing
-        ? sparkSpectrum(fundamentalHz, Math.min(1, Math.max(0.05, energy)))
+      const {
+        energy: liveEnergy,
+        firing: liveFiring,
+        fundamentalHz: liveFundamentalHz,
+      } = live.current;
+      const injected = liveFiring
+        ? sparkSpectrum(liveFundamentalHz, Math.min(1, Math.max(0.05, liveEnergy)))
         : new Float32Array(BINS);
       const next = new Float32Array(BINS);
       for (let i = 0; i < BINS; i++) {
@@ -88,7 +92,7 @@ export function SparkWaterfall({ fundamentalHz, energy, firing, className }: Spa
 
     raf = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(raf);
-  }, [energy, firing, fundamentalHz, onscreenRef.current]);
+  }, [live, onscreenRef, rows]);
 
   const f0Khz = (fundamentalHz / 1000).toFixed(0);
 

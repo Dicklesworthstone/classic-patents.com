@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import {
@@ -53,9 +53,11 @@ export default function SalisburyRobotHand3D({
   );
   const [hudVisible, setHudVisible] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Preserve the mechanism as the primary instrument on tablet/phone. The
     // explicit button still lets any visitor reopen the telemetry overlay.
+    // A layout effect applies the breakpoint before the first paint; a passive
+    // effect briefly flashed the desktop HUD on compact screens.
     setHudVisible(window.matchMedia("(min-width: 880px)").matches);
   }, []);
 

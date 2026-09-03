@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type * as THREE from "three";
+import * as THREE from "three";
 import {
   HULL_SLA_DEFAULT_CONTROLS,
   readHullStereolithographyControls,
@@ -15,10 +15,16 @@ describe("US 4,575,330 Charles W. Hull Stereolithography procedural 3D model & v
     expect(model.resinMesh.parent?.name).toBe("VatTank");
     expect(model.platformGroup.parent?.name).toBe("ElevatorMechanism");
     expect(model.partGroup.parent).toBe(model.platformGroup);
+    expect(model.platformCarriageNut.parent).toBe(model.platformGroup);
+    expect(model.scannerSupportGroup.parent).toBe(model.root);
+    expect(model.scannerGroup.parent).toBe(model.root);
     expect(model.laserSpotMesh.parent).toBe(model.root);
     expect(model.galvoMirrorMesh.parent?.name).toBe("LaserScannerAssembly");
 
     expect(model.partGroup.children.length).toBeGreaterThan(0);
+    const scannerBounds = new THREE.Box3().setFromObject(model.scannerGroup);
+    const supportBounds = new THREE.Box3().setFromObject(model.scannerSupportGroup);
+    expect(scannerBounds.intersectsBox(supportBounds)).toBe(true);
     model.dispose();
   });
 
@@ -38,6 +44,8 @@ describe("US 4,575,330 Charles W. Hull Stereolithography procedural 3D model & v
     // Platform position changes dynamically
     expect(typeof initialY).toBe("number");
     expect(typeof laterY).toBe("number");
+    expect(model.platformCarriageNut.position.z).toBeCloseTo(-0.85, 8);
+    expect(model.platformCarriageNut.position.y).toBeCloseTo(0, 8);
 
     model.dispose();
   });

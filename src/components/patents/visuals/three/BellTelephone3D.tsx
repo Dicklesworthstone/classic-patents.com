@@ -4,13 +4,13 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { memo, useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepBellTelephone } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import type { ElectromagneticsState, MachineState } from "@/physics/types";
 import {
   globalTransportBus,
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -55,7 +55,7 @@ export const BellTelephone3D = memo(() => {
   const liquidConductivity = params.liquidConductivity ?? 1.2;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
 
   const bell = stepBellTelephone({
     voiceAmplitude: voiceAmplitudeDb,
@@ -70,6 +70,8 @@ export const BellTelephone3D = memo(() => {
     voiceAmplitudeDb,
     airGapMm: params.airGap ?? 0.35,
     acousticFrequencyHz,
+    batteryVoltage,
+    currentBaselineAmps: bell.currentBaselineAmps,
     acousticDisplayOmegaRadPerS: bell.acousticDisplayOmegaRadPerS,
     diaphragmStudioScale: bell.diaphragmStudioScale,
     electronStudioSpeed: bell.electronStudioSpeed,
@@ -100,21 +102,21 @@ export const BellTelephone3D = memo(() => {
       const acousticPhaseRad =
         (acousticTimeRef.current * live.current.acousticDisplayOmegaRadPerS) % (2 * Math.PI);
       const em: ElectromagneticsState = {
-        frequencyHz: acousticFrequencyHz,
+        frequencyHz: live.current.acousticFrequencyHz,
         magneticFluxDensityTesla: 0,
         electricFieldVpm: 0,
         phaseAngleRad: acousticPhaseRad,
         inductanceHenry: 0,
         capacitanceFarad: 0,
-        currentAmperes: bell.currentBaselineAmps,
-        voltageVolts: batteryVoltage,
+        currentAmperes: live.current.currentBaselineAmps,
+        voltageVolts: live.current.batteryVoltage,
         powerFactor: 1,
         efficiencyPct: 0,
         synchronousRpm: 0,
         slipFraction: 0,
         rotorRpm: 0,
         shaftPowerWatts: 0,
-        electricalInputWatts: batteryVoltage * bell.currentBaselineAmps,
+        electricalInputWatts: live.current.batteryVoltage * live.current.currentBaselineAmps,
       };
       const machine: MachineState = {
         poseXMeters: 0,
@@ -125,14 +127,13 @@ export const BellTelephone3D = memo(() => {
       };
       return { em, machine };
     };
-    globalTransportBus.registerUpdater("us-174465-bell-telephone", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-174465-bell-telephone");
-  }, [
-    live.current.acousticDisplayOmegaRadPerS,
-    acousticFrequencyHz,
-    batteryVoltage,
-    bell.currentBaselineAmps,
-  ]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-174465-bell-telephone",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
@@ -145,10 +146,6 @@ export const BellTelephone3D = memo(() => {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;

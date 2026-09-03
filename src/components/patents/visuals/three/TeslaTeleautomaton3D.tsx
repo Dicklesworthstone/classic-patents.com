@@ -123,8 +123,12 @@ export function TeslaTeleautomaton3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-613809-tesla-teleautomaton", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-613809-tesla-teleautomaton");
+    const unregister = globalTransportBus.registerUpdater(
+      "us-613809-tesla-teleautomaton",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
   }, [live]);
 
   const studioRef = useRef<StudioContext | null>(null);

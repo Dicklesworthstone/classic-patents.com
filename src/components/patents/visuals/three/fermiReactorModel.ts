@@ -38,6 +38,8 @@ export interface FermiReactorModel {
   heatFieldFrames: Float64Array;
   laplacianModeField: Float64Array;
   neutronCount: number;
+  graphiteBricks: THREE.InstancedMesh;
+  fuelSlugs: THREE.InstancedMesh;
   graphiteMat: THREE.MeshStandardMaterial;
   uraniumFuelMat: THREE.MeshStandardMaterial;
   updateKinematics: (
@@ -141,49 +143,68 @@ export function buildFermiReactorModel(): FermiReactorModel {
 
   const pileLayers = 14;
   const pileRadius = 3.6;
+  const graphitePositions: Array<readonly [number, number, number]> = [];
 
   for (let l = 0; l < pileLayers; l++) {
     const layerFraction = (l / (pileLayers - 1) - 0.5) * 2;
     const r = Math.sqrt(Math.max(0.1, 1 - layerFraction * layerFraction * 0.85)) * pileRadius;
-    const layerGroup = new THREE.Group();
-    layerGroup.position.y = -2.2 + l * 0.32;
+    const layerY = -2.2 + l * 0.32;
 
     const brickCount = Math.floor(r * 2.4);
     for (let bx = -brickCount; bx <= brickCount; bx++) {
       for (let bz = -brickCount; bz <= brickCount; bz++) {
         const dist = Math.sqrt(bx * bx + bz * bz) * 0.35;
         if (dist <= r) {
-          const brickGeo = new THREE.BoxGeometry(0.33, 0.3, 0.33);
-          disposables.push(brickGeo);
-          const brick = new THREE.Mesh(brickGeo, graphiteMat);
-          brick.position.set(bx * 0.35, 0, bz * 0.35);
-          brick.castShadow = true;
-          brick.receiveShadow = true;
-          layerGroup.add(brick);
+          graphitePositions.push([bx * 0.35, layerY, bz * 0.35]);
         }
       }
     }
-    pileGroup.add(layerGroup);
   }
+
+  const graphiteBrickGeo = new THREE.BoxGeometry(0.33, 0.3, 0.33);
+  disposables.push(graphiteBrickGeo);
+  const graphiteBricks = new THREE.InstancedMesh(
+    graphiteBrickGeo,
+    graphiteMat,
+    graphitePositions.length,
+  );
+  graphiteBricks.name = "Graphite moderator brick lattice";
+  graphiteBricks.castShadow = true;
+  graphiteBricks.receiveShadow = true;
+  const instanceMatrix = new THREE.Matrix4();
+  graphitePositions.forEach(([x, y, z], index) => {
+    instanceMatrix.makeTranslation(x, y, z);
+    graphiteBricks.setMatrixAt(index, instanceMatrix);
+  });
+  graphiteBricks.instanceMatrix.needsUpdate = true;
+  pileGroup.add(graphiteBricks);
 
   const fuelGroup = new THREE.Group();
   fuelGroup.position.y = -1.2;
   root.add(fuelGroup);
+  const fuelPositions: Array<readonly [number, number, number]> = [];
 
   for (let fl = 2; fl < pileLayers - 2; fl += 2) {
     const layerY = -2.2 + fl * 0.32;
     for (let fx = -4; fx <= 4; fx += 2) {
       for (let fz = -4; fz <= 4; fz += 2) {
         if (Math.sqrt(fx * fx + fz * fz) * 0.35 < pileRadius * 0.85) {
-          const fuelGeo = new THREE.CylinderGeometry(0.09, 0.09, 0.22, 12);
-          disposables.push(fuelGeo);
-          const fuel = new THREE.Mesh(fuelGeo, uraniumFuelMat);
-          fuel.position.set(fx * 0.35, layerY, fz * 0.35);
-          fuelGroup.add(fuel);
+          fuelPositions.push([fx * 0.35, layerY, fz * 0.35]);
         }
       }
     }
   }
+
+  const fuelGeo = new THREE.CylinderGeometry(0.09, 0.09, 0.22, 12);
+  disposables.push(fuelGeo);
+  const fuelSlugs = new THREE.InstancedMesh(fuelGeo, uraniumFuelMat, fuelPositions.length);
+  fuelSlugs.name = "Natural uranium fuel slug lattice";
+  fuelPositions.forEach(([x, y, z], index) => {
+    instanceMatrix.makeTranslation(x, y, z);
+    fuelSlugs.setMatrixAt(index, instanceMatrix);
+  });
+  fuelSlugs.instanceMatrix.needsUpdate = true;
+  fuelGroup.add(fuelSlugs);
 
   const rodGroup = new THREE.Group();
   root.add(rodGroup);
@@ -291,6 +312,7 @@ export function buildFermiReactorModel(): FermiReactorModel {
     for (const d of disposables) {
       d.dispose();
     }
+    root.clear();
   };
 
   const model: FermiReactorModel = {
@@ -309,6 +331,8 @@ export function buildFermiReactorModel(): FermiReactorModel {
     heatFieldFrames,
     laplacianModeField,
     neutronCount,
+    graphiteBricks,
+    fuelSlugs,
     graphiteMat,
     uraniumFuelMat,
     updateKinematics,

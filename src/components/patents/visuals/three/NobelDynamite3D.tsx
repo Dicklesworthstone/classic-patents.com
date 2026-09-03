@@ -3,9 +3,9 @@
 import { Camera, Eye, EyeOff, Flame, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { stepNobelDynamite } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -68,7 +68,7 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
   const [isFuseLit, setIsFuseLit] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const fuseTimerRef = useRef<number | null>(null);
 
@@ -121,10 +121,6 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;

@@ -23,6 +23,7 @@ export interface SpencerMicrowaveModel {
   anodeOuter: THREE.Mesh;
   cathodeMesh: THREE.Mesh;
   spokePoints: THREE.Points;
+  spokePointSets: readonly THREE.Points[];
   spokeGeo: THREE.BufferGeometry;
   spokePos: Float32Array;
   materials: {
@@ -210,6 +211,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   // SOURCE-NUMBERED OSCILLATOR ABSTRACTION (10 / 11)
   // ==========================================
   const magnetronGroup = new THREE.Group();
+  magnetronGroup.name = "Oscillator source 10";
   root.add(magnetronGroup);
 
   // Cylindrical OFHC Copper Anode Block
@@ -299,6 +301,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
 
   // Coupling loop and common wave-guide path (26/27 -> 23).
   const waveguideGroup = new THREE.Group();
+  waveguideGroup.name = "Oscillator coupling guide 26";
   waveguideGroup.position.set(3.8, 0, 0);
 
   const guideGeo = new THREE.BoxGeometry(3.5, 2.2, 1.4);
@@ -322,14 +325,6 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   loopMesh.rotation.y = Math.PI / 2;
   waveguideGroup.add(loopMesh);
   magnetronGroup.add(waveguideGroup);
-
-  // The drawing shows two oscillator sources joined to one transformer and
-  // one treatment path. Clone the same neutral oscillator abstraction for 11;
-  // the two groups are intentionally not presented as a modern tube design.
-  magnetronGroup.position.x = -5.4;
-  const secondOscillator = magnetronGroup.clone(true);
-  secondOscillator.position.x = 5.4;
-  root.add(secondOscillator);
 
   // Equipment Foundation Plinth & Conveyor Stand Legs
   const benchGroup = new THREE.Group();
@@ -446,7 +441,33 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   disposables.push(spokeMat);
 
   const spokePoints = new THREE.Points(spokeGeo, spokeMat);
+  spokePoints.name = "Oscillator 10 illustrative electron spokes";
   magnetronGroup.add(spokePoints);
+
+  // The drawing shows two oscillator sources joined to one transformer and
+  // one treatment path. Clone only after every oscillator-local organ has
+  // been added, so source 11 cannot silently lose its pole shoes, return yoke,
+  // or illustrative electron-spoke layer.
+  magnetronGroup.position.x = -5.4;
+  const secondOscillator = magnetronGroup.clone(true);
+  secondOscillator.name = "Oscillator source 11";
+  secondOscillator.position.x = 5.4;
+  const secondGuide = secondOscillator.getObjectByName("Oscillator coupling guide 26");
+  if (!secondGuide) throw new Error("Oscillator 11 is missing its coupling guide 27.");
+  // Mirror the second branch inward so oscillator 11 actually meets common
+  // guide 23 instead of projecting an isolated guide farther outboard.
+  secondGuide.name = "Oscillator coupling guide 27";
+  secondGuide.position.x = -3.8;
+  secondGuide.rotation.y = Math.PI;
+  const secondSpokePoints = secondOscillator.getObjectByName(
+    "Oscillator 10 illustrative electron spokes",
+  );
+  if (!(secondSpokePoints instanceof THREE.Points)) {
+    throw new Error("Oscillator 11 is missing its illustrative electron-spoke layer.");
+  }
+  secondSpokePoints.name = "Oscillator 11 illustrative electron spokes";
+  root.add(secondOscillator);
+  const spokePointSets = [spokePoints, secondSpokePoints] as const;
 
   const updateKinematics = (
     delta: number,
@@ -479,6 +500,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
     anodeOuter,
     cathodeMesh,
     spokePoints,
+    spokePointSets,
     spokeGeo,
     spokePos,
     materials: {
@@ -513,13 +535,15 @@ export function updateSpencerMicrowaveKinematics(
   isCutaway = false,
 ): void {
   if (isOscillating) {
-    model.spokePoints.visible = showSpokeWheel;
     const heat = heatFrames(12, 16, 2);
     const local = 1 + Math.abs(sampleHeatAt(heat, 12, 16, 8, 0.3, 0.3));
-    model.spokePoints.rotation.y += delta * spokeDisplayOmegaRadPerS * local;
+    for (const spokeLayer of model.spokePointSets) {
+      spokeLayer.visible = showSpokeWheel;
+      spokeLayer.rotation.y += delta * spokeDisplayOmegaRadPerS * local;
+    }
     model.materials.spokeMat.opacity = Math.min(1, spokeOpacity * local);
   } else {
-    model.spokePoints.visible = false;
+    for (const spokeLayer of model.spokePointSets) spokeLayer.visible = false;
   }
 
   // Cutaway mode: make copper anode block and magnet pole shoes translucent

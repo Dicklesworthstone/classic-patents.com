@@ -78,6 +78,8 @@ export function CortPuddlingRolling3D() {
     puddlingDurationMinutes: puddlingMin,
     rollerPassCount: rollerPassCount,
     rollSpeedRpm: rollSpeedRpm,
+    cutaway,
+    showCallouts,
   });
 
   // Shared transport tape: the cortKernel op point publishes to the
@@ -99,11 +101,6 @@ export function CortPuddlingRolling3D() {
       fluidFlowVelocityMps: 0,
     },
   });
-
-  const cutawayRef = useRef(cutaway);
-  cutawayRef.current = cutaway;
-  const calloutsRef = useRef(showCallouts);
-  calloutsRef.current = showCallouts;
 
   const studioRef = useRef<StudioContext | null>(null);
 
@@ -142,17 +139,11 @@ export function CortPuddlingRolling3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater(EXHIBIT_ID, integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater(EXHIBIT_ID);
-  }, [
-    live.current.furnaceTemperatureCelsius,
-    live.current.initialCarbonPercent,
-    live.current.rabbleStirringRpm,
-    live.current.puddlingDurationMinutes,
-    live.current.rollerPassCount,
-    live.current.rollSpeedRpm,
-  ]);
+    const unregister = globalTransportBus.registerUpdater(EXHIBIT_ID, integrate, "TS_FALLBACK");
+    return unregister;
+  }, [live]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The persistent WebGL scene consumes the stable layout-effect-synchronized control ref so toggles do not rebuild and flash the studio.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -183,8 +174,8 @@ export function CortPuddlingRolling3D() {
       // bus frame lands.
       const outputs = kernelOutputsRef.current;
 
-      model.setCutaway(cutawayRef.current);
-      model.setShowCallouts(calloutsRef.current);
+      model.setCutaway(live.current.cutaway);
+      model.setShowCallouts(live.current.showCallouts);
       model.updateAnimation(
         virtualTime,
         outputs.isPastyNatureState,

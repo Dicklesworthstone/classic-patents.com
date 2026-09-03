@@ -7,14 +7,19 @@ export interface MakinoScaraModel {
   dispose: () => void;
 }
 
-function point3([x, z]: readonly [number, number]): THREE.Vector3 {
-  return new THREE.Vector3(x, 0, z);
+function point3([x, z]: readonly [number, number], layerY = 0): THREE.Vector3 {
+  return new THREE.Vector3(x, layerY, z);
 }
 
 function setRodBetween(mesh: THREE.Mesh, start: THREE.Vector3, end: THREE.Vector3) {
   const direction = end.clone().sub(start);
   const length = direction.length();
   mesh.position.copy(start).add(end).multiplyScalar(0.5);
+  if (length <= Number.EPSILON) {
+    mesh.scale.set(1, 0, 1);
+    mesh.quaternion.identity();
+    return;
+  }
   mesh.scale.set(1, length, 1);
   mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
 }
@@ -78,18 +83,21 @@ export function buildMakinoScaraModel(): MakinoScaraModel {
   root.add(plinth);
 
   const motorOne = new THREE.Mesh(
-    geometry(new THREE.CylinderGeometry(0.2, 0.25, 0.56, 28)),
+    geometry(new THREE.CylinderGeometry(0.2, 0.25, 0.28, 28)),
     firstMat,
   );
   motorOne.name = "Motor 1 and shaft 3";
-  motorOne.position.y = 0.2;
+  motorOne.position.y = 0.1;
   root.add(motorOne);
   const motorTwo = new THREE.Mesh(
-    geometry(new THREE.CylinderGeometry(0.2, 0.25, 0.56, 28)),
+    geometry(new THREE.CylinderGeometry(0.16, 0.2, 0.24, 28)),
     fourthMat,
   );
   motorTwo.name = "Motor 2 and shaft 3a";
-  motorTwo.position.y = 0.2;
+  // Claim 1 aligns the shaft axes, not the solid motor volumes. Stack the two
+  // normalized housings axially so they meet without occupying the same space;
+  // the two link layers below make both coaxial output paths inspectable.
+  motorTwo.position.y = 0.36;
   root.add(motorTwo);
 
   const rodGeometry = geometry(new THREE.CylinderGeometry(0.075, 0.075, 1, 16));
@@ -108,9 +116,18 @@ export function buildMakinoScaraModel(): MakinoScaraModel {
   firstJoint.name = "First outer joint";
   const fourthJoint = new THREE.Mesh(jointGeometry, fourthMat);
   fourthJoint.name = "Fourth outer joint";
-  const toolJoint = new THREE.Mesh(jointGeometry, toolMat);
+  const toolJoint = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.1, 0.1, 0.52, 20)),
+    toolMat,
+  );
   toolJoint.name = "Assembly tool joint 8";
-  root.add(firstJoint, fourthJoint, toolJoint);
+  const toolJointSecond = new THREE.Mesh(toolJoint.geometry, toolMat);
+  toolJointSecond.name = "Assembly tool second pivot (Claim 6)";
+  root.add(firstJoint, fourthJoint, toolJoint, toolJointSecond);
+
+  const toolCarrier = new THREE.Mesh(rodGeometry, toolMat);
+  toolCarrier.name = "Rigid two-pivot assembly tool 13";
+  root.add(toolCarrier);
 
   const toolGroup = new THREE.Group();
   toolGroup.name = "Assembly tool 9";
@@ -137,29 +154,48 @@ export function buildMakinoScaraModel(): MakinoScaraModel {
   root.add(yLinkGroup);
 
   const updatePose = (pose: MakinoScaraPose) => {
-    const baseA = point3(pose.firstBase);
-    const baseB = point3(pose.fourthBase);
-    const outerA = point3(pose.firstOuterJoint);
-    const outerB = point3(pose.fourthOuterJoint);
-    const tool = point3(pose.tool);
-    motorOne.position.set(baseA.x, 0.2, baseA.z);
-    motorTwo.position.set(baseB.x, 0.2, baseB.z);
+    const firstLayerY = 0.24;
+    const fourthLayerY = 0.5;
+    const toolLayerY = (firstLayerY + fourthLayerY) / 2;
+    const baseA = point3(pose.firstBase, firstLayerY);
+    const baseB = point3(pose.fourthBase, fourthLayerY);
+    const outerA = point3(pose.firstOuterJoint, firstLayerY);
+    const outerB = point3(pose.fourthOuterJoint, fourthLayerY);
+    const firstTool = point3(pose.toolJoints[0], firstLayerY);
+    const fourthTool = point3(pose.toolJoints[1], fourthLayerY);
+    const tool = point3(pose.tool, toolLayerY);
+    motorOne.position.set(baseA.x, 0.1, baseA.z);
+    motorTwo.position.set(baseB.x, 0.36, baseB.z);
     setRodBetween(firstLink, baseA, outerA);
     setRodBetween(fourthLink, baseB, outerB);
-    setRodBetween(secondLink, outerA, tool);
-    setRodBetween(thirdLink, outerB, tool);
+    setRodBetween(secondLink, outerA, firstTool);
+    setRodBetween(thirdLink, outerB, fourthTool);
     firstJoint.position.copy(outerA);
     fourthJoint.position.copy(outerB);
-    toolJoint.position.copy(tool);
+    toolJoint.position.copy(point3(pose.toolJoints[0], toolLayerY));
+    toolJointSecond.position.copy(point3(pose.toolJoints[1], toolLayerY));
+    toolJointSecond.visible = pose.topology === "claim-6-y-link";
+    toolCarrier.visible = pose.topology === "claim-6-y-link";
+    if (toolCarrier.visible) {
+      setRodBetween(
+        toolCarrier,
+        point3(pose.toolJoints[0], toolLayerY),
+        point3(pose.toolJoints[1], toolLayerY),
+      );
+    }
     toolGroup.position.copy(tool);
     toolGroup.rotation.y = -pose.toolAttitudeRad;
 
     yLinkGroup.visible = pose.yLinkHub !== null;
     if (pose.yLinkHub) {
-      const hub = point3(pose.yLinkHub);
-      setRodBetween(yRodA, baseA, hub);
-      setRodBetween(yRodB, hub, baseB);
-      setRodBetween(yRodC, hub, tool);
+      const yLinkLayerY = toolLayerY;
+      const yFirstOuter = point3(pose.firstOuterJoint, yLinkLayerY);
+      const yBaseB = point3(pose.fourthBase, yLinkLayerY);
+      const hub = point3(pose.yLinkHub, yLinkLayerY);
+      const yToolRight = point3(pose.toolJoints[1], yLinkLayerY);
+      setRodBetween(yRodA, yFirstOuter, hub);
+      setRodBetween(yRodB, hub, yBaseB);
+      setRodBetween(yRodC, hub, yToolRight);
       yHub.position.copy(hub);
     }
   };

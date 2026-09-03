@@ -59,7 +59,7 @@ export function WozniakAppleSim() {
     apple.dramAddrSpan,
     apple.dramAddrStride,
     apple.rasterLineWrap,
-    onscreenRef.current,
+    onscreenRef,
   ]);
 
   return (

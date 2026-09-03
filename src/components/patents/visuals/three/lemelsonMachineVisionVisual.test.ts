@@ -1,9 +1,13 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import {
   LEMELSON_MACHINE_VISION_DEFAULT_CONTROLS,
-  stepLemelsonMachineVisionSi,
+  stepLemelsonMachineVisionTopology,
 } from "@/physics/lemelsonMachineVisionKernel";
 import { createLemelsonMachineVisionModel } from "./lemelsonMachineVisionModel";
+
+const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
 
 describe("US 3,081,379 Lemelson Machine Vision 3D Procedural Model", () => {
   test("instantiates full procedural hierarchy: conveyor, camera, lamps, diverter, CRT monitor", () => {
@@ -23,33 +27,61 @@ describe("US 3,081,379 Lemelson Machine Vision 3D Procedural Model", () => {
     model.dispose();
   });
 
-  test("animates workpiece translation, beam wobble, and diverter gate rotation on update", () => {
+  test("reads normalized signal states without animating an invented machine cycle", () => {
     const model = createLemelsonMachineVisionModel();
-    const state = stepLemelsonMachineVisionSi(LEMELSON_MACHINE_VISION_DEFAULT_CONTROLS);
-
-    // Initial update at t = 0
-    model.update(LEMELSON_MACHINE_VISION_DEFAULT_CONTROLS, state.metrics, 0);
-    const initialPartX = model.partMesh.position.x;
-
-    // Advance time to t = 1.0 s
-    model.update(LEMELSON_MACHINE_VISION_DEFAULT_CONTROLS, state.metrics, 1.0);
-    const advancedPartX = model.partMesh.position.x;
-    expect(advancedPartX).not.toBe(initialPartX);
-
-    // Defective part triggers solenoid diverter gate swing
-    const defectiveState = stepLemelsonMachineVisionSi({
-      ...LEMELSON_MACHINE_VISION_DEFAULT_CONTROLS,
-      actualPartWidthM: 0.095, // Defective +15 mm oversize
-    });
-    expect(defectiveState.metrics.isDefective).toBe(true);
-
-    // Update with defective metrics
-    model.update(
-      { ...LEMELSON_MACHINE_VISION_DEFAULT_CONTROLS, actualPartWidthM: 0.095 },
-      defectiveState.metrics,
-      2.0,
+    const nominalState = stepLemelsonMachineVisionTopology(
+      LEMELSON_MACHINE_VISION_DEFAULT_CONTROLS,
     );
 
+    model.update(nominalState);
+    expect(model.scanConeMesh.visible).toBe(true);
+    const initialPartX = model.partMesh.position.x;
+    const initialBladeRotation = model.diverterBladeMesh.rotation.y;
+    const nominalPartMaterial = model.partMesh.material;
+
+    const withheldScan = stepLemelsonMachineVisionTopology({
+      ...LEMELSON_MACHINE_VISION_DEFAULT_CONTROLS,
+      scanPathEnabled: 0,
+    });
+    model.update(withheldScan);
+    expect(model.scanConeMesh.visible).toBe(false);
+    expect(model.partMesh.position.x).toBe(initialPartX);
+    expect(model.diverterBladeMesh.rotation.y).toBe(initialBladeRotation);
+
+    const referenceDifference = stepLemelsonMachineVisionTopology({
+      ...LEMELSON_MACHINE_VISION_DEFAULT_CONTROLS,
+      referenceSignalMatches: 0,
+    });
+    model.update(referenceDifference);
+    expect(referenceDifference.referenceComparison).toBe("difference");
+    expect(model.partMesh.material).not.toBe(nominalPartMaterial);
+    expect("metrics" in referenceDifference).toBe(false);
+
     model.dispose();
+  });
+
+  test("keeps both public faces on the source-bounded topology without an SI fallback", () => {
+    const simSource = readFileSync(join(VISUALS_DIRECTORY, "LemelsonMachineVisionSim.tsx"), "utf8");
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "LemelsonMachineVision3D.tsx"),
+      "utf8",
+    );
+    const modelSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "lemelsonMachineVisionModel.ts"),
+      "utf8",
+    );
+
+    for (const source of [simSource, threeSource]) {
+      expect(source).toContain("stepLemelsonMachineVisionTopology");
+      expect(source).not.toContain("stepLemelsonMachineVisionSi");
+      expect(source).not.toContain("scanBeamVelocityMPerS");
+      expect(source).not.toContain("solenoidForceN");
+      expect(source).not.toContain("gateResponseTimeMs");
+    }
+    expect(simSource).toContain("source topology only");
+    expect(threeSource).toContain("isRefused: true");
+    expect(modelSource).not.toContain("simTimeSec");
+    expect(modelSource).not.toContain("Math.sin");
+    expect(modelSource).not.toContain("MathUtils.lerp");
   });
 });

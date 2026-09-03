@@ -19,6 +19,20 @@ import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
+const MESTRAL_NARROW_VIEWPORT_MAX_WIDTH_PX = 480;
+
+export function mestralOverviewCameraForViewport(viewportWidth: number): {
+  cameraPos: [number, number, number];
+  targetPos: [number, number, number];
+} {
+  if (viewportWidth < MESTRAL_NARROW_VIEWPORT_MAX_WIDTH_PX) {
+    // A 10-unit tape needs a wider initial radius on a portrait canvas. This
+    // frames the engaged field and the rising peel flap as one mechanism.
+    return { cameraPos: [8.6, 7, 20.2], targetPos: [0, 1.8, 0] };
+  }
+  return { cameraPos: [4.5, 3.5, 9.5], targetPos: [0, 0.5, 0] };
+}
+
 export default function MestralVelcro3D({
   patentId = "us-2717437-mestral-velcro",
 }: {
@@ -50,10 +64,12 @@ export default function MestralVelcro3D({
   useEffect(() => {
     if (!containerRef.current) return;
 
+    const overviewCamera = mestralOverviewCameraForViewport(containerRef.current.clientWidth);
+
     const studio = createThreeStudioScene({
       container: containerRef.current,
-      cameraPos: [4.5, 3.5, 9.5],
-      targetPos: [0, 0.5, 0],
+      cameraPos: overviewCamera.cameraPos,
+      targetPos: overviewCamera.targetPos,
       environmentStyle: "studio",
       enableFloorGrid: true,
       floorColor: 0x1c1917,

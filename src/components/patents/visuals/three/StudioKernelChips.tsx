@@ -170,7 +170,7 @@ export function StudioKernelChips({
         <button
           type="button"
           onClick={() => setIsExpanded(true)}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/95 dark:bg-ink-900/95 backdrop-blur-md border border-amber-700/30 dark:border-amber-500/30 shadow-md text-[10px] sm:text-xs font-sans font-semibold text-amber-900 dark:text-amber-200 hover:bg-amber-50 dark:hover:bg-ink-800 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/95 dark:bg-ink-900/95 backdrop-blur-md border border-amber-700/30 dark:border-amber-500/30 shadow-md text-[10px] sm:text-xs font-sans font-semibold text-amber-900 dark:text-amber-200 hover:bg-amber-50 dark:hover:bg-ink-800 transition-[background-color,transform] hover:scale-105 active:scale-95 cursor-pointer"
           title="Open SI Telemetry Chips"
           aria-label="Open SI Telemetry Chips"
           aria-expanded={false}
@@ -192,7 +192,7 @@ export function StudioKernelChips({
     <div
       ref={chipContainerRef}
       id={titleId}
-      className={`absolute bottom-3 sm:bottom-4 z-10 pointer-events-auto transition-all duration-200 ${
+      className={`absolute bottom-3 sm:bottom-4 z-10 pointer-events-auto ${
         effectiveSide === "right"
           ? "right-3 sm:right-4 max-w-[min(calc(100%-25rem),28rem)]"
           : "left-3 sm:left-4 max-w-[min(100%-1.5rem,28rem)]"

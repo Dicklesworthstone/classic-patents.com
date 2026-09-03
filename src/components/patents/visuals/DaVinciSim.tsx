@@ -12,6 +12,7 @@ import {
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -38,23 +39,17 @@ export function DaVinciSim({
   const gripAngleDeg = params.gripAngleDeg ?? 30;
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const isPlayingRef = useRef(isPlaying);
-  const controlsRef = useRef(
-    readDaVinciControls({
+  const live = useLiveSimParams({
+    isPlaying,
+    controls: readDaVinciControls({
       motionScaleRatio: motionScale,
       tremorFilterEnabled: tremorFilter,
       masterInputSpeedMps: inputSpeed,
       gripAngleDeg,
     }),
-  );
-  isPlayingRef.current = isPlaying;
-  controlsRef.current = readDaVinciControls({
-    motionScaleRatio: motionScale,
-    tremorFilterEnabled: tremorFilter,
-    masterInputSpeedMps: inputSpeed,
-    gripAngleDeg,
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted animation loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the canvas loop.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -64,14 +59,14 @@ export function DaVinciSim({
     let animId: number;
     let timeSec = 0;
     const clock = createStudioClock();
-    let state = stepDaVinci(controlsRef.current, 0);
+    let state = stepDaVinci(live.current.controls, 0);
 
     const render = (now: number) => {
       animId = requestAnimationFrame(render);
       const { dt } = clock.pump(now);
       if (!onscreenRef.current) return;
-      const frameControls = controlsRef.current;
-      if (isPlayingRef.current) {
+      const frameControls = live.current.controls;
+      if (live.current.isPlaying) {
         const stepDt = dt > 0 ? dt : 1 / 60;
         timeSec += stepDt;
         state = stepDaVinci(frameControls, timeSec, state, stepDt);

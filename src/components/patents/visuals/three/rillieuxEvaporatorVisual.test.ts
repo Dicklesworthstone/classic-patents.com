@@ -30,6 +30,20 @@ describe("Norbert Rillieux Multiple-Effect Evaporator 3D Visual & Thermodynamics
     expect(modelSource).toContain("boilDisplayOmegaRadPerS");
   });
 
+  test("keeps the studio animation loop alive after a visible frame", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/RillieuxEvaporator3D.tsx"),
+      "utf8",
+    );
+    const loopStart = source.indexOf("const animate =");
+    const loopEnd = source.indexOf("return () =>", loopStart);
+    const loop = source.slice(loopStart, loopEnd);
+
+    expect(loop).toMatch(
+      /animFrameRef\.current = requestAnimationFrame\(animate\);\s*if \(!studio\.isVisible\(\)\) \{/,
+    );
+  });
+
   test("creates valid Three.js model hierarchy with 3 vessels, tube bundles, and condenser", () => {
     const model = createRillieuxEvaporatorModel();
     expect(model.group).toBeDefined();

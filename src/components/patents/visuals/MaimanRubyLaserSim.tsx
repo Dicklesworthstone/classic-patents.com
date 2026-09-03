@@ -375,7 +375,7 @@ export function MaimanRubyLaserSim({ interactive = true }: MaimanRubyLaserSimPro
             }}
             disabled={isFiring}
             aria-label="Trigger Flashlamp"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-mono text-xs font-bold transition-all shadow-sm disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-mono text-xs font-bold transition-[background-color,opacity] shadow-sm disabled:opacity-50"
             title="Trigger Flashlamp"
           >
             <Zap className="w-3.5 h-3.5" />

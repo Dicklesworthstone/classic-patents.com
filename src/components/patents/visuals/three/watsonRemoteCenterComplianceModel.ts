@@ -60,6 +60,14 @@ export function buildWatsonRemoteCenterComplianceModel(): WatsonRemoteCenterComp
       metalness: 0.45,
     }),
   );
+  const workpieceMat = material(
+    new THREE.MeshStandardMaterial({
+      color: 0x334155,
+      metalness: 0.72,
+      roughness: 0.32,
+      side: THREE.DoubleSide,
+    }),
+  );
 
   const base = new THREE.Mesh(geometry(new THREE.CylinderGeometry(1.24, 1.24, 0.18, 40)), baseMat);
   base.name = "machine portion 18";
@@ -136,10 +144,22 @@ export function buildWatsonRemoteCenterComplianceModel(): WatsonRemoteCenterComp
   bellows.rotation.x = Math.PI / 2;
   bellows.position.y = 0.08;
   plate.add(bellows);
-  const hole = new THREE.Mesh(geometry(new THREE.CylinderGeometry(0.35, 0.5, 0.52, 32)), baseMat);
-  hole.name = "illustrative chamfered hole 71";
-  hole.position.set(0.86, -2.32, 0);
-  root.add(hole);
+  // The workpiece is fixed to the exhibit floor; it must not follow the
+  // compliant plate. Its open conical wall is a real visible mouth rather
+  // than the capped solid cylinder previously labelled as a hole.
+  const workpieceBase = new THREE.Mesh(
+    geometry(new THREE.BoxGeometry(1.4, 0.12, 1.2)),
+    workpieceMat,
+  );
+  workpieceBase.name = "fixed workpiece support for hole 71";
+  workpieceBase.position.set(0.48, -2.54, 0);
+  const hole = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.35, 0.5, 0.52, 32, 1, true)),
+    workpieceMat,
+  );
+  hole.name = "fixed open chamfered hole 71";
+  hole.position.set(0.48, -2.32, 0);
+  root.add(workpieceBase, hole);
 
   const updatePose = (pose: WatsonRemoteCenterCompliancePose) => {
     const x = pose.translationOffset * 0.62;

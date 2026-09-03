@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { stepKilbyIntegratedCircuit } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -38,10 +39,18 @@ export const KilbyIntegratedCircuitSim: React.FC<KilbySimProps> = ({ className =
     reverseBiasVoltageV: reverseBias,
     baseDriveCurrentUa: baseDrive,
   });
+  const live = useLiveSimParams({
+    activeCircuitMode,
+    clockState,
+    resistorLength,
+    resistorWidth,
+    simState,
+    supplyVoltage,
+  });
+  const animationTimeRef = useRef(0);
 
   useEffect(() => {
     let animationFrameId: number;
-    let time = 0;
 
     const render = () => {
       animationFrameId = requestAnimationFrame(render);
@@ -50,10 +59,19 @@ export const KilbyIntegratedCircuitSim: React.FC<KilbySimProps> = ({ className =
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
+      const {
+        activeCircuitMode,
+        clockState,
+        resistorLength,
+        resistorWidth,
+        simState,
+        supplyVoltage,
+      } = live.current;
 
       const width = canvas.width;
       const height = canvas.height;
-      time += 0.03;
+      animationTimeRef.current += 0.03;
+      const time = animationTimeRef.current;
 
       // Dark solid-state blueprint/museum background
       ctx.fillStyle = "#0a0f1d";
@@ -336,15 +354,7 @@ export const KilbyIntegratedCircuitSim: React.FC<KilbySimProps> = ({ className =
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [
-    simState,
-    activeCircuitMode,
-    clockState,
-    supplyVoltage,
-    resistorLength,
-    resistorWidth,
-    onscreenRef.current,
-  ]);
+  }, [live, onscreenRef]);
 
   return (
     <div
@@ -381,6 +391,7 @@ export const KilbyIntegratedCircuitSim: React.FC<KilbySimProps> = ({ className =
           <button
             type="button"
             onClick={() => {
+              animationTimeRef.current = 0;
               resetParams();
               setActiveCircuitMode("flipflop");
               setClockState(false);

@@ -137,8 +137,12 @@ export function TownesLaser3D({
         },
       };
     };
-    globalTransportBus.registerUpdater("us-2929922-townes-laser", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-2929922-townes-laser");
+    const unregister = globalTransportBus.registerUpdater(
+      "us-2929922-townes-laser",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
   }, [live]);
 
   const handlePresetChange = (preset: CameraPreset) => {
@@ -165,8 +169,8 @@ export function TownesLaser3D({
 
     const clock = createStudioClock();
     const animate = (now: number) => {
+      animFrameRef.current = requestAnimationFrame(animate);
       if (!studio.isVisible()) {
-        animFrameRef.current = requestAnimationFrame(animate);
         return;
       }
       const { simTimeSec } = clock.pump(now);

@@ -1,7 +1,7 @@
 "use client";
 
 import { Cog, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { ARKWRIGHT_DEFAULT_CONTROLS, stepArkwrightWaterFrame } from "@/physics/arkwrightKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -9,6 +9,7 @@ import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
 const EXHIBIT_ID = "gb-931-arkwright-water-frame";
+const UI_SNAPSHOT_INTERVAL_MS = 80;
 
 export function ArkwrightWaterFrameSim() {
   const { params, updateParam, resetParams } = usePatentPhysics(EXHIBIT_ID);
@@ -28,6 +29,7 @@ export function ArkwrightWaterFrameSim() {
     inputRovingCountNe,
   };
   const [animTime, setAnimTime] = useState(0);
+  const animTimeRef = useRef(0);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const speedId = useId();
@@ -39,18 +41,28 @@ export function ArkwrightWaterFrameSim() {
   useEffect(() => {
     let frameId: number;
     let lastTime = performance.now();
+    let lastUiSnapshot = 0;
 
     const loop = (time: number) => {
       frameId = requestAnimationFrame(loop);
-      if (!onscreenRef.current) return;
+      if (!onscreenRef.current) {
+        lastTime = time;
+        return;
+      }
       const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
       lastTime = time;
-      setAnimTime((prev) => prev + dt);
+      animTimeRef.current += dt;
+      // Rollers, flyer, bobbin, and heart-cam traverse derive from one drive;
+      // keep their SVG projection coherent in a bounded UI snapshot.
+      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = time;
+        setAnimTime(animTimeRef.current);
+      }
     };
 
     frameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameId);
-  }, [onscreenRef.current]);
+  }, [onscreenRef]);
 
   const outputs = stepArkwrightWaterFrame(controls);
 
@@ -138,6 +150,7 @@ export function ArkwrightWaterFrameSim() {
             type="button"
             onClick={() => {
               resetParams();
+              animTimeRef.current = 0;
               setAnimTime(0);
               soundEngine.playSwitchClick();
             }}

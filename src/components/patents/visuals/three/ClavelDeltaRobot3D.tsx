@@ -1,7 +1,7 @@
 "use client";
 
 import { Eye, EyeOff, RotateCcw } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { applyClaimConstraintModifications } from "@/physics/claimConstraints";
@@ -14,14 +14,16 @@ import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildClavelDeltaRobotModel } from "./clavelDeltaRobotModel";
+import { useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-4976582-clavel-delta-robot";
 
 const VIEWS = {
   overview: {
-    position: [4.4, 2.7, 5.0] as [number, number, number],
-    target: [0, -0.1, 0] as [number, number, number],
+    position: [7.2, 3.55, 8.1] as [number, number, number],
+    target: [0, -1, 0] as [number, number, number],
   },
   platform: {
     position: [2.1, 0.3, 2.7] as [number, number, number],
@@ -33,6 +35,18 @@ const VIEWS = {
   },
 } as const;
 
+export function clavelDeltaRobotViewForViewport(view: keyof typeof VIEWS, viewportWidth: number) {
+  const config = VIEWS[view];
+  const multiplier = viewportWidth < 480 ? (view === "overview" ? 0.85 : 1.15) : 1;
+  return {
+    position: config.position.map(
+      (coordinate, index) =>
+        config.target[index] + (coordinate - config.target[index]) * multiplier,
+    ) as [number, number, number],
+    target: [...config.target] as [number, number, number],
+  };
+}
+
 const ARM_CONTROLS = [
   { id: "armOneInput", label: "Arm 1", color: "text-cyan-300", accent: "accent-cyan-400" },
   { id: "armTwoInput", label: "Arm 2", color: "text-amber-300", accent: "accent-amber-400" },
@@ -43,9 +57,8 @@ const ARM_CONTROLS = [
 export function ClavelDeltaRobot3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const liveParams = useRef<Record<string, number>>({});
   const [view, setView] = useState<keyof typeof VIEWS>("overview");
-  const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [webglUnavailable, setWebglUnavailable] = useState(false);
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
   const claimStates = useMemo(() => readClavelDeltaRobotClaimStates(params), [params]);
@@ -53,7 +66,7 @@ export function ClavelDeltaRobot3D() {
     () => applyClaimConstraintModifications(PATENT_ID, params, claimStates),
     [params, claimStates],
   );
-  liveParams.current = claimResult.modifiedParams;
+  const liveParams = useLiveSimParams(claimResult.modifiedParams);
   const state = useMemo(
     () => stepClavelDeltaRobotTopology(claimResult.modifiedParams),
     [claimResult.modifiedParams],
@@ -67,10 +80,13 @@ export function ClavelDeltaRobot3D() {
     refusal: { isRefused: true, reason: state.refusal.reason },
   });
 
-  useEffect(() => {
+  // Resolve the WebGL fallback before the browser paints: a passive effect can
+  // briefly show an empty canvas and controls when WebGL creation fails.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
+  useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const initial = VIEWS.overview;
+    const initial = clavelDeltaRobotViewForViewport("overview", container.clientWidth);
     let studio: StudioContext;
     try {
       studio = createThreeStudioScene({
@@ -82,7 +98,7 @@ export function ClavelDeltaRobot3D() {
         ambientIntensity: 2.6,
         sunIntensity: 3.0,
         cameraMinDistance: 2.2,
-        cameraMaxDistance: 11,
+        cameraMaxDistance: 16.5,
       });
     } catch {
       setWebglUnavailable(true);
@@ -136,9 +152,23 @@ export function ClavelDeltaRobot3D() {
 
   const selectView = (next: keyof typeof VIEWS) => {
     setView(next);
-    const nextView = VIEWS[next];
+    const nextView = clavelDeltaRobotViewForViewport(
+      next,
+      containerRef.current?.clientWidth ?? 1000,
+    );
     studioRef.current?.controls.setView(nextView.position, nextView.target);
   };
+
+  useEffect(() => {
+    const restoreResponsiveView = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const next = clavelDeltaRobotViewForViewport(view, container.clientWidth);
+      studioRef.current?.controls.setView(next.position, next.target);
+    };
+    window.addEventListener("resize", restoreResponsiveView);
+    return () => window.removeEventListener("resize", restoreResponsiveView);
+  }, [view]);
 
   const setClaim = (number: number, active: boolean) => {
     const key =

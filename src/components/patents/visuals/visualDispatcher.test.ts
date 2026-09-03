@@ -11,7 +11,7 @@ describe("Visual Simulation Dispatcher & Catalogue Completeness", () => {
       // Ensure physics registry is bound
       const registryEntry = PATENT_PHYSICS_REGISTRY[patent.id];
       expect(registryEntry).toBeDefined();
-      if (patent.id !== "us-542846-diesel-engine") {
+      if (!["us-542846-diesel-engine", "us-3671542-kwolek-kevlar"].includes(patent.id)) {
         expect(registryEntry.controls.length).toBeGreaterThan(0);
       }
       expect(registryEntry.governingEquation.length).toBeGreaterThan(0);

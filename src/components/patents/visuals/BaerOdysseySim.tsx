@@ -1,16 +1,16 @@
 "use client";
 
 import { Crosshair, Play, RotateCcw, ShieldCheck, Sparkles, Tv, Zap } from "lucide-react";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import {
   type BaerOdysseyControls,
-  type BaerOdysseyMetrics,
-  type BaerOdysseyState,
   DEFAULT_BAER_CONTROLS,
-  INITIAL_BAER_STATE,
-  stepBaerOdysseySi,
+  readBaerOdysseyTapeFrame,
+  requestBaerLightGunTrigger,
+  requestBaerTargetReset,
 } from "@/physics/baerOdysseyKernel";
+import { usePatentRuntimeTick } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 const PATENT_ID = "us-3728480-baer-odyssey";
@@ -22,68 +22,30 @@ interface BaerOdysseySimProps {
 type OverlayType = "none" | "tennis" | "target" | "roulette";
 
 export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
-  const { params, updateParam } = usePatentPhysics(PATENT_ID);
+  const { effectiveParams, updateParam } = usePatentPhysics(PATENT_ID);
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const controls = useMemo<BaerOdysseyControls>(
     () => ({
       ...DEFAULT_BAER_CONTROLS,
       ...initialControls,
-      ...params,
+      ...effectiveParams,
     }),
-    [initialControls, params],
+    [effectiveParams, initialControls],
   );
-
-  const [simState, setSimState] = useState<BaerOdysseyState>(INITIAL_BAER_STATE);
-  const [metrics, setMetrics] = useState<BaerOdysseyMetrics>(() => {
-    return stepBaerOdysseySi(INITIAL_BAER_STATE, controls, 0.016).metrics;
-  });
+  const runtimeTick = usePatentRuntimeTick(PATENT_ID, 1);
+  const tapeFrame = readBaerOdysseyTapeFrame(controls);
+  const simState = tapeFrame.state;
+  const metrics = tapeFrame.metrics;
   const [overlay, setOverlay] = useState<OverlayType>("tennis");
-  const [isPlaying, setIsPlaying] = useState(true);
-
-  const requestRef = useRef<number | null>(null);
-  const lastTimeRef = useRef<number | null>(null);
   const crtGlowId = useId();
   const phosphorGridId = useId();
 
-  useEffect(() => {
-    if (!isPlaying) {
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
-      lastTimeRef.current = null;
-      return;
-    }
-
-    const animate = (timeNow: number) => {
-      if (lastTimeRef.current !== null) {
-        const dt = Math.min((timeNow - lastTimeRef.current) / 1000.0, 0.05);
-        setSimState((prevState) => {
-          const result = stepBaerOdysseySi(prevState, controls, dt);
-          setMetrics(result.metrics);
-          return result.state;
-        });
-      }
-      lastTimeRef.current = timeNow;
-      requestRef.current = requestAnimationFrame(animate);
-    };
-
-    requestRef.current = requestAnimationFrame(animate);
-    return () => {
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
-    };
-  }, [controls, isPlaying]);
-
   const handleResetGame = () => {
-    setSimState(INITIAL_BAER_STATE);
-    updateParam("resetButton", 1);
-    setTimeout(() => {
-      updateParam("resetButton", 0);
-    }, 150);
+    requestBaerTargetReset();
   };
 
   const handleFireLightGun = () => {
-    updateParam("lightGunTrigger", 1);
-    setTimeout(() => {
-      updateParam("lightGunTrigger", 0);
-    }, 200);
+    requestBaerLightGunTrigger();
   };
 
   // Screen pixel coordinate transformations (500x320 viewbox)
@@ -100,7 +62,12 @@ export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
   const ballScreenY = screenTop + metrics.ballY * screenHeight;
 
   return (
-    <div className="flex flex-col gap-5 rounded-2xl border border-amber-900/60 bg-gradient-to-b from-stone-950 via-slate-950 to-neutral-950 p-6 text-slate-100 shadow-2xl">
+    <div
+      className="flex flex-col gap-5 rounded-2xl border border-amber-900/60 bg-gradient-to-b from-stone-950 via-slate-950 to-neutral-950 p-6 text-slate-100 shadow-2xl"
+      data-runtime-tick={runtimeTick}
+      data-ball-x={metrics.ballX}
+      data-ball-y={metrics.ballY}
+    >
       {/* Header Banner */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-800 pb-4">
         <div>
@@ -131,11 +98,13 @@ export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
 
           <button
             type="button"
-            onClick={() => setIsPlaying(!isPlaying)}
+            onClick={() => updateParam("running", controls.running ? 0 : 1)}
             className="flex items-center gap-1.5 rounded-lg border border-stone-700 bg-stone-900 px-3 py-1 text-xs font-medium text-amber-300 hover:bg-stone-800 transition"
           >
-            <Play className={`h-3.5 w-3.5 ${isPlaying ? "text-emerald-400" : "text-amber-400"}`} />
-            {isPlaying ? "Running (60 Hz)" : "Paused"}
+            <Play
+              className={`h-3.5 w-3.5 ${controls.running ? "text-emerald-400" : "text-amber-400"}`}
+            />
+            {controls.running ? "Running (60 Hz)" : "Paused"}
           </button>
 
           <button

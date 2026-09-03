@@ -119,9 +119,12 @@ export function DavenportElectricMotor3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-132-davenport-electric-motor", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-132-davenport-electric-motor");
-  }, [live.current.shaftOmegaRadPerS, live.current.supplyVoltage, live.current.motorRpm]);
+    return globalTransportBus.registerUpdater(
+      "us-132-davenport-electric-motor",
+      integrate,
+      "TS_FALLBACK",
+    );
+  }, [live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);

@@ -8,6 +8,8 @@ import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
+const UI_SNAPSHOT_INTERVAL_MS = 80;
+
 export function GatlingGunSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-36836-gatling-gun");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -16,6 +18,8 @@ export function GatlingGunSim() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [clusterAngleDeg, setClusterAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const clusterAngleRef = useRef(0);
+  const gatlingRef = useRef<ReturnType<typeof stepGatlingGun> | null>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const gatling = stepGatlingGun({ crankRpm, barrelCount });
@@ -25,26 +29,43 @@ export function GatlingGunSim() {
   const muzzleEnergyJoules = gatling.muzzleEnergyJoules;
 
   useEffect(() => {
+    gatlingRef.current = gatling;
+  }, [gatling]);
+
+  useEffect(() => {
     if (!isPlaying) return;
 
     let lastTime = performance.now();
+    let lastUiSnapshot = 0;
 
     const loop = (time: number) => {
       animRef.current = requestAnimationFrame(loop);
-      if (!onscreenRef.current) return;
+      if (!onscreenRef.current) {
+        lastTime = time;
+        return;
+      }
       const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
       lastTime = time;
+      const liveGatling = gatlingRef.current;
+      if (!liveGatling) return;
 
-      setClusterAngleDeg(
-        (prev) => (prev + gatling.crankOmegaDegPerS * dt) % gatling.displayWrapDeg,
-      );
+      clusterAngleRef.current =
+        (clusterAngleRef.current + liveGatling.crankOmegaDegPerS * dt) % liveGatling.displayWrapDeg;
+
+      // Barrel positions and bolt strokes are a coupled SVG topology rather than
+      // one transform. Render a bounded presentation snapshot instead of re-rendering
+      // this whole diagram on every display frame.
+      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = time;
+        setClusterAngleDeg(clusterAngleRef.current);
+      }
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, gatling.crankOmegaDegPerS, gatling.displayWrapDeg, onscreenRef.current]);
+  }, [isPlaying, onscreenRef]);
 
   return (
     <div
@@ -98,6 +119,7 @@ export function GatlingGunSim() {
             type="button"
             onClick={() => {
               resetParams();
+              clusterAngleRef.current = 0;
               setClusterAngleDeg(0);
               soundEngine.playSwitchClick();
             }}

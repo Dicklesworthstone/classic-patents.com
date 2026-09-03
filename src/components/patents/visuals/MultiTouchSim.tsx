@@ -312,14 +312,7 @@ export function MultiTouchSim({
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [
-    fingerCount,
-    separationMm,
-    pressureGrams,
-    gestureVelocityMmS,
-    isPlaying,
-    onscreenRef.current,
-  ]);
+  }, [fingerCount, separationMm, pressureGrams, gestureVelocityMmS, isPlaying, onscreenRef]);
 
   return (
     <div

@@ -95,6 +95,56 @@ export function buildClavelDeltaRobotModel(): ClavelDeltaRobotModel {
   const lowerGeometry = geometry(new THREE.CylinderGeometry(0.034, 0.034, 1, 14));
   const jointGeometry = geometry(new THREE.SphereGeometry(0.09, 18, 14));
   const fixedMotorGeometry = geometry(new THREE.CylinderGeometry(0.16, 0.16, 0.42, 24));
+  const createNamedInstancedPart = (name: string, meshGeometry: THREE.BufferGeometry) => {
+    const instances = new THREE.InstancedMesh(meshGeometry, lowerMaterial, 3);
+    instances.name = name;
+    instances.userData.actuatorIndices = [1, 2, 3];
+    instances.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    topologyGroup.add(instances);
+    return instances;
+  };
+  const upperJointAInstances = createNamedInstancedPart("Cardan joint 6a", jointGeometry);
+  const upperJointBInstances = createNamedInstancedPart("Cardan joint 6b", jointGeometry);
+  const lowerBarAInstances = createNamedInstancedPart("Linking bar 5a", lowerGeometry);
+  const lowerBarBInstances = createNamedInstancedPart("Linking bar 5b", lowerGeometry);
+  const lowerJointAInstances = createNamedInstancedPart("Cardan joint 7a", jointGeometry);
+  const lowerJointBInstances = createNamedInstancedPart("Cardan joint 7b", jointGeometry);
+  const instancedArticulation = [
+    upperJointAInstances,
+    upperJointBInstances,
+    lowerBarAInstances,
+    lowerBarBInstances,
+    lowerJointAInstances,
+    lowerJointBInstances,
+  ] as const;
+  const positiveYAxis = new THREE.Vector3(0, 1, 0);
+  const instanceDirection = new THREE.Vector3();
+  const instancePosition = new THREE.Vector3();
+  const instanceQuaternion = new THREE.Quaternion();
+  const instanceScale = new THREE.Vector3();
+  const instanceMatrix = new THREE.Matrix4();
+  const setInstancedPoint = (
+    instances: THREE.InstancedMesh,
+    index: number,
+    position: THREE.Vector3,
+  ) => {
+    instanceMatrix.makeTranslation(position.x, position.y, position.z);
+    instances.setMatrixAt(index, instanceMatrix);
+  };
+  const setInstancedBeamBetween = (
+    instances: THREE.InstancedMesh,
+    index: number,
+    start: THREE.Vector3,
+    end: THREE.Vector3,
+  ) => {
+    instanceDirection.subVectors(end, start);
+    const beamLength = instanceDirection.length();
+    instancePosition.addVectors(start, end).multiplyScalar(0.5);
+    instanceQuaternion.setFromUnitVectors(positiveYAxis, instanceDirection.normalize());
+    instanceScale.set(1, Math.max(0.0001, beamLength), 1);
+    instanceMatrix.compose(instancePosition, instanceQuaternion, instanceScale);
+    instances.setMatrixAt(index, instanceMatrix);
+  };
 
   const armParts = [0, 1, 2].map((index) => {
     const group = new THREE.Group();
@@ -110,41 +160,13 @@ export function buildClavelDeltaRobotModel(): ClavelDeltaRobotModel {
     axis.rotation.z = Math.PI / 2;
     const upperArm = new THREE.Mesh(armGeometry, mat);
     upperArm.name = "Control arm 4";
-    const upperJointA = new THREE.Mesh(jointGeometry, lowerMaterial);
-    upperJointA.name = "Cardan joint 6a";
-    const upperJointB = new THREE.Mesh(jointGeometry, lowerMaterial);
-    upperJointB.name = "Cardan joint 6b";
-    const lowerBarA = new THREE.Mesh(lowerGeometry, lowerMaterial);
-    lowerBarA.name = "Linking bar 5a";
-    const lowerBarB = new THREE.Mesh(lowerGeometry, lowerMaterial);
-    lowerBarB.name = "Linking bar 5b";
-    const lowerJointA = new THREE.Mesh(jointGeometry, lowerMaterial);
-    lowerJointA.name = "Cardan joint 7a";
-    const lowerJointB = new THREE.Mesh(jointGeometry, lowerMaterial);
-    lowerJointB.name = "Cardan joint 7b";
-    group.add(
-      housing,
-      axis,
-      upperArm,
-      upperJointA,
-      upperJointB,
-      lowerBarA,
-      lowerBarB,
-      lowerJointA,
-      lowerJointB,
-    );
+    group.add(housing, axis, upperArm);
     topologyGroup.add(group);
     return {
       group,
       housing,
       axis,
       upperArm,
-      upperJointA,
-      upperJointB,
-      lowerBarA,
-      lowerBarB,
-      lowerJointA,
-      lowerJointB,
     };
   });
 
@@ -199,16 +221,20 @@ export function buildClavelDeltaRobotModel(): ClavelDeltaRobotModel {
       part.housing.position.y += 0.05;
       part.axis.position.copy(basePivot);
       setBeamBetween(part.upperArm, basePivot, controlArmEnd);
-      part.upperJointA.position.copy(upperA);
-      part.upperJointB.position.copy(upperB);
-      part.lowerJointA.position.copy(lowerA);
-      part.lowerJointB.position.copy(lowerB);
-      setBeamBetween(part.lowerBarA, upperA, lowerA);
-      setBeamBetween(part.lowerBarB, upperB, lowerB);
-      part.lowerBarB.visible = state.pairedBarsVisible;
-      part.upperJointB.visible = state.pairedBarsVisible;
-      part.lowerJointB.visible = state.pairedBarsVisible;
+      setInstancedPoint(upperJointAInstances, index, upperA);
+      setInstancedPoint(upperJointBInstances, index, upperB);
+      setInstancedPoint(lowerJointAInstances, index, lowerA);
+      setInstancedPoint(lowerJointBInstances, index, lowerB);
+      setInstancedBeamBetween(lowerBarAInstances, index, upperA, lowerA);
+      setInstancedBeamBetween(lowerBarBInstances, index, upperB, lowerB);
     });
+    for (const instances of instancedArticulation) {
+      instances.instanceMatrix.needsUpdate = true;
+      instances.computeBoundingSphere();
+    }
+    lowerBarBInstances.visible = state.pairedBarsVisible;
+    upperJointBInstances.visible = state.pairedBarsVisible;
+    lowerJointBInstances.visible = state.pairedBarsVisible;
 
     platform.position.copy(point(state.platformCenter));
     toolGroup.position.copy(point(state.platformCenter));

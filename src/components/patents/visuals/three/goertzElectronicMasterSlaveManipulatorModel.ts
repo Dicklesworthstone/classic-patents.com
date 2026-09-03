@@ -17,6 +17,7 @@ interface ArmAssembly {
   wrist: THREE.Mesh;
   jawA: THREE.Mesh;
   jawB: THREE.Mesh;
+  jawBridge: THREE.Mesh;
   cableA: THREE.Line;
   cableB: THREE.Line;
 }
@@ -27,6 +28,24 @@ function setRodBetween(mesh: THREE.Mesh, start: THREE.Vector3, end: THREE.Vector
   mesh.position.copy(start).add(end).multiplyScalar(0.5);
   mesh.scale.set(1, Math.max(length, 0.0001), 1);
   mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+}
+
+function createCableGeometry(pointCount: number): THREE.BufferGeometry {
+  const cableGeometry = new THREE.BufferGeometry();
+  cableGeometry.setAttribute("position", new THREE.Float32BufferAttribute(pointCount * 3, 3));
+  return cableGeometry;
+}
+
+function updateCableGeometry(geometry: THREE.BufferGeometry, points: readonly THREE.Vector3[]) {
+  const position = geometry.getAttribute("position");
+  if (!(position instanceof THREE.BufferAttribute) || position.count !== points.length) {
+    throw new Error("Goertz cable topology changed after its fixed buffer was allocated.");
+  }
+  points.forEach((cablePoint, index) => {
+    position.setXYZ(index, cablePoint.x, cablePoint.y, cablePoint.z);
+  });
+  position.needsUpdate = true;
+  geometry.computeBoundingSphere();
 }
 
 function pointsForChannels(base: THREE.Vector3, channels: readonly number[]) {
@@ -104,6 +123,17 @@ export function buildGoertzElectronicMasterSlaveManipulatorModel(): GoertzElectr
       opacity: 0.8,
     }),
   );
+  const dividerMat = material(
+    new THREE.MeshStandardMaterial({
+      color: 0x334155,
+      metalness: 0.35,
+      roughness: 0.5,
+      transparent: true,
+      opacity: 0.26,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    }),
+  );
 
   const floor = new THREE.Mesh(geometry(new THREE.BoxGeometry(7.4, 0.12, 3.4)), steel);
   floor.name = "normalized master and slave support floor";
@@ -111,7 +141,7 @@ export function buildGoertzElectronicMasterSlaveManipulatorModel(): GoertzElectr
   floor.receiveShadow = true;
   root.add(floor);
 
-  const divider = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.08, 3.9, 2.6)), steel);
+  const divider = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.08, 3.9, 2.6)), dividerMat);
   divider.name = "sealed-cell separation plane";
   divider.position.set(0, -0.05, 0);
   root.add(divider);
@@ -160,15 +190,30 @@ export function buildGoertzElectronicMasterSlaveManipulatorModel(): GoertzElectr
     jawA.name = `${name} grasper jaw A`;
     const jawB = new THREE.Mesh(jawGeometry, toolMat);
     jawB.name = `${name} grasper jaw B`;
-    const cableGeometryA = geometry(new THREE.BufferGeometry());
-    cableGeometryA.setFromPoints([base, base.clone(), base.clone(), base.clone()]);
-    const cableGeometryB = geometry(new THREE.BufferGeometry());
-    cableGeometryB.setFromPoints([base, base.clone(), base.clone(), base.clone()]);
+    const jawBridge = new THREE.Mesh(
+      geometry(new THREE.CylinderGeometry(0.045, 0.045, 1, 14)),
+      toolMat,
+    );
+    jawBridge.name = `${name} grasper jaw carrier`;
+    const cableGeometryA = geometry(createCableGeometry(4));
+    const cableGeometryB = geometry(createCableGeometry(4));
     const cableA = new THREE.Line(cableGeometryA, cableMat);
     cableA.name = `${name} source cable route 160–164`;
     const cableB = new THREE.Line(cableGeometryB, cableMat);
     cableB.name = `${name} source cable route 175–176`;
-    root.add(firstArm, secondArm, toolStem, shoulder, elbow, wrist, jawA, jawB, cableA, cableB);
+    root.add(
+      firstArm,
+      secondArm,
+      toolStem,
+      shoulder,
+      elbow,
+      wrist,
+      jawA,
+      jawB,
+      jawBridge,
+      cableA,
+      cableB,
+    );
     return {
       base: base.clone().add(new THREE.Vector3(0, 1.5, 0)),
       firstArm,
@@ -179,6 +224,7 @@ export function buildGoertzElectronicMasterSlaveManipulatorModel(): GoertzElectr
       wrist,
       jawA,
       jawB,
+      jawBridge,
       cableA,
       cableB,
     };
@@ -191,7 +237,12 @@ export function buildGoertzElectronicMasterSlaveManipulatorModel(): GoertzElectr
     linkMat,
   );
   channelLink.name = "seven duplicated electrical correspondence systems";
-  root.add(channelLink);
+  const signalRiserGeometry = geometry(new THREE.CylinderGeometry(0.045, 0.045, 1, 16));
+  const masterSignalRiser = new THREE.Mesh(signalRiserGeometry, linkMat);
+  masterSignalRiser.name = "master correspondence-system riser";
+  const slaveSignalRiser = new THREE.Mesh(signalRiserGeometry, linkMat);
+  slaveSignalRiser.name = "slave correspondence-system riser";
+  root.add(channelLink, masterSignalRiser, slaveSignalRiser);
   const resistanceArrow = new THREE.Mesh(
     geometry(new THREE.ConeGeometry(0.16, 0.42, 20)),
     resistanceMat,
@@ -212,8 +263,16 @@ export function buildGoertzElectronicMasterSlaveManipulatorModel(): GoertzElectr
     arm.jawB.position.copy(points.tool).add(new THREE.Vector3(0, -jawSpread, 0));
     arm.jawA.rotation.z = points.wristAngle;
     arm.jawB.rotation.z = points.wristAngle;
-    arm.cableA.geometry.setFromPoints([arm.base, points.first, points.second, points.tool]);
-    arm.cableB.geometry.setFromPoints([
+    // The carrier sits behind the gripping faces: it touches both sliding jaws
+    // and the tool stem without blocking the open space between the jaws.
+    const carrierOffset = new THREE.Vector3(0, 0, -0.07);
+    setRodBetween(
+      arm.jawBridge,
+      arm.jawA.position.clone().add(carrierOffset),
+      arm.jawB.position.clone().add(carrierOffset),
+    );
+    updateCableGeometry(arm.cableA.geometry, [arm.base, points.first, points.second, points.tool]);
+    updateCableGeometry(arm.cableB.geometry, [
       arm.base.clone().add(new THREE.Vector3(0.08, 0, 0)),
       points.first.clone().add(new THREE.Vector3(0.05, 0, 0)),
       points.second.clone().add(new THREE.Vector3(-0.05, 0, 0)),
@@ -227,9 +286,11 @@ export function buildGoertzElectronicMasterSlaveManipulatorModel(): GoertzElectr
       updateArm(master, pose.masterChannels);
       updateArm(slave, pose.slaveChannels);
       const channelY = 1.36;
-      const linkStart = new THREE.Vector3(-1.55, channelY, 0);
-      const linkEnd = new THREE.Vector3(1.55, channelY, 0);
+      const linkStart = new THREE.Vector3(master.base.x, channelY, 0);
+      const linkEnd = new THREE.Vector3(slave.base.x, channelY, 0);
       setRodBetween(channelLink, linkStart, linkEnd);
+      setRodBetween(masterSignalRiser, master.base, linkStart);
+      setRodBetween(slaveSignalRiser, slave.base, linkEnd);
       channelLink.visible = true;
       resistanceArrow.visible = pose.reflectedResistance > 0.005;
       if (resistanceArrow.visible) {

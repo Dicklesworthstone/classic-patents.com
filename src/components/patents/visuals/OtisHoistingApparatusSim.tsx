@@ -9,12 +9,41 @@ import {
 } from "@/physics/otisKernel";
 import { ensureOtisWasm, stepOtisTopology } from "@/physics/otisWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
-import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { getPatentPhysicsParams, usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
 import { useOffscreenGate } from "./useOffscreenGate";
 
 const PATENT_ID = "us-31128-otis-elevator";
+const UI_SNAPSHOT_INTERVAL_MS = 80;
+
+type OtisAnimationControls = {
+  driveCommand: OtisDriveCommand;
+  displayRatePct: number;
+  ropeGIntact: boolean;
+  stopRopePulled: boolean;
+  claim1HookLockEnabled: boolean;
+  claim3BrakeInterlockEnabled: boolean;
+  claim4CounterpoiseEnabled: boolean;
+};
+
+function readAnimationControls(
+  driveCommand: OtisDriveCommand,
+  displayRatePct: number,
+  ropeGIntact: boolean,
+  stopRopePulled: boolean,
+  claimStates: Record<number, boolean>,
+): OtisAnimationControls {
+  return {
+    driveCommand,
+    displayRatePct,
+    ropeGIntact,
+    stopRopePulled,
+    claim1HookLockEnabled: claimStates[1] !== false,
+    claim3BrakeInterlockEnabled: claimStates[3] !== false,
+    claim4CounterpoiseEnabled: claimStates[4] !== false,
+  };
+}
 
 export function OtisHoistingApparatusSim() {
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
@@ -34,6 +63,9 @@ export function OtisHoistingApparatusSim() {
   const displayRatePct = params.displayRatePct ?? 60;
   const ropeGIntact = (params.ropeGIntegrityPct ?? 100) >= 15;
   const stopRopePulled = params.stopRopePulled === 1;
+  const liveControlsRef = useRef(
+    readAnimationControls(driveCommand, displayRatePct, ropeGIntact, stopRopePulled, claimStates),
+  );
   const state = stepOtisTopology({
     platformPositionNormalized: platformPosition,
     drivePhaseRad: drivePhase,
@@ -50,27 +82,44 @@ export function OtisHoistingApparatusSim() {
   }, []);
 
   useEffect(() => {
+    liveControlsRef.current = readAnimationControls(
+      driveCommand,
+      displayRatePct,
+      ropeGIntact,
+      stopRopePulled,
+      claimStates,
+    );
+  }, [claimStates, displayRatePct, driveCommand, ropeGIntact, stopRopePulled]);
+
+  useEffect(() => {
     let requestId = 0;
-    let frame = 0;
+    let lastUiSnapshot = 0;
+    let hasVisibleFrame = false;
+    let publishedPosition = positionRef.current;
+    let publishedPhase = phaseRef.current;
     const clock = createStudioClock();
     const animate = (now: number) => {
       requestId = requestAnimationFrame(animate);
-      if (!onscreenRef.current) return;
+      if (!onscreenRef.current) {
+        hasVisibleFrame = false;
+        return;
+      }
+      if (!hasVisibleFrame) {
+        clock.pump(now);
+        hasVisibleFrame = true;
+        return;
+      }
       const { dt } = clock.pump(now);
+      const controls = liveControlsRef.current;
       const current = stepOtisTopology({
         platformPositionNormalized: positionRef.current,
         drivePhaseRad: phaseRef.current,
-        driveCommand,
-        ropeGIntact,
-        stopRopePulled,
-        claim1HookLockEnabled: claimStates[1] !== false,
-        claim3BrakeInterlockEnabled: claimStates[3] !== false,
-        claim4CounterpoiseEnabled: claimStates[4] !== false,
+        ...controls,
       });
       positionRef.current = advanceOtisPlatformPosition(
         positionRef.current,
         current.platformMotionDirection,
-        displayRatePct,
+        controls.displayRatePct,
         dt,
       );
       const transmittedDirection = current.straightBeltOWorking
@@ -82,15 +131,21 @@ export function OtisHoistingApparatusSim() {
         phaseRef.current =
           (phaseRef.current + transmittedDirection * 1.5 * dt + Math.PI * 2) % (Math.PI * 2);
       }
-      frame += 1;
-      if (frame % 3 === 0) {
-        setPlatformPosition(positionRef.current);
-        setDrivePhase(phaseRef.current);
+      if (now - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = now;
+        if (positionRef.current !== publishedPosition) {
+          publishedPosition = positionRef.current;
+          setPlatformPosition(positionRef.current);
+        }
+        if (phaseRef.current !== publishedPhase) {
+          publishedPhase = phaseRef.current;
+          setDrivePhase(phaseRef.current);
+        }
       }
     };
     requestId = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestId);
-  }, [claimStates, displayRatePct, driveCommand, onscreenRef, ropeGIntact, stopRopePulled]);
+  }, [onscreenRef]);
 
   const platformY = 258 - state.platformPositionNormalized * 160;
   const counterY = 258 - state.counterpoisePositionNormalized * 160;
@@ -405,6 +460,17 @@ export function OtisHoistingApparatusSim() {
               type="button"
               onClick={() => {
                 resetParams();
+                const reset = getPatentPhysicsParams(PATENT_ID);
+                const resetDriveCommand = [-1, 0, 1].includes(reset.driveCommand)
+                  ? (reset.driveCommand as OtisDriveCommand)
+                  : 0;
+                liveControlsRef.current = readAnimationControls(
+                  resetDriveCommand,
+                  reset.displayRatePct ?? 60,
+                  (reset.ropeGIntegrityPct ?? 100) >= 15,
+                  reset.stopRopePulled === 1,
+                  claimStates,
+                );
                 positionRef.current = OTIS_DEFAULT_PLATFORM_POSITION;
                 phaseRef.current = 0;
                 setPlatformPosition(OTIS_DEFAULT_PLATFORM_POSITION);

@@ -4,7 +4,6 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { gatlingBoltStudioX, stepGatlingGun } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { MachineState } from "@/physics/types";
 import {
@@ -12,6 +11,7 @@ import {
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -62,7 +62,7 @@ export function GatlingGun3D() {
   const [showMuzzleFlash] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
 
   const live = useLiveSimParams({
     crankRpm,
@@ -113,9 +113,13 @@ export function GatlingGun3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-36836-gatling-gun", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-36836-gatling-gun");
-  }, [live.current.claim1Active, live.current.crankOmegaRadPerS]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-36836-gatling-gun",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const studioRef = useRef<StudioContext | null>(null);
 
@@ -124,10 +128,6 @@ export function GatlingGun3D() {
     const cfg = CAMERA_PRESETS[preset];
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     if (!containerRef.current) return;

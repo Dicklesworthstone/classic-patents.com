@@ -5,6 +5,7 @@ import { Activity, Sparkles } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { SourceVisualUnavailable } from "./SourceVisualUnavailable";
 
 // 2D Vector Schematics & Dynamic Simulators
 
@@ -25,6 +26,36 @@ const SimLoading = () => (
       LOADING INTERACTIVE SIMULATION...
     </span>
   </div>
+);
+
+const BaerOdysseyPhysicsRuntimeOwner = dynamic(
+  () =>
+    import("./PatentPhysicsRuntimeOwner").then((module) => module.BaerOdysseyPhysicsRuntimeOwner),
+  { ssr: false },
+);
+const MetcalfeEthernetPhysicsRuntimeOwner = dynamic(
+  () =>
+    import("./PatentPhysicsRuntimeOwner").then(
+      (module) => module.MetcalfeEthernetPhysicsRuntimeOwner,
+    ),
+  { ssr: false },
+);
+const FarnsworthTvPhysicsRuntimeOwner = dynamic(
+  () =>
+    import("./PatentPhysicsRuntimeOwner").then((module) => module.FarnsworthTvPhysicsRuntimeOwner),
+  { ssr: false },
+);
+const EInkPhysicsRuntimeOwner = dynamic(
+  () => import("./PatentPhysicsRuntimeOwner").then((module) => module.EInkPhysicsRuntimeOwner),
+  { ssr: false },
+);
+const LamarrPhysicsRuntimeOwner = dynamic(
+  () => import("./PatentPhysicsRuntimeOwner").then((module) => module.LamarrPhysicsRuntimeOwner),
+  { ssr: false },
+);
+const MarconiPhysicsRuntimeOwner = dynamic(
+  () => import("./PatentPhysicsRuntimeOwner").then((module) => module.MarconiPhysicsRuntimeOwner),
+  { ssr: false },
 );
 // 2D sims are lazy: the dispatcher defaults to the 3D face, so each page only
 // downloads the vector-diagram code when the visitor actually toggles it.
@@ -92,10 +123,13 @@ const DaimlerEngineSim = dynamic(
   () => import("./DaimlerEngineSim").then((m) => m.DaimlerEngineSim),
   { ssr: false, loading: SimLoading },
 );
-const DaVinciSim = dynamic(() => import("./DaVinciSim").then((m) => m.DaVinciSim), {
-  ssr: false,
-  loading: SimLoading,
-});
+const DaVinciInterfaceSim = dynamic(
+  () => import("./DaVinciInterfaceSim").then((m) => m.DaVinciInterfaceSim),
+  {
+    ssr: false,
+    loading: SimLoading,
+  },
+);
 const DavenportMotorSim = dynamic(
   () => import("./DavenportMotorSim").then((m) => m.DavenportMotorSim),
   { ssr: false, loading: SimLoading },
@@ -231,10 +265,6 @@ const KamenMedicationInjectionSim = dynamic(
   () => import("./KamenMedicationInjectionSim").then((m) => m.KamenMedicationInjectionSim),
   { ssr: false, loading: SimLoading },
 );
-const KwolekKevlarSim = dynamic(() => import("./KwolekKevlarSim").then((m) => m.KwolekKevlarSim), {
-  ssr: false,
-  loading: SimLoading,
-});
 const LamarrFrequencyHoppingSim = dynamic(
   () => import("./LamarrFrequencyHoppingSim").then((m) => m.LamarrFrequencyHoppingSim),
   { ssr: false, loading: SimLoading },
@@ -633,10 +663,6 @@ const KamenMedicationInjection3D = dynamic(
   () => import("./three/KamenMedicationInjection3D").then((m) => m.KamenMedicationInjection3D),
   { ssr: false, loading: ThreeLoading },
 );
-const KwolekKevlar3D = dynamic(
-  () => import("./three/KwolekKevlar3D").then((mod) => mod.KwolekKevlar3D),
-  { ssr: false, loading: ThreeLoading },
-);
 const LamarrFrequencyHopping3D = dynamic(
   () => import("./three/LamarrFrequencyHopping3D").then((mod) => mod.LamarrFrequencyHopping3D),
   { ssr: false, loading: ThreeLoading },
@@ -865,10 +891,13 @@ const Roomba3D = dynamic(() => import("./three/Roomba3D").then((mod) => mod.Room
   ssr: false,
   loading: ThreeLoading,
 });
-const DaVinci3D = dynamic(() => import("./three/DaVinci3D").then((mod) => mod.DaVinci3D), {
-  ssr: false,
-  loading: ThreeLoading,
-});
+const DaVinciInterface3D = dynamic(
+  () => import("./three/DaVinciInterface3D").then((mod) => mod.DaVinciInterface3D),
+  {
+    ssr: false,
+    loading: ThreeLoading,
+  },
+);
 const EInk3D = dynamic(() => import("./three/EInk3D").then((mod) => mod.EInk3D), {
   ssr: false,
   loading: ThreeLoading,
@@ -1091,7 +1120,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             case "us-542846-diesel-engine":
               return renderMode === "3d-physics" ? <DieselEngine3D /> : <DieselEngineSim />;
             case "us-586193-marconi-radio":
-              return renderMode === "3d-physics" ? <MarconiRadio3D /> : <MarconiRadioSim />;
+              return (
+                <>
+                  <MarconiPhysicsRuntimeOwner patentId={patentId} />
+                  {renderMode === "3d-physics" ? <MarconiRadio3D /> : <MarconiRadioSim />}
+                </>
+              );
             case "us-608969-parsons-turbine":
               return renderMode === "3d-physics" ? <ParsonsTurbine3D /> : <ParsonsTurbineSim />;
             case "us-613809-tesla-teleautomaton":
@@ -1147,7 +1181,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
                 <SundbackZipperSim patentId={patentId} />
               );
             case "us-1773980-farnsworth-tv":
-              return renderMode === "3d-physics" ? <FarnsworthTV3D /> : <FarnsworthTVSim />;
+              return (
+                <>
+                  <FarnsworthTvPhysicsRuntimeOwner patentId={patentId} />
+                  {renderMode === "3d-physics" ? <FarnsworthTV3D /> : <FarnsworthTVSim />}
+                </>
+              );
             case "us-1781541-einstein-refrigerator":
               return renderMode === "3d-physics" ? (
                 <EinsteinRefrigerator3D />
@@ -1155,10 +1194,15 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
                 <EinsteinRefrigeratorSim />
               );
             case "us-2292387-lamarr-frequency-hopping":
-              return renderMode === "3d-physics" ? (
-                <LamarrFrequencyHopping3D />
-              ) : (
-                <LamarrFrequencyHoppingSim />
+              return (
+                <>
+                  <LamarrPhysicsRuntimeOwner patentId={patentId} />
+                  {renderMode === "3d-physics" ? (
+                    <LamarrFrequencyHopping3D />
+                  ) : (
+                    <LamarrFrequencyHoppingSim />
+                  )}
+                </>
               );
             case "us-2297691-carlson-electrophotography":
               return renderMode === "3d-physics" ? (
@@ -1230,9 +1274,19 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             case "us-3541541-engelbart-mouse":
               return renderMode === "3d-physics" ? <EngelbartMouse3D /> : <EngelbartMouseSim />;
             case "us-3671542-kwolek-kevlar":
-              return renderMode === "3d-physics" ? <KwolekKevlar3D /> : <KwolekKevlarSim />;
+              return (
+                <SourceVisualUnavailable
+                  title="US 3,671,542 visual held at the checked-claim boundary"
+                  detail="The public evidence currently verifies the front sheet, nine checked drawing sheets, and two printed composition claims. The remaining specification, examples, tables, and correction certificates do not yet have a complete manual source edition. The inherited polymer, tensile, and ballistic scene therefore remains unavailable rather than presenting later material behavior as a model of this grant."
+                />
+              );
             case "us-3728480-baer-odyssey":
-              return renderMode === "3d-physics" ? <BaerOdyssey3D /> : <BaerOdysseySim />;
+              return (
+                <>
+                  <BaerOdysseyPhysicsRuntimeOwner patentId={patentId} />
+                  {renderMode === "3d-physics" ? <BaerOdyssey3D /> : <BaerOdysseySim />}
+                </>
+              );
             case "us-3923554-boyle-smith-ccd":
             case "us-3858232-boyle-smith-ccd":
               return renderMode === "3d-physics" ? <BoyleSmithCcd3D /> : <BoyleSmithCcdSim />;
@@ -1256,7 +1310,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
                 <StackhouseManipulatorSim />
               );
             case "us-4063220-metcalfe-ethernet":
-              return renderMode === "3d-physics" ? <MetcalfeEthernet3D /> : <MetcalfeEthernetSim />;
+              return (
+                <>
+                  <MetcalfeEthernetPhysicsRuntimeOwner patentId={patentId} />
+                  {renderMode === "3d-physics" ? <MetcalfeEthernet3D /> : <MetcalfeEthernetSim />}
+                </>
+              );
             case "us-2318259-sikorsky-helicopter":
               return renderMode === "3d-physics" ? (
                 <SikorskyHelicopter3D />
@@ -1316,11 +1375,16 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
                 <KamenSegwaySim patentId={patentId} />
               );
             case "us-6120588-eink":
-              return renderMode === "3d-physics" ? <EInk3D /> : <EInkSim />;
+              return (
+                <>
+                  <EInkPhysicsRuntimeOwner patentId={patentId} />
+                  {renderMode === "3d-physics" ? <EInk3D /> : <EInkSim />}
+                </>
+              );
             case "us-6285999-pagerank":
               return renderMode === "3d-physics" ? <PageRank3D /> : <PageRankSim />;
             case "us-6331181-davinci":
-              return renderMode === "3d-physics" ? <DaVinci3D /> : <DaVinciSim />;
+              return renderMode === "3d-physics" ? <DaVinciInterface3D /> : <DaVinciInterfaceSim />;
             case "us-6594844-roomba":
               return renderMode === "3d-physics" ? <Roomba3D /> : <RoombaSim />;
             case "us-7479949-multitouch":

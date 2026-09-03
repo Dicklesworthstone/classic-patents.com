@@ -4,11 +4,16 @@ import { Camera, Eye, EyeOff, Pause, Play, RotateCcw, Volume2, VolumeX } from "l
 import { useEffect, useRef, useState } from "react";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
-import { daimlerKernelSource, ensureDaimlerWasm } from "@/physics/daimlerWasm";
+import {
+  daimlerKernelSource,
+  ensureDaimlerWasm,
+  subscribeDaimlerKernelSource,
+} from "@/physics/daimlerWasm";
 import { FrankenSimEngine } from "@/physics/engine";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { useWasmKernelSource } from "@/physics/useWasmKernelSource";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   buildDaimlerMarineInstallationModel,
@@ -44,7 +49,11 @@ const CAMERA_PRESETS: Record<
 export function DaimlerEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { params, updateParam } = usePatentPhysics("us-361931-daimler-engine");
-  const [kernelSource, setKernelSource] = useState(daimlerKernelSource());
+  const kernelSource = useWasmKernelSource(
+    daimlerKernelSource,
+    subscribeDaimlerKernelSource,
+    ensureDaimlerWasm,
+  );
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const shaftPosition = params.shaftPosition ?? 1;
@@ -65,16 +74,6 @@ export function DaimlerEngine3D() {
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isMuted, toggleMute } = usePatentAudio();
-
-  useEffect(() => {
-    let active = true;
-    void ensureDaimlerWasm().then((nextSource) => {
-      if (active) setKernelSource(nextSource);
-    });
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const live = useLiveSimParams({
     shaftPosition,

@@ -316,7 +316,7 @@ export function KamenSegwaySim({ patentId = PATENT_ID }: { patentId?: string }) 
                 </div>
                 <div className="w-full bg-slate-800 h-2 rounded-full mt-2 overflow-hidden">
                   <div
-                    className={`h-full transition-all ${
+                    className={`h-full transition-[width,background-color] ${
                       tel.balancingMarginRatio > 0.45
                         ? "bg-emerald-500"
                         : tel.balancingMarginRatio > 0.22

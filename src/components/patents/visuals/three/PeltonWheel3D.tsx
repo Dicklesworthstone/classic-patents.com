@@ -86,8 +86,12 @@ export function PeltonWheel3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-233692-pelton-water-wheel", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-233692-pelton-water-wheel");
+    const unregister = globalTransportBus.registerUpdater(
+      "us-233692-pelton-water-wheel",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
   }, [live]);
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);

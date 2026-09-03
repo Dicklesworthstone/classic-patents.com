@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { stepDeForestAudion } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -42,7 +43,17 @@ export function DeForestAudionSim({
     gridSignalAmplitudeMv,
     loadResistanceKOhms,
   });
+  const live = useLiveSimParams({
+    plateVoltageV,
+    gridBiasVoltageV,
+    filamentCurrentA,
+    gridSignalAmplitudeMv,
+    loadResistanceKOhms,
+    physics,
+  });
 
+  // Draw from a layout-effect-synchronized snapshot so changing a control
+  // preserves the accumulated electron and oscilloscope phase.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -55,6 +66,14 @@ export function DeForestAudionSim({
     const render = () => {
       animId = requestAnimationFrame(render);
       if (!onscreenRef.current) return;
+      const {
+        plateVoltageV,
+        gridBiasVoltageV,
+        filamentCurrentA,
+        gridSignalAmplitudeMv,
+        loadResistanceKOhms,
+        physics,
+      } = live.current;
       time += 0.03;
 
       const w = canvas.width;
@@ -349,15 +368,7 @@ export function DeForestAudionSim({
     return () => {
       cancelAnimationFrame(animId);
     };
-  }, [
-    plateVoltageV,
-    gridBiasVoltageV,
-    filamentCurrentA,
-    gridSignalAmplitudeMv,
-    loadResistanceKOhms,
-    physics,
-    onscreenRef.current,
-  ]);
+  }, [live, onscreenRef]);
 
   return (
     <div

@@ -3,7 +3,6 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepEricssonPropeller } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { MachineState } from "@/physics/types";
 import {
@@ -11,6 +10,7 @@ import {
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -61,7 +61,7 @@ export function EricssonPropeller3D() {
     (params.bladePitchAngleDeg as number) ?? (params.pitchAngleDeg as number) ?? 35;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const ericson = stepEricssonPropeller({
@@ -125,9 +125,13 @@ export function EricssonPropeller3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-588-ericsson-propeller", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-588-ericsson-propeller");
-  }, [live.current.claim1Active, live.current.shaftOmegaRadPerS, live.current.shipSpeedKnots]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-588-ericsson-propeller",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
@@ -140,10 +144,6 @@ export function EricssonPropeller3D() {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;

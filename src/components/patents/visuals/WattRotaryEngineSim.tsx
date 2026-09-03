@@ -12,12 +12,14 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
+
+const UI_SNAPSHOT_INTERVAL_MS = 80;
 
 export function WattRotaryEngineSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("gb-1306-watt-rotary-engine");
@@ -28,6 +30,7 @@ export function WattRotaryEngineSim() {
   >("engine-elevation");
   const [isPlaying, setIsPlaying] = useState(true);
   const [time, setTime] = useState(0);
+  const timeRef = useRef(0);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const strokeRateSpm = params.strokeRateSpm ?? 20;
@@ -40,18 +43,29 @@ export function WattRotaryEngineSim() {
     if (!isPlaying) return;
     let animationFrameId: number;
     let lastTimestamp = performance.now();
+    let lastUiSnapshot = 0;
 
     const render = (now: number) => {
       animationFrameId = requestAnimationFrame(render);
-      if (!onscreenRef.current) return;
-      const deltaSec = (now - lastTimestamp) / 1000;
+      if (!onscreenRef.current) {
+        lastTimestamp = now;
+        return;
+      }
+      const deltaSec = Math.max(0, Math.min(0.1, (now - lastTimestamp) / 1000));
       lastTimestamp = now;
-      setTime((prev) => prev + deltaSec);
+      timeRef.current += deltaSec;
+      // The beam, connecting rod, fixed-centre gear mesh, and both rendering
+      // tabs derive from one closed kernel pose; publish a coherent 12.5 Hz
+      // snapshot rather than re-rendering their entire SVG tree each rAF.
+      if (now - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = now;
+        setTime(timeRef.current);
+      }
     };
 
     animationFrameId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [isPlaying, onscreenRef.current]);
+  }, [isPlaying, onscreenRef]);
 
   // Compute live physics telemetry
   const telemetry = stepWattRotaryEngine(
@@ -152,6 +166,7 @@ export function WattRotaryEngineSim() {
             type="button"
             onClick={() => {
               resetParams();
+              timeRef.current = 0;
               setTime(0);
               setIsPlaying(true);
               soundEngine.playSwitchClick();

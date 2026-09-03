@@ -10,6 +10,8 @@ import { PortHamiltonianEnergyStrip } from "./PortHamiltonianEnergyStrip";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
+const UI_SNAPSHOT_INTERVAL_MS = 80;
+
 export function CorlissEngineSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-6162-corliss-steam-engine");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -20,6 +22,8 @@ export function CorlissEngineSim() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [crankAngleDeg, setCrankAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const crankAngleRef = useRef(0);
+  const corlissRef = useRef<ReturnType<typeof stepCorlissEngine> | null>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const corliss = stepCorlissEngine({
@@ -33,24 +37,42 @@ export function CorlissEngineSim() {
   const thermalEfficiencyPct = corliss.thermalEfficiencyPct;
 
   useEffect(() => {
+    corlissRef.current = corliss;
+  }, [corliss]);
+
+  useEffect(() => {
     if (!isPlaying) return;
 
     let lastTime = performance.now();
+    let lastUiSnapshot = 0;
 
     const loop = (time: number) => {
       animRef.current = requestAnimationFrame(loop);
-      if (!onscreenRef.current) return;
+      if (!onscreenRef.current) {
+        lastTime = time;
+        return;
+      }
       const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
       lastTime = time;
+      const liveCorliss = corlissRef.current;
+      if (!liveCorliss) return;
 
-      setCrankAngleDeg((prev) => (prev + corliss.crankOmegaDegPerS * dt) % corliss.displayWrapDeg);
+      crankAngleRef.current =
+        (crankAngleRef.current + liveCorliss.crankOmegaDegPerS * dt) % liveCorliss.displayWrapDeg;
+      // Piston, wrist plate, rod, spokes, and valve windows share one crank angle.
+      // Publish an intentionally bounded topology snapshot instead of forcing the
+      // full diagram through React at display-frame rate.
+      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = time;
+        setCrankAngleDeg(crankAngleRef.current);
+      }
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, corliss.crankOmegaDegPerS, corliss.displayWrapDeg, onscreenRef.current]);
+  }, [isPlaying, onscreenRef]);
 
   // Kinematic calculations for piston & wrist-plate
   const pistonStroke = sliderStrokeSvg(crankAngleDeg, corliss.pistonStrokePx);
@@ -120,6 +142,7 @@ export function CorlissEngineSim() {
             type="button"
             onClick={() => {
               resetParams();
+              crankAngleRef.current = 0;
               setCrankAngleDeg(0);
               soundEngine.playSwitchClick();
             }}

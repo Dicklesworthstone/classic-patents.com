@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import { stepHewittMercuryLamp } from "@/physics/catalogKernels";
 import {
   articulateHewittMercuryLampModel,
@@ -96,6 +97,26 @@ describe("US 682,690 Peter Cooper Hewitt Mercury-Vapor Arc Lamp Visual Boundary"
     expect(nodes.mercuryPoolMesh).toBeDefined();
     expect(nodes.condensingGlobe).toBeDefined();
     expect(nodes.materials.length).toBeGreaterThan(4);
+    const cradle = nodes.root.getObjectByName("Tilting lamp cradle and trunnion");
+    const lamp = nodes.root.getObjectByName("Complete discharge tube attached to tilting cradle");
+    const backplate = nodes.root.getObjectByName("Floor-reaching mounting backplate");
+    const support = nodes.root.getObjectByName("Backplate-to-cradle pivot support");
+    const pivot = nodes.root.getObjectByName("Central cradle trunnion anchored to bracket");
+    const starterLead = nodes.root.getObjectByName(
+      "Starting-choke lead connected to cathode terminal",
+    );
+    expect(lamp?.parent).toBe(cradle);
+    expect(backplate).toBeDefined();
+    expect(support).toBeDefined();
+    expect(pivot?.parent).toBe(cradle);
+    expect(starterLead?.parent).toBe(nodes.root);
+    if (!support || !pivot) {
+      throw new Error("Expected the cradle pivot and its backplate support to exist.");
+    }
+    nodes.root.updateMatrixWorld(true);
+    expect(
+      new THREE.Box3().setFromObject(support).intersectsBox(new THREE.Box3().setFromObject(pivot)),
+    ).toBe(true);
 
     const sim = stepHewittMercuryLamp({
       mainsVoltageV: 110,
@@ -120,8 +141,17 @@ describe("US 682,690 Peter Cooper Hewitt Mercury-Vapor Arc Lamp Visual Boundary"
 
     expect(nodes.plasmaLight.intensity).toBeGreaterThan(2.0);
     expect(nodes.cathodeSpotMesh.position.x).toBeGreaterThan(0.05);
+    const firstPassDroplets = Array.from(
+      nodes.dropletParticles.geometry.getAttribute("position").array,
+    );
+    articulateHewittMercuryLampModel(nodes, sim, 2.0);
+    articulateHewittMercuryLampModel(nodes, sim, 1.0);
+    expect(Array.from(nodes.dropletParticles.geometry.getAttribute("position").array)).toEqual(
+      firstPassDroplets,
+    );
     const modelSource = readFileSync(modelPath, "utf-8");
     expect(modelSource).not.toContain("timeSec * 30");
     expect(modelSource).not.toContain("timeSec * 8");
+    expect(() => nodes.dispose()).not.toThrow();
   });
 });

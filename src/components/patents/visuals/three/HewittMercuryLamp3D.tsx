@@ -69,7 +69,7 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  isometric: { pos: [0, 2.5, 5.0], target: [0, 1.5, 0] },
+  isometric: { pos: [0, 2.5, 6.2], target: [0, 1.5, -0.15] },
   cathode: { pos: [-1.6, 1.6, 1.8], target: [-1.6, 1.4, 0] },
   plasmaColumn: { pos: [0, 1.6, 2.5], target: [0, 1.5, 0] },
   condenser: { pos: [1.6, 1.9, 1.8], target: [1.6, 1.7, 0] },
@@ -170,15 +170,13 @@ export function HewittMercuryLamp3D({
         },
       };
     };
-    globalTransportBus.registerUpdater("us-682690-hewitt-mercury-lamp", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-682690-hewitt-mercury-lamp");
-  }, [
-    live.current.ballastResistanceOhms,
-    live.current.condenserCoolingLevel,
-    live.current.mainsVoltageV,
-    live.current.tubeDiameterMm,
-    live.current.tubeLengthCm,
-  ]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-682690-hewitt-mercury-lamp",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
@@ -204,8 +202,8 @@ export function HewittMercuryLamp3D({
 
     const clock = createStudioClock();
     const animate = (now: number) => {
+      animFrameRef.current = requestAnimationFrame(animate);
       if (!studio.isVisible()) {
-        animFrameRef.current = requestAnimationFrame(animate);
         return;
       }
       const { dt, simTimeSec } = clock.pump(now);
@@ -240,9 +238,7 @@ export function HewittMercuryLamp3D({
 
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-      nodes.materials.forEach((m) => {
-        m.dispose();
-      });
+      nodes.dispose();
       studio.cleanup();
       studioRef.current = null;
       nodesRef.current = null;

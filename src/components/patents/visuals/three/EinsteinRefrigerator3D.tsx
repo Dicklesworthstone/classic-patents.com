@@ -141,21 +141,12 @@ export function EinsteinRefrigerator3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater(
+    return globalTransportBus.registerUpdater(
       "us-1781541-einstein-refrigerator",
       integrate,
       "TS_FALLBACK",
     );
-    return () => globalTransportBus.unregisterUpdater("us-1781541-einstein-refrigerator");
-  }, [
-    live.current.claim1Active,
-    live.current.coolingWatts,
-    live.current.cop,
-    live.current.evapTempC,
-    live.current.heatInputWatts,
-    live.current.partialPressureButaneAtm,
-    live.current.totalPressureAtm,
-  ]);
+  }, [live]);
 
   const studioRef = useRef<StudioContext | null>(null);
 

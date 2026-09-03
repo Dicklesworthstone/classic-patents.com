@@ -73,8 +73,8 @@ export function PageRank3D() {
       };
       return null;
     };
-    globalTransportBus.registerUpdater(EXHIBIT_ID, integrate);
-    return () => globalTransportBus.unregisterUpdater(EXHIBIT_ID);
+    const unregister = globalTransportBus.registerUpdater(EXHIBIT_ID, integrate);
+    return unregister;
   }, [live]);
 
   useEffect(() => {

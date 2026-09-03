@@ -2,113 +2,101 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
-  KAMEN_TRANSPORTER_DEFAULT_CONTROLS,
   readKamenTransporterControls,
-  stepKamenTransporterSi,
+  stepKamenTransporterTopology,
 } from "@/physics/kamenTransporterKernel";
 import {
   buildKamenTransporterModel,
   updateKamenTransporterKinematics,
 } from "./kamenTransporterModel";
 
-describe("US 5,701,965 Dean Kamen Human Transporter Visual & Dynamic Stabilization Boundary", () => {
-  test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
+describe("US 5,701,965 Kamen Transporter source-bound Three.js topology", () => {
+  test("uses a procedural Three.js model with named cluster-wheel topology and no external asset", () => {
     const model = buildKamenTransporterModel();
-    expect(model.root).toBeDefined();
-    expect(model.chassis).toBeDefined();
-    expect(model.leftCluster).toBeDefined();
-    expect(model.rightCluster).toBeDefined();
-    expect(model.leftWheel1).toBeDefined();
-    expect(model.rightWheel1).toBeDefined();
-    expect(model.stairTerrain).toBeDefined();
-    expect(model.cgMarker).toBeDefined();
-
-    // Verify cleanup
+    expect(model.root.name).toBe("kamen-source-topology");
+    expect(model.leftCluster.name).toBe("cluster-wheel-module");
+    expect(model.rightCluster.name).toBe("cluster-wheel-module");
+    expect(model.topologyLinkLine.name).toBe("control-relationship-link");
+    expect(model.leftWheel1.name).toBe("cluster-wheel-a");
+    expect(model.rightWheel2.name).toBe("cluster-wheel-b");
     expect(() => model.dispose()).not.toThrow();
   });
 
-  test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
-    const controls = readKamenTransporterControls({
-      riderPitchLeanDeg: 5,
-      velocityCommandMs: 1.5,
-      operatingMode: "balance_2wheel",
-    });
+  test("resolves a deterministic qualitative climb relation without a numeric dynamics claim", () => {
+    const controls = readKamenTransporterControls({ topologyState: 4 });
+    const run1 = stepKamenTransporterTopology(controls);
+    const run2 = stepKamenTransporterTopology(controls);
 
-    const run1 = stepKamenTransporterSi(controls);
-    const run2 = stepKamenTransporterSi(controls);
-
-    expect(run1.pitchAngleDeg).toBe(run2.pitchAngleDeg);
-    expect(run1.balanceTorqueNm).toBe(run2.balanceTorqueNm);
-    expect(run1.forwardVelocityMs).toBe(run2.forwardVelocityMs);
-    expect(run1.stabilityMargin).toBe(run2.stabilityMargin);
+    expect(run1).toEqual(run2);
+    expect(run1.topologyState).toBe("climb");
+    expect(run1.balanceLoopActive).toBe(true);
+    expect(run1.clusterTopologyActive).toBe(true);
+    expect(run1.stairSequenceActive).toBe(true);
+    expect(run1.wheelControlMode).toBe("balance-and-cluster-coordination");
+    expect(run1.sourceClaimNumbers).toEqual([21, 22, 26]);
   });
 
-  test("computes genuine inverted pendulum equilibrium, natural frequency, and restoring torque in SI units", () => {
-    const neutralControls = { ...KAMEN_TRANSPORTER_DEFAULT_CONTROLS };
-    const neutral = stepKamenTransporterSi(neutralControls);
-
-    expect(neutral.naturalFrequencyRadS).toBeGreaterThan(3.0); // sqrt(9.81 / 0.92) ~ 3.26 rad/s
-    expect(neutral.isBalancing).toBe(true);
-    expect(neutral.pitchRefusal).toBe(false);
-
-    // Forward lean test
-    const forwardLean = stepKamenTransporterSi({
-      ...neutralControls,
-      riderPitchLeanDeg: -8,
-    });
-    expect(forwardLean.pitchAngleDeg).toBeLessThan(0);
-    expect(forwardLean.balanceTorqueNm).toBeLessThan(0); // Restoring forward acceleration
-
-    // Safety refusal test on extreme tilt
-    const extremeTilt = stepKamenTransporterSi({
-      ...neutralControls,
-      riderPitchLeanDeg: -35,
-    });
-    expect(extremeTilt.pitchRefusal).toBe(true);
-    expect(extremeTilt.stabilityMargin).toBe(0);
-  });
-
-  test("projects the kernel-owned terminal wheel phase without recomputing speed", () => {
+  test("projects discrete source-reading poses without wheel spin, translation, or chassis tilt", () => {
     const model = buildKamenTransporterModel();
-    const controls = { ...KAMEN_TRANSPORTER_DEFAULT_CONTROLS };
-    const tel = stepKamenTransporterSi(controls);
-    const phase = 1.25;
+    const balanceControls = readKamenTransporterControls({ topologyState: 1 });
+    const balance = stepKamenTransporterTopology(balanceControls);
+    updateKamenTransporterKinematics(model, balanceControls, balance, 9);
 
-    expect(() => {
-      updateKamenTransporterKinematics(model, controls, tel, phase);
-    }).not.toThrow();
+    expect(model.chassis.rotation.z).toBe(0);
+    expect(model.leftWheel1.rotation.z).toBe(0);
+    expect(model.rightWheel2.rotation.z).toBe(0);
+    expect(model.stairTerrain.visible).toBe(false);
 
-    expect(model.chassis.position.y).toBeGreaterThan(0.2); // Elevated in 2-wheel balance mode
-    expect(model.seatGroup.visible).toBe(true);
-    expect(model.leftWheel1.rotation.z).toBeCloseTo(-phase, 12);
-    expect(model.leftWheel2.rotation.z).toBeCloseTo(-phase, 12);
-    expect(model.rightWheel1.rotation.z).toBeCloseTo(-phase, 12);
-    expect(model.rightWheel2.rotation.z).toBeCloseTo(-phase, 12);
+    const climbControls = readKamenTransporterControls({ topologyState: 4 });
+    const climb = stepKamenTransporterTopology(climbControls);
+    updateKamenTransporterKinematics(model, climbControls, climb, 0);
+    expect(model.leftCluster.rotation.z).toBe(climb.clusterDisplayPoseRad);
+    expect(model.rightCluster.rotation.z).toBe(climb.clusterDisplayPoseRad);
+    expect(model.stairTerrain.visible).toBe(true);
 
-    const fasterTel = stepKamenTransporterSi({ ...controls, velocityCommandMs: 3 });
-    updateKamenTransporterKinematics(model, controls, fasterTel, phase);
-    expect(model.leftWheel1.rotation.z).toBeCloseTo(-phase, 12);
+    const withheldControls = readKamenTransporterControls({
+      topologyState: 4,
+      claim16ClusterEnabled: 0,
+    });
+    updateKamenTransporterKinematics(
+      model,
+      withheldControls,
+      stepKamenTransporterTopology(withheldControls),
+      0,
+    );
+    expect(model.leftCluster.visible).toBe(false);
+    expect(model.rightCluster.visible).toBe(false);
+    model.dispose();
+  });
 
+  test("keeps the public scenes on the shared tape while excluding false SI and gear-train language", () => {
     const sceneSource = readFileSync(
       join(process.cwd(), "src/components/patents/visuals/three/KamenTransporter3D.tsx"),
       "utf8",
     );
-    expect(sceneSource).toContain("globalTransportBus.registerUpdater");
-    expect(sceneSource).toContain("createKamenTransporterTransportUpdater");
-    expect(sceneSource).not.toContain("wheelRollAngle +=");
-    expect(sceneSource).not.toContain("* 0.016");
-
+    const twoDimensionalSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/KamenTransporterSim.tsx"),
+      "utf8",
+    );
     const modelSource = readFileSync(
       join(process.cwd(), "src/components/patents/visuals/three/kamenTransporterModel.ts"),
       "utf8",
     );
-    expect(modelSource).not.toContain("wheelSpinSpeed");
-    expect(modelSource).toContain("-wheelRollAngleRad");
 
-    model.dispose();
+    expect(sceneSource).toContain("globalTransportBus.registerUpdater");
+    expect(sceneSource).toContain("createKamenTransporterTransportUpdater");
+    expect(sceneSource).toContain("stepKamenTransporterTopology");
+    expect(sceneSource).not.toContain("stepKamenTransporterSi");
+    expect(sceneSource).not.toMatch(/riderPitchLeanDeg|velocityCommandMs|MOTOR TORQUE|N·m|m\/s/i);
+    expect(twoDimensionalSource).toContain("stepKamenTransporterTopology");
+    expect(twoDimensionalSource).not.toMatch(/riderPitchLeanDeg|velocityCommandMs|N·m|m\/s/i);
+    expect(twoDimensionalSource.match(/<PhysicsTelemetryBadge/g)?.length).toBe(1);
+    expect(modelSource).toContain("cluster-wheel-carrier");
+    expect(modelSource).toContain("clusterDisplayPoseRad");
+    expect(modelSource).not.toMatch(/planetary|wheelSpinSpeed|SCENARIO_WHEEL_RADIUS/i);
   });
 
-  test("places phone telemetry and controls after the transporter canvas", () => {
+  test("places telemetry and claim-reading controls after the fixed canvas", () => {
     const source = readFileSync(
       join(process.cwd(), "src/components/patents/visuals/three/KamenTransporter3D.tsx"),
       "utf8",
@@ -121,6 +109,9 @@ describe("US 5,701,965 Dean Kamen Human Transporter Visual & Dynamic Stabilizati
     expect(telemetryIndex).toBeGreaterThan(canvasIndex);
     expect(controlsIndex).toBeGreaterThan(telemetryIndex);
     expect(source).toContain('id="kamen-transporter-camera-view"');
-    expect(source).toContain("hidden space-y-1");
+    expect(source).toContain("controls.setView");
+    expect(source).not.toContain("camera.position.set");
+    expect(source).toContain('updateParam("topologyState", index)');
+    expect(source).toContain('data-audit-primary-control={index === 0 ? "true" : undefined}');
   });
 });

@@ -1,7 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import type { Object3D } from "three";
 import { FrankenSimEngine } from "@/physics/engine";
+import { spencerViewForViewport } from "./SpencerMicrowave3D";
 import {
   buildSpencerMicrowaveModel,
   updateSpencerMicrowaveKinematics,
@@ -62,9 +64,28 @@ describe("US 2,495,429 Percy Spencer Microwave Cavity Magnetron visual & RF phys
       expect(threeSource).toContain(preset);
     }
     expect(threeSource).toContain("isCutaway");
+
+    const desktop = spencerViewForViewport("iso", 1200);
+    const tablet = spencerViewForViewport("iso", 768);
+    const phone = spencerViewForViewport("iso", 320);
+    const distance = (view: typeof desktop) => Math.hypot(...view.pos);
+    expect(distance(tablet) / distance(desktop)).toBeCloseTo(1.55, 8);
+    expect(distance(phone) / distance(desktop)).toBeCloseTo(2.15, 8);
+    expect(threeSource).toContain("Source-bounded energy path");
+    expect(threeSource).toContain("SPENCER_3D_SOURCE_BOUNDARY");
+    expect(threeSource).toContain("modern illustrative scenario only");
+    expect(threeSource).toContain("refusal: { isRefused: true");
+    expect(threeSource).not.toContain("refusal: { isRefused: false }");
+    expect(threeSource).not.toContain("em: {");
+    expect(threeSource).toContain("Modern-scenario frequency:");
+    expect(threeSource).toContain("Illustrative modern magnetron scenario");
+    expect(threeSource).toContain('updateParam("rfPowerSetting", active ? 1 : 0)');
+    expect(threeSource).not.toContain('updateParam("rfPowerSetting", active ? 800 : 0)');
+    expect(threeSource).not.toContain('label="RF Power Rating"');
+    expect(threeSource).not.toContain('paramKey="anodeVoltage"');
   });
 
-  test("computes genuine Hull cutoff condition, microwave frequency, and dielectric loss in SI units", () => {
+  test("keeps the disclosed modern magnetron scenario deterministic and outside the source receipt", () => {
     const result = FrankenSimEngine.stepSpencerMicrowave(2.2, 1450, 800);
     expect(result.hullCutoffGauss).toBeGreaterThan(500);
     expect(result.isOscillating).toBe(true);
@@ -82,12 +103,28 @@ describe("US 2,495,429 Percy Spencer Microwave Cavity Magnetron visual & RF phys
     expect(model.anodeOuter).toBeDefined();
     expect(model.cathodeMesh).toBeDefined();
     expect(model.spokePoints).toBeDefined();
+    const guides: Object3D[] = [];
+    model.root.traverse((node) => {
+      if (node.name.startsWith("Oscillator coupling guide 2")) guides.push(node);
+    });
+    expect(guides).toHaveLength(2);
+    expect(guides.map((guide) => guide.name).sort()).toEqual([
+      "Oscillator coupling guide 26",
+      "Oscillator coupling guide 27",
+    ]);
+    expect(guides.map((guide) => guide.position.x).sort((a, b) => a - b)).toEqual([-3.8, 3.8]);
+    expect(model.spokePointSets).toHaveLength(2);
+    expect(model.root.getObjectByName("Oscillator source 10")).toBeDefined();
+    expect(model.root.getObjectByName("Oscillator source 11")).toBeDefined();
 
     // Test kinematics update & cutaway
     updateSpencerMicrowaveKinematics(model, 1 / 60, true, 4.5, 0.547, true, true);
-    expect(model.spokePoints.visible).toBe(true);
+    expect(model.spokePointSets.every((spokes) => spokes.visible)).toBe(true);
+    expect(model.spokePointSets[0].rotation.y).toBeCloseTo(model.spokePointSets[1].rotation.y, 10);
     expect(model.spokePoints.rotation.y).toBeGreaterThan(0);
     expect(model.materials.copperAnodeMat.opacity).toBe(0.35);
+    updateSpencerMicrowaveKinematics(model, 1 / 60, false, 4.5, 0.547, true, true);
+    expect(model.spokePointSets.every((spokes) => !spokes.visible)).toBe(true);
 
     model.dispose();
   });

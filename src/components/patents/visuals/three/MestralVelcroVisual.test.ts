@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import {
   MESTRAL_VELCRO_DEFAULTS,
@@ -13,9 +14,21 @@ import {
   resetPatentPhysicsParams,
   setPatentPhysicsParam,
 } from "@/physics/usePatentPhysics";
+import { mestralOverviewCameraForViewport } from "./MestralVelcro3D";
 import { createMestralVelcroModel } from "./mestralVelcroModel";
 
 describe("Mestral Velcro 3D Procedural Model", () => {
+  test("widens the initial overview enough to show the tape and peel flap on a phone", () => {
+    expect(mestralOverviewCameraForViewport(342)).toEqual({
+      cameraPos: [8.6, 7, 20.2],
+      targetPos: [0, 1.8, 0],
+    });
+    expect(mestralOverviewCameraForViewport(768)).toEqual({
+      cameraPos: [4.5, 3.5, 9.5],
+      targetPos: [0, 0.5, 0],
+    });
+  });
+
   test("instantiates procedural hook and loop arrays with valid Three.js hierarchy", () => {
     const model = createMestralVelcroModel();
     expect(model.rootGroup).toBeDefined();
@@ -56,17 +69,31 @@ describe("Mestral Velcro 3D Procedural Model", () => {
     model.dispose();
   });
 
-  test("uses the kernel-emitted peel front to pose the 3D loop field", () => {
+  test("keeps the loop pile attached to backing sections as the kernel peel front advances", () => {
     const model = createMestralVelcroModel();
     const earlyControls = { ...MESTRAL_VELCRO_DEFAULTS, peelProgress: 0.05 };
     const lateControls = { ...MESTRAL_VELCRO_DEFAULTS, peelProgress: 0.95 };
-    const loopNearTheFront = model.loopMeshes[1];
+    const rightHandSection = model.upperTapeSections.at(-1);
+    const loopOnRightHandSection = model.loopMeshes.find(
+      (loop) => loop.parent === rightHandSection,
+    );
+
+    expect(rightHandSection).toBeDefined();
+    expect(loopOnRightHandSection).toBeDefined();
 
     model.update(earlyControls, stepMestralVelcroSi(earlyControls));
-    expect(loopNearTheFront?.position.y).toBeGreaterThan(0);
+    const earlyDetachedHeight = rightHandSection?.position.y ?? 0;
 
     model.update(lateControls, stepMestralVelcroSi(lateControls));
-    expect(loopNearTheFront?.position.y).toBe(0);
+    expect(rightHandSection?.position.y).toBeGreaterThan(earlyDetachedHeight);
+    expect(rightHandSection?.rotation.z).toBeGreaterThan(0);
+    expect(loopOnRightHandSection?.position.y).toBe(0);
+
+    model.rootGroup.updateMatrixWorld(true);
+    const sectionWorld = rightHandSection?.getWorldPosition(new THREE.Vector3());
+    const loopWorld = loopOnRightHandSection?.getWorldPosition(new THREE.Vector3());
+    expect(loopWorld?.x).toBeCloseTo(sectionWorld?.x ?? 0, 6);
+    expect(loopWorld?.y).toBeCloseTo(sectionWorld?.y ?? 0, 6);
     model.dispose();
   });
 

@@ -3,7 +3,6 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { stepGrammeDynamo } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { ElectromagneticsState, MachineState } from "@/physics/types";
 import {
@@ -11,6 +10,7 @@ import {
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -78,7 +78,7 @@ export const GrammeDynamo3D = memo(() => {
   const gramme = stepGrammeDynamo({ shaftRate });
   const showMagneticFlux = true;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
@@ -142,9 +142,13 @@ export const GrammeDynamo3D = memo(() => {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-120057-gramme-dynamo", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-120057-gramme-dynamo");
-  }, [live.current.claim1Active, live.current.displayRadPerFrame]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-120057-gramme-dynamo",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const studioRef = useRef<StudioContext | null>(null);
 
@@ -159,10 +163,6 @@ export const GrammeDynamo3D = memo(() => {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;

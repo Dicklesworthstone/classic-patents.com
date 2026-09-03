@@ -46,6 +46,13 @@ export function BoyleSmithCcd3D() {
   const incidentLux = params.incidentLux ?? 250;
   const integrationTime = params.integrationTimeMs ?? 16.7;
   const temperature = params.temperatureKelvin ?? 300;
+  const metrics = stepBoyleSmithCcd({
+    gateVoltageV: gateVoltage,
+    clockFrequencyMhz: clockFreq,
+    incidentLux,
+    integrationTimeMs: integrationTime,
+    temperatureKelvin: temperature,
+  });
 
   const live = useLiveSimParams({
     gateVoltageV: gateVoltage,
@@ -53,6 +60,7 @@ export function BoyleSmithCcd3D() {
     incidentLux,
     integrationTimeMs: integrationTime,
     temperatureKelvin: temperature,
+    chargeTransferEfficiencyPct: metrics.ctePct,
     isRunning,
     isCutaway,
   });
@@ -64,14 +72,6 @@ export function BoyleSmithCcd3D() {
     const cfg = CAMERA_PRESETS[preset];
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
-
-  const metrics = stepBoyleSmithCcd({
-    gateVoltageV: gateVoltage,
-    clockFrequencyMhz: clockFreq,
-    incidentLux,
-    integrationTimeMs: integrationTime,
-    temperatureKelvin: temperature,
-  });
 
   // Shared transport tape: one bus-owned integrator steps the three-phase
   // display clock; the kernel's transfer-efficiency metrics publish on the
@@ -98,7 +98,7 @@ export function BoyleSmithCcd3D() {
         biasVoltageVolts: live.current.gateVoltageV,
         currentGainAlpha: 0,
         holeDiffusionCoefficientCm2ps: 0,
-        chargeTransferEfficiencyPct: metrics.ctePct,
+        chargeTransferEfficiencyPct: live.current.chargeTransferEfficiencyPct,
         clockPeriodNs:
           live.current.clockFrequencyMhz > 0
             ? Number((1000 / live.current.clockFrequencyMhz).toFixed(3))
@@ -119,14 +119,13 @@ export function BoyleSmithCcd3D() {
       };
       return { semi, machine };
     };
-    globalTransportBus.registerUpdater("us-3858232-boyle-smith-ccd", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-3858232-boyle-smith-ccd");
-  }, [
-    live.current.isRunning,
-    live.current.gateVoltageV,
-    live.current.clockFrequencyMhz,
-    metrics.ctePct,
-  ]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-3858232-boyle-smith-ccd",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   useEffect(() => {
     const container = containerRef.current;

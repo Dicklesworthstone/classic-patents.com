@@ -13,7 +13,8 @@ export function MilacronRobotToolchangerSim() {
   const slide = state.lockingSlideFraction;
   const slideX = 270 + slide * 96;
   const baseY = state.toolBasePresent ? 220 - state.registrationFraction * 36 : 310;
-  const tMemberVisible = state.toolBasePresent && state.registrationComplete;
+  const tMemberVisible = state.toolBasePresent && state.claimFourTMemberSelected;
+  const genericMemberVisible = state.toolBasePresent && !state.claimFourTMemberSelected;
 
   return (
     <section className="overflow-hidden rounded-2xl border border-cyan-800/50 bg-slate-950 text-slate-100 shadow-2xl">
@@ -225,6 +226,39 @@ export function MilacronRobotToolchangerSim() {
                     </text>
                   </g>
                 )}
+                {genericMemberVisible && (
+                  <g>
+                    <rect
+                      x="-12"
+                      y="-17"
+                      width="24"
+                      height="54"
+                      rx="4"
+                      fill="#f43f5e"
+                      stroke="#fecdd3"
+                      strokeWidth="2"
+                    />
+                    <ellipse
+                      cx="0"
+                      cy="-18"
+                      rx="25"
+                      ry="10"
+                      fill="#e11d48"
+                      stroke="#fecdd3"
+                      strokeWidth="3"
+                    />
+                    <text
+                      x="0"
+                      y="-40"
+                      textAnchor="middle"
+                      fill="#fecdd3"
+                      fontFamily="monospace"
+                      fontSize="11"
+                    >
+                      CLAIM 3 RETENTION MEMBER
+                    </text>
+                  </g>
+                )}
                 <text
                   x="0"
                   y="106"
@@ -296,7 +330,11 @@ export function MilacronRobotToolchangerSim() {
             <div className="rounded-lg border border-emerald-800/70 bg-emerald-950/35 p-2.5">
               <span className="text-emerald-300">Claim 4</span>
               <span className="float-right font-mono">
-                {state.claimFourRampCaptured ? "ramp captured" : "not selected"}
+                {state.claimFourTMemberSelected
+                  ? state.claimFourRampCaptured
+                    ? "ramp captured"
+                    : "T-member selected"
+                  : "Claim 3 member"}
               </span>
             </div>
           </div>

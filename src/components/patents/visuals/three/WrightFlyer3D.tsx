@@ -592,14 +592,14 @@ export function WrightFlyer3D() {
           <SensitivitySlider
             id="airspeed"
             patentId={WRIGHT_PATENT_ID}
-            paramKey="airspeedKts"
+            paramKey="airspeed"
             label="Airspeed"
             value={airspeedMph}
             min={15}
             max={45}
             step={1}
             unit="mph"
-            onChange={(val) => updateParam("speed", val)}
+            onChange={(val) => updateParam("airspeed", val)}
             allParams={params}
           />
 

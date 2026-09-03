@@ -8,6 +8,8 @@ import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
+const UI_SNAPSHOT_INTERVAL_MS = 80;
+
 export function WhitneyCottonGinSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-x72-whitney-cotton-gin");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -16,6 +18,10 @@ export function WhitneyCottonGinSim() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [angle, setAngle] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const angleRef = useRef(0);
+  const ginRef = useRef<ReturnType<typeof stepWhitneyCottonGin> | null>(null);
+  const sawRef = useRef<SVGGElement>(null);
+  const brushRef = useRef<SVGGElement>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const gin = stepWhitneyCottonGin({ crankRpm, seedGridClearance: grateClearanceMm });
@@ -26,24 +32,47 @@ export function WhitneyCottonGinSim() {
   const isSeedDamaged = grateClearanceMm > 3.8;
 
   useEffect(() => {
+    ginRef.current = gin;
+  }, [gin]);
+
+  useEffect(() => {
     if (!isPlaying) return;
 
     let lastTime = performance.now();
+    let lastUiSnapshot = 0;
 
     const loop = (time: number) => {
       animRef.current = requestAnimationFrame(loop);
-      if (!onscreenRef.current) return;
+      if (!onscreenRef.current) {
+        lastTime = time;
+        return;
+      }
       const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
       lastTime = time;
+      const liveGin = ginRef.current;
+      if (!liveGin) return;
 
-      setAngle((prev) => (prev + gin.crankOmegaDegPerS * dt) % gin.displayWrapDeg);
+      angleRef.current =
+        (angleRef.current + liveGin.crankOmegaDegPerS * dt) % liveGin.displayWrapDeg;
+      sawRef.current?.setAttribute(
+        "transform",
+        `translate(260, 170) rotate(${angleRef.current * liveGin.sawToCrankRatio})`,
+      );
+      brushRef.current?.setAttribute(
+        "transform",
+        `translate(420, 170) rotate(${-angleRef.current * liveGin.brushToCrankRatio})`,
+      );
+      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = time;
+        setAngle(angleRef.current);
+      }
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, gin.crankOmegaDegPerS, gin.displayWrapDeg, onscreenRef.current]);
+  }, [isPlaying, onscreenRef]);
 
   return (
     <div
@@ -97,6 +126,9 @@ export function WhitneyCottonGinSim() {
             type="button"
             onClick={() => {
               resetParams();
+              angleRef.current = 0;
+              sawRef.current?.setAttribute("transform", "translate(260, 170) rotate(0)");
+              brushRef.current?.setAttribute("transform", "translate(420, 170) rotate(0)");
               setAngle(0);
               soundEngine.playSwitchClick();
             }}
@@ -180,7 +212,7 @@ export function WhitneyCottonGinSim() {
           </g>
 
           {/* Rotating Saw Cylinder */}
-          <g transform={`translate(260, 170) rotate(${angle * gin.sawToCrankRatio})`}>
+          <g ref={sawRef} transform={`translate(260, 170) rotate(${angle * gin.sawToCrankRatio})`}>
             <circle cx="0" cy="0" r={gin.sawSvgR} fill="#2A2A2A" stroke="#C5A059" strokeWidth="3" />
             {/* Saw teeth */}
             {Array.from({ length: gin.sawToothCount }).map((_, i) => {
@@ -198,7 +230,10 @@ export function WhitneyCottonGinSim() {
           </g>
 
           {/* Rotating Brush Cylinder (counter-rotating at kernel brush/crank ratio) */}
-          <g transform={`translate(420, 170) rotate(${-angle * gin.brushToCrankRatio})`}>
+          <g
+            ref={brushRef}
+            transform={`translate(420, 170) rotate(${-angle * gin.brushToCrankRatio})`}
+          >
             <circle
               cx="0"
               cy="0"

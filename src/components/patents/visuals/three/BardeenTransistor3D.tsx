@@ -108,9 +108,12 @@ export const BardeenTransistor3D = memo(() => {
       };
       return { machine };
     };
-    globalTransportBus.registerUpdater("us-2524035-bardeen-transistor", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-2524035-bardeen-transistor");
-  }, [live.current.carrierDisplaySpeed, live.current.showCarrierPaths]);
+    return globalTransportBus.registerUpdater(
+      "us-2524035-bardeen-transistor",
+      integrate,
+      "TS_FALLBACK",
+    );
+  }, [live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);

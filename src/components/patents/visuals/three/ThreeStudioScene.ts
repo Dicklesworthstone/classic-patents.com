@@ -174,6 +174,7 @@ export function checkPrefersReducedMotion(): boolean {
  * Creates a high-luminosity, beautiful blue sky & studio environment for Three.js.
  */
 export function createThreeStudioScene(opts: StudioOptions): StudioContext {
+  const studioStartedAt = typeof performance !== "undefined" ? performance.now() : 0;
   const {
     container,
     cameraPos = [14, 12, 16],
@@ -237,6 +238,36 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   container.style.contain = "layout paint";
   container.style.transform = "translateZ(0)";
   container.replaceChildren(canvas);
+
+  // Publish lightweight renderer receipts on the canvas for production E2E
+  // budgets. The frame receipt advances after each successful render so a
+  // runner can distinguish a live studio from a merely mounted canvas. The
+  // expensive renderer-info measurements remain sampled.
+  canvas.dataset.threeFrameCount = "0";
+  const renderWithoutDiagnostics = renderer.render.bind(renderer);
+  let renderedFrameCount = 0;
+  renderer.render = ((renderScene: THREE.Object3D, renderCamera: THREE.Camera) => {
+    const nextFrameCount = renderedFrameCount + 1;
+    const shouldSample = nextFrameCount === 1 || nextFrameCount === 5 || nextFrameCount % 30 === 0;
+    const submitStartedAt = shouldSample ? performance.now() : 0;
+    renderWithoutDiagnostics(renderScene, renderCamera);
+    renderedFrameCount = nextFrameCount;
+    canvas.dataset.threeFrameCount = String(renderedFrameCount);
+    if (shouldSample) {
+      const renderInfo = renderer.info.render;
+      // This is CPU time spent submitting the render, not a GPU timer query.
+      canvas.dataset.threeCpuSubmitMs = (performance.now() - submitStartedAt).toFixed(3);
+      canvas.dataset.threeDrawCalls = String(renderInfo.calls);
+      canvas.dataset.threeTriangles = String(renderInfo.triangles);
+      canvas.dataset.threeLines = String(renderInfo.lines);
+      canvas.dataset.threePoints = String(renderInfo.points);
+      canvas.dataset.threeGeometries = String(renderer.info.memory.geometries);
+      canvas.dataset.threeTextures = String(renderer.info.memory.textures);
+      if (renderedFrameCount === 1) {
+        canvas.dataset.threeFirstRenderMs = (performance.now() - studioStartedAt).toFixed(3);
+      }
+    }
+  }) as typeof renderer.render;
 
   // Mobile GPU resets silently kill WebGL contexts. preventDefault on loss
   // keeps the context restorable; three.js re-uploads programs, geometries,

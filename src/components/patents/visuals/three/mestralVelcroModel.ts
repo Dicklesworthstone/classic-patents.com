@@ -18,6 +18,8 @@ export interface MestralVelcro3DObjects {
   rootGroup: THREE.Group;
   lowerTapeGroup: THREE.Group;
   upperTapeGroup: THREE.Group;
+  /** Consecutive flexible-backing sections that own their loop-pile roots. */
+  upperTapeSections: THREE.Group[];
   lancetBarGroup: THREE.Group;
   hookMeshes: THREE.Mesh[];
   loopMeshes: THREE.Mesh[];
@@ -110,12 +112,27 @@ export function createMestralVelcroModel(): MestralVelcro3DObjects {
   const upperTapeGroup = new THREE.Group();
   upperTapeGroup.name = "upper-tape";
 
-  const upperTapeGeo = new THREE.BoxGeometry(10, 0.2, 3);
-  const upperTapeMesh = new THREE.Mesh(upperTapeGeo, tapeBackingMaterial);
-  upperTapeMesh.position.set(0, 0.1, 0);
-  upperTapeGroup.add(upperTapeMesh);
+  // A single rigid backing cannot describe a peel front. Segment the flexible
+  // tape along the peel direction, with each section owning the loop roots
+  // attached to its lower face.
+  const columnPitch = 0.6;
+  const upperTapeSectionGeo = new THREE.BoxGeometry(columnPitch + 0.04, 0.2, 3);
+  const upperTapeSections: THREE.Group[] = [];
+  for (let c = 0; c < numCols; c++) {
+    const section = new THREE.Group();
+    section.name = `upper-tape-section-${c}`;
+    section.position.x = -4.5 + c * columnPitch;
 
-  // 4. Procedural Upper Loop Array
+    const backing = new THREE.Mesh(upperTapeSectionGeo, tapeBackingMaterial);
+    // A loop's local y = 0 root sits exactly on this lower backing face.
+    backing.position.y = 0.1;
+    section.add(backing);
+    upperTapeGroup.add(section);
+    upperTapeSections.push(section);
+  }
+
+  // 4. Procedural Upper Loop Array. Loops belong to their backing section;
+  // no loop can move independently through empty space during a peel.
   const loopMeshes: THREE.Mesh[] = [];
   const loopCurvePoints = [
     new THREE.Vector3(0, 0, 0),
@@ -130,11 +147,10 @@ export function createMestralVelcroModel(): MestralVelcro3DObjects {
   for (let r = 0; r < numRows; r++) {
     for (let c = 0; c < numCols; c++) {
       const lMesh = new THREE.Mesh(baseLoopGeo, loopMaterial);
-      const x = -4.5 + c * 0.6;
       const z = -1.1 + r * 0.55;
-      lMesh.position.set(x, 0, z);
+      lMesh.position.set(0, 0, z);
       lMesh.rotation.y = (r * 0.4 + c * 0.2) * Math.PI;
-      upperTapeGroup.add(lMesh);
+      upperTapeSections[c]?.add(lMesh);
       loopMeshes.push(lMesh);
     }
   }
@@ -163,23 +179,20 @@ export function createMestralVelcroModel(): MestralVelcro3DObjects {
   // Dynamic Update Function
   function update(controls: MestralVelcroControls, tel: MestralVelcroTelemetry, _timeSec = 0) {
     const peelRad = (controls.peelAngleDeg * Math.PI) / 180;
-    const peelPivotX = -4.5 + tel.peelProgress * 9.0;
+    // The display starts peeling from the right edge. More normalized advance
+    // must mean more of the tape is detached, never less.
+    const peelPivotX = 4.5 - tel.peelProgress * 9.0;
+    // World lengths are a compact studio projection rather than measured tape
+    // dimensions. Derive the section tilt from the displayed rise so both the
+    // backing and loop pile remain geometrically continuous.
+    const displayRisePerX = 0.8 * Math.sin(peelRad);
+    const peeledSectionTilt = Math.atan2(displayRisePerX, 1);
 
-    // Update Upper Tape Peeling Curve
     upperTapeGroup.position.set(0, 1.1, 0);
-
-    // Dynamic Upper Loops Positioning along Peel Wave
-    loopMeshes.forEach((mesh) => {
-      const origX = mesh.position.x;
-      if (origX > peelPivotX) {
-        const deltaX = origX - peelPivotX;
-        const liftY = deltaX * Math.sin(peelRad) * 0.8;
-        mesh.position.y = liftY;
-        mesh.rotation.z = deltaX * 0.15;
-      } else {
-        mesh.position.y = 0;
-        mesh.rotation.z = 0;
-      }
+    upperTapeSections.forEach((section) => {
+      const detachedDistance = Math.max(0, section.position.x - peelPivotX);
+      section.position.y = detachedDistance * displayRisePerX;
+      section.rotation.z = detachedDistance > 0 ? peeledSectionTilt : 0;
     });
 
     // Update lancet heat color
@@ -194,7 +207,7 @@ export function createMestralVelcroModel(): MestralVelcro3DObjects {
 
   function dispose() {
     lowerTapeGeo.dispose();
-    upperTapeGeo.dispose();
+    upperTapeSectionGeo.dispose();
     baseHookGeo.dispose();
     baseLoopGeo.dispose();
     lancetGeo.dispose();
@@ -210,6 +223,7 @@ export function createMestralVelcroModel(): MestralVelcro3DObjects {
     rootGroup,
     lowerTapeGroup,
     upperTapeGroup,
+    upperTapeSections,
     lancetBarGroup,
     hookMeshes,
     loopMeshes,
