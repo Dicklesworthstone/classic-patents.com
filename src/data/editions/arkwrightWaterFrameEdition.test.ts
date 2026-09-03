@@ -7,6 +7,7 @@ import {
   archivalEditionForPublication,
   isArchivalEditionExplicitlyWithheld,
 } from "@/data/editions/publicationApproval";
+import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import { arkwrightWaterFramePatent } from "../patents/arkwright-water-frame";
 import {
   ARKWRIGHT_WATER_FRAME_PARALLEL_READINGS,
@@ -36,7 +37,7 @@ describe("Richard Arkwright Water Frame Archival Edition Research Boundary", () 
     expect(digest).toBe("3254894ae66cb4ddd2612d164e24af76f5efa8ee8ac6b741c8affc70d8fe62fd");
   });
 
-  test("keeps the modern reconstruction outside every public legal-source surface", () => {
+  test("keeps the modern reconstruction unbound from verified legal claims and archival-edition data", () => {
     expect(arkwrightWaterFramePatent.archivalEdition).toBeUndefined();
     expect(arkwrightWaterFramePatent.originalTextAsset).toBeUndefined();
     expect(arkwrightWaterFramePatent.filingDate).toBeNull();
@@ -89,13 +90,18 @@ describe("Richard Arkwright Water Frame Archival Edition Research Boundary", () 
     }
   });
 
-  test("confirms reviewed transcript ledger exists and contains page markers", () => {
+  test("keeps a page-complete transcription of all three pinned reconstruction pages", () => {
     expect(existsSync(ledgerPath)).toBe(true);
     const content = readFileSync(ledgerPath, "utf-8");
-    expect(content).toContain("--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---");
-    expect(content).toContain("--- REVIEWED TRANSCRIPTION PAGE 2 OF 2 ---");
+    expect(validateReviewedTranscription(content, 3)).toEqual({ valid: true });
+    expect(content).toContain("--- REVIEWED TRANSCRIPTION PAGE 1 OF 3 ---");
+    expect(content).toContain("--- REVIEWED TRANSCRIPTION PAGE 2 OF 3 ---");
+    expect(content).toContain("--- REVIEWED TRANSCRIPTION PAGE 3 OF 3 ---");
     expect(content).toContain("RICHARD ARKWRIGHT");
     expect(content).toContain("Drawing out and attenuating cotton");
+    expect(content).toContain("ARKWRIGHT'S SPECIFICATION. — SHEET 1.");
+    expect(content).toContain("EXPLANATION OF THE LETTERS ON THE DRAWING:");
+    expect(content).toContain("G. Heart-Cam Traverse Motion.");
   });
 
   test("keeps research companion notes internally indexed without publishing them", () => {

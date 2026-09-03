@@ -1,4 +1,4 @@
---- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 3 ---
 A.D. 1769 . . . . . . . N° 931.
 
 RICHARD ARKWRIGHT.
@@ -32,6 +32,9 @@ G represents the heart-wheel or cam, driven by slow worm gearing from the main s
 CLAIMS AND DECLARATION:
 
 AND I DO HEREBY DECLARE that the essential principle and distinctive character of my said Invention consists in:
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 3 ---
+
 1. Drawing out and attenuating cotton, wool, or other fibrous substances into a roving or thread of any desired fineness by passing the same successively through two or more pairs of rollers turning with different and accelerating velocities;
 2. Pressing the top leather-covered rollers upon the lower fluted metal cylinders by suspended weights to preserve uniform traction;
 3. Imparting the requisite twist to the drawn fibers continuously by rapidly revolving flyers; and
@@ -41,12 +44,27 @@ RICHARD ARKWRIGHT. (L.S.)
 
 AND BE IT REMEMBERED, that on the Eighth day of November, in the tenth year of the Reign of King George the Third, the aforesaid Richard Arkwright came before our said Lord the King in His Chancery, and acknowledged the Specification aforesaid, and all and every thing therein contained, in form above written. Enrolled the Eighth day of November, in the year of our Lord One thousand seven hundred and sixty-nine.
 
---- REVIEWED TRANSCRIPTION PAGE 2 OF 2 ---
-[DRAWING SHEET 1: Technical Engraving of the 4-Spindle Water Frame, Lettered A through G with Explanatory Legend]
-A: The Great Wheel or Drum driven by water power.
-B: The Driving Shaft with clutches and whorl bands.
-C: The Differential Drawing Rollers.
-D: Weighted Levers pressing top leather rollers.
-E: High-Speed Steel Flyers.
-F: Retarded Bobbins.
-G: Heart-Cam Traverse Motion.
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 3 ---
+A.D. 1769 — N° 931. — ENROLLED CHANCERY SPECIFICATION
+
+A.D. 1769. — N° 931.
+
+ARKWRIGHT'S SPECIFICATION. — SHEET 1.
+
+[The drawing sheet annexed to the Chancery Enrollment of Richard Arkwright’s 1769 Water Frame Patent]
+
+ARKWRIGHT'S WATER FRAME COTTON SPINNING MACHINE
+
+British Patent N° 931 — Enrolled in Chancery A.D. 1769
+
+EXPLANATION OF THE LETTERS ON THE DRAWING:
+
+A. The Great Wheel or Drum driven by water power.
+B. The Driving Shaft with clutches and whorl bands.
+C. The Differential Drawing Rollers.
+D. Weighted Levers pressing top leather rollers.
+E. High-Speed Steel Flyers.
+F. Retarded Bobbins.
+G. Heart-Cam Traverse Motion.
+
+Richard Arkwright's 1769 Water Frame was the first continuous, fully mechanical spinning machine to produce strong warp yarn without hand labor.
