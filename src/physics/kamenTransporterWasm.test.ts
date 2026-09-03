@@ -50,20 +50,22 @@ describe("Kamen transporter generic FrankenSim browser boundary", () => {
 
   test("rejects missing ownership, geometry drift, penetration, and unsupported poses", () => {
     const parsed = JSON.parse(VALID_RECEIPT).ok;
-    expect(decodeKamenTransporterWasmStep(JSON.stringify({ ok: { ...parsed, owner: "fake" } }))).toBeNull();
+    expect(
+      decodeKamenTransporterWasmStep(JSON.stringify({ ok: { ...parsed, owner: "fake" } })),
+    ).toBeNull();
     expect(
       decodeKamenTransporterWasmStep(
         JSON.stringify({ ok: { ...parsed, wheel_radius_m: parsed.wheel_radius_m + 0.01 } }),
       ),
     ).toBeNull();
     expect(
-      decodeKamenTransporterWasmStep(
-        JSON.stringify({ ok: { ...parsed, minimum_gap_m: -0.01 } }),
-      ),
+      decodeKamenTransporterWasmStep(JSON.stringify({ ok: { ...parsed, minimum_gap_m: -0.01 } })),
     ).toBeNull();
     expect(
       decodeKamenTransporterWasmStep(
-        JSON.stringify({ ok: { ...parsed, contact_mask: [false, false, false], contact_count: 0 } }),
+        JSON.stringify({
+          ok: { ...parsed, contact_mask: [false, false, false], contact_count: 0 },
+        }),
       ),
     ).toBeNull();
   });

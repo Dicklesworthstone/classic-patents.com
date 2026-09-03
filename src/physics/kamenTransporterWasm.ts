@@ -252,7 +252,9 @@ export function stepKamenTransporterPhysics(
         touching: decoded.contact_mask[index] ?? false,
       } satisfies KamenTransporterWheelContact;
     });
-    const contactWheelIds = wheelContacts.filter((wheel) => wheel.touching).map((wheel) => wheel.id);
+    const contactWheelIds = wheelContacts
+      .filter((wheel) => wheel.touching)
+      .map((wheel) => wheel.id);
 
     return {
       ...fallback,
