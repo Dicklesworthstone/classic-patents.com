@@ -128,6 +128,7 @@
 		F0665294F6F08EC2070462B4 /* native-visualizations.json in Resources */ = {isa = PBXBuildFile; fileRef = 223FEBB699A1D739C994B450 /* native-visualizations.json */; };
 		F1503F8CFC13D77CED3CAA4F /* us-79265-sholes-typewriter.usdz in Resources */ = {isa = PBXBuildFile; fileRef = BCD6B789D55D18D2CBB99F90 /* us-79265-sholes-typewriter.usdz */; };
 		F568D981D52B76AB39BBEB8D /* PatentVisualizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B4A0EFE3EBA3FB0122D944 /* PatentVisualizationView.swift */; };
+		F88B3DA0DC77DB62097C3BB6 /* AppearanceUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D21B6C917CD3C1B0943A754 /* AppearanceUITests.swift */; };
 		F8ABE3DC10983E14CCC17AEB /* gb-1306-watt-rotary-engine.usdz in Resources */ = {isa = PBXBuildFile; fileRef = A5D0A970216D62BCA604C641 /* gb-1306-watt-rotary-engine.usdz */; };
 		F9F281DD5160D664359F4182 /* IOSProfileRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9EBC608751CC3AA65E9EB69 /* IOSProfileRunner.swift */; };
 		FEFD9D935A36F043DAEFB6BA /* us-347140-thomson-welding.usdz in Resources */ = {isa = PBXBuildFile; fileRef = FC470A1D81DB4D8ECBF77144 /* us-347140-thomson-welding.usdz */; };
@@ -172,6 +173,7 @@
 		2393F7248B81AA2942257AA1 /* PatentCollectionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentCollectionStore.swift; sourceTree = "<group>"; };
 		26D04B558896891ED8644458 /* us-4921293-salisbury-robot-hand.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-4921293-salisbury-robot-hand.usdz"; sourceTree = "<group>"; };
 		2956FD31EAAA9C42F1AE5A93 /* us-1219881-sundback-zipper.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-1219881-sundback-zipper.usdz"; sourceTree = "<group>"; };
+		2D21B6C917CD3C1B0943A754 /* AppearanceUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceUITests.swift; sourceTree = "<group>"; };
 		2ECBABAB440FFDF9A699B6F9 /* us-2495429-spencer-microwave.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-2495429-spencer-microwave.usdz"; sourceTree = "<group>"; };
 		2F81FC588C65120F2E595145 /* us-5121329-crump-fdm.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-5121329-crump-fdm.usdz"; sourceTree = "<group>"; };
 		300F2CC7BC7927DB62BC2A8B /* gb-913-watt-separate-condenser.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "gb-913-watt-separate-condenser.usdz"; sourceTree = "<group>"; };
@@ -333,6 +335,7 @@
 		9B3708170E83D590B0D4EC21 /* UITests */ = {
 			isa = PBXGroup;
 			children = (
+				2D21B6C917CD3C1B0943A754 /* AppearanceUITests.swift */,
 				FA689C73A22AFBD690BCA450 /* FrankenPatentsUITests.swift */,
 			);
 			path = UITests;
@@ -724,6 +727,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F88B3DA0DC77DB62097C3BB6 /* AppearanceUITests.swift in Sources */,
 				170D4837B7C62EDDCFE45820 /* FrankenPatentsUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
