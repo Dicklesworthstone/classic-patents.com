@@ -10,25 +10,15 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import {
+  type McCormickReaperCameraPreset as CameraPreset,
+  mccormickReaperCameraForViewport,
+} from "./mccormickReaperCamera";
 import { buildMcCormickReaperModel, updateMcCormickReaperKinematics } from "./mccormickReaperModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset = "iso" | "sickle_guards" | "grain_reel" | "platform" | "drive_wheel" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [10.5, 7.0, 11.0], target: [0, 0, 0] },
-  sickle_guards: { pos: [-1.0, 1.0, 4.5], target: [-0.5, -0.6, 1.8] },
-  grain_reel: { pos: [2.8, 3.8, 4.0], target: [0, 1.2, 0] },
-  platform: { pos: [0, 5.0, 0], target: [0, -0.5, -0.5] },
-  drive_wheel: { pos: [-5.0, 1.2, 3.2], target: [-3.2, 0.4, 0] },
-  top: { pos: [0, 13.0, 0.1], target: [0, 0, 0] },
-};
 
 export function McCormickReaper3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -75,7 +65,7 @@ export function McCormickReaper3D() {
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = mccormickReaperCameraForViewport(preset, containerRef.current?.clientWidth ?? 0);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -94,7 +84,7 @@ export function McCormickReaper3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = mccormickReaperCameraForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
