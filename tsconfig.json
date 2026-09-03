@@ -28,7 +28,8 @@
     "next-env.d.ts",
     "scripts/**/*.ts",
     "src/**/*.ts",
-    "src/**/*.tsx"
+    "src/**/*.tsx",
+    ".next-isolated/types/**/*.ts"
   ],
   "exclude": ["node_modules", ".next", ".next-isolated-build", "doctor.config.ts"]
 }

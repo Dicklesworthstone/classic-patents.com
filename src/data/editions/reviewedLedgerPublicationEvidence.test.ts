@@ -3,6 +3,7 @@ import type { CuratedSpecificationEdition, Patent } from "@/types/patent";
 import { allPatents } from "../patents";
 import { kwolekKevlarPatent } from "../patents/kwolek-kevlar";
 import { wrightFlyerPatent } from "../patents/wright-flyer";
+import { completeArchivalEditionForViewer } from "./publicationApproval";
 import {
   evaluateReviewedLedgerTextEvidence,
   literalLedgerSectionsForEdition,
@@ -195,11 +196,12 @@ describe("reviewed-ledger publication evidence", () => {
     expect(transcript).toContain("What is claimed is:");
   });
 
-  test("keeps every catalogue record readable through an edition or a complete local transcript", () => {
+  test("keeps every catalogue record readable through its selected edition or local transcript", () => {
     for (const patent of allPatents) {
-      expect(Boolean(patent.archivalEdition) || Boolean(reviewedLedgerTextForViewer(patent))).toBe(
-        true,
-      );
+      expect(
+        Boolean(completeArchivalEditionForViewer(patent)) ||
+          Boolean(reviewedLedgerTextForViewer(patent)),
+      ).toBe(true);
     }
   });
 });
