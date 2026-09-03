@@ -14,6 +14,12 @@ import { createServer } from "node:net";
 import * as path from "node:path";
 import { validateCuratedSpecificationEdition } from "../src/data/archivalEditionValidation";
 import { wrightFlyerPatent } from "../src/data/patents/wright-flyer";
+import { assertDeploymentReadyAndAliased } from "./deployment-target";
+import {
+  assertCanonicalVercelProject,
+  assertDeploymentHasRequiredAliases,
+  runLiveSourceReaderSweep,
+} from "./deployment-verification";
 
 const DEPLOYMENT_LOCK_PORT = 45_267;
 const PUBLIC_HOSTNAMES = ["classic-patents.com", "www.classic-patents.com"] as const;
@@ -24,6 +30,8 @@ const WRIGHT_ARCHIVAL_TEXT_LABEL = "Original Patent Text";
 const COMPLETE_SOURCE_DELIVERY_ROUTE = "/patents/us-4063220-metcalfe-ethernet";
 const COMPLETE_SOURCE_DELIVERY_MARKER = 'data-source-delivery="edition"';
 const PUBLICATION_CONTRACT_TESTS = [
+  "scripts/deployment-verification.test.ts",
+  "scripts/deployment-target.test.ts",
   "src/data/editions/archivalEditionSemantics.test.ts",
   "src/data/editions/manualEditionCoverageAudit.test.ts",
   "src/data/editions/manualEditionPublicationContract.test.ts",
@@ -342,6 +350,7 @@ async function main() {
 
   const lock = await acquireDeploymentLock();
   try {
+    assertCanonicalVercelProject();
     assertNoConflictingBuilds("Preflight");
     assertCleanTrackedWorkingTree("Preflight");
     const commit = currentCommit();
@@ -386,9 +395,26 @@ async function main() {
     for (const hostname of PROMOTION_HOSTNAMES) {
       run("vercel", ["alias", "set", previewUrl, hostname]);
     }
+    const inspectOutput = run("vercel", ["inspect", previewUrl], true).stdout;
+    assertDeploymentReadyAndAliased(inspectOutput, PROMOTION_HOSTNAMES);
+    assertDeploymentHasRequiredAliases(PROMOTION_HOSTNAMES);
     for (const hostname of PROMOTION_HOSTNAMES) {
       await assertReleaseRoutes(`https://${hostname}`);
     }
+
+    console.log("\nRunning live source-reader headless browser sweep on production deployment...");
+    const sweepResult = await runLiveSourceReaderSweep({
+      baseUrl: `https://${PUBLIC_HOSTNAMES[0]}`,
+    });
+    if (sweepResult.failed > 0) {
+      throw new Error(
+        `Live source-reader sweep failed on ${sweepResult.failed} of ${sweepResult.total} routes. Refusing promotion.`,
+      );
+    }
+    console.log(
+      `✓ Live source-reader sweep passed: ${sweepResult.passed}/${sweepResult.total} routes delivered complete source faces.`,
+    );
+
     console.log(
       `\nProduction release ${commit.slice(0, 12)} is live and verified at both public hostnames and the platform alias.`,
     );
