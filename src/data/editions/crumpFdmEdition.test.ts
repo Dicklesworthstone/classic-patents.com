@@ -104,22 +104,33 @@ describe("US 5,121,329 S. Scott Crump FDM Archival Edition Contract", () => {
     }
   });
 
-  test("wires claim 1 and claim 39 constraints in claimConstraints", () => {
+  test("wires Claims 1, 2, and 39 without fabricating failure physics", () => {
     const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
     const r1 = applyClaimConstraintModifications(
       "us-5121329-crump-fdm",
       {},
       { 1: false, 39: true },
     );
-    expect(r1.modifiedParams.nozzleTempC).toBe(120);
-    expect(r1.refusalWarning).toContain("COLD NOZZLE JAM REFUSAL");
+    expect(r1.modifiedParams.claim1ApparatusEnabled).toBe(0);
+    expect(r1.modifiedParams.claim2HeatingEnabled).toBe(1);
+    expect(r1.refusalWarning).toContain("CLAIM 1 TOPOLOGY REMOVED");
+
+    const r2 = applyClaimConstraintModifications(
+      "us-5121329-crump-fdm",
+      {},
+      { 1: true, 2: false, 39: true },
+    );
+    expect(r2.modifiedParams.claim1ApparatusEnabled).toBe(1);
+    expect(r2.modifiedParams.claim2HeatingEnabled).toBe(0);
+    expect(r2.refusalWarning).toContain("CLAIM 2 HEATING REMOVED");
 
     const r39 = applyClaimConstraintModifications(
       "us-5121329-crump-fdm",
       {},
       { 1: true, 39: false },
     );
-    expect(r39.modifiedParams.layerHeightMm).toBe(0.9);
-    expect(r39.refusalWarning).toContain("DELAMINATION REFUSAL");
+    expect(r39.modifiedParams.claim39PlanarNozzleEnabled).toBe(0);
+    expect(r39.refusalWarning).toContain("CLAIM 39 GEOMETRY REMOVED");
+    expect(r39.refusalWarning).not.toMatch(/delamination refusal|strength loss/i);
   });
 });

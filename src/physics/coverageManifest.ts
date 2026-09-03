@@ -198,6 +198,15 @@ export const DEDICATED_WASM_SURFACES = {
     artifactSha256: "f20637bf916fee5feab91c4dcd452a987c07de331b1838087b3ff7a4fca285f2",
     refusalBoundary: "typed-wasm",
   },
+  "us-5121329-crump-fdm": {
+    kind: "generic-wasm",
+    sourceCrate: "fs-crump-wasm",
+    loaderFunction: "ensureCrumpFdmWasm",
+    exportName: "crump_fdm_step",
+    artifactUrl: "/wasm/fs-crump/fs_crump_wasm_bg.wasm",
+    artifactSha256: "32e1d6bfe67f86d963e30a2b1b0866993106dd102319a9bc9037cea191d6a113",
+    refusalBoundary: "typed-wasm",
+  },
   "us-6331181-davinci": {
     kind: "generic-wasm",
     sourceCrate: "fs-davinci-wasm",
