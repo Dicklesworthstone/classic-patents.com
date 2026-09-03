@@ -59,6 +59,20 @@ describe("US 319,596 Hiram Maxim Muzzle-Gas Machine-Gun visual & mechanism bound
     }
   });
 
+  test("samples the shared mechanism phase without autonomous firing or a private action clock", () => {
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "MaximMachineGun3D.tsx"),
+      "utf8",
+    );
+
+    expect(threeSource).toContain("cyclePhaseRad");
+    expect(threeSource).toContain("p.cyclePhaseRad");
+    expect(threeSource).toContain("Boolean(p.isMuzzleFiring)");
+    expect(threeSource).not.toContain("let timeSec");
+    expect(threeSource).not.toContain("timeSec * p.fireOmegaRadPerS");
+    expect(threeSource).not.toContain("createStudioClock");
+  });
+
   test("exposes authentic camera presets and cutaway mode for muzzle-gas mechanism observation", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "MaximMachineGun3D.tsx"),

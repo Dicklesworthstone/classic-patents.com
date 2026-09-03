@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
-import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -32,6 +31,7 @@ export function MaximMachineGun3D() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-319596-maxim-machine-gun");
   const gasImpulsePct = (params.gasImpulsePct as number) ?? 75;
   const cyclePhaseDeg = (params.cyclePhase as number) ?? 0;
+  const cyclePhaseRad = (cyclePhaseDeg * Math.PI) / 180;
 
   const maxim = FrankenSimEngine.stepMaximMachineGun({
     cyclePhaseDeg,
@@ -61,6 +61,8 @@ export function MaximMachineGun3D() {
     gasImpulsePct,
     sleeveForwardMm: maxim.sleeveForwardMm,
     breechOpenMm: maxim.breechOpenMm,
+    cyclePhaseRad,
+    isMuzzleFiring: maxim.isMuzzleFiring ? 1 : 0,
     fireOmegaRadPerS: maxim.fireOmegaRadPerS,
     fireCycleWrapRad: maxim.fireCycleWrapRad,
   });
@@ -103,25 +105,20 @@ export function MaximMachineGun3D() {
     scene.add(flashLight);
 
     let reqId: number;
-    let timeSec = 0;
-    const clock = createStudioClock();
 
-    const animate = (now: number) => {
+    const animate = (_now: number) => {
       reqId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
-      const { dt } = clock.pump(now);
-      timeSec += dt;
 
       const p = live.current;
-      const cyclePhase = (timeSec * p.fireOmegaRadPerS) % p.fireCycleWrapRad;
 
       const { isMuzzleFlash } = updateMaximMachineGunKinematics(
         model,
-        dt,
-        cyclePhase,
+        0,
+        p.cyclePhaseRad,
         p.fireOmegaRadPerS,
         p.gasImpulsePct,
-        true,
+        Boolean(p.isMuzzleFiring),
         p.isCutaway,
       );
 

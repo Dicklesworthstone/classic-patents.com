@@ -9,13 +9,18 @@ declare module "pdfjs-dist" {
     cancel(): void;
   }
 
+  export interface RenderParameters {
+    canvas?: HTMLCanvasElement | null;
+    canvasContext?: CanvasRenderingContext2D | null;
+    viewport: PDFPageViewport;
+    transform?: number[];
+    background?: string;
+    [key: string]: unknown;
+  }
+
   export interface PDFPageProxy {
     getViewport(params: { scale: number }): PDFPageViewport;
-    render(params: {
-      canvasContext: CanvasRenderingContext2D;
-      viewport: PDFPageViewport;
-      transform?: number[];
-    }): RenderTask;
+    render(params: RenderParameters): RenderTask;
   }
 
   export interface PDFDocumentProxy {
@@ -35,6 +40,7 @@ declare module "pdfjs-dist" {
     disableAutoFetch?: boolean;
     disableRange?: boolean;
     disableStream?: boolean;
+    [key: string]: unknown;
   }
 
   export const GlobalWorkerOptions: {
@@ -42,7 +48,5 @@ declare module "pdfjs-dist" {
     workerPort?: unknown;
   };
 
-  export function getDocument(
-    src: string | URL | DocumentInitParameters,
-  ): PDFDocumentLoadingTask;
+  export function getDocument(src: string | URL | DocumentInitParameters): PDFDocumentLoadingTask;
 }
