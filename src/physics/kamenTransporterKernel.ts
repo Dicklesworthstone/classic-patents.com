@@ -4,11 +4,10 @@ import type { TapeUpdater } from "./useFrankenSimPhysics";
  * Source-bound topology reader for US 5,701,965 — Human Transporter.
  *
  * The checked grant establishes a motorized drive/control-loop relationship,
- * independently controlled cluster wheels, and the ordering of balance,
- * transfer, climb, and transition modes. It does not provide a controller
- * gain, torque, speed, mass, wheel radius, or recovery-margin datum. This
- * module therefore publishes only the state topology needed by the 2D and 3D
- * claim-reading instruments.
+ * independently controlled cluster wheels, nominal Table 1 wheel/carrier/stair
+ * geometry, and the ordering of balance, transfer, climb, and transition
+ * modes. It does not provide the mass/inertia, contact, motor, sensor, or
+ * controller constants needed for quantitative dynamics.
  */
 
 export const KAMEN_TRANSPORTER_TOPOLOGY_STATES = [
@@ -168,6 +167,10 @@ export interface KamenTransporterMotionState {
   wheelRollAngleRad: number;
   travelMeters: number;
 }
+
+export type KamenTransporterTelemetryStepper = (
+  controls: KamenTransporterControls,
+) => KamenTransporterTelemetry;
 
 export const KAMEN_TRANSPORTER_DEFAULT_CONTROLS: KamenTransporterControls = {
   topologyState: "balance",
@@ -688,10 +691,11 @@ export function advanceKamenTransporterMotion(
   controls: KamenTransporterControls,
   _previous: KamenTransporterMotionState = createKamenTransporterMotionState(controls),
   _dt: number = 1 / 60,
+  stepTelemetry: KamenTransporterTelemetryStepper = stepKamenTransporterTopology,
 ): KamenTransporterMotionState {
   return {
     controls,
-    telemetry: stepKamenTransporterTopology(controls),
+    telemetry: stepTelemetry(controls),
     wheelRollAngleRad: 0,
     travelMeters: 0,
   };
@@ -710,9 +714,15 @@ export function resetKamenTransporterTapeState(): void {
 /** One shared fixed-step source-reading tape for the transporter teaching faces. */
 export function createKamenTransporterTransportUpdater(
   getControls: () => KamenTransporterControls,
+  stepTelemetry: KamenTransporterTelemetryStepper = stepKamenTransporterTopology,
 ): TapeUpdater {
   return (_previousTelemetry, dt) => {
-    const next = advanceKamenTransporterMotion(getControls(), kamenTransporterTapeState, dt);
+    const next = advanceKamenTransporterMotion(
+      getControls(),
+      kamenTransporterTapeState,
+      dt,
+      stepTelemetry,
+    );
     kamenTransporterTapeState = next;
 
     return {

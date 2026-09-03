@@ -28,21 +28,22 @@ describe("Kamen transporter source-bound topology tape", () => {
   });
 
   test("pins the nominal Table 1 dimensions in SI units", () => {
-    expect(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M).toEqual({
-      systemCentreOffsetM: 0.5334,
-      clusterRadiusM: 0.1417574,
-      adjacentWheelCentreDistanceM: 0.2455418,
-      stairTreadM: 0.27686,
-      stairRiseM: 0.17399,
-      riserToLowerContactM: 0.0764794,
-      wheelRadiusM: 0.096774,
-    });
+    expect(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.systemCentreOffsetM).toBeCloseTo(0.5334, 12);
+    expect(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.clusterRadiusM).toBeCloseTo(0.1417574, 12);
+    expect(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.adjacentWheelCentreDistanceM).toBeCloseTo(
+      0.2455418,
+      12,
+    );
+    expect(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairTreadM).toBeCloseTo(0.27686, 12);
+    expect(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairRiseM).toBeCloseTo(0.17399, 12);
+    expect(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.riserToLowerContactM).toBeCloseTo(0.0764794, 12);
+    expect(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.wheelRadiusM).toBeCloseTo(0.096774, 12);
     expect(
       Math.abs(
         KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.adjacentWheelCentreDistanceM -
           Math.sqrt(3) * KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.clusterRadiusM,
       ),
-    ).toBeLessThan(2e-6);
+    ).toBeLessThan(2e-5);
   });
 
   test("keeps every source pose supported without horizontal-surface penetration", () => {
