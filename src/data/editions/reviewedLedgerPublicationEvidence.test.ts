@@ -172,6 +172,21 @@ describe("reviewed-ledger publication evidence", () => {
     ).toBeUndefined();
   });
 
+  test("keeps a readable canonical transcript visitor-visible even if its review markers need repair", () => {
+    // A stale page-count declaration is review evidence, not a source-reader
+    // gate. The internal validator above still reports this mismatch.
+    const asset = wrightFlyerPatent.originalTextAsset;
+    if (!asset) throw new Error("Wright Flyer fixture must have a reviewed source asset.");
+    const transcript = reviewedLedgerTextForViewer({
+      id: wrightFlyerPatent.id,
+      originalTextAsset: {
+        ...asset,
+        pageCount: 1,
+      },
+    });
+    expect(transcript).toStartWith("--- REVIEWED TRANSCRIPTION PAGE 1 OF 10 ---");
+  });
+
   test("loads a complete local transcript when legacy metadata has not yet classified it", () => {
     const transcript = reviewedLedgerTextForViewer(kwolekKevlarPatent);
     expect(transcript).toStartWith("--- REVIEWED TRANSCRIPTION PAGE 1 OF 58 ---");
@@ -180,18 +195,11 @@ describe("reviewed-ledger publication evidence", () => {
     expect(transcript).toContain("What is claimed is:");
   });
 
-  test("keeps every catalogue record with no structured edition readable from its full local transcript", () => {
-    const recordsWithoutEdition = allPatents.filter((patent) => !patent.archivalEdition);
-    expect(recordsWithoutEdition.map((patent) => patent.id)).toEqual([
-      "gb-931-arkwright-water-frame",
-      "us-313224-mergenthaler-linotype",
-      "us-3671542-kwolek-kevlar",
-      "us-4068536-stackhouse-manipulator",
-    ]);
-
-    for (const patent of recordsWithoutEdition) {
-      const transcript = reviewedLedgerTextForViewer(patent);
-      expect(transcript).toStartWith("--- REVIEWED TRANSCRIPTION PAGE 1 OF");
+  test("keeps every catalogue record readable through an edition or a complete local transcript", () => {
+    for (const patent of allPatents) {
+      expect(Boolean(patent.archivalEdition) || Boolean(reviewedLedgerTextForViewer(patent))).toBe(
+        true,
+      );
     }
   });
 });

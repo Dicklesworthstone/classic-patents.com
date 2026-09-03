@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { allPatents } from "@/data/patents";
 import {
   archivalEditionForPublication,
+  completeArchivalEditionForViewer,
   evaluateArchivalPublicationState,
   isArchivalEditionExplicitlyWithheld,
 } from "./publicationApproval";
@@ -85,5 +86,18 @@ describe("Publication Approval State Machine", () => {
     expect(decision.status).toBe("withheld-pending-review");
     expect(decision.isPublished).toBe(false);
     expect(decision.reasonCode).toBe("PENDING_FACSIMILE_REVIEW");
+  });
+
+  it("keeps a held fully reviewed edition readable but routes an explicitly unfinished draft to its ledger", () => {
+    const heldReviewed = allPatents.find((p) => p.id === "us-2981877-noyce-ic");
+    const unfinished = allPatents.find((p) => p.id === "us-2708656-fermi-reactor");
+    if (!heldReviewed || !unfinished) {
+      throw new Error("Source-reader fixtures are missing from the catalogue.");
+    }
+
+    expect(heldReviewed.archivalEdition?.completeFacsimileReviewed).toBe(true);
+    expect(completeArchivalEditionForViewer(heldReviewed)).toBe(heldReviewed.archivalEdition);
+    expect(unfinished.archivalEdition?.completeFacsimileReviewed).toBe(false);
+    expect(completeArchivalEditionForViewer(unfinished)).toBeUndefined();
   });
 });

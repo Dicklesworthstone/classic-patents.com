@@ -9659,8 +9659,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       {
         id: "nozzleTempC",
         label: "Liquefier Nozzle Temperature",
-        min: 160,
-        max: 290,
+        min: 140,
+        max: 280,
         step: 5,
         defaultValue: CRUMP_FDM_DEFAULT_CONTROLS.nozzleTempC,
         unit: "°C",

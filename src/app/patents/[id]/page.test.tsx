@@ -61,14 +61,13 @@ describe("PatentDetailPage component", () => {
     expect(html).toContain("acceptedFigureCount");
   });
 
-  test("presents Fermi's stored archival edition to the viewer without blocking on audit review", async () => {
+  test("presents Fermi's complete reviewed transcript instead of its unfinished archival draft", async () => {
     const PageJsx = await PatentDetailPage({
       params: Promise.resolve({ id: "us-2708656-fermi-reactor" }),
     });
     const html = renderToStaticMarkup(PageJsx);
 
-    expect(html).toContain('data-archival-edition="manual-react-edition"');
-    expect(html).not.toContain('data-archival-edition="withheld"');
+    expect(html).toContain('data-archival-edition="withheld"');
   });
 
   test("handles legacy redirects gracefully", async () => {

@@ -76,8 +76,8 @@ export function CrumpFdmSim({ patentId = PATENT_ID }: { patentId?: string }) {
             US 5,121,329 — Fused Deposition Modeling (FDM) Simulation Instrument
           </h3>
           <p className="text-xs text-stone-400">
-            Pinch-roller solid filament drive, heated liquefier flow, & planar ironing road
-            deposition
+            Flexible-strand roller feed, Claim 2 heating means, and Claim 39 planar-bottom/gap
+            relation
           </p>
         </div>
 
@@ -583,7 +583,7 @@ export function CrumpFdmSim({ patentId = PATENT_ID }: { patentId?: string }) {
         {/* Refusal Banner Overlay */}
         {tel.refusalReason && (
           <div className="absolute inset-x-4 top-4 rounded-lg border border-rose-600/80 bg-rose-950/90 p-3 text-xs font-mono text-rose-200 shadow-xl backdrop-blur">
-            <span className="font-bold text-rose-400">TYPED KERNEL REFUSAL: </span>
+            <span className="font-bold text-rose-400">SOURCE / PHYSICS BOUNDARY: </span>
             {tel.refusalReason}
           </div>
         )}

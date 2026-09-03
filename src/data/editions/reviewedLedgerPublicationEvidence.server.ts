@@ -1,6 +1,5 @@
 import { readFileSync } from "node:fs";
 import { isAbsolute, join, normalize, sep } from "node:path";
-import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import type { Patent } from "@/types/patent";
 import {
   evaluateReviewedLedgerTextEvidence,
@@ -39,12 +38,6 @@ function fallbackTranscriptUrlForPatent(id: string | undefined): string | undefi
   return `/patents/transcripts/${id}-reviewed.txt`;
 }
 
-function declaredTranscriptPageCount(transcript: string): number | undefined {
-  const firstMarker = transcript.match(/^--- REVIEWED TRANSCRIPTION PAGE 1 OF (\d+) ---/);
-  const pageCount = Number(firstMarker?.[1]);
-  return Number.isSafeInteger(pageCount) && pageCount > 0 ? pageCount : undefined;
-}
-
 export function reviewedLedgerTextForViewer(
   patent: Pick<Patent, "id" | "originalTextAsset">,
 ): string | undefined {
@@ -60,11 +53,11 @@ export function reviewedLedgerTextForViewer(
 
   try {
     const transcript = readFileSync(ledgerPath, "utf8");
-    const pageCount = declaredTranscriptPageCount(transcript);
-    if (!pageCount || !validateReviewedTranscription(transcript, pageCount).valid) {
-      return undefined;
-    }
-    return transcript;
+    // Validation remains part of the internal publication-evidence pipeline
+    // below. It must never suppress a readable local primary-source transcript
+    // from the visitor's source face: a malformed page marker is a repair task,
+    // not a reason to hide the legal instrument.
+    return transcript.trim().length > 0 ? transcript : undefined;
   } catch {
     return undefined;
   }

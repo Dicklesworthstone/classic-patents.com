@@ -107,7 +107,15 @@ export function completeArchivalEditionForViewer(
   patent: Pick<Patent, "archivalEdition">,
   _decision?: Pick<ArchivalPublicationDecision, "reviewerAttestation">,
 ): CuratedSpecificationEdition | undefined {
-  return patent.archivalEdition;
+  // An editorial hold is not a text gate: a fully reviewed edition remains
+  // readable even while a crop, companion reading, or other release check is
+  // pending. An edition explicitly recorded as an unfinished facsimile review
+  // is different: render the complete page-marked reviewed ledger instead of
+  // presenting that draft under the visitor-facing "complete" source heading.
+  // Do not treat a missing legacy attestation as a negative one.
+  return patent.archivalEdition?.completeFacsimileReviewed === false
+    ? undefined
+    : patent.archivalEdition;
 }
 
 /**

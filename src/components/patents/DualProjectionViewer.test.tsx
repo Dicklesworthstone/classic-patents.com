@@ -118,6 +118,29 @@ describe("DualProjectionViewer component", () => {
     }
   });
 
+  test("renders the pinned complete facsimile instead of a partial excerpt when no text reader is available", () => {
+    const patentWithoutTextReader = {
+      ...wrightFlyerPatent,
+      archivalEdition: undefined,
+      originalTextAsset: undefined,
+    };
+
+    const html = renderToStaticMarkup(
+      <DualProjectionViewer
+        patent={patentWithoutTextReader}
+        archivalPublication={evaluateArchivalPublicationState(patentWithoutTextReader)}
+        colorizedEquations={getColorizedEquationsForPatent(wrightFlyerPatent.id)}
+        initialView="original-spec"
+      />,
+    );
+
+    expect(html).toContain('data-testid="complete-facsimile-source-fallback"');
+    expect(html).toContain("Complete scanned patent record");
+    expect(html).toContain(wrightFlyerPatent.originalPdfUrl);
+    expect(html).not.toContain('data-testid="source-text-excerpt"');
+    expect(html).not.toContain("not published yet");
+  });
+
   test("renders the complete locally available Kwolek instrument despite its editorial hold", () => {
     const transcript = reviewedLedgerTextForViewer(kwolekKevlarPatent);
     expect(transcript).toStartWith("--- REVIEWED TRANSCRIPTION PAGE 1 OF 58 ---");
@@ -138,13 +161,15 @@ describe("DualProjectionViewer component", () => {
     expect(html).not.toContain('data-testid="held-archival-edition-notice"');
   });
 
-  test("renders Fermi's stored archival edition for the visitor without withholding", () => {
+  test("renders Fermi's complete reviewed transcript rather than calling its unfinished draft complete", () => {
     const decision = evaluateArchivalPublicationState(fermiReactorPatent);
     const patent = patentForPublicationViewer(fermiReactorPatent, decision);
     const transcript = reviewedLedgerTextForViewer(fermiReactorPatent);
 
     expect(fermiReactorPatent.archivalEdition).toBeDefined();
-    expect(patent.archivalEdition).toBe(fermiReactorPatent.archivalEdition);
+    expect(fermiReactorPatent.archivalEdition?.completeFacsimileReviewed).toBe(false);
+    expect(patent.archivalEdition).toBeUndefined();
+    expect(transcript).toStartWith("--- REVIEWED TRANSCRIPTION PAGE 1 OF 58 ---");
 
     const html = renderToStaticMarkup(
       <DualProjectionViewer
@@ -156,10 +181,9 @@ describe("DualProjectionViewer component", () => {
       />,
     );
 
-    expect(html).toContain("Complete Manually Prepared Archival Edition");
-    expect(html).toContain(
-      "The present invention relates to the general subject of nuclear fission",
-    );
+    expect(html).toContain("Complete patent transcript");
+    expect(html).toContain("--- REVIEWED TRANSCRIPTION PAGE 1 OF 58 ---");
+    expect(html).toContain("NEUTRONIC REACTOR");
     expect(html).not.toContain('data-testid="held-archival-edition-notice"');
   });
 });

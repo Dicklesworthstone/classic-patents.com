@@ -88,8 +88,10 @@ function handlePrint() {
 }
 
 /**
- * Dedicated facsimile face. It is intentionally separate from the readable
- * source-text faces and is never used as a replacement for patent text.
+ * Dedicated facsimile face. It normally has its own reader tab; when no
+ * readable local transcript exists, this complete pinned primary source is
+ * also the last-resort source-text face. Editorial acceptance never changes
+ * either use.
  */
 function PinnedFacsimilePanel({
   patent,
@@ -208,30 +210,22 @@ function ReviewedTranscript({ transcript }: { transcript: string }) {
   );
 }
 
-function TranscriptUnavailable({ patent }: { patent: Patent }) {
+function CompleteFacsimileSourceFallback({
+  patent,
+  pdfEmbedUnsupported,
+}: {
+  patent: Patent;
+  pdfEmbedUnsupported: boolean;
+}) {
   return (
-    <section
-      className="space-y-4 rounded-2xl border border-parchment-300 bg-parchment-100/80 p-5 text-ink-900 dark:border-ink-800 dark:bg-ink-900/80 dark:text-parchment-100"
-      data-testid="source-text-excerpt"
-    >
+    <section className="space-y-4" data-testid="complete-facsimile-source-fallback">
       <div>
-        <h4 className="font-serif text-lg font-bold">Available patent text</h4>
-        <p className="mt-1 font-sans text-sm leading-relaxed">
-          This record has not yet received a page-complete reviewed transcript. Its available source
-          excerpt remains visible here.
+        <h4 className="font-serif text-lg font-bold">Complete scanned patent record</h4>
+        <p className="mt-1 font-sans text-sm leading-relaxed text-ink-700 dark:text-parchment-300">
+          This pinned facsimile is the complete primary legal instrument.
         </p>
       </div>
-      <pre className="max-h-[40dvh] overflow-auto whitespace-pre-wrap break-words border-t border-parchment-300 pt-4 font-serif text-sm leading-relaxed text-ink-950 dark:border-ink-800 dark:text-parchment-100">
-        {patent.originalText}
-      </pre>
-      <a
-        href={patent.originalPdfUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex w-fit items-center gap-2 text-sm font-mono font-semibold text-amber-800 underline decoration-amber-500/60 underline-offset-4 hover:text-amber-900 dark:text-amber-300 dark:hover:text-amber-200"
-      >
-        <FileText className="h-4 w-4" /> Open original facsimile
-      </a>
+      <PinnedFacsimilePanel patent={patent} pdfEmbedUnsupported={pdfEmbedUnsupported} />
     </section>
   );
 }
@@ -269,7 +263,7 @@ export function DualProjectionViewer({
     ? `Patent text edition · prepared ${archivalSource.edition.preparedAt}`
     : reviewedTranscript
       ? "Complete patent transcript"
-      : "Available primary-source text";
+      : "Complete primary-source facsimile";
   const sourceVisualHold = patent.id === "us-3671542-kwolek-kevlar";
   const visualFaceLabel = sourceVisualHold
     ? "Visual Model in Preparation"
@@ -555,7 +549,10 @@ export function DualProjectionViewer({
               ) : reviewedTranscript ? (
                 <ReviewedTranscript transcript={reviewedTranscript} />
               ) : (
-                <TranscriptUnavailable patent={patent} />
+                <CompleteFacsimileSourceFallback
+                  patent={patent}
+                  pdfEmbedUnsupported={pdfEmbedUnsupported}
+                />
               )}
             </div>
           </div>
@@ -817,7 +814,10 @@ export function DualProjectionViewer({
             ) : reviewedTranscript ? (
               <ReviewedTranscript transcript={reviewedTranscript} />
             ) : (
-              <TranscriptUnavailable patent={patent} />
+              <CompleteFacsimileSourceFallback
+                patent={patent}
+                pdfEmbedUnsupported={pdfEmbedUnsupported}
+              />
             )}
           </div>
         </div>
