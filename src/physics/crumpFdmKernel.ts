@@ -121,8 +121,7 @@ export const CRUMP_FDM_ILLUSTRATIVE_NOZZLE_LAND_LENGTH_MM = 1.6;
 const PINCH_FRICTION_COEFF = 0.35;
 
 const CAPILLARY_OWNER = "fs-flux::capillary::step_newtonian_circular_capillary" as const;
-const THERMAL_OWNER =
-  "fs-conduction::reduced_slab::step_first_mode_slab_cooling" as const;
+const THERMAL_OWNER = "fs-conduction::reduced_slab::step_first_mode_slab_cooling" as const;
 const CAPILLARY_BOUNDARY =
   "newtonian-incompressible-fully-developed-laminar-no-slip-circular-land" as const;
 const THERMAL_BOUNDARY =
@@ -132,13 +131,23 @@ function binary(value: unknown, fallback: number): number {
   return typeof value === "number" ? (value >= 0.5 ? 1 : 0) : fallback;
 }
 
+function dynamicParam(
+  params:
+    | Partial<CrumpFdmControls>
+    | Record<string, number | boolean | string | undefined>
+    | undefined,
+  key: string,
+): number | boolean | string | undefined {
+  return (params as Record<string, number | boolean | string | undefined> | undefined)?.[key];
+}
+
 export function readCrumpFdmClaimStates(
-  params?: Record<string, number | boolean | string | undefined>,
+  params?: Partial<CrumpFdmControls> | Record<string, number | boolean | string | undefined>,
 ): Record<1 | 2 | 39, boolean> {
   return {
-    1: binary(params?.claim1ConstraintActive, 1) === 1,
-    2: binary(params?.claim2ConstraintActive, 1) === 1,
-    39: binary(params?.claim39ConstraintActive, 1) === 1,
+    1: binary(dynamicParam(params, "claim1ConstraintActive"), 1) === 1,
+    2: binary(dynamicParam(params, "claim2ConstraintActive"), 1) === 1,
+    39: binary(dynamicParam(params, "claim39ConstraintActive"), 1) === 1,
   };
 }
 
@@ -147,15 +156,15 @@ export function readCrumpFdmControls(
 ): CrumpFdmControls {
   return {
     claim1ApparatusEnabled: binary(
-      params?.claim1ApparatusEnabled ?? params?.claim1ConstraintActive,
+      params?.claim1ApparatusEnabled ?? dynamicParam(params, "claim1ConstraintActive"),
       CRUMP_FDM_DEFAULT_CONTROLS.claim1ApparatusEnabled,
     ),
     claim2HeatingEnabled: binary(
-      params?.claim2HeatingEnabled ?? params?.claim2ConstraintActive,
+      params?.claim2HeatingEnabled ?? dynamicParam(params, "claim2ConstraintActive"),
       CRUMP_FDM_DEFAULT_CONTROLS.claim2HeatingEnabled,
     ),
     claim39PlanarNozzleEnabled: binary(
-      params?.claim39PlanarNozzleEnabled ?? params?.claim39ConstraintActive,
+      params?.claim39PlanarNozzleEnabled ?? dynamicParam(params, "claim39ConstraintActive"),
       CRUMP_FDM_DEFAULT_CONTROLS.claim39PlanarNozzleEnabled,
     ),
     nozzleTempC:
@@ -252,8 +261,7 @@ export function stepCrumpFdmSi(controls: CrumpFdmControls): CrumpFdmTelemetry {
   const interfaceAboveGlassTransition = interfaceTemperatureMarginC >= 0;
 
   const claim1ApparatusPresent = controls.claim1ApparatusEnabled === 1;
-  const claim2HeatingMeansPresent =
-    claim1ApparatusPresent && controls.claim2HeatingEnabled === 1;
+  const claim2HeatingMeansPresent = claim1ApparatusPresent && controls.claim2HeatingEnabled === 1;
   const claim39PlanarGapPresent =
     claim1ApparatusPresent && controls.claim39PlanarNozzleEnabled === 1;
 

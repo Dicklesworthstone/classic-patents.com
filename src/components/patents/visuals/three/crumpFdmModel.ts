@@ -15,6 +15,7 @@ export interface CrumpFdm3DObjects {
   planarNozzleLandMesh: THREE.Mesh;
   roundedOutletMesh: THREE.Mesh;
   heaterBlockMesh: THREE.Mesh;
+  heaterCoilGroup: THREE.Group;
   driveRollerMesh: THREE.Mesh;
   pinchRollerMesh: THREE.Mesh;
   activeBeadMesh: THREE.Mesh;
@@ -60,6 +61,13 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
     color: 0xb45309,
     metalness: 0.6,
     roughness: 0.35,
+  });
+  const heaterCoilMaterial = new THREE.MeshStandardMaterial({
+    color: 0xef4444,
+    emissive: 0x7f1d1d,
+    emissiveIntensity: 0.9,
+    metalness: 0.45,
+    roughness: 0.3,
   });
 
   const filamentMaterial = new THREE.MeshStandardMaterial({
@@ -268,6 +276,17 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
   heaterBlockMesh.position.y = -0.2;
   carriageGroup.add(heaterBlockMesh);
 
+  const heaterCoilGroup = new THREE.Group();
+  heaterCoilGroup.name = "Figure 5 electric resistance heater coil 130";
+  for (const y of [-0.17, -0.2, -0.23]) {
+    const turn = new THREE.Mesh(new THREE.TorusGeometry(0.112, 0.012, 8, 28), heaterCoilMaterial);
+    turn.name = "Heater coil 130 turn";
+    turn.rotation.x = Math.PI / 2;
+    turn.position.y = y;
+    heaterCoilGroup.add(turn);
+  }
+  carriageGroup.add(heaterCoilGroup);
+
   // Outlet nozzle 122 has a capped, substantially planar bottom rather than
   // the former impossible point tip. Claim 39's larger planar land is a
   // separately observable geometry probe.
@@ -432,6 +451,7 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
       segment.visible = apparatusVisible;
     });
     heaterBlockMesh.visible = apparatusVisible && tel.claim2HeatingMeansPresent;
+    heaterCoilGroup.visible = apparatusVisible && tel.claim2HeatingMeansPresent;
     planarNozzleLandMesh.visible = apparatusVisible && tel.claim39PlanarGapPresent;
     roundedOutletMesh.visible = apparatusVisible && !tel.claim39PlanarGapPresent;
 
@@ -486,8 +506,7 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
     const outletBottomLocalY = tel.claim39PlanarGapPresent
       ? planarNozzleLandMesh.position.y - 0.006
       : roundedOutletMesh.position.y - 0.043;
-    const nozzleTipWorldY =
-      gantryGroup.position.y + carriageGroup.position.y + outletBottomLocalY;
+    const nozzleTipWorldY = gantryGroup.position.y + carriageGroup.position.y + outletBottomLocalY;
     const visualGap = controls.layerHeightMm * 0.1;
     const partTopRelativeToBed = partGroup.position.y + layerCount * 0.02;
     bedGroup.position.y = nozzleTipWorldY - partTopRelativeToBed - visualGap;
@@ -511,6 +530,7 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
     bedMaterial.dispose();
     brassMaterial.dispose();
     heaterBlockMaterial.dispose();
+    heaterCoilMaterial.dispose();
     filamentMaterial.dispose();
     printedPartMaterial.dispose();
     activeBeadMaterial.dispose();
@@ -540,6 +560,7 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
     planarNozzleLandMesh,
     roundedOutletMesh,
     heaterBlockMesh,
+    heaterCoilGroup,
     driveRollerMesh,
     pinchRollerMesh,
     activeBeadMesh,

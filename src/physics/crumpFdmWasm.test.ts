@@ -12,8 +12,7 @@ const VALID_RECEIPT = JSON.stringify({
     cooling_time_constant_s: 0.0494,
     time_to_threshold_s: 0.045,
     threshold_temperature_check_k: 378.15,
-    capillary_boundary:
-      "newtonian-incompressible-fully-developed-laminar-no-slip-circular-land",
+    capillary_boundary: "newtonian-incompressible-fully-developed-laminar-no-slip-circular-land",
     thermal_boundary: "one-dimensional-fixed-boundary-first-mode-screen-no-phase-change",
   },
 });
@@ -41,12 +40,8 @@ describe("Crump FDM generic FrankenSim browser boundary", () => {
   test("cold-start fallback is finite, explicit, and equation-owned", () => {
     const state = stepCrumpFdmPhysics(CRUMP_FDM_DEFAULT_CONTROLS);
     expect(state.runtimeSource).toBe("ts-fallback");
-    expect(state.capillaryOwner).toBe(
-      "fs-flux::capillary::step_newtonian_circular_capillary",
-    );
-    expect(state.thermalOwner).toBe(
-      "fs-conduction::reduced_slab::step_first_mode_slab_cooling",
-    );
+    expect(state.capillaryOwner).toBe("fs-flux::capillary::step_newtonian_circular_capillary");
+    expect(state.thermalOwner).toBe("fs-conduction::reduced_slab::step_first_mode_slab_cooling");
     expect(Number.isFinite(state.nozzlePressureDropMPa)).toBe(true);
     expect(Number.isFinite(state.timeToGlassTransitionSec)).toBe(true);
   });

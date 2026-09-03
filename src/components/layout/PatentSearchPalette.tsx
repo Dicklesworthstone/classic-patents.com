@@ -105,7 +105,7 @@ export function PatentSearchPalette({ onClose }: PatentSearchPaletteProps) {
               setQuery(e.target.value);
               setSelectedIndex(0);
             }}
-            className="w-full bg-transparent border-none text-base font-sans text-ink-950 dark:text-parchment-50 placeholder:text-ink-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600/60 dark:focus-visible:ring-amber-400/60 rounded-lg transition-shadow"
+            className="w-full bg-transparent border-none text-base font-sans text-ink-950 dark:text-parchment-50 placeholder:text-ink-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600/60 dark:focus-visible:ring-amber-400/60 rounded-lg transition-shadow [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none"
             aria-label="Search patents"
             role="combobox"
             aria-expanded="true"

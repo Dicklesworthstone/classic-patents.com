@@ -13,8 +13,8 @@ import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { wasmSurfaceForPatent } from "@/physics/coverageManifest";
 import { CRUMP_FDM_SCENARIO_NOTE, readCrumpFdmControls } from "@/physics/crumpFdmKernel";
 import {
-  crumpFdmKernelSource,
   type CrumpFdmKernelSource,
+  crumpFdmKernelSource,
   crumpFdmRuntimeLabel,
   ensureCrumpFdmWasm,
   stepCrumpFdmPhysics,
@@ -37,7 +37,7 @@ export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
   const controls = useMemo(() => readCrumpFdmControls(effectiveParams), [effectiveParams]);
   const [kernelSource, setKernelSource] = useState<CrumpFdmKernelSource>(crumpFdmKernelSource);
   const telemetry = useMemo(
-    () => stepCrumpFdmPhysics(controls),
+    () => stepCrumpFdmPhysics(controls, kernelSource),
     [controls, kernelSource],
   );
   const equations = useMemo(() => ALL_COLORIZED_EQUATIONS[patentId] ?? [], [patentId]);
@@ -258,8 +258,8 @@ export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
         <div className="rounded-lg border border-rose-800/70 bg-rose-950/30 p-3 text-rose-100">
           <span className="font-mono font-bold text-rose-300">MODEL BOUNDARY</span>
           <p className="mt-1">
-            {CRUMP_FDM_SCENARIO_NOTE} No shear-thinning, entrance loss, contact resistance,
-            phase change, bond strength, or historic performance is inferred.
+            {CRUMP_FDM_SCENARIO_NOTE} No shear-thinning, entrance loss, contact resistance, phase
+            change, bond strength, or historic performance is inferred.
           </p>
         </div>
       </div>

@@ -11,7 +11,8 @@ describe("US 5,121,329 S. Scott Crump FDM SI Physics Kernel", () => {
 
     // The specification calls the flexible strand "on the order of one-sixteenth
     // inch": 1/16 in = 1.5875 mm, A_filament = 1.979 mm², and v_feed = 2.047 mm/s.
-    expect(telemetry.filamentFeedSpeedMmS).toBeCloseTo(2.05, 1);
+    expect(controls.filamentDiameterMm).toBe(1.5875);
+    expect(telemetry.filamentFeedSpeedMmS).toBeCloseTo(2.046, 2);
 
     expect(telemetry.isExtruding).toBe(true);
     expect(telemetry.coldNozzleJamRefusal).toBe(false);
@@ -62,7 +63,58 @@ describe("US 5,121,329 S. Scott Crump FDM SI Physics Kernel", () => {
     expect(telemetry.beadAspectRatio).toBeCloseTo(2.25, 2);
     expect(telemetry.coolingTimeConstantSec).toBeGreaterThan(0.01);
     expect(telemetry.coolingTimeConstantSec).toBeLessThan(1.0);
-    expect(telemetry.interfaceTemperatureMarginC).toBeGreaterThan(0);
+    expect(telemetry.timeToGlassTransitionSec).toBeCloseTo(
+      telemetry.coolingTimeConstantSec * Math.log((225 - 25) / (105 - 25)),
+      12,
+    );
+    expect(telemetry.timeToGlassTransitionSec).toBeLessThan(telemetry.coolingTimeConstantSec);
+    expect(telemetry.interfaceTemperatureMarginC).toBeCloseTo(20, 12);
     expect(telemetry.interfaceAboveGlassTransition).toBe(true);
+    expect("weldQualityRatio" in telemetry).toBe(false);
+  });
+
+  test("keeps Claim 1, Claim 2, and Claim 39 as distinct source predicates", () => {
+    const withoutClaim1 = stepCrumpFdmSi({
+      ...CRUMP_FDM_DEFAULT_CONTROLS,
+      claim1ApparatusEnabled: 0,
+    });
+    expect(withoutClaim1.claim1ApparatusPresent).toBe(false);
+    expect(withoutClaim1.claim2HeatingMeansPresent).toBe(false);
+    expect(withoutClaim1.claim39PlanarGapPresent).toBe(false);
+    expect(withoutClaim1.isExtruding).toBe(false);
+    expect(withoutClaim1.refusalReason).toContain("Claim 1 topology withheld");
+
+    const withoutClaim2 = stepCrumpFdmSi({
+      ...CRUMP_FDM_DEFAULT_CONTROLS,
+      claim2HeatingEnabled: 0,
+    });
+    expect(withoutClaim2.claim1ApparatusPresent).toBe(true);
+    expect(withoutClaim2.claim2HeatingMeansPresent).toBe(false);
+    expect(withoutClaim2.isExtruding).toBe(false);
+    expect(withoutClaim2.refusalReason).toContain("Claim 2 heating means withheld");
+
+    const withoutClaim39 = stepCrumpFdmSi({
+      ...CRUMP_FDM_DEFAULT_CONTROLS,
+      claim39PlanarNozzleEnabled: 0,
+    });
+    expect(withoutClaim39.claim1ApparatusPresent).toBe(true);
+    expect(withoutClaim39.claim2HeatingMeansPresent).toBe(true);
+    expect(withoutClaim39.claim39PlanarGapPresent).toBe(false);
+    expect(withoutClaim39.isExtruding).toBe(true);
+    expect(withoutClaim39.refusalReason).toBeUndefined();
+  });
+
+  test("states the exact generic-law owners and reduced-model boundaries", () => {
+    const telemetry = stepCrumpFdmSi(CRUMP_FDM_DEFAULT_CONTROLS);
+    expect(telemetry.capillaryOwner).toBe("fs-flux::capillary::step_newtonian_circular_capillary");
+    expect(telemetry.thermalOwner).toBe(
+      "fs-conduction::reduced_slab::step_first_mode_slab_cooling",
+    );
+    expect(telemetry.capillaryBoundary).toContain("newtonian");
+    expect(telemetry.thermalBoundary).toContain("no-phase-change");
+    expect(telemetry.hydraulicPowerW).toBeCloseTo(
+      telemetry.nozzlePressureDropMPa * 1e6 * telemetry.volumetricFlowRateMm3S * 1e-9,
+      12,
+    );
   });
 });

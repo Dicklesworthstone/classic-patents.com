@@ -277,10 +277,14 @@ export function LincolnBuoy3D() {
           </div>
         )}
 
-        {/* Bottom SI Telemetry Chip Strip */}
+        {/* The stern paddlewheel occupies the lower-right of the source-derived
+            vessel. Keep the secondary readout in the empty upper river lane so
+            it cannot mask that named mechanism at the desktop default view. */}
         <StudioKernelChips
           side="right"
           visible={showUiOverlay}
+          placement="top"
+          width="compact"
           title="HYDROSTATIC BUOYANCY & SHOAL CLEARANCE"
           chips={[
             {

@@ -1,8 +1,8 @@
 import {
-  type CrumpFdmControls,
-  type CrumpFdmTelemetry,
   CRUMP_FDM_GLASS_TRANSITION_TEMP_C,
   CRUMP_FDM_ILLUSTRATIVE_NOZZLE_LAND_LENGTH_MM,
+  type CrumpFdmControls,
+  type CrumpFdmTelemetry,
   stepCrumpFdmSi,
 } from "./crumpFdmKernel";
 
@@ -69,12 +69,10 @@ export function decodeCrumpFdmWasmStep(raw: string): CrumpFdmWasmStep | null {
     if (!result) return null;
     if (
       result.capillary_owner !== "fs-flux::capillary::step_newtonian_circular_capillary" ||
-      result.thermal_owner !==
-        "fs-conduction::reduced_slab::step_first_mode_slab_cooling" ||
+      result.thermal_owner !== "fs-conduction::reduced_slab::step_first_mode_slab_cooling" ||
       result.capillary_boundary !==
         "newtonian-incompressible-fully-developed-laminar-no-slip-circular-land" ||
-      result.thermal_boundary !==
-        "one-dimensional-fixed-boundary-first-mode-screen-no-phase-change"
+      result.thermal_boundary !== "one-dimensional-fixed-boundary-first-mode-screen-no-phase-change"
     ) {
       return null;
     }
@@ -88,7 +86,12 @@ export function decodeCrumpFdmWasmStep(raw: string): CrumpFdmWasmStep | null {
     ]) {
       if (!finiteNonNegative(value)) return null;
     }
-    if (!closeEnough(result.threshold_temperature_check_k, CRUMP_FDM_GLASS_TRANSITION_TEMP_C + 273.15)) {
+    const thresholdTemperatureCheckK = result.threshold_temperature_check_k;
+    if (
+      thresholdTemperatureCheckK === undefined ||
+      !finiteNonNegative(thresholdTemperatureCheckK) ||
+      !closeEnough(thresholdTemperatureCheckK, CRUMP_FDM_GLASS_TRANSITION_TEMP_C + 273.15)
+    ) {
       return null;
     }
     return result as CrumpFdmWasmStep;
@@ -142,7 +145,10 @@ function fallbackState(controls: CrumpFdmControls): CrumpFdmRuntimeTelemetry {
 }
 
 /** Step validated generic FrankenSim owners when loaded, otherwise their TS mirror. */
-export function stepCrumpFdmPhysics(controls: CrumpFdmControls): CrumpFdmRuntimeTelemetry {
+export function stepCrumpFdmPhysics(
+  controls: CrumpFdmControls,
+  _kernelSource?: CrumpFdmKernelSource,
+): CrumpFdmRuntimeTelemetry {
   const fallback = fallbackState(controls);
   if (!stepFn || !fallback.claim1ApparatusPresent || !fallback.claim2HeatingMeansPresent) {
     return fallback;

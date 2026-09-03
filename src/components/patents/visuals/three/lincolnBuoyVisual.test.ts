@@ -1,11 +1,40 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import { stepLincolnBuoy } from "@/physics/catalogKernels";
 import { lincolnBuoyViewForViewport } from "./lincolnBuoyCamera";
 import { buildLincolnBuoyModel, updateLincolnBuoyKinematics } from "./lincolnBuoyModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
+const DESKTOP_AUDIT_VIEWPORT = { width: 1214, height: 460 };
+const DESKTOP_TELEMETRY_INSET_PX = 16;
+const COMPACT_TELEMETRY_WIDTH_PX = 17 * 16;
+const MIN_TELEMETRY_CLEARANCE_PX = 48;
+
+function projectedGeometryBounds(
+  root: THREE.Object3D,
+  camera: THREE.PerspectiveCamera,
+  viewport: typeof DESKTOP_AUDIT_VIEWPORT,
+) {
+  const projected: THREE.Vector3[] = [];
+  root.traverse((node) => {
+    const positions = (node as THREE.Mesh).geometry?.getAttribute("position");
+    if (!positions) return;
+
+    const point = new THREE.Vector3();
+    for (let index = 0; index < positions.count; index += 1) {
+      point.fromBufferAttribute(positions, index).applyMatrix4(node.matrixWorld).project(camera);
+      projected.push(point.clone());
+    }
+  });
+
+  return {
+    count: projected.length,
+    minX: Math.min(...projected.map((point) => ((point.x + 1) * viewport.width) / 2)),
+    maxX: Math.max(...projected.map((point) => ((point.x + 1) * viewport.width) / 2)),
+  };
+}
 
 describe("US 6,469 Abraham Lincoln Buoying Vessels Over Shoals visual & hydrostatics boundary", () => {
   test("frames the complete hull and seven-unit smokestack envelope", () => {
@@ -20,6 +49,77 @@ describe("US 6,469 Abraham Lincoln Buoying Vessels Over Shoals visual & hydrosta
 
     expect(desktop.target).toEqual([0, 2.2, 0]);
     expect(distance(phone) / distance(desktop)).toBeCloseTo(1.2, 8);
+  });
+
+  test("keeps the source-named stern paddlewheel clear of desktop telemetry", () => {
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "LincolnBuoy3D.tsx"), "utf8");
+    const telemetryLeftEdge =
+      DESKTOP_AUDIT_VIEWPORT.width - DESKTOP_TELEMETRY_INSET_PX - COMPACT_TELEMETRY_WIDTH_PX;
+    const view = lincolnBuoyViewForViewport("iso", DESKTOP_AUDIT_VIEWPORT.width);
+
+    // V21's actual desktop canvas is 1214 × 460. The old 28-rem bottom card
+    // began at x=750 and concealed the x=771–861 px paddlewheel. The compact,
+    // top-right lane starts at x=926, leaving the entire physical vessel visible.
+    expect(threeSource).toContain('placement="top"');
+    expect(threeSource).toContain('width="compact"');
+
+    for (const inflationPct of [75, 100]) {
+      const model = buildLincolnBuoyModel();
+      try {
+        const hydrostatics = stepLincolnBuoy({
+          inflationPct,
+          shoalDepth: 3.5,
+          weightTons: 380,
+        });
+        updateLincolnBuoyKinematics(
+          model,
+          0,
+          inflationPct,
+          3.5,
+          hydrostatics.baseDraftFt,
+          hydrostatics.hullDraftFt,
+          hydrostatics.paddleDisplayOmegaRadPerS,
+          false,
+          380,
+        );
+        model.rootGroup.updateMatrixWorld(true);
+
+        const camera = new THREE.PerspectiveCamera(
+          42,
+          DESKTOP_AUDIT_VIEWPORT.width / DESKTOP_AUDIT_VIEWPORT.height,
+          0.1,
+          1000,
+        );
+        camera.position.set(...view.pos);
+        camera.lookAt(...view.target);
+        camera.updateProjectionMatrix();
+        camera.updateMatrixWorld();
+
+        const vessel = projectedGeometryBounds(model.boatGroup, camera, DESKTOP_AUDIT_VIEWPORT);
+        const paddlewheel = projectedGeometryBounds(
+          model.paddlewheelGroup,
+          camera,
+          DESKTOP_AUDIT_VIEWPORT,
+        );
+
+        expect(vessel.count, `${inflationPct}% vessel geometry`).toBeGreaterThan(0);
+        expect(paddlewheel.count, `${inflationPct}% paddlewheel geometry`).toBeGreaterThan(0);
+        expect(vessel.maxX, `${inflationPct}% vessel telemetry clearance`).toBeLessThan(
+          telemetryLeftEdge - MIN_TELEMETRY_CLEARANCE_PX,
+        );
+        expect(paddlewheel.maxX, `${inflationPct}% paddlewheel telemetry clearance`).toBeLessThan(
+          telemetryLeftEdge - MIN_TELEMETRY_CLEARANCE_PX,
+        );
+        expect(paddlewheel.minX, `${inflationPct}% paddlewheel canvas left edge`).toBeGreaterThan(
+          0,
+        );
+        expect(paddlewheel.maxX, `${inflationPct}% paddlewheel canvas right edge`).toBeLessThan(
+          DESKTOP_AUDIT_VIEWPORT.width,
+        );
+      } finally {
+        model.dispose();
+      }
+    }
   });
 
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {

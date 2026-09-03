@@ -1,11 +1,12 @@
 export const LEMELSON_ADJUSTABLE_MANIPULATOR_CAMERA_VIEWS = {
   overview: {
-    // The first read has to show the complete rail-to-jaw load path, but the
-    // old distant overview reduced the claimed wrist and gripping jaw to a
-    // few pixels against the gantry. This remains wide enough for both
-    // supports while making the articulated end effector inspectable.
-    position: [4.9, 3.0, 5.4] as [number, number, number],
-    target: [0, 1.15, 0] as [number, number, number],
+    // The prior desktop overview projected the near/right normalized gantry
+    // support below the canvas (and beneath the controls panel), especially
+    // when the carriage reaches its rightmost displayed position. This modest
+    // pullback and lower focus retain the complete overhead-track-to-jaw path
+    // without changing the source-derived apparatus geometry or close views.
+    position: [6.0, 3.4, 6.6] as [number, number, number],
+    target: [0, 0.7, 0] as [number, number, number],
   },
   gantry: {
     position: [0.0, 3.8, 4.5] as [number, number, number],

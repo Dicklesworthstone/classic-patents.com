@@ -2585,6 +2585,207 @@ async function auditPatent(
         sourceOwnersHonest && physicalSequenceCompleted && crossFaceParity;
     }
 
+    if (patentId === "us-5121329-crump-fdm") {
+      const readCrumpState = (testId: string) =>
+        dispatcher.getByTestId(testId).evaluate((element) => ({
+          topology: element.getAttribute("data-crump-claim1-topology"),
+          heating: element.getAttribute("data-crump-claim2-heating"),
+          tip: element.getAttribute("data-crump-claim39-tip"),
+          extruding: element.getAttribute("data-crump-extruding"),
+          layerGapMm: Number(element.getAttribute("data-crump-layer-gap-mm")),
+          flowMm3S: Number(element.getAttribute("data-crump-flow-mm3-s")),
+          pressureMPa: Number(element.getAttribute("data-crump-pressure-mpa")),
+          runtimeSource: element.getAttribute("data-crump-runtime-source"),
+          capillaryOwner: element.getAttribute("data-crump-capillary-owner"),
+          thermalOwner: element.getAttribute("data-crump-thermal-owner"),
+          capillaryBoundary: element.getAttribute("data-crump-capillary-boundary"),
+          thermalBoundary: element.getAttribute("data-crump-thermal-boundary"),
+          worldSupport: element.getAttribute("data-crump-world-support"),
+        }));
+      const threeDimensional = dispatcher.getByTestId("crump-fdm-three");
+      await threeDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      const claimToggle = dispatcher.getByTestId("claim-constraint-toggle");
+      for (const claimNumber of [1, 2, 39]) {
+        const toggle = claimToggle.locator(`[data-claim-number="${claimNumber}"]`);
+        if ((await toggle.getAttribute("data-claim-active")) !== "true") await toggle.click();
+      }
+      await page
+        .waitForFunction(
+          () =>
+            document
+              .querySelector('[data-testid="crump-fdm-three"]')
+              ?.getAttribute("data-crump-runtime-source") === "wasm",
+          undefined,
+          { timeout: 15_000 },
+        )
+        .catch(() => undefined);
+      const defaultState = await readCrumpState("crump-fdm-three");
+
+      const printSpeed = dispatcher.getByLabel(/Print Speed \(/);
+      await printSpeed.focus();
+      await printSpeed.press("End");
+      await page.waitForFunction(
+        (previousFlow) =>
+          Number(
+            document
+              .querySelector('[data-testid="crump-fdm-three"]')
+              ?.getAttribute("data-crump-flow-mm3-s"),
+          ) > previousFlow,
+        defaultState.flowMm3S,
+      );
+      const highSpeedState = await readCrumpState("crump-fdm-three");
+
+      const claim39Toggle = claimToggle.locator('[data-claim-number="39"]');
+      await claim39Toggle.click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="crump-fdm-three"]')
+            ?.getAttribute("data-crump-claim39-tip") === "rounded",
+      );
+      const roundedTipState = await readCrumpState("crump-fdm-three");
+      const roundedTipScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.claim-39-rounded-unsheared-comparison.png`,
+      );
+      await dispatcher.screenshot({ path: roundedTipScreenshotPath });
+
+      await dispatcher.getByRole("button", { name: "2D Technical Diagram" }).click();
+      const twoDimensional = dispatcher.getByTestId("crump-fdm-two");
+      await twoDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      const twoDimensionalRoundedState = await readCrumpState("crump-fdm-two");
+      const twoDimensionalScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.shared-two-dimensional-rounded-outlet.png`,
+      );
+      await dispatcher.screenshot({ path: twoDimensionalScreenshotPath });
+
+      await dispatcher.getByRole("button", { name: "3D Physics Simulation" }).click();
+      await threeDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      await claim39Toggle.click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="crump-fdm-three"]')
+            ?.getAttribute("data-crump-claim39-tip") === "planar",
+      );
+
+      const claim2Toggle = claimToggle.locator('[data-claim-number="2"]');
+      await claim2Toggle.click();
+      await page.waitForFunction(() => {
+        const element = document.querySelector('[data-testid="crump-fdm-three"]');
+        return (
+          element?.getAttribute("data-crump-claim2-heating") === "withheld" &&
+          element.getAttribute("data-crump-extruding") === "false"
+        );
+      });
+      const heatingWithheldState = await readCrumpState("crump-fdm-three");
+      const heatingWithheldScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.claim-2-heating-means-withheld.png`,
+      );
+      await dispatcher.screenshot({ path: heatingWithheldScreenshotPath });
+      await claim2Toggle.click();
+
+      const claim1Toggle = claimToggle.locator('[data-claim-number="1"]');
+      await claim1Toggle.click();
+      await page.waitForFunction(() => {
+        const element = document.querySelector('[data-testid="crump-fdm-three"]');
+        return (
+          element?.getAttribute("data-crump-claim1-topology") === "withheld" &&
+          element.getAttribute("data-crump-claim2-heating") === "withheld" &&
+          element.getAttribute("data-crump-claim39-tip") === "rounded" &&
+          element.getAttribute("data-crump-extruding") === "false"
+        );
+      });
+      const topologyWithheldState = await readCrumpState("crump-fdm-three");
+      const topologyWithheldScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.claim-1-apparatus-topology-withheld.png`,
+      );
+      await dispatcher.screenshot({ path: topologyWithheldScreenshotPath });
+
+      await dispatcher.getByRole("button", { name: "2D Technical Diagram" }).click();
+      await twoDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      const twoDimensionalWithheldState = await readCrumpState("crump-fdm-two");
+      await dispatcher.getByRole("button", { name: "3D Physics Simulation" }).click();
+      await threeDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      await claim1Toggle.click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="crump-fdm-three"]')
+            ?.getAttribute("data-crump-claim1-topology") === "present",
+      );
+      const restoredState = await readCrumpState("crump-fdm-three");
+
+      const sourceOwnersHonest =
+        defaultState.capillaryOwner === "fs-flux::capillary::step_newtonian_circular_capillary" &&
+        defaultState.thermalOwner === "fs-conduction::reduced_slab::step_first_mode_slab_cooling" &&
+        defaultState.capillaryBoundary ===
+          "newtonian-incompressible-fully-developed-laminar-no-slip-circular-land" &&
+        defaultState.thermalBoundary ===
+          "one-dimensional-fixed-boundary-first-mode-screen-no-phase-change" &&
+        ["wasm", "ts-fallback"].includes(defaultState.runtimeSource ?? "");
+      const physicalSequenceCompleted =
+        defaultState.topology === "present" &&
+        defaultState.heating === "present" &&
+        defaultState.tip === "planar" &&
+        defaultState.extruding === "true" &&
+        defaultState.layerGapMm > 0 &&
+        defaultState.flowMm3S > 0 &&
+        defaultState.pressureMPa > 0 &&
+        defaultState.worldSupport === "chassis-base-posts-crown" &&
+        highSpeedState.flowMm3S > defaultState.flowMm3S &&
+        roundedTipState.topology === "present" &&
+        roundedTipState.heating === "present" &&
+        roundedTipState.tip === "rounded" &&
+        roundedTipState.extruding === "true" &&
+        heatingWithheldState.topology === "present" &&
+        heatingWithheldState.heating === "withheld" &&
+        heatingWithheldState.extruding === "false" &&
+        topologyWithheldState.topology === "withheld" &&
+        topologyWithheldState.heating === "withheld" &&
+        topologyWithheldState.tip === "rounded" &&
+        topologyWithheldState.extruding === "false" &&
+        restoredState.topology === "present" &&
+        restoredState.heating === "present" &&
+        restoredState.tip === "planar";
+      const crossFaceParity =
+        twoDimensionalRoundedState.topology === roundedTipState.topology &&
+        twoDimensionalRoundedState.heating === roundedTipState.heating &&
+        twoDimensionalRoundedState.tip === roundedTipState.tip &&
+        twoDimensionalRoundedState.extruding === roundedTipState.extruding &&
+        twoDimensionalRoundedState.layerGapMm === roundedTipState.layerGapMm &&
+        twoDimensionalRoundedState.flowMm3S === roundedTipState.flowMm3S &&
+        twoDimensionalRoundedState.pressureMPa === roundedTipState.pressureMPa &&
+        twoDimensionalWithheldState.topology === topologyWithheldState.topology &&
+        twoDimensionalWithheldState.heating === topologyWithheldState.heating &&
+        twoDimensionalWithheldState.tip === topologyWithheldState.tip &&
+        twoDimensionalWithheldState.extruding === topologyWithheldState.extruding;
+      mechanismInteraction = {
+        available: true,
+        kind: "generic-capillary-and-thermal-wasm-close-gap-claim-topology-and-cross-face-parity",
+        defaultState,
+        highSpeedState,
+        roundedTipState,
+        twoDimensionalRoundedState,
+        heatingWithheldState,
+        topologyWithheldState,
+        twoDimensionalWithheldState,
+        restoredState,
+        sourceOwnersHonest,
+        physicalSequenceCompleted,
+        crossFaceParity,
+        roundedTipScreenshotPath,
+        twoDimensionalScreenshotPath,
+        heatingWithheldScreenshotPath,
+        topologyWithheldScreenshotPath,
+      };
+      mechanismInteractionValid =
+        sourceOwnersHonest && physicalSequenceCompleted && crossFaceParity;
+    }
+
     if (patentId === "us-586193-marconi-radio") {
       const receiverPreset = surface.getByRole("button", { name: "Receiver & Reset" });
       const receiverFocusApplied =

@@ -197,7 +197,7 @@ export function CrumpFdmSim({ patentId = PATENT_ID }: { patentId?: string }) {
                 x="120"
                 y="250"
                 width="240"
-                height="20"
+                height="22"
                 rx={tel.claim39PlanarGapPresent ? 3 : 10}
                 fill="url(#cooling-bead)"
                 stroke="#f59e0b"
@@ -236,11 +236,11 @@ export function CrumpFdmSim({ patentId = PATENT_ID }: { patentId?: string }) {
                 <line x1="-42" y1="56" x2="42" y2="56" stroke="#94a3b8" strokeWidth="3" />
 
                 {/* Flexible-strand drive/idler rollers (FIG. 5). */}
-                <circle cx="-50" cy="40" r="18" fill="#475569" stroke="#f59e0b" strokeWidth="2" />
-                <circle cx="50" cy="40" r="18" fill="#475569" stroke="#f59e0b" strokeWidth="2" />
-                <circle cx="-50" cy="40" r="4" fill="#f59e0b" />
-                <circle cx="50" cy="40" r="4" fill="#f59e0b" />
-                <text x="-85" y="15" fill="#f59e0b" fontSize="9" fontFamily="monospace">
+                <circle cx="-25" cy="40" r="18" fill="#475569" stroke="#f59e0b" strokeWidth="2" />
+                <circle cx="25" cy="40" r="18" fill="#475569" stroke="#f59e0b" strokeWidth="2" />
+                <circle cx="-25" cy="40" r="4" fill="#f59e0b" />
+                <circle cx="25" cy="40" r="4" fill="#f59e0b" />
+                <text x="-105" y="15" fill="#f59e0b" fontSize="9" fontFamily="monospace">
                   Drive Roller 134
                 </text>
                 <text x="35" y="15" fill="#f59e0b" fontSize="9" fontFamily="monospace">
@@ -304,6 +304,15 @@ export function CrumpFdmSim({ patentId = PATENT_ID }: { patentId?: string }) {
 
                   {/* Molten Core inside Liquefier */}
                   <rect x="-6" y="100" width="12" height="70" fill="url(#melt-gradient)" />
+                  <path
+                    d="M -48 106 C -60 114 -60 124 -48 132 C -36 140 -36 150 -48 158"
+                    fill="none"
+                    stroke="#fb7185"
+                    strokeWidth="3"
+                  />
+                  <text x="-128" y="154" fill="#fda4af" fontSize="9" fontFamily="monospace">
+                    Heater coil 130
+                  </text>
                 </g>
 
                 {/* Outlet nozzle 122; Claim 39 chooses planar or rounded comparison tip. */}
