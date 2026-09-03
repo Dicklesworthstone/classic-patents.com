@@ -7,6 +7,7 @@ import {
   stepHaberAmmonia,
   stepHewittMercuryLamp,
   stepKilbyIntegratedCircuit,
+  stepLamarrRecordControl,
   stepLandPolaroidInstantFilm,
   stepRillieuxEvaporator,
   stepTownesLaser,
@@ -23,7 +24,7 @@ import {
 
 import { stepAmfVersatranTopology } from "./amfVersatranKernel";
 import { stepArkwrightWaterFrame } from "./arkwrightKernel";
-import { INITIAL_BAER_STATE, readBaerControls, stepBaerOdysseySi } from "./baerOdysseyKernel";
+import { readBaerControls, readBaerOdysseyTapeFrame } from "./baerOdysseyKernel";
 import {
   stepBellTelephone,
   stepBoyleSmithCcd,
@@ -53,15 +54,22 @@ import {
   stepWhitneyCottonGin,
   stepWozniakApple,
   stepZeppelinAirship,
-  voltsToKv,
 } from "./catalogKernels";
 import { stepClavelDeltaRobotTopology } from "./clavelDeltaRobotKernel";
 import { stepCortPuddlingRolling } from "./cortKernel";
 import { CRUMP_FDM_DEFAULT_CONTROLS, readCrumpFdmControls, stepCrumpFdmSi } from "./crumpFdmKernel";
-import { readDaVinciControls } from "./daVinciKernel";
+import {
+  readDaVinciInterfaceControls,
+  resolveDaVinciInterfaceTopology,
+} from "./daVinciInterfaceTopology";
 import { stepDevolProgrammedTransfer } from "./devolProgrammedTransferKernel";
-import { stepEInk } from "./eInkKernel";
+import { readEInkRuntimeControls, readEInkTapeFrame, resetEInkTape } from "./eInkSharedKernel";
 import { FrankenSimEngine } from "./engine";
+import {
+  readFarnsworthTvControls,
+  readFarnsworthTvTapeFrame,
+  resetFarnsworthTvTape,
+} from "./farnsworthTvKernel";
 import { stepFermiKinetics } from "./fermiKinetics";
 import {
   GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS,
@@ -85,10 +93,10 @@ import {
   stepKamenSegwaySi,
 } from "./kamenSegwayKernel";
 import {
-  KAMEN_TRANSPORTER_DEFAULT_CONTROLS,
   readKamenTransporterControls,
-  stepKamenTransporterSi,
+  stepKamenTransporterTopology,
 } from "./kamenTransporterKernel";
+import { resetLamarrTape } from "./lamarrSharedKernel";
 import { stepLemelsonManipulatorTopology } from "./lemelsonAdjustableManipulatorKernel";
 import {
   LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS,
@@ -97,7 +105,7 @@ import {
 } from "./lemelsonAutomaticProductionKernel";
 import {
   readLemelsonMachineVisionControls,
-  stepLemelsonMachineVisionSi,
+  stepLemelsonMachineVisionTopology,
 } from "./lemelsonMachineVisionKernel";
 import {
   LEMELSON_WAREHOUSE_DEFAULT_CONTROLS,
@@ -107,19 +115,23 @@ import {
 import {
   stepHoweSewingMachine,
   stepMergenthalerLinotype,
-  stepRenoEscalator,
   stepSholesTypewriter,
 } from "./machineKernels";
 import { stepMakinoScaraTopology } from "./makinoScaraKernel";
+import {
+  readMarconiRuntimeControls,
+  readMarconiTapeFrame,
+  resetMarconiTape,
+} from "./marconiSharedKernel";
 import {
   MESTRAL_VELCRO_DEFAULTS,
   readMestralVelcroControls,
   stepMestralVelcroSi,
 } from "./mestralVelcroKernel";
 import {
-  INITIAL_ETHERNET_STATE,
   readEthernetControls,
-  stepMetcalfeEthernetSi,
+  readMetcalfeEthernetTapeFrame,
+  resetMetcalfeEthernetTape,
 } from "./metcalfeEthernetKernel";
 import { stepMilacronRobotToolchanger } from "./milacronRobotToolchangerKernel";
 import { stepMultiTouch } from "./multiTouchKernel";
@@ -200,6 +212,10 @@ export interface PatentPhysicsMetadata {
   engineMethod: string;
   controls: PhysicsControl[];
   computeMetrics: (params: Record<string, number>) => PhysicsMetric[];
+  /** Reproject metrics when a stateful fixed-step tape advances. */
+  refreshFromRuntimeTape?: boolean;
+  /** Reset stateful event/trajectory tape together with baseline controls. */
+  resetRuntimeTape?: () => void;
   pedagogicalInsight: string;
   provenance?: MetricProvenanceClassification;
   enforceConstraints?: (
@@ -452,6 +468,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     },
   },
   "us-3728480-baer-odyssey": {
+    refreshFromRuntimeTape: true,
     domain: "video_electronics",
     domainTitle: "Television Gaming & Raster Coincidence",
     equationName: "NTSC Raster Timing, Monostable RC Spot Delay & Coincidence Gating",
@@ -544,7 +561,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     ],
     computeMetrics(rawParams) {
       const controls = readBaerControls(rawParams as any);
-      const { metrics } = stepBaerOdysseySi(INITIAL_BAER_STATE, controls, 0.016);
+      const metrics = readBaerOdysseyTapeFrame(controls).metrics;
       return [
         {
           label: "Horizontal Sync",
@@ -737,6 +754,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     },
   },
   "us-4063220-metcalfe-ethernet": {
+    refreshFromRuntimeTape: true,
+    resetRuntimeTape: resetMetcalfeEthernetTape,
     domain: "networking_electrodynamics",
     domainTitle: "Ethernet Coaxial CSMA/CD & Binary Exponential Backoff",
     equationName:
@@ -770,7 +789,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "stationCount",
-        label: "Active Contending Stations",
+        label: "Analytical Contender Estimate",
         min: 2,
         max: 32,
         step: 1,
@@ -780,7 +799,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "offeredLoad",
-        label: "Offered Traffic Load (G)",
+        label: "Analytical Offered Load (G)",
         min: 0.05,
         max: 2.5,
         step: 0.05,
@@ -811,7 +830,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     ],
     computeMetrics: (controls: Record<string, number>) => {
       const parsedControls = readEthernetControls(controls as any);
-      const { metrics } = stepMetcalfeEthernetSi(INITIAL_ETHERNET_STATE, parsedControls, 0.016);
+      const metrics = readMetcalfeEthernetTapeFrame(parsedControls).metrics;
 
       return [
         {
@@ -2920,12 +2939,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   // Preserved, non-public legacy model. The source-reviewed US 586,193 route
   // is held below until an independently accepted visual can support it.
   "_legacy-unpublished-us-586193-marconi-radio": {
+    refreshFromRuntimeTape: true,
+    resetRuntimeTape: resetMarconiTape,
     domain: "electromagnetics_flux",
-    domainTitle: "Spark-Gap Resonant Damped Wave Oscillations & Aerial Radiation",
-    equationName: "Monopole Radiation Resistance & Resonant Frequency",
+    domainTitle: "Source-Bounded Wireless Receiver Contact and Automatic Reset",
+    equationName: "Claim 1 Receiver Contact, Local Circuit, and Shaking Sequence",
     governingEquation:
-      "f_0 = \\frac{1}{2\\pi \\sqrt{L C}} \\quad \\text{and} \\quad R_{\\text{rad}} = 36.56\\ \\Omega \\quad (\\lambda = 4h)",
-    engineMethod: "FrankenSimEngine.stepMarconiRadio",
+      "\\text{received oscillation} \\rightarrow \\text{imperfect contact conducts} \\rightarrow \\text{local circuit acts} \\rightarrow \\text{shaking means resets contact}",
+    engineMethod:
+      "createMarconiTransportUpdater (source-bounded fixed-step causal tape; quantitative RF link budget withheld)",
     controls: [
       {
         id: "sparkVoltage",
@@ -2935,6 +2957,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 28,
         unit: "kV",
+        provenance: "scenario-reader",
+        provenanceCitation:
+          "Illustrative apparatus control; US 586,193 supplies no transmitter voltage for a quantitative RF solution.",
       },
       {
         id: "aerialHeight",
@@ -2944,6 +2969,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 2,
         defaultValue: 88,
         unit: "m",
+        provenance: "scenario-reader",
+        provenanceCitation:
+          "Illustrative display dimension; US 586,193 describes elevated conductors but prints no mast height for this apparatus.",
       },
       {
         id: "sparkGapMm",
@@ -2953,47 +2981,69 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 10,
         unit: "mm",
+        provenance: "scenario-reader",
+        provenanceCitation:
+          "Illustrative geometry control; US 586,193 does not print this spark-gap spacing.",
       },
     ],
     computeMetrics: (p) => {
-      const v = p.sparkVoltage ?? 28;
-      const h = p.aerialHeight ?? 88;
-      const radio = FrankenSimEngine.stepMarconiRadio(h, p.sparkGapMm ?? 10, v);
-      const freqKhz = radio.resonantFreqKhz;
+      const tape = readMarconiTapeFrame(readMarconiRuntimeControls(p));
 
       return [
         {
-          label: "Resonant Frequency",
-          value: freqKhz.toString(),
-          unit: "kHz",
+          label: "Illustrative Apparatus Inputs",
+          value: `${tape.controls.inductionCoilKv} kV · ${tape.controls.aerialHeightMeters} m · ${tape.controls.sparkGapMm} mm`,
+          unit: "reader controls",
+          badgeColor: "purple",
+          progressPct: clampProgress((tape.controls.inductionCoilKv / 50) * 100),
+          provenance: "scenario-reader",
+          provenanceCitation:
+            "Reader-selected display inputs only; US 586,193 supplies none of them as a basis for a quantitative RF link budget.",
+        },
+        {
+          label: "Receiver Sequence",
+          value: tape.receiverStage.replaceAll("-", " "),
+          unit: "state",
           badgeColor: "cyan",
-          progressPct: clampProgress((freqKhz / 2500) * 100),
+          progressPct: tape.pulseAgeSec === null ? 0 : clampProgress(tape.wavefrontProgress * 100),
+          provenance: "topology-normalized",
+          provenanceCitation:
+            "The order follows Claim 1's contact, circuit, and shaking means; display timing is normalized and is not a patent measurement.",
         },
         {
-          label: "Peak RF Power",
-          value: radio.peakRfPowerKw.toString(),
-          unit: "kW",
+          label: "Imperfect Contact",
+          value: tape.receiverConducting ? "conducting" : "open",
+          unit: "contact state",
           badgeColor: "amber",
-          progressPct: Math.min(100, (radio.peakRfPowerKw / 80) * 100),
+          progressPct: tape.receiverConducting ? 100 : 0,
+          provenance: "topology-normalized",
+          provenanceCitation:
+            "Claim 1 names the imperfect contact in the receiver but gives no threshold or resistance for a numerical contact model.",
         },
         {
-          label: "Radiation Resistance",
-          value: radio.radiationResistanceOhms.toFixed(1),
-          unit: "Ω",
+          label: "Sensitive-Tube Current Limit",
+          value: "≤1",
+          unit: "mA",
           badgeColor: "emerald",
-          progressPct: clampProgress(75),
+          progressPct: 100,
+          provenance: "source-disclosed",
+          provenanceCitation:
+            "US 586,193 advises allowing no more than one milliampere through a well-made sensitive tube while active.",
         },
         {
-          label: "Estimated Range",
-          value: radio.maxRangeMiles.toString(),
-          unit: "mi",
+          label: "Single-Cell EMF Limit",
+          value: "≤1.5",
+          unit: "V",
           badgeColor: "indigo",
-          progressPct: Math.min(100, (radio.maxRangeMiles / 200) * 100),
+          progressPct: 100,
+          provenance: "source-disclosed",
+          provenanceCitation:
+            "US 586,193 warns that more than 1.5 volts from a Leclanché cell may pass current with no transmitted oscillation.",
         },
       ];
     },
     pedagogicalInsight:
-      "Connecting one terminal of an elevated vertical antenna to the spark gap and the other directly to the conductive earth turns the system into an asymmetric quarter-wave Hertzian radiator.",
+      "The source-backed mechanism is a complete causal chain: received oscillations change an imperfect contact, the resulting local-circuit current operates the signal apparatus, and a circuit-actuated shaker restores the contact for the next signal. The grant does not provide a quantitative RF link budget.",
   },
   "us-1647-morse-telegraph": {
     domain: "electromagnetics_flux",
@@ -3617,6 +3667,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   // Preserved source-bound model. Publication remains held pending independent
   // figure-crop review; metrics describe only the illustrated record system.
   "_legacy-unpublished-us-2292387-lamarr-frequency-hopping": {
+    refreshFromRuntimeTape: true,
+    resetRuntimeTape: resetLamarrTape,
     domain: "electromagnetics_flux",
     domainTitle: "Synchronized record-controlled radio tuning",
     equationName: "Record position and receiver matching",
@@ -3646,26 +3698,24 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const position = Math.max(0, Math.min(6, Math.round(p.recordPosition ?? 0)));
-      const row = "ABCDEFG"[position] ?? "A";
-      const receiverTuned = position >= 3;
-      const tone = p.commandTone === 500 ? "500" : "100";
+      const state = stepLamarrRecordControl(p);
+      const tone = String(state.commandTone);
 
       return [
         {
           label: "Transmitter record row",
-          value: row,
+          value: state.transmitterRow,
           unit: "A–G",
           badgeColor: "indigo",
-          progressPct: clampProgress((position / 6) * 100),
+          progressPct: clampProgress((state.recordPosition / 6) * 100),
           provenance: "source-disclosed",
         },
         {
           label: "Receiver match",
-          value: receiverTuned ? "D–G" : "A–C false",
+          value: state.receiverEffective ? "D–G" : "A–C false",
           unit: "channels",
           badgeColor: "emerald",
-          progressPct: receiverTuned ? 100 : 0,
+          progressPct: state.receiverEffective ? 100 : 0,
           provenance: "source-disclosed",
         },
         {
@@ -3678,10 +3728,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Warning lamp 43",
-          value: receiverTuned ? "off" : "on",
+          value: state.warningLampOn ? "on" : "off",
           unit: "row H",
           badgeColor: "amber",
-          progressPct: receiverTuned ? 0 : 100,
+          progressPct: state.warningLampOn ? 100 : 0,
           provenance: "source-disclosed",
         },
       ];
@@ -3924,12 +3974,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "Identical metal scoops with convex upper projections and concave lower pockets are offset by half a tooth pitch ($p/2$) along corded fabric tapes. Squeezing the teeth together through a converging Y-cam causes each scoop to nest positively inside the hollow socket of its opposing neighbor, providing extreme transverse burst strength while allowing 180° folding flexibility.",
   },
   "us-1773980-farnsworth-tv": {
+    refreshFromRuntimeTape: true,
+    resetRuntimeTape: resetFarnsworthTvTape,
     domain: "semiconductor_carrier",
     domainTitle: "Relativistic Photo-Cathode Lorentz Deflection Dissector Tube",
     equationName: "Lorentz Force Magnetic Scanline Deflection",
     governingEquation:
       "\\vec{F} = -e (\\vec{E} + \\vec{v} \\times \\vec{B}) \\quad \\text{and} \\quad r = \\frac{m_e v}{e B}",
-    engineMethod: "FrankenSimEngine.stepFarnsworthTV",
+    engineMethod: "createFarnsworthTvTransportUpdater → FrankenSimEngine.stepFarnsworthTv",
     controls: [
       {
         id: "anodeVoltage",
@@ -3993,13 +4045,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const v = p.anodeVoltage ?? 1500;
-      const i = p.coilCurrent ?? 0.42;
-      const hFreq = p.horizontalFreqKhz ?? 15.75;
-      const vFreq = p.verticalFreqHz ?? 60;
-      const lux = p.lightIntensityLux ?? 500;
-      const gauss = FrankenSimEngine.farnsworthDeflectionGauss(i);
-      const beam = FrankenSimEngine.stepFarnsworthTv(voltsToKv(v), gauss, lux);
+      const controls = readFarnsworthTvControls(p as any);
+      const beam = readFarnsworthTvTapeFrame(controls).beamState;
+      const hFreq = controls.horizontalFreqKhz;
+      const vFreq = controls.verticalFreqHz;
       const beamVelocity = beam.electronVelocityMegaMps.toFixed(1);
       const derivedScanLines = Math.round((hFreq * 1000) / vFreq);
       const photoUa = beam.photocathodeCurrentUa.toFixed(1);
@@ -5054,87 +5103,95 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "Spring-loaded brass pins pass through card perforations into mercury pools, completing 12V circuits that advance dial accumulators and trigger sorting box lids in parallel.",
   },
   "us-470918-reno-escalator": {
-    domain: "continuum_elasticity",
-    domainTitle: "Inclined Passenger Throughput & Comb-Plate Safety Extraction",
-    equationName: "Continuous Transit Throughput & Motor Drive Torque",
-    governingEquation:
-      "\\dot{N}_{\\text{pass}} = \\frac{v \\cdot w_{\\text{step}}}{L_{\\text{pass}}} \\quad \\text{and} \\quad \\tau = \\frac{R}{\\eta} \\sum m_i g (\\sin\\theta + \\mu \\cos\\theta)",
-    engineMethod: "FrankenSimEngine.stepRenoEscalator",
+    domain: "mechanical_kinematics",
+    domainTitle: "Source-Bounded Endless Conveyor Kinematics",
+    equationName: "Traveling Belt and Hand-Rail Speed",
+    governingEquation: "v = \\omega R; \\quad 200\\,\\text{ft/min} \\approx 1.016\\,\\text{m/s}",
+    engineMethod: "TypeScript host kinematic readout (no Reno WASM step)",
     controls: [
       {
-        id: "passengerCount",
-        label: "Live Passenger Load",
-        min: 0,
-        max: 60,
-        step: 2,
-        defaultValue: 30,
-        unit: "riders",
-      },
-      {
         id: "inclineAngle",
-        label: "Truss Incline Angle",
+        label: "Incline (source preference ≈25°)",
         min: 20,
         max: 35,
         step: 1,
         defaultValue: 25,
         unit: "°",
+        provenance: "scenario-reader",
+        provenanceCitation: "The specification proposes an angle of slope of about 25 degrees.",
       },
       {
         id: "beltSpeed",
-        label: "Linear Tread Velocity",
-        min: 0.3,
-        max: 0.75,
-        step: 0.05,
-        defaultValue: 0.45,
+        label: "Belt speed (source reference 200 ft/min)",
+        min: 0.4,
+        max: 1.2,
+        step: 0.001,
+        defaultValue: 1.016,
         unit: "m/s",
+        provenance: "scenario-reader",
+        provenanceCitation:
+          "The specification says the conveyor and hand-rail preferably move at about 200 feet per minute.",
       },
     ],
     computeMetrics: (p) => {
-      const count = p.passengerCount ?? 30;
-      const angle = p.inclineAngle ?? 25;
-      const v = p.beltSpeed ?? 0.45;
-      const reno = stepRenoEscalator({
-        passengerCount: count,
-        inclineAngleDeg: angle,
-        velocityMps: v,
-      });
-      const throughput = reno.throughputPerHour;
-      const torque = reno.motorTorqueNm;
-      const powerKw = reno.motorPowerKw.toFixed(2);
+      const v = p.beltSpeed ?? 1.016;
+      const inclineDeg = p.inclineAngle ?? 25;
+      const speedFpm = Math.round((v * 60) / 0.3048);
 
       return [
         {
-          label: "Hourly Throughput",
-          value: `${throughput.toLocaleString()}/hr`,
-          unit: "passengers",
-          badgeColor: "emerald",
-          progressPct: clampProgress((throughput / 10000) * 100),
-        },
-        {
-          label: "Drive Motor Torque",
-          value: `${torque} N·m`,
-          unit: "τ_motor",
-          badgeColor: "indigo",
-          progressPct: clampProgress((torque / 6000) * 100),
-        },
-        {
-          label: "Motor Power Draw",
-          value: `${powerKw} kW`,
-          unit: "P_elec",
-          badgeColor: "amber",
-          progressPct: clampProgress((Number(powerKw) / 10) * 100),
-        },
-        {
-          label: "Comb-Plate Clearance",
-          value: `${reno.combPlateClearanceMm} mm`,
-          unit: "δ_gap",
+          label: "Selected Belt Speed",
+          value: `${speedFpm} ft/min`,
+          unit: `${v.toFixed(3)} m/s`,
           badgeColor: "cyan",
-          progressPct: clampProgress(80),
+          progressPct: clampProgress((v / 1.2) * 100),
+          provenance: "scenario-reader",
+        },
+        {
+          label: "Patent Preferred Speed",
+          value: "200 ft/min",
+          unit: "≈ 1.016 m/s",
+          badgeColor: "emerald",
+          progressPct: clampProgress((200 / 240) * 100),
+          provenance: "source-disclosed",
+          provenanceCitation:
+            "The specification states that the conveyor and hand-rail preferably move at about 200 feet per minute.",
+        },
+        {
+          label: "Patent Stated Maximum",
+          value: "6,000",
+          unit: "passengers/h, single file",
+          badgeColor: "amber",
+          progressPct: clampProgress(75),
+          provenance: "source-disclosed",
+          provenanceCitation:
+            "The specification gives a maximum capacity of six thousand passengers per hour in single file.",
+        },
+        {
+          label: "Preferred Comb Clearance",
+          value: "≤ 1/8 in",
+          unit: "≤ 3.175 mm",
+          badgeColor: "cyan",
+          progressPct: clampProgress(64),
+          provenance: "source-disclosed",
+          provenanceCitation:
+            "The specification says clearance between the comb prongs and belt grooves should not exceed one-eighth inch.",
+        },
+        {
+          label: "Selected Incline",
+          value: `${inclineDeg.toFixed(0)}°`,
+          unit: "source-preference display",
+          badgeColor: "indigo",
+          progressPct: clampProgress(((inclineDeg - 20) / 15) * 100),
+          provenance: "scenario-reader",
+          provenanceCitation:
+            "The specification proposes an angle of slope of about 25 degrees; the selected value controls the normalized geometric reconstruction.",
         },
       ];
     },
     pedagogicalInsight:
-      "Longitudinally grooved treads pass smoothly under stationary comb-plate fingers with sub-millimeter clearance, lifting footwear off the incline without danger of pinching.",
+      "Reno describes a hinged, longitudinally grooved belt passing fixed comb fingers, an articulated traveling hand-rail, a preferred speed of about 200 feet per minute, and a stated single-file maximum of 6,000 passengers per hour. The source does not provide a power, torque, or load-curve measurement.",
+    provenance: "source-disclosed",
   },
   "_legacy-unpublished-us-542846-diesel-engine": {
     domain: "thermodynamics_transport",
@@ -8468,184 +8525,120 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "US 3,212,649 discloses a column, carriage, arm, wrist rotation, wrist swing, gripper operation, tape recording/playback, and resolver/error-detector paths. This shared instrument reports only normalized exhibit topology and phase comparison; it refuses unprinted dimensions, pressure, flow, payload, gain, timing, and performance values.",
   },
   "us-3081379-lemelson-machine-vision": {
-    domain: "optical_electronics",
-    domainTitle: "Television Raster Scanning & Machine Vision",
-    equationName: "Video Line Scan Dimensional Slicing & Defect Detection",
-    governingEquation:
-      "f_H = N_L \\cdot f_F,\\quad v_{\\text{scan}} = \\frac{W_{\\text{target}}}{T_{\\text{active}}},\\quad L_{\\text{meas}} = v_{\\text{scan}} \\cdot \\tau_{\\text{pulse}},\\quad F_{\\text{mag}} = \\frac{(N I)^2 \\mu_0 A_p}{2 g^2}",
-    engineMethod: "stepLemelsonMachineVisionSi (analytical SI optical signal & solenoid dynamics)",
+    domain: "source_bounded_video_signal_topology",
+    domainTitle: "Source-Bound Video Signal Gating & Analysis",
+    equationName: "Claim 1 Signal-Path Admission",
+    governingEquation: "C = S \\land G \\land A \\land I",
+    engineMethod:
+      "stepLemelsonMachineVisionTopology (deterministic TypeScript source-bounded signal topology; no calibrated beam velocity, optical responsivity, solenoid force, or response model)",
     controls: [
       {
-        id: "scanLineCount",
-        label: "Raster scan lines",
-        min: 100,
-        max: 1200,
-        step: 25,
-        defaultValue: 525,
-        unit: "lines",
-        provenance: "scenario-reader",
+        id: "scanPathEnabled",
+        label: "Electron-beam scan path",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "off/on",
+        provenance: "source-disclosed",
       },
       {
-        id: "frameRateHz",
-        label: "Frame rate",
-        min: 10,
-        max: 120,
-        step: 5,
-        defaultValue: 30,
-        unit: "Hz",
-        provenance: "scenario-reader",
+        id: "synchronizedGateEnabled",
+        label: "Synchronized programming gate",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "off/on",
+        provenance: "source-disclosed",
       },
       {
-        id: "targetWidthM",
-        label: "Field of view width",
-        min: 0.05,
-        max: 1.0,
-        step: 0.01,
-        defaultValue: 0.2,
-        unit: "m",
-        provenance: "scenario-reader",
+        id: "analyzingCircuitEnabled",
+        label: "Analyzing circuit",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "off/on",
+        provenance: "source-disclosed",
       },
       {
-        id: "illuminationLux",
-        label: "Illumination level",
-        min: 100,
-        max: 10000,
-        step: 100,
-        defaultValue: 1500,
-        unit: "lux",
-        provenance: "scenario-reader",
+        id: "inspectionSignalPresent",
+        label: "Picture signal at inspection",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "off/on",
+        provenance: "source-disclosed",
       },
       {
-        id: "thresholdVoltage",
-        label: "Threshold comparator level",
-        min: 0.05,
-        max: 1.0,
-        step: 0.05,
-        defaultValue: 0.45,
-        unit: "V",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "nominalPartWidthM",
-        label: "Nominal part width",
-        min: 0.01,
-        max: 0.5,
-        step: 0.005,
-        defaultValue: 0.08,
-        unit: "m",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "actualPartWidthM",
-        label: "Actual part width",
-        min: 0.01,
-        max: 0.5,
-        step: 0.001,
-        defaultValue: 0.082,
-        unit: "m",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "conveyorSpeedMPerS",
-        label: "Conveyor speed",
-        min: 0.01,
-        max: 2.0,
-        step: 0.05,
-        defaultValue: 0.25,
-        unit: "m/s",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "gateSolenoidCurrentA",
-        label: "Solenoid coil current",
-        min: 0.1,
-        max: 10.0,
-        step: 0.1,
-        defaultValue: 2.5,
-        unit: "A",
-        provenance: "scenario-reader",
+        id: "referenceSignalMatches",
+        label: "Reference comparison",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "difference/match",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics(rawParams) {
       const controls = readLemelsonMachineVisionControls(rawParams);
-      const state = stepLemelsonMachineVisionSi(controls);
+      const state = stepLemelsonMachineVisionTopology(controls);
       return [
         {
-          id: "horizontalScanFreqHz",
-          label: "Horizontal Scan Freq (f_H)",
-          value: state.metrics.horizontalScanFreqHz.toFixed(0),
-          unit: "Hz",
-          precision: 0,
+          label: "Scan path",
+          value: state.scanPathActive ? "ACTIVE" : "WITHHELD",
+          unit: "claim topology",
           badgeColor: "emerald",
-          provenance: "scenario-modern",
+          progressPct: state.scanPathActive ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
-          id: "linePeriodUs",
-          label: "Line Duration (T_H)",
-          value: state.metrics.linePeriodUs.toFixed(2),
-          unit: "µs",
-          precision: 2,
+          label: "Synchronized gate",
+          value: state.synchronizedGateActive ? "PASS" : "WITHHELD",
+          unit: "claim topology",
           badgeColor: "cyan",
-          provenance: "scenario-modern",
+          progressPct: state.synchronizedGateActive ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
-          id: "scanBeamVelocityMPerS",
-          label: "Beam Scan Velocity (v_scan)",
-          value: state.metrics.scanBeamVelocityMPerS.toFixed(1),
-          unit: "m/s",
-          precision: 1,
+          label: "Analyzing circuit",
+          value: state.analyzingCircuitActive ? "INSPECTING" : "WITHHELD",
+          unit: "claim topology",
           badgeColor: "indigo",
-          provenance: "scenario-modern",
+          progressPct: state.analyzingCircuitActive ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
-          id: "pulseWidthUs",
-          label: "Detected Pulse Width (τ)",
-          value: state.metrics.pulseWidthUs.toFixed(2),
-          unit: "µs",
-          precision: 2,
+          label: "Inspection signal",
+          value: state.inspectionSignalPresent ? "PRESENT" : "WITHHELD",
+          unit: "claim topology",
           badgeColor: "amber",
-          provenance: "scenario-modern",
+          progressPct: state.inspectionSignalPresent ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
-          id: "measuredPartWidthMm",
-          label: "Measured Width (L_meas)",
-          value: state.metrics.measuredPartWidthMm.toFixed(1),
-          unit: "mm",
-          precision: 1,
-          badgeColor: "emerald",
-          provenance: "scenario-modern",
-        },
-        {
-          id: "dimensionalErrorMm",
-          label: "Dimensional Deviation (ΔL)",
-          value: state.metrics.dimensionalErrorMm.toFixed(2),
-          unit: "mm",
-          precision: 2,
-          badgeColor: state.defectDetected ? "rose" : "indigo",
-          provenance: "scenario-modern",
-        },
-        {
-          id: "solenoidForceN",
-          label: "Reject Solenoid Force (F_mag)",
-          value: state.metrics.solenoidForceN.toFixed(2),
-          unit: "N",
-          precision: 2,
+          label: "Control output",
+          value: state.controlOutputReady ? "READY" : "HELD",
+          unit: "source topology",
           badgeColor: "purple",
-          provenance: "scenario-modern",
+          progressPct: state.controlOutputReady ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
-          id: "gateResponseTimeMs",
-          label: "Gate Trip Response (t_act)",
-          value: state.metrics.gateResponseTimeMs.toFixed(1),
-          unit: "ms",
-          precision: 1,
+          label: "Quantitative mechanics",
+          value: "WITHHELD",
+          unit: "missing source inputs",
           badgeColor: "amber",
-          provenance: "scenario-modern",
+          progressPct: 0,
+          provenance: "refusal-bounded",
         },
       ];
     },
     pedagogicalInsight:
-      "US 3,081,379 discloses using television raster lines to scan manufactured parts on a conveyor, converting photometric light patterns into electrical video waveforms, slicing with threshold gates, and converting pulse duration into dimension metrics to trigger high-speed sorting gates.",
+      "US 3,081,379 connects a scan path, synchronized programming and gating, an analyzing circuit, and a control output. The grant does not establish a calibrated raster rate, image-field dimension, optical response, comparator threshold, coil geometry, force, or actuator response, so this exhibit reports only the printed signal topology.",
   },
   "us-3260375-lemelson-adjustable-manipulator": {
     domain: "source_bounded_robot_kinematics",
@@ -8945,13 +8938,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "gripForceSetpointN",
-        label: "Source-labelled grip setpoint",
+        label: "Requested grip command",
         min: 0,
         max: 2000,
         step: 25,
         defaultValue: 900,
-        unit: "N (not contact force)",
-        provenance: "source-disclosed",
+        unit: "N command (source-max bounded)",
+        provenance: "scenario-reader",
       },
       {
         id: "frameRotationDeg",
@@ -9007,7 +9000,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "N · setpoint only",
           badgeColor: "purple",
           progressPct: (state.requestedGripForceN / state.sourceReportedGripForceN) * 100,
-          provenance: "source-disclosed",
+          provenance: "scenario-reader",
         },
         {
           label: "Reported Repeatability",
@@ -9020,7 +9013,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       ];
     },
     pedagogicalInsight:
-      "US 4,765,668 prints an opposed 5 mm-lead ball screw, a typical 6-inch jaw opening, a 43 mm/s maximum hand-travel figure, eight encoder pegs, and 0.05 mm reported repeatability. The shared instrument calculates only the symmetric screw and encoder relationships. Its grip field is deliberately a bounded source-labelled setpoint: the grant does not supply workpiece/finger geometry, friction, pneumatic transfer, payload, or connector stroke for contact, pressure, or robot-arm dynamics.",
+      "US 4,765,668 prints an opposed 5 mm-lead ball screw, a typical 6-inch jaw opening, a 43 mm/s maximum hand-travel figure, eight encoder pegs, and 0.05 mm reported repeatability. The shared instrument calculates only the symmetric screw and encoder relationships. Its grip field is a visitor request bounded by the source's 2,000 N prototype maximum: the grant does not supply workpiece/finger geometry, friction, pneumatic transfer, payload, or connector stroke for contact, pressure, or robot-arm dynamics.",
     enforceConstraints: (params) => ({
       ...params,
       jawOpeningFraction: Math.max(0, Math.min(1, params.jawOpeningFraction ?? 0.52)),
@@ -9109,25 +9102,17 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "US 6,594,844 claims a low-cost optical geometry: the emitter and detector fields overlap in a finite region, and the redirect circuit responds when the expected floor or wall does not occupy it. The room motion is a contextual differential-drive demonstrator, not a coverage guarantee.",
   },
   "us-6331181-davinci": {
-    domain: "medical_robotics",
+    domain: "source_bounded_tool_interface_topology",
     domainTitle: "Compatibility, Calibration, and Engagement Data",
-    equationName: "Nominal-to-Measured Tool Offset",
-    governingEquation: "\\Delta q_{tool} = q_{measured} - q_{nominal}",
-    engineMethod: "FrankenSimEngine.stepDaVinci",
+    equationName: "Nominal-to-Measured Tool Offset Record",
+    governingEquation:
+      "\\mathrm{ready}=\\mathrm{compatible}\\land\\mathrm{calibrationRecord}\\land\\mathrm{engagement},\\qquad \\Delta q_{tool}=q_{measured}-q_{nominal}",
+    engineMethod:
+      "resolveDaVinciInterfaceTopology (source-bounded TypeScript topology; quantitative mechanics refused)",
     controls: [
       {
-        id: "motionScaleRatio",
-        label: "Compatibility table entries (illustrative)",
-        min: 1,
-        max: 10,
-        step: 1,
-        defaultValue: 3,
-        unit: ":1",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "tremorFilterEnabled",
-        label: "Compatibility signal present",
+        id: "compatibilitySignalPresent",
+        label: "Compatibility identifier present",
         min: 0,
         max: 1,
         step: 1,
@@ -9136,66 +9121,65 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         provenance: "source-disclosed",
       },
       {
-        id: "gripAngleDeg",
-        label: "End-effector angle (illustrative)",
+        id: "calibrationRecordAvailable",
+        label: "Measured calibration record available",
         min: 0,
-        max: 60,
-        step: 5,
-        defaultValue: 30,
-        unit: "°",
-        provenance: "scenario-reader",
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "",
+        provenance: "source-disclosed",
       },
       {
-        id: "masterInputSpeedMps",
-        label: "Drive velocity (illustrative)",
-        min: 0.2,
-        max: 1.5,
-        step: 0.05,
-        defaultValue: 0.5,
-        unit: "m/s",
-        provenance: "scenario-reader",
+        id: "engagementSignalPresent",
+        label: "Engagement signal present",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics: (p) => {
-      const controls = readDaVinciControls(p);
-      const state = FrankenSimEngine.stepDaVinci(controls, 1);
+      const state = resolveDaVinciInterfaceTopology(readDaVinciInterfaceControls(p));
       return [
         {
-          label: "Illustrative offset scale",
-          value: `${controls.motionScaleRatio}:1`,
+          label: "Compatibility identifier",
+          value: state.compatibilitySignalPresent ? "present" : "absent",
           unit: "",
-          badgeColor: "cyan",
-          progressPct: clampProgress((controls.motionScaleRatio / 10) * 100),
-          provenance: "scenario-reader",
-        },
-        {
-          label: "Compatibility signal",
-          value: state.compatibilitySignalPercent > 0 ? "present" : "absent",
-          unit: "",
-          badgeColor: state.compatibilitySignalPercent > 0 ? "emerald" : "rose",
-          progressPct: state.compatibilitySignalPercent,
+          badgeColor: state.compatibilitySignalPresent ? "emerald" : "rose",
+          progressPct: state.compatibilitySignalPresent ? 100 : 0,
           provenance: "source-disclosed",
         },
         {
-          label: "End-effector angle",
-          value: ((state.gripRad * 180) / Math.PI).toFixed(0),
-          unit: "°",
-          badgeColor: "amber",
-          progressPct: clampProgress((controls.gripAngleDeg / 60) * 100),
-          provenance: "scenario-reader",
+          label: "Calibration record",
+          value: state.calibrationRecordAvailable ? "available" : "missing",
+          unit: "",
+          badgeColor: state.calibrationRecordAvailable ? "cyan" : "rose",
+          progressPct: state.calibrationRecordAvailable ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
-          label: "Illustrative tip clearance",
-          value: state.obstacleDistanceMm.toFixed(1),
-          unit: "mm",
-          badgeColor: state.isCupContact ? "rose" : "emerald",
-          progressPct: clampProgress((state.obstacleDistanceMm / 150) * 100),
-          provenance: "scenario-reader",
+          label: "Engagement",
+          value: state.engagementSignalPresent ? "confirmed" : "unconfirmed",
+          unit: "",
+          badgeColor: state.engagementSignalPresent ? "emerald" : "amber",
+          progressPct: state.engagementSignalPresent ? 100 : 0,
+          provenance: "source-disclosed",
+        },
+        {
+          label: "Quantitative mechanics",
+          value: "withheld",
+          unit: "",
+          badgeColor: "amber",
+          progressPct: 0,
+          provenance: "refusal-bounded",
         },
       ];
     },
     pedagogicalInsight:
-      "US 6,331,181 centers tool-boundary data: compatibility, tool type, measured calibration offsets, life information, and engagement signals are transmitted to a processor before or during tool exchange.",
+      "US 6,331,181 centers tool-boundary data: compatibility, tool type, measured calibration offsets, life information, and engagement signals are transmitted to a processor before or during tool exchange. It does not disclose a universal arm trajectory, contact material model, force, or speed.",
   },
   "us-4512709-milacron-robot-toolchanger": {
     domain: "source_bounded_toolchanger_topology",
@@ -9766,112 +9750,73 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "US 5,121,329 established that FDM extrusion relies on using solid filament as a piston pump into a heated liquefier, where the flat nozzle tip irons extruded beads into a planar road (w/h ≈ 2.25) while conducting heat into the substrate to freeze dimensions in ~50 ms.",
   },
   "us-5701965-kamen-transporter": {
-    domain: "robotics_locomotion",
-    domainTitle: "Inverted Pendulum Dynamic Balancing & Cluster Stair-Climbing Kinematics",
-    equationName: "Inverted Pendulum Dynamic Equilibrium & Motor Torque",
+    domain: "source_bounded_balance_transfer_climb_topology",
+    domainTitle: "Source-Bounded Balance, Transfer & Climb Topology",
+    equationName: "Claimed State-Transition Relationship",
     governingEquation:
-      "I \\ddot{\\theta} = m g h \\sin\\theta - \\tau_{\\text{motor}} - F_{\\text{traction}} h \\cos\\theta \\quad \\text{and} \\quad \\tau_{\\text{motor}} = K_p \\theta + K_d \\dot{\\theta} + K_v (v_{\\text{cmd}} - v)",
-    engineMethod: "FrankenSimEngine.stepKamenTransporter",
+      "\\text{control loop} + \\text{motorized drive} + \\text{ground-contact module} \\longrightarrow \\text{fore-aft balance / state transition}",
+    engineMethod: "TypeScript source-topology state reader (no SI dynamics)",
     controls: [
       {
-        id: "riderPitchLeanDeg",
-        label: "Rider Pitch Lean",
-        min: -15,
-        max: 15,
+        id: "topologyState",
+        label: "Claim-reading state",
+        min: 0,
+        max: 5,
         step: 1,
-        defaultValue: KAMEN_TRANSPORTER_DEFAULT_CONTROLS.riderPitchLeanDeg,
-        unit: "°",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "velocityCommandMs",
-        label: "Velocity Command",
-        min: -2.0,
-        max: 4.0,
-        step: 0.2,
-        defaultValue: KAMEN_TRANSPORTER_DEFAULT_CONTROLS.velocityCommandMs,
-        unit: "m/s",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "yawSteering",
-        label: "Yaw Steering Differential",
-        min: -1.0,
-        max: 1.0,
-        step: 0.1,
-        defaultValue: KAMEN_TRANSPORTER_DEFAULT_CONTROLS.yawSteering,
-        unit: "",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "riderMassKg",
-        label: "Rider Payload Mass",
-        min: 40,
-        max: 120,
-        step: 5,
-        defaultValue: KAMEN_TRANSPORTER_DEFAULT_CONTROLS.riderMassKg,
-        unit: "kg",
-        provenance: "scenario-reader",
+        defaultValue: 1,
+        unit: "state",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics: (p) => {
       const controls = readKamenTransporterControls(p);
-      const tel = stepKamenTransporterSi(controls);
+      const topology = stepKamenTransporterTopology(controls);
       return [
         {
-          label: "Pitch Angle",
-          value: tel.pitchAngleDeg.toFixed(1),
-          unit: "°",
-          badgeColor: tel.pitchRefusal
-            ? "rose"
-            : Math.abs(tel.pitchAngleDeg) > 10
-              ? "amber"
-              : "emerald",
-          progressPct: clampProgress((Math.abs(tel.pitchAngleDeg) / 25) * 100),
+          label: "Claim-reading state",
+          value: topology.stateLabel.toUpperCase(),
+          unit: "source topology",
+          badgeColor: "emerald",
+          progressPct: 100,
           provenance: "source-disclosed",
         },
         {
-          label: "Balancing Torque",
-          value: tel.balanceTorqueNm.toFixed(1),
-          unit: "N·m",
-          badgeColor: Math.abs(tel.balanceTorqueNm) > 80 ? "amber" : "cyan",
-          progressPct: clampProgress((Math.abs(tel.balanceTorqueNm) / 120) * 100),
+          label: "Ground-module control",
+          value: topology.wheelControlMode.replaceAll("-", " ").toUpperCase(),
+          unit: "claim topology",
+          badgeColor: topology.wheelControlMode === "topology-withheld" ? "amber" : "cyan",
+          progressPct: topology.wheelControlMode === "topology-withheld" ? 0 : 100,
           provenance: "source-disclosed",
         },
         {
-          label: "Linear Speed",
-          value: tel.forwardVelocityMs.toFixed(2),
-          unit: "m/s",
+          label: "Claim references",
+          value: topology.sourceClaimNumbers.map((claim) => `C${claim}`).join(" · "),
+          unit: "printed claim relations",
           badgeColor: "indigo",
-          progressPct: clampProgress((Math.abs(tel.forwardVelocityMs) / 5.0) * 100),
+          progressPct: 100,
           provenance: "source-disclosed",
         },
         {
-          label: "Stability Margin",
-          value: (tel.stabilityMargin * 100).toFixed(0),
-          unit: "%",
-          badgeColor:
-            tel.stabilityMargin > 0.6 ? "emerald" : tel.stabilityMargin > 0.2 ? "amber" : "rose",
-          progressPct: clampProgress(tel.stabilityMargin * 100),
+          label: "Balance-loop relation",
+          value: topology.balanceLoopActive ? "PRESENT" : "WITHHELD",
+          unit: "source topology",
+          badgeColor: topology.balanceLoopActive ? "emerald" : "amber",
+          progressPct: topology.balanceLoopActive ? 100 : 0,
           provenance: "source-disclosed",
         },
         {
-          label: "Operating State",
-          value: tel.pitchRefusal
-            ? "UNSTABLE RUNAWAY"
-            : tel.isClimbing
-              ? "STAIR CLIMB"
-              : tel.isBalancing
-                ? "2-WHEEL BALANCE"
-                : "4-WHEEL STANDARD",
-          unit: "state",
-          badgeColor: tel.pitchRefusal ? "rose" : tel.isBalancing ? "emerald" : "amber",
-          provenance: "source-disclosed",
+          label: "Quantitative dynamics",
+          value: "WITHHELD",
+          unit: "missing source inputs",
+          badgeColor: "amber",
+          progressPct: 0,
+          provenance: "refusal-bounded",
+          provenanceCitation: topology.sourceBoundary,
         },
       ];
     },
     pedagogicalInsight:
-      "Dean Kamen's dynamic stabilization continuously drives the wheels underneath the vehicle center of gravity in response to detected pitch tilt $\\theta$ and pitch angular rate $\\dot{\\theta}$. When the rider leans forward, the inverted pendulum equation commands restorative motor torque $\\tau = K_p \\theta + K_d \\dot{\\theta}$ that balances the vehicle while creating smooth forward acceleration.",
+      "US 5,701,965 records control-loop, motorized-drive, independently controlled ground-module, and ordered balance/transfer/climb relationships. The facsimile does not provide a controller gain, torque, speed, mass, wheel radius, force, angle, or stability-margin datum, so the public instrument reads the documented state topology without forecasting vehicle dynamics.",
   },
   "us-6302230-kamen-segway": {
     domain: "robotics_locomotion",
@@ -10261,15 +10206,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const v = p.electrodeVoltageVolts ?? 15;
-      const out = stepEInk(
-        {
-          electrodeVoltageVolts: v,
-          fluidViscosityCp: p.fluidViscosityCp ?? 2.0,
-          particleChargeCoupled: 1.0,
-        },
-        1.0,
-      );
+      const controls = readEInkRuntimeControls(p as any);
+      const out = readEInkTapeFrame(controls).state;
       return [
         {
           label: "Surface Reflectance",
@@ -10289,6 +10227,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
       ];
     },
+    resetRuntimeTape: resetEInkTape,
     pedagogicalInsight:
       "E-Ink achieves bistable electronic paper by electrophoretically driving charged titanium dioxide white particles and carbon black pigment particles through a dielectric fluid inside microcapsules.",
   },
@@ -11135,8 +11074,45 @@ PATENT_PHYSICS_REGISTRY["us-7479949"] = PATENT_PHYSICS_REGISTRY["us-7479949-mult
 // The 3D/2D instruments write these ids; the badge must not stay on sourceFocus.
 PATENT_PHYSICS_REGISTRY["us-3923554-boyle-smith-ccd"] =
   PATENT_PHYSICS_REGISTRY["us-3858232-boyle-smith-ccd"];
-PATENT_PHYSICS_REGISTRY["us-3671542-kwolek-kevlar"] =
-  PATENT_PHYSICS_REGISTRY["_legacy-unpublished-us-3671542-kwolek-kevlar"];
+PATENT_PHYSICS_REGISTRY["us-3671542-kwolek-kevlar"] = {
+  domain: "source_reading",
+  domainTitle: "Source-Bounded Claim Reading",
+  equationName: "Printed Polyamide Dope Composition",
+  governingEquation:
+    "carbocyclic aromatic polyamide + selected liquid medium → optically anisotropic dope",
+  engineMethod:
+    "Source-bound claim reading; quantitative processing and material-performance model withheld",
+  controls: [],
+  computeMetrics: () => [
+    {
+      label: "Claim 1",
+      value: "optically anisotropic dope",
+      unit: "printed composition",
+      badgeColor: "emerald",
+      progressPct: 100,
+      provenance: "source-disclosed",
+    },
+    {
+      label: "Claim 2",
+      value: "> about 98% H₂SO₄",
+      unit: "printed narrowing",
+      badgeColor: "cyan",
+      progressPct: 100,
+      provenance: "source-disclosed",
+    },
+    {
+      label: "Visual Model",
+      value: "WITHHELD",
+      unit: "source boundary",
+      badgeColor: "rose",
+      progressPct: 0,
+      provenance: "refusal-bounded",
+    },
+  ],
+  pedagogicalInsight:
+    "The public reading remains at the printed composition claims: an optically anisotropic dope formed from a carbocyclic aromatic polyamide and selected liquid medium, with Claim 2 narrowing the liquid medium to concentrated sulfuric acid. The reviewed source boundary does not license a quantitative processing or material-performance model.",
+  provenance: "source-disclosed",
+};
 PATENT_PHYSICS_REGISTRY["us-586193-marconi-radio"] =
   PATENT_PHYSICS_REGISTRY["_legacy-unpublished-us-586193-marconi-radio"];
 PATENT_PHYSICS_REGISTRY["us-2292387-lamarr-frequency-hopping"] =

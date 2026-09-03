@@ -14,7 +14,6 @@ import {
   stepHallAluminium,
   stepHewittMercuryLamp,
   stepMaimanRubyLaser,
-  stepMarconiRadio,
   stepMorseTelegraph,
   stepNoyceIC,
   stepParsonsTurbine,
@@ -29,8 +28,6 @@ import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
 import { stepHopkinsPotash } from "./hopkinsPotashKernel";
 import { readKamenSegwayControls, stepKamenSegwaySi } from "./kamenSegwayKernel";
-import { readKamenTransporterControls, stepKamenTransporterSi } from "./kamenTransporterKernel";
-import { stepRenoEscalator } from "./machineKernels";
 import { readMestralVelcroControls, stepMestralVelcroSi } from "./mestralVelcroKernel";
 import { stepRillieuxEvaporator } from "./rillieuxEvaporatorKernel";
 import { readWattRotaryControls, stepWattRotaryEngine } from "./wattRotaryKernel";
@@ -41,6 +38,10 @@ const MECHANICAL_HORSEPOWER_W = 745.7;
 
 /** Explicit reasons that a published record has no honest SI power-flow strip. */
 export const ENERGY_CHANNEL_OMISSION_REASONS = {
+  "us-470918-reno-escalator":
+    "US 470,918 gives belt and hand-rail geometry, a preferred travel speed, a stated single-file capacity, and top-or-bottom power application, but no prime-mover type, torque, load, friction, voltage, flow, or power datum from which an honest SI energy channel can be derived.",
+  "us-586193-marconi-radio":
+    "US 586,193 prints transmitter/receiver topology and local sensitive-tube limits, but no inductance, capacitance, antenna current, loss, duty cycle, propagation loss, or transmitter power datum from which an honest SI energy channel can be derived.",
   "us-1102653-goddard-rocket":
     "US 1,102,653 prints apparatus geometry and firing order but no burn rate, force, speed, or power datum from which an SI energy channel can be derived.",
   "us-361931-daimler-engine":
@@ -51,6 +52,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 194,047 prints charge ordering, valve-gear topology, and a one-to-two shaft timing relation but no cylinder dimensions, operating speed, fuel flow, pressure trace, torque, inertia, or power datum from which an SI energy channel can be derived.",
   "us-6331181-davinci":
     "US 6,331,181 prints tool-memory, compatibility, calibration-offset, engagement, and linkage topology but no motor torque, drive speed, friction, electrical load, or power datum from which an SI energy channel can be derived.",
+  "us-5701965-kamen-transporter":
+    "US 5,701,965 describes a motorized drive, control loop, cluster-wheel arrangement, and balance/transfer/climb modes, but gives no electrical input, motor rating, torque, speed, drivetrain loss, mass, force, or duty-cycle datum from which an SI energy channel can be derived.",
   "us-6594844-roomba":
     "US 6,594,844 prints optical emitter/detector geometry and redirect-circuit behavior but no battery voltage, current, robot mass, motor load, brush drag, vacuum flow, loss, or power datum from which an SI energy channel can be derived.",
   "us-4750-howe-sewing-machine":
@@ -138,7 +141,7 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
   "us-2292387-lamarr-frequency-hopping":
     "US 2,292,387 specifies the mechanical and electrical coordination of slotted record strips, pneumatic sensing head 45, motors, and radio tuning circuits, but supplies no motor power, suction wattage, vacuum pressure, RF radiation power, or continuous wattage datum from which an authentic SI energy channel can be derived.",
   "us-3671542-kwolek-kevlar":
-    "US 3,671,542 specifies anisotropic liquid-crystalline polyamide dopes, polymer compositions, and optical properties across 83 examples, but supplies no extrusion pump power, coagulation bath wattage, spinning motor energy, or continuous wattage datum from which an authentic SI energy channel can be derived.",
+    "The checked public claims of US 3,671,542 establish composition conditions for an optically anisotropic dope, not a quantified energy path; no extrusion, pump, bath, prime-mover, or finished-fiber power datum is published here.",
   "us-1773980-farnsworth-tv":
     "US 1,773,980 describes an electrical image dissector using a photoelectric cathode, accelerating anode, electrostatic deflection plates, collector aperture, and quartz oscillograph light valve, but supplies no operational beam current, deflection voltage power, RF carrier wattage, or continuous wattage datum from which an authentic SI energy channel can be derived.",
   "us-233692-pelton-water-wheel":
@@ -203,14 +206,6 @@ export function energyChannelsFor(
       { name: "Fan work", watts: carrier.airMovementWatts, tone: "in" },
       { name: "Separator resistance", watts: carrier.airMovementWatts, tone: "loss" },
     ];
-  }
-  if (patentId === "us-586193-marconi-radio") {
-    const radio = stepMarconiRadio(
-      params.aerialHeight ?? 88,
-      params.sparkGapMm ?? 10,
-      params.sparkVoltage ?? 28,
-    );
-    return [{ name: "Spark RF", watts: radio.peakRfPowerKw * 1000, tone: "in" }];
   }
   if (patentId === "us-2708656-fermi-reactor") {
     const kinetics = stepFermiKinetics(
@@ -278,12 +273,7 @@ export function energyChannelsFor(
     ];
   }
   if (patentId === "us-470918-reno-escalator") {
-    const reno = stepRenoEscalator({
-      passengerCount: params.passengerCount,
-      inclineAngleDeg: params.inclineAngle,
-      velocityMps: params.beltSpeed,
-    });
-    return [{ name: "Motor", watts: reno.motorPowerKw * 1000, tone: "in" }];
+    return [];
   }
   if (patentId === "us-400766-hall-aluminium") {
     const hall = stepHallAluminium({
@@ -756,27 +746,7 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-5701965-kamen-transporter") {
-    const controls = readKamenTransporterControls(params);
-    const tel = stepKamenTransporterSi(controls);
-    const motorElecW = Math.max(
-      20,
-      Math.abs(tel.balanceTorqueNm) * (Math.abs(tel.forwardVelocityMs) / 0.15) * 1.15 + 35,
-    );
-    const mechTractionW = Math.abs(tel.groundTractionForceN * tel.forwardVelocityMs);
-    const heatLossW = Math.max(5, motorElecW - mechTractionW);
-    return [
-      { name: "Battery Pack Electric Power Supply", watts: motorElecW, tone: "in" },
-      {
-        name: "Inverted Pendulum Ground Traction & Balancing Work",
-        watts: mechTractionW,
-        tone: "useful",
-      },
-      {
-        name: "Servomotor Copper I²R & Planetary Gearbox Heat Loss",
-        watts: heatLossW,
-        tone: "loss",
-      },
-    ];
+    return [];
   }
 
   if (patentId === "us-6302230-kamen-segway") {

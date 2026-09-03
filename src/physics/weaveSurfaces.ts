@@ -43,7 +43,6 @@ import {
   stepCcdWells,
   stepHoweSewingMachine,
   stepMergenthalerLinotype,
-  stepRenoEscalator,
   stepSholesTypewriter,
 } from "./machineKernels";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
@@ -601,18 +600,13 @@ export function materialProbe(
     };
   }
   if (patentId.includes("reno") || patentId.includes("470918")) {
-    const reno = stepRenoEscalator({
-      passengerCount: params.passengerCount,
-      inclineAngleDeg: params.inclineAngle,
-      velocityMps: params.beltSpeed,
-    });
     return {
       part: calloutLabel,
-      material: "Hardwood cleats into bronze comb teeth",
-      qty: "v",
-      value: reno.speedFpm.toString(),
-      unit: "fpm",
-      note: `${reno.throughputPerHour}/h · ${reno.motorTorqueNm} N·m · ${reno.combPlateClearanceMm} mm comb gap.`,
+      material: "Hinged grooved belt, cast-steel comb, and articulated hand-rail",
+      qty: "source speed",
+      value: "200",
+      unit: "ft/min",
+      note: "The source prefers about 200 ft/min for belt and hand-rail; its cast-steel comb clearance should not exceed 1/8 in (3.175 mm), and its stated maximum is 6,000 passengers/h in single file. No torque or power model is asserted.",
     };
   }
   if (patentId.includes("otis") || patentId.includes("31128")) {
@@ -856,33 +850,16 @@ export function materialProbe(
     };
   }
   if (patentId.includes("kwolek") || patentId.includes("kevlar") || patentId.includes("3671542")) {
-    const kevlar = FrankenSimEngine.stepKevlarContinuum(
-      params.drawRatio ?? 6.5,
-      params.impactVelocity ?? 450,
-      params.appliedTension ?? 30,
-    );
-    return {
-      part: calloutLabel,
-      material: "p-aramid nematic dope, hydrogen-bonded lattice",
-      qty: "E",
-      value: kevlar.elasticModulusGpa.toFixed(0),
-      unit: "GPa",
-      note: `σ_uts ${kevlar.tensileStrengthGpa} GPa · align ${kevlar.alignmentPct}% · v_s ${kevlar.sonicVelocityMps} m/s.`,
-    };
+    return null;
   }
   if (patentId.includes("marconi") || patentId.includes("586193")) {
-    const radio = FrankenSimEngine.stepMarconiRadio(
-      params.aerialHeight ?? 88,
-      params.sparkGapMm ?? 10,
-      params.sparkVoltage ?? 28,
-    );
     return {
       part: calloutLabel,
-      material: "Spark gap, coherer, and quarter-wave aerial",
-      qty: "f₀",
-      value: radio.resonantFreqKhz.toString(),
-      unit: "kHz",
-      note: `${radio.peakRfPowerKw} kW · R_rad ${radio.radiationResistanceOhms} Ω · range ${radio.maxRangeMiles} mi.`,
+      material: "Spark source, imperfect contact, local circuit, and shaking means",
+      qty: "I_tube",
+      value: "≤1",
+      unit: "mA",
+      note: "Source-disclosed active-tube limit; frequency, radiated power, and range are not inferred.",
     };
   }
   if (patentId.includes("parsons") || patentId.includes("608969") || patentId.includes("328710")) {
@@ -1169,14 +1146,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     return [{ label: "Cycle", min: 5, max: 90, live: lino.cycleS, unit: "s" }];
   }
   if (patentId.includes("reno") || patentId.includes("470918")) {
-    const reno = stepRenoEscalator({
-      velocityMps: params.beltSpeed,
-      inclineAngleDeg: params.inclineAngle,
-      passengerCount: params.passengerCount,
-    });
-    return [
-      { label: "Throughput", min: 1000, max: 8000, live: reno.throughputPerHour, unit: "/h" },
-    ];
+    return [];
   }
   if (patentId.includes("otis") || patentId.includes("31128")) {
     const otis = stepOtis1861Topology(readOtisTopologyControls(params));
@@ -1312,12 +1282,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId.includes("kwolek") || patentId.includes("kevlar") || patentId.includes("3671542")) {
-    const kevlar = FrankenSimEngine.stepKevlarContinuum(
-      params.drawRatio ?? 6.5,
-      params.impactVelocity ?? 450,
-      params.appliedTension ?? 30,
-    );
-    return [{ label: "E", min: 60, max: 145, live: kevlar.elasticModulusGpa, unit: "GPa" }];
+    return [];
   }
   if (
     patentId.includes("bardeen") ||
@@ -1730,32 +1695,10 @@ export function fidelityField(
     };
   }
   if (patentId.includes("marconi") || patentId.includes("586193")) {
-    const radio = FrankenSimEngine.stepMarconiRadio(
-      params.aerialHeight ?? 88,
-      params.sparkGapMm ?? 10,
-      params.sparkVoltage ?? 28,
-    );
-    return {
-      part: "f₀ vs 88 m quarter-wave",
-      model: radio.resonantFreqKhz.toString(),
-      reference: "852",
-      residual: (radio.resonantFreqKhz - 852).toString(),
-      unit: "kHz",
-    };
+    return null;
   }
   if (patentId.includes("kwolek") || patentId.includes("kevlar") || patentId.includes("3671542")) {
-    const kevlar = FrankenSimEngine.stepKevlarContinuum(
-      params.drawRatio ?? 6.5,
-      params.impactVelocity ?? 450,
-      params.appliedTension ?? 30,
-    );
-    return {
-      part: "E vs 90 GPa arrest floor",
-      model: kevlar.elasticModulusGpa.toFixed(0),
-      reference: "90",
-      residual: (kevlar.elasticModulusGpa - 90).toFixed(0),
-      unit: "GPa",
-    };
+    return null;
   }
   if (patentId.includes("gb-913") || patentId.includes("watt-separate-condenser")) {
     return {
@@ -2034,13 +1977,7 @@ export function fidelityField(
     };
   }
   if (patentId.includes("reno") || patentId.includes("470918")) {
-    return {
-      part: "Passenger throughput vs 1896 Coney Island pier",
-      model: "3600",
-      reference: "3500",
-      residual: "100",
-      unit: "riders/h",
-    };
+    return null;
   }
   if (patentId.includes("diesel") || patentId.includes("542846")) {
     return {
@@ -2296,18 +2233,9 @@ export function whitneySamples(omegaT: number): { x: number; y: number; bx: numb
 
 export function spectralModes(patentId: string, params: Record<string, number>): SpectralMode[] {
   if (patentId.includes("marconi") || patentId.includes("586193")) {
-    const radio = FrankenSimEngine.stepMarconiRadio(
-      params.aerialHeight ?? 88,
-      params.sparkGapMm ?? 10,
-      params.sparkVoltage ?? 28,
-    );
-    const f0 = radio.resonantFreqKhz * 1000;
-    return [1, 3, 5].map((n) => ({
-      n,
-      freqHz: f0 * n,
-      amp: n === 1 ? 1 : 1 / n,
-      name: n === 1 ? "quarter-wave" : `odd ${n}`,
-    }));
+    // The source gives no L/C pair or measured carrier frequency from which
+    // a patent-specific spectrum could be reconstructed.
+    return [];
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
     const transformer = stepTeslaTransformerSi(readTeslaTransformerControls(params));
@@ -2871,14 +2799,7 @@ export function datedScenarios(patentId: string): DatedScenario[] {
     ];
   }
   if (patentId.includes("reno") || patentId.includes("470918")) {
-    return [
-      {
-        id: "coney-island-1896",
-        date: "1896-06-15",
-        name: "Coney Island Old Iron Pier incline elevator",
-        writes: { beltSpeed: 0.5, inclineAngle: 25 },
-      },
-    ];
+    return [];
   }
   if (patentId.includes("diesel") || patentId.includes("542846")) {
     return [
@@ -3051,14 +2972,7 @@ export function datedScenarios(patentId: string): DatedScenario[] {
     ];
   }
   if (patentId.includes("kwolek") || patentId.includes("3671542")) {
-    return [
-      {
-        id: "dupont-1965",
-        date: "1965-06-15",
-        name: "DuPont Experimental Station aramid spin",
-        writes: { appliedTension: 50, temperatureCelsius: 22 },
-      },
-    ];
+    return [];
   }
   if (patentId.includes("wozniak") || patentId.includes("4136359")) {
     return [
@@ -3163,12 +3077,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     ];
   }
   if (patentId.includes("reno") || patentId.includes("470918")) {
-    const reno = stepRenoEscalator({
-      passengerCount: params.passengerCount,
-      inclineAngleDeg: params.inclineAngle,
-      velocityMps: params.beltSpeed,
-    });
-    return [{ from: "motor", to: "incline", watts: reno.motorPowerKw * 1000 }];
+    return [];
   }
   if (patentId.includes("maxim") || patentId.includes("319596")) {
     const maxim = FrankenSimEngine.stepMaximMachineGun({
@@ -3187,12 +3096,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [{ from: "thrust · v", to: "hull", watts: screw.thrustKn * 1000 * v }];
   }
   if (patentId.includes("marconi") || patentId.includes("586193")) {
-    const radio = FrankenSimEngine.stepMarconiRadio(
-      params.aerialHeight ?? 88,
-      params.sparkGapMm ?? 10,
-      params.sparkVoltage ?? 28,
-    );
-    return [{ from: "spark", to: "aerial", watts: radio.peakRfPowerKw * 1000 }];
+    return [];
   }
   if (patentId === "us-808897-carrier-air-conditioner") {
     const carrier = FrankenSimEngine.stepCarrierAirConditioner({
@@ -3576,7 +3480,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [{ from: "desktop drag", to: "potentiometer resolver", watts: 0.4 }];
   }
   if (patentId.includes("kwolek") || patentId.includes("3671542") || patentId.includes("kevlar")) {
-    return [{ from: "spin dope pump", to: "aramid alignment", watts: 1248 }];
+    return [];
   }
   if (patentId.includes("boyle") || patentId.includes("3858232") || patentId.includes("ccd")) {
     return [{ from: "3-phase clock gate", to: "packet shift", watts: 0.085 }];

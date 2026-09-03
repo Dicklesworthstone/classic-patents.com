@@ -19,6 +19,11 @@ describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
         continue;
       }
 
+      if (patent.id === "us-3671542-kwolek-kevlar") {
+        expect(constraints).toEqual([]);
+        continue;
+      }
+
       expect(constraints.length).toBeGreaterThanOrEqual(1);
 
       for (const c of constraints) {
@@ -74,6 +79,38 @@ describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
     expect(res.activeFailures.length).toBeGreaterThanOrEqual(1);
     expect(res.activeFailures[0]).toContain("Source-bound Claim 1 condition absent");
     expect(res.refusalWarning).toContain("SOURCE-BOUND REFUSAL");
+  });
+
+  test("Kwolek Claim 1 has no live inversion until the complete source edition exists", () => {
+    const params = { polymerConcentrationPct: 18, drawRatio: 6.5, impactVelocity: 450 };
+    expect(CATALOG_CLAIM_CONSTRAINTS["us-3671542-kwolek-kevlar"]).toEqual([]);
+    expect(
+      applyClaimConstraintModifications("us-3671542-kwolek-kevlar", params, { 1: false }),
+    ).toEqual({ modifiedParams: params, activeFailures: [], refusalWarning: null });
+  });
+
+  test("Lemelson Claim 1 inversion withholds topology rather than fabricating a performance result", () => {
+    const res = applyClaimConstraintModifications(
+      "us-3081379-lemelson-machine-vision",
+      {
+        scanPathEnabled: 1,
+        synchronizedGateEnabled: 1,
+        analyzingCircuitEnabled: 1,
+        inspectionSignalPresent: 1,
+        referenceSignalMatches: 1,
+      },
+      { 1: false },
+    );
+
+    expect(res.modifiedParams.scanPathEnabled).toBe(0);
+    expect(res.modifiedParams.synchronizedGateEnabled).toBe(0);
+    expect(res.modifiedParams.analyzingCircuitEnabled).toBe(0);
+    expect(res.modifiedParams.inspectionSignalPresent).toBe(1);
+    expect(res.activeFailures).toEqual([
+      "Claim 1 signal path withheld: the exhibit no longer represents the source-described scan, synchronized gate, and analyzing-circuit combination.",
+    ]);
+    expect(res.refusalWarning).toContain("CLAIM 1 WITHHELD");
+    expect("gateWindowWidthUs" in res.modifiedParams).toBe(false);
   });
 
   test("Tesla transformer Claim 1 inversion opens only the source-described common node", () => {
@@ -225,5 +262,23 @@ describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
     expect(result.modifiedParams.claim15ServoHandoffEnabled).toBe(0);
     expect(result.activeFailures).toHaveLength(3);
     expect(result.refusalWarning).toContain("no travel limit");
+  });
+
+  test("Kamen claim inversions withhold only fore-aft and cluster-wheel topology", () => {
+    const result = applyClaimConstraintModifications(
+      "us-5701965-kamen-transporter",
+      { topologyState: 4 },
+      { 1: false, 16: false },
+    );
+
+    expect(result.modifiedParams.balanceTopologyEnabled).toBe(0);
+    expect(result.modifiedParams.clusterTopologyEnabled).toBe(0);
+    expect(result.modifiedParams.riderPitchLeanDeg).toBeUndefined();
+    expect(result.activeFailures).toEqual([
+      "Claim 1 fore-aft control topology withheld: the display no longer represents the source-described support, motorized drive, ground-contacting module, and control-loop combination.",
+      "Claim 16 cluster-wheel topology withheld: the display no longer represents the source-described paired cluster and independently driven wheel relationship.",
+    ]);
+    expect(result.refusalWarning).toContain("SOURCE-BOUND REFUSAL");
+    expect(result.refusalWarning).toContain("not a public torque");
   });
 });

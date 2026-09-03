@@ -369,14 +369,27 @@ export const LINOTYPE_CHARS_PER_LINE = 42;
  * therefore exposes only a visitor-selected demonstration cadence and relative
  * phase values. It must never be labelled as measured machine telemetry.
  */
-export function stepSholesTypewriter(
-  demonstrationCadencePerMin: number,
-  elapsedS: number,
-): {
+export interface SholesTypewriterDisplayStep {
   eventsPerSecond: number;
   completedSteps: number;
   keyCyclePct: number;
   ratchetReleasePct: number;
+  /**
+   * Continuous, source-bounded display stroke. It rises with key L, then
+   * returns to rest while the escapement advances; it is not a measured throw.
+   */
+  typebarStrokePct: number;
+  /**
+   * Fraction of the current escapement step already taken while the type-bar
+   * returns. This holds at one after the step, so a ratchet never rewinds.
+   */
+  escapementAdvancePct: number;
+  /** Monotone ratchet position in display steps, shared by wheel and ribbon. */
+  totalEscapementSteps: number;
+  /** Carriage position in the finite twelve-column display strip; never wraps. */
+  displayCarriageSteps: number;
+  /** The historical source does not establish an automatic line-return law. */
+  requiresManualCarriageReturn: boolean;
   displayTypebarIndex: number;
   displayColumnWrap: number;
   columnPitchPx: number;
@@ -415,21 +428,95 @@ export function stepSholesTypewriter(
   escapementStepRad: number;
   ribbonStepRad: number;
   carriagePitchStudio: number;
-} {
-  const cadence = Math.min(120, Math.max(0, demonstrationCadencePerMin));
+}
+
+const SHOLES_KEY_RAISE_END = 0.35;
+const SHOLES_TYPEBAR_RETURN_END = 0.7;
+
+function clampSholesCadence(demonstrationCadencePerMin: number) {
+  return Math.min(120, Math.max(0, demonstrationCadencePerMin));
+}
+
+function clampUnit(value: number) {
+  return Math.min(1, Math.max(0, value));
+}
+
+/**
+ * Advance the source-bounded display cycle without reinterpreting earlier
+ * strokes when a visitor changes the demonstration cadence. The cycle count is
+ * state; cadence only determines how many new display strokes accrue per tick.
+ */
+export function advanceSholesTypewriterCycle(
+  priorCycleCount: number,
+  demonstrationCadencePerMin: number,
+  dtS: number,
+) {
+  const eventsPerSecond = clampSholesCadence(demonstrationCadencePerMin) / 60;
+  return Math.max(0, priorCycleCount) + Math.max(0, dtS) * eventsPerSecond;
+}
+
+/**
+ * Resolve a Sholes display pose from an accumulated display-cycle count.
+ *
+ * The source supplies order, not measured phase durations: key L raises bar T;
+ * lever H releases ratchet I; the carriage advances as the bar falls. The
+ * proportions below are therefore explicitly display timing. They preserve the
+ * causal order and, critically, retain each completed ratchet step instead of
+ * winding it backwards after the release pulse ends.
+ */
+export function stepSholesTypewriterAtCycle(
+  demonstrationCadencePerMin: number,
+  accumulatedCycleCount: number,
+): SholesTypewriterDisplayStep {
+  const cadence = clampSholesCadence(demonstrationCadencePerMin);
   const eventsPerSecond = cadence / 60;
-  const cycleCount = Math.max(0, elapsedS) * eventsPerSecond;
-  const keyCyclePct = eventsPerSecond > 0 ? cycleCount % 1 : 0;
+  const cycleCount = Math.max(0, accumulatedCycleCount);
+  // A paused cadence retains the current display pose; only advancing cycles
+  // changes phase. `stepSholesTypewriter(0, elapsed)` still begins at zero.
+  const keyCyclePct = cycleCount % 1;
   const completedSteps = Math.floor(cycleCount);
+  const displayColumnWrap = 12;
+
+  const typebarStrokePct =
+    keyCyclePct < SHOLES_KEY_RAISE_END
+      ? clampUnit(keyCyclePct / SHOLES_KEY_RAISE_END)
+      : keyCyclePct < SHOLES_TYPEBAR_RETURN_END
+        ? clampUnit(
+            1 -
+              (keyCyclePct - SHOLES_KEY_RAISE_END) /
+                (SHOLES_TYPEBAR_RETURN_END - SHOLES_KEY_RAISE_END),
+          )
+        : 0;
+  const escapementAdvancePct =
+    keyCyclePct <= SHOLES_KEY_RAISE_END
+      ? 0
+      : keyCyclePct < SHOLES_TYPEBAR_RETURN_END
+        ? clampUnit(
+            (keyCyclePct - SHOLES_KEY_RAISE_END) /
+              (SHOLES_TYPEBAR_RETURN_END - SHOLES_KEY_RAISE_END),
+          )
+        : 1;
+  const totalEscapementSteps = completedSteps + escapementAdvancePct;
+  const requiresManualCarriageReturn = totalEscapementSteps >= displayColumnWrap;
+
   return {
     eventsPerSecond,
     completedSteps,
     keyCyclePct,
+    // Kept for the source-face state readout. Presentation geometry instead
+    // consumes the continuous stroke/advance fields above.
     ratchetReleasePct: keyCyclePct < 0.35 ? keyCyclePct / 0.35 : 0,
+    typebarStrokePct: requiresManualCarriageReturn ? 0 : typebarStrokePct,
+    escapementAdvancePct,
+    totalEscapementSteps,
+    // The pedagogical strip stops at a line end rather than inventing an
+    // automatic carriage return or teleporting a complete carriage backwards.
+    displayCarriageSteps: Math.min(totalEscapementSteps, displayColumnWrap),
+    requiresManualCarriageReturn,
     // This indexes only diagrammatic bars in the presentation, never a
     // claim about how many bars the source machine used.
-    displayTypebarIndex: completedSteps % 12,
-    displayColumnWrap: 12,
+    displayTypebarIndex: completedSteps % displayColumnWrap,
+    displayColumnWrap,
     columnPitchPx: 6,
     typebarOuterRx: 140,
     typebarOuterRy: 70,
@@ -469,6 +556,17 @@ export function stepSholesTypewriter(
   };
 }
 
+export function stepSholesTypewriter(
+  demonstrationCadencePerMin: number,
+  elapsedS: number,
+): SholesTypewriterDisplayStep {
+  const eventsPerSecond = clampSholesCadence(demonstrationCadencePerMin) / 60;
+  return stepSholesTypewriterAtCycle(
+    demonstrationCadencePerMin,
+    Math.max(0, elapsedS) * eventsPerSecond,
+  );
+}
+
 /** Alternating type-bar yaw sign on the 3D basket. Shared by 3D. */
 export function sholesTypebarYawSign(index: number) {
   return index % 2 === 0 ? 1 : -1;
@@ -480,16 +578,28 @@ export function sholesCarriageStudioX(index: number, wrap = 12, pitch = 0.18) {
   return 0 - (((index % w) + w) % w) * pitch;
 }
 
+/**
+ * Finite museum-display carriage coordinate. Unlike the historic diagram
+ * helper above, this deliberately clamps at the end of its display line so the
+ * 3D carriage cannot teleport back to column zero without a depicted return.
+ */
+export function sholesCarriageStudioXAtDisplayStep(step: number, wrap = 12, pitch = 0.18) {
+  const terminalStep = Math.max(0, wrap);
+  return -Math.min(terminalStep, Math.max(0, step)) * pitch;
+}
+
 /** Key-lever studio Y on the 3D keyboard. Shared by 3D. */
 export function sholesKeyStudioY(
   kIndex: number,
-  active: boolean,
+  strokePct: number,
   homeY = 0.25,
   rowPitch = 0.12,
   keysPerRow = 10,
   dip = 0.16,
 ) {
-  return homeY - Math.floor(kIndex / Math.max(1, keysPerRow)) * rowPitch - (active ? dip : 0);
+  return (
+    homeY - Math.floor(kIndex / Math.max(1, keysPerRow)) * rowPitch - clampUnit(strokePct) * dip
+  );
 }
 
 /** Diagrammatic type-bar throw on the US 79,265 2D face. Shared by 2D. */

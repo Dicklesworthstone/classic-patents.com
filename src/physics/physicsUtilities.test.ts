@@ -83,9 +83,12 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(energyChannelsFor("us-3858232-boyle-smith-ccd", {})[0]?.name).toBe("Clock Gate Drive");
     expect(energyChannelsFor("us-3671542-kwolek-kevlar", {})).toEqual([]);
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-3671542-kwolek-kevlar"]).toContain(
-      "anisotropic liquid-crystalline polyamide dopes",
+      "optically anisotropic dope",
     );
-    expect(energyChannelsFor("us-586193-marconi-radio", {})[0]?.name).toBe("Spark RF");
+    expect(energyChannelsFor("us-586193-marconi-radio", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-586193-marconi-radio"]).toContain(
+      "no inductance, capacitance",
+    );
     expect(energyChannelsFor("us-2292387-lamarr-frequency-hopping", {})).toEqual([]);
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-2292387-lamarr-frequency-hopping"]).toContain(
       "slotted record strips",
@@ -133,7 +136,10 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-233692-pelton-water-wheel"]).toContain(
       "bucket geometry",
     );
-    expect(energyChannelsFor("us-470918-reno-escalator", {})[0]?.name).toBe("Motor");
+    expect(energyChannelsFor("us-470918-reno-escalator", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-470918-reno-escalator"]).toContain(
+      "no prime-mover type",
+    );
     expect(energyChannelsFor("us-319596-maxim-machine-gun", {})).toEqual([]);
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-319596-maxim-machine-gun"]).toContain(
       "no continuous firing rate",

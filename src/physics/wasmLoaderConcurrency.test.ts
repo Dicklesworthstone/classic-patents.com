@@ -6,6 +6,7 @@ test("concurrent WASM consumers share one in-flight load and receive the final s
     const goddard = await import("./src/physics/goddardWasm.ts");
     const davinci = await import("./src/physics/daVinciWasm.ts");
     const edison = await import("./src/physics/edisonWasm.ts");
+    const daimler = await import("./src/physics/daimlerWasm.ts");
     const tesla = await import("./src/physics/teslaWasm.ts");
     const flyer = await import("./src/physics/flyerWasm.ts");
     const otto = await import("./src/physics/ottoWasm.ts");
@@ -47,6 +48,7 @@ test("concurrent WASM consumers share one in-flight load and receive the final s
         "  return JSON.stringify({ ok: { voltage_v: 110, current_a: 0.7333333333333333, joule_power_w: 80.66666666666666, filament_temperature_k: 1950, radiative_power_w: 80.66666666666666, relative_energy_closure: 0 } });",
         "}",
       ].join("\n"),
+      daimler: [init, "export function daimler_marine_step() { return '{}'; }"].join("\n"),
       tesla: [
         init,
         "export function tesla_transformer_step() {",
@@ -79,8 +81,10 @@ test("concurrent WASM consumers share one in-flight load and receive the final s
           ? "goddard"
           : url.includes("fs-edison")
             ? "edison"
-          : url.includes("fs-davinci")
-            ? "davinci"
+            : url.includes("fs-daimler")
+              ? "daimler"
+            : url.includes("fs-davinci")
+              ? "davinci"
           : url.includes("fs-tesla")
             ? "tesla"
             : url.includes("fs-otto")
@@ -91,11 +95,25 @@ test("concurrent WASM consumers share one in-flight load and receive the final s
       return new Response(sources[key], { status: 200 });
     };
 
+    const sourceTransitions = new Map();
+    const unsubscribeSourceListeners = [
+      ["goddard", goddard.goddardKernelSource, goddard.subscribeGoddardKernelSource],
+      ["edison", edison.edisonKernelSource, edison.subscribeEdisonKernelSource],
+      [
+        "davinci",
+        davinci.daVinciTopologyKernelSource,
+        davinci.subscribeDaVinciTopologyKernelSource,
+      ],
+      ["daimler", daimler.daimlerKernelSource, daimler.subscribeDaimlerKernelSource],
+    ].map(([name, readSource, subscribe]) =>
+      subscribe(() => sourceTransitions.set(name, readSource())),
+    );
     const cases = [
       [generic.ensureGenericWasm, "wasm", generic.genericKernelSource],
       [goddard.ensureGoddardWasm, "wasm", goddard.goddardKernelSource],
       [edison.ensureEdisonWasm, "wasm", edison.edisonKernelSource],
       [davinci.ensureDaVinciTopologyWasm, "wasm", davinci.daVinciTopologyKernelSource],
+      [daimler.ensureDaimlerWasm, "wasm", daimler.daimlerKernelSource],
       [tesla.ensureTeslaWasm, "wasm", tesla.teslaKernelSource],
       [flyer.ensureFlyerWasm, "wasm", flyer.flyerKernelSource],
       [otto.ensureOttoWasm, "wasm", otto.ottoKernelSource],
@@ -107,7 +125,15 @@ test("concurrent WASM consumers share one in-flight load and receive the final s
         throw new Error("a concurrent caller observed an intermediate source");
       }
     }
-    if (counts.size !== 8 || [...counts.values()].some((count) => count !== 1)) {
+    unsubscribeSourceListeners.forEach((unsubscribe) => unsubscribe());
+    if (
+      ["goddard", "edison", "davinci", "daimler"].some(
+        (name) => sourceTransitions.get(name) !== "wasm",
+      )
+    ) {
+      throw new Error("a dedicated WASM source subscriber missed the final source");
+    }
+    if (counts.size !== 9 || [...counts.values()].some((count) => count !== 1)) {
       throw new Error("a loader performed duplicate glue fetches");
     }
     if (FrankenSimEngine.stepGoddardApparatus(0, 120, 6000, 4.5, 0, false, true).runtimeSource !== "wasm") {

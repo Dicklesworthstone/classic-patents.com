@@ -7,6 +7,10 @@ import { stepAmfVersatranTopology } from "./amfVersatranKernel";
 import { INITIAL_BAER_STATE, readBaerControls, stepBaerOdysseySi } from "./baerOdysseyKernel";
 import { stepClavelDeltaRobotTopology } from "./clavelDeltaRobotKernel";
 import { readCrumpFdmControls, stepCrumpFdmSi } from "./crumpFdmKernel";
+import {
+  readDaVinciInterfaceControls,
+  resolveDaVinciInterfaceTopology,
+} from "./daVinciInterfaceTopology";
 import { stepDevolProgrammedTransfer } from "./devolProgrammedTransferKernel";
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
@@ -16,13 +20,13 @@ import {
   stepHullStereolithographySi,
 } from "./hullStereolithographyKernel";
 import { readKamenSegwayControls, stepKamenSegwaySi } from "./kamenSegwayKernel";
-import { readKamenTransporterControls, stepKamenTransporterSi } from "./kamenTransporterKernel";
+import {
+  readKamenTransporterControls,
+  stepKamenTransporterTopology,
+} from "./kamenTransporterKernel";
 import { stepLemelsonManipulatorTopology } from "./lemelsonAdjustableManipulatorKernel";
 import { stepLemelsonAutomaticProductionTopology } from "./lemelsonAutomaticProductionKernel";
-import {
-  readLemelsonMachineVisionControls,
-  stepLemelsonMachineVisionSi,
-} from "./lemelsonMachineVisionKernel";
+import { stepLemelsonMachineVisionTopology } from "./lemelsonMachineVisionKernel";
 import { stepHoweSewingMachine } from "./machineKernels";
 import { readMestralVelcroControls, stepMestralVelcroSi } from "./mestralVelcroKernel";
 import {
@@ -89,7 +93,6 @@ const LAMARR_FREQUENCY_HOPPING_ID = "us-2292387-lamarr-frequency-hopping";
 const SPENCER_MICROWAVE_ID = "us-2495429-spencer-microwave";
 const BARDEEN_TRANSISTOR_ID = "us-2524035-bardeen-transistor";
 const NOYCE_IC_ID = "us-2981877-noyce-ic";
-const KWOLEK_KEVLAR_ID = "us-3671542-kwolek-kevlar";
 const PARSONS_TURBINE_ID = "us-608969-parsons-turbine";
 const TESLA_COIL_ID = "us-593138-tesla-coil";
 const TESLA_TELEAUTOMATON_ID = "us-613809-tesla-teleautomaton";
@@ -1294,38 +1297,6 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
     ];
   }
 
-  if (patentId === KWOLEK_KEVLAR_ID) {
-    const conc = params.polymerConcentrationPct ?? 18.5;
-    const draw = params.drawRatio ?? 6.5;
-
-    return [
-      {
-        id: "anisotropic-dope",
-        phrase: "Optically anisotropic dope consisting essentially of",
-        active: conc >= 10,
-        tone: "live",
-        caption: `Concentration = ${conc} wt%: Liquid-crystalline nematic domains form in sulfuric acid spin dope.`,
-      },
-      {
-        id: "viscosity-discontinuity",
-        phrase:
-          "decrease in viscosity with increasing concentration represented by a sharp discontinuity in the slope of the plot of the dope viscosity vs. polymer concentration curve without the formation of a solid phase",
-        active: conc >= 15 && conc <= 22,
-        tone: "live",
-        caption:
-          "Nematic alignment reduces shear viscosity above critical concentration threshold, facilitating extrusion.",
-      },
-      {
-        id: "axial-alignment",
-        phrase:
-          "liquid-crystalline domains undergo spontaneous, nearly perfect axial alignment, yielding as-spun fibers of exceptionally high tensile modulus",
-        active: draw >= 4.0,
-        tone: "live",
-        caption: `Draw ratio = ${draw}: Spin-stretch elongational flow aligns rigid PPTA rods parallel to filament axis.`,
-      },
-    ];
-  }
-
   if (patentId === PARSONS_TURBINE_ID) {
     const rpm = params.rotorRpm ?? 3000;
     const pIn = params.inletPressurePsi ?? 180;
@@ -2391,8 +2362,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-6331181-davinci") {
-    const ratio = params.motionScaleRatio ?? 3.0;
-    const compatibilityPresent = (params.tremorFilterEnabled ?? 1) > 0.5;
+    const interfaceTopology = resolveDaVinciInterfaceTopology(readDaVinciInterfaceControls(params));
     return [
       {
         id: "robotic-surgical-tool",
@@ -2405,11 +2375,15 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
       {
         id: "processor-which-directs-movement",
         phrase: "processor which directs movement",
-        active: compatibilityPresent,
-        tone: "live",
-        caption: compatibilityPresent
-          ? `Compatibility identifier is present; the ${ratio.toFixed(0)}-entry illustrative offset control represents tool-specific data available to the processor.`
-          : "Compatibility identifier is absent, so the source-facing processor/tool boundary is not satisfied.",
+        active: interfaceTopology.processorCanConfigureTool,
+        tone: interfaceTopology.processorCanConfigureTool ? "held" : "broken",
+        caption: interfaceTopology.processorCanConfigureTool
+          ? "Compatibility identifier, calibration record, and engagement signal are present, so the source-described processor/tool configuration boundary is represented. No motion scale, speed, force, or stability value is asserted."
+          : interfaceTopology.status === "incompatible"
+            ? "Compatibility identifier is absent, so the source-facing processor/tool boundary is not satisfied."
+            : interfaceTopology.status === "calibration-record-missing"
+              ? "The calibration record is unavailable, so the source-facing processor/tool configuration boundary is incomplete."
+              : "The engagement signal is unconfirmed, so the source-facing processor/tool configuration boundary is incomplete.",
       },
     ];
   }
@@ -2449,29 +2423,39 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
 
   if (patentId === KAMEN_TRANSPORTER_ID) {
     const controls = readKamenTransporterControls(params);
-    const tel = stepKamenTransporterSi(controls);
+    const topology = stepKamenTransporterTopology(controls);
     return [
       {
         id: "dynamically-maintaining-stability",
         phrase: "dynamically maintaining stability",
-        active: tel.isBalancing && !tel.pitchRefusal,
-        tone: tel.pitchRefusal ? "broken" : tel.isBalancing ? "held" : "live",
-        caption: tel.pitchRefusal
-          ? "Safety Refusal: pitch tilt exceeded maximum dynamic balance envelope (25°)."
-          : tel.isBalancing
-            ? `Active 2-wheel inverted pendulum equilibrium held (torque=${tel.balanceTorqueNm.toFixed(1)} N·m, speed=${tel.forwardVelocityMs.toFixed(2)} m/s).`
-            : "Operating in 4-wheel static stability support mode.",
+        active: topology.balanceLoopActive,
+        tone: topology.balanceLoopActive ? "held" : "broken",
+        caption: topology.balanceLoopActive
+          ? "Claim 22 names a balance mode in which the ground-contacting wheels are controlled to maintain fore-and-aft balance. The grant supplies no torque, gain, speed, sensor rate, or recovery margin."
+          : "The balance-loop topology is withheld for this claim comparison; the exhibit does not predict a fall or a stability limit.",
       },
       {
         id: "cluster-of-wheels",
         phrase: "cluster of wheels",
-        active: tel.isClimbing || controls.operatingMode === "stair_climb",
-        tone: tel.isClimbing ? "live" : "held",
-        caption: `Planetary cluster angle = ${tel.clusterAngleDeg.toFixed(0)}°; ${
-          tel.isClimbing
-            ? "actively rotating carrier to hoist vehicle over stair risers."
-            : "cluster locked for rolling ground contact."
-        }`,
+        active: topology.clusterTopologyActive,
+        tone: topology.clusterTopologyActive
+          ? topology.stairSequenceActive
+            ? "live"
+            : "held"
+          : "broken",
+        caption: topology.clusterTopologyActive
+          ? `Claims ${topology.sourceClaimNumbers.join(", ")} show a cluster-wheel arrangement around a central axis with separately controlled ground-contacting wheels; no gear train is asserted. ${topology.stairSequenceActive ? "The selected state makes the transfer/climb ordering visible without predicting obstacle geometry or motion." : "The ground-contact relation is shown without a climbing-performance prediction."}`
+          : "The cluster-wheel topology is withheld for this claim comparison; no obstacle-traversal prediction is inferred.",
+      },
+      {
+        id: "coordination-control-means",
+        phrase: "coordination control means",
+        active: topology.clusterTopologyActive && topology.stairSequenceActive,
+        tone: topology.clusterTopologyActive && topology.stairSequenceActive ? "live" : "broken",
+        caption:
+          topology.clusterTopologyActive && topology.stairSequenceActive
+            ? "Claim 26 orders start, next-pair placement, weight transfer, climb, and return toward balance. This is a qualitative state sequence, not a timed path or drive calculation."
+            : "The coordination-control sequence is not represented in the selected claim-reading state.",
       },
     ];
   }
@@ -2625,40 +2609,49 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-3081379-lemelson-machine-vision") {
-    const controls = readLemelsonMachineVisionControls(params);
-    const state = stepLemelsonMachineVisionSi(controls);
+    const state = stepLemelsonMachineVisionTopology(params);
     return [
       {
         id: "electron-beam-scanning",
         phrase:
           "means for causing an electron beam to scan an area of an image field in a single frame sweep",
-        active: true,
-        tone: "live",
-        caption: `Raster scan frequency: ${state.metrics.horizontalScanFreqHz} Hz (${controls.scanLineCount} lines @ ${controls.frameRateHz} fps, line duration ${state.metrics.linePeriodUs.toFixed(2)} µs).`,
+        active: state.scanPathActive,
+        tone: state.scanPathActive ? "live" : "broken",
+        caption: state.scanPathActive
+          ? "The source-described scan path is present as the first branch of the normalized inspection signal topology; no beam velocity, image-field dimension, or frame rate is asserted."
+          : "The scan path is withheld, so the claim-reading comparison cannot form a scanned picture-signal path.",
       },
       {
         id: "gated-analyzing-circuit",
         phrase:
           "analyzing circuit connected to a gating means in the output of a circuit in which said picture signal is generated",
-        active: true,
-        tone: "live",
-        caption: `Threshold comparator level: ${controls.thresholdVoltage.toFixed(2)} V slicing video peak (${state.metrics.videoPeakVoltageV.toFixed(2)} V), pulse width ${state.metrics.pulseWidthUs.toFixed(2)} µs.`,
+        active: state.gatedPictureSignal && state.analyzingCircuitActive,
+        tone: state.gatedPictureSignal && state.analyzingCircuitActive ? "live" : "broken",
+        caption:
+          state.gatedPictureSignal && state.analyzingCircuitActive
+            ? "The selected topology carries the scanned picture signal through a synchronized gate to the analyzing circuit. Threshold, voltage, pulse width, and signal-response values are not published here."
+            : "The gate or analyzing-circuit relation is withheld for this claim-reading comparison.",
       },
       {
         id: "dimensional-measurement-slicing",
         phrase:
           "inspecting a predetermined area of said image field by the analysis of that portion of the picture signal",
-        active: true,
-        tone: state.metrics.isDefective ? "broken" : "live",
-        caption: `Measured dimension: ${state.metrics.measuredPartWidthMm.toFixed(1)} mm (nominal ${(controls.nominalPartWidthM * 1000).toFixed(1)} mm, deviation ${state.metrics.dimensionalErrorMm.toFixed(2)} mm, status: ${state.metrics.isDefective ? "DEFECT DETECTED" : "WITHIN TOLERANCE"}).`,
+        active: state.inspectionSignalPresent && state.analyzingCircuitActive,
+        tone: state.inspectionSignalPresent && state.analyzingCircuitActive ? "live" : "broken",
+        caption:
+          state.inspectionSignalPresent && state.analyzingCircuitActive
+            ? "The normalized path identifies an inspected picture-signal portion and an analyzing circuit. It does not calculate a dimension, tolerance, or defect decision."
+            : "An inspection signal or analyzing-circuit relation is withheld, so this comparison does not report a measurement outcome.",
       },
       {
         id: "solenoid-rejection-gate",
         phrase:
           "programming means being synchronized in its operation for automatically operating said gating means",
-        active: state.metrics.isDefective,
-        tone: state.metrics.isDefective ? "live" : "held",
-        caption: `Solenoid reject force: ${state.metrics.solenoidForceN.toFixed(2)} N (response ${state.metrics.gateResponseTimeMs.toFixed(1)} ms, coil current ${controls.gateSolenoidCurrentA.toFixed(1)} A).`,
+        active: state.controlOutputReady,
+        tone: state.controlOutputReady ? "live" : "held",
+        caption: state.controlOutputReady
+          ? "The programming/gating relationship is connected after the analyzing circuit in the source topology. It does not assert a coil current, actuator force, response time, or rejection outcome."
+          : "The normalized control-output path is held because its upstream signal relation is incomplete.",
       },
     ];
   }

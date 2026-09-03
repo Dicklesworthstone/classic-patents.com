@@ -11,7 +11,11 @@
  * 6. VHF Channel 3/4 RF carrier modulation and antenna terminal power (FCC Part 15 compliance).
  */
 
+import type { TapeUpdater } from "./useFrankenSimPhysics";
+
 export interface BaerOdysseyControls {
+  /** Shared transport run state; false freezes physical time and pose. */
+  running: boolean;
   /** Player 1 Horizontal Potentiometer (0 to 1) */
   player1PotX: number;
   /** Player 1 Vertical Potentiometer (0 to 1) */
@@ -102,6 +106,7 @@ export interface BaerOdysseyMetrics {
 }
 
 export const DEFAULT_BAER_CONTROLS: BaerOdysseyControls = {
+  running: true,
   player1PotX: 0.15,
   player1PotY: 0.5,
   player2PotX: 0.85,
@@ -170,6 +175,7 @@ function deterministicServeVerticalVelocity(
 
 export function readBaerControls(raw?: Partial<BaerOdysseyControls>): BaerOdysseyControls {
   return {
+    running: raw?.running === undefined ? DEFAULT_BAER_CONTROLS.running : Boolean(raw.running),
     player1PotX: Math.max(
       0.05,
       Math.min(0.45, raw?.player1PotX ?? DEFAULT_BAER_CONTROLS.player1PotX),
@@ -211,7 +217,7 @@ export function stepBaerOdysseySi(
   controls: BaerOdysseyControls,
   dtSeconds: number,
 ): { state: BaerOdysseyState; metrics: BaerOdysseyMetrics } {
-  const dt = Math.max(0.0001, Math.min(0.1, dtSeconds));
+  const dt = controls.running ? Math.max(0, Math.min(0.1, dtSeconds)) : 0;
   const time = state.timeSeconds + dt;
 
   let ballX = state.ballX;
@@ -378,4 +384,88 @@ export function stepBaerOdysseySi(
   };
 
   return { state: nextState, metrics };
+}
+
+export interface BaerOdysseyTapeFrame {
+  readonly state: BaerOdysseyState;
+  readonly metrics: BaerOdysseyMetrics;
+}
+
+let tapeFrame: BaerOdysseyTapeFrame | undefined;
+let targetResetRequested = false;
+let lightGunTriggerRequested = false;
+
+export function getBaerOdysseyTapeFrame(): BaerOdysseyTapeFrame | undefined {
+  return tapeFrame;
+}
+
+/** Current shared frame, or a zero-time projection before the first owner tick. */
+export function readBaerOdysseyTapeFrame(controls: BaerOdysseyControls): BaerOdysseyTapeFrame {
+  return tapeFrame ?? stepBaerOdysseySi(INITIAL_BAER_STATE, controls, 0);
+}
+
+/** Restore the complete deterministic game tape to its documented initial state. */
+export function resetBaerOdysseyTape(): void {
+  tapeFrame = undefined;
+  targetResetRequested = false;
+  lightGunTriggerRequested = false;
+}
+
+/** Queue a one-tick reset input so pausing cannot swallow the visitor's command. */
+export function requestBaerTargetReset(): void {
+  targetResetRequested = true;
+}
+
+/** Queue a one-tick light-gun trigger; its duration is virtual, not wall-clock based. */
+export function requestBaerLightGunTrigger(): void {
+  lightGunTriggerRequested = true;
+}
+
+/** One fixed-step owner for the 2D face, 3D face, and telemetry projection. */
+export function createBaerOdysseyTransportUpdater(
+  getControls: () => BaerOdysseyControls,
+): TapeUpdater {
+  return (_previous, dt) => {
+    const controls = getControls();
+    const resetRequested = targetResetRequested;
+    const triggerRequested = lightGunTriggerRequested;
+    if (!controls.running && !resetRequested && !triggerRequested) return null;
+
+    targetResetRequested = false;
+    lightGunTriggerRequested = false;
+    const result = stepBaerOdysseySi(
+      tapeFrame?.state ?? INITIAL_BAER_STATE,
+      {
+        ...controls,
+        resetButton: controls.resetButton || resetRequested,
+        lightGunTrigger: controls.lightGunTrigger || triggerRequested,
+      },
+      dt,
+    );
+    tapeFrame = result;
+
+    return {
+      domain: "electromagnetics_flux",
+      refusal: { isRefused: false },
+      video: {
+        ballX: result.metrics.ballX,
+        ballY: result.metrics.ballY,
+        ballVx: result.metrics.ballVx,
+        ballVy: result.metrics.ballVy,
+        player1X: result.metrics.p1X,
+        player1Y: result.metrics.p1Y,
+        player2X: result.metrics.p2X,
+        player2Y: result.metrics.p2Y,
+        scorePlayer1: result.state.scoreP1,
+        scorePlayer2: result.state.scoreP2,
+        targetHitCount: result.state.targetHitCount,
+        targetVisible: result.metrics.targetVisible,
+        coincidenceActive: result.metrics.coincidenceActive,
+        lightGunCoincidence: result.metrics.lightGunCoincidence,
+        horizontalSyncHz: result.metrics.horizontalSyncFreqHz,
+        verticalFieldHz: result.metrics.verticalFreqHz,
+        rfCarrierMHz: result.metrics.rfCarrierFreqMHz,
+      },
+    };
+  };
 }

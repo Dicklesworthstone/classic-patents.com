@@ -39,6 +39,12 @@ describe("Wright Flyer 3-Axis Aerodynamics Kernel", () => {
     expect(uncoupled.rudderDeg).toBe(0);
   });
 
+  test("reads the canonical airspeed bus control in historical mph", () => {
+    const controls = readWrightControls({ airspeed: 45 });
+
+    expect(controls.airspeedMph).toBe(45);
+  });
+
   test("stepWrightFlyerSi computes aerodynamic lift, induced drag, and adverse yaw in SI units", () => {
     const controls = readWrightControls({ airspeed: 30, wingWarp: 0, elevator: 0, coupled: 1 });
     const si = stepWrightFlyerSi(controls);

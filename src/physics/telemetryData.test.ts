@@ -14,7 +14,7 @@ describe("Physics Telemetry Data Registry", () => {
       expect(entry.governingEquation.trim().length).toBeGreaterThan(0);
       expect(entry.engineMethod.trim().length).toBeGreaterThan(0);
       expect(entry.pedagogicalInsight.trim().length).toBeGreaterThan(20);
-      if (patent.id !== "us-542846-diesel-engine") {
+      if (!["us-542846-diesel-engine", "us-3671542-kwolek-kevlar"].includes(patent.id)) {
         expect(entry.controls.length).toBeGreaterThan(0);
       }
     }
@@ -265,19 +265,20 @@ describe("Physics Telemetry Data Registry", () => {
   test("routes Da Vinci telemetry through the executable shared contact kernel", () => {
     const daVinci = PATENT_PHYSICS_REGISTRY["us-6331181-davinci"];
     expect(daVinciRegistryEntry).toBe(daVinci);
-    expect(daVinci.engineMethod).toBe("FrankenSimEngine.stepDaVinci");
+    expect(daVinci.engineMethod).toBe(
+      "resolveDaVinciInterfaceTopology (source-bounded TypeScript topology; quantitative mechanics refused)",
+    );
     expect(
       daVinci.computeMetrics({
-        motionScaleRatio: 4,
-        tremorFilterEnabled: 0,
-        masterInputSpeedMps: 0.75,
-        gripAngleDeg: 20,
+        compatibilitySignalPresent: 0,
+        calibrationRecordAvailable: 1,
+        engagementSignalPresent: 1,
       }),
     ).toMatchObject([
-      { label: "Illustrative offset scale", value: "4:1" },
-      { label: "Compatibility signal", value: "absent" },
-      { label: "End-effector angle", value: "20", unit: "°" },
-      { label: "Illustrative tip clearance", unit: "mm" },
+      { label: "Compatibility identifier", value: "absent" },
+      { label: "Calibration record", value: "available" },
+      { label: "Engagement", value: "confirmed" },
+      { label: "Quantitative mechanics", value: "withheld" },
     ]);
   });
 
@@ -554,13 +555,12 @@ describe("Physics Telemetry Data Registry", () => {
     }
   });
 
-  test("routes Parsons, CCD, Kevlar, Marconi, Lamarr, Fermi, Engelbart, Linotype, and Hollerith onto their shared kernels", () => {
+  test("routes Parsons, CCD, Marconi, Lamarr, Fermi, Engelbart, Linotype, and Hollerith onto their shared kernels", () => {
     const routed: Array<[string, string]> = [
       ["us-608969-parsons-turbine", "stepParsonsMarine"],
       ["us-3858232-boyle-smith-ccd", "stepBoyleSmithCcd"],
       ["us-3923554-boyle-smith-ccd", "stepBoyleSmithCcd"],
-      ["us-3671542-kwolek-kevlar", "stepKevlarContinuum"],
-      ["us-586193-marconi-radio", "stepMarconiRadio"],
+      ["us-586193-marconi-radio", "createMarconiTransportUpdater"],
       ["us-2292387-lamarr-frequency-hopping", "stepLamarrFrequencyHopping"],
       ["us-2708656-fermi-reactor", "stepFermiReactor"],
       ["us-3541541-engelbart-mouse", "stepEngelbartMouse"],
@@ -573,5 +573,18 @@ describe("Physics Telemetry Data Registry", () => {
       expect(entry.controls.some((control) => control.id === "sourceFocus")).toBe(false);
       expect(entry.computeMetrics({}).length).toBeGreaterThan(0);
     }
+  });
+
+  test("keeps Kwolek's public id separate from the preserved legacy material model", () => {
+    const publicEntry = PATENT_PHYSICS_REGISTRY["us-3671542-kwolek-kevlar"];
+    const legacyEntry = PATENT_PHYSICS_REGISTRY["_legacy-unpublished-us-3671542-kwolek-kevlar"];
+    expect(publicEntry).not.toBe(legacyEntry);
+    expect(publicEntry.controls).toEqual([]);
+    expect(publicEntry.engineMethod).toContain("model withheld");
+    expect(publicEntry.computeMetrics({}).map((metric) => metric.label)).toEqual([
+      "Claim 1",
+      "Claim 2",
+      "Visual Model",
+    ]);
   });
 });

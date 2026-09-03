@@ -17,6 +17,7 @@ import {
   stepKevlarContinuum as catalogStepKevlar,
   stepLegacyDaimlerEngineUS349983 as catalogStepLegacyDaimlerEngineUS349983,
   stepLincolnBuoy as catalogStepLincolnBuoy,
+  farnsworthDisplaySweepRates,
   goddardSchematicStack,
   stepBellTelephone,
   stepCorlissEngine,
@@ -69,7 +70,7 @@ import { stepKamenSegwaySi } from "./kamenSegwayKernel";
 import {
   type KamenTransporterControls,
   type KamenTransporterTelemetry,
-  stepKamenTransporterSi,
+  stepKamenTransporterTopology,
 } from "./kamenTransporterKernel";
 import {
   type LemelsonAdjustableManipulatorParams,
@@ -77,8 +78,8 @@ import {
 } from "./lemelsonAdjustableManipulatorKernel";
 import {
   type LemelsonMachineVisionControls,
-  type LemelsonMachineVisionState,
-  stepLemelsonMachineVisionSi,
+  type LemelsonMachineVisionTopologyState,
+  stepLemelsonMachineVisionTopology,
 } from "./lemelsonMachineVisionKernel";
 import {
   type LemelsonWarehouseControls,
@@ -241,6 +242,28 @@ export interface CarrierAirWasherAnimationState {
   readonly dropletDisplayOpacity: number;
   readonly activeSeparatorPlateCount: number;
 }
+
+/**
+ * Public source-bound state for US 5,701,965.
+ *
+ * The kernel retains a legacy scenario shape for saved-session compatibility,
+ * but the engine boundary deliberately exposes only relationships supported by
+ * the reviewed grant. Keeping this narrower than KamenTransporterTelemetry is
+ * load-bearing: a caller of the public engine cannot accidentally relabel a
+ * retired illustrative value as a property of the patent.
+ */
+export type KamenTransporterPublicTopologyState = Pick<
+  KamenTransporterTelemetry,
+  | "topologyState"
+  | "stateLabel"
+  | "balanceLoopActive"
+  | "clusterTopologyActive"
+  | "stairSequenceActive"
+  | "wheelControlMode"
+  | "clusterDisplayPoseRad"
+  | "sourceClaimNumbers"
+  | "sourceBoundary"
+>;
 
 export const FrankenSimEngine = {
   /**
@@ -625,6 +648,8 @@ export const FrankenSimEngine = {
     magneticDeflectionGauss: number,
     incidentLux: number = 500,
     scanLines: number = 60,
+    horizontalFreqKhz: number = 15.75,
+    verticalFreqHz: number = 60,
   ) {
     const electronMassKg = 9.1093837e-31;
     const electronChargeC = 1.60217663e-19;
@@ -642,6 +667,8 @@ export const FrankenSimEngine = {
     const gyroRadiusMm =
       bTesla > 1e-6 ? ((electronMassKg * velocityMps) / (electronChargeC * bTesla)) * 1000 : 9999;
 
+    const sweepRates = farnsworthDisplaySweepRates(horizontalFreqKhz, verticalFreqHz);
+
     return {
       anodeKv,
       electronVelocityMps: Math.round(velocityMps),
@@ -651,6 +678,8 @@ export const FrankenSimEngine = {
       rasterAdvance: Number(Math.max(1, velocityMps / 2.1e7).toFixed(2)),
       rasterLinePct: 100 / Math.max(1, scanLines),
       rasterLineWrapPct: 100,
+      scanLines: Math.max(1, Math.round(scanLines)),
+      ...sweepRates,
       electronDisplaySpeed: Number(((velocityMps / 2e7) * 45).toFixed(3)),
       electronVelocityMegaMps: Number((velocityMps / 1e6).toFixed(1)),
       relativisticPct: Number((relativisticBeta * 100).toFixed(1)),
@@ -673,8 +702,6 @@ export const FrankenSimEngine = {
       schematicEnvelopeH: 110,
       schematicEnvelopeRx: 48,
       schematicCathodeLabelDy: 4,
-      scanHCoupling: 0.4,
-      scanVCoupling: 0.2,
       scanAmp: 0.9,
       beamPathOriginX: -4.5,
       beamPathSpanX: 8.0,
@@ -693,7 +720,7 @@ export const FrankenSimEngine = {
 
   /**
    * Guglielmo Marconi Spark Transmitter (US 586,193)
-   * Monopole Quarter-Wave Radiation & Range Proportionality
+   * Source-bounded apparatus geometry; quantitative RF outputs are refused
    */
   stepMarconiRadio(aerialHeightMeters: number, sparkGapMm: number, coilKv: number) {
     return stepMarconiRadioCatalog(aerialHeightMeters, sparkGapMm, coilKv);
@@ -1305,9 +1332,20 @@ export const FrankenSimEngine = {
 
   stepKamenTransporter(
     controls: KamenTransporterControls,
-    dt: number = 1 / 60,
-  ): KamenTransporterTelemetry {
-    return stepKamenTransporterSi(controls, dt);
+    _dt: number = 1 / 60,
+  ): KamenTransporterPublicTopologyState {
+    const topology = stepKamenTransporterTopology(controls);
+    return {
+      topologyState: topology.topologyState,
+      stateLabel: topology.stateLabel,
+      balanceLoopActive: topology.balanceLoopActive,
+      clusterTopologyActive: topology.clusterTopologyActive,
+      stairSequenceActive: topology.stairSequenceActive,
+      wheelControlMode: topology.wheelControlMode,
+      clusterDisplayPoseRad: topology.clusterDisplayPoseRad,
+      sourceClaimNumbers: topology.sourceClaimNumbers,
+      sourceBoundary: topology.sourceBoundary,
+    };
   },
 
   stepWatsonRcc(controls: WatsonRemoteCenterComplianceControls): WatsonRemoteCenterCompliancePose {
@@ -1327,8 +1365,10 @@ export const FrankenSimEngine = {
   },
 
   /** US 3,081,379 Lemelson automatic measurement & machine vision apparatus. */
-  stepLemelsonMachineVision(controls: LemelsonMachineVisionControls): LemelsonMachineVisionState {
-    return stepLemelsonMachineVisionSi(controls);
+  stepLemelsonMachineVision(
+    controls: LemelsonMachineVisionControls,
+  ): LemelsonMachineVisionTopologyState {
+    return stepLemelsonMachineVisionTopology(controls);
   },
 
   /** US 3,260,375 Lemelson adjustable limit-switch industrial manipulator. */

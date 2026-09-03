@@ -11,6 +11,7 @@ describe("US 4,512,709 Milacron Robot Toolchanger source-bounded engagement topo
     expect(state.phase).toBe("captured-t-member");
     expect(state.registrationComplete).toBe(true);
     expect(state.toolRetained).toBe(true);
+    expect(state.claimFourTMemberSelected).toBe(true);
     expect(state.claimFourRampCaptured).toBe(true);
     expect(state.quantitativeMechanicsRefused).toBe(true);
   });
@@ -47,6 +48,7 @@ describe("US 4,512,709 Milacron Robot Toolchanger source-bounded engagement topo
       claimFourTMember: 0,
     });
     expect(generic.toolRetained).toBe(true);
+    expect(generic.claimFourTMemberSelected).toBe(false);
     expect(generic.claimFourRampCaptured).toBe(false);
     expect(generic.phase).toBe("locked");
   });

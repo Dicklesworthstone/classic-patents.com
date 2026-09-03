@@ -16,6 +16,7 @@ type GoddardApparatusFn = (
   primaryChargeSubstantiallyConsumed: boolean,
   gyroEnabled: boolean,
 ) => string;
+type GoddardKernelSourceListener = () => void;
 
 export interface GoddardWasmStep {
   chamber_pressure_psi: number;
@@ -45,9 +46,21 @@ let goddardFn: GoddardFn | null = null;
 let goddardApparatusFn: GoddardApparatusFn | null = null;
 let loadPromise: Promise<GoddardKernelSource> | null = null;
 let source: GoddardKernelSource = "unloaded";
+const sourceListeners = new Set<GoddardKernelSourceListener>();
 
 export function goddardKernelSource(): GoddardKernelSource {
   return source;
+}
+
+export function subscribeGoddardKernelSource(listener: GoddardKernelSourceListener): () => void {
+  sourceListeners.add(listener);
+  return () => sourceListeners.delete(listener);
+}
+
+function setGoddardKernelSource(next: GoddardKernelSource): void {
+  if (source === next) return;
+  source = next;
+  for (const listener of [...sourceListeners]) listener();
 }
 
 export function decodeGoddardWasmStep(raw: string): GoddardWasmStep | null {
@@ -134,7 +147,7 @@ export function ensureGoddardWasm(): Promise<GoddardKernelSource> {
 
 async function initializeGoddardWasm(): Promise<GoddardKernelSource> {
   if (typeof window === "undefined") {
-    source = "ts-fallback";
+    setGoddardKernelSource("ts-fallback");
     return source;
   }
   try {
@@ -160,7 +173,7 @@ async function initializeGoddardWasm(): Promise<GoddardKernelSource> {
       }
       goddardApparatusFn = mod.goddard_apparatus_step;
       goddardFn = mod.goddard_rocket_step;
-      source = "wasm";
+      setGoddardKernelSource("wasm");
     } finally {
       URL.revokeObjectURL(blobUrl);
     }
@@ -168,7 +181,7 @@ async function initializeGoddardWasm(): Promise<GoddardKernelSource> {
     console.warn("Failed to load fs-goddard-wasm, using fallback", err);
     goddardApparatusFn = null;
     goddardFn = null;
-    source = "ts-fallback";
+    setGoddardKernelSource("ts-fallback");
   }
   return source;
 }

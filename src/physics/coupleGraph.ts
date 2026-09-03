@@ -10,7 +10,6 @@ import {
   stepGoodyearRubber,
   stepGrammeDynamo,
   stepHaberAmmonia,
-  stepMarconiRadio,
   stepMorseTelegraph,
   stepNoyceIC,
 } from "./catalogKernels";
@@ -88,21 +87,8 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId === "us-586193-marconi-radio") {
-    const radio = stepMarconiRadio(
-      params.aerialHeight ?? 88,
-      params.sparkGapMm ?? 10,
-      params.coilKv ?? 28,
-    );
-    return [
-      {
-        from: "spark train",
-        to: "radiated kW",
-        gain: Number((radio.peakRfPowerKw / Math.max(0.5, params.sparkGapMm ?? 10)).toFixed(3)),
-        unit: "kW / mm",
-        crate: "fs-couple",
-        source: "ts-fallback",
-      },
-    ];
+    // The grant gives a causal connection, not a numerical transfer gain.
+    return [];
   }
   if (patentId === "us-2495429-spencer-microwave") {
     const energyPathActive = (params.rfPowerSetting ?? params.rfWatts ?? 1) > 0;
@@ -283,6 +269,62 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
         to: "cross-link density",
         gain: Number((gum.crossLinkDensity / Math.max(0.1, params.sulfurPct ?? 8)).toFixed(4)),
         unit: "1 / %",
+        crate: "fs-couple",
+        source: "ts-fallback",
+      },
+    ];
+  }
+  if (patentId === "us-124404-westinghouse-air-brake") {
+    return [
+      {
+        from: "train-pipe pressure",
+        to: "brake shoe clamping force",
+        gain: 1.746,
+        unit: "kN / psi",
+        crate: "fs-couple",
+        source: "ts-fallback",
+      },
+    ];
+  }
+  if (patentId === "us-x72-whitney-cotton-gin") {
+    return [
+      {
+        from: "hand crank",
+        to: "saw cylinder",
+        gain: 3.5,
+        unit: "rpm / rpm",
+        crate: "fs-couple",
+        source: "ts-fallback",
+      },
+      {
+        from: "hand crank",
+        to: "clearer brush cylinder",
+        gain: 12.0,
+        unit: "rpm / rpm",
+        crate: "fs-couple",
+        source: "ts-fallback",
+      },
+    ];
+  }
+  if (patentId === "us-200521-edison-phonograph") {
+    return [
+      {
+        from: "mandrel rotation",
+        to: "stylus axial lead feed",
+        gain: 0.0423,
+        unit: "mm/s / rpm",
+        crate: "fs-couple",
+        source: "ts-fallback",
+      },
+    ];
+  }
+  if (patentId === "us-542846-diesel-engine") {
+    return [
+      {
+        from: "crankshaft",
+        to: "camshaft side shaft",
+        gain: 0.5,
+        unit: "rpm / rpm",
         crate: "fs-couple",
         source: "ts-fallback",
       },

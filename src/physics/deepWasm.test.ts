@@ -171,7 +171,9 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     expect(stepEdisonBulb({ voltage: 110 }).filamentHeatSample).toBeGreaterThan(0);
     expect(stepNoyceIC({ reverseBias: 5 }).poissonPeak).toBeGreaterThan(0);
     expect(stepGoodyearRubber(145, 8, 30).grayScottMeanV).toBeGreaterThanOrEqual(0);
-    expect(stepMarconiRadio(88, 10, 28).sparkOddHarmonicPower).toBeGreaterThan(0);
+    const marconi = stepMarconiRadio(88, 10, 28);
+    expect(marconi.sourceBoundary).toContain("does not disclose");
+    expect("sparkOddHarmonicPower" in marconi).toBe(false);
     const otis = stepOtisTopology({
       platformPositionNormalized: 0.55,
       drivePhaseRad: 0,
@@ -212,9 +214,9 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     const e = coupleEdgesFor("us-223898-edison-lightbulb", { voltage: 110 });
     expect(e[0]?.from).toBe("I²R");
     expect(e[0]?.to).toBe("radiation");
-    expect(coupleEdgesFor("us-586193-marconi-radio", { sparkGapMm: 10 })[0]?.from).toBe(
-      "spark train",
-    );
+    // US 586,193 discloses a causal receiver/reset sequence, but not the
+    // numerical RF parameters required for an honest transfer gain.
+    expect(coupleEdgesFor("us-586193-marconi-radio", { sparkGapMm: 10 })).toEqual([]);
     expect(coupleEdgesFor("us-233692-pelton-water-wheel", { headMeters: 450 })).toEqual([]);
     expect(coupleEdgesFor("us-194047-otto-engine", { compressionRatio: 4.5 })[0]?.from).toBe(
       "engine shaft I",
@@ -239,6 +241,37 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     expect(coupleEdgesFor("us-4750-howe-sewing-machine", { crankRpm: 200 })[0]?.to).toBe(
       "baster plate H feed",
     );
+    const wh = coupleEdgesFor("us-124404-westinghouse-air-brake", { trainPipePressurePsi: 50 });
+    expect(wh[0]?.from).toBe("train-pipe pressure");
+    expect(wh[0]?.to).toBe("brake shoe clamping force");
+    expect(wh[0]?.gain).toBe(1.746);
+    expect(wh[0]?.unit).toBe("kN / psi");
+
+    const gin = coupleEdgesFor("us-x72-whitney-cotton-gin", { crankRpm: 180 });
+    expect(gin[0]?.from).toBe("hand crank");
+    expect(gin[0]?.to).toBe("saw cylinder");
+    expect(gin[0]?.gain).toBe(3.5);
+    expect(gin[1]?.from).toBe("hand crank");
+    expect(gin[1]?.to).toBe("clearer brush cylinder");
+    expect(gin[1]?.gain).toBe(12.0);
+
+    const phono = coupleEdgesFor("us-200521-edison-phonograph", { mandrelRpm: 60 });
+    expect(phono[0]?.from).toBe("mandrel rotation");
+    expect(phono[0]?.to).toBe("stylus axial lead feed");
+    expect(phono[0]?.gain).toBe(0.0423);
+    expect(phono[0]?.unit).toBe("mm/s / rpm");
+
+    const otto = coupleEdgesFor("us-194047-otto-engine", {});
+    expect(otto[0]?.from).toBe("engine shaft I");
+    expect(otto[0]?.to).toBe("counter-shaft K");
+    expect(otto[0]?.gain).toBe(0.5);
+    expect(otto[0]?.unit).toBe("revolution / revolution");
+
+    const diesel = coupleEdgesFor("us-542846-diesel-engine", {});
+    expect(diesel[0]?.from).toBe("crankshaft");
+    expect(diesel[0]?.to).toBe("camshaft side shaft");
+    expect(diesel[0]?.gain).toBe(0.5);
+    expect(diesel[0]?.unit).toBe("rpm / rpm");
   });
 
   test("catalog 3Ds no longer fake const dt = 1/60 inside the rAF loop", () => {
@@ -274,6 +307,8 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
       if (
         name === "ArkwrightWaterFrame3D.tsx" ||
         name === "BoyleSmithCcd3D.tsx" ||
+        name === "LamarrFrequencyHopping3D.tsx" ||
+        name === "MarconiRadio3D.tsx" ||
         name === "TeslaCoil3D.tsx"
       ) {
         // Bus-driven pose consumers: they integrate nothing locally, so the

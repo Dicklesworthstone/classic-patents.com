@@ -275,34 +275,11 @@ export function computeParameterSensitivity(
       break;
     }
 
-    case "us-3671542-kwolek-kevlar": {
-      if (controlKey === "drawRatio") {
-        const _draw = params.drawRatio ?? 6.5;
-        const dE_dDraw = 17.0; // GPa / draw ratio
-        return {
-          metricName: "Tensile Modulus Sensitivity",
-          derivativeSymbol: "∂E / ∂(Draw)",
-          derivativeValue: Number(dE_dDraw.toFixed(1)),
-          derivativeUnit: "GPa / draw",
-          interpretation:
-            "Linear stiffening rate as PPTA nematic domains align along the fiber spin axis.",
-        };
-      }
-      if (controlKey === "impactVelocity") {
-        const v = params.impactVelocity ?? 450.0;
-        const bulletMassKg = 0.008;
-        const dEk_dv = bulletMassKg * v; // 3.6 J / (m/s)
-        return {
-          metricName: "Impact Energy Momentum Rate",
-          derivativeSymbol: "∂E_k / ∂v",
-          derivativeValue: Number(dEk_dv.toFixed(2)),
-          derivativeUnit: "J / (m/s)",
-          interpretation:
-            "Rate of kinetic energy transfer into the woven PPTA armor panel upon bullet impact.",
-        };
-      }
-      break;
-    }
+    case "us-3671542-kwolek-kevlar":
+      // The checked claims identify composition conditions, but not a
+      // quantitative spinning or finished-fiber response. A derivative would
+      // turn withheld source material into a performance assertion.
+      return null;
 
     case "us-1102653-goddard-rocket": {
       if (controlKey === "tubeLengthRatio") {
@@ -840,30 +817,6 @@ export function computeParameterSensitivity(
       break;
     }
 
-    case "us-586193-marconi-radio": {
-      if (controlKey === "antennaHeightM" || controlKey === "antennaHeight") {
-        return {
-          metricName: "Radiation Resistance",
-          derivativeSymbol: "∂R_rad / ∂h",
-          derivativeValue: 3.2,
-          derivativeUnit: "Ω / m",
-          interpretation:
-            "Monopole dipole radiation resistance scaling quadratically with aerial elevation.",
-        };
-      }
-      if (controlKey === "sparkVoltageKv" || controlKey === "sparkVoltage") {
-        return {
-          metricName: "RF Pulse Radiated Power",
-          derivativeSymbol: "∂P_rad / ∂V_spark",
-          derivativeValue: 48.0,
-          derivativeUnit: "W / kV",
-          interpretation:
-            "Electrostatic discharge energy available for wireless electromagnetic propagation.",
-        };
-      }
-      break;
-    }
-
     case "us-593138-tesla-coil": {
       if (controlKey === "disturbanceFrequencyHz") {
         return {
@@ -1373,20 +1326,6 @@ export function computeParameterSensitivity(
           derivativeUnit: "Hz / (m/s)",
           interpretation:
             "Orthogonal potentiometer disc resolution translating physical desktop displacement into X-Y coordinates.",
-        };
-      }
-      break;
-    }
-
-    case "us-6331181-davinci": {
-      if (controlKey === "motionScaleRatio") {
-        return {
-          metricName: "Microsurgical Motion Scaling",
-          derivativeSymbol: "∂Scale / ∂Ratio",
-          derivativeValue: 1.0,
-          derivativeUnit: "mm / mm",
-          interpretation:
-            "Kinematic teleoperation down-scaling eliminating physiological surgeon tremor at the end-effector.",
         };
       }
       break;
@@ -1952,48 +1891,6 @@ export function computeParameterSensitivity(
       break;
     }
 
-    case "us-3081379-lemelson-machine-vision": {
-      if (controlKey === "scanLineCount") {
-        return {
-          metricName: "Horizontal Scan Frequency Sensitivity",
-          derivativeSymbol: "∂f_H / ∂N_L",
-          derivativeValue: 30,
-          derivativeUnit: "Hz / line",
-          interpretation:
-            "Linear rate of increase in horizontal line scanning frequency per added raster line.",
-        };
-      }
-      if (controlKey === "gateSolenoidCurrentA") {
-        const turns = 450;
-        const current = 2.5;
-        const mu0 = 4 * Math.PI * 1e-7;
-        const area = 0.0004;
-        const gap = 0.008;
-        const dFdI = (turns * turns * current * mu0 * area) / (gap * gap);
-        return {
-          metricName: "Solenoid Ejection Force Sensitivity",
-          derivativeSymbol: "∂F_{mag} / ∂I",
-          derivativeValue: dFdI,
-          derivativeUnit: "N / A",
-          interpretation:
-            "Electromagnetic Lorentz force gradient with respect to coil excitation current.",
-        };
-      }
-      if (controlKey === "targetWidthM") {
-        const linePeriod = 1 / (525 * 30);
-        const activeSweep = linePeriod * 0.84;
-        return {
-          metricName: "Scan Beam Velocity Sensitivity",
-          derivativeSymbol: "∂v_{scan} / ∂W_{target}",
-          derivativeValue: 1 / activeSweep,
-          derivativeUnit: "(m/s) / m",
-          interpretation:
-            "Rate of optical beam scan speed increase across the image field per metre of target width.",
-        };
-      }
-      break;
-    }
-
     case "us-3260375-lemelson-adjustable-manipulator": {
       if (
         controlKey === "columnAzimuth" ||
@@ -2085,27 +1982,10 @@ export function computeParameterSensitivity(
     }
 
     case "us-5701965-kamen-transporter": {
-      if (controlKey === "riderPitchLeanDeg" || controlKey === "pitchLean") {
-        return {
-          metricName: "Restorative Motor Torque",
-          derivativeSymbol: "∂τ / ∂θ",
-          derivativeValue: 4.18,
-          derivativeUnit: "N·m / deg",
-          interpretation:
-            "Proportional feedback restoring torque commanded by inverted-pendulum controller to balance rider lean.",
-        };
-      }
-      if (controlKey === "velocityCommandMs" || controlKey === "velocityCommand") {
-        return {
-          metricName: "Ground Acceleration",
-          derivativeSymbol: "∂a / ∂v_cmd",
-          derivativeValue: 0.85,
-          derivativeUnit: "(m/s²) / (m/s)",
-          interpretation:
-            "Wheel traction acceleration generated to match rider commanded travel speed.",
-        };
-      }
-      break;
+      // US 5,701,965 is presented here as a discrete claim-reading state
+      // machine. It has no continuous public control whose derivative can be
+      // calculated without replacing the source boundary with a scenario.
+      return null;
     }
 
     case "us-4976582-clavel-delta-robot": {
@@ -2331,12 +2211,12 @@ export function computeParameterSensitivity(
       }
       if (controlKey === "gripForceSetpointN") {
         return {
-          metricName: "Source-Labelled Grip Setpoint",
+          metricName: "Requested Grip Command",
           derivativeSymbol: "∂F_{set} / ∂u_{set}",
           derivativeValue: 1,
           derivativeUnit: "N setpoint / N control",
           interpretation:
-            "Identity of the bounded source-labelled command. The grant's incomplete pneumatic, finger, workpiece, and friction data prohibit treating it as a calculated contact force or payload result.",
+            "Identity of the visitor-requested command, bounded by the source's prototype maximum. The grant's incomplete pneumatic, finger, workpiece, and friction data prohibit treating it as a calculated contact force or payload result.",
         };
       }
       if (controlKey === "frameRotationDeg") {

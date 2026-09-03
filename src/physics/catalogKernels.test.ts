@@ -729,16 +729,29 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.holeResetPad).toBe(BARDEEN_HOLE_RESET_PAD);
   });
 
-  test("Marconi radio computes quarter-wave antenna radiation resistance and resonant frequency", () => {
+  test("Marconi radio maps reader inputs to finite display geometry and refuses an RF solution", () => {
     const res = stepMarconiRadio(88, 10, 28);
-    expect(res.radiationResistanceOhms).toBe(36.56);
-    expect(res.resonantFreqKhz).toBeGreaterThan(0);
+    expect(res.displayAerialHeightMeters).toBe(88);
+    expect(res.displaySparkGapMm).toBe(10);
+    expect(res.displayCoilPotentialKv).toBe(28);
+    expect(res.sourceBoundary).toContain("does not disclose");
+    for (const forbidden of [
+      "radiationResistanceOhms",
+      "resonantFreqKhz",
+      "peakRfPowerKw",
+      "maxRangeMiles",
+      "sparkOddHarmonicPower",
+    ]) {
+      expect(forbidden in res).toBe(false);
+    }
+    // This generic quarter-wave inverse remains a separate mathematical helper;
+    // the US 586,193 public route does not call it.
     expect(marconiMastHeightFromHz(1000000)).toBeGreaterThan(0);
     expect(res.schematicGapR).toBe(10);
     expect(res.schematicMastY0).toBe(50);
     expect(res.schematicEarthW).toBe(80);
     expect(res.schematicMastX).toBe(120);
-    expect(res.waveRingWrapPx).toBe(120);
+    expect(res.sparkGapStudioHalfSpan).toBeGreaterThan(0.35);
   });
 
   test("Colt revolver computes chamber cylinder index and lock bolt ratchet engagement", () => {

@@ -193,18 +193,19 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(datedScenarios("us-3858232-boyle-smith-ccd")[0]?.id).toBe("murray-hill-1969");
     expect(coupleLinks("us-3858232-boyle-smith-ccd", {})[0]?.from).toBe("3-phase clock gate");
 
-    expect(materialProbe("us-3671542-kwolek-kevlar", "Dope", {})?.qty).toBe("E");
-    expect(intervalGhosts("us-3671542-kwolek-kevlar", {})[0]?.unit).toBe("GPa");
-    expect(fidelityField("us-3671542-kwolek-kevlar", {})?.reference).toBe("90");
+    expect(materialProbe("us-3671542-kwolek-kevlar", "Dope", {})).toBeNull();
+    expect(intervalGhosts("us-3671542-kwolek-kevlar", {})).toEqual([]);
+    expect(fidelityField("us-3671542-kwolek-kevlar", {})).toBeNull();
+    expect(coupleLinks("us-3671542-kwolek-kevlar", {})).toEqual([]);
 
     expect(materialProbe("us-542846-diesel-engine", "Claim 1 process", {})).toBeNull();
     expect(intervalGhosts("us-542846-diesel-engine", {})[0]?.unit).toBe(":1");
     expect(fidelityField("us-542846-diesel-engine", {})?.reference).toBe("26.2");
     expect(datedScenarios("us-542846-diesel-engine")[0]?.id).toBe("augsburg-1897");
 
-    expect(materialProbe("us-586193-marconi-radio", "Contact receiver", {})?.qty).toBe("f₀");
+    expect(materialProbe("us-586193-marconi-radio", "Contact receiver", {})?.qty).toBe("I_tube");
     expect(intervalGhosts("us-586193-marconi-radio", {})[0]?.label).toBe("Aerial");
-    expect(spectralModes("us-586193-marconi-radio", {}).map((mode) => mode.n)).toEqual([1, 3, 5]);
+    expect(spectralModes("us-586193-marconi-radio", {})).toEqual([]);
     expect(datedScenarios("us-586193-marconi-radio")[0]?.id).toBe("poldhu-1901-12-12");
 
     expect(materialProbe("us-2292387-lamarr-frequency-hopping", "Record strip", {})?.qty).toBe(
@@ -270,10 +271,10 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(coupleLinks("us-132-davenport-electric-motor", {}).length).toBe(1);
     expect(coupleLinks("us-347140-thomson-welding", {})[0]?.from).toBe("I²R");
     expect(coupleLinks("us-233692-pelton-water-wheel", {})[0]?.from).toBe("water jet");
-    expect(coupleLinks("us-470918-reno-escalator", {})[0]?.from).toBe("motor");
+    expect(coupleLinks("us-470918-reno-escalator", {})).toEqual([]);
     expect(coupleLinks("us-319596-maxim-machine-gun", {})[0]?.from).toBe("muzzle_gas");
     expect(coupleLinks("us-588-ericsson-propeller", {})[0]?.from).toBe("thrust · v");
-    expect(coupleLinks("us-586193-marconi-radio", {})[0]?.from).toBe("spark");
+    expect(coupleLinks("us-586193-marconi-radio", {})).toEqual([]);
     expect(coupleLinks("us-808897-carrier-air-conditioner", {})[0]?.from).toBe("fan");
     expect(coupleLinks("us-2708656-fermi-reactor", {})[0]?.from).toBe("fission");
     expect(coupleLinks("us-608969-parsons-turbine", {})[0]?.from).toBe("steam");

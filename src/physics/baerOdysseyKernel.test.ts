@@ -1,10 +1,17 @@
-import { describe, expect, test } from "bun:test";
+import { afterEach, describe, expect, test } from "bun:test";
 import {
+  createBaerOdysseyTransportUpdater,
   DEFAULT_BAER_CONTROLS,
+  getBaerOdysseyTapeFrame,
   INITIAL_BAER_STATE,
   readBaerControls,
+  requestBaerLightGunTrigger,
+  requestBaerTargetReset,
+  resetBaerOdysseyTape,
   stepBaerOdysseySi,
 } from "./baerOdysseyKernel";
+
+afterEach(() => resetBaerOdysseyTape());
 
 describe("Ralph H. Baer US 3,728,480 Magnavox Odyssey SI Physics Kernel", () => {
   test("initializes default controls and clamps input boundaries", () => {
@@ -120,5 +127,55 @@ describe("Ralph H. Baer US 3,728,480 Magnavox Odyssey SI Physics Kernel", () => 
     expect(oppositePoint.state.scoreP2).toBe(1);
     expect(oppositePoint.state.ballVx).toBeGreaterThan(0);
     expect(oppositePoint.state.ballVy).not.toBe(firstReplay.state.ballVy);
+  });
+
+  test("continues one shared fixed-step tape when a different visual owner replaces the updater", () => {
+    resetBaerOdysseyTape();
+    const firstFace = createBaerOdysseyTransportUpdater(() => DEFAULT_BAER_CONTROLS);
+    const firstUpdate = firstFace({} as never, 1 / 60);
+    const firstFrame = getBaerOdysseyTapeFrame();
+    expect(firstUpdate?.video?.ballX).toBe(firstFrame?.state.ballX);
+
+    const secondFace = createBaerOdysseyTransportUpdater(() => DEFAULT_BAER_CONTROLS);
+    secondFace({} as never, 1 / 60);
+    const secondFrame = getBaerOdysseyTapeFrame();
+    expect(secondFrame?.state.timeSeconds).toBeCloseTo(2 / 60, 12);
+    expect(secondFrame?.state.ballX).not.toBe(firstFrame?.state.ballX);
+  });
+
+  test("replays a shared transport tape byte-for-byte after a deterministic reset", () => {
+    const replay = () => {
+      resetBaerOdysseyTape();
+      const updater = createBaerOdysseyTransportUpdater(() => DEFAULT_BAER_CONTROLS);
+      return [1 / 60, 1 / 60, 1 / 30, 1 / 120].map(() => {
+        updater({} as never, 1 / 60);
+        return structuredClone(getBaerOdysseyTapeFrame());
+      });
+    };
+
+    expect(replay()).toEqual(replay());
+  });
+
+  test("delivers light-gun and reset commands for exactly one virtual tick while paused", () => {
+    const paused = {
+      ...DEFAULT_BAER_CONTROLS,
+      running: false,
+      lightGunAimX: DEFAULT_BAER_CONTROLS.player2PotX,
+      lightGunAimY: DEFAULT_BAER_CONTROLS.player2PotY,
+    };
+    const updater = createBaerOdysseyTransportUpdater(() => paused);
+    expect(updater({} as never, 1 / 60)).toBeNull();
+
+    requestBaerLightGunTrigger();
+    const triggered = updater({} as never, 1 / 60);
+    expect(triggered?.video?.lightGunCoincidence).toBe(true);
+    expect(getBaerOdysseyTapeFrame()?.state.targetHitCount).toBe(1);
+    expect(updater({} as never, 1 / 60)).toBeNull();
+
+    requestBaerTargetReset();
+    const reset = updater({} as never, 1 / 60);
+    expect(reset?.video?.targetVisible).toBe(true);
+    expect(getBaerOdysseyTapeFrame()?.state.targetHitCount).toBe(1);
+    expect(getBaerOdysseyTapeFrame()?.state.timeSeconds).toBe(0);
   });
 });

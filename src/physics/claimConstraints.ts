@@ -24,6 +24,11 @@ export interface ClaimConstraintResult {
 }
 
 export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition[]> = {
+  // The public Kwolek record is intentionally held at checked Claim 1/2
+  // composition text until a complete archival edition licenses a live
+  // mechanism inversion. Keep the explicit empty seat so callers can
+  // distinguish a reviewed refusal from an unregistered catalogue id.
+  "us-3671542-kwolek-kevlar": [],
   "us-821393-wright-flyer": [
     {
       claimNumber: 1,
@@ -317,20 +322,6 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       failureModeName: "Thermoplastic Melt & Creep Rupture",
       historicalPriorArt:
         "Raw natural caoutchouc softened in summer heat and turned brittle and fragile in winter frosts.",
-    },
-  ],
-  "us-3671542-kwolek-kevlar": [
-    {
-      claimNumber: 1,
-      patentId: "us-3671542-kwolek-kevlar",
-      claimTitle: "Liquid-Crystalline PPTA Anisotropic Spin Dope",
-      activeDescription:
-        "Claim 1 spins extended-chain poly(p-phenylene terephthalamide) nematic dopes into ultra-high-modulus aligned fibers.",
-      invertedDescription:
-        "Isotropic random coils: unaligned polymer chains fold into spherulites with 90% lower tensile strength and low modulus.",
-      failureModeName: "Isotropic Spherulitic Yield & Tensile Sag",
-      historicalPriorArt:
-        "Conventional melt-spun aliphatic polyamides (nylon 6,6) exhibited flexible chain folding and moderate tensile strength.",
     },
   ],
   "us-1102653-goddard-rocket": [
@@ -1497,14 +1488,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-3081379-lemelson-machine-vision",
-      claimTitle: "Synchronized Video Beam Gating, Pulse Duration Measurement & Defect Diverter",
+      claimTitle: "Scan, Synchronized Gate, and Analyzing-Circuit Signal Path",
       activeDescription:
-        "Claim 1 combines electron beam raster scanning, synchronized gating means, and an analyzing circuit that measures video pulse duration across the scanned field to detect dimensional variations and actuate an automatic workpiece rejector.",
+        "Claim 1 combines a predetermined electron-beam scan path, synchronized programming and gating means, and an analyzing circuit that receives only the selected picture-signal portion.",
       invertedDescription:
-        "Without the claimed synchronized gating means and pulse duration analyzing circuit, the raster video signal cannot isolate the predetermined object boundaries or gauge part dimensions in real time, rendering automated defect rejection impossible.",
-      failureModeName: "Ungated Optical Metrology Loss & Dimensional Inspection Failure",
+        "With Claim 1 withheld, the exhibit no longer presents the coupled scan-to-gate-to-analyzing path. It does not infer a measurement error, reject rate, signal level, or actuator result.",
+      failureModeName: "Claim 1 Signal Path Withheld",
       historicalPriorArt:
-        "Prior industrial inspection required human operators to manually position and visually read optical comparators or calipers, with no capability for high-speed automated raster-scan dimensional sorting.",
+        "The reviewed claim is the source for this combined signal path; the exhibit makes no unreviewed before-and-after performance comparison.",
     },
   ],
   "us-3728480-baer-odyssey": [
@@ -1780,26 +1771,26 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-5701965-kamen-transporter",
-      claimTitle: "Closed-Loop Dynamic Inverted Pendulum Stability in Fore-Aft Plane",
+      claimTitle: "Fore-Aft Balance-Control Topology",
       activeDescription:
-        "Claim 1 maintains dynamic pitch balance by commanding restorative motor torque to ground wheels based on sensed pitch deviation and angular rate.",
+        "Claim 1 retains the source-described support, ground-contacting module, motorized drive, and fore-aft control-loop combination.",
       invertedDescription:
-        "Disabled balance loop: inverted pendulum chassis immediately falls over due to uncontrolled gravitational moment.",
-      failureModeName: "Inverted Pendulum Gravitational Overturn",
+        "Comparison state: withholding Claim 1 removes the public fore-aft balance-control topology; no fall, torque, angle, or recovery outcome is inferred.",
+      failureModeName: "Claim 1 Fore-Aft Control Topology Withheld",
       historicalPriorArt:
-        "Prior-art wheelchairs relied on static 4-point wheelbases with low centers of gravity, unable to navigate rough ground or climb stairs.",
+        "The grant describes the difficulty of combining stability, ordinary locomotion, and stair use for a self-propelled user-guidable transporter.",
     },
     {
       claimNumber: 16,
       patentId: "us-5701965-kamen-transporter",
-      claimTitle: "Planetary Cluster Wheel Stair-Climbing Mechanism",
+      claimTitle: "Paired Cluster-Wheel Ground Modules",
       activeDescription:
-        "Claim 16 equips opposing sides with multi-wheel clusters rotatable about a central axle for stair stepping and dynamic elevation.",
+        "Claim 16 retains source-described wheel clusters on the two sides, with wheels capable of being motor-driven independently of their clusters.",
       invertedDescription:
-        "Locked cluster: vehicle is constrained to standard 4-wheel rolling, unable to step over curbs or climb stair risers.",
-      failureModeName: "Obstacle / Stair Riser Immobilization",
+        "Comparison state: withholding Claim 16 removes the public cluster-wheel topology; no gear train, curb, stair, clearance, or traversal result is inferred.",
+      failureModeName: "Claim 16 Cluster-Wheel Topology Withheld",
       historicalPriorArt:
-        "Tracked or legged stair climbers were excessively heavy, mechanically complex, and prone to slipping.",
+        "The claim narrows the broader transporter to wheels arranged as a cluster on each lateral side of the vehicle.",
     },
   ],
   "us-6302230-kamen-segway": [
@@ -1954,21 +1945,6 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "POLYMER INSTABILITY: Absence of covalent crosslinks causes unrecoverable plastic creep deformation.";
-      }
-      break;
-    }
-
-    case "us-3671542-kwolek-kevlar": {
-      const claim1Active = claimStates[1] ?? true;
-      if (!claim1Active) {
-        modified.drawRatio = 1.2; // Low isotropic draw
-        modified.tensileModulusGpa = 3.5; // Collapsed modulus from 130 GPa to 3.5 GPa
-        modified.tensileStrengthMpa = 240.0; // Collapsed strength from 3200 MPa to 240 MPa
-        activeFailures.push(
-          "Isotropic Chain Spherulites: Unaligned PPTA chains yield plastically upon impact",
-        );
-        refusalWarning =
-          "LIQUID-CRYSTAL LOSS: Loss of nematic liquid-crystalline orientation prevents ballistic energy dispersion.";
       }
       break;
     }
@@ -2711,13 +2687,20 @@ export function applyClaimConstraintModifications(
 
     case "us-5701965-kamen-transporter": {
       const claim1Active = claimStates[1] ?? true;
+      const claim16Active = claimStates[16] ?? true;
       if (!claim1Active) {
-        modified.riderPitchLeanDeg = 25; // Overturn tilt
+        modified.balanceTopologyEnabled = 0;
         activeFailures.push(
-          "Dynamic Balance Collapse: Without closed-loop motor torque feedback, inverted pendulum falls over under gravity",
+          "Claim 1 fore-aft control topology withheld: the display no longer represents the source-described support, motorized drive, ground-contacting module, and control-loop combination.",
         );
         refusalWarning =
-          "INVERTED PENDULUM INSTABILITY: Claim 1 active feedback control loop required to counteract gravitational overturning moment.";
+          "SOURCE-BOUND REFUSAL: Claim 1 establishes a control-loop combination, not a public torque, angle, fall-time, stability-margin, or recovery calculation.";
+      }
+      if (!claim16Active) {
+        modified.clusterTopologyEnabled = 0;
+        activeFailures.push(
+          "Claim 16 cluster-wheel topology withheld: the display no longer represents the source-described paired cluster and independently driven wheel relationship.",
+        );
       }
       break;
     }
@@ -2771,13 +2754,14 @@ export function applyClaimConstraintModifications(
     case "us-3081379-lemelson-machine-vision": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
-        modified.gateWindowWidthUs = 60.0;
-        modified.thresholdVoltage = 0.05;
+        modified.scanPathEnabled = 0;
+        modified.synchronizedGateEnabled = 0;
+        modified.analyzingCircuitEnabled = 0;
         activeFailures.push(
-          "Ungated Video Noise: Lack of synchronized gating causes background clutter to trigger continuous false defect states",
+          "Claim 1 signal path withheld: the exhibit no longer represents the source-described scan, synchronized gate, and analyzing-circuit combination.",
         );
         refusalWarning =
-          "REGION OF INTEREST GATING COLLAPSE: Synchronized electronic gating required to isolate workpiece measurement zone.";
+          "CLAIM 1 WITHHELD: US 3,081,379 supplies no calibration from which to infer scan speed, optical amplitude, measurement error, reject rate, solenoid force, or actuator response.";
       }
       break;
     }

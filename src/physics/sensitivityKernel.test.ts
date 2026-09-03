@@ -93,11 +93,15 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
       "us-361931-daimler-engine",
       "us-2495429-spencer-microwave",
       "us-2988237-devol-programmed-transfer",
+      "us-3081379-lemelson-machine-vision",
       "us-3313014-lemelson-automatic-production",
       "us-3858581-kamen-medication-injection-device",
       "us-4098001-watson-remote-center-compliance",
       "us-4098001-watson-rcc",
       "us-4512709-milacron-robot-toolchanger",
+      "us-5701965-kamen-transporter",
+      "us-586193-marconi-radio",
+      "us-6331181-davinci",
     ]);
 
     for (const patent of allPatents) {
@@ -110,6 +114,17 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
       );
       expect(recognized.length).toBeGreaterThanOrEqual(1);
     }
+  });
+
+  test("Marconi refuses derivatives for illustrative dimensions absent from US 586,193", () => {
+    expect(computeParameterSensitivity("us-586193-marconi-radio", "antennaHeightM", {})).toBeNull();
+    expect(computeParameterSensitivity("us-586193-marconi-radio", "sparkVoltageKv", {})).toBeNull();
+  });
+
+  test("Kamen transporter refuses a continuous derivative for its discrete source topology", () => {
+    expect(
+      computeParameterSensitivity("us-5701965-kamen-transporter", "topologyState", {}),
+    ).toBeNull();
   });
 
   test("unknown patent returns null cleanly without throwing", () => {

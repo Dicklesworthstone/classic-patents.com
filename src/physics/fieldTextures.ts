@@ -290,14 +290,21 @@ export function computeNoyceDepletionField(reverseBiasV: number, gridSize = 32):
 }
 
 /** Farnsworth dissector raster potential along the scanned line. */
-export function computeFarnsworthRasterField(beamFrac: number, gridSize = 32): Float32Array {
-  const grid = new Float32Array(gridSize * gridSize);
-  const cx = Math.max(0, Math.min(1, beamFrac));
+export function computeFarnsworthRasterField(
+  beamXFrac: number,
+  gridSize = 32,
+  target?: Float32Array,
+  beamYFrac = 0.5,
+): Float32Array {
+  const requiredLength = gridSize * gridSize;
+  const grid = target?.length === requiredLength ? target : new Float32Array(requiredLength);
+  const cx = Math.max(0, Math.min(1, beamXFrac));
+  const cy = Math.max(0, Math.min(1, beamYFrac));
   for (let y = 0; y < gridSize; y++) {
     for (let x = 0; x < gridSize; x++) {
       const u = x / (gridSize - 1);
       const v = y / (gridSize - 1);
-      const line = Math.exp(-((v - 0.5) ** 2) / 0.01);
+      const line = Math.exp(-((v - cy) ** 2) / 0.01);
       const spot = Math.exp(-((u - cx) ** 2) / 0.004);
       grid[y * gridSize + x] = Math.max(0, Math.min(1, 0.25 * line + 0.75 * line * spot));
     }

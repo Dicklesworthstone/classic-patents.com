@@ -381,3 +381,26 @@ export function useFrankenSimPhysics(
     updateTelemetry,
   };
 }
+
+/**
+ * Low-frequency view of a patent's runtime tape for React readouts. Three.js
+ * loops consume the transport directly; badges only need a decimated refresh.
+ */
+export function usePatentRuntimeTick(
+  patentId: string,
+  ticksPerRefresh = 6,
+  enabled = true,
+): number {
+  const transport = globalTransportBus.getTransport(patentId);
+  const stride = Math.max(1, Math.floor(ticksPerRefresh));
+  const subscribe = useCallback(
+    (onStoreChange: () => void) =>
+      enabled ? transport.subscribe(() => onStoreChange()) : () => undefined,
+    [enabled, transport],
+  );
+  const getSnapshot = useCallback(
+    () => (enabled ? Math.floor(transport.lastFrame.tick / stride) : 0),
+    [enabled, stride, transport],
+  );
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+}

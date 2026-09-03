@@ -83,6 +83,26 @@ export interface PatentCoverageSummary {
   missingSharedBus: number;
 }
 
+/**
+ * Patents whose 2D/3D faces consume a transport tape owned above the face
+ * switch. Keeping the owner outside either face prevents a mode toggle from
+ * resetting the physical sequence or mounting a second updater.
+ */
+export const EXTERNAL_RUNTIME_OWNER_PATENT_IDS = [
+  "us-1773980-farnsworth-tv",
+  "us-4063220-metcalfe-ethernet",
+  "us-3728480-baer-odyssey",
+  "us-6120588-eink",
+  "us-2292387-lamarr-frequency-hopping",
+  "us-586193-marconi-radio",
+] as const;
+
+const EXTERNAL_RUNTIME_OWNER_PATENT_ID_SET = new Set<string>(EXTERNAL_RUNTIME_OWNER_PATENT_IDS);
+
+export function hasExternalRuntimeOwner(patentId: string): boolean {
+  return EXTERNAL_RUNTIME_OWNER_PATENT_ID_SET.has(patentId);
+}
+
 const GENERIC_WASM_SURFACE: WasmSurfaceDescriptor = {
   kind: "generic-wasm",
   sourceCrate: "fs-wasm",
@@ -210,8 +230,6 @@ const GENERIC_WASM_PATENT_IDS = new Set([
   "us-381968-tesla-motor",
   "us-388850-eastman-kodak",
   "us-395781-hollerith-tabulating",
-  "us-470918-reno-escalator",
-  "us-586193-marconi-radio",
   "us-621195-zeppelin-airship",
   "us-x9430-colt-revolver",
   "us-608969-parsons-turbine",
@@ -220,7 +238,6 @@ const GENERIC_WASM_PATENT_IDS = new Set([
   "us-2495429-spencer-microwave",
   "us-2708656-fermi-reactor",
   "us-3541541-engelbart-mouse",
-  "us-3671542-kwolek-kevlar",
   "us-4136359-wozniak-apple",
 ]);
 

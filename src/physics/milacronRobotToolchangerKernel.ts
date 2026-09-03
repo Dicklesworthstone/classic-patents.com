@@ -40,6 +40,7 @@ export interface MilacronRobotToolchangerState {
   lockingSlideEngaged: boolean;
   retentionMemberAdmitted: boolean;
   toolRetained: boolean;
+  claimFourTMemberSelected: boolean;
   claimFourRampCaptured: boolean;
   releasePermitted: boolean;
   lockingSlideFraction: number;
@@ -96,7 +97,8 @@ export function stepMilacronRobotToolchanger(
   const lockingSlideEngaged = controls.lockingSlideFraction === 1;
   const retentionMemberAdmitted = registrationComplete && apertureAligned;
   const toolRetained = registrationComplete && lockingSlideEngaged;
-  const claimFourRampCaptured = toolRetained && controls.claimFourTMember >= 0.5;
+  const claimFourTMemberSelected = controls.claimFourTMember >= 0.5;
+  const claimFourRampCaptured = toolRetained && claimFourTMemberSelected;
 
   const phase: MilacronToolchangerPhase = !toolBasePresent
     ? "adapter-open"
@@ -117,6 +119,7 @@ export function stepMilacronRobotToolchanger(
     lockingSlideEngaged,
     retentionMemberAdmitted,
     toolRetained,
+    claimFourTMemberSelected,
     claimFourRampCaptured,
     releasePermitted: toolBasePresent && apertureAligned,
     lockingSlideFraction: controls.lockingSlideFraction,

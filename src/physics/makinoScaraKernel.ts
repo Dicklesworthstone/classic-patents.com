@@ -11,6 +11,12 @@
 
 export const MAKINO_EXHIBIT_LINK_LENGTH = 1;
 export const MAKINO_EXHIBIT_BASE_SPAN = 0.72;
+/**
+ * Declared display length for links 6 and 7 in the non-parallelogram Claim 3
+ * exhibit. The larger radius keeps every permitted pair of display angles
+ * inside the normalized five-bar workspace; it is not a recovered dimension.
+ */
+export const MAKINO_EXHIBIT_OFFSET_FOLLOWER_LENGTH = 1.4;
 
 export interface MakinoScaraControls {
   firstLinkAngleDeg: number;
@@ -46,6 +52,8 @@ export interface MakinoScaraPose {
   fourthBase: readonly [number, number];
   firstOuterJoint: readonly [number, number];
   fourthOuterJoint: readonly [number, number];
+  /** Claim 1/3 use one coincident axis; Claim 6 uses two axes on rigid tool 13. */
+  toolJoints: readonly [readonly [number, number], readonly [number, number]];
   tool: readonly [number, number];
   /** Claim 6's illustrative Y-link meeting point. */
   yLinkHub: readonly [number, number] | null;
@@ -63,6 +71,59 @@ function finite(value: number | undefined, fallback: number): number {
 
 function clampAngle(value: number): number {
   return Math.max(-180, Math.min(180, value));
+}
+
+function add(
+  left: readonly [number, number],
+  right: readonly [number, number],
+): readonly [number, number] {
+  return [left[0] + right[0], left[1] + right[1]];
+}
+
+function subtract(
+  end: readonly [number, number],
+  start: readonly [number, number],
+): readonly [number, number] {
+  return [end[0] - start[0], end[1] - start[1]];
+}
+
+/**
+ * Solve the shared distal joint of the offset-axis four-link form using two
+ * fixed-length followers. The lower source-sheet assembly branch matches
+ * Figure 4 and, unlike an endpoint average, never stretches either bar while
+ * the base motors move.
+ */
+function solveOffsetToolJoint(
+  firstOuterJoint: readonly [number, number],
+  fourthOuterJoint: readonly [number, number],
+): readonly [number, number] {
+  const chord = subtract(fourthOuterJoint, firstOuterJoint);
+  const chordLength = Math.hypot(chord[0], chord[1]);
+  if (chordLength <= Number.EPSILON) {
+    return [firstOuterJoint[0], firstOuterJoint[1] - MAKINO_EXHIBIT_OFFSET_FOLLOWER_LENGTH];
+  }
+  const safeLength = Math.max(chordLength, Number.EPSILON);
+  const midpoint: readonly [number, number] = [
+    (firstOuterJoint[0] + fourthOuterJoint[0]) / 2,
+    (firstOuterJoint[1] + fourthOuterJoint[1]) / 2,
+  ];
+  const halfChord = Math.min(chordLength / 2, MAKINO_EXHIBIT_OFFSET_FOLLOWER_LENGTH);
+  const height = Math.sqrt(
+    Math.max(0, MAKINO_EXHIBIT_OFFSET_FOLLOWER_LENGTH ** 2 - halfChord ** 2),
+  );
+  const perpendicular: readonly [number, number] = [-chord[1] / safeLength, chord[0] / safeLength];
+  const firstCandidate: readonly [number, number] = [
+    midpoint[0] + perpendicular[0] * height,
+    midpoint[1] + perpendicular[1] * height,
+  ];
+  const secondCandidate: readonly [number, number] = [
+    midpoint[0] - perpendicular[0] * height,
+    midpoint[1] - perpendicular[1] * height,
+  ];
+  if (firstCandidate[1] !== secondCandidate[1]) {
+    return firstCandidate[1] < secondCandidate[1] ? firstCandidate : secondCandidate;
+  }
+  return firstCandidate[0] < secondCandidate[0] ? firstCandidate : secondCandidate;
 }
 
 export function readMakinoScaraControls(params: MakinoScaraControlParams): MakinoScaraControls {
@@ -89,15 +150,15 @@ export function readMakinoScaraControls(params: MakinoScaraControlParams): Makin
 /**
  * Deterministic drawing/kinematic pose shared by 2D and Three.js faces.
  *
- * `firstBase` and `fourthBase` are spaced only so a reader can see both
- * otherwise vertically concentric shaft axes in a planar museum projection.
- * They are a visualization convention, not a length recovered from the grant.
+ * The Claim 1 base anchors are exactly coincident because the printed form is
+ * coaxial. Claim 3 and Claim 6 use a declared display span to distinguish the
+ * source-described offset alternatives; that span is not a recovered length.
  */
 export function stepMakinoScaraTopology(params: MakinoScaraControlParams): MakinoScaraPose {
   const controls = readMakinoScaraControls(params);
   const firstLinkAngleRad = (controls.firstLinkAngleDeg * Math.PI) / 180;
   const fourthLinkAngleRad = (controls.fourthLinkAngleDeg * Math.PI) / 180;
-  const toolAttitudeRad = (controls.toolAttitudeDeg * Math.PI) / 180;
+  const requestedToolAttitudeRad = (controls.toolAttitudeDeg * Math.PI) / 180;
 
   const topology =
     controls.topologyVariant === 1
@@ -108,13 +169,9 @@ export function stepMakinoScaraTopology(params: MakinoScaraControlParams): Makin
   const independentClaim =
     controls.topologyVariant === 1 ? 1 : controls.topologyVariant === 2 ? 3 : 6;
 
-  // A compact display separation lets two distinct shaft/link attachments be
-  // legible in projection. The concentric embodiment remains labelled as
-  // concentric; it is not treated as a physical lateral distance.
-  const displaySpan =
-    topology === "claim-1-concentric" ? MAKINO_EXHIBIT_BASE_SPAN * 0.28 : MAKINO_EXHIBIT_BASE_SPAN;
-  const firstBase: readonly [number, number] = [-displaySpan / 2, 0];
-  const fourthBase: readonly [number, number] = [displaySpan / 2, 0];
+  const displaySpan = topology === "claim-1-concentric" ? 0 : MAKINO_EXHIBIT_BASE_SPAN;
+  const firstBase: readonly [number, number] = displaySpan === 0 ? [0, 0] : [-displaySpan / 2, 0];
+  const fourthBase: readonly [number, number] = displaySpan === 0 ? [0, 0] : [displaySpan / 2, 0];
   const firstOuterJoint: readonly [number, number] = [
     firstBase[0] + MAKINO_EXHIBIT_LINK_LENGTH * Math.cos(firstLinkAngleRad),
     firstBase[1] + MAKINO_EXHIBIT_LINK_LENGTH * Math.sin(firstLinkAngleRad),
@@ -124,20 +181,35 @@ export function stepMakinoScaraTopology(params: MakinoScaraControlParams): Makin
     fourthBase[1] + MAKINO_EXHIBIT_LINK_LENGTH * Math.sin(fourthLinkAngleRad),
   ];
 
-  // This midpoint is an explanatory closure marker, not a claimed length
-  // solution. The patent's drawing establishes link relations, while its
-  // missing lengths prevent a source-faithful metre-valued FK solution.
-  const tool: readonly [number, number] = [
-    (firstOuterJoint[0] + fourthOuterJoint[0]) / 2,
-    (firstOuterJoint[1] + fourthOuterJoint[1]) / 2,
-  ];
-  const yLinkHub: readonly [number, number] | null =
+  const firstVector = subtract(firstOuterJoint, firstBase);
+  const fourthVector = subtract(fourthOuterJoint, fourthBase);
+
+  // Figure 1 expressly makes links 6/5 and 7/4 equal and parallel. Figure 6
+  // repeats that closure around a rigid two-pivot tool and the three arms of
+  // Y-link 14. Figure 4 is not a parallelogram, so its two fixed follower bars
+  // meet at the lower branch of a circle-circle closure instead.
+  const concentricTool = add(firstOuterJoint, fourthVector);
+  const offsetTool = solveOffsetToolJoint(firstOuterJoint, fourthOuterJoint);
+  const yToolLeft = add(firstOuterJoint, fourthVector);
+  const yToolRight = add(fourthOuterJoint, firstVector);
+  const toolJoints: readonly [readonly [number, number], readonly [number, number]] =
     topology === "claim-6-y-link"
-      ? [
-          (firstBase[0] + fourthOuterJoint[0] + tool[0]) / 3,
-          (firstBase[1] + fourthOuterJoint[1] + tool[1]) / 3,
-        ]
-      : null;
+      ? [yToolLeft, yToolRight]
+      : topology === "claim-1-concentric"
+        ? [concentricTool, concentricTool]
+        : [offsetTool, offsetTool];
+  const tool: readonly [number, number] = [
+    (toolJoints[0][0] + toolJoints[1][0]) / 2,
+    (toolJoints[0][1] + toolJoints[1][1]) / 2,
+  ];
+  // Claim 6 connects Y-link 14 to the first outer axis, the second motor
+  // shaft, and the tool's third axis. The first two points form a
+  // parallelogram with the base span, fixing this hub exactly.
+  const yLinkHub: readonly [number, number] | null =
+    topology === "claim-6-y-link" ? add(fourthBase, firstVector) : null;
+  // Claims 2 and 5 add a belt-driven attitude coordinate. Independent Claim
+  // 6 instead requires tool 13 to move without altering its attitude.
+  const toolAttitudeRad = topology === "claim-6-y-link" ? 0 : requestedToolAttitudeRad;
 
   return {
     topology,
@@ -148,10 +220,16 @@ export function stepMakinoScaraTopology(params: MakinoScaraControlParams): Makin
     fourthBase,
     firstOuterJoint,
     fourthOuterJoint,
+    toolJoints,
     tool,
     yLinkHub,
     independentClaim,
-    positionLaw: "p_tool = f(θ₁, θ₂; four-link topology), normalized exhibit coordinates only",
+    positionLaw:
+      topology === "claim-1-concentric"
+        ? "p_tool = p_base + u₁(θ₁) + u₄(θ₂), exact normalized parallelogram closure; normalized exhibit coordinates only"
+        : topology === "claim-3-offset"
+          ? "||p_tool - p₆|| = ||p_tool - p₇|| = 1.4 display units, fixed-link circle-intersection closure; normalized exhibit coordinates only"
+          : "p_left = p₄ + u₅, p_right = p₅ + u₄, with tool 13 parallel to the base through three normalized parallelogram closures",
     refusal: {
       refused: true,
       reason:

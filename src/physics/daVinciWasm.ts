@@ -9,6 +9,7 @@ type DaVinciTopologyFn = (
   insertionNormalized: number,
   compatibilityIdentifierPresent: boolean,
 ) => string;
+type DaVinciTopologyKernelSourceListener = () => void;
 
 export interface DaVinciTopologyWasmStep {
   joint_dofs: number;
@@ -30,9 +31,23 @@ export interface DaVinciTopologyWasmStep {
 let topologyFn: DaVinciTopologyFn | null = null;
 let loadPromise: Promise<DaVinciTopologyKernelSource> | null = null;
 let source: DaVinciTopologyKernelSource = "unloaded";
+const sourceListeners = new Set<DaVinciTopologyKernelSourceListener>();
 
 export function daVinciTopologyKernelSource(): DaVinciTopologyKernelSource {
   return source;
+}
+
+export function subscribeDaVinciTopologyKernelSource(
+  listener: DaVinciTopologyKernelSourceListener,
+): () => void {
+  sourceListeners.add(listener);
+  return () => sourceListeners.delete(listener);
+}
+
+function setDaVinciTopologyKernelSource(next: DaVinciTopologyKernelSource): void {
+  if (source === next) return;
+  source = next;
+  for (const listener of [...sourceListeners]) listener();
 }
 
 function isAxis(
@@ -92,7 +107,7 @@ export function ensureDaVinciTopologyWasm(): Promise<DaVinciTopologyKernelSource
 
 async function initializeDaVinciTopologyWasm(): Promise<DaVinciTopologyKernelSource> {
   if (typeof window === "undefined") {
-    source = "ts-fallback";
+    setDaVinciTopologyKernelSource("ts-fallback");
     return source;
   }
   try {
@@ -113,14 +128,14 @@ async function initializeDaVinciTopologyWasm(): Promise<DaVinciTopologyKernelSou
         throw new Error("davinci_topology_step missing from browser module");
       }
       topologyFn = module.davinci_topology_step;
-      source = "wasm";
+      setDaVinciTopologyKernelSource("wasm");
     } finally {
       URL.revokeObjectURL(blobUrl);
     }
   } catch (error) {
     console.warn("Failed to load fs-davinci-wasm; using typed topology fallback", error);
     topologyFn = null;
-    source = "ts-fallback";
+    setDaVinciTopologyKernelSource("ts-fallback");
   }
   return source;
 }

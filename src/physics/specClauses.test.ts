@@ -147,16 +147,12 @@ describe("Specification Clauses & Interactive Telemetry Weave", () => {
     expect(clauses[3].tone).toBe("live");
   });
 
-  test("Kwolek Kevlar lights anisotropic dope and viscosity discontinuity clauses", () => {
+  test("Kwolek withholds live spec-clause probes until the source edition is complete", () => {
     const clauses = specClausesFor("us-3671542-kwolek-kevlar", {
       polymerConcentrationPct: 18.5,
       drawRatio: 6.5,
     });
-    expect(clauses.length).toBe(3);
-    expect(clauses[0].phrase).toContain("Optically anisotropic dope");
-    expect(clauses[1].phrase).toContain("decrease in viscosity with increasing concentration");
-    expect(clauses[1].active).toBe(true);
-    expect(clauses[2].phrase).toContain("liquid-crystalline domains undergo spontaneous");
+    expect(clauses).toEqual([]);
   });
 
   test("Tesla US 593,138 breaks the exact common-node clause when Claim 1 is opened", () => {
@@ -229,12 +225,91 @@ describe("Specification Clauses & Interactive Telemetry Weave", () => {
     });
   });
 
+  test("Kamen Transporter reads balance and cluster relationships without invented drive values", () => {
+    const climb = specClausesFor("us-5701965-kamen-transporter", { topologyState: 4 });
+    expect(climb).toHaveLength(3);
+    expect(climb.find((clause) => clause.id === "dynamically-maintaining-stability")).toMatchObject(
+      {
+        active: true,
+        tone: "held",
+      },
+    );
+    expect(climb.find((clause) => clause.id === "cluster-of-wheels")).toMatchObject({
+      active: true,
+      tone: "live",
+    });
+    expect(climb.find((clause) => clause.id === "coordination-control-means")).toMatchObject({
+      active: true,
+      tone: "live",
+    });
+    expect(climb.map((clause) => clause.caption).join(" ")).not.toMatch(
+      /N·m|m\/s|planetary|recovery limit/i,
+    );
+
+    const withdrawn = specClausesFor("us-5701965-kamen-transporter", {
+      topologyState: 1,
+      claim1BalanceEnabled: 0,
+    });
+    expect(
+      withdrawn.find((clause) => clause.id === "dynamically-maintaining-stability"),
+    ).toMatchObject({
+      active: false,
+      tone: "broken",
+    });
+    expect(
+      withdrawn.find((clause) => clause.id === "dynamically-maintaining-stability")?.caption,
+    ).toContain("does not predict a fall");
+  });
+
+  test("Da Vinci exposes only compatibility, calibration, and engagement topology", () => {
+    const ready = specClausesFor("us-6331181-davinci", {
+      compatibilitySignalPresent: 1,
+      calibrationRecordAvailable: 1,
+      engagementSignalPresent: 1,
+    });
+    expect(ready.find((clause) => clause.id === "processor-which-directs-movement")).toMatchObject({
+      active: true,
+      tone: "held",
+    });
+    expect(ready.map((clause) => clause.caption).join(" ")).not.toMatch(/3-entry|tremor/i);
+
+    const calibrationMissing = specClausesFor("us-6331181-davinci", {
+      compatibilitySignalPresent: 1,
+      calibrationRecordAvailable: 0,
+      engagementSignalPresent: 1,
+    });
+    expect(
+      calibrationMissing.find((clause) => clause.id === "processor-which-directs-movement"),
+    ).toMatchObject({ active: false, tone: "broken" });
+  });
+
+  test("Lemelson machine vision reads scan/gate/analyzing topology without false SI output", () => {
+    const live = specClausesFor("us-3081379-lemelson-machine-vision", {});
+    expect(live).toHaveLength(4);
+    expect(live.every((clause) => clause.active)).toBe(true);
+    expect(live.map((clause) => clause.caption).join(" ")).not.toMatch(
+      /\d+\s*(?:Hz|µs|mm|V|N|ms)\b/,
+    );
+
+    const gateWithheld = specClausesFor("us-3081379-lemelson-machine-vision", {
+      synchronizedGateEnabled: 0,
+    });
+    expect(gateWithheld.find((clause) => clause.id === "gated-analyzing-circuit")).toMatchObject({
+      active: false,
+      tone: "broken",
+    });
+  });
+
   test("every patent in allPatents has at least one authored spec clause with valid SI metadata", async () => {
     const { allPatents } = await import("@/data/patents");
     expect(allPatents.length).toBeGreaterThanOrEqual(85);
 
     for (const patent of allPatents) {
       const clauses = specClausesFor(patent.id, {});
+      if (patent.id === "us-3671542-kwolek-kevlar") {
+        expect(clauses).toEqual([]);
+        continue;
+      }
       expect(clauses.length).toBeGreaterThan(0);
 
       for (const clause of clauses) {
