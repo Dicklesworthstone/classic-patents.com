@@ -33,6 +33,64 @@ export const KAMEN_TRANSPORTER_TOPOLOGY_LABELS: Readonly<
   transition: "Transition gate before balance",
 };
 
+const INCH_M = 0.0254;
+
+/**
+ * Nominal implemented geometry printed in US 5,701,965 Table 1 (PDF p. 42,
+ * patent columns 11–12). These are source values, not inferred Segway data.
+ */
+export const KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M = Object.freeze({
+  systemCentreOffsetM: 21.0 * INCH_M,
+  clusterRadiusM: 5.581 * INCH_M,
+  adjacentWheelCentreDistanceM: 9.667 * INCH_M,
+  stairTreadM: 10.9 * INCH_M,
+  stairRiseM: 6.85 * INCH_M,
+  riserToLowerContactM: 3.011 * INCH_M,
+  wheelRadiusM: 3.81 * INCH_M,
+});
+
+export const KAMEN_TRANSPORTER_SOURCE_CONTROL_CYCLE_HZ = Object.freeze({
+  minimum: 200,
+  maximum: 400,
+});
+
+export const KAMEN_TRANSPORTER_GEOMETRY_RECEIPT =
+  "US 5,701,965 Table 1 and Figures 38–42: three equal wheels per lateral cluster, nominal wheel/cluster/stair dimensions, and source-ordered support poses.";
+
+export const KAMEN_TRANSPORTER_GENERIC_OWNER =
+  "fs-mbd::tri_wheel_cluster::step_tri_wheel_stair_contact";
+
+export const KAMEN_TRANSPORTER_CONTACT_BOUNDARY =
+  "Rigid planar three-equal-wheel kinematics with horizontal ground/tread gap checks; no force, friction, tire compliance, impact, motor, controller, sensor, or riser-side contact result.";
+
+export type KamenTransporterWheelId = "a" | "b" | "c" | "direct";
+
+export interface KamenTransporterWheelContact {
+  id: KamenTransporterWheelId;
+  centerXM: number;
+  centerYM: number;
+  supportHeightM: number;
+  signedVerticalGapM: number;
+  touching: boolean;
+}
+
+export interface KamenTransporterDisplayPose {
+  /** Source-dimensioned carrier-axis coordinate in the side-elevation frame [m]. */
+  axleXM: number;
+  /** Source-dimensioned carrier-axis height above level ground [m]. */
+  axleYM: number;
+  /** Three.js/SVG counter-clockwise carrier rotation [rad]. */
+  carrierRotationRad: number;
+  /** Post/chassis pitch from vertical, positive counter-clockwise [rad]. */
+  chassisPitchRad: number;
+  stairActive: boolean;
+  sourceFigure: string;
+  wheelContacts: readonly KamenTransporterWheelContact[];
+  contactWheelIds: readonly KamenTransporterWheelId[];
+  contactCount: number;
+  minimumGapM: number;
+}
+
 export interface KamenTransporterControls {
   /** Reader-selected claim topology state, not a timed or dimensional input. */
   topologyState: KamenTransporterTopologyState;
@@ -68,8 +126,13 @@ export interface KamenTransporterTelemetry {
     | "balance-and-cluster-coordination"
     | "transition-gate"
     | "topology-withheld";
-  /** Render-only normalized cluster pose; it is not a printed angle. */
+  /** Source-dimensioned carrier pose derived from Table 1 and Figures 39–42 [rad]. */
   clusterDisplayPoseRad: number;
+  /** Source-dimensioned, contact-checked pose shared by the 2D and 3D faces. */
+  displayPose: KamenTransporterDisplayPose;
+  sourceGeometryReceipt: string;
+  genericOwner: string;
+  contactBoundary: string;
   sourceClaimNumbers: readonly number[];
   sourceBoundary: string;
   /** Legacy modern-scenario fields. Never present them as grant values. */
@@ -121,7 +184,7 @@ export const KAMEN_TRANSPORTER_DEFAULT_CONTROLS: KamenTransporterControls = {
 export const KAMEN_TRANSPORTER_DEFAULT_TOPOLOGY_STATE_INDEX = 1;
 
 export const KAMEN_TOPOLOGY_SOURCE_BOUNDARY =
-  "US 5,701,965 describes control relationships and state ordering, not numerical torque, speed, mass, wheel-radius, gain, force, or stability-margin values.";
+  "US 5,701,965 prints nominal wheel, cluster, stair, centre-offset, pose, and 200–400 Hz control-cycle data, but not vehicle mass/inertia, motor curves, controller gains, sensor calibration, tire/contact parameters, or a quantitative stability margin.";
 
 // Legacy modern-scenario constants are preserved below so older saved local
 // sessions still deserialize. They are intentionally quarantined from the
@@ -340,14 +403,178 @@ function topologyStateFromParams(
   }
 }
 
-const CLUSTER_DISPLAY_POSE_RADIANS: Readonly<Record<KamenTransporterTopologyState, number>> = {
-  ground_support: 0,
-  balance: 0,
-  stair_start: Math.PI / 6,
-  weight_transfer: Math.PI / 3,
-  climb: Math.PI / 2,
-  transition: 0,
-};
+const KAMEN_CONTACT_TOLERANCE_M = 1e-8;
+const KAMEN_WHEEL_PHASES_RAD = [-Math.PI / 2, Math.PI / 6, (5 * Math.PI) / 6] as const;
+const KAMEN_WHEEL_IDS = ["a", "b", "c"] as const;
+
+/** Horizontal support height for the Table 1 two-riser teaching profile [m]. */
+export function kamenHorizontalSupportHeightM(xM: number, stairActive: boolean): number {
+  if (!stairActive || xM < 0) return 0;
+  if (xM < KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairTreadM) {
+    return KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairRiseM;
+  }
+  return 2 * KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairRiseM;
+}
+
+/**
+ * Resolve one source-dimensioned side-elevation pose. Figures 39A/39B,
+ * 41A/41B, and 42A–42C provide the state geometry; the exact carrier angle
+ * used here closes the rounded Table 1 dimensions without wheel penetration.
+ */
+export function resolveKamenTransporterDisplayPose(
+  topologyState: KamenTransporterTopologyState,
+  clusterTopologyActive = true,
+): KamenTransporterDisplayPose {
+  const geometry = KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M;
+  if (!clusterTopologyActive) {
+    const directContact: KamenTransporterWheelContact = {
+      id: "direct",
+      centerXM: 0,
+      centerYM: geometry.wheelRadiusM,
+      supportHeightM: 0,
+      signedVerticalGapM: 0,
+      touching: true,
+    };
+    return {
+      axleXM: 0,
+      axleYM: geometry.wheelRadiusM,
+      carrierRotationRad: 0,
+      chassisPitchRad: 0,
+      stairActive: false,
+      sourceFigure: "Claim 1 direct ground-contact comparison; Claim 16 cluster withheld",
+      wheelContacts: [directContact],
+      contactWheelIds: ["direct"],
+      contactCount: 1,
+      minimumGapM: 0,
+    };
+  }
+
+  const adjacentDistanceFromRadiusM = Math.sqrt(3) * geometry.clusterRadiusM;
+  const sourceStartRotationRad = -(
+    Math.PI / 3 -
+    Math.asin(geometry.stairRiseM / adjacentDistanceFromRadiusM)
+  );
+  const startWheelAAngleRad = KAMEN_WHEEL_PHASES_RAD[0] + sourceStartRotationRad;
+  const startAxleXM =
+    -geometry.riserToLowerContactM - geometry.clusterRadiusM * Math.cos(startWheelAAngleRad);
+  const startAxleYM =
+    geometry.wheelRadiusM - geometry.clusterRadiusM * Math.sin(startWheelAAngleRad);
+  const startPitchRad = startWheelAAngleRad + (2 * Math.PI - 2.814) - Math.PI / 2;
+  const transferWheelBAngleRad = KAMEN_WHEEL_PHASES_RAD[1] + sourceStartRotationRad;
+  const transferPitchRad = transferWheelBAngleRad + (2 * Math.PI - 5.236) - Math.PI / 2;
+
+  const climbRotationRad = sourceStartRotationRad - (2 * Math.PI) / 3;
+  const climbWheelBAngleRad = KAMEN_WHEEL_PHASES_RAD[1] + climbRotationRad;
+  const climbAxleXM =
+    geometry.stairTreadM -
+    geometry.riserToLowerContactM -
+    geometry.clusterRadiusM * Math.cos(climbWheelBAngleRad);
+  const climbAxleYM =
+    geometry.stairRiseM +
+    geometry.wheelRadiusM -
+    geometry.clusterRadiusM * Math.sin(climbWheelBAngleRad);
+  const climbPitchRad = climbWheelBAngleRad + (2 * Math.PI - 2.814) - Math.PI / 2;
+
+  let pose: Omit<
+    KamenTransporterDisplayPose,
+    "wheelContacts" | "contactWheelIds" | "contactCount" | "minimumGapM"
+  >;
+  switch (topologyState) {
+    case "ground_support":
+      pose = {
+        axleXM: 0,
+        axleYM: geometry.wheelRadiusM + geometry.clusterRadiusM / 2,
+        carrierRotationRad: -Math.PI / 3,
+        chassisPitchRad: 0,
+        stairActive: false,
+        sourceFigure: "Claim 16 / Claim 20 four-ground-wheel comparison",
+      };
+      break;
+    case "balance":
+      pose = {
+        axleXM: 0,
+        axleYM: geometry.wheelRadiusM + geometry.clusterRadiusM,
+        carrierRotationRad: 0,
+        chassisPitchRad: 0,
+        stairActive: false,
+        sourceFigure: "Figure 39A normal balance pose",
+      };
+      break;
+    case "stair_start":
+      pose = {
+        axleXM: startAxleXM,
+        axleYM: startAxleYM,
+        carrierRotationRad: sourceStartRotationRad,
+        chassisPitchRad: startPitchRad,
+        stairActive: true,
+        sourceFigure: "Figure 39B start pose",
+      };
+      break;
+    case "weight_transfer":
+      pose = {
+        axleXM: startAxleXM,
+        axleYM: startAxleYM,
+        carrierRotationRad: sourceStartRotationRad,
+        chassisPitchRad: transferPitchRad,
+        stairActive: true,
+        sourceFigure: "Figure 41B weight transferred to upper wheel pair",
+      };
+      break;
+    case "climb":
+      pose = {
+        axleXM: climbAxleXM,
+        axleYM: climbAxleYM,
+        carrierRotationRad: climbRotationRad,
+        chassisPitchRad: climbPitchRad,
+        stairActive: true,
+        sourceFigure: "Figure 42C next wheel pair placed on succeeding tread",
+      };
+      break;
+    case "transition":
+      pose = {
+        axleXM: 1.5 * geometry.stairTreadM,
+        axleYM: 2 * geometry.stairRiseM + geometry.wheelRadiusM + geometry.clusterRadiusM,
+        carrierRotationRad: (-4 * Math.PI) / 3,
+        chassisPitchRad: 0,
+        stairActive: true,
+        sourceFigure: "Figure 38 zero-crossing gate after the Figure 42 sequence",
+      };
+      break;
+  }
+
+  const wheelContacts = KAMEN_WHEEL_PHASES_RAD.map((phaseRad, index) => {
+    const angleRad = phaseRad + pose.carrierRotationRad;
+    const centerXM = pose.axleXM + geometry.clusterRadiusM * Math.cos(angleRad);
+    const centerYM = pose.axleYM + geometry.clusterRadiusM * Math.sin(angleRad);
+    const supportHeightM = kamenHorizontalSupportHeightM(centerXM, pose.stairActive);
+    const signedVerticalGapM = centerYM - geometry.wheelRadiusM - supportHeightM;
+    if (signedVerticalGapM < -KAMEN_CONTACT_TOLERANCE_M) {
+      throw new Error(
+        `Kamen ${topologyState} wheel ${KAMEN_WHEEL_IDS[index]} penetrates its support by ${signedVerticalGapM} m.`,
+      );
+    }
+    return {
+      id: KAMEN_WHEEL_IDS[index],
+      centerXM,
+      centerYM,
+      supportHeightM,
+      signedVerticalGapM,
+      touching: Math.abs(signedVerticalGapM) <= KAMEN_CONTACT_TOLERANCE_M,
+    } satisfies KamenTransporterWheelContact;
+  });
+  const contactWheelIds = wheelContacts.filter((wheel) => wheel.touching).map((wheel) => wheel.id);
+  if (contactWheelIds.length === 0) {
+    throw new Error(`Kamen ${topologyState} source pose has no horizontal support contact.`);
+  }
+
+  return {
+    ...pose,
+    wheelContacts,
+    contactWheelIds,
+    contactCount: contactWheelIds.length,
+    minimumGapM: Math.min(...wheelContacts.map((wheel) => wheel.signedVerticalGapM)),
+  };
+}
 
 /**
  * Resolve only the relations the checked claims describe. The angle is a
@@ -367,32 +594,41 @@ export function stepKamenTransporterTopology(
   const stairSequenceActive = ["stair_start", "weight_transfer", "climb", "transition"].includes(
     topologyState,
   );
+  const displayPose = resolveKamenTransporterDisplayPose(
+    topologyState,
+    controls.clusterTopologyEnabled,
+  );
 
   let wheelControlMode: KamenTransporterTelemetry["wheelControlMode"] =
     "independent-ground-wheel-control";
-  let sourceClaimNumbers: readonly number[] = [16, 21];
-  if (!controls.clusterTopologyEnabled && requiresCluster) {
-    wheelControlMode = "topology-withheld";
-    sourceClaimNumbers = [16, 21];
+  let sourceClaimNumbers: readonly number[] = [16, 20, 21];
+  if (!controls.clusterTopologyEnabled) {
+    wheelControlMode =
+      requiresCluster || (topologyState === "balance" && !balanceLoopActive)
+        ? "topology-withheld"
+        : topologyState === "balance"
+          ? "balance-mode"
+          : "independent-ground-wheel-control";
+    sourceClaimNumbers = [1, 16];
   } else if (topologyState === "balance") {
     wheelControlMode = balanceLoopActive ? "balance-mode" : "topology-withheld";
-    sourceClaimNumbers = [21, 22];
+    sourceClaimNumbers = [20, 21, 22];
   } else if (topologyState === "stair_start") {
     wheelControlMode = balanceLoopActive
       ? "balance-and-cluster-coordination"
       : "cluster-positioning";
-    sourceClaimNumbers = [21, 22, 26];
+    sourceClaimNumbers = [20, 21, 22, 26];
   } else if (topologyState === "weight_transfer") {
     wheelControlMode = "weight-transfer-position-hold";
-    sourceClaimNumbers = [21, 23, 26];
+    sourceClaimNumbers = [20, 21, 23, 26];
   } else if (topologyState === "climb") {
     wheelControlMode = balanceLoopActive
       ? "balance-and-cluster-coordination"
       : "cluster-positioning";
-    sourceClaimNumbers = [21, 22, 26];
+    sourceClaimNumbers = [20, 21, 22, 26];
   } else if (topologyState === "transition") {
     wheelControlMode = "transition-gate";
-    sourceClaimNumbers = [21, 24, 25];
+    sourceClaimNumbers = [20, 21, 24, 25];
   }
 
   return {
@@ -402,7 +638,11 @@ export function stepKamenTransporterTopology(
     clusterTopologyActive: controls.clusterTopologyEnabled,
     stairSequenceActive,
     wheelControlMode,
-    clusterDisplayPoseRad: CLUSTER_DISPLAY_POSE_RADIANS[topologyState],
+    clusterDisplayPoseRad: displayPose.carrierRotationRad,
+    displayPose,
+    sourceGeometryReceipt: KAMEN_TRANSPORTER_GEOMETRY_RECEIPT,
+    genericOwner: KAMEN_TRANSPORTER_GENERIC_OWNER,
+    contactBoundary: KAMEN_TRANSPORTER_CONTACT_BOUNDARY,
     sourceClaimNumbers,
     sourceBoundary: KAMEN_TOPOLOGY_SOURCE_BOUNDARY,
     // Compatibility-only values for legacy callers. Public components and
