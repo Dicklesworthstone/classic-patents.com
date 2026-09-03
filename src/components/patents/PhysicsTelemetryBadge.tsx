@@ -2,6 +2,7 @@
 
 import { Activity, Cpu, Gauge, Info, RotateCcw, Zap } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { CoupledDynamicsStrip } from "@/components/patents/CoupledDynamicsStrip";
 import { EnergyFlowStrip } from "@/components/patents/EnergyFlowStrip";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer } from "@/components/ui/LatexRenderer";
@@ -10,6 +11,7 @@ import { energyChannelsFor } from "@/physics/energyChannels";
 import { qtyDimension } from "@/physics/qty";
 import { computeParameterSensitivity } from "@/physics/sensitivityKernel";
 import { getProvenanceLabel } from "@/physics/telemetryProvenance";
+import { usePatentRuntimeTick } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { ColorizedEquation as ColorizedEquationType } from "@/types/equation";
 import { soundEngine } from "@/utils/soundEngine";
@@ -28,20 +30,28 @@ export function PhysicsTelemetryBadge({
 }: PhysicsTelemetryBadgeProps) {
   const {
     meta: data,
-    metrics: liveMetrics,
+    effectiveParams,
+    metrics: parameterMetrics,
     params,
     updateParam,
     lastChange,
     resetParams,
   } = usePatentPhysics(patentId);
+  const runtimeTick = usePatentRuntimeTick(patentId, 6, data?.refreshFromRuntimeTape === true);
+  const liveMetrics = useMemo(() => {
+    if (!data?.refreshFromRuntimeTape) return parameterMetrics;
+    void runtimeTick;
+    return data.computeMetrics(effectiveParams);
+  }, [data, effectiveParams, parameterMetrics, runtimeTick]);
   const [showTheory, setShowTheory] = useState(defaultExpanded);
 
   const handleReset = useCallback(() => {
     resetParams();
+    data?.resetRuntimeTape?.();
     if (typeof window !== "undefined") {
       soundEngine.playSwitchClick();
     }
-  }, [resetParams]);
+  }, [data, resetParams]);
 
   const energy = useMemo(() => energyChannelsFor(patentId, params), [patentId, params]);
   const coupleEdges = useMemo(() => coupleEdgesFor(patentId, params), [patentId, params]);
@@ -101,7 +111,7 @@ export function PhysicsTelemetryBadge({
           <button
             type="button"
             onClick={handleReset}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-parchment-100 dark:bg-ink-900 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-700 dark:text-ink-300 hover:text-ink-950 dark:hover:text-white font-mono text-[11px] font-semibold transition-all border border-parchment-300 dark:border-ink-700 shadow-2xs cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-parchment-100 dark:bg-ink-900 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-700 dark:text-ink-300 hover:text-ink-950 dark:hover:text-white font-mono text-[11px] font-semibold transition-colors border border-parchment-300 dark:border-ink-700 shadow-2xs cursor-pointer"
             title="Reset to Baseline Parameters"
           >
             <RotateCcw className="w-3 h-3" />
@@ -111,7 +121,7 @@ export function PhysicsTelemetryBadge({
           <button
             type="button"
             onClick={() => setShowTheory((v) => !v)}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-mono text-[11px] font-bold transition-all border shadow-2xs cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-mono text-[11px] font-bold transition-colors border shadow-2xs cursor-pointer ${
               showTheory
                 ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-700 dark:border-amber-500"
                 : "bg-parchment-100 dark:bg-ink-900 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-200 dark:hover:bg-ink-800"
@@ -124,7 +134,7 @@ export function PhysicsTelemetryBadge({
       </div>
 
       {/* Live SI Telemetry Metrics Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 min-[420px]:grid-cols-2 sm:grid-cols-4 gap-3">
         {liveMetrics.map((metric) => {
           const barColor =
             metric.badgeColor === "rose"
@@ -149,8 +159,11 @@ export function PhysicsTelemetryBadge({
               key={metric.label}
               className="p-3.5 rounded-xl border border-parchment-300/80 dark:border-ink-800 bg-white dark:bg-ink-900/90 text-ink-900 dark:text-parchment-100 flex flex-col justify-between shadow-2xs hover:border-amber-700/30 dark:hover:border-ink-700 transition-colors"
             >
-              <div className="flex items-center justify-between gap-1">
-                <span className="text-[10px] uppercase font-mono tracking-wider font-semibold text-ink-500 dark:text-ink-400 truncate">
+              <div className="flex min-w-0 items-start justify-between gap-1">
+                <span
+                  className="text-[10px] uppercase font-mono tracking-wider font-semibold leading-tight break-words text-ink-500 dark:text-ink-400"
+                  title={metric.label}
+                >
                   {metric.label}
                 </span>
                 <div className="flex items-center gap-1">
@@ -166,13 +179,13 @@ export function PhysicsTelemetryBadge({
                 </div>
               </div>
 
-              <div className="flex items-baseline gap-1.5 my-2">
+              <div className="flex min-w-0 flex-wrap items-baseline gap-1.5 my-2">
                 <span
-                  className={`font-mono text-base sm:text-lg font-extrabold tracking-tight ${valColor}`}
+                  className={`min-w-0 break-words font-mono text-base sm:text-lg font-extrabold tracking-tight ${valColor}`}
                 >
                   {metric.value}
                 </span>
-                <span className="font-mono text-[10px] text-ink-500 dark:text-ink-400 font-medium">
+                <span className="break-words font-mono text-[10px] text-ink-500 dark:text-ink-400 font-medium">
                   {metric.unit}
                   <span className="ml-1 opacity-70">[{qtyDimension(metric.unit)}]</span>
                 </span>
@@ -182,7 +195,7 @@ export function PhysicsTelemetryBadge({
               {typeof metric.progressPct === "number" && (
                 <div className="w-full bg-parchment-200 dark:bg-ink-800 h-1.5 rounded-full overflow-hidden mt-0.5">
                   <div
-                    className={`h-full ${barColor} transition-all duration-200 rounded-full`}
+                    className={`h-full ${barColor} transition-[width] duration-200 rounded-full`}
                     style={{ width: `${Math.max(3, Math.min(100, metric.progressPct))}%` }}
                   />
                 </div>
@@ -309,6 +322,7 @@ export function PhysicsTelemetryBadge({
       )}
 
       {energy.length > 0 && <EnergyFlowStrip title={data.domain} channels={energy} />}
+      {coupleEdges.length > 0 && <CoupledDynamicsStrip edges={coupleEdges} />}
 
       {/* Expanded Governing Equations & Deep Pedagogical Theory */}
       {showTheory && (

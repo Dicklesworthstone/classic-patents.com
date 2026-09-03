@@ -36,7 +36,11 @@ export function ColorizedEquation({
   const [activeVarId, setActiveVarId] = useState<string | null>(
     initialActiveVariableId ?? (equation.variables[0]?.id || null),
   );
-  const [pinnedVarId, setPinnedVarId] = useState<string | null>(null);
+  // Pinning only changes which identifier the mouse-leave handler restores;
+  // the active variable remains the rendered source of truth. Store this
+  // interaction-only value in a ref so a click does not schedule a second
+  // render after selecting the variable.
+  const pinnedVarIdRef = useRef<string | null>(null);
   const [isExpanded, setIsExpanded] = useState<boolean>(defaultExpanded);
   const [colorBlindMode, setColorBlindMode] = useState<boolean>(false);
 
@@ -76,19 +80,19 @@ export function ColorizedEquation({
 
   const handleSelectVar = useCallback((id: string, pin = false) => {
     setActiveVarId(id);
-    if (pin) setPinnedVarId(id);
+    if (pin) pinnedVarIdRef.current = id;
   }, []);
 
   const handleReset = useCallback(() => {
     setActiveVarId(equation.variables[0]?.id ?? null);
-    setPinnedVarId(null);
+    pinnedVarIdRef.current = null;
   }, [equation.variables]);
 
   const handleFormulaMouseLeave = useCallback(() => {
-    if (pinnedVarId) {
-      setActiveVarId(pinnedVarId);
+    if (pinnedVarIdRef.current) {
+      setActiveVarId(pinnedVarIdRef.current);
     }
-  }, [pinnedVarId]);
+  }, []);
 
   // Interactive formula event delegation: hover on any KaTeX term inside equation
   const handleFormulaMouseOver = useCallback(

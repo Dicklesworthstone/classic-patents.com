@@ -3,34 +3,33 @@
 import { ArrowRight, BookOpen, Compass, Search, Sparkles, User, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { allPatents, searchPatents } from "@/data/patents";
 import type { Patent } from "@/types/patent";
 
 interface PatentSearchPaletteProps {
-  isOpen: boolean;
   onClose: () => void;
 }
 
-export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProps) {
+export function PatentSearchPalette({ onClose }: PatentSearchPaletteProps) {
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  useEffect(() => {
+  // The parent mounts a fresh palette for each open action. This resets search
+  // state before the dialog is ever painted instead of briefly showing the
+  // previous query and then clearing it in response to an `isOpen` prop.
+  useLayoutEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    if (isOpen && !dialog.open) {
+    if (!dialog.open) {
       dialog.showModal();
-      setQuery("");
-      setSelectedIndex(0);
-      setTimeout(() => inputRef.current?.focus(), 50);
-    } else if (!isOpen && dialog.open) {
-      dialog.close();
     }
-  }, [isOpen]);
+    const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 50);
+    return () => window.clearTimeout(focusTimer);
+  }, []);
 
   const results = useMemo(() => {
     if (!query.trim()) {
@@ -145,6 +144,7 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
             results.map((patent: Patent, idx: number) => {
               const isSelected = idx === selectedIndex;
               const year = patent.grantDate.split("-")[0];
+              const hasVisualHold = patent.id === "us-3671542-kwolek-kevlar";
 
               return (
                 <Link
@@ -201,7 +201,7 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
                         isSelected ? "text-amber-100" : "text-amber-700 dark:text-amber-400"
                       }`}
                     >
-                      Open 3D Model
+                      {hasVisualHold ? "Open Source-Bound Record" : "Open 3D Model"}
                     </span>
                     <ArrowRight
                       className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${

@@ -19,7 +19,6 @@ const NAV_LINKS = [
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [isApplePlatform, setIsApplePlatform] = useState(true);
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
 
@@ -52,12 +51,6 @@ export function Header() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
-  // Hydration-safe platform probe: SSR renders the ⌘ glyph; non-Apple
-  // clients correct it after mount so Windows/Linux show their real modifier.
-  useEffect(() => {
-    setIsApplePlatform(/Mac|iPhone|iPad|iPod/.test(navigator.userAgent));
-  }, []);
-
   // Close the mobile drawer on Escape or any press outside the header shell.
   useEffect(() => {
     if (!mobileOpen) return;
@@ -160,13 +153,13 @@ export function Header() {
               type="button"
               onClick={() => setSearchOpen(true)}
               className="flex items-center gap-2 px-3 py-2 sm:py-1.5 min-h-11 sm:min-h-0 rounded-xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/80 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-700 dark:text-parchment-300 text-xs font-sans font-medium transition-colors shadow-2xs cursor-pointer"
-              title={`Search all patents (${isApplePlatform ? "⌘K" : "Ctrl+K"})`}
+              title="Search all patents (⌘ / Ctrl K)"
               aria-label="Search patents"
             >
               <Search className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
               <span className="hidden sm:inline">Search...</span>
               <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono bg-parchment-200 dark:bg-ink-800 border border-parchment-300 dark:border-ink-700 rounded text-ink-500">
-                {isApplePlatform ? "⌘K" : "Ctrl K"}
+                ⌘ / Ctrl K
               </kbd>
             </button>
 
@@ -221,7 +214,7 @@ export function Header() {
       </header>
 
       {/* Instant Patent Search Palette Modal */}
-      <PatentSearchPalette isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+      {searchOpen ? <PatentSearchPalette onClose={() => setSearchOpen(false)} /> : null}
     </>
   );
 }
