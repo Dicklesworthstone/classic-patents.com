@@ -325,7 +325,8 @@ export function LemelsonMachineVisionSim() {
           </div>
         </div>
 
-        <form className="space-y-4 p-4 sm:p-5" onSubmit={(event) => event.preventDefault()}>
+        <fieldset className="space-y-4 p-4 sm:p-5">
+          <legend className="sr-only">Normalized source states</legend>
           <div>
             <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-cyan-400">
               Normalized source states
@@ -390,7 +391,7 @@ export function LemelsonMachineVisionSim() {
             <RotateCcw className="h-4 w-4" />
             Reset source exhibit
           </button>
-        </form>
+        </fieldset>
       </div>
     </section>
   );

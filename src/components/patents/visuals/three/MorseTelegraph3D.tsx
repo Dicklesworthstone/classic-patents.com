@@ -10,45 +10,12 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import { type MorseCameraPreset, morseCameraPresetForViewport } from "./morseTelegraphCamera";
 import { buildMorseTelegraphModel, updateMorseTelegraphKinematics } from "./morseTelegraphModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset =
-  | "iso"
-  | "key_lever"
-  | "electromagnet_relay"
-  | "paper_tape_register"
-  | "sounding_anvil"
-  | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [11, 8, 13], target: [0, 0, 0] },
-  key_lever: { pos: [-3.5, 2.5, 4.5], target: [-3.5, -0.8, 0] },
-  electromagnet_relay: { pos: [3.5, 2.0, 4.0], target: [3.5, -0.8, 0] },
-  paper_tape_register: { pos: [2.0, 3.5, 3.5], target: [1.5, 0.5, 0] },
-  sounding_anvil: { pos: [3.5, 3.0, 2.0], target: [3.5, 0.2, 0] },
-  top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
-};
-
-const MORSE_NARROW_VIEWPORT_MAX_WIDTH_PX = 480;
-
-export function morseCameraPresetForViewport(
-  preset: CameraPreset,
-  viewportWidth: number,
-): { pos: [number, number, number]; target: [number, number, number] } {
-  if (preset === "iso" && viewportWidth < MORSE_NARROW_VIEWPORT_MAX_WIDTH_PX) {
-    // The complete baseboard spans almost fourteen studio units. Give a
-    // portrait viewport enough radius to show its key, sounder, and register.
-    return { pos: [15, 11, 20], target: [0, -0.5, 0] };
-  }
-  return CAMERA_PRESETS[preset];
-}
 
 export function MorseTelegraph3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -62,7 +29,7 @@ export function MorseTelegraph3D() {
   const lineLengthMiles = params.lineLengthMiles ?? 44;
   const wpmSpeed = params.wpmSpeed ?? 20;
   const keyIsDown = (params.keyIsDown ?? 0) >= 0.5;
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<MorseCameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const morse = stepMorseTelegraph({
@@ -121,7 +88,7 @@ export function MorseTelegraph3D() {
 
   const studioRef = useRef<StudioContext | null>(null);
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: MorseCameraPreset) => {
     setActiveCamera(preset);
     const cfg = morseCameraPresetForViewport(preset, containerRef.current?.clientWidth ?? Infinity);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
@@ -204,7 +171,7 @@ export function MorseTelegraph3D() {
                 ["paper_tape_register", "Paper Tape"],
                 ["sounding_anvil", "Anvil"],
                 ["top", "Plan View"],
-              ] as [CameraPreset, string][]
+              ] as [MorseCameraPreset, string][]
             ).map(([preset, label]) => (
               <button
                 key={preset}

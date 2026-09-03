@@ -8,48 +8,12 @@ import { usePatentRuntimeTick } from "@/physics/useFrankenSimPhysics";
 import { getPatentPhysicsParams, usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { type MarconiCameraPreset, marconiViewForViewport } from "./marconiRadioCamera";
 import { buildMarconiRadioModel, updateMarconiRadioKinematics } from "./marconiRadioModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset =
-  | "iso"
-  | "full_system"
-  | "receiver"
-  | "spark_gap"
-  | "induction_coil"
-  | "aerial_monopole"
-  | "morse_key"
-  | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [13, 8.5, 15.5], target: [1.8, 0.8, 0] },
-  full_system: { pos: [14.2, 9.2, 17], target: [1.8, 0.7, 0] },
-  receiver: { pos: [10.2, 1.4, 5.8], target: [6.5, -1.6, 0] },
-  spark_gap: { pos: [0, -0.8, 3.8], target: [0, -1.8, 0] },
-  induction_coil: { pos: [0, -1.2, -4.5], target: [0, -2.1, -1.8] },
-  aerial_monopole: { pos: [-3.5, 3.5, 6.5], target: [-3.5, 2.5, 0] },
-  morse_key: { pos: [3.0, -1.5, 2.5], target: [3.0, -2.4, -0.5] },
-  top: { pos: [0, 13.5, 0.1], target: [0, 0, 0] },
-};
-
-export function marconiViewForViewport(preset: CameraPreset, viewportWidth: number) {
-  const config = CAMERA_PRESETS[preset];
-  const multiplier = viewportWidth < 480 ? 1.35 : viewportWidth < 900 ? 1.08 : 1;
-  return {
-    pos: [
-      config.target[0] + (config.pos[0] - config.target[0]) * multiplier,
-      config.target[1] + (config.pos[1] - config.target[1]) * multiplier,
-      config.target[2] + (config.pos[2] - config.target[2]) * multiplier,
-    ] as [number, number, number],
-    target: config.target,
-  };
-}
 
 export function MarconiRadio3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -62,7 +26,7 @@ export function MarconiRadio3D() {
   const sparkGapMm = params.sparkGapMm ?? 10;
   const inductionCoilKv = params.sparkVoltage ?? 28;
   const showEmWavefronts = true;
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<MarconiCameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
@@ -84,7 +48,7 @@ export function MarconiRadio3D() {
 
   const studioRef = useRef<StudioContext | null>(null);
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: MarconiCameraPreset) => {
     setActiveCamera(preset);
     const cfg = marconiViewForViewport(preset, containerRef.current?.clientWidth ?? 1000);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
@@ -188,7 +152,7 @@ export function MarconiRadio3D() {
                 ["aerial_monopole", "Aerial Mast"],
                 ["morse_key", "Morse Key"],
                 ["top", "Radiation Axis"],
-              ] as [CameraPreset, string][]
+              ] as [MarconiCameraPreset, string][]
             ).map(([preset, label]) => (
               <button
                 key={preset}
@@ -360,6 +324,7 @@ export function MarconiRadio3D() {
             </div>
             <input
               type="range"
+              aria-label="Illustrative spark-gap spacing"
               min="2"
               max="25"
               step="1"

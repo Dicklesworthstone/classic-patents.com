@@ -3,9 +3,10 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { getColorizedEquationsForPatent } from "../src/data/colorizedEquations";
 import {
-  archivalEditionForPublication,
+  completeArchivalEditionForViewer,
   evaluateArchivalPublicationState,
 } from "../src/data/editions/publicationApproval";
+import { reviewedLedgerTextForViewer } from "../src/data/editions/reviewedLedgerPublicationEvidence.server";
 import { allPatents } from "../src/data/patents";
 import { CATALOG_CLAIM_CONSTRAINTS } from "../src/physics/claimConstraints";
 import { energyChannelsFor } from "../src/physics/energyChannels";
@@ -76,10 +77,11 @@ describe("patent E2E scenario contract", () => {
           claims: [{ number: 1 }] as Patent["claims"],
           drawings: [{ figureNumber: "1" }] as Patent["drawings"],
         }),
-        patent("us-2-withheld"),
+        patent("us-2-transcript"),
       ],
       {
-        isEditionPublished: (entry) => entry.id === "us-1-published",
+        rendersEdition: (entry) => entry.id === "us-1-published",
+        hasCompleteTranscript: (entry) => entry.id === "us-2-transcript",
         assetExists: () => true,
         equationIdsForPatent: () => ["equation-1"],
         claimProbeCountForPatent: () => 2,
@@ -102,12 +104,13 @@ describe("patent E2E scenario contract", () => {
     expect(scenarios[0]).toMatchObject({
       patentId: "us-1-published",
       route: "/patents/us-1-published",
-      sourceState: "published",
+      sourceState: "edition",
       sourcePublicationState: "accepted",
       sourceReasonCode: "ACCEPTED",
       claimCount: 1,
       drawingCount: 1,
       hasReviewedLedger: true,
+      hasCompleteTranscript: false,
       hasStoredEdition: true,
       figurePreviewUrls: ["/patents/figures/us-1/fig-1.png"],
       equationIds: ["equation-1"],
@@ -125,11 +128,19 @@ describe("patent E2E scenario contract", () => {
         },
       ],
     });
-    expect(scenarios[1]?.sourceState).toBe("withheld");
+    expect(scenarios[1]).toMatchObject({
+      patentId: "us-2-transcript",
+      sourceState: "transcript",
+      hasCompleteTranscript: true,
+    });
   });
 
   test("rejects duplicate catalogue ids and missing or non-canonical PDF assets", () => {
-    const facts = { isEditionPublished: () => false, assetExists: () => true };
+    const facts = {
+      rendersEdition: () => false,
+      hasCompleteTranscript: () => true,
+      assetExists: () => true,
+    };
     expect(() => buildPatentE2EScenarios([patent("us-1"), patent("us-1")], facts)).toThrow(
       "Duplicate patent id",
     );
@@ -149,7 +160,8 @@ describe("patent E2E scenario contract", () => {
 
   test("selects exact ids and fails loudly for an unknown id", () => {
     const scenarios = buildPatentE2EScenarios([patent("us-1"), patent("us-2")], {
-      isEditionPublished: () => true,
+      rendersEdition: () => true,
+      hasCompleteTranscript: () => false,
     });
     expect(selectPatentE2EScenarios(scenarios, ["us-2", "us-2"])).toHaveLength(1);
     expect(() => selectPatentE2EScenarios(scenarios, ["us-404"])).toThrow("Unknown patent E2E id");
@@ -157,7 +169,11 @@ describe("patent E2E scenario contract", () => {
 
   test("builds an exact manifest from the live catalogue and all pinned PDFs", () => {
     const scenarios = buildPatentE2EScenarios(allPatents, {
-      isEditionPublished: (entry) => Boolean(archivalEditionForPublication(entry)),
+      rendersEdition: (entry) => {
+        const decision = evaluateArchivalPublicationState(entry);
+        return Boolean(completeArchivalEditionForViewer(entry, decision));
+      },
+      hasCompleteTranscript: (entry) => Boolean(reviewedLedgerTextForViewer(entry)),
       publicationDecision: evaluateArchivalPublicationState,
       assetExists: (publicUrl) =>
         fs.existsSync(path.join(process.cwd(), "public", publicUrl.replace(/^\/+/, ""))),
@@ -193,8 +209,23 @@ describe("patent E2E scenario contract", () => {
     expect(scenarios.every((scenario) => scenario.route === `/patents/${scenario.patentId}`)).toBe(
       true,
     );
-    expect(scenarios.some((scenario) => scenario.sourceState === "published")).toBe(true);
-    expect(scenarios.some((scenario) => scenario.sourceState === "withheld")).toBe(true);
+    expect(scenarios.some((scenario) => scenario.sourceState === "edition")).toBe(true);
+    expect(scenarios.some((scenario) => scenario.sourceState === "transcript")).toBe(true);
+    for (const scenario of scenarios) {
+      const patent = allPatents.find((entry) => entry.id === scenario.patentId);
+      if (!patent) throw new Error(`Missing catalogue patent ${scenario.patentId}`);
+      const decision = evaluateArchivalPublicationState(patent);
+      const completeEdition = completeArchivalEditionForViewer(patent, decision);
+      expect(scenario.sourceState).toBe(completeEdition ? "edition" : "transcript");
+      if (!completeEdition) {
+        expect(scenario.hasCompleteTranscript).toBe(true);
+      }
+    }
+    expect(
+      scenarios.every(
+        (scenario) => scenario.sourceState !== "transcript" || scenario.hasCompleteTranscript,
+      ),
+    ).toBe(true);
     expect(scenarios.every((scenario) => scenario.sourceReasonCode.length > 0)).toBe(true);
     expect(
       scenarios.every(
@@ -221,7 +252,7 @@ describe("patent E2E scenario contract", () => {
     expect(teslaMotor?.sourceDecision.figureAttestation?.acceptedOccurrenceCount).toBe(
       teslaMotor?.sourceDecision.requiredFigureCount,
     );
-    expect(teslaMotor?.sourceState).toBe("withheld");
+    expect(teslaMotor?.sourceState).toBe("edition");
     expect(teslaMotor?.sourceReasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
     expect(teslaMotor?.sourceDecision.acceptedFigureCount).toBe(0);
     expect(
@@ -308,7 +339,8 @@ describe("patent E2E CLI contract", () => {
 
   test("maps patent-local changes exactly and expands shared-surface changes to the catalogue", () => {
     const scenarios = buildPatentE2EScenarios([patent("us-1-alpha"), patent("us-2-beta")], {
-      isEditionPublished: () => true,
+      rendersEdition: () => true,
+      hasCompleteTranscript: () => false,
     });
     expect(
       resolveChangedPatentIds(

@@ -20,9 +20,10 @@ import {
 } from "playwright";
 import { getColorizedEquationsForPatent } from "../src/data/colorizedEquations";
 import {
-  archivalEditionForPublication,
+  completeArchivalEditionForViewer,
   evaluateArchivalPublicationState,
 } from "../src/data/editions/publicationApproval";
+import { reviewedLedgerTextForViewer } from "../src/data/editions/reviewedLedgerPublicationEvidence.server";
 import { allPatents } from "../src/data/patents";
 import { CATALOG_CLAIM_CONSTRAINTS } from "../src/physics/claimConstraints";
 import { energyChannelsFor } from "../src/physics/energyChannels";
@@ -136,7 +137,11 @@ async function main() {
   let scenarios: PatentE2EScenario[] = [];
   try {
     scenarios = buildPatentE2EScenarios(allPatents, {
-      isEditionPublished: (patent) => Boolean(archivalEditionForPublication(patent)),
+      rendersEdition: (patent) => {
+        const decision = evaluateArchivalPublicationState(patent);
+        return Boolean(completeArchivalEditionForViewer(patent, decision));
+      },
+      hasCompleteTranscript: (patent) => Boolean(reviewedLedgerTextForViewer(patent)),
       publicationDecision: evaluateArchivalPublicationState,
       assetExists: (publicUrl) =>
         fs.existsSync(path.join(process.cwd(), "public", publicUrl.replace(/^\/+/, ""))),
@@ -286,7 +291,7 @@ async function runFailureEvidenceSelfTest(args: {
     title: "Intentional failure evidence",
     route: "/",
     pdfUrl: "/patents/pdfs/__not-used__.pdf",
-    sourceState: "withheld",
+    sourceState: "transcript",
     sourcePublicationState: "held",
     sourceReasonCode: "SELF_TEST_FAILURE",
     sourceDecision: {
@@ -323,6 +328,7 @@ async function runFailureEvidenceSelfTest(args: {
     claimCount: 0,
     drawingCount: 0,
     hasReviewedLedger: false,
+    hasCompleteTranscript: true,
     hasStoredEdition: false,
     figurePreviewUrls: [],
     equationIds: [],
@@ -670,18 +676,25 @@ async function verifySourceFace(
       } catch {
         throw new Error("The route rendered malformed archival publication evidence JSON.");
       }
-      if (scenario.sourceState === "published" && archivalKind === "withheld") {
+      if (scenario.sourceState === "edition" && archivalKind === "withheld") {
         throw new Error(
-          "Expected a published manual edition, but the route rendered withheld state.",
+          "Expected a rendered manual edition, but the route has no archival edition.",
         );
       }
-      if (scenario.sourceState === "withheld") {
+      if (scenario.sourceState === "transcript") {
         if (archivalKind !== "withheld") {
-          throw new Error(`Expected withheld source state, received ${archivalKind}.`);
+          throw new Error(
+            `Expected no archival edition for transcript mode, received ${archivalKind}.`,
+          );
         }
-        await page
-          .getByRole("heading", { name: "Complete archival edition is not published yet" })
-          .waitFor({ state: "visible" });
+        const transcript = page.getByTestId("reviewed-transcript-fallback");
+        await transcript.waitFor({ state: "visible" });
+        const transcriptText = await transcript.locator("pre").textContent();
+        if (!transcriptText?.startsWith("--- REVIEWED TRANSCRIPTION PAGE 1 OF ")) {
+          throw new Error(
+            "Transcript mode did not render a complete page-marked patent transcript.",
+          );
+        }
       } else {
         await page
           .getByRole("heading", { name: /Specification of Letters Patent/ })
@@ -703,13 +716,14 @@ async function verifySourceFace(
         );
       }
       return {
-        sourceState: archivalKind === "withheld" ? "withheld" : "published",
+        sourceState: scenario.sourceState,
         archivalKind,
         publicationState,
         reasonCode,
         decision: renderedDecision,
         hasStoredEdition: scenario.hasStoredEdition,
         hasReviewedLedger: scenario.hasReviewedLedger,
+        hasCompleteTranscript: scenario.hasCompleteTranscript,
       };
     },
   );
@@ -721,10 +735,10 @@ async function verifySourceFace(
     async () => {
       const references = page.getByTestId("source-figure-reference");
       const referenceCount = await references.count();
-      if (scenario.sourceState === "withheld" || scenario.figurePreviewUrls.length === 0) {
+      if (scenario.sourceState === "transcript" || scenario.figurePreviewUrls.length === 0) {
         if (referenceCount !== 0) {
           throw new Error(
-            `Rendered ${referenceCount} archival figure reference(s) without a published preview contract.`,
+            `Rendered ${referenceCount} archival figure reference(s) without a structured-edition preview contract.`,
           );
         }
         return { referenceCount, interaction: "not-applicable" };

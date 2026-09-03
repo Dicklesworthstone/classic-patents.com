@@ -4,8 +4,14 @@ import { useId, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { FrankenSimEngine } from "@/physics/engine";
-import { readSalisburyRobotHandControls } from "@/physics/salisburyRobotHandKernel";
+import {
+  readSalisburyRobotHandControls,
+  SALISBURY_FRANKENSIM_CONTACT_OWNER,
+  SALISBURY_FRANKENSIM_REVOLUTE_OWNER,
+  SALISBURY_FRANKENSIM_TOPOLOGY_OWNER,
+} from "@/physics/salisburyRobotHandKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function SalisburyRobotHandSim({
@@ -13,10 +19,18 @@ export function SalisburyRobotHandSim({
 }: {
   patentId?: string;
 }) {
-  const { params, updateParam } = usePatentPhysics(patentId);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
-  const controls = useMemo(() => readSalisburyRobotHandControls(params), [params]);
+  const { effectiveParams, claimStates, claimConstraintResult, updateParam } =
+    usePatentPhysics(patentId);
+  const controls = useMemo(
+    () => readSalisburyRobotHandControls(effectiveParams),
+    [effectiveParams],
+  );
   const tel = useMemo(() => FrankenSimEngine.stepSalisburyRobotHand(controls), [controls]);
+  const idlerState = !tel.claim1RoutingProbe
+    ? "withheld"
+    : tel.claim2IdlerProbe
+      ? "fixed"
+      : "released";
   const equations = useMemo(() => ALL_COLORIZED_EQUATIONS[patentId] ?? [], [patentId]);
 
   const clipId = useId();
@@ -38,41 +52,66 @@ export function SalisburyRobotHandSim({
   const theta2 = (tel.displayJointAnglesDeg[1] * Math.PI) / 180;
   const theta3 = (tel.displayJointAnglesDeg[2] * Math.PI) / 180;
 
-  // Forward kinematics in 2D projection
+  const projectChain = (
+    baseX: number,
+    baseY: number,
+    baseAngle: number,
+    axis2Delta: number,
+    axis3Delta: number,
+  ) => {
+    const joint2X = baseX + l1 * Math.cos(baseAngle);
+    const joint2Y = baseY + l1 * Math.sin(baseAngle);
+    const secondAngle = baseAngle + axis2Delta;
+    const joint3X = joint2X + l2 * Math.cos(secondAngle);
+    const joint3Y = joint2Y + l2 * Math.sin(secondAngle);
+    const thirdAngle = secondAngle + axis3Delta;
+    return {
+      joint2X,
+      joint2Y,
+      joint3X,
+      joint3Y,
+      tipX: joint3X + l3 * Math.cos(thirdAngle),
+      tipY: joint3Y + l3 * Math.sin(thirdAngle),
+    };
+  };
+
+  // Forward kinematics in a normalized teaching projection. Every link starts
+  // at its parent's endpoint; the thumb uses the same serial transform instead
+  // of the old cosine-only shortcut that could shorten it without bending it.
   // Finger 1 (Upper Left, base angle -60 deg + spread)
   const baseAngle1 = -Math.PI / 2 - 0.5 + spread;
   const f1_baseX = palmCenterX - 60;
   const f1_baseY = palmCenterY - 40;
-  const f1_j2X = f1_baseX + l1 * Math.cos(baseAngle1);
-  const f1_j2Y = f1_baseY + l1 * Math.sin(baseAngle1);
-  const f1_j3X = f1_j2X + l2 * Math.cos(baseAngle1 + theta2 * 0.4);
-  const f1_j3Y = f1_j2Y + l2 * Math.sin(baseAngle1 + theta2 * 0.4);
-  const f1_tipX = f1_j3X + l3 * Math.cos(baseAngle1 + theta2 * 0.4 + theta3 * 0.5);
-  const f1_tipY = f1_j3Y + l3 * Math.sin(baseAngle1 + theta2 * 0.4 + theta3 * 0.5);
+  const finger1 = projectChain(f1_baseX, f1_baseY, baseAngle1, theta2 * 0.4, theta3 * 0.5);
 
   // Finger 2 (Upper Right, base angle -60 deg - spread)
   const baseAngle2 = -Math.PI / 2 + 0.5 - spread;
   const f2_baseX = palmCenterX + 60;
   const f2_baseY = palmCenterY - 40;
-  const f2_j2X = f2_baseX + l1 * Math.cos(baseAngle2);
-  const f2_j2Y = f2_baseY + l1 * Math.sin(baseAngle2);
-  const f2_j3X = f2_j2X + l2 * Math.cos(baseAngle2 - theta2 * 0.4);
-  const f2_j3Y = f2_j2Y + l2 * Math.sin(baseAngle2 - theta2 * 0.4);
-  const f2_tipX = f2_j3X + l3 * Math.cos(baseAngle2 - theta2 * 0.4 - theta3 * 0.5);
-  const f2_tipY = f2_j3Y + l3 * Math.sin(baseAngle2 - theta2 * 0.4 - theta3 * 0.5);
+  const finger2 = projectChain(f2_baseX, f2_baseY, baseAngle2, -theta2 * 0.4, -theta3 * 0.5);
 
   // Finger 3 / Opposing Thumb (Bottom Center, reaching upward)
   const f3_baseX = palmCenterX;
   const f3_baseY = palmCenterY + 70;
-  const f3_j2X = f3_baseX;
-  const f3_j2Y = f3_baseY - l1;
-  const f3_j3X = f3_j2X;
-  const f3_j3Y = f3_j2Y - l2 * Math.cos(theta2 * 0.4);
-  const f3_tipX = f3_j3X;
-  const f3_tipY = f3_j3Y - l3 * Math.cos(theta2 * 0.4 + theta3 * 0.5);
+  const finger3 = projectChain(f3_baseX, f3_baseY, -Math.PI / 2, theta2 * 0.4, theta3 * 0.5);
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-slate-700/60 bg-slate-950/90 p-4 text-slate-100 shadow-2xl backdrop-blur">
+    <div
+      className="flex flex-col gap-4 rounded-xl border border-slate-700/60 bg-slate-950/90 p-4 text-slate-100 shadow-2xl backdrop-blur"
+      data-testid="salisbury-robot-hand-two"
+      data-salisbury-routing={tel.claim1RoutingProbe ? "present" : "withheld"}
+      data-salisbury-idler={idlerState}
+      data-salisbury-active-joints={tel.activeJointCoordinates}
+      data-salisbury-active-cable-ends={tel.activeCableEndCount}
+      data-salisbury-source-law={tel.sourceLawApplicable ? "applicable" : "withheld"}
+      data-salisbury-runtime-source={tel.runtimeSource}
+      data-salisbury-t1={controls.tensionT1N.toFixed(1)}
+      data-salisbury-torques={tel.jointTorquesNm.map((torque) => torque.toFixed(3)).join(",")}
+      data-salisbury-topology-owner={tel.owners.topology}
+      data-salisbury-revolute-owner={tel.owners.revolute}
+      data-salisbury-contact-owner={tel.owners.contactCandidate}
+      data-salisbury-contact-boundary="refused-unparameterized"
+    >
       {/* Header & Controls Bar */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
         <div>
@@ -230,6 +269,7 @@ export function SalisburyRobotHandSim({
                     fill="none"
                     stroke={["#38bdf8", "#34d399", "#fbbf24", "#fb7185"][index]}
                     strokeWidth="2"
+                    opacity={tel.claim1RoutingProbe ? 1 : 0}
                   />
                 ))}
                 <text
@@ -262,32 +302,32 @@ export function SalisburyRobotHandSim({
               </text>
 
               {/* Finger 1 (Left) */}
-              <g>
+              <g opacity={tel.claim1RoutingProbe ? 1 : 0}>
                 <line
                   x1={f1_baseX}
                   y1={f1_baseY}
-                  x2={f1_j2X}
-                  y2={f1_j2Y}
+                  x2={finger1.joint2X}
+                  y2={finger1.joint2Y}
                   stroke="#94a3b8"
                   strokeWidth="10"
                   strokeLinecap="round"
                 />
                 <line
-                  x1={f1_j2X}
-                  y1={f1_j2Y}
-                  x2={f1_j3X}
-                  y2={f1_j3Y}
+                  x1={finger1.joint2X}
+                  y1={finger1.joint2Y}
+                  x2={finger1.joint3X}
+                  y2={finger1.joint3Y}
                   stroke="#cbd5e1"
                   strokeWidth="8"
                   strokeLinecap="round"
                 />
                 <line
-                  x1={f1_j3X}
-                  y1={f1_j3Y}
-                  x2={f1_tipX}
-                  y2={f1_tipY}
-                  stroke="#e2e8f0"
-                  strokeWidth="6"
+                  x1={finger1.joint3X}
+                  y1={finger1.joint3Y}
+                  x2={finger1.tipX}
+                  y2={finger1.tipY}
+                  stroke="#f59e0b"
+                  strokeWidth="12"
                   strokeLinecap="round"
                 />
                 {/* Joints */}
@@ -295,64 +335,55 @@ export function SalisburyRobotHandSim({
                   cx={f1_baseX}
                   cy={f1_baseY}
                   r="7"
-                  fill="#0284c7"
+                  fill={tel.claim2IdlerProbe ? "#0284c7" : "#92400e"}
                   stroke="#38bdf8"
                   strokeWidth="1.5"
                 />
                 <circle
-                  cx={f1_j2X}
-                  cy={f1_j2Y}
+                  cx={finger1.joint2X}
+                  cy={finger1.joint2Y}
                   r="6"
                   fill="#0f766e"
                   stroke="#2dd4bf"
                   strokeWidth="1.5"
                 />
                 <circle
-                  cx={f1_j3X}
-                  cy={f1_j3Y}
+                  cx={finger1.joint3X}
+                  cy={finger1.joint3Y}
                   r="5"
                   fill="#0f766e"
                   stroke="#2dd4bf"
                   strokeWidth="1.5"
                 />
-                {/* Spherical Elastomer Fingertip */}
-                <circle
-                  cx={f1_tipX}
-                  cy={f1_tipY}
-                  r="9"
-                  fill="#f59e0b"
-                  stroke="#fbbf24"
-                  strokeWidth="2"
-                />
               </g>
 
               {/* Finger 2 (Right) */}
-              <g>
+              <g opacity={tel.claim1RoutingProbe ? 1 : 0}>
                 <line
                   x1={f2_baseX}
                   y1={f2_baseY}
-                  x2={f2_j2X}
-                  y2={f2_j2Y}
+                  x2={finger2.joint2X}
+                  y2={finger2.joint2Y}
                   stroke="#94a3b8"
                   strokeWidth="10"
                   strokeLinecap="round"
                 />
                 <line
-                  x1={f2_j2X}
-                  y1={f2_j2Y}
-                  x2={f2_j3X}
-                  y2={f2_j3Y}
+                  x1={finger2.joint2X}
+                  y1={finger2.joint2Y}
+                  x2={finger2.joint3X}
+                  y2={finger2.joint3Y}
                   stroke="#cbd5e1"
                   strokeWidth="8"
                   strokeLinecap="round"
                 />
                 <line
-                  x1={f2_j3X}
-                  y1={f2_j3Y}
-                  x2={f2_tipX}
-                  y2={f2_tipY}
-                  stroke="#e2e8f0"
-                  strokeWidth="6"
+                  x1={finger2.joint3X}
+                  y1={finger2.joint3Y}
+                  x2={finger2.tipX}
+                  y2={finger2.tipY}
+                  stroke="#f59e0b"
+                  strokeWidth="12"
                   strokeLinecap="round"
                 />
                 {/* Joints */}
@@ -360,64 +391,55 @@ export function SalisburyRobotHandSim({
                   cx={f2_baseX}
                   cy={f2_baseY}
                   r="7"
-                  fill="#0284c7"
+                  fill={tel.claim2IdlerProbe ? "#0284c7" : "#92400e"}
                   stroke="#38bdf8"
                   strokeWidth="1.5"
                 />
                 <circle
-                  cx={f2_j2X}
-                  cy={f2_j2Y}
+                  cx={finger2.joint2X}
+                  cy={finger2.joint2Y}
                   r="6"
                   fill="#0f766e"
                   stroke="#2dd4bf"
                   strokeWidth="1.5"
                 />
                 <circle
-                  cx={f2_j3X}
-                  cy={f2_j3Y}
+                  cx={finger2.joint3X}
+                  cy={finger2.joint3Y}
                   r="5"
                   fill="#0f766e"
                   stroke="#2dd4bf"
                   strokeWidth="1.5"
                 />
-                {/* Spherical Elastomer Fingertip */}
-                <circle
-                  cx={f2_tipX}
-                  cy={f2_tipY}
-                  r="9"
-                  fill="#f59e0b"
-                  stroke="#fbbf24"
-                  strokeWidth="2"
-                />
               </g>
 
               {/* Finger 3 (Thumb / Opposing Base) */}
-              <g>
+              <g opacity={tel.claim1RoutingProbe ? 1 : 0}>
                 <line
                   x1={f3_baseX}
                   y1={f3_baseY}
-                  x2={f3_j2X}
-                  y2={f3_j2Y}
+                  x2={finger3.joint2X}
+                  y2={finger3.joint2Y}
                   stroke="#94a3b8"
                   strokeWidth="10"
                   strokeLinecap="round"
                 />
                 <line
-                  x1={f3_j2X}
-                  y1={f3_j2Y}
-                  x2={f3_j3X}
-                  y2={f3_j3Y}
+                  x1={finger3.joint2X}
+                  y1={finger3.joint2Y}
+                  x2={finger3.joint3X}
+                  y2={finger3.joint3Y}
                   stroke="#cbd5e1"
                   strokeWidth="8"
                   strokeLinecap="round"
                 />
                 <line
-                  x1={f3_j3X}
-                  y1={f3_j3Y}
-                  x2={f3_tipX}
-                  y2={f3_tipY}
-                  stroke="#e2e8f0"
-                  strokeWidth="6"
+                  x1={finger3.joint3X}
+                  y1={finger3.joint3Y}
+                  x2={finger3.tipX}
+                  y2={finger3.tipY}
+                  stroke="#f59e0b"
+                  strokeWidth="12"
                   strokeLinecap="round"
                 />
                 {/* Joints */}
@@ -425,36 +447,67 @@ export function SalisburyRobotHandSim({
                   cx={f3_baseX}
                   cy={f3_baseY}
                   r="7"
-                  fill="#0284c7"
+                  fill={tel.claim2IdlerProbe ? "#0284c7" : "#92400e"}
                   stroke="#38bdf8"
                   strokeWidth="1.5"
                 />
                 <circle
-                  cx={f3_j2X}
-                  cy={f3_j2Y}
+                  cx={finger3.joint2X}
+                  cy={finger3.joint2Y}
                   r="6"
                   fill="#0f766e"
                   stroke="#2dd4bf"
                   strokeWidth="1.5"
                 />
                 <circle
-                  cx={f3_j3X}
-                  cy={f3_j3Y}
+                  cx={finger3.joint3X}
+                  cy={finger3.joint3Y}
                   r="5"
                   fill="#0f766e"
                   stroke="#2dd4bf"
                   strokeWidth="1.5"
                 />
-                {/* Spherical Elastomer Fingertip */}
-                <circle
-                  cx={f3_tipX}
-                  cy={f3_tipY}
-                  r="9"
-                  fill="#f59e0b"
-                  stroke="#fbbf24"
-                  strokeWidth="2"
-                />
               </g>
+
+              {tel.claim1RoutingProbe ? (
+                <text
+                  x={palmCenterX}
+                  y={palmCenterY - 58}
+                  textAnchor="middle"
+                  className={`font-mono text-[9px] ${
+                    tel.claim2IdlerProbe ? "fill-emerald-300" : "fill-amber-300"
+                  }`}
+                >
+                  CLAIM 2 FIRST IDLER: {tel.claim2IdlerProbe ? "FIXED" : "RELEASED"}
+                </text>
+              ) : (
+                <g transform={`translate(${palmCenterX - 150}, ${palmCenterY - 105})`}>
+                  <rect
+                    width="300"
+                    height="58"
+                    rx="8"
+                    fill="#3f0718"
+                    stroke="#fb7185"
+                    strokeWidth="2"
+                  />
+                  <text
+                    x="150"
+                    y="24"
+                    textAnchor="middle"
+                    className="fill-rose-200 font-mono text-[11px] font-bold"
+                  >
+                    CLAIM 1 DIGIT ROUTING WITHHELD
+                  </text>
+                  <text
+                    x="150"
+                    y="42"
+                    textAnchor="middle"
+                    className="fill-rose-300 font-mono text-[9px]"
+                  >
+                    0 active joints · 0 active cable ends
+                  </text>
+                </g>
+              )}
 
               {/* Status Overlay HUD */}
               <g transform="translate(16, 20)">
@@ -469,13 +522,14 @@ export function SalisburyRobotHandSim({
                   SOURCE-LAW RECEIPT
                 </text>
                 <text x="12" y="38" className="fill-emerald-400 font-mono text-xs font-bold">
-                  {tel.provenance === "TS_SOURCE_LAW" ? "● PRINTED TORQUE MAP" : "○ REFUSED"}
+                  {tel.sourceLawApplicable ? "● PRINTED TORQUE MAP" : "○ ROUTING WITHHELD"}
                 </text>
                 <text x="12" y="56" className="fill-slate-300 font-mono text-[10px]">
                   Pattern: {tel.pullPattern}
                 </text>
                 <text x="12" y="72" className="fill-slate-300 font-mono text-[10px]">
-                  9 revolute joints · 12 cable ends
+                  {tel.activeJointCoordinates} active joints · {tel.activeCableEndCount} active
+                  cable ends
                 </text>
                 <text x="12" y="88" className="fill-slate-300 font-mono text-[10px]">
                   Dynamics/contact: source does not supply them
@@ -520,7 +574,7 @@ export function SalisburyRobotHandSim({
                       y={yPos + 14}
                       className="fill-slate-100 font-mono text-xs font-bold"
                     >
-                      {tension.toFixed(1)} N
+                      {tension.toFixed(1)} N {tel.sourceLawApplicable ? "" : "(configured)"}
                     </text>
                     <text x="470" y={yPos + 14} className="fill-slate-400 font-mono text-[10px]">
                       {i === 0
@@ -541,20 +595,26 @@ export function SalisburyRobotHandSim({
                 <text x="16" y="24" className="fill-emerald-400 font-mono text-xs font-bold">
                   PRINTED FIGURE 3 TORQUE VECTOR (NOT A DYNAMIC POSE)
                 </text>
-                <text x="16" y="48" className="fill-slate-200 font-mono text-xs">
-                  τ₁ (Yaw):{" "}
-                  <span className="font-bold text-sky-400">
-                    {tel.jointTorquesNm[0].toFixed(3)} N·m
-                  </span>{" "}
-                  | τ₂ (Proximal):{" "}
-                  <span className="font-bold text-emerald-400">
-                    {tel.jointTorquesNm[1].toFixed(3)} N·m
-                  </span>{" "}
-                  | τ₃ (Distal):{" "}
-                  <span className="font-bold text-amber-400">
-                    {tel.jointTorquesNm[2].toFixed(3)} N·m
-                  </span>
-                </text>
+                {tel.sourceLawApplicable ? (
+                  <text x="16" y="48" className="fill-slate-200 font-mono text-xs">
+                    τ₁ (Yaw):{" "}
+                    <span className="font-bold text-sky-400">
+                      {tel.jointTorquesNm[0].toFixed(3)} N·m
+                    </span>{" "}
+                    | τ₂ (Proximal):{" "}
+                    <span className="font-bold text-emerald-400">
+                      {tel.jointTorquesNm[1].toFixed(3)} N·m
+                    </span>{" "}
+                    | τ₃ (Distal):{" "}
+                    <span className="font-bold text-amber-400">
+                      {tel.jointTorquesNm[2].toFixed(3)} N·m
+                    </span>
+                  </text>
+                ) : (
+                  <text x="16" y="48" className="fill-rose-300 font-mono text-xs font-bold">
+                    WITHHELD — Claim 1 route absent, so the printed map is not applicable.
+                  </text>
+                )}
               </g>
             </g>
           )}
@@ -576,6 +636,23 @@ export function SalisburyRobotHandSim({
         stability.
       </div>
 
+      <div className="grid gap-2 text-[11px] leading-4 sm:grid-cols-2">
+        <div className="rounded-lg border border-emerald-700/60 bg-emerald-950/30 p-2 text-emerald-100">
+          <span className="font-mono font-bold text-emerald-300">FRANKENSIM LAW OWNERS</span>
+          <p className="mt-1">
+            {SALISBURY_FRANKENSIM_TOPOLOGY_OWNER} owns the source parent graph and torque map; each
+            axis is admitted by {SALISBURY_FRANKENSIM_REVOLUTE_OWNER}.
+          </p>
+        </div>
+        <div className="rounded-lg border border-rose-700/60 bg-rose-950/30 p-2 text-rose-100">
+          <span className="font-mono font-bold text-rose-300">CONTACT SOLVE REFUSED</span>
+          <p className="mt-1">
+            {SALISBURY_FRANKENSIM_CONTACT_OWNER} lacks a source-complete object, fingertip material,
+            friction, and approach card. No grasp force, closure, payload, or stability is shown.
+          </p>
+        </div>
+      </div>
+
       {/* Physics Sliders Controls Grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div className="flex flex-col gap-1.5 rounded-lg border border-slate-800 bg-slate-900/60 p-3">
@@ -585,6 +662,7 @@ export function SalisburyRobotHandSim({
           </div>
           <input
             type="range"
+            aria-label="Cable tension T1 in newtons"
             min="0"
             max="40"
             step="1"
@@ -604,6 +682,7 @@ export function SalisburyRobotHandSim({
           </div>
           <input
             type="range"
+            aria-label="Cable tension T2 in newtons"
             min="0"
             max="40"
             step="1"
@@ -623,6 +702,7 @@ export function SalisburyRobotHandSim({
           </div>
           <input
             type="range"
+            aria-label="Cable tension T3 in newtons"
             min="0"
             max="40"
             step="1"
@@ -640,6 +720,7 @@ export function SalisburyRobotHandSim({
           </div>
           <input
             type="range"
+            aria-label="Cable tension T4 in newtons"
             min="0"
             max="40"
             step="1"
@@ -659,6 +740,7 @@ export function SalisburyRobotHandSim({
           </div>
           <input
             type="range"
+            aria-label="Illustrative R2 pulley radius in millimeters"
             min="4"
             max="20"
             step="1"
@@ -680,6 +762,7 @@ export function SalisburyRobotHandSim({
           </div>
           <input
             type="checkbox"
+            aria-label="Fix the Claim 2 first idler"
             checked={controls.firstIdlerFixed}
             onChange={(e) => updateParam("firstIdlerFixed", e.target.checked ? 1 : 0)}
             className="h-5 w-5 accent-orange-500"
@@ -691,11 +774,24 @@ export function SalisburyRobotHandSim({
       </div>
 
       <div className="pt-2 border-t border-slate-800">
+        {claimConstraintResult.activeFailures.length > 0 && (
+          <div
+            role="status"
+            className="mb-3 rounded-lg border border-rose-600/60 bg-rose-950/40 p-2 text-xs leading-5 text-rose-100"
+          >
+            {claimConstraintResult.activeFailures.map((failure) => (
+              <p key={failure}>{failure}</p>
+            ))}
+            {claimConstraintResult.refusalWarning && (
+              <p className="mt-1 text-rose-200">{claimConstraintResult.refusalWarning}</p>
+            )}
+          </div>
+        )}
         <ClaimConstraintToggle
           patentId={patentId}
           claimStates={claimStates}
-          onClaimStateChange={(num, active) =>
-            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          onToggleClaim={(number, active) =>
+            updateParam(claimConstraintStateParamId(number), active ? 1 : 0)
           }
         />
       </div>

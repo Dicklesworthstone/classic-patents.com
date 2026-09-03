@@ -21,6 +21,14 @@ interface BaerOdysseySimProps {
 
 type OverlayType = "none" | "tennis" | "target" | "roulette";
 
+function resetTargetLatch() {
+  requestBaerTargetReset();
+}
+
+function fireLightGun() {
+  requestBaerLightGunTrigger();
+}
+
 export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
   const { effectiveParams, updateParam } = usePatentPhysics(PATENT_ID);
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
@@ -39,14 +47,6 @@ export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
   const [overlay, setOverlay] = useState<OverlayType>("tennis");
   const crtGlowId = useId();
   const phosphorGridId = useId();
-
-  const handleResetGame = () => {
-    requestBaerTargetReset();
-  };
-
-  const handleFireLightGun = () => {
-    requestBaerLightGunTrigger();
-  };
 
   // Screen pixel coordinate transformations (500x320 viewbox)
   const screenWidth = 460;
@@ -109,7 +109,7 @@ export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
 
           <button
             type="button"
-            onClick={handleResetGame}
+            onClick={resetTargetLatch}
             className="flex items-center gap-1.5 rounded-lg border border-stone-700 bg-stone-900 px-3 py-1 text-xs font-medium text-stone-300 hover:bg-stone-800 transition"
           >
             <RotateCcw className="h-3.5 w-3.5 text-amber-400" />
@@ -576,7 +576,7 @@ export function BaerOdysseySim({ initialControls }: BaerOdysseySimProps) {
 
               <button
                 type="button"
-                onClick={handleFireLightGun}
+                onClick={fireLightGun}
                 className="w-full flex items-center justify-center gap-2 rounded-lg border border-red-500/60 bg-gradient-to-r from-red-950 to-amber-950 py-2 text-xs font-bold text-red-200 hover:from-red-900 hover:to-amber-900 transition active:scale-95 shadow-lg"
               >
                 <Crosshair className="h-4 w-4 text-red-400" />

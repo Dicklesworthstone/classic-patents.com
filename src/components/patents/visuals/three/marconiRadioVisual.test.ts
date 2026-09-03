@@ -7,7 +7,7 @@ import { ENERGY_CHANNEL_OMISSION_REASONS, energyChannelsFor } from "@/physics/en
 import { computeParameterSensitivity } from "@/physics/sensitivityKernel";
 import { PATENT_PHYSICS_REGISTRY } from "@/physics/telemetryData";
 import { spectralModes } from "@/physics/weaveSurfaces";
-import { marconiViewForViewport } from "./MarconiRadio3D";
+import { marconiViewForViewport } from "./marconiRadioCamera";
 import {
   buildMarconiRadioModel,
   type MarconiRadioKinematicsState,

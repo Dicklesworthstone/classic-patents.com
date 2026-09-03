@@ -5,61 +5,73 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { claimConstraintStateParamId } from "@/physics/claimConstraints";
-import { stepMakinoScaraTopology } from "@/physics/makinoScaraKernel";
+import {
+  MAKINO_FRANKENSIM_BOUNDARY,
+  MAKINO_FRANKENSIM_OWNER,
+  measureMakinoScaraInvariants,
+  stepMakinoScaraTopology,
+} from "@/physics/makinoScaraKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { buildMakinoScaraModel } from "./makinoScaraModel";
+import {
+  MAKINO_SCARA_CAMERA_VIEWS,
+  type MakinoScaraCameraView,
+  makinoScaraFloorForViewport,
+  makinoScaraViewForViewport,
+} from "./makinoScaraCamera";
+import {
+  buildMakinoScaraModel,
+  MAKINO_SCARA_BASE_BOTTOM_LOCAL_Y,
+  MAKINO_SCARA_MODEL_FLOOR_Y,
+  MAKINO_SCARA_MODEL_ROOT_Y,
+} from "./makinoScaraModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-4341502-makino-scara";
 
-const VIEWS = {
-  overview: {
-    position: [4.0, 1.0, 4.6] as [number, number, number],
-    target: [0, -4.05, 0] as [number, number, number],
-  },
-  plan: {
-    position: [0, 8.5, 0.01] as [number, number, number],
-    target: [0, -4.08, 0] as [number, number, number],
-  },
-  tool: {
-    position: [2.4, 1.4, 3.0] as [number, number, number],
-    target: [0.15, -4.0, 0.25] as [number, number, number],
-  },
-} as const;
-
 export function MakinoScara3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const [view, setView] = useState<keyof typeof VIEWS>("overview");
+  const [view, setView] = useState<MakinoScaraCameraView>("overview");
   const { params, effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
     usePatentPhysics(PATENT_ID);
   const liveParams = useLiveSimParams(effectiveParams);
   const pose = useMemo(() => stepMakinoScaraTopology(effectiveParams), [effectiveParams]);
+  const measurements = useMemo(() => measureMakinoScaraInvariants(pose), [pose]);
   const topology = params.topologyVariant ?? 1;
   const effectiveTopology = effectiveParams.topologyVariant ?? topology;
+  const toolAttitudeDeg = (pose.toolAttitudeRad * 180) / Math.PI;
+  const baseFloorGap = Math.abs(
+    MAKINO_SCARA_MODEL_ROOT_Y + MAKINO_SCARA_BASE_BOTTOM_LOCAL_Y - MAKINO_SCARA_MODEL_FLOOR_Y,
+  );
+  const refusalTelemetry = useMemo(
+    () => ({
+      domain: "solid_mechanics" as const,
+      refusal: { isRefused: true as const, reason: pose.refusal.reason },
+    }),
+    [pose.refusal.reason],
+  );
 
-  // The source-bounded refusal is itself a first-class physics status. No
-  // FrankenSim/WASM badge is shown because no source-supported SI body model
-  // can be stepped from this grant's un-dimensioned geometry.
-  useFrankenSimPhysics(PATENT_ID, {
-    domain: "solid_mechanics",
-    refusal: { isRefused: true, reason: pose.refusal.reason },
-  });
+  // The generic fs-mbd joint owner is identified, but no FrankenSim/WASM badge
+  // is shown because an un-dimensioned closed loop cannot produce an SI body
+  // model. Memoizing this envelope also avoids republishing an identical
+  // refusal merely because React rendered a new object identity.
+  useFrankenSimPhysics(PATENT_ID, refusalTelemetry);
 
-  const selectView = (next: keyof typeof VIEWS) => {
+  const selectView = (next: MakinoScaraCameraView) => {
     setView(next);
-    const camera = VIEWS[next];
+    const camera = makinoScaraViewForViewport(next, containerRef.current?.clientWidth ?? 1000);
     studioRef.current?.controls.setView(camera.position, camera.target);
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
+  // The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const initial = VIEWS.overview;
+    const initial = makinoScaraViewForViewport("overview", container.clientWidth);
+    const floorPlan = makinoScaraFloorForViewport(container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: initial.position,
@@ -79,17 +91,14 @@ export function MakinoScara3D() {
       roughness: 0.68,
       metalness: 0.28,
     });
-    const floor = new THREE.Mesh(new THREE.CircleGeometry(4.7, 64), floorMat);
+    const floor = new THREE.Mesh(new THREE.CircleGeometry(floorPlan.radius, 64), floorMat);
     floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -4.5;
+    floor.position.set(floorPlan.centerX, MAKINO_SCARA_MODEL_FLOOR_Y, 0);
     floor.receiveShadow = true;
     scene.add(floor);
 
     const model = buildMakinoScaraModel();
     scene.add(model.root);
-    const axes = new THREE.AxesHelper(1.15);
-    axes.position.set(-1.55, -4.42, -1.25);
-    scene.add(axes);
 
     let frame = 0;
     const clock = createStudioClock();
@@ -111,13 +120,28 @@ export function MakinoScara3D() {
       studio.cleanup();
       studioRef.current = null;
     };
-  }, []);
+  }, [liveParams]);
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl">
+    <section
+      data-testid="makino-scara-three"
+      data-topology={pose.topology}
+      data-base-axis-gap={measurements.baseAxisGap.toFixed(12)}
+      data-first-link-length={measurements.firstDrivenLinkLength.toFixed(12)}
+      data-fourth-link-length={measurements.fourthDrivenLinkLength.toFixed(12)}
+      data-second-link-length={measurements.secondFollowerLength.toFixed(12)}
+      data-third-link-length={measurements.thirdFollowerLength.toFixed(12)}
+      data-tool-pivot-gap={measurements.toolPivotGap.toFixed(12)}
+      data-fixed-member-error={measurements.fixedMemberError.toExponential(4)}
+      data-tool-attitude-deg={toolAttitudeDeg.toFixed(4)}
+      data-belt-transmission={pose.beltTransmissionAvailable ? "connected" : "claim-6-fixed"}
+      data-base-floor-gap={baseFloorGap.toExponential(4)}
+      data-law-owner={`${MAKINO_FRANKENSIM_OWNER}; ${MAKINO_FRANKENSIM_BOUNDARY}`}
+      className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl"
+    >
       <div className="relative min-h-[420px] sm:min-h-[520px]">
         <div ref={containerRef} className="absolute inset-0" />
-        <div className="pointer-events-none absolute inset-x-3 top-3 hidden items-start justify-between gap-3 sm:flex sm:inset-x-5 sm:top-5">
+        <div className="pointer-events-none absolute inset-x-5 top-5 hidden items-start justify-between gap-3 lg:flex">
           <div className="rounded-xl border border-cyan-700/70 bg-slate-950/85 px-3 py-2 backdrop-blur">
             <p className="font-mono text-[10px] tracking-[0.16em] text-cyan-300">
               US 4,341,502 · PROCEDURAL 3D
@@ -125,7 +149,7 @@ export function MakinoScara3D() {
             <p className="mt-1 text-sm font-medium text-white">Normalized four-link linkage</p>
           </div>
           <div className="rounded-xl border border-rose-800/70 bg-rose-950/85 px-3 py-2 text-right text-[11px] leading-4 text-rose-100 backdrop-blur sm:max-w-xs">
-            No source-backed SI dynamics: topology and angle geometry only.
+            {MAKINO_FRANKENSIM_OWNER} identified · constrained SI solve refused.
           </div>
         </div>
       </div>
@@ -133,7 +157,7 @@ export function MakinoScara3D() {
         data-mobile-layout="controls-below-canvas"
         className="grid gap-2 border-t border-slate-700/80 bg-slate-950/90 p-3 sm:grid-cols-[1fr_auto]"
       >
-        <div className="grid gap-2 sm:grid-cols-3">
+        <div className="grid gap-2 sm:grid-cols-4">
           <label className="text-xs text-slate-200">
             θ₁{" "}
             <span className="float-right font-mono text-cyan-300">
@@ -167,6 +191,23 @@ export function MakinoScara3D() {
             />
           </label>
           <label className="text-xs text-slate-200">
+            Tool φ{" "}
+            <span className="float-right font-mono text-emerald-300">
+              {toolAttitudeDeg.toFixed(0)}°
+            </span>
+            <input
+              className="mt-1 w-full accent-emerald-400"
+              type="range"
+              min="-180"
+              max="180"
+              step="1"
+              value={toolAttitudeDeg}
+              disabled={pose.topology === "claim-6-y-link"}
+              aria-label="Tool attitude"
+              onChange={(event) => updateParam("toolAttitudeDeg", Number(event.target.value))}
+            />
+          </label>
+          <label className="text-xs text-slate-200">
             Claim form
             <select
               className="mt-1 w-full rounded border border-slate-600 bg-slate-900 p-1 text-xs"
@@ -182,7 +223,7 @@ export function MakinoScara3D() {
           </label>
         </div>
         <div className="flex flex-wrap items-end gap-2">
-          {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((candidate) => (
+          {(Object.keys(MAKINO_SCARA_CAMERA_VIEWS) as MakinoScaraCameraView[]).map((candidate) => (
             <button
               key={candidate}
               type="button"
@@ -203,7 +244,13 @@ export function MakinoScara3D() {
           </button>
         </div>
 
-        <div className="border-t border-slate-800 pt-2">
+        <p className="text-[11px] leading-4 text-slate-400 sm:col-span-2">
+          {pose.beltTransmissionAvailable
+            ? "Claims 2/5 extension shown: motor 10 drives connected belt 11 along link 4 and belt 12 along link 6 to tool axis 8."
+            : "Claim 6 shown: rigid tool 13 has two separated pivots and Y-link 14 holds its attitude fixed."}
+        </p>
+
+        <div className="border-t border-slate-800 pt-2 sm:col-span-2">
           <ClaimConstraintToggle
             patentId={PATENT_ID}
             claimStates={claimStates}

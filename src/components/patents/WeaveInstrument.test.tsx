@@ -18,4 +18,18 @@ describe("WeaveInstrument component", () => {
 
     expect(html).toContain("Plume");
   });
+
+  test("keeps the named patent-specific interaction panels after panel extraction", () => {
+    const bell = renderToStaticMarkup(<WeaveInstrument patentId="us-174465-bell-telephone" />);
+    const morse = renderToStaticMarkup(<WeaveInstrument patentId="us-1647-morse-telegraph" />);
+    const lamarr = renderToStaticMarkup(
+      <WeaveInstrument patentId="us-2292387-lamarr-frequency-hopping" />,
+    );
+
+    expect(bell).toContain("Named ring · visitor mic");
+    expect(bell).toContain("Speak 4 s");
+    expect(morse).toContain("Typed Morse lives on the 2D face");
+    expect(lamarr).toContain("Piano-roll hop grid");
+    expect(lamarr).toContain(">16<");
+  });
 });

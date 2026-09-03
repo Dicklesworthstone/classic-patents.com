@@ -1,55 +1,108 @@
 import { describe, expect, test } from "bun:test";
 import {
+  HULL_FIBER_BUNDLE_DIAMETER_MM,
+  HULL_FIBER_BUNDLE_LENGTH_M,
+  HULL_FRANKENSIM_ELEVATOR_OWNER,
+  HULL_FRANKENSIM_OPTICAL_ATTENUATION_OWNER,
+  HULL_PREFERRED_LAMP_POWER_W,
   HULL_SLA_DEFAULT_CONTROLS,
+  HULL_SPOT_DIAMETER_UPPER_BOUND_MM,
+  HULL_SURFACE_IRRADIANCE_APPROX_W_CM2,
+  readHullStereolithographyControls,
   stepHullStereolithographySi,
+  stepHullStereolithographyTopology,
 } from "./hullStereolithographyKernel";
 
-describe("US 4,575,330 Charles W. Hull Stereolithography SI Physics Kernel", () => {
-  test("computes Beer-Lambert photopolymer cure depth and parabolic line width", () => {
-    const controls = { ...HULL_SLA_DEFAULT_CONTROLS };
-    const tel = stepHullStereolithographySi(controls);
+describe("US 4,575,330 source-bounded stereolithography apparatus kernel", () => {
+  test("publishes only measurements printed for Hull's preferred working embodiment", () => {
+    const state = stepHullStereolithographyTopology();
 
-    expect(tel.isCured).toBe(true);
-    expect(tel.peakExposureMJCm2).toBeGreaterThan(controls.criticalExposureMJCm2);
-    expect(tel.cureDepthUm).toBeGreaterThan(controls.layerThicknessUm);
-    expect(tel.interlayerAdhesionRatio).toBeGreaterThanOrEqual(1.0);
-    expect(tel.curedLineWidthUm).toBeGreaterThan(0);
-    expect(tel.polymerizationConversionPct).toBeGreaterThan(50);
+    expect(state.printedSourceCard).toEqual({
+      lampElectricalPowerW: HULL_PREFERRED_LAMP_POWER_W,
+      fiberBundleDiameterMm: HULL_FIBER_BUNDLE_DIAMETER_MM,
+      fiberBundleLengthM: HULL_FIBER_BUNDLE_LENGTH_M,
+      spotDiameterUpperBoundMm: HULL_SPOT_DIAMETER_UPPER_BOUND_MM,
+      surfaceIrradianceApproxWcm2: HULL_SURFACE_IRRADIANCE_APPROX_W_CM2,
+    });
+    expect(state.printedSourceCard).toEqual({
+      lampElectricalPowerW: 350,
+      fiberBundleDiameterMm: 1,
+      fiberBundleLengthM: 1,
+      spotDiameterUpperBoundMm: 1,
+      surfaceIrradianceApproxWcm2: 1,
+    });
   });
 
-  test("triggers underexposure refusal when cure depth is less than layer thickness", () => {
-    // High scan speed leads to low exposure
-    const controls = {
+  test("keeps the shutter open only when the supported stack is at the working position", () => {
+    const working = stepHullStereolithographyTopology({
       ...HULL_SLA_DEFAULT_CONTROLS,
-      laserScanSpeedMmS: 1500,
-      laserPowerMw: 10,
-    };
-    const tel = stepHullStereolithographySi(controls);
+      shutterRequestedOpen: 1,
+      recoatExcursionFraction: 0,
+    });
+    expect(working.shutterRequestedOpen).toBe(true);
+    expect(working.shutterOpen).toBe(true);
+    expect(working.exposureAtWorkingSurface).toBe(true);
+    expect(working.shutterInterlockActive).toBe(false);
+    expect(working.apparatusState).toBe("working-position / shutter-open");
 
-    expect(tel.underexposureRefusal).toBe(true);
-    expect(tel.refusalReason).toContain("Underexposure delamination");
-  });
-
-  test("triggers overpenetration refusal when cure depth greatly exceeds layer step", () => {
-    // Very high power and low speed
-    const controls = {
+    const recoating = stepHullStereolithographyTopology({
       ...HULL_SLA_DEFAULT_CONTROLS,
-      laserPowerMw: 150,
-      laserScanSpeedMmS: 50,
-      layerThicknessUm: 40,
-    };
-    const tel = stepHullStereolithographySi(controls);
-
-    expect(tel.overpenetrationRefusal).toBe(true);
-    expect(tel.refusalReason).toContain("Overpenetration Z-distortion");
+      shutterRequestedOpen: 1,
+      recoatExcursionFraction: 0.65,
+    });
+    expect(recoating.shutterRequestedOpen).toBe(true);
+    expect(recoating.shutterOpen).toBe(false);
+    expect(recoating.exposureAtWorkingSurface).toBe(false);
+    expect(recoating.shutterInterlockActive).toBe(true);
+    expect(recoating.apparatusState).toBe("recoating-excursion / shutter-interlocked");
   });
 
-  test("calculates layer build time and viscous resin recoating settling time", () => {
-    const controls = { ...HULL_SLA_DEFAULT_CONTROLS, resinViscosityCp: 2000 };
-    const tel = stepHullStereolithographySi(controls);
+  test("clamps normalized apparatus controls and discretizes shutter and display laminae", () => {
+    expect(
+      readHullStereolithographyControls({
+        shutterRequestedOpen: 0.49,
+        scanXFraction: -9,
+        scanZFraction: 9,
+        recoatExcursionFraction: 3,
+        displayLaminaCount: 7.6,
+      }),
+    ).toEqual({
+      shutterRequestedOpen: 0,
+      scanXFraction: -1,
+      scanZFraction: 1,
+      recoatExcursionFraction: 1,
+      displayLaminaCount: 8,
+    });
+  });
 
-    expect(tel.recoatMeniscusSettlingTimeSec).toBeGreaterThan(3.0);
-    expect(tel.layerBuildTimeSec).toBeGreaterThan(tel.recoatMeniscusSettlingTimeSec);
-    expect(tel.totalBuildTimeMin).toBeGreaterThan(0);
+  test("retains support and lamina topology through every reader state", () => {
+    for (const recoatExcursionFraction of [0, 0.25, 0.5, 1]) {
+      const state = stepHullStereolithographySi({
+        ...HULL_SLA_DEFAULT_CONTROLS,
+        recoatExcursionFraction,
+        displayLaminaCount: 12,
+      });
+      expect(state.objectSupportedByPlatform).toBe(true);
+      expect(state.laminaeRemainIntegrated).toBe(true);
+      expect(state.workingSurfaceHeld).toBe(true);
+      expect(state.visibleLaminaCount).toBe(12);
+    }
+  });
+
+  test("identifies generic FrankenSim owners but refuses unparameterized performance claims", () => {
+    const state = stepHullStereolithographyTopology();
+    expect(state.owners.elevator).toBe(HULL_FRANKENSIM_ELEVATOR_OWNER);
+    expect(state.owners.opticalAttenuationCandidate).toBe(
+      HULL_FRANKENSIM_OPTICAL_ATTENUATION_OWNER,
+    );
+    expect(state.quantitativeCureAvailable).toBe(false);
+    expect(state.quantitativeMotionAvailable).toBe(false);
+    expect(state.refusal.refused).toBe(true);
+    expect(state.refusal.reason).toContain("does not print");
+    expect(state.refusal.reason).toContain("refuses cure depth");
+    expect("peakExposureMJCm2" in state).toBe(false);
+    expect("cureDepthUm" in state).toBe(false);
+    expect("resinViscosityCp" in state.controls).toBe(false);
+    expect("laserPowerMw" in state.controls).toBe(false);
   });
 });

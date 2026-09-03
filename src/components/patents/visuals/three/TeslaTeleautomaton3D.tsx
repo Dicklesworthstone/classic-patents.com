@@ -401,6 +401,7 @@ export function TeslaTeleautomaton3D() {
             </div>
             <input
               type="range"
+              aria-label="Propeller throttle"
               min="0"
               max="100"
               step="5"

@@ -39,8 +39,14 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  overview: { pos: [4.8, 4.2, 5.8], target: [0.5, 1.8, 0] },
-  "gear-mesh": { pos: [3.8, 1.8, 3.2], target: [2.2, 0.9, 0] },
+  // Keep the flywheel behind the sun-and-planet train in the default view.
+  // The model is read from the mechanism side first; the flywheel remains
+  // available as a named part instead of becoming an accidental occluder.
+  overview: { pos: [4.8, 4.2, -5.8], target: [0.5, 1.8, 0] },
+  // Inspect the meshing pair from the side opposite the flywheel. Looking
+  // through the flywheel's rim makes the very mechanism this preset teaches
+  // needlessly opaque.
+  "gear-mesh": { pos: [3.25, 1.45, -3], target: [2.2, 0.9, 0] },
   beam: { pos: [0.2, 4.5, 4.0], target: [0, 3.2, 0] },
   cylinder: { pos: [-3.8, 2.5, 3.2], target: [-2.2, 1.5, 0] },
 };
@@ -58,7 +64,15 @@ function cameraPresetForViewport(
   // A portrait viewport has far less horizontal field of view than the
   // desktop studio. Preserve the same target but move the camera outward so
   // the complete mechanism remains inspectable instead of clipping its gears.
-  const mobileDistanceMultiplier = 1.55;
+  // The 320px shell has a narrower usable canvas than the 375px layout; its
+  // flywheel otherwise touches the left edge even though the 375px frame is
+  // correctly composed. Keep that additional clearance local to the narrow
+  // shell instead of making every phone unnecessarily distant.
+  // At 320px the full scene is only 286 CSS pixels wide after the page
+  // gutter. A 1.75× pullback still clipped the flywheel and base corners in
+  // the live studio, so the narrow-shell composition deliberately has its
+  // own fit distance rather than pretending that the 375px framing transfers.
+  const mobileDistanceMultiplier = viewportWidth < 360 ? 2.15 : 1.55;
   return {
     pos: [
       config.target[0] + (config.pos[0] - config.target[0]) * mobileDistanceMultiplier,
@@ -84,7 +98,9 @@ export function WattRotaryEngine3D() {
 
   const [isPlaying, setIsPlaying] = useState(true);
   const [cutaway, setCutaway] = useState(false);
-  const [showCallouts, setShowCallouts] = useState(true);
+  // The labels are useful on demand, but sprite labels render above the mesh
+  // and make the compact planet/sun pair harder to inspect at tablet width.
+  const [showCallouts, setShowCallouts] = useState(false);
   // The gear train is the teaching surface. Telemetry remains available from
   // the toggle, but it must not cover the mesh by default.
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(false);
@@ -100,6 +116,7 @@ export function WattRotaryEngine3D() {
     isPlaying,
     cutaway,
     showCallouts,
+    gearInspection: cameraPreset === "gear-mesh",
   });
 
   // Shared transport tape: sun-and-planet kinematics publish to the patentId-keyed bus.
@@ -141,7 +158,7 @@ export function WattRotaryEngine3D() {
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted rAF loop deliberately reads this stable, layout-effect-synchronized ref so a control change never tears down and flashes the WebGL scene.
+  // The mounted rAF loop deliberately reads this stable, layout-effect-synchronized ref so a control change never tears down and flashes the WebGL scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -174,6 +191,7 @@ export function WattRotaryEngine3D() {
           modelRef.current.updateAnimation(out);
         }
         modelRef.current.setCutaway(live.current.cutaway);
+        modelRef.current.setGearInspection(live.current.gearInspection);
         modelRef.current.setShowCallouts(live.current.showCallouts);
       }
 
@@ -191,7 +209,7 @@ export function WattRotaryEngine3D() {
       studioRef.current = null;
       modelRef.current = null;
     };
-  }, []);
+  }, [live]);
 
   useEffect(() => {
     const restoreMobileFraming = () => {
@@ -222,7 +240,7 @@ export function WattRotaryEngine3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Top-Left Camera Preset Toolbar */}
-        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 hidden sm:flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-28rem)] gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+        <div className="absolute top-3 left-3 lg:top-4 lg:left-4 z-10 hidden lg:flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-9.5rem)] lg:max-w-[calc(100%-28rem)] gap-1 lg:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 lg:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] lg:text-xs transition-opacity duration-200">
           <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
             <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
           </span>
@@ -238,6 +256,11 @@ export function WattRotaryEngine3D() {
               key={preset}
               type="button"
               onClick={() => handleCameraPreset(preset)}
+              title={
+                preset === "gear-mesh"
+                  ? "Gear inspection view (flywheel and labels temporarily hidden)"
+                  : undefined
+              }
               className={`min-h-9 px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                 cameraPreset === preset
                   ? "bg-amber-600 text-white shadow-xs font-semibold"
@@ -249,7 +272,7 @@ export function WattRotaryEngine3D() {
           ))}
         </div>
 
-        <div className="absolute top-3 left-3 z-10 sm:hidden">
+        <div className="absolute top-3 left-3 z-10 lg:hidden">
           <label className="sr-only" htmlFor="watt-camera-view">
             Camera view
           </label>
@@ -441,6 +464,7 @@ export function WattRotaryEngine3D() {
             </div>
             <input
               type="range"
+              aria-label="Boiler pressure"
               min="40"
               max="120"
               step="5"
@@ -459,6 +483,7 @@ export function WattRotaryEngine3D() {
             </div>
             <input
               type="range"
+              aria-label="Stroke rate"
               min="10"
               max="40"
               step="1"
@@ -498,6 +523,7 @@ export function WattRotaryEngine3D() {
             </div>
             <input
               type="range"
+              aria-label="Flywheel inertia"
               min="1000"
               max="5000"
               step="250"

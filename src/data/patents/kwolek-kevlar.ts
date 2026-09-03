@@ -291,7 +291,7 @@ export const kwolekKevlarPatent: Patent = {
   patentNumber: "US 3,671,542",
   title: "Optically Anisotropic Aromatic Polyamide Dopes",
   shortTitle: "Kwolek Kevlar Aromatic Polyamide Dopes",
-  subtitle: "Source edition withheld pending a complete 58-page manual transcription",
+  subtitle: "Complete Patent Transcript with a Structured Edition in Preparation",
   inventors: ["Stephanie Louise Kwolek"],
   inventorLocation: "Wilmington, Delaware",
   grantDate: "1972-06-20",
@@ -300,7 +300,7 @@ export const kwolekKevlarPatent: Patent = {
   category: "materials",
   categoryLabel: "Polymer Chemistry & Advanced Materials",
   summary:
-    "The grant's abstract describes optically anisotropic dopes made from carbocyclic aromatic polyamides in suitable liquid media and says those dopes are used to prepare fibers with unusual internal structure and high tensile properties. Its complete 58-page source face remains withheld until a literal manual edition is finished.",
+    "The grant's abstract describes optically anisotropic dopes made from carbocyclic aromatic polyamides in suitable liquid media and says those dopes are used to prepare fibers with unusual internal structure and high tensile properties. Its complete 58-page transcript is readable on the Original Patent Text face while a structured manual edition is prepared.",
   heroQuote:
     "Compositions or dopes comprising carbocyclic aromatic polyamides in suitable liquid media are prepared which are optically anisotropic.",
   originalPdfUrl: "/patents/pdfs/us-3671542-kwolek-kevlar.pdf",
@@ -317,10 +317,10 @@ Filed May 23, 1969, Appl. No. 827,345
 ABSTRACT
 Compositions or dopes comprising carbocyclic aromatic polyamides in suitable liquid media are prepared which are optically anisotropic. These dopes are used in preparing fibers of unique internal structure and exceptionally high tensile properties.
 
-The full 58-page historical instrument is available through the original PDF. Its public manual edition is deliberately withheld while the remaining specification pages, tables, examples, claims, and correction certificates are transcribed and checked against that facsimile.`,
+The complete 58-page historical transcript is readable on the Original Patent Text face. A structured manual edition is still being prepared against the pinned facsimile.`,
   plainEnglishExplanation: {
     overview:
-      "The verified front sheet says this grant concerns optically anisotropic aromatic-polyamide dopes and their use in making fibers. The catalogue does not yet publish a broader engineering explanation because the manual source edition is incomplete.",
+      "The verified front sheet says this grant concerns optically anisotropic aromatic-polyamide dopes and their use in making fibers. The complete patent transcript is available on the Original Patent Text face; a broader engineering explanation remains limited while the structured source edition is prepared.",
     coreMechanism:
       "The two printed claims define a polymer dope made from a carbocyclic aromatic polyamide and selected liquid media. Claim 2 narrows one such medium to concentrated sulfuric acid. A complete explanation of the specification's processing, examples, figures, tables, and corrections awaits line-by-line manual review.",
     mechanicalBreakdown: [

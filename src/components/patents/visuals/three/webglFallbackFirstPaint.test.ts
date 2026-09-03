@@ -14,13 +14,15 @@ describe("WebGL fallback first-paint boundary", () => {
         "utf8",
       );
       const layoutEffectStart = source.indexOf("useLayoutEffect(() => {");
-      const layoutEffectEnd = source.indexOf("\n  }, []);", layoutEffectStart);
+      const layoutEffectEnd = source.indexOf("\n  }, [liveParams]);", layoutEffectStart);
       const mountedStudio = source.slice(layoutEffectStart, layoutEffectEnd);
 
       expect(layoutEffectStart).toBeGreaterThan(0);
       expect(layoutEffectEnd).toBeGreaterThan(layoutEffectStart);
       expect(mountedStudio).toContain("createThreeStudioScene");
       expect(mountedStudio).toContain("setWebglUnavailable(true)");
+      expect(mountedStudio).toContain("liveParams.current");
+      expect(mountedStudio).not.toContain("[liveParams.current]");
     }
   });
 });

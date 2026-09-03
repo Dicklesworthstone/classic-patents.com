@@ -20,6 +20,8 @@ export interface FingerHierarchy {
   distalLink: THREE.Group;
   fingertipMesh: THREE.Mesh;
   pulleys: THREE.Mesh[];
+  firstIdlerLock: THREE.Mesh;
+  firstIdlerFreeMarker: THREE.Mesh;
   tendonLines: THREE.LineSegments;
 }
 
@@ -32,6 +34,7 @@ export interface SalisburyRobotHandModel {
   cableBundles: THREE.LineSegments[];
   actuatorSpools: THREE.Mesh[];
   tensionSensors: THREE.Mesh[];
+  sourceTopologyObjects: THREE.Object3D[];
   materials: {
     aluminiumChassis: THREE.MeshStandardMaterial;
     fingerLink: THREE.MeshStandardMaterial;
@@ -47,6 +50,7 @@ export function buildSalisburyRobotHandModel(): SalisburyRobotHandModel {
   const forearmGroup = new THREE.Group();
   const wristGroup = new THREE.Group();
   const palmGroup = new THREE.Group();
+  palmGroup.name = "palm-20";
   rootGroup.add(forearmGroup);
   forearmGroup.add(wristGroup);
   wristGroup.add(palmGroup);
@@ -84,7 +88,7 @@ export function buildSalisburyRobotHandModel(): SalisburyRobotHandModel {
   materialsToDispose.push(fingertipElastomer);
 
   const cableSteel = new LineBasicMaterialWithDisposal({
-    color: 0x38bdf8,
+    vertexColors: true,
     linewidth: 1.5,
   });
   materialsToDispose.push(cableSteel);
@@ -132,18 +136,29 @@ export function buildSalisburyRobotHandModel(): SalisburyRobotHandModel {
   wristPlate.position.set(0, -0.05, 0);
   wristGroup.add(wristPlate);
 
-  const palmGeo = new THREE.BoxGeometry(2.35, 0.42, 1.35);
-  geometriesToDispose.push(palmGeo);
-  const palmMesh = new THREE.Mesh(palmGeo, aluminiumChassis);
-  palmMesh.name = "palm-20";
-  palmMesh.position.y = 0.15;
-  palmGroup.add(palmMesh);
+  // Palm 20 is the source's angular member 22 plus transverse terminal member
+  // 24, not a monolithic rectangular plate. Their overlap forms one rigid,
+  // wrist-mounted T-shaped chassis: two fingers attach to member 24 and the
+  // opposing thumb attaches to member 22.
+  const angularMemberGeo = new THREE.BoxGeometry(0.58, 0.38, 1.55);
+  geometriesToDispose.push(angularMemberGeo);
+  const angularMember = new THREE.Mesh(angularMemberGeo, aluminiumChassis);
+  angularMember.name = "palm angular member 22";
+  angularMember.position.set(0, 0.15, 0.04);
+  palmGroup.add(angularMember);
+
+  const terminalMemberGeo = new THREE.BoxGeometry(2.15, 0.38, 0.52);
+  geometriesToDispose.push(terminalMemberGeo);
+  const terminalMember = new THREE.Mesh(terminalMemberGeo, aluminiumChassis);
+  terminalMember.name = "palm terminal member 24";
+  terminalMember.position.set(0, 0.15, -0.5);
+  palmGroup.add(terminalMember);
 
   // 3. Build Three 3-DOF Articulated Fingers
   const fingers: FingerHierarchy[] = [];
   const fingerPositions = [
-    { x: -0.7, z: -0.3, yawBase: -0.18 },
-    { x: 0.7, z: -0.3, yawBase: 0.18 },
+    { x: -0.7, z: -0.5, yawBase: -0.18 },
+    { x: 0.7, z: -0.5, yawBase: 0.18 },
     { x: 0.0, z: 0.55, yawBase: Math.PI },
   ];
   const cableOffsets = [
@@ -154,10 +169,13 @@ export function buildSalisburyRobotHandModel(): SalisburyRobotHandModel {
   ] as const;
   const verticalAxis = new THREE.Vector3(0, 1, 0);
   const tensionSensors: THREE.Mesh[] = [];
+  const sourceTopologyObjects: THREE.Object3D[] = [];
+  const cableColors = [0x38bdf8, 0x34d399, 0xfbbf24, 0xfb7185] as const;
 
   for (let f = 0; f < 3; f++) {
     const fConfig = fingerPositions[f];
     const fingerRoot = new THREE.Group();
+    fingerRoot.name = `finger-${f + 1}-three-joint-chain`;
     fingerRoot.position.set(fConfig.x, 0.42, fConfig.z);
     fingerRoot.rotation.y = fConfig.yawBase;
     palmGroup.add(fingerRoot);
@@ -175,6 +193,7 @@ export function buildSalisburyRobotHandModel(): SalisburyRobotHandModel {
       sensor.position.set(fConfig.x + seatOffset.x, 0.41, fConfig.z + seatOffset.z);
       palmGroup.add(sensor);
       tensionSensors.push(sensor);
+      sourceTopologyObjects.push(sensor);
     }
 
     // Joint 1: Base Yaw Link (abduction/adduction)
@@ -193,10 +212,36 @@ export function buildSalisburyRobotHandModel(): SalisburyRobotHandModel {
     geometriesToDispose.push(basePulleyGeo);
     const basePulleyMeshes = Array.from({ length: 4 }, (_, index) => {
       const pulley = new THREE.Mesh(basePulleyGeo, pulleyBrass);
-      pulley.position.set(0, 0.14, (index - 1.5) * 0.085);
+      const labels = ["30′", "30″", "30‴", "30⁗"] as const;
+      pulley.name = `finger-${f + 1}-Axis-1-pulley-${labels[index]}`;
+      // Every sheave is coaxial with pin 36. Varying position along Y stacks
+      // the four 80-mm display-width sheaves contiguously on that one Axis 1.
+      pulley.position.set(0, (index - 1.5) * 0.08, 0);
       yawLink.add(pulley);
       return pulley;
     });
+
+    const basePinGeo = new THREE.CylinderGeometry(0.045, 0.045, 0.48, 12);
+    geometriesToDispose.push(basePinGeo);
+    const basePin = new THREE.Mesh(basePinGeo, fingerLink);
+    basePin.name = `finger-${f + 1}-Axis-1-pin-36`;
+    yawLink.add(basePin);
+
+    const firstIdlerLockGeo = new THREE.BoxGeometry(0.12, 0.1, 0.31);
+    geometriesToDispose.push(firstIdlerLockGeo);
+    const firstIdlerLock = new THREE.Mesh(firstIdlerLockGeo, fingerLink);
+    firstIdlerLock.name = `finger-${f + 1}-Claim-2-first-idler-lock`;
+    firstIdlerLock.position.set(0.15, -0.12, 0);
+    yawLink.add(firstIdlerLock);
+
+    const freeMarkerGeo = new THREE.TorusGeometry(0.205, 0.022, 8, 28);
+    geometriesToDispose.push(freeMarkerGeo);
+    const firstIdlerFreeMarker = new THREE.Mesh(freeMarkerGeo, fingertipElastomer);
+    firstIdlerFreeMarker.name = `finger-${f + 1}-Claim-2-released-idler-marker`;
+    firstIdlerFreeMarker.rotation.x = Math.PI / 2;
+    firstIdlerFreeMarker.position.y = -0.12;
+    firstIdlerFreeMarker.visible = false;
+    yawLink.add(firstIdlerFreeMarker);
 
     // Base link strut extending to Joint 2
     const baseStrutGeo = new THREE.BoxGeometry(0.25, 0.5, 0.28);
@@ -212,6 +257,7 @@ export function buildSalisburyRobotHandModel(): SalisburyRobotHandModel {
 
     // Joint 2 drive pulley (oriented horizontally on pitch axis)
     const j2PulleyMesh = new THREE.Mesh(basePulleyGeo, pulleyBrass);
+    j2PulleyMesh.name = `finger-${f + 1}-Axis-2-drive-pulley-45`;
     j2PulleyMesh.rotation.z = Math.PI / 2;
     proximalLink.add(j2PulleyMesh);
 
@@ -229,6 +275,7 @@ export function buildSalisburyRobotHandModel(): SalisburyRobotHandModel {
 
     // Joint 3 drive pulley
     const j3PulleyMesh = new THREE.Mesh(basePulleyGeo, pulleyBrass);
+    j3PulleyMesh.name = `finger-${f + 1}-Axis-3-idler-pulley-54`;
     j3PulleyMesh.rotation.z = Math.PI / 2;
     distalLink.add(j3PulleyMesh);
 
@@ -239,17 +286,28 @@ export function buildSalisburyRobotHandModel(): SalisburyRobotHandModel {
     link3Mesh.position.set(0, 0.35, 0);
     distalLink.add(link3Mesh);
 
-    // Spherical Compliant Fingertip
-    const tipGeo = new THREE.SphereGeometry(0.2, 24, 24);
+    // The source draws an elongated resilient cover over joint 48. A capsule
+    // preserves that seated, finger-like geometry without inventing material
+    // dimensions or presenting a detached spherical contact body.
+    const tipGeo = new THREE.CapsuleGeometry(0.15, 0.36, 8, 20);
     geometriesToDispose.push(tipGeo);
     const fingertipMesh = new THREE.Mesh(tipGeo, fingertipElastomer);
-    fingertipMesh.position.set(0, 0.72, 0);
+    fingertipMesh.name = `finger-${f + 1}-resilient-tip-cover-48`;
+    fingertipMesh.position.set(0, 0.86, 0);
     distalLink.add(fingertipMesh);
 
     // Four moving tendon polylines. Their vertices are rewritten after every
     // joint update so no cable end floats away from its pulley/link anchor.
     const tendonGeo = new THREE.BufferGeometry();
     tendonGeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(72), 3));
+    const tendonColors = new Float32Array(72);
+    for (let cableIndex = 0; cableIndex < 4; cableIndex++) {
+      const color = new THREE.Color(cableColors[cableIndex]);
+      for (let vertexIndex = 0; vertexIndex < 6; vertexIndex++) {
+        color.toArray(tendonColors, (cableIndex * 6 + vertexIndex) * 3);
+      }
+    }
+    tendonGeo.setAttribute("color", new THREE.BufferAttribute(tendonColors, 3));
     geometriesToDispose.push(tendonGeo);
     const tendonLines = new THREE.LineSegments(tendonGeo, cableSteel);
     rootGroup.add(tendonLines);
@@ -261,8 +319,11 @@ export function buildSalisburyRobotHandModel(): SalisburyRobotHandModel {
       distalLink,
       fingertipMesh,
       pulleys: [...basePulleyMeshes, j2PulleyMesh, j3PulleyMesh],
+      firstIdlerLock,
+      firstIdlerFreeMarker,
       tendonLines,
     });
+    sourceTopologyObjects.push(fingerRoot, tendonLines);
   }
 
   // 4. Twelve visible actuator drums and three four-cable bundles connect the
@@ -294,11 +355,22 @@ export function buildSalisburyRobotHandModel(): SalisburyRobotHandModel {
       routeVertices.push(origin, middle, middle.clone(), end);
     }
     const bundleGeometry = new THREE.BufferGeometry().setFromPoints(routeVertices);
+    const bundleColors = new Float32Array(routeVertices.length * 3);
+    for (let cableIndex = 0; cableIndex < 4; cableIndex++) {
+      const color = new THREE.Color(cableColors[cableIndex]);
+      for (let vertexIndex = 0; vertexIndex < 4; vertexIndex++) {
+        color.toArray(bundleColors, (cableIndex * 4 + vertexIndex) * 3);
+      }
+    }
+    bundleGeometry.setAttribute("color", new THREE.BufferAttribute(bundleColors, 3));
     geometriesToDispose.push(bundleGeometry);
     const bundle = new THREE.LineSegments(bundleGeometry, cableSteel);
     rootGroup.add(bundle);
     cableBundles.push(bundle);
+    sourceTopologyObjects.push(bundle);
   }
+
+  sourceTopologyObjects.push(...actuatorSpools);
 
   const dispose = () => {
     for (const mat of materialsToDispose) mat.dispose();
@@ -314,6 +386,7 @@ export function buildSalisburyRobotHandModel(): SalisburyRobotHandModel {
     cableBundles,
     actuatorSpools,
     tensionSensors,
+    sourceTopologyObjects,
     materials: {
       aluminiumChassis,
       fingerLink,
@@ -374,13 +447,23 @@ export function updateSalisburyRobotHandModel(
   tel: SalisburyRobotHandTelemetry,
 ) {
   const [axis1Deg, axis2Deg, axis3Deg] = tel.displayJointAnglesDeg;
+  for (const object of model.sourceTopologyObjects) object.visible = tel.claim1RoutingProbe;
   for (let index = 0; index < model.fingers.length; index++) {
     const finger = model.fingers[index];
     const mirror = index === 1 ? -1 : 1;
     finger.yawLink.rotation.y = (mirror * axis1Deg * Math.PI) / 180;
     finger.proximalLink.rotation.x = -(axis2Deg * Math.PI) / 180;
     finger.distalLink.rotation.x = -(axis3Deg * Math.PI) / 180;
+    finger.firstIdlerLock.visible = tel.claim1RoutingProbe && tel.claim2IdlerProbe;
+    finger.firstIdlerFreeMarker.visible = tel.claim1RoutingProbe && !tel.claim2IdlerProbe;
   }
+
+  model.rootGroup.userData.claim1RoutingPresent = tel.claim1RoutingProbe;
+  model.rootGroup.userData.firstIdlerFixed = tel.claim2IdlerProbe;
+  model.rootGroup.userData.activeJointCoordinates = tel.activeJointCoordinates;
+  model.rootGroup.userData.activeCableEndCount = tel.activeCableEndCount;
+  model.rootGroup.userData.genericTopologyOwner = tel.owners.topology;
+  model.rootGroup.userData.genericRevoluteOwner = tel.owners.revolute;
 
   model.rootGroup.updateMatrixWorld(true);
   for (const finger of model.fingers) updateTendonPath(model.rootGroup, finger);

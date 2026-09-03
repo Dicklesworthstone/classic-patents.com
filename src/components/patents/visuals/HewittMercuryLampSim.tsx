@@ -418,6 +418,7 @@ export function HewittMercuryLampSim({
           </div>
           <input
             type="range"
+            aria-label="Electrical mains voltage in volts"
             min={80}
             max={240}
             step={5}
@@ -438,6 +439,7 @@ export function HewittMercuryLampSim({
           </div>
           <input
             type="range"
+            aria-label="Mercury-vapor tube length in centimeters"
             min={30}
             max={150}
             step={5}
@@ -456,6 +458,7 @@ export function HewittMercuryLampSim({
           </div>
           <input
             type="range"
+            aria-label="Mercury-vapor tube diameter in millimeters"
             min={15}
             max={40}
             step={1}
@@ -474,6 +477,7 @@ export function HewittMercuryLampSim({
           </div>
           <input
             type="range"
+            aria-label="Condenser cooling level"
             min={0.5}
             max={2.0}
             step={0.1}
@@ -492,6 +496,7 @@ export function HewittMercuryLampSim({
           </div>
           <input
             type="range"
+            aria-label="Ballast resistance in ohms"
             min={5}
             max={30}
             step={1}

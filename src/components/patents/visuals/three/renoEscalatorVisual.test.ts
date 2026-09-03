@@ -5,7 +5,7 @@ import * as THREE from "three";
 import { energyChannelsFor } from "@/physics/energyChannels";
 import { stepRenoEscalator } from "@/physics/machineKernels";
 import { PATENT_PHYSICS_REGISTRY } from "@/physics/telemetryData";
-import { RENO_CAMERA_PRESETS } from "./RenoEscalator3D";
+import { RENO_CAMERA_PRESETS } from "./renoEscalatorCamera";
 import {
   buildRenoEscalatorModel,
   createRenoEscalatorLayout,

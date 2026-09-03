@@ -42,20 +42,10 @@ import {
   FLYER_DIM,
   updateWrightFlyerKinematics,
 } from "./wrightFlyerAirframe";
-
-type CameraPreset = "iso" | "wing_warp" | "canard" | "rudder" | "engine_props" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [7.6, 3.2, 8.4], target: [0, 0.15, 0] },
-  wing_warp: { pos: [-6.5, 1.8, 4.2], target: [-4.5, 0.2, 0] },
-  canard: { pos: [0, 1.2, 5.5], target: [0, 0.4, 2.5] },
-  rudder: { pos: [0, 1.4, -6.0], target: [0, 0.4, -2.5] },
-  engine_props: { pos: [2.8, 1.2, -1.8], target: [0, 0.2, -0.5] },
-  top: { pos: [0, 13.5, 0.1], target: [0, 0, 0] },
-};
+import {
+  type WrightFlyerCameraPreset as CameraPreset,
+  wrightFlyerViewForViewport,
+} from "./wrightFlyerCamera";
 
 function deterministicUnit(index: number, channel: number, generation = 0): number {
   const sample =
@@ -124,8 +114,8 @@ export function WrightFlyer3D() {
   const [isAutoFlying, setIsAutoFlying] = useState<boolean>(true);
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: isCoupled });
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [kernelLabel, setKernelLabel] = useState(flyerKernelSource());
-  const [aeroLabel, setAeroLabel] = useState(flyerAeroSource());
+  const [kernelLabel, setKernelLabel] = useState(flyerKernelSource);
+  const [aeroLabel, setAeroLabel] = useState(flyerAeroSource);
   const live = useLiveSimParams({
     wingWarpDeg,
     rudderYawDeg,
@@ -152,8 +142,8 @@ export function WrightFlyer3D() {
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
-    studioRef.current?.controls.setView(cfg.pos, cfg.target);
+    const camera = wrightFlyerViewForViewport(preset, containerRef.current?.clientWidth ?? 1000);
+    studioRef.current?.controls.setView(camera.pos, camera.target);
   };
 
   useEffect(() => {
@@ -165,24 +155,25 @@ export function WrightFlyer3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const initialCamera = wrightFlyerViewForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
-      cameraPos: iso.pos,
-      targetPos: iso.target,
+      cameraPos: initialCamera.pos,
+      targetPos: initialCamera.target,
       fov: 38,
     });
     studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    controls.setRadius(11);
 
     const airframe = buildWrightFlyerAirframe();
     const flyerGroup = airframe.group;
     scene.add(flyerGroup);
 
     // --- AERODYNAMIC AIRFLOW STREAMLINE PARTICLES ---
-    const particleCount = 280;
+    // A sparse, translucent field communicates flow without burying the
+    // claimed wing-warp / rudder geometry at high-control settings.
+    const particleCount = 180;
     const particleGeo = new THREE.BufferGeometry();
     const particlePositions = new Float32Array(particleCount * 3);
     const particleColors = new Float32Array(particleCount * 3);
@@ -204,11 +195,11 @@ export function WrightFlyer3D() {
     particleGeo.setAttribute("color", new THREE.BufferAttribute(particleColors, 3));
 
     const particleMat = new THREE.PointsMaterial({
-      size: 0.5,
+      size: 0.34,
       map: glowTex,
       vertexColors: true,
       transparent: true,
-      opacity: 0.85,
+      opacity: 0.55,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
@@ -339,6 +330,18 @@ export function WrightFlyer3D() {
       studioRef.current = null;
     };
   }, [live]);
+
+  useEffect(() => {
+    const restoreResponsiveView = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const camera = wrightFlyerViewForViewport(activeCamera, container.clientWidth);
+      studioRef.current?.controls.setView(camera.pos, camera.target);
+    };
+
+    window.addEventListener("resize", restoreResponsiveView);
+    return () => window.removeEventListener("resize", restoreResponsiveView);
+  }, [activeCamera]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
@@ -627,6 +630,7 @@ export function WrightFlyer3D() {
             </div>
             <input
               type="range"
+              aria-label="Pitch canard angle"
               min="-15"
               max="15"
               step="0.5"
@@ -645,6 +649,7 @@ export function WrightFlyer3D() {
             </div>
             <input
               type="range"
+              aria-label="Coupled rudder angle"
               min="-20"
               max="20"
               step="0.5"

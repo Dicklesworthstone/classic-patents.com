@@ -51,7 +51,10 @@ export const usdzArchivesHaveEqualContent = (left: Uint8Array, right: Uint8Array
   if (left.byteLength !== right.byteLength) return false;
   const canonicalLeft = canonicalizeUSDZArchive(left);
   const canonicalRight = canonicalizeUSDZArchive(right);
-  return canonicalLeft.every((byte, index) => byte === canonicalRight[index]);
+  return (
+    canonicalLeft.length === canonicalRight.length &&
+    canonicalLeft.every((byte, index) => byte === canonicalRight[index])
+  );
 };
 
 type SemanticArchiveEntry = {
@@ -120,7 +123,7 @@ export const usdzArchivesHaveEquivalentPayload = (left: Uint8Array, right: Uint8
       return leftEntry.payload === rightEntry.payload;
     }
     return (
-      leftEntry.payload.byteLength === rightEntry.payload.byteLength &&
+      leftEntry.payload.length === rightEntry.payload.length &&
       leftEntry.payload.every((byte, byteIndex) => byte === rightEntry.payload[byteIndex])
     );
   });

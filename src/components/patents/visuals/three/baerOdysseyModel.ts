@@ -9,7 +9,7 @@ export interface BaerOdyssey3DModel {
 
 export function buildBaerOdysseyModel(): BaerOdyssey3DModel {
   const root = new THREE.Group();
-  root.name = "US 3,728,480 Magnavox Odyssey 3D Studio Model";
+  root.name = "US 3,728,480 Figure 1 and 1B Source Apparatus";
 
   const geometries: THREE.BufferGeometry[] = [];
   const materials: THREE.Material[] = [];
@@ -66,7 +66,16 @@ export function buildBaerOdysseyModel(): BaerOdyssey3DModel {
       metalness: 0.9,
     }),
   );
-  const _crtGlass = material(
+  const signalCableMaterial = material(
+    new THREE.MeshStandardMaterial({
+      color: 0x1f2937,
+      emissive: 0x0b3b4d,
+      emissiveIntensity: 0.35,
+      roughness: 0.72,
+      metalness: 0.08,
+    }),
+  );
+  const photocellGlass = material(
     new THREE.MeshStandardMaterial({
       color: 0x0f172a,
       roughness: 0.1,
@@ -74,25 +83,22 @@ export function buildBaerOdysseyModel(): BaerOdyssey3DModel {
     }),
   );
 
-  // Screen Phosphor Glow Materials
+  // Screen phosphor and signal-path materials. The patent permits monochrome
+  // or color receivers; the two generated source dots are deliberately the
+  // same phosphor color rather than invented game-player colors.
   const screenPhosphorMat = material(
     new THREE.MeshBasicMaterial({
       color: 0x041824,
     }),
   );
-  const paddleP1Mat = material(
+  const dot20Material = material(
     new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
+      color: 0xfff7c2,
     }),
   );
-  const paddleP2Mat = material(
+  const dot20PrimeMaterial = material(
     new THREE.MeshBasicMaterial({
-      color: 0xf472b6,
-    }),
-  );
-  const ballMat = material(
-    new THREE.MeshBasicMaterial({
-      color: 0xfef08a,
+      color: 0xfff7c2,
     }),
   );
   const coincidenceGlowMat = material(
@@ -106,110 +112,65 @@ export function buildBaerOdysseyModel(): BaerOdyssey3DModel {
   // 1. CRT TELEVISION SET (RECEIVER 10)
   const tvGroup = new THREE.Group();
   tvGroup.name = "Television Receiver 10";
-  tvGroup.position.set(0, 1.2, 0);
+  tvGroup.position.set(0, 0.825, 0);
 
   // TV Cabinet (Wood Console)
-  const tvCabinetMesh = new THREE.Mesh(geometry(new THREE.BoxGeometry(2.4, 1.8, 1.4)), woodFinish);
+  const tvCabinetMesh = new THREE.Mesh(
+    geometry(new THREE.BoxGeometry(2.25, 1.65, 1.1)),
+    woodFinish,
+  );
+  tvCabinetMesh.name = "Receiver 10 cabinet";
   tvCabinetMesh.castShadow = true;
   tvCabinetMesh.receiveShadow = true;
   tvGroup.add(tvCabinetMesh);
 
   // TV Front Bezel (Cream plastic)
-  const tvBezel = new THREE.Mesh(geometry(new THREE.BoxGeometry(2.2, 1.6, 0.1)), plasticBlack);
-  tvBezel.position.set(0, 0, 0.71);
+  const tvBezel = new THREE.Mesh(geometry(new THREE.BoxGeometry(2.05, 1.4, 0.08)), plasticBlack);
+  tvBezel.name = "Receiver 10 front bezel";
+  tvBezel.position.set(0, 0, 0.57);
   tvGroup.add(tvBezel);
 
   // Curved CRT Screen Face
-  const crtScreen = new THREE.Mesh(geometry(new THREE.PlaneGeometry(1.6, 1.2)), screenPhosphorMat);
-  crtScreen.position.set(-0.2, 0.05, 0.77);
+  const crtScreen = new THREE.Mesh(
+    geometry(new THREE.PlaneGeometry(1.72, 1.12)),
+    screenPhosphorMat,
+  );
+  crtScreen.name = "Television screen 18";
+  crtScreen.position.set(0, 0, 0.615);
   tvGroup.add(crtScreen);
 
-  // TV Tuner Control Panel on Right Side
-  const tunerPanel = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.35, 1.2, 0.05)), creamConsole);
-  tunerPanel.position.set(0.8, 0.05, 0.76);
-  tvGroup.add(tunerPanel);
+  // Generated rectangular dots 20 and 20-1 from Figure 1. They are not
+  // Pong paddles and no autonomous third ball is part of this source view.
+  const dot20Mesh = new THREE.Mesh(geometry(new THREE.PlaneGeometry(0.11, 0.075)), dot20Material);
+  dot20Mesh.name = "Generated dot 20";
+  dot20Mesh.position.set(-0.5, 0.05, 0.62);
+  tvGroup.add(dot20Mesh);
 
-  // Channel VHF Dial (Knob)
-  const vhfKnob = new THREE.Mesh(
-    geometry(new THREE.CylinderGeometry(0.08, 0.08, 0.06, 24)),
-    chromeMetal,
+  const dot20PrimeMesh = new THREE.Mesh(
+    geometry(new THREE.PlaneGeometry(0.11, 0.075)),
+    dot20PrimeMaterial,
   );
-  vhfKnob.rotation.x = Math.PI / 2;
-  vhfKnob.position.set(0.8, 0.35, 0.8);
-  tvGroup.add(vhfKnob);
-
-  // UHF Dial
-  const uhfKnob = new THREE.Mesh(
-    geometry(new THREE.CylinderGeometry(0.08, 0.08, 0.06, 24)),
-    chromeMetal,
-  );
-  uhfKnob.rotation.x = Math.PI / 2;
-  uhfKnob.position.set(0.8, 0.1, 0.8);
-  tvGroup.add(uhfKnob);
-
-  // Speaker Grille Slits
-  const grille = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.3, 0.35, 0.02)), plasticBlack);
-  grille.position.set(0.8, -0.3, 0.78);
-  tvGroup.add(grille);
-
-  // TV Stand / Legs
-  const legGeom = geometry(new THREE.CylinderGeometry(0.04, 0.025, 0.8, 16));
-  const legFL = new THREE.Mesh(legGeom, goldTrim);
-  legFL.position.set(-1.0, -1.2, 0.5);
-  legFL.rotation.z = 0.15;
-  legFL.rotation.x = -0.1;
-  tvGroup.add(legFL);
-
-  const legFR = new THREE.Mesh(legGeom, goldTrim);
-  legFR.position.set(1.0, -1.2, 0.5);
-  legFR.rotation.z = -0.15;
-  legFR.rotation.x = -0.1;
-  tvGroup.add(legFR);
-
-  const legBL = new THREE.Mesh(legGeom, goldTrim);
-  legBL.position.set(-1.0, -1.2, -0.5);
-  legBL.rotation.z = 0.15;
-  legBL.rotation.x = 0.1;
-  tvGroup.add(legBL);
-
-  const legBR = new THREE.Mesh(legGeom, goldTrim);
-  legBR.position.set(1.0, -1.2, -0.5);
-  legBR.rotation.z = -0.15;
-  legBR.rotation.x = 0.1;
-  tvGroup.add(legBR);
-
-  // CRT Screen Phosphor Dynamic Meshes
-  const p1PaddleMesh = new THREE.Mesh(geometry(new THREE.PlaneGeometry(0.06, 0.28)), paddleP1Mat);
-  p1PaddleMesh.position.set(-0.7, 0.05, 0.78);
-  tvGroup.add(p1PaddleMesh);
-
-  const p2PaddleMesh = new THREE.Mesh(geometry(new THREE.PlaneGeometry(0.06, 0.28)), paddleP2Mat);
-  p2PaddleMesh.position.set(0.3, 0.05, 0.78);
-  tvGroup.add(p2PaddleMesh);
-
-  const ballMesh = new THREE.Mesh(geometry(new THREE.PlaneGeometry(0.05, 0.05)), ballMat);
-  ballMesh.position.set(-0.2, 0.05, 0.78);
-  tvGroup.add(ballMesh);
+  dot20PrimeMesh.name = "Generated dot 20-1";
+  dot20PrimeMesh.position.set(0.5, 0.05, 0.62);
+  tvGroup.add(dot20PrimeMesh);
 
   const coincidenceGlowMesh = new THREE.Mesh(
     geometry(new THREE.RingGeometry(0.04, 0.12, 24)),
     coincidenceGlowMat,
   );
-  coincidenceGlowMesh.position.set(-0.2, 0.05, 0.782);
+  coincidenceGlowMesh.name = "Dot coincidence indicator";
+  coincidenceGlowMesh.position.set(0, 0.05, 0.623);
   tvGroup.add(coincidenceGlowMesh);
 
   root.add(tvGroup);
 
-  // 2. MAGNAVOX ODYSSEY MASTER CONSOLE (UNIT 14 / 21)
+  // 2. SOURCE MASTER CONTROL UNIT 21 (FIG. 1B)
   const consoleGroup = new THREE.Group();
-  consoleGroup.name = "Master Console 14";
+  consoleGroup.name = "Master Control Unit 21";
   consoleGroup.position.set(0, 0.1, 1.8);
 
-  // Console Body (Futuristic 1972 Cream + Brown Faux Wood)
-  const consoleBody = new THREE.Mesh(
-    geometry(new THREE.BoxGeometry(1.2, 0.18, 0.75)),
-    creamConsole,
-  );
+  const consoleBody = new THREE.Mesh(geometry(new THREE.BoxGeometry(1.2, 0.2, 0.75)), creamConsole);
+  consoleBody.name = "Master unit 21 housing";
   consoleBody.castShadow = true;
   consoleBody.receiveShadow = true;
   consoleGroup.add(consoleBody);
@@ -221,103 +182,117 @@ export function buildBaerOdysseyModel(): BaerOdyssey3DModel {
   consoleTopInlay.position.set(0, 0.095, 0);
   consoleGroup.add(consoleTopInlay);
 
-  // Program Card Cartridge Slot
-  const slotBezel = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.5, 0.04, 0.08)), goldTrim);
-  slotBezel.position.set(0, 0.11, -0.15);
-  consoleGroup.add(slotBezel);
-
-  // Inserted Game Card #1 (Tennis)
-  const gameCard = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.44, 0.18, 0.04)), creamConsole);
-  gameCard.position.set(0, 0.18, -0.15);
-  consoleGroup.add(gameCard);
-
   // Reset Button (Pushbutton 26)
   const resetBtn = new THREE.Mesh(
     geometry(new THREE.CylinderGeometry(0.035, 0.035, 0.04, 16)),
     goldTrim,
   );
-  resetBtn.position.set(0.35, 0.11, 0.18);
+  resetBtn.name = "Reset switch 26";
+  resetBtn.position.set(-0.2, 0.125, 0);
   consoleGroup.add(resetBtn);
 
-  // Chroma Background Color Dial (Knob 15)
+  // Background-color control 15 is on the front of master unit 21.
+  const chromaDialGroup = new THREE.Group();
+  chromaDialGroup.name = "Background color knob 15";
+  chromaDialGroup.position.set(0.18, 0, 0.385);
   const chromaDial = new THREE.Mesh(
     geometry(new THREE.CylinderGeometry(0.045, 0.045, 0.03, 20)),
     chromeMetal,
   );
-  chromaDial.position.set(-0.35, 0.11, 0.18);
-  consoleGroup.add(chromaDial);
+  chromaDial.rotation.x = Math.PI / 2;
+  chromaDialGroup.add(chromaDial);
+  const chromaPointer = new THREE.Mesh(
+    geometry(new THREE.BoxGeometry(0.01, 0.045, 0.018)),
+    plasticBlack,
+  );
+  chromaPointer.position.set(0, 0.02, 0.02);
+  chromaDialGroup.add(chromaPointer);
+  consoleGroup.add(chromaDialGroup);
 
   root.add(consoleGroup);
 
   // 3. PLAYER 1 CONTROLLER (UNIT 22)
+  const controllerKnobPointerGeometry = geometry(new THREE.BoxGeometry(0.012, 0.012, 0.045));
   const p1Group = new THREE.Group();
-  p1Group.name = "Player 1 Controller 22";
+  p1Group.name = "Individual Control Unit 22";
   p1Group.position.set(-1.1, 0.08, 2.2);
 
-  const p1Box = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.42, 0.14, 0.42)), creamConsole);
+  const p1Box = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.48, 0.16, 0.42)), creamConsole);
+  p1Box.name = "Control unit 22 housing";
   p1Box.castShadow = true;
   p1Group.add(p1Box);
 
-  // Player 1 Vertical Knob (Knob 16) on right side of controller
+  // Figure 1B places both position knobs on the top surface.
+  const p1KnobVGroup = new THREE.Group();
+  p1KnobVGroup.name = "Control 22 vertical knob 16";
+  p1KnobVGroup.position.set(-0.1, 0.095, 0);
   const p1KnobV = new THREE.Mesh(
     geometry(new THREE.CylinderGeometry(0.04, 0.04, 0.04, 16)),
     plasticBlack,
   );
-  p1KnobV.rotation.z = Math.PI / 2;
-  p1KnobV.position.set(0.22, 0, 0);
-  p1Group.add(p1KnobV);
+  p1KnobVGroup.add(p1KnobV);
+  const p1KnobVPointer = new THREE.Mesh(controllerKnobPointerGeometry, creamConsole);
+  p1KnobVPointer.position.set(0, 0.026, 0.012);
+  p1KnobVGroup.add(p1KnobVPointer);
+  p1Group.add(p1KnobVGroup);
 
-  // Player 1 Horizontal Knob (Knob 17) on right side of controller
+  const p1KnobHGroup = new THREE.Group();
+  p1KnobHGroup.name = "Control 22 horizontal knob 17";
+  p1KnobHGroup.position.set(0.1, 0.095, 0);
   const p1KnobH = new THREE.Mesh(
-    geometry(new THREE.CylinderGeometry(0.03, 0.03, 0.04, 16)),
+    geometry(new THREE.CylinderGeometry(0.04, 0.04, 0.04, 16)),
     chromeMetal,
   );
-  p1KnobH.rotation.z = Math.PI / 2;
-  p1KnobH.position.set(0.25, 0, 0);
-  p1Group.add(p1KnobH);
-
-  // Player 1 English Dial on left side
-  const p1KnobEnglish = new THREE.Mesh(
-    geometry(new THREE.CylinderGeometry(0.04, 0.04, 0.03, 16)),
-    plasticBlack,
-  );
-  p1KnobEnglish.rotation.z = Math.PI / 2;
-  p1KnobEnglish.position.set(-0.22, 0, 0);
-  p1Group.add(p1KnobEnglish);
+  p1KnobHGroup.add(p1KnobH);
+  const p1KnobHPointer = new THREE.Mesh(controllerKnobPointerGeometry, plasticBlack);
+  p1KnobHPointer.position.set(0, 0.026, 0.012);
+  p1KnobHGroup.add(p1KnobHPointer);
+  p1Group.add(p1KnobHGroup);
 
   root.add(p1Group);
 
   // 4. PLAYER 2 CONTROLLER (UNIT 23)
   const p2Group = new THREE.Group();
-  p2Group.name = "Player 2 Controller 23";
+  p2Group.name = "Individual Control Unit 23";
   p2Group.position.set(1.1, 0.08, 2.2);
 
-  const p2Box = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.42, 0.14, 0.42)), creamConsole);
+  const p2Box = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.48, 0.16, 0.42)), creamConsole);
+  p2Box.name = "Control unit 23 housing";
   p2Box.castShadow = true;
   p2Group.add(p2Box);
 
+  const p2KnobVGroup = new THREE.Group();
+  p2KnobVGroup.name = "Control 23 vertical knob 16-1";
+  p2KnobVGroup.position.set(-0.1, 0.095, 0);
   const p2KnobV = new THREE.Mesh(
     geometry(new THREE.CylinderGeometry(0.04, 0.04, 0.04, 16)),
     plasticBlack,
   );
-  p2KnobV.rotation.z = Math.PI / 2;
-  p2KnobV.position.set(0.22, 0, 0);
-  p2Group.add(p2KnobV);
+  p2KnobVGroup.add(p2KnobV);
+  const p2KnobVPointer = new THREE.Mesh(controllerKnobPointerGeometry, creamConsole);
+  p2KnobVPointer.position.set(0, 0.026, 0.012);
+  p2KnobVGroup.add(p2KnobVPointer);
+  p2Group.add(p2KnobVGroup);
 
+  const p2KnobHGroup = new THREE.Group();
+  p2KnobHGroup.name = "Control 23 horizontal knob 17-1";
+  p2KnobHGroup.position.set(0.1, 0.095, 0);
   const p2KnobH = new THREE.Mesh(
-    geometry(new THREE.CylinderGeometry(0.03, 0.03, 0.04, 16)),
+    geometry(new THREE.CylinderGeometry(0.04, 0.04, 0.04, 16)),
     chromeMetal,
   );
-  p2KnobH.rotation.z = Math.PI / 2;
-  p2KnobH.position.set(0.25, 0, 0);
-  p2Group.add(p2KnobH);
+  p2KnobHGroup.add(p2KnobH);
+  const p2KnobHPointer = new THREE.Mesh(controllerKnobPointerGeometry, plasticBlack);
+  p2KnobHPointer.position.set(0, 0.026, 0.012);
+  p2KnobHGroup.add(p2KnobHPointer);
+  p2Group.add(p2KnobHGroup);
 
   root.add(p2Group);
 
   // 5. OPTICAL LIGHT GUN (FIG. 1C)
   const gunGroup = new THREE.Group();
-  gunGroup.name = "Light Gun 27";
-  gunGroup.position.set(0.6, 0.12, 1.4);
+  gunGroup.name = "Photoelectric Light Gun 27";
+  gunGroup.position.set(0.55, 0.235, 2.55);
   gunGroup.rotation.y = -0.4;
 
   const gunBarrel = new THREE.Mesh(
@@ -327,67 +302,127 @@ export function buildBaerOdysseyModel(): BaerOdyssey3DModel {
   gunBarrel.rotation.x = Math.PI / 2;
   gunGroup.add(gunBarrel);
 
-  const gunStock = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.05, 0.12, 0.35)), woodFinish);
-  gunStock.position.set(0, -0.05, 0.35);
-  gunStock.rotation.x = 0.2;
-  gunGroup.add(gunStock);
+  const photocellLens = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.028, 0.028, 0.025, 18)),
+    photocellGlass,
+  );
+  photocellLens.name = "Light gun 27 photoelectric cell lens";
+  photocellLens.position.z = -0.33;
+  photocellLens.rotation.x = Math.PI / 2;
+  gunGroup.add(photocellLens);
+
+  const gunGrip = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.09, 0.24, 0.11)), woodFinish);
+  gunGrip.name = "Light gun 27 grip";
+  gunGrip.position.set(0, -0.105, 0.16);
+  gunGrip.rotation.x = -0.25;
+  gunGroup.add(gunGrip);
+
+  const gunTrigger = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.026, 0.07, 0.018)), goldTrim);
+  gunTrigger.name = "Light gun 27 trigger";
+  gunTrigger.position.set(0, -0.055, 0.055);
+  gunTrigger.rotation.x = -0.25;
+  gunGroup.add(gunTrigger);
 
   root.add(gunGroup);
 
-  // 6. Connecting Antenna Twin-Lead Cable (Lead 12)
-  const cableGeom = geometry(new THREE.CylinderGeometry(0.01, 0.01, 1.8, 8));
-  const cableMesh = new THREE.Mesh(cableGeom, plasticBlack);
-  cableMesh.position.set(0, 0.6, 0.9);
-  cableMesh.rotation.x = 0.9;
-  root.add(cableMesh);
+  // 6. Every detached unit in Figure 1B is physically tethered. Short
+  // cylinder runs make the routing inspectable and keep both endpoints inside
+  // the connected housings instead of leaving decorative floating cords.
+  const addCable = (name: string, points: readonly THREE.Vector3[], radius = 0.014) => {
+    const cable = new THREE.Group();
+    cable.name = name;
+    cable.userData.start = points[0]?.toArray() ?? [];
+    cable.userData.end = points.at(-1)?.toArray() ?? [];
+    for (let index = 0; index < points.length - 1; index += 1) {
+      const start = points[index];
+      const end = points[index + 1];
+      if (!start || !end) continue;
+      const delta = end.clone().sub(start);
+      const segment = new THREE.Mesh(
+        geometry(new THREE.CylinderGeometry(radius, radius, delta.length(), 10)),
+        signalCableMaterial,
+      );
+      segment.name = `${name} segment ${index + 1}`;
+      segment.position.copy(start).add(end).multiplyScalar(0.5);
+      segment.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), delta.normalize());
+      cable.add(segment);
+    }
+    root.add(cable);
+    return cable;
+  };
+
+  addCable("Shielded connection means 12", [
+    new THREE.Vector3(0.34, 0.08, 1.43),
+    new THREE.Vector3(0.55, 0.014, 1.18),
+    new THREE.Vector3(0.8, 0.014, 0.78),
+    new THREE.Vector3(0.88, 0.14, 0.54),
+  ]);
+  addCable("Control unit 22 cable", [
+    new THREE.Vector3(-0.86, 0.08, 2.2),
+    new THREE.Vector3(-0.76, 0.014, 2.05),
+    new THREE.Vector3(-0.6, 0.07, 1.92),
+  ]);
+  addCable("Control unit 23 cable", [
+    new THREE.Vector3(0.86, 0.08, 2.2),
+    new THREE.Vector3(0.76, 0.014, 2.05),
+    new THREE.Vector3(0.6, 0.07, 1.92),
+  ]);
+  addCable(
+    "Light gun 27 electrical cable",
+    [
+      new THREE.Vector3(0.55, 0.235, 2.55),
+      new THREE.Vector3(0.45, 0.01, 2.35),
+      new THREE.Vector3(0.38, 0.07, 2.15),
+    ],
+    0.01,
+  );
 
   // Floor Mat / Table surface
   const tableMesh = new THREE.Mesh(geometry(new THREE.BoxGeometry(4.2, 0.08, 3.2)), woodFinish);
+  tableMesh.name = "Supporting table surface";
   tableMesh.position.set(0, -0.04, 1.4);
   tableMesh.receiveShadow = true;
   root.add(tableMesh);
 
   // Update loop
   const updateState = (metrics: BaerOdysseyMetrics, controls: BaerOdysseyControls) => {
-    // Map screen bounds: X from -0.9 to 0.5 (width 1.4), Y from -0.45 to 0.55 (height 1.0)
-    const screenXMin = -0.9;
-    const screenXSpan = 1.4;
+    // Map both source dots across the same receiver screen 18. Later-game
+    // paddle/ball conventions are intentionally absent from this projection.
+    const screenXMin = -0.76;
+    const screenXSpan = 1.52;
     const screenYMin = -0.45;
-    const screenYSpan = 1.0;
+    const screenYSpan = 0.9;
 
-    // Position P1 paddle
+    // Position source dot 20.
     const p1X = screenXMin + metrics.p1X * screenXSpan;
     const p1Y = screenYMin + (1.0 - metrics.p1Y) * screenYSpan;
-    p1PaddleMesh.position.set(p1X, p1Y, 0.78);
+    dot20Mesh.position.set(p1X, p1Y, 0.62);
+    dot20Mesh.visible = metrics.firstDotVisible;
 
-    // Position P2 paddle / target
+    // Position source dot 20-1.
     const p2X = screenXMin + metrics.p2X * screenXSpan;
     const p2Y = screenYMin + (1.0 - metrics.p2Y) * screenYSpan;
-    p2PaddleMesh.position.set(p2X, p2Y, 0.78);
-    p2PaddleMesh.visible = metrics.targetVisible;
-
-    // Position ball
-    const bX = screenXMin + metrics.ballX * screenXSpan;
-    const bY = screenYMin + (1.0 - metrics.ballY) * screenYSpan;
-    ballMesh.position.set(bX, bY, 0.78);
+    dot20PrimeMesh.position.set(p2X, p2Y, 0.62);
+    dot20PrimeMesh.visible = metrics.secondDotVisible;
 
     // Coincidence Flash Effect
     if (metrics.coincidenceActive) {
-      coincidenceGlowMesh.position.set(bX, bY, 0.782);
+      coincidenceGlowMesh.position.set(p2X, p2Y, 0.623);
       coincidenceGlowMat.opacity = 0.9;
     } else {
       coincidenceGlowMat.opacity = 0.0;
     }
 
-    // Rotate knobs based on potentiometer controls
-    p1KnobV.rotation.x = controls.player1PotY * Math.PI * 2;
-    p1KnobH.rotation.x = controls.player1PotX * Math.PI * 2;
-    p1KnobEnglish.rotation.x = controls.englishControl * Math.PI;
+    // The pointer groups rotate about the vertical shaft axis, making every
+    // source potentiometer visibly follow its shared control value.
+    p1KnobVGroup.rotation.y = controls.player1PotY * Math.PI * 2;
+    p1KnobHGroup.rotation.y = controls.player1PotX * Math.PI * 2;
+    p2KnobVGroup.rotation.y = controls.player2PotY * Math.PI * 2;
+    p2KnobHGroup.rotation.y = controls.player2PotX * Math.PI * 2;
+    chromaDialGroup.rotation.z = (controls.chromaPhaseDeg / 180.0) * Math.PI;
 
-    p2KnobV.rotation.x = controls.player2PotY * Math.PI * 2;
-    p2KnobH.rotation.x = controls.player2PotX * Math.PI * 2;
-
-    chromaDial.rotation.y = (controls.chromaPhaseDeg / 180.0) * Math.PI;
+    signalCableMaterial.emissiveIntensity = metrics.directCouplingActive ? 0.35 : 0;
+    screenPhosphorMat.color.setHex(metrics.claim1TopologyActive ? 0x041824 : 0x020617);
   };
 
   const dispose = () => {

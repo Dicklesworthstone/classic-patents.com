@@ -1,57 +1,86 @@
 /**
- * hullStereolithographyKernel.ts
+ * Source-bounded apparatus kernel for Charles W. Hull's US 4,575,330.
  *
- * SI computational physics kernel for Charles W. Hull's Stereolithography Apparatus (US Patent 4,575,330).
- *
- * Models the fundamental photopolymerization physics and galvanometer mechanics:
- * 1. Gaussian laser beam irradiance profile: E(x,y) = sqrt(2/pi) * (P_L / (w_0 * v_s)) * exp(-2 y^2 / w_0^2)
- * 2. Beer-Lambert photopolymer absorption law: C_d = D_p * ln(E_max / E_c)
- * 3. Parabolic cured line width: L_w = w_0 * sqrt(2 * ln(E_max / E_c))
- * 4. Interlaminar adhesion ratio: R_adhesion = C_d / delta_z
- * 5. Resin recoating fluid dynamics & viscous meniscus leveling time
- * 6. Typed refusal boundaries for underexposure delamination and overpenetration Z-distortion.
+ * The grant discloses the topology and sequence of the preferred apparatus,
+ * plus a small set of source-card measurements. It does not disclose the
+ * resin/material parameters needed to predict cure depth, conversion,
+ * adhesion, recoating time, or build duration. This kernel therefore owns the
+ * observable apparatus state and explicitly refuses those numerical results.
  */
 
+export const HULL_FRANKENSIM_ELEVATOR_OWNER = "fs-mbd::JointModel::prismatic";
+export const HULL_FRANKENSIM_OPTICAL_ATTENUATION_OWNER = "fs-render::volumes::beer_lambert";
+
+export const HULL_PREFERRED_LAMP_POWER_W = 350;
+export const HULL_FIBER_BUNDLE_DIAMETER_MM = 1;
+export const HULL_FIBER_BUNDLE_LENGTH_M = 1;
+export const HULL_SPOT_DIAMETER_UPPER_BOUND_MM = 1;
+export const HULL_SURFACE_IRRADIANCE_APPROX_W_CM2 = 1;
+
+export const HULL_SLA_SOURCE_BOUNDARY = `US 4,575,330 discloses a ${HULL_PREFERRED_LAMP_POWER_W} W mercury short-arc lamp, a ${HULL_FIBER_BUNDLE_DIAMETER_MM} mm UV-transmitting fiber bundle ${HULL_FIBER_BUNDLE_LENGTH_M} m long, an electronic shutter, a quartz lens, a spot somewhat under ${HULL_SPOT_DIAMETER_UPPER_BOUND_MM} mm, and about ${HULL_SURFACE_IRRADIANCE_APPROX_W_CM2} W/cm² long-wave UV intensity at the working surface. It does not print spectral radiant power at the resin, scan dwell or speed, absorption/extinction coefficients, critical exposure, reaction kinetics, layer thickness, viscosity, platform stroke or speed, part dimensions, or a build-time datum.`;
+
 export interface HullStereolithographyControls {
-  laserPowerMw: number; // UV laser radiant power (mW) [10..150]
-  laserScanSpeedMmS: number; // Galvanometer linear vector scan speed (mm/s) [50..1200]
-  beamWaistRadiusUm: number; // Gaussian beam radius w_0 (um) [60..250]
-  layerThicknessUm: number; // Sliced layer thickness delta_z (um) [25..250]
-  penetrationDepthUm: number; // Resin optical penetration depth D_p (um) [60..250]
-  criticalExposureMJCm2: number; // Critical threshold E_c (mJ/cm^2) [4..25]
-  resinViscosityCp: number; // Dynamic viscosity of photopolymer (cP) [100..4000]
-  elevatorDipSpeedMmS: number; // Elevator z-axis plunge speed (mm/s) [1..25]
-  partLayersCount: number; // Sliced layer count in build [1..300]
+  /** Reader-requested state of the source-described electronic shutter. */
+  shutterRequestedOpen: number;
+  /** Normalized plotter/carriage coordinate; the grant supplies no travel. */
+  scanXFraction: number;
+  /** Normalized plotter/carriage coordinate; the grant supplies no travel. */
+  scanZFraction: number;
+  /** 0 = next-layer working position; 1 = illustrative recoating over-travel. */
+  recoatExcursionFraction: number;
+  /** Illustrative lamina count, not the printed count of a source object. */
+  displayLaminaCount: number;
 }
 
 export interface HullStereolithographyTelemetry {
-  peakExposureMJCm2: number;
-  cureDepthUm: number;
-  curedLineWidthUm: number;
-  interlayerAdhesionRatio: number;
-  isCured: boolean;
-  layerBuildTimeSec: number;
-  totalBuildTimeMin: number;
-  polymerizationConversionPct: number;
-  recoatMeniscusSettlingTimeSec: number;
-  laserRadiantDoseJ_Cm2: number;
-  underexposureRefusal: boolean;
-  overpenetrationRefusal: boolean;
-  recoatDelayRefusal: boolean;
-  refusalReason?: string;
+  readonly controls: HullStereolithographyControls;
+  readonly shutterRequestedOpen: boolean;
+  readonly shutterOpen: boolean;
+  readonly shutterInterlockActive: boolean;
+  readonly exposureAtWorkingSurface: boolean;
+  readonly spotXFraction: number;
+  readonly spotZFraction: number;
+  readonly platformDepthFraction: number;
+  readonly visibleLaminaCount: number;
+  readonly workingSurfaceHeld: true;
+  readonly objectSupportedByPlatform: true;
+  readonly laminaeRemainIntegrated: true;
+  readonly apparatusState:
+    | "working-position / shutter-open"
+    | "working-position / shutter-closed"
+    | "recoating-excursion / shutter-interlocked";
+  readonly printedSourceCard: {
+    readonly lampElectricalPowerW: 350;
+    readonly fiberBundleDiameterMm: 1;
+    readonly fiberBundleLengthM: 1;
+    readonly spotDiameterUpperBoundMm: 1;
+    readonly surfaceIrradianceApproxWcm2: 1;
+  };
+  readonly quantitativeCureAvailable: false;
+  readonly quantitativeMotionAvailable: false;
+  readonly sourceBoundary: string;
+  readonly owners: {
+    readonly elevator: typeof HULL_FRANKENSIM_ELEVATOR_OWNER;
+    readonly opticalAttenuationCandidate: typeof HULL_FRANKENSIM_OPTICAL_ATTENUATION_OWNER;
+  };
+  readonly refusal: { readonly refused: true; readonly reason: string };
 }
 
 export const HULL_SLA_DEFAULT_CONTROLS: HullStereolithographyControls = {
-  laserPowerMw: 45.0, // 45 mW UV HeCd / Solid-state laser
-  laserScanSpeedMmS: 320.0, // 320 mm/s vector scan velocity
-  beamWaistRadiusUm: 110.0, // 110 um spot radius (220 um diameter)
-  layerThicknessUm: 100.0, // 100 um (0.1 mm) layer step
-  penetrationDepthUm: 140.0, // 140 um optical penetration depth D_p
-  criticalExposureMJCm2: 9.2, // 9.2 mJ/cm^2 critical threshold E_c
-  resinViscosityCp: 650.0, // 650 cP standard acrylate/epoxy resin
-  elevatorDipSpeedMmS: 5.0, // 5 mm/s elevator travel
-  partLayersCount: 50, // 50 layers
+  shutterRequestedOpen: 1,
+  scanXFraction: 0,
+  scanZFraction: 0,
+  recoatExcursionFraction: 0,
+  displayLaminaCount: 7,
 };
+
+function finiteOr(value: unknown, fallback: number): number {
+  return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
 
 export function readHullStereolithographyControls(
   params?:
@@ -59,120 +88,92 @@ export function readHullStereolithographyControls(
     | Record<string, number | boolean | string | undefined>,
 ): HullStereolithographyControls {
   return {
-    laserPowerMw:
-      typeof params?.laserPowerMw === "number"
-        ? Math.max(5, Math.min(200, params.laserPowerMw))
-        : HULL_SLA_DEFAULT_CONTROLS.laserPowerMw,
-    laserScanSpeedMmS:
-      typeof params?.laserScanSpeedMmS === "number"
-        ? Math.max(20, Math.min(2000, params.laserScanSpeedMmS))
-        : HULL_SLA_DEFAULT_CONTROLS.laserScanSpeedMmS,
-    beamWaistRadiusUm:
-      typeof params?.beamWaistRadiusUm === "number"
-        ? Math.max(40, Math.min(400, params.beamWaistRadiusUm))
-        : HULL_SLA_DEFAULT_CONTROLS.beamWaistRadiusUm,
-    layerThicknessUm:
-      typeof params?.layerThicknessUm === "number"
-        ? Math.max(10, Math.min(400, params.layerThicknessUm))
-        : HULL_SLA_DEFAULT_CONTROLS.layerThicknessUm,
-    penetrationDepthUm:
-      typeof params?.penetrationDepthUm === "number"
-        ? Math.max(40, Math.min(400, params.penetrationDepthUm))
-        : HULL_SLA_DEFAULT_CONTROLS.penetrationDepthUm,
-    criticalExposureMJCm2:
-      typeof params?.criticalExposureMJCm2 === "number"
-        ? Math.max(2, Math.min(50, params.criticalExposureMJCm2))
-        : HULL_SLA_DEFAULT_CONTROLS.criticalExposureMJCm2,
-    resinViscosityCp:
-      typeof params?.resinViscosityCp === "number"
-        ? Math.max(50, Math.min(8000, params.resinViscosityCp))
-        : HULL_SLA_DEFAULT_CONTROLS.resinViscosityCp,
-    elevatorDipSpeedMmS:
-      typeof params?.elevatorDipSpeedMmS === "number"
-        ? Math.max(0.5, Math.min(40, params.elevatorDipSpeedMmS))
-        : HULL_SLA_DEFAULT_CONTROLS.elevatorDipSpeedMmS,
-    partLayersCount:
-      typeof params?.partLayersCount === "number"
-        ? Math.max(1, Math.min(500, Math.round(params.partLayersCount)))
-        : HULL_SLA_DEFAULT_CONTROLS.partLayersCount,
+    shutterRequestedOpen:
+      finiteOr(params?.shutterRequestedOpen, HULL_SLA_DEFAULT_CONTROLS.shutterRequestedOpen) >= 0.5
+        ? 1
+        : 0,
+    scanXFraction: clamp(
+      finiteOr(params?.scanXFraction, HULL_SLA_DEFAULT_CONTROLS.scanXFraction),
+      -1,
+      1,
+    ),
+    scanZFraction: clamp(
+      finiteOr(params?.scanZFraction, HULL_SLA_DEFAULT_CONTROLS.scanZFraction),
+      -1,
+      1,
+    ),
+    recoatExcursionFraction: clamp(
+      finiteOr(params?.recoatExcursionFraction, HULL_SLA_DEFAULT_CONTROLS.recoatExcursionFraction),
+      0,
+      1,
+    ),
+    displayLaminaCount: Math.round(
+      clamp(
+        finiteOr(params?.displayLaminaCount, HULL_SLA_DEFAULT_CONTROLS.displayLaminaCount),
+        1,
+        12,
+      ),
+    ),
   };
 }
 
+export function stepHullStereolithographyTopology(
+  params:
+    | Partial<HullStereolithographyControls>
+    | Record<string, number | boolean | string | undefined> = HULL_SLA_DEFAULT_CONTROLS,
+): HullStereolithographyTelemetry {
+  const controls = readHullStereolithographyControls(params);
+  const shutterRequestedOpen = controls.shutterRequestedOpen === 1;
+  const atWorkingPosition = controls.recoatExcursionFraction <= 0.02;
+  const shutterOpen = shutterRequestedOpen && atWorkingPosition;
+  const shutterInterlockActive = shutterRequestedOpen && !atWorkingPosition;
+  const refusalReason = `${HULL_SLA_SOURCE_BOUNDARY} ${HULL_FRANKENSIM_ELEVATOR_OWNER} can own a prismatic elevator only after its stroke, timing, and load card exists. ${HULL_FRANKENSIM_OPTICAL_ATTENUATION_OWNER} can own optical attenuation only after the resin extinction/absorption card exists and does not itself supply photopolymer cure kinetics. This exhibit therefore refuses cure depth, cured line width, conversion, adhesion strength, recoating time, build duration, and actuator force.`;
+
+  return {
+    controls,
+    shutterRequestedOpen,
+    shutterOpen,
+    shutterInterlockActive,
+    exposureAtWorkingSurface: shutterOpen,
+    spotXFraction: controls.scanXFraction,
+    spotZFraction: controls.scanZFraction,
+    platformDepthFraction: controls.recoatExcursionFraction,
+    visibleLaminaCount: controls.displayLaminaCount,
+    workingSurfaceHeld: true,
+    objectSupportedByPlatform: true,
+    laminaeRemainIntegrated: true,
+    apparatusState: shutterInterlockActive
+      ? "recoating-excursion / shutter-interlocked"
+      : shutterOpen
+        ? "working-position / shutter-open"
+        : "working-position / shutter-closed",
+    printedSourceCard: {
+      lampElectricalPowerW: HULL_PREFERRED_LAMP_POWER_W,
+      fiberBundleDiameterMm: HULL_FIBER_BUNDLE_DIAMETER_MM,
+      fiberBundleLengthM: HULL_FIBER_BUNDLE_LENGTH_M,
+      spotDiameterUpperBoundMm: HULL_SPOT_DIAMETER_UPPER_BOUND_MM,
+      surfaceIrradianceApproxWcm2: HULL_SURFACE_IRRADIANCE_APPROX_W_CM2,
+    },
+    quantitativeCureAvailable: false,
+    quantitativeMotionAvailable: false,
+    sourceBoundary: HULL_SLA_SOURCE_BOUNDARY,
+    owners: {
+      elevator: HULL_FRANKENSIM_ELEVATOR_OWNER,
+      opticalAttenuationCandidate: HULL_FRANKENSIM_OPTICAL_ATTENUATION_OWNER,
+    },
+    refusal: { refused: true, reason: refusalReason },
+  };
+}
+
+/**
+ * Compatibility entry point retained for the shared engine registry. Despite
+ * the historic name, it returns source topology plus SI source-card constants,
+ * never a fabricated photopolymer solve.
+ */
 export function stepHullStereolithographySi(
   controls: HullStereolithographyControls,
 ): HullStereolithographyTelemetry {
-  const P_L_Watts = controls.laserPowerMw * 1e-3;
-  const v_s_m_s = controls.laserScanSpeedMmS * 1e-3;
-  const w_0_m = controls.beamWaistRadiusUm * 1e-6;
-  const w_0_cm = w_0_m * 100;
-  const v_s_cm_s = v_s_m_s * 100;
-
-  // 1. Peak centerline exposure: E_max = sqrt(2/pi) * (P_L / (w_0 * v_s)) in J/cm^2 -> mJ/cm^2
-  const factor = Math.sqrt(2 / Math.PI);
-  const E_max_J_cm2 = factor * (P_L_Watts / (w_0_cm * v_s_cm_s));
-  const peakExposureMJCm2 = E_max_J_cm2 * 1000;
-
-  const isCured = peakExposureMJCm2 > controls.criticalExposureMJCm2;
-
-  // 2. Cure Depth via Beer-Lambert Law: C_d = D_p * ln(E_max / E_c)
-  let cureDepthUm = 0;
-  let curedLineWidthUm = 0;
-  let conversionPct = 0;
-
-  if (isCured) {
-    const exposureRatio = peakExposureMJCm2 / controls.criticalExposureMJCm2;
-    cureDepthUm = controls.penetrationDepthUm * Math.log(exposureRatio);
-    curedLineWidthUm = 2 * controls.beamWaistRadiusUm * Math.sqrt(0.5 * Math.log(exposureRatio));
-    conversionPct = Math.min(96, 55 + 32 * (1 - Math.exp(-0.8 * Math.log(exposureRatio))));
-  }
-
-  // 3. Interlayer Adhesion
-  const interlayerAdhesionRatio = cureDepthUm / Math.max(1, controls.layerThicknessUm);
-
-  // 4. Fluid Mechanics: Recoating & Meniscus Leveling Time
-  // Time = elevator travel + fluid settling (scales with viscosity and vat width)
-  const travelTimeSec = (controls.layerThicknessUm * 1e-3 * 2) / controls.elevatorDipSpeedMmS;
-  const recoatMeniscusSettlingTimeSec = (controls.resinViscosityCp / 1000) * 1.8 + travelTimeSec;
-
-  // 5. Scan Time per Layer (nominal 200 mm vector contour per layer)
-  const nominalVectorLengthMm = 250;
-  const scanTimeSec = nominalVectorLengthMm / controls.laserScanSpeedMmS;
-  const layerBuildTimeSec = scanTimeSec + recoatMeniscusSettlingTimeSec;
-  const totalBuildTimeMin = (layerBuildTimeSec * controls.partLayersCount) / 60;
-
-  // 6. Refusal Boundaries
-  let underexposureRefusal = false;
-  let overpenetrationRefusal = false;
-  let recoatDelayRefusal = false;
-  let refusalReason: string | undefined;
-
-  if (!isCured || interlayerAdhesionRatio < 1.0) {
-    underexposureRefusal = true;
-    refusalReason = `Underexposure delamination: Cure depth (${cureDepthUm.toFixed(1)} µm) is less than layer step (${controls.layerThicknessUm} µm). Layers will separate.`;
-  } else if (interlayerAdhesionRatio > 2.8) {
-    overpenetrationRefusal = true;
-    refusalReason = `Overpenetration Z-distortion: Cure depth (${cureDepthUm.toFixed(1)} µm) exceeds 2.8x layer thickness, causing uncontrolled deep polymerization.`;
-  } else if (recoatMeniscusSettlingTimeSec > 15) {
-    recoatDelayRefusal = true;
-    refusalReason = `High resin viscosity (${controls.resinViscosityCp} cP) prevents timely surface recoating, causing air bubble voids.`;
-  }
-
-  return {
-    peakExposureMJCm2,
-    cureDepthUm,
-    curedLineWidthUm,
-    interlayerAdhesionRatio,
-    isCured,
-    layerBuildTimeSec,
-    totalBuildTimeMin,
-    polymerizationConversionPct: isCured ? conversionPct : 0,
-    recoatMeniscusSettlingTimeSec,
-    laserRadiantDoseJ_Cm2: E_max_J_cm2,
-    underexposureRefusal,
-    overpenetrationRefusal,
-    recoatDelayRefusal,
-    refusalReason,
-  };
+  return stepHullStereolithographyTopology(controls);
 }
 
 export function stepHullStereolithography(
@@ -181,5 +182,5 @@ export function stepHullStereolithography(
     number | boolean | string
   > = HULL_SLA_DEFAULT_CONTROLS as unknown as Record<string, number | boolean | string>,
 ): HullStereolithographyTelemetry {
-  return stepHullStereolithographySi(readHullStereolithographyControls(params));
+  return stepHullStereolithographyTopology(params);
 }

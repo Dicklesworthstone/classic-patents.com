@@ -2,7 +2,8 @@ import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { bardeenTransistor2524035Patent } from "@/data/patents/bardeen-transistor-2524035";
 import { wrightFlyerPatent } from "@/data/patents/wright-flyer";
-import { ClaimsDecoder, claimLiveState } from "./ClaimsDecoder";
+import { ClaimsDecoder } from "./ClaimsDecoder";
+import { claimLiveState } from "./claimLiveState";
 
 describe("ClaimsDecoder component", () => {
   test("renders claim tabs, original legal text, and plain-English translation cards for Wright Flyer", () => {

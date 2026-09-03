@@ -16,7 +16,6 @@ import {
 } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildBardeenTransistorModel,
   updateBardeenTransistorKinematics,
@@ -37,6 +36,9 @@ const CAMERA_PRESETS: Record<
   base: { pos: [-5, 2, 4], target: [-2, 0, 1] },
   top: { pos: [0, 12.0, 0.1], target: [0, 0, 0] },
 };
+
+export const BARDEEN_3D_SOURCE_BOUNDARY =
+  "US 2,524,035 reports three small-signal operating samples and a preferred 1–10 mil contact spacing, but no carrier mobility, lifetime, transit time, or complete DC bias-supply power. Carrier dots and enlarged layer thicknesses are diagrammatic; quantitative transport and a closed energy balance are refused.";
 
 export const BardeenTransistor3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -73,10 +75,8 @@ export const BardeenTransistor3D = memo(() => {
   useFrankenSimPhysics("us-2524035-bardeen-transistor", {
     domain: "semiconductor_carrier",
     refusal: {
-      isRefused: !(claimStates[1] ?? true),
-      reason: !(claimStates[1] ?? true)
-        ? "Contact spacing beyond diffusion length: injected holes recombine before collection"
-        : undefined,
+      isRefused: true,
+      reason: BARDEEN_3D_SOURCE_BOUNDARY,
     },
     semi: {
       biasVoltageVolts: sample.collectorBiasVolts,
@@ -311,6 +311,15 @@ export const BardeenTransistor3D = memo(() => {
 
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <p
+          data-testid="bardeen-source-boundary"
+          className="mb-4 text-xs leading-relaxed text-ink-600 dark:text-ink-300"
+        >
+          <strong className="text-ink-900 dark:text-parchment-100">
+            Source-bounded operating points.
+          </strong>{" "}
+          {BARDEEN_3D_SOURCE_BOUNDARY}
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="rounded-xl border border-parchment-300 dark:border-ink-700 p-3">
             <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-600 dark:text-ink-300">
@@ -356,12 +365,6 @@ export const BardeenTransistor3D = memo(() => {
             setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
             updateParam("claim1Active", active ? 1 : 0);
           }}
-          className="mt-3"
-        />
-
-        <PortHamiltonianEnergyStrip
-          patentId="us-2524035-bardeen-transistor"
-          params={params}
           className="mt-3"
         />
       </div>

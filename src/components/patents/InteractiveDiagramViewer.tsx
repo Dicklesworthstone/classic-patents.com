@@ -78,7 +78,10 @@ import { stepDevolProgrammedTransfer } from "@/physics/devolProgrammedTransferKe
 import { FrankenSimEngine, lamarrSchematicHop, lamarrSchematicStaffY } from "@/physics/engine";
 import { fermiSchematicSlug, stepFermiKinetics } from "@/physics/fermiKinetics";
 import { stepGoertzMasterSlaveTopology } from "@/physics/goertzElectronicMasterSlaveManipulatorKernel";
-import { stepKamenInjectionMechanism } from "@/physics/kamenInjectionKernel";
+import {
+  readKamenInjectionControls,
+  readKamenInjectionTapeFrame,
+} from "@/physics/kamenInjectionKernel";
 import { stepLemelsonManipulatorTopology } from "@/physics/lemelsonAdjustableManipulatorKernel";
 import { stepLemelsonAutomaticProductionTopology } from "@/physics/lemelsonAutomaticProductionKernel";
 import { stepLemelsonWarehouseTopology } from "@/physics/lemelsonWarehouseKernel";
@@ -858,7 +861,8 @@ function _renderHistoricalSchematic(
     case "fermi-reactor": {
       const rodWithdrawal = params?.rodWithdrawal ?? 83.5;
       const modPurity = params?.moderatorPurity ?? 99.5;
-      const kinetics = stepFermiKinetics(rodWithdrawal, modPurity);
+      const claim1Active = (params?.claim1Active ?? 1) >= 0.5;
+      const kinetics = stepFermiKinetics(rodWithdrawal, modPurity, 0.72, claim1Active);
       const rodY = kinetics.schematicRodY;
       const keff = kinetics.kEffective;
       const fuelGlow = keff > 1.002 ? "#ef4444" : keff >= 0.998 ? "#10b981" : "#3b82f6";
@@ -895,30 +899,31 @@ function _renderHistoricalSchematic(
               stroke="#475569"
             />
           ))}
-          {/* Uranium fuel slug matrix with dynamic criticality color */}
-          {Array.from({ length: kinetics.schematicSlugRows }, (_, row) =>
-            Array.from({ length: kinetics.schematicSlugCols }, (_, col) => {
-              const slug = fermiSchematicSlug(
-                col,
-                row,
-                kinetics.schematicSlugOriginX,
-                kinetics.schematicSlugOriginY,
-                kinetics.schematicSlugPitchX,
-                kinetics.schematicSlugPitchY,
-              );
-              return (
-                <circle
-                  key={`${col}-${row}`}
-                  cx={slug.cx}
-                  cy={slug.cy}
-                  r={kinetics.schematicSlugR}
-                  fill={fuelGlow}
-                  stroke="#34d399"
-                />
-              );
-            }),
-          )}
-          {/* Cadmium Control Rod moving dynamically into core */}
+          {/* End view of Claim 1 natural-uranium rods. */}
+          {claim1Active &&
+            Array.from({ length: kinetics.schematicSlugRows }, (_, row) =>
+              Array.from({ length: kinetics.schematicSlugCols }, (_, col) => {
+                const slug = fermiSchematicSlug(
+                  col,
+                  row,
+                  kinetics.schematicSlugOriginX,
+                  kinetics.schematicSlugOriginY,
+                  kinetics.schematicSlugPitchX,
+                  kinetics.schematicSlugPitchY,
+                );
+                return (
+                  <circle
+                    key={`${col}-${row}`}
+                    cx={slug.cx}
+                    cy={slug.cy}
+                    r={kinetics.schematicSlugR}
+                    fill={fuelGlow}
+                    stroke="#34d399"
+                  />
+                );
+              }),
+            )}
+          {/* Figure 8 side-entry absorber on its horizontal path. */}
           <rect
             x={kinetics.schematicRodX}
             y={rodY}
@@ -7275,8 +7280,10 @@ function _renderHistoricalSchematic(
       );
     }
     case "kamen-injection-device": {
-      const pose = stepKamenInjectionMechanism(params ?? {});
-      const plungerX = 132 + pose.plungerPosition * 142;
+      const controls = readKamenInjectionControls(params ?? {});
+      const frame = readKamenInjectionTapeFrame(controls);
+      const pose = frame.metrics;
+      const plungerX = 132 + pose.followerPositionNormalized * 142;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <text
@@ -7295,7 +7302,7 @@ function _renderHistoricalSchematic(
             MOTOR 24
           </text>
           <text x="83" y="169" textAnchor="middle" fill="#94a3b8" fontSize="7">
-            {pose.motorState}
+            {pose.phase}
           </text>
           <line x1="114" y1="158" x2="332" y2="158" stroke="#e2e8f0" strokeWidth="8" />
           <line
@@ -7339,7 +7346,7 @@ function _renderHistoricalSchematic(
             114 / 116
           </text>
           <path d="M 297 141 V 104" stroke="#a78bfa" strokeDasharray="4 3" />
-          {pose.reliefPathShown && (
+          {!pose.clutchEngaged && (
             <path
               d="M 158 193 C 181 237, 243 237, 266 193"
               stroke="#fb7185"
@@ -7348,8 +7355,8 @@ function _renderHistoricalSchematic(
             />
           )}
           <text x="200" y="254" textAnchor="middle" fill="#94a3b8" fontSize="8">
-            selected screw pose {(pose.plungerPosition * 100).toFixed(0)}% · pulse progress{" "}
-            {(pose.pulseProgress * 100).toFixed(0)}%
+            follower {(pose.followerPositionNormalized * 100).toFixed(0)}% normalized · count{" "}
+            {pose.cyclePulseCount}/{pose.selectedPulseCount}
           </text>
           <text x="200" y="278" textAnchor="middle" fill="#fda4af" fontSize="8">
             nonclinical normalized mechanism; dose, flow, pressure, and outcome refused
@@ -7359,13 +7366,22 @@ function _renderHistoricalSchematic(
     }
     case "watson-remote-center-compliance": {
       const pose = stepWatsonRemoteCenterComplianceTopology(params ?? {});
-      const toolX = 200 + pose.translationOffset * 58;
-      const toolAngle = (pose.remainingAxisMismatch - 0.22) * 0.42;
+      const holeX = 310;
+      const contactY = 253;
+      const translatedX = 200 + pose.translationPhase * (holeX - 200);
+      const toolAngle = pose.remainingAxisMismatch * 0.3;
+      const toolLength = 82;
+      const toolX = pose.remoteCenterTopology
+        ? translatedX - Math.sin(toolAngle) * toolLength
+        : translatedX;
+      const toolY = pose.remoteCenterTopology ? contactY - Math.cos(toolAngle) * toolLength : 171;
       const toolEnd = {
-        x: toolX + Math.sin(toolAngle) * 82,
-        y: 173 + Math.cos(toolAngle) * 82,
+        x: toolX + Math.sin(toolAngle) * toolLength,
+        y: toolY + Math.cos(toolAngle) * toolLength,
       };
-      const remoteCenter = pose.remoteCenterTopology ? toolEnd : { x: toolX, y: 118 };
+      const remoteCenter = pose.remoteCenterTopology
+        ? { x: translatedX, y: contactY }
+        : { x: toolX, y: toolY };
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <text
@@ -7383,7 +7399,7 @@ function _renderHistoricalSchematic(
             fixed machine portion 18
           </text>
           <rect
-            x={toolX - 61}
+            x={translatedX - 61}
             y="95"
             width="122"
             height="14"
@@ -7391,27 +7407,27 @@ function _renderHistoricalSchematic(
             fill="#1e293b"
             stroke="#e2e8f0"
           />
-          <text x={toolX + 67} y="106" fill="#cbd5e1" fontSize="7">
+          <text x={translatedX + 67} y="106" fill="#cbd5e1" fontSize="7">
             ring 22
           </text>
           <rect
             x={toolX - 55}
-            y="159"
+            y={toolY - 7}
             width="110"
             height="14"
             rx="4"
             fill="#1e293b"
             stroke="#fbbf24"
           />
-          <text x={toolX + 61} y="170" fill="#fde68a" fontSize="7">
+          <text x={toolX + 61} y={toolY + 4} fill="#fde68a" fontSize="7">
             plate 20
           </text>
           {[-42, 0, 42].map((offset) => (
             <line
               key={`axial-${offset}`}
               x1={200 + offset}
-              y1="66"
-              x2={toolX + offset}
+              y1="159"
+              x2={translatedX + offset}
               y2="95"
               stroke="#22d3ee"
               strokeWidth="4"
@@ -7422,17 +7438,17 @@ function _renderHistoricalSchematic(
               <line
                 x1={remoteCenter.x}
                 y1={remoteCenter.y}
-                x2={toolX + offset}
+                x2={translatedX + offset}
                 y2="109"
                 stroke="#67e8f9"
                 strokeDasharray="4 4"
                 opacity="0.62"
               />
               <line
-                x1={toolX + offset}
+                x1={translatedX + offset}
                 y1="109"
                 x2={toolX + offset * 0.78}
-                y2="159"
+                y2={toolY - 7}
                 stroke="#f59e0b"
                 strokeWidth="4"
               />
@@ -7446,14 +7462,14 @@ function _renderHistoricalSchematic(
           </text>
           <line
             x1={toolX}
-            y1="173"
+            y1={toolY}
             x2={toolEnd.x}
             y2={toolEnd.y}
             stroke="#e2e8f0"
             strokeWidth="10"
             strokeLinecap="round"
           />
-          <line x1="310" y1="164" x2="310" y2="271" stroke="#94a3b8" strokeDasharray="5 4" />
+          <line x1={holeX} y1="164" x2={holeX} y2="271" stroke="#94a3b8" strokeDasharray="5 4" />
           <path d="M 283 253 L 296 237 L 324 237 L 337 253" stroke="#7dd3fc" strokeWidth="3" />
           <circle
             cx={remoteCenter.x}
@@ -7466,7 +7482,7 @@ function _renderHistoricalSchematic(
             {pose.remoteCenterTopology ? "remote center 50" : "local contrast"}
           </text>
           {pose.antiTwistConstraint && (
-            <ellipse cx={toolX} cy="158" rx="22" ry="6" stroke="#c084fc" strokeWidth="3" />
+            <ellipse cx={toolX} cy={toolY - 8} rx="22" ry="6" stroke="#c084fc" strokeWidth="3" />
           )}
           <text x="200" y="278" textAnchor="middle" fill="#fda4af" fontSize="8">
             normalized geometry only; SI force, stiffness, clearance, and timing refused

@@ -70,7 +70,7 @@ function isAxis<const T extends readonly [number, number, number]>(
 ): value is T {
   return (
     Array.isArray(value) &&
-    value.length === 3 &&
+    value.length === expected.length &&
     value.every(
       (component, index) =>
         typeof component === "number" &&

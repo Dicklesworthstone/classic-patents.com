@@ -109,6 +109,25 @@ export function WattRotaryEngineSim() {
     { length: telemetry.planetTeeth },
     (_, index) => (index / telemetry.planetTeeth) * 360 + 180 / telemetry.planetTeeth,
   );
+  // The 2D pitch-mesh panel must keep every supported gear pair in frame.
+  // At 2:1, the orbiting planet is substantially larger than the sun, so a
+  // fixed 120px orbit clips it at the 350px drawing boundary. This is a
+  // uniform presentation scale only: all radii and centre distances still
+  // come from the same kernel pitch geometry.
+  const gearMeshCenterX = 250;
+  const gearMeshCenterY = 180;
+  const gearMeshToothOverhangPx = 6;
+  const maximumGearRadiusFraction =
+    Math.max(telemetry.sunPitchRadiusM, telemetry.planetPitchRadiusM) /
+    telemetry.gearCenterDistanceM;
+  const gearMeshOrbitRadiusPx = Math.min(
+    96,
+    (144 - gearMeshToothOverhangPx) / (1 + maximumGearRadiusFraction),
+  );
+  const gearMeshSunRadiusPx =
+    gearMeshOrbitRadiusPx * (telemetry.sunPitchRadiusM / telemetry.gearCenterDistanceM);
+  const gearMeshPlanetRadiusPx =
+    gearMeshOrbitRadiusPx * (telemetry.planetPitchRadiusM / telemetry.gearCenterDistanceM);
   const pistonY = 400 - (telemetry.pistonPositionM / 1.8) * 100;
 
   return (
@@ -520,11 +539,11 @@ export function WattRotaryEngineSim() {
               <rect width="500" height="350" fill="#0a0f1d" rx="10" stroke="#1f2937" />
 
               {/* Sun gear pitch circle and teeth */}
-              <g transform={`rotate(${sunAngleDeg}, 180, 180)`}>
+              <g transform={`rotate(${sunAngleDeg}, ${gearMeshCenterX}, ${gearMeshCenterY})`}>
                 <circle
-                  cx="180"
-                  cy="180"
-                  r={(120 * telemetry.sunPitchRadiusM) / telemetry.gearCenterDistanceM}
+                  cx={gearMeshCenterX}
+                  cy={gearMeshCenterY}
+                  r={gearMeshSunRadiusPx}
                   fill="#b45309"
                   fillOpacity="0.3"
                   stroke="#f59e0b"
@@ -533,18 +552,25 @@ export function WattRotaryEngineSim() {
                 {sunToothAngles.map((deg) => (
                   <rect
                     key={deg}
-                    x={180 - 3}
-                    y={176 - (120 * telemetry.sunPitchRadiusM) / telemetry.gearCenterDistanceM}
+                    x={gearMeshCenterX - 3}
+                    y={gearMeshCenterY - gearMeshSunRadiusPx - 4}
                     width="6"
                     height="8"
                     fill="#fef08a"
-                    transform={`rotate(${deg}, 180, 180)`}
+                    transform={`rotate(${deg}, ${gearMeshCenterX}, ${gearMeshCenterY})`}
                   />
                 ))}
-                <circle cx="180" cy="180" r="14" fill="#1e293b" stroke="#f59e0b" strokeWidth="2" />
+                <circle
+                  cx={gearMeshCenterX}
+                  cy={gearMeshCenterY}
+                  r="14"
+                  fill="#1e293b"
+                  stroke="#f59e0b"
+                  strokeWidth="2"
+                />
                 <text
-                  x="180"
-                  y="185"
+                  x={gearMeshCenterX}
+                  y={gearMeshCenterY + 5}
                   fill="#fef08a"
                   fontSize="11"
                   fontWeight="bold"
@@ -556,20 +582,20 @@ export function WattRotaryEngineSim() {
 
               {/* Radius Guide Link connecting Sun to Planet */}
               {(() => {
-                const meshSunRadius =
-                  (120 * telemetry.sunPitchRadiusM) / telemetry.gearCenterDistanceM;
-                const meshPlanetRadius =
-                  (120 * telemetry.planetPitchRadiusM) / telemetry.gearCenterDistanceM;
-                const meshPlanetX = 180 + 120 * Math.sin(orbitAngleRad);
-                const meshPlanetY = 180 + 120 * Math.cos(orbitAngleRad);
-                const meshContactX = 180 + meshSunRadius * Math.sin(orbitAngleRad);
-                const meshContactY = 180 + meshSunRadius * Math.cos(orbitAngleRad);
+                const meshPlanetX =
+                  gearMeshCenterX + gearMeshOrbitRadiusPx * Math.sin(orbitAngleRad);
+                const meshPlanetY =
+                  gearMeshCenterY + gearMeshOrbitRadiusPx * Math.cos(orbitAngleRad);
+                const meshContactX =
+                  gearMeshCenterX + gearMeshSunRadiusPx * Math.sin(orbitAngleRad);
+                const meshContactY =
+                  gearMeshCenterY + gearMeshSunRadiusPx * Math.cos(orbitAngleRad);
 
                 return (
                   <>
                     <line
-                      x1="180"
-                      y1="180"
+                      x1={gearMeshCenterX}
+                      y1={gearMeshCenterY}
                       x2={meshPlanetX}
                       y2={meshPlanetY}
                       stroke="#64748b"
@@ -582,7 +608,7 @@ export function WattRotaryEngineSim() {
                       <circle
                         cx={meshPlanetX}
                         cy={meshPlanetY}
-                        r={meshPlanetRadius}
+                        r={gearMeshPlanetRadiusPx}
                         fill="#0284c7"
                         fillOpacity="0.3"
                         stroke="#38bdf8"
@@ -592,7 +618,7 @@ export function WattRotaryEngineSim() {
                         <rect
                           key={deg}
                           x={meshPlanetX - 3}
-                          y={meshPlanetY - meshPlanetRadius - 4}
+                          y={meshPlanetY - gearMeshPlanetRadiusPx - 4}
                           width="6"
                           height="8"
                           fill="#bae6fd"
@@ -704,6 +730,7 @@ export function WattRotaryEngineSim() {
           </div>
           <input
             type="range"
+            aria-label="Beam stroke rate in strokes per minute"
             min="10"
             max="30"
             step="2"
@@ -723,6 +750,7 @@ export function WattRotaryEngineSim() {
           </div>
           <input
             type="range"
+            aria-label="Boiler steam pressure in kilopascals"
             min="40"
             max="120"
             step="5"
@@ -742,6 +770,7 @@ export function WattRotaryEngineSim() {
           </div>
           <input
             type="range"
+            aria-label="Planet-to-sun gear tooth ratio"
             min="0.5"
             max="2.0"
             step="0.25"
@@ -761,6 +790,7 @@ export function WattRotaryEngineSim() {
           </div>
           <input
             type="range"
+            aria-label="Flywheel mass in kilograms"
             min="1000"
             max="6000"
             step="250"

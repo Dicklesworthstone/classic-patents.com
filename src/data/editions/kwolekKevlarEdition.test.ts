@@ -32,7 +32,12 @@ describe("US 3,671,542 Stephanie Kwolek source-authoring boundary", () => {
       totalClaims: 2,
       independentClaims: 1,
     });
-    expect(kwolekKevlarPatent.originalText).toContain("The full 58-page historical instrument");
+    expect(kwolekKevlarPatent.originalText).toContain(
+      "The complete 58-page historical transcript is readable",
+    );
+    expect(kwolekKevlarPatent.originalText).toContain(
+      "A structured manual edition is still being prepared",
+    );
     expect(kwolekKevlarPatent.historicalContext.patentWars).toEqual([]);
   });
 

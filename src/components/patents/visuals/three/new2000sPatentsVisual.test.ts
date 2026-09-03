@@ -15,10 +15,84 @@ import { buildDaVinciModel } from "./DaVinciModel";
 import { buildEInkModel } from "./EInkModel";
 import { buildMultiTouchModel } from "./MultiTouchModel";
 import { buildPageRankModel } from "./PageRankModel";
+import { pageRankCameraForViewport } from "./pageRankCamera";
 import { buildRoombaModel } from "./RoombaModel";
 
 describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
   describe("US 6,285,999 Google PageRank", () => {
+    test("keeps the full rotating three-document topology in phone and desktop ISO frames", () => {
+      const phone = pageRankCameraForViewport("iso", 320);
+      expect(phone).toEqual({ pos: [0, 0.8, 17], target: [0, 0.8, 0] });
+      expect(pageRankCameraForViewport("iso", 768)).toEqual({
+        pos: [0, 0.5, 10.8],
+        target: [0, 0.5, 0],
+      });
+      const desktop = pageRankCameraForViewport("iso", 1280);
+      expect(desktop).toEqual({ pos: [0, 0.7, 12], target: [0, 0.7, 0] });
+      expect(pageRankCameraForViewport("graph_network", 320)).toEqual({
+        pos: [5.0, 3.5, 6.5],
+        target: [0, 0, 0],
+      });
+
+      const model = buildPageRankModel();
+      for (const node of model.nodes) node.scale.setScalar(1.53);
+
+      const corners = (box: THREE.Box3) => {
+        const points: THREE.Vector3[] = [];
+        for (const x of [box.min.x, box.max.x]) {
+          for (const y of [box.min.y, box.max.y]) {
+            for (const z of [box.min.z, box.max.z]) points.push(new THREE.Vector3(x, y, z));
+          }
+        }
+        return points;
+      };
+
+      for (const { view, aspect, horizontalLimit, verticalLimit } of [
+        { view: phone, aspect: 320 / 380, horizontalLimit: 0.9, verticalLimit: 0.75 },
+        { view: desktop, aspect: 1214 / 460, horizontalLimit: 0.4, verticalLimit: 0.75 },
+      ]) {
+        const camera = new THREE.PerspectiveCamera(42, aspect, 0.1, 1000);
+        camera.position.fromArray(view.pos);
+        camera.lookAt(...view.target);
+        camera.updateProjectionMatrix();
+
+        for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 12) {
+          model.mainGroup.rotation.y = angle;
+          model.root.updateMatrixWorld(true);
+          camera.updateMatrixWorld(true);
+          const projected: THREE.Vector3[] = [];
+          model.mainGroup.traverse((object) => {
+            if (
+              !(
+                object instanceof THREE.Mesh ||
+                object instanceof THREE.Line ||
+                object instanceof THREE.Points
+              )
+            ) {
+              return;
+            }
+            object.geometry.computeBoundingBox();
+            const bounds = object.geometry.boundingBox;
+            if (!bounds) return;
+            for (const point of corners(bounds)) {
+              projected.push(point.applyMatrix4(object.matrixWorld).project(camera));
+            }
+          });
+          expect(Math.min(...projected.map((point) => point.x))).toBeGreaterThanOrEqual(
+            -horizontalLimit,
+          );
+          expect(Math.max(...projected.map((point) => point.x))).toBeLessThanOrEqual(
+            horizontalLimit,
+          );
+          expect(Math.min(...projected.map((point) => point.y))).toBeGreaterThanOrEqual(
+            -verticalLimit,
+          );
+          expect(Math.max(...projected.map((point) => point.y))).toBeLessThanOrEqual(verticalLimit);
+        }
+      }
+      model.dispose();
+    });
+
     test("computes deterministic Markov probability convergence", () => {
       const initial = [1 / 3, 1 / 3, 1 / 3];
       const step1 = stepPageRank({ dampingFactor: 0.85 }, initial);

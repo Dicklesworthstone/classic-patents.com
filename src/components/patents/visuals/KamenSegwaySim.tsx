@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
-import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
 import {
   KAMEN_SEGWAY_DEFAULT_CONTROLS,
@@ -11,6 +10,7 @@ import {
   stepKamenSegwaySi,
 } from "@/physics/kamenSegwayKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { KamenSegwayClaimHeader } from "./KamenSegwayClaimHeader";
 
 const PATENT_ID = "us-6302230-kamen-segway";
 
@@ -51,27 +51,16 @@ export function KamenSegwaySim({ patentId = PATENT_ID }: { patentId?: string }) 
     <div className="w-full bg-slate-950 text-slate-100 rounded-xl border border-slate-800 p-4 shadow-2xl flex flex-col gap-4">
       {/* Header & Mode Switcher */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-cyan-400 animate-pulse" />
-            <h3 className="font-mono text-sm font-semibold tracking-wider text-cyan-400 uppercase">
-              US 6,302,230 • Inverted Pendulum Dynamic Balancing Simulator
-            </h3>
-          </div>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Source-disclosed automatic balance and ripple-alarm topology · modern illustrative SI
-            scenario
-          </p>
-          <ClaimConstraintToggle
-            patentId={PATENT_ID}
-            claimStates={claimStates}
-            onToggleClaim={(claimNumber, active) => {
-              const key = claimNumber === 1 ? "claim1BalanceEnabled" : "claim2RippleEnabled";
-              patentPhysics?.updateParam?.(key, active ? 1 : 0);
-            }}
-            className="mt-2"
-          />
-        </div>
+        <KamenSegwayClaimHeader
+          patentId={PATENT_ID}
+          title="US 6,302,230 • Inverted Pendulum Dynamic Balancing Simulator"
+          description="Source-disclosed automatic balance and ripple-alarm topology · modern illustrative SI scenario"
+          claimStates={claimStates}
+          onToggleClaim={(claimNumber, active) => {
+            const key = claimNumber === 1 ? "claim1BalanceEnabled" : "claim2RippleEnabled";
+            patentPhysics?.updateParam?.(key, active ? 1 : 0);
+          }}
+        />
 
         {/* View Mode Buttons */}
         <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800 text-xs">
@@ -478,6 +467,7 @@ export function KamenSegwaySim({ patentId = PATENT_ID }: { patentId?: string }) 
           </div>
           <input
             type="range"
+            aria-label="Rider pitch lean in degrees"
             min="-15"
             max="15"
             step="0.5"
@@ -496,6 +486,7 @@ export function KamenSegwaySim({ patentId = PATENT_ID }: { patentId?: string }) 
           </div>
           <input
             type="range"
+            aria-label="Ground traction coefficient"
             min="0.15"
             max="0.95"
             step="0.05"
@@ -516,6 +507,7 @@ export function KamenSegwaySim({ patentId = PATENT_ID }: { patentId?: string }) 
           </div>
           <input
             type="range"
+            aria-label="Speed governor limit in meters per second"
             min="2.0"
             max="6.0"
             step="0.5"

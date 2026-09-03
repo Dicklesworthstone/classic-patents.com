@@ -13,29 +13,10 @@ import { readCrumpFdmControls, stepCrumpFdmSi } from "@/physics/crumpFdmKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { type CrumpCameraPreset, crumpViewForViewport } from "./crumpFdmCamera";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-5121329-crump-fdm";
-const CRUMP_VIEWS = {
-  isometric: { position: [4.2, 3.6, 4.8], target: [0, 1.4, 0] },
-  nozzle: { position: [0.8, 1.6, 1.2], target: [0, 1.3, 0] },
-  top: { position: [0.1, 6.2, 0.1], target: [0, 1.5, 0] },
-  side: { position: [5.2, 1.4, 0], target: [0, 1.4, 0] },
-} as const;
-
-type CrumpCameraPreset = keyof typeof CRUMP_VIEWS;
-
-export function crumpViewForViewport(view: CrumpCameraPreset, viewportWidth: number) {
-  const config = CRUMP_VIEWS[view];
-  const multiplier = viewportWidth < 480 ? (view === "isometric" ? 1.45 : 1.25) : 1;
-  return {
-    position: config.position.map(
-      (coordinate, index) =>
-        config.target[index] + (coordinate - config.target[index]) * multiplier,
-    ) as [number, number, number],
-    target: [...config.target] as [number, number, number],
-  };
-}
 
 export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -53,7 +34,7 @@ export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
 
   const [cameraPreset, setCameraPreset] = useState<CrumpCameraPreset>("isometric");
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The persistent WebGL scene reads the stable layout-effect-synchronized control ref; depending on `.current` would recreate and flash the studio.
+  // The persistent WebGL scene reads the stable layout-effect-synchronized control ref; depending on `.current` would recreate and flash the studio.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -97,7 +78,7 @@ export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
       studio.dispose();
       studioRef.current = null;
     };
-  }, []);
+  }, [liveParams]);
 
   useEffect(() => {
     const restoreResponsiveView = () => {

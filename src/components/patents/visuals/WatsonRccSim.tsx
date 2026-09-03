@@ -477,6 +477,7 @@ export function WatsonRccSim({ patentId = "us-4098001-watson-rcc" }: { patentId?
           </div>
           <input
             type="range"
+            aria-label="Lateral contact force in newtons"
             min="0"
             max="80"
             step="1"
@@ -496,6 +497,7 @@ export function WatsonRccSim({ patentId = "us-4098001-watson-rcc" }: { patentId?
           </div>
           <input
             type="range"
+            aria-label="Applied tip moment in newton meters"
             min="-3"
             max="3"
             step="0.1"
@@ -515,6 +517,7 @@ export function WatsonRccSim({ patentId = "us-4098001-watson-rcc" }: { patentId?
           </div>
           <input
             type="range"
+            aria-label="Initial alignment offset in millimeters"
             min="0"
             max="2.5"
             step="0.1"
@@ -536,6 +539,7 @@ export function WatsonRccSim({ patentId = "us-4098001-watson-rcc" }: { patentId?
           </div>
           <input
             type="range"
+            aria-label="Axial insertion force in newtons"
             min="0"
             max="400"
             step="10"

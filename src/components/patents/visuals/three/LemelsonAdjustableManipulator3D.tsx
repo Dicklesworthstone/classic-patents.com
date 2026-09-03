@@ -9,46 +9,16 @@ import { stepLemelsonManipulatorTopology } from "@/physics/lemelsonAdjustableMan
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import {
+  LEMELSON_ADJUSTABLE_MANIPULATOR_CAMERA_VIEWS,
+  type LemelsonAdjustableManipulatorCameraView,
+  lemelsonAdjustableManipulatorViewForViewport,
+} from "./lemelsonAdjustableManipulatorCamera";
 import { buildLemelsonAdjustableManipulatorModel } from "./lemelsonAdjustableManipulatorModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-3260375-lemelson-adjustable-manipulator";
-
-const VIEWS = {
-  overview: {
-    position: [4.8, 3.2, 5.2] as [number, number, number],
-    target: [0, 1.0, 0] as [number, number, number],
-  },
-  gantry: {
-    position: [0.0, 3.8, 4.5] as [number, number, number],
-    target: [0, 2.0, 0] as [number, number, number],
-  },
-  wrist: {
-    position: [2.5, 0.8, 2.5] as [number, number, number],
-    target: [0.5, 0.2, 0] as [number, number, number],
-  },
-} as const;
-
-const PHONE_OVERVIEW = {
-  position: [9.6, 6.4, 10.4] as [number, number, number],
-  target: [0, 1.0, 0] as [number, number, number],
-} as const;
-
-const PHONE_WRIST = {
-  position: [1.9, 0.65, 2.0] as [number, number, number],
-  target: [0.33, -0.3, 0] as [number, number, number],
-} as const;
-
-function viewForViewport(view: keyof typeof VIEWS, viewportWidth: number) {
-  if (viewportWidth >= 640) return VIEWS[view];
-  if (view === "overview") return PHONE_OVERVIEW;
-  if (view === "wrist") return PHONE_WRIST;
-  return {
-    position: [0, 5.7, 7.0] as [number, number, number],
-    target: VIEWS.gantry.target,
-  };
-}
 
 const POSE_CONTROLS = [
   {
@@ -132,7 +102,7 @@ export function LemelsonAdjustableManipulator3D({
 } = {}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const [view, setView] = useState<keyof typeof VIEWS>("overview");
+  const [view, setView] = useState<LemelsonAdjustableManipulatorCameraView>("overview");
   const [interfaceVisible, setInterfaceVisible] = useState(true);
   const { params, effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
     usePatentPhysics(PATENT_ID);
@@ -147,18 +117,27 @@ export function LemelsonAdjustableManipulator3D({
     },
   });
 
-  const selectView = (nextView: keyof typeof VIEWS) => {
+  const selectView = (nextView: LemelsonAdjustableManipulatorCameraView) => {
     setView(nextView);
-    const camera = viewForViewport(nextView, containerRef.current?.clientWidth ?? 640);
+    const camera = lemelsonAdjustableManipulatorViewForViewport(
+      nextView,
+      containerRef.current?.clientWidth ?? 640,
+    );
     studioRef.current?.controls.setView(camera.position, camera.target);
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
+  // The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const initialView = container.clientWidth < 640 ? "wrist" : "overview";
-    const initialCamera = viewForViewport(initialView, container.clientWidth);
+    // Start every visitor with the complete supported apparatus. The former
+    // phone-only wrist close-up hid the gantry, carriage, and most of the load
+    // path on first paint; Wrist remains available as an explicit detail view.
+    const initialView = "overview";
+    const initialCamera = lemelsonAdjustableManipulatorViewForViewport(
+      initialView,
+      container.clientWidth,
+    );
     setView(initialView);
     const studio = createThreeStudioScene({
       container,
@@ -210,13 +189,13 @@ export function LemelsonAdjustableManipulator3D({
       studio.cleanup();
       studioRef.current = null;
     };
-  }, []);
+  }, [liveParams]);
 
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl">
       <div className="relative min-h-[500px] sm:min-h-[630px]">
         <div ref={containerRef} className="absolute inset-0" />
-        <div className="pointer-events-none absolute inset-x-3 top-3 flex flex-col items-stretch gap-2 sm:inset-x-5 sm:top-5 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+        <div className="pointer-events-none absolute inset-x-5 top-5 hidden items-start justify-between gap-3 lg:flex">
           <div className="rounded-xl border border-cyan-700/70 bg-slate-950/85 px-3 py-2 backdrop-blur">
             <p className="font-mono text-[10px] tracking-[0.16em] text-cyan-300">
               US 3,260,375 · ADJUSTABLE MANIPULATOR TOPOLOGY
@@ -226,7 +205,11 @@ export function LemelsonAdjustableManipulator3D({
 
           <div className="pointer-events-auto flex w-full items-center justify-end gap-2 sm:w-auto">
             <div className="flex rounded-lg border border-slate-700 bg-slate-900/80 p-0.5 backdrop-blur">
-              {(Object.keys(VIEWS) as (keyof typeof VIEWS)[]).map((vKey) => (
+              {(
+                Object.keys(
+                  LEMELSON_ADJUSTABLE_MANIPULATOR_CAMERA_VIEWS,
+                ) as LemelsonAdjustableManipulatorCameraView[]
+              ).map((vKey) => (
                 <button
                   key={vKey}
                   type="button"
@@ -269,6 +252,33 @@ export function LemelsonAdjustableManipulator3D({
             >
               <RotateCcw className="h-3 w-3" /> Reset
             </button>
+          </div>
+
+          <div
+            data-responsive-view-deck
+            className="mt-3 flex flex-wrap items-center gap-2 lg:hidden"
+          >
+            <span className="mr-1 text-[11px] font-mono uppercase tracking-wide text-slate-400">
+              Camera
+            </span>
+            {(
+              Object.keys(
+                LEMELSON_ADJUSTABLE_MANIPULATOR_CAMERA_VIEWS,
+              ) as LemelsonAdjustableManipulatorCameraView[]
+            ).map((vKey) => (
+              <button
+                key={vKey}
+                type="button"
+                onClick={() => selectView(vKey)}
+                className={`min-h-9 rounded-lg border px-2.5 text-xs font-medium capitalize transition-colors ${
+                  view === vKey
+                    ? "border-cyan-400 bg-cyan-500/20 text-cyan-300"
+                    : "border-slate-700 bg-slate-900 text-slate-300 hover:text-white"
+                }`}
+              >
+                {vKey}
+              </button>
+            ))}
           </div>
 
           <div className="mt-3 grid gap-x-5 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">

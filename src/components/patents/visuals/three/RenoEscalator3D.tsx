@@ -8,6 +8,7 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import { RENO_CAMERA_PRESETS, type RenoCameraPreset } from "./renoEscalatorCamera";
 import {
   buildRenoEscalatorModel,
   type RenoEscalatorModelResult,
@@ -19,24 +20,10 @@ import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "comb_plates" | "cleated_deck" | "handrail" | "top_drive" | "top";
-
 const RENO_SOURCE_SPEED_FPM = 200;
 const RENO_SOURCE_SPEED_MPS = 1.016;
 const RENO_SOURCE_MAX_SINGLE_FILE_PER_HOUR = 6000;
 const RENO_SOURCE_COMB_CLEARANCE_MM = 3.175;
-
-export const RENO_CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [9.5, 6.5, 10.5], target: [0, 0, 0] },
-  comb_plates: { pos: [7.3, 4.1, 5.3], target: [5.0, 2.1, 0] },
-  cleated_deck: { pos: [4.5, 5.4, 9.5], target: [0, -0.2, 0] },
-  handrail: { pos: [-5.5, 4.8, 8.0], target: [-1.0, 0.8, 1.2] },
-  top_drive: { pos: [8.0, 4.0, 7.0], target: [5.2, 2.8, 0] },
-  top: { pos: [0, 14.0, 0.1], target: [0, 0, 0] },
-};
 
 export function RenoEscalator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,7 +35,7 @@ export function RenoEscalator3D() {
   const beltSpeedMps = (params.beltSpeed as number) ?? RENO_SOURCE_SPEED_MPS;
   const inclineAngleDeg = (params.inclineAngle as number) ?? 25;
   const deckSpeedFpm = Math.round((beltSpeedMps * 60) / 0.3048);
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<RenoCameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const live = useLiveSimParams({
@@ -74,7 +61,7 @@ export function RenoEscalator3D() {
 
   const studioRef = useRef<StudioContext | null>(null);
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: RenoCameraPreset) => {
     setActiveCamera(preset);
     const cfg = RENO_CAMERA_PRESETS[preset];
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
@@ -163,7 +150,7 @@ export function RenoEscalator3D() {
                 ["handrail", "Handrail"],
                 ["top_drive", "Top Drive Wheel"],
                 ["top", "Top"],
-              ] as [CameraPreset, string][]
+              ] as [RenoCameraPreset, string][]
             ).map(([preset, label]) => (
               <button
                 key={preset}
@@ -295,6 +282,7 @@ export function RenoEscalator3D() {
             </div>
             <input
               type="range"
+              aria-label="Belt speed"
               min="0.400"
               max="1.200"
               step="0.001"
@@ -315,6 +303,7 @@ export function RenoEscalator3D() {
             </div>
             <input
               type="range"
+              aria-label="Truss incline"
               min="20"
               max="35"
               step="1"

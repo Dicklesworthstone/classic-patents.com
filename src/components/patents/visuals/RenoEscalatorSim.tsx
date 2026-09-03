@@ -328,6 +328,7 @@ export function RenoEscalatorSim() {
           </div>
           <input
             type="range"
+            aria-label="Escalator belt speed in meters per second"
             min="0.4"
             max="1.2"
             step="0.001"

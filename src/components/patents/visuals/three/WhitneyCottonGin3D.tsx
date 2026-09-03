@@ -342,6 +342,7 @@ export function WhitneyCottonGin3D() {
             </div>
             <input
               type="range"
+              aria-label="Hand crank speed"
               min="60"
               max="360"
               step="10"

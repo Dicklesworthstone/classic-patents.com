@@ -79,7 +79,6 @@ describe("US 78,317 Alfred Nobel Porous-Earth Explosive Dynamite visual & detona
     expect(result.kieselguhrCount).toBe(24);
     expect(result.kieselguhrPitch).toBe(32);
     expect(result.shockwaveGlow).toBeCloseTo(1 + (result.detonationVelocityMps / 6000) * 1.5, 2);
-    expect(result.stickDisplayOmegaRadPerS).toBeCloseTo(0.2, 5);
   });
 
   test("builds and articulates procedural wax paper shell, kieselguhr core, diatom grains, and detonator cap correctly", () => {
@@ -92,18 +91,26 @@ describe("US 78,317 Alfred Nobel Porous-Earth Explosive Dynamite visual & detona
     expect(nodes.grainInst.count).toBe(35);
 
     const nobel = stepNobelDynamite({ ngConcentrationPct: 75, capEnergyJoules: 1.2 });
-    updateNobelDynamiteKinematics(
-      nodes,
-      materials,
-      0.016,
-      0.5,
-      true,
-      nobel.shockwaveGlow,
-      nobel.stickDisplayOmegaRadPerS,
-      true,
-    );
+    updateNobelDynamiteKinematics(nodes, materials, 0.5, true, nobel.shockwaveGlow, true);
     expect(materials.waxPaper.transparent).toBe(true);
     expect(nodes.shockwaveMesh.visible).toBe(true);
+    expect(nodes.stickGroup.rotation.y).toBe(0);
+
+    dispose();
+  });
+
+  test("keeps the loaded cartridge static; ignition animates only the local detonation state", () => {
+    const { nodes, materials, dispose } = buildNobelDynamiteModel();
+    const nobel = stepNobelDynamite({ ngConcentrationPct: 75, capEnergyJoules: 1.2 });
+
+    updateNobelDynamiteKinematics(nodes, materials, 0, false, nobel.shockwaveGlow, false);
+    const stationaryYaw = nodes.stickGroup.rotation.y;
+
+    updateNobelDynamiteKinematics(nodes, materials, 0.5, true, nobel.shockwaveGlow, false);
+
+    expect(nodes.stickGroup.rotation.y).toBe(stationaryYaw);
+    expect(nodes.shockwaveMesh.visible).toBe(true);
+    expect(materials.sparkMat.opacity).toBeGreaterThan(0);
 
     dispose();
   });

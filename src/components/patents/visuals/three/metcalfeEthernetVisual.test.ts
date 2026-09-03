@@ -4,7 +4,7 @@ import {
   INITIAL_ETHERNET_STATE,
   stepMetcalfeEthernetSi,
 } from "@/physics/metcalfeEthernetKernel";
-import { metcalfeViewForViewport } from "./MetcalfeEthernet3D";
+import { metcalfeViewForViewport } from "./metcalfeEthernetCamera";
 import { buildMetcalfeEthernetModel } from "./metcalfeEthernetModel";
 
 const readSource = async (relativePath: string): Promise<string> =>

@@ -92,6 +92,8 @@ export const EXTERNAL_RUNTIME_OWNER_PATENT_IDS = [
   "us-1773980-farnsworth-tv",
   "us-4063220-metcalfe-ethernet",
   "us-3728480-baer-odyssey",
+  "us-3858232-boyle-smith-ccd",
+  "us-3858581-kamen-medication-injection-device",
   "us-6120588-eink",
   "us-2292387-lamarr-frequency-hopping",
   "us-586193-marconi-radio",
@@ -187,6 +189,15 @@ export const DEDICATED_WASM_SURFACES = {
     artifactSha256: "9c8ee2c8fcf80a1186b32b1ecae529476f24646060f7f767fcb051ddbb1b69c2",
     refusalBoundary: "typed-wasm",
   },
+  "us-4921293-salisbury-robot-hand": {
+    kind: "generic-wasm",
+    sourceCrate: "fs-salisbury-wasm",
+    loaderFunction: "ensureSalisburyWasm",
+    exportName: "salisbury_hand_step",
+    artifactUrl: "/wasm/fs-salisbury/fs_salisbury_wasm_bg.wasm",
+    artifactSha256: "f20637bf916fee5feab91c4dcd452a987c07de331b1838087b3ff7a4fca285f2",
+    refusalBoundary: "typed-wasm",
+  },
   "us-6331181-davinci": {
     kind: "generic-wasm",
     sourceCrate: "fs-davinci-wasm",
@@ -237,7 +248,6 @@ const GENERIC_WASM_PATENT_IDS = new Set([
   "us-1781541-einstein-refrigerator",
   "us-2495429-spencer-microwave",
   "us-2708656-fermi-reactor",
-  "us-3541541-engelbart-mouse",
   "us-4136359-wozniak-apple",
 ]);
 

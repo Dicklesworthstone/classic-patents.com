@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { otisOverviewRadiusForViewport } from "./OtisHoistingApparatus3D";
+import { otisOverviewRadiusForViewport } from "./otisHoistingCamera";
 
 test("Otis hoisting overview widens enough to preserve the whole apparatus on narrow screens", () => {
   expect(otisOverviewRadiusForViewport(283)).toBe(22);

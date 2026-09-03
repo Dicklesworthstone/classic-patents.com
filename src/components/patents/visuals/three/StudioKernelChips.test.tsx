@@ -43,6 +43,23 @@ describe("StudioKernelChips Component", () => {
     expect(html).toContain("max-w-[min(calc(100%-25rem),28rem)]");
   });
 
+  test("supports a compact top-right lane when an apparatus occupies the bottom edge", () => {
+    const html = renderToStaticMarkup(
+      <StudioKernelChips
+        visible
+        title="Clearance Lane"
+        chips={sampleChips}
+        side="right"
+        placement="top"
+        width="compact"
+      />,
+    );
+
+    expect(html).toContain("top-20");
+    expect(html).not.toContain("bottom-3 sm:bottom-4");
+    expect(html).toContain("max-w-[17rem]");
+  });
+
   test("automatically redirects side='left' to 'right' when hasPrimaryHud is true", () => {
     const html = renderToStaticMarkup(
       <StudioKernelChips

@@ -58,7 +58,7 @@ export function LemelsonMachineVision3D({ patentId = PATENT_ID }: { patentId?: s
     "isometric",
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
+  // The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -100,7 +100,7 @@ export function LemelsonMachineVision3D({ patentId = PATENT_ID }: { patentId?: s
       studio.cleanup();
       studioRef.current = null;
     };
-  }, []);
+  }, [liveState]);
 
   const handlePresetChange = (preset: "isometric" | "vidicon" | "diverter" | "top") => {
     setCameraPreset(preset);
@@ -227,10 +227,8 @@ export function LemelsonMachineVision3D({ patentId = PATENT_ID }: { patentId?: s
           </p>
         </div>
 
-        <form
-          className="space-y-3 rounded-xl border border-slate-700 bg-slate-900/60 p-3"
-          onSubmit={(event) => event.preventDefault()}
-        >
+        <fieldset className="space-y-3 rounded-xl border border-slate-700 bg-slate-900/60 p-3">
+          <legend className="sr-only">Source-state controls</legend>
           <div>
             <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-cyan-300">
               Source-state controls
@@ -261,7 +259,7 @@ export function LemelsonMachineVision3D({ patentId = PATENT_ID }: { patentId?: s
             <RotateCcw className="h-3.5 w-3.5" />
             Reset source exhibit
           </button>
-        </form>
+        </fieldset>
       </div>
     </section>
   );

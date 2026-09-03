@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
 import {
   buildStackhouseManipulatorModel,
@@ -36,7 +36,7 @@ export default function StackhouseManipulator3D({
 
   const liveControlsRef = useRef(controls);
   const liveTelRef = useRef(tel);
-  useEffect(() => {
+  useLayoutEffect(() => {
     liveControlsRef.current = controls;
     liveTelRef.current = tel;
   }, [controls, tel]);
@@ -189,6 +189,7 @@ export default function StackhouseManipulator3D({
               </div>
               <input
                 type="range"
+                aria-label="Forearm roll theta 1"
                 min="-180"
                 max="180"
                 step="1"
@@ -207,6 +208,7 @@ export default function StackhouseManipulator3D({
               </div>
               <input
                 type="range"
+                aria-label="Intermediate roll theta 2"
                 min="-180"
                 max="180"
                 step="1"
@@ -223,6 +225,7 @@ export default function StackhouseManipulator3D({
               </div>
               <input
                 type="range"
+                aria-label="Tool spin roll theta 3"
                 min="-180"
                 max="180"
                 step="1"
@@ -239,6 +242,7 @@ export default function StackhouseManipulator3D({
               </div>
               <input
                 type="range"
+                aria-label="Tool standoff"
                 min="0.05"
                 max="0.40"
                 step="0.01"

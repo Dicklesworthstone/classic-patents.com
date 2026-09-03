@@ -24,6 +24,7 @@ import { ensureGenericWasm } from "@/physics/genericWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { type ColtRevolverCameraPreset, coltRevolverCameraForViewport } from "./coltRevolverCamera";
 import {
   buildColtRevolverModel,
   type ColtRevolverModel,
@@ -33,47 +34,6 @@ import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset = "iso" | "cylinder" | "lockwork" | "sightline" | "loading_lever" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  // The Paterson spans roughly fifteen studio units from grip to muzzle. Keep
-  // the overview far enough back to show that full claimed assembly before a
-  // visitor selects one of the close mechanical views.
-  iso: { pos: [5.6, 3.4, 15.4], target: [1.2, 0.0, 0] },
-  cylinder: { pos: [0.0, 1.8, 4.2], target: [0.0, 0.2, 0] },
-  lockwork: { pos: [-2.2, 0.8, 3.8], target: [-1.8, -0.4, 0] },
-  sightline: { pos: [-5.2, 1.38, 0.0], target: [6.0, 1.25, 0.0] },
-  loading_lever: { pos: [3.2, -1.8, 4.5], target: [2.0, -0.4, 0] },
-  top: { pos: [1.2, 9.5, 0.05], target: [1.2, 0.0, 0] },
-};
-
-function cameraPresetForViewport(
-  preset: CameraPreset,
-  viewportWidth: number,
-): {
-  pos: [number, number, number];
-  target: [number, number, number];
-} {
-  const config = CAMERA_PRESETS[preset];
-  if (viewportWidth >= 640 || preset !== "iso") return config;
-
-  // The long Paterson profile fits the desktop's landscape field of view but
-  // clips at portrait width. Pull only the overview camera back, preserving
-  // the deliberately close teaching views for cylinder and lockwork details.
-  const mobileDistanceMultiplier = 1.9;
-  return {
-    pos: [
-      config.target[0] + (config.pos[0] - config.target[0]) * mobileDistanceMultiplier,
-      config.target[1] + (config.pos[1] - config.target[1]) * mobileDistanceMultiplier,
-      config.target[2] + (config.pos[2] - config.target[2]) * mobileDistanceMultiplier,
-    ],
-    target: config.target,
-  };
-}
 
 export function ColtRevolver3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -90,7 +50,7 @@ export function ColtRevolver3D() {
   const [isFiring, setIsFiring] = useState<boolean>(false);
   const [showLockworkCutaway, setShowLockworkCutaway] = useState<boolean>(false);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<ColtRevolverCameraPreset>("iso");
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -152,10 +112,25 @@ export function ColtRevolver3D() {
     recoilZ: 0,
     recoilX: 0,
   });
+  const firingTimeoutRef = useRef<number | null>(null);
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  useEffect(() => {
+    return () => {
+      if (firingTimeoutRef.current !== null) {
+        window.clearTimeout(firingTimeoutRef.current);
+        firingTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
+  const applyCameraPreset = (preset: ColtRevolverCameraPreset) => {
     setActiveCamera(preset);
-    const cfg = cameraPresetForViewport(preset, window.innerWidth);
+    const container = containerRef.current;
+    const cfg = coltRevolverCameraForViewport(
+      preset,
+      container?.clientWidth ?? window.innerWidth,
+      container?.clientHeight ?? window.innerHeight,
+    );
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -178,6 +153,9 @@ export function ColtRevolver3D() {
 
   const handlePullTrigger = useCallback(() => {
     if (!isFullCock || isFiring) return;
+    if (firingTimeoutRef.current !== null) {
+      window.clearTimeout(firingTimeoutRef.current);
+    }
     setIsFiring(true);
     animRef.current.isFiringSeq = true;
     animRef.current.firingProgress = 0;
@@ -191,7 +169,8 @@ export function ColtRevolver3D() {
     animRef.current.recoilZ = Math.min(0.22, kick * 1.5);
     animRef.current.recoilX = Math.max(-0.4, -kickX * 1.8);
 
-    window.setTimeout(() => {
+    firingTimeoutRef.current = window.setTimeout(() => {
+      firingTimeoutRef.current = null;
       setIsFiring(false);
       animRef.current.isFiringSeq = false;
       const nextChamber = coltNextChamber(currentChamberIndex, coltMech.chamberCount);
@@ -211,12 +190,12 @@ export function ColtRevolver3D() {
   ]);
 
   // 3D Scene Initialization
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted scene reads the stable, layout-effect-synchronized live ref so toggling visual controls never destroys and flashes the WebGL canvas.
+  // The mounted scene reads the stable, layout-effect-synchronized live ref so toggling visual controls never destroys and flashes the WebGL canvas.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = cameraPresetForViewport("iso", window.innerWidth);
+    const iso = coltRevolverCameraForViewport("iso", container.clientWidth, container.clientHeight);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -331,10 +310,10 @@ export function ColtRevolver3D() {
       studio.dispose();
       studioRef.current = null;
     };
-  }, []);
+  }, [live]);
 
   return (
-    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-clip border border-parchment-300 dark:border-ink-800 shadow-patent">
       <div className="sr-only">Samuel Colt Revolving Gun Paterson 3D</div>
       {/* 3D WebGL Canvas Viewport */}
       <div className="relative min-h-[420px] sm:min-h-[500px] w-full cursor-grab active:cursor-grabbing">
@@ -351,7 +330,7 @@ export function ColtRevolver3D() {
                 ["sightline", "Sightline"],
                 ["loading_lever", "Loading Lever"],
                 ["top", "Top Plan"],
-              ] as [CameraPreset, string][]
+              ] as [ColtRevolverCameraPreset, string][]
             ).map(([preset, label]) => (
               <button
                 key={preset}
@@ -522,7 +501,7 @@ export function ColtRevolver3D() {
       {/* Interactive Bottom Control Deck */}
       <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
         {/* Action Buttons Row */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5 bg-parchment-100/95 dark:bg-ink-900/95 max-sm:sticky max-sm:top-[calc(4rem+env(safe-area-inset-top))] max-sm:z-20 max-sm:py-2">
           <button
             type="button"
             onClick={handleCockHammer}
@@ -568,7 +547,7 @@ export function ColtRevolver3D() {
         </div>
 
         {/* Sensitivity Sliders Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+        <div className="grid grid-cols-1 gap-4 pt-1 max-sm:[&_input[type=range]]:scroll-mt-72 md:grid-cols-3">
           <SensitivitySlider
             id="us-x9430-colt-revolver-chamberpressure"
             patentId="us-x9430-colt-revolver"
@@ -619,7 +598,7 @@ export function ColtRevolver3D() {
           onToggleClaim={(claimNo, active) =>
             setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
           }
-          className="mt-2"
+          className="mt-2 max-sm:[&_button]:scroll-mt-72"
         />
 
         {/* Port-Hamiltonian Dirac Energy Strip */}

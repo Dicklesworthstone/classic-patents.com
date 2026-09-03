@@ -340,6 +340,7 @@ export function BaekelandBakelite3D() {
             </div>
             <input
               type="range"
+              aria-label="Wood-flour filler percentage"
               min="10"
               max="60"
               step="5"

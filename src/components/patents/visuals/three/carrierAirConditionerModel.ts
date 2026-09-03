@@ -6,6 +6,7 @@ export interface CarrierAirConditionerModelNodes {
   root: THREE.Group;
   solidCasingMesh: THREE.Mesh;
   cutawayCasingGroup: THREE.Group;
+  cutawayRoofRails: THREE.Mesh[];
   sprayHeadersGroup: THREE.Group;
   sprayNozzles: THREE.Mesh[];
   separatorGroup: THREE.Group;
@@ -115,9 +116,24 @@ export function buildCarrierAirConditionerModel(): CarrierAirConditionerModelRes
   root.add(solidCasingMesh);
 
   const cutawayCasingGroup = new THREE.Group();
-  const top = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(7, 0.08, 3.4)), materials.casing);
-  top.position.set(0, 1.85, 0);
-  cutawayCasingGroup.add(top);
+  // A full roof looks like a cutaway only from the side; from the default
+  // elevated studio view it completely hides the washer's spray and sinuous
+  // separator. Keep the casing outline as thin roof rails, leaving the actual
+  // source-named internals visible through the open inspection face.
+  const cutawayRoofRails: THREE.Mesh[] = [];
+  const addCutawayRoofRail = (width: number, depth: number, x: number, z: number) => {
+    const rail = new THREE.Mesh(
+      trackGeo(new THREE.BoxGeometry(width, 0.12, depth)),
+      materials.casing,
+    );
+    rail.position.set(x, 1.85, z);
+    cutawayCasingGroup.add(rail);
+    cutawayRoofRails.push(rail);
+  };
+  addCutawayRoofRail(7, 0.14, 0, -1.6);
+  addCutawayRoofRail(7, 0.14, 0, 1.6);
+  addCutawayRoofRail(0.14, 3.06, -3.43, 0);
+  addCutawayRoofRail(0.14, 3.06, 3.43, 0);
   const back = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(7, 3.1, 0.08)), materials.casing);
   back.position.set(0, 0.3, -1.66);
   cutawayCasingGroup.add(back);
@@ -279,6 +295,7 @@ export function buildCarrierAirConditionerModel(): CarrierAirConditionerModelRes
       root,
       solidCasingMesh,
       cutawayCasingGroup,
+      cutawayRoofRails,
       sprayHeadersGroup,
       sprayNozzles,
       separatorGroup,

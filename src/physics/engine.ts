@@ -371,15 +371,16 @@ export const FrankenSimEngine = {
   },
 
   /**
-   * Enrico Fermi Chicago Pile-1 (US 2,708,656).
-   * Delegates to fermiKinetics — same k_eff as the badge, schematic, and 3D HUD.
+   * Source-bounded graphite/natural-uranium lattice for US 2,708,656.
+   * Delegates to fermiKinetics. The legacy enrichment argument is accepted for
+   * call compatibility but cannot alter Claim 1's natural-uranium fuel basis.
    */
   stepFermiReactor(
     controlRodWithdrawalPct: number,
     moderatorPurityPct: number,
-    fuelEnrichmentPct: number = 0.72,
+    _fuelEnrichmentPct: number = 0.72,
   ): NuclearKineticsState {
-    return stepFermiKinetics(controlRodWithdrawalPct, moderatorPurityPct, fuelEnrichmentPct);
+    return stepFermiKinetics(controlRodWithdrawalPct, moderatorPurityPct, _fuelEnrichmentPct);
   },
 
   /**

@@ -54,10 +54,57 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
     expect(sens?.derivativeValue).toBeLessThan(0);
   });
 
-  test("Bardeen transistor computes point-contact alpha current gain sensitivity", () => {
-    const sens = computeParameterSensitivity("us-2524035-bardeen-transistor", "emitterCurrent", {});
-    expect(sens).toBeDefined();
-    expect(sens?.derivativeValue).toBeGreaterThan(1.0); // Alpha > 1
+  test("Bardeen refuses derivatives absent from the source-reported samples", () => {
+    for (const control of [
+      "operatingSample",
+      "pointSpacingMils",
+      "claim1Active",
+      "emitterCurrent",
+      "pointSpacing",
+    ]) {
+      expect(computeParameterSensitivity("us-2524035-bardeen-transistor", control, {})).toBeNull();
+    }
+  });
+
+  test("Noyce exposes only identity sensitivities for source-display geometry", () => {
+    expect(
+      computeParameterSensitivity("us-2981877-noyce-ic", "oxideThicknessUm", {
+        oxideThicknessUm: 1,
+      }),
+    ).toMatchObject({
+      metricName: "Displayed Oxide Thickness",
+      derivativeValue: 1,
+      derivativeUnit: "µm / µm",
+    });
+    expect(
+      computeParameterSensitivity("us-2981877-noyce-ic", "leadStripWidthFraction", {
+        leadStripWidthFraction: 0.12,
+      }),
+    ).toMatchObject({
+      metricName: "Displayed Lead Width Fraction",
+      derivativeValue: 1,
+    });
+    expect(computeParameterSensitivity("us-2981877-noyce-ic", "reverseBias", {})).toBeNull();
+  });
+
+  test("Kilby exposes only identity sensitivities for source-display geometry", () => {
+    expect(
+      computeParameterSensitivity(
+        "us-3138743-kilby-integrated-circuit",
+        "sectionRevealFraction",
+        {},
+      ),
+    ).toMatchObject({
+      metricName: "Displayed Semiconductor Section Reveal",
+      derivativeValue: 1,
+      derivativeUnit: "fraction / fraction",
+    });
+    expect(
+      computeParameterSensitivity("us-3138743-kilby-integrated-circuit", "wireArchFraction", {}),
+    ).toMatchObject({ metricName: "Displayed Wire 70 Arch", derivativeValue: 1 });
+    expect(
+      computeParameterSensitivity("us-3138743-kilby-integrated-circuit", "reverseBiasVoltageV", {}),
+    ).toBeNull();
   });
 
   test("Otis exposes only its declared normalized display-rate sensitivity", () => {
@@ -92,9 +139,11 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
       "us-307031-edison-indicator",
       "us-361931-daimler-engine",
       "us-2495429-spencer-microwave",
+      "us-2524035-bardeen-transistor",
       "us-2988237-devol-programmed-transfer",
       "us-3081379-lemelson-machine-vision",
       "us-3313014-lemelson-automatic-production",
+      "us-3858232-boyle-smith-ccd",
       "us-3858581-kamen-medication-injection-device",
       "us-4098001-watson-remote-center-compliance",
       "us-4098001-watson-rcc",
@@ -116,15 +165,89 @@ describe("Parameter Sensitivity Kernel & Analytical Derivatives", () => {
     }
   });
 
+  test("reports Milacron's exact source-sequence sensitivity without inventing SI mechanics", () => {
+    const openRegistration = computeParameterSensitivity(
+      "us-4512709-milacron-robot-toolchanger",
+      "registrationFraction",
+      { toolBasePresent: 1, registrationFraction: 0.5, lockingSlideFraction: 0 },
+    );
+    expect(openRegistration?.derivativeValue).toBe(1);
+    expect(openRegistration?.derivativeUnit).toBe("normalized / normalized");
+
+    const blockedRegistration = computeParameterSensitivity(
+      "us-4512709-milacron-robot-toolchanger",
+      "registrationFraction",
+      { toolBasePresent: 1, registrationFraction: 0.5, lockingSlideFraction: 1 },
+    );
+    expect(blockedRegistration?.derivativeValue).toBe(0);
+    expect(blockedRegistration?.interpretation).toContain("interlock blocks");
+
+    const topologyToggle = computeParameterSensitivity(
+      "us-4512709-milacron-robot-toolchanger",
+      "claimFourTMember",
+      { toolBasePresent: 1, registrationFraction: 1, lockingSlideFraction: 1 },
+    );
+    expect(topologyToggle?.derivativeSymbol).toBe("Δstate / Δtoggle");
+    expect(topologyToggle?.interpretation).toContain("not a continuous derivative");
+  });
+
   test("Marconi refuses derivatives for illustrative dimensions absent from US 586,193", () => {
     expect(computeParameterSensitivity("us-586193-marconi-radio", "antennaHeightM", {})).toBeNull();
     expect(computeParameterSensitivity("us-586193-marconi-radio", "sparkVoltageKv", {})).toBeNull();
+  });
+
+  test("Boyle–Smith refuses derivatives absent from the source-disclosed CCD timing relation", () => {
+    expect(
+      computeParameterSensitivity("us-3858232-boyle-smith-ccd", "clockStepRateHz", {}),
+    ).toBeNull();
+    expect(
+      computeParameterSensitivity("us-3858232-boyle-smith-ccd", "pulseDepthNormalized", {}),
+    ).toBeNull();
   });
 
   test("Kamen transporter refuses a continuous derivative for its discrete source topology", () => {
     expect(
       computeParameterSensitivity("us-5701965-kamen-transporter", "topologyState", {}),
     ).toBeNull();
+  });
+
+  test("Makino differentiates the selected closure branch and fixes Claim 6 attitude", () => {
+    const params = {
+      firstLinkAngleDeg: 32,
+      fourthLinkAngleDeg: -38,
+      topologyVariant: 1,
+    };
+    const first = computeParameterSensitivity(
+      "us-4341502-makino-scara",
+      "firstLinkAngleDeg",
+      params,
+    );
+    const fourth = computeParameterSensitivity(
+      "us-4341502-makino-scara",
+      "fourthLinkAngleDeg",
+      params,
+    );
+    expect(first).toMatchObject({
+      metricName: "End-Effector X Coordinate",
+      derivativeUnit: "norm / deg",
+    });
+    expect(first?.derivativeValue).toBeCloseTo(
+      -Math.sin((32 * Math.PI) / 180) * (Math.PI / 180),
+      5,
+    );
+    expect(fourth?.derivativeValue).toBeCloseTo(
+      Math.cos((-38 * Math.PI) / 180) * (Math.PI / 180),
+      5,
+    );
+    expect(
+      computeParameterSensitivity("us-4341502-makino-scara", "toolAttitudeDeg", params),
+    ).toMatchObject({ derivativeValue: 1, derivativeUnit: "deg / deg" });
+    expect(
+      computeParameterSensitivity("us-4341502-makino-scara", "toolAttitudeDeg", {
+        ...params,
+        topologyVariant: 3,
+      }),
+    ).toMatchObject({ derivativeValue: 0, derivativeUnit: "deg / deg" });
   });
 
   test("unknown patent returns null cleanly without throwing", () => {

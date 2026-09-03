@@ -48,7 +48,7 @@ export function OttoEngineSim() {
     },
   });
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The registered transport intentionally stays mounted while this layout-effect-synchronized ref supplies latest controls.
+  // The registered transport intentionally stays mounted while this layout-effect-synchronized ref supplies latest controls.
   useEffect(() => {
     return globalTransportBus.registerUpdater(
       "us-194047-otto-engine",
@@ -58,7 +58,7 @@ export function OttoEngineSim() {
         claim1ChargeGradingPresent: liveControls.current.claim1ChargeGradingPresent,
       })),
     );
-  }, [onscreenRef]);
+  }, [liveControls, onscreenRef]);
 
   const pose =
     getOttoTapePose() ??
@@ -347,6 +347,7 @@ export function OttoEngineSim() {
           </div>
           <input
             type="range"
+            aria-label="Crankshaft rotational speed in RPM"
             min="60"
             max="320"
             step="10"
@@ -362,6 +363,7 @@ export function OttoEngineSim() {
           </div>
           <input
             type="range"
+            aria-label="Declared analysis compression ratio"
             min="3.0"
             max="8.0"
             step="0.5"

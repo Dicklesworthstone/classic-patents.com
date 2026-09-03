@@ -2,6 +2,7 @@
 
 import { Eye, EyeOff, RotateCcw } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import * as THREE from "three";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { applyClaimConstraintModifications } from "@/physics/claimConstraints";
@@ -13,39 +14,17 @@ import {
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { buildClavelDeltaRobotModel } from "./clavelDeltaRobotModel";
+import {
+  CLAVEL_DELTA_ROBOT_CAMERA_VIEWS,
+  type ClavelDeltaRobotCameraView,
+  clavelDeltaRobotViewForViewport,
+} from "./clavelDeltaRobotCamera";
+import { buildClavelDeltaRobotModel, CLAVEL_EXHIBIT_FLOOR_Y } from "./clavelDeltaRobotModel";
 import { useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-4976582-clavel-delta-robot";
-
-const VIEWS = {
-  overview: {
-    position: [7.2, 3.55, 8.1] as [number, number, number],
-    target: [0, -1, 0] as [number, number, number],
-  },
-  platform: {
-    position: [2.1, 0.3, 2.7] as [number, number, number],
-    target: [0, -0.78, 0] as [number, number, number],
-  },
-  base: {
-    position: [0.05, 4.1, 0.1] as [number, number, number],
-    target: [0, 0.2, 0] as [number, number, number],
-  },
-} as const;
-
-export function clavelDeltaRobotViewForViewport(view: keyof typeof VIEWS, viewportWidth: number) {
-  const config = VIEWS[view];
-  const multiplier = viewportWidth < 480 ? (view === "overview" ? 0.85 : 1.15) : 1;
-  return {
-    position: config.position.map(
-      (coordinate, index) =>
-        config.target[index] + (coordinate - config.target[index]) * multiplier,
-    ) as [number, number, number],
-    target: [...config.target] as [number, number, number],
-  };
-}
 
 const ARM_CONTROLS = [
   { id: "armOneInput", label: "Arm 1", color: "text-cyan-300", accent: "accent-cyan-400" },
@@ -57,8 +36,13 @@ const ARM_CONTROLS = [
 export function ClavelDeltaRobot3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const [view, setView] = useState<keyof typeof VIEWS>("overview");
+  const [view, setView] = useState<ClavelDeltaRobotCameraView>("overview");
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
+  // The control deck now lives below the WebGL canvas, so it can remain
+  // available on narrow screens without covering the claimed mechanism. Keep
+  // it independent from the responsive notice overlay: otherwise the latter's
+  // post-mount phone adjustment can remove a focused range or Reset action.
+  const [showControlDeck, setShowControlDeck] = useState(true);
   const [webglUnavailable, setWebglUnavailable] = useState(false);
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
   const claimStates = useMemo(() => readClavelDeltaRobotClaimStates(params), [params]);
@@ -82,7 +66,9 @@ export function ClavelDeltaRobot3D() {
 
   // Resolve the WebGL fallback before the browser paints: a passive effect can
   // briefly show an empty canvas and controls when WebGL creation fails.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
+  // `useLiveSimParams` returns one stable ref object; keeping that object in
+  // the dependency list preserves the mounted studio while avoiding a stale
+  // initial pose. Deliberately do not depend on its mutable `.current` value.
   useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -117,7 +103,7 @@ export function ClavelDeltaRobot3D() {
     floor.rotation.x = -Math.PI / 2;
     // Kept below the declared normalized platform/tool display envelope; this
     // is framing geometry, not a source-backed floor height.
-    floor.position.y = -2.18;
+    floor.position.y = CLAVEL_EXHIBIT_FLOOR_Y;
     floor.receiveShadow = true;
     scene.add(floor);
 
@@ -148,15 +134,37 @@ export function ClavelDeltaRobot3D() {
       studio.cleanup();
       studioRef.current = null;
     };
-  }, []);
+  }, [liveParams]);
 
-  const selectView = (next: keyof typeof VIEWS) => {
+  const selectView = (next: ClavelDeltaRobotCameraView) => {
     setView(next);
     const nextView = clavelDeltaRobotViewForViewport(
       next,
       containerRef.current?.clientWidth ?? 1000,
     );
     studioRef.current?.controls.setView(nextView.position, nextView.target);
+  };
+
+  /** Restore every authored control and the actual Three.js overview camera. */
+  const resetStudio = () => {
+    // The source-state bus publishes through React subscribers. Commit this
+    // user-requested reset before returning from the click so the visible
+    // state, all cross-face readers, and the camera reset form one action.
+    flushSync(() => {
+      resetParams();
+      setView("overview");
+    });
+    const initial = clavelDeltaRobotViewForViewport(
+      "overview",
+      containerRef.current?.clientWidth ?? 1000,
+    );
+    studioRef.current?.controls.setView(initial.position, initial.target);
+  };
+
+  const toggleStudioUi = () => {
+    const next = !showUiOverlay;
+    setShowUiOverlay(next);
+    setShowControlDeck(next);
   };
 
   useEffect(() => {
@@ -179,7 +187,21 @@ export function ClavelDeltaRobot3D() {
   };
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl">
+    <section
+      className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl"
+      data-testid="clavel-delta-robot-three"
+      data-clavel-topology={state.topologyVisible ? "present" : "withheld"}
+      data-clavel-paired-bars={state.pairedBarsVisible ? "two-per-leg" : "withheld"}
+      data-clavel-tool-drive={state.toolAxisVisible ? "present" : "withheld"}
+      data-clavel-bar-length={state.normalizedBarLength.toFixed(6)}
+      data-clavel-closure-residual={state.closureResidual.toExponential(3)}
+      data-clavel-platform-center={state.platformCenter.map((value) => value.toFixed(6)).join(",")}
+      data-clavel-tool-angle-rad={state.toolAxisRotationRad.toFixed(6)}
+      data-clavel-runtime-source={state.runtimeSource}
+      data-clavel-topology-owner={state.topologyOwner}
+      data-clavel-frankensim-boundary={state.frankenSimBoundary}
+      data-clavel-world-support="fixed-floor-gantry"
+    >
       <div className="relative min-h-[440px] sm:min-h-[540px]">
         <div ref={containerRef} className="absolute inset-0" />
         {webglUnavailable && (
@@ -205,13 +227,13 @@ export function ClavelDeltaRobot3D() {
         )}
         <div className="pointer-events-none absolute inset-x-3 top-3 z-10 sm:inset-x-5 sm:top-5">
           {showUiOverlay && (
-            <div className="flex items-start justify-between gap-3 pr-11">
+            <div className="flex items-start justify-between gap-3 pr-24 sm:pr-36">
               <div className="rounded-xl border border-cyan-700/70 bg-slate-950/85 px-3 py-2 backdrop-blur">
                 <p className="font-mono text-[10px] tracking-[0.16em] text-cyan-300">
                   US 4,976,582 · PROCEDURAL 3D
                 </p>
                 <p className="mt-1 text-sm font-medium text-white">
-                  Three paired-bar legs · one fixed-attitude platform
+                  Three paired-bar legs · fixed base · one fixed-attitude platform
                 </p>
               </div>
               <div className="max-w-xs rounded-xl border border-rose-800/70 bg-rose-950/85 px-3 py-2 text-right text-[11px] leading-4 text-rose-100 backdrop-blur">
@@ -220,68 +242,80 @@ export function ClavelDeltaRobot3D() {
               </div>
             </div>
           )}
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay((current) => !current)}
-            aria-pressed={showUiOverlay}
-            aria-label={
-              showUiOverlay
-                ? "Hide studio controls and notices"
-                : "Show studio controls and notices"
-            }
-            data-clavel-delta-robot-ui-toggle="true"
-            className="pointer-events-auto absolute right-0 top-0 flex min-h-9 items-center gap-1 rounded-lg border border-slate-600 bg-slate-950/90 px-2 text-[11px] text-slate-100 backdrop-blur hover:bg-slate-800"
-          >
-            {showUiOverlay ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-            <span className="hidden sm:inline">{showUiOverlay ? "Hide UI" : "Show UI"}</span>
-          </button>
+          <div className="pointer-events-auto absolute right-0 top-0 flex items-center gap-1">
+            <button
+              type="button"
+              onClick={resetStudio}
+              aria-label="Reset"
+              title="Reset source-bounded controls and overview camera"
+              data-clavel-delta-robot-reset="true"
+              className="flex min-h-9 min-w-9 items-center justify-center gap-1 rounded-lg border border-cyan-600/80 bg-slate-950/90 px-2 text-[11px] text-cyan-100 backdrop-blur hover:bg-slate-800"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Reset</span>
+            </button>
+            <button
+              type="button"
+              onClick={toggleStudioUi}
+              aria-pressed={showUiOverlay}
+              aria-label={showUiOverlay ? "Hide studio notices" : "Show studio notices"}
+              data-clavel-delta-robot-ui-toggle="true"
+              className="flex min-h-9 items-center gap-1 rounded-lg border border-slate-600 bg-slate-950/90 px-2 text-[11px] text-slate-100 backdrop-blur hover:bg-slate-800"
+            >
+              {showUiOverlay ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+              <span className="hidden sm:inline">{showUiOverlay ? "Hide UI" : "Show UI"}</span>
+            </button>
+          </div>
         </div>
+      </div>
 
-        {showUiOverlay && (
-          <div
-            className="absolute bottom-3 left-3 right-3 max-h-[calc(100%-4.5rem)] overflow-y-auto rounded-xl border border-slate-700/80 bg-slate-950/90 p-3 backdrop-blur sm:bottom-5 sm:left-5 sm:right-5"
-            data-clavel-delta-robot-ui-overlay="true"
-          >
-            <div className="grid gap-2 sm:grid-cols-4">
-              {ARM_CONTROLS.map((control) => {
-                const value = params[control.id] ?? 0;
-                return (
-                  <label className="text-xs text-slate-200" key={control.id}>
-                    <span className={control.color}>{control.label}</span>
-                    <span className="float-right font-mono">{value.toFixed(2)}</span>
-                    <input
-                      className={`mt-1 w-full ${control.accent}`}
-                      type="range"
-                      min="-1"
-                      max="1"
-                      step="0.02"
-                      value={value}
-                      aria-label={`${control.label} normalized input`}
-                      onChange={(event) => updateParam(control.id, Number(event.target.value))}
-                    />
-                  </label>
-                );
-              })}
-              <label className="text-xs text-slate-200">
-                <span className="text-amber-300">Tool axis</span>
-                <span className="float-right font-mono">
-                  {(params.toolAxisInput ?? 0).toFixed(2)}
-                </span>
-                <input
-                  className="mt-1 w-full accent-amber-400"
-                  type="range"
-                  min="-1"
-                  max="1"
-                  step="0.02"
-                  value={params.toolAxisInput ?? 0}
-                  aria-label="Tool-axis normalized input"
-                  onChange={(event) => updateParam("toolAxisInput", Number(event.target.value))}
-                />
-              </label>
-            </div>
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-slate-800 pt-3">
-              <div className="flex flex-wrap gap-2">
-                {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((candidate) => (
+      {showControlDeck && (
+        <div
+          className="relative z-10 border-t border-slate-800 bg-slate-950/95 px-3 py-3 sm:px-5 sm:py-4"
+          data-clavel-delta-robot-control-deck="true"
+          data-clavel-delta-robot-ui-overlay="true"
+        >
+          <div className="grid gap-2 sm:grid-cols-4">
+            {ARM_CONTROLS.map((control) => {
+              const value = params[control.id] ?? 0;
+              return (
+                <label className="text-xs text-slate-200" key={control.id}>
+                  <span className={control.color}>{control.label}</span>
+                  <span className="float-right font-mono">{value.toFixed(2)}</span>
+                  <input
+                    className={`mt-1 w-full ${control.accent}`}
+                    type="range"
+                    min="-1"
+                    max="1"
+                    step="0.02"
+                    value={value}
+                    aria-label={`${control.label} normalized input`}
+                    onChange={(event) => updateParam(control.id, Number(event.target.value))}
+                  />
+                </label>
+              );
+            })}
+            <label className="text-xs text-slate-200">
+              <span className="text-amber-300">Tool axis</span>
+              <span className="float-right font-mono">
+                {(params.toolAxisInput ?? 0).toFixed(2)}
+              </span>
+              <input
+                className="mt-1 w-full accent-amber-400"
+                type="range"
+                min="-1"
+                max="1"
+                step="0.02"
+                value={params.toolAxisInput ?? 0}
+                aria-label="Tool-axis normalized input"
+                onChange={(event) => updateParam("toolAxisInput", Number(event.target.value))}
+              />
+            </label>
+          </div>
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-slate-800 pt-3">
+            <div className="flex flex-wrap gap-2">
+              {(Object.keys(CLAVEL_DELTA_ROBOT_CAMERA_VIEWS) as ClavelDeltaRobotCameraView[]).map(
+                (candidate) => (
                   <button
                     key={candidate}
                     type="button"
@@ -296,29 +330,21 @@ export function ClavelDeltaRobot3D() {
                     <Eye className="mr-1 inline h-3.5 w-3.5" />
                     {candidate}
                   </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={resetParams}
-                  className="min-h-9 rounded-lg border border-slate-600 bg-slate-900 px-2.5 text-xs text-slate-200 hover:bg-slate-800"
-                >
-                  <RotateCcw className="mr-1 inline h-3.5 w-3.5" />
-                  Reset
-                </button>
-              </div>
-              <span className="font-mono text-[10px] text-slate-400">
-                {state.status.replaceAll("-", " ").toUpperCase()}
-              </span>
+                ),
+              )}
             </div>
-            <ClaimConstraintToggle
-              patentId={PATENT_ID}
-              claimStates={{ ...claimStates }}
-              onToggleClaim={setClaim}
-              className="mt-3 border-t border-slate-800 pt-3"
-            />
+            <span className="font-mono text-[10px] text-slate-400">
+              {state.status.replaceAll("-", " ").toUpperCase()}
+            </span>
           </div>
-        )}
-      </div>
+          <ClaimConstraintToggle
+            patentId={PATENT_ID}
+            claimStates={{ ...claimStates }}
+            onToggleClaim={setClaim}
+            className="mt-3 border-t border-slate-800 pt-3"
+          />
+        </div>
+      )}
     </section>
   );
 }

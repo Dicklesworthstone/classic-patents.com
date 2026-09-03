@@ -13,6 +13,11 @@ import { applyClaimConstraintModifications } from "@/physics/claimConstraints";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import {
+  AMF_VERSATRAN_CAMERA_VIEWS,
+  type AmfVersatranCameraView,
+  amfVersatranViewForViewport,
+} from "./amfVersatranCamera";
 import { buildAmfVersatranModel } from "./amfVersatranModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -20,41 +25,6 @@ import { useLiveSimParams } from "./useLiveSimParams";
 const PATENT_ID = "us-3212649-amf-versatran";
 const SOURCE_BOUNDARY_MESSAGE =
   "Normalized topology only. The grant does not publish a dimension table, payload, pressure, flow, timing, force, or performance calibration.";
-
-const VIEWS = {
-  overview: {
-    position: [4.9, 3.1, 5.8] as [number, number, number],
-    target: [0, -0.1, 0] as [number, number, number],
-  },
-  wrist: {
-    position: [4.2, 1.8, 2.5] as [number, number, number],
-    target: [1.05, 0.15, 0] as [number, number, number],
-  },
-  programming: {
-    position: [3.8, 2.0, -4.5] as [number, number, number],
-    target: [0.15, -0.35, -0.45] as [number, number, number],
-  },
-} as const;
-
-export function amfVersatranViewForViewport(
-  view: keyof typeof VIEWS,
-  viewportWidth: number,
-): { position: [number, number, number]; target: [number, number, number] } {
-  const config = VIEWS[view];
-  const multiplier = viewportWidth < 480 ? (view === "overview" ? 1.55 : 1.25) : 1;
-  const target =
-    viewportWidth < 480 && view === "overview"
-      ? ([0, -0.65, 0] as [number, number, number])
-      : config.target;
-  return {
-    position: [
-      target[0] + (config.position[0] - config.target[0]) * multiplier,
-      target[1] + (config.position[1] - config.target[1]) * multiplier,
-      target[2] + (config.position[2] - config.target[2]) * multiplier,
-    ],
-    target,
-  };
-}
 
 const POSE_CONTROLS = [
   {
@@ -115,7 +85,7 @@ const POSE_CONTROLS = [
 export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } = {}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const [view, setView] = useState<keyof typeof VIEWS>("overview");
+  const [view, setView] = useState<AmfVersatranCameraView>("overview");
   const [interfaceVisible, setInterfaceVisible] = useState(true);
   const [webglUnavailable, setWebglUnavailable] = useState(false);
   const { params, updateParam, resetParams } = usePatentPhysics(patentId);
@@ -126,6 +96,7 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
   );
   const liveParams = useLiveSimParams(claimResult.modifiedParams);
   const state = stepAmfVersatranTopology(claimResult.modifiedParams);
+  const claim1Active = claimStates[1] ?? true;
   const claim8Active = claimStates[8] ?? true;
   const claim12Active = claimStates[12] ?? true;
 
@@ -134,7 +105,7 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
     refusal: { isRefused: true, reason: state.refusal.reason },
   });
 
-  const selectView = (nextView: keyof typeof VIEWS) => {
+  const selectView = (nextView: AmfVersatranCameraView) => {
     setView(nextView);
     const camera = amfVersatranViewForViewport(nextView, containerRef.current?.clientWidth ?? 1000);
     studioRef.current?.controls.setView(camera.position, camera.target);
@@ -142,7 +113,9 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
 
   // Resolve the WebGL fallback before the browser paints: a passive effect can
   // briefly show an empty canvas and controls when WebGL creation fails.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The persistent WebGL scene reads the stable layout-effect-synchronized control ref; depending on `.current` would recreate and flash the studio.
+  // `useLiveSimParams` returns one stable ref object; keeping that object in
+  // the dependency list preserves the mounted studio while avoiding a stale
+  // initial pose. Deliberately do not depend on its mutable `.current` value.
   useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -176,7 +149,7 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
     const floor = new THREE.Mesh(new THREE.CircleGeometry(4.85, 64), floorMaterial);
     floor.name = "normalized museum floor";
     floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -1.3;
+    floor.position.y = -1.01;
     floor.receiveShadow = true;
     scene.add(floor);
 
@@ -184,7 +157,7 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
     model.updateState(stepAmfVersatranTopology(liveParams.current));
     scene.add(model.root);
     const axes = new THREE.AxesHelper(0.72);
-    axes.position.set(-2.4, -1.22, -1.35);
+    axes.position.set(-2.4, -0.99, -1.35);
     scene.add(axes);
 
     let frame = 0;
@@ -207,7 +180,7 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
       studio.cleanup();
       studioRef.current = null;
     };
-  }, []);
+  }, [liveParams]);
 
   useEffect(() => {
     const restoreResponsiveView = () => {
@@ -249,7 +222,25 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
             </div>
           </div>
         )}
-        <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-3 sm:inset-x-5 sm:top-5">
+        {!webglUnavailable && !claim1Active && (
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 z-10 flex h-[420px] items-center justify-center bg-slate-950/65 p-6 text-center backdrop-blur-[2px] lg:h-[630px]"
+            role="status"
+            data-amf-versatran-claim-1-withheld="true"
+          >
+            <div className="max-w-md rounded-2xl border border-rose-700/80 bg-slate-950/95 p-5 shadow-2xl">
+              <p className="font-mono text-[11px] tracking-[0.15em] text-rose-300">
+                CLAIM 1 TOPOLOGY WITHHELD
+              </p>
+              <p className="mt-2 text-sm leading-6 text-slate-200">
+                This viewport deliberately does not assert the six-actuator hydraulic/servo-valve
+                combination while Claim 1 is inverted. The source text and 2D topology remain
+                available below; the empty apparatus is a boundary, not a render failure.
+              </p>
+            </div>
+          </div>
+        )}
+        <div className="pointer-events-none absolute inset-x-3 top-3 hidden items-start justify-between gap-3 sm:inset-x-5 sm:top-5 sm:flex">
           <div className="rounded-xl border border-cyan-700/70 bg-slate-950/85 px-3 py-2 backdrop-blur">
             <p className="font-mono text-[10px] tracking-[0.16em] text-cyan-300">
               US 3,212,649 · PROCEDURAL 3D
@@ -275,7 +266,7 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
 
         {interfaceVisible && !webglUnavailable && (
           <>
-            <div className="pointer-events-none absolute left-3 top-24 rounded-xl border border-slate-700/80 bg-slate-950/85 p-2.5 font-mono text-[11px] text-slate-200 backdrop-blur sm:left-5">
+            <div className="pointer-events-none absolute left-3 top-24 hidden rounded-xl border border-slate-700/80 bg-slate-950/85 p-2.5 font-mono text-[11px] text-slate-200 backdrop-blur sm:left-5 sm:block">
               <p>
                 MODE{" "}
                 <span className="text-cyan-300">
@@ -304,6 +295,16 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
             >
               <p className="rounded-lg border border-rose-900/70 bg-rose-950/60 p-2 text-[11px] leading-4 text-rose-100 sm:hidden">
                 {SOURCE_BOUNDARY_MESSAGE}
+              </p>
+              <p className="rounded-lg border border-slate-700/80 bg-slate-900/80 p-2 font-mono text-[10px] leading-4 text-slate-200 sm:hidden">
+                MODE{" "}
+                <span className="text-cyan-300">
+                  {state.programMode === "manual-teach-and-record"
+                    ? "TEACH / RECORD"
+                    : "RECORDED-SIGNAL PLAYBACK"}
+                </span>
+                {" · "}TRACKING{" "}
+                <span className="text-amber-300">{state.trackingState.toUpperCase()}</span>
               </p>
               <ClaimConstraintToggle
                 patentId={PATENT_ID}
@@ -417,22 +418,24 @@ export function AmfVersatran3D({ patentId = PATENT_ID }: { patentId?: string } =
                   display positions are normalized signals, not a physical rate.
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((candidate) => (
-                    <button
-                      key={candidate}
-                      type="button"
-                      onClick={() => selectView(candidate)}
-                      className={
-                        "min-h-9 rounded-lg border px-2.5 text-xs capitalize focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 " +
-                        (view === candidate
-                          ? "border-cyan-400 bg-cyan-400 text-slate-950"
-                          : "border-slate-600 bg-slate-900 text-slate-200 hover:bg-slate-800")
-                      }
-                    >
-                      <Eye className="mr-1 inline h-3.5 w-3.5" />
-                      {candidate}
-                    </button>
-                  ))}
+                  {(Object.keys(AMF_VERSATRAN_CAMERA_VIEWS) as AmfVersatranCameraView[]).map(
+                    (candidate) => (
+                      <button
+                        key={candidate}
+                        type="button"
+                        onClick={() => selectView(candidate)}
+                        className={
+                          "min-h-9 rounded-lg border px-2.5 text-xs capitalize focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 " +
+                          (view === candidate
+                            ? "border-cyan-400 bg-cyan-400 text-slate-950"
+                            : "border-slate-600 bg-slate-900 text-slate-200 hover:bg-slate-800")
+                        }
+                      >
+                        <Eye className="mr-1 inline h-3.5 w-3.5" />
+                        {candidate}
+                      </button>
+                    ),
+                  )}
                   <button
                     type="button"
                     onClick={resetParams}

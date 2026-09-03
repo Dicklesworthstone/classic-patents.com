@@ -3,11 +3,26 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
+import { maximCameraForViewport } from "./maximMachineGunCamera";
 import { buildMaximMachineGunModel, updateMaximMachineGunKinematics } from "./maximMachineGunModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
 describe("US 319,596 Hiram Maxim Muzzle-Gas Machine-Gun visual & mechanism boundary", () => {
+  test("uses a closer complete-gun frame on tablet and phone without changing close-up presets", () => {
+    const desktop = maximCameraForViewport("iso", 1280);
+    const tablet = maximCameraForViewport("iso", 768);
+    const phone = maximCameraForViewport("iso", 390);
+
+    expect(tablet.pos[0]).toBeLessThan(desktop.pos[0]);
+    expect(tablet.target).toEqual([0, -0.05, 0.35]);
+    expect(phone).toEqual({ pos: [1.8, 1.3, 1.95], target: [0, -0.05, 0.35] });
+    expect(maximCameraForViewport("muzzle_sleeve", 390)).toEqual({
+      pos: [0.8, 0.5, 1.6],
+      target: [0, 0.1, 0.9],
+    });
+  });
+
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "MaximMachineGun3D.tsx"),
@@ -65,6 +80,17 @@ describe("US 319,596 Hiram Maxim Muzzle-Gas Machine-Gun visual & mechanism bound
     expect(threeSource).toContain("controls.setView");
     expect(threeSource).not.toContain("cameraRef");
     expect(threeSource).toContain("Maxim Machine Gun 3D");
+  });
+
+  test("keeps the compact identity card free of the nested absolute SI-readout widget", () => {
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "MaximMachineGun3D.tsx"),
+      "utf8",
+    );
+
+    expect(threeSource).toContain('data-testid="maxim-identity-card"');
+    expect(threeSource).toContain('data-testid="maxim-kernel-provenance"');
+    expect(threeSource).not.toContain("<StudioKernelChips");
   });
 
   test("computes genuine muzzle-gas expansion and Scotch-yoke kinematics in SI units", () => {

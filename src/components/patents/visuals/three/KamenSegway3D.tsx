@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
-import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { KamenSegwayClaimHeader } from "@/components/patents/visuals/KamenSegwayClaimHeader";
 import { createKamenSegwayModel } from "@/components/patents/visuals/three/kamenSegwayModel";
 import {
   createThreeStudioScene,
@@ -43,7 +43,7 @@ export function KamenSegway3D({ patentId = PATENT_ID }: { patentId?: string }) {
   const controlsRef = useLiveSimParams(effectiveControls);
   const telRef = useLiveSimParams(tel);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted render loop reads stable, layout-effect-synchronized refs; depending on their current values would rebuild the Three.js scene.
+  // The mounted render loop reads stable, layout-effect-synchronized refs; depending on their current values would rebuild the Three.js scene.
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -79,7 +79,7 @@ export function KamenSegway3D({ patentId = PATENT_ID }: { patentId?: string }) {
       studio.dispose();
       studioRef.current = null;
     };
-  }, []);
+  }, [controlsRef, telRef]);
 
   const updateControl = (key: string, value: number) => {
     patentPhysics?.updateParam?.(key, value);
@@ -89,27 +89,16 @@ export function KamenSegway3D({ patentId = PATENT_ID }: { patentId?: string }) {
     <div className="w-full bg-slate-950 text-slate-100 rounded-xl border border-slate-800 p-4 shadow-2xl flex flex-col gap-4">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-cyan-400 animate-pulse" />
-            <h3 className="font-mono text-sm font-semibold tracking-wider text-cyan-400 uppercase">
-              US 6,302,230 • 3D Inverted Pendulum Transporter Studio
-            </h3>
-          </div>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Source-disclosed automatic-balance and ripple-alarm topology with modern illustrative 3D
-            kinematics
-          </p>
-          <ClaimConstraintToggle
-            patentId={PATENT_ID}
-            claimStates={claimStates}
-            onToggleClaim={(claimNumber, active) => {
-              const key = claimNumber === 1 ? "claim1BalanceEnabled" : "claim2RippleEnabled";
-              patentPhysics?.updateParam?.(key, active ? 1 : 0);
-            }}
-            className="mt-2"
-          />
-        </div>
+        <KamenSegwayClaimHeader
+          patentId={PATENT_ID}
+          title="US 6,302,230 • 3D Inverted Pendulum Transporter Studio"
+          description="Source-disclosed automatic-balance and ripple-alarm topology with modern illustrative 3D kinematics"
+          claimStates={claimStates}
+          onToggleClaim={(claimNumber, active) => {
+            const key = claimNumber === 1 ? "claim1BalanceEnabled" : "claim2RippleEnabled";
+            patentPhysics?.updateParam?.(key, active ? 1 : 0);
+          }}
+        />
       </div>
 
       {/* 3D WebGL Viewport */}
@@ -192,6 +181,7 @@ export function KamenSegway3D({ patentId = PATENT_ID }: { patentId?: string }) {
           </div>
           <input
             type="range"
+            aria-label="Rider pitch lean"
             min="-15"
             max="15"
             step="0.5"
@@ -210,6 +200,7 @@ export function KamenSegway3D({ patentId = PATENT_ID }: { patentId?: string }) {
           </div>
           <input
             type="range"
+            aria-label="Steering yaw command"
             min="-1.0"
             max="1.0"
             step="0.1"
@@ -228,6 +219,7 @@ export function KamenSegway3D({ patentId = PATENT_ID }: { patentId?: string }) {
           </div>
           <input
             type="range"
+            aria-label="Speed governor limit"
             min="2.0"
             max="6.0"
             step="0.5"

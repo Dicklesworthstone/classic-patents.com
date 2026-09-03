@@ -33,6 +33,18 @@ const BaerOdysseyPhysicsRuntimeOwner = dynamic(
     import("./PatentPhysicsRuntimeOwner").then((module) => module.BaerOdysseyPhysicsRuntimeOwner),
   { ssr: false },
 );
+const BoyleSmithCcdPhysicsRuntimeOwner = dynamic(
+  () =>
+    import("./PatentPhysicsRuntimeOwner").then((module) => module.BoyleSmithCcdPhysicsRuntimeOwner),
+  { ssr: false },
+);
+const KamenInjectionPhysicsRuntimeOwner = dynamic(
+  () =>
+    import("./PatentPhysicsRuntimeOwner").then(
+      (module) => module.KamenInjectionPhysicsRuntimeOwner,
+    ),
+  { ssr: false },
+);
 const MetcalfeEthernetPhysicsRuntimeOwner = dynamic(
   () =>
     import("./PatentPhysicsRuntimeOwner").then(
@@ -88,7 +100,7 @@ const BellTelephoneSim = dynamic(
   { ssr: false, loading: SimLoading },
 );
 const BoyleSmithCcdSim = dynamic(
-  () => import("./BoyleSmithCcdSim").then((m) => m.BoyleSmithCcdSim),
+  () => import("./BoyleSmithCcdSourceSim").then((m) => m.BoyleSmithCcdSourceSim),
   { ssr: false, loading: SimLoading },
 );
 const CarlsonElectrophotographySim = dynamic(
@@ -262,7 +274,10 @@ const KamenSegwaySim = dynamic(() => import("./KamenSegwaySim").then((m) => m.Ka
   loading: SimLoading,
 });
 const KamenMedicationInjectionSim = dynamic(
-  () => import("./KamenMedicationInjectionSim").then((m) => m.KamenMedicationInjectionSim),
+  () =>
+    import("./KamenMedicationInjectionSourceSim").then(
+      (module) => module.KamenMedicationInjectionSourceSim,
+    ),
   { ssr: false, loading: SimLoading },
 );
 const LamarrFrequencyHoppingSim = dynamic(
@@ -516,7 +531,7 @@ const BellPhotophone3D = dynamic(
   { ssr: false, loading: ThreeLoading },
 );
 const BoyleSmithCcd3D = dynamic(
-  () => import("./three/BoyleSmithCcd3D").then((mod) => mod.BoyleSmithCcd3D),
+  () => import("./three/BoyleSmithCcdSource3D").then((mod) => mod.BoyleSmithCcdSource3D),
   { ssr: false, loading: ThreeLoading },
 );
 const CarlsonElectrophotography3D = dynamic(
@@ -716,7 +731,7 @@ const NobelDynamite3D = dynamic(
   { ssr: false, loading: ThreeLoading },
 );
 const NoycePlanarIC3D = dynamic(
-  () => import("./three/NoycePlanarIC3D").then((mod) => mod.NoycePlanarIC3D),
+  () => import("./three/NoyceSourceLead3D").then((mod) => mod.NoycePlanarIC3D),
   { ssr: false, loading: ThreeLoading },
 );
 const OtisHoistingApparatus3D = dynamic(
@@ -788,7 +803,7 @@ const MaimanRubyLaser3D = dynamic(
   { ssr: false, loading: ThreeLoading },
 );
 const TownesLaser3D = dynamic(
-  () => import("./three/TownesLaser3D").then((mod) => mod.TownesLaser3D),
+  () => import("./three/TownesMaserSystem3D").then((mod) => mod.TownesLaser3D),
   { ssr: false, loading: ThreeLoading },
 );
 const LandPolaroid3D = dynamic(
@@ -796,7 +811,7 @@ const LandPolaroid3D = dynamic(
   { ssr: false, loading: ThreeLoading },
 );
 const KilbyIntegratedCircuit3D = dynamic(
-  () => import("./three/KilbyIntegratedCircuit3D").then((mod) => mod.KilbyIntegratedCircuit3D),
+  () => import("./three/KilbySourceCircuit3D").then((mod) => mod.KilbyIntegratedCircuit3D),
   { ssr: false, loading: ThreeLoading },
 );
 
@@ -923,6 +938,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
   // the shared transport tick observable to browser acceptance tests without
   // inventing a second control path.
   const { tick: physicsTick, lastChange } = usePatentPhysics(patentId);
+  const sourceVisualHold = patentId === "us-3671542-kwolek-kevlar";
   const [renderMode, setRenderMode] = useState<"3d-physics" | "vector-diagram">(
     () => renderModeMemory.get(patentId) ?? "3d-physics",
   );
@@ -941,37 +957,39 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
       data-physics-tick={physicsTick}
       data-physics-last-change={lastChange?.id ?? ""}
     >
-      {/* 3D vs 2D Toggle Switcher */}
-      <div className="flex justify-end">
-        <div className="flex items-center gap-1 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs sm:text-sm font-sans shadow-sm">
-          <button
-            type="button"
-            onClick={() => switchRenderMode("3d-physics")}
-            aria-pressed={renderMode === "3d-physics"}
-            className={`flex min-h-11 items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-2 sm:py-1.5 rounded-lg transition-colors ${
-              renderMode === "3d-physics"
-                ? "bg-amber-600 text-white font-bold shadow-xs"
-                : "text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400"
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>3D Physics Simulation</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => switchRenderMode("vector-diagram")}
-            aria-pressed={renderMode === "vector-diagram"}
-            className={`flex min-h-11 items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-2 sm:py-1.5 rounded-lg transition-colors ${
-              renderMode === "vector-diagram"
-                ? "bg-amber-600 text-white font-bold shadow-xs"
-                : "text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400"
-            }`}
-          >
-            <Activity className="w-3.5 h-3.5" />
-            <span>2D Technical Diagram</span>
-          </button>
+      {/* 3D vs 2D Toggle Switcher. A source-held record has no modes to choose. */}
+      {!sourceVisualHold && (
+        <div className="flex justify-end">
+          <div className="flex items-center gap-1 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs sm:text-sm font-sans shadow-sm">
+            <button
+              type="button"
+              onClick={() => switchRenderMode("3d-physics")}
+              aria-pressed={renderMode === "3d-physics"}
+              className={`flex min-h-11 items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-2 sm:py-1.5 rounded-lg transition-colors ${
+                renderMode === "3d-physics"
+                  ? "bg-amber-600 text-white font-bold shadow-xs"
+                  : "text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400"
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>3D Physics Simulation</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => switchRenderMode("vector-diagram")}
+              aria-pressed={renderMode === "vector-diagram"}
+              className={`flex min-h-11 items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-2 sm:py-1.5 rounded-lg transition-colors ${
+                renderMode === "vector-diagram"
+                  ? "bg-amber-600 text-white font-bold shadow-xs"
+                  : "text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400"
+              }`}
+            >
+              <Activity className="w-3.5 h-3.5" />
+              <span>2D Technical Diagram</span>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Render Selected Visual Module */}
       <div data-testid="patent-visual-surface" data-render-mode={renderMode}>
@@ -1276,8 +1294,8 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             case "us-3671542-kwolek-kevlar":
               return (
                 <SourceVisualUnavailable
-                  title="US 3,671,542 visual held at the checked-claim boundary"
-                  detail="The public evidence currently verifies the front sheet, nine checked drawing sheets, and two printed composition claims. The remaining specification, examples, tables, and correction certificates do not yet have a complete manual source edition. The inherited polymer, tensile, and ballistic scene therefore remains unavailable rather than presenting later material behavior as a model of this grant."
+                  title="US 3,671,542 visual model in preparation"
+                  detail="The complete page-marked transcript is readable on the Original Patent Text face, but manual source acceptance currently covers only the front sheet, nine checked drawing sheets, and two printed composition claims. The remaining specification, examples, tables, and correction certificates still need reconciliation before they can support a visual model. The inherited polymer, tensile, and ballistic scene remains unavailable because it would present later material behavior as a model of this grant."
                 />
               );
             case "us-3728480-baer-odyssey":
@@ -1289,7 +1307,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
               );
             case "us-3923554-boyle-smith-ccd":
             case "us-3858232-boyle-smith-ccd":
-              return renderMode === "3d-physics" ? <BoyleSmithCcd3D /> : <BoyleSmithCcdSim />;
+              return (
+                <>
+                  <BoyleSmithCcdPhysicsRuntimeOwner patentId="us-3858232-boyle-smith-ccd" />
+                  {renderMode === "3d-physics" ? <BoyleSmithCcd3D /> : <BoyleSmithCcdSim />}
+                </>
+              );
             case "us-4098001-watson-remote-center-compliance":
             case "us-4098001-watson-rcc":
               return renderMode === "3d-physics" ? (
@@ -1298,10 +1321,15 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
                 <WatsonRemoteCenterComplianceSim />
               );
             case "us-3858581-kamen-medication-injection-device":
-              return renderMode === "3d-physics" ? (
-                <KamenMedicationInjection3D />
-              ) : (
-                <KamenMedicationInjectionSim />
+              return (
+                <>
+                  <KamenInjectionPhysicsRuntimeOwner patentId={patentId} />
+                  {renderMode === "3d-physics" ? (
+                    <KamenMedicationInjection3D />
+                  ) : (
+                    <KamenMedicationInjectionSim />
+                  )}
+                </>
               );
             case "us-4068536-stackhouse-manipulator":
               return renderMode === "3d-physics" ? (

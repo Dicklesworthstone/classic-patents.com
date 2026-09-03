@@ -14,28 +14,17 @@ import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildPageRankModel } from "./PageRankModel";
+import { type PageRankCameraPreset, pageRankCameraForViewport } from "./pageRankCamera";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { usePatentAudio } from "./usePatentAudio";
 
 const EXHIBIT_ID = "us-6285999-pagerank";
 
-type CameraPreset = "iso" | "graph_network" | "central_node" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [0, 0, 8.5], target: [0, 0, 0] },
-  graph_network: { pos: [5.0, 3.5, 6.5], target: [0, 0, 0] },
-  central_node: { pos: [1.8, 1.2, 3.2], target: [0, 0, 0] },
-  top: { pos: [0, 10.0, 0.01], target: [0, 0, 0] },
-};
-
 export function PageRank3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<PageRankCameraPreset>("iso");
   const [hud, setHud] = useState({ damping: 0.85, iter: 0, topRank: 0.38 });
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
@@ -48,9 +37,9 @@ export function PageRank3D() {
 
   const studioRef = useRef<StudioContext | null>(null);
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: PageRankCameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = pageRankCameraForViewport(preset, containerRef.current?.clientWidth ?? 1024);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -80,7 +69,7 @@ export function PageRank3D() {
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const iso = CAMERA_PRESETS.iso;
+    const iso = pageRankCameraForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -164,7 +153,7 @@ export function PageRank3D() {
                 ["graph_network", "Link Graph"],
                 ["central_node", "Hub Node"],
                 ["top", "Plan View"],
-              ] as [CameraPreset, string][]
+              ] as [PageRankCameraPreset, string][]
             ).map(([preset, label]) => (
               <button
                 key={preset}
@@ -295,6 +284,7 @@ export function PageRank3D() {
             </div>
             <input
               type="range"
+              aria-label="Link-follow probability"
               min="0.10"
               max="0.95"
               step="0.05"

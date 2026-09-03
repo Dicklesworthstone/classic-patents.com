@@ -13,6 +13,10 @@ import {
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import {
+  type CortPuddlingRollingCameraPreset as CameraPreset,
+  cortPuddlingRollingViewForViewport,
+} from "./cortPuddlingRollingCamera";
 import { buildCortPuddlingRollingModel } from "./cortPuddlingRollingModel";
 import { type KernelChip, StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -21,18 +25,13 @@ import { usePatentAudio } from "./usePatentAudio";
 
 const EXHIBIT_ID = "gb-1420-cort-puddling-rolling";
 
-type CameraPreset = "iso" | "furnace" | "hearth" | "mill" | "grooves";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [0, 2.8, 6.0], target: [0, 1.2, 0] },
-  furnace: { pos: [-2.8, 2.2, 3.8], target: [-2.8, 1.2, 0] },
-  hearth: { pos: [-2.5, 1.8, 1.6], target: [-2.5, 0.9, 0] },
-  mill: { pos: [2.0, 1.8, 3.6], target: [2.0, 1.1, 0] },
-  grooves: { pos: [2.0, 1.3, 1.8], target: [2.0, 1.0, 0] },
-};
+const CAMERA_PRESET_OPTIONS: readonly { readonly id: CameraPreset; readonly label: string }[] = [
+  { id: "iso", label: "Overview" },
+  { id: "furnace", label: "Puddling Furnace" },
+  { id: "hearth", label: "Molten Hearth" },
+  { id: "mill", label: "Rolling Mill" },
+  { id: "grooves", label: "Groove Passes" },
+];
 
 const IDLE_THERMO: ThermodynamicsState = {
   temperatureCelsius: 0,
@@ -143,16 +142,16 @@ export function CortPuddlingRolling3D() {
     return unregister;
   }, [live]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The persistent WebGL scene consumes the stable layout-effect-synchronized control ref so toggles do not rebuild and flash the studio.
+  // The persistent WebGL scene consumes the stable layout-effect-synchronized control ref so toggles do not rebuild and flash the studio.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const initialCamera = cortPuddlingRollingViewForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
-      cameraPos: iso.pos,
-      targetPos: iso.target,
+      cameraPos: initialCamera.pos,
+      targetPos: initialCamera.target,
       fov: 42,
       enableFloorGrid: true,
     });
@@ -194,15 +193,30 @@ export function CortPuddlingRolling3D() {
       model.dispose();
       studio.cleanup();
     };
-  }, []);
+  }, [live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActivePreset(preset);
     const studio = studioRef.current;
     if (!studio) return;
-    const cfg = CAMERA_PRESETS[preset];
-    studio.controls.setView(cfg.pos, cfg.target);
+    const camera = cortPuddlingRollingViewForViewport(
+      preset,
+      containerRef.current?.clientWidth ?? 1000,
+    );
+    studio.controls.setView(camera.pos, camera.target);
   };
+
+  useEffect(() => {
+    const restoreResponsiveView = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const camera = cortPuddlingRollingViewForViewport(activePreset, container.clientWidth);
+      studioRef.current?.controls.setView(camera.pos, camera.target);
+    };
+
+    window.addEventListener("resize", restoreResponsiveView);
+    return () => window.removeEventListener("resize", restoreResponsiveView);
+  }, [activePreset]);
 
   const chips: KernelChip[] = [
     {
@@ -237,14 +251,6 @@ export function CortPuddlingRolling3D() {
     },
   ];
 
-  const presets: { id: CameraPreset; label: string }[] = [
-    { id: "iso", label: "Overview" },
-    { id: "furnace", label: "Puddling Furnace" },
-    { id: "hearth", label: "Molten Hearth" },
-    { id: "mill", label: "Rolling Mill" },
-    { id: "grooves", label: "Groove Passes" },
-  ];
-
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
       <div className="sr-only">Henry Cort Puddling Process and Grooved Rollers 3D</div>
@@ -257,7 +263,7 @@ export function CortPuddlingRolling3D() {
             <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
               <Camera className="w-3.5 h-3.5" /> View:
             </span>
-            {presets.map(({ id, label }) => (
+            {CAMERA_PRESET_OPTIONS.map(({ id, label }) => (
               <button
                 key={id}
                 type="button"
@@ -366,6 +372,7 @@ export function CortPuddlingRolling3D() {
             </div>
             <input
               type="range"
+              aria-label="Reverberatory furnace temperature"
               min="1100"
               max="1450"
               step="10"
@@ -386,6 +393,7 @@ export function CortPuddlingRolling3D() {
             </div>
             <input
               type="range"
+              aria-label="Pig iron carbon content"
               min="2.5"
               max="4.5"
               step="0.1"
@@ -406,6 +414,7 @@ export function CortPuddlingRolling3D() {
             </div>
             <input
               type="range"
+              aria-label="Roll speed"
               min="10"
               max="50"
               step="1"
@@ -417,8 +426,8 @@ export function CortPuddlingRolling3D() {
         </div>
 
         <p className="mt-3 text-[11px] leading-relaxed text-amber-800 dark:text-amber-300">
-          Editorial process model only. The source edition is withheld and GB 1420 has no
-          source-backed numbered claim probe or accepted drawing crop.
+          Editorial process model only. It illustrates the stated puddling-and-rolling sequence, not
+          a reconstruction of a drawing sheet, numbered claim probe, or measured production record.
         </p>
 
         <PortHamiltonianEnergyStrip

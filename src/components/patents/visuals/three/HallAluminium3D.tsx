@@ -15,45 +15,12 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import { type HallAluminiumCameraPreset, hallViewForViewport } from "./hallAluminiumCamera";
 import { createHallAluminiumModel, updateHallAluminiumVisual } from "./hallAluminiumModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset = "overview" | "anodes" | "molten_bath" | "siphon_tap";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  overview: { pos: [0, 4.0, 6.2], target: [0, 0, 0] },
-  anodes: { pos: [0, 2.0, 2.6], target: [0, 0.5, 0] },
-  molten_bath: { pos: [0, 0.9, 3.2], target: [0, -0.2, 0] },
-  siphon_tap: { pos: [2.6, 0.6, 2.2], target: [1.8, -0.5, 0] },
-};
-
-export function hallViewForViewport(preset: CameraPreset, viewportWidth: number) {
-  const config = CAMERA_PRESETS[preset];
-  const multiplier =
-    viewportWidth < 480
-      ? preset === "overview"
-        ? 1.65
-        : 1.35
-      : viewportWidth < 900
-        ? preset === "overview"
-          ? 1.25
-          : 1.12
-        : 1;
-  return {
-    pos: [
-      config.target[0] + (config.pos[0] - config.target[0]) * multiplier,
-      config.target[1] + (config.pos[1] - config.target[1]) * multiplier,
-      config.target[2] + (config.pos[2] - config.target[2]) * multiplier,
-    ] as [number, number, number],
-    target: config.target,
-  };
-}
 
 const IDLE_EM: ElectromagneticsState = {
   frequencyHz: 0,
@@ -87,7 +54,7 @@ const IDLE_THERMO: ThermodynamicsState = {
 
 export function HallAluminium3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [activePreset, setActivePreset] = useState<CameraPreset>("overview");
+  const [activePreset, setActivePreset] = useState<HallAluminiumCameraPreset>("overview");
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(true);
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -157,7 +124,7 @@ export function HallAluminium3D() {
 
   const studioRef = useRef<ReturnType<typeof createThreeStudioScene> | null>(null);
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: HallAluminiumCameraPreset) => {
     setActivePreset(preset);
     const studio = studioRef.current;
     if (!studio) return;
@@ -253,22 +220,22 @@ export function HallAluminium3D() {
             <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
               <Camera className="w-3.5 h-3.5" /> View:
             </span>
-            {(["overview", "anodes", "molten_bath", "siphon_tap"] as CameraPreset[]).map(
-              (preset) => (
-                <button
-                  key={preset}
-                  type="button"
-                  onClick={() => applyCameraPreset(preset)}
-                  className={`min-h-9 px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                    activePreset === preset
-                      ? "bg-amber-600 text-white shadow-xs font-semibold"
-                      : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                  }`}
-                >
-                  {preset.replace("_", " ")}
-                </button>
-              ),
-            )}
+            {(
+              ["overview", "anodes", "molten_bath", "siphon_tap"] as HallAluminiumCameraPreset[]
+            ).map((preset) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyCameraPreset(preset)}
+                className={`min-h-9 px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activePreset === preset
+                    ? "bg-amber-600 text-white shadow-xs font-semibold"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {preset.replace("_", " ")}
+              </button>
+            ))}
           </div>
         )}
 

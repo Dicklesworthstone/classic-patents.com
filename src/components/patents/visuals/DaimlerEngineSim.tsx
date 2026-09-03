@@ -287,7 +287,7 @@ function DaimlerMarineInstallationFace({
 
 export function DaimlerEngineSim() {
   const { params, updateParam } = usePatentPhysics("us-361931-daimler-engine");
-  const [kernelSource, setKernelSource] = useState(daimlerKernelSource());
+  const [kernelSource, setKernelSource] = useState(daimlerKernelSource);
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const shaftPosition = params.shaftPosition ?? 1;
   const coolingPumpEnabled = params.coolingPumpEnabled ?? 0;

@@ -42,7 +42,7 @@ export function LemelsonWarehousing3D({
 
   const [cameraPreset, setCameraPreset] = useState<"aisle" | "overhead" | "forks" | "bay">("aisle");
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The persistent WebGL scene reads the stable layout-effect-synchronized control ref; depending on `.current` would recreate and flash the studio.
+  // The persistent WebGL scene reads the stable layout-effect-synchronized control ref; depending on `.current` would recreate and flash the studio.
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -100,7 +100,7 @@ export function LemelsonWarehousing3D({
       modelRef.current = null;
       clockRef.current = null;
     };
-  }, []);
+  }, [liveControlsRef]);
 
   const handleCameraPreset = (preset: "aisle" | "overhead" | "forks" | "bay") => {
     setCameraPreset(preset);
@@ -230,6 +230,7 @@ export function LemelsonWarehousing3D({
           </div>
           <input
             type="range"
+            aria-label="Target bay X"
             min="1"
             max="10"
             step="1"
@@ -246,6 +247,7 @@ export function LemelsonWarehousing3D({
           </div>
           <input
             type="range"
+            aria-label="Target level Z"
             min="1"
             max="6"
             step="1"
@@ -262,6 +264,7 @@ export function LemelsonWarehousing3D({
           </div>
           <input
             type="range"
+            aria-label="Traverse speed"
             min="0.5"
             max="2.5"
             step="0.1"
@@ -278,6 +281,7 @@ export function LemelsonWarehousing3D({
           </div>
           <input
             type="range"
+            aria-label="Hoist speed"
             min="0.2"
             max="1.2"
             step="0.1"

@@ -51,7 +51,7 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     }
 
     const fermiGhosts = intervalGhosts("us-2708656-fermi-reactor", { rodWithdrawal: 83.5 });
-    expect(fermiGhosts[0]?.label).toBe("k_eff");
+    expect(fermiGhosts[0]?.label).toBe("normalized k_eff");
     expect(fermiGhosts[0]?.max).toBeGreaterThanOrEqual(fermiGhosts[0]?.min ?? 0);
   });
 
@@ -109,31 +109,29 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     });
   });
 
-  test("drains Noyce US 2,981,877 weave surfaces from the planar-junction kernel", () => {
+  test("keeps Noyce US 2,981,877 weave surfaces inside the source topology boundary", () => {
     const probe = materialProbe("us-2981877-noyce-ic", "Lead across junction", {
-      reverseBias: 5,
-      oxideThickness: 0.5,
-      clockFrequencyMhz: 10,
+      oxideThicknessUm: 1,
+      leadStripWidthFraction: 0.12,
     });
     expect(probe).toMatchObject({
-      qty: "W",
+      qty: "t_ox",
       unit: "µm",
     });
-    expect(probe?.note).toContain("pF/mm²");
+    expect(probe?.note).toContain("Electrical performance is refused");
     expect(
       intervalGhosts("us-2981877-noyce-ic", {
-        reverseBias: 5,
-        oxideThickness: 0.5,
-        clockFrequencyMhz: 10,
+        oxideThicknessUm: 1,
+        leadStripWidthFraction: 0.12,
       }),
     ).toEqual([
-      { label: "W", min: 0.4, max: 2.5, live: 1.19, unit: "µm" },
-      { label: "tpd", min: 0.8, max: 3, live: 1.3, unit: "ns" },
+      { label: "t_ox", min: 0.5, max: 2, live: 1, unit: "µm" },
+      { label: "w_lead", min: 0.08, max: 0.28, live: 0.12, unit: "span fraction" },
     ]);
-    expect(fidelityField("us-2981877-noyce-ic", { oxideThickness: 0.5 })).toMatchObject({
-      model: "500",
-      reference: "1500",
-      residual: "-1000",
+    expect(fidelityField("us-2981877-noyce-ic", { oxideThicknessUm: 1 })).toMatchObject({
+      model: "1000",
+      reference: "1000–2000",
+      residual: "within source range",
       unit: "nm",
     });
     expect(datedScenarios("us-2981877-noyce-ic")).toEqual([
@@ -141,9 +139,36 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
         id: "noyce-filing-1959",
         date: "1959-07-30",
         name: "Filed semiconductor device-and-lead structure",
-        writes: { reverseBias: 5, oxideThickness: 0.5, clockFrequencyMhz: 10 },
+        writes: { oxideThicknessUm: 1, leadStripWidthFraction: 0.12 },
       },
     ]);
+  });
+
+  test("keeps Kilby US 3,138,743 weave surfaces inside its printed construction", () => {
+    expect(
+      intervalGhosts("us-3138743-kilby-integrated-circuit", {
+        sectionRevealFraction: 0.25,
+        wireArchFraction: 0.7,
+      }),
+    ).toEqual([
+      { label: "section reveal", min: 0, max: 1, live: 0.25, unit: "fraction" },
+      { label: "wire 70 arch", min: 0.2, max: 1, live: 0.7, unit: "fraction" },
+    ]);
+    expect(fidelityField("us-3138743-kilby-integrated-circuit", {})).toMatchObject({
+      part: "Figure 6a wafer dimensions",
+      model: "0.200 × 0.080 × 0.0025",
+      reference: "0.200 × 0.080 × 0.0025",
+      residual: "0",
+    });
+    expect(datedScenarios("us-3138743-kilby-integrated-circuit")).toEqual([
+      {
+        id: "kilby-application-1959",
+        date: "1959-02-06",
+        name: "US 3,138,743 application: Figure 6a source construction",
+        writes: { sectionRevealFraction: 0, wireArchFraction: 0.55 },
+      },
+    ]);
+    expect(coupleLinks("us-3138743-kilby-integrated-circuit", {})).toEqual([]);
   });
 
   test("drains Carrier US 808,897 weave surfaces from the spray-dew-point kernel", () => {
@@ -187,11 +212,29 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
       rotorRpm: 3000,
     });
 
-    expect(materialProbe("us-3858232-boyle-smith-ccd", "Storage minimum", {})?.qty).toBe("CTE");
-    expect(intervalGhosts("us-3858232-boyle-smith-ccd", {})[0]?.unit).toBe("e⁻");
-    expect(fidelityField("us-3858232-boyle-smith-ccd", {})?.unit).toBe("");
-    expect(datedScenarios("us-3858232-boyle-smith-ccd")[0]?.id).toBe("murray-hill-1969");
-    expect(coupleLinks("us-3858232-boyle-smith-ccd", {})[0]?.from).toBe("3-phase clock gate");
+    expect(materialProbe("us-3858232-boyle-smith-ccd", "Storage medium", {})).toMatchObject({
+      qty: "Claim 1 medium",
+      value: "continuous",
+      unit: "single conductivity type",
+    });
+    expect(intervalGhosts("us-3858232-boyle-smith-ccd", {})[0]).toMatchObject({
+      label: "Pulse overlap",
+      unit: "t_p / delta-t",
+    });
+    expect(fidelityField("us-3858232-boyle-smith-ccd", {})).toMatchObject({
+      part: "Figure 3 pulse-overlap inequality",
+      reference: "> 0.333",
+      unit: "t_p / delta-t",
+    });
+    expect(datedScenarios("us-3858232-boyle-smith-ccd")[0]).toMatchObject({
+      id: "us-3858232-figure-3-source-sequence",
+      writes: {
+        clockStepRateHz: 1.2,
+        pulseWidthToStepRatio: 0.5,
+        pulseDepthNormalized: 0.78,
+      },
+    });
+    expect(coupleLinks("us-3858232-boyle-smith-ccd", {})).toEqual([]);
 
     expect(materialProbe("us-3671542-kwolek-kevlar", "Dope", {})).toBeNull();
     expect(intervalGhosts("us-3671542-kwolek-kevlar", {})).toEqual([]);
@@ -217,10 +260,10 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
       channels: 88,
     });
 
-    expect(materialProbe("us-2708656-fermi-reactor", "Lattice", {})?.qty).toBe("k_eff");
-    expect(intervalGhosts("us-2708656-fermi-reactor", {})[0]?.label).toBe("k_eff");
-    expect(fidelityField("us-2708656-fermi-reactor", {})?.reference).toBe("1.0000");
-    expect(datedScenarios("us-2708656-fermi-reactor")[0]?.id).toBe("cp1-1942-12-02");
+    expect(materialProbe("us-2708656-fermi-reactor", "Lattice", {})?.qty).toBe("Claim 1 lattice");
+    expect(intervalGhosts("us-2708656-fermi-reactor", {})[0]?.label).toBe("normalized k_eff");
+    expect(fidelityField("us-2708656-fermi-reactor", {})?.reference).toBe("source-bounded");
+    expect(datedScenarios("us-2708656-fermi-reactor")[0]?.id).toBe("patent-bare-ratio-example");
 
     expect(materialProbe("us-200521-edison-phonograph", "Cylinder A", {})?.qty).toBe("groove");
     expect(intervalGhosts("us-200521-edison-phonograph", {})[0]?.label).toBe("Groove");
@@ -228,7 +271,13 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
 
     expect(materialProbe("us-3541541-engelbart-mouse", "Position wheel", {})?.qty).toBe("ω");
     expect(intervalGhosts("us-3541541-engelbart-mouse", {})[0]?.unit).toBe("rad/s");
-    expect(fidelityField("us-3541541-engelbart-mouse", {})?.unit).toBe("dpi");
+    expect(fidelityField("us-3541541-engelbart-mouse", {})).toEqual({
+      part: "Wheel dimension and resolution",
+      model: "illustrative scenario",
+      reference: "not printed",
+      residual: "withheld",
+      unit: "source boundary",
+    });
     expect(datedScenarios("us-3541541-engelbart-mouse")[0]?.id).toBe("sri-1968-12-09");
 
     expect(materialProbe("us-313224-mergenthaler-linotype", "Matrix-bar", {})?.qty).toBe("cycle");
@@ -254,7 +303,7 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(wrightScenarios.length).toBeGreaterThan(0);
     expect(wrightScenarios[0].date).toContain("1903");
 
-    expect(datedScenarios("us-2708656-fermi-reactor")[0]?.id).toBe("cp1-1942-12-02");
+    expect(datedScenarios("us-2708656-fermi-reactor")[0]?.id).toBe("patent-bare-ratio-example");
   });
 
   test("evaluates cross-patent Dirac coupling power links", () => {
@@ -276,7 +325,7 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(coupleLinks("us-588-ericsson-propeller", {})[0]?.from).toBe("thrust · v");
     expect(coupleLinks("us-586193-marconi-radio", {})).toEqual([]);
     expect(coupleLinks("us-808897-carrier-air-conditioner", {})[0]?.from).toBe("fan");
-    expect(coupleLinks("us-2708656-fermi-reactor", {})[0]?.from).toBe("fission");
+    expect(coupleLinks("us-2708656-fermi-reactor", {})).toEqual([]);
     expect(coupleLinks("us-608969-parsons-turbine", {})[0]?.from).toBe("steam");
     expect(coupleLinks("us-400766-hall-aluminium", {})[0]?.from).toBe("bus");
     expect(coupleLinks("us-879532-de-forest-audion", {})[0]?.from).toBe("filament");

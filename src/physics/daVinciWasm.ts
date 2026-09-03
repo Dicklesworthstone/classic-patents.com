@@ -56,7 +56,7 @@ function isAxis(
 ): value is [number, number, number] {
   return (
     Array.isArray(value) &&
-    value.length === 3 &&
+    value.length === expected.length &&
     value.every(
       (component, index) =>
         typeof component === "number" &&

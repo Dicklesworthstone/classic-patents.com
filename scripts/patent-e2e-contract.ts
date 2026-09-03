@@ -17,7 +17,12 @@ export const PATENT_E2E_VIEWPORTS = {
 
 export type PatentE2EViewportName = keyof typeof PATENT_E2E_VIEWPORTS;
 export type PatentE2EEventStatus = "info" | "pass" | "fail";
-export type PatentE2ESourceState = "published" | "withheld";
+/**
+ * The reader's source-text delivery mode. Editorial acceptance remains in
+ * `sourcePublicationState`; it is deliberately not allowed to erase an
+ * otherwise complete source-text face.
+ */
+export type PatentE2ESourceState = "edition" | "transcript";
 
 export interface PatentE2EControl {
   id: string;
@@ -42,6 +47,7 @@ export interface PatentE2EScenario {
   claimCount: number;
   drawingCount: number;
   hasReviewedLedger: boolean;
+  hasCompleteTranscript: boolean;
   hasStoredEdition: boolean;
   figurePreviewUrls: readonly string[];
   equationIds: readonly string[];
@@ -119,7 +125,10 @@ export interface PatentE2EOptions {
 }
 
 interface ScenarioFacts {
-  isEditionPublished: (patent: Patent) => boolean;
+  /** Whether the reader renders a stored archival edition for this record. */
+  rendersEdition: (patent: Patent) => boolean;
+  /** Whether the reader can render a complete page-marked transcript. */
+  hasCompleteTranscript: (patent: Patent) => boolean;
   publicationDecision?: (patent: Patent) => ArchivalPublicationDecision;
   assetExists?: (publicUrl: string) => boolean;
   equationIdsForPatent?: (patent: Patent) => readonly string[];
@@ -164,20 +173,26 @@ export function buildPatentE2EScenarios(
     }
 
     const decision = facts.publicationDecision?.(patent);
-    const isPublished = decision?.isPublished ?? facts.isEditionPublished(patent);
+    const rendersEdition = facts.rendersEdition(patent);
+    const hasCompleteTranscript = facts.hasCompleteTranscript(patent);
+    if (!rendersEdition && !hasCompleteTranscript) {
+      throw new Error(
+        `${patent.id} has neither a rendered archival edition nor a complete readable transcript.`,
+      );
+    }
     return {
       patentId: patent.id,
       patentNumber: patent.patentNumber,
       title: patent.shortTitle,
       route: `/patents/${patent.id}`,
       pdfUrl: patent.originalPdfUrl,
-      sourceState: isPublished ? "published" : "withheld",
+      sourceState: rendersEdition ? "edition" : "transcript",
       sourcePublicationState:
         decision?.state.kind ??
-        (isPublished ? "accepted" : patent.archivalEdition ? "candidate" : "facsimile-only"),
+        (rendersEdition ? "accepted" : patent.archivalEdition ? "candidate" : "facsimile-only"),
       sourceReasonCode:
         decision?.reasonCode ??
-        (isPublished
+        (rendersEdition
           ? "ACCEPTED"
           : patent.archivalEdition
             ? "UNSPECIFIED_HOLD"
@@ -218,6 +233,7 @@ export function buildPatentE2EScenarios(
       claimCount: patent.claims.length,
       drawingCount: patent.drawings.length,
       hasReviewedLedger: patent.originalTextAsset?.kind === "reviewed-transcription",
+      hasCompleteTranscript,
       hasStoredEdition: Boolean(patent.archivalEdition),
       figurePreviewUrls: figurePreviewUrlsForPatent(patent),
       equationIds: [...(facts.equationIdsForPatent?.(patent) ?? [])],

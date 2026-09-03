@@ -7,6 +7,12 @@ export interface RobotEndEffectorModel {
   dispose: () => void;
 }
 
+export const ROBOT_END_EFFECTOR_EXHIBIT_FLOOR_Y = -1.7;
+export const ROBOT_END_EFFECTOR_HAND_WIDTH_WORLD = 0.32;
+export const ROBOT_END_EFFECTOR_TRANSVERSE_TRAVEL_WORLD = 0.34;
+const TRANSVERSE_RAIL_HALF_LENGTH_WORLD = 0.65;
+const TRANSVERSE_BEARING_HALF_LENGTH_WORLD = 0.15;
+
 /**
  * Procedural museum model derived from the named frame, double screws, hands,
  * fingers, spur gears, and encoder pegs in US 4,765,668. The source does not
@@ -101,9 +107,35 @@ export function buildRobotEndEffectorModel(): RobotEndEffectorModel {
     return gear;
   };
 
+  const createThread = (name: string, xStart: number, xEnd: number, handedness: -1 | 1) => {
+    const turns = 12;
+    const segments = 144;
+    const points = Array.from({ length: segments + 1 }, (_, index) => {
+      const fraction = index / segments;
+      const angle = handedness * fraction * turns * Math.PI * 2;
+      return new THREE.Vector3(
+        THREE.MathUtils.lerp(xStart, xEnd, fraction),
+        Math.cos(angle) * 0.082,
+        Math.sin(angle) * 0.082,
+      );
+    });
+    const thread = new THREE.Mesh(
+      geometry(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), segments, 0.011, 6)),
+      screwMat,
+    );
+    thread.name = name;
+    thread.userData.handedness = handedness < 0 ? "left" : "right";
+    thread.userData.turns = turns;
+    return thread;
+  };
+
+  const transverseCarriage = new THREE.Group();
+  transverseCarriage.name = "Claim 16 guided transverse carriage 134";
+  root.add(transverseCarriage);
+
   const rotatingAssembly = new THREE.Group();
   rotatingAssembly.name = "Connector-mounted rotating gripper assembly 10";
-  root.add(rotatingAssembly);
+  transverseCarriage.add(rotatingAssembly);
 
   const frame = new THREE.Group();
   frame.name = "Frame 12 with cylinders 26 and 30 and web 28";
@@ -134,19 +166,30 @@ export function buildRobotEndEffectorModel(): RobotEndEffectorModel {
   screwGroup.name = "Opposed-thread ball screws 40";
   rotatingAssembly.add(screwGroup);
   const handGroups: Array<{ group: THREE.Group; side: -1 | 1 }> = [];
-  const fingerGroups: Array<{ group: THREE.Group; removalDirection: -1 | 1 }> = [];
-  const screwMeshes: THREE.Mesh[] = [];
+  const fingerGroups: Array<{
+    group: THREE.Group;
+    seatedOffsetX: number;
+    withdrawalDirection: -1 | 1;
+  }> = [];
+  const screwAssemblies: THREE.Group[] = [];
   const screwAxisY = 0.72;
   for (const transverseSide of [-1, 1] as const) {
-    const screw = new THREE.Mesh(
+    const screw = new THREE.Group();
+    screw.name = transverseSide > 0 ? "Upper ball screw 40" : "Lower ball screw 40";
+    screw.position.y = transverseSide * screwAxisY;
+    const screwCore = new THREE.Mesh(
       geometry(new THREE.CylinderGeometry(0.075, 0.075, 3.16, 24)),
       screwMat,
     );
-    screw.name = transverseSide > 0 ? "Upper ball screw 40" : "Lower ball screw 40";
-    screw.rotation.z = Math.PI / 2;
-    screw.position.y = transverseSide * screwAxisY;
+    screwCore.name = `${screw.name} core and central portion 58`;
+    screwCore.rotation.z = Math.PI / 2;
+    screw.add(
+      screwCore,
+      createThread(`${screw.name} right-hand threaded portion 56`, -1.55, -0.1, 1),
+      createThread(`${screw.name} left-hand threaded portion 60`, 0.1, 1.55, -1),
+    );
     screwGroup.add(screw);
-    screwMeshes.push(screw);
+    screwAssemblies.push(screw);
 
     for (const longitudinalSide of [-1, 1] as const) {
       const hand = new THREE.Group();
@@ -156,7 +199,10 @@ export function buildRobotEndEffectorModel(): RobotEndEffectorModel {
         transverseSide > 0 ? (longitudinalSide < 0 ? 22 : 23) : longitudinalSide < 0 ? 24 : 25;
       hand.name = `${transverseSide > 0 ? "Upper" : "Lower"} hand ${partNumber}`;
       hand.position.y = transverseSide * 0.54;
-      const carriage = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.4, 0.52, 0.68)), handMat);
+      const carriage = new THREE.Mesh(
+        geometry(new THREE.BoxGeometry(ROBOT_END_EFFECTOR_HAND_WIDTH_WORLD, 0.52, 0.68)),
+        handMat,
+      );
       carriage.name = "Sliding hand body";
       hand.add(carriage);
       const finger = new THREE.Group();
@@ -171,7 +217,11 @@ export function buildRobotEndEffectorModel(): RobotEndEffectorModel {
       hand.add(finger);
       rotatingAssembly.add(hand);
       handGroups.push({ group: hand, side: longitudinalSide });
-      fingerGroups.push({ group: finger, removalDirection: longitudinalSide });
+      fingerGroups.push({
+        group: finger,
+        seatedOffsetX: -longitudinalSide * (ROBOT_END_EFFECTOR_HAND_WIDTH_WORLD - 0.18) * 0.5,
+        withdrawalDirection: -longitudinalSide as -1 | 1,
+      });
     }
   }
 
@@ -281,33 +331,70 @@ export function buildRobotEndEffectorModel(): RobotEndEffectorModel {
   connector.name = "Robot connector 130 rotational fitting";
   connector.rotation.z = Math.PI / 2;
   connector.position.x = -1.87;
-  root.add(connector);
+  transverseCarriage.add(connector);
+
+  const connectorHousing = new THREE.Mesh(
+    geometry(new THREE.BoxGeometry(0.32, 1.55, 0.34)),
+    frameMat,
+  );
+  connectorHousing.name = "Robot-side support housing for transverse mechanism 134";
+  connectorHousing.position.set(-2.05, 0, 0);
+  root.add(connectorHousing);
+
+  for (const side of [-1, 1] as const) {
+    const rail = new THREE.Mesh(
+      geometry(new THREE.CylinderGeometry(0.055, 0.055, TRANSVERSE_RAIL_HALF_LENGTH_WORLD * 2, 16)),
+      screwMat,
+    );
+    rail.name = `${side > 0 ? "Upper" : "Lower"} transverse guide for bearings ${side > 0 ? 156 : 158}`;
+    rail.rotation.x = Math.PI / 2;
+    rail.position.set(-1.84, side * 0.56, 0);
+    root.add(rail);
+
+    const bearing = new THREE.Mesh(
+      geometry(new THREE.BoxGeometry(0.28, 0.22, TRANSVERSE_BEARING_HALF_LENGTH_WORLD * 2)),
+      handMat,
+    );
+    bearing.name = `${side > 0 ? "Upper" : "Lower"} sliding bearing ${side > 0 ? 156 : 158}`;
+    bearing.position.set(-1.84, side * 0.56, 0);
+    transverseCarriage.add(bearing);
+  }
 
   // The grant identifies connector 130 but does not print the upstream robot
   // arm geometry. This neutral museum stand supports that disclosed connector
   // without pretending to reconstruct robot 132.
   const supportPost = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.3, 1.25, 0.46)), frameMat);
   supportPost.name = "Exhibit wrist support for connector 130 — not claimed robot geometry";
-  supportPost.position.set(-1.87, -0.975, 0);
+  supportPost.position.set(-2.05, -0.975, 0);
   root.add(supportPost);
   const supportFoot = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.92, 0.1, 0.82)), frameMat);
   supportFoot.name = "Exhibit wrist support floor foot";
-  supportFoot.position.set(-1.87, -1.65, 0);
+  supportFoot.position.set(-2.05, -1.65, 0);
   root.add(supportFoot);
 
   const displayMetresToWorld = 7;
   const updateState = (state: RobotEndEffectorState) => {
     const offset = state.perHandOffsetM * displayMetresToWorld;
-    for (const hand of handGroups) hand.group.position.x = hand.side * offset;
-    for (const screw of screwMeshes) screw.rotation.x = -state.screwAngleRad;
+    const handCenterOffset = offset + ROBOT_END_EFFECTOR_HAND_WIDTH_WORLD / 2;
+    for (const hand of handGroups) {
+      hand.group.position.x = hand.side * handCenterOffset;
+      hand.group.visible = state.claim1TopologyPresent;
+    }
+    for (const screw of screwAssemblies) {
+      screw.rotation.x = -state.screwAngleRad;
+      screw.visible = state.claim1TopologyPresent;
+    }
     upperMotorGear.rotation.x = state.motorRevolutions * 2 * Math.PI;
     lowerMotorGear.rotation.x = state.motorRevolutions * 2 * Math.PI;
     upperScrewGear.rotation.x = -state.screwAngleRad;
     lowerScrewGear.rotation.x = -state.screwAngleRad;
     encoderPegs.rotation.x = state.motorRevolutions * 2 * Math.PI;
     for (const finger of fingerGroups) {
-      finger.group.position.x = finger.removalDirection * (1 - state.fingerRetainedFraction) * 0.24;
-      finger.group.visible = state.fingerRetainedFraction > 0.03;
+      const withdrawalFraction = 1 - state.fingerRetainedFraction;
+      finger.group.position.x =
+        finger.seatedOffsetX +
+        finger.withdrawalDirection * Math.min(0.18, withdrawalFraction * 0.2);
+      finger.group.visible = state.claim1TopologyPresent && state.fingerRetainedFraction > 0.03;
     }
     const gripCommandFraction = Math.min(
       1,
@@ -316,12 +403,22 @@ export function buildRobotEndEffectorModel(): RobotEndEffectorModel {
     gripCommandMat.opacity = 0.16 + gripCommandFraction * 0.58;
     gripCommandMat.emissiveIntensity = 0.15 + gripCommandFraction * 1.35;
     for (const indicator of gripCommandIndicators) {
-      indicator.group.position.x = indicator.side * (offset + 0.43);
+      indicator.group.position.x = indicator.side * (handCenterOffset + 0.43);
       indicator.group.scale.setScalar(0.72 + gripCommandFraction * 0.48);
+      indicator.group.visible = state.claim1TopologyPresent;
       indicator.group.userData.requestedGripForceN = state.requestedGripForceN;
       indicator.group.userData.isContactForce = false;
     }
+    transverseCarriage.position.z =
+      state.transverseOffsetNormalized * ROBOT_END_EFFECTOR_TRANSVERSE_TRAVEL_WORLD;
     rotatingAssembly.rotation.x = state.frameRotationRad;
+    root.userData.claim1TopologyPresent = state.claim1TopologyPresent;
+    root.userData.clearJawGapM = state.jawOpeningM;
+    root.userData.fingerWithdrawalDirection = "inward toward the screw midpoint";
+    root.userData.transversePositionNormalized = state.transverseOffsetNormalized;
+    root.userData.transverseGuidesRemainEngaged =
+      Math.abs(transverseCarriage.position.z) + TRANSVERSE_BEARING_HALF_LENGTH_WORLD <=
+      TRANSVERSE_RAIL_HALF_LENGTH_WORLD;
   };
 
   return {

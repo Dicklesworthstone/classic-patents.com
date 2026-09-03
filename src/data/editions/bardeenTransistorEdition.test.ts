@@ -6,6 +6,7 @@ import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValid
 import { bardeenTransistorPatent } from "@/data/patents/bardeen-transistor";
 import { bardeenTransistor2524035Patent } from "@/data/patents/bardeen-transistor-2524035";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
+import { PATENT_PHYSICS_REGISTRY } from "@/physics/telemetryData";
 import type { CuratedSpecificationInline } from "@/types/patent";
 import {
   bardeenTransistorArchivalEdition,
@@ -794,16 +795,20 @@ describe("US 2,524,035 manual source edition", () => {
   });
 
   test("provides valid provenance classifications for all Bardeen controls and metrics", () => {
-    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
     const entry = PATENT_PHYSICS_REGISTRY["us-2524035-bardeen-transistor"];
     expect(entry).toBeDefined();
-    for (const ctrl of entry.controls) {
-      expect(ctrl.provenance).toBe("scenario-modern");
-    }
+    expect(entry.controls.map((ctrl) => [ctrl.id, ctrl.provenance])).toEqual([
+      ["operatingSample", "scenario-reader"],
+      ["pointSpacingMils", "scenario-reader"],
+      ["claim1Active", "scenario-reader"],
+    ]);
     const metrics = entry.computeMetrics({});
-    for (const m of metrics) {
-      expect(m.provenance).toBe("scenario-modern");
-    }
+    expect(metrics.map((metric) => [metric.label, metric.provenance])).toEqual([
+      ["Reported Voltage Gain", "source-disclosed"],
+      ["Reported Power Gain", "source-disclosed"],
+      ["Selected Contact Gap", "scenario-reader"],
+      ["Claim 1 Contact Path", "scenario-reader"],
+    ]);
   });
 
   test("enforces figure acceptance pending audit hold in publication state registry", () => {

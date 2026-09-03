@@ -1,8 +1,37 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import * as THREE from "three";
 import { stepWattCondenser, WATT_DEFAULT_CONTROLS } from "@/physics/wattCondenserKernel";
+import { wattSeparateCondenserCameraForViewport } from "./wattSeparateCondenserCamera";
 import { buildWattSeparateCondenserModel, WATT_DIM } from "./wattSeparateCondenserModel";
+
+function projectedBounds(
+  object: THREE.Object3D,
+  cameraView: ReturnType<typeof wattSeparateCondenserCameraForViewport>,
+  viewportWidth: number,
+  viewportHeight: number,
+) {
+  object.updateMatrixWorld(true);
+  const bounds = new THREE.Box3().setFromObject(object);
+  const camera = new THREE.PerspectiveCamera(42, viewportWidth / viewportHeight, 0.1, 1000);
+  camera.position.set(...cameraView.pos);
+  camera.lookAt(...cameraView.target);
+  camera.updateProjectionMatrix();
+  camera.updateMatrixWorld(true);
+
+  const values = [bounds.min.x, bounds.max.x].flatMap((x) =>
+    [bounds.min.y, bounds.max.y].flatMap((y) =>
+      [bounds.min.z, bounds.max.z].map((z) => new THREE.Vector3(x, y, z).project(camera)),
+    ),
+  );
+  return {
+    minX: Math.min(...values.map((value) => value.x)),
+    maxX: Math.max(...values.map((value) => value.x)),
+    minY: Math.min(...values.map((value) => value.y)),
+    maxY: Math.max(...values.map((value) => value.y)),
+  };
+}
 
 describe("GB 913 James Watt Separate Condenser visual & thermodynamics boundary", () => {
   const root = process.cwd();
@@ -16,7 +45,6 @@ describe("GB 913 James Watt Separate Condenser visual & thermodynamics boundary"
       resolve(root, "src/components/patents/visuals/three/WattSeparateCondenser3D.tsx"),
       "utf-8",
     );
-
     expect(modelSource).not.toContain("GLTFLoader");
     expect(modelSource).not.toContain(".gltf");
     expect(modelSource).not.toContain(".glb");
@@ -39,6 +67,10 @@ describe("GB 913 James Watt Separate Condenser visual & thermodynamics boundary"
       resolve(root, "src/components/patents/visuals/three/WattSeparateCondenser3D.tsx"),
       "utf-8",
     );
+    const cameraSource = readFileSync(
+      resolve(root, "src/components/patents/visuals/three/wattSeparateCondenserCamera.ts"),
+      "utf-8",
+    );
     expect(vizSource).toContain("activePreset");
     expect(vizSource).toContain("Steam Jacket (B)");
     expect(vizSource).toContain("Condenser (E)");
@@ -46,6 +78,15 @@ describe("GB 913 James Watt Separate Condenser visual & thermodynamics boundary"
     expect(vizSource).toContain("Boiler (A)");
     expect(vizSource).toContain("setCutaway");
     expect(vizSource).toContain("controls.setView");
+    expect(vizSource).toContain("wattSeparateCondenserCameraForViewport");
+    expect(vizSource).toContain(
+      'wattSeparateCondenserCameraForViewport("iso", container.clientWidth)',
+    );
+    expect(wattSeparateCondenserCameraForViewport("iso", 768)).toEqual({
+      pos: [-9, 7, 12],
+      target: [-0.5, 3.5, 0],
+    });
+    expect(cameraSource).toContain("Start from the open machinery side");
     expect(vizSource).toContain("useLiveSimParams");
     expect(vizSource).toContain("cycleOmegaRadPerS");
     expect(vizSource).not.toContain("spm / 60");
@@ -55,6 +96,27 @@ describe("GB 913 James Watt Separate Condenser visual & thermodynamics boundary"
     );
     expect(simSource).toContain("outputs.cycleOmegaRadPerS");
     expect(simSource).not.toContain("spm / 60");
+  });
+
+  test("keeps the complete condenser-engine assembly inside 320 px and 375 px phone overviews", () => {
+    const model = buildWattSeparateCondenserModel();
+    for (const viewportWidth of [288, 343]) {
+      const frame = projectedBounds(
+        model.root,
+        wattSeparateCondenserCameraForViewport("iso", viewportWidth),
+        viewportWidth,
+        380,
+      );
+
+      // 0.90 leaves visual breathing room for the boiler, beam, cylinder,
+      // wall, and condenser instead of letting a phone crop the claimed topology.
+      expect(frame.minX).toBeGreaterThan(-0.9);
+      expect(frame.maxX).toBeLessThan(0.9);
+      expect(frame.minY).toBeGreaterThan(-0.9);
+      expect(frame.maxY).toBeLessThan(0.9);
+    }
+    expect(wattSeparateCondenserCameraForViewport("iso", 288).pos).not.toEqual([-9, 7, 12]);
+    model.dispose();
   });
 
   test("computes genuine Rankine cycle power, separate condenser vacuum, and coal economy in SI units", () => {

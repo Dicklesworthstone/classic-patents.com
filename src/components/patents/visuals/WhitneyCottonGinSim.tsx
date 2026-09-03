@@ -341,6 +341,7 @@ export function WhitneyCottonGinSim() {
           </div>
           <input
             type="range"
+            aria-label="Cotton-gin hand crank speed in revolutions per minute"
             min="20"
             max="120"
             step="5"
@@ -356,6 +357,7 @@ export function WhitneyCottonGinSim() {
           </div>
           <input
             type="range"
+            aria-label="Grate slot clearance in millimeters"
             min="1.5"
             max="6.0"
             step="0.1"

@@ -246,6 +246,7 @@ export function EastmanKodakSim() {
           </div>
           <input
             type="range"
+            aria-label="Barrel shutter exposure duration in seconds"
             min="0.01"
             max="0.1"
             step="0.01"
@@ -263,6 +264,7 @@ export function EastmanKodakSim() {
           </div>
           <input
             type="range"
+            aria-label="Current exposure count on the film roll"
             min="0"
             max={kodak.rollCapacity}
             step="1"

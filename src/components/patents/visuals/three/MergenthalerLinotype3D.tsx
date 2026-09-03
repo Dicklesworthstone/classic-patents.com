@@ -15,6 +15,10 @@ import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
+  linotypeCameraForViewport,
+  type MergenthalerLinotypeCameraPreset,
+} from "./mergenthalerLinotypeCamera";
+import {
   buildMergenthalerLinotypeModel,
   updateMergenthalerLinotypeKinematics,
 } from "./mergenthalerLinotypeModel";
@@ -22,26 +26,6 @@ import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset =
-  | "iso"
-  | "matrix_magazine"
-  | "casting_pot"
-  | "spaceband_justifier"
-  | "keyboard"
-  | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [11.0, 8.5, 12.5], target: [0, 0, 0] },
-  matrix_magazine: { pos: [0, 4.2, 3.8], target: [0, 2.2, 0] },
-  casting_pot: { pos: [-2.8, 0.5, 3.5], target: [-1.5, -0.4, 0] },
-  spaceband_justifier: { pos: [0, 0.8, 3.2], target: [0, 0.2, 0] },
-  keyboard: { pos: [0, 1.2, 3.4], target: [0, -0.6, 1.4] },
-  top: { pos: [0, 14.0, 0.1], target: [0, 0, 0] },
-};
 
 export function MergenthalerLinotype3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -62,7 +46,7 @@ export function MergenthalerLinotype3D() {
   });
   const castingLpm = linotypeIdle.linesPerMin;
   const charsPerHour = linotypeIdle.charsPerHour;
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<MergenthalerLinotypeCameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const crateSource = useGenericWasmSource();
 
@@ -127,9 +111,9 @@ export function MergenthalerLinotype3D() {
     return unregister;
   }, [live]);
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: MergenthalerLinotypeCameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = linotypeCameraForViewport(preset, containerRef.current?.clientWidth ?? 1024);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -143,7 +127,7 @@ export function MergenthalerLinotype3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = linotypeCameraForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -222,7 +206,7 @@ export function MergenthalerLinotype3D() {
                 ["spaceband_justifier", "Spacebands"],
                 ["keyboard", "Keyboard"],
                 ["top", "Top"],
-              ] as [CameraPreset, string][]
+              ] as [MergenthalerLinotypeCameraPreset, string][]
             ).map(([preset, label]) => (
               <button
                 key={preset}
@@ -332,6 +316,7 @@ export function MergenthalerLinotype3D() {
             </div>
             <input
               type="range"
+              aria-label="Matrix assembly rate"
               min="20"
               max="120"
               step="5"
@@ -352,6 +337,7 @@ export function MergenthalerLinotype3D() {
             </div>
             <input
               type="range"
+              aria-label="Spaceband wedge lift"
               min="3"
               max="10"
               step="0.5"
@@ -372,6 +358,7 @@ export function MergenthalerLinotype3D() {
             </div>
             <input
               type="range"
+              aria-label="Melting pot temperature"
               min="230"
               max="320"
               step="5"

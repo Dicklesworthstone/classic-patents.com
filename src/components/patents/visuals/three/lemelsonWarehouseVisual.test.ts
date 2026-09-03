@@ -86,8 +86,8 @@ describe("US 3,119,501 automatic warehousing visual", () => {
     expect(studioSource).toContain("useLiveSimParams(effectiveParams)");
     expect(studioSource).not.toContain("liveParams.current = effectiveParams");
     expect(studioSource).toContain("claimConstraintResult.refusalWarning");
-    expect(studioSource).toContain("min-h-[740px] sm:min-h-[540px]");
-    expect(studioSource).toContain("bottom-[350px] sm:inset-0");
+    expect(studioSource).toContain('data-mobile-layout="controls-below-canvas"');
+    expect(studioSource).toContain("min-h-[430px] sm:min-h-[540px]");
     expect(studioSource).toContain('view === "overview" ? 1.45 : 1.25');
   });
 });

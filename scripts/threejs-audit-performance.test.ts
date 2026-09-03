@@ -115,4 +115,17 @@ describe("Three.js production benchmark statistics", () => {
       'const ENFORCE_DRAW_CALL_BUDGET = process.env.THREEJS_AUDIT_ENFORCE_DRAW_CALLS !== "0"',
     );
   });
+
+  test("records source-bound visual refusals as performance-ineligible instead of false failures", () => {
+    const auditSource = readFileSync(
+      join(process.cwd(), "scripts/e2e-threejs-visual-audit.ts"),
+      "utf8",
+    );
+    expect(auditSource).toContain('button[title$="(Shortcut: 3)"]');
+    expect(auditSource).toContain('kind: "not-applicable" as const');
+    expect(auditSource).toContain('action: "performance-not-applicable"');
+    expect(auditSource).toContain(
+      'if (outcome === "not-applicable") performanceApplicable = false',
+    );
+  });
 });

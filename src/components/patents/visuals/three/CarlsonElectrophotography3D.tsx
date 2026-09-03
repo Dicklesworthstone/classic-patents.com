@@ -43,7 +43,7 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  isometric: { pos: [0, 2.5, 5.0], target: [0, 0, 0] },
+  isometric: { pos: [0, 3.2, 7.0], target: [0, 0.25, 0] },
   coronaCharger: { pos: [0, 2.4, 2.0], target: [0, 1.2, 0] },
   photoconductiveDrum: { pos: [0, 0.4, 3.2], target: [0, 0, 0] },
   opticalSlit: { pos: [2.0, 1.6, 2.2], target: [1.2, 0.85, 0] },

@@ -52,7 +52,7 @@ Be it known that I, ROBERT H. GODDARD, a citizen of the United States, residing 
 
 This invention relates to a rocket apparatus and particularly to a form of such apparatus adapted to transport photographic or other recording instruments to extreme heights. Certain features of the invention are also applicable to the display of signals or to the projection of explosives.
 
-The full reviewed transcription and manually authored source edition are withheld from the visitor-facing archival reading face pending independent source review.`,
+The full reviewed transcription and manually authored source edition are available on the visitor-facing archival reading face.`,
   plainEnglishExplanation: {
     overview:
       "The source solves four linked problems for a high-altitude recording rocket: turn explosive heat into useful exhaust motion, rotate the rocket before launch, restore spin in its smaller follow-on rocket, and keep the camera from spinning with the outer body. It uses solid explosive disks, not liquid oxygen or gasoline; it fires the smaller rocket from a tube rather than dropping an exhausted lower stage.",

@@ -1,12 +1,25 @@
-export type SourceVisualizationRoute = {
-  spatialComponent: string;
-  vectorComponent: string;
-};
+export type SourceVisualizationRoute =
+  | {
+      kind: "model";
+      spatialComponent: string;
+      vectorComponent: string;
+    }
+  | {
+      kind: "source-bound-pdf-only";
+      sourceBoundary: string;
+    };
+
+export const SOURCE_BOUNDARY_PDF_ONLY =
+  "The public record is limited to the pinned facsimile and checked claim reading. No reviewed transcription, archival edition, model, controls, quantitative metrics, or USDZ asset is shipped in the native app.";
 
 /**
  * Reads the explicit patent dispatcher without depending on formatter-specific
  * indentation. Consecutive case labels intentionally share the first visual
  * pair that follows them, matching JavaScript switch fallthrough semantics.
+ *
+ * A case that renders `<SourceVisualUnavailable` instead of a 3D/2D pair is a
+ * source-bound PDF-only route: the native app ships only the pinned facsimile
+ * and checked claim reading for it, never a model.
  */
 export function parseSourceVisualizationRoutes(
   source: string,
@@ -33,12 +46,19 @@ export function parseSourceVisualizationRoutes(
     const segmentStart = (match.index ?? 0) + match[0].length;
     const segmentEnd = cases[index + 1]?.index ?? dispatcher.length;
     const segment = dispatcher.slice(segmentStart, segmentEnd);
+    if (segment.includes("<SourceVisualUnavailable")) {
+      for (const id of pendingIds) {
+        routes.set(id, { kind: "source-bound-pdf-only", sourceBoundary: SOURCE_BOUNDARY_PDF_ONLY });
+      }
+      pendingIds = [];
+      continue;
+    }
     const spatialComponent = segment.match(/<([A-Z][A-Za-z0-9]*3D)\b/)?.[1];
     const vectorComponent = segment.match(/<([A-Z][A-Za-z0-9]*Sim)\b/)?.[1];
     if (!spatialComponent || !vectorComponent) continue;
 
     for (const id of pendingIds) {
-      routes.set(id, { spatialComponent, vectorComponent });
+      routes.set(id, { kind: "model", spatialComponent, vectorComponent });
     }
     pendingIds = [];
   }

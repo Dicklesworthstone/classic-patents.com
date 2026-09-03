@@ -3,6 +3,9 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   CLAVEL_DELTA_ROBOT_DEFAULT_CONTROLS,
+  CLAVEL_DELTA_ROBOT_FRANKENSIM_BOUNDARY,
+  CLAVEL_DELTA_ROBOT_RUNTIME_SOURCE,
+  CLAVEL_DELTA_ROBOT_TOPOLOGY_OWNER,
   readClavelDeltaRobotClaimStates,
   readClavelDeltaRobotControls,
   stepClavelDeltaRobotTopology,
@@ -120,6 +123,9 @@ describe("US 4,976,582 Clavel Delta source-bounded topology", () => {
     expect(state.refusal.reason).toContain("calibrated dimensions");
     expect(state.refusal.reason).toContain("payload");
     expect(state.refusal.reason).toContain("SI position, velocity, acceleration, force");
+    expect(state.topologyOwner).toBe(CLAVEL_DELTA_ROBOT_TOPOLOGY_OWNER);
+    expect(state.runtimeSource).toBe(CLAVEL_DELTA_ROBOT_RUNTIME_SOURCE);
+    expect(state.frankenSimBoundary).toBe(CLAVEL_DELTA_ROBOT_FRANKENSIM_BOUNDARY);
   });
 
   test("turns Claim 1, Claim 2, and Claim 8 topology probes into visible withdrawals", () => {

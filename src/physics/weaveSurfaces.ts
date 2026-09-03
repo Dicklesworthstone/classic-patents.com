@@ -3,6 +3,7 @@
  * No CSV, QR, receipts, or invented WASM.
  */
 
+import { readBoyleSmithCcdSourceControls, readBoyleSmithCcdTapeFrame } from "./boyleSmithCcdKernel";
 import {
   stepBardeenTransistor,
   stepBellTelephone,
@@ -27,7 +28,6 @@ import {
   stepMcCormickReaper,
   stepMorseTelegraph,
   stepNobelDynamite,
-  stepNoyceIC,
   stepParsonsTurbine,
   stepPasteurFermentation,
   stepThomsonWelding,
@@ -40,11 +40,11 @@ import {
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
 import {
-  stepCcdWells,
   stepHoweSewingMachine,
   stepMergenthalerLinotype,
   stepSholesTypewriter,
 } from "./machineKernels";
+import { readNoycePlanarLeadControls, stepNoycePlanarLeadTopology } from "./noycePlanarLeadKernel";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
 import { stepTeslaMotorFig9, teslaBAt, teslaMotorPhaseHz } from "./teslaKernel";
@@ -204,14 +204,19 @@ export function materialProbe(
   if (patentId.includes("fermi")) {
     const rod = params.rodWithdrawal ?? 83.5;
     const mod = params.moderatorPurity ?? 99.5;
-    const kinetics = stepFermiKinetics(rod, mod);
+    const claim1Active = (params.claim1Active ?? 1) >= 0.5;
+    const kinetics = stepFermiKinetics(rod, mod, 0.72, claim1Active);
     return {
       part: calloutLabel,
-      material: "Cadmium in a graphite–uranium lattice",
-      qty: "k_eff",
-      value: kinetics.kEffective.toFixed(4),
-      unit: "",
-      note: `Rods at ${rod.toFixed(0)}% withdrawn. Delayed-critical band is 0.998–1.002 · n ${kinetics.neutronDisplaySpeed} u/s.`,
+      material: claim1Active
+        ? "Cadmium absorber beside a graphite and natural-uranium rod lattice"
+        : "Graphite moderator with Claim 1's uranium-rod path removed",
+      qty: "Claim 1 lattice",
+      value: claim1Active ? "present" : "removed",
+      unit: "topology",
+      note: claim1Active
+        ? `Normalized absorber withdrawal ${rod.toFixed(0)}% gives teaching-lens k_eff ${kinetics.kEffective.toFixed(4)}; no source-calibrated rod worth, flux, power, or detector rate is claimed.`
+        : "Removing the claimed uranium-rod lattice breaks the represented chain-reacting topology; no excursion is inferred.",
     };
   }
   if (patentId.includes("howe") || patentId.includes("4750")) {
@@ -237,11 +242,11 @@ export function materialProbe(
     });
     return {
       part: calloutLabel,
-      material: "Orthogonal wooden wheels + potentiometer wipers",
+      material: "Perpendicular position wheels + potentiometer wipers",
       qty: "ω",
       value: mouse.omegaRadPerS.toFixed(1),
       unit: "rad/s",
-      note: `${mouse.dpi} dpi, ${mouse.slewPxPerS} px/s from wheel roll.`,
+      note: `${mouse.dpi} counts/in is an illustrative incremental-encoder scenario; the grant prints no radius, resolution, or cursor sampling rate.`,
     };
   }
   if (
@@ -250,19 +255,14 @@ export function materialProbe(
     patentId.includes("3923554") ||
     patentId.includes("3858232")
   ) {
-    const wells = stepCcdWells(
-      1,
-      params.incidentLux ?? 850,
-      params.clockFreq ?? 2.5,
-      params.gateVoltage ?? 8,
-    );
+    const metrics = readBoyleSmithCcdTapeFrame(readBoyleSmithCcdSourceControls(params)).metrics;
     return {
       part: calloutLabel,
-      material: "Three-phase MOS polysilicon gates on p-Si",
-      qty: "CTE",
-      value: wells.ctePct.toFixed(4),
-      unit: "%",
-      note: `${wells.photoElectrons.toLocaleString()} e⁻ in a ${wells.fullWellElectrons.toLocaleString()} e⁻ well. φ ${wells.phasePeriodNs} ns.`,
+      material: "N-type layer 20, insulating layer 21, and electrode groups 22/23/24",
+      qty: "Claim 1 medium",
+      value: metrics.claim1TopologyComplete ? "continuous" : "withheld",
+      unit: "single conductivity type",
+      note: `Figure 3 phase ${metrics.activePhase}; input 1101. The grant supplies no carrier count, CTE, operating voltage, capacitance, or power datum.`,
     };
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
@@ -307,18 +307,14 @@ export function materialProbe(
     };
   }
   if (patentId.includes("noyce") || patentId.includes("2981877")) {
-    const ic = stepNoyceIC({
-      reverseBias: params.reverseBias,
-      oxideThickness: params.oxideThickness,
-      clockFrequencyMhz: params.clockFrequencyMhz,
-    });
+    const ic = stepNoycePlanarLeadTopology(readNoycePlanarLeadControls(params));
     return {
       part: calloutLabel,
       material: "Thermally grown SiO₂ over a surface-reaching P-N junction",
-      qty: "W",
-      value: ic.depletionWidthUm.toFixed(2),
+      qty: "t_ox",
+      value: ic.controls.oxideThicknessUm.toFixed(1),
       unit: "µm",
-      note: `${ic.junctionCapPfPerMm2} pF/mm² · tpd ${ic.propDelayNs} ns · margin ${ic.breakdownMarginV} V.`,
+      note: `${ic.contactsRemainSeparated ? "Oxide-supported lead crossing held." : "Insulated crossing withheld."} Electrical performance is refused because the grant prints no bias, dopant profile, dielectric constant, junction area, or clock.`,
     };
   }
   if (patentId === "us-808897-carrier-air-conditioner") {
@@ -919,8 +915,17 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   if (patentId.includes("fermi")) {
     const rod = params.rodWithdrawal ?? 83.5;
     const mod = params.moderatorPurity ?? 99.5;
-    const keff = stepFermiKinetics(rod, mod).kEffective;
-    return [{ label: "k_eff", min: 0.85, max: 1.05, live: keff, unit: "" }];
+    const claim1Active = (params.claim1Active ?? 1) >= 0.5;
+    const keff = stepFermiKinetics(rod, mod, 0.72, claim1Active).kEffective;
+    return [
+      {
+        label: "normalized k_eff",
+        min: claim1Active ? 0.975 : 0,
+        max: claim1Active ? 1.005 : 0,
+        live: keff,
+        unit: "teaching lens",
+      },
+    ];
   }
   if (
     patentId.includes("goddard") ||
@@ -1007,19 +1012,14 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     patentId.includes("3923554") ||
     patentId.includes("3858232")
   ) {
-    const wells = stepCcdWells(
-      1,
-      params.incidentLux ?? 850,
-      params.clockFreq ?? 2.5,
-      params.gateVoltage ?? 8,
-    );
+    const controls = readBoyleSmithCcdSourceControls(params);
     return [
       {
-        label: "Packet",
-        min: 0,
-        max: wells.fullWellElectrons,
-        live: wells.photoElectrons,
-        unit: "e⁻",
+        label: "Pulse overlap",
+        min: 1 / 3,
+        max: 0.8,
+        live: controls.pulseWidthToStepRatio,
+        unit: "t_p / delta-t",
       },
     ];
   }
@@ -1059,14 +1059,16 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     return [{ label: "r_L", min: 1, max: 40, live: tv.gyroRadiusMm, unit: "mm" }];
   }
   if (patentId.includes("noyce") || patentId.includes("2981877")) {
-    const ic = stepNoyceIC({
-      reverseBias: params.reverseBias,
-      oxideThickness: params.oxideThickness,
-      clockFrequencyMhz: params.clockFrequencyMhz,
-    });
+    const ic = stepNoycePlanarLeadTopology(readNoycePlanarLeadControls(params));
     return [
-      { label: "W", min: 0.4, max: 2.5, live: ic.depletionWidthUm, unit: "µm" },
-      { label: "tpd", min: 0.8, max: 3, live: ic.propDelayNs, unit: "ns" },
+      { label: "t_ox", min: 0.5, max: 2, live: ic.controls.oxideThicknessUm, unit: "µm" },
+      {
+        label: "w_lead",
+        min: 0.08,
+        max: 0.28,
+        live: ic.controls.leadStripWidthFraction,
+        unit: "span fraction",
+      },
     ];
   }
   if (patentId === "us-808897-carrier-air-conditioner") {
@@ -1428,7 +1430,22 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     return [{ label: "P_pump", min: 100, max: 600, live: params.pumpPowerWatts ?? 350, unit: "W" }];
   }
   if (patentId.includes("kilby") || patentId.includes("3138743")) {
-    return [{ label: "V_cc", min: 5, max: 15, live: params.supplyVoltageV ?? 10, unit: "V" }];
+    return [
+      {
+        label: "section reveal",
+        min: 0,
+        max: 1,
+        live: params.sectionRevealFraction ?? 0,
+        unit: "fraction",
+      },
+      {
+        label: "wire 70 arch",
+        min: 0.2,
+        max: 1,
+        live: params.wireArchFraction ?? 0.55,
+        unit: "fraction",
+      },
+    ];
   }
   if (patentId.includes("maiman") || patentId.includes("3353115")) {
     return [
@@ -1522,17 +1539,12 @@ export function fidelityField(
     };
   }
   if (patentId.includes("engelbart") || patentId.includes("3541541")) {
-    const mouse = stepEngelbartMouse({
-      mouseSpeed: params.mouseSpeed ?? 350,
-      wheelRadius: params.wheelRadius ?? 10,
-      pulsesPerRev: params.pulsesPerRev ?? 200,
-    });
     return {
-      part: "Resolution vs 1968 NLS mouse",
-      model: mouse.dpi.toString(),
-      reference: "200",
-      residual: (mouse.dpi - 200).toString(),
-      unit: "dpi",
+      part: "Wheel dimension and resolution",
+      model: "illustrative scenario",
+      reference: "not printed",
+      residual: "withheld",
+      unit: "source boundary",
     };
   }
   if (
@@ -1541,18 +1553,14 @@ export function fidelityField(
     patentId.includes("3923554") ||
     patentId.includes("3858232")
   ) {
-    const wells = stepCcdWells(
-      1,
-      params.incidentLux ?? 850,
-      params.clockFreq ?? 2.5,
-      params.gateVoltage ?? 8,
-    );
+    const controls = readBoyleSmithCcdSourceControls(params);
+    const margin = controls.pulseWidthToStepRatio - 1 / 3;
     return {
-      part: "CTE vs Bell Labs 1969 packet transfer",
-      model: wells.cte.toFixed(5),
-      reference: "0.99995",
-      residual: (wells.cte - 0.99995).toFixed(5),
-      unit: "",
+      part: "Figure 3 pulse-overlap inequality",
+      model: controls.pulseWidthToStepRatio.toFixed(3),
+      reference: "> 0.333",
+      residual: margin > 0 ? `+${margin.toFixed(3)}` : margin.toFixed(3),
+      unit: "t_p / delta-t",
     };
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
@@ -1581,16 +1589,18 @@ export function fidelityField(
     };
   }
   if (patentId.includes("noyce") || patentId.includes("2981877")) {
-    const ic = stepNoyceIC({
-      reverseBias: params.reverseBias,
-      oxideThickness: params.oxideThickness,
-      clockFrequencyMhz: params.clockFrequencyMhz,
-    });
+    const ic = stepNoycePlanarLeadTopology(readNoycePlanarLeadControls(params));
+    const thicknessNm = ic.controls.oxideThicknessUm * 1000;
     return {
-      part: "Illustrated oxide vs kernel tox",
-      model: ic.oxideThicknessNm.toFixed(0),
-      reference: "1500",
-      residual: (ic.oxideThicknessNm - 1500).toFixed(0),
+      part: "Displayed oxide vs printed example range",
+      model: thicknessNm.toFixed(0),
+      reference: "1000–2000",
+      residual:
+        thicknessNm < 1000
+          ? `${(thicknessNm - 1000).toFixed(0)} below range`
+          : thicknessNm > 2000
+            ? `+${(thicknessNm - 2000).toFixed(0)} above range`
+            : "within source range",
       unit: "nm",
     };
   }
@@ -1674,10 +1684,10 @@ export function fidelityField(
       params.moderatorPurity ?? 99.5,
     );
     return {
-      part: "k_eff vs delayed-critical band",
+      part: "Normalized absorber lens (not calibration)",
       model: kinetics.kEffective.toFixed(4),
-      reference: "1.0000",
-      residual: (kinetics.kEffective - 1).toFixed(4),
+      reference: "source-bounded",
+      residual: "not calibrated",
       unit: "",
     };
   }
@@ -2125,11 +2135,11 @@ export function fidelityField(
   }
   if (patentId.includes("kilby") || patentId.includes("3138743")) {
     return {
-      part: "Oscillation frequency vs TI 1958 monolithic bar",
-      model: "1.3",
-      reference: "1.3",
-      residual: "0.0",
-      unit: "MHz",
+      part: "Figure 6a wafer dimensions",
+      model: "0.200 × 0.080 × 0.0025",
+      reference: "0.200 × 0.080 × 0.0025",
+      residual: "0",
+      unit: "in (length × width × thickness)",
     };
   }
   if (patentId.includes("maiman") || patentId.includes("3353115")) {
@@ -2264,10 +2274,10 @@ export function datedScenarios(patentId: string): DatedScenario[] {
   if (patentId.includes("fermi")) {
     return [
       {
-        id: "cp1-1942-12-02",
-        date: "1942-12-02",
-        name: "CP-1 first critical",
-        writes: { rodWithdrawal: 65, moderatorPurity: 99.9 },
+        id: "patent-bare-ratio-example",
+        date: "1955-05-17",
+        name: "Patent illustrative bare-ratio teaching point",
+        writes: { rodWithdrawal: 100, moderatorPurity: 99.5, claim1Active: 1 },
       },
     ];
   }
@@ -2432,10 +2442,14 @@ export function datedScenarios(patentId: string): DatedScenario[] {
   ) {
     return [
       {
-        id: "murray-hill-1969",
-        date: "1969-10-19",
-        name: "Bell Labs CCD announcement",
-        writes: { clockFreq: 1.0, gateVoltage: 10, incidentLux: 650 },
+        id: "us-3858232-figure-3-source-sequence",
+        date: "1974-12-31",
+        name: "US 3,858,232 Figure 3 source sequence",
+        writes: {
+          clockStepRateHz: 1.2,
+          pulseWidthToStepRatio: 0.5,
+          pulseDepthNormalized: 0.78,
+        },
       },
     ];
   }
@@ -2475,7 +2489,7 @@ export function datedScenarios(patentId: string): DatedScenario[] {
         id: "noyce-filing-1959",
         date: "1959-07-30",
         name: "Filed semiconductor device-and-lead structure",
-        writes: { reverseBias: 5, oxideThickness: 0.5, clockFrequencyMhz: 10 },
+        writes: { oxideThicknessUm: 1, leadStripWidthFraction: 0.12 },
       },
     ];
   }
@@ -2954,10 +2968,10 @@ export function datedScenarios(patentId: string): DatedScenario[] {
   if (patentId.includes("kilby") || patentId.includes("3138743")) {
     return [
       {
-        id: "ti-1958",
-        date: "1958-09-12",
-        name: "Texas Instruments first germanium phase-shift oscillator",
-        writes: { supplyVoltageV: 10, resistanceKOhms: 1 },
+        id: "kilby-application-1959",
+        date: "1959-02-06",
+        name: "US 3,138,743 application: Figure 6a source construction",
+        writes: { sectionRevealFraction: 0, wireArchFraction: 0.55 },
       },
     ];
   }
@@ -3111,11 +3125,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [{ from: "fan", to: "sinuous separator", watts: carrier.airMovementWatts }];
   }
   if (patentId.includes("fermi")) {
-    const kinetics = stepFermiKinetics(
-      params.rodWithdrawal ?? 83.5,
-      params.moderatorPurity ?? 99.5,
-    );
-    return [{ from: "fission", to: "graphite", watts: kinetics.thermalPowerWatts }];
+    return [];
   }
   if (patentId.includes("parsons") || patentId.includes("608969") || patentId.includes("328710")) {
     const parsons = stepParsonsTurbine({
@@ -3194,7 +3204,10 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     patentId.includes("3923554") ||
     patentId.includes("3858232")
   ) {
-    return [{ from: "3-phase clock gate", to: "packet shift", watts: 0.085 }];
+    // The grant defines the three-conductor transfer topology and timing
+    // inequality but supplies no voltage, capacitance, current, switching
+    // loss, or load datum for a watt-valued coupling edge.
+    return [];
   }
   if (patentId.includes("howe") || patentId.includes("4750")) {
     // US 4,750 prints topology and two local dimensions, but no torque,
@@ -3341,10 +3354,10 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     ];
   }
   if (patentId.includes("noyce") || patentId.includes("2981877")) {
-    return [{ from: "DC supply", to: "planar logic switching", watts: 0.085 }];
+    return [];
   }
   if (patentId.includes("kilby") || patentId.includes("3138743")) {
-    return [{ from: "DC battery", to: "oscillator AC signal", watts: 0.016 }];
+    return [];
   }
   if (patentId.includes("maiman") || patentId.includes("3353115")) {
     return [
@@ -3483,7 +3496,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [];
   }
   if (patentId.includes("boyle") || patentId.includes("3858232") || patentId.includes("ccd")) {
-    return [{ from: "3-phase clock gate", to: "packet shift", watts: 0.085 }];
+    return [];
   }
   if (patentId.includes("pagerank") || patentId.includes("6285999")) {
     return [{ from: "server power", to: "Markov transition matrix", watts: 217 }];

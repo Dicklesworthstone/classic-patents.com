@@ -1,43 +1,50 @@
 import { describe, expect, test } from "bun:test";
 import {
+  FERMI_KINETICS_SOURCE_BOUNDARY,
   fermiKeff,
   fermiLatticeCell,
   fermiSchematicSlug,
+  NATURAL_URANIUM_U235_PERCENT,
   stepFermiKinetics,
 } from "./fermiKinetics";
 
-describe("Enrico Fermi Chicago Pile-1 Nuclear Kinetics Kernel", () => {
-  test("fermiKeff computes delayed-critical point near 83.5% rod withdrawal with pure moderator", () => {
-    // Critical state: ~83.5% withdrawal, 99.5% graphite purity, 0.72% natural uranium
+describe("US 2,708,656 source-bounded lattice and normalized absorber kernel", () => {
+  test("places the declared default absorber lens near unity without claiming source calibration", () => {
     const keff = fermiKeff(83.5, 99.5, 0.72);
     expect(keff).toBeGreaterThanOrEqual(0.998);
     expect(keff).toBeLessThanOrEqual(1.002);
+    expect(FERMI_KINETICS_SOURCE_BOUNDARY).toContain("does not calibrate absorber worth");
+    expect(FERMI_KINETICS_SOURCE_BOUNDARY).toContain("closed energy accounting are refused");
   });
 
-  test("subcritical state produces low thermal power and positive period sentinel", () => {
-    // Fully inserted control rods (0% withdrawal)
+  test("keeps unsupported reactivity, power, flux, detector rate, and period explicitly unavailable", () => {
     const sub = stepFermiKinetics(0, 99.5, 0.72);
-    expect(sub.kEffective).toBeLessThan(0.9);
-    expect(sub.reactivityDollars).toBeLessThan(0);
-    expect(sub.thermalPowerWatts).toBeLessThan(50);
-    expect(sub.reactorPeriodSeconds).toBe(-999);
+    expect(sub.kEffective).toBeLessThan(1);
+    expect(sub.quantitativeTransientAvailable).toBe(false);
+    expect(sub.reactivityDollars).toBe(0);
+    expect(sub.thermalPowerWatts).toBe(0);
+    expect(sub.thermalNeutronFluxNPerCm2S).toBe(0);
+    expect(sub.geigerIntervalMs).toBe(0);
+    expect(sub.geigerIntervalS).toBe(0);
+    expect(sub.reactorPeriodSeconds).toBe(0);
   });
 
-  test("prompt supercritical state calculates positive reactivity and exponential period", () => {
-    // 95% rod withdrawal
+  test("moves the normalized multiplication lens monotonically without inventing a transient", () => {
     const superCrit = stepFermiKinetics(95, 99.5, 0.72);
-    expect(superCrit.kEffective).toBeGreaterThan(1.01);
-    expect(superCrit.reactivityDollars).toBeGreaterThan(1.0);
-    expect(superCrit.reactorPeriodSeconds).toBeGreaterThan(0);
-    expect(superCrit.thermalPowerWatts).toBeGreaterThan(500);
+    expect(superCrit.kEffective).toBeGreaterThan(1.002);
+    expect(superCrit.reactivityDollars).toBe(0);
+    expect(superCrit.reactorPeriodSeconds).toBe(0);
+    expect(superCrit.thermalPowerWatts).toBe(0);
   });
 
-  test("precursor groups adhere to 6-group delayed neutron kinetics standard", () => {
+  test("uses only the delayed-neutron fact printed by the grant and keeps schematic seats stable", () => {
     const res = stepFermiKinetics(83.5, 99.5, 0.72);
-    expect(res.delayedNeutronFractionBeta).toBe(0.0065);
-    expect(res.precursorConcentrationGroup1to6.length).toBe(6);
-    const sumBeta = res.precursorConcentrationGroup1to6.reduce((a, b) => a + b, 0);
-    expect(sumBeta).toBeCloseTo(1.0, 2);
+    expect(res.delayedNeutronFractionBeta).toBe(0.01);
+    expect(res.precursorConcentrationGroup1to6).toEqual([]);
+    expect(res.delayedNeutronMeanDelaySeconds).toBe(5);
+    expect(res.quantitativeTransientAvailable).toBe(false);
+    expect(res.naturalUraniumU235Percent).toBe(NATURAL_URANIUM_U235_PERCENT);
+    expect(res.claim1PathActive).toBe(true);
     expect(res.latticeRows).toBe(5);
     expect(res.latticeCols).toBe(7);
     expect(fermiLatticeCell(0, 0).cx).toBe(80);
@@ -51,5 +58,28 @@ describe("Enrico Fermi Chicago Pile-1 Nuclear Kinetics Kernel", () => {
     expect(fermiSchematicSlug(1, 1).cy).toBe(170);
     expect(res.schematicGridXs).toEqual([140, 200, 260]);
     expect(res.schematicGridYs).toEqual([110, 150, 190]);
+  });
+
+  test("does not let an enrichment argument silently change Claim 1's natural-uranium basis", () => {
+    expect(fermiKeff(83.5, 99.5, 0.72)).toBe(fermiKeff(83.5, 99.5, 20));
+    expect(stepFermiKinetics(83.5, 99.5, 20).naturalUraniumU235Percent).toBe(0.72);
+  });
+
+  test("Claim 1 inversion removes the chain-reacting path instead of creating a power excursion", () => {
+    const removed = stepFermiKinetics(99.5, 99.5, 0.72, false);
+    expect(removed.claim1PathActive).toBe(false);
+    expect(removed.kEffective).toBe(0);
+    expect(removed.neutronDisplaySpeed).toBe(0);
+    expect(removed.fuelGlowIntensity).toBe(0);
+    expect(removed.thermalPowerWatts).toBe(0);
+  });
+
+  test("clamps out-of-range controls and falls back from non-finite input", () => {
+    expect(stepFermiKinetics(Number.NaN, Number.POSITIVE_INFINITY).kEffective).toBe(
+      stepFermiKinetics(83.5, 99.5).kEffective,
+    );
+    expect(stepFermiKinetics(-10, 120).controlRodInsertionFraction).toBe(1);
+    expect(stepFermiKinetics(120, -10).controlRodInsertionFraction).toBe(0);
+    expect(stepFermiKinetics(50, -10).moderatorPurityPercent).toBe(0);
   });
 });

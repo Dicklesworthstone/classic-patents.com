@@ -340,6 +340,7 @@ export function OtisElevator3D() {
             </div>
             <input
               type="range"
+              aria-label="Elevator cab payload"
               min="200"
               max="1500"
               step="50"
@@ -360,6 +361,7 @@ export function OtisElevator3D() {
             </div>
             <input
               type="range"
+              aria-label="Hoisting cable tension"
               min="0"
               max="100"
               step="5"

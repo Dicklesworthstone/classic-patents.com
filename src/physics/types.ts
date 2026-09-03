@@ -96,20 +96,21 @@ export interface ThermodynamicsState {
 // 5. Nuclear Criticality & Delayed Neutron Kinetics
 export interface NuclearKineticsState {
   kEffective: number; // k_eff
-  reactivityDollars: number; // $
+  reactivityDollars: number; // $, or 0 when the source boundary refuses it
   thermalNeutronFluxNPerCm2S: number; // n/(cm^2*s)
-  delayedNeutronFractionBeta: number; // beta = 0.0065
-  precursorConcentrationGroup1to6: number[];
-  reactorPeriodSeconds: number; // T (s)
+  delayedNeutronFractionBeta: number; // beta
+  precursorConcentrationGroup1to6: number[]; // empty when no six-group fit is supported
+  delayedNeutronMeanDelaySeconds: number;
+  quantitativeTransientAvailable: boolean;
+  reactorPeriodSeconds: number; // T (s), or 0 when unavailable
   thermalPowerWatts: number; // W
   controlRodInsertionFraction: number;
   geigerIntervalMs: number;
   geigerIntervalS: number;
   thermalFluxE7: number;
-  neutronDisplaySpeed: number;
-  rodStudioY: number;
+  neutronDisplaySpeed: number; // studio units/s, never physical neutron velocity
+  rodStudioX: number;
   fuelGlowIntensity: number;
-  rodSvgY: number;
   schematicRodY: number;
   latticeRows: number;
   latticeCols: number;
@@ -140,6 +141,14 @@ export interface NuclearKineticsState {
   schematicRodX: number;
   schematicRodW: number;
   schematicRodH: number;
+  /** Claim 1 graphite/natural-uranium geometric lattice is visibly present. */
+  claim1PathActive: boolean;
+  /** Fixed natural-uranium teaching reference; not an enrichment control. */
+  naturalUraniumU235Percent: number;
+  /** Visitor-declared qualitative purity input. */
+  moderatorPurityPercent: number;
+  /** Explicit limit on what the source licenses this state to predict. */
+  sourceBoundary: string;
 }
 
 // 6. Continuum Mechanics, Polymers & Mechanisms

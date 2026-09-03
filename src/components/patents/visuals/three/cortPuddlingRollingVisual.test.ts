@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import * as THREE from "three";
+import { cortPuddlingRollingViewForViewport } from "./cortPuddlingRollingCamera";
 import { buildCortPuddlingRollingModel } from "./cortPuddlingRollingModel";
 
 describe("Henry Cort Puddling & Grooved Rolling 3D WebGL Model", () => {
@@ -71,6 +72,39 @@ describe("Henry Cort Puddling & Grooved Rolling 3D WebGL Model", () => {
     expect(modelSource).not.toContain("timeSec * 10)");
     expect(modelSource).toContain("puddleFlickerOmegaRadPerS");
     expect(modelSource).toContain("sparkHashRate");
+  });
+
+  test("keeps the full furnace-stack envelope inside the overview framing", async () => {
+    const cameraSource = await Bun.file(
+      new URL("./cortPuddlingRollingCamera.ts", import.meta.url),
+    ).text();
+    expect(cameraSource).toContain("iso: { pos: [0, 4.4, 10.6], target: [0, 1.35, 0] }");
+    expect(cameraSource).toContain("3.6-unit stack");
+  });
+
+  test("re-centres only the phone overview so the furnace and mill remain one process", async () => {
+    const distance = (view: ReturnType<typeof cortPuddlingRollingViewForViewport>) =>
+      Math.hypot(
+        view.pos[0] - view.target[0],
+        view.pos[1] - view.target[1],
+        view.pos[2] - view.target[2],
+      );
+    const desktopOverview = cortPuddlingRollingViewForViewport("iso", 1200);
+    const phoneOverview = cortPuddlingRollingViewForViewport("iso", 375);
+    expect(distance(phoneOverview) / distance(desktopOverview)).toBeCloseTo(1.2254, 3);
+    expect(phoneOverview).toEqual({
+      pos: [-0.7, 5.5, 13],
+      target: [-0.7, 1.8, 0],
+    });
+    expect(cortPuddlingRollingViewForViewport("hearth", 375)).toEqual(
+      cortPuddlingRollingViewForViewport("hearth", 1200),
+    );
+
+    const threeSource = await Bun.file(
+      new URL("./CortPuddlingRolling3D.tsx", import.meta.url),
+    ).text();
+    expect(threeSource).toContain("cortPuddlingRollingViewForViewport");
+    expect(threeSource).toContain('window.addEventListener("resize", restoreResponsiveView)');
   });
 
   test("properly cleans up WebGL geometries and materials on disposal", () => {

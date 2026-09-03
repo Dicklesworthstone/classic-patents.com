@@ -50,8 +50,8 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             Reverberatory Decarburization &amp; Continuous Grooved Roll Squeeze
           </p>
           <p className="mt-2 max-w-2xl text-[11px] leading-relaxed text-amber-800 dark:text-amber-300">
-            Editorial process model only. GB 1420&apos;s source edition is withheld; this instrument
-            is not a reconstruction of a surviving patent drawing or a measured production record.
+            Editorial process model only. It illustrates the stated puddling-and-rolling sequence,
+            not a reconstruction of a surviving patent drawing or a measured production record.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">

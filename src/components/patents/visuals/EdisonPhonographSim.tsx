@@ -374,6 +374,7 @@ export function EdisonPhonographSim() {
           </div>
           <input
             type="range"
+            aria-label="Clockwork mandrel speed in revolutions per minute"
             min="40"
             max="140"
             step="5"
@@ -389,6 +390,7 @@ export function EdisonPhonographSim() {
           </div>
           <input
             type="range"
+            aria-label="Diaphragm excitation level in model units"
             min="40"
             max="100"
             step="5"

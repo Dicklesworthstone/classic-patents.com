@@ -1,15 +1,19 @@
 import * as THREE from "three";
-import { stepClavelDeltaRobotTopology } from "@/physics/clavelDeltaRobotKernel";
 import type {
   ClavelDeltaRobotTopologyState,
   ClavelDeltaVec3,
 } from "@/physics/clavelDeltaRobotKernel";
+import { stepClavelDeltaRobotTopology } from "@/physics/clavelDeltaRobotKernel";
 
 export interface ClavelDeltaRobotModel {
   readonly root: THREE.Group;
   readonly updatePose: (state: ClavelDeltaRobotTopologyState) => void;
   readonly dispose: () => void;
 }
+
+export const CLAVEL_EXHIBIT_FLOOR_Y = -2.18;
+const CLAVEL_BASE_CENTER_Y = 0.72;
+const CLAVEL_BASE_THICKNESS = 0.15;
 
 function point([x, y, z]: ClavelDeltaVec3): THREE.Vector3 {
   return new THREE.Vector3(x, y, z);
@@ -76,16 +80,64 @@ export function buildClavelDeltaRobotModel(): ClavelDeltaRobotModel {
       emissiveIntensity: 0.14,
     }),
   );
+  const supportMaterial = material(
+    new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.72, roughness: 0.34 }),
+  );
 
   const base = new THREE.Mesh(
     geometry(new THREE.CylinderGeometry(1.52, 1.52, 0.15, 3)),
     baseMaterial,
   );
   base.name = "Base member 1";
-  base.rotation.y = Math.PI / 2;
-  base.position.y = 0.72;
+  // CylinderGeometry's three outer vertices begin at +Z, -30°, and -150°.
+  // A half-turn puts them on the same -90° / 30° / 150° radials as the three
+  // source-labelled fixed actuator pivots instead of leaving those housings
+  // outside the triangular base plate.
+  base.rotation.y = Math.PI;
+  base.position.y = CLAVEL_BASE_CENTER_Y;
   base.receiveShadow = true;
   root.add(base);
+
+  // The grant calls member 1 fixed but does not claim or dimension a building
+  // support. This deliberately neutral exhibit gantry closes that fixed-world
+  // boundary without presenting it as a patent part. Its three posts sit on
+  // the scene floor and its short radial headers overlap the base underside.
+  const supportGroup = new THREE.Group();
+  supportGroup.name = "Fixed-world exhibit gantry (not a patent part)";
+  supportGroup.userData.sourceStatus = "exhibit-support-not-a-patent-part";
+  const baseUndersideY = CLAVEL_BASE_CENTER_Y - CLAVEL_BASE_THICKNESS / 2;
+  const postHeight = baseUndersideY - CLAVEL_EXHIBIT_FLOOR_Y;
+  const postGeometry = geometry(new THREE.BoxGeometry(0.12, postHeight, 0.12));
+  const footGeometry = geometry(new THREE.BoxGeometry(0.42, 0.07, 0.42));
+  const headerGeometry = geometry(new THREE.CylinderGeometry(0.055, 0.055, 1, 14));
+  for (let index = 0; index < 3; index += 1) {
+    const angle = -Math.PI / 2 + (index * 2 * Math.PI) / 3;
+    const radialDirection = new THREE.Vector3(Math.cos(angle), 0, Math.sin(angle));
+    const postTop = radialDirection.clone().multiplyScalar(1.78);
+    postTop.y = baseUndersideY;
+    const baseAnchor = radialDirection.clone().multiplyScalar(1.28);
+    baseAnchor.y = baseUndersideY;
+
+    const post = new THREE.Mesh(postGeometry, supportMaterial);
+    post.name = `Exhibit support post ${index + 1} (not a patent part)`;
+    post.position.copy(postTop);
+    post.position.y = CLAVEL_EXHIBIT_FLOOR_Y + postHeight / 2;
+    post.castShadow = true;
+    post.receiveShadow = true;
+
+    const foot = new THREE.Mesh(footGeometry, supportMaterial);
+    foot.name = `Exhibit floor foot ${index + 1} (not a patent part)`;
+    foot.position.copy(postTop);
+    foot.position.y = CLAVEL_EXHIBIT_FLOOR_Y + 0.035;
+    foot.receiveShadow = true;
+
+    const header = new THREE.Mesh(headerGeometry, supportMaterial);
+    header.name = `Exhibit base header ${index + 1} (not a patent part)`;
+    setBeamBetween(header, postTop, baseAnchor);
+    header.castShadow = true;
+    supportGroup.add(post, foot, header);
+  }
+  root.add(supportGroup);
 
   const topologyGroup = new THREE.Group();
   topologyGroup.name = "Claim 1 three-actuator parallel topology";
@@ -188,11 +240,26 @@ export function buildClavelDeltaRobotModel(): ClavelDeltaRobotModel {
   );
   toolShaft.name = "Working member 9";
   toolShaft.position.y = -0.33;
-  const toolTip = new THREE.Mesh(geometry(new THREE.ConeGeometry(0.1, 0.18, 18)), toolMaterial);
-  toolTip.name = "Tool tip";
-  toolTip.position.y = -0.7;
-  toolTip.rotation.x = Math.PI;
-  toolGroup.add(toolShaft, toolTip);
+  const gripperBridge = new THREE.Mesh(
+    geometry(new THREE.BoxGeometry(0.44, 0.09, 0.12)),
+    toolMaterial,
+  );
+  gripperBridge.name = "Working member 9 source-style gripper bridge";
+  gripperBridge.position.y = -0.64;
+  const jawGeometry = geometry(new THREE.BoxGeometry(0.09, 0.3, 0.1));
+  const leftJaw = new THREE.Mesh(jawGeometry, toolMaterial);
+  leftJaw.name = "Working member 9 gripper jaw A";
+  leftJaw.position.set(-0.175, -0.79, 0);
+  const rightJaw = new THREE.Mesh(jawGeometry, toolMaterial);
+  rightJaw.name = "Working member 9 gripper jaw B";
+  rightJaw.position.set(0.175, -0.79, 0);
+  const orientationMarker = new THREE.Mesh(
+    geometry(new THREE.SphereGeometry(0.055, 14, 10)),
+    cyanMaterial,
+  );
+  orientationMarker.name = "Tool-axis exhibit orientation marker (not a patent part)";
+  orientationMarker.position.set(-0.175, -0.96, 0);
+  toolGroup.add(toolShaft, gripperBridge, leftJaw, rightJaw, orientationMarker);
   topologyGroup.add(toolGroup);
 
   const supplementaryMotor = new THREE.Group();

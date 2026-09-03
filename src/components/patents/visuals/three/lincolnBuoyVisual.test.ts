@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepLincolnBuoy } from "@/physics/catalogKernels";
-import { lincolnBuoyViewForViewport } from "./LincolnBuoy3D";
+import { lincolnBuoyViewForViewport } from "./lincolnBuoyCamera";
 import { buildLincolnBuoyModel, updateLincolnBuoyKinematics } from "./lincolnBuoyModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");

@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   createThreeStudioScene,
@@ -14,40 +14,19 @@ import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildEInkModel } from "./EInkModel";
+import { type EInkCameraPreset, eInkViewForViewport } from "./eInkCamera";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
+import { StudioOverlayActionToolbar } from "./StudioOverlayActionToolbar";
+import { createExplodedLayerStudioOverlayActions } from "./studioOverlayActions";
 import { usePatentAudio } from "./usePatentAudio";
 
 const EXHIBIT_ID = "us-6120588-eink";
-
-type CameraPreset = "iso" | "microcapsule" | "electrodes" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [4.8, 3.2, 5.4], target: [0, -0.1, 0] },
-  microcapsule: { pos: [2.5, 1.8, 3.4], target: [0, 0, 0] },
-  electrodes: { pos: [4.4, 3.6, 4.9], target: [0, 0, 0] },
-  top: { pos: [0, 6.0, 0.01], target: [0, 0, 0] },
-};
-
-export function eInkViewForViewport(preset: CameraPreset, viewportWidth: number) {
-  const config = CAMERA_PRESETS[preset];
-  const multiplier = viewportWidth < 480 ? (preset === "iso" ? 1.2 : 1.12) : 1;
-  return {
-    pos: config.pos.map(
-      (coordinate, index) =>
-        config.target[index] + (coordinate - config.target[index]) * multiplier,
-    ) as [number, number, number],
-    target: [...config.target] as [number, number, number],
-  };
-}
 
 export function EInk3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<EInkCameraPreset>("iso");
   const [hud, setHud] = useState({
     voltage: 15,
     reflectance: 72,
@@ -69,7 +48,7 @@ export function EInk3D() {
 
   const studioRef = useRef<StudioContext | null>(null);
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: EInkCameraPreset) => {
     setActiveCamera(preset);
     const cfg = eInkViewForViewport(preset, containerRef.current?.clientWidth ?? 1000);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
@@ -161,7 +140,7 @@ export function EInk3D() {
                 ["microcapsule", "Microcapsule Core"],
                 ["electrodes", "Source Electrodes 100/110"],
                 ["top", "Plan View"],
-              ] as [CameraPreset, string][]
+              ] as [EInkCameraPreset, string][]
             ).map(([preset, label]) => (
               <button
                 key={preset}
@@ -180,61 +159,21 @@ export function EInk3D() {
         )}
 
         {/* Top Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
-          <button
-            type="button"
-            onClick={() => {
+        <StudioOverlayActionToolbar
+          actions={createExplodedLayerStudioOverlayActions({
+            isAudioMuted,
+            onToggleSound: () => {
               toggleSound();
               soundEngine.playSwitchClick();
-            }}
-            className="min-h-9 p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-          >
-            {isAudioMuted ? (
-              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            ) : (
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIsCutaway(!isCutaway)}
-            className={`min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              isCutaway
-                ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-            title={isCutaway ? "Collapse Electrode Plates" : "Explode Microcapsule Stack"}
-            aria-label={isCutaway ? "Collapse Electrode Plates" : "Explode Microcapsule Stack"}
-          >
-            <Layers className="w-4 h-4" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`min-h-9 p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showUiOverlay
-                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-            }`}
-            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
-            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
-          >
-            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
-          <button
-            aria-label="Reset camera view"
-            type="button"
-            onClick={() => applyCameraPreset("iso")}
-            className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
+            },
+            isCutaway,
+            onToggleCutaway: () => setIsCutaway(!isCutaway),
+            cutawayTitle: isCutaway ? "Collapse Electrode Plates" : "Explode Microcapsule Stack",
+            showUiOverlay,
+            onToggleUiOverlay: () => setShowUiOverlay(!showUiOverlay),
+            onResetCamera: () => applyCameraPreset("iso"),
+          })}
+        />
 
         {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (

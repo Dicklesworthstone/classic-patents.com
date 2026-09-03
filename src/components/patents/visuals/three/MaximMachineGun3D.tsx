@@ -12,35 +12,16 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import { type MaximMachineGunCameraPreset, maximCameraForViewport } from "./maximMachineGunCamera";
 import {
   buildMaximMachineGunModel,
   type MaximMachineGunModel,
   updateMaximMachineGunKinematics,
 } from "./maximMachineGunModel";
-import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
+import { useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset =
-  | "iso"
-  | "muzzle_sleeve"
-  | "reversing_linkage"
-  | "breech_crosshead"
-  | "volute_spring"
-  | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [2.5, 1.8, 2.5], target: [0, 0, 0.4] },
-  muzzle_sleeve: { pos: [0.8, 0.5, 1.6], target: [0, 0.1, 0.9] },
-  reversing_linkage: { pos: [1.1, 0.5, 0.7], target: [0, 0.08, 0.5] },
-  breech_crosshead: { pos: [-0.6, 0.6, -0.2], target: [0, 0.1, -0.1] },
-  volute_spring: { pos: [0.8, 0.5, -0.3], target: [0.1, 0.1, -0.2] },
-  top: { pos: [0, 3.5, 0.4], target: [0, 0, 0.4] },
-};
 
 export function MaximMachineGun3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -70,7 +51,7 @@ export function MaximMachineGun3D() {
     },
   });
 
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<MaximMachineGunCameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const crateSource = useGenericWasmSource();
 
@@ -87,9 +68,9 @@ export function MaximMachineGun3D() {
   const studioRef = useRef<StudioContext | null>(null);
   const modelRef = useRef<MaximMachineGunModel | null>(null);
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: MaximMachineGunCameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = maximCameraForViewport(preset, containerRef.current?.clientWidth ?? 1024);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -103,7 +84,7 @@ export function MaximMachineGun3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = maximCameraForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -127,6 +108,7 @@ export function MaximMachineGun3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt } = clock.pump(now);
       timeSec += dt;
 
@@ -166,17 +148,20 @@ export function MaximMachineGun3D() {
     <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] max-h-[640px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl select-none">
       <div ref={containerRef} className="absolute inset-0" />
       <div className="absolute top-4 left-4 z-10 hidden sm:flex flex-col gap-2">
-        <div className="bg-ink-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-800/50 shadow-lg flex items-center gap-2.5">
+        <div
+          data-testid="maxim-identity-card"
+          className="bg-ink-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-800/50 shadow-lg flex items-center gap-2.5"
+        >
           <Layers className="w-4 h-4 text-amber-500" />
           <span className="font-serif text-xs font-semibold tracking-wide text-parchment-100">
             Maxim Machine Gun 3D (US 319,596)
           </span>
-          <StudioKernelChips
-            chips={[
-              { label: "Kernel", value: crateSource },
-              { label: "Topology", value: "Fixed Barrel / Sleeve" },
-            ]}
-          />
+          <span
+            data-testid="maxim-kernel-provenance"
+            className="hidden lg:inline border-l border-parchment-700/70 pl-2.5 font-mono text-[10px] text-parchment-300"
+          >
+            Kernel {crateSource} · fixed barrel / sleeve
+          </span>
         </div>
       </div>
 

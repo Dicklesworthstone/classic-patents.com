@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { wozniakBusCycle } from "./WozniakAppleSim";
+import { wozniakBusCycle } from "@/physics/catalogKernels";
 
 describe("wozniakBusCycle", () => {
   test("replays the same address and bus owner for the same tick and controls", () => {

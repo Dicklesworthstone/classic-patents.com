@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { readLamarrRuntimeControls, readLamarrTapeFrame } from "@/physics/lamarrSharedKernel";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -8,42 +8,17 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import { type LamarrCameraPreset, lamarrViewForViewport } from "./lamarrFrequencyHoppingCamera";
 import {
   buildLamarrFrequencyHoppingModel,
   updateLamarrFrequencyHoppingKinematics,
 } from "./lamarrFrequencyHoppingModel";
 import { useResponsiveStudioHud } from "./StudioKernelChips";
+import { StudioOverlayActionToolbar } from "./StudioOverlayActionToolbar";
+import { createSourceBoundStudioOverlayActions } from "./studioOverlayActions";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset = "iso" | "roll" | "waterfall" | "escapement" | "torpedo" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [8, 5.5, 9.5], target: [0, 0, 0] },
-  roll: { pos: [-2.5, 1.5, 3.5], target: [-1.5, 0, 0] },
-  waterfall: { pos: [0, 2.5, 4.5], target: [0, 0, 0] },
-  escapement: { pos: [2.0, 1.0, 3.0], target: [1.5, 0, 0] },
-  torpedo: { pos: [4.0, 1.5, 3.5], target: [2.5, 0, 0] },
-  top: { pos: [0, 9.0, 0.1], target: [0, 0, 0] },
-};
-
-export function lamarrViewForViewport(preset: CameraPreset, viewportWidth: number) {
-  const config = CAMERA_PRESETS[preset];
-  const multiplier =
-    viewportWidth < 480 ? (preset === "iso" ? 1.55 : 1.3) : viewportWidth < 900 ? 1.15 : 1;
-  return {
-    pos: [
-      config.target[0] + (config.pos[0] - config.target[0]) * multiplier,
-      config.target[1] + (config.pos[1] - config.target[1]) * multiplier,
-      config.target[2] + (config.pos[2] - config.target[2]) * multiplier,
-    ] as [number, number, number],
-    target: config.target,
-  };
-}
 
 export function LamarrFrequencyHopping3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,7 +29,7 @@ export function LamarrFrequencyHopping3D() {
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<LamarrCameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { frame } = useFrankenSimPhysics("us-2292387-lamarr-frequency-hopping");
@@ -62,7 +37,7 @@ export function LamarrFrequencyHopping3D() {
   const recordState = readLamarrTapeFrame(readLamarrRuntimeControls(params));
   const live = useLiveSimParams({ recordState, isCutaway });
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: LamarrCameraPreset) => {
     setActiveCamera(preset);
     const cfg = lamarrViewForViewport(preset, containerRef.current?.clientWidth ?? 1000);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
@@ -169,73 +144,25 @@ export function LamarrFrequencyHopping3D() {
           </div>
         )}
 
-        {/* Top Right Tool Bar */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
-          <button
-            type="button"
-            onClick={() => setIsCutaway(!isCutaway)}
-            title={isCutaway ? "Switch to Solid Torpedo Bay" : "Switch to Torpedo Bay Cutaway"}
-            className={`min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              isCutaway
-                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`min-h-9 p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showUiOverlay
-                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-            }`}
-            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
-            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
-          >
-            {showUiOverlay ? (
-              <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            ) : (
-              <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            )}
-          </button>
-          <button
-            aria-label={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
-            type="button"
-            onClick={handleToggleSound}
-            className="min-h-9 p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
-          >
-            {isAudioMuted ? (
-              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            ) : (
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
-            )}
-          </button>
-          <button
-            aria-label={showCalloutPins ? "Hide annotation pins" : "Show annotation pins"}
-            type="button"
-            onClick={() => setShowCalloutPins(!showCalloutPins)}
-            className={`min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showCalloutPins
-                ? "bg-amber-600 text-white border-amber-700 shadow-md"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-            title="Toggle Historical Patent Numeral Pins"
-          >
-            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
-          <button
-            aria-label="Reset camera view"
-            type="button"
-            onClick={() => applyCameraPreset("iso")}
-            className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
-          >
-            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
-        </div>
+        <StudioOverlayActionToolbar
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2"
+          actions={createSourceBoundStudioOverlayActions({
+            isCutaway,
+            onToggleCutaway: () => setIsCutaway(!isCutaway),
+            cutawayTitle: isCutaway
+              ? "Switch to Solid Torpedo Bay"
+              : "Switch to Torpedo Bay Cutaway",
+            showUiOverlay,
+            onToggleUiOverlay: () => setShowUiOverlay(!showUiOverlay),
+            isAudioMuted,
+            onToggleSound: handleToggleSound,
+            audioAriaLabel: isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound",
+            audioTitle: isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound",
+            showCalloutPins,
+            onToggleCalloutPins: () => setShowCalloutPins(!showCalloutPins),
+            onResetCamera: () => applyCameraPreset("iso"),
+          })}
+        />
 
         {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (

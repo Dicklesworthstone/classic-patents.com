@@ -326,6 +326,7 @@ export function HopkinsPotash3D() {
             </div>
             <input
               type="range"
+              aria-label="Furnace temperature"
               min="500"
               max="950"
               step="25"
@@ -344,6 +345,7 @@ export function HopkinsPotash3D() {
             </div>
             <input
               type="range"
+              aria-label="Roasting time"
               min="0.5"
               max="6.0"
               step="0.5"
@@ -362,6 +364,7 @@ export function HopkinsPotash3D() {
             </div>
             <input
               type="range"
+              aria-label="Raw ash batch mass"
               min="50"
               max="500"
               step="25"
@@ -380,6 +383,7 @@ export function HopkinsPotash3D() {
             </div>
             <input
               type="range"
+              aria-label="Water temperature"
               min="20"
               max="100"
               step="5"

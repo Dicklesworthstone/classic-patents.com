@@ -384,6 +384,7 @@ export function DeLavalSeparator3D() {
             </div>
             <input
               type="range"
+              aria-label="Centrifuge bowl speed"
               min="2000"
               max="9000"
               step="250"
@@ -402,6 +403,7 @@ export function DeLavalSeparator3D() {
             </div>
             <input
               type="range"
+              aria-label="Raw milk feed rate"
               min="100"
               max="600"
               step="25"

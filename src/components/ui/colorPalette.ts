@@ -259,6 +259,36 @@ function replaceOutsideProtected(latex: string, re: RegExp, replacement: string)
   return out + latex.slice(last);
 }
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function sourceSymbolIds(
+  latex: string,
+  variables: readonly { id: string; symbol: string }[],
+): Set<string> {
+  const idsBySymbol = new Map<string, string[]>();
+  for (const variable of variables) {
+    if (!variable.symbol) continue;
+    const ids = idsBySymbol.get(variable.symbol);
+    if (ids) ids.push(variable.id);
+    else idsBySymbol.set(variable.symbol, [variable.id]);
+  }
+
+  const alternatives: string[] = [];
+  for (const symbol of idsBySymbol.keys()) alternatives.push(escapeRegExp(symbol));
+  if (alternatives.length === 0) return new Set();
+
+  const present = new Set<string>();
+  const matcher = new RegExp(alternatives.join("|"), "g");
+  for (const match of latex.matchAll(matcher)) {
+    const ids = idsBySymbol.get(match[0]);
+    if (!ids) continue;
+    for (const id of ids) present.add(id);
+  }
+  return present;
+}
+
 /**
  * Takes a colorized equation and ensures all variables are wrapped with interactive HTML classes and data attributes for KaTeX rendering.
  *
@@ -277,6 +307,10 @@ export function prepareInteractiveLatex(equation: {
   variables: Array<{ id: string; symbol: string; color: ColorVariant }>;
 }): string {
   let latex = equation.colorizedLatex || equation.rawLatex;
+  // Wrapping adds markup but never removes a source symbol. Record those
+  // symbols in one source scan before the three mutation passes instead of
+  // repeatedly scanning the full equation for every fallback variable.
+  const sourceSymbols = sourceSymbolIds(latex, equation.variables);
 
   // Count how many variables use each palette color; a color (and thus any
   // of its hex aliases) identifies a variable only when it is unique within
@@ -379,10 +413,9 @@ export function prepareInteractiveLatex(equation: {
     const hex = cfg.hexLight;
     const termClass = `eq-term eq-term-${v.id} eq-term-${v.color}`;
 
-    if (latex.includes(v.symbol)) {
+    if (sourceSymbols.has(v.id)) {
       const rawReplacement = `\\htmlClass{${termClass}}{\\htmlData{var=${v.id}}{\\textcolor{${hex}}{${v.symbol}}}}`;
 
-      const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       const isAlphaNumStart = /^[a-zA-Z0-9]/.test(v.symbol);
       const isAlphaNumEnd = /[a-zA-Z0-9]$/.test(v.symbol);
 

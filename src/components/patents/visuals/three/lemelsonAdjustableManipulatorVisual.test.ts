@@ -6,12 +6,32 @@ import {
   LEMELSON_MANIPULATOR_DEFAULT_CONTROLS,
   stepLemelsonManipulatorTopology,
 } from "@/physics/lemelsonAdjustableManipulatorKernel";
+import { lemelsonAdjustableManipulatorViewForViewport } from "./lemelsonAdjustableManipulatorCamera";
 import { buildLemelsonAdjustableManipulatorModel } from "./lemelsonAdjustableManipulatorModel";
 
 const ROOT = process.cwd();
 const source = (path: string) => readFileSync(join(ROOT, path), "utf8");
 
 describe("US 3,260,375 Lemelson Adjustable Manipulator procedural visual boundary", () => {
+  test("fits the whole supported apparatus at phone and tablet canvas widths", () => {
+    const distanceFromTarget = (camera: { position: number[]; target: number[] }) =>
+      Math.hypot(
+        camera.position[0] - camera.target[0],
+        camera.position[1] - camera.target[1],
+        camera.position[2] - camera.target[2],
+      );
+    const phone = lemelsonAdjustableManipulatorViewForViewport("overview", 228);
+    const tablet = lemelsonAdjustableManipulatorViewForViewport("overview", 644);
+    const desktop = lemelsonAdjustableManipulatorViewForViewport("overview", 1214);
+
+    expect(distanceFromTarget(phone)).toBeGreaterThan(distanceFromTarget(tablet));
+    // The desktop canvas can keep the entire gantry in frame while moving
+    // close enough for the source-claimed wrist and jaw to be legible.
+    expect(desktop).toEqual({ position: [4.9, 3.0, 5.4], target: [0, 1.15, 0] });
+    expect(distanceFromTarget(desktop)).toBeLessThan(distanceFromTarget(tablet));
+    expect(phone.target).toEqual(tablet.target);
+  });
+
   test("builds the procedural 3D model and updates kinematics correctly", () => {
     const model = buildLemelsonAdjustableManipulatorModel();
     expect(model.root.name).toContain("US 3,260,375");
@@ -99,6 +119,9 @@ describe("US 3,260,375 Lemelson Adjustable Manipulator procedural visual boundar
     const studio3d = source(
       "src/components/patents/visuals/three/LemelsonAdjustableManipulator3D.tsx",
     );
+    const camera = source(
+      "src/components/patents/visuals/three/lemelsonAdjustableManipulatorCamera.ts",
+    );
     const telemetry = source("src/physics/telemetryData.ts");
 
     expect(kernel).toContain("stepLemelsonManipulatorTopology");
@@ -122,10 +145,12 @@ describe("US 3,260,375 Lemelson Adjustable Manipulator procedural visual boundar
       studio3d.indexOf("ref={containerRef}"),
     );
     expect(studio3d).not.toContain("absolute right-3 bottom-3");
-    expect(studio3d).toContain("const PHONE_OVERVIEW");
-    expect(studio3d).toContain("const PHONE_WRIST");
-    expect(studio3d).toContain('container.clientWidth < 640 ? "wrist" : "overview"');
-    expect(studio3d).toContain("viewForViewport(initialView, container.clientWidth)");
+    expect(camera).toContain("const PHONE_OVERVIEW");
+    expect(camera).toContain("const PHONE_WRIST");
+    expect(camera).toContain("const TABLET_OVERVIEW");
+    expect(studio3d).toContain('const initialView = "overview"');
+    expect(studio3d).toContain("lemelsonAdjustableManipulatorViewForViewport");
+    expect(studio3d).toContain("data-responsive-view-deck");
     expect(telemetry).toContain('"us-3260375-lemelson-adjustable-manipulator"');
   });
 });

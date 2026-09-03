@@ -487,6 +487,7 @@ export function TownesLaserSim({
           </div>
           <input
             type="range"
+            aria-label="Pump flash power in watts"
             min={50}
             max={1000}
             step={25}
@@ -505,6 +506,7 @@ export function TownesLaserSim({
           </div>
           <input
             type="range"
+            aria-label="Laser cavity length in centimeters"
             min={5}
             max={100}
             step={5}
@@ -525,6 +527,7 @@ export function TownesLaserSim({
           </div>
           <input
             type="range"
+            aria-label="Output coupler R2 reflectivity percentage"
             min={80}
             max={99.5}
             step={0.5}
@@ -547,6 +550,7 @@ export function TownesLaserSim({
           </div>
           <input
             type="range"
+            aria-label="Laser aperture diameter in millimeters"
             min={2}
             max={25}
             step={1}

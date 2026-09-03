@@ -606,6 +606,7 @@ export default function LemelsonWarehousingSim() {
             </div>
             <input
               type="range"
+              aria-label="Target warehouse bay column"
               min="1"
               max="10"
               step="1"
@@ -623,6 +624,7 @@ export default function LemelsonWarehousingSim() {
             </div>
             <input
               type="range"
+              aria-label="Target warehouse shelf tier"
               min="1"
               max="6"
               step="1"
@@ -642,6 +644,7 @@ export default function LemelsonWarehousingSim() {
             </div>
             <input
               type="range"
+              aria-label="Warehouse traverse speed in meters per second"
               min="0.4"
               max="2.5"
               step="0.1"
@@ -659,6 +662,7 @@ export default function LemelsonWarehousingSim() {
             </div>
             <input
               type="range"
+              aria-label="Pallet load mass in kilograms"
               min="50"
               max="800"
               step="25"

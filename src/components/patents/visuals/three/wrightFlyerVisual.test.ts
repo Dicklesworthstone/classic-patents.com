@@ -10,6 +10,7 @@ import {
   wrightWarpFromPointerNx,
 } from "@/physics/wrightKernel";
 import { buildWrightFlyerAirframe, updateWrightFlyerKinematics } from "./wrightFlyerAirframe";
+import { wrightFlyerViewForViewport } from "./wrightFlyerCamera";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
 
@@ -30,6 +31,8 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(threeSource).not.toContain("/ 1100");
     expect(threeSource).not.toContain("/ 400");
     expect(threeSource).toContain("wrightHoverY");
+    expect(threeSource).toContain("const particleCount = 180");
+    expect(threeSource).toContain("opacity: 0.55");
     expect(threeSource).not.toContain("* 1.4");
   });
 
@@ -54,6 +57,31 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("controls.setView");
     expect(threeSource).not.toContain("cameraRef");
+  });
+
+  test("keeps the full wing envelope inside phone and tablet overviews without weakening detail views", () => {
+    const distance = (view: ReturnType<typeof wrightFlyerViewForViewport>) =>
+      Math.hypot(
+        view.pos[0] - view.target[0],
+        view.pos[1] - view.target[1],
+        view.pos[2] - view.target[2],
+      );
+    const desktopIso = wrightFlyerViewForViewport("iso", 1200);
+    const tabletIso = wrightFlyerViewForViewport("iso", 768);
+    const phoneIso = wrightFlyerViewForViewport("iso", 375);
+    const desktopTop = wrightFlyerViewForViewport("top", 1200);
+    const phoneTop = wrightFlyerViewForViewport("top", 375);
+    const phoneDetail = wrightFlyerViewForViewport("wing_warp", 375);
+
+    expect(distance(phoneIso) / distance(desktopIso)).toBeCloseTo(2.2, 8);
+    expect(distance(tabletIso) / distance(desktopIso)).toBeCloseTo(1.6, 8);
+    expect(distance(phoneTop) / distance(desktopTop)).toBeCloseTo(1.85, 8);
+    expect(phoneDetail).toEqual(wrightFlyerViewForViewport("wing_warp", 1200));
+
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "WrightFlyer3D.tsx"), "utf8");
+    expect(threeSource).toContain("wrightFlyerViewForViewport");
+    expect(threeSource).toContain('window.addEventListener("resize", restoreResponsiveView)');
+    expect(threeSource).not.toContain("controls.setRadius(11)");
   });
 
   test("writes the same canonical airspeed key that the shared Wright kernel reads", () => {

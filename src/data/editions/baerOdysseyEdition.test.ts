@@ -91,7 +91,11 @@ describe("US 3,728,480 Television Gaming and Training Apparatus (Magnavox Odysse
   test("wires claim 1 constraint in claimConstraints", () => {
     const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
     const r1 = applyClaimConstraintModifications("us-3728480-baer-odyssey", {}, { 1: false });
-    expect(r1.modifiedParams.ballSpeedMultiplier).toBe(0.0);
-    expect(r1.refusalWarning).toContain("PASSIVE BROADCAST LOCK");
+    expect(r1.modifiedParams.claim1Active).toBe(0);
+    expect(r1.modifiedParams.ballSpeedMultiplier).toBeUndefined();
+    expect(r1.activeFailures).toEqual([
+      "Claim 1 signal path omitted: control-unit dot generation, raster synchronization, participant manipulation, and direct receiver coupling are withheld.",
+    ]);
+    expect(r1.refusalWarning).toContain("CLAIM 1 TOPOLOGY WITHHELD");
   });
 });

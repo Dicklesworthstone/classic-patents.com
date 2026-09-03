@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepCorlissEngine } from "@/physics/catalogKernels";
@@ -18,16 +18,18 @@ import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildCorlissEngineModel, updateCorlissEngineKinematics } from "./corlissSteamEngineModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
+import { StudioOverlayActionToolbar } from "./StudioOverlayActionToolbar";
+import { createStandardStudioOverlayActions } from "./studioOverlayActions";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "wrist_plate" | "dashpots" | "flywheel" | "governor" | "top";
+type CameraConfig = { pos: [number, number, number]; target: [number, number, number] };
 
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
+const COMPACT_STUDIO_MAX_WIDTH_PX = 640;
+
+const CAMERA_PRESETS: Record<CameraPreset, CameraConfig> = {
   iso: { pos: [12.0, 9.0, 13.0], target: [0, 0, 0] },
   wrist_plate: { pos: [-2.0, 1.8, 4.5], target: [-1.8, 0.4, 0] },
   dashpots: { pos: [-2.2, -0.8, 3.8], target: [-2.0, -1.8, 0] },
@@ -35,6 +37,20 @@ const CAMERA_PRESETS: Record<
   governor: { pos: [-1.0, 3.2, 4.0], target: [-1.0, 1.8, 1.2] },
   top: { pos: [0, 14.0, 0.1], target: [0, 0, 0] },
 };
+
+// The full girder engine is wider than a portrait phone's default isometric
+// frustum. Pull back only the compact overview; named close-up presets retain
+// their inspection scale after the visitor deliberately chooses them.
+const MOBILE_CAMERA_PRESETS: Partial<Record<CameraPreset, CameraConfig>> = {
+  iso: { pos: [17.0, 10.5, 22.5], target: [0, -0.5, 0] },
+};
+
+function resolveCameraPreset(preset: CameraPreset, viewportWidth: number): CameraConfig {
+  if (viewportWidth <= COMPACT_STUDIO_MAX_WIDTH_PX) {
+    return MOBILE_CAMERA_PRESETS[preset] ?? CAMERA_PRESETS[preset];
+  }
+  return CAMERA_PRESETS[preset];
+}
 
 export function CorlissSteamEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -106,7 +122,7 @@ export function CorlissSteamEngine3D() {
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = resolveCameraPreset(preset, containerRef.current?.clientWidth ?? 0);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
   const toggleSound = () => {
@@ -119,7 +135,7 @@ export function CorlissSteamEngine3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = resolveCameraPreset("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -215,56 +231,19 @@ export function CorlissSteamEngine3D() {
           </div>
         )}
 
-        {/* Top-Right Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
-          <button
-            type="button"
-            onClick={() => setIsCutaway(!isCutaway)}
-            title={isCutaway ? "Switch to Solid Engine" : "Switch to Cylinder Cutaway"}
-            className={`min-h-9 p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm text-xs font-sans flex items-center gap-1 ${
-              isCutaway
-                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={toggleSound}
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="min-h-9 p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`min-h-9 p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showUiOverlay
-                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-            }`}
-            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
-            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
-          >
-            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
-
-          <button
-            aria-label="Reset camera view"
-            type="button"
-            onClick={() => applyCameraPreset("iso")}
-            className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
+        <StudioOverlayActionToolbar
+          actions={createStandardStudioOverlayActions({
+            isCutaway,
+            onToggleCutaway: () => setIsCutaway(!isCutaway),
+            cutawayTitle: isCutaway ? "Switch to Solid Engine" : "Switch to Cylinder Cutaway",
+            isAudioMuted,
+            onToggleSound: toggleSound,
+            showUiOverlay,
+            onToggleUiOverlay: () => setShowUiOverlay(!showUiOverlay),
+            overlayTitle: showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI",
+            onResetCamera: () => applyCameraPreset("iso"),
+          })}
+        />
 
         {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
@@ -343,6 +322,7 @@ export function CorlissSteamEngine3D() {
             </div>
             <input
               type="range"
+              aria-label="Engine speed"
               min="20"
               max="120"
               step="5"

@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import * as THREE from "three";
 import { stepDevolProgrammedTransfer } from "@/physics/devolProgrammedTransferKernel";
+import { devolCameraForViewport } from "./devolProgrammedTransferCamera";
 import { buildDevolProgrammedTransferModel } from "./devolProgrammedTransferModel";
 
 const THREE_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals", "three");
@@ -20,6 +21,17 @@ function requiredObject(root: THREE.Object3D, name: string): THREE.Object3D {
 }
 
 describe("US 2,988,237 Devol programmed-transfer visual boundary", () => {
+  test("widens the tablet default view enough to keep the telescoping gripper in frame", () => {
+    const desktop = devolCameraForViewport(1280);
+    const tablet = devolCameraForViewport(768);
+    const phone = devolCameraForViewport(390);
+
+    expect(tablet.position[0]).toBeGreaterThan(desktop.position[0]);
+    expect(tablet.position[2]).toBeGreaterThan(desktop.position[2]);
+    expect(tablet.target).toEqual(desktop.target);
+    expect(phone).toEqual({ position: [7.8, 4.7, 8.4], target: [1.5, 0.95, 0] });
+  });
+
   test("uses procedural geometry for the disclosed carriage, encoder, drum, and gripper", () => {
     const source = readFileSync(join(THREE_DIRECTORY, "devolProgrammedTransferModel.ts"), "utf8");
     const model = buildDevolProgrammedTransferModel();

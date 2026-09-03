@@ -130,10 +130,12 @@ describe("US 4,765,668 Robot End Effector Archival Edition Contract", () => {
     const activeRes = applyClaimConstraintModifications(PATENT_ID, {}, { 1: true });
     expect(activeRes.activeFailures.length).toBe(0);
 
-    const invertedRes = applyClaimConstraintModifications(PATENT_ID, {}, { 1: false });
+    const rawControls = { jawOpeningFraction: 0.52, fingerChangeFraction: 0.35 };
+    const invertedRes = applyClaimConstraintModifications(PATENT_ID, rawControls, { 1: false });
     expect(invertedRes.activeFailures.length).toBeGreaterThan(0);
-    expect(invertedRes.modifiedParams.jawOpeningFraction).toBe(0);
-    expect(invertedRes.modifiedParams.fingerChangeFraction).toBe(1);
+    expect(invertedRes.modifiedParams.claim1TopologyEnabled).toBe(0);
+    expect(invertedRes.modifiedParams.jawOpeningFraction).toBe(rawControls.jawOpeningFraction);
+    expect(invertedRes.modifiedParams.fingerChangeFraction).toBe(rawControls.fingerChangeFraction);
     expect(invertedRes.refusalWarning).toContain("SOURCE BOUNDARY");
   });
 });

@@ -1,13 +1,14 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import {
   AMF_VERSATRAN_CLAIM_PROBE_PARAMS,
   AMF_VERSATRAN_DEFAULT_CONTROLS,
   readAmfVersatranClaimStates,
   stepAmfVersatranTopology,
 } from "@/physics/amfVersatranKernel";
-import { amfVersatranViewForViewport } from "./AMFVersatran3D";
+import { amfVersatranViewForViewport } from "./amfVersatranCamera";
 import { buildAmfVersatranModel } from "./amfVersatranModel";
 
 const ROOT = process.cwd();
@@ -23,8 +24,8 @@ describe("US 3,212,649 AMF Versatran procedural visual boundary", () => {
         view.position[1] - view.target[1],
         view.position[2] - view.target[2],
       );
-    expect(distance(phone) / distance(desktop)).toBeCloseTo(1.55, 8);
-    expect(phone.target).toEqual([0, -0.65, 0]);
+    expect(distance(phone) / distance(desktop)).toBeCloseTo(1.3, 8);
+    expect(phone.target).toEqual([0, 0.15, 0]);
 
     const threeD = source("src/components/patents/visuals/three/AMFVersatran3D.tsx");
     const modelViewport = threeD.indexOf('data-mobile-layout="dedicated-model-viewport"');
@@ -39,23 +40,33 @@ describe("US 3,212,649 AMF Versatran procedural visual boundary", () => {
     expect(threeD).not.toContain("mt-[432px]");
     expect(threeD).not.toContain("sm:absolute sm:bottom-5");
     expect(threeD).toContain("scroll-mt-24");
+    expect(threeD).toContain("hidden items-start justify-between");
+    expect(threeD).toContain("sm:flex");
+    expect(threeD).toContain("top-24 hidden rounded-xl");
   });
 
   test("builds the source-named machine and keeps the two disclosed wrist motions separate", () => {
     const model = buildAmfVersatranModel();
     const column = model.root.getObjectByName("Rotating column B assembly");
+    const columnPost = model.root.getObjectByName("Column B vertical post");
+    const base = model.root.getObjectByName("Base assembly");
     const carriage = model.root.getObjectByName("Elevating carriage C");
     const arm = model.root.getObjectByName("Horizontal arm A");
+    const boom = model.root.getObjectByName("Normalized horizontal arm travel display");
     const wristSwing = model.root.getObjectByName(
       "Wrist assembly G swing about central vertical axis",
     );
     const wristRotation = model.root.getObjectByName(
       "Wrist assembly G rotation about horizontal arm axis",
     );
+    const wristHub = model.root.getObjectByName("Wrist G normalized hub");
     const teach = model.root.getObjectByName("Manual programming arm");
     const teachPivot = model.root.getObjectByName("Manual programming pivot anchored to column B");
     const signalDisplay = model.root.getObjectByName(
       "Recorded-signal and feedback comparison display",
+    );
+    const signalCabinet = model.root.getObjectByName(
+      "Recorded-signal cabinet supported on museum floor",
     );
     const upperJawPivot = model.root.getObjectByName("Upper gripping-finger pivot");
     const finger = model.root.getObjectByName("Gripping finger 324");
@@ -72,14 +83,19 @@ describe("US 3,212,649 AMF Versatran procedural visual boundary", () => {
 
     expect(model.root.name).toContain("US 3,212,649");
     expect(column).toBeDefined();
+    expect(columnPost).toBeDefined();
+    expect(base).toBeDefined();
     expect(carriage).toBeDefined();
     expect(arm).toBeDefined();
+    expect(boom).toBeDefined();
     expect(wristSwing).toBeDefined();
     expect(wristRotation).toBeDefined();
+    expect(wristHub).toBeDefined();
     expect(teach).toBeDefined();
     expect(teachPivot).toBeDefined();
     expect(teachPivot?.parent).toBe(column);
     expect(signalDisplay).toBeDefined();
+    expect(signalCabinet).toBeDefined();
     expect(upperJawPivot).toBeDefined();
     expect(finger).toBeDefined();
     expect(upperPinion).toBeDefined();
@@ -99,6 +115,7 @@ describe("US 3,212,649 AMF Versatran procedural visual boundary", () => {
       gripperOperation: 0.1,
     });
     model.updateState(openState);
+    model.root.updateMatrixWorld(true);
     // The programming linkage must originate inside the rotating column's
     // r=0.24 envelope instead of terminating in open air beside it.
     expect(teachPivot?.position.x).toBeCloseTo(-0.2, 12);
@@ -111,6 +128,24 @@ describe("US 3,212,649 AMF Versatran procedural visual boundary", () => {
       12,
     );
     expect(wristSwing?.rotation.y).toBeCloseTo(openState.displayPose.wristSwingDisplayRad, 12);
+
+    for (const [supported, support, relationship] of [
+      [columnPost, base, "column B must meet the base"],
+      [carriage, columnPost, "carriage C must stay on column B"],
+      [boom, carriage, "arm A must pass through carriage C"],
+      [wristHub, boom, "wrist G must meet arm A"],
+    ] as const) {
+      if (!supported || !support) throw new Error(`Missing object: ${relationship}`);
+      expect(
+        new THREE.Box3()
+          .setFromObject(supported)
+          .intersectsBox(new THREE.Box3().setFromObject(support)),
+        relationship,
+      ).toBe(true);
+    }
+    if (!base || !signalCabinet) throw new Error("AMF support geometry is missing.");
+    expect(new THREE.Box3().setFromObject(base).min.y).toBeCloseTo(-1.01, 6);
+    expect(new THREE.Box3().setFromObject(signalCabinet).min.y).toBeCloseTo(-1.01, 6);
 
     const closedState = stepAmfVersatranTopology({
       ...AMF_VERSATRAN_DEFAULT_CONTROLS,
@@ -207,6 +242,8 @@ describe("US 3,212,649 AMF Versatran procedural visual boundary", () => {
     expect(threeD).toContain("createThreeStudioScene");
     expect(threeD).toContain("createStudioClock");
     expect(threeD).toContain('data-amf-versatran-webgl-fallback="true"');
+    expect(threeD).toContain('data-amf-versatran-claim-1-withheld="true"');
+    expect(threeD).toContain("CLAIM 1 TOPOLOGY WITHHELD");
     expect(threeD).toContain("This browser cannot create WebGL.");
     expect(model).toContain("display proportions only");
     expect(model).not.toContain("Math.random");

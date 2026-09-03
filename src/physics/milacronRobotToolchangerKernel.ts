@@ -24,8 +24,14 @@ export interface MilacronRobotToolchangerControls {
 
 export type MilacronToolchangerControls = MilacronRobotToolchangerControls;
 
+export const MILACRON_FRANKENSIM_JOINT_OWNER = "fs-mbd::JointModel::prismatic";
+export const MILACRON_FRANKENSIM_CONTACT_OWNER =
+  "fs-contact::normal_patch + fs-tribo::partial_slip";
+export const MILACRON_FRANKENSIM_BOUNDARY =
+  "generic prismatic-joint, normal-contact, and friction owners identified; SI actuation and wedge retention refused";
+
 export type MilacronToolchangerPhase =
-  | "adapter-open"
+  | "adapter-empty"
   | "base-present"
   | "registered"
   | "locked"
@@ -43,8 +49,15 @@ export interface MilacronRobotToolchangerState {
   claimFourTMemberSelected: boolean;
   claimFourRampCaptured: boolean;
   releasePermitted: boolean;
+  /** Requested display positions remain visible so an interlock is inspectable. */
+  requestedLockingSlideFraction: number;
+  requestedRegistrationFraction: number;
+  /** Effective positions are the physically admissible state rendered on both faces. */
   lockingSlideFraction: number;
   registrationFraction: number;
+  registrationMotionBlocked: boolean;
+  sequenceValid: boolean;
+  sequenceNote: string;
   quantitativeMechanicsRefused: true;
   sourceBoundary: {
     note: string;
@@ -59,8 +72,7 @@ export const MILACRON_ROBOT_TOOLCHANGER_DEFAULTS: MilacronRobotToolchangerContro
   claimFourTMember: 1,
 };
 
-const SOURCE_BOUNDARY_NOTE =
-  "US 4,512,709 supplies registration-and-ramp-capture topology but no actuator pressure, cylinder bore, stroke, ramp angle, friction, preload, mass, holding load, cycle time, or positional tolerance. The shared kernel refuses force, energy, timing, and reliability results.";
+const SOURCE_BOUNDARY_NOTE = `US 4,512,709 supplies registration-and-ramp-capture topology but no actuator pressure, cylinder bore, stroke, ramp angle, friction, preload, mass, holding load, cycle time, or positional tolerance. ${MILACRON_FRANKENSIM_JOINT_OWNER} owns slide translation and ${MILACRON_FRANKENSIM_CONTACT_OWNER} owns an eventual wedge-contact solve, but the source card cannot parameterize either SI model. The shared kernel refuses force, energy, timing, and reliability results.`;
 
 function clampFraction(value: unknown, fallback: number): number {
   return typeof value === "number" && Number.isFinite(value)
@@ -92,16 +104,42 @@ export function stepMilacronRobotToolchanger(
 ): MilacronRobotToolchangerState {
   const controls = readMilacronRobotToolchangerControls(raw);
   const toolBasePresent = controls.toolBasePresent >= 0.5;
-  const registrationComplete = toolBasePresent && controls.registrationFraction === 1;
-  const apertureAligned = controls.lockingSlideFraction === 0;
-  const lockingSlideEngaged = controls.lockingSlideFraction === 1;
-  const retentionMemberAdmitted = registrationComplete && apertureAligned;
+  const requestedRegistrationFraction = controls.registrationFraction;
+  const requestedLockingSlideFraction = controls.lockingSlideFraction;
+  const registrationMotionBlocked =
+    toolBasePresent && requestedLockingSlideFraction > 0 && requestedRegistrationFraction < 1;
+  // The locked slide bears on the retention head and cannot coexist with a
+  // withdrawn or partly admitted member. The slide therefore wins an invalid
+  // stateless control combination and holds the base seated. UI interlocks
+  // prevent visitors from entering this combination during normal operation.
+  const registrationFraction = !toolBasePresent
+    ? 0
+    : registrationMotionBlocked
+      ? 1
+      : requestedRegistrationFraction;
+  const lockingSlideFraction = requestedLockingSlideFraction;
+  const registrationComplete = toolBasePresent && registrationFraction === 1;
+  const apertureAligned = lockingSlideFraction === 0;
+  const lockingSlideEngaged = lockingSlideFraction === 1;
+  const retentionMemberAdmitted = registrationComplete;
   const toolRetained = registrationComplete && lockingSlideEngaged;
   const claimFourTMemberSelected = controls.claimFourTMember >= 0.5;
   const claimFourRampCaptured = toolRetained && claimFourTMemberSelected;
+  const sequenceValid = !registrationMotionBlocked;
+  const sequenceNote = registrationMotionBlocked
+    ? "Withdrawal or admission is blocked until slide aperture 34 is fully aligned."
+    : !toolBasePresent
+      ? "The adapter is empty; present a common tool base while aperture 34 is aligned."
+      : !registrationComplete
+        ? "Move the common base onto locating pins 43 and 44 before closing slide 33."
+        : apertureAligned
+          ? "The base is registered and released; slide 33 may now move to its locking position."
+          : lockingSlideEngaged
+            ? "The base is registered and retained; align aperture 34 before withdrawal."
+            : "Slide 33 is moving between its source-described terminal positions; no withdrawal is permitted.";
 
   const phase: MilacronToolchangerPhase = !toolBasePresent
-    ? "adapter-open"
+    ? "adapter-empty"
     : claimFourRampCaptured
       ? "captured-t-member"
       : toolRetained
@@ -115,15 +153,20 @@ export function stepMilacronRobotToolchanger(
     toolBasePresent,
     registrationComplete,
     apertureAligned,
-    admissionPermitted: retentionMemberAdmitted,
+    admissionPermitted: toolBasePresent && apertureAligned,
     lockingSlideEngaged,
     retentionMemberAdmitted,
     toolRetained,
     claimFourTMemberSelected,
     claimFourRampCaptured,
-    releasePermitted: toolBasePresent && apertureAligned,
-    lockingSlideFraction: controls.lockingSlideFraction,
-    registrationFraction: controls.registrationFraction,
+    releasePermitted: registrationComplete && apertureAligned,
+    requestedLockingSlideFraction,
+    requestedRegistrationFraction,
+    lockingSlideFraction,
+    registrationFraction,
+    registrationMotionBlocked,
+    sequenceValid,
+    sequenceNote,
     quantitativeMechanicsRefused: true,
     sourceBoundary: { note: SOURCE_BOUNDARY_NOTE, isRefused: true },
   };

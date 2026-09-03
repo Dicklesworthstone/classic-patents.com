@@ -4,7 +4,14 @@ import { Eye, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
-import { stepRobotEndEffector } from "@/physics/robotEndEffectorKernel";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
+import {
+  ROBOT_END_EFFECTOR_FRANKENSIM_CONTACT_OWNER,
+  ROBOT_END_EFFECTOR_FRANKENSIM_HELICAL_OWNER,
+  ROBOT_END_EFFECTOR_FRANKENSIM_PRISMATIC_OWNER,
+  ROBOT_END_EFFECTOR_FRANKENSIM_REVOLUTE_OWNER,
+  stepRobotEndEffector,
+} from "@/physics/robotEndEffectorKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -45,19 +52,23 @@ function viewForViewport(view: keyof typeof VIEWS, viewportWidth: number) {
 export function RobotEndEffector3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-  const liveParams = useLiveSimParams(params);
-  const state = useMemo(() => stepRobotEndEffector(params), [params]);
+  const { params, effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(PATENT_ID);
+  const liveParams = useLiveSimParams(effectiveParams);
+  const state = useMemo(() => stepRobotEndEffector(effectiveParams), [effectiveParams]);
   const [view, setView] = useState<keyof typeof VIEWS>("perspective");
 
   // This is a shared deterministic screw/encoder kernel. No FrankenSim/WASM
   // step is claimed because the source withholds contact, pneumatic, payload,
   // frame-dimension, and connector-stroke inputs needed for a body simulation.
-  useFrankenSimPhysics(PATENT_ID, {
-    domain: "solid_mechanics",
-    refusal: { isRefused: true, reason: state.sourceBoundary.note },
-  });
+  const refusalTelemetry = useMemo(
+    () => ({
+      domain: "solid_mechanics" as const,
+      refusal: { isRefused: true as const, reason: state.sourceBoundary.note },
+    }),
+    [state.sourceBoundary.note],
+  );
+  useFrankenSimPhysics(PATENT_ID, refusalTelemetry);
 
   const selectView = (next: keyof typeof VIEWS) => {
     setView(next);
@@ -65,7 +76,7 @@ export function RobotEndEffector3D() {
     studioRef.current?.controls.setView(selected.position, selected.target);
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
+  // The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -121,10 +132,26 @@ export function RobotEndEffector3D() {
       studio.cleanup();
       studioRef.current = null;
     };
-  }, []);
+  }, [liveParams]);
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl">
+    <section
+      className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl"
+      data-testid="robot-end-effector-three"
+      data-robot-end-effector-topology={state.claim1TopologyPresent ? "present" : "withheld"}
+      data-robot-end-effector-jaw-gap-mm={(state.jawOpeningM * 1000).toFixed(1)}
+      data-robot-end-effector-midpoint-mm={(state.symmetricMidpointM * 1000).toFixed(3)}
+      data-robot-end-effector-finger-retained={state.fingerRetainedFraction.toFixed(3)}
+      data-robot-end-effector-finger-withdrawal="inward"
+      data-robot-end-effector-transverse={state.transverseOffsetNormalized.toFixed(3)}
+      data-robot-end-effector-roll-deg={((state.frameRotationRad * 180) / Math.PI).toFixed(0)}
+      data-robot-end-effector-helical-owner={state.owners.helical}
+      data-robot-end-effector-roll-owner={state.owners.roll}
+      data-robot-end-effector-transverse-owner={state.owners.transverse}
+      data-robot-end-effector-contact-owner={state.owners.contactCandidate}
+      data-robot-end-effector-boundary="refused-unparameterized"
+      data-robot-end-effector-support="two-guides-engaged"
+    >
       <div className="relative min-h-[440px] sm:min-h-[540px]">
         <div ref={containerRef} className="absolute inset-0" />
         <div className="pointer-events-none absolute inset-x-3 top-3 hidden items-start justify-between gap-3 sm:flex sm:inset-x-5 sm:top-5">
@@ -164,7 +191,7 @@ export function RobotEndEffector3D() {
         data-mobile-layout="controls-below-canvas"
         className="grid gap-3 border-t border-slate-700/80 bg-slate-950/90 p-3 lg:grid-cols-[minmax(0,1fr)_auto]"
       >
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
           <label className="text-xs text-slate-200">
             Jaw opening
             <span className="float-right font-mono text-cyan-300">
@@ -229,6 +256,24 @@ export function RobotEndEffector3D() {
               onChange={(event) => updateParam("fingerChangeFraction", Number(event.target.value))}
             />
           </label>
+          <label className="text-xs text-slate-200">
+            Claim 16 transverse stage
+            <span className="float-right font-mono text-emerald-300">
+              {(params.transverseOffsetFraction ?? 0).toFixed(2)} normalized
+            </span>
+            <input
+              className="mt-1 w-full accent-emerald-400"
+              type="range"
+              min="-1"
+              max="1"
+              step="0.05"
+              value={params.transverseOffsetFraction ?? 0}
+              aria-label="Source-described transverse stage normalized position"
+              onChange={(event) =>
+                updateParam("transverseOffsetFraction", Number(event.target.value))
+              }
+            />
+          </label>
         </div>
         <div className="flex flex-wrap items-end gap-2">
           {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((candidate) => (
@@ -253,18 +298,54 @@ export function RobotEndEffector3D() {
         </div>
 
         <p className="text-[11px] leading-4 text-slate-400 lg:col-span-2">
-          Finger change is axial dovetail withdrawal. At full travel the removed fingers enter the
-          source-mentioned stationary fixture, whose geometry the grant does not draw, and leave
-          this normalized view. Amber arrows visualize the requested grip command only; without a
-          workpiece/contact model they are not force vectors or achieved contact force.
+          Finger change is inward axial dovetail withdrawal, as Claim 13 requires. At full travel
+          the removed fingers enter the source-mentioned stationary fixture, whose geometry the
+          grant does not draw, and leave this normalized view. Amber arrows visualize the requested
+          grip command only; without a workpiece/contact model they are not force vectors or
+          achieved contact force. Claim 16 transverse motion is normalized because no stroke is
+          printed.
         </p>
+
+        <div className="grid gap-2 text-[11px] leading-4 sm:grid-cols-2 lg:col-span-2">
+          <div className="rounded-lg border border-emerald-700/60 bg-emerald-950/30 p-2 text-emerald-100">
+            <span className="font-mono font-bold text-emerald-300">GENERIC JOINT OWNERS</span>
+            <p className="mt-1">
+              {ROBOT_END_EFFECTOR_FRANKENSIM_HELICAL_OWNER} closes the opposed screw relation;{" "}
+              {ROBOT_END_EFFECTOR_FRANKENSIM_REVOLUTE_OWNER} and{" "}
+              {ROBOT_END_EFFECTOR_FRANKENSIM_PRISMATIC_OWNER} own the source-described connector
+              roll and transverse guide.
+            </p>
+          </div>
+          <div className="rounded-lg border border-rose-700/60 bg-rose-950/30 p-2 text-rose-100">
+            <span className="font-mono font-bold text-rose-300">CONTACT SOLVE REFUSED</span>
+            <p className="mt-1">
+              {ROBOT_END_EFFECTOR_FRANKENSIM_CONTACT_OWNER} needs workpiece geometry, materials,
+              friction, and contact approach that the grant does not print. Grip pressure, payload,
+              deflection, power, and cycle time remain unreported.
+            </p>
+          </div>
+        </div>
+
+        {claimConstraintResult.activeFailures.length > 0 && (
+          <div
+            role="status"
+            className="rounded-lg border border-rose-600/60 bg-rose-950/40 p-2 text-xs leading-5 text-rose-100 lg:col-span-2"
+          >
+            {claimConstraintResult.activeFailures.map((failure) => (
+              <p key={failure}>{failure}</p>
+            ))}
+            {claimConstraintResult.refusalWarning && (
+              <p className="mt-1 text-rose-200">{claimConstraintResult.refusalWarning}</p>
+            )}
+          </div>
+        )}
 
         <div className="border-t border-slate-800 pt-2">
           <ClaimConstraintToggle
             patentId={PATENT_ID}
             claimStates={claimStates}
-            onClaimStateChange={(num, active) =>
-              setClaimStates((prev) => ({ ...prev, [num]: active }))
+            onToggleClaim={(number, active) =>
+              updateParam(claimConstraintStateParamId(number), active ? 1 : 0)
             }
           />
         </div>

@@ -90,4 +90,19 @@ describe("US 3,119,501 Jerome Lemelson Automatic Warehousing Visual Boundary", (
 
     model.dispose();
   });
+
+  it("keeps the interactive deck below the canvas instead of covering the racking", () => {
+    const studioSource = readFileSync(
+      join(
+        process.cwd(),
+        "src/components/patents/visuals/three/LemelsonAutomaticWarehousing3D.tsx",
+      ),
+      "utf8",
+    );
+
+    expect(studioSource.indexOf('data-mobile-layout="controls-below-canvas"')).toBeGreaterThan(
+      studioSource.indexOf("ref={containerRef}"),
+    );
+    expect(studioSource).not.toContain("bottom-[350px]");
+  });
 });

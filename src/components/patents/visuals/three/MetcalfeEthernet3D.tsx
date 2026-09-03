@@ -9,65 +9,34 @@ import {
   resetMetcalfeEthernetTape,
 } from "@/physics/metcalfeEthernetKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import {
+  METCALFE_ETHERNET_CAMERA_VIEWS,
+  type MetcalfeEthernetCameraView,
+  metcalfeViewForViewport,
+} from "./metcalfeEthernetCamera";
 import { buildMetcalfeEthernetModel } from "./metcalfeEthernetModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-4063220-metcalfe-ethernet";
 
-const VIEWS = {
-  overview: {
-    position: [0, 3.2, 5.8] as [number, number, number],
-    target: [0, 1.0, 0] as [number, number, number],
-  },
-  alto1: {
-    position: [-2.0, 1.8, 2.2] as [number, number, number],
-    target: [-2.0, 1.3, 0.3] as [number, number, number],
-  },
-  coaxTap: {
-    position: [-0.5, 1.0, 0.8] as [number, number, number],
-    target: [-0.5, 0.4, -0.5] as [number, number, number],
-  },
-  alto2: {
-    position: [2.0, 1.8, 2.2] as [number, number, number],
-    target: [2.0, 1.3, 0.3] as [number, number, number],
-  },
-} as const;
-
-export function metcalfeViewForViewport(
-  view: keyof typeof VIEWS,
-  viewportWidth: number,
-): { position: [number, number, number]; target: [number, number, number] } {
-  const config = VIEWS[view];
-  if (viewportWidth >= 640) return config;
-  const multiplier = view === "overview" ? 1.95 : 1.5;
-  return {
-    position: [
-      config.target[0] + (config.position[0] - config.target[0]) * multiplier,
-      config.target[1] + (config.position[1] - config.target[1]) * multiplier,
-      config.target[2] + (config.position[2] - config.target[2]) * multiplier,
-    ],
-    target: config.target,
-  };
-}
-
 export function MetcalfeEthernet3D({ patentId = PATENT_ID }: { patentId?: string } = {}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const [view, setView] = useState<keyof typeof VIEWS>("overview");
+  const [view, setView] = useState<MetcalfeEthernetCameraView>("overview");
   const [interfaceVisible, setInterfaceVisible] = useState(true);
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const { params, effectiveParams, updateParam, resetParams } = usePatentPhysics(patentId);
   const liveParams = useLiveSimParams(effectiveParams);
 
-  const selectView = (nextView: keyof typeof VIEWS) => {
+  const selectView = (nextView: MetcalfeEthernetCameraView) => {
     setView(nextView);
     const camera = metcalfeViewForViewport(nextView, containerRef.current?.clientWidth ?? 1000);
     studioRef.current?.controls.setView(camera.position, camera.target);
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The persistent WebGL scene reads the stable layout-effect-synchronized control ref; depending on `.current` would recreate and flash the studio.
+  // The persistent WebGL scene reads the stable layout-effect-synchronized control ref; depending on `.current` would recreate and flash the studio.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -109,7 +78,7 @@ export function MetcalfeEthernet3D({ patentId = PATENT_ID }: { patentId?: string
       model.dispose();
       studio.dispose();
     };
-  }, []);
+  }, [liveParams]);
 
   useEffect(() => {
     const restoreResponsiveView = () => {
@@ -129,23 +98,25 @@ export function MetcalfeEthernet3D({ patentId = PATENT_ID }: { patentId?: string
 
         {/* View Presets */}
         <div className="absolute top-4 left-4 right-24 z-10 flex gap-2 overflow-x-auto pb-1">
-          {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((v) => (
-            <button
-              key={v}
-              type="button"
-              onClick={() => selectView(v)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${
-                view === v
-                  ? "bg-amber-500 text-slate-950 font-bold"
-                  : "bg-slate-900/80 text-slate-300 hover:bg-slate-800"
-              }`}
-            >
-              {v === "overview" && "Full Lab Overview"}
-              {v === "alto1" && "Alto 1 (Transmitter)"}
-              {v === "coaxTap" && "Coaxial Tap Transceiver"}
-              {v === "alto2" && "Alto 2 (Receiver)"}
-            </button>
-          ))}
+          {(Object.keys(METCALFE_ETHERNET_CAMERA_VIEWS) as MetcalfeEthernetCameraView[]).map(
+            (v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => selectView(v)}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${
+                  view === v
+                    ? "bg-amber-500 text-slate-950 font-bold"
+                    : "bg-slate-900/80 text-slate-300 hover:bg-slate-800"
+                }`}
+              >
+                {v === "overview" && "Full Lab Overview"}
+                {v === "alto1" && "Alto 1 (Transmitter)"}
+                {v === "coaxTap" && "Coaxial Tap Transceiver"}
+                {v === "alto2" && "Alto 2 (Receiver)"}
+              </button>
+            ),
+          )}
         </div>
 
         {/* Visibility Toggle & Reset */}

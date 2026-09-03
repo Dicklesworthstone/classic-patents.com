@@ -38,6 +38,12 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       }
     }
     expect(Object.keys(ENERGY_CHANNEL_OMISSION_REASONS)).toEqual([
+      "us-3138743-kilby-integrated-circuit",
+      "us-2981877-noyce-ic",
+      "us-2929922-townes-laser",
+      "us-2717437-mestral-velcro",
+      "us-2318259-sikorsky-helicopter",
+      "us-2708656-fermi-reactor",
       "us-470918-reno-escalator",
       "us-586193-marconi-radio",
       "us-1102653-goddard-rocket",
@@ -51,6 +57,7 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-31128-otis-elevator",
       "us-4341502-makino-scara",
       "us-4512709-milacron-robot-toolchanger",
+      "us-4575330-hull-stereolithography",
       "us-4765668-robot-end-effector",
       "us-2846084-goertz-electronic-master-slave-manipulator",
       "us-4921293-salisbury-robot-hand",
@@ -78,6 +85,7 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-971501-haber-ammonia",
       "us-1219881-sundback-zipper",
       "us-2495429-spencer-microwave",
+      "us-2524035-bardeen-transistor",
       "us-6469-lincoln-buoy",
       "us-x8277-mccormick-reaper",
       "us-727650-linde-air-liquefaction",
@@ -93,6 +101,8 @@ describe("Physics Energy Channels (SI Power & Heat Balances)", () => {
       "us-1773980-farnsworth-tv",
       "us-233692-pelton-water-wheel",
       "us-3541541-engelbart-mouse",
+      "us-3728480-baer-odyssey",
+      "us-3858232-boyle-smith-ccd",
       "us-395781-hollerith-tabulating",
       "us-706737-fessenden-wireless",
       "us-2543181-land-polaroid",

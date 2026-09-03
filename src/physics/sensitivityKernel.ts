@@ -10,7 +10,9 @@
  * use automatic differentiation; the unused Dual class was removed.
  */
 
+import { stepLandPolaroidInstantFilm } from "./catalogKernels";
 import { readCrumpFdmControls } from "./crumpFdmKernel";
+import { fermiKeff } from "./fermiKinetics";
 import {
   readGoertzMasterSlaveControls,
   stepGoertzMasterSlaveTopology,
@@ -20,7 +22,10 @@ import {
   stepHullStereolithographySi,
 } from "./hullStereolithographyKernel";
 import { stepLemelsonWarehouseTopology } from "./lemelsonWarehouseKernel";
+import { stepMakinoScaraTopology } from "./makinoScaraKernel";
 import { readMestralVelcroControls, stepMestralVelcroSi } from "./mestralVelcroKernel";
+import { stepMilacronRobotToolchanger } from "./milacronRobotToolchangerKernel";
+import { readNoycePlanarLeadControls } from "./noycePlanarLeadKernel";
 import { OTIS_DECLARED_MAX_DISPLAY_TRAVEL_PER_S } from "./otisKernel";
 import { ROBOT_END_EFFECTOR_TYPICAL_JAW_OPENING_M } from "./robotEndEffectorKernel";
 import { readSalisburyRobotHandControls } from "./salisburyRobotHandKernel";
@@ -184,21 +189,50 @@ export function computeParameterSensitivity(
       break;
     }
 
-    case "us-2981877-noyce-ic":
-    case "us-3138743-kilby-integrated-circuit": {
-      if (controlKey === "reverseBiasVoltageV" || controlKey === "reverseBias") {
-        const vr = params.reverseBiasVoltageV ?? params.reverseBias ?? 3.0;
-        const vbi = 0.7; // built-in potential
-        const c0 = 12.0; // pF at zero bias
-        // C_j = C_0 / sqrt(1 + Vr/Vbi) -> dCj/dVr = -C_0 / (2 * Vbi * (1 + Vr/Vbi)^(3/2))
-        const ratio = 1 + vr / vbi;
-        const dCj_dvr = -c0 / (2 * vbi * ratio ** 1.5);
+    case "us-2981877-noyce-ic": {
+      const controls = readNoycePlanarLeadControls(params);
+      if (controlKey === "oxideThicknessUm") {
         return {
-          metricName: "Junction Capacitance",
-          derivativeSymbol: "∂C_j / ∂V_r",
-          derivativeValue: Number(dCj_dvr.toFixed(3)),
-          derivativeUnit: "pF / V",
-          interpretation: "Depletion layer widening under increasing reverse electric field.",
+          metricName: "Displayed Oxide Thickness",
+          derivativeSymbol: "∂t_{oxide,display} / ∂t_{oxide,reader}",
+          derivativeValue: 1,
+          derivativeUnit: "µm / µm",
+          interpretation:
+            "Identity slope for the source-example geometry control only; the grant does not license an electrical-performance derivative.",
+        };
+      }
+      if (controlKey === "leadStripWidthFraction") {
+        return {
+          metricName: "Displayed Lead Width Fraction",
+          derivativeSymbol: "∂w_{display} / ∂w_{reader}",
+          derivativeValue: controls.leadStripWidthFraction > 0 ? 1 : 0,
+          derivativeUnit: "fraction / fraction",
+          interpretation:
+            "Identity slope for the normalized drawing geometry only; no resistance, capacitance, delay, or power sensitivity is inferred.",
+        };
+      }
+      break;
+    }
+
+    case "us-3138743-kilby-integrated-circuit": {
+      if (controlKey === "sectionRevealFraction") {
+        return {
+          metricName: "Displayed Semiconductor Section Reveal",
+          derivativeSymbol: "∂s_{display} / ∂s_{reader}",
+          derivativeValue: 1,
+          derivativeUnit: "fraction / fraction",
+          interpretation:
+            "Identity slope for the normalized section-view control only; no electrical performance sensitivity is inferred.",
+        };
+      }
+      if (controlKey === "wireArchFraction") {
+        return {
+          metricName: "Displayed Wire 70 Arch",
+          derivativeSymbol: "∂h_{display} / ∂h_{reader}",
+          derivativeValue: 1,
+          derivativeUnit: "fraction / fraction",
+          interpretation:
+            "Identity slope for the normalized drawing geometry only; both bond endpoints remain fixed and no wire inductance or delay is inferred.",
         };
       }
       break;
@@ -210,50 +244,33 @@ export function computeParameterSensitivity(
         controlKey === "controlRodWithdrawalPct" ||
         controlKey === "rodPosition"
       ) {
-        // Registry id is rodWithdrawal; the legacy keys stay accepted for tests.
         const rod =
           params.rodWithdrawal ?? params.controlRodWithdrawalPct ?? params.rodPosition ?? 65.0;
-        // Rod worth curve derivative d(rho)/d(x) ~ sin^2(pi*x)
-        const xFrac = rod / 100.0;
-        const dRho_dx = (Math.PI / 2) * Math.sin(Math.PI * xFrac) * 0.0015; // dk / %
+        const moderatorPurity = params.moderatorPurity ?? 99.5;
+        const lower = Math.max(0, rod - 0.5);
+        const upper = Math.min(100, rod + 0.5);
+        const dKeffDx =
+          upper > lower
+            ? (fermiKeff(upper, moderatorPurity) - fermiKeff(lower, moderatorPurity)) /
+              (upper - lower)
+            : 0;
         return {
-          metricName: "Reactivity Insertion",
-          derivativeSymbol: "∂ρ / ∂x_rod",
-          derivativeValue: Number((dRho_dx * 1e5).toFixed(1)),
-          derivativeUnit: "pcm / %",
-          interpretation: "Cadmium neutron absorption cross-section differential worth.",
+          metricName: "Normalized Multiplication Lens",
+          derivativeSymbol: "∂k_eff / ∂x_absorber",
+          derivativeValue: Number(dKeffDx.toFixed(6)),
+          derivativeUnit: "k / % normalized travel",
+          interpretation:
+            "Central difference over the same explicitly normalized absorber lens used by the visual. It is not a source-calibrated cadmium worth curve.",
         };
       }
       break;
     }
     case "us-3858232-boyle-smith-ccd": {
-      if (
-        controlKey === "gateVoltageV" ||
-        controlKey === "gateVoltage" ||
-        controlKey === "voltage"
-      ) {
-        const _vg = params.gateVoltageV ?? params.gateVoltage ?? 10.0;
-        // Full well charge sensitivity: d(N_well)/d(Vg) = C_ox / q_e ~ 1.5e-13 / 1.602e-19 ~ 936,000 e/V
-        const dN_dvg = 93630.0; // e- / V
-        return {
-          metricName: "Full Well Sensitivity",
-          derivativeSymbol: "∂N_well / ∂V_g",
-          derivativeValue: Number(dN_dvg.toFixed(0)),
-          derivativeUnit: "e⁻ / V",
-          interpretation:
-            "Linear growth of MOS potential well electron storage capacity per gate volt.",
-        };
-      }
-      if (controlKey === "clockFrequencyMhz" || controlKey === "frequency") {
-        return {
-          metricName: "Charge Transfer Efficiency",
-          derivativeSymbol: "∂CTE / ∂f_clk",
-          derivativeValue: -0.004,
-          derivativeUnit: "% / MHz",
-          interpretation:
-            "Transfer inefficiency roll-off at elevated multi-phase clock frequencies.",
-        };
-      }
+      // The issued grant discloses a three-conductor sequence and the
+      // Figure 3 overlap inequality, but not the geometry, doping,
+      // capacitance, mobility, operating voltage, or clock frequency needed
+      // for a physical derivative. A discontinuous topology/timing admission
+      // boundary is not misrepresented as an SI sensitivity.
       break;
     }
 
@@ -660,9 +677,45 @@ export function computeParameterSensitivity(
       break;
     }
 
-    case "us-3353115-maiman-ruby-laser":
-    case "us-3353115-maiman-laser":
     case "us-2929922-townes-laser": {
+      const cavityLengthCm = Number(params.cavityLengthCm ?? 10);
+      const chamberDiameterCm = Math.max(0.5, Number(params.chamberDiameterCm ?? 1));
+      if (controlKey === "cavityLengthCm") {
+        return {
+          metricName: "Chamber Aspect Ratio",
+          derivativeSymbol: "∂(L/D) / ∂L",
+          derivativeValue: Number((1 / chamberDiameterCm).toFixed(3)),
+          derivativeUnit: "ratio / cm",
+          interpretation:
+            "Exact geometry derivative for the reader-scaled chamber; the patent's illustrative chamber is about 10 cm long and 1 cm in diameter.",
+        };
+      }
+      if (controlKey === "chamberDiameterCm") {
+        return {
+          metricName: "Chamber Aspect Ratio",
+          derivativeSymbol: "∂(L/D) / ∂D",
+          derivativeValue: Number((-cavityLengthCm / chamberDiameterCm ** 2).toFixed(3)),
+          derivativeUnit: "ratio / cm",
+          interpretation:
+            "Exact geometry derivative only; no optical gain or output-power sensitivity is inferred.",
+        };
+      }
+      if (controlKey === "endReflectivityPct") {
+        const reflectivityPct = Number(params.endReflectivityPct ?? 97);
+        return {
+          metricName: "Two-End Round-Trip Reflectivity",
+          derivativeSymbol: "∂(R²) / ∂R",
+          derivativeValue: Number(((2 * reflectivityPct) / 100).toFixed(3)),
+          derivativeUnit: "% round-trip / % end reflectivity",
+          interpretation:
+            "Exact dimensionless bookkeeping for equal reader-selected end reflectivities; cavity loss and gain remain refused.",
+        };
+      }
+      break;
+    }
+
+    case "us-3353115-maiman-ruby-laser":
+    case "us-3353115-maiman-laser": {
       if (
         controlKey === "pumpPowerWatts" ||
         controlKey === "pumpPower" ||
@@ -974,24 +1027,58 @@ export function computeParameterSensitivity(
     }
 
     case "us-2543181-land-polaroid": {
-      if (controlKey === "devTimeSec" || controlKey === "time") {
+      if (
+        controlKey === "developmentTimeSec" ||
+        controlKey === "devTimeSec" ||
+        controlKey === "time"
+      ) {
+        const rawTime = params.developmentTimeSec ?? params.devTimeSec ?? params.time ?? 30;
+        const time = Number.isFinite(rawTime) ? Math.max(0, Math.min(60, rawTime)) : 30;
+        const halfStep = 0.5;
+        const lower = Math.max(0, time - halfStep);
+        const upper = Math.min(60, time + halfStep);
+        const lowState = stepLandPolaroidInstantFilm({
+          ...params,
+          developmentTimeSec: lower,
+        });
+        const highState = stepLandPolaroidInstantFilm({
+          ...params,
+          developmentTimeSec: upper,
+        });
         return {
-          metricName: "Diffusion Optical Density",
+          metricName: "Scenario Positive-Image Density",
           derivativeSymbol: "∂OD / ∂t_dev",
-          derivativeValue: 0.035,
+          derivativeValue: Number(
+            (
+              (highState.positiveSilverDensity - lowState.positiveSilverDensity) /
+              (upper - lower)
+            ).toFixed(4),
+          ),
           derivativeUnit: "OD / s",
           interpretation:
-            "Rate of solubilized unexposed silver halide diffusion across reagent reagent layer to mordant surface.",
+            "Finite difference over the declared modern diffusion-transfer teaching scenario; it is not a source-reported kinetic constant.",
         };
       }
       if (controlKey === "rollerGapUm" || controlKey === "gap") {
+        const rawGap = params.rollerGapUm ?? params.gap ?? 25;
+        const gap = Number.isFinite(rawGap) ? Math.max(1, Math.min(1000, rawGap)) : 25;
+        const halfStep = 0.5;
+        const lower = Math.max(1, gap - halfStep);
+        const upper = gap + halfStep;
+        const lowState = stepLandPolaroidInstantFilm({ ...params, rollerGapUm: lower });
+        const highState = stepLandPolaroidInstantFilm({ ...params, rollerGapUm: upper });
         return {
-          metricName: "Reagent Layer Hydro-Spreading",
-          derivativeSymbol: "∂LayerThickness / ∂Gap",
-          derivativeValue: 0.85,
-          derivativeUnit: "µm / µm",
+          metricName: "Scenario Diffusion Flux",
+          derivativeSymbol: "∂J / ∂Gap",
+          derivativeValue: Number(
+            (
+              (highState.diffusionFluxMolPerM2S - lowState.diffusionFluxMolPerM2S) /
+              (upper - lower)
+            ).toFixed(6),
+          ),
+          derivativeUnit: "(mol·m⁻²·s⁻¹) / µm",
           interpretation:
-            "Uniformity of viscous chemical developer pod spreading under mechanical roller nip compression.",
+            "Finite difference of the declared Fickian teaching lens as its assumed layer gap changes; the patent supplies no calibrated gap.",
         };
       }
       break;
@@ -1016,30 +1103,6 @@ export function computeParameterSensitivity(
           derivativeUnit: "rad·s⁻¹ / Hz",
           interpretation:
             "Linear angular frequency transfer of continuous undulatory acoustic wave.",
-        };
-      }
-      break;
-    }
-
-    case "us-2524035-bardeen-transistor": {
-      if (controlKey === "emitterCurrent") {
-        return {
-          metricName: "Collector Current Alpha Gain",
-          derivativeSymbol: "∂I_c / ∂I_e",
-          derivativeValue: 1.48,
-          derivativeUnit: "mA / mA",
-          interpretation:
-            "Point-contact transistor alpha current gain exceeding unity via minority carrier hole injection.",
-        };
-      }
-      if (controlKey === "pointSpacing") {
-        return {
-          metricName: "Hole Collection Efficiency",
-          derivativeSymbol: "∂η / ∂s_point",
-          derivativeValue: -0.018,
-          derivativeUnit: "% / µm",
-          interpretation:
-            "Decay of collector hole capture as spacing exceeds germanium hole diffusion length.",
         };
       }
       break;
@@ -1672,44 +1735,36 @@ export function computeParameterSensitivity(
           ...controls,
           filamentDiameterMm: Math.max(0.05, d0 - 0.01),
         });
-        const dTauDd =
-          (probePlus.shearStressCapacityN_Cm2 - probeMinus.shearStressCapacityN_Cm2) / 0.02;
+        const derivative =
+          (probePlus.relativeBendingGeometryIndex - probeMinus.relativeBendingGeometryIndex) / 0.02;
         return {
-          metricName: "Shear Stress Capacity",
-          derivativeSymbol: "∂τ_shear / ∂d",
-          derivativeValue: Number(dTauDd.toFixed(1)),
-          derivativeUnit: "N/cm² / mm",
+          metricName: "Relative Bending Geometry",
+          derivativeSymbol: "∂K_geometry,rel / ∂d",
+          derivativeValue: Number(derivative.toFixed(2)),
+          derivativeUnit: "index / mm",
           interpretation:
-            "Central difference of hook shear capacity showing steep d⁴ fourth-power stiffness dependence on monofilament diameter.",
+            "Central difference of the exact circular-section d⁴/L³ geometry index. This is not a force derivative: the grant does not provide a material modulus or contact law.",
         };
       }
-      if (controlKey === "heatSettingTempC") {
-        const t0 = controls.heatSettingTempC;
-        const probePlus = stepMestralVelcroSi({ ...controls, heatSettingTempC: t0 + 2 });
-        const probeMinus = stepMestralVelcroSi({ ...controls, heatSettingTempC: t0 - 2 });
-        const dPhiDt =
-          ((probePlus.thermalRetentionFraction - probeMinus.thermalRetentionFraction) / 4) * 100;
+      if (controlKey === "hookLengthMm") {
+        const length = controls.hookLengthMm;
+        const probePlus = stepMestralVelcroSi({
+          ...controls,
+          hookLengthMm: Math.min(3, length + 0.05),
+        });
+        const probeMinus = stepMestralVelcroSi({
+          ...controls,
+          hookLengthMm: Math.max(1, length - 0.05),
+        });
+        const derivative =
+          (probePlus.relativeBendingGeometryIndex - probeMinus.relativeBendingGeometryIndex) / 0.1;
         return {
-          metricName: "Thermal Shape Retention",
-          derivativeSymbol: "∂ϕ_set / ∂T",
-          derivativeValue: Number(dPhiDt.toFixed(2)),
-          derivativeUnit: "% / °C",
+          metricName: "Relative Bending Geometry",
+          derivativeSymbol: "∂K_geometry,rel / ∂L",
+          derivativeValue: Number(derivative.toFixed(2)),
+          derivativeUnit: "index / mm",
           interpretation:
-            "Rate of polymer chain crystallization annealing per degree Celsius across the lancet bar heating threshold.",
-        };
-      }
-      if (controlKey === "peelAngleDeg") {
-        const a0 = controls.peelAngleDeg;
-        const probePlus = stepMestralVelcroSi({ ...controls, peelAngleDeg: Math.min(170, a0 + 2) });
-        const probeMinus = stepMestralVelcroSi({ ...controls, peelAngleDeg: Math.max(10, a0 - 2) });
-        const dFdTheta = (probePlus.totalPeelForceN - probeMinus.totalPeelForceN) / 4;
-        return {
-          metricName: "Steady Peeling Force",
-          derivativeSymbol: "∂F_peel / ∂θ",
-          derivativeValue: Number(dFdTheta.toFixed(3)),
-          derivativeUnit: "N / deg",
-          interpretation:
-            "Kendall peeling gradient demonstrating reduced disengagement force requirement as peeling angle approaches 180° (T-peel).",
+            "Central difference of the exact L⁻³ geometry factor. This does not claim a physical spring rate without the missing material and boundary data.",
         };
       }
       break;
@@ -1740,50 +1795,75 @@ export function computeParameterSensitivity(
             "Central difference of the shared source-topology kernel. It shows how the illustrative remote-obstruction selector affects the normalized Claim 9 reflection cue; it is not a contact force or a servo-performance measurement.",
         };
       }
-      if (controlKey === "horizontalArmPivot") {
-        const pivot = controls.horizontalArmPivot;
+      if (controlKey === "gripperClosure") {
+        const closure = controls.gripperClosure;
         const plus = stepGoertzMasterSlaveTopology({
           ...controls,
-          horizontalArmPivot: Math.min(1, pivot + h),
+          gripperClosure: Math.min(1, closure + h),
         });
         const minus = stepGoertzMasterSlaveTopology({
           ...controls,
-          horizontalArmPivot: Math.max(-1, pivot - h),
+          gripperClosure: Math.max(0, closure - h),
         });
         const derivative =
-          (plus.positionErrors[0] - minus.positionErrors[0]) /
-          (Math.min(1, pivot + h) - Math.max(-1, pivot - h));
+          (plus.positionErrors[6] - minus.positionErrors[6]) /
+          (Math.min(1, closure + h) - Math.max(0, closure - h));
         return {
-          metricName: "Axis 113b Mismatch Display",
-          derivativeSymbol: "∂e_113b / ∂q_m",
+          metricName: "Gripper-Closure Mismatch Display",
+          derivativeSymbol: "∂e_grip / ∂q_m,grip",
           derivativeValue: Number(derivative.toFixed(3)),
           derivativeUnit: "normalized mismatch / normalized master coordinate",
           interpretation:
-            "Central difference of the normalized correspondence display for one printed motion channel. The historical source supplies the proportional-error topology, not an SI arm displacement, gain, velocity, or force law.",
+            "Central difference of the explicitly illustrative gripper-obstruction display. The other six channels remain in correspondence; this is not an SI displacement, gain, contact-force, or servo-performance derivative.",
         };
       }
       break;
     }
 
     case "us-4341502-makino-scara": {
+      const centralDifference = (
+        control: "firstLinkAngleDeg" | "fourthLinkAngleDeg",
+        coordinate: 0 | 1,
+      ) => {
+        const center = params[control] ?? (control === "firstLinkAngleDeg" ? 32 : -38);
+        const deltaDeg = 0.01;
+        const high = stepMakinoScaraTopology({ ...params, [control]: center + deltaDeg });
+        const low = stepMakinoScaraTopology({ ...params, [control]: center - deltaDeg });
+        return (high.tool[coordinate] - low.tool[coordinate]) / (2 * deltaDeg);
+      };
       if (controlKey === "firstLinkAngleDeg" || controlKey === "theta1") {
+        const derivative = centralDifference("firstLinkAngleDeg", 0);
         return {
           metricName: "End-Effector X Coordinate",
           derivativeSymbol: "∂X_tool / ∂θ_1",
-          derivativeValue: -0.0175,
+          derivativeValue: Number(derivative.toFixed(6)),
           derivativeUnit: "norm / deg",
           interpretation:
-            "Planar Cartesian displacement of the assembly tool joint under primary shoulder link rotation.",
+            "Central difference through the selected normalized closed-chain branch; it is a display-coordinate derivative, not metres per degree.",
         };
       }
       if (controlKey === "fourthLinkAngleDeg" || controlKey === "theta4") {
+        const derivative = centralDifference("fourthLinkAngleDeg", 1);
         return {
           metricName: "End-Effector Y Coordinate",
           derivativeSymbol: "∂Y_tool / ∂θ_4",
-          derivativeValue: 0.0175,
+          derivativeValue: Number(derivative.toFixed(6)),
           derivativeUnit: "norm / deg",
           interpretation:
-            "Planar Cartesian displacement of the assembly tool joint under parallel elbow link rotation.",
+            "Central difference through the selected normalized closed-chain branch; it preserves fixed member lengths but makes no SI motion claim.",
+        };
+      }
+      if (controlKey === "toolAttitudeDeg" || controlKey === "toolAttitude") {
+        const pose = stepMakinoScaraTopology(params);
+        return {
+          metricName: "Tool Attitude",
+          derivativeSymbol: "∂φ_tool / ∂φ_command",
+          derivativeValue: pose.topology === "claim-6-y-link" ? 0 : 1,
+          derivativeUnit: "deg / deg",
+          interpretation:
+            pose.topology === "claim-6-y-link"
+              ? "Claim 6 fixes tool 13's relative attitude through Y-link 14, so the independent belt-attitude command is refused in this topology."
+              : "Claims 2/5 add motor 10 and belts 11/12 as a distinct attitude coordinate; the normalized exhibit maps that source-named coordinate directly.",
         };
       }
       break;
@@ -1931,14 +2011,24 @@ export function computeParameterSensitivity(
     }
 
     case "us-3858581-kamen-medication-injection-device": {
-      if (controlKey === "leadScrewTurnFraction") {
+      if (controlKey === "selectedPulseCount") {
         return {
-          metricName: "Normalized Lead-Screw Display Position",
-          derivativeSymbol: "∂q_{plunger} / ∂q_{turn}",
+          metricName: "Counted Stop Coordinate",
+          derivativeSymbol: "∂N_{stop} / ∂N_{selected}",
           derivativeValue: 1,
-          derivativeUnit: "normalized display fraction / normalized turn fraction",
+          derivativeUnit: "screw-turn events / selected event",
           interpretation:
-            "Identity slope of the nonclinical source-topology exhibit. The grant does not provide a screw pitch, reservoir geometry, dose, pressure, or delivery-rate datum, so no clinical or physical output is inferred.",
+            "Each added selector count admits exactly one further striker/switch event before motor-off. Converting that event to displacement still requires the unprinted screw pitch; volume, dose, pressure, and delivery rate remain refused.",
+        };
+      }
+      if (controlKey === "displayTurnsPerSecond") {
+        return {
+          metricName: "Counted Stop Coordinate",
+          derivativeSymbol: "∂N_{stop} / ∂ω_{display}",
+          derivativeValue: 0,
+          derivativeUnit: "screw-turn events / (display turns/s)",
+          interpretation:
+            "Changing the deliberately accelerated museum display speed changes how quickly the animation reaches the stop, not the integer screw-turn count at which counters 114/116 switch the motor off.",
         };
       }
       break;
@@ -1955,12 +2045,12 @@ export function computeParameterSensitivity(
             probe("lateralContactFraction", contact - h).translationOffset) /
           (2 * h);
         return {
-          metricName: "Illustrated Translation",
+          metricName: "Figure 4 Translation Phase",
           derivativeSymbol: "∂q_t / ∂q_c",
           derivativeValue: Number(derivative.toFixed(3)),
           derivativeUnit: "display fraction / contact fraction",
           interpretation:
-            "Slope of the normalized exhibit pose. It is not a force-compliance or dimensional prediction.",
+            "Slope of the normalized Figure 4 sequence coordinate. The phase reaches one before Figure 5 rotation begins; it is not a force-compliance or dimensional prediction.",
         };
       }
       if (controlKey === "axisMismatchFraction") {
@@ -2081,60 +2171,87 @@ export function computeParameterSensitivity(
     }
 
     case "us-4512709-milacron-robot-toolchanger": {
-      if (
-        controlKey === "lockingSlideFraction" ||
-        controlKey === "registrationFraction" ||
-        controlKey === "toolBasePresent" ||
-        controlKey === "claimFourTMember"
-      ) {
+      const state = stepMilacronRobotToolchanger(params);
+      if (controlKey === "registrationFraction") {
         return {
-          metricName: "Locking Slide Capture Progression",
-          derivativeSymbol: "∂State / ∂q",
-          derivativeValue: 1.0,
-          derivativeUnit: "state / fraction",
+          metricName: "Effective Registration Position",
+          derivativeSymbol: "∂q_reg,eff / ∂q_reg,req",
+          derivativeValue: state.apertureAligned && state.toolBasePresent ? 1 : 0,
+          derivativeUnit: "normalized / normalized",
           interpretation:
-            "Deterministic source-bounded registration, aperture admission, and ramp engagement progression.",
+            state.apertureAligned && state.toolBasePresent
+              ? "The aligned aperture admits source-bounded registration motion one-for-one."
+              : "The source sequence interlock blocks registration motion until a base is present and aperture 34 is aligned.",
+        };
+      }
+      if (controlKey === "lockingSlideFraction") {
+        return {
+          metricName: "Normalized Slide Position",
+          derivativeSymbol: "∂q_slide,eff / ∂q_slide,req",
+          derivativeValue: 1,
+          derivativeUnit: "normalized / normalized",
+          interpretation:
+            "The source-bounded prismatic display follows the requested slide coordinate; this is not an SI stroke or force derivative.",
+        };
+      }
+      if (controlKey === "toolBasePresent" || controlKey === "claimFourTMember") {
+        return {
+          metricName: "Discrete Topology Selection",
+          derivativeSymbol: "Δstate / Δtoggle",
+          derivativeValue: controlKey === "toolBasePresent" ? 1 : state.toolRetained ? 1 : 0,
+          derivativeUnit: "Boolean state / toggle",
+          interpretation:
+            "This is a finite Boolean topology change, not a continuous derivative or a quantitative mechanics result.",
         };
       }
       break;
     }
 
     case "us-4575330-hull-stereolithography": {
-      const controls = readHullStereolithographyControls(params);
-      if (controlKey === "laserPowerMw") {
-        // dC_d / dP_L = D_p / P_L
-        const dCd_dP = controls.penetrationDepthUm / Math.max(1, controls.laserPowerMw);
+      const state = stepHullStereolithographySi(readHullStereolithographyControls(params));
+      if (controlKey === "scanXFraction" || controlKey === "scanZFraction") {
         return {
-          metricName: "Polymerization Curing Depth",
-          derivativeSymbol: "∂C_d / ∂P_L",
-          derivativeValue: Number(dCd_dP.toFixed(3)),
-          derivativeUnit: "µm / mW",
+          metricName: controlKey === "scanXFraction" ? "Normalized Spot X" : "Normalized Spot Z",
+          derivativeSymbol:
+            controlKey === "scanXFraction"
+              ? "∂q_{x,\\mathrm{eff}} / ∂q_{x,\\mathrm{req}}"
+              : "∂q_{z,\\mathrm{eff}} / ∂q_{z,\\mathrm{req}}",
+          derivativeValue: 1,
+          derivativeUnit: "normalized / normalized",
           interpretation:
-            "Logarithmic sensitivity from Beer-Lambert law: increasing laser power expands cure depth with diminishing returns (scaling inversely with operating power P_L).",
+            "The source-bounded plotter display follows the reader coordinate one-for-one. The grant supplies no physical carriage travel, scan velocity, or dwell, so this is not an SI motion derivative.",
         };
       }
-      if (controlKey === "laserScanSpeedMmS") {
-        // dC_d / dv_s = -D_p / v_s
-        const dCd_dVs = -controls.penetrationDepthUm / Math.max(1, controls.laserScanSpeedMmS);
+      if (controlKey === "recoatExcursionFraction") {
         return {
-          metricName: "Polymerization Curing Depth",
-          derivativeSymbol: "∂C_d / ∂v_s",
-          derivativeValue: Number(dCd_dVs.toFixed(3)),
-          derivativeUnit: "µm / (mm/s)",
+          metricName: "Normalized Platform Excursion",
+          derivativeSymbol: "∂q_{platform,eff} / ∂q_{platform,req}",
+          derivativeValue: 1,
+          derivativeUnit: "normalized / normalized",
           interpretation:
-            "Increasing galvanometer vector scan velocity reduces dwell time, exponentially thinning the cured cross-sectional lamina.",
+            "The supported platform follows the normalized reader excursion. No millimetre stroke, speed, load, or actuator force is inferred from the grant.",
         };
       }
-      if (controlKey === "layerThicknessUm") {
-        const tel = stepHullStereolithographySi(controls);
-        const dAdhesion_dZ = -tel.cureDepthUm / Math.max(1, controls.layerThicknessUm) ** 2;
+      if (controlKey === "shutterRequestedOpen" || controlKey === "displayLaminaCount") {
         return {
-          metricName: "Interlayer Adhesion Ratio",
-          derivativeSymbol: "∂(C_d / Δz) / ∂Δz",
-          derivativeValue: Number(dAdhesion_dZ.toFixed(4)),
-          derivativeUnit: "1 / µm",
+          metricName:
+            controlKey === "shutterRequestedOpen"
+              ? "Discrete Shutter / Sequence State"
+              : "Illustrative Lamina Topology",
+          derivativeSymbol: "Δstate / Δreader control",
+          derivativeValue:
+            controlKey === "shutterRequestedOpen"
+              ? state.platformDepthFraction <= 0.02
+                ? 1
+                : 0
+              : 1,
+          derivativeUnit: "discrete display state",
           interpretation:
-            "Increasing layer step height reduces relative overlap cure margin; step height must remain below cure depth C_d to prevent catastrophic part delamination.",
+            controlKey === "shutterRequestedOpen"
+              ? state.platformDepthFraction <= 0.02
+                ? "At the working position, the electronic shutter request changes the displayed source state. This finite toggle is not a radiometric sensitivity."
+                : "During the recoating excursion, the sequence guard holds the effective shutter closed. This finite interlock is not a cure-kinetics result."
+              : "The control changes how many touching illustrative cross-sections are shown; it does not claim a printed layer count, thickness, adhesion, or build time.",
         };
       }
       break;
@@ -2237,6 +2354,16 @@ export function computeParameterSensitivity(
           derivativeUnit: "retained fraction / fixture-change fraction",
           interpretation:
             "The shared reader state defines retained fraction as one minus the source-described finger-change fraction. It does not assert an automatic change time or gripping outcome.",
+        };
+      }
+      if (controlKey === "transverseOffsetFraction") {
+        return {
+          metricName: "Claim 16 Transverse Coordinate",
+          derivativeSymbol: "∂q_{trans}/∂u_{trans}",
+          derivativeValue: 1,
+          derivativeUnit: "normalized coordinate / control fraction",
+          interpretation:
+            "Identity slope for the source-described reciprocal transverse stage. US 4,765,668 prints no connector stroke, cylinder dimensions, pressure, load, or speed, so this remains a normalized topology sensitivity rather than SI travel or actuator performance.",
         };
       }
       break;

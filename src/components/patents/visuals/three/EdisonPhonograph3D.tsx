@@ -372,6 +372,7 @@ export function EdisonPhonograph3D() {
             </div>
             <input
               type="range"
+              aria-label="Illustrative clock-work rate"
               min="40"
               max="140"
               step="5"
@@ -392,6 +393,7 @@ export function EdisonPhonograph3D() {
             </div>
             <input
               type="range"
+              aria-label="Illustrative diaphragm-excitation level"
               min="40"
               max="100"
               step="5"

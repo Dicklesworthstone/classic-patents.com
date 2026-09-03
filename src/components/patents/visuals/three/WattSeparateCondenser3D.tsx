@@ -18,22 +18,13 @@ import { type KernelChip, StudioKernelChips, useResponsiveStudioHud } from "./St
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+import {
+  type WattSeparateCondenserCameraPreset,
+  wattSeparateCondenserCameraForViewport,
+} from "./wattSeparateCondenserCamera";
 import { buildWattSeparateCondenserModel } from "./wattSeparateCondenserModel";
 
 const EXHIBIT_ID = "gb-913-watt-separate-condenser";
-
-type CameraPreset = "iso" | "cylinder" | "condenser" | "beam" | "boiler";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [9, 7, 12], target: [0, 3.5, 0] },
-  cylinder: { pos: [-2.5, 3.4, 5.2], target: [-2.5, 2.6, 0] },
-  condenser: { pos: [-2.5, 1.8, 4.2], target: [-2.5, 0.8, 0] },
-  beam: { pos: [0.2, 7.2, 6.5], target: [0, 4.8, 0] },
-  boiler: { pos: [-5.5, 2.8, 5.0], target: [-5.5, 1.5, 0] },
-};
 
 export function WattSeparateCondenser3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -41,13 +32,16 @@ export function WattSeparateCondenser3D() {
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [cutaway, setCutaway] = useState(false);
   const [showCallouts, setShowCallouts] = useState(true);
-  const [activePreset, setActivePreset] = useState<CameraPreset>("iso");
+  const [activePreset, setActivePreset] = useState<WattSeparateCondenserCameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
-  const handlePresetChange = (preset: CameraPreset) => {
+  const handlePresetChange = (preset: WattSeparateCondenserCameraPreset) => {
     setActivePreset(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = wattSeparateCondenserCameraForViewport(
+      preset,
+      containerRef.current?.clientWidth ?? 1024,
+    );
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -119,12 +113,12 @@ export function WattSeparateCondenser3D() {
     return unregister;
   }, [live]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The persistent WebGL scene consumes the stable layout-effect-synchronized control ref so toggles do not rebuild and flash the studio.
+  // The persistent WebGL scene consumes the stable layout-effect-synchronized control ref so toggles do not rebuild and flash the studio.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = wattSeparateCondenserCameraForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -165,7 +159,7 @@ export function WattSeparateCondenser3D() {
       studio.dispose();
       studioRef.current = null;
     };
-  }, []);
+  }, [live]);
 
   const chips: KernelChip[] = [
     {
@@ -338,6 +332,7 @@ export function WattSeparateCondenser3D() {
             </div>
             <input
               type="range"
+              aria-label="Condenser temperature"
               min="20"
               max="60"
               step="1"
@@ -356,6 +351,7 @@ export function WattSeparateCondenser3D() {
             </div>
             <input
               type="range"
+              aria-label="Stroke rate"
               min="10"
               max="35"
               step="1"

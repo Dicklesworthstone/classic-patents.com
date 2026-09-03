@@ -444,6 +444,7 @@ export function CarlsonElectrophotographySim({
           </div>
           <input
             type="range"
+            aria-label="Corona charging voltage in kilovolts"
             min={4.0}
             max={8.0}
             step={0.25}
@@ -466,6 +467,7 @@ export function CarlsonElectrophotographySim({
           </div>
           <input
             type="range"
+            aria-label="Optical exposure in lux seconds"
             min={0}
             max={30}
             step={1}
@@ -486,6 +488,7 @@ export function CarlsonElectrophotographySim({
           </div>
           <input
             type="range"
+            aria-label="Selenium photoconductor thickness in micrometers"
             min={10}
             max={60}
             step={5}
@@ -508,6 +511,7 @@ export function CarlsonElectrophotographySim({
           </div>
           <input
             type="range"
+            aria-label="Fuser temperature in degrees Celsius"
             min={120}
             max={220}
             step={5}

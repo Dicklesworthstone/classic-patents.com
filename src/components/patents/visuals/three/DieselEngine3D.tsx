@@ -16,6 +16,7 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import { type DieselEngineCameraPreset, dieselCameraPresetForViewport } from "./dieselEngineCamera";
 import {
   buildDieselEngineModel,
   type DieselEngineMaterials,
@@ -27,20 +28,6 @@ import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset = "iso" | "cylinder" | "injector" | "crosshead" | "compressor" | "flywheel";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [7.5, 3.2, 7.5], target: [0, 0.4, 0] },
-  cylinder: { pos: [0.1, 2.4, 3.4], target: [0, 2.0, 0] },
-  injector: { pos: [0.1, 4.4, 2.2], target: [0, 3.8, 0] },
-  crosshead: { pos: [0.1, -0.4, 3.0], target: [0, -0.6, 0] },
-  compressor: { pos: [-3.6, 0.6, -1.8], target: [-1.0, -0.2, -0.8] },
-  flywheel: { pos: [4.5, -0.8, 3.8], target: [0, -1.6, 1.6] },
-};
 
 const BAR_TO_ATM = 0.986923;
 
@@ -76,7 +63,7 @@ export function DieselEngine3D() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [cutawayMode, setCutawayMode] = useState<boolean>(true);
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<DieselEngineCameraPreset>("iso");
   const { isMuted, toggleMute } = usePatentAudio();
 
   const peakPressureBar = diesel.pCompBar;
@@ -141,7 +128,7 @@ export function DieselEngine3D() {
     tCompressionC: peakTempC,
   });
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The transport updater reads a stable layout-effect-synchronized kernel snapshot; depending on `.current` would repeatedly unregister and restart the engine.
+  // The transport updater reads a stable layout-effect-synchronized kernel snapshot; depending on `.current` would repeatedly unregister and restart the engine.
   useEffect(() => {
     const integrate: TapeUpdater = (prev, dt) => {
       if (!live.current.isPlaying) return null;
@@ -186,17 +173,18 @@ export function DieselEngine3D() {
       "TS_FALLBACK",
     );
     return unregister;
-  }, [live]);
+  }, [live, kernelSnapshotRef]);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = dieselCameraPresetForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [7.5, 3.2, 7.5],
-      targetPos: [0, 0.4, 0],
-      fov: 40,
+      cameraPos: iso.pos,
+      targetPos: iso.target,
+      fov: 44,
       enableClouds: true,
       enableFloorGrid: true,
     });
@@ -207,6 +195,7 @@ export function DieselEngine3D() {
     const { root, nodes, materials } = buildDieselEngineModel();
     nodesRef.current = nodes;
     matsRef.current = materials;
+    updateDieselEngineKinematics(nodes, 0, true);
     scene.add(root);
 
     // --- RENDER LOOP: pure consumer of the shared transport tape ---
@@ -253,9 +242,9 @@ export function DieselEngine3D() {
     };
   }, [live]);
 
-  const setCameraView = (view: CameraPreset) => {
+  const setCameraView = (view: DieselEngineCameraPreset) => {
     setActiveCamera(view);
-    const cfg = CAMERA_PRESETS[view];
+    const cfg = dieselCameraPresetForViewport(view, containerRef.current?.clientWidth ?? 1000);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
   const applyCameraPreset = setCameraView;
@@ -280,7 +269,7 @@ export function DieselEngine3D() {
                 ["crosshead", "Crosshead"],
                 ["compressor", "Compressor"],
                 ["flywheel", "Flywheel"],
-              ] as [CameraPreset, string][]
+              ] as [DieselEngineCameraPreset, string][]
             ).map(([preset, label]) => (
               <button
                 key={preset}

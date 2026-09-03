@@ -108,6 +108,17 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    const closeOnBackdropClick = (event: MouseEvent) => {
+      // Native <dialog> backdrop clicks target the dialog itself.
+      if (event.target === dialog) onClose();
+    };
+    dialog.addEventListener("click", closeOnBackdropClick);
+    return () => dialog.removeEventListener("click", closeOnBackdropClick);
+  }, [onClose]);
+
   const filteredGlossary = GLOSSARY_TERMS.filter(
     (g) =>
       g.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -163,13 +174,10 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
   return (
     <dialog
       ref={dialogRef}
+      aria-modal="true"
       aria-labelledby="glossary-modal-title"
       className="fixed inset-0 z-50 m-auto w-[min(42rem,calc(100vw-2rem))] max-h-[85dvh] p-0 bg-transparent border-none open:flex open:items-center open:justify-center backdrop:bg-ink-950/80 backdrop:backdrop-blur-sm"
       onClose={onClose}
-      onClick={(e) => {
-        // Clicks on the native <dialog> backdrop land on the dialog element.
-        if (e.target === dialogRef.current) onClose();
-      }}
       onKeyDown={(e) => {
         if (e.key === "Escape") onClose();
       }}
@@ -189,6 +197,7 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
           <button
             aria-label="Close"
             type="button"
+            onClick={onClose}
             className="p-1.5 min-h-11 min-w-11 flex items-center justify-center rounded-lg text-ink-500 hover:text-ink-800 dark:hover:text-ink-200 hover:bg-parchment-200 dark:hover:bg-ink-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />

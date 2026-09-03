@@ -1,13 +1,16 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { stepTownesLaser } from "@/physics/catalogKernels";
-import { articulateTownesLaserModel, buildTownesLaserModel } from "./townesLaserModel";
+import {
+  stepTownesMaserTopology,
+  TOWNES_MASER_DEFAULT_CONTROLS,
+} from "@/physics/townesMaserKernel";
+import { buildTownesMaserSystemModel } from "./townesMaserSystemModel";
 
 describe("US 2,929,922 Arthur L. Schawlow & Charles H. Townes Optical Maser / Laser Visual Boundary", () => {
   const rootDir = process.cwd();
-  const modelFile = join(rootDir, "src/components/patents/visuals/three/townesLaserModel.ts");
-  const studioFile = join(rootDir, "src/components/patents/visuals/three/TownesLaser3D.tsx");
+  const modelFile = join(rootDir, "src/components/patents/visuals/three/townesMaserSystemModel.ts");
+  const studioFile = join(rootDir, "src/components/patents/visuals/three/TownesMaserSystem3D.tsx");
 
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
     const modelSource = readFileSync(modelFile, "utf-8");
@@ -16,10 +19,11 @@ describe("US 2,929,922 Arthur L. Schawlow & Charles H. Townes Optical Maser / La
     expect(modelSource).not.toContain(".gltf");
     expect(modelSource).not.toContain(".glb");
     expect(modelSource).not.toContain("GLTFLoader");
-    expect(modelSource).not.toContain("time * 6.0");
-    expect(modelSource).not.toContain("time * 12.0");
-    expect(modelSource).toContain("pumpShimmerOmegaRadPerS");
-    expect(studioSource).toContain("beamShimmerOmegaRadPerS");
+    expect(modelSource).toContain("generator 10");
+    expect(modelSource).toContain("modulated amplifier 12");
+    expect(modelSource).toContain("detector 13");
+    expect(modelSource).toContain("absorptive sheet 25 with aperture 24");
+    expect(modelSource).toContain("longitudinal-field coil 32");
 
     expect(studioSource).not.toContain(".gltf");
     expect(studioSource).not.toContain(".glb");
@@ -27,8 +31,11 @@ describe("US 2,929,922 Arthur L. Schawlow & Charles H. Townes Optical Maser / La
     expect(studioSource).toContain('usePatentPhysics("us-2929922-townes-laser")');
     expect(studioSource).toContain('from "./useLiveSimParams"');
     expect(studioSource).toContain("createThreeStudioScene");
+    expect(studioSource).toContain("isRefused: true");
+    expect(studioSource).toContain('value: "refused"');
     expect(studioSource).not.toContain("OrbitControls");
-    expect(studioSource).not.toContain("[cameraPreset, live]");
+    expect(studioSource).not.toContain("laserOutputPowerWatts");
+    expect(studioSource).not.toContain("thresholdGainPerCm");
     const simSource = readFileSync(
       join(rootDir, "src/components/patents/visuals/TownesLaserSim.tsx"),
       "utf-8",
@@ -44,64 +51,37 @@ describe("US 2,929,922 Arthur L. Schawlow & Charles H. Townes Optical Maser / La
     expect(studioSource).not.toContain("performance.now");
   });
 
-  test("computes genuine Schawlow-Townes threshold gain, population inversion, and beam divergence in SI units", () => {
-    // Below threshold (P = 80 W < 120 W)
-    const below = stepTownesLaser({ pumpPowerWatts: 80 });
-    expect(below.isLasing).toBe(false);
-    expect(below.laserOutputPowerWatts).toBe(0);
-    expect(below.thresholdGainPerCm).toBeGreaterThan(0.005);
-    expect(below.beamShimmerOmegaRadPerS).toBe(0);
-    expect(below.pumpShimmerOmegaRadPerS).toBe(6);
-
-    // Above threshold (P = 400 W)
-    const above = stepTownesLaser({
-      pumpPowerWatts: 400,
-      cavityLengthCm: 25,
-      mirror2ReflectivityPct: 94,
-      beamDiameterMm: 8,
-    });
-    expect(above.isLasing).toBe(true);
-    expect(above.laserOutputPowerWatts).toBeGreaterThan(15);
-    expect(above.intraCavityPowerWatts).toBeGreaterThan(above.laserOutputPowerWatts);
-    expect(above.beamDivergenceMrad).toBeGreaterThan(0.2);
-    expect(above.beamDivergenceMrad).toBeLessThan(2.0);
-    expect(above.fresnelNumber).toBeGreaterThan(0.1);
-    expect(above.beamShimmerOmegaRadPerS).toBe(12);
+  test("computes only source-supported geometry and exact reflectivity bookkeeping", () => {
+    const state = stepTownesMaserTopology(TOWNES_MASER_DEFAULT_CONTROLS);
+    expect(state.chamberAspectRatio).toBe(10);
+    expect(state.readerRoundTripReflectivityFraction).toBeCloseTo(0.97 ** 2, 6);
+    expect(state.signalPathComplete).toBe(true);
+    expect(state.quantitativeOpticalPerformanceAvailable).toBe(false);
+    expect(state.refusal.refused).toBe(true);
   });
 
-  test("builds and articulates procedural base rail, mirror mounts, laser tube, helical flashlamp, and coherent beams", () => {
-    const nodes = buildTownesLaserModel();
-    expect(nodes.root).toBeDefined();
-    expect(nodes.baseRail).toBeDefined();
-    expect(nodes.rearMirrorMount).toBeDefined();
-    expect(nodes.frontMirrorMount).toBeDefined();
-    expect(nodes.laserTube).toBeDefined();
-    expect(nodes.gainCore).toBeDefined();
-    expect(nodes.helicalFlashlamp).toBeDefined();
-    expect(nodes.intraCavityBeam).toBeDefined();
-    expect(nodes.outputBeam).toBeDefined();
-    expect(nodes.detectorHousing).toBeDefined();
+  test("builds one grounded, connected generator-to-amplifier-to-detector apparatus", () => {
+    const model = buildTownesMaserSystemModel();
+    expect(model.root.name).toContain("connected maser communications system");
+    expect(model.generator.name).toBe("generator 10");
+    expect(model.amplifier.name).toBe("modulated amplifier 12");
+    expect(model.detector.name).toContain("detector 13");
+    expect(model.modeSelector.name).toContain("23–26");
+    expect(model.generatorPumpLamps).toHaveLength(4);
+    expect(model.modulationCoils).toHaveLength(5);
 
-    // Articulate above threshold
-    const above = stepTownesLaser({ pumpPowerWatts: 500 });
-    articulateTownesLaserModel(
-      nodes,
-      {
-        pumpPowerWatts: 500,
-        laserOutputPowerWatts: 120,
-        intraCavityPowerWatts: 1800,
-        isLasing: true,
-        pumpShimmerOmegaRadPerS: above.pumpShimmerOmegaRadPerS,
-        beamShimmerOmegaRadPerS: above.beamShimmerOmegaRadPerS,
-      },
-      1.5,
-    );
+    const active = stepTownesMaserTopology(TOWNES_MASER_DEFAULT_CONTROLS);
+    model.update(active, 1.5);
+    expect(model.generatorBeam.visible).toBe(true);
+    expect(model.amplifierBeam.visible).toBe(true);
+    expect(model.detectorBeam.visible).toBe(true);
 
-    // Materials should be valid and disposed cleanly
-    expect(nodes.materials.length).toBeGreaterThan(6);
-    for (const m of nodes.materials) {
-      m.dispose();
-    }
+    const withheld = stepTownesMaserTopology({ claim1PathPresent: 0 });
+    model.update(withheld, 2);
+    expect(model.generatorBeam.visible).toBe(false);
+    expect(model.amplifierBeam.visible).toBe(false);
+    expect(model.detectorBeam.visible).toBe(false);
+    model.dispose();
   });
 });
 

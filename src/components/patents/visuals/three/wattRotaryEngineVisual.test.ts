@@ -26,13 +26,23 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
     expect(studioSource).toContain('id="watt-camera-view"');
     expect(studioSource).toContain('className="absolute top-14 right-3 sm:top-4 sm:right-4');
     expect(studioSource).toContain("cameraPresetForViewport");
+    // The 320px shell must pull the full flywheel/base footprint farther back
+    // than the 375px shell; this protects the narrow-phone containment fix.
+    expect(studioSource).toContain("viewportWidth < 360 ? 2.15 : 1.55");
+    expect(studioSource).toContain("overview: { pos: [4.8, 4.2, -5.8]");
+    expect(studioSource).toContain('"gear-mesh": { pos: [3.25, 1.45, -3]');
+    expect(studioSource).toContain("const [showCallouts, setShowCallouts] = useState(false);");
+    expect(studioSource).toContain("hidden lg:flex");
+    expect(studioSource).toContain("lg:hidden");
     expect(studioSource).not.toContain("typeof window");
     expect(studioSource).not.toContain("isPlayingRef.current =");
     expect(studioSource).not.toContain("cutawayRef.current =");
     expect(studioSource).not.toContain("showCalloutsRef.current =");
     expect(studioSource).toContain("live.current.isPlaying");
     expect(studioSource).toContain("live.current.cutaway");
+    expect(studioSource).toContain("live.current.gearInspection");
     expect(studioSource).toContain("live.current.showCallouts");
+    expect(studioSource).toContain("flywheel and labels temporarily hidden");
   });
 
   test("builds complete procedural node graph with all authentic engine assemblies", () => {
@@ -68,6 +78,21 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
     model.setCutaway(false);
     expect(model.cylinderShellMesh.visible).toBe(true);
     expect(model.cylinderCutawayMesh.visible).toBe(false);
+
+    model.dispose();
+  });
+
+  test("uses a truthful gear-inspection presentation without changing the gear law", () => {
+    const model = buildWattRotaryEngineModel();
+
+    expect(model.flywheelGroup.visible).toBe(true);
+    model.setGearInspection(true);
+    expect(model.flywheelGroup.visible).toBe(false);
+    expect(model.calloutSprites.every((sprite) => !sprite.visible)).toBe(true);
+
+    model.setGearInspection(false);
+    expect(model.flywheelGroup.visible).toBe(true);
+    expect(model.calloutSprites.every((sprite) => sprite.visible)).toBe(true);
 
     model.dispose();
   });
@@ -155,6 +180,9 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
     );
     expect(svgSource).toContain("const sunAngleDeg = -telemetry.sunShaftAngleDeg;");
     expect(svgSource).toContain("const planetAngleDeg = -telemetry.planetBodyAngleDeg;");
+    expect(svgSource).toContain("const gearMeshOrbitRadiusPx = Math.min(");
+    expect(svgSource).toContain("const maximumGearRadiusFraction =");
+    expect(svgSource).toContain("r={gearMeshPlanetRadiusPx}");
     expect(svgSource).not.toContain("INITIAL_WATT_CONNECTING_ROD_ANGLE_RAD");
 
     model.dispose();

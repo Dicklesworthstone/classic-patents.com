@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import { createBaerOdysseyTransportUpdater, readBaerControls } from "@/physics/baerOdysseyKernel";
 import {
+  createBoyleSmithCcdTransportUpdater,
+  getBoyleSmithCcdTapeFrame,
+  readBoyleSmithCcdSourceControls,
+} from "@/physics/boyleSmithCcdKernel";
+import {
   createEInkTransportUpdater,
   getEInkTapeFrame,
   readEInkRuntimeControls,
@@ -12,6 +17,11 @@ import {
   getFarnsworthTvTapeFrame,
   readFarnsworthTvControls,
 } from "@/physics/farnsworthTvKernel";
+import {
+  createKamenInjectionTransportUpdater,
+  getKamenInjectionTapeFrame,
+  readKamenInjectionControls,
+} from "@/physics/kamenInjectionKernel";
 import {
   createLamarrTransportUpdater,
   getLamarrTapeFrame,
@@ -47,14 +57,14 @@ export function BaerOdysseyPhysicsRuntimeOwner({ patentId }: { patentId: string 
   const liveParams = useLiveSimParams(effectiveParams);
   const { frame } = useFrankenSimPhysics(patentId);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The registered bus updater must remain mounted while this layout-effect-synchronized ref receives the latest controls; depending on current values would reset its transport tape.
+  // The registered bus updater remains mounted while this layout-effect-synchronized ref receives the latest controls.
   useEffect(() => {
     return globalTransportBus.registerUpdater(
       patentId,
       createBaerOdysseyTransportUpdater(() => readBaerControls(liveParams.current as any)),
       "TS_FALLBACK",
     );
-  }, [patentId]);
+  }, [patentId, liveParams]);
 
   return (
     <span
@@ -70,6 +80,73 @@ export function BaerOdysseyPhysicsRuntimeOwner({ patentId }: { patentId: string 
   );
 }
 
+/** Stable owner for the source-bounded Figure 2/3 three-phase transfer tape. */
+export function BoyleSmithCcdPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
+  const mount = useRuntimeOwnerMount();
+  const { effectiveParams } = usePatentPhysics(patentId);
+  const liveParams = useLiveSimParams(effectiveParams);
+  const { frame } = useFrankenSimPhysics(patentId);
+
+  useEffect(() => {
+    return globalTransportBus.registerUpdater(
+      patentId,
+      createBoyleSmithCcdTransportUpdater(() =>
+        readBoyleSmithCcdSourceControls(liveParams.current),
+      ),
+      "TS_FALLBACK",
+    );
+  }, [patentId, liveParams]);
+
+  const tape = getBoyleSmithCcdTapeFrame();
+  return (
+    <span
+      hidden
+      data-testid="patent-physics-runtime-owner"
+      data-patent-id={patentId}
+      data-runtime-tick={frame.tick}
+      data-runtime-owner-mount={mount}
+      data-runtime-digest={frame.digest}
+      data-active-phase={tape?.metrics.activePhase ?? ""}
+      data-packet-coordinate={tape?.state.packetCoordinateGates ?? ""}
+      data-transfer-allowed={tape?.metrics.packetMotionAllowed ?? ""}
+    />
+  );
+}
+
+/** Stable owner for the source-described screw, switch, counter, and timer sequence. */
+export function KamenInjectionPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
+  const mount = useRuntimeOwnerMount();
+  const { effectiveParams } = usePatentPhysics(patentId);
+  const liveParams = useLiveSimParams(effectiveParams);
+  const { frame } = useFrankenSimPhysics(patentId);
+
+  useEffect(() => {
+    return globalTransportBus.registerUpdater(
+      patentId,
+      createKamenInjectionTransportUpdater(() => readKamenInjectionControls(liveParams.current)),
+      "TS_FALLBACK",
+    );
+  }, [patentId, liveParams]);
+
+  const tape = getKamenInjectionTapeFrame();
+  return (
+    <span
+      hidden
+      data-testid="patent-physics-runtime-owner"
+      data-patent-id={patentId}
+      data-runtime-tick={frame.tick}
+      data-runtime-owner-mount={mount}
+      data-runtime-digest={frame.digest}
+      data-source-phase={tape?.metrics.phase ?? ""}
+      data-motor-rotor-turns={tape?.state.motorRotorTurns ?? ""}
+      data-lead-screw-turns={tape?.state.leadScrewTurns ?? ""}
+      data-cycle-pulse-count={tape?.metrics.cyclePulseCount ?? ""}
+      data-follower-position={tape?.metrics.followerPositionNormalized ?? ""}
+      data-clutch-engaged={tape?.metrics.clutchEngaged ?? ""}
+    />
+  );
+}
+
 /** Stable owner for the image-dissector raster and electron-optics state tape. */
 export function FarnsworthTvPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
   const mount = useRuntimeOwnerMount();
@@ -77,14 +154,14 @@ export function FarnsworthTvPhysicsRuntimeOwner({ patentId }: { patentId: string
   const liveParams = useLiveSimParams(effectiveParams);
   const { frame } = useFrankenSimPhysics(patentId);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The registered bus updater must remain mounted while this layout-effect-synchronized ref receives the latest controls; depending on current values would reset its transport tape.
+  // The registered bus updater remains mounted while this layout-effect-synchronized ref receives the latest controls.
   useEffect(() => {
     return globalTransportBus.registerUpdater(
       patentId,
       createFarnsworthTvTransportUpdater(() => readFarnsworthTvControls(liveParams.current as any)),
       "TS_FALLBACK",
     );
-  }, [patentId]);
+  }, [patentId, liveParams]);
   const running = getFarnsworthTvTapeFrame()?.controls.running;
 
   return (
@@ -111,7 +188,7 @@ export function EInkPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
   const liveParams = useLiveSimParams(effectiveParams);
   const { frame } = useFrankenSimPhysics(patentId);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The registered bus updater must remain mounted while this layout-effect-synchronized ref receives the latest controls; depending on current values would reset its transport tape.
+  // The registered bus updater remains mounted while this layout-effect-synchronized ref receives the latest controls.
   useEffect(() => {
     return globalTransportBus.registerUpdater(
       patentId,
@@ -123,7 +200,7 @@ export function EInkPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
       ),
       "TS_FALLBACK",
     );
-  }, [patentId]);
+  }, [patentId, liveParams]);
 
   const tape = frame.telemetry.em;
   const running = getEInkTapeFrame()?.controls.running;
@@ -149,14 +226,14 @@ export function LamarrPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
   const liveParams = useLiveSimParams(effectiveParams);
   const { frame } = useFrankenSimPhysics(patentId);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The registered bus updater must remain mounted while this layout-effect-synchronized ref receives the latest controls; depending on current values would reset its transport tape.
+  // The registered bus updater remains mounted while this layout-effect-synchronized ref receives the latest controls.
   useEffect(() => {
     return globalTransportBus.registerUpdater(
       patentId,
       createLamarrTransportUpdater(() => readLamarrRuntimeControls(liveParams.current)),
       "TS_FALLBACK",
     );
-  }, [patentId]);
+  }, [patentId, liveParams]);
 
   const state = getLamarrTapeFrame();
   return (
@@ -182,14 +259,14 @@ export function MarconiPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
   const liveParams = useLiveSimParams(effectiveParams);
   const { frame } = useFrankenSimPhysics(patentId);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The registered bus updater must remain mounted while this layout-effect-synchronized ref receives the latest controls; depending on current values would reset its transport tape.
+  // The registered bus updater remains mounted while this layout-effect-synchronized ref receives the latest controls.
   useEffect(() => {
     return globalTransportBus.registerUpdater(
       patentId,
       createMarconiTransportUpdater(() => readMarconiRuntimeControls(liveParams.current)),
       "TS_FALLBACK",
     );
-  }, [patentId]);
+  }, [patentId, liveParams]);
 
   const state = getMarconiTapeFrame();
   return (
@@ -216,14 +293,14 @@ export function MetcalfeEthernetPhysicsRuntimeOwner({ patentId }: { patentId: st
   const liveParams = useLiveSimParams(effectiveParams);
   const { frame } = useFrankenSimPhysics(patentId);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The registered bus updater must remain mounted while this layout-effect-synchronized ref receives the latest controls; depending on current values would reset its transport tape.
+  // The registered bus updater remains mounted while this layout-effect-synchronized ref receives the latest controls.
   useEffect(() => {
     return globalTransportBus.registerUpdater(
       patentId,
       createMetcalfeEthernetTransportUpdater(() => readEthernetControls(liveParams.current as any)),
       "TS_FALLBACK",
     );
-  }, [patentId]);
+  }, [patentId, liveParams]);
 
   return (
     <span

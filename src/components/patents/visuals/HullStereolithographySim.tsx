@@ -1,7 +1,10 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import {
+  HULL_FRANKENSIM_ELEVATOR_OWNER,
+  HULL_FRANKENSIM_OPTICAL_ATTENUATION_OWNER,
   HULL_SLA_DEFAULT_CONTROLS,
   type HullStereolithographyControls,
   readHullStereolithographyControls,
@@ -9,636 +12,550 @@ import {
 } from "@/physics/hullStereolithographyKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "./PortHamiltonianEnergyStrip";
 
 const PATENT_ID = "us-4575330-hull-stereolithography";
 
+type HullView = "apparatus" | "sequence" | "source";
+
+const HULL_SOURCE_SEQUENCE = [
+  [
+    "10",
+    "Form one cross-sectional lamina",
+    "Apply the prescribed pattern only at the selected two-dimensional interface.",
+  ],
+  [
+    "11",
+    "Integrate it with the previous lamina",
+    "The new solid adheres to the already-supported object.",
+  ],
+  [
+    "12",
+    "Contain the responsive fluid",
+    "Liquid 22 remains in container 21 with a designated working surface 23.",
+  ],
+  [
+    "13",
+    "Apply stimulation as a graphic pattern",
+    "Direct the prescribed pattern at working surface 23 so the fluid forms one thin individual lamina.",
+  ],
+  [
+    "14",
+    "Superimpose successive adjacent laminae",
+    "Place each newly formed lamina against the preceding one so the integrated stack defines object 30.",
+  ],
+] as const;
+
+const HULL_PREFERRED_SOURCE_CARD = [
+  ["Lamp electrical rating", "350 W mercury short-arc lamp"],
+  ["Fiber bundle", "1 mm diameter · 1 m long · UV transmitting"],
+  ["Switching", "electronically controlled shutter"],
+  ["Focus", "quartz lens · spot somewhat under 1 mm"],
+  ["Surface irradiance", "about 1 W/cm² long-wave UV"],
+  ["Working liquid", "Potting Compound 363 modified acrylate"],
+  ["Positioning/control", "HP 9872 plotter · HP 3497A controller"],
+] as const;
+
 export function HullStereolithographySim() {
-  const { params, updateParam } = usePatentPhysics(PATENT_ID);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
+  const { effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(PATENT_ID);
+  const [activeView, setActiveView] = useState<HullView>("apparatus");
+  const baseId = useId();
   const controls = useMemo(
     () =>
       readHullStereolithographyControls({
         ...HULL_SLA_DEFAULT_CONTROLS,
-        ...params,
+        ...effectiveParams,
       }),
-    [params],
+    [effectiveParams],
   );
-  const [activeTab, setActiveTab] = useState<"vat" | "profile" | "kinetics">("vat");
-  const baseId = useId();
-
-  const tel = stepHullStereolithographySi(controls);
+  const state = useMemo(() => stepHullStereolithographySi(controls), [controls]);
 
   const update = <K extends keyof HullStereolithographyControls>(
     key: K,
     value: HullStereolithographyControls[K],
-  ) => {
-    updateParam(key, value as number);
-  };
+  ) => updateParam(key, value);
+
+  const lensX = 400 + state.spotXFraction * 145;
+  const platformY = 320 + state.platformDepthFraction * 46;
+  const displayedLaminae = Math.min(9, state.visibleLaminaCount);
 
   return (
-    <div className="flex flex-col gap-6 rounded-2xl border border-amber-900/30 bg-stone-950 p-6 text-stone-200 shadow-2xl backdrop-blur-md">
-      {/* Title & Masthead */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-amber-900/40 pb-4">
+    <div
+      className="flex scroll-mt-24 flex-col gap-5 rounded-2xl border border-amber-900/30 bg-stone-950 p-3 text-stone-200 shadow-2xl [&_button]:scroll-mt-24 [&_input]:scroll-mt-24 sm:p-6"
+      data-testid="hull-stereolithography-two"
+      data-hull-shutter-effective={state.shutterOpen ? "open" : "closed"}
+      data-hull-shutter-interlock={state.shutterInterlockActive ? "active" : "clear"}
+      data-hull-platform-depth={state.platformDepthFraction.toFixed(3)}
+      data-hull-lamina-count={state.visibleLaminaCount}
+    >
+      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-amber-900/40 pb-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="rounded bg-amber-500/20 px-2.5 py-0.5 font-mono text-xs font-semibold text-amber-300">
-              US 4,575,330
-            </span>
-            <span className="text-xs uppercase tracking-widest text-stone-400">
-              Apparatus for Production of Three-Dimensional Objects by Stereolithography
-            </span>
+          <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-400">
+            US 4,575,330 · source-bounded technical diagram
           </div>
           <h2 className="mt-1 font-serif text-2xl font-bold tracking-tight text-amber-100">
-            Photopolymerization & Layered Additive Solidification
+            Drawing at a liquid surface, one supported lamina at a time
           </h2>
         </div>
-
-        {/* View Mode Tabs */}
-        <div className="flex rounded-lg bg-stone-900/90 p-1 border border-stone-800">
+        <div className="flex max-w-full flex-wrap gap-1 rounded-lg border border-stone-800 bg-stone-900/90 p-1">
+          {(
+            [
+              ["apparatus", "Fig. 3 apparatus", "Fig. 3"],
+              ["sequence", "Figs. 1–2 sequence", "Sequence"],
+              ["source", "1986 source card", "Source"],
+            ] as const
+          ).map(([view, label, compactLabel]) => (
+            <button
+              key={view}
+              type="button"
+              aria-pressed={activeView === view}
+              aria-label={label}
+              onClick={() => setActiveView(view)}
+              className={`shrink-0 rounded-md px-2 py-1.5 text-[11px] font-medium transition-colors sm:px-3 sm:text-xs ${
+                activeView === view
+                  ? "bg-amber-600 text-white"
+                  : "text-stone-400 hover:text-stone-200"
+              }`}
+            >
+              <span className="sm:hidden">{compactLabel}</span>
+              <span className="hidden sm:inline">{label}</span>
+            </button>
+          ))}
           <button
             type="button"
-            onClick={() => setActiveTab("vat")}
-            className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-              activeTab === "vat"
-                ? "bg-amber-600 text-white shadow-sm"
-                : "text-stone-400 hover:text-stone-200"
-            }`}
+            onClick={resetParams}
+            className="shrink-0 rounded-md px-2 py-1.5 text-[11px] font-medium text-stone-300 transition-colors hover:text-white sm:px-3 sm:text-xs"
           >
-            SLA Resin Vat (Fig. 1)
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("profile")}
-            className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-              activeTab === "profile"
-                ? "bg-amber-600 text-white shadow-sm"
-                : "text-stone-400 hover:text-stone-200"
-            }`}
-          >
-            Beer-Lambert Profile (Fig. 3)
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("kinetics")}
-            className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-              activeTab === "kinetics"
-                ? "bg-amber-600 text-white shadow-sm"
-                : "text-stone-400 hover:text-stone-200"
-            }`}
-          >
-            Elevator Recoating (Fig. 2)
+            Reset
           </button>
         </div>
       </div>
 
-      {/* Refusal Banner if out-of-bounds */}
-      {(tel.underexposureRefusal || tel.overpenetrationRefusal || tel.recoatDelayRefusal) && (
-        <div className="rounded-xl border border-rose-500/40 bg-rose-950/40 p-4 text-rose-200">
-          <div className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-rose-400">
-            <span>⚠️ Physical Constraint Refusal</span>
-          </div>
-          <p className="mt-1 text-sm font-medium">{tel.refusalReason}</p>
-        </div>
-      )}
-
-      {/* Main Visual SVG Simulation Canvas */}
-      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-stone-800 bg-stone-900/50 shadow-inner">
+      <div
+        className={`relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-stone-800 bg-stone-900/50 shadow-inner sm:block sm:aspect-[16/9] ${
+          activeView === "apparatus" ? "block" : "hidden"
+        }`}
+      >
         <svg
           viewBox="0 0 800 450"
           className="h-full w-full"
           preserveAspectRatio="xMidYMid meet"
           role="img"
-          aria-label="Stereolithography Simulation Diagram"
+          aria-label="Source-bounded diagram of Hull's preferred stereolithography apparatus"
         >
           <defs>
-            <linearGradient id={`${baseId}-laser-beam`} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#a855f7" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#c084fc" stopOpacity="0.95" />
+            <linearGradient id={`${baseId}-resin`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.62" />
+              <stop offset="100%" stopColor="#075985" stopOpacity="0.84" />
             </linearGradient>
-            <linearGradient id={`${baseId}-resin-fluid`} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#0284c7" stopOpacity="0.65" />
-              <stop offset="100%" stopColor="#0369a1" stopOpacity="0.85" />
+            <linearGradient id={`${baseId}-fiber`} x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#f8fafc" />
+              <stop offset="100%" stopColor="#c084fc" />
             </linearGradient>
-            <linearGradient id={`${baseId}-solid-layer`} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#d97706" stopOpacity="0.9" />
-              <stop offset="100%" stopColor="#b45309" stopOpacity="0.95" />
-            </linearGradient>
+            <marker
+              id={`${baseId}-arrow`}
+              viewBox="0 0 10 10"
+              refX="8"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse"
+            >
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#f59e0b" />
+            </marker>
           </defs>
 
-          {activeTab === "vat" && (
-            <g id="sla-vat-assembly">
-              {/* Vat Tank Body */}
+          {activeView === "apparatus" && (
+            <g>
               <rect
-                x="120"
-                y="160"
-                width="560"
-                height="240"
+                x="55"
+                y="178"
+                width="690"
+                height="238"
                 rx="6"
                 fill="#1c1917"
                 stroke="#78716c"
-                strokeWidth="2"
+                strokeWidth="5"
               />
-              {/* Liquid Photopolymer */}
-              <rect x="130" y="180" width="540" height="210" fill={`url(#${baseId}-resin-fluid)`} />
-              <line
-                x1="130"
-                y1="180"
-                x2="670"
-                y2="180"
-                stroke="#38bdf8"
-                strokeWidth="2"
-                strokeDasharray="4 2"
-              />
-              <text x="140" y="175" fill="#7dd3fc" fontSize="11" fontFamily="monospace">
-                LIQUID RESIN SURFACE (Z = 0)
+              <rect x="65" y="205" width="670" height="201" fill={`url(#${baseId}-resin)`} />
+              <line x1="65" y1="205" x2="735" y2="205" stroke="#7dd3fc" strokeWidth="3" />
+              <text x="75" y="196" fill="#bae6fd" fontSize="12" fontFamily="monospace">
+                fixed working surface 23 · UV-curable liquid 22
+              </text>
+              <text x="68" y="435" fill="#d6d3d1" fontSize="12" fontFamily="monospace">
+                container 21
               </text>
 
-              {/* Elevator Plunger Lead Screw & Platform */}
+              <rect x="604" y="226" width="15" height="178" rx="6" fill="#a8a29e" />
               <rect
-                x="385"
-                y="240"
-                width="30"
-                height="150"
-                fill="#44403c"
-                stroke="#a8a29e"
-                strokeWidth="1"
+                x="585"
+                y={platformY - 2}
+                width="52"
+                height="16"
+                rx="5"
+                fill="#d6d3d1"
+                stroke="#78716c"
               />
               <rect
-                x="250"
-                y="260"
-                width="300"
-                height="14"
-                rx="2"
+                x="274"
+                y={platformY}
+                width="320"
+                height="16"
+                rx="3"
                 fill="#78716c"
-                stroke="#d6d3d1"
-                strokeWidth="1.5"
+                stroke="#e7e5e4"
               />
-              <text x="260" y="285" fill="#e7e5e4" fontSize="11" fontFamily="monospace">
-                BUILD PLATFORM 29
+              <text x="624" y="247" fill="#e7e5e4" fontSize="11" fontFamily="monospace">
+                elevator guide
+              </text>
+              <text x="282" y={platformY + 34} fill="#e7e5e4" fontSize="11" fontFamily="monospace">
+                object-support platform 29
               </text>
 
-              {/* Cured Solid Object Layers */}
-              {Array.from({
-                length: Math.min(8, Math.max(1, Math.floor(controls.partLayersCount / 6))),
-              }).map((_, i) => {
-                const layerY = 246 - i * 8;
+              {Array.from({ length: displayedLaminae }, (_, index) => {
+                const width = 208 - index * 8;
+                const y = platformY - 1 - (index + 1) * 11;
                 return (
                   <rect
-                    key={`cured-layer-${i}`}
-                    x={310 - (i % 2 === 0 ? 0 : 10)}
-                    width={180 + (i % 2 === 0 ? 0 : 20)}
-                    y={layerY}
-                    height="7"
-                    rx="1"
-                    fill={`url(#${baseId}-solid-layer)`}
-                    stroke="#f59e0b"
-                    strokeWidth="0.8"
+                    key={`hull-lamina-${index}`}
+                    x={434 - width / 2}
+                    y={y}
+                    width={width}
+                    height="11"
+                    rx="2"
+                    fill={index % 2 === 0 ? "#d97706" : "#f59e0b"}
+                    stroke="#fbbf24"
+                    strokeWidth="0.7"
                   />
                 );
               })}
+              <text
+                x="300"
+                y={platformY - displayedLaminae * 11 - 9}
+                fill="#fde68a"
+                fontSize="11"
+                fontFamily="monospace"
+              >
+                touching display laminae 30a / 30b / 30c
+              </text>
 
-              {/* Active UV Laser Source & Galvanometer Mirrors */}
               <rect
-                x="350"
-                y="20"
-                width="100"
-                height="40"
-                rx="4"
-                fill="#292524"
-                stroke="#a855f7"
+                x="86"
+                y="35"
+                width="185"
+                height="60"
+                rx="8"
+                fill="#171412"
+                stroke="#f59e0b"
                 strokeWidth="2"
               />
               <text
-                x="362"
-                y="44"
-                fill="#d8b4fe"
-                fontSize="11"
+                x="101"
+                y="59"
+                fill="#fbbf24"
+                fontSize="12"
                 fontFamily="monospace"
                 fontWeight="bold"
               >
-                UV LASER 21
+                source 26
               </text>
-
-              {/* Galvanometer Mirror Scanner */}
-              <polygon
-                points="390,75 410,75 400,90"
-                fill="#e2e8f0"
-                stroke="#64748b"
-                strokeWidth="1.5"
-              />
-              <text x="415" y="85" fill="#94a3b8" fontSize="10" fontFamily="monospace">
-                X-Y GALVO 26
+              <text x="101" y="79" fill="#e7e5e4" fontSize="11" fontFamily="monospace">
+                350 W mercury short-arc lamp
               </text>
-
-              {/* Focused Gaussian UV Laser Beam */}
-              <polygon
-                points="400,90 380,180 420,180"
-                fill={`url(#${baseId}-laser-beam)`}
-                opacity="0.85"
-              />
-              <line x1="400" y1="90" x2="400" y2="180" stroke="#f3e8ff" strokeWidth="2" />
-
-              {/* Laser Spot Interaction Curing Zone */}
-              <ellipse
-                cx="400"
-                cy="180"
-                rx={Math.max(6, tel.curedLineWidthUm * 0.1)}
-                ry="3"
-                fill="#fbbf24"
-                opacity="0.9"
-              />
-
-              {/* Telemetry Overlay Callout */}
-              <g transform="translate(560, 40)">
-                <rect
-                  width="210"
-                  height="90"
-                  rx="6"
-                  fill="#0c0a09"
-                  stroke="#d97706"
-                  strokeWidth="1"
-                  opacity="0.9"
-                />
-                <text
-                  x="12"
-                  y="24"
-                  fill="#fbbf24"
-                  fontSize="11"
-                  fontFamily="monospace"
-                  fontWeight="bold"
-                >
-                  SLA SPOT DOSIMETRY
-                </text>
-                <text x="12" y="44" fill="#e7e5e4" fontSize="10" fontFamily="monospace">
-                  Peak Exp: {tel.peakExposureMJCm2.toFixed(1)} mJ/cm²
-                </text>
-                <text x="12" y="62" fill="#e7e5e4" fontSize="10" fontFamily="monospace">
-                  Cure Depth: {tel.cureDepthUm.toFixed(1)} µm
-                </text>
-                <text x="12" y="80" fill="#e7e5e4" fontSize="10" fontFamily="monospace">
-                  Adhesion: {tel.interlayerAdhesionRatio.toFixed(2)}x layer step
-                </text>
-              </g>
-            </g>
-          )}
-
-          {activeTab === "profile" && (
-            <g id="beer-lambert-profile">
               <rect
-                x="80"
-                y="40"
-                width="640"
-                height="360"
-                rx="8"
-                fill="#141210"
-                stroke="#44403c"
-                strokeWidth="1.5"
+                x="276"
+                y="53"
+                width="10"
+                height="24"
+                fill={state.shutterOpen ? "#10b981" : "#ef4444"}
+                stroke="#f8fafc"
               />
-              <text
-                x="100"
-                y="70"
-                fill="#f59e0b"
-                fontSize="14"
-                fontFamily="serif"
-                fontWeight="bold"
-              >
-                Beer-Lambert Parabolic Photocure Cross-Section (Figure 3)
+              <text x="262" y="111" fill="#d6d3d1" fontSize="10" fontFamily="monospace">
+                electronic shutter
               </text>
-
-              {/* Grid & Axes */}
-              <line x1="140" y1="120" x2="660" y2="120" stroke="#57534e" strokeWidth="1.5" />
-              <text x="610" y="115" fill="#a8a29e" fontSize="10" fontFamily="monospace">
-                X (µm)
-              </text>
-              <line x1="400" y1="100" x2="400" y2="360" stroke="#57534e" strokeWidth="1.5" />
-              <text x="405" y="355" fill="#a8a29e" fontSize="10" fontFamily="monospace">
-                Depth Z (µm)
-              </text>
-
-              {/* Layer Step Indicator Line */}
-              {(() => {
-                const layerLineY = 120 + (controls.layerThicknessUm / 300) * 200;
-                return (
-                  <g>
-                    <line
-                      x1="140"
-                      y1={layerLineY}
-                      x2="660"
-                      y2={layerLineY}
-                      stroke="#38bdf8"
-                      strokeWidth="1.5"
-                      strokeDasharray="5 3"
-                    />
-                    <text
-                      x="150"
-                      y={layerLineY - 6}
-                      fill="#38bdf8"
-                      fontSize="10"
-                      fontFamily="monospace"
-                    >
-                      Layer Step Δz = {controls.layerThicknessUm} µm
-                    </text>
-                  </g>
-                );
-              })()}
-
-              {/* Parabolic Solid Cure Boundary Profile */}
-              {(() => {
-                const scaleZ = 200 / 300;
-                const scaleX = 200 / 400;
-                const maxZ = 120 + tel.cureDepthUm * scaleZ;
-                const halfW = (tel.curedLineWidthUm * scaleX) / 2;
-
-                const pathData = `M ${400 - halfW} 120 Q 400 ${maxZ + 20} ${400 + halfW} 120 Z`;
-                return (
-                  <g>
-                    <path
-                      d={pathData}
-                      fill={`url(#${baseId}-solid-layer)`}
-                      stroke="#fbbf24"
-                      strokeWidth="2"
-                      opacity="0.85"
-                    />
-                    <circle cx="400" cy={maxZ} r="4" fill="#ef4444" />
-                    <text x="415" y={maxZ + 4} fill="#fca5a5" fontSize="11" fontFamily="monospace">
-                      Max Cure Depth C_d = {tel.cureDepthUm.toFixed(1)} µm
-                    </text>
-                  </g>
-                );
-              })()}
-
-              {/* Critical Exposure Threshold Notation */}
-              <text x="120" y="380" fill="#d6d3d1" fontSize="11" fontFamily="monospace">
-                Working Equation: C_d = D_p · ln(E_max / E_c) = {controls.penetrationDepthUm} · ln(
-                {tel.peakExposureMJCm2.toFixed(1)} / {controls.criticalExposureMJCm2})
-              </text>
-            </g>
-          )}
-
-          {activeTab === "kinetics" && (
-            <g id="recoating-fluid-dynamics">
-              <rect
-                x="80"
-                y="40"
-                width="640"
-                height="360"
-                rx="8"
-                fill="#141210"
-                stroke="#44403c"
-                strokeWidth="1.5"
-              />
-              <text
-                x="100"
-                y="70"
-                fill="#f59e0b"
-                fontSize="14"
-                fontFamily="serif"
-                fontWeight="bold"
-              >
-                Viscous Photopolymer Meniscus Leveling & Recoating
-              </text>
-
-              {/* Viscous Meniscus Profile */}
               <path
-                d="M 120 180 Q 260 210 400 180 T 680 180 L 680 340 L 120 340 Z"
-                fill={`url(#${baseId}-resin-fluid)`}
-                stroke="#0284c7"
+                d={`M 286 65 C 340 12, ${lensX - 50} 20, ${lensX} 92`}
+                fill="none"
+                stroke={`url(#${baseId}-fiber)`}
+                strokeWidth="5"
+              />
+              <text x="340" y="30" fill="#e7e5e4" fontSize="10" fontFamily="monospace">
+                1 mm bundle · 1 m long
+              </text>
+              <rect
+                x={lensX - 18}
+                y="86"
+                width="36"
+                height="66"
+                rx="7"
+                fill="#292524"
+                stroke="#cbd5e1"
                 strokeWidth="2"
               />
-
-              {/* Elevator Motion Vector */}
-              <g transform="translate(400, 240)">
-                <line
-                  x1="0"
-                  y1="-30"
-                  x2="0"
-                  y2="40"
-                  stroke="#fbbf24"
-                  strokeWidth="3"
-                  markerEnd="url(#arrow)"
-                />
-                <text x="15" y="10" fill="#fbbf24" fontSize="12" fontFamily="monospace">
-                  v_dip = {controls.elevatorDipSpeedMmS} mm/s
-                </text>
-              </g>
-
-              {/* Recoat Settling Metrics */}
-              <rect
-                x="120"
-                y="270"
-                width="560"
-                height="60"
-                rx="4"
-                fill="#1c1917"
-                stroke="#57534e"
-                strokeWidth="1"
-              />
-              <text x="140" y="295" fill="#facc15" fontSize="11" fontFamily="monospace">
-                Dynamic Viscosity µ = {controls.resinViscosityCp} cP | Meniscus Settling Time ={" "}
-                {tel.recoatMeniscusSettlingTimeSec.toFixed(2)} s
+              <text x={lensX + 26} y="112" fill="#e7e5e4" fontSize="10" fontFamily="monospace">
+                quartz lens tube on plotter carriage
               </text>
-              <text x="140" y="315" fill="#e7e5e4" fontSize="10" fontFamily="monospace">
-                Estimated Total Build Time ({controls.partLayersCount} layers) ={" "}
-                {tel.totalBuildTimeMin.toFixed(1)} minutes
+
+              {state.exposureAtWorkingSurface && (
+                <>
+                  <line x1={lensX} y1="152" x2={lensX} y2="205" stroke="#e879f9" strokeWidth="3" />
+                  <ellipse cx={lensX} cy="205" rx="10" ry="4" fill="#f0abfc" />
+                  <text x={lensX + 15} y="222" fill="#f5d0fe" fontSize="11" fontFamily="monospace">
+                    spot 27 ({state.spotXFraction.toFixed(2)}, {state.spotZFraction.toFixed(2)})
+                  </text>
+                </>
+              )}
+
+              <line
+                x1="670"
+                y1="270"
+                x2="670"
+                y2="350"
+                stroke="#f59e0b"
+                strokeWidth="3"
+                markerEnd={`url(#${baseId}-arrow)`}
+              />
+              <text x="680" y="304" fill="#fbbf24" fontSize="11" fontFamily="monospace">
+                programmed move away
+              </text>
+            </g>
+          )}
+
+          {activeView === "sequence" && (
+            <g>
+              {HULL_SOURCE_SEQUENCE.map(([number, title, detail], index) => {
+                const x = 42 + (index % 3) * 252;
+                const y = 55 + Math.floor(index / 3) * 185;
+                return (
+                  <g key={number}>
+                    <rect
+                      x={x}
+                      y={y}
+                      width="220"
+                      height="142"
+                      rx="10"
+                      fill="#1c1917"
+                      stroke="#57534e"
+                    />
+                    <circle cx={x + 28} cy={y + 29} r="17" fill="#b45309" />
+                    <text
+                      x={x + 28}
+                      y={y + 34}
+                      textAnchor="middle"
+                      fill="#fff7ed"
+                      fontSize="13"
+                      fontWeight="bold"
+                    >
+                      {number}
+                    </text>
+                    <text
+                      x={x + 54}
+                      y={y + 27}
+                      fill="#fbbf24"
+                      fontSize="12"
+                      fontFamily="serif"
+                      fontWeight="bold"
+                    >
+                      {title}
+                    </text>
+                    <foreignObject x={x + 18} y={y + 52} width="184" height="76">
+                      <p className="m-0 text-[11px] leading-relaxed text-stone-300">{detail}</p>
+                    </foreignObject>
+                  </g>
+                );
+              })}
+            </g>
+          )}
+
+          {activeView === "source" && (
+            <g>
+              <rect
+                x="50"
+                y="42"
+                width="700"
+                height="365"
+                rx="12"
+                fill="#141210"
+                stroke="#57534e"
+              />
+              <text x="80" y="78" fill="#fbbf24" fontSize="16" fontFamily="serif" fontWeight="bold">
+                What the preferred embodiment actually prints
+              </text>
+              {HULL_PREFERRED_SOURCE_CARD.map(([label, value], index) => (
+                <g key={label} transform={`translate(80 ${108 + index * 34})`}>
+                  <text fill="#a8a29e" fontSize="11" fontFamily="monospace">
+                    {label}
+                  </text>
+                  <text x="225" fill="#e7e5e4" fontSize="12" fontFamily="monospace">
+                    {value}
+                  </text>
+                </g>
+              ))}
+              <rect x="80" y="347" width="640" height="42" rx="7" fill="#3f1018" stroke="#fb7185" />
+              <text x="96" y="365" fill="#fecdd3" fontSize="10.5" fontFamily="monospace">
+                Not printed: resin absorption / critical dose / cure kinetics / layer step / scan
+                speed /
+              </text>
+              <text x="96" y="380" fill="#fecdd3" fontSize="10.5" fontFamily="monospace">
+                platform stroke or speed / viscosity / part scale / adhesion force / build duration.
               </text>
             </g>
           )}
         </svg>
       </div>
 
-      {/* Control Sliders Panel */}
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        {/* Column 1: Optical & Laser Controls */}
-        <div className="space-y-4 rounded-xl border border-stone-800 bg-stone-900/60 p-4">
-          <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-amber-400">
-            Laser Beam Optics
-          </h3>
-
-          <div>
-            <div className="flex justify-between text-xs text-stone-300">
-              <label htmlFor={`${baseId}-laser-power`}>UV Laser Power (mW)</label>
-              <span className="font-mono text-amber-300">{controls.laserPowerMw} mW</span>
-            </div>
-            <input
-              id={`${baseId}-laser-power`}
-              type="range"
-              min="10"
-              max="150"
-              step="1"
-              value={controls.laserPowerMw}
-              onChange={(e) => update("laserPowerMw", Number(e.target.value))}
-              className="mt-1 w-full accent-amber-500"
-            />
-          </div>
-
-          <div>
-            <div className="flex justify-between text-xs text-stone-300">
-              <label htmlFor={`${baseId}-scan-speed`}>Scan Speed (mm/s)</label>
-              <span className="font-mono text-amber-300">{controls.laserScanSpeedMmS} mm/s</span>
-            </div>
-            <input
-              id={`${baseId}-scan-speed`}
-              type="range"
-              min="50"
-              max="1200"
-              step="10"
-              value={controls.laserScanSpeedMmS}
-              onChange={(e) => update("laserScanSpeedMmS", Number(e.target.value))}
-              className="mt-1 w-full accent-amber-500"
-            />
-          </div>
-
-          <div>
-            <div className="flex justify-between text-xs text-stone-300">
-              <label htmlFor={`${baseId}-beam-waist`}>Beam Waist Radius w₀ (µm)</label>
-              <span className="font-mono text-amber-300">{controls.beamWaistRadiusUm} µm</span>
-            </div>
-            <input
-              id={`${baseId}-beam-waist`}
-              type="range"
-              min="60"
-              max="250"
-              step="5"
-              value={controls.beamWaistRadiusUm}
-              onChange={(e) => update("beamWaistRadiusUm", Number(e.target.value))}
-              className="mt-1 w-full accent-amber-500"
-            />
-          </div>
+      {activeView === "sequence" && (
+        <div className="grid gap-3 rounded-xl border border-stone-800 bg-stone-900/50 p-3 shadow-inner sm:hidden">
+          {HULL_SOURCE_SEQUENCE.map(([number, title, detail]) => (
+            <article key={number} className="rounded-lg border border-stone-700 bg-stone-950 p-4">
+              <div className="flex items-start gap-3">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-amber-700 font-mono text-sm font-bold text-white">
+                  {number}
+                </span>
+                <div>
+                  <h3 className="font-serif text-base font-bold leading-snug text-amber-300">
+                    {title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-stone-300">{detail}</p>
+                </div>
+              </div>
+            </article>
+          ))}
         </div>
+      )}
 
-        {/* Column 2: Photopolymer Chemistry */}
-        <div className="space-y-4 rounded-xl border border-stone-800 bg-stone-900/60 p-4">
-          <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-amber-400">
-            Resin Photochemistry
+      {activeView === "source" && (
+        <div className="rounded-xl border border-stone-700 bg-stone-900/60 p-4 shadow-inner sm:hidden">
+          <h3 className="font-serif text-lg font-bold text-amber-300">
+            What the preferred embodiment actually prints
           </h3>
-
-          <div>
-            <div className="flex justify-between text-xs text-stone-300">
-              <label htmlFor={`${baseId}-penetration-depth`}>Penetration Depth D_p (µm)</label>
-              <span className="font-mono text-amber-300">{controls.penetrationDepthUm} µm</span>
-            </div>
-            <input
-              id={`${baseId}-penetration-depth`}
-              type="range"
-              min="60"
-              max="250"
-              step="5"
-              value={controls.penetrationDepthUm}
-              onChange={(e) => update("penetrationDepthUm", Number(e.target.value))}
-              className="mt-1 w-full accent-amber-500"
-            />
-          </div>
-
-          <div>
-            <div className="flex justify-between text-xs text-stone-300">
-              <label htmlFor={`${baseId}-critical-exposure`}>Critical Exposure E_c (mJ/cm²)</label>
-              <span className="font-mono text-amber-300">
-                {controls.criticalExposureMJCm2} mJ/cm²
-              </span>
-            </div>
-            <input
-              id={`${baseId}-critical-exposure`}
-              type="range"
-              min="4"
-              max="25"
-              step="0.2"
-              value={controls.criticalExposureMJCm2}
-              onChange={(e) => update("criticalExposureMJCm2", Number(e.target.value))}
-              className="mt-1 w-full accent-amber-500"
-            />
-          </div>
-
-          <div>
-            <div className="flex justify-between text-xs text-stone-300">
-              <label htmlFor={`${baseId}-viscosity`}>Resin Viscosity (cP)</label>
-              <span className="font-mono text-amber-300">{controls.resinViscosityCp} cP</span>
-            </div>
-            <input
-              id={`${baseId}-viscosity`}
-              type="range"
-              min="100"
-              max="4000"
-              step="50"
-              value={controls.resinViscosityCp}
-              onChange={(e) => update("resinViscosityCp", Number(e.target.value))}
-              className="mt-1 w-full accent-amber-500"
-            />
-          </div>
+          <dl className="mt-4 space-y-3">
+            {HULL_PREFERRED_SOURCE_CARD.map(([label, value]) => (
+              <div key={label} className="border-b border-stone-800 pb-3 last:border-0 last:pb-0">
+                <dt className="font-mono text-[11px] uppercase tracking-wide text-stone-500">
+                  {label}
+                </dt>
+                <dd className="mt-1 text-sm leading-relaxed text-stone-200">{value}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-4 rounded-lg border border-rose-400/60 bg-rose-950/40 p-3 text-xs leading-relaxed text-rose-100">
+            Not printed: resin absorption, critical dose, cure kinetics, layer step, scan speed,
+            platform stroke or speed, viscosity, part scale, adhesion force, or build duration.
+          </p>
         </div>
+      )}
 
-        {/* Column 3: Slicing & Elevator Recoating */}
-        <div className="space-y-4 rounded-xl border border-stone-800 bg-stone-900/60 p-4">
-          <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-amber-400">
-            Slicing & Recoating
-          </h3>
-
-          <div>
-            <div className="flex justify-between text-xs text-stone-300">
-              <label htmlFor={`${baseId}-layer-thickness`}>Layer Step Δz (µm)</label>
-              <span className="font-mono text-amber-300">{controls.layerThicknessUm} µm</span>
-            </div>
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="rounded-xl border border-stone-800 bg-stone-900/60 p-3 sm:col-span-2 xl:col-span-1">
+          <div className="text-xs text-stone-300">Electronic shutter</div>
+          <button
+            type="button"
+            aria-label={controls.shutterRequestedOpen === 1 ? "Close shutter" : "Open shutter"}
+            aria-pressed={controls.shutterRequestedOpen === 1}
+            onClick={() =>
+              update("shutterRequestedOpen", controls.shutterRequestedOpen === 1 ? 0 : 1)
+            }
+            className={`mt-2 w-full rounded-md border px-3 py-2 text-xs font-semibold ${
+              controls.shutterRequestedOpen === 1
+                ? "border-fuchsia-400/50 bg-fuchsia-500/20 text-fuchsia-200"
+                : "border-stone-700 bg-stone-950 text-stone-300"
+            }`}
+          >
+            {controls.shutterRequestedOpen === 1 ? "Requested open" : "Closed"}
+          </button>
+        </div>
+        {(
+          [
+            ["scanXFraction", "Scan spot X", -1, 1, 0.05, controls.scanXFraction.toFixed(2)],
+            ["scanZFraction", "Scan spot Z", -1, 1, 0.05, controls.scanZFraction.toFixed(2)],
+            [
+              "recoatExcursionFraction",
+              "Recoating excursion",
+              0,
+              1,
+              0.05,
+              `${Math.round(controls.recoatExcursionFraction * 100)}%`,
+            ],
+            [
+              "displayLaminaCount",
+              "Illustrative laminae",
+              1,
+              12,
+              1,
+              String(controls.displayLaminaCount),
+            ],
+          ] as const
+        ).map(([key, label, min, max, step, value]) => (
+          <div key={key} className="rounded-xl border border-stone-800 bg-stone-900/60 p-3">
+            <label htmlFor={`${baseId}-${key}`} className="block text-xs text-stone-300">
+              {label} ({value})
+            </label>
             <input
-              id={`${baseId}-layer-thickness`}
+              id={`${baseId}-${key}`}
               type="range"
-              min="25"
-              max="250"
-              step="5"
-              value={controls.layerThicknessUm}
-              onChange={(e) => update("layerThicknessUm", Number(e.target.value))}
+              min={min}
+              max={max}
+              step={step}
+              value={controls[key]}
+              onChange={(event) => update(key, Number(event.target.value))}
               className="mt-1 w-full accent-amber-500"
             />
           </div>
+        ))}
+      </div>
 
-          <div>
-            <div className="flex justify-between text-xs text-stone-300">
-              <label htmlFor={`${baseId}-elevator-speed`}>Elevator Dip Speed (mm/s)</label>
-              <span className="font-mono text-amber-300">{controls.elevatorDipSpeedMmS} mm/s</span>
-            </div>
-            <input
-              id={`${baseId}-elevator-speed`}
-              type="range"
-              min="1"
-              max="25"
-              step="1"
-              value={controls.elevatorDipSpeedMmS}
-              onChange={(e) => update("elevatorDipSpeedMmS", Number(e.target.value))}
-              className="mt-1 w-full accent-amber-500"
-            />
-          </div>
+      {state.shutterInterlockActive && (
+        <div className="rounded-xl border border-amber-400/40 bg-amber-950/30 p-3 text-sm text-amber-100">
+          Sequence guard: the requested open shutter is held closed while platform 29 is below its
+          next-layer working position.
+        </div>
+      )}
 
-          <div>
-            <div className="flex justify-between text-xs text-stone-300">
-              <label htmlFor={`${baseId}-layers-count`}>Part Layers Count</label>
-              <span className="font-mono text-amber-300">{controls.partLayersCount} layers</span>
-            </div>
-            <input
-              id={`${baseId}-layers-count`}
-              type="range"
-              min="10"
-              max="200"
-              step="5"
-              value={controls.partLayersCount}
-              onChange={(e) => update("partLayersCount", Number(e.target.value))}
-              className="mt-1 w-full accent-amber-500"
-            />
+      {claimConstraintResult.activeFailures.length > 0 && (
+        <div
+          role="status"
+          className="rounded-xl border border-rose-500/40 bg-rose-950/30 p-3 text-xs leading-relaxed text-rose-100"
+        >
+          {claimConstraintResult.activeFailures.map((failure) => (
+            <p key={failure}>{failure}</p>
+          ))}
+          {claimConstraintResult.refusalWarning && (
+            <p className="mt-1 text-rose-200">{claimConstraintResult.refusalWarning}</p>
+          )}
+        </div>
+      )}
+
+      <div className="grid gap-3 lg:grid-cols-2">
+        <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3 text-xs leading-relaxed text-emerald-100">
+          <div className="font-mono font-bold uppercase tracking-wider text-emerald-300">
+            Connected topology
           </div>
+          <p className="mt-1">
+            Every displayed lamina touches the one below; object 30 stays on platform 29; the
+            platform stays joined to its guide carriage; and the light head stays on the plotter
+            rails throughout X–Z motion.
+          </p>
+        </div>
+        <div className="rounded-xl border border-rose-500/30 bg-rose-950/20 p-3 text-xs leading-relaxed text-rose-100">
+          <div className="font-mono font-bold uppercase tracking-wider text-rose-300">
+            Quantitative result refused
+          </div>
+          <p className="mt-1">
+            {HULL_FRANKENSIM_ELEVATOR_OWNER} and {HULL_FRANKENSIM_OPTICAL_ATTENUATION_OWNER} are the
+            relevant generic owners, but the grant cannot parameterize an elevator solve or an
+            attenuation-plus-photopolymer cure solve. No cure depth, adhesion, conversion, force,
+            recoating time, or build duration is fabricated here.
+          </p>
         </div>
       </div>
 
-      <div className="rounded-xl border border-stone-800 bg-stone-900/60 p-4">
-        <PortHamiltonianEnergyStrip
-          patentId={PATENT_ID}
-          params={controls as unknown as Record<string, number>}
-        />
-      </div>
-
-      <div className="rounded-xl border border-stone-800 bg-stone-900/60 p-4">
+      <div className="border-t border-stone-800 pt-3">
         <ClaimConstraintToggle
           patentId={PATENT_ID}
           claimStates={claimStates}
-          onClaimStateChange={(num, active) =>
-            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          onToggleClaim={(number, active) =>
+            updateParam(claimConstraintStateParamId(number), active ? 1 : 0)
           }
         />
       </div>

@@ -29,6 +29,12 @@ import { InteractiveDiagramViewer } from "./InteractiveDiagramViewer";
 import { KernelTickChip } from "./KernelTickChip";
 import { MuseumBroadsidePlaque } from "./MuseumBroadsidePlaque";
 import { PhysicsTelemetryBadge } from "./PhysicsTelemetryBadge";
+import {
+  applyPatentViewToUrl,
+  isPatentViewMode,
+  type PatentViewMode,
+  viewModeFromSearch,
+} from "./patentViewMode";
 import { PatentVisualDispatcher } from "./visuals";
 import { WeaveInstrument } from "./WeaveInstrument";
 
@@ -39,12 +45,13 @@ interface DualProjectionViewerProps {
   archivalPublication: ArchivalPublicationViewState;
   /** One server-resolved companion map; never import the all-patent registry here. */
   archivalParallelReadings?: Readonly<Record<number, readonly string[]>>;
+  /** A server-read, page-complete reviewed transcript used only when this record
+   * has no authored archival edition. It is source text, never a PDF renderer. */
+  reviewedTranscript?: string;
   initialView?: string;
   /** Per-patent colorized equations, resolved on the server (colorizedEquations.ts is
    * a 976KB all-patents record that must never enter the client bundle wholesale). */
   colorizedEquations: ColorizedEquationType[];
-  /** Server-derived flag; research-asset metadata itself never crosses into the client. */
-  hasRawSourceText: boolean;
 }
 
 interface ArchivalPublicationViewState {
@@ -53,23 +60,6 @@ interface ArchivalPublicationViewState {
   explanation: string;
   state: { kind: ArchivalPublicationStateKind };
 }
-
-export type PatentViewMode =
-  | "plain-english"
-  | "original-spec"
-  | "interactive-sim"
-  | "schematic-sheet"
-  | "pdf-facsimile"
-  | "split-view";
-
-const PATENT_VIEW_MODES: PatentViewMode[] = [
-  "plain-english",
-  "original-spec",
-  "interactive-sim",
-  "schematic-sheet",
-  "pdf-facsimile",
-  "split-view",
-];
 
 function isFormulaPureLatex(str: string): boolean {
   if (!str) return false;
@@ -87,32 +77,6 @@ function isFormulaPureLatex(str: string): boolean {
   return true;
 }
 
-function isPatentViewMode(value: string | undefined): value is PatentViewMode {
-  return !!value && (PATENT_VIEW_MODES as string[]).includes(value);
-}
-
-export function viewModeFromSearch(search: string): PatentViewMode | undefined {
-  const candidate = new URLSearchParams(search).get("view") ?? undefined;
-  return isPatentViewMode(candidate) ? candidate : undefined;
-}
-
-/**
- * Next href after a face click. Returns null when `view` is already `mode`
- * so history is not double-pushed. Preserves other query keys and the hash.
- *
- * Face selection stays a client query param. Do not lift `searchParams` into
- * the RSC patent page (that makes every `/patents/[id]` route dynamic). Do not
- * drop pushState/popstate either: a `.classic-patents-live-*` checkout once
- * mutated React state only, so `?view=` deep-links stopped updating and Back
- * left the old face on screen.
- */
-export function applyPatentViewToUrl(href: string, mode: PatentViewMode): string | null {
-  const url = new URL(href, "https://classic-patents.com");
-  if (url.searchParams.get("view") === mode) return null;
-  url.searchParams.set("view", mode);
-  return `${url.pathname}${url.search}${url.hash}`;
-}
-
 function viewModeFromLocation(): PatentViewMode | undefined {
   return viewModeFromSearch(window.location.search);
 }
@@ -123,62 +87,41 @@ function handlePrint() {
   }
 }
 
-type FacsimilePanelVariant = "standalone" | "held-edition-fallback";
-
 /**
- * A record's pinned facsimile remains available even when the hand-authored
- * reading edition has not crossed its publication review. Keep that distinction
- * explicit without upgrading the facsimile's provenance or review status.
+ * Dedicated facsimile face. It is intentionally separate from the readable
+ * source-text faces and is never used as a replacement for patent text.
  */
 function PinnedFacsimilePanel({
   patent,
   pdfEmbedUnsupported,
-  variant = "standalone",
 }: {
   patent: Patent;
   pdfEmbedUnsupported: boolean;
-  variant?: FacsimilePanelVariant;
 }) {
-  const isHeldEditionFallback = variant === "held-edition-fallback";
-  const frameHeight = isHeldEditionFallback
-    ? "h-[65dvh] min-h-[440px] sm:h-[680px]"
-    : "h-[75dvh] sm:h-[80dvh] lg:h-[800px]";
+  const frameHeight = "h-[75dvh] sm:h-[80dvh] lg:h-[800px]";
 
   return (
     <section
       className="space-y-5"
       data-testid="pinned-pdf-facsimile"
-      data-facsimile-context={variant}
+      data-facsimile-context="standalone"
     >
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 pb-4 dark:border-ink-800">
         <div>
           <span className="block text-xs font-mono font-bold uppercase tracking-widest text-amber-700 dark:text-amber-400 sm:text-sm">
-            {isHeldEditionFallback ? "Pinned Primary-Source Facsimile" : "Pinned Record Facsimile"}
+            Pinned Record Facsimile
           </span>
           <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-100">
             {patent.patentNumber} — Pinned Scanned Facsimile
           </h3>
-          {isHeldEditionFallback && (
-            <p className="mt-1 max-w-2xl text-sm leading-relaxed text-ink-700 dark:text-parchment-300">
-              This is the pinned facsimile served with this record, not a curated archival edition
-              or an OCR text layer.
-            </p>
-          )}
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <a
             href={patent.originalPdfUrl}
-            target={isHeldEditionFallback ? "_blank" : undefined}
-            rel={isHeldEditionFallback ? "noopener noreferrer" : undefined}
-            download={!isHeldEditionFallback || undefined}
+            download
             className="flex items-center gap-2 rounded-xl bg-amber-700 px-4 py-2 text-sm font-mono font-bold text-white shadow-sm transition-colors hover:bg-amber-800"
           >
-            {isHeldEditionFallback ? (
-              <FileText className="h-4 w-4" />
-            ) : (
-              <Download className="h-4 w-4" />
-            )}
-            {isHeldEditionFallback ? "Open Complete Original PDF" : "Download PDF"}
+            <Download className="h-4 w-4" /> Download PDF
           </a>
           <a
             href={patent.googlePatentsUrl}
@@ -246,41 +189,50 @@ function PinnedFacsimilePanel({
   );
 }
 
-function TranscriptUnavailable({
-  patent,
-  hasRawSourceText,
-  decision,
-  pdfEmbedUnsupported,
-}: {
-  patent: Patent;
-  hasRawSourceText: boolean;
-  decision: ArchivalPublicationViewState;
-  pdfEmbedUnsupported: boolean;
-}) {
+function ReviewedTranscript({ transcript }: { transcript: string }) {
   return (
-    <div className="space-y-5">
-      <div
-        className="rounded-2xl border border-amber-300 bg-amber-50/80 p-5 text-ink-900 dark:border-amber-800 dark:bg-amber-950/20 dark:text-parchment-100"
-        data-testid="held-archival-edition-notice"
-        role="status"
-      >
-        <h4 className="font-serif text-lg font-bold">Curated archival edition pending</h4>
-        <p className="mt-2 font-sans text-sm leading-relaxed">
-          {decision.explanation} The manual reading edition remains unpublished
-          {hasRawSourceText
-            ? "; the private raw comparison layer is not presented as a reviewed edition."
-            : "."}
-        </p>
-        <p className="mt-3 font-mono text-xs font-semibold tracking-wide text-amber-900 dark:text-amber-200">
-          Review status: {decision.state.kind} · reason {decision.reasonCode}
+    <section
+      className="space-y-4 text-ink-950 dark:text-parchment-100"
+      data-testid="reviewed-transcript-fallback"
+    >
+      <div>
+        <h4 className="font-serif text-lg font-bold">Complete patent transcript</h4>
+        <p className="mt-1 font-sans text-sm leading-relaxed text-ink-700 dark:text-parchment-300">
+          The page markers preserve the source order while a structured reading edition is prepared.
         </p>
       </div>
-      <PinnedFacsimilePanel
-        patent={patent}
-        pdfEmbedUnsupported={pdfEmbedUnsupported}
-        variant="held-edition-fallback"
-      />
-    </div>
+      <pre className="max-h-[68dvh] overflow-auto whitespace-pre-wrap break-words rounded-xl border border-parchment-300 bg-parchment-100/80 p-4 font-mono text-xs leading-relaxed text-ink-950 shadow-xs dark:border-ink-800 dark:bg-ink-900/80 dark:text-parchment-100 sm:p-6">
+        {transcript}
+      </pre>
+    </section>
+  );
+}
+
+function TranscriptUnavailable({ patent }: { patent: Patent }) {
+  return (
+    <section
+      className="space-y-4 rounded-2xl border border-parchment-300 bg-parchment-100/80 p-5 text-ink-900 dark:border-ink-800 dark:bg-ink-900/80 dark:text-parchment-100"
+      data-testid="source-text-excerpt"
+    >
+      <div>
+        <h4 className="font-serif text-lg font-bold">Available patent text</h4>
+        <p className="mt-1 font-sans text-sm leading-relaxed">
+          This record has not yet received a page-complete reviewed transcript. Its available source
+          excerpt remains visible here.
+        </p>
+      </div>
+      <pre className="max-h-[40dvh] overflow-auto whitespace-pre-wrap break-words border-t border-parchment-300 pt-4 font-serif text-sm leading-relaxed text-ink-950 dark:border-ink-800 dark:text-parchment-100">
+        {patent.originalText}
+      </pre>
+      <a
+        href={patent.originalPdfUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex w-fit items-center gap-2 text-sm font-mono font-semibold text-amber-800 underline decoration-amber-500/60 underline-offset-4 hover:text-amber-900 dark:text-amber-300 dark:hover:text-amber-200"
+      >
+        <FileText className="h-4 w-4" /> Open original facsimile
+      </a>
+    </section>
   );
 }
 
@@ -288,9 +240,9 @@ export function DualProjectionViewer({
   patent,
   archivalPublication,
   archivalParallelReadings,
+  reviewedTranscript,
   initialView,
   colorizedEquations,
-  hasRawSourceText,
 }: DualProjectionViewerProps) {
   const { tick, lastChange } = usePatentPhysics(patent.id);
   const [viewMode, setViewModeState] = useState<PatentViewMode>(
@@ -306,22 +258,21 @@ export function DualProjectionViewer({
       (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     setPdfEmbedUnsupported(isIOS);
   }, []);
-  // A raw PDF text layer is private comparison evidence, never a public
-  // publication source. The optional edition is already hand-authored in
-  // semantic nodes; this component intentionally performs no text cleanup.
-  // A semantic edition stays visitor-facing when it is present. Editorial
-  // review state is diagnostic information, not a gate that replaces the
-  // patent text with an empty notice.
-  const archivalSource =
-    patent.archivalEdition && archivalParallelReadings
-      ? { edition: patent.archivalEdition, paragraphReadings: archivalParallelReadings }
-      : undefined;
+  // A semantic edition stays visitor-facing whenever it exists. Parallel
+  // readings enhance it but are never a condition for showing legal source
+  // text. If an edition has not been authored yet, the server may supply a
+  // complete reviewed ledger as a literal text fallback.
+  const archivalSource = patent.archivalEdition
+    ? { edition: patent.archivalEdition, paragraphReadings: archivalParallelReadings ?? {} }
+    : undefined;
   const originalTextLabel = archivalSource
-    ? `Complete manually prepared edition · facsimile reviewed ${archivalSource.edition.preparedAt}`
-    : "Pinned primary-source facsimile · curated archival edition pending";
+    ? `Patent text edition · prepared ${archivalSource.edition.preparedAt}`
+    : reviewedTranscript
+      ? "Complete patent transcript"
+      : "Available primary-source text";
   const sourceVisualHold = patent.id === "us-3671542-kwolek-kevlar";
   const visualFaceLabel = sourceVisualHold
-    ? "Source-Bound Visual Hold"
+    ? "Visual Model in Preparation"
     : "Interactive 3D Simulator";
 
   // Hydration-safe: SSR stays on the default face; URL selection applies after
@@ -601,13 +552,10 @@ export function DualProjectionViewer({
                   claimDecoders={patent.claims}
                   className="text-ink-950 select-text dark:text-parchment-100"
                 />
+              ) : reviewedTranscript ? (
+                <ReviewedTranscript transcript={reviewedTranscript} />
               ) : (
-                <TranscriptUnavailable
-                  patent={patent}
-                  hasRawSourceText={hasRawSourceText}
-                  decision={archivalPublication}
-                  pdfEmbedUnsupported={pdfEmbedUnsupported}
-                />
+                <TranscriptUnavailable patent={patent} />
               )}
             </div>
           </div>
@@ -659,13 +607,13 @@ export function DualProjectionViewer({
                   <Activity className="w-5 h-5 text-amber-700 dark:text-amber-500" />
                   <span>
                     {sourceVisualHold
-                      ? "Source-Bound Visual Hold"
+                      ? "Visual Model in Preparation"
                       : "Interactive Real-Time Physical Simulation"}
                   </span>
                 </h4>
                 <span className="text-xs font-sans text-ink-500 hidden sm:inline">
                   {sourceVisualHold
-                    ? "Checked claims only · no interactive physical model is published"
+                    ? "Complete patent text remains available · visual model in preparation"
                     : "Drag to rotate · Scroll to zoom · Shared controls update the displayed model"}
                 </span>
                 <span className="text-xs font-sans text-ink-500 sm:hidden">
@@ -836,7 +784,9 @@ export function DualProjectionViewer({
                 <span className="text-xs sm:text-sm font-mono text-amber-700 dark:text-amber-400 font-bold uppercase tracking-widest block">
                   {archivalSource
                     ? "Complete Manually Prepared Archival Edition"
-                    : "Pinned Primary-Source Facsimile"}
+                    : reviewedTranscript
+                      ? "Complete Patent Transcript"
+                      : "Available Patent Text"}
                 </span>
                 <h3 className="font-serif text-2xl sm:text-3xl font-bold text-ink-950 dark:text-parchment-50">
                   {patent.patentNumber} · Specification of Letters Patent
@@ -864,13 +814,10 @@ export function DualProjectionViewer({
                 claimDecoders={patent.claims}
                 className="rounded-2xl border border-parchment-300 bg-parchment-100/80 p-6 text-ink-950 shadow-xs select-text dark:border-ink-800 dark:bg-ink-900/80 dark:text-parchment-100 sm:p-10"
               />
+            ) : reviewedTranscript ? (
+              <ReviewedTranscript transcript={reviewedTranscript} />
             ) : (
-              <TranscriptUnavailable
-                patent={patent}
-                hasRawSourceText={hasRawSourceText}
-                decision={archivalPublication}
-                pdfEmbedUnsupported={pdfEmbedUnsupported}
-              />
+              <TranscriptUnavailable patent={patent} />
             )}
           </div>
         </div>

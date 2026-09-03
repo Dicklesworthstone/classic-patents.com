@@ -11,7 +11,6 @@ import {
   stepGrammeDynamo,
   stepHaberAmmonia,
   stepMorseTelegraph,
-  stepNoyceIC,
 } from "./catalogKernels";
 import { fermiKeff } from "./fermiKinetics";
 import { stepHoweSewingMachine } from "./machineKernels";
@@ -214,20 +213,9 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
       },
     ];
   }
-  if (patentId === "us-2981877-noyce-ic") {
-    const vr = params.reverseBias ?? 5;
-    const die = stepNoyceIC({ reverseBias: vr });
-    return [
-      {
-        from: "reverse bias",
-        to: "depletion width",
-        gain: Number((die.depletionWidthUm / Math.max(0.1, vr)).toFixed(4)),
-        unit: "µm / V",
-        crate: "fs-couple",
-        source: "ts-fallback",
-      },
-    ];
-  }
+  // US 2,981,877 supplies a connected oxide/contact/lead topology, but no
+  // numeric cause/effect pair from which an fs-couple gain can be derived.
+  if (patentId === "us-2981877-noyce-ic") return [];
   if (patentId === "us-1647-morse-telegraph") {
     const volts = params.lineVoltageV ?? 24;
     const morse = stepMorseTelegraph({ lineVoltageV: volts });

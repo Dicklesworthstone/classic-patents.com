@@ -73,9 +73,11 @@ export function buildZeppelinAirshipModel(): ZeppelinAirshipModelResult {
 
   const duraluminGirders = trackMat(
     new THREE.MeshStandardMaterial({
-      color: 0x94a3b8,
-      roughness: 0.32,
-      metalness: 0.88,
+      // A dark, high-contrast structural tone preserves the frame's legibility
+      // against the pale studio sky, especially in cutaway inspection mode.
+      color: 0x334155,
+      roughness: 0.42,
+      metalness: 0.72,
     }),
   );
 

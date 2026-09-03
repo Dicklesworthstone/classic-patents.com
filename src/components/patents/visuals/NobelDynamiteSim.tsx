@@ -252,6 +252,7 @@ export function NobelDynamiteSim() {
           </div>
           <input
             type="range"
+            aria-label="Nitroglycerin mass ratio percentage"
             min="50"
             max="85"
             step="1"
@@ -267,6 +268,7 @@ export function NobelDynamiteSim() {
           </div>
           <input
             type="range"
+            aria-label="Blasting cap primer energy in joules"
             min="0.1"
             max="2.5"
             step="0.1"

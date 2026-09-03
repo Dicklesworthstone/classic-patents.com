@@ -274,6 +274,7 @@ export function EinsteinRefrigerator3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
+            aria-label={showUiOverlay ? "Hide overlay interface" : "Show overlay interface"}
             className={`min-h-9 p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
               showUiOverlay
                 ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"

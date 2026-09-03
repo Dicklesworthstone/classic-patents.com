@@ -122,7 +122,7 @@ export function ArkwrightWaterFrame3D() {
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The persistent WebGL scene consumes the stable layout-effect-synchronized control ref so toggles do not rebuild and flash the studio.
+  // The persistent WebGL scene consumes the stable layout-effect-synchronized control ref so toggles do not rebuild and flash the studio.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -185,7 +185,7 @@ export function ArkwrightWaterFrame3D() {
       studio.cleanup();
       studioRef.current = null;
     };
-  }, []);
+  }, [live]);
 
   const outputs = stepArkwrightWaterFrame({
     waterWheelRpm,
@@ -333,6 +333,7 @@ export function ArkwrightWaterFrame3D() {
             </div>
             <input
               type="range"
+              aria-label="Water wheel speed"
               min="10"
               max="60"
               step="1"
@@ -351,6 +352,7 @@ export function ArkwrightWaterFrame3D() {
             </div>
             <input
               type="range"
+              aria-label="Total draft ratio"
               min="2.0"
               max="6.0"
               step="0.1"
@@ -371,6 +373,7 @@ export function ArkwrightWaterFrame3D() {
             </div>
             <input
               type="range"
+              aria-label="Roller clamp weight"
               min="2.0"
               max="10.0"
               step="0.5"

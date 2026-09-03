@@ -32,7 +32,10 @@ export function EnergyFlowStrip({ title, channels }: EnergyFlowStripProps) {
                 ? "bg-emerald-500"
                 : "bg-amber-500";
           return (
-            <div key={ch.name} className="grid grid-cols-[7rem_1fr_4.5rem] items-center gap-2">
+            <div
+              key={ch.name}
+              className="grid grid-cols-[6.5rem_1fr_4.5rem] items-center gap-2 sm:grid-cols-[11rem_1fr_5rem]"
+            >
               <span className="text-[10px] font-mono text-ink-600 dark:text-ink-400 truncate">
                 {ch.name}
               </span>

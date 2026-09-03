@@ -3,6 +3,7 @@ import type { KamenSegwayControls, KamenSegwayTelemetry } from "@/physics/kamenS
 
 export interface KamenSegway3DObjects {
   rootGroup: THREE.Group;
+  vehicleYawGroup: THREE.Group;
   chassisGroup: THREE.Group;
   leftWheelGroup: THREE.Group;
   rightWheelGroup: THREE.Group;
@@ -17,14 +18,28 @@ export function createKamenSegwayModel(): KamenSegway3DObjects {
   rootGroup.name = "kamen-segway-root";
 
   // 1. Ground Grid
-  const groundGrid = new THREE.GridHelper(30, 30, 0x0ea5e9, 0x1e293b);
-  groundGrid.position.y = 0;
+  const groundGrid = new THREE.GridHelper(6, 12, 0x0ea5e9, 0x1e293b);
+  groundGrid.name = "segway-world-fixed museum floor";
+  groundGrid.position.y = -0.015;
+  for (const material of Array.isArray(groundGrid.material)
+    ? groundGrid.material
+    : [groundGrid.material]) {
+    material.transparent = true;
+    material.opacity = 0.2;
+    material.depthWrite = false;
+  }
   rootGroup.add(groundGrid);
+
+  // Steering rotates the machine in the world; the museum floor is a fixed
+  // reference frame and must never yaw with the rider.
+  const vehicleYawGroup = new THREE.Group();
+  vehicleYawGroup.name = "segway-vehicle-yaw-frame";
+  rootGroup.add(vehicleYawGroup);
 
   // 2. Transporter Machine Root (Pivot on wheel axle at y = 0.24)
   const chassisGroup = new THREE.Group();
   chassisGroup.position.y = 0.24;
-  rootGroup.add(chassisGroup);
+  vehicleYawGroup.add(chassisGroup);
 
   // Chassis base platform
   const platformGeo = new THREE.BoxGeometry(0.55, 0.08, 0.42);
@@ -206,7 +221,7 @@ export function createKamenSegwayModel(): KamenSegway3DObjects {
 
     // 2. Yaw Steering Differential
     const yawRate = controls.steeringInput * 1.5;
-    rootGroup.rotation.y = timeSec * yawRate * 0.5;
+    vehicleYawGroup.rotation.y = timeSec * yawRate * 0.5;
 
     // 3. Wheel Spin Rotation based on velocity: omega = v / R
     const wheelOmega = tel.velocityMS / 0.24;
@@ -233,6 +248,7 @@ export function createKamenSegwayModel(): KamenSegway3DObjects {
 
   return {
     rootGroup,
+    vehicleYawGroup,
     chassisGroup,
     leftWheelGroup,
     rightWheelGroup,

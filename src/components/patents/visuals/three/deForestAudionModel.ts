@@ -15,6 +15,7 @@ import * as THREE from "three";
 export interface DeForestAudionModelNodes {
   root: THREE.Group;
   glassBulb: THREE.Mesh;
+  glassBulbRim: THREE.Mesh;
   filamentMesh: THREE.Mesh;
   filamentLight: THREE.PointLight;
   gridMesh: THREE.Mesh;
@@ -42,17 +43,32 @@ export function buildDeForestAudionModel(): DeForestAudionModelNodes {
     transmission: 0.9,
     ior: 1.52,
     transparent: true,
-    opacity: 0.4,
+    // Depth writing from a transparent shell can hide the very electrodes the
+    // cutaway is meant to teach. Keep the envelope present but visually quiet.
+    opacity: 0.18,
+    depthWrite: false,
   });
   materials.push(glassMat);
+
+  // A cutaway cannot reduce the sealed envelope to invisibility: visitors need
+  // to see that the filament, grid, and plate sit inside one evacuated bulb.
+  // This is a museum contour for the glass shell, not an additional patent part.
+  const glassRimMat = new THREE.MeshBasicMaterial({
+    color: 0xdbeafe,
+    transparent: true,
+    opacity: 0.28,
+    depthWrite: false,
+  });
+  materials.push(glassRimMat);
 
   const getterMat = new THREE.MeshStandardMaterial({
     color: 0x475569,
     metalness: 0.95,
     roughness: 0.1,
     transparent: true,
-    opacity: 0.85,
+    opacity: 0.36,
     side: THREE.BackSide,
+    depthWrite: false,
   });
   materials.push(getterMat);
 
@@ -66,14 +82,14 @@ export function buildDeForestAudionModel(): DeForestAudionModelNodes {
   materials.push(filamentMat);
 
   const gridMat = new THREE.MeshStandardMaterial({
-    color: 0x94a3b8,
+    color: 0x1e293b,
     metalness: 0.9,
     roughness: 0.2,
   });
   materials.push(gridMat);
 
   const plateMat = new THREE.MeshStandardMaterial({
-    color: 0x64748b,
+    color: 0x334155,
     metalness: 0.8,
     roughness: 0.35,
   });
@@ -157,6 +173,12 @@ export function buildDeForestAudionModel(): DeForestAudionModelNodes {
   const bulbGeo = new THREE.SphereGeometry(1.2, 32, 24);
   const glassBulb = new THREE.Mesh(bulbGeo, glassMat);
   bulbGroup.add(glassBulb);
+
+  // The front-facing contour is deliberately thin: it preserves a readable
+  // sealed-bulb silhouette without drawing across the electrode teaching view.
+  const glassBulbRim = new THREE.Mesh(new THREE.TorusGeometry(1.205, 0.018, 8, 64), glassRimMat);
+  glassBulbRim.name = "Museum contour of sealed evacuated glass bulb";
+  bulbGroup.add(glassBulbRim);
 
   // Metallic Silver Getter Mirror Deposit on top inner dome
   const getterGeo = new THREE.SphereGeometry(1.18, 24, 16, 0, Math.PI * 2, 0, Math.PI / 4);
@@ -304,15 +326,18 @@ export function buildDeForestAudionModel(): DeForestAudionModelNodes {
   bulbGroup.add(electronParticles);
 
   const setCutaway = (cutaway: boolean) => {
-    glassMat.opacity = cutaway ? 0.08 : 0.4;
+    glassMat.opacity = cutaway ? 0.1 : 0.18;
     glassMat.needsUpdate = true;
-    getterMat.opacity = cutaway ? 0.15 : 0.85;
+    glassRimMat.opacity = cutaway ? 0.52 : 0.28;
+    glassRimMat.needsUpdate = true;
+    getterMat.opacity = cutaway ? 0.08 : 0.36;
     getterMat.needsUpdate = true;
   };
 
   return {
     root,
     glassBulb,
+    glassBulbRim,
     filamentMesh,
     filamentLight,
     gridMesh,

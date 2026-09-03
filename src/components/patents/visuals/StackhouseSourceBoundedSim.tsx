@@ -8,6 +8,7 @@ import {
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 const PATENT_ID = "us-4068536-stackhouse-manipulator";
+const POINT_P = { x: 390, y: 220 } as const;
 
 interface SliderProps {
   id: string;
@@ -45,15 +46,14 @@ export function StackhouseSourceBoundedSim() {
   const controls = readStackhouseSourceControls(params);
   const pose = stepStackhouseSourceTopology(controls);
 
-  const pointP = { x: 390, y: 220 };
   const firstAxisAngle = -pose.alphaABRad;
   const bEnd = {
-    x: pointP.x + Math.cos(firstAxisAngle) * 118,
-    y: pointP.y + Math.sin(firstAxisAngle) * 118,
+    x: POINT_P.x + Math.cos(firstAxisAngle) * 118,
+    y: POINT_P.y + Math.sin(firstAxisAngle) * 118,
   };
   const terminalBase = {
-    x: pointP.x + pose.terminalAxisOffset * 90,
-    y: pointP.y,
+    x: POINT_P.x + pose.terminalAxisOffset * 90,
+    y: POINT_P.y,
   };
   const projectedMagnitude = Math.hypot(pose.toolDirection[0], pose.toolDirection[2]) || 1;
   const toolEnd = {
@@ -148,15 +148,15 @@ export function StackhouseSourceBoundedSim() {
             elbow-mounted hydraulic motors
           </text>
 
-          <circle cx={pointP.x} cy={pointP.y} r="25" fill="#b45309" stroke="#fbbf24" />
+          <circle cx={POINT_P.x} cy={POINT_P.y} r="25" fill="#b45309" stroke="#fbbf24" />
           <path
-            d={`M${pointP.x} ${pointP.y} L${bEnd.x} ${bEnd.y}`}
+            d={`M${POINT_P.x} ${POINT_P.y} L${bEnd.x} ${bEnd.y}`}
             stroke="#0284c7"
             strokeWidth="28"
             strokeLinecap="round"
           />
           <path
-            d={`M${pointP.x} ${pointP.y} L${bEnd.x} ${bEnd.y}`}
+            d={`M${POINT_P.x} ${POINT_P.y} L${bEnd.x} ${bEnd.y}`}
             stroke="#7dd3fc"
             strokeWidth="7"
             strokeDasharray="9 5"
@@ -167,8 +167,8 @@ export function StackhouseSourceBoundedSim() {
 
           {pose.terminalAxisOffset > 0 && (
             <line
-              x1={pointP.x}
-              y1={pointP.y}
+              x1={POINT_P.x}
+              y1={POINT_P.y}
               x2={terminalBase.x}
               y2={terminalBase.y}
               stroke="#fb923c"
@@ -198,8 +198,15 @@ export function StackhouseSourceBoundedSim() {
             shaft 26 / mounting surface 14c
           </text>
 
-          <circle cx={pointP.x} cy={pointP.y} r="6" fill="#ef4444" stroke="white" strokeWidth="2" />
-          <text x={pointP.x - 13} y={pointP.y + 48} fill="#fca5a5" fontSize="11">
+          <circle
+            cx={POINT_P.x}
+            cy={POINT_P.y}
+            r="6"
+            fill="#ef4444"
+            stroke="white"
+            strokeWidth="2"
+          />
+          <text x={POINT_P.x - 13} y={POINT_P.y + 48} fill="#fca5a5" fontSize="11">
             P
           </text>
 

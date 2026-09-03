@@ -50,6 +50,9 @@ describe("US 6,162 George Corliss Steam Engine visual & kinematics boundary", ()
       expect(threeSource).toContain(preset);
     }
 
+    expect(threeSource).toContain("MOBILE_CAMERA_PRESETS");
+    expect(threeSource).toContain("iso: { pos: [17.0, 10.5, 22.5], target: [0, -0.5, 0] }");
+    expect(threeSource).toContain('resolveCameraPreset("iso", container.clientWidth)');
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Corliss Steam Engine 3D");
   });

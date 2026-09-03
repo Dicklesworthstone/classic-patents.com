@@ -10,37 +10,12 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import { type LincolnBuoyCameraPreset, lincolnBuoyViewForViewport } from "./lincolnBuoyCamera";
 import { buildLincolnBuoyModel, updateLincolnBuoyKinematics } from "./lincolnBuoyModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset = "iso" | "bellows_chambers" | "pilothouse" | "paddlewheel" | "keel" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [14, 12.2, 16], target: [0, 2.2, 0] },
-  bellows_chambers: { pos: [0, -0.8, 6.5], target: [0, -0.5, 0] },
-  pilothouse: { pos: [-5.5, 5.0, 5.0], target: [-3.2, 3.5, 0] },
-  paddlewheel: { pos: [8.5, 1.2, 3.5], target: [6.8, 0, 0] },
-  keel: { pos: [0, -4.5, 8.5], target: [0, -1.0, 0] },
-  top: { pos: [0, 13.0, 0.1], target: [0, 0, 0] },
-};
-
-export function lincolnBuoyViewForViewport(preset: CameraPreset, viewportWidth: number) {
-  const config = CAMERA_PRESETS[preset];
-  const multiplier = viewportWidth < 480 ? (preset === "iso" ? 1.2 : 1.12) : 1;
-  return {
-    pos: config.pos.map(
-      (coordinate, index) =>
-        config.target[index] + (coordinate - config.target[index]) * multiplier,
-    ) as [number, number, number],
-    target: [...config.target] as [number, number, number],
-  };
-}
 
 export function LincolnBuoy3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -56,7 +31,7 @@ export function LincolnBuoy3D() {
     (params.shoalDepth as number) ?? (params.riverShoalDepthFt as number) ?? 4.5;
   const steamboatWeightTons =
     (params.weightTons as number) ?? (params.steamboatWeightTons as number) ?? 380;
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<LincolnBuoyCameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
@@ -99,7 +74,7 @@ export function LincolnBuoy3D() {
     paddleDisplayOmegaRadPerS: lincoln.paddleDisplayOmegaRadPerS,
   });
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: LincolnBuoyCameraPreset) => {
     setActiveCamera(preset);
     const cfg = lincolnBuoyViewForViewport(preset, containerRef.current?.clientWidth ?? 1000);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
@@ -348,6 +323,7 @@ export function LincolnBuoy3D() {
             </div>
             <input
               type="range"
+              aria-label="Bellows inflation"
               min="0"
               max="100"
               step="1"
@@ -366,6 +342,7 @@ export function LincolnBuoy3D() {
             </div>
             <input
               type="range"
+              aria-label="Steamboat weight"
               min="200"
               max="600"
               step="10"
@@ -384,6 +361,7 @@ export function LincolnBuoy3D() {
             </div>
             <input
               type="range"
+              aria-label="Shoal water depth"
               min="2.0"
               max="12.0"
               step="0.1"

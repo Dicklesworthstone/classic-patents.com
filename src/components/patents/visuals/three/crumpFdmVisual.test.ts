@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import * as THREE from "three";
 import { CRUMP_FDM_DEFAULT_CONTROLS, stepCrumpFdmSi } from "@/physics/crumpFdmKernel";
-import { crumpViewForViewport } from "./CrumpFdm3D";
+import { crumpViewForViewport } from "./crumpFdmCamera";
 import { createCrumpFdmModel } from "./crumpFdmModel";
 
 describe("US 5,121,329 Crump FDM Procedural 3D Visual Model", () => {

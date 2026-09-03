@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { eInkViewForViewport } from "./EInk3D";
+import { eInkViewForViewport } from "./eInkCamera";
 
 test("E-Ink 3D projects electrophoretic state without rotating the apparatus", async () => {
   const source = await Bun.file(new URL("./EInk3D.tsx", import.meta.url)).text();

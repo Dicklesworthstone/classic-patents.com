@@ -344,6 +344,7 @@ export function DaimlerEngine3D() {
             </div>
             <input
               type="range"
+              aria-label="Cooling pump setting"
               min="0"
               max="1"
               step="1"

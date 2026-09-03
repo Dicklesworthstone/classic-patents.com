@@ -4,22 +4,34 @@ import type {
   HullStereolithographyTelemetry,
 } from "@/physics/hullStereolithographyKernel";
 
+export const HULL_RESIN_SURFACE_Y = 1.42;
+export const HULL_RECOAT_DISPLAY_TRAVEL = 0.28;
+export const HULL_DISPLAY_LAMINA_HEIGHT = 0.055;
+export const HULL_PLATFORM_HALF_THICKNESS = 0.04;
+
 export interface HullStereolithography3DObjects {
   root: THREE.Group;
-  vatMesh: THREE.Mesh;
+  floorMesh: THREE.Mesh;
+  vatBaseMesh: THREE.Mesh;
   resinMesh: THREE.Mesh;
   platformGroup: THREE.Group;
   partGroup: THREE.Group;
+  laminaMeshes: THREE.Mesh[];
+  activeLaminaMesh: THREE.Mesh;
   platformCarriageNut: THREE.Mesh;
+  elevatorLeadScrew: THREE.Mesh;
   scannerGroup: THREE.Group;
   scannerSupportGroup: THREE.Group;
-  laserBeamLine: THREE.Line;
-  laserSpotMesh: THREE.Mesh;
-  galvoMirrorMesh: THREE.Mesh;
+  plotterXCarriage: THREE.Group;
+  lensCarriageGroup: THREE.Group;
+  fiberLine: THREE.Line;
+  uvBeamLine: THREE.Line;
+  uvSpotMesh: THREE.Mesh;
+  shutterBladeMesh: THREE.Mesh;
   update: (
     controls: HullStereolithographyControls,
-    _tel: HullStereolithographyTelemetry,
-    simTimeSec: number,
+    telemetry: HullStereolithographyTelemetry,
+    simTimeSec?: number,
   ) => void;
   dispose: () => void;
 }
@@ -28,241 +40,320 @@ export function createHullStereolithographyModel(): HullStereolithography3DObjec
   const root = new THREE.Group();
   root.name = "HullStereolithographyModel";
 
-  // Materials
-  const vatMaterial = new THREE.MeshStandardMaterial({
-    color: 0x292524,
-    metalness: 0.8,
-    roughness: 0.3,
-  });
+  const materials: THREE.Material[] = [];
+  const geometries: THREE.BufferGeometry[] = [];
+  const material = <T extends THREE.Material>(value: T): T => {
+    materials.push(value);
+    return value;
+  };
+  const geometry = <T extends THREE.BufferGeometry>(value: T): T => {
+    geometries.push(value);
+    return value;
+  };
 
-  const vatGlassMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0xffffff,
-    metalness: 0.1,
-    roughness: 0.1,
-    transmission: 0.85,
-    thickness: 0.05,
-    transparent: true,
-    opacity: 0.5,
-  });
+  const darkMetal = material(
+    new THREE.MeshStandardMaterial({ color: 0x292524, metalness: 0.78, roughness: 0.3 }),
+  );
+  const brightMetal = material(
+    new THREE.MeshStandardMaterial({ color: 0xb8b4ad, metalness: 0.88, roughness: 0.22 }),
+  );
+  const blackHousing = material(
+    new THREE.MeshStandardMaterial({ color: 0x171412, metalness: 0.42, roughness: 0.48 }),
+  );
+  const glass = material(
+    new THREE.MeshPhysicalMaterial({
+      color: 0xdbeafe,
+      roughness: 0.08,
+      transmission: 0.8,
+      thickness: 0.04,
+      transparent: true,
+      opacity: 0.4,
+      depthWrite: false,
+    }),
+  );
+  const resin = material(
+    new THREE.MeshPhysicalMaterial({
+      color: 0x0ea5e9,
+      roughness: 0.22,
+      transmission: 0.46,
+      transparent: true,
+      opacity: 0.48,
+      depthWrite: false,
+    }),
+  );
+  const cured = material(
+    new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.42, metalness: 0.08 }),
+  );
+  const curedAlternate = material(
+    new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.38, metalness: 0.06 }),
+  );
+  const activeCure = material(
+    new THREE.MeshStandardMaterial({
+      color: 0xfef08a,
+      emissive: 0xf59e0b,
+      emissiveIntensity: 1.2,
+      roughness: 0.3,
+    }),
+  );
+  const violet = material(new THREE.LineBasicMaterial({ color: 0xe879f9 }));
+  const fiberMaterial = material(new THREE.LineBasicMaterial({ color: 0xf8fafc }));
+  const spotMaterial = material(
+    new THREE.MeshBasicMaterial({ color: 0xf0abfc, transparent: true, opacity: 0.95 }),
+  );
+  const floorMaterial = material(
+    new THREE.MeshStandardMaterial({ color: 0xddd6ce, roughness: 0.82, metalness: 0.02 }),
+  );
 
-  const resinMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0x0284c7,
-    metalness: 0.1,
-    roughness: 0.2,
-    transmission: 0.7,
-    transparent: true,
-    opacity: 0.65,
-  });
+  const floorMesh = new THREE.Mesh(geometry(new THREE.BoxGeometry(3.6, 0.1, 3.25)), floorMaterial);
+  floorMesh.name = "Museum floor supporting the vat";
+  floorMesh.position.y = -0.05;
+  floorMesh.receiveShadow = true;
+  root.add(floorMesh);
 
-  const platformMaterial = new THREE.MeshStandardMaterial({
-    color: 0xa8a29e,
-    metalness: 0.85,
-    roughness: 0.25,
-  });
-
-  const curedPartMaterial = new THREE.MeshStandardMaterial({
-    color: 0xf59e0b,
-    metalness: 0.3,
-    roughness: 0.4,
-  });
-
-  const laserSpotMaterial = new THREE.MeshBasicMaterial({
-    color: 0xc084fc,
-  });
-
-  // 1. Vat Tank Structure
   const vatGroup = new THREE.Group();
-  vatGroup.name = "VatTank";
+  vatGroup.name = "Container 21";
+  const vatBaseMesh = new THREE.Mesh(geometry(new THREE.BoxGeometry(2.5, 0.12, 2.2)), darkMetal);
+  vatBaseMesh.name = "Container 21 base";
+  vatBaseMesh.position.y = 0.06;
+  const vatFront = new THREE.Mesh(geometry(new THREE.BoxGeometry(2.3, 1.44, 0.06)), glass);
+  vatFront.name = "Container 21 transparent front wall";
+  vatFront.position.set(0, 0.84, 1.03);
+  const vatBack = new THREE.Mesh(geometry(new THREE.BoxGeometry(2.3, 1.44, 0.06)), darkMetal);
+  vatBack.position.set(0, 0.84, -1.03);
+  const vatLeft = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.06, 1.44, 2.0)), darkMetal);
+  vatLeft.position.set(-1.15, 0.84, 0);
+  const vatRight = vatLeft.clone();
+  vatRight.position.x = 1.15;
+  vatGroup.add(vatBaseMesh, vatFront, vatBack, vatLeft, vatRight);
 
-  const vatBase = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.1, 2.0), vatMaterial);
-  vatBase.position.y = -0.05;
-  vatGroup.add(vatBase);
-
-  // Vat Glass Window (Front)
-  const vatFront = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.4, 0.05), vatGlassMaterial);
-  vatFront.position.set(0, 0.7, 0.95);
-  vatGroup.add(vatFront);
-
-  // Vat Sides & Back
-  const vatBack = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.4, 0.05), vatMaterial);
-  vatBack.position.set(0, 0.7, -0.95);
-  vatGroup.add(vatBack);
-
-  const vatLeft = new THREE.Mesh(new THREE.BoxGeometry(0.05, 1.4, 1.9), vatMaterial);
-  vatLeft.position.set(-1.1, 0.7, 0);
-  vatGroup.add(vatLeft);
-
-  const vatRight = new THREE.Mesh(new THREE.BoxGeometry(0.05, 1.4, 1.9), vatMaterial);
-  vatRight.position.set(1.1, 0.7, 0);
-  vatGroup.add(vatRight);
-
-  // 2. Liquid Resin Volume
-  const resinGeo = new THREE.BoxGeometry(2.1, 1.2, 1.8);
-  const resinMesh = new THREE.Mesh(resinGeo, resinMaterial);
-  resinMesh.position.set(0, 0.6, 0);
+  const resinMesh = new THREE.Mesh(geometry(new THREE.BoxGeometry(2.22, 1.27, 1.94)), resin);
+  resinMesh.name = "UV-curable liquid 22 with fixed working surface 23";
+  resinMesh.position.set(0, 0.785, 0);
+  resinMesh.renderOrder = 2;
   vatGroup.add(resinMesh);
-
   root.add(vatGroup);
 
-  // 3. Elevator Mechanism & Build Platform
   const elevatorGroup = new THREE.Group();
-  elevatorGroup.name = "ElevatorMechanism";
+  elevatorGroup.name = "Elevator platform 29 and translational support";
+  const elevatorLeadScrew = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.035, 0.035, 1.95, 18)),
+    brightMetal,
+  );
+  elevatorLeadScrew.name = "Illustrative prismatic elevator guide";
+  elevatorLeadScrew.position.set(0, 1.095, -0.98);
+  const lowerBearing = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.09, 0.09, 0.12, 20)),
+    darkMetal,
+  );
+  lowerBearing.position.set(0, 0.18, -0.98);
+  const upperBearing = lowerBearing.clone();
+  upperBearing.position.y = 2.01;
+  const elevatorColumn = new THREE.Mesh(
+    geometry(new THREE.BoxGeometry(0.18, 1.95, 0.13)),
+    darkMetal,
+  );
+  elevatorColumn.position.set(0, 1.095, -1.055);
+  elevatorGroup.add(elevatorColumn, elevatorLeadScrew, lowerBearing, upperBearing);
 
-  // Lead Screw (Vertical)
-  const leadScrewGeo = new THREE.CylinderGeometry(0.03, 0.03, 2.2, 16);
-  const leadScrewMesh = new THREE.Mesh(leadScrewGeo, platformMaterial);
-  leadScrewMesh.position.set(0, 1.1, -0.85);
-  elevatorGroup.add(leadScrewMesh);
-
-  // Moveable Platform Group
   const platformGroup = new THREE.Group();
-  platformGroup.name = "PlatformGroup";
-
-  const platformMesh = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.06, 1.2), platformMaterial);
-  platformMesh.position.set(0, 0, 0);
-  platformGroup.add(platformMesh);
-
-  // The platform cannot hover independently of its lead screw. A carriage
-  // nut rides around the screw and a short rear bracket joins that nut to the
-  // platform edge, so every elevator pose remains one connected mechanism.
+  platformGroup.name = "Platform 29 moving with its carriage";
+  const platformMesh = new THREE.Mesh(
+    geometry(new THREE.BoxGeometry(1.28, HULL_PLATFORM_HALF_THICKNESS * 2, 1.2)),
+    brightMetal,
+  );
+  platformMesh.name = "Object-support platform 29";
   const platformCarriageNut = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.09, 0.09, 0.16, 20),
-    platformMaterial,
+    geometry(new THREE.CylinderGeometry(0.1, 0.1, 0.18, 20)),
+    brightMetal,
   );
-  platformCarriageNut.name = "Lead-screw carriage nut attached to build platform";
-  platformCarriageNut.position.set(0, 0, -0.85);
+  platformCarriageNut.name = "Platform carriage surrounding elevator guide";
+  platformCarriageNut.position.set(0, 0, -0.98);
   const platformRearBracket = new THREE.Mesh(
-    new THREE.BoxGeometry(0.22, 0.08, 0.31),
-    platformMaterial,
+    geometry(new THREE.BoxGeometry(0.23, 0.08, 0.37)),
+    brightMetal,
   );
-  platformRearBracket.name = "Build-platform-to-carriage support bracket";
-  platformRearBracket.position.set(0, 0, -0.725);
-  platformGroup.add(platformCarriageNut, platformRearBracket);
+  platformRearBracket.name = "Continuous platform-to-carriage bracket";
+  platformRearBracket.position.set(0, 0, -0.785);
+  platformGroup.add(platformMesh, platformCarriageNut, platformRearBracket);
 
-  // 4. Cured 3D Object Group (anchored to platform)
   const partGroup = new THREE.Group();
-  partGroup.name = "CuredObjectPart";
-  platformGroup.add(partGroup);
-
-  // Build a multi-layered procedural specimen
-  const partMesh = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.35, 0.45, 0.5, 32),
-    curedPartMaterial,
+  partGroup.name = "Object 30 assembled from touching laminae 30a, 30b, 30c";
+  const laminaMeshes: THREE.Mesh[] = [];
+  for (let index = 0; index < 12; index++) {
+    const radiusBottom = 0.49 - index * 0.012;
+    const radiusTop = Math.max(0.33, radiusBottom - 0.012);
+    const lamina = new THREE.Mesh(
+      geometry(new THREE.CylinderGeometry(radiusTop, radiusBottom, HULL_DISPLAY_LAMINA_HEIGHT, 32)),
+      index % 2 === 0 ? cured : curedAlternate,
+    );
+    lamina.name = `Integrated display lamina ${index + 1}`;
+    lamina.position.y =
+      HULL_PLATFORM_HALF_THICKNESS +
+      HULL_DISPLAY_LAMINA_HEIGHT / 2 +
+      index * HULL_DISPLAY_LAMINA_HEIGHT;
+    lamina.castShadow = true;
+    partGroup.add(lamina);
+    laminaMeshes.push(lamina);
+  }
+  const activeLaminaMesh = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.34, 0.34, 0.008, 32)),
+    activeCure,
   );
-  partMesh.position.set(0, 0.28, 0);
-  partGroup.add(partMesh);
-
+  activeLaminaMesh.name = "Illuminated cross-section at working surface 23";
+  partGroup.add(activeLaminaMesh);
+  platformGroup.add(partGroup);
   elevatorGroup.add(platformGroup);
   root.add(elevatorGroup);
 
-  // 5. Optical UV Laser Scanner Head
-  const scannerGroup = new THREE.Group();
-  scannerGroup.name = "LaserScannerAssembly";
-  scannerGroup.position.set(0, 2.4, 0);
-
-  const laserHousing = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.25, 0.35), vatMaterial);
-  scannerGroup.add(laserHousing);
-
-  const galvoMirrorGeo = new THREE.BoxGeometry(0.12, 0.02, 0.12);
-  const galvoMirrorMesh = new THREE.Mesh(galvoMirrorGeo, platformMaterial);
-  galvoMirrorMesh.position.set(0, -0.15, 0);
-  scannerGroup.add(galvoMirrorMesh);
-
-  root.add(scannerGroup);
-
-  // Rear optical gantry: two uprights terminate on the vat's back wall, a
-  // crossbeam joins them, and a forward boom overlaps the scanner housing.
-  // The previous housing was literally suspended at y=2.4 with no parent
-  // structure, which contradicted the otherwise physical apparatus.
   const scannerSupportGroup = new THREE.Group();
-  scannerSupportGroup.name = "Vat-anchored optical scanner gantry";
-  for (const x of [-0.95, 0.95]) {
-    const upright = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.1, 0.08), platformMaterial);
-    upright.name = `Optical gantry upright ${x < 0 ? "left" : "right"}`;
-    upright.position.set(x, 1.93, -0.9);
+  scannerSupportGroup.name = "Container-anchored plotter support";
+  for (const x of [-1.03, 1.03]) {
+    const upright = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.09, 2.35, 0.09)), brightMetal);
+    upright.name = `Plotter support upright ${x < 0 ? "left" : "right"}`;
+    upright.position.set(x, 1.295, -1.02);
     scannerSupportGroup.add(upright);
   }
-  const scannerCrossbeam = new THREE.Mesh(new THREE.BoxGeometry(1.98, 0.1, 0.1), platformMaterial);
-  scannerCrossbeam.name = "Optical gantry crossbeam";
-  scannerCrossbeam.position.set(0, 2.43, -0.9);
-  const scannerBoom = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.1, 0.9), platformMaterial);
-  scannerBoom.name = "Scanner-housing support boom";
-  scannerBoom.position.set(0, 2.43, -0.48);
-  scannerSupportGroup.add(scannerCrossbeam, scannerBoom);
+  const crossbeam = new THREE.Mesh(geometry(new THREE.BoxGeometry(2.15, 0.12, 0.12)), brightMetal);
+  crossbeam.name = "Plotter X-axis crossbeam";
+  crossbeam.position.set(0, 2.45, -1.02);
+  scannerSupportGroup.add(crossbeam);
+
+  const scannerGroup = new THREE.Group();
+  scannerGroup.name = "Preferred 350 W mercury-lamp source 26";
+  const lampHousing = new THREE.Mesh(
+    geometry(new THREE.BoxGeometry(0.72, 0.32, 0.42)),
+    blackHousing,
+  );
+  lampHousing.name = "Mercury short-arc lamp housing";
+  lampHousing.position.set(-0.66, 2.67, -1.02);
+  const waterCoolingCollar = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.1, 0.1, 0.18, 20)),
+    brightMetal,
+  );
+  waterCoolingCollar.name = "Water-cooled fiber input collar";
+  waterCoolingCollar.rotation.z = Math.PI / 2;
+  waterCoolingCollar.position.set(-0.25, 2.67, -1.02);
+  const shutterBladeMesh = new THREE.Mesh(
+    geometry(new THREE.BoxGeometry(0.02, 0.19, 0.2)),
+    darkMetal,
+  );
+  shutterBladeMesh.name = "Electronically controlled shutter blade";
+  shutterBladeMesh.position.set(-0.33, 2.67, -1.02);
+  scannerGroup.add(lampHousing, waterCoolingCollar, shutterBladeMesh);
+  scannerSupportGroup.add(scannerGroup);
+
+  const plotterXCarriage = new THREE.Group();
+  plotterXCarriage.name = "Computer-driven plotter X carriage";
+  const xCarriageBlock = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.2, 0.2, 0.2)), darkMetal);
+  xCarriageBlock.position.set(0, 2.4, -1.02);
+  const zRail = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.08, 0.08, 1.78)), brightMetal);
+  zRail.name = "Plotter carriage Z rail";
+  zRail.position.set(0, 2.34, -0.17);
+  plotterXCarriage.add(xCarriageBlock, zRail);
+
+  const lensCarriageGroup = new THREE.Group();
+  lensCarriageGroup.name = "Fiber output, shutter path, and quartz lens tube";
+  const zCarriageBlock = new THREE.Mesh(
+    geometry(new THREE.BoxGeometry(0.18, 0.16, 0.18)),
+    darkMetal,
+  );
+  zCarriageBlock.position.y = 2.34;
+  const lensTube = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.055, 0.08, 0.43, 20)),
+    blackHousing,
+  );
+  lensTube.name = "Quartz-lens tube carried by the plotter";
+  lensTube.position.y = 2.085;
+  lensCarriageGroup.add(zCarriageBlock, lensTube);
+  plotterXCarriage.add(lensCarriageGroup);
+  scannerSupportGroup.add(plotterXCarriage);
   root.add(scannerSupportGroup);
 
-  // 6. Active Laser Beam and Curing Spot on resin surface (Z = 1.2 in world)
-  const laserBeamGeo = new THREE.BufferGeometry().setFromPoints([
-    new THREE.Vector3(0, 2.25, 0),
-    new THREE.Vector3(0, 1.2, 0),
-  ]);
-  const laserBeamMat = new THREE.LineBasicMaterial({ color: 0xc084fc, linewidth: 1 });
-  const laserBeamLine = new THREE.Line(laserBeamGeo, laserBeamMat);
-  root.add(laserBeamLine);
+  const fiberGeometry = geometry(
+    new THREE.BufferGeometry().setFromPoints(Array.from({ length: 5 }, () => new THREE.Vector3())),
+  );
+  const fiberLine = new THREE.Line(fiberGeometry, fiberMaterial);
+  fiberLine.name = "Continuous one-metre UV-transmitting fiber bundle";
+  root.add(fiberLine);
 
-  const laserSpotGeo = new THREE.SphereGeometry(0.04, 16, 16);
-  const laserSpotMesh = new THREE.Mesh(laserSpotGeo, laserSpotMaterial);
-  laserSpotMesh.position.set(0, 1.2, 0);
-  root.add(laserSpotMesh);
+  const uvBeamGeometry = geometry(
+    new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]),
+  );
+  const uvBeamLine = new THREE.Line(uvBeamGeometry, violet);
+  uvBeamLine.name = "Source-described UV spot light path";
+  root.add(uvBeamLine);
 
-  // Dynamic Update Function
+  const uvSpotMesh = new THREE.Mesh(geometry(new THREE.CircleGeometry(0.045, 24)), spotMaterial);
+  uvSpotMesh.name = "Spot 27 at fixed working surface 23";
+  uvSpotMesh.rotation.x = -Math.PI / 2;
+  root.add(uvSpotMesh);
+
   function update(
-    _controls: HullStereolithographyControls,
-    _tel: HullStereolithographyTelemetry,
-    simTimeSec: number,
+    controls: HullStereolithographyControls,
+    telemetry: HullStereolithographyTelemetry,
+    _simTimeSec = 0,
   ) {
-    // 1. Elevator vertical position (moving downward as build progresses)
-    const elevatorCycle = 0.5 + 0.3 * Math.sin(simTimeSec * 0.4);
-    platformGroup.position.y = 1.15 - elevatorCycle * 0.7;
+    const count = Math.max(1, Math.min(12, Math.round(controls.displayLaminaCount)));
+    for (let index = 0; index < laminaMeshes.length; index++) {
+      laminaMeshes[index].visible = index < count;
+    }
 
-    // 2. Galvanometer raster scanning path (Lissajous figure on surface)
-    const scanX = 0.35 * Math.sin(simTimeSec * 4.5);
-    const scanZ = 0.35 * Math.cos(simTimeSec * 3.2);
+    const localStackTop = HULL_PLATFORM_HALF_THICKNESS + count * HULL_DISPLAY_LAMINA_HEIGHT;
+    platformGroup.position.y =
+      HULL_RESIN_SURFACE_Y -
+      localStackTop -
+      telemetry.platformDepthFraction * HULL_RECOAT_DISPLAY_TRAVEL;
+    activeLaminaMesh.position.y = localStackTop + 0.004;
+    activeLaminaMesh.visible = telemetry.exposureAtWorkingSurface;
 
-    laserSpotMesh.position.set(scanX, 1.2, scanZ);
+    const scanX = telemetry.spotXFraction * 0.72;
+    const scanZ = telemetry.spotZFraction * 0.58;
+    plotterXCarriage.position.x = scanX;
+    lensCarriageGroup.position.z = scanZ;
 
-    // Update laser line end coordinates
-    const positions = laserBeamLine.geometry.attributes.position as THREE.BufferAttribute;
-    positions.setXYZ(0, 0, 2.25, 0);
-    positions.setXYZ(1, scanX, 1.2, scanZ);
-    positions.needsUpdate = true;
+    uvSpotMesh.position.set(scanX, HULL_RESIN_SURFACE_Y + 0.006, scanZ);
+    uvSpotMesh.visible = telemetry.exposureAtWorkingSurface;
+    uvBeamLine.visible = telemetry.exposureAtWorkingSurface;
+    const beamPositions = uvBeamGeometry.getAttribute("position") as THREE.BufferAttribute;
+    beamPositions.setXYZ(0, scanX, 1.87, scanZ);
+    beamPositions.setXYZ(1, scanX, HULL_RESIN_SURFACE_Y + 0.012, scanZ);
+    beamPositions.needsUpdate = true;
 
-    // Galvo mirror rotation tracking scan spot
-    galvoMirrorMesh.rotation.x = Math.atan2(scanZ, 1.05);
-    galvoMirrorMesh.rotation.y = Math.atan2(scanX, 1.05);
+    const fiberPositions = fiberGeometry.getAttribute("position") as THREE.BufferAttribute;
+    fiberPositions.setXYZ(0, -0.25, 2.67, -1.02);
+    fiberPositions.setXYZ(1, -0.05, 2.82, -0.96);
+    fiberPositions.setXYZ(2, scanX, 2.73, -0.82);
+    fiberPositions.setXYZ(3, scanX, 2.5, scanZ - 0.08);
+    fiberPositions.setXYZ(4, scanX, 2.3, scanZ);
+    fiberPositions.needsUpdate = true;
+
+    shutterBladeMesh.rotation.z = telemetry.shutterOpen ? Math.PI / 2 : 0;
   }
 
   function dispose() {
-    vatMaterial.dispose();
-    vatGlassMaterial.dispose();
-    resinMaterial.dispose();
-    platformMaterial.dispose();
-    curedPartMaterial.dispose();
-    laserSpotMaterial.dispose();
-    laserBeamMat.dispose();
-    const disposedGeometries = new Set<THREE.BufferGeometry>();
-    root.traverse((object) => {
-      if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
-        if (!disposedGeometries.has(object.geometry)) {
-          disposedGeometries.add(object.geometry);
-          object.geometry.dispose();
-        }
-      }
-    });
+    for (const entry of new Set(materials)) entry.dispose();
+    for (const entry of new Set(geometries)) entry.dispose();
   }
 
   return {
     root,
-    vatMesh: vatBase,
+    floorMesh,
+    vatBaseMesh,
     resinMesh,
     platformGroup,
     partGroup,
+    laminaMeshes,
+    activeLaminaMesh,
     platformCarriageNut,
+    elevatorLeadScrew,
     scannerGroup,
     scannerSupportGroup,
-    laserBeamLine,
-    laserSpotMesh,
-    galvoMirrorMesh,
+    plotterXCarriage,
+    lensCarriageGroup,
+    fiberLine,
+    uvBeamLine,
+    uvSpotMesh,
+    shutterBladeMesh,
     update,
     dispose,
   };

@@ -720,7 +720,6 @@ export function stepNobelDynamite(params: {
       : 0,
     ...shockWaveCrate(ng),
     shockwaveGlow: Number((1 + (detonationVelocityMps / 6000) * 1.5).toFixed(3)),
-    stickDisplayOmegaRadPerS: 0.2,
     kieselguhrCount: 24,
     kieselguhrCols: 8,
     kieselguhrOriginX: 200,
@@ -2340,7 +2339,9 @@ export function stepEngelbartMouse(params: {
   const diameterMm = r * 2;
   const circumferenceMm = Math.PI * diameterMm;
   return {
-    dpi: Math.round((ppr * 10) / r),
+    // Counts per inch = counts/revolution divided by inches/revolution.
+    // The prior ppr*10/r shortcut overstated resolution by ~2.47x.
+    dpi: Math.round((ppr * 25.4) / circumferenceMm),
     omegaRadPerS: Number((v / r).toFixed(1)),
     slewPxPerS: Number((v * 3.8).toFixed(0)),
     wheelDiameterMm: diameterMm,
@@ -2348,8 +2349,12 @@ export function stepEngelbartMouse(params: {
     mmPerPulse: Number((circumferenceMm / ppr).toFixed(3)),
     countsPerMm: Number((ppr / circumferenceMm).toFixed(2)),
     pulseRateHz: Number(((v * ppr) / circumferenceMm).toFixed(1)),
-    clickDisplayMs: Math.max(80, Math.round(180000 / Math.max(1, (v * ppr) / circumferenceMm))),
-    pathDisplayOmega: Number((v * 0.018).toFixed(4)),
+    // UI-only switch travel is intentionally readable and independent of
+    // pointer speed; the grant does not disclose a switch timing constant.
+    clickDisplayMs: 250,
+    // Time-dilated exhibit motion. The real wheel rate remains omega=v/r;
+    // this only maps a 100–800 mm/s scenario into a readable 3D path speed.
+    pathDisplayOmega: Number((v / 700).toFixed(4)),
     resolverSvgScale: 40,
     diameterToRadius: 2,
     pointerSvgWidth: 400,
@@ -4436,6 +4441,7 @@ export interface LandPolaroidInput {
   alkaliPh?: number; // 10.5 to 13.8
   exposureFraction?: number; // 0.0 to 1.0
   developmentTimeSec?: number; // 0 to 60 s
+  claim1Active?: boolean;
 }
 
 export interface LandPolaroidState {
@@ -4447,16 +4453,20 @@ export interface LandPolaroidState {
   printCompletionPercent: number;
   unexposedSilverComplexedRatio: number;
   rollerDisplayOmegaRadPerS: number;
+  claim1PathActive: boolean;
 }
 
 export function stepLandPolaroidInstantFilm(input: LandPolaroidInput): LandPolaroidState {
-  const viscosity = input.reagentViscosityCp ?? 25000;
-  const gap = input.rollerGapUm ?? 25;
-  const hq = input.hydroquinoneConcentrationM ?? 0.2;
-  const hypo = input.thiosulfateConcentrationM ?? 0.35;
-  const ph = input.alkaliPh ?? 12.6;
-  const exposure = Math.max(0, Math.min(1, input.exposureFraction ?? 0.6));
-  const time = Math.max(0, Math.min(60, input.developmentTimeSec ?? 30));
+  const finite = (value: number | undefined, fallback: number) =>
+    Number.isFinite(value) ? (value as number) : fallback;
+  const viscosity = Math.max(1000, Math.min(100000, finite(input.reagentViscosityCp, 25000)));
+  const gap = Math.max(1, Math.min(1000, finite(input.rollerGapUm, 25)));
+  const hq = Math.max(0, Math.min(1, finite(input.hydroquinoneConcentrationM, 0.2)));
+  const hypo = Math.max(0, Math.min(2, finite(input.thiosulfateConcentrationM, 0.35)));
+  const ph = Math.max(0, Math.min(14, finite(input.alkaliPh, 12.6)));
+  const exposure = Math.max(0, Math.min(1, finite(input.exposureFraction, 0.6)));
+  const time = Math.max(0, Math.min(60, finite(input.developmentTimeSec, 30)));
+  const claim1PathActive = input.claim1Active ?? true;
 
   // pH-dependent development rate constant k_dev (hydroquinone dianion activity)
   const phFactor = 10 ** (ph - 11.5);
@@ -4467,14 +4477,16 @@ export function stepLandPolaroidInstantFilm(input: LandPolaroidInput): LandPolar
 
   // Negative silver development
   const negProgress = 1 - Math.exp(-kDev * time);
-  const negativeSilverDensity = Number((2.8 * exposure * negProgress).toFixed(2));
+  const negativeSilverDensity = claim1PathActive
+    ? Number((2.8 * exposure * negProgress).toFixed(2))
+    : 0;
 
   // Soluble silver thiosulfate complex formation from unexposed silver halide
   const unexposedFraction = 1 - exposure;
   const complexationProgress = 1 - Math.exp(-kSol * time);
-  const unexposedSilverComplexedRatio = Number(
-    (unexposedFraction * complexationProgress).toFixed(3),
-  );
+  const unexposedSilverComplexedRatio = claim1PathActive
+    ? Number((unexposedFraction * complexationProgress).toFixed(3))
+    : 0;
 
   // Fickian Diffusion coefficient D inversely proportional to polymer viscosity
   const dDiff = 1.2e-9 * (25000 / Math.max(1000, viscosity)); // m^2/s
@@ -4483,22 +4495,32 @@ export function stepLandPolaroidInstantFilm(input: LandPolaroidInput): LandPolar
   const transferProgress = 1 - Math.exp(-time / Math.max(0.5, diffusionTimeConst));
 
   // Positive reflection silver density (D_max = 2.10)
-  const positiveSilverDensity = Number((2.1 * unexposedFraction * transferProgress).toFixed(2));
+  const positiveSilverDensity = claim1PathActive
+    ? Number((2.1 * unexposedFraction * complexationProgress * transferProgress).toFixed(2))
+    : 0;
 
   // Transfer efficiency
-  const transferEfficiencyPercent = Number((92 * (1 - Math.exp(-time / 15))).toFixed(1));
+  const transferEfficiencyPercent = claim1PathActive
+    ? Number((92 * complexationProgress * transferProgress).toFixed(1))
+    : 0;
 
   // Diffusion flux
   const gradC = (hypo * unexposedFraction) / gapMeters;
-  const diffusionFluxMolPerM2S = Number((dDiff * gradC * 1000).toFixed(4));
+  const diffusionFluxMolPerM2S = claim1PathActive ? Number((dDiff * gradC * 1000).toFixed(4)) : 0;
 
   // Meniscus spread uniformity (optimal at 10,000 - 50,000 cP)
   const viscPenalty = Math.abs(Math.log10(viscosity / 25000));
-  const meniscusSpreadUniformityPercent = Number(Math.max(40, 98 - viscPenalty * 22).toFixed(1));
+  const meniscusSpreadUniformityPercent = claim1PathActive
+    ? Number(Math.max(40, 98 - viscPenalty * 22).toFixed(1))
+    : 0;
 
   // Overall print completion percentage
-  const printCompletionPercent = Number(Math.min(100, (time / 60) * 100).toFixed(1));
-  const rollerDisplayOmegaRadPerS = time > 0 ? 3 : 0;
+  const printCompletionPercent = claim1PathActive
+    ? Number(Math.min(100, (time / 60) * 100).toFixed(1))
+    : 0;
+  // Spreading is a short mechanical event before the longer chemical wait.
+  // Do not imply that the pressure rolls rotate for the full development time.
+  const rollerDisplayOmegaRadPerS = claim1PathActive && time > 0 && time <= 3 ? 3 : 0;
 
   return {
     negativeSilverDensity,
@@ -4509,6 +4531,7 @@ export function stepLandPolaroidInstantFilm(input: LandPolaroidInput): LandPolar
     printCompletionPercent,
     unexposedSilverComplexedRatio,
     rollerDisplayOmegaRadPerS,
+    claim1PathActive,
   };
 }
 

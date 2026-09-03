@@ -7,6 +7,7 @@ import { stepDevolProgrammedTransfer } from "@/physics/devolProgrammedTransferKe
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { devolCameraForViewport } from "./devolProgrammedTransferCamera";
 import { buildDevolProgrammedTransferModel } from "./devolProgrammedTransferModel";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -24,15 +25,15 @@ export function DevolProgrammedTransfer3D() {
     refusal: { isRefused: true, reason: state.refusal.reason },
   });
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
+  // The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const phone = container.clientWidth < 640;
+    const camera = devolCameraForViewport(container.clientWidth);
     const studio = createThreeStudioScene({
       container,
-      cameraPos: phone ? [7.8, 4.7, 8.4] : [5.3, 3.25, 5.6],
-      targetPos: phone ? [1.5, 0.95, 0] : [0.65, 0.95, 0],
+      cameraPos: camera.position,
+      targetPos: camera.target,
       environmentStyle: "studio",
       enableClouds: false,
       ambientIntensity: 2.2,
@@ -71,7 +72,7 @@ export function DevolProgrammedTransfer3D() {
       floorMaterial.dispose();
       studio.cleanup();
     };
-  }, []);
+  }, [liveParams]);
 
   return (
     <section className="overflow-hidden rounded-2xl border border-indigo-800/60 bg-slate-950 shadow-2xl">

@@ -13,10 +13,11 @@ import {
 
 afterEach(() => resetBaerOdysseyTape());
 
-describe("Ralph H. Baer US 3,728,480 Magnavox Odyssey SI Physics Kernel", () => {
+describe("Ralph H. Baer US 3,728,480 source-apparatus kernel", () => {
   test("initializes default controls and clamps input boundaries", () => {
     const defaultControls = readBaerControls();
-    expect(defaultControls.player1PotX).toBeCloseTo(0.15, 2);
+    expect(defaultControls.player1PotX).toBeCloseTo(0.25, 2);
+    expect(defaultControls.player2PotX).toBeCloseTo(0.75, 2);
     expect(defaultControls.player1PotY).toBeCloseTo(0.5, 2);
     expect(defaultControls.rfChannel).toBe(3);
 
@@ -40,31 +41,57 @@ describe("Ralph H. Baer US 3,728,480 Magnavox Odyssey SI Physics Kernel", () => 
     expect(metrics.verticalPeriodMs).toBeCloseTo(16.67, 1);
     expect(metrics.chromaSubcarrierFreqMHz).toBeCloseTo(3.579545, 4);
     expect(metrics.rfCarrierFreqMHz).toBe(61.25); // Ch 3
-    expect(metrics.rfAntennaPowerNanoWatts).toBeGreaterThan(50);
+    expect(metrics.rfAntennaPowerNanoWatts).toBe(0);
     expect(metrics.p1DelayHMicrosec).toBeGreaterThan(9.0);
     expect(metrics.p1DelayHMicrosec).toBeLessThan(57.0);
     expect(metrics.p1DelayVMs).toBeGreaterThan(1.5);
     expect(metrics.p1DelayVMs).toBeLessThan(15.5);
   });
 
-  test("detects paddle collision coincidence and reflects ball horizontal velocity", () => {
-    // Position ball right on Player 1 paddle moving left
-    const testState = {
-      ...INITIAL_BAER_STATE,
-      ballX: 0.15,
-      ballY: 0.5,
-      ballVx: -0.5,
-      ballVy: 0.0,
-    };
-    const controls = {
+  test("latches dot 20 off on Figure 5E dot coincidence until reset after separation", () => {
+    const coincidentControls = {
       ...DEFAULT_BAER_CONTROLS,
-      player1PotX: 0.15,
-      player1PotY: 0.5,
+      player1PotX: 0.4,
+      player1PotY: 0.6,
+      player2PotX: 0.4,
+      player2PotY: 0.6,
     };
 
-    const result = stepBaerOdysseySi(testState, controls, 0.016);
-    expect(result.metrics.coincidenceActive).toBe(true);
-    expect(result.state.ballVx).toBeGreaterThan(0); // Bounced right
+    const coincidence = stepBaerOdysseySi(INITIAL_BAER_STATE, coincidentControls, 0.016);
+    expect(coincidence.metrics.dotCoincidenceActive).toBe(true);
+    expect(coincidence.metrics.coincidenceActive).toBe(true);
+    expect(coincidence.state.targetExtinct).toBe(true);
+    expect(coincidence.metrics.firstDotVisible).toBe(false);
+    expect(coincidence.metrics.secondDotVisible).toBe(true);
+
+    const separatedControls = {
+      ...coincidentControls,
+      player2PotX: 0.8,
+    };
+    const latched = stepBaerOdysseySi(coincidence.state, separatedControls, 5);
+    expect(latched.metrics.dotCoincidenceActive).toBe(false);
+    expect(latched.state.targetExtinct).toBe(true);
+    expect(latched.metrics.firstDotVisible).toBe(false);
+
+    const reset = stepBaerOdysseySi(
+      latched.state,
+      { ...separatedControls, resetButton: true },
+      0.016,
+    );
+    expect(reset.state.targetExtinct).toBe(false);
+    expect(reset.metrics.firstDotVisible).toBe(true);
+  });
+
+  test("withholds the complete Claim 1 signal path without inventing a degraded result", () => {
+    const controls = { ...DEFAULT_BAER_CONTROLS, claim1Active: false };
+    const result = stepBaerOdysseySi(INITIAL_BAER_STATE, controls, 1);
+
+    expect(result.state.timeSeconds).toBe(0);
+    expect(result.metrics.claim1TopologyActive).toBe(false);
+    expect(result.metrics.directCouplingActive).toBe(false);
+    expect(result.metrics.firstDotVisible).toBe(false);
+    expect(result.metrics.secondDotVisible).toBe(false);
+    expect(result.metrics.dotCoincidenceActive).toBe(false);
   });
 
   test("detects light gun alignment and triggers target extinction on trigger pull", () => {

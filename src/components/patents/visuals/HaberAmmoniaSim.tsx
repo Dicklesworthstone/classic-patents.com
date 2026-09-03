@@ -584,6 +584,7 @@ export function HaberAmmoniaSim({
           </div>
           <input
             type="range"
+            aria-label="Reactor pressure in atmospheres"
             min={50}
             max={300}
             step={5}
@@ -602,6 +603,7 @@ export function HaberAmmoniaSim({
           </div>
           <input
             type="range"
+            aria-label="Catalyst temperature in degrees Celsius"
             min={350}
             max={650}
             step={5}
@@ -620,6 +622,7 @@ export function HaberAmmoniaSim({
           </div>
           <input
             type="range"
+            aria-label="Stoichiometric feed flow rate in moles per second"
             min={10}
             max={100}
             step={2}
@@ -638,6 +641,7 @@ export function HaberAmmoniaSim({
           </div>
           <input
             type="range"
+            aria-label="Catalyst activity multiplier"
             min={0.2}
             max={2.0}
             step={0.1}

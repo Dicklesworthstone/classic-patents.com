@@ -338,6 +338,7 @@ export function McCormickReaperSim() {
           </div>
           <input
             type="range"
+            aria-label="Horse ground speed in miles per hour"
             min="1.5"
             max="5.0"
             step="0.2"

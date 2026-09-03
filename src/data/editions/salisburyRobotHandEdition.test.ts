@@ -168,7 +168,9 @@ describe("US 4,921,293 Salisbury & Ruoff Multi-Fingered Robotic Hand manual sour
 
     const defaultMetrics = config.computeMetrics({});
     for (const metric of defaultMetrics) {
-      expect(["source-disclosed", "scenario-reader"]).toContain(metric.provenance);
+      expect(["source-disclosed", "scenario-reader", "refusal-bounded"]).toContain(
+        metric.provenance,
+      );
     }
   });
 
@@ -193,13 +195,15 @@ describe("US 4,921,293 Salisbury & Ruoff Multi-Fingered Robotic Hand manual sour
     );
     expect(activeRes.activeFailures.length).toBe(0);
 
+    const rawControls = { tensionT1N: 18, tensionT2N: 22, tensionT3N: 10, tensionT4N: 14 };
     const invertedRes = applyClaimConstraintModifications(
       "us-4921293-salisbury-robot-hand",
-      {},
+      rawControls,
       { 1: false, 2: false },
     );
     expect(invertedRes.activeFailures.length).toBeGreaterThan(0);
-    expect(invertedRes.modifiedParams.tensionT1N).toBe(0);
+    expect(invertedRes.modifiedParams.claim1RoutingEnabled).toBe(0);
+    expect(invertedRes.modifiedParams.tensionT1N).toBe(rawControls.tensionT1N);
     expect(invertedRes.modifiedParams.firstIdlerFixed).toBe(0);
     expect(invertedRes.refusalWarning).toContain("SOURCE BOUNDARY");
   });

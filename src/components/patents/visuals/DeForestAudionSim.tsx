@@ -432,6 +432,7 @@ export function DeForestAudionSim({
           </div>
           <input
             type="range"
+            aria-label="B-battery plate voltage in volts"
             min={10}
             max={120}
             step={5}
@@ -450,6 +451,7 @@ export function DeForestAudionSim({
           </div>
           <input
             type="range"
+            aria-label="Grid bias voltage in volts"
             min={-6.0}
             max={2.0}
             step={0.25}
@@ -468,6 +470,7 @@ export function DeForestAudionSim({
           </div>
           <input
             type="range"
+            aria-label="Filament current in amperes"
             min={0.5}
             max={1.5}
             step={0.1}
@@ -486,6 +489,7 @@ export function DeForestAudionSim({
           </div>
           <input
             type="range"
+            aria-label="Input radio-frequency signal amplitude in millivolts"
             min={10}
             max={200}
             step={5}
@@ -504,6 +508,7 @@ export function DeForestAudionSim({
           </div>
           <input
             type="range"
+            aria-label="Headset load resistance in kiloohms"
             min={5}
             max={50}
             step={5}

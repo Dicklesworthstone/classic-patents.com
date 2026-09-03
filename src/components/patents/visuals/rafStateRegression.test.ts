@@ -68,13 +68,44 @@ describe("2D rAF presentation ownership", () => {
     const source = sourceFor("OtisHoistingApparatusSim.tsx");
 
     expect(source).toContain("const UI_SNAPSHOT_INTERVAL_MS = 80;");
-    expect(source).toContain("const liveControlsRef = useRef(");
+    expect(source).toContain("useRef<OtisAnimationControls | null>(null)");
+    expect(source).toContain("liveControlsRef.current = readAnimationControls(");
+    expect(source).not.toContain("if (liveControlsRef.current === null)");
     expect(source).toContain("const controls = liveControlsRef.current;");
     expect(source).toContain("lastUiSnapshot");
     expect(source).toContain("}, [onscreenRef]);");
     expect(source).not.toContain(
       "}, [claimStates, displayRatePct, driveCommand, onscreenRef, ropeGIntact, stopRopePulled]);",
     );
+  });
+
+  test("does not evaluate kernel-source readers or empty control defaults on every render", () => {
+    const lazyStateContracts = [
+      ["DaimlerEngineSim.tsx", "useState(daimlerKernelSource)", "useState(daimlerKernelSource())"],
+      [
+        "three/SalisburyRobotHand3D.tsx",
+        "useState<SalisburyKernelSource>(salisburyKernelSource)",
+        "useState<SalisburyKernelSource>(salisburyKernelSource())",
+      ],
+      [
+        "three/SpencerMicrowave3D.tsx",
+        "useState(genericKernelSource)",
+        "useState(genericKernelSource())",
+      ],
+      ["three/WrightFlyer3D.tsx", "useState(flyerKernelSource)", "useState(flyerKernelSource())"],
+      ["three/WrightFlyer3D.tsx", "useState(flyerAeroSource)", "useState(flyerAeroSource())"],
+    ] as const;
+
+    for (const [fileName, lazyInitializer, eagerInitializer] of lazyStateContracts) {
+      const source = sourceFor(fileName);
+      expect(source).toContain(lazyInitializer);
+      expect(source).not.toContain(eagerInitializer);
+    }
+
+    const mestralSource = sourceFor("MestralVelcroSim.tsx");
+    expect(mestralSource).toContain("const EMPTY_MESTRAL_VELCRO_CONTROLS");
+    expect(mestralSource).toContain("initialControls = EMPTY_MESTRAL_VELCRO_CONTROLS");
+    expect(mestralSource).not.toContain("initialControls = {}");
   });
 
   test("keeps Goddard's source pose ref-owned between bounded React snapshots", () => {

@@ -310,6 +310,7 @@ export function McCormickReaper3D() {
             </div>
             <input
               type="range"
+              aria-label="Draft ground speed"
               min="1.0"
               max="6.0"
               step="0.2"

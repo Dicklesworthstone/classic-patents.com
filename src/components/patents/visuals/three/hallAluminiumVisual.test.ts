@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import * as THREE from "three";
 import { stepHallAluminium } from "@/physics/catalogKernels";
-import { hallViewForViewport } from "./HallAluminium3D";
+import { hallViewForViewport } from "./hallAluminiumCamera";
 import {
   createHallAluminiumModel,
   HALL_CELL_GEOMETRY,

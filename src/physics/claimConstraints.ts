@@ -160,12 +160,12 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-3138743-kilby-integrated-circuit",
-      claimTitle: "Monolithic Semiconductor Body Integration",
+      claimTitle: "Wafer-Defined Transistors, Resistors, and Conductive Means",
       activeDescription:
-        "Claim 1 integrates active transistors, bulk resistors, and PN junction capacitors within a single semiconductor bar.",
+        "Claim 1 defines multiple junction transistors and thin elongated resistor regions in one single-crystal wafer, with conductive means connecting selected resistor and transistor regions.",
       invertedDescription:
-        "Discrete wired components: interconnections suffer from high solder joint failure rates and parasitics.",
-      failureModeName: "Tyranny of Numbers Interconnect Failure",
+        "Source-bounded comparison: the wafer-defined transistors and resistors remain visible, but the claimed conductive means between selected regions are withheld; no substitute circuit or quantitative failure is invented.",
+      failureModeName: "Claim 1 Conductive Means Withheld",
       historicalPriorArt:
         "Complex electronics required thousands of hand-soldered discrete components with prohibitive failure rates.",
     },
@@ -174,14 +174,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-3541541-engelbart-mouse",
-      claimTitle: "Orthogonal Dual-Wheel 2D Coordinate Resolution",
+      claimTitle: "Perpendicular Supporting Wheels, Digital Transducers, and Flexible Conductor",
       activeDescription:
-        "Claim 1 resolves XY position independently using two mutually perpendicular rolling wheels contacting potentiometers.",
+        "Claim 1 combines a housing supported by two perpendicular position wheels, a digital position transducer connected to each wheel, and a flexible conductor to the computer.",
       invertedDescription:
-        "Single-axis trackball slippage: mechanical skew introduces cross-axis coupling error during cursor positioning.",
-      failureModeName: "Cross-Axis Positional Drift",
+        "Source-bounded comparison: the second perpendicular wheel is withheld, leaving only one measured coordinate; no trackball, slip coefficient, or invented error magnitude is substituted.",
+      failureModeName: "Second Coordinate Channel Withheld",
       historicalPriorArt:
-        "Light pens and trackballs were ergonomically tiring and required complex analog tracking electronics.",
+        "The specification contrasts its surface-supported control with a light pencil that must be raised to the display and can cover the area being edited.",
     },
   ],
   "us-4136359-wozniak-apple": [
@@ -286,14 +286,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-2708656-fermi-reactor",
-      claimTitle: "Delayed Neutron Controlled Criticality Margin",
+      claimTitle: "Graphite Moderator & Natural-Uranium Rod Lattice",
       activeDescription:
-        "Claim 1 maintains operating reactivity within the delayed neutron fraction (k_eff <= 1 + beta).",
+        "Claim 1 combines graphite moderator with natural-uranium rods in a geometric pattern, Figure 3 rod-size and volume-ratio geometry, sufficient purity, and sufficient total mass to sustain a chain reaction.",
       invertedDescription:
-        "Prompt supercriticality: reactivity exceeds delayed neutron fraction, causing prompt power divergence.",
-      failureModeName: "Prompt Critical Power Excursion",
+        "Claim-topology probe: remove the natural-uranium rod lattice from the graphite pile. The source no longer establishes the claimed chain-reacting combination; no invented power excursion is substituted.",
+      failureModeName: "Claim 1 Uranium-Rod Lattice Withheld",
       historicalPriorArt:
-        "Pre-reactor calculations lacked verified 6-group delayed neutron precursor kinetics.",
+        "The specification explains that fine uranium dispersion loses too many neutrons to resonance absorption; aggregation into geometrically spaced bodies reduces that surface-loss path.",
     },
   ],
   "us-2981877-noyce-ic": [
@@ -302,12 +302,12 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       patentId: "us-2981877-noyce-ic",
       claimTitle: "Adherent Passivating Oxide & Thin-Film Interconnects",
       activeDescription:
-        "Claim 1 forms adherent SiO₂ insulating layers with vapor-deposited aluminum leads crossing PN junctions.",
+        "Claim 1 retains semiconductor oxide across one portion of a surface-reaching P-N junction and carries an adherent conductor over that oxide to one of two nearby contacts.",
       invertedDescription:
-        "Unpassivated flying wire bonds: fragile gold whiskers create parasitic inductance and risk junction shorts.",
-      failureModeName: "Flying Wire Bond Parasitic Short",
+        "Withhold the oxide bridge beneath the crossing conductor. The source-specific insulation relationship is absent; no substitute wire-bond package or quantitative switching fault is invented.",
+      failureModeName: "Claim 1 Oxide Bridge Withheld",
       historicalPriorArt:
-        "Kilby's initial 1958 IC required manual gold wire bonding between mesa-isolated semiconductor devices.",
+        "The specification says prior diffused-junction practice chemically removed the oxide before depositing contacts; Noyce instead leaves selected oxide portions in place as lead insulation.",
     },
   ],
   "us-3633-goodyear-rubber": [
@@ -404,14 +404,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-2717437-mestral-velcro",
-      claimTitle: "Thermal Shape Setting of Synthetic Monofilament Loops",
+      claimTitle: "Heat, Loop Formation, and Off-Centre Cutting Sequence",
       activeDescription:
-        "Claim 1 subjects auxiliary synthetic warp loops to thermal heat setting before cutting, permanently freezing hook shape memory.",
+        "Claim 1 forms auxiliary synthetic warp loops, subjects the threads to heat, and cuts near the loop ends to produce material-engaging means.",
       invertedDescription:
-        "Without thermal heat setting, cut monofilament strands relax into straight vertical bristles without retaining hook curvature.",
-      failureModeName: "Hook Shape Relaxation & Zero Fastening Adhesion",
+        "With the heat-setting step withheld, this source-bounded exhibit shows the cut auxiliary pile as straight strands and refuses a quantitative material response.",
+      failureModeName: "Heat-Setting Topology Withheld",
       historicalPriorArt:
-        "Traditional velvet pile looms cut unheated natural fibers (silk/cotton) which lacked spring recovery and hook geometry.",
+        "The grant distinguishes its artificial-thread, heat-setting, and off-centre cutting sequence from ordinary velvet manufacture.",
     },
     {
       claimNumber: 3,
@@ -420,10 +420,10 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       activeDescription:
         "Claim 3 claims foundation weave with raised synthetic resin pile threads terminating in material-engaging hooks.",
       invertedDescription:
-        "Reverting to unhooked velvet pile, eliminating in-plane shear holding capacity.",
-      failureModeName: "Soft Velvet Pile Slippage",
+        "With the material-engaging hook termination withheld, the comparison remains an attached straight raised pile rather than a fastening fabric.",
+      failureModeName: "Material-Engaging Hook Topology Withheld",
       historicalPriorArt:
-        "Decorative upholstery velvets provided silky softness but zero mechanical retention force.",
+        "The claim identifies the material-engaging termination of at least part of the artificial raised pile as the article-level distinction.",
     },
   ],
   "us-4512709-milacron-robot-toolchanger": [
@@ -460,22 +460,22 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       activeDescription:
         "Claim 1 draws cross-sectional laminae at a 2D interface and moves the object away stepwise to build up a 3D solid part.",
       invertedDescription:
-        "Without layer-by-layer slicing and translation: attempt bulk curing in 3D volume, leading to uncontrolled polymer gelation and thermal runaway.",
-      failureModeName: "Uncontrolled Bulk Photopolymer Gelation",
+        "Without successive cross-sections and stepwise movement, the exhibit can show only one supported two-dimensional layer and cannot represent the claimed three-dimensional buildup.",
+      failureModeName: "Successive Lamina Buildup Withheld",
       historicalPriorArt:
-        "Prior art (Swainson US 4,041,476) attempted two-laser beam intersecting points in 3D liquid volumes, suffering catastrophic positioning instability and bulk clouding.",
+        "The specification distinguishes earlier systems that focused intersecting beams at points deep within a fluid volume; it identifies absorption, diffusion, dispersion, diffraction, exposure control, and resolution as difficulties, but does not report catastrophic thermal runaway.",
     },
     {
       claimNumber: 2,
       patentId: "us-4575330-hull-stereolithography",
       claimTitle: "Thin Surface Layer Restricted Reaction",
       activeDescription:
-        "Claim 2 restricts synergistic stimulation to only a thin surface layer at the designated working interface.",
+        "Claim 2 combines a responsive fluid body, immersed object support, selective translation away from a designated surface, and reaction means that forms a thin solid cross-sectional lamina at that surface.",
       invertedDescription:
-        "Without surface-depth confinement: actinic light penetrates deeply into the vat, solidifying the entire resin pool into an unusable block.",
-      failureModeName: "Excessive Deep-Cure Z-Distortion",
+        "With the reaction means withheld, the supported platform and liquid remain visible but no new surface lamina can be formed or attributed to Claim 2.",
+      failureModeName: "Claim 2 Reaction Means Withheld",
       historicalPriorArt:
-        "Magat (US 2,708,617) irradiated unconfined bulk monomers, causing uncontrolled polymerization throughout the fluid container.",
+        "Claim 2 is a system combination. The grant supplies the surface-forming topology but no absorption coefficient, critical dose, cure-depth model, or deep-cure failure threshold.",
     },
   ],
   "us-5121329-crump-fdm": [
@@ -764,14 +764,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-3858232-boyle-smith-ccd",
-      claimTitle: "Sequential Multi-Phase Potential Well Charge Transfer",
+      claimTitle: "Single-Conductivity Charge-Storage Medium",
       activeDescription:
-        "Claim 1 applies sequential multi-phase clock voltages across dielectric-isolated electrodes to shift potential energy wells and transport discrete minority carrier packets.",
+        "Claim 1 characterizes the charge-storage medium beneath the sequentially biased electrodes as one continuous semiconductor region of a single conductivity type.",
       invertedDescription:
-        "Static unclocked gate array: without sequential three-phase potential well progression, photogenerated charge packets smear across pixel boundaries.",
-      failureModeName: "Charge Smear & Bulk Interface Recombination",
+        "Claim 1 condition withheld: the exhibit no longer represents a continuous single-conductivity storage-and-transfer channel. It makes no invented loss, efficiency, or smear prediction.",
+      failureModeName: "Claim 1 Storage Medium Withheld",
       historicalPriorArt:
-        "Early image sensors used destructive X-Y matrix diode addressing with high readout noise and low fill factor.",
+        "The printed claim itself supplies this construction boundary; the exhibit does not infer a quantitative comparison with any unreviewed prior device.",
     },
   ],
   "us-3858581-kamen-medication-injection-device": [
@@ -1132,12 +1132,12 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       patentId: "us-2543181-land-polaroid",
       claimTitle: "Rupturable Pod Reagent Spreading & Instant Diffusion-Transfer Development",
       activeDescription:
-        "Claim 1 spreads a viscous chemical reagent from a rupturable pod between a photosensitive negative and image-receiving sheet via compression rollers, completing solubilizing diffusion-transfer positive image formation in under 60 seconds without a darkroom.",
+        "Claim 1 attaches the photosensitive layer, transfer-image base layer, and liquid container as one product, positions the container to rupture without removing it, and releases liquid between superposed layers so transported processing material can form the transfer image.",
       invertedDescription:
-        "Multi-bath wet darkroom immersion: without viscous pod spreading and positive transfer mordants, exposed film requires developer tanks, acid stop baths, fixers, and wash baths over 30+ minutes.",
-      failureModeName: "Multi-Bath Wet Darkroom Immersion Delay",
+        "Detached-container topology: the liquid package is no longer secured to the superposable layers, so the claimed self-contained release path between those layers is absent.",
+      failureModeName: "Attached Container-to-Layer Path Removed",
       historicalPriorArt:
-        "Traditional photography required wet chemical processing tanks, darkrooms, and prolonged chemical fixing/washing before a positive print could be viewed.",
+        "Conventional photographic processing kept the sensitized material and the processing-liquid supply as separate articles handled in external baths or apparatus.",
     },
   ],
   "gb-913-watt-separate-condenser": [
@@ -1474,14 +1474,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-2929922-townes-laser",
-      claimTitle: "Fabry-Pérot Resonant Cavity Optical Masers (Laser) with Population Inversion",
+      claimTitle: "Connected Maser Generator, Modulated Amplifier, Modulating Source, and Detector",
       activeDescription:
-        "Claim 1 places an active atomic medium in optical population inversion between parallel reflective mirrors, stimulating coherent optical emission.",
+        "Claim 1 connects monochromatic generator 10 to pumped modulated amplifier 12 and detector 13, with transparent chamber sides, parallel reflective ends, negative-temperature media, and output coupling.",
       invertedDescription:
-        "Incoherent thermal lamp: spontaneous emission photons emit randomly in all directions and phases, with zero spatial coherence and massive divergence.",
-      failureModeName: "Incoherent Spontaneous Emission & Spatial Beam Divergence",
+        "Claim 1 path withheld: the exhibit retains the historical hardware silhouette for orientation but removes pumping and optical transmission, and makes no output or failure-rate prediction.",
+      failureModeName: "Claim 1 Communications Path Withheld",
       historicalPriorArt:
-        "Conventional light sources relied on thermal incandescence or gas discharge with incoherent, multi-directional emission.",
+        "The reviewed grant itself is the authority for this combined generator-amplifier-detector topology; the exhibit does not manufacture a quantitative prior-art comparison.",
     },
   ],
   "us-3081379-lemelson-machine-vision": [
@@ -1506,10 +1506,10 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       activeDescription:
         "Claim 1 generates participant-manipulated video dots synchronized with TV raster scan and directly couples the modulated signals only to a standard unmodified television receiver.",
       invertedDescription:
-        "Passive Broadcast TV Only: Standard commercial television receivers function strictly as passive display instruments with zero participant control or local symbol generation.",
-      failureModeName: "Passive Broadcast Receiver Lock & Unresponsive Video Raster",
+        "Claim 1 topology withheld: the control-unit dot signals, raster synchronization, participant position controls, and direct receiver coupling are no longer presented as a connected apparatus.",
+      failureModeName: "Claim 1 Interactive Signal Path Withheld",
       historicalPriorArt:
-        "Prior to Baer's 1968 invention, cathode ray tubes in home receivers were solely passive broadcast receivers whose presentation was dictated entirely by transmission studios.",
+        "The grant describes the object of converting a standard receiver from passive broadcast presentation to participant-controlled local symbol display; the exhibit makes no broader quantitative prior-art claim.",
     },
   ],
   "us-4063220-metcalfe-ethernet": [
@@ -1923,13 +1923,25 @@ export function applyClaimConstraintModifications(
     case "us-2981877-noyce-ic": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
-        modified.parasiticInductanceNh = 45.0; // Flying gold bond wire inductance
-        modified.propDelayPs = 2500.0; // Delay explodes from 400ps to 2500ps
+        modified.claim1OxideBridgePresent = 0;
         activeFailures.push(
-          "Wire Bond Inductance Ringing: Unpassivated leads limit clock to < 100 MHz",
+          "Source-bound Claim 1 condition absent: the adherent conductor no longer crosses the junction on retained semiconductor oxide",
         );
         refusalWarning =
-          "SEMICONDUCTOR FAULT: Flying wire bond parasitic L-C ringing causes clock skew.";
+          "SOURCE-BOUND REFUSAL: the patent does not supply voltage, capacitance, leakage, delay, clock, or power values for this inversion.";
+      }
+      break;
+    }
+
+    case "us-3138743-kilby-integrated-circuit": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.claim1ConductiveMeansPresent = 0;
+        activeFailures.push(
+          "Source-bound Claim 1 condition absent: the selected elongated resistor and transistor regions are no longer connected by conductive means",
+        );
+        refusalWarning =
+          "SOURCE-BOUND REFUSAL: US 3,138,743 does not supply the operating point needed to infer current, frequency, delay, power, heat, or a quantitative failure outcome for this inversion.";
       }
       break;
     }
@@ -2123,17 +2135,28 @@ export function applyClaimConstraintModifications(
       break;
     }
 
+    case "us-3541541-engelbart-mouse": {
+      const claim1Active = claimStates[1] ?? true;
+      modified.orthogonalAxes = claim1Active ? 2 : 1;
+      if (!claim1Active) {
+        activeFailures.push(
+          "Second Coordinate Channel Withheld: one supporting wheel and its transducer cannot resolve two-dimensional surface motion",
+        );
+        refusalWarning =
+          "CLAIM 1 TOPOLOGY INCOMPLETE: the second perpendicular supporting wheel, its digital transducer, and therefore the Y coordinate channel are withheld.";
+      }
+      break;
+    }
+
     case "us-3858232-boyle-smith-ccd": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
-        modified.clockFrequencyMhz = 0.0; // Clock frozen
-        modified.gateVoltageV = 0.5; // Collapsed potential wells
-        modified.chargeTransferEfficiency = 0.82; // Massive CTE degradation
+        modified.claim1SingleConductivityPresent = 0;
         activeFailures.push(
-          "Charge Smear: Static gate potential traps minority carriers at SiO₂ interface defects",
+          "Claim 1 medium withheld: the display no longer represents a continuous single-conductivity semiconductor charge-storage path.",
         );
         refusalWarning =
-          "CHARGE COLLAPSE: Without sequential 3-phase potential stepping, discrete charge packets diffuse and recombine.";
+          "CLAIM 1 MEDIUM WITHHELD: quantitative charge loss, transfer efficiency, and recombination are not inferred.";
       }
       break;
     }
@@ -2220,12 +2243,12 @@ export function applyClaimConstraintModifications(
     case "us-3858581-kamen-medication-injection-device": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
-        modified.motorCircuitClosed = 0;
+        modified.claim1PulseLoopPresent = 0;
         activeFailures.push(
-          "Claim 1 pulse-counted lead-screw advance withheld: open-loop drive cannot track turn count or control plunger displacement.",
+          "Claim 1 striker/switch/counter loop withheld: the motor and screw may still turn, but no counted event can stop the motor at the selected displacement.",
         );
         refusalWarning =
-          "NONCLINICAL MECHANISM REFUSAL: withholding pulse-switch counting breaks the turn-counting loop; the grant provides no source-bounded alternative timing or clinical-delivery model.";
+          "NONCLINICAL MECHANISM REFUSAL: withholding the screw-mounted striker, pulse switch, and counting circuit breaks the grant's rotation-counted motor-control loop; the source provides no bounded alternative control or clinical-delivery model.";
       }
       break;
     }
@@ -2441,14 +2464,26 @@ export function applyClaimConstraintModifications(
 
     case "us-2543181-land-polaroid": {
       const claim1Active = claimStates[1] ?? true;
+      modified.claim1Active = claim1Active ? 1 : 0;
       if (!claim1Active) {
-        modified.transferEfficiencyPct = 0.0; // No diffusion transfer
-        modified.developmentTimeSec = 1800.0; // 30 minutes in darkroom
         activeFailures.push(
-          "Multi-Bath Darkroom Delay: Without pod reagent spreading, positive image requires wet developer, stop, and fixer baths",
+          "Attached Container-to-Layer Path Removed: the liquid container is no longer part of the superposable photographic product",
         );
         refusalWarning =
-          "INSTANT DEVELOPMENT COLLAPSE: Rupturable pod and solubilizing diffusion transfer required for 60-second daylight processing.";
+          "CLAIM 1 TOPOLOGY REMOVED: the detached container cannot release its liquid between the attached photosensitive and transfer-image layers as claimed.";
+      }
+      break;
+    }
+
+    case "us-2708656-fermi-reactor": {
+      const claim1Active = claimStates[1] ?? true;
+      modified.claim1Active = claim1Active ? 1 : 0;
+      if (!claim1Active) {
+        activeFailures.push(
+          "Claim 1 natural-uranium rods removed from the graphite moderator lattice",
+        );
+        refusalWarning =
+          "CLAIM 1 TOPOLOGY REMOVED: without the geometrically spaced natural-uranium rods, the exhibit no longer represents the claimed chain-reacting graphite-and-uranium combination; no quantitative substitute is inferred.";
       }
       break;
     }
@@ -2479,20 +2514,21 @@ export function applyClaimConstraintModifications(
       const claim1Active = claimStates[1] ?? true;
       const claim2Active = claimStates[2] ?? true;
       if (!claim1Active) {
-        modified.layerThicknessUm = 0;
+        modified.displayLaminaCount = 1;
+        modified.recoatExcursionFraction = 0;
         activeFailures.push(
-          "Layer Translation Disabled: Without stepwise Z-axis elevator index, exposure causes bulk gelation without distinct 3D slices",
+          "Successive Lamina Buildup Withheld: only one supported cross-section remains, so the display no longer represents Claim 1's stepwise three-dimensional buildup",
         );
         refusalWarning =
-          "BULK GELATION REFUSAL: Stepwise 2D laminar extraction is fundamental to stereolithography.";
+          "CLAIM 1 TOPOLOGY REMOVED: successive cross-sections and stepwise movement are required for the claimed three-dimensional object.";
       }
       if (!claim2Active) {
-        modified.penetrationDepthUm = 800; // Unconfined deep radiation
+        modified.shutterRequestedOpen = 0;
         activeFailures.push(
-          "Surface Confinement Lost: Radiation penetrates entire vat depth, solidifying bulk resin into an unusable monolithic brick",
+          "Claim 2 Reaction Means Withheld: the light path remains connected but its shutter is closed, so no new surface lamina is attributed to the claim",
         );
         refusalWarning =
-          "OVERPENETRATION DISTORTION: Surface confinement of synergistic stimulation is required.";
+          "CLAIM 2 TOPOLOGY REMOVED: the selected surface-forming reaction means is required to add another lamina to the supported object.";
       }
       break;
     }
@@ -2523,12 +2559,9 @@ export function applyClaimConstraintModifications(
       const claim1Active = claimStates[1] ?? true;
       const claim2Active = claimStates[2] ?? true;
       if (!claim1Active) {
-        modified.tensionT1N = 0;
-        modified.tensionT2N = 0;
-        modified.tensionT3N = 0;
-        modified.tensionT4N = 0;
+        modified.claim1RoutingEnabled = 0;
         activeFailures.push(
-          "Claim 1 routing absent: the comparison removes the four source-law cable inputs and makes no derailment, collapse, or force-performance prediction",
+          "Claim 1 three-joint/four-cable topology withheld: the comparison removes the serial digit and routed cables while preserving the visitor’s raw tension settings",
         );
         refusalWarning =
           "SOURCE BOUNDARY: Claim 1 inversion is a topology comparison; US 4,921,293 supplies no historic cable pretension, dimensions, inertia, damping, contact, or failure measurements.";
@@ -2576,20 +2609,20 @@ export function applyClaimConstraintModifications(
       const claim1Active = claimStates[1] ?? true;
       const claim3Active = claimStates[3] ?? true;
       if (!claim1Active) {
-        modified.heatSettingTempC = 25; // Cold un-set
+        modified.thermalSettingPresent = 0;
         activeFailures.push(
-          "Hook Shape Relaxation: Without thermal heat setting, cut loops relax into straight bristles with 0% hook retention",
+          "Heat-setting topology withheld: the cut auxiliary pile is shown as attached straight strands rather than source-described retained hooks.",
         );
         refusalWarning =
-          "THERMAL SETTING LOSS: Claim 1 in-situ heat setting required to lock nylon monofilament curvature.";
+          "SOURCE BOUNDARY: Claim 1 requires heat before cutting, but US 2,717,437 gives no temperature-response data from which a retention percentage can be calculated.";
       }
       if (!claim3Active) {
-        modified.engagementRatio = 0.05;
+        modified.hookPilePresent = 0;
         activeFailures.push(
-          "Uncut Smooth Pile: Without raised material-engaging hooks, velvet fabric cannot interlock or sustain shear load",
+          "Material-engaging hook topology withheld: the comparison remains an attached straight raised pile.",
         );
         refusalWarning =
-          "HOOK GEOMETRY LOSS: Claim 3 synthetic hook pile required for reversible multi-hook fastening.";
+          "SOURCE BOUNDARY: Claim 3 supplies the hook-pile topology but no load or contact data from which a counterfactual holding capacity can be calculated.";
       }
       break;
     }
@@ -2674,10 +2707,9 @@ export function applyClaimConstraintModifications(
     case "us-4765668-robot-end-effector": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
-        modified.jawOpeningFraction = 0;
-        modified.fingerChangeFraction = 1;
+        modified.claim1TopologyEnabled = 0;
         activeFailures.push(
-          "Claim 1 Symmetric Removable-Hand Topology Omitted: the comparison state removes the illustrated opposed-thread opening and releases the source-described removable fingers.",
+          "Claim 1 Symmetric Removable-Hand Topology Omitted: the comparison state withholds the opposed-thread screw, paired travelling hands, and removable fingers instead of disguising their absence as a closed-jaw pose.",
         );
         refusalWarning =
           "SOURCE BOUNDARY: Claim 1 inversion is a topology comparison only; US 4,765,668 supplies no workpiece, contact, friction, payload, pneumatic, or throughput result to predict.";
@@ -2771,7 +2803,7 @@ export function applyClaimConstraintModifications(
       const claim7Active = claimStates[7] ?? true;
 
       if (!claim1Active) {
-        modified.markerSensed = 0;
+        modified.stationDetected = 0;
         activeFailures.push(
           "Claim 1 Selected-Station Feedback Chain Omitted: Without marker sensing and powered retention means, carrier bypasses station without record reading.",
         );
@@ -2779,7 +2811,7 @@ export function applyClaimConstraintModifications(
           "STATION SENSING COLLAPSE: Claim 1 marker sensing and station retention required for automated positioning.";
       }
       if (!claim7Active) {
-        modified.contactsEngaged = 0;
+        modified.stationCoupled = 0;
         activeFailures.push(
           "Claim 7 Portable Controller Coupling Omitted: Without multi-circuit controller-to-station electrical contact coupling, station operation cannot be triggered.",
         );
@@ -2792,11 +2824,12 @@ export function applyClaimConstraintModifications(
     case "us-3728480-baer-odyssey": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
-        modified.ballSpeedMultiplier = 0.0;
+        modified.claim1Active = 0;
         activeFailures.push(
-          "Passive Broadcast Mode: Participant manipulation disabled; television functions solely as passive receiver with zero local dot generation.",
+          "Claim 1 signal path omitted: control-unit dot generation, raster synchronization, participant manipulation, and direct receiver coupling are withheld.",
         );
-        refusalWarning = "PASSIVE BROADCAST LOCK: Active interactive symbol generation disengaged.";
+        refusalWarning =
+          "CLAIM 1 TOPOLOGY WITHHELD: the exhibit no longer presents a connected interactive-television signal path.";
       }
       break;
     }
@@ -2818,21 +2851,21 @@ export function applyClaimConstraintModifications(
       const claim2Active = claimStates[2] ?? true;
 
       if (!claim2Active) {
-        modified.tailRotorPedalPercent = -100.0;
+        modified.auxiliaryRotorEnabled = 0;
         activeFailures.push(
-          "Uncompensated Torque Reaction: Auxiliary anti-torque tail rotor disengaged; aircraft spins uncontrollably about main rotor axis due to uncancelled torque reaction.",
+          "Uncompensated Torque Reaction: the Claim 2 auxiliary rotor is removed from the teaching scenario, leaving main-rotor reaction torque unopposed.",
         );
         refusalWarning =
-          "TORQUE EQUILIBRIUM VIOLATION: Anti-torque tail rotor compensation disengaged.";
+          "CLAIM 2 INVERTED: auxiliary-rotor anti-torque action is disabled; scenario yaw reaction is unopposed.";
       }
 
       if (!claim1Active) {
-        modified.engineThrottlePercent = 20.0;
+        modified.collectiveThrottleLinked = 0;
         activeFailures.push(
-          "Engine Droop / Stall Mode: Collective pitch-throttle correlator disengaged; engine lacks automatic power compensation when pulling collective pitch, leading to severe RPM decay.",
+          "Uncorrelated Power Control: collective pitch no longer adds the patent's simultaneous positive engine-power command, so the normalized rotor-speed response droops under increased pitch load.",
         );
         refusalWarning =
-          "THROTTLE CORRELATION FAILURE: Synchronized pitch-power linkage disengaged.";
+          "CLAIM 1 INVERTED: the positive collective-to-engine-power linkage is disabled.";
       }
       break;
     }

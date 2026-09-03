@@ -19,6 +19,8 @@ import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
+const TRIP_MODES = ["running", "tripped_derailment", "tripped_parting"] as const;
+
 export function WestinghouseAirBrakeSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-124404-westinghouse-air-brake");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -29,8 +31,7 @@ export function WestinghouseAirBrakeSim() {
   const accidentTripMode = params.accidentTrip ?? 0;
   const signalPulsePsi = params.signalPulsePressure ?? 0;
 
-  const tripModes = ["running", "tripped_derailment", "tripped_parting"] as const;
-  const tripCockState = tripModes[accidentTripMode] ?? "running";
+  const tripCockState = TRIP_MODES[accidentTripMode] ?? "running";
   const selectingCockState = selectingCockPos === 1 ? "reversed" : "normal";
 
   const [activeClaimProbe, setActiveClaimProbe] = useState<number | null>(null);

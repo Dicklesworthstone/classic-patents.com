@@ -35,6 +35,13 @@ describe("US 879,532 Lee de Forest Audion Triode Visual & Electronics Boundary",
     expect(simSource).not.toContain("- time * 6");
     expect(modelSource).not.toContain("const speed = 0.02");
     expect(studioSource).toContain("electronStreamAdvancePerFrame");
+    expect(studioSource).toContain("isometric: { pos: [0, 0.8, 5.2], target: [0, 0.1, 0] }");
+    expect(studioSource).toContain("const [isCutaway, setIsCutaway] = useState(true);");
+    expect(modelSource).toContain("depthWrite: false");
+    expect(modelSource).toContain("Museum contour of sealed evacuated glass bulb");
+    expect(modelSource).toContain("glassMat.opacity = cutaway ? 0.1 : 0.18");
+    expect(modelSource).toContain("glassRimMat.opacity = cutaway ? 0.52 : 0.28");
+    expect(modelSource).toContain("getterMat.opacity = cutaway ? 0.08 : 0.36");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -81,11 +88,30 @@ describe("US 879,532 Lee de Forest Audion Triode Visual & Electronics Boundary",
     const nodes = buildDeForestAudionModel();
     expect(nodes.root).toBeDefined();
     expect(nodes.glassBulb).toBeDefined();
+    expect(nodes.glassBulbRim).toBeDefined();
     expect(nodes.filamentMesh).toBeDefined();
     expect(nodes.filamentLight).toBeDefined();
     expect(nodes.gridMesh).toBeDefined();
     expect(nodes.plateMesh).toBeDefined();
     expect(nodes.materials.length).toBeGreaterThan(4);
+
+    const glass = nodes.glassBulb.material as { depthWrite: boolean; opacity: number };
+    const rim = nodes.glassBulbRim.material as { depthWrite: boolean; opacity: number };
+    const getter = nodes.getterMirror.material as { depthWrite: boolean; opacity: number };
+    expect(glass.depthWrite).toBe(false);
+    expect(rim.depthWrite).toBe(false);
+    expect(getter.depthWrite).toBe(false);
+    expect(glass.opacity).toBe(0.18);
+    expect(rim.opacity).toBe(0.28);
+    expect(getter.opacity).toBe(0.36);
+    nodes.setCutaway?.(true);
+    expect(glass.opacity).toBe(0.1);
+    expect(rim.opacity).toBe(0.52);
+    expect(getter.opacity).toBe(0.08);
+    nodes.setCutaway?.(false);
+    expect(glass.opacity).toBe(0.18);
+    expect(rim.opacity).toBe(0.28);
+    expect(getter.opacity).toBe(0.36);
 
     const sim = stepDeForestAudion({ plateVoltageV: 45, filamentCurrentA: 1.0 });
     articulateDeForestAudionModel(

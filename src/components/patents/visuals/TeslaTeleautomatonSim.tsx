@@ -294,6 +294,7 @@ export function TeslaTeleautomatonSim() {
           </div>
           <input
             type="range"
+            aria-label="Rudder servo deflection in degrees"
             min="-35"
             max="35"
             step="5"
@@ -309,6 +310,7 @@ export function TeslaTeleautomatonSim() {
           </div>
           <input
             type="range"
+            aria-label="Electric motor throttle percentage"
             min="0"
             max="100"
             step="5"

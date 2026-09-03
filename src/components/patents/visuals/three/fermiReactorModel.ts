@@ -1,18 +1,15 @@
 /**
- * Procedural Three.js Model Builder for US 2,708,656
- * Enrico Fermi & Leo Szilard — Neutronic Reactor (Chicago Pile-1, 1955)
+ * Procedural Three.js teaching model for US 2,708,656.
  *
- * Implements the authentic self-sustaining nuclear chain reaction pile:
- * - Multi-tier timber framing scaffold of pine and Douglas fir beams with hoisting gantry
- * - Matrix of high-purity graphite moderator bricks arranged in orthogonal lattice geometry
- * - Array of natural uranium metal lumps and sintered uranium oxide fuel cylinders (Claim 1)
- * - Cadmium neutron-absorbing control and emergency safety rods (Claim 2 & Claim 3)
- * - BF3 proportional neutron counter detection chamber
- * - Thermal neutron diffusion cascade cloud with dynamic fission criticality spectrum
+ * Figures 7–8, rather than the later CP-1 publicity photographs, own the
+ * visible apparatus topology here: an enclosed rectangular graphite pile,
+ * geometrically spaced natural-uranium rods, side-entry absorber mechanisms,
+ * supported guide tables, and an ionization chamber. Dimensions are enlarged
+ * display mappings and are not represented as source measurements.
  */
 
 import * as THREE from "three";
-import { computeFermiNeutronFluxField } from "@/physics/fieldTextures";
+import { computeFermiNormalizedDisplayField } from "@/physics/fieldTextures";
 import {
   heatFrames,
   laplacianModeShape,
@@ -24,24 +21,29 @@ import { createGlowPointTexture } from "./ThreeStudioScene";
 
 export interface FermiReactorModel {
   root: THREE.Group;
-  timberGroup: THREE.Group;
+  foundation: THREE.Mesh;
+  enclosureGroup: THREE.Group;
+  supportGroup: THREE.Group;
   pileGroup: THREE.Group;
   fuelGroup: THREE.Group;
   rodGroup: THREE.Group;
-  bf3Detector: THREE.Mesh;
+  controlRods: THREE.Mesh[];
+  controlRodCarriages: THREE.Mesh[];
+  ionizationChamber: THREE.Mesh;
   neutronPoints: THREE.Points;
   neutronGeo: THREE.BufferGeometry;
   neutronPos: Float32Array;
   neutronVel: Float32Array;
   neutronColors: Float32Array;
-  neutronFluxField: Float32Array;
+  neutronDisplayField: Float32Array;
   heatFieldFrames: Float64Array;
   laplacianModeField: Float64Array;
   neutronCount: number;
   graphiteBricks: THREE.InstancedMesh;
-  fuelSlugs: THREE.InstancedMesh;
+  uraniumRods: THREE.InstancedMesh;
   graphiteMat: THREE.MeshStandardMaterial;
   uraniumFuelMat: THREE.MeshStandardMaterial;
+  enclosureMat: THREE.MeshStandardMaterial;
   updateKinematics: (
     delta: number,
     controlRodWithdrawalPct: number,
@@ -49,119 +51,117 @@ export interface FermiReactorModel {
     moderatorPurityPct: number,
     neutronDisplaySpeed: number,
     showNeutronCascade: boolean,
-    rodStudioY?: number,
+    rodStudioX?: number,
     fuelGlowIntensity?: number,
+    isCutaway?: boolean,
+    claim1Active?: boolean,
   ) => void;
   dispose: () => void;
 }
 
 export function buildFermiReactorModel(): FermiReactorModel {
   const root = new THREE.Group();
+  root.name = "US 2708656 Figures 7-8 graphite and natural-uranium reactor";
   const disposables: Array<{ dispose: () => void }> = [];
   const lcg = createLcg(19421202);
 
-  const graphiteMat = new THREE.MeshStandardMaterial({
-    color: 0x1e293b,
-    roughness: 0.5,
-    metalness: 0.6,
-  });
-  disposables.push(graphiteMat);
+  const material = (options: THREE.MeshStandardMaterialParameters) => {
+    const result = new THREE.MeshStandardMaterial(options);
+    disposables.push(result);
+    return result;
+  };
 
-  const uraniumFuelMat = new THREE.MeshStandardMaterial({
-    color: 0xd97706,
+  const addBox = (
+    name: string,
+    size: [number, number, number],
+    position: [number, number, number],
+    boxMaterial: THREE.Material,
+    parent: THREE.Object3D = root,
+  ) => {
+    const geometry = new THREE.BoxGeometry(...size);
+    disposables.push(geometry);
+    const mesh = new THREE.Mesh(geometry, boxMaterial);
+    mesh.name = name;
+    mesh.position.set(...position);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    parent.add(mesh);
+    return mesh;
+  };
+
+  const graphiteMat = material({
+    color: 0x252b35,
+    roughness: 0.82,
+    metalness: 0.08,
+  });
+  const uraniumFuelMat = material({
+    color: 0x9a6b29,
+    roughness: 0.32,
+    metalness: 0.72,
+  });
+  const cadmiumRodMat = material({
+    color: 0xb45309,
     roughness: 0.3,
-    metalness: 0.85,
+    metalness: 0.72,
   });
-  disposables.push(uraniumFuelMat);
-
-  const cadmiumRodMat = new THREE.MeshStandardMaterial({
-    color: 0x64748b,
-    roughness: 0.15,
-    metalness: 0.95,
+  const structuralSteelMat = material({
+    color: 0x475569,
+    roughness: 0.4,
+    metalness: 0.72,
   });
-  disposables.push(cadmiumRodMat);
-
-  const timberSupportMat = new THREE.MeshStandardMaterial({
-    color: 0x78350f,
-    roughness: 0.6,
-    metalness: 0.1,
+  const foundationMat = material({
+    color: 0x78716c,
+    roughness: 0.92,
+    metalness: 0,
   });
-  disposables.push(timberSupportMat);
-
-  const pulleyMat = new THREE.MeshStandardMaterial({
-    color: 0xd97706,
-    metalness: 0.85,
+  const detectorMat = material({
+    color: 0xb6c0ce,
+    roughness: 0.28,
+    metalness: 0.82,
   });
-  disposables.push(pulleyMat);
-
-  const detectorMat = new THREE.MeshStandardMaterial({
-    color: 0x94a3b8,
-    metalness: 0.95,
+  const enclosureMat = material({
+    color: 0xa8a29e,
+    roughness: 0.78,
+    metalness: 0.08,
+    transparent: true,
+    opacity: 0.72,
   });
-  disposables.push(detectorMat);
 
-  const timberGroup = new THREE.Group();
-  timberGroup.position.y = -3.4;
-  root.add(timberGroup);
+  // Every major assembly terminates at this concrete exhibit foundation.
+  const foundation = addBox(
+    "concrete foundation 10 supporting reactor and guide tables",
+    [18, 0.32, 9],
+    [0.6, -3.56, 0],
+    foundationMat,
+  );
 
-  for (let b = 0; b < 6; b++) {
-    const beamXGeo = new THREE.BoxGeometry(11.0, 0.45, 0.45);
-    disposables.push(beamXGeo);
-    const beamX = new THREE.Mesh(beamXGeo, timberSupportMat);
-    beamX.position.set(0, 0, -4.5 + b * 1.8);
-    timberGroup.add(beamX);
-  }
-
-  for (let c = 0; c < 4; c++) {
-    const colGeo = new THREE.BoxGeometry(0.5, 7.5, 0.5);
-    disposables.push(colGeo);
-    const col = new THREE.Mesh(colGeo, timberSupportMat);
-    const cx = c % 2 === 0 ? -4.5 : 4.5;
-    const cz = c < 2 ? -3.8 : 3.8;
-    col.position.set(cx, 3.5, cz);
-    timberGroup.add(col);
-  }
-
-  for (let g = 0; g < 3; g++) {
-    const gantryGeo = new THREE.BoxGeometry(10.2, 0.35, 0.35);
-    disposables.push(gantryGeo);
-    const gantry = new THREE.Mesh(gantryGeo, timberSupportMat);
-    gantry.position.set(0, 7.2, -2.5 + g * 2.5);
-    timberGroup.add(gantry);
-
-    const pulleyGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.15, 16);
-    disposables.push(pulleyGeo);
-    const pulley = new THREE.Mesh(pulleyGeo, pulleyMat);
-    pulley.rotation.z = Math.PI / 2;
-    pulley.position.set(0, 7.0, -2.5 + g * 2.5);
-    timberGroup.add(pulley);
-  }
+  const enclosureGroup = new THREE.Group();
+  enclosureGroup.name = "rectangular enclosure 11 with top opening 20";
+  root.add(enclosureGroup);
+  addBox("rear enclosure wall", [6.8, 5.4, 0.18], [0, -0.7, -3.35], enclosureMat, enclosureGroup);
+  addBox("left enclosure wall", [0.18, 5.4, 6.8], [-3.35, -0.7, 0], enclosureMat, enclosureGroup);
+  addBox("right enclosure wall", [0.18, 5.4, 6.8], [3.35, -0.7, 0], enclosureMat, enclosureGroup);
+  addBox("front enclosure wall", [6.8, 5.4, 0.18], [0, -0.7, 3.35], enclosureMat, enclosureGroup);
+  // Four top plates leave the source's central access opening visible.
+  addBox("top plate front", [6.8, 0.18, 2.25], [0, 2, 2.22], enclosureMat, enclosureGroup);
+  addBox("top plate rear", [6.8, 0.18, 2.25], [0, 2, -2.22], enclosureMat, enclosureGroup);
+  addBox("top plate left", [2.25, 0.18, 2.25], [-2.22, 2, 0], enclosureMat, enclosureGroup);
+  addBox("top plate right", [2.25, 0.18, 2.25], [2.22, 2, 0], enclosureMat, enclosureGroup);
 
   const pileGroup = new THREE.Group();
-  pileGroup.position.y = -1.2;
+  pileGroup.name = "continuous graphite moderator lattice";
   root.add(pileGroup);
 
-  const pileLayers = 14;
-  const pileRadius = 3.6;
   const graphitePositions: Array<readonly [number, number, number]> = [];
-
-  for (let l = 0; l < pileLayers; l++) {
-    const layerFraction = (l / (pileLayers - 1) - 0.5) * 2;
-    const r = Math.sqrt(Math.max(0.1, 1 - layerFraction * layerFraction * 0.85)) * pileRadius;
-    const layerY = -2.2 + l * 0.32;
-
-    const brickCount = Math.floor(r * 2.4);
-    for (let bx = -brickCount; bx <= brickCount; bx++) {
-      for (let bz = -brickCount; bz <= brickCount; bz++) {
-        const dist = Math.sqrt(bx * bx + bz * bz) * 0.35;
-        if (dist <= r) {
-          graphitePositions.push([bx * 0.35, layerY, bz * 0.35]);
-        }
+  for (let layer = 0; layer < 13; layer++) {
+    for (let column = 0; column < 17; column++) {
+      for (let row = 0; row < 17; row++) {
+        graphitePositions.push([-2.72 + column * 0.34, -3.22 + layer * 0.4, -2.72 + row * 0.34]);
       }
     }
   }
 
-  const graphiteBrickGeo = new THREE.BoxGeometry(0.33, 0.3, 0.33);
+  const graphiteBrickGeo = new THREE.BoxGeometry(0.32, 0.38, 0.32);
   disposables.push(graphiteBrickGeo);
   const graphiteBricks = new THREE.InstancedMesh(
     graphiteBrickGeo,
@@ -180,61 +180,118 @@ export function buildFermiReactorModel(): FermiReactorModel {
   pileGroup.add(graphiteBricks);
 
   const fuelGroup = new THREE.Group();
-  fuelGroup.position.y = -1.2;
+  fuelGroup.name = "Claim 1 geometrically spaced natural-uranium rod lattice";
   root.add(fuelGroup);
-  const fuelPositions: Array<readonly [number, number, number]> = [];
-
-  for (let fl = 2; fl < pileLayers - 2; fl += 2) {
-    const layerY = -2.2 + fl * 0.32;
-    for (let fx = -4; fx <= 4; fx += 2) {
-      for (let fz = -4; fz <= 4; fz += 2) {
-        if (Math.sqrt(fx * fx + fz * fz) * 0.35 < pileRadius * 0.85) {
-          fuelPositions.push([fx * 0.35, layerY, fz * 0.35]);
-        }
-      }
-    }
+  const fuelPositions: Array<readonly [number, number]> = [];
+  for (const y of [-2.35, -1.15, 0.05, 1.25]) {
+    for (const x of [-2.1, -0.7, 0.7, 2.1]) fuelPositions.push([x, y]);
   }
-
-  const fuelGeo = new THREE.CylinderGeometry(0.09, 0.09, 0.22, 12);
+  const fuelGeo = new THREE.CylinderGeometry(0.13, 0.13, 5.9, 16);
+  fuelGeo.rotateX(Math.PI / 2);
   disposables.push(fuelGeo);
-  const fuelSlugs = new THREE.InstancedMesh(fuelGeo, uraniumFuelMat, fuelPositions.length);
-  fuelSlugs.name = "Natural uranium fuel slug lattice";
-  fuelPositions.forEach(([x, y, z], index) => {
-    instanceMatrix.makeTranslation(x, y, z);
-    fuelSlugs.setMatrixAt(index, instanceMatrix);
+  const uraniumRods = new THREE.InstancedMesh(fuelGeo, uraniumFuelMat, fuelPositions.length);
+  uraniumRods.name = "Natural uranium rods disposed in a geometric pattern";
+  fuelPositions.forEach(([x, y], index) => {
+    instanceMatrix.makeTranslation(x, y, 0);
+    uraniumRods.setMatrixAt(index, instanceMatrix);
   });
-  fuelSlugs.instanceMatrix.needsUpdate = true;
-  fuelGroup.add(fuelSlugs);
+  uraniumRods.instanceMatrix.needsUpdate = true;
+  uraniumRods.castShadow = true;
+  fuelGroup.add(uraniumRods);
 
+  // Figures 7–8 show side-entry absorber mechanisms carried on guide tables.
+  // The rails, legs, bearing carriage, and rod form one continuous load path.
+  const supportGroup = new THREE.Group();
+  supportGroup.name = "source side-entry control-rod guide tables";
+  root.add(supportGroup);
   const rodGroup = new THREE.Group();
+  rodGroup.name = "cadmium absorber rods supported by guide carriages";
   root.add(rodGroup);
+  const controlRods: THREE.Mesh[] = [];
+  const controlRodCarriages: THREE.Mesh[] = [];
+  const absorberZs = [-1.6, 0, 1.6];
+  const rodGeo = new THREE.CylinderGeometry(0.1, 0.1, 5.8, 16);
+  rodGeo.rotateZ(Math.PI / 2);
+  disposables.push(rodGeo);
+  for (const z of absorberZs) {
+    addBox(
+      "absorber guide rail",
+      [6.7, 0.14, 0.14],
+      [5.55, -0.25, z],
+      structuralSteelMat,
+      supportGroup,
+    );
+    addBox(
+      "absorber guide rail",
+      [6.7, 0.14, 0.14],
+      [5.55, -0.25, z + 0.34],
+      structuralSteelMat,
+      supportGroup,
+    );
+    for (const x of [3, 8.3]) {
+      addBox(
+        "guide-table leg",
+        [0.18, 3.22, 0.18],
+        [x, -1.89, z + 0.17],
+        structuralSteelMat,
+        supportGroup,
+      );
+      addBox(
+        "guide-table foot",
+        [0.65, 0.12, 0.65],
+        [x, -3.34, z + 0.17],
+        structuralSteelMat,
+        supportGroup,
+      );
+    }
 
-  const rodCoords: [number, number][] = [
-    [0, 0],
-    [-0.7, 0.7],
-    [0.7, -0.7],
-  ];
-
-  for (const [rx, rz] of rodCoords) {
-    const rodGeo = new THREE.CylinderGeometry(0.08, 0.08, 5.8, 16);
-    disposables.push(rodGeo);
     const rod = new THREE.Mesh(rodGeo, cadmiumRodMat);
-    rod.position.set(rx, 1.2, rz);
+    rod.name = "side-entry cadmium absorber rod";
+    rod.position.set(0, 0.2, z + 0.17);
+    rod.castShadow = true;
     rodGroup.add(rod);
+    controlRods.push(rod);
 
-    const wireGeo = new THREE.CylinderGeometry(0.015, 0.015, 4.2, 8);
-    disposables.push(wireGeo);
-    const wire = new THREE.Mesh(wireGeo, cadmiumRodMat);
-    wire.position.set(rx, 4.8, rz);
-    rodGroup.add(wire);
+    const carriage = addBox(
+      "rod-end carriage continuously seated on guide rails",
+      [0.36, 0.62, 0.62],
+      [2.9, 0.04, z + 0.17],
+      structuralSteelMat,
+      rodGroup,
+    );
+    controlRodCarriages.push(carriage);
   }
 
+  // Figure 8 identifies ionization chamber 29a/32. It is seated in a cradle
+  // fixed to the left-side foundation; no unsupported detector floats nearby.
   const detectorGeo = new THREE.CylinderGeometry(0.12, 0.12, 1.4, 16);
+  detectorGeo.rotateZ(Math.PI / 2);
   disposables.push(detectorGeo);
-  const bf3Detector = new THREE.Mesh(detectorGeo, detectorMat);
-  bf3Detector.position.set(2.4, -0.5, 0);
-  bf3Detector.rotation.z = Math.PI / 2;
-  root.add(bf3Detector);
+  const ionizationChamber = new THREE.Mesh(detectorGeo, detectorMat);
+  ionizationChamber.name = "ionization chamber 29a and detector head 32";
+  ionizationChamber.position.set(-3.95, -0.5, 0.8);
+  root.add(ionizationChamber);
+  addBox(
+    "ionization chamber cradle",
+    [1.8, 0.18, 0.7],
+    [-4.15, -0.72, 0.8],
+    structuralSteelMat,
+    supportGroup,
+  );
+  addBox(
+    "ionization chamber stand",
+    [0.22, 2.62, 0.22],
+    [-4.55, -2.02, 0.8],
+    structuralSteelMat,
+    supportGroup,
+  );
+  addBox(
+    "ionization chamber stand foot",
+    [0.8, 0.12, 0.8],
+    [-4.55, -3.34, 0.8],
+    structuralSteelMat,
+    supportGroup,
+  );
 
   const neutronCount = 300;
   const neutronGeo = new THREE.BufferGeometry();
@@ -242,7 +299,7 @@ export function buildFermiReactorModel(): FermiReactorModel {
   const neutronPos = new Float32Array(neutronCount * 3);
   const neutronVel = new Float32Array(neutronCount * 3);
   const neutronColors = new Float32Array(neutronCount * 3);
-  const neutronFluxField = new Float32Array(16 * 16);
+  const neutronDisplayField = new Float32Array(16 * 16);
   const heatFieldFrames = heatFrames(12, 16, 2);
   const laplacianModeField = laplacianModes(17, 3);
   const glowTex = createGlowPointTexture();
@@ -250,9 +307,9 @@ export function buildFermiReactorModel(): FermiReactorModel {
 
   for (let i = 0; i < neutronCount; i++) {
     const idx = i * 3;
-    neutronPos[idx] = (lcg() - 0.5) * 6.5;
-    neutronPos[idx + 1] = -2.6 + lcg() * 3.2;
-    neutronPos[idx + 2] = (lcg() - 0.5) * 6.5;
+    neutronPos[idx] = (lcg() - 0.5) * 5.4;
+    neutronPos[idx + 1] = -3.0 + lcg() * 4.4;
+    neutronPos[idx + 2] = (lcg() - 0.5) * 5.4;
 
     const theta = lcg() * Math.PI * 2;
     const phi = (lcg() - 0.5) * Math.PI;
@@ -289,11 +346,13 @@ export function buildFermiReactorModel(): FermiReactorModel {
     moderatorPurityPct: number,
     neutronDisplaySpeed: number,
     showNeutronCascade: boolean,
-    rodStudioY?: number,
+    rodStudioX?: number,
     fuelGlowIntensity?: number,
+    isCutaway = false,
+    claim1Active = true,
   ) => {
-    const effRodStudioY =
-      rodStudioY ?? -0.5 + (Math.min(100, Math.max(0, controlRodWithdrawalPct)) / 100) * 3.2;
+    const effRodStudioX =
+      rodStudioX ?? (Math.min(100, Math.max(0, controlRodWithdrawalPct)) / 100) * 5.8;
     const effFuelGlow = fuelGlowIntensity ?? Math.max(0, (kEff - 0.98) * 8);
     updateFermiReactorKinematics(
       model,
@@ -302,9 +361,11 @@ export function buildFermiReactorModel(): FermiReactorModel {
       kEff,
       moderatorPurityPct,
       neutronDisplaySpeed,
-      effRodStudioY,
+      effRodStudioX,
       effFuelGlow,
       showNeutronCascade,
+      isCutaway,
+      claim1Active,
     );
   };
 
@@ -317,24 +378,29 @@ export function buildFermiReactorModel(): FermiReactorModel {
 
   const model: FermiReactorModel = {
     root,
-    timberGroup,
+    foundation,
+    enclosureGroup,
+    supportGroup,
     pileGroup,
     fuelGroup,
     rodGroup,
-    bf3Detector,
+    controlRods,
+    controlRodCarriages,
+    ionizationChamber,
     neutronPoints,
     neutronGeo,
     neutronPos,
     neutronVel,
     neutronColors,
-    neutronFluxField,
+    neutronDisplayField,
     heatFieldFrames,
     laplacianModeField,
     neutronCount,
     graphiteBricks,
-    fuelSlugs,
+    uraniumRods,
     graphiteMat,
     uraniumFuelMat,
+    enclosureMat,
     updateKinematics,
     dispose,
   };
@@ -345,51 +411,72 @@ export function buildFermiReactorModel(): FermiReactorModel {
 export function updateFermiReactorKinematics(
   model: FermiReactorModel,
   delta: number,
-  _controlRodWithdrawalPct: number,
+  controlRodWithdrawalPct: number,
   kEff: number,
   moderatorPurityPct: number,
   neutronDisplaySpeed: number,
-  rodStudioY: number,
+  rodStudioX: number,
   fuelGlowIntensity: number,
   showNeutronCascade: boolean,
   isCutaway = false,
+  claim1Active = true,
 ): void {
-  const targetRodY = rodStudioY;
-  model.rodGroup.position.y += (targetRodY - model.rodGroup.position.y) * 0.1;
+  const withdrawal = Math.min(
+    100,
+    Math.max(0, Number.isFinite(controlRodWithdrawalPct) ? controlRodWithdrawalPct : 83.5),
+  );
+  const targetRodX = Math.min(5.8, Math.max(0, Number.isFinite(rodStudioX) ? rodStudioX : 4.843));
+  for (let index = 0; index < model.controlRods.length; index++) {
+    const rod = model.controlRods[index];
+    const carriage = model.controlRodCarriages[index];
+    if (rod) rod.position.x = targetRodX;
+    // The carriage overlaps the rod's outboard end and remains seated on both
+    // rails across the complete normalized travel range.
+    if (carriage) carriage.position.x = targetRodX + 2.9;
+  }
 
-  const purity = moderatorPurityPct / 100;
+  const purity = Math.min(
+    1,
+    Math.max(0, Number.isFinite(moderatorPurityPct) ? moderatorPurityPct / 100 : 0.995),
+  );
   model.graphiteMat.color.setRGB(0.12 * purity, 0.13 * purity, 0.15 * purity);
-  model.uraniumFuelMat.emissiveIntensity = fuelGlowIntensity;
+  model.fuelGroup.visible = claim1Active;
+  model.uraniumFuelMat.emissiveIntensity = claim1Active ? Math.max(0, fuelGlowIntensity) : 0;
   model.uraniumFuelMat.emissive.setHex(kEff > 1.002 ? 0xf97316 : 0x22c55e);
 
-  if (showNeutronCascade) {
+  if (showNeutronCascade && claim1Active) {
     const heatFrame = Math.max(0, Math.min(15, Math.floor((kEff - 0.9) * 80)));
-    const rodInsertion = Math.max(0, Math.min(1, 1 - (rodStudioY + 0.5) / 3.2));
-    const fluxField = computeFermiNeutronFluxField(kEff, rodInsertion, 16, model.neutronFluxField);
+    const rodInsertion = 1 - withdrawal / 100;
+    const displayField = computeFermiNormalizedDisplayField(
+      kEff,
+      rodInsertion,
+      16,
+      model.neutronDisplayField,
+    );
     const speed = neutronDisplaySpeed * delta;
     const pos = model.neutronPos;
     const vel = model.neutronVel;
     for (let i = 0; i < model.neutronCount; i++) {
       const idx = i * 3;
-      const u = Math.max(0, Math.min(1, 0.5 + ((pos[idx] ?? 0) + 3.6) / 7.2));
-      const v = Math.max(0, Math.min(1, 0.5 + ((pos[idx + 2] ?? 0) + 3.6) / 7.2));
+      const u = Math.max(0, Math.min(1, 0.5 + (pos[idx] ?? 0) / 5.4));
+      const v = Math.max(0, Math.min(1, 0.5 + (pos[idx + 2] ?? 0) / 5.4));
       const gx = Math.floor(u * 15);
       const gy = Math.floor(v * 15);
-      const fluxSample = fluxField[gy * 16 + gx] ?? 0.5;
+      const displaySample = displayField[gy * 16 + gx] ?? 0.5;
       const local =
         1 +
         Math.abs(sampleHeatAt(model.heatFieldFrames, 12, 16, heatFrame, u, v)) *
-          (0.5 + 0.5 * fluxSample);
+          (0.5 + 0.5 * displaySample);
       const lattice = 1 + 0.35 * laplacianModeShape(model.laplacianModeField, 17, 3, 0, i);
       pos[idx] += (vel[idx] ?? 0) * speed * 2.0 * local;
       pos[idx + 1] += (vel[idx + 1] ?? 0) * speed * 2.0 * lattice;
       pos[idx + 2] += (vel[idx + 2] ?? 0) * speed * 2.0 * local;
 
       if (
-        Math.abs(pos[idx]) > 3.6 ||
-        Math.abs(pos[idx + 2]) > 3.6 ||
-        pos[idx + 1] > 0.5 ||
-        pos[idx + 1] < -4.0
+        Math.abs(pos[idx]) > 2.8 ||
+        Math.abs(pos[idx + 2]) > 2.8 ||
+        pos[idx + 1] > 1.5 ||
+        pos[idx + 1] < -3.25
       ) {
         pos[idx] = ((i % 17) / 17 - 0.5) * 1.5;
         pos[idx + 1] = -2.0 + ((i % 13) / 13 - 0.5) * 1.5;
@@ -404,4 +491,7 @@ export function updateFermiReactorKinematics(
 
   model.graphiteMat.opacity = isCutaway ? 0.35 : 1.0;
   model.graphiteMat.transparent = isCutaway;
+  model.graphiteMat.depthWrite = !isCutaway;
+  model.enclosureMat.opacity = isCutaway ? 0.16 : 0.72;
+  model.enclosureMat.depthWrite = !isCutaway;
 }

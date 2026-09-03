@@ -188,6 +188,66 @@ export function MakinoScaraSim() {
                 stroke="#fcd34d"
                 strokeWidth="5"
               />
+              {pose.beltTransmissionAvailable && (
+                <g data-makino-belt-transmission="claims-2-5">
+                  <line
+                    x1={baseA}
+                    y1={ORIGIN_Y - 10}
+                    x2={outerA}
+                    y2={outerAY - 10}
+                    stroke="#34d399"
+                    strokeWidth="3"
+                  />
+                  <line
+                    x1={baseA}
+                    y1={ORIGIN_Y + 10}
+                    x2={outerA}
+                    y2={outerAY + 10}
+                    stroke="#34d399"
+                    strokeWidth="3"
+                  />
+                  <line
+                    x1={outerA}
+                    y1={outerAY - 10}
+                    x2={toolLeftX}
+                    y2={toolLeftY - 10}
+                    stroke="#10b981"
+                    strokeWidth="3"
+                  />
+                  <line
+                    x1={outerA}
+                    y1={outerAY + 10}
+                    x2={toolLeftX}
+                    y2={toolLeftY + 10}
+                    stroke="#10b981"
+                    strokeWidth="3"
+                  />
+                  {[
+                    { x: baseA, y: ORIGIN_Y },
+                    { x: outerA, y: outerAY },
+                    { x: toolLeftX, y: toolLeftY },
+                  ].map((pulley, index) => (
+                    <circle
+                      key={`belt-pulley-${index}`}
+                      cx={pulley.x}
+                      cy={pulley.y}
+                      r="13"
+                      fill="none"
+                      stroke="#6ee7b7"
+                      strokeWidth="3"
+                    />
+                  ))}
+                  <text
+                    x={baseA - 28}
+                    y={ORIGIN_Y - 22}
+                    fill="#a7f3d0"
+                    fontSize="10"
+                    fontFamily="monospace"
+                  >
+                    MOTOR 10 · BELTS 11/12
+                  </text>
+                </g>
+              )}
               {yHub && (
                 <>
                   <line

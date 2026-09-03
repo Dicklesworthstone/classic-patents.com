@@ -63,9 +63,7 @@ export function OtisHoistingApparatusSim() {
   const displayRatePct = params.displayRatePct ?? 60;
   const ropeGIntact = (params.ropeGIntegrityPct ?? 100) >= 15;
   const stopRopePulled = params.stopRopePulled === 1;
-  const liveControlsRef = useRef(
-    readAnimationControls(driveCommand, displayRatePct, ropeGIntact, stopRopePulled, claimStates),
-  );
+  const liveControlsRef = useRef<OtisAnimationControls | null>(null);
   const state = stepOtisTopology({
     platformPositionNormalized: platformPosition,
     drivePhaseRad: drivePhase,
@@ -111,6 +109,7 @@ export function OtisHoistingApparatusSim() {
       }
       const { dt } = clock.pump(now);
       const controls = liveControlsRef.current;
+      if (controls === null) return;
       const current = stepOtisTopology({
         platformPositionNormalized: positionRef.current,
         drivePhaseRad: phaseRef.current,

@@ -3,13 +3,14 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   archivalEditionForPublication,
+  completeArchivalEditionForViewer,
   evaluateArchivalPublicationState,
   patentForPublicationViewer,
 } from "@/data/editions/publicationApproval";
 import { allPatents } from "@/data/patents";
 import { whitneyCottonGinPatent } from "@/data/patents/whitney-cotton-gin";
 import type { Patent } from "@/types/patent";
-import { applyPatentViewToUrl, viewModeFromSearch } from "./DualProjectionViewer";
+import { applyPatentViewToUrl, viewModeFromSearch } from "./patentViewMode";
 
 const VIEWER_SOURCE = readFileSync(
   join(process.cwd(), "src/components/patents/DualProjectionViewer.tsx"),
@@ -20,6 +21,10 @@ const PATENT_PAGE_SOURCE = readFileSync(
   "utf8",
 );
 const E2E_AUDIT_SOURCE = readFileSync(join(process.cwd(), "scripts/e2e-visual-audit.ts"), "utf8");
+const THREEJS_AUDIT_SOURCE = readFileSync(
+  join(process.cwd(), "scripts/e2e-threejs-visual-audit.ts"),
+  "utf8",
+);
 
 describe("patent view URL state", () => {
   test("accepts each documented face and ignores unrecognized query values", () => {
@@ -73,22 +78,27 @@ describe("patent view URL state", () => {
       "data-archival-publication-evidence={JSON.stringify(archivalDiagnostics)}",
     );
     expect(VIEWER_SOURCE).toContain("const archivalSource =");
-    expect(VIEWER_SOURCE).toContain("patent.archivalEdition && archivalParallelReadings");
+    expect(VIEWER_SOURCE).toContain("const archivalSource = patent.archivalEdition");
+    expect(VIEWER_SOURCE).toContain("archivalParallelReadings ?? {}");
+    expect(VIEWER_SOURCE).toContain("reviewedTranscript");
+    expect(VIEWER_SOURCE).toContain('data-testid="reviewed-transcript-fallback"');
     expect(VIEWER_SOURCE).not.toContain(
-      "archivalPublication.isPublished && patent.archivalEdition && archivalParallelReadings",
+      "archivalPublication.isPublished && patent.archivalEdition",
     );
     expect(VIEWER_SOURCE).not.toContain("evaluateArchivalPublicationState(patent)");
     expect(VIEWER_SOURCE).not.toContain("archivalParallelReadingsFor");
     expect(PATENT_PAGE_SOURCE).not.toContain("searchParams");
     expect(E2E_AUDIT_SOURCE).toContain('searchParams.get("view") === "original-spec"');
     expect(E2E_AUDIT_SOURCE).toContain('searchParams.get("view") === view');
+    expect(THREEJS_AUDIT_SOURCE).toContain('action: "original-patent-text"');
+    expect(THREEJS_AUDIT_SOURCE).toContain('data-testid="reviewed-transcript-fallback"');
   });
 
-  test("gives the held Kwolek route a checked-claim visual boundary instead of a simulator affordance", () => {
+  test("gives the Kwolek route a visual-only boundary without withholding its patent text", () => {
     expect(VIEWER_SOURCE).toContain('patent.id === "us-3671542-kwolek-kevlar"');
-    expect(VIEWER_SOURCE).toContain("Source-Bound Visual Hold");
+    expect(VIEWER_SOURCE).toContain("Visual Model in Preparation");
     expect(VIEWER_SOURCE).toContain("Checked Claim Reading");
-    expect(VIEWER_SOURCE).toContain("no interactive physical model is published");
+    expect(VIEWER_SOURCE).toContain("Complete patent text remains available");
     expect(VIEWER_SOURCE).toContain("data-source-visual-hold={sourceVisualHold || undefined}");
   });
 });
@@ -174,5 +184,15 @@ describe("archival publication boundary", () => {
     expect(acceptedDecision.isPublished).toBe(true);
     expect(acceptedProjection.archivalEdition).toBe(acceptedPatent.archivalEdition);
     expect(acceptedProjection.originalTextAsset).toBeUndefined();
+  });
+
+  test("routes incomplete stored editions to their complete reviewed ledger source face", () => {
+    const fermi = allPatents.find((patent) => patent.id === "us-2708656-fermi-reactor");
+    if (!fermi) throw new Error("Fermi reactor patent not found");
+
+    const decision = evaluateArchivalPublicationState(fermi);
+    expect(fermi.archivalEdition).toBeDefined();
+    expect(completeArchivalEditionForViewer(fermi, decision)).toBeUndefined();
+    expect(patentForPublicationViewer(fermi, decision).archivalEdition).toBeUndefined();
   });
 });

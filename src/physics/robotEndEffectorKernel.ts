@@ -1,42 +1,47 @@
 /**
  * robotEndEffectorKernel.ts
  *
- * SI computational physics and kinematic kernel for Alexander H. Slocum & Peter A. Jurgens'
- * Robot End Effector (US 4,765,668, Granted Aug. 23, 1988).
+ * Source-bounded kinematic kernel for Alexander H. Slocum & Peter A. Jurgens'
+ * Robot End Effector (US 4,765,668, granted Aug. 23, 1988).
  *
- * Physical models:
- * 1. Opposed-thread recirculating ball screw linear kinematics (p = 5 mm, N_gear = 48.3 / 35.6 ≈ 1.3567).
- * 2. Ball screw torque-to-thrust force transmission (F_grip = 2*pi*eta*tau_motor*N / p <= 2,000 N).
- * 3. Symmetrical center-point centering repeatability (|delta_center| <= 0.05 mm).
- * 4. Dual-hand independent actuation (Side A raw stock / Side B finished part).
- * 5. Transverse frame positioning and 180° roll reorientation cycle.
+ * The grant prints a 5 mm opposed-thread lead, gear pitch diameters, eight
+ * encoder pegs, a typical six-inch opening, and several prototype ratings.
+ * Those facts close the helical displacement and encoder relationships. They
+ * do not close a pneumatic, contact, compliance, payload, or cycle-time solve.
+ * `fs-mbd::JointModel::helical` owns the generic screw law; this typed browser
+ * kernel mirrors that one-coordinate constraint without claiming a WASM step.
  */
 
+export const ROBOT_END_EFFECTOR_FRANKENSIM_HELICAL_OWNER = "fs-mbd::JointModel::helical" as const;
+export const ROBOT_END_EFFECTOR_FRANKENSIM_REVOLUTE_OWNER = "fs-mbd::JointModel::revolute" as const;
+export const ROBOT_END_EFFECTOR_FRANKENSIM_PRISMATIC_OWNER =
+  "fs-mbd::JointModel::prismatic" as const;
+export const ROBOT_END_EFFECTOR_FRANKENSIM_CONTACT_OWNER = "fs-contact::normal_patch" as const;
+
+const SOURCE_BOUNDARY_NOTE = `US 4,765,668 closes opposed-helical hand displacement and eight-peg encoder phase, but it does not print the workpiece/finger contact geometry, material pair, friction, pneumatic flow, duty cycle, connector stroke, or full body dimensions needed for force, pressure, power, structural deflection, dynamics, or cycle-time telemetry. ${ROBOT_END_EFFECTOR_FRANKENSIM_HELICAL_OWNER} owns the screw constraint, ${ROBOT_END_EFFECTOR_FRANKENSIM_REVOLUTE_OWNER} owns connector roll, ${ROBOT_END_EFFECTOR_FRANKENSIM_PRISMATIC_OWNER} owns the transverse stage, and ${ROBOT_END_EFFECTOR_FRANKENSIM_CONTACT_OWNER} is the candidate contact owner; only the source-closed kinematics are admitted here.`;
+
 export interface RobotEndEffectorControls {
-  /** Motor rotational speed in RPM (-1000 to +1000 RPM) */
+  /** Visitor-declared motor speed, bounded by the printed 260 RPM rating. */
   motorRpm: number;
-  /** Commanded motor torque in N·m (0 to 2.5 N·m) */
+  /** Visitor-declared motor torque, bounded by the printed 10 N·m stall rating. */
   motorTorqueNm: number;
-  /** Current jaw opening target for Side A in mm (0 to 152.4 mm / 6 in) */
+  /** Source-typical Side A jaw-opening scenario in mm. */
   jawSpanMm: number;
-  /** Side B secondary hand jaw opening in mm (0 to 152.4 mm) */
+  /** Source-typical Side B jaw-opening scenario in mm. */
   sideBJawSpanMm: number;
-  /** Robot connector roll angle in degrees (-180° to +180°) */
+  /** Claim 17 connector-roll inspection coordinate. */
   connectorRollDeg: number;
-  /** Transverse frame translation stroke in mm (-50 to +50 mm) */
-  transverseOffsetMm: number;
-  /** Workpiece stiffness in N/mm (10 to 5000 N/mm) */
-  workpieceStiffnessN_Mm: number;
+  /** Claim 16 transverse inspection coordinate; the grant prints no stroke. */
+  transverseOffsetNormalized: number;
 }
 
 export const ROBOT_END_EFFECTOR_DEFAULTS: RobotEndEffectorControls = {
-  motorRpm: 350,
-  motorTorqueNm: 0.85,
+  motorRpm: 260,
+  motorTorqueNm: 0,
   jawSpanMm: 65.0,
   sideBJawSpanMm: 80.0,
   connectorRollDeg: 0,
-  transverseOffsetMm: 0,
-  workpieceStiffnessN_Mm: 500,
+  transverseOffsetNormalized: 0,
 };
 
 export interface RobotEndEffectorTelemetry {
@@ -48,32 +53,34 @@ export interface RobotEndEffectorTelemetry {
   singleHandVelocityMmS: number;
   /** Relative closing speed between paired hands in mm/s (<= 43 mm/s) */
   relativeClosingSpeedMmS: number;
-  /** Available mechanical clamping grip force in Newtons (<= 2000 N) */
-  clampingForceN: number;
-  /** Instantaneous screw drive torque in N·m */
-  screwTorqueNm: number;
-  /** Ball screw mechanical advantage (F_thrust / tau_screw) in m^-1 */
-  mechanicalAdvantageM_1: number;
-  /** Symmetrical center-point deviation in mm (<= 0.05 mm) */
-  centerPointRepeatabilityMm: number;
+  /** Visitor motor-torque request; never promoted to achieved grip force. */
+  requestedMotorTorqueNm: number;
+  /** Source-reported prototype maximum gripping force, not a solved output. */
+  sourceReportedMaxGripForceN: number;
+  /** Source-reported system repeatability, not a calculated error budget. */
+  sourceReportedRepeatabilityMm: number;
   /** Left hand absolute position from frame midpoint in mm */
   leftHandPositionMm: number;
   /** Right hand absolute position from frame midpoint in mm */
   rightHandPositionMm: number;
-  /** Total gripping power delivered by motor in Watts */
-  mechanicalPowerW: number;
-  /** Back-driving resistance threshold torque in N·m */
-  backDriveHoldingTorqueNm: number;
   /** Primary hand pair A span in mm */
   sideASpanMm: number;
   /** Secondary hand pair B span in mm */
   sideBSpanMm: number;
-  /** Transverse position offset in mm */
-  transversePositionMm: number;
+  /** Normalized transverse inspection coordinate; the source prints no stroke. */
+  transversePositionNormalized: number;
   /** Frame roll orientation in degrees */
   frameRollDeg: number;
-  /** Cycle time for 50 mm stroke in seconds */
-  stroke50mmTimeSec: number;
+  /** Source-reported prototype maximum travel figure. */
+  sourceReportedMaxTravelMmS: number;
+  /** Generic law ownership and typed refusal boundary. */
+  owners: {
+    helical: typeof ROBOT_END_EFFECTOR_FRANKENSIM_HELICAL_OWNER;
+    roll: typeof ROBOT_END_EFFECTOR_FRANKENSIM_REVOLUTE_OWNER;
+    transverse: typeof ROBOT_END_EFFECTOR_FRANKENSIM_PRISMATIC_OWNER;
+    contactCandidate: typeof ROBOT_END_EFFECTOR_FRANKENSIM_CONTACT_OWNER;
+  };
+  sourceBoundary: { isRefused: true; note: string };
 }
 
 /** Gear reduction from driving pinion (35.6 mm) to screw gear (48.3 mm) */
@@ -82,7 +89,7 @@ export const GEAR_RATIO = 48.3 / 35.6; // ~1.35674
 /** Screw lead: 5 mm / revolution */
 export const SCREW_LEAD_M = 0.005; // 5 mm
 
-/** Ball screw forward transmission efficiency (disclosed ~90%) */
+/** Source says the ball screw can be efficient "up to 90%." */
 export const SCREW_EFFICIENCY = 0.9;
 
 /** Maximum reported gripping force in Newtons */
@@ -96,10 +103,10 @@ export function readRobotEndEffectorControls(
 ): RobotEndEffectorControls {
   return {
     motorRpm: Number.isFinite(raw.motorRpm)
-      ? (raw.motorRpm as number)
+      ? Math.max(-260, Math.min(260, raw.motorRpm as number))
       : ROBOT_END_EFFECTOR_DEFAULTS.motorRpm,
     motorTorqueNm: Number.isFinite(raw.motorTorqueNm)
-      ? Math.max(0, raw.motorTorqueNm as number)
+      ? Math.max(0, Math.min(10, raw.motorTorqueNm as number))
       : ROBOT_END_EFFECTOR_DEFAULTS.motorTorqueNm,
     jawSpanMm: Number.isFinite(raw.jawSpanMm)
       ? Math.min(152.4, Math.max(0, raw.jawSpanMm as number))
@@ -108,14 +115,11 @@ export function readRobotEndEffectorControls(
       ? Math.min(152.4, Math.max(0, raw.sideBJawSpanMm as number))
       : ROBOT_END_EFFECTOR_DEFAULTS.sideBJawSpanMm,
     connectorRollDeg: Number.isFinite(raw.connectorRollDeg)
-      ? (raw.connectorRollDeg as number)
+      ? Math.max(-180, Math.min(180, raw.connectorRollDeg as number))
       : ROBOT_END_EFFECTOR_DEFAULTS.connectorRollDeg,
-    transverseOffsetMm: Number.isFinite(raw.transverseOffsetMm)
-      ? (raw.transverseOffsetMm as number)
-      : ROBOT_END_EFFECTOR_DEFAULTS.transverseOffsetMm,
-    workpieceStiffnessN_Mm: Number.isFinite(raw.workpieceStiffnessN_Mm)
-      ? Math.max(1, raw.workpieceStiffnessN_Mm as number)
-      : ROBOT_END_EFFECTOR_DEFAULTS.workpieceStiffnessN_Mm,
+    transverseOffsetNormalized: Number.isFinite(raw.transverseOffsetNormalized)
+      ? Math.max(-1, Math.min(1, raw.transverseOffsetNormalized as number))
+      : ROBOT_END_EFFECTOR_DEFAULTS.transverseOffsetNormalized,
   };
 }
 
@@ -123,67 +127,43 @@ export function stepRobotEndEffectorSi(
   controls: RobotEndEffectorControls,
   _timeSec = 0,
 ): RobotEndEffectorTelemetry {
-  const motorRpm = controls.motorRpm;
+  const controlsRead = readRobotEndEffectorControls({ ...controls });
+  const motorRpm = controlsRead.motorRpm;
   const screwRpm = motorRpm / GEAR_RATIO;
   const screwOmegaRadS = (screwRpm * 2 * Math.PI) / 60;
 
   // Linear speed of each hand (mm/s)
   const singleHandVelocityMmS = (Math.abs(screwRpm) * (SCREW_LEAD_M * 1000)) / 60;
-  // Relative closing/opening speed is 2x single hand speed
-  const relativeClosingSpeedMmS = Math.min(MAX_TRAVEL_SPEED_MM_S, 2 * singleHandVelocityMmS);
-
-  // Torque at screw shaft
-  const tauMotor = Math.max(0, controls.motorTorqueNm);
-  const tauScrew = tauMotor * GEAR_RATIO;
-
-  // Mechanical advantage: F / tau_screw = 2 * pi * eta / lead
-  const mechanicalAdvantageM_1 = (2 * Math.PI * SCREW_EFFICIENCY) / SCREW_LEAD_M;
-
-  // Clamping thrust force F = 2 * pi * eta * tau_screw / lead
-  const rawClampingForceN = tauScrew * mechanicalAdvantageM_1;
-  const clampingForceN = Math.min(MAX_RATED_GRIP_FORCE_N, rawClampingForceN);
+  const relativeClosingSpeedMmS = 2 * singleHandVelocityMmS;
 
   // Symmetrical hand positions from midpoint
-  const spanA = Math.min(152.4, Math.max(0, controls.jawSpanMm));
+  const spanA = controlsRead.jawSpanMm;
   const halfSpanA = spanA / 2;
   const leftHandPositionMm = -halfSpanA;
   const rightHandPositionMm = halfSpanA;
-
-  // Center-point repeatability (governed by screw linearity and symmetric bearings)
-  const loadDeflectionFactor = (clampingForceN / MAX_RATED_GRIP_FORCE_N) * 0.03;
-  const centerPointRepeatabilityMm = Math.min(0.05, 0.01 + loadDeflectionFactor);
-
-  // Mechanical power delivered: P = tau_motor * omega_motor
-  const motorOmegaRadS = (motorRpm * 2 * Math.PI) / 60;
-  const mechanicalPowerW = Math.abs(tauMotor * motorOmegaRadS);
-
-  // Back-driving threshold holding torque
-  // Since eta = 0.90 > 0.50, back-drive efficiency eta_back ~ 2 - 1/eta ~ 0.888
-  const etaBack = Math.max(0.1, 2 - 1 / SCREW_EFFICIENCY);
-  const backDriveHoldingTorqueNm =
-    (clampingForceN * SCREW_LEAD_M) / (2 * Math.PI * etaBack * GEAR_RATIO);
-
-  // 50 mm stroke travel time
-  const stroke50mmTimeSec = relativeClosingSpeedMmS > 0 ? 50 / relativeClosingSpeedMmS : 999.0;
 
   return {
     screwRpm,
     screwOmegaRadS,
     singleHandVelocityMmS,
     relativeClosingSpeedMmS,
-    clampingForceN,
-    screwTorqueNm: tauScrew,
-    mechanicalAdvantageM_1,
-    centerPointRepeatabilityMm,
+    requestedMotorTorqueNm: controlsRead.motorTorqueNm,
+    sourceReportedMaxGripForceN: MAX_RATED_GRIP_FORCE_N,
+    sourceReportedRepeatabilityMm: 0.05,
     leftHandPositionMm,
     rightHandPositionMm,
-    mechanicalPowerW,
-    backDriveHoldingTorqueNm,
     sideASpanMm: spanA,
-    sideBSpanMm: controls.sideBJawSpanMm,
-    transversePositionMm: controls.transverseOffsetMm,
-    frameRollDeg: controls.connectorRollDeg,
-    stroke50mmTimeSec,
+    sideBSpanMm: controlsRead.sideBJawSpanMm,
+    transversePositionNormalized: controlsRead.transverseOffsetNormalized,
+    frameRollDeg: controlsRead.connectorRollDeg,
+    sourceReportedMaxTravelMmS: MAX_TRAVEL_SPEED_MM_S,
+    owners: {
+      helical: ROBOT_END_EFFECTOR_FRANKENSIM_HELICAL_OWNER,
+      roll: ROBOT_END_EFFECTOR_FRANKENSIM_REVOLUTE_OWNER,
+      transverse: ROBOT_END_EFFECTOR_FRANKENSIM_PRISMATIC_OWNER,
+      contactCandidate: ROBOT_END_EFFECTOR_FRANKENSIM_CONTACT_OWNER,
+    },
+    sourceBoundary: { isRefused: true, note: SOURCE_BOUNDARY_NOTE },
   };
 }
 
@@ -200,10 +180,17 @@ export interface RobotEndEffectorState {
   requestedGripForceN: number;
   fingerRetainedFraction: number;
   frameRotationRad: number;
-  transverseOffsetM: number;
+  transverseOffsetNormalized: number;
   symmetricMidpointM: number;
+  claim1TopologyPresent: boolean;
   sourceReportedGripForceN: number;
   sourceRepeatabilityM: number;
+  owners: {
+    helical: typeof ROBOT_END_EFFECTOR_FRANKENSIM_HELICAL_OWNER;
+    roll: typeof ROBOT_END_EFFECTOR_FRANKENSIM_REVOLUTE_OWNER;
+    transverse: typeof ROBOT_END_EFFECTOR_FRANKENSIM_PRISMATIC_OWNER;
+    contactCandidate: typeof ROBOT_END_EFFECTOR_FRANKENSIM_CONTACT_OWNER;
+  };
   sourceBoundary: {
     note: string;
     isRefused: boolean;
@@ -220,11 +207,15 @@ export function stepRobotEndEffector(
     ? Math.min(2000, Math.max(0, rawParams.gripForceSetpointN as number))
     : 900;
   const rotationDeg = Number.isFinite(rawParams.frameRotationDeg)
-    ? (rawParams.frameRotationDeg as number)
+    ? Math.min(180, Math.max(-180, rawParams.frameRotationDeg as number))
     : 0;
   const fingerChange = Number.isFinite(rawParams.fingerChangeFraction)
     ? Math.min(1, Math.max(0, rawParams.fingerChangeFraction as number))
     : 0;
+  const transverseOffsetNormalized = Number.isFinite(rawParams.transverseOffsetFraction)
+    ? Math.min(1, Math.max(-1, rawParams.transverseOffsetFraction as number))
+    : 0;
+  const claim1TopologyPresent = (rawParams.claim1TopologyEnabled ?? 1) >= 0.5;
 
   const jawOpeningM = fraction * ROBOT_END_EFFECTOR_TYPICAL_JAW_OPENING_M;
   const perHandOffsetM = jawOpeningM / 2;
@@ -243,12 +234,19 @@ export function stepRobotEndEffector(
     requestedGripForceN: gripForce,
     fingerRetainedFraction: 1 - fingerChange,
     frameRotationRad: (rotationDeg * Math.PI) / 180,
-    transverseOffsetM: 0,
+    transverseOffsetNormalized,
     symmetricMidpointM: 0,
+    claim1TopologyPresent,
     sourceReportedGripForceN: MAX_RATED_GRIP_FORCE_N,
     sourceRepeatabilityM: 0.00005, // 0.05 mm
+    owners: {
+      helical: ROBOT_END_EFFECTOR_FRANKENSIM_HELICAL_OWNER,
+      roll: ROBOT_END_EFFECTOR_FRANKENSIM_REVOLUTE_OWNER,
+      transverse: ROBOT_END_EFFECTOR_FRANKENSIM_PRISMATIC_OWNER,
+      contactCandidate: ROBOT_END_EFFECTOR_FRANKENSIM_CONTACT_OWNER,
+    },
     sourceBoundary: {
-      note: "US 4,765,668 supplies 5 mm lead, 2000 N max force, and 0.05 mm repeatability. Refuses unprinted payload, contact pressure, and robot arm model.",
+      note: SOURCE_BOUNDARY_NOTE,
       isRefused: true,
     },
   };

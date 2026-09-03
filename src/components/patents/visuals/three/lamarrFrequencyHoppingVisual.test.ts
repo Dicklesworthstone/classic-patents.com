@@ -18,7 +18,7 @@ import {
   readLamarrRuntimeControls,
   resetLamarrTape,
 } from "@/physics/lamarrSharedKernel";
-import { lamarrViewForViewport } from "./LamarrFrequencyHopping3D";
+import { lamarrViewForViewport } from "./lamarrFrequencyHoppingCamera";
 import {
   buildLamarrFrequencyHoppingModel,
   updateLamarrFrequencyHoppingKinematics,

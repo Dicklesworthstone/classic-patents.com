@@ -93,4 +93,16 @@ describe("US 1,102,653 Robert H. Goddard Rocket visual simulation", () => {
     expect(threeSource).toContain("stepGoddardApparatus");
     expect(threeSource).not.toContain("stepGoddardRocket");
   });
+
+  test("keeps claim controls below the canvas so narrow displays retain the apparatus", () => {
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three/Goddard1914Apparatus3D.tsx"),
+      "utf8",
+    );
+
+    expect(threeSource.indexOf("data-goddard-claims-deck")).toBeGreaterThan(
+      threeSource.indexOf("ref={containerRef}"),
+    );
+    expect(threeSource).toContain("max-w-[calc(100%-1.5rem)]");
+  });
 });

@@ -105,7 +105,8 @@ export function buildAmfVersatranModel(): AmfVersatranModel {
     geometry(new THREE.CylinderGeometry(0.24, 0.24, 2.65, 32)),
     columnSteel,
   );
-  columnPost.position.y = 1.32;
+  columnPost.name = "Column B vertical post";
+  columnPost.position.y = 1.315;
   columnAssembly.add(columnPost);
 
   const carriage = new THREE.Group();
@@ -210,6 +211,7 @@ export function buildAmfVersatranModel(): AmfVersatranModel {
   const signalDisplay = new THREE.Group();
   signalDisplay.name = "Recorded-signal and feedback comparison display";
   const signalCabinet = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.9, 1.4, 0.36)), darkSteel);
+  signalCabinet.name = "Recorded-signal cabinet supported on museum floor";
   const recordedDial = new THREE.Mesh(
     geometry(new THREE.CylinderGeometry(0.2, 0.2, 0.05, 24)),
     signalPaint,
@@ -237,7 +239,7 @@ export function buildAmfVersatranModel(): AmfVersatranModel {
     signalDisplay.add(lamp);
     return lamp;
   });
-  signalDisplay.position.set(1.66, -0.18, -0.88);
+  signalDisplay.position.set(1.66, -0.31, -0.88);
   signalDisplay.add(signalCabinet, recordedDial, feedbackDial, comparator);
   root.add(signalDisplay);
 
@@ -249,13 +251,15 @@ export function buildAmfVersatranModel(): AmfVersatranModel {
 
     const boomLength = 0.72 + controls.armTravel * 0.9;
     telescopingBoom.scale.x = boomLength;
-    telescopingBoom.position.x = 0.79 + boomLength / 2;
+    // The source arm slides through carriage C. Keep the model's boom rooted
+    // inside that carriage instead of starting in open air beside it.
+    telescopingBoom.position.x = 0.22 + boomLength / 2;
     actuatorShell.scale.y = boomLength * 0.88;
-    actuatorShell.position.x = 0.76 + boomLength / 2;
-    actuatorRod.scale.y = 0.37 + controls.armTravel * 0.68;
-    actuatorRod.position.x = 1.1 + boomLength;
+    actuatorShell.position.x = 0.22 + boomLength * 0.44;
+    actuatorRod.scale.y = boomLength * 0.22;
+    actuatorRod.position.x = 0.22 + boomLength * 0.89;
 
-    const wristX = 0.79 + boomLength + 0.26;
+    const wristX = 0.22 + boomLength;
     wristSwingStage.position.x = wristX;
     wristSwingStage.rotation.y = displayPose.wristSwingDisplayRad;
     wristRotationStage.rotation.x = displayPose.wristRotationDisplayRad;

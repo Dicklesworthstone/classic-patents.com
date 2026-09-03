@@ -364,6 +364,7 @@ export function ThomsonWelding3D() {
             </div>
             <input
               type="range"
+              aria-label="Secondary welding current"
               min="1000"
               max="6000"
               step="100"
@@ -384,6 +385,7 @@ export function ThomsonWelding3D() {
             </div>
             <input
               type="range"
+              aria-label="Mechanical upset pressure"
               min="10"
               max="60"
               step="5"

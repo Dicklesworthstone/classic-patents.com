@@ -8,8 +8,8 @@ const BRIDGED_STUDIOS = [
   ["LemelsonMachineVision3D.tsx", "liveState", "state"],
   ["MakinoScara3D.tsx", "liveParams", "effectiveParams"],
   ["MilacronRobotToolchanger3D.tsx", "liveParams", "params"],
-  ["RobotEndEffector3D.tsx", "liveParams", "params"],
-  ["SikorskyHelicopter3D.tsx", "liveParams", "params"],
+  ["RobotEndEffector3D.tsx", "liveParams", "effectiveParams"],
+  ["SikorskyHelicopter3D.tsx", "liveParams", "claimResult.modifiedParams"],
 ] as const;
 
 describe("Three.js React 19 live simulation parameter bridges", () => {

@@ -14,8 +14,12 @@ import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
+import {
+  SPENCER_3D_SOURCE_BOUNDARY,
+  type SpencerCameraPreset,
+  spencerViewForViewport,
+} from "./spencerMicrowaveCamera";
 import {
   buildSpencerMicrowaveModel,
   updateSpencerMicrowaveKinematics,
@@ -24,43 +28,6 @@ import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset =
-  | "iso"
-  | "cavity_resonator"
-  | "electron_spokes"
-  | "waveguide_launch"
-  | "strapping_rings"
-  | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [10.5, 8, 12], target: [0, 0, 0] },
-  cavity_resonator: { pos: [0, 2.5, 3.5], target: [0, 0, 0] },
-  electron_spokes: { pos: [0, 4.5, 0.1], target: [0, 0, 0] },
-  waveguide_launch: { pos: [2.5, 1.8, 3.0], target: [1.2, 0, 0] },
-  strapping_rings: { pos: [0, 1.2, 2.5], target: [0, 0, 0] },
-  top: { pos: [0, 10.0, 0.1], target: [0, 0, 0] },
-};
-
-export const SPENCER_3D_SOURCE_BOUNDARY =
-  "US 2,495,429 establishes the connected dual-oscillator treatment path and a wavelength region, but supplies no tube voltage, magnetic field, RF power, or quantitative magnetron model. The displayed numerical operating point is a modern illustrative scenario only.";
-
-export function spencerViewForViewport(preset: CameraPreset, viewportWidth: number) {
-  const config = CAMERA_PRESETS[preset];
-  const multiplier =
-    viewportWidth < 480 ? (preset === "iso" ? 2.15 : 1.5) : viewportWidth < 900 ? 1.55 : 1;
-  return {
-    pos: [
-      config.target[0] + (config.pos[0] - config.target[0]) * multiplier,
-      config.target[1] + (config.pos[1] - config.target[1]) * multiplier,
-      config.target[2] + (config.pos[2] - config.target[2]) * multiplier,
-    ] as [number, number, number],
-    target: config.target,
-  };
-}
-
 export function SpencerMicrowave3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
@@ -68,7 +35,7 @@ export function SpencerMicrowave3D() {
   // Magnetron & Cavity Resonator State
   const { params, updateParam } = usePatentPhysics("us-2495429-spencer-microwave");
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
-  const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const [isCutaway, setIsCutaway] = useState<boolean>(true);
   const energyPathActive = (params.rfPowerSetting ?? 1) >= 0.5;
   // The grant defines the connected apparatus and wavelength region, not a
   // quantitative tube operating point. These fixed values are a disclosed
@@ -81,9 +48,9 @@ export function SpencerMicrowave3D() {
   const [showWaterDipoles, _setShowWaterDipoles] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<SpencerCameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const [crateSource, setCrateSource] = useState(genericKernelSource);
 
   // RF Cavity Physics Calculations (FrankenSim Hull Cutoff & Microwave Emission)
   const rfPhysics = FrankenSimEngine.stepSpencerMicrowave(
@@ -114,7 +81,7 @@ export function SpencerMicrowave3D() {
     spokeDisplayOmegaRadPerS: rfPhysics.spokeDisplayOmegaRadPerS,
   });
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: SpencerCameraPreset) => {
     setActiveCamera(preset);
     const cfg = spencerViewForViewport(preset, containerRef.current?.clientWidth ?? 1000);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
@@ -143,12 +110,12 @@ export function SpencerMicrowave3D() {
 
     const fieldGrid = 32;
     const fieldTex = createColormappedFieldTexture(
-      computeSpencerCavityField(800, true, 0, fieldGrid),
+      computeSpencerCavityField(0, false, 0, fieldGrid),
       fieldGrid,
       fieldGrid,
     );
     const fieldPlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(4.0, 2.4),
+      new THREE.PlaneGeometry(1.8, 2.4),
       new THREE.MeshBasicMaterial({
         map: fieldTex,
         transparent: true,
@@ -159,7 +126,8 @@ export function SpencerMicrowave3D() {
     fieldPlane.rotation.x = -Math.PI / 2;
     // The field belongs over the conveyor treatment region, downstream of
     // the joined guide—not at an unconnected scene-origin display plane.
-    fieldPlane.position.set(0, -2.25, 1.3);
+    fieldPlane.position.set(3.35, -0.62, 0);
+    fieldPlane.visible = false;
     scene.add(fieldPlane);
     const fieldRgba = fieldTex.image.data as Uint8Array;
 
@@ -209,6 +177,7 @@ export function SpencerMicrowave3D() {
         fieldGrid,
       );
       fieldTex.needsUpdate = true;
+      fieldPlane.visible = Boolean(p.isOscillating);
 
       controls.update();
       renderer.render(scene, studio.camera);
@@ -240,13 +209,6 @@ export function SpencerMicrowave3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <PortHamiltonianEnergyStrip
-        patentId="us-2495429-spencer-microwave"
-        params={{
-          rfPowerWatts,
-          anodeVoltage: anodeVoltageVolts,
-        }}
-      />
       <div className="sr-only">Percy L. Spencer Microwave Cavity Magnetron 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
@@ -263,7 +225,7 @@ export function SpencerMicrowave3D() {
                 ["cavity_resonator", "Cavity"],
                 ["electron_spokes", "Spokes"],
                 ["waveguide_launch", "Waveguide"],
-                ["strapping_rings", "Strapping Rings"],
+                ["transformer", "Transformer"],
                 ["top", "Interaction Space"],
               ] as const
             ).map(([id, label]) => (
@@ -445,12 +407,6 @@ export function SpencerMicrowave3D() {
             Energy path {energyPathActive ? "enabled" : "disabled"}
           </button>
         </div>
-
-        <PortHamiltonianEnergyStrip
-          patentId="us-2495429-spencer-microwave"
-          params={params}
-          className="mt-3"
-        />
       </div>
     </div>
   );

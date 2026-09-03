@@ -25,7 +25,7 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [8, 5.5, 8], target: [0, 0, 0] },
+  iso: { pos: [9.5, 3.8, 9.5], target: [-0.25, 0, 0] },
   spray: { pos: [-3.4, 2.1, 4.1], target: [-2.3, 0.2, 0] },
   plates: { pos: [0.2, 2.6, 4.5], target: [-0.5, 0.2, 0] },
   fan: { pos: [4.2, 1.8, 3.6], target: [2.4, 0.3, 0] },
@@ -95,6 +95,7 @@ export function CarrierAirConditioner3D() {
       container,
       cameraPos: CAMERA_PRESETS.iso.pos,
       targetPos: CAMERA_PRESETS.iso.target,
+      fov: 44,
     });
     studioRef.current = studio;
     const { scene, camera, renderer, controls } = studio;

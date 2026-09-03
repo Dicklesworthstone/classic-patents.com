@@ -9,14 +9,18 @@ import {
 } from "@/physics/mestralVelcroKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "./PortHamiltonianEnergyStrip";
 
 interface MestralVelcroSimProps {
   initialControls?: Partial<MestralVelcroControls>;
   className?: string;
 }
 
-export function MestralVelcroSim({ initialControls = {}, className = "" }: MestralVelcroSimProps) {
+const EMPTY_MESTRAL_VELCRO_CONTROLS: Partial<MestralVelcroControls> = {};
+
+export function MestralVelcroSim({
+  initialControls = EMPTY_MESTRAL_VELCRO_CONTROLS,
+  className = "",
+}: MestralVelcroSimProps) {
   const { effectiveParams, claimStates, updateParam } = usePatentPhysics(
     "us-2717437-mestral-velcro",
   );
@@ -32,6 +36,7 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
 
   const clipId = useId();
   const tel = stepMestralVelcroSi(controls);
+  const peelFrontX = 90 + tel.peelProgress * 550;
 
   const updateControl = (key: keyof MestralVelcroControls, val: number) => {
     updateParam(key, val);
@@ -48,7 +53,7 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
             US 2,717,437
           </span>
           <h3 className="text-sm font-semibold tracking-wide text-stone-100">
-            De Mestral Hook-and-Loop Fastener (Velcro) Simulator
+            De Mestral Hook-Pile Fabric Source Reader
           </h3>
         </div>
 
@@ -62,7 +67,7 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
                 : "text-stone-400 hover:text-stone-200"
             }`}
           >
-            Peeling Anisotropy (Fig. 2)
+            Hook Interengagement (Fig. 2)
           </button>
           <button
             type="button"
@@ -84,7 +89,7 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
                 : "text-stone-400 hover:text-stone-200"
             }`}
           >
-            Hook Cantilever Beam FEA
+            Filament Geometry Lens
           </button>
         </div>
       </div>
@@ -105,7 +110,7 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
             <linearGradient id={`lancet-heat-${clipId}`} x1="0%" y1="0%" x2="0%" y2="100%">
               <stop
                 offset="0%"
-                stopColor={controls.heatSettingTempC > 140 ? "#ef4444" : "#f97316"}
+                stopColor={tel.thermalSettingPresent ? "#ef4444" : "#57534e"}
                 stopOpacity="0.85"
               />
               <stop offset="100%" stopColor="#b45309" stopOpacity="0.95" />
@@ -114,6 +119,17 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
               <feGaussianBlur stdDeviation="3" result="blur" />
               <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
+            <marker
+              id={`traction-arrow-${clipId}`}
+              viewBox="0 0 10 10"
+              refX="8"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse"
+            >
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444" />
+            </marker>
           </defs>
 
           {/* BACKGROUND GRID */}
@@ -148,15 +164,14 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
                 fontFamily="sans-serif"
                 fontWeight="bold"
               >
-                LOWER FOUNDATION TAPE (1-inch width)
+                LOWER HOOK-PILE FABRIC · FIXED DISPLAY BOUNDARY
               </text>
 
-              {/* Lower Hooks & Loops Array */}
-              {Array.from({ length: 18 }).map((_, i) => {
-                const x = 90 + i * 36;
-                const isPeelingZone = x > 380 && x < 540;
-                const _isDisengaged = x >= 540;
-                const hookBend = isPeelingZone ? (x - 380) * 0.08 : 0;
+              {/* Lower hook strands 9 and straight cut strands 10 */}
+              {Array.from({ length: 6 + tel.visiblePileRows * 3 }).map((_, i, hooks) => {
+                const x = 90 + (i * 620) / Math.max(1, hooks.length - 1);
+                const isPeelingZone = x > peelFrontX - 60 && x < peelFrontX + 60;
+                const hookBend = isPeelingZone ? (x - (peelFrontX - 60)) * 0.08 : 0;
 
                 return (
                   <g key={`lower-hook-${i}`} transform={`translate(${x}, 270)`}>
@@ -172,7 +187,11 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
                     />
                     {/* Upright hook 9 with curved apex 4 */}
                     <path
-                      d={`M 5,0 L 5,-45 Q ${5 - hookBend * 10},-60 ${-10 + hookBend * 12},-50`}
+                      d={
+                        tel.hookInterengagementAvailable
+                          ? `M 5,0 L 5,-45 Q ${5 - hookBend * 10},-60 ${-10 + hookBend * 12},-50`
+                          : "M 5,0 L 5,-48"
+                      }
                       fill="none"
                       stroke={isPeelingZone ? "#f59e0b" : "#fbbf24"}
                       strokeWidth={controls.filamentDiameterMm * 14}
@@ -185,16 +204,16 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
               {/* Upper Foundation Tape (Peeling Flap) */}
               {(() => {
                 const peelAngleRad = (controls.peelAngleDeg * Math.PI) / 180;
-                const peelStartX = 90 + tel.peelProgress * 550;
+                const peelStartX = peelFrontX;
                 const flapLength = 260;
-                const flapEndX = peelStartX + flapLength * Math.cos(Math.PI - peelAngleRad);
+                const flapEndX = peelStartX + flapLength * Math.cos(peelAngleRad);
                 const flapEndY = 220 - flapLength * Math.sin(peelAngleRad);
 
                 return (
                   <g>
                     {/* Engaged Flat Section of Upper Tape */}
                     <path
-                      d={`M 60,220 L ${peelStartX},220 Q ${peelStartX + 20},220 ${peelStartX + 40 * Math.cos(Math.PI - peelAngleRad * 0.5)},${220 - 40 * Math.sin(peelAngleRad * 0.5)} L ${flapEndX},${flapEndY}`}
+                      d={`M 60,220 L ${peelStartX},220 Q ${peelStartX + 20},220 ${peelStartX + 40 * Math.cos(peelAngleRad * 0.5)},${220 - 40 * Math.sin(peelAngleRad * 0.5)} L ${flapEndX},${flapEndY}`}
                       fill="none"
                       stroke="#0284c7"
                       strokeWidth="18"
@@ -202,14 +221,18 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
                     />
 
                     {/* Opposing Meshed Hooks on Engaged Section */}
-                    {Array.from({ length: 14 }).map((_, j) => {
-                      const ux = 90 + j * 36;
+                    {Array.from({ length: 6 + tel.visiblePileRows * 3 }).map((_, j, hooks) => {
+                      const ux = 90 + (j * 620) / Math.max(1, hooks.length - 1);
                       if (ux >= peelStartX - 15) return null;
                       return (
                         <g key={`upper-hook-${j}`} transform={`translate(${ux}, 220)`}>
                           {/* Downward pointing hooks */}
                           <path
-                            d="M 0,0 L 0,40 Q 0,55 12,46"
+                            d={
+                              tel.hookInterengagementAvailable
+                                ? "M 0,0 L 0,40 Q 0,55 12,46"
+                                : "M 0,0 L 0,46"
+                            }
                             fill="none"
                             stroke="#38bdf8"
                             strokeWidth={controls.filamentDiameterMm * 14}
@@ -219,20 +242,20 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
                       );
                     })}
 
-                    {/* Peeling Tensile Pull Vector */}
+                    {/* External traction direction. No force magnitude is inferred. */}
                     <g transform={`translate(${flapEndX}, ${flapEndY})`}>
                       <line
                         x1="0"
                         y1="0"
-                        x2={-50 * Math.cos(peelAngleRad)}
+                        x2={50 * Math.cos(peelAngleRad)}
                         y2={-50 * Math.sin(peelAngleRad)}
                         stroke="#ef4444"
                         strokeWidth="3"
-                        markerEnd="url(#arrow)"
+                        markerEnd={`url(#traction-arrow-${clipId})`}
                       />
                       <circle cx="0" cy="0" r="5" fill="#ef4444" />
                       <text
-                        x={-60 * Math.cos(peelAngleRad)}
+                        x={60 * Math.cos(peelAngleRad)}
                         y={-60 * Math.sin(peelAngleRad)}
                         fill="#f87171"
                         fontSize="12"
@@ -240,11 +263,11 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
                         fontFamily="sans-serif"
                         textAnchor="middle"
                       >
-                        F_peel = {tel.totalPeelForceN.toFixed(2)} N ({controls.peelAngleDeg}°)
+                        EXTERNAL CLAMP DIRECTION · {controls.peelAngleDeg}°
                       </text>
                     </g>
 
-                    {/* Peel Crack Tip Stress Concentration Indicator */}
+                    {/* Kernel-owned normalized separation front */}
                     <circle
                       cx={peelStartX}
                       cy="245"
@@ -263,18 +286,18 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
                       fontFamily="monospace"
                       textAnchor="middle"
                     >
-                      Peel Front (w·Gc)
+                      NORMALIZED PEEL FRONT
                     </text>
                   </g>
                 );
               })()}
 
-              {/* Shear Vector Annotation */}
+              {/* Source Figure 2 topology annotation */}
               <g transform="translate(180, 160)">
                 <rect
                   x="-10"
                   y="-14"
-                  width="220"
+                  width="330"
                   height="28"
                   rx="6"
                   fill="#1c1917"
@@ -288,8 +311,7 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
                   fontWeight="bold"
                   fontFamily="monospace"
                 >
-                  In-Plane Shear: {tel.maxShearCapacity5cm2N.toFixed(1)} N (
-                  {tel.forceAnisotropyRatio.toFixed(1)}x vs Peel)
+                  SOURCE FIG. 2 · TWO HOOK FACES · UPPER TURNED 90°
                 </text>
               </g>
             </g>
@@ -343,7 +365,7 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
                   fontFamily="monospace"
                   textAnchor="middle"
                 >
-                  5 ({controls.heatSettingTempC}°C)
+                  HEATED BAR 5
                 </text>
               </g>
 
@@ -391,7 +413,11 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
                   10
                 </text>
                 <path
-                  d="M -15,0 L -15,-120 Q -15,-155 -38,-130"
+                  d={
+                    tel.hookInterengagementAvailable
+                      ? "M -15,0 L -15,-120 Q -15,-155 -38,-130"
+                      : "M -15,0 L -15,-145"
+                  }
                   fill="none"
                   stroke="#fbbf24"
                   strokeWidth="5"
@@ -405,7 +431,7 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
                   fontWeight="bold"
                   fontFamily="monospace"
                 >
-                  Hook 4
+                  {tel.hookInterengagementAvailable ? "Hook 4" : "Straight pile"}
                 </text>
               </g>
 
@@ -414,12 +440,12 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
                 Weft 1 / Warp 2 (Ground Weave)
               </text>
               <text x="370" y="295" fill="#f59e0b" fontSize="11" fontFamily="sans-serif">
-                Thermic Annealing Zone (ϕ_set = {(tel.thermalRetentionFraction * 100).toFixed(0)}%)
+                HEAT-BEFORE-CUTTING TOPOLOGY · NO TEMPERATURE PRINTED
               </text>
             </g>
           )}
 
-          {/* VIEW MODE 3: SINGLE HOOK CANTILEVER BEAM FEA */}
+          {/* VIEW MODE 3: EXACT SECTION GEOMETRY, WITHOUT INVENTED MATERIAL DATA */}
           {viewMode === "single-hook" && (
             <g transform="translate(250, 40)">
               {/* Foundation Ground Anchor */}
@@ -441,57 +467,36 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
                 fontFamily="monospace"
                 textAnchor="middle"
               >
-                Foundation Anchorage (&gt;15 N)
+                FOUNDATION WEAVE · ATTACHED ROOT
               </text>
 
-              {/* Magnified Hook Profile with Live Deflection */}
+              {/* Magnified source hook profile with reader-selected geometry */}
               {(() => {
-                const defl = (tel.hookDeflectionMm / 1000) * 120; // scaled visual px
+                const heightScale = controls.hookLengthMm / 1.8;
                 return (
                   <g>
-                    {/* Neutral Unloaded Curve (dashed) */}
+                    {/* Selected hook shape. No uncalibrated load deformation. */}
                     <path
-                      d="M 0,280 L 0,100 Q 0,10 65,40"
+                      d={`M 0,280 L 0,${280 - 180 * heightScale} Q 0,${280 - 270 * heightScale} ${65 * heightScale},${280 - 240 * heightScale}`}
                       fill="none"
-                      stroke="#52525b"
-                      strokeWidth="3"
-                      strokeDasharray="4,4"
-                    />
-
-                    {/* Loaded Deflected Hook Beam */}
-                    <path
-                      d={`M 0,280 L 0,100 Q 0,10 ${65 + defl},${40 - defl * 0.4}`}
-                      fill="none"
-                      stroke={defl > 15 ? "#ef4444" : "#f59e0b"}
+                      stroke="#f59e0b"
                       strokeWidth={controls.filamentDiameterMm * 40}
                       strokeLinecap="round"
                     />
-
-                    {/* Tip Force Vector */}
-                    <g transform={`translate(${65 + defl}, ${40 - defl * 0.4})`}>
-                      <line x1="0" y1="0" x2="60" y2="-30" stroke="#38bdf8" strokeWidth="3" />
-                      <circle cx="0" cy="0" r="6" fill="#38bdf8" />
-                      <text
-                        x="70"
-                        y="-35"
-                        fill="#7dd3fc"
-                        fontSize="12"
-                        fontWeight="bold"
-                        fontFamily="monospace"
-                      >
-                        F = {(tel.singleHookReleaseForceN * 1000).toFixed(1)} mN
-                      </text>
-                    </g>
-
-                    {/* Deflection Dimension Arc */}
-                    <text x="35" y="160" fill="#fbbf24" fontSize="11" fontFamily="monospace">
-                      δ = {tel.hookDeflectionMm.toFixed(2)} mm
+                    <text x="90" y="130" fill="#fbbf24" fontSize="11" fontFamily="monospace">
+                      illustrative d = {controls.filamentDiameterMm.toFixed(2)} mm
                     </text>
-                    <text x="35" y="180" fill="#a1a1aa" fontSize="11" fontFamily="monospace">
-                      k_hook = {tel.singleHookSpringRateN_M.toFixed(1)} N/m
+                    <text x="90" y="150" fill="#a1a1aa" fontSize="11" fontFamily="monospace">
+                      illustrative L = {controls.hookLengthMm.toFixed(1)} mm
                     </text>
-                    <text x="35" y="200" fill="#a1a1aa" fontSize="11" fontFamily="monospace">
-                      EI = {(tel.flexuralRigidityN_M2 * 1e6).toFixed(3)} μN·m²
+                    <text x="90" y="170" fill="#a1a1aa" fontSize="11" fontFamily="monospace">
+                      I = {tel.circularSectionSecondMomentM4.toExponential(2)} m⁴
+                    </text>
+                    <text x="90" y="190" fill="#a1a1aa" fontSize="11" fontFamily="monospace">
+                      relative d⁴/L³ index = {tel.relativeBendingGeometryIndex.toFixed(2)}×
+                    </text>
+                    <text x="90" y="225" fill="#fb7185" fontSize="11" fontFamily="monospace">
+                      FORCE REFUSED · E AND CONTACT LAW ABSENT
                     </text>
                   </g>
                 );
@@ -503,26 +508,22 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
         {/* Floating Live Telemetry Badge Overlay */}
         <div className="absolute top-4 right-4 bg-stone-950/90 border border-stone-800 backdrop-blur-md px-3 py-2.5 rounded-lg shadow-lg text-xs font-mono text-stone-300 space-y-1">
           <div className="flex justify-between space-x-4">
-            <span className="text-stone-400">Shear Capacity:</span>
+            <span className="text-stone-400">Source faces:</span>
             <span className="text-emerald-400 font-semibold">
-              {tel.shearStressCapacityN_Cm2.toFixed(1)} N/cm²
+              {tel.hookInterengagementAvailable ? "2 hook piles" : "straight-pile comparison"}
             </span>
           </div>
           <div className="flex justify-between space-x-4">
-            <span className="text-stone-400">Peel Force (1-in):</span>
-            <span className="text-amber-400 font-semibold">{tel.totalPeelForceN.toFixed(2)} N</span>
+            <span className="text-stone-400">Face rotation:</span>
+            <span className="text-amber-400 font-semibold">90°</span>
           </div>
           <div className="flex justify-between space-x-4">
-            <span className="text-stone-400">Anisotropy Ratio:</span>
-            <span className="text-purple-400 font-bold">
-              {tel.forceAnisotropyRatio.toFixed(1)}x
-            </span>
+            <span className="text-stone-400">Display rows:</span>
+            <span className="text-purple-400 font-bold">{tel.visiblePileRows}</span>
           </div>
           <div className="flex justify-between space-x-4">
-            <span className="text-stone-400">Thermal Memory:</span>
-            <span className="text-cyan-400 font-semibold">
-              {(tel.thermalRetentionFraction * 100).toFixed(0)}%
-            </span>
+            <span className="text-stone-400">Forces / energy:</span>
+            <span className="text-rose-400 font-semibold">refused</span>
           </div>
         </div>
       </div>
@@ -532,13 +533,14 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
         {/* Filament Diameter */}
         <div className="flex flex-col space-y-1.5">
           <div className="flex justify-between text-stone-300 font-medium">
-            <span>Nylon Monofilament d</span>
+            <span>Illustrative Filament d</span>
             <span className="font-mono text-amber-400">
               {controls.filamentDiameterMm.toFixed(2)} mm
             </span>
           </div>
           <input
             type="range"
+            aria-label="Illustrative filament diameter in millimeters"
             min="0.10"
             max="0.35"
             step="0.01"
@@ -548,31 +550,33 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
           />
         </div>
 
-        {/* Lancet Bar Temperature */}
+        {/* Hook Height */}
         <div className="flex flex-col space-y-1.5">
           <div className="flex justify-between text-stone-300 font-medium">
-            <span>Lancet Heat Temp (Fig. 1)</span>
-            <span className="font-mono text-red-400">{controls.heatSettingTempC}°C</span>
+            <span>Illustrative Hook Height</span>
+            <span className="font-mono text-amber-400">{controls.hookLengthMm.toFixed(1)} mm</span>
           </div>
           <input
             type="range"
-            min="100"
-            max="200"
-            step="5"
-            value={controls.heatSettingTempC}
-            onChange={(e) => updateControl("heatSettingTempC", parseInt(e.target.value, 10))}
-            className="accent-red-500 bg-stone-800 h-1.5 rounded-lg cursor-pointer"
+            aria-label="Illustrative hook height in millimeters"
+            min="1"
+            max="3"
+            step="0.1"
+            value={controls.hookLengthMm}
+            onChange={(e) => updateControl("hookLengthMm", parseFloat(e.target.value))}
+            className="accent-amber-500 bg-stone-800 h-1.5 rounded-lg cursor-pointer"
           />
         </div>
 
         {/* Peeling Angle */}
         <div className="flex flex-col space-y-1.5">
           <div className="flex justify-between text-stone-300 font-medium">
-            <span>Peeling Angle θ (Fig. 2)</span>
+            <span>Applied Clamp Direction</span>
             <span className="font-mono text-blue-400">{controls.peelAngleDeg}°</span>
           </div>
           <input
             type="range"
+            aria-label="Applied clamp direction in degrees"
             min="20"
             max="160"
             step="5"
@@ -585,11 +589,12 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
         {/* Hook Density */}
         <div className="flex flex-col space-y-1.5">
           <div className="flex justify-between text-stone-300 font-medium">
-            <span>Hook Density</span>
-            <span className="font-mono text-emerald-400">{controls.hookDensityPerCm2} cm⁻²</span>
+            <span>Illustrative Pile Population</span>
+            <span className="font-mono text-emerald-400">{tel.visiblePileRows} rows</span>
           </div>
           <input
             type="range"
+            aria-label="Illustrative rendered pile population"
             min="20"
             max="120"
             step="4"
@@ -610,6 +615,7 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
             </div>
             <input
               type="range"
+              aria-label="Peeling separation-front progress"
               min="0.05"
               max="0.95"
               step="0.01"
@@ -621,7 +627,13 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
         )}
       </div>
 
-      {/* Claim Constraints & Energy Ledger */}
+      <div className="border-t border-amber-900/60 bg-amber-950/25 px-4 py-3 text-xs leading-relaxed text-amber-100">
+        <strong>Source boundary:</strong> The facsimile supplies topology but not the material,
+        contact, dimensional, or test data required for shear capacity, peel force, thermal
+        retention, power, or a closed energy balance.
+      </div>
+
+      {/* Claim Constraints */}
       <div className="p-4 bg-stone-950 border-t border-stone-800 flex flex-col space-y-3">
         <ClaimConstraintToggle
           patentId="us-2717437-mestral-velcro"
@@ -629,10 +641,6 @@ export function MestralVelcroSim({ initialControls = {}, className = "" }: Mestr
           onToggleClaim={(claimNumber, active) =>
             updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
           }
-        />
-        <PortHamiltonianEnergyStrip
-          patentId="us-2717437-mestral-velcro"
-          params={controls as unknown as Record<string, number>}
         />
       </div>
     </div>

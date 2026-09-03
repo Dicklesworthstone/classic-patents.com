@@ -189,21 +189,31 @@ describe("US 3,858,581 manual source edition", () => {
     expect(energyChannelsFor("us-3858581-kamen-medication-injection-device", {})).toEqual([]);
   });
 
-  test("wires claim 1 inversion probe to open the motor circuit and report nonclinical refusal", () => {
+  test("wires claim 1 inversion probe to withhold the counted loop and report nonclinical refusal", () => {
     const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
-    const { stepKamenInjectionMechanism } = require("@/physics/kamenInjectionKernel");
+    const {
+      INITIAL_KAMEN_INJECTION_STATE,
+      readKamenInjectionControls,
+      stepKamenInjectionMechanism,
+    } = require("@/physics/kamenInjectionKernel");
 
     const result = applyClaimConstraintModifications(
       "us-3858581-kamen-medication-injection-device",
-      { motorCircuitClosed: 1 },
+      { running: 1, claim1PulseLoopPresent: 1 },
       { 1: false },
     );
-    expect(result.modifiedParams.motorCircuitClosed).toBe(0);
+    expect(result.modifiedParams.claim1PulseLoopPresent).toBe(0);
+    expect(result.modifiedParams.running).toBe(1);
     expect(result.refusalWarning).toContain("NONCLINICAL MECHANISM REFUSAL");
 
-    const pose = stepKamenInjectionMechanism(result.modifiedParams);
-    expect(pose.motorCircuitClosed).toBe(false);
-    expect(pose.motorState).toBe("open");
+    const frame = stepKamenInjectionMechanism(
+      INITIAL_KAMEN_INJECTION_STATE,
+      readKamenInjectionControls(result.modifiedParams),
+      0.1,
+    );
+    expect(frame.metrics.pulseLoopComplete).toBe(false);
+    expect(frame.metrics.phase).toBe("pulse loop withheld");
+    expect(frame.state.leadScrewTurns).toBeGreaterThan(0);
   });
 });
 

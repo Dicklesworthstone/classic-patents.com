@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepMorseTelegraph } from "@/physics/catalogKernels";
-import { morseCameraPresetForViewport } from "./MorseTelegraph3D";
+import { morseCameraPresetForViewport } from "./morseTelegraphCamera";
 import { buildMorseTelegraphModel, updateMorseTelegraphKinematics } from "./morseTelegraphModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");

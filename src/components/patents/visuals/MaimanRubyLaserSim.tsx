@@ -333,7 +333,7 @@ export function MaimanRubyLaserSim({ interactive = true }: MaimanRubyLaserSimPro
 
     render();
     return () => cancelAnimationFrame(animId);
-  }, [pumpEnergy, outputReflectivity, temperature, isFiring, metrics, onscreenRef.current]);
+  }, [pumpEnergy, outputReflectivity, temperature, isFiring, metrics, onscreenRef]);
 
   return (
     <div

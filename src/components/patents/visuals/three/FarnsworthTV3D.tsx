@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
@@ -19,9 +19,10 @@ import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildFarnsworthTvModel, updateFarnsworthTvKinematics } from "./farnsworthTvModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
+import { StudioOverlayActionToolbar } from "./StudioOverlayActionToolbar";
+import { createSourceBoundStudioOverlayActions } from "./studioOverlayActions";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
-
 import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "photocathode" | "aperture" | "coils" | "electron_gun" | "top";
@@ -30,7 +31,7 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [6, 4, 7], target: [0, 0, 0] },
+  iso: { pos: [7.8, 5.2, 9.1], target: [0, 0, 0] },
   photocathode: { pos: [-4, 0.5, 3], target: [-2.5, 0, 0] },
   aperture: { pos: [2.5, 1, 2], target: [2.0, 0, 0] },
   coils: { pos: [0, 3, 4], target: [0, 0, 0] },
@@ -253,73 +254,23 @@ export function FarnsworthTV3D() {
           </div>
         )}
 
-        {/* Top Right Tool Bar */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
-          <button
-            type="button"
-            onClick={() => setIsCutaway(!isCutaway)}
-            title={isCutaway ? "Switch to Solid Tube Mounts" : "Switch to Tube Cutaway"}
-            className={`min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              isCutaway
-                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`min-h-9 p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showUiOverlay
-                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-            }`}
-            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
-            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
-          >
-            {showUiOverlay ? (
-              <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            ) : (
-              <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            )}
-          </button>
-          <button
-            aria-label={isAudioMuted ? "Unmute simulation audio" : "Mute simulation audio"}
-            type="button"
-            onClick={toggleSound}
-            className="min-h-9 p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
-          >
-            {isAudioMuted ? (
-              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            ) : (
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
-            )}
-          </button>
-          <button
-            aria-label={showCalloutPins ? "Hide annotation pins" : "Show annotation pins"}
-            type="button"
-            onClick={() => setShowCalloutPins(!showCalloutPins)}
-            className={`min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showCalloutPins
-                ? "bg-amber-600 text-white border-amber-700 shadow-md"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-            title="Toggle Historical Patent Numeral Pins"
-          >
-            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
-          <button
-            aria-label="Reset camera view"
-            type="button"
-            onClick={() => applyCameraPreset("iso")}
-            className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
-          >
-            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
-        </div>
+        <StudioOverlayActionToolbar
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2"
+          actions={createSourceBoundStudioOverlayActions({
+            isCutaway,
+            onToggleCutaway: () => setIsCutaway(!isCutaway),
+            cutawayTitle: isCutaway ? "Switch to Solid Tube Mounts" : "Switch to Tube Cutaway",
+            showUiOverlay,
+            onToggleUiOverlay: () => setShowUiOverlay(!showUiOverlay),
+            isAudioMuted,
+            onToggleSound: toggleSound,
+            audioAriaLabel: isAudioMuted ? "Unmute simulation audio" : "Mute simulation audio",
+            audioTitle: isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound",
+            showCalloutPins,
+            onToggleCalloutPins: () => setShowCalloutPins(!showCalloutPins),
+            onResetCamera: () => applyCameraPreset("iso"),
+          })}
+        />
 
         {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (

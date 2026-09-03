@@ -26,6 +26,11 @@ export interface BardeenTransistorModelNodes {
   collectorGroup: THREE.Group;
   emitterContact: THREE.Mesh;
   collectorContact: THREE.Mesh;
+  inputTransformer: THREE.Group;
+  outputTransformer: THREE.Group;
+  emitterBattery: THREE.Mesh;
+  collectorBattery: THREE.Mesh;
+  circuitConductors: readonly THREE.Mesh[];
   carrierPoints: THREE.Points;
   carrierPositions: Float32Array;
   carrierCount: number;
@@ -101,6 +106,16 @@ function createGermaniumTexture(): THREE.CanvasTexture | undefined {
 }
 
 const CARRIER_COUNT = 120;
+const CONTACT_SURFACE_Y = 0.16;
+const EMITTER_UPPER_ANCHOR = new THREE.Vector3(-1.45, 2.05, 0);
+const COLLECTOR_UPPER_ANCHOR = new THREE.Vector3(1.45, 2.05, 0);
+
+function setConnectedCylinder(mesh: THREE.Mesh, start: THREE.Vector3, end: THREE.Vector3): void {
+  const delta = end.clone().sub(start);
+  mesh.position.copy(start).add(end).multiplyScalar(0.5);
+  mesh.scale.set(1, delta.length(), 1);
+  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), delta.normalize());
+}
 
 export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
   const rootGroup = new THREE.Group();
@@ -178,24 +193,15 @@ export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
     ),
   };
 
-  // Heavy Brass Mounting Baseplate with Terminal Screws
+  // Exhibit foundation for the complete Fig. 1 circuit path.
   const plinth = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(7.2, 0.35, 6.2)),
+    trackGeo(new THREE.BoxGeometry(12, 0.35, 6.2)),
     materials.baseMetal,
   );
+  plinth.name = "Bardeen Fig. 1 apparatus foundation";
   plinth.position.y = -1.4;
   plinth.receiveShadow = true;
   rootGroup.add(plinth);
-
-  // Terminal binding posts on baseplate
-  for (const bx of [-3.0, 0, 3.0]) {
-    const post = new THREE.Mesh(
-      trackGeo(new THREE.CylinderGeometry(0.16, 0.16, 0.5, 12)),
-      materials.baseMetal,
-    );
-    post.position.set(bx, -1.05, 2.6);
-    rootGroup.add(post);
-  }
 
   // Block 1: the supporting semiconductor body shown in Fig. 1 and Fig. 1a.
   const geBlock = new THREE.Mesh(
@@ -232,43 +238,126 @@ export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
   surfaceLayer.position.y = 0.11;
   rootGroup.add(surfaceLayer);
 
-  // Overhead Dielectric Adjustment Bridge & Clamp Mount
-  const bridgeMat = trackMat(
+  // Fig. 1 circuit members: input transformer 10 and output transformer 9,
+  // emitter battery 7, collector battery 8, and continuous conductors to the
+  // plated base 2 and point contacts 5/6.
+  const circuitCoreMat = trackMat(
     new THREE.MeshStandardMaterial({
       color: 0x1e293b,
       roughness: 0.5,
       metalness: 0.7,
     }),
   );
-  const wedgeMat = trackMat(
+  const batteryMat = trackMat(
     new THREE.MeshStandardMaterial({
-      color: 0xf1f5f9,
-      roughness: 0.3,
-      metalness: 0.1,
+      color: 0x475569,
+      roughness: 0.46,
+      metalness: 0.35,
     }),
   );
 
-  // Bridge Support Upright Columns
-  for (const colX of [-3.1, 3.1]) {
-    const col = new THREE.Mesh(
-      trackGeo(new THREE.CylinderGeometry(0.18, 0.22, 4.0, 16)),
-      bridgeMat,
-    );
-    col.position.set(colX, 0.6, 0);
-    col.castShadow = true;
-    rootGroup.add(col);
-  }
-  // Bridge Crossbeam
-  const bridgeBeam = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(6.6, 0.25, 0.5)), bridgeMat);
-  bridgeBeam.position.set(0, 2.6, 0);
-  rootGroup.add(bridgeBeam);
+  const buildTransformer = (name: string, x: number) => {
+    const group = new THREE.Group();
+    group.name = name;
+    group.position.set(x, -0.58, 0);
+    for (const z of [-0.35, 0.35]) {
+      const windingGeo = trackGeo(new THREE.TorusGeometry(0.42, 0.095, 10, 28));
+      for (const y of [-0.35, -0.12, 0.12, 0.35]) {
+        const winding = new THREE.Mesh(windingGeo, materials.springWire);
+        winding.position.set(0, y, z);
+        winding.rotation.x = Math.PI / 2;
+        group.add(winding);
+      }
+    }
+    for (const [size, position] of [
+      [
+        [1.35, 0.14, 1.2],
+        [0, 0.68, 0],
+      ],
+      [
+        [1.35, 0.14, 1.2],
+        [0, -0.68, 0],
+      ],
+      [
+        [0.14, 1.36, 1.2],
+        [-0.605, 0, 0],
+      ],
+      [
+        [0.14, 1.36, 1.2],
+        [0.605, 0, 0],
+      ],
+    ] as const) {
+      const core = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(...size)), circuitCoreMat);
+      core.position.set(position[0], position[1], position[2]);
+      group.add(core);
+    }
+    rootGroup.add(group);
+    return group;
+  };
 
-  // Insulating Point-Contact Support Wedge
-  const wedge = new THREE.Mesh(trackGeo(new THREE.ConeGeometry(0.65, 1.2, 4)), wedgeMat);
-  wedge.rotation.y = Math.PI / 4;
-  wedge.position.set(0, 2.0, 0);
-  wedge.castShadow = true;
-  rootGroup.add(wedge);
+  const inputTransformer = buildTransformer("Input transformer 10", -5.05);
+  const outputTransformer = buildTransformer("Output transformer 9", 5.05);
+
+  const buildBattery = (name: string, x: number) => {
+    const battery = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(0.72, 0.58, 0.52)), batteryMat);
+    battery.name = name;
+    battery.position.set(x, -0.935, -2.25);
+    rootGroup.add(battery);
+    for (const terminalX of [-0.2, 0.2]) {
+      const terminal = new THREE.Mesh(
+        trackGeo(new THREE.CylinderGeometry(0.055, 0.055, 0.14, 10)),
+        materials.springWire,
+      );
+      terminal.position.set(terminalX, 0.36, 0);
+      battery.add(terminal);
+    }
+    return battery;
+  };
+  const emitterBattery = buildBattery("Emitter battery 7", -3.85);
+  const collectorBattery = buildBattery("Collector battery 8", 3.85);
+
+  const circuitConductors: THREE.Mesh[] = [];
+  const addConductor = (name: string, points: readonly THREE.Vector3[]) => {
+    const curve = new THREE.CatmullRomCurve3(points.map((point) => point.clone()));
+    const geometry = trackGeo(new THREE.TubeGeometry(curve, 28, 0.045, 8, false));
+    const conductor = new THREE.Mesh(geometry, materials.springWire);
+    conductor.name = name;
+    rootGroup.add(conductor);
+    circuitConductors.push(conductor);
+    return conductor;
+  };
+
+  addConductor("Input boundary to transformer 10", [
+    new THREE.Vector3(-6, -0.45, -0.35),
+    new THREE.Vector3(-5.65, -0.45, -0.35),
+  ]);
+  addConductor("Transformer 10 through emitter battery 7", [
+    new THREE.Vector3(-4.45, -0.45, -0.35),
+    new THREE.Vector3(-4.2, -0.55, -1.8),
+    new THREE.Vector3(-3.85, -0.55, -2.25),
+    new THREE.Vector3(-2.8, 0.25, -1.5),
+    EMITTER_UPPER_ANCHOR,
+  ]);
+  addConductor("Collector 6 through battery 8 to transformer 9", [
+    COLLECTOR_UPPER_ANCHOR,
+    new THREE.Vector3(2.8, 0.25, -1.5),
+    new THREE.Vector3(3.85, -0.55, -2.25),
+    new THREE.Vector3(4.45, -0.45, -0.35),
+  ]);
+  addConductor("Output transformer 9 to external boundary", [
+    new THREE.Vector3(5.65, -0.45, -0.35),
+    new THREE.Vector3(6, -0.45, -0.35),
+  ]);
+  addConductor("Plated-base return to transformer 10", [
+    new THREE.Vector3(-3, -1.18, 0.5),
+    new THREE.Vector3(-4.2, -1.05, 1.25),
+    new THREE.Vector3(-4.45, -0.72, 0.35),
+  ]);
+  addConductor("Plated-base return to transformer 9", [
+    new THREE.Vector3(3, -1.18, 0.5),
+    new THREE.Vector3(4.2, -1.05, 1.25),
+    new THREE.Vector3(4.45, -0.72, 0.35),
+  ]);
 
   // Emitter 5 and collector 6: pointed spring wires, one of the expressly
   // described contact forms. Their separation is animated from the shared
@@ -277,24 +366,33 @@ export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
   const collectorGroup = new THREE.Group();
 
   const emitterContact = new THREE.Mesh(
-    trackGeo(new THREE.CylinderGeometry(0.055, 0.055, 3.1, 12)),
+    trackGeo(new THREE.CylinderGeometry(0.055, 0.055, 1, 12)),
     materials.springWire,
   );
-  emitterContact.rotation.z = -0.46;
-  emitterContact.position.set(-0.7, 1.5, 0);
+  emitterContact.name = "Emitter point contact 5";
   emitterContact.castShadow = true;
   emitterGroup.add(emitterContact);
   rootGroup.add(emitterGroup);
 
   const collectorContact = new THREE.Mesh(
-    trackGeo(new THREE.CylinderGeometry(0.055, 0.055, 3.1, 12)),
+    trackGeo(new THREE.CylinderGeometry(0.055, 0.055, 1, 12)),
     materials.springWire,
   );
-  collectorContact.rotation.z = 0.46;
-  collectorContact.position.set(0.7, 1.5, 0);
+  collectorContact.name = "Collector point contact 6";
   collectorContact.castShadow = true;
   collectorGroup.add(collectorContact);
   rootGroup.add(collectorGroup);
+
+  setConnectedCylinder(
+    emitterContact,
+    new THREE.Vector3(-0.305, CONTACT_SURFACE_Y, 0),
+    EMITTER_UPPER_ANCHOR,
+  );
+  setConnectedCylinder(
+    collectorContact,
+    new THREE.Vector3(0.305, CONTACT_SURFACE_Y, 0),
+    COLLECTOR_UPPER_ANCHOR,
+  );
 
   // Deterministic illustrative carrier paths. Their speed is explicitly a
   // display mapping; the grant does not report carrier lifetime or transit time.
@@ -320,6 +418,11 @@ export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
     collectorGroup,
     emitterContact,
     collectorContact,
+    inputTransformer,
+    outputTransformer,
+    emitterBattery,
+    collectorBattery,
+    circuitConductors,
     carrierPoints,
     carrierPositions,
     carrierCount: CARRIER_COUNT,
@@ -347,9 +450,19 @@ export function updateBardeenTransistorKinematics(
   showCarrierPaths: boolean,
   isCutaway: boolean,
 ) {
-  const currentGapUnits = gapStudioUnits;
-  nodes.emitterGroup.position.x = -currentGapUnits / 2;
-  nodes.collectorGroup.position.x = currentGapUnits / 2;
+  const currentGapUnits = Number.isFinite(gapStudioUnits)
+    ? Math.min(1.53, Math.max(0.495, gapStudioUnits))
+    : 0.61;
+  setConnectedCylinder(
+    nodes.emitterContact,
+    new THREE.Vector3(-currentGapUnits / 2, CONTACT_SURFACE_Y, 0),
+    EMITTER_UPPER_ANCHOR,
+  );
+  setConnectedCylinder(
+    nodes.collectorContact,
+    new THREE.Vector3(currentGapUnits / 2, CONTACT_SURFACE_Y, 0),
+    COLLECTOR_UPPER_ANCHOR,
+  );
 
   const displayStep = carrierDisplaySpeed * dt;
   const pos = nodes.carrierPositions;

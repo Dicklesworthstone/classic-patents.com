@@ -56,7 +56,7 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
       wheelSpeedMps: wheelSpeed,
     },
   });
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The registered transport intentionally stays mounted while this layout-effect-synchronized ref supplies latest controls.
+  // The registered transport intentionally stays mounted while this layout-effect-synchronized ref supplies latest controls.
   useEffect(() => {
     return globalTransportBus.registerUpdater(
       "us-6594844-roomba",
@@ -70,7 +70,7 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
       })),
       "TS_FALLBACK",
     );
-  }, [onscreenRef]);
+  }, [liveControls, onscreenRef]);
 
   // Path history for breadcrumbs trail
   const trailRef = useRef<Array<{ x: number; y: number }>>([]);

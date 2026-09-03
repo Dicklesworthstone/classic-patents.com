@@ -31,6 +31,17 @@ export function PatentSearchPalette({ onClose }: PatentSearchPaletteProps) {
     return () => window.clearTimeout(focusTimer);
   }, []);
 
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    const closeOnBackdropClick = (event: MouseEvent) => {
+      // Native <dialog> backdrop clicks target the dialog itself.
+      if (event.target === dialog) onClose();
+    };
+    dialog.addEventListener("click", closeOnBackdropClick);
+    return () => dialog.removeEventListener("click", closeOnBackdropClick);
+  }, [onClose]);
+
   const results = useMemo(() => {
     if (!query.trim()) {
       return allPatents.slice(0, 8);
@@ -75,14 +86,11 @@ export function PatentSearchPalette({ onClose }: PatentSearchPaletteProps) {
   return (
     <dialog
       ref={dialogRef}
+      aria-modal="true"
       aria-label="Patent Search Palette"
       className="fixed inset-0 z-50 m-auto w-[min(44rem,calc(100vw-2rem))] max-h-[85dvh] p-0 bg-transparent border-none open:flex open:items-center open:justify-center backdrop:bg-ink-950/80 backdrop:backdrop-blur-sm"
       onClose={onClose}
       onKeyDown={handleKeyDown}
-      onClick={(e) => {
-        // Clicks on the native <dialog> backdrop land on the dialog element.
-        if (e.target === dialogRef.current) onClose();
-      }}
     >
       <div className="w-full max-w-2xl bg-parchment-50 dark:bg-ink-950 rounded-3xl border border-parchment-300 dark:border-ink-800 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative">
         {/* Search Input Bar */}

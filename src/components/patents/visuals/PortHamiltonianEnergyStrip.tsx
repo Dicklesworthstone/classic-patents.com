@@ -11,6 +11,18 @@ interface PortHamiltonianEnergyStripProps {
   className?: string;
 }
 
+function formatJoules(joules: number) {
+  if (joules >= 1e6) return `${(joules / 1e6).toFixed(2)} MJ`;
+  if (joules >= 1e3) return `${(joules / 1e3).toFixed(1)} kJ`;
+  return `${joules.toFixed(1)} J`;
+}
+
+function formatWatts(watts: number) {
+  if (watts >= 1e6) return `${(watts / 1e6).toFixed(2)} MW`;
+  if (watts >= 1e3) return `${(watts / 1e3).toFixed(1)} kW`;
+  return `${watts.toFixed(1)} W`;
+}
+
 export const PortHamiltonianEnergyStrip: React.FC<PortHamiltonianEnergyStripProps> = ({
   patentId,
   params,
@@ -18,18 +30,6 @@ export const PortHamiltonianEnergyStrip: React.FC<PortHamiltonianEnergyStripProp
   className = "",
 }) => {
   const ledger = computePortHamiltonianEnergy(patentId, params, simTimeSec);
-
-  const formatJoules = (j: number) => {
-    if (j >= 1e6) return `${(j / 1e6).toFixed(2)} MJ`;
-    if (j >= 1e3) return `${(j / 1e3).toFixed(1)} kJ`;
-    return `${j.toFixed(1)} J`;
-  };
-
-  const formatWatts = (w: number) => {
-    if (w >= 1e6) return `${(w / 1e6).toFixed(2)} MW`;
-    if (w >= 1e3) return `${(w / 1e3).toFixed(1)} kW`;
-    return `${w.toFixed(1)} W`;
-  };
 
   return (
     <div

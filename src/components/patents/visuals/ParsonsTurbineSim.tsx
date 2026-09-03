@@ -271,6 +271,7 @@ export function ParsonsTurbineSim() {
             <span className="font-mono">{marine.routing}</span>
           </div>
           <select
+            aria-label="Turbine valve connection routing"
             value={routing}
             onChange={(e) => setRouting(e.target.value as ParsonsRoutingMode)}
             className="w-full rounded-lg border border-parchment-300 dark:border-ink-700 bg-parchment-50 dark:bg-ink-900 px-2 py-2 text-sm"
@@ -287,6 +288,7 @@ export function ParsonsTurbineSim() {
           </div>
           <input
             type="range"
+            aria-label="Steam admission throttle percentage"
             min="0"
             max="1"
             step="0.05"

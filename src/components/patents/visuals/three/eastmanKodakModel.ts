@@ -21,6 +21,7 @@ import { eastmanSprocketCrate } from "@/physics/genericWasm";
 export interface EastmanKodakModelNodes {
   rootGroup: THREE.Group;
   boxBody: THREE.Mesh;
+  cutawayCase: THREE.Group;
   internalChassis: THREE.Group;
   lightCone: THREE.Mesh;
   filmGroup: THREE.Group;
@@ -200,9 +201,12 @@ export function buildEastmanKodakModel(): EastmanKodakModelResult {
     ),
     darkInterior: trackMat(
       new THREE.MeshStandardMaterial({
-        color: 0x09090b,
-        roughness: 0.92,
+        color: 0x1e293b,
+        roughness: 0.86,
         metalness: 0.05,
+        transparent: true,
+        opacity: 0.5,
+        depthWrite: false,
       }),
     ),
     strapLeather: trackMat(
@@ -222,6 +226,34 @@ export function buildEastmanKodakModel(): EastmanKodakModelResult {
   boxBody.castShadow = true;
   boxBody.receiveShadow = true;
   rootGroup.add(boxBody);
+
+  // The visitor's default view is an actual open three-quarter case, not a
+  // transparent full box. Retaining the back, left, and lower panels preserves
+  // the original box-camera envelope while opening the upper/front/right
+  // inspection face toward the studio camera.
+  const cutawayCase = new THREE.Group();
+  cutawayCase.name = "OpenCutawayCase";
+  const addCutawayPanel = (
+    width: number,
+    height: number,
+    depth: number,
+    x: number,
+    y: number,
+    z: number,
+  ) => {
+    const panel = new THREE.Mesh(
+      trackGeo(new THREE.BoxGeometry(width, height, depth)),
+      materials.moroccoLeather,
+    );
+    panel.position.set(x, y, z);
+    panel.receiveShadow = true;
+    cutawayCase.add(panel);
+  };
+  addCutawayPanel(4.8, 3.8, 0.08, 0, 0, -1.86);
+  addCutawayPanel(0.08, 3.8, 3.72, -2.36, 0, 0);
+  addCutawayPanel(4.72, 0.08, 3.72, 0, -1.86, 0);
+  cutawayCase.visible = false;
+  rootGroup.add(cutawayCase);
 
   // Top leather carrying handle
   const carryingStrap = new THREE.Mesh(
@@ -265,16 +297,34 @@ export function buildEastmanKodakModel(): EastmanKodakModelResult {
   const internalChassis = new THREE.Group();
   rootGroup.add(internalChassis);
 
-  // Mahogany roll-holder frame
-  const chassisFrame = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(4.4, 3.4, 3.4)),
-    materials.mahoganyWood,
-  );
+  // Mahogany roll-holder frame. The former solid box hid its own film path;
+  // these source-bounded rails define the chassis without occluding the spools
+  // and focal-plane strip that the cutaway is meant to teach.
+  const chassisFrame = new THREE.Group();
+  const addChassisRail = (
+    width: number,
+    height: number,
+    depth: number,
+    x: number,
+    y: number,
+    z: number,
+  ) => {
+    const rail = new THREE.Mesh(
+      trackGeo(new THREE.BoxGeometry(width, height, depth)),
+      materials.mahoganyWood,
+    );
+    rail.position.set(x, y, z);
+    chassisFrame.add(rail);
+  };
+  addChassisRail(4.1, 0.16, 0.16, 0, 1.48, -1.52);
+  addChassisRail(4.1, 0.16, 0.16, 0, -1.48, -1.52);
+  addChassisRail(0.16, 3.12, 0.16, -2.0, 0, -1.52);
+  addChassisRail(0.16, 3.12, 0.16, 2.0, 0, -1.52);
   internalChassis.add(chassisFrame);
 
   // Conical light baffle dark chamber
   const lightCone = new THREE.Mesh(
-    trackGeo(new THREE.ConeGeometry(1.6, 3.0, 24, 1, true)),
+    trackGeo(new THREE.ConeGeometry(1.6, 3.0, 24, 1, true, 0.7, Math.PI * 1.32)),
     materials.darkInterior,
   );
   lightCone.rotation.z = -Math.PI / 2;
@@ -313,9 +363,10 @@ export function buildEastmanKodakModel(): EastmanKodakModelResult {
   takeupSpool.castShadow = true;
   filmGroup.add(takeupSpool);
 
-  // Film exposure focal plane (2.5-inch circular image aperture frame)
+  // Continuous paper-backed film across the focal plane. A strip, rather than
+  // an opaque full back panel, keeps both rolls and the film path inspectable.
   const filmPlane = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(3.2, 3.0, 0.05)),
+    trackGeo(new THREE.BoxGeometry(3.2, 0.56, 0.05)),
     materials.rollFilm,
   );
   filmPlane.position.set(0, 0, -1.2);
@@ -431,6 +482,7 @@ export function buildEastmanKodakModel(): EastmanKodakModelResult {
   const nodes: EastmanKodakModelNodes = {
     rootGroup,
     boxBody,
+    cutawayCase,
     internalChassis,
     lightCone,
     filmGroup,
@@ -464,11 +516,11 @@ export function buildEastmanKodakModel(): EastmanKodakModelResult {
 }
 
 /**
- * Updates Kodak barrel shutter rotation, film advance, and cutaway shell transparency.
+ * Updates Kodak barrel shutter rotation, film advance, and open-case cutaway state.
  */
 export function updateEastmanKodakKinematics(
   nodes: EastmanKodakModelNodes,
-  materials: EastmanKodakMaterials,
+  _materials: EastmanKodakMaterials,
   dt: number,
   _timeSec: number,
   barrelOmegaRadPerS: number,
@@ -497,7 +549,14 @@ export function updateEastmanKodakKinematics(
     });
   }
 
-  // 4. Cutaway Body Mode
-  materials.moroccoLeather.opacity = isCutaway ? 0.28 : 1.0;
-  materials.moroccoLeather.transparent = isCutaway;
+  // 4. Cutaway Body Mode. Geometry, rather than ghosted leather, reveals the
+  // roll holder at narrow viewport sizes while leaving solid mode historically
+  // legible and fully opaque.
+  const shouldShowSolidCase = !isCutaway;
+  if (nodes.boxBody.visible !== shouldShowSolidCase) {
+    nodes.boxBody.visible = shouldShowSolidCase;
+  }
+  if (nodes.cutawayCase.visible !== isCutaway) {
+    nodes.cutawayCase.visible = isCutaway;
+  }
 }

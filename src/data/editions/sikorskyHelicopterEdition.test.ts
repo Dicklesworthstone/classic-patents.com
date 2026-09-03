@@ -111,15 +111,15 @@ describe("US 2,318,259 Direct-Lift Aircraft (Helicopter) archival edition", () =
       {},
       { 1: false, 2: true },
     );
-    expect(r1.modifiedParams.engineThrottlePercent).toBe(20.0);
-    expect(r1.refusalWarning).toContain("THROTTLE CORRELATION FAILURE");
+    expect(r1.modifiedParams.collectiveThrottleLinked).toBe(0);
+    expect(r1.refusalWarning).toContain("positive collective-to-engine-power linkage");
 
     const r2 = applyClaimConstraintModifications(
       "us-2318259-sikorsky-helicopter",
       {},
       { 1: true, 2: false },
     );
-    expect(r2.modifiedParams.tailRotorPedalPercent).toBe(-100.0);
-    expect(r2.refusalWarning).toContain("TORQUE EQUILIBRIUM VIOLATION");
+    expect(r2.modifiedParams.auxiliaryRotorEnabled).toBe(0);
+    expect(r2.refusalWarning).toContain("auxiliary-rotor anti-torque action");
   });
 });

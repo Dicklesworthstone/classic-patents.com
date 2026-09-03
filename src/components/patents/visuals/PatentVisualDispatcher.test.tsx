@@ -31,6 +31,16 @@ describe("PatentVisualDispatcher Component", () => {
     expect(html).toContain("2D Technical Diagram");
   });
 
+  test("does not offer nonexistent 3D and 2D modes for the source-held Kwolek record", () => {
+    const html = renderToStaticMarkup(
+      <PatentVisualDispatcher patentId="us-3671542-kwolek-kevlar" />,
+    );
+
+    expect(html).toContain("Visual-model boundary");
+    expect(html).not.toContain("3D Physics Simulation");
+    expect(html).not.toContain("2D Technical Diagram");
+  });
+
   test("renders fallback banner for unrecognized patent id", () => {
     const html = renderToStaticMarkup(<PatentVisualDispatcher patentId="non-existent-patent-id" />);
 

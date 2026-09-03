@@ -8,37 +8,34 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import {
+  type EdisonIndicatorCameraPreset,
+  edisonIndicatorCameraForViewport,
+} from "./edisonIndicatorCamera";
 import { buildEdisonIndicatorModel } from "./edisonIndicatorModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "overview" | "bulb" | "galvanometer" | "regulation";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  overview: { pos: [0, 2.2, 3.8], target: [0, 0.9, 0] },
-  bulb: { pos: [-1.1, 1.2, 2.0], target: [-1.1, 1.15, 0] },
-  galvanometer: { pos: [1.0, 1.3, 2.0], target: [1.0, 1.25, 0] },
-  regulation: { pos: [1.0, 1.9, 1.4], target: [1.0, 1.8, 0] },
-};
-
 export default function EdisonIndicator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
 
-  const [activePreset, setActivePreset] = useState<CameraPreset>("overview");
-  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
+  const [activePreset, setActivePreset] = useState<EdisonIndicatorCameraPreset>("overview");
+  // The wide indicator baseboard occupies the lower studio area. Reserve this
+  // exhibit's desktop overlay for genuinely wide screens instead of placing a
+  // telemetry card over the apparatus at intermediate widths.
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true, {
+    minDesktopWidth: 1100,
+  });
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: EdisonIndicatorCameraPreset) => {
     setActivePreset(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = edisonIndicatorCameraForViewport(preset, containerRef.current?.clientWidth ?? 0);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -84,10 +81,11 @@ export default function EdisonIndicator3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const overview = edisonIndicatorCameraForViewport("overview", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
-      cameraPos: CAMERA_PRESETS.overview.pos,
-      targetPos: CAMERA_PRESETS.overview.target,
+      cameraPos: overview.pos,
+      targetPos: overview.target,
     });
     studioRef.current = studio;
     const model = buildEdisonIndicatorModel();
@@ -118,6 +116,19 @@ export default function EdisonIndicator3D() {
     };
   }, [live]);
 
+  useEffect(() => {
+    const restoreResponsiveCamera = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const cfg = edisonIndicatorCameraForViewport(activePreset, container.clientWidth);
+      studioRef.current?.controls.setView(cfg.pos, cfg.target);
+    };
+
+    restoreResponsiveCamera();
+    window.addEventListener("resize", restoreResponsiveCamera);
+    return () => window.removeEventListener("resize", restoreResponsiveCamera);
+  }, [activePreset]);
+
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
       <div className="sr-only">Thomas Edison Electrical Indicator 3D</div>
@@ -130,22 +141,22 @@ export default function EdisonIndicator3D() {
             <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
               <Camera className="w-3.5 h-3.5" /> View:
             </span>
-            {(["overview", "bulb", "galvanometer", "regulation"] as CameraPreset[]).map(
-              (preset) => (
-                <button
-                  key={preset}
-                  type="button"
-                  onClick={() => applyCameraPreset(preset)}
-                  className={`min-h-9 px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                    activePreset === preset
-                      ? "bg-amber-600 text-white shadow-xs"
-                      : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                  }`}
-                >
-                  {preset}
-                </button>
-              ),
-            )}
+            {(
+              ["overview", "bulb", "galvanometer", "regulation"] as EdisonIndicatorCameraPreset[]
+            ).map((preset) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyCameraPreset(preset)}
+                className={`min-h-9 px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activePreset === preset
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {preset}
+              </button>
+            ))}
           </div>
         )}
 
@@ -252,10 +263,13 @@ export default function EdisonIndicator3D() {
           </div>
         )}
 
-        {/* Bottom SI Telemetry Chip Strip */}
+        {/* Top-right SI telemetry uses the deliberately empty sky lane; the
+            baseboard and its lead stay fully readable at desktop width. */}
         <StudioKernelChips
           side="right"
           visible={showUiOverlay}
+          placement="top"
+          width="compact"
           title="EDISON EFFECT THERMIONIC EMISSION"
           chips={[
             { label: "V_mains", value: `${mainsVoltage.toFixed(0)}`, unit: "V" },
@@ -297,6 +311,7 @@ export default function EdisonIndicator3D() {
             </div>
             <input
               type="range"
+              aria-label="Mains voltage"
               min="90"
               max="130"
               step="1"
@@ -350,6 +365,7 @@ export default function EdisonIndicator3D() {
             </div>
             <input
               type="range"
+              aria-label="Torsion null reference"
               min="105"
               max="115"
               step="1"

@@ -366,6 +366,7 @@ export function EricssonPropeller3D() {
             </div>
             <input
               type="range"
+              aria-label="Illustrative shaft motion"
               min="40"
               max="240"
               step="10"
@@ -386,6 +387,7 @@ export function EricssonPropeller3D() {
             </div>
             <input
               type="range"
+              aria-label="Illustrative plate angle"
               min="20"
               max="55"
               step="1"

@@ -234,7 +234,7 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     expect(
       coupleEdgesFor("us-235199-bell-photophone", { transmissionDistanceM: 213 })[0]?.from,
     ).toBe("range");
-    expect(coupleEdgesFor("us-2981877-noyce-ic", { reverseBias: 5 })[0]?.from).toBe("reverse bias");
+    expect(coupleEdgesFor("us-2981877-noyce-ic", {})).toEqual([]);
     expect(coupleEdgesFor("us-4750-howe-sewing-machine", { crankRpm: 200 })[0]?.from).toBe(
       "main shaft C",
     );
@@ -296,8 +296,8 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
       "CortPuddlingRolling3D.tsx",
       "LamarrFrequencyHopping3D.tsx",
       "BellPhotophone3D.tsx",
-      "TownesLaser3D.tsx",
-      "KilbyIntegratedCircuit3D.tsx",
+      "TownesMaserSystem3D.tsx",
+      "KilbySourceCircuit3D.tsx",
       "HaberAmmonia3D.tsx",
       "FessendenWireless3D.tsx",
       "DeForestAudion3D.tsx",
@@ -356,14 +356,14 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     expect(computeCarrierSprayField(15000, 16).length).toBe(256);
 
     const {
-      computeFermiNeutronFluxField,
+      computeFermiNormalizedDisplayField,
       computeGoddardPlumeField,
       computeLaserCavityField,
       computeJouleThomsonThermalField,
       computeSteamEnthalpyField,
     } = require("./fieldTextures");
 
-    expect(computeFermiNeutronFluxField(1.02, 0.2, 16).length).toBe(256);
+    expect(computeFermiNormalizedDisplayField(1.02, 0.2, 16).length).toBe(256);
     expect(computeGoddardPlumeField(250, 4.0, 0.1, 16).length).toBe(256);
     expect(computeLaserCavityField(1500, 0.8, 16).length).toBe(256);
     expect(computeJouleThomsonThermalField(180, 110, 16).length).toBe(256);

@@ -17,6 +17,9 @@ export const MAKINO_EXHIBIT_BASE_SPAN = 0.72;
  * inside the normalized five-bar workspace; it is not a recovered dimension.
  */
 export const MAKINO_EXHIBIT_OFFSET_FOLLOWER_LENGTH = 1.4;
+export const MAKINO_FRANKENSIM_OWNER = "fs-mbd::JointModel::revolute";
+export const MAKINO_FRANKENSIM_BOUNDARY =
+  "generic revolute-joint composition identified; closed-chain SI dynamics refused";
 
 export interface MakinoScaraControls {
   firstLinkAngleDeg: number;
@@ -58,11 +61,23 @@ export interface MakinoScaraPose {
   /** Claim 6's illustrative Y-link meeting point. */
   yLinkHub: readonly [number, number] | null;
   independentClaim: 1 | 3 | 6;
+  /** Claims 2/5 add this connected transmission; Claim 6 fixes attitude instead. */
+  beltTransmissionAvailable: boolean;
   positionLaw: string;
   refusal: {
     refused: true;
     reason: string;
   };
+}
+
+export interface MakinoScaraInvariantMeasurements {
+  baseAxisGap: number;
+  firstDrivenLinkLength: number;
+  fourthDrivenLinkLength: number;
+  secondFollowerLength: number;
+  thirdFollowerLength: number;
+  toolPivotGap: number;
+  fixedMemberError: number;
 }
 
 function finite(value: number | undefined, fallback: number): number {
@@ -85,6 +100,10 @@ function subtract(
   start: readonly [number, number],
 ): readonly [number, number] {
   return [end[0] - start[0], end[1] - start[1]];
+}
+
+function vectorLength(value: readonly [number, number]): number {
+  return Math.hypot(value[0], value[1]);
 }
 
 /**
@@ -224,6 +243,7 @@ export function stepMakinoScaraTopology(params: MakinoScaraControlParams): Makin
     tool,
     yLinkHub,
     independentClaim,
+    beltTransmissionAvailable: topology !== "claim-6-y-link",
     positionLaw:
       topology === "claim-1-concentric"
         ? "p_tool = p_base + u₁(θ₁) + u₄(θ₂), exact normalized parallelogram closure; normalized exhibit coordinates only"
@@ -232,8 +252,43 @@ export function stepMakinoScaraTopology(params: MakinoScaraControlParams): Makin
           : "p_left = p₄ + u₅, p_right = p₅ + u₄, with tool 13 parallel to the base through three normalized parallelogram closures",
     refusal: {
       refused: true,
-      reason:
-        "US 4,341,502 does not state link lengths, payload, motor torque, stiffness, clearance, or controller gains. This shared kernel reports topology and normalized angular geometry only; it refuses SI dynamics and contact-force claims.",
+      reason: `US 4,341,502 does not state link lengths, mass properties, payload, motor torque, stiffness, clearance, or controller gains. ${MAKINO_FRANKENSIM_OWNER} owns each source-described vertical pivot, but FrankenSim's articulated-body lane is a tree and the grant cannot parameterize a closed-chain SI solve. This shared kernel therefore reports exact normalized topology only and refuses SI dynamics and contact-force claims.`,
     },
+  };
+}
+
+/** Quantifies the source topology without promoting display lengths to metres. */
+export function measureMakinoScaraInvariants(
+  pose: MakinoScaraPose,
+): MakinoScaraInvariantMeasurements {
+  const firstDrivenLinkLength = vectorLength(subtract(pose.firstOuterJoint, pose.firstBase));
+  const fourthDrivenLinkLength = vectorLength(subtract(pose.fourthOuterJoint, pose.fourthBase));
+  const secondFollowerLength = vectorLength(subtract(pose.toolJoints[0], pose.firstOuterJoint));
+  const thirdFollowerLength = vectorLength(subtract(pose.toolJoints[1], pose.fourthOuterJoint));
+  const baseAxisGap = vectorLength(subtract(pose.fourthBase, pose.firstBase));
+  const toolPivotGap = vectorLength(subtract(pose.toolJoints[1], pose.toolJoints[0]));
+  const expectedFollowerLength =
+    pose.topology === "claim-3-offset"
+      ? MAKINO_EXHIBIT_OFFSET_FOLLOWER_LENGTH
+      : MAKINO_EXHIBIT_LINK_LENGTH;
+  const expectedAxisGap = pose.topology === "claim-1-concentric" ? 0 : MAKINO_EXHIBIT_BASE_SPAN;
+  const expectedToolPivotGap = pose.topology === "claim-6-y-link" ? MAKINO_EXHIBIT_BASE_SPAN : 0;
+  const fixedMemberError = Math.max(
+    Math.abs(firstDrivenLinkLength - MAKINO_EXHIBIT_LINK_LENGTH),
+    Math.abs(fourthDrivenLinkLength - MAKINO_EXHIBIT_LINK_LENGTH),
+    Math.abs(secondFollowerLength - expectedFollowerLength),
+    Math.abs(thirdFollowerLength - expectedFollowerLength),
+    Math.abs(baseAxisGap - expectedAxisGap),
+    Math.abs(toolPivotGap - expectedToolPivotGap),
+  );
+
+  return {
+    baseAxisGap,
+    firstDrivenLinkLength,
+    fourthDrivenLinkLength,
+    secondFollowerLength,
+    thirdFollowerLength,
+    toolPivotGap,
+    fixedMemberError,
   };
 }

@@ -76,7 +76,7 @@ describe("executable project coverage manifest", () => {
     expect(manifest).toHaveLength(103);
     expect(new Set(manifest.map((row) => row.patentId)).size).toBe(103);
     expect(manifest.every((row) => row.source.pinnedFacsimile)).toBe(true);
-    expect(manifest.filter((row) => row.source.reviewedLedger)).toHaveLength(99);
+    expect(manifest.filter((row) => row.source.reviewedLedger)).toHaveLength(100);
     expect(manifest.filter((row) => row.source.archivalEdition === "published")).toHaveLength(
       summary.publishedEditions,
     );
@@ -114,6 +114,7 @@ describe("executable project coverage manifest", () => {
       "us-1781541-einstein-refrigerator",
       "us-2708656-fermi-reactor",
       "us-4136359-wozniak-apple",
+      "us-4921293-salisbury-robot-hand",
     ]) {
       expect(wasmSurfaceForPatent(patentId)?.kind).toBe("generic-wasm");
     }
@@ -192,7 +193,7 @@ describe("executable project coverage manifest", () => {
         surface.artifactSha256,
       );
     }
-    expect(checkedArtifacts.size).toBe(11);
+    expect(checkedArtifacts.size).toBe(12);
   });
 
   test("all 3D studios now have an updater or a typed snapshot path", () => {

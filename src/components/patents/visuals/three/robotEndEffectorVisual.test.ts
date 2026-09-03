@@ -3,7 +3,10 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import * as THREE from "three";
 import { stepRobotEndEffector } from "@/physics/robotEndEffectorKernel";
-import { buildRobotEndEffectorModel } from "./robotEndEffectorModel";
+import {
+  buildRobotEndEffectorModel,
+  ROBOT_END_EFFECTOR_EXHIBIT_FLOOR_Y,
+} from "./robotEndEffectorModel";
 
 function requiredObject(root: THREE.Object3D, name: string): THREE.Object3D {
   const object = root.getObjectByName(name);
@@ -95,6 +98,28 @@ describe("US 4,765,668 Slocum Robot End Effector 3D Visual Boundary", () => {
     model.dispose();
   });
 
+  test("renders opposite-handed helical threads around an unthreaded midpoint", () => {
+    const model = buildRobotEndEffectorModel();
+    for (const side of ["Upper", "Lower"] as const) {
+      const rightThread = requiredObject(
+        model.root,
+        `${side} ball screw 40 right-hand threaded portion 56`,
+      );
+      const leftThread = requiredObject(
+        model.root,
+        `${side} ball screw 40 left-hand threaded portion 60`,
+      );
+      const core = requiredObject(model.root, `${side} ball screw 40 core and central portion 58`);
+      expect(rightThread.userData.handedness).toBe("right");
+      expect(leftThread.userData.handedness).toBe("left");
+      expect(rightThread.userData.turns).toBe(12);
+      expect(leftThread.userData.turns).toBe(12);
+      expect(worldBounds(core).intersectsBox(worldBounds(rightThread))).toBe(true);
+      expect(worldBounds(core).intersectsBox(worldBounds(leftThread))).toBe(true);
+    }
+    model.dispose();
+  });
+
   test("rotates encoder pegs with gear 66 while proximity switch 74 stays on the end plate", () => {
     const model = buildRobotEndEffectorModel();
     const pegs = requiredObject(model.root, "Rotating eight-peg encoder 72");
@@ -124,7 +149,7 @@ describe("US 4,765,668 Slocum Robot End Effector 3D Visual Boundary", () => {
     expect(worldBounds(handBody).intersectsBox(worldBounds(finger22))).toBe(true);
     model.updateState(stepRobotEndEffector({ fingerChangeFraction: 0.9 }));
     model.root.updateMatrixWorld(true);
-    expect(finger22.position.x).toBeLessThan(seatedX);
+    expect(finger22.position.x).toBeGreaterThan(seatedX);
     expect(worldBounds(handBody).intersectsBox(worldBounds(finger22))).toBe(true);
     expect(finger22.visible).toBe(true);
     model.updateState(stepRobotEndEffector({ fingerChangeFraction: 1 }));
@@ -148,7 +173,50 @@ describe("US 4,765,668 Slocum Robot End Effector 3D Visual Boundary", () => {
     expect(worldBounds(endPlate).intersectsBox(worldBounds(connector))).toBe(true);
     expect(worldBounds(connector).min.y).toBeCloseTo(worldBounds(post).max.y, 7);
     expect(worldBounds(post).min.y).toBeCloseTo(worldBounds(foot).max.y, 7);
-    expect(worldBounds(foot).min.y).toBeCloseTo(-1.7, 7);
+    expect(worldBounds(foot).min.y).toBeCloseTo(ROBOT_END_EFFECTOR_EXHIBIT_FLOOR_Y, 7);
+    model.dispose();
+  });
+
+  test("slides the complete gripper on two continuously engaged transverse guides", () => {
+    const model = buildRobotEndEffectorModel();
+    const carriage = requiredObject(model.root, "Claim 16 guided transverse carriage 134");
+    const upperRail = requiredObject(model.root, "Upper transverse guide for bearings 156");
+    const lowerRail = requiredObject(model.root, "Lower transverse guide for bearings 158");
+    const upperBearing = requiredObject(model.root, "Upper sliding bearing 156");
+    const lowerBearing = requiredObject(model.root, "Lower sliding bearing 158");
+    for (const normalized of [-1, 0, 1]) {
+      model.updateState(stepRobotEndEffector({ transverseOffsetFraction: normalized }));
+      model.root.updateMatrixWorld(true);
+      expect(Math.sign(carriage.position.z)).toBe(Math.sign(normalized));
+      expect(worldBounds(upperRail).intersectsBox(worldBounds(upperBearing))).toBe(true);
+      expect(worldBounds(lowerRail).intersectsBox(worldBounds(lowerBearing))).toBe(true);
+      expect(model.root.userData.transverseGuidesRemainEngaged).toBe(true);
+    }
+    model.dispose();
+  });
+
+  test("keeps hand bodies out of one another while the displayed finger gap reaches zero", () => {
+    const model = buildRobotEndEffectorModel();
+    model.updateState(stepRobotEndEffector({ jawOpeningFraction: 0 }));
+    model.root.updateMatrixWorld(true);
+    const leftHand = requiredObject(model.root, "Upper hand 14");
+    const rightHand = requiredObject(model.root, "Upper hand 16");
+    const leftBounds = worldBounds(requiredObject(leftHand, "Sliding hand body"));
+    const rightBounds = worldBounds(requiredObject(rightHand, "Sliding hand body"));
+    const penetrationX =
+      Math.min(leftBounds.max.x, rightBounds.max.x) - Math.max(leftBounds.min.x, rightBounds.min.x);
+    expect(penetrationX).toBeLessThanOrEqual(1e-9);
+    expect(model.root.userData.clearJawGapM).toBe(0);
+    model.dispose();
+  });
+
+  test("withholds the complete Claim 1 screw-hand-finger topology when inverted", () => {
+    const model = buildRobotEndEffectorModel();
+    model.updateState(stepRobotEndEffector({ claim1TopologyEnabled: 0 }));
+    expect(requiredObject(model.root, "Upper ball screw 40").visible).toBe(false);
+    expect(requiredObject(model.root, "Upper hand 14").visible).toBe(false);
+    expect(requiredObject(model.root, "Removable dovetail finger 22").visible).toBe(false);
+    expect(model.root.userData.claim1TopologyPresent).toBe(false);
     model.dispose();
   });
 
@@ -221,8 +289,26 @@ describe("US 4,765,668 Slocum Robot End Effector 3D Visual Boundary", () => {
     expect(source).toContain("hidden rounded-xl");
     expect(source).toContain('viewForViewport("perspective", container.clientWidth)');
     expect(source).toContain("floor.position.y = -1.7");
-    expect(source).toContain("Finger change is axial dovetail withdrawal");
+    expect(source).toContain("Finger change is inward axial dovetail withdrawal");
     expect(source).toContain("command only");
-    expect(source).toContain("they are not force vectors or achieved contact force");
+    expect(source).toContain("they are not force vectors or");
+    expect(source).toContain("achieved contact force");
+    expect(source).toContain("effectiveParams");
+    expect(source).toContain("claimConstraintStateParamId");
+    expect(source).toContain("Source-described transverse stage normalized position");
+  });
+
+  test("keeps both public faces on the same claim-constrained control bus", () => {
+    for (const relativePath of [
+      "src/components/patents/visuals/three/RobotEndEffector3D.tsx",
+      "src/components/patents/visuals/RobotEndEffectorSim.tsx",
+    ]) {
+      const source = readFileSync(join(process.cwd(), relativePath), "utf8");
+      expect(source).toContain("effectiveParams");
+      expect(source).toContain("claimConstraintStateParamId");
+      expect(source).toContain("data-robot-end-effector-topology=");
+      expect(source).toContain('data-robot-end-effector-finger-withdrawal="inward"');
+      expect(source).toContain("transverseOffsetFraction");
+    }
   });
 });

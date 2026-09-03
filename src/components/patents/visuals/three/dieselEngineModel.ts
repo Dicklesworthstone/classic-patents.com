@@ -11,6 +11,12 @@ import * as THREE from "three";
 export interface DieselEngineNodes {
   rootGroup: THREE.Group;
   cylinderC: THREE.Group;
+  cylinderLinerSolid: THREE.Mesh;
+  cylinderLinerCutaway: THREE.Mesh;
+  cylinderJacketSolid: THREE.Mesh;
+  cylinderJacketCutaway: THREE.Mesh;
+  cylinderHeadSolid: THREE.Mesh;
+  cylinderHeadCutaway: THREE.Mesh;
   plungerP: THREE.Group;
   crank: THREE.Group;
   hopperB: THREE.Group;
@@ -27,13 +33,13 @@ export interface DieselEngineMaterials {
 
 export function createDieselEngineMaterials(): DieselEngineMaterials {
   return {
-    body: new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.75, metalness: 0.25 }),
-    accent: new THREE.MeshStandardMaterial({ color: 0xb45309, roughness: 0.55, metalness: 0.35 }),
+    body: new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.62, metalness: 0.35 }),
+    accent: new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.48, metalness: 0.42 }),
     source: new THREE.MeshStandardMaterial({
-      color: 0x38bdf8,
+      color: 0x22d3ee,
       transparent: true,
-      opacity: 0.28,
-      roughness: 0.8,
+      opacity: 0.62,
+      roughness: 0.48,
     }),
   };
 }
@@ -75,30 +81,71 @@ export function buildDieselEngineModel(): {
   // ==============================================================
   const cylinderC = new THREE.Group();
   cylinderC.name = "CylinderC";
-  const cylinder = new THREE.Mesh(
+  // The camera approaches from the upper-front side. The source names a
+  // cylinder and plunger, so cutaway mode opens that same near quadrant rather
+  // than pretending that a translucent solid wall is an inspection window.
+  const cutawayThetaStart = 1.45;
+  const cutawayThetaLength = Math.PI * 1.33;
+
+  const cylinderLinerSolid = new THREE.Mesh(
     new THREE.CylinderGeometry(1, 1, 2.8, 20, 1, true),
     materials.body,
   );
-  cylinder.rotation.z = Math.PI / 2;
-  cylinderC.add(cylinder);
+  cylinderLinerSolid.rotation.z = Math.PI / 2;
+  cylinderC.add(cylinderLinerSolid);
+
+  const cylinderLinerCutaway = new THREE.Mesh(
+    new THREE.CylinderGeometry(1, 1, 2.8, 20, 1, true, cutawayThetaStart, cutawayThetaLength),
+    materials.body,
+  );
+  cylinderLinerCutaway.rotation.z = Math.PI / 2;
+  cylinderLinerCutaway.visible = false;
+  cylinderC.add(cylinderLinerCutaway);
 
   // Cylinder Outer Jacket Wall
-  const cylinderJacket = new THREE.Mesh(
+  const cylinderJacketSolid = new THREE.Mesh(
     new THREE.CylinderGeometry(1.15, 1.15, 2.6, 24),
     materials.body,
   );
-  cylinderJacket.rotation.z = Math.PI / 2;
-  cylinderJacket.position.x = 0.2;
-  cylinderC.add(cylinderJacket);
+  cylinderJacketSolid.rotation.z = Math.PI / 2;
+  cylinderJacketSolid.position.x = 0.2;
+  cylinderC.add(cylinderJacketSolid);
+
+  const cylinderJacketCutaway = new THREE.Mesh(
+    new THREE.CylinderGeometry(1.15, 1.15, 2.6, 24, 1, true, cutawayThetaStart, cutawayThetaLength),
+    materials.body,
+  );
+  cylinderJacketCutaway.rotation.z = Math.PI / 2;
+  cylinderJacketCutaway.position.x = 0.2;
+  cylinderJacketCutaway.visible = false;
+  cylinderC.add(cylinderJacketCutaway);
 
   // Cylinder Head End Flange
-  const cylinderHead = new THREE.Mesh(
+  const cylinderHeadSolid = new THREE.Mesh(
     new THREE.CylinderGeometry(1.22, 1.22, 0.35, 24),
     materials.body,
   );
-  cylinderHead.rotation.z = Math.PI / 2;
-  cylinderHead.position.x = 1.5;
-  cylinderC.add(cylinderHead);
+  cylinderHeadSolid.rotation.z = Math.PI / 2;
+  cylinderHeadSolid.position.x = 1.5;
+  cylinderC.add(cylinderHeadSolid);
+
+  const cylinderHeadCutaway = new THREE.Mesh(
+    new THREE.CylinderGeometry(
+      1.22,
+      1.22,
+      0.35,
+      24,
+      1,
+      false,
+      cutawayThetaStart,
+      cutawayThetaLength,
+    ),
+    materials.body,
+  );
+  cylinderHeadCutaway.rotation.z = Math.PI / 2;
+  cylinderHeadCutaway.position.x = 1.5;
+  cylinderHeadCutaway.visible = false;
+  cylinderC.add(cylinderHeadCutaway);
 
   // ==============================================================
   // 3. Plunger P & Connecting Rod Kinematics
@@ -235,6 +282,12 @@ export function buildDieselEngineModel(): {
     nodes: {
       rootGroup: root,
       cylinderC,
+      cylinderLinerSolid,
+      cylinderLinerCutaway,
+      cylinderJacketSolid,
+      cylinderJacketCutaway,
+      cylinderHeadSolid,
+      cylinderHeadCutaway,
       plungerP,
       crank,
       hopperB,
@@ -255,5 +308,11 @@ export function updateDieselEngineKinematics(
   const phase = Number.isFinite(phaseRad) ? phaseRad : 0;
   nodes.crank.rotation.z = phase;
   nodes.plungerP.position.x = -0.12 + Math.sin(phase) * 0.12;
+  nodes.cylinderLinerSolid.visible = !cutawayMode;
+  nodes.cylinderLinerCutaway.visible = cutawayMode;
+  nodes.cylinderJacketSolid.visible = !cutawayMode;
+  nodes.cylinderJacketCutaway.visible = cutawayMode;
+  nodes.cylinderHeadSolid.visible = !cutawayMode;
+  nodes.cylinderHeadCutaway.visible = cutawayMode;
   nodes.annularSpaceS.visible = cutawayMode;
 }

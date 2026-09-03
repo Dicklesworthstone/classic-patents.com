@@ -9,7 +9,10 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { stepWatsonRemoteCenterComplianceTopology } from "@/physics/watsonRemoteCenterComplianceKernel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
-import { buildWatsonRemoteCenterComplianceModel } from "./watsonRemoteCenterComplianceModel";
+import {
+  buildWatsonRemoteCenterComplianceModel,
+  deriveWatsonRemoteCenterExhibitGeometry,
+} from "./watsonRemoteCenterComplianceModel";
 
 const PATENT_ID = "us-4098001-watson-rcc";
 
@@ -53,11 +56,18 @@ export function WatsonRemoteCenterCompliance3D() {
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
   const liveParams = useLiveSimParams(params);
   const pose = stepWatsonRemoteCenterComplianceTopology(params);
+  const exhibit = deriveWatsonRemoteCenterExhibitGeometry(pose);
+  const freeEndStatus =
+    exhibit.tipContactGap < 0.001
+      ? "AT CHAMFER 75"
+      : pose.translationPhase < 1
+        ? "APPROACHING CHAMFER 75"
+        : "SWEPT OFF CHAMFER BY LOCAL PIVOT";
 
-  // The generic fs-mbd crate is the appropriate future owner for a
-  // dimensioned flexure/contact model. This patent's source omits the inputs
-  // required for that step, so the browser truthfully exposes a refusal and
-  // keeps this 3D face on the same normalized host kernel as the 2D face.
+  // fs-solid::Rod is the appropriate law owner for a dimensioned flexure
+  // solve. This patent omits its section, material, load, and contact inputs,
+  // so the browser truthfully exposes a refusal and keeps both faces on the
+  // same source-topology pose rather than inventing a material card.
   useFrankenSimPhysics(PATENT_ID, {
     domain: "solid_mechanics",
     refusal: { isRefused: true, reason: pose.refusal.reason },
@@ -69,7 +79,7 @@ export function WatsonRemoteCenterCompliance3D() {
     studioRef.current?.controls.setView(camera.position, camera.target);
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The persistent WebGL scene reads the stable layout-effect-synchronized control ref; depending on `.current` would recreate and flash the studio.
+  // The persistent WebGL scene reads the stable layout-effect-synchronized control ref; depending on `.current` would recreate and flash the studio.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -94,13 +104,13 @@ export function WatsonRemoteCenterCompliance3D() {
     });
     const floor = new THREE.Mesh(new THREE.CircleGeometry(4.8, 64), floorMaterial);
     floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -2.6;
+    floor.position.y = -2.21;
     floor.receiveShadow = true;
     scene.add(floor);
     const model = buildWatsonRemoteCenterComplianceModel();
     scene.add(model.root);
     const axes = new THREE.AxesHelper(0.7);
-    axes.position.set(-1.55, -2.5, -1.3);
+    axes.position.set(-1.55, -2.2, -1.3);
     scene.add(axes);
     const clock = createStudioClock();
     let frame = 0;
@@ -123,10 +133,19 @@ export function WatsonRemoteCenterCompliance3D() {
       studio.cleanup();
       studioRef.current = null;
     };
-  }, []);
+  }, [liveParams]);
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl">
+    <section
+      data-testid="watson-rcc-three"
+      data-tip-contact-gap={exhibit.tipContactGap.toFixed(6)}
+      data-remote-center-tip-gap={exhibit.remoteCenterToTipGap.toFixed(6)}
+      data-tool-axis-error={Math.abs(exhibit.plateRotationZ).toFixed(6)}
+      data-translation-phase={pose.translationPhase.toFixed(6)}
+      data-rotation-phase={pose.rotationPhase.toFixed(6)}
+      data-law-owner="fs-solid::Rod (material/load inputs absent; topology-only host pose)"
+      className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl"
+    >
       <div className="relative min-h-[740px] sm:min-h-[540px]">
         <div ref={containerRef} className="absolute inset-x-0 top-0 bottom-[350px] sm:inset-0" />
         <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-3 sm:inset-x-5 sm:top-5">
@@ -137,15 +156,15 @@ export function WatsonRemoteCenterCompliance3D() {
             <p className="mt-1 text-sm font-medium text-white">Remote-center flexure topology</p>
           </div>
           <div className="hidden max-w-xs rounded-xl border border-rose-800/70 bg-rose-950/90 px-3 py-2 text-right text-[11px] leading-4 text-rose-100 backdrop-blur sm:block">
-            Normalized host geometry only. No source-backed SI flexure, contact, or performance
-            model.
+            fs-solid rod law identified; SI solve refused because the source omits section,
+            material, load, and contact inputs.
           </div>
         </div>
 
         <div className="absolute bottom-3 left-3 right-3 grid max-h-[340px] gap-3 overflow-y-auto rounded-xl border border-slate-700/80 bg-slate-950/90 p-3 backdrop-blur sm:bottom-5 sm:left-5 sm:right-5 sm:max-h-none lg:grid-cols-[1fr_auto]">
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             <label className="text-xs text-slate-200">
-              Contact position{" "}
+              Contact-guided sequence{" "}
               <span className="float-right font-mono text-cyan-300">
                 {percent(pose.lateralContactFraction)}
               </span>
@@ -156,7 +175,7 @@ export function WatsonRemoteCenterCompliance3D() {
                 max="1"
                 step="0.01"
                 value={pose.lateralContactFraction}
-                aria-label="Chamfer contact position"
+                aria-label="Contact-guided alignment sequence"
                 onChange={(event) =>
                   updateParam("lateralContactFraction", Number(event.target.value))
                 }
@@ -229,6 +248,15 @@ export function WatsonRemoteCenterCompliance3D() {
               Reset
             </button>
           </div>
+          <p className="self-end rounded-md border border-slate-700 bg-slate-900/80 px-2 py-1.5 font-mono text-[10px] leading-4 text-slate-300 lg:col-span-2">
+            <span className="hidden sm:block">
+              CYAN 56/58/60 AXIAL · AMBER 24/26/28 RADIAL · VIOLET 90 ANTI-TWIST
+            </span>
+            <span className="block">
+              FIG. 4 TRANSLATION {percent(pose.translationPhase)} · FIG. 5 ROTATION{" "}
+              {percent(pose.rotationPhase)} · FREE END 52 {freeEndStatus}
+            </span>
+          </p>
         </div>
       </div>
       <p className="border-t border-slate-800 px-4 py-3 text-xs leading-5 text-slate-300 sm:px-5">

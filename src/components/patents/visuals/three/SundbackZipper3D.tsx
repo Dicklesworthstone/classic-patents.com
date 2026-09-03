@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "@/components/patents/visuals/PortHamiltonianEnergyStrip";
@@ -37,7 +37,7 @@ export default function SundbackZipper3D({
   // Live ref for rAF loop to avoid canvas remounting
   const liveControlsRef = useRef(controls);
   const liveTelRef = useRef(tel);
-  useEffect(() => {
+  useLayoutEffect(() => {
     liveControlsRef.current = controls;
     liveTelRef.current = tel;
   }, [controls, tel]);
@@ -69,6 +69,8 @@ export default function SundbackZipper3D({
 
     let animId: number;
     const renderLoop = () => {
+      animId = requestAnimationFrame(renderLoop);
+      if (!studio.isVisible()) return;
       if (modelRef.current && studioRef.current) {
         updateSundbackZipperKinematics(
           modelRef.current,
@@ -78,7 +80,6 @@ export default function SundbackZipper3D({
         studioRef.current.controls.update();
         studioRef.current.renderer.render(studioRef.current.scene, studioRef.current.camera);
       }
-      animId = requestAnimationFrame(renderLoop);
     };
     animId = requestAnimationFrame(renderLoop);
 

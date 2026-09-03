@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "@/components/patents/visuals/PortHamiltonianEnergyStrip";
 import {
   createMestralVelcroModel,
   type MestralVelcro3DObjects,
@@ -14,24 +13,20 @@ import {
 } from "@/components/patents/visuals/three/ThreeStudioScene";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
 import { claimConstraintStateParamId } from "@/physics/claimConstraints";
-import { readMestralVelcroControls, stepMestralVelcroSi } from "@/physics/mestralVelcroKernel";
+import {
+  MESTRAL_VELCRO_SOURCE_BOUNDARY,
+  readMestralVelcroControls,
+  stepMestralVelcroSi,
+} from "@/physics/mestralVelcroKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { mestralOverviewCameraForViewport } from "./mestralVelcroCamera";
 
-const MESTRAL_NARROW_VIEWPORT_MAX_WIDTH_PX = 480;
-
-export function mestralOverviewCameraForViewport(viewportWidth: number): {
-  cameraPos: [number, number, number];
-  targetPos: [number, number, number];
-} {
-  if (viewportWidth < MESTRAL_NARROW_VIEWPORT_MAX_WIDTH_PX) {
-    // A 10-unit tape needs a wider initial radius on a portrait canvas. This
-    // frames the engaged field and the rising peel flap as one mechanism.
-    return { cameraPos: [8.6, 7, 20.2], targetPos: [0, 1.8, 0] };
-  }
-  return { cameraPos: [4.5, 3.5, 9.5], targetPos: [0, 0.5, 0] };
-}
+const MESTRAL_RUNTIME_BOUNDARY = {
+  domain: "solid_mechanics",
+  refusal: { isRefused: true, reason: MESTRAL_VELCRO_SOURCE_BOUNDARY },
+} as const;
 
 export default function MestralVelcro3D({
   patentId = "us-2717437-mestral-velcro",
@@ -46,7 +41,7 @@ export default function MestralVelcro3D({
   const controls = useMemo(() => readMestralVelcroControls(effectiveParams), [effectiveParams]);
   const tel = useMemo(() => stepMestralVelcroSi(controls), [controls]);
 
-  useFrankenSimPhysics(patentId);
+  useFrankenSimPhysics(patentId, MESTRAL_RUNTIME_BOUNDARY);
 
   const [cameraPreset, setCameraPreset] = useState<
     "perspective" | "peel-front" | "hooks-detail" | "top"
@@ -56,7 +51,7 @@ export default function MestralVelcro3D({
   const liveControlsRef = useRef(controls);
   const liveTelRef = useRef(tel);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     liveControlsRef.current = controls;
     liveTelRef.current = tel;
   }, [controls, tel]);
@@ -87,6 +82,10 @@ export default function MestralVelcro3D({
     const renderLoop = (now: number) => {
       clock.pump(now);
       if (modelRef.current && studioRef.current) {
+        if (!studioRef.current.isVisible()) {
+          animId = requestAnimationFrame(renderLoop);
+          return;
+        }
         modelRef.current.update(liveControlsRef.current, liveTelRef.current);
         studioRef.current.controls.update();
         studioRef.current.renderer.render(studioRef.current.scene, studioRef.current.camera);
@@ -100,8 +99,10 @@ export default function MestralVelcro3D({
       if (modelRef.current) {
         studio.scene.remove(modelRef.current.rootGroup);
         modelRef.current.dispose();
+        modelRef.current = null;
       }
       studio.dispose();
+      studioRef.current = null;
     };
   }, []);
 
@@ -110,16 +111,21 @@ export default function MestralVelcro3D({
     if (!studioRef.current) return;
     switch (preset) {
       case "perspective":
-        studioRef.current.controls.setView([4.5, 3.5, 9.5], [0, 0.5, 0]);
+        {
+          const overviewCamera = mestralOverviewCameraForViewport(
+            containerRef.current?.clientWidth ?? 1024,
+          );
+          studioRef.current.controls.setView(overviewCamera.cameraPos, overviewCamera.targetPos);
+        }
         break;
       case "peel-front":
-        studioRef.current.controls.setView([0, 1.2, 7.5], [0, 0.5, 0]);
+        studioRef.current.controls.setView([0, -2.2, 7.8], [0, -3.1, 0]);
         break;
       case "hooks-detail":
-        studioRef.current.controls.setView([-2.0, 1.0, 3.2], [-2.0, 0.5, 0]);
+        studioRef.current.controls.setView([-2, -2.5, 3.5], [-2, -3.55, 0]);
         break;
       case "top":
-        studioRef.current.controls.setView([0, 11.0, 0.1], [0, 0, 0]);
+        studioRef.current.controls.setView([0, 7, 0.1], [0, -3.5, 0]);
         break;
     }
   };
@@ -128,6 +134,16 @@ export default function MestralVelcro3D({
 
   return (
     <div className="relative w-full rounded-2xl overflow-hidden bg-stone-950 border border-stone-800 shadow-2xl flex flex-col">
+      <div className="border-b border-stone-800 bg-stone-950 px-4 py-3">
+        <h3 className="font-serif text-base font-bold text-stone-100">
+          De Mestral Hook-Pile Fabric · Source Figure 2
+        </h3>
+        <p className="mt-1 max-w-4xl text-xs leading-relaxed text-stone-400">
+          Two pieces of the same hooked pile face each other; the upper piece is turned 90°. The
+          lower fabric rests on the floor-supported exhibit plate, while the upper free edge remains
+          attached to the silver peel clamp and its red external-traction boundary.
+        </p>
+      </div>
       {/* 3D WebGL Canvas Container */}
       <div ref={containerRef} className="w-full h-[480px] relative">
         {/* Camera Preset Toolbar */}
@@ -183,17 +199,18 @@ export default function MestralVelcro3D({
       </div>
 
       {/* Control Slider Dashboard */}
-      <div className="p-5 bg-stone-950 border-t border-stone-800 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+      <div className="p-5 bg-stone-950 border-t border-stone-800 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 text-xs">
         {/* Filament Diameter */}
         <div className="flex flex-col space-y-1.5">
           <div className="flex justify-between text-stone-300 font-medium">
-            <span>Monofilament Diameter (d)</span>
+            <span>Illustrative Filament Diameter</span>
             <span className="font-mono text-amber-400">
               {controls.filamentDiameterMm.toFixed(2)} mm
             </span>
           </div>
           <input
             type="range"
+            aria-label="Illustrative filament diameter"
             min="0.10"
             max="0.35"
             step="0.01"
@@ -203,37 +220,57 @@ export default function MestralVelcro3D({
           />
         </div>
 
+        {/* Hook Height */}
+        <div className="flex flex-col space-y-1.5">
+          <div className="flex justify-between text-stone-300 font-medium">
+            <span>Illustrative Hook Height</span>
+            <span className="font-mono text-amber-400">{controls.hookLengthMm.toFixed(1)} mm</span>
+          </div>
+          <input
+            type="range"
+            aria-label="Illustrative hook height"
+            min="1"
+            max="3"
+            step="0.1"
+            value={controls.hookLengthMm}
+            onChange={(e) => updateParam("hookLengthMm", parseFloat(e.target.value))}
+            className="accent-amber-500 bg-stone-800 h-1.5 rounded-lg cursor-pointer"
+          />
+        </div>
+
+        {/* Display Population */}
+        <div className="flex flex-col space-y-1.5">
+          <div className="flex justify-between text-stone-300 font-medium">
+            <span>Illustrative Pile Population</span>
+            <span className="font-mono text-emerald-400">{tel.visiblePileRows} rows</span>
+          </div>
+          <input
+            type="range"
+            aria-label="Illustrative pile population"
+            min="20"
+            max="120"
+            step="4"
+            value={controls.hookDensityPerCm2}
+            onChange={(e) => updateParam("hookDensityPerCm2", parseInt(e.target.value, 10))}
+            className="accent-emerald-500 bg-stone-800 h-1.5 rounded-lg cursor-pointer"
+          />
+        </div>
+
         {/* Peeling Angle */}
         <div className="flex flex-col space-y-1.5">
           <div className="flex justify-between text-stone-300 font-medium">
-            <span>Peeling Angle (θ)</span>
+            <span>Applied Clamp Direction</span>
             <span className="font-mono text-blue-400">{controls.peelAngleDeg}°</span>
           </div>
           <input
             type="range"
+            aria-label="Applied clamp direction"
             min="20"
             max="160"
             step="5"
             value={controls.peelAngleDeg}
             onChange={(e) => updateParam("peelAngleDeg", parseInt(e.target.value, 10))}
             className="accent-blue-500 bg-stone-800 h-1.5 rounded-lg cursor-pointer"
-          />
-        </div>
-
-        {/* Lancet Bar Temp */}
-        <div className="flex flex-col space-y-1.5">
-          <div className="flex justify-between text-stone-300 font-medium">
-            <span>Lancet Heat Temp</span>
-            <span className="font-mono text-red-400">{controls.heatSettingTempC}°C</span>
-          </div>
-          <input
-            type="range"
-            min="100"
-            max="200"
-            step="5"
-            value={controls.heatSettingTempC}
-            onChange={(e) => updateParam("heatSettingTempC", parseInt(e.target.value, 10))}
-            className="accent-red-500 bg-stone-800 h-1.5 rounded-lg cursor-pointer"
           />
         </div>
 
@@ -245,6 +282,7 @@ export default function MestralVelcro3D({
           </div>
           <input
             type="range"
+            aria-label="Peeling advance"
             min="0.05"
             max="0.95"
             step="0.01"
@@ -255,7 +293,13 @@ export default function MestralVelcro3D({
         </div>
       </div>
 
-      {/* Claim Constraints & Energy Ledger */}
+      <div className="border-t border-amber-900/60 bg-amber-950/25 px-4 py-3 text-xs leading-relaxed text-amber-100">
+        <strong>Source boundary:</strong> Figure 2 establishes topology, not performance data. The
+        exhibit refuses peel force, shear capacity, thermal-retention percentage, power, and
+        energy-loss telemetry; no FrankenSim solid/contact WASM step is claimed.
+      </div>
+
+      {/* Claim Constraints */}
       <div className="p-4 bg-stone-950 border-t border-stone-800 flex flex-col space-y-3">
         <ClaimConstraintToggle
           patentId={patentId}
@@ -263,10 +307,6 @@ export default function MestralVelcro3D({
           onToggleClaim={(claimNumber, active) =>
             updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
           }
-        />
-        <PortHamiltonianEnergyStrip
-          patentId={patentId}
-          params={controls as unknown as Record<string, number>}
         />
       </div>
     </div>

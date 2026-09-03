@@ -40,8 +40,8 @@ describe("PatentDetailPage component", () => {
       params: Promise.resolve({ id: "us-3671542-kwolek-kevlar" }),
     });
     const html = renderToStaticMarkup(PageJsx);
-    expect(html).toContain("Source-Bound Visual Hold");
-    expect(html).toContain("no interactive physical model is published");
+    expect(html).toContain("Visual Model in Preparation");
+    expect(html).toContain("Complete patent text remains available");
     expect(html).not.toContain("Interactive Real-Time Physical Simulation");
     expect(html).toContain('data-source-visual-hold="true"');
   });
@@ -59,6 +59,16 @@ describe("PatentDetailPage component", () => {
     expect(html).toContain('data-archival-publication-state="held"');
     expect(html).toContain("data-archival-publication-evidence=");
     expect(html).toContain("acceptedFigureCount");
+  });
+
+  test("does not present Fermi's incomplete stored edition as a complete archival edition", async () => {
+    const PageJsx = await PatentDetailPage({
+      params: Promise.resolve({ id: "us-2708656-fermi-reactor" }),
+    });
+    const html = renderToStaticMarkup(PageJsx);
+
+    expect(html).toContain('data-archival-edition="withheld"');
+    expect(html).not.toContain("Complete Manually Prepared Archival Edition");
   });
 
   test("handles legacy redirects gracefully", async () => {

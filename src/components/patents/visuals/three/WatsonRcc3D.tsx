@@ -36,7 +36,7 @@ export function WatsonRcc3D({ patentId = "us-4098001-watson-rcc" }: { patentId?:
     "perspective",
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: The persistent WebGL scene reads stable layout-effect-synchronized pose refs; depending on `.current` would recreate and flash the studio.
+  // The persistent WebGL scene reads stable layout-effect-synchronized pose refs; depending on `.current` would recreate and flash the studio.
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -79,7 +79,7 @@ export function WatsonRcc3D({ patentId = "us-4098001-watson-rcc" }: { patentId?:
       studioRef.current = null;
       modelRef.current = null;
     };
-  }, []);
+  }, [liveControlsRef, liveTelRef]);
 
   const handleCameraPreset = (preset: "perspective" | "side" | "focal" | "insertion") => {
     setCameraPreset(preset);
@@ -206,6 +206,7 @@ export function WatsonRcc3D({ patentId = "us-4098001-watson-rcc" }: { patentId?:
           </div>
           <input
             type="range"
+            aria-label="Lateral contact force"
             min="0"
             max="80"
             step="1"
@@ -224,6 +225,7 @@ export function WatsonRcc3D({ patentId = "us-4098001-watson-rcc" }: { patentId?:
           </div>
           <input
             type="range"
+            aria-label="Tip moment"
             min="-3"
             max="3"
             step="0.1"
@@ -242,6 +244,7 @@ export function WatsonRcc3D({ patentId = "us-4098001-watson-rcc" }: { patentId?:
           </div>
           <input
             type="range"
+            aria-label="Initial misalignment"
             min="0"
             max="2.5"
             step="0.1"

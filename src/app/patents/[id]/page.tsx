@@ -12,6 +12,7 @@ import {
   evaluateArchivalPublicationState,
   patentForPublicationViewer,
 } from "@/data/editions/publicationApproval";
+import { reviewedLedgerTextForViewer } from "@/data/editions/reviewedLedgerPublicationEvidence.server";
 import {
   allPatents,
   getAdjacentPatents,
@@ -85,16 +86,19 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
   }
   const colorizedEquations = getColorizedEquationsForPatent(id);
   const archivalPublication = evaluateArchivalPublicationState(patent);
-  // Editorial review status must never replace an existing source-text
-  // edition with an empty gate. The state stays available as diagnostics, but
-  // visitors can read the hand-authored patent text already in the catalogue.
-  const archivalEdition = patent.archivalEdition;
-  const archivalDiagnostics = archivalPublicationDiagnostics(archivalPublication);
+  // Editorial acceptance never gates source text. The viewer projection keeps
+  // a complete, structurally valid edition, or falls open to the complete
+  // reviewed ledger when the stored edition is only a draft.
   const viewerPatent = patentForPublicationViewer(patent, archivalPublication);
+  const archivalEdition = viewerPatent.archivalEdition;
+  const archivalDiagnostics = archivalPublicationDiagnostics(archivalPublication);
   const archivalParallelReadings = archivalEdition
     ? archivalParallelReadingsFor(patent.id)
     : undefined;
-  const hasRawSourceText = patent.originalTextAsset?.kind === "source-pdf-text-layer";
+  // A legitimate reviewed transcript is readable source material even before
+  // a complete structured React edition is available. Keep it as text, not as
+  // a substitute PDF experience, and never use review state as a visibility gate.
+  const reviewedTranscript = archivalEdition ? undefined : reviewedLedgerTextForViewer(patent);
   const archivalPublicationView = {
     isPublished: archivalPublication.isPublished,
     reasonCode: archivalPublication.reasonCode,
@@ -149,8 +153,8 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
           patent={viewerPatent}
           archivalPublication={archivalPublicationView}
           archivalParallelReadings={archivalParallelReadings}
+          reviewedTranscript={reviewedTranscript}
           colorizedEquations={colorizedEquations}
-          hasRawSourceText={hasRawSourceText}
         />
       </div>
 
