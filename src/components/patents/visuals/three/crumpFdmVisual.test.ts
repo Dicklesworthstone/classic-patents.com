@@ -195,6 +195,12 @@ describe("US 5,121,329 Crump FDM Procedural 3D Visual Model", () => {
     expect(model.flattenedRoadMesh.visible).toBe(false);
     expect(model.unshearedBeadMesh.visible).toBe(true);
     expect(model.activeBeadMesh.visible).toBe(true);
+    model.root.updateMatrixWorld(true);
+    const unshearedBounds = new THREE.Box3().setFromObject(model.unshearedBeadMesh);
+    const partBounds = new THREE.Box3().setFromObject(model.partGroup);
+    const roundedOutletBounds = new THREE.Box3().setFromObject(model.roundedOutletMesh);
+    expect(unshearedBounds.min.y).toBeCloseTo(partBounds.max.y, 3);
+    expect(unshearedBounds.max.y).toBeCloseTo(roundedOutletBounds.min.y, 3);
 
     const claim2Controls = { ...CRUMP_FDM_DEFAULT_CONTROLS, claim2HeatingEnabled: 0 };
     model.update(claim2Controls, stepCrumpFdmSi(claim2Controls), 0.5);

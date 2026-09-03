@@ -170,7 +170,7 @@ export function CrumpFdmSim({ patentId = PATENT_ID }: { patentId?: string }) {
                 Article-receiving base plate 10
               </text>
 
-              {/* Previously Solidified Layers (Layers 1 to 4) */}
+              {/* Previously deposited and cooled layers (Layers 1 to 4). */}
               {Array.from({ length: 4 }).map((_, layerIdx) => {
                 const yPos = 360 - (layerIdx + 1) * 22;
                 return (
@@ -392,7 +392,7 @@ export function CrumpFdmSim({ patentId = PATENT_ID }: { patentId?: string }) {
                 </text>
                 <text x="12" y="126" fill="#e2e8f0" fontSize="10" fontFamily="monospace">
                   Interface ΔT vs Tg:{" "}
-                  <tspan fill={tel.poorAdhesionRefusal ? "#f43f5e" : "#4ade80"}>
+                  <tspan fill={tel.interfaceAboveGlassTransition ? "#4ade80" : "#f43f5e"}>
                     {tel.interfaceTemperatureMarginC.toFixed(1)} °C
                   </tspan>
                 </text>

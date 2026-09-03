@@ -9740,8 +9740,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           label: "Interface Thermal Margin (T_int − Tg)",
           value: tel.interfaceTemperatureMarginC.toFixed(1),
           unit: "°C",
-          badgeColor:
-            tel.interfaceAboveGlassTransition && !tel.poorAdhesionRefusal ? "emerald" : "rose",
+          badgeColor: tel.interfaceAboveGlassTransition ? "emerald" : "rose",
           provenance: "scenario-modern",
         },
       ];

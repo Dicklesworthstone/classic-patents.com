@@ -117,4 +117,18 @@ describe("US 5,121,329 S. Scott Crump FDM SI Physics Kernel", () => {
       12,
     );
   });
+
+  test("does not turn a Tg screen or unprinted road ratio into a fabricated bond failure", () => {
+    const state = stepCrumpFdmSi({
+      ...CRUMP_FDM_DEFAULT_CONTROLS,
+      nozzleTempC: 190,
+      ambientTempC: 15,
+      printSpeedMmS: 10,
+      layerHeightMm: 0.5,
+    });
+    expect(state.interfaceAboveGlassTransition).toBe(false);
+    expect(state.claim39PlanarGapPresent).toBe(true);
+    expect(state.isExtruding).toBe(true);
+    expect(state.refusalReason).toBeUndefined();
+  });
 });

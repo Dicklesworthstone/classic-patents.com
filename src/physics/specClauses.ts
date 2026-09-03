@@ -3285,37 +3285,26 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         id: "crump-planar-shearing-tip",
         phrase:
           "planar bottom surface of said tip being maintained substantially parallel to said first layer",
-        active:
-          tel.claim39PlanarGapPresent && controls.layerHeightMm <= controls.nozzleDiameterMm * 0.85,
-        tone:
-          tel.claim39PlanarGapPresent && controls.layerHeightMm <= controls.nozzleDiameterMm * 0.85
-            ? "held"
-            : "broken",
+        active: tel.claim39PlanarGapPresent,
+        tone: tel.claim39PlanarGapPresent ? "held" : "broken",
         caption: !tel.claim39PlanarGapPresent
           ? "Claim 39 planar-bottom/gap relation is withheld."
           : `The planar nozzle bottom is maintained ${controls.layerHeightMm} mm above the preceding layer in the normalized display. The visible ${tel.beadAspectRatio.toFixed(2)}:1 road/gap ratio comes from visitor-declared modern scenario values.`,
       },
       {
-        id: "crump-interlayer-weld",
+        id: "crump-sequential-layer-cooling",
         phrase:
           "successive layers of said material of predetermined thickness which build up on each other sequentially as they solidify",
-        active:
-          tel.claim1ApparatusPresent &&
-          tel.claim2HeatingMeansPresent &&
-          tel.interfaceAboveGlassTransition &&
-          !tel.poorAdhesionRefusal,
+        active: tel.claim1ApparatusPresent && tel.claim2HeatingMeansPresent && tel.isExtruding,
         tone:
-          tel.claim1ApparatusPresent &&
-          tel.claim2HeatingMeansPresent &&
-          tel.interfaceAboveGlassTransition &&
-          !tel.poorAdhesionRefusal
+          tel.claim1ApparatusPresent && tel.claim2HeatingMeansPresent && tel.isExtruding
             ? "held"
             : "broken",
         caption: !tel.claim1ApparatusPresent
           ? "Claim 1 sequential-layer apparatus topology is withheld."
           : !tel.claim2HeatingMeansPresent
             ? "Claim 2 heating is withheld, so the illustrative thermoplastic thermal screen is not asserted."
-            : `Interface-temperature screen is ${tel.interfaceTempC.toFixed(1)} °C (Tg = ${CRUMP_FDM_GLASS_TRANSITION_TEMP_C} °C; margin ${tel.interfaceTemperatureMarginC.toFixed(1)} °C). Cooling time constant is ${(tel.coolingTimeConstantSec * 1000).toFixed(0)} ms. This screen does not calculate bond strength.`,
+            : `The topology shows successive touching roads. The separate interface-temperature screen is ${tel.interfaceTempC.toFixed(1)} °C (Tg = ${CRUMP_FDM_GLASS_TRANSITION_TEMP_C} °C; margin ${tel.interfaceTemperatureMarginC.toFixed(1)} °C), with a first-mode time constant of ${(tel.coolingTimeConstantSec * 1000).toFixed(0)} ms. A Tg crossing is not solidification, and this screen does not calculate bond strength.`,
       },
     ];
   }

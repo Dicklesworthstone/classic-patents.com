@@ -519,9 +519,10 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
 
     flattenedRoadMesh.visible = tel.isExtruding && tel.claim39PlanarGapPresent;
     unshearedBeadMesh.visible = tel.isExtruding && !tel.claim39PlanarGapPresent;
-    for (const depositedMesh of [flattenedRoadMesh, unshearedBeadMesh]) {
-      depositedMesh.position.set(xPos, partTopRelativeToBed + 0.009, zPos);
-    }
+    flattenedRoadMesh.position.set(xPos, partTopRelativeToBed + 0.009, zPos);
+    const unshearedRadialScale = visualGap / (2 * 0.038);
+    unshearedBeadMesh.scale.set(unshearedRadialScale, 1, unshearedRadialScale);
+    unshearedBeadMesh.position.set(xPos, partTopRelativeToBed + visualGap / 2, zPos);
   }
 
   function dispose() {

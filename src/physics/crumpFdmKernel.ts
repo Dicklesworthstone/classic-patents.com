@@ -73,12 +73,11 @@ export interface CrumpFdmTelemetry {
   claim2HeatingMeansPresent: boolean;
   /** Claim 39 planar-bottom/gap relation is present in the comparison state. */
   claim39PlanarGapPresent: boolean;
-  /** Whether the thermoplastic bead is actively extruding and adhering */
+  /** Whether the declared thermoplastic feed path is actively extruding. */
   isExtruding: boolean;
   /** Refusal boundaries */
   coldNozzleJamRefusal: boolean;
   filamentGrindingRefusal: boolean;
-  poorAdhesionRefusal: boolean;
   refusalReason?: string;
   /** Generic FrankenSim owner mirrored by this synchronous TypeScript path. */
   capillaryOwner: "fs-flux::capillary::step_newtonian_circular_capillary";
@@ -268,10 +267,6 @@ export function stepCrumpFdmSi(controls: CrumpFdmControls): CrumpFdmTelemetry {
   // 10. Refusal boundaries
   const coldNozzleJamRefusal = claim2HeatingMeansPresent && controls.nozzleTempC < 160.0;
   const filamentGrindingRefusal = claim2HeatingMeansPresent && F_drive_N > F_traction_N;
-  const poorAdhesionRefusal =
-    claim39PlanarGapPresent &&
-    (!interfaceAboveGlassTransition || controls.layerHeightMm > controls.nozzleDiameterMm * 0.85);
-
   let refusalReason: string | undefined;
   if (!claim1ApparatusPresent) {
     refusalReason =
@@ -283,16 +278,13 @@ export function stepCrumpFdmSi(controls: CrumpFdmControls): CrumpFdmTelemetry {
     refusalReason = `Illustrative ABS thermal refusal: nozzle temperature (${controls.nozzleTempC.toFixed(0)} °C) is below this scenario's 160 °C flow-admission threshold.`;
   } else if (filamentGrindingRefusal) {
     refusalReason = `Illustrative traction refusal: axial pressure-force screen (${F_drive_N.toFixed(1)} N) exceeds the declared roller traction limit (${F_traction_N.toFixed(1)} N).`;
-  } else if (poorAdhesionRefusal) {
-    refusalReason = `Thermal/contact screen refused: interface estimate is ${interfaceTemperatureMarginC.toFixed(0)} °C relative to illustrative ABS Tg or the declared gap exceeds 85% of nozzle diameter; no bond strength is inferred.`;
   }
 
   const isExtruding =
     claim1ApparatusPresent &&
     claim2HeatingMeansPresent &&
     !coldNozzleJamRefusal &&
-    !filamentGrindingRefusal &&
-    !poorAdhesionRefusal;
+    !filamentGrindingRefusal;
 
   return {
     volumetricFlowRateMm3S: Q_mm3_s,
@@ -315,7 +307,6 @@ export function stepCrumpFdmSi(controls: CrumpFdmControls): CrumpFdmTelemetry {
     isExtruding,
     coldNozzleJamRefusal,
     filamentGrindingRefusal,
-    poorAdhesionRefusal,
     refusalReason,
     capillaryOwner: CAPILLARY_OWNER,
     thermalOwner: THERMAL_OWNER,
