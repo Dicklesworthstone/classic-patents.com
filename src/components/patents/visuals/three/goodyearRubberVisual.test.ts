@@ -95,17 +95,20 @@ describe("US 3,633 Charles Goodyear Vulcanized Rubber visual & polymer mechanics
       // and 341 px canvas widths, rather than the broader browser viewport.
       expect(desktop).toEqual({ pos: [2, 7, 18], target: [2, -1.7, 0] });
       expect(tablet).toEqual({ pos: [0, 10.5, 25], target: [0, -2.1, 0] });
-      expect(phone375).toEqual({ pos: [30, 20, 35], target: [0, 8, 0] });
-      expect(phone).toEqual({ pos: [30, 20, 35], target: [0, 8, 0] });
+      expect(phone375).toEqual({ pos: [24.5, 15, 29], target: [1, 5, 0] });
+      expect(phone).toEqual({ pos: [26, 25, 25], target: [1, 5, 0] });
 
-      // Test the relaxed, normal, and maximally stretched supported states;
-      // the last pair includes the primary-control temperature maximum recorded
-      // by the visual audit rather than only the relaxed network.
-      for (const [cureTemperature, stretch] of [
-        [110, 1],
-        [145, 1.8],
-        [190, 2.5],
-      ]) {
+      // The phone audit's primary control is Vulcanization Temp, so its maximum
+      // retains the default λ = 1.8. Keep the independent λ = 2.5 boundary as
+      // well: it prevents the closer 375 px framing from regressing the complete
+      // tensile apparatus at the largest supported extension.
+      const testCases: readonly [string, number, number][] = [
+        ["relaxed", 110, 1],
+        ["phone375 default", 145, 1.8],
+        ["phone375 primary-control maximum", 190, 1.8],
+        ["maximum supported extension", 190, 2.5],
+      ];
+      for (const [state, cureTemperature, stretch] of testCases) {
         const rubber = FrankenSimEngine.stepGoodyearRubber(cureTemperature, 8, 30, stretch, 35);
         updateGoodyearRubberKinematics(
           nodes,
@@ -142,11 +145,40 @@ describe("US 3,633 Charles Goodyear Vulcanized Rubber visual & polymer mechanics
 
           // NDC ±1 is the canvas edge. A 0.15+ edge clearance catches the V17
           // desktop and V14 tablet crops without accepting a one-pixel "fix".
-          const stateName = `${layout}: ${cureTemperature}°C, λ=${stretch}`;
+          const stateName = `${layout} ${state}: ${cureTemperature}°C, λ=${stretch}`;
           expect(frame.minX, `${stateName} left edge`).toBeGreaterThan(-0.85);
           expect(frame.maxX, `${stateName} right edge`).toBeLessThan(0.85);
           expect(frame.minY, `${stateName} lower edge`).toBeGreaterThan(-0.85);
           expect(frame.maxY, `${stateName} upper edge`).toBeLessThan(0.85);
+
+          if (state === "phone375 default" || state === "phone375 primary-control maximum") {
+            const projectedWidthPx = ((frame.maxX - frame.minX) * width) / 2;
+            const projectedHeightPx = ((frame.maxY - frame.minY) * height) / 2;
+            const topPx = ((1 - frame.maxY) * height) / 2;
+            const bottomEdgePx = ((1 - frame.minY) * height) / 2;
+
+            if (layout === "phone375") {
+              // V17's crop repair left only about 160 × 106 px of apparatus in
+              // the 341 × 380 px phone375 canvas. These two real interaction
+              // states must leave the polymer network legible while staying
+              // clear of the top controls and the lower control boundary.
+              expect(projectedWidthPx, `${stateName} phone375 coverage`).toBeGreaterThan(190);
+              expect(projectedHeightPx, `${stateName} phone375 coverage`).toBeGreaterThan(120);
+              expect(topPx, `${stateName} top control clearance`).toBeGreaterThan(120);
+              expect(bottomEdgePx, `${stateName} lower control clearance`).toBeLessThan(340);
+            }
+
+            if (layout === "phone") {
+              // The 286 px compact canvas uses a deliberately higher pose to
+              // retain λ = 2.5 grip clearance. Its default and actual
+              // primary-control maximum must nevertheless be larger than the
+              // V17 tiny composition and remain outside the control zones.
+              expect(projectedWidthPx, `${stateName} compact-phone coverage`).toBeGreaterThan(165);
+              expect(projectedHeightPx, `${stateName} compact-phone coverage`).toBeGreaterThan(140);
+              expect(topPx, `${stateName} top control clearance`).toBeGreaterThan(150);
+              expect(bottomEdgePx, `${stateName} lower control clearance`).toBeLessThan(320);
+            }
+          }
         }
       }
     } finally {

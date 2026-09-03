@@ -3,7 +3,10 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import * as THREE from "three";
 import { stepPasteurFermentation } from "@/physics/catalogKernels";
-import { pasteurFermentationCameraForViewport } from "./pasteurFermentationCamera";
+import {
+  PASTEUR_DESKTOP_SAFE_TOP_PX,
+  pasteurFermentationCameraForViewport,
+} from "./pasteurFermentationCamera";
 import {
   buildPasteurFermentationModel,
   updatePasteurFermentationKinematics,
@@ -104,34 +107,75 @@ describe("US 135,245 Pasteur closed-vessel process visual boundary", () => {
     expect(threeSource).not.toContain("genericKernelSource");
   });
 
-  test("frames Pipe E, Nozzle P, Generator M M, vessel A, and exit cup v in the default overview", () => {
+  test("keeps the complete source apparatus clear of the desktop View rail in every audited pose", () => {
+    // These are the three persisted V23 desktop screenshots: the initial
+    // state, the audit's primary CO2 control state, and the subsequent claim
+    // inversion. The rail remains visible in all three, so a canvas-only NDC
+    // edge check is insufficient.
+    const desktopAuditPoses = [
+      { name: "default", co2SweepPct: 100, sprayCoveragePct: 100, isCutaway: false },
+      { name: "primary-control-max", co2SweepPct: 0, sprayCoveragePct: 100, isCutaway: false },
+      { name: "claim-inverted", co2SweepPct: 0, sprayCoveragePct: 100, isCutaway: false },
+    ] as const;
+    const width = 1214;
+    const height = 460;
+    const desktop = pasteurFermentationCameraForViewport("iso", width);
+    const safeTopNdc = 1 - (2 * PASTEUR_DESKTOP_SAFE_TOP_PX) / height;
+
+    expect(desktop).toEqual({ pos: [12.5, 8.6, 13.5], target: [0, 2, 0] });
+
+    for (const pose of desktopAuditPoses) {
+      const { rootGroup, nodes, materials, dispose } = buildPasteurFermentationModel();
+      try {
+        updatePasteurFermentationKinematics(
+          nodes,
+          materials,
+          0.016,
+          pose.co2SweepPct,
+          pose.sprayCoveragePct,
+          pose.isCutaway,
+        );
+        rootGroup.updateMatrixWorld(true);
+        const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 1000);
+        camera.position.set(...desktop.pos);
+        camera.lookAt(...desktop.target);
+        camera.updateProjectionMatrix();
+        camera.updateMatrixWorld();
+        const frame = projectedObjectBounds(rootGroup, camera);
+
+        expect(frame.minX, `${pose.name} apparatus left edge`).toBeGreaterThan(-0.85);
+        expect(frame.maxX, `${pose.name} apparatus right edge`).toBeLessThan(0.85);
+        expect(frame.minY, `${pose.name} apparatus lower edge`).toBeGreaterThan(-0.85);
+        expect(frame.maxY, `${pose.name} Pipe E hanger envelope below View rail`).toBeLessThan(
+          safeTopNdc,
+        );
+      } finally {
+        dispose();
+      }
+    }
+  });
+
+  test("retains a wider overview for the compact phone canvases", () => {
+    const phone375 = pasteurFermentationCameraForViewport("iso", 341);
+    const phone = pasteurFermentationCameraForViewport("iso", 286);
+
+    expect(phone375).toEqual({ pos: [11.5, 7.8, 12.7], target: [0, 0.8, 0] });
+    expect(phone).toEqual(phone375);
+
     const { rootGroup, dispose } = buildPasteurFermentationModel();
     try {
       rootGroup.updateMatrixWorld(true);
-      const desktop = pasteurFermentationCameraForViewport("iso", 1216);
-      const phone375 = pasteurFermentationCameraForViewport("iso", 341);
-      const phone = pasteurFermentationCameraForViewport("iso", 286);
-
-      expect(desktop).toEqual({ pos: [11, 7.5, 12], target: [0, 0.8, 0] });
-      expect(phone375).toEqual({ pos: [11.5, 7.8, 12.7], target: [0, 0.8, 0] });
-      expect(phone).toEqual(phone375);
-
-      for (const [layout, view, width, height] of [
-        ["desktop", desktop, 1216, 460],
-        // The visual audit's actual compact canvas dimensions, rather than its
-        // browser viewport widths, keep the portrait envelope meaningful.
-        ["phone375", phone375, 341, 380],
-        ["phone", phone, 286, 380],
+      for (const [layout, view, width] of [
+        ["phone375", phone375, 341],
+        ["phone", phone, 286],
       ] as const) {
-        const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(42, width / 380, 0.1, 1000);
         camera.position.set(...view.pos);
         camera.lookAt(...view.target);
         camera.updateProjectionMatrix();
         camera.updateMatrixWorld();
         const frame = projectedObjectBounds(rootGroup, camera);
 
-        // NDC +/-1 is the canvas edge. This meaningful margin catches the
-        // reported desktop top crop instead of accepting a one-pixel move.
         expect(frame.minX, `${layout} apparatus left edge`).toBeGreaterThan(-0.85);
         expect(frame.maxX, `${layout} apparatus right edge`).toBeLessThan(0.85);
         expect(frame.minY, `${layout} apparatus lower edge`).toBeGreaterThan(-0.85);

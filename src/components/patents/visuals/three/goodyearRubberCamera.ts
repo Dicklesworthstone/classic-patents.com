@@ -25,6 +25,7 @@ export const GOODYEAR_RUBBER_CAMERA_PRESETS: Record<
 
 const DESKTOP_STUDIO_MIN_WIDTH_PX = 1024;
 const TABLET_STUDIO_MIN_WIDTH_PX = 600;
+const PHONE_375_STUDIO_MIN_WIDTH_PX = 320;
 
 // The prior oblique overview lets the full tensile-test frame and stretched
 // polymer network run through the right and lower edge of the wide desktop
@@ -48,14 +49,27 @@ const TABLET_CAMERA_PRESETS: Partial<Record<GoodyearRubberCameraPreset, Goodyear
     iso: { pos: [0, 10.5, 25], target: [0, -2.1, 0] },
   };
 
-// On the 286 px and 341 px phone canvases, the inherited close isometric view
-// cut off the stretched specimen and its tensile grips. This wider low-angle
-// overview contains the complete supported apparatus even at λ = 2.5 while
-// keeping it beneath the phone's camera and claim controls. It is intentionally
-// limited to the overview; the authored inspection presets remain unchanged.
+// The 341 px canvas produced by the 375 px phone viewport has enough horizontal
+// room for a closer overview. The previous crop-safe pose made the actual
+// specimen, polymer chains, and sulfur bridges needlessly small. This reframe
+// raises the complete default and primary-control state clear of the phone HUD
+// while retaining 25+ px horizontal clearance at the supported λ = 2.5 limit.
+// It is intentionally limited to the overview; the authored inspection presets
+// remain unchanged.
+const PHONE_375_CAMERA_PRESETS: Partial<
+  Record<GoodyearRubberCameraPreset, GoodyearRubberCameraView>
+> = {
+  iso: { pos: [24.5, 15, 29], target: [1, 5, 0] },
+};
+
+// The narrower 286 px canvas cannot take the closer 375 px composition at the
+// supported maximum extension without clipping a tensile grip. A higher
+// oblique pose instead foreshortens the tensile axis: it enlarges the default
+// polymer network while preserving the complete λ = 2.5 apparatus and the
+// phone control clearances.
 const PHONE_CAMERA_PRESETS: Partial<Record<GoodyearRubberCameraPreset, GoodyearRubberCameraView>> =
   {
-    iso: { pos: [30, 20, 35], target: [0, 8, 0] },
+    iso: { pos: [26, 25, 25], target: [1, 5, 0] },
   };
 
 export function goodyearRubberCameraForViewport(
@@ -67,6 +81,9 @@ export function goodyearRubberCameraForViewport(
   }
   if (viewportWidth >= TABLET_STUDIO_MIN_WIDTH_PX) {
     return TABLET_CAMERA_PRESETS[preset] ?? GOODYEAR_RUBBER_CAMERA_PRESETS[preset];
+  }
+  if (viewportWidth >= PHONE_375_STUDIO_MIN_WIDTH_PX) {
+    return PHONE_375_CAMERA_PRESETS[preset] ?? GOODYEAR_RUBBER_CAMERA_PRESETS[preset];
   }
   return PHONE_CAMERA_PRESETS[preset] ?? GOODYEAR_RUBBER_CAMERA_PRESETS[preset];
 }
