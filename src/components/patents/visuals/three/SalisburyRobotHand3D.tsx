@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import {
   buildSalisburyRobotHandModel,
   type SalisburyRobotHandModel,
@@ -34,6 +35,7 @@ export default function SalisburyRobotHand3D({
   const modelRef = useRef<SalisburyRobotHandModel | null>(null);
 
   const { params, updateParam } = usePatentPhysics(patentId);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
   const controls = useMemo(() => readSalisburyRobotHandControls(params), [params]);
   const [, setKernelSource] = useState<SalisburyKernelSource>(salisburyKernelSource());
   const tel = FrankenSimEngine.stepSalisburyRobotHand(controls);
@@ -140,13 +142,31 @@ export default function SalisburyRobotHand3D({
           <h3 className="text-base font-semibold tracking-wide text-slate-100">
             Salisbury Hand Connected Transmission Studio
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="hidden text-xs text-slate-400 sm:block">
             US 4,921,293 • remote drive → wrist → palm → three anchored digits • representative
             T₁–T₄ study, 12 routed ends
           </p>
         </div>
 
-        <div className="flex rounded-lg bg-slate-800/80 p-1 text-xs">
+        <label className="sr-only" htmlFor="salisbury-camera-view">
+          Camera view
+        </label>
+        <select
+          id="salisbury-camera-view"
+          aria-label="Camera view"
+          className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-2 text-xs text-slate-100 sm:hidden"
+          value={cameraPreset}
+          onChange={(event) =>
+            handleCameraPreset(event.target.value as "overview" | "wrist" | "pulleys" | "cables")
+          }
+        >
+          <option value="overview">Overview</option>
+          <option value="wrist">Wrist</option>
+          <option value="pulleys">Pulleys</option>
+          <option value="cables">Cable route</option>
+        </select>
+
+        <div className="hidden rounded-lg bg-slate-800/80 p-1 text-xs sm:flex">
           <button
             type="button"
             onClick={() => handleCameraPreset("overview")}
@@ -194,7 +214,7 @@ export default function SalisburyRobotHand3D({
         </div>
       </div>
 
-      <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-900 shadow-inner">
+      <div className="relative min-h-[320px] w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-900 shadow-inner sm:min-h-0 sm:aspect-video">
         <div ref={containerRef} className="h-full w-full" />
 
         <button
@@ -367,6 +387,16 @@ export default function SalisburyRobotHand3D({
             Claim predicate; torque law stays separate
           </span>
         </div>
+      </div>
+
+      <div className="pt-2 border-t border-slate-800">
+        <ClaimConstraintToggle
+          patentId={patentId}
+          claimStates={claimStates}
+          onClaimStateChange={(num, active) =>
+            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          }
+        />
       </div>
 
       <PhysicsTelemetryBadge patentId={patentId} equations={equations} />

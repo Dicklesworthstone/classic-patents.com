@@ -3,6 +3,8 @@
 import { Eye, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { stepLemelsonWarehouseTopology } from "@/physics/lemelsonWarehouseKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -34,13 +36,17 @@ export function LemelsonAutomaticWarehousing3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
   const [view, setView] = useState<keyof typeof VIEWS>("overview");
-  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
-  const liveParams = useRef(params);
-  liveParams.current = params;
-  const pose = stepLemelsonWarehouseTopology(params);
+  const { effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(PATENT_ID);
+  const liveParams = useRef(effectiveParams);
+  liveParams.current = effectiveParams;
+  const pose = stepLemelsonWarehouseTopology(effectiveParams);
   useFrankenSimPhysics(PATENT_ID, {
     domain: "solid_mechanics",
-    refusal: { isRefused: true, reason: pose.refusal.reason },
+    refusal: {
+      isRefused: true,
+      reason: claimConstraintResult.refusalWarning ?? pose.refusal.reason,
+    },
   });
   const selectView = (next: keyof typeof VIEWS) => {
     setView(next);
@@ -115,93 +121,120 @@ export function LemelsonAutomaticWarehousing3D() {
             Normalized host geometry only. No source-backed warehouse scale or performance model.
           </div>
         </div>
-        <div className="absolute bottom-3 left-3 right-3 grid gap-3 rounded-xl border border-slate-700/80 bg-slate-950/90 p-3 backdrop-blur sm:bottom-5 sm:left-5 sm:right-5 lg:grid-cols-[1fr_auto]">
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            <label className="text-xs text-slate-200">
-              Rail address{" "}
-              <span className="float-right font-mono text-cyan-300">
-                {percent(pose.railAddressFraction)}
-              </span>
-              <input
-                className="mt-1 w-full accent-cyan-400"
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={pose.railAddressFraction}
-                aria-label="Rail address"
-                onChange={(event) => updateParam("railAddressFraction", Number(event.target.value))}
-              />
-            </label>
-            <label className="text-xs text-slate-200">
-              Vertical address{" "}
-              <span className="float-right font-mono text-amber-300">
-                {percent(pose.levelAddressFraction)}
-              </span>
-              <input
-                className="mt-1 w-full accent-amber-400"
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={pose.levelAddressFraction}
-                aria-label="Vertical address"
-                onChange={(event) =>
-                  updateParam("levelAddressFraction", Number(event.target.value))
-                }
-              />
-            </label>
-            <label className="text-xs text-slate-200">
-              Shuttle extension{" "}
-              <span className="float-right font-mono text-purple-300">
-                {percent(pose.shuttleExtensionFraction)}
-              </span>
-              <input
-                className="mt-1 w-full accent-purple-400"
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={pose.shuttleExtensionFraction}
-                aria-label="Shuttle extension"
-                onChange={(event) =>
-                  updateParam("shuttleExtensionFraction", Number(event.target.value))
-                }
-              />
-            </label>
-            <label className="text-xs text-slate-200">
-              Addressing logic
-              <select
-                className="mt-1 w-full rounded border border-slate-600 bg-slate-900 p-1 text-xs"
-                value={Number(pose.automaticAddressing)}
-                aria-label="Automatic addressing"
-                onChange={(event) => updateParam("automaticAddressing", Number(event.target.value))}
-              >
-                <option value="1">Claim sequence</option>
-                <option value="0">Manual comparison</option>
-              </select>
-            </label>
-          </div>
-          <div className="flex flex-wrap items-end gap-2">
-            {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((candidate) => (
+        <div className="absolute bottom-3 left-3 right-3 z-10 grid max-h-[calc(100%-7rem)] gap-3 overflow-y-auto rounded-xl border border-slate-700/80 bg-slate-950/90 p-3 backdrop-blur sm:bottom-5 sm:left-5 sm:right-5">
+          <ClaimConstraintToggle
+            patentId={PATENT_ID}
+            claimStates={claimStates}
+            onToggleClaim={(claimNumber, active) =>
+              updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
+            }
+          />
+          {claimConstraintResult.activeFailures.length > 0 && (
+            <div role="status" className="rounded-lg border border-rose-800 bg-rose-950/80 p-2">
+              {claimConstraintResult.activeFailures.map((failure: string) => (
+                <p key={failure} className="text-[11px] leading-4 text-rose-100">
+                  {failure}
+                </p>
+              ))}
+              {claimConstraintResult.refusalWarning && (
+                <p className="mt-1 text-[10px] leading-4 text-rose-200">
+                  {claimConstraintResult.refusalWarning}
+                </p>
+              )}
+            </div>
+          )}
+          <div className="grid gap-3 lg:grid-cols-[1fr_auto]">
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              <label className="text-xs text-slate-200">
+                Rail address{" "}
+                <span className="float-right font-mono text-cyan-300">
+                  {percent(pose.railAddressFraction)}
+                </span>
+                <input
+                  className="mt-1 w-full accent-cyan-400"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={pose.railAddressFraction}
+                  aria-label="Rail address"
+                  onChange={(event) =>
+                    updateParam("railAddressFraction", Number(event.target.value))
+                  }
+                />
+              </label>
+              <label className="text-xs text-slate-200">
+                Vertical address{" "}
+                <span className="float-right font-mono text-amber-300">
+                  {percent(pose.levelAddressFraction)}
+                </span>
+                <input
+                  className="mt-1 w-full accent-amber-400"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={pose.levelAddressFraction}
+                  aria-label="Vertical address"
+                  onChange={(event) =>
+                    updateParam("levelAddressFraction", Number(event.target.value))
+                  }
+                />
+              </label>
+              <label className="text-xs text-slate-200">
+                Shuttle extension{" "}
+                <span className="float-right font-mono text-purple-300">
+                  {percent(pose.shuttleExtensionFraction)}
+                </span>
+                <input
+                  className="mt-1 w-full accent-purple-400"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={pose.shuttleExtensionFraction}
+                  aria-label="Shuttle extension"
+                  onChange={(event) =>
+                    updateParam("shuttleExtensionFraction", Number(event.target.value))
+                  }
+                />
+              </label>
+              <label className="text-xs text-slate-200">
+                Addressing logic
+                <select
+                  className="mt-1 w-full rounded border border-slate-600 bg-slate-900 p-1 text-xs"
+                  value={Number(pose.automaticAddressing)}
+                  aria-label="Automatic addressing"
+                  onChange={(event) =>
+                    updateParam("automaticAddressing", Number(event.target.value))
+                  }
+                >
+                  <option value="1">Claim sequence</option>
+                  <option value="0">Manual comparison</option>
+                </select>
+              </label>
+            </div>
+            <div className="flex flex-wrap items-end gap-2">
+              {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((candidate) => (
+                <button
+                  key={candidate}
+                  type="button"
+                  onClick={() => selectView(candidate)}
+                  className={`min-h-9 rounded-lg border px-2.5 text-xs capitalize focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 ${view === candidate ? "border-cyan-400 bg-cyan-400 text-slate-950" : "border-slate-600 bg-slate-900 text-slate-200 hover:bg-slate-800"}`}
+                >
+                  <Eye className="mr-1 inline h-3.5 w-3.5" />
+                  {candidate}
+                </button>
+              ))}
               <button
-                key={candidate}
                 type="button"
-                onClick={() => selectView(candidate)}
-                className={`min-h-9 rounded-lg border px-2.5 text-xs capitalize focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 ${view === candidate ? "border-cyan-400 bg-cyan-400 text-slate-950" : "border-slate-600 bg-slate-900 text-slate-200 hover:bg-slate-800"}`}
+                onClick={resetParams}
+                className="min-h-9 rounded-lg border border-slate-600 bg-slate-900 px-2.5 text-xs text-slate-200 hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
               >
-                <Eye className="mr-1 inline h-3.5 w-3.5" />
-                {candidate}
+                <RotateCcw className="mr-1 inline h-3.5 w-3.5" />
+                Reset
               </button>
-            ))}
-            <button
-              type="button"
-              onClick={resetParams}
-              className="min-h-9 rounded-lg border border-slate-600 bg-slate-900 px-2.5 text-xs text-slate-200 hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
-            >
-              <RotateCcw className="mr-1 inline h-3.5 w-3.5" />
-              Reset
-            </button>
+            </div>
           </div>
         </div>
       </div>

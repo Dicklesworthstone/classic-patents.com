@@ -1,16 +1,29 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import {
   HULL_SLA_DEFAULT_CONTROLS,
   type HullStereolithographyControls,
   readHullStereolithographyControls,
   stepHullStereolithographySi,
 } from "@/physics/hullStereolithographyKernel";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "./PortHamiltonianEnergyStrip";
+
+const PATENT_ID = "us-4575330-hull-stereolithography";
 
 export function HullStereolithographySim() {
-  const [controls, setControls] =
-    useState<HullStereolithographyControls>(HULL_SLA_DEFAULT_CONTROLS);
+  const { params, updateParam } = usePatentPhysics(PATENT_ID);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
+  const controls = useMemo(
+    () =>
+      readHullStereolithographyControls({
+        ...HULL_SLA_DEFAULT_CONTROLS,
+        ...params,
+      }),
+    [params],
+  );
   const [activeTab, setActiveTab] = useState<"vat" | "profile" | "kinetics">("vat");
   const baseId = useId();
 
@@ -20,12 +33,7 @@ export function HullStereolithographySim() {
     key: K,
     value: HullStereolithographyControls[K],
   ) => {
-    setControls((prev) =>
-      readHullStereolithographyControls({
-        ...prev,
-        [key]: value,
-      }),
-    );
+    updateParam(key, value as number);
   };
 
   return (
@@ -616,6 +624,23 @@ export function HullStereolithographySim() {
             />
           </div>
         </div>
+      </div>
+
+      <div className="rounded-xl border border-stone-800 bg-stone-900/60 p-4">
+        <PortHamiltonianEnergyStrip
+          patentId={PATENT_ID}
+          params={controls as unknown as Record<string, number>}
+        />
+      </div>
+
+      <div className="rounded-xl border border-stone-800 bg-stone-900/60 p-4">
+        <ClaimConstraintToggle
+          patentId={PATENT_ID}
+          claimStates={claimStates}
+          onClaimStateChange={(num, active) =>
+            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          }
+        />
       </div>
     </div>
   );

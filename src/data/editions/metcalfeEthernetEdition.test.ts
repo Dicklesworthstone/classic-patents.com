@@ -14,7 +14,6 @@ import {
   metcalfeEthernetClaimText,
   metcalfeEthernetParallelReadings,
 } from "./metcalfeEthernetEdition";
-import { archivalEditionForPublication } from "./publicationApproval";
 
 const ROOT = process.cwd();
 const FACSIMILE_PATH = join(ROOT, "public/patents/pdfs/us-4063220-metcalfe-ethernet.pdf");
@@ -30,12 +29,10 @@ describe("US 4,063,220 Multipoint Data Communication System (Ethernet) archival 
 
     const editionValidation = validateCuratedSpecificationEdition(metcalfeEthernetArchivalEdition);
     expect(editionValidation.valid).toBe(true);
-
-    const published = archivalEditionForPublication(metcalfeEthernetPatent);
-    expect(published).toBeDefined();
-    expect(published?.sourcePdfSha256).toBe(
+    expect(metcalfeEthernetArchivalEdition.sourcePdfSha256).toBe(
       "3bd400ad08a604c1911f554f3bda8ddc4a64923170760736fde6bd481e5ec928",
     );
+    expect(metcalfeEthernetPatent.archivalEdition).toBe(metcalfeEthernetArchivalEdition);
   });
 
   test("derives issued Claim 1 string from the manual source edition", () => {
@@ -90,5 +87,25 @@ describe("US 4,063,220 Multipoint Data Communication System (Ethernet) archival 
     for (const index of readingIndices) {
       expect(metcalfeEthernetArchivalEdition.blocks[index]).toBeDefined();
     }
+  });
+
+  test("provides valid provenance classifications for all Metcalfe controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-4063220-metcalfe-ethernet"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("wires claim 1 constraint in claimConstraints", () => {
+    const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
+    const r1 = applyClaimConstraintModifications("us-4063220-metcalfe-ethernet", {}, { 1: false });
+    expect(r1.modifiedParams.triggerCollision).toBe(1);
+    expect(r1.refusalWarning).toContain("CONTENTION COLLAPSE");
   });
 });

@@ -9,6 +9,22 @@ import {
   pagerankParallelReadings,
 } from "@/data/editions/pagerankEdition";
 import { pagerankPatent } from "@/data/patents/pagerank";
+import {
+  normalizeLiteralSourceText,
+  validateReviewedTranscription,
+  validateReviewedTranscriptionLiteralCoverage,
+  validateReviewedTranscriptionPageAnchors,
+} from "@/data/patents/sourceTextValidation";
+import { ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS } from "./archivalFigureAcceptance";
+import {
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS,
+  validateFigureOccurrenceSourceLocators,
+} from "./figureOccurrenceSourceLocators";
+import { evaluateArchivalPublicationState } from "./publicationApproval";
+import {
+  evaluateReviewedLedgerTextEvidence,
+  literalLedgerSectionsForEdition,
+} from "./reviewedLedgerPublicationEvidence";
 
 const PINNED_SHA256 = "c2e024116b9411385aa9cb5d51d3eb34b99f59db190c2bb9298d9d6d6eeed2e4";
 
@@ -35,6 +51,7 @@ describe("US 6,285,999 Google PageRank Archival Edition Contract", () => {
     expect(fs.existsSync(pdfPath)).toBe(true);
     const diskSha = createHash("sha256").update(fs.readFileSync(pdfPath)).digest("hex");
     expect(diskSha).toBe(PINNED_SHA256);
+    expect(pagerankPatent.originalTextAsset?.sourcePdfSha256).toBe(PINNED_SHA256);
   });
 
   test("contains all 29 printed claims exactly matching manual claim text", () => {
@@ -99,14 +116,223 @@ describe("US 6,285,999 Google PageRank Archival Edition Contract", () => {
     );
     expect(fs.existsSync(transcriptPath)).toBe(true);
     const content = fs.readFileSync(transcriptPath, "utf-8");
-    const matches = content.match(/--- REVIEWED TRANSCRIPTION PAGE \d+ OF 12 ---/g);
-    expect(matches).toBeDefined();
-    expect(matches?.length).toBe(12);
+    expect(validateReviewedTranscription(content, 12)).toEqual({ valid: true });
+    expect(
+      validateReviewedTranscriptionPageAnchors(
+        content,
+        12,
+        pagerankPatent.originalTextAsset?.pageAnchors,
+      ),
+    ).toEqual({ valid: true });
     expect(content).toContain("US 6,285,999 B1");
     expect(content).toContain("29 Claims, 3 Drawing Sheets");
     expect(content).toContain("CERTIFICATE OF CORRECTION");
     expect(content).toContain(
       "This invention was made with Government support under contract 9411306",
     );
+
+    expect(
+      validateReviewedTranscription(
+        content.replace(
+          "--- REVIEWED TRANSCRIPTION PAGE 6 OF 12 ---",
+          "--- REVIEWED TRANSCRIPTION PAGE 6 OF 11 ---",
+        ),
+        12,
+      ),
+    ).toEqual({
+      valid: false,
+      error:
+        "The reviewed transcription page ledger is invalid at marker 6; expected page 6 of 12.",
+    });
+  });
+
+  test("keeps source mastheads, headings, and paragraphs literal rather than editorial summaries", () => {
+    const transcriptPath = path.join(
+      process.cwd(),
+      "public",
+      "patents",
+      "transcripts",
+      "us-6285999-pagerank-reviewed.txt",
+    );
+    const normalizedLedger = normalizeLiteralSourceText(fs.readFileSync(transcriptPath, "utf8"));
+    const sourceHeadings = pagerankArchivalEdition.blocks
+      .filter((block) => block.kind === "heading")
+      .map((block) => block.text);
+
+    expect(sourceHeadings.length).toBeGreaterThan(0);
+    for (const heading of sourceHeadings) {
+      expect(normalizedLedger).toContain(normalizeLiteralSourceText(heading));
+    }
+  });
+
+  test("pins all visitor-facing source blocks to the reviewed ledger", () => {
+    const transcriptPath = path.join(
+      process.cwd(),
+      "public",
+      "patents",
+      "transcripts",
+      "us-6285999-pagerank-reviewed.txt",
+    );
+    const transcript = fs.readFileSync(transcriptPath, "utf8");
+    const sections = literalLedgerSectionsForEdition(pagerankArchivalEdition);
+
+    expect(validateReviewedTranscriptionLiteralCoverage(transcript, 12, sections)).toEqual({
+      valid: true,
+    });
+    expect(evaluateReviewedLedgerTextEvidence(pagerankPatent, transcript)).toMatchObject({
+      status: "verified",
+      valid: true,
+      authoredSectionCount: 77,
+      coveredSectionCount: 77,
+      coverageFraction: 1,
+      missingSectionIndexes: [],
+      missingClaimNumbers: [],
+    });
+
+    const corrupted = transcript.replace(
+      "29. The method of claim 1",
+      "29. [corrupted source section]",
+    );
+    expect(evaluateReviewedLedgerTextEvidence(pagerankPatent, corrupted)).toMatchObject({
+      valid: false,
+      status: "literal-coverage-incomplete",
+      missingClaimNumbers: [29],
+    });
+
+    const missingMasthead = transcript.replace(
+      "Appl. No.: 09/004,827 Filed: Jan. 9, 1998",
+      "[missing source masthead line]",
+    );
+    expect(evaluateReviewedLedgerTextEvidence(pagerankPatent, missingMasthead)).toMatchObject({
+      valid: false,
+      status: "literal-coverage-incomplete",
+      missingSectionIndexes: expect.arrayContaining([7]),
+    });
+
+    const missingParagraph = transcript.replace(
+      "This invention was supported in part by the National Science Foundation grant number IRI-9411306-4. The Government has certain rights in the invention.",
+      "[missing source paragraph]",
+    );
+    expect(evaluateReviewedLedgerTextEvidence(pagerankPatent, missingParagraph)).toMatchObject({
+      valid: false,
+      status: "literal-coverage-incomplete",
+      missingSectionIndexes: expect.arrayContaining([10]),
+    });
+  });
+
+  test("fails closed for missing ledger accountability and divergent source digest", () => {
+    const asset = pagerankPatent.originalTextAsset;
+    if (!asset) throw new Error("PageRank must bind a reviewed source ledger.");
+
+    expect(
+      evaluateArchivalPublicationState({
+        ...pagerankPatent,
+        originalTextAsset: { ...asset, reviewedBy: "" },
+      }).reasonCode,
+    ).toBe("MISSING_LEDGER_REVIEWER");
+    expect(
+      evaluateArchivalPublicationState({
+        ...pagerankPatent,
+        originalTextAsset: { ...asset, reviewedAt: "" },
+      }).reasonCode,
+    ).toBe("MISSING_LEDGER_REVIEW_DATE");
+    expect(
+      evaluateArchivalPublicationState({
+        ...pagerankPatent,
+        originalTextAsset: { ...asset, sourcePdfSha256: "0".repeat(64) },
+      }).reasonCode,
+    ).toBe("SOURCE_DIGEST_MISMATCH");
+  });
+
+  test("accepts only locator-bound direct facsimile crops", () => {
+    const decision = evaluateArchivalPublicationState(pagerankPatent);
+
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.isPublished).toBe(true);
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 6,
+      acceptedFigureCount: 6,
+      attestation: {
+        acceptanceBasis: "independent-figure-review",
+        acceptedOccurrenceCount: 6,
+        matchesEdition: true,
+        matchesLocators: true,
+      },
+    });
+    expect(
+      decision.figureManifest.figures.map((figure) => ({
+        occurrence: figure.occurrence,
+        sourcePdfPage: figure.sourcePdfPage,
+        sourceRaster: figure.sourceRaster,
+        sourceRectPixels: figure.sourceRectPixels,
+        status: figure.status,
+      })),
+    ).toEqual([
+      {
+        occurrence: "edition-block-20-group-0-inline-0",
+        sourcePdfPage: 3,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 387, y: 272, width: 1681, height: 2580 },
+        status: "accepted",
+      },
+      {
+        occurrence: "edition-block-20-group-0-inline-2",
+        sourcePdfPage: 4,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 302, y: 272, width: 1783, height: 2598 },
+        status: "accepted",
+      },
+      {
+        occurrence: "edition-block-20-group-0-inline-4",
+        sourcePdfPage: 5,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 393, y: 272, width: 1659, height: 2859 },
+        status: "accepted",
+      },
+      {
+        occurrence: "edition-block-23-group-0-inline-1",
+        sourcePdfPage: 3,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 387, y: 272, width: 1681, height: 2580 },
+        status: "accepted",
+      },
+      {
+        occurrence: "edition-block-27-group-0-inline-1",
+        sourcePdfPage: 4,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 302, y: 272, width: 1783, height: 2598 },
+        status: "accepted",
+      },
+      {
+        occurrence: "edition-block-34-group-0-inline-1",
+        sourcePdfPage: 5,
+        sourceRaster: { width: 2320, height: 3408 },
+        sourceRectPixels: { x: 393, y: 272, width: 1659, height: 2859 },
+        status: "accepted",
+      },
+    ]);
+
+    const patentId = "us-6285999-pagerank";
+    const activeOccurrences = Object.fromEntries(
+      decision.figureManifest.figures.map((figure) => [figure.occurrence, figure.activeAsset]),
+    );
+    expect(
+      validateFigureOccurrenceSourceLocators(
+        { [patentId]: FIGURE_OCCURRENCE_SOURCE_LOCATORS[patentId].slice(1) },
+        {
+          canonicalAssetsByPatent: {
+            [patentId]: Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[patentId].assets),
+          },
+          canonicalOccurrencesByPatent: { [patentId]: activeOccurrences },
+          sourcePdfPageCountsByPatent: { [patentId]: 12 },
+        },
+      ),
+    ).toEqual({
+      valid: false,
+      errors: [
+        "us-6285999-pagerank: locator count does not equal the active edition figure-occurrence count.",
+        "us-6285999-pagerank edition-block-20-group-0-inline-0: active edition occurrence has no locator.",
+      ],
+    });
   });
 });

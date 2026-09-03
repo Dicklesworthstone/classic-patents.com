@@ -64,31 +64,38 @@ export function WattRotaryEngineSim() {
     time,
   );
 
-  // SVG Geometry Constants
+  // One affine world-to-SVG transform keeps every joint coincident with the
+  // same kernel geometry used by the 3D model.
+  const pixelsPerMeter = 70;
   const beamPivotX = 280;
   const beamPivotY = 160;
-  const beamHalfLength = 130;
-  const beamAngleRad = (telemetry.beamAngleDeg * Math.PI) / 180;
-
-  const leftBeamX = beamPivotX - Math.cos(beamAngleRad) * beamHalfLength;
-  const leftBeamY = beamPivotY - Math.sin(beamAngleRad) * beamHalfLength;
-
-  const rightBeamX = beamPivotX + Math.cos(beamAngleRad) * beamHalfLength;
-  const rightBeamY = beamPivotY + Math.sin(beamAngleRad) * beamHalfLength;
-
-  // Sun Gear Center
-  const sunCenterX = 450;
-  const sunCenterY = 360;
-  const rSunPx = 45;
-  const rPlanetPx = rSunPx * gearRatioNpOverNs;
-  const rOrbitPx = rSunPx + rPlanetPx;
-
-  // Orbit angle
-  const orbitAngleRad = (telemetry.planetOrbitAngleDeg * Math.PI) / 180;
-  const planetCenterX = sunCenterX + rOrbitPx * Math.sin(orbitAngleRad);
-  const planetCenterY = sunCenterY - rOrbitPx * Math.cos(orbitAngleRad);
-
-  const sunAngleDeg = telemetry.sunShaftAngleDeg;
+  const worldToSvgX = (worldX: number) => beamPivotX + worldX * pixelsPerMeter;
+  const worldToSvgY = (worldY: number) => beamPivotY - (worldY - 3.2) * pixelsPerMeter;
+  const leftBeamX = worldToSvgX(telemetry.leftBeamEndX);
+  const leftBeamY = worldToSvgY(telemetry.leftBeamEndY);
+  const rightBeamX = worldToSvgX(telemetry.rightBeamEndX);
+  const rightBeamY = worldToSvgY(telemetry.rightBeamEndY);
+  const sunCenterX = worldToSvgX(2.2);
+  const sunCenterY = worldToSvgY(0.9);
+  const rOrbitPx = telemetry.gearCenterDistanceM * pixelsPerMeter;
+  const rSunPx = telemetry.sunPitchRadiusM * pixelsPerMeter;
+  const rPlanetPx = telemetry.planetPitchRadiusM * pixelsPerMeter;
+  const orbitAngleRad = telemetry.planetOrbitAngleRad;
+  const planetCenterX = sunCenterX + telemetry.planetPosX * pixelsPerMeter;
+  const planetCenterY = sunCenterY - telemetry.planetPosY * pixelsPerMeter;
+  // SVG's downward-positive Y axis mirrors the kernel's world coordinates, so
+  // a positive physical shaft angle must render as a negative SVG rotation.
+  const planetAngleDeg = -telemetry.planetBodyAngleDeg;
+  const sunAngleDeg = -telemetry.sunShaftAngleDeg;
+  const sunToothAngles = Array.from(
+    { length: telemetry.sunTeeth },
+    (_, index) => (index / telemetry.sunTeeth) * 360,
+  );
+  const planetToothAngles = Array.from(
+    { length: telemetry.planetTeeth },
+    (_, index) => (index / telemetry.planetTeeth) * 360 + 180 / telemetry.planetTeeth,
+  );
+  const pistonY = 400 - (telemetry.pistonPositionM / 1.8) * 100;
 
   return (
     <div
@@ -107,8 +114,7 @@ export function WattRotaryEngineSim() {
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
-            Authentic 2:1 speed multiplication, planetary tooth mesh, and continuous rotative shaft
-            drive
+            Fixed-centre gear mesh, closed rod geometry, and continuous rotative shaft drive
           </p>
         </div>
 
@@ -275,7 +281,7 @@ export function WattRotaryEngineSim() {
             {/* Reciprocating Piston inside Cylinder */}
             <rect
               x="55"
-              y={320 + telemetry.beamAngleDeg * 1.5}
+              y={pistonY}
               width="70"
               height="20"
               fill="#d97706"
@@ -285,7 +291,7 @@ export function WattRotaryEngineSim() {
             {/* Piston Rod */}
             <line
               x1="90"
-              y1={320 + telemetry.beamAngleDeg * 1.5}
+              y1={pistonY}
               x2={leftBeamX}
               y2={leftBeamY}
               stroke="#e2e8f0"
@@ -386,7 +392,7 @@ export function WattRotaryEngineSim() {
               />
             </g>
 
-            {/* Sun Gear (Keyed fast to Sun Shaft, rotating at 2x SPM) */}
+            {/* Sun Gear (keyed to the output shaft) */}
             <g transform={`rotate(${sunAngleDeg}, ${sunCenterX}, ${sunCenterY})`}>
               <circle
                 cx={sunCenterX}
@@ -397,7 +403,7 @@ export function WattRotaryEngineSim() {
                 strokeWidth="1.5"
               />
               {/* Sun Gear Teeth */}
-              {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => (
+              {sunToothAngles.map((deg) => (
                 <rect
                   key={deg}
                   x={sunCenterX - 3}
@@ -429,8 +435,8 @@ export function WattRotaryEngineSim() {
               strokeDasharray="4,2"
             />
 
-            {/* Planet Gear Wheel (Rigidly clamped to Connecting Rod, orbiting Sun) */}
-            <g>
+            {/* Planet gear: its centre orbits while the body is restrained from a full turn. */}
+            <g transform={`rotate(${planetAngleDeg}, ${planetCenterX}, ${planetCenterY})`}>
               <circle
                 cx={planetCenterX}
                 cy={planetCenterY}
@@ -439,8 +445,8 @@ export function WattRotaryEngineSim() {
                 stroke="#bae6fd"
                 strokeWidth="1.5"
               />
-              {/* Planet Gear Teeth */}
-              {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => (
+              {/* Planet Gear Teeth (offset by half pitch to interlock with Sun teeth) */}
+              {planetToothAngles.map((deg) => (
                 <rect
                   key={deg}
                   x={planetCenterX - 3}
@@ -459,7 +465,7 @@ export function WattRotaryEngineSim() {
                 stroke="#38bdf8"
                 strokeWidth="2"
               />
-              {/* Rigid Connecting Rod Bracket */}
+              {/* Centre bearing joining the rod, guide link, and planet axle. */}
               <circle cx={planetCenterX} cy={planetCenterY} r="4" fill="#fef08a" />
             </g>
 
@@ -474,7 +480,9 @@ export function WattRotaryEngineSim() {
               </text>
               <text x="12" y="60" fill="#94a3b8" fontSize="10">
                 Shaft Speed:{" "}
-                <tspan fill="#38bdf8">{telemetry.shaftRpm.toFixed(1)} RPM (2× Multiplier)</tspan>
+                <tspan fill="#38bdf8">
+                  {telemetry.shaftRpm.toFixed(1)} RPM ({telemetry.speedMultiplier.toFixed(2)}×)
+                </tspan>
               </text>
               <text x="12" y="78" fill="#94a3b8" fontSize="10">
                 Shaft Power:{" "}
@@ -496,80 +504,111 @@ export function WattRotaryEngineSim() {
             >
               <rect width="500" height="350" fill="#0a0f1d" rx="10" stroke="#1f2937" />
 
-              {/* Sun Gear Pitch Circle */}
-              <circle
-                cx="200"
-                cy="175"
-                r="70"
-                fill="#b45309"
-                fillOpacity="0.3"
-                stroke="#f59e0b"
-                strokeWidth="2.5"
-              />
-              <circle cx="200" cy="175" r="14" fill="#1e293b" stroke="#f59e0b" strokeWidth="2" />
-              <text
-                x="200"
-                y="180"
-                fill="#fef08a"
-                fontSize="11"
-                fontWeight="bold"
-                textAnchor="middle"
-              >
-                SUN (A)
-              </text>
-
-              {/* Planet Gear Pitch Circle Orbiting at 45 deg */}
-              <g transform={`rotate(${orbitAngleRad * (180 / Math.PI)}, 200, 175)`}>
-                <line
-                  x1="200"
-                  y1="175"
-                  x2="340"
-                  y2="175"
-                  stroke="#94a3b8"
-                  strokeWidth="2"
-                  strokeDasharray="4,4"
-                />
+              {/* Sun gear pitch circle and teeth */}
+              <g transform={`rotate(${sunAngleDeg}, 180, 180)`}>
                 <circle
-                  cx="340"
-                  cy="175"
-                  r="70"
-                  fill="#0284c7"
+                  cx="180"
+                  cy="180"
+                  r={(120 * telemetry.sunPitchRadiusM) / telemetry.gearCenterDistanceM}
+                  fill="#b45309"
                   fillOpacity="0.3"
-                  stroke="#38bdf8"
+                  stroke="#f59e0b"
                   strokeWidth="2.5"
                 />
-                <circle cx="340" cy="175" r="12" fill="#1e293b" stroke="#38bdf8" strokeWidth="2" />
+                {sunToothAngles.map((deg) => (
+                  <rect
+                    key={deg}
+                    x={180 - 3}
+                    y={176 - (120 * telemetry.sunPitchRadiusM) / telemetry.gearCenterDistanceM}
+                    width="6"
+                    height="8"
+                    fill="#fef08a"
+                    transform={`rotate(${deg}, 180, 180)`}
+                  />
+                ))}
+                <circle cx="180" cy="180" r="14" fill="#1e293b" stroke="#f59e0b" strokeWidth="2" />
                 <text
-                  x="340"
-                  y="180"
-                  fill="#bae6fd"
+                  x="180"
+                  y="185"
+                  fill="#fef08a"
                   fontSize="11"
                   fontWeight="bold"
                   textAnchor="middle"
                 >
-                  PLANET (B)
-                </text>
-
-                {/* Rigid Connecting Rod Extension */}
-                <line
-                  x1="340"
-                  y1="175"
-                  x2="450"
-                  y2="100"
-                  stroke="#e2e8f0"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-                <text x="400" y="110" fill="#e2e8f0" fontSize="9">
-                  Connecting Rod
-                </text>
-
-                {/* Pitch Line Tooth Mesh Contact Point */}
-                <circle cx="270" cy="175" r="6" fill="#ef4444" />
-                <text x="270" y="160" fill="#fca5a5" fontSize="8" textAnchor="middle">
-                  Pitch Contact
+                  SUN (A)
                 </text>
               </g>
+
+              {/* Radius Guide Link connecting Sun to Planet */}
+              {(() => {
+                const meshSunRadius =
+                  (120 * telemetry.sunPitchRadiusM) / telemetry.gearCenterDistanceM;
+                const meshPlanetRadius =
+                  (120 * telemetry.planetPitchRadiusM) / telemetry.gearCenterDistanceM;
+                const meshPlanetX = 180 + 120 * Math.sin(orbitAngleRad);
+                const meshPlanetY = 180 + 120 * Math.cos(orbitAngleRad);
+                const meshContactX = 180 + meshSunRadius * Math.sin(orbitAngleRad);
+                const meshContactY = 180 + meshSunRadius * Math.cos(orbitAngleRad);
+
+                return (
+                  <>
+                    <line
+                      x1="180"
+                      y1="180"
+                      x2={meshPlanetX}
+                      y2={meshPlanetY}
+                      stroke="#64748b"
+                      strokeWidth="3"
+                      strokeDasharray="4,3"
+                    />
+
+                    {/* Planet centre orbits; restrained body does not accumulate an axial turn. */}
+                    <g transform={`rotate(${planetAngleDeg}, ${meshPlanetX}, ${meshPlanetY})`}>
+                      <circle
+                        cx={meshPlanetX}
+                        cy={meshPlanetY}
+                        r={meshPlanetRadius}
+                        fill="#0284c7"
+                        fillOpacity="0.3"
+                        stroke="#38bdf8"
+                        strokeWidth="2.5"
+                      />
+                      {planetToothAngles.map((deg) => (
+                        <rect
+                          key={deg}
+                          x={meshPlanetX - 3}
+                          y={meshPlanetY - meshPlanetRadius - 4}
+                          width="6"
+                          height="8"
+                          fill="#bae6fd"
+                          transform={`rotate(${deg}, ${meshPlanetX}, ${meshPlanetY})`}
+                        />
+                      ))}
+                      <circle
+                        cx={meshPlanetX}
+                        cy={meshPlanetY}
+                        r="12"
+                        fill="#1e293b"
+                        stroke="#38bdf8"
+                        strokeWidth="2"
+                      />
+                      <text
+                        x={meshPlanetX}
+                        y={meshPlanetY + 5}
+                        fill="#bae6fd"
+                        fontSize="11"
+                        fontWeight="bold"
+                        textAnchor="middle"
+                      >
+                        PLANET (B)
+                      </text>
+                    </g>
+
+                    {/* Pitch Line Tooth Mesh Contact Point */}
+                    <circle cx={meshContactX} cy={meshContactY} r="5" fill="#ef4444" />
+                  </>
+                );
+              })()}
 
               {/* Formula & Explanation Card */}
               <g transform="translate(20, 20)">
@@ -580,7 +619,8 @@ export function WattRotaryEngineSim() {
                   ω_shaft = ω_beam · (1 + N_planet / N_sun)
                 </text>
                 <text x="0" y="55" fill="#94a3b8" fontSize="10">
-                  When N_planet = N_sun (equal gears), ratio = 2.0×
+                  Current pair: {telemetry.planetTeeth}:{telemetry.sunTeeth} teeth →{" "}
+                  {telemetry.speedMultiplier.toFixed(2)}× shaft speed
                 </text>
               </g>
             </svg>

@@ -38,7 +38,7 @@ export const kamenSegwayPatent: Patent = {
   era: "Information Age (1970–Present)",
 
   summary:
-    "Dean Kamen and the DEKA engineering team invented the modern self-balancing personal transporter (the Segway HT). Departing from traditional multi-wheel vehicles that rely on static stability, the transporter operates as an actively balanced inverted pendulum supported on two coaxial wheels. Solid-state gyroscopes and accelerometers track rider center-of-gravity displacement, commanding high-torque brushless DC motors to sprint forward or backward beneath the rider to maintain continuous dynamic equilibrium. Crucially, the patent introduces the 'balancing margin monitor'—an onboard supervisory system that measures available acceleration headroom and warns the rider via tactile platform ripple vibration, audible alarms, and pitch pushback before motor torque saturation can cause an overturn.",
+    "US 6,302,230 describes a vehicle whose platform and ground-contacting module form a system unstable with respect to tipping when its motorized drive is unpowered, and automatically balanced when powered. Its independent claims define a balancing margin from present and maximum operating velocity, a monitor for that margin, and an alarm when the margin falls below a specified limit; Claim 2 adds ripple modulation of drive power as one alarm form.",
 
   heroQuote:
     "The motorized drive arrangement, ground contacting module and payload comprise a system being unstable with respect to tipping when the motorized drive is not powered; the motorized drive arrangement causing, when powered, automatically balanced operation of the system.",
@@ -51,9 +51,162 @@ export const kamenSegwayPatent: Patent = {
     url: "/patents/transcripts/us-6302230-kamen-segway-reviewed.txt",
     kind: "reviewed-transcription",
     reviewedBy: "Classic Patents Research Team",
-    reviewedAt: "2026-09-01",
+    reviewedAt: "2026-09-02",
     sourcePdfSha256: EXPECTED_PDF_SHA256,
     pageCount: 29,
+    pageAnchors: [
+      {
+        page: 1,
+        exactSourceText: "US 6,302,230 B1\n\n(12) United States Patent",
+        sourceRelationship: "Title page masthead",
+      },
+      {
+        page: 2,
+        exactSourceText: "US 6,302,230 B1\nPage 2",
+        sourceRelationship: "Facsimile page 2 references cited",
+      },
+      {
+        page: 3,
+        exactSourceText: "US 6,302,230 B1\nPage 3",
+        sourceRelationship: "Facsimile page 3 references cited",
+      },
+      {
+        page: 4,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 1 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 1 of 16 (FIG. 1)",
+      },
+      {
+        page: 5,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 2 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 2 of 16 (FIG. 2)",
+      },
+      {
+        page: 6,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 3 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 3 of 16 (FIG. 3)",
+      },
+      {
+        page: 7,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 4 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 4 of 16 (FIG. 4)",
+      },
+      {
+        page: 8,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 5 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 5 of 16 (FIG. 5)",
+      },
+      {
+        page: 9,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 6 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 6 of 16 (FIG. 6)",
+      },
+      {
+        page: 10,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 7 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 7 of 16 (FIG. 7)",
+      },
+      {
+        page: 11,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 8 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 8 of 16 (FIG. 8)",
+      },
+      {
+        page: 12,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 9 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 9 of 16 (FIG. 9)",
+      },
+      {
+        page: 13,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 10 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 10 of 16 (FIG. 10)",
+      },
+      {
+        page: 14,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 11 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 11 of 16 (FIG. 11)",
+      },
+      {
+        page: 15,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 12 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 12 of 16 (FIG. 12)",
+      },
+      {
+        page: 16,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 13 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 13 of 16 (FIG. 13)",
+      },
+      {
+        page: 17,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 14 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 14 of 16 (FIG. 14)",
+      },
+      {
+        page: 18,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 15 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 15 of 16 (FIG. 15)",
+      },
+      {
+        page: 19,
+        exactSourceText: "U.S. Patent   Oct. 16, 2001   Sheet 16 of 16   US 6,302,230 B1",
+        sourceRelationship: "Drawing sheet 16 of 16 (FIG. 16)",
+      },
+      {
+        page: 20,
+        exactSourceText: "PERSONAL MOBILITY VEHICLES AND\nMETHODS\nTECHNICAL FIELD",
+        sourceRelationship:
+          "Specification columns 1-2 (Technical Field, Background Art, Summary of the Invention)",
+      },
+      {
+        page: 21,
+        exactSourceText: "ment provides a device for carrying a payload including a",
+        sourceRelationship: "Specification columns 3-4 (Summary of the Invention)",
+      },
+      {
+        page: 22,
+        exactSourceText: "b. operating a motorized drive arrangement, coupled to",
+        sourceRelationship:
+          "Specification columns 5-6 (Summary of the Invention, Brief Description of Drawings)",
+      },
+      {
+        page: 23,
+        exactSourceText: "user, as in the case of a bicycle or motorcycle or Scooter, or,",
+        sourceRelationship:
+          "Specification columns 7-8 (Description of Specific Embodiments, Dynamic Stability)",
+      },
+      {
+        page: 24,
+        exactSourceText: "to maintain dynamic stability, subject 10 will no longer be",
+        sourceRelationship: "Specification columns 9-10 (Control loop equations and wheel torque)",
+      },
+      {
+        page: 25,
+        exactSourceText: "non-Zero K, the effect of X is to produce a specified offset",
+        sourceRelationship: "Specification columns 11-12 (Pitch and lean orientation)",
+      },
+      {
+        page: 26,
+        exactSourceText: "for platform adjustment and for determining the mode of",
+        sourceRelationship:
+          "Specification columns 13-14 (Microcontroller architecture and sensor processing)",
+      },
+      {
+        page: 27,
+        exactSourceText: "were permitted to reach the maximum speed of which they",
+        sourceRelationship:
+          "Specification columns 15-16 (Headroom and balancing margin monitoring)",
+      },
+      {
+        page: 28,
+        exactSourceText: "Such as arcuate members and clusters of wheels are",
+        sourceRelationship:
+          "Specification columns 17-18 (Steering, alternative ground contact, Claims 1-3)",
+      },
+      {
+        page: 29,
+        exactSourceText: "4. A device according to claim 1, wherein the ground",
+        sourceRelationship: "Specification columns 19-20 (Claims 4-7 conclusion)",
+      },
+    ],
   },
 
   archivalEdition: kamenSegwayArchivalEdition,
@@ -79,7 +232,7 @@ export const kamenSegwayPatent: Patent = {
         "Safety alarm triggered upon approaching motor torque/velocity limit",
       ],
       legalSignificance:
-        "The master apparatus claim that established legal exclusivity over two-wheeled self-balancing human transporters and active balancing margin supervisory safety systems.",
+        "Independent apparatus claim: it states the platform, ground-contacting module, powered automatic balancing, balancing-margin monitor, and alarm combination that defines this grant's asserted legal scope.",
     },
     {
       number: 2,
@@ -122,7 +275,7 @@ export const kamenSegwayPatent: Patent = {
         "Threshold-based supervisory safety triggering",
       ],
       legalSignificance:
-        "Broad independent method claim covering the algorithmic sequence of balancing an unstable transporter while calculating acceleration margin to prevent tip-over.",
+        "Independent method claim: it recites operating the motorized drive for automatic balance, monitoring a balancing margin, generating a signal, and generating an alarm below the specified limit.",
     },
     {
       number: 6,
@@ -146,27 +299,27 @@ export const kamenSegwayPatent: Patent = {
 
   plainEnglishExplanation: {
     overview:
-      "For over a century, wheeled vehicles relied entirely on static geometry for stability: three or four wheels spread out across a wide base to keep the center of gravity strictly inside the wheel perimeter. Dean Kamen and his team at DEKA inverted this paradigm. The Segway HT balances dynamically on two coaxial wheels like an inverted broomstick balanced on an open palm. When the rider leans forward, gravity begins pulling them down; solid-state gyroscopes detect the tilt in milliseconds, commanding the electric motors to accelerate the wheels forward directly beneath the rider's center of gravity. Most importantly, the patent addresses the critical failure mode of inverted-pendulum robotics: if the motor runs at 100% speed, it has zero torque left to sprint forward and catch a falling rider. The 'balancing margin monitor' continuously measures this torque headroom, warning the rider through haptic platform vibration and pitch pushback before an irrecoverable fall can happen.",
+      "The specification distinguishes static stability from a vehicle kept upright by a control loop. Its legal move is not a specified motor, sensor package, or production model: it is the combination of powered automatic balance with a balancing-margin monitor and an alarm. In ordinary dynamics, moving a wheel beneath a leaning payload can counter its gravitational moment; the visitor model makes that relationship visible while clearly treating all SI hardware values as modern illustrative inputs.",
 
     coreMechanism:
-      "The transporter balances through four integrated functional subsystems: (1) Inertial Sensing & Pitch Estimation: a cluster of micro-machined silicon angular rate sensors (gyroscopes) and tilt accelerometers measure pitch angle $\\theta$ and pitch angular rate $\\dot\\theta$ relative to gravity. (2) Real-Time State-Space Motor Control: a digital signal processor computes optimal motor voltage using Linear Quadratic Regulator (LQR) state feedback: $\\tau = -(K_\\theta \\theta + K_{\\dot\\theta} \\dot\\theta + K_x x + K_v v)$. (3) Dual Coaxial Brushless DC Drive: high-power servomotors apply bidirectional torque to the left and right wheels via precision planetary reduction gearboxes, driving the chassis forward to cancel forward lean. (4) Balancing Margin & Alarm Supervision: the controller computes the remaining velocity and torque headroom $\\Delta v = v_{\\text{limit}} - |v|$. When $\\Delta v$ drops below safety thresholds, the controller superimposes an 18 Hz torque ripple onto the motor drive signal, causing the platform to shudder violently under the rider's feet while tilting the handlebar backward (pitch pushback) to physically compel the rider to slow down.",
+      "The grant's source-bound chain is: a powered ground-contacting module automatically balances the otherwise tipping-prone platform; the system compares present velocity with a maximum operating velocity chosen to retain acceleration potential; a monitor characterizes that balancing margin; and an alarm warns when the margin crosses a specified limit. The patent names audible, visual, tactile, and ripple-modulated alarm forms. The live SI exhibit is a modern illustrative inverted-pendulum scenario: its mass, geometry, gain, speed, torque, friction, and warning waveform are teaching inputs, not figures printed by the grant.",
 
     mechanicalBreakdown: [
       {
         title: "Coaxial Dual-Wheel Inverted Pendulum Chassis",
         summary:
-          "Two laterally disposed pneumatic wheels rotating on a single transverse axis, supporting a foot platform that is statically unstable in the fore-aft pitch plane.",
+          "A platform and ground-contacting module form a vehicle that the claim says is unstable with respect to tipping when the motorized drive is unpowered.",
         technicalDetails:
-          "The chassis (12) houses the battery pack, motor controllers, and DSP computer directly between two 19-inch coaxial wheels (20). When unpowered, the system immediately falls forward or backward ($I \\ddot\\theta = M g L \\sin\\theta$). When powered, wheel acceleration $\\ddot{x} = g \\tan\\theta$ creates an inertial D'Alembert reaction force that completely stabilizes the inverted mass.",
+          "Figures 1 and 2 show standing-rider embodiments and ground-contacting arrangements. $I \\ddot\\theta = M g L \\sin\\theta$ is the modern small-model way to express an overturning moment; the grant does not print a mass, center-of-mass height, wheel size, or fall time.",
         archaicTerm: "system being unstable with respect to tipping",
         modernEquivalent: "dynamically balanced inverted pendulum mobile robot",
       },
       {
         title: "Inertial Gyroscope & Accelerometer Sensor Cluster",
         summary:
-          "Redundant solid-state vibrating-structure gyroscopes and tilt accelerometers tracking pitch rate and gravitational orientation.",
+          "The illustrated control arrangements use pitch and wheel-rotation sensing as inputs to a control system.",
         technicalDetails:
-          "Five solid-state angular rate gyros (three active, two redundant) sample chassis angular velocity at over 100 Hz. Accelerometers measure the gravity vector $\\mathbf{g}$ to continuously correct for gyro bias drift, producing a drift-free estimate of absolute pitch angle $\\theta$ and pitch rate $\\dot\\theta$.",
+          "Figure 5 labels a pitch sensor, wheel-rotation sensors, and pitch-rate sensor; Figure 3 depicts state-feedback blocks. The grant does not identify a count, sampling rate, redundancy arrangement, IMU technology, or filter implementation. A contemporary sensor-fusion interpretation is therefore pedagogical, not archival fact.",
         archaicTerm: "attitude sensor arrangement",
         modernEquivalent: "MEMS 6-axis IMU with Kalman sensor fusion",
       },
@@ -175,16 +328,15 @@ export const kamenSegwayPatent: Patent = {
         summary:
           "A real-time safety algorithm tracking the acceleration headroom between current operating velocity and motor physical saturation limits.",
         technicalDetails:
-          "The balancing margin $M_{\\text{bal}} = 1 - (|v| / v_{\\text{max}})^2 - (|\\tau_{\\text{demand}}| / \\tau_{\\text{max}})$ evaluates how much additional torque is available to catch sudden forward rider lunges or road bumps. If $M_{\\text{bal}} \\le 0.15$, supervisory safety routines initiate active deceleration.",
+          "Claim 1 defines the balancing margin as the difference between maximum operating velocity and present velocity. A normalized reserve calculation in the exhibit is a modern illustrative teaching device; the grant does not print its algebraic form, threshold, torque reserve, road-bump response, or deceleration profile.",
         archaicTerm: "means for monitoring a balancing margin",
         modernEquivalent: "dynamic torque headroom supervisory safety observer",
       },
       {
         title: "Haptic Torque Ripple & Platform Shudder Alarm",
-        summary:
-          "A motor-drive modulation technique that shakes the foot platform at an unmistakable tactile frequency to warn the rider without taking their eyes off the road.",
+        summary: "Claim 2 specifies ripple modulation of motorized-drive power as an alarm form.",
         technicalDetails:
-          "When the balancing margin drops below the safe threshold, the controller superimposes a sinusoidal or square torque ripple ($f \\approx 18\\text{ Hz}$, amplitude $\\Delta\\tau \\approx 15\\text{ N}\\cdot\\text{m}$) directly onto the motor command. This vibrates the foot platform with high tactile saliency, bypassing sensory overload and alerting the rider instantaneously.",
+          "The source says that ripple modulation can provide an alarm perceived as a rumbling ride. It does not disclose a waveform, frequency, torque amplitude, platform acceleration, or human-factors result. The exhibit therefore signals ripple state without presenting those unprinted quantities as patent facts.",
         archaicTerm: "ripple modulation of the power output",
         modernEquivalent: "haptic motor drive torque ripple alarm",
       },
@@ -196,74 +348,61 @@ export const kamenSegwayPatent: Patent = {
         formula:
           "\\tau_{\\text{motor}} = M g L \\sin\\theta + M L \\ddot{x} \\cos\\theta + I \\ddot{\\theta}",
         explanation:
-          "The transporter is modeled as an inverted pendulum where gravitational torque $M g L \\sin\\theta$ destabilizes the system. Forward chassis acceleration $\\ddot{x}$ produces an inertial reaction force $-M \\ddot{x} L \\cos\\theta$ that counteracts gravity. By driving the wheels with acceleration $\\ddot{x} = g \\tan\\theta$, the net torque about the center of mass vanishes, maintaining stable dynamic equilibrium.",
+          "This is a modern illustrative mechanics model of the source-described unstable/automatically balanced relationship. It teaches how acceleration can counter a gravitational moment, but the grant does not supply its mass, geometry, acceleration law, or performance envelope.",
       },
       {
-        principle: "State-Space Linear Quadratic Regulator (LQR) Control",
+        principle: "State-Feedback Control Diagram (Modern Interpretation)",
         formula:
           "\\mathbf{u}(t) = -\\mathbf{K} \\mathbf{x}(t) = - (K_\\theta \\theta + K_{\\dot\\theta} \\dot\\theta + K_x x + K_v v)",
         explanation:
-          "The digital controller minimizes a quadratic cost function weighting state error against motor effort. Full state feedback uses four calibrated gains: pitch angle gain $K_\\theta$, pitch angular velocity gain $K_{\\dot\\theta}$, position gain $K_x$, and velocity damping gain $K_v$, placing closed-loop poles in the left-half s-plane for robust, critically damped stability.",
+          "Figure 3 depicts feedback terms labeled $K_1$ through $K_4$. Reading that diagram through an LQR formulation is a modern control-theory interpretation; the patent does not name an LQR, give calibrated gains, a cost function, pole locations, or a damping result.",
       },
       {
         principle: "Ground Traction Limit & Acceleration Headroom",
         formula:
           "F_{\\text{drive}} = \\frac{\\tau_{\\text{motor}}}{R} \\le \\mu_{\\text{ground}} M g",
         explanation:
-          "The maximum horizontal thrust force that can be exerted without tire slip is bounded by the Coulomb friction coefficient $\\mu$ and total weight $M g$. If the demanded balancing force exceeds $\\mu M g$, wheel slip occurs and balance is lost, establishing a fundamental physical refusal boundary for low-friction surfaces.",
+          "This modern tire-contact bound supplies an honest refusal boundary for the illustrative model. The grant identifies an underlying surface but does not disclose a friction coefficient, tire model, or slip threshold.",
       },
     ],
 
     whyItMattersToday:
-      "Dean Kamen's Segway patent US 6,302,230 represents a landmark milestone in modern robotics and control theory. It demonstrated to the world that complex multi-variable inverted-pendulum robotics could be made safe, robust, and intuitive enough for everyday consumer transportation. The concepts pioneered here—microprocessor sensor fusion, state-space motor torque balancing, balancing margin supervisory monitors, and intuitive lean-to-drive interfaces—laid the engineering foundation for an entire generation of mobile robotics, autonomous personal electric vehicles, self-balancing hoverboards, and modern robotic exoskeletons.",
+      "The document is a useful primary record for studying a persistent robotics problem: a mechanically tipping-prone platform can be kept upright only while its drive has enough authority to respond. Its balancing-margin claim makes that reserve explicit. The exhibit connects this legal topology to a clearly labeled modern mechanics model rather than asserting an undocumented line of technical descent or product performance.",
   },
 
   historicalContext: {
     problemStatement:
-      "For centuries, all wheeled personal transportation relied on static multi-wheel stability (automobiles, tricycles, wheelchairs) or forward gyroscopic momentum (bicycles). Statically stable vehicles require large footprints and cannot turn within their own geometry, while prior dynamic balancing research lacked safe operational boundaries to prevent runaway motor saturation and catastrophic rider tipover.",
+      "The specification frames the problem as transporting a standing user over an irregular surface without requiring a statically stable resting position. It contrasts static stability with dynamic stability maintained either by a user or by a control loop.",
     priorArtLimitations: [
-      "Statically stable multi-wheel vehicles have large turning radii and cannot navigate tight indoor corridors or dense pedestrian sidewalks.",
-      "Traditional wheelchairs are heavy and restricted to flat ramps, lacking intuitive human body-weight velocity control.",
-      "Academic inverted pendulum carts lacked supervisory torque margin monitoring, causing sudden motor saturation and uncontrolled falls upon encountering obstacles or steep slopes.",
+      "The source says that vehicles generally rely on static stability under foreseen placement conditions, while bicycles, motorcycles, and scooters can instead rely on user-maintained dynamic stability.",
+      "The grant does not provide a comparative turning-radius, wheelchair, terrain, motor-saturation, or accident-rate study; this exhibit does not supply one in its place.",
     ],
     breakthroughInsight:
-      "Dean Kamen and the DEKA team inverted personal mobility by operating the transporter as an active inverted pendulum on two coaxial wheels. By fusing solid-state gyroscopes and accelerometers, the controller drives the wheels forward beneath a falling rider (mimicking human bipedal walking). Crucially, Kamen invented the 'balancing margin monitor', continuously tracking remaining acceleration headroom and warning the rider via 18 Hz tactile platform vibration and pitch pushback before stability is compromised.",
-    patentWars: [
-      {
-        rivalName: "Global Clone Manufacturers & Micro-Mobility Importers",
-        rivalClaim:
-          "During the 2000s and 2010s, numerous international manufacturers produced two-wheeled self-balancing scooters and hoverboards, claiming basic inverted-pendulum balancing was unpatentable prior art.",
-        conflictDetails:
-          "Segway LLC and DEKA filed multiple patent infringement lawsuits and United States International Trade Commission (USITC) Section 337 investigations to block infringing balancing vehicles from entering the US market.",
-        resolution:
-          "In 2015, Chinese robotics company Ninebot, backed by Xiaomi and Sequoia Capital, acquired Segway LLC, uniting the core Kamen patent portfolio with global high-volume manufacturing.",
-        legalOutcome:
-          "The acquisition solidified Segway-Ninebot as the dominant worldwide intellectual property holder for self-balancing personal electric mobility vehicles.",
-      },
-    ],
+      "The independently claimed addition is supervisory as well as balancing: Claim 1 defines a balancing margin from present and maximum operating velocity, asks a monitor to characterize it, and calls for an alarm below a specified limit. Claim 2 specifies ripple modulation as one alarm form.",
+    patentWars: [],
     civilizationalImpact:
-      "US 6,302,230 pioneered the modern personal electric vehicle (PEV) revolution. Beyond commercial use in police, security, and tourism, its dynamic balancing and torque margin control algorithms laid the foundation for electric unicycles (EUCs), self-balancing hoverboards, autonomous mobile delivery robots, and humanoid robot balance architectures.",
+      "The grant provides a compact primary-source case study in active balance, control authority, and rider-facing warning. Claims about later market share, commercial deployment, litigation, or technical lineage require separately reviewed authoritative records and are intentionally absent here.",
     aftermath:
-      "Dean Kamen officially unveiled the Segway HT on December 3, 2001. Segway became an indelible 21st-century cultural and engineering icon. Dean Kamen was inducted into the National Inventors Hall of Fame and continues to invent breakthrough medical, robotics, and water-purification systems at DEKA.",
+      "This record is limited to the reviewed grant, its pinned facsimile, and the source-faithful editorial edition. It makes no unlocated assertion about a later launch, acquisition, litigation, award, or commercial outcome.",
     funFact:
-      "During secret development under code name 'Ginger' and 'IT', tech luminaries Steve Jobs and Jeff Bezos previewed prototypes in Manchester, New Hampshire, with Jobs predicting it would be as big a deal as the personal computer.",
+      "The printed drawings span several embodiments: two-wheel and clustered arrangements, an unicycle, standing rider configurations, control diagrams, and a force diagram. The visitor-facing record identifies the drawings by their printed figure numbers.",
     sideNotes: [
-      "The Segway HT uses five solid-state vibrating-structure gyroscopes and two redundant microprocessors for fail-safe control loop execution.",
-      "The speed limiting pitch-pushback automatically tilts the platform backward to induce the rider to naturally lean back and decelerate without hand brakes.",
+      "Claim 1 defines balancing margin as the difference between maximum operating velocity and present velocity; it does not print a percentage reserve or torque rating.",
+      "Claim 2 identifies ripple modulation of motorized-drive power. The source does not print a vibration frequency or amplitude.",
     ],
   },
 
   drawings: [
     {
-      figureNumber: "1A",
-      title: "FIG. 1A: Side Elevation of Self-Balancing Personal Transporter",
+      figureNumber: "1",
+      title: "FIG. 1: Side View of Standing Personal Vehicle",
       caption:
         "Side view showing a human rider standing upright on base platform 12 supported on two coaxial wheels 20 with vertical handlebar 16.",
       svgType: "kamen-segway",
       callouts: [
         {
           id: "callout-1-user",
-          figureRef: "Fig. 1A",
+          figureRef: "Fig. 1",
           label: "Human Rider",
           element: "10",
           description: "Human user / rider standing on the platform",
@@ -272,7 +411,7 @@ export const kamenSegwayPatent: Patent = {
         },
         {
           id: "callout-1-chassis",
-          figureRef: "Fig. 1A",
+          figureRef: "Fig. 1",
           label: "Base Platform",
           element: "12",
           description: "Base platform / chassis supporting the user",
@@ -281,7 +420,7 @@ export const kamenSegwayPatent: Patent = {
         },
         {
           id: "callout-1-mast",
-          figureRef: "Fig. 1A",
+          figureRef: "Fig. 1",
           label: "Handlebar Mast",
           element: "16",
           description: "Vertical handlebar mast with handgrips 14",
@@ -290,7 +429,7 @@ export const kamenSegwayPatent: Patent = {
         },
         {
           id: "callout-1-wheels",
-          figureRef: "Fig. 1A",
+          figureRef: "Fig. 1",
           label: "Coaxial Wheels",
           element: "20",
           description: "Coaxial ground-contacting drive wheels",
@@ -301,118 +440,127 @@ export const kamenSegwayPatent: Patent = {
     },
     {
       figureNumber: "2",
-      title: "FIG. 2: Isometric View of Transporter and Coordinate Axes",
+      title: "FIG. 2: Alternate Personal Vehicle with Wheel Cluster",
       caption:
-        "Perspective view showing the two laterally disposed drive wheels 20, vertical yaw axis Z-Z, and transverse rotation axis Y-Y.",
+        "Perspective drawing of an alternate standing-rider vehicle with the printed wheel-cluster arrangement.",
       svgType: "kamen-segway",
       callouts: [
         {
           id: "callout-2-platform",
           figureRef: "Fig. 2",
-          label: "Chassis Platform",
+          label: "Platform",
           element: "12",
-          description: "Chassis platform astride the two coaxial wheels",
+          description: "Printed platform reference numeral",
           x: 50,
           y: 72,
         },
         {
           id: "callout-2-grips",
           figureRef: "Fig. 2",
-          label: "Handlebar Grips",
+          label: "Handlebar",
           element: "14",
-          description: "Handlebar grips with user steer input",
+          description: "Printed handlebar reference numeral",
           x: 50,
           y: 18,
         },
         {
           id: "callout-2-wheels",
           figureRef: "Fig. 2",
-          label: "Drive Wheels",
-          element: "20",
-          description: "Left and right pneumatic drive wheels",
-          x: 32,
-          y: 78,
+          label: "Wheel Cluster",
+          element: "28",
+          description: "Printed clustered ground-contacting-wheel reference numeral",
+          x: 30,
+          y: 77,
         },
       ],
     },
     {
       figureNumber: "3",
-      title: "FIG. 3: Control Loop & Balancing Margin Architecture",
+      title: "FIG. 3: Simplified Balance Control Strategy",
       caption:
-        "Block diagram of the sensor cluster, state estimator, motor amplifiers, balancing margin monitor, and alarm transducers.",
+        "Block diagram showing a plant, feedback terms K1 through K4, and the two printed integrator blocks.",
       svgType: "kamen-segway",
       callouts: [
         {
-          id: "callout-3-imu",
+          id: "callout-3-plant",
           figureRef: "Fig. 3",
-          label: "Sensor Cluster",
-          element: "30",
-          description: "Inertial sensor cluster (gyroscopes & accelerometers)",
-          x: 25,
-          y: 35,
+          label: "Plant",
+          element: "61",
+          description: "Printed plant block in the simplified control strategy",
+          x: 53,
+          y: 28,
         },
         {
-          id: "callout-3-dsp",
+          id: "callout-3-feedback",
           figureRef: "Fig. 3",
-          label: "Digital Controller",
-          element: "32",
-          description: "Digital signal processor / state-space controller",
-          x: 50,
-          y: 35,
+          label: "Feedback Terms",
+          element: "K1–K4",
+          description: "Printed feedback gains in the simplified diagram",
+          x: 49,
+          y: 53,
         },
         {
-          id: "callout-3-margin",
+          id: "callout-3-pitch-integrator",
           figureRef: "Fig. 3",
-          label: "Balancing Margin Monitor",
-          element: "34",
-          description: "Balancing margin supervisory monitor",
-          x: 50,
-          y: 65,
+          label: "Pitch Integrator",
+          element: "62",
+          description: "Printed integrator block for the pitch-rate path",
+          x: 68,
+          y: 52,
         },
         {
-          id: "callout-3-alarm",
+          id: "callout-3-position-integrator",
           figureRef: "Fig. 3",
-          label: "Alarm Transducer",
-          element: "36",
-          description: "Tactile ripple modulation alarm and audible beeper",
-          x: 78,
-          y: 65,
+          label: "Position Integrator",
+          element: "63",
+          description: "Printed integrator block for the position-rate path",
+          x: 68,
+          y: 73,
         },
       ],
     },
     {
       figureNumber: "4",
-      title: "FIG. 4: Rider Pitch Lean Angle & Center of Mass Displacement",
+      title: "FIG. 4: Directional Command Diagram",
       caption:
-        "Diagram illustrating user lean angle θ displacing center of gravity CG forward of the ground contact point P.",
+        "Printed directional diagram with forward, reverse, left-turn, and right-turn commands.",
       svgType: "kamen-segway",
       callouts: [
         {
-          id: "callout-4-cg",
+          id: "callout-4-forward",
           figureRef: "Fig. 4",
-          label: "Center of Gravity",
-          element: "CG",
-          description: "Displaced center of gravity of loaded transporter",
-          x: 62,
-          y: 38,
+          label: "Forward",
+          element: "FORWARD",
+          description: "Printed forward direction label",
+          x: 50,
+          y: 22,
         },
         {
-          id: "callout-4-pitch",
+          id: "callout-4-left-turn",
           figureRef: "Fig. 4",
-          label: "Pitch Angle",
-          element: "θ",
-          description: "Pitch angle lean relative to gravity vertical",
-          x: 52,
-          y: 55,
+          label: "Left Turn",
+          element: "LEFT TURN",
+          description: "Printed left-turn direction label",
+          x: 18,
+          y: 53,
         },
         {
-          id: "callout-4-contact",
+          id: "callout-4-right-turn",
           figureRef: "Fig. 4",
-          label: "Ground Contact",
-          element: "P",
-          description: "Ground contact patch of wheel axle",
-          x: 48,
-          y: 92,
+          label: "Right Turn",
+          element: "RIGHT TURN",
+          description: "Printed right-turn direction label",
+          x: 82,
+          y: 53,
+        },
+        {
+          id: "callout-4-reverse",
+          figureRef: "Fig. 4",
+          label: "Reverse",
+          element: "REVERSE",
+          description: "Printed reverse direction label",
+          x: 50,
+          y: 83,
         },
       ],
     },

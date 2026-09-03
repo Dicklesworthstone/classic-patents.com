@@ -653,7 +653,7 @@ export function updateMergenthalerLinotypeKinematics(
   }
   if (nodes.distributorScrews) {
     nodes.distributorScrews.forEach((screw) => {
-      screw.rotation.y += distributorStepRad;
+      screw.rotation.x += distributorStepRad;
     });
   }
 

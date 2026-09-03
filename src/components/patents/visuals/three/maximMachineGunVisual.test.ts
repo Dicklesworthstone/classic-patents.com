@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { buildMaximMachineGunModel, updateMaximMachineGunKinematics } from "./maximMachineGunModel";
 
@@ -20,6 +21,8 @@ describe("US 319,596 Hiram Maxim Muzzle-Gas Machine-Gun visual & mechanism bound
     expect(threeSource).not.toContain("GLTFLoader");
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
+    expect(threeSource).toContain('<div ref={containerRef} className="absolute inset-0" />');
+    expect(threeSource).not.toContain('<div\n      ref={containerRef}\n      className="relative');
     expect(modelSource).toContain("buildMaximMachineGunModel");
     expect(modelSource).toContain("updateMaximMachineGunKinematics");
     expect(modelSource).not.toContain("stepMaximMachineGun({})");
@@ -87,12 +90,31 @@ describe("US 319,596 Hiram Maxim Muzzle-Gas Machine-Gun visual & mechanism bound
     expect(model.fixedBarrelGroup).toBeDefined();
     expect(model.muzzleSleeveGroup).toBeDefined();
     expect(model.reversingLeversGroup).toBeDefined();
+    expect(model.reversingLeverPivots).toHaveLength(2);
     expect(model.operatingRodsGroup).toBeDefined();
     expect(model.crankshaftGroup).toBeDefined();
     expect(model.crossHeadBreechGroup).toBeDefined();
     expect(model.voluteSpringHousing).toBeDefined();
     expect(model.feedStarwheelsGroup).toBeDefined();
     expect(model.muzzleFlashMesh).toBeDefined();
+    expect(model.tripodGroup.parent).toBe(model.rootGroup);
+    expect(model.tripodLegs).toHaveLength(3);
+    expect(model.tripodFeet).toHaveLength(3);
+
+    model.tripodLegs.forEach((leg, index) => {
+      const height = (leg.geometry as THREE.CylinderGeometry).parameters.height;
+      const halfAxis = new THREE.Vector3(0, height / 2, 0).applyQuaternion(leg.quaternion);
+      const endpointA = leg.position.clone().add(halfAxis);
+      const endpointB = leg.position.clone().sub(halfAxis);
+      const hubResidual = Math.min(
+        endpointA.distanceTo(model.tripodHub.position),
+        endpointB.distanceTo(model.tripodHub.position),
+      );
+      const footTop = model.tripodFeet[index].position.clone().add(new THREE.Vector3(0, 0.03, 0));
+      const footResidual = Math.min(endpointA.distanceTo(footTop), endpointB.distanceTo(footTop));
+      expect(hubResidual).toBeLessThan(1e-9);
+      expect(footResidual).toBeLessThan(1e-9);
+    });
 
     const maxim = FrankenSimEngine.stepMaximMachineGun({ cyclePhaseDeg: 180 });
     const { isMuzzleFlash } = updateMaximMachineGunKinematics(
@@ -108,6 +130,11 @@ describe("US 319,596 Hiram Maxim Muzzle-Gas Machine-Gun visual & mechanism bound
     expect(model.materials.gunmetal.transparent).toBe(true);
     expect(model.muzzleSleeveGroup.position.z).toBeGreaterThan(0.01);
     expect(model.crossHeadBreechGroup.position.z).toBeLessThan(-0.01);
+    expect(model.reversingLeversGroup.rotation.x).toBe(0);
+    for (const pivot of model.reversingLeverPivots) {
+      expect(pivot.rotation.x).toBeLessThan(0);
+      expect(pivot.getObjectByName(pivot.name.replace("Pivot", "Pin"))).toBeDefined();
+    }
 
     model.dispose();
   });

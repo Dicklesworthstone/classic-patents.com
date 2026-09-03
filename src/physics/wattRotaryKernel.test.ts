@@ -1,5 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { readWattRotaryControls, stepWattRotaryEngine } from "./wattRotaryKernel";
+import {
+  canonicalWattGearRatio,
+  readWattRotaryControls,
+  stepWattRotaryEngine,
+  WATT_ROTARY_KINEMATIC_GEOMETRY,
+} from "./wattRotaryKernel";
 
 describe("James Watt 1781 Sun & Planet Epicyclic Physics Kernel (GB 1306)", () => {
   test("computes exact 2:1 epicyclic speed multiplication for equal sun and planet gears", () => {
@@ -44,5 +49,87 @@ describe("James Watt 1781 Sun & Planet Epicyclic Physics Kernel (GB 1306)", () =
 
     expect(t0.flywheelKineticEnergyJ).toBeGreaterThan(50000);
     expect(t0.speedFluctuationCoeff).toBeLessThan(0.25);
+  });
+
+  test("quantizes the public ratio control to buildable quarter-step gear pairs", () => {
+    expect(canonicalWattGearRatio(-10)).toBe(0.5);
+    expect(canonicalWattGearRatio(0.62)).toBe(0.5);
+    expect(canonicalWattGearRatio(0.63)).toBe(0.75);
+    expect(canonicalWattGearRatio(1.88)).toBe(2);
+    expect(canonicalWattGearRatio(Number.NaN)).toBe(1);
+  });
+
+  test("closes the fixed rod and external epicyclic mesh through full cycles at every ratio", () => {
+    for (const ratio of [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]) {
+      for (let sample = 0; sample <= 96; sample += 1) {
+        const timeSec = (3 * sample) / 96;
+        const telemetry = stepWattRotaryEngine(
+          readWattRotaryControls({ strokeRateSpm: 20, gearRatioNpOverNs: ratio }),
+          timeSec,
+        );
+
+        expect(Number.isFinite(telemetry.beamAngleRad)).toBe(true);
+        expect(Math.abs(telemetry.connectingRodConstraintResidualM)).toBeLessThan(1e-10);
+        expect(Math.abs(telemetry.gearMeshConstraintResidualRad)).toBeLessThan(1e-10);
+        expect(telemetry.planetBodyAngleRad).toBe(0);
+        expect(telemetry.sunShaftAngleRad).toBeCloseTo(
+          telemetry.speedMultiplier * telemetry.planetOrbitAngleRad,
+          12,
+        );
+        expect(telemetry.sunPitchRadiusM + telemetry.planetPitchRadiusM).toBeCloseTo(
+          WATT_ROTARY_KINEMATIC_GEOMETRY.gearCenterDistanceM,
+          12,
+        );
+        expect(telemetry.planetTeeth / telemetry.sunTeeth).toBe(ratio);
+      }
+    }
+  });
+
+  test("keeps the restrained planet fixed and the output shaft at the mesh-required angular speed", () => {
+    const dt = 1e-5;
+    for (const ratio of [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]) {
+      const controls = readWattRotaryControls({ strokeRateSpm: 20, gearRatioNpOverNs: ratio });
+      for (const timeSec of [0.2, 0.8, 1.4, 2.2]) {
+        const pose = stepWattRotaryEngine(controls, timeSec);
+        const next = stepWattRotaryEngine(controls, timeSec + dt);
+
+        expect(pose.planetBodyAngleRad).toBe(0);
+        expect(pose.sunShaftAngleRad).toBeCloseTo(
+          pose.speedMultiplier * pose.planetOrbitAngleRad,
+          12,
+        );
+        expect((next.sunShaftAngleRad - pose.sunShaftAngleRad) / dt).toBeCloseTo(
+          pose.shaftAngularVelocityRadS,
+          8,
+        );
+      }
+    }
+  });
+
+  test("keeps the shaft angle continuous when the carrier crosses a revolution boundary", () => {
+    const controls = readWattRotaryControls({ strokeRateSpm: 20, gearRatioNpOverNs: 0.5 });
+    const before = stepWattRotaryEngine(controls, 3 - 1e-6);
+    const boundary = stepWattRotaryEngine(controls, 3);
+    const after = stepWattRotaryEngine(controls, 3 + 1e-6);
+
+    expect(boundary.planetOrbitAngleRad).toBeCloseTo(2 * Math.PI, 12);
+    expect(boundary.sunShaftAngleRad).toBeCloseTo(3 * Math.PI, 12);
+    expect(boundary.sunShaftAngleDeg).toBeCloseTo(180, 10);
+    expect(boundary.sunShaftAngleRad - before.sunShaftAngleRad).toBeGreaterThan(0);
+    expect(after.sunShaftAngleRad - boundary.sunShaftAngleRad).toBeGreaterThan(0);
+    expect(after.sunShaftAngleRad - boundary.sunShaftAngleRad).toBeCloseTo(
+      boundary.sunShaftAngleRad - before.sunShaftAngleRad,
+      10,
+    );
+  });
+
+  test("is exactly replayable for equal inputs and simulation time", () => {
+    const controls = readWattRotaryControls({
+      strokeRateSpm: 26,
+      boilerPressureKpa: 95,
+      gearRatioNpOverNs: 1.75,
+      flywheelMassKg: 4250,
+    });
+    expect(stepWattRotaryEngine(controls, 17.125)).toEqual(stepWattRotaryEngine(controls, 17.125));
   });
 });

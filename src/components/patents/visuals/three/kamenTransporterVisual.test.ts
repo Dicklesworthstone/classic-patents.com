@@ -1,4 +1,6 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import {
   KAMEN_TRANSPORTER_DEFAULT_CONTROLS,
   readKamenTransporterControls,
@@ -66,18 +68,59 @@ describe("US 5,701,965 Dean Kamen Human Transporter Visual & Dynamic Stabilizati
     expect(extremeTilt.stabilityMargin).toBe(0);
   });
 
-  test("builds and articulates procedural 3D model through kinematics updates", () => {
+  test("projects the kernel-owned terminal wheel phase without recomputing speed", () => {
     const model = buildKamenTransporterModel();
     const controls = { ...KAMEN_TRANSPORTER_DEFAULT_CONTROLS };
     const tel = stepKamenTransporterSi(controls);
+    const phase = 1.25;
 
     expect(() => {
-      updateKamenTransporterKinematics(model, controls, tel, 1.0);
+      updateKamenTransporterKinematics(model, controls, tel, phase);
     }).not.toThrow();
 
     expect(model.chassis.position.y).toBeGreaterThan(0.2); // Elevated in 2-wheel balance mode
     expect(model.seatGroup.visible).toBe(true);
+    expect(model.leftWheel1.rotation.z).toBeCloseTo(-phase, 12);
+    expect(model.leftWheel2.rotation.z).toBeCloseTo(-phase, 12);
+    expect(model.rightWheel1.rotation.z).toBeCloseTo(-phase, 12);
+    expect(model.rightWheel2.rotation.z).toBeCloseTo(-phase, 12);
+
+    const fasterTel = stepKamenTransporterSi({ ...controls, velocityCommandMs: 3 });
+    updateKamenTransporterKinematics(model, controls, fasterTel, phase);
+    expect(model.leftWheel1.rotation.z).toBeCloseTo(-phase, 12);
+
+    const sceneSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/KamenTransporter3D.tsx"),
+      "utf8",
+    );
+    expect(sceneSource).toContain("globalTransportBus.registerUpdater");
+    expect(sceneSource).toContain("createKamenTransporterTransportUpdater");
+    expect(sceneSource).not.toContain("wheelRollAngle +=");
+    expect(sceneSource).not.toContain("* 0.016");
+
+    const modelSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/kamenTransporterModel.ts"),
+      "utf8",
+    );
+    expect(modelSource).not.toContain("wheelSpinSpeed");
+    expect(modelSource).toContain("-wheelRollAngleRad");
 
     model.dispose();
+  });
+
+  test("places phone telemetry and controls after the transporter canvas", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/KamenTransporter3D.tsx"),
+      "utf8",
+    );
+    const canvasIndex = source.indexOf("ref={containerRef}");
+    const telemetryIndex = source.indexOf('data-mobile-layout="telemetry-after-canvas"');
+    const controlsIndex = source.indexOf('data-mobile-layout="controls-after-canvas"');
+
+    expect(canvasIndex).toBeGreaterThan(-1);
+    expect(telemetryIndex).toBeGreaterThan(canvasIndex);
+    expect(controlsIndex).toBeGreaterThan(telemetryIndex);
+    expect(source).toContain('id="kamen-transporter-camera-view"');
+    expect(source).toContain("hidden space-y-1");
   });
 });

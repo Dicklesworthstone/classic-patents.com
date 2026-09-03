@@ -1517,8 +1517,8 @@ export function stepThomsonWelding(params: {
 }) {
   const i = params.weldCurrentAmps ?? 4500;
   const press = params.clampPressureMpa ?? 35;
-  const kw = Math.round((i ** 2 * 0.00018) / 1000);
-  const tempC = Math.round(25 + (kw / 3.6) * 850);
+  const kw = Number(((i ** 2 * 0.00018) / 1000).toFixed(2));
+  const tempC = Math.round(25 + (kw / 3.645) * 850);
   const upsetBurrWidthMm = Number(((press / 35) * 3.8).toFixed(1));
   return {
     jouleKw: kw,
@@ -2070,6 +2070,8 @@ export function stepBellTelephone(params: {
     ...bellWaveCrate(freqHz),
   };
 }
+
+export type BellTelephoneState = ReturnType<typeof stepBellTelephone>;
 
 /** Acoustic-ring progress on the 3D horn. Shared by 3D. */
 export function bellWaveProgress(

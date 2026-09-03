@@ -27,14 +27,14 @@ export const kamenMedicationInjectionPatent: Patent = {
   heroQuote: "A radially oriented striker mounted on said lead screw",
   originalPdfUrl: "/patents/pdfs/us-3858581-kamen-medication-injection-device.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3858581A/en",
-  usptoClassification: "Int. Cl. A61M 5/14; U.S. Cl. 128/218 (printed)",
+  usptoClassification: "Int. Cl. A61M 5/20; U.S. Cl. 128/218 A, 128/DIG. 1 (printed)",
   archivalEdition: kamenMedicationInjectionArchivalEdition,
   originalTextAsset: {
     url: "/patents/transcripts/us-3858581-kamen-medication-injection-device-reviewed.txt",
     pageCount: 8,
     kind: "reviewed-transcription",
     reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-09-01",
+    reviewedAt: "2026-09-02",
     sourcePdfSha256: "1aa0df879ec119a9ad4025774e482dfc41e748127bc3f83cde31047daeedc35d",
     pageAnchors: [
       {
@@ -44,13 +44,13 @@ export const kamenMedicationInjectionPatent: Patent = {
       },
       {
         page: 2,
-        exactSourceText: "FIG. 1 is a perspective view",
-        sourceRelationship: "source figure sheet",
+        exactSourceText: "SHEET 1 OF 2",
+        sourceRelationship: "source figure sheet 1",
       },
       {
         page: 3,
-        exactSourceText: "FIG. 4 is an end elevational view",
-        sourceRelationship: "source figure sheet",
+        exactSourceText: "SHEET 2 OF 2",
+        sourceRelationship: "source figure sheet 2",
       },
       {
         page: 4,
@@ -69,7 +69,7 @@ export const kamenMedicationInjectionPatent: Patent = {
       },
       {
         page: 7,
-        exactSourceText: "FIG. 6 illustrates",
+        exactSourceText: "The circuit of FIG. 6 will further be understood",
         sourceRelationship: "printed control description",
       },
       {
@@ -210,10 +210,10 @@ export const kamenMedicationInjectionPatent: Patent = {
       dependsOn: [4],
       originalText: manualClaimText(5),
       plainEnglish:
-        "Claim 5 adds a scale relating plunger displacement to an ascending pulse count. Its legal function is a readable mechanical-to-count correspondence in the claimed assembly. The historical scale does not supply a current medical instruction, and this archive deliberately does not expose it as a dose-setting control.",
+        "Claim 5 adds a scale relating plunger displacement to a corresponding number of pulses. Its legal function is a readable mechanical-to-count correspondence in the claimed assembly. The historical scale does not supply a current medical instruction, and this archive deliberately does not expose it as a dose-setting control.",
       keyInnovations: [
         "Plunger-displacement scale",
-        "Ascending pulse count",
+        "Corresponding pulse count",
         "Count-to-position correspondence",
       ],
       legalSignificance:

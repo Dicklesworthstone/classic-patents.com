@@ -1,12 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import {
   KAMEN_SEGWAY_DEFAULT_CONTROLS,
+  KAMEN_SEGWAY_MODERN_SCENARIO_BOUNDARY,
   readKamenSegwayControls,
   stepKamenSegwaySi,
 } from "./kamenSegwayKernel";
 
 describe("US 6,302,230 Dean Kamen Segway Self-Balancing Transporter Physics Kernel", () => {
-  test("computes genuine inverted-pendulum restoring torque and forward speed for default controls", () => {
+  test("computes a clearly bounded modern illustrative inverted-pendulum scenario", () => {
     const controls = KAMEN_SEGWAY_DEFAULT_CONTROLS;
     const tel = stepKamenSegwaySi(controls);
 
@@ -19,6 +20,7 @@ describe("US 6,302,230 Dean Kamen Segway Self-Balancing Transporter Physics Kern
     expect(tel.tractionLossRefusal).toBe(false);
     expect(tel.pitchOverturnRefusal).toBe(false);
     expect(tel.refusalReason).toBeNull();
+    expect(KAMEN_SEGWAY_MODERN_SCENARIO_BOUNDARY).toContain("Modern illustrative SI scenario");
   });
 
   test("triggers speed pushback and ripple alarm when approaching maximum operating velocity", () => {
@@ -77,5 +79,38 @@ describe("US 6,302,230 Dean Kamen Segway Self-Balancing Transporter Physics Kern
     const tel = stepKamenSegwaySi(controls);
     expect(tel.velocityMS).toBeLessThan(0); // Reversing
     expect(tel.leftMotorTorqueNm).toBeLessThan(tel.rightMotorTorqueNm); // Yaw steering differential
+  });
+
+  test("withholds Claim 1 powered automatic balance through a source-bounded refusal", () => {
+    const tel = stepKamenSegwaySi({
+      ...KAMEN_SEGWAY_DEFAULT_CONTROLS,
+      claim1BalanceEnabled: false,
+    });
+
+    expect(tel.claim1BalanceWithheld).toBe(true);
+    expect(tel.motorTorqueNm).toBe(0);
+    expect(tel.driveThrustForceN).toBe(0);
+    expect(tel.balancingMarginRatio).toBe(0);
+    expect(tel.pitchOverturnRefusal).toBe(true);
+    expect(tel.refusalReason).toContain("Claim 1 topology withheld");
+    expect(tel.refusalReason).toContain("no fall-time or hardware-performance prediction");
+  });
+
+  test("withholds Claim 2 ripple modulation without inventing a substitute alarm", () => {
+    const active = stepKamenSegwaySi({
+      ...KAMEN_SEGWAY_DEFAULT_CONTROLS,
+      riderPitchDeg: 14.5,
+    });
+    const withheld = stepKamenSegwaySi({
+      ...KAMEN_SEGWAY_DEFAULT_CONTROLS,
+      riderPitchDeg: 14.5,
+      claim2RippleEnabled: false,
+    });
+
+    expect(active.tactileAlarmActive).toBe(true);
+    expect(withheld.claim2RippleWithheld).toBe(true);
+    expect(withheld.tactileAlarmActive).toBe(false);
+    expect(withheld.rippleAlarmAmplitudeNm).toBe(0);
+    expect(withheld.audibleAlarmActive).toBe(true);
   });
 });

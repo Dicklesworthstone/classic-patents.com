@@ -108,7 +108,17 @@ export default function HaberAmmonia3D({
     studioRef.current?.controls.setView(targetConfig.pos, targetConfig.target);
   };
 
+  const handleClaimToggle = (claimNumber: number, active: boolean) => {
+    setClaimStates((prev) => ({ ...prev, [claimNumber]: active }));
+    updateParam("pressureAtm", active ? 175 : 1);
+  };
+
   useEffect(() => {
+    // The published patent explicitly says "No Drawing". The source-bounded
+    // fallback below must not mount (or even construct) the retained,
+    // interpretive apparatus draft behind that refusal boundary.
+    if (sourceBoundedVisualOnly) return;
+
     const container = containerRef.current;
     if (!container) return;
 
@@ -173,6 +183,8 @@ export default function HaberAmmonia3D({
   if (sourceBoundedVisualOnly) {
     return (
       <section
+        data-testid="three-d-source-boundary"
+        role="status"
         aria-labelledby="haber-3d-source-boundary-heading"
         className="flex min-h-[380px] flex-col justify-center gap-4 rounded-2xl border border-amber-300 bg-amber-50 p-6 text-slate-900 shadow-md dark:border-amber-800 dark:bg-slate-950 dark:text-slate-100"
       >
@@ -182,6 +194,12 @@ export default function HaberAmmonia3D({
             3D apparatus view withheld: no drawing in US 971,501
           </h3>
         </div>
+        <ClaimConstraintToggle
+          patentId="us-971501-haber-ammonia"
+          claimStates={claimStates}
+          onToggleClaim={handleClaimToggle}
+          className="self-start"
+        />
         <p className="max-w-3xl text-sm leading-6 text-slate-700 dark:text-slate-300">
           This grant contains no apparatus drawing. A compressor, heat exchanger, condenser, or
           recycle loop would be a later industrial interpretation rather than an archival figure, so
@@ -255,10 +273,7 @@ export default function HaberAmmonia3D({
           <ClaimConstraintToggle
             patentId="us-971501-haber-ammonia"
             claimStates={claimStates}
-            onToggleClaim={(c: number, active: boolean) => {
-              setClaimStates((prev) => ({ ...prev, [c]: active }));
-              updateParam("pressureAtm", active ? 175 : 1);
-            }}
+            onToggleClaim={handleClaimToggle}
           />
           <button
             type="button"

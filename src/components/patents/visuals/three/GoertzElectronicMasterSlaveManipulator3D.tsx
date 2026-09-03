@@ -3,6 +3,8 @@
 import { Eye, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { stepGoertzMasterSlaveTopology } from "@/physics/goertzElectronicMasterSlaveManipulatorKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -102,17 +104,21 @@ export function GoertzElectronicMasterSlaveManipulator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
   const [view, setView] = useState<keyof typeof VIEWS>("overview");
-  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
-  const liveParams = useRef(params);
-  liveParams.current = params;
-  const pose = stepGoertzMasterSlaveTopology(params);
+  const { params, effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(PATENT_ID);
+  const liveParams = useRef(effectiveParams);
+  liveParams.current = effectiveParams;
+  const pose = stepGoertzMasterSlaveTopology(effectiveParams);
 
   // The patent supplies topology, not the SI inputs that a physical robot-arm
   // simulation would need. This accurately records a typed refusal instead of
   // presenting the procedural exhibit as a FrankenSim/WASM force calculation.
   useFrankenSimPhysics(PATENT_ID, {
     domain: "solid_mechanics",
-    refusal: { isRefused: true, reason: pose.refusal.reason },
+    refusal: {
+      isRefused: true,
+      reason: claimConstraintResult.refusalWarning ?? pose.refusal.reason,
+    },
   });
 
   const selectView = (next: keyof typeof VIEWS) => {
@@ -199,7 +205,28 @@ export function GoertzElectronicMasterSlaveManipulator3D() {
           </div>
         </div>
 
-        <div className="absolute bottom-3 left-3 right-3 grid gap-3 rounded-xl border border-slate-700/90 bg-slate-950/90 p-3 backdrop-blur sm:bottom-5 sm:left-5 sm:right-5">
+        <div className="absolute bottom-3 left-3 right-3 z-10 grid max-h-[calc(100%-7rem)] gap-3 overflow-y-auto rounded-xl border border-slate-700/90 bg-slate-950/90 p-3 backdrop-blur sm:bottom-5 sm:left-5 sm:right-5">
+          <ClaimConstraintToggle
+            patentId={PATENT_ID}
+            claimStates={claimStates}
+            onToggleClaim={(claimNumber, active) =>
+              updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
+            }
+          />
+          {claimConstraintResult.activeFailures.length > 0 && (
+            <div role="status" className="rounded-lg border border-rose-800 bg-rose-950/80 p-2">
+              {claimConstraintResult.activeFailures.map((failure: string) => (
+                <p key={failure} className="text-[11px] leading-4 text-rose-100">
+                  {failure}
+                </p>
+              ))}
+              {claimConstraintResult.refusalWarning && (
+                <p className="mt-1 text-[10px] leading-4 text-rose-200">
+                  {claimConstraintResult.refusalWarning}
+                </p>
+              )}
+            </div>
+          )}
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {AXIS_CONTROLS.map((control) => {
               const value = params[control.id] ?? 0;

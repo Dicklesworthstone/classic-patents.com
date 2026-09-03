@@ -84,6 +84,11 @@ const FIGURE_DIMENSIONS: Record<string, { width: number; height: number }> = {
   },
 };
 
+// Reserve the reviewed v2 filenames and dimensions without publishing dead
+// links. The preserved v1 crops are explicitly rejected evidence; previews
+// remain absent until the v2 assets receive independent acceptance.
+const ATTACH_ACCEPTED_FIGURE_PREVIEWS = false;
+
 const ref = (
   refText: string,
   targetHref: string,
@@ -102,7 +107,7 @@ const ref = (
     referenceType: "figure",
     label: targetLabel,
     figurePreviews:
-      previewSources.length > 0
+      ATTACH_ACCEPTED_FIGURE_PREVIEWS && previewSources.length > 0
         ? previewSources.map((src) => {
             // v1 files are preserved poisoned evidence. Normalize every
             // authored occurrence to the reserved v2 source-crop target so

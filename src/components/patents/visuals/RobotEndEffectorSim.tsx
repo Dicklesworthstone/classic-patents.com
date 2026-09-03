@@ -1,7 +1,8 @@
 "use client";
 
 import { RotateCcw } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { stepRobotEndEffector } from "@/physics/robotEndEffectorKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
@@ -11,6 +12,7 @@ const DISPLAY_METRES_TO_PX = 1200;
 
 export function RobotEndEffectorSim() {
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const state = useMemo(() => stepRobotEndEffector(params), [params]);
   const offset = state.perHandOffsetM * DISPLAY_METRES_TO_PX;
   const leftX = CENTER_X - offset;
@@ -331,6 +333,16 @@ export function RobotEndEffectorSim() {
             <RotateCcw className="mr-1.5 inline h-3.5 w-3.5" />
             Reset source controls
           </button>
+        </div>
+
+        <div className="col-span-full pt-2 border-t border-slate-800">
+          <ClaimConstraintToggle
+            patentId={PATENT_ID}
+            claimStates={claimStates}
+            onClaimStateChange={(num, active) =>
+              setClaimStates((prev) => ({ ...prev, [num]: active }))
+            }
+          />
         </div>
       </footer>
     </section>

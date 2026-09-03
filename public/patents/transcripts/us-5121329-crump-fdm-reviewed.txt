@@ -1,20 +1,17 @@
 --- REVIEWED TRANSCRIPTION PAGE 1 OF 15 ---
 
-|||||||||||||||    US00521329A
-United States Patent (19)                                                            11) Patent Number:                 5,121,329
-Crump                                                                                45 Date of Patent:               Jun. 9, 1992
-(54) CREATING
-     APPARATUSTHREE-DIMENSIONAL
-               AND METHOD FOR                                                  Asyntek Brochure, "Benchtop Automation' May
-                                                                               1988.
-         OBJECTS                                                               Primary Examiner-Joseph Ruggiero
- 75)    Inventor: S. Scott Crump, Minnetonka, Minn.                            Assistant Examiner-Patrick D. Muir
-(73)    Assignee: Stratasys, Inc., Minneapolis, Minn.                          Attorney, Agent, or Firm-Moore & Hansen
-21      Appl. No.: 429,012                                                     57)                  ABSTRACT
-                                                                               Apparatus incorporating a movable dispensing head
-22      Filed:     Oct. 30, 1989                                               provided with a supply of material which solidifies at a
-51) Int. Cl. .............................................. G06F 15/46         predetermined temperature, and a base member, which
-52 U.S. Cl. ............................... 364/468; 364/474.24;               are moved relative to each other along "X," "Y," and
+United States Patent [19]
+Crump
+[11] Patent Number: 5,121,329
+[45] Date of Patent: Jun. 9, 1992
+
+[54] APPARATUS AND METHOD FOR CREATING THREE-DIMENSIONAL OBJECTS
+[75] Inventor: S. Scott Crump, Minnetonka, Minn.
+[73] Assignee: Stratasys, Inc., Minneapolis, Minn.
+[21] Appl. No.: 429,012
+[22] Filed: Oct. 30, 1989
+[51] Int. Cl.⁵ G06F 15/46
+[52] U.S. Cl. 364/468; 364/474.24; 364/477; 264/239; 264/25; 425/174.4
                    364/477; 264/239; 264/25; 425/1744                          "Z" axes in a predetermined pattern to create three-di
 58) Field of Search ....................... 364/472, 473, 477;                 mensional objects by building up material discharged
           264/308, 13; 425/1744; 427/8, 52; 164/94;                            from the dispensing head onto the base member at a

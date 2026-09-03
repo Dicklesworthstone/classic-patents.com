@@ -11,6 +11,7 @@ import type {
   KamenTransporterControls,
   KamenTransporterTelemetry,
 } from "@/physics/kamenTransporterKernel";
+import { KAMEN_TRANSPORTER_SCENARIO_WHEEL_RADIUS_M } from "@/physics/kamenTransporterKernel";
 
 export interface KamenTransporterModel {
   root: THREE.Group;
@@ -173,14 +174,20 @@ export function buildKamenTransporterModel(): KamenTransporterModel {
     cluster.add(capMesh);
 
     // Wheel 1
-    const tireGeom = new THREE.TorusGeometry(0.13, 0.04, 16, 24);
+    const tireTubeRadius = 0.04;
+    const tireGeom = new THREE.TorusGeometry(
+      KAMEN_TRANSPORTER_SCENARIO_WHEEL_RADIUS_M - tireTubeRadius,
+      tireTubeRadius,
+      16,
+      24,
+    );
     geometriesToDispose.push(tireGeom);
     const wheel1 = new THREE.Mesh(tireGeom, tireMat);
     wheel1.position.set(-0.18, 0, 0);
     wheel1.castShadow = true;
     cluster.add(wheel1);
 
-    const rimGeom = new THREE.CylinderGeometry(0.11, 0.11, 0.04, 16);
+    const rimGeom = new THREE.CylinderGeometry(0.09, 0.09, 0.04, 16);
     rimGeom.rotateX(Math.PI / 2);
     geometriesToDispose.push(rimGeom);
     const rim1 = new THREE.Mesh(rimGeom, rimMat);
@@ -244,7 +251,7 @@ export function updateKamenTransporterKinematics(
   model: KamenTransporterModel,
   controls: KamenTransporterControls,
   tel: KamenTransporterTelemetry,
-  timeS: number,
+  wheelRollAngleRad: number,
 ) {
   // 1. Chassis Pitch Orientation (Inverted Pendulum Tilt)
   const pitchRad = tel.pitchAngleRad;
@@ -254,36 +261,40 @@ export function updateKamenTransporterKinematics(
   const isBalanceMode = controls.operatingMode === "balance_2wheel";
   const isStairMode = controls.operatingMode === "stair_climb";
 
+  let elevationY = 0.0;
   if (isBalanceMode) {
-    model.chassis.position.y = 0.28;
+    elevationY = 0.28;
     model.seatGroup.visible = true;
     model.standingMast.visible = true;
     model.stairTerrain.visible = false;
   } else if (isStairMode) {
-    model.chassis.position.y = 0.22;
+    elevationY = 0.22;
     model.seatGroup.visible = true;
     model.standingMast.visible = false;
     model.stairTerrain.visible = true;
   } else {
     // 4-wheel standard mode
-    model.chassis.position.y = 0.0;
+    elevationY = 0.0;
     model.seatGroup.visible = true;
     model.standingMast.visible = false;
     model.stairTerrain.visible = false;
   }
+
+  model.chassis.position.y = elevationY;
+  model.leftCluster.position.y = elevationY;
+  model.rightCluster.position.y = elevationY;
 
   // 3. Cluster Rotation Kinematics
   const clusterRad = (tel.clusterAngleDeg * Math.PI) / 180;
   model.leftCluster.rotation.z = clusterRad;
   model.rightCluster.rotation.z = clusterRad;
 
-  // 4. Individual Wheel Roll Kinematics
-  const wheelSpinSpeed = tel.forwardVelocityMs / 0.15;
-  const wheelSpinAngle = wheelSpinSpeed * timeS;
-  model.leftWheel1.rotation.y = wheelSpinAngle;
-  model.leftWheel2.rotation.y = wheelSpinAngle;
-  model.rightWheel1.rotation.y = wheelSpinAngle;
-  model.rightWheel2.rotation.y = wheelSpinAngle;
+  // 4. The fixed-step physics kernel owns the integrated rolling phase. The
+  // model is a projection and must not multiply by speed or time a second time.
+  model.leftWheel1.rotation.z = -wheelRollAngleRad;
+  model.leftWheel2.rotation.z = -wheelRollAngleRad;
+  model.rightWheel1.rotation.z = -wheelRollAngleRad;
+  model.rightWheel2.rotation.z = -wheelRollAngleRad;
 
   // 5. Center of Gravity Marker Color Feedback
   const cgMat = model.cgMarker.material as THREE.MeshStandardMaterial;

@@ -67,4 +67,14 @@ describe("US 4,341,502 Makino Assembly Robot visual boundary", () => {
     expect(simSource).toContain("usePatentPhysics");
     expect(simSource).toContain("normalized exhibit geometry");
   });
+
+  test("keeps the phone canvas clear by placing controls after it", () => {
+    const studioSource = readFileSync(join(THREE_DIRECTORY, "MakinoScara3D.tsx"), "utf8");
+    const canvasIndex = studioSource.indexOf("ref={containerRef}");
+    const controlsIndex = studioSource.indexOf('data-mobile-layout="controls-below-canvas"');
+
+    expect(canvasIndex).toBeGreaterThan(-1);
+    expect(controlsIndex).toBeGreaterThan(canvasIndex);
+    expect(studioSource).toContain("hidden items-start justify-between");
+  });
 });

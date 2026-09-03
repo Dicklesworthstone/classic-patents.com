@@ -22,32 +22,32 @@
 | **1** | Title Sheet, Masthead, Abstract, Primary Examiner, Fig. 1 Preview | US Patent No. 6,302,230 B1 granted to Kamen et al. on Oct. 16, 2001; 75 cited references. |
 | **2** | Cited References (U.S. Patent Documents, Foreign Patent Documents) | Comprehensive prior-art citations on dynamically balancing vehicles, wheelchairs, and robotic inverted pendulums. |
 | **3** | Cited Other Publications & Foreign Patents | Citations to Osaka et al. (1981), Kawaji (1989), Vos (MIT 1992), and Ha et al. (1996). |
-| **4** | Sheet 1 of 16 (FIGS. 1A, 1B) | Perspective views showing a human rider standing on the platform supported by two laterally disposed coaxial wheels. |
-| **5** | Sheet 2 of 16 (FIG. 2) | Detailed isometric view of the transporter showing platform, vertical handlebar, drive cluster, and coordinate axes. |
-| **6** | Sheet 3 of 16 (FIG. 3) | Control loop block diagram: gyroscopic rate sensors, tilt sensors, motor drivers, margin monitor, and alarm. |
-| **7** | Sheet 4 of 16 (FIG. 4) | Side elevation showing rider pitch angle lean $\theta$ displacing center of gravity relative to wheel contact point. |
-| **8** | Sheet 5 of 16 (FIG. 5) | Schematic diagram of the inverted pendulum balancing physics, wheel contact point, and motorized restoring torque. |
-| **9** | Sheet 6 of 16 (FIG. 6) | Mechanical cross-section of the motorized drive cluster, dual brushless DC motors, and precision reduction gearbox. |
-| **10** | Sheet 7 of 16 (FIG. 7) | Inertial measurement unit (IMU) sensor cluster block diagram and microprocessor pitch state estimation. |
-| **11** | Sheet 8 of 16 (FIG. 8) | Operating velocity vs. balancing margin limit curve showing speed limiting boundary. |
-| **12** | Sheet 9 of 16 (FIGS. 9, 10) | Balancing response waveforms and tactile ripple/shake alarm power modulation signal. |
-| **13** | Sheet 10 of 16 (FIG. 11) | Single-wheel (unicycle) personal transporter embodiment with side footrests. |
-| **14** | Sheet 11 of 16 (FIG. 12) | Handlebar twist-grip steering mechanism and differential motor speed command coupling. |
-| **15** | Sheet 12 of 16 (FIG. 13) | Redundant electrical power architecture, dual battery packs, and fail-safe controller boards. |
-| **16** | Sheet 13 of 16 (FIG. 14) | State-space linear quadratic regulator (LQR) control topology with pitch, pitch-rate, position, and velocity gains. |
-| **17** | Sheet 14 of 16 (FIGS. 15, 16) | Pitch pushback / tiltback speed limiting mechanism and rider notification dynamics. |
-| **18** | Sheet 15 of 16 (FIGS. 17, 18) | Stair-climbing cluster and obstacle traversal mechanisms. |
-| **19** | Sheet 16 of 16 (FIGS. 19, 20) | Power-assist parking stand, kickstand deployment, and stationary stabilization modes. |
-| **20** | Col. 1–2 (Technical Field, Background, Inverted Pendulum Instability) | Detailed discussion of statically unstable inverted pendulum physics and human mobility challenges. |
-| **21** | Col. 3–4 (Summary of the Invention, Balancing Margin, Alarm Modes) | Core inventive concepts: active motorized dynamic balancing, balancing margin monitoring, and tactile alarm feedback. |
-| **22** | Col. 5–6 (Brief Description of the Drawings) | Detailed summaries for FIGS. 1A through 20. |
-| **23** | Col. 7–8 (Detailed Description of Preferred Embodiments, Platform & Wheels) | Detailed description of platform structure, wheel layout, chassis mounting, and user interaction. |
-| **24** | Col. 9–10 (Control Loop Architecture & Sensor Fusion) | Mathematical formulation of state estimator, rate gyroscopes, gravity accelerometers, and complementary filtering. |
-| **25** | Col. 11–12 (State Feedback Equations & Motor Torque Command) | Equations $\tau = K_1 \theta + K_2 \dot\theta + K_3 x + K_4 \dot{x}$, gain tuning, and pitch stability criteria. |
-| **26** | Col. 13–14 (Balancing Margin Monitoring & Speed Limiting) | Balancing margin calculation: difference between available acceleration torque and present velocity demand. |
-| **27** | Col. 15–16 (Tactile Ripple Vibration & Audible Alarms) | Power output ripple modulation generating physical shudder/vibration through platform to alert rider. |
-| **28** | Col. 17–18 (Unicycle Embodiment & Opening of Claims 1–3) | Single-wheel configuration, differential footplate steering, and claims 1, 2, 3. |
-| **29** | Col. 19–20 (Claims 4–7 & Closing Signatures) | Dependent claim 4, independent method claim 5, dependent method claims 6 and 7. |
+| **4** | Sheet 1 of 16 (FIG. 1) | Standing-rider personal vehicle; printed figure label, sheet number, and reference numerals checked. |
+| **5** | Sheet 2 of 16 (FIG. 2) | Alternate standing-rider vehicle with wheel cluster; printed figure label and sheet number checked. |
+| **6** | Sheet 3 of 16 (FIG. 3) | Simplified balance-control block diagram; printed plant, K1–K4, and integrator labels checked. |
+| **7** | Sheet 4 of 16 (FIG. 4) | Directional command diagram; printed forward, reverse, left-turn, and right-turn labels checked. |
+| **8** | Sheet 5 of 16 (FIG. 5) | Control-system block diagram; printed figure label and source numerals checked. |
+| **9** | Sheet 6 of 16 (FIG. 6) | Peripheral microcontroller-board diagram; printed figure label and source numerals checked. |
+| **10** | Sheet 7 of 16 (FIG. 7) | Wheel-motor control diagram; printed figure label and source numerals checked. |
+| **11** | Sheet 8 of 16 (FIG. 8) | Standing unicycle embodiment; printed figure label and source numerals checked. |
+| **12** | Sheet 9 of 16 (FIG. 9) | Standing vehicle with articulated handle; printed figure label and source numerals checked. |
+| **13** | Sheet 10 of 16 (FIG. 10) | Multi-wheel standing vehicle embodiment; printed figure label and source numerals checked. |
+| **14** | Sheet 11 of 16 (FIG. 11) | Lean-controlled unicycle embodiment; printed figure label and source numerals checked. |
+| **15** | Sheet 12 of 16 (FIG. 12) | Lean-controlled unicycle embodiment; printed figure label and source numerals checked. |
+| **16** | Sheet 13 of 16 (FIG. 13) | Lean-controlled unicycle embodiment; printed figure label and source numerals checked. |
+| **17** | Sheet 14 of 16 (FIG. 14) | Standing unicycle embodiment; printed figure label and source numerals checked. |
+| **18** | Sheet 15 of 16 (FIG. 15) | Standing unicycle embodiment; printed figure label and source numerals checked. |
+| **19** | Sheet 16 of 16 (FIG. 16) | Force diagram; printed figure label, symbols, and source numerals checked. |
+| **20** | Col. 1–2 (Technical Field, Background, Summary) | Opening field, background, and summary source text checked against the reviewed ledger. |
+| **21** | Col. 3–4 (Summary, Brief Description) | Continuation of source text and beginning of the printed drawing descriptions checked. |
+| **22** | Col. 5–6 (Brief Description, Detailed Description) | Printed descriptions for FIGS. 1–7 and start of detailed embodiments checked. |
+| **23** | Col. 7–8 (Detailed Description) | Dynamic-stability discussion and FIG. 16 force description checked. |
+| **24** | Col. 9–10 (Detailed Description) | FIG. 3 simplified control-strategy discussion checked. |
+| **25** | Col. 11–12 (Detailed Description) | FIG. 5 drive/control-system discussion checked. |
+| **26** | Col. 13–14 (Detailed Description) | FIGS. 6–7 controller and wheel-motor discussion checked. |
+| **27** | Col. 15–16 (Detailed Description) | Balancing-margin, alarm, and speed-limiting discussion checked. |
+| **28** | Col. 17–18 (Detailed Description, Claims 1–3) | Remaining embodiment text and opening claims checked. |
+| **29** | Col. 19–20 (Claims 4–7) | Closing claim text and signatures checked. |
 
 ---
 
@@ -55,5 +55,15 @@
 
 - **Public Source Face**: [`src/data/editions/kamenSegwayEdition.ts`](file:///Users/jemanuel/projects/classic-patents.com/src/data/editions/kamenSegwayEdition.ts) — continuous, hand-authored React source face with typed blocks, terms, figure links, and dynamic claims.
 - **Reviewed Comparison Ledger**: [`public/patents/transcripts/us-6302230-kamen-segway-reviewed.txt`](file:///Users/jemanuel/projects/classic-patents.com/public/patents/transcripts/us-6302230-kamen-segway-reviewed.txt).
-- **Figure Crops**: Stored under `public/patents/figures/us-6302230-kamen-segway/` (`fig-1-source-crop-v1.png` to `fig-16-source-crop-v1.png`).
+- **Figure Crops**: Preserved full-sheet renderings are stored under `public/patents/figures/us-6302230-kamen-segway/` (`fig-1-source-crop-v1.png` to `fig-16-source-crop-v1.png`). They remain research evidence; the edition cites only the figure previews it actually needs. No asset is represented as an independently accepted isolated crop without a separate crop receipt.
 - **Printed Claims**: Exactly 7 printed claims (Claims 1 and 5 are independent; Claims 2, 3, 4 depend on Claim 1; Claims 6 and 7 depend on Claim 5).
+
+---
+
+## Figure Crop Review and Preservation Boundary
+
+1. **Source PDF Pinned Facsimile**: `public/patents/pdfs/us-6302230-kamen-segway.pdf` (29 pages, SHA-256 `bcda272e161a0b973db9d64090f8102447e9aa35914a9a73e70a38736b7934db`).
+2. **Drawing Sheets 1 to 16**: Facsimile pages 4 through 19 contain Drawing Sheets 1 to 16, corresponding to Figures 1 through 16.
+3. **Figure Crops on Disk**: Full drawing sheets rendered at 2088x2930 resolution in `public/patents/figures/us-6302230-kamen-segway/` (`fig-1-source-crop-v1.png` through `fig-16-source-crop-v1.png`).
+4. **Occurrences in Archival Edition**: Exactly 25 figure occurrence citations across 16 figures registered and verified with source page locators in `src/data/editions/figureOccurrenceSourceLocators.ts`.
+

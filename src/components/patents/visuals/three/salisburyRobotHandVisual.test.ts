@@ -1,4 +1,6 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import * as THREE from "three";
@@ -158,5 +160,17 @@ describe("US 4,921,293 Salisbury & Ruoff Multi-Fingered Robotic Hand visual & ki
         expect(html).toContain("REMOTE DRIVE 35");
       }
     }
+  });
+
+  test("gives the hand a full-height phone viewport and a compact camera selector", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/SalisburyRobotHand3D.tsx"),
+      "utf8",
+    );
+
+    expect(source).toContain('id="salisbury-camera-view"');
+    expect(source).toContain("sm:hidden");
+    expect(source).toContain("min-h-[320px]");
+    expect(source).toContain("sm:min-h-0 sm:aspect-video");
   });
 });

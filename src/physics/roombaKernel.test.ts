@@ -157,4 +157,17 @@ describe("US 6,594,844 Autonomous Cleaning Robot: SOTA Collision Detection & Ant
     expect(roombaPoseHudPresentation("TS_FALLBACK").value).toBe("typed TS mirror");
     expect(roombaPoseHudPresentation("WASM").value).toBe("fs-mbd WASM");
   });
+
+  test("provides valid provenance classifications for all Roomba controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-6594844-roomba"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({ wheelSpeedMps: 0.3, turnRateRadSec: 1.5 });
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
 });

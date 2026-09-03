@@ -255,16 +255,19 @@ export function HewittMercuryLamp3D({
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Top-Left Camera Preset Toolbar & Claim Constraint Toggle */}
+        {/* The claim probe is a mechanism control, not optional HUD chrome. Keep
+            it reachable when the responsive telemetry overlay starts hidden. */}
+        <div className="absolute top-14 right-3 sm:top-16 sm:right-4 z-10 max-w-[calc(100%-1.5rem)] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-682690-hewitt-mercury-lamp"
+            claimStates={claimStates}
+            onToggleClaim={(num, active) => setClaimStates((prev) => ({ ...prev, [num]: active }))}
+          />
+        </div>
+
+        {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-2 max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-28rem)] pointer-events-auto">
-            <ClaimConstraintToggle
-              patentId="us-682690-hewitt-mercury-lamp"
-              claimStates={claimStates}
-              onToggleClaim={(num, active) =>
-                setClaimStates((prev) => ({ ...prev, [num]: active }))
-              }
-            />
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-28rem)] pointer-events-auto">
             <div className="flex flex-nowrap overflow-x-auto scrollbar-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
               <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
                 <Camera className="w-3.5 h-3.5" /> View:

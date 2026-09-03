@@ -89,4 +89,36 @@ describe("US 1,219,881 Gideon Sundback Separable Fastener manual source edition"
     const result = validateReviewedTranscription(ledger, 5);
     expect(result.valid).toBe(true);
   });
+
+  test("provides valid provenance classifications for all Sundback controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-1219881-sundback-zipper"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("wires claim 1 and claim 2 constraints in claimConstraints", () => {
+    const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
+    const r1 = applyClaimConstraintModifications(
+      "us-1219881-sundback-zipper",
+      {},
+      { 1: false, 2: true },
+    );
+    expect(r1.modifiedParams.staggerAligned).toBe(0);
+    expect(r1.refusalWarning).toContain("STAGGER ALIGNMENT LOSS");
+
+    const r2 = applyClaimConstraintModifications(
+      "us-1219881-sundback-zipper",
+      {},
+      { 1: true, 2: false },
+    );
+    expect(r2.modifiedParams.socketOverlapRatio).toBe(0.1);
+    expect(r2.refusalWarning).toContain("SOCKET NESTING COLLAPSE");
+  });
 });

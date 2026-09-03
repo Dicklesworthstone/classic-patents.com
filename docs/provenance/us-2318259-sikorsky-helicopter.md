@@ -49,3 +49,27 @@
 3. **Archival React Edition**: Authored at `src/data/editions/sikorskyHelicopterEdition.ts`.
 4. **Figure Sheet Crops**: Saved at `public/patents/figures/us-2318259-sikorsky-helicopter/fig-[1-10]-source-crop-v1.png`.
 5. **No Local OCR**: Text transcribed directly against the primary facsimile.
+
+---
+
+## 4. Figure-crop review and preservation boundary
+
+Each active preview is a lossless source-sheet rendering from the pinned PDF,
+not a reconstruction or a separately drawn diagram. The full drawing-sheet
+raster is retained as the active crop so that source labels and context remain
+inspectable. Every retained raster is 2,320 by 3,408 pixels and the reviewed
+source rectangle is therefore the complete raster: `x=0`, `y=0`, `width=2320`, `height=3408`.
+
+| Active preview | Pinned PDF page | Reviewed source region | Authored edition occurrences |
+|:---|:---|:---|:---|
+| `fig-1-source-crop-v1.png` | 1 | Full Drawing Sheet 1 (Figs. 1, 2), 0,0–2320,3408 | blocks 11/0/0, 12/0/0, 23/0/1, 30/0/1 |
+| `fig-2-source-crop-v1.png` | 2 | Full Drawing Sheet 2 (Fig. 3), 0,0–2320,3408 | block 13/0/0 |
+| `fig-3-source-crop-v1.png` | 3 | Full Drawing Sheet 3 (Fig. 4), 0,0–2320,3408 | block 14/0/0 |
+| `fig-4-source-crop-v1.png` | 4 | Full Drawing Sheet 4 (Figs. 5, 6, 7), 0,0–2320,3408 | blocks 15/0/0, 16/0/0, 17/0/0, 30/0/3 |
+| `fig-5-source-crop-v1.png` | 5 | Full Drawing Sheet 5 (Fig. 8), 0,0–2320,3408 | block 18/0/0 |
+| `fig-6-source-crop-v1.png` | 6 | Full Drawing Sheet 6 (Figs. 9, 10), 0,0–2320,3408 | blocks 19/0/0, 20/0/0 |
+| `fig-7-source-crop-v1.png` | 7 | Full Drawing Sheet 7 (Figs. 11, 12), 0,0–2320,3408 | blocks 21/0/0, 22/0/0 |
+| `fig-8-source-crop-v1.png` | 8 | Full Drawing Sheet 8 (Fig. 13), 0,0–2320,3408 | Reference drawing sheet (preserved) |
+| `fig-9-source-crop-v1.png` | 9 | Full Drawing Sheet 9 (Figs. 14, 15, 16), 0,0–2320,3408 | Reference drawing sheet (preserved) |
+| `fig-10-source-crop-v1.png` | 10 | Full Drawing Sheet 10 (Figs. 17, 18), 0,0–2320,3408 | Reference drawing sheet (preserved) |
+

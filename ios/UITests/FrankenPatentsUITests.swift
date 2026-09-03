@@ -23,6 +23,23 @@ final class FrankenPatentsUITests: XCTestCase {
         )
     }
 
+    func testLatestCatalogueDeltaRobotExhibitRenders() {
+        let app = launch(
+            patentID: "us-4976582-clavel-delta-robot",
+            section: "Simulation"
+        )
+        assertExists(
+            app.descendants(matching: .any)["patent-native-visualization"],
+            in: app,
+            message: "The newly merged Clavel Delta Robot native exhibit did not render",
+            screenshotName: "Clavel Delta Robot native spatial exhibit"
+        )
+        XCTAssertFalse(
+            app.descendants(matching: .any)["patent-native-model-load-error"].exists,
+            "The Clavel route rendered the missing-model plaque instead of its bundled USDZ"
+        )
+    }
+
     func testNativeEquationAtlasRenders() {
         let app = launch(
             patentID: "us-3260375-lemelson-adjustable-manipulator",
@@ -55,9 +72,8 @@ final class FrankenPatentsUITests: XCTestCase {
             patentID: "us-1219881-sundback-zipper",
             section: "Simulation"
         )
-        XCUIDevice.shared.orientation = .landscapeLeft
         defer { XCUIDevice.shared.orientation = .portrait }
-        Thread.sleep(forTimeInterval: 0.85)
+        let windowFrame = waitForLandscapeWindow(in: app)
         let visualization = app.descendants(matching: .any)["patent-native-visualization"]
         XCTAssertTrue(
             visualization.waitForExistence(timeout: 12),
@@ -68,7 +84,6 @@ final class FrankenPatentsUITests: XCTestCase {
         // Simulator after an in-test orientation change. Check the actual
         // accessibility geometry here; visual evidence is captured from the
         // explicitly addressed simulator framebuffer by the verification run.
-        let windowFrame = app.windows.firstMatch.frame
         XCTAssertGreaterThan(windowFrame.width, windowFrame.height)
         assertHorizontallyContained(visualization, in: windowFrame, name: "native visualization")
         assertHorizontallyContained(app.buttons["Pause"], in: windowFrame, name: "animation control")
@@ -127,5 +142,19 @@ final class FrankenPatentsUITests: XCTestCase {
         let frame = element.frame
         XCTAssertGreaterThanOrEqual(frame.minX, window.minX - 1, "The \(name) overflows left")
         XCTAssertLessThanOrEqual(frame.maxX, window.maxX + 1, "The \(name) overflows right")
+    }
+
+    private func waitForLandscapeWindow(in app: XCUIApplication) -> CGRect {
+        var frame = app.windows.firstMatch.frame
+        for orientation in [UIDeviceOrientation.landscapeLeft, .landscapeRight] {
+            XCUIDevice.shared.orientation = orientation
+            let deadline = Date().addingTimeInterval(3)
+            repeat {
+                RunLoop.current.run(until: Date().addingTimeInterval(0.15))
+                frame = app.windows.firstMatch.frame
+                if frame.width > frame.height { return frame }
+            } while Date() < deadline
+        }
+        return frame
     }
 }

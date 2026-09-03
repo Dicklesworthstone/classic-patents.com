@@ -12,6 +12,7 @@ mock.module("next/navigation", () => ({
 }));
 
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
+import { evaluateArchivalPublicationState } from "@/data/editions/publicationApproval";
 import { wrightFlyerPatent } from "@/data/patents/wright-flyer";
 import { DualProjectionViewer } from "./DualProjectionViewer";
 
@@ -20,7 +21,10 @@ describe("DualProjectionViewer component", () => {
     const html = renderToStaticMarkup(
       <DualProjectionViewer
         patent={wrightFlyerPatent}
+        archivalPublication={evaluateArchivalPublicationState(wrightFlyerPatent)}
+        archivalParallelReadings={undefined}
         colorizedEquations={getColorizedEquationsForPatent(wrightFlyerPatent.id)}
+        hasRawSourceText={false}
         initialView="plain-english"
       />,
     );
@@ -40,7 +44,10 @@ describe("DualProjectionViewer component", () => {
     const originalHtml = renderToStaticMarkup(
       <DualProjectionViewer
         patent={wrightFlyerPatent}
+        archivalPublication={evaluateArchivalPublicationState(wrightFlyerPatent)}
+        archivalParallelReadings={undefined}
         colorizedEquations={getColorizedEquationsForPatent(wrightFlyerPatent.id)}
+        hasRawSourceText={false}
         initialView="original-spec"
       />,
     );

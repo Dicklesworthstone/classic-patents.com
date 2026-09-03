@@ -11,6 +11,7 @@ struct NativePatentSceneView: View {
     let isRunning: Bool
     @State private var resetToken = 0
     @State private var isPrepared = false
+    @State private var didLoadModel = false
 
     var body: some View {
         ZStack {
@@ -19,7 +20,8 @@ struct NativePatentSceneView: View {
                 drive: drive,
                 isRunning: isRunning,
                 resetToken: resetToken,
-                isPrepared: $isPrepared
+                isPrepared: $isPrepared,
+                didLoadModel: $didLoadModel
             )
 
             if !isPrepared {
@@ -40,6 +42,24 @@ struct NativePatentSceneView: View {
                 .background(.black.opacity(0.82), in: RoundedRectangle(cornerRadius: 18))
                 .overlay(RoundedRectangle(cornerRadius: 18).stroke(Lab.brass.opacity(0.35)))
                 .allowsHitTesting(false)
+            }
+
+            if isPrepared && !didLoadModel {
+                VStack(spacing: 9) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundStyle(.red)
+                    Text("Bundled 3D model unavailable")
+                        .font(.system(size: Lab.size(13), weight: .bold, design: .rounded))
+                        .foregroundStyle(Lab.parchment)
+                    Text("This exhibit is incomplete in this build.")
+                        .font(.system(size: Lab.size(10.5), design: .rounded))
+                        .foregroundStyle(Lab.secondary)
+                }
+                .padding(20)
+                .background(.black.opacity(0.9), in: RoundedRectangle(cornerRadius: 16))
+                .overlay(RoundedRectangle(cornerRadius: 16).stroke(.red.opacity(0.55)))
+                .accessibilityIdentifier("patent-native-model-load-error")
             }
 
             VStack {
@@ -82,7 +102,10 @@ struct NativePatentSceneView: View {
         .background(Color.black)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Interactive three dimensional model of \(patent.shortTitle)")
-        .onChange(of: patent.id) { _, _ in isPrepared = false }
+        .onChange(of: patent.id) { _, _ in
+            isPrepared = false
+            didLoadModel = false
+        }
     }
 }
 
@@ -150,8 +173,11 @@ private struct PatentSceneRepresentable: UIViewRepresentable {
     let isRunning: Bool
     let resetToken: Int
     @Binding var isPrepared: Bool
+    @Binding var didLoadModel: Bool
 
-    func makeCoordinator() -> Coordinator { Coordinator(isPrepared: $isPrepared) }
+    func makeCoordinator() -> Coordinator {
+        Coordinator(isPrepared: $isPrepared, didLoadModel: $didLoadModel)
+    }
 
     func makeUIView(context: Context) -> SCNView {
         // The option-key initializer is not exposed by Mac Catalyst even
@@ -191,17 +217,24 @@ private struct PatentSceneRepresentable: UIViewRepresentable {
         private weak var modelRoot: SCNNode?
         private var animatedNodes: [SCNNode] = []
         private var cameraHome = SCNVector3(5.8, 3.5, 7.6)
+        private var cameraTarget = SCNVector3(0, 0.15, 0)
+        private var normalizedExtent: Float = 7.0
         private let isPrepared: Binding<Bool>
+        private let didLoadModel: Binding<Bool>
+        private var modelLoadSucceeded = false
 
-        init(isPrepared: Binding<Bool>) {
+        init(isPrepared: Binding<Bool>, didLoadModel: Binding<Bool>) {
             self.isPrepared = isPrepared
+            self.didLoadModel = didLoadModel
         }
 
         func install(patentID: String, in view: SCNView) {
             self.patentID = patentID
             animatedNodes = []
+            modelLoadSucceeded = false
             let scene = SCNScene()
             view.scene = scene
+            configurePresentation(for: patentID)
 
             let model = SCNNode()
             model.name = "NativePatentModel"
@@ -209,6 +242,7 @@ private struct PatentSceneRepresentable: UIViewRepresentable {
                 for child in imported.rootNode.childNodes {
                     model.addChildNode(child.clone())
                 }
+                modelLoadSucceeded = true
             } else {
                 model.addChildNode(errorPlaque())
             }
@@ -234,6 +268,7 @@ private struct PatentSceneRepresentable: UIViewRepresentable {
                           let view,
                           self.patentID == expectedPatentID,
                           view.scene === scene else { return }
+                    self.didLoadModel.wrappedValue = self.modelLoadSucceeded
                     self.isPrepared.wrappedValue = true
                 }
             }
@@ -254,7 +289,7 @@ private struct PatentSceneRepresentable: UIViewRepresentable {
             guard let camera = view.scene?.rootNode.childNode(withName: "MuseumCamera", recursively: true) else { return }
             let changes = {
                 camera.position = self.cameraHome
-                camera.look(at: SCNVector3(0, 0.15, 0))
+                camera.look(at: self.cameraTarget)
                 view.pointOfView = camera
             }
             if animated { SCNTransaction.animationDuration = 0.32 }
@@ -277,8 +312,24 @@ private struct PatentSceneRepresentable: UIViewRepresentable {
             let extent = max(maximum.x - minimum.x, max(maximum.y - minimum.y, maximum.z - minimum.z))
             guard extent.isFinite, extent > 0.000_1 else { return }
             node.pivot = SCNMatrix4MakeTranslation(center.x, center.y, center.z)
-            let scale = 7.0 / extent
+            let scale = normalizedExtent / extent
             node.scale = SCNVector3(scale, scale, scale)
+        }
+
+        private func configurePresentation(for patentID: String) {
+            cameraHome = SCNVector3(5.8, 3.5, 7.6)
+            cameraTarget = SCNVector3(0, 0.15, 0)
+            normalizedExtent = 7.0
+
+            if patentID == "us-4976582-clavel-delta-robot" {
+                // The Delta mechanism hangs below its broad triangular base.
+                // The general museum camera looks down onto that base and
+                // hides the articulated arms. A lower three-quarter view and
+                // slightly wider framing reveal the complete parallel linkage.
+                cameraHome = SCNVector3(6.2, 0.35, 7.8)
+                cameraTarget = SCNVector3(0, -0.25, 0)
+                normalizedExtent = 5.4
+            }
         }
 
         private func addCamera(to scene: SCNScene) {
@@ -289,7 +340,7 @@ private struct PatentSceneRepresentable: UIViewRepresentable {
             camera.camera?.zNear = 0.01
             camera.camera?.zFar = 1_000
             camera.position = cameraHome
-            camera.look(at: SCNVector3(0, 0.15, 0))
+            camera.look(at: cameraTarget)
             scene.rootNode.addChildNode(camera)
         }
 

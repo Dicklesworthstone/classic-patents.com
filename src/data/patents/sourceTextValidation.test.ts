@@ -30,6 +30,54 @@ describe("reviewed-ledger literal comparison", () => {
     );
   });
 
+  it("bridges a repeated patent-number/page-number header across a source-page split", () => {
+    const ledger = [
+      "--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---",
+      "The circuit is laid out on the printed circuit",
+      "--- REVIEWED TRANSCRIPTION PAGE 2 OF 2 ---",
+      "3,858,581",
+      "7",
+      "board.",
+    ].join("\n");
+
+    expect(normalizeReviewedLedgerText(ledger)).toBe(
+      normalizeReviewedLedgerText("The circuit is laid out on the printed circuit board."),
+    );
+  });
+
+  it("bridges a repeated header after page-bound column furniture", () => {
+    const ledger = [
+      "--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---",
+      "The circuit is laid out on the printed circuit",
+      "--- REVIEWED TRANSCRIPTION PAGE 2 OF 2 ---",
+      "",
+      "Column 3",
+      "",
+      "3,858,581",
+      "7",
+      "board.",
+    ].join("\n");
+
+    expect(normalizeReviewedLedgerText(ledger)).toBe(
+      normalizeReviewedLedgerText("The circuit is laid out on the printed circuit board."),
+    );
+  });
+
+  it("preserves a patent-number citation when it occurs in source prose", () => {
+    const ledger = [
+      "--- REVIEWED TRANSCRIPTION PAGE 1 OF 1 ---",
+      "The cited record is US 3,858,581.",
+      "7",
+      "The following sentence is still part of the source text.",
+    ].join("\n");
+
+    expect(normalizeReviewedLedgerText(ledger)).toBe(
+      normalizeReviewedLedgerText(
+        "The cited record is US 3,858,581. The following sentence is still part of the source text.",
+      ),
+    );
+  });
+
   it("does not erase punctuation or ordinary words while normalizing layout noise", () => {
     expect(normalizeReviewedLedgerText("Claim: first field; second field.")).toBe(
       "Claim: first field; second field.",

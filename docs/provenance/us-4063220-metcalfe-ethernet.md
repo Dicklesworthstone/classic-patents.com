@@ -53,3 +53,10 @@
 3. **Archival React Edition**: Authored at `src/data/editions/metcalfeEthernetEdition.ts`.
 4. **Figure Sheet Crops**: Saved at `public/patents/figures/us-4063220-metcalfe-ethernet/fig-[1-6]-source-crop-v1.png`.
 5. **No Local OCR**: Text transcribed directly against the primary facsimile.
+
+---
+
+## 4. Figure Crop Review and Preservation Boundary
+
+All 6 drawing sheet crops (`fig-1-source-crop-v1.png` through `fig-6-source-crop-v1.png`) are 2320x3408 high-resolution full-sheet facsimiles extracted directly from PDF pages 2 through 7. Each of the 32 inline figure references in the archival edition is bound via `metcalfeEthernetLocator` in `src/data/editions/figureOccurrenceSourceLocators.ts` with explicit source sheet page numbers and verified SHA-256 digests in `src/data/editions/archivalFigureAcceptance.ts`.
+

@@ -45,9 +45,16 @@ describe("US 3,260,375 Lemelson Adjustable Manipulator procedural visual boundar
     expect(sim2d).toContain('const PATENT_ID = "us-3260375-lemelson-adjustable-manipulator";');
     expect(sim2d).toContain("usePatentPhysics(PATENT_ID)");
     expect(sim2d).toContain("stepLemelsonManipulatorTopology");
+    expect(sim2d).toContain("ClaimConstraintToggle");
+    expect(sim2d).toContain("effectiveParams");
+    expect(sim2d).toContain('role="status"');
     expect(studio3d).toContain('const PATENT_ID = "us-3260375-lemelson-adjustable-manipulator";');
     expect(studio3d).toContain("usePatentPhysics(PATENT_ID)");
     expect(studio3d).toContain("createStudioClock");
+    expect(studio3d).toContain("ClaimConstraintToggle");
+    expect(studio3d).toContain("liveParams.current = effectiveParams");
+    expect(studio3d).toContain("claimConstraintResult.refusalWarning");
+    expect(studio3d).toContain('role="status"');
     expect(telemetry).toContain('"us-3260375-lemelson-adjustable-manipulator"');
   });
 });

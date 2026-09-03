@@ -369,4 +369,27 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
     expect(fermiReactorPatent.originalTextAsset).toBeDefined();
     expect(fermiReactorPatent.archivalEdition).toBe(fermiReactorArchivalEdition);
   });
+
+  test("provides valid provenance classifications for all Fermi controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-2708656-fermi-reactor"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("enforces full specification pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(fermiReactorPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_FULL_SPECIFICATION_PENDING");
+  });
 });

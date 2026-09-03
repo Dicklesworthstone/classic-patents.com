@@ -67,6 +67,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 2,846,084 prints a seven-channel electrical master–slave topology, sample servo components, an error-signal relationship, limiter, and tachometer feedback, but no arm dimensions, mass, payload, motor torque constants, current, voltage, gain, speed, force calibration, contact model, or duty cycle from which a source-faithful SI power-flow channel can be derived.",
   "us-4921293-salisbury-robot-hand":
     "US 4,921,293 prints four cable tensions, pulley-radius symbols, three static torque equations, and remote-drive topology but no cable speed, motor current, voltage, torque constant, friction, efficiency, duty cycle, contact work, or time response from which a source-faithful SI power-flow channel can be derived.",
+  "us-4976582-clavel-delta-robot":
+    "US 4,976,582 prints three actuator/linking-member topologies, paired bars, a movable platform, and an optional working-member motor, but no dimensions, mass, inertia, payload, actuator torque or pressure, voltage or current, speed, duty cycle, friction, efficiency, or power datum from which a source-faithful SI energy channel can be derived.",
   "us-2988237-devol-programmed-transfer":
     "US 2,988,237 prints coded-position, program-controller, hydraulic-actuator, transfer-head, and gripper relationships but no reusable hydraulic pressure, flow, actuator dimensions, payload, mass, speed, efficiency, or power datum from which an SI energy channel can be derived.",
   "us-3212649-amf-versatran":
@@ -143,6 +145,12 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 233,692 describes the bucket geometry (curved bottoms c, central apex d, inclined sides e, and sloping face b) for dividing a water jet, but supplies no hydraulic head, volumetric flow rate, runner RPM, efficiency, or continuous mechanical power datum from which an authentic SI energy channel can be derived.",
   "us-3541541-engelbart-mouse":
     "US 3,541,541 specifies the mechanical construction of perpendicular knife-edge wheels, potentiometer shafts, and housing, but supplies no hand translation velocity, rolling friction, potentiometer power dissipation, or continuous mechanical/electrical wattage datum from which an authentic SI energy channel can be derived.",
+  "us-395781-hollerith-tabulating":
+    "US 395,781 describes an electro-mechanical tabulating system with sensing pins, mercury cups, and magnet-actuated counting registers, but supplies no operational battery voltage, coil resistance, circuit current, pulse duty cycle, or continuous electrical power datum from which an authentic SI energy channel can be derived.",
+  "us-706737-fessenden-wireless":
+    "US 706,737 describes continuous-wave wireless signalling using a high-frequency alternator, sending conductor, and low-resistance tuned antenna circuit, but supplies no operational alternator drive power, RF radiating efficiency, antenna field current, or continuous wattage datum from which an authentic SI energy channel can be derived.",
+  "us-2543181-land-polaroid":
+    "US 2,543,181 describes a photographic product and process employing a viscous reagent pod, spreading rollers, and diffusion-transfer reversal chemistry between negative and positive layers, but supplies no mechanical pull force, translation speed, roller drive wattage, or continuous SI power datum from which an authentic energy channel can be derived.",
 } as const satisfies Record<string, string>;
 
 export function energyChannelsFor(
@@ -661,15 +669,6 @@ export function energyChannelsFor(
     ];
   }
 
-  if (patentId === "us-706737-fessenden-wireless") {
-    const rfW = 1200;
-    return [
-      { name: "Alternator Shaft", watts: rfW, tone: "in" },
-      { name: "Continuous Wave RF", watts: rfW * 0.64, tone: "useful" },
-      { name: "Antenna Tuning Loss", watts: rfW * 0.36, tone: "loss" },
-    ];
-  }
-
   if (patentId === "us-x1-hopkins-potash") {
     const hopkins = stepHopkinsPotash({
       roastTempC: params.roastTempC ?? params.furnaceTempC,
@@ -726,15 +725,6 @@ export function energyChannelsFor(
     ];
   }
 
-  if (patentId === "us-395781-hollerith-tabulating") {
-    const pulseW = 24;
-    return [
-      { name: "Battery Solenoid Pulse", watts: pulseW, tone: "in" },
-      { name: "Counter Dial Magnet Actuation", watts: pulseW * 0.78, tone: "useful" },
-      { name: "Mercury Cup Contact Resistance", watts: pulseW * 0.22, tone: "loss" },
-    ];
-  }
-
   if (patentId === "us-542846-diesel-engine") {
     const fuelW = 12000;
     return [
@@ -750,15 +740,6 @@ export function energyChannelsFor(
 
   if (patentId === "us-2495429-spencer-microwave") {
     return [];
-  }
-
-  if (patentId === "us-2543181-land-polaroid") {
-    const rollW = 4.2;
-    return [
-      { name: "Film Pull Mechanical Roller Work", watts: rollW, tone: "in" },
-      { name: "Reagent Pod Rupture & Diffusion Transfer", watts: rollW * 0.76, tone: "useful" },
-      { name: "Spreading Viscous Layer Shear Friction", watts: rollW * 0.24, tone: "loss" },
-    ];
   }
 
   if (patentId === "us-6285999-pagerank") {
@@ -806,23 +787,25 @@ export function energyChannelsFor(
       35,
       mechanicalThrustW * 1.25 + Math.abs(tel.motorTorqueNm) * 2.2 + 25,
     );
+    // The patent names ripple modulation but gives neither an electrical power nor
+    // a waveform. This retained teaching channel is deliberately illustrative.
     const hapticRippleW = tel.tactileAlarmActive ? 18.0 : 0.0;
     const electricalOhmicLossW = Math.max(10, motorElecW - mechanicalThrustW - hapticRippleW);
 
     return [
-      { name: "Dual Saphion Li-Ion Battery Power", watts: motorElecW, tone: "in" },
+      { name: "Illustrative Electrical Input", watts: motorElecW, tone: "in" },
       {
-        name: "Inverted Pendulum Ground Thrust & Kinetic Propulsion",
+        name: "Illustrative Ground Thrust & Kinetic Propulsion",
         watts: mechanicalThrustW,
         tone: "useful",
       },
       {
-        name: "18 Hz Tactile Ripple Alarm Shudder Dissipation",
+        name: "Illustrative Ripple-Alarm Dissipation",
         watts: hapticRippleW,
         tone: tel.tactileAlarmActive ? "useful" : "loss",
       },
       {
-        name: "Brushless Servomotor Copper I²R & Planetary Gear Friction Loss",
+        name: "Illustrative Drive-Train Electrical and Friction Loss",
         watts: electricalOhmicLossW,
         tone: "loss",
       },

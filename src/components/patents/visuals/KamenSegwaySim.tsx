@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
 import {
   KAMEN_SEGWAY_DEFAULT_CONTROLS,
@@ -32,6 +33,13 @@ export function KamenSegwaySim({ patentId = PATENT_ID }: { patentId?: string }) 
   const tel = useMemo(() => {
     return stepKamenSegwaySi(effectiveControls);
   }, [effectiveControls]);
+  const claimStates = useMemo(
+    () => ({
+      1: effectiveControls.claim1BalanceEnabled,
+      2: effectiveControls.claim2RippleEnabled,
+    }),
+    [effectiveControls.claim1BalanceEnabled, effectiveControls.claim2RippleEnabled],
+  );
 
   const updateControl = (key: keyof KamenSegwayControls, value: number) => {
     const updated = { ...effectiveControls, [key]: value };
@@ -51,9 +59,18 @@ export function KamenSegwaySim({ patentId = PATENT_ID }: { patentId?: string }) 
             </h3>
           </div>
           <p className="text-xs text-slate-400 mt-0.5">
-            Dean Kamen Segway HT: State Feedback, Balancing Margin Headroom, and 18 Hz Tactile
-            Ripple Alarm
+            Source-disclosed automatic balance and ripple-alarm topology · modern illustrative SI
+            scenario
           </p>
+          <ClaimConstraintToggle
+            patentId={PATENT_ID}
+            claimStates={claimStates}
+            onToggleClaim={(claimNumber, active) => {
+              const key = claimNumber === 1 ? "claim1BalanceEnabled" : "claim2RippleEnabled";
+              patentPhysics?.updateParam?.(key, active ? 1 : 0);
+            }}
+            className="mt-2"
+          />
         </div>
 
         {/* View Mode Buttons */}
@@ -332,10 +349,18 @@ export function KamenSegwaySim({ patentId = PATENT_ID }: { patentId?: string }) 
                     tel.tactileAlarmActive ? "text-rose-400 animate-bounce" : "text-slate-500"
                   }`}
                 >
-                  {tel.tactileAlarmActive ? "18 Hz SHUDDER" : "STANDBY"}
+                  {tel.claim2RippleWithheld
+                    ? "CLAIM 2 WITHHELD"
+                    : tel.tactileAlarmActive
+                      ? "RIPPLE ACTIVE"
+                      : "STANDBY"}
                 </div>
                 <span className="text-xs text-slate-400">
-                  {tel.tactileAlarmActive ? "Platform Vibration Active" : "Torque Reserve OK"}
+                  {tel.claim2RippleWithheld
+                    ? "No substitute alarm inferred"
+                    : tel.tactileAlarmActive
+                      ? "Ripple-modulation alarm active"
+                      : "Modern model reserve OK"}
                 </span>
               </div>
             </div>

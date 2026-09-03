@@ -2,6 +2,7 @@
 
 import { Camera, Eye, EyeOff, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { daimlerKernelSource, ensureDaimlerWasm } from "@/physics/daimlerWasm";
 import { FrankenSimEngine } from "@/physics/engine";
@@ -44,6 +45,7 @@ export function DaimlerEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { params, updateParam } = usePatentPhysics("us-361931-daimler-engine");
   const [kernelSource, setKernelSource] = useState(daimlerKernelSource());
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const shaftPosition = params.shaftPosition ?? 1;
   const coolingPumpEnabled = params.coolingPumpEnabled ?? 0;
@@ -358,6 +360,16 @@ export function DaimlerEngine3D() {
           friction coefficient, cooling flow, thrust, or power from which quantitative performance
           could be derived.
         </p>
+
+        <div className="mt-4 pt-3 border-t border-parchment-200 dark:border-ink-800">
+          <ClaimConstraintToggle
+            patentId="us-361931-daimler-engine"
+            claimStates={claimStates}
+            onClaimStateChange={(num, active) =>
+              setClaimStates((prev) => ({ ...prev, [num]: active }))
+            }
+          />
+        </div>
       </div>
     </div>
   );

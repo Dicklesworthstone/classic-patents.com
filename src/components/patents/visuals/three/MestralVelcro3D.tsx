@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "@/components/patents/visuals/PortHamiltonianEnergyStrip";
 import {
   createMestralVelcroModel,
   type MestralVelcro3DObjects,
@@ -11,6 +13,7 @@ import {
   type StudioContext,
 } from "@/components/patents/visuals/three/ThreeStudioScene";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { readMestralVelcroControls, stepMestralVelcroSi } from "@/physics/mestralVelcroKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -25,13 +28,12 @@ export default function MestralVelcro3D({
   const studioRef = useRef<StudioContext | null>(null);
   const modelRef = useRef<MestralVelcro3DObjects | null>(null);
 
-  const { params, updateParam } = usePatentPhysics(patentId);
-  const controls = useMemo(() => readMestralVelcroControls(params), [params]);
+  const { effectiveParams, claimStates, updateParam } = usePatentPhysics(patentId);
+  const controls = useMemo(() => readMestralVelcroControls(effectiveParams), [effectiveParams]);
   const tel = useMemo(() => stepMestralVelcroSi(controls), [controls]);
 
   useFrankenSimPhysics(patentId);
 
-  const [peelProgress, setPeelProgress] = useState<number>(0.35);
   const [cameraPreset, setCameraPreset] = useState<
     "perspective" | "peel-front" | "hooks-detail" | "top"
   >("perspective");
@@ -39,13 +41,11 @@ export default function MestralVelcro3D({
   // Live refs for animation frame render loop
   const liveControlsRef = useRef(controls);
   const liveTelRef = useRef(tel);
-  const livePeelRef = useRef(peelProgress);
 
   useEffect(() => {
     liveControlsRef.current = controls;
     liveTelRef.current = tel;
-    livePeelRef.current = peelProgress;
-  }, [controls, tel, peelProgress]);
+  }, [controls, tel]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -71,7 +71,7 @@ export default function MestralVelcro3D({
     const renderLoop = (now: number) => {
       clock.pump(now);
       if (modelRef.current && studioRef.current) {
-        modelRef.current.update(liveControlsRef.current, liveTelRef.current, livePeelRef.current);
+        modelRef.current.update(liveControlsRef.current, liveTelRef.current);
         studioRef.current.controls.update();
         studioRef.current.renderer.render(studioRef.current.scene, studioRef.current.camera);
       }
@@ -225,18 +225,33 @@ export default function MestralVelcro3D({
         <div className="flex flex-col space-y-1.5">
           <div className="flex justify-between text-stone-300 font-medium">
             <span>Peeling Advance</span>
-            <span className="font-mono text-cyan-400">{(peelProgress * 100).toFixed(0)}%</span>
+            <span className="font-mono text-cyan-400">{(tel.peelProgress * 100).toFixed(0)}%</span>
           </div>
           <input
             type="range"
             min="0.05"
             max="0.95"
             step="0.01"
-            value={peelProgress}
-            onChange={(e) => setPeelProgress(parseFloat(e.target.value))}
+            value={controls.peelProgress}
+            onChange={(e) => updateParam("peelProgress", parseFloat(e.target.value))}
             className="accent-cyan-500 bg-stone-800 h-1.5 rounded-lg cursor-pointer"
           />
         </div>
+      </div>
+
+      {/* Claim Constraints & Energy Ledger */}
+      <div className="p-4 bg-stone-950 border-t border-stone-800 flex flex-col space-y-3">
+        <ClaimConstraintToggle
+          patentId={patentId}
+          claimStates={claimStates}
+          onToggleClaim={(claimNumber, active) =>
+            updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
+          }
+        />
+        <PortHamiltonianEnergyStrip
+          patentId={patentId}
+          params={controls as unknown as Record<string, number>}
+        />
       </div>
     </div>
   );

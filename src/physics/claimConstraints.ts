@@ -17,6 +17,12 @@ export interface ClaimConstraintDefinition {
   historicalPriorArt: string;
 }
 
+export interface ClaimConstraintResult {
+  modifiedParams: Record<string, number>;
+  activeFailures: string[];
+  refusalWarning: string | null;
+}
+
 export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition[]> = {
   "us-821393-wright-flyer": [
     {
@@ -533,6 +539,44 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "The grant describes the idler and drive-pulley relationship as part of its articulated-finger routing; it does not provide measured comparative performance for a released idler.",
     },
   ],
+  "us-4976582-clavel-delta-robot": [
+    {
+      claimNumber: 1,
+      patentId: "us-4976582-clavel-delta-robot",
+      claimTitle: "Three-Actuator Attitude-Preserving Parallel Topology",
+      activeDescription:
+        "Claim 1 combines a base, movable member, at least three single-degree-of-freedom actuators, and articulated linking means that fix the movable member's inclination and orientation through their stated motions.",
+      invertedDescription:
+        "Withhold the Claim 1 construction. The exhibit no longer represents the source-described attitude-preserving parallel device and does not invent a falling, inaccurate, or dynamically unstable platform.",
+      failureModeName: "Claim 1 Parallel Topology Withheld",
+      historicalPriorArt:
+        "The specification contrasts serial arrangements with a parallel arrangement whose actuators are fixed to the base; it supplies no measured counterfactual performance for removing that topology.",
+    },
+    {
+      claimNumber: 2,
+      patentId: "us-4976582-clavel-delta-robot",
+      claimTitle: "Paired Parallel Linking Bars",
+      activeDescription:
+        "Claim 2 narrows Claim 1 to a linking means made of two parallel bars, each articulated at the actuator-side and movable-member-side ends.",
+      invertedDescription:
+        "Withhold the paired-bar construction while leaving the normalized teaching pose otherwise unscored. The grant does not state an accuracy, stiffness, force, or failure law for a single-bar comparison.",
+      failureModeName: "Claim 2 Paired Bars Withheld",
+      historicalPriorArt:
+        "The patent presents alternative single-bar/cardanic arrangements separately; it does not quantify a comparative orientation or payload result for replacing the claimed paired bars.",
+    },
+    {
+      claimNumber: 8,
+      patentId: "us-4976582-clavel-delta-robot",
+      claimTitle: "Base-Mounted Supplementary Tool-Axis Motor",
+      activeDescription:
+        "Claim 8 adds a rotatable working member and a supplementary motor mounted on the base for rotation about the working member's longitudinal axis.",
+      invertedDescription:
+        "Withhold only the Claim 8 base-mounted supplementary-drive form. The exhibit does not replace it with an invented transmission torque, speed, or tool performance prediction.",
+      failureModeName: "Claim 8 Base Tool-Motor Form Withheld",
+      historicalPriorArt:
+        "The grant separately claims a movable-member-mounted motor in Claim 9, so removal of Claim 8 is displayed as a legal-topology boundary rather than a claim that all tool rotation is impossible.",
+    },
+  ],
   "us-400766-hall-aluminium": [
     {
       claimNumber: 1,
@@ -745,12 +789,12 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       patentId: "us-3858581-kamen-medication-injection-device",
       claimTitle: "Lead Screw Striker & Pulse-Counted Syringe Advance",
       activeDescription:
-        "Claim 1 couples a drive motor to a uniform-pitch lead screw with a radial striker that trips a pulse switch once per revolution to count turns and control plunger displacement.",
+        "Claim 1 couples a drive motor to a uniform-pitch lead screw with a radial striker that trips a pulse switch once per revolution, preserving the source-described turn-counting link to plunger motion.",
       invertedDescription:
-        "Open-loop timed injection: without pulse counting from the lead-screw striker, variations in motor speed cause erratic plunger advance and inaccurate dosing.",
-      failureModeName: "Uncounted Open-Loop Plunger Advance",
+        "Withheld rotation-counting topology: without pulses from the lead-screw striker, this normalized exhibit no longer represents Claim 1's link between screw turns and motor control.",
+      failureModeName: "Withheld Rotation-Counting Topology",
       historicalPriorArt:
-        "Early automated infusion pumps used unregulated clockwork or analog motor timers that drifted under varying mechanical friction.",
+        "The source describes earlier motor-driven syringe devices and presents its rotation-linked counting arrangement as the improvement; this exhibit makes no broader prior-art or clinical-performance claim.",
     },
   ],
   "us-2495429-spencer-microwave": [
@@ -1764,24 +1808,24 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       patentId: "us-6302230-kamen-segway",
       claimTitle: "Inverted Pendulum Dynamic Balancing & Balancing Margin Alarm",
       activeDescription:
-        "Claim 1 maintains closed-loop dynamic balance on coaxial wheels while continuously evaluating reserve acceleration potential to warn the user before balancing failure.",
+        "Claim 1 recites a powered, automatically balanced vehicle, a balancing margin defined from present and maximum operating velocity, a monitor, and an alarm when that margin falls below a specified limit.",
       invertedDescription:
-        "Disabled balance loop: inverted pendulum transporter immediately falls forward/backward under gravitational torque, or saturates motors without rider warning.",
-      failureModeName: "Inverted Pendulum Gravitational Overturn / Torque Saturation",
+        "Claim-topology probe: withholding the powered automatic-balance combination leaves the source-described unpowered instability. The grant does not supply a fall time, motor rating, or other quantitative failure prediction.",
+      failureModeName: "Claim 1 Powered Automatic-Balance Topology Withheld",
       historicalPriorArt:
-        "Prior vehicles relied on static multi-wheel stability or passive gyroscopes, lacking active lean balancing and dynamic acceleration margin safety supervision.",
+        "The specification contrasts the claimed active control loop with statically stable vehicles and user-maintained dynamic stability such as a bicycle, motorcycle, or scooter.",
     },
     {
       claimNumber: 2,
       patentId: "us-6302230-kamen-segway",
       claimTitle: "Tactile Motor Ripple Vibration Alarm",
       activeDescription:
-        "Claim 2 modulates motor drive power output with an 18 Hz torque ripple to transmit physical shudder feedback through the platform to the rider's feet.",
+        "Claim 2 adds ripple modulation of the motorized drive arrangement's power output as the alarm path.",
       invertedDescription:
-        "No tactile feedback: rider receives no physical vibration warning when approaching motor torque limits, increasing risk of sudden loss of balance.",
-      failureModeName: "Loss of Haptic Speed/Torque Margin Feedback",
+        "Claim-topology probe: withholding the ripple-modulation path removes that dependent-claim alarm form. The grant does not print a vibration frequency, torque amplitude, or comparative safety outcome.",
+      failureModeName: "Claim 2 Ripple-Modulation Alarm Path Withheld",
       historicalPriorArt:
-        "Visual or audible dashboard warnings were easily missed in noisy outdoor environments or when rider focus was on the path ahead.",
+        "The specification lists audible, visual, tactile, and ripple-modulated alarm forms; it does not provide a comparative human-factors study of them.",
     },
   ],
   "us-3212649-amf-versatran": [
@@ -2197,6 +2241,19 @@ export function applyClaimConstraintModifications(
       break;
     }
 
+    case "us-3858581-kamen-medication-injection-device": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.motorCircuitClosed = 0;
+        activeFailures.push(
+          "Claim 1 pulse-counted lead-screw advance withheld: open-loop drive cannot track turn count or control plunger displacement.",
+        );
+        refusalWarning =
+          "NONCLINICAL MECHANISM REFUSAL: withholding pulse-switch counting breaks the turn-counting loop; the grant provides no source-bounded alternative timing or clinical-delivery model.";
+      }
+      break;
+    }
+
     case "us-307031-edison-indicator": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
@@ -2422,6 +2479,7 @@ export function applyClaimConstraintModifications(
 
     case "us-1219881-sundback-zipper": {
       const claim1Active = claimStates[1] ?? true;
+      const claim2Active = claimStates[2] ?? true;
       if (!claim1Active) {
         modified.staggerAligned = 0;
         activeFailures.push(
@@ -2429,6 +2487,14 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "STAGGER ALIGNMENT LOSS: Claim 1 half-pitch offset required for progressive nested interlock.";
+      }
+      if (!claim2Active) {
+        modified.socketOverlapRatio = 0.1;
+        activeFailures.push(
+          "Flexion Pop-Out: Reduced tooth socket overlap causes lateral unmeshing under bending load",
+        );
+        refusalWarning =
+          "SOCKET NESTING COLLAPSE: Claim 2 elongated projections and sockets required to prevent lateral flexion pop-out.";
       }
       break;
     }
@@ -2502,6 +2568,34 @@ export function applyClaimConstraintModifications(
       break;
     }
 
+    case "us-4976582-clavel-delta-robot": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim2Active = claimStates[2] ?? true;
+      const claim8Active = claimStates[8] ?? true;
+
+      if (!claim1Active) {
+        modified.claim1TopologyEnabled = 0;
+        activeFailures.push(
+          "Claim 1 topology withheld: the display no longer represents the three-actuator, attitude-preserving parallel device.",
+        );
+        refusalWarning =
+          "SOURCE BOUNDARY: US 4,976,582 supplies no dimensions, mass, payload, actuator data, stiffness, accuracy, or dynamic law from which a counterfactual platform outcome can be calculated.";
+      }
+      if (!claim2Active) {
+        modified.claim2PairedBarsEnabled = 0;
+        activeFailures.push(
+          "Claim 2 topology withheld: the display no longer represents the source-described paired parallel linking bars.",
+        );
+      }
+      if (!claim8Active) {
+        modified.claim8BaseMotorEnabled = 0;
+        activeFailures.push(
+          "Claim 8 topology withheld: the display no longer represents the base-mounted supplementary working-member motor form.",
+        );
+      }
+      break;
+    }
+
     case "us-2717437-mestral-velcro": {
       const claim1Active = claimStates[1] ?? true;
       const claim3Active = claimStates[3] ?? true;
@@ -2565,6 +2659,42 @@ export function applyClaimConstraintModifications(
       break;
     }
 
+    case "us-3119501-lemelson-automatic-warehousing": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim3Active = claimStates[3] ?? true;
+      if (!claim1Active) {
+        modified.automaticAddressing = 0;
+        modified.shuttleExtensionFraction = 0;
+        activeFailures.push(
+          "Claim 1 position-feedback chain omitted: the normalized carrier remains manually positionable, but automatic scan/count stopping and selected-bay transfer are disabled.",
+        );
+        refusalWarning =
+          "SOURCE BOUNDARY: omitting the Claim 1 scan-and-count relationship establishes no speed, drift, collision, or payload outcome.";
+      }
+      if (!claim3Active) {
+        modified.automaticAddressing = 0;
+        activeFailures.push(
+          "Claim 3 reflective-marker feedback omitted: the display cannot represent automatic coordinate selection from the claimed optical feedback signals.",
+        );
+        refusalWarning =
+          "SOURCE BOUNDARY: the grant supplies topology for marker feedback, not sensor precision or positioning-error dynamics.";
+      }
+      break;
+    }
+
+    case "us-4341502-makino-scara": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.topologyVariant = 2; // Invert to non-concentric offset embodiment
+        activeFailures.push(
+          "Claim 1 Concentric Base Four-Link SCARA Mechanism Omitted: the comparison state displaces the common base axis into a non-concentric offset linkage.",
+        );
+        refusalWarning =
+          "SOURCE BOUNDARY: Claim 1 inversion is a kinematic topology comparison only; US 4,341,502 supplies no historical link lengths, inertias, torques, or cycle times to calculate.";
+      }
+      break;
+    }
+
     case "us-4765668-robot-end-effector": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
@@ -2597,16 +2727,17 @@ export function applyClaimConstraintModifications(
       const claim2Active = claimStates[2] ?? true;
 
       if (!claim1Active) {
-        modified.riderPitchDeg = 22; // Overturn lean beyond recovery envelope
+        modified.claim1BalanceEnabled = 0;
         activeFailures.push(
-          "Dynamic Balancing Failure: Without Claim 1 closed-loop dynamic balancing, inverted pendulum platform collapses under gravitational torque.",
+          "Claim 1 powered automatic-balance topology withheld: the source describes the unpowered system as unstable with respect to tipping.",
         );
         refusalWarning =
-          "INVERTED PENDULUM INSTABILITY: Claim 1 active motor torque balancing required to prevent forward/rearward tipover.";
+          "SOURCE-BOUND REFUSAL: the grant establishes unpowered tipping instability but supplies no fall-time, motor-rating, or performance law for this counterfactual.";
       }
       if (!claim2Active) {
+        modified.claim2RippleEnabled = 0;
         activeFailures.push(
-          "Tactile Ripple Omitted: Haptic platform shudder alarm disabled; rider receives no physical footplate vibration upon approaching torque limits.",
+          "Claim 2 ripple-modulation alarm path withheld: no vibration frequency, amplitude, or comparative warning performance is inferred.",
         );
       }
       break;
@@ -2647,6 +2778,29 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "REGION OF INTEREST GATING COLLAPSE: Synchronized electronic gating required to isolate workpiece measurement zone.";
+      }
+      break;
+    }
+
+    case "us-3313014-lemelson-automatic-production": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim7Active = claimStates[7] ?? true;
+
+      if (!claim1Active) {
+        modified.markerSensed = 0;
+        activeFailures.push(
+          "Claim 1 Selected-Station Feedback Chain Omitted: Without marker sensing and powered retention means, carrier bypasses station without record reading.",
+        );
+        refusalWarning =
+          "STATION SENSING COLLAPSE: Claim 1 marker sensing and station retention required for automated positioning.";
+      }
+      if (!claim7Active) {
+        modified.contactsEngaged = 0;
+        activeFailures.push(
+          "Claim 7 Portable Controller Coupling Omitted: Without multi-circuit controller-to-station electrical contact coupling, station operation cannot be triggered.",
+        );
+        refusalWarning =
+          "PORTABLE CONTROLLER DISCONNECTED: Claim 7 station contact coupling required for operation sequencing.";
       }
       break;
     }
@@ -2705,6 +2859,7 @@ export function applyClaimConstraintModifications(
       const claim15Active = claimStates[15] ?? true;
 
       if (!claim1Active) {
+        modified.claim1SelectedSwitchesEnabled = 0;
         activeFailures.push(
           "Claim 1 topology omitted: the display no longer represents its first and second selected switch/actuator relationships.",
         );
@@ -2712,13 +2867,64 @@ export function applyClaimConstraintModifications(
           "POSITIONAL REFUSAL: no travel limit, stopping accuracy, or safety behavior is inferred.";
       }
       if (!claim8Active) {
+        modified.claim8BistableSwitchEnabled = 0;
         activeFailures.push(
           "Claim 8 topology omitted: the display no longer represents its bi-stable switch contact-set relationship.",
         );
       }
       if (!claim15Active) {
+        modified.claim15ServoHandoffEnabled = 0;
         activeFailures.push(
           "Claim 15 topology omitted: the display no longer represents its selected-position servo stop/start relationship.",
+        );
+      }
+      break;
+    }
+
+    case "us-588-ericsson-propeller": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim2Active = claimStates[2] ?? true;
+      const claim3Active = claimStates[3] ?? true;
+
+      if (!claim1Active) {
+        activeFailures.push(
+          "Draft-Induced Emergence & Cyclic Blade Slap: Without metallic hoops, spiral spokes, and entire immersion, partial immersion causes cyclic blade slap.",
+        );
+        refusalWarning =
+          "ENTIRE IMMERSION LOSS: Claim 1 hoop and spoke immersion required to employ full plate area.";
+      }
+      if (!claim2Active) {
+        activeFailures.push(
+          "Induced Wake Degradation: Outer series fails to turn at greater speed in the accelerated inner current.",
+        );
+        refusalWarning =
+          "UNEQUAL SPEED DIFFERENTIAL LOSS: Claim 2 higher speed in accelerated current disengaged.";
+      }
+      if (!claim3Active) {
+        activeFailures.push(
+          "Fixed Submerged Gear Drag: Without retractable upright stem and conical casing, underwater installation cannot be hoisted for maintenance or sailing.",
+        );
+        refusalWarning = "RETRACTABLE STEM DISENGAGED: Claim 3 removable stem and fairing omitted.";
+      }
+      break;
+    }
+
+    case "us-4512709-milacron-robot-toolchanger": {
+      const claim1Active = claimStates[1] ?? true;
+      const claim4Active = claimStates[4] ?? true;
+
+      if (!claim1Active) {
+        modified.lockingSlideFraction = 0;
+        activeFailures.push(
+          "Open-Aperture Release State: With slide aperture left aligned, tool-base member remains in admission path rather than locked capture configuration.",
+        );
+        refusalWarning =
+          "TOOL RETENTION LOSS: Claim 1 transverse locking slide required for positive robot tool capture.";
+      }
+      if (!claim4Active) {
+        modified.claimFourTMember = 0;
+        activeFailures.push(
+          "Claim 4 Geometry Not Selected: Display represents general slide retention without the dependent claim's bifurcated ramp and T-member crossbar geometry.",
         );
       }
       break;
@@ -2733,6 +2939,42 @@ export function applyClaimConstraintModifications(
     activeFailures,
     refusalWarning,
   };
+}
+
+export function claimConstraintStateParamId(claimNumber: number): string {
+  return `claim${claimNumber}ConstraintActive`;
+}
+
+/**
+ * Read claim state from the same patent-keyed parameter store used by both
+ * visual modes. Missing keys mean the issued claim is active by default.
+ */
+export function readSharedClaimConstraintStates(
+  patentId: string,
+  params: Record<string, number>,
+): Record<number, boolean> {
+  return Object.fromEntries(
+    (CATALOG_CLAIM_CONSTRAINTS[patentId] ?? []).map(({ claimNumber }) => [
+      claimNumber,
+      (params[claimConstraintStateParamId(claimNumber)] ?? 1) >= 0.5,
+    ]),
+  );
+}
+
+/**
+ * Derive the claim-constrained view of a patent's shared controls without
+ * overwriting the visitor's raw slider choices. That distinction is what lets
+ * a claim be restored without losing the pre-inversion pose.
+ */
+export function applySharedClaimConstraintModifications(
+  patentId: string,
+  params: Record<string, number>,
+): ClaimConstraintResult {
+  return applyClaimConstraintModifications(
+    patentId,
+    params,
+    readSharedClaimConstraintStates(patentId, params),
+  );
 }
 
 CATALOG_CLAIM_CONSTRAINTS["us-4098001-watson-remote-center-compliance"] = CATALOG_CLAIM_CONSTRAINTS[

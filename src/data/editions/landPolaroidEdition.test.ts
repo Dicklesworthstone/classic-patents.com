@@ -314,4 +314,36 @@ describe("US 2,543,181 Edwin Land Polaroid published manual archival edition", (
       "FIGURES 23–24",
     ]);
   });
+
+  it("provides valid provenance classifications for all Land controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-2543181-land-polaroid"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  it("registers explicit energy channel omission reason for Land Polaroid", () => {
+    const {
+      energyChannelsFor,
+      ENERGY_CHANNEL_OMISSION_REASONS,
+    } = require("@/physics/energyChannels");
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-2543181-land-polaroid"]).toBeDefined();
+    expect(energyChannelsFor("us-2543181-land-polaroid", {})).toEqual([]);
+  });
+
+  it("enforces full specification pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(landPolaroidPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_FULL_SPECIFICATION_PENDING");
+  });
 });

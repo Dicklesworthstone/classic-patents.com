@@ -153,7 +153,7 @@ export function buildRobotEndEffectorModel(): RobotEndEffectorModel {
     for (const hand of handGroups) hand.group.position.x = hand.side * offset;
     for (const screw of screwMeshes) screw.rotation.x = state.screwAngleRad;
     motorGear.rotation.x = state.motorRevolutions * 2 * Math.PI;
-    screwGear.rotation.x = state.screwAngleRad;
+    screwGear.rotation.x = -state.screwAngleRad;
     encoder.rotation.x = state.motorRevolutions * 2 * Math.PI;
     for (const finger of fingerGroups) {
       finger.position.y = -state.fingerRetainedFraction * 0.02;

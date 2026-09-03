@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import {
   createHullStereolithographyModel,
   type HullStereolithography3DObjects,
@@ -37,6 +38,7 @@ const VIEWS = {
 export function HullStereolithography3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
   const { params, updateParam } = usePatentPhysics(PATENT_ID);
   const liveParams = useRef(params);
   liveParams.current = params;
@@ -209,6 +211,16 @@ export function HullStereolithography3D() {
             className="mt-1 w-full accent-amber-500"
           />
         </div>
+      </div>
+
+      <div className="p-4 bg-stone-950 border-t border-stone-800">
+        <ClaimConstraintToggle
+          patentId={PATENT_ID}
+          claimStates={claimStates}
+          onClaimStateChange={(num, active) =>
+            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          }
+        />
       </div>
     </div>
   );

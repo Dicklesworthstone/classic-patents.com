@@ -65,8 +65,75 @@ export const pagerankPatent: Patent = {
     pageCount: 12,
     kind: "reviewed-transcription",
     reviewedBy: "Classic Patents editorial agent (GPT-5 Codex)",
-    reviewedAt: "2026-08-21",
+    reviewedAt: "2026-09-02",
     sourcePdfSha256: "c2e024116b9411385aa9cb5d51d3eb34b99f59db190c2bb9298d9d6d6eeed2e4",
+    pageAnchors: [
+      {
+        page: 1,
+        exactSourceText: "Patent No.: US 6,285,999 B1",
+        sourceRelationship:
+          "Grant masthead, bibliographic record, references, abstract, and partial diagram.",
+      },
+      {
+        page: 2,
+        exactSourceText: "OTHER PUBLICATIONS",
+        sourceRelationship: "Continuation of the printed other-publications list.",
+      },
+      {
+        page: 3,
+        exactSourceText: "U.S. Patent Sep. 4, 2001 Sheet 1 of 3 US 6,285,999 B1",
+        sourceRelationship: "Figure 1 drawing sheet.",
+      },
+      {
+        page: 4,
+        exactSourceText: "U.S. Patent Sep. 4, 2001 Sheet 2 of 3 US 6,285,999 B1",
+        sourceRelationship: "Figure 2 drawing sheet.",
+      },
+      {
+        page: 5,
+        exactSourceText: "U.S. Patent Sep. 4, 2001 Sheet 3 of 3 US 6,285,999 B1",
+        sourceRelationship: "Figure 3 drawing sheet.",
+      },
+      {
+        page: 6,
+        exactSourceText: "METHOD FOR NODE RANKING IN A LINKED DATABASE",
+        sourceRelationship: "Opening specification page through the opening summary.",
+      },
+      {
+        page: 7,
+        exactSourceText: "BRIEF DESCRIPTION OF THE DRAWINGS",
+        sourceRelationship:
+          "Summary continuation, drawing descriptions, detailed-description opening, and rank recurrence.",
+      },
+      {
+        page: 8,
+        exactSourceText: "In practice, there are millions of documents",
+        sourceRelationship:
+          "Figure 2 calculation, iterative procedure, random-surfer model, and transition-matrix description.",
+      },
+      {
+        page: 9,
+        exactSourceText: "Another important application and embodiment of the present invention",
+        sourceRelationship:
+          "Weighting variants, Web-search embodiment, conclusion, and opening Claim 1.",
+      },
+      {
+        page: 10,
+        exactSourceText: "2. The method of claim 1",
+        sourceRelationship:
+          "Claims 2 through 19 after Claim 1 ends on the preceding two-column source page.",
+      },
+      {
+        page: 11,
+        exactSourceText: "20. The method of claim 1",
+        sourceRelationship: "Claims 20 through 29.",
+      },
+      {
+        page: 12,
+        exactSourceText: "CERTIFICATE OF CORRECTION",
+        sourceRelationship: "USPTO certificate correcting the government-support paragraph.",
+      },
+    ],
   },
   originalText: `UNITED STATES PATENT
 US 6,285,999 B1
@@ -75,10 +142,10 @@ Date of Patent: Sep. 4, 2001
 METHOD FOR NODE RANKING IN A LINKED DATABASE
 Inventor: Lawrence Page, Stanford, CA (US)
 Assignee: The Board of Trustees of the Leland Stanford Junior University, Stanford, CA (US)
-Application No.: 09/004,827 · Filed: Jan. 9, 1998
+Appl. No.: 09/004,827 Filed: Jan. 9, 1998
 
 ABSTRACT
-A method assigns importance ranks to nodes in a linked database, such as the World Wide Web. The rank assigned to a document is calculated from the ranks of documents citing it. In addition, the rank of a document is calculated from a constant representing the probability that a browser through the database will randomly jump to the document. The method is particularly useful for enhancing the performance of search engines for text databases on the World Wide Web, whose documents have a large variation in quality and importance.
+A method assigns importance ranks to nodes in a linked database, such as any database of documents containing citations, the World Wide Web or any other hypermedia database. The rank assigned to a document is calculated from the ranks of documents citing it. In addition, the rank of a document is calculated from a constant representing the probability that a browser through the database will randomly jump to the document. The method is particularly useful in enhancing the performance of search engine results for hypermedia databases, such as the World Wide Web, whose documents have a large variation in quality.
 
 CROSS-REFERENCES TO RELATED APPLICATIONS
 This application claims priority from U.S. provisional patent application Ser. No. 60/035,205 filed Jan. 10, 1997, which is incorporated herein by reference.

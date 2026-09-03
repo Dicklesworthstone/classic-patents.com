@@ -77,4 +77,28 @@ describe("US 2,929,922 Townes & Schawlow Optical Maser / Laser Archival Edition 
       expect(readings?.[0].trim().length).toBeGreaterThan(40);
     }
   });
+
+  test("provides valid provenance classifications for all Townes controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-2929922-townes-laser"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("enforces facsimile review pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const { townesLaserPatent } = require("@/data/patents/townes-laser");
+    const decision = evaluateTypedArchivalPublicationState(townesLaserPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
+  });
 });

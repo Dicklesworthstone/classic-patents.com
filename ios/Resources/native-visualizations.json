@@ -23,8 +23,8 @@
     "builder": "buildWattRotaryEngineModel",
     "spatialComponent": "WattRotaryEngine3D",
     "vectorComponent": "WattRotaryEngineSim",
-    "meshCount": 65,
-    "namedNodeCount": 20
+    "meshCount": 353,
+    "namedNodeCount": 21
   },
   {
     "id": "gb-1420-cort-puddling-rolling",
@@ -320,8 +320,8 @@
     "builder": "buildMaximMachineGunModel",
     "spatialComponent": "MaximMachineGun3D",
     "vectorComponent": "MaximMachineGunSim",
-    "meshCount": 26,
-    "namedNodeCount": 12
+    "meshCount": 32,
+    "namedNodeCount": 27
   },
   {
     "id": "us-347140-thomson-welding",
@@ -573,8 +573,8 @@
     "builder": "buildSikorskyHelicopterModel",
     "spatialComponent": "SikorskyHelicopter3D",
     "vectorComponent": "SikorskyHelicopterSim",
-    "meshCount": 49,
-    "namedNodeCount": 2
+    "meshCount": 51,
+    "namedNodeCount": 9
   },
   {
     "id": "us-2495429-spencer-microwave",
@@ -847,6 +847,15 @@
     "namedNodeCount": 75
   },
   {
+    "id": "us-4976582-clavel-delta-robot",
+    "asset": "NativeModels/us-4976582-clavel-delta-robot.usdz",
+    "builder": "buildClavelDeltaRobotModel",
+    "spatialComponent": "ClavelDeltaRobot3D",
+    "vectorComponent": "ClavelDeltaRobotSim",
+    "meshCount": 33,
+    "namedNodeCount": 40
+  },
+  {
     "id": "us-5121329-crump-fdm",
     "asset": "NativeModels/us-5121329-crump-fdm.usdz",
     "builder": "createCrumpFdmModel",
@@ -889,7 +898,7 @@
     "spatialComponent": "KamenSegway3D",
     "vectorComponent": "KamenSegwaySim",
     "meshCount": 18,
-    "namedNodeCount": 7
+    "namedNodeCount": 11
   },
   {
     "id": "us-6331181-davinci",

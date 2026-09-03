@@ -1,0 +1,50 @@
+[
+  {
+    "id": "us-135245-pasteur-fermentation",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-157124-glidden-barbed-wire",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-174465-bell-telephone",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-194047-otto-engine",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-200521-edison-phonograph",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-223898-edison-lightbulb",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-233692-pelton-water-wheel",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  },
+  {
+    "id": "us-235199-bell-photophone",
+    "status": "captured",
+    "canvasCount": 1,
+    "errors": []
+  }
+]

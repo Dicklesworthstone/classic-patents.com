@@ -136,10 +136,12 @@ export function createKamenSegwayModel(): KamenSegway3DObjects {
     roughness: 0.8,
   });
   const leftGrip = new THREE.Mesh(gripGeo, gripMat);
+  leftGrip.name = "segway-left-grip";
   leftGrip.position.set(-0.2, 0.95, 0);
   mastGroup.add(leftGrip);
 
   const rightGrip = new THREE.Mesh(gripGeo, gripMat);
+  rightGrip.name = "segway-right-grip";
   rightGrip.position.set(0.2, 0.95, 0);
   mastGroup.add(rightGrip);
 
@@ -175,17 +177,26 @@ export function createKamenSegwayModel(): KamenSegway3DObjects {
   head.position.set(0, 1.12, 0);
   riderGroup.add(head);
 
-  // Rider Arms
-  const armGeo = new THREE.CylinderGeometry(0.035, 0.03, 0.42, 12);
-  const leftArm = new THREE.Mesh(armGeo, riderMat);
-  leftArm.position.set(-0.16, 0.9, 0.06);
-  leftArm.rotation.x = Math.PI / 4;
-  riderGroup.add(leftArm);
+  // Rider arms are endpoint-solved struts from the torso shoulders to the
+  // handlebar grips. This keeps the humanoid visibly tethered to the machine
+  // instead of placing decorative cylinders near the controls.
+  const addConnectedArm = (
+    name: string,
+    shoulder: THREE.Vector3,
+    gripInMastCoordinates: THREE.Vector3,
+  ) => {
+    const gripInChassisCoordinates = gripInMastCoordinates.clone().add(mastGroup.position);
+    const direction = gripInChassisCoordinates.clone().sub(shoulder);
+    const armGeo = new THREE.CylinderGeometry(0.03, 0.035, direction.length(), 12);
+    const arm = new THREE.Mesh(armGeo, riderMat);
+    arm.name = name;
+    arm.position.copy(shoulder).add(gripInChassisCoordinates).multiplyScalar(0.5);
+    arm.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+    riderGroup.add(arm);
+  };
 
-  const rightArm = new THREE.Mesh(armGeo, riderMat);
-  rightArm.position.set(0.16, 0.9, 0.06);
-  rightArm.rotation.x = Math.PI / 4;
-  riderGroup.add(rightArm);
+  addConnectedArm("segway-left-arm", new THREE.Vector3(-0.1, 0.92, 0), leftGrip.position);
+  addConnectedArm("segway-right-arm", new THREE.Vector3(0.1, 0.92, 0), rightGrip.position);
 
   // Update Animation Method
   const update = (controls: KamenSegwayControls, tel: KamenSegwayTelemetry, timeSec: number) => {

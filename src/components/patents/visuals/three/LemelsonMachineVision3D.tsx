@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { createLemelsonMachineVisionModel } from "@/components/patents/visuals/three/lemelsonMachineVisionModel";
 import {
   createThreeStudioScene,
@@ -21,6 +22,7 @@ const PATENT_ID = "us-3081379-lemelson-machine-vision";
 export function LemelsonMachineVision3D({ patentId = PATENT_ID }: { patentId?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const { params } = usePatentPhysics(patentId);
   const liveParams = useRef(params);
@@ -166,6 +168,16 @@ export function LemelsonMachineVision3D({ patentId = PATENT_ID }: { patentId?: s
             {state.metrics.solenoidForceN.toFixed(2)} N
           </p>
         </div>
+      </div>
+
+      <div className="p-4 bg-slate-950 border-t border-slate-800">
+        <ClaimConstraintToggle
+          patentId={patentId}
+          claimStates={claimStates}
+          onClaimStateChange={(num, active) =>
+            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          }
+        />
       </div>
     </div>
   );

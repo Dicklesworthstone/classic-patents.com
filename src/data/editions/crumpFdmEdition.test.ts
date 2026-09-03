@@ -90,4 +90,36 @@ describe("US 5,121,329 S. Scott Crump FDM Archival Edition Contract", () => {
       expect(readings[index]).toBeDefined();
     }
   });
+
+  test("provides valid provenance classifications for all Crump controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-5121329-crump-fdm"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("wires claim 1 and claim 39 constraints in claimConstraints", () => {
+    const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
+    const r1 = applyClaimConstraintModifications(
+      "us-5121329-crump-fdm",
+      {},
+      { 1: false, 39: true },
+    );
+    expect(r1.modifiedParams.nozzleTempC).toBe(120);
+    expect(r1.refusalWarning).toContain("COLD NOZZLE JAM REFUSAL");
+
+    const r39 = applyClaimConstraintModifications(
+      "us-5121329-crump-fdm",
+      {},
+      { 1: true, 39: false },
+    );
+    expect(r39.modifiedParams.layerHeightMm).toBe(0.9);
+    expect(r39.refusalWarning).toContain("DELAMINATION REFUSAL");
+  });
 });

@@ -57,6 +57,34 @@ export interface StudioContext {
 }
 
 /**
+ * A finger must travel far enough to express an intentional horizontal orbit
+ * before the studio takes ownership. Until then, vertical movement remains a
+ * normal document scroll.
+ */
+export const TOUCH_ORBIT_THRESHOLD_PX = 8;
+
+export type SingleTouchGestureIntent = "pending" | "scroll" | "orbit";
+
+/**
+ * Classify the initial one-finger movement without consuming a vertical page
+ * scroll. Ties deliberately favor scrolling so a diagonal reading gesture
+ * does not unexpectedly rotate the model.
+ */
+export function classifySingleTouchGesture(
+  deltaX: number,
+  deltaY: number,
+): SingleTouchGestureIntent {
+  const horizontalDistance = Math.abs(deltaX);
+  const verticalDistance = Math.abs(deltaY);
+
+  if (Math.max(horizontalDistance, verticalDistance) < TOUCH_ORBIT_THRESHOLD_PX) {
+    return "pending";
+  }
+
+  return horizontalDistance > verticalDistance ? "orbit" : "scroll";
+}
+
+/**
  * Generates a smooth procedural atmospheric sky canvas texture.
  */
 function createProceduralSkyTexture(
@@ -200,7 +228,9 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   canvas.style.display = "block";
   canvas.style.width = "100%";
   canvas.style.height = "100%";
-  canvas.style.touchAction = "none";
+  // Preserve ordinary vertical document scrolling. The gesture engine claims
+  // only an intentional horizontal orbit or a two-finger camera gesture.
+  canvas.style.touchAction = "pan-y";
   canvas.style.outline = "none";
   canvas.style.transform = "translateZ(0)";
   container.style.isolation = "isolate";
@@ -320,7 +350,11 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   const isReducedMotion = checkPrefersReducedMotion();
 
   // Multi-pointer state tracking (unifies mouse, pen, and touch)
-  const activePointers = new Map<number, { x: number; y: number }>();
+  const activePointers = new Map<number, { x: number; y: number; pointerType: string }>();
+  type TouchGesture = "idle" | "pending" | "scroll" | "orbit" | "pinch";
+  let touchGesture: TouchGesture = "idle";
+  let touchStartX = 0;
+  let touchStartY = 0;
   let isDragging = false;
   let isPinching = false;
   let isPanning = false;
@@ -339,13 +373,45 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   const maxRadius = Math.min(80.0, opts.cameraMaxDistance ?? 80.0);
 
   const domEl = renderer.domElement;
-  domEl.style.touchAction = "none";
+  domEl.style.touchAction = "pan-y";
   domEl.style.userSelect = "none";
   domEl.style.webkitUserSelect = "none";
   if (container) {
-    container.style.touchAction = "none";
+    container.style.touchAction = "pan-y";
     container.style.userSelect = "none";
   }
+
+  const activeTouchPointers = () =>
+    Array.from(activePointers.values()).filter((pointer) => pointer.pointerType === "touch");
+
+  const armSingleTouch = (point: { x: number; y: number }) => {
+    touchGesture = "pending";
+    isDragging = false;
+    isPinching = false;
+    isPanning = false;
+    touchStartX = point.x;
+    touchStartY = point.y;
+    prevSingleX = point.x;
+    prevSingleY = point.y;
+    velTheta = 0;
+    velPhi = 0;
+  };
+
+  const beginPinchGesture = (points: readonly { x: number; y: number }[]) => {
+    const [firstPoint, secondPoint] = points;
+    if (!firstPoint || !secondPoint) return;
+
+    touchGesture = "pinch";
+    isDragging = false;
+    isPinching = true;
+    isPanning = true;
+    initialPinchDist = Math.hypot(firstPoint.x - secondPoint.x, firstPoint.y - secondPoint.y);
+    initialPinchRadius = targetSpherical.radius;
+    prevPinchMidX = (firstPoint.x + secondPoint.x) / 2;
+    prevPinchMidY = (firstPoint.y + secondPoint.y) / 2;
+    velTheta = 0;
+    velPhi = 0;
+  };
 
   // Pan helper: translate centerTarget in camera plane
   const panCamera = (deltaX: number, deltaY: number) => {
@@ -367,9 +433,22 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
 
   // Unified Pointer Handlers with Window Tracking for uninhibited dragging
   const onPointerDown = (e: PointerEvent) => {
-    activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    activePointers.set(e.pointerId, {
+      x: e.clientX,
+      y: e.clientY,
+      pointerType: e.pointerType,
+    });
 
-    if (activePointers.size === 1) {
+    if (e.pointerType === "touch") {
+      const touchPointers = activeTouchPointers();
+      if (touchPointers.length >= 2) {
+        beginPinchGesture(touchPointers);
+        if (e.cancelable) e.preventDefault();
+      } else {
+        const touchPointer = touchPointers[0];
+        if (touchPointer) armSingleTouch(touchPointer);
+      }
+    } else if (activePointers.size === 1) {
       if (e.button === 2 || e.shiftKey) {
         isPanning = true;
         isDragging = false;
@@ -382,28 +461,84 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
       velTheta = 0;
       velPhi = 0;
     } else if (activePointers.size >= 2) {
-      isDragging = false;
-      isPinching = true;
-      isPanning = true;
-      const pts = Array.from(activePointers.values());
-      initialPinchDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
-      initialPinchRadius = targetSpherical.radius;
-      prevPinchMidX = (pts[0].x + pts[1].x) / 2;
-      prevPinchMidY = (pts[0].y + pts[1].y) / 2;
-      velTheta = 0;
-      velPhi = 0;
+      beginPinchGesture(Array.from(activePointers.values()));
     }
 
     if (typeof window !== "undefined") {
-      window.addEventListener("pointermove", onPointerMove);
+      window.addEventListener("pointermove", onPointerMove, { passive: false });
       window.addEventListener("pointerup", onPointerUp);
       window.addEventListener("pointercancel", onPointerUp);
     }
   };
 
   const onPointerMove = (e: PointerEvent) => {
-    if (!activePointers.has(e.pointerId)) return;
-    activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const pointer = activePointers.get(e.pointerId);
+    if (!pointer) return;
+    activePointers.set(e.pointerId, {
+      x: e.clientX,
+      y: e.clientY,
+      pointerType: pointer.pointerType,
+    });
+
+    const touchPointers = activeTouchPointers();
+    if (touchPointers.length >= 2) {
+      if (touchGesture !== "pinch") beginPinchGesture(touchPointers);
+      // `touch-action: pan-y` retains vertical page scroll for an idle finger.
+      // Only an active two-finger camera gesture suppresses browser handling.
+      if (e.cancelable) e.preventDefault();
+
+      const [firstPoint, secondPoint] = touchPointers;
+      if (!firstPoint || !secondPoint) return;
+      const dist = Math.hypot(firstPoint.x - secondPoint.x, firstPoint.y - secondPoint.y);
+      if (initialPinchDist > 0 && dist > 0) {
+        const pinchFactor = initialPinchDist / dist;
+        targetSpherical.radius = Math.max(
+          minRadius,
+          Math.min(maxRadius, initialPinchRadius * pinchFactor),
+        );
+      }
+
+      const midX = (firstPoint.x + secondPoint.x) / 2;
+      const midY = (firstPoint.y + secondPoint.y) / 2;
+      panCamera(midX - prevPinchMidX, midY - prevPinchMidY);
+      prevPinchMidX = midX;
+      prevPinchMidY = midY;
+      return;
+    }
+
+    if (pointer.pointerType === "touch") {
+      if (touchGesture === "pending") {
+        const intent = classifySingleTouchGesture(e.clientX - touchStartX, e.clientY - touchStartY);
+        if (intent === "pending") return;
+        if (intent === "scroll") {
+          touchGesture = "scroll";
+          return;
+        }
+
+        touchGesture = "orbit";
+        isDragging = true;
+        isPanning = false;
+      }
+
+      if (touchGesture === "scroll") return;
+      if (touchGesture === "orbit") {
+        // Deliberate horizontal orbit: prevent default only after the intent
+        // threshold, never while a visitor is trying to read the page.
+        if (e.cancelable) e.preventDefault();
+        const dx = e.clientX - prevSingleX;
+        const dy = e.clientY - prevSingleY;
+        velTheta = -dx * 0.0065;
+        velPhi = dy * 0.0065;
+        targetSpherical.theta -= dx * 0.0065;
+        targetSpherical.phi = Math.max(
+          0.02,
+          Math.min(Math.PI - 0.02, targetSpherical.phi + dy * 0.0065),
+        );
+        prevSingleX = e.clientX;
+        prevSingleY = e.clientY;
+      }
+      return;
+    }
 
     if (activePointers.size === 1) {
       const dx = e.clientX - prevSingleX;
@@ -444,26 +579,45 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   };
 
   const onPointerUp = (e: PointerEvent) => {
+    const releasedPointer = activePointers.get(e.pointerId);
     activePointers.delete(e.pointerId);
+
+    const touchPointers = activeTouchPointers();
+    if (touchPointers.length >= 2) {
+      beginPinchGesture(touchPointers);
+    } else if (releasedPointer?.pointerType === "touch" || touchGesture !== "idle") {
+      const remainingTouch = touchPointers[0];
+      if (remainingTouch) {
+        // Once one finger leaves a pinch, require a fresh horizontal intent
+        // before taking control again; a vertical follow-up remains a scroll.
+        armSingleTouch(remainingTouch);
+      } else {
+        touchGesture = "idle";
+        isDragging = false;
+        isPinching = false;
+        isPanning = false;
+      }
+    }
 
     if (activePointers.size === 0) {
       isDragging = false;
       isPinching = false;
       isPanning = false;
+      touchGesture = "idle";
       if (typeof window !== "undefined") {
         window.removeEventListener("pointermove", onPointerMove);
         window.removeEventListener("pointerup", onPointerUp);
         window.removeEventListener("pointercancel", onPointerUp);
       }
-    } else if (activePointers.size === 2) {
+    } else if (touchPointers.length >= 2) {
       // A 3+ finger gesture lost one pointer: the remaining pair needs its
       // own pinch baseline, or the next move zooms from stale distances.
-      const pair = Array.from(activePointers.values());
+      const pair = touchPointers;
       initialPinchDist = Math.hypot(pair[0].x - pair[1].x, pair[0].y - pair[1].y);
       initialPinchRadius = targetSpherical.radius;
       prevPinchMidX = (pair[0].x + pair[1].x) / 2;
       prevPinchMidY = (pair[0].y + pair[1].y) / 2;
-    } else if (activePointers.size === 1) {
+    } else if (activePointers.size === 1 && releasedPointer?.pointerType !== "touch") {
       isPinching = false;
       isPanning = false;
       isDragging = true;
@@ -496,11 +650,20 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
     resetFraming();
   };
 
+  // Safari emits proprietary gesture events for pinch gestures. Limit this
+  // prevention to the canvas so the rest of the document still zooms normally.
+  const onSafariGesture = (e: Event) => {
+    e.preventDefault();
+  };
+
   // Register Event Listeners on canvas
-  domEl.addEventListener("pointerdown", onPointerDown);
+  domEl.addEventListener("pointerdown", onPointerDown, { passive: false });
   domEl.addEventListener("wheel", onWheel, { passive: false });
   domEl.addEventListener("contextmenu", onContextMenu);
   domEl.addEventListener("dblclick", onDblClick);
+  domEl.addEventListener("gesturestart", onSafariGesture, { passive: false });
+  domEl.addEventListener("gesturechange", onSafariGesture, { passive: false });
+  domEl.addEventListener("gestureend", onSafariGesture, { passive: false });
 
   let lastResizeW = width;
   let lastResizeH = height;
@@ -577,6 +740,9 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
       domEl.removeEventListener("wheel", onWheel);
       domEl.removeEventListener("contextmenu", onContextMenu);
       domEl.removeEventListener("dblclick", onDblClick);
+      domEl.removeEventListener("gesturestart", onSafariGesture);
+      domEl.removeEventListener("gesturechange", onSafariGesture);
+      domEl.removeEventListener("gestureend", onSafariGesture);
       if (typeof window !== "undefined") {
         window.removeEventListener("pointermove", onPointerMove);
         window.removeEventListener("pointerup", onPointerUp);

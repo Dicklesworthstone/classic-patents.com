@@ -34,6 +34,9 @@ export interface FermiReactorModel {
   neutronPos: Float32Array;
   neutronVel: Float32Array;
   neutronColors: Float32Array;
+  neutronFluxField: Float32Array;
+  heatFieldFrames: Float64Array;
+  laplacianModeField: Float64Array;
   neutronCount: number;
   graphiteMat: THREE.MeshStandardMaterial;
   uraniumFuelMat: THREE.MeshStandardMaterial;
@@ -218,6 +221,9 @@ export function buildFermiReactorModel(): FermiReactorModel {
   const neutronPos = new Float32Array(neutronCount * 3);
   const neutronVel = new Float32Array(neutronCount * 3);
   const neutronColors = new Float32Array(neutronCount * 3);
+  const neutronFluxField = new Float32Array(16 * 16);
+  const heatFieldFrames = heatFrames(12, 16, 2);
+  const laplacianModeField = laplacianModes(17, 3);
   const glowTex = createGlowPointTexture();
   disposables.push(glowTex);
 
@@ -299,6 +305,9 @@ export function buildFermiReactorModel(): FermiReactorModel {
     neutronPos,
     neutronVel,
     neutronColors,
+    neutronFluxField,
+    heatFieldFrames,
+    laplacianModeField,
     neutronCount,
     graphiteMat,
     uraniumFuelMat,
@@ -327,14 +336,12 @@ export function updateFermiReactorKinematics(
   const purity = moderatorPurityPct / 100;
   model.graphiteMat.color.setRGB(0.12 * purity, 0.13 * purity, 0.15 * purity);
   model.uraniumFuelMat.emissiveIntensity = fuelGlowIntensity;
-  model.uraniumFuelMat.emissive = new THREE.Color(kEff > 1.002 ? 0xf97316 : 0x22c55e);
+  model.uraniumFuelMat.emissive.setHex(kEff > 1.002 ? 0xf97316 : 0x22c55e);
 
   if (showNeutronCascade) {
-    const heat = heatFrames(12, 16, 2);
-    const modes = laplacianModes(17, 3);
     const heatFrame = Math.max(0, Math.min(15, Math.floor((kEff - 0.9) * 80)));
     const rodInsertion = Math.max(0, Math.min(1, 1 - (rodStudioY + 0.5) / 3.2));
-    const fluxField = computeFermiNeutronFluxField(kEff, rodInsertion, 16);
+    const fluxField = computeFermiNeutronFluxField(kEff, rodInsertion, 16, model.neutronFluxField);
     const speed = neutronDisplaySpeed * delta;
     const pos = model.neutronPos;
     const vel = model.neutronVel;
@@ -346,8 +353,10 @@ export function updateFermiReactorKinematics(
       const gy = Math.floor(v * 15);
       const fluxSample = fluxField[gy * 16 + gx] ?? 0.5;
       const local =
-        1 + Math.abs(sampleHeatAt(heat, 12, 16, heatFrame, u, v)) * (0.5 + 0.5 * fluxSample);
-      const lattice = 1 + 0.35 * laplacianModeShape(modes, 17, 3, 0, i);
+        1 +
+        Math.abs(sampleHeatAt(model.heatFieldFrames, 12, 16, heatFrame, u, v)) *
+          (0.5 + 0.5 * fluxSample);
+      const lattice = 1 + 0.35 * laplacianModeShape(model.laplacianModeField, 17, 3, 0, i);
       pos[idx] += (vel[idx] ?? 0) * speed * 2.0 * local;
       pos[idx + 1] += (vel[idx + 1] ?? 0) * speed * 2.0 * lattice;
       pos[idx + 2] += (vel[idx + 2] ?? 0) * speed * 2.0 * local;

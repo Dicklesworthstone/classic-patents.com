@@ -3,6 +3,7 @@
 import { Eye, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { stepRobotEndEffector } from "@/physics/robotEndEffectorKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -31,6 +32,7 @@ export function RobotEndEffector3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const liveParams = useRef(params);
   liveParams.current = params;
   const state = useMemo(() => stepRobotEndEffector(params), [params]);
@@ -109,7 +111,7 @@ export function RobotEndEffector3D() {
     <section className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl">
       <div className="relative min-h-[440px] sm:min-h-[540px]">
         <div ref={containerRef} className="absolute inset-0" />
-        <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-3 sm:inset-x-5 sm:top-5">
+        <div className="pointer-events-none absolute inset-x-3 top-3 hidden items-start justify-between gap-3 sm:flex sm:inset-x-5 sm:top-5">
           <div className="rounded-xl border border-cyan-700/70 bg-slate-950/85 px-3 py-2 backdrop-blur">
             <p className="font-mono text-[10px] tracking-[0.16em] text-cyan-300">
               US 4,765,668 · PROCEDURAL 3D
@@ -123,7 +125,7 @@ export function RobotEndEffector3D() {
           </div>
         </div>
 
-        <div className="pointer-events-none absolute left-3 top-24 rounded-xl border border-slate-700/80 bg-slate-950/85 p-2.5 font-mono text-[11px] text-slate-200 backdrop-blur sm:left-5">
+        <div className="pointer-events-none absolute left-3 top-24 hidden rounded-xl border border-slate-700/80 bg-slate-950/85 p-2.5 font-mono text-[11px] text-slate-200 backdrop-blur sm:block sm:left-5">
           <p>
             GAP <span className="text-cyan-300">{(state.jawOpeningM * 1000).toFixed(1)} mm</span>
           </p>
@@ -135,97 +137,107 @@ export function RobotEndEffector3D() {
             <span className="text-amber-300">{state.encoderCountModulo.toFixed(2)} / 8</span>
           </p>
         </div>
-
-        <div className="absolute bottom-3 left-3 right-3 grid gap-3 rounded-xl border border-slate-700/80 bg-slate-950/90 p-3 backdrop-blur sm:bottom-5 sm:left-5 sm:right-5 lg:grid-cols-[minmax(0,1fr)_auto]">
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            <label className="text-xs text-slate-200">
-              Jaw opening
-              <span className="float-right font-mono text-cyan-300">
-                {((params.jawOpeningFraction ?? 0.52) * 100).toFixed(0)}%
-              </span>
-              <input
-                className="mt-1 w-full accent-cyan-400"
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={params.jawOpeningFraction ?? 0.52}
-                aria-label="Jaw opening fraction"
-                onChange={(event) => updateParam("jawOpeningFraction", Number(event.target.value))}
-              />
-            </label>
-            <label className="text-xs text-slate-200">
-              Source-labelled grip setpoint
-              <span className="float-right font-mono text-amber-300">
-                {(params.gripForceSetpointN ?? 900).toFixed(0)} N
-              </span>
-              <input
-                className="mt-1 w-full accent-amber-400"
-                type="range"
-                min="0"
-                max="2000"
-                step="25"
-                value={params.gripForceSetpointN ?? 900}
-                aria-label="Grip-force setpoint"
-                onChange={(event) => updateParam("gripForceSetpointN", Number(event.target.value))}
-              />
-            </label>
-            <label className="text-xs text-slate-200">
-              Claim 17 frame rotation
-              <span className="float-right font-mono text-violet-300">
-                {(params.frameRotationDeg ?? 0).toFixed(0)}°
-              </span>
-              <input
-                className="mt-1 w-full accent-violet-400"
-                type="range"
-                min="-180"
-                max="180"
-                step="1"
-                value={params.frameRotationDeg ?? 0}
-                aria-label="Longitudinal-axis frame rotation"
-                onChange={(event) => updateParam("frameRotationDeg", Number(event.target.value))}
-              />
-            </label>
-            <label className="text-xs text-slate-200">
-              Finger change sequence
-              <span className="float-right font-mono text-rose-300">
-                {((params.fingerChangeFraction ?? 0) * 100).toFixed(0)}%
-              </span>
-              <input
-                className="mt-1 w-full accent-rose-400"
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={params.fingerChangeFraction ?? 0}
-                aria-label="Finger-change sequence"
-                onChange={(event) =>
-                  updateParam("fingerChangeFraction", Number(event.target.value))
-                }
-              />
-            </label>
-          </div>
-          <div className="flex flex-wrap items-end gap-2">
-            {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((candidate) => (
-              <button
-                key={candidate}
-                type="button"
-                onClick={() => selectView(candidate)}
-                className={`min-h-9 rounded-lg border px-2.5 text-xs capitalize ${view === candidate ? "border-cyan-400 bg-cyan-500 text-slate-950" : "border-slate-600 bg-slate-900 text-slate-200 hover:bg-slate-800"}`}
-              >
-                <Eye className="mr-1 inline h-3.5 w-3.5" />
-                {candidate}
-              </button>
-            ))}
+      </div>
+      <div
+        data-mobile-layout="controls-below-canvas"
+        className="grid gap-3 border-t border-slate-700/80 bg-slate-950/90 p-3 lg:grid-cols-[minmax(0,1fr)_auto]"
+      >
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          <label className="text-xs text-slate-200">
+            Jaw opening
+            <span className="float-right font-mono text-cyan-300">
+              {((params.jawOpeningFraction ?? 0.52) * 100).toFixed(0)}%
+            </span>
+            <input
+              className="mt-1 w-full accent-cyan-400"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={params.jawOpeningFraction ?? 0.52}
+              aria-label="Jaw opening fraction"
+              onChange={(event) => updateParam("jawOpeningFraction", Number(event.target.value))}
+            />
+          </label>
+          <label className="text-xs text-slate-200">
+            Source-labelled grip setpoint
+            <span className="float-right font-mono text-amber-300">
+              {(params.gripForceSetpointN ?? 900).toFixed(0)} N
+            </span>
+            <input
+              className="mt-1 w-full accent-amber-400"
+              type="range"
+              min="0"
+              max="2000"
+              step="25"
+              value={params.gripForceSetpointN ?? 900}
+              aria-label="Grip-force setpoint"
+              onChange={(event) => updateParam("gripForceSetpointN", Number(event.target.value))}
+            />
+          </label>
+          <label className="text-xs text-slate-200">
+            Claim 17 frame rotation
+            <span className="float-right font-mono text-violet-300">
+              {(params.frameRotationDeg ?? 0).toFixed(0)}°
+            </span>
+            <input
+              className="mt-1 w-full accent-violet-400"
+              type="range"
+              min="-180"
+              max="180"
+              step="1"
+              value={params.frameRotationDeg ?? 0}
+              aria-label="Longitudinal-axis frame rotation"
+              onChange={(event) => updateParam("frameRotationDeg", Number(event.target.value))}
+            />
+          </label>
+          <label className="text-xs text-slate-200">
+            Finger change sequence
+            <span className="float-right font-mono text-rose-300">
+              {((params.fingerChangeFraction ?? 0) * 100).toFixed(0)}%
+            </span>
+            <input
+              className="mt-1 w-full accent-rose-400"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={params.fingerChangeFraction ?? 0}
+              aria-label="Finger-change sequence"
+              onChange={(event) => updateParam("fingerChangeFraction", Number(event.target.value))}
+            />
+          </label>
+        </div>
+        <div className="flex flex-wrap items-end gap-2">
+          {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((candidate) => (
             <button
+              key={candidate}
               type="button"
-              onClick={resetParams}
-              className="min-h-9 rounded-lg border border-slate-600 bg-slate-900 px-2.5 text-xs text-slate-200 hover:bg-slate-800"
+              onClick={() => selectView(candidate)}
+              className={`min-h-9 rounded-lg border px-2.5 text-xs capitalize ${view === candidate ? "border-cyan-400 bg-cyan-500 text-slate-950" : "border-slate-600 bg-slate-900 text-slate-200 hover:bg-slate-800"}`}
             >
-              <RotateCcw className="mr-1 inline h-3.5 w-3.5" />
-              Reset
+              <Eye className="mr-1 inline h-3.5 w-3.5" />
+              {candidate}
             </button>
-          </div>
+          ))}
+          <button
+            type="button"
+            onClick={resetParams}
+            className="min-h-9 rounded-lg border border-slate-600 bg-slate-900 px-2.5 text-xs text-slate-200 hover:bg-slate-800"
+          >
+            <RotateCcw className="mr-1 inline h-3.5 w-3.5" />
+            Reset
+          </button>
+        </div>
+
+        <div className="border-t border-slate-800 pt-2">
+          <ClaimConstraintToggle
+            patentId={PATENT_ID}
+            claimStates={claimStates}
+            onClaimStateChange={(num, active) =>
+              setClaimStates((prev) => ({ ...prev, [num]: active }))
+            }
+          />
         </div>
       </div>
     </section>

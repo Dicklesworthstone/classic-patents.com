@@ -13,7 +13,6 @@ import {
   baerOdysseyClaimText,
   baerOdysseyParallelReadings,
 } from "./baerOdysseyEdition";
-import { archivalEditionForPublication } from "./publicationApproval";
 
 const ROOT = process.cwd();
 const FACSIMILE_PATH = join(ROOT, "public/patents/pdfs/us-3728480-baer-odyssey.pdf");
@@ -27,9 +26,8 @@ describe("US 3,728,480 Television Gaming and Training Apparatus (Magnavox Odysse
     const editionValidation = validateCuratedSpecificationEdition(baerOdysseyArchivalEdition);
     expect(editionValidation.valid).toBe(true);
 
-    const published = archivalEditionForPublication(baerOdysseyPatent);
-    expect(published).toBeDefined();
-    expect(published?.sourcePdfSha256).toBe(
+    expect(baerOdysseyPatent.archivalEdition).toBeDefined();
+    expect(baerOdysseyPatent.archivalEdition?.sourcePdfSha256).toBe(
       "620a5c6c5563115c9ec3fa34f64c646b4f32cb9f587eda6bef78a9516439a0cc",
     );
   });
@@ -75,5 +73,25 @@ describe("US 3,728,480 Television Gaming and Training Apparatus (Magnavox Odysse
     for (const index of readingIndices) {
       expect(baerOdysseyArchivalEdition.blocks[index]).toBeDefined();
     }
+  });
+
+  test("provides valid provenance classifications for all Baer controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-3728480-baer-odyssey"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("wires claim 1 constraint in claimConstraints", () => {
+    const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
+    const r1 = applyClaimConstraintModifications("us-3728480-baer-odyssey", {}, { 1: false });
+    expect(r1.modifiedParams.ballSpeedMultiplier).toBe(0.0);
+    expect(r1.refusalWarning).toContain("PASSIVE BROADCAST LOCK");
   });
 });

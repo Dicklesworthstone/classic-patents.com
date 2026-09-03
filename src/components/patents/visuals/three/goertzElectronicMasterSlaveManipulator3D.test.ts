@@ -77,9 +77,16 @@ describe("US 2,846,084 Goertz procedural visual boundary", () => {
     expect(studioSource).toContain("useFrankenSimPhysics");
     expect(studioSource).toContain("isRefused: true");
     expect(studioSource).toContain("stepGoertzMasterSlaveTopology");
+    expect(studioSource).toContain("ClaimConstraintToggle");
+    expect(studioSource).toContain("effectiveParams");
+    expect(studioSource).toContain('role="status"');
     expect(studioSource).not.toContain("Math.random");
     expect(studioSource).not.toContain("performance.now()");
     expect(simSource).toContain("usePatentPhysics");
+    expect(simSource).toContain("ClaimConstraintToggle");
+    expect(simSource).toContain("claimConstraintStateParamId");
+    expect(simSource).toContain("effectiveParams");
+    expect(simSource).toContain('role="status"');
     expect(simSource).toContain("normalized source topology");
   });
 });

@@ -1,28 +1,53 @@
 --- REVIEWED TRANSCRIPTION PAGE 1 OF 8 ---
 
-United States Patent. Watson. 4,098,001. July 4, 1978.
-REMOTE CENTER COMPLIANCE SYSTEM.
-Inventor: Paul C. Watson, Arlington, Mass. Assignee: The Charles Stark Draper Laboratory, Inc., Cambridge, Mass. Appl. No. 732,286. Filed Oct. 13, 1976. Int. Cl. G01B 5/25. 2 Claims, 15 Drawing Figures.
+United States Patent [19]
+Watson
+[11] 4,098,001
+[45] Jul. 4, 1978
 
-Abstract: A remote center compliance system including means for establishing rotational motion about a center remote from the means for establishing the rotational motion and in two directions transverse to radii from the remote center.
+[54] REMOTE CENTER COMPLIANCE SYSTEM
+[75] Inventor: Paul C. Watson, Arlington, Mass.
+[73] Assignee: The Charles Stark Draper Laboratory, Inc., Cambridge, Mass.
+[21] Appl. No.: 732,286
+[22] Filed: Oct. 13, 1976
+[51] Int. Cl.² G01B 5/25
+[52] U.S. Cl. 33/169 C; 29/407; 29/464; 33/180 R; 214/1 CM; 267/158; 267/160; 308/2 A
+[58] Field of Search 33/169 C, 180 R, 181 R; 29/407, 464, 468, 240.5; 214/1 CM; 267/158, 160; 308/2 A
+
+[57] ABSTRACT
+A remote center compliance system including means for establishing rotational motion about a center remote from the means for establishing the rotational motion and in two directions transverse to radii from the remote center.
+
+2 Claims, 15 Drawing Figures
 
 --- REVIEWED TRANSCRIPTION PAGE 2 OF 8 ---
 
-U.S. Patent. July 4, 1978. Sheet 1 of 3. 4,098,001.
+U.S. Patent Jul. 4, 1978 Sheet 1 of 3 4,098,001
 
-Figs. 1, 2, 3, 4, 4A, and 5. Remote center compliance system 10; rotational mechanism 12; translational mechanism 14; rod 16; fixed machine portion 18; plate 20; ring 22; flexures 24, 26, 28; remote center 50; chamfered hole 71; and the translational and rotational force diagrams.
+FIG. 1
+FIG. 2
+FIG. 3
+FIG. 4
+FIG. 4A
+FIG. 5
 
 --- REVIEWED TRANSCRIPTION PAGE 3 OF 8 ---
 
-U.S. Patent. July 4, 1978. Sheet 2 of 3. 4,098,001.
+U.S. Patent Jul. 4, 1978 Sheet 2 of 3 4,098,001
 
-Figs. 5A, 6, 7, 8, and 9. The complying orientation, alternate annular construction, bellows 90 with casing 92 and support wire 94, bearing construction, and an arrangement that places flexures in tension for excessive axial force.
+FIG. 5A
+FIG. 6
+FIG. 7
+FIG. 8
+FIG. 9
 
 --- REVIEWED TRANSCRIPTION PAGE 4 OF 8 ---
 
-U.S. Patent. July 4, 1978. Sheet 3 of 3. 4,098,001.
+U.S. Patent Jul. 4, 1978 Sheet 3 of 3 4,098,001
 
-Figs. 10, 11, 11A, and 12. Concatenated rotational and translational mechanisms, four support/flexure elements, their geometry, and an alternative conical structure. Paul C. Watson, inventor.
+FIG. 10
+FIG. 11
+FIG. 11A
+FIG. 12
 
 --- REVIEWED TRANSCRIPTION PAGE 5 OF 8 ---
 

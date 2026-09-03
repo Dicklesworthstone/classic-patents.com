@@ -45,6 +45,27 @@ const CAMERA_PRESETS: Record<
   cylinder: { pos: [-3.8, 2.5, 3.2], target: [-2.2, 1.5, 0] },
 };
 
+function cameraPresetForViewport(preset: CameraPreset): {
+  pos: [number, number, number];
+  target: [number, number, number];
+} {
+  const config = CAMERA_PRESETS[preset];
+  if (typeof window === "undefined" || window.innerWidth >= 640) return config;
+
+  // A portrait viewport has far less horizontal field of view than the
+  // desktop studio. Preserve the same target but move the camera outward so
+  // the complete mechanism remains inspectable instead of clipping its gears.
+  const mobileDistanceMultiplier = 1.55;
+  return {
+    pos: [
+      config.target[0] + (config.pos[0] - config.target[0]) * mobileDistanceMultiplier,
+      config.target[1] + (config.pos[1] - config.target[1]) * mobileDistanceMultiplier,
+      config.target[2] + (config.pos[2] - config.target[2]) * mobileDistanceMultiplier,
+    ],
+    target: config.target,
+  };
+}
+
 export function WattRotaryEngine3D() {
   const { params, updateParam } = usePatentPhysics("gb-1306-watt-rotary-engine");
 
@@ -61,7 +82,9 @@ export function WattRotaryEngine3D() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [cutaway, setCutaway] = useState(false);
   const [showCallouts, setShowCallouts] = useState(true);
-  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
+  // The gear train is the teaching surface. Telemetry remains available from
+  // the toggle, but it must not cover the mesh by default.
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(false);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
@@ -113,7 +136,7 @@ export function WattRotaryEngine3D() {
 
   const handleCameraPreset = (preset: CameraPreset) => {
     setCameraPreset(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = cameraPresetForViewport(preset);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -121,7 +144,7 @@ export function WattRotaryEngine3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const initialPreset = CAMERA_PRESETS.overview;
+    const initialPreset = cameraPresetForViewport("overview");
     const studio = createThreeStudioScene({
       container,
       cameraPos: initialPreset.pos,
@@ -146,11 +169,7 @@ export function WattRotaryEngine3D() {
         // Bus-owned kernel step: read the latest shared-tape gear poses.
         const out = wattStepRef.current;
         if (out) {
-          modelRef.current.updateAnimation({
-            beamAngleDeg: out.beamAngleDeg,
-            planetOrbitAngleDeg: out.planetOrbitAngleDeg,
-            sunShaftAngleDeg: out.sunShaftAngleDeg,
-          });
+          modelRef.current.updateAnimation(out);
         }
         modelRef.current.setCutaway(cutawayRef.current);
         modelRef.current.setShowCallouts(showCalloutsRef.current);
@@ -172,6 +191,18 @@ export function WattRotaryEngine3D() {
     };
   }, []);
 
+  useEffect(() => {
+    const restoreMobileFraming = () => {
+      if (window.innerWidth >= 640) return;
+      const config = cameraPresetForViewport(cameraPreset);
+      studioRef.current?.controls.setView(config.pos, config.target);
+    };
+
+    restoreMobileFraming();
+    window.addEventListener("resize", restoreMobileFraming);
+    return () => window.removeEventListener("resize", restoreMobileFraming);
+  }, [cameraPreset]);
+
   const telemetry = stepWattRotaryEngine(
     {
       strokeRateSpm,
@@ -189,34 +220,50 @@ export function WattRotaryEngine3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Top-Left Camera Preset Toolbar */}
-        {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-28rem)] gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
-            </span>
-            {(
-              [
-                ["overview", "Overview"],
-                ["gear-mesh", "Gear Mesh"],
-                ["beam", "Beam"],
-                ["cylinder", "Cylinder"],
-              ] as const
-            ).map(([preset, label]) => (
-              <button
-                key={preset}
-                type="button"
-                onClick={() => handleCameraPreset(preset)}
-                className={`min-h-9 px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                  cameraPreset === preset
-                    ? "bg-amber-600 text-white shadow-xs font-semibold"
-                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        )}
+        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 hidden sm:flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-28rem)] gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+          <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+            <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+          </span>
+          {(
+            [
+              ["overview", "Overview"],
+              ["gear-mesh", "Gear Mesh"],
+              ["beam", "Beam"],
+              ["cylinder", "Cylinder"],
+            ] as const
+          ).map(([preset, label]) => (
+            <button
+              key={preset}
+              type="button"
+              onClick={() => handleCameraPreset(preset)}
+              className={`min-h-9 px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                cameraPreset === preset
+                  ? "bg-amber-600 text-white shadow-xs font-semibold"
+                  : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <div className="absolute top-3 left-3 z-10 sm:hidden">
+          <label className="sr-only" htmlFor="watt-camera-view">
+            Camera view
+          </label>
+          <select
+            id="watt-camera-view"
+            value={cameraPreset}
+            onChange={(event) => handleCameraPreset(event.target.value as CameraPreset)}
+            className="min-h-9 max-w-32 rounded-lg border border-parchment-300 bg-white/95 px-2 text-xs font-semibold text-ink-800 shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/95 dark:text-parchment-100"
+            aria-label="Watt engine camera view"
+          >
+            <option value="overview">Overview</option>
+            <option value="gear-mesh">Gear Mesh</option>
+            <option value="beam">Beam</option>
+            <option value="cylinder">Cylinder</option>
+          </select>
+        </div>
 
         {/* Top-Right Action Controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[min(90%,26rem)] sm:max-w-[26rem]">
@@ -316,7 +363,8 @@ export function WattRotaryEngine3D() {
                 Shaft Multiplier:
               </span>
               <span className="text-emerald-700 dark:text-emerald-400 font-bold">
-                {telemetry.speedMultiplier.toFixed(1)}× (2:1 Ratio)
+                {telemetry.speedMultiplier.toFixed(2)}× ({telemetry.planetTeeth}:
+                {telemetry.sunTeeth} teeth)
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
@@ -360,14 +408,14 @@ export function WattRotaryEngine3D() {
             },
             {
               label: "Shaft Speed",
-              value: `${(strokeRateSpm * gearRatioNpOverNs).toFixed(0)}`,
+              value: `${telemetry.shaftRpm.toFixed(0)}`,
               unit: "RPM",
               tone: "hot",
             },
             {
               label: "Gear Ratio",
-              value: `${gearRatioNpOverNs.toFixed(1)}:1`,
-              unit: "Sun/Planet",
+              value: `${telemetry.gearRatioNpOverNs.toFixed(2)}:1`,
+              unit: "Planet/Sun",
             },
             {
               label: "Flywheel Mass",
@@ -381,7 +429,7 @@ export function WattRotaryEngine3D() {
 
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Boiler Pressure</span>
@@ -415,6 +463,27 @@ export function WattRotaryEngine3D() {
               value={strokeRateSpm}
               onChange={(e) => updateParam("strokeRateSpm", Number.parseFloat(e.target.value))}
               className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Planet / Sun Teeth</span>
+              <span className="text-sky-700 dark:text-sky-400 font-mono font-bold">
+                {telemetry.planetTeeth}:{telemetry.sunTeeth}
+              </span>
+            </div>
+            <input
+              aria-label="Planet to sun gear ratio"
+              type="range"
+              min="0.5"
+              max="2"
+              step="0.25"
+              value={gearRatioNpOverNs}
+              onChange={(event) =>
+                updateParam("gearRatioNpOverNs", Number.parseFloat(event.target.value))
+              }
+              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-sky-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-sky-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
             />
           </div>
 

@@ -30,7 +30,9 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [0, 0, 4.5], target: [0, 0, 0] },
+  // Keep the whole 5-unit touch surface and its support in the initial view;
+  // the close presets remain available for the capacitive grid and contacts.
+  iso: { pos: [0, 0, 7.5], target: [0, 0, 0] },
   touch_surface: { pos: [0, 0.8, 3.2], target: [0, 0, 0] },
   sensor_grid: { pos: [0, 1.8, 2.5], target: [0, 0, 0] },
   top: { pos: [0, 5.0, 0.01], target: [0, 0, 0] },

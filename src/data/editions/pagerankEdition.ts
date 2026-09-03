@@ -96,73 +96,73 @@ export const pagerankParallelReadings: Readonly<Record<number, readonly string[]
     "The drawing references identify FIG. 1 as the three-document relationship, FIG. 2 as the rank example, and FIG. 3 as the flowchart.",
   ],
   22: [
-    "FIG. 1 terminology distinguishes a linking parent source from a linked child destination and records the forward and backward link directions.",
+    "The detailed-description preamble says the examples do not impose limitations and acknowledges the named people who supported reduction to practice.",
   ],
   23: [
-    "The patent's recurrence uses alpha divided by N plus normalized rank contributions from each backlink page, with alpha between zero and one.",
+    "A linked database is a directed graph of N nodes with forward and backward links; FIG. 1 gives the three-document example and names B and C as backlinks of A.",
   ],
   24: [
-    "FIG. 2's alpha-free example gives A from C, B from half of A, and C from B plus half of A, producing ranks 0.4, 0.2, and 0.4.",
+    "Simple citation rank is just a backlink count, while the patent says its method is more subtle and gives a different result.",
   ],
   25: [
-    "With alpha equal to one half, the three equations include one-sixth random-jump terms and have solution values fourteen-thirty-ninths, ten-thirty-ninths, and fifteen-thirty-ninths.",
+    "The recurrence combines α/N with normalized ranks from each backlink, so a highly ranked backlink has more effect than a lowly ranked one with the same number of forward links.",
   ],
   26: [
-    "The steady-state vector is the dominant eigenvector of the normalized link matrix when the iteration converges, while childless pages require special handling.",
+    "Ranks form a probability distribution and the random-jump term represents a surfer going to any page instead of following a forward link; the specification identifies the resulting vector as the principal eigenvector.",
   ],
   27: [
-    "Backlink anchor text, indexed alongside the target, can describe a page more accurately than its own content and can expose otherwise hard-to-index objects.",
+    "FIG. 2 works a three-document example first with α equal to zero and then with α equal to one half, including each recurrence and the resulting fractional ranks.",
   ],
   28: [
-    "The method can annotate displayed links with an icon, text, or another indicator of destination rank so a viewer can compare relative importance.",
+    "For large graphs the preferred embodiment starts every rank at one over N, repeats the formulas, and permits useful approximate values before high precision.",
   ],
   29: [
-    "A Web-search embodiment builds an index and directed hyperlink graph, ranks the nodes, and combines rank with full text, titles, backlink anchors, and nearby text.",
+    "The random-surfer description is an equivalent steady-state probability model, not a new legal requirement beyond the source's stated embodiments.",
   ],
   30: [
-    "For large databases the preferred embodiment starts ranks at one over N and repeatedly calculates a new set; approximate values may be useful before full precision.",
+    "The model defines an initial probability vector p0, a transition matrix A, and the distributions after one and two followed links.",
   ],
   31: [
-    "The random-surfer model uses an initial probability vector p0 and an N-by-N transition matrix A, producing p1 equal to A times p0 and p2 equal to A squared times p0.",
+    "When the iteration converges, its limiting probability is a dominant eigenvector of A; pages without links bleed probability and enlarge the random-jump contribution.",
   ],
   32: [
-    "When convergence occurs, the limiting probability is the dominant eigenvector of A and probability circulates through linked nodes, while childless pages can amplify loops.",
+    "The patent describes removing childless pages during iteration, adding them back, normalizing p_i when used for convergence, or estimating the steady state with few iterations.",
   ],
   33: [
-    "Childless pages may be removed during iteration and added back afterward, followed by additional iterations and norm-one normalization, or a short iteration can estimate the steady state.",
+    "Rank can be a component of the steady-state distribution, and the source also gives a logarithmic rank for differences spanning orders of magnitude.",
   ],
   34: [
-    "A node rank can be a steady-state component or a logarithmic ratio to the minimum component, expressing differences that span orders of magnitude.",
-  ],
-  35: [
     "FIG. 3 selects p0 at step 101, computes pn at step 103 using A to the nth power, and determines r[k] from the kth component at step 105.",
   ],
+  35: [
+    "The initial distribution may be uniform or non-uniform; the source explains how a non-uniform start can reduce iterations and the effect of irrelevant-term inflation.",
+  ],
   36: [
-    "A uniform p0 assigns one over N to every node; a non-uniform start can focus probability on known important nodes and reduce iterations or unrelated-term inflation.",
+    "The transition matrix uses α/N times an all-ones matrix plus one minus α times B, whose entries distribute a node's probability among its forward links.",
   ],
   37: [
-    "The transition matrix combines alpha over N times an all-ones matrix with one minus alpha times normalized adjacency matrix B, where B divides by forward-link count.",
+    "The one-minus-α factor is described as damping inherited rank and α is typically around fifteen percent; the source also permits a short α-equals-zero calculation.",
   ],
   38: [
-    "Including the random-jump probability during many iterations prevents artificial concentration of rank inside Web loops; alternatively alpha can be zero for only a few iterations.",
+    "The random-linking probability can be allocated to selected sites or withheld from highly important nodes, including to reduce artificially inflated relevance.",
   ],
   39: [
-    "The random-jump probability may be targeted to selected important nodes, omitted from high-importance nodes, or altered to discount local and same-server links.",
+    "The source describes a model that jumps from unimportant sites, ignores local links, discounts same-server links, and can use domains or other distances for weighting.",
   ],
   40: [
-    "Weights may favor backlinks from different institutions, authors, locations, domain roots, visible or emphasized positions, and recently modified pages.",
+    "Backlinks may receive more weight for institutional, author, geographic, domain-root, visibility, emphasis, or recency reasons; the source also describes rapid convergence and personalized starting importance.",
   ],
   41: [
-    "Fast convergence and lower cost than a full-text index permit personalized starting importance for a user's home page or bookmarks.",
+    "The specification says a user’s home page or bookmarks can receive large initial importance or a high return-jump probability, and link display can carry a rank indicator.",
   ],
   42: [
-    "Rank can estimate exposure, support site design and backlink arrangements, evaluate graph changes, and use real usage data without equating rank with traffic.",
+    "The ranking can estimate attention and graph changes; real usage data can seed alpha, while rank remains a measure of exposure rather than necessarily actual traffic.",
   ],
   43: [
-    "A crawler builds the graph and index; the search engine ranks nodes and combines the score with full text, titles, backlink anchors, titles, and nearby text.",
+    "A Web-search embodiment uses a crawler, index, and directed graph, then ranks the graph nodes before locating documents by the specified search criteria.",
   ],
   44: [
-    "The specification concludes that embodiments may be altered and that the scope is determined by the claims and their legal equivalents.",
+    "The search engine may use full text, titles, backlink anchor text and nearby text; results are sorted by rank and may be grouped, after which the source says claim scope controls.",
   ],
   76: [
     "The certificate identifies patent 6,285,999 B1, application 09/004827, the September 4, 2001 date, and Lawrence Page as inventor.",
@@ -182,7 +182,7 @@ export const pagerankArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "c2e024116b9411385aa9cb5d51d3eb34b99f59db190c2bb9298d9d6d6eeed2e4",
   preparedBy: "Classic Patents editorial agent (GPT-5 Codex)",
-  preparedAt: "2026-08-21",
+  preparedAt: "2026-09-02",
   completeFacsimileReviewed: true,
   blocks: [
     {
@@ -195,7 +195,7 @@ export const pagerankArchivalEdition: CuratedSpecificationEdition = {
         "METHOD FOR NODE RANKING IN A LINKED DATABASE",
         "Inventor: Lawrence Page, Stanford, CA (US)",
         "Assignee: The Board of Trustees of the Leland Stanford Junior University, Stanford, CA (US)",
-        "Application No.: 09/004,827 · Filed: Jan. 9, 1998",
+        "Appl. No.: 09/004,827 Filed: Jan. 9, 1998",
       ],
     },
     {
@@ -204,7 +204,7 @@ export const pagerankArchivalEdition: CuratedSpecificationEdition = {
       text: "ABSTRACT",
     },
     p(
-      "A method assigns importance ranks to nodes in a linked database, such as the World Wide Web. The rank assigned to a document is calculated from the ranks of documents citing it. In addition, the rank of a document is calculated from a constant representing the probability that a browser through the database will randomly jump to the document. The method is particularly useful for enhancing the performance of search engines for text databases on the World Wide Web, whose documents have a large variation in quality and importance.",
+      "A method assigns importance ranks to nodes in a linked database, such as any database of documents containing citations, the World Wide Web or any other hypermedia database. The rank assigned to a document is calculated from the ranks of documents citing it. In addition, the rank of a document is calculated from a constant representing the probability that a browser through the database will randomly jump to the document. The method is particularly useful in enhancing the performance of search engine results for hypermedia databases, such as the World Wide Web, whose documents have a large variation in quality.",
     ),
     {
       kind: "heading",
@@ -248,7 +248,7 @@ export const pagerankArchivalEdition: CuratedSpecificationEdition = {
       "Moreover, when searching the highly competitive Web, this measure of relevancy is vulnerable to spamming techniques that authors can use to artificially inflate their document’s relevance in order to draw attention to it or its advertisements. For this reason search results often contain commercial appeals that should not be considered a match to the query. Although search engines are designed to avoid such ruses, poorly conceived mechanisms can result in disappointing failures to retrieve desired information.",
     ),
     p(
-      "Hyperlink Search Engine, developed by IDD Information Services, uses backlink information, namely information from pages that contain links to the current page, to assist in identifying relevant Web documents. Rather than using the content of a document to determine relevance, the technique uses the anchor text of links to the document to characterize the relevance of a document. The idea of associating anchor text with the page the text points to was first implemented in the World Wide Web Worm. The Hyperlink Search Engine has applied this idea to assist in determining document relevance in a search. In particular, search query terms are compared to a collection of anchor text descriptions that point to the page, rather than to a keyword index of the page content. A rank is then assigned to a document based on the degree to which the search terms match the anchor descriptions in its backlink documents.",
+      "Hyperlink Search Engine, developed by IDD Information Services, (http://rankdex.gari.com/) uses backlink information (i.e., information from pages that contain links to the current page) to assist in identifying relevant Web documents. Rather than using the content of a document to determine relevance, the technique uses the anchor text of links to the document to characterize the relevance of a document. The idea of associating anchor text with the page the text points to was first implemented in the World Wide Web Worm (Oliver A. McBryan, GENVL and WWWW: Tools for Taming the Web, First International Conference on the World Wide Web, CERN, Geneva, May 25—27, 1994). The Hyperlink Search Engine has applied this idea to assist in determining document relevance in a search. In particular, search query terms are compared to a collection of anchor text descriptions that point to the page, rather than to a keyword index of the page content. A rank is then assigned to a document based on the degree to which the search terms match the anchor descriptions in its backlink documents.",
     ),
     p(
       "The well known idea of citation counting is a simple method for determining the importance of a document by counting its number of citations, or backlinks. The citation rank r(A) of a document which has n backlink pages is simply r(A) = n. In the case of databases whose content is of relatively uniform quality and importance it is valid to assume that a highly cited document should be of greater interest than a document with only one or two citations. Many databases, however, have extreme variations in the quality and importance of documents. In these cases, citation ranking is overly simplistic. For example, citation ranking will give the same rank to a document that is cited once on an obscure page as to a similar document that is cited once on a well-known and highly respected page.",
@@ -256,24 +256,18 @@ export const pagerankArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "heading",
       level: 2,
-      text: "SUMMARY OF THE INVENTION",
+      text: "SUMMARY",
     },
     p(
-      "The present invention provides an objective, link-structure-based ranking method that overcomes the limitations of keyword-matching search engines. In accordance with the present invention, the importance rank of a document in a linked database is determined by the link structure of the database itself. A document receives a high rank if it is linked to by other high-ranking documents.",
+      "Various aspects of the present invention provide systems and methods for ranking documents in a linked database. One aspect provides an objective ranking based on the relationship between documents. Another aspect of the invention is directed to a technique for ranking documents within a database whose content has a large variation in quality and importance. Another aspect of the present invention is to provide a document ranking method that is scalable and can be applied to extremely large databases such as the World Wide Web. Additional aspects of the invention will become apparent in view of the following description and associated figures.",
     ),
     p(
-      "The rank calculation models a ",
-      term(
-        "random surfer",
-        "Random Surfer Model",
-        "An idealized web browser whose long-run location is modeled by the patent’s probability process; the specification uses alpha for random jumps and one minus alpha for following normalized forward links.",
-      ),
-      " who traverses the linked database. The rank of a document corresponds to the steady-state probability that the surfer will be at that document after following many links. The invention provides an iterative numerical technique for approximating that distribution over very large linked databases.",
+      "One aspect of the present invention is directed to taking advantage of the linked structure of a database to assign a rank to each document in the database, where the document rank is a measure of the importance of a document. Rather than determining relevance only from the intrinsic content of a document, or from the anchor text of backlinks to the document, a method consistent with the invention determines importance from the extrinsic relationships between documents. Intuitively, a document should be important (regardless of its content) if it is highly cited by other documents. Not all citations, however, are necessarily of equal significance. A citation from an important document is more important than a citation from a relatively unimportant document. Thus, the importance of a page, and hence the rank assigned to it, should depend not just on the number of citations it has, but on the importance of the citing documents as well. This implies a recursive definition of rank: the rank of a document is a function of the ranks of the documents which cite it. The ranks of documents may be calculated by an iterative procedure on a linked database.\n\nBecause citations, or links, are ways of directing attention, the important documents correspond to those documents to which the most attention is directed. Thus, a high rank indicates that a document is considered valuable by many people or by important people. Most likely, these are the pages to which someone performing a search would like to direct his or her attention. Looked at another way, the importance of a page is directly related to the steady-state probability that a random Web surfer ends up at the page after following a large number of links. Because there is a larger probability that a surfer will end up at an important page than at an unimportant page, this method of ranking pages assigns higher ranks to the more important pages.\n\nIn one aspect of the invention, a computer implemented method is provided for scoring linked database documents. The method comprises the steps of: obtaining a plurality of documents, at least some of the documents being linked documents, at least some of the documents being linking documents, and at least some of the documents being both linked documents and linking documents, each of the linked documents being pointed to by a link in one or more of the linking documents; assigning a score to each of the linked documents based on scores of the one or more linking documents; and processing the linked documents according to their scores. Additional aspects, applications and advantages will become apparent in view of the following description and associated figures.",
     ),
     {
       kind: "heading",
       level: 2,
-      text: "BRIEF DESCRIPTION OF THE DRAWING FIGURES",
+      text: "BRIEF DESCRIPTION OF THE DRAWINGS",
     },
     p(
       makePreview(
@@ -298,120 +292,106 @@ export const pagerankArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "heading",
       level: 2,
-      text: "DETAILED DESCRIPTION OF THE PREFERRED EMBODIMENTS",
+      text: "DETAILED DESCRIPTION",
     },
     p(
-      "Referring to ",
+      "Although the following detailed description contains many specifics for the purposes of illustration, anyone of ordinary skill in the art will appreciate that many variations and alterations to the following details are within the scope of the invention. Accordingly, the following embodiments of the invention are set forth without any loss of generality to, and without imposing limitations upon, the claimed invention. For support in reducing the present invention to practice, the inventor acknowledges Sergey Brin, Scott Hassan, Rajeev Motwani, Alan Steremberg, and Terry Winograd.",
+    ),
+    p(
+      "A linked database (i.e. any database of documents containing mutual citations, such as the World Wide Web or other hypermedia archive, a dictionary or thesaurus, and a database of academic articles, patents, or court cases) can be represented as a directed graph of N nodes, where each node corresponds to a Web page document and where the directed connections between nodes correspond to links from one document to another. A given node has a set of forward links that connect it to children nodes, and a set of backward links that connect it to parent nodes. ",
       makePreview("FIG. 1", [1], "Relationship between three linked documents A, B, and C"),
-      ", a linked database contains documents A, B, and C. The first links in documents B and C point to document A, so B and C are backlinks of A and A is a forward link of B and C. Documents B and C also have other forward links to documents that are not shown. In the terminology of the present invention, a ",
-      term(
-        "linking document",
-        "Linking Document / Forward Link",
-        "A source document containing a directed hyperlink to a destination document; the source is the parent of that destination in the directed graph.",
-      ),
-      " is a linking document (or parent node) with respect to A, while B and C are each a ",
-      term(
-        "linked document",
-        "Linked Document / Backlink",
-        "A destination document reached by an incoming directed hyperlink; the destination is the child of the source document in the directed graph.",
-      ),
-      " (or child node) with respect to A.",
+      " shows a typical relationship between three hypertext documents A, B, and C. As shown in this particular figure, the first links in documents B and C are pointers to document A. In this case we say that B and C are backlinks of A, and that A is a forward link of B and of C. Documents B and C also have other forward links to documents that are not shown.",
     ),
     p(
-      "In the preferred embodiment, the rank r(A) is defined as r(A) = alpha/N + (1-alpha) * (r(B1)/|B1| + ... + r(Bn)/|Bn|), where B1 through Bn are the backlink pages of A, r(Bi) are their ranks, |Bi| are their numbers of forward links, ",
+      "Although the ranking method of the present invention is superficially similar to the well known idea of citation counting, the present method is more subtle and complex than citation counting and gives far superior results. In a simple citation ranking, the rank of a document A which has n backlink pages is simply r(A)=n.",
+    ),
+    p(
+      "According to one embodiment of the present method of ranking, the backlinks from different pages are weighted differently and the number of links on each page is normalized. More precisely, the rank of a page A is defined according to the present invention as r(A) = α/N + (1 − α)(r(B₁)/|B₁| + ··· + r(Bₙ)/|Bₙ|), where B₁, . . . , Bₙ are the backlink pages of A, r(B₁), . . . , r(Bₙ) are their ranks, |B₁|, . . . , |Bₙ| are their numbers of forward links, and ",
       term(
-        "alpha",
+        "α",
         "Random-jump probability",
-        "The patent’s constant random-jump probability, in the interval [0, 1], which supplies alpha/N to every page while one minus alpha scales normalized forward-link contributions.",
+        "The patent’s constant random-jump probability, in the interval [0, 1], which supplies α/N to every page while one minus α scales normalized forward-link contributions.",
       ),
-      " is in the interval [0, 1], and N is the total number of pages in the Web. The specification also states that the ranks form a probability distribution and sum to unity. The text gives a typical value around 0.1 for alpha and later describes a value around 15 percent.",
+      " is a constant in the interval [0,1], and N is the total number of pages in the Web. This definition is clearly more complicated and subtle than the simple citation rank. Like the citation rank, this definition yields a page rank that increases as the number of backlinks increases. But the present method considers a citation from a highly ranked backlink as more important than a citation from a lowly ranked backlink (provided both citations come from backlink documents that have an equal number of forward links). In the present invention, it is possible, therefore, for a document with only one backlink (from a very highly ranked page) to have a higher rank than another document with many backlinks (from very low ranked pages). This is not the case with simple citation ranking.",
     ),
     p(
-      "Referring to ",
+      "The ranks form a probability distribution over Web pages, so that the sum of ranks over all Web pages is unity. The rank of a page can be interpreted as the probability that a surfer will be at the page after following a large number of forward links. The constant α in the formula is interpreted as the probability that the Web surfer will jump randomly to any Web page instead of following a forward link. The page ranks for all the pages can be calculated using a simple iterative algorithm, and corresponds to the principal eigenvector of the normalized link matrix of the Web, as will be discussed in more detail below.",
+    ),
+    p(
+      "In order to illustrate the present method of ranking, consider the simple Web of three documents shown in ",
       makePreview("FIG. 2", [2], "Rank propagation across documents A, B, and C"),
-      ", document A has a single backlink from C, document B has a single backlink from A, and document C has backlinks from B and A. With alpha omitted, the illustrative values are r(A)=0.4, r(B)=0.2, and r(C)=0.4. With alpha=0.5, the text gives r(A)=1/6+r(C)/2, r(B)=1/6+r(A)/4, and r(C)=1/6+r(A)/4+r(B)/2, whose solution is 14/39, 10/39, and 15/39.",
+      ". For simplicity of illustration, we assume in this example that α=0. Document A has a single backlink to document C, and this is the only forward link of document C, so r(A)=r(C). Document B has a single backlink to document A, but this is one of two forward links of document A, so r(B)=r(A)/2. Document C has two backlinks. One backlink is to document B, and this is the only forward link of document B. The other backlink is to document A via the other of the two forward links from A. Thus r(C)=r(B)+r(A)/2. In this simple illustrative case we can see by inspection that r(A)=0.4, r(B)=0.2, and r(C)=0.4. Although a typical value for α is ~0.1, if for simplicity we set α=0.5 (which corresponds to a 50% chance that a surfer will randomly jump to one of the three pages rather than following a forward link), then the mathematical relationships between the ranks become more complicated. In particular, we then have r(A)=1/6+r(C)/2, r(B)=1/6+r(A)/4, and r(C)=1/6+r(A)/4+r(B)/2. The solution in this case is r(A)=14/39, r(B)=10/39, and r(C)=15/39.",
     ),
     p(
-      "Referring to ",
-      makePreview("FIG. 3", [3], "Iterative rank computation flowchart"),
-      ", step 101 selects an initial N-dimensional vector p_0. Step 103 computes an approximation p_n to the steady-state probability p_infinity according to p_n = A^n p_0. Matrix A is an N by N transition-probability matrix, and step 105 determines rank r[k] from the kth component of p_n. The process uses the ",
+      "In practice, there are millions of documents and it is not possible to find the solution to a million equations by inspection. Accordingly, in the preferred embodiment a simple iterative procedure is used. As the initial state we may simply set all the ranks equal to 1/N. The formulas are then used to calculate a new set of ranks based on the existing ranks. In the case of millions of documents, sufficient convergence typically takes on the order of 100 iterations. It is not always necessary or even desirable, however, to calculate the rank of every page with high precision. Even approximate rank values, using two or more iterations, can provide very valuable, or even superior, information.",
+    ),
+    p(
+      "The iteration process can be understood as a steady-state probability distribution calculated from a model of a ",
       term(
-        "power iteration",
-        "Power Iteration Method",
-        "An iterative numerical procedure that repeatedly applies a transition matrix to approximate its steady-state probability vector, which is a dominant eigenvector when convergence holds.",
+        "random surfer",
+        "Random Surfer Model",
+        "An idealized web browser whose long-run location is modeled by the patent’s probability process; the specification uses α for random jumps and one minus α for following normalized forward links.",
       ),
-      " method. The patent describes a finite number of iterations and does not require a particular tolerance label.",
+      ". This model is mathematically equivalent to the explanation described above, but provides a more direct and concise characterization of the procedure.",
     ),
     p(
-      "The steady-state vector p represents the ",
+      "The model includes (a) an initial N-dimensional probability distribution vector p₀ where each component p₀[i] gives the initial probability that a random surfer will start at a node i, and (b) an N×N transition probability matrix A where each component A[i][j] gives the probability that the surfer will move from node i to node j. The probability distribution of the graph after the surfer follows one link is p₁=Ap₀, and after two links the probability distribution is p₂=Ap₁=A²p₀.",
+    ),
+    p(
+      "Assuming this iteration converges, it will converge to a steady-state probability p∞ = lim(n→∞) Aⁿp₀, which is a ",
       term(
         "dominant eigenvector",
         "Stationary Eigenvector",
         "The limiting probability vector of the patent’s normalized link transition matrix, corresponding to the dominant eigenvector when the iteration converges; this is a source term, not a claim that every Web graph has the same numerical solution.",
       ),
-      " of the link transition matrix. The patent explains that childless pages complicate the calculation, proposes removing them during iteration and adding them back, and requires the norm of each intermediate vector to be one when that normalization is used.",
+      " of A. The iteration circulates the probability through the linked nodes like energy flows through a circuit and accumulates in important places. Because pages with no links occur in significant numbers and bleed off energy, they cause some complication with computing the ranking. This complication is caused by the fact they can add huge amounts to the “random jump” factor.",
     ),
     p(
-      "In another aspect of the invention, link weights can be adjusted by domain, user browsing history, geographic location, link visibility, or recency. In search-engine applications, ",
+      "This, in turn, causes loops in the graph to be highly emphasized which is not generally a desirable property of the model. In order to address this problem, these childless pages can simply be removed from the model during the iterative stages, and added back in after the iteration is complete. After the childless pages are added back in, however, the same number of iterations that was required to remove them should be done to make sure they all receive a value. (Note that in order to ensure convergence, the norm of pᵢ must be made equal to 1 after each iteration.) An alternate method to control the contribution of the childless nodes is to only estimate the steady state by iterating a small number of times.",
+    ),
+    p(
+      "The rank r[i] of a node i can then be defined as a function of this steady-state probability distribution. For example, the rank can be defined simply by r[i]=p∞[i]. This method of calculating rank is mathematically equivalent to the iterative method described first. Those skilled in the art will appreciate that this same method can be characterized in various different ways that are mathematically equivalent. Such characterizations are obviously within the scope of the present invention. Because the rank of various different documents can vary by orders of magnitude, it is convenient to define a logarithmic rank r[i] = log(p∞[i]/minₖ∈[1,N]{p∞[k]}) which assigns a rank of 0 to the lowest ranked node and increases by 1 for each order of magnitude in importance higher than the lowest ranked node.",
+    ),
+    p(
+      "“",
+      makePreview("FIG. 3", [3], "Iterative rank computation flowchart"),
+      " shows one embodiment of a computer implemented method for calculating an importance rank for N linked nodes of a linked database. At a step 101, an initial N-dimensional vector p₀ is selected. An approximation pₙ to a steady-state probability p∞ in accordance with the equation pₙ=Aⁿp₀ is computed at a step 103. Matrix A can be an N×N transition probability matrix having elements A[i][j] representing a probability of moving from node i to node j. At a step 105, a rank r[k] for node k from a kᵗʰ component of pₙ is determined.”.",
+    ),
+    p(
+      "In one particular embodiment, a finite number of iterations are performed to approximate p∞. The initial distribution can be selected to be uniform or non-uniform. A uniform distribution would set each component of p₀ equal to 1/N. A non-uniform distribution, for example, can divide the initial probability among a few nodes which are known a priori to have relatively large importance. This non-uniform distribution decreases the number of iterations required to obtain a close approximation to p∞ and also is one way to reduce the effect of artificially inflating relevance by adding unrelated terms.",
+    ),
+    p(
+      "In another particular embodiment, the transition matrix A is given by A = α/N · 1 + (1 − α)B, where 1 is an N×N matrix consisting of all 1s, α is the probability that a surfer will jump randomly to any one of the N nodes, and B is a matrix whose elements B[i][j] are given by 1/nᵢ if node i points to node j, and 0 otherwise, where nᵢ is the total number of forward links from node i. The (1−α) factor acts as a damping factor that limits the extent to which a document’s rank can be inherited by children documents. This models the fact that users typically jump to a different place in the Web after following a few links. The value of α is typically around 15%.",
+    ),
+    p(
+      "Including this damping is important when many iterations are used to calculate the rank so that there is no artificial concentration of rank importance within loops of the Web. Alternatively, one may set α=0 and only iterate a few times in the calculation.",
+    ),
+    p(
+      "Consistent with the present invention, there are several ways that this method can be adapted or altered for various purposes. As already mentioned above, rather than including the random linking probability α equally among all nodes, it can be divided in various ways among all the sites by changing the 1 matrix to another matrix. For example, it could be distributed so that a random jump takes the surfer to one of a few nodes that have a high importance, and will not take the surfer to any of the other nodes. This can be very effective in preventing deceptively tagged documents from receiving artificially inflated relevance. Alternatively, the random linking probability could be distributed so that random jumps do not happen from high importance nodes, and only happen from other nodes.",
+    ),
+    p(
+      "This distribution would model a surfer who is more likely to make random jumps from unimportant sites and follow forward links from important sites. A modification to avoid drawing unwarranted attention to pages with artificially inflated relevance is to ignore local links between documents and only consider links between separate domains. Because the links from other sites to the document are not directly under the control of a typical Web site designer, it is then difficult for the designer to artificially inflate the ranking. A simpler approach is to weight links from pages contained on the same Web server less than links from other servers. Also, in addition to servers, internet domains and any general measure of the distance between links could be used to determine such a weighting.",
+    ),
+    p(
+      "Additional modifications can further improve the performance of this method. Rank can be increased for documents whose backlinks are maintained by different institutions and authors in various geographic locations. Or it can be increased if links come from unusually important Web locations such as the root page of a domain. Links can also be weighted by their relative importance within a document. For example, highly visible links that are near the top of a document can be given more weight. Also, links that are in large fonts or emphasized in other ways can be given more weight. In this way, the model better approximates human usage and authors’ intentions. In many cases it is appropriate to assign higher value to links coming from pages that have been modified recently since such information is less likely to be obsolete.",
+    ),
+    p(
+      "Various implementations of the invention have the advantage that the convergence is very fast (a few hours using current processors) and it is much less expensive than building a full-text index. This speed allows the ranking to be customized or personalized for specific users. For example, a user’s home page and/or bookmarks can be given a large initial importance, and/or a high probability of a random jump returning to it. This high rating essentially indicates to the system that the person’s homepage and/or bookmarks does indeed contain subjects of importance that should be highly ranked. This procedure essentially trains the system to recognize pages related to the person’s interests. The present method of determining the rank of a document can also be used to enhance the display of documents. In particular, each link in a document can be annotated with an icon, text, or other indicator of the rank of the document that each link points to. Anyone viewing the document can then easily see the relative importance of various links in the document.",
+    ),
+    p(
+      "The present method of ranking documents in a database can also be useful for estimating the amount of attention any document receives on the Web since it models human behavior when surfing the Web. Estimating the importance of each backlink to a page can be useful for many purposes including site design, business arrangements with the backlinkers, and marketing. The effect of potential changes to the hypertext structure can be evaluated by adding them to the link structure and recomputing the ranking. Real usage data, when available, can be used as a starting point for the model and as the distribution for the alpha factor. This can allow this ranking model to fill holes in the usage data, and provide a more accurate or comprehensive picture. Thus, although this method of ranking does not necessarily match the actual traffic, it nevertheless measures the degree of exposure a document has throughout the Web.",
+    ),
+    p(
+      "Another important application and embodiment of the present invention is directed to enhancing the quality of results from Web search engines. In this application of the present invention, a ranking method according to the invention is integrated into a Web search engine to produce results far superior to existing methods in quality and performance. A search engine employing a ranking method of the present invention provides automation while producing results comparable to a human maintained categorized system. In this approach, a Web crawler explores the Web and creates an index of the Web content, as well as a directed graph of nodes corresponding to the structure of hyperlinks. The nodes of the graph (i.e. pages of the Web) are then ranked according to importance as described above in connection with various exemplary embodiments of the present invention.",
+    ),
+    p(
+      "The search engine is used to locate documents that match the specified search criteria, either by searching full text, or by searching titles only. In addition, the search can include the ",
       term(
         "anchor text",
         "Hyperlink Anchor Text",
         "The descriptive words attached to a hyperlink; the patent proposes indexing those words with the destination so a page can match a query through how other pages describe it.",
       ),
-      " from backlinks is indexed alongside the target document. The patent notes that anchor text can describe a page more accurately than the page itself and can help return pages that have not yet been crawled.",
-    ),
-    p(
-      "In another embodiment, document ranks annotate links displayed in documents or directories with an icon, text, or another indicator, so a viewer can assess the relative importance of destinations.",
-    ),
-    p(
-      "The patent describes a Web-search implementation in which a crawler creates an index and a directed graph, the nodes are ranked, and results are sorted by rank. Searches may use full text, titles, backlink anchor text, backlink titles, and nearby text, and results may be grouped by category or site.",
-    ),
-    p(
-      "In practice, there are millions of documents and it is not possible to find the solution to a million equations by inspection. The preferred embodiment starts all ranks at 1/N and uses the formulas repeatedly to calculate a new set of ranks. In the case of millions of documents, sufficient convergence typically takes on the order of 100 iterations. It is not always necessary or desirable to calculate every page with high precision; approximate rank values after two or more iterations can also provide useful information.",
-    ),
-    p(
-      "The random-surfer model includes an initial N-dimensional probability distribution vector p₀, whose component p₀[i] is the probability of starting at node i, and an N × N transition probability matrix A, whose component A[i][j] is the probability of moving from node i to node j. The probability distribution after one link is p₁ = A p₀, and after two links it is p₂ = A p₁ = A² p₀.",
-    ),
-    p(
-      "Assuming the iteration converges, it converges to the steady-state probability p∞ = lim(n→∞) Aⁿ p₀, which is a dominant eigenvector of A. The iteration circulates probability through linked nodes and accumulates it in important places. Pages with no links bleed off probability and can add huge amounts to the random-jump factor, causing loops in the graph to be highly emphasized.",
-    ),
-    p(
-      "To address childless pages, the pages may be removed from the model during the iterative stages and added back after the iteration is complete. After they are added back, the same number of iterations used during removal should be performed so that each receives a value. The norm of pᵢ must be made equal to 1 after each iteration when this normalization is used. An alternate method is to estimate the steady state with only a small number of iterations.",
-    ),
-    p(
-      "The rank r[i] of node i can be defined as a function of the steady-state distribution, for example r[i] = p∞[i]. Equivalent characterizations remain within the scope of the invention. Because ranks can differ by orders of magnitude, a logarithmic rank may be defined as log(p∞[i] / minₖ p∞[k]), assigning rank zero to the lowest-ranked node and increasing by one for each order of magnitude in importance.",
-    ),
-    p(
-      "At step 101 of ",
-      makePreview("FIG. 3", [3], "Flowchart showing initial vector selection"),
-      ", an initial N-dimensional vector p₀ is selected. At step 103, an approximation pₙ to p∞ is computed according to pₙ = Aⁿ p₀. Matrix A has elements A[i][j] representing the probability of moving from i to j. At step 105, a rank r[k] is determined from the kth component of pₙ.",
-    ),
-    p(
-      "The initial distribution may be uniform or non-uniform. A uniform distribution sets every component of p₀ to 1/N. A non-uniform distribution can divide the initial probability among a few nodes known a priori to have relatively large importance, reducing the number of iterations needed for a close approximation and reducing the effect of artificially inflating relevance by adding unrelated terms.",
-    ),
-    p(
-      "In one particular embodiment, the transition matrix is A = alpha/N · 1 + (1-alpha)B, where 1 is an N × N matrix consisting of all ones, alpha is the probability that a surfer will jump randomly to any of the N nodes, and B[i][j] is 1/nᵢ if node i points to node j and zero otherwise. Here nᵢ is the total number of forward links from node i. The (1-alpha) factor limits the extent to which a document’s rank is inherited by child documents and models the fact that users typically jump to a different place after following a few links. The value of alpha is typically around 15 percent.",
-    ),
-    p(
-      "Including the random-jump probability is important when many iterations are used so that there is no artificial concentration of rank within Web loops. Alternatively, alpha may be set to zero and only a few iterations performed.",
-    ),
-    p(
-      "The random-linking probability may be divided among selected important nodes rather than all sites, or random jumps may be prevented from high-importance nodes. This models a surfer more likely to jump from unimportant sites and follow links from important sites. Local links may be ignored, or links on the same server may be weighted less than links from other servers. Other distances between links may also determine the weighting.",
-    ),
-    p(
-      "Rank can be increased for documents whose backlinks are maintained by different institutions and authors in different geographic locations, for links from unusually important domain roots, and for links weighted by their relative importance within a document. Highly visible links near the top of a document, links in large fonts, emphasized links, and links from recently modified pages may receive higher value.",
-    ),
-    p(
-      "Various implementations converge quickly and cost less than building a full-text index. This speed permits ranking customized for users. A user’s home page or bookmarks can be given a large initial importance or a high probability of a random jump returning to it, which trains the system to recognize pages related to that user’s interests.",
-    ),
-    p(
-      "The ranking method can estimate the amount of attention a document receives, assist site design and arrangements with backlinkers, and evaluate proposed changes to a hypertext structure by adding the changes and recomputing rank. Real usage data can be used as a starting point and as the distribution for alpha. The model does not necessarily match actual traffic, but measures the degree of exposure a document receives throughout the Web.",
-    ),
-    p(
-      "A ranking method according to the invention may be integrated into a Web search engine. A crawler explores the Web and creates an index and a directed graph of nodes corresponding to hyperlink structure. The nodes are ranked according to the method, and a search engine locates documents by full text, titles, backlink anchor text, backlink document titles, and text near backlink anchors. The results are sorted with high-ranking documents first and low-ranking documents last, and may be grouped by category or site.",
-    ),
-    p(
-      "It will be clear to one skilled in the art that the above embodiments may be altered in many ways without departing from the scope of the invention. Accordingly, the scope of the invention should be determined by the following claims and their legal equivalents.",
+      " associated with backlinks to the page. This approach has several advantages in this context. First, anchors often provide more accurate descriptions of Web pages than the pages themselves. Second, anchors may exist for images, programs, and other objects that cannot be indexed by a text-based search engine. This also makes it possible to return Web pages which have not actually been crawled. In addition, the engine can compare the search terms with a list of its backlink document titles. Thus, even though the text of the document itself may not match the search terms, if the document is cited by documents whose titles or backlink anchor text match the search terms, the document will be considered a match. In addition to or instead of the anchor text, the text in the immediate vicinity of the backlink anchor text can also be compared to the search terms in order to improve the search. Once a set of documents is identified that match the search terms, the list of documents is then sorted with high ranking documents first and low ranking documents last. The ranking in this case is a function which combines all of the above factors such as the objective ranking and textual matching. If desired, the results can be grouped by category or site as well.\n\nIt will be clear to one skilled in the art that the above embodiments may be altered in many ways without departing from the scope of the invention. Accordingly, the scope of the invention should be determined by the following claims and their legal equivalents.",
     ),
     {
       kind: "heading",
@@ -714,16 +694,16 @@ export const pagerankArchivalEdition: CuratedSpecificationEdition = {
       text: "CERTIFICATE OF CORRECTION",
     },
     p(
-      "PATENT NO.: 6,285,999 B1. APPLICATION NO.: 09/004827. DATED: September 4, 2001. INVENTOR: Lawrence Page.",
+      "PATENT NO. : 6,285,999 B1. Page 1 of 1. APPLICATION NO. : 09/004827. DATED : September 4, 2001. INVENTOR(S) : Lawrence Page.",
     ),
     p(
-      "It is certified that error appears in the above-identified patent and that the Letters Patent is hereby corrected as shown below.",
+      "It is certified that error appears in the above-identified patent and that said Letters Patent is hereby corrected as shown below:",
     ),
     p(
       "In the Specification, Column 1, lines 13-15 should be replaced with the following paragraph: This invention was made with Government support under contract 9411306 awarded by the National Science Foundation. The Government has certain rights in this invention.",
     ),
     p(
-      "Signed and sealed the Sixth Day of August, 2013. Teresa Stanek Rea, Acting Director of the United States Patent and Trademark Office.",
+      "Signed and Sealed this Sixth Day of August, 2013. Teresa Stanek Rea, Acting Director of the United States Patent and Trademark Office.",
     ),
   ],
 };

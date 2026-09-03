@@ -9,6 +9,7 @@ import { bellTelephonePatent } from "./bell-telephone";
 import { boyleSmithCcdPatent } from "./boyle-smith-ccd";
 import { carlsonElectrophotographyPatent } from "./carlson-electrophotography";
 import { carrierAirConditionerPatent } from "./carrier-air-conditioner";
+import { clavelDeltaRobotPatent } from "./clavel-delta-robot";
 import { coltRevolverPatent } from "./colt-revolver";
 import { corlissSteamEnginePatent } from "./corliss-steam-engine";
 import { cortPuddlingRollingPatent } from "./cort-puddling-rolling";
@@ -222,6 +223,7 @@ export const allPatents: Patent[] = parsePatentCatalog([
   hullStereolithographyPatent, // 1986-03-11
   robotEndEffectorPatent, // 1988-08-23
   salisburyRobotHandPatent, // 1990-05-01
+  clavelDeltaRobotPatent, // 1990-12-11
   crumpFdmPatent, // 1992-06-09
   kamenTransporterPatent, // 1997-12-30
   eInkPatent, // 2000-09-19

@@ -135,7 +135,7 @@ export const renoEscalatorArchivalEdition: CuratedSpecificationEdition = {
       },
       figure(2, "Figs. 2"),
       { kind: "text", text: " and " },
-      figure(4),
+      figure(4, "4"),
       {
         kind: "text",
         text: ". These sections are hinged together, as shown at 12, and are cast with a grooved surface, as shown in cross-section in ",
@@ -161,7 +161,7 @@ export const renoEscalatorArchivalEdition: CuratedSpecificationEdition = {
       },
       figure(1, "Figs. 1"),
       { kind: "text", text: " and " },
-      figure(2),
+      figure(2, "2"),
       {
         kind: "text",
         text: ", so that as the square parts of the hinges 12 leave the sliding or planed surfaces 15 of the beams 4 the rounded parts of the hinges are engaged by and supported in the seats or notches 17 about the circumferences of the wheels 3.",
@@ -190,7 +190,7 @@ export const renoEscalatorArchivalEdition: CuratedSpecificationEdition = {
       },
       figure(3, "Figs. 3"),
       { kind: "text", text: " and " },
-      figure(4),
+      figure(4, "4"),
       { kind: "text", text: "." },
     ]),
     paragraph([

@@ -156,4 +156,51 @@ describe("US 4,921,293 Salisbury & Ruoff Multi-Fingered Robotic Hand manual sour
     expect(salisburyRobotHandPatent.historicalContext.patentWars).toEqual([]);
     expect(salisburyRobotHandPatent.originalText).not.toContain("What is claimed");
   });
+
+  test("provides valid provenance classifications for all Salisbury controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const config = PATENT_PHYSICS_REGISTRY["us-4921293-salisbury-robot-hand"];
+    expect(config).toBeDefined();
+
+    for (const ctrl of config.controls) {
+      expect(["source-disclosed", "scenario-reader"]).toContain(ctrl.provenance);
+    }
+
+    const defaultMetrics = config.computeMetrics({});
+    for (const metric of defaultMetrics) {
+      expect(["source-disclosed", "scenario-reader"]).toContain(metric.provenance);
+    }
+  });
+
+  test("wires claim 1 and claim 2 constraints in claimConstraints", () => {
+    const {
+      CATALOG_CLAIM_CONSTRAINTS,
+      applyClaimConstraintModifications,
+    } = require("@/physics/claimConstraints");
+    const constraints = CATALOG_CLAIM_CONSTRAINTS["us-4921293-salisbury-robot-hand"];
+    expect(constraints).toBeDefined();
+    expect(constraints.length).toBeGreaterThanOrEqual(2);
+
+    const claim1 = constraints.find((c: any) => c.claimNumber === 1);
+    expect(claim1).toBeDefined();
+    const claim2 = constraints.find((c: any) => c.claimNumber === 2);
+    expect(claim2).toBeDefined();
+
+    const activeRes = applyClaimConstraintModifications(
+      "us-4921293-salisbury-robot-hand",
+      {},
+      { 1: true, 2: true },
+    );
+    expect(activeRes.activeFailures.length).toBe(0);
+
+    const invertedRes = applyClaimConstraintModifications(
+      "us-4921293-salisbury-robot-hand",
+      {},
+      { 1: false, 2: false },
+    );
+    expect(invertedRes.activeFailures.length).toBeGreaterThan(0);
+    expect(invertedRes.modifiedParams.tensionT1N).toBe(0);
+    expect(invertedRes.modifiedParams.firstIdlerFixed).toBe(0);
+    expect(invertedRes.refusalWarning).toContain("SOURCE BOUNDARY");
+  });
 });

@@ -1,7 +1,9 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "@/components/patents/visuals/PortHamiltonianEnergyStrip";
 import {
   DEFAULT_SIKORSKY_CONTROLS,
   INITIAL_SIKORSKY_STATE,
@@ -10,9 +12,20 @@ import {
   type SikorskyHelicopterState,
   stepSikorskyHelicopterSi,
 } from "@/physics/sikorskyHelicopterKernel";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+
+const PATENT_ID = "us-2318259-sikorsky-helicopter";
 
 export const SikorskyHelicopterSim: React.FC = () => {
-  const [controls, setControls] = useState<SikorskyHelicopterControls>(DEFAULT_SIKORSKY_CONTROLS);
+  const { params, updateParam } = usePatentPhysics(PATENT_ID);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
+  const controls = useMemo<SikorskyHelicopterControls>(
+    () => ({
+      ...DEFAULT_SIKORSKY_CONTROLS,
+      ...params,
+    }),
+    [params],
+  );
   const [simState, setSimState] = useState<SikorskyHelicopterState>(INITIAL_SIKORSKY_STATE);
   const [metrics, setMetrics] = useState<SikorskyHelicopterMetrics>(() => {
     return stepSikorskyHelicopterSi(INITIAL_SIKORSKY_STATE, DEFAULT_SIKORSKY_CONTROLS, 0.016)
@@ -26,10 +39,7 @@ export const SikorskyHelicopterSim: React.FC = () => {
     key: K,
     value: SikorskyHelicopterControls[K],
   ) => {
-    setControls((prev) => {
-      const next = { ...prev, [key]: value };
-      return next;
-    });
+    updateParam(key, value as number);
   };
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -302,6 +312,23 @@ export const SikorskyHelicopterSim: React.FC = () => {
             </span>
           </div>
         </div>
+      </div>
+
+      <div className="p-4 bg-stone-900/60 rounded-lg border border-stone-800">
+        <PortHamiltonianEnergyStrip
+          patentId={PATENT_ID}
+          params={controls as unknown as Record<string, number>}
+        />
+      </div>
+
+      <div className="p-4 bg-stone-900/60 rounded-lg border border-stone-800">
+        <ClaimConstraintToggle
+          patentId={PATENT_ID}
+          claimStates={claimStates}
+          onClaimStateChange={(num, active) =>
+            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          }
+        />
       </div>
     </div>
   );

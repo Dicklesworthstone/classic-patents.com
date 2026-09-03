@@ -21,7 +21,8 @@ const PLATFORM_HOSTNAME = "classic-patents.vercel.app";
 const PROMOTION_HOSTNAMES = [...PUBLIC_HOSTNAMES, PLATFORM_HOSTNAME] as const;
 const WRIGHT_ROUTE = "/patents/us-821393-wright-flyer";
 const WRIGHT_ARCHIVAL_TEXT_LABEL = "Original Patent Text";
-const WRIGHT_MANUAL_EDITION_MARKER = 'data-archival-edition="manual-react-edition"';
+const PUBLISHED_MANUAL_EDITION_ROUTE = "/patents/us-4063220-metcalfe-ethernet";
+const PUBLISHED_MANUAL_EDITION_MARKER = 'data-archival-edition="manual-react-edition"';
 const PUBLICATION_CONTRACT_TESTS = [
   "src/data/editions/archivalEditionSemantics.test.ts",
   "src/data/editions/manualEditionCoverageAudit.test.ts",
@@ -125,9 +126,17 @@ function conflictingBuilds(): string[] {
     const pid = parts[0];
     const ppid = parts[1];
     if (pid === currentPid || ppid === currentPid) return false;
+    const commandStr = parts.slice(3).join(" ");
+    if (
+      /\b(?:SkyComputerUseClient|Codex Computer Use|Google Chrome|Electron|Antigravity)\b/i.test(
+        commandStr,
+      )
+    ) {
+      return false;
+    }
     if (
       !/\b(?:next\s+(?:build|dev)|vercel\s+(?:build|deploy)|bun\s+(?:run\s+(?:build|dev)|scripts\/build\.ts))\b/.test(
-        line,
+        commandStr,
       )
     ) {
       return false;
@@ -140,11 +149,11 @@ function conflictingBuilds(): string[] {
 }
 
 function assertNoConflictingBuilds(stage: string) {
-  for (let attempt = 0; attempt < 6; attempt++) {
+  for (let attempt = 0; attempt < 120; attempt++) {
     const conflicts = conflictingBuilds();
     if (conflicts.length === 0) return;
-    if (attempt < 5) {
-      spawnSync("sleep", ["0.5"]);
+    if (attempt < 119) {
+      spawnSync("sleep", ["1"]);
       continue;
     }
     throw new Error(
@@ -294,12 +303,16 @@ function assertProtectedPreviewResponse(
 
 async function assertReleaseRoutes(url: string) {
   await assertResponse(url, WRIGHT_ROUTE, WRIGHT_ARCHIVAL_TEXT_LABEL);
-  await assertResponse(url, WRIGHT_ROUTE, WRIGHT_MANUAL_EDITION_MARKER);
+  await assertResponse(url, PUBLISHED_MANUAL_EDITION_ROUTE, PUBLISHED_MANUAL_EDITION_MARKER);
 }
 
 function assertProtectedPreviewRoutes(deployment: string) {
   assertProtectedPreviewResponse(deployment, WRIGHT_ROUTE, WRIGHT_ARCHIVAL_TEXT_LABEL);
-  assertProtectedPreviewResponse(deployment, WRIGHT_ROUTE, WRIGHT_MANUAL_EDITION_MARKER);
+  assertProtectedPreviewResponse(
+    deployment,
+    PUBLISHED_MANUAL_EDITION_ROUTE,
+    PUBLISHED_MANUAL_EDITION_MARKER,
+  );
 }
 
 async function acquireDeploymentLock() {

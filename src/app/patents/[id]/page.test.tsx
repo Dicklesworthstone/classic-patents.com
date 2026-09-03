@@ -39,6 +39,9 @@ describe("PatentDetailPage component", () => {
     expect(html).toContain("Wright Flyer");
     expect(html).toContain("Plain English Face");
     expect(html).toContain("Original Patent Text");
+    expect(html).toContain('data-archival-publication-state="held"');
+    expect(html).toContain("data-archival-publication-evidence=");
+    expect(html).toContain("acceptedFigureCount");
   });
 
   test("handles legacy redirects gracefully", async () => {

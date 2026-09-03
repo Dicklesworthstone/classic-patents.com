@@ -7,7 +7,9 @@ import {
   kamenSegwayParallelReadings,
 } from "@/data/editions/kamenSegwayEdition";
 import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
+import { kamenSegwayPatent } from "@/data/patents/kamen-segway";
 import { normalizeReviewedLedgerText } from "@/data/patents/sourceTextValidation";
+import { PATENT_PHYSICS_REGISTRY } from "@/physics/telemetryData";
 import type { CuratedSpecificationBlock, CuratedSpecificationInline } from "@/types/patent";
 
 const PATENT_ID = "us-6302230-kamen-segway";
@@ -105,6 +107,98 @@ describe("US 6,302,230 Dean Kamen Segway Human Transporter Archival Edition Cont
     for (const index of paragraphIndexes) {
       expect(readings[index]).toBeDefined();
       expect(kamenSegwayParallelReadings[index]?.join(" ").length).toBeGreaterThan(30);
+    }
+  });
+
+  test("provides valid provenance classifications for all Segway controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-6302230-kamen-segway"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("wires claim 1 and claim 2 inversion probes through the balance/alarm kernel", () => {
+    const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
+    const { stepKamenSegwaySi } = require("@/physics/kamenSegwayKernel");
+
+    const invertedClaim1 = applyClaimConstraintModifications(
+      "us-6302230-kamen-segway",
+      {},
+      {
+        1: false,
+        2: true,
+      },
+    );
+    expect(invertedClaim1.refusalWarning).toContain("SOURCE-BOUND REFUSAL");
+    expect(invertedClaim1.modifiedParams.claim1BalanceEnabled).toBe(0);
+    const tel1 = stepKamenSegwaySi({
+      riderPitchDeg: 4.5,
+      steeringInput: 0,
+      riderMassKg: 75,
+      groundFrictionCoeff: 0.85,
+      speedLimitMS: 5.5,
+      claim1BalanceEnabled: false,
+      claim2RippleEnabled: true,
+    });
+    expect(tel1.pitchOverturnRefusal).toBe(true);
+    expect(tel1.claim1BalanceWithheld).toBe(true);
+
+    const tel2 = stepKamenSegwaySi({
+      riderPitchDeg: 4.5,
+      steeringInput: 0,
+      riderMassKg: 75,
+      groundFrictionCoeff: 0.85,
+      speedLimitMS: 5.5,
+      claim1BalanceEnabled: true,
+      claim2RippleEnabled: false,
+    });
+    expect(tel2.tactileAlarmActive).toBe(false);
+    expect(tel2.claim2RippleWithheld).toBe(true);
+  });
+
+  test("keeps figure identity and historical context faithful to the reviewed source", () => {
+    const firstDrawing = kamenSegwayPatent.drawings[0];
+    expect(firstDrawing?.figureNumber).toBe("1");
+    expect(firstDrawing?.title).toStartWith("FIG. 1:");
+    expect(firstDrawing?.callouts.every((callout) => callout.figureRef === "Fig. 1")).toBe(true);
+
+    for (const drawing of kamenSegwayPatent.drawings) {
+      expect(
+        drawing.callouts.every((callout) => callout.figureRef === `Fig. ${drawing.figureNumber}`),
+      ).toBe(true);
+    }
+
+    const provenance = readFileSync(
+      resolve(process.cwd(), "docs/provenance/us-6302230-kamen-segway.md"),
+      "utf8",
+    );
+    expect(provenance).toContain("Sheet 1 of 16 (FIG. 1)");
+    expect(provenance).not.toContain("FIGS. 1A, 1B");
+    expect(kamenSegwayParallelReadings[15]?.join(" ")).toContain("Figures 1 and 2");
+
+    expect(kamenSegwayPatent.historicalContext.patentWars).toEqual([]);
+    const publicCopy = JSON.stringify(kamenSegwayPatent).toLowerCase();
+    for (const unsupportedAssertion of ["18 hz", "ninebot", "usitc", "five solid-state"]) {
+      expect(publicCopy).not.toContain(unsupportedAssertion);
+    }
+  });
+
+  test("classifies the interactive model as modern and preserves its source boundary", () => {
+    const registry = PATENT_PHYSICS_REGISTRY[PATENT_ID];
+    expect(registry?.provenance).toBe("scenario-modern");
+    for (const control of registry?.controls ?? []) {
+      expect(control.provenance).toBeDefined();
+      expect(control.provenanceCitation).toBeTruthy();
+    }
+    for (const metric of registry?.computeMetrics({}) ?? []) {
+      expect(metric.provenance).toBeDefined();
+      expect(metric.provenanceCitation).toBeTruthy();
     }
   });
 });

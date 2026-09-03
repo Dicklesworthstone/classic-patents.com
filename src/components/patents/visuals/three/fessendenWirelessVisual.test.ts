@@ -41,6 +41,15 @@ describe("US 706,737 Reginald A. Fessenden Continuous-Wave Wireless visual & RF 
     expect(studioSource).toContain('"liquidBarretter"');
   });
 
+  test("keeps the registered claim probe outside optional responsive HUD chrome", () => {
+    const probeIndex = studioSource.indexOf(
+      '<ClaimConstraintToggle\n            patentId="us-706737-fessenden-wireless"',
+    );
+    const optionalHudIndex = studioSource.indexOf("{/* Top-Left Camera Preset Toolbar */}");
+    expect(probeIndex).toBeGreaterThan(0);
+    expect(optionalHudIndex).toBeGreaterThan(probeIndex);
+  });
+
   test("computes genuine Thomson LC resonance, antenna efficiency, and thermal demodulation in SI units", () => {
     const simTuned = stepFessendenWireless({
       carrierFrequencyKhz: 75,

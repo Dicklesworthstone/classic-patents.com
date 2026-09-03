@@ -112,4 +112,20 @@ describe("US X1 Samuel Hopkins Potash 3D Visual & Shared Physics Contract", () =
     const expectedWatts = Math.max(100, Math.round(hopkins.thermalEnergyJoules / (2.5 * 3600)));
     expect(channels[0]?.watts).toBe(expectedWatts);
   });
+
+  test("produces distinct telemetry envelopes when furnace temperature changes", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-x1-hopkins-potash"];
+    const m750 = entry.computeMetrics({ ...HOPKINS_DEFAULT_CONTROLS, roastTempC: 750 });
+    const m775 = entry.computeMetrics({ ...HOPKINS_DEFAULT_CONTROLS, roastTempC: 775 });
+    const m500 = entry.computeMetrics({ ...HOPKINS_DEFAULT_CONTROLS, roastTempC: 500 });
+
+    const env750 = m750.map((m: any) => `${m.label} ${m.value}`).join("; ");
+    const env775 = m775.map((m: any) => `${m.label} ${m.value}`).join("; ");
+    const env500 = m500.map((m: any) => `${m.label} ${m.value}`).join("; ");
+
+    expect(env750).not.toBe(env775);
+    expect(env750).not.toBe(env500);
+    expect(env775).not.toBe(env500);
+  });
 });

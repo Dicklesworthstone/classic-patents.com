@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import {
   type DaimlerKernelSource,
   daimlerKernelSource,
@@ -287,6 +288,7 @@ function DaimlerMarineInstallationFace({
 export function DaimlerEngineSim() {
   const { params, updateParam } = usePatentPhysics("us-361931-daimler-engine");
   const [kernelSource, setKernelSource] = useState(daimlerKernelSource());
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const shaftPosition = params.shaftPosition ?? 1;
   const coolingPumpEnabled = params.coolingPumpEnabled ?? 0;
 
@@ -330,6 +332,16 @@ export function DaimlerEngineSim() {
             onChange={(event) => updateParam("coolingPumpEnabled", Number(event.target.value))}
           />
         </label>
+      </div>
+
+      <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4">
+        <ClaimConstraintToggle
+          patentId="us-361931-daimler-engine"
+          claimStates={claimStates}
+          onClaimStateChange={(num, active) =>
+            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          }
+        />
       </div>
     </div>
   );

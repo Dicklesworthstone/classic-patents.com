@@ -9,6 +9,26 @@
 
 import type { CuratedSpecificationEdition, OriginalTextAssetKind, Patent } from "@/types/patent";
 import { validateCuratedSpecificationEdition } from "../archivalEditionValidation";
+import {
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS,
+  type ArchivalFigureAcceptanceAttestation,
+} from "./archivalFigureAcceptance";
+import {
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS,
+  type FigureOccurrenceSourceLocatorRegistry,
+  figureOccurrenceKey,
+  type NormalizedSourceRectangle,
+  type SourcePixelRectangle,
+  validateFigureOccurrenceSourceLocators,
+} from "./figureOccurrenceSourceLocators";
+import type {
+  PinnedPdfByteVerificationAvailability,
+  PinnedPdfByteVerificationReason,
+} from "./pinnedPdfByteVerification.server";
+import {
+  NO_REVIEWED_LEDGER_PUBLICATION_EVIDENCE,
+  type ReviewedLedgerPublicationEvidence,
+} from "./reviewedLedgerPublicationEvidence";
 
 export const ARCHIVAL_PUBLICATION_REASON_CODES = [
   "ACCEPTED",
@@ -19,8 +39,11 @@ export const ARCHIVAL_PUBLICATION_REASON_CODES = [
   "MISSING_REVIEWED_LEDGER",
   "MISSING_LEDGER_REVIEWER",
   "MISSING_LEDGER_REVIEW_DATE",
+  "LEDGER_CONTENT_COVERAGE_INCOMPLETE",
   "MISSING_SOURCE_DIGEST",
   "SOURCE_DIGEST_MISMATCH",
+  "PINNED_PDF_BYTES_UNAVAILABLE",
+  "PINNED_PDF_DIGEST_MISMATCH",
   "FIGURE_ACCEPTANCE_PENDING",
   "FABRICATION_OR_RECONSTRUCTION_QUARANTINE",
   "AUDIT_FIGURE_ACCEPTANCE_PENDING",
@@ -50,13 +73,13 @@ export interface ArchivalFigureEvidence {
   /** Stable occurrence in the continuous manual edition, not a filename guess. */
   occurrence: string;
   sourceFigure: string;
-  /**
-   * Existing legacy editions often name a figure but do not retain its PDF
-   * page/rectangle separately. Null records that absence honestly; it does
-   * not turn a crop filename into a page locator.
-   */
   sourcePdfPage: number | null;
-  sourceRegion: string | null;
+  sourceRaster: { width: number; height: number } | null;
+  sourceRectPixels: SourcePixelRectangle | null;
+  sourceRegion: NormalizedSourceRectangle | null;
+  locatorReviewer: string | null;
+  locatorReviewedAt: string | null;
+  locatorEvidenceReference: string | null;
   activeAsset: string | null;
   priorAssets: readonly string[];
   assetSha256: string | null;
@@ -70,8 +93,37 @@ export interface ArchivalFigureEvidence {
 export interface ArchivalFigureManifest {
   requiredFigureCount: number;
   acceptedFigureCount: number;
+  attestation: {
+    sourcePdfSha256: string;
+    reviewer: string;
+    reviewedAt: string;
+    acceptanceBasis: ArchivalFigureAcceptanceAttestation["acceptanceBasis"];
+    acceptedOccurrenceCount: number;
+    acceptedAssetCount: number;
+    matchesEdition: boolean;
+    matchesLocators: boolean;
+  } | null;
   figures: readonly ArchivalFigureEvidence[];
 }
+
+/** Public-safe byte evidence. Absolute server paths never cross this boundary. */
+export interface ArchivalPinnedPdfByteEvidence {
+  canonicalPublicPdfUrl: string | null;
+  expectedSha256: string | null;
+  actualSha256: string | null;
+  availability: PinnedPdfByteVerificationAvailability;
+  matchesExpected: boolean;
+  reason: PinnedPdfByteVerificationReason;
+}
+
+export const NO_PINNED_PDF_BYTE_EVIDENCE: ArchivalPinnedPdfByteEvidence = {
+  canonicalPublicPdfUrl: null,
+  expectedSha256: null,
+  actualSha256: null,
+  availability: "unavailable",
+  matchesExpected: false,
+  reason: "MISSING_PDF",
+};
 
 export interface ArchivalPublicationEvidence {
   edition: {
@@ -87,7 +139,9 @@ export interface ArchivalPublicationEvidence {
     reviewedAt: string | null;
     sourcePdfSha256: string | null;
   };
+  ledgerContent: ReviewedLedgerPublicationEvidence;
   digestParity: "matching" | "mismatched" | "unavailable";
+  pinnedPdfBytes: ArchivalPinnedPdfByteEvidence;
   companionReadings: boolean;
   claimDisposition: "formal-claims" | "no-formal-claims";
   drawingDisposition: "drawings-required" | "no-drawings";
@@ -125,6 +179,45 @@ export interface ArchivalPublicationDecision {
     hasCompanionReadings: boolean;
     structuralValidationPassed: boolean;
     isQuarantined: boolean;
+  };
+}
+
+/**
+ * Stable, serializable projection used by route diagnostics and the browser
+ * acceptance harness. Keeping this projection beside the state machine stops
+ * server-rendered evidence and E2E expectations from drifting independently.
+ */
+export interface ArchivalPublicationDiagnostics {
+  completeFacsimileReviewed: boolean;
+  ledgerKind: OriginalTextAssetKind | null;
+  ledgerReviewer: string | null;
+  ledgerReviewedAt: string | null;
+  ledgerContent: ReviewedLedgerPublicationEvidence;
+  digestParity: ArchivalPublicationEvidence["digestParity"];
+  pinnedPdfBytes: ArchivalPinnedPdfByteEvidence;
+  requiredFigureCount: number;
+  acceptedFigureCount: number;
+  figureAttestation: ArchivalFigureManifest["attestation"];
+  figures: readonly ArchivalFigureEvidence[];
+  evidenceReferences: readonly string[];
+}
+
+export function archivalPublicationDiagnostics(
+  decision: ArchivalPublicationDecision,
+): ArchivalPublicationDiagnostics {
+  return {
+    completeFacsimileReviewed: decision.reviewerAttestation.completeFacsimileReviewed,
+    ledgerKind: decision.state.evidence.ledger.kind,
+    ledgerReviewer: decision.state.evidence.ledger.reviewer,
+    ledgerReviewedAt: decision.state.evidence.ledger.reviewedAt,
+    ledgerContent: decision.state.evidence.ledgerContent,
+    digestParity: decision.state.evidence.digestParity,
+    pinnedPdfBytes: decision.state.evidence.pinnedPdfBytes,
+    requiredFigureCount: decision.figureManifest.requiredFigureCount,
+    acceptedFigureCount: decision.figureManifest.acceptedFigureCount,
+    figureAttestation: decision.figureManifest.attestation,
+    figures: decision.figureManifest.figures,
+    evidenceReferences: decision.state.evidence.evidenceReferences,
   };
 }
 
@@ -435,13 +528,20 @@ function inlinesForBlock(edition: CuratedSpecificationEdition, blockIndex: numbe
 }
 
 function figureManifestForEdition(
+  patentId: string,
   edition: CuratedSpecificationEdition | undefined,
+  sourcePdfPageCount: number | null,
 ): ArchivalFigureManifest {
-  if (!edition) return { requiredFigureCount: 0, acceptedFigureCount: 0, figures: [] };
-  const preparedBy = typeof edition.preparedBy === "string" ? edition.preparedBy : "";
-  const preparedAt = typeof edition.preparedAt === "string" ? edition.preparedAt : "";
+  if (!edition) {
+    return { requiredFigureCount: 0, acceptedFigureCount: 0, attestation: null, figures: [] };
+  }
+  const attestation = (
+    ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS as Readonly<
+      Record<string, ArchivalFigureAcceptanceAttestation>
+    >
+  )[patentId];
 
-  const figures = edition.blocks.flatMap((_, blockIndex) =>
+  const candidates = edition.blocks.flatMap((_, blockIndex) =>
     inlinesForBlock(edition, blockIndex).flatMap((inlines, groupIndex) =>
       inlines.flatMap((inline, inlineIndex) => {
         if (inline.kind !== "reference" || inline.referenceType !== "figure") return [];
@@ -450,45 +550,131 @@ function figureManifestForEdition(
           preview && preview.width > 0 && preview.height > 0
             ? { width: preview.width, height: preview.height }
             : null;
-        const accepted = Boolean(
-          preview?.src &&
-            preview.alt.trim() &&
-            dimensions &&
-            preparedBy.trim() &&
-            preparedAt.trim(),
-        );
         return [
           {
-            occurrence: `edition-block-${blockIndex}-group-${groupIndex}-inline-${inlineIndex}`,
+            occurrence: figureOccurrenceKey(blockIndex, groupIndex, inlineIndex),
             sourceFigure: inline.text,
-            sourcePdfPage: null,
-            sourceRegion: null,
             activeAsset: preview?.src ?? null,
             priorAssets: (inline.figurePreviews ?? []).slice(1).map((candidate) => candidate.src),
-            assetSha256: null,
             dimensions,
-            status: accepted ? "accepted" : "pending",
-            reviewer: accepted ? preparedBy : null,
-            reviewedAt: accepted ? preparedAt : null,
-            rejectionReason: accepted
-              ? null
-              : "This figure occurrence lacks a reviewed, dimensioned source crop.",
-          } satisfies ArchivalFigureEvidence,
+            preview,
+          },
         ];
       }),
     ),
   );
 
+  const activeAssetPaths = [
+    ...new Set(
+      candidates.flatMap((candidate) => (candidate.preview ? [candidate.preview.src] : [])),
+    ),
+  ].sort();
+  const attestedAssetPaths = attestation ? Object.keys(attestation.assets).sort() : [];
+  const attestationMatchesEdition = Boolean(
+    attestation &&
+      attestation.sourcePdfSha256 === edition.sourcePdfSha256 &&
+      attestation.acceptedOccurrenceCount === candidates.length &&
+      activeAssetPaths.length === attestedAssetPaths.length &&
+      activeAssetPaths.every((path, index) => path === attestedAssetPaths[index]) &&
+      candidates.every((candidate) => {
+        if (!candidate.preview || !candidate.dimensions) return false;
+        const assetEvidence = attestation.assets[candidate.preview.src];
+        return Boolean(
+          assetEvidence &&
+            assetEvidence.width === candidate.preview.width &&
+            assetEvidence.height === candidate.preview.height &&
+            /^[a-f0-9]{64}$/.test(assetEvidence.sha256),
+        );
+      }),
+  );
+  const locators =
+    (FIGURE_OCCURRENCE_SOURCE_LOCATORS as FigureOccurrenceSourceLocatorRegistry)[patentId] ?? [];
+  const locatorValidation = validateFigureOccurrenceSourceLocators(
+    { [patentId]: locators },
+    {
+      canonicalAssetsByPatent: { [patentId]: activeAssetPaths },
+      canonicalOccurrencesByPatent: {
+        [patentId]: Object.fromEntries(
+          candidates.map((candidate) => [candidate.occurrence, candidate.activeAsset]),
+        ),
+      },
+      ...(sourcePdfPageCount
+        ? { sourcePdfPageCountsByPatent: { [patentId]: sourcePdfPageCount } }
+        : {}),
+    },
+  );
+  const locatorByOccurrence = new Map(
+    locators.map((locator) => [locator.occurrenceKey, locator] as const),
+  );
+  const locatorSetMatchesEdition = Boolean(sourcePdfPageCount && locatorValidation.valid);
+
+  const figures: ArchivalFigureEvidence[] = candidates.map((candidate) => {
+    const assetEvidence = candidate.preview
+      ? attestation?.assets[candidate.preview.src]
+      : undefined;
+    const locator = locatorByOccurrence.get(candidate.occurrence);
+    const accepted = Boolean(
+      attestationMatchesEdition && locatorSetMatchesEdition && assetEvidence && locator,
+    );
+    const rejectionReason = (() => {
+      if (accepted) return null;
+      if (!attestation)
+        return "This figure occurrence has no explicit digest-pinned acceptance attestation.";
+      if (!attestationMatchesEdition)
+        return "The active figure occurrence no longer matches its digest-pinned acceptance attestation.";
+      if (!locator)
+        return "This figure occurrence lacks an independently reviewed source-page and source-region locator.";
+      if (!sourcePdfPageCount || locator.sourcePdfPage > sourcePdfPageCount)
+        return "The figure occurrence locator names a page outside the reviewed facsimile.";
+      return "The reviewed occurrence-locator set does not exactly match the active archival edition.";
+    })();
+    return {
+      occurrence: candidate.occurrence,
+      sourceFigure: candidate.sourceFigure,
+      sourcePdfPage: locator?.sourcePdfPage ?? null,
+      sourceRaster: locator?.sourceRaster ?? null,
+      sourceRectPixels: locator?.sourceRectPixels ?? null,
+      sourceRegion: locator?.normalizedSourceRect ?? null,
+      locatorReviewer: locator?.reviewer ?? null,
+      locatorReviewedAt: locator?.reviewedAt ?? null,
+      locatorEvidenceReference: locator?.evidenceReference ?? null,
+      activeAsset: candidate.activeAsset,
+      priorAssets: candidate.priorAssets,
+      assetSha256: assetEvidence?.sha256 ?? null,
+      dimensions: candidate.dimensions,
+      status: accepted ? "accepted" : "pending",
+      reviewer: accepted ? (attestation?.reviewer ?? null) : null,
+      reviewedAt: accepted ? (attestation?.reviewedAt ?? null) : null,
+      rejectionReason,
+    };
+  });
+
   return {
     requiredFigureCount: figures.length,
     acceptedFigureCount: figures.filter((figure) => figure.status === "accepted").length,
+    attestation: attestation
+      ? {
+          sourcePdfSha256: attestation.sourcePdfSha256,
+          reviewer: attestation.reviewer,
+          reviewedAt: attestation.reviewedAt,
+          acceptanceBasis: attestation.acceptanceBasis,
+          acceptedOccurrenceCount: attestation.acceptedOccurrenceCount,
+          acceptedAssetCount: Object.keys(attestation.assets).length,
+          matchesEdition: attestationMatchesEdition,
+          matchesLocators: locatorSetMatchesEdition,
+        }
+      : null,
     figures,
   };
 }
 
 function baseEvidence(
   patent: Pick<Patent, "id" | "archivalEdition" | "originalTextAsset">,
-  hasCompanionReadings: boolean,
+  options: {
+    hasCompanionReadings: boolean;
+    ledgerContent: ReviewedLedgerPublicationEvidence;
+    pinnedPdfBytes: ArchivalPinnedPdfByteEvidence;
+  },
 ): ArchivalPublicationEvidence {
   const edition = patent.archivalEdition;
   const asset = patent.originalTextAsset;
@@ -525,11 +711,13 @@ function baseEvidence(
       reviewedAt: asset?.reviewedAt ?? null,
       sourcePdfSha256: ledgerDigest,
     },
+    ledgerContent: options.ledgerContent,
     digestParity,
-    companionReadings: hasCompanionReadings,
+    pinnedPdfBytes: options.pinnedPdfBytes,
+    companionReadings: options.hasCompanionReadings,
     claimDisposition: edition?.claimStatus ? "no-formal-claims" : "formal-claims",
     drawingDisposition: edition?.drawingStatus ? "no-drawings" : "drawings-required",
-    figures: figureManifestForEdition(edition),
+    figures: figureManifestForEdition(patent.id, edition, asset?.pageCount ?? null),
     evidenceReferences: [
       patent.id,
       ...(edition ? [`edition:${patent.id}`] : []),
@@ -587,11 +775,20 @@ function decision(
  */
 export function evaluateTypedArchivalPublicationState(
   patent: Pick<Patent, "id" | "archivalEdition" | "originalTextAsset">,
-  options: { hasCompanionReadings: boolean; isQuarantined?: boolean } = {
+  options: {
+    hasCompanionReadings: boolean;
+    isQuarantined?: boolean;
+    ledgerContent?: ReviewedLedgerPublicationEvidence;
+    pinnedPdfBytes?: ArchivalPinnedPdfByteEvidence;
+  } = {
     hasCompanionReadings: false,
   },
 ): ArchivalPublicationDecision {
-  const evidence = baseEvidence(patent, options.hasCompanionReadings);
+  const evidence = baseEvidence(patent, {
+    hasCompanionReadings: options.hasCompanionReadings,
+    ledgerContent: options.ledgerContent ?? NO_REVIEWED_LEDGER_PUBLICATION_EVIDENCE,
+    pinnedPdfBytes: options.pinnedPdfBytes ?? NO_PINNED_PDF_BYTE_EVIDENCE,
+  });
   const override = ARCHIVAL_PUBLICATION_STATE_OVERRIDES[patent.id];
   if (override) {
     return decision(
@@ -692,6 +889,21 @@ export function evaluateTypedArchivalPublicationState(
     );
   }
 
+  if (!evidence.ledgerContent.valid) {
+    return decision(
+      patent,
+      {
+        kind: "held",
+        reasonCode: "LEDGER_CONTENT_COVERAGE_INCOMPLETE",
+        explanation:
+          evidence.ledgerContent.error ??
+          "The reviewed transcription does not yet prove complete literal coverage of the public source edition.",
+        evidence,
+      },
+      false,
+    );
+  }
+
   if (evidence.digestParity === "unavailable") {
     return decision(
       patent,
@@ -713,6 +925,22 @@ export function evaluateTypedArchivalPublicationState(
         kind: "held",
         reasonCode: "SOURCE_DIGEST_MISMATCH",
         explanation: "The edition and reviewed ledger do not name the same pinned source PDF.",
+        evidence,
+      },
+      false,
+    );
+  }
+
+  if (!evidence.pinnedPdfBytes.matchesExpected) {
+    const digestMismatch = evidence.pinnedPdfBytes.availability === "mismatch";
+    return decision(
+      patent,
+      {
+        kind: "held",
+        reasonCode: digestMismatch ? "PINNED_PDF_DIGEST_MISMATCH" : "PINNED_PDF_BYTES_UNAVAILABLE",
+        explanation: digestMismatch
+          ? "The pinned local facsimile bytes do not match the digest declared by the edition and reviewed ledger."
+          : "The publication gate could not verify the canonical pinned facsimile bytes against the edition and reviewed-ledger digest.",
         evidence,
       },
       false,

@@ -13,9 +13,14 @@ import * as THREE from "three";
 export interface MaximMachineGunModel {
   rootGroup: THREE.Group;
   gunGroup: THREE.Group;
+  tripodGroup: THREE.Group;
+  tripodHub: THREE.Mesh;
+  tripodLegs: THREE.Mesh[];
+  tripodFeet: THREE.Mesh[];
   fixedBarrelGroup: THREE.Group;
   muzzleSleeveGroup: THREE.Group;
   reversingLeversGroup: THREE.Group;
+  reversingLeverPivots: THREE.Group[];
   operatingRodsGroup: THREE.Group;
   crankshaftGroup: THREE.Group;
   crossHeadBreechGroup: THREE.Group;
@@ -89,16 +94,42 @@ export function buildMaximMachineGunModel(): MaximMachineGunModel {
   pillarMesh.position.y = -0.35;
   tripodGroup.add(pillarMesh);
 
+  const tripodHub = new THREE.Mesh(new THREE.SphereGeometry(0.095, 16, 10), iron);
+  tripodHub.name = "TripodLegJunction";
+  tripodHub.position.set(0, -0.62, 0);
+  tripodGroup.add(tripodHub);
+
+  const tripodLegs: THREE.Mesh[] = [];
+  const tripodFeet: THREE.Mesh[] = [];
+  const legStart = tripodHub.position.clone();
   for (let i = 0; i < 3; i++) {
     const legAngle = (i * Math.PI * 2) / 3;
-    const legGeo = new THREE.CylinderGeometry(0.03, 0.025, 0.85, 12);
+    const footCenter = new THREE.Vector3(
+      Math.sin(legAngle) * 0.58,
+      -0.79,
+      Math.cos(legAngle) * 0.58,
+    );
+    const legEnd = footCenter.clone().setY(-0.76);
+    const legDirection = legEnd.clone().sub(legStart);
+    const legGeo = new THREE.CylinderGeometry(0.025, 0.032, legDirection.length(), 12);
     const legMesh = new THREE.Mesh(legGeo, iron);
-    legMesh.position.set(Math.sin(legAngle) * 0.25, -0.65, Math.cos(legAngle) * 0.25);
-    legMesh.rotation.x = Math.cos(legAngle) * 0.45;
-    legMesh.rotation.z = -Math.sin(legAngle) * 0.45;
+    legMesh.name = `TripodLeg${i + 1}`;
+    legMesh.position.copy(legStart).add(legEnd).multiplyScalar(0.5);
+    legMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), legDirection.normalize());
     tripodGroup.add(legMesh);
+    tripodLegs.push(legMesh);
+
+    const footMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.06, 16), iron);
+    footMesh.name = `TripodFoot${i + 1}`;
+    footMesh.position.copy(footCenter);
+    tripodGroup.add(footMesh);
+    tripodFeet.push(footMesh);
   }
   rootGroup.add(tripodGroup);
+
+  const groundGrid = new THREE.GridHelper(4, 20, 0xc7b58b, 0xd9cdb1);
+  groundGrid.position.y = -0.82;
+  rootGroup.add(groundGrid);
 
   // 2. Main Receiver Frame A with Removable Top Cover A'
   const frameGeo = new THREE.BoxGeometry(0.18, 0.22, 0.75);
@@ -154,18 +185,35 @@ export function buildMaximMachineGunModel(): MaximMachineGunModel {
   // 5. Reversing Levers n (Pivoted on Frame Pins n')
   const reversingLeversGroup = new THREE.Group();
   reversingLeversGroup.name = "ReversingLevers_n";
+  const reversingLeverPivots: THREE.Group[] = [];
   for (const side of [-1, 1]) {
-    const leverGeo = new THREE.BoxGeometry(0.015, 0.14, 0.025);
+    const pivotGroup = new THREE.Group();
+    pivotGroup.name = `ReversingLeverPivot_${side < 0 ? "Left" : "Right"}`;
+    pivotGroup.position.set(side * 0.105, 0.08, 0.65);
+
+    const leverGeo = new THREE.BoxGeometry(0.018, 0.14, 0.2);
     const leverMesh = new THREE.Mesh(leverGeo, polishedSteel);
-    leverMesh.position.set(side * 0.105, 0.08, 0.65);
-    reversingLeversGroup.add(leverMesh);
+    leverMesh.name = `ReversingLever_${side < 0 ? "Left" : "Right"}`;
+    pivotGroup.add(leverMesh);
 
     // Frame pivot pin
     const pinGeo = new THREE.CylinderGeometry(0.008, 0.008, 0.03, 12);
     pinGeo.rotateZ(Math.PI / 2);
     const pinMesh = new THREE.Mesh(pinGeo, brass);
-    pinMesh.position.set(side * 0.105, 0.08, 0.65);
-    reversingLeversGroup.add(pinMesh);
+    pinMesh.name = `ReversingLeverPin_${side < 0 ? "Left" : "Right"}`;
+    pivotGroup.add(pinMesh);
+
+    // A short arm reaches into the muzzle-sleeve lug. It shares the pivot
+    // group, so rocking never tears the lever away from its frame pin.
+    const sleeveArmGeo = new THREE.CylinderGeometry(0.009, 0.009, 0.22, 10);
+    sleeveArmGeo.rotateX(Math.PI / 2);
+    const sleeveArm = new THREE.Mesh(sleeveArmGeo, bronze);
+    sleeveArm.name = `MuzzleSleeveArm_${side < 0 ? "Left" : "Right"}`;
+    sleeveArm.position.z = 0.1;
+    pivotGroup.add(sleeveArm);
+
+    reversingLeversGroup.add(pivotGroup);
+    reversingLeverPivots.push(pivotGroup);
   }
   gunGroup.add(reversingLeversGroup);
 
@@ -173,10 +221,10 @@ export function buildMaximMachineGunModel(): MaximMachineGunModel {
   const operatingRodsGroup = new THREE.Group();
   operatingRodsGroup.name = "ConnectingRods_cprime";
   for (const side of [-1, 1]) {
-    const rodGeo = new THREE.CylinderGeometry(0.009, 0.009, 0.62, 12);
+    const rodGeo = new THREE.CylinderGeometry(0.009, 0.009, 0.9, 12);
     rodGeo.rotateX(Math.PI / 2);
     const rodMesh = new THREE.Mesh(rodGeo, polishedSteel);
-    rodMesh.position.set(side * 0.098, 0.04, 0.3);
+    rodMesh.position.set(side * 0.098, 0.04, 0.21);
     operatingRodsGroup.add(rodMesh);
   }
   gunGroup.add(operatingRodsGroup);
@@ -246,33 +294,42 @@ export function buildMaximMachineGunModel(): MaximMachineGunModel {
   gunGroup.add(muzzleFlashMesh);
 
   const dispose = () => {
-    pillarGeo.dispose();
-    frameGeo.dispose();
-    lidGeo.dispose();
-    barrelGeo.dispose();
-    collarGeo.dispose();
-    sleeveGeo.dispose();
-    nozzleGeo.dispose();
-    lugGeo.dispose();
-    shaftGeo.dispose();
-    breechGeo.dispose();
-    slotGeo.dispose();
-    springCaseGeo.dispose();
-    flashGeo.dispose();
-    gunmetal.dispose();
-    polishedSteel.dispose();
-    brass.dispose();
-    bronze.dispose();
-    iron.dispose();
-    flame.dispose();
+    const disposedGeometries = new Set<THREE.BufferGeometry>();
+    const disposedMaterials = new Set<THREE.Material>();
+    rootGroup.traverse((object) => {
+      const drawable = object as THREE.Object3D & {
+        geometry?: THREE.BufferGeometry;
+        material?: THREE.Material | THREE.Material[];
+      };
+      if (drawable.geometry && !disposedGeometries.has(drawable.geometry)) {
+        drawable.geometry.dispose();
+        disposedGeometries.add(drawable.geometry);
+      }
+      const objectMaterials = Array.isArray(drawable.material)
+        ? drawable.material
+        : drawable.material
+          ? [drawable.material]
+          : [];
+      for (const objectMaterial of objectMaterials) {
+        if (!disposedMaterials.has(objectMaterial)) {
+          objectMaterial.dispose();
+          disposedMaterials.add(objectMaterial);
+        }
+      }
+    });
   };
 
   return {
     rootGroup,
     gunGroup,
+    tripodGroup,
+    tripodHub,
+    tripodLegs,
+    tripodFeet,
     fixedBarrelGroup,
     muzzleSleeveGroup,
     reversingLeversGroup,
+    reversingLeverPivots,
     operatingRodsGroup,
     crankshaftGroup,
     crossHeadBreechGroup,
@@ -309,7 +366,9 @@ export function updateMaximMachineGunKinematics(
 
   // 2. Reversing Levers n rock on frame pivots
   const leverAngle = 0.3 * strokeFactor;
-  model.reversingLeversGroup.rotation.x = -leverAngle;
+  for (const pivot of model.reversingLeverPivots) {
+    pivot.rotation.x = -leverAngle;
+  }
 
   // 3. Operating Rods c' pull rearward
   const rodRearM = -0.03 * strokeFactor;

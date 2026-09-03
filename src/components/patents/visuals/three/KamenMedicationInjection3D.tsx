@@ -1,8 +1,10 @@
 "use client";
 
 import { Eye, RotateCcw } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { stepKamenInjectionMechanism } from "@/physics/kamenInjectionKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -33,13 +35,17 @@ export function KamenMedicationInjection3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
   const [view, setView] = useState<keyof typeof VIEWS>("overview");
-  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
-  const liveParams = useRef(params);
-  liveParams.current = params;
-  const pose = stepKamenInjectionMechanism(params);
+  const { effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(PATENT_ID);
+  const liveParams = useRef(effectiveParams);
+  liveParams.current = effectiveParams;
+  const pose = useMemo(() => stepKamenInjectionMechanism(effectiveParams), [effectiveParams]);
   useFrankenSimPhysics(PATENT_ID, {
     domain: "solid_mechanics",
-    refusal: { isRefused: true, reason: pose.refusal.reason },
+    refusal: {
+      isRefused: true,
+      reason: claimConstraintResult.refusalWarning ?? pose.refusal.reason,
+    },
   });
   const selectView = (next: keyof typeof VIEWS) => {
     setView(next);
@@ -114,67 +120,92 @@ export function KamenMedicationInjection3D() {
           </div>
         </div>
         <div className="absolute bottom-3 left-3 right-3 grid gap-3 rounded-xl border border-slate-700/80 bg-slate-950/90 p-3 backdrop-blur sm:bottom-5 sm:left-5 sm:right-5 lg:grid-cols-[1fr_auto]">
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            <label className="text-xs text-slate-200">
-              Lead-screw rotation{" "}
-              <span className="float-right font-mono text-cyan-300">
-                {percent(pose.leadScrewTurnFraction)}
-              </span>
-              <input
-                className="mt-1 w-full accent-cyan-400"
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={pose.leadScrewTurnFraction}
-                aria-label="Lead-screw rotation"
-                onChange={(event) =>
-                  updateParam("leadScrewTurnFraction", Number(event.target.value))
-                }
-              />
-            </label>
-            <label className="text-xs text-slate-200">
-              Counter target{" "}
-              <span className="float-right font-mono text-purple-300">
-                {percent(pose.counterTargetFraction)}
-              </span>
-              <input
-                className="mt-1 w-full accent-purple-400"
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={pose.counterTargetFraction}
-                aria-label="Pulse counter target"
-                onChange={(event) =>
-                  updateParam("counterTargetFraction", Number(event.target.value))
-                }
-              />
-            </label>
-            <label className="text-xs text-slate-200">
-              Motor circuit
-              <select
-                className="mt-1 w-full rounded border border-slate-600 bg-slate-900 p-1 text-xs"
-                value={Number(pose.motorCircuitClosed)}
-                aria-label="Motor circuit state"
-                onChange={(event) => updateParam("motorCircuitClosed", Number(event.target.value))}
-              >
-                <option value="1">Closed</option>
-                <option value="0">Open</option>
-              </select>
-            </label>
-            <label className="text-xs text-slate-200">
-              Relief arrangement
-              <select
-                className="mt-1 w-full rounded border border-slate-600 bg-slate-900 p-1 text-xs"
-                value={Number(pose.reliefPathShown)}
-                aria-label="Relief arrangement"
-                onChange={(event) => updateParam("reliefPathShown", Number(event.target.value))}
-              >
-                <option value="0">Hidden</option>
-                <option value="1">Shown</option>
-              </select>
-            </label>
+          <div className="space-y-2">
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              <label className="text-xs text-slate-200">
+                Lead-screw rotation{" "}
+                <span className="float-right font-mono text-cyan-300">
+                  {percent(pose.leadScrewTurnFraction)}
+                </span>
+                <input
+                  className="mt-1 w-full accent-cyan-400"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={pose.leadScrewTurnFraction}
+                  aria-label="Lead-screw rotation"
+                  onChange={(event) =>
+                    updateParam("leadScrewTurnFraction", Number(event.target.value))
+                  }
+                />
+              </label>
+              <label className="text-xs text-slate-200">
+                Counter target{" "}
+                <span className="float-right font-mono text-purple-300">
+                  {percent(pose.counterTargetFraction)}
+                </span>
+                <input
+                  className="mt-1 w-full accent-purple-400"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={pose.counterTargetFraction}
+                  aria-label="Pulse counter target"
+                  onChange={(event) =>
+                    updateParam("counterTargetFraction", Number(event.target.value))
+                  }
+                />
+              </label>
+              <label className="text-xs text-slate-200">
+                Motor circuit
+                <select
+                  className="mt-1 w-full rounded border border-slate-600 bg-slate-900 p-1 text-xs"
+                  value={Number(pose.motorCircuitClosed)}
+                  aria-label="Motor circuit state"
+                  onChange={(event) =>
+                    updateParam("motorCircuitClosed", Number(event.target.value))
+                  }
+                >
+                  <option value="1">Closed</option>
+                  <option value="0">Open</option>
+                </select>
+              </label>
+              <label className="text-xs text-slate-200">
+                Relief arrangement
+                <select
+                  className="mt-1 w-full rounded border border-slate-600 bg-slate-900 p-1 text-xs"
+                  value={Number(pose.reliefPathShown)}
+                  aria-label="Relief arrangement"
+                  onChange={(event) => updateParam("reliefPathShown", Number(event.target.value))}
+                >
+                  <option value="0">Hidden</option>
+                  <option value="1">Shown</option>
+                </select>
+              </label>
+            </div>
+            <ClaimConstraintToggle
+              patentId={PATENT_ID}
+              claimStates={claimStates}
+              onToggleClaim={(claimNumber, active) =>
+                updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
+              }
+            />
+            {claimConstraintResult.activeFailures.length > 0 && (
+              <div role="status" className="rounded-lg border border-rose-800 bg-rose-950/80 p-2">
+                {claimConstraintResult.activeFailures.map((failure) => (
+                  <p key={failure} className="text-[10px] leading-4 text-rose-100">
+                    {failure}
+                  </p>
+                ))}
+                {claimConstraintResult.refusalWarning && (
+                  <p className="mt-1 text-[10px] leading-4 text-rose-200">
+                    {claimConstraintResult.refusalWarning}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
           <div className="flex flex-wrap items-end gap-2">
             {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((candidate) => (

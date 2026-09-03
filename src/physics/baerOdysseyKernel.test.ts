@@ -91,4 +91,34 @@ describe("Ralph H. Baer US 3,728,480 Magnavox Odyssey SI Physics Kernel", () => 
     expect(resetResult.state.targetExtinct).toBe(false);
     expect(resetResult.metrics.targetVisible).toBe(true);
   });
+
+  test("replays every post-score serve from the scored game state without ambient randomness", () => {
+    const pointForPlayerOne = {
+      ...INITIAL_BAER_STATE,
+      ballX: 1.02,
+      ballY: 0.5,
+      ballVx: 0.45,
+      ballVy: 0.18,
+    };
+    const pointForPlayerTwo = {
+      ...INITIAL_BAER_STATE,
+      ballX: -0.02,
+      ballY: 0.5,
+      ballVx: -0.45,
+      ballVy: 0.18,
+    };
+
+    const firstReplay = stepBaerOdysseySi(pointForPlayerOne, DEFAULT_BAER_CONTROLS, 0.016);
+    const secondReplay = stepBaerOdysseySi(pointForPlayerOne, DEFAULT_BAER_CONTROLS, 0.016);
+    const oppositePoint = stepBaerOdysseySi(pointForPlayerTwo, DEFAULT_BAER_CONTROLS, 0.016);
+
+    expect(firstReplay).toEqual(secondReplay);
+    expect(firstReplay.state.scoreP1).toBe(1);
+    expect(firstReplay.state.ballVx).toBeLessThan(0);
+    expect(firstReplay.state.ballVy).toBeGreaterThanOrEqual(-0.15);
+    expect(firstReplay.state.ballVy).toBeLessThanOrEqual(0.15);
+    expect(oppositePoint.state.scoreP2).toBe(1);
+    expect(oppositePoint.state.ballVx).toBeGreaterThan(0);
+    expect(oppositePoint.state.ballVy).not.toBe(firstReplay.state.ballVy);
+  });
 });

@@ -96,4 +96,27 @@ describe("US 3,858,232 Willard S. Boyle & George E. Smith Charge-Coupled Devices
 
     expect(readingIndexes).toEqual(paragraphIndexes);
   });
+
+  test("provides valid provenance classifications for all Boyle-Smith CCD controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-3858232-boyle-smith-ccd"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("enforces ledger acceptance pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(boyleSmithCcdPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_LEDGER_ACCEPTANCE_PENDING");
+  });
 });

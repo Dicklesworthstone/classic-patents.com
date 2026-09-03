@@ -15,12 +15,10 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
-import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
-import {
-  type ArchivalPublicationDecision,
-  archivalEditionForPublication,
-  evaluateArchivalPublicationState,
-} from "@/data/editions/publicationApproval";
+import type {
+  ArchivalPublicationReasonCode,
+  ArchivalPublicationStateKind,
+} from "@/data/editions/archivalPublicationState";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { ColorizedEquation as ColorizedEquationType } from "@/types/equation";
 import type { Patent } from "@/types/patent";
@@ -36,10 +34,24 @@ import { WeaveInstrument } from "./WeaveInstrument";
 
 interface DualProjectionViewerProps {
   patent: Patent;
+  /** Evaluated on the server so the complete cross-catalogue acceptance
+   * registry and asset digests never enter the client bundle. */
+  archivalPublication: ArchivalPublicationViewState;
+  /** One server-resolved companion map; never import the all-patent registry here. */
+  archivalParallelReadings?: Readonly<Record<number, readonly string[]>>;
   initialView?: string;
   /** Per-patent colorized equations, resolved on the server (colorizedEquations.ts is
    * a 976KB all-patents record that must never enter the client bundle wholesale). */
   colorizedEquations: ColorizedEquationType[];
+  /** Server-derived flag; research-asset metadata itself never crosses into the client. */
+  hasRawSourceText: boolean;
+}
+
+interface ArchivalPublicationViewState {
+  isPublished: boolean;
+  reasonCode: ArchivalPublicationReasonCode;
+  explanation: string;
+  state: { kind: ArchivalPublicationStateKind };
 }
 
 export type PatentViewMode =
@@ -101,8 +113,6 @@ export function applyPatentViewToUrl(href: string, mode: PatentViewMode): string
   return `${url.pathname}${url.search}${url.hash}`;
 }
 
-export { archivalEditionForPublication };
-
 function viewModeFromLocation(): PatentViewMode | undefined {
   return viewModeFromSearch(window.location.search);
 }
@@ -120,7 +130,7 @@ function TranscriptUnavailable({
 }: {
   patent: Patent;
   hasRawSourceText: boolean;
-  decision: ArchivalPublicationDecision;
+  decision: ArchivalPublicationViewState;
 }) {
   return (
     <div
@@ -157,8 +167,11 @@ function TranscriptUnavailable({
 
 export function DualProjectionViewer({
   patent,
+  archivalPublication,
+  archivalParallelReadings,
   initialView,
   colorizedEquations,
+  hasRawSourceText,
 }: DualProjectionViewerProps) {
   const { tick, lastChange } = usePatentPhysics(patent.id);
   const [viewMode, setViewModeState] = useState<PatentViewMode>(
@@ -177,18 +190,16 @@ export function DualProjectionViewer({
   // A raw PDF text layer is private comparison evidence, never a public
   // publication source. The optional edition is already hand-authored in
   // semantic nodes; this component intentionally performs no text cleanup.
-  const rawSourceTextAsset =
-    patent.originalTextAsset?.kind === "source-pdf-text-layer"
-      ? patent.originalTextAsset
-      : undefined;
   // A semantic edition becomes visitor-facing only together with its explicit
   // paragraph companions. Treat an accidentally bound draft as withheld rather
   // than calling the fail-closed lookup during render and crashing the route.
-  const archivalPublication = evaluateArchivalPublicationState(patent);
-  const archivalEdition = archivalEditionForPublication(patent);
-  const originalTextLabel = archivalEdition
-    ? `Complete manually prepared edition · facsimile reviewed ${archivalEdition.preparedAt}`
-    : rawSourceTextAsset
+  const archivalSource =
+    archivalPublication.isPublished && patent.archivalEdition && archivalParallelReadings
+      ? { edition: patent.archivalEdition, paragraphReadings: archivalParallelReadings }
+      : undefined;
+  const originalTextLabel = archivalSource
+    ? `Complete manually prepared edition · facsimile reviewed ${archivalSource.edition.preparedAt}`
+    : hasRawSourceText
       ? "Raw source-PDF text layer retained privately · manual edition pending"
       : "Complete archival edition unavailable";
 
@@ -243,7 +254,7 @@ export function DualProjectionViewer({
       className="space-y-8 print:space-y-4"
       data-testid="dual-projection-viewer"
       data-hydrated={hydrated}
-      data-archival-edition={archivalEdition?.kind ?? "withheld"}
+      data-archival-edition={archivalSource?.edition.kind ?? "withheld"}
       data-archival-publication-state={archivalPublication.state.kind}
       data-archival-publication-reason={archivalPublication.reasonCode}
     >
@@ -473,13 +484,13 @@ export function DualProjectionViewer({
       {/* VIEW MODE: SCHEMATIC SHEET & NUMBERED CALLOUTS */}
       {viewMode === "schematic-sheet" && (
         <div className="space-y-6">
-          {archivalEdition?.drawingStatus?.kind === "no-drawings-in-facsimile" ? (
+          {archivalSource?.edition.drawingStatus?.kind === "no-drawings-in-facsimile" ? (
             <div className="rounded-2xl border border-amber-300 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-950/20 p-6 text-ink-900 dark:text-parchment-100">
               <h4 className="font-serif text-xl font-bold">
                 Historical Text-Only Instrument (No Drawing Sheets)
               </h4>
               <p className="mt-2 font-sans text-sm leading-relaxed">
-                {archivalEdition.drawingStatus.evidence}
+                {archivalSource.edition.drawingStatus.evidence}
               </p>
             </div>
           ) : (
@@ -535,17 +546,17 @@ export function DualProjectionViewer({
               <p className="text-[11px] font-mono uppercase tracking-wider text-amber-800 dark:text-amber-400">
                 {originalTextLabel}
               </p>
-              {archivalEdition ? (
+              {archivalSource ? (
                 <CuratedSpecificationEdition
-                  edition={archivalEdition}
-                  paragraphReadings={archivalParallelReadingsFor(patent.id)}
+                  edition={archivalSource.edition}
+                  paragraphReadings={archivalSource.paragraphReadings}
                   claimDecoders={patent.claims}
                   className="text-ink-950 select-text dark:text-parchment-100"
                 />
               ) : (
                 <TranscriptUnavailable
                   patent={patent}
-                  hasRawSourceText={Boolean(rawSourceTextAsset)}
+                  hasRawSourceText={hasRawSourceText}
                   decision={archivalPublication}
                 />
               )}
@@ -745,7 +756,7 @@ export function DualProjectionViewer({
           <ClaimsDecoder
             claims={patent.claims}
             patentId={patent.id}
-            claimStatus={archivalEdition?.claimStatus}
+            claimStatus={archivalSource?.edition.claimStatus}
           />
 
           {/* Historical Context & Patent Wars */}
@@ -760,9 +771,9 @@ export function DualProjectionViewer({
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
               <div>
                 <span className="text-xs sm:text-sm font-mono text-amber-700 dark:text-amber-400 font-bold uppercase tracking-widest block">
-                  {archivalEdition
+                  {archivalSource
                     ? "Complete Manually Prepared Archival Edition"
-                    : rawSourceTextAsset
+                    : hasRawSourceText
                       ? "Raw Source Layer Withheld From Publication"
                       : "Original Patent Text"}
                 </span>
@@ -785,17 +796,17 @@ export function DualProjectionViewer({
               </div>
             </div>
 
-            {archivalEdition ? (
+            {archivalSource ? (
               <CuratedSpecificationEdition
-                edition={archivalEdition}
-                paragraphReadings={archivalParallelReadingsFor(patent.id)}
+                edition={archivalSource.edition}
+                paragraphReadings={archivalSource.paragraphReadings}
                 claimDecoders={patent.claims}
                 className="rounded-2xl border border-parchment-300 bg-parchment-100/80 p-6 text-ink-950 shadow-xs select-text dark:border-ink-800 dark:bg-ink-900/80 dark:text-parchment-100 sm:p-10"
               />
             ) : (
               <TranscriptUnavailable
                 patent={patent}
-                hasRawSourceText={Boolean(rawSourceTextAsset)}
+                hasRawSourceText={hasRawSourceText}
                 decision={archivalPublication}
               />
             )}

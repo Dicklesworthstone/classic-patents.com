@@ -16,6 +16,7 @@ import { bellTelephoneParallelReadings } from "./bellTelephoneEdition";
 import { boyleSmithCcdParallelReadings } from "./boyleSmithCcdEdition";
 import { carlsonElectrophotographyParallelReadings } from "./carlsonElectrophotographyEdition";
 import { carrierAirConditionerParallelReadings } from "./carrierAirConditionerEdition";
+import { clavelDeltaRobotParallelReadings } from "./clavelDeltaRobotEdition";
 import { coltRevolverParallelReadings } from "./coltRevolverEdition";
 import { corlissSteamEngineParallelReadings } from "./corlissSteamEngineEdition";
 import { CORT_PUDDLING_ROLLING_PARALLEL_READINGS } from "./cortPuddlingRollingEdition";
@@ -207,6 +208,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-4575330-hull-stereolithography": hullStereolithographyParallelReadings,
   "us-4765668-robot-end-effector": robotEndEffectorParallelReadings,
   "us-4921293-salisbury-robot-hand": salisburyRobotHandParallelReadings,
+  "us-4976582-clavel-delta-robot": clavelDeltaRobotParallelReadings,
   "us-5121329-crump-fdm": crumpFdmParallelReadings,
   "us-5701965-kamen-transporter": kamenTransporterParallelReadings,
   "us-6302230-kamen-segway": kamenSegwayParallelReadings,

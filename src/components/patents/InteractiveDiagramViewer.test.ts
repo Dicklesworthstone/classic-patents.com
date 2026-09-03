@@ -201,6 +201,90 @@ describe("InteractiveDiagramViewer React rendering", () => {
     }
   });
 
+  test("routes every Clavel Delta drawing through the shared paired-bar topology kernel", () => {
+    const patent = allPatents.find((candidate) => candidate.id === "us-4976582-clavel-delta-robot");
+    if (!patent) throw new Error("Clavel Delta robot patent fixture is missing");
+
+    const source = readFileSync(
+      join(process.cwd(), "src/components/patents/InteractiveDiagramViewer.tsx"),
+      "utf8",
+    );
+    expect(source).toContain("stepClavelDeltaRobotTopology(params ?? {})");
+    for (const svgType of [
+      "clavel-delta-robot",
+      "clavel-delta-ball-joint",
+      "clavel-delta-single-bar",
+      "clavel-delta-linear",
+    ]) {
+      expect(source).toContain(`"${svgType}"`);
+    }
+
+    const renderFrame = () =>
+      renderToStaticMarkup(
+        React.createElement(InteractiveDiagramViewer, {
+          drawings: patent.drawings,
+          patentId: patent.id,
+          patentNumber: patent.patentNumber,
+        }),
+      );
+
+    resetPatentPhysicsParams(patent.id);
+    try {
+      const baseline = renderFrame();
+      expect(baseline).toContain('data-clavel-delta-robot-topology="typed-ts-source-bounded"');
+      expect(baseline).toContain('data-clavel-delta-robot-claim-1="live"');
+      expect(baseline).toContain('data-clavel-delta-robot-claim-2="live"');
+      expect(baseline).toContain('data-clavel-delta-robot-claim-8="live"');
+      expect(source).toContain("FIG. 2 · BALL-AND-SOCKET JOINT ALTERNATIVE");
+      expect(source).toContain("FIGS. 3–4 · SINGLE-BAR / CARDAN ALTERNATIVE");
+      expect(source).toContain("FIG. 5 · STRAIGHT-GUIDE INPUT ALTERNATIVE");
+      expect(source).toContain("data-clavel-delta-figure-2-drive={");
+      expect(source).toContain('"claim-9-movable-member"');
+      expect(source).toContain("motor 11 is mounted on movable member 8 (Claim 9)");
+      expect(source).toContain('{isLinearFigure ? "13" : "2"}');
+      expect(source).toContain("ACTUATOR HOUSINGS 13 · TRANSLATING MEMBERS 24");
+
+      const renderOnlyFigure = (figureNumber: string) => {
+        const drawing = patent.drawings.find(
+          (candidate) => candidate.figureNumber === figureNumber,
+        );
+        if (!drawing) throw new Error(`Clavel Figure ${figureNumber} fixture is missing`);
+        return renderToStaticMarkup(
+          React.createElement(InteractiveDiagramViewer, {
+            drawings: [drawing],
+            patentId: patent.id,
+            patentNumber: patent.patentNumber,
+          }),
+        );
+      };
+      const figureTwo = renderOnlyFigure("2");
+      expect(figureTwo).toContain('data-clavel-delta-figure-2-drive="claim-9-movable-member"');
+      expect(figureTwo).toContain("11 ON 8 · CLAIM 9");
+      expect(figureTwo).not.toContain(">14</text>");
+
+      const figureFive = renderOnlyFigure("5");
+      expect(figureFive).toContain("ACTUATOR HOUSINGS 13 · TRANSLATING MEMBERS 24");
+      expect(figureFive).toContain(">13</text>");
+      expect(figureFive).toContain(">24</text>");
+      expect(figureFive).not.toContain(">2</text>");
+
+      setPatentPhysicsParam(patent.id, "armOneInput", 0.55);
+      expect(renderFrame()).not.toBe(baseline);
+
+      setPatentPhysicsParam(patent.id, "claim2PairedBarsEnabled", 0);
+      const pairedBarsWithheld = renderFrame();
+      expect(pairedBarsWithheld).toContain('data-clavel-delta-robot-claim-2="withheld"');
+      expect(pairedBarsWithheld).toContain("CLAIM 2 PAIR WITHHELD");
+
+      setPatentPhysicsParam(patent.id, "claim1TopologyEnabled", 0);
+      const topologyWithheld = renderFrame();
+      expect(topologyWithheld).toContain('data-clavel-delta-robot-claim-1="withheld"');
+      expect(topologyWithheld).toContain("CLAIM 1 PARALLEL-LINKAGE TOPOLOGY WITHHELD");
+    } finally {
+      resetPatentPhysicsParams(patent.id);
+    }
+  });
+
   test("keeps the Pasteur schematic on the apparatus printed in US 135,245", () => {
     const source = readFileSync(
       join(process.cwd(), "src/components/patents/InteractiveDiagramViewer.tsx"),

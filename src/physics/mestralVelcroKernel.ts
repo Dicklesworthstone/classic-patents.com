@@ -16,6 +16,12 @@ export interface MestralVelcroControls {
   hookLengthMm: number;
   hookDensityPerCm2: number;
   peelAngleDeg: number;
+  /**
+   * Reader-controlled, normalized location of the peel front through the
+   * displayed overlap. It synchronizes the 2D and 3D pedagogical projections;
+   * it is not presented as a historically measured travel distance.
+   */
+  peelProgress: number;
   heatSettingTempC: number;
   appliedShearForceN: number;
   appliedPeelRateMmS: number;
@@ -35,6 +41,8 @@ export interface MestralVelcroTelemetry {
   forceAnisotropyRatio: number;
   peelDisengagementPowerWatts: number;
   hookDeflectionMm: number;
+  /** Kernel-owned normalized display coordinate shared by every visual face. */
+  peelProgress: number;
 }
 
 export const MESTRAL_VELCRO_DEFAULTS: MestralVelcroControls = {
@@ -42,6 +50,7 @@ export const MESTRAL_VELCRO_DEFAULTS: MestralVelcroControls = {
   hookLengthMm: 1.8,
   hookDensityPerCm2: 64,
   peelAngleDeg: 90,
+  peelProgress: 0.35,
   heatSettingTempC: 150,
   appliedShearForceN: 25.0,
   appliedPeelRateMmS: 10.0,
@@ -59,6 +68,10 @@ export function readMestralVelcroControls(params: Record<string, number>): Mestr
     hookLengthMm: params.hookLengthMm ?? MESTRAL_VELCRO_DEFAULTS.hookLengthMm,
     hookDensityPerCm2: params.hookDensityPerCm2 ?? MESTRAL_VELCRO_DEFAULTS.hookDensityPerCm2,
     peelAngleDeg: params.peelAngleDeg ?? MESTRAL_VELCRO_DEFAULTS.peelAngleDeg,
+    peelProgress: Math.max(
+      0.05,
+      Math.min(0.95, params.peelProgress ?? MESTRAL_VELCRO_DEFAULTS.peelProgress),
+    ),
     heatSettingTempC: params.heatSettingTempC ?? MESTRAL_VELCRO_DEFAULTS.heatSettingTempC,
     appliedShearForceN: params.appliedShearForceN ?? MESTRAL_VELCRO_DEFAULTS.appliedShearForceN,
     appliedPeelRateMmS: params.appliedPeelRateMmS ?? MESTRAL_VELCRO_DEFAULTS.appliedPeelRateMmS,
@@ -77,6 +90,7 @@ export function stepMestralVelcroSi(
   const T_c = controls.heatSettingTempC;
   const theta_rad = (Math.max(5, Math.min(175, controls.peelAngleDeg)) * Math.PI) / 180;
   const v_peel_m_s = Math.max(0.1, controls.appliedPeelRateMmS) * 1e-3;
+  const peelProgress = Math.max(0.05, Math.min(0.95, controls.peelProgress));
 
   // 1. Second moment of area and flexural rigidity
   // I = pi * d^4 / 64
@@ -140,5 +154,6 @@ export function stepMestralVelcroSi(
     forceAnisotropyRatio,
     peelDisengagementPowerWatts,
     hookDeflectionMm,
+    peelProgress,
   };
 }

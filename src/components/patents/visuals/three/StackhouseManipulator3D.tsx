@@ -118,11 +118,28 @@ export default function StackhouseManipulator3D({
           <h3 className="text-base font-semibold text-foreground">
             3D Studio: 3-Roll Spherical Wrist Manipulator
           </h3>
-          <p className="text-xs text-muted-foreground">
+          <p className="hidden text-xs text-muted-foreground sm:block">
             US 4,068,536 • Concentric Oblique Shafts & Single Intersection Center Point
           </p>
         </div>
-        <div className="flex items-center gap-1.5 rounded-lg border border-border/50 bg-background/50 p-1">
+        <label className="sr-only" htmlFor="stackhouse-camera-view">
+          Camera view
+        </label>
+        <select
+          id="stackhouse-camera-view"
+          aria-label="Camera view"
+          className="w-full rounded-lg border border-border/50 bg-background/50 px-2.5 py-2 text-xs text-foreground sm:hidden"
+          value={cameraPreset}
+          onChange={(event) =>
+            setCameraPreset(event.target.value as "isometric" | "forearm" | "bend" | "flange")
+          }
+        >
+          <option value="isometric">Isometric</option>
+          <option value="forearm">Forearm roll</option>
+          <option value="bend">Oblique bend</option>
+          <option value="flange">Tool flange</option>
+        </select>
+        <div className="hidden items-center gap-1.5 rounded-lg border border-border/50 bg-background/50 p-1 sm:flex">
           {(
             [
               { key: "isometric", label: "Isometric" },
@@ -149,7 +166,7 @@ export default function StackhouseManipulator3D({
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* 3D WebGL Canvas */}
-        <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-border/30 bg-slate-950/80 lg:col-span-2">
+        <div className="relative min-h-[320px] w-full overflow-hidden rounded-lg border border-border/30 bg-slate-950/80 sm:min-h-0 sm:aspect-video lg:col-span-2">
           <div ref={containerRef} className="h-full w-full" />
           <div className="pointer-events-none absolute bottom-3 left-3 rounded bg-black/60 px-2 py-1 font-mono text-[10px] text-white backdrop-blur">
             Tip Pos: [{tel.toolTipPositionM[0].toFixed(2)}, {tel.toolTipPositionM[1].toFixed(2)},{" "}

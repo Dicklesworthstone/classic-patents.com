@@ -76,6 +76,7 @@ const supportedTeXCommands = new Set([
   "leq",
   "lesssim",
   "lfloor",
+  "lVert",
   "ll",
   "ln",
   "log",
@@ -107,6 +108,7 @@ const supportedTeXCommands = new Set([
   "qquad",
   "quad",
   "rfloor",
+  "rVert",
   "rho",
   "right",
   "rightarrow",
@@ -232,6 +234,9 @@ assert(
   /excludes:\s*[\s\S]*PatentDetailView\.swift/.test(projectConfiguration),
   "the superseded external-link PatentDetailView must stay excluded from the native target",
 );
+const generatedProject = await Bun.file(
+  new URL("./FrankenPatents.xcodeproj/project.pbxproj", import.meta.url),
+).text();
 
 const equationsFor = (patentId: string) => {
   const published = ALL_COLORIZED_EQUATIONS[patentId] ?? [];
@@ -612,6 +617,10 @@ for (const record of records) {
       const asset = Bun.file(new URL(`./Resources/${visual.asset}`, import.meta.url));
       assert(await asset.exists(), `${record.id}: native model asset is absent`);
       assert(asset.size > 1_000, `${record.id}: native model asset is implausibly small`);
+      assert(
+        generatedProject.includes(`${record.id}.usdz in Resources`),
+        `${record.id}: native model exists but the generated Xcode project does not bundle it`,
+      );
     }
   }
 }

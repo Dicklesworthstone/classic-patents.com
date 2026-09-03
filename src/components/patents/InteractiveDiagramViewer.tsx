@@ -76,6 +76,7 @@ import {
   zeppelinSchematicCell,
   zeppelinSchematicGondola,
 } from "@/physics/catalogKernels";
+import { stepClavelDeltaRobotTopology } from "@/physics/clavelDeltaRobotKernel";
 import { stepDevolProgrammedTransfer } from "@/physics/devolProgrammedTransferKernel";
 import { FrankenSimEngine, lamarrSchematicHop, lamarrSchematicStaffY } from "@/physics/engine";
 import { fermiSchematicSlug, stepFermiKinetics } from "@/physics/fermiKinetics";
@@ -170,6 +171,7 @@ interface InteractiveDiagramViewerProps {
 
 const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
   [/versatran|3212649|3,212,649/, "amf-versatran"],
+  [/clavel|delta[- ]?robot|4976582|4,976,582/, "clavel-delta-robot"],
   [/salisbury|4921293|4,921,293/, "salisbury-robot-hand"],
   [/milacron|4512709|4,512,709/, "milacron-robot-toolchanger"],
   [/segway|6302230|6,302,230/, "kamen-segway"],
@@ -256,6 +258,7 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "carlson-electrophotography-charging": true,
   "carlson-electrophotography-rotary": true,
   "carrier-air-conditioner": true,
+  "clavel-delta-robot": true,
   "colt-revolver": true,
   "corliss-engine": true,
   "cort-puddling-rolling": true,
@@ -341,6 +344,19 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "zeppelin-airship": true,
 };
 
+/**
+ * The grant's four source drawing entries are deliberately authored as
+ * separate identities. They all share the one normalized, source-bounded
+ * Delta topology kernel; mapping them here keeps a Figure 2, 3–4, or 5 tab
+ * from falling through to an unrelated generic drawing.
+ */
+const CLAVEL_DELTA_SVG_TYPES: readonly string[] = [
+  "clavel-delta-robot",
+  "clavel-delta-ball-joint",
+  "clavel-delta-single-bar",
+  "clavel-delta-linear",
+];
+
 function resolveSchematicKind(
   svgType: string,
   _figureNumber: string,
@@ -350,6 +366,7 @@ function resolveSchematicKind(
   const t = svgType.toLowerCase();
   if (t === "generic") return "generic";
   if (t === "wright-fig1" || t === "wright-fig2") return "wright-flyer";
+  if (CLAVEL_DELTA_SVG_TYPES.includes(t)) return "clavel-delta-robot";
   // Authored identity wins outright.
   if (SCHEMATIC_SWITCH_ARM_IS_KIND[t]) return t;
   // Family variants ("carlson-electrophotography-transfer",
@@ -6392,6 +6409,591 @@ function _renderHistoricalSchematic(
           <text x="200" y="282" textAnchor="middle" fill="#fda4af" fontSize="8">
             normalized schematic; source gives no dimensional or load telemetry
           </text>
+        </g>
+      );
+    }
+    case "clavel-delta-robot": {
+      const state = stepClavelDeltaRobotTopology(params ?? {});
+      const compactFigure = figureNumber.replaceAll(" ", "");
+      const isBallJointFigure = compactFigure === "2";
+      const isSingleBarFigure = compactFigure === "3–4" || compactFigure === "3-4";
+      const isLinearFigure = compactFigure === "5";
+      const figureLabel = isBallJointFigure
+        ? "FIG. 2 · BALL-AND-SOCKET JOINT ALTERNATIVE"
+        : isSingleBarFigure
+          ? "FIGS. 3–4 · SINGLE-BAR / CARDAN ALTERNATIVE"
+          : isLinearFigure
+            ? "FIG. 5 · STRAIGHT-GUIDE INPUT ALTERNATIVE"
+            : "FIG. 1 · THREE ROTARY ARMS / PAIRED BARS";
+      const toSvg = ([x, y, z]: readonly [number, number, number]): readonly [number, number] => [
+        200 + x * 58 + z * 26,
+        128 - y * 57 + z * 13,
+      ];
+      const baseTriangle = state.legs.map((leg) => toSvg(leg.basePivot));
+      const platformCorners = [
+        toSvg([
+          state.platformCenter[0] - 0.22,
+          state.platformCenter[1],
+          state.platformCenter[2] - 0.18,
+        ]),
+        toSvg([
+          state.platformCenter[0] + 0.22,
+          state.platformCenter[1],
+          state.platformCenter[2] - 0.18,
+        ]),
+        toSvg([
+          state.platformCenter[0] + 0.22,
+          state.platformCenter[1],
+          state.platformCenter[2] + 0.18,
+        ]),
+        toSvg([
+          state.platformCenter[0] - 0.22,
+          state.platformCenter[1],
+          state.platformCenter[2] + 0.18,
+        ]),
+      ] as const;
+      const [platformX, platformY] = toSvg(state.platformCenter);
+      const [firstBaseX, firstBaseY] = baseTriangle[0] ?? [200, 72];
+      // Figure 2 is the Claim 9 alternative: its supplementary motor 11 is
+      // carried by movable member 8, not by the base-side Claim 8 train 14.
+      const movableMemberMotor = isBallJointFigure;
+      const motorX = movableMemberMotor ? platformX + 31 : firstBaseX - 48;
+      const motorY = movableMemberMotor ? platformY + 2 : firstBaseY + 20;
+      const toolAxisY = platformY + 38;
+      const supplementaryDriveVisible = movableMemberMotor
+        ? state.topologyVisible
+        : state.toolAxisVisible;
+      const jointLabels = isBallJointFigure
+        ? { upper: "26a / 26b", lower: "27a / 27b" }
+        : { upper: "6a / 6b", lower: "7a / 7b" };
+      const statusLabel = !state.topologyVisible
+        ? "CLAIM 1 TOPOLOGY WITHHELD"
+        : !state.pairedBarsVisible
+          ? "CLAIM 2 PAIR WITHHELD"
+          : !state.toolAxisVisible
+            ? "CLAIM 8 TOOL AXIS WITHHELD"
+            : "CLAIMED TOPOLOGY VISIBLE";
+      const statusColor = state.status === "claimed-topology-visible" ? "#86efac" : "#fda4af";
+
+      return (
+        <g
+          stroke="#38bdf8"
+          strokeWidth="1.5"
+          fill="none"
+          data-clavel-delta-robot-topology="typed-ts-source-bounded"
+          data-clavel-delta-robot-active-claim={state.activeClaim}
+          data-clavel-delta-robot-status={state.status}
+          data-clavel-delta-robot-claim-1={state.claimProbeStates[1] ? "live" : "withheld"}
+          data-clavel-delta-robot-claim-2={state.claimProbeStates[2] ? "live" : "withheld"}
+          data-clavel-delta-robot-claim-8={state.claimProbeStates[8] ? "live" : "withheld"}
+          data-clavel-delta-robot-paired-bar-invariant={state.pairedBarInvariant}
+          data-clavel-delta-figure-2-drive={
+            movableMemberMotor ? "claim-9-movable-member" : undefined
+          }
+        >
+          <title>
+            US 4,976,582 source-bounded Delta topology: normalized construction coordinates make the
+            paired-link invariant inspectable; dimensions, loads, speed, torque, workspace, and
+            performance prediction are refused because the grant does not report them.
+          </title>
+          <text
+            x="200"
+            y="23"
+            textAnchor="middle"
+            fill="#bae6fd"
+            fontSize="8.5"
+            fontFamily="monospace"
+          >
+            {figureLabel}
+          </text>
+          <text
+            x="200"
+            y="34"
+            textAnchor="middle"
+            fill="#94a3b8"
+            fontSize="6.5"
+            fontFamily="monospace"
+          >
+            US 4,976,582 · NORMALIZED CLOSED-CHAIN TOPOLOGY · NO SI PERFORMANCE CLAIM
+          </text>
+
+          <g aria-label="Live source-bounded Delta claim state">
+            <rect x="250" y="42" width="132" height="35" rx="3" fill="#0f172a" stroke="#475569" />
+            <text x="257" y="55" fill={statusColor} fontSize="6.5" fontFamily="monospace">
+              CLAIM {state.activeClaim} · {statusLabel}
+            </text>
+            <text x="257" y="67" fill="#94a3b8" fontSize="5.5" fontFamily="monospace">
+              {state.pairedBarInvariant} · unitless
+            </text>
+          </g>
+
+          {!state.topologyVisible ? (
+            <g aria-label="Claim 1 topology withheld">
+              <rect
+                x="48"
+                y="104"
+                width="304"
+                height="108"
+                rx="8"
+                fill="#2a1220"
+                stroke="#fb7185"
+              />
+              <text
+                x="200"
+                y="147"
+                textAnchor="middle"
+                fill="#fecdd3"
+                fontSize="10"
+                fontFamily="monospace"
+              >
+                CLAIM 1 PARALLEL-LINKAGE TOPOLOGY WITHHELD
+              </text>
+              <text
+                x="200"
+                y="165"
+                textAnchor="middle"
+                fill="#fda4af"
+                fontSize="7"
+                fontFamily="monospace"
+              >
+                BASE 1 · THREE ACTUATOR PORTIONS 3 · LINKING MEANS NOT DRAWN
+              </text>
+              <text
+                x="200"
+                y="184"
+                textAnchor="middle"
+                fill="#94a3b8"
+                fontSize="6.5"
+                fontFamily="monospace"
+              >
+                The live exhibit does not substitute an unclaimed mechanism.
+              </text>
+            </g>
+          ) : (
+            <>
+              <rect x="25" y="43" width="48" height="25" rx="2" fill="#172554" stroke="#60a5fa" />
+              <text
+                x="49"
+                y="54"
+                textAnchor="middle"
+                fill="#bfdbfe"
+                fontSize="6.5"
+                fontFamily="monospace"
+              >
+                12
+              </text>
+              <text
+                x="49"
+                y="63"
+                textAnchor="middle"
+                fill="#94a3b8"
+                fontSize="5.5"
+                fontFamily="monospace"
+              >
+                CONTROL
+              </text>
+
+              <polygon
+                points={baseTriangle.map(([x, y]) => `${x},${y}`).join(" ")}
+                fill="#0f172a"
+                fillOpacity="0.94"
+                stroke="#38bdf8"
+                strokeWidth="2"
+              />
+              <text
+                x="200"
+                y="103"
+                textAnchor="middle"
+                fill="#bae6fd"
+                fontSize="7"
+                fontFamily="monospace"
+              >
+                {isLinearFigure
+                  ? "BASE MEMBER 1 · ACTUATOR HOUSINGS 13 · TRANSLATING MEMBERS 24"
+                  : "BASE MEMBER 1 · FIXED ACTUATOR PORTIONS 3"}
+              </text>
+
+              {state.legs.map((leg, index) => {
+                const [baseX, baseY] = toSvg(leg.basePivot);
+                const [armX, armY] = toSvg(leg.controlArmEnd);
+                const [upperAX, upperAY] = toSvg(leg.upperJointA);
+                const [upperBX, upperBY] = toSvg(leg.upperJointB);
+                const [lowerAX, lowerAY] = toSvg(leg.lowerJointA);
+                const [lowerBX, lowerBY] = toSvg(leg.lowerJointB);
+                const [upperCenterX, upperCenterY] = toSvg(leg.upperPairCenter);
+                const [lowerCenterX, lowerCenterY] = toSvg(leg.lowerPairCenter);
+                const color = ["#67e8f9", "#fbbf24", "#c4b5fd"][index] ?? "#67e8f9";
+                const inputLabel = isLinearFigure ? "24" : "4";
+                const jointNodes = [
+                  [upperAX, upperAY],
+                  [upperBX, upperBY],
+                  [lowerAX, lowerAY],
+                  [lowerBX, lowerBY],
+                ] as const;
+
+                return (
+                  <g key={`clavel-delta-leg-${leg.index}`}>
+                    {isLinearFigure ? (
+                      <rect
+                        x={baseX - 10}
+                        y={baseY - 7}
+                        width="20"
+                        height="14"
+                        rx="2"
+                        fill="#0f172a"
+                        stroke={color}
+                        strokeWidth="2"
+                      />
+                    ) : (
+                      <circle
+                        cx={baseX}
+                        cy={baseY}
+                        r="9"
+                        fill="#0f172a"
+                        stroke={color}
+                        strokeWidth="2"
+                      />
+                    )}
+                    <text
+                      x={baseX}
+                      y={baseY + 2.5}
+                      textAnchor="middle"
+                      fill={color}
+                      fontSize="6"
+                      fontFamily="monospace"
+                    >
+                      {isLinearFigure ? "13" : "2"}
+                    </text>
+                    {isLinearFigure ? (
+                      <g>
+                        <line
+                          x1={baseX - 11}
+                          y1={baseY - 11}
+                          x2={baseX + 11}
+                          y2={baseY + 11}
+                          stroke="#64748b"
+                          strokeWidth="5"
+                          strokeLinecap="round"
+                        />
+                        <line
+                          x1={baseX - 14}
+                          y1={baseY - 14}
+                          x2={baseX + 14}
+                          y2={baseY + 14}
+                          stroke={color}
+                          strokeWidth="1"
+                          strokeDasharray="2 2"
+                        />
+                        <line
+                          x1={baseX}
+                          y1={baseY}
+                          x2={armX}
+                          y2={armY}
+                          stroke={color}
+                          strokeWidth="3"
+                          strokeDasharray="4 3"
+                          strokeLinecap="round"
+                        />
+                      </g>
+                    ) : (
+                      <line
+                        x1={baseX}
+                        y1={baseY}
+                        x2={armX}
+                        y2={armY}
+                        stroke={color}
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                      />
+                    )}
+                    <text
+                      x={armX + 7}
+                      y={armY - 5}
+                      fill={color}
+                      fontSize="6"
+                      fontFamily="monospace"
+                    >
+                      {inputLabel}
+                    </text>
+
+                    {isSingleBarFigure ? (
+                      <g>
+                        <line
+                          x1={upperCenterX}
+                          y1={upperCenterY}
+                          x2={lowerCenterX}
+                          y2={lowerCenterY}
+                          stroke={color}
+                          strokeWidth="4"
+                          strokeLinecap="round"
+                        />
+                        <circle
+                          cx={upperCenterX}
+                          cy={upperCenterY}
+                          r="4"
+                          fill="#0f172a"
+                          stroke={color}
+                        />
+                        <circle
+                          cx={lowerCenterX}
+                          cy={lowerCenterY}
+                          r="4"
+                          fill="#0f172a"
+                          stroke={color}
+                        />
+                        {index === 0 && (
+                          <>
+                            <text
+                              x={(upperCenterX + lowerCenterX) / 2 + 5}
+                              y={(upperCenterY + lowerCenterY) / 2 - 3}
+                              fill="#e0f2fe"
+                              fontSize="6"
+                              fontFamily="monospace"
+                            >
+                              25
+                            </text>
+                            <text
+                              x={upperCenterX + 5}
+                              y={upperCenterY - 5}
+                              fill="#e0f2fe"
+                              fontSize="5.5"
+                              fontFamily="monospace"
+                            >
+                              36
+                            </text>
+                            <text
+                              x={lowerCenterX + 5}
+                              y={lowerCenterY + 7}
+                              fill="#e0f2fe"
+                              fontSize="5.5"
+                              fontFamily="monospace"
+                            >
+                              37
+                            </text>
+                          </>
+                        )}
+                      </g>
+                    ) : state.pairedBarsVisible ? (
+                      <g>
+                        <line
+                          x1={upperAX}
+                          y1={upperAY}
+                          x2={lowerAX}
+                          y2={lowerAY}
+                          stroke={color}
+                          strokeWidth="3.5"
+                          strokeLinecap="round"
+                        />
+                        <line
+                          x1={upperBX}
+                          y1={upperBY}
+                          x2={lowerBX}
+                          y2={lowerBY}
+                          stroke={color}
+                          strokeWidth="3.5"
+                          strokeLinecap="round"
+                        />
+                        {jointNodes.map(([x, y], jointIndex) => (
+                          <circle
+                            key={`clavel-joint-${jointIndex}`}
+                            cx={x}
+                            cy={y}
+                            r="2.8"
+                            fill={isBallJointFigure ? "#075985" : "#0f172a"}
+                            stroke={color}
+                            strokeWidth="1"
+                          />
+                        ))}
+                        {index === 0 && (
+                          <>
+                            <text
+                              x={upperCenterX + 5}
+                              y={upperCenterY - 6}
+                              fill="#e0f2fe"
+                              fontSize="5.5"
+                              fontFamily="monospace"
+                            >
+                              {jointLabels.upper}
+                            </text>
+                            <text
+                              x={lowerCenterX + 5}
+                              y={lowerCenterY + 8}
+                              fill="#e0f2fe"
+                              fontSize="5.5"
+                              fontFamily="monospace"
+                            >
+                              {jointLabels.lower}
+                            </text>
+                            <text
+                              x={(upperCenterX + lowerCenterX) / 2 + 5}
+                              y={(upperCenterY + lowerCenterY) / 2 - 5}
+                              fill="#e0f2fe"
+                              fontSize="6"
+                              fontFamily="monospace"
+                            >
+                              5a / 5b
+                            </text>
+                          </>
+                        )}
+                      </g>
+                    ) : null}
+                  </g>
+                );
+              })}
+
+              {!state.pairedBarsVisible && !isSingleBarFigure && (
+                <text
+                  x="200"
+                  y="145"
+                  textAnchor="middle"
+                  fill="#fda4af"
+                  fontSize="7"
+                  fontFamily="monospace"
+                >
+                  CLAIM 2 TWO PARALLEL BARS 5a / 5b WITHHELD
+                </text>
+              )}
+
+              <polygon
+                points={platformCorners.map(([x, y]) => `${x},${y}`).join(" ")}
+                fill="#164e63"
+                stroke="#a5f3fc"
+                strokeWidth="2"
+              />
+              <text
+                x={platformX}
+                y={platformY + 3}
+                textAnchor="middle"
+                fill="#ecfeff"
+                fontSize="7"
+                fontFamily="monospace"
+              >
+                8
+              </text>
+              <text
+                x={platformX}
+                y={platformY + 17}
+                textAnchor="middle"
+                fill="#a5f3fc"
+                fontSize="6"
+                fontFamily="monospace"
+              >
+                MOVABLE MEMBER · ATTITUDE FIXED
+              </text>
+
+              {supplementaryDriveVisible ? (
+                <g
+                  aria-label={
+                    movableMemberMotor
+                      ? "Figure 2 Claim 9 movable-member tool-axis topology"
+                      : "Claim 8 base-mounted tool-axis topology"
+                  }
+                >
+                  <line
+                    x1={platformX}
+                    y1={platformY + 8}
+                    x2={platformX}
+                    y2={toolAxisY}
+                    stroke="#fde68a"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                  />
+                  <g
+                    transform={`translate(${platformX} ${toolAxisY}) rotate(${(state.toolAxisRotationRad * 180) / Math.PI})`}
+                  >
+                    <circle r="9" fill="#713f12" stroke="#fde68a" strokeWidth="1.5" />
+                    <path d="M-5 0 H5 M0 -5 V5" stroke="#fef3c7" strokeWidth="1.2" />
+                  </g>
+                  <text
+                    x={platformX + 12}
+                    y={toolAxisY + 2}
+                    fill="#fef3c7"
+                    fontSize="6"
+                    fontFamily="monospace"
+                  >
+                    9 · AXIS 10
+                  </text>
+                  <rect
+                    x={motorX - 13}
+                    y={motorY - 8}
+                    width="26"
+                    height="16"
+                    rx="3"
+                    fill="#422006"
+                    stroke="#fbbf24"
+                  />
+                  <text
+                    x={motorX}
+                    y={motorY + 2}
+                    textAnchor="middle"
+                    fill="#fde68a"
+                    fontSize="6"
+                    fontFamily="monospace"
+                  >
+                    11
+                  </text>
+                  {!movableMemberMotor && (
+                    <>
+                      <path
+                        d={`M ${motorX + 14} ${motorY} L ${platformX - 9} ${toolAxisY - 7}`}
+                        stroke="#fbbf24"
+                        strokeWidth="1.2"
+                        strokeDasharray="3 2"
+                      />
+                      <text
+                        x={(motorX + platformX) / 2 - 8}
+                        y={(motorY + toolAxisY) / 2 - 5}
+                        fill="#fcd34d"
+                        fontSize="5.5"
+                        fontFamily="monospace"
+                      >
+                        14
+                      </text>
+                    </>
+                  )}
+                  {movableMemberMotor && (
+                    <text
+                      x={platformX + 45}
+                      y={platformY + 18}
+                      fill="#fcd34d"
+                      fontSize="5.5"
+                      fontFamily="monospace"
+                    >
+                      11 ON 8 · CLAIM 9
+                    </text>
+                  )}
+                </g>
+              ) : (
+                <text
+                  x={platformX}
+                  y={toolAxisY + 10}
+                  textAnchor="middle"
+                  fill="#fda4af"
+                  fontSize="6.5"
+                  fontFamily="monospace"
+                >
+                  CLAIM 8 SUPPLEMENTARY MOTOR 11 / TOOL AXIS 10 WITHHELD
+                </text>
+              )}
+
+              <text
+                x="200"
+                y="283"
+                textAnchor="middle"
+                fill="#94a3b8"
+                fontSize="6"
+                fontFamily="monospace"
+              >
+                {isSingleBarFigure
+                  ? "FIGS. 3–4 source alternative: bar 25 with cardan articulations 36 and 37."
+                  : isLinearFigure
+                    ? "FIG. 5 source alternative: members 24 translate on straight guides; no guide dimensions inferred."
+                    : movableMemberMotor
+                      ? "FIG. 2 source alternative: motor 11 is mounted on movable member 8 (Claim 9), not the Claim 8 base-motor form."
+                      : "Rigid paired lower links share one length and displacement vector; display coordinates only, not a workspace or load model."}
+              </text>
+            </>
+          )}
         </g>
       );
     }

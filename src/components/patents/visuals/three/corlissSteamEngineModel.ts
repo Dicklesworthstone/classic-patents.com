@@ -528,9 +528,9 @@ export function updateCorlissEngineKinematics(
   model.crankGroup.rotation.z = -crankAngleRad;
   model.flywheel.rotation.z = -crankAngleRad;
 
-  // 2. Crosshead Reciprocating Kinematics
-  const pinX = 3.8 - Math.cos(crankAngleRad) * crankRadius;
-  const pinY = Math.sin(crankAngleRad) * crankRadius;
+  // 2. Crosshead Reciprocating Kinematics (Tracking exact cPin world coordinates)
+  const pinX = 3.8 + Math.cos(crankAngleRad) * crankRadius;
+  const pinY = -Math.sin(crankAngleRad) * crankRadius;
   const crossheadX = pinX - Math.sqrt(conRodLength ** 2 - pinY ** 2);
   model.crossheadGroup.position.x = crossheadX;
 

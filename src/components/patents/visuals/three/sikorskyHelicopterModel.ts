@@ -58,7 +58,7 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
 
   const fabricWing = material(
     new THREE.MeshStandardMaterial({
-      color: 0xebf5fb, // Doped aircraft linen/fabric
+      color: 0xd8c39f, // Warm doped linen stays legible against the studio sky
       roughness: 0.7,
       metalness: 0.1,
       side: THREE.DoubleSide,
@@ -89,6 +89,23 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
       side: THREE.DoubleSide,
     }),
   );
+
+  const connectedStrut = (
+    name: string,
+    start: THREE.Vector3,
+    end: THREE.Vector3,
+    radius: number,
+  ) => {
+    const direction = end.clone().sub(start);
+    const strut = new THREE.Mesh(
+      geometry(new THREE.CylinderGeometry(radius, radius, direction.length(), 8)),
+      steelTruss,
+    );
+    strut.name = name;
+    strut.position.copy(start).add(end).multiplyScalar(0.5);
+    strut.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+    return strut;
+  };
 
   // Airframe Group (translates/pitches with flight dynamics)
   const airframe = new THREE.Group();
@@ -177,24 +194,44 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
   wheelGeo.rotateZ(Math.PI / 2);
 
   const leftWheel = new THREE.Mesh(wheelGeo, rubberTire);
+  leftWheel.name = "SikorskyLeftMainWheel";
   leftWheel.position.set(-0.7, -0.1, 0.4);
   const rightWheel = new THREE.Mesh(wheelGeo, rubberTire);
+  rightWheel.name = "SikorskyRightMainWheel";
   rightWheel.position.set(0.7, -0.1, 0.4);
   const tailWheel = new THREE.Mesh(
     geometry(new THREE.CylinderGeometry(0.08, 0.08, 0.04, 12)).rotateZ(Math.PI / 2),
     rubberTire,
   );
-  tailWheel.position.set(0, -0.1, -1.8);
+  tailWheel.name = "SikorskyTailWheel";
+  tailWheel.position.set(0, -0.1, -4.55);
 
-  const lgStrutGeo = geometry(new THREE.CylinderGeometry(0.02, 0.02, 0.6, 8));
-  const lgStrutL = new THREE.Mesh(lgStrutGeo, steelTruss);
-  lgStrutL.rotation.z = Math.PI / 6;
-  lgStrutL.position.set(-0.52, 0.05, 0.4);
-  const lgStrutR = new THREE.Mesh(lgStrutGeo, steelTruss);
-  lgStrutR.rotation.z = -Math.PI / 6;
-  lgStrutR.position.set(0.52, 0.05, 0.4);
+  const mainAxle = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.025, 0.025, 1.4, 10)).rotateZ(Math.PI / 2),
+    steelTruss,
+  );
+  mainAxle.name = "SikorskyMainAxle";
+  mainAxle.position.set(0, -0.1, 0.4);
+  const lgStrutL = connectedStrut(
+    "SikorskyLeftLandingStrut",
+    new THREE.Vector3(-0.35, 0.2, 0.4),
+    leftWheel.position,
+    0.02,
+  );
+  const lgStrutR = connectedStrut(
+    "SikorskyRightLandingStrut",
+    new THREE.Vector3(0.35, 0.2, 0.4),
+    rightWheel.position,
+    0.02,
+  );
+  const tailStrut = connectedStrut(
+    "SikorskyTailWheelStrut",
+    new THREE.Vector3(0, 0.65, -4.55),
+    tailWheel.position,
+    0.018,
+  );
 
-  lgGroup.add(leftWheel, rightWheel, tailWheel, lgStrutL, lgStrutR);
+  lgGroup.add(leftWheel, rightWheel, tailWheel, mainAxle, lgStrutL, lgStrutR, tailStrut);
   fuselageGroup.add(lgGroup);
 
   // 2. Tail Boom & Anti-Torque Tail Rotor

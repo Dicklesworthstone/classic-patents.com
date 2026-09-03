@@ -70,34 +70,22 @@ Paper “Synthesis and Control of the Anthropomorphic Two-Handed Manipulator” 
 U.S. Patent    May 1, 1990    Sheet 1 of 3    4,921,293
 
 FIG. 1
-Visible reference numerals: 10, 12, 14, 16, 17, 18, 20, 22, 24, 25, 27, 28, 30, 32, 34, 35, 36, 38, 40, 41, 42, 43, 44, 45, 46, 47, 48, 50.
-ACTUATOR DRIVE & CONTROL 35
-
 FIG. 2
-Visible reference numerals: 24, 25, 26, 28, 30′, 30″, 30‴, 30⁗, 36, 38, 40, 41, 42, 43, 46, 47, 48, 50.
 
 --- REVIEWED TRANSCRIPTION PAGE 4 OF 10 ---
 
 U.S. Patent    May 1, 1990    Sheet 2 of 3    4,921,293
 
 FIG. 3
-Visible labels: T₁, T₂, T₃, T₄; 30′, 30″, 30‴, 30⁗, 43, 44, 45, 47, 48, 54.
-
 FIG. 4
-Visible reference numerals: 24, 32, 33, 55, 56, 57, 58, 59, 60.
-
 FIG. 5
-Visible reference numerals: 33, 54, 56, 64, 65, 67.
 
 --- REVIEWED TRANSCRIPTION PAGE 5 OF 10 ---
 
 U.S. Patent    May 1, 1990    Sheet 3 of 3    4,921,293
 
 FIG. 6
-Visible labels: T₁, T₂, T₃, T₄; 24, 28, 30′, 30″, 30‴, 30⁗, 32, 33, 36, 38, 40, 41, 42, 43, 46, 47, 48, 50, 58, 59, 70, 71, 74.
-
 FIG. 7
-Visible labels: T₁, T₂, T₃, T₄; 24, 28, 32, 33, 36, 40, 41, 42, 43, 44′, 44″, 47, 48, 50, 54, 58, 59, 60, 72, 74.
 
 --- REVIEWED TRANSCRIPTION PAGE 6 OF 10 ---
 

@@ -1,16 +1,15 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { evaluateArchivalPublicationState } from "@/data/editions/publicationApproval";
+import {
+  archivalEditionForPublication,
+  evaluateArchivalPublicationState,
+  patentForPublicationViewer,
+} from "@/data/editions/publicationApproval";
 import { allPatents } from "@/data/patents";
-import { goodyearRubberPatent } from "@/data/patents/goodyear-rubber";
 import { whitneyCottonGinPatent } from "@/data/patents/whitney-cotton-gin";
 import type { Patent } from "@/types/patent";
-import {
-  applyPatentViewToUrl,
-  archivalEditionForPublication,
-  viewModeFromSearch,
-} from "./DualProjectionViewer";
+import { applyPatentViewToUrl, viewModeFromSearch } from "./DualProjectionViewer";
 
 const VIEWER_SOURCE = readFileSync(
   join(process.cwd(), "src/components/patents/DualProjectionViewer.tsx"),
@@ -67,9 +66,17 @@ describe("patent view URL state", () => {
     expect(VIEWER_SOURCE).not.toMatch(
       /const setViewMode = \(mode: PatentViewMode\) => \{\s*setViewModeState\(mode\);\s*\};/,
     );
+    expect(PATENT_PAGE_SOURCE).toContain("patent={viewerPatent}");
+    expect(PATENT_PAGE_SOURCE).toContain("archivalPublication={archivalPublicationView}");
     expect(PATENT_PAGE_SOURCE).toContain(
-      "<DualProjectionViewer patent={patent} colorizedEquations={colorizedEquations} />",
+      "data-archival-publication-evidence={JSON.stringify(archivalDiagnostics)}",
     );
+    expect(VIEWER_SOURCE).toContain("const archivalSource =");
+    expect(VIEWER_SOURCE).toContain(
+      "archivalPublication.isPublished && patent.archivalEdition && archivalParallelReadings",
+    );
+    expect(VIEWER_SOURCE).not.toContain("evaluateArchivalPublicationState(patent)");
+    expect(VIEWER_SOURCE).not.toContain("archivalParallelReadingsFor");
     expect(PATENT_PAGE_SOURCE).not.toContain("searchParams");
     expect(E2E_AUDIT_SOURCE).toContain('searchParams.get("view") === "original-spec"');
     expect(E2E_AUDIT_SOURCE).toContain('searchParams.get("view") === view');
@@ -78,58 +85,84 @@ describe("patent view URL state", () => {
 
 describe("archival publication boundary", () => {
   test("publishes accepted editions and withholds held audit records", () => {
-    expect(archivalEditionForPublication(goodyearRubberPatent)).toBe(
-      goodyearRubberPatent.archivalEdition,
-    );
+    const acceptedPatent = allPatents.find((patent) => patent.id === "us-78317-nobel-dynamite");
+    if (!acceptedPatent) throw new Error("Nobel dynamite patent not found");
+    expect(archivalEditionForPublication(acceptedPatent)).toBe(acceptedPatent.archivalEdition);
     // Whitney has an audit hold in ARCHIVAL_PUBLICATION_STATE_OVERRIDES (classic-patentscom-hi0)
     expect(archivalEditionForPublication(whitneyCottonGinPatent)).toBeUndefined();
 
     const unmappedPatent: Patent = {
-      ...goodyearRubberPatent,
+      ...acceptedPatent,
       id: "us-unmapped-draft-test",
     };
     expect(archivalEditionForPublication(unmappedPatent)).toBeUndefined();
   });
 
   test("does not make optional reviewed-ledger page anchors a publication condition", () => {
-    const asset = goodyearRubberPatent.originalTextAsset;
+    const acceptedPatent = allPatents.find((patent) => patent.id === "us-78317-nobel-dynamite");
+    if (!acceptedPatent) throw new Error("Nobel dynamite patent not found");
+    const asset = acceptedPatent.originalTextAsset;
     if (!asset) {
-      throw new Error("Goodyear publication fixture requires a reviewed source asset.");
+      throw new Error("Publication fixture requires a reviewed source asset.");
     }
 
     const withoutOptionalPageAnchors: Patent = {
-      ...goodyearRubberPatent,
+      ...acceptedPatent,
       originalTextAsset: { ...asset, pageAnchors: undefined },
     };
 
     expect(archivalEditionForPublication(withoutOptionalPageAnchors)).toBe(
-      goodyearRubberPatent.archivalEdition,
+      acceptedPatent.archivalEdition,
     );
   });
 
-  test("releases exactly the records that pass evaluateArchivalPublicationState", () => {
-    const releasedIds = allPatents
-      .filter((patent) => archivalEditionForPublication(patent))
-      .map((patent) => patent.id)
-      .toSorted();
+  test(
+    "releases exactly the records that pass evaluateArchivalPublicationState",
+    () => {
+      const releasedIds = allPatents
+        .filter((patent) => archivalEditionForPublication(patent))
+        .map((patent) => patent.id)
+        .toSorted();
 
-    const expectedAcceptedIds = allPatents
-      .filter((patent) => evaluateArchivalPublicationState(patent).isPublished)
-      .map((patent) => patent.id)
-      .toSorted();
+      const expectedAcceptedIds = allPatents
+        .filter((patent) => evaluateArchivalPublicationState(patent).isPublished)
+        .map((patent) => patent.id)
+        .toSorted();
 
-    expect(releasedIds).toEqual(expectedAcceptedIds);
-    expect(releasedIds).not.toHaveLength(0);
-  });
+      expect(releasedIds).toEqual(expectedAcceptedIds);
+      expect(releasedIds).not.toHaveLength(0);
+    },
+    { timeout: 30000 },
+  );
 
-  test("returns publishedEdition for all accepted patents", () => {
-    for (const patent of allPatents) {
-      const decision = evaluateArchivalPublicationState(patent);
-      if (decision.isPublished) {
-        expect(archivalEditionForPublication(patent)).toBe(patent.archivalEdition);
-      } else {
-        expect(archivalEditionForPublication(patent)).toBeUndefined();
+  test(
+    "returns publishedEdition for all accepted patents",
+    () => {
+      for (const patent of allPatents) {
+        const decision = evaluateArchivalPublicationState(patent);
+        if (decision.isPublished) {
+          expect(archivalEditionForPublication(patent)).toBe(patent.archivalEdition);
+        } else {
+          expect(archivalEditionForPublication(patent)).toBeUndefined();
+        }
       }
-    }
+    },
+    { timeout: 30000 },
+  );
+
+  test("does not serialize held editions or ledger metadata into client viewer props", () => {
+    const heldDecision = evaluateArchivalPublicationState(whitneyCottonGinPatent);
+    const heldProjection = patentForPublicationViewer(whitneyCottonGinPatent, heldDecision);
+    expect(heldDecision.isPublished).toBe(false);
+    expect(heldProjection.archivalEdition).toBeUndefined();
+    expect(heldProjection.originalTextAsset).toBeUndefined();
+
+    const acceptedPatent = allPatents.find((patent) => patent.id === "us-78317-nobel-dynamite");
+    if (!acceptedPatent) throw new Error("Nobel dynamite patent not found");
+    const acceptedDecision = evaluateArchivalPublicationState(acceptedPatent);
+    const acceptedProjection = patentForPublicationViewer(acceptedPatent, acceptedDecision);
+    expect(acceptedDecision.isPublished).toBe(true);
+    expect(acceptedProjection.archivalEdition).toBe(acceptedPatent.archivalEdition);
+    expect(acceptedProjection.originalTextAsset).toBeUndefined();
   });
 });

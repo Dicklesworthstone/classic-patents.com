@@ -32,6 +32,10 @@ export interface LemelsonManipulatorControls {
   stop1Elevation: number;
   /** Position of adjustable vertical stop 2 [0, 1]. */
   stop2Elevation: number;
+  /** Source-topology claim predicates; shared across 2D and 3D faces. */
+  claim1SelectedSwitchesEnabled: number;
+  claim8BistableSwitchEnabled: number;
+  claim15ServoHandoffEnabled: number;
 }
 
 export const LEMELSON_DEFAULT_CONTROLS: LemelsonManipulatorControls = {
@@ -45,6 +49,9 @@ export const LEMELSON_DEFAULT_CONTROLS: LemelsonManipulatorControls = {
   stop2Azimuth: 0.75,
   stop1Elevation: 0.15,
   stop2Elevation: 0.85,
+  claim1SelectedSwitchesEnabled: 1,
+  claim8BistableSwitchEnabled: 1,
+  claim15ServoHandoffEnabled: 1,
 };
 
 export const LEMELSON_MANIPULATOR_DEFAULT_CONTROLS = LEMELSON_DEFAULT_CONTROLS;
@@ -83,6 +90,7 @@ export interface LemelsonManipulatorState {
   sequencer: LemelsonSequencerState;
   activeClaim: number;
   activeClaimScope: string;
+  activeClaimStatus: "represented" | "withheld";
   refusal: {
     refused: true;
     reason: string;
@@ -99,6 +107,10 @@ function sanitizeNumber(value: unknown, fallback: number, min: number, max: numb
     return fallback;
   }
   return clamp(value, min, max);
+}
+
+function binary(value: unknown, fallback: number): number {
+  return sanitizeNumber(value, fallback, 0, 1) >= 0.5 ? 1 : 0;
 }
 
 export function readLemelsonControls(
@@ -151,6 +163,18 @@ export function readLemelsonControls(
       LEMELSON_DEFAULT_CONTROLS.stop2Elevation,
       0,
       1,
+    ),
+    claim1SelectedSwitchesEnabled: binary(
+      params.claim1SelectedSwitchesEnabled,
+      LEMELSON_DEFAULT_CONTROLS.claim1SelectedSwitchesEnabled,
+    ),
+    claim8BistableSwitchEnabled: binary(
+      params.claim8BistableSwitchEnabled,
+      LEMELSON_DEFAULT_CONTROLS.claim8BistableSwitchEnabled,
+    ),
+    claim15ServoHandoffEnabled: binary(
+      params.claim15ServoHandoffEnabled,
+      LEMELSON_DEFAULT_CONTROLS.claim15ServoHandoffEnabled,
     ),
   };
 }
@@ -215,12 +239,19 @@ export function stepLemelsonManipulatorTopology(
   // their unprinted contact tolerances into a physical controller.
   const isVerticalStopStage = controls.cyclePhase === 1;
   const isRotaryStopStage = controls.cyclePhase === 2;
+  const selectedSwitchesEnabled = controls.claim1SelectedSwitchesEnabled === 1;
+  const bistableSwitchEnabled = controls.claim8BistableSwitchEnabled === 1;
+  const rotarySwitchStageEnabled = !isRotaryStopStage || bistableSwitchEnabled;
   const stop1Tripped =
-    (isVerticalStopStage && Math.abs(controls.columnElevation - controls.stop1Elevation) < 0.08) ||
-    (isRotaryStopStage && Math.abs(controls.columnAzimuth - controls.stop1Azimuth) < 0.08);
+    selectedSwitchesEnabled &&
+    rotarySwitchStageEnabled &&
+    ((isVerticalStopStage && Math.abs(controls.columnElevation - controls.stop1Elevation) < 0.08) ||
+      (isRotaryStopStage && Math.abs(controls.columnAzimuth - controls.stop1Azimuth) < 0.08));
   const stop2Tripped =
-    (isVerticalStopStage && Math.abs(controls.columnElevation - controls.stop2Elevation) < 0.08) ||
-    (isRotaryStopStage && Math.abs(controls.columnAzimuth - controls.stop2Azimuth) < 0.08);
+    selectedSwitchesEnabled &&
+    rotarySwitchStageEnabled &&
+    ((isVerticalStopStage && Math.abs(controls.columnElevation - controls.stop2Elevation) < 0.08) ||
+      (isRotaryStopStage && Math.abs(controls.columnAzimuth - controls.stop2Azimuth) < 0.08));
 
   const trippedSwitches: string[] = [];
   if (stop1Tripped) trippedSwitches.push("Selected actuator/limit event 1");
@@ -229,28 +260,40 @@ export function stepLemelsonManipulatorTopology(
   const sequencer: LemelsonSequencerState = {
     phaseIndex: controls.cyclePhase,
     phaseName: currentPhase.name,
-    activeMotor: currentPhase.motor,
+    activeMotor:
+      controls.cyclePhase === 0 && controls.claim15ServoHandoffEnabled === 0
+        ? "idle"
+        : currentPhase.motor,
     trippedLimitSwitches: trippedSwitches,
     stop1Tripped,
     stop2Tripped,
-    nextScheduledAction: currentPhase.next,
+    nextScheduledAction:
+      controls.cyclePhase === 0 && controls.claim15ServoHandoffEnabled === 0
+        ? "Claim 15 selected-position servo handoff omitted"
+        : currentPhase.next,
   };
 
   // Claim determination
   let activeClaim = 1;
   let activeClaimScope = "Claim 1 (Guided carriage and selected-switch combination)";
-  if (controls.cyclePhase === 2 && (stop1Tripped || stop2Tripped)) {
+  let activeClaimStatus: LemelsonManipulatorState["activeClaimStatus"] =
+    controls.claim1SelectedSwitchesEnabled === 1 ? "represented" : "withheld";
+  if (controls.cyclePhase === 2) {
     activeClaim = 8;
     activeClaimScope = "Claim 8 (Rotatable assembly with a bi-stable limit switch)";
+    activeClaimStatus = controls.claim8BistableSwitchEnabled === 1 ? "represented" : "withheld";
   } else if (controls.cyclePhase === 3) {
     activeClaim = 9;
     activeClaimScope = "Claim 9 (Pivoting joint with selectable arc limits)";
+    activeClaimStatus = "represented";
   } else if (controls.cyclePhase === 4) {
     activeClaim = 14;
     activeClaimScope = "Claim 14 (Linear, rotary, and article-seizing switch coordination)";
+    activeClaimStatus = "represented";
   } else if (controls.cyclePhase === 0) {
     activeClaim = 15;
     activeClaimScope = "Claim 15 (Selected-position conveying-cycle control)";
+    activeClaimStatus = controls.claim15ServoHandoffEnabled === 1 ? "represented" : "withheld";
   }
 
   return {
@@ -259,6 +302,7 @@ export function stepLemelsonManipulatorTopology(
     sequencer,
     activeClaim,
     activeClaimScope,
+    activeClaimStatus,
     refusal: {
       refused: true,
       reason:

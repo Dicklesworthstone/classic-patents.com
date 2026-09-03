@@ -180,4 +180,35 @@ describe("thomsonWeldingArchivalEdition", () => {
     ).toEqual(paragraphIndexes);
     expect(thomsonWeldingParallelReadings[13]?.join(" ")).toContain("one fifty-thousandth");
   });
+
+  test("provides valid provenance classifications for all Thomson controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-347140-thomson-welding"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("verifies telemetry sensitivity to secondary welding current", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-347140-thomson-welding"];
+    const m1 = entry.computeMetrics({ weldCurrentAmps: 4500 });
+    const m2 = entry.computeMetrics({ weldCurrentAmps: 4600 });
+    expect(m1).not.toEqual(m2);
+  });
+
+  test("enforces facsimile review pending audit hold in publication state registry", () => {
+    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+    const decision = evaluateTypedArchivalPublicationState(thomsonWeldingPatent, {
+      hasCompanionReadings: true,
+    });
+    expect(decision.isPublished).toBe(false);
+    expect(decision.state.kind).toBe("held");
+    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
+  });
 });

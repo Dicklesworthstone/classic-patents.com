@@ -3,6 +3,8 @@
 import { Eye, EyeOff, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { stepLemelsonManipulatorTopology } from "@/physics/lemelsonAdjustableManipulatorKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -111,14 +113,18 @@ export function LemelsonAdjustableManipulator3D({
   const studioRef = useRef<StudioContext | null>(null);
   const [view, setView] = useState<keyof typeof VIEWS>("overview");
   const [interfaceVisible, setInterfaceVisible] = useState(true);
-  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
-  const liveParams = useRef(params);
-  liveParams.current = params;
-  const state = stepLemelsonManipulatorTopology(params);
+  const { params, effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(PATENT_ID);
+  const liveParams = useRef(effectiveParams);
+  liveParams.current = effectiveParams;
+  const state = stepLemelsonManipulatorTopology(effectiveParams);
 
   useFrankenSimPhysics(patentId, {
     domain: "solid_mechanics",
-    refusal: { isRefused: true, reason: state.refusal.reason },
+    refusal: {
+      isRefused: true,
+      reason: claimConstraintResult.refusalWarning ?? state.refusal.reason,
+    },
   });
 
   const selectView = (nextView: keyof typeof VIEWS) => {
@@ -273,6 +279,32 @@ export function LemelsonAdjustableManipulator3D({
                 dimensions, speed, force, timing, or controller-performance result is displayed.
               </p>
             </div>
+          </div>
+        )}
+      </div>
+      <div className="grid gap-3 border-t border-slate-800 bg-slate-950/95 p-4">
+        <ClaimConstraintToggle
+          patentId={PATENT_ID}
+          claimStates={claimStates}
+          onToggleClaim={(claimNumber, active) =>
+            updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
+          }
+        />
+        <p className="font-mono text-[11px] text-cyan-200">
+          {state.activeClaimScope}: {state.activeClaimStatus.toUpperCase()}
+        </p>
+        {claimConstraintResult.activeFailures.length > 0 && (
+          <div role="status" className="rounded-lg border border-rose-800 bg-rose-950/80 p-2">
+            {claimConstraintResult.activeFailures.map((failure: string) => (
+              <p key={failure} className="text-[11px] leading-4 text-rose-100">
+                {failure}
+              </p>
+            ))}
+            {claimConstraintResult.refusalWarning && (
+              <p className="mt-1 text-[10px] leading-4 text-rose-200">
+                {claimConstraintResult.refusalWarning}
+              </p>
+            )}
           </div>
         )}
       </div>

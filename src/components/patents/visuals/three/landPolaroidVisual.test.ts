@@ -53,6 +53,16 @@ describe("US 2,543,181 Edwin Land Polaroid Instant Photography Visual Boundary",
     expect(stateA.transferEfficiencyPercent).toBe(stateB.transferEfficiencyPercent);
   });
 
+  it("does not mutate the shared processing-time control until the visitor starts the timer", () => {
+    const simSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/LandPolaroidSim.tsx"),
+      "utf8",
+    );
+    expect(simSource).toContain("useState<boolean>(false)");
+    expect(simSource).toContain("if (!isPlaying) setInternalTime(developmentTimeSec)");
+    expect(simSource).toContain('aria-label={isPlaying ? "Pause Timer" : "Start Timer"}');
+  });
+
   it("computes genuine Fickian diffusion transfer and complexation chemistry in SI units", () => {
     const shadowState = stepLandPolaroidInstantFilm({
       developmentTimeSec: 45,

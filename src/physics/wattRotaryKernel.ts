@@ -2,8 +2,10 @@
  * wattRotaryKernel.ts
  *
  * Physics kernel for James Watt's 1781 Rotary Motion & Sun-and-Planet Engine (GB 1306).
- * Computes exact SI kinematics, epicyclic 2:1 gear multiplication, connecting rod
- * constraint, tangential tooth load, flywheel kinetic storage, and indicated shaft power.
+ * Computes one source-owned kinematic state for the beam, fixed-length connecting
+ * rod, epicyclic gear pair, and flywheel. The display geometry is a normalized
+ * engineering reconstruction: the surviving patent record does not supply a
+ * dimensioned engine installation from which these lengths can be recovered.
  */
 
 export interface WattRotaryControls {
@@ -17,13 +19,33 @@ export interface WattRotaryControls {
 
 export interface WattRotaryTelemetry {
   // Kinematics & Speeds
-  beamAngleDeg: number; // Beam angular deflection (-18 to +18 deg)
+  beamAngleDeg: number; // Beam angular deflection from fixed-link closure
+  beamAngleRad: number;
   pistonPositionM: number; // Piston travel (0 to strokeLengthM)
   pistonVelocityMps: number; // Piston instantaneous velocity (m/s)
   planetOrbitAngleDeg: number; // Planet center orbital angle (0 - 360 deg)
+  planetOrbitAngleRad: number;
+  planetBodyAngleDeg: number; // Planet has a fixed orientation while its centre orbits
+  planetBodyAngleRad: number;
   planetPosX: number; // Planet center X coordinate (m)
   planetPosY: number; // Planet center Y coordinate (m)
-  sunShaftAngleDeg: number; // Flywheel shaft angle (0 - 720 deg per cycle)
+  sunShaftAngleDeg: number; // Wrapped flywheel shaft angle (0 - 360 deg)
+  sunShaftAngleRad: number;
+  connectingRodAngleDeg: number;
+  connectingRodAngleRad: number;
+  rightBeamEndX: number;
+  rightBeamEndY: number;
+  leftBeamEndX: number;
+  leftBeamEndY: number;
+  sunPitchRadiusM: number;
+  planetPitchRadiusM: number;
+  gearCenterDistanceM: number;
+  connectingRodLengthM: number;
+  connectingRodConstraintResidualM: number;
+  gearMeshConstraintResidualRad: number;
+  sunTeeth: number;
+  planetTeeth: number;
+  gearRatioNpOverNs: number;
   shaftRpm: number; // Output driveshaft speed (RPM)
   shaftAngularVelocityRadS: number; // Driveshaft angular velocity (rad/s)
   cycleOmegaRadPerS: number; // Beam / planet-orbit angular velocity (rad/s)
@@ -42,6 +64,57 @@ export interface WattRotaryTelemetry {
   brakeHorsepower: number; // Imperial horse-power (hp)
   flywheelKineticEnergyJ: number; // Kinetic energy in flywheel (J)
   speedFluctuationCoeff: number; // Flywheel speed fluctuation coefficient delta
+}
+
+/**
+ * Normalized presentation geometry shared by the SI kernel and both visual
+ * faces. It establishes topology and closure constraints; it is not asserted
+ * to be a measurement of a particular surviving Watt engine.
+ */
+export const WATT_ROTARY_KINEMATIC_GEOMETRY = Object.freeze({
+  beamPivotX: 0,
+  beamPivotY: 3.2,
+  beamHalfLengthM: 2.2,
+  sunCenterX: 2.2,
+  sunCenterY: 0.9,
+  gearCenterDistanceM: 0.9,
+  connectingRodLengthM: 2.4,
+  nominalSunTeeth: 20,
+  ratioMin: 0.5,
+  ratioMax: 2,
+  ratioStep: 0.25,
+});
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
+
+export function canonicalWattGearRatio(value: number): number {
+  const geometry = WATT_ROTARY_KINEMATIC_GEOMETRY;
+  const finiteValue = Number.isFinite(value) ? value : 1;
+  const clamped = clamp(finiteValue, geometry.ratioMin, geometry.ratioMax);
+  return Number((Math.round(clamped / geometry.ratioStep) * geometry.ratioStep).toFixed(2));
+}
+
+function positiveModulo(value: number, modulus: number): number {
+  return ((value % modulus) + modulus) % modulus;
+}
+
+function solveBeamAngleRad(planetX: number, planetY: number): number {
+  const geometry = WATT_ROTARY_KINEMATIC_GEOMETRY;
+  const qx = planetX - geometry.beamPivotX;
+  const qy = planetY - geometry.beamPivotY;
+  const qLength = Math.hypot(qx, qy);
+  const numerator =
+    qLength * qLength +
+    geometry.beamHalfLengthM * geometry.beamHalfLengthM -
+    geometry.connectingRodLengthM * geometry.connectingRodLengthM;
+  const denominator = 2 * geometry.beamHalfLengthM * qLength;
+  const closureCosine = clamp(numerator / denominator, -1, 1);
+
+  // The upper/right assembly branch keeps the beam continuous for one full
+  // carrier revolution. The other mathematical branch crosses the pillar.
+  return Math.atan2(qy, qx) + Math.acos(closureCosine);
 }
 
 export function readWattRotaryControls(
@@ -63,15 +136,21 @@ export function stepWattRotaryEngine(
 ): WattRotaryTelemetry {
   const spm = Math.max(5, Math.min(40, controls.strokeRateSpm));
   const pEff = Math.max(20e3, Math.min(200e3, controls.boilerPressureKpa * 1e3));
-  const ratio = Math.max(0.5, Math.min(2.0, controls.gearRatioNpOverNs));
+  const ratio = canonicalWattGearRatio(controls.gearRatioNpOverNs);
   const mFlywheel = Math.max(500, Math.min(10000, controls.flywheelMassKg));
   const bore = controls.cylinderBoreM ?? 0.76;
   const stroke = controls.strokeLengthM ?? 1.8;
 
-  // Geometry
-  const rSun = 0.45; // Sun pitch radius (m)
-  const rPlanet = rSun * ratio; // Planet pitch radius (m)
-  const rOrbit = rSun + rPlanet; // Orbit center distance (m)
+  // Geometry. The carrier radius remains fixed when the visitor changes the
+  // tooth ratio; the paired pitch radii and tooth module change together.
+  // This is a physically buildable replacement gear set and does not silently
+  // alter the walking-beam stroke or stretch the connecting rod.
+  const geometry = WATT_ROTARY_KINEMATIC_GEOMETRY;
+  const rOrbit = geometry.gearCenterDistanceM;
+  const rSun = rOrbit / (1 + ratio);
+  const rPlanet = rOrbit - rSun;
+  const sunTeeth = geometry.nominalSunTeeth;
+  const planetTeeth = Math.round(sunTeeth * ratio);
   const rFlywheel = 2.4; // Flywheel outer rim radius (m)
   const iFlywheel = 0.5 * mFlywheel * (rFlywheel * rFlywheel); // Moment of inertia (kg*m^2)
 
@@ -81,30 +160,64 @@ export function stepWattRotaryEngine(
   const speedMultiplier = 1 + ratio; // 2.0 for equal gears
 
   // Angles & Motion
-  const orbitPhase = (timeSec * omegaCycle) % (2 * Math.PI);
+  const carrierAngleRad = timeSec * omegaCycle;
+  const orbitPhase = positiveModulo(carrierAngleRad, 2 * Math.PI);
   const planetOrbitAngleDeg = ((orbitPhase * 180) / Math.PI) % 360;
 
-  // Shaft Rotational Speed (2:1 multiplication)
-  const shaftRpm = spm * speedMultiplier;
-  const shaftAngularVelocityRadS = (shaftRpm * 2 * Math.PI) / 60;
-  const sunShaftAngleDeg = ((orbitPhase * speedMultiplier * 180) / Math.PI) % 360;
-
-  // Beam & Piston Kinematics
-  const maxBeamAngleRad = Math.asin(stroke / (2 * 2.4)); // ~22 deg
-  const beamAngleRad = maxBeamAngleRad * Math.sin(orbitPhase);
-  const beamAngleDeg = (beamAngleRad * 180) / Math.PI;
-
-  const pistonPositionM = (stroke / 2) * (1 - Math.cos(orbitPhase));
-  const pistonVelocityMps = (stroke / 2) * omegaCycle * Math.sin(orbitPhase);
-
-  // Planet Center Position (relative to Sun shaft center at (0, 0))
+  // Planet centre and exact four-bar closure. Unlike the former sinusoidal
+  // approximation, this solves a fixed-length connecting rod against the
+  // walking-beam endpoint on every step.
   const planetPosX = rOrbit * Math.sin(orbitPhase);
   const planetPosY = -rOrbit * Math.cos(orbitPhase);
+  const planetWorldX = geometry.sunCenterX + planetPosX;
+  const planetWorldY = geometry.sunCenterY + planetPosY;
+  const beamAngleRad = solveBeamAngleRad(planetWorldX, planetWorldY);
+  const beamAngleDeg = (beamAngleRad * 180) / Math.PI;
+
+  const rightBeamEndX = geometry.beamPivotX + geometry.beamHalfLengthM * Math.cos(beamAngleRad);
+  const rightBeamEndY = geometry.beamPivotY + geometry.beamHalfLengthM * Math.sin(beamAngleRad);
+  const leftBeamEndX = geometry.beamPivotX - geometry.beamHalfLengthM * Math.cos(beamAngleRad);
+  const leftBeamEndY = geometry.beamPivotY - geometry.beamHalfLengthM * Math.sin(beamAngleRad);
+  const rodDx = planetWorldX - rightBeamEndX;
+  const rodDy = planetWorldY - rightBeamEndY;
+  const connectingRodLength = Math.hypot(rodDx, rodDy);
+  const connectingRodAngleRad = Math.atan2(rodDx, -rodDy);
+
+  // Watt's planet wheel travels around the sun but is restrained from turning
+  // about its own centre. The connecting spear therefore supplies a moving
+  // bearing position, not the wheel's axial orientation. For an external
+  // epicyclic mesh, Ns(theta_s - theta_c) + Np(theta_p - theta_c) = 0. With
+  // theta_p fixed at zero, theta_s = (1 + Np/Ns) * theta_c.
+  const planetBodyAngleRad = 0;
+  const planetBodyAngleDeg = (planetBodyAngleRad * 180) / Math.PI;
+  const shaftRpm = spm * speedMultiplier;
+  const shaftAngularVelocityRadS = (shaftRpm * 2 * Math.PI) / 60;
+  const sunShaftAngleRad = speedMultiplier * carrierAngleRad;
+  const sunShaftAngleDeg = positiveModulo((sunShaftAngleRad * 180) / Math.PI, 360);
+  const gearMeshConstraintResidualRad =
+    sunTeeth * (sunShaftAngleRad - carrierAngleRad) +
+    planetTeeth * (planetBodyAngleRad - carrierAngleRad);
+
+  // The piston follows the left beam end. Differentiate the four-bar closure
+  // analytically so velocity and rendered position remain the same mechanism.
+  const pistonBottomReferenceY = geometry.beamHalfLengthM;
+  const pistonPositionM = clamp(leftBeamEndY - pistonBottomReferenceY, 0, stroke);
+  const planetVelocityX = rOrbit * omegaCycle * Math.cos(orbitPhase);
+  const planetVelocityY = rOrbit * omegaCycle * Math.sin(orbitPhase);
+  const rodUnitPerpX = -Math.sin(beamAngleRad);
+  const rodUnitPerpY = Math.cos(beamAngleRad);
+  const closureDenominator =
+    geometry.beamHalfLengthM * (rodDx * rodUnitPerpX + rodDy * rodUnitPerpY);
+  const beamAngularVelocity =
+    Math.abs(closureDenominator) > 1e-9
+      ? (rodDx * planetVelocityX + rodDy * planetVelocityY) / closureDenominator
+      : 0;
+  const pistonVelocityMps =
+    -geometry.beamHalfLengthM * Math.cos(beamAngleRad) * beamAngularVelocity;
 
   // Forces
   const pistonArea = (Math.PI * bore * bore) / 4;
   const pistonForceN = pEff * pistonArea; // Max single-acting steam force ~31.7 kN
-  const _rodAngle = Math.asin(planetPosX / 3.2); // Connecting rod sway angle
   const connectingRodForceN = Math.abs(pistonForceN * Math.cos(beamAngleRad));
 
   // Epicyclic Tangential Tooth Force & Torque
@@ -127,12 +240,32 @@ export function stepWattRotaryEngine(
 
   return {
     beamAngleDeg,
+    beamAngleRad,
     pistonPositionM,
     pistonVelocityMps,
     planetOrbitAngleDeg,
+    planetOrbitAngleRad: carrierAngleRad,
+    planetBodyAngleDeg,
+    planetBodyAngleRad,
     planetPosX,
     planetPosY,
     sunShaftAngleDeg,
+    sunShaftAngleRad,
+    connectingRodAngleDeg: (connectingRodAngleRad * 180) / Math.PI,
+    connectingRodAngleRad,
+    rightBeamEndX,
+    rightBeamEndY,
+    leftBeamEndX,
+    leftBeamEndY,
+    sunPitchRadiusM: rSun,
+    planetPitchRadiusM: rPlanet,
+    gearCenterDistanceM: rOrbit,
+    connectingRodLengthM: geometry.connectingRodLengthM,
+    connectingRodConstraintResidualM: connectingRodLength - geometry.connectingRodLengthM,
+    gearMeshConstraintResidualRad,
+    sunTeeth,
+    planetTeeth,
+    gearRatioNpOverNs: ratio,
     shaftRpm,
     shaftAngularVelocityRadS,
     cycleOmegaRadPerS: omegaCycle,

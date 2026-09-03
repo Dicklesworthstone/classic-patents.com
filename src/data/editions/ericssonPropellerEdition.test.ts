@@ -180,4 +180,64 @@ describe("ericssonPropellerArchivalEdition", () => {
       expect(normalizedTranscript).toContain(sourceText.replace(/\s+/g, " ").trim());
     }
   });
+
+  test("derives all printed claims dynamically from edition without duplicate strings", () => {
+    expect(ericssonPropellerPatent.claims.length).toBe(3);
+    const editionClaims = ericssonPropellerArchivalEdition.blocks.filter((b) => b.kind === "claim");
+    expect(editionClaims.length).toBe(3);
+
+    for (const claim of ericssonPropellerPatent.claims) {
+      const editionBlock = editionClaims.find((c) => c.number === claim.number);
+      expect(editionBlock).toBeDefined();
+      const expectedText = editionBlock?.inlines.map((inl) => inl.text).join("");
+      expect(claim.originalText).toBe(expectedText ?? "");
+    }
+  });
+
+  test("provides valid provenance classifications for all Ericsson controls and metrics", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-588-ericsson-propeller"];
+    expect(entry).toBeDefined();
+    for (const ctrl of entry.controls) {
+      expect(ctrl.provenance).toBeDefined();
+    }
+    const metrics = entry.computeMetrics({});
+    for (const m of metrics) {
+      expect(m.provenance).toBeDefined();
+    }
+  });
+
+  test("verifies telemetry sensitivity to illustrative shaft motion and plate angle", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-588-ericsson-propeller"];
+    const m1 = entry.computeMetrics({ shaftRpm: 120, bladePitchAngleDeg: 35 });
+    const m2 = entry.computeMetrics({ shaftRpm: 180, bladePitchAngleDeg: 35 });
+    const m3 = entry.computeMetrics({ shaftRpm: 120, bladePitchAngleDeg: 45 });
+    expect(m1).not.toEqual(m2);
+    expect(m1).not.toEqual(m3);
+  });
+
+  test("wires claim 1, 2, and 3 constraints in claimConstraints", () => {
+    const { applyClaimConstraintModifications } = require("@/physics/claimConstraints");
+    const r1 = applyClaimConstraintModifications(
+      "us-588-ericsson-propeller",
+      {},
+      { 1: false, 2: true, 3: true },
+    );
+    expect(r1.refusalWarning).toContain("ENTIRE IMMERSION LOSS");
+
+    const r2 = applyClaimConstraintModifications(
+      "us-588-ericsson-propeller",
+      {},
+      { 1: true, 2: false, 3: true },
+    );
+    expect(r2.refusalWarning).toContain("UNEQUAL SPEED DIFFERENTIAL LOSS");
+
+    const r3 = applyClaimConstraintModifications(
+      "us-588-ericsson-propeller",
+      {},
+      { 1: true, 2: true, 3: false },
+    );
+    expect(r3.refusalWarning).toContain("RETRACTABLE STEM DISENGAGED");
+  });
 });

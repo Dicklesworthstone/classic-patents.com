@@ -165,7 +165,7 @@ export const deForestAudionArchivalEdition: CuratedSpecificationEdition = {
         " represents in diagram a wireless telegraph receiving system comprising an oscillation detector constructed and connected in accordance with the present invention and ",
       ),
       ref(
-        "Figure 2",
+        "Fig. 2",
         "#figure-2",
         "Sheet 1, Figure 2 — Modified form of Audion oscillation detector",
         "/patents/figures/us-879532-de-forest-audion/fig-2-source-crop-v2.png",

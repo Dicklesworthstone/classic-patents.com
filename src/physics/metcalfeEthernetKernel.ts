@@ -23,10 +23,16 @@ export interface MetcalfeEthernetControls {
 
 export interface MetcalfeEthernetState {
   simTimeSec: number;
+  rngSeed: number;
+  rngCounter: number;
   station1CollisionCount: number;
   station2CollisionCount: number;
   station1BackoffRemainingSec: number;
   station2BackoffRemainingSec: number;
+  station1BackoffSlot: number;
+  station2BackoffSlot: number;
+  station1PacketProgressSec: number;
+  station2PacketProgressSec: number;
   station1State: "idle" | "deferring" | "transmitting" | "jamming" | "backing_off";
   station2State: "idle" | "deferring" | "transmitting" | "jamming" | "backing_off";
   packetSuccessCount: number;
@@ -63,10 +69,16 @@ export const DEFAULT_ETHERNET_CONTROLS: MetcalfeEthernetControls = {
 
 export const INITIAL_ETHERNET_STATE: MetcalfeEthernetState = {
   simTimeSec: 0.0,
+  rngSeed: 0x04063220,
+  rngCounter: 0,
   station1CollisionCount: 0,
   station2CollisionCount: 0,
   station1BackoffRemainingSec: 0.0,
   station2BackoffRemainingSec: 0.0,
+  station1BackoffSlot: 0,
+  station2BackoffSlot: 0,
+  station1PacketProgressSec: 0.0,
+  station2PacketProgressSec: 0.0,
   station1State: "idle",
   station2State: "idle",
   packetSuccessCount: 0,
@@ -82,6 +94,26 @@ const PROPAGATION_VELOCITY = SPEED_OF_LIGHT / Math.sqrt(DIELECTRIC_PERMITTIVITY)
 const COAX_IMPEDANCE_OHMS = 50.0; // Standard RG-8 coaxial cable
 const SINGLE_TX_VOLTAGE = -1.0; // Volts into 25 ohms
 const COLLISION_VOLTAGE_THRESHOLD = -1.5; // Volts threshold for collision detection
+
+function deterministicUint32(seed: number, counter: number, stream: number): number {
+  let value = (seed ^ Math.imul(counter + 1, 0x9e3779b9) ^ Math.imul(stream + 1, 0x85ebca6b)) >>> 0;
+  value ^= value >>> 16;
+  value = Math.imul(value, 0x7feb352d);
+  value ^= value >>> 15;
+  value = Math.imul(value, 0x846ca68b);
+  value ^= value >>> 16;
+  return value >>> 0;
+}
+
+function deterministicBackoffSlot(
+  seed: number,
+  counter: number,
+  stream: number,
+  maxSlot: number,
+): number {
+  if (maxSlot <= 0) return 0;
+  return deterministicUint32(seed, counter, stream) % (maxSlot + 1);
+}
 
 export function readEthernetControls(
   raw?: Partial<MetcalfeEthernetControls>,
@@ -146,10 +178,15 @@ export function stepMetcalfeEthernetSi(
   let st2 = prevState.station2State;
   let st1Backoff = Math.max(0, prevState.station1BackoffRemainingSec - safeDt);
   let st2Backoff = Math.max(0, prevState.station2BackoffRemainingSec - safeDt);
+  let st1BackoffSlot = prevState.station1BackoffSlot;
+  let st2BackoffSlot = prevState.station2BackoffSlot;
+  let st1PacketProgress = prevState.station1PacketProgressSec;
+  let st2PacketProgress = prevState.station2PacketProgressSec;
   let st1ColCount = prevState.station1CollisionCount;
   let st2ColCount = prevState.station2CollisionCount;
   let totalCollisions = prevState.totalCollisionCount;
   let successPackets = prevState.packetSuccessCount;
+  let rngCounter = prevState.rngCounter;
 
   // Determine active transmitters
   let tx1Active = false;
@@ -191,27 +228,40 @@ export function stepMetcalfeEthernetSi(
 
     const k1 = Math.min(st1ColCount, 10);
     const maxSlots1 = 2 ** k1 - 1;
-    // Deterministic pseudo-random seed based on simulation time and station id
-    const r1 = Math.floor(((Math.sin(simTimeSec * 1000 + 1) + 1) / 2) * (maxSlots1 + 1));
-    st1Backoff = r1 * slotTimeSec + jamDurationSec;
+    st1BackoffSlot = deterministicBackoffSlot(prevState.rngSeed, rngCounter, 1, maxSlots1);
+    rngCounter += 1;
+    st1Backoff = st1BackoffSlot * slotTimeSec + jamDurationSec;
     st1 = "jamming";
+    st1PacketProgress = 0;
 
     const k2 = Math.min(st2ColCount, 10);
     const maxSlots2 = 2 ** k2 - 1;
-    const r2 = Math.floor(((Math.cos(simTimeSec * 1000 + 2) + 1) / 2) * (maxSlots2 + 1));
-    st2Backoff = r2 * slotTimeSec + jamDurationSec;
+    st2BackoffSlot = deterministicBackoffSlot(prevState.rngSeed, rngCounter, 2, maxSlots2);
+    rngCounter += 1;
+    st2Backoff = st2BackoffSlot * slotTimeSec + jamDurationSec;
     st2 = "jamming";
+    st2PacketProgress = 0;
   } else if (tx1Active && !tx2Active) {
-    // Transmitting cleanly
-    if (Math.random() < safeDt / packetDurationSec) {
-      successPackets += 1;
+    st1PacketProgress += safeDt;
+    const completedPackets = Math.floor(st1PacketProgress / packetDurationSec);
+    if (completedPackets > 0) {
+      successPackets += completedPackets;
+      st1PacketProgress -= completedPackets * packetDurationSec;
       st1ColCount = 0;
     }
+    st2PacketProgress = 0;
   } else if (tx2Active && !tx1Active) {
-    if (Math.random() < safeDt / packetDurationSec) {
-      successPackets += 1;
+    st2PacketProgress += safeDt;
+    const completedPackets = Math.floor(st2PacketProgress / packetDurationSec);
+    if (completedPackets > 0) {
+      successPackets += completedPackets;
+      st2PacketProgress -= completedPackets * packetDurationSec;
       st2ColCount = 0;
     }
+    st1PacketProgress = 0;
+  } else {
+    st1PacketProgress = 0;
+    st2PacketProgress = 0;
   }
 
   // 4. Manchester Phase Clock
@@ -236,10 +286,16 @@ export function stepMetcalfeEthernetSi(
 
   const nextState: MetcalfeEthernetState = {
     simTimeSec,
+    rngSeed: prevState.rngSeed,
+    rngCounter,
     station1CollisionCount: st1ColCount,
     station2CollisionCount: st2ColCount,
     station1BackoffRemainingSec: st1Backoff,
     station2BackoffRemainingSec: st2Backoff,
+    station1BackoffSlot: st1BackoffSlot,
+    station2BackoffSlot: st2BackoffSlot,
+    station1PacketProgressSec: st1PacketProgress,
+    station2PacketProgressSec: st2PacketProgress,
     station1State: st1,
     station2State: st2,
     packetSuccessCount: successPackets,
