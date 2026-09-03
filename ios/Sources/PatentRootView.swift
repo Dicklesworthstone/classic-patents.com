@@ -1,9 +1,29 @@
 import SwiftUI
 
+private enum PatentRootSection: String, CaseIterable, Identifiable {
+    case archive = "Archive"
+    case timeline = "Timeline"
+    case saved = "Saved"
+    case method = "Method"
+
+    var id: Self { self }
+
+    var symbol: String {
+        switch self {
+        case .archive: "books.vertical.fill"
+        case .timeline: "timeline.selection"
+        case .saved: "bookmark.fill"
+        case .method: "compass.drawing"
+        }
+    }
+}
+
 struct PatentRootView: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @AppStorage(LabAppearance.storageKey) private var appearance = LabAppearance.dark.rawValue
     @StateObject private var library: PatentLibrary
     @StateObject private var collection: PatentCollectionStore
+    @State private var section = PatentRootSection.archive
 
     init() {
         let library = PatentLibrary()
@@ -42,19 +62,11 @@ struct PatentRootView: View {
             } else if launchRoot == "method" {
                 PatentMethodologyView()
             } else {
-                TabView {
-                    PatentMuseumView(library: library)
-                        .tabItem { Label("Archive", systemImage: "books.vertical.fill") }
-                    NativePatentTimelineView(library: library)
-                        .tabItem { Label("Timeline", systemImage: "timeline.selection") }
-                    SavedPatentsView(library: library)
-                        .tabItem { Label("Saved", systemImage: "bookmark.fill") }
-                    PatentMethodologyView()
-                        .tabItem { Label("Method", systemImage: "compass.drawing") }
-                }
-                .tint(Lab.brass)
-                .toolbarBackground(Lab.background.opacity(0.96), for: .tabBar)
-                .toolbarBackground(.visible, for: .tabBar)
+#if targetEnvironment(macCatalyst)
+                tabbedRoot
+#else
+                if horizontalSizeClass == .regular { regularRoot } else { tabbedRoot }
+#endif
             }
         }
         .environmentObject(collection)
@@ -77,6 +89,68 @@ struct PatentRootView: View {
             .background(Lab.background.opacity(0.96))
         }
         .preferredColorScheme((LabAppearance(rawValue: appearance) ?? .dark).colorScheme)
+    }
+
+    private var tabbedRoot: some View {
+        TabView(selection: $section) {
+            PatentMuseumView(library: library)
+                .tabItem { Label("Archive", systemImage: PatentRootSection.archive.symbol) }
+                .tag(PatentRootSection.archive)
+            NativePatentTimelineView(library: library)
+                .tabItem { Label("Timeline", systemImage: PatentRootSection.timeline.symbol) }
+                .tag(PatentRootSection.timeline)
+            SavedPatentsView(library: library)
+                .tabItem { Label("Saved", systemImage: PatentRootSection.saved.symbol) }
+                .tag(PatentRootSection.saved)
+            PatentMethodologyView()
+                .tabItem { Label("Method", systemImage: PatentRootSection.method.symbol) }
+                .tag(PatentRootSection.method)
+        }
+        .tint(Lab.brass)
+        .toolbarBackground(Lab.background.opacity(0.96), for: .tabBar)
+        .toolbarBackground(.visible, for: .tabBar)
+        .toolbarColorScheme(
+            (LabAppearance(rawValue: appearance) ?? .dark).colorScheme,
+            for: .tabBar
+        )
+    }
+
+    private var regularRoot: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 8) {
+                ForEach(PatentRootSection.allCases) { candidate in
+                    Button {
+                        withAnimation(.snappy(duration: 0.22)) { section = candidate }
+                    } label: {
+                        Label(candidate.rawValue, systemImage: candidate.symbol)
+                            .font(.system(size: Lab.size(10), weight: .bold, design: .rounded))
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 10)
+                            .foregroundStyle(section == candidate ? Lab.background : Lab.brass)
+                            .background(
+                                section == candidate ? Lab.brass : Lab.panelStrong,
+                                in: Capsule()
+                            )
+                            .overlay(Capsule().stroke(Lab.brass.opacity(section == candidate ? 0 : 0.32)))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(section == candidate ? .isSelected : [])
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Lab.background.opacity(0.96))
+
+            Group {
+                switch section {
+                case .archive: PatentMuseumView(library: library)
+                case .timeline: NativePatentTimelineView(library: library)
+                case .saved: SavedPatentsView(library: library)
+                case .method: PatentMethodologyView()
+                }
+            }
+        }
     }
 
     private var categoryMenu: some View {

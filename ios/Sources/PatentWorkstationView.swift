@@ -27,6 +27,7 @@ private enum WorkstationSection: String, CaseIterable, Identifiable {
 
 struct PatentWorkstationView: View {
     let patent: PatentRecord
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @EnvironmentObject private var collection: PatentCollectionStore
     @State private var section: WorkstationSection
     @State private var showsPDF = false
@@ -99,6 +100,7 @@ struct PatentWorkstationView: View {
         // masthead on iPhone. A single space preserves the bar geometry.
         .navigationTitle(" ")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(horizontalSizeClass == .regular ? .hidden : .visible, for: .navigationBar)
         .sheet(isPresented: $showsPDF) { PatentPDFReader(patent: patent) }
         .onAppear { collection.recordVisit(patent.id) }
     }

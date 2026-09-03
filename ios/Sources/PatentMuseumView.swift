@@ -149,12 +149,10 @@ struct PatentMuseumView: View {
                 ContentUnavailableView.search(text: library.query)
             } else {
                 List {
-                    if compact {
-                        ArchiveSummaryCard(recordCount: library.records.count)
-                            .listRowInsets(EdgeInsets(top: 12, leading: 14, bottom: 12, trailing: 14))
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Color.clear)
-                    }
+                    ArchiveSummaryCard(recordCount: library.records.count)
+                        .listRowInsets(EdgeInsets(top: 12, leading: 14, bottom: 12, trailing: 14))
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
                     ForEach(library.filteredRecords) { patent in
                         if compact {
                             NavigationLink(value: patent) { PatentRow(patent: patent, compact: true) }
