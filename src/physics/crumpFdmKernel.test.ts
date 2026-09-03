@@ -9,9 +9,9 @@ describe("US 5,121,329 S. Scott Crump FDM SI Physics Kernel", () => {
     // Q = w * h * v_head = 0.45 * 0.20 * 45 = 4.05 mm^3/s
     expect(telemetry.volumetricFlowRateMm3S).toBeCloseTo(4.05, 2);
 
-    // A_filament = pi * (1.75)^2 / 4 = 2.4053 mm^2
-    // v_feed = 4.05 / 2.4053 = 1.6837 mm/s
-    expect(telemetry.filamentFeedSpeedMmS).toBeCloseTo(1.68, 1);
+    // The specification calls the flexible strand "on the order of one-sixteenth
+    // inch": 1/16 in = 1.5875 mm, A_filament = 1.979 mm², and v_feed = 2.047 mm/s.
+    expect(telemetry.filamentFeedSpeedMmS).toBeCloseTo(2.05, 1);
 
     expect(telemetry.isExtruding).toBe(true);
     expect(telemetry.coldNozzleJamRefusal).toBe(false);
@@ -37,7 +37,7 @@ describe("US 5,121,329 S. Scott Crump FDM SI Physics Kernel", () => {
 
     expect(telemetry.isExtruding).toBe(false);
     expect(telemetry.coldNozzleJamRefusal).toBe(true);
-    expect(telemetry.refusalReason).toContain("below polymer liquefaction point");
+    expect(telemetry.refusalReason).toContain("flow-admission threshold");
   });
 
   test("enforces filament grinding refusal when required drive force exceeds pinch roller traction", () => {
@@ -51,7 +51,7 @@ describe("US 5,121,329 S. Scott Crump FDM SI Physics Kernel", () => {
 
     expect(telemetry.isExtruding).toBe(false);
     expect(telemetry.filamentGrindingRefusal).toBe(true);
-    expect(telemetry.refusalReason).toContain("exceeds roller traction limit");
+    expect(telemetry.refusalReason).toContain("exceeds the declared roller traction limit");
   });
 
   test("computes thermal cooling time constant and bead aspect ratio", () => {
@@ -62,5 +62,7 @@ describe("US 5,121,329 S. Scott Crump FDM SI Physics Kernel", () => {
     expect(telemetry.beadAspectRatio).toBeCloseTo(2.25, 2);
     expect(telemetry.coolingTimeConstantSec).toBeGreaterThan(0.01);
     expect(telemetry.coolingTimeConstantSec).toBeLessThan(1.0);
+    expect(telemetry.interfaceTemperatureMarginC).toBeGreaterThan(0);
+    expect(telemetry.interfaceAboveGlassTransition).toBe(true);
   });
 });

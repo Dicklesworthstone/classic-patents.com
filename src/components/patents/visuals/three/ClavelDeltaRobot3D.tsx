@@ -188,7 +188,7 @@ export function ClavelDeltaRobot3D() {
 
   return (
     <section
-      className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl"
+      className="scroll-mt-24 overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl [&_button]:scroll-mt-24 [&_input]:scroll-mt-24"
       data-testid="clavel-delta-robot-three"
       data-clavel-topology={state.topologyVisible ? "present" : "withheld"}
       data-clavel-paired-bars={state.pairedBarsVisible ? "two-per-leg" : "withheld"}

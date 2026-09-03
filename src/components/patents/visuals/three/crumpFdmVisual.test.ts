@@ -113,13 +113,13 @@ describe("US 5,121,329 Crump FDM Procedural 3D Visual Model", () => {
     expect(bounds(leftBearing).intersectsBox(bounds(frontRail))).toBe(true);
     expect(bounds(leftBearing).intersectsBox(bounds(rearRail))).toBe(true);
 
-    const buildPlate = model.root.getObjectByName("Heated build plate");
+    const articleReceivingBasePlate = model.root.getObjectByName("Article-receiving base plate 10");
     for (const side of ["left", "right"]) {
       const screw = model.root.getObjectByName(`Build-platform Z lead screw ${side}`);
       const nut = model.root.getObjectByName(`Build-platform Z carriage nut ${side}`);
       const baseBearing = model.root.getObjectByName(`Z lead-screw base bearing ${side}`);
       expect(bounds(nut).intersectsBox(bounds(screw))).toBe(true);
-      expect(bounds(nut).intersectsBox(bounds(buildPlate))).toBe(true);
+      expect(bounds(nut).intersectsBox(bounds(articleReceivingBasePlate))).toBe(true);
       expect(bounds(baseBearing).intersectsBox(bounds(screw))).toBe(true);
     }
 

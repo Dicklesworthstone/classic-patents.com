@@ -12,7 +12,11 @@ import {
   stepBoyleSmithCcdSource,
 } from "./boyleSmithCcdKernel";
 import { stepClavelDeltaRobotTopology } from "./clavelDeltaRobotKernel";
-import { readCrumpFdmControls, stepCrumpFdmSi } from "./crumpFdmKernel";
+import {
+  CRUMP_FDM_GLASS_TRANSITION_TEMP_C,
+  readCrumpFdmControls,
+  stepCrumpFdmSi,
+} from "./crumpFdmKernel";
 import {
   readDaVinciInterfaceControls,
   resolveDaVinciInterfaceTopology,
@@ -3260,33 +3264,63 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
       {
         id: "crump-filament-pinch-feed",
         phrase:
-          "flexible strand 12 is drawn from supply reel 14 by motor-driven pinch feed rollers",
-        active: !tel.filamentGrindingRefusal,
-        tone: !tel.filamentGrindingRefusal ? "live" : "broken",
-        caption: `Pinch drive applies ${controls.pinchRollerForceN} N normal force yielding ${tel.maxTractionForceN.toFixed(1)} N traction. Required feed force is ${tel.feedDriveForceN.toFixed(1)} N (status: ${tel.filamentGrindingRefusal ? "slipping / grinding" : "positive engagement"}).`,
+          "a plurality of drive rollers 134 are provided within supply chamber 118",
+        active:
+          tel.claim1ApparatusPresent && !tel.filamentGrindingRefusal,
+        tone:
+          tel.claim1ApparatusPresent && !tel.filamentGrindingRefusal
+            ? "live"
+            : "broken",
+        caption: !tel.claim1ApparatusPresent
+          ? "Claim 1 apparatus topology is withheld, so the feed-chain comparison is not asserted."
+          : `Figure 5 drive roller 134 and idler 136 remain visibly connected to strand 110. The displayed ${tel.maxTractionForceN.toFixed(1)} N traction limit is an illustrative friction screen, not a patent measurement.`,
       },
       {
         id: "crump-heated-liquefier",
-        phrase: "temperature-controlled flow passage 20",
-        active: !tel.coldNozzleJamRefusal,
-        tone: !tel.coldNozzleJamRefusal ? "live" : "broken",
-        caption: `Liquefier operates at ${controls.nozzleTempC.toFixed(0)} °C with apparent melt viscosity ${tel.apparentViscosityPaS.toFixed(0)} Pa·s, developing ${tel.nozzlePressureDropMPa.toFixed(3)} MPa capillary pressure drop.`,
+        phrase: "heating means disposed in close proximity to said flow passage means",
+        active: tel.claim2HeatingMeansPresent && !tel.coldNozzleJamRefusal,
+        tone: tel.claim2HeatingMeansPresent && !tel.coldNozzleJamRefusal ? "live" : "broken",
+        caption: !tel.claim1ApparatusPresent
+          ? "Claim 1 apparatus topology is withheld, so the thermoplastic liquefier comparison is not asserted."
+          : !tel.claim2HeatingMeansPresent
+            ? "Claim 2 heating means is withheld."
+            : `The Claim 2 heating means is present. The displayed ${controls.nozzleTempC.toFixed(0)} °C and ${tel.nozzlePressureDropMPa.toFixed(3)} MPa are an illustrative ABS/Newtonian screen, not printed performance data.`,
       },
       {
         id: "crump-planar-shearing-tip",
         phrase:
           "planar bottom surface of said tip being maintained substantially parallel to said first layer",
-        active: controls.layerHeightMm <= controls.nozzleDiameterMm * 0.85,
-        tone: controls.layerHeightMm <= controls.nozzleDiameterMm * 0.85 ? "held" : "broken",
-        caption: `Gap clearance is ${controls.layerHeightMm} mm below nozzle land (orifice d = ${controls.nozzleDiameterMm} mm). Planar shearing irons bead into aspect ratio ${tel.beadAspectRatio.toFixed(2)}x (road width w = ${controls.roadWidthMm} mm).`,
+        active:
+          tel.claim39PlanarGapPresent && controls.layerHeightMm <= controls.nozzleDiameterMm * 0.85,
+        tone:
+          tel.claim39PlanarGapPresent && controls.layerHeightMm <= controls.nozzleDiameterMm * 0.85
+            ? "held"
+            : "broken",
+        caption: !tel.claim39PlanarGapPresent
+          ? "Claim 39 planar-bottom/gap relation is withheld."
+          : `The planar nozzle bottom is maintained ${controls.layerHeightMm} mm above the preceding layer in the normalized display. The visible ${tel.beadAspectRatio.toFixed(2)}:1 road/gap ratio comes from visitor-declared modern scenario values.`,
       },
       {
         id: "crump-interlayer-weld",
         phrase:
           "successive layers of said material of predetermined thickness which build up on each other sequentially as they solidify",
-        active: tel.weldQualityRatio >= 0.95,
-        tone: tel.weldQualityRatio >= 0.95 ? "held" : "broken",
-        caption: `Interface contact temperature is ${tel.interfaceTempC.toFixed(1)} °C (Tg = 105 °C, ratio ${tel.weldQualityRatio.toFixed(2)}x). Cooling time constant is ${(tel.coolingTimeConstantSec * 1000).toFixed(0)} ms.`,
+        active:
+          tel.claim1ApparatusPresent &&
+          tel.claim2HeatingMeansPresent &&
+          tel.interfaceAboveGlassTransition &&
+          !tel.poorAdhesionRefusal,
+        tone:
+          tel.claim1ApparatusPresent &&
+          tel.claim2HeatingMeansPresent &&
+          tel.interfaceAboveGlassTransition &&
+          !tel.poorAdhesionRefusal
+            ? "held"
+            : "broken",
+        caption: !tel.claim1ApparatusPresent
+          ? "Claim 1 sequential-layer apparatus topology is withheld."
+          : !tel.claim2HeatingMeansPresent
+            ? "Claim 2 heating is withheld, so the illustrative thermoplastic thermal screen is not asserted."
+          : `Interface-temperature screen is ${tel.interfaceTempC.toFixed(1)} °C (Tg = ${CRUMP_FDM_GLASS_TRANSITION_TEMP_C} °C; margin ${tel.interfaceTemperatureMarginC.toFixed(1)} °C). Cooling time constant is ${(tel.coolingTimeConstantSec * 1000).toFixed(0)} ms. This screen does not calculate bond strength.`,
       },
     ];
   }

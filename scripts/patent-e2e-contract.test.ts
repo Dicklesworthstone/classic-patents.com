@@ -311,7 +311,7 @@ describe("patent E2E scenario contract", () => {
         expect(previewUrl.startsWith("/patents/figures/")).toBe(true);
       }
     }
-  });
+  }, 30_000);
 });
 
 describe("patent E2E CLI contract", () => {

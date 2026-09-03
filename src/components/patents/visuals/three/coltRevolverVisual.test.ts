@@ -132,7 +132,32 @@ describe("US X9430 Colt Paterson Revolver visual & physics boundary", () => {
     expect(threeSource).toContain("max-sm:sticky");
     expect(threeSource).toContain("max-sm:top-[calc(4rem+env(safe-area-inset-top))]");
     expect(threeSource).toContain("max-sm:[&_input[type=range]]:scroll-mt-72");
-    expect(threeSource).toContain('className="mt-2 max-sm:[&_button]:scroll-mt-72"');
+    expect(threeSource).toContain(
+      'className="mt-2 max-sm:[&_button]:scroll-mt-72 max-sm:[&_button]:scroll-mb-[calc(4rem+env(safe-area-inset-top))]"',
+    );
+  });
+
+  test("defers Colt phone focus clearance until after a claim click can dispatch", () => {
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "ColtRevolver3D.tsx"),
+      "utf8",
+    );
+
+    expect(threeSource).toContain("function keepFocusedPhoneControlClear");
+    expect(threeSource).toContain('window.matchMedia("(max-width: 639px)")');
+    expect(threeSource).toContain("target.closest('[data-testid=\"claim-constraint-toggle\"]')");
+    expect(threeSource).toContain("window.requestAnimationFrame");
+    expect(threeSource).toContain("document.activeElement !== target");
+    expect(threeSource).toContain(
+      'target.scrollIntoView({ block: "end", inline: "nearest", behavior: "instant" });',
+    );
+    expect(threeSource).toContain(
+      "max-sm:[&_input[type=range]]:scroll-mb-[calc(4rem+env(safe-area-inset-top))]",
+    );
+    expect(threeSource).toContain(
+      "max-sm:[&_button]:scroll-mb-[calc(4rem+env(safe-area-inset-top))]",
+    );
+    expect(threeSource).toContain("onFocusCapture={keepFocusedPhoneControlClear}");
   });
 
   test("clears a pending firing completion before unmount", () => {

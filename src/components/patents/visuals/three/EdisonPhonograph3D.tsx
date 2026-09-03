@@ -15,6 +15,10 @@ import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
+  type EdisonPhonographCameraPreset,
+  edisonPhonographCameraForViewport,
+} from "./edisonPhonographCamera";
+import {
   buildEdisonPhonographModel,
   updateEdisonPhonographKinematics,
 } from "./edisonPhonographModel";
@@ -22,26 +26,6 @@ import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset =
-  | "iso"
-  | "stylus_groove"
-  | "tinfoil_cylinder"
-  | "speaking_tube"
-  | "illustrative_drive"
-  | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [9.5, 7.0, 11.0], target: [0, 0, 0] },
-  stylus_groove: { pos: [0, 2.2, 3.2], target: [0, 1.2, 0.8] },
-  tinfoil_cylinder: { pos: [-1.8, 1.8, 3.8], target: [-0.4, 0.8, 0] },
-  speaking_tube: { pos: [2.8, 3.0, 4.0], target: [0, 1.8, 1.8] },
-  illustrative_drive: { pos: [-4.5, 2.0, 3.5], target: [-3.5, 0.5, 0] },
-  top: { pos: [0, 12.0, 0.1], target: [0, 0, 0] },
-};
 
 const IDLE_MACHINE: MachineState = {
   poseXMeters: 0,
@@ -62,7 +46,7 @@ export function EdisonPhonograph3D() {
   const mandrelRpm = params.mandrelRpm ?? 60;
   const cylinderRpm = mandrelRpm;
   const voiceVolumeDb = params.voiceVolumeDb ?? params.soundWaveAmpDb ?? 75;
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<EdisonPhonographCameraPreset>("iso");
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -131,9 +115,9 @@ export function EdisonPhonograph3D() {
     );
   }, [live]);
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: EdisonPhonographCameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = edisonPhonographCameraForViewport(preset, containerRef.current?.clientWidth ?? 0);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -147,7 +131,7 @@ export function EdisonPhonograph3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = edisonPhonographCameraForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -196,6 +180,17 @@ export function EdisonPhonograph3D() {
     };
   }, [live]);
 
+  useEffect(() => {
+    const restoreResponsiveCamera = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const cfg = edisonPhonographCameraForViewport(activeCamera, container.clientWidth);
+      studioRef.current?.controls.setView(cfg.pos, cfg.target);
+    };
+    window.addEventListener("resize", restoreResponsiveCamera);
+    return () => window.removeEventListener("resize", restoreResponsiveCamera);
+  }, [activeCamera]);
+
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
       <div className="sr-only">Thomas Edison Phonograph 3D</div>
@@ -216,7 +211,7 @@ export function EdisonPhonograph3D() {
                 ["speaking_tube", "Speaking Tube"],
                 ["illustrative_drive", "Illustrative Drive"],
                 ["top", "Plan View"],
-              ] as [CameraPreset, string][]
+              ] as [EdisonPhonographCameraPreset, string][]
             ).map(([preset, label]) => (
               <button
                 key={preset}

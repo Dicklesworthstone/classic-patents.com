@@ -482,26 +482,38 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-5121329-crump-fdm",
-      claimTitle: "Heated Liquefier & Synchronized Filament Extrusion",
+      claimTitle: "Metered Fluid-State Deposition with Relative X/Y/Z Motion",
       activeDescription:
-        "Claim 1 advances solid feedstock into a heated liquefier under positive mechanical pressure, metered synchronously with 3-axis Cartesian motion.",
+        "Claim 1 combines a dispensing head with flow passage and outlet, material introduced in a fluid state, a nearby receiving base, relative X/Y/Z movement, sequential layer offsets, and metered discharge coordinated with that movement.",
       invertedDescription:
-        "Unsynchronized or unheated extrusion: solid filament jams cold in nozzle capillary or over-extrudes uncontrolled bulk blobs.",
-      failureModeName: "Extrusion Feedrate Decoupling & Cold Jam",
+        "The comparison removes the claimed head/base/metering/relative-motion topology. Heating is not removed here because it first appears in Claim 2.",
+      failureModeName: "Claim 1 Apparatus Topology Withheld",
       historicalPriorArt:
-        "Prior art relied on liquid photo-vats or high-power laser powder sintering without direct mechanical feedstock metering.",
+        "Claim 1 is broader than the flexible heated-strand embodiment: it covers the coordinated layerwise apparatus combination without requiring a heater or solid filament.",
+    },
+    {
+      claimNumber: 2,
+      patentId: "us-5121329-crump-fdm",
+      claimTitle: "Heating Means Near the Flow Passage or Outlet",
+      activeDescription:
+        "Claim 2 adds heating means near the flow passage and outlet so a thermally solidifiable material can be maintained in a fluid state for discharge.",
+      invertedDescription:
+        "The heater is visibly withheld from the Fig. 5 thermoplastic scenario. Claim 1 remains the broader fluid-state apparatus and is not falsely described as requiring heat.",
+      failureModeName: "Claim 2 Heating Means Withheld",
+      historicalPriorArt:
+        "The grant separately claims heating because the independent apparatus claim also encompasses materials introduced or maintained in fluid state by other means.",
     },
     {
       claimNumber: 39,
       patentId: "us-5121329-crump-fdm",
       claimTitle: "Planar Shearing Nozzle Land & Gap Height Control",
       activeDescription:
-        "Claim 39 maintains the planar bottom surface of the tip parallel to the substrate, ironing and shearing each bead into a flattened road to eliminate accumulative Z errors.",
+        "Claim 39 maintains a substantially planar nozzle-bottom surface parallel to the preceding layer at a selected gap, producing the printed shearing/doctor-blade action and avoiding accumulated Z-position error.",
       invertedDescription:
-        "Excessive nozzle clearance: cylindrical bead is deposited without flattening, causing severe delamination, dimensional warping, and accumulative layer height errors.",
-      failureModeName: "Loss of Planar Ironing & Interlayer Delamination",
+        "The planar land is replaced by a rounded outlet and the comparison shows an unsheared round bead. No unsupported strength, delamination, or dimensional-error magnitude is inferred.",
+      failureModeName: "Claim 39 Planar-Gap Relation Withheld",
       historicalPriorArt:
-        "Uncontrolled bead deposition without planar shearing caused round cross-sections with poor interlayer contact area.",
+        "The claim text itself assigns a shearing effect to the substantially planar tip and maintained gap; the patent supplies no measured bond-strength comparison.",
     },
   ],
   "us-4921293-salisbury-robot-hand": [
@@ -2535,22 +2547,31 @@ export function applyClaimConstraintModifications(
 
     case "us-5121329-crump-fdm": {
       const claim1Active = claimStates[1] ?? true;
+      const claim2Active = claimStates[2] ?? true;
       const claim39Active = claimStates[39] ?? true;
+      modified.claim1ApparatusEnabled = claim1Active ? 1 : 0;
+      modified.claim2HeatingEnabled = claim2Active ? 1 : 0;
+      modified.claim39PlanarNozzleEnabled = claim39Active ? 1 : 0;
       if (!claim1Active) {
-        modified.nozzleTempC = 120; // Cold unheated liquefier
         activeFailures.push(
-          "Liquefier Heating Inactive: Solid feedstock cannot melt, resulting in solid capillary nozzle jam and zero extrusion",
+          "Claim 1 apparatus combination withheld: dispensing head, receiving base, metering, and coordinated relative X/Y/Z layer movement are removed",
         );
         refusalWarning =
-          "COLD NOZZLE JAM REFUSAL: Positive thermal liquefaction required to extrude flowable polymer.";
+          "CLAIM 1 TOPOLOGY REMOVED: heating is not silently substituted for the broader independent apparatus combination.";
+      }
+      if (!claim2Active) {
+        activeFailures.push(
+          "Claim 2 heating means withheld from the flexible-strand thermoplastic embodiment",
+        );
+        refusalWarning =
+          "CLAIM 2 HEATING REMOVED: this thermoplastic illustration cannot attribute liquefaction to the patent, while Claim 1 remains broader than heat.";
       }
       if (!claim39Active) {
-        modified.layerHeightMm = 0.9; // Excessive gap clearance
         activeFailures.push(
-          "Planar Shearing Lost: Nozzle tip clearance too high to flatten bead, causing uncompressed cylindrical strands and delamination",
+          "Claim 39 substantially planar nozzle-bottom and maintained-gap relation withheld; an unsheared round bead is shown without a fabricated failure magnitude",
         );
         refusalWarning =
-          "DELAMINATION REFUSAL: Planar nozzle land ironing required to flatten beads and eliminate accumulative Z errors.";
+          "CLAIM 39 GEOMETRY REMOVED: no delamination, strength, or dimensional-error value is inferred because the grant supplies none.";
       }
       break;
     }

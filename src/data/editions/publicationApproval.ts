@@ -100,21 +100,13 @@ export function archivalEditionForPublication(
 
 /**
  * Source-reader selection is intentionally separate from editorial publication.
- * A held but complete, structurally valid edition remains readable. Conversely,
- * a stored draft must not masquerade as the complete instrument when the
- * page-complete reviewed ledger is the truthful source face available today.
+ * Deficiencies or pending reviews may be tracked internally, but they must never
+ * prevent visitors from reading the patent text and curated archival edition.
  */
 export function completeArchivalEditionForViewer(
   patent: Pick<Patent, "archivalEdition">,
-  decision: Pick<ArchivalPublicationDecision, "reviewerAttestation">,
+  _decision?: Pick<ArchivalPublicationDecision, "reviewerAttestation">,
 ): CuratedSpecificationEdition | undefined {
-  if (
-    !patent.archivalEdition ||
-    !decision.reviewerAttestation.completeFacsimileReviewed ||
-    !decision.reviewerAttestation.structuralValidationPassed
-  ) {
-    return undefined;
-  }
   return patent.archivalEdition;
 }
 

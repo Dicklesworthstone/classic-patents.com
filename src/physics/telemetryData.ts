@@ -9650,11 +9650,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-5121329-crump-fdm": {
     domain: "thermodynamics",
-    domainTitle: "Fused Deposition Modeling (FDM) Melt Flow & Thermal Solidification",
-    equationName: "Poiseuille Capillary Flow, Feed Kinematics, & Thermal Cooling",
+    domainTitle: "FDM Relative Motion, Reduced Melt-Flow & Thermal Screening",
+    equationName: "Metered Deposition, Newtonian Capillary Screen & First-Mode Cooling",
     governingEquation:
       "Q = w h v_{\\text{head}}, \\quad \\Delta P = \\frac{8 \\mu L Q}{\\pi R^4}, \\quad \\tau = \\frac{h^2}{\\pi^2 \\alpha}",
-    engineMethod: "FrankenSimEngine.stepCrumpFdm",
+    engineMethod: "fs-flux::capillary + fs-conduction::reduced_slab through fs-crump-wasm",
     controls: [
       {
         id: "nozzleTempC",
@@ -9716,7 +9716,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           provenance: "scenario-modern",
         },
         {
-          label: "Nozzle Pressure Drop (ΔP)",
+          label: "Newtonian Pressure Screen (ΔP)",
           value: tel.nozzlePressureDropMPa.toFixed(3),
           unit: "MPa",
           badgeColor: "amber",
@@ -9730,23 +9730,24 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           provenance: "scenario-modern",
         },
         {
-          label: "Cooling Time Constant (τ)",
+          label: "First-Mode Cooling Constant (τ)",
           value: (tel.coolingTimeConstantSec * 1000).toFixed(0),
           unit: "ms",
           badgeColor: "cyan",
           provenance: "scenario-modern",
         },
         {
-          label: "Interlayer Weld Quality (T_int/Tg)",
-          value: tel.weldQualityRatio.toFixed(2),
-          unit: "x",
-          badgeColor: tel.poorAdhesionRefusal ? "rose" : "emerald",
+          label: "Interface Thermal Margin (T_int − Tg)",
+          value: tel.interfaceTemperatureMarginC.toFixed(1),
+          unit: "°C",
+          badgeColor:
+            tel.interfaceAboveGlassTransition && !tel.poorAdhesionRefusal ? "emerald" : "rose",
           provenance: "scenario-modern",
         },
       ];
     },
     pedagogicalInsight:
-      "US 5,121,329 established that FDM extrusion relies on using solid filament as a piston pump into a heated liquefier, where the flat nozzle tip irons extruded beads into a planar road (w/h ≈ 2.25) while conducting heat into the substrate to freeze dimensions in ~50 ms.",
+      "Claim 1 covers the broader metered fluid-state head/base/relative-motion apparatus; Claim 2 separately adds heating, and Claim 39 separately claims a substantially planar nozzle bottom maintained at a controlled gap for a shearing or doctor-blade effect. The displayed pressure and cooling values are modern illustrative screens owned by generic FrankenSim laws, not dimensions or performance measurements printed in US 5,121,329.",
   },
   "us-5701965-kamen-transporter": {
     domain: "source_bounded_balance_transfer_climb_topology",

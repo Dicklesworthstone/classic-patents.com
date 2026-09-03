@@ -23,10 +23,41 @@ function namedInstancedPart(root: THREE.Object3D, name: string): THREE.Instanced
   return part;
 }
 
+function projectedModelBounds(
+  cameraView: ReturnType<typeof clavelDeltaRobotViewForViewport>,
+  viewportWidth: number,
+  viewportHeight: number,
+  root: THREE.Object3D,
+) {
+  root.updateWorldMatrix(true, true);
+  const bounds = new THREE.Box3().setFromObject(root);
+  const camera = new THREE.PerspectiveCamera(42, viewportWidth / viewportHeight, 0.1, 1000);
+  camera.position.set(...cameraView.position);
+  camera.lookAt(...cameraView.target);
+  camera.updateWorldMatrix(true, false);
+
+  const projected = new THREE.Vector3();
+  const result = { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity };
+  for (const x of [bounds.min.x, bounds.max.x]) {
+    for (const y of [bounds.min.y, bounds.max.y]) {
+      for (const z of [bounds.min.z, bounds.max.z]) {
+        projected.set(x, y, z).project(camera);
+        result.minX = Math.min(result.minX, projected.x);
+        result.maxX = Math.max(result.maxX, projected.x);
+        result.minY = Math.min(result.minY, projected.y);
+        result.maxY = Math.max(result.maxY, projected.y);
+      }
+    }
+  }
+  return result;
+}
+
 describe("US 4,976,582 Clavel Delta procedural visual boundary", () => {
-  test("uses a materially closer default study view while keeping phone framing complete", () => {
+  test("keeps the complete Arm 1 endpoint inside the overview frame at every target viewport", () => {
     const desktop = clavelDeltaRobotViewForViewport("overview", 1200);
+    const tablet = clavelDeltaRobotViewForViewport("overview", 720);
     const phone = clavelDeltaRobotViewForViewport("overview", 320);
+    const narrowPhone = clavelDeltaRobotViewForViewport("overview", 288);
     const distance = (camera: typeof desktop) =>
       Math.hypot(
         camera.position[0] - camera.target[0],
@@ -34,12 +65,62 @@ describe("US 4,976,582 Clavel Delta procedural visual boundary", () => {
         camera.position[2] - camera.target[2],
       );
 
-    expect(distance(desktop)).toBeLessThan(8);
-    expect(desktop.target).toEqual([0, -0.15, 0]);
-    expect(distance(phone) / distance(desktop)).toBeCloseTo(1.15, 8);
+    // The overview is intentionally wider than the old close crop: its fixed
+    // gantry and Arm 1=1 closure remain legible rather than touching an edge.
+    expect(distance(desktop)).toBeLessThan(9);
+    expect(desktop.target).toEqual([0, -0.35, 0]);
+    expect(distance(tablet) / distance(desktop)).toBeCloseTo(1, 8);
+    expect(distance(phone) / distance(desktop)).toBeCloseTo(1.28 / 1.15, 8);
+    expect(distance(narrowPhone) / distance(desktop)).toBeCloseTo(1.48 / 1.15, 8);
     expect(source("src/components/patents/visuals/three/ClavelDeltaRobot3D.tsx")).toContain(
       "useResponsiveStudioHud(true)",
     );
+  });
+
+  test("leaves a visible edge margin around the supported exhibit at Arm 1 extremes", () => {
+    const viewports = [
+      [1216, 540],
+      [720, 540],
+      [343, 440],
+      [288, 440],
+    ] as const;
+
+    const model = buildClavelDeltaRobotModel();
+    try {
+      for (const [viewportWidth, viewportHeight] of viewports) {
+        const cameraView = clavelDeltaRobotViewForViewport("overview", viewportWidth);
+        for (const armOneInput of [-1, 0, 1] as const) {
+          model.updatePose(stepClavelDeltaRobotTopology({ armOneInput }));
+          const bounds = projectedModelBounds(
+            cameraView,
+            viewportWidth,
+            viewportHeight,
+            model.root,
+          );
+          // ±0.94 leaves at least 3% of the clip space on every edge. The
+          // bound includes the unclaimed exhibit gantry because it visibly
+          // supports the claimed mechanism and must not be sawed off at 320px.
+          expect(bounds.minX).toBeGreaterThan(-0.94);
+          expect(bounds.maxX).toBeLessThan(0.94);
+          expect(bounds.minY).toBeGreaterThan(-0.94);
+          expect(bounds.maxY).toBeLessThan(0.94);
+        }
+      }
+    } finally {
+      model.dispose();
+    }
+  });
+
+  test("keeps the local canvas and every focusable control clear of the sticky museum masthead", () => {
+    const studioSource = source("src/components/patents/visuals/three/ClavelDeltaRobot3D.tsx");
+
+    // The card does not become a sticky scroll container. The document scroll
+    // remains authoritative, while focus/claim buttons receive the same safe
+    // masthead clearance as the audited Hull apparatus.
+    expect(studioSource).toContain("scroll-mt-24");
+    expect(studioSource).toContain("[&_button]:scroll-mt-24");
+    expect(studioSource).toContain("[&_input]:scroll-mt-24");
+    expect(studioSource).not.toContain("max-sm:sticky");
   });
 
   test("keeps one exact Reset action mounted outside the responsive control deck", () => {

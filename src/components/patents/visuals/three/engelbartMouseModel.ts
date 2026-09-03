@@ -603,11 +603,11 @@ export function updateEngelbartMouseKinematics(
   }
 
   // Removing Claim 1's second perpendicular wheel leaves one measured
-  // coordinate. The exhibit therefore refuses Y travel rather than inventing
-  // a trackball or a numerical cross-axis slip model.
+  // coordinate. The exhibit therefore refuses Y travel while the chassis
+  // stays planted on the desk; an incomplete resolver is not a new force.
   if (!claim1Active) posZ = 0;
   nodes.mouseGroup.position.set(posX, 0, posZ);
-  nodes.mouseGroup.rotation.z = claim1Active ? 0 : 0.045 + Math.sin(timeSec * 2) * 0.012;
+  nodes.mouseGroup.rotation.z = 0;
 
   // Solve absolute no-slip wheel coordinates from absolute chassis travel.
   // This produces identical poses for identical time/parameter inputs at any

@@ -175,7 +175,17 @@ export function ClavelDeltaRobotSim() {
                   />
                 );
               })}
-              <text x="122" y="38" fill="#cbd5e1" fontSize="10" fontFamily="monospace">
+              <text
+                x="730"
+                y="82"
+                textAnchor="end"
+                fill="#cbd5e1"
+                stroke="#020617"
+                strokeWidth="4"
+                paintOrder="stroke"
+                fontSize="10"
+                fontFamily="monospace"
+              >
                 FIXED-WORLD SUPPORT SYMBOL · EXHIBIT FRAME, NOT A PATENT PART
               </text>
             </g>

@@ -17,7 +17,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { type Browser, chromium, type Page } from "playwright";
+import { type Browser, chromium, type Locator, type Page } from "playwright";
 import { allPatents } from "../src/data/patents";
 import { EXTERNAL_RUNTIME_OWNER_PATENT_IDS } from "../src/physics/coverageManifest";
 import {
@@ -46,6 +46,7 @@ const ENFORCE_DRAW_CALL_BUDGET = process.env.THREEJS_AUDIT_ENFORCE_DRAW_CALLS !=
 const MAX_FIRST_RENDER_MS = Number(process.env.THREEJS_AUDIT_MAX_FIRST_RENDER_MS ?? 1_000);
 const MAX_CPU_SUBMIT_MS = Number(process.env.THREEJS_AUDIT_MAX_CPU_SUBMIT_MS ?? 16.7);
 const MAX_DRAW_CALLS = Number(process.env.THREEJS_AUDIT_MAX_DRAW_CALLS ?? 250);
+const STICKY_HEADER_CANVAS_CLEARANCE_PX = 8;
 const PERFORMANCE_SAMPLE_COUNT = Math.max(
   0,
   Math.floor(Number(process.env.THREEJS_AUDIT_PERF_SAMPLES ?? 0)),
@@ -166,6 +167,185 @@ async function captureFailure(page: Page, patentId: string, viewport: ViewportNa
   const screenshotPath = path.join(SCREENSHOT_DIRECTORY, `${patentId}.${viewport}.failure.png`);
   await page.screenshot({ path: screenshotPath, fullPage: true }).catch(() => undefined);
   return screenshotPath;
+}
+
+/**
+ * Component screenshots are useful for inspecting a visual's full control
+ * surface, but Playwright may compose a sticky header into that element image
+ * while the real browser viewport has clear geometry. Capture the actual
+ * viewport separately and make overlap verdicts from DOM rectangles only.
+ */
+async function captureActualViewportEvidence(args: {
+  page: Page;
+  canvas: Locator;
+  patentId: string;
+  viewport: ViewportName;
+  stage: "primary-control-max" | "claim-inverted";
+}) {
+  await args.canvas.scrollIntoViewIfNeeded();
+  await args.page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      }),
+  );
+
+  // A canvas taller than the viewport can be only partially visible after a
+  // control click. `scrollIntoViewIfNeeded()` legitimately leaves that state
+  // alone, but the canvas top can then sit behind the sticky header. Reframe
+  // the screenshot at its top edge when the document can scroll there. The
+  // post-scroll rectangle below remains authoritative, so a canvas that
+  // cannot be cleared still produces a real overlap failure.
+  const framing = await args.page.evaluate(
+    ({ id, clearancePx }) => {
+      const root = document.querySelector(
+        `[data-testid="patent-visual-dispatcher"][data-patent-id="${id}"]`,
+      );
+      const candidate = root?.querySelector("canvas");
+      const canvas = candidate instanceof HTMLCanvasElement ? candidate : null;
+      const header = document.querySelector<HTMLElement>("header.sticky.top-0");
+      const canvasTopPx = canvas?.getBoundingClientRect().top ?? null;
+      const headerBottomPx = header?.getBoundingClientRect().bottom ?? null;
+      const minimumCanvasTopPx =
+        headerBottomPx === null ? 0 : Math.max(0, headerBottomPx + clearancePx);
+      const requestedScrollDeltaY =
+        canvasTopPx !== null && canvasTopPx < minimumCanvasTopPx
+          ? canvasTopPx - minimumCanvasTopPx
+          : 0;
+      const scrollYBefore = window.scrollY;
+
+      if (requestedScrollDeltaY !== 0) {
+        // The application normally uses smooth scrolling. Audit framing must
+        // settle synchronously so the following receipt describes this exact
+        // viewport rather than an intermediate scroll animation frame.
+        const inlineScrollBehavior = document.documentElement.style.scrollBehavior;
+        document.documentElement.style.scrollBehavior = "auto";
+        window.scrollBy(0, requestedScrollDeltaY);
+        document.documentElement.style.scrollBehavior = inlineScrollBehavior;
+      }
+
+      return {
+        canvasTopPx,
+        headerBottomPx,
+        minimumCanvasTopPx,
+        requestedScrollDeltaY,
+        scrollYBefore,
+        scrollYAfterRequest: window.scrollY,
+        reframed: requestedScrollDeltaY !== 0,
+      };
+    },
+    { id: args.patentId, clearancePx: STICKY_HEADER_CANVAS_CLEARANCE_PX },
+  );
+  await args.page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      }),
+  );
+
+  const geometry = await args.page.evaluate(
+    ({ id, framing }) => {
+      const root = document.querySelector(
+        `[data-testid="patent-visual-dispatcher"][data-patent-id="${id}"]`,
+      );
+      const candidate = root?.querySelector("canvas");
+      const canvas = candidate instanceof HTMLCanvasElement ? candidate : null;
+      const header = document.querySelector<HTMLElement>("header.sticky.top-0");
+      const viewport = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        scrollX: window.scrollX,
+        scrollY: window.scrollY,
+      };
+      const toRect = (element: Element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+        };
+      };
+
+      if (!canvas) {
+        return {
+          capture: "actual-viewport" as const,
+          framing,
+          viewport,
+          canvas: null,
+          siteStickyHeader: header
+            ? {
+                position: getComputedStyle(header).position,
+                rect: toRect(header),
+              }
+            : null,
+          stickyHeaderCanvasOverlap: {
+            actualIntersection: false,
+            overlapWidthPx: 0,
+            overlapHeightPx: 0,
+            verticalClearancePx: null,
+          },
+        };
+      }
+
+      const canvasRect = toRect(canvas);
+      const visibleCanvasWidth = Math.max(
+        0,
+        Math.min(canvasRect.right, viewport.width) - Math.max(canvasRect.left, 0),
+      );
+      const visibleCanvasHeight = Math.max(
+        0,
+        Math.min(canvasRect.bottom, viewport.height) - Math.max(canvasRect.top, 0),
+      );
+      const headerRect = header ? toRect(header) : null;
+      const overlapWidthPx = headerRect
+        ? Math.max(
+            0,
+            Math.min(canvasRect.right, headerRect.right) -
+              Math.max(canvasRect.left, headerRect.left),
+          )
+        : 0;
+      const overlapHeightPx = headerRect
+        ? Math.max(
+            0,
+            Math.min(canvasRect.bottom, headerRect.bottom) -
+              Math.max(canvasRect.top, headerRect.top),
+          )
+        : 0;
+
+      return {
+        capture: "actual-viewport" as const,
+        framing,
+        viewport,
+        canvas: {
+          rect: canvasRect,
+          visibleInViewport: visibleCanvasWidth > 0 && visibleCanvasHeight > 0,
+        },
+        siteStickyHeader: header
+          ? {
+              position: getComputedStyle(header).position,
+              rect: headerRect,
+            }
+          : null,
+        stickyHeaderCanvasOverlap: {
+          actualIntersection: overlapWidthPx > 0 && overlapHeightPx > 0,
+          overlapWidthPx,
+          overlapHeightPx,
+          verticalClearancePx: headerRect ? canvasRect.top - headerRect.bottom : null,
+        },
+      };
+    },
+    { id: args.patentId, framing },
+  );
+
+  const screenshotPath = path.join(
+    SCREENSHOT_DIRECTORY,
+    `${args.patentId}.${args.viewport}.${args.stage}.viewport.png`,
+  );
+  await args.page.screenshot({ path: screenshotPath, fullPage: false });
+  return { screenshotPath, geometry };
 }
 
 /**
@@ -998,6 +1178,13 @@ async function auditPatent(
         `${patentId}.${viewport}.primary-control-max.png`,
       );
       await dispatcher.screenshot({ path: changedScreenshotPath });
+      const viewportEvidence = await captureActualViewportEvidence({
+        page,
+        canvas,
+        patentId,
+        viewport,
+        stage: "primary-control-max",
+      });
       interaction = {
         available: true,
         accessibleName,
@@ -1009,8 +1196,15 @@ async function auditPatent(
         changedLastControl,
         tickAdvanced,
         screenshotPath: changedScreenshotPath,
+        viewportScreenshotPath: viewportEvidence.screenshotPath,
+        viewportGeometry: viewportEvidence.geometry,
       };
-      interactionValid = requestedValue !== null && changedValue !== priorValue && tickAdvanced;
+      interactionValid =
+        requestedValue !== null &&
+        changedValue !== priorValue &&
+        tickAdvanced &&
+        viewportEvidence.geometry.canvas?.visibleInViewport === true &&
+        !viewportEvidence.geometry.stickyHeaderCanvasOverlap.actualIntersection;
     }
 
     const claimToggle = dispatcher.getByTestId("claim-constraint-toggle").locator("button").first();
@@ -1025,6 +1219,13 @@ async function auditPatent(
         `${patentId}.${viewport}.claim-inverted.png`,
       );
       await dispatcher.screenshot({ path: claimScreenshotPath });
+      const viewportEvidence = await captureActualViewportEvidence({
+        page,
+        canvas,
+        patentId,
+        viewport,
+        stage: "claim-inverted",
+      });
       await claimToggle.click();
       const restoredPressed = await claimToggle.getAttribute("aria-pressed");
       claimInteraction = {
@@ -1033,9 +1234,14 @@ async function auditPatent(
         invertedPressed,
         restoredPressed,
         screenshotPath: claimScreenshotPath,
+        viewportScreenshotPath: viewportEvidence.screenshotPath,
+        viewportGeometry: viewportEvidence.geometry,
       };
       claimInteractionValid =
-        invertedPressed !== beforePressed && restoredPressed === beforePressed;
+        invertedPressed !== beforePressed &&
+        restoredPressed === beforePressed &&
+        viewportEvidence.geometry.canvas?.visibleInViewport === true &&
+        !viewportEvidence.geometry.stickyHeaderCanvasOverlap.actualIntersection;
     }
 
     let mechanismInteraction: Record<string, unknown> = { available: false };
@@ -2700,6 +2906,7 @@ async function auditPatent(
         runtimeErrors: 0,
         primaryControlChangesTickWhenAvailable: true,
         claimToggleRestoresWhenAvailable: true,
+        actualViewportCanvasClearOfStickyHeaderAfterInteractions: true,
         patentMechanismInteractionPassesWhenAvailable: true,
         lifecycleRoundTripPreservesOwnerWhenAvailable: true,
         performanceBudgetsWhenEnforced: performanceBudget,

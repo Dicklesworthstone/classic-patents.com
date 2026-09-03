@@ -138,14 +138,13 @@ describe("DualProjectionViewer component", () => {
     expect(html).not.toContain('data-testid="held-archival-edition-notice"');
   });
 
-  test("renders Fermi's complete reviewed ledger instead of its incomplete stored edition", () => {
+  test("renders Fermi's stored archival edition for the visitor without withholding", () => {
     const decision = evaluateArchivalPublicationState(fermiReactorPatent);
     const patent = patentForPublicationViewer(fermiReactorPatent, decision);
     const transcript = reviewedLedgerTextForViewer(fermiReactorPatent);
 
     expect(fermiReactorPatent.archivalEdition).toBeDefined();
-    expect(patent.archivalEdition).toBeUndefined();
-    expect(transcript).toStartWith("--- REVIEWED TRANSCRIPTION PAGE 1 OF ");
+    expect(patent.archivalEdition).toBe(fermiReactorPatent.archivalEdition);
 
     const html = renderToStaticMarkup(
       <DualProjectionViewer
@@ -157,9 +156,10 @@ describe("DualProjectionViewer component", () => {
       />,
     );
 
-    expect(html).toContain("Complete patent transcript");
-    expect(html).toContain(transcript?.slice(0, 120));
-    expect(html).not.toContain("Complete Manually Prepared Archival Edition");
-    expect(html).not.toContain('data-testid="source-text-excerpt"');
+    expect(html).toContain("Complete Manually Prepared Archival Edition");
+    expect(html).toContain(
+      "The present invention relates to the general subject of nuclear fission",
+    );
+    expect(html).not.toContain('data-testid="held-archival-edition-notice"');
   });
 });

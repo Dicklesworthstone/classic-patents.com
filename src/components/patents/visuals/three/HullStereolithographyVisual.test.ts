@@ -202,4 +202,20 @@ describe("US 4,575,330 source-bounded procedural 3D apparatus", () => {
     expect(threeDimensionalSource).toContain('["top", "Working surface", "Surface"]');
     expect(twoDimensionalSource).toContain('["sequence", "Figs. 1–2 sequence", "Sequence"]');
   });
+
+  test("stacks provenance and refusal cards through the tablet breakpoint", () => {
+    const threeDimensionalSource = readFileSync(
+      new URL("./HullStereolithography3D.tsx", import.meta.url),
+      "utf8",
+    );
+    const cardsStart = threeDimensionalSource.indexOf("Printed preferred source card");
+    const cardsEnd = threeDimensionalSource.indexOf(
+      "claimConstraintResult.activeFailures",
+      cardsStart,
+    );
+    const sourceAndBoundaryCards = threeDimensionalSource.slice(cardsStart - 400, cardsEnd);
+
+    expect(sourceAndBoundaryCards).toContain('className="grid gap-3 lg:grid-cols-2"');
+    expect(sourceAndBoundaryCards).not.toContain("md:grid-cols-2");
+  });
 });

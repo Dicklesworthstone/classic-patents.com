@@ -186,13 +186,13 @@ describe("archival publication boundary", () => {
     expect(acceptedProjection.originalTextAsset).toBeUndefined();
   });
 
-  test("routes incomplete stored editions to their complete reviewed ledger source face", () => {
+  test("preserves stored editions for the viewer even when audit review is pending", () => {
     const fermi = allPatents.find((patent) => patent.id === "us-2708656-fermi-reactor");
     if (!fermi) throw new Error("Fermi reactor patent not found");
 
     const decision = evaluateArchivalPublicationState(fermi);
     expect(fermi.archivalEdition).toBeDefined();
-    expect(completeArchivalEditionForViewer(fermi, decision)).toBeUndefined();
-    expect(patentForPublicationViewer(fermi, decision).archivalEdition).toBeUndefined();
+    expect(completeArchivalEditionForViewer(fermi, decision)).toBe(fermi.archivalEdition);
+    expect(patentForPublicationViewer(fermi, decision).archivalEdition).toBe(fermi.archivalEdition);
   });
 });

@@ -98,7 +98,7 @@ export function BaerOdyssey3D({ patentId = PATENT_ID }: { patentId?: string } = 
         <div ref={containerRef} className="absolute inset-0 h-full w-full" />
 
         {/* Camera View Switcher Buttons */}
-        <div className="absolute top-4 right-4 left-4 z-10 flex flex-nowrap gap-2 overflow-x-auto pb-1 sm:right-36">
+        <div className="absolute top-4 right-4 left-4 z-10 flex flex-nowrap gap-2 overflow-x-auto pb-1 lg:right-56">
           {(Object.keys(BAER_ODYSSEY_CAMERA_VIEWS) as BaerOdysseyCameraView[]).map((key) => (
             <button
               key={key}
@@ -119,7 +119,7 @@ export function BaerOdyssey3D({ patentId = PATENT_ID }: { patentId?: string } = 
         </div>
 
         {/* Top Right HUD Controls */}
-        <div className="absolute top-14 right-4 z-10 flex items-center gap-2 sm:top-4">
+        <div className="absolute top-14 right-4 z-10 flex items-center gap-2 lg:top-4">
           <button
             type="button"
             onClick={() => setInterfaceVisible(!interfaceVisible)}
