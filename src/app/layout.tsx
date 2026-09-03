@@ -105,6 +105,26 @@ export default function RootLayout({
       <body className="antialiased selection:bg-amber-500/20 selection:text-amber-900 dark:selection:text-amber-200">
         {/* biome-ignore lint/security/noDangerouslySetInnerHtml: static inline theme bootstrap string, no user input */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        {/* Schema.org WebSite Structured Data */}
+        <script
+          type="application/ld+json"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: Static Schema.org WebSite metadata
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "Classic Patents",
+              url: "https://classic-patents.com",
+              description:
+                "An open-source digital museum restoring history's most consequential patents into verified transcripts, full original PDFs, rigorous Plain English engineering breakdowns, and interactive 3D physical simulations.",
+              publisher: {
+                "@type": "Organization",
+                name: "Classic Patents",
+                url: "https://classic-patents.com",
+              },
+            }).replace(/</g, "\\u003c"),
+          }}
+        />
         <AudioCleanupProvider />
         {/* WCAG 2.4.1 bypass block: keyboard/SR users can jump straight to content. */}
         <a
