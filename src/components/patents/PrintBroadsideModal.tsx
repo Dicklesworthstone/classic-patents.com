@@ -157,6 +157,8 @@ export function PrintBroadsideModal({ isOpen, onClose, patent }: PrintBroadsideM
   return (
     <dialog
       ref={dialogRef}
+      id="patent-broadside-dialog"
+      data-testid="patent-broadside-dialog"
       aria-modal="true"
       aria-labelledby="broadside-modal-title"
       className="fixed inset-0 z-50 m-auto w-[min(56rem,calc(100vw-2rem))] max-h-[92dvh] p-0 bg-transparent border-none open:flex open:items-center open:justify-center backdrop:bg-ink-950/80 backdrop:backdrop-blur-sm"

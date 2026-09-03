@@ -164464,16 +164464,16 @@
     ],
     "physics": {
       "domain": "thermodynamics",
-      "domainTitle": "Fused Deposition Modeling (FDM) Melt Flow & Thermal Solidification",
-      "equationName": "Poiseuille Capillary Flow, Feed Kinematics, & Thermal Cooling",
+      "domainTitle": "FDM Relative Motion, Reduced Melt-Flow & Thermal Screening",
+      "equationName": "Metered Deposition, Newtonian Capillary Screen & First-Mode Cooling",
       "governingEquation": "Q = w h v_{\\text{head}}, \\quad \\Delta P = \\frac{8 \\mu L Q}{\\pi R^4}, \\quad \\tau = \\frac{h^2}{\\pi^2 \\alpha}",
-      "engineMethod": "FrankenSimEngine.stepCrumpFdm",
+      "engineMethod": "fs-flux::capillary + fs-conduction::reduced_slab through fs-crump-wasm",
       "controls": [
         {
           "id": "nozzleTempC",
           "label": "Liquefier Nozzle Temperature",
-          "min": 160,
-          "max": 290,
+          "min": 140,
+          "max": 280,
           "step": 5,
           "defaultValue": 225,
           "unit": "°C",
@@ -164510,7 +164510,7 @@
           "provenance": "scenario-reader"
         }
       ],
-      "pedagogicalInsight": "US 5,121,329 established that FDM extrusion relies on using solid filament as a piston pump into a heated liquefier, where the flat nozzle tip irons extruded beads into a planar road (w/h ≈ 2.25) while conducting heat into the substrate to freeze dimensions in ~50 ms."
+      "pedagogicalInsight": "Claim 1 covers the broader metered fluid-state head/base/relative-motion apparatus; Claim 2 separately adds heating, and Claim 39 separately claims a substantially planar nozzle bottom maintained at a controlled gap for a shearing or doctor-blade effect. The displayed pressure and cooling values are modern illustrative screens owned by generic FrankenSim laws, not dimensions or performance measurements printed in US 5,121,329."
     },
     "sourceVisualization": {
       "kind": "model",
@@ -166442,7 +166442,7 @@
             "role": "Claim 21 cluster-control relationship",
             "unit": "claim element",
             "dimension": "[1]",
-            "explanation": "Claim 21 names control of each cluster about a central axis; this card does not expose an angular scale or a gear arrangement."
+            "explanation": "Claim 21 names control of each cluster about a central axis. The adjacent geometry card uses the source's printed dimensions without inventing a gear arrangement."
           },
           {
             "id": "wheel_control",
@@ -166462,7 +166462,7 @@
             "role": "Claim 26 ordered coordination state",
             "unit": "claim sequence",
             "dimension": "[1]",
-            "explanation": "Claim 26 prints a start, weight-transfer, and climb ordering; it supplies no public timing, stair dimension, clearance, or traversal-performance value."
+            "explanation": "Claim 26 prints a start, weight-transfer, and climb ordering. Table 1 supplies nominal stair dimensions, while timing, force, and traversal performance remain undisclosed."
           },
           {
             "id": "balance_mode",
@@ -166475,17 +166475,120 @@
             "explanation": "The claim names a balance mode for selected steps. The public reader shows that named state without calculating a fall, recovery, or stability boundary."
           }
         ],
-        "pedagogicalNote": "This normalized claim reading makes the cluster-and-wheel coordination legible. It assigns no gear train, climbing geometry, torque law, riser prediction, or modern performance simulation.",
+        "pedagogicalNote": "This claim reading makes the cluster-and-wheel coordination legible. The companion rigid-contact relation uses Table 1 geometry, but assigns no gear train, torque law, friction model, impact response, or modern performance simulation.",
         "claimRef": 26,
         "historicalSignificance": "Claims 21 through 26 separate cluster and wheel control relationships and state the coordination sequence for the stair-use embodiment."
+      },
+      {
+        "id": "kamen-tri-wheel-support-geometry",
+        "patentId": "us-5701965-kamen-transporter",
+        "title": "Claim 20 Three-Wheel Carrier & Horizontal Support Gaps",
+        "category": "Source-Dimensioned Rigid Contact Geometry",
+        "rawLatex": "x_i=x_c+l\\cos(\\phi+2\\pi i/3),\\quad y_i=y_c+l\\sin(\\phi+2\\pi i/3),\\quad g_i=y_i-r-h(x_i)\\ge 0",
+        "colorizedLatex": "\\textcolor{#2563eb}{x_i}=\\textcolor{#059669}{x_c}+\\textcolor{#d97706}{l}\\cos(\\textcolor{#9333ea}{\\phi}+2\\pi i/3),\\quad \\textcolor{#2563eb}{y_i}=\\textcolor{#059669}{y_c}+\\textcolor{#d97706}{l}\\sin(\\textcolor{#9333ea}{\\phi}+2\\pi i/3),\\quad \\textcolor{#dc2626}{g_i}=y_i-\\textcolor{#0891b2}{r}-h(x_i)\\ge 0",
+        "plainEnglishSentence": [
+          {
+            "text": "For each of the "
+          },
+          {
+            "text": "three equal wheel centers",
+            "variableId": "wheel_center"
+          },
+          {
+            "text": ", rotate the printed "
+          },
+          {
+            "text": "carrier radius",
+            "variableId": "cluster_radius"
+          },
+          {
+            "text": " by 120 degrees about the "
+          },
+          {
+            "text": "cluster axis",
+            "variableId": "cluster_axis"
+          },
+          {
+            "text": ", then subtract the "
+          },
+          {
+            "text": "wheel radius",
+            "variableId": "wheel_radius"
+          },
+          {
+            "text": " and local tread height. A valid rigid pose keeps every "
+          },
+          {
+            "text": "support gap",
+            "variableId": "support_gap"
+          },
+          {
+            "text": " nonnegative and at least one gap at zero."
+          }
+        ],
+        "variables": [
+          {
+            "id": "wheel_center",
+            "symbol": "(x_i,y_i)",
+            "name": "Wheel-Center Coordinates",
+            "color": "sapphire",
+            "role": "Rigid center of wheel A, B, or C in the patent side-elevation frame",
+            "unit": "meters (m)",
+            "dimension": "[L]",
+            "explanation": "The three centers are separated by 120 degrees. The 2D and 3D faces consume the same coordinates from the accepted support receipt."
+          },
+          {
+            "id": "cluster_axis",
+            "symbol": "(x_c,y_c)",
+            "name": "Cluster-Axis Position",
+            "color": "emerald",
+            "role": "Common carrier axis connected to the chassis and both lateral wheel clusters",
+            "unit": "meters (m)",
+            "dimension": "[L]",
+            "explanation": "Figures 39 through 42 determine the discrete teaching pose of this axis relative to the ground and stair treads."
+          },
+          {
+            "id": "cluster_radius",
+            "symbol": "l",
+            "name": "Carrier Radius",
+            "color": "amber",
+            "role": "Table 1 distance from cluster axis to each wheel center",
+            "unit": "meters (m)",
+            "dimension": "[L]",
+            "explanation": "Table 1 prints l = 5.581 inches, or 0.1417574 meters."
+          },
+          {
+            "id": "wheel_radius",
+            "symbol": "r",
+            "name": "Wheel Radius",
+            "color": "cyan",
+            "role": "Table 1 outside wheel radius used to locate the rigid rolling surface",
+            "unit": "meters (m)",
+            "dimension": "[L]",
+            "explanation": "Table 1 prints r = 3.81 inches, or 0.096774 meters."
+          },
+          {
+            "id": "support_gap",
+            "symbol": "g_i",
+            "name": "Horizontal Support Gap",
+            "color": "rose",
+            "role": "Wheel-bottom height above ground or the applicable stair tread",
+            "unit": "meters (m)",
+            "dimension": "[L]",
+            "explanation": "A negative value is refused as support penetration. A zero value marks rigid horizontal contact; forces and riser-side contact are outside this boundary."
+          }
+        ],
+        "pedagogicalNote": "The source prints r = 3.81 in, l = 5.581 in, adjacent-center distance l′ = 9.667 in, stair rise h = 6.85 in, and tread d = 10.9 in. The relation checks geometric support only; it does not infer normal force, friction, compliance, impact, or motor response.",
+        "claimRef": 20,
+        "historicalSignificance": "Claim 20 specifies three equal wheels in each cluster, while the later stair-state claims coordinate the carrier and independently controlled ground wheels."
       }
     ],
     "physics": {
-      "domain": "source_bounded_balance_transfer_climb_topology",
-      "domainTitle": "Source-Bounded Balance, Transfer & Climb Topology",
-      "equationName": "Claimed State-Transition Relationship",
-      "governingEquation": "\\text{control loop} + \\text{motorized drive} + \\text{ground-contact module} \\longrightarrow \\text{fore-aft balance / state transition}",
-      "engineMethod": "TypeScript source-topology state reader (no SI dynamics)",
+      "domain": "source_dimensioned_tri_wheel_contact",
+      "domainTitle": "Source-Dimensioned Tri-Wheel Balance & Stair Contact",
+      "equationName": "Rigid Three-Wheel Carrier Support Relation",
+      "governingEquation": "x_i=x_c+l\\cos(\\phi+2\\pi i/3),\\quad y_i=y_c+l\\sin(\\phi+2\\pi i/3),\\quad g_i=y_i-r-h(x_i)\\ge 0",
+      "engineMethod": "fs-kamen-wasm source adapter over fs-mbd::tri_wheel_cluster with typed equation-identical fallback",
       "controls": [
         {
           "id": "topologyState",
@@ -166498,7 +166601,7 @@
           "provenance": "source-disclosed"
         }
       ],
-      "pedagogicalInsight": "US 5,701,965 records control-loop, motorized-drive, independently controlled ground-module, and ordered balance/transfer/climb relationships. The facsimile does not provide a controller gain, torque, speed, mass, wheel radius, force, angle, or stability-margin datum, so the public instrument reads the documented state topology without forecasting vehicle dynamics."
+      "pedagogicalInsight": "US 5,701,965 records a three-equal-wheel cluster, nominal wheel/carrier/stair geometry, independently controlled ground wheels, and the ordered balance/transfer/climb sequence. The fs-mbd owner resolves all three wheel centers and refuses penetration or unsupported poses. It does not forecast vehicle dynamics because the facsimile omits the mass/inertia, motor, controller, sensor, friction, compliance, impact, and contact inputs needed to do so."
     },
     "sourceVisualization": {
       "kind": "model",
