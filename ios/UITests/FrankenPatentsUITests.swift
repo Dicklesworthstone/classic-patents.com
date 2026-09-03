@@ -23,6 +23,43 @@ final class FrankenPatentsUITests: XCTestCase {
         )
     }
 
+    func testAppStoreArchiveOverviewIsAppBound() {
+        let app = launch(root: nil)
+        assertExists(
+            app.descendants(matching: .any)["archive-summary"],
+            in: app,
+            message: "The compact archive did not expose its current catalogue summary",
+            screenshotName: "App Store 1 - 103-record offline archive"
+        )
+        XCTAssertFalse(
+            app.staticTexts["FrankenRobots"].exists,
+            "App-bound FrankenPatents evidence unexpectedly contained a FrankenRobots label"
+        )
+    }
+
+    func testAppStoreTimelineOverviewRenders() {
+        let app = launch(root: "timeline")
+        assertExists(
+            app.staticTexts["Over Two Centuries of Human Ingenuity (1769–2009)"],
+            in: app,
+            message: "The invention timeline overview did not render",
+            screenshotName: "App Store 2 - two-century invention timeline"
+        )
+    }
+
+    func testAppStoreWrightPlainEnglishWorkstationRenders() {
+        let app = launch(
+            patentID: "us-821393-wright-flyer",
+            section: "Plain English"
+        )
+        assertExists(
+            app.staticTexts["Flying-Machine"],
+            in: app,
+            message: "The Wright Flyer plain-English workstation did not render",
+            screenshotName: "App Store 3 - Wright Flyer engineering workstation"
+        )
+    }
+
     func testLatestCatalogueDeltaRobotExhibitRenders() {
         let app = launch(
             patentID: "us-4976582-clavel-delta-robot",
@@ -100,8 +137,22 @@ final class FrankenPatentsUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = [
             "-FrankenPatentsUITestPatent", patentID,
-            "-FrankenPatentsUITestSection", section,
+            "-FrankenPatentsUITestSection", section
         ]
+        app.launch()
+        XCTAssertTrue(
+            app.wait(for: .runningForeground, timeout: 8),
+            "FrankenPatents did not remain in the foreground"
+        )
+        return app
+    }
+
+    @discardableResult
+    private func launch(root: String?) -> XCUIApplication {
+        let app = XCUIApplication()
+        if let root {
+            app.launchArguments = ["-FrankenPatentsUITestRoot", root]
+        }
         app.launch()
         XCTAssertTrue(
             app.wait(for: .runningForeground, timeout: 8),

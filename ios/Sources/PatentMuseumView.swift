@@ -124,7 +124,11 @@ struct PatentMuseumView: View {
                 Text("\(library.records.count) CURATED RECORDS")
                     .font(.system(size: Lab.size(9.5), weight: .bold, design: .rounded))
                     .foregroundStyle(Lab.brass)
-                Text("The complete catalog, figures, equations, history, claims, and native interactive studies are bundled for private offline use. Only an original patent PDF is downloaded when you explicitly request it.")
+                Text(
+                    "The complete catalog, figures, equations, history, claims, and native interactive studies "
+                        + "are bundled for private offline use. Only an original patent PDF is downloaded when "
+                        + "you explicitly request it."
+                )
                     .font(.system(size: Lab.size(11), design: .rounded))
                     .foregroundStyle(Lab.secondary)
             }
@@ -136,22 +140,34 @@ struct PatentMuseumView: View {
     private func patentList(compact: Bool) -> some View {
         Group {
             if let error = library.loadError {
-                ContentUnavailableView("Catalog unavailable", systemImage: "exclamationmark.triangle", description: Text(error))
+                ContentUnavailableView(
+                    "Catalog unavailable",
+                    systemImage: "exclamationmark.triangle",
+                    description: Text(error)
+                )
             } else if library.filteredRecords.isEmpty {
                 ContentUnavailableView.search(text: library.query)
             } else {
-                List(library.filteredRecords) { patent in
+                List {
                     if compact {
-                        NavigationLink(value: patent) { PatentRow(patent: patent, compact: true) }
-                    } else {
-                        Button {
-                            selectedID = patent.id
-                        } label: {
-                            PatentRow(patent: patent, compact: false)
-                                .contentShape(Rectangle())
+                        ArchiveSummaryCard(recordCount: library.records.count)
+                            .listRowInsets(EdgeInsets(top: 12, leading: 14, bottom: 12, trailing: 14))
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
+                    }
+                    ForEach(library.filteredRecords) { patent in
+                        if compact {
+                            NavigationLink(value: patent) { PatentRow(patent: patent, compact: true) }
+                        } else {
+                            Button {
+                                selectedID = patent.id
+                            } label: {
+                                PatentRow(patent: patent, compact: false)
+                                    .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            .listRowBackground(selectedID == patent.id ? Lab.brass.opacity(0.12) : Color.clear)
                         }
-                        .buttonStyle(.plain)
-                        .listRowBackground(selectedID == patent.id ? Lab.brass.opacity(0.12) : Color.clear)
                     }
                 }
                 .listStyle(.plain)
@@ -161,6 +177,37 @@ struct PatentMuseumView: View {
         .background(MuseumBackground())
         .searchable(text: $library.query, prompt: "Inventor, mechanism, patent…")
         .navigationTitle(compact ? "" : library.selectedCategory.map { library.label(for: $0) } ?? "The archive")
+    }
+}
+
+private struct ArchiveSummaryCard: View {
+    let recordCount: Int
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            MuseumLabel(text: "Private offline invention museum")
+            HStack(alignment: .firstTextBaseline, spacing: 7) {
+                Text("\(recordCount)")
+                    .font(.system(size: Lab.size(31), weight: .black, design: .serif))
+                    .foregroundStyle(Lab.parchment)
+                Text("curated patent records")
+                    .font(.system(size: Lab.size(15), weight: .bold, design: .rounded))
+                    .foregroundStyle(Lab.text)
+            }
+            Text(
+                "Search the complete archive, then open native claims, figures, equations, historical context, "
+                    + "and interactive engineering studies."
+            )
+                .font(.system(size: Lab.size(11.5), design: .rounded))
+                .foregroundStyle(Lab.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(16)
+        .background(Lab.panel, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Lab.brass.opacity(0.30)))
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("archive-summary")
+        .accessibilityLabel("\(recordCount) curated patent records in a private offline invention museum")
     }
 }
 
