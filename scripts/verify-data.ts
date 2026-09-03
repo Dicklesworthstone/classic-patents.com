@@ -27,6 +27,7 @@ import {
 } from "../src/data/patents/sourceTextValidation";
 import {
   buildPatentCoverageManifest,
+  hasExternalRuntimeOwner,
   type SharedBusParticipation,
   wasmSurfaceForPatent,
 } from "../src/physics/coverageManifest";
@@ -113,6 +114,7 @@ function sharedBusParticipationFor(
   patentId: string,
   threeVisualSources: readonly string[],
 ): SharedBusParticipation {
+  if (hasExternalRuntimeOwner(patentId)) return "updater";
   const matchingSources = threeVisualSources.filter((source) => source.includes(patentId));
   if (matchingSources.some((source) => source.includes("registerUpdater"))) return "updater";
   if (matchingSources.some((source) => source.includes("useFrankenSimPhysics"))) return "snapshot";
@@ -161,6 +163,22 @@ async function main() {
       .filter((filename) => filename.endsWith("Kernel.ts"))
       .map((filename) => fs.readFileSync(path.join(physicsDirectory, filename), "utf8")),
   ];
+  const genericWasmHookSource = fs.readFileSync(
+    path.join(physicsDirectory, "useGenericWasmSource.ts"),
+    "utf8",
+  );
+
+  const runtimeSourcesReachLoader = (
+    sources: readonly string[],
+    loaderFunction: string,
+  ): boolean => {
+    if (sources.some((source) => source.includes(loaderFunction))) return true;
+    return (
+      loaderFunction === "ensureGenericWasm" &&
+      sources.some((source) => source.includes("useGenericWasmSource")) &&
+      genericWasmHookSource.includes(loaderFunction)
+    );
+  };
 
   const equationSerialization = validateColorizedEquationCatalogue(ALL_COLORIZED_EQUATIONS);
   for (const error of equationSerialization.errors) {
@@ -649,7 +667,7 @@ async function main() {
       const matchingRuntimeSources = runtimeOwnerSources.filter((source) =>
         source.includes(row.patentId),
       );
-      if (!matchingRuntimeSources.some((source) => source.includes(descriptor.loaderFunction))) {
+      if (!runtimeSourcesReachLoader(matchingRuntimeSources, descriptor.loaderFunction)) {
         console.error(
           `❌ [${row.patentId}] Declares ${descriptor.sourceCrate}, but its active visual/kernel owner does not call ${descriptor.loaderFunction}.`,
         );
