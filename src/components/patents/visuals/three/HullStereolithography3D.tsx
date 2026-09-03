@@ -300,7 +300,7 @@ export function HullStereolithography3D() {
             </div>
           )}
 
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-3 lg:grid-cols-2">
             <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3 text-xs leading-relaxed text-emerald-100">
               <div className="font-mono font-bold uppercase tracking-wider text-emerald-300">
                 Printed preferred source card

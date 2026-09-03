@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { allPatents } from "@/data/patents";
+import { generateChicagoCitation, generateRisCitation } from "@/utils/patentCitations";
 
 describe("Archaic Legal Glossary & Academic Citation Engine", () => {
   test("generates valid BibTeX entries for every catalog patent", () => {
@@ -42,6 +43,26 @@ describe("Archaic Legal Glossary & Academic Citation Engine", () => {
     }
   });
 
+  test("generates valid RIS reference citations for every catalog patent", () => {
+    for (const patent of allPatents) {
+      const ris = generateRisCitation(patent);
+      expect(ris.startsWith("TY  - PAT")).toBe(true);
+      expect(ris.endsWith("ER  - ")).toBe(true);
+      expect(ris).toContain(`TI  - ${patent.title}`);
+      expect(ris).toContain(`M3  - U.S. Patent ${patent.patentNumber}`);
+      expect(ris).toContain(`UR  - https://classic-patents.com/patents/${patent.id}`);
+    }
+  });
+
+  test("generates valid Chicago Manual of Style citations for every catalog patent", () => {
+    for (const patent of allPatents) {
+      const chicago = generateChicagoCitation(patent);
+      expect(chicago).toContain(patent.title);
+      expect(chicago).toContain(patent.patentNumber);
+      expect(chicago.endsWith(`https://classic-patents.com/patents/${patent.id}.`)).toBe(true);
+    }
+  });
+
   test("Wright Flyer exemplar produces pristine academic citation strings", () => {
     const wright = allPatents.find((p) => p.id === "us-821393-wright-flyer");
     expect(wright).toBeDefined();
@@ -57,5 +78,13 @@ describe("Archaic Legal Glossary & Academic Citation Engine", () => {
 
     const apaAuthor = wright.inventors.join(", ");
     expect(apaAuthor).toBe("Orville Wright, Wilbur Wright");
+
+    const ris = generateRisCitation(wright);
+    expect(ris).toContain("AU  - Wright, Orville\nAU  - Wright, Wilbur");
+
+    const chicago = generateChicagoCitation(wright);
+    expect(chicago).toContain(
+      'Wright, Orville, and Wilbur Wright. 1906. "Flying-Machine." U.S. Patent US 821,393',
+    );
   });
 });

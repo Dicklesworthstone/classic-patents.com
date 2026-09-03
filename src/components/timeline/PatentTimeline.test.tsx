@@ -33,6 +33,17 @@ describe("PatentTimeline component", () => {
     expect(html).toContain("separate condenser");
   });
 
+  test("renders interactive timeline scrubber slider with accessible range attributes", () => {
+    const html = renderToStaticMarkup(<PatentTimeline />);
+
+    expect(html).toContain('data-testid="timeline-scrubber"');
+    expect(html).toContain('aria-label="Timeline milestone scrubber"');
+    expect(html).toContain('type="range"');
+    expect(html).toContain("1836 (Colt)");
+    expect(html).toContain("1906 (Wright)");
+    expect(html).toContain("1947 (Transistor)");
+  });
+
   test("does not advertise a 3D model for the source-held Kwolek record", () => {
     expect(TIMELINE_SOURCE).toContain('selectedPatent.id === "us-3671542-kwolek-kevlar"');
     expect(TIMELINE_SOURCE).toContain("Explore Source-Bound Record");

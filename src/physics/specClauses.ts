@@ -12,7 +12,11 @@ import {
   stepBoyleSmithCcdSource,
 } from "./boyleSmithCcdKernel";
 import { stepClavelDeltaRobotTopology } from "./clavelDeltaRobotKernel";
-import { readCrumpFdmControls, stepCrumpFdmSi } from "./crumpFdmKernel";
+import {
+  CRUMP_FDM_GLASS_TRANSITION_TEMP_C,
+  readCrumpFdmControls,
+  stepCrumpFdmSi,
+} from "./crumpFdmKernel";
 import {
   readDaVinciInterfaceControls,
   resolveDaVinciInterfaceTopology,
@@ -2448,7 +2452,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: topology.balanceLoopActive,
         tone: topology.balanceLoopActive ? "held" : "broken",
         caption: topology.balanceLoopActive
-          ? "Claim 22 names a balance mode in which the ground-contacting wheels are controlled to maintain fore-and-aft balance. The grant supplies no torque, gain, speed, sensor rate, or recovery margin."
+          ? `Claim 22 names a balance mode in which the ground-contacting wheels are controlled to maintain fore-and-aft balance. The ${topology.displayPose.sourceFigure} pose has rigid horizontal contact at wheel ${topology.displayPose.contactWheelIds.join(" + ").toUpperCase()}; torque, gain, speed, sensor response, and recovery margin remain withheld.`
           : "The balance-loop topology is withheld for this claim comparison; the exhibit does not predict a fall or a stability limit.",
       },
       {
@@ -2461,7 +2465,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
             : "held"
           : "broken",
         caption: topology.clusterTopologyActive
-          ? `Claims ${topology.sourceClaimNumbers.join(", ")} show a cluster-wheel arrangement around a central axis with separately controlled ground-contacting wheels; no gear train is asserted. ${topology.stairSequenceActive ? "The selected state makes the transfer/climb ordering visible without predicting obstacle geometry or motion." : "The ground-contact relation is shown without a climbing-performance prediction."}`
+          ? `Claims ${topology.sourceClaimNumbers.join(", ")} show three equal wheels around each cluster axis with separately controlled ground-contacting wheels; no gear train is asserted. ${topology.stairSequenceActive ? `The selected state uses the nominal Table 1 stair profile and touches wheel ${topology.displayPose.contactWheelIds.join(" + ").toUpperCase()} without predicting force, friction, impact, or traversal time.` : `The source-dimensioned level-ground pose touches wheel ${topology.displayPose.contactWheelIds.join(" + ").toUpperCase()} without a climbing-performance prediction.`}`
           : "The cluster-wheel topology is withheld for this claim comparison; no obstacle-traversal prediction is inferred.",
       },
       {
@@ -2471,7 +2475,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         tone: topology.clusterTopologyActive && topology.stairSequenceActive ? "live" : "broken",
         caption:
           topology.clusterTopologyActive && topology.stairSequenceActive
-            ? "Claim 26 orders start, next-pair placement, weight transfer, climb, and return toward balance. This is a qualitative state sequence, not a timed path or drive calculation."
+            ? `Claim 26 orders start, next-pair placement, weight transfer, climb, and return toward balance. ${topology.displayPose.sourceFigure} is resolved as rigid contact geometry, not a timed path, force history, or drive calculation.`
             : "The coordination-control sequence is not represented in the selected claim-reading state.",
       },
     ];
@@ -3259,34 +3263,48 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
     return [
       {
         id: "crump-filament-pinch-feed",
-        phrase:
-          "flexible strand 12 is drawn from supply reel 14 by motor-driven pinch feed rollers",
-        active: !tel.filamentGrindingRefusal,
-        tone: !tel.filamentGrindingRefusal ? "live" : "broken",
-        caption: `Pinch drive applies ${controls.pinchRollerForceN} N normal force yielding ${tel.maxTractionForceN.toFixed(1)} N traction. Required feed force is ${tel.feedDriveForceN.toFixed(1)} N (status: ${tel.filamentGrindingRefusal ? "slipping / grinding" : "positive engagement"}).`,
+        phrase: "a plurality of drive rollers 134 are provided within supply chamber 118",
+        active: tel.claim1ApparatusPresent && !tel.filamentGrindingRefusal,
+        tone: tel.claim1ApparatusPresent && !tel.filamentGrindingRefusal ? "live" : "broken",
+        caption: !tel.claim1ApparatusPresent
+          ? "Claim 1 apparatus topology is withheld, so the feed-chain comparison is not asserted."
+          : `Figure 5 drive roller 134 and idler 136 remain visibly connected to strand 110. The displayed ${tel.maxTractionForceN.toFixed(1)} N traction limit is an illustrative friction screen, not a patent measurement.`,
       },
       {
         id: "crump-heated-liquefier",
-        phrase: "temperature-controlled flow passage 20",
-        active: !tel.coldNozzleJamRefusal,
-        tone: !tel.coldNozzleJamRefusal ? "live" : "broken",
-        caption: `Liquefier operates at ${controls.nozzleTempC.toFixed(0)} °C with apparent melt viscosity ${tel.apparentViscosityPaS.toFixed(0)} Pa·s, developing ${tel.nozzlePressureDropMPa.toFixed(3)} MPa capillary pressure drop.`,
+        phrase: "heating means disposed in close proximity to said flow passage means",
+        active: tel.claim2HeatingMeansPresent && !tel.coldNozzleJamRefusal,
+        tone: tel.claim2HeatingMeansPresent && !tel.coldNozzleJamRefusal ? "live" : "broken",
+        caption: !tel.claim1ApparatusPresent
+          ? "Claim 1 apparatus topology is withheld, so the thermoplastic liquefier comparison is not asserted."
+          : !tel.claim2HeatingMeansPresent
+            ? "Claim 2 heating means is withheld."
+            : `The Claim 2 heating means is present. The displayed ${controls.nozzleTempC.toFixed(0)} °C and ${tel.nozzlePressureDropMPa.toFixed(3)} MPa are an illustrative ABS/Newtonian screen, not printed performance data.`,
       },
       {
         id: "crump-planar-shearing-tip",
         phrase:
           "planar bottom surface of said tip being maintained substantially parallel to said first layer",
-        active: controls.layerHeightMm <= controls.nozzleDiameterMm * 0.85,
-        tone: controls.layerHeightMm <= controls.nozzleDiameterMm * 0.85 ? "held" : "broken",
-        caption: `Gap clearance is ${controls.layerHeightMm} mm below nozzle land (orifice d = ${controls.nozzleDiameterMm} mm). Planar shearing irons bead into aspect ratio ${tel.beadAspectRatio.toFixed(2)}x (road width w = ${controls.roadWidthMm} mm).`,
+        active: tel.claim39PlanarGapPresent,
+        tone: tel.claim39PlanarGapPresent ? "held" : "broken",
+        caption: !tel.claim39PlanarGapPresent
+          ? "Claim 39 planar-bottom/gap relation is withheld."
+          : `The planar nozzle bottom is maintained ${controls.layerHeightMm} mm above the preceding layer in the normalized display. The visible ${tel.beadAspectRatio.toFixed(2)}:1 road/gap ratio comes from visitor-declared modern scenario values.`,
       },
       {
-        id: "crump-interlayer-weld",
+        id: "crump-sequential-layer-cooling",
         phrase:
           "successive layers of said material of predetermined thickness which build up on each other sequentially as they solidify",
-        active: tel.weldQualityRatio >= 0.95,
-        tone: tel.weldQualityRatio >= 0.95 ? "held" : "broken",
-        caption: `Interface contact temperature is ${tel.interfaceTempC.toFixed(1)} °C (Tg = 105 °C, ratio ${tel.weldQualityRatio.toFixed(2)}x). Cooling time constant is ${(tel.coolingTimeConstantSec * 1000).toFixed(0)} ms.`,
+        active: tel.claim1ApparatusPresent && tel.claim2HeatingMeansPresent && tel.isExtruding,
+        tone:
+          tel.claim1ApparatusPresent && tel.claim2HeatingMeansPresent && tel.isExtruding
+            ? "held"
+            : "broken",
+        caption: !tel.claim1ApparatusPresent
+          ? "Claim 1 sequential-layer apparatus topology is withheld."
+          : !tel.claim2HeatingMeansPresent
+            ? "Claim 2 heating is withheld, so the illustrative thermoplastic thermal screen is not asserted."
+            : `The topology shows successive touching roads. The separate interface-temperature screen is ${tel.interfaceTempC.toFixed(1)} °C (Tg = ${CRUMP_FDM_GLASS_TRANSITION_TEMP_C} °C; margin ${tel.interfaceTemperatureMarginC.toFixed(1)} °C), with a first-mode time constant of ${(tel.coolingTimeConstantSec * 1000).toFixed(0)} ms. A Tg crossing is not solidification, and this screen does not calculate bond strength.`,
       },
     ];
   }

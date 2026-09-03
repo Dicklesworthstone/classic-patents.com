@@ -61,6 +61,9 @@ artifacts/e2e-patent-vertical-slices/
 artifacts/e2e-threejs-visual-audit/
 artifacts/threejs-fleet-audit/
 artifacts/viewport-audit/
+artifacts/nobel-maxim-live-vision/
+artifacts/threejs-physics-audit/
+tmp/
 tsconfig.tsbuildinfo
 .ntm/
 .env*

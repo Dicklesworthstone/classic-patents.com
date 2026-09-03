@@ -42,10 +42,13 @@ export function ThemeToggle() {
   }, [setMode]);
 
   if (!mounted) {
-    // Static placeholder: same footprint as the real button so the header
-    // does not jitter between SSR paint and hydration.
     return (
-      <div className="w-11 h-11 rounded-xl bg-parchment-200 dark:bg-ink-800 border border-parchment-300 dark:border-ink-700" />
+      <div
+        className="w-11 h-11 rounded-xl bg-white/50 dark:bg-ink-900/50 border border-parchment-300 dark:border-ink-700 flex items-center justify-center text-ink-400 dark:text-ink-500"
+        aria-hidden="true"
+      >
+        <Sun className="w-5 h-5 opacity-40" />
+      </div>
     );
   }
 

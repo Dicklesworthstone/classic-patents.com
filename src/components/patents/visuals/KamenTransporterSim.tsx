@@ -1,17 +1,28 @@
 "use client";
 
-import { useId, useMemo } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
 import { claimConstraintStateParamId } from "@/physics/claimConstraints";
+import { wasmSurfaceForPatent } from "@/physics/coverageManifest";
 import {
+  createKamenTransporterTransportUpdater,
+  KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M,
   KAMEN_TRANSPORTER_TOPOLOGY_LABELS,
   KAMEN_TRANSPORTER_TOPOLOGY_STATES,
   readKamenTransporterControls,
-  stepKamenTransporterTopology,
 } from "@/physics/kamenTransporterKernel";
+import {
+  ensureKamenTransporterWasm,
+  type KamenTransporterKernelSource,
+  kamenTransporterKernelSource,
+  kamenTransporterRuntimeLabel,
+  stepKamenTransporterPhysics,
+} from "@/physics/kamenTransporterWasm";
+import { globalTransportBus, useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 
 export function KamenTransporterSim({
   patentId = "us-5701965-kamen-transporter",
@@ -20,26 +31,74 @@ export function KamenTransporterSim({
 }) {
   const { effectiveParams, claimStates, updateParam } = usePatentPhysics(patentId);
   const controls = useMemo(() => readKamenTransporterControls(effectiveParams), [effectiveParams]);
-  const topology = useMemo(() => stepKamenTransporterTopology(controls), [controls]);
+  const liveControls = useLiveSimParams(controls);
+  const [kernelSource, setKernelSource] = useState<KamenTransporterKernelSource>(
+    kamenTransporterKernelSource,
+  );
+  const topology = useMemo(
+    () => stepKamenTransporterPhysics(controls, kernelSource),
+    [controls, kernelSource],
+  );
   const equations = useMemo(() => ALL_COLORIZED_EQUATIONS[patentId] ?? [], [patentId]);
   const clipId = useId();
 
+  useFrankenSimPhysics(patentId);
+
+  useEffect(() => {
+    if (!wasmSurfaceForPatent(patentId)) return;
+    let active = true;
+    void ensureKamenTransporterWasm().then((nextSource) => {
+      if (active) setKernelSource(nextSource);
+    });
+    return () => {
+      active = false;
+    };
+  }, [patentId]);
+
+  useEffect(() => {
+    return globalTransportBus.registerUpdater(
+      patentId,
+      createKamenTransporterTransportUpdater(
+        () => liveControls.current,
+        stepKamenTransporterPhysics,
+      ),
+      kernelSource === "wasm" ? "WASM" : "TS_FALLBACK",
+    );
+  }, [kernelSource, liveControls, patentId]);
+
   const width = 640;
   const height = 460;
-  const groundY = 380;
-  const centerX = width / 2;
-  const wheelRadius = 38;
-  const carrierRadius = 46;
-  const hubY = groundY - wheelRadius - (topology.balanceLoopActive ? carrierRadius : 0);
-  const carrierAngle = topology.clusterDisplayPoseRad;
-  const wheel1X = centerX - carrierRadius * Math.sin(carrierAngle);
-  const wheel1Y = hubY + carrierRadius * Math.cos(carrierAngle);
-  const wheel2X = centerX + carrierRadius * Math.sin(carrierAngle);
-  const wheel2Y = hubY - carrierRadius * Math.cos(carrierAngle);
+  const groundY = 400;
+  const originX = 260;
+  const pixelsPerMeter = 260;
+  const worldX = (xM: number) => originX + xM * pixelsPerMeter;
+  const worldY = (yM: number) => groundY - yM * pixelsPerMeter;
+  const wheelRadiusPx = KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.wheelRadiusM * pixelsPerMeter;
+  const hubX = worldX(topology.displayPose.axleXM);
+  const hubY = worldY(topology.displayPose.axleYM);
+  const chassisPitchDeg = (-topology.displayPose.chassisPitchRad * 180) / Math.PI;
   const selectedStateIndex = KAMEN_TRANSPORTER_TOPOLOGY_STATES.indexOf(topology.topologyState);
 
   return (
-    <div className="flex w-full flex-col items-center space-y-6 rounded-2xl border border-parchment-300 bg-parchment-50 p-6 shadow-patent dark:border-ink-800 dark:bg-ink-950">
+    <div
+      className="flex w-full flex-col items-center space-y-6 rounded-2xl border border-parchment-300 bg-parchment-50 p-6 shadow-patent dark:border-ink-800 dark:bg-ink-950"
+      data-testid="kamen-transporter-two"
+      data-kamen-state={topology.topologyState}
+      data-kamen-contact-wheels={topology.displayPose.contactWheelIds.join(",")}
+      data-kamen-contact-count={topology.displayPose.contactCount}
+      data-kamen-minimum-gap-m={topology.displayPose.minimumGapM.toFixed(12)}
+      data-kamen-runtime-source={topology.runtimeSource}
+      data-kamen-owner={topology.genericOwner}
+      data-kamen-boundary={topology.runtimeBoundary}
+      data-kamen-source-figure={topology.displayPose.sourceFigure}
+      data-kamen-cluster-topology={topology.clusterTopologyActive ? "present" : "withheld"}
+      data-kamen-balance-loop={topology.balanceLoopActive ? "active" : "withheld"}
+      data-kamen-wheel-count="three-per-lateral-cluster"
+      data-kamen-wheel-radius-m={KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.wheelRadiusM}
+      data-kamen-cluster-radius-m={KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.clusterRadiusM}
+      data-kamen-stair-rise-m={KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairRiseM}
+      data-kamen-stair-tread-m={KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairTreadM}
+    >
       <div className="flex w-full flex-col justify-between gap-4 border-b border-parchment-200 pb-4 sm:flex-row sm:items-center dark:border-ink-800">
         <div>
           <div className="flex items-center gap-2">
@@ -51,7 +110,7 @@ export function KamenTransporterSim({
             </span>
           </div>
           <h3 className="mt-1 font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Balance, Transfer &amp; Climb Claim Topology
+            Source-Dimensioned Balance, Transfer &amp; Climb Contact Geometry
           </h3>
         </div>
         <PhysicsTelemetryBadge patentId={patentId} equations={equations} />
@@ -85,9 +144,9 @@ export function KamenTransporterSim({
             ))}
           </g>
 
-          {topology.stairSequenceActive ? (
+          {topology.displayPose.stairActive ? (
             <path
-              d={`M 0,${groundY} L 240,${groundY} L 240,${groundY - 50} L 360,${groundY - 50} L 360,${groundY - 100} L ${width},${groundY - 100} L ${width},${height} L 0,${height} Z`}
+              d={`M 0,${groundY} L ${worldX(0)},${groundY} L ${worldX(0)},${worldY(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairRiseM)} L ${worldX(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairTreadM)},${worldY(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairRiseM)} L ${worldX(KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairTreadM)},${worldY(2 * KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairRiseM)} L ${width},${worldY(2 * KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairRiseM)} L ${width},${height} L 0,${height} Z`}
               fill={`url(#ground-grad-${clipId})`}
               stroke="#57534e"
               strokeWidth="2"
@@ -105,84 +164,119 @@ export function KamenTransporterSim({
           )}
 
           <line
-            x1={centerX}
+            x1={hubX}
             y1={hubY}
-            x2={centerX}
-            y2={hubY - 175}
+            x2={worldX(
+              topology.displayPose.axleXM -
+                KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.systemCentreOffsetM *
+                  Math.sin(topology.displayPose.chassisPitchRad),
+            )}
+            y2={worldY(
+              topology.displayPose.axleYM +
+                KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.systemCentreOffsetM *
+                  Math.cos(topology.displayPose.chassisPitchRad),
+            )}
             stroke="#94a3b8"
             strokeDasharray="4 4"
             strokeWidth="1.5"
           />
           <text
-            x={centerX + 10}
-            y={hubY - 158}
+            x={hubX + 10}
+            y={Math.max(116, hubY - 128)}
             className="fill-ink-600 font-mono text-[10px] dark:fill-parchment-300"
           >
-            CONTROL RELATIONSHIP
+            TABLE 1 CENTRE OFFSET: 21.0 IN
           </text>
 
-          <g opacity={topology.clusterTopologyActive ? 1 : 0.28}>
-            <line
-              x1={wheel1X}
-              y1={wheel1Y}
-              x2={wheel2X}
-              y2={wheel2Y}
-              stroke="#64748b"
-              strokeLinecap="round"
-              strokeWidth="8"
-            />
-            <circle
-              cx={wheel1X}
-              cy={wheel1Y}
-              r={wheelRadius}
-              fill="#1e293b"
-              stroke="#38bdf8"
-              strokeWidth="4"
-            />
-            <circle cx={wheel1X} cy={wheel1Y} r="6" fill="#94a3b8" />
-            <circle
-              cx={wheel2X}
-              cy={wheel2Y}
-              r={wheelRadius}
-              fill="#1e293b"
-              stroke="#38bdf8"
-              strokeWidth="4"
-            />
-            <circle cx={wheel2X} cy={wheel2Y} r="6" fill="#94a3b8" />
-            <circle cx={centerX} cy={hubY} r="14" fill="#0f172a" stroke="#fbbf24" strokeWidth="3" />
-          </g>
+          {topology.clusterTopologyActive ? (
+            <g data-kamen-svg-cluster="three-equal-wheels">
+              {topology.displayPose.wheelContacts.map((wheel) => (
+                <line
+                  key={`arm-${wheel.id}`}
+                  x1={hubX}
+                  y1={hubY}
+                  x2={worldX(wheel.centerXM)}
+                  y2={worldY(wheel.centerYM)}
+                  stroke="#64748b"
+                  strokeLinecap="round"
+                  strokeWidth="8"
+                />
+              ))}
+              {topology.displayPose.wheelContacts.map((wheel) => (
+                <g key={`wheel-${wheel.id}`}>
+                  <circle
+                    cx={worldX(wheel.centerXM)}
+                    cy={worldY(wheel.centerYM)}
+                    r={wheelRadiusPx}
+                    fill="#1e293b"
+                    stroke={wheel.touching ? "#10b981" : "#38bdf8"}
+                    strokeWidth="4"
+                  />
+                  <circle
+                    cx={worldX(wheel.centerXM)}
+                    cy={worldY(wheel.centerYM)}
+                    r="5"
+                    fill="#94a3b8"
+                  />
+                  <text
+                    x={worldX(wheel.centerXM)}
+                    y={worldY(wheel.centerYM) + 4}
+                    textAnchor="middle"
+                    className="fill-white font-mono text-[9px] font-bold"
+                  >
+                    {wheel.id.toUpperCase()}
+                  </text>
+                </g>
+              ))}
+              <circle cx={hubX} cy={hubY} r="13" fill="#0f172a" stroke="#fbbf24" strokeWidth="3" />
+            </g>
+          ) : (
+            <g data-kamen-svg-direct-wheel="claim-16-withheld">
+              <circle
+                cx={hubX}
+                cy={hubY}
+                r={wheelRadiusPx}
+                fill="#1e293b"
+                stroke="#10b981"
+                strokeWidth="4"
+              />
+              <circle cx={hubX} cy={hubY} r="6" fill="#fbbf24" />
+            </g>
+          )}
 
-          <g transform={`translate(${centerX}, ${hubY - 142})`}>
+          <g transform={`translate(${hubX}, ${hubY}) rotate(${chassisPitchDeg})`}>
+            <line x1="0" y1="0" x2="0" y2="-28" stroke="#64748b" strokeWidth="12" />
             <rect
-              x="-28"
-              y="-15"
-              width="56"
-              height="30"
+              x="-45"
+              y="-52"
+              width="90"
+              height="28"
               rx="6"
               fill={`url(#chassis-grad-${clipId})`}
               stroke="#38bdf8"
               strokeWidth="2"
             />
-            <rect x="-20" y="-67" width="14" height="55" rx="4" fill="#0369a1" stroke="#38bdf8" />
+            <rect x="-35" y="-86" width="58" height="15" rx="4" fill="#0369a1" stroke="#38bdf8" />
+            <rect x="-28" y="-75" width="13" height="26" rx="3" fill="#334155" />
             <line
-              x1="15"
-              y1="-5"
-              x2="28"
-              y2="-45"
+              x1="18"
+              y1="-40"
+              x2="26"
+              y2="-178"
               stroke="#f59e0b"
               strokeLinecap="round"
-              strokeWidth="3"
+              strokeWidth="6"
             />
-            <circle cx="28" cy="-45" r="4" fill="#f59e0b" />
+            <line x1="0" y1="-178" x2="52" y2="-178" stroke="#f59e0b" strokeWidth="6" />
+            <circle
+              cx="0"
+              cy={-KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.systemCentreOffsetM * pixelsPerMeter}
+              r="9"
+              fill={topology.balanceLoopActive ? "#10b981" : "#f59e0b"}
+              stroke="#ffffff"
+              strokeWidth="2"
+            />
           </g>
-          <circle
-            cx={centerX}
-            cy={hubY - 142}
-            r="9"
-            fill={topology.balanceLoopActive ? "#10b981" : "#f59e0b"}
-            stroke="#ffffff"
-            strokeWidth="2"
-          />
 
           <text
             x="20"
@@ -206,7 +300,16 @@ export function KamenTransporterSim({
             CLAIMS: {topology.sourceClaimNumbers.join(", ")}
           </text>
           <text x="20" y="94" className="fill-ink-500 font-mono text-[9px] dark:fill-parchment-400">
-            SCHEMATIC POSE ONLY — NO TORQUE, SPEED, ANGLE, OR STABILITY VALUE IS ASSERTED.
+            CONTACT: {topology.displayPose.contactWheelIds.join(" + ").toUpperCase()} —{" "}
+            {topology.displayPose.sourceFigure.toUpperCase()}
+          </text>
+          <text
+            x="20"
+            y="108"
+            className="fill-ink-500 font-mono text-[9px] dark:fill-parchment-400"
+          >
+            {kamenTransporterRuntimeLabel(topology.runtimeSource).toUpperCase()} — FORCE, FRICTION,
+            IMPACT &amp; CONTROL RESPONSE WITHHELD.
           </text>
         </svg>
       </div>
@@ -217,7 +320,7 @@ export function KamenTransporterSim({
             <label htmlFor="kamen-topology-state" className="font-bold">
               Claim-reading state
             </label>
-            <span className="text-[10px] text-ink-500 dark:text-ink-400">QUALITATIVE</span>
+            <span className="text-[10px] text-ink-500 dark:text-ink-400">SOURCE POSES</span>
           </div>
           <div id="kamen-topology-state" className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
             {KAMEN_TRANSPORTER_TOPOLOGY_STATES.map((state, index) => (
@@ -241,9 +344,10 @@ export function KamenTransporterSim({
         <div className="rounded-lg border border-parchment-200 bg-parchment-100 p-3 text-ink-700 dark:border-ink-800 dark:bg-ink-900 dark:text-parchment-200">
           <p className="font-bold">Source boundary</p>
           <p className="mt-1 leading-relaxed text-[11px] text-ink-600 dark:text-ink-400">
-            The checked claims describe a control loop, independently controlled ground-contacting
-            wheels, cluster positioning, and a stair state sequence. They do not publish a drive
-            rating, response law, operating speed, or stability margin.
+            Table 1 prints the nominal 3.81-inch wheel radius, 5.581-inch carrier radius, 6.85-inch
+            rise, and 10.9-inch tread. The generic fs-mbd owner checks those rigid horizontal
+            contacts; force, friction, impact, compliance, motor, sensor, and controller results
+            remain withheld.
           </p>
         </div>
 

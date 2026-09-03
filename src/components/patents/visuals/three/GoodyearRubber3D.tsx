@@ -9,25 +9,15 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import {
+  type GoodyearRubberCameraPreset,
+  goodyearRubberCameraForViewport,
+} from "./goodyearRubberCamera";
 import { buildGoodyearRubberModel, updateGoodyearRubberKinematics } from "./goodyearRubberModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset = "iso" | "chains" | "bridges" | "clamps" | "stress_vectors" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [6, 4, 7], target: [0, 0, 0] },
-  chains: { pos: [0, 1.5, 3.5], target: [0, 0, 0] },
-  bridges: { pos: [1.2, 0.8, 2.0], target: [0.5, 0, 0] },
-  clamps: { pos: [4.5, 1.5, 3.0], target: [2.5, 0, 0] },
-  stress_vectors: { pos: [0, 5.0, 4.0], target: [0, 0, 0] },
-  top: { pos: [0, 9.0, 0.1], target: [0, 0, 0] },
-};
 
 export function GoodyearRubber3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -40,7 +30,7 @@ export function GoodyearRubber3D() {
   const sulfurWeightPct = params.sulfurPct ?? 8;
   const cureTemperatureCelsius = params.vulcanTemp ?? 145;
   const appliedTensileStretch = params.appliedTensileStretch ?? 1.8;
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<GoodyearRubberCameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const crateSource = useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
@@ -90,9 +80,9 @@ export function GoodyearRubber3D() {
     specimenTempC: params.specimenTempC ?? 35,
   });
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: GoodyearRubberCameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = goodyearRubberCameraForViewport(preset, containerRef.current?.clientWidth ?? 0);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -106,7 +96,7 @@ export function GoodyearRubber3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = goodyearRubberCameraForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -161,6 +151,17 @@ export function GoodyearRubber3D() {
     };
   }, [live]);
 
+  useEffect(() => {
+    const restoreResponsiveCamera = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const cfg = goodyearRubberCameraForViewport(activeCamera, container.clientWidth);
+      studioRef.current?.controls.setView(cfg.pos, cfg.target);
+    };
+    window.addEventListener("resize", restoreResponsiveCamera);
+    return () => window.removeEventListener("resize", restoreResponsiveCamera);
+  }, [activeCamera]);
+
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
       <PortHamiltonianEnergyStrip
@@ -188,7 +189,7 @@ export function GoodyearRubber3D() {
                 ["clamps", "Tensile Grips"],
                 ["stress_vectors", "Stress Field"],
                 ["top", "Top View"],
-              ] as [CameraPreset, string][]
+              ] as [GoodyearRubberCameraPreset, string][]
             ).map(([preset, label]) => (
               <button
                 key={preset}

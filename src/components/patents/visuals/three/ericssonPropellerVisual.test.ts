@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import { stepEricssonPropeller } from "@/physics/catalogKernels";
 import {
   buildEricssonPropellerModel,
@@ -64,6 +65,65 @@ describe("US 588 John Ericsson Screw Propeller visual & hydrodynamics boundary",
     expect(threeSource).toContain("Ericsson Spiral-Plate Reader Aid 3D");
     expect(threeSource).toContain("Source-bounded reader aid");
     expect(threeSource).toContain("Source spiral");
+  });
+
+  test("frames the source sternpost and rudder clear of the desktop reader controls", () => {
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "EricssonPropeller3D.tsx"),
+      "utf8",
+    );
+
+    // This locks the default view observed at the 1214 × 460 desktop canvas.
+    // The top reader toolbar ends at local y=65; the lower-right telemetry rail
+    // begins at x=750, y=328. The source-model sternpost and rudder must remain
+    // outside those occupied regions rather than being hidden behind them.
+    expect(threeSource).toContain("iso: { pos: [11.5, 8.0, 13.5], target: [1.4, 0.35, 0] },");
+
+    const model = buildEricssonPropellerModel();
+    model.rootGroup.updateMatrixWorld(true);
+
+    const canvasWidth = 1214;
+    const canvasHeight = 460;
+    const camera = new THREE.PerspectiveCamera(42, canvasWidth / canvasHeight, 0.1, 1000);
+    camera.position.set(11.5, 8.0, 13.5);
+    camera.lookAt(1.4, 0.35, 0);
+    camera.updateProjectionMatrix();
+    camera.updateMatrixWorld(true);
+
+    const projectBounds = (object: THREE.Object3D) => {
+      const bounds = new THREE.Box3().setFromObject(object);
+      const corners = [
+        new THREE.Vector3(bounds.min.x, bounds.min.y, bounds.min.z),
+        new THREE.Vector3(bounds.min.x, bounds.min.y, bounds.max.z),
+        new THREE.Vector3(bounds.min.x, bounds.max.y, bounds.min.z),
+        new THREE.Vector3(bounds.min.x, bounds.max.y, bounds.max.z),
+        new THREE.Vector3(bounds.max.x, bounds.min.y, bounds.min.z),
+        new THREE.Vector3(bounds.max.x, bounds.min.y, bounds.max.z),
+        new THREE.Vector3(bounds.max.x, bounds.max.y, bounds.min.z),
+        new THREE.Vector3(bounds.max.x, bounds.max.y, bounds.max.z),
+      ].map((corner) => {
+        corner.project(camera);
+        return {
+          x: ((corner.x + 1) / 2) * canvasWidth,
+          y: ((1 - corner.y) / 2) * canvasHeight,
+        };
+      });
+      return {
+        left: Math.min(...corners.map((corner) => corner.x)),
+        right: Math.max(...corners.map((corner) => corner.x)),
+        top: Math.min(...corners.map((corner) => corner.y)),
+        bottom: Math.max(...corners.map((corner) => corner.y)),
+      };
+    };
+
+    const sternpostBounds = projectBounds(model.hullGroup);
+    const rudderBounds = projectBounds(model.rudderMesh);
+
+    expect(sternpostBounds.top).toBeGreaterThan(65);
+    expect(rudderBounds.right).toBeLessThan(750);
+    expect(rudderBounds.bottom).toBeLessThan(328);
+
+    model.dispose();
   });
 
   test("marks hydrodynamic output as illustrative while preserving the printed geometry", () => {

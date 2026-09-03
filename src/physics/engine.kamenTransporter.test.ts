@@ -29,7 +29,7 @@ describe("Kamen transporter public source-bound engine boundary", () => {
       clusterTopologyActive: true,
       stairSequenceActive: true,
       wheelControlMode: "balance-and-cluster-coordination",
-      sourceClaimNumbers: [21, 22, 26],
+      sourceClaimNumbers: [20, 21, 22, 26],
     });
     expect(Object.keys(state).sort()).toEqual(
       [

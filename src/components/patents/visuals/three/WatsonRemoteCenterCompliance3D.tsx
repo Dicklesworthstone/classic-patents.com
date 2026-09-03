@@ -146,22 +146,27 @@ export function WatsonRemoteCenterCompliance3D() {
       data-law-owner="fs-solid::Rod (material/load inputs absent; topology-only host pose)"
       className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl"
     >
-      <div className="relative min-h-[740px] sm:min-h-[540px]">
-        <div ref={containerRef} className="absolute inset-x-0 top-0 bottom-[350px] sm:inset-0" />
-        <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-3 sm:inset-x-5 sm:top-5">
-          <div className="rounded-xl border border-cyan-700/70 bg-slate-950/90 px-3 py-2 backdrop-blur">
-            <p className="font-mono text-[10px] tracking-[0.16em] text-cyan-300">
-              US 4,098,001 · PROCEDURAL 3D
-            </p>
-            <p className="mt-1 text-sm font-medium text-white">Remote-center flexure topology</p>
-          </div>
-          <div className="hidden max-w-xs rounded-xl border border-rose-800/70 bg-rose-950/90 px-3 py-2 text-right text-[11px] leading-4 text-rose-100 backdrop-blur sm:block">
-            fs-solid rod law identified; SI solve refused because the source omits section,
-            material, load, and contact inputs.
+      <div className="relative min-h-[740px] sm:min-h-0 lg:grid lg:min-h-[540px]">
+        <div className="relative h-[390px] sm:h-[540px] lg:col-start-1 lg:row-start-1">
+          <div ref={containerRef} className="absolute inset-0" />
+          <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-3 sm:inset-x-5 sm:top-5">
+            <div className="rounded-xl border border-cyan-700/70 bg-slate-950/90 px-3 py-2 backdrop-blur">
+              <p className="font-mono text-[10px] tracking-[0.16em] text-cyan-300">
+                US 4,098,001 · PROCEDURAL 3D
+              </p>
+              <p className="mt-1 text-sm font-medium text-white">Remote-center flexure topology</p>
+            </div>
+            <div className="hidden max-w-xs rounded-xl border border-rose-800/70 bg-rose-950/90 px-3 py-2 text-right text-[11px] leading-4 text-rose-100 backdrop-blur sm:block">
+              fs-solid rod law identified; SI solve refused because the source omits section,
+              material, load, and contact inputs.
+            </div>
           </div>
         </div>
 
-        <div className="absolute bottom-3 left-3 right-3 grid max-h-[340px] gap-3 overflow-y-auto rounded-xl border border-slate-700/80 bg-slate-950/90 p-3 backdrop-blur sm:bottom-5 sm:left-5 sm:right-5 sm:max-h-none lg:grid-cols-[1fr_auto]">
+        <div
+          data-testid="watson-rcc-controls"
+          className="absolute bottom-3 left-3 right-3 grid max-h-[340px] gap-3 overflow-y-auto rounded-xl border border-slate-700/80 bg-slate-950/90 p-3 backdrop-blur sm:static sm:mx-5 sm:my-5 sm:max-h-none lg:col-start-1 lg:row-start-1 lg:z-10 lg:mx-5 lg:my-0 lg:mb-5 lg:self-end lg:grid-cols-[1fr_auto]"
+        >
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             <label className="text-xs text-slate-200">
               Contact-guided sequence{" "}

@@ -261,7 +261,7 @@ describe("US 4,098,001 remote-center compliance visual", () => {
     expect(source).toContain("remote center 50");
   });
 
-  test("reserves a usable portrait model viewport above scrollable controls", () => {
+  test("keeps tablet controls below, not over, the RCC model canvas", () => {
     const source = readFileSync(
       join(
         process.cwd(),
@@ -269,9 +269,19 @@ describe("US 4,098,001 remote-center compliance visual", () => {
       ),
       "utf8",
     );
-    expect(source).toContain("min-h-[740px] sm:min-h-[540px]");
-    expect(source).toContain("bottom-[350px] sm:inset-0");
+    expect(source).toContain("min-h-[740px] sm:min-h-0 lg:grid lg:min-h-[540px]");
+    expect(source).toContain("relative h-[390px] sm:h-[540px] lg:col-start-1 lg:row-start-1");
+    expect(source).toContain('ref={containerRef} className="absolute inset-0"');
     expect(source).toContain("max-h-[340px]");
+    expect(source).toContain('data-testid="watson-rcc-controls"');
+    // At tablet widths, the 540 px canvas is a complete visual surface and
+    // all live controls follow it in normal flow. Desktop reuses the compact
+    // overlay grid cell; portrait retains its explicitly reserved lower space.
+    expect(source).toContain("sm:static sm:mx-5 sm:my-5 sm:max-h-none");
+    expect(source).toContain(
+      "lg:col-start-1 lg:row-start-1 lg:z-10 lg:mx-5 lg:my-0 lg:mb-5 lg:self-end",
+    );
+    expect(source).not.toContain("sm:inset-0");
     expect(source).toContain('view === "overview" ? 1.4 : 1.22');
     expect(source).toContain('data-testid="watson-rcc-three"');
     expect(source).toContain("data-tip-contact-gap");

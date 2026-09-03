@@ -9,7 +9,16 @@ import {
   type StudioContext,
 } from "@/components/patents/visuals/three/ThreeStudioScene";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
-import { readCrumpFdmControls, stepCrumpFdmSi } from "@/physics/crumpFdmKernel";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
+import { wasmSurfaceForPatent } from "@/physics/coverageManifest";
+import { CRUMP_FDM_SCENARIO_NOTE, readCrumpFdmControls } from "@/physics/crumpFdmKernel";
+import {
+  type CrumpFdmKernelSource,
+  crumpFdmKernelSource,
+  crumpFdmRuntimeLabel,
+  ensureCrumpFdmWasm,
+  stepCrumpFdmPhysics,
+} from "@/physics/crumpFdmWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -21,16 +30,30 @@ const PATENT_ID = "us-5121329-crump-fdm";
 export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 39: true });
+  const { effectiveParams, claimStates, claimConstraintResult, updateParam } =
+    usePatentPhysics(patentId);
+  const liveParams = useLiveSimParams(effectiveParams);
 
-  const { params, updateParam } = usePatentPhysics(patentId);
-  const liveParams = useLiveSimParams(params);
-
-  const controls = useMemo(() => readCrumpFdmControls(params), [params]);
-  const telemetry = useMemo(() => stepCrumpFdmSi(controls), [controls]);
+  const controls = useMemo(() => readCrumpFdmControls(effectiveParams), [effectiveParams]);
+  const [kernelSource, setKernelSource] = useState<CrumpFdmKernelSource>(crumpFdmKernelSource);
+  const telemetry = useMemo(
+    () => stepCrumpFdmPhysics(controls, kernelSource),
+    [controls, kernelSource],
+  );
   const equations = useMemo(() => ALL_COLORIZED_EQUATIONS[patentId] ?? [], [patentId]);
 
   useFrankenSimPhysics(patentId);
+
+  useEffect(() => {
+    if (!wasmSurfaceForPatent(patentId)) return;
+    let active = true;
+    void ensureCrumpFdmWasm().then((nextSource) => {
+      if (active) setKernelSource(nextSource);
+    });
+    return () => {
+      active = false;
+    };
+  }, [patentId]);
 
   const [cameraPreset, setCameraPreset] = useState<CrumpCameraPreset>("isometric");
 
@@ -63,7 +86,7 @@ export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
       if (!studio.isVisible()) return;
       const { simTimeSec } = clock.pump(now);
       const activeControls = readCrumpFdmControls(liveParams.current);
-      const activeTelemetry = stepCrumpFdmSi(activeControls);
+      const activeTelemetry = stepCrumpFdmPhysics(activeControls);
 
       model.update(activeControls, activeTelemetry, simTimeSec);
       orbitControls.update();
@@ -100,7 +123,23 @@ export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div
+      className="flex flex-col gap-4"
+      data-testid="crump-fdm-three"
+      data-crump-claim1-topology={telemetry.claim1ApparatusPresent ? "present" : "withheld"}
+      data-crump-claim2-heating={telemetry.claim2HeatingMeansPresent ? "present" : "withheld"}
+      data-crump-claim39-tip={telemetry.claim39PlanarGapPresent ? "planar" : "rounded"}
+      data-crump-extruding={telemetry.isExtruding ? "true" : "false"}
+      data-crump-layer-gap-mm={controls.layerHeightMm.toFixed(3)}
+      data-crump-flow-mm3-s={telemetry.volumetricFlowRateMm3S.toFixed(6)}
+      data-crump-pressure-mpa={telemetry.nozzlePressureDropMPa.toFixed(6)}
+      data-crump-runtime-source={telemetry.runtimeSource}
+      data-crump-capillary-owner={telemetry.capillaryOwner}
+      data-crump-thermal-owner={telemetry.thermalOwner}
+      data-crump-capillary-boundary={telemetry.capillaryBoundary}
+      data-crump-thermal-boundary={telemetry.thermalBoundary}
+      data-crump-world-support="chassis-base-posts-crown"
+    >
       {/* 3D Viewport with HUD */}
       <div className="relative min-h-[360px] w-full overflow-hidden rounded-2xl border border-stone-800 bg-stone-950 shadow-2xl sm:min-h-0 sm:aspect-[16/9]">
         <div ref={containerRef} className="h-full w-full" />
@@ -208,6 +247,29 @@ export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
       {/* Physics Telemetry Badge */}
       <PhysicsTelemetryBadge patentId={patentId} equations={equations} />
 
+      <div className="grid gap-2 text-[11px] leading-4 sm:grid-cols-2">
+        <div className="rounded-lg border border-emerald-800/70 bg-emerald-950/30 p-3 text-emerald-100">
+          <span className="font-mono font-bold text-emerald-300">GENERIC LAW OWNERS</span>
+          <p className="mt-1">
+            {crumpFdmRuntimeLabel(telemetry.runtimeSource)} · {telemetry.capillaryOwner} ·{" "}
+            {telemetry.thermalOwner}
+          </p>
+        </div>
+        <div className="rounded-lg border border-rose-800/70 bg-rose-950/30 p-3 text-rose-100">
+          <span className="font-mono font-bold text-rose-300">MODEL BOUNDARY</span>
+          <p className="mt-1">
+            {CRUMP_FDM_SCENARIO_NOTE} No shear-thinning, entrance loss, contact resistance, phase
+            change, bond strength, or historic performance is inferred.
+          </p>
+        </div>
+      </div>
+
+      {claimConstraintResult.refusalWarning && (
+        <div className="rounded-lg border border-rose-700/70 bg-rose-950/50 p-3 text-xs leading-5 text-rose-100">
+          {claimConstraintResult.refusalWarning}
+        </div>
+      )}
+
       {/* Sliders Grid */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl border border-stone-800 bg-stone-900/60 p-3">
@@ -277,7 +339,7 @@ export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
           patentId={patentId}
           claimStates={claimStates}
           onClaimStateChange={(num, active) =>
-            setClaimStates((prev) => ({ ...prev, [num]: active }))
+            updateParam(claimConstraintStateParamId(num), active ? 1 : 0)
           }
         />
       </div>

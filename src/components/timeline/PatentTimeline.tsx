@@ -53,19 +53,40 @@ export function PatentTimeline() {
     }
   }, [filteredPatents, selectedPatentId]);
 
+  const selectIndex = useCallback(
+    (index: number) => {
+      const bounded = Math.max(0, Math.min(filteredPatents.length - 1, index));
+      if (filteredPatents[bounded]) {
+        setSelectedPatentId(filteredPatents[bounded].id);
+      }
+    },
+    [filteredPatents],
+  );
+
   const selectPrevious = useCallback(() => {
-    if (currentFilteredIndex > 0) {
-      setSelectedPatentId(filteredPatents[currentFilteredIndex - 1].id);
-    }
-  }, [currentFilteredIndex, filteredPatents]);
+    selectIndex(currentFilteredIndex - 1);
+  }, [currentFilteredIndex, selectIndex]);
 
   const selectNext = useCallback(() => {
-    if (currentFilteredIndex < filteredPatents.length - 1) {
-      setSelectedPatentId(filteredPatents[currentFilteredIndex + 1].id);
-    }
-  }, [currentFilteredIndex, filteredPatents]);
+    selectIndex(currentFilteredIndex + 1);
+  }, [currentFilteredIndex, selectIndex]);
 
-  // Keyboard navigation: Left/Right arrows
+  const selectFirst = useCallback(() => {
+    selectIndex(0);
+  }, [selectIndex]);
+
+  const selectLast = useCallback(() => {
+    selectIndex(filteredPatents.length - 1);
+  }, [filteredPatents.length, selectIndex]);
+
+  const stepBy = useCallback(
+    (delta: number) => {
+      selectIndex(currentFilteredIndex + delta);
+    },
+    [currentFilteredIndex, selectIndex],
+  );
+
+  // Keyboard navigation: Left/Right arrows, Home/End, PageUp/PageDown
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target;
@@ -77,7 +98,7 @@ export function PatentTimeline() {
       ) {
         return;
       }
-      // Never steal arrows while a modal dialog owns the interaction.
+      // Never steal keys while a modal dialog owns the interaction.
       if (typeof document !== "undefined" && document.querySelector("dialog[open]")) return;
       if (e.key === "ArrowLeft") {
         e.preventDefault();
@@ -85,11 +106,23 @@ export function PatentTimeline() {
       } else if (e.key === "ArrowRight") {
         e.preventDefault();
         selectNext();
+      } else if (e.key === "Home") {
+        e.preventDefault();
+        selectFirst();
+      } else if (e.key === "End") {
+        e.preventDefault();
+        selectLast();
+      } else if (e.key === "PageUp") {
+        e.preventDefault();
+        stepBy(-5);
+      } else if (e.key === "PageDown") {
+        e.preventDefault();
+        stepBy(5);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectPrevious, selectNext]);
+  }, [selectPrevious, selectNext, selectFirst, selectLast, stepBy]);
 
   return (
     <div className="space-y-8">
@@ -131,6 +164,56 @@ export function PatentTimeline() {
             {currentFilteredIndex + 1}
           </span>{" "}
           of {filteredPatents.length}
+        </div>
+      </div>
+
+      {/* Interactive Timeline Milestone Scrubber */}
+      <div
+        data-testid="timeline-scrubber"
+        className="p-4 rounded-2xl bg-parchment-100/90 dark:bg-ink-900/80 border border-parchment-300 dark:border-ink-800 shadow-xs space-y-3"
+      >
+        <div className="flex items-center justify-between text-xs font-mono">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-amber-700 dark:text-amber-400 text-sm">
+              {selectedPatent.grantDate.split("-")[0]}
+            </span>
+            <span className="text-ink-400 dark:text-ink-500">·</span>
+            <span className="font-serif font-bold text-ink-900 dark:text-parchment-100 truncate max-w-[220px] sm:max-w-md">
+              {selectedPatent.shortTitle}
+            </span>
+          </div>
+          <div className="text-ink-600 dark:text-ink-400">
+            Milestone {currentFilteredIndex + 1} of {filteredPatents.length}
+          </div>
+        </div>
+
+        <div className="relative flex items-center">
+          <input
+            type="range"
+            min={0}
+            max={filteredPatents.length - 1}
+            value={currentFilteredIndex >= 0 ? currentFilteredIndex : 0}
+            onChange={(e) => selectIndex(Number(e.target.value))}
+            aria-label="Timeline milestone scrubber"
+            aria-valuemin={1}
+            aria-valuemax={filteredPatents.length}
+            aria-valuenow={currentFilteredIndex + 1}
+            aria-valuetext={`${selectedPatent.shortTitle} (${selectedPatent.grantDate.split("-")[0]})`}
+            className="w-full h-2.5 bg-parchment-300 dark:bg-ink-800 rounded-lg appearance-none cursor-pointer accent-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+          />
+        </div>
+
+        {/* Milestone Key Anchors */}
+        <div className="flex justify-between text-[10px] font-mono text-ink-500 dark:text-ink-400 pt-0.5">
+          <span>{filteredPatents[0]?.grantDate.split("-")[0] || "1769"}</span>
+          <span className="hidden sm:inline">1836 (Colt)</span>
+          <span className="hidden md:inline">1876 (Bell)</span>
+          <span className="hidden sm:inline">1906 (Wright)</span>
+          <span className="hidden md:inline">1947 (Transistor)</span>
+          <span className="hidden lg:inline">1977 (Apple)</span>
+          <span>
+            {filteredPatents[filteredPatents.length - 1]?.grantDate.split("-")[0] || "2009"}
+          </span>
         </div>
       </div>
 

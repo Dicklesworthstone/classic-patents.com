@@ -327,7 +327,7 @@ describe("US 3,541,541 Douglas Engelbart Computer Mouse visual & resolver kinema
     model.dispose();
   });
 
-  test("maps shared Claim 1 inversion to a visible one-axis refusal without inventing trackball slip", () => {
+  test("maps shared Claim 1 inversion to a visible one-axis refusal without inventing trackball slip or chassis wobble", () => {
     const constrained = applyClaimConstraintModifications(
       "us-3541541-engelbart-mouse",
       { mouseSpeed: 350, wheelRadius: 10, pulsesPerRev: 200 },
@@ -356,7 +356,7 @@ describe("US 3,541,541 Douglas Engelbart Computer Mouse visual & resolver kinema
     expect(Math.abs(model.nodes.yWheelRim.rotation.y)).toBe(0);
     expect(model.nodes.yWheelGroup.visible).toBe(false);
     expect(model.nodes.yWheelGroup.position.y).toBe(model.nodes.xWheelGroup.position.y);
-    expect(model.nodes.mouseGroup.rotation.z).not.toBe(0);
+    expect(model.nodes.mouseGroup.rotation.z).toBe(0);
 
     model.dispose();
   });

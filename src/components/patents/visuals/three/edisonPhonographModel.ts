@@ -15,6 +15,7 @@ export interface EdisonPhonographModel {
   cylinderGroup: THREE.Group;
   soundBoxGroup: THREE.Group;
   stylus: THREE.Mesh;
+  horn: THREE.Mesh;
   rotationReferenceWheel: THREE.Mesh;
   materials: {
     illustrativeBase: THREE.MeshStandardMaterial;
@@ -308,6 +309,7 @@ export function buildEdisonPhonographModel(): EdisonPhonographModel {
     new THREE.ConeGeometry(1.8, 3.6, 24, 1, true),
     illustrativeWarmMetalMat,
   );
+  horn.name = "Illustrative speaking-tube horn";
   horn.rotation.x = -Math.PI / 3.2;
   horn.position.set(0, 1.8, 2.0);
   horn.castShadow = true;
@@ -324,6 +326,7 @@ export function buildEdisonPhonographModel(): EdisonPhonographModel {
     cylinderGroup,
     soundBoxGroup,
     stylus,
+    horn,
     rotationReferenceWheel,
     materials: {
       illustrativeBase: illustrativeBaseMat,

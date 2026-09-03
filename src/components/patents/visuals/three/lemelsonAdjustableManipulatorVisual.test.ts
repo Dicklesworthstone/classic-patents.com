@@ -12,6 +12,30 @@ import { buildLemelsonAdjustableManipulatorModel } from "./lemelsonAdjustableMan
 const ROOT = process.cwd();
 const source = (path: string) => readFileSync(join(ROOT, path), "utf8");
 
+function projectedObjectBounds(root: THREE.Object3D, camera: THREE.PerspectiveCamera) {
+  const projected: THREE.Vector3[] = [];
+  root.traverse((node) => {
+    const positions = (node as THREE.Mesh).geometry?.getAttribute("position");
+    if (!positions) return;
+    const point = new THREE.Vector3();
+    for (let index = 0; index < positions.count; index += 1) {
+      projected.push(
+        point
+          .fromBufferAttribute(positions, index)
+          .applyMatrix4(node.matrixWorld)
+          .project(camera)
+          .clone(),
+      );
+    }
+  });
+  return {
+    minX: Math.min(...projected.map((projectedPoint) => projectedPoint.x)),
+    maxX: Math.max(...projected.map((projectedPoint) => projectedPoint.x)),
+    minY: Math.min(...projected.map((projectedPoint) => projectedPoint.y)),
+    maxY: Math.max(...projected.map((projectedPoint) => projectedPoint.y)),
+  };
+}
+
 describe("US 3,260,375 Lemelson Adjustable Manipulator procedural visual boundary", () => {
   test("fits the whole supported apparatus at phone and tablet canvas widths", () => {
     const distanceFromTarget = (camera: { position: number[]; target: number[] }) =>
@@ -27,9 +51,44 @@ describe("US 3,260,375 Lemelson Adjustable Manipulator procedural visual boundar
     expect(distanceFromTarget(phone)).toBeGreaterThan(distanceFromTarget(tablet));
     // The desktop canvas can keep the entire gantry in frame while moving
     // close enough for the source-claimed wrist and jaw to be legible.
-    expect(desktop).toEqual({ position: [4.9, 3.0, 5.4], target: [0, 1.15, 0] });
+    expect(desktop).toEqual({ position: [6, 3.4, 6.6], target: [0, 0.7, 0] });
     expect(distanceFromTarget(desktop)).toBeLessThan(distanceFromTarget(tablet));
     expect(phone.target).toEqual(tablet.target);
+  });
+
+  test("keeps the named right gantry base and full apparatus above desktop controls", () => {
+    const model = buildLemelsonAdjustableManipulatorModel();
+    try {
+      const view = lemelsonAdjustableManipulatorViewForViewport("overview", 1214);
+      const camera = new THREE.PerspectiveCamera(42, 1214 / 630, 0.1, 1000);
+      camera.position.set(...view.position);
+      camera.lookAt(...view.target);
+      camera.updateProjectionMatrix();
+      camera.updateMatrixWorld();
+
+      const rightGantry = model.root.getObjectByName("Normalized exhibit gantry support 2");
+      expect(rightGantry).toBeInstanceOf(THREE.Object3D);
+
+      for (const [pose, controls] of [
+        ["default", LEMELSON_MANIPULATOR_DEFAULT_CONTROLS],
+        ["rightmost carriage", { ...LEMELSON_MANIPULATOR_DEFAULT_CONTROLS, carriagePosition: 1 }],
+      ] as const) {
+        model.updateState(stepLemelsonManipulatorTopology(controls));
+        model.root.updateMatrixWorld(true);
+        const fullFrame = projectedObjectBounds(model.root, camera);
+        const rightGantryFrame = projectedObjectBounds(rightGantry as THREE.Object3D, camera);
+
+        // NDC +/-1 is the canvas edge. A 0.15+ margin rejects the V21 crop
+        // instead of merely moving the post to a one-pixel gap above controls.
+        expect(fullFrame.minX, `${pose} apparatus left edge`).toBeGreaterThan(-0.85);
+        expect(fullFrame.maxX, `${pose} apparatus right edge`).toBeLessThan(0.85);
+        expect(fullFrame.minY, `${pose} apparatus lower edge`).toBeGreaterThan(-0.85);
+        expect(fullFrame.maxY, `${pose} apparatus upper edge`).toBeLessThan(0.85);
+        expect(rightGantryFrame.minY, `${pose} right gantry base`).toBeGreaterThan(-0.85);
+      }
+    } finally {
+      model.dispose();
+    }
   });
 
   test("builds the procedural 3D model and updates kinematics correctly", () => {

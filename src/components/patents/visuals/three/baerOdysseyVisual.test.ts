@@ -29,6 +29,12 @@ describe("US 3,728,480 Ralph Baer source-apparatus 3D model", () => {
     expect(threeDimensionalSource).not.toContain("sm:absolute sm:bottom-16");
     expect(threeDimensionalSource).toContain('className="shrink-0 p-4');
     expect(threeDimensionalSource).toContain('aria-label="Dot 20 horizontal potentiometer"');
+    expect(threeDimensionalSource).toContain("pb-1 lg:right-56");
+    expect(threeDimensionalSource).toContain(
+      "top-14 right-4 z-10 flex items-center gap-2 lg:top-4",
+    );
+    expect(threeDimensionalSource).not.toContain("sm:right-36");
+    expect(threeDimensionalSource).not.toContain("sm:top-4");
     expect(threeDimensionalSource).not.toContain("English / Ball Spin");
     expect(threeDimensionalSource).not.toContain("Program Card");
   });

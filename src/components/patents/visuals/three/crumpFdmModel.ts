@@ -12,10 +12,15 @@ export interface CrumpFdm3DObjects {
   filamentLine: THREE.Line;
   filamentSegmentMeshes: readonly [THREE.Mesh, THREE.Mesh, THREE.Mesh];
   nozzleMesh: THREE.Mesh;
+  planarNozzleLandMesh: THREE.Mesh;
+  roundedOutletMesh: THREE.Mesh;
   heaterBlockMesh: THREE.Mesh;
+  heaterCoilGroup: THREE.Group;
   driveRollerMesh: THREE.Mesh;
   pinchRollerMesh: THREE.Mesh;
   activeBeadMesh: THREE.Mesh;
+  flattenedRoadMesh: THREE.Mesh;
+  unshearedBeadMesh: THREE.Mesh;
   filamentGuideMesh: THREE.Mesh;
   spoolGroup: THREE.Group;
   spoolSupportGroup: THREE.Group;
@@ -56,6 +61,13 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
     color: 0xb45309,
     metalness: 0.6,
     roughness: 0.35,
+  });
+  const heaterCoilMaterial = new THREE.MeshStandardMaterial({
+    color: 0xef4444,
+    emissive: 0x7f1d1d,
+    emissiveIntensity: 0.9,
+    metalness: 0.45,
+    roughness: 0.3,
   });
 
   const filamentMaterial = new THREE.MeshStandardMaterial({
@@ -111,13 +123,14 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
 
   root.add(frameGroup);
 
-  // 2. Heated Build Bed (Z-Axis Movement)
+  // 2. Article-receiving base plate (normalized modern relative-motion
+  // arrangement allowed by the specification, not a literal Fig. 1 layout).
   const bedGroup = new THREE.Group();
-  bedGroup.name = "HeatedBuildPlatform";
-  bedGroup.position.set(0, 0.5, 0);
+  bedGroup.name = "ArticleReceivingBasePlate10";
+  bedGroup.position.set(0, 0.82, 0);
 
   const bedPlate = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.06, 1.8), bedMaterial);
-  bedPlate.name = "Heated build plate";
+  bedPlate.name = "Article-receiving base plate 10";
   bedGroup.add(bedPlate);
 
   // Two fixed lead screws rise from pillow blocks on the chassis base. Nuts
@@ -232,14 +245,16 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
   motorMesh.position.set(0, 0.45, 0);
   carriageGroup.add(motorMesh);
 
-  // Pinch Drive Rollers (FIG. 2)
+  // Flexible-strand drive roller 134 and idler roller 136 (FIG. 5).
   const rollerGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.04, 24);
   const driveRollerMesh = new THREE.Mesh(rollerGeo, rodMaterial);
+  driveRollerMesh.name = "Drive roller 134";
   driveRollerMesh.rotation.x = Math.PI / 2;
   driveRollerMesh.position.set(-0.08, 0.28, 0.12);
   carriageGroup.add(driveRollerMesh);
 
   const pinchRollerMesh = new THREE.Mesh(rollerGeo, rodMaterial);
+  pinchRollerMesh.name = "Idler roller 136";
   pinchRollerMesh.rotation.x = Math.PI / 2;
   pinchRollerMesh.position.set(0.08, 0.28, 0.12);
   carriageGroup.add(pinchRollerMesh);
@@ -255,16 +270,47 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
   heatsinkMesh.position.y = -0.05;
   carriageGroup.add(heatsinkMesh);
 
-  // Heated Liquefier Block (FIG. 3)
+  // Heating means around the flow passage/outlet (Claim 2; FIG. 5 coil 130).
   const heaterBlockMesh = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.1, 0.2), heaterBlockMaterial);
+  heaterBlockMesh.name = "Claim 2 heating means near flow passage";
   heaterBlockMesh.position.y = -0.2;
   carriageGroup.add(heaterBlockMesh);
 
-  // Brass Nozzle Tip (FIG. 3)
-  const nozzleMesh = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.1, 16), brassMaterial);
-  nozzleMesh.rotation.x = Math.PI;
+  const heaterCoilGroup = new THREE.Group();
+  heaterCoilGroup.name = "Figure 5 electric resistance heater coil 130";
+  for (const y of [-0.17, -0.2, -0.23]) {
+    const turn = new THREE.Mesh(new THREE.TorusGeometry(0.112, 0.012, 8, 28), heaterCoilMaterial);
+    turn.name = "Heater coil 130 turn";
+    turn.rotation.x = Math.PI / 2;
+    turn.position.y = y;
+    heaterCoilGroup.add(turn);
+  }
+  carriageGroup.add(heaterCoilGroup);
+
+  // Outlet nozzle 122 has a capped, substantially planar bottom rather than
+  // the former impossible point tip. Claim 39's larger planar land is a
+  // separately observable geometry probe.
+  const nozzleMesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.06, 0.035, 0.1, 24),
+    brassMaterial,
+  );
+  nozzleMesh.name = "Flow-passage outlet nozzle 122";
   nozzleMesh.position.y = -0.28;
   carriageGroup.add(nozzleMesh);
+
+  const planarNozzleLandMesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.07, 0.07, 0.012, 24),
+    brassMaterial,
+  );
+  planarNozzleLandMesh.name = "Claim 39 substantially planar nozzle bottom";
+  planarNozzleLandMesh.position.y = -0.336;
+  carriageGroup.add(planarNozzleLandMesh);
+
+  const roundedOutletMesh = new THREE.Mesh(new THREE.SphereGeometry(0.043, 20, 12), brassMaterial);
+  roundedOutletMesh.name = "Claim 39-withheld rounded outlet comparison";
+  roundedOutletMesh.position.y = -0.333;
+  roundedOutletMesh.visible = false;
+  carriageGroup.add(roundedOutletMesh);
 
   // Active Extrusion Bead
   const activeBeadMesh = new THREE.Mesh(
@@ -273,7 +319,24 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
     new THREE.CylinderGeometry(0.02, 0.02, 1, 16),
     activeBeadMaterial,
   );
+  activeBeadMesh.name = "Connected outlet-to-layer material bridge";
   carriageGroup.add(activeBeadMesh);
+
+  const flattenedRoadMesh = new THREE.Mesh(
+    new THREE.BoxGeometry(0.24, 0.018, 0.09),
+    activeBeadMaterial,
+  );
+  flattenedRoadMesh.name = "Claim 39 flattened road at maintained gap";
+  bedGroup.add(flattenedRoadMesh);
+
+  const unshearedBeadMesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.038, 0.038, 0.24, 18),
+    activeBeadMaterial,
+  );
+  unshearedBeadMesh.name = "Claim 39-withheld unsheared round bead comparison";
+  unshearedBeadMesh.rotation.z = Math.PI / 2;
+  unshearedBeadMesh.visible = false;
+  bedGroup.add(unshearedBeadMesh);
 
   xBridgeGroup.add(carriageGroup);
   root.add(gantryGroup);
@@ -376,6 +439,22 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
   });
 
   function update(controls: CrumpFdmControls, tel: CrumpFdmTelemetry, simTimeSec: number) {
+    const apparatusVisible = tel.claim1ApparatusPresent;
+    gantryGroup.visible = apparatusVisible;
+    bedGroup.visible = apparatusVisible;
+    zLiftSupportGroup.visible = apparatusVisible;
+    spoolGroup.visible = apparatusVisible;
+    spoolSupportGroup.visible = apparatusVisible;
+    filamentGuideMesh.visible = apparatusVisible;
+    filamentLine.visible = apparatusVisible;
+    filamentSegmentMeshes.forEach((segment) => {
+      segment.visible = apparatusVisible;
+    });
+    heaterBlockMesh.visible = apparatusVisible && tel.claim2HeatingMeansPresent;
+    heaterCoilGroup.visible = apparatusVisible && tel.claim2HeatingMeansPresent;
+    planarNozzleLandMesh.visible = apparatusVisible && tel.claim39PlanarGapPresent;
+    roundedOutletMesh.visible = apparatusVisible && !tel.claim39PlanarGapPresent;
+
     // Toolhead circular/raster motion
     // Stay inside the top layer's 0.333-unit radius so the live bead always
     // lands on material instead of orbiting just outside the vessel wall.
@@ -421,19 +500,29 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
       pinchRollerMesh.quaternion.copy(rollerBaseQuaternion).multiply(rollerSpinQuaternion);
     }
 
-    // Bed Z position follows build height
-    const currentZHeight = 0.5 - controls.layerHeightMm * 0.5;
-    bedGroup.position.y = currentZHeight;
-
-    // Join the brass nozzle tip to the actual top of the layered part. This
-    // is a geometric constraint, not a decorative fixed-length extrusion.
-    const nozzleTipWorldY = gantryGroup.position.y + carriageGroup.position.y - 0.33;
-    const partTopWorldY = bedGroup.position.y + partGroup.position.y + layerCount * 0.02;
-    const beadLength = Math.max(0.02, nozzleTipWorldY - partTopWorldY);
+    // Solve the plate position from the actual layer top and declared working
+    // gap. One display unit represents 10 mm here, so 0.20 mm -> 0.020 units.
+    // This removes the old 4.4 mm free-falling filament pillar.
+    const outletBottomLocalY = tel.claim39PlanarGapPresent
+      ? planarNozzleLandMesh.position.y - 0.006
+      : roundedOutletMesh.position.y - 0.043;
+    const nozzleTipWorldY = gantryGroup.position.y + carriageGroup.position.y + outletBottomLocalY;
+    const visualGap = controls.layerHeightMm * 0.1;
+    const partTopRelativeToBed = partGroup.position.y + layerCount * 0.02;
+    bedGroup.position.y = nozzleTipWorldY - partTopRelativeToBed - visualGap;
+    const partTopWorldY = bedGroup.position.y + partTopRelativeToBed;
+    const beadLength = nozzleTipWorldY - partTopWorldY;
     const beadScaleX = controls.roadWidthMm / 0.45;
     activeBeadMesh.position.y =
       (nozzleTipWorldY + partTopWorldY) / 2 - gantryGroup.position.y - carriageGroup.position.y;
     activeBeadMesh.scale.set(beadScaleX, beadLength, beadScaleX);
+
+    flattenedRoadMesh.visible = tel.isExtruding && tel.claim39PlanarGapPresent;
+    unshearedBeadMesh.visible = tel.isExtruding && !tel.claim39PlanarGapPresent;
+    flattenedRoadMesh.position.set(xPos, partTopRelativeToBed + 0.009, zPos);
+    const unshearedRadialScale = visualGap / (2 * 0.038);
+    unshearedBeadMesh.scale.set(unshearedRadialScale, 1, unshearedRadialScale);
+    unshearedBeadMesh.position.set(xPos, partTopRelativeToBed + visualGap / 2, zPos);
   }
 
   function dispose() {
@@ -442,6 +531,7 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
     bedMaterial.dispose();
     brassMaterial.dispose();
     heaterBlockMaterial.dispose();
+    heaterCoilMaterial.dispose();
     filamentMaterial.dispose();
     printedPartMaterial.dispose();
     activeBeadMaterial.dispose();
@@ -468,10 +558,15 @@ export function createCrumpFdmModel(): CrumpFdm3DObjects {
     filamentLine,
     filamentSegmentMeshes,
     nozzleMesh,
+    planarNozzleLandMesh,
+    roundedOutletMesh,
     heaterBlockMesh,
+    heaterCoilGroup,
     driveRollerMesh,
     pinchRollerMesh,
     activeBeadMesh,
+    flattenedRoadMesh,
+    unshearedBeadMesh,
     filamentGuideMesh,
     spoolGroup,
     spoolSupportGroup,

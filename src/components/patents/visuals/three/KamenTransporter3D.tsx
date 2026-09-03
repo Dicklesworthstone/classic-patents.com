@@ -14,14 +14,22 @@ import {
 } from "@/components/patents/visuals/three/ThreeStudioScene";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
 import { claimConstraintStateParamId } from "@/physics/claimConstraints";
+import { wasmSurfaceForPatent } from "@/physics/coverageManifest";
 import {
   createKamenTransporterTransportUpdater,
   getKamenTransporterTapeState,
+  KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M,
   KAMEN_TRANSPORTER_TOPOLOGY_LABELS,
   KAMEN_TRANSPORTER_TOPOLOGY_STATES,
   readKamenTransporterControls,
-  stepKamenTransporterTopology,
 } from "@/physics/kamenTransporterKernel";
+import {
+  ensureKamenTransporterWasm,
+  type KamenTransporterKernelSource,
+  kamenTransporterKernelSource,
+  kamenTransporterRuntimeLabel,
+  stepKamenTransporterPhysics,
+} from "@/physics/kamenTransporterWasm";
 import { globalTransportBus, useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -38,21 +46,41 @@ export default function KamenTransporter3D({
   const modelRef = useRef<KamenTransporterModel | null>(null);
   const { effectiveParams, claimStates, updateParam } = usePatentPhysics(patentId);
   const controls = useMemo(() => readKamenTransporterControls(effectiveParams), [effectiveParams]);
-  const topology = useMemo(() => stepKamenTransporterTopology(controls), [controls]);
+  const [kernelSource, setKernelSource] = useState<KamenTransporterKernelSource>(
+    kamenTransporterKernelSource,
+  );
+  const topology = useMemo(
+    () => stepKamenTransporterPhysics(controls, kernelSource),
+    [controls, kernelSource],
+  );
   const liveControls = useLiveSimParams(controls);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
 
   useFrankenSimPhysics(patentId);
+
+  useEffect(() => {
+    if (!wasmSurfaceForPatent(patentId)) return;
+    let active = true;
+    void ensureKamenTransporterWasm().then((nextSource) => {
+      if (active) setKernelSource(nextSource);
+    });
+    return () => {
+      active = false;
+    };
+  }, [patentId]);
 
   // This fixed tape carries source-reading state only. It neither derives nor
   // animates a speed, torque, angle, or stability value from the grant.
   useEffect(() => {
     return globalTransportBus.registerUpdater(
       patentId,
-      createKamenTransporterTransportUpdater(() => liveControls.current),
-      "TS_FALLBACK",
+      createKamenTransporterTransportUpdater(
+        () => liveControls.current,
+        stepKamenTransporterPhysics,
+      ),
+      kernelSource === "wasm" ? "WASM" : "TS_FALLBACK",
     );
-  }, [liveControls, patentId]);
+  }, [kernelSource, liveControls, patentId]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -61,8 +89,8 @@ export default function KamenTransporter3D({
     let animationFrameId: number;
     const studio = createThreeStudioScene({
       container: containerRef.current,
-      cameraPos: [1.8, 1.2, 2.2],
-      targetPos: [0, 0.5, 0],
+      cameraPos: [1.35, 1.15, 1.65],
+      targetPos: [0.08, 0.48, 0],
       ambientIntensity: 0.7,
       sunIntensity: 1.5,
     });
@@ -75,7 +103,7 @@ export default function KamenTransporter3D({
     updateKamenTransporterKinematics(
       model,
       initialControls,
-      stepKamenTransporterTopology(initialControls),
+      stepKamenTransporterPhysics(initialControls),
       0,
     );
 
@@ -113,16 +141,16 @@ export default function KamenTransporter3D({
     if (!studioRef.current) return;
     switch (preset) {
       case "overview":
-        studioRef.current.controls.setView([1.8, 1.2, 2.2], [0, 0.5, 0]);
+        studioRef.current.controls.setView([1.35, 1.15, 1.65], [0.08, 0.48, 0]);
         break;
       case "side":
-        studioRef.current.controls.setView([0, 0.5, 2.8], [0, 0.5, 0]);
+        studioRef.current.controls.setView([0, 0.55, 2.25], [0.08, 0.48, 0]);
         break;
       case "balance":
-        studioRef.current.controls.setView([1.2, 0.9, 1.4], [0, 0.85, 0]);
+        studioRef.current.controls.setView([0.9, 1.0, 1.2], [0, 0.55, 0]);
         break;
       case "stairs":
-        studioRef.current.controls.setView([2.4, 1.4, 2.0], [0.8, 0.4, 0]);
+        studioRef.current.controls.setView([1.1, 1.05, 1.6], [0.15, 0.48, 0]);
         break;
     }
   };
@@ -130,7 +158,25 @@ export default function KamenTransporter3D({
   const selectedStateIndex = KAMEN_TRANSPORTER_TOPOLOGY_STATES.indexOf(topology.topologyState);
 
   return (
-    <div className="flex w-full flex-col items-center space-y-4 rounded-2xl border border-parchment-300 bg-parchment-50 p-3 shadow-patent dark:border-ink-800 dark:bg-ink-950 sm:space-y-6 sm:p-6">
+    <div
+      className="flex w-full flex-col items-center space-y-4 rounded-2xl border border-parchment-300 bg-parchment-50 p-3 shadow-patent dark:border-ink-800 dark:bg-ink-950 sm:space-y-6 sm:p-6"
+      data-testid="kamen-transporter-three"
+      data-kamen-state={topology.topologyState}
+      data-kamen-contact-wheels={topology.displayPose.contactWheelIds.join(",")}
+      data-kamen-contact-count={topology.displayPose.contactCount}
+      data-kamen-minimum-gap-m={topology.displayPose.minimumGapM.toFixed(12)}
+      data-kamen-runtime-source={topology.runtimeSource}
+      data-kamen-owner={topology.genericOwner}
+      data-kamen-boundary={topology.runtimeBoundary}
+      data-kamen-source-figure={topology.displayPose.sourceFigure}
+      data-kamen-cluster-topology={topology.clusterTopologyActive ? "present" : "withheld"}
+      data-kamen-balance-loop={topology.balanceLoopActive ? "active" : "withheld"}
+      data-kamen-wheel-count="three-per-lateral-cluster"
+      data-kamen-wheel-radius-m={KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.wheelRadiusM}
+      data-kamen-cluster-radius-m={KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.clusterRadiusM}
+      data-kamen-stair-rise-m={KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairRiseM}
+      data-kamen-stair-tread-m={KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.stairTreadM}
+    >
       <div className="flex w-full flex-col justify-between gap-4 border-b border-parchment-200 pb-4 sm:flex-row sm:items-center dark:border-ink-800">
         <div>
           <div className="flex items-center gap-2">
@@ -138,7 +184,7 @@ export default function KamenTransporter3D({
               US 5,701,965
             </span>
             <span className="font-mono text-xs font-medium text-ink-500 dark:text-ink-400">
-              THREE.JS SOURCE-BOUND TOPOLOGY STUDIO
+              THREE.JS + FS-MBD RIGID-CONTACT STUDIO
             </span>
           </div>
           <h3 className="mt-1 font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
@@ -198,8 +244,16 @@ export default function KamenTransporter3D({
             <span className="font-bold text-emerald-400">CLAIMS:</span>
             <span>{topology.sourceClaimNumbers.join(", ")}</span>
           </div>
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-sky-400">CONTACT:</span>
+            <span>
+              {topology.displayPose.contactWheelIds.join(" + ").toUpperCase()} ·{" "}
+              {topology.displayPose.sourceFigure}
+            </span>
+          </div>
           <p className="max-w-80 pt-1 text-[10px] leading-relaxed text-ink-400">
-            Discrete schematic pose only; the grant supplies no numerical drive or stability result.
+            {kamenTransporterRuntimeLabel(topology.runtimeSource)} · Table 1 dimensions · horizontal
+            support gaps only.
           </p>
         </div>
       </div>
@@ -220,7 +274,7 @@ export default function KamenTransporter3D({
             <label htmlFor="kamen-3d-topology-state" className="font-bold">
               Claim-reading state
             </label>
-            <span className="text-[10px] text-ink-500 dark:text-ink-400">QUALITATIVE</span>
+            <span className="text-[10px] text-ink-500 dark:text-ink-400">SOURCE POSES</span>
           </div>
           <div id="kamen-3d-topology-state" className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
             {KAMEN_TRANSPORTER_TOPOLOGY_STATES.map((state, index) => (
@@ -244,9 +298,10 @@ export default function KamenTransporter3D({
         <div className="rounded-lg border border-parchment-200 bg-parchment-100 p-3 text-ink-700 dark:border-ink-800 dark:bg-ink-900 dark:text-parchment-200">
           <p className="font-bold">Source boundary</p>
           <p className="mt-1 text-[11px] leading-relaxed text-ink-600 dark:text-ink-400">
-            The public claims establish relationships among a control loop, cluster wheels,
-            transfer, and climbing states. The 3D model does not turn that topology into a force,
-            timing, or performance prediction.
+            The grant prints three equal wheels per cluster and nominal wheel, carrier, stair, and
+            centre-offset dimensions. The generic fs-mbd owner checks rigid horizontal support;
+            force, friction, impact, compliance, motor, sensor, and controller results remain
+            withheld.
           </p>
         </div>
 

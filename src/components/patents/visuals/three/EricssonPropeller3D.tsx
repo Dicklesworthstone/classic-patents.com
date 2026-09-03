@@ -30,7 +30,10 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [9.0, 6.0, 10.5], target: [0, 0, 0] },
+  // Pull the default reader view clear of the camera toolbar: the tall
+  // sternpost stays visible while the source-named rudder remains beside the
+  // telemetry rail rather than underneath it.
+  iso: { pos: [11.5, 8.0, 13.5], target: [1.4, 0.35, 0] },
   propeller_drum: { pos: [0, 0.5, 4.2], target: [0, 0, 0] },
   helical_blades: { pos: [2.5, 1.8, 3.0], target: [0.5, 0, 0] },
   sternpost: { pos: [-3.2, 1.2, 3.5], target: [-1.5, 0, 0] },

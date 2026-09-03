@@ -81,6 +81,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 4,921,293 prints four cable tensions, pulley-radius symbols, three static torque equations, and remote-drive topology but no cable speed, motor current, voltage, torque constant, friction, efficiency, duty cycle, contact work, or time response from which a source-faithful SI power-flow channel can be derived.",
   "us-4976582-clavel-delta-robot":
     "US 4,976,582 prints three actuator/linking-member topologies, paired bars, a movable platform, and an optional working-member motor, but no dimensions, mass, inertia, payload, actuator torque or pressure, voltage or current, speed, duty cycle, friction, efficiency, or power datum from which a source-faithful SI energy channel can be derived.",
+  "us-5121329-crump-fdm":
+    "US 5,121,329 prints a heated flow passage, resistance-heater coil, flexible-strand feed, metered discharge, and relative-motion topology but no heater voltage, resistance, duty cycle, mass flow, specific heat, latent heat, convection coefficient, emissivity, motor power, or efficiency from which a closed source-faithful SI energy partition can be derived.",
   "us-2988237-devol-programmed-transfer":
     "US 2,988,237 prints coded-position, program-controller, hydraulic-actuator, transfer-head, and gripper relationships but no reusable hydraulic pressure, flow, actuator dimensions, payload, mass, speed, efficiency, or power datum from which an SI energy channel can be derived.",
   "us-3212649-amf-versatran":
@@ -735,29 +737,6 @@ export function energyChannelsFor(
 
   if (patentId === "us-4575330-hull-stereolithography") {
     return [];
-  }
-
-  if (patentId === "us-5121329-crump-fdm") {
-    const nozzleTemp = typeof params.nozzleTempC === "number" ? params.nozzleTempC : 225.0;
-    const printSpeed = typeof params.printSpeedMmS === "number" ? params.printSpeedMmS : 45.0;
-    const heaterPowerW = Math.max(10.0, 35.0 * ((nozzleTemp - 25.0) / 200.0));
-    const polymerMeltingW = heaterPowerW * 0.65;
-    const thermalLossW = heaterPowerW * 0.35;
-    const mechanicalFeedW = 0.8 + (printSpeed / 50.0) * 0.6;
-    return [
-      { name: "Liquefier Electrical Heating Input", watts: heaterPowerW, tone: "in" },
-      { name: "Extruder Stepper Mechanical Drive Power", watts: mechanicalFeedW, tone: "in" },
-      {
-        name: "Thermoplastic Polymer Sensible Heating & Latent Fusion",
-        watts: polymerMeltingW,
-        tone: "useful",
-      },
-      {
-        name: "Heater Block Convective & Radiative Thermal Loss",
-        watts: thermalLossW,
-        tone: "loss",
-      },
-    ];
   }
 
   return [];

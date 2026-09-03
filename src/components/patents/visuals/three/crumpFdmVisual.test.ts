@@ -41,10 +41,15 @@ describe("US 5,121,329 Crump FDM Procedural 3D Visual Model", () => {
     expect(model.zLiftSupportGroup.parent).toBe(model.root);
     expect(model.partGroup).toBeDefined();
     expect(model.nozzleMesh).toBeDefined();
+    expect(model.planarNozzleLandMesh).toBeDefined();
+    expect(model.roundedOutletMesh).toBeDefined();
     expect(model.heaterBlockMesh).toBeDefined();
+    expect(model.heaterCoilGroup.children).toHaveLength(3);
     expect(model.driveRollerMesh).toBeDefined();
     expect(model.pinchRollerMesh).toBeDefined();
     expect(model.activeBeadMesh).toBeDefined();
+    expect(model.flattenedRoadMesh).toBeDefined();
+    expect(model.unshearedBeadMesh).toBeDefined();
     expect(model.filamentLine).toBeDefined();
     expect(model.filamentSegmentMeshes).toHaveLength(3);
     expect(model.filamentGuideMesh.parent).toBe(model.root);
@@ -113,13 +118,13 @@ describe("US 5,121,329 Crump FDM Procedural 3D Visual Model", () => {
     expect(bounds(leftBearing).intersectsBox(bounds(frontRail))).toBe(true);
     expect(bounds(leftBearing).intersectsBox(bounds(rearRail))).toBe(true);
 
-    const buildPlate = model.root.getObjectByName("Heated build plate");
+    const articleReceivingBasePlate = model.root.getObjectByName("Article-receiving base plate 10");
     for (const side of ["left", "right"]) {
       const screw = model.root.getObjectByName(`Build-platform Z lead screw ${side}`);
       const nut = model.root.getObjectByName(`Build-platform Z carriage nut ${side}`);
       const baseBearing = model.root.getObjectByName(`Z lead-screw base bearing ${side}`);
       expect(bounds(nut).intersectsBox(bounds(screw))).toBe(true);
-      expect(bounds(nut).intersectsBox(bounds(buildPlate))).toBe(true);
+      expect(bounds(nut).intersectsBox(bounds(articleReceivingBasePlate))).toBe(true);
       expect(bounds(baseBearing).intersectsBox(bounds(screw))).toBe(true);
     }
 
@@ -144,23 +149,88 @@ describe("US 5,121,329 Crump FDM Procedural 3D Visual Model", () => {
       expect(end.z).toBeCloseTo(path.getZ(index + 1), 6);
     }
 
-    const nozzleTipWorldY = model.gantryGroup.position.y + model.carriageGroup.position.y - 0.33;
-    const partTopWorldY =
-      model.bedGroup.position.y +
-      model.partGroup.position.y +
-      model.partGroup.children.length * 0.02;
-    const beadCenterWorldY =
-      model.gantryGroup.position.y +
-      model.carriageGroup.position.y +
-      model.activeBeadMesh.position.y;
-    expect(beadCenterWorldY + model.activeBeadMesh.scale.y / 2).toBeCloseTo(nozzleTipWorldY, 8);
-    expect(beadCenterWorldY - model.activeBeadMesh.scale.y / 2).toBeCloseTo(partTopWorldY, 8);
+    model.root.updateMatrixWorld(true);
+    const nozzleLandBounds = new THREE.Box3().setFromObject(model.planarNozzleLandMesh);
+    const partBounds = new THREE.Box3().setFromObject(model.partGroup);
+    const activeBeadBounds = new THREE.Box3().setFromObject(model.activeBeadMesh);
+    // The visible bridge must meet the actual planar-land bottom and the actual
+    // current-layer top, not a duplicated approximation of either coordinate.
+    expect(activeBeadBounds.max.y).toBeCloseTo(nozzleLandBounds.min.y, 8);
+    expect(activeBeadBounds.min.y).toBeCloseTo(partBounds.max.y, 8);
+    expect(nozzleLandBounds.min.y - partBounds.max.y).toBeCloseTo(
+      CRUMP_FDM_DEFAULT_CONTROLS.layerHeightMm * 0.1,
+      8,
+    );
+    expect(model.flattenedRoadMesh.visible).toBe(true);
+    expect(model.unshearedBeadMesh.visible).toBe(false);
 
     // Test refusal / inactive extrusion hides bead
     const stoppedTel = { ...tel, isExtruding: false };
     model.update(CRUMP_FDM_DEFAULT_CONTROLS, stoppedTel, 2.0);
     expect(model.activeBeadMesh.visible).toBe(false);
 
+    model.dispose();
+  });
+
+  test("renders a flat Claim 39 outlet and distinct, non-fabricated claim comparisons", () => {
+    const model = createCrumpFdmModel();
+    const defaultTelemetry = stepCrumpFdmSi(CRUMP_FDM_DEFAULT_CONTROLS);
+    model.update(CRUMP_FDM_DEFAULT_CONTROLS, defaultTelemetry, 0.5);
+
+    expect(model.nozzleMesh.geometry.type).toBe("CylinderGeometry");
+    expect(model.planarNozzleLandMesh.geometry.type).toBe("CylinderGeometry");
+    expect(model.planarNozzleLandMesh.visible).toBe(true);
+    expect(model.roundedOutletMesh.visible).toBe(false);
+    expect(model.heaterBlockMesh.visible).toBe(true);
+    expect(model.heaterCoilGroup.visible).toBe(true);
+    expect(model.gantryGroup.visible).toBe(true);
+
+    const claim39Controls = {
+      ...CRUMP_FDM_DEFAULT_CONTROLS,
+      claim39PlanarNozzleEnabled: 0,
+    };
+    model.update(claim39Controls, stepCrumpFdmSi(claim39Controls), 0.5);
+    expect(model.planarNozzleLandMesh.visible).toBe(false);
+    expect(model.roundedOutletMesh.visible).toBe(true);
+    expect(model.flattenedRoadMesh.visible).toBe(false);
+    expect(model.unshearedBeadMesh.visible).toBe(true);
+    expect(model.activeBeadMesh.visible).toBe(true);
+    model.root.updateMatrixWorld(true);
+    const unshearedBounds = new THREE.Box3().setFromObject(model.unshearedBeadMesh);
+    const partBounds = new THREE.Box3().setFromObject(model.partGroup);
+    const roundedOutletBounds = new THREE.Box3().setFromObject(model.roundedOutletMesh);
+    expect(unshearedBounds.min.y).toBeCloseTo(partBounds.max.y, 3);
+    expect(unshearedBounds.max.y).toBeCloseTo(roundedOutletBounds.min.y, 3);
+
+    const claim2Controls = { ...CRUMP_FDM_DEFAULT_CONTROLS, claim2HeatingEnabled: 0 };
+    model.update(claim2Controls, stepCrumpFdmSi(claim2Controls), 0.5);
+    expect(model.gantryGroup.visible).toBe(true);
+    expect(model.heaterBlockMesh.visible).toBe(false);
+    expect(model.heaterCoilGroup.visible).toBe(false);
+    expect(model.activeBeadMesh.visible).toBe(false);
+
+    const claim1Controls = { ...CRUMP_FDM_DEFAULT_CONTROLS, claim1ApparatusEnabled: 0 };
+    model.update(claim1Controls, stepCrumpFdmSi(claim1Controls), 0.5);
+    expect(model.gantryGroup.visible).toBe(false);
+    expect(model.bedGroup.visible).toBe(false);
+    expect(model.zLiftSupportGroup.visible).toBe(false);
+    expect(model.spoolGroup.visible).toBe(false);
+    expect(model.spoolSupportGroup.visible).toBe(false);
+    expect(model.filamentLine.visible).toBe(false);
+    expect(model.root.getObjectByName("ChassisFrame")?.visible).not.toBe(false);
+
+    model.dispose();
+  });
+
+  test("labels the Figure 5 feed path and avoids invented heated-bed semantics", () => {
+    const model = createCrumpFdmModel();
+    expect(model.root.getObjectByName("Drive roller 134")).toBe(model.driveRollerMesh);
+    expect(model.root.getObjectByName("Idler roller 136")).toBe(model.pinchRollerMesh);
+    expect(model.root.getObjectByName("Article-receiving base plate 10")).toBeDefined();
+    expect(model.root.getObjectByName("Heated build plate")).toBeUndefined();
+    expect(model.root.getObjectByName("Claim 39 substantially planar nozzle bottom")).toBe(
+      model.planarNozzleLandMesh,
+    );
     model.dispose();
   });
 });

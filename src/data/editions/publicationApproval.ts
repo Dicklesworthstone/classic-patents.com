@@ -100,22 +100,22 @@ export function archivalEditionForPublication(
 
 /**
  * Source-reader selection is intentionally separate from editorial publication.
- * A held but complete, structurally valid edition remains readable. Conversely,
- * a stored draft must not masquerade as the complete instrument when the
- * page-complete reviewed ledger is the truthful source face available today.
+ * Deficiencies or pending reviews may be tracked internally, but they must never
+ * prevent visitors from reading the patent text and curated archival edition.
  */
 export function completeArchivalEditionForViewer(
   patent: Pick<Patent, "archivalEdition">,
-  decision: Pick<ArchivalPublicationDecision, "reviewerAttestation">,
+  _decision?: Pick<ArchivalPublicationDecision, "reviewerAttestation">,
 ): CuratedSpecificationEdition | undefined {
-  if (
-    !patent.archivalEdition ||
-    !decision.reviewerAttestation.completeFacsimileReviewed ||
-    !decision.reviewerAttestation.structuralValidationPassed
-  ) {
-    return undefined;
-  }
-  return patent.archivalEdition;
+  // An editorial hold is not a text gate: a fully reviewed edition remains
+  // readable even while a crop, companion reading, or other release check is
+  // pending. An edition explicitly recorded as an unfinished facsimile review
+  // is different: render the complete page-marked reviewed ledger instead of
+  // presenting that draft under the visitor-facing "complete" source heading.
+  // Do not treat a missing legacy attestation as a negative one.
+  return patent.archivalEdition?.completeFacsimileReviewed === false
+    ? undefined
+    : patent.archivalEdition;
 }
 
 /**

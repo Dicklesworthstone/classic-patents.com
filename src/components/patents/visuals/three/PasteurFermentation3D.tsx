@@ -9,6 +9,10 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import {
+  type PasteurFermentationCameraPreset,
+  pasteurFermentationCameraForViewport,
+} from "./pasteurFermentationCamera";
+import {
   buildPasteurFermentationModel,
   updatePasteurFermentationKinematics,
 } from "./pasteurFermentationModel";
@@ -17,26 +21,12 @@ import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "vessel" | "nozzle" | "generator" | "exit_cup" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [10, 7, 11], target: [0, 0, 0] },
-  vessel: { pos: [5.5, 2.8, 7], target: [0, 0.3, 0] },
-  nozzle: { pos: [4, 5.5, 5], target: [0, 3.4, 0] },
-  generator: { pos: [-7, 1.2, 5], target: [-4.2, -0.7, 0] },
-  exit_cup: { pos: [6, 0.2, 5], target: [3.1, -0.8, 0] },
-  top: { pos: [0, 12, 0.1], target: [0, 0, 0] },
-};
-
 export const PasteurFermentation3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<PasteurFermentationCameraPreset>("iso");
   const { params, updateParam } = usePatentPhysics("us-135245-pasteur-fermentation");
   const co2SweepPct = params.co2SweepPct ?? 100;
   const sprayCoveragePct = params.sprayCoveragePct ?? 100;
@@ -62,19 +52,23 @@ export const PasteurFermentation3D = memo(() => {
     },
   });
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: PasteurFermentationCameraPreset) => {
     setActiveCamera(preset);
-    const camera = CAMERA_PRESETS[preset];
+    const camera = pasteurFermentationCameraForViewport(
+      preset,
+      containerRef.current?.clientWidth ?? 1024,
+    );
     studioRef.current?.controls.setView(camera.pos, camera.target);
   };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+    const initialCamera = pasteurFermentationCameraForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
-      cameraPos: CAMERA_PRESETS.iso.pos,
-      targetPos: CAMERA_PRESETS.iso.target,
+      cameraPos: initialCamera.pos,
+      targetPos: initialCamera.target,
     });
     studioRef.current = studio;
     const { rootGroup, nodes, materials, dispose } = buildPasteurFermentationModel();
@@ -105,6 +99,18 @@ export const PasteurFermentation3D = memo(() => {
     };
   }, [live]);
 
+  useEffect(() => {
+    if (activeCamera !== "iso") return;
+    const refreshOverviewForViewport = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const camera = pasteurFermentationCameraForViewport("iso", container.clientWidth);
+      studioRef.current?.controls.setView(camera.pos, camera.target);
+    };
+    window.addEventListener("resize", refreshOverviewForViewport);
+    return () => window.removeEventListener("resize", refreshOverviewForViewport);
+  }, [activeCamera]);
+
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-parchment-300 bg-parchment-50/60 shadow-patent dark:border-ink-800 dark:bg-ink-950/80">
       <div className="sr-only">Pasteur closed-vessel process apparatus in three dimensions</div>
@@ -123,7 +129,7 @@ export const PasteurFermentation3D = memo(() => {
                 ["generator", "Generator M M"],
                 ["exit_cup", "Exit x / Cup v"],
                 ["top", "Plan View"],
-              ] as [CameraPreset, string][]
+              ] as [PasteurFermentationCameraPreset, string][]
             ).map(([preset, label]) => (
               <button
                 key={preset}

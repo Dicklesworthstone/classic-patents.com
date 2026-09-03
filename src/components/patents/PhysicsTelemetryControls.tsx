@@ -85,31 +85,22 @@ function PhysicsTelemetryControlCard({
 
 export function PhysicsTelemetryControls({
   controls,
-  lastChange,
+  lastChange: _lastChange,
   onUpdateParam,
   params,
   patentId,
 }: PhysicsTelemetryControlsProps) {
   return (
-    <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pt-4 border-t border-parchment-200 dark:border-ink-800">
-        {controls.map((control) => (
-          <PhysicsTelemetryControlCard
-            key={control.id}
-            control={control}
-            onUpdateParam={onUpdateParam}
-            params={params}
-            patentId={patentId}
-          />
-        ))}
-      </div>
-
-      {lastChange ? (
-        <div className="font-mono text-[10px] text-ink-600 dark:text-ink-400">
-          d({lastChange.id})/dt = {lastChange.ratePerSec >= 0 ? "+" : ""}
-          {lastChange.ratePerSec.toFixed(2)} /s
-        </div>
-      ) : null}
-    </>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pt-4 border-t border-parchment-200 dark:border-ink-800">
+      {controls.map((control) => (
+        <PhysicsTelemetryControlCard
+          key={control.id}
+          control={control}
+          onUpdateParam={onUpdateParam}
+          params={params}
+          patentId={patentId}
+        />
+      ))}
+    </div>
   );
 }

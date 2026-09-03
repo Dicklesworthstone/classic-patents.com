@@ -3,8 +3,9 @@
 import { Activity, Sparkles } from "lucide-react";
 // 3D WebGL Physics Simulators
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { planPhoneFocusClearance } from "./phoneFocusClearance";
 import { SourceVisualUnavailable } from "./SourceVisualUnavailable";
 
 // 2D Vector Schematics & Dynamic Simulators
@@ -932,6 +933,8 @@ interface PatentVisualDispatcherProps {
 // diagram had to re-select it on every face change).
 const renderModeMemory = new Map<string, "3d-physics" | "vector-diagram">();
 
+const PHONE_FOCUS_MEDIA_QUERY = "(max-width: 639px)";
+
 export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps) {
   // This is deliberately read-only instrumentation. The visual modules and the
   // telemetry badge own their own subscriptions, while the dispatcher makes
@@ -942,6 +945,84 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
   const [renderMode, setRenderMode] = useState<"3d-physics" | "vector-diagram">(
     () => renderModeMemory.get(patentId) ?? "3d-physics",
   );
+  const dispatcherRef = useRef<HTMLDivElement>(null);
+  const phoneFocusFrameRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    // Listen at `document` rather than placing a focus handler on a static
+    // layout element. React target handlers (including Colt's deliberate
+    // click-preserving rAF) run first; this dispatcher-scoped listener then
+    // makes the final measured correction on the same frame.
+    const keepFocusedPhoneControlClear = (event: FocusEvent) => {
+      const control = event.target;
+      const dispatcher = dispatcherRef.current;
+      if (
+        !(control instanceof HTMLElement) ||
+        !dispatcher?.contains(control) ||
+        !control.matches("button, input, select, textarea") ||
+        !window.matchMedia(PHONE_FOCUS_MEDIA_QUERY).matches
+      ) {
+        return;
+      }
+
+      if (phoneFocusFrameRef.current !== null) {
+        window.cancelAnimationFrame(phoneFocusFrameRef.current);
+      }
+      phoneFocusFrameRef.current = window.requestAnimationFrame(() => {
+        phoneFocusFrameRef.current = null;
+        if (document.activeElement !== control || !control.isConnected) return;
+
+        const canvas = dispatcher.querySelector("canvas");
+        const stickyHeader = document.querySelector("header.sticky");
+        if (!(canvas instanceof HTMLCanvasElement) || !(stickyHeader instanceof HTMLElement))
+          return;
+
+        const canvasRect = canvas.getBoundingClientRect();
+        const headerRect = stickyHeader.getBoundingClientRect();
+        const controlRect = control.getBoundingClientRect();
+        if (
+          headerRect.bottom <= 0 ||
+          headerRect.top >= window.innerHeight ||
+          canvasRect.width <= 0 ||
+          canvasRect.height <= 0 ||
+          controlRect.width <= 0 ||
+          controlRect.height <= 0
+        ) {
+          return;
+        }
+
+        const plan = planPhoneFocusClearance(
+          canvasRect,
+          headerRect,
+          controlRect,
+          window.innerHeight,
+        );
+        if (!plan || Math.abs(plan.scrollTopDelta) < 0.5) return;
+
+        const maximumScrollTop = Math.max(
+          0,
+          document.documentElement.scrollHeight - window.innerHeight,
+        );
+        const boundedDelta = Math.min(
+          maximumScrollTop - window.scrollY,
+          Math.max(-window.scrollY, plan.scrollTopDelta),
+        );
+        // Do not knowingly trade the canvas/header overlap for a hidden
+        // active control when the page cannot physically scroll far enough.
+        if (Math.abs(boundedDelta - plan.scrollTopDelta) >= 0.5) return;
+
+        window.scrollBy({ top: boundedDelta, behavior: "instant" });
+      });
+    };
+
+    document.addEventListener("focusin", keepFocusedPhoneControlClear);
+    return () => {
+      document.removeEventListener("focusin", keepFocusedPhoneControlClear);
+      if (phoneFocusFrameRef.current !== null) {
+        window.cancelAnimationFrame(phoneFocusFrameRef.current);
+      }
+    };
+  }, []);
 
   const switchRenderMode = (mode: "3d-physics" | "vector-diagram") => {
     renderModeMemory.set(patentId, mode);
@@ -950,6 +1031,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
 
   return (
     <div
+      ref={dispatcherRef}
       className="space-y-4"
       data-testid="patent-visual-dispatcher"
       data-patent-id={patentId}

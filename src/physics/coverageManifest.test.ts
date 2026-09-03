@@ -103,8 +103,8 @@ describe("executable project coverage manifest", () => {
     expect(manifest.filter((row) => row.runtime.wasmSurface === "interpretive-wasm")).toHaveLength(
       0,
     );
-    expect(manifest.filter((row) => row.runtime.wasmSurface === "generic-wasm")).toHaveLength(37);
-    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(63);
+    expect(manifest.filter((row) => row.runtime.wasmSurface === "generic-wasm")).toHaveLength(39);
+    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(61);
 
     for (const patentId of [
       "us-x9430-colt-revolver",
@@ -115,6 +115,8 @@ describe("executable project coverage manifest", () => {
       "us-2708656-fermi-reactor",
       "us-4136359-wozniak-apple",
       "us-4921293-salisbury-robot-hand",
+      "us-5121329-crump-fdm",
+      "us-5701965-kamen-transporter",
     ]) {
       expect(wasmSurfaceForPatent(patentId)?.kind).toBe("generic-wasm");
     }
@@ -193,7 +195,7 @@ describe("executable project coverage manifest", () => {
         surface.artifactSha256,
       );
     }
-    expect(checkedArtifacts.size).toBe(12);
+    expect(checkedArtifacts.size).toBe(14);
   });
 
   test("all 3D studios now have an updater or a typed snapshot path", () => {
@@ -204,14 +206,21 @@ describe("executable project coverage manifest", () => {
       expect(visualDispatcherSource).toContain(`case "${patentId}":`);
       expect(manifest.find((row) => row.patentId === patentId)?.runtime.sharedBus).toBe("updater");
     }
-    for (const patentId of ["us-194047-otto-engine", "us-6594844-roomba"]) {
+    for (const patentId of [
+      "us-194047-otto-engine",
+      "us-6594844-roomba",
+      "us-5701965-kamen-transporter",
+    ]) {
       const promotedOwner = manifest.find((row) => row.patentId === patentId);
       expect(promotedOwner?.runtime.admittedSharedBusProvenance).toEqual(["WASM", "TS_FALLBACK"]);
     }
     expect(
       manifest
         .filter(
-          (row) => row.patentId !== "us-194047-otto-engine" && row.patentId !== "us-6594844-roomba",
+          (row) =>
+            row.patentId !== "us-194047-otto-engine" &&
+            row.patentId !== "us-6594844-roomba" &&
+            row.patentId !== "us-5701965-kamen-transporter",
         )
         .every(
           (row) =>

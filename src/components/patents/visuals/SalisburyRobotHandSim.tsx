@@ -14,6 +14,37 @@ import {
 } from "@/physics/salisburyRobotHandKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
+const SALISBURY_SOURCE_LAW_BOUNDARIES = [
+  {
+    id: "law-owners",
+    panelClassName:
+      "rounded-lg border border-emerald-700/60 bg-emerald-950/30 p-2 text-emerald-100",
+    titleClassName: "font-mono font-bold text-emerald-300",
+    title: "FRANKENSIM LAW OWNERS",
+    description: `${SALISBURY_FRANKENSIM_TOPOLOGY_OWNER} owns the source parent graph and torque map; each axis is admitted by ${SALISBURY_FRANKENSIM_REVOLUTE_OWNER}.`,
+  },
+  {
+    id: "contact-refusal",
+    panelClassName: "rounded-lg border border-rose-700/60 bg-rose-950/30 p-2 text-rose-100",
+    titleClassName: "font-mono font-bold text-rose-300",
+    title: "CONTACT SOLVE REFUSED",
+    description: `${SALISBURY_FRANKENSIM_CONTACT_OWNER} lacks a source-complete object, fingertip material, friction, and approach card. No grasp force, closure, payload, or stability is shown.`,
+  },
+] as const;
+
+function SalisburySourceLawBoundaries() {
+  return (
+    <div className="grid gap-2 text-[11px] leading-4 sm:grid-cols-2">
+      {SALISBURY_SOURCE_LAW_BOUNDARIES.map((boundary) => (
+        <div key={boundary.id} className={boundary.panelClassName}>
+          <span className={boundary.titleClassName}>{boundary.title}</span>
+          <p className="mt-1">{boundary.description}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function SalisburyRobotHandSim({
   patentId = "us-4921293-salisbury-robot-hand",
 }: {
@@ -636,22 +667,7 @@ export function SalisburyRobotHandSim({
         stability.
       </div>
 
-      <div className="grid gap-2 text-[11px] leading-4 sm:grid-cols-2">
-        <div className="rounded-lg border border-emerald-700/60 bg-emerald-950/30 p-2 text-emerald-100">
-          <span className="font-mono font-bold text-emerald-300">FRANKENSIM LAW OWNERS</span>
-          <p className="mt-1">
-            {SALISBURY_FRANKENSIM_TOPOLOGY_OWNER} owns the source parent graph and torque map; each
-            axis is admitted by {SALISBURY_FRANKENSIM_REVOLUTE_OWNER}.
-          </p>
-        </div>
-        <div className="rounded-lg border border-rose-700/60 bg-rose-950/30 p-2 text-rose-100">
-          <span className="font-mono font-bold text-rose-300">CONTACT SOLVE REFUSED</span>
-          <p className="mt-1">
-            {SALISBURY_FRANKENSIM_CONTACT_OWNER} lacks a source-complete object, fingertip material,
-            friction, and approach card. No grasp force, closure, payload, or stability is shown.
-          </p>
-        </div>
-      </div>
+      <SalisburySourceLawBoundaries />
 
       {/* Physics Sliders Controls Grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

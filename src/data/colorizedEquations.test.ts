@@ -580,8 +580,9 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
     expect(cards.map((card) => card.id)).toEqual([
       "kamen-fore-aft-control-topology",
       "kamen-cluster-transfer-climb-topology",
+      "kamen-tri-wheel-support-geometry",
     ]);
-    expect(cards.map((card) => card.claimRef)).toEqual([1, 26]);
+    expect(cards.map((card) => card.claimRef)).toEqual([1, 26, 20]);
 
     const published = JSON.stringify(cards).toLowerCase();
     for (const unsupportedPublicAssertion of [
@@ -600,6 +601,8 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
     }
     expect(published).toContain("claim 1");
     expect(published).toContain("claim 26");
+    expect(published).toContain("three equal wheels");
+    expect(published).toContain("5.581 inches");
     expect(published).toContain("source-topology");
   });
 });

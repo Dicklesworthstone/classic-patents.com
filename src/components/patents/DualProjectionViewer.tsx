@@ -87,10 +87,7 @@ function handlePrint() {
   }
 }
 
-/**
- * Dedicated facsimile face. It is intentionally separate from the readable
- * source-text faces and is never used as a replacement for patent text.
- */
+/** Dedicated facsimile face. It is separate from the readable source-text faces. */
 function PinnedFacsimilePanel({
   patent,
   pdfEmbedUnsupported,

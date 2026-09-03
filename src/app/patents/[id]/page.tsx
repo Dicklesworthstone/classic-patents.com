@@ -2,9 +2,11 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AudioNarrationPlayer } from "@/components/patents/AudioNarrationPlayer";
 import { DualProjectionViewer } from "@/components/patents/DualProjectionViewer";
 import { LegacyPatentRedirect } from "@/components/patents/LegacyPatentRedirect";
 import { PatentHeader } from "@/components/patents/PatentHeader";
+import { PatentLineageView } from "@/components/patents/PatentLineageView";
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
 import { archivalPublicationDiagnostics } from "@/data/editions/archivalPublicationState";
 import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
@@ -13,6 +15,7 @@ import {
   patentForPublicationViewer,
 } from "@/data/editions/publicationApproval";
 import { reviewedLedgerTextForViewer } from "@/data/editions/reviewedLedgerPublicationEvidence.server";
+import { getLineagesForPatent } from "@/data/patentLineages";
 import {
   allPatents,
   getAdjacentPatents,
@@ -142,6 +145,11 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
       {/* Patent Header & Metadata Bar */}
       <PatentHeader patent={patent} />
 
+      {/* Audio Engineering Breakdown Narration */}
+      <div className="print:hidden">
+        <AudioNarrationPlayer patent={patent} />
+      </div>
+
       {/* Dual Projection Viewer (Plain English + original source + visual face) */}
       <div
         data-archival-edition={archivalEdition?.kind ?? "withheld"}
@@ -157,6 +165,13 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
           colorizedEquations={colorizedEquations}
         />
       </div>
+
+      {/* Technological Lineage & Descent (Predecessors & Successors) */}
+      {getLineagesForPatent(id).length > 0 && (
+        <section aria-label="Technological Lineage and Historical Ancestry" className="pt-2">
+          <PatentLineageView currentPatentId={patent.id} />
+        </section>
+      )}
 
       {/* Adjacent Patent Chronological Navigation */}
       <nav

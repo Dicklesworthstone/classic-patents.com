@@ -17,7 +17,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { type Browser, chromium, type Page } from "playwright";
+import { type Browser, chromium, type Locator, type Page } from "playwright";
 import { allPatents } from "../src/data/patents";
 import { EXTERNAL_RUNTIME_OWNER_PATENT_IDS } from "../src/physics/coverageManifest";
 import {
@@ -46,6 +46,7 @@ const ENFORCE_DRAW_CALL_BUDGET = process.env.THREEJS_AUDIT_ENFORCE_DRAW_CALLS !=
 const MAX_FIRST_RENDER_MS = Number(process.env.THREEJS_AUDIT_MAX_FIRST_RENDER_MS ?? 1_000);
 const MAX_CPU_SUBMIT_MS = Number(process.env.THREEJS_AUDIT_MAX_CPU_SUBMIT_MS ?? 16.7);
 const MAX_DRAW_CALLS = Number(process.env.THREEJS_AUDIT_MAX_DRAW_CALLS ?? 250);
+const STICKY_HEADER_CANVAS_CLEARANCE_PX = 8;
 const PERFORMANCE_SAMPLE_COUNT = Math.max(
   0,
   Math.floor(Number(process.env.THREEJS_AUDIT_PERF_SAMPLES ?? 0)),
@@ -166,6 +167,185 @@ async function captureFailure(page: Page, patentId: string, viewport: ViewportNa
   const screenshotPath = path.join(SCREENSHOT_DIRECTORY, `${patentId}.${viewport}.failure.png`);
   await page.screenshot({ path: screenshotPath, fullPage: true }).catch(() => undefined);
   return screenshotPath;
+}
+
+/**
+ * Component screenshots are useful for inspecting a visual's full control
+ * surface, but Playwright may compose a sticky header into that element image
+ * while the real browser viewport has clear geometry. Capture the actual
+ * viewport separately and make overlap verdicts from DOM rectangles only.
+ */
+async function captureActualViewportEvidence(args: {
+  page: Page;
+  canvas: Locator;
+  patentId: string;
+  viewport: ViewportName;
+  stage: "primary-control-max" | "claim-inverted";
+}) {
+  await args.canvas.scrollIntoViewIfNeeded();
+  await args.page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      }),
+  );
+
+  // A canvas taller than the viewport can be only partially visible after a
+  // control click. `scrollIntoViewIfNeeded()` legitimately leaves that state
+  // alone, but the canvas top can then sit behind the sticky header. Reframe
+  // the screenshot at its top edge when the document can scroll there. The
+  // post-scroll rectangle below remains authoritative, so a canvas that
+  // cannot be cleared still produces a real overlap failure.
+  const framing = await args.page.evaluate(
+    ({ id, clearancePx }) => {
+      const root = document.querySelector(
+        `[data-testid="patent-visual-dispatcher"][data-patent-id="${id}"]`,
+      );
+      const candidate = root?.querySelector("canvas");
+      const canvas = candidate instanceof HTMLCanvasElement ? candidate : null;
+      const header = document.querySelector<HTMLElement>("header.sticky.top-0");
+      const canvasTopPx = canvas?.getBoundingClientRect().top ?? null;
+      const headerBottomPx = header?.getBoundingClientRect().bottom ?? null;
+      const minimumCanvasTopPx =
+        headerBottomPx === null ? 0 : Math.max(0, headerBottomPx + clearancePx);
+      const requestedScrollDeltaY =
+        canvasTopPx !== null && canvasTopPx < minimumCanvasTopPx
+          ? canvasTopPx - minimumCanvasTopPx
+          : 0;
+      const scrollYBefore = window.scrollY;
+
+      if (requestedScrollDeltaY !== 0) {
+        // The application normally uses smooth scrolling. Audit framing must
+        // settle synchronously so the following receipt describes this exact
+        // viewport rather than an intermediate scroll animation frame.
+        const inlineScrollBehavior = document.documentElement.style.scrollBehavior;
+        document.documentElement.style.scrollBehavior = "auto";
+        window.scrollBy(0, requestedScrollDeltaY);
+        document.documentElement.style.scrollBehavior = inlineScrollBehavior;
+      }
+
+      return {
+        canvasTopPx,
+        headerBottomPx,
+        minimumCanvasTopPx,
+        requestedScrollDeltaY,
+        scrollYBefore,
+        scrollYAfterRequest: window.scrollY,
+        reframed: requestedScrollDeltaY !== 0,
+      };
+    },
+    { id: args.patentId, clearancePx: STICKY_HEADER_CANVAS_CLEARANCE_PX },
+  );
+  await args.page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      }),
+  );
+
+  const geometry = await args.page.evaluate(
+    ({ id, framing }) => {
+      const root = document.querySelector(
+        `[data-testid="patent-visual-dispatcher"][data-patent-id="${id}"]`,
+      );
+      const candidate = root?.querySelector("canvas");
+      const canvas = candidate instanceof HTMLCanvasElement ? candidate : null;
+      const header = document.querySelector<HTMLElement>("header.sticky.top-0");
+      const viewport = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        scrollX: window.scrollX,
+        scrollY: window.scrollY,
+      };
+      const toRect = (element: Element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+        };
+      };
+
+      if (!canvas) {
+        return {
+          capture: "actual-viewport" as const,
+          framing,
+          viewport,
+          canvas: null,
+          siteStickyHeader: header
+            ? {
+                position: getComputedStyle(header).position,
+                rect: toRect(header),
+              }
+            : null,
+          stickyHeaderCanvasOverlap: {
+            actualIntersection: false,
+            overlapWidthPx: 0,
+            overlapHeightPx: 0,
+            verticalClearancePx: null,
+          },
+        };
+      }
+
+      const canvasRect = toRect(canvas);
+      const visibleCanvasWidth = Math.max(
+        0,
+        Math.min(canvasRect.right, viewport.width) - Math.max(canvasRect.left, 0),
+      );
+      const visibleCanvasHeight = Math.max(
+        0,
+        Math.min(canvasRect.bottom, viewport.height) - Math.max(canvasRect.top, 0),
+      );
+      const headerRect = header ? toRect(header) : null;
+      const overlapWidthPx = headerRect
+        ? Math.max(
+            0,
+            Math.min(canvasRect.right, headerRect.right) -
+              Math.max(canvasRect.left, headerRect.left),
+          )
+        : 0;
+      const overlapHeightPx = headerRect
+        ? Math.max(
+            0,
+            Math.min(canvasRect.bottom, headerRect.bottom) -
+              Math.max(canvasRect.top, headerRect.top),
+          )
+        : 0;
+
+      return {
+        capture: "actual-viewport" as const,
+        framing,
+        viewport,
+        canvas: {
+          rect: canvasRect,
+          visibleInViewport: visibleCanvasWidth > 0 && visibleCanvasHeight > 0,
+        },
+        siteStickyHeader: header
+          ? {
+              position: getComputedStyle(header).position,
+              rect: headerRect,
+            }
+          : null,
+        stickyHeaderCanvasOverlap: {
+          actualIntersection: overlapWidthPx > 0 && overlapHeightPx > 0,
+          overlapWidthPx,
+          overlapHeightPx,
+          verticalClearancePx: headerRect ? canvasRect.top - headerRect.bottom : null,
+        },
+      };
+    },
+    { id: args.patentId, framing },
+  );
+
+  const screenshotPath = path.join(
+    SCREENSHOT_DIRECTORY,
+    `${args.patentId}.${args.viewport}.${args.stage}.viewport.png`,
+  );
+  await args.page.screenshot({ path: screenshotPath, fullPage: false });
+  return { screenshotPath, geometry };
 }
 
 /**
@@ -998,6 +1178,13 @@ async function auditPatent(
         `${patentId}.${viewport}.primary-control-max.png`,
       );
       await dispatcher.screenshot({ path: changedScreenshotPath });
+      const viewportEvidence = await captureActualViewportEvidence({
+        page,
+        canvas,
+        patentId,
+        viewport,
+        stage: "primary-control-max",
+      });
       interaction = {
         available: true,
         accessibleName,
@@ -1009,8 +1196,15 @@ async function auditPatent(
         changedLastControl,
         tickAdvanced,
         screenshotPath: changedScreenshotPath,
+        viewportScreenshotPath: viewportEvidence.screenshotPath,
+        viewportGeometry: viewportEvidence.geometry,
       };
-      interactionValid = requestedValue !== null && changedValue !== priorValue && tickAdvanced;
+      interactionValid =
+        requestedValue !== null &&
+        changedValue !== priorValue &&
+        tickAdvanced &&
+        viewportEvidence.geometry.canvas?.visibleInViewport === true &&
+        !viewportEvidence.geometry.stickyHeaderCanvasOverlap.actualIntersection;
     }
 
     const claimToggle = dispatcher.getByTestId("claim-constraint-toggle").locator("button").first();
@@ -1025,6 +1219,13 @@ async function auditPatent(
         `${patentId}.${viewport}.claim-inverted.png`,
       );
       await dispatcher.screenshot({ path: claimScreenshotPath });
+      const viewportEvidence = await captureActualViewportEvidence({
+        page,
+        canvas,
+        patentId,
+        viewport,
+        stage: "claim-inverted",
+      });
       await claimToggle.click();
       const restoredPressed = await claimToggle.getAttribute("aria-pressed");
       claimInteraction = {
@@ -1033,9 +1234,14 @@ async function auditPatent(
         invertedPressed,
         restoredPressed,
         screenshotPath: claimScreenshotPath,
+        viewportScreenshotPath: viewportEvidence.screenshotPath,
+        viewportGeometry: viewportEvidence.geometry,
       };
       claimInteractionValid =
-        invertedPressed !== beforePressed && restoredPressed === beforePressed;
+        invertedPressed !== beforePressed &&
+        restoredPressed === beforePressed &&
+        viewportEvidence.geometry.canvas?.visibleInViewport === true &&
+        !viewportEvidence.geometry.stickyHeaderCanvasOverlap.actualIntersection;
     }
 
     let mechanismInteraction: Record<string, unknown> = { available: false };
@@ -2379,6 +2585,207 @@ async function auditPatent(
         sourceOwnersHonest && physicalSequenceCompleted && crossFaceParity;
     }
 
+    if (patentId === "us-5121329-crump-fdm") {
+      const readCrumpState = (testId: string) =>
+        dispatcher.getByTestId(testId).evaluate((element) => ({
+          topology: element.getAttribute("data-crump-claim1-topology"),
+          heating: element.getAttribute("data-crump-claim2-heating"),
+          tip: element.getAttribute("data-crump-claim39-tip"),
+          extruding: element.getAttribute("data-crump-extruding"),
+          layerGapMm: Number(element.getAttribute("data-crump-layer-gap-mm")),
+          flowMm3S: Number(element.getAttribute("data-crump-flow-mm3-s")),
+          pressureMPa: Number(element.getAttribute("data-crump-pressure-mpa")),
+          runtimeSource: element.getAttribute("data-crump-runtime-source"),
+          capillaryOwner: element.getAttribute("data-crump-capillary-owner"),
+          thermalOwner: element.getAttribute("data-crump-thermal-owner"),
+          capillaryBoundary: element.getAttribute("data-crump-capillary-boundary"),
+          thermalBoundary: element.getAttribute("data-crump-thermal-boundary"),
+          worldSupport: element.getAttribute("data-crump-world-support"),
+        }));
+      const threeDimensional = dispatcher.getByTestId("crump-fdm-three");
+      await threeDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      const claimToggle = dispatcher.getByTestId("claim-constraint-toggle");
+      for (const claimNumber of [1, 2, 39]) {
+        const toggle = claimToggle.locator(`[data-claim-number="${claimNumber}"]`);
+        if ((await toggle.getAttribute("data-claim-active")) !== "true") await toggle.click();
+      }
+      await page
+        .waitForFunction(
+          () =>
+            document
+              .querySelector('[data-testid="crump-fdm-three"]')
+              ?.getAttribute("data-crump-runtime-source") === "wasm",
+          undefined,
+          { timeout: 15_000 },
+        )
+        .catch(() => undefined);
+      const defaultState = await readCrumpState("crump-fdm-three");
+
+      const printSpeed = dispatcher.getByLabel(/Print Speed \(/);
+      await printSpeed.focus();
+      await printSpeed.press("End");
+      await page.waitForFunction(
+        (previousFlow) =>
+          Number(
+            document
+              .querySelector('[data-testid="crump-fdm-three"]')
+              ?.getAttribute("data-crump-flow-mm3-s"),
+          ) > previousFlow,
+        defaultState.flowMm3S,
+      );
+      const highSpeedState = await readCrumpState("crump-fdm-three");
+
+      const claim39Toggle = claimToggle.locator('[data-claim-number="39"]');
+      await claim39Toggle.click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="crump-fdm-three"]')
+            ?.getAttribute("data-crump-claim39-tip") === "rounded",
+      );
+      const roundedTipState = await readCrumpState("crump-fdm-three");
+      const roundedTipScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.claim-39-rounded-unsheared-comparison.png`,
+      );
+      await dispatcher.screenshot({ path: roundedTipScreenshotPath });
+
+      await dispatcher.getByRole("button", { name: "2D Technical Diagram" }).click();
+      const twoDimensional = dispatcher.getByTestId("crump-fdm-two");
+      await twoDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      const twoDimensionalRoundedState = await readCrumpState("crump-fdm-two");
+      const twoDimensionalScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.shared-two-dimensional-rounded-outlet.png`,
+      );
+      await dispatcher.screenshot({ path: twoDimensionalScreenshotPath });
+
+      await dispatcher.getByRole("button", { name: "3D Physics Simulation" }).click();
+      await threeDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      await claim39Toggle.click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="crump-fdm-three"]')
+            ?.getAttribute("data-crump-claim39-tip") === "planar",
+      );
+
+      const claim2Toggle = claimToggle.locator('[data-claim-number="2"]');
+      await claim2Toggle.click();
+      await page.waitForFunction(() => {
+        const element = document.querySelector('[data-testid="crump-fdm-three"]');
+        return (
+          element?.getAttribute("data-crump-claim2-heating") === "withheld" &&
+          element.getAttribute("data-crump-extruding") === "false"
+        );
+      });
+      const heatingWithheldState = await readCrumpState("crump-fdm-three");
+      const heatingWithheldScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.claim-2-heating-means-withheld.png`,
+      );
+      await dispatcher.screenshot({ path: heatingWithheldScreenshotPath });
+      await claim2Toggle.click();
+
+      const claim1Toggle = claimToggle.locator('[data-claim-number="1"]');
+      await claim1Toggle.click();
+      await page.waitForFunction(() => {
+        const element = document.querySelector('[data-testid="crump-fdm-three"]');
+        return (
+          element?.getAttribute("data-crump-claim1-topology") === "withheld" &&
+          element.getAttribute("data-crump-claim2-heating") === "withheld" &&
+          element.getAttribute("data-crump-claim39-tip") === "rounded" &&
+          element.getAttribute("data-crump-extruding") === "false"
+        );
+      });
+      const topologyWithheldState = await readCrumpState("crump-fdm-three");
+      const topologyWithheldScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.claim-1-apparatus-topology-withheld.png`,
+      );
+      await dispatcher.screenshot({ path: topologyWithheldScreenshotPath });
+
+      await dispatcher.getByRole("button", { name: "2D Technical Diagram" }).click();
+      await twoDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      const twoDimensionalWithheldState = await readCrumpState("crump-fdm-two");
+      await dispatcher.getByRole("button", { name: "3D Physics Simulation" }).click();
+      await threeDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      await claim1Toggle.click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="crump-fdm-three"]')
+            ?.getAttribute("data-crump-claim1-topology") === "present",
+      );
+      const restoredState = await readCrumpState("crump-fdm-three");
+
+      const sourceOwnersHonest =
+        defaultState.capillaryOwner === "fs-flux::capillary::step_newtonian_circular_capillary" &&
+        defaultState.thermalOwner === "fs-conduction::reduced_slab::step_first_mode_slab_cooling" &&
+        defaultState.capillaryBoundary ===
+          "newtonian-incompressible-fully-developed-laminar-no-slip-circular-land" &&
+        defaultState.thermalBoundary ===
+          "one-dimensional-fixed-boundary-first-mode-screen-no-phase-change" &&
+        ["wasm", "ts-fallback"].includes(defaultState.runtimeSource ?? "");
+      const physicalSequenceCompleted =
+        defaultState.topology === "present" &&
+        defaultState.heating === "present" &&
+        defaultState.tip === "planar" &&
+        defaultState.extruding === "true" &&
+        defaultState.layerGapMm > 0 &&
+        defaultState.flowMm3S > 0 &&
+        defaultState.pressureMPa > 0 &&
+        defaultState.worldSupport === "chassis-base-posts-crown" &&
+        highSpeedState.flowMm3S > defaultState.flowMm3S &&
+        roundedTipState.topology === "present" &&
+        roundedTipState.heating === "present" &&
+        roundedTipState.tip === "rounded" &&
+        roundedTipState.extruding === "true" &&
+        heatingWithheldState.topology === "present" &&
+        heatingWithheldState.heating === "withheld" &&
+        heatingWithheldState.extruding === "false" &&
+        topologyWithheldState.topology === "withheld" &&
+        topologyWithheldState.heating === "withheld" &&
+        topologyWithheldState.tip === "rounded" &&
+        topologyWithheldState.extruding === "false" &&
+        restoredState.topology === "present" &&
+        restoredState.heating === "present" &&
+        restoredState.tip === "planar";
+      const crossFaceParity =
+        twoDimensionalRoundedState.topology === roundedTipState.topology &&
+        twoDimensionalRoundedState.heating === roundedTipState.heating &&
+        twoDimensionalRoundedState.tip === roundedTipState.tip &&
+        twoDimensionalRoundedState.extruding === roundedTipState.extruding &&
+        twoDimensionalRoundedState.layerGapMm === roundedTipState.layerGapMm &&
+        twoDimensionalRoundedState.flowMm3S === roundedTipState.flowMm3S &&
+        twoDimensionalRoundedState.pressureMPa === roundedTipState.pressureMPa &&
+        twoDimensionalWithheldState.topology === topologyWithheldState.topology &&
+        twoDimensionalWithheldState.heating === topologyWithheldState.heating &&
+        twoDimensionalWithheldState.tip === topologyWithheldState.tip &&
+        twoDimensionalWithheldState.extruding === topologyWithheldState.extruding;
+      mechanismInteraction = {
+        available: true,
+        kind: "generic-capillary-and-thermal-wasm-close-gap-claim-topology-and-cross-face-parity",
+        defaultState,
+        highSpeedState,
+        roundedTipState,
+        twoDimensionalRoundedState,
+        heatingWithheldState,
+        topologyWithheldState,
+        twoDimensionalWithheldState,
+        restoredState,
+        sourceOwnersHonest,
+        physicalSequenceCompleted,
+        crossFaceParity,
+        roundedTipScreenshotPath,
+        twoDimensionalScreenshotPath,
+        heatingWithheldScreenshotPath,
+        topologyWithheldScreenshotPath,
+      };
+      mechanismInteractionValid =
+        sourceOwnersHonest && physicalSequenceCompleted && crossFaceParity;
+    }
+
     if (patentId === "us-586193-marconi-radio") {
       const receiverPreset = surface.getByRole("button", { name: "Receiver & Reset" });
       const receiverFocusApplied =
@@ -2700,6 +3107,7 @@ async function auditPatent(
         runtimeErrors: 0,
         primaryControlChangesTickWhenAvailable: true,
         claimToggleRestoresWhenAvailable: true,
+        actualViewportCanvasClearOfStickyHeaderAfterInteractions: true,
         patentMechanismInteractionPassesWhenAvailable: true,
         lifecycleRoundTripPreservesOwnerWhenAvailable: true,
         performanceBudgetsWhenEnforced: performanceBudget,

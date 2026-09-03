@@ -44,6 +44,33 @@ describe("Three.js production benchmark statistics", () => {
     expect(auditSource).toContain("await canvas.scrollIntoViewIfNeeded()");
   });
 
+  test("records actual viewport geometry after interactions without treating stitched component shots as overlap evidence", () => {
+    const auditSource = readFileSync(
+      join(process.cwd(), "scripts/e2e-threejs-visual-audit.ts"),
+      "utf8",
+    );
+    expect(auditSource).toContain("captureActualViewportEvidence");
+    expect(auditSource).toContain('"header.sticky.top-0"');
+    expect(auditSource).toContain("actualIntersection");
+    expect(auditSource).toContain("overlapWidthPx");
+    expect(auditSource).toContain("overlapHeightPx");
+    expect(auditSource).toContain("verticalClearancePx");
+    expect(auditSource).toContain("STICKY_HEADER_CANVAS_CLEARANCE_PX");
+    expect(auditSource).toContain("minimumCanvasTopPx");
+    expect(auditSource).toContain("requestedScrollDeltaY");
+    expect(auditSource).toContain("framing,");
+    expect(auditSource).toContain("fullPage: false");
+    expect(auditSource).toContain(".viewport.png");
+    expect(auditSource).toContain('stage: "primary-control-max"');
+    expect(auditSource).toContain('stage: "claim-inverted"');
+    expect(auditSource).toContain("viewportGeometry: viewportEvidence.geometry");
+    expect(auditSource).toContain(
+      "!viewportEvidence.geometry.stickyHeaderCanvasOverlap.actualIntersection",
+    );
+    expect(auditSource).toContain("await dispatcher.screenshot({ path: changedScreenshotPath })");
+    expect(auditSource).toContain("await dispatcher.screenshot({ path: claimScreenshotPath })");
+  });
+
   test("normalizes missing and non-finite dataset values without serializing NaN", () => {
     expect(finiteNumber(undefined)).toBeNull();
     expect(finiteNumber("")).toBeNull();

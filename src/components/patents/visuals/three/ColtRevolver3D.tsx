@@ -13,7 +13,7 @@ import {
   VolumeX,
   Zap,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { type FocusEvent, useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "@/components/patents/visuals/PortHamiltonianEnergyStrip";
@@ -34,6 +34,30 @@ import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+
+/**
+ * Keep a keyboard-focused phone control in the lower safe viewing lane.
+ * Native range focus otherwise stops with the museum masthead across the
+ * remaining visible strip of the canvas. This is Colt-local: it leaves the
+ * shared sticky header and the action row's own sticky behavior alone.
+ */
+function keepFocusedPhoneControlClear(event: FocusEvent<HTMLElement>) {
+  const target = event.target;
+  const isRange = target instanceof HTMLInputElement && target.type === "range";
+  const isClaimToggle =
+    target instanceof HTMLButtonElement &&
+    target.closest('[data-testid="claim-constraint-toggle"]') !== null;
+  if (!isRange && !isClaimToggle) return;
+  if (!window.matchMedia("(max-width: 639px)").matches) return;
+
+  // Focusing a claim chip happens during pointer activation. Moving the page
+  // in that focus phase can relocate the pointer before its click dispatches,
+  // so wait for the next paint while retaining keyboard-focus clearance.
+  window.requestAnimationFrame(() => {
+    if (!target.isConnected || document.activeElement !== target) return;
+    target.scrollIntoView({ block: "end", inline: "nearest", behavior: "instant" });
+  });
+}
 
 export function ColtRevolver3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -499,7 +523,10 @@ export function ColtRevolver3D() {
       </div>
 
       {/* Interactive Bottom Control Deck */}
-      <div className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4">
+      <div
+        className="p-4 sm:p-5 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 space-y-4 max-sm:[&_input[type=range]]:scroll-mb-[calc(4rem+env(safe-area-inset-top))]"
+        onFocusCapture={keepFocusedPhoneControlClear}
+      >
         {/* Action Buttons Row */}
         <div className="flex flex-wrap items-center gap-2.5 bg-parchment-100/95 dark:bg-ink-900/95 max-sm:sticky max-sm:top-[calc(4rem+env(safe-area-inset-top))] max-sm:z-20 max-sm:py-2">
           <button
@@ -598,7 +625,7 @@ export function ColtRevolver3D() {
           onToggleClaim={(claimNo, active) =>
             setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
           }
-          className="mt-2 max-sm:[&_button]:scroll-mt-72"
+          className="mt-2 max-sm:[&_button]:scroll-mt-72 max-sm:[&_button]:scroll-mb-[calc(4rem+env(safe-area-inset-top))]"
         />
 
         {/* Port-Hamiltonian Dirac Energy Strip */}

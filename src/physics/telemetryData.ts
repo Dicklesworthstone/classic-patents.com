@@ -95,10 +95,8 @@ import {
   readKamenSegwayControls,
   stepKamenSegwaySi,
 } from "./kamenSegwayKernel";
-import {
-  readKamenTransporterControls,
-  stepKamenTransporterTopology,
-} from "./kamenTransporterKernel";
+import { readKamenTransporterControls } from "./kamenTransporterKernel";
+import { stepKamenTransporterPhysics } from "./kamenTransporterWasm";
 import {
   KILBY_FIGURE_7_VALUES,
   KILBY_PRINTED_WAFER,
@@ -9650,17 +9648,17 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-5121329-crump-fdm": {
     domain: "thermodynamics",
-    domainTitle: "Fused Deposition Modeling (FDM) Melt Flow & Thermal Solidification",
-    equationName: "Poiseuille Capillary Flow, Feed Kinematics, & Thermal Cooling",
+    domainTitle: "FDM Relative Motion, Reduced Melt-Flow & Thermal Screening",
+    equationName: "Metered Deposition, Newtonian Capillary Screen & First-Mode Cooling",
     governingEquation:
       "Q = w h v_{\\text{head}}, \\quad \\Delta P = \\frac{8 \\mu L Q}{\\pi R^4}, \\quad \\tau = \\frac{h^2}{\\pi^2 \\alpha}",
-    engineMethod: "FrankenSimEngine.stepCrumpFdm",
+    engineMethod: "fs-flux::capillary + fs-conduction::reduced_slab through fs-crump-wasm",
     controls: [
       {
         id: "nozzleTempC",
         label: "Liquefier Nozzle Temperature",
-        min: 160,
-        max: 290,
+        min: 140,
+        max: 280,
         step: 5,
         defaultValue: CRUMP_FDM_DEFAULT_CONTROLS.nozzleTempC,
         unit: "°C",
@@ -9716,7 +9714,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           provenance: "scenario-modern",
         },
         {
-          label: "Nozzle Pressure Drop (ΔP)",
+          label: "Newtonian Pressure Screen (ΔP)",
           value: tel.nozzlePressureDropMPa.toFixed(3),
           unit: "MPa",
           badgeColor: "amber",
@@ -9730,31 +9728,32 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           provenance: "scenario-modern",
         },
         {
-          label: "Cooling Time Constant (τ)",
+          label: "First-Mode Cooling Constant (τ)",
           value: (tel.coolingTimeConstantSec * 1000).toFixed(0),
           unit: "ms",
           badgeColor: "cyan",
           provenance: "scenario-modern",
         },
         {
-          label: "Interlayer Weld Quality (T_int/Tg)",
-          value: tel.weldQualityRatio.toFixed(2),
-          unit: "x",
-          badgeColor: tel.poorAdhesionRefusal ? "rose" : "emerald",
+          label: "Interface Thermal Margin (T_int − Tg)",
+          value: tel.interfaceTemperatureMarginC.toFixed(1),
+          unit: "°C",
+          badgeColor: tel.interfaceAboveGlassTransition ? "emerald" : "rose",
           provenance: "scenario-modern",
         },
       ];
     },
     pedagogicalInsight:
-      "US 5,121,329 established that FDM extrusion relies on using solid filament as a piston pump into a heated liquefier, where the flat nozzle tip irons extruded beads into a planar road (w/h ≈ 2.25) while conducting heat into the substrate to freeze dimensions in ~50 ms.",
+      "Claim 1 covers the broader metered fluid-state head/base/relative-motion apparatus; Claim 2 separately adds heating, and Claim 39 separately claims a substantially planar nozzle bottom maintained at a controlled gap for a shearing or doctor-blade effect. The displayed pressure and cooling values are modern illustrative screens owned by generic FrankenSim laws, not dimensions or performance measurements printed in US 5,121,329.",
   },
   "us-5701965-kamen-transporter": {
-    domain: "source_bounded_balance_transfer_climb_topology",
-    domainTitle: "Source-Bounded Balance, Transfer & Climb Topology",
-    equationName: "Claimed State-Transition Relationship",
+    domain: "source_dimensioned_tri_wheel_contact",
+    domainTitle: "Source-Dimensioned Tri-Wheel Balance & Stair Contact",
+    equationName: "Rigid Three-Wheel Carrier Support Relation",
     governingEquation:
-      "\\text{control loop} + \\text{motorized drive} + \\text{ground-contact module} \\longrightarrow \\text{fore-aft balance / state transition}",
-    engineMethod: "TypeScript source-topology state reader (no SI dynamics)",
+      "x_i=x_c+l\\cos(\\phi+2\\pi i/3),\\quad y_i=y_c+l\\sin(\\phi+2\\pi i/3),\\quad g_i=y_i-r-h(x_i)\\ge 0",
+    engineMethod:
+      "fs-kamen-wasm source adapter over fs-mbd::tri_wheel_cluster with typed equation-identical fallback",
     controls: [
       {
         id: "topologyState",
@@ -9769,7 +9768,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     ],
     computeMetrics: (p) => {
       const controls = readKamenTransporterControls(p);
-      const topology = stepKamenTransporterTopology(controls);
+      const topology = stepKamenTransporterPhysics(controls, "ts-fallback");
       return [
         {
           label: "Claim-reading state",
@@ -9804,6 +9803,24 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           provenance: "source-disclosed",
         },
         {
+          label: "Horizontal support contacts",
+          value: topology.displayPose.contactWheelIds.join(" + ").toUpperCase(),
+          unit: `${topology.displayPose.contactCount} wheel${topology.displayPose.contactCount === 1 ? "" : "s"}`,
+          badgeColor: "emerald",
+          progressPct: 100,
+          provenance: "source-disclosed",
+          provenanceCitation: topology.sourceGeometryReceipt,
+        },
+        {
+          label: "Nominal source geometry",
+          value: "r 3.810 · l 5.581 · h 6.850 · d 10.900",
+          unit: "inches · Table 1",
+          badgeColor: "cyan",
+          progressPct: 100,
+          provenance: "source-disclosed",
+          provenanceCitation: topology.sourceGeometryReceipt,
+        },
+        {
           label: "Quantitative dynamics",
           value: "WITHHELD",
           unit: "missing source inputs",
@@ -9815,7 +9832,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       ];
     },
     pedagogicalInsight:
-      "US 5,701,965 records control-loop, motorized-drive, independently controlled ground-module, and ordered balance/transfer/climb relationships. The facsimile does not provide a controller gain, torque, speed, mass, wheel radius, force, angle, or stability-margin datum, so the public instrument reads the documented state topology without forecasting vehicle dynamics.",
+      "US 5,701,965 records a three-equal-wheel cluster, nominal wheel/carrier/stair geometry, independently controlled ground wheels, and the ordered balance/transfer/climb sequence. The fs-mbd owner resolves all three wheel centers and refuses penetration or unsupported poses. It does not forecast vehicle dynamics because the facsimile omits the mass/inertia, motor, controller, sensor, friction, compliance, impact, and contact inputs needed to do so.",
   },
   "us-6302230-kamen-segway": {
     domain: "robotics_locomotion",
