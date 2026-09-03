@@ -44,6 +44,8 @@ const CAMERA_PRESETS: Record<
   signaling_gauge: { pos: [4.2, 1.8, 1.8], target: [3.4, 0.8, 0.4] },
 };
 
+const TRIP_MODES = ["running", "tripped_derailment", "tripped_parting"] as const;
+
 export function WestinghouseAirBrake3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
@@ -58,8 +60,7 @@ export function WestinghouseAirBrake3D() {
   const accidentTripMode = (params.accidentTrip as number) ?? 0;
   const signalPulsePsi = (params.signalPulsePressure as number) ?? 0;
 
-  const tripModes = ["running", "tripped_derailment", "tripped_parting"] as const;
-  const tripCockState = tripModes[accidentTripMode] ?? "running";
+  const tripCockState = TRIP_MODES[accidentTripMode] ?? "running";
   const selectingCockState = selectingCockPos === 1 ? "reversed" : "normal";
 
   const westinghouse = FrankenSimEngine.stepWestinghouseAirBrake({
@@ -127,12 +128,12 @@ export function WestinghouseAirBrake3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater(
+    const unregister = globalTransportBus.registerUpdater(
       "us-124404-westinghouse-air-brake",
       integrate,
       "TS_FALLBACK",
     );
-    return () => globalTransportBus.unregisterUpdater("us-124404-westinghouse-air-brake");
+    return unregister;
   }, [live]);
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -418,6 +419,7 @@ export function WestinghouseAirBrake3D() {
             </div>
             <input
               type="range"
+              aria-label="Selecting cock position"
               min="0"
               max="1"
               step="1"

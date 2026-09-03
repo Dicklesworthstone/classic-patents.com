@@ -4,39 +4,27 @@ import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import {
-  DEFAULT_ETHERNET_CONTROLS,
-  INITIAL_ETHERNET_STATE,
+  ethernetDisplayWavePhase,
   type MetcalfeEthernetControls,
-  stepMetcalfeEthernetSi,
+  readEthernetControls,
+  readMetcalfeEthernetTapeFrame,
+  resetMetcalfeEthernetTape,
 } from "@/physics/metcalfeEthernetKernel";
+import { usePatentRuntimeTick } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 const PATENT_ID = "us-4063220-metcalfe-ethernet";
 
-interface WavePacket {
-  id: number;
-  originStationIndex: number;
-  originX: number; // 0..1 normalized cable pos
-  direction: 1 | -1;
-  currentX: number;
-  isJam: boolean;
-  active: boolean;
-}
-
 export const MetcalfeEthernetSim: React.FC = () => {
-  const { params, updateParam } = usePatentPhysics(PATENT_ID);
+  const { effectiveParams, updateParam } = usePatentPhysics(PATENT_ID);
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const controls = useMemo<MetcalfeEthernetControls>(
-    () => ({
-      ...DEFAULT_ETHERNET_CONTROLS,
-      ...params,
-    }),
-    [params],
+    () => readEthernetControls(effectiveParams as any),
+    [effectiveParams],
   );
-
-  const metrics = useMemo(() => {
-    return stepMetcalfeEthernetSi(INITIAL_ETHERNET_STATE, controls, 0.016).metrics;
-  }, [controls]);
+  const runtimeTick = usePatentRuntimeTick(PATENT_ID, 1);
+  const tapeFrame = readMetcalfeEthernetTapeFrame(controls);
+  const { state, metrics } = tapeFrame;
 
   const setControl = <K extends keyof MetcalfeEthernetControls>(
     key: K,
@@ -46,43 +34,25 @@ export const MetcalfeEthernetSim: React.FC = () => {
   };
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const packetsRef = useRef<WavePacket[]>([]);
-  const packetIdSeq = useRef(1);
-
-  // Handle station transmit buttons
-  const sendPacketFromStation = (stationIdx: number) => {
-    const stationX = 0.15 + (stationIdx / 3) * 0.7;
-    packetsRef.current.push({
-      id: packetIdSeq.current++,
-      originStationIndex: stationIdx,
-      originX: stationX,
-      direction: 1,
-      currentX: stationX,
-      isJam: false,
-      active: true,
-    });
-    packetsRef.current.push({
-      id: packetIdSeq.current++,
-      originStationIndex: stationIdx,
-      originX: stationX,
-      direction: -1,
-      currentX: stationX,
-      isJam: false,
-      active: true,
-    });
-  };
 
   useEffect(() => {
-    let animationFrameId: number;
-
     const render = () => {
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      const width = canvas.width;
-      const height = canvas.height;
+      const rectangle = canvas.getBoundingClientRect();
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      const bufferWidth = Math.max(1, Math.round(rectangle.width * pixelRatio));
+      const bufferHeight = Math.max(1, Math.round(rectangle.height * pixelRatio));
+      if (canvas.width !== bufferWidth || canvas.height !== bufferHeight) {
+        canvas.width = bufferWidth;
+        canvas.height = bufferHeight;
+      }
+      ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      const width = rectangle.width;
+      const height = rectangle.height;
 
       // Background
       ctx.fillStyle = "#090d16";
@@ -194,63 +164,45 @@ export const MetcalfeEthernetSim: React.FC = () => {
         ctx.fillText(st.label, st.x, cableY - 130);
       });
 
-      // 4. Update & Draw Propagating Wave Packets
-      const speedPxPerFrame = 4.0;
-      const packets = packetsRef.current;
-
-      for (let i = 0; i < packets.length; i++) {
-        const p = packets[i];
-        if (!p.active) continue;
-
-        p.currentX += (p.direction * speedPxPerFrame) / cableLengthPx;
-
-        // Check if reached terminator
-        if (p.currentX <= 0 || p.currentX >= 1) {
-          p.active = false;
-          continue;
-        }
-
-        const px = cableStartX + p.currentX * cableLengthPx;
-
-        // Packet waveform pulse
-        const packetColor = p.isJam ? "#ef4444" : "#38bdf8";
-        ctx.fillStyle = packetColor;
-        ctx.shadowColor = packetColor;
+      // 4. Draw the exact shared tape phase, slowed explicitly so a
+      // nanosecond electromagnetic transit remains visible to a visitor.
+      const wavePhase = ethernetDisplayWavePhase(state);
+      const drawBidirectionalWave = (originX: number, color: string) => {
+        ctx.fillStyle = color;
+        ctx.shadowColor = color;
         ctx.shadowBlur = 12;
-
-        ctx.beginPath();
-        ctx.arc(px, cableY, 8, 0, Math.PI * 2);
-        ctx.fill();
-
+        for (const x of [
+          originX + wavePhase * (cableEndX - originX),
+          originX - wavePhase * (originX - cableStartX),
+        ]) {
+          ctx.beginPath();
+          ctx.arc(x, cableY, 8, 0, Math.PI * 2);
+          ctx.fill();
+        }
         ctx.shadowBlur = 0;
+      };
+
+      if (state.station1State === "transmitting" || state.station1State === "jamming") {
+        drawBidirectionalWave(
+          stations[0].x,
+          state.station1State === "jamming" ? "#ef4444" : stations[0].color,
+        );
+      }
+      if (state.station2State === "transmitting" || state.station2State === "jamming") {
+        drawBidirectionalWave(
+          stations[1].x,
+          state.station2State === "jamming" ? "#ef4444" : stations[1].color,
+        );
       }
 
-      // Check packet collisions (packets overlapping on wire from different origins)
-      for (let i = 0; i < packets.length; i++) {
-        for (let j = i + 1; j < packets.length; j++) {
-          const p1 = packets[i];
-          const p2 = packets[j];
-          if (
-            p1.active &&
-            p2.active &&
-            p1.originStationIndex !== p2.originStationIndex &&
-            Math.abs(p1.currentX - p2.currentX) < 0.03
-          ) {
-            // Collision spark!
-            const colX = cableStartX + ((p1.currentX + p2.currentX) / 2) * cableLengthPx;
-            ctx.fillStyle = "#facc15";
-            ctx.shadowColor = "#ef4444";
-            ctx.shadowBlur = 20;
-            ctx.beginPath();
-            ctx.arc(colX, cableY, 16, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-
-            // Turn into jam packets
-            p1.isJam = true;
-            p2.isJam = true;
-          }
-        }
+      if (metrics.collisionDisplayActive) {
+        ctx.fillStyle = "#facc15";
+        ctx.shadowColor = "#ef4444";
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc((stations[0].x + stations[1].x) / 2, cableY, 16, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
       }
 
       // 5. Draw Bottom Scope / Telemetry Panel
@@ -268,24 +220,24 @@ export const MetcalfeEthernetSim: React.FC = () => {
       ctx.fillText("COAXIAL BUS VOLTAGE & MANCHESTER OSCILLOSCOPE", 35, scopeY + 20);
 
       // Draw Manchester bit transitions
-      const time = Date.now() / 1000;
       const scopeStartX = 40;
       const scopeEndX = width - 40;
       const scopeMidY = scopeY + 60;
 
-      ctx.strokeStyle = metrics?.collisionDetected ? "#ef4444" : "#22c55e";
+      ctx.strokeStyle = metrics.collisionDisplayActive ? "#ef4444" : "#22c55e";
       ctx.lineWidth = 2.5;
       ctx.beginPath();
 
       for (let x = scopeStartX; x < scopeEndX; x += 2) {
-        const t = (x - scopeStartX) * 0.05 + time * 5;
+        const t = (x - scopeStartX) * 0.05 + state.manchesterClockPhase / (Math.PI * 2);
         const bitVal = Math.sin(t) > 0 ? 1 : -1;
         // Mid-bit Manchester transition
         const phase = t % 1;
         const yOffset = phase > 0.5 ? bitVal * 20 : -bitVal * 20;
+        const deterministicJamRipple = Math.sin(t * 17 + state.rngCounter * 0.31) * 5;
         const y =
           scopeMidY +
-          (metrics?.collisionDetected ? yOffset * 1.8 + (Math.random() - 0.5) * 10 : yOffset);
+          (metrics.collisionDisplayActive ? yOffset * 1.8 + deterministicJamRipple : yOffset);
 
         if (x === scopeStartX) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
@@ -296,9 +248,9 @@ export const MetcalfeEthernetSim: React.FC = () => {
       ctx.fillStyle = "#38bdf8";
       ctx.font = "11px monospace";
       ctx.fillText(`BUS V: ${metrics?.busVoltageVolts?.toFixed(2) ?? "-1.00"} V`, 40, scopeY + 105);
-      ctx.fillStyle = metrics?.collisionDetected ? "#ef4444" : "#22c55e";
+      ctx.fillStyle = metrics.collisionDisplayActive ? "#ef4444" : "#22c55e";
       ctx.fillText(
-        `STATUS: ${metrics?.collisionDetected ? "COLLISION DETECTED (JAMMING)" : "CARRIER CLEAR / CLEAN"}`,
+        `STATUS: ${metrics.collisionDisplayActive ? "COLLISION EVENT / JAM + BACKOFF" : "CARRIER CLEAR / CLEAN"}`,
         180,
         scopeY + 105,
       );
@@ -308,16 +260,22 @@ export const MetcalfeEthernetSim: React.FC = () => {
         450,
         scopeY + 105,
       );
-
-      animationFrameId = requestAnimationFrame(render);
     };
 
-    animationFrameId = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [metrics]);
+    render();
+    const observer = new ResizeObserver(render);
+    const canvas = canvasRef.current;
+    if (canvas) observer.observe(canvas);
+    return () => observer.disconnect();
+  }, [metrics, state]);
 
   return (
-    <div className="flex flex-col gap-4 w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-slate-200">
+    <div
+      className="flex flex-col gap-4 w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-slate-200"
+      data-runtime-tick={runtimeTick}
+      data-rng-counter={state.rngCounter}
+      data-collision-count={state.totalCollisionCount}
+    >
       {/* Header controls */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
         <div>
@@ -329,47 +287,71 @@ export const MetcalfeEthernetSim: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex w-full flex-wrap gap-2 sm:w-auto">
           <button
             type="button"
-            onClick={() => sendPacketFromStation(0)}
-            className="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-md text-xs font-medium transition"
+            onClick={() => {
+              updateParam("triggerCollision", 0);
+              updateParam("station1Transmitting", 1);
+              updateParam("station2Transmitting", 0);
+            }}
+            className="grow px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-md text-xs font-medium transition sm:grow-0"
           >
             Transmit from Node A
           </button>
           <button
             type="button"
-            onClick={() => sendPacketFromStation(1)}
-            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md text-xs font-medium transition"
+            onClick={() => {
+              updateParam("triggerCollision", 0);
+              updateParam("station1Transmitting", 0);
+              updateParam("station2Transmitting", 1);
+            }}
+            className="grow px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md text-xs font-medium transition sm:grow-0"
           >
             Transmit from Node B
           </button>
           <button
             type="button"
             onClick={() => {
-              sendPacketFromStation(0);
-              setTimeout(() => sendPacketFromStation(1), 120);
+              updateParam("station1Transmitting", 1);
+              updateParam("station2Transmitting", 1);
+              updateParam("triggerCollision", 1);
             }}
-            className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-md text-xs font-medium transition"
+            className="grow px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-md text-xs font-medium transition sm:grow-0"
           >
             Force Collision!
+          </button>
+          <button
+            type="button"
+            onClick={() => resetMetcalfeEthernetTape()}
+            className="grow px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded-md text-xs font-medium transition sm:grow-0"
+          >
+            Reset Event Tape
           </button>
         </div>
       </div>
 
       {/* Main Canvas */}
       <div className="relative w-full h-[380px] bg-slate-900 rounded-lg overflow-hidden border border-slate-800">
-        <canvas ref={canvasRef} width={800} height={380} className="w-full h-full block" />
+        <canvas
+          ref={canvasRef}
+          className="w-full h-full block"
+          aria-label="Animated coaxial Ethernet collision-domain diagram"
+        />
       </div>
 
       {/* Physics Sliders */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
         <div className="flex flex-col gap-1.5 bg-slate-900/60 p-3 rounded-lg border border-slate-800/80">
           <div className="flex justify-between text-xs">
-            <span className="text-slate-300 font-medium">Coaxial Cable Length</span>
+            <label htmlFor="metcalfe-cable-length" className="text-slate-300 font-medium">
+              Coaxial Cable Length
+            </label>
             <span className="text-amber-400 font-mono">{controls.cableLengthMeters} m</span>
           </div>
           <input
+            id="metcalfe-cable-length"
+            aria-label="Coaxial cable length"
             type="range"
             min="50"
             max="1000"
@@ -385,10 +367,14 @@ export const MetcalfeEthernetSim: React.FC = () => {
 
         <div className="flex flex-col gap-1.5 bg-slate-900/60 p-3 rounded-lg border border-slate-800/80">
           <div className="flex justify-between text-xs">
-            <span className="text-slate-300 font-medium">Data Rate</span>
+            <label htmlFor="metcalfe-data-rate" className="text-slate-300 font-medium">
+              Data Rate
+            </label>
             <span className="text-sky-400 font-mono">{controls.dataRateMbps} Mbps</span>
           </div>
           <input
+            id="metcalfe-data-rate"
+            aria-label="Ethernet data rate"
             type="range"
             min="1.0"
             max="10.0"
@@ -404,10 +390,14 @@ export const MetcalfeEthernetSim: React.FC = () => {
 
         <div className="flex flex-col gap-1.5 bg-slate-900/60 p-3 rounded-lg border border-slate-800/80">
           <div className="flex justify-between text-xs">
-            <span className="text-slate-300 font-medium">Offered Traffic Load (G)</span>
+            <label htmlFor="metcalfe-offered-load" className="text-slate-300 font-medium">
+              Offered Traffic Load (G)
+            </label>
             <span className="text-emerald-400 font-mono">{controls.offeredLoad}</span>
           </div>
           <input
+            id="metcalfe-offered-load"
+            aria-label="Offered Ethernet traffic load"
             type="range"
             min="0.1"
             max="2.0"

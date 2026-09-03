@@ -1,9 +1,10 @@
 /**
- * kamenTransporterModel.ts
+ * Procedural source-reading model for US 5,701,965 — Human Transporter.
  *
- * Procedural 3D WebGL model of the Dean Kamen Human Transporter (US 5,701,965 iBOT / Segway).
- * Constructs aluminum chassis, passenger seat, standing mast/handlebar, planetary wheel clusters,
- * hub servomotors, and stair terrain using pure Three.js procedural geometry without external assets.
+ * This is a qualitative claim-reading instrument: it makes the supported
+ * ground-contacting cluster, balance-loop, transfer, and climb relationships
+ * visible. Scene dimensions and the discrete cluster poses are normalized
+ * display coordinates, not measurements or a reconstruction of a gear train.
  */
 
 import * as THREE from "three";
@@ -11,7 +12,9 @@ import type {
   KamenTransporterControls,
   KamenTransporterTelemetry,
 } from "@/physics/kamenTransporterKernel";
-import { KAMEN_TRANSPORTER_SCENARIO_WHEEL_RADIUS_M } from "@/physics/kamenTransporterKernel";
+
+/** Normalized scene radius only; it is not a dimension disclosed by the grant. */
+const DISPLAY_WHEEL_RADIUS = 0.15;
 
 export interface KamenTransporterModel {
   root: THREE.Group;
@@ -26,109 +29,96 @@ export interface KamenTransporterModel {
   rightWheel2: THREE.Mesh;
   stairTerrain: THREE.Group;
   cgMarker: THREE.Mesh;
-  pitchVectorLine: THREE.Line;
+  topologyLinkLine: THREE.Line;
   dispose: () => void;
 }
 
 export function buildKamenTransporterModel(): KamenTransporterModel {
   const root = new THREE.Group();
+  root.name = "kamen-source-topology";
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
 
-  // Materials
   const chassisMat = new THREE.MeshStandardMaterial({
-    color: 0x0284c7, // Sky Blue
+    color: 0x0284c7,
     metalness: 0.6,
     roughness: 0.3,
   });
-  materialsToDispose.push(chassisMat);
-
-  const darkAlumMat = new THREE.MeshStandardMaterial({
-    color: 0x334155, // Slate
+  const structuralMat = new THREE.MeshStandardMaterial({
+    color: 0x334155,
     metalness: 0.8,
     roughness: 0.4,
   });
-  materialsToDispose.push(darkAlumMat);
-
   const tireMat = new THREE.MeshStandardMaterial({
-    color: 0x1e293b, // Dark charcoal rubber
+    color: 0x1e293b,
     roughness: 0.9,
     metalness: 0.1,
   });
-  materialsToDispose.push(tireMat);
-
   const rimMat = new THREE.MeshStandardMaterial({
-    color: 0x38bdf8, // Light blue spoke rim
+    color: 0x38bdf8,
     metalness: 0.7,
     roughness: 0.2,
   });
-  materialsToDispose.push(rimMat);
-
   const accentMat = new THREE.MeshStandardMaterial({
-    color: 0xf59e0b, // Amber Gold
+    color: 0xf59e0b,
     metalness: 0.5,
     roughness: 0.3,
   });
-  materialsToDispose.push(accentMat);
-
-  const cgMat = new THREE.MeshStandardMaterial({
-    color: 0x10b981, // Emerald green
+  const topologyMat = new THREE.MeshStandardMaterial({
+    color: 0x10b981,
     emissive: 0x047857,
     emissiveIntensity: 0.4,
     roughness: 0.2,
   });
-  materialsToDispose.push(cgMat);
+  const stairMat = new THREE.MeshStandardMaterial({ color: 0x78716c, roughness: 0.8 });
+  materialsToDispose.push(
+    chassisMat,
+    structuralMat,
+    tireMat,
+    rimMat,
+    accentMat,
+    topologyMat,
+    stairMat,
+  );
 
-  const stairMat = new THREE.MeshStandardMaterial({
-    color: 0x78716c, // Stone stair
-    roughness: 0.8,
-  });
-  materialsToDispose.push(stairMat);
-
-  // 1. Central Chassis
   const chassis = new THREE.Group();
+  chassis.name = "support-and-control-body";
   root.add(chassis);
-
-  // Main battery / controller baseboard
   const baseGeom = new THREE.BoxGeometry(0.4, 0.14, 0.46);
   geometriesToDispose.push(baseGeom);
-  const baseMesh = new THREE.Mesh(baseGeom, darkAlumMat);
+  const baseMesh = new THREE.Mesh(baseGeom, structuralMat);
   baseMesh.castShadow = true;
   chassis.add(baseMesh);
 
-  // Central cross axle housing
-  const axleGeom = new THREE.CylinderGeometry(0.04, 0.04, 0.62, 24);
-  axleGeom.rotateX(Math.PI / 2);
-  geometriesToDispose.push(axleGeom);
-  const axleMesh = new THREE.Mesh(axleGeom, accentMat);
-  chassis.add(axleMesh);
+  const crossMemberGeom = new THREE.CylinderGeometry(0.04, 0.04, 0.62, 24);
+  crossMemberGeom.rotateX(Math.PI / 2);
+  geometriesToDispose.push(crossMemberGeom);
+  chassis.add(new THREE.Mesh(crossMemberGeom, accentMat));
 
-  // 2. Passenger Seat Assembly
+  // A support silhouette keeps the human-transporter context legible; it is
+  // not a claim that this is the physical configuration of any embodiment.
   const seatGroup = new THREE.Group();
+  seatGroup.name = "support-silhouette";
   chassis.add(seatGroup);
-
   const seatCushionGeom = new THREE.BoxGeometry(0.38, 0.08, 0.38);
   geometriesToDispose.push(seatCushionGeom);
   const seatCushion = new THREE.Mesh(seatCushionGeom, chassisMat);
   seatCushion.position.set(0, 0.25, 0);
   seatGroup.add(seatCushion);
-
   const seatBackGeom = new THREE.BoxGeometry(0.06, 0.45, 0.38);
   geometriesToDispose.push(seatBackGeom);
   const seatBack = new THREE.Mesh(seatBackGeom, chassisMat);
   seatBack.position.set(-0.16, 0.5, 0);
   seatGroup.add(seatBack);
 
-  // 3. Standing Mast / Handlebar (Segway mode)
   const standingMast = new THREE.Group();
+  standingMast.name = "balance-mode-marker";
   chassis.add(standingMast);
-
   const mastGeom = new THREE.CylinderGeometry(0.02, 0.025, 0.95, 16);
   geometriesToDispose.push(mastGeom);
-  const mastMesh = new THREE.Mesh(mastGeom, darkAlumMat);
+  const mastMesh = new THREE.Mesh(mastGeom, structuralMat);
   mastMesh.position.set(0.12, 0.52, 0);
   standingMast.add(mastMesh);
-
   const handleBarGeom = new THREE.CylinderGeometry(0.018, 0.018, 0.45, 16);
   handleBarGeom.rotateX(Math.PI / 2);
   geometriesToDispose.push(handleBarGeom);
@@ -136,83 +126,81 @@ export function buildKamenTransporterModel(): KamenTransporterModel {
   handleBarMesh.position.set(0.12, 1.0, 0);
   standingMast.add(handleBarMesh);
 
-  // 4. Center of Gravity Marker
-  const cgGeom = new THREE.SphereGeometry(0.04, 16, 16);
-  geometriesToDispose.push(cgGeom);
-  const cgMarker = new THREE.Mesh(cgGeom, cgMat);
+  const markerGeom = new THREE.SphereGeometry(0.04, 16, 16);
+  geometriesToDispose.push(markerGeom);
+  const cgMarker = new THREE.Mesh(markerGeom, topologyMat);
+  cgMarker.name = "topology-state-marker";
   cgMarker.position.set(0, 0.85, 0);
   chassis.add(cgMarker);
 
-  // 5. Inverted Pendulum Vector Line
-  const lineGeom = new THREE.BufferGeometry().setFromPoints([
+  const linkGeom = new THREE.BufferGeometry().setFromPoints([
     new THREE.Vector3(0, 0, 0),
     new THREE.Vector3(0, 0.85, 0),
   ]);
-  geometriesToDispose.push(lineGeom);
-  const lineMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 2 });
+  geometriesToDispose.push(linkGeom);
+  const lineMat = new THREE.LineBasicMaterial({ color: 0x38bdf8 });
   materialsToDispose.push(lineMat);
-  const pitchVectorLine = new THREE.Line(lineGeom, lineMat);
-  chassis.add(pitchVectorLine);
+  const topologyLinkLine = new THREE.Line(linkGeom, lineMat);
+  topologyLinkLine.name = "control-relationship-link";
+  chassis.add(topologyLinkLine);
 
-  // Helper function to build a planetary wheel cluster
-  function createClusterGroup(sideZ: number) {
+  function createClusterWheelGroup(sideZ: number) {
     const cluster = new THREE.Group();
+    cluster.name = "cluster-wheel-module";
     cluster.position.set(0, 0, sideZ);
     root.add(cluster);
 
-    // Planetary carrier arm
+    const carrier = new THREE.Group();
+    carrier.name = "cluster-wheel-carrier";
+    cluster.add(carrier);
     const armGeom = new THREE.BoxGeometry(0.36, 0.04, 0.03);
     geometriesToDispose.push(armGeom);
-    const armMesh = new THREE.Mesh(armGeom, darkAlumMat);
-    cluster.add(armMesh);
+    carrier.add(new THREE.Mesh(armGeom, structuralMat));
 
-    // Central cluster pivot cap
     const capGeom = new THREE.CylinderGeometry(0.05, 0.05, 0.05, 16);
     capGeom.rotateX(Math.PI / 2);
     geometriesToDispose.push(capGeom);
-    const capMesh = new THREE.Mesh(capGeom, accentMat);
-    cluster.add(capMesh);
+    carrier.add(new THREE.Mesh(capGeom, accentMat));
 
-    // Wheel 1
     const tireTubeRadius = 0.04;
     const tireGeom = new THREE.TorusGeometry(
-      KAMEN_TRANSPORTER_SCENARIO_WHEEL_RADIUS_M - tireTubeRadius,
+      DISPLAY_WHEEL_RADIUS - tireTubeRadius,
       tireTubeRadius,
       16,
       24,
     );
     geometriesToDispose.push(tireGeom);
-    const wheel1 = new THREE.Mesh(tireGeom, tireMat);
-    wheel1.position.set(-0.18, 0, 0);
-    wheel1.castShadow = true;
-    cluster.add(wheel1);
-
     const rimGeom = new THREE.CylinderGeometry(0.09, 0.09, 0.04, 16);
     rimGeom.rotateX(Math.PI / 2);
     geometriesToDispose.push(rimGeom);
-    const rim1 = new THREE.Mesh(rimGeom, rimMat);
-    wheel1.add(rim1);
 
-    // Wheel 2
+    const wheel1 = new THREE.Mesh(tireGeom, tireMat);
+    wheel1.name = "cluster-wheel-a";
+    wheel1.position.set(-0.18, 0, 0);
+    wheel1.castShadow = true;
+    carrier.add(wheel1);
+    wheel1.add(new THREE.Mesh(rimGeom, rimMat));
+
     const wheel2 = new THREE.Mesh(tireGeom, tireMat);
+    wheel2.name = "cluster-wheel-b";
     wheel2.position.set(0.18, 0, 0);
     wheel2.castShadow = true;
-    cluster.add(wheel2);
-
-    const rim2 = new THREE.Mesh(rimGeom, rimMat);
-    wheel2.add(rim2);
+    carrier.add(wheel2);
+    wheel2.add(new THREE.Mesh(rimGeom, rimMat));
 
     return { cluster, wheel1, wheel2 };
   }
 
-  const left = createClusterGroup(0.32);
-  const right = createClusterGroup(-0.32);
+  const left = createClusterWheelGroup(0.32);
+  const right = createClusterWheelGroup(-0.32);
 
-  // 6. Procedural Stair Terrain
   const stairTerrain = new THREE.Group();
+  stairTerrain.name = "symbolic-stair-sequence";
   stairTerrain.position.set(1.2, -0.15, 0);
+  stairTerrain.visible = false;
   root.add(stairTerrain);
-
+  // These are normalized scene blocks used only to distinguish the transfer /
+  // climb states. They are not a measured stair geometry from the patent.
   for (let i = 0; i < 4; i++) {
     const stepGeom = new THREE.BoxGeometry(0.35, 0.16 * (i + 1), 1.2);
     geometriesToDispose.push(stepGeom);
@@ -235,13 +223,13 @@ export function buildKamenTransporterModel(): KamenTransporterModel {
     rightWheel2: right.wheel2,
     stairTerrain,
     cgMarker,
-    pitchVectorLine,
+    topologyLinkLine,
     dispose: () => {
-      materialsToDispose.forEach((m) => {
-        m.dispose();
+      materialsToDispose.forEach((material) => {
+        material.dispose();
       });
-      geometriesToDispose.forEach((g) => {
-        g.dispose();
+      geometriesToDispose.forEach((geometry) => {
+        geometry.dispose();
       });
     },
   };
@@ -249,63 +237,41 @@ export function buildKamenTransporterModel(): KamenTransporterModel {
 
 export function updateKamenTransporterKinematics(
   model: KamenTransporterModel,
-  controls: KamenTransporterControls,
+  _controls: KamenTransporterControls,
   tel: KamenTransporterTelemetry,
-  wheelRollAngleRad: number,
+  _wheelRollAngleRad: number,
 ) {
-  // 1. Chassis Pitch Orientation (Inverted Pendulum Tilt)
-  const pitchRad = tel.pitchAngleRad;
-  model.chassis.rotation.z = -pitchRad;
+  // No pitch or wheel spin is calculated: neither is published numerically in
+  // US 5,701,965. The discrete display pose is explicitly a claim-reading cue.
+  model.chassis.rotation.z = 0;
+  const normalizedElevation = tel.topologyState === "ground_support" ? 0 : 0.22;
+  model.chassis.position.y = normalizedElevation;
+  model.leftCluster.position.y = normalizedElevation;
+  model.rightCluster.position.y = normalizedElevation;
 
-  // 2. Mode-dependent chassis elevation and seat visibility
-  const isBalanceMode = controls.operatingMode === "balance_2wheel";
-  const isStairMode = controls.operatingMode === "stair_climb";
+  model.leftCluster.visible = tel.clusterTopologyActive;
+  model.rightCluster.visible = tel.clusterTopologyActive;
+  const displayPose = tel.clusterTopologyActive ? tel.clusterDisplayPoseRad : 0;
+  model.leftCluster.rotation.z = displayPose;
+  model.rightCluster.rotation.z = displayPose;
+  model.stairTerrain.visible = tel.stairSequenceActive;
+  model.seatGroup.visible = true;
+  model.standingMast.visible = tel.balanceLoopActive;
 
-  let elevationY = 0.0;
-  if (isBalanceMode) {
-    elevationY = 0.28;
-    model.seatGroup.visible = true;
-    model.standingMast.visible = true;
-    model.stairTerrain.visible = false;
-  } else if (isStairMode) {
-    elevationY = 0.22;
-    model.seatGroup.visible = true;
-    model.standingMast.visible = false;
-    model.stairTerrain.visible = true;
+  model.leftWheel1.rotation.z = 0;
+  model.leftWheel2.rotation.z = 0;
+  model.rightWheel1.rotation.z = 0;
+  model.rightWheel2.rotation.z = 0;
+
+  const markerMaterial = model.cgMarker.material as THREE.MeshStandardMaterial;
+  if (tel.balanceLoopActive) {
+    markerMaterial.color.setHex(0x10b981);
+    markerMaterial.emissive.setHex(0x047857);
+  } else if (tel.clusterTopologyActive) {
+    markerMaterial.color.setHex(0xf59e0b);
+    markerMaterial.emissive.setHex(0x92400e);
   } else {
-    // 4-wheel standard mode
-    elevationY = 0.0;
-    model.seatGroup.visible = true;
-    model.standingMast.visible = false;
-    model.stairTerrain.visible = false;
-  }
-
-  model.chassis.position.y = elevationY;
-  model.leftCluster.position.y = elevationY;
-  model.rightCluster.position.y = elevationY;
-
-  // 3. Cluster Rotation Kinematics
-  const clusterRad = (tel.clusterAngleDeg * Math.PI) / 180;
-  model.leftCluster.rotation.z = clusterRad;
-  model.rightCluster.rotation.z = clusterRad;
-
-  // 4. The fixed-step physics kernel owns the integrated rolling phase. The
-  // model is a projection and must not multiply by speed or time a second time.
-  model.leftWheel1.rotation.z = -wheelRollAngleRad;
-  model.leftWheel2.rotation.z = -wheelRollAngleRad;
-  model.rightWheel1.rotation.z = -wheelRollAngleRad;
-  model.rightWheel2.rotation.z = -wheelRollAngleRad;
-
-  // 5. Center of Gravity Marker Color Feedback
-  const cgMat = model.cgMarker.material as THREE.MeshStandardMaterial;
-  if (tel.pitchRefusal) {
-    cgMat.color.setHex(0xef4444); // Red on refusal / fall
-    cgMat.emissive.setHex(0xb91c1c);
-  } else if (tel.isBalancing) {
-    cgMat.color.setHex(0x10b981); // Emerald on active balance
-    cgMat.emissive.setHex(0x047857);
-  } else {
-    cgMat.color.setHex(0x0284c7); // Blue in 4-wheel standard
-    cgMat.emissive.setHex(0x0369a1);
+    markerMaterial.color.setHex(0x0284c7);
+    markerMaterial.emissive.setHex(0x0369a1);
   }
 }

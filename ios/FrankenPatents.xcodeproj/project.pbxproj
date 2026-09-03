@@ -98,7 +98,6 @@
 		ABF5A49283B377976C6EE06D /* NativeDocumentKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCCE257DEE2FB77FA5A7566B /* NativeDocumentKit.swift */; };
 		B38ED1A5B9082B71504E6512 /* us-31128-otis-elevator.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 55153ED970A9B9997DB52B89 /* us-31128-otis-elevator.usdz */; };
 		B74D328F2D10F542B0A46E97 /* gb-1420-cort-puddling-rolling.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 9AD7D14B2B56A90402716AAB /* gb-1420-cort-puddling-rolling.usdz */; };
-		B8928FB9A6025988E147896E /* us-3671542-kwolek-kevlar.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 455942E5510378DF350994DE /* us-3671542-kwolek-kevlar.usdz */; };
 		BB85A65E646BB87BBABCC6CA /* us-381968-tesla-motor.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 6C2FDE9DF94455B246A28519 /* us-381968-tesla-motor.usdz */; };
 		BCCA028BBE5736CA32845495 /* us-135245-pasteur-fermentation.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 4C8CBEAE6DBA11D07376A78F /* us-135245-pasteur-fermentation.usdz */; };
 		BD5A2AC8E0066130A7CE5910 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE462E30D6932C7473CC5257 /* Theme.swift */; };
@@ -192,7 +191,6 @@
 		3D037AA34C22115D24F9A0D0 /* us-4098001-watson-rcc.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-4098001-watson-rcc.usdz"; sourceTree = "<group>"; };
 		3FFBB6750FFC47C9FA5B5EC7 /* us-1781541-einstein-refrigerator.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-1781541-einstein-refrigerator.usdz"; sourceTree = "<group>"; };
 		42E807B5470E4F6879C9BCAE /* FrankenPatentsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrankenPatentsApp.swift; sourceTree = "<group>"; };
-		455942E5510378DF350994DE /* us-3671542-kwolek-kevlar.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-3671542-kwolek-kevlar.usdz"; sourceTree = "<group>"; };
 		46289DA682343E8405C914E1 /* us-3858581-kamen-medication-injection-device.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-3858581-kamen-medication-injection-device.usdz"; sourceTree = "<group>"; };
 		470E78F059E8FF16D5AF3206 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4C40DDFDF87D7CB98DA59148 /* us-4136359-wozniak-apple.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-4136359-wozniak-apple.usdz"; sourceTree = "<group>"; };
@@ -440,7 +438,6 @@
 				3997BBDA0C7C7D618036B0BF /* us-3313014-lemelson-automatic-production.usdz */,
 				EED29199D2983A857CA99568 /* us-3353115-maiman-ruby-laser.usdz */,
 				36F390D5D33B68606B8D7F93 /* us-3541541-engelbart-mouse.usdz */,
-				455942E5510378DF350994DE /* us-3671542-kwolek-kevlar.usdz */,
 				3124F3F39F1E87911E2A7BC7 /* us-3728480-baer-odyssey.usdz */,
 				6D9F3EED269BFB26359DBEFA /* us-3858232-boyle-smith-ccd.usdz */,
 				46289DA682343E8405C914E1 /* us-3858581-kamen-medication-injection-device.usdz */,
@@ -633,7 +630,6 @@
 				9BD228092F78F9578758FA28 /* us-3541541-engelbart-mouse.usdz in Resources */,
 				A5FABCC541156AB1FAF8FD9C /* us-361931-daimler-engine.usdz in Resources */,
 				3B119595B9B100DF7875BB41 /* us-3633-goodyear-rubber.usdz in Resources */,
-				B8928FB9A6025988E147896E /* us-3671542-kwolek-kevlar.usdz in Resources */,
 				52AAF0211AB36F1D53B7531A /* us-36836-gatling-gun.usdz in Resources */,
 				DC822C730C907F361DEFF2EB /* us-3728480-baer-odyssey.usdz in Resources */,
 				BB85A65E646BB87BBABCC6CA /* us-381968-tesla-motor.usdz in Resources */,

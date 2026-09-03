@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   createThreeStudioScene,
@@ -20,6 +20,8 @@ import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildMultiTouchModel } from "./MultiTouchModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
+import { StudioOverlayActionToolbar } from "./StudioOverlayActionToolbar";
+import { createExplodedLayerStudioOverlayActions } from "./studioOverlayActions";
 import { usePatentAudio } from "./usePatentAudio";
 
 const EXHIBIT_ID = "us-7479949-multitouch";
@@ -108,14 +110,8 @@ export function MultiTouch3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater(EXHIBIT_ID, integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater(EXHIBIT_ID);
-  }, [
-    live.current.fingerCount,
-    live.current.fingerSeparationMm,
-    live.current.touchPressureGrams,
-    live.current.gestureVelocityMmS,
-  ]);
+    return globalTransportBus.registerUpdater(EXHIBIT_ID, integrate, "TS_FALLBACK");
+  }, [live]);
 
   const studioRef = useRef<StudioContext | null>(null);
 
@@ -138,21 +134,12 @@ export function MultiTouch3D() {
     const model = buildMultiTouchModel();
     studio.scene.add(model.root);
 
-    let _renderedSteps = 0;
     let hudCounter = 0;
     let rafId = 0;
-    let timeSec = 0;
-    let lastFrameTimeMs: number | undefined;
 
-    const animate = (frameTimeMs: number) => {
+    const animate = () => {
       rafId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
-      const delta =
-        lastFrameTimeMs !== undefined ? Math.min((frameTimeMs - lastFrameTimeMs) / 1000, 0.1) : 0;
-      lastFrameTimeMs = frameTimeMs;
-      timeSec += delta;
-
-      _renderedSteps += 1;
       const p = live.current;
 
       // Pure consumer of the shared transport tape: the bus updater owns the
@@ -177,9 +164,6 @@ export function MultiTouch3D() {
           model.docGroup.position.x = currentState.touch1X * 0.5;
           model.docGroup.position.y = currentState.touch1Y * 0.5;
         }
-
-        model.mainGroup.rotation.x = Math.sin(timeSec * 0.5) * 0.08 + 0.1;
-        model.mainGroup.rotation.y = Math.cos(timeSec * 0.4) * 0.08;
 
         hudCounter += 1;
         if (hudCounter % 10 === 0) {
@@ -243,61 +227,21 @@ export function MultiTouch3D() {
         )}
 
         {/* Top Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
-          <button
-            type="button"
-            onClick={() => {
+        <StudioOverlayActionToolbar
+          actions={createExplodedLayerStudioOverlayActions({
+            isAudioMuted,
+            onToggleSound: () => {
               toggleSound();
               soundEngine.playSwitchClick();
-            }}
-            className="min-h-9 p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-          >
-            {isAudioMuted ? (
-              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            ) : (
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIsCutaway(!isCutaway)}
-            className={`min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              isCutaway
-                ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-            title={isCutaway ? "Collapse Stack Layers" : "Explode Capacitive Stack Layers"}
-            aria-label={isCutaway ? "Collapse Stack Layers" : "Explode Capacitive Stack Layers"}
-          >
-            <Layers className="w-4 h-4" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`min-h-9 p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showUiOverlay
-                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-            }`}
-            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
-            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
-          >
-            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
-          <button
-            aria-label="Reset camera view"
-            type="button"
-            onClick={() => applyCameraPreset("iso")}
-            className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
+            },
+            isCutaway,
+            onToggleCutaway: () => setIsCutaway(!isCutaway),
+            cutawayTitle: isCutaway ? "Collapse Stack Layers" : "Explode Capacitive Stack Layers",
+            showUiOverlay,
+            onToggleUiOverlay: () => setShowUiOverlay(!showUiOverlay),
+            onResetCamera: () => applyCameraPreset("iso"),
+          })}
+        />
 
         {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (

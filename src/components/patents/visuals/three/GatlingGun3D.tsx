@@ -1,10 +1,9 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { gatlingBoltStudioX, stepGatlingGun } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { MachineState } from "@/physics/types";
 import {
@@ -12,12 +11,15 @@ import {
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildGatlingGunModel } from "./gatlingGunModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
+import { StudioOverlayActionToolbar } from "./StudioOverlayActionToolbar";
+import { createStandardStudioOverlayActions } from "./studioOverlayActions";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -62,7 +64,7 @@ export function GatlingGun3D() {
   const [showMuzzleFlash] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
 
   const live = useLiveSimParams({
     crankRpm,
@@ -113,9 +115,13 @@ export function GatlingGun3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-36836-gatling-gun", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-36836-gatling-gun");
-  }, [live.current.claim1Active, live.current.crankOmegaRadPerS]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-36836-gatling-gun",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const studioRef = useRef<StudioContext | null>(null);
 
@@ -124,10 +130,6 @@ export function GatlingGun3D() {
     const cfg = CAMERA_PRESETS[preset];
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -259,55 +261,19 @@ export function GatlingGun3D() {
         )}
 
         {/* Top Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
-          <button
-            type="button"
-            onClick={() => setIsCutaway(!isCutaway)}
-            title={isCutaway ? "Solid Housing" : "Cutaway Breech"}
-            className={`min-h-9 p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm text-xs font-sans flex items-center gap-1 ${
-              isCutaway
-                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={toggleSound}
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="min-h-9 p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`min-h-9 p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showUiOverlay
-                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-            }`}
-            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
-            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
-          >
-            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
-
-          <button
-            aria-label="Reset camera view"
-            type="button"
-            onClick={() => applyCameraPreset("iso")}
-            className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
+        <StudioOverlayActionToolbar
+          actions={createStandardStudioOverlayActions({
+            isCutaway,
+            onToggleCutaway: () => setIsCutaway(!isCutaway),
+            cutawayTitle: isCutaway ? "Solid Housing" : "Cutaway Breech",
+            isAudioMuted,
+            onToggleSound: toggleSound,
+            showUiOverlay,
+            onToggleUiOverlay: () => setShowUiOverlay(!showUiOverlay),
+            overlayTitle: showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI",
+            onResetCamera: () => applyCameraPreset("iso"),
+          })}
+        />
 
         {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
@@ -388,6 +354,7 @@ export function GatlingGun3D() {
             </div>
             <input
               type="range"
+              aria-label="Revolving barrel count"
               min="4"
               max="10"
               step="2"

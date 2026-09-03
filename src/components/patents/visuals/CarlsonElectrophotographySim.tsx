@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { stepCarlsonElectrophotography } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -39,7 +40,10 @@ export function CarlsonElectrophotographySim({
     layerThicknessUm,
     fuserTemperatureC,
   });
+  const live = useLiveSimParams({ isRotating, physics });
 
+  // The layout-effect bridge updates telemetry without tearing down the drum
+  // animation, so control changes retain the current rotation phase.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -62,6 +66,7 @@ export function CarlsonElectrophotographySim({
     const render = () => {
       animId = requestAnimationFrame(render);
       if (!onscreenRef.current) return;
+      const { isRotating, physics } = live.current;
       if (isRotating) {
         angle += 0.015;
       }
@@ -363,7 +368,7 @@ export function CarlsonElectrophotographySim({
     return () => {
       cancelAnimationFrame(animId);
     };
-  }, [isRotating, physics, onscreenRef.current]);
+  }, [live, onscreenRef]);
 
   return (
     <div
@@ -439,6 +444,7 @@ export function CarlsonElectrophotographySim({
           </div>
           <input
             type="range"
+            aria-label="Corona charging voltage in kilovolts"
             min={4.0}
             max={8.0}
             step={0.25}
@@ -461,6 +467,7 @@ export function CarlsonElectrophotographySim({
           </div>
           <input
             type="range"
+            aria-label="Optical exposure in lux seconds"
             min={0}
             max={30}
             step={1}
@@ -481,6 +488,7 @@ export function CarlsonElectrophotographySim({
           </div>
           <input
             type="range"
+            aria-label="Selenium photoconductor thickness in micrometers"
             min={10}
             max={60}
             step={5}
@@ -503,6 +511,7 @@ export function CarlsonElectrophotographySim({
           </div>
           <input
             type="range"
+            aria-label="Fuser temperature in degrees Celsius"
             min={120}
             max={220}
             step={5}

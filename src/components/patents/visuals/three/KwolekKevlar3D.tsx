@@ -10,7 +10,6 @@ import {
   Sparkles,
   Volume2,
   VolumeX,
-  Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
@@ -27,7 +26,13 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
-import { buildKwolekKevlarModel, updateKwolekKevlarKinematics } from "./kwolekKevlarModel";
+import {
+  buildKwolekKevlarModel,
+  kwolekIllustrativeOrientationalOrder,
+  kwolekIllustrativeSheetVisibility,
+  poseKwolekIllustrativeOrder,
+  updateKwolekKevlarKinematics,
+} from "./kwolekKevlarModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -70,7 +75,6 @@ export function KwolekKevlar3D() {
   const temperatureCelsius = params.temperatureCelsius ?? 85;
   const showHydrogenBonds = params.showHydrogenBonds !== 0;
   const isImpactTesting = params.isImpactTesting !== 0;
-  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
@@ -85,7 +89,12 @@ export function KwolekKevlar3D() {
     params.appliedTension ?? 30,
     temperatureCelsius,
   );
-  const isNematicLCP = polymerConcentrationPct >= 12.0 && temperatureCelsius < 105;
+  const orientationalOrder = kwolekIllustrativeOrientationalOrder(
+    polymerConcentrationPct,
+    kevlar.thermalDisorder,
+    kevlar.shearAlignment,
+  );
+  const sheetVisibility = kwolekIllustrativeSheetVisibility(orientationalOrder);
   const tensileStrengthGpa = kevlar.tensileStrengthGpa.toFixed(2);
   const modulusGpa = kevlar.elasticModulusGpa.toFixed(0);
 
@@ -93,7 +102,7 @@ export function KwolekKevlar3D() {
     temperatureCelsius,
     showHydrogenBonds,
     isImpactTesting,
-    isNematicLCP,
+    orientationalOrder,
     isCutaway,
     isAudioMuted,
     drawRatio,
@@ -142,14 +151,8 @@ export function KwolekKevlar3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-3671542-kwolek-kevlar", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-3671542-kwolek-kevlar");
-  }, [
-    live.current.appliedTension,
-    live.current.drawRatio,
-    live.current.impactVelocityMps,
-    live.current.temperatureCelsius,
-  ]);
+    return globalTransportBus.registerUpdater("us-3671542-kwolek-kevlar", integrate, "TS_FALLBACK");
+  }, [live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
@@ -192,16 +195,15 @@ export function KwolekKevlar3D() {
       elapsed += delta;
       const p = live.current;
 
-      const wiggle = p.chainWiggleOmegaRadPerS;
-
-      for (let i = 0; i < model.chains.length; i++) {
-        const item = model.chains[i];
-        if (p.isNematicLCP) {
-          item.group.rotation.z = Math.sin(elapsed * wiggle + i) * p.chainWiggleAmp;
-          item.group.position.y =
-            item.baseY + Math.sin(elapsed * p.chainWobbleOmega + i) * p.chainWobbleAmp;
-        }
-      }
+      poseKwolekIllustrativeOrder(
+        model,
+        p.orientationalOrder,
+        elapsed,
+        p.chainWiggleOmegaRadPerS,
+        p.chainWiggleAmp,
+        p.chainWobbleAmp,
+        p.chainWobbleOmega,
+      );
 
       updateKwolekKevlarKinematics(
         model,
@@ -211,6 +213,7 @@ export function KwolekKevlar3D() {
         p.shearAlignment,
         p.bulletDisplaySpeed,
         p.isCutaway,
+        p.orientationalOrder,
       );
 
       controls.update();
@@ -247,13 +250,13 @@ export function KwolekKevlar3D() {
             <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
               <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
                 <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-500 animate-pulse" />
-                Liquid Crystal Aramid Telemetry
+                Aramid Orientation Guide
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Strength:</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">Continuum strength:</span>{" "}
                   <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {tensileStrengthGpa} GPa ({isNematicLCP ? "≈5× steel" : "isotropic"})
+                    {tensileStrengthGpa} GPa (scenario)
                   </span>
                 </div>
                 <div>
@@ -263,21 +266,17 @@ export function KwolekKevlar3D() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Phase:</span>{" "}
-                  <span
-                    className={`font-bold ${
-                      isNematicLCP
-                        ? "text-purple-600 dark:text-purple-400"
-                        : "text-amber-600 dark:text-amber-400"
-                    }`}
-                  >
-                    {isNematicLCP ? "Nematic LCP" : "Isotropic"}
+                  <span className="text-ink-600 dark:text-ink-400">Order guide:</span>{" "}
+                  <span className="font-bold text-purple-600 dark:text-purple-400">
+                    {Math.round(orientationalOrder * 100)}% normalized
                   </span>
                 </div>
                 <div>
-                  <span className="text-ink-600 dark:text-ink-400">Spec Strength:</span>{" "}
+                  <span className="text-ink-600 dark:text-ink-400">H-bond sheet:</span>{" "}
                   <span className="font-bold text-amber-600 dark:text-amber-400">
-                    2.5×10⁶ N·m/kg
+                    {showHydrogenBonds
+                      ? `${Math.round(sheetVisibility * 100)}% illustrated`
+                      : "Hidden by control"}
                   </span>
                 </div>
               </div>
@@ -285,12 +284,12 @@ export function KwolekKevlar3D() {
 
             <div className="hidden sm:flex bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 items-center gap-2 max-w-full">
               <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0" />
-              <span className="truncate">Stephanie Kwolek (US 3,819,587) — Kevlar (1971)</span>
+              <span className="truncate">Stephanie Kwolek (US 3,671,542) — Kevlar (1972)</span>
             </div>
           </div>
         )}
 
-        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Cutaway, Reset) */}
+        {/* Top Right Tool Bar (Toggle UI, Audio, Cutaway, Reset) */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center gap-1.5 sm:gap-2 justify-end max-w-[min(90%,26rem)] sm:max-w-[26rem] pointer-events-auto">
           <ClaimConstraintToggle
             patentId="us-3671542-kwolek-kevlar"
@@ -341,19 +340,6 @@ export function KwolekKevlar3D() {
             ) : (
               <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
             )}
-          </button>
-          <button
-            aria-label={showCalloutPins ? "Hide annotation pins" : "Show annotation pins"}
-            type="button"
-            onClick={() => setShowCalloutPins(!showCalloutPins)}
-            className={`min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showCalloutPins
-                ? "bg-amber-600 text-white border-amber-700 shadow-md"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-            title="Toggle Historical Patent Numeral Pins"
-          >
-            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
           <button
             aria-label="Reset camera view"
@@ -408,17 +394,22 @@ export function KwolekKevlar3D() {
             { label: "Young's Modulus", value: modulusGpa, unit: "GPa" },
             { label: "Draw Ratio", value: `${drawRatio.toFixed(1)}x` },
             {
-              label: "Concentration",
+              label: "Concentration input",
               value: `${polymerConcentrationPct.toFixed(1)}%`,
               unit: "PPD-T",
             },
-            { label: "Temperature", value: `${temperatureCelsius}°C` },
+            { label: "Temperature input", value: `${temperatureCelsius}°C` },
             {
-              label: "Phase",
-              value: isNematicLCP ? "Nematic Liquid Crystal" : "Isotropic Solution",
-              tone: isNematicLCP ? "ok" : "warn",
+              label: "Order guide",
+              value: `${Math.round(orientationalOrder * 100)}% normalized`,
+              tone: orientationalOrder >= 0.7 ? "ok" : "warn",
             },
-            { label: "H-Bonds", value: showHydrogenBonds ? "Inter-chain Sheet" : "Disordered" },
+            {
+              label: "H-bond sheet",
+              value: showHydrogenBonds
+                ? `${Math.round(sheetVisibility * 100)}% illustrated`
+                : "Hidden by control",
+            },
           ]}
         />
       </div>
@@ -430,7 +421,7 @@ export function KwolekKevlar3D() {
             id="polymerConc"
             patentId="us-3671542-kwolek-kevlar"
             paramKey="polymerConcentrationPct"
-            label="Polymer Dope Concentration"
+            label="Illustrative concentration input"
             value={polymerConcentrationPct}
             min={5}
             max={25}
@@ -458,7 +449,7 @@ export function KwolekKevlar3D() {
             id="dopeTemp"
             patentId="us-3671542-kwolek-kevlar"
             paramKey="temperatureCelsius"
-            label="Spinning Dope Temp"
+            label="Illustrative temperature input"
             value={temperatureCelsius}
             min={20}
             max={120}
@@ -468,6 +459,11 @@ export function KwolekKevlar3D() {
             allParams={params}
           />
         </div>
+        <p className="mt-3 text-[11px] leading-relaxed text-ink-600 dark:text-ink-400">
+          These inputs continuously normalize the orientation illustration; they do not declare a
+          universal isotropic-to-nematic phase boundary. In the patent, onset depends on the
+          polymer, solvent, inherent viscosity, and measured viscosity discontinuity.
+        </p>
       </div>
     </div>
   );

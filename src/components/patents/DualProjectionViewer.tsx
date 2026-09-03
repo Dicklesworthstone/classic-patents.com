@@ -12,7 +12,7 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
 import type {
@@ -29,6 +29,12 @@ import { InteractiveDiagramViewer } from "./InteractiveDiagramViewer";
 import { KernelTickChip } from "./KernelTickChip";
 import { MuseumBroadsidePlaque } from "./MuseumBroadsidePlaque";
 import { PhysicsTelemetryBadge } from "./PhysicsTelemetryBadge";
+import {
+  applyPatentViewToUrl,
+  isPatentViewMode,
+  type PatentViewMode,
+  viewModeFromSearch,
+} from "./patentViewMode";
 import { PatentVisualDispatcher } from "./visuals";
 import { WeaveInstrument } from "./WeaveInstrument";
 
@@ -39,12 +45,13 @@ interface DualProjectionViewerProps {
   archivalPublication: ArchivalPublicationViewState;
   /** One server-resolved companion map; never import the all-patent registry here. */
   archivalParallelReadings?: Readonly<Record<number, readonly string[]>>;
+  /** A server-read, page-complete reviewed transcript used only when this record
+   * has no authored archival edition. It is source text, never a PDF renderer. */
+  reviewedTranscript?: string;
   initialView?: string;
   /** Per-patent colorized equations, resolved on the server (colorizedEquations.ts is
    * a 976KB all-patents record that must never enter the client bundle wholesale). */
   colorizedEquations: ColorizedEquationType[];
-  /** Server-derived flag; research-asset metadata itself never crosses into the client. */
-  hasRawSourceText: boolean;
 }
 
 interface ArchivalPublicationViewState {
@@ -53,23 +60,6 @@ interface ArchivalPublicationViewState {
   explanation: string;
   state: { kind: ArchivalPublicationStateKind };
 }
-
-export type PatentViewMode =
-  | "plain-english"
-  | "original-spec"
-  | "interactive-sim"
-  | "schematic-sheet"
-  | "pdf-facsimile"
-  | "split-view";
-
-const PATENT_VIEW_MODES: PatentViewMode[] = [
-  "plain-english",
-  "original-spec",
-  "interactive-sim",
-  "schematic-sheet",
-  "pdf-facsimile",
-  "split-view",
-];
 
 function isFormulaPureLatex(str: string): boolean {
   if (!str) return false;
@@ -87,32 +77,6 @@ function isFormulaPureLatex(str: string): boolean {
   return true;
 }
 
-function isPatentViewMode(value: string | undefined): value is PatentViewMode {
-  return !!value && (PATENT_VIEW_MODES as string[]).includes(value);
-}
-
-export function viewModeFromSearch(search: string): PatentViewMode | undefined {
-  const candidate = new URLSearchParams(search).get("view") ?? undefined;
-  return isPatentViewMode(candidate) ? candidate : undefined;
-}
-
-/**
- * Next href after a face click. Returns null when `view` is already `mode`
- * so history is not double-pushed. Preserves other query keys and the hash.
- *
- * Face selection stays a client query param. Do not lift `searchParams` into
- * the RSC patent page (that makes every `/patents/[id]` route dynamic). Do not
- * drop pushState/popstate either: a `.classic-patents-live-*` checkout once
- * mutated React state only, so `?view=` deep-links stopped updating and Back
- * left the old face on screen.
- */
-export function applyPatentViewToUrl(href: string, mode: PatentViewMode): string | null {
-  const url = new URL(href, "https://classic-patents.com");
-  if (url.searchParams.get("view") === mode) return null;
-  url.searchParams.set("view", mode);
-  return `${url.pathname}${url.search}${url.hash}`;
-}
-
 function viewModeFromLocation(): PatentViewMode | undefined {
   return viewModeFromSearch(window.location.search);
 }
@@ -123,45 +87,152 @@ function handlePrint() {
   }
 }
 
-function TranscriptUnavailable({
+/**
+ * Dedicated facsimile face. It is intentionally separate from the readable
+ * source-text faces and is never used as a replacement for patent text.
+ */
+function PinnedFacsimilePanel({
   patent,
-  hasRawSourceText,
-  decision,
+  pdfEmbedUnsupported,
 }: {
   patent: Patent;
-  hasRawSourceText: boolean;
-  decision: ArchivalPublicationViewState;
+  pdfEmbedUnsupported: boolean;
 }) {
+  const frameHeight = "h-[75dvh] sm:h-[80dvh] lg:h-[800px]";
+
   return (
-    <div
-      className="rounded-2xl border border-amber-300 bg-amber-50/80 p-6 text-ink-900 dark:border-amber-800 dark:bg-amber-950/20 dark:text-parchment-100"
-      role="status"
+    <section
+      className="space-y-5"
+      data-testid="pinned-pdf-facsimile"
+      data-facsimile-context="standalone"
     >
-      <h4 className="font-serif text-xl font-bold">
-        Complete archival edition is not published yet
-      </h4>
-      <p className="mt-2 font-sans text-sm leading-relaxed">
-        {decision.explanation}{" "}
-        {hasRawSourceText
-          ? "A private raw comparison layer exists, but it is not a publication-ready edition. The page deliberately does not render it or substitute a short editorial excerpt."
-          : "This record does not yet have an explicitly authored archival edition. The page deliberately does not substitute its short editorial excerpt for the full legal instrument."}
-      </p>
-      <p className="mt-3 font-mono text-xs font-semibold tracking-wide text-amber-900 dark:text-amber-200">
-        Review status: {decision.state.kind} · reason {decision.reasonCode}
-      </p>
-      <p className="mt-3 font-sans text-sm leading-relaxed">
-        The complete primary source is available as the scanned patent PDF. It remains the
-        authoritative comparison document until a full manual React edition is published.
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 pb-4 dark:border-ink-800">
+        <div>
+          <span className="block text-xs font-mono font-bold uppercase tracking-widest text-amber-700 dark:text-amber-400 sm:text-sm">
+            Pinned Record Facsimile
+          </span>
+          <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-100">
+            {patent.patentNumber} — Pinned Scanned Facsimile
+          </h3>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <a
+            href={patent.originalPdfUrl}
+            download
+            className="flex items-center gap-2 rounded-xl bg-amber-700 px-4 py-2 text-sm font-mono font-bold text-white shadow-sm transition-colors hover:bg-amber-800"
+          >
+            <Download className="h-4 w-4" /> Download PDF
+          </a>
+          <a
+            href={patent.googlePatentsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 rounded-xl border border-parchment-300 bg-parchment-200 px-4 py-2 text-sm font-mono font-semibold text-ink-900 transition-colors hover:bg-parchment-300 dark:border-ink-700 dark:bg-ink-800 dark:text-parchment-100"
+          >
+            <ExternalLink className="h-4 w-4" /> Google Patents
+          </a>
+        </div>
+      </div>
+
+      {pdfEmbedUnsupported ? (
+        <div className="flex flex-col items-center gap-4 rounded-2xl border border-parchment-300 bg-parchment-100/70 p-8 text-center dark:border-ink-800 dark:bg-ink-900/70 sm:p-10">
+          <FileText className="h-10 w-10 text-amber-700 dark:text-amber-400" aria-hidden />
+          <div className="max-w-md space-y-2">
+            <h4 className="font-serif text-xl font-bold text-ink-950 dark:text-parchment-100">
+              iOS does not display PDFs inline
+            </h4>
+            <p className="font-sans text-sm leading-relaxed text-ink-700 dark:text-parchment-300">
+              Open the pinned {patent.patentNumber} facsimile in a new tab, or download it for
+              offline reading. Curated-edition review does not change this pinned file.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <a
+              href={patent.originalPdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-xl bg-amber-700 px-4 py-2.5 text-sm font-mono font-bold text-white shadow-sm transition-colors hover:bg-amber-800"
+            >
+              <FileText className="h-4 w-4" /> Open Facsimile PDF
+            </a>
+            <a
+              href={patent.originalPdfUrl}
+              download
+              className="flex items-center gap-2 rounded-xl border border-parchment-300 bg-parchment-200 px-4 py-2.5 text-sm font-mono font-semibold text-ink-900 transition-colors hover:bg-parchment-300 dark:border-ink-700 dark:bg-ink-800 dark:text-parchment-100 dark:hover:bg-ink-700"
+            >
+              <Download className="h-4 w-4" /> Download
+            </a>
+          </div>
+        </div>
+      ) : (
+        <div
+          className={`w-full ${frameHeight} overflow-hidden rounded-2xl border border-parchment-300 bg-ink-900 shadow-inner dark:border-ink-800`}
+        >
+          <object
+            data={`${patent.originalPdfUrl}#toolbar=1&navpanes=0`}
+            type="application/pdf"
+            aria-label={`${patent.patentNumber} PDF Facsimile`}
+            className="h-full w-full border-none bg-ink-900"
+          >
+            <a
+              href={patent.originalPdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-full items-center justify-center text-sm font-sans text-parchment-100 underline"
+            >
+              Open the {patent.patentNumber} PDF facsimile
+            </a>
+          </object>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function ReviewedTranscript({ transcript }: { transcript: string }) {
+  return (
+    <section
+      className="space-y-4 text-ink-950 dark:text-parchment-100"
+      data-testid="reviewed-transcript-fallback"
+    >
+      <div>
+        <h4 className="font-serif text-lg font-bold">Complete patent transcript</h4>
+        <p className="mt-1 font-sans text-sm leading-relaxed text-ink-700 dark:text-parchment-300">
+          The page markers preserve the source order while a structured reading edition is prepared.
+        </p>
+      </div>
+      <pre className="max-h-[68dvh] overflow-auto whitespace-pre-wrap break-words rounded-xl border border-parchment-300 bg-parchment-100/80 p-4 font-mono text-xs leading-relaxed text-ink-950 shadow-xs dark:border-ink-800 dark:bg-ink-900/80 dark:text-parchment-100 sm:p-6">
+        {transcript}
+      </pre>
+    </section>
+  );
+}
+
+function TranscriptUnavailable({ patent }: { patent: Patent }) {
+  return (
+    <section
+      className="space-y-4 rounded-2xl border border-parchment-300 bg-parchment-100/80 p-5 text-ink-900 dark:border-ink-800 dark:bg-ink-900/80 dark:text-parchment-100"
+      data-testid="source-text-excerpt"
+    >
+      <div>
+        <h4 className="font-serif text-lg font-bold">Available patent text</h4>
+        <p className="mt-1 font-sans text-sm leading-relaxed">
+          This record has not yet received a page-complete reviewed transcript. Its available source
+          excerpt remains visible here.
+        </p>
+      </div>
+      <pre className="max-h-[40dvh] overflow-auto whitespace-pre-wrap break-words border-t border-parchment-300 pt-4 font-serif text-sm leading-relaxed text-ink-950 dark:border-ink-800 dark:text-parchment-100">
+        {patent.originalText}
+      </pre>
       <a
         href={patent.originalPdfUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-5 inline-flex items-center gap-2 rounded-xl bg-amber-700 px-4 py-2 text-sm font-mono font-bold text-white shadow-sm transition-colors hover:bg-amber-800"
+        className="inline-flex w-fit items-center gap-2 text-sm font-mono font-semibold text-amber-800 underline decoration-amber-500/60 underline-offset-4 hover:text-amber-900 dark:text-amber-300 dark:hover:text-amber-200"
       >
-        <FileText className="h-4 w-4" /> Open Complete Original PDF
+        <FileText className="h-4 w-4" /> Open original facsimile
       </a>
-    </div>
+    </section>
   );
 }
 
@@ -169,9 +240,9 @@ export function DualProjectionViewer({
   patent,
   archivalPublication,
   archivalParallelReadings,
+  reviewedTranscript,
   initialView,
   colorizedEquations,
-  hasRawSourceText,
 }: DualProjectionViewerProps) {
   const { tick, lastChange } = usePatentPhysics(patent.id);
   const [viewMode, setViewModeState] = useState<PatentViewMode>(
@@ -187,25 +258,26 @@ export function DualProjectionViewer({
       (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     setPdfEmbedUnsupported(isIOS);
   }, []);
-  // A raw PDF text layer is private comparison evidence, never a public
-  // publication source. The optional edition is already hand-authored in
-  // semantic nodes; this component intentionally performs no text cleanup.
-  // A semantic edition becomes visitor-facing only together with its explicit
-  // paragraph companions. Treat an accidentally bound draft as withheld rather
-  // than calling the fail-closed lookup during render and crashing the route.
-  const archivalSource =
-    archivalPublication.isPublished && patent.archivalEdition && archivalParallelReadings
-      ? { edition: patent.archivalEdition, paragraphReadings: archivalParallelReadings }
-      : undefined;
+  // A semantic edition stays visitor-facing whenever it exists. Parallel
+  // readings enhance it but are never a condition for showing legal source
+  // text. If an edition has not been authored yet, the server may supply a
+  // complete reviewed ledger as a literal text fallback.
+  const archivalSource = patent.archivalEdition
+    ? { edition: patent.archivalEdition, paragraphReadings: archivalParallelReadings ?? {} }
+    : undefined;
   const originalTextLabel = archivalSource
-    ? `Complete manually prepared edition · facsimile reviewed ${archivalSource.edition.preparedAt}`
-    : hasRawSourceText
-      ? "Raw source-PDF text layer retained privately · manual edition pending"
-      : "Complete archival edition unavailable";
+    ? `Patent text edition · prepared ${archivalSource.edition.preparedAt}`
+    : reviewedTranscript
+      ? "Complete patent transcript"
+      : "Available primary-source text";
+  const sourceVisualHold = patent.id === "us-3671542-kwolek-kevlar";
+  const visualFaceLabel = sourceVisualHold
+    ? "Visual Model in Preparation"
+    : "Interactive 3D Simulator";
 
   // Hydration-safe: SSR stays on the default face; URL selection applies after
   // mount, so routes remain static while refresh, bookmarks, and history work.
-  useEffect(() => {
+  useLayoutEffect(() => {
     const syncFromLocation = () => {
       const view = viewModeFromLocation();
       setViewModeState(view ?? "plain-english");
@@ -216,7 +288,7 @@ export function DualProjectionViewer({
     return () => window.removeEventListener("popstate", syncFromLocation);
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setHydrated(true);
   }, []);
 
@@ -257,6 +329,7 @@ export function DualProjectionViewer({
       data-archival-edition={archivalSource?.edition.kind ?? "withheld"}
       data-archival-publication-state={archivalPublication.state.kind}
       data-archival-publication-reason={archivalPublication.reasonCode}
+      data-source-visual-hold={sourceVisualHold || undefined}
     >
       {/* Archival Broadside Plaque Header (Active during print) */}
       <MuseumBroadsidePlaque patent={patent} />
@@ -304,7 +377,7 @@ export function DualProjectionViewer({
             type="button"
             aria-pressed={viewMode === "interactive-sim"}
             onClick={() => setViewMode("interactive-sim")}
-            title="Interactive 3D Simulator (Shortcut: 3)"
+            title={`${visualFaceLabel} (Shortcut: 3)`}
             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
               viewMode === "interactive-sim"
                 ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-700"
@@ -312,7 +385,7 @@ export function DualProjectionViewer({
             }`}
           >
             <Activity className="w-4 h-4 text-amber-300" />
-            <span>Interactive 3D Simulator</span>
+            <span>{visualFaceLabel}</span>
             <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.5 rounded bg-black/15 dark:bg-white/15 opacity-80">
               3
             </kbd>
@@ -389,86 +462,8 @@ export function DualProjectionViewer({
 
       {/* VIEW MODE: FULL ORIGINAL PDF FACSIMILE */}
       {viewMode === "pdf-facsimile" && (
-        <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-8 shadow-patent space-y-5">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
-            <div>
-              <span className="text-xs sm:text-sm font-mono text-amber-700 dark:text-amber-400 font-bold uppercase tracking-widest block">
-                Primary Archival Facsimile
-              </span>
-              <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-100">
-                {patent.patentNumber} — Original Scanned USPTO Document
-              </h3>
-            </div>
-            <div className="flex items-center gap-3">
-              <a
-                href={patent.originalPdfUrl}
-                download
-                className="px-4 py-2 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-sm font-mono font-bold transition-colors flex items-center gap-2 shadow-sm"
-              >
-                <Download className="w-4 h-4" /> Download PDF
-              </a>
-              <a
-                href={patent.googlePatentsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-2 rounded-xl bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 text-ink-900 dark:text-parchment-100 text-sm font-mono font-semibold transition-colors flex items-center gap-2 border border-parchment-300 dark:border-ink-700"
-              >
-                <ExternalLink className="w-4 h-4" /> Google Patents
-              </a>
-            </div>
-          </div>
-
-          {/* Embedded PDF Viewer */}
-          {pdfEmbedUnsupported ? (
-            <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/70 p-8 sm:p-10 flex flex-col items-center text-center gap-4">
-              <FileText className="w-10 h-10 text-amber-700 dark:text-amber-400" aria-hidden />
-              <div className="space-y-2 max-w-md">
-                <h4 className="font-serif text-xl font-bold text-ink-950 dark:text-parchment-100">
-                  iOS does not display PDFs inline
-                </h4>
-                <p className="font-sans text-sm text-ink-700 dark:text-parchment-300 leading-relaxed">
-                  Open the scanned {patent.patentNumber} facsimile in a new tab, or download it for
-                  offline reading. The complete document is the authoritative primary source for
-                  this record.
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                <a
-                  href={patent.originalPdfUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-sm font-mono font-bold transition-colors flex items-center gap-2 shadow-sm"
-                >
-                  <FileText className="w-4 h-4" /> Open Facsimile PDF
-                </a>
-                <a
-                  href={patent.originalPdfUrl}
-                  download
-                  className="px-4 py-2.5 rounded-xl bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-900 dark:text-parchment-100 text-sm font-mono font-semibold transition-colors flex items-center gap-2 border border-parchment-300 dark:border-ink-700"
-                >
-                  <Download className="w-4 h-4" /> Download
-                </a>
-              </div>
-            </div>
-          ) : (
-            <div className="w-full h-[75dvh] sm:h-[80dvh] lg:h-[800px] rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 bg-ink-900 shadow-inner">
-              <object
-                data={`${patent.originalPdfUrl}#toolbar=1&navpanes=0`}
-                type="application/pdf"
-                aria-label={`${patent.patentNumber} PDF Facsimile`}
-                className="w-full h-full border-none bg-ink-900"
-              >
-                <a
-                  href={patent.originalPdfUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex h-full items-center justify-center text-sm font-sans text-parchment-100 underline"
-                >
-                  Open the {patent.patentNumber} PDF facsimile
-                </a>
-              </object>
-            </div>
-          )}
+        <div className="space-y-5 rounded-2xl border border-parchment-300 bg-parchment-50 p-6 shadow-patent dark:border-ink-800 dark:bg-ink-950 sm:p-8">
+          <PinnedFacsimilePanel patent={patent} pdfEmbedUnsupported={pdfEmbedUnsupported} />
         </div>
       )}
 
@@ -514,7 +509,9 @@ export function DualProjectionViewer({
               <div className="flex items-center gap-2.5">
                 <Sparkles className="w-5 h-5 text-emerald-600" />
                 <h3 className="font-serif text-xl font-bold text-ink-950 dark:text-parchment-100">
-                  Face 1: Plain English Breakdown
+                  {sourceVisualHold
+                    ? "Face 1: Checked Claim Reading"
+                    : "Face 1: Plain English Breakdown"}
                 </h3>
               </div>
               <KernelTickChip tick={tick} lastChange={lastChange} face="plain" />
@@ -524,7 +521,9 @@ export function DualProjectionViewer({
                 <TextWithLatex text={patent.plainEnglishExplanation.overview} />
               </div>
               <div className="p-4 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 text-sm font-sans text-ink-900 dark:text-emerald-200 leading-relaxed">
-                <span className="font-bold block mb-1">Core Physical Mechanism:</span>
+                <span className="font-bold block mb-1">
+                  {sourceVisualHold ? "Checked Claim Boundary:" : "Core Physical Mechanism:"}
+                </span>
                 <TextWithLatex text={patent.plainEnglishExplanation.coreMechanism} />
               </div>
             </div>
@@ -553,12 +552,10 @@ export function DualProjectionViewer({
                   claimDecoders={patent.claims}
                   className="text-ink-950 select-text dark:text-parchment-100"
                 />
+              ) : reviewedTranscript ? (
+                <ReviewedTranscript transcript={reviewedTranscript} />
               ) : (
-                <TranscriptUnavailable
-                  patent={patent}
-                  hasRawSourceText={hasRawSourceText}
-                  decision={archivalPublication}
-                />
+                <TranscriptUnavailable patent={patent} />
               )}
             </div>
           </div>
@@ -572,10 +569,14 @@ export function DualProjectionViewer({
           <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-950 p-7 sm:p-9 shadow-patent space-y-8">
             <div>
               <span className="text-xs sm:text-sm font-mono text-amber-700 dark:text-amber-400 font-bold uppercase tracking-widest block">
-                Engineering Analysis &amp; Physical Principles
+                {sourceVisualHold
+                  ? "Checked Claim Reading"
+                  : "Engineering Analysis & Physical Principles"}
               </span>
               <h3 className="font-serif text-2xl sm:text-3xl font-bold text-ink-950 dark:text-parchment-50">
-                How It Works: Step-by-Step Mechanical &amp; Physical Breakdown
+                {sourceVisualHold
+                  ? "What the Checked Claims Establish"
+                  : "How It Works: Step-by-Step Mechanical & Physical Breakdown"}
               </h3>
             </div>
 
@@ -590,25 +591,35 @@ export function DualProjectionViewer({
             <div className="p-6 rounded-2xl bg-amber-500/10 border border-amber-500/30 dark:bg-amber-950/20 space-y-2">
               <div className="flex items-center gap-2 text-amber-800 dark:text-amber-400 font-serif font-bold text-lg">
                 <Zap className="w-5 h-5" />
-                <span>The Core Breakthrough Mechanism</span>
+                <span>
+                  {sourceVisualHold ? "Checked Claim Boundary" : "The Core Breakthrough Mechanism"}
+                </span>
               </div>
               <p className="font-sans text-base text-ink-900 dark:text-parchment-100 leading-relaxed">
                 <TextWithLatex text={patent.plainEnglishExplanation.coreMechanism} />
               </p>
             </div>
 
-            {/* 3D / 2D Simulation Embedded in Plain English View */}
+            {/* Visual face embedded in the educational reading. */}
             <div className="space-y-4 pt-2 print:hidden">
               <div className="flex items-center justify-between">
                 <h4 className="font-serif font-bold text-xl text-ink-950 dark:text-parchment-50 flex items-center gap-2">
                   <Activity className="w-5 h-5 text-amber-700 dark:text-amber-500" />
-                  <span>Interactive Real-Time Physical Simulation</span>
+                  <span>
+                    {sourceVisualHold
+                      ? "Visual Model in Preparation"
+                      : "Interactive Real-Time Physical Simulation"}
+                  </span>
                 </h4>
                 <span className="text-xs font-sans text-ink-500 hidden sm:inline">
-                  Drag to rotate · Scroll to zoom · Shared controls update the displayed model
+                  {sourceVisualHold
+                    ? "Complete patent text remains available · visual model in preparation"
+                    : "Drag to rotate · Scroll to zoom · Shared controls update the displayed model"}
                 </span>
                 <span className="text-xs font-sans text-ink-500 sm:hidden">
-                  Drag to rotate · Pinch to zoom · Shared controls update the displayed model
+                  {sourceVisualHold
+                    ? "Checked claims only · no physical model is published"
+                    : "Drag to rotate · Pinch to zoom · Shared controls update the displayed model"}
                 </span>
               </div>
               <PatentVisualDispatcher patentId={patent.id} />
@@ -773,9 +784,9 @@ export function DualProjectionViewer({
                 <span className="text-xs sm:text-sm font-mono text-amber-700 dark:text-amber-400 font-bold uppercase tracking-widest block">
                   {archivalSource
                     ? "Complete Manually Prepared Archival Edition"
-                    : hasRawSourceText
-                      ? "Raw Source Layer Withheld From Publication"
-                      : "Original Patent Text"}
+                    : reviewedTranscript
+                      ? "Complete Patent Transcript"
+                      : "Available Patent Text"}
                 </span>
                 <h3 className="font-serif text-2xl sm:text-3xl font-bold text-ink-950 dark:text-parchment-50">
                   {patent.patentNumber} · Specification of Letters Patent
@@ -803,12 +814,10 @@ export function DualProjectionViewer({
                 claimDecoders={patent.claims}
                 className="rounded-2xl border border-parchment-300 bg-parchment-100/80 p-6 text-ink-950 shadow-xs select-text dark:border-ink-800 dark:bg-ink-900/80 dark:text-parchment-100 sm:p-10"
               />
+            ) : reviewedTranscript ? (
+              <ReviewedTranscript transcript={reviewedTranscript} />
             ) : (
-              <TranscriptUnavailable
-                patent={patent}
-                hasRawSourceText={hasRawSourceText}
-                decision={archivalPublication}
-              />
+              <TranscriptUnavailable patent={patent} />
             )}
           </div>
         </div>

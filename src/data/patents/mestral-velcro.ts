@@ -15,9 +15,8 @@ export const mestralVelcroPatent: Patent = {
   id: "us-2717437-mestral-velcro",
   patentNumber: "US 2,717,437",
   title: "Velvet Type Fabric and Method of Producing Same",
-  shortTitle: "De Mestral Hook-and-Loop Fastener (Velcro)",
-  subtitle:
-    "Thermoplastic Polyamide Monofilament Hooks, Velvet Lancet Weave, and Peeling Anisotropy",
+  shortTitle: "De Mestral Hook-Pile Fastening Fabric",
+  subtitle: "Artificial Raised Pile, Heated Lancet Formation, and 90° Hook-to-Hook Engagement",
   inventors: ["George de Mestral"],
   inventorLocation: "Prangins, Vaud, Switzerland",
   grantDate: "1955-09-13",
@@ -26,7 +25,7 @@ export const mestralVelcroPatent: Patent = {
   category: "consumer",
   categoryLabel: "Fasteners & Biomimetic Materials",
   summary:
-    "George de Mestral's landmark 1955 patent established the biomimetic hook-and-loop fastener (Velcro). By weaving synthetic polyamide (nylon) monofilament loops over electrically heated lancet bars on a velvet loom and shearing them on one side, de Mestral created semi-rigid micro-hooks that reversibly interlock with opposing loops or mesh fibers. The resulting fastener delivers massive in-plane shear resistance while remaining effortlessly peelable without mechanical wear or registration constraints.",
+    "George de Mestral's 1955 grant claims a velvet-type fabric whose artificial raised pile terminates in material-engaging hooks, plus the method of forming auxiliary synthetic warp loops over a carrier, heating them, and cutting near their outer ends. Its Figure 2 fastening embodiment faces two pieces of the same hook fabric together after turning one piece 90 degrees.",
   heroQuote:
     "A mere pressure exerted on the two garment elements against each other will provide for their fastening. A somewhat considerable tractional stress exerted on the two garment elements thus associated, allows separating them when required.",
   originalPdfUrl: "/patents/pdfs/us-2717437-mestral-velcro.pdf",
@@ -69,16 +68,16 @@ Fabrics of the type referred to are intended primarily for use as closing means 
 
   plainEnglishExplanation: {
     overview:
-      "In 1941, Swiss electrical engineer George de Mestral returned from a hunting trip in the Alps and examined the burdock burrs (Arctium lappa) tenaciously clinging to his Irish Pointer's fur and his wool socks. Under a microscope, he discovered that the burrs were covered in hundreds of microscopic stiff hooks that effortlessly entangled the flexible hair loops. De Mestral spent over a decade translating this natural fastening phenomenon into an industrial textile process. Traditional textile fasteners—zippers, buttons, and snap studs—relied on rigid metal or bone parts that required precise manual alignment, jammed with dirt, and suffered mechanical fatigue. De Mestral realized that synthetic thermoplastic polyamides (nylon) could be woven on a velvet bar loom into upright loops, heat-set to permanently freeze their curvature, and sheared on one leg to create hundreds of elastic micro-hooks per square centimeter. When pressed against an opposing pile of loops or cross-oriented hooks, the system self-aligns instantaneously, resisting high shear forces yet peeling open cleanly without mechanical fatigue.",
+      "The grant moves the engaging feature into a woven raised pile. Auxiliary artificial warp threads form loops over transverse bars; heat is applied while the thread is on the bar; and a guided cut near the loop's outer end leaves a hook-shaped pile strand beside a straight strand. For the illustrated fastener, two pieces of that same hook-bearing fabric face one another after one is turned through 90 degrees. This is hook-to-hook engagement in the source, not the later familiar pairing of a hook face with a closed-loop face.",
     coreMechanism:
-      "The Velcro fastener operates through the mechanical interaction of elastic thermoplastic cantilever beams and microscopic geometry. During manufacture, auxiliary nylon warp threads are looped over transverse metallic lancet bars. Internal electrical resistance heating or steam raises the nylon above its heat-setting threshold (~140°C–180°C), relaxing internal molecular stresses and permanently locking the drawn polymer chains into a curved loop profile. A guided razor blade traveling along a groove in the lancet bar shears each loop asymmetrically, creating one active curved hook and one straight vertical standing strand. When two opposing fabric tapes are pressed together, hundreds of flexible hooks deflect elastically into the opposing pile and re-expand under the loops. In-plane shear loading pulls the hooks along their longitudinal axis where tensile stiffness is highest, requiring massive collective force ($F_{\\text{shear}} > 50\\text{ N/cm}^2$). In contrast, peeling loading applies normal tensile bending moment to only one narrow row of hooks at a time, allowing each individual hook to flex open ($F_{\\text{hook}} \\approx 0.05\\text{ N}$) and release cleanly without damaging the underlying weave.",
+      "Foundation weft 1 and warp 2 bind auxiliary synthetic warp 3. That auxiliary warp rises around bar 5 as loop 6. The specification permits heating the carrier so the thread assumes and retains the carrier-imparted form; knife 8 runs in groove 7 and cuts near an outer end, leaving hooked strand 9 with engaging end 4 and straight strand 10. In Figure 2, pressure brings two 90-degree-crossed hook piles into contact; traction separates them. The grant gives no strand diameter, modulus, hook density, tape width, force-displacement curve, measured peel force, or thermal-response curve, so the interactive exhibit refuses those quantities rather than backfilling modern test values.",
     mechanicalBreakdown: [
       {
         title: "Synthetic Polyamide (Nylon) Monofilament Loop Yarn",
         summary:
-          "High-tenacity oriented nylon monofilament yarn providing elastic spring recovery and thermal memory.",
+          "Artificial pile yarn chosen so the bar-formed shape can be retained after heating and cutting.",
         technicalDetails:
-          "De Mestral specifies continuous drawn synthetic polymeric amide (nylon) filaments. Axial drawing aligns the semicrystalline polymer chains along the filament axis, producing an elastic modulus $E \\approx 2.8\\text{ GPa}$, high tensile strength ($> 600\\text{ MPa}$), and superior flexural fatigue resistance across tens of thousands of opening-closing cycles.",
+          "The specification names synthetic thermoplastic materials and discusses synthetic polymeric amides such as nylon. It does not print a grade, draw ratio, diameter, elastic modulus, tensile strength, or fatigue-life result for the illustrated pile.",
         archaicTerm: "synthetic polymeric amide / artificial material",
         modernEquivalent: "drawn nylon-6,6 thermoplastic monofilament",
       },
@@ -87,7 +86,7 @@ Fabrics of the type referred to are intended primarily for use as closing means 
         summary:
           "Transverse metallic lancet bar that forms the raised pile loops and applies controlled thermal heat setting.",
         technicalDetails:
-          "Mounted across the shed of a velvet bar loom, metal lancet bar 5 supports loop 6 during weaving. Internal electrical resistance heating or steam warms the bar to the thermal setting temperature ($T_{\\text{set}} > T_g$), inducing entropy elasticity and permanently setting the curvature radius $R_{\\text{hook}} \\approx 0.4\\text{ mm}$.",
+          "Metal bar 5 supports loop 6 during weaving and may be heated so the thread retains the imparted form. The grant describes electrical heating and a steam-heated tubular alternative, but gives neither a setting temperature nor a hook-radius dimension.",
         archaicTerm: "small transverse metal bars submitted to thermic action",
         modernEquivalent: "heated velvet lancet wire / thermoforming loom mandrel",
       },
@@ -105,7 +104,7 @@ Fabrics of the type referred to are intended primarily for use as closing means 
         summary:
           "Curved thermoplastic hook element that elastically flexes open under peel traction and springs back into shape.",
         technicalDetails:
-          "Each hook acts as a curved cantilever beam with second moment of area $I = \\pi d^4 / 64$ ($d \\approx 0.15\\text{–}0.25\\text{ mm}$). Under peel loads, the hook deflects elastically by $\\delta = F L^3 / (3 E I)$ until disengaging at tip clearance, immediately recovering its original curve without plastic deformation.",
+          "A circular display strand has the exact geometric second moment $I = \\pi d^4/64$. A real curved-hook contact solve would additionally require the actual diameter, curved geometry, modulus, opposing-hook contact law, friction, and release criterion. None is printed in this grant, so the exhibit stops at geometry.",
         archaicTerm: "pile threads showing material-engaging means bent downwardly",
         modernEquivalent: "elastic micro-hook fastening element",
       },
@@ -114,7 +113,7 @@ Fabrics of the type referred to are intended primarily for use as closing means 
         summary:
           "Tightly interlaced warp and weft matrix anchoring the roots of the hook and loop filaments.",
         technicalDetails:
-          "Foundation weft threads 1 and warp threads 2 interlace in a dense plain or twill weave. The auxiliary pile warp 3 is firmly bound between multiple weft picks, providing a pullout anchoring force exceeding $15\\text{ N}$ per filament to prevent hook shedding during repeated peeling.",
+          "Foundation weft 1 and warp 2 interlace around and bind auxiliary pile warp 3. Figure 1 establishes that attachment path; the grant does not publish weave dimensions, yarn tension, root pullout force, or repeated-peel durability.",
         archaicTerm: "foundation structure constituted by a weft and a warp",
         modernEquivalent: "high-density woven ground backing cloth",
       },
@@ -123,29 +122,30 @@ Fabrics of the type referred to are intended primarily for use as closing means 
         summary:
           "Dual hook-bearing fabric tapes superposed at right angles to create dense multi-directional engagement.",
         technicalDetails:
-          "Orienting opposing hook tapes at a 90° angular displacement creates a two-dimensional cross-grid of intersecting hooks ($n \\approx 50\\text{–}100\\text{ hooks/cm}^2$). Multi-point contact ensures isotropic shear resistance regardless of lateral force direction while accommodating surface misalignment and angular mismatch.",
+          "The specification directs the reader to superpose two pieces of the Figure 1 fabric, turn one piece 90 degrees, and face their pile surfaces so hooks 4 on strands 9 engage the other piece's hooks. Figure 2 establishes this crossed topology but no hook density or directional capacity.",
         archaicTerm: "superposed pieces having a 90° angular displacement",
         modernEquivalent: "biaxial self-engaging hook array / dual-lock fastener",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Thermoplastic Glass Transition & Thermal Shape Setting",
+        principle: "Carrier-Constrained Thermal Shape Setting",
         explanation:
-          "When nylon monofilament is heated above its glass transition temperature ($T_g \\approx 50^\\circ\\text{C}$) to near its crystallization annealing range ($140^\\circ\\text{C} \\le T \\le 180^\\circ\\text{C}$), amorphous polymer chains relax and re-crystallize into the curved geometry defined by the lancet bar. Upon cooling, secondary hydrogen bonds freeze the curved shape into permanent mechanical memory.",
-        formula: "S(T) = S_0 \\cdot \\exp\\left(-\\frac{E_a}{k_B T}\\right)",
+          "Heating occurs while the artificial pile thread is constrained around carrier 5, before knife 8 cuts the loop. The source claims that sequence and retained form qualitatively; a temperature-response or crystallization model would require material-grade and process data the grant does not supply.",
+        formula:
+          "\\text{form loop} \\rightarrow \\text{heat on carrier} \\rightarrow \\text{cut near end}",
       },
       {
-        principle: "Euler-Bernoulli Elastic Cantilever Hook Deflection",
+        principle: "Circular Filament Section Geometry",
         explanation:
-          "Under disengagement forces, the curved monofilament hook behaves as an elastic curved beam. The tip deflection $\\delta$ under disengagement force $F$ depends inversely on the flexural rigidity $E I = E \\pi d^4 / 64$. Elastic recovery occurs because operating stresses remain below the polymer's yield strength $\\sigma_y \\approx 80\\text{ MPa}$.",
-        formula: "\\delta = \\frac{F L^3}{3 E I} = \\frac{64 F L^3}{3 \\pi E d^4}",
+          "For the reader-selected circular display strand, the second moment of area follows exactly from diameter. This shows why diameter strongly changes bending geometry without pretending that the patent supplied the modulus, straight-beam boundary, or contact force required for a physical spring-rate result.",
+        formula: "I = \\frac{\\pi d^4}{64}",
       },
       {
-        principle: "Fracture Mechanics of Peeling Anisotropy",
+        principle: "Orthogonal Hook-Pile Interengagement",
         explanation:
-          "Velcro achieves extreme force anisotropy ($F_{\\text{shear}} / F_{\\text{peel}} \\gg 10$) because shear forces distribute uniformly across all $N$ hooks simultaneously ($F_{\\text{shear}} = N \\cdot F_{\\text{hook}}$), whereas peel forces localize at a narrow fracture line of width $w$ at peeling angle $\\theta$, loading only one infinitesimal row of hooks at a time.",
-        formula: "F_{\\text{peel}} = \\frac{w \\cdot G_c}{1 - \\cos\\theta}",
+          "Turning one of two identical hook fabrics through 90 degrees makes the two hook orientations cross when their pile surfaces face. The source says pressure fastens and traction separates them; it does not provide a Kendall peel specimen, adhesion energy, or measured anisotropy ratio.",
+        formula: "\\theta_{\\text{face}} = 90^\\circ",
       },
     ],
     whyItMattersToday:
@@ -340,24 +340,12 @@ Fabrics of the type referred to are intended primarily for use as closing means 
       "Buttons and press studs concentrated stress on single fastener points, pulling through thin fabrics under tension.",
     ],
     breakthroughInsight:
-      "De Mestral realized that drawn synthetic thermoplastic polyamides (nylon) possess crystalline thermal memory: when woven as auxiliary loops over heated lancet bars above the glass transition temperature and slit asymmetrically, they retain a permanent, spring-elastic hook curvature that reversibly interlocks with opposing loops or perpendicular hooks with extreme peel-to-shear force anisotropy.",
-    patentWars: [
-      {
-        rivalName: "Fastener Manufacturing Competitors (1958–1978)",
-        rivalClaim:
-          "Combining standard velvet loom weaving with nylon synthetic fiber was obvious over prior art velvet patents (Holland, Miller).",
-        conflictDetails:
-          "Upon the global commercial success of Velcro in apparel, aerospace, and military gear, rival textile manufacturers attempted to produce unpatented hook-and-loop tapes, arguing that heat-setting nylon fibers was an obvious polymer treatment.",
-        resolution:
-          "Courts in the United States and Europe upheld de Mestral's patents, recognizing the unexpected synergy between nylon thermal shape setting, lancet bar groove slicing, and the resulting non-jamming hook fastener.",
-        legalOutcome:
-          "Established unbreakable patent exclusivity that gave Velcro complete market protection until the core patent expired in 1978.",
-      },
-    ],
+      "The claimed move is a manufacturing and textile-topology combination: artificial auxiliary pile is formed around a carrier, heat-set before cutting, terminated in hooks, and—in the Figure 2 fastening embodiment—mated to a second, orthogonally oriented piece of the same hook fabric.",
+    patentWars: [],
     civilizationalImpact:
       "George de Mestral's Velcro patent created the entire modern category of biomimetic hook-and-loop fasteners. It became an essential component of modern space exploration, military gear, pediatric and adaptive apparel, surgical devices, and automotive manufacturing, processing billions of fastening cycles daily across the globe.",
     funFact:
-      "NASA adopted Velcro for the Apollo space program to anchor equipment, food packets, and astronaut suit closures in zero gravity; Apollo 11 astronauts even installed Velcro patches inside their helmets to scratch their noses during lunar spacewalks.",
+      "The grant proposes the same material-engaging raised pile not only for garment and curtain fasteners but also for scouring or cleaning surfaces.",
     aftermath:
       "After the patent expired in 1978, Velcro remained a protected trademark, and de Mestral was inducted into the National Inventors Hall of Fame in 1999.",
   },

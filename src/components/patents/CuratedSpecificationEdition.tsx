@@ -27,6 +27,25 @@ interface CuratedSpecificationEditionProps {
   className?: string;
 }
 
+/**
+ * The archival edition is authored content, not a position-addressed stream.
+ * Give React a repeatable identity based on the authored value so an editor
+ * inserting a paragraph or an inline annotation does not remount later
+ * annotations, figure previews, or parallel readings.
+ */
+function withContentKeys<T>(
+  items: readonly T[],
+  describe: (item: T) => string,
+): Array<{ item: T; key: string; sourceIndex: number }> {
+  const occurrences = new Map<string, number>();
+  return items.map((item, sourceIndex) => {
+    const identity = describe(item);
+    const occurrence = occurrences.get(identity) ?? 0;
+    occurrences.set(identity, occurrence + 1);
+    return { item, key: `${identity}#${occurrence}`, sourceIndex };
+  });
+}
+
 function hasFineHoverPointer() {
   return (
     typeof window !== "undefined" &&
@@ -166,9 +185,9 @@ function FigureReference({
           Original patent drawing
         </span>
         <span className="grid gap-3">
-          {inline.figurePreviews?.map((preview) => (
+          {inline.figurePreviews?.map((preview, previewIndex) => (
             <span
-              key={preview.src}
+              key={`${preview.src}:${previewIndex}`}
               className="overflow-hidden rounded-xl border border-parchment-300 bg-white dark:border-ink-800 dark:bg-ink-900"
             >
               <a
@@ -200,8 +219,7 @@ function FigureReference({
 function RenderInlines({ inlines }: { inlines: CuratedSpecificationInlines }) {
   return (
     <>
-      {inlines.map((inline, index) => {
-        const key = `${inline.kind}-${index}`;
+      {withContentKeys(inlines, (inline) => JSON.stringify(inline)).map(({ item: inline, key }) => {
         if (inline.kind === "text") return <span key={key}>{inline.text}</span>;
         if (inline.kind === "reference") return <SourceReference key={key} inline={inline} />;
         if (inline.kind === "emphasis") return <em key={key}>{inline.text}</em>;
@@ -240,11 +258,13 @@ function ParallelReading({
           Plain English
         </span>
         <div className="space-y-3">
-          {plainEnglish.map((paragraph, index) => (
-            <p key={`${index}-${paragraph.slice(0, 24)}`} className="text-pretty">
-              {paragraph}
-            </p>
-          ))}
+          {withContentKeys(plainEnglish, (paragraph) => paragraph).map(
+            ({ item: paragraph, key }) => (
+              <p key={key} className="text-pretty">
+                {paragraph}
+              </p>
+            ),
+          )}
         </div>
       </aside>
     </section>
@@ -271,187 +291,195 @@ export function CuratedSpecificationEdition({
       className={className ? `${readingRhythm} ${className}` : readingRhythm}
       data-edition-kind={edition.kind}
     >
-      {edition.blocks.map((block, index) => {
-        const key = `${block.kind}-${index}`;
-
-        if (block.kind === "masthead") {
-          const [office, inventors, title, ...legalDetails] = block.lines;
-          return (
-            <header
-              key={key}
-              className="overflow-hidden rounded-2xl border border-amber-700/30 bg-[linear-gradient(135deg,rgba(180,83,9,0.13),rgba(255,251,235,0.55)_48%,rgba(180,83,9,0.07))] shadow-sm dark:border-amber-600/30 dark:bg-[linear-gradient(135deg,rgba(180,83,9,0.2),rgba(20,20,18,0.35)_48%,rgba(180,83,9,0.1))]"
-            >
-              <div className="border-b border-amber-700/25 bg-amber-700/[0.08] px-5 py-3 text-center font-mono text-[0.65rem] font-bold uppercase tracking-[0.2em] text-amber-950 dark:border-amber-500/25 dark:bg-amber-500/[0.1] dark:text-amber-200 sm:px-8 sm:text-[0.72rem]">
-                {office}
-              </div>
-              <div className="px-5 py-7 text-center sm:px-10 sm:py-10">
-                <p className="font-sans text-xs font-semibold uppercase tracking-[0.14em] text-ink-700 dark:text-parchment-300 sm:text-sm">
-                  {inventors}
-                </p>
-                <h2 className="mt-4 font-serif text-3xl font-bold tracking-[0.06em] text-ink-950 dark:text-parchment-50 sm:mt-5 sm:text-5xl">
-                  {title}
-                </h2>
-              </div>
-              <div className="grid border-t border-amber-700/25 bg-parchment-100/60 font-mono text-[0.68rem] font-semibold leading-5 text-ink-700 dark:border-amber-500/25 dark:bg-ink-950/35 dark:text-parchment-300 sm:grid-cols-2 sm:text-xs">
-                {legalDetails.map((detail, detailIndex) => (
-                  <p
-                    key={`${key}-legal-detail-${detailIndex}`}
-                    className="px-5 py-3 text-center sm:px-6 sm:py-4 sm:text-left [&:not(:first-child)]:border-t [&:not(:first-child)]:border-amber-700/20 sm:[&:not(:first-child)]:border-l sm:[&:not(:first-child)]:border-t-0 dark:[&:not(:first-child)]:border-amber-500/20"
-                  >
-                    {detail}
-                  </p>
-                ))}
-              </div>
-            </header>
-          );
-        }
-
-        if (block.kind === "heading") {
-          const Heading = block.level === 2 ? "h3" : "h4";
-          return (
-            <Heading
-              key={key}
-              className={
-                block.level === 2
-                  ? "pt-7 text-center font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50"
-                  : "pt-5 font-serif text-xl font-bold text-ink-950 dark:text-parchment-50"
-              }
-            >
-              {block.text}
-            </Heading>
-          );
-        }
-
-        if (block.kind === "paragraph" || block.kind === "claim") {
-          const plainEnglish = paragraphReadings[index];
-
-          if (block.kind === "claim") {
-            const claimDecoder = claimDecoders.find((c) => c.number === block.number);
-            const claimPlainEnglish =
-              plainEnglish && plainEnglish.length > 0
-                ? plainEnglish
-                : claimDecoder?.plainEnglish
-                  ? [claimDecoder.plainEnglish]
-                  : undefined;
-
-            const claimSection = (
-              <section
-                id={`claim-${block.number}`}
-                aria-label={`Claim ${block.number}`}
-                className="grid grid-cols-[auto_1fr] gap-x-3 rounded-r-xl border-l-2 border-amber-500/70 bg-parchment-100/50 px-4 py-3 dark:border-amber-700 dark:bg-ink-900/50"
+      {withContentKeys(edition.blocks, (block) => JSON.stringify(block)).map(
+        ({ item: block, key, sourceIndex }) => {
+          if (block.kind === "masthead") {
+            const [office, inventors, title, ...legalDetails] = block.lines;
+            return (
+              <header
+                key={key}
+                className="overflow-hidden rounded-2xl border border-amber-700/30 bg-[linear-gradient(135deg,rgba(180,83,9,0.13),rgba(255,251,235,0.55)_48%,rgba(180,83,9,0.07))] shadow-sm dark:border-amber-600/30 dark:bg-[linear-gradient(135deg,rgba(180,83,9,0.2),rgba(20,20,18,0.35)_48%,rgba(180,83,9,0.1))]"
               >
-                <span className="pt-1 font-mono text-xs font-bold text-amber-800 dark:text-amber-400">
-                  {block.number}.
-                </span>
-                <p className="text-pretty">
-                  <RenderInlines inlines={block.inlines} />
-                </p>
-              </section>
+                <div className="border-b border-amber-700/25 bg-amber-700/[0.08] px-5 py-3 text-center font-mono text-[0.65rem] font-bold uppercase tracking-[0.2em] text-amber-950 dark:border-amber-500/25 dark:bg-amber-500/[0.1] dark:text-amber-200 sm:px-8 sm:text-[0.72rem]">
+                  {office}
+                </div>
+                <div className="px-5 py-7 text-center sm:px-10 sm:py-10">
+                  <p className="font-sans text-xs font-semibold uppercase tracking-[0.14em] text-ink-700 dark:text-parchment-300 sm:text-sm">
+                    {inventors}
+                  </p>
+                  <h2 className="mt-4 font-serif text-3xl font-bold tracking-[0.06em] text-ink-950 dark:text-parchment-50 sm:mt-5 sm:text-5xl">
+                    {title}
+                  </h2>
+                </div>
+                <div className="grid border-t border-amber-700/25 bg-parchment-100/60 font-mono text-[0.68rem] font-semibold leading-5 text-ink-700 dark:border-amber-500/25 dark:bg-ink-950/35 dark:text-parchment-300 sm:grid-cols-2 sm:text-xs">
+                  {withContentKeys(legalDetails, (detail) => detail).map(
+                    ({ item: detail, key: detailKey }) => (
+                      <p
+                        key={detailKey}
+                        className="px-5 py-3 text-center sm:px-6 sm:py-4 sm:text-left [&:not(:first-child)]:border-t [&:not(:first-child)]:border-amber-700/20 sm:[&:not(:first-child)]:border-l sm:[&:not(:first-child)]:border-t-0 dark:[&:not(:first-child)]:border-amber-500/20"
+                      >
+                        {detail}
+                      </p>
+                    ),
+                  )}
+                </div>
+              </header>
             );
-            // Owner policy: publish the verbatim claim text even when its
-            // decoder has not been authored yet; the companion appears when
-            // it lands.
-            if (claimPlainEnglish && claimPlainEnglish.length > 0) {
-              return (
-                <ParallelReading
-                  key={key}
-                  plainEnglish={claimPlainEnglish}
-                  sourceLabel={`Original claim ${block.number}`}
+          }
+
+          if (block.kind === "heading") {
+            const Heading = block.level === 2 ? "h3" : "h4";
+            return (
+              <Heading
+                key={key}
+                className={
+                  block.level === 2
+                    ? "pt-7 text-center font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50"
+                    : "pt-5 font-serif text-xl font-bold text-ink-950 dark:text-parchment-50"
+                }
+              >
+                {block.text}
+              </Heading>
+            );
+          }
+
+          if (block.kind === "paragraph" || block.kind === "claim") {
+            const plainEnglish = paragraphReadings[sourceIndex];
+
+            if (block.kind === "claim") {
+              const claimDecoder = claimDecoders.find((c) => c.number === block.number);
+              const claimPlainEnglish =
+                plainEnglish && plainEnglish.length > 0
+                  ? plainEnglish
+                  : claimDecoder?.plainEnglish
+                    ? [claimDecoder.plainEnglish]
+                    : undefined;
+
+              const claimSection = (
+                <section
+                  id={`claim-${block.number}`}
+                  aria-label={`Claim ${block.number}`}
+                  className="grid grid-cols-[auto_1fr] gap-x-3 rounded-r-xl border-l-2 border-amber-500/70 bg-parchment-100/50 px-4 py-3 dark:border-amber-700 dark:bg-ink-900/50"
                 >
-                  {claimSection}
+                  <span className="pt-1 font-mono text-xs font-bold text-amber-800 dark:text-amber-400">
+                    {block.number}.
+                  </span>
+                  <p className="text-pretty">
+                    <RenderInlines inlines={block.inlines} />
+                  </p>
+                </section>
+              );
+              // Owner policy: publish the verbatim claim text even when its
+              // decoder has not been authored yet; the companion appears when
+              // it lands.
+              if (claimPlainEnglish && claimPlainEnglish.length > 0) {
+                return (
+                  <ParallelReading
+                    key={key}
+                    plainEnglish={claimPlainEnglish}
+                    sourceLabel={`Original claim ${block.number}`}
+                  >
+                    {claimSection}
+                  </ParallelReading>
+                );
+              }
+              return <div key={key}>{claimSection}</div>;
+            }
+
+            if (plainEnglish && plainEnglish.length > 0) {
+              return (
+                <ParallelReading key={key} plainEnglish={plainEnglish}>
+                  <p className="text-pretty">
+                    <RenderInlines inlines={block.inlines} />
+                  </p>
                 </ParallelReading>
               );
             }
-            return <div key={key}>{claimSection}</div>;
-          }
-
-          if (plainEnglish && plainEnglish.length > 0) {
+            // Owner policy: a paragraph without its hand-authored companion
+            // still publishes the verbatim source text. Presence beats absence.
             return (
-              <ParallelReading key={key} plainEnglish={plainEnglish}>
-                <p className="text-pretty">
-                  <RenderInlines inlines={block.inlines} />
-                </p>
-              </ParallelReading>
+              <p key={key} className="text-pretty">
+                <RenderInlines inlines={block.inlines} />
+              </p>
             );
           }
-          // Owner policy: a paragraph without its hand-authored companion
-          // still publishes the verbatim source text. Presence beats absence.
-          return (
-            <p key={key} className="text-pretty">
-              <RenderInlines inlines={block.inlines} />
-            </p>
-          );
-        }
 
-        if (block.kind === "figure-sheet") {
-          // Drawing sheets belong to the facsimile, not to the continuous
-          // reading edition. Every source-figure occurrence is authored in
-          // the surrounding specification text and can expose its own local
-          // crop on hover. Rendering a sheet card here would reintroduce PDF
-          // pagination into a view whose purpose is continuous reading.
-          return null;
-        }
+          if (block.kind === "figure-sheet") {
+            // Drawing sheets belong to the facsimile, not to the continuous
+            // reading edition. Every source-figure occurrence is authored in
+            // the surrounding specification text and can expose its own local
+            // crop on hover. Rendering a sheet card here would reintroduce PDF
+            // pagination into a view whose purpose is continuous reading.
+            return null;
+          }
 
-        if (block.kind === "table") {
+          if (block.kind === "table") {
+            return (
+              <figure
+                key={key}
+                className="overflow-x-auto rounded-xl border border-parchment-300 dark:border-ink-800"
+              >
+                {block.caption && (
+                  <figcaption className="border-b border-parchment-300 bg-parchment-100 px-4 py-3 font-sans text-sm font-semibold text-ink-900 dark:border-ink-800 dark:bg-ink-900 dark:text-parchment-100">
+                    {block.caption}
+                  </figcaption>
+                )}
+                <table className="min-w-full border-collapse text-left font-sans text-sm">
+                  <thead className="bg-parchment-100/70 dark:bg-ink-900/70">
+                    <tr>
+                      {withContentKeys(block.headers, (header) => JSON.stringify(header)).map(
+                        ({ item: header, key: headerKey }) => (
+                          <th
+                            key={headerKey}
+                            scope="col"
+                            className="border-b border-parchment-300 px-4 py-3 font-semibold text-ink-900 dark:border-ink-800 dark:text-parchment-100"
+                          >
+                            <RenderInlines inlines={header} />
+                          </th>
+                        ),
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {withContentKeys(block.rows, (row) => JSON.stringify(row)).map(
+                      ({ item: row, key: rowKey }) => (
+                        <tr key={rowKey}>
+                          {withContentKeys(row, (cell) => JSON.stringify(cell)).map(
+                            ({ item: cell, key: cellKey }) => (
+                              <td
+                                key={cellKey}
+                                className="border-b border-parchment-200 px-4 py-3 align-top last:border-b-0 dark:border-ink-800"
+                              >
+                                <RenderInlines inlines={cell} />
+                              </td>
+                            ),
+                          )}
+                        </tr>
+                      ),
+                    )}
+                  </tbody>
+                </table>
+              </figure>
+            );
+          }
+
           return (
             <figure
               key={key}
-              className="overflow-x-auto rounded-xl border border-parchment-300 dark:border-ink-800"
+              className="rounded-xl border border-amber-300 bg-amber-50/70 px-5 py-4 text-center dark:border-amber-800 dark:bg-amber-950/20"
             >
-              {block.caption && (
-                <figcaption className="border-b border-parchment-300 bg-parchment-100 px-4 py-3 font-sans text-sm font-semibold text-ink-900 dark:border-ink-800 dark:bg-ink-900 dark:text-parchment-100">
-                  {block.caption}
+              <code className="font-mono text-sm text-ink-950 dark:text-parchment-50">
+                {block.text}
+              </code>
+              {block.description && (
+                <figcaption className="mt-2 font-sans text-xs leading-relaxed text-ink-700 dark:text-ink-300">
+                  {block.description}
                 </figcaption>
               )}
-              <table className="min-w-full border-collapse text-left font-sans text-sm">
-                <thead className="bg-parchment-100/70 dark:bg-ink-900/70">
-                  <tr>
-                    {block.headers.map((header, headerIndex) => (
-                      <th
-                        key={`${key}-header-${headerIndex}`}
-                        scope="col"
-                        className="border-b border-parchment-300 px-4 py-3 font-semibold text-ink-900 dark:border-ink-800 dark:text-parchment-100"
-                      >
-                        <RenderInlines inlines={header} />
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {block.rows.map((row, rowIndex) => (
-                    <tr key={`${key}-row-${rowIndex}`}>
-                      {row.map((cell, cellIndex) => (
-                        <td
-                          key={`${key}-cell-${rowIndex}-${cellIndex}`}
-                          className="border-b border-parchment-200 px-4 py-3 align-top last:border-b-0 dark:border-ink-800"
-                        >
-                          <RenderInlines inlines={cell} />
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </figure>
           );
-        }
-
-        return (
-          <figure
-            key={key}
-            className="rounded-xl border border-amber-300 bg-amber-50/70 px-5 py-4 text-center dark:border-amber-800 dark:bg-amber-950/20"
-          >
-            <code className="font-mono text-sm text-ink-950 dark:text-parchment-50">
-              {block.text}
-            </code>
-            {block.description && (
-              <figcaption className="mt-2 font-sans text-xs leading-relaxed text-ink-700 dark:text-ink-300">
-                {block.description}
-              </figcaption>
-            )}
-          </figure>
-        );
-      })}
+        },
+      )}
     </article>
   );
 }

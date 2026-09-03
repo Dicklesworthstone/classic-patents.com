@@ -1,6 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import {
   readSalisburyRobotHandControls,
+  SALISBURY_FRANKENSIM_CONTACT_OWNER,
+  SALISBURY_FRANKENSIM_REVOLUTE_OWNER,
+  SALISBURY_FRANKENSIM_TOPOLOGY_OWNER,
   SALISBURY_HAND_DEFAULT_CONTROLS,
   stepSalisburyRobotHandSi,
 } from "./salisburyRobotHandKernel";
@@ -23,6 +26,9 @@ describe("US 4,921,293 source-bounded tendon torque kernel", () => {
     expect(telemetry.jointTorquesNm[1]).toBeCloseTo(0.24, 12);
     expect(telemetry.jointTorquesNm[2]).toBeCloseTo(0.1, 12);
     expect(telemetry.refused).toBe(false);
+    expect(telemetry.sourceLawApplicable).toBe(true);
+    expect(telemetry.activeJointCoordinates).toBe(9);
+    expect(telemetry.activeCableEndCount).toBe(12);
     expect(telemetry.provenance).toBe("TS_SOURCE_LAW");
   });
 
@@ -84,6 +90,32 @@ describe("US 4,921,293 source-bounded tendon torque kernel", () => {
     expect(free.jointTorquesNm).toEqual(fixed.jointTorquesNm);
   });
 
+  test("withholds Claim 1 topology without erasing the visitor's raw tension settings", () => {
+    const controls = {
+      ...SALISBURY_HAND_DEFAULT_CONTROLS,
+      claim1RoutingPresent: false,
+    };
+    const withheld = stepSalisburyRobotHandSi(controls);
+    expect(withheld.tendonTensionsN).toEqual([18, 22, 10, 14]);
+    expect(withheld.claim1RoutingProbe).toBe(false);
+    expect(withheld.claim2IdlerProbe).toBe(false);
+    expect(withheld.sourceLawApplicable).toBe(false);
+    expect(withheld.activeJointCoordinates).toBe(0);
+    expect(withheld.activeCableEndCount).toBe(0);
+    expect(withheld.jointTorquesNm).toEqual([0, 0, 0]);
+    expect(withheld.displayJointAnglesDeg).toEqual([0, 0, 0]);
+    expect(withheld.pullPattern).toBe("Claim 1 routing withheld");
+  });
+
+  test("names the generic law owners and the explicitly unparameterized contact candidate", () => {
+    const telemetry = stepSalisburyRobotHandSi(SALISBURY_HAND_DEFAULT_CONTROLS);
+    expect(telemetry.owners).toEqual({
+      topology: SALISBURY_FRANKENSIM_TOPOLOGY_OWNER,
+      revolute: SALISBURY_FRANKENSIM_REVOLUTE_OWNER,
+      contactCandidate: SALISBURY_FRANKENSIM_CONTACT_OWNER,
+    });
+  });
+
   test("always exposes the historical dynamics boundary", () => {
     const telemetry = stepSalisburyRobotHandSi(SALISBURY_HAND_DEFAULT_CONTROLS);
     expect(telemetry.historicalDynamicsAvailable).toBe(false);
@@ -103,5 +135,8 @@ describe("US 4,921,293 source-bounded tendon torque kernel", () => {
     });
     expect(readSalisburyRobotHandControls({ firstIdlerFixed: 0 }).firstIdlerFixed).toBe(false);
     expect(readSalisburyRobotHandControls({ firstIdlerFixed: 1 }).firstIdlerFixed).toBe(true);
+    expect(readSalisburyRobotHandControls({ claim1RoutingEnabled: 0 }).claim1RoutingPresent).toBe(
+      false,
+    );
   });
 });

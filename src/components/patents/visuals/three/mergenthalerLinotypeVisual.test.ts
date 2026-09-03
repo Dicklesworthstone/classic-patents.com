@@ -1,7 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import { stepMergenthalerLinotype } from "@/physics/machineKernels";
+import { linotypeCameraForViewport } from "./mergenthalerLinotypeCamera";
 import {
   buildMergenthalerLinotypeModel,
   updateMergenthalerLinotypeKinematics,
@@ -10,6 +12,45 @@ import {
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
 describe("US 313,224 Ottmar Mergenthaler Linotype visual & mechanics boundary", () => {
+  test("keeps the whole linecaster readable in the desktop ISO frame while retaining touch and close-up cameras", () => {
+    const desktop = linotypeCameraForViewport("iso", 1280);
+    const tablet = linotypeCameraForViewport("iso", 768);
+    const phone = linotypeCameraForViewport("iso", 390);
+
+    expect(desktop).toEqual({ pos: [9.2, 7.1, 10.5], target: [0, 0.8, 0] });
+    expect(tablet).toEqual({ pos: [9.2, 6.7, 10.6], target: [0, 1, 0] });
+    expect(phone).toEqual({ pos: [10, 7.2, 11.5], target: [0, 1, 0] });
+    expect(linotypeCameraForViewport("casting_pot", 390)).toEqual({
+      pos: [-2.8, 0.5, 3.5],
+      target: [-1.5, -0.4, 0],
+    });
+
+    const { rootGroup, dispose } = buildMergenthalerLinotypeModel();
+    try {
+      rootGroup.updateMatrixWorld(true);
+      const bounds = new THREE.Box3().setFromObject(rootGroup);
+      const camera = new THREE.PerspectiveCamera(42, 1214 / 460, 0.1, 1000);
+      camera.position.fromArray(desktop.pos);
+      camera.lookAt(...desktop.target);
+      camera.updateProjectionMatrix();
+      camera.updateMatrixWorld(true);
+
+      const projected = [
+        ...[bounds.min.x, bounds.max.x].flatMap((x) =>
+          [bounds.min.y, bounds.max.y].flatMap((y) =>
+            [bounds.min.z, bounds.max.z].map((z) => new THREE.Vector3(x, y, z).project(camera)),
+          ),
+        ),
+      ];
+      expect(Math.min(...projected.map((point) => point.x))).toBeGreaterThanOrEqual(-0.25);
+      expect(Math.max(...projected.map((point) => point.x))).toBeLessThanOrEqual(0.25);
+      expect(Math.min(...projected.map((point) => point.y))).toBeGreaterThanOrEqual(-0.85);
+      expect(Math.max(...projected.map((point) => point.y))).toBeLessThanOrEqual(0.8);
+    } finally {
+      dispose();
+    }
+  });
+
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "MergenthalerLinotype3D.tsx"),

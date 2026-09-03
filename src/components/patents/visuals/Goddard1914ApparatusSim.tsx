@@ -1,50 +1,144 @@
 "use client";
 
 import { Gauge, RotateCcw } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
-import { ensureGoddardWasm, goddardKernelSource } from "@/physics/goddardWasm";
-import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import {
+  ensureGoddardWasm,
+  goddardKernelSource,
+  subscribeGoddardKernelSource,
+} from "@/physics/goddardWasm";
+import { getPatentPhysicsParams, usePatentPhysics } from "@/physics/usePatentPhysics";
+import { useWasmKernelSource } from "@/physics/useWasmKernelSource";
+import { useOffscreenGate } from "./useOffscreenGate";
+
+const PATENT_ID = "us-1102653-goddard-rocket";
+const UI_SNAPSHOT_INTERVAL_MS = 80;
+
+type GoddardAnimationControls = {
+  primarySpinRpm: number;
+  gyroSpinRpm: number;
+  tubeLengthRatio: number;
+  auxiliaryReleaseFraction: number;
+  primaryChargeSubstantiallyConsumed: boolean;
+  gyroEnabled: boolean;
+};
+
+function readGoddardAnimationControls(params: Record<string, number>): GoddardAnimationControls {
+  return {
+    primarySpinRpm: params.primarySpinRpm ?? 120,
+    gyroSpinRpm: params.gyroSpinRpm ?? 6_000,
+    tubeLengthRatio: params.tubeLengthRatio ?? 4.5,
+    auxiliaryReleaseFraction: params.auxiliaryReleaseFraction ?? 0,
+    primaryChargeSubstantiallyConsumed: (params.primaryChargeConsumed ?? 0) !== 0,
+    gyroEnabled: (params.gyroEnabled ?? 1) !== 0,
+  };
+}
 
 function quaternionAxisAngleDeg([w, _x, y]: readonly [number, number, number, number]): number {
   return (2 * Math.atan2(y, w) * 180) / Math.PI;
 }
 
+function projectGoddardPose(
+  primaryAssembly: SVGGElement | null,
+  auxiliaryAssembly: SVGGElement | null,
+  gyroAssembly: SVGGElement | null,
+  primaryAngleDeg: number,
+  auxiliaryReleaseFraction: number,
+  gyroOperational: boolean,
+) {
+  primaryAssembly?.setAttribute("transform", `rotate(${primaryAngleDeg} 320 300)`);
+  auxiliaryAssembly?.setAttribute("transform", `translate(0 ${-auxiliaryReleaseFraction * 125})`);
+  gyroAssembly?.setAttribute(
+    "transform",
+    `rotate(${gyroOperational ? -primaryAngleDeg : 0} 320 42)`,
+  );
+}
+
 export function GoddardRocketSim() {
-  const { params, updateParam, resetParams } = usePatentPhysics("us-1102653-goddard-rocket");
-  const [kernelSource, setKernelSource] = useState(goddardKernelSource());
+  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
+  const kernelSource = useWasmKernelSource(
+    goddardKernelSource,
+    subscribeGoddardKernelSource,
+    ensureGoddardWasm,
+  );
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const elapsedSecondsRef = useRef(0);
+  const primaryAssemblyRef = useRef<SVGGElement>(null);
+  const auxiliaryAssemblyRef = useRef<SVGGElement>(null);
+  const gyroAssemblyRef = useRef<SVGGElement>(null);
+  const controls = readGoddardAnimationControls(params);
+  const controlsRef = useRef(controls);
+  const {
+    primarySpinRpm,
+    gyroSpinRpm,
+    tubeLengthRatio,
+    auxiliaryReleaseFraction,
+    primaryChargeSubstantiallyConsumed,
+    gyroEnabled,
+  } = controls;
 
   useEffect(() => {
-    let active = true;
-    void ensureGoddardWasm().then((source) => {
-      if (active) setKernelSource(source);
-    });
-    return () => {
-      active = false;
+    controlsRef.current = {
+      primarySpinRpm,
+      gyroSpinRpm,
+      tubeLengthRatio,
+      auxiliaryReleaseFraction,
+      primaryChargeSubstantiallyConsumed,
+      gyroEnabled,
     };
-  }, []);
+  }, [
+    auxiliaryReleaseFraction,
+    gyroEnabled,
+    gyroSpinRpm,
+    primaryChargeSubstantiallyConsumed,
+    primarySpinRpm,
+    tubeLengthRatio,
+  ]);
 
   useEffect(() => {
     let requestId = 0;
-    let previous = 0;
+    let lastFrame = 0;
+    let lastUiSnapshot = 0;
     const animate = (now: number) => {
       requestId = requestAnimationFrame(animate);
-      if (now - previous < 50) return;
-      previous = now;
-      setElapsedSeconds((elapsed) => (elapsed + 0.05) % 600);
+      if (!onscreenRef.current) {
+        lastFrame = now;
+        return;
+      }
+      const dtSeconds = lastFrame === 0 ? 0 : Math.min((now - lastFrame) / 1000, 0.1);
+      lastFrame = now;
+      elapsedSecondsRef.current = (elapsedSecondsRef.current + dtSeconds) % 600;
+      const currentControls = controlsRef.current;
+      const currentPhysics = FrankenSimEngine.stepGoddardApparatus(
+        elapsedSecondsRef.current,
+        currentControls.primarySpinRpm,
+        currentControls.gyroSpinRpm,
+        currentControls.tubeLengthRatio,
+        currentControls.auxiliaryReleaseFraction,
+        currentControls.primaryChargeSubstantiallyConsumed,
+        currentControls.gyroEnabled,
+      );
+      const currentPrimaryAngleDeg = quaternionAxisAngleDeg(currentPhysics.primaryQuaternion);
+      projectGoddardPose(
+        primaryAssemblyRef.current,
+        auxiliaryAssemblyRef.current,
+        gyroAssemblyRef.current,
+        currentPrimaryAngleDeg,
+        currentControls.auxiliaryReleaseFraction,
+        currentControls.gyroEnabled && currentControls.gyroSpinRpm > 0,
+      );
+      if (now - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = now;
+        setElapsedSeconds(elapsedSecondsRef.current);
+      }
     };
     requestId = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestId);
-  }, []);
+  }, [onscreenRef]);
 
-  const primarySpinRpm = params.primarySpinRpm ?? 120;
-  const gyroSpinRpm = params.gyroSpinRpm ?? 6_000;
-  const tubeLengthRatio = params.tubeLengthRatio ?? 4.5;
-  const auxiliaryReleaseFraction = params.auxiliaryReleaseFraction ?? 0;
-  const primaryChargeSubstantiallyConsumed = (params.primaryChargeConsumed ?? 0) !== 0;
-  const gyroEnabled = (params.gyroEnabled ?? 1) !== 0;
   const gyroOperational = gyroEnabled && gyroSpinRpm > 0;
   const physics = FrankenSimEngine.stepGoddardApparatus(
     elapsedSeconds,
@@ -59,7 +153,10 @@ export function GoddardRocketSim() {
   const primaryAngleDeg = quaternionAxisAngleDeg(physics.primaryQuaternion);
 
   return (
-    <div className="space-y-6 rounded-2xl border border-amber-900/20 bg-parchment-50 p-6 shadow-patent dark:border-ink-800 dark:bg-ink-950 sm:p-7">
+    <div
+      ref={rootRef}
+      className="space-y-6 rounded-2xl border border-amber-900/20 bg-parchment-50 p-6 shadow-patent dark:border-ink-800 dark:bg-ink-950 sm:p-7"
+    >
       <div className="flex flex-col justify-between gap-3 border-b border-parchment-200 pb-4 dark:border-ink-800 sm:flex-row sm:items-start">
         <div>
           <div className="flex items-center gap-2.5">
@@ -82,7 +179,30 @@ export function GoddardRocketSim() {
           </span>
           <button
             type="button"
-            onClick={resetParams}
+            onClick={() => {
+              resetParams();
+              const resetControls = readGoddardAnimationControls(getPatentPhysicsParams(PATENT_ID));
+              controlsRef.current = resetControls;
+              elapsedSecondsRef.current = 0;
+              const resetPhysics = FrankenSimEngine.stepGoddardApparatus(
+                0,
+                resetControls.primarySpinRpm,
+                resetControls.gyroSpinRpm,
+                resetControls.tubeLengthRatio,
+                resetControls.auxiliaryReleaseFraction,
+                resetControls.primaryChargeSubstantiallyConsumed,
+                resetControls.gyroEnabled,
+              );
+              projectGoddardPose(
+                primaryAssemblyRef.current,
+                auxiliaryAssemblyRef.current,
+                gyroAssemblyRef.current,
+                quaternionAxisAngleDeg(resetPhysics.primaryQuaternion),
+                resetControls.auxiliaryReleaseFraction,
+                resetControls.gyroEnabled && resetControls.gyroSpinRpm > 0,
+              );
+              setElapsedSeconds(0);
+            }}
             aria-label="Reset source apparatus"
             className="rounded-lg bg-parchment-200 p-2 text-ink-800 transition-colors hover:bg-parchment-300 dark:bg-ink-800 dark:text-parchment-200 dark:hover:bg-ink-700"
           >
@@ -147,7 +267,7 @@ export function GoddardRocketSim() {
               22/23 bearings
             </text>
 
-            <g transform={`rotate(${primaryAngleDeg} 320 300)`}>
+            <g ref={primaryAssemblyRef} transform={`rotate(${primaryAngleDeg} 320 300)`}>
               <rect
                 x="280"
                 y="210"
@@ -226,7 +346,10 @@ export function GoddardRocketSim() {
                 24 firing tube
               </text>
 
-              <g transform={`translate(0 ${-auxiliaryReleaseFraction * 125})`}>
+              <g
+                ref={auxiliaryAssemblyRef}
+                transform={`translate(0 ${-auxiliaryReleaseFraction * 125})`}
+              >
                 <path
                   d="M 309 155 L 331 155 L 329 105 L 311 105 Z"
                   fill="#b87333"
@@ -249,7 +372,10 @@ export function GoddardRocketSim() {
                 <text x="348" y="78" fill="#fbbf24" fontSize="13" fontFamily="monospace">
                   25 auxiliary
                 </text>
-                <g transform={`rotate(${gyroOperational ? -primaryAngleDeg : 0} 320 42)`}>
+                <g
+                  ref={gyroAssemblyRef}
+                  transform={`rotate(${gyroOperational ? -primaryAngleDeg : 0} 320 42)`}
+                >
                   <line x1="305" y1="42" x2="335" y2="42" stroke="#94a3b8" strokeWidth="5" />
                   <circle cx="314" cy="42" r="10" fill="#b87333" stroke="#fde68a" strokeWidth="2" />
                   <rect x="324" y="33" width="14" height="12" fill="#111827" stroke="#cbd5e1" />

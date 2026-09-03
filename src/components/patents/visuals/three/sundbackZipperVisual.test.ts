@@ -1,4 +1,6 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import {
   SUNDBACK_ZIPPER_DEFAULT_CONTROLS,
   stepSundbackZipperSi,
@@ -6,6 +8,20 @@ import {
 import { buildSundbackZipperModel, updateSundbackZipperKinematics } from "./sundbackZipperModel";
 
 describe("US 1,219,881 Gideon Sundback Separable Fastener visual & kinematics boundary", () => {
+  test("puts the full telemetry panel after the model on constrained screens", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/SundbackZipper3D.tsx"),
+      "utf8",
+    );
+    const canvas = source.indexOf("ref={containerRef}");
+    const mobileTelemetry = source.indexOf('data-mobile-layout="telemetry-after-canvas"');
+    expect(mobileTelemetry).toBeGreaterThan(canvas);
+    expect(source).toContain("hidden lg:block");
+    expect(source).toContain("overflow-x-auto");
+    expect(source).toContain("shrink-0");
+    expect(source).toContain('data-audit-primary-control="true"');
+  });
+
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
     const model = buildSundbackZipperModel();
     expect(model.rootGroup).toBeDefined();

@@ -22,6 +22,17 @@ describe("Alexander Graham Bell Photophone 3D Model & Physics Visual Test Suite"
     expect(threeSource).toContain("controls.setView");
   });
 
+  test("uses a compact overview that keeps the full optical chain in frame", () => {
+    const threeSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/BellPhotophone3D.tsx"),
+      "utf8",
+    );
+
+    expect(threeSource).toContain("MOBILE_CAMERA_PRESETS");
+    expect(threeSource).toContain("overview: { pos: [0, 5.5, 25.0], target: [0, 0, 0] }");
+    expect(threeSource).toContain('resolveCameraPreset("overview", container.clientWidth)');
+  });
+
   test("creates valid Three.js model hierarchy with transmitter, beam, and receiver dish", () => {
     const model = createBellPhotophoneModel();
     expect(model.group).toBeDefined();

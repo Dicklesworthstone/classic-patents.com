@@ -2,9 +2,11 @@ import { expect, test } from "bun:test";
 
 test("a successful generic WASM load invalidates pre-load fallback cache entries", async () => {
   const code = String.raw`
-    const { ensureGenericWasm, gaMotorOrbit, genericKernelSource } =
+    const { ensureGenericWasm, gaMotorOrbit, genericKernelSource, subscribeGenericKernelSource } =
       await import("./src/physics/genericWasm.ts");
     const sentinel = 4242.125;
+    const sourceTransitions = [];
+    const unsubscribe = subscribeGenericKernelSource(() => sourceTransitions.push(genericKernelSource()));
     const fallback = gaMotorOrbit(11, 13);
     if (genericKernelSource() !== "unloaded" || fallback[2] === sentinel) {
       throw new Error("pre-load sample did not use the fallback");
@@ -29,11 +31,15 @@ test("a successful generic WASM load invalidates pre-load fallback cache entries
     Object.defineProperty(globalThis, "window", { configurable: true, value: {} });
     globalThis.fetch = async () => new Response(moduleSource, { status: 200 });
     if (await ensureGenericWasm() !== "wasm") throw new Error("synthetic WASM did not bind");
+    unsubscribe();
+    if (!sourceTransitions.includes("wasm")) {
+      throw new Error("source subscribers were not notified when WASM bound");
+    }
     const stepped = gaMotorOrbit(11, 13);
     if (stepped === fallback || stepped[2] !== sentinel) {
       throw new Error("post-load sample reused the cached fallback");
     }
-    console.log("cache-handoff-ok");
+    console.log("cache-handoff-and-source-store-ok");
   `;
   const child = Bun.spawn({
     cmd: [process.execPath, "-e", code],
@@ -49,5 +55,5 @@ test("a successful generic WASM load invalidates pre-load fallback cache entries
 
   expect(stderr).toBe("");
   expect(exitCode).toBe(0);
-  expect(stdout.trim()).toBe("cache-handoff-ok");
+  expect(stdout.trim()).toBe("cache-handoff-and-source-store-ok");
 });

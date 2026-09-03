@@ -1,3 +1,5 @@
+import type { TapeUpdater } from "./useFrankenSimPhysics";
+
 /**
  * src/physics/metcalfeEthernetKernel.ts
  *
@@ -13,8 +15,8 @@
 export interface MetcalfeEthernetControls {
   readonly cableLengthMeters: number; // 10 to 1000 m (nominal 500m segment)
   readonly dataRateMbps: number; // 1.0 to 10.0 Mbps (nominal 2.94 to 10.0)
-  readonly stationCount: number; // 2 to 32 contending stations
-  readonly offeredLoad: number; // 0.05 to 2.5 (normalized network traffic intensity)
+  readonly stationCount: number; // 2 to 32 nodes in the analytical contention projection
+  readonly offeredLoad: number; // analytical normalized traffic intensity, 0.05 to 2.5
   readonly packetSizeBytes: number; // 64 to 1518 bytes
   readonly triggerCollision: boolean; // Manual collision inject for pedagogy
   readonly station1Transmitting: boolean; // Station 1 transmit state
@@ -29,6 +31,12 @@ export interface MetcalfeEthernetState {
   station2CollisionCount: number;
   station1BackoffRemainingSec: number;
   station2BackoffRemainingSec: number;
+  station1JamRemainingSec: number;
+  station2JamRemainingSec: number;
+  station1InterframeGapRemainingSec: number;
+  station2InterframeGapRemainingSec: number;
+  station1CarrierTailRemainingSec: number;
+  station2CarrierTailRemainingSec: number;
   station1BackoffSlot: number;
   station2BackoffSlot: number;
   station1PacketProgressSec: number;
@@ -37,6 +45,8 @@ export interface MetcalfeEthernetState {
   station2State: "idle" | "deferring" | "transmitting" | "jamming" | "backing_off";
   packetSuccessCount: number;
   totalCollisionCount: number;
+  lastCollisionTimeSec: number;
+  triggerCollisionLatched: boolean;
   busVoltageV: number;
   manchesterClockPhase: number;
 }
@@ -48,6 +58,7 @@ export interface MetcalfeEthernetMetrics {
   readonly bitPeriodNs: number; // Manchester bit period (ns)
   readonly busVoltageVolts: number; // Instantaneous analog bus voltage (V)
   readonly collisionDetected: boolean; // XOR collision gate output (true/false)
+  readonly collisionDisplayActive: boolean; // deterministic slowed event hold for the museum visual
   readonly carrierSensed: boolean; // Carrier sense comparator (true/false)
   readonly throughputMbps: number; // Achieved useful data throughput (Mbps)
   readonly channelEfficiencyPct: number; // Protocol utilization efficiency (%)
@@ -75,6 +86,12 @@ export const INITIAL_ETHERNET_STATE: MetcalfeEthernetState = {
   station2CollisionCount: 0,
   station1BackoffRemainingSec: 0.0,
   station2BackoffRemainingSec: 0.0,
+  station1JamRemainingSec: 0.0,
+  station2JamRemainingSec: 0.0,
+  station1InterframeGapRemainingSec: 0.0,
+  station2InterframeGapRemainingSec: 0.0,
+  station1CarrierTailRemainingSec: 0.0,
+  station2CarrierTailRemainingSec: 0.0,
   station1BackoffSlot: 0,
   station2BackoffSlot: 0,
   station1PacketProgressSec: 0.0,
@@ -83,6 +100,8 @@ export const INITIAL_ETHERNET_STATE: MetcalfeEthernetState = {
   station2State: "idle",
   packetSuccessCount: 0,
   totalCollisionCount: 0,
+  lastCollisionTimeSec: Number.NEGATIVE_INFINITY,
+  triggerCollisionLatched: false,
   busVoltageV: 0.0,
   manchesterClockPhase: 0.0,
 };
@@ -93,7 +112,6 @@ const DIELECTRIC_PERMITTIVITY = 2.25; // Polyethylene coaxial core
 const PROPAGATION_VELOCITY = SPEED_OF_LIGHT / Math.sqrt(DIELECTRIC_PERMITTIVITY); // ~1.9986e8 m/s (~0.666c)
 const COAX_IMPEDANCE_OHMS = 50.0; // Standard RG-8 coaxial cable
 const SINGLE_TX_VOLTAGE = -1.0; // Volts into 25 ohms
-const COLLISION_VOLTAGE_THRESHOLD = -1.5; // Volts threshold for collision detection
 
 function deterministicUint32(seed: number, counter: number, stream: number): number {
   let value = (seed ^ Math.imul(counter + 1, 0x9e3779b9) ^ Math.imul(stream + 1, 0x85ebca6b)) >>> 0;
@@ -141,9 +159,13 @@ export function readEthernetControls(
     ),
     triggerCollision: Boolean(raw?.triggerCollision),
     station1Transmitting:
-      raw?.station1Transmitting ?? DEFAULT_ETHERNET_CONTROLS.station1Transmitting,
+      raw?.station1Transmitting === undefined
+        ? DEFAULT_ETHERNET_CONTROLS.station1Transmitting
+        : Boolean(raw.station1Transmitting),
     station2Transmitting:
-      raw?.station2Transmitting ?? DEFAULT_ETHERNET_CONTROLS.station2Transmitting,
+      raw?.station2Transmitting === undefined
+        ? DEFAULT_ETHERNET_CONTROLS.station2Transmitting
+        : Boolean(raw.station2Transmitting),
   };
 }
 
@@ -152,9 +174,7 @@ export function stepMetcalfeEthernetSi(
   controls: MetcalfeEthernetControls,
   dt: number,
 ): { state: MetcalfeEthernetState; metrics: MetcalfeEthernetMetrics } {
-  const safeDt = Math.max(0.0001, Math.min(dt, 0.1));
-  const simTimeSec = prevState.simTimeSec + safeDt;
-
+  const safeDt = Math.max(0, Math.min(dt, 0.1));
   // 1. Physical Propagation & Bit Timing
   const oneWayPropDelaySec = controls.cableLengthMeters / PROPAGATION_VELOCITY;
   const oneWayPropDelayNs = oneWayPropDelaySec * 1e9;
@@ -172,12 +192,22 @@ export function stepMetcalfeEthernetSi(
   const packetDurationSec = packetBits * bitPeriodSec;
   const jamDurationSec = 32 * bitPeriodSec; // 32-bit jam sequence
   const jamDurationMicrosec = jamDurationSec * 1e6;
+  const interframeGapSec = 96 * bitPeriodSec;
 
-  // 2. Transmit State Machine & Collision Resolution
+  // 2. Event-timed transmit state machine. Ethernet's propagation, jam, and
+  // backoff intervals are microseconds; advancing them as one 16.7 ms display
+  // step both skipped states and changed outcomes with frame splitting.
+  let simTimeSec = prevState.simTimeSec;
   let st1 = prevState.station1State;
   let st2 = prevState.station2State;
-  let st1Backoff = Math.max(0, prevState.station1BackoffRemainingSec - safeDt);
-  let st2Backoff = Math.max(0, prevState.station2BackoffRemainingSec - safeDt);
+  let st1Backoff = Math.max(0, prevState.station1BackoffRemainingSec);
+  let st2Backoff = Math.max(0, prevState.station2BackoffRemainingSec);
+  let st1Jam = Math.max(0, prevState.station1JamRemainingSec);
+  let st2Jam = Math.max(0, prevState.station2JamRemainingSec);
+  let st1InterframeGap = Math.max(0, prevState.station1InterframeGapRemainingSec);
+  let st2InterframeGap = Math.max(0, prevState.station2InterframeGapRemainingSec);
+  let st1CarrierTail = Math.max(0, prevState.station1CarrierTailRemainingSec);
+  let st2CarrierTail = Math.max(0, prevState.station2CarrierTailRemainingSec);
   let st1BackoffSlot = prevState.station1BackoffSlot;
   let st2BackoffSlot = prevState.station2BackoffSlot;
   let st1PacketProgress = prevState.station1PacketProgressSec;
@@ -185,84 +215,218 @@ export function stepMetcalfeEthernetSi(
   let st1ColCount = prevState.station1CollisionCount;
   let st2ColCount = prevState.station2CollisionCount;
   let totalCollisions = prevState.totalCollisionCount;
+  let lastCollisionTimeSec = prevState.lastCollisionTimeSec;
   let successPackets = prevState.packetSuccessCount;
   let rngCounter = prevState.rngCounter;
+  const triggerCollisionLatched = controls.triggerCollision;
+  const wants1 = controls.station1Transmitting || controls.triggerCollision;
+  const wants2 = controls.station2Transmitting || controls.triggerCollision;
+  const epsilon = 1e-12;
+  let remainingSec = safeDt;
 
-  // Determine active transmitters
-  let tx1Active = false;
-  let tx2Active = false;
+  // The museum's explicit collision command represents two endpoints that
+  // begin within one propagation window. Treat its rising edge as that event,
+  // even when one endpoint had already sensed an older carrier and was
+  // deferring. Subsequent ticks obey ordinary jam, IFG, and BEB state.
+  if (controls.triggerCollision && !prevState.triggerCollisionLatched) {
+    st1 = "transmitting";
+    st2 = "transmitting";
+    st1PacketProgress = 0;
+    st2PacketProgress = 0;
+    st1Jam = 0;
+    st2Jam = 0;
+    st1Backoff = 0;
+    st2Backoff = 0;
+    st1InterframeGap = 0;
+    st2InterframeGap = 0;
+  }
 
-  if (st1Backoff <= 0) {
-    if (controls.station1Transmitting) {
-      st1 = "transmitting";
-      tx1Active = true;
-    } else {
+  const signalAtStation1 = () =>
+    st1CarrierTail > epsilon ||
+    st2 === "jamming" ||
+    (st2 === "transmitting" && st2PacketProgress >= oneWayPropDelaySec - epsilon);
+  const signalAtStation2 = () =>
+    st2CarrierTail > epsilon ||
+    st1 === "jamming" ||
+    (st1 === "transmitting" && st1PacketProgress >= oneWayPropDelaySec - epsilon);
+
+  const normalizeStates = () => {
+    const was1Transmitting = st1 === "transmitting";
+    const was2Transmitting = st2 === "transmitting";
+    const senses1Carrier = signalAtStation1();
+    const senses2Carrier = signalAtStation2();
+
+    // IEEE 802.3 requires 96 bit-times of locally observed idle medium between
+    // frames. Hold the gap at its full value while a remote wave is present;
+    // the timer starts only after that wave's propagation tail has passed.
+    if (!was1Transmitting && st1 !== "jamming" && senses1Carrier) {
+      st1InterframeGap = interframeGapSec;
+    }
+    if (!was2Transmitting && st2 !== "jamming" && senses2Carrier) {
+      st2InterframeGap = interframeGapSec;
+    }
+
+    if (st1Jam > epsilon) st1 = "jamming";
+    else if (was1Transmitting) st1 = "transmitting";
+    else if (!wants1) {
       st1 = "idle";
+      st1PacketProgress = 0;
+    } else if (senses1Carrier || st1InterframeGap > epsilon) st1 = "deferring";
+    else if (st1Backoff > epsilon) st1 = "backing_off";
+    else {
+      st1 = "transmitting";
+      st1PacketProgress = 0;
     }
-  } else {
-    st1 = "backing_off";
-  }
 
-  if (st2Backoff <= 0) {
-    if (controls.station2Transmitting || controls.triggerCollision) {
-      st2 = "transmitting";
-      tx2Active = true;
-    } else {
+    if (st2Jam > epsilon) st2 = "jamming";
+    else if (was2Transmitting) st2 = "transmitting";
+    else if (!wants2) {
       st2 = "idle";
+      st2PacketProgress = 0;
+    } else if (senses2Carrier || st2InterframeGap > epsilon) st2 = "deferring";
+    else if (st2Backoff > epsilon) st2 = "backing_off";
+    else {
+      st2 = "transmitting";
+      st2PacketProgress = 0;
     }
-  } else {
-    st2 = "backing_off";
-  }
+  };
 
-  // 3. Collision Detection on Coaxial Cable
-  const activeTxCount = (tx1Active ? 1 : 0) + (tx2Active ? 1 : 0);
-  const busVoltageV = activeTxCount * SINGLE_TX_VOLTAGE;
-  const collisionDetected = activeTxCount >= 2 || busVoltageV <= COLLISION_VOLTAGE_THRESHOLD;
-  const carrierSensed = activeTxCount > 0;
+  for (let eventCount = 0; remainingSec > epsilon && eventCount < 50_000; eventCount += 1) {
+    normalizeStates();
+    const tx1 = st1 === "transmitting";
+    const tx2 = st2 === "transmitting";
+    const jam1 = st1 === "jamming";
+    const jam2 = st2 === "jamming";
+    const senses1Carrier = signalAtStation1();
+    const senses2Carrier = signalAtStation2();
 
-  if (collisionDetected) {
-    totalCollisions += 1;
-    // Binary Exponential Backoff Algorithm: delay = r * slotTime, r in [0, 2^min(n,10) - 1]
-    st1ColCount = Math.min(st1ColCount + 1, 16);
-    st2ColCount = Math.min(st2ColCount + 1, 16);
+    if (
+      tx1 &&
+      tx2 &&
+      Math.min(st1PacketProgress, st2PacketProgress) >= oneWayPropDelaySec - epsilon
+    ) {
+      totalCollisions += 1;
+      lastCollisionTimeSec = simTimeSec;
+      st1ColCount = Math.min(st1ColCount + 1, 16);
+      st2ColCount = Math.min(st2ColCount + 1, 16);
+      st1BackoffSlot = deterministicBackoffSlot(
+        prevState.rngSeed,
+        rngCounter,
+        1,
+        2 ** Math.min(st1ColCount, 10) - 1,
+      );
+      rngCounter += 1;
+      st2BackoffSlot = deterministicBackoffSlot(
+        prevState.rngSeed,
+        rngCounter,
+        2,
+        2 ** Math.min(st2ColCount, 10) - 1,
+      );
+      rngCounter += 1;
+      st1Backoff = st1BackoffSlot * slotTimeSec;
+      st2Backoff = st2BackoffSlot * slotTimeSec;
+      st1Jam = jamDurationSec;
+      st2Jam = jamDurationSec;
+      st1 = "jamming";
+      st2 = "jamming";
+      st1PacketProgress = 0;
+      st2PacketProgress = 0;
+      continue;
+    }
 
-    const k1 = Math.min(st1ColCount, 10);
-    const maxSlots1 = 2 ** k1 - 1;
-    st1BackoffSlot = deterministicBackoffSlot(prevState.rngSeed, rngCounter, 1, maxSlots1);
-    rngCounter += 1;
-    st1Backoff = st1BackoffSlot * slotTimeSec + jamDurationSec;
-    st1 = "jamming";
-    st1PacketProgress = 0;
+    let advanceSec = remainingSec;
+    if (tx1 && tx2) {
+      advanceSec = Math.min(
+        advanceSec,
+        Math.max(0, oneWayPropDelaySec - Math.min(st1PacketProgress, st2PacketProgress)),
+      );
+    }
+    if (tx1 && st1PacketProgress < oneWayPropDelaySec - epsilon) {
+      advanceSec = Math.min(advanceSec, oneWayPropDelaySec - st1PacketProgress);
+    }
+    if (tx2 && st2PacketProgress < oneWayPropDelaySec - epsilon) {
+      advanceSec = Math.min(advanceSec, oneWayPropDelaySec - st2PacketProgress);
+    }
+    if (tx1) advanceSec = Math.min(advanceSec, packetDurationSec - st1PacketProgress);
+    if (tx2) advanceSec = Math.min(advanceSec, packetDurationSec - st2PacketProgress);
+    if (jam1) advanceSec = Math.min(advanceSec, st1Jam);
+    if (jam2) advanceSec = Math.min(advanceSec, st2Jam);
+    if (!senses1Carrier && !tx1 && !jam1 && st1InterframeGap > epsilon) {
+      advanceSec = Math.min(advanceSec, st1InterframeGap);
+    }
+    if (!senses2Carrier && !tx2 && !jam2 && st2InterframeGap > epsilon) {
+      advanceSec = Math.min(advanceSec, st2InterframeGap);
+    }
+    if (st1CarrierTail > epsilon && !jam2 && !tx2) {
+      advanceSec = Math.min(advanceSec, st1CarrierTail);
+    }
+    if (st2CarrierTail > epsilon && !jam1 && !tx1) {
+      advanceSec = Math.min(advanceSec, st2CarrierTail);
+    }
 
-    const k2 = Math.min(st2ColCount, 10);
-    const maxSlots2 = 2 ** k2 - 1;
-    st2BackoffSlot = deterministicBackoffSlot(prevState.rngSeed, rngCounter, 2, maxSlots2);
-    rngCounter += 1;
-    st2Backoff = st2BackoffSlot * slotTimeSec + jamDurationSec;
-    st2 = "jamming";
-    st2PacketProgress = 0;
-  } else if (tx1Active && !tx2Active) {
-    st1PacketProgress += safeDt;
-    const completedPackets = Math.floor(st1PacketProgress / packetDurationSec);
-    if (completedPackets > 0) {
-      successPackets += completedPackets;
-      st1PacketProgress -= completedPackets * packetDurationSec;
+    if (!senses1Carrier && !tx1 && !jam1 && st1Backoff > epsilon) {
+      advanceSec = Math.min(advanceSec, st1Backoff);
+    }
+    if (!senses2Carrier && !tx2 && !jam2 && st2Backoff > epsilon) {
+      advanceSec = Math.min(advanceSec, st2Backoff);
+    }
+    if (advanceSec <= epsilon) advanceSec = Math.min(remainingSec, epsilon);
+
+    if (tx1) st1PacketProgress += advanceSec;
+    if (tx2) st2PacketProgress += advanceSec;
+    if (jam1) st1Jam = Math.max(0, st1Jam - advanceSec);
+    if (jam2) st2Jam = Math.max(0, st2Jam - advanceSec);
+    if (!senses1Carrier && !tx1 && !jam1) {
+      st1InterframeGap = Math.max(0, st1InterframeGap - advanceSec);
+      st1Backoff = Math.max(0, st1Backoff - advanceSec);
+    }
+    if (!senses2Carrier && !tx2 && !jam2) {
+      st2InterframeGap = Math.max(0, st2InterframeGap - advanceSec);
+      st2Backoff = Math.max(0, st2Backoff - advanceSec);
+    }
+
+    const remoteSignalReached1 = jam2 || (tx2 && st2PacketProgress >= oneWayPropDelaySec - epsilon);
+    const remoteSignalReached2 = jam1 || (tx1 && st1PacketProgress >= oneWayPropDelaySec - epsilon);
+    st1CarrierTail = remoteSignalReached1
+      ? oneWayPropDelaySec
+      : Math.max(0, st1CarrierTail - advanceSec);
+    st2CarrierTail = remoteSignalReached2
+      ? oneWayPropDelaySec
+      : Math.max(0, st2CarrierTail - advanceSec);
+    simTimeSec += advanceSec;
+    remainingSec -= advanceSec;
+
+    if (tx1 && st1PacketProgress >= packetDurationSec - epsilon) {
+      successPackets += 1;
+      st1PacketProgress = 0;
       st1ColCount = 0;
+      st1 = "idle";
+      st1InterframeGap = interframeGapSec;
     }
-    st2PacketProgress = 0;
-  } else if (tx2Active && !tx1Active) {
-    st2PacketProgress += safeDt;
-    const completedPackets = Math.floor(st2PacketProgress / packetDurationSec);
-    if (completedPackets > 0) {
-      successPackets += completedPackets;
-      st2PacketProgress -= completedPackets * packetDurationSec;
+    if (tx2 && st2PacketProgress >= packetDurationSec - epsilon) {
+      successPackets += 1;
+      st2PacketProgress = 0;
       st2ColCount = 0;
+      st2 = "idle";
+      st2InterframeGap = interframeGapSec;
     }
-    st1PacketProgress = 0;
-  } else {
-    st1PacketProgress = 0;
-    st2PacketProgress = 0;
+    if (jam1 && st1Jam <= epsilon) st1InterframeGap = interframeGapSec;
+    if (jam2 && st2Jam <= epsilon) st2InterframeGap = interframeGapSec;
   }
+
+  normalizeStates();
+  const tx1Active = st1 === "transmitting" || st1 === "jamming";
+  const tx2Active = st2 === "transmitting" || st2 === "jamming";
+  const activeTxCount = Number(tx1Active) + Number(tx2Active);
+  const busVoltageV = activeTxCount * SINGLE_TX_VOLTAGE;
+  const collisionDetected =
+    st1 === "jamming" ||
+    st2 === "jamming" ||
+    (st1 === "transmitting" &&
+      st2 === "transmitting" &&
+      Math.min(st1PacketProgress, st2PacketProgress) >= oneWayPropDelaySec - epsilon);
+  const collisionDisplayActive = simTimeSec - lastCollisionTimeSec <= 0.35;
+  const carrierSensed = activeTxCount > 0 || signalAtStation1() || signalAtStation2();
 
   // 4. Manchester Phase Clock
   const manchesterClockPhase =
@@ -272,7 +436,8 @@ export function stepMetcalfeEthernetSi(
   // Normalized propagation-to-packet ratio: a = propDelay / packetDuration
   const a = oneWayPropDelaySec / packetDurationSec;
   // Standard CSMA/CD maximum efficiency model: eta = 1 / (1 + 2 a e)
-  const channelEfficiency = 1.0 / (1.0 + 2.0 * a * Math.E * controls.offeredLoad);
+  const contentionLoad = controls.offeredLoad * (1 + Math.log2(controls.stationCount / 2));
+  const channelEfficiency = 1.0 / (1.0 + 2.0 * a * Math.E * contentionLoad);
   const throughputMbps =
     controls.dataRateMbps * channelEfficiency * (1 - Math.min(0.9, totalCollisions * 0.005));
 
@@ -281,8 +446,9 @@ export function stepMetcalfeEthernetSi(
   const backoffMeanDelayMicrosec = meanSlots * slotTimeMicrosec;
 
   // Power dissipation: P = V^2 / R into two 50-ohm termination resistors
+  const parallelTerminatorResistanceOhms = COAX_IMPEDANCE_OHMS / 2;
   const terminatorDissipationMw =
-    activeTxCount > 0 ? (SINGLE_TX_VOLTAGE ** 2 / COAX_IMPEDANCE_OHMS) * 1000 : 0.0;
+    activeTxCount > 0 ? (busVoltageV ** 2 / parallelTerminatorResistanceOhms) * 1000 : 0.0;
 
   const nextState: MetcalfeEthernetState = {
     simTimeSec,
@@ -292,6 +458,12 @@ export function stepMetcalfeEthernetSi(
     station2CollisionCount: st2ColCount,
     station1BackoffRemainingSec: st1Backoff,
     station2BackoffRemainingSec: st2Backoff,
+    station1JamRemainingSec: st1Jam,
+    station2JamRemainingSec: st2Jam,
+    station1InterframeGapRemainingSec: st1InterframeGap,
+    station2InterframeGapRemainingSec: st2InterframeGap,
+    station1CarrierTailRemainingSec: st1CarrierTail,
+    station2CarrierTailRemainingSec: st2CarrierTail,
     station1BackoffSlot: st1BackoffSlot,
     station2BackoffSlot: st2BackoffSlot,
     station1PacketProgressSec: st1PacketProgress,
@@ -300,6 +472,8 @@ export function stepMetcalfeEthernetSi(
     station2State: st2,
     packetSuccessCount: successPackets,
     totalCollisionCount: totalCollisions,
+    lastCollisionTimeSec,
+    triggerCollisionLatched,
     busVoltageV,
     manchesterClockPhase,
   };
@@ -311,6 +485,7 @@ export function stepMetcalfeEthernetSi(
     bitPeriodNs,
     busVoltageVolts: busVoltageV,
     collisionDetected,
+    collisionDisplayActive,
     carrierSensed,
     throughputMbps: Math.max(0.01, throughputMbps),
     channelEfficiencyPct: Math.min(100, Math.max(0, channelEfficiency * 100)),
@@ -320,4 +495,80 @@ export function stepMetcalfeEthernetSi(
   };
 
   return { state: nextState, metrics };
+}
+
+export interface MetcalfeEthernetTapeFrame {
+  readonly state: MetcalfeEthernetState;
+  readonly metrics: MetcalfeEthernetMetrics;
+}
+
+let tapeFrame: MetcalfeEthernetTapeFrame | undefined;
+
+export function getMetcalfeEthernetTapeFrame(): MetcalfeEthernetTapeFrame | undefined {
+  return tapeFrame;
+}
+
+/** Current shared frame, or a zero-time projection before the first owner tick. */
+export function readMetcalfeEthernetTapeFrame(
+  controls: MetcalfeEthernetControls,
+): MetcalfeEthernetTapeFrame {
+  return tapeFrame ?? stepMetcalfeEthernetSi(INITIAL_ETHERNET_STATE, controls, 0);
+}
+
+export function resetMetcalfeEthernetTape(): void {
+  tapeFrame = undefined;
+}
+
+/** Deterministic slow-time phase used only to make nanosecond propagation visible. */
+export function ethernetDisplayWavePhase(state: MetcalfeEthernetState): number {
+  return (state.simTimeSec * 0.45) % 1;
+}
+
+/** One fixed-step owner for Ethernet's 2D, 3D, and telemetry projections. */
+export function createMetcalfeEthernetTransportUpdater(
+  getControls: () => MetcalfeEthernetControls,
+): TapeUpdater {
+  return (_previous, dt) => {
+    const result = stepMetcalfeEthernetSi(
+      tapeFrame?.state ?? INITIAL_ETHERNET_STATE,
+      getControls(),
+      dt,
+    );
+    tapeFrame = result;
+
+    return {
+      domain: "electromagnetics_flux",
+      refusal: { isRefused: false },
+      network: {
+        simTimeSec: result.state.simTimeSec,
+        rngSeed: result.state.rngSeed,
+        rngCounter: result.state.rngCounter,
+        station1State: result.state.station1State,
+        station2State: result.state.station2State,
+        station1BackoffSlot: result.state.station1BackoffSlot,
+        station2BackoffSlot: result.state.station2BackoffSlot,
+        station1BackoffRemainingSec: result.state.station1BackoffRemainingSec,
+        station2BackoffRemainingSec: result.state.station2BackoffRemainingSec,
+        station1JamRemainingSec: result.state.station1JamRemainingSec,
+        station2JamRemainingSec: result.state.station2JamRemainingSec,
+        station1InterframeGapRemainingSec: result.state.station1InterframeGapRemainingSec,
+        station2InterframeGapRemainingSec: result.state.station2InterframeGapRemainingSec,
+        station1CarrierTailRemainingSec: result.state.station1CarrierTailRemainingSec,
+        station2CarrierTailRemainingSec: result.state.station2CarrierTailRemainingSec,
+        station1PacketProgressSec: result.state.station1PacketProgressSec,
+        station2PacketProgressSec: result.state.station2PacketProgressSec,
+        packetSuccessCount: result.state.packetSuccessCount,
+        totalCollisionCount: result.state.totalCollisionCount,
+        lastCollisionTimeSec: result.state.lastCollisionTimeSec,
+        triggerCollisionLatched: result.state.triggerCollisionLatched,
+        manchesterClockPhaseRad: result.state.manchesterClockPhase,
+        busVoltageVolts: result.metrics.busVoltageVolts,
+        collisionDetected: result.metrics.collisionDetected,
+        collisionDisplayActive: result.metrics.collisionDisplayActive,
+        carrierSensed: result.metrics.carrierSensed,
+        throughputMbps: result.metrics.throughputMbps,
+        channelEfficiencyPct: result.metrics.channelEfficiencyPct,
+      },
+    };
+  };
 }

@@ -13,7 +13,13 @@ export function MilacronRobotToolchangerSim() {
   const slide = state.lockingSlideFraction;
   const slideX = 270 + slide * 96;
   const baseY = state.toolBasePresent ? 220 - state.registrationFraction * 36 : 310;
-  const tMemberVisible = state.toolBasePresent && state.registrationComplete;
+  const tMemberVisible = state.toolBasePresent && state.claimFourTMemberSelected;
+  const genericMemberVisible = state.toolBasePresent && !state.claimFourTMemberSelected;
+  const registrationControlDisabled = !state.toolBasePresent || !state.apertureAligned;
+  const slideControlDisabled = state.toolBasePresent && !state.registrationComplete;
+  const toolPresenceControlDisabled = state.toolBasePresent
+    ? !(state.apertureAligned && state.registrationFraction === 0)
+    : !state.apertureAligned;
 
   return (
     <section className="overflow-hidden rounded-2xl border border-cyan-800/50 bg-slate-950 text-slate-100 shadow-2xl">
@@ -170,6 +176,17 @@ export function MilacronRobotToolchangerSim() {
 
             {state.toolBasePresent && (
               <g transform={`translate(355 ${baseY})`}>
+                <path d="M-44 72H44L37 132H-37Z" fill="#475569" stroke="#cbd5e1" strokeWidth="3" />
+                <rect
+                  x="-23"
+                  y="129"
+                  width="46"
+                  height="22"
+                  rx="7"
+                  fill="#fbbf24"
+                  stroke="#fef3c7"
+                  strokeWidth="2"
+                />
                 <ellipse
                   cx="0"
                   cy="58"
@@ -225,15 +242,48 @@ export function MilacronRobotToolchangerSim() {
                     </text>
                   </g>
                 )}
+                {genericMemberVisible && (
+                  <g>
+                    <rect
+                      x="-12"
+                      y="-17"
+                      width="24"
+                      height="54"
+                      rx="4"
+                      fill="#f43f5e"
+                      stroke="#fecdd3"
+                      strokeWidth="2"
+                    />
+                    <ellipse
+                      cx="0"
+                      cy="-18"
+                      rx="25"
+                      ry="10"
+                      fill="#e11d48"
+                      stroke="#fecdd3"
+                      strokeWidth="3"
+                    />
+                    <text
+                      x="0"
+                      y="-40"
+                      textAnchor="middle"
+                      fill="#fecdd3"
+                      fontFamily="monospace"
+                      fontSize="11"
+                    >
+                      CLAIM 3 RETENTION MEMBER
+                    </text>
+                  </g>
+                )}
                 <text
                   x="0"
-                  y="106"
+                  y="169"
                   textAnchor="middle"
                   fill="#fde68a"
                   fontFamily="monospace"
                   fontSize="12"
                 >
-                  COMMON TOOL BASE 18
+                  TOOL 19 · COMMON BASE 18
                 </text>
               </g>
             )}
@@ -296,7 +346,11 @@ export function MilacronRobotToolchangerSim() {
             <div className="rounded-lg border border-emerald-800/70 bg-emerald-950/35 p-2.5">
               <span className="text-emerald-300">Claim 4</span>
               <span className="float-right font-mono">
-                {state.claimFourRampCaptured ? "ramp captured" : "not selected"}
+                {state.claimFourTMemberSelected
+                  ? state.claimFourRampCaptured
+                    ? "ramp captured"
+                    : "T-member selected"
+                  : "Claim 3 member"}
               </span>
             </div>
           </div>
@@ -308,8 +362,11 @@ export function MilacronRobotToolchangerSim() {
             <input
               type="checkbox"
               checked={state.toolBasePresent}
+              aria-label="Tool base present"
+              disabled={toolPresenceControlDisabled}
+              title={toolPresenceControlDisabled ? state.sequenceNote : undefined}
               onChange={(event) => updateParam("toolBasePresent", event.target.checked ? 1 : 0)}
-              className="h-5 w-5 accent-cyan-400"
+              className="h-5 w-5 accent-cyan-400 disabled:cursor-not-allowed disabled:opacity-40"
             />
           </label>
           <label className="block text-sm text-slate-200">
@@ -318,13 +375,15 @@ export function MilacronRobotToolchangerSim() {
               {Math.round((params.registrationFraction ?? 1) * 100)}%
             </span>
             <input
-              className="mt-2 w-full accent-cyan-400"
+              className="mt-2 w-full accent-cyan-400 disabled:cursor-not-allowed disabled:opacity-40"
               type="range"
               min="0"
               max="1"
               step="0.01"
               value={params.registrationFraction ?? 1}
               aria-label="Tool-base registration fraction"
+              disabled={registrationControlDisabled}
+              title={registrationControlDisabled ? state.sequenceNote : undefined}
               onChange={(event) => updateParam("registrationFraction", Number(event.target.value))}
             />
           </label>
@@ -334,13 +393,15 @@ export function MilacronRobotToolchangerSim() {
               {Math.round((params.lockingSlideFraction ?? 1) * 100)}%
             </span>
             <input
-              className="mt-2 w-full accent-amber-400"
+              className="mt-2 w-full accent-amber-400 disabled:cursor-not-allowed disabled:opacity-40"
               type="range"
               min="0"
               max="1"
               step="0.01"
               value={params.lockingSlideFraction ?? 1}
               aria-label="Locking slide fraction"
+              disabled={slideControlDisabled}
+              title={slideControlDisabled ? state.sequenceNote : undefined}
               onChange={(event) => updateParam("lockingSlideFraction", Number(event.target.value))}
             />
           </label>
@@ -353,6 +414,16 @@ export function MilacronRobotToolchangerSim() {
               className="h-5 w-5 accent-rose-400"
             />
           </label>
+          <p
+            role="status"
+            className={`rounded-lg border p-3 text-xs leading-5 ${
+              state.sequenceValid
+                ? "border-cyan-900/70 bg-cyan-950/30 text-cyan-100"
+                : "border-rose-800/80 bg-rose-950/45 text-rose-100"
+            }`}
+          >
+            {state.sequenceNote}
+          </p>
           <p className="rounded-lg border border-rose-900/70 bg-rose-950/35 p-3 text-xs leading-5 text-rose-100">
             {state.sourceBoundary.note}
           </p>

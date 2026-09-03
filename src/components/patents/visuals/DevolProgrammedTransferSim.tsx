@@ -6,10 +6,13 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 const PATENT_ID = "us-2988237-devol-programmed-transfer";
 
+function codeText(bits: readonly boolean[]) {
+  return bits.map((bit) => (bit ? "1" : "0")).join("");
+}
+
 export function DevolProgrammedTransferSim() {
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
   const state = stepDevolProgrammedTransfer(params);
-  const codeText = (bits: readonly boolean[]) => bits.map((bit) => (bit ? "1" : "0")).join("");
 
   return (
     <section className="overflow-hidden rounded-2xl border border-indigo-800/60 bg-slate-950 text-slate-100 shadow-2xl">

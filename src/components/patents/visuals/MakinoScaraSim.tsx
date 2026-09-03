@@ -1,8 +1,9 @@
 "use client";
 
 import { RotateCcw } from "lucide-react";
-import { useId, useMemo, useState } from "react";
+import { useId, useMemo } from "react";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { stepMakinoScaraTopology } from "@/physics/makinoScaraKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
@@ -26,18 +27,22 @@ export function MakinoScaraSim() {
   const fourthId = useId();
   const toolId = useId();
   const topologyId = useId();
-  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-  const pose = useMemo(() => stepMakinoScaraTopology(params), [params]);
+  const { params, effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(PATENT_ID);
+  const pose = useMemo(() => stepMakinoScaraTopology(effectiveParams), [effectiveParams]);
   const firstAngle = params.firstLinkAngleDeg ?? 32;
   const fourthAngle = params.fourthLinkAngleDeg ?? -38;
   const toolAngle = params.toolAttitudeDeg ?? 0;
   const topology = params.topologyVariant ?? 1;
+  const effectiveTopology = effectiveParams.topologyVariant ?? topology;
+  const displayedToolAngle = pose.topology === "claim-6-y-link" ? 0 : toolAngle;
   const [baseA] = point(pose.firstBase);
   const [baseB] = point(pose.fourthBase);
   const [outerA] = point(pose.firstOuterJoint);
   const [, outerAY] = point(pose.firstOuterJoint);
   const [outerB, outerBY] = point(pose.fourthOuterJoint);
+  const [toolLeftX, toolLeftY] = point(pose.toolJoints[0]);
+  const [toolRightX, toolRightY] = point(pose.toolJoints[1]);
   const [toolX, toolY] = point(pose.tool);
   const yHub = pose.yLinkHub ? point(pose.yLinkHub) : null;
   const toolDirection = [
@@ -129,10 +134,7 @@ export function MakinoScaraSim() {
               fontSize="10"
               fontFamily="monospace"
             >
-              BASE ·{" "}
-              {pose.topology === "claim-1-concentric"
-                ? "coaxial display separation"
-                : "offset shafts"}
+              BASE · {pose.topology === "claim-1-concentric" ? "coaxial shafts" : "offset shafts"}
             </text>
 
             <g strokeLinecap="round" strokeLinejoin="round">
@@ -173,24 +175,84 @@ export function MakinoScaraSim() {
               <line
                 x1={outerA}
                 y1={outerAY}
-                x2={toolX}
-                y2={toolY}
+                x2={toolLeftX}
+                y2={toolLeftY}
                 stroke="#38bdf8"
                 strokeWidth="5"
               />
               <line
                 x1={outerB}
                 y1={outerBY}
-                x2={toolX}
-                y2={toolY}
+                x2={toolRightX}
+                y2={toolRightY}
                 stroke="#fcd34d"
                 strokeWidth="5"
               />
+              {pose.beltTransmissionAvailable && (
+                <g data-makino-belt-transmission="claims-2-5">
+                  <line
+                    x1={baseA}
+                    y1={ORIGIN_Y - 10}
+                    x2={outerA}
+                    y2={outerAY - 10}
+                    stroke="#34d399"
+                    strokeWidth="3"
+                  />
+                  <line
+                    x1={baseA}
+                    y1={ORIGIN_Y + 10}
+                    x2={outerA}
+                    y2={outerAY + 10}
+                    stroke="#34d399"
+                    strokeWidth="3"
+                  />
+                  <line
+                    x1={outerA}
+                    y1={outerAY - 10}
+                    x2={toolLeftX}
+                    y2={toolLeftY - 10}
+                    stroke="#10b981"
+                    strokeWidth="3"
+                  />
+                  <line
+                    x1={outerA}
+                    y1={outerAY + 10}
+                    x2={toolLeftX}
+                    y2={toolLeftY + 10}
+                    stroke="#10b981"
+                    strokeWidth="3"
+                  />
+                  {[
+                    { x: baseA, y: ORIGIN_Y },
+                    { x: outerA, y: outerAY },
+                    { x: toolLeftX, y: toolLeftY },
+                  ].map((pulley, index) => (
+                    <circle
+                      key={`belt-pulley-${index}`}
+                      cx={pulley.x}
+                      cy={pulley.y}
+                      r="13"
+                      fill="none"
+                      stroke="#6ee7b7"
+                      strokeWidth="3"
+                    />
+                  ))}
+                  <text
+                    x={baseA - 28}
+                    y={ORIGIN_Y - 22}
+                    fill="#a7f3d0"
+                    fontSize="10"
+                    fontFamily="monospace"
+                  >
+                    MOTOR 10 · BELTS 11/12
+                  </text>
+                </g>
+              )}
               {yHub && (
                 <>
                   <line
-                    x1={baseA}
-                    y1={ORIGIN_Y}
+                    x1={outerA}
+                    y1={outerAY}
                     x2={yHub[0]}
                     y2={yHub[1]}
                     stroke="#c084fc"
@@ -200,8 +262,8 @@ export function MakinoScaraSim() {
                   <line
                     x1={yHub[0]}
                     y1={yHub[1]}
-                    x2={toolX}
-                    y2={toolY}
+                    x2={toolRightX}
+                    y2={toolRightY}
                     stroke="#c084fc"
                     strokeWidth="3"
                     strokeDasharray="7 5"
@@ -245,9 +307,43 @@ export function MakinoScaraSim() {
               />
             </g>
 
+            {pose.topology === "claim-1-concentric" && (
+              <g data-makino-coaxial-base="true">
+                <circle
+                  cx={baseA}
+                  cy={ORIGIN_Y}
+                  r="14"
+                  fill="#0f172a"
+                  stroke="#67e8f9"
+                  strokeWidth="3"
+                />
+                <circle
+                  cx={baseA}
+                  cy={ORIGIN_Y}
+                  r="8"
+                  fill="#713f12"
+                  stroke="#fbbf24"
+                  strokeWidth="2"
+                />
+                <text
+                  x={baseA}
+                  y={ORIGIN_Y + 4}
+                  textAnchor="middle"
+                  fill="#fef3c7"
+                  fontSize="9"
+                  fontFamily="monospace"
+                >
+                  1/2
+                </text>
+              </g>
+            )}
             {[
-              { x: baseA, y: ORIGIN_Y, label: "1", color: "#67e8f9" },
-              { x: baseB, y: ORIGIN_Y, label: "2", color: "#fbbf24" },
+              ...(pose.topology === "claim-1-concentric"
+                ? []
+                : [
+                    { x: baseA, y: ORIGIN_Y, label: "1", color: "#67e8f9" },
+                    { x: baseB, y: ORIGIN_Y, label: "2", color: "#fbbf24" },
+                  ]),
               { x: outerA, y: outerAY, label: "4", color: "#67e8f9" },
               { x: outerB, y: outerBY, label: "5", color: "#fbbf24" },
             ].map((node) => (
@@ -272,6 +368,21 @@ export function MakinoScaraSim() {
                 </text>
               </g>
             ))}
+            {pose.topology === "claim-6-y-link" && (
+              <g data-makino-rigid-tool-13="true">
+                <line
+                  x1={toolLeftX}
+                  y1={toolLeftY}
+                  x2={toolRightX}
+                  y2={toolRightY}
+                  stroke="#fde68a"
+                  strokeWidth="18"
+                  strokeLinecap="round"
+                />
+                <circle cx={toolLeftX} cy={toolLeftY} r="5" fill="#713f12" />
+                <circle cx={toolRightX} cy={toolRightY} r="5" fill="#713f12" />
+              </g>
+            )}
             <rect
               x={toolX - 13}
               y={toolY - 13}
@@ -290,7 +401,7 @@ export function MakinoScaraSim() {
               fontSize="11"
               fontFamily="monospace"
             >
-              9
+              {pose.topology === "claim-6-y-link" ? "13" : "9"}
             </text>
             <text x={toolX + 18} y={toolY + 30} fill="#fde68a" fontSize="11" fontFamily="monospace">
               ASSEMBLY TOOL
@@ -342,9 +453,14 @@ export function MakinoScaraSim() {
               onChange={(event) => updateParam("fourthLinkAngleDeg", Number(event.target.value))}
             />
           </label>
-          <label className="block text-sm text-slate-200" htmlFor={toolId}>
-            Tool attitude φ{" "}
-            <span className="float-right font-mono text-yellow-200">{toolAngle.toFixed(0)}°</span>
+          <label
+            className={`block text-sm ${pose.topology === "claim-6-y-link" ? "text-slate-500" : "text-slate-200"}`}
+            htmlFor={toolId}
+          >
+            Tool attitude φ{pose.topology === "claim-6-y-link" ? " (fixed by Claim 6)" : ""}{" "}
+            <span className="float-right font-mono text-yellow-200">
+              {displayedToolAngle.toFixed(0)}°
+            </span>
             <input
               id={toolId}
               className="mt-2 w-full accent-yellow-300"
@@ -352,7 +468,8 @@ export function MakinoScaraSim() {
               min="-180"
               max="180"
               step="1"
-              value={toolAngle}
+              value={displayedToolAngle}
+              disabled={pose.topology === "claim-6-y-link"}
               onChange={(event) => updateParam("toolAttitudeDeg", Number(event.target.value))}
             />
           </label>
@@ -361,7 +478,8 @@ export function MakinoScaraSim() {
             <select
               id={topologyId}
               className="mt-2 w-full rounded-md border border-slate-600 bg-slate-900 p-2 text-sm"
-              value={topology}
+              value={effectiveTopology}
+              disabled={claimStates[1] === false}
               onChange={(event) => updateParam("topologyVariant", Number(event.target.value))}
             >
               <option value="1">Claim 1 · concentric</option>
@@ -370,7 +488,7 @@ export function MakinoScaraSim() {
             </select>
           </label>
           <p className="rounded-lg border border-violet-800/70 bg-violet-950/30 p-3 text-xs leading-5 text-violet-100">
-            {topologyTitle(topology)}
+            {topologyTitle(effectiveTopology)}
           </p>
           <p className="rounded-lg border border-rose-800/70 bg-rose-950/30 p-3 text-xs leading-5 text-rose-100">
             {pose.refusal.reason}
@@ -387,10 +505,18 @@ export function MakinoScaraSim() {
             <ClaimConstraintToggle
               patentId={PATENT_ID}
               claimStates={claimStates}
-              onClaimStateChange={(num, active) =>
-                setClaimStates((prev) => ({ ...prev, [num]: active }))
+              onToggleClaim={(claimNumber, active) =>
+                updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
               }
             />
+            {claimConstraintResult.activeFailures.length > 0 && (
+              <div
+                role="status"
+                className="mt-2 rounded-lg border border-rose-800 bg-rose-950/70 p-2 text-xs leading-5 text-rose-100"
+              >
+                {claimConstraintResult.activeFailures.join(" ")}
+              </div>
+            )}
           </div>
         </aside>
       </div>

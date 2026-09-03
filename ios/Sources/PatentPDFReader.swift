@@ -51,7 +51,7 @@ final class PatentPDFStore: ObservableObject {
         activeRequestToken = requestToken
         guard let remoteURL = URL(string: patent.originalPdfURL),
               Self.isAllowedPDFURL(remoteURL),
-              let expectedDigest = patent.originalTextAsset?.sourcePdfSha256,
+              let expectedDigest = patent.expectedSourcePDFSHA256,
               Self.isCanonicalSHA256(expectedDigest) else {
             state = .failed("The source PDF address is invalid.")
             return
@@ -149,7 +149,7 @@ final class PatentPDFStore: ObservableObject {
         return directory.appendingPathComponent("\(patent.id).pdf")
     }
 
-    nonisolated private static func isCanonicalSHA256(_ digest: String) -> Bool {
+    nonisolated static func isCanonicalSHA256(_ digest: String) -> Bool {
         digest.count == 64 && digest.allSatisfy { $0.isHexDigit }
     }
 
@@ -221,7 +221,7 @@ struct PatentPDFReader: View {
                         Text("DOWNLOADING THE ORIGINAL FACSIMILE")
                             .font(.system(size: Lab.size(10.5), weight: .bold, design: .rounded))
                             .foregroundStyle(Lab.brass)
-                        Text("This PDF is the only museum material fetched from classic-patents.com. The catalog, edition, equations, figures, and simulations are bundled in the app.")
+                        Text(facsimileDescription)
                             .font(.system(size: Lab.size(12), design: .rounded))
                             .foregroundStyle(Lab.secondary)
                             .multilineTextAlignment(.center)
@@ -257,6 +257,13 @@ struct PatentPDFReader: View {
             }
         }
         .task(id: patent.id) { await store.load(patent: patent) }
+    }
+
+    private var facsimileDescription: String {
+        if patent.sourceVisualization.isSourceBoundPDFOnly {
+            return "This source-bound record intentionally provides the pinned facsimile without a bundled transcript, archival edition, visual model, controls, or quantitative metrics."
+        }
+        return "This PDF is the only museum material fetched from classic-patents.com. The catalog, edition, equations, figures, and simulations are bundled in the app."
     }
 }
 

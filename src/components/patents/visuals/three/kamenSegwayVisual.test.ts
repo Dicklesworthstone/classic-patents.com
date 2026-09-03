@@ -10,12 +10,22 @@ describe("US 6,302,230 Dean Kamen Segway Transporter 3D WebGL Model", () => {
     const segway = createKamenSegwayModel();
 
     expect(segway.rootGroup).toBeDefined();
+    expect(segway.vehicleYawGroup).toBeDefined();
     expect(segway.chassisGroup).toBeDefined();
     expect(segway.leftWheelGroup).toBeDefined();
     expect(segway.rightWheelGroup).toBeDefined();
     expect(segway.mastGroup).toBeDefined();
     expect(segway.riderGroup).toBeDefined();
     expect(segway.groundGrid).toBeDefined();
+    expect(segway.groundGrid.position.y).toBeLessThan(0);
+    const gridMaterials = Array.isArray(segway.groundGrid.material)
+      ? segway.groundGrid.material
+      : [segway.groundGrid.material];
+    for (const material of gridMaterials) {
+      expect(material.transparent).toBe(true);
+      expect(material.opacity).toBeLessThanOrEqual(0.2);
+      expect(material.depthWrite).toBe(false);
+    }
 
     expect(segway.rootGroup.children.length).toBeGreaterThan(0);
     expect(segway.chassisGroup.children.length).toBeGreaterThan(4);
@@ -41,7 +51,11 @@ describe("US 6,302,230 Dean Kamen Segway Transporter 3D WebGL Model", () => {
 
   test("animates pitch rotation, wheel spin, and haptic shudder vibration", () => {
     const segway = createKamenSegwayModel();
-    const controls = { ...KAMEN_SEGWAY_DEFAULT_CONTROLS, riderPitchDeg: 6.0 };
+    const controls = {
+      ...KAMEN_SEGWAY_DEFAULT_CONTROLS,
+      riderPitchDeg: 6.0,
+      steeringInput: 0.5,
+    };
     const tel = stepKamenSegwaySi(controls);
 
     segway.update(controls, tel, 1.5);
@@ -52,6 +66,11 @@ describe("US 6,302,230 Dean Kamen Segway Transporter 3D WebGL Model", () => {
     // Wheels spun
     expect(segway.leftWheelGroup.rotation.x).not.toBe(0);
     expect(segway.rightWheelGroup.rotation.x).not.toBe(0);
+
+    // The ground is a world reference, so steering must yaw the vehicle
+    // hierarchy rather than carry a 30-unit grid across the rider.
+    expect(segway.rootGroup.rotation.y).toBe(0);
+    expect(segway.vehicleYawGroup.rotation.y).not.toBe(0);
   });
 
   test("connects both visual faces to the shared claim probes and source boundary", () => {
@@ -63,15 +82,23 @@ describe("US 6,302,230 Dean Kamen Segway Transporter 3D WebGL Model", () => {
       resolve(process.cwd(), "src/components/patents/visuals/three/KamenSegway3D.tsx"),
       "utf8",
     );
+    const sharedClaimHeader = readFileSync(
+      resolve(process.cwd(), "src/components/patents/visuals/KamenSegwayClaimHeader.tsx"),
+      "utf8",
+    );
 
     for (const visualSource of [twoD, threeD]) {
       expect(visualSource).toContain("usePatentPhysics");
-      expect(visualSource).toContain("ClaimConstraintToggle");
+      expect(visualSource).toContain("KamenSegwayClaimHeader");
       expect(visualSource).toContain("claim1BalanceEnabled");
       expect(visualSource).toContain("claim2RippleEnabled");
       expect(visualSource).toContain("modern illustrative");
       expect(visualSource).not.toContain("18 Hz");
     }
+
+    expect(sharedClaimHeader).toContain("ClaimConstraintToggle");
+    expect(sharedClaimHeader).toContain("claimStates");
+    expect(sharedClaimHeader).toContain("onToggleClaim");
 
     expect(threeD).toContain("studio.controls.update()");
     expect(threeD).toContain("studio.renderer.render(studio.scene, studio.camera)");

@@ -9,6 +9,7 @@ import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
 const VESSEL_X = [145, 300, 455] as const;
+const UI_SNAPSHOT_INTERVAL_MS = 80;
 
 export function PasteurFermentationSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-135245-pasteur-fermentation");
@@ -19,6 +20,7 @@ export function PasteurFermentationSim() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [timerSeconds, setTimerSeconds] = useState(0);
   const animRef = useRef<number | null>(null);
+  const timerSecondsRef = useRef(0);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const process = stepPasteurFermentation({ co2SweepPct, sprayCoveragePct, wortTempC });
@@ -26,18 +28,28 @@ export function PasteurFermentationSim() {
   useEffect(() => {
     if (!isPlaying) return;
     let lastTime: number | undefined;
+    let lastUiSnapshot = 0;
     const loop = (time: number) => {
       animRef.current = requestAnimationFrame(loop);
-      if (!onscreenRef.current) return;
+      if (!onscreenRef.current) {
+        lastTime = time;
+        return;
+      }
       const dt = lastTime === undefined ? 0 : Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
-      setTimerSeconds((previous) => (previous + dt) % 10);
+      timerSecondsRef.current = (timerSecondsRef.current + dt) % 10;
+      // Drops and CO₂ markers are individually phase-shifted, so retain the
+      // source-layout SVG and publish only a bounded presentation snapshot.
+      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = time;
+        setTimerSeconds(timerSecondsRef.current);
+      }
     };
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current !== null) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, onscreenRef.current]);
+  }, [isPlaying, onscreenRef]);
 
   return (
     <div
@@ -83,6 +95,7 @@ export function PasteurFermentationSim() {
             type="button"
             onClick={() => {
               resetParams();
+              timerSecondsRef.current = 0;
               setTimerSeconds(0);
               soundEngine.playSwitchClick();
             }}

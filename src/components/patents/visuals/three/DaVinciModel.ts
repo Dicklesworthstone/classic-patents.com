@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { DA_VINCI_TABLE_SURFACE_Y_M } from "@/physics/daVinciKernel";
 
 export interface DaVinciModel {
   root: THREE.Group;
@@ -165,28 +166,48 @@ export function buildDaVinciModel(): DaVinciModel {
   );
 
   const surgicalTable = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(4.2, 0.4, 3.2)), tableMat);
-  surgicalTable.position.set(0, -1.8, 0);
+  surgicalTable.name = "Kernel-aligned surgical table";
+  surgicalTable.position.set(0, DA_VINCI_TABLE_SURFACE_Y_M - 0.2, 0);
   surgicalTable.receiveShadow = true;
   root.add(surgicalTable);
 
-  const sterileDrape = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(3.6, 0.15, 2.8)), drapeMat);
-  sterileDrape.position.set(0, -1.5, 0);
+  const sterileDrape = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(3.6, 0.04, 2.8)), drapeMat);
+  sterileDrape.name = "Sterile drape at kernel table surface";
+  sterileDrape.position.set(0, DA_VINCI_TABLE_SURFACE_Y_M - 0.02, 0);
   root.add(sterileDrape);
+
+  const tableLegGeometry = trackGeo(new THREE.BoxGeometry(0.18, 1.26, 0.18));
+  for (const [index, [x, z]] of [
+    [-1.7, -1.1],
+    [-1.7, 1.1],
+    [1.7, -1.1],
+    [1.7, 1.1],
+  ].entries()) {
+    const leg = new THREE.Mesh(tableLegGeometry, tableMat);
+    leg.name = `Surgical table support leg ${index + 1}`;
+    leg.position.set(x, DA_VINCI_TABLE_SURFACE_Y_M - 1.03, z);
+    leg.castShadow = true;
+    leg.receiveShadow = true;
+    root.add(leg);
+  }
 
   // Patient Abdominal Trocar Incision Guide Ring
   const trocarGeo = trackGeo(new THREE.TorusGeometry(0.38, 0.045, 16, 32));
   const trocar = new THREE.Mesh(trocarGeo, trocarMat);
+  trocar.name = "Seated illustrative incision guide ring";
+  trocar.userData.constraintMode = "visual-guide-only";
   trocar.rotation.x = Math.PI / 2;
   trocar.position.set(0, 0, 0);
   root.add(trocar);
 
   // Patient Abdomen Dome Contour
   const abdomenGeo = trackGeo(
-    new THREE.SphereGeometry(1.4, 24, 16, 0, Math.PI * 2, 0, Math.PI / 3),
+    new THREE.SphereGeometry(1.15, 32, 18, 0, Math.PI * 2, 0, Math.PI / 2),
   );
   const abdomenMesh = new THREE.Mesh(abdomenGeo, drapeMat);
-  abdomenMesh.rotation.x = Math.PI;
-  abdomenMesh.position.set(0, -0.15, 0);
+  abdomenMesh.name = "Convex patient abdomen training form";
+  abdomenMesh.scale.y = 0.14;
+  abdomenMesh.position.set(0, DA_VINCI_TABLE_SURFACE_Y_M, 0);
   root.add(abdomenMesh);
 
   // 2. Patient-side cart and articulated manipulator support, reconstructed
@@ -434,6 +455,7 @@ export function buildDaVinciModel(): DaVinciModel {
   // Outer Cup Cylinder / Truncated Tapered Shell
   const cupOuterGeo = trackGeo(new THREE.CylinderGeometry(0.075, 0.062, 0.13, 32));
   const cupOuterMesh = new THREE.Mesh(cupOuterGeo, ceramicCupMat);
+  cupOuterMesh.name = "Cup body seated on kernel table surface";
   cupOuterMesh.position.set(0, 0.065, 0);
   cupOuterMesh.castShadow = true;
   cupOuterMesh.receiveShadow = true;
@@ -476,6 +498,7 @@ export function buildDaVinciModel(): DaVinciModel {
     }),
   );
   const suturePad = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(0.24, 0.025, 0.24)), siliconeMat);
+  suturePad.name = "Training pad seated on kernel table surface";
   suturePad.position.set(-0.35, -0.138, 0.32);
   suturePad.receiveShadow = true;
   suturePadGroup.add(suturePad);
@@ -496,7 +519,7 @@ export function buildDaVinciModel(): DaVinciModel {
   const normalLineMat = trackMat(
     new THREE.LineBasicMaterial({
       color: 0xf59e0b,
-      linewidth: 2,
+      linewidth: 1,
     }),
   );
   const normalLineGeo = trackGeo(

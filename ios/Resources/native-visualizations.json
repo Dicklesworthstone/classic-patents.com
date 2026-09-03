@@ -1,6 +1,7 @@
 [
   {
     "id": "gb-913-watt-separate-condenser",
+    "kind": "model",
     "asset": "NativeModels/gb-913-watt-separate-condenser.usdz",
     "builder": "buildWattSeparateCondenserModel",
     "spatialComponent": "WattSeparateCondenser3D",
@@ -10,6 +11,7 @@
   },
   {
     "id": "gb-931-arkwright-water-frame",
+    "kind": "model",
     "asset": "NativeModels/gb-931-arkwright-water-frame.usdz",
     "builder": "buildArkwrightWaterFrameModel",
     "spatialComponent": "ArkwrightWaterFrame3D",
@@ -19,6 +21,7 @@
   },
   {
     "id": "gb-1306-watt-rotary-engine",
+    "kind": "model",
     "asset": "NativeModels/gb-1306-watt-rotary-engine.usdz",
     "builder": "buildWattRotaryEngineModel",
     "spatialComponent": "WattRotaryEngine3D",
@@ -28,6 +31,7 @@
   },
   {
     "id": "gb-1420-cort-puddling-rolling",
+    "kind": "model",
     "asset": "NativeModels/gb-1420-cort-puddling-rolling.usdz",
     "builder": "buildCortPuddlingRollingModel",
     "spatialComponent": "CortPuddlingRolling3D",
@@ -37,6 +41,7 @@
   },
   {
     "id": "us-x1-hopkins-potash",
+    "kind": "model",
     "asset": "NativeModels/us-x1-hopkins-potash.usdz",
     "builder": "buildHopkinsPotashModel",
     "spatialComponent": "HopkinsPotash3D",
@@ -46,6 +51,7 @@
   },
   {
     "id": "us-x72-whitney-cotton-gin",
+    "kind": "model",
     "asset": "NativeModels/us-x72-whitney-cotton-gin.usdz",
     "builder": "buildWhitneyCottonGinModel",
     "spatialComponent": "WhitneyCottonGin3D",
@@ -55,6 +61,7 @@
   },
   {
     "id": "us-x8277-mccormick-reaper",
+    "kind": "model",
     "asset": "NativeModels/us-x8277-mccormick-reaper.usdz",
     "builder": "buildMcCormickReaperModel",
     "spatialComponent": "McCormickReaper3D",
@@ -64,6 +71,7 @@
   },
   {
     "id": "us-x9430-colt-revolver",
+    "kind": "model",
     "asset": "NativeModels/us-x9430-colt-revolver.usdz",
     "builder": "buildColtRevolverModel",
     "spatialComponent": "ColtRevolver3D",
@@ -73,6 +81,7 @@
   },
   {
     "id": "us-132-davenport-electric-motor",
+    "kind": "model",
     "asset": "NativeModels/us-132-davenport-electric-motor.usdz",
     "builder": "buildDavenportMotorModel",
     "spatialComponent": "DavenportElectricMotor3D",
@@ -82,6 +91,7 @@
   },
   {
     "id": "us-588-ericsson-propeller",
+    "kind": "model",
     "asset": "NativeModels/us-588-ericsson-propeller.usdz",
     "builder": "buildEricssonPropellerModel",
     "spatialComponent": "EricssonPropeller3D",
@@ -91,6 +101,7 @@
   },
   {
     "id": "us-1647-morse-telegraph",
+    "kind": "model",
     "asset": "NativeModels/us-1647-morse-telegraph.usdz",
     "builder": "buildMorseTelegraphModel",
     "spatialComponent": "MorseTelegraph3D",
@@ -100,6 +111,7 @@
   },
   {
     "id": "us-3237-rillieux-evaporator",
+    "kind": "model",
     "asset": "NativeModels/us-3237-rillieux-evaporator.usdz",
     "builder": "createRillieuxEvaporatorModel",
     "spatialComponent": "RillieuxEvaporator3D",
@@ -109,6 +121,7 @@
   },
   {
     "id": "us-3633-goodyear-rubber",
+    "kind": "model",
     "asset": "NativeModels/us-3633-goodyear-rubber.usdz",
     "builder": "buildGoodyearRubberModel",
     "spatialComponent": "GoodyearRubber3D",
@@ -118,6 +131,7 @@
   },
   {
     "id": "us-4750-howe-sewing-machine",
+    "kind": "model",
     "asset": "NativeModels/us-4750-howe-sewing-machine.usdz",
     "builder": "buildHoweSewingMachineModel",
     "spatialComponent": "HoweSewingMachine3D",
@@ -127,6 +141,7 @@
   },
   {
     "id": "us-6162-corliss-steam-engine",
+    "kind": "model",
     "asset": "NativeModels/us-6162-corliss-steam-engine.usdz",
     "builder": "buildCorlissEngineModel",
     "spatialComponent": "CorlissSteamEngine3D",
@@ -136,6 +151,7 @@
   },
   {
     "id": "us-6469-lincoln-buoy",
+    "kind": "model",
     "asset": "NativeModels/us-6469-lincoln-buoy.usdz",
     "builder": "buildLincolnBuoyModel",
     "spatialComponent": "LincolnBuoy3D",
@@ -145,6 +161,7 @@
   },
   {
     "id": "us-31128-otis-elevator",
+    "kind": "model",
     "asset": "NativeModels/us-31128-otis-elevator.usdz",
     "builder": "buildOtis1861HoistingModel",
     "spatialComponent": "OtisHoistingApparatus3D",
@@ -154,6 +171,7 @@
   },
   {
     "id": "us-36836-gatling-gun",
+    "kind": "model",
     "asset": "NativeModels/us-36836-gatling-gun.usdz",
     "builder": "buildGatlingGunModel",
     "spatialComponent": "GatlingGun3D",
@@ -163,6 +181,7 @@
   },
   {
     "id": "us-48475-yale-lock",
+    "kind": "model",
     "asset": "NativeModels/us-48475-yale-lock.usdz",
     "builder": "createYaleLockModel",
     "spatialComponent": "YaleLock3D",
@@ -172,6 +191,7 @@
   },
   {
     "id": "us-78317-nobel-dynamite",
+    "kind": "model",
     "asset": "NativeModels/us-78317-nobel-dynamite.usdz",
     "builder": "buildNobelDynamiteModel",
     "spatialComponent": "NobelDynamite3D",
@@ -181,15 +201,17 @@
   },
   {
     "id": "us-79265-sholes-typewriter",
+    "kind": "model",
     "asset": "NativeModels/us-79265-sholes-typewriter.usdz",
     "builder": "buildSholesTypewriterModel",
     "spatialComponent": "SholesTypewriter3D",
     "vectorComponent": "SholesTypewriterSim",
-    "meshCount": 251,
-    "namedNodeCount": 150
+    "meshCount": 111,
+    "namedNodeCount": 50
   },
   {
     "id": "us-105338-hyatt-celluloid",
+    "kind": "model",
     "asset": "NativeModels/us-105338-hyatt-celluloid.usdz",
     "builder": "buildHyattCelluloidModel",
     "spatialComponent": "HyattCelluloid3D",
@@ -199,6 +221,7 @@
   },
   {
     "id": "us-120057-gramme-dynamo",
+    "kind": "model",
     "asset": "NativeModels/us-120057-gramme-dynamo.usdz",
     "builder": "buildGrammeDynamoModel",
     "spatialComponent": "GrammeDynamo3D",
@@ -208,6 +231,7 @@
   },
   {
     "id": "us-124404-westinghouse-air-brake",
+    "kind": "model",
     "asset": "NativeModels/us-124404-westinghouse-air-brake.usdz",
     "builder": "buildWestinghouseAirBrakeModel",
     "spatialComponent": "WestinghouseAirBrake3D",
@@ -217,6 +241,7 @@
   },
   {
     "id": "us-135245-pasteur-fermentation",
+    "kind": "model",
     "asset": "NativeModels/us-135245-pasteur-fermentation.usdz",
     "builder": "buildPasteurFermentationModel",
     "spatialComponent": "PasteurFermentation3D",
@@ -226,6 +251,7 @@
   },
   {
     "id": "us-157124-glidden-barbed-wire",
+    "kind": "model",
     "asset": "NativeModels/us-157124-glidden-barbed-wire.usdz",
     "builder": "buildGliddenBarbedWireModel",
     "spatialComponent": "GliddenBarbedWire3D",
@@ -235,6 +261,7 @@
   },
   {
     "id": "us-174465-bell-telephone",
+    "kind": "model",
     "asset": "NativeModels/us-174465-bell-telephone.usdz",
     "builder": "buildBellTelephoneModel",
     "spatialComponent": "BellTelephone3D",
@@ -244,6 +271,7 @@
   },
   {
     "id": "us-194047-otto-engine",
+    "kind": "model",
     "asset": "NativeModels/us-194047-otto-engine.usdz",
     "builder": "buildOttoEngineModel",
     "spatialComponent": "OttoEngine3D",
@@ -253,6 +281,7 @@
   },
   {
     "id": "us-200521-edison-phonograph",
+    "kind": "model",
     "asset": "NativeModels/us-200521-edison-phonograph.usdz",
     "builder": "buildEdisonPhonographModel",
     "spatialComponent": "EdisonPhonograph3D",
@@ -262,6 +291,7 @@
   },
   {
     "id": "us-223898-edison-lightbulb",
+    "kind": "model",
     "asset": "NativeModels/us-223898-edison-lightbulb.usdz",
     "builder": "buildEdison223898Model",
     "spatialComponent": "EdisonBulb3D",
@@ -271,6 +301,7 @@
   },
   {
     "id": "us-233692-pelton-water-wheel",
+    "kind": "model",
     "asset": "NativeModels/us-233692-pelton-water-wheel.usdz",
     "builder": "buildPeltonWheelModel",
     "spatialComponent": "PeltonWheel3D",
@@ -280,6 +311,7 @@
   },
   {
     "id": "us-235199-bell-photophone",
+    "kind": "model",
     "asset": "NativeModels/us-235199-bell-photophone.usdz",
     "builder": "createBellPhotophoneModel",
     "spatialComponent": "BellPhotophone3D",
@@ -289,6 +321,7 @@
   },
   {
     "id": "us-247804-delaval-separator",
+    "kind": "model",
     "asset": "NativeModels/us-247804-delaval-separator.usdz",
     "builder": "buildDeLavalSeparatorModel",
     "spatialComponent": "DeLavalSeparator3D",
@@ -298,6 +331,7 @@
   },
   {
     "id": "us-307031-edison-indicator",
+    "kind": "model",
     "asset": "NativeModels/us-307031-edison-indicator.usdz",
     "builder": "buildEdisonIndicatorModel",
     "spatialComponent": "EdisonIndicator3D",
@@ -307,6 +341,7 @@
   },
   {
     "id": "us-313224-mergenthaler-linotype",
+    "kind": "model",
     "asset": "NativeModels/us-313224-mergenthaler-linotype.usdz",
     "builder": "buildMergenthalerLinotypeModel",
     "spatialComponent": "MergenthalerLinotype3D",
@@ -316,6 +351,7 @@
   },
   {
     "id": "us-319596-maxim-machine-gun",
+    "kind": "model",
     "asset": "NativeModels/us-319596-maxim-machine-gun.usdz",
     "builder": "buildMaximMachineGunModel",
     "spatialComponent": "MaximMachineGun3D",
@@ -325,6 +361,7 @@
   },
   {
     "id": "us-347140-thomson-welding",
+    "kind": "model",
     "asset": "NativeModels/us-347140-thomson-welding.usdz",
     "builder": "buildThomsonWeldingModel",
     "spatialComponent": "ThomsonWelding3D",
@@ -334,6 +371,7 @@
   },
   {
     "id": "us-361931-daimler-engine",
+    "kind": "model",
     "asset": "NativeModels/us-361931-daimler-engine.usdz",
     "builder": "buildDaimlerMarineInstallationModel",
     "spatialComponent": "DaimlerEngine3D",
@@ -343,6 +381,7 @@
   },
   {
     "id": "us-381968-tesla-motor",
+    "kind": "model",
     "asset": "NativeModels/us-381968-tesla-motor.usdz",
     "builder": "buildTeslaMotorModel",
     "spatialComponent": "TeslaMotor3D",
@@ -352,15 +391,17 @@
   },
   {
     "id": "us-388850-eastman-kodak",
+    "kind": "model",
     "asset": "NativeModels/us-388850-eastman-kodak.usdz",
     "builder": "buildEastmanKodakModel",
     "spatialComponent": "EastmanKodak3D",
     "vectorComponent": "EastmanKodakSim",
-    "meshCount": 31,
-    "namedNodeCount": 18
+    "meshCount": 37,
+    "namedNodeCount": 19
   },
   {
     "id": "us-395781-hollerith-tabulating",
+    "kind": "model",
     "asset": "NativeModels/us-395781-hollerith-tabulating.usdz",
     "builder": "buildHollerithTabulatingModel",
     "spatialComponent": "HollerithTabulating3D",
@@ -370,42 +411,47 @@
   },
   {
     "id": "us-400766-hall-aluminium",
+    "kind": "model",
     "asset": "NativeModels/us-400766-hall-aluminium.usdz",
     "builder": "createHallAluminiumModel",
     "spatialComponent": "HallAluminium3D",
     "vectorComponent": "HallAluminiumSim",
-    "meshCount": 33,
-    "namedNodeCount": 15
+    "meshCount": 45,
+    "namedNodeCount": 30
   },
   {
     "id": "us-470918-reno-escalator",
+    "kind": "model",
     "asset": "NativeModels/us-470918-reno-escalator.usdz",
     "builder": "buildRenoEscalatorModel",
     "spatialComponent": "RenoEscalator3D",
     "vectorComponent": "RenoEscalatorSim",
-    "meshCount": 352,
-    "namedNodeCount": 43
+    "meshCount": 55,
+    "namedNodeCount": 36
   },
   {
     "id": "us-542846-diesel-engine",
+    "kind": "model",
     "asset": "NativeModels/us-542846-diesel-engine.usdz",
     "builder": "buildDieselEngineModel",
     "spatialComponent": "DieselEngine3D",
     "vectorComponent": "DieselEngineSim",
-    "meshCount": 28,
-    "namedNodeCount": 8
+    "meshCount": 31,
+    "namedNodeCount": 14
   },
   {
     "id": "us-586193-marconi-radio",
+    "kind": "model",
     "asset": "NativeModels/us-586193-marconi-radio.usdz",
     "builder": "buildMarconiRadioModel",
     "spatialComponent": "MarconiRadio3D",
     "vectorComponent": "MarconiRadioSim",
-    "meshCount": 25,
-    "namedNodeCount": 21
+    "meshCount": 41,
+    "namedNodeCount": 46
   },
   {
     "id": "us-593138-tesla-coil",
+    "kind": "model",
     "asset": "NativeModels/us-593138-tesla-coil.usdz",
     "builder": "buildTeslaCoilModel",
     "spatialComponent": "TeslaCoil3D",
@@ -415,6 +461,7 @@
   },
   {
     "id": "us-608969-parsons-turbine",
+    "kind": "model",
     "asset": "NativeModels/us-608969-parsons-turbine.usdz",
     "builder": "buildParsonsTurbineModel",
     "spatialComponent": "ParsonsTurbine3D",
@@ -424,6 +471,7 @@
   },
   {
     "id": "us-613809-tesla-teleautomaton",
+    "kind": "model",
     "asset": "NativeModels/us-613809-tesla-teleautomaton.usdz",
     "builder": "buildTeslaTeleautomatonModel",
     "spatialComponent": "TeslaTeleautomaton3D",
@@ -433,6 +481,7 @@
   },
   {
     "id": "us-621195-zeppelin-airship",
+    "kind": "model",
     "asset": "NativeModels/us-621195-zeppelin-airship.usdz",
     "builder": "buildZeppelinAirshipModel",
     "spatialComponent": "ZeppelinAirship3D",
@@ -442,15 +491,17 @@
   },
   {
     "id": "us-682690-hewitt-mercury-lamp",
+    "kind": "model",
     "asset": "NativeModels/us-682690-hewitt-mercury-lamp.usdz",
     "builder": "buildHewittMercuryLampModel",
     "spatialComponent": "HewittMercuryLamp3D",
     "vectorComponent": "HewittMercuryLampSim",
-    "meshCount": 15,
-    "namedNodeCount": 12
+    "meshCount": 18,
+    "namedNodeCount": 21
   },
   {
     "id": "us-706737-fessenden-wireless",
+    "kind": "model",
     "asset": "NativeModels/us-706737-fessenden-wireless.usdz",
     "builder": "buildFessendenWirelessModel",
     "spatialComponent": "FessendenWireless3D",
@@ -460,6 +511,7 @@
   },
   {
     "id": "us-727650-linde-air-liquefaction",
+    "kind": "model",
     "asset": "NativeModels/us-727650-linde-air-liquefaction.usdz",
     "builder": "buildLindeLiquefactionModel",
     "spatialComponent": "LindeAirLiquefaction3D",
@@ -469,33 +521,37 @@
   },
   {
     "id": "us-808897-carrier-air-conditioner",
+    "kind": "model",
     "asset": "NativeModels/us-808897-carrier-air-conditioner.usdz",
     "builder": "buildCarrierAirConditionerModel",
     "spatialComponent": "CarrierAirConditioner3D",
     "vectorComponent": "CarrierAirConditionerSim",
-    "meshCount": 80,
-    "namedNodeCount": 20
+    "meshCount": 83,
+    "namedNodeCount": 24
   },
   {
     "id": "us-821393-wright-flyer",
+    "kind": "model",
     "asset": "NativeModels/us-821393-wright-flyer.usdz",
     "builder": "buildWrightFlyerAirframe",
     "spatialComponent": "WrightFlyer3D",
     "vectorComponent": "WrightFlyerSim",
-    "meshCount": 321,
-    "namedNodeCount": 12
+    "meshCount": 86,
+    "namedNodeCount": 63
   },
   {
     "id": "us-879532-de-forest-audion",
+    "kind": "model",
     "asset": "NativeModels/us-879532-de-forest-audion.usdz",
     "builder": "buildDeForestAudionModel",
     "spatialComponent": "DeForestAudion3D",
     "vectorComponent": "DeForestAudionSim",
-    "meshCount": 28,
-    "namedNodeCount": 11
+    "meshCount": 29,
+    "namedNodeCount": 12
   },
   {
     "id": "us-942699-baekeland-bakelite",
+    "kind": "model",
     "asset": "NativeModels/us-942699-baekeland-bakelite.usdz",
     "builder": "buildBaekelandBakeliteModel",
     "spatialComponent": "BaekelandBakelite3D",
@@ -505,6 +561,7 @@
   },
   {
     "id": "us-971501-haber-ammonia",
+    "kind": "no-drawing",
     "asset": null,
     "builder": "source-boundary:no-drawing",
     "spatialComponent": "HaberAmmonia3D",
@@ -515,6 +572,7 @@
   },
   {
     "id": "us-1102653-goddard-rocket",
+    "kind": "model",
     "asset": "NativeModels/us-1102653-goddard-rocket.usdz",
     "builder": "buildGoddardRocketModel",
     "spatialComponent": "GoddardRocket3D",
@@ -524,6 +582,7 @@
   },
   {
     "id": "us-1219881-sundback-zipper",
+    "kind": "model",
     "asset": "NativeModels/us-1219881-sundback-zipper.usdz",
     "builder": "buildSundbackZipperModel",
     "spatialComponent": "SundbackZipper3D",
@@ -533,15 +592,17 @@
   },
   {
     "id": "us-1773980-farnsworth-tv",
+    "kind": "model",
     "asset": "NativeModels/us-1773980-farnsworth-tv.usdz",
     "builder": "buildFarnsworthTvModel",
     "spatialComponent": "FarnsworthTV3D",
     "vectorComponent": "FarnsworthTVSim",
-    "meshCount": 23,
+    "meshCount": 52,
     "namedNodeCount": 8
   },
   {
     "id": "us-1781541-einstein-refrigerator",
+    "kind": "model",
     "asset": "NativeModels/us-1781541-einstein-refrigerator.usdz",
     "builder": "buildEinsteinRefrigeratorModel",
     "spatialComponent": "EinsteinRefrigerator3D",
@@ -551,15 +612,17 @@
   },
   {
     "id": "us-2292387-lamarr-frequency-hopping",
+    "kind": "model",
     "asset": "NativeModels/us-2292387-lamarr-frequency-hopping.usdz",
     "builder": "buildLamarrFrequencyHoppingModel",
     "spatialComponent": "LamarrFrequencyHopping3D",
     "vectorComponent": "LamarrFrequencyHoppingSim",
-    "meshCount": 27,
-    "namedNodeCount": 15
+    "meshCount": 39,
+    "namedNodeCount": 42
   },
   {
     "id": "us-2297691-carlson-electrophotography",
+    "kind": "model",
     "asset": "NativeModels/us-2297691-carlson-electrophotography.usdz",
     "builder": "buildCarlsonElectrophotographyModel",
     "spatialComponent": "CarlsonElectrophotography3D",
@@ -569,69 +632,77 @@
   },
   {
     "id": "us-2318259-sikorsky-helicopter",
+    "kind": "model",
     "asset": "NativeModels/us-2318259-sikorsky-helicopter.usdz",
     "builder": "buildSikorskyHelicopterModel",
     "spatialComponent": "SikorskyHelicopter3D",
     "vectorComponent": "SikorskyHelicopterSim",
-    "meshCount": 51,
-    "namedNodeCount": 9
+    "meshCount": 56,
+    "namedNodeCount": 24
   },
   {
     "id": "us-2495429-spencer-microwave",
+    "kind": "model",
     "asset": "NativeModels/us-2495429-spencer-microwave.usdz",
     "builder": "buildSpencerMicrowaveModel",
     "spatialComponent": "SpencerMicrowave3D",
     "vectorComponent": "SpencerMicrowaveSim",
-    "meshCount": 98,
-    "namedNodeCount": 5
+    "meshCount": 66,
+    "namedNodeCount": 50
   },
   {
     "id": "us-2524035-bardeen-transistor",
+    "kind": "model",
     "asset": "NativeModels/us-2524035-bardeen-transistor.usdz",
     "builder": "buildBardeenTransistorModel",
     "spatialComponent": "BardeenTransistor3D",
     "vectorComponent": "BardeenTransistorSim",
-    "meshCount": 14,
-    "namedNodeCount": 10
+    "meshCount": 43,
+    "namedNodeCount": 21
   },
   {
     "id": "us-2543181-land-polaroid",
+    "kind": "model",
     "asset": "NativeModels/us-2543181-land-polaroid.usdz",
     "builder": "createLandPolaroidModel",
     "spatialComponent": "LandPolaroid3D",
     "vectorComponent": "LandPolaroidSim",
-    "meshCount": 22,
-    "namedNodeCount": 15
+    "meshCount": 27,
+    "namedNodeCount": 30
   },
   {
     "id": "us-2708656-fermi-reactor",
+    "kind": "model",
     "asset": "NativeModels/us-2708656-fermi-reactor.usdz",
     "builder": "buildFermiReactorModel",
     "spatialComponent": "FermiReactor3D",
     "vectorComponent": "FermiReactorSim",
-    "meshCount": 2866,
-    "namedNodeCount": 7
+    "meshCount": 39,
+    "namedNodeCount": 46
   },
   {
     "id": "us-2717437-mestral-velcro",
+    "kind": "model",
     "asset": "NativeModels/us-2717437-mestral-velcro.usdz",
     "builder": "createMestralVelcroModel",
     "spatialComponent": "MestralVelcro3D",
     "vectorComponent": "MestralVelcroSim",
-    "meshCount": 164,
-    "namedNodeCount": 164
+    "meshCount": 216,
+    "namedNodeCount": 218
   },
   {
     "id": "us-2846084-goertz-electronic-master-slave-manipulator",
+    "kind": "model",
     "asset": "NativeModels/us-2846084-goertz-electronic-master-slave-manipulator.usdz",
     "builder": "buildGoertzElectronicMasterSlaveManipulatorModel",
     "spatialComponent": "GoertzElectronicMasterSlaveManipulator3D",
     "vectorComponent": "GoertzElectronicMasterSlaveManipulatorSim",
-    "meshCount": 24,
-    "namedNodeCount": 29
+    "meshCount": 66,
+    "namedNodeCount": 103
   },
   {
     "id": "us-2929922-townes-laser",
+    "kind": "model",
     "asset": "NativeModels/us-2929922-townes-laser.usdz",
     "builder": "buildTownesLaserModel",
     "spatialComponent": "TownesLaser3D",
@@ -641,6 +712,7 @@
   },
   {
     "id": "us-2981877-noyce-ic",
+    "kind": "model",
     "asset": "NativeModels/us-2981877-noyce-ic.usdz",
     "builder": "buildNoycePlanarICModel",
     "spatialComponent": "NoycePlanarIC3D",
@@ -650,15 +722,17 @@
   },
   {
     "id": "us-2988237-devol-programmed-transfer",
+    "kind": "model",
     "asset": "NativeModels/us-2988237-devol-programmed-transfer.usdz",
     "builder": "buildDevolProgrammedTransferModel",
     "spatialComponent": "DevolProgrammedTransfer3D",
     "vectorComponent": "DevolProgrammedTransferSim",
-    "meshCount": 14,
-    "namedNodeCount": 8
+    "meshCount": 27,
+    "namedNodeCount": 34
   },
   {
     "id": "us-3081379-lemelson-machine-vision",
+    "kind": "model",
     "asset": "NativeModels/us-3081379-lemelson-machine-vision.usdz",
     "builder": "createLemelsonMachineVisionModel",
     "spatialComponent": "LemelsonMachineVision3D",
@@ -668,6 +742,7 @@
   },
   {
     "id": "us-3119501-lemelson-automatic-warehousing",
+    "kind": "model",
     "asset": "NativeModels/us-3119501-lemelson-automatic-warehousing.usdz",
     "builder": "buildLemelsonWarehouseModel",
     "spatialComponent": "LemelsonAutomaticWarehousing3D",
@@ -677,6 +752,7 @@
   },
   {
     "id": "us-3138743-kilby-integrated-circuit",
+    "kind": "model",
     "asset": "NativeModels/us-3138743-kilby-integrated-circuit.usdz",
     "builder": "createKilbyIntegratedCircuitModel",
     "spatialComponent": "KilbyIntegratedCircuit3D",
@@ -686,69 +762,76 @@
   },
   {
     "id": "us-3212649-amf-versatran",
+    "kind": "model",
     "asset": "NativeModels/us-3212649-amf-versatran.usdz",
     "builder": "buildAmfVersatranModel",
     "spatialComponent": "AmfVersatran3D",
     "vectorComponent": "AmfVersatranSim",
-    "meshCount": 23,
-    "namedNodeCount": 31
+    "meshCount": 24,
+    "namedNodeCount": 34
   },
   {
     "id": "us-3260375-lemelson-adjustable-manipulator",
+    "kind": "model",
     "asset": "NativeModels/us-3260375-lemelson-adjustable-manipulator.usdz",
     "builder": "buildLemelsonAdjustableManipulatorModel",
     "spatialComponent": "LemelsonAdjustableManipulator3D",
     "vectorComponent": "LemelsonAdjustableManipulatorSim",
-    "meshCount": 28,
-    "namedNodeCount": 1
+    "meshCount": 36,
+    "namedNodeCount": 34
   },
   {
     "id": "us-3313014-lemelson-automatic-production",
+    "kind": "model",
     "asset": "NativeModels/us-3313014-lemelson-automatic-production.usdz",
     "builder": "buildLemelsonAutomaticProductionModel",
     "spatialComponent": "LemelsonAutomaticProduction3D",
     "vectorComponent": "LemelsonAutomaticProductionSim",
-    "meshCount": 32,
-    "namedNodeCount": 32
+    "meshCount": 61,
+    "namedNodeCount": 66
   },
   {
     "id": "us-3353115-maiman-ruby-laser",
+    "kind": "model",
     "asset": "NativeModels/us-3353115-maiman-ruby-laser.usdz",
     "builder": "createMaimanRubyLaserModel",
     "spatialComponent": "MaimanRubyLaser3D",
     "vectorComponent": "MaimanRubyLaserSim",
-    "meshCount": 19,
-    "namedNodeCount": 12
+    "meshCount": 20,
+    "namedNodeCount": 25
   },
   {
     "id": "us-3541541-engelbart-mouse",
+    "kind": "model",
     "asset": "NativeModels/us-3541541-engelbart-mouse.usdz",
     "builder": "buildEngelbartMouseModel",
     "spatialComponent": "EngelbartMouse3D",
     "vectorComponent": "EngelbartMouseSim",
-    "meshCount": 20,
-    "namedNodeCount": 15
+    "meshCount": 79,
+    "namedNodeCount": 84
   },
   {
     "id": "us-3671542-kwolek-kevlar",
-    "asset": "NativeModels/us-3671542-kwolek-kevlar.usdz",
-    "builder": "buildKwolekKevlarModel",
-    "spatialComponent": "KwolekKevlar3D",
-    "vectorComponent": "KwolekKevlarSim",
-    "meshCount": 157,
-    "namedNodeCount": 10
+    "kind": "source-bound-pdf-only",
+    "asset": null,
+    "builder": "source-bound:pdf-only",
+    "meshCount": 0,
+    "namedNodeCount": 0,
+    "sourceBoundary": "The public record is limited to the pinned facsimile and checked claim reading. No reviewed transcription, archival edition, model, controls, quantitative metrics, or USDZ asset is shipped in the native app."
   },
   {
     "id": "us-3728480-baer-odyssey",
+    "kind": "model",
     "asset": "NativeModels/us-3728480-baer-odyssey.usdz",
     "builder": "buildBaerOdysseyModel",
     "spatialComponent": "BaerOdyssey3D",
     "vectorComponent": "BaerOdysseySim",
-    "meshCount": 32,
-    "namedNodeCount": 6
+    "meshCount": 35,
+    "namedNodeCount": 38
   },
   {
     "id": "us-3858232-boyle-smith-ccd",
+    "kind": "model",
     "asset": "NativeModels/us-3858232-boyle-smith-ccd.usdz",
     "builder": "createBoyleSmithCcdModel",
     "spatialComponent": "BoyleSmithCcd3D",
@@ -758,15 +841,17 @@
   },
   {
     "id": "us-3858581-kamen-medication-injection-device",
+    "kind": "model",
     "asset": "NativeModels/us-3858581-kamen-medication-injection-device.usdz",
     "builder": "buildKamenInjectionModel",
     "spatialComponent": "KamenMedicationInjection3D",
     "vectorComponent": "KamenMedicationInjectionSim",
-    "meshCount": 10,
-    "namedNodeCount": 10
+    "meshCount": 70,
+    "namedNodeCount": 81
   },
   {
     "id": "us-4063220-metcalfe-ethernet",
+    "kind": "model",
     "asset": "NativeModels/us-4063220-metcalfe-ethernet.usdz",
     "builder": "buildMetcalfeEthernetModel",
     "spatialComponent": "MetcalfeEthernet3D",
@@ -776,6 +861,7 @@
   },
   {
     "id": "us-4068536-stackhouse-manipulator",
+    "kind": "model",
     "asset": "NativeModels/us-4068536-stackhouse-manipulator.usdz",
     "builder": "buildStackhouseManipulatorModel",
     "spatialComponent": "StackhouseManipulator3D",
@@ -785,15 +871,17 @@
   },
   {
     "id": "us-4098001-watson-rcc",
+    "kind": "model",
     "asset": "NativeModels/us-4098001-watson-rcc.usdz",
     "builder": "buildWatsonRemoteCenterComplianceModel",
     "spatialComponent": "WatsonRemoteCenterCompliance3D",
     "vectorComponent": "WatsonRemoteCenterComplianceSim",
-    "meshCount": 14,
-    "namedNodeCount": 19
+    "meshCount": 41,
+    "namedNodeCount": 56
   },
   {
     "id": "us-4136359-wozniak-apple",
+    "kind": "model",
     "asset": "NativeModels/us-4136359-wozniak-apple.usdz",
     "builder": "buildWozniakAppleModel",
     "spatialComponent": "WozniakApple3D",
@@ -803,87 +891,97 @@
   },
   {
     "id": "us-4341502-makino-scara",
+    "kind": "model",
     "asset": "NativeModels/us-4341502-makino-scara.usdz",
     "builder": "buildMakinoScaraModel",
     "spatialComponent": "MakinoScara3D",
     "vectorComponent": "MakinoScaraSim",
-    "meshCount": 16,
-    "namedNodeCount": 13
+    "meshCount": 33,
+    "namedNodeCount": 33
   },
   {
     "id": "us-4512709-milacron-robot-toolchanger",
+    "kind": "model",
     "asset": "NativeModels/us-4512709-milacron-robot-toolchanger.usdz",
     "builder": "buildMilacronRobotToolchangerModel",
     "spatialComponent": "MilacronRobotToolchanger3D",
     "vectorComponent": "MilacronRobotToolchangerSim",
-    "meshCount": 24,
-    "namedNodeCount": 17
+    "meshCount": 39,
+    "namedNodeCount": 51
   },
   {
     "id": "us-4575330-hull-stereolithography",
+    "kind": "model",
     "asset": "NativeModels/us-4575330-hull-stereolithography.usdz",
     "builder": "createHullStereolithographyModel",
     "spatialComponent": "HullStereolithography3D",
     "vectorComponent": "HullStereolithographySim",
-    "meshCount": 12,
-    "namedNodeCount": 11
+    "meshCount": 38,
+    "namedNodeCount": 41
   },
   {
     "id": "us-4765668-robot-end-effector",
+    "kind": "model",
     "asset": "NativeModels/us-4765668-robot-end-effector.usdz",
     "builder": "buildRobotEndEffectorModel",
     "spatialComponent": "RobotEndEffector3D",
     "vectorComponent": "RobotEndEffectorSim",
-    "meshCount": 28,
-    "namedNodeCount": 33
+    "meshCount": 118,
+    "namedNodeCount": 141
   },
   {
     "id": "us-4921293-salisbury-robot-hand",
+    "kind": "model",
     "asset": "NativeModels/us-4921293-salisbury-robot-hand.usdz",
     "builder": "buildSalisburyRobotHandModel",
     "spatialComponent": "SalisburyRobotHand3D",
     "vectorComponent": "SalisburyRobotHandSim",
-    "meshCount": 64,
-    "namedNodeCount": 75
+    "meshCount": 74,
+    "namedNodeCount": 85
   },
   {
     "id": "us-4976582-clavel-delta-robot",
+    "kind": "model",
     "asset": "NativeModels/us-4976582-clavel-delta-robot.usdz",
     "builder": "buildClavelDeltaRobotModel",
     "spatialComponent": "ClavelDeltaRobot3D",
     "vectorComponent": "ClavelDeltaRobotSim",
     "meshCount": 33,
-    "namedNodeCount": 40
+    "namedNodeCount": 41
   },
   {
     "id": "us-5121329-crump-fdm",
+    "kind": "model",
     "asset": "NativeModels/us-5121329-crump-fdm.usdz",
     "builder": "createCrumpFdmModel",
     "spatialComponent": "CrumpFdm3D",
     "vectorComponent": "CrumpFdmSim",
-    "meshCount": 52,
-    "namedNodeCount": 13
+    "meshCount": 69,
+    "namedNodeCount": 43
   },
   {
     "id": "us-5701965-kamen-transporter",
+    "kind": "model",
     "asset": "NativeModels/us-5701965-kamen-transporter.usdz",
     "builder": "buildKamenTransporterModel",
     "spatialComponent": "KamenTransporter3D",
     "vectorComponent": "KamenTransporterSim",
     "meshCount": 23,
-    "namedNodeCount": 13
+    "namedNodeCount": 15
   },
   {
     "id": "us-6120588-eink",
+    "kind": "model",
     "asset": "NativeModels/us-6120588-eink.usdz",
     "builder": "buildEInkModel",
     "spatialComponent": "EInk3D",
     "vectorComponent": "EInkSim",
-    "meshCount": 112,
-    "namedNodeCount": 104
+    "meshCount": 18,
+    "namedNodeCount": 10
   },
   {
     "id": "us-6285999-pagerank",
+    "kind": "model",
     "asset": "NativeModels/us-6285999-pagerank.usdz",
     "builder": "buildPageRankModel",
     "spatialComponent": "PageRank3D",
@@ -893,24 +991,27 @@
   },
   {
     "id": "us-6302230-kamen-segway",
+    "kind": "model",
     "asset": "NativeModels/us-6302230-kamen-segway.usdz",
     "builder": "createKamenSegwayModel",
     "spatialComponent": "KamenSegway3D",
     "vectorComponent": "KamenSegwaySim",
     "meshCount": 18,
-    "namedNodeCount": 11
+    "namedNodeCount": 12
   },
   {
     "id": "us-6331181-davinci",
+    "kind": "model",
     "asset": "NativeModels/us-6331181-davinci.usdz",
-    "builder": "buildDaVinciModel",
-    "spatialComponent": "DaVinci3D",
-    "vectorComponent": "DaVinciSim",
-    "meshCount": 25,
-    "namedNodeCount": 24
+    "builder": "buildDaVinciInterfaceModel",
+    "spatialComponent": "DaVinciInterface3D",
+    "vectorComponent": "DaVinciInterfaceSim",
+    "meshCount": 18,
+    "namedNodeCount": 11
   },
   {
     "id": "us-6594844-roomba",
+    "kind": "model",
     "asset": "NativeModels/us-6594844-roomba.usdz",
     "builder": "buildRoombaModel",
     "spatialComponent": "Roomba3D",
@@ -920,6 +1021,7 @@
   },
   {
     "id": "us-7479949-multitouch",
+    "kind": "model",
     "asset": "NativeModels/us-7479949-multitouch.usdz",
     "builder": "buildMultiTouchModel",
     "spatialComponent": "MultiTouch3D",

@@ -1,7 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { stepSholesTypewriter } from "@/physics/machineKernels";
+import * as THREE from "three";
+import {
+  advanceSholesTypewriterCycle,
+  stepSholesTypewriter,
+  stepSholesTypewriterAtCycle,
+} from "@/physics/machineKernels";
 import {
   buildSholesTypewriterModel,
   updateSholesTypewriterKinematics,
@@ -74,6 +79,18 @@ describe("US 79,265 Christopher Latham Sholes Type-Writer visual & escapement bo
     expect(result.keysPerRow).toBe(10);
   });
 
+  test("carries the animation pose through cadence changes and returns explicitly at the display line end", () => {
+    const accumulatedCycles = advanceSholesTypewriterCycle(0, 40, 10);
+    const slowPose = stepSholesTypewriterAtCycle(40, accumulatedCycles);
+    const fastPose = stepSholesTypewriterAtCycle(120, accumulatedCycles);
+    const lineEndPose = stepSholesTypewriterAtCycle(40, 12.2);
+
+    expect(fastPose.totalEscapementSteps).toBeCloseTo(slowPose.totalEscapementSteps, 10);
+    expect(lineEndPose.requiresManualCarriageReturn).toBe(true);
+    expect(lineEndPose.displayCarriageSteps).toBe(12);
+    expect(lineEndPose.typebarStrokePct).toBe(0);
+  });
+
   test("builds and articulates procedural wooden table, radial type basket, platen carriage, and escapement ratchet correctly", () => {
     const model = buildSholesTypewriterModel();
     expect(model.rootGroup.children.length).toBeGreaterThan(0);
@@ -85,9 +102,48 @@ describe("US 79,265 Christopher Latham Sholes Type-Writer visual & escapement bo
     expect(model.nodes.typeBars.length).toBeGreaterThan(10);
 
     // Test kinematics update
-    updateSholesTypewriterKinematics(model.nodes, model.materials, 0.5, 0, false);
+    updateSholesTypewriterKinematics(model.nodes, model.materials, 0.5, 0, false, 40, 7.5, 7.5);
     expect(model.nodes.platen.position.x).toBeDefined();
+    expect(model.nodes.keyCapsMesh.count).toBe(40);
+    expect(model.nodes.keyBezelsMesh.count).toBe(40);
+    expect(model.nodes.pullWires?.count).toBe(24);
+    expect(model.nodes.escapement.rotation.x).toBeCloseTo(7.5 * 0.06, 8);
+    expect(model.nodes.ribbonSpoolLeft?.rotation.y).toBeCloseTo(-7.5 * 0.02, 8);
+    expect(model.nodes.ribbonSpoolRight?.rotation.y).toBeCloseTo(7.5 * 0.02, 8);
+
+    const keyCapMatrix = new THREE.Matrix4();
+    const keyCapPosition = new THREE.Vector3();
+    model.nodes.keyCapsMesh.getMatrixAt(0, keyCapMatrix);
+    keyCapMatrix.decompose(keyCapPosition, new THREE.Quaternion(), new THREE.Vector3());
+    expect(keyCapPosition.y).toBeCloseTo(0.25 - 0.16 * 0.5, 8);
+
+    const keyBezelMatrix = new THREE.Matrix4();
+    const keyBezelPosition = new THREE.Vector3();
+    model.nodes.keyBezelsMesh.getMatrixAt(0, keyBezelMatrix);
+    keyBezelMatrix.decompose(keyBezelPosition, new THREE.Quaternion(), new THREE.Vector3());
+    expect(keyBezelPosition.y).toBeCloseTo(0.25 - 0.16 * 0.5 + 0.08, 8);
+
+    const escapementAngle = model.nodes.escapement.rotation.x;
+    const ribbonAngle = model.nodes.ribbonSpoolLeft?.rotation.y;
+    updateSholesTypewriterKinematics(model.nodes, model.materials, 0.5, 0, false, 40, 7.5, 7.5);
+    expect(model.nodes.escapement.rotation.x).toBe(escapementAngle);
+    expect(model.nodes.ribbonSpoolLeft?.rotation.y).toBe(ribbonAngle);
+
+    updateSholesTypewriterKinematics(model.nodes, model.materials, 0, 0, false, 40, 20, 12);
+    expect(model.nodes.carriageGroup.position.x).toBeCloseTo(-2.16, 8);
 
     model.dispose();
+  });
+
+  test("uses the transport registration disposer so a stale visual cannot unregister a replacement updater", () => {
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "SholesTypewriter3D.tsx"),
+      "utf8",
+    );
+
+    expect(threeSource).toContain("return globalTransportBus.registerUpdater(");
+    expect(threeSource).not.toContain(
+      'return () => globalTransportBus.unregisterUpdater("us-79265-sholes-typewriter")',
+    );
   });
 });

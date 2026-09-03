@@ -46,23 +46,36 @@ const figureAssetPath = (number: number) =>
     : number >= 18
       ? `/patents/figures/us-235199-bell-photophone/fig-${number}-source-crop-v5.png`
       : `/patents/figures/us-235199-bell-photophone/fig-${number}-source-crop${number === 14 || number === 15 ? "-v4" : "-v3"}.png`;
+
+function figurePreviews(numbers: readonly number[]) {
+  const previews: Array<{
+    src: string;
+    alt: string;
+    width: number;
+    height: number;
+  }> = [];
+  const seenSources = new Set<string>();
+  for (const number of numbers) {
+    const src = figureAssetPath(number);
+    if (seenSources.has(src)) continue;
+    seenSources.add(src);
+    previews.push({
+      src,
+      alt: `Fig. ${number} from US 235,199`,
+      width: FIGURE_DIMS[number].width,
+      height: FIGURE_DIMS[number].height,
+    });
+  }
+  return previews;
+}
+
 const fig = (text: string, numbers: readonly number[]): CuratedSpecificationInline => ({
   kind: "reference",
   text,
   href: `#figure-${numbers[0]}`,
   referenceType: "figure",
   label: `Facsimile preview for ${text}`,
-  figurePreviews: numbers
-    .map((number) => ({
-      src: figureAssetPath(number),
-      alt: `Fig. ${number} from US 235,199`,
-      width: FIGURE_DIMS[number].width,
-      height: FIGURE_DIMS[number].height,
-    }))
-    .filter(
-      (preview, index, previews) =>
-        previews.findIndex((candidate) => candidate.src === preview.src) === index,
-    ),
+  figurePreviews: figurePreviews(numbers),
 });
 
 const SOURCE_PARAGRAPHS = [

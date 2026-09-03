@@ -8,6 +8,8 @@ import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
+const UI_SNAPSHOT_INTERVAL_MS = 80;
+
 export function ParsonsTurbineSim() {
   const { resetParams } = usePatentPhysics("us-608969-parsons-turbine");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -17,27 +19,43 @@ export function ParsonsTurbineSim() {
   const [throttle, setThrottle] = useState(0.75);
   const [flowPhase, setFlowPhase] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const flowPhaseRef = useRef(0);
+  const marineRef = useRef<ReturnType<typeof stepParsonsMarine> | null>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
   const marine = stepParsonsMarine({ routing, reversing, throttle });
 
   useEffect(() => {
+    marineRef.current = marine;
+  }, [marine]);
+
+  useEffect(() => {
     if (!isPlaying) return;
     let lastTime = performance.now();
+    let lastUiSnapshot = 0;
 
     const loop = (time: number) => {
       animRef.current = requestAnimationFrame(loop);
-      if (!onscreenRef.current) return;
+      if (!onscreenRef.current) {
+        lastTime = time;
+        return;
+      }
       const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
       lastTime = time;
+      const liveMarine = marineRef.current;
+      if (!liveMarine) return;
 
-      setFlowPhase((prev) => (prev + dt * (0.5 + marine.flowRateRelative)) % 1);
+      flowPhaseRef.current = (flowPhaseRef.current + dt * (0.5 + liveMarine.flowRateRelative)) % 1;
+      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = time;
+        setFlowPhase(flowPhaseRef.current);
+      }
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, marine.flowRateRelative, onscreenRef.current]);
+  }, [isPlaying, onscreenRef]);
 
   return (
     <div
@@ -91,6 +109,8 @@ export function ParsonsTurbineSim() {
               setRouting("series");
               setReversing(false);
               setThrottle(0.75);
+              flowPhaseRef.current = 0;
+              setFlowPhase(0);
               soundEngine.playSwitchClick();
             }}
             aria-label="Reset Simulation"
@@ -251,6 +271,7 @@ export function ParsonsTurbineSim() {
             <span className="font-mono">{marine.routing}</span>
           </div>
           <select
+            aria-label="Turbine valve connection routing"
             value={routing}
             onChange={(e) => setRouting(e.target.value as ParsonsRoutingMode)}
             className="w-full rounded-lg border border-parchment-300 dark:border-ink-700 bg-parchment-50 dark:bg-ink-900 px-2 py-2 text-sm"
@@ -267,6 +288,7 @@ export function ParsonsTurbineSim() {
           </div>
           <input
             type="range"
+            aria-label="Steam admission throttle percentage"
             min="0"
             max="1"
             step="0.05"

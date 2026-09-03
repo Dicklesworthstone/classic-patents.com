@@ -10,7 +10,6 @@ import {
   createColormappedFieldTexture,
   writeColormappedField,
 } from "@/physics/fieldTextures";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepTeslaMotorFig9, teslaBAt, teslaMotorPhaseHz } from "@/physics/teslaKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { ElectromagneticsState } from "@/physics/types";
@@ -19,6 +18,7 @@ import {
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -71,7 +71,7 @@ export function TeslaMotor3D() {
   const [showMagneticFlux] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
@@ -138,9 +138,13 @@ export function TeslaMotor3D() {
         em: { ...(prev.em ?? IDLE_EM), phaseAngleRad: bFieldAngleRef.current },
       };
     };
-    globalTransportBus.registerUpdater("us-381968-tesla-motor", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-381968-tesla-motor");
-  }, [live.current.claim1Active, live.current.fieldDisplayOmegaRadPerS]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-381968-tesla-motor",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
   const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
@@ -148,10 +152,6 @@ export function TeslaMotor3D() {
     const cfg = CAMERA_PRESETS[preset];
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   // Optional generator-phase teaching tone.
   useEffect(() => {

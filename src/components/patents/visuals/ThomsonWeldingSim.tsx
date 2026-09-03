@@ -260,6 +260,7 @@ export function ThomsonWeldingSim() {
           </div>
           <input
             type="range"
+            aria-label="Secondary welding current in amperes"
             min="1000"
             max="6000"
             step="100"
@@ -275,6 +276,7 @@ export function ThomsonWeldingSim() {
           </div>
           <input
             type="range"
+            aria-label="Mechanical clamping pressure in megapascals"
             min="10"
             max="60"
             step="5"

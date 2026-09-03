@@ -1,47 +1,39 @@
 "use client";
 
 import { Radio, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
+import { readLamarrRuntimeControls, readLamarrTapeFrame } from "@/physics/lamarrSharedKernel";
+import { usePatentRuntimeTick } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
 const TRANSMITTER_ROWS = ["A", "B", "C", "D", "E", "F", "G"] as const;
-const RECEIVER_ROWS = new Set(["D", "E", "F", "G"]);
 
 export function LamarrFrequencyHoppingSim() {
   const { params, updateParam, resetParams } = usePatentPhysics(
     "us-2292387-lamarr-frequency-hopping",
   );
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [isHoppingActive, setIsHoppingActive] = useState<boolean>(true);
-  const [recordPosition, setRecordPosition] = useState(() =>
-    Math.max(0, Math.min(6, Math.round(params.recordPosition ?? 0))),
-  );
   const [rudderStep, setRudderStep] = useState(0);
-  const [commandTone, setCommandTone] = useState<100 | 500>(100);
-  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
-
-  // Shared player-piano roll — not Math.random. Transmitter and receiver share the same punched sequence.
-  useEffect(() => {
-    if (!isHoppingActive) return;
-
-    const interval = setInterval(() => {
-      if (!onscreenRef.current) return;
-      setRecordPosition((position) => (position + 1) % 7);
-    }, 700);
-
-    return () => clearInterval(interval);
-  }, [isHoppingActive, onscreenRef.current]);
-
-  const txRow = TRANSMITTER_ROWS[recordPosition] ?? "A";
-  const receiverTuned = RECEIVER_ROWS.has(txRow);
-  const lampOn = !receiverTuned;
+  const { rootRef } = useOffscreenGate<HTMLDivElement>();
+  usePatentRuntimeTick("us-2292387-lamarr-frequency-hopping", 1);
+  const recordState = readLamarrTapeFrame(readLamarrRuntimeControls(params));
+  const {
+    recordPosition,
+    transmitterRow: txRow,
+    receiverEffective: receiverTuned,
+    warningLampOn: lampOn,
+  } = recordState;
   const transmitCommand = () => {
-    if (!receiverTuned) return;
-    setRudderStep((step) => step + (commandTone === 100 ? -1 : 1));
+    const next = readLamarrTapeFrame({
+      recordPosition,
+      commandTone: recordState.commandTone === 500 ? 500 : 100,
+    });
+    if (!next.receiverEffective) return;
+    setRudderStep((step) => step + next.commandDelta);
     soundEngine.playSwitchClick();
   };
 
@@ -69,16 +61,12 @@ export function LamarrFrequencyHoppingSim() {
           <button
             type="button"
             onClick={() => {
-              setIsHoppingActive((active) => !active);
+              updateParam("recordPosition", (recordPosition + 1) % 7);
               soundEngine.playSwitchClick();
             }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-colors border shadow-sm ${
-              isHoppingActive
-                ? "bg-purple-700 text-white border-purple-800"
-                : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
-            }`}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-colors border shadow-sm bg-purple-700 text-white border-purple-800"
           >
-            {isHoppingActive ? "Piano Roll: Running" : "Piano Roll: Paused"}
+            Advance matched records one index
           </button>
           <button
             type="button"
@@ -96,10 +84,7 @@ export function LamarrFrequencyHoppingSim() {
             type="button"
             onClick={() => {
               resetParams();
-              setIsHoppingActive(true);
-              setRecordPosition(0);
               setRudderStep(0);
-              setCommandTone(100);
               soundEngine.playSwitchClick();
             }}
             aria-label="Reset Simulation"
@@ -178,7 +163,6 @@ export function LamarrFrequencyHoppingSim() {
               value={recordPosition}
               onChange={(event) => {
                 const next = Number(event.target.value);
-                setRecordPosition(next);
                 updateParam("recordPosition", next);
               }}
               className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-purple-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-purple-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
@@ -196,8 +180,8 @@ export function LamarrFrequencyHoppingSim() {
                 <button
                   key={tone}
                   type="button"
-                  onClick={() => setCommandTone(tone)}
-                  className={`rounded-lg border px-3 py-2 text-xs font-mono ${commandTone === tone ? "bg-purple-700 text-white border-purple-800" : "bg-white/60 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"}`}
+                  onClick={() => updateParam("commandTone", tone)}
+                  className={`rounded-lg border px-3 py-2 text-xs font-mono ${recordState.commandTone === tone ? "bg-purple-700 text-white border-purple-800" : "bg-white/60 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"}`}
                 >
                   {tone}-cycle → {tone === 100 ? "left" : "right"} rudder
                 </button>

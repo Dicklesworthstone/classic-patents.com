@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { stepHaberAmmonia } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -40,7 +41,10 @@ export function HaberAmmoniaSim({
     catalystActivity,
   });
   const sourceBoundedVisualOnly = true;
+  const live = useLiveSimParams({ pressureAtm, temperatureCelsius, isPlaying, physics });
 
+  // The long-lived flow animation receives current telemetry without losing
+  // its compressor and particle phase whenever a control renders.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -53,6 +57,7 @@ export function HaberAmmoniaSim({
     const render = () => {
       animId = requestAnimationFrame(render);
       if (!onscreenRef.current) return;
+      const { pressureAtm, temperatureCelsius, isPlaying, physics } = live.current;
       if (isPlaying) time += 0.025;
 
       const w = canvas.width;
@@ -398,7 +403,7 @@ export function HaberAmmoniaSim({
     return () => {
       cancelAnimationFrame(animId);
     };
-  }, [pressureAtm, temperatureCelsius, isPlaying, physics, onscreenRef.current]);
+  }, [live, onscreenRef]);
 
   if (sourceBoundedVisualOnly) {
     return (
@@ -579,6 +584,7 @@ export function HaberAmmoniaSim({
           </div>
           <input
             type="range"
+            aria-label="Reactor pressure in atmospheres"
             min={50}
             max={300}
             step={5}
@@ -597,6 +603,7 @@ export function HaberAmmoniaSim({
           </div>
           <input
             type="range"
+            aria-label="Catalyst temperature in degrees Celsius"
             min={350}
             max={650}
             step={5}
@@ -615,6 +622,7 @@ export function HaberAmmoniaSim({
           </div>
           <input
             type="range"
+            aria-label="Stoichiometric feed flow rate in moles per second"
             min={10}
             max={100}
             step={2}
@@ -633,6 +641,7 @@ export function HaberAmmoniaSim({
           </div>
           <input
             type="range"
+            aria-label="Catalyst activity multiplier"
             min={0.2}
             max={2.0}
             step={0.1}

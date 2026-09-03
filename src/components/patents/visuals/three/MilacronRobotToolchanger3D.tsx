@@ -3,12 +3,22 @@
 import { Eye, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import { stepMilacronRobotToolchanger } from "@/physics/milacronRobotToolchangerKernel";
+import {
+  MILACRON_FRANKENSIM_BOUNDARY,
+  MILACRON_FRANKENSIM_CONTACT_OWNER,
+  MILACRON_FRANKENSIM_JOINT_OWNER,
+  stepMilacronRobotToolchanger,
+} from "@/physics/milacronRobotToolchangerKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { buildMilacronRobotToolchangerModel } from "./milacronRobotToolchangerModel";
+import {
+  buildMilacronRobotToolchangerModel,
+  MILACRON_EXHIBIT_FLOOR_Y,
+  type MilacronRobotToolchangerModel,
+} from "./milacronRobotToolchangerModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-4512709-milacron-robot-toolchanger";
 const VIEWS = {
@@ -26,32 +36,66 @@ const VIEWS = {
   },
 } as const;
 
+const PHONE_VIEWS = {
+  adapter: {
+    position: [7.0, 4.8, 8.8] as [number, number, number],
+    target: [-0.3, -0.05, 0] as [number, number, number],
+  },
+  lock: {
+    position: [3.9, 2.5, 5.5] as [number, number, number],
+    target: [0.1, -0.1, 0.05] as [number, number, number],
+  },
+  rack: {
+    position: [-7.2, 4.0, 7.6] as [number, number, number],
+    target: [-1.15, -0.1, 0] as [number, number, number],
+  },
+} as const;
+
+function viewForViewport(view: keyof typeof VIEWS, viewportWidth: number) {
+  return viewportWidth < 640 ? PHONE_VIEWS[view] : VIEWS[view];
+}
+
 export function MilacronRobotToolchanger3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
+  const modelRef = useRef<MilacronRobotToolchangerModel | null>(null);
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
-  const liveParams = useRef(params);
-  liveParams.current = params;
+  const liveParams = useLiveSimParams(params);
   const state = useMemo(() => stepMilacronRobotToolchanger(params), [params]);
   const [view, setView] = useState<keyof typeof VIEWS>("adapter");
+  const refusalTelemetry = useMemo(
+    () => ({
+      domain: "solid_mechanics" as const,
+      refusal: { isRefused: true as const, reason: state.sourceBoundary.note },
+    }),
+    [state.sourceBoundary.note],
+  );
+  const registrationControlDisabled = !state.toolBasePresent || !state.apertureAligned;
+  const slideControlDisabled = state.toolBasePresent && !state.registrationComplete;
+  const toolPresenceControlDisabled = state.toolBasePresent
+    ? !(state.apertureAligned && state.registrationFraction === 0)
+    : !state.apertureAligned;
 
-  useFrankenSimPhysics(PATENT_ID, {
-    domain: "solid_mechanics",
-    refusal: { isRefused: true, reason: state.sourceBoundary.note },
-  });
+  useFrankenSimPhysics(PATENT_ID, refusalTelemetry);
 
   const selectView = (next: keyof typeof VIEWS) => {
     setView(next);
-    studioRef.current?.controls.setView(VIEWS[next].position, VIEWS[next].target);
+    const selected = viewForViewport(next, containerRef.current?.clientWidth ?? 640);
+    studioRef.current?.controls.setView(selected.position, selected.target);
+    modelRef.current?.setInspectionMode(next);
   };
 
+  // The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+    const initialView = container.clientWidth < 640 ? "lock" : "adapter";
+    const initialCamera = viewForViewport(initialView, container.clientWidth);
+    setView(initialView);
     const studio = createThreeStudioScene({
       container,
-      cameraPos: VIEWS.adapter.position,
-      targetPos: VIEWS.adapter.target,
+      cameraPos: initialCamera.position,
+      targetPos: initialCamera.target,
       environmentStyle: "studio",
       enableClouds: false,
       ambientIntensity: 2.7,
@@ -68,10 +112,12 @@ export function MilacronRobotToolchanger3D() {
     });
     const floor = new THREE.Mesh(new THREE.CircleGeometry(4.6, 64), floorMat);
     floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -1.28;
+    floor.position.y = MILACRON_EXHIBIT_FLOOR_Y;
     floor.receiveShadow = true;
     scene.add(floor);
     const model = buildMilacronRobotToolchangerModel();
+    model.setInspectionMode(initialView);
+    modelRef.current = model;
     scene.add(model.root);
     const axes = new THREE.AxesHelper(0.65);
     axes.position.set(-2.75, -1.18, -1.2);
@@ -95,11 +141,25 @@ export function MilacronRobotToolchanger3D() {
       floorMat.dispose();
       studio.cleanup();
       studioRef.current = null;
+      modelRef.current = null;
     };
-  }, []);
+  }, [liveParams]);
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl">
+    <section
+      data-testid="milacron-toolchanger-three"
+      data-milacron-sequence-valid={state.sequenceValid}
+      data-milacron-registration-blocked={state.registrationMotionBlocked}
+      data-milacron-registration-effective={state.registrationFraction.toFixed(3)}
+      data-milacron-slide-effective={state.lockingSlideFraction.toFixed(3)}
+      data-milacron-tool-retained={state.toolRetained}
+      data-milacron-wrist-floor-gap="0.000"
+      data-milacron-rack-floor-gap="0.000"
+      data-milacron-frankensim-joint-owner={MILACRON_FRANKENSIM_JOINT_OWNER}
+      data-milacron-frankensim-contact-owner={MILACRON_FRANKENSIM_CONTACT_OWNER}
+      data-milacron-frankensim-boundary={MILACRON_FRANKENSIM_BOUNDARY}
+      className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl"
+    >
       <div className="relative min-h-[440px] sm:min-h-[540px]">
         <div ref={containerRef} className="absolute inset-0" />
         <div className="pointer-events-none absolute inset-x-3 top-3 hidden items-start justify-between gap-3 sm:flex sm:inset-x-5 sm:top-5">
@@ -128,7 +188,17 @@ export function MilacronRobotToolchanger3D() {
           <p>
             CLAIM 4{" "}
             <span className="text-emerald-300">
-              {state.claimFourRampCaptured ? "CAPTURED" : "NOT ACTIVE"}
+              {state.claimFourTMemberSelected
+                ? state.claimFourRampCaptured
+                  ? "T-MEMBER CAPTURED"
+                  : "T-MEMBER SELECTED"
+                : "CLAIM 3 GENERIC MEMBER"}
+            </span>
+          </p>
+          <p>
+            SEQUENCE{" "}
+            <span className={state.sequenceValid ? "text-emerald-300" : "text-rose-300"}>
+              {state.sequenceValid ? "ADMISSIBLE" : "INTERLOCKED"}
             </span>
           </p>
         </div>
@@ -137,20 +207,22 @@ export function MilacronRobotToolchanger3D() {
         data-mobile-layout="controls-below-canvas"
         className="grid gap-3 border-t border-slate-700/80 bg-slate-950/90 p-3 lg:grid-cols-[minmax(0,1fr)_auto]"
       >
-        <div className="grid gap-2 sm:grid-cols-3">
+        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
           <label className="text-xs text-slate-200">
             Registration{" "}
             <span className="float-right font-mono text-cyan-300">
               {Math.round((params.registrationFraction ?? 1) * 100)}%
             </span>
             <input
-              className="mt-1 w-full accent-cyan-400"
+              className="mt-1 w-full accent-cyan-400 disabled:cursor-not-allowed disabled:opacity-40"
               type="range"
               min="0"
               max="1"
               step="0.01"
               value={params.registrationFraction ?? 1}
               aria-label="Tool-base registration fraction"
+              disabled={registrationControlDisabled}
+              title={registrationControlDisabled ? state.sequenceNote : undefined}
               onChange={(event) => updateParam("registrationFraction", Number(event.target.value))}
             />
           </label>
@@ -160,24 +232,38 @@ export function MilacronRobotToolchanger3D() {
               {Math.round((params.lockingSlideFraction ?? 1) * 100)}%
             </span>
             <input
-              className="mt-1 w-full accent-amber-400"
+              className="mt-1 w-full accent-amber-400 disabled:cursor-not-allowed disabled:opacity-40"
               type="range"
               min="0"
               max="1"
               step="0.01"
               value={params.lockingSlideFraction ?? 1}
               aria-label="Locking slide fraction"
+              disabled={slideControlDisabled}
+              title={slideControlDisabled ? state.sequenceNote : undefined}
               onChange={(event) => updateParam("lockingSlideFraction", Number(event.target.value))}
             />
           </label>
           <label className="flex items-center justify-between gap-2 text-xs text-slate-200">
             Tool base present
             <input
-              className="h-4 w-4 accent-cyan-400"
+              className="h-4 w-4 accent-cyan-400 disabled:cursor-not-allowed disabled:opacity-40"
               type="checkbox"
               checked={state.toolBasePresent}
               aria-label="Tool base present"
+              disabled={toolPresenceControlDisabled}
+              title={toolPresenceControlDisabled ? state.sequenceNote : undefined}
               onChange={(event) => updateParam("toolBasePresent", event.target.checked ? 1 : 0)}
+            />
+          </label>
+          <label className="flex items-center justify-between gap-2 text-xs text-slate-200">
+            Claim 4 T-member form
+            <input
+              className="h-4 w-4 accent-rose-400"
+              type="checkbox"
+              checked={state.claimFourTMemberSelected}
+              aria-label="Claim 4 T-member form"
+              onChange={(event) => updateParam("claimFourTMember", event.target.checked ? 1 : 0)}
             />
           </label>
         </div>
@@ -202,6 +288,15 @@ export function MilacronRobotToolchanger3D() {
             Reset
           </button>
         </div>
+        <p
+          role="status"
+          className={`text-[11px] leading-4 lg:col-span-2 ${state.sequenceValid ? "text-slate-400" : "text-rose-300"}`}
+        >
+          {state.sequenceNote}{" "}
+          {view === "lock"
+            ? "Lock inspection uses a transparent cutaway of common base 18 so aperture 34, slide 33, and the selected retention member remain visible. Transparency is an inspection aid, not source material."
+            : "Adapter and rack views keep all source-described plates opaque; select Lock to inspect the otherwise enclosed capture geometry."}
+        </p>
       </div>
     </section>
   );

@@ -3,7 +3,6 @@ import { stepArkwrightWaterFrame } from "./arkwrightKernel";
 import { stepBellPhotophone } from "./bellPhotophoneKernel";
 import {
   stepBellTelephone,
-  stepBoyleSmithCcd,
   stepCarlsonElectrophotography,
   stepCorlissEngine,
   stepDavenportMotor,
@@ -14,24 +13,17 @@ import {
   stepHallAluminium,
   stepHewittMercuryLamp,
   stepMaimanRubyLaser,
-  stepMarconiRadio,
   stepMorseTelegraph,
-  stepNoyceIC,
   stepParsonsTurbine,
   stepThomsonWelding,
-  stepTownesLaser,
   stepWattCondenser,
   stepWhitneyCottonGin,
   stepWozniakApple,
 } from "./catalogKernels";
 import { stepCortPuddlingRolling } from "./cortKernel";
 import { FrankenSimEngine } from "./engine";
-import { stepFermiKinetics } from "./fermiKinetics";
 import { stepHopkinsPotash } from "./hopkinsPotashKernel";
 import { readKamenSegwayControls, stepKamenSegwaySi } from "./kamenSegwayKernel";
-import { readKamenTransporterControls, stepKamenTransporterSi } from "./kamenTransporterKernel";
-import { stepRenoEscalator } from "./machineKernels";
-import { readMestralVelcroControls, stepMestralVelcroSi } from "./mestralVelcroKernel";
 import { stepRillieuxEvaporator } from "./rillieuxEvaporatorKernel";
 import { readWattRotaryControls, stepWattRotaryEngine } from "./wattRotaryKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
@@ -41,6 +33,22 @@ const MECHANICAL_HORSEPOWER_W = 745.7;
 
 /** Explicit reasons that a published record has no honest SI power-flow strip. */
 export const ENERGY_CHANNEL_OMISSION_REASONS = {
+  "us-3138743-kilby-integrated-circuit":
+    "US 3,138,743 prints the monolithic circuit construction, wafer dimensions and resistivity, layer depth, selected resistor and capacitor values, contacts, leads, and interconnect topology, but no supply voltage, operating current, transistor gain, junction geometry, measured frequency, delay, thermal point, or power datum from which a closed SI energy balance can be derived.",
+  "us-2981877-noyce-ic":
+    "US 2,981,877 supplies oxide, junction, contact, and lead topology but no applied voltage, dopant profile, dielectric constant, junction area, leakage, capacitance, clock, current, power, or operating point from which a closed SI energy balance can be derived.",
+  "us-2929922-townes-laser":
+    "US 2,929,922 prints the connected generator/amplifier/detector topology, approximate chamber dimensions, potassium-vapor temperature and pressure, and a sample end-assembly optical percentage split, but no pumping power, transition wavelength, gain, excited-state lifetime, internal loss, detector responsivity, or operating point from which a closed SI energy balance can be derived.",
+  "us-2717437-mestral-velcro":
+    "US 2,717,437 prints the woven foundation, auxiliary synthetic pile, heated grooved bar, off-centre cutting step, material-engaging hooks, and 90-degree two-fabric arrangement, but no filament dimensions, modulus, tape width, engaged-hook population, force-displacement curve, peel rate, friction, hysteresis, or power datum from which a source-faithful SI energy channel can be derived.",
+  "us-2318259-sikorsky-helicopter":
+    "US 2,318,259 prints the main-rotor, pitch-control, throttle-linkage, and auxiliary-rotor topology but no aircraft mass, rotor or boom dimensions, operating speed, torque, force, fuel flow, efficiency, or power datum from which a source-faithful SI energy channel can be derived.",
+  "us-2708656-fermi-reactor":
+    "US 2,708,656 prints fission energy, several reactor examples, and operating heat outputs, but the Figures 7–8 teaching view does not select a source reactor mass, coolant circuit, flow rate, temperature field, calibrated neutron flux, absorber-worth curve, or transient initial condition from which one closed SI power balance can be derived without mixing incompatible embodiments.",
+  "us-470918-reno-escalator":
+    "US 470,918 gives belt and hand-rail geometry, a preferred travel speed, a stated single-file capacity, and top-or-bottom power application, but no prime-mover type, torque, load, friction, voltage, flow, or power datum from which an honest SI energy channel can be derived.",
+  "us-586193-marconi-radio":
+    "US 586,193 prints transmitter/receiver topology and local sensitive-tube limits, but no inductance, capacitance, antenna current, loss, duty cycle, propagation loss, or transmitter power datum from which an honest SI energy channel can be derived.",
   "us-1102653-goddard-rocket":
     "US 1,102,653 prints apparatus geometry and firing order but no burn rate, force, speed, or power datum from which an SI energy channel can be derived.",
   "us-361931-daimler-engine":
@@ -51,6 +59,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 194,047 prints charge ordering, valve-gear topology, and a one-to-two shaft timing relation but no cylinder dimensions, operating speed, fuel flow, pressure trace, torque, inertia, or power datum from which an SI energy channel can be derived.",
   "us-6331181-davinci":
     "US 6,331,181 prints tool-memory, compatibility, calibration-offset, engagement, and linkage topology but no motor torque, drive speed, friction, electrical load, or power datum from which an SI energy channel can be derived.",
+  "us-5701965-kamen-transporter":
+    "US 5,701,965 describes a motorized drive, control loop, cluster-wheel arrangement, and balance/transfer/climb modes, but gives no electrical input, motor rating, torque, speed, drivetrain loss, mass, force, or duty-cycle datum from which an SI energy channel can be derived.",
   "us-6594844-roomba":
     "US 6,594,844 prints optical emitter/detector geometry and redirect-circuit behavior but no battery voltage, current, robot mass, motor load, brush drag, vacuum flow, loss, or power datum from which an SI energy channel can be derived.",
   "us-4750-howe-sewing-machine":
@@ -61,6 +71,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 4,341,502 prints link topology and joint angle relationships but no link lengths, motor torque, payload mass, velocity, friction, or power datum from which an SI energy channel can be derived.",
   "us-4512709-milacron-robot-toolchanger":
     "US 4,512,709 prints a fluid-powered linear actuator, slideway, T-member ramps, locating pins, and optional fluid/electrical interfaces but no pressure, cylinder bore, stroke, flow, speed, force, ramp angle, friction, payload, mass, duty cycle, or power datum from which a source-faithful SI energy channel can be derived.",
+  "us-4575330-hull-stereolithography":
+    "US 4,575,330 prints a 350 W mercury short-arc lamp electrical rating and about 1 W/cm² long-wave UV at the working surface, but no spectral radiant-power balance, illuminated area, shutter duty cycle, exposure time, resin absorption, cure enthalpy, cooling flow, or actuator power from which a closed SI energy partition can be derived.",
   "us-4765668-robot-end-effector":
     "US 4,765,668 prints prototype screw lead, gear diameters, an air-motor rating, hand-travel, and force figures, but does not supply a consistent torque-to-grip/contact chain, finger/workpiece geometry, friction, pneumatic flow, duty cycle, connector stroke, or verified mechanical power datum from which a source-faithful SI energy channel can be derived.",
   "us-2846084-goertz-electronic-master-slave-manipulator":
@@ -115,6 +127,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "US 1,219,881 specifies the mechanical geometry of corded edge tapes, stamped interlocking scoops, and the Y-slider cam, but supplies no continuous slider pull velocity, friction coefficient, or power datum from which an SI energy channel can be derived.",
   "us-2495429-spencer-microwave":
     "US 2,495,429 specifies dual magnetron oscillators feeding a common hollow waveguide over a conveyor, but supplies no continuous electrical power input, magnetron efficiency, tube voltage, or cooling dissipation datum from which an SI energy channel can be derived.",
+  "us-2524035-bardeen-transistor":
+    "US 2,524,035 reports small-signal input and output powers for three operating samples, but does not report the emitter and collector DC supply currents or total bias-supply power needed to close a conservative energy balance; signal power gain alone is not a complete SI power-flow partition.",
   "us-6469-lincoln-buoy":
     "US 6,469 specifies expansible buoyant side chambers, sliding spars D, and main shaft C with ropes and pulleys for vessel draft reduction, but supplies no shaft horsepower, steam engine wattage, manual cranking rate, or continuous power datum from which an SI energy channel can be derived.",
   "us-x8277-mccormick-reaper":
@@ -138,13 +152,17 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
   "us-2292387-lamarr-frequency-hopping":
     "US 2,292,387 specifies the mechanical and electrical coordination of slotted record strips, pneumatic sensing head 45, motors, and radio tuning circuits, but supplies no motor power, suction wattage, vacuum pressure, RF radiation power, or continuous wattage datum from which an authentic SI energy channel can be derived.",
   "us-3671542-kwolek-kevlar":
-    "US 3,671,542 specifies anisotropic liquid-crystalline polyamide dopes, polymer compositions, and optical properties across 83 examples, but supplies no extrusion pump power, coagulation bath wattage, spinning motor energy, or continuous wattage datum from which an authentic SI energy channel can be derived.",
+    "The checked public claims of US 3,671,542 establish composition conditions for an optically anisotropic dope, not a quantified energy path; no extrusion, pump, bath, prime-mover, or finished-fiber power datum is published here.",
   "us-1773980-farnsworth-tv":
     "US 1,773,980 describes an electrical image dissector using a photoelectric cathode, accelerating anode, electrostatic deflection plates, collector aperture, and quartz oscillograph light valve, but supplies no operational beam current, deflection voltage power, RF carrier wattage, or continuous wattage datum from which an authentic SI energy channel can be derived.",
   "us-233692-pelton-water-wheel":
     "US 233,692 describes the bucket geometry (curved bottoms c, central apex d, inclined sides e, and sloping face b) for dividing a water jet, but supplies no hydraulic head, volumetric flow rate, runner RPM, efficiency, or continuous mechanical power datum from which an authentic SI energy channel can be derived.",
   "us-3541541-engelbart-mouse":
-    "US 3,541,541 specifies the mechanical construction of perpendicular knife-edge wheels, potentiometer shafts, and housing, but supplies no hand translation velocity, rolling friction, potentiometer power dissipation, or continuous mechanical/electrical wattage datum from which an authentic SI energy channel can be derived.",
+    "US 3,541,541 specifies the mechanical construction of perpendicular position wheels, potentiometer shafts, and housing, but supplies no hand translation velocity, rolling friction, potentiometer power dissipation, or continuous mechanical/electrical wattage datum from which an authentic SI energy channel can be derived.",
+  "us-3728480-baer-odyssey":
+    "US 3,728,480 identifies a preferred battery supply and prints circuit topology, sync frequencies, pulse amplitudes, and pulse widths, but supplies no battery voltage/current, duty-cycle-complete load, RF terminal voltage, antenna impedance, or loss measurements from which a closed continuous SI power partition can be derived.",
+  "us-3858232-boyle-smith-ccd":
+    "US 3,858,232 prints the electrode, insulating-layer, semiconductor-channel, input, detector, and sequential pulse topology, but supplies no complete operating voltage, capacitance, drive current, switching loss, load power, or measured energy balance from which an authentic continuous SI power partition can be derived.",
   "us-395781-hollerith-tabulating":
     "US 395,781 describes an electro-mechanical tabulating system with sensing pins, mercury cups, and magnet-actuated counting registers, but supplies no operational battery voltage, coil resistance, circuit current, pulse duty cycle, or continuous electrical power datum from which an authentic SI energy channel can be derived.",
   "us-706737-fessenden-wireless":
@@ -203,21 +221,6 @@ export function energyChannelsFor(
       { name: "Fan work", watts: carrier.airMovementWatts, tone: "in" },
       { name: "Separator resistance", watts: carrier.airMovementWatts, tone: "loss" },
     ];
-  }
-  if (patentId === "us-586193-marconi-radio") {
-    const radio = stepMarconiRadio(
-      params.aerialHeight ?? 88,
-      params.sparkGapMm ?? 10,
-      params.sparkVoltage ?? 28,
-    );
-    return [{ name: "Spark RF", watts: radio.peakRfPowerKw * 1000, tone: "in" }];
-  }
-  if (patentId === "us-2708656-fermi-reactor") {
-    const kinetics = stepFermiKinetics(
-      params.rodWithdrawal ?? 83.5,
-      params.moderatorPurity ?? 99.5,
-    );
-    return [{ name: "Fission heat", watts: kinetics.thermalPowerWatts, tone: "in" }];
   }
   if (patentId === "us-328710-parsons-turbine") {
     const parsons = stepParsonsTurbine({
@@ -278,12 +281,7 @@ export function energyChannelsFor(
     ];
   }
   if (patentId === "us-470918-reno-escalator") {
-    const reno = stepRenoEscalator({
-      passengerCount: params.passengerCount,
-      inclineAngleDeg: params.inclineAngle,
-      velocityMps: params.beltSpeed,
-    });
-    return [{ name: "Motor", watts: reno.motorPowerKw * 1000, tone: "in" }];
+    return [];
   }
   if (patentId === "us-400766-hall-aluminium") {
     const hall = stepHallAluminium({
@@ -507,33 +505,11 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-2929922-townes-laser") {
-    const laser = stepTownesLaser({
-      pumpPowerWatts: params.pumpPowerWatts,
-      cavityLengthCm: params.cavityLengthCm,
-      mirror2ReflectivityPct: params.mirror2ReflectivityPct,
-    });
-    const pumpW = params.pumpPowerWatts ?? 350;
-    return [
-      { name: "Optical Flash Pump", watts: pumpW, tone: "in" },
-      { name: "Stimulated Coherent Beam", watts: laser.laserOutputPowerWatts, tone: "useful" },
-      {
-        name: "Nonradiative Cavity Heat",
-        watts: Math.max(0, pumpW - laser.laserOutputPowerWatts),
-        tone: "loss",
-      },
-    ];
+    return [];
   }
 
   if (patentId === "us-2981877-noyce-ic") {
-    const _noyce = stepNoyceIC({
-      clockFrequencyMhz: params.clockFrequencyMhz,
-      reverseBias: params.reverseBias,
-    });
-    return [
-      { name: "DC Power Supply", watts: 0.12, tone: "in" },
-      { name: "Planar Logic Switching", watts: 0.085, tone: "useful" },
-      { name: "Substrate Leakage", watts: 0.035, tone: "loss" },
-    ];
+    return [];
   }
 
   if (patentId === "us-3353115-maiman-ruby-laser") {
@@ -544,40 +520,26 @@ export function energyChannelsFor(
       outputMirrorReflectivity: params.outputMirrorReflectivity,
       crystalTemperatureKelvin: params.crystalTemperatureKelvin,
     });
-    const pumpAvgW = (params.pumpEnergyJoules ?? 150) / ((params.flashDurationMs ?? 1.0) * 1e-3);
+    const flashDurationSeconds = Math.max(1e-6, (params.flashDurationMs ?? 1.0) * 1e-3);
+    const pumpAvgW = (params.pumpEnergyJoules ?? 150) / flashDurationSeconds;
+    const laserCycleAvgW = maiman.laserPulseEnergyJoules / flashDurationSeconds;
     return [
-      { name: "Xenon Flashtube", watts: pumpAvgW, tone: "in" },
-      { name: "694.3nm Laser Pulse", watts: maiman.laserPeakPowerKw * 1000, tone: "useful" },
+      { name: "Flash input", watts: pumpAvgW, tone: "in" },
+      { name: "Laser cycle average", watts: laserCycleAvgW, tone: "useful" },
       {
-        name: "Phonon Crystal Heating",
-        watts: Math.max(0, pumpAvgW - maiman.laserPeakPowerKw * 1000),
+        name: "Optical + lattice loss",
+        watts: Math.max(0, pumpAvgW - laserCycleAvgW),
         tone: "loss",
       },
     ];
   }
 
   if (patentId === "us-3858232-boyle-smith-ccd") {
-    const _ccd = stepBoyleSmithCcd({
-      gateVoltageV: params.gateVoltageV,
-      clockFrequencyMhz: params.clockFrequencyMhz,
-      incidentLux: params.incidentLux,
-      integrationTimeMs: params.integrationTimeMs,
-      temperatureKelvin: params.temperatureKelvin,
-    });
-    const clockW = (0.045 * (params.clockFrequencyMhz ?? 5.0)) / 5.0;
-    return [
-      { name: "Clock Gate Drive", watts: clockW, tone: "in" },
-      { name: "Photoelectron Packet Transfer", watts: clockW * 0.82, tone: "useful" },
-      { name: "Dark Thermal Noise", watts: clockW * 0.18, tone: "loss" },
-    ];
+    return [];
   }
 
   if (patentId === "us-3728480-baer-odyssey") {
-    return [
-      { name: "DC Battery Supply (9V)", watts: 1.8, tone: "in" },
-      { name: "Multivibrators & RF Modulator", watts: 1.45, tone: "useful" },
-      { name: "Resistive Thermal Dissipation", watts: 0.35, tone: "loss" },
-    ];
+    return [];
   }
 
   if (patentId === "us-4063220-metcalfe-ethernet") {
@@ -585,15 +547,6 @@ export function energyChannelsFor(
       { name: "Transceiver Driver DC Power (+12V/-5V)", watts: 0.95, tone: "in" },
       { name: "Coaxial RF Signal Transmission", watts: 0.45, tone: "useful" },
       { name: "50-Ohm Terminator & Cable Resistive Loss", watts: 0.5, tone: "loss" },
-    ];
-  }
-
-  if (patentId === "us-2318259-sikorsky-helicopter") {
-    return [
-      { name: "Engine Fuel Chemical Combustion", watts: 55000.0, tone: "in" },
-      { name: "Main Rotor Lift & Induced Power", watts: 44000.0, tone: "useful" },
-      { name: "Tail Rotor Anti-Torque Thrust Power", watts: 4500.0, tone: "useful" },
-      { name: "Blade Profile Drag & Transmission Losses", watts: 6500.0, tone: "loss" },
     ];
   }
 
@@ -610,23 +563,11 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-2524035-bardeen-transistor") {
-    const iE = (params.emitterCurrent ?? 0.6) * 1e-3;
-    const biasW = iE * 0.7 + 0.035;
-    return [
-      { name: "Emitter Bias Supply", watts: biasW * 1000, tone: "in" },
-      { name: "Collector Amplified Output", watts: biasW * 1000 * 0.76, tone: "useful" },
-      { name: "Germanium Bulk Recombination", watts: biasW * 1000 * 0.24, tone: "loss" },
-    ];
+    return [];
   }
 
   if (patentId === "us-3138743-kilby-integrated-circuit") {
-    const vSupply = params.supplyVoltageV ?? 10;
-    const dcW = vSupply * 2.5e-3; // 2.5 mA DC
-    return [
-      { name: "DC Power Supply", watts: dcW * 1000, tone: "in" },
-      { name: "Oscillator AC Output", watts: dcW * 1000 * 0.65, tone: "useful" },
-      { name: "Diffused Resistor I²R", watts: dcW * 1000 * 0.35, tone: "loss" },
-    ];
+    return [];
   }
 
   if (patentId === "us-6120588-eink") {
@@ -756,27 +697,7 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-5701965-kamen-transporter") {
-    const controls = readKamenTransporterControls(params);
-    const tel = stepKamenTransporterSi(controls);
-    const motorElecW = Math.max(
-      20,
-      Math.abs(tel.balanceTorqueNm) * (Math.abs(tel.forwardVelocityMs) / 0.15) * 1.15 + 35,
-    );
-    const mechTractionW = Math.abs(tel.groundTractionForceN * tel.forwardVelocityMs);
-    const heatLossW = Math.max(5, motorElecW - mechTractionW);
-    return [
-      { name: "Battery Pack Electric Power Supply", watts: motorElecW, tone: "in" },
-      {
-        name: "Inverted Pendulum Ground Traction & Balancing Work",
-        watts: mechTractionW,
-        tone: "useful",
-      },
-      {
-        name: "Servomotor Copper I²R & Planetary Gearbox Heat Loss",
-        watts: heatLossW,
-        tone: "loss",
-      },
-    ];
+    return [];
   }
 
   if (patentId === "us-6302230-kamen-segway") {
@@ -812,43 +733,8 @@ export function energyChannelsFor(
     ];
   }
 
-  if (patentId === "us-2717437-mestral-velcro") {
-    const controls = readMestralVelcroControls(params);
-    const tel = stepMestralVelcroSi(controls);
-    const totalPeelW = tel.peelDisengagementPowerWatts;
-    return [
-      { name: "Manual Peeling Traction Input", watts: totalPeelW, tone: "in" },
-      {
-        name: "Micro-Hook Elastic Bending & Disengagement Work",
-        watts: totalPeelW * 0.82,
-        tone: "useful",
-      },
-      {
-        name: "Polyamide Viscoelastic Hysteresis & Fiber Friction Loss",
-        watts: totalPeelW * 0.18,
-        tone: "loss",
-      },
-    ];
-  }
-
   if (patentId === "us-4575330-hull-stereolithography") {
-    const laserMw = typeof params.laserPowerMw === "number" ? params.laserPowerMw : 45.0;
-    const laserW = Math.max(0.005, laserMw * 1e-3);
-    const photochemicalW = laserW * 0.68;
-    const thermalDissipationW = laserW * 0.32;
-    return [
-      { name: "UV Laser Radiant Optical Beam Input", watts: laserW, tone: "in" },
-      {
-        name: "Photochemical Cross-Linking & Gel Network Formation",
-        watts: photochemicalW,
-        tone: "useful",
-      },
-      {
-        name: "Exothermic Reaction & Fluid Thermal Dissipation to Vat",
-        watts: thermalDissipationW,
-        tone: "loss",
-      },
-    ];
+    return [];
   }
 
   if (patentId === "us-5121329-crump-fdm") {

@@ -29,6 +29,23 @@ describe("PatentDetailPage component", () => {
     expect(meta.title).toContain("US 821,393");
   });
 
+  test("labels the source-held Kwolek record without advertising an interactive simulation", async () => {
+    const meta = await generateMetadata({
+      params: Promise.resolve({ id: "us-3671542-kwolek-kevlar" }),
+    });
+    expect(meta.title).toContain("Source-Bound Record");
+    expect(meta.title).not.toContain("Interactive Sim");
+
+    const PageJsx = await PatentDetailPage({
+      params: Promise.resolve({ id: "us-3671542-kwolek-kevlar" }),
+    });
+    const html = renderToStaticMarkup(PageJsx);
+    expect(html).toContain("Visual Model in Preparation");
+    expect(html).toContain("Complete patent text remains available");
+    expect(html).not.toContain("Interactive Real-Time Physical Simulation");
+    expect(html).toContain('data-source-visual-hold="true"');
+  });
+
   test("renders complete patent detail page for Wright Flyer", async () => {
     const PageJsx = await PatentDetailPage({
       params: Promise.resolve({ id: "us-821393-wright-flyer" }),
@@ -42,6 +59,16 @@ describe("PatentDetailPage component", () => {
     expect(html).toContain('data-archival-publication-state="held"');
     expect(html).toContain("data-archival-publication-evidence=");
     expect(html).toContain("acceptedFigureCount");
+  });
+
+  test("does not present Fermi's incomplete stored edition as a complete archival edition", async () => {
+    const PageJsx = await PatentDetailPage({
+      params: Promise.resolve({ id: "us-2708656-fermi-reactor" }),
+    });
+    const html = renderToStaticMarkup(PageJsx);
+
+    expect(html).toContain('data-archival-edition="withheld"');
+    expect(html).not.toContain("Complete Manually Prepared Archival Edition");
   });
 
   test("handles legacy redirects gracefully", async () => {

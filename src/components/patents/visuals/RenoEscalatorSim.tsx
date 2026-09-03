@@ -8,45 +8,89 @@ import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
+const UI_SNAPSHOT_INTERVAL_MS = 80;
+
+function projectRenoTreads(
+  cleatsGroup: SVGGElement | null,
+  handrail: SVGPathElement | null,
+  treadOffset: number,
+  reno: ReturnType<typeof stepRenoEscalator>,
+) {
+  for (let index = 0; index < (cleatsGroup?.children.length ?? 0); index += 1) {
+    const cleat = cleatsGroup?.children.item(index);
+    if (!(cleat instanceof SVGGElement)) continue;
+    const { x, y } = renoCleatSvg(
+      index,
+      treadOffset,
+      reno.cleatSvgPitchPx,
+      reno.treadSvgWrapPx,
+      reno.cleatSvgOriginX,
+      reno.cleatSvgOriginY,
+      reno.cleatSvgXScale,
+      reno.cleatSvgYScale,
+    );
+    cleat.setAttribute("transform", `translate(${x}, ${y}) rotate(${reno.cleatSvgRotateDeg})`);
+  }
+  handrail?.setAttribute("stroke-dashoffset", String(-treadOffset));
+}
+
 export function RenoEscalatorSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-470918-reno-escalator");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const beltSpeedMps = params.beltSpeed ?? 0.45;
-  const passengerLoad = params.passengerCount ?? 30;
+  const beltSpeedMps = params.beltSpeed ?? 1.016;
   const inclineAngleDeg = params.inclineAngle ?? 25;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [treadOffset, setTreadOffset] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const treadOffsetRef = useRef(0);
+  const renoRef = useRef<ReturnType<typeof stepRenoEscalator> | null>(null);
+  const cleatsGroupRef = useRef<SVGGElement>(null);
+  const handrailRef = useRef<SVGPathElement>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const reno = stepRenoEscalator({
-    passengerCount: passengerLoad,
     inclineAngleDeg,
     velocityMps: beltSpeedMps,
   });
   const beltSpeedFpm = reno.speedFpm;
-  const passengersPerHour = reno.throughputPerHour;
-  const driveMotorPowerKw = reno.motorPowerKw;
+
+  useEffect(() => {
+    renoRef.current = reno;
+  }, [reno]);
 
   useEffect(() => {
     if (!isPlaying) return;
 
     let lastTime = performance.now();
+    let lastUiSnapshot = 0;
 
     const loop = (time: number) => {
       animRef.current = requestAnimationFrame(loop);
-      if (!onscreenRef.current) return;
+      if (!onscreenRef.current) {
+        lastTime = time;
+        return;
+      }
       const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
       lastTime = time;
+      const liveReno = renoRef.current;
+      if (!liveReno) return;
 
-      setTreadOffset((prev) => (prev + reno.treadSvgAdvancePerS * dt) % reno.treadSvgWrapPx);
+      const nextOffset =
+        (treadOffsetRef.current + liveReno.treadSvgAdvancePerS * dt) % liveReno.treadSvgWrapPx;
+      treadOffsetRef.current = nextOffset;
+      projectRenoTreads(cleatsGroupRef.current, handrailRef.current, nextOffset, liveReno);
+
+      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = time;
+        setTreadOffset(nextOffset);
+      }
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, reno.treadSvgAdvancePerS, reno.treadSvgWrapPx, onscreenRef.current]);
+  }, [isPlaying, onscreenRef]);
 
   return (
     <div
@@ -62,7 +106,7 @@ export function RenoEscalatorSim() {
             </h3>
           </div>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
-            25° slotted hardwood cleats, intermeshing stationary comb plate, and moving handrail.
+            Approx. 25° grooved hinged belt, fixed cast-steel comb landing, and articulated rail.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -100,6 +144,8 @@ export function RenoEscalatorSim() {
             type="button"
             onClick={() => {
               resetParams();
+              treadOffsetRef.current = 0;
+              projectRenoTreads(cleatsGroupRef.current, handrailRef.current, 0, reno);
               setTreadOffset(0);
               soundEngine.playSwitchClick();
             }}
@@ -132,14 +178,14 @@ export function RenoEscalatorSim() {
           <g transform="translate(60, 275)">
             <polygon
               points="0,0 40,0 35,15 0,15"
-              fill="#D4AF37"
-              stroke="#744210"
+              fill="#718096"
+              stroke="#334155"
               strokeWidth="1.5"
             />
             <text
               x="-40"
               y="28"
-              fill="#744210"
+              fill="#334155"
               fontSize="9"
               fontWeight="bold"
               fontFamily="sans-serif"
@@ -152,14 +198,14 @@ export function RenoEscalatorSim() {
           <g transform="translate(480, 95)">
             <polygon
               points="0,0 40,0 40,15 5,15"
-              fill="#D4AF37"
-              stroke="#744210"
+              fill="#718096"
+              stroke="#334155"
               strokeWidth="1.5"
             />
             <text
               x="45"
               y="10"
-              fill="#744210"
+              fill="#334155"
               fontSize="9"
               fontWeight="bold"
               fontFamily="sans-serif"
@@ -169,7 +215,7 @@ export function RenoEscalatorSim() {
           </g>
 
           {/* Moving 25-degree Incline Endless Cleated Belt */}
-          <g id="moving-cleats">
+          <g ref={cleatsGroupRef} id="moving-cleats">
             {Array.from({ length: 14 }).map((_, i) => {
               const { x: xPos, y: yPos } = renoCleatSvg(
                 i,
@@ -186,30 +232,41 @@ export function RenoEscalatorSim() {
                   key={`cleat-${i * reno.cleatSvgPitchPx}`}
                   transform={`translate(${xPos}, ${yPos}) rotate(${reno.cleatSvgRotateDeg})`}
                 >
-                  {/* Longitudinal wooden ridge cleats */}
+                  {/* Longitudinal grooves in the hinged cast-iron belt sections */}
                   <rect
                     x="0"
                     y="0"
                     width="30"
                     height="8"
                     rx="1.5"
-                    fill="#8B5A2B"
-                    stroke="#5C4033"
+                    fill="#59616A"
+                    stroke="#334155"
                     strokeWidth="1"
                   />
-                  <line x1="0" y1="4" x2="30" y2="4" stroke="#D4AF37" strokeWidth="1.5" />
+                  <line x1="0" y1="4" x2="30" y2="4" stroke="#CBD5E1" strokeWidth="1.5" />
                 </g>
               );
             })}
           </g>
 
-          {/* Synchronized Moving Rubber Handrail */}
+          {/* Fixed grooved rail 7 supports articulated rail plates 8. */}
+          <path
+            ref={handrailRef}
+            d="M 70 238 L 170 238 L 470 63 L 540 63"
+            stroke="#718096"
+            strokeWidth="5"
+            fill="none"
+            strokeLinecap="round"
+          />
+          {/* Articulated traveling handrail 10 advances with the belt phase. */}
           <path
             d="M 70 230 L 170 230 L 470 55 L 540 55"
             stroke="#1A202C"
             strokeWidth="8"
             fill="none"
-            strokeLinecap="round"
+            strokeLinecap="butt"
+            strokeDasharray="12 4"
+            strokeDashoffset={-treadOffset}
           />
           <text
             x="260"
@@ -219,7 +276,7 @@ export function RenoEscalatorSim() {
             fontWeight="bold"
             fontFamily="sans-serif"
           >
-            25° Inclined Moving Handrail
+            Traveling articulated handrail 10 / fixed rail 7
           </text>
         </svg>
       </div>
@@ -228,69 +285,55 @@ export function RenoEscalatorSim() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Belt Linear Speed
+            Selected Belt Speed
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {beltSpeedMps} m/s ({beltSpeedFpm} FPM)
+            {beltSpeedMps.toFixed(3)} m/s ({beltSpeedFpm} FPM)
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Capacity
+            Patent Preferred Speed
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            {passengersPerHour.toLocaleString()} riders/hr
+            200 FPM (1.016 m/s)
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Motor Power
+            Patent Stated Maximum
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {driveMotorPowerKw} kW
+            6,000 passengers/h, single file
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Incline Geometry
+            Comb Clearance
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {inclineAngleDeg}° Incline
+            ≤ 1/8 in (3.175 mm)
           </span>
         </div>
       </div>
 
       {/* Sliders */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
+      <div className="grid grid-cols-1 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Escalator Linear Speed</span>
+            <span>Belt Speed (source reference 200 FPM)</span>
             <span className="font-mono">
-              {beltSpeedMps} m/s ({beltSpeedFpm} FPM)
+              {beltSpeedMps.toFixed(3)} m/s ({beltSpeedFpm} FPM)
             </span>
           </div>
           <input
             type="range"
-            min="0.3"
-            max="0.75"
-            step="0.05"
+            aria-label="Escalator belt speed in meters per second"
+            min="0.4"
+            max="1.2"
+            step="0.001"
             value={beltSpeedMps}
             onChange={(e) => updateParam("beltSpeed", Number(e.target.value))}
-            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-          />
-        </div>
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Passenger Live Load</span>
-            <span className="font-mono">{passengerLoad} Passengers</span>
-          </div>
-          <input
-            type="range"
-            min="0"
-            max="60"
-            step="2"
-            value={passengerLoad}
-            onChange={(e) => updateParam("passengerCount", Number(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
         </div>

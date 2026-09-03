@@ -136,8 +136,8 @@ export default function HaberAmmonia3D({
 
     const clock = createStudioClock();
     const animate = (now: number) => {
+      animFrameRef.current = requestAnimationFrame(animate);
       if (!studio.isVisible()) {
-        animFrameRef.current = requestAnimationFrame(animate);
         return;
       }
       const { dt, simTimeSec } = clock.pump(now);

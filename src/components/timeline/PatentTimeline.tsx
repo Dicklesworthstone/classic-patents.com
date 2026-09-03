@@ -3,8 +3,10 @@
 import { ArrowRight, ChevronLeft, ChevronRight, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { CoupledDynamicsStrip } from "@/components/patents/CoupledDynamicsStrip";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { allPatents } from "@/data/patents";
+import { coupleEdgesFor } from "@/physics/coupleGraph";
 import { formatPatentDate } from "@/utils/patentDate";
 
 type EraGroup = "all" | "early" | "gilded" | "modern";
@@ -41,6 +43,8 @@ export function PatentTimeline() {
     sortedPatents.find((p) => p.id === selectedPatentId) ||
     sortedPatents[0];
   const currentFilteredIndex = filteredPatents.findIndex((p) => p.id === selectedPatent.id);
+  const coupleEdges = useMemo(() => coupleEdgesFor(selectedPatent.id, {}), [selectedPatent.id]);
+  const selectedPatentHasVisualHold = selectedPatent.id === "us-3671542-kwolek-kevlar";
 
   // Sync selected patent to filtered set on era tab switch
   useEffect(() => {
@@ -228,7 +232,11 @@ export function PatentTimeline() {
               href={`/patents/${selectedPatent.id}`}
               className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs sm:text-sm font-sans font-bold transition-colors shadow-sm"
             >
-              <span>Explore Patent &amp; 3D Model</span>
+              <span>
+                {selectedPatentHasVisualHold
+                  ? "Explore Source-Bound Record"
+                  : "Explore Patent & 3D Model"}
+              </span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -279,6 +287,12 @@ export function PatentTimeline() {
             </div>
           </div>
         </div>
+
+        {coupleEdges.length > 0 && (
+          <div className="pt-2">
+            <CoupledDynamicsStrip edges={coupleEdges} />
+          </div>
+        )}
       </div>
     </div>
   );

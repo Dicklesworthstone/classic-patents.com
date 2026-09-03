@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import type { BoxGeometry } from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import {
   buildCarrierAirConditionerModel,
@@ -65,6 +66,11 @@ describe("US 808,897 Carrier wet air washer visual boundary", () => {
     expect(nodes.fanRotor.rotation.z).toBeCloseTo(initialRotation - 0.25, 10);
     expect(nodes.solidCasingMesh.visible).toBe(false);
     expect(nodes.cutawayCasingGroup.visible).toBe(true);
+    expect(nodes.cutawayRoofRails).toHaveLength(4);
+    for (const rail of nodes.cutawayRoofRails) {
+      expect(rail.geometry.type).toBe("BoxGeometry");
+      expect((rail.geometry as BoxGeometry).parameters.height).toBeCloseTo(0.12, 10);
+    }
     expect(materials.droplet.opacity).toBe(state.animation.dropletDisplayOpacity);
     expect(nodes.separatorPlates.filter((plate) => plate.visible)).toHaveLength(
       state.animation.activeSeparatorPlateCount,

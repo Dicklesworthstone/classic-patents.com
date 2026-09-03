@@ -1,7 +1,7 @@
 "use client";
 
 import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   stepTeslaMotorFig9,
   TESLA_FIELD_DISPLAY_SLOWDOWN,
@@ -16,6 +16,8 @@ import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
+const UI_SNAPSHOT_INTERVAL_MS = 80;
+
 export function TeslaMotorSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-381968-tesla-motor");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -26,30 +28,51 @@ export function TeslaMotorSim() {
   const isPlayingAudio = !isAudioMuted && (params.acHum ?? 1) === 1;
   const [_activePedagogyStep, setActivePedagogyStep] = useState<number>(1);
   const [angle, setAngle] = useState<number>(0);
+  const angleRef = useRef(0);
+  const apparatusRef = useRef<ReturnType<typeof stepTeslaMotorFig9> | null>(null);
+  const diskRef = useRef<SVGGElement>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const apparatus = stepTeslaMotorFig9(frequencyHz);
+
+  useEffect(() => {
+    apparatusRef.current = apparatus;
+  }, [apparatus]);
 
   // Animation loop integrates the kernel's display angular velocity from the
   // browser-provided elapsed timestamp. The interval is not a physics clock.
   useEffect(() => {
     let frameId = 0;
     let lastTimestampMs: number | undefined;
+    let lastUiSnapshot = 0;
     const animate = (timestampMs: number) => {
       frameId = requestAnimationFrame(animate);
-      if (!onscreenRef.current) return;
+      if (!onscreenRef.current) {
+        lastTimestampMs = timestampMs;
+        return;
+      }
+      const liveApparatus = apparatusRef.current;
+      if (!liveApparatus) return;
       if (lastTimestampMs !== undefined) {
         const elapsedS = Math.min((timestampMs - lastTimestampMs) / 1000, 0.1);
-        setAngle(
-          (previous) =>
-            (previous + apparatus.fieldDisplayOmegaDegPerS * elapsedS) % apparatus.displayWrapDeg,
+        angleRef.current =
+          (angleRef.current + liveApparatus.fieldDisplayOmegaDegPerS * elapsedS) %
+          liveApparatus.displayWrapDeg;
+        diskRef.current?.setAttribute(
+          "transform",
+          `translate(${liveApparatus.statorCenterX}, ${liveApparatus.statorCenterY}) rotate(${angleRef.current})`,
         );
+
+        if (timestampMs - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+          lastUiSnapshot = timestampMs;
+          setAngle(angleRef.current);
+        }
       }
       lastTimestampMs = timestampMs;
     };
     frameId = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(frameId);
-  }, [apparatus.fieldDisplayOmegaDegPerS, apparatus.displayWrapDeg, onscreenRef.current]);
+  }, [onscreenRef]);
 
   // Audio AC Hum feedback
   useEffect(() => {
@@ -144,6 +167,12 @@ export function TeslaMotorSim() {
             type="button"
             onClick={() => {
               resetParams();
+              angleRef.current = 0;
+              diskRef.current?.setAttribute(
+                "transform",
+                `translate(${apparatus.statorCenterX}, ${apparatus.statorCenterY}) rotate(0)`,
+              );
+              setAngle(0);
               setActivePedagogyStep(1);
               soundEngine.playSwitchClick();
             }}
@@ -263,6 +292,7 @@ export function TeslaMotorSim() {
 
             {/* Fig. 9 magnetic disk D inside the annular ring R. */}
             <g
+              ref={diskRef}
               transform={`translate(${apparatus.statorCenterX}, ${apparatus.statorCenterY}) rotate(${angle})`}
             >
               <circle

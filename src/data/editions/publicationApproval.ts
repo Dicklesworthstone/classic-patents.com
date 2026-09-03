@@ -9,8 +9,10 @@
  * 3. Structural validation without fatal schema errors,
  * 4. Zero fabrication / reconstruction quarantine holds.
  *
- * Visitors still receive the pinned facsimile and all independently supportable educational
- * functionality with a clear review-status explanation when an edition is withheld.
+ * Editorial publication never decides whether a visitor can read the patent:
+ * a complete verified edition remains readable while review notes are held, and
+ * a page-complete reviewed ledger supplies the text face when no such edition
+ * exists. The pinned facsimile remains a separate reference/download face.
  */
 
 import type { CuratedSpecificationEdition, Patent } from "@/types/patent";
@@ -97,9 +99,31 @@ export function archivalEditionForPublication(
 }
 
 /**
+ * Source-reader selection is intentionally separate from editorial publication.
+ * A held but complete, structurally valid edition remains readable. Conversely,
+ * a stored draft must not masquerade as the complete instrument when the
+ * page-complete reviewed ledger is the truthful source face available today.
+ */
+export function completeArchivalEditionForViewer(
+  patent: Pick<Patent, "archivalEdition">,
+  decision: Pick<ArchivalPublicationDecision, "reviewerAttestation">,
+): CuratedSpecificationEdition | undefined {
+  if (
+    !patent.archivalEdition ||
+    !decision.reviewerAttestation.completeFacsimileReviewed ||
+    !decision.reviewerAttestation.structuralValidationPassed
+  ) {
+    return undefined;
+  }
+  return patent.archivalEdition;
+}
+
+/**
  * Project a canonical record across the server/client boundary without
- * serializing research-only source assets. Accepted editions remain available
- * to the renderer; held editions and all ledger metadata stay server-side.
+ * serializing research-only source assets. Editorial release state never hides
+ * a complete source face; when a stored edition itself is incomplete, the route
+ * supplies its complete reviewed ledger instead. Raw ledger metadata stays
+ * server-side.
  */
 export function patentForPublicationViewer(
   patent: Patent,
@@ -107,7 +131,7 @@ export function patentForPublicationViewer(
 ): Patent {
   return {
     ...patent,
-    archivalEdition: decision.publishedEdition,
+    archivalEdition: completeArchivalEditionForViewer(patent, decision),
     originalTextAsset: undefined,
   };
 }

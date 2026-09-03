@@ -533,7 +533,9 @@ export function buildTeslaTeleautomatonModel(): TeslaTeleautomatonModelResult {
 }
 
 /**
- * Updates boat pitch/roll buoyancy, propeller spin, rudder steering angle, and RF pulse animation.
+ * Updates source-supported propeller, rudder, control-disk, and RF behavior.
+ * The patent model has no sea-state input, so the hull remains fixed rather
+ * than implying an unmodeled buoyancy simulation.
  */
 export function updateTeslaTeleautomatonKinematics(
   nodes: TeslaTeleautomatonModelNodes,
@@ -547,31 +549,22 @@ export function updateTeslaTeleautomatonKinematics(
   steppingDiskIndex = 0,
   cohererDisplayOmegaRadPerS = 0,
 ) {
-  // 1. Aquatic Wave Buoyancy Motion (Pitch, Roll, Heave)
-  const heaveY = Math.sin(timeSec * 1.5) * 0.06;
-  const rollZ = Math.sin(timeSec * 1.2) * 0.04;
-  const pitchX = Math.cos(timeSec * 1.0) * 0.025;
-
-  nodes.hullGroup.position.y = heaveY;
-  nodes.hullGroup.rotation.z = pitchX;
-  nodes.hullGroup.rotation.x = rollZ;
-
-  // 2. Propeller spin from the shared kernel ω
+  // 1. Propeller spin from the shared kernel ω
   nodes.propellerGroup.rotation.x += propellerOmegaRadPerS * dt;
 
-  // 3. Rudder Steering Articulation
+  // 2. Rudder Steering Articulation
   const rudderRad = (rudderAngleDeg * Math.PI) / 180;
   nodes.rudderGroup.rotation.y = rudderRad;
 
-  // 4. Decoherer & Stepping Disk Kinematics
+  // 3. Decoherer & Stepping Disk Kinematics
   nodes.rotatingCoherer.rotation.x += dt * cohererDisplayOmegaRadPerS;
   nodes.steppingDiskLogic.rotation.z = (steppingDiskIndex % 8) * (Math.PI / 4);
 
-  // 5. Cutaway Shell Toggle
+  // 4. Cutaway Shell Toggle
   nodes.hullMesh.visible = !cutawayMode;
   nodes.cutawayHullMesh.visible = cutawayMode;
 
-  // 6. Wireless RF Electromagnetic Wave Propagation
+  // 5. Wireless RF Electromagnetic Wave Propagation
   if (showRadioWaves) {
     materials.rfEnergy.opacity = 0.85;
     nodes.rfWaveRings.forEach((ring, i) => {

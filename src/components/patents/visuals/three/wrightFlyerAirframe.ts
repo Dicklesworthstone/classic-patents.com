@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
 /**
  * 1903 Wright Flyer Historical Engineering Specifications (US Patent 821,393)
@@ -35,6 +36,10 @@ export interface FlyerAirframe {
   cradleGroup: THREE.Group;
   leftPropBlades: THREE.Group;
   rightPropBlades: THREE.Group;
+  leftTipUpper: THREE.Group;
+  rightTipUpper: THREE.Group;
+  leftTipLower: THREE.Group;
+  rightTipLower: THREE.Group;
   leftBayWireMat: THREE.MeshStandardMaterial;
   rightBayWireMat: THREE.MeshStandardMaterial;
   muslinMat: THREE.MeshStandardMaterial;
@@ -284,6 +289,77 @@ function loftWrightWingPanel(opts: {
 }
 
 /**
+ * Collapse meshes that form one rigid body into one draw unit per material and
+ * shadow state. The caller chooses the articulation boundary: this helper is
+ * never allowed to cross a wing-tip, control-surface, cradle, or propeller
+ * pivot. Geometry is baked into the supplied root's local frame, preserving
+ * the exact visible pose and every external articulation handle.
+ */
+function consolidateRigidMeshes(root: THREE.Group, label: string, recursive = true): void {
+  const candidates: THREE.Mesh[] = [];
+  const collect = (candidate: THREE.Object3D) => {
+    if (
+      candidate instanceof THREE.Mesh &&
+      !(candidate instanceof THREE.InstancedMesh) &&
+      !Array.isArray(candidate.material)
+    ) {
+      candidates.push(candidate);
+    }
+  };
+  if (recursive) root.traverse((candidate) => candidate !== root && collect(candidate));
+  else for (const candidate of root.children) collect(candidate);
+
+  root.updateWorldMatrix(true, true);
+  const rootInverse = root.matrixWorld.clone().invert();
+  const buckets = new Map<
+    string,
+    {
+      material: THREE.Material;
+      castShadow: boolean;
+      receiveShadow: boolean;
+      meshes: THREE.Mesh[];
+    }
+  >();
+  for (const mesh of candidates) {
+    const material = mesh.material as THREE.Material;
+    const key = `${material.uuid}:${mesh.castShadow ? 1 : 0}:${mesh.receiveShadow ? 1 : 0}:${mesh.renderOrder}`;
+    const bucket = buckets.get(key) ?? {
+      material,
+      castShadow: mesh.castShadow,
+      receiveShadow: mesh.receiveShadow,
+      meshes: [],
+    };
+    bucket.meshes.push(mesh);
+    buckets.set(key, bucket);
+  }
+
+  let batchIndex = 0;
+  for (const bucket of buckets.values()) {
+    if (bucket.meshes.length < 2) continue;
+    const transformed = bucket.meshes.map((mesh) => {
+      mesh.updateWorldMatrix(true, false);
+      const relative = rootInverse.clone().multiply(mesh.matrixWorld);
+      return mesh.geometry.clone().applyMatrix4(relative);
+    });
+    const merged = mergeGeometries(transformed, false);
+    for (const geometry of transformed) geometry.dispose();
+    if (!merged) throw new Error(`Failed to consolidate Wright ${label} geometry.`);
+
+    const batch = new THREE.Mesh(merged, bucket.material);
+    batch.name = `${label}-rigid-batch-${batchIndex++}`;
+    batch.castShadow = bucket.castShadow;
+    batch.receiveShadow = bucket.receiveShadow;
+    batch.renderOrder = bucket.meshes[0]?.renderOrder ?? 0;
+    root.add(batch);
+
+    for (const mesh of bucket.meshes) {
+      mesh.parent?.remove(mesh);
+      mesh.geometry.dispose();
+    }
+  }
+}
+
+/**
  * Creates an authentic spruce interplane strut with streamlined cross section
  * and brass socket hardware at both ends.
  */
@@ -314,6 +390,7 @@ function createStreamlineStrut(
     g.add(pin);
   }
 
+  consolidateRigidMeshes(g, "streamline-strut");
   return g;
 }
 
@@ -434,6 +511,7 @@ function createWrightPropeller(
     propGroup.add(bladeMesh);
   }
 
+  consolidateRigidMeshes(propGroup, "propeller");
   return propGroup;
 }
 
@@ -635,11 +713,15 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
       tipGroup.add(bow);
 
       tipGroup.name = sign < 0 ? "leftTip" : "rightTip";
+      consolidateRigidMeshes(tipGroup, sign < 0 ? "left-wing-tip" : "right-wing-tip");
       wingGroup.add(tipGroup);
     };
 
     addFlexibleTip(-1);
     addFlexibleTip(1);
+    // Keep the two tip pivots separate while batching fixed center ribs and
+    // spars that have no independent degree of freedom.
+    consolidateRigidMeshes(wingGroup, "fixed-wing-center", false);
     return wingGroup;
   };
 
@@ -711,6 +793,7 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
       steelMat,
       brassMat,
     );
+    consolidateRigidMeshes(skidGroup, "landing-skid");
     return skidGroup;
   };
   group.add(createLandingSkid(-0.95), createLandingSkid(0.95));
@@ -757,6 +840,7 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
       group.add(boom);
     }
   }
+  consolidateRigidMeshes(canardGroup, "canard");
   group.add(canardGroup);
 
   // --- 5. AFT TWIN VERTICAL RUDDERS (YAW CONTROL & CLAIM 1 COUPLING) ---
@@ -793,6 +877,7 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
   };
 
   rudderGroup.add(createRudderFin(-d.rudderSep / 2), createRudderFin(d.rudderSep / 2));
+  consolidateRigidMeshes(rudderGroup, "twin-rudder");
 
   // Aft rudder outrigger booms
   for (const x of [-d.rudderSep / 2, d.rudderSep / 2]) {
@@ -865,6 +950,7 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
   fuelLine.position.set(0.05, yUpper - (yLower + 0.24) - 0.6, 0.06);
   engine.add(fuelLine);
 
+  consolidateRigidMeshes(engine, "engine");
   group.add(engine);
 
   // --- 7. PRONE PILOT HIP CRADLE & ORVILLE WRIGHT FIGURE ---
@@ -915,6 +1001,7 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
   elevatorLever.rotation.z = -0.22;
   cradleGroup.add(elevatorLever);
 
+  consolidateRigidMeshes(cradleGroup, "pilot-cradle");
   group.add(cradleGroup);
 
   // --- 8. ANEMOMETER & FLIGHT INSTRUMENTS ---
@@ -946,6 +1033,7 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
   stopwatch.position.set(0, -0.04, 0.025);
   instCluster.add(stopwatch);
 
+  consolidateRigidMeshes(instCluster, "instrument-cluster");
   group.add(instCluster);
 
   // --- 9. TWIN COUNTER-ROTATING PUSHER PROPELLERS & CHAIN CASINGS ---
@@ -995,6 +1083,23 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
     brassMat,
   );
 
+  // The remaining direct meshes are fixed truss wires, turnbuckles, and
+  // support booms. Nested articulated groups are deliberately excluded.
+  consolidateRigidMeshes(group, "fixed-airframe", false);
+
+  const leftTipUpper = upperWing.getObjectByName("leftTip");
+  const rightTipUpper = upperWing.getObjectByName("rightTip");
+  const leftTipLower = lowerWing.getObjectByName("leftTip");
+  const rightTipLower = lowerWing.getObjectByName("rightTip");
+  if (
+    !(leftTipUpper instanceof THREE.Group) ||
+    !(rightTipUpper instanceof THREE.Group) ||
+    !(leftTipLower instanceof THREE.Group) ||
+    !(rightTipLower instanceof THREE.Group)
+  ) {
+    throw new Error("Wright wing-tip articulation handles are incomplete.");
+  }
+
   return {
     group,
     upperWing,
@@ -1004,6 +1109,10 @@ export function buildWrightFlyerAirframe(): FlyerAirframe {
     cradleGroup,
     leftPropBlades,
     rightPropBlades,
+    leftTipUpper,
+    rightTipUpper,
+    leftTipLower,
+    rightTipLower,
     leftBayWireMat,
     rightBayWireMat,
     muslinMat,
@@ -1033,17 +1142,10 @@ export function updateWrightFlyerKinematics(
 
   // Animate Wing Warping Deflection on Mesh Tips
   const warpRad = (wingWarpDeg * Math.PI) / 180;
-  const leftTipUpper = airframe.upperWing.getObjectByName("leftTip");
-  const rightTipUpper = airframe.upperWing.getObjectByName("rightTip");
-  const leftTipLower = airframe.lowerWing.getObjectByName("leftTip");
-  const rightTipLower = airframe.lowerWing.getObjectByName("rightTip");
-
-  if (leftTipUpper && rightTipUpper && leftTipLower && rightTipLower) {
-    leftTipUpper.rotation.x = warpRad * 0.6;
-    leftTipLower.rotation.x = warpRad * 0.6;
-    rightTipUpper.rotation.x = -warpRad * 0.6;
-    rightTipLower.rotation.x = -warpRad * 0.6;
-  }
+  airframe.leftTipUpper.rotation.x = warpRad * 0.6;
+  airframe.leftTipLower.rotation.x = warpRad * 0.6;
+  airframe.rightTipUpper.rotation.x = -warpRad * 0.6;
+  airframe.rightTipLower.rotation.x = -warpRad * 0.6;
 
   // Pilot hip cradle sliding sideways during wing warping
   airframe.cradleGroup.position.x = cradleStudioX;

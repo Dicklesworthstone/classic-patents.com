@@ -3,9 +3,9 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepMcCormickReaper } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -38,7 +38,7 @@ export function McCormickReaper3D() {
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const { params, updateParam } = usePatentPhysics("us-x8277-mccormick-reaper");
@@ -89,10 +89,6 @@ export function McCormickReaper3D() {
       soundEngine.stopContinuousTone();
     };
   }, [isAudioMuted, groundSpeedMph]);
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -314,6 +310,7 @@ export function McCormickReaper3D() {
             </div>
             <input
               type="range"
+              aria-label="Draft ground speed"
               min="1.0"
               max="6.0"
               step="0.2"

@@ -2,11 +2,17 @@ import * as THREE from "three";
 import type {
   MetcalfeEthernetControls,
   MetcalfeEthernetMetrics,
+  MetcalfeEthernetState,
 } from "@/physics/metcalfeEthernetKernel";
+import { ethernetDisplayWavePhase } from "@/physics/metcalfeEthernetKernel";
 
 export interface MetcalfeEthernet3DModel {
   root: THREE.Group;
-  updateState: (metrics: MetcalfeEthernetMetrics, controls: MetcalfeEthernetControls) => void;
+  updateState: (
+    state: MetcalfeEthernetState,
+    metrics: MetcalfeEthernetMetrics,
+    controls: MetcalfeEthernetControls,
+  ) => void;
   dispose: () => void;
 }
 
@@ -191,23 +197,25 @@ export function buildMetcalfeEthernetModel(): MetcalfeEthernet3DModel {
   collisionSpark.position.set(0, 0.4, -0.5);
   root.add(collisionSpark);
 
-  // 5. Update Loop
-  let waveProgress1 = 0;
-  let waveProgress2 = 0;
-
-  const updateState = (metrics: MetcalfeEthernetMetrics, _controls: MetcalfeEthernetControls) => {
-    // Animate wave propagation
-    waveProgress1 = (waveProgress1 + 0.025) % 1.0;
-    waveProgress2 = (waveProgress2 + 0.025) % 1.0;
+  // 5. Draw the shared transport state. The display phase is a deterministic
+  // slow-time projection of nanosecond coax propagation, never frame-counted.
+  const updateState = (
+    state: MetcalfeEthernetState,
+    metrics: MetcalfeEthernetMetrics,
+    _controls: MetcalfeEthernetControls,
+  ) => {
+    const waveProgress = ethernetDisplayWavePhase(state);
 
     const leftX = -cableLength / 2;
     const rightX = cableLength / 2;
 
-    waveRing1.position.x = -2.0 + waveProgress1 * (rightX - -2.0);
-    waveRing2.position.x = 2.0 - waveProgress2 * (2.0 - leftX);
+    waveRing1.position.x = -2.0 + waveProgress * (rightX - -2.0);
+    waveRing2.position.x = 2.0 - waveProgress * (2.0 - leftX);
+    waveRing1.visible = state.station1State === "transmitting" || state.station1State === "jamming";
+    waveRing2.visible = state.station2State === "transmitting" || state.station2State === "jamming";
 
     // Collision Flash
-    if (metrics.collisionDetected) {
+    if (metrics.collisionDisplayActive) {
       collisionFlashMat.opacity = 0.9;
       (station1.crtScreen.material as THREE.MeshBasicMaterial).color.setHex(0xef4444);
       (station2.crtScreen.material as THREE.MeshBasicMaterial).color.setHex(0xef4444);

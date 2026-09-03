@@ -1,9 +1,14 @@
 "use client";
 
 import { RotateCcw } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
-import { stepRobotEndEffector } from "@/physics/robotEndEffectorKernel";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
+import {
+  ROBOT_END_EFFECTOR_FRANKENSIM_CONTACT_OWNER,
+  ROBOT_END_EFFECTOR_FRANKENSIM_HELICAL_OWNER,
+  stepRobotEndEffector,
+} from "@/physics/robotEndEffectorKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 const PATENT_ID = "us-4765668-robot-end-effector";
@@ -11,16 +16,32 @@ const CENTER_X = 340;
 const DISPLAY_METRES_TO_PX = 1200;
 
 export function RobotEndEffectorSim() {
-  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-  const state = useMemo(() => stepRobotEndEffector(params), [params]);
+  const { params, effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(PATENT_ID);
+  const state = useMemo(() => stepRobotEndEffector(effectiveParams), [effectiveParams]);
   const offset = state.perHandOffsetM * DISPLAY_METRES_TO_PX;
-  const leftX = CENTER_X - offset;
-  const rightX = CENTER_X + offset;
+  const leftX = CENTER_X - offset - 24;
+  const rightX = CENTER_X + offset + 24;
+  const fingerWithdrawalPx = (1 - state.fingerRetainedFraction) * 18;
   const fingersPresent = state.fingerRetainedFraction > 0.03;
+  const transverseDy = state.transverseOffsetNormalized * 28;
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-cyan-800/50 bg-slate-950 text-slate-100 shadow-2xl">
+    <section
+      className="overflow-hidden rounded-2xl border border-cyan-800/50 bg-slate-950 text-slate-100 shadow-2xl"
+      data-testid="robot-end-effector-two"
+      data-robot-end-effector-topology={state.claim1TopologyPresent ? "present" : "withheld"}
+      data-robot-end-effector-jaw-gap-mm={(state.jawOpeningM * 1000).toFixed(1)}
+      data-robot-end-effector-midpoint-mm={(state.symmetricMidpointM * 1000).toFixed(3)}
+      data-robot-end-effector-finger-retained={state.fingerRetainedFraction.toFixed(3)}
+      data-robot-end-effector-finger-withdrawal="inward"
+      data-robot-end-effector-transverse={state.transverseOffsetNormalized.toFixed(3)}
+      data-robot-end-effector-roll-deg={((state.frameRotationRad * 180) / Math.PI).toFixed(0)}
+      data-robot-end-effector-helical-owner={state.owners.helical}
+      data-robot-end-effector-contact-owner={state.owners.contactCandidate}
+      data-robot-end-effector-boundary="refused-unparameterized"
+      data-robot-end-effector-support="two-guides-engaged"
+    >
       <header className="border-b border-cyan-900/70 bg-slate-900/80 px-4 py-3 sm:px-6">
         <p className="font-mono text-[11px] tracking-[0.16em] text-cyan-300">
           US 4,765,668 · OPPOSED-THREAD KINEMATICS
@@ -61,180 +82,224 @@ export function RobotEndEffectorSim() {
               source-bound displacement; illustrative rail and finger dimensions
             </text>
 
+            <line x1="76" x2="76" y1="137" y2="293" stroke="#64748b" strokeWidth="5" />
             <rect
-              x="105"
-              y="154"
-              width="470"
-              height="122"
-              rx="14"
-              fill="#0f172a"
-              stroke="#475569"
-              strokeWidth="3"
+              x="66"
+              y={207 + transverseDy}
+              width="20"
+              height="16"
+              rx="3"
+              fill="#0e7490"
+              stroke="#67e8f9"
             />
-            <rect x="105" y="206" width="470" height="18" rx="7" fill="#334155" stroke="#64748b" />
-            <text
-              x="340"
-              y="198"
-              textAnchor="middle"
-              fill="#bae6fd"
-              fontFamily="monospace"
-              fontSize="11"
-            >
-              CENTRAL WEB 28 · IDEAL MIDPOINT
+            <text x="50" y="319" fill="#6ee7b7" fontSize="9" fontFamily="monospace">
+              CLAIM 16 GUIDE
             </text>
-            <line
-              x1="340"
-              x2="340"
-              y1="86"
-              y2="346"
-              stroke="#34d399"
-              strokeWidth="2"
-              strokeDasharray="5 5"
-            />
-            <text x="347" y="99" fill="#6ee7b7" fontFamily="monospace" fontSize="11">
-              m = 0
-            </text>
-
-            {[176, 254].map((y, index) => (
-              <g key={y}>
-                <rect
-                  x="138"
-                  y={y - 5}
-                  width="404"
-                  height="10"
-                  rx="5"
-                  fill="url(#end-effector-screw)"
-                />
-                {Array.from({ length: 17 }, (_, thread) => (
-                  <line
-                    key={thread}
-                    x1={157 + thread * 22}
-                    y1={y - 9}
-                    x2={169 + thread * 22}
-                    y2={y + 9}
-                    stroke="#0f172a"
-                    strokeWidth="2"
-                  />
-                ))}
-                <text x="116" y={y + 4} fill="#cbd5e1" fontFamily="monospace" fontSize="10">
-                  {index === 0 ? "UPPER" : "LOWER"}
-                </text>
-              </g>
-            ))}
-
-            {[
-              { y: 176, label: "14 / 16" },
-              { y: 254, label: "18 / 20" },
-            ].map(({ y, label }) => (
-              <g key={y}>
-                <g transform={`translate(${leftX} ${y})`}>
-                  <rect
-                    x="-24"
-                    y="-28"
-                    width="48"
-                    height="56"
-                    rx="7"
-                    fill="#0e7490"
-                    stroke="#67e8f9"
-                    strokeWidth="2"
-                  />
-                  <path
-                    d="M -26 -18 L -42 -10 L -42 10 L -26 18"
-                    fill="none"
-                    stroke="#67e8f9"
-                    strokeWidth="4"
-                  />
-                  {fingersPresent && (
-                    <path
-                      d="M -42 -8 L -61 -34 L -61 35 L -42 8"
-                      fill="none"
-                      stroke="#fbbf24"
-                      strokeWidth="7"
-                      strokeLinejoin="round"
-                    />
-                  )}
-                </g>
-                <g transform={`translate(${rightX} ${y})`}>
-                  <rect
-                    x="-24"
-                    y="-28"
-                    width="48"
-                    height="56"
-                    rx="7"
-                    fill="#0e7490"
-                    stroke="#67e8f9"
-                    strokeWidth="2"
-                  />
-                  <path
-                    d="M 26 -18 L 42 -10 L 42 10 L 26 18"
-                    fill="none"
-                    stroke="#67e8f9"
-                    strokeWidth="4"
-                  />
-                  {fingersPresent && (
-                    <path
-                      d="M 42 -8 L 61 -34 L 61 35 L 42 8"
-                      fill="none"
-                      stroke="#fbbf24"
-                      strokeWidth="7"
-                      strokeLinejoin="round"
-                    />
-                  )}
-                </g>
-                <text
-                  x="340"
-                  y={y + 5}
-                  textAnchor="middle"
-                  fill="#f8fafc"
-                  fontFamily="monospace"
-                  fontSize="10"
-                >
-                  {label}
-                </text>
-              </g>
-            ))}
-
-            <line x1={leftX} x2={rightX} y1="326" y2="326" stroke="#fbbf24" strokeWidth="2" />
-            <path
-              d={`M ${leftX} 326 l 8 -5 v 10 z M ${rightX} 326 l -8 -5 v 10 z`}
-              fill="#fbbf24"
-            />
-            <text
-              x="340"
-              y="344"
-              textAnchor="middle"
-              fill="#fde68a"
-              fontFamily="monospace"
-              fontSize="12"
-            >
-              g = {(state.jawOpeningM * 1000).toFixed(1)} mm
-            </text>
-
-            <g transform="translate(587 214)">
-              <circle r="30" fill="#92400e" stroke="#fbbf24" strokeWidth="3" />
-              {Array.from({ length: 8 }, (_, peg) => {
-                const angle = (peg * Math.PI * 2) / 8 + state.encoderCountModulo * (Math.PI / 4);
-                return (
-                  <circle
-                    key={peg}
-                    cx={Math.cos(angle) * 23}
-                    cy={Math.sin(angle) * 23}
-                    r="3.5"
-                    fill="#67e8f9"
-                  />
-                );
-              })}
-              <rect x="-7" y="-47" width="14" height="12" rx="2" fill="#22d3ee" />
+            {!state.claim1TopologyPresent && (
               <text
-                x="0"
-                y="53"
+                x="340"
+                y="118"
+                textAnchor="middle"
+                fill="#fda4af"
+                fontSize="13"
+                fontFamily="monospace"
+                fontWeight="bold"
+              >
+                CLAIM 1 SCREW / HAND / FINGER TOPOLOGY WITHHELD
+              </text>
+            )}
+
+            <g
+              transform={`translate(0 ${transverseDy})`}
+              opacity={state.claim1TopologyPresent ? 1 : 0.16}
+            >
+              <rect
+                x="105"
+                y="154"
+                width="470"
+                height="122"
+                rx="14"
+                fill="#0f172a"
+                stroke="#475569"
+                strokeWidth="3"
+              />
+              <rect
+                x="105"
+                y="206"
+                width="470"
+                height="18"
+                rx="7"
+                fill="#334155"
+                stroke="#64748b"
+              />
+              <text
+                x="340"
+                y="198"
                 textAnchor="middle"
                 fill="#bae6fd"
                 fontFamily="monospace"
-                fontSize="10"
+                fontSize="11"
               >
-                8 COUNT
+                CENTRAL WEB 28 · IDEAL MIDPOINT
               </text>
+              <line
+                x1="340"
+                x2="340"
+                y1="86"
+                y2="346"
+                stroke="#34d399"
+                strokeWidth="2"
+                strokeDasharray="5 5"
+              />
+              <text x="347" y="99" fill="#6ee7b7" fontFamily="monospace" fontSize="11">
+                m = 0
+              </text>
+
+              {[176, 254].map((y, index) => (
+                <g key={y}>
+                  <rect
+                    x="138"
+                    y={y - 5}
+                    width="404"
+                    height="10"
+                    rx="5"
+                    fill="url(#end-effector-screw)"
+                  />
+                  {Array.from({ length: 17 }, (_, thread) => (
+                    <line
+                      key={thread}
+                      x1={157 + thread * 22}
+                      y1={y - 9}
+                      x2={169 + thread * 22}
+                      y2={y + 9}
+                      stroke="#0f172a"
+                      strokeWidth="2"
+                    />
+                  ))}
+                  <text x="116" y={y + 4} fill="#cbd5e1" fontFamily="monospace" fontSize="10">
+                    {index === 0 ? "UPPER" : "LOWER"}
+                  </text>
+                </g>
+              ))}
+
+              {state.claim1TopologyPresent &&
+                [
+                  { y: 176, label: "14 / 16" },
+                  { y: 254, label: "18 / 20" },
+                ].map(({ y, label }) => (
+                  <g key={y}>
+                    <g transform={`translate(${leftX} ${y})`}>
+                      <rect
+                        x="-24"
+                        y="-28"
+                        width="48"
+                        height="56"
+                        rx="7"
+                        fill="#0e7490"
+                        stroke="#67e8f9"
+                        strokeWidth="2"
+                      />
+                      {fingersPresent && (
+                        <path
+                          d={
+                            y < 200
+                              ? `M ${8 + fingerWithdrawalPx} -24 L ${8 + fingerWithdrawalPx} -65 L ${24 + fingerWithdrawalPx} -65 L ${24 + fingerWithdrawalPx} -24`
+                              : `M ${8 + fingerWithdrawalPx} 24 L ${8 + fingerWithdrawalPx} 65 L ${24 + fingerWithdrawalPx} 65 L ${24 + fingerWithdrawalPx} 24`
+                          }
+                          fill="none"
+                          stroke="#fbbf24"
+                          strokeWidth="6"
+                          strokeLinejoin="round"
+                        />
+                      )}
+                    </g>
+                    <g transform={`translate(${rightX} ${y})`}>
+                      <rect
+                        x="-24"
+                        y="-28"
+                        width="48"
+                        height="56"
+                        rx="7"
+                        fill="#0e7490"
+                        stroke="#67e8f9"
+                        strokeWidth="2"
+                      />
+                      {fingersPresent && (
+                        <path
+                          d={
+                            y < 200
+                              ? `M ${-8 - fingerWithdrawalPx} -24 L ${-8 - fingerWithdrawalPx} -65 L ${-24 - fingerWithdrawalPx} -65 L ${-24 - fingerWithdrawalPx} -24`
+                              : `M ${-8 - fingerWithdrawalPx} 24 L ${-8 - fingerWithdrawalPx} 65 L ${-24 - fingerWithdrawalPx} 65 L ${-24 - fingerWithdrawalPx} 24`
+                          }
+                          fill="none"
+                          stroke="#fbbf24"
+                          strokeWidth="6"
+                          strokeLinejoin="round"
+                        />
+                      )}
+                    </g>
+                    <text
+                      x="340"
+                      y={y + 5}
+                      textAnchor="middle"
+                      fill="#f8fafc"
+                      fontFamily="monospace"
+                      fontSize="10"
+                    >
+                      {label}
+                    </text>
+                  </g>
+                ))}
+
+              <line
+                x1={leftX + 24}
+                x2={rightX - 24}
+                y1="326"
+                y2="326"
+                stroke="#fbbf24"
+                strokeWidth="2"
+              />
+              <path
+                d={`M ${leftX + 24} 326 l 8 -5 v 10 z M ${rightX - 24} 326 l -8 -5 v 10 z`}
+                fill="#fbbf24"
+              />
+              <text
+                x="340"
+                y="344"
+                textAnchor="middle"
+                fill="#fde68a"
+                fontFamily="monospace"
+                fontSize="12"
+              >
+                g = {(state.jawOpeningM * 1000).toFixed(1)} mm
+              </text>
+
+              <g transform="translate(587 214)">
+                <circle r="30" fill="#92400e" stroke="#fbbf24" strokeWidth="3" />
+                {Array.from({ length: 8 }, (_, peg) => {
+                  const angle = (peg * Math.PI * 2) / 8 + state.encoderCountModulo * (Math.PI / 4);
+                  return (
+                    <circle
+                      key={peg}
+                      cx={Math.cos(angle) * 23}
+                      cy={Math.sin(angle) * 23}
+                      r="3.5"
+                      fill="#67e8f9"
+                    />
+                  );
+                })}
+                <rect x="-7" y="-47" width="14" height="12" rx="2" fill="#22d3ee" />
+                <text
+                  x="0"
+                  y="53"
+                  textAnchor="middle"
+                  fill="#bae6fd"
+                  fontFamily="monospace"
+                  fontSize="10"
+                >
+                  8 COUNT
+                </text>
+              </g>
             </g>
           </svg>
         </div>
@@ -265,6 +330,18 @@ export function RobotEndEffectorSim() {
                 <dt className="text-slate-400">Reported repeatability</dt>
                 <dd className="font-mono text-emerald-300">0.05 mm</dd>
               </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-slate-400">Transverse stage</dt>
+                <dd className="font-mono text-emerald-300">
+                  {state.transverseOffsetNormalized.toFixed(2)} normalized
+                </dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-slate-400">Frame roll</dt>
+                <dd className="font-mono text-violet-300">
+                  {((state.frameRotationRad * 180) / Math.PI).toFixed(0)}° out of plane
+                </dd>
+              </div>
             </dl>
           </div>
           <div className="rounded-xl border border-amber-800/70 bg-amber-950/30 p-3 text-xs leading-5 text-amber-100">
@@ -272,10 +349,25 @@ export function RobotEndEffectorSim() {
             not give the workpiece, finger dimensions, friction, air-flow/pressure transfer, or
             connector stroke.
           </div>
+          <div className="rounded-xl border border-emerald-800/70 bg-emerald-950/30 p-3 text-xs leading-5 text-emerald-100">
+            <span className="font-mono text-[10px] tracking-[0.14em] text-emerald-300">
+              GENERIC OWNER
+            </span>
+            <p className="mt-1">{ROBOT_END_EFFECTOR_FRANKENSIM_HELICAL_OWNER}</p>
+          </div>
+          <div className="rounded-xl border border-rose-800/70 bg-rose-950/30 p-3 text-xs leading-5 text-rose-100">
+            <span className="font-mono text-[10px] tracking-[0.14em] text-rose-300">
+              CONTACT REFUSED
+            </span>
+            <p className="mt-1">
+              {ROBOT_END_EFFECTOR_FRANKENSIM_CONTACT_OWNER} lacks a source-complete workpiece and
+              material card.
+            </p>
+          </div>
         </aside>
       </div>
 
-      <footer className="grid gap-3 border-t border-cyan-900/70 bg-slate-900/75 p-4 sm:grid-cols-2 lg:grid-cols-5 sm:p-5">
+      <footer className="grid gap-3 border-t border-cyan-900/70 bg-slate-900/75 p-4 sm:grid-cols-2 xl:grid-cols-7 sm:p-5">
         <label className="text-xs text-slate-200 lg:col-span-2">
           Jaw opening{" "}
           <span className="float-right font-mono text-cyan-300">
@@ -293,7 +385,7 @@ export function RobotEndEffectorSim() {
           />
         </label>
         <label className="text-xs text-slate-200">
-          Grip setpoint{" "}
+          Requested grip command{" "}
           <span className="float-right font-mono text-amber-300">
             {(params.gripForceSetpointN ?? 900).toFixed(0)} N
           </span>
@@ -304,7 +396,7 @@ export function RobotEndEffectorSim() {
             max="2000"
             step="25"
             value={params.gripForceSetpointN ?? 900}
-            aria-label="Source-labelled grip setpoint"
+            aria-label="Requested grip command bounded by source maximum"
             onChange={(event) => updateParam("gripForceSetpointN", Number(event.target.value))}
           />
         </label>
@@ -324,6 +416,40 @@ export function RobotEndEffectorSim() {
             onChange={(event) => updateParam("frameRotationDeg", Number(event.target.value))}
           />
         </label>
+        <label className="text-xs text-slate-200">
+          Finger withdrawal{" "}
+          <span className="float-right font-mono text-rose-300">
+            {((params.fingerChangeFraction ?? 0) * 100).toFixed(0)}%
+          </span>
+          <input
+            className="mt-1.5 w-full accent-rose-400"
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={params.fingerChangeFraction ?? 0}
+            aria-label="Inward dovetail finger withdrawal"
+            onChange={(event) => updateParam("fingerChangeFraction", Number(event.target.value))}
+          />
+        </label>
+        <label className="text-xs text-slate-200">
+          Transverse stage{" "}
+          <span className="float-right font-mono text-emerald-300">
+            {(params.transverseOffsetFraction ?? 0).toFixed(2)} normalized
+          </span>
+          <input
+            className="mt-1.5 w-full accent-emerald-400"
+            type="range"
+            min="-1"
+            max="1"
+            step="0.05"
+            value={params.transverseOffsetFraction ?? 0}
+            aria-label="Source-described transverse stage normalized position"
+            onChange={(event) =>
+              updateParam("transverseOffsetFraction", Number(event.target.value))
+            }
+          />
+        </label>
         <div className="flex items-end">
           <button
             type="button"
@@ -335,12 +461,26 @@ export function RobotEndEffectorSim() {
           </button>
         </div>
 
-        <div className="col-span-full pt-2 border-t border-slate-800">
+        {claimConstraintResult.activeFailures.length > 0 && (
+          <div
+            role="status"
+            className="col-span-full rounded-lg border border-rose-600/60 bg-rose-950/40 p-3 text-xs leading-5 text-rose-100"
+          >
+            {claimConstraintResult.activeFailures.map((failure) => (
+              <p key={failure}>{failure}</p>
+            ))}
+            {claimConstraintResult.refusalWarning && (
+              <p className="mt-1 text-rose-200">{claimConstraintResult.refusalWarning}</p>
+            )}
+          </div>
+        )}
+
+        <div className="col-span-full border-t border-slate-800 pt-2">
           <ClaimConstraintToggle
             patentId={PATENT_ID}
             claimStates={claimStates}
-            onClaimStateChange={(num, active) =>
-              setClaimStates((prev) => ({ ...prev, [num]: active }))
+            onToggleClaim={(number, active) =>
+              updateParam(claimConstraintStateParamId(number), active ? 1 : 0)
             }
           />
         </div>

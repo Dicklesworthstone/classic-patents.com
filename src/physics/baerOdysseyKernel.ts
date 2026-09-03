@@ -1,17 +1,27 @@
 /**
  * SI Physics & Electronic Timing Kernel for US 3,728,480:
- * Ralph H. Baer — Television Gaming and Training Apparatus (Magnavox Odyssey)
+ * Ralph H. Baer — Television Gaming and Training Apparatus
  *
  * Models:
  * 1. NTSC standard raster horizontal (15.75 kHz) and vertical (60 Hz) astable multivibrators.
  * 2. Monostable RC time-delay spot synthesis and coordinate translation.
  * 3. Diode AND-matrix spot slicing (pulse width & height).
- * 4. Coincidence detection gating, paddle-ball collision response, and English spin deflection.
+ * 4. Diode coincidence detection and latched SCR extinction of a generated dot.
  * 5. Optical light gun photodetector coincidence and SCR crowbar target extinction.
- * 6. VHF Channel 3/4 RF carrier modulation and antenna terminal power (FCC Part 15 compliance).
+ *
+ * The later-game moving-dot tape remains available to the legacy 2D teaching
+ * face, but is deliberately kept separate from the source Claim 1 topology.
+ * No RF output power is inferred because the grant supplies neither terminal
+ * voltage nor load impedance.
  */
 
+import type { TapeUpdater } from "./useFrankenSimPhysics";
+
 export interface BaerOdysseyControls {
+  /** Shared transport run state; false freezes physical time and pose. */
+  running: boolean;
+  /** Claim 1 control-unit/synchronization/manipulation/coupling topology. */
+  claim1Active: boolean;
   /** Player 1 Horizontal Potentiometer (0 to 1) */
   player1PotX: number;
   /** Player 1 Vertical Potentiometer (0 to 1) */
@@ -85,15 +95,25 @@ export interface BaerOdysseyMetrics {
   ballVx: number;
   /** Ball vertical velocity (screen units / s) */
   ballVy: number;
-  /** Instantaneous paddle-ball coincidence active */
+  /** Instantaneous source-dot coincidence active. */
   coincidenceActive: boolean;
+  /** Instantaneous overlap of source dots 20 and 20-1. */
+  dotCoincidenceActive: boolean;
+  /** First source dot remains driven unless the SCR crowbar latch is set. */
+  firstDotVisible: boolean;
+  /** Second source dot remains driven while Claim 1 topology is present. */
+  secondDotVisible: boolean;
+  /** Whether Claim 1's complete local signal path is represented. */
+  claim1TopologyActive: boolean;
+  /** Whether generated signals remain coupled to receiver 10. */
+  directCouplingActive: boolean;
   /** Light gun alignment optical coincidence active */
   lightGunCoincidence: boolean;
   /** Target dot active on CRT (false if extinguished by hit) */
   targetVisible: boolean;
   /** RF Carrier Frequency (MHz) ~ 61.25 MHz (Ch 3) or 67.25 MHz (Ch 4) */
   rfCarrierFreqMHz: number;
-  /** RF Antenna Output Peak Power (nW) into 300 ohm twin lead */
+  /** Refused RF terminal-power slot; always zero because the grant omits its inputs. */
   rfAntennaPowerNanoWatts: number;
   /** Chroma Subcarrier Frequency (MHz) ~ 3.579545 MHz */
   chromaSubcarrierFreqMHz: number;
@@ -102,9 +122,11 @@ export interface BaerOdysseyMetrics {
 }
 
 export const DEFAULT_BAER_CONTROLS: BaerOdysseyControls = {
-  player1PotX: 0.15,
+  running: true,
+  claim1Active: true,
+  player1PotX: 0.25,
   player1PotY: 0.5,
-  player2PotX: 0.85,
+  player2PotX: 0.75,
   player2PotY: 0.5,
   englishControl: 0.0,
   ballSpeedMultiplier: 1.0,
@@ -170,16 +192,21 @@ function deterministicServeVerticalVelocity(
 
 export function readBaerControls(raw?: Partial<BaerOdysseyControls>): BaerOdysseyControls {
   return {
+    running: raw?.running === undefined ? DEFAULT_BAER_CONTROLS.running : Boolean(raw.running),
+    claim1Active:
+      raw?.claim1Active === undefined
+        ? DEFAULT_BAER_CONTROLS.claim1Active
+        : Boolean(raw.claim1Active),
     player1PotX: Math.max(
       0.05,
-      Math.min(0.45, raw?.player1PotX ?? DEFAULT_BAER_CONTROLS.player1PotX),
+      Math.min(0.95, raw?.player1PotX ?? DEFAULT_BAER_CONTROLS.player1PotX),
     ),
     player1PotY: Math.max(
       0.05,
       Math.min(0.95, raw?.player1PotY ?? DEFAULT_BAER_CONTROLS.player1PotY),
     ),
     player2PotX: Math.max(
-      0.55,
+      0.05,
       Math.min(0.95, raw?.player2PotX ?? DEFAULT_BAER_CONTROLS.player2PotX),
     ),
     player2PotY: Math.max(
@@ -211,7 +238,7 @@ export function stepBaerOdysseySi(
   controls: BaerOdysseyControls,
   dtSeconds: number,
 ): { state: BaerOdysseyState; metrics: BaerOdysseyMetrics } {
-  const dt = Math.max(0.0001, Math.min(0.1, dtSeconds));
+  const dt = controls.running && controls.claim1Active ? Math.max(0, Math.min(0.1, dtSeconds)) : 0;
   const time = state.timeSeconds + dt;
 
   let ballX = state.ballX;
@@ -231,16 +258,7 @@ export function stepBaerOdysseySi(
     targetExtinctTimer = 0;
   }
 
-  // Handle Target Extinction Timer
-  if (targetExtinct) {
-    targetExtinctTimer -= dt;
-    if (targetExtinctTimer <= 0) {
-      targetExtinct = false;
-      targetExtinctTimer = 0;
-    }
-  }
-
-  // Calculate paddle positions from RC potentiometer settings
+  // Calculate generated-dot positions from the source RC controls.
   const p1X = controls.player1PotX;
   const p1Y = controls.player1PotY;
   const p2X = controls.player2PotX;
@@ -260,10 +278,23 @@ export function stepBaerOdysseySi(
     ballVy = -Math.abs(ballVy);
   }
 
-  // Coincidence detection: Diode AND gate logic
-  let coincidenceActive = false;
+  // Figure 5E coincidence is overlap of the two generated rectangular dots,
+  // not a later Pong-style paddle/ball collision. The SCR crowbar latches the
+  // first dot generator off until switch 26 is operated after separation.
+  const dotCoincidenceActive =
+    controls.claim1Active &&
+    Math.abs(p1X - p2X) <= PADDLE_HALF_WIDTH * 2 &&
+    Math.abs(p1Y - p2Y) <= PADDLE_HALF_HEIGHT * 2;
+  const coincidenceActive = dotCoincidenceActive;
+  if (dotCoincidenceActive && !targetExtinct) {
+    targetExtinct = true;
+    targetExtinctTimer = 0;
+    lastCoincidenceTime = time;
+  }
 
-  // Check Player 1 paddle coincidence
+  // Preserve the optional moving-dot demonstration tape used by the 2D
+  // teaching face, but do not call those bounces the patent's coincidence
+  // detector. The source 3D apparatus projects only dots 20 and 20-1.
   const p1DistX = Math.abs(ballX - p1X);
   const p1DistY = Math.abs(ballY - p1Y);
   if (
@@ -275,8 +306,6 @@ export function stepBaerOdysseySi(
       // Add English spin deflection
       const offset = (ballY - p1Y) / PADDLE_HALF_HEIGHT;
       ballVy = offset * 0.4 + controls.englishControl * 0.25;
-      coincidenceActive = true;
-      lastCoincidenceTime = time;
     }
   }
 
@@ -291,8 +320,6 @@ export function stepBaerOdysseySi(
       ballVx = -Math.abs(ballVx);
       const offset = (ballY - p2Y) / PADDLE_HALF_HEIGHT;
       ballVy = offset * 0.4 + controls.englishControl * 0.25;
-      coincidenceActive = true;
-      lastCoincidenceTime = time;
     }
   }
 
@@ -321,7 +348,7 @@ export function stepBaerOdysseySi(
     lightGunCoincidence = true;
     if (controls.lightGunTrigger && !targetExtinct) {
       targetExtinct = true;
-      targetExtinctTimer = 2.0; // 2 seconds extinction
+      targetExtinctTimer = 0;
       targetHitCount += 1;
       lastCoincidenceTime = time;
     }
@@ -334,8 +361,9 @@ export function stepBaerOdysseySi(
   const p2DelayVMs = DELAY_V_MIN_MS + p2Y * (DELAY_V_MAX_MS - DELAY_V_MIN_MS);
 
   const rfCarrierFreqMHz = controls.rfChannel === 4 ? 67.25 : 61.25;
-  // 5 mV RMS into 300 ohm twin lead antenna
-  const rfAntennaPowerNanoWatts = ((0.005 * 0.005) / 300.0) * 1e9; // ~83.33 nW
+  // The grant gives neither terminal voltage nor antenna impedance/power.
+  // Preserve a numeric slot for legacy consumers but refuse the quantity.
+  const rfAntennaPowerNanoWatts = 0;
 
   const nextState: BaerOdysseyState = {
     timeSeconds: time,
@@ -369,6 +397,11 @@ export function stepBaerOdysseySi(
     ballVx,
     ballVy,
     coincidenceActive,
+    dotCoincidenceActive,
+    firstDotVisible: controls.claim1Active && !targetExtinct,
+    secondDotVisible: controls.claim1Active,
+    claim1TopologyActive: controls.claim1Active,
+    directCouplingActive: controls.claim1Active,
     lightGunCoincidence,
     targetVisible: !targetExtinct,
     rfCarrierFreqMHz,
@@ -378,4 +411,88 @@ export function stepBaerOdysseySi(
   };
 
   return { state: nextState, metrics };
+}
+
+export interface BaerOdysseyTapeFrame {
+  readonly state: BaerOdysseyState;
+  readonly metrics: BaerOdysseyMetrics;
+}
+
+let tapeFrame: BaerOdysseyTapeFrame | undefined;
+let targetResetRequested = false;
+let lightGunTriggerRequested = false;
+
+export function getBaerOdysseyTapeFrame(): BaerOdysseyTapeFrame | undefined {
+  return tapeFrame;
+}
+
+/** Current shared frame, or a zero-time projection before the first owner tick. */
+export function readBaerOdysseyTapeFrame(controls: BaerOdysseyControls): BaerOdysseyTapeFrame {
+  return tapeFrame ?? stepBaerOdysseySi(INITIAL_BAER_STATE, controls, 0);
+}
+
+/** Restore the complete deterministic game tape to its documented initial state. */
+export function resetBaerOdysseyTape(): void {
+  tapeFrame = undefined;
+  targetResetRequested = false;
+  lightGunTriggerRequested = false;
+}
+
+/** Queue a one-tick reset input so pausing cannot swallow the visitor's command. */
+export function requestBaerTargetReset(): void {
+  targetResetRequested = true;
+}
+
+/** Queue a one-tick light-gun trigger; its duration is virtual, not wall-clock based. */
+export function requestBaerLightGunTrigger(): void {
+  lightGunTriggerRequested = true;
+}
+
+/** One fixed-step owner for the 2D face, 3D face, and telemetry projection. */
+export function createBaerOdysseyTransportUpdater(
+  getControls: () => BaerOdysseyControls,
+): TapeUpdater {
+  return (_previous, dt) => {
+    const controls = getControls();
+    const resetRequested = targetResetRequested;
+    const triggerRequested = lightGunTriggerRequested;
+    if (!controls.running && !resetRequested && !triggerRequested) return null;
+
+    targetResetRequested = false;
+    lightGunTriggerRequested = false;
+    const result = stepBaerOdysseySi(
+      tapeFrame?.state ?? INITIAL_BAER_STATE,
+      {
+        ...controls,
+        resetButton: controls.resetButton || resetRequested,
+        lightGunTrigger: controls.lightGunTrigger || triggerRequested,
+      },
+      dt,
+    );
+    tapeFrame = result;
+
+    return {
+      domain: "electromagnetics_flux",
+      refusal: { isRefused: false },
+      video: {
+        ballX: result.metrics.ballX,
+        ballY: result.metrics.ballY,
+        ballVx: result.metrics.ballVx,
+        ballVy: result.metrics.ballVy,
+        player1X: result.metrics.p1X,
+        player1Y: result.metrics.p1Y,
+        player2X: result.metrics.p2X,
+        player2Y: result.metrics.p2Y,
+        scorePlayer1: result.state.scoreP1,
+        scorePlayer2: result.state.scoreP2,
+        targetHitCount: result.state.targetHitCount,
+        targetVisible: result.metrics.targetVisible,
+        coincidenceActive: result.metrics.coincidenceActive,
+        lightGunCoincidence: result.metrics.lightGunCoincidence,
+        horizontalSyncHz: result.metrics.horizontalSyncFreqHz,
+        verticalFieldHz: result.metrics.verticalFreqHz,
+        rfCarrierMHz: result.metrics.rfCarrierFreqMHz,
+      },
+    };
+  };
 }

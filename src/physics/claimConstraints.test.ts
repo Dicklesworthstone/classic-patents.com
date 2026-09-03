@@ -19,6 +19,11 @@ describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
         continue;
       }
 
+      if (patent.id === "us-3671542-kwolek-kevlar") {
+        expect(constraints).toEqual([]);
+        continue;
+      }
+
       expect(constraints.length).toBeGreaterThanOrEqual(1);
 
       for (const c of constraints) {
@@ -57,6 +62,36 @@ describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
     expect(res.modifiedParams.vacuumTorr).toBe(760.0);
   });
 
+  test("Noyce Claim 1 inversion withholds only the printed oxide bridge", () => {
+    const result = applyClaimConstraintModifications(
+      "us-2981877-noyce-ic",
+      { oxideThicknessUm: 1, leadStripWidthFraction: 0.12 },
+      { 1: false },
+    );
+    expect(result.modifiedParams.claim1OxideBridgePresent).toBe(0);
+    expect(result.modifiedParams.parasiticInductanceNh).toBeUndefined();
+    expect(result.modifiedParams.propDelayPs).toBeUndefined();
+    expect(result.activeFailures).toEqual([
+      "Source-bound Claim 1 condition absent: the adherent conductor no longer crosses the junction on retained semiconductor oxide",
+    ]);
+    expect(result.refusalWarning).toContain("does not supply voltage");
+  });
+
+  test("Kilby Claim 1 inversion withholds conductive means without inventing performance", () => {
+    const result = applyClaimConstraintModifications(
+      "us-3138743-kilby-integrated-circuit",
+      { sectionRevealFraction: 0, wireArchFraction: 0.55 },
+      { 1: false },
+    );
+    expect(result.modifiedParams.claim1ConductiveMeansPresent).toBe(0);
+    expect(result.modifiedParams.supplyVoltageV).toBeUndefined();
+    expect(result.modifiedParams.collectorCurrentMa).toBeUndefined();
+    expect(result.activeFailures[0]).toContain(
+      "selected elongated resistor and transistor regions",
+    );
+    expect(result.refusalWarning).toContain("does not supply the operating point");
+  });
+
   test("Goodyear rubber Claim 1 inversion triggers plastic creep failure", () => {
     const res = applyClaimConstraintModifications(
       "us-3633-goodyear-rubber",
@@ -76,6 +111,38 @@ describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
     expect(res.refusalWarning).toContain("SOURCE-BOUND REFUSAL");
   });
 
+  test("Kwolek Claim 1 has no live inversion until the complete source edition exists", () => {
+    const params = { polymerConcentrationPct: 18, drawRatio: 6.5, impactVelocity: 450 };
+    expect(CATALOG_CLAIM_CONSTRAINTS["us-3671542-kwolek-kevlar"]).toEqual([]);
+    expect(
+      applyClaimConstraintModifications("us-3671542-kwolek-kevlar", params, { 1: false }),
+    ).toEqual({ modifiedParams: params, activeFailures: [], refusalWarning: null });
+  });
+
+  test("Lemelson Claim 1 inversion withholds topology rather than fabricating a performance result", () => {
+    const res = applyClaimConstraintModifications(
+      "us-3081379-lemelson-machine-vision",
+      {
+        scanPathEnabled: 1,
+        synchronizedGateEnabled: 1,
+        analyzingCircuitEnabled: 1,
+        inspectionSignalPresent: 1,
+        referenceSignalMatches: 1,
+      },
+      { 1: false },
+    );
+
+    expect(res.modifiedParams.scanPathEnabled).toBe(0);
+    expect(res.modifiedParams.synchronizedGateEnabled).toBe(0);
+    expect(res.modifiedParams.analyzingCircuitEnabled).toBe(0);
+    expect(res.modifiedParams.inspectionSignalPresent).toBe(1);
+    expect(res.activeFailures).toEqual([
+      "Claim 1 signal path withheld: the exhibit no longer represents the source-described scan, synchronized gate, and analyzing-circuit combination.",
+    ]);
+    expect(res.refusalWarning).toContain("CLAIM 1 WITHHELD");
+    expect("gateWindowWidthUs" in res.modifiedParams).toBe(false);
+  });
+
   test("Tesla transformer Claim 1 inversion opens only the source-described common node", () => {
     const res = applyClaimConstraintModifications("us-593138-tesla-coil", {}, { 1: false });
     expect(res.modifiedParams.claim1CommonNodeConnected).toBe(0);
@@ -83,6 +150,53 @@ describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
     expect(res.refusalWarning).toContain("SOURCE-BOUND REFUSAL");
     expect(res.modifiedParams.secondaryVoltageKv).toBeUndefined();
     expect(res.modifiedParams.resonantQ).toBeUndefined();
+  });
+
+  test("Hull claim inversions withhold surface-lamina topology without fabricating cure behavior", () => {
+    const raw = {
+      shutterRequestedOpen: 1,
+      scanXFraction: 0.45,
+      scanZFraction: -0.2,
+      recoatExcursionFraction: 0.7,
+      displayLaminaCount: 8,
+    };
+    const claimOne = applyClaimConstraintModifications("us-4575330-hull-stereolithography", raw, {
+      1: false,
+      2: true,
+    });
+    expect(claimOne.modifiedParams.displayLaminaCount).toBe(1);
+    expect(claimOne.modifiedParams.recoatExcursionFraction).toBe(0);
+    expect(claimOne.modifiedParams.shutterRequestedOpen).toBe(1);
+    expect(claimOne.activeFailures[0]).toContain("Successive Lamina Buildup Withheld");
+    expect(claimOne.refusalWarning).toContain("CLAIM 1 TOPOLOGY REMOVED");
+    expect(claimOne.modifiedParams.cureDepthUm).toBeUndefined();
+    expect(claimOne.modifiedParams.penetrationDepthUm).toBeUndefined();
+
+    const claimTwo = applyClaimConstraintModifications("us-4575330-hull-stereolithography", raw, {
+      1: true,
+      2: false,
+    });
+    expect(claimTwo.modifiedParams.shutterRequestedOpen).toBe(0);
+    expect(claimTwo.modifiedParams.displayLaminaCount).toBe(8);
+    expect(claimTwo.activeFailures[0]).toContain("Claim 2 Reaction Means Withheld");
+    expect(claimTwo.refusalWarning).toContain("CLAIM 2 TOPOLOGY REMOVED");
+    expect(claimTwo.modifiedParams.cureDepthUm).toBeUndefined();
+    expect(claimTwo.modifiedParams.penetrationDepthUm).toBeUndefined();
+  });
+
+  test("Boyle-Smith Claim 1 inversion withholds the storage medium without inventing CTE", () => {
+    const result = applyClaimConstraintModifications(
+      "us-3858232-boyle-smith-ccd",
+      { pulseWidthToStepRatio: 0.5 },
+      { 1: false },
+    );
+    expect(result.modifiedParams.claim1SingleConductivityPresent).toBe(0);
+    expect(result.modifiedParams.pulseWidthToStepRatio).toBe(0.5);
+    expect(result.modifiedParams.chargeTransferEfficiencyPct).toBeUndefined();
+    expect(result.activeFailures).toEqual([
+      "Claim 1 medium withheld: the display no longer represents a continuous single-conductivity semiconductor charge-storage path.",
+    ]);
+    expect(result.refusalWarning).toContain("not inferred");
   });
 
   test("AMF Versatran claim inversions withhold only their source-described topology", () => {
@@ -225,5 +339,40 @@ describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
     expect(result.modifiedParams.claim15ServoHandoffEnabled).toBe(0);
     expect(result.activeFailures).toHaveLength(3);
     expect(result.refusalWarning).toContain("no travel limit");
+  });
+
+  test("robot end-effector Claim 1 inversion withholds topology without corrupting controls", () => {
+    const raw = {
+      jawOpeningFraction: 0.64,
+      fingerChangeFraction: 0.2,
+      transverseOffsetFraction: -0.45,
+    };
+    const result = applyClaimConstraintModifications("us-4765668-robot-end-effector", raw, {
+      1: false,
+    });
+    expect(result.modifiedParams.claim1TopologyEnabled).toBe(0);
+    expect(result.modifiedParams.jawOpeningFraction).toBe(0.64);
+    expect(result.modifiedParams.fingerChangeFraction).toBe(0.2);
+    expect(result.modifiedParams.transverseOffsetFraction).toBe(-0.45);
+    expect(result.activeFailures[0]).toContain("withholds the opposed-thread screw");
+    expect(result.refusalWarning).toContain("no workpiece");
+  });
+
+  test("Kamen claim inversions withhold only fore-aft and cluster-wheel topology", () => {
+    const result = applyClaimConstraintModifications(
+      "us-5701965-kamen-transporter",
+      { topologyState: 4 },
+      { 1: false, 16: false },
+    );
+
+    expect(result.modifiedParams.balanceTopologyEnabled).toBe(0);
+    expect(result.modifiedParams.clusterTopologyEnabled).toBe(0);
+    expect(result.modifiedParams.riderPitchLeanDeg).toBeUndefined();
+    expect(result.activeFailures).toEqual([
+      "Claim 1 fore-aft control topology withheld: the display no longer represents the source-described support, motorized drive, ground-contacting module, and control-loop combination.",
+      "Claim 16 cluster-wheel topology withheld: the display no longer represents the source-described paired cluster and independently driven wheel relationship.",
+    ]);
+    expect(result.refusalWarning).toContain("SOURCE-BOUND REFUSAL");
+    expect(result.refusalWarning).toContain("not a public torque");
   });
 });

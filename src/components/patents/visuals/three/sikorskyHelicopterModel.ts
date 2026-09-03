@@ -15,6 +15,15 @@ export interface SikorskyHelicopter3DModel {
   dispose: () => void;
 }
 
+/**
+ * Maps unbounded SI altitude into the bounded museum-studio inspection volume.
+ * The mapping is monotonic, finite-safe, and deliberately presentation-only.
+ */
+export function sikorskyStudioAltitude(altitudeMeters: number): number {
+  const safeAltitude = Number.isFinite(altitudeMeters) ? Math.max(0, altitudeMeters) : 0;
+  return Math.min(2.3, 0.1 + 2.2 * (1 - Math.exp(-safeAltitude / 6)));
+}
+
 export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
   const root = new THREE.Group();
   root.name = "US 2,318,259 Sikorsky VS-300 Helicopter 3D Studio Model";
@@ -31,10 +40,10 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
     return value;
   };
 
-  // Materials
+  // Museum-display materials. Colors are interpretive, not source attributes.
   const steelTruss = material(
     new THREE.MeshStandardMaterial({
-      color: 0x85929e, // Welded chrome-moly steel tubing
+      color: 0x85929e,
       roughness: 0.35,
       metalness: 0.7,
     }),
@@ -42,7 +51,7 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
 
   const engineDark = material(
     new THREE.MeshStandardMaterial({
-      color: 0x2c3e50, // Franklin 4-cylinder engine block
+      color: 0x2c3e50,
       roughness: 0.55,
       metalness: 0.6,
     }),
@@ -50,7 +59,7 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
 
   const bronzeBrass = material(
     new THREE.MeshStandardMaterial({
-      color: 0xd4ac0d, // Swashplate collar & pitch links
+      color: 0xd4ac0d,
       roughness: 0.3,
       metalness: 0.8,
     }),
@@ -58,7 +67,7 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
 
   const fabricWing = material(
     new THREE.MeshStandardMaterial({
-      color: 0xd8c39f, // Warm doped linen stays legible against the studio sky
+      color: 0xd8c39f,
       roughness: 0.7,
       metalness: 0.1,
       side: THREE.DoubleSide,
@@ -67,7 +76,7 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
 
   const yellowTip = material(
     new THREE.MeshStandardMaterial({
-      color: 0xf1c40f, // Safety yellow rotor tips
+      color: 0xf1c40f,
       roughness: 0.4,
       metalness: 0.2,
     }),
@@ -105,6 +114,17 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
     strut.position.copy(start).add(end).multiplyScalar(0.5);
     strut.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
     return strut;
+  };
+
+  const setConnectedCylinder = (cylinder: THREE.Mesh, start: THREE.Vector3, end: THREE.Vector3) => {
+    const direction = end.clone().sub(start);
+    const length = direction.length();
+    cylinder.position.copy(start).add(end).multiplyScalar(0.5);
+    cylinder.quaternion.setFromUnitVectors(
+      new THREE.Vector3(0, 1, 0),
+      length > 1e-9 ? direction.multiplyScalar(1 / length) : new THREE.Vector3(0, 1, 0),
+    );
+    cylinder.scale.set(1, length, 1);
   };
 
   // Airframe Group (translates/pitches with flight dynamics)
@@ -158,7 +178,7 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
     fuselageGroup.add(crossStrut);
   }
 
-  // Engine Block (Franklin 4-cyl)
+  // Source-disclosed engine envelope; no make, output, or dimensions are inferred.
   const engineMesh = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.5, 0.45, 0.65)), engineDark);
   engineMesh.position.set(0, 0.5, -0.2);
   fuselageGroup.add(engineMesh);
@@ -245,6 +265,15 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
   tailBoomMesh.position.set(0, 0, -1.8);
   tailBoomGroup.add(tailBoomMesh);
 
+  // Positive drive path runs continuously inside the tail boom to the auxiliary rotor gearbox.
+  const tailDriveShaft = new THREE.Mesh(
+    geometry(new THREE.CylinderGeometry(0.012, 0.012, 3.6, 8)).rotateX(Math.PI / 2),
+    bronzeBrass,
+  );
+  tailDriveShaft.name = "SikorskyAuxiliaryRotorDriveShaft";
+  tailDriveShaft.position.set(0, 0, -1.8);
+  tailBoomGroup.add(tailDriveShaft);
+
   // Tail Vertical Pylon
   const tailPylon = new THREE.Mesh(
     geometry(new THREE.CylinderGeometry(0.025, 0.025, 0.6, 8)),
@@ -296,7 +325,20 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
 
   const swashplateRingGeo = geometry(new THREE.CylinderGeometry(0.18, 0.18, 0.04, 16));
   const swashplateMesh = new THREE.Mesh(swashplateRingGeo, bronzeBrass);
+  swashplateMesh.name = "SikorskyStationaryPitchControlPlate168";
   swashplateGroup.add(swashplateMesh);
+
+  // Patent plate 176 rotates with the rotor across thrust bearing 174 while
+  // inheriting the collective/cyclic pose selected by stationary plate 168.
+  const rotatingPitchPlate = new THREE.Group();
+  rotatingPitchPlate.name = "SikorskyRotatingPitchControlPlate176";
+  swashplateGroup.add(rotatingPitchPlate);
+  const rotatingPitchRing = new THREE.Mesh(
+    geometry(new THREE.TorusGeometry(0.15, 0.015, 8, 24)).rotateX(Math.PI / 2),
+    bronzeBrass,
+  );
+  rotatingPitchRing.position.y = 0.045;
+  rotatingPitchPlate.add(rotatingPitchRing);
 
   // Rotating Main Rotor Head (spins with rotor RPM)
   const mainRotorHead = new THREE.Group();
@@ -311,6 +353,10 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
 
   // 3 Articulated Blade Assemblies (120 deg separation)
   const blades: THREE.Group[] = [];
+  const lowerPitchAnchors: THREE.Object3D[] = [];
+  const upperPitchAnchors: THREE.Object3D[] = [];
+  const pitchLinks: THREE.Mesh[] = [];
+  const pitchLinkGeometry = geometry(new THREE.CylinderGeometry(0.012, 0.012, 1, 8));
   const bladeRadius = 3.6; // Visual span scaled for 3D studio
 
   for (let i = 0; i < 3; i++) {
@@ -354,9 +400,40 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
       geometry(new THREE.CylinderGeometry(0.01, 0.01, 0.12, 8)),
       bronzeBrass,
     );
+    pitchHorn.name = `SikorskyBladePitchHorn${i + 1}`;
     pitchHorn.position.set(0.1, -0.05, 0.08);
     bladeSpanGroup.add(pitchHorn);
+
+    const upperAnchor = new THREE.Object3D();
+    upperAnchor.name = `SikorskyBladePitchHornAnchor${i + 1}`;
+    upperAnchor.position.set(0.1, -0.11, 0.08);
+    bladeSpanGroup.add(upperAnchor);
+    upperPitchAnchors.push(upperAnchor);
+
+    const lowerAnchor = new THREE.Object3D();
+    lowerAnchor.name = `SikorskyPitchPlateAnchor${i + 1}`;
+    lowerAnchor.position.set(0.14 * Math.cos(bladeAngle), 0.045, -0.14 * Math.sin(bladeAngle));
+    rotatingPitchPlate.add(lowerAnchor);
+    lowerPitchAnchors.push(lowerAnchor);
+
+    const pitchLink = new THREE.Mesh(pitchLinkGeometry, bronzeBrass);
+    pitchLink.name = `SikorskyRigidPitchLink${i + 1}`;
+    mainMastGroup.add(pitchLink);
+    pitchLinks.push(pitchLink);
   }
+
+  const startWorld = new THREE.Vector3();
+  const endWorld = new THREE.Vector3();
+  const updatePitchLinks = () => {
+    root.updateMatrixWorld(true);
+    for (let index = 0; index < pitchLinks.length; index++) {
+      lowerPitchAnchors[index].getWorldPosition(startWorld);
+      upperPitchAnchors[index].getWorldPosition(endWorld);
+      const localStart = mainMastGroup.worldToLocal(startWorld.clone());
+      const localEnd = mainMastGroup.worldToLocal(endWorld.clone());
+      setConnectedCylinder(pitchLinks[index], localStart, localEnd);
+    }
+  };
 
   // 4. Update function (60 FPS tick)
   const updateState = (
@@ -365,7 +442,11 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
     state: SikorskyHelicopterState,
   ) => {
     // Helicopter position & attitude
-    const altY = Math.max(0.1, state.altitudeMeters * 0.4);
+    // The studio is an inspection volume, not a world-scale chase camera.
+    // Compress unbounded scenario altitude monotonically so a sustained climb
+    // cannot carry the mechanism out of the exhibit while the numeric SI
+    // readout retains the kernel's uncompressed altitude.
+    const altY = sikorskyStudioAltitude(state.altitudeMeters);
     airframe.position.set(0, altY, 0);
     airframe.rotation.set(
       (state.pitchAngleDeg * Math.PI) / 180.0,
@@ -382,6 +463,7 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
 
     // Main Rotor Spin
     mainRotorHead.rotation.y = -state.rotorPhaseRad;
+    rotatingPitchPlate.rotation.y = -state.rotorPhaseRad;
 
     // Cyclic Pitch feathering on individual blades
     const collRad = (controls.collectivePitchDeg * Math.PI) / 180.0;
@@ -408,6 +490,11 @@ export function buildSikorskyHelicopterModel(): SikorskyHelicopter3DModel {
     cyclicStick.rotation.x = (controls.cyclicPitchForwardDeg * Math.PI) / 180.0;
     cyclicStick.rotation.z = (-controls.cyclicRollRightDeg * Math.PI) / 180.0;
     collectiveLever.rotation.x = Math.PI / 4 - (controls.collectivePitchDeg / 16.0) * 0.35;
+
+    // Reconnect every push-pull rod after plate tilt, plate rotation, blade
+    // feathering, and head rotation. Both endpoints remain mechanically
+    // coincident through the full control range.
+    updatePitchLinks();
   };
 
   const dispose = () => {

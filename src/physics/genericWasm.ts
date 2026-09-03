@@ -22,6 +22,7 @@ type NsCavityFn = (cells: number, frames: number, re: number, spf: number) => Fl
 type TrussPathFn = (nx: number, ny: number, gapTol: number) => Float64Array;
 type FlowcertFn = (steps: number, tol: number) => Float64Array;
 type RunFrameFn = (seed: number) => Float64Array;
+type GenericKernelSourceListener = () => void;
 
 let gaFn: GaFn | null = null;
 let heatFn: HeatFn | null = null;
@@ -31,6 +32,7 @@ let cyclicFn: CyclicFn | null = null;
 let modesFn: ModesFn | null = null;
 let loadPromise: Promise<GenericKernelSource> | null = null;
 let source: GenericKernelSource = "unloaded";
+const sourceListeners = new Set<GenericKernelSourceListener>();
 
 /**
  * Optional P7 exports. Bound only when a slim `/wasm/fs-generic/` artifact
@@ -90,6 +92,17 @@ export function genericKernelSource(): GenericKernelSource {
   return source;
 }
 
+export function subscribeGenericKernelSource(listener: GenericKernelSourceListener): () => void {
+  sourceListeners.add(listener);
+  return () => sourceListeners.delete(listener);
+}
+
+function setGenericKernelSource(next: GenericKernelSource): void {
+  if (source === next) return;
+  source = next;
+  for (const listener of [...sourceListeners]) listener();
+}
+
 export function ensureGenericWasm(): Promise<GenericKernelSource> {
   loadPromise ??= initializeGenericWasm();
   return loadPromise;
@@ -97,7 +110,7 @@ export function ensureGenericWasm(): Promise<GenericKernelSource> {
 
 async function initializeGenericWasm(): Promise<GenericKernelSource> {
   if (typeof window === "undefined") {
-    source = "ts-fallback";
+    setGenericKernelSource("ts-fallback");
     return source;
   }
   try {
@@ -163,7 +176,7 @@ async function initializeGenericWasm(): Promise<GenericKernelSource> {
       // resolves. Do not let those cached arrays survive while the UI reports
       // a WASM source: the first post-load sample must cross the bound export.
       clearKernelCaches();
-      source = "wasm";
+      setGenericKernelSource("wasm");
     } finally {
       URL.revokeObjectURL(blobUrl);
     }
@@ -175,7 +188,7 @@ async function initializeGenericWasm(): Promise<GenericKernelSource> {
     cyclicFn = null;
     modesFn = null;
     clearExtraWasmFns();
-    source = "ts-fallback";
+    setGenericKernelSource("ts-fallback");
   }
   return source;
 }

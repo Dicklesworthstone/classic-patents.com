@@ -4,13 +4,13 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepDeLavalSeparator } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import {
   globalTransportBus,
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -53,7 +53,7 @@ export function DeLavalSeparator3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
 
   const live = useLiveSimParams({
     bowlRpm,
@@ -116,9 +116,13 @@ export function DeLavalSeparator3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-247804-delaval-separator", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-247804-delaval-separator");
-  }, [live.current.displayOmegaRadPerS]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-247804-delaval-separator",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
@@ -131,10 +135,6 @@ export function DeLavalSeparator3D() {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -384,6 +384,7 @@ export function DeLavalSeparator3D() {
             </div>
             <input
               type="range"
+              aria-label="Centrifuge bowl speed"
               min="2000"
               max="9000"
               step="250"
@@ -402,6 +403,7 @@ export function DeLavalSeparator3D() {
             </div>
             <input
               type="range"
+              aria-label="Raw milk feed rate"
               min="100"
               max="600"
               step="25"

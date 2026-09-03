@@ -126,19 +126,13 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
         },
       };
     };
-    globalTransportBus.registerUpdater(
+    const unregister = globalTransportBus.registerUpdater(
       "us-3138743-kilby-integrated-circuit",
       integrate,
       "TS_FALLBACK",
     );
-    return () => globalTransportBus.unregisterUpdater("us-3138743-kilby-integrated-circuit");
-  }, [
-    live.current.baseDriveCurrentUa,
-    live.current.resistorLengthUm,
-    live.current.resistorWidthUm,
-    live.current.reverseBiasVoltageV,
-    live.current.supplyVoltageV,
-  ]);
+    return unregister;
+  }, [live]);
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
@@ -167,8 +161,8 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
 
     const clock = createStudioClock();
     const animate = (now: number) => {
+      animFrameRef.current = requestAnimationFrame(animate);
       if (!studio.isVisible()) {
-        animFrameRef.current = requestAnimationFrame(animate);
         return;
       }
       const { simTimeSec } = clock.pump(now);

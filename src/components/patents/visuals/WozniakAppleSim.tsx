@@ -10,8 +10,6 @@ import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
-export { wozniakBusCycle };
-
 export function WozniakAppleSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-4136359-wozniak-apple");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -59,7 +57,7 @@ export function WozniakAppleSim() {
     apple.dramAddrSpan,
     apple.dramAddrStride,
     apple.rasterLineWrap,
-    onscreenRef.current,
+    onscreenRef,
   ]);
 
   return (

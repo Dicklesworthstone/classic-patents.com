@@ -7,6 +7,7 @@ type EdisonRadiativeFn = (
   emissivity: number,
   ambientTemperatureK: number,
 ) => string;
+type EdisonKernelSourceListener = () => void;
 
 export interface EdisonRadiativeState {
   voltage_v: number;
@@ -40,9 +41,21 @@ const STEFAN_BOLTZMANN_W_M2_K4 = 5.670374419e-8;
 let radiativeFn: EdisonRadiativeFn | null = null;
 let loadPromise: Promise<EdisonKernelSource> | null = null;
 let source: EdisonKernelSource = "unloaded";
+const sourceListeners = new Set<EdisonKernelSourceListener>();
 
 export function edisonKernelSource(): EdisonKernelSource {
   return source;
+}
+
+export function subscribeEdisonKernelSource(listener: EdisonKernelSourceListener): () => void {
+  sourceListeners.add(listener);
+  return () => sourceListeners.delete(listener);
+}
+
+function setEdisonKernelSource(next: EdisonKernelSource): void {
+  if (source === next) return;
+  source = next;
+  for (const listener of [...sourceListeners]) listener();
 }
 
 export function edisonFilamentAreaM2(filamentLengthCm: number): number {
@@ -91,7 +104,7 @@ export function ensureEdisonWasm(): Promise<EdisonKernelSource> {
 
 async function initializeEdisonWasm(): Promise<EdisonKernelSource> {
   if (typeof window === "undefined") {
-    source = "ts-fallback";
+    setEdisonKernelSource("ts-fallback");
     return source;
   }
   try {
@@ -112,14 +125,14 @@ async function initializeEdisonWasm(): Promise<EdisonKernelSource> {
         throw new Error("edison_radiative_step missing from browser module");
       }
       radiativeFn = module.edison_radiative_step;
-      source = "wasm";
+      setEdisonKernelSource("wasm");
     } finally {
       URL.revokeObjectURL(blobUrl);
     }
   } catch (error) {
     console.warn("Failed to load fs-edison-wasm; using typed radiative fallback", error);
     radiativeFn = null;
-    source = "ts-fallback";
+    setEdisonKernelSource("ts-fallback");
   }
   return source;
 }

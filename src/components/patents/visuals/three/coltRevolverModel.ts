@@ -3,6 +3,43 @@ import { wave2dFrames, waveFrameRms } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 
 /**
+ * Dark historical finishes still need separable planes and grain in the bright
+ * museum studio. These are display materials only: geometry and kinematics
+ * remain the source-bound Paterson mechanism below.
+ */
+export const COLT_HISTORICAL_FINISHES = {
+  caseHardenedTextureBase: "#34485b",
+  walnutTextureBase: "#6a371c",
+  engravingTextureBase: "#3e5a74",
+  bluedSteel: {
+    color: 0x5a748a,
+    metalness: 0.66,
+    roughness: 0.32,
+    emissive: 0x0b1928,
+    emissiveIntensity: 0.12,
+  },
+  caseHardenedSteel: {
+    color: 0xc2d2e0,
+    metalness: 0.66,
+    roughness: 0.36,
+    emissive: 0x0b1826,
+    emissiveIntensity: 0.1,
+  },
+  engravedSteel: {
+    color: 0x809cb4,
+    metalness: 0.66,
+    roughness: 0.31,
+    emissive: 0x091827,
+    emissiveIntensity: 0.1,
+  },
+  walnut: {
+    color: 0x995a30,
+    metalness: 0.02,
+    roughness: 0.46,
+  },
+} as const;
+
+/**
  * 1836 Samuel Colt Paterson Revolver (.36 Caliber No. 5 Texas Model)
  * Authentic Historical Engineering Specifications from US Patent 138 (Feb 25, 1836)
  *
@@ -49,17 +86,18 @@ function createCaseHardenedTexture(lcg: () => number): THREE.CanvasTexture {
   const ctx = canvas.getContext("2d");
   if (!ctx) return new THREE.CanvasTexture(canvas);
 
-  // Deep dark mottled slate-blue base
-  ctx.fillStyle = "#1e2430";
+  // A blue-black, mid-value base keeps the period case hardening legible
+  // instead of turning into one silhouette under studio lighting.
+  ctx.fillStyle = COLT_HISTORICAL_FINISHES.caseHardenedTextureBase;
   ctx.fillRect(0, 0, 512, 512);
 
   // Swirling oxidation halos (cyan, violet, straw amber, and charcoal)
   const colors = [
-    "rgba(56, 114, 170, 0.55)", // peacock blue
-    "rgba(142, 68, 173, 0.45)", // straw purple
-    "rgba(212, 143, 56, 0.48)", // amber straw
-    "rgba(40, 55, 71, 0.7)", // deep charcoal
-    "rgba(93, 109, 126, 0.4)", // mottled nickel
+    "rgba(74, 143, 202, 0.58)", // peacock blue
+    "rgba(159, 88, 190, 0.46)", // straw purple
+    "rgba(224, 157, 69, 0.52)", // amber straw
+    "rgba(48, 66, 84, 0.62)", // deep charcoal
+    "rgba(135, 158, 182, 0.46)", // mottled nickel
   ];
 
   for (let i = 0; i < 80; i++) {
@@ -109,14 +147,15 @@ function createWalnutGripTexture(lcg: () => number): THREE.CanvasTexture {
   const ctx = canvas.getContext("2d");
   if (!ctx) return new THREE.CanvasTexture(canvas);
 
-  // Deep chocolate walnut base
-  ctx.fillStyle = "#3a1f0f";
+  // The Paterson grip remains dark American walnut, but with enough value for
+  // its growth rings to be inspectable at the overview camera distance.
+  ctx.fillStyle = COLT_HISTORICAL_FINISHES.walnutTextureBase;
   ctx.fillRect(0, 0, 512, 512);
 
   // Flowing wood grain growth rings
   for (let i = 0; i < 110; i++) {
     const y = i * 4.8 + (lcg() - 0.5) * 3;
-    ctx.strokeStyle = i % 4 === 0 ? "rgba(26, 12, 5, 0.65)" : "rgba(84, 46, 22, 0.45)";
+    ctx.strokeStyle = i % 4 === 0 ? "rgba(39, 17, 6, 0.62)" : "rgba(182, 101, 48, 0.48)";
     ctx.lineWidth = 1.2 + (lcg() - 0.5) * 0.8;
     ctx.beginPath();
     ctx.moveTo(0, y);
@@ -135,7 +174,7 @@ function createWalnutGripTexture(lcg: () => number): THREE.CanvasTexture {
   for (let j = 0; j < 350; j++) {
     const rx = lcg() * 512;
     const ry = lcg() * 512;
-    ctx.fillStyle = "rgba(18, 9, 4, 0.35)";
+    ctx.fillStyle = "rgba(31, 13, 4, 0.4)";
     ctx.fillRect(rx, ry, 1.2, 3.5 + lcg() * 4);
   }
 
@@ -160,12 +199,13 @@ function createCylinderEngravingTexture(): THREE.CanvasTexture {
   const ctx = canvas.getContext("2d");
   if (!ctx) return new THREE.CanvasTexture(canvas);
 
-  // Deep blued steel background
-  ctx.fillStyle = "#1b2430";
+  // Blued steel stays distinctly darker than the case-hardened frame while
+  // preserving the roll engraving against the daylight studio background.
+  ctx.fillStyle = COLT_HISTORICAL_FINISHES.engravingTextureBase;
   ctx.fillRect(0, 0, 1024, 256);
 
   // Engraved borders
-  ctx.strokeStyle = "rgba(175, 205, 235, 0.45)";
+  ctx.strokeStyle = "rgba(207, 229, 249, 0.65)";
   ctx.lineWidth = 1.5;
   ctx.strokeRect(10, 15, 1004, 226);
   ctx.strokeRect(16, 21, 992, 214);
@@ -207,23 +247,17 @@ export function buildColtRevolverModel(): ColtRevolverModel {
 
   // --- 1. HISTORICAL PBR MATERIALS ---
   const bluedBarrelMat = new THREE.MeshStandardMaterial({
-    color: 0x1e2733,
-    metalness: 0.9,
-    roughness: 0.24,
+    ...COLT_HISTORICAL_FINISHES.bluedSteel,
   });
 
   const caseHardenedMat = new THREE.MeshStandardMaterial({
     map: caseHardenedTex,
-    color: 0x94a3b8,
-    metalness: 0.85,
-    roughness: 0.3,
+    ...COLT_HISTORICAL_FINISHES.caseHardenedSteel,
   });
 
   const engravedCylinderMat = new THREE.MeshStandardMaterial({
     map: engravingTex,
-    color: 0x243040,
-    metalness: 0.92,
-    roughness: 0.22,
+    ...COLT_HISTORICAL_FINISHES.engravedSteel,
   });
 
   const polishedBrassMat = new THREE.MeshStandardMaterial({
@@ -234,9 +268,7 @@ export function buildColtRevolverModel(): ColtRevolverModel {
 
   const walnutGripMat = new THREE.MeshStandardMaterial({
     map: walnutTex,
-    color: 0x54321a,
-    metalness: 0.03,
-    roughness: 0.42,
+    ...COLT_HISTORICAL_FINISHES.walnut,
   });
 
   const boreInteriorMat = new THREE.MeshStandardMaterial({

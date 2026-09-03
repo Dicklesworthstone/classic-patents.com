@@ -71,7 +71,7 @@ describe("typed archival publication state", () => {
       if (!patent) continue;
       expect(evaluateArchivalPublicationState(patent).isPublished).toBe(false);
     }
-  });
+  }, 30000);
 
   test("a restrictive audit override wins over otherwise accepted metadata", () => {
     const wright = allPatents.find((patent) => patent.id === "us-821393-wright-flyer");

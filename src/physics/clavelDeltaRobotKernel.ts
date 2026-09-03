@@ -49,6 +49,12 @@ export const CLAVEL_DELTA_ROBOT_CLAIM_PROBE_PARAMS = {
   8: "claim8BaseMotorEnabled",
 } as const;
 
+export const CLAVEL_DELTA_ROBOT_TOPOLOGY_OWNER =
+  "classic-patents::stepClavelDeltaRobotTopology" as const;
+export const CLAVEL_DELTA_ROBOT_RUNTIME_SOURCE = "ts-normalized-closed-chain" as const;
+export const CLAVEL_DELTA_ROBOT_FRANKENSIM_BOUNDARY =
+  "fs-mbd::holonomic-loop-constraints-unavailable" as const;
+
 export type ClavelDeltaClaimStates = Readonly<Record<1 | 2 | 8, boolean>>;
 
 export interface ClavelDeltaLeg {
@@ -116,6 +122,9 @@ export interface ClavelDeltaRobotTopologyState {
     | "claim-2 paired bars withheld"
     | "normalized closed-chain configuration unavailable";
   readonly positionLaw: string;
+  readonly topologyOwner: typeof CLAVEL_DELTA_ROBOT_TOPOLOGY_OWNER;
+  readonly runtimeSource: typeof CLAVEL_DELTA_ROBOT_RUNTIME_SOURCE;
+  readonly frankenSimBoundary: typeof CLAVEL_DELTA_ROBOT_FRANKENSIM_BOUNDARY;
   readonly refusal: {
     readonly refused: true;
     readonly reason: string;
@@ -446,6 +455,9 @@ export function stepClavelDeltaRobotTopology(
         : "claim-2 paired bars withheld",
     positionLaw:
       "||p* + a_i* - e_i*|| = L* for all three legs; normalized closed-chain exhibit construction only",
+    topologyOwner: CLAVEL_DELTA_ROBOT_TOPOLOGY_OWNER,
+    runtimeSource: CLAVEL_DELTA_ROBOT_RUNTIME_SOURCE,
+    frankenSimBoundary: CLAVEL_DELTA_ROBOT_FRANKENSIM_BOUNDARY,
     refusal: { refused: true, reason: SOURCE_BOUNDARY_REASON },
   };
 }

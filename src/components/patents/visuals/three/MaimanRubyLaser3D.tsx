@@ -2,14 +2,16 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { EnergyFlowStrip } from "@/components/patents/EnergyFlowStrip";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepMaimanRubyLaser } from "@/physics/catalogKernels";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
+import { energyChannelsFor } from "@/physics/energyChannels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { createMaimanRubyLaserModel } from "./maimanRubyLaserModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -22,16 +24,29 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [10, 8, 14], target: [3, 0.4, 0] },
+  iso: { pos: [10, 8, 14], target: [1.7, 0.2, 0] },
   ruby_rod: { pos: [4.5, 2.0, 5.0], target: [3, 0.4, 0] },
   flashlamp: { pos: [1.5, 3.5, 4.0], target: [2.5, 0.4, 0] },
   resonator: { pos: [9.0, 1.2, 2.0], target: [6.0, 0.4, 0] },
   top: { pos: [3.0, 16.0, 0.1], target: [3, 0.4, 0] },
 };
 
+function cameraForViewport(preset: CameraPreset, width: number) {
+  const camera = CAMERA_PRESETS[preset];
+  if (width >= 520) return camera;
+  const scale = preset === "iso" ? 1.32 : 1.16;
+  return {
+    pos: camera.pos.map((value, index) =>
+      Number((camera.target[index] + (value - camera.target[index]) * scale).toFixed(3)),
+    ) as [number, number, number],
+    target: camera.target,
+  };
+}
+
 export function MaimanRubyLaser3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { params, updateParam } = usePatentPhysics("us-3353115-maiman-ruby-laser");
+  const { params, effectiveParams, claimStates, claimConstraintResult, updateParam } =
+    usePatentPhysics("us-3353115-maiman-ruby-laser");
   const pumpEnergyJoules = params.pumpEnergyJoules ?? 150;
   const crystalTemperatureKelvin = params.crystalTemperatureKelvin ?? 300;
   const outputMirrorReflectivity = params.outputMirrorReflectivity ?? 0.92;
@@ -39,48 +54,50 @@ export function MaimanRubyLaser3D() {
   const rodLengthCm = params.rodLengthCm ?? 5.0;
 
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
-  const [isCutaway, setIsCutaway] = useState(false);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+  const [isCutaway, setIsCutaway] = useState(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isFiring, setIsFiring] = useState(false);
   const isFiringRef = useRef(false);
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const live = useLiveSimParams({
-    pumpEnergyJoules,
-    flashDurationMs,
-    rodLengthCm,
-    outputMirrorReflectivity,
-    crystalTemperatureKelvin,
+    pumpEnergyJoules: effectiveParams.pumpEnergyJoules ?? pumpEnergyJoules,
+    flashDurationMs: effectiveParams.flashDurationMs ?? flashDurationMs,
+    rodLengthCm: effectiveParams.rodLengthCm ?? rodLengthCm,
+    outputMirrorReflectivity: effectiveParams.outputMirrorReflectivity ?? outputMirrorReflectivity,
+    crystalTemperatureKelvin: effectiveParams.crystalTemperatureKelvin ?? crystalTemperatureKelvin,
     isCutaway,
   });
   // Shared transport tape: optical pumping state publishes to the bus.
   useFrankenSimPhysics("us-3353115-maiman-ruby-laser", {
     domain: "optics_waves",
-    refusal: { isRefused: false },
+    refusal: {
+      isRefused: claimConstraintResult.activeFailures.length > 0,
+      reason: claimConstraintResult.refusalWarning ?? undefined,
+    },
   });
 
   const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = cameraForViewport(preset, containerRef.current?.clientWidth ?? 800);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const metrics = stepMaimanRubyLaser({
-    pumpEnergyJoules: live.current.pumpEnergyJoules,
-    flashDurationMs: live.current.flashDurationMs,
-    rodLengthCm: live.current.rodLengthCm,
-    outputMirrorReflectivity: live.current.outputMirrorReflectivity,
-    crystalTemperatureKelvin: live.current.crystalTemperatureKelvin,
+    pumpEnergyJoules: effectiveParams.pumpEnergyJoules,
+    flashDurationMs: effectiveParams.flashDurationMs,
+    rodLengthCm: effectiveParams.rodLengthCm,
+    outputMirrorReflectivity: effectiveParams.outputMirrorReflectivity,
+    crystalTemperatureKelvin: effectiveParams.crystalTemperatureKelvin,
   });
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = cameraForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -101,7 +118,10 @@ export function MaimanRubyLaser3D() {
       const { dt } = studioClock.pump(nowMs);
 
       if (isFiringRef.current) {
-        flashPhase += dt * 3;
+        // Millisecond laser physics is intentionally time-dilated for human
+        // vision; the relative duration control still lengthens the display.
+        const displayPulseDurationSeconds = 0.65 + 0.2 * live.current.flashDurationMs;
+        flashPhase += dt / displayPulseDurationSeconds;
         if (flashPhase > 1.0) {
           flashPhase = 0;
           setIsFiring(false);
@@ -153,7 +173,7 @@ export function MaimanRubyLaser3D() {
 
         {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-28rem)] gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+          <div className="absolute left-3 right-3 top-3 z-10 flex flex-nowrap gap-1 overflow-x-auto rounded-xl border border-parchment-300 bg-white/85 p-1 text-[10px] shadow-sm backdrop-blur-md transition-opacity scrollbar-none dark:border-ink-700 dark:bg-ink-900/85 sm:left-4 sm:right-auto sm:top-4 sm:max-w-[calc(100%-28rem)] sm:gap-1.5 sm:p-1.5 sm:text-xs">
             <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
               <Camera className="w-3.5 h-3.5" /> View:
             </span>
@@ -183,15 +203,7 @@ export function MaimanRubyLaser3D() {
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 max-w-[min(90%,26rem)] sm:max-w-[26rem] pointer-events-auto">
-          <ClaimConstraintToggle
-            patentId="us-3353115-maiman-ruby-laser"
-            claimStates={claimStates}
-            onToggleClaim={(c: number, active: boolean) => {
-              setClaimStates((prev) => ({ ...prev, [c]: active }));
-              updateParam("pumpEnergyJoules", active ? 150 : 20);
-            }}
-          />
+        <div className="pointer-events-auto absolute right-3 top-16 z-10 flex max-w-[calc(100%-1.5rem)] flex-wrap items-center justify-end gap-1.5 sm:right-4 sm:top-4 sm:max-w-[26rem] sm:gap-2">
           <button
             type="button"
             onClick={triggerLaserPulse}
@@ -268,7 +280,13 @@ export function MaimanRubyLaser3D() {
               <span
                 className={`font-bold ${metrics.isLasing ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}
               >
-                {metrics.isLasing ? "COHERENT 694.3 nm" : "SUB-THRESHOLD"}
+                {isFiring
+                  ? metrics.isLasing
+                    ? "COHERENT 694.3 nm"
+                    : "FLUORESCENCE ONLY"
+                  : metrics.isLasing
+                    ? "ABOVE THRESHOLD — READY"
+                    : "SUB-THRESHOLD"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
@@ -306,7 +324,13 @@ export function MaimanRubyLaser3D() {
             { label: "T_crystal", value: String(crystalTemperatureKelvin), unit: "K" },
             {
               label: "State",
-              value: metrics.isLasing ? "Lasing Cascade" : "Spontaneous Decay",
+              value: isFiring
+                ? metrics.isLasing
+                  ? "Lasing Cascade"
+                  : "Fluorescence Only"
+                : metrics.isLasing
+                  ? "Ready — Trigger Flash"
+                  : "Sub-threshold",
               tone: metrics.isLasing ? "hot" : "ok",
             },
           ]}
@@ -315,11 +339,11 @@ export function MaimanRubyLaser3D() {
 
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <SensitivitySlider
             id="pumpEnergy"
-            patentId="us-3353115-maiman-laser"
-            paramKey="pumpPowerWatts"
+            patentId="us-3353115-maiman-ruby-laser"
+            paramKey="pumpEnergyJoules"
             label="Xenon Flash Energy"
             value={pumpEnergyJoules}
             min={50}
@@ -333,7 +357,7 @@ export function MaimanRubyLaser3D() {
           <SensitivitySlider
             id="maimanTemp"
             patentId="us-3353115-maiman-ruby-laser"
-            paramKey="temperature"
+            paramKey="crystalTemperatureKelvin"
             label="Crystal Temperature"
             value={crystalTemperatureKelvin}
             min={77}
@@ -347,7 +371,7 @@ export function MaimanRubyLaser3D() {
           <SensitivitySlider
             id="maimanMirror"
             patentId="us-3353115-maiman-ruby-laser"
-            paramKey="reflectivity"
+            paramKey="outputMirrorReflectivity"
             label="Coupler Reflectivity"
             value={outputMirrorReflectivity}
             min={0.7}
@@ -357,22 +381,69 @@ export function MaimanRubyLaser3D() {
             onChange={(val) => updateParam("outputMirrorReflectivity", val)}
             allParams={params}
           />
+
+          <SensitivitySlider
+            id="maimanFlashDuration"
+            patentId="us-3353115-maiman-ruby-laser"
+            paramKey="flashDurationMs"
+            label="Flash Duration"
+            value={flashDurationMs}
+            min={0.5}
+            max={3}
+            step={0.1}
+            unit="ms"
+            onChange={(val) => updateParam("flashDurationMs", val)}
+            allParams={params}
+          />
+
+          <SensitivitySlider
+            id="maimanRodLength"
+            patentId="us-3353115-maiman-ruby-laser"
+            paramKey="rodLengthCm"
+            label="Ruby Rod Length"
+            value={rodLengthCm}
+            min={2}
+            max={10}
+            step={0.5}
+            unit="cm"
+            onChange={(val) => updateParam("rodLengthCm", val)}
+            allParams={params}
+          />
         </div>
 
         <ClaimConstraintToggle
           patentId="us-3353115-maiman-ruby-laser"
           claimStates={claimStates}
           onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0)
           }
           className="mt-2"
         />
 
-        <PortHamiltonianEnergyStrip
-          patentId="us-3353115-maiman-ruby-laser"
-          params={params}
-          className="mt-3"
-        />
+        {claimConstraintResult.activeFailures.length > 0 ? (
+          <div
+            role="status"
+            className="mt-2 space-y-1 rounded-lg border border-rose-500/40 bg-rose-500/10 p-3"
+          >
+            {claimConstraintResult.activeFailures.map((failure) => (
+              <p key={failure} className="text-xs leading-relaxed text-rose-900 dark:text-rose-100">
+                {failure}
+              </p>
+            ))}
+            <p className="text-[11px] leading-relaxed text-rose-800 dark:text-rose-200">
+              Effective Claim 1 probe: {effectiveParams.pumpEnergyJoules?.toFixed(0)} J. The raw{" "}
+              {pumpEnergyJoules.toFixed(0)} J scenario remains stored so restoring the claim does
+              not erase the visitor&apos;s setting.
+            </p>
+          </div>
+        ) : null}
+
+        <div className="mt-3">
+          <EnergyFlowStrip
+            title="Scenario energy rate · common flash interval"
+            channels={energyChannelsFor("us-3353115-maiman-ruby-laser", effectiveParams)}
+          />
+        </div>
       </div>
     </div>
   );

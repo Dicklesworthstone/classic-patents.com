@@ -275,7 +275,7 @@ export const mestralVelcroParallelReadings: Record<number, readonly string[]> = 
     "De Mestral establishes the foundation concept: incorporating synthetic thermoplastic monofilament threads into a velvet weave to form an upright raised pile, where individual pile threads are given terminal material-engaging geometries for reversible adhesion or scouring.",
   ],
   3: [
-    "The core thermal manufacturing sequence is disclosed: auxiliary warp loops are woven over a carrier wire, subjected to heat setting to thermally freeze the loop curvature into the polymer memory, and then sheared on one side to yield resilient cantilever hooks.",
+    "The core manufacturing sequence is disclosed: auxiliary warp loops are woven over a carrier, heated while constrained so the thread retains the imparted form, and then cut near an outer end to leave material-engaging hook-shaped pile.",
   ],
   4: [
     "The primary commercial application is defined as a universal garment and curtain closure, serving as a flexible, blind fastener replacing mechanical slide fasteners (zippers), rigid buttons, and snap press studs.",
@@ -296,7 +296,7 @@ export const mestralVelcroParallelReadings: Record<number, readonly string[]> = 
     "The specification clarifies that the underlying foundation weave may be varied into any stable plain, twill, or satin weave without departing from the invention.",
   ],
   10: [
-    "De Mestral specifies synthetic polyamide (nylon) monofilament with axially oriented polymer chains, which provides the critical mechanical spring stiffness, fatigue resistance, and thermal memory required for repeated engagement cycles.",
+    "De Mestral discusses artificial monofilaments, including synthetic polymeric amides, and states that stretching or drawing can orient their structure; the grant does not publish a grade, modulus, strength, or fatigue test.",
   ],
   11: [
     "The velvet loom lancet mechanism is described: transverse metal bars 5 form loops 6, while internal electrical resistance heating or steam channels heat the bar to thermoform the loops prior to cutting along longitudinal knife guide groove 7 by blade 8.",
@@ -305,7 +305,7 @@ export const mestralVelcroParallelReadings: Record<number, readonly string[]> = 
     "Cutting each heated loop asymmetrically produces two distinct pile elements: an active curved hook strand 9 and a straight lost strand 10.",
   ],
   13: [
-    "Fastener operation is explained: superposing two identical hook-bearing fabrics at 90° angular orientation allows opposing hook arrays to interlock with high cumulative retention force per square inch, yet separate cleanly when pulled with normal tensile force as hooks elastically deflect.",
+    "Fastener operation is explained: superposing two identical hook-bearing fabrics, turning one through 90°, and facing their pile surfaces lets hooks 4 on strands 9 interengage; pressure fastens the pieces and a sufficiently large traction separates them.",
   ],
   14: [
     "Application and closure method: sewing strips along fabric margins enables effortless fastening upon light touch contact and reliable separation under deliberate peel traction.",

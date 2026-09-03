@@ -13,6 +13,8 @@ import { readCrumpFdmControls, stepCrumpFdmSi } from "@/physics/crumpFdmKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { type CrumpCameraPreset, crumpViewForViewport } from "./crumpFdmCamera";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-5121329-crump-fdm";
 
@@ -22,8 +24,7 @@ export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 39: true });
 
   const { params, updateParam } = usePatentPhysics(patentId);
-  const liveParams = useRef(params);
-  liveParams.current = params;
+  const liveParams = useLiveSimParams(params);
 
   const controls = useMemo(() => readCrumpFdmControls(params), [params]);
   const telemetry = useMemo(() => stepCrumpFdmSi(controls), [controls]);
@@ -31,18 +32,18 @@ export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
 
   useFrankenSimPhysics(patentId);
 
-  const [cameraPreset, setCameraPreset] = useState<"isometric" | "nozzle" | "top" | "side">(
-    "isometric",
-  );
+  const [cameraPreset, setCameraPreset] = useState<CrumpCameraPreset>("isometric");
 
+  // The persistent WebGL scene reads the stable layout-effect-synchronized control ref; depending on `.current` would recreate and flash the studio.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    const initialView = crumpViewForViewport("isometric", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [4.2, 3.6, 4.8],
-      targetPos: [0, 1.4, 0],
+      cameraPos: initialView.position,
+      targetPos: initialView.target,
       environmentStyle: "studio",
       enableFloorGrid: true,
       floorColor: 0x1e293b,
@@ -77,32 +78,50 @@ export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
       studio.dispose();
       studioRef.current = null;
     };
-  }, []);
+  }, [liveParams]);
 
-  const setView = (view: "isometric" | "nozzle" | "top" | "side") => {
+  useEffect(() => {
+    const restoreResponsiveView = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const next = crumpViewForViewport(cameraPreset, container.clientWidth);
+      studioRef.current?.controls.setView(next.position, next.target);
+    };
+    window.addEventListener("resize", restoreResponsiveView);
+    return () => window.removeEventListener("resize", restoreResponsiveView);
+  }, [cameraPreset]);
+
+  const setView = (view: CrumpCameraPreset) => {
     setCameraPreset(view);
     const studio = studioRef.current;
     if (!studio) return;
-
-    if (view === "isometric") {
-      studio.controls.setView([4.2, 3.6, 4.8], [0, 1.4, 0]);
-    } else if (view === "nozzle") {
-      studio.controls.setView([0.8, 1.6, 1.2], [0, 1.3, 0]);
-    } else if (view === "top") {
-      studio.controls.setView([0.1, 6.2, 0.1], [0, 1.5, 0]);
-    } else if (view === "side") {
-      studio.controls.setView([5.2, 1.4, 0], [0, 1.4, 0]);
-    }
+    const next = crumpViewForViewport(view, containerRef.current?.clientWidth ?? 1000);
+    studio.controls.setView(next.position, next.target);
   };
 
   return (
     <div className="flex flex-col gap-4">
       {/* 3D Viewport with HUD */}
-      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-stone-800 bg-stone-950 shadow-2xl">
+      <div className="relative min-h-[360px] w-full overflow-hidden rounded-2xl border border-stone-800 bg-stone-950 shadow-2xl sm:min-h-0 sm:aspect-[16/9]">
         <div ref={containerRef} className="h-full w-full" />
 
         {/* Camera Preset Toolbar */}
-        <div className="absolute right-4 top-4 z-10 flex gap-1.5 rounded-lg border border-stone-700/80 bg-stone-900/90 p-1.5 backdrop-blur">
+        <label className="sr-only" htmlFor="crump-3d-camera-view">
+          Camera view
+        </label>
+        <select
+          id="crump-3d-camera-view"
+          aria-label="Camera view"
+          className="absolute right-3 top-3 z-10 max-w-[calc(100%-1.5rem)] rounded-lg border border-stone-700 bg-stone-900/90 px-2.5 py-2 text-[11px] font-medium text-stone-100 backdrop-blur sm:hidden"
+          value={cameraPreset}
+          onChange={(event) => setView(event.target.value as CrumpCameraPreset)}
+        >
+          <option value="isometric">ISOMETRIC</option>
+          <option value="nozzle">NOZZLE &amp; ROAD</option>
+          <option value="top">GANTRY TOP</option>
+          <option value="side">SIDE PROFILE</option>
+        </select>
+        <div className="absolute right-4 top-4 z-10 hidden gap-1.5 rounded-lg border border-stone-700/80 bg-stone-900/90 p-1.5 backdrop-blur sm:flex">
           <button
             type="button"
             onClick={() => setView("isometric")}
@@ -150,7 +169,7 @@ export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
         </div>
 
         {/* Live HUD Overlay */}
-        <div className="pointer-events-none absolute bottom-4 left-4 z-10 flex flex-wrap gap-2">
+        <div className="pointer-events-none absolute bottom-4 left-4 z-10 hidden flex-wrap gap-2 sm:flex">
           <span className="rounded-md border border-cyan-500/40 bg-stone-900/90 px-3 py-1.5 text-xs font-mono text-cyan-300 backdrop-blur">
             Flow Q: {telemetry.volumetricFlowRateMm3S.toFixed(2)} mm³/s
           </span>
@@ -166,6 +185,24 @@ export function CrumpFdm3D({ patentId = PATENT_ID }: { patentId?: string }) {
             </span>
           )}
         </div>
+      </div>
+
+      <div
+        data-mobile-layout="telemetry-after-canvas"
+        className="grid gap-2 rounded-xl border border-stone-800 bg-stone-900/70 p-3 text-[11px] font-mono sm:hidden"
+      >
+        <span className="text-cyan-300">
+          Flow Q: {telemetry.volumetricFlowRateMm3S.toFixed(2)} mm³/s
+        </span>
+        <span className="text-amber-300">
+          Pressure ΔP: {telemetry.nozzlePressureDropMPa.toFixed(3)} MPa
+        </span>
+        <span className="text-emerald-300">
+          Feed v_feed: {telemetry.filamentFeedSpeedMmS.toFixed(2)} mm/s
+        </span>
+        {telemetry.refusalReason && (
+          <span className="text-rose-300">{telemetry.refusalReason}</span>
+        )}
       </div>
 
       {/* Physics Telemetry Badge */}

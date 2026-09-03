@@ -371,7 +371,7 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
                   stroke={link.active ? "#fbbf24" : "#3f3f46"}
                   strokeWidth={link.active ? "3" : "1"}
                   strokeDasharray={link.active ? "none" : "2,2"}
-                  className="transition-all duration-300"
+                  className="transition-[stroke,stroke-width,stroke-dasharray] duration-300"
                 />
               ))}
 
@@ -433,7 +433,7 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
             </div>
             <div className="w-full bg-stone-800 rounded-full h-2 mt-1.5 overflow-hidden">
               <div
-                className={`h-full transition-all duration-300 ${
+                className={`h-full transition-[width,background-color] duration-300 ${
                   sim.voidPorosityPct < 5 ? "bg-emerald-500" : "bg-rose-500"
                 }`}
                 style={{ width: `${Math.min(100, sim.voidPorosityPct * 2)}%` }}
@@ -452,6 +452,7 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
           </div>
           <input
             type="range"
+            aria-label="Curing temperature in degrees Celsius"
             min="90"
             max="180"
             step="5"
@@ -469,6 +470,7 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
           </div>
           <input
             type="range"
+            aria-label="Closed-vessel pressure in pounds per square inch"
             min="0"
             max="120"
             step="5"
@@ -488,6 +490,7 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
           </div>
           <input
             type="range"
+            aria-label="Cure duration in minutes"
             min="10"
             max="180"
             step="5"
@@ -505,6 +508,7 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
           </div>
           <input
             type="range"
+            aria-label="Condensing catalyst percentage"
             min="0.2"
             max="5.0"
             step="0.1"
@@ -522,6 +526,7 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
           </div>
           <input
             type="range"
+            aria-label="Listed material filler content percentage"
             min="0"
             max="60"
             step="5"

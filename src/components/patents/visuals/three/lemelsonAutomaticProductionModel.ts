@@ -59,15 +59,43 @@ export function buildLemelsonAutomaticProductionModel(): LemelsonAutomaticProduc
     }),
   );
 
+  // The patent allows a monorail supported by the production-tool frames
+  // (Fig. 10). These restrained contextual members close that load path; they
+  // are deliberately named as exhibit context rather than claimed apparatus.
+  const foundation = new THREE.Mesh(geometry(new THREE.BoxGeometry(8, 0.14, 3.6)), darkSteel);
+  foundation.name = "Factory floor datum (display context)";
+  foundation.position.set(0, -0.275, 0.75);
+  root.add(foundation);
+
   const railGroup = new THREE.Group();
   railGroup.name = "Overhead trackway 21 and slide bars 28";
-  const rail = new THREE.Mesh(geometry(new THREE.BoxGeometry(7.6, 0.16, 0.3)), steel);
+  const rail = new THREE.Mesh(geometry(new THREE.BoxGeometry(7.6, 0.16, 0.4)), steel);
+  rail.name = "Overhead monorail track 21";
   rail.position.set(0, 2.4, 0);
   railGroup.add(rail);
-  [-0.28, 0.28].forEach((z) => {
+  [-3.52, 3.52].forEach((x, index) => {
+    const support = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.18, 2.69, 0.42)), darkSteel);
+    support.name = `Track support frame ${index + 1} (display context)`;
+    support.position.set(x, 1.135, 0);
+    railGroup.add(support);
+  });
+  [-0.28, 0.28].forEach((z, barIndex) => {
     const bar = new THREE.Mesh(geometry(new THREE.BoxGeometry(7.6, 0.045, 0.035)), controlInk);
+    bar.name = `Power slide bar 28 ${barIndex + 1}`;
     bar.position.set(0, 2.12, z);
     railGroup.add(bar);
+
+    [-3, -1.5, 0, 1.5, 3].forEach((x, hangerIndex) => {
+      const vertical = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.04, 0.19, 0.04)), darkSteel);
+      vertical.name = `Slide-bar hanger ${barIndex + 1}.${hangerIndex + 1} vertical`;
+      vertical.position.set(x, 2.225, z);
+      railGroup.add(vertical);
+
+      const railArm = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.04, 0.04, 0.17)), darkSteel);
+      railArm.name = `Slide-bar hanger ${barIndex + 1}.${hangerIndex + 1} rail arm`;
+      railArm.position.set(x, 2.32, Math.sign(z) * 0.215);
+      railGroup.add(railArm);
+    });
   });
   root.add(railGroup);
 
@@ -91,10 +119,21 @@ export function buildLemelsonAutomaticProductionModel(): LemelsonAutomaticProduc
     marker.name = `Marker 61 / station sensing event ${index + 1}`;
     marker.position.set(x, 2.1, -0.18);
     station.add(marker);
+    const markerStem = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.06, 0.2, 0.06)), darkSteel);
+    markerStem.name = `Marker 61 mounting stem ${index + 1}`;
+    markerStem.position.set(x, 2.23, -0.18);
+    station.add(markerStem);
     const contacts = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.42, 0.1, 0.14)), idleInk);
     contacts.name = `Fixed contacts 87 ${index + 1}`;
     contacts.position.set(x, 0.84, 0.54);
     station.add(contacts);
+    const interfaceSupport = new THREE.Mesh(
+      geometry(new THREE.BoxGeometry(0.18, 0.32, 0.18)),
+      darkSteel,
+    );
+    interfaceSupport.name = `Station contact and clamp support ${index + 1}`;
+    interfaceSupport.position.set(x, 0.635, 0.54);
+    station.add(interfaceSupport);
     const clamp = new THREE.Mesh(geometry(new THREE.BoxGeometry(1.02, 0.13, 0.13)), idleInk);
     clamp.name = `Power-operated carrier retaining means ${index + 1}`;
     clamp.position.set(x, 0.68, 0.43);
@@ -112,6 +151,7 @@ export function buildLemelsonAutomaticProductionModel(): LemelsonAutomaticProduc
   carrier.add(carriage);
   [-0.23, 0.23].forEach((z) => {
     const wheel = new THREE.Mesh(geometry(new THREE.CylinderGeometry(0.12, 0.12, 0.1, 16)), steel);
+    wheel.name = `Carriage wheel 24 ${z < 0 ? 1 : 2}`;
     wheel.rotation.x = Math.PI / 2;
     wheel.position.set(0, 2.35, z);
     carrier.add(wheel);
@@ -153,7 +193,7 @@ export function buildLemelsonAutomaticProductionModel(): LemelsonAutomaticProduc
   reach.add(movableContacts);
   const lockingBar = new THREE.Mesh(geometry(new THREE.BoxGeometry(0.8, 0.1, 0.1)), warningInk);
   lockingBar.name = "Carrier locking / retaining state";
-  lockingBar.position.set(0, 0.18, 0.57);
+  lockingBar.position.set(0, 0.115, 0.57);
   lockingBar.visible = false;
   reach.add(lockingBar);
   lift.add(reach);
@@ -174,7 +214,11 @@ export function buildLemelsonAutomaticProductionModel(): LemelsonAutomaticProduc
   return {
     root,
     update: (state) => {
-      const carrierX = (state.carrierAddressFraction - 0.5) * 6.3;
+      // The display's normalized address endpoints are the outer modeled work
+      // stations, not the unused ends of the contextual rail. That keeps a
+      // selected carrier over a station instead of depicting a coupled machine
+      // while the carrier has visibly overshot it.
+      const carrierX = (state.carrierAddressFraction - 0.5) * 4.8;
       const selectedStation = Math.max(
         0,
         Math.min(2, Math.round(state.carrierAddressFraction * 2)),

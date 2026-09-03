@@ -1,13 +1,42 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import { stepDavenportMotor } from "@/physics/catalogKernels";
+import { davenportElectricMotorCameraForViewport } from "./davenportElectricMotorCamera";
 import {
   buildDavenportMotorModel,
   updateDavenportMotorKinematics,
 } from "./davenportElectricMotorModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
+
+function projectedBounds(
+  object: THREE.Object3D,
+  cameraView: ReturnType<typeof davenportElectricMotorCameraForViewport>,
+  viewportWidth: number,
+  viewportHeight: number,
+) {
+  object.updateMatrixWorld(true);
+  const bounds = new THREE.Box3().setFromObject(object);
+  const camera = new THREE.PerspectiveCamera(42, viewportWidth / viewportHeight, 0.1, 1000);
+  camera.position.set(...cameraView.pos);
+  camera.lookAt(...cameraView.target);
+  camera.updateProjectionMatrix();
+  camera.updateMatrixWorld(true);
+
+  const values = [bounds.min.x, bounds.max.x].flatMap((x) =>
+    [bounds.min.y, bounds.max.y].flatMap((y) =>
+      [bounds.min.z, bounds.max.z].map((z) => new THREE.Vector3(x, y, z).project(camera)),
+    ),
+  );
+  return {
+    minX: Math.min(...values.map((value) => value.x)),
+    maxX: Math.max(...values.map((value) => value.x)),
+    minY: Math.min(...values.map((value) => value.y)),
+    maxY: Math.max(...values.map((value) => value.y)),
+  };
+}
 
 describe("US 132 Thomas Davenport Commutator DC Electric Motor visual & electromechanics boundary", () => {
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
@@ -48,6 +77,10 @@ describe("US 132 Thomas Davenport Commutator DC Electric Motor visual & electrom
       join(VISUALS_DIRECTORY, "three", "DavenportElectricMotor3D.tsx"),
       "utf8",
     );
+    const cameraSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "davenportElectricMotorCamera.ts"),
+      "utf8",
+    );
 
     for (const preset of ["iso", "commutator", "stator_magnets", "rotor", "brushes", "top"]) {
       expect(threeSource).toContain(preset);
@@ -55,6 +88,34 @@ describe("US 132 Thomas Davenport Commutator DC Electric Motor visual & electrom
 
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Davenport DC Motor 3D");
+    expect(threeSource).toContain("davenportElectricMotorCameraForViewport");
+    expect(threeSource).toContain(
+      'davenportElectricMotorCameraForViewport("iso", container.clientWidth)',
+    );
+    expect(davenportElectricMotorCameraForViewport("iso", 768)).toEqual({
+      pos: [9.5, 2.6, 10.5],
+      target: [0, -0.25, 0],
+    });
+    expect(cameraSource).toContain("A high overview looks down through the brass bearing plate");
+  });
+
+  test("keeps the baseboard, magnetic cores, and elevated bridge inside 320 px and 375 px phone overviews", () => {
+    const { rootGroup, dispose } = buildDavenportMotorModel();
+    for (const viewportWidth of [288, 343]) {
+      const frame = projectedBounds(
+        rootGroup,
+        davenportElectricMotorCameraForViewport("iso", viewportWidth),
+        viewportWidth,
+        380,
+      );
+
+      expect(frame.minX).toBeGreaterThan(-0.9);
+      expect(frame.maxX).toBeLessThan(0.9);
+      expect(frame.minY).toBeGreaterThan(-0.9);
+      expect(frame.maxY).toBeLessThan(0.9);
+    }
+    expect(davenportElectricMotorCameraForViewport("iso", 288).pos).not.toEqual([9.5, 2.6, 10.5]);
+    dispose();
   });
 
   test("computes genuine DC motor torque, back EMF, and electrical efficiency in SI units", () => {

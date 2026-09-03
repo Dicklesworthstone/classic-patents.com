@@ -125,6 +125,16 @@ describe("InteractiveDiagramViewer React rendering", () => {
     expect(source).not.toContain("Hot Tube");
   });
 
+  test("does not retain a latent Kwolek polymer schematic behind the source-bound record", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/components/patents/InteractiveDiagramViewer.tsx"),
+      "utf8",
+    );
+    expect(source).not.toContain('case "kwolek-kevlar"');
+    expect(source).not.toContain("stepKevlarContinuum");
+    expect(source).not.toContain("kevlarSchematicLattice");
+  });
+
   test("opens Tesla's secondary bond on the same shared Claim 1 state as both model faces", () => {
     const patent = allPatents.find((candidate) => candidate.id === "us-593138-tesla-coil");
     if (!patent) throw new Error("Tesla transformer patent fixture is missing");

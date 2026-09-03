@@ -41,8 +41,13 @@ export interface StackhouseSourcePose extends StackhouseSourceControls {
   readonly alphaABRad: number;
   readonly alphaBCRad: number;
   readonly toolDirection: readonly [number, number, number];
+  readonly axisADirection: readonly [0, 0, 1];
+  readonly axisBDirection: readonly [number, number, number];
+  readonly axisCDirection: readonly [number, number, number];
   readonly bendAngleDeg: number;
   readonly azimuthAngleDeg: number;
+  readonly rotationDeterminant: number;
+  readonly rotationOrthonormalityError: number;
   /** Drawing-space contrast offset; never meters or a manufacturing tolerance. */
   readonly terminalAxisOffset: number;
   readonly intersectionState: "preferred single point P" | "offset-axis source contrast";
@@ -53,6 +58,7 @@ export interface StackhouseSourcePose extends StackhouseSourceControls {
     | "preferred point-P topology"
     | "source warns that deviations create orientation holes";
   readonly positionLaw: string;
+  readonly jointOwner: "fs-mbd revolute-joint forward kinematics · typed browser mirror";
   readonly refusal: { readonly refused: true; readonly reason: string };
 }
 
@@ -93,6 +99,32 @@ function rotateY(angle: number): Matrix3 {
   const cosine = Math.cos(angle);
   const sine = Math.sin(angle);
   return [cosine, 0, sine, 0, 1, 0, -sine, 0, cosine];
+}
+
+function directionOfLocalZ(matrix: Matrix3): readonly [number, number, number] {
+  return [matrix[2], matrix[5], matrix[8]];
+}
+
+function determinant(matrix: Matrix3): number {
+  return (
+    matrix[0] * (matrix[4] * matrix[8] - matrix[5] * matrix[7]) -
+    matrix[1] * (matrix[3] * matrix[8] - matrix[5] * matrix[6]) +
+    matrix[2] * (matrix[3] * matrix[7] - matrix[4] * matrix[6])
+  );
+}
+
+function orthonormalityError(matrix: Matrix3): number {
+  let maximum = 0;
+  for (let row = 0; row < 3; row += 1) {
+    for (let column = 0; column < 3; column += 1) {
+      let dot = 0;
+      for (let axis = 0; axis < 3; axis += 1) {
+        dot += matrix[axis * 3 + row] * matrix[axis * 3 + column];
+      }
+      maximum = Math.max(maximum, Math.abs(dot - (row === column ? 1 : 0)));
+    }
+  }
+  return maximum;
 }
 
 export function readStackhouseSourceControls(
@@ -153,18 +185,14 @@ export function stepStackhouseSourceTopology(
   const alphaBC = controls.secondObliqueAngleDeg * DEG_TO_RAD;
   const exactIntersection = controls.singleIntersection >= 0.5;
 
-  const orientation = multiply(
-    multiply(
-      multiply(multiply(rotateZ(thetaA), rotateY(alphaAB)), rotateZ(thetaB)),
-      rotateY(-alphaBC),
-    ),
-    rotateZ(thetaC),
-  );
-  const direction: readonly [number, number, number] = [
-    orientation[2],
-    orientation[5],
-    orientation[8],
-  ];
+  // This is the equation-identical browser mirror of a root-fixed tree with
+  // three fs-mbd `JointModel::revolute` links and fixed oblique transforms
+  // between them. The generic articulated owner is not exported by the
+  // current browser artifact, so this surface must not claim a WASM step.
+  const axisBFrame = multiply(rotateZ(thetaA), rotateY(alphaAB));
+  const axisCFrame = multiply(multiply(axisBFrame, rotateZ(thetaB)), rotateY(-alphaBC));
+  const orientation = multiply(axisCFrame, rotateZ(thetaC));
+  const direction = directionOfLocalZ(orientation);
   const bendAngleDeg = Math.acos(Math.max(-1, Math.min(1, direction[2]))) * RAD_TO_DEG;
   const azimuthAngleDeg = Math.atan2(direction[1], direction[0]) * RAD_TO_DEG;
   const sourceCondition = controls.firstObliqueAngleDeg > 45 && controls.secondObliqueAngleDeg > 45;
@@ -177,8 +205,13 @@ export function stepStackhouseSourceTopology(
     alphaABRad: alphaAB,
     alphaBCRad: alphaBC,
     toolDirection: direction,
+    axisADirection: [0, 0, 1],
+    axisBDirection: directionOfLocalZ(axisBFrame),
+    axisCDirection: directionOfLocalZ(axisCFrame),
     bendAngleDeg,
     azimuthAngleDeg,
+    rotationDeterminant: determinant(orientation),
+    rotationOrthonormalityError: orthonormalityError(orientation),
     terminalAxisOffset: exactIntersection ? 0 : 0.12,
     intersectionState: exactIntersection
       ? "preferred single point P"
@@ -190,6 +223,7 @@ export function stepStackhouseSourceTopology(
       ? "preferred point-P topology"
       : "source warns that deviations create orientation holes",
     positionLaw: "R_display = R_z(q_A) · R_y(α_AB) · R_z(q_B) · R_y(−α_BC) · R_z(q_C)",
+    jointOwner: "fs-mbd revolute-joint forward kinematics · typed browser mirror",
     refusal: {
       refused: true,
       reason:

@@ -55,7 +55,7 @@ The platform provides:
 │  • Farnsworth Electronic Television Image Dissector & Electron Gun     │
 │  • Noyce Planar Integrated Circuit Silicon & Metal Layer Cutaway       │
 │  • Spencer Microwave Cavity Magnetron RF Food Heating Resonator        │
-│  • Kwolek Liquid-Crystalline Aramid (Kevlar) Polymer Chain Alignment   │
+│  • Kwolek Source-Bound Aromatic-Polyamide Claim Reading (Visual Held)  │
 ├────────────────────────────────────────────────────────────────────────┤
 │                       DATA & PIPELINE LAYER                            │
 │  • Structured TypeScript Patent Store (`src/data/patents/`)            │
@@ -142,13 +142,13 @@ The platform launches with eight of the most transformative patents across aviat
 - **Plain English Breakdown**: Dielectric heating: 2.45 GHz microwave photons causing polar water molecules in food to rapidly oscillate, generating volumetric heat through molecular friction rather than surface conduction.
 - **Interactive Visual**: Microwave cavity wave resonance & polar molecule oscillation visualizer. Users adjust RF frequency and food water content to watch dipole oscillation and thermal gradients.
 
-### 3.8 Stephanie L. Kwolek — Wholly Aromatic Carbocyclic Polycarbonamide Filaments (Kevlar)
+### 3.8 Stephanie Louise Kwolek — Optically Anisotropic Aromatic Polyamide Dopes
 - **Patent Number**: US 3,671,542
-- **Grant Date**: June 20, 1972 (Filed April 16, 1970)
+- **Grant Date**: June 20, 1972 (Filed May 23, 1969)
 - **Classification**: Materials Science / Polymer Chemistry
-- **Core Invention**: High-tensile, high-modulus synthetic fibers spun from liquid crystalline solutions of poly(p-phenylene terephthalamide) (PPTA) exhibiting parallel-oriented rigid aromatic chains with extensive inter-chain hydrogen bonding.
-- **Plain English Breakdown**: Transforming an uncooperative, cloudy liquid-crystal solution into a fiber 5x stronger than steel on an equal-weight basis through radical molecular chain alignment and dense benzene-ring hydrogen bonding.
-- **Interactive Visual**: Polymer alignment & tensile stress test. Users switch between randomly oriented flexible polymer chains and aligned PPTA crystalline fibrils, applying ballistic tensile strain to observe stress distribution.
+- **Core Invention**: The checked claims define optically anisotropic dopes made from a qualifying carbocyclic aromatic polyamide and selected liquid-media families; Claim 2 narrows one medium to concentrated sulfuric acid greater than about 98 percent by weight.
+- **Plain English Breakdown**: A claim-bound reading of the verified composition relation, explicitly separated from the unreviewed specification, examples, tables, correction certificates, and later material-performance narratives.
+- **Interactive Visual**: Source-integrity hold. The public route does not present polymer spinning, strength, ballistic, or thermal behavior until a complete manual source edition supports such a visual.
 
 ### 3.9 Raymond C. Goertz, William M. Thompson & Robert A. Olsen — Electronic Master Slave Manipulator
 - **Patent Number**: US 2,846,084
@@ -192,7 +192,7 @@ Each curated patent features a custom interactive simulation component located i
 | **Noyce Planar IC** | `NoycePlanarICSim.tsx` | Layer-by-layer 3D/2D cutaway: Silicon substrate, N/P doped regions, $\text{SiO}_2$ isolation oxide, deposited aluminum interconnects. |
 | **Spencer Microwave** | `SpencerMicrowaveSim.tsx` | RF cavity resonance frequency, water molecule dipole rotation simulator, thermal penetration depth vs surface browning comparison. |
 | **Goertz Master–Slave Manipulator** | `GoertzElectronicMasterSlaveManipulatorSim.tsx` | Seven named master/slave motion channels, normalized position mismatch, bilateral resistance reflection, limiter state, and tachometer derivative branch; source-bound rather than a claimed physical-performance model. |
-| **Kwolek Kevlar** | `KwolekKevlarSim.tsx` | Polymer chain alignment slider (Isotropic vs Liquid Crystalline Nematic), hydrogen bond network density, ballistic impact stress-strain curve. |
+| **Kwolek Aromatic-Polyamide Dopes** | `SourceVisualUnavailable.tsx` | Source-integrity hold at the checked composition claims; the inherited polymer, tensile, and ballistic model is unavailable pending a complete manual edition. |
 
 ---
 
@@ -347,8 +347,8 @@ export interface Patent {
   - Master documents: `AGENTS.md`, `COMPREHENSIVE_PLAN_FOR_CLASSIC_PATENTS.md`, `README.md`, `LICENSE`.
 
 - **Phase 2: Patent Data & Simulation Engine**:
-  - Full curated dataset for all 8 historical patents with facsimile-reviewed scholarly editions, complete claims, and plain English breakdowns.
-  - Bespoke interactive React/SVG simulation components for Wright Flyer, Tesla's Fig. 9 two-circuit motor-generator, Edison Light Bulb, Bell Telephone, Farnsworth TV, Noyce Planar IC, Spencer Microwave, and Kwolek Kevlar.
+  - Curated source and editorial work for the eight historical references; Kwolek remains a facsimile-only source hold rather than an accepted manual edition.
+  - Bespoke interactive React/SVG simulation components for Wright Flyer, Tesla's Fig. 9 two-circuit motor-generator, Edison Light Bulb, Bell Telephone, Farnsworth TV, Noyce Planar IC, and Spencer Microwave. Kwolek remains a source-bound visual hold until the manual edition is complete.
 
 - **Phase 3: Web Application & UI Polish**:
   - Home gallery, search & filtering, era timelines.

@@ -17,7 +17,7 @@ describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
   test("keeps the p1–17 drawing/crop boundary fail-closed", () => {
     expect(mergenthalerLinotypePatent.archivalEdition).toBeUndefined();
     expect(mergenthalerLinotypePatent.originalTextAsset).toBeDefined();
-    expect(mergenthalerLinotypePatent.originalTextAsset?.kind).toBe("source-pdf-text-layer");
+    expect(mergenthalerLinotypePatent.originalTextAsset?.kind).toBe("reviewed-transcription");
   });
 
   test("pins the 35-page facsimile but keeps the unaccepted staged edition invalid", () => {

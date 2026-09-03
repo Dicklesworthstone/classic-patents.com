@@ -1,6 +1,6 @@
 "use client";
 
-import { Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import {
   DA_VINCI_CUP_HEIGHT_M,
@@ -12,6 +12,8 @@ import {
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { SimulationHeader } from "./SimulationHeader";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -38,23 +40,17 @@ export function DaVinciSim({
   const gripAngleDeg = params.gripAngleDeg ?? 30;
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const isPlayingRef = useRef(isPlaying);
-  const controlsRef = useRef(
-    readDaVinciControls({
+  const live = useLiveSimParams({
+    isPlaying,
+    controls: readDaVinciControls({
       motionScaleRatio: motionScale,
       tremorFilterEnabled: tremorFilter,
       masterInputSpeedMps: inputSpeed,
       gripAngleDeg,
     }),
-  );
-  isPlayingRef.current = isPlaying;
-  controlsRef.current = readDaVinciControls({
-    motionScaleRatio: motionScale,
-    tremorFilterEnabled: tremorFilter,
-    masterInputSpeedMps: inputSpeed,
-    gripAngleDeg,
   });
 
+  // The mounted animation loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the canvas loop.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -64,14 +60,14 @@ export function DaVinciSim({
     let animId: number;
     let timeSec = 0;
     const clock = createStudioClock();
-    let state = stepDaVinci(controlsRef.current, 0);
+    let state = stepDaVinci(live.current.controls, 0);
 
     const render = (now: number) => {
       animId = requestAnimationFrame(render);
       const { dt } = clock.pump(now);
       if (!onscreenRef.current) return;
-      const frameControls = controlsRef.current;
-      if (isPlayingRef.current) {
+      const frameControls = live.current.controls;
+      if (live.current.isPlaying) {
         const stepDt = dt > 0 ? dt : 1 / 60;
         timeSec += stepDt;
         state = stepDaVinci(frameControls, timeSec, state, stepDt);
@@ -366,67 +362,44 @@ export function DaVinciSim({
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [onscreenRef]);
+  }, [live, onscreenRef]);
 
   return (
     <div
       ref={rootRef}
       className="w-full flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-800 text-ink-900 dark:text-parchment-100 shadow-md"
     >
-      {/* Header with Title and Global Action Controls */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
-        <div>
-          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Surgical Tool Data Interface (US 6,331,181)
-          </h3>
-          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Source-bounded tool interface: compatibility, tool type, measured calibration offsets,
-            and engagement data cross the processor boundary.
-          </p>
-        </div>
-        <div className="flex items-center gap-2 self-end sm:self-auto">
-          <button
-            type="button"
-            onClick={() => {
-              toggleSound();
-              soundEngine.playSwitchClick();
-            }}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setIsPlaying(!isPlaying);
-              soundEngine.playSwitchClick();
-            }}
-            aria-label={isPlaying ? "Pause Simulation" : "Play Simulation"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title={isPlaying ? "Pause Simulation" : "Play Simulation"}
-          >
-            {isPlaying ? (
-              <Pause className="w-4 h-4 text-amber-600" />
-            ) : (
-              <Play className="w-4 h-4" />
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              resetParams();
-              soundEngine.playSwitchClick();
-            }}
-            aria-label="Reset Simulation"
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title="Reset Simulation"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
+      <SimulationHeader
+        title="Surgical Tool Data Interface (US 6,331,181)"
+        description="Source-bounded tool interface: compatibility, tool type, measured calibration offsets, and engagement data cross the processor boundary."
+        playbackAction={{
+          label: isPlaying ? "Pause Simulation" : "Play Simulation",
+          icon: isPlaying ? (
+            <Pause className="h-4 w-4 text-amber-600" />
+          ) : (
+            <Play className="h-4 w-4" />
+          ),
+          onPress: () => {
+            setIsPlaying(!isPlaying);
+            soundEngine.playSwitchClick();
+          },
+        }}
+        audioAction={{
+          label: isAudioMuted ? "Unmute Sound" : "Mute Sound",
+          icon: isAudioMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />,
+          onPress: () => {
+            toggleSound();
+            soundEngine.playSwitchClick();
+          },
+        }}
+        onReset={() => {
+          resetParams();
+          soundEngine.playSwitchClick();
+        }}
+        actionOrder="audio-playback"
+        descriptionHasTopMargin={false}
+        withBottomMargin={false}
+      />
 
       {/* Canvas */}
       <div className="relative w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-ink-800 bg-canvas">

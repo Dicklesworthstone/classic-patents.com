@@ -1,6 +1,7 @@
 export type DaimlerKernelSource = "wasm" | "ts-fallback" | "unloaded";
 
 type DaimlerMarineFn = (shaftSelection: number, coolingPumpEnabled: boolean) => string;
+type DaimlerKernelSourceListener = () => void;
 
 export interface DaimlerMarineWasmStep {
   shaft_translation_along_axis_normalized: number;
@@ -19,9 +20,21 @@ export interface DaimlerMarineWasmStep {
 let daimlerMarineFn: DaimlerMarineFn | null = null;
 let loadPromise: Promise<DaimlerKernelSource> | null = null;
 let source: DaimlerKernelSource = "unloaded";
+const sourceListeners = new Set<DaimlerKernelSourceListener>();
 
 export function daimlerKernelSource(): DaimlerKernelSource {
   return source;
+}
+
+export function subscribeDaimlerKernelSource(listener: DaimlerKernelSourceListener): () => void {
+  sourceListeners.add(listener);
+  return () => sourceListeners.delete(listener);
+}
+
+function setDaimlerKernelSource(next: DaimlerKernelSource): void {
+  if (source === next) return;
+  source = next;
+  for (const listener of [...sourceListeners]) listener();
 }
 
 export function decodeDaimlerMarineWasmStep(raw: string): DaimlerMarineWasmStep | null {
@@ -83,7 +96,7 @@ export function ensureDaimlerWasm(): Promise<DaimlerKernelSource> {
 
 async function initializeDaimlerWasm(): Promise<DaimlerKernelSource> {
   if (typeof window === "undefined") {
-    source = "ts-fallback";
+    setDaimlerKernelSource("ts-fallback");
     return source;
   }
   try {
@@ -104,14 +117,14 @@ async function initializeDaimlerWasm(): Promise<DaimlerKernelSource> {
         throw new Error("daimler_marine_step missing from browser module");
       }
       daimlerMarineFn = module.daimler_marine_step;
-      source = "wasm";
+      setDaimlerKernelSource("wasm");
     } finally {
       URL.revokeObjectURL(blobUrl);
     }
   } catch (error) {
     console.warn("Failed to load fs-daimler-wasm; using typed fallback", error);
     daimlerMarineFn = null;
-    source = "ts-fallback";
+    setDaimlerKernelSource("ts-fallback");
   }
   return source;
 }

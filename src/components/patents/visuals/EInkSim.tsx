@@ -1,9 +1,13 @@
 "use client";
 
 import { Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
-import { stepEInk } from "@/physics/eInkKernel";
-import { createStudioClock } from "@/physics/tickScheduler";
+import { useEffect, useId, useRef } from "react";
+import {
+  readEInkRuntimeControls,
+  readEInkTapeFrame,
+  resetEInkTape,
+} from "@/physics/eInkSharedKernel";
+import { usePatentRuntimeTick } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -14,6 +18,50 @@ interface EInkSimProps {
   initialViscosity?: number;
 }
 
+type EInkParticle = {
+  index: number;
+  restX: number;
+  x: number;
+  y: number; // -1 (bottom) to +1 (top)
+  type: "white" | "black";
+  size: number;
+};
+
+function createEInkParticles(): EInkParticle[] {
+  const unitHash = (index: number, salt: number) => {
+    const value = Math.sin(index * 12.9898 + salt * 78.233) * 43758.5453;
+    return value - Math.floor(value);
+  };
+  const particles: EInkParticle[] = [];
+
+  for (let index = 0; index < 35; index++) {
+    const restX = (index % 2 === 0 ? 0.25 : 0.75) + (unitHash(index, 1) - 0.5) * 0.16;
+    particles.push({
+      index,
+      restX,
+      x: restX,
+      y: 0.8,
+      type: "white",
+      size: 7 + unitHash(index, 3) * 3,
+    });
+  }
+
+  for (let index = 0; index < 35; index++) {
+    const particleIndex = index + 35;
+    const restX = (index % 2 === 0 ? 0.25 : 0.75) + (unitHash(particleIndex, 1) - 0.5) * 0.16;
+    particles.push({
+      index: particleIndex,
+      restX,
+      x: restX,
+      y: -0.8,
+      type: "black",
+      size: 7 + unitHash(particleIndex, 3) * 3,
+    });
+  }
+
+  return particles;
+}
+
 export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkSimProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
@@ -22,101 +70,43 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
 
   const { params, updateParam, resetParams } = usePatentPhysics("us-6120588-eink");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const voltage = params.electrodeVoltageVolts ?? initialVoltage;
-  const viscosity = params.fluidViscosityCp ?? initialViscosity;
-  const chargeCoupled = params.particleChargeCoupled ?? 1.0;
-
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const controls = readEInkRuntimeControls({
+    electrodeVoltageVolts: params.electrodeVoltageVolts ?? initialVoltage,
+    fluidViscosityCp: params.fluidViscosityCp ?? initialViscosity,
+    particleChargeCoupled: params.particleChargeCoupled ?? 1,
+    running: (params.isRunning ?? 1) > 0,
+  });
+  const voltage = controls.electrodeVoltageVolts;
+  const viscosity = controls.fluidViscosityCp;
+  usePatentRuntimeTick("us-6120588-eink", 1);
+  const { state, simTimeSec } = readEInkTapeFrame(controls);
+  const isPlaying = controls.running;
 
   // Microcapsule particles. Layout is an electrophoretic suspension distribution.
-  const particlesRef = useRef<
-    Array<{
-      index: number;
-      restX: number;
-      x: number;
-      y: number; // -1 (bottom) to +1 (top)
-      type: "white" | "black";
-      size: number;
-    }>
-  >([]);
-
-  if (particlesRef.current.length === 0) {
-    const unitHash = (i: number, salt: number) => {
-      const n = Math.sin(i * 12.9898 + salt * 78.233) * 43758.5453;
-      return n - Math.floor(n);
-    };
-    const pts = [];
-    for (let i = 0; i < 35; i++) {
-      const restX = (i % 2 === 0 ? 0.25 : 0.75) + (unitHash(i, 1) - 0.5) * 0.16;
-      pts.push({
-        index: i,
-        restX,
-        x: restX,
-        y: 0.8,
-        type: "white" as const,
-        size: 7 + unitHash(i, 3) * 3,
-      });
-    }
-    for (let i = 0; i < 35; i++) {
-      const index = i + 35;
-      const restX = (i % 2 === 0 ? 0.25 : 0.75) + (unitHash(index, 1) - 0.5) * 0.16;
-      pts.push({
-        index,
-        restX,
-        x: restX,
-        y: -0.8,
-        type: "black" as const,
-        size: 7 + unitHash(index, 3) * 3,
-      });
-    }
-    particlesRef.current = pts;
-  }
+  const particlesRef = useRef<EInkParticle[]>([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    if (particlesRef.current.length === 0) {
+      particlesRef.current = createEInkParticles();
+    }
 
-    let animId: number;
-    let timeSec = 0;
-    let state = stepEInk(
-      {
-        electrodeVoltageVolts: voltage,
-        fluidViscosityCp: viscosity,
-        particleChargeCoupled: chargeCoupled,
-      },
-      0.016,
-    );
-
-    const clock = createStudioClock();
-    const render = (now: number) => {
-      animId = requestAnimationFrame(render);
+    const render = () => {
       if (!onscreenRef.current) return;
-      if (isPlaying) {
-        const { dt, simTimeSec } = clock.pump(now);
-        timeSec = simTimeSec;
-        state = stepEInk(
-          {
-            electrodeVoltageVolts: voltage,
-            fluidViscosityCp: viscosity,
-            particleChargeCoupled: chargeCoupled,
-          },
-          dt,
-          state,
-        );
 
-        // Same kernel Y the 3D meshes lerp toward. Thermal jitter drains Stokes-Einstein ω.
-        for (const p of particlesRef.current) {
-          const targetY = p.type === "white" ? state.whiteParticleNormY : state.blackParticleNormY;
-          const jitterY =
-            Math.sin(p.index * 5.1 + timeSec * state.brownianJitterOmegaYRadPerS) * 0.04;
-          p.y += (targetY + jitterY - p.y) * 0.18;
-          p.y = Math.max(-0.88, Math.min(0.88, p.y));
-          p.x =
-            p.restX + Math.cos(p.index * 4.3 + timeSec * state.brownianJitterOmegaXRadPerS) * 0.02;
-          p.x = Math.max(0.12, Math.min(0.88, p.x));
-        }
+      // Both faces project the same kernel Y at the same tape time. Thermal
+      // jitter drains the kernel's viscosity-dependent Stokes-Einstein rate.
+      for (const p of particlesRef.current) {
+        const targetY = p.type === "white" ? state.whiteParticleNormY : state.blackParticleNormY;
+        const jitterY =
+          Math.sin(p.index * 5.1 + simTimeSec * state.brownianJitterOmegaYRadPerS) * 0.04;
+        p.y = Math.max(-0.88, Math.min(0.88, targetY + jitterY));
+        p.x =
+          p.restX + Math.cos(p.index * 4.3 + simTimeSec * state.brownianJitterOmegaXRadPerS) * 0.02;
+        p.x = Math.max(0.12, Math.min(0.88, p.x));
       }
 
       const w = canvas.width;
@@ -336,9 +326,8 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
       );
     };
 
-    animId = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(animId);
-  }, [voltage, viscosity, chargeCoupled, isPlaying, onscreenRef.current]);
+    render();
+  }, [simTimeSec, state, voltage, onscreenRef]);
 
   return (
     <div
@@ -372,7 +361,7 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
           <button
             type="button"
             onClick={() => {
-              setIsPlaying(!isPlaying);
+              updateParam("isRunning", isPlaying ? 0 : 1);
               soundEngine.playSwitchClick();
             }}
             aria-label={isPlaying ? "Pause Simulation" : "Play Simulation"}
@@ -388,6 +377,7 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
           <button
             type="button"
             onClick={() => {
+              resetEInkTape();
               resetParams();
               soundEngine.playSwitchClick();
             }}
@@ -470,7 +460,7 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
               updateParam("electrodeVoltageVolts", 15.0);
               soundEngine.playSwitchClick();
             }}
-            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-parchment-100 dark:bg-ink-900 border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-neutral-800 hover:text-ink-900 dark:hover:text-white transition-all"
+            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-parchment-100 dark:bg-ink-900 border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-neutral-800 hover:text-ink-900 dark:hover:text-white transition-colors"
           >
             ⚪ Positive field
           </button>
@@ -480,7 +470,7 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
               updateParam("electrodeVoltageVolts", -15.0);
               soundEngine.playSwitchClick();
             }}
-            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-parchment-100 dark:bg-ink-900 border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-neutral-800 hover:text-ink-900 dark:hover:text-white transition-all"
+            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-parchment-100 dark:bg-ink-900 border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-neutral-800 hover:text-ink-900 dark:hover:text-white transition-colors"
           >
             ⚫ Negative field
           </button>
@@ -490,7 +480,7 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
               updateParam("electrodeVoltageVolts", 0.0);
               soundEngine.playSwitchClick();
             }}
-            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-400 dark:border-emerald-500/80 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-900/80 transition-all"
+            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-400 dark:border-emerald-500/80 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-900/80 transition-colors"
           >
             ⚡ Field off (0V)
           </button>

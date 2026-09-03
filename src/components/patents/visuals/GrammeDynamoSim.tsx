@@ -8,6 +8,8 @@ import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
+const UI_SNAPSHOT_INTERVAL_MS = 80;
+
 export function GrammeDynamoSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-120057-gramme-dynamo");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -17,23 +19,42 @@ export function GrammeDynamoSim() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [angleDeg, setAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const angleRef = useRef(0);
+  const dynamoRef = useRef<ReturnType<typeof stepGrammeDynamo> | null>(null);
+  const armatureRef = useRef<SVGGElement>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   useEffect(() => {
+    dynamoRef.current = gramme;
+  }, [gramme]);
+
+  useEffect(() => {
     if (!isPlaying) return;
-    const loop = () => {
+    let lastUiSnapshot = 0;
+    const loop = (time: number) => {
       animRef.current = requestAnimationFrame(loop);
       if (!onscreenRef.current) return;
+      const liveDynamo = dynamoRef.current;
+      if (!liveDynamo) return;
       // The animation is a visual cue, not a historical speed measurement.
       // Fixed per-frame steps avoid deriving state from a private wall clock.
-      setAngleDeg((prev) => (prev + gramme.displayDegPerFrame) % gramme.displayWrapDeg);
+      angleRef.current =
+        (angleRef.current + liveDynamo.displayDegPerFrame) % liveDynamo.displayWrapDeg;
+      armatureRef.current?.setAttribute(
+        "transform",
+        `translate(${liveDynamo.torusCx}, ${liveDynamo.torusCy}) rotate(${angleRef.current})`,
+      );
+      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = time;
+        setAngleDeg(angleRef.current);
+      }
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, gramme.displayDegPerFrame, gramme.displayWrapDeg, onscreenRef.current]);
+  }, [isPlaying, onscreenRef]);
 
   return (
     <div
@@ -88,6 +109,11 @@ export function GrammeDynamoSim() {
             type="button"
             onClick={() => {
               resetParams();
+              angleRef.current = 0;
+              armatureRef.current?.setAttribute(
+                "transform",
+                `translate(${gramme.torusCx}, ${gramme.torusCy}) rotate(0)`,
+              );
               setAngleDeg(0);
               soundEngine.playSwitchClick();
             }}
@@ -143,7 +169,10 @@ export function GrammeDynamoSim() {
           </text>
 
           {/* Toroidal Soft-Iron Ring Armature */}
-          <g transform={`translate(${gramme.torusCx}, ${gramme.torusCy}) rotate(${angleDeg})`}>
+          <g
+            ref={armatureRef}
+            transform={`translate(${gramme.torusCx}, ${gramme.torusCy}) rotate(${angleDeg})`}
+          >
             {/* Laminated Soft-Iron Torus */}
             <circle
               cx="0"

@@ -15,7 +15,6 @@
 
 import * as THREE from "three";
 import { stepZeppelinAirship } from "@/physics/catalogKernels";
-import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
 
 export interface ZeppelinAirshipModelNodes {
   rootGroup: THREE.Group;
@@ -74,9 +73,11 @@ export function buildZeppelinAirshipModel(): ZeppelinAirshipModelResult {
 
   const duraluminGirders = trackMat(
     new THREE.MeshStandardMaterial({
-      color: 0x94a3b8,
-      roughness: 0.32,
-      metalness: 0.88,
+      // A dark, high-contrast structural tone preserves the frame's legibility
+      // against the pale studio sky, especially in cutaway inspection mode.
+      color: 0x334155,
+      roughness: 0.42,
+      metalness: 0.72,
     }),
   );
 
@@ -336,13 +337,14 @@ export function buildZeppelinAirshipModel(): ZeppelinAirshipModelResult {
 }
 
 /**
- * Updates airship buoyancy height, pitch trim, propeller rotation, and trim weight position.
+ * Updates the source-supported buoyancy station, pitch trim, propulsion, and
+ * trim-weight position. Wind and rigid-body dynamics are not modeled, so the
+ * hull does not acquire synthetic sway or pitch oscillation.
  */
 export function updateZeppelinAirshipKinematics(
   nodes: ZeppelinAirshipModelNodes,
   materials: ZeppelinAirshipMaterials,
   dt: number,
-  timeSec: number,
   hullStudioY: number,
   pitchTrimDeg: number,
   propellerSpeedRadPerS: number,
@@ -356,15 +358,9 @@ export function updateZeppelinAirshipKinematics(
     flightSpeedKnots,
     trimWeight: trimWeightPosM,
   });
-  const heat = heatFrames(12, 16, 2);
-  const lift =
-    1 + Math.abs(sampleHeatAt(heat, 12, 16, Math.abs(Math.floor(timeSec * 4)) % 16, 0.5, 0.3));
-  // 1. Aerostatic Buoyancy Altitude & Gentle Flight Sway
-  nodes.hullGroup.position.y =
-    hullStudioY + Math.sin(timeSec * zeppelin.swayOmega) * zeppelin.swayAmp * lift;
-  nodes.hullGroup.rotation.z =
-    (pitchTrimDeg * Math.PI) / 180 +
-    Math.sin(timeSec * zeppelin.pitchSwayOmega) * zeppelin.pitchSwayAmp;
+  // 1. Aerostatic buoyancy station and trim angle from the shared kernel.
+  nodes.hullGroup.position.y = hullStudioY;
+  nodes.hullGroup.rotation.z = (pitchTrimDeg * Math.PI) / 180;
 
   // 2. Sliding Trim Weight Translation along Keel
   nodes.trimWeightMesh.position.x = Math.max(

@@ -12,6 +12,7 @@ import {
   evaluateArchivalPublicationState,
   patentForPublicationViewer,
 } from "@/data/editions/publicationApproval";
+import { reviewedLedgerTextForViewer } from "@/data/editions/reviewedLedgerPublicationEvidence.server";
 import {
   allPatents,
   getAdjacentPatents,
@@ -49,8 +50,12 @@ export async function generateMetadata({ params }: PatentPageProps): Promise<Met
 
   const description = `${patent.subtitle}. ${patent.summary}`;
   const url = `/patents/${patent.id}`;
+  const presentationLabel =
+    patent.id === "us-3671542-kwolek-kevlar"
+      ? "Plain English & Source-Bound Record"
+      : "Plain English & Interactive Sim";
   return {
-    title: `${patent.shortTitle} (${patent.patentNumber}) — Plain English & Interactive Sim`,
+    title: `${patent.shortTitle} (${patent.patentNumber}) — ${presentationLabel}`,
     description,
     // Without these overrides every patent page inherits the root-layout
     // openGraph/twitter objects: generic og:title and site-level og:url.
@@ -81,13 +86,19 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
   }
   const colorizedEquations = getColorizedEquationsForPatent(id);
   const archivalPublication = evaluateArchivalPublicationState(patent);
-  const archivalEdition = archivalPublication.publishedEdition;
-  const archivalDiagnostics = archivalPublicationDiagnostics(archivalPublication);
+  // Editorial acceptance never gates source text. The viewer projection keeps
+  // a complete, structurally valid edition, or falls open to the complete
+  // reviewed ledger when the stored edition is only a draft.
   const viewerPatent = patentForPublicationViewer(patent, archivalPublication);
+  const archivalEdition = viewerPatent.archivalEdition;
+  const archivalDiagnostics = archivalPublicationDiagnostics(archivalPublication);
   const archivalParallelReadings = archivalEdition
     ? archivalParallelReadingsFor(patent.id)
     : undefined;
-  const hasRawSourceText = patent.originalTextAsset?.kind === "source-pdf-text-layer";
+  // A legitimate reviewed transcript is readable source material even before
+  // a complete structured React edition is available. Keep it as text, not as
+  // a substitute PDF experience, and never use review state as a visibility gate.
+  const reviewedTranscript = archivalEdition ? undefined : reviewedLedgerTextForViewer(patent);
   const archivalPublicationView = {
     isPublished: archivalPublication.isPublished,
     reasonCode: archivalPublication.reasonCode,
@@ -131,7 +142,7 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
       {/* Patent Header & Metadata Bar */}
       <PatentHeader patent={patent} />
 
-      {/* Dual Projection Viewer (Plain English + Original Spec + Interactive Simulator) */}
+      {/* Dual Projection Viewer (Plain English + original source + visual face) */}
       <div
         data-archival-edition={archivalEdition?.kind ?? "withheld"}
         data-archival-publication-state={archivalPublication.state.kind}
@@ -142,8 +153,8 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
           patent={viewerPatent}
           archivalPublication={archivalPublicationView}
           archivalParallelReadings={archivalParallelReadings}
+          reviewedTranscript={reviewedTranscript}
           colorizedEquations={colorizedEquations}
-          hasRawSourceText={hasRawSourceText}
         />
       </div>
 

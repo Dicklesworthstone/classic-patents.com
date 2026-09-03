@@ -3,34 +3,44 @@
 import { ArrowRight, BookOpen, Compass, Search, Sparkles, User, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { allPatents, searchPatents } from "@/data/patents";
 import type { Patent } from "@/types/patent";
 
 interface PatentSearchPaletteProps {
-  isOpen: boolean;
   onClose: () => void;
 }
 
-export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProps) {
+export function PatentSearchPalette({ onClose }: PatentSearchPaletteProps) {
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
+  // The parent mounts a fresh palette for each open action. This resets search
+  // state before the dialog is ever painted instead of briefly showing the
+  // previous query and then clearing it in response to an `isOpen` prop.
+  useLayoutEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (!dialog.open) {
+      dialog.showModal();
+    }
+    const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 50);
+    return () => window.clearTimeout(focusTimer);
+  }, []);
+
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    if (isOpen && !dialog.open) {
-      dialog.showModal();
-      setQuery("");
-      setSelectedIndex(0);
-      setTimeout(() => inputRef.current?.focus(), 50);
-    } else if (!isOpen && dialog.open) {
-      dialog.close();
-    }
-  }, [isOpen]);
+    const closeOnBackdropClick = (event: MouseEvent) => {
+      // Native <dialog> backdrop clicks target the dialog itself.
+      if (event.target === dialog) onClose();
+    };
+    dialog.addEventListener("click", closeOnBackdropClick);
+    return () => dialog.removeEventListener("click", closeOnBackdropClick);
+  }, [onClose]);
 
   const results = useMemo(() => {
     if (!query.trim()) {
@@ -76,14 +86,11 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
   return (
     <dialog
       ref={dialogRef}
+      aria-modal="true"
       aria-label="Patent Search Palette"
       className="fixed inset-0 z-50 m-auto w-[min(44rem,calc(100vw-2rem))] max-h-[85dvh] p-0 bg-transparent border-none open:flex open:items-center open:justify-center backdrop:bg-ink-950/80 backdrop:backdrop-blur-sm"
       onClose={onClose}
       onKeyDown={handleKeyDown}
-      onClick={(e) => {
-        // Clicks on the native <dialog> backdrop land on the dialog element.
-        if (e.target === dialogRef.current) onClose();
-      }}
     >
       <div className="w-full max-w-2xl bg-parchment-50 dark:bg-ink-950 rounded-3xl border border-parchment-300 dark:border-ink-800 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative">
         {/* Search Input Bar */}
@@ -145,6 +152,7 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
             results.map((patent: Patent, idx: number) => {
               const isSelected = idx === selectedIndex;
               const year = patent.grantDate.split("-")[0];
+              const hasVisualHold = patent.id === "us-3671542-kwolek-kevlar";
 
               return (
                 <Link
@@ -201,7 +209,7 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
                         isSelected ? "text-amber-100" : "text-amber-700 dark:text-amber-400"
                       }`}
                     >
-                      Open 3D Model
+                      {hasVisualHold ? "Open Source-Bound Record" : "Open 3D Model"}
                     </span>
                     <ArrowRight
                       className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${

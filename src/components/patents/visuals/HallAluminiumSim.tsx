@@ -487,6 +487,7 @@ export function HallAluminiumSim() {
             </div>
             <input
               type="range"
+              aria-label="Hall cell direct current in amperes"
               min={100000}
               max={500000}
               step={10000}
@@ -508,6 +509,7 @@ export function HallAluminiumSim() {
             </div>
             <input
               type="range"
+              aria-label="Cryolite bath temperature in degrees Celsius"
               min={920}
               max={1020}
               step={5}
@@ -531,6 +533,7 @@ export function HallAluminiumSim() {
             </div>
             <input
               type="range"
+              aria-label="Alumina concentration by weight percentage"
               min={2.0}
               max={8.0}
               step={0.5}

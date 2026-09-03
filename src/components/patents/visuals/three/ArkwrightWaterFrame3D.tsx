@@ -63,6 +63,8 @@ export function ArkwrightWaterFrame3D() {
     rollerClampingWeightKg,
     stapleLengthMm: params.stapleLengthMm,
     inputRovingCountNe: params.inputRovingCountNe,
+    cutaway,
+    showCallouts,
   });
 
   // Shared transport tape: honest envelope plus one bus-owned integrator.
@@ -110,15 +112,9 @@ export function ArkwrightWaterFrame3D() {
       };
       return { machine };
     };
-    globalTransportBus.registerUpdater(EXHIBIT_ID, integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater(EXHIBIT_ID);
-  }, [
-    live.current.waterWheelRpm,
-    live.current.totalDraftRatio,
-    live.current.rollerClampingWeightKg,
-    live.current.stapleLengthMm,
-    live.current.inputRovingCountNe,
-  ]);
+    const unregister = globalTransportBus.registerUpdater(EXHIBIT_ID, integrate, "TS_FALLBACK");
+    return unregister;
+  }, [live]);
 
   const handlePresetChange = (preset: CameraPreset) => {
     setActivePreset(preset);
@@ -126,11 +122,7 @@ export function ArkwrightWaterFrame3D() {
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
-  const cutawayRef = useRef(cutaway);
-  cutawayRef.current = cutaway;
-  const calloutsRef = useRef(showCallouts);
-  calloutsRef.current = showCallouts;
-
+  // The persistent WebGL scene consumes the stable layout-effect-synchronized control ref so toggles do not rebuild and flash the studio.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -178,8 +170,8 @@ export function ArkwrightWaterFrame3D() {
       model.traverseRailGroup.position.y = 0.52 + traverseOffset;
       model.camGroup.rotation.z = ph.traverse;
 
-      model.setCutaway(cutawayRef.current);
-      model.setCalloutsVisible(calloutsRef.current);
+      model.setCutaway(live.current.cutaway);
+      model.setCalloutsVisible(live.current.showCallouts);
 
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
@@ -193,7 +185,7 @@ export function ArkwrightWaterFrame3D() {
       studio.cleanup();
       studioRef.current = null;
     };
-  }, []);
+  }, [live]);
 
   const outputs = stepArkwrightWaterFrame({
     waterWheelRpm,
@@ -341,6 +333,7 @@ export function ArkwrightWaterFrame3D() {
             </div>
             <input
               type="range"
+              aria-label="Water wheel speed"
               min="10"
               max="60"
               step="1"
@@ -359,6 +352,7 @@ export function ArkwrightWaterFrame3D() {
             </div>
             <input
               type="range"
+              aria-label="Total draft ratio"
               min="2.0"
               max="6.0"
               step="0.1"
@@ -379,6 +373,7 @@ export function ArkwrightWaterFrame3D() {
             </div>
             <input
               type="range"
+              aria-label="Roller clamp weight"
               min="2.0"
               max="10.0"
               step="0.5"

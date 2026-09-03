@@ -40,7 +40,7 @@ export function BellTelephoneSim() {
       setTime((t) => t + 1);
     }, 40);
     return () => clearInterval(timer);
-  }, [onscreenRef.current]);
+  }, [onscreenRef]);
 
   // Update real-time Web Audio synthesis when playing
   useEffect(() => {

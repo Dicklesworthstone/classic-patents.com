@@ -1,7 +1,4 @@
-import {
-  kwolekKevlarArchivalEdition,
-  kwolekKevlarClaims,
-} from "@/data/editions/kwolekKevlarEdition";
+import { kwolekKevlarClaims } from "@/data/editions/kwolekKevlarEdition";
 import type { Patent } from "@/types/patent";
 
 // Preserved research draft. This object contains broad modern interpretation and a
@@ -30,15 +27,6 @@ const _legacyKwolekKevlarPatentDraft: Patent = {
   originalPdfUrl: "/patents/pdfs/us-3671542-kwolek-kevlar.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3671542A/en",
   usptoClassification: "D01F 6/60 (Synthetic polyamide fibers)",
-  archivalEdition: kwolekKevlarArchivalEdition,
-  originalTextAsset: {
-    url: "/patents/transcripts/us-3671542-kwolek-kevlar-reviewed.txt",
-    pageCount: 58,
-    kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (SteelNeedle)",
-    reviewedAt: "2026-08-18",
-    sourcePdfSha256: "7a2b753cf8d6f329d5fad750dc2de510f723876cac6aa41a4076f0343a7a62c4",
-  },
   originalText: `UNITED STATES PATENT OFFICE.
 STEPHANIE L. KWOLEK, OF WILMINGTON, DELAWARE, ASSIGNOR TO E. I. DU PONT DE NEMOURS AND COMPANY, OF WILMINGTON, DELAWARE.
 
@@ -294,14 +282,16 @@ I claim as my invention:
  * The public record is intentionally narrower than the preserved legacy draft
  * above. The source-audit receipt proves the front sheet, nine drawing sheets,
  * and both printed claims, but not a complete manually prepared specification.
- * Keep the original face withheld until that work is finished.
+ * Do not bind the legacy edition or its incomplete ledger to this public record:
+ * neither is a reviewed source asset, and the pinned facsimile remains the
+ * only complete source face until that work is finished.
  */
 export const kwolekKevlarPatent: Patent = {
   id: "us-3671542-kwolek-kevlar",
   patentNumber: "US 3,671,542",
   title: "Optically Anisotropic Aromatic Polyamide Dopes",
   shortTitle: "Kwolek Kevlar Aromatic Polyamide Dopes",
-  subtitle: "Source edition withheld pending a complete 58-page manual transcription",
+  subtitle: "Complete Patent Transcript with a Structured Edition in Preparation",
   inventors: ["Stephanie Louise Kwolek"],
   inventorLocation: "Wilmington, Delaware",
   grantDate: "1972-06-20",
@@ -310,21 +300,12 @@ export const kwolekKevlarPatent: Patent = {
   category: "materials",
   categoryLabel: "Polymer Chemistry & Advanced Materials",
   summary:
-    "The grant's abstract describes optically anisotropic dopes made from carbocyclic aromatic polyamides in suitable liquid media and says those dopes are used to prepare fibers with unusual internal structure and high tensile properties. Its complete 58-page source face remains withheld until a literal manual edition is finished.",
+    "The grant's abstract describes optically anisotropic dopes made from carbocyclic aromatic polyamides in suitable liquid media and says those dopes are used to prepare fibers with unusual internal structure and high tensile properties. Its complete 58-page transcript is readable on the Original Patent Text face while a structured manual edition is prepared.",
   heroQuote:
     "Compositions or dopes comprising carbocyclic aromatic polyamides in suitable liquid media are prepared which are optically anisotropic.",
   originalPdfUrl: "/patents/pdfs/us-3671542-kwolek-kevlar.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3671542A/en",
   usptoClassification: "U.S. Cl. 260/30.8 R; Int. Cl. C08g 51/44.",
-  archivalEdition: kwolekKevlarArchivalEdition,
-  originalTextAsset: {
-    url: "/patents/transcripts/us-3671542-kwolek-kevlar-reviewed.txt",
-    pageCount: 58,
-    kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (SteelNeedle)",
-    reviewedAt: "2026-08-18",
-    sourcePdfSha256: "7a2b753cf8d6f329d5fad750dc2de510f723876cac6aa41a4076f0343a7a62c4",
-  },
   originalText: `UNITED STATES PATENT
 3,671,542
 Patented June 20, 1972
@@ -336,10 +317,10 @@ Filed May 23, 1969, Appl. No. 827,345
 ABSTRACT
 Compositions or dopes comprising carbocyclic aromatic polyamides in suitable liquid media are prepared which are optically anisotropic. These dopes are used in preparing fibers of unique internal structure and exceptionally high tensile properties.
 
-The full 58-page historical instrument is available through the original PDF. Its public manual edition is deliberately withheld while the remaining specification pages, tables, examples, claims, and correction certificates are transcribed and checked against that facsimile.`,
+The complete 58-page historical transcript is readable on the Original Patent Text face. A structured manual edition is still being prepared against the pinned facsimile.`,
   plainEnglishExplanation: {
     overview:
-      "The verified front sheet says this grant concerns optically anisotropic aromatic-polyamide dopes and their use in making fibers. The catalogue does not yet publish a broader engineering explanation because the manual source edition is incomplete.",
+      "The verified front sheet says this grant concerns optically anisotropic aromatic-polyamide dopes and their use in making fibers. The complete patent transcript is available on the Original Patent Text face; a broader engineering explanation remains limited while the structured source edition is prepared.",
     coreMechanism:
       "The two printed claims define a polymer dope made from a carbocyclic aromatic polyamide and selected liquid media. Claim 2 narrows one such medium to concentrated sulfuric acid. A complete explanation of the specification's processing, examples, figures, tables, and corrections awaits line-by-line manual review.",
     mechanicalBreakdown: [
@@ -395,19 +376,10 @@ The full 58-page historical instrument is available through the original PDF. It
     ],
     breakthroughInsight:
       "The grant's abstract distinguishes optically anisotropic polyamide dopes and connects them to fibers with distinctive internal structure.",
-    patentWars: [
-      {
-        rivalName: "Akzo Nobel N.V. (Twaron)",
-        rivalClaim:
-          "Dutch chemical manufacturer Akzo developed poly-p-phenylene terephthalamide fiber under the trade name Twaron, filing European and US patent applications asserting distinct solvent formulations.",
-        conflictDetails:
-          "DuPont and Akzo engaged in international patent infringement litigation across the United States, Netherlands, and Germany throughout the 1980s over liquid-crystalline aramid spinning processes (E.I. du Pont de Nemours & Co. v. Akzo N.V.).",
-        resolution:
-          "In 1988, DuPont and Akzo signed a worldwide cross-licensing and coexistence agreement, allocating market territories and licensing each other's aramid polymer processing patents.",
-        legalOutcome:
-          "Kwolek's foundational US Patent No. 3,671,542 was affirmed as the breakthrough patent in anisotropic liquid-crystalline polymer solutions, protecting DuPont's multi-billion-dollar Kevlar franchise.",
-      },
-    ],
+    // The checked source packet establishes the grant and its claims, not a
+    // later litigation record. Keep this empty until a separate primary legal
+    // source can support a public patent-war entry.
+    patentWars: [],
     civilizationalImpact:
       "The page remains a source-preservation record until its full historical and technical interpretation can be checked against the complete facsimile.",
   },

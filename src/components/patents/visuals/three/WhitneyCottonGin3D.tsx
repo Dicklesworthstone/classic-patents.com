@@ -3,13 +3,13 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import {
   globalTransportBus,
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -58,7 +58,7 @@ export function WhitneyCottonGin3D() {
   const [showFibers, setShowFibers] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const dailyOutputLbs = gin.outputLbsPerDay.toFixed(1);
@@ -101,8 +101,12 @@ export function WhitneyCottonGin3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-x72-whitney-cotton-gin", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-x72-whitney-cotton-gin");
+    const unregister = globalTransportBus.registerUpdater(
+      "us-x72-whitney-cotton-gin",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
   }, [live]);
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -118,10 +122,6 @@ export function WhitneyCottonGin3D() {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -342,6 +342,7 @@ export function WhitneyCottonGin3D() {
             </div>
             <input
               type="range"
+              aria-label="Hand crank speed"
               min="60"
               max="360"
               step="10"

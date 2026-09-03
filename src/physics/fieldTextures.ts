@@ -3,7 +3,7 @@
  *
  * FrankenSim GPU Field & Streamline Generator for Classic Patents.
  * Bridges discrete PDE field solutions (Fourier conduction, Laplace potential,
- * 6-group neutron diffusion, Maxwell vector flux, Navier-Stokes streamlines)
+ * normalized teaching displays, Maxwell vector flux, Navier-Stokes streamlines)
  * into Three.js DataTextures and zero-copy Float32Array geometry vertex buffers.
  *
  * Governed strictly by SI units and deterministic pseudo-random particle seeds.
@@ -290,14 +290,21 @@ export function computeNoyceDepletionField(reverseBiasV: number, gridSize = 32):
 }
 
 /** Farnsworth dissector raster potential along the scanned line. */
-export function computeFarnsworthRasterField(beamFrac: number, gridSize = 32): Float32Array {
-  const grid = new Float32Array(gridSize * gridSize);
-  const cx = Math.max(0, Math.min(1, beamFrac));
+export function computeFarnsworthRasterField(
+  beamXFrac: number,
+  gridSize = 32,
+  target?: Float32Array,
+  beamYFrac = 0.5,
+): Float32Array {
+  const requiredLength = gridSize * gridSize;
+  const grid = target?.length === requiredLength ? target : new Float32Array(requiredLength);
+  const cx = Math.max(0, Math.min(1, beamXFrac));
+  const cy = Math.max(0, Math.min(1, beamYFrac));
   for (let y = 0; y < gridSize; y++) {
     for (let x = 0; x < gridSize; x++) {
       const u = x / (gridSize - 1);
       const v = y / (gridSize - 1);
-      const line = Math.exp(-((v - 0.5) ** 2) / 0.01);
+      const line = Math.exp(-((v - cy) ** 2) / 0.01);
       const spot = Math.exp(-((u - cx) ** 2) / 0.004);
       grid[y * gridSize + x] = Math.max(0, Math.min(1, 0.25 * line + 0.75 * line * spot));
     }
@@ -359,8 +366,15 @@ export function writeColormappedField(
   }
 }
 
-/** Fermi CP-1 2D spatial neutron flux field from diffusion with cadmium rod absorption. */
-export function computeFermiNeutronFluxField(
+/**
+ * Normalized particle-density texture for the US 2,708,656 studio.
+ *
+ * This is deliberately not named or presented as neutron flux: the patent
+ * does not provide the boundary conditions or absorber-worth calibration
+ * required for a quantitative diffusion solve. The rectangular cosine shape
+ * simply keeps display particles concentrated inside the modeled pile.
+ */
+export function computeFermiNormalizedDisplayField(
   keff: number,
   rodInsertion: number,
   gridSize = 32,
@@ -375,15 +389,10 @@ export function computeFermiNeutronFluxField(
     for (let x = 0; x < gridSize; x++) {
       const u = (x / (gridSize - 1)) * 2 - 1; // [-1..1]
       const v = (y / (gridSize - 1)) * 2 - 1; // [-1..1]
-      const r2 = u * u + v * v;
-      if (r2 > 1.0) {
-        grid[y * gridSize + x] = 0;
-        continue;
-      }
-      // Fundamental Bessel/cosine diffusion mode
+      // Rectangular display envelope; not a fitted reactor eigenmode.
       const fundamental = Math.cos((Math.PI * u) / 2) * Math.cos((Math.PI * v) / 2);
-      // Local absorber rod depression near center-top
-      const rodDist2 = u * u + (v - 0.25) * (v - 0.25);
+      // Qualitative occlusion around a side-entry absorber path.
+      const rodDist2 = u * u + v * v;
       const rodDip = rodSuppression * 0.75 * Math.exp(-rodDist2 / 0.12);
       const val = Math.max(0, fundamental - rodDip) * fluxScale;
       grid[y * gridSize + x] = Math.max(0, Math.min(1, val));

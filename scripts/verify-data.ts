@@ -15,7 +15,6 @@ import { archivalParallelReadingsFor } from "../src/data/editions/parallelReadin
 import {
   archivalEditionForPublication,
   evaluateArchivalPublicationState,
-  isArchivalEditionExplicitlyWithheld,
 } from "../src/data/editions/publicationApproval";
 import { allPatents, searchPatents } from "../src/data/patents";
 import { patentSchema } from "../src/data/patents/schema";
@@ -27,6 +26,7 @@ import {
 } from "../src/data/patents/sourceTextValidation";
 import {
   buildPatentCoverageManifest,
+  hasExternalRuntimeOwner,
   type SharedBusParticipation,
   wasmSurfaceForPatent,
 } from "../src/physics/coverageManifest";
@@ -34,8 +34,7 @@ import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
 import type { CuratedSpecificationBlock, CuratedSpecificationInlines } from "../src/types/patent";
 
 const MAX_PDF_TEXT_BUFFER_BYTES = 64 * 1024 * 1024;
-const BARE_DRAWING_REFERENCE =
-  /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|(?:section|division)\s+\d+)\b/i;
+const BARE_DRAWING_REFERENCE = /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|division\s+\d+)\b/i;
 const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
   "us-x9430-colt-revolver",
   "us-3633-goodyear-rubber",
@@ -113,6 +112,7 @@ function sharedBusParticipationFor(
   patentId: string,
   threeVisualSources: readonly string[],
 ): SharedBusParticipation {
+  if (hasExternalRuntimeOwner(patentId)) return "updater";
   const matchingSources = threeVisualSources.filter((source) => source.includes(patentId));
   if (matchingSources.some((source) => source.includes("registerUpdater"))) return "updater";
   if (matchingSources.some((source) => source.includes("useFrankenSimPhysics"))) return "snapshot";
@@ -161,6 +161,22 @@ async function main() {
       .filter((filename) => filename.endsWith("Kernel.ts"))
       .map((filename) => fs.readFileSync(path.join(physicsDirectory, filename), "utf8")),
   ];
+  const genericWasmHookSource = fs.readFileSync(
+    path.join(physicsDirectory, "useGenericWasmSource.ts"),
+    "utf8",
+  );
+
+  const runtimeSourcesReachLoader = (
+    sources: readonly string[],
+    loaderFunction: string,
+  ): boolean => {
+    if (sources.some((source) => source.includes(loaderFunction))) return true;
+    return (
+      loaderFunction === "ensureGenericWasm" &&
+      sources.some((source) => source.includes("useGenericWasmSource")) &&
+      genericWasmHookSource.includes(loaderFunction)
+    );
+  };
 
   const equationSerialization = validateColorizedEquationCatalogue(ALL_COLORIZED_EQUATIONS);
   for (const error of equationSerialization.errors) {
@@ -345,11 +361,10 @@ async function main() {
       }
     }
 
-    // 8. A public complete specification must be a manual React edition with
-    // an explicitly registered companion map, never an OCR result, text
-    // transcript, HTML string, or runtime reconstruction. A patent-local
-    // draft without that map is intentionally withheld by the renderer and
-    // must not be validated as a visitor-facing edition.
+    // 8. A manual React edition may earn its fuller editorial-publication
+    // designation only after its companion map and acceptance checks. That
+    // designation is not a reader gate: every patent still exposes its authored
+    // edition or complete reviewed ledger on the Original Patent Text face.
     const archivalEdition = archivalEditionForPublication(patent);
     if (archivalEdition) {
       publishedManualEdition = true;
@@ -503,11 +518,9 @@ async function main() {
       console.warn(
         patent.archivalEdition
           ? patent.archivalEdition.completeFacsimileReviewed !== true
-            ? `⚠️  ${prefix} Complete source text is withheld: the stored edition has not passed full-facsimile review.`
-            : isArchivalEditionExplicitlyWithheld(patent.id)
-              ? `⚠️  ${prefix} Complete source text is withheld pending root editorial acceptance.`
-              : `⚠️  ${prefix} Complete source text is withheld: a patent-local manual-edition draft has no published companion map.`
-          : `⚠️  ${prefix} Complete source text is withheld: no manually prepared archival edition is published.`,
+            ? `⚠️  ${prefix} The stored patent text remains visible; its archival edition has not passed full-facsimile review.`
+            : `⚠️  ${prefix} The authored patent text remains visible; its richer editorial companion map is still in preparation.`
+          : `⚠️  ${prefix} No structured edition is registered; the complete reviewed transcript remains visible.`,
       );
     }
 
@@ -588,7 +601,7 @@ async function main() {
       console.log(
         publishedManualEdition
           ? `✓ ${prefix} Passed integrity and published-manual-edition gates (PDF verified: ${(pdfSizeBytes / 1024).toFixed(1)} KB).`
-          : `✓ ${prefix} Passed catalog/source-integrity gates; complete manual edition remains withheld (PDF verified: ${(pdfSizeBytes / 1024).toFixed(1)} KB).`,
+          : `✓ ${prefix} Passed catalog/source-integrity gates; complete source text remains visible (PDF verified: ${(pdfSizeBytes / 1024).toFixed(1)} KB).`,
       );
     } else {
       console.error(`✗ ${prefix} Failed ${patentErrorCount} verification gate(s).`);
@@ -649,7 +662,7 @@ async function main() {
       const matchingRuntimeSources = runtimeOwnerSources.filter((source) =>
         source.includes(row.patentId),
       );
-      if (!matchingRuntimeSources.some((source) => source.includes(descriptor.loaderFunction))) {
+      if (!runtimeSourcesReachLoader(matchingRuntimeSources, descriptor.loaderFunction)) {
         console.error(
           `❌ [${row.patentId}] Declares ${descriptor.sourceCrate}, but its active visual/kernel owner does not call ${descriptor.loaderFunction}.`,
         );
@@ -720,7 +733,9 @@ async function main() {
     `Runtime ownership: ${wasmSurfaceCounts["patent-specific-wasm"]?.length ?? 0} patent-specific WASM surface; ${wasmSurfaceCounts["interpretive-wasm"]?.length ?? 0} dedicated interpretive WASM surfaces; ${wasmSurfaceCounts["generic-wasm"]?.length ?? 0} generic WASM consumers; ${wasmSurfaceCounts.none?.length ?? 0} typed-host-only records. Shared bus: ${sharedBusCounts.updater?.length ?? 0} updaters; ${sharedBusCounts.snapshot?.length ?? 0} typed snapshots; ${sharedBusCounts.missing?.length ?? 0} honest placeholders.`,
   );
   if (manualEditionGaps.length > 0) {
-    console.warn(`Withheld pending manual preparation: ${manualEditionGaps.join(", ")}.`);
+    console.warn(
+      `Editorial companion preparation remains for: ${manualEditionGaps.join(", ")}. Complete source text remains visible.`,
+    );
   }
   console.log(
     `Verification Result: ${

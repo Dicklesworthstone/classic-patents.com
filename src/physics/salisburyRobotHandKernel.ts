@@ -20,6 +20,8 @@ export interface SalisburyRobotHandControls {
   radiusScaleMm: number;
   /** Claim 2 study switch: whether the first idler is held in position. */
   firstIdlerFixed: boolean;
+  /** Internal claim-comparison predicate; normal visitor controls leave this true. */
+  claim1RoutingPresent?: boolean;
 }
 
 export type SalisburyPullPattern =
@@ -27,6 +29,7 @@ export type SalisburyPullPattern =
   | "T1/T4 opposed: second-joint command"
   | "T2/T3 paired: first-joint command"
   | "T1/T4 paired: opposite first-joint command"
+  | "Claim 1 routing withheld"
   | "mixed cable loading";
 
 export interface SalisburyRobotHandTelemetry {
@@ -40,6 +43,14 @@ export interface SalisburyRobotHandTelemetry {
   firstIdlerFixed: boolean;
   claim1RoutingProbe: boolean;
   claim2IdlerProbe: boolean;
+  sourceLawApplicable: boolean;
+  activeJointCoordinates: 0 | 9;
+  activeCableEndCount: 0 | 12;
+  owners: {
+    topology: typeof SALISBURY_FRANKENSIM_TOPOLOGY_OWNER;
+    revolute: typeof SALISBURY_FRANKENSIM_REVOLUTE_OWNER;
+    contactCandidate: typeof SALISBURY_FRANKENSIM_CONTACT_OWNER;
+  };
   refused: boolean;
   refusalReason?: string;
   historicalDynamicsAvailable: false;
@@ -54,7 +65,14 @@ export const SALISBURY_HAND_DEFAULT_CONTROLS: SalisburyRobotHandControls = {
   tensionT4N: 14,
   radiusScaleMm: 10,
   firstIdlerFixed: true,
+  claim1RoutingPresent: true,
 };
+
+export const SALISBURY_FRANKENSIM_TOPOLOGY_OWNER =
+  "fs-mbd::salisbury::step_salisbury_hand" as const;
+export const SALISBURY_FRANKENSIM_REVOLUTE_OWNER =
+  "fs-mbd::articulated::JointModel::revolute" as const;
+export const SALISBURY_FRANKENSIM_CONTACT_OWNER = "fs-contact::normal_patch" as const;
 
 const HISTORICAL_DYNAMICS_REFUSAL =
   "US 4,921,293 prints the tendon-to-joint torque equations but no historic pulley dimensions, link geometry, mass, inertia, damping, motor rating, friction coefficient, or contact modulus. Dynamic pose, grasp force, force closure, speed, and stability are therefore unavailable.";
@@ -94,6 +112,14 @@ export function stepSalisburyRobotHandSi(
   // collapse the physical hand's twelve separately routed cable ends to four.
   const tensions: [number, number, number, number] = [t1, t2, t3, t4];
   const invalidTensionIndex = tensions.findIndex((value) => !isValidTension(value));
+  const claim1RoutingPresent = controls.claim1RoutingPresent !== false;
+  const activeJointCoordinates = claim1RoutingPresent ? 9 : 0;
+  const activeCableEndCount = claim1RoutingPresent ? 12 : 0;
+  const owners = {
+    topology: SALISBURY_FRANKENSIM_TOPOLOGY_OWNER,
+    revolute: SALISBURY_FRANKENSIM_REVOLUTE_OWNER,
+    contactCandidate: SALISBURY_FRANKENSIM_CONTACT_OWNER,
+  } as const;
 
   if (
     invalidTensionIndex >= 0 ||
@@ -113,6 +139,10 @@ export function stepSalisburyRobotHandSi(
       firstIdlerFixed: controls.firstIdlerFixed,
       claim1RoutingProbe: false,
       claim2IdlerProbe: false,
+      sourceLawApplicable: false,
+      activeJointCoordinates,
+      activeCableEndCount,
+      owners,
       refused: true,
       refusalReason,
       historicalDynamicsAvailable: false,
@@ -124,6 +154,27 @@ export function stepSalisburyRobotHandSi(
   const r2 = controls.radiusScaleMm / 1000;
   const r1 = r2 * 1.2;
   const r3 = r2 * 1.4;
+
+  if (!claim1RoutingPresent) {
+    return {
+      tendonTensionsN: tensions,
+      pulleyRadiiM: [r1, r2, r3],
+      jointTorquesNm: [0, 0, 0],
+      displayJointAnglesDeg: [0, 0, 0],
+      pullPattern: "Claim 1 routing withheld",
+      firstIdlerFixed: controls.firstIdlerFixed,
+      claim1RoutingProbe: false,
+      claim2IdlerProbe: false,
+      sourceLawApplicable: false,
+      activeJointCoordinates,
+      activeCableEndCount,
+      owners,
+      refused: false,
+      historicalDynamicsAvailable: false,
+      historicalDynamicsRefusal: HISTORICAL_DYNAMICS_REFUSAL,
+      provenance: "TS_SOURCE_LAW",
+    };
+  }
 
   // Equations printed in the preferred-embodiment discussion for Figure 3.
   const torque1Nm = -t1 * r1 + t2 * r2 + t3 * r2 - t4 * r1;
@@ -143,6 +194,10 @@ export function stepSalisburyRobotHandSi(
     firstIdlerFixed: controls.firstIdlerFixed,
     claim1RoutingProbe: true,
     claim2IdlerProbe: controls.firstIdlerFixed,
+    sourceLawApplicable: true,
+    activeJointCoordinates,
+    activeCableEndCount,
+    owners,
     refused: false,
     historicalDynamicsAvailable: false,
     historicalDynamicsRefusal: HISTORICAL_DYNAMICS_REFUSAL,
@@ -175,5 +230,11 @@ export function readSalisburyRobotHandControls(
         : typeof params.firstIdlerFixed === "number"
           ? params.firstIdlerFixed >= 0.5
           : SALISBURY_HAND_DEFAULT_CONTROLS.firstIdlerFixed,
+    claim1RoutingPresent:
+      typeof params.claim1RoutingEnabled === "boolean"
+        ? params.claim1RoutingEnabled
+        : typeof params.claim1RoutingEnabled === "number"
+          ? params.claim1RoutingEnabled >= 0.5
+          : SALISBURY_HAND_DEFAULT_CONTROLS.claim1RoutingPresent,
   };
 }

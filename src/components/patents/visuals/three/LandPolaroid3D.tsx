@@ -1,23 +1,24 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepLandPolaroidInstantFilm } from "@/physics/catalogKernels";
-import { createStudioClock } from "@/physics/tickScheduler";
-import type { MachineState } from "@/physics/types";
-import {
-  globalTransportBus,
-  type TapeUpdater,
-  useFrankenSimPhysics,
-} from "@/physics/useFrankenSimPhysics";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import {
+  type LandPolaroidCameraPreset as CameraPreset,
+  LAND_POLAROID_CAMERA_PRESETS,
+  landPolaroidViewForViewport,
+} from "./landPolaroidCamera";
 import { createLandPolaroidModel, type LandPolaroidModelNodes } from "./landPolaroidModel";
+import { LAND_POLAROID_3D_SOURCE_BOUNDARY } from "./landPolaroidSourceBoundary";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
+import { StudioOverlayActionToolbar } from "./StudioOverlayActionToolbar";
+import { createWideStudioOverlayActions } from "./studioOverlayActions";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -26,51 +27,13 @@ interface LandPolaroid3DProps {
   className?: string;
 }
 
-type CameraPreset = "overview" | "rollers" | "pod" | "print";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { label: string; pos: [number, number, number]; target: [number, number, number] }
-> = {
-  overview: {
-    label: "Instant Camera & Film Overview",
-    pos: [3.5, 5.0, 7.5],
-    target: [0.5, 0, 1.2],
-  },
-  rollers: {
-    label: "Nip Pressure Rollers",
-    pos: [1.8, 2.2, 2.5],
-    target: [0.6, 0, 0],
-  },
-  pod: {
-    label: "Rupturable Reagent Pod",
-    pos: [0.6, 2.5, 1.5],
-    target: [0.6, 0, -0.6],
-  },
-  print: {
-    label: "Developing Positive Print",
-    pos: [3.5, 2.8, 4.5],
-    target: [2.4, 0, 2.8],
-  },
-};
-
-const IDLE_MACHINE: MachineState = {
-  poseXMeters: 0,
-  poseYMeters: 0,
-  headingRad: 0,
-  modeLabel: "idle",
-  wheelSpeedMps: 0,
-};
-
 export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const studioRef = useRef<StudioContext | null>(null);
   const modelRef = useRef<LandPolaroidModelNodes | null>(null);
   const animFrameRef = useRef<number | null>(null);
-  const timeRef = useRef<number>(0);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
-  const [isCutaway, setIsCutaway] = useState<boolean>(false);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+  const [isCutaway, setIsCutaway] = useState<boolean>(true);
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const { params, updateParam } = usePatentPhysics("us-2543181-land-polaroid");
@@ -79,6 +42,18 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
   const reagentViscosityCp = params.reagentViscosityCp ?? 25000;
   const rollerGapUm = params.rollerGapUm ?? 25;
   const alkaliPh = params.alkaliPh ?? 12.6;
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({
+    1: (params.claim1Active ?? 1) >= 0.5,
+  });
+  const claim1Active = claimStates[1] ?? true;
+  const sourceState = stepLandPolaroidInstantFilm({
+    developmentTimeSec,
+    exposureFraction,
+    reagentViscosityCp,
+    rollerGapUm,
+    alkaliPh,
+    claim1Active,
+  });
 
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
 
@@ -89,60 +64,27 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
     rollerGapUm,
     alkaliPh,
     isCutaway,
+    claim1Active,
   });
 
-  // Roller phase lives in a ref so updater re-registration never snaps it.
-  const rollerAngleRef = useRef(0);
-
-  // Shared transport tape: the diffusion-transfer kernel (previously unused by
-  // this face) is adopted here; the bus updater owns the roller integration.
+  // The source owns the topology and chemistry description, but not the
+  // constants needed to claim a calibrated FrankenSim diffusion or energy run.
   useFrankenSimPhysics("us-2543181-land-polaroid", {
-    domain: "solid_mechanics",
-    refusal: { isRefused: false },
-    machine: { ...IDLE_MACHINE, modeLabel: "developing" },
+    domain: "materials_kinetics",
+    refusal: { isRefused: true, reason: LAND_POLAROID_3D_SOURCE_BOUNDARY },
   });
-
-  useEffect(() => {
-    const integrate: TapeUpdater = (_prev, dt) => {
-      const film = stepLandPolaroidInstantFilm({
-        reagentViscosityCp: live.current.reagentViscosityCp,
-        rollerGapUm: live.current.rollerGapUm,
-        alkaliPh: live.current.alkaliPh,
-        exposureFraction: live.current.exposureFraction,
-        developmentTimeSec: live.current.developmentTimeSec,
-      });
-      rollerAngleRef.current =
-        (rollerAngleRef.current + film.rollerDisplayOmegaRadPerS * dt) % (Math.PI * 2);
-      return {
-        refusal: { isRefused: false },
-        machine: {
-          ...IDLE_MACHINE,
-          headingRad: rollerAngleRef.current,
-          modeLabel: film.printCompletionPercent >= 100 ? "print complete" : "developing",
-        },
-      };
-    };
-    globalTransportBus.registerUpdater("us-2543181-land-polaroid", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-2543181-land-polaroid");
-  }, [
-    live.current.alkaliPh,
-    live.current.developmentTimeSec,
-    live.current.exposureFraction,
-    live.current.reagentViscosityCp,
-    live.current.rollerGapUm,
-  ]);
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
-    const targetConfig = CAMERA_PRESETS[preset];
-    studioRef.current?.controls.setView(targetConfig.pos, targetConfig.target);
+    const view = landPolaroidViewForViewport(preset, containerRef.current?.clientWidth ?? 1024);
+    studioRef.current?.controls.setView(view.pos, view.target);
   };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const overview = CAMERA_PRESETS.overview;
+    const overview = landPolaroidViewForViewport("overview", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: overview.pos,
@@ -154,17 +96,14 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
     modelRef.current = model;
     studio.scene.add(model.group);
 
-    const clock = createStudioClock();
-    const animate = (now: number) => {
+    const animate = () => {
+      animFrameRef.current = requestAnimationFrame(animate);
       if (!studio.isVisible()) {
-        animFrameRef.current = requestAnimationFrame(animate);
         return;
       }
-      const { simTimeSec } = clock.pump(now);
-      timeRef.current = simTimeSec;
       studio.controls.update();
-      model.setCutaway?.(live.current.isCutaway ?? false);
-      model.update(timeRef.current, live.current);
+      model.setCutaway(live.current.isCutaway ?? false);
+      model.update(0, live.current);
       studio.renderer.render(studio.scene, studio.camera);
     };
 
@@ -193,7 +132,7 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
             <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
               <Camera className="w-3.5 h-3.5" /> View:
             </span>
-            {(Object.keys(CAMERA_PRESETS) as CameraPreset[]).map((key) => (
+            {(Object.keys(LAND_POLAROID_CAMERA_PRESETS) as CameraPreset[]).map((key) => (
               <button
                 key={key}
                 type="button"
@@ -204,74 +143,34 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
                     : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
                 }`}
               >
-                {CAMERA_PRESETS[key].label}
+                {LAND_POLAROID_CAMERA_PRESETS[key].label}
               </button>
             ))}
           </div>
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[min(90%,26rem)] sm:max-w-[26rem]">
-          <button
-            type="button"
-            onClick={() => {
+        <StudioOverlayActionToolbar
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[min(90%,26rem)] sm:max-w-[26rem]"
+          actions={createWideStudioOverlayActions({
+            isCutaway,
+            onToggleCutaway: () => {
               setIsCutaway((prev) => !prev);
               soundEngine.playSwitchClick();
-            }}
-            className={`min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
-              isCutaway
-                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-700"
-                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
-            }`}
-            title={isCutaway ? "Switch to Solid Camera Body" : "Switch to Interior Cutaway"}
-            aria-label={isCutaway ? "Switch to Solid Camera Body" : "Switch to Interior Cutaway"}
-          >
-            <Layers className="w-4 h-4" />
-            <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
+            },
+            cutawayTitle: isCutaway
+              ? "Restore Opaque Photosensitive Sheet"
+              : "Expose Internal Layer Stack",
+            isAudioMuted,
+            onToggleSound: () => {
               toggleSound();
               soundEngine.playSwitchClick();
-            }}
-            className="min-h-9 p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-          >
-            {isAudioMuted ? (
-              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            ) : (
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
-              showUiOverlay
-                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
-                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-700"
-            }`}
-            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
-            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
-          >
-            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
-          </button>
-
-          <button
-            aria-label="Reset camera view"
-            type="button"
-            onClick={() => handlePresetChange("overview")}
-            className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
-          >
-            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
-        </div>
+            },
+            showUiOverlay,
+            onToggleUiOverlay: () => setShowUiOverlay(!showUiOverlay),
+            onResetCamera: () => handlePresetChange("overview"),
+          })}
+        />
 
         {/* Bottom-Left Telemetry Banner */}
         {showUiOverlay && (
@@ -280,7 +179,7 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
               US 2,543,181 — Edwin Land Polaroid Instant Film
             </div>
             <div className="text-[10px] font-sans text-ink-600 dark:text-ink-400 mt-0.5">
-              Diffusion Transfer Reversal with Rupturable Foil Pod &amp; Squeegee Rollers
+              Claim 1 attached product with liquid container and superposed transfer layers
             </div>
           </div>
         )}
@@ -289,10 +188,10 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
         <StudioKernelChips
           side="right"
           visible={showUiOverlay}
-          title="DIFFUSION-TRANSFER INSTANT CHEMISTRY"
+          title="SOURCE TOPOLOGY · MODERN TEACHING LENS"
           chips={[
-            { label: "t_dev", value: `${developmentTimeSec.toFixed(0)}`, unit: "s" },
-            { label: "Roller Gap", value: `${rollerGapUm.toFixed(0)}`, unit: "µm" },
+            { label: "Scenario t_dev", value: `${developmentTimeSec.toFixed(0)}`, unit: "s" },
+            { label: "Teaching Gap", value: `${rollerGapUm.toFixed(0)}`, unit: "µm" },
             {
               label: "Viscosity",
               value: `${reagentViscosityCp.toLocaleString()}`,
@@ -300,21 +199,37 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
             },
             { label: "Alkali pH", value: `${alkaliPh.toFixed(1)}`, unit: "pH" },
             { label: "Exposure", value: `${(exposureFraction * 100).toFixed(0)}%` },
-            { label: "Process", value: "One-Step Rupturable Pod Diffusion" },
+            {
+              label: "Transfer",
+              value: `${sourceState.transferEfficiencyPercent.toFixed(1)}`,
+              unit: "% scenario",
+            },
+            {
+              label: "Claim 1 path",
+              value: sourceState.claim1PathActive ? "attached" : "removed",
+              tone: sourceState.claim1PathActive ? "ok" : "warn",
+            },
           ]}
         />
       </div>
 
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <p
+          data-testid="land-polaroid-source-boundary"
+          className="mb-4 text-xs leading-relaxed text-ink-600 dark:text-ink-300"
+        >
+          <strong className="text-ink-900 dark:text-parchment-100">Source boundary.</strong>{" "}
+          {LAND_POLAROID_3D_SOURCE_BOUNDARY}
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <SensitivitySlider
             id="developmentTime"
             patentId="us-2543181-land-polaroid"
-            paramKey="devTimeSec"
+            paramKey="developmentTimeSec"
             label="Development Time"
             value={developmentTimeSec}
-            min={10}
+            min={0}
             max={60}
             step={1}
             onChange={(val) => updateParam("developmentTimeSec", val)}
@@ -330,6 +245,7 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
             </div>
             <input
               type="range"
+              aria-label="Exposure level"
               min="0.1"
               max="1.0"
               step="0.05"
@@ -356,16 +272,11 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
         <ClaimConstraintToggle
           patentId="us-2543181-land-polaroid"
           claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
+          onToggleClaim={(claimNo, active) => {
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
+            updateParam("claim1Active", active ? 1 : 0);
+          }}
           className="mt-2"
-        />
-
-        <PortHamiltonianEnergyStrip
-          patentId="us-2543181-land-polaroid"
-          params={params}
-          className="mt-3"
         />
       </div>
     </div>

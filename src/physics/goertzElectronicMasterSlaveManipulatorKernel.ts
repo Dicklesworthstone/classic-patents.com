@@ -61,18 +61,22 @@ export interface GoertzMasterSlavePose {
   readonly positionErrors: readonly number[];
   readonly errorMagnitude: number;
   readonly reflectedResistance: number;
-  readonly limiterActive: boolean;
   readonly forceReflectionEnabled: boolean;
   readonly tachometerDampingEnabled: boolean;
-  readonly activeClaim: 1 | 9 | 10 | 11 | 12 | 13;
+  readonly limiterEnabled: boolean;
+  readonly mismatchChannel: GoertzMotionChannel | null;
+  readonly activeClaim: 1 | 9 | 10 | 11 | 12;
   readonly state:
     | "correspondence"
-    | "remote contact without reflection"
-    | "force-reflecting remote contact"
-    | "limited error response";
+    | "remote gripper obstruction without reflection"
+    | "force-reflecting remote gripper obstruction";
   readonly positionLaw: string;
+  readonly quantitativeDynamicsAvailable: false;
   readonly refusal: { refused: true; reason: string };
 }
+
+export const GOERTZ_MASTER_SLAVE_SOURCE_BOUNDARY =
+  "US 2,846,084 specifies seven corresponding motions, a position-error signal whose amplitude is proportional to positional difference and whose phase gives direction, force on both corresponding members, an opposing relative-speed tachometer path, and an abnormal-condition limiter. It does not publish arm dimensions, mass, inertia, transmission ratios, motor constants, control gains, limiter threshold, payload, contact stiffness, force calibration, motion history, or bandwidth.";
 
 function bounded(value: number | undefined, fallback: number, min = -1, max = 1): number {
   const candidate = typeof value === "number" && Number.isFinite(value) ? value : fallback;
@@ -135,10 +139,12 @@ export function readGoertzMasterSlaveControls(
 /**
  * Maps the source-described seven correspondence channels to normalized state.
  * `contactResistance` is an illustrative scenario selector, not a material
- * measurement; it makes an obstruction visible by withholding part of the
- * commanded slave displacement. The feedback expressions are deliberately
- * dimensionless because the source does not provide the quantities needed for
- * SI dynamics.
+ * measurement. It withholds only part of the slave gripper's commanded closure,
+ * matching the source's fragile-beaker explanation while leaving the other six
+ * channels in correspondence. The tachometer and limiter flags disclose their
+ * source-described control paths but cannot alter this static pose: doing so
+ * would require motion history and a limiter threshold that the grant does not
+ * supply.
  */
 export function stepGoertzMasterSlaveTopology(
   params: Partial<GoertzMasterSlaveControls> | Record<string, number | undefined>,
@@ -153,41 +159,29 @@ export function stepGoertzMasterSlaveTopology(
     controls.toolAxis172,
     controls.gripperClosure,
   ] as const;
-  const neutral = [0, 0, 0, 0, 0, 0, 0] as const;
-  const dampingFactor = controls.tachometerDampingEnabled === 1 ? 0.68 : 1;
-  const contactFraction = controls.contactResistance * dampingFactor;
-  const rawErrors = masterChannels.map((value, index) => {
-    const mismatch = (value - (neutral[index] ?? 0)) * contactFraction;
-    return mismatch === 0 ? 0 : mismatch;
-  });
-  const rawMagnitude = Math.max(...rawErrors.map((value) => Math.abs(value)));
-  // Claim 10/12’s limiting function is represented only as normalized command
-  // clipping. It is not a source claim about a particular speed or voltage.
-  const commandLimit = 0.55;
-  const limiterActive = controls.limiterEnabled === 1 && rawMagnitude > commandLimit;
-  const positionErrors = rawErrors.map((value) =>
-    limiterActive ? Math.sign(value) * Math.min(Math.abs(value), commandLimit) : value,
-  );
+  const gripperMismatch = controls.gripperClosure * controls.contactResistance;
+  const positionErrors = [0, 0, 0, 0, 0, 0, gripperMismatch] as const;
   const slaveChannels = masterChannels.map((value, index) => value - (positionErrors[index] ?? 0));
   const errorMagnitude = Math.max(...positionErrors.map((value) => Math.abs(value)));
   const forceReflectionEnabled = controls.forceReflectionEnabled === 1;
   const reflectedResistance = forceReflectionEnabled ? errorMagnitude : 0;
-  const state: GoertzMasterSlavePose["state"] = limiterActive
-    ? "limited error response"
-    : controls.contactResistance === 0
-      ? "correspondence"
-      : forceReflectionEnabled
-        ? "force-reflecting remote contact"
-        : "remote contact without reflection";
-  const activeClaim: GoertzMasterSlavePose["activeClaim"] = limiterActive
-    ? controls.tachometerDampingEnabled === 1
+  const contactActive = gripperMismatch > 0;
+  const state: GoertzMasterSlavePose["state"] = !contactActive
+    ? "correspondence"
+    : forceReflectionEnabled
+      ? "force-reflecting remote gripper obstruction"
+      : "remote gripper obstruction without reflection";
+  const tachometerDampingEnabled = controls.tachometerDampingEnabled === 1;
+  const limiterEnabled = controls.limiterEnabled === 1;
+  const activeClaim: GoertzMasterSlavePose["activeClaim"] = !forceReflectionEnabled
+    ? 1
+    : limiterEnabled && tachometerDampingEnabled
       ? 12
-      : 10
-    : controls.tachometerDampingEnabled === 1
-      ? 11
-      : forceReflectionEnabled
-        ? 9
-        : 13;
+      : limiterEnabled
+        ? 10
+        : tachometerDampingEnabled
+          ? 11
+          : 9;
 
   return {
     masterChannels,
@@ -195,17 +189,18 @@ export function stepGoertzMasterSlaveTopology(
     positionErrors,
     errorMagnitude,
     reflectedResistance,
-    limiterActive,
     forceReflectionEnabled,
-    tachometerDampingEnabled: controls.tachometerDampingEnabled === 1,
+    tachometerDampingEnabled,
+    limiterEnabled,
+    mismatchChannel: contactActive ? "tool opening/closing" : null,
     activeClaim,
     state,
     positionLaw:
-      "normalized slave channel = master channel − source-shaped positional mismatch; E ∝ (master − slave)",
+      "E ∝ q_m − q_s, with phase indicating correction direction; the static exhibit withholds only illustrative slave-gripper closure",
+    quantitativeDynamicsAvailable: false,
     refusal: {
       refused: true,
-      reason:
-        "US 2,846,084 states position correspondence, force reflection, relative-speed feedback, and limiting topology, but not arm dimensions, mass, inertia, transmission ratios, motor constants, control gains, payload, contact stiffness, force calibration, or bandwidth. This shared kernel therefore reports deterministic normalized channel correspondence only and refuses SI force, speed, or performance prediction.",
+      reason: `${GOERTZ_MASTER_SLAVE_SOURCE_BOUNDARY} This shared kernel therefore reports deterministic normalized channel correspondence only; it refuses SI force, speed, transient, stability, or performance prediction and does not numerically step the tachometer or limiter paths.`,
     },
   };
 }

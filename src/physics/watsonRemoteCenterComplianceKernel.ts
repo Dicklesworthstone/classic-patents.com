@@ -5,12 +5,13 @@
  * 50, axial elements accommodate translation, and claim 2 adds an anti-twist
  * member. It does not give dimensions, flexure material, stiffness, mass,
  * contact friction, force, clearance, or timing. This is therefore a shared,
- * deterministic normalized geometry exhibit, not an SI contact simulation or
- * a FrankenSim/WASM step.
+ * deterministic normalized geometry exhibit. FrankenSim's `fs-solid::Rod`
+ * owns the applicable geometrically exact flexure law, but the missing source
+ * inputs prevent an honest material card, SI contact simulation, or WASM step.
  */
 
 export interface WatsonRemoteCenterComplianceControls {
-  /** Source-illustrative position of the lateral chamfer contact, 0–1. */
+  /** Reader traversal of the Figure 4 then Figure 5 contact sequence, 0–1. */
   lateralContactFraction: number;
   /** Source-illustrative initial axis mismatch, 0–1. */
   axisMismatchFraction: number;
@@ -35,6 +36,10 @@ export interface WatsonRemoteCenterCompliancePose {
   antiTwistConstraint: boolean;
   /** Unitless drawing-space lateral accommodation. */
   translationOffset: number;
+  /** First half of the illustrated contact sequence, normalized to 0–1. */
+  translationPhase: number;
+  /** Second half of the illustrated contact sequence, normalized to 0–1. */
+  rotationPhase: number;
   /** Unitless drawing-space angular correction. */
   rotationCorrection: number;
   /** Unitless remaining mismatch after the illustrated contact sequence. */
@@ -83,9 +88,11 @@ export function readWatsonRemoteCenterComplianceControls(
 }
 
 /**
- * Shared 2D/3D pose. The constants below are display extents only, so readers
- * can see the source's translation-then-rotation narrative. They are never
- * meters, degrees, forces, stiffnesses, or a prediction of insertion success.
+ * Shared 2D/3D pose. `lateralContactFraction` is a reader-controlled traversal
+ * of the source's two-part contact narrative: Figure 4 first accommodates the
+ * lateral error, then Figure 5/5A rotates the operator about remote center 50.
+ * The values are topology-normalized phase coordinates. They are never meters,
+ * radians, forces, stiffnesses, or a prediction of insertion success.
  */
 export function stepWatsonRemoteCenterComplianceTopology(
   params: Partial<WatsonRemoteCenterComplianceControls> | Record<string, number | undefined>,
@@ -93,25 +100,27 @@ export function stepWatsonRemoteCenterComplianceTopology(
   const controls = readWatsonRemoteCenterComplianceControls(params);
   const remoteCenterTopology = controls.remoteCenterTopology >= 0.5;
   const antiTwistConstraint = remoteCenterTopology && controls.antiTwistConstraint >= 0.5;
-  const correctionGain = remoteCenterTopology ? 0.88 : 0.24;
-  const translationGain = remoteCenterTopology ? 0.72 : 0.18;
-  const rotationCorrection = controls.axisMismatchFraction * correctionGain;
+  const translationPhase = Math.min(1, controls.lateralContactFraction * 2);
+  const rotationPhase = Math.max(0, controls.lateralContactFraction * 2 - 1);
+  const rotationCorrection = controls.axisMismatchFraction * rotationPhase;
 
   return {
     ...controls,
     remoteCenterTopology,
     antiTwistConstraint,
-    translationOffset: controls.lateralContactFraction * translationGain,
+    translationOffset: translationPhase,
+    translationPhase,
+    rotationPhase,
     rotationCorrection,
     remainingAxisMismatch: Math.max(0, controls.axisMismatchFraction - rotationCorrection),
     remoteCenterProjection: remoteCenterTopology ? 1 : 0,
     activeClaim: remoteCenterTopology ? (antiTwistConstraint ? 2 : 1) : null,
     positionLaw:
-      "normalized pose = f(lateral contact, axis mismatch, radial-plus-axial claim topology)",
+      "Figure 4 translation phase -> Figure 5 remote-center rotation phase; normalized source topology",
     refusal: {
       refused: true,
       reason:
-        "US 4,098,001 gives the remote-center and flexure topology but no dimensions, material, stiffness, force, clearance, friction, mass, or timing. The shared kernel therefore refuses SI contact dynamics and reports normalized exhibit geometry only.",
+        "US 4,098,001 gives the remote-center and flexure topology but no dimensions, section geometry, material, stiffness, force, clearance, friction, mass, or timing. fs-solid::Rod is the applicable law owner, but the shared kernel refuses an invented material/load card and reports normalized exhibit geometry only.",
     },
   };
 }

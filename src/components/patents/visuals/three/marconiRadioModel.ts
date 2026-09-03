@@ -11,13 +11,12 @@
  * 4. Morse transmitting telegraph key and primary chemical battery jar series.
  * 5. Buried earth ground conduction plate and connection lead.
  * 6. Expanding electromagnetic spherical/toroidal RF wavefronts.
+ * 7. Grounded receiving aerial, chokes, metallic-powder coherer, relay output,
+ *    and a mechanically linked trembler that restores the detector.
  */
 
 import * as THREE from "three";
-import { wave2dFrames, waveFrameRms } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
-
-const lcg = createLcg(1208);
 
 export interface MarconiRadioModelNodes {
   rootGroup: THREE.Group;
@@ -25,8 +24,10 @@ export interface MarconiRadioModelNodes {
   capacityHat: THREE.Mesh;
   aerialWire: THREE.Mesh;
   guyLines: THREE.LineSegments;
+  guyLinePositions: Float32Array;
   sparkGapGroup: THREE.Group;
   sparkBalls: THREE.Mesh[];
+  sparkPillars: THREE.Mesh[];
   sparkArc: THREE.Line;
   sparkArcGeo: THREE.BufferGeometry;
   arcPositions: Float32Array;
@@ -37,10 +38,19 @@ export interface MarconiRadioModelNodes {
   inductionCoilGroup: THREE.Group;
   morseKeyGroup: THREE.Group;
   morseLever: THREE.Mesh;
+  receiverGroup: THREE.Group;
+  receiverAerial: THREE.Mesh;
+  receiverGroundPlate: THREE.Mesh;
+  coherer: THREE.Mesh;
+  receiverChokes: THREE.Mesh[];
+  relayArmature: THREE.Mesh;
+  tremblerArmature: THREE.Mesh;
+  receiverLamp: THREE.Mesh;
   groundPlate: THREE.Mesh;
   waveRings: THREE.Mesh[];
   waveCount: number;
   mastBaseY: number;
+  random: () => number;
 }
 
 export interface MarconiRadioMaterials {
@@ -53,6 +63,9 @@ export interface MarconiRadioMaterials {
   sparkArc: THREE.LineBasicMaterial;
   sparkPoints: THREE.PointsMaterial;
   wavefrontMat: THREE.MeshBasicMaterial;
+  detector: THREE.MeshStandardMaterial;
+  relay: THREE.MeshStandardMaterial;
+  receiverLamp: THREE.MeshStandardMaterial;
 }
 
 export interface MarconiRadioModelResult {
@@ -62,11 +75,26 @@ export interface MarconiRadioModelResult {
   dispose: () => void;
 }
 
+export interface MarconiRadioKinematicsState {
+  readonly mastStudioScale: number;
+  readonly sparkGapStudioHalfSpan: number;
+  readonly wavefrontProgress: number;
+  readonly sparkActive: boolean;
+  readonly waveActive: boolean;
+  readonly showEmWavefronts: boolean;
+  readonly receiverConducting: boolean;
+  readonly relayActive: boolean;
+  readonly resetActive: boolean;
+  readonly resetPhase: number;
+  readonly isCutaway: boolean;
+}
+
 const SPARK_PARTICLE_COUNT = 60;
 const WAVE_COUNT = 5;
 
 export function buildMarconiRadioModel(): MarconiRadioModelResult {
   const rootGroup = new THREE.Group();
+  const random = createLcg(1208);
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
 
@@ -146,6 +174,28 @@ export function buildMarconiRadioModel(): MarconiRadioModelResult {
         side: THREE.DoubleSide,
       }),
     ),
+    detector: trackMat(
+      new THREE.MeshStandardMaterial({
+        color: 0x94a3b8,
+        roughness: 0.5,
+        metalness: 0.8,
+      }),
+    ),
+    relay: trackMat(
+      new THREE.MeshStandardMaterial({
+        color: 0x64748b,
+        roughness: 0.55,
+        metalness: 0.7,
+      }),
+    ),
+    receiverLamp: trackMat(
+      new THREE.MeshStandardMaterial({
+        color: 0x7c2d12,
+        emissive: 0x7c2d12,
+        emissiveIntensity: 0.15,
+        roughness: 0.35,
+      }),
+    ),
   };
 
   // 1. Timber Aerial Mast & Capacity Plate
@@ -183,7 +233,8 @@ export function buildMarconiRadioModel(): MarconiRadioModelResult {
     guyPositions.push(-3.5, 3.0, 0, -5.5, -3.0, gz * 0.8);
     guyPositions.push(-3.5, 3.0, 0, -1.5, -3.0, gz * 0.8);
   });
-  guyWiresGeo.setAttribute("position", new THREE.Float32BufferAttribute(guyPositions, 3));
+  const guyLinePositions = new Float32Array(guyPositions);
+  guyWiresGeo.setAttribute("position", new THREE.BufferAttribute(guyLinePositions, 3));
   const guyLines = new THREE.LineSegments(
     guyWiresGeo,
     trackMat(new THREE.LineBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.6 })),
@@ -250,6 +301,7 @@ export function buildMarconiRadioModel(): MarconiRadioModelResult {
   rootGroup.add(sparkGapGroup);
 
   const sparkBalls: THREE.Mesh[] = [];
+  const sparkPillars: THREE.Mesh[] = [];
   const spherePositions = [-1.2, -0.4, 0.4, 1.2];
   spherePositions.forEach((sx, idx) => {
     const isInner = idx === 1 || idx === 2;
@@ -269,6 +321,7 @@ export function buildMarconiRadioModel(): MarconiRadioModelResult {
     );
     pillar.position.set(sx, -0.6, 0);
     sparkGapGroup.add(pillar);
+    sparkPillars.push(pillar);
   });
 
   // Central Spark Discharge Arc Line
@@ -283,9 +336,9 @@ export function buildMarconiRadioModel(): MarconiRadioModelResult {
   const sparkParticlePos = new Float32Array(SPARK_PARTICLE_COUNT * 3);
   for (let i = 0; i < SPARK_PARTICLE_COUNT; i++) {
     const idx = i * 3;
-    sparkParticlePos[idx] = (lcg() - 0.5) * 0.8;
-    sparkParticlePos[idx + 1] = -1.8 + (lcg() - 0.5) * 0.3;
-    sparkParticlePos[idx + 2] = (lcg() - 0.5) * 0.4;
+    sparkParticlePos[idx] = (random() - 0.5) * 0.8;
+    sparkParticlePos[idx + 1] = -1.8 + (random() - 0.5) * 0.3;
+    sparkParticlePos[idx + 2] = (random() - 0.5) * 0.4;
   }
   sparkParticleGeo.setAttribute("position", new THREE.BufferAttribute(sparkParticlePos, 3));
   const sparkPoints = new THREE.Points(sparkParticleGeo, materials.sparkPoints);
@@ -306,7 +359,197 @@ export function buildMarconiRadioModel(): MarconiRadioModelResult {
   groundWire.position.set(0, -2.5, 0);
   rootGroup.add(groundWire);
 
-  // 6. Expanding Electromagnetic Spherical/Toroidal Wavefronts
+  const conductorMaterial = trackMat(
+    new THREE.LineBasicMaterial({ color: 0xca8a04, transparent: true, opacity: 0.9 }),
+  );
+  const addConductor = (name: string, points: THREE.Vector3[]) => {
+    const geometry = trackGeo(new THREE.BufferGeometry().setFromPoints(points));
+    const conductor = new THREE.Line(geometry, conductorMaterial);
+    conductor.name = name;
+    rootGroup.add(conductor);
+  };
+  addConductor("Aerial-to-spark conductor", [
+    new THREE.Vector3(-3.2, -3.45, 0),
+    new THREE.Vector3(-3.2, -2.4, 0),
+    new THREE.Vector3(-1.2, -1.8, 0),
+  ]);
+  addConductor("Spark-to-earth conductor", [
+    new THREE.Vector3(1.2, -1.8, 0),
+    new THREE.Vector3(1.2, -2.65, 0),
+    new THREE.Vector3(0, -3.15, 0),
+  ]);
+
+  // 6. Receiver: coherer -> relay local circuit -> trembler reset.  The
+  // patent's detector is a variable-resistance metallic-powder contact; this
+  // visual keeps its signal and reset circuits visibly separate from the
+  // transmitter while connecting every causal stage with conductors.
+  const receiverGroup = new THREE.Group();
+  receiverGroup.name = "coherer_receiver_and_reset";
+  receiverGroup.position.set(6.5, -2.1, 0);
+  rootGroup.add(receiverGroup);
+
+  const receiverBase = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(3.4, 0.25, 2.2)),
+    materials.mahoganyBase,
+  );
+  receiverBase.position.y = -0.75;
+  receiverGroup.add(receiverBase);
+
+  // Receiver RF path. The left electrode rises to an insulated elevated
+  // conductor; the right electrode returns to its own earth plate. These are
+  // the two physically separate stations printed in the long-distance claims.
+  const receiverAerial = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.035, 0.035, 4.5, 8)),
+    materials.copperAerial,
+  );
+  receiverAerial.name = "receiver_insulated_elevated_conductor";
+  receiverAerial.position.set(-2.2, 3.2, 0);
+  receiverGroup.add(receiverAerial);
+  const receiverMast = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.11, 0.22, 6.63, 12)),
+    materials.woodMast,
+  );
+  receiverMast.name = "receiver_aerial_support_mast";
+  receiverMast.position.set(-2.45, 2.135, 0);
+  receiverGroup.add(receiverMast);
+  const receiverCapacityPlate = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.72, 0.72, 0.06, 20)),
+    materials.copperAerial,
+  );
+  receiverCapacityPlate.name = "receiver_elevated_metal_plate";
+  receiverCapacityPlate.position.set(-2.2, 5.45, 0);
+  receiverGroup.add(receiverCapacityPlate);
+
+  const receiverGroundPlate = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(1.45, 0.07, 1.5)),
+    materials.groundEarth,
+  );
+  receiverGroundPlate.name = "receiver_earth_connection";
+  receiverGroundPlate.position.set(-0.15, -1.22, 0);
+  receiverGroup.add(receiverGroundPlate);
+
+  const coherer = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.17, 0.17, 1.25, 16)),
+    materials.detector,
+  );
+  coherer.name = "metallic_powder_coherer_detector";
+  coherer.rotation.z = Math.PI / 2;
+  coherer.position.set(-0.85, 0, 0);
+  receiverGroup.add(coherer);
+
+  for (const x of [-1.55, -0.15]) {
+    const electrode = new THREE.Mesh(
+      trackGeo(new THREE.CylinderGeometry(0.065, 0.065, 0.38, 12)),
+      materials.brassBalls,
+    );
+    electrode.position.set(x, 0, 0);
+    receiverGroup.add(electrode);
+  }
+
+  const receiverChokes: THREE.Mesh[] = [];
+  for (const x of [-1.82, 0.12]) {
+    const choke = new THREE.Mesh(
+      trackGeo(new THREE.TorusGeometry(0.14, 0.045, 8, 18)),
+      materials.copperAerial,
+    );
+    choke.name = x < 0 ? "receiver_aerial_choking_coil" : "receiver_earth_choking_coil";
+    choke.rotation.y = Math.PI / 2;
+    choke.position.set(x, 0, 0);
+    receiverGroup.add(choke);
+    receiverChokes.push(choke);
+  }
+
+  const relayCore = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(0.42, 0.48, 0.72)),
+    materials.relay,
+  );
+  relayCore.position.set(0.55, 0, 0);
+  receiverGroup.add(relayCore);
+  const relayArmature = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(0.82, 0.07, 0.12)),
+    materials.brassBalls,
+  );
+  relayArmature.name = "local_circuit_relay_armature";
+  relayArmature.position.set(0.72, 0.35, 0);
+  receiverGroup.add(relayArmature);
+
+  const tremblerCore = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(0.32, 0.4, 0.58)),
+    materials.relay,
+  );
+  tremblerCore.position.set(1.35, 0, 0);
+  receiverGroup.add(tremblerCore);
+  const tremblerArmature = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(0.64, 0.055, 0.1)),
+    materials.brassBalls,
+  );
+  tremblerArmature.name = "coherer_trembler_reset";
+  tremblerArmature.position.set(1.35, 0.3, 0);
+  receiverGroup.add(tremblerArmature);
+
+  const receiverLamp = new THREE.Mesh(
+    trackGeo(new THREE.SphereGeometry(0.19, 16, 16)),
+    materials.receiverLamp,
+  );
+  receiverLamp.name = "receiver_local_circuit_indicator";
+  receiverLamp.position.set(0.65, 0.65, 0);
+  receiverGroup.add(receiverLamp);
+
+  const localBattery = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(0.55, 0.48, 0.62)),
+    materials.coilIron,
+  );
+  localBattery.name = "receiver_local_battery";
+  localBattery.position.set(0.2, -0.38, 0);
+  receiverGroup.add(localBattery);
+
+  const receiverConductorMaterial = trackMat(
+    new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.9 }),
+  );
+  const addReceiverConductor = (name: string, points: THREE.Vector3[]) => {
+    const geometry = trackGeo(new THREE.BufferGeometry().setFromPoints(points));
+    const conductor = new THREE.Line(geometry, receiverConductorMaterial);
+    conductor.name = name;
+    receiverGroup.add(conductor);
+  };
+  addReceiverConductor("receiver_aerial_to_coherer", [
+    new THREE.Vector3(-1.55, 0, 0),
+    new THREE.Vector3(-1.82, 0, 0),
+    new THREE.Vector3(-2.2, 0, 0),
+    new THREE.Vector3(-2.2, 0.95, 0),
+  ]);
+  addReceiverConductor("coherer_to_receiver_earth", [
+    new THREE.Vector3(-0.15, 0, 0),
+    new THREE.Vector3(0.12, 0, 0),
+    new THREE.Vector3(0.12, -1.185, 0),
+    new THREE.Vector3(-0.15, -1.185, 0),
+  ]);
+  addReceiverConductor("coherer_to_relay_local_circuit", [
+    new THREE.Vector3(-0.15, -0.12, 0.18),
+    new THREE.Vector3(0.2, -0.12, 0.18),
+    new THREE.Vector3(0.34, 0, 0.18),
+  ]);
+  addReceiverConductor("relay_to_local_battery", [
+    new THREE.Vector3(0.55, -0.24, 0.18),
+    new THREE.Vector3(0.2, -0.24, 0.18),
+  ]);
+  addReceiverConductor("local_battery_to_coherer", [
+    new THREE.Vector3(-0.08, -0.38, 0.18),
+    new THREE.Vector3(-1.55, -0.38, 0.18),
+    new THREE.Vector3(-1.55, -0.12, 0.18),
+  ]);
+  addReceiverConductor("relay_to_trembler_reset", [
+    new THREE.Vector3(0.95, 0.25, 0),
+    new THREE.Vector3(1.35, 0.25, 0),
+    new THREE.Vector3(1.35, 0.05, 0),
+  ]);
+  addReceiverConductor("trembler_tapper_linkage", [
+    new THREE.Vector3(1.03, 0.3, 0),
+    new THREE.Vector3(0.15, 0.3, 0),
+    new THREE.Vector3(-0.15, 0.17, 0),
+  ]);
+
+  // 7. Expanding electromagnetic wavefronts from the transmitter aerial.
   const waveRings: THREE.Mesh[] = [];
   for (let i = 0; i < WAVE_COUNT; i++) {
     const ringGeo = trackGeo(new THREE.RingGeometry(1.2 + i * 1.5, 1.28 + i * 1.5, 48));
@@ -324,8 +567,10 @@ export function buildMarconiRadioModel(): MarconiRadioModelResult {
     capacityHat,
     aerialWire,
     guyLines,
+    guyLinePositions,
     sparkGapGroup,
     sparkBalls,
+    sparkPillars,
     sparkArc,
     sparkArcGeo,
     arcPositions,
@@ -336,10 +581,19 @@ export function buildMarconiRadioModel(): MarconiRadioModelResult {
     inductionCoilGroup,
     morseKeyGroup,
     morseLever,
+    receiverGroup,
+    receiverAerial,
+    receiverGroundPlate,
+    coherer,
+    receiverChokes,
+    relayArmature,
+    tremblerArmature,
+    receiverLamp,
     groundPlate,
     waveRings,
     waveCount: WAVE_COUNT,
     mastBaseY,
+    random,
   };
 
   const dispose = () => {
@@ -360,17 +614,21 @@ export function buildMarconiRadioModel(): MarconiRadioModelResult {
 export function updateMarconiRadioKinematics(
   nodes: MarconiRadioModelNodes,
   materials: MarconiRadioMaterials,
-  _dt: number,
-  timeSec: number,
-  _aerialHeightMeters: number,
-  _resonantFreqMhz: number,
-  waveOpacityBase: number,
-  wavePhaseRate: number,
-  mastStudioScale: number,
-  isSparking: boolean,
-  showEmWavefronts: boolean,
-  isCutaway: boolean,
+  state: MarconiRadioKinematicsState,
 ) {
+  const {
+    mastStudioScale,
+    sparkGapStudioHalfSpan,
+    wavefrontProgress,
+    sparkActive,
+    waveActive,
+    showEmWavefronts,
+    receiverConducting,
+    relayActive,
+    resetActive,
+    resetPhase,
+    isCutaway,
+  } = state;
   // 1. Aerial Mast Height Scaling
   const mastScale = mastStudioScale;
   nodes.mast.scale.y = mastScale;
@@ -378,52 +636,75 @@ export function updateMarconiRadioKinematics(
   nodes.capacityHat.position.y = nodes.mastBaseY + 9.5 * mastScale;
   nodes.aerialWire.scale.y = mastScale;
   nodes.aerialWire.position.y = nodes.mastBaseY + 4.75 * mastScale;
+  const topRelativeHeights = [9.15, 9.15, 6.95, 6.95, 9.15, 9.15, 6.95, 6.95];
+  for (let segment = 0; segment < topRelativeHeights.length; segment += 1) {
+    const offset = segment * 6;
+    nodes.guyLinePositions[offset] = -3.5;
+    nodes.guyLinePositions[offset + 1] = nodes.mastBaseY + topRelativeHeights[segment] * mastScale;
+    nodes.guyLinePositions[offset + 2] = 0;
+  }
+  nodes.guyLines.geometry.attributes.position.needsUpdate = true;
 
   // 2. Spark Gap Arc & Glow Dynamics
-  if (isSparking) {
+  const innerHalfSpan = Math.max(0.37, Math.min(0.55, sparkGapStudioHalfSpan));
+  nodes.sparkBalls[1].position.x = -innerHalfSpan;
+  nodes.sparkBalls[2].position.x = innerHalfSpan;
+  nodes.sparkPillars[1].position.x = -innerHalfSpan;
+  nodes.sparkPillars[2].position.x = innerHalfSpan;
+  const dischargeHalfSpan = innerHalfSpan - 0.35;
+  if (sparkActive) {
     nodes.sparkPoints.visible = true;
-    nodes.sparkArc.visible = lcg() > 0.15;
+    nodes.sparkArc.visible = nodes.random() > 0.15;
 
     const aPos = nodes.arcPositions;
     for (let i = 0; i < 15; i++) {
       const t = i / 14;
       const idx = i * 3;
-      aPos[idx] = -0.4 + t * 0.8;
-      aPos[idx + 1] = (lcg() - 0.5) * 0.12;
-      aPos[idx + 2] = (lcg() - 0.5) * 0.12;
+      aPos[idx] = -dischargeHalfSpan + t * dischargeHalfSpan * 2;
+      aPos[idx + 1] = (nodes.random() - 0.5) * 0.12;
+      aPos[idx + 2] = (nodes.random() - 0.5) * 0.12;
     }
     nodes.sparkArcGeo.attributes.position.needsUpdate = true;
 
     const sPos = nodes.sparkParticlePos;
     for (let i = 0; i < nodes.sparkCount; i++) {
       const idx = i * 3;
-      sPos[idx] = (lcg() - 0.5) * 0.8;
-      sPos[idx + 1] = -1.8 + (lcg() - 0.5) * 0.3;
-      sPos[idx + 2] = (lcg() - 0.5) * 0.4;
+      sPos[idx] = (nodes.random() - 0.5) * dischargeHalfSpan * 2;
+      sPos[idx + 1] = -1.8 + (nodes.random() - 0.5) * 0.3;
+      sPos[idx + 2] = (nodes.random() - 0.5) * 0.4;
     }
     nodes.sparkParticleGeo.attributes.position.needsUpdate = true;
 
-    // Morse lever key tap follows spark-train phase rate (leftover 8 at default ~0.85 MHz)
-    nodes.morseLever.rotation.z = Math.sin(timeSec * wavePhaseRate * 8) * 0.08;
+    // A fired pulse means the key is visibly depressed. The source supplies no
+    // calibrated oscillation rate, so this is a discrete state, not an RF clock.
+    nodes.morseLever.rotation.z = -0.12;
   } else {
     nodes.sparkPoints.visible = false;
     nodes.sparkArc.visible = false;
     nodes.morseLever.rotation.z = 0;
   }
 
+  // The shared fixed-step tape owns this causal sequence. The model only
+  // projects coherer conduction, local relay output, and mechanical reset.
+  const detector = materials.detector;
+  detector.emissive.setHex(receiverConducting ? 0x0e7490 : 0x000000);
+  detector.emissiveIntensity = receiverConducting ? 0.8 : 0;
+  nodes.relayArmature.rotation.z = relayActive ? -0.16 : 0;
+  nodes.tremblerArmature.rotation.z = resetActive ? Math.sin(resetPhase * Math.PI * 4) * 0.22 : 0;
+  const lampMaterial = materials.receiverLamp;
+  lampMaterial.emissive.setHex(relayActive ? 0xf59e0b : 0x7c2d12);
+  lampMaterial.emissiveIntensity = relayActive ? 1.2 : 0.15;
+
   // 3. Electromagnetic Wavefront Propagation
-  const wave = wave2dFrames(16, 24, 2);
-  const waveFrame = Math.floor(timeSec * Math.max(0.1, wavePhaseRate) * 4) % 24;
-  const waveEnergy = waveFrameRms(wave, 16, 24, waveFrame);
+  const normalizedWavefront = Math.max(0, Math.min(1, wavefrontProgress));
   for (let i = 0; i < nodes.waveCount; i++) {
     const ring = nodes.waveRings[i];
     if (ring) {
-      ring.visible = showEmWavefronts && isSparking;
-      const wavePhase = (timeSec * wavePhaseRate + i * 0.7) % 3.0;
-      ring.scale.setScalar(1.0 + wavePhase * 0.6 * (1 + waveEnergy));
+      ring.visible = showEmWavefronts && waveActive && normalizedWavefront >= i * 0.04;
+      ring.scale.setScalar(0.8 + normalizedWavefront * 1.15);
       (ring.material as THREE.MeshBasicMaterial).opacity = Math.max(
-        0,
-        (waveOpacityBase - wavePhase * 0.24) * (0.35 + waveEnergy * 2),
+        0.08,
+        0.42 - normalizedWavefront * 0.26 - i * 0.025,
       );
     }
   }

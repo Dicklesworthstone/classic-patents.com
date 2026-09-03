@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "runId": "2026-09-03T04-00-00.623Z__30216",
+  "baseUrl": "http://127.0.0.1:3428",
+  "patentCount": 1,
+  "viewportCount": 1,
+  "eventCount": 1,
+  "failureCount": 0,
+  "eventPath": "/Users/jemanuel/projects/classic-patents.com/artifacts/multitouch-motion-vision-desktop-retry/2026-09-03T04-00-00.623Z__30216/events.jsonl",
+  "screenshotDirectory": "/Users/jemanuel/projects/classic-patents.com/artifacts/multitouch-motion-vision-desktop-retry/2026-09-03T04-00-00.623Z__30216/screenshots",
+  "performanceSampleCount": 0,
+  "performanceSummaryPath": null
+}

@@ -26,6 +26,6 @@ describe("Header component", () => {
     expect(html).toContain("Tesla AC Motor");
     expect(html).toContain("Timeline");
     expect(html).toContain("Search...");
-    expect(html).toContain("⌘K");
+    expect(html).toContain("⌘ / Ctrl K");
   });
 });

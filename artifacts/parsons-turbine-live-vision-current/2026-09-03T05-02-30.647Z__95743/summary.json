@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "runId": "2026-09-03T05-02-30.647Z__95743",
+  "baseUrl": "http://127.0.0.1:3428",
+  "patentCount": 1,
+  "viewportCount": 3,
+  "eventCount": 3,
+  "failureCount": 0,
+  "eventPath": "/Users/jemanuel/projects/classic-patents.com/artifacts/parsons-turbine-live-vision-current/2026-09-03T05-02-30.647Z__95743/events.jsonl",
+  "screenshotDirectory": "/Users/jemanuel/projects/classic-patents.com/artifacts/parsons-turbine-live-vision-current/2026-09-03T05-02-30.647Z__95743/screenshots",
+  "performanceSampleCount": 0,
+  "performanceSummaryPath": null
+}

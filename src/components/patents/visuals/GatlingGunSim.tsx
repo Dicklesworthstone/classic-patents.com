@@ -1,12 +1,15 @@
 "use client";
 
-import { Pause, Play, RotateCcw, Target, Volume2, VolumeX } from "lucide-react";
+import { Pause, Play, Target, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { gatlingBoltSvgX, gatlingMuzzleFlash, stepGatlingGun } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { SimulationHeader } from "./SimulationHeader";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
+
+const UI_SNAPSHOT_INTERVAL_MS = 80;
 
 export function GatlingGunSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-36836-gatling-gun");
@@ -16,6 +19,8 @@ export function GatlingGunSim() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [clusterAngleDeg, setClusterAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const clusterAngleRef = useRef(0);
+  const gatlingRef = useRef<ReturnType<typeof stepGatlingGun> | null>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const gatling = stepGatlingGun({ crankRpm, barrelCount });
@@ -25,89 +30,84 @@ export function GatlingGunSim() {
   const muzzleEnergyJoules = gatling.muzzleEnergyJoules;
 
   useEffect(() => {
+    gatlingRef.current = gatling;
+  }, [gatling]);
+
+  useEffect(() => {
     if (!isPlaying) return;
 
     let lastTime = performance.now();
+    let lastUiSnapshot = 0;
 
     const loop = (time: number) => {
       animRef.current = requestAnimationFrame(loop);
-      if (!onscreenRef.current) return;
+      if (!onscreenRef.current) {
+        lastTime = time;
+        return;
+      }
       const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
       lastTime = time;
+      const liveGatling = gatlingRef.current;
+      if (!liveGatling) return;
 
-      setClusterAngleDeg(
-        (prev) => (prev + gatling.crankOmegaDegPerS * dt) % gatling.displayWrapDeg,
-      );
+      clusterAngleRef.current =
+        (clusterAngleRef.current + liveGatling.crankOmegaDegPerS * dt) % liveGatling.displayWrapDeg;
+
+      // Barrel positions and bolt strokes are a coupled SVG topology rather than
+      // one transform. Render a bounded presentation snapshot instead of re-rendering
+      // this whole diagram on every display frame.
+      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = time;
+        setClusterAngleDeg(clusterAngleRef.current);
+      }
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, gatling.crankOmegaDegPerS, gatling.displayWrapDeg, onscreenRef.current]);
+  }, [isPlaying, onscreenRef]);
 
   return (
     <div
       ref={rootRef}
       className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <Target className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-              Richard Jordan Gatling Rotary Battery-Gun (US 36,836)
-            </h3>
-          </div>
-          <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
-            Rotating barrel cluster, helical cam track, and continuous pipelined cartridge cycling.
-          </p>
-        </div>
-        <div className="flex items-center gap-2 self-end sm:self-auto">
-          <button
-            type="button"
-            onClick={() => {
-              setIsPlaying(!isPlaying);
-              soundEngine.playSwitchClick();
-            }}
-            aria-label={isPlaying ? "Pause Simulation" : "Play Simulation"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-          >
-            {isPlaying ? (
-              <Pause className="w-4 h-4 text-amber-600" />
-            ) : (
-              <Play className="w-4 h-4" />
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              toggleSound();
-              soundEngine.playSwitchClick();
-            }}
-            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-          >
-            {isAudioMuted ? (
-              <VolumeX className="w-4 h-4" />
-            ) : (
-              <Volume2 className="w-4 h-4 text-amber-600" />
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              resetParams();
-              setClusterAngleDeg(0);
-              soundEngine.playSwitchClick();
-            }}
-            aria-label="Reset Simulation"
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
+      <SimulationHeader
+        icon={<Target className="h-5 w-5 text-amber-600 dark:text-amber-400" />}
+        title="Richard Jordan Gatling Rotary Battery-Gun (US 36,836)"
+        description="Rotating barrel cluster, helical cam track, and continuous pipelined cartridge cycling."
+        playbackAction={{
+          label: isPlaying ? "Pause Simulation" : "Play Simulation",
+          icon: isPlaying ? (
+            <Pause className="h-4 w-4 text-amber-600" />
+          ) : (
+            <Play className="h-4 w-4" />
+          ),
+          onPress: () => {
+            setIsPlaying(!isPlaying);
+            soundEngine.playSwitchClick();
+          },
+        }}
+        audioAction={{
+          label: isAudioMuted ? "Unmute Audio" : "Mute Audio",
+          icon: isAudioMuted ? (
+            <VolumeX className="h-4 w-4" />
+          ) : (
+            <Volume2 className="h-4 w-4 text-amber-600" />
+          ),
+          onPress: () => {
+            toggleSound();
+            soundEngine.playSwitchClick();
+          },
+        }}
+        onReset={() => {
+          resetParams();
+          clusterAngleRef.current = 0;
+          setClusterAngleDeg(0);
+          soundEngine.playSwitchClick();
+        }}
+      />
 
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
@@ -335,6 +335,7 @@ export function GatlingGunSim() {
           </div>
           <input
             type="range"
+            aria-label="Hand crank speed in revolutions per minute"
             min="20"
             max="120"
             step="5"
@@ -350,6 +351,7 @@ export function GatlingGunSim() {
           </div>
           <input
             type="range"
+            aria-label="Number of barrels in the cluster"
             min="4"
             max="10"
             step="2"

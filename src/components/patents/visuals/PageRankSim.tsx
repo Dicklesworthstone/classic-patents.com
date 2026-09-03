@@ -5,6 +5,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { stepPageRank } from "@/physics/pageRankKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -39,6 +40,8 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
   const [iterationCount, setIterationCount] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [ranks, setRanks] = useState<number[]>([1 / 3, 1 / 3, 1 / 3]);
+  const live = useLiveSimParams({ dampingFactor, iterationCount, ranks });
+  const particlePhaseRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -47,12 +50,16 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
     if (!ctx) return;
 
     let animId: number;
-    let particlePhase = 0;
 
     const render = () => {
       animId = requestAnimationFrame(render);
       if (!onscreenRef.current) return;
-      particlePhase += 0.02;
+      particlePhaseRef.current += 0.02;
+      const {
+        dampingFactor: currentDampingFactor,
+        iterationCount: currentIterationCount,
+        ranks: currentRanks,
+      } = live.current;
 
       const w = canvas.width;
       const h = canvas.height;
@@ -84,7 +91,7 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
       ctx.font = "11px monospace";
       ctx.fillStyle = "#94a3b8";
       ctx.fillText(
-        `US 6,285,999 • Power Iteration • Link-follow (1−α): ${dampingFactor.toFixed(2)} • Iterations: ${iterationCount}`,
+        `US 6,285,999 • Power Iteration • Link-follow (1−α): ${currentDampingFactor.toFixed(2)} • Iterations: ${currentIterationCount}`,
         20,
         42,
       );
@@ -151,7 +158,7 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
         ctx.fill();
 
         // Flowing Random Surfer Probability Photon
-        const t = (particlePhase + (fromIdx * 0.3 + toIdx * 0.2)) % 1.0;
+        const t = (particlePhaseRef.current + (fromIdx * 0.3 + toIdx * 0.2)) % 1.0;
         const px = startX + (endX - startX) * t;
         const py = startY + (endY - startY) * t;
 
@@ -163,7 +170,7 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
 
       // Draw Web Page Nodes
       for (const n of GRAPH_NODES) {
-        const rank = ranks[n.id] ?? 0.2;
+        const rank = currentRanks[n.id] ?? 0.2;
         // Node radius scales with PageRank score
         const radius = 18 + rank * 40;
 
@@ -224,7 +231,7 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
 
       for (let i = 0; i < GRAPH_NODES.length; i++) {
         const n = GRAPH_NODES[i];
-        const rVal = ranks[i] ?? 0.2;
+        const rVal = currentRanks[i] ?? 0.2;
         const curY = bStartY + i * (bHeight + 8);
 
         ctx.fillStyle = "#cbd5e1";
@@ -247,7 +254,7 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
       }
 
       // Sum Invariant
-      const sum = ranks.reduce((a, b) => a + b, 0);
+      const sum = currentRanks.reduce((a, b) => a + b, 0);
       ctx.fillStyle = "#94a3b8";
       ctx.font = "9px monospace";
       ctx.fillText(`Invariant: Σ r_i = ${sum.toFixed(3)} (Stochastic Sum)`, rX + 15, rY + rH - 12);
@@ -255,7 +262,7 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [ranks, dampingFactor, iterationCount, onscreenRef.current]);
+  }, [live, onscreenRef]);
 
   // Step iteration effect when playing
   useEffect(() => {
@@ -271,7 +278,7 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
     }, 400);
 
     return () => clearInterval(interval);
-  }, [isPlaying, dampingFactor, onscreenRef.current]);
+  }, [isPlaying, dampingFactor, onscreenRef]);
 
   const handleStepOnce = () => {
     setRanks((prev) => {
@@ -282,6 +289,7 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
   };
 
   const handleReset = () => {
+    particlePhaseRef.current = 0;
     setRanks([1 / 3, 1 / 3, 1 / 3]);
     setIterationCount(0);
   };
@@ -410,7 +418,7 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
               handleStepOnce();
               soundEngine.playSwitchClick();
             }}
-            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-parchment-100 dark:bg-ink-900 border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-neutral-800 hover:text-ink-900 dark:hover:text-white transition-all"
+            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-parchment-100 dark:bg-ink-900 border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-neutral-800 hover:text-ink-900 dark:hover:text-white transition-[background-color,color]"
           >
             ⚡ Step Power Iteration (+1)
           </button>

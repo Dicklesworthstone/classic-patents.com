@@ -253,11 +253,9 @@ My machine embraces two leading groups of mechanism: first, those which form a t
 };
 
 /**
- * Source-bounded catalog record for the 1885 grant. The manual source edition
- * and its reviewed ledger remain under editorial hold: only the exact claims
- * have completed a full claim-by-claim facsimile check. Do not add an
- * `archivalEdition` or `originalTextAsset` here until the 35-page manuscript
- * passes a fresh, independent acceptance review.
+ * Source-bounded catalog record for the 1885 grant. Its structured annotated
+ * edition is still undergoing a fresh, independent acceptance review, while
+ * the complete 35-page reviewed ledger remains the reader's source face.
  */
 export const mergenthalerLinotypePatent: Patent = {
   id: "us-313224-mergenthaler-linotype",
@@ -280,9 +278,11 @@ export const mergenthalerLinotypePatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US313224A/en",
   usptoClassification: "B41B 11/00 (Matrix-composing machines / Hot-metal casting)",
   originalTextAsset: {
-    url: "/patents/source-text/us-313224-mergenthaler-linotype.txt",
+    url: "/patents/transcripts/us-313224-mergenthaler-linotype-reviewed.txt",
     pageCount: 35,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (SteelNeedle)",
+    reviewedAt: "2026-08-18",
     sourcePdfSha256: "d85530ab4302e8be7e4c0ac280d438756f1dd21dabc844f2c5b2e76861d7444a",
   },
   originalText: `UNITED STATES PATENT OFFICE.
@@ -301,7 +301,7 @@ This invention is directed to the rapid and economical production of letter-pres
 
 My machine embraces two leading groups of mechanism: first, those which form a temporary and changing matrix representing a number of words; and, second, those by which molten or plastic material is delivered to the matrix and discharged therefrom in the form of printing-bars.
 
-[Curated source excerpt only. The 35-page manual source face remains withheld until its transcript, figures, annotations, and companion readings pass independent facsimile acceptance.]`,
+[The complete 35-page, page-marked patent transcript is readable on the Original Patent Text face. A structured annotated edition is still being prepared; this short excerpt remains here for context.]`,
   plainEnglishExplanation: {
     overview:
       "The printed grant tackles the time required to compose a line of letterpress printing. Its answer is not the later commercial Linotype cycle often associated with Mergenthaler. This document describes parallel matrix-bars, each carrying characters and spacing surfaces, that move independently until the selected characters form a temporary matrix. A separate mechanism fills that matrix and releases a printing-bar.",
@@ -422,7 +422,7 @@ My machine embraces two leading groups of mechanism: first, those which form a t
     civilizationalImpact:
       "US 313,224 records a specific bar-matrix approach to mechanized printing-form production. The source alone does not establish adoption figures, production rates, market dominance, or the history of later commercial Linotype machines.",
     aftermath:
-      "The grant issued on March 3, 1885 with seventy printed claims. Its full source edition remains withheld while the entire facsimile, figure treatment, and reading companions receive a fresh independent review.",
+      "The grant issued on March 3, 1885 with seventy printed claims. Its complete page-marked transcript is readable on the Original Patent Text face while a structured edition, figure treatment, and companion readings receive fresh independent review.",
     sideNotes: [
       "The specification says the matrix-bars are tapered and that characters and blank spacing surfaces are arranged in the order of their width.",
       "Figures 1 through 51 appear across seventeen drawing sheets in the pinned facsimile.",

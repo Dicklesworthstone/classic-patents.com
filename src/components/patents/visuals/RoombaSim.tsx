@@ -16,6 +16,7 @@ import { globalTransportBus, useFrankenSimPhysics } from "@/physics/useFrankenSi
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -37,8 +38,7 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
   const opticalSensorEnabled = (params.opticalSensorEnabled ?? 1) >= 0.5;
   const claimStates = { 1: opticalSensorEnabled };
   const isPlaying = (params.isRunning ?? 1) >= 0.5;
-  const liveControls = useRef({ wheelSpeed, turnRate, isPlaying, opticalSensorEnabled });
-  liveControls.current = { wheelSpeed, turnRate, isPlaying, opticalSensorEnabled };
+  const liveControls = useLiveSimParams({ wheelSpeed, turnRate, isPlaying, opticalSensorEnabled });
 
   useFrankenSimPhysics("us-6594844-roomba", {
     domain: "solid_mechanics",
@@ -56,6 +56,7 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
       wheelSpeedMps: wheelSpeed,
     },
   });
+  // The registered transport intentionally stays mounted while this layout-effect-synchronized ref supplies latest controls.
   useEffect(() => {
     return globalTransportBus.registerUpdater(
       "us-6594844-roomba",
@@ -69,7 +70,7 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
       })),
       "TS_FALLBACK",
     );
-  }, [onscreenRef]);
+  }, [liveControls, onscreenRef]);
 
   // Path history for breadcrumbs trail
   const trailRef = useRef<Array<{ x: number; y: number }>>([]);
@@ -490,7 +491,7 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
               trailRef.current = [];
               soundEngine.playSwitchClick();
             }}
-            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-parchment-100 dark:bg-ink-900 border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-neutral-800 hover:text-ink-900 dark:hover:text-white transition-all"
+            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-parchment-100 dark:bg-ink-900 border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-neutral-800 hover:text-ink-900 dark:hover:text-white transition-colors"
           >
             Clear Path Ribbon
           </button>

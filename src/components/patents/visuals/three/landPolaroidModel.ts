@@ -3,335 +3,301 @@ import { type LandPolaroidInput, stepLandPolaroidInstantFilm } from "@/physics/c
 
 export interface LandPolaroidModelNodes {
   group: THREE.Group;
-  cameraBody: THREE.Mesh;
-  bellows: THREE.Group;
-  lensAssembly: THREE.Group;
-  foldingBed: THREE.Group;
-  struts: THREE.Group;
+  foundation: THREE.Mesh;
+  processBed: THREE.Group;
+  incomingBed: THREE.Mesh;
+  outgoingBed: THREE.Mesh;
+  bearingFrames: THREE.Group;
   rollerTop: THREE.Mesh;
   rollerBottom: THREE.Mesh;
   negativeSheet: THREE.Mesh;
   positiveSheet: THREE.Mesh;
+  attachedSeams: THREE.Group;
   reagentGelLayer: THREE.Mesh;
   meniscusWave: THREE.Mesh;
   rupturablePod: THREE.Group;
-  printSlide: THREE.Group;
-  spools: THREE.Group;
+  positiveImage: THREE.Mesh;
   materials: THREE.Material[];
   geometries: THREE.BufferGeometry[];
   update: (timeSec: number, input: LandPolaroidInput) => void;
-  setCutaway?: (cutaway: boolean) => void;
+  setCutaway: (cutaway: boolean) => void;
   dispose: () => void;
 }
 
-export function createLandPolaroidModel(_initialInput?: LandPolaroidInput): LandPolaroidModelNodes {
+const FILM_Y = 1;
+const ROLLER_Z = 0;
+
+export function createLandPolaroidModel(
+  initialInput: LandPolaroidInput = {},
+): LandPolaroidModelNodes {
   const group = new THREE.Group();
+  group.name = "US 2543181 Figure 1 and Figure 14 photographic product";
   const materials: THREE.Material[] = [];
   const geometries: THREE.BufferGeometry[] = [];
 
-  // PBR Materials
-  const cameraBodyMat = new THREE.MeshStandardMaterial({
-    color: 0x334155,
-    metalness: 0.85,
-    roughness: 0.3,
-  });
-  materials.push(cameraBodyMat);
-
-  const cutawayCameraBodyMat = new THREE.MeshStandardMaterial({
-    color: 0x334155,
-    metalness: 0.85,
-    roughness: 0.3,
+  const material = (options: THREE.MeshStandardMaterialParameters) => {
+    const result = new THREE.MeshStandardMaterial(options);
+    materials.push(result);
+    return result;
+  };
+  const baseMaterial = material({ color: 0x334155, metalness: 0.7, roughness: 0.35 });
+  const steelMaterial = material({ color: 0xcbd5e1, metalness: 0.92, roughness: 0.18 });
+  const bearingMaterial = material({ color: 0x475569, metalness: 0.82, roughness: 0.28 });
+  const negativeMaterial = material({
+    color: 0x172033,
+    roughness: 0.5,
     transparent: true,
-    opacity: 0.25,
+    opacity: 0.96,
     side: THREE.DoubleSide,
   });
-  materials.push(cutawayCameraBodyMat);
-
-  const leatherMat = new THREE.MeshStandardMaterial({
-    color: 0x78350f,
-    metalness: 0.1,
-    roughness: 0.8,
-  });
-  materials.push(leatherMat);
-
-  const chromeMat = new THREE.MeshStandardMaterial({
-    color: 0xf8fafc,
-    metalness: 0.95,
-    roughness: 0.15,
-  });
-  materials.push(chromeMat);
-
-  const glassMat = new THREE.MeshPhysicalMaterial({
-    color: 0xe2e8f0,
-    transmission: 0.9,
-    roughness: 0.05,
-    metalness: 0.1,
-    transparent: true,
-    opacity: 0.8,
-  });
-  materials.push(glassMat);
-
-  const podFoilMat = new THREE.MeshStandardMaterial({
-    color: 0xf59e0b,
-    metalness: 0.92,
-    roughness: 0.2,
-  });
-  materials.push(podFoilMat);
-
-  const negFilmMat = new THREE.MeshStandardMaterial({
-    color: 0x1e293b,
-    roughness: 0.5,
-  });
-  materials.push(negFilmMat);
-
-  const posPaperMat = new THREE.MeshStandardMaterial({
-    color: 0xf1f5f9,
-    roughness: 0.6,
-  });
-  materials.push(posPaperMat);
-
-  const gelMat = new THREE.MeshStandardMaterial({
+  const positiveMaterial = material({ color: 0xf5f0df, roughness: 0.72 });
+  const attachmentMaterial = material({ color: 0xa16207, roughness: 0.58 });
+  const podMaterial = material({ color: 0xd97706, metalness: 0.72, roughness: 0.28 });
+  const reagentMaterial = material({
     color: 0x10b981,
+    emissive: 0x065f46,
+    emissiveIntensity: 0.25,
     transparent: true,
-    opacity: 0.85,
-    roughness: 0.1,
+    opacity: 0.68,
+    roughness: 0.18,
   });
-  materials.push(gelMat);
-
-  const meniscusMat = new THREE.MeshStandardMaterial({
-    color: 0x34d399,
-    emissive: 0x059669,
-    emissiveIntensity: 0.5,
+  const meniscusMaterial = material({
+    color: 0x6ee7b7,
+    emissive: 0x10b981,
+    emissiveIntensity: 0.7,
     transparent: true,
     opacity: 0.9,
-    roughness: 0.1,
   });
-  materials.push(meniscusMat);
+  const imageMaterial = material({ color: 0x1f2937, roughness: 0.55 });
 
-  const silverImageMat = new THREE.MeshStandardMaterial({
-    color: 0x0f172a,
-    roughness: 0.4,
-  });
-  materials.push(silverImageMat);
-
-  // 1. Polaroid Model 95 Camera Body
-  const bodyGeo = new THREE.BoxGeometry(4.2, 2.8, 1.4);
-  geometries.push(bodyGeo);
-  const cameraBody = new THREE.Mesh(bodyGeo, cameraBodyMat);
-  cameraBody.position.set(-1.8, 0, 0);
-  cameraBody.castShadow = true;
-  cameraBody.receiveShadow = true;
-  group.add(cameraBody);
-
-  // 2. Leather Accordion Bellows
-  const bellows = new THREE.Group();
-  const foldCount = 5;
-  for (let i = 0; i < foldCount; i++) {
-    const scale = 1 - i * 0.12;
-    const bGeo = new THREE.BoxGeometry(1.6 * scale, 1.2 * scale, 0.18);
-    geometries.push(bGeo);
-    const bMesh = new THREE.Mesh(bGeo, leatherMat);
-    bMesh.position.set(-1.8, 0, 0.8 + i * 0.22);
-    bellows.add(bMesh);
-  }
-  group.add(bellows);
-
-  // 3. Front Standard & Optical Lens Assembly (US 2,543,181 Camera Standard)
-  const lensAssembly = new THREE.Group();
-  const lensBezelGeo = new THREE.CylinderGeometry(0.5, 0.55, 0.3, 32);
-  lensBezelGeo.rotateX(Math.PI / 2);
-  geometries.push(lensBezelGeo);
-  const lensBezel = new THREE.Mesh(lensBezelGeo, chromeMat);
-  lensAssembly.add(lensBezel);
-
-  const glassGeo = new THREE.SphereGeometry(0.42, 24, 24);
-  glassGeo.scale(1, 1, 0.3);
-  geometries.push(glassGeo);
-  const glassElem = new THREE.Mesh(glassGeo, glassMat);
-  glassElem.position.set(0, 0, 0.1);
-  lensAssembly.add(glassElem);
-
-  lensAssembly.position.set(-1.8, 0, 1.9);
-  group.add(lensAssembly);
-
-  // 4. Folding Front Bed and Chrome Scissor Struts
-  const foldingBed = new THREE.Group();
-  const bedPlateGeo = new THREE.BoxGeometry(2.4, 0.1, 2.6);
-  geometries.push(bedPlateGeo);
-  const bedPlate = new THREE.Mesh(bedPlateGeo, cameraBodyMat);
-  bedPlate.position.set(-1.8, -1.35, 1.3);
-  foldingBed.add(bedPlate);
-  group.add(foldingBed);
-
-  const struts = new THREE.Group();
-  const strutGeo = new THREE.BoxGeometry(0.06, 0.06, 2.2);
-  geometries.push(strutGeo);
-
-  const strutL = new THREE.Mesh(strutGeo, chromeMat);
-  strutL.position.set(-2.8, -0.6, 1.0);
-  strutL.rotation.x = -0.45;
-  struts.add(strutL);
-
-  const strutR = new THREE.Mesh(strutGeo, chromeMat);
-  strutR.position.set(-0.8, -0.6, 1.0);
-  strutR.rotation.x = -0.45;
-  struts.add(strutR);
-  group.add(struts);
-
-  // 5. Internal Supply & Takeup Film Spools
-  const spools = new THREE.Group();
-  const spoolGeo = new THREE.CylinderGeometry(0.25, 0.25, 2.4, 24);
-  geometries.push(spoolGeo);
-
-  const negSpool = new THREE.Mesh(spoolGeo, chromeMat);
-  negSpool.position.set(-3.5, 0.8, -0.2);
-  spools.add(negSpool);
-
-  const posSpool = new THREE.Mesh(spoolGeo, chromeMat);
-  posSpool.position.set(-3.5, -0.8, -0.2);
-  spools.add(posSpool);
-  group.add(spools);
-
-  // 6. Precision Pressure Roller Mechanism (Nip Rollers)
-  const rollerRadius = 0.18;
-  const rollerLength = 3.2;
-  const rollerGeo = new THREE.CylinderGeometry(rollerRadius, rollerRadius, rollerLength, 32);
-  rollerGeo.rotateZ(Math.PI / 2);
-  geometries.push(rollerGeo);
-
-  const rollerTop = new THREE.Mesh(rollerGeo, chromeMat);
-  rollerTop.position.set(0.6, 0.28, 0);
-  rollerTop.castShadow = true;
-  group.add(rollerTop);
-
-  const rollerBottom = new THREE.Mesh(rollerGeo, chromeMat);
-  rollerBottom.position.set(0.6, -0.28, 0);
-  rollerBottom.castShadow = true;
-  group.add(rollerBottom);
-
-  // 7. Rupturable Reagent Pod (Foil pouch containing developer reagent)
-  const rupturablePod = new THREE.Group();
-  const podGeo = new THREE.BoxGeometry(2.4, 0.22, 0.5);
-  geometries.push(podGeo);
-  const podMesh = new THREE.Mesh(podGeo, podFoilMat);
-  rupturablePod.add(podMesh);
-  rupturablePod.position.set(0.6, 0, -0.6);
-  group.add(rupturablePod);
-
-  // 8. Multi-Layer Film Sandwich Stack
-  const sheetWidth = 2.8;
-  const sheetLength = 3.6;
-
-  // Negative Sheet (Photosensitive silver halide emulsion)
-  const negGeo = new THREE.BoxGeometry(sheetWidth, 0.04, sheetLength);
-  geometries.push(negGeo);
-  const negativeSheet = new THREE.Mesh(negGeo, negFilmMat);
-  negativeSheet.position.set(0.6, 0.08, 1.4);
-  negativeSheet.castShadow = true;
-  group.add(negativeSheet);
-
-  // Metered Viscous Gel Layer (Center diffusion gap)
-  const gelGeo = new THREE.BoxGeometry(sheetWidth * 0.94, 0.02, sheetLength * 0.94);
-  geometries.push(gelGeo);
-  const reagentGelLayer = new THREE.Mesh(gelGeo, gelMat);
-  reagentGelLayer.position.set(0.6, 0.0, 1.4);
-  group.add(reagentGelLayer);
-
-  // Dynamic Meniscus Wave (Advancing reagent meniscus wedge between rollers)
-  const meniscusGeo = new THREE.CylinderGeometry(0.12, 0.04, sheetWidth * 0.9, 16);
-  meniscusGeo.rotateZ(Math.PI / 2);
-  geometries.push(meniscusGeo);
-  const meniscusWave = new THREE.Mesh(meniscusGeo, meniscusMat);
-  meniscusWave.position.set(0.6, 0.0, 0.2);
-  group.add(meniscusWave);
-
-  // Positive Sheet (Receptive layer with silver precipitating nuclei)
-  const posGeo = new THREE.BoxGeometry(sheetWidth, 0.04, sheetLength);
-  geometries.push(posGeo);
-  const positiveSheet = new THREE.Mesh(posGeo, posPaperMat);
-  positiveSheet.position.set(0.6, -0.08, 1.4);
-  positiveSheet.receiveShadow = true;
-  group.add(positiveSheet);
-
-  // 9. Emerging Developing Print Slide
-  const printSlide = new THREE.Group();
-  const frameGeo = new THREE.BoxGeometry(3.0, 0.02, 3.8);
-  geometries.push(frameGeo);
-  const frameMesh = new THREE.Mesh(frameGeo, posPaperMat);
-  printSlide.add(frameMesh);
-
-  const imageAreaGeo = new THREE.BoxGeometry(2.5, 0.025, 2.5);
-  geometries.push(imageAreaGeo);
-  const imageAreaMesh = new THREE.Mesh(imageAreaGeo, silverImageMat);
-  imageAreaMesh.position.set(0, 0.01, -0.3);
-  printSlide.add(imageAreaMesh);
-
-  printSlide.position.set(2.4, -0.1, 2.8);
-  printSlide.rotation.y = 0.2;
-  group.add(printSlide);
-
-  // Update loop
-  const update = (timeSec: number, input: LandPolaroidInput) => {
-    const state = stepLandPolaroidInstantFilm(input);
-
-    // Rollers counter-rotation from kernel ω (0 when development time is 0)
-    rollerTop.rotation.x = timeSec * state.rollerDisplayOmegaRadPerS;
-    rollerBottom.rotation.x = -timeSec * state.rollerDisplayOmegaRadPerS;
-
-    // Spools rotation during film transport
-    negSpool.rotation.y = timeSec * state.rollerDisplayOmegaRadPerS * 0.7;
-    posSpool.rotation.y = -timeSec * state.rollerDisplayOmegaRadPerS * 0.7;
-
-    // Pod crushing animation
-    const isRuptured = (input.developmentTimeSec ?? 30) > 0;
-    rupturablePod.scale.y = isRuptured ? 0.35 : 1.0;
-    rupturablePod.position.y = isRuptured ? -0.05 : 0;
-
-    // Advancing meniscus wave position
-    const devProgress = Math.min(1.0, (input.developmentTimeSec ?? 30) / 60);
-    meniscusWave.position.z = 0.2 + devProgress * 2.4;
-    meniscusWave.visible = isRuptured && devProgress < 0.95;
-
-    // Developing image density tone
-    const posDensity = state.positiveSilverDensity;
-    const toneVal = Math.max(0.08, 0.95 - (posDensity / 2.1) * 0.85);
-    silverImageMat.color.setRGB(toneVal, toneVal * 0.96, toneVal * 0.9);
-
-    // Gel layer spreading glow
-    const gelAlpha = 0.4 + 0.5 * (state.meniscusSpreadUniformityPercent / 100);
-    gelMat.opacity = gelAlpha;
+  const addBox = (
+    name: string,
+    size: [number, number, number],
+    position: [number, number, number],
+    boxMaterial: THREE.Material,
+    parent: THREE.Object3D = group,
+  ) => {
+    const geometry = new THREE.BoxGeometry(...size);
+    geometries.push(geometry);
+    const mesh = new THREE.Mesh(geometry, boxMaterial);
+    mesh.name = name;
+    mesh.position.set(...position);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    parent.add(mesh);
+    return mesh;
   };
 
-  const setCutaway = (cutaway: boolean) => {
-    cameraBody.material = cutaway ? cutawayCameraBodyMat : cameraBodyMat;
-    bellows.visible = !cutaway;
+  // The museum model is an enlarged section of the claimed product, supported
+  // by a presentation bed. It intentionally does not invent a consumer camera.
+  const foundation = addBox(
+    "supported exhibit foundation",
+    [7, 0.24, 7.2],
+    [0, 0.12, 0.35],
+    baseMaterial,
+  );
+  const processBed = new THREE.Group();
+  processBed.name = "split film support platen clear of roller nip";
+  group.add(processBed);
+  const incomingBed = addBox(
+    "incoming film support platen",
+    [3, 0.16, 2.2],
+    [0, 0.87, -1.55],
+    baseMaterial,
+    processBed,
+  );
+  const outgoingBed = addBox(
+    "outgoing film support platen",
+    [3, 0.16, 3.1],
+    [0, 0.87, 1.95],
+    baseMaterial,
+    processBed,
+  );
+  for (const x of [-1.25, 1.25]) {
+    for (const z of [-2.15, 2.95]) {
+      addBox("platen support leg", [0.18, 0.55, 0.18], [x, 0.515, z], baseMaterial);
+    }
+  }
+
+  const bearingFrames = new THREE.Group();
+  bearingFrames.name = "roller bearing frames seated on foundation";
+  group.add(bearingFrames);
+  for (const x of [-1.82, 1.82]) {
+    addBox(
+      "roller frame upright",
+      [0.24, 1.38, 0.46],
+      [x, 0.93, ROLLER_Z],
+      bearingMaterial,
+      bearingFrames,
+    );
+    for (const y of [0.665, 1.335]) {
+      const bearingGeometry = new THREE.CylinderGeometry(0.18, 0.18, 0.18, 24);
+      bearingGeometry.rotateZ(Math.PI / 2);
+      geometries.push(bearingGeometry);
+      const bearing = new THREE.Mesh(bearingGeometry, steelMaterial);
+      bearing.name = "roller journal bearing";
+      bearing.position.set(x > 0 ? -0.13 : 0.13, y - 0.93, 0);
+      bearingFrames.children[bearingFrames.children.length - 1]?.add(bearing);
+    }
+  }
+
+  const rollerGeometry = new THREE.CylinderGeometry(0.285, 0.285, 3.4, 40);
+  rollerGeometry.rotateZ(Math.PI / 2);
+  geometries.push(rollerGeometry);
+  const markerGeometry = new THREE.BoxGeometry(0.05, 0.38, 0.055);
+  geometries.push(markerGeometry);
+  const rollerTop = new THREE.Mesh(rollerGeometry, steelMaterial);
+  rollerTop.name = "upper pressure roller";
+  rollerTop.position.set(0, 1.335, ROLLER_Z);
+  const topMarker = new THREE.Mesh(markerGeometry, attachmentMaterial);
+  topMarker.position.x = 1.715;
+  rollerTop.add(topMarker);
+  group.add(rollerTop);
+  const rollerBottom = new THREE.Mesh(rollerGeometry, steelMaterial);
+  rollerBottom.name = "lower pressure roller";
+  rollerBottom.position.set(0, 0.665, ROLLER_Z);
+  const bottomMarker = new THREE.Mesh(markerGeometry, attachmentMaterial);
+  bottomMarker.position.x = -1.715;
+  rollerBottom.add(bottomMarker);
+  group.add(rollerBottom);
+
+  // Claim 1 requires the sensitized layer, transfer-image base, and container
+  // to be attached as one product. The long edge seams make that load path
+  // visible rather than leaving two unsupported sheets floating in space.
+  const negativeSheet = addBox(
+    "photosensitive layer and transparent base",
+    [2.8, 0.03, 5.7],
+    [0, 1.035, 0.45],
+    negativeMaterial,
+  );
+  const positiveSheet = addBox(
+    "transfer-image base layer",
+    [2.8, 0.03, 5.7],
+    [0, 0.965, 0.45],
+    positiveMaterial,
+  );
+  const attachedSeams = new THREE.Group();
+  attachedSeams.name = "attached product edge seams";
+  group.add(attachedSeams);
+  for (const x of [-1.37, 1.37]) {
+    addBox(
+      "layer attachment seam",
+      [0.06, 0.1, 5.7],
+      [x, FILM_Y, 0.45],
+      attachmentMaterial,
+      attachedSeams,
+    );
+  }
+
+  const reagentGelLayer = addBox(
+    "released processing liquid between superposed layers",
+    [2.58, 0.026, 2.85],
+    [0, FILM_Y, 1.62],
+    reagentMaterial,
+  );
+  const meniscusWave = addBox(
+    "advancing reagent boundary",
+    [2.58, 0.042, 0.1],
+    [0, FILM_Y, 0.22],
+    meniscusMaterial,
+  );
+  const positiveImage = addBox(
+    "transfer image forming on receiving layer",
+    [2.18, 0.012, 2.18],
+    [0, 1.006, 1.72],
+    imageMaterial,
+  );
+
+  const rupturablePod = new THREE.Group();
+  rupturablePod.name = "container 218 attached across the product";
+  const podBody = addBox(
+    "liquid container 218",
+    [2.64, 0.15, 0.58],
+    [0, 0, 0],
+    podMaterial,
+    rupturablePod,
+  );
+  podBody.castShadow = true;
+  for (const x of [-1.34, 1.34]) {
+    addBox("container end seal", [0.08, 0.18, 0.64], [x, 0, 0], attachmentMaterial, rupturablePod);
+  }
+  rupturablePod.position.set(0, FILM_Y, -0.46);
+  group.add(rupturablePod);
+
+  let cutaway = false;
+  const update = (_timeSec: number, input: LandPolaroidInput) => {
+    const state = stepLandPolaroidInstantFilm(input);
+    const developmentTime = Number.isFinite(input.developmentTimeSec)
+      ? Math.max(0, Math.min(60, input.developmentTimeSec as number))
+      : 30;
+    const spreadTime = Math.min(3, developmentTime);
+    const rollerAngle = spreadTime * 3;
+    rollerTop.rotation.x = rollerAngle;
+    rollerBottom.rotation.x = -rollerAngle;
+
+    if (state.claim1PathActive) {
+      const ruptureProgress = Math.min(1, developmentTime / 3);
+      rupturablePod.position.set(0, FILM_Y, -0.46);
+      rupturablePod.rotation.set(0, 0, 0);
+      rupturablePod.scale.set(1, 1 - ruptureProgress * 0.58, 1);
+      attachedSeams.visible = true;
+      reagentGelLayer.visible = developmentTime > 0;
+      positiveImage.visible = developmentTime > 0;
+      meniscusWave.visible = developmentTime > 0 && developmentTime < 60;
+    } else {
+      // The removed claim element still obeys gravity: the detached container
+      // is placed on the foundation beside the supported product.
+      rupturablePod.position.set(2.55, 0.33, -1.65);
+      rupturablePod.rotation.set(0, Math.PI / 2, 0);
+      rupturablePod.scale.set(1, 1, 1);
+      attachedSeams.visible = false;
+      reagentGelLayer.visible = false;
+      positiveImage.visible = false;
+      meniscusWave.visible = false;
+    }
+
+    const progress = Math.min(1, developmentTime / 60);
+    meniscusWave.position.z = 0.22 + progress * 2.55;
+    reagentMaterial.opacity = cutaway
+      ? 0.82
+      : 0.45 + 0.28 * (state.meniscusSpreadUniformityPercent / 100);
+    const tone = Math.max(0.08, 0.93 - (state.positiveSilverDensity / 2.1) * 0.82);
+    imageMaterial.color.setRGB(tone, tone * 0.96, tone * 0.88);
+  };
+
+  const setCutaway = (nextCutaway: boolean) => {
+    cutaway = nextCutaway;
+    negativeMaterial.opacity = nextCutaway ? 0.16 : 0.96;
+    negativeMaterial.depthWrite = !nextCutaway;
   };
 
   const dispose = () => {
-    for (const g of geometries) g.dispose();
-    for (const m of materials) m.dispose();
+    for (const geometry of geometries) geometry.dispose();
+    for (const item of materials) item.dispose();
   };
 
-  return {
+  const model = {
     group,
-    cameraBody,
-    bellows,
-    lensAssembly,
-    foldingBed,
-    struts,
+    foundation,
+    processBed,
+    incomingBed,
+    outgoingBed,
+    bearingFrames,
     rollerTop,
     rollerBottom,
     negativeSheet,
     positiveSheet,
+    attachedSeams,
     reagentGelLayer,
     meniscusWave,
     rupturablePod,
-    printSlide,
-    spools,
+    positiveImage,
     materials,
     geometries,
     update,
     setCutaway,
     dispose,
   };
+  model.update(0, initialInput);
+  return model;
 }

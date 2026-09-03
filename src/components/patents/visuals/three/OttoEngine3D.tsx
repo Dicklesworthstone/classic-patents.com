@@ -445,6 +445,7 @@ export function OttoEngine3D() {
             </div>
             <input
               type="range"
+              aria-label="Engine speed"
               min="60"
               max="320"
               step="10"

@@ -2,7 +2,11 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { kamenTransporterArchivalEdition } from "./kamenTransporterEdition";
+import { kamenTransporterPatent } from "@/data/patents/kamen-transporter";
+import {
+  kamenTransporterArchivalEdition,
+  kamenTransporterParallelReadings,
+} from "./kamenTransporterEdition";
 import { archivalParallelReadingsFor } from "./parallelReadings";
 
 const ROOT = process.cwd();
@@ -11,6 +15,7 @@ const LEDGER_PATH = join(
   ROOT,
   "public/patents/transcripts/us-5701965-kamen-transporter-reviewed.txt",
 );
+const PROVENANCE_PATH = join(ROOT, "docs/provenance/us-5701965-kamen-transporter.md");
 
 describe("US 5,701,965 Dean Kamen Human Transporter Archival Edition Contract", () => {
   test("pins the immutable source PDF digest", () => {
@@ -63,18 +68,115 @@ describe("US 5,701,965 Dean Kamen Human Transporter Archival Edition Contract", 
     }
   });
 
+  test("keeps editorial figure and cluster-wheel language inside the checked source boundary", () => {
+    const figureSheet = kamenTransporterArchivalEdition.blocks.find(
+      (block) => block.kind === "figure-sheet",
+    );
+    expect(figureSheet?.kind).toBe("figure-sheet");
+    if (figureSheet?.kind !== "figure-sheet") return;
+    expect(figureSheet.description.map((inline) => inline.text).join(" ")).not.toContain(
+      "planetary gear",
+    );
+
+    const clusterParagraph = kamenTransporterArchivalEdition.blocks.find(
+      (block) =>
+        block.kind === "paragraph" &&
+        block.inlines.some(
+          (inline) => inline.kind === "term" && inline.text === "cluster of wheels",
+        ),
+    );
+    expect(clusterParagraph?.kind).toBe("paragraph");
+    if (clusterParagraph?.kind !== "paragraph") return;
+    const clusterTerm = clusterParagraph.inlines.find(
+      (inline) => inline.kind === "term" && inline.text === "cluster of wheels",
+    );
+    expect(clusterTerm?.kind).toBe("term");
+    if (clusterTerm?.kind !== "term") return;
+    expect(clusterTerm.definition).toContain("does not identify a planetary gear train");
+    expect(kamenTransporterParallelReadings[8]?.join(" ")).toContain(
+      "rather than a planetary gear train",
+    );
+    expect(kamenTransporterParallelReadings[14]?.join(" ")).not.toMatch(/gyro|accelerometer/i);
+    expect(kamenTransporterParallelReadings[14]?.join(" ")).toContain(
+      "does not turn the source material into a calibrated",
+    );
+  });
+
+  test("keeps canonical public copy and provenance at a source-topology boundary", () => {
+    const editorialCopy = [
+      kamenTransporterPatent.summary,
+      kamenTransporterPatent.plainEnglishExplanation.overview,
+      kamenTransporterPatent.plainEnglishExplanation.coreMechanism,
+      kamenTransporterPatent.plainEnglishExplanation.whyItMattersToday,
+      ...kamenTransporterPatent.plainEnglishExplanation.mechanicalBreakdown.flatMap((card) => [
+        card.title,
+        card.summary,
+        card.technicalDetails,
+        card.modernEquivalent,
+      ]),
+      ...kamenTransporterPatent.claims.flatMap((claim) => [
+        claim.plainEnglish,
+        ...claim.keyInnovations,
+        claim.legalSignificance ?? "",
+      ]),
+      ...kamenTransporterPatent.drawings.flatMap((drawing) => [
+        drawing.title,
+        drawing.caption,
+        ...drawing.callouts.flatMap((callout) => [callout.label, callout.description]),
+      ]),
+      kamenTransporterPatent.historicalContext.problemStatement,
+      kamenTransporterPatent.historicalContext.breakthroughInsight,
+      kamenTransporterPatent.historicalContext.civilizationalImpact,
+      kamenTransporterPatent.historicalContext.aftermath,
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    for (const unsupportedPublicAssertion of [
+      "100 hz",
+      "state-space pid",
+      "gyroscope",
+      "accelerometer",
+      "harmonic drive",
+      "ibot",
+      "segway pt",
+      "hoverboard",
+      "newton-meters",
+    ]) {
+      expect(editorialCopy).not.toContain(unsupportedPublicAssertion);
+    }
+    expect(kamenTransporterPatent.stats?.independentClaims).toBe(2);
+    expect(kamenTransporterPatent.claims.find((claim) => claim.number === 16)?.isIndependent).toBe(
+      false,
+    );
+    expect(kamenTransporterPatent.claims.find((claim) => claim.number === 16)?.dependsOn).toEqual([
+      1,
+    ]);
+    expect(kamenTransporterPatent.claims.find((claim) => claim.number === 48)?.dependsOn).toEqual([
+      1,
+    ]);
+
+    const provenance = readFileSync(PROVENANCE_PATH, "utf8");
+    expect(provenance).toContain("Public source-reading topology");
+    expect(provenance).not.toContain("Physical SI Kernel");
+    expect(provenance).not.toContain("FrankenSim");
+    expect(provenance).not.toContain("planetary gear ratio");
+  });
+
   test("provides valid provenance classifications for all Kamen Transporter controls and metrics", () => {
     const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
     const config = PATENT_PHYSICS_REGISTRY["us-5701965-kamen-transporter"];
     expect(config).toBeDefined();
 
     for (const ctrl of config.controls) {
-      expect(["source-disclosed", "scenario-reader"]).toContain(ctrl.provenance);
+      expect(["source-disclosed", "scenario-reader", "refusal-bounded"]).toContain(ctrl.provenance);
     }
 
     const defaultMetrics = config.computeMetrics({});
     for (const metric of defaultMetrics) {
-      expect(["source-disclosed", "scenario-reader"]).toContain(metric.provenance);
+      expect(["source-disclosed", "scenario-reader", "refusal-bounded"]).toContain(
+        metric.provenance,
+      );
     }
   });
 
@@ -105,7 +207,9 @@ describe("US 5,701,965 Dean Kamen Human Transporter Archival Edition Contract", 
       { 1: false, 16: false },
     );
     expect(invertedRes.activeFailures.length).toBeGreaterThan(0);
-    expect(invertedRes.modifiedParams.riderPitchLeanDeg).toBe(25);
-    expect(invertedRes.refusalWarning).toContain("INVERTED PENDULUM INSTABILITY");
+    expect(invertedRes.modifiedParams.balanceTopologyEnabled).toBe(0);
+    expect(invertedRes.modifiedParams.clusterTopologyEnabled).toBe(0);
+    expect(invertedRes.modifiedParams.riderPitchLeanDeg).toBeUndefined();
+    expect(invertedRes.refusalWarning).toContain("SOURCE-BOUND REFUSAL");
   });
 });

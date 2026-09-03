@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { boyleSmithCcdPatent } from "@/data/patents/boyle-smith-ccd";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
+import { applyClaimConstraintModifications } from "@/physics/claimConstraints";
 import {
   boyleSmithCcdArchivalEdition,
   boyleSmithCcdClaimText,
@@ -108,6 +109,33 @@ describe("US 3,858,232 Willard S. Boyle & George E. Smith Charge-Coupled Devices
     for (const m of metrics) {
       expect(m.provenance).toBeDefined();
     }
+    const publicPhysics = JSON.stringify(entry);
+    for (const unsupported of [
+      "gateVoltageV",
+      "clockFrequencyMhz",
+      "incidentLux",
+      "fullWellCapacityElectrons",
+      "snrDb",
+      "darkElectrons",
+    ]) {
+      expect(publicPhysics).not.toContain(unsupported);
+    }
+  });
+
+  test("maps Claim 1 inversion only to the printed single-conductivity storage boundary", () => {
+    const result = applyClaimConstraintModifications(
+      "us-3858232-boyle-smith-ccd",
+      { pulseWidthToStepRatio: 0.5 },
+      { 1: false },
+    );
+    expect(result.modifiedParams).toMatchObject({
+      pulseWidthToStepRatio: 0.5,
+      claim1SingleConductivityPresent: 0,
+    });
+    expect(result.modifiedParams.chargeTransferEfficiencyPct).toBeUndefined();
+    expect(result.modifiedParams.gateVoltageV).toBeUndefined();
+    expect(result.activeFailures[0]).toContain("continuous single-conductivity");
+    expect(result.refusalWarning).toContain("not inferred");
   });
 
   test("enforces ledger acceptance pending audit hold in publication state registry", () => {

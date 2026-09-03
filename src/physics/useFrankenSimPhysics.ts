@@ -19,6 +19,9 @@ type TapeListener = (frame: TransportTapeFrame) => void;
 type FrameScheduler = (callback: (nowMs: number) => void) => number;
 const TRANSPORT_TICK_S = 1 / 60;
 const TRANSPORT_TICK_MS = TRANSPORT_TICK_S * 1000;
+// Hooks that omit an initial envelope must share a stable empty value. A fresh
+// `{}` here retriggers the publication effect on every render.
+const EMPTY_INITIAL_TELEMETRY: Partial<UniversalPatentPhysicsTelemetry> = {};
 
 export type TapeUpdater = (
   prev: UniversalPatentPhysicsTelemetry,
@@ -333,7 +336,7 @@ export const globalTransportBus = new TransportBus();
 
 export function useFrankenSimPhysics(
   patentId: string,
-  initialTelemetry: Partial<UniversalPatentPhysicsTelemetry> = {},
+  initialTelemetry: Partial<UniversalPatentPhysicsTelemetry> = EMPTY_INITIAL_TELEMETRY,
 ) {
   const transport = globalTransportBus.getTransport(patentId, initialTelemetry);
   const subscribe = useCallback(
@@ -380,4 +383,27 @@ export function useFrankenSimPhysics(
     frame,
     updateTelemetry,
   };
+}
+
+/**
+ * Low-frequency view of a patent's runtime tape for React readouts. Three.js
+ * loops consume the transport directly; badges only need a decimated refresh.
+ */
+export function usePatentRuntimeTick(
+  patentId: string,
+  ticksPerRefresh = 6,
+  enabled = true,
+): number {
+  const transport = globalTransportBus.getTransport(patentId);
+  const stride = Math.max(1, Math.floor(ticksPerRefresh));
+  const subscribe = useCallback(
+    (onStoreChange: () => void) =>
+      enabled ? transport.subscribe(() => onStoreChange()) : () => undefined,
+    [enabled, transport],
+  );
+  const getSnapshot = useCallback(
+    () => (enabled ? Math.floor(transport.lastFrame.tick / stride) : 0),
+    [enabled, stride, transport],
+  );
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }

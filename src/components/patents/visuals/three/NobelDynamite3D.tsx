@@ -3,9 +3,9 @@
 import { Camera, Eye, EyeOff, Flame, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { stepNobelDynamite } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -68,7 +68,7 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
   const [isFuseLit, setIsFuseLit] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const fuseTimerRef = useRef<number | null>(null);
 
@@ -78,7 +78,6 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
     detonationVelocityMps,
     isFuseLit,
     shockwaveGlow: nobel.shockwaveGlow,
-    stickDisplayOmegaRadPerS: nobel.stickDisplayOmegaRadPerS,
     isAudioMuted,
     isCutaway,
     blastOverpressureMpa: nobel.blastOverpressureMpa,
@@ -123,10 +122,6 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
   };
 
   useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
-
-  useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
@@ -147,13 +142,10 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
     let reqId: number;
     let simTimeSec = 0;
     const sched = new TickScheduler(1 / 60, 0);
-    let lastMs: number | undefined;
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
-      const dt = lastMs !== undefined ? Math.min((now - lastMs) / 1000, 0.1) : 0;
-      lastMs = now;
       sched.pump(now / 1000, () => {
         simTimeSec += 1 / 60;
       });
@@ -163,11 +155,9 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
       updateNobelDynamiteKinematics(
         nodes,
         materials,
-        dt,
         elapsedSec,
         Boolean(p.isFuseLit),
         p.shockwaveGlow,
-        p.stickDisplayOmegaRadPerS,
         p.isCutaway,
         p.ngPercentage,
         p.capEnergyJoules,
@@ -358,6 +348,7 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
             </div>
             <input
               type="range"
+              aria-label="Nitroglycerin absorption percentage"
               min="50"
               max="85"
               step="5"
@@ -380,6 +371,7 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
             </div>
             <input
               type="range"
+              aria-label="Blasting cap shock energy"
               min="0.2"
               max="3.0"
               step="0.2"

@@ -121,7 +121,7 @@ describe("US 3,313,014 manual source edition", () => {
       {},
       { 1: false, 7: true },
     );
-    expect(r1.modifiedParams.markerSensed).toBe(0);
+    expect(r1.modifiedParams.stationDetected).toBe(0);
     expect(r1.refusalWarning).toContain("STATION SENSING COLLAPSE");
 
     const r7 = applyClaimConstraintModifications(
@@ -129,7 +129,7 @@ describe("US 3,313,014 manual source edition", () => {
       {},
       { 1: true, 7: false },
     );
-    expect(r7.modifiedParams.contactsEngaged).toBe(0);
+    expect(r7.modifiedParams.stationCoupled).toBe(0);
     expect(r7.refusalWarning).toContain("PORTABLE CONTROLLER DISCONNECTED");
   });
 });

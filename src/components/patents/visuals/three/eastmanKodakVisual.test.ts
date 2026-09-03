@@ -104,7 +104,25 @@ describe("US 388,850 George Eastman Roll-Film Box Camera visual & optics boundar
       kodak.filmAdvanceSpeedRadPerS,
       kodak.supplySpoolOmegaRadPerS,
     );
-    expect(materials.moroccoLeather.transparent).toBe(true);
+    expect(nodes.boxBody.visible).toBe(false);
+    expect(nodes.cutawayCase.visible).toBe(true);
+    expect(materials.moroccoLeather.transparent).toBe(false);
+    expect(materials.moroccoLeather.opacity).toBe(1);
+    expect(materials.darkInterior.transparent).toBe(true);
+    expect(materials.darkInterior.depthWrite).toBe(false);
+
+    updateEastmanKodakKinematics(
+      nodes,
+      materials,
+      0,
+      0.5,
+      kodak.barrelOmegaRadPerS,
+      false,
+      kodak.filmAdvanceSpeedRadPerS,
+      kodak.supplySpoolOmegaRadPerS,
+    );
+    expect(nodes.boxBody.visible).toBe(true);
+    expect(nodes.cutawayCase.visible).toBe(false);
 
     dispose();
   });

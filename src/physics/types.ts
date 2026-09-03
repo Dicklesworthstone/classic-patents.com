@@ -96,20 +96,21 @@ export interface ThermodynamicsState {
 // 5. Nuclear Criticality & Delayed Neutron Kinetics
 export interface NuclearKineticsState {
   kEffective: number; // k_eff
-  reactivityDollars: number; // $
+  reactivityDollars: number; // $, or 0 when the source boundary refuses it
   thermalNeutronFluxNPerCm2S: number; // n/(cm^2*s)
-  delayedNeutronFractionBeta: number; // beta = 0.0065
-  precursorConcentrationGroup1to6: number[];
-  reactorPeriodSeconds: number; // T (s)
+  delayedNeutronFractionBeta: number; // beta
+  precursorConcentrationGroup1to6: number[]; // empty when no six-group fit is supported
+  delayedNeutronMeanDelaySeconds: number;
+  quantitativeTransientAvailable: boolean;
+  reactorPeriodSeconds: number; // T (s), or 0 when unavailable
   thermalPowerWatts: number; // W
   controlRodInsertionFraction: number;
   geigerIntervalMs: number;
   geigerIntervalS: number;
   thermalFluxE7: number;
-  neutronDisplaySpeed: number;
-  rodStudioY: number;
+  neutronDisplaySpeed: number; // studio units/s, never physical neutron velocity
+  rodStudioX: number;
   fuelGlowIntensity: number;
-  rodSvgY: number;
   schematicRodY: number;
   latticeRows: number;
   latticeCols: number;
@@ -140,6 +141,14 @@ export interface NuclearKineticsState {
   schematicRodX: number;
   schematicRodW: number;
   schematicRodH: number;
+  /** Claim 1 graphite/natural-uranium geometric lattice is visibly present. */
+  claim1PathActive: boolean;
+  /** Fixed natural-uranium teaching reference; not an enrichment control. */
+  naturalUraniumU235Percent: number;
+  /** Visitor-declared qualitative purity input. */
+  moderatorPurityPercent: number;
+  /** Explicit limit on what the source licenses this state to predict. */
+  sourceBoundary: string;
 }
 
 // 6. Continuum Mechanics, Polymers & Mechanisms
@@ -166,6 +175,72 @@ export interface MachineState {
   travelMeters?: number;
 }
 
+/** Television-raster/game state carried by the shared fixed-step tape. */
+export interface VideoElectronicsState {
+  ballX: number;
+  ballY: number;
+  ballVx: number;
+  ballVy: number;
+  player1X: number;
+  player1Y: number;
+  player2X: number;
+  player2Y: number;
+  scorePlayer1: number;
+  scorePlayer2: number;
+  targetHitCount: number;
+  targetVisible: boolean;
+  coincidenceActive: boolean;
+  lightGunCoincidence: boolean;
+  horizontalSyncHz: number;
+  verticalFieldHz: number;
+  rfCarrierMHz: number;
+}
+
+/** Coaxial-network state carried by the shared fixed-step tape. */
+export interface NetworkElectrodynamicsState {
+  simTimeSec: number;
+  rngSeed: number;
+  rngCounter: number;
+  station1State: string;
+  station2State: string;
+  station1BackoffSlot: number;
+  station2BackoffSlot: number;
+  station1BackoffRemainingSec: number;
+  station2BackoffRemainingSec: number;
+  station1JamRemainingSec: number;
+  station2JamRemainingSec: number;
+  station1InterframeGapRemainingSec: number;
+  station2InterframeGapRemainingSec: number;
+  station1CarrierTailRemainingSec: number;
+  station2CarrierTailRemainingSec: number;
+  station1PacketProgressSec: number;
+  station2PacketProgressSec: number;
+  packetSuccessCount: number;
+  totalCollisionCount: number;
+  lastCollisionTimeSec: number;
+  triggerCollisionLatched: boolean;
+  manchesterClockPhaseRad: number;
+  busVoltageVolts: number;
+  collisionDetected: boolean;
+  collisionDisplayActive: boolean;
+  carrierSensed: boolean;
+  throughputMbps: number;
+  channelEfficiencyPct: number;
+}
+
+/** Coherent electron-beam raster state carried by the shared fixed-step tape. */
+export interface ElectronOpticsRasterState {
+  simTimeSec: number;
+  scanLines: number;
+  rasterLineIndex: number;
+  rasterXPercent: number;
+  rasterYPercent: number;
+  beamFraction: number;
+  horizontalDeflectionUnits: number;
+  verticalDeflectionUnits: number;
+  inHorizontalRetrace: boolean;
+}
+
 export interface UniversalPatentPhysicsTelemetry {
   patentId: string;
   domain: PhysicsDomain;
@@ -179,4 +254,7 @@ export interface UniversalPatentPhysicsTelemetry {
   nuclear?: NuclearKineticsState;
   continuum?: ContinuumState;
   machine?: MachineState;
+  video?: VideoElectronicsState;
+  network?: NetworkElectrodynamicsState;
+  raster?: ElectronOpticsRasterState;
 }

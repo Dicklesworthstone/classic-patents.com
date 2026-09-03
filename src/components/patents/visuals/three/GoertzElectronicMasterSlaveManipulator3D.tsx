@@ -2,7 +2,6 @@
 
 import { Eye, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { stepGoertzMasterSlaveTopology } from "@/physics/goertzElectronicMasterSlaveManipulatorKernel";
@@ -11,21 +10,37 @@ import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildGoertzElectronicMasterSlaveManipulatorModel } from "./goertzElectronicMasterSlaveManipulatorModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-2846084-goertz-electronic-master-slave-manipulator";
 
 const VIEWS = {
   overview: {
-    position: [5.9, 3.8, 6.8] as [number, number, number],
-    target: [0, -0.4, 0] as [number, number, number],
+    position: [6.9, 3.8, 7.4] as [number, number, number],
+    target: [0, -0.1, -0.1] as [number, number, number],
   },
   master: {
-    position: [-4.7, 2.5, 4.5] as [number, number, number],
-    target: [-2.1, -0.35, 0] as [number, number, number],
+    position: [-4.9, 2.7, 4.8] as [number, number, number],
+    target: [-2.08, -0.05, -0.15] as [number, number, number],
   },
   slave: {
-    position: [4.7, 2.5, 4.5] as [number, number, number],
-    target: [2.1, -0.35, 0] as [number, number, number],
+    position: [4.9, 2.7, 4.8] as [number, number, number],
+    target: [2.08, -0.05, -0.15] as [number, number, number],
+  },
+} as const;
+
+const PHONE_VIEWS = {
+  overview: {
+    position: [0, 4.8, 14.8] as [number, number, number],
+    target: [0, -0.05, -0.15] as [number, number, number],
+  },
+  master: {
+    position: [-2.08, 3.25, 7.8] as [number, number, number],
+    target: [-2.08, -0.05, -0.15] as [number, number, number],
+  },
+  slave: {
+    position: [2.08, 3.25, 7.8] as [number, number, number],
+    target: [2.08, -0.05, -0.15] as [number, number, number],
   },
 } as const;
 
@@ -106,8 +121,7 @@ export function GoertzElectronicMasterSlaveManipulator3D() {
   const [view, setView] = useState<keyof typeof VIEWS>("overview");
   const { params, effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
     usePatentPhysics(PATENT_ID);
-  const liveParams = useRef(effectiveParams);
-  liveParams.current = effectiveParams;
+  const liveParams = useLiveSimParams(effectiveParams);
   const pose = stepGoertzMasterSlaveTopology(effectiveParams);
 
   // The patent supplies topology, not the SI inputs that a physical robot-arm
@@ -123,14 +137,16 @@ export function GoertzElectronicMasterSlaveManipulator3D() {
 
   const selectView = (next: keyof typeof VIEWS) => {
     setView(next);
-    const camera = VIEWS[next];
+    const camera =
+      (containerRef.current?.clientWidth ?? 640) < 480 ? PHONE_VIEWS[next] : VIEWS[next];
     studioRef.current?.controls.setView(camera.position, camera.target);
   };
 
+  // The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const initial = VIEWS.overview;
+    const initial = container.clientWidth < 480 ? PHONE_VIEWS.overview : VIEWS.overview;
     const studio = createThreeStudioScene({
       container,
       cameraPos: initial.position,
@@ -140,31 +156,13 @@ export function GoertzElectronicMasterSlaveManipulator3D() {
       ambientIntensity: 2.6,
       sunIntensity: 2.8,
       cameraMinDistance: 2.6,
-      cameraMaxDistance: 13,
+      cameraMaxDistance: 20,
     });
     studioRef.current = studio;
     const { scene, camera, renderer, controls } = studio;
 
-    const presentationFloorMaterial = new THREE.MeshStandardMaterial({
-      color: 0x020617,
-      roughness: 0.78,
-      metalness: 0.18,
-    });
-    const presentationFloor = new THREE.Mesh(
-      new THREE.CircleGeometry(5.4, 64),
-      presentationFloorMaterial,
-    );
-    presentationFloor.name = "museum presentation floor";
-    presentationFloor.rotation.x = -Math.PI / 2;
-    presentationFloor.position.y = -2.03;
-    presentationFloor.receiveShadow = true;
-    scene.add(presentationFloor);
-
     const model = buildGoertzElectronicMasterSlaveManipulatorModel();
     scene.add(model.root);
-    const axes = new THREE.AxesHelper(0.85);
-    axes.position.set(-3.55, -1.95, -1.18);
-    scene.add(axes);
 
     let frame = 0;
     const clock = createStudioClock();
@@ -181,124 +179,126 @@ export function GoertzElectronicMasterSlaveManipulator3D() {
     return () => {
       cancelAnimationFrame(frame);
       model.dispose();
-      presentationFloor.geometry.dispose();
-      presentationFloorMaterial.dispose();
       studio.cleanup();
       studioRef.current = null;
     };
-  }, []);
+  }, [liveParams]);
 
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl">
       <div className="relative min-h-[490px] sm:min-h-[610px]">
         <div ref={containerRef} className="absolute inset-0" />
         <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-3 sm:inset-x-5 sm:top-5">
-          <div className="rounded-xl border border-cyan-700/70 bg-slate-950/85 px-3 py-2 backdrop-blur">
-            <p className="font-mono text-[10px] tracking-[0.16em] text-cyan-300">
-              US 2,846,084 · PROCEDURAL 3D
+          <div className="max-w-[230px] rounded-xl border border-cyan-700/70 bg-slate-950/85 px-3 py-2 backdrop-blur sm:max-w-none">
+            <p className="font-mono text-[10px] tracking-[0.08em] text-cyan-300 sm:tracking-[0.16em]">
+              US 2,846,084 · FIGS. 1–9 RECONSTRUCTION
             </p>
-            <p className="mt-1 text-sm font-medium text-white">Master handle ↔ remote grasper</p>
+            <p className="mt-1 text-sm font-medium text-white">
+              Seven-channel master handle ↔ remote grasper
+            </p>
           </div>
-          <div className="rounded-xl border border-rose-800/70 bg-rose-950/90 px-3 py-2 text-right text-[11px] leading-4 text-rose-100 backdrop-blur sm:max-w-xs">
-            Source-bound normalized topology. No dimensions, payload, force, speed, or WASM-step
-            claim.
+          <div className="hidden rounded-xl border border-rose-800/70 bg-rose-950/90 px-3 py-2 text-right text-[11px] leading-4 text-rose-100 backdrop-blur sm:block sm:max-w-xs">
+            Source-shaped normalized topology. Static contact cannot numerically step the tachometer
+            or limiter; no dimensions, payload, force, speed, or WASM claim.
           </div>
         </div>
-
-        <div className="absolute bottom-3 left-3 right-3 z-10 grid max-h-[calc(100%-7rem)] gap-3 overflow-y-auto rounded-xl border border-slate-700/90 bg-slate-950/90 p-3 backdrop-blur sm:bottom-5 sm:left-5 sm:right-5">
-          <ClaimConstraintToggle
-            patentId={PATENT_ID}
-            claimStates={claimStates}
-            onToggleClaim={(claimNumber, active) =>
-              updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
-            }
-          />
-          {claimConstraintResult.activeFailures.length > 0 && (
-            <div role="status" className="rounded-lg border border-rose-800 bg-rose-950/80 p-2">
-              {claimConstraintResult.activeFailures.map((failure: string) => (
-                <p key={failure} className="text-[11px] leading-4 text-rose-100">
-                  {failure}
-                </p>
-              ))}
-              {claimConstraintResult.refusalWarning && (
-                <p className="mt-1 text-[10px] leading-4 text-rose-200">
-                  {claimConstraintResult.refusalWarning}
-                </p>
-              )}
-            </div>
-          )}
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            {AXIS_CONTROLS.map((control) => {
-              const value = params[control.id] ?? 0;
-              return (
-                <label key={control.id} className="text-[11px] text-slate-200">
-                  {control.label}
-                  <span className="float-right font-mono text-cyan-300">
-                    {control.id === "gripperClosure" ? percent(value) : value.toFixed(2)}
-                  </span>
-                  <input
-                    className={`mt-1 w-full ${control.accent}`}
-                    type="range"
-                    min={control.min}
-                    max={control.max}
-                    step="0.01"
-                    value={value}
-                    aria-label={control.label}
-                    onChange={(event) => updateParam(control.id, Number(event.target.value))}
-                  />
-                </label>
-              );
-            })}
-            <label className="text-[11px] text-slate-200">
-              Illustrative remote resistance
-              <span className="float-right font-mono text-rose-300">
-                {percent(params.contactResistance ?? 0)}
-              </span>
-              <input
-                className="mt-1 w-full accent-rose-400"
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={params.contactResistance ?? 0}
-                aria-label="Illustrative remote contact resistance"
-                onChange={(event) => updateParam("contactResistance", Number(event.target.value))}
-              />
-            </label>
+      </div>
+      <div
+        data-mobile-layout="controls-below-canvas"
+        className="grid gap-3 border-t border-slate-700/90 bg-slate-950/95 p-3"
+      >
+        <ClaimConstraintToggle
+          patentId={PATENT_ID}
+          claimStates={claimStates}
+          onToggleClaim={(claimNumber, active) =>
+            updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
+          }
+        />
+        {claimConstraintResult.activeFailures.length > 0 && (
+          <div role="status" className="rounded-lg border border-rose-800 bg-rose-950/80 p-2">
+            {claimConstraintResult.activeFailures.map((failure: string) => (
+              <p key={failure} className="text-[11px] leading-4 text-rose-100">
+                {failure}
+              </p>
+            ))}
+            {claimConstraintResult.refusalWarning && (
+              <p className="mt-1 text-[10px] leading-4 text-rose-200">
+                {claimConstraintResult.refusalWarning}
+              </p>
+            )}
           </div>
+        )}
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          {AXIS_CONTROLS.map((control) => {
+            const value = params[control.id] ?? 0;
+            return (
+              <label key={control.id} className="text-[11px] text-slate-200">
+                {control.label}
+                <span className="float-right font-mono text-cyan-300">
+                  {control.id === "gripperClosure" ? percent(value) : value.toFixed(2)}
+                </span>
+                <input
+                  className={`mt-1 w-full ${control.accent}`}
+                  type="range"
+                  min={control.min}
+                  max={control.max}
+                  step="0.01"
+                  value={value}
+                  aria-label={control.label}
+                  onChange={(event) => updateParam(control.id, Number(event.target.value))}
+                />
+              </label>
+            );
+          })}
+          <label className="text-[11px] text-slate-200">
+            Illustrative gripper obstruction
+            <span className="float-right font-mono text-rose-300">
+              {percent(params.contactResistance ?? 0)}
+            </span>
+            <input
+              className="mt-1 w-full accent-rose-400"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={params.contactResistance ?? 0}
+              aria-label="Illustrative gripper obstruction"
+              onChange={(event) => updateParam("contactResistance", Number(event.target.value))}
+            />
+          </label>
+        </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="max-w-xl text-[11px] leading-4 text-slate-300">
-              Seven source-described channels synchronize the two articulated assemblies. An
-              illustrative obstruction creates positional mismatch; the highlighted arrow appears
-              only when Claim 9’s bilateral reflection is enabled.
-            </p>
-            <div className="flex flex-wrap items-end gap-2">
-              {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((candidate) => (
-                <button
-                  key={candidate}
-                  type="button"
-                  onClick={() => selectView(candidate)}
-                  className={`min-h-9 rounded-lg border px-2.5 text-xs capitalize focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 ${view === candidate ? "border-cyan-400 bg-cyan-400 text-slate-950" : "border-slate-600 bg-slate-900 text-slate-200 hover:bg-slate-800"}`}
-                >
-                  <Eye className="mr-1 inline h-3.5 w-3.5" />
-                  {candidate}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={resetParams}
-                className="min-h-9 rounded-lg border border-slate-600 bg-slate-900 px-2.5 text-xs text-slate-200 hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
-              >
-                <RotateCcw className="mr-1 inline h-3.5 w-3.5" />
-                Reset
-              </button>
-            </div>
-          </div>
-          <p className="rounded-lg border border-rose-900/70 bg-rose-950/35 px-2 py-1.5 text-[10px] leading-4 text-rose-100">
-            {pose.refusal.reason}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="max-w-xl text-[11px] leading-4 text-slate-300">
+            Seven source-described channels synchronize the two articulated assemblies. An
+            illustrative fragile-object obstruction withholds only slave-gripper closure; the
+            handle-attached arrow appears only when Claim 9’s bilateral reflection path is enabled.
           </p>
+          <div className="flex flex-wrap items-end gap-2">
+            {(Object.keys(VIEWS) as Array<keyof typeof VIEWS>).map((candidate) => (
+              <button
+                key={candidate}
+                type="button"
+                onClick={() => selectView(candidate)}
+                className={`min-h-9 rounded-lg border px-2.5 text-xs capitalize focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 ${view === candidate ? "border-cyan-400 bg-cyan-400 text-slate-950" : "border-slate-600 bg-slate-900 text-slate-200 hover:bg-slate-800"}`}
+              >
+                <Eye className="mr-1 inline h-3.5 w-3.5" />
+                {candidate}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={resetParams}
+              className="min-h-9 rounded-lg border border-slate-600 bg-slate-900 px-2.5 text-xs text-slate-200 hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
+            >
+              <RotateCcw className="mr-1 inline h-3.5 w-3.5" />
+              Reset
+            </button>
+          </div>
         </div>
+        <p className="rounded-lg border border-rose-900/70 bg-rose-950/35 px-2 py-1.5 text-[10px] leading-4 text-rose-100">
+          {pose.refusal.reason}
+        </p>
       </div>
     </section>
   );

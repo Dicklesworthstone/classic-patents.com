@@ -6,18 +6,21 @@ const nativeModelAlias = "@/components/patents/visuals/three/";
  * current TypeScript alias are valid source shapes.
  */
 export const nativeModelSpecifiers = (source: string): string[] => {
-  const specifiers = [...source.matchAll(/from\s+["']([^"']+)["']/g)]
-    .map((match) => match[1])
-    .map((specifier) => {
-      if (specifier.startsWith("./")) return specifier;
-      if (specifier.startsWith(nativeModelAlias)) {
-        return `./${specifier.slice(nativeModelAlias.length)}`;
-      }
-      return null;
-    })
-    .filter((specifier): specifier is string => specifier !== null)
-    .map((specifier) => specifier.replace(/\.(?:ts|tsx)$/, ""))
-    .filter((specifier) => /(?:model|airframe)$/i.test(specifier));
+  const specifiers: string[] = [];
+  for (const match of source.matchAll(/from\s+["']([^"']+)["']/g)) {
+    const sourceSpecifier = match[1];
+    if (!sourceSpecifier) continue;
+
+    const relativeSpecifier = sourceSpecifier.startsWith("./")
+      ? sourceSpecifier
+      : sourceSpecifier.startsWith(nativeModelAlias)
+        ? `./${sourceSpecifier.slice(nativeModelAlias.length)}`
+        : null;
+    if (!relativeSpecifier) continue;
+
+    const specifier = relativeSpecifier.replace(/\.(?:ts|tsx)$/, "");
+    if (/(?:model|airframe)$/i.test(specifier)) specifiers.push(specifier);
+  }
 
   return [...new Set(specifiers)];
 };

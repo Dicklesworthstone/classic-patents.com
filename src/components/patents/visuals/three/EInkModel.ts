@@ -1,15 +1,15 @@
 import * as THREE from "three";
-import { stepEInk } from "@/physics/eInkKernel";
+import type { EInkState } from "@/physics/eInkKernel";
 
 export interface EInkModel {
   root: THREE.Group;
   mainGroup: THREE.Group;
-  whiteParticleMeshes: THREE.Mesh[];
-  blackParticleMeshes: THREE.Mesh[];
+  whiteParticleInstances: THREE.InstancedMesh;
+  blackParticleInstances: THREE.InstancedMesh;
   eFieldArrows: THREE.Group[];
   topPlate: THREE.Mesh;
   bottomPlate: THREE.Mesh;
-  updateElectrophoresis: (voltage: number, timeSec: number) => void;
+  updateElectrophoresis: (state: EInkState, timeSec: number) => void;
   setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
@@ -177,10 +177,27 @@ export function buildEInkModel(): EInkModel {
   const NUM_PARTICLES = 48;
   const particleGeo = trackGeo(new THREE.SphereGeometry(0.065, 16, 16));
 
-  const whiteParticleMeshes: THREE.Mesh[] = [];
-  const blackParticleMeshes: THREE.Mesh[] = [];
   const whiteInitialOffsets: { x: number; z: number; jitter: number }[] = [];
   const blackInitialOffsets: { x: number; z: number; jitter: number }[] = [];
+  const whiteParticleY = new Float32Array(NUM_PARTICLES);
+  const blackParticleY = new Float32Array(NUM_PARTICLES);
+  const particleMatrix = new THREE.Matrix4();
+  const whiteParticleInstances = new THREE.InstancedMesh(
+    particleGeo,
+    whiteParticleMat,
+    NUM_PARTICLES,
+  );
+  whiteParticleInstances.name = "Positively charged white pigment particles";
+  whiteParticleInstances.castShadow = true;
+  whiteParticleInstances.frustumCulled = false;
+  const blackParticleInstances = new THREE.InstancedMesh(
+    particleGeo,
+    blackParticleMat,
+    NUM_PARTICLES,
+  );
+  blackParticleInstances.name = "Negatively charged black pigment particles";
+  blackParticleInstances.castShadow = true;
+  blackParticleInstances.frustumCulled = false;
 
   for (let i = 0; i < NUM_PARTICLES; i++) {
     const angle = (i / NUM_PARTICLES) * Math.PI * 2;
@@ -189,20 +206,19 @@ export function buildEInkModel(): EInkModel {
     const offsetZ = Math.sin(angle) * r;
     const jitterY = Math.cos(i * 5.1) * 0.2;
 
-    const wp = new THREE.Mesh(particleGeo, whiteParticleMat);
-    wp.position.set(offsetX, 0.75 + jitterY, offsetZ);
-    wp.castShadow = true;
-    mainGroup.add(wp);
-    whiteParticleMeshes.push(wp);
+    whiteParticleY[i] = 0.75 + jitterY;
+    particleMatrix.makeTranslation(offsetX, whiteParticleY[i], offsetZ);
+    whiteParticleInstances.setMatrixAt(i, particleMatrix);
     whiteInitialOffsets.push({ x: offsetX, z: offsetZ, jitter: jitterY });
 
-    const bp = new THREE.Mesh(particleGeo, blackParticleMat);
-    bp.position.set(-offsetX, -0.75 - jitterY, -offsetZ);
-    bp.castShadow = true;
-    mainGroup.add(bp);
-    blackParticleMeshes.push(bp);
+    blackParticleY[i] = -0.75 - jitterY;
+    particleMatrix.makeTranslation(-offsetX, blackParticleY[i], -offsetZ);
+    blackParticleInstances.setMatrixAt(i, particleMatrix);
     blackInitialOffsets.push({ x: -offsetX, z: -offsetZ, jitter: -jitterY });
   }
+  whiteParticleInstances.instanceMatrix.needsUpdate = true;
+  blackParticleInstances.instanceMatrix.needsUpdate = true;
+  mainGroup.add(whiteParticleInstances, blackParticleInstances);
 
   // 5. Electric Field Directional Vectors
   const eFieldArrows: THREE.Group[] = [];
@@ -231,29 +247,35 @@ export function buildEInkModel(): EInkModel {
     eFieldArrows.push(arrowGroup);
   });
 
-  const updateElectrophoresis = (voltage: number, timeSec: number) => {
-    // Electrophoretic particle velocity v = μ * E
-    const normV = Math.max(-1, Math.min(1, voltage / 15));
-    const targetYWhite = normV >= 0 ? 0.8 : -0.8;
-    const targetYBlack = normV >= 0 ? -0.8 : 0.8;
-    const eink = stepEInk({ electrodeVoltageVolts: voltage, fluidViscosityCp: 2.0 }, 0);
-    const jitterOmega = (eink.brownianJitterOmegaYRadPerS + eink.brownianJitterOmegaXRadPerS) / 2;
+  const updateElectrophoresis = (state: EInkState, timeSec: number) => {
+    const normV = Math.max(-1, Math.min(1, state.electricFieldVperUm / 0.3));
+    const targetYWhite = state.whiteParticleNormY * 0.87;
+    const targetYBlack = state.blackParticleNormY * 0.87;
+    const jitterOmega = (state.brownianJitterOmegaYRadPerS + state.brownianJitterOmegaXRadPerS) / 2;
 
-    whiteParticleMeshes.forEach((wp, idx) => {
-      const init = whiteInitialOffsets[idx];
-      const targetY = targetYWhite + init.jitter;
-      wp.position.y += (targetY - wp.position.y) * 0.08;
-      wp.position.x = init.x + Math.sin(timeSec * jitterOmega + idx) * 0.02;
-      wp.position.z = init.z + Math.cos(timeSec * jitterOmega + idx) * 0.02;
+    whiteInitialOffsets.forEach((init, idx) => {
+      const targetY = targetYWhite + init.jitter * 0.35;
+      whiteParticleY[idx] = targetY;
+      particleMatrix.makeTranslation(
+        init.x + Math.sin(timeSec * jitterOmega + idx) * 0.02,
+        whiteParticleY[idx],
+        init.z + Math.cos(timeSec * jitterOmega + idx) * 0.02,
+      );
+      whiteParticleInstances.setMatrixAt(idx, particleMatrix);
     });
 
-    blackParticleMeshes.forEach((bp, idx) => {
-      const init = blackInitialOffsets[idx];
-      const targetY = targetYBlack + init.jitter;
-      bp.position.y += (targetY - bp.position.y) * 0.08;
-      bp.position.x = init.x + Math.cos(timeSec * jitterOmega + idx) * 0.02;
-      bp.position.z = init.z + Math.sin(timeSec * jitterOmega + idx) * 0.02;
+    blackInitialOffsets.forEach((init, idx) => {
+      const targetY = targetYBlack + init.jitter * 0.35;
+      blackParticleY[idx] = targetY;
+      particleMatrix.makeTranslation(
+        init.x + Math.cos(timeSec * jitterOmega + idx) * 0.02,
+        blackParticleY[idx],
+        init.z + Math.sin(timeSec * jitterOmega + idx) * 0.02,
+      );
+      blackParticleInstances.setMatrixAt(idx, particleMatrix);
     });
+    whiteParticleInstances.instanceMatrix.needsUpdate = true;
+    blackParticleInstances.instanceMatrix.needsUpdate = true;
 
     // Update E-field arrow direction and intensity
     eFieldArrows.forEach((arrow) => {
@@ -279,8 +301,8 @@ export function buildEInkModel(): EInkModel {
   return {
     root,
     mainGroup,
-    whiteParticleMeshes,
-    blackParticleMeshes,
+    whiteParticleInstances,
+    blackParticleInstances,
     eFieldArrows,
     topPlate,
     bottomPlate,

@@ -5,7 +5,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepEngelbartMouse } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { MachineState } from "@/physics/types";
 import {
@@ -16,8 +16,11 @@ import {
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
-import { buildEngelbartMouseModel, updateEngelbartMouseKinematics } from "./engelbartMouseModel";
+import {
+  buildEngelbartMouseModel,
+  ENGELBART_DESK_Y,
+  updateEngelbartMouseKinematics,
+} from "./engelbartMouseModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -29,19 +32,36 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [11, 9, 13], target: [0, 0, 0] },
-  wheels: { pos: [0, -6, 9], target: [0, 0, 0] },
-  xray: { pos: [4, 7, 9], target: [0, 1.2, 0] },
-  microswitch: { pos: [3, 4, -4], target: [1.3, 2.0, -2.0] },
-  potentiometers: { pos: [-3, 3, 2], target: [0, 0.5, 0] },
+  iso: { pos: [10, 7.5, 13], target: [0.5, 0.55, 1.2] },
+  wheels: { pos: [6, 1.8, -10], target: [0, -0.12, -0.2] },
+  xray: { pos: [7, 6.5, 11.5], target: [0.3, 0.7, 1] },
+  microswitch: { pos: [4.5, 4.4, -6.5], target: [0, 1.8, -1.7] },
+  potentiometers: { pos: [-6.5, 4.2, -6], target: [-0.2, 0.5, -0.2] },
   top: { pos: [0, 16, 0.1], target: [0, 0, 0] },
 };
+
+function cameraForViewport(preset: CameraPreset, width: number) {
+  const config = CAMERA_PRESETS[preset];
+  if (width >= 520) return config;
+  const scale = preset === "top" ? 1.15 : 1.34;
+  return {
+    pos: config.pos.map((coordinate, index) =>
+      index === 1 && preset !== "top" ? coordinate * 1.12 : coordinate * scale,
+    ) as [number, number, number],
+    target: config.target,
+  };
+}
+
+// The patent's teaching is the orthogonal resolver mechanism beneath the
+// housing. Start in the expressly-labelled cutaway inspection state so the
+// visitor sees that mechanism before choosing a close-up.
+const DEFAULT_CAMERA_PRESET: CameraPreset = "xray";
 
 const IDLE_MACHINE: MachineState = {
   poseXMeters: 0,
   poseYMeters: 0,
   headingRad: 0,
-  modeLabel: "encoder-wheels",
+  modeLabel: "orthogonal-position-wheels",
   wheelSpeedMps: 0,
 };
 
@@ -49,20 +69,21 @@ export const EngelbartMouse3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
-  const [isXRayMode, setIsXRayMode] = useState<boolean>(false);
+  const [isXRayMode, setIsXRayMode] = useState<boolean>(true);
   const [isClicking, setIsClicking] = useState<boolean>(false);
+  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Mechanical Coordinates & Pulse Resolver Parameters
-  const { params, updateParam } = usePatentPhysics("us-3541541-engelbart-mouse");
+  const { params, effectiveParams, claimStates, claimConstraintResult, updateParam } =
+    usePatentPhysics("us-3541541-engelbart-mouse");
   const mouseSpeedMmPerS =
-    (params.mouseSpeed as number) ?? (params.mouseSpeedMmPerS as number) ?? 350;
-  const surfaceFrictionCoeff = (params.surfaceFrictionCoeff as number) ?? 0.35;
-  const wheelRadiusMm = (params.wheelRadius as number) ?? (params.wheelRadiusMm as number) ?? 9.5;
-  const pulsesPerRev = (params.pulsesPerRev as number) ?? 200;
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+    (effectiveParams.mouseSpeed as number) ?? (effectiveParams.mouseSpeedMmPerS as number) ?? 350;
+  const wheelRadiusMm =
+    (effectiveParams.wheelRadius as number) ?? (effectiveParams.wheelRadiusMm as number) ?? 10;
+  const pulsesPerRev = (effectiveParams.pulsesPerRev as number) ?? 200;
+  const claim1Active = claimStates[1] ?? true;
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>(DEFAULT_CAMERA_PRESET);
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const mouse = stepEngelbartMouse({
     mouseSpeed: mouseSpeedMmPerS,
@@ -72,7 +93,6 @@ export const EngelbartMouse3D = memo(() => {
 
   const live = useLiveSimParams({
     mouseSpeedMmPerS,
-    surfaceFrictionCoeff,
     wheelRadiusMm,
     isAudioMuted,
     isXRayMode,
@@ -81,7 +101,7 @@ export const EngelbartMouse3D = memo(() => {
     wheelOmegaRadPerS: mouse.omegaRadPerS,
     pathDisplayOmega: mouse.pathDisplayOmega,
     resolverSvgScale: mouse.resolverSvgScale,
-    claim1Active: claimStates[1] === false ? 0 : 1,
+    claim1Active: claim1Active ? 1 : 0,
     pulsesPerRev,
   });
 
@@ -89,56 +109,56 @@ export const EngelbartMouse3D = memo(() => {
   // the patentId-keyed bus so every face reads one deterministic state.
   useFrankenSimPhysics("us-3541541-engelbart-mouse", {
     domain: "solid_mechanics",
-    refusal: { isRefused: false },
+    refusal: {
+      isRefused: !claim1Active,
+      reason: claimConstraintResult.refusalWarning ?? undefined,
+    },
     machine: {
       ...IDLE_MACHINE,
       wheelSpeedMps: mouseSpeedMmPerS / 1000,
     },
   });
 
-  // One tape-bound integrator (br-ixl): the bus updater owns the wheel
-  // rotation phase and dead-reckoned desk travel. Accumulators live in refs
-  // so re-registering on control changes never snaps the phase back to zero.
-  const wheelAngleRef = useRef(0);
-  const travelMetersRef = useRef(0);
-  const lastLegalRef = useRef({ angle: 0, travel: 0 });
+  // One tape-bound integrator owns the time-dilated exhibit path. The patent's
+  // real rolling rate remains the separate SI value v/r.
+  const pathPhaseRef = useRef(0);
   useEffect(() => {
     const integrate: TapeUpdater = (_prev, dt) => {
       const refused = (live.current.claim1Active ?? 1) < 0.5;
-      if (!refused) {
-        wheelAngleRef.current += (live.current.wheelOmegaRadPerS ?? 0) * dt;
-        travelMetersRef.current += ((live.current.mouseSpeedMmPerS ?? 0) * dt) / 1000;
-        lastLegalRef.current = {
-          angle: wheelAngleRef.current,
-          travel: travelMetersRef.current,
-        };
-      } else {
-        wheelAngleRef.current = lastLegalRef.current.angle;
-        travelMetersRef.current = lastLegalRef.current.travel;
-      }
+      pathPhaseRef.current += (live.current.pathDisplayOmega ?? 0) * dt;
+      const poseX = Math.sin(pathPhaseRef.current) * 0.064;
+      const poseY = refused ? 0 : Math.sin(pathPhaseRef.current * 2) * 0.036;
       return {
         refusal: {
           isRefused: refused,
-          reason: refused ? "Claim 1 wheels lifted: resolver held at last legal angle" : undefined,
+          reason: refused
+            ? "Claim 1 topology incomplete: second coordinate wheel and transducer withheld"
+            : undefined,
         },
         machine: {
           ...IDLE_MACHINE,
-          poseXMeters: travelMetersRef.current,
-          headingRad: wheelAngleRef.current,
+          poseXMeters: poseX,
+          poseYMeters: poseY,
+          headingRad: 0,
           wheelSpeedMps: (live.current.mouseSpeedMmPerS ?? 0) / 1000,
         },
       };
     };
-    globalTransportBus.registerUpdater("us-3541541-engelbart-mouse", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-3541541-engelbart-mouse");
-  }, [live.current.claim1Active, live.current.mouseSpeedMmPerS, live.current.wheelOmegaRadPerS]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-3541541-engelbart-mouse",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
+    if (preset === "xray") setIsXRayMode(true);
     if (preset === "xray" || preset === "potentiometers") {
       setIsXRayMode(true);
     }
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = cameraForViewport(preset, containerRef.current?.clientWidth ?? 800);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -149,22 +169,29 @@ export const EngelbartMouse3D = memo(() => {
   };
 
   const handleManualClick = () => {
+    if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
     setIsClicking(true);
     if (!isAudioMuted) {
       soundEngine.playMicroswitchClick();
     }
-    setTimeout(() => setIsClicking(false), 250);
+    clickTimerRef.current = setTimeout(() => {
+      setIsClicking(false);
+      clickTimerRef.current = null;
+    }, 250);
   };
 
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
+  useEffect(
+    () => () => {
+      if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+    },
+    [],
+  );
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = cameraForViewport(DEFAULT_CAMERA_PRESET, container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -182,7 +209,7 @@ export const EngelbartMouse3D = memo(() => {
     });
     const desk = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), deskMat);
     desk.rotation.x = -Math.PI / 2;
-    desk.position.y = -1.5;
+    desk.position.y = ENGELBART_DESK_Y;
     desk.receiveShadow = true;
     scene.add(desk);
 
@@ -210,8 +237,9 @@ export const EngelbartMouse3D = memo(() => {
         "figure8",
         p.wheelRadiusMm,
         p.pulsesPerRev,
-        p.isXRayMode,
         p.isClicking,
+        p.isXRayMode,
+        (p.claim1Active ?? 1) >= 0.5,
       );
 
       controls.update();
@@ -247,7 +275,7 @@ export const EngelbartMouse3D = memo(() => {
                 ["wheels", "Orthogonal Wheels"],
                 ["xray", "Internal X-Ray"],
                 ["microswitch", "Red Button"],
-                ["potentiometers", "Resolvers"],
+                ["potentiometers", "Transducers"],
                 ["top", "Plan View"],
               ] as [CameraPreset, string][]
             ).map(([preset, label]) => (
@@ -334,13 +362,13 @@ export const EngelbartMouse3D = memo(() => {
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Resolution:</span>
+              <span className="text-ink-600 dark:text-ink-400">Alt. Encoder Resolution:</span>
               <span className="font-bold text-emerald-800 dark:text-emerald-400">
                 {mouse.dpi} CPI
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Pulse Rate:</span>
+              <span className="text-ink-600 dark:text-ink-400">Alt. Encoder Pulse Rate:</span>
               <span className="font-bold text-purple-800 dark:text-purple-400">
                 {mouse.pulseRateHz.toFixed(0)} pulses/s
               </span>
@@ -359,9 +387,9 @@ export const EngelbartMouse3D = memo(() => {
           side="right"
           title="Engelbart orthogonal position resolver kinetics"
           chips={[
-            { label: "Displacement", value: `${mouseSpeedMmPerS}`, unit: "mm/s" },
+            { label: "Scenario Speed", value: `${mouseSpeedMmPerS}`, unit: "mm/s" },
             { label: "Wheel Radius", value: `${wheelRadiusMm}`, unit: "mm" },
-            { label: "Encoder Resolution", value: `${mouse.dpi}`, unit: "CPI" },
+            { label: "Alt. Encoder", value: `${mouse.dpi}`, unit: "CPI" },
             {
               label: "Pulse Rate",
               value: `${mouse.pulseRateHz.toFixed(0)}`,
@@ -374,8 +402,14 @@ export const EngelbartMouse3D = memo(() => {
               unit: "rad/s",
             },
             {
-              label: "XY crate",
-              value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
+              label: "Roll constraint",
+              value: "Δs = rΔθ",
+              tone: claim1Active ? "ok" : "warn",
+            },
+            {
+              label: "Coordinate axes",
+              value: claim1Active ? "2 / 2" : "1 / 2 withheld",
+              tone: claim1Active ? "ok" : "warn",
             },
           ]}
         />
@@ -416,11 +450,11 @@ export const EngelbartMouse3D = memo(() => {
             id="engelbartPpr"
             patentId="us-3541541-engelbart-mouse"
             paramKey="pulsesPerRev"
-            label="Resolver Pulses / Rev"
+            label="Alternative Encoder PPR"
             value={pulsesPerRev}
-            min={50}
+            min={20}
             max={400}
-            step={10}
+            step={4}
             unit=" PPR"
             onChange={(val) => updateParam("pulsesPerRev", val)}
             allParams={params}
@@ -431,16 +465,24 @@ export const EngelbartMouse3D = memo(() => {
           patentId="us-3541541-engelbart-mouse"
           claimStates={claimStates}
           onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0)
           }
           className="mt-2"
         />
 
-        <PortHamiltonianEnergyStrip
-          patentId="us-3541541-engelbart-mouse"
-          params={params}
-          className="mt-3"
-        />
+        {claimConstraintResult.refusalWarning ? (
+          <div
+            className="mt-3 rounded-lg border border-rose-400/50 bg-rose-600/10 px-3 py-2 text-xs text-rose-900 dark:text-rose-200"
+            role="status"
+          >
+            {claimConstraintResult.refusalWarning}
+          </div>
+        ) : null}
+        <p className="mt-3 text-[11px] leading-relaxed text-ink-600 dark:text-ink-400">
+          Energy telemetry is withheld: US 3,541,541 prints no mouse mass, hand force, rolling
+          resistance, transducer current, or supply voltage. The live values above are kinematics
+          only.
+        </p>
       </div>
     </div>
   );

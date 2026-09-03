@@ -5,8 +5,18 @@
 
 import { stepAmfVersatranTopology } from "./amfVersatranKernel";
 import { INITIAL_BAER_STATE, readBaerControls, stepBaerOdysseySi } from "./baerOdysseyKernel";
+import {
+  BOYLE_SMITH_CCD_ID,
+  INITIAL_BOYLE_SMITH_CCD_SOURCE_STATE,
+  readBoyleSmithCcdSourceControls,
+  stepBoyleSmithCcdSource,
+} from "./boyleSmithCcdKernel";
 import { stepClavelDeltaRobotTopology } from "./clavelDeltaRobotKernel";
 import { readCrumpFdmControls, stepCrumpFdmSi } from "./crumpFdmKernel";
+import {
+  readDaVinciInterfaceControls,
+  resolveDaVinciInterfaceTopology,
+} from "./daVinciInterfaceTopology";
 import { stepDevolProgrammedTransfer } from "./devolProgrammedTransferKernel";
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
@@ -16,14 +26,19 @@ import {
   stepHullStereolithographySi,
 } from "./hullStereolithographyKernel";
 import { readKamenSegwayControls, stepKamenSegwaySi } from "./kamenSegwayKernel";
-import { readKamenTransporterControls, stepKamenTransporterSi } from "./kamenTransporterKernel";
+import {
+  readKamenTransporterControls,
+  stepKamenTransporterTopology,
+} from "./kamenTransporterKernel";
+import {
+  readKilbySourceCircuitControls,
+  stepKilbySourceCircuitTopology,
+} from "./kilbySourceCircuitKernel";
 import { stepLemelsonManipulatorTopology } from "./lemelsonAdjustableManipulatorKernel";
 import { stepLemelsonAutomaticProductionTopology } from "./lemelsonAutomaticProductionKernel";
-import {
-  readLemelsonMachineVisionControls,
-  stepLemelsonMachineVisionSi,
-} from "./lemelsonMachineVisionKernel";
+import { stepLemelsonMachineVisionTopology } from "./lemelsonMachineVisionKernel";
 import { stepHoweSewingMachine } from "./machineKernels";
+import { measureMakinoScaraInvariants, stepMakinoScaraTopology } from "./makinoScaraKernel";
 import { readMestralVelcroControls, stepMestralVelcroSi } from "./mestralVelcroKernel";
 import {
   INITIAL_ETHERNET_STATE,
@@ -31,6 +46,7 @@ import {
   stepMetcalfeEthernetSi,
 } from "./metcalfeEthernetKernel";
 import { stepMilacronRobotToolchanger } from "./milacronRobotToolchangerKernel";
+import { readNoycePlanarLeadControls, stepNoycePlanarLeadTopology } from "./noycePlanarLeadKernel";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { stepRobotEndEffector } from "./robotEndEffectorKernel";
 import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
@@ -44,6 +60,8 @@ import { stepStackhouseSourceTopology } from "./stackhouseSourceKernel";
 import { readSundbackZipperControls, stepSundbackZipperSi } from "./sundbackZipperKernel";
 import { stepTeslaMotorFig9, teslaMotorPhaseHz } from "./teslaKernel";
 import { readTeslaTransformerControls, stepTeslaTransformerSi } from "./teslaTransformerKernel";
+import { stepTownesMaserTopology } from "./townesMaserKernel";
+import { stepWatsonRemoteCenterComplianceTopology } from "./watsonRemoteCenterComplianceKernel";
 
 export interface SpecClause {
   id: string;
@@ -69,7 +87,6 @@ const DE_FOREST_ID = "us-879532-de-forest-audion";
 const CARLSON_ID = "us-2297691-carlson-electrophotography";
 const TOWNES_ID = "us-2929922-townes-laser";
 const MAIMAN_ID = "us-3353115-maiman-ruby-laser";
-const BOYLE_SMITH_CCD_ID = "us-3858232-boyle-smith-ccd";
 const KILBY_ID = "us-3138743-kilby-integrated-circuit";
 const EDISON_LIGHTBULB_ID = "us-223898-edison-lightbulb";
 const EDISON_LAMP_LEGACY_ID = "us-223898-edison-lamp";
@@ -89,7 +106,6 @@ const LAMARR_FREQUENCY_HOPPING_ID = "us-2292387-lamarr-frequency-hopping";
 const SPENCER_MICROWAVE_ID = "us-2495429-spencer-microwave";
 const BARDEEN_TRANSISTOR_ID = "us-2524035-bardeen-transistor";
 const NOYCE_IC_ID = "us-2981877-noyce-ic";
-const KWOLEK_KEVLAR_ID = "us-3671542-kwolek-kevlar";
 const PARSONS_TURBINE_ID = "us-608969-parsons-turbine";
 const TESLA_COIL_ID = "us-593138-tesla-coil";
 const TESLA_TELEAUTOMATON_ID = "us-613809-tesla-teleautomaton";
@@ -331,93 +347,97 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   if (patentId === FERMI_ID) {
     const rod = params.rodWithdrawal ?? 83.5;
     const mod = params.moderatorPurity ?? 99.5;
-    const keff = stepFermiKinetics(rod, mod).kEffective;
+    const claim1Active = (params.claim1Active ?? 1) >= 0.5;
+    const keff = stepFermiKinetics(rod, mod, 0.72, claim1Active).kEffective;
     return [
       {
-        id: "critical",
-        phrase: "self-sustaining",
-        active: keff >= 0.998,
-        tone: keff > 1.002 ? "live" : "held",
-        caption:
-          keff >= 0.998
-            ? `k_eff = ${keff.toFixed(4)}: chain reaction holds.`
-            : `k_eff = ${keff.toFixed(4)}: subcritical.`,
+        id: "claim-1-lattice",
+        phrase: "natural uranium rods disposed in a geometric pattern therein",
+        active: claim1Active,
+        tone: claim1Active ? "held" : "broken",
+        caption: claim1Active
+          ? `Claim 1 lattice present; normalized absorber lens k_eff = ${keff.toFixed(4)}.`
+          : "Claim 1 natural-uranium rod lattice removed; no chain-reaction result is inferred.",
       },
     ];
   }
 
   if (patentId === KILBY_ID) {
-    const vcc = params.supplyVoltageV ?? 6.0;
-    const lUm = params.resistorLengthUm ?? 500;
-    const wUm = params.resistorWidthUm ?? 50;
-    const vr = params.reverseBiasVoltageV ?? 3.0;
-    const ib = params.baseDriveCurrentUa ?? 40;
-
-    const isBiased = vcc >= 2.0;
-    const isTransistorActive = ib >= 15;
-    const isCapacitorActive = vr >= 1.0;
+    const state = stepKilbySourceCircuitTopology(readKilbySourceCircuitControls(params));
 
     return [
       {
         id: "monolithic-body",
         phrase:
-          "wafer of single-crystal semiconductor material containing a plurality of active and passive circuit components",
-        active: isBiased,
-        tone: "live",
-        caption: `Single crystal bar hosting integrated mesa transistors, bulk resistors, and p-n junction capacitors at V_cc = ${vcc} V.`,
+          "plurality of electrical circuit components in a wafer of single-crystal semiconductor material",
+        active: true,
+        tone: "held",
+        caption:
+          "Claim 1's transistors and resistor regions remain defined in one single-crystal wafer.",
       },
       {
-        id: "bulk-resistor",
-        phrase: "passive circuit component is an elongated resistor region",
-        active: isBiased,
-        tone: "live",
-        caption: `Aspect ratio L/W = ${(lUm / wUm).toFixed(1)}: Bulk semiconductor path providing calibrated ohmic load resistance.`,
+        id: "junction-transistors",
+        phrase: "plurality of junction transistors defined in the wafer",
+        active: true,
+        tone: "held",
+        caption:
+          "T1 and T2 are surface-reaching junction structures in the wafer, not floating packaged parts.",
       },
       {
-        id: "pn-capacitor",
-        phrase: "passive circuit component is a capacitor defined by a p-n junction",
-        active: isCapacitorActive,
-        tone: isCapacitorActive ? "live" : "broken",
-        caption: `V_R = ${vr} V: Reverse-biased depletion transition capacitance providing AC coupling without discrete capacitors.`,
+        id: "elongated-resistors",
+        phrase:
+          "plurality of thin elongated regions of the wafer exhibiting substantial resistance",
+        active: true,
+        tone: "held",
+        caption: "R1–R8 are shaped semiconductor paths integral to that same wafer.",
       },
       {
         id: "conductor-interconnects",
-        phrase: "conductor means for interconnecting said components into an operative circuit",
-        active: isTransistorActive,
-        tone: "held",
-        caption: `Gold flying wire bonds linking isolated component mesas into a functional bistable flip-flop/oscillator.`,
+        phrase:
+          "conductive means connecting selected ones of the elongated regions to regions of selected ones of the transistors",
+        active: state.conductiveMeansPresent,
+        tone: state.conductiveMeansPresent ? "held" : "broken",
+        caption: state.conductiveMeansPresent
+          ? "Thermally bonded wires 70 provide Claim 1's selected resistor-to-transistor connections."
+          : "Claim 1 inversion withholds wires 70; no electrical performance is inferred.",
       },
     ];
   }
 
   if (patentId === BOYLE_SMITH_CCD_ID) {
-    const vGate = params.gateVoltageV ?? 10;
-    const isBiased = vGate >= 5;
+    const controls = readBoyleSmithCcdSourceControls(params);
+    const { metrics } = stepBoyleSmithCcdSource(INITIAL_BOYLE_SMITH_CCD_SOURCE_STATE, controls, 0);
 
     return [
       {
         id: "ccd-potential-wells",
         phrase:
           "potential energy minima in a semiconductor for storing discrete packets of minority charge carriers",
-        active: isBiased,
-        tone: isBiased ? "live" : "broken",
-        caption: `Gate Bias V_G=${vGate} V: MOS gate electrodes induce deep potential wells in single-conductivity silicon substrate.`,
+        active: metrics.claim1TopologyComplete,
+        tone: metrics.claim1TopologyComplete ? "live" : "broken",
+        caption: metrics.claim1TopologyComplete
+          ? "The displayed electrodes establish moving potential-energy minima in the continuous Figure 2 storage medium; absolute well depth is refused because the grant prints no operating bias."
+          : "Claim 1's single-conductivity charge-storage medium is withheld, so the potential-well transport path is not asserted.",
       },
       {
         id: "ccd-sequential-transfer",
         phrase:
           "sequentially biasing said plurality of electrodes to translate said charge packets along a continuous channel",
-        active: true,
-        tone: "live",
-        caption: `Three-Phase Clocking: Overlapping pulsed electric fields translate stored photoelectrons from well to well with CTE > 99.99%.`,
+        active: metrics.packetMotionAllowed,
+        tone: metrics.packetMotionAllowed ? "live" : "broken",
+        caption: metrics.packetMotionAllowed
+          ? `Figure 3 pulse relation satisfied: t_p / delta-t = ${controls.pulseWidthToStepRatio.toFixed(2)} > 1/3. The animation advances the printed 1101 packet pattern without inventing CTE.`
+          : "Sequential transfer is refused because the Claim 1 channel or Figure 3 overlap condition is absent.",
       },
       {
         id: "ccd-single-conductivity-channel",
         phrase:
           "said channel consisting essentially of semiconductor material of a single conductivity type",
-        active: true,
-        tone: "live",
-        caption: `Continuous Single-Conductivity Channel: Eliminates isolated p-n junction diffusions, enabling high packing density.`,
+        active: metrics.claim1TopologyComplete,
+        tone: metrics.claim1TopologyComplete ? "live" : "broken",
+        caption: metrics.claim1TopologyComplete
+          ? "Claim 1's storage medium is represented as one continuous region of a single conductivity type beneath electrodes 22, 23, and 24."
+          : "Claim 1's single-conductivity condition is withheld; no replacement material or performance consequence is fabricated.",
       },
       {
         id: "ccd-charge-detection",
@@ -425,7 +445,8 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
           "detecting means coupled to said semiconductor for converting said charge packets into output electrical signals",
         active: true,
         tone: "live",
-        caption: `Floating Diffusion Readout Node: Converts transported electron packets into low-noise voltage signals.`,
+        caption:
+          "Figure 2 terminates the displayed channel at barrier-layer output region 29 and load 30; output voltage, noise, and sensitivity remain unquantified.",
       },
     ];
   }
@@ -473,41 +494,39 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === TOWNES_ID) {
-    const pPump = params.pumpPowerWatts ?? 350;
-    const r2Pct = params.mirror2ReflectivityPct ?? 94;
-    const isLasing = pPump >= 120;
-    const isTransmitting = r2Pct < 99.5;
+    const state = stepTownesMaserTopology(params);
 
     return [
       {
-        id: "population-inversion",
+        id: "connected-communications-system",
         phrase:
-          "pumping means for establishing a population inversion between said first and second states",
-        active: isLasing,
-        tone: isLasing ? "live" : "broken",
-        caption: `Pump Power=${pPump} W: Optical excitation populates upper laser level above ground state, establishing non-equilibrium quantum optical gain.`,
+          "a monochromatic maser generator, a coherent modulated maser amplifier, a modulating source, and a detector",
+        active: state.claim1PathPresent,
+        tone: state.claim1PathPresent ? "live" : "broken",
+        caption: state.claim1PathPresent
+          ? "Claim 1's generator → modulated amplifier → detector topology is present as one continuous optical system."
+          : "Claim 1 is withheld; the display does not imply a functioning communications path.",
       },
       {
-        id: "fabry-perot-reflector-pair",
-        phrase:
-          "an optical cavity resonator containing said medium, said resonator being bounded by a pair of spaced reflecting surfaces",
-        active: true,
-        tone: "live",
-        caption: `Fabry-Pérot Resonator: Parallel plane mirrors reflect axial standing waves back and forth through the inverted gain medium.`,
+        id: "pumping-means",
+        phrase: "means arranged about said chamber for pumping said medium",
+        active: state.pumpingPathPresent,
+        tone: state.pumpingPathPresent ? "live" : "broken",
+        caption: `Normalized pumping-lamp command=${state.controls.pumpExcitationPct.toFixed(0)}%. The patent provides no pump-watt or threshold datum.`,
       },
       {
-        id: "non-reflecting-side-boundaries",
-        phrase: "the side boundaries of said resonator being substantially non-reflecting",
-        active: true,
-        tone: "live",
-        caption: `Open Cavity Mode Selection: Non-reflecting open sidewalls discard off-axis modes via high diffraction loss, isolating the fundamental TEM00 mode.`,
+        id: "focal-plane-mode-selector",
+        phrase: "an absorptive member having an opening therethrough",
+        active: state.modeSelectorOpen,
+        tone: state.modeSelectorOpen ? "live" : "held",
+        caption: `Lens 23 focuses the selected directional mode through aperture 24 in absorptive sheet 25; normalized opening=${state.controls.modeApertureOpenPct.toFixed(0)}%.`,
       },
       {
-        id: "partially-transmitting-output",
-        phrase: "at least one of said reflecting surfaces is partially transmitting",
-        active: isTransmitting,
-        tone: isTransmitting ? "live" : "held",
-        caption: `Output Coupler R2=${r2Pct}%: Extracts a collimated, diffraction-limited coherent optical beam while sustaining intra-cavity oscillation.`,
+        id: "longitudinal-field-modulation",
+        phrase: "establishing a magnetic field parallel to the longitudinal axis of said chamber",
+        active: state.zeemanModulationPathPresent,
+        tone: state.zeemanModulationPathPresent ? "live" : "held",
+        caption: `Coil 32 and source 11 provide the source-described Zeeman modulation path; normalized field command=${state.controls.modulationFieldPct.toFixed(0)}%, with field strength intentionally refused.`,
       },
     ];
   }
@@ -1041,48 +1060,46 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   if (patentId === MESTRAL_VELCRO_ID) {
     const controls = readMestralVelcroControls(params);
     const tel = stepMestralVelcroSi(controls);
-    const isThermallySet = tel.thermalRetentionFraction >= 0.7;
-    const isEngaged = controls.engagementRatio > 0.3;
-    const isWithinShearLimit = controls.appliedShearForceN <= tel.maxShearCapacity5cm2N;
 
     return [
       {
         id: "synthetic-raised-pile",
         phrase:
           "raised pile is made of artificial material, while at least part of the threads in said pile is provided near its end with material-engaging means",
-        active: isEngaged,
-        tone: isEngaged ? "held" : "broken",
-        caption: isEngaged
-          ? `Synthetic monofilament pile (${controls.hookDensityPerCm2} hooks/cm², d=${controls.filamentDiameterMm} mm) maintains upright elastic spring geometry.`
-          : "Engagement ratio too low to establish continuous multi-hook pile contact.",
+        active: tel.hookPilePresent,
+        tone: tel.hookPilePresent ? "held" : "broken",
+        caption: tel.hookPilePresent
+          ? "The source-required raised artificial pile terminates in material-engaging hooks. Display count and dimensions are illustrative, not measurements from the grant."
+          : "Claim 3 hook terminations are withheld; the attached comparison pile remains straight.",
       },
       {
         id: "thermal-shape-setting",
         phrase:
           "heat the bar 5 before the cutting of the loops 6, so that the thread extending over the bar may assume and retain the shape imparted to it by the latter",
-        active: isThermallySet,
-        tone: isThermallySet ? "held" : "broken",
-        caption: isThermallySet
-          ? `Lancet bar temperature (${controls.heatSettingTempC}°C) has thermoformed nylon loops with ${(tel.thermalRetentionFraction * 100).toFixed(1)}% permanent elastic shape memory.`
-          : `Insufficient thermal energy (${controls.heatSettingTempC}°C < 135°C): amorphous chains fail to freeze hook curvature upon cutting.`,
+        active: tel.thermalSettingPresent,
+        tone: tel.thermalSettingPresent ? "held" : "broken",
+        caption: tel.thermalSettingPresent
+          ? "Heat-before-cutting topology is present. The grant supplies no temperature or calibrated retention curve, so the exhibit does not invent either."
+          : "Claim 1 heat-setting topology is withheld; no numerical thermal response is inferred.",
       },
       {
         id: "superposed-90-engagement",
         phrase:
           "superpose two pieces of fabric of the type illustrated in Fig. 1, after having imparted to one of the two pieces a 90° angular displacement in respect to the other piece and after turning them so that their pile surfaces face each other, the pile threads 9 of one piece engaging the pile threads 9 of the other piece through the co-operating hooks 4",
-        active: isWithinShearLimit,
-        tone: isWithinShearLimit ? "held" : "broken",
-        caption: isWithinShearLimit
-          ? `90° cross-array interlock sustains applied shear (${controls.appliedShearForceN} N <= ${tel.maxShearCapacity5cm2N.toFixed(1)} N max limit; shear stress: ${tel.shearStressCapacityN_Cm2.toFixed(1)} N/cm²).`
-          : `Shear slippage: applied load (${controls.appliedShearForceN} N) exceeds maximum friction-hook capacity (${tel.maxShearCapacity5cm2N.toFixed(1)} N).`,
+        active: tel.hookInterengagementAvailable,
+        tone: tel.hookInterengagementAvailable ? "held" : "broken",
+        caption: tel.hookInterengagementAvailable
+          ? "Two pieces of the same hook fabric face one another with the upper pile rotated 90°, exactly as Figure 2 describes."
+          : "The 90° fabric arrangement remains visible, but the disabled hook topology cannot interengage.",
       },
       {
         id: "peeling-anisotropy-yield",
         phrase:
           "in the case of any straining, the fastening arrangement will yield before any damage is inflicted on the fabric",
-        active: tel.forceAnisotropyRatio > 5,
-        tone: tel.forceAnisotropyRatio > 5 ? "held" : "live",
-        caption: `Peel fracture anisotropy active: steady peel requires only ${tel.totalPeelForceN.toFixed(2)} N (anisotropy ratio: ${tel.forceAnisotropyRatio.toFixed(1)}x over shear), peeling cleanly without fiber damage.`,
+        active: false,
+        tone: "live",
+        caption:
+          "The grant states this qualitative yielding behavior but supplies no width, engagement count, material law, contact curve, or test data from which a damage limit or peel force can be calculated.",
       },
     ];
   }
@@ -1262,66 +1279,37 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === NOYCE_IC_ID) {
-    const vr = params.reverseBias ?? 5;
-    const tox = params.oxideThickness ?? 0.5;
+    const state = stepNoycePlanarLeadTopology(readNoycePlanarLeadControls(params));
 
     return [
       {
         id: "passivating-oxide",
         phrase:
           "insulating surface layer consisting essentially of oxide of the same semiconductor extending across the junctions",
-        active: tox >= 0.2,
-        tone: "held",
-        caption: `t_ox = ${tox} µm: Thermally grown SiO2 passivates silicon surface and insulates P-N junction boundaries.`,
+        active: state.oxideCrossesJunction,
+        tone: state.oxideCrossesJunction ? "held" : "broken",
+        caption: state.oxideCrossesJunction
+          ? `The retained ${state.controls.oxideThicknessUm.toFixed(1)} µm source-example oxide crosses the surface-reaching junction and supports the lead.`
+          : "Claim-topology probe: the oxide bridge is withheld, so the source no longer establishes an insulated crossing.",
       },
       {
         id: "adherent-metal-leads",
         phrase:
           "leads in the form of vacuum-deposited or otherwise formed metal strips extending over and adherent to the insulating oxide layer",
-        active: true,
-        tone: "live",
-        caption:
-          "Evaporated aluminum interconnect strips run directly over oxide bridges, interconnecting circuit elements without shorting.",
+        active: state.adherentMetalLeadPresent,
+        tone: state.contactsRemainSeparated ? "live" : "broken",
+        caption: state.contactsRemainSeparated
+          ? "The deposited strip remains adherent to the oxide bridge and fits through the contact gap without touching the C-shaped base contact."
+          : "The displayed strip lacks a valid insulated, gap-clear route; no delay or short-circuit magnitude is invented.",
       },
       {
         id: "dished-junctions",
         phrase:
           "dished, P-N junctions each having an edge extending to said surface and there surrounding and defining an enclosed region of said semiconductor",
-        active: vr >= 1,
-        tone: "live",
-        caption: `VR = ${vr} V: Planar diffused junctions surface-terminate under oxide; reverse bias isolates adjacent component tubs.`,
-      },
-    ];
-  }
-
-  if (patentId === KWOLEK_KEVLAR_ID) {
-    const conc = params.polymerConcentrationPct ?? 18.5;
-    const draw = params.drawRatio ?? 6.5;
-
-    return [
-      {
-        id: "anisotropic-dope",
-        phrase: "Optically anisotropic dope consisting essentially of",
-        active: conc >= 10,
-        tone: "live",
-        caption: `Concentration = ${conc} wt%: Liquid-crystalline nematic domains form in sulfuric acid spin dope.`,
-      },
-      {
-        id: "viscosity-discontinuity",
-        phrase:
-          "decrease in viscosity with increasing concentration represented by a sharp discontinuity in the slope of the plot of the dope viscosity vs. polymer concentration curve without the formation of a solid phase",
-        active: conc >= 15 && conc <= 22,
+        active: true,
         tone: "live",
         caption:
-          "Nematic alignment reduces shear viscosity above critical concentration threshold, facilitating extrusion.",
-      },
-      {
-        id: "axial-alignment",
-        phrase:
-          "liquid-crystalline domains undergo spontaneous, nearly perfect axial alignment, yielding as-spun fibers of exceptionally high tensile modulus",
-        active: draw >= 4.0,
-        tone: "live",
-        caption: `Draw ratio = ${draw}: Spin-stretch elongational flow aligns rigid PPTA rods parallel to filament axis.`,
+          "Junctions 3 and 4 terminate at surface 2 as the source describes. The grant prints no bias voltage, depletion width, or breakdown margin for this illustration.",
       },
     ];
   }
@@ -2391,8 +2379,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-6331181-davinci") {
-    const ratio = params.motionScaleRatio ?? 3.0;
-    const compatibilityPresent = (params.tremorFilterEnabled ?? 1) > 0.5;
+    const interfaceTopology = resolveDaVinciInterfaceTopology(readDaVinciInterfaceControls(params));
     return [
       {
         id: "robotic-surgical-tool",
@@ -2405,11 +2392,15 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
       {
         id: "processor-which-directs-movement",
         phrase: "processor which directs movement",
-        active: compatibilityPresent,
-        tone: "live",
-        caption: compatibilityPresent
-          ? `Compatibility identifier is present; the ${ratio.toFixed(0)}-entry illustrative offset control represents tool-specific data available to the processor.`
-          : "Compatibility identifier is absent, so the source-facing processor/tool boundary is not satisfied.",
+        active: interfaceTopology.processorCanConfigureTool,
+        tone: interfaceTopology.processorCanConfigureTool ? "held" : "broken",
+        caption: interfaceTopology.processorCanConfigureTool
+          ? "Compatibility identifier, calibration record, and engagement signal are present, so the source-described processor/tool configuration boundary is represented. No motion scale, speed, force, or stability value is asserted."
+          : interfaceTopology.status === "incompatible"
+            ? "Compatibility identifier is absent, so the source-facing processor/tool boundary is not satisfied."
+            : interfaceTopology.status === "calibration-record-missing"
+              ? "The calibration record is unavailable, so the source-facing processor/tool configuration boundary is incomplete."
+              : "The engagement signal is unconfirmed, so the source-facing processor/tool configuration boundary is incomplete.",
       },
     ];
   }
@@ -2449,51 +2440,79 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
 
   if (patentId === KAMEN_TRANSPORTER_ID) {
     const controls = readKamenTransporterControls(params);
-    const tel = stepKamenTransporterSi(controls);
+    const topology = stepKamenTransporterTopology(controls);
     return [
       {
         id: "dynamically-maintaining-stability",
         phrase: "dynamically maintaining stability",
-        active: tel.isBalancing && !tel.pitchRefusal,
-        tone: tel.pitchRefusal ? "broken" : tel.isBalancing ? "held" : "live",
-        caption: tel.pitchRefusal
-          ? "Safety Refusal: pitch tilt exceeded maximum dynamic balance envelope (25°)."
-          : tel.isBalancing
-            ? `Active 2-wheel inverted pendulum equilibrium held (torque=${tel.balanceTorqueNm.toFixed(1)} N·m, speed=${tel.forwardVelocityMs.toFixed(2)} m/s).`
-            : "Operating in 4-wheel static stability support mode.",
+        active: topology.balanceLoopActive,
+        tone: topology.balanceLoopActive ? "held" : "broken",
+        caption: topology.balanceLoopActive
+          ? "Claim 22 names a balance mode in which the ground-contacting wheels are controlled to maintain fore-and-aft balance. The grant supplies no torque, gain, speed, sensor rate, or recovery margin."
+          : "The balance-loop topology is withheld for this claim comparison; the exhibit does not predict a fall or a stability limit.",
       },
       {
         id: "cluster-of-wheels",
         phrase: "cluster of wheels",
-        active: tel.isClimbing || controls.operatingMode === "stair_climb",
-        tone: tel.isClimbing ? "live" : "held",
-        caption: `Planetary cluster angle = ${tel.clusterAngleDeg.toFixed(0)}°; ${
-          tel.isClimbing
-            ? "actively rotating carrier to hoist vehicle over stair risers."
-            : "cluster locked for rolling ground contact."
-        }`,
+        active: topology.clusterTopologyActive,
+        tone: topology.clusterTopologyActive
+          ? topology.stairSequenceActive
+            ? "live"
+            : "held"
+          : "broken",
+        caption: topology.clusterTopologyActive
+          ? `Claims ${topology.sourceClaimNumbers.join(", ")} show a cluster-wheel arrangement around a central axis with separately controlled ground-contacting wheels; no gear train is asserted. ${topology.stairSequenceActive ? "The selected state makes the transfer/climb ordering visible without predicting obstacle geometry or motion." : "The ground-contact relation is shown without a climbing-performance prediction."}`
+          : "The cluster-wheel topology is withheld for this claim comparison; no obstacle-traversal prediction is inferred.",
+      },
+      {
+        id: "coordination-control-means",
+        phrase: "coordination control means",
+        active: topology.clusterTopologyActive && topology.stairSequenceActive,
+        tone: topology.clusterTopologyActive && topology.stairSequenceActive ? "live" : "broken",
+        caption:
+          topology.clusterTopologyActive && topology.stairSequenceActive
+            ? "Claim 26 orders start, next-pair placement, weight transfer, climb, and return toward balance. This is a qualitative state sequence, not a timed path or drive calculation."
+            : "The coordination-control sequence is not represented in the selected claim-reading state.",
       },
     ];
   }
 
   if (patentId === "us-4341502-makino-scara") {
-    const theta1 = params.firstLinkAngleDeg ?? 32;
-    const theta4 = params.fourthLinkAngleDeg ?? -38;
+    const pose = stepMakinoScaraTopology(params);
+    const invariants = measureMakinoScaraInvariants(pose);
+    const closed = invariants.fixedMemberError < 1e-10;
+    const topologyLabel =
+      pose.topology === "claim-1-concentric"
+        ? "Claim 1 coaxial parallelogram"
+        : pose.topology === "claim-3-offset"
+          ? "Claim 3 fixed-length offset chain"
+          : "Claim 6 Y-link and rigid tool carrier";
     return [
       {
         id: "four-link-mechanism",
         phrase: "four-link mechanism",
-        active: true,
-        tone: "live",
-        caption: `θ1=${theta1}°, θ4=${theta4}°: Parallel-link SCARA configuration maintaining high vertical rigidity with planar compliance.`,
+        active: closed,
+        tone: closed ? "held" : "broken",
+        caption: `${topologyLabel}: all source-named rigid members close with ${invariants.fixedMemberError.toExponential(1)} normalized endpoint error. This is a geometric exhibit, not an SI stiffness claim.`,
       },
       {
-        id: "assembly-robot",
-        phrase: "assembly robot",
-        active: true,
-        tone: "held",
+        id: "belt-devices",
+        phrase: "belt devices 11, 12",
+        active: pose.beltTransmissionAvailable,
+        tone: pose.beltTransmissionAvailable ? "live" : "held",
+        caption: pose.beltTransmissionAvailable
+          ? `Claims 2/5 transmission active: motor 10 drives two connected belt runs to tool attitude φ=${((pose.toolAttitudeRad * 180) / Math.PI).toFixed(0)}° without changing the solved tool point.`
+          : "Claim 6 does not use the belt-attitude extension; its two-pivot tool 13 is instead held at fixed relative alignment by Y-link 14.",
+      },
+      {
+        id: "y-shaped-link-mechanism",
+        phrase: "Y-shaped link mechanism 14",
+        active: pose.topology === "claim-6-y-link",
+        tone: pose.topology === "claim-6-y-link" ? "live" : "held",
         caption:
-          "Selective Compliance Assembly Robot Arm architecture designed for high-speed precision component insertion.",
+          pose.topology === "claim-6-y-link"
+            ? `Y-link 14 connects the first outer axis, second-motor shaft, and third tool axis; the two tool pivots remain ${invariants.toolPivotGap.toFixed(2)} normalized units apart with φ fixed at 0°.`
+            : "The selected Claim 1/3 form uses one distal tool axis; choose Claim 6 to inspect the separated tool pivots and three-arm Y-link.",
       },
     ];
   }
@@ -2505,26 +2524,29 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
       {
         id: "left-and-right-hand-threaded",
         phrase: "left and right hand threaded ball screw",
-        active: true,
-        tone: "live",
-        caption: `The shared 5 mm-lead kernel gives a ${(state.jawOpeningM * 1000).toFixed(1)} mm source-typical jaw gap while equal-and-opposite hands preserve the ideal midpoint.`,
+        active: state.claim1TopologyPresent,
+        tone: state.claim1TopologyPresent ? "live" : "broken",
+        caption: state.claim1TopologyPresent
+          ? `The shared 5 mm-lead kernel gives a ${(state.jawOpeningM * 1000).toFixed(1)} mm source-typical jaw gap while equal-and-opposite hands preserve the ideal midpoint. ${state.owners.helical} owns the generic opposed-helical constraint.`
+          : "Claim 1 comparison state: the opposed screw and its travelling hands are withheld rather than rendered at a misleading zero-gap pose.",
       },
       {
         id: "substantially-symmetrical",
         phrase: "substantially symmetrical to said screw mid portion",
-        active: Math.abs(state.symmetricMidpointM) < 1e-12,
-        tone: "held",
+        active: state.claim1TopologyPresent && Math.abs(state.symmetricMidpointM) < 1e-12,
+        tone: state.claim1TopologyPresent ? "held" : "broken",
         caption:
           "The display enforces ideal symmetric kinematics only. The source reports repeatability but withholds backlash, stiffness, and loading measurements needed for a physical error budget.",
       },
       {
         id: "removably-mounting-finger",
         phrase: "removably mounting each said finger",
-        active: fingersRetained,
-        tone: fingersRetained ? "held" : "broken",
-        caption: fingersRetained
-          ? "Claims 13–15's rail/channel, dovetail, and catch arrangement is represented as a retained finger interface."
-          : "Finger-change probe: the source's auxiliary-fixture sequence has released the illustrative fingers; no grasp or contact result is asserted.",
+        active: state.claim1TopologyPresent && fingersRetained,
+        tone: state.claim1TopologyPresent && fingersRetained ? "held" : "broken",
+        caption:
+          state.claim1TopologyPresent && fingersRetained
+            ? "Claims 13–15's rail/channel, dovetail, and catch arrangement is represented as a retained finger interface."
+            : "Finger-change probe: the source's auxiliary-fixture sequence has released the illustrative fingers; no grasp or contact result is asserted.",
       },
       {
         id: "rotation-signal",
@@ -2532,6 +2554,15 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: true,
         tone: "live",
         caption: `The source's eight pegs yield an encoder teaching phase of ${state.encoderCountModulo.toFixed(2)} of 8. It is not promoted to a complete servo or repeatability model.`,
+      },
+      {
+        id: "transverse-frame-motion",
+        phrase: "means for reciprocally moving said frame in a transverse direction",
+        active: state.claim1TopologyPresent,
+        tone: state.claim1TopologyPresent ? "held" : "broken",
+        caption: state.claim1TopologyPresent
+          ? `${state.owners.transverse} owns the source-described guided stage at normalized coordinate ${state.transverseOffsetNormalized.toFixed(2)}. The grant prints no stroke or actuator card, so no SI displacement or force is inferred.`
+          : "Claim 1's supporting gripper topology is withheld, so the dependent Claim 16 stage is not presented as a functioning end effector.",
       },
     ];
   }
@@ -2570,17 +2601,17 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: pose.tachometerDampingEnabled,
         tone: pose.tachometerDampingEnabled ? "held" : "broken",
         caption: pose.tachometerDampingEnabled
-          ? "Claim 11 probe: the source-described relative-speed path is enabled as a damping topology, without a numerical speed or stability prediction."
-          : "The relative-speed damping probe is off; the source’s tachometer bridge relationship is not applied to the normalized display.",
+          ? "Claim 11 probe: the source-described relative-speed path is present, but this static exhibit does not invent a speed history, damping ratio, or stability prediction."
+          : "The relative-speed probe is off; the source’s tachometer bridge branch is omitted from the topology comparison.",
       },
       {
         id: "limiter-210",
         phrase: "limiter 210",
-        active: pose.limiterActive,
-        tone: pose.limiterActive ? "live" : "held",
-        caption: pose.limiterActive
-          ? "Claims 10 and 12 probe: the normalized command is clipped at the exhibit boundary, not at a source-derived voltage or motor-speed value."
-          : "The source describes limiter 210; it remains inactive until the illustrative mismatch exceeds the normalized display limit.",
+        active: pose.limiterEnabled,
+        tone: pose.limiterEnabled ? "held" : "broken",
+        caption: pose.limiterEnabled
+          ? "Claims 10 and 12 probe: limiter 210 is present as a source-described abnormal-condition path. No clipping is calculated because the grant gives no universal threshold for this static pose."
+          : "The limiter branch is omitted from the topology comparison; no voltage, speed, or safety outcome is inferred.",
       },
     ];
   }
@@ -2625,40 +2656,49 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-3081379-lemelson-machine-vision") {
-    const controls = readLemelsonMachineVisionControls(params);
-    const state = stepLemelsonMachineVisionSi(controls);
+    const state = stepLemelsonMachineVisionTopology(params);
     return [
       {
         id: "electron-beam-scanning",
         phrase:
           "means for causing an electron beam to scan an area of an image field in a single frame sweep",
-        active: true,
-        tone: "live",
-        caption: `Raster scan frequency: ${state.metrics.horizontalScanFreqHz} Hz (${controls.scanLineCount} lines @ ${controls.frameRateHz} fps, line duration ${state.metrics.linePeriodUs.toFixed(2)} µs).`,
+        active: state.scanPathActive,
+        tone: state.scanPathActive ? "live" : "broken",
+        caption: state.scanPathActive
+          ? "The source-described scan path is present as the first branch of the normalized inspection signal topology; no beam velocity, image-field dimension, or frame rate is asserted."
+          : "The scan path is withheld, so the claim-reading comparison cannot form a scanned picture-signal path.",
       },
       {
         id: "gated-analyzing-circuit",
         phrase:
           "analyzing circuit connected to a gating means in the output of a circuit in which said picture signal is generated",
-        active: true,
-        tone: "live",
-        caption: `Threshold comparator level: ${controls.thresholdVoltage.toFixed(2)} V slicing video peak (${state.metrics.videoPeakVoltageV.toFixed(2)} V), pulse width ${state.metrics.pulseWidthUs.toFixed(2)} µs.`,
+        active: state.gatedPictureSignal && state.analyzingCircuitActive,
+        tone: state.gatedPictureSignal && state.analyzingCircuitActive ? "live" : "broken",
+        caption:
+          state.gatedPictureSignal && state.analyzingCircuitActive
+            ? "The selected topology carries the scanned picture signal through a synchronized gate to the analyzing circuit. Threshold, voltage, pulse width, and signal-response values are not published here."
+            : "The gate or analyzing-circuit relation is withheld for this claim-reading comparison.",
       },
       {
         id: "dimensional-measurement-slicing",
         phrase:
           "inspecting a predetermined area of said image field by the analysis of that portion of the picture signal",
-        active: true,
-        tone: state.metrics.isDefective ? "broken" : "live",
-        caption: `Measured dimension: ${state.metrics.measuredPartWidthMm.toFixed(1)} mm (nominal ${(controls.nominalPartWidthM * 1000).toFixed(1)} mm, deviation ${state.metrics.dimensionalErrorMm.toFixed(2)} mm, status: ${state.metrics.isDefective ? "DEFECT DETECTED" : "WITHIN TOLERANCE"}).`,
+        active: state.inspectionSignalPresent && state.analyzingCircuitActive,
+        tone: state.inspectionSignalPresent && state.analyzingCircuitActive ? "live" : "broken",
+        caption:
+          state.inspectionSignalPresent && state.analyzingCircuitActive
+            ? "The normalized path identifies an inspected picture-signal portion and an analyzing circuit. It does not calculate a dimension, tolerance, or defect decision."
+            : "An inspection signal or analyzing-circuit relation is withheld, so this comparison does not report a measurement outcome.",
       },
       {
         id: "solenoid-rejection-gate",
         phrase:
           "programming means being synchronized in its operation for automatically operating said gating means",
-        active: state.metrics.isDefective,
-        tone: state.metrics.isDefective ? "live" : "held",
-        caption: `Solenoid reject force: ${state.metrics.solenoidForceN.toFixed(2)} N (response ${state.metrics.gateResponseTimeMs.toFixed(1)} ms, coil current ${controls.gateSolenoidCurrentA.toFixed(1)} A).`,
+        active: state.controlOutputReady,
+        tone: state.controlOutputReady ? "live" : "held",
+        caption: state.controlOutputReady
+          ? "The programming/gating relationship is connected after the analyzing circuit in the source topology. It does not assert a coil current, actuator force, response time, or rejection outcome."
+          : "The normalized control-output path is held because its upstream signal relation is incomplete.",
       },
     ];
   }
@@ -2671,34 +2711,48 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         id: "raster-sync-generation",
         phrase:
           "means for generating synchronizing signals to synchronize the television raster scan",
-        active: true,
-        tone: "live",
-        caption: `NTSC horizontal sweep: ${metrics.horizontalSyncFreqHz} Hz (line period ${metrics.horizontalPeriodMicrosec.toFixed(1)} µs), vertical field: ${metrics.verticalFreqHz} Hz (${metrics.verticalPeriodMs.toFixed(1)} ms).`,
+        active: metrics.claim1TopologyActive,
+        tone: metrics.claim1TopologyActive ? "live" : "held",
+        caption: metrics.claim1TopologyActive
+          ? `Horizontal sweep: ${metrics.horizontalSyncFreqHz} Hz (line period ${metrics.horizontalPeriodMicrosec.toFixed(1)} µs), vertical field: ${metrics.verticalFreqHz} Hz (${metrics.verticalPeriodMs.toFixed(1)} ms).`
+          : "Claim 1 synchronization topology is withheld.",
       },
       {
         id: "rc-delay-manipulation",
         phrase: "means for manipulating the position of the 'dots' on the screen of said receiver",
-        active: true,
-        tone: "live",
-        caption: `Player 1 RC delay: ${metrics.p1DelayHMicrosec.toFixed(1)} µs horizontal, ${metrics.p1DelayVMs.toFixed(2)} ms vertical; Player 2: ${metrics.p2DelayHMicrosec.toFixed(1)} µs, ${metrics.p2DelayVMs.toFixed(2)} ms.`,
+        active: metrics.claim1TopologyActive,
+        tone: metrics.claim1TopologyActive ? "live" : "held",
+        caption: metrics.claim1TopologyActive
+          ? `Dot 20 delay: ${metrics.p1DelayHMicrosec.toFixed(1)} µs horizontal, ${metrics.p1DelayVMs.toFixed(2)} ms vertical; dot 20₁: ${metrics.p2DelayHMicrosec.toFixed(1)} µs, ${metrics.p2DelayVMs.toFixed(2)} ms.`
+          : "Claim 1 participant position controls are withheld.",
       },
       {
         id: "coincidence-gating",
         phrase:
           "means for denoting coincidence when a 'dot' generated by said first generator is positioned over a 'dot'",
-        active: metrics.coincidenceActive || metrics.lightGunCoincidence,
-        tone: metrics.coincidenceActive || metrics.lightGunCoincidence ? "live" : "held",
-        caption: metrics.coincidenceActive
-          ? `PADDLE-BALL COINCIDENCE ACTIVE: Diode AND gate triggered, horizontal velocity reflected (v_x = ${metrics.ballVx.toFixed(2)} screen/s, English spin = ${controls.englishControl.toFixed(2)}).`
-          : `Coincidence gate monitoring scan overlap (Ball at [${metrics.ballX.toFixed(2)}, ${metrics.ballY.toFixed(2)}]).`,
+        active:
+          metrics.claim1TopologyActive &&
+          (metrics.dotCoincidenceActive || metrics.lightGunCoincidence),
+        tone:
+          metrics.claim1TopologyActive &&
+          (metrics.dotCoincidenceActive || metrics.lightGunCoincidence)
+            ? "live"
+            : "held",
+        caption: !metrics.claim1TopologyActive
+          ? "The prerequisite Claim 1 dot-generation path is withheld."
+          : metrics.dotCoincidenceActive
+            ? "DOT COINCIDENCE ACTIVE: outputs 94 and 98 overlap, firing the Figure 5E SCR crowbar latch that suppresses the first dot until reset switch 26 is operated after separation."
+            : `Coincidence gate monitoring dots 20 and 20₁ at [${metrics.p1X.toFixed(2)}, ${metrics.p1Y.toFixed(2)}] and [${metrics.p2X.toFixed(2)}, ${metrics.p2Y.toFixed(2)}].`,
       },
       {
         id: "rf-carrier-coupling",
         phrase:
           "means for directly coupling the generated signals only to said television receiver",
-        active: true,
-        tone: "live",
-        caption: `Modulated VHF Channel ${controls.rfChannel} carrier at ${metrics.rfCarrierFreqMHz.toFixed(2)} MHz, output power ${metrics.rfAntennaPowerNanoWatts.toFixed(1)} nW into 300-ohm antenna twin lead.`,
+        active: metrics.directCouplingActive,
+        tone: metrics.directCouplingActive ? "live" : "held",
+        caption: metrics.directCouplingActive
+          ? `Generated video is coupled by shielded lead 12 to receiver antenna terminals 19. Channel ${controls.rfChannel} at ${metrics.rfCarrierFreqMHz.toFixed(2)} MHz is an explicitly labelled modern frequency scenario; the grant prints no RF output power.`
+          : "Claim 1 direct receiver coupling is withheld.",
       },
     ];
   }
@@ -2758,8 +2812,8 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         tone: controls.engineRunning === 1 ? "live" : "held",
         caption:
           controls.engineRunning === 1
-            ? `COLLECTIVE-THROTTLE CORRELATION ACTIVE: Blade pitch ${controls.collectivePitchDeg.toFixed(1)}° mechanically commands ${metrics.effectiveThrottlePercent.toFixed(1)}% engine throttle, delivering ${(metrics.mainRotorPowerWatts / 1000.0).toFixed(1)} kW.`
-            : `Engine stopped (autorotation state); freewheeling sprag clutch disengaged.`,
+            ? `SOURCE RELATIONSHIP ACTIVE: increasing the selected collective raises the linked engine-power command. The displayed ${controls.collectivePitchDeg.toFixed(1)}° / ${metrics.effectiveThrottlePercent.toFixed(1)}% scenario values are not printed calibrations.`
+            : `Engine stopped in the teaching scenario; the source-disclosed automatic one-way drive permits the rotor to overrun the engine.`,
       },
       {
         id: "anti-torque-tail-rotor",
@@ -2767,14 +2821,14 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
           "auxiliary rotor having a plane of rotation at right angles to the plane of rotation of said main rotor",
         active: metrics.tailRotorThrustNewtons > 50,
         tone: metrics.tailRotorThrustNewtons > 50 ? "live" : "held",
-        caption: `ANTI-TORQUE EQUILIBRIUM: Tail rotor generating ${metrics.tailRotorThrustNewtons.toFixed(1)} N thrust across 4.8m tail boom, balancing ${metrics.mainRotorTorqueNm.toFixed(1)} N·m main rotor torque (net yaw: ${metrics.netYawMomentNm.toFixed(1)} N·m).`,
+        caption: `SOURCE TOPOLOGY ACTIVE: the orthogonal variable-pitch auxiliary rotor provides directional control. The displayed ${metrics.tailRotorThrustNewtons.toFixed(1)} N and ${metrics.netYawMomentNm.toFixed(1)} N·m are modern-scenario outputs, not grant measurements.`,
       },
       {
         id: "universal-blade-connection",
         phrase: "universal connection between the inner end of each blade and said shaft",
         active: metrics.tipSpeedMs > 50,
         tone: "live",
-        caption: `Flapping and hunting hinges active; main blade tip velocity ${metrics.tipSpeedMs.toFixed(1)} m/s (Mach ${metrics.tipMachNumber.toFixed(2)}), vertical lift ${metrics.mainRotorThrustNewtons.toFixed(1)} N.`,
+        caption: `The disclosed universal blade connections permit pitch change and limited articulated motion. Tip speed ${metrics.tipSpeedMs.toFixed(1)} m/s and lift ${metrics.mainRotorThrustNewtons.toFixed(1)} N belong only to the normalized teaching scenario.`,
       },
       {
         id: "resilient-torque-links",
@@ -2878,10 +2932,9 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
     patentId === "us-4098001-watson-rcc" ||
     patentId === "us-4098001-watson-remote-center-compliance"
   ) {
-    const contactFraction = params.lateralContactFraction ?? 0.62;
-    const mismatchFraction = params.axisMismatchFraction ?? 0.44;
-    const isRemoteCenter = (params.remoteCenterTopology ?? 1) >= 0.5;
-    const hasAntiTwist = (params.antiTwistConstraint ?? 1) >= 0.5;
+    const pose = stepWatsonRemoteCenterComplianceTopology(params);
+    const isRemoteCenter = pose.remoteCenterTopology;
+    const hasAntiTwist = pose.antiTwistConstraint;
     return [
       {
         id: "remote-center-compliance",
@@ -2895,16 +2948,16 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
       {
         id: "rotational-elements",
         phrase: "rotational interconnection elements",
-        active: isRemoteCenter && mismatchFraction > 0.02,
+        active: isRemoteCenter && pose.rotationPhase > 0.02,
         tone: "live",
-        caption: `Normalized axis-mismatch cue ${(mismatchFraction * 100).toFixed(0)}%: the exhibit makes the source's radial-element orientation legible without inventing torque or stiffness.`,
+        caption: `Figure 5 rotation phase ${(pose.rotationPhase * 100).toFixed(0)}% with ${(pose.remainingAxisMismatch * 100).toFixed(0)}% normalized axis mismatch remaining: the radial-element pose is shown without inventing torque or stiffness.`,
       },
       {
         id: "translational-elements",
         phrase: "translational interconnection elements",
-        active: contactFraction > 0.02,
+        active: pose.translationPhase > 0.02,
         tone: "live",
-        caption: `Normalized chamfer-contact cue ${(contactFraction * 100).toFixed(0)}%: the connected axial elements move with the intermediate member; no force or dimensional response is asserted.`,
+        caption: `Figure 4 translation phase ${(pose.translationPhase * 100).toFixed(0)}%: axial elements 56/58/60 remain connected between fixed lip 54 and moving ring 22; no force or dimensional response is asserted.`,
       },
       {
         id: "torque-resistant-means",
@@ -2919,31 +2972,37 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-3858581-kamen-medication-injection-device") {
-    const pulseCount = params.pulseCount ?? 12;
-    const motorRunning = (params.motorRunning ?? 1) >= 0.5;
+    const pulseTarget = Math.max(1, Math.min(99, Math.round(params.selectedPulseCount ?? 27)));
+    const pulseLoopPresent = (params.claim1PulseLoopPresent ?? 1) >= 0.5;
+    const clutchEngaged = (params.clutchEngaged ?? 1) >= 0.5;
+    const running = (params.running ?? 1) >= 0.5;
     return [
       {
         id: "lead-screw",
         phrase: "uniform-pitch lead screw",
-        active: true,
-        tone: "live",
-        caption:
-          "Claim 1 lead screw: rotation of the screw advances the syringe plunger axially by a fixed displacement per turn.",
+        active: clutchEngaged,
+        tone: clutchEngaged ? "live" : "held",
+        caption: clutchEngaged
+          ? "Claim 1 screw path complete: motor 24 drives uniform-pitch screw 22; guided follower 18 translates rather than co-rotating. The unprinted pitch remains symbolic."
+          : "Claim 3 clutch 136 is released: the motor rotor may turn while lead screw 22, follower 18, and plunger 14 hold position.",
       },
       {
         id: "striker-switch",
         phrase: "radially oriented striker mounted on said lead screw",
-        active: motorRunning,
-        tone: motorRunning ? "live" : "held",
-        caption: `Pulse counting switch active (${pulseCount} pulses recorded): striker trips switch once per screw revolution.`,
+        active: pulseLoopPresent && clutchEngaged && running,
+        tone: pulseLoopPresent ? (clutchEngaged && running ? "live" : "held") : "broken",
+        caption: pulseLoopPresent
+          ? "Striker 80 is rigidly mounted to screw 22 and physically reaches switch arm 82 once per complete screw revolution."
+          : "Claim 1 probe withheld: striker 80, switch 84, and their counted electrical event are absent from the control path.",
       },
       {
         id: "motor-control",
         phrase: "pulse-counting control circuit",
-        active: pulseCount > 0,
-        tone: "live",
-        caption:
-          "Claim 1 pulse counter stops the motor upon reaching the predetermined pulse count.",
+        active: pulseLoopPresent,
+        tone: pulseLoopPresent ? "live" : "broken",
+        caption: pulseLoopPresent
+          ? `Counters 114/116 are wired back to motor-off switch 126 and stop the motor at the selected ${pulseTarget}-pulse integer count.`
+          : "With the pulse loop withheld, the model refuses to imply that elapsed time controls the same displacement.",
       },
     ];
   }
@@ -3048,22 +3107,24 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: tel.claim1RoutingProbe,
         tone: tel.claim1RoutingProbe ? "live" : "broken",
         caption: tel.claim1RoutingProbe
-          ? `The admitted source topology has 4 cable ends per digit and 12 across the three-digit hand; the representative digit's peak visitor-declared tension is ${Math.max(...tel.tendonTensionsN).toFixed(1)} N.`
+          ? `${tel.owners.topology} admits 4 cable ends per digit and 12 across the three-digit hand; the representative digit's peak visitor-declared tension is ${Math.max(...tel.tendonTensionsN).toFixed(1)} N.`
           : "The four-cable/three-joint source route was not admitted.",
       },
       {
         id: "salisbury-base-paired-pull",
         phrase: "There is no direct cable connection to the base joint 40 at Axis 1.",
-        active: !tel.refused,
-        tone: "live",
-        caption: `${tel.pullPattern}. The Figure 3 equations currently return τ₁=${tel.jointTorquesNm[0].toFixed(3)}, τ₂=${tel.jointTorquesNm[1].toFixed(3)}, and τ₃=${tel.jointTorquesNm[2].toFixed(3)} N·m.`,
+        active: tel.sourceLawApplicable && !tel.refused,
+        tone: tel.sourceLawApplicable && !tel.refused ? "live" : "broken",
+        caption: tel.sourceLawApplicable
+          ? `${tel.pullPattern}. The Figure 3 equations currently return τ₁=${tel.jointTorquesNm[0].toFixed(3)}, τ₂=${tel.jointTorquesNm[1].toFixed(3)}, and τ₃=${tel.jointTorquesNm[2].toFixed(3)} N·m.`
+          : "The Claim 1 four-cable route is withheld, so the Figure 3 torque map is not applied to the preserved raw controls.",
       },
       {
         id: "salisbury-strain-tension",
         phrase:
           "measure the strain on the deflecting member 64, which is a function of the tension on the cable 33",
-        active: !tel.refused,
-        tone: "live",
+        active: tel.claim1RoutingProbe && !tel.refused,
+        tone: tel.claim1RoutingProbe && !tel.refused ? "live" : "broken",
         caption:
           "The source discloses two strain-gauge layouts and one sensor per cable, but no calibration curve, range, accuracy, or bandwidth from which to fabricate sensor telemetry.",
       },
@@ -3098,7 +3159,9 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         tone: state.lockingSlideEngaged ? "held" : "broken",
         caption: state.lockingSlideEngaged
           ? "The shared source-topology kernel has shifted the slide to its capture state; no historical stroke is asserted."
-          : "The aperture remains aligned for admission/release, so the slide has not entered its source-described capture state.",
+          : state.apertureAligned
+            ? "Aperture 34 is aligned with opening 30 for admission or release; no historical stroke is asserted."
+            : "Slide 33 is between terminal positions. The interlock refuses tool-base motion until aperture 34 is fully aligned.",
       },
       {
         id: "milacron-wedge-ramps",
@@ -3108,6 +3171,18 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         caption: state.claimFourRampCaptured
           ? "Claim 4 probe: the selected T-member crossbar and bifurcated slide are in the documented capture geometry."
           : "Claim 4 is not currently in its selected ramp-and-T capture state; no clamping-force result is inferred.",
+      },
+      {
+        id: "milacron-separation-interlock",
+        phrase:
+          "slide 33 must be shifted to the phantom position shown in order to align the slide aperture 34 with the T-member 35 for tool separation to occur",
+        active: !state.registrationMotionBlocked,
+        tone: state.registrationMotionBlocked ? "broken" : "held",
+        caption: state.registrationMotionBlocked
+          ? "The requested base motion is physically interlocked: the effective base remains seated until aperture 34 is aligned."
+          : state.releasePermitted
+            ? "Aperture 34 is aligned around the admitted member, so separation is permitted."
+            : "No impossible separation has been requested; the effective base pose remains consistent with the slide state.",
       },
       {
         id: "milacron-bistable-failsafe",
@@ -3131,39 +3206,48 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
   }
 
   if (patentId === "us-4575330-hull-stereolithography") {
-    const controls = readHullStereolithographyControls(params);
-    const tel = stepHullStereolithographySi(controls);
+    const state = stepHullStereolithographySi(readHullStereolithographyControls(params));
 
     return [
       {
         id: "hull-layer-by-layer-buildup",
         phrase:
           "each lamina being integrated with the previous lamina to build up the desired three-dimensional object",
-        active: tel.isCured && tel.interlayerAdhesionRatio >= 1.0,
-        tone: tel.isCured && tel.interlayerAdhesionRatio >= 1.0 ? "held" : "broken",
-        caption: `Cure depth is ${tel.cureDepthUm.toFixed(1)} µm vs layer step ${controls.layerThicknessUm} µm (interlayer ratio ${tel.interlayerAdhesionRatio.toFixed(2)}x). Monolithic interlayer adhesion is ${tel.interlayerAdhesionRatio >= 1.0 ? "active" : "delaminated"}.`,
+        active: state.laminaeRemainIntegrated && state.visibleLaminaCount > 1,
+        tone: state.laminaeRemainIntegrated && state.visibleLaminaCount > 1 ? "held" : "broken",
+        caption:
+          state.visibleLaminaCount > 1
+            ? `The exhibit shows ${state.visibleLaminaCount} touching cross-sectional laminae, all carried by platform 29. Their geometry demonstrates the claimed build topology; adhesion strength is not computed.`
+            : "One supported cross-section is shown. Increase the illustrative lamina count to inspect the successive integrated stack.",
       },
       {
         id: "hull-synergistic-stimulation",
         phrase:
           "application of synergistic stimulation, such as ultraviolet light, to a fluid medium",
-        active: tel.isCured,
-        tone: tel.isCured ? "live" : "broken",
-        caption: `Peak UV exposure E_max is ${tel.peakExposureMJCm2.toFixed(2)} mJ/cm² (critical threshold E_c = ${controls.criticalExposureMJCm2} mJ/cm²). Photopolymerization conversion is ${tel.polymerizationConversionPct.toFixed(1)}%.`,
+        active: state.exposureAtWorkingSurface,
+        tone: state.exposureAtWorkingSurface ? "live" : "held",
+        caption: state.exposureAtWorkingSurface
+          ? "The electronic shutter is open with platform 29 at the next-layer working position, so the source-described UV spot reaches surface 23."
+          : state.shutterInterlockActive
+            ? "The platform is making its recoating excursion, so the display interlock holds the requested shutter closed until the supported stack returns to surface 23."
+            : "The electronic shutter is closed; no UV spot is delivered to surface 23.",
       },
       {
-        id: "hull-galvo-laser-scan",
+        id: "hull-programmed-spot",
         phrase: "spot of ultraviolet light 27 generated by source 26 is moved across the surface",
-        active: !tel.underexposureRefusal && !tel.overpenetrationRefusal,
-        tone: !tel.underexposureRefusal && !tel.overpenetrationRefusal ? "live" : "broken",
-        caption: `Scanning vector velocity is ${controls.laserScanSpeedMmS} mm/s with Gaussian beam radius w₀ = ${controls.beamWaistRadiusUm} µm, generating cured line width L_w = ${tel.curedLineWidthUm.toFixed(1)} µm.`,
+        active: state.exposureAtWorkingSurface,
+        tone: state.exposureAtWorkingSurface ? "live" : "held",
+        caption: `Spot 27 is at normalized plotter coordinate (${state.spotXFraction.toFixed(2)}, ${state.spotZFraction.toFixed(2)}). The grant gives no carriage travel, velocity, dwell, or Gaussian beam model, so this is positional topology only.`,
       },
       {
         id: "hull-elevator-stepping",
-        phrase: "elevator 29 then moves down by a predetermined layer thickness",
-        active: !tel.recoatDelayRefusal,
-        tone: !tel.recoatDelayRefusal ? "live" : "broken",
-        caption: `Elevator steps ${controls.layerThicknessUm} µm at ${controls.elevatorDipSpeedMmS} mm/s. Resin viscosity (${controls.resinViscosityCp} cP) yields meniscus settling time of ${tel.recoatMeniscusSettlingTimeSec.toFixed(2)} s.`,
+        phrase: "elevator platform 29 that was initially just below surface 23 is moved down",
+        active: state.platformDepthFraction > 0.02,
+        tone: state.platformDepthFraction > 0.02 ? "live" : "held",
+        caption:
+          state.platformDepthFraction > 0.02
+            ? `Platform 29 is at normalized recoating excursion ${state.platformDepthFraction.toFixed(2)}; the object remains attached to the platform while liquid can refill above it.`
+            : "Platform 29 is back at the next-layer working position with the top of the supported stack at fixed surface 23.",
       },
     ];
   }

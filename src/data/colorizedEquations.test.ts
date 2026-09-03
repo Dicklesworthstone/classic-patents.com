@@ -400,6 +400,28 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
     }
   });
 
+  test("keeps Lemelson US 3,081,379 at its source-bounded signal-path relation", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-3081379-lemelson-machine-vision"];
+    expect(cards.map((card) => card.id)).toEqual(["lemelson-source-signal-path"]);
+    expect(cards[0]?.claimRef).toBe(1);
+    expect(cards[0]?.rawLatex).toBe("C = S \\land G \\land A \\land I");
+    expect(cards[0]?.variables.every((variable) => variable.unit === "logical state")).toBe(true);
+
+    const publicCards = JSON.stringify(cards).toLowerCase();
+    for (const unsupportedPublicAssertion of [
+      "scanbeamvelocitympers",
+      "solenoidforcen",
+      "gatereponsetimems",
+      "measuredpartwidthmm",
+      "f_{\\text{mag}}",
+      "v_{\\text{scan}}",
+      "15,750",
+      "0.0006",
+    ]) {
+      expect(publicCards).not.toContain(unsupportedPublicAssertion);
+    }
+  });
+
   test("keeps Marconi US 586,193 at its held contact-and-reset claim boundary", () => {
     const cards = ALL_COLORIZED_EQUATIONS["us-586193-marconi-radio"];
     expect(cards.map((card) => card.id)).toEqual(["marconi-source-contact-reset"]);
@@ -551,5 +573,33 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
     ]) {
       expect(published).not.toContain(unsupportedLegacyAssertion);
     }
+  });
+
+  test("keeps Kamen's public cards on claim topology rather than an illustrative dynamics model", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-5701965-kamen-transporter"];
+    expect(cards.map((card) => card.id)).toEqual([
+      "kamen-fore-aft-control-topology",
+      "kamen-cluster-transfer-climb-topology",
+    ]);
+    expect(cards.map((card) => card.claimRef)).toEqual([1, 26]);
+
+    const published = JSON.stringify(cards).toLowerCase();
+    for (const unsupportedPublicAssertion of [
+      "100 hz",
+      "pid",
+      "gyroscope",
+      "accelerometer",
+      "newton-meters",
+      "meters per second",
+      "harmonic drive",
+      "planetary",
+      "segway pt",
+      "ibot",
+    ]) {
+      expect(published).not.toContain(unsupportedPublicAssertion);
+    }
+    expect(published).toContain("claim 1");
+    expect(published).toContain("claim 26");
+    expect(published).toContain("source-topology");
   });
 });

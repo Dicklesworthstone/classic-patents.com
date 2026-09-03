@@ -53,6 +53,7 @@ export interface WattRotaryModelNodes {
   cylinderCutawayMesh: THREE.Mesh;
   calloutSprites: THREE.Sprite[];
   setCutaway: (cutaway: boolean) => void;
+  setGearInspection: (inspecting: boolean) => void;
   setShowCallouts: (show: boolean) => void;
   getActiveGearGeometry: () => WattGearGeometrySnapshot;
   updateAnimation: (pose: WattRotaryPose) => void;
@@ -465,6 +466,14 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
     calloutSprites.push(sprite);
   }
 
+  let calloutsRequested = true;
+  let gearInspectionActive = false;
+  const applyCalloutVisibility = () => {
+    for (const sprite of calloutSprites) {
+      sprite.visible = calloutsRequested && !gearInspectionActive;
+    }
+  };
+
   // ==========================================
   // CONTROLLER METHODS
   // ==========================================
@@ -473,10 +482,18 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
     cylinderCutawayMesh.visible = cutaway;
   };
 
+  const setGearInspection = (inspecting: boolean) => {
+    // The Gear Mesh camera is an explicitly labeled inspection presentation:
+    // leave the source-driven gears and their shaft state intact, while
+    // temporarily removing the flywheel and labels that otherwise mask their mesh.
+    gearInspectionActive = inspecting;
+    flywheelGroup.visible = !inspecting;
+    applyCalloutVisibility();
+  };
+
   const setShowCallouts = (show: boolean) => {
-    for (const sprite of calloutSprites) {
-      sprite.visible = show;
-    }
+    calloutsRequested = show;
+    applyCalloutVisibility();
   };
 
   const updateAnimation = (pose: WattRotaryPose) => {
@@ -548,6 +565,7 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
     cylinderCutawayMesh,
     calloutSprites,
     setCutaway,
+    setGearInspection,
     setShowCallouts,
     getActiveGearGeometry,
     updateAnimation,

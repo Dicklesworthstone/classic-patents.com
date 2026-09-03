@@ -14,16 +14,30 @@ import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "overview" | "transmitter" | "receiver" | "top";
+type CameraConfig = { pos: [number, number, number]; target: [number, number, number] };
 
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
+const COMPACT_STUDIO_MAX_WIDTH_PX = 640;
+
+const CAMERA_PRESETS: Record<CameraPreset, CameraConfig> = {
   overview: { pos: [0, 4.0, 12.0], target: [0, 1.0, 0] },
   transmitter: { pos: [-3.5, 2.5, 4.0], target: [-5.0, 1.2, 0] },
   receiver: { pos: [3.5, 2.5, 4.0], target: [5.0, 1.2, 0] },
   top: { pos: [0, 14.0, 0.1], target: [0, 1.0, 0] },
 };
+
+// At a phone's portrait aspect ratio the 13-unit source-to-detector arrangement
+// is wider than the default overview frustum. Keep both terminals in-frame so
+// the beam reads as a connection rather than an otherwise unexplained white band.
+const MOBILE_CAMERA_PRESETS: Partial<Record<CameraPreset, CameraConfig>> = {
+  overview: { pos: [0, 5.5, 25.0], target: [0, 0, 0] },
+};
+
+function resolveCameraPreset(preset: CameraPreset, viewportWidth: number): CameraConfig {
+  if (viewportWidth <= COMPACT_STUDIO_MAX_WIDTH_PX) {
+    return MOBILE_CAMERA_PRESETS[preset] ?? CAMERA_PRESETS[preset];
+  }
+  return CAMERA_PRESETS[preset];
+}
 
 export function BellPhotophone3D() {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -38,7 +52,7 @@ export function BellPhotophone3D() {
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = resolveCameraPreset(preset, containerRef.current?.clientWidth ?? 0);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -68,7 +82,7 @@ export function BellPhotophone3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const overview = CAMERA_PRESETS.overview;
+    const overview = resolveCameraPreset("overview", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: overview.pos,

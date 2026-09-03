@@ -1,41 +1,19 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
-import { FrankenSimEngine } from "@/physics/engine";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
-import { createStudioClock } from "@/physics/tickScheduler";
-import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
-import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { readMarconiRuntimeControls, readMarconiTapeFrame } from "@/physics/marconiSharedKernel";
+import { usePatentRuntimeTick } from "@/physics/useFrankenSimPhysics";
+import { getPatentPhysicsParams, usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import { type MarconiCameraPreset, marconiViewForViewport } from "./marconiRadioCamera";
 import { buildMarconiRadioModel, updateMarconiRadioKinematics } from "./marconiRadioModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset =
-  | "iso"
-  | "spark_gap"
-  | "induction_coil"
-  | "aerial_monopole"
-  | "morse_key"
-  | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [13, 10, 16], target: [0, 0, 0] },
-  spark_gap: { pos: [0, -0.8, 3.8], target: [0, -1.8, 0] },
-  induction_coil: { pos: [0, -1.2, -4.5], target: [0, -2.1, -1.8] },
-  aerial_monopole: { pos: [-3.5, 3.5, 6.5], target: [-3.5, 2.5, 0] },
-  morse_key: { pos: [3.0, -1.5, 2.5], target: [3.0, -2.4, -0.5] },
-  top: { pos: [0, 13.5, 0.1], target: [0, 0, 0] },
-};
 
 export function MarconiRadio3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -47,64 +25,32 @@ export function MarconiRadio3D() {
   const aerialHeightMeters = params.aerialHeight ?? 88;
   const sparkGapMm = params.sparkGapMm ?? 10;
   const inductionCoilKv = params.sparkVoltage ?? 28;
-  const [showEmWavefronts] = useState<boolean>(true);
-  const [isSparking] = useState<boolean>(true);
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const showEmWavefronts = true;
+  const [activeCamera, setActiveCamera] = useState<MarconiCameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
-  // Electromagnetic Wireless Physics (FrankenSim Monopole Radiation)
-  const radioPhysics = FrankenSimEngine.stepMarconiRadio(
-    aerialHeightMeters,
-    sparkGapMm,
-    inductionCoilKv,
-  );
-
-  // Shared transport tape envelope: spark-gap radiation publishes to the
-  // patentId-keyed bus so badges and sibling faces read one honest state.
-  useFrankenSimPhysics("us-586193-marconi-radio", {
-    domain: "electromagnetics_flux",
-    refusal: { isRefused: false },
-    em: {
-      frequencyHz: radioPhysics.resonantFreqMhz * 1e6,
-      magneticFluxDensityTesla: 0,
-      electricFieldVpm: 0,
-      phaseAngleRad: 0,
-      inductanceHenry: 0,
-      capacitanceFarad: 0,
-      currentAmperes: 0,
-      voltageVolts: inductionCoilKv * 1000,
-      powerFactor: 0,
-      efficiencyPct: 0,
-      synchronousRpm: 0,
-      slipFraction: 0,
-      rotorRpm: 0,
-      shaftPowerWatts: 0,
-      electricalInputWatts: 0,
-    },
-  });
+  const runtimeControls = readMarconiRuntimeControls(params);
+  const runtimeTick = usePatentRuntimeTick("us-586193-marconi-radio", 30, true);
+  void runtimeTick;
+  // Pure consumer of the shared transport tape; no local integration clock.
+  const tapeFrame = readMarconiTapeFrame(runtimeControls);
 
   const live = useLiveSimParams({
     aerialHeightMeters,
     sparkGapMm,
     inductionCoilKv,
     showEmWavefronts,
-    isSparking,
     isAudioMuted,
     isCutaway,
-    resonantFreqMhz: radioPhysics.resonantFreqMhz,
-    peakRfPowerKw: radioPhysics.peakRfPowerKw,
-    waveOpacityBase: radioPhysics.waveOpacityBase,
-    wavePhaseRate: radioPhysics.wavePhaseRate,
-    mastStudioScale: radioPhysics.mastStudioScale,
+    runtimeControls,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: MarconiCameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = marconiViewForViewport(preset, containerRef.current?.clientWidth ?? 1000);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -114,15 +60,17 @@ export function MarconiRadio3D() {
     });
   };
 
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
+  const triggerSpark = () => {
+    const current = readMarconiRuntimeControls(getPatentPhysicsParams("us-586193-marconi-radio"));
+    updateParam("sparkPulseSequence", current.sparkPulseSequence + 1);
+    if (!isAudioMuted) soundEngine.playSparkDischarge(0.12);
+  };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = marconiViewForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -137,38 +85,25 @@ export function MarconiRadio3D() {
 
     // Animation Loop
     let reqId: number;
-    let sparkCooldown = 0;
-    const clock = createStudioClock();
-
-    const animate = (now: number) => {
+    const animate = () => {
       reqId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
-      const { dt: delta, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
+      const tape = readMarconiTapeFrame(p.runtimeControls);
 
-      sparkCooldown += delta;
-      const shouldFire = sparkCooldown >= 0.15;
-      if (shouldFire) {
-        sparkCooldown = 0;
-        if (!p.isAudioMuted && p.isSparking) {
-          soundEngine.playSparkDischarge(0.12);
-        }
-      }
-
-      updateMarconiRadioKinematics(
-        nodes,
-        materials,
-        delta,
-        timeSec,
-        p.aerialHeightMeters,
-        p.resonantFreqMhz,
-        p.waveOpacityBase,
-        p.wavePhaseRate,
-        p.mastStudioScale,
-        p.showEmWavefronts,
-        p.isSparking && shouldFire,
-        p.isCutaway,
-      );
+      updateMarconiRadioKinematics(nodes, materials, {
+        mastStudioScale: tape.display.mastStudioScale,
+        sparkGapStudioHalfSpan: tape.display.sparkGapStudioHalfSpan,
+        wavefrontProgress: tape.wavefrontProgress,
+        sparkActive: tape.sparkActive,
+        waveActive: tape.waveActive,
+        showEmWavefronts: p.showEmWavefronts,
+        receiverConducting: tape.receiverConducting,
+        relayActive: tape.relayActive,
+        resetActive: tape.resetActive,
+        resetPhase: tape.resetPhase,
+        isCutaway: p.isCutaway,
+      });
 
       controls.update();
       renderer.render(scene, camera);
@@ -184,6 +119,17 @@ export function MarconiRadio3D() {
     };
   }, [live]);
 
+  useEffect(() => {
+    const restoreResponsiveView = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const config = marconiViewForViewport(activeCamera, container.clientWidth);
+      studioRef.current?.controls.setView(config.pos, config.target);
+    };
+    window.addEventListener("resize", restoreResponsiveView);
+    return () => window.removeEventListener("resize", restoreResponsiveView);
+  }, [activeCamera]);
+
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
       <div className="sr-only">Guglielmo Marconi Wireless Radio 3D</div>
@@ -192,19 +138,21 @@ export function MarconiRadio3D() {
 
         {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-28rem)] gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-15rem)] gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
             <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
               <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
             </span>
             {(
               [
                 ["iso", "Isometric"],
+                ["full_system", "Full System"],
+                ["receiver", "Receiver & Reset"],
                 ["spark_gap", "Spark Gap"],
                 ["induction_coil", "Induction Coil"],
                 ["aerial_monopole", "Aerial Mast"],
                 ["morse_key", "Morse Key"],
                 ["top", "Radiation Axis"],
-              ] as [CameraPreset, string][]
+              ] as [MarconiCameraPreset, string][]
             ).map(([preset, label]) => (
               <button
                 key={preset}
@@ -224,6 +172,16 @@ export function MarconiRadio3D() {
 
         {/* Top Right Tool Bar */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+          <button
+            type="button"
+            onClick={triggerSpark}
+            title="Fire one transmitter spark pulse"
+            aria-label="Fire Spark"
+            className="flex min-h-9 items-center gap-1 rounded-xl border border-amber-700 bg-amber-600 p-1.5 text-xs text-white shadow-sm transition-colors hover:bg-amber-700 sm:p-2"
+          >
+            <Zap className="h-4 w-4" />
+            <span className="hidden lg:inline">Fire Spark</span>
+          </button>
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
@@ -278,29 +236,33 @@ export function MarconiRadio3D() {
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
               <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
-                Resonant Frequency:
+                Receiver sequence:
               </span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">
-                {radioPhysics.resonantFreqMhz.toFixed(2)} MHz
+              <span className="font-bold text-sky-800 dark:text-sky-400">
+                {tapeFrame.receiverStage.replaceAll("-", " ")}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Wavelength (λ = 4h):</span>
+              <span className="text-ink-600 dark:text-ink-400">Imperfect contact:</span>
               <span className="font-bold text-cyan-800 dark:text-cyan-400">
-                {radioPhysics.wavelengthMeters.toFixed(1)} m
+                {tapeFrame.receiverConducting ? "conducting" : "open"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Peak RF Power:</span>
+              <span className="text-ink-600 dark:text-ink-400">Local relay:</span>
               <span className="text-emerald-800 dark:text-emerald-400 font-bold">
-                {radioPhysics.peakRfPowerKw.toFixed(1)} kW
+                {tapeFrame.relayActive ? "energized" : "idle"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Radiation Resistance:</span>
-              <span className="text-purple-800 dark:text-purple-400 font-bold">
-                {radioPhysics.radiationResistanceOhms.toFixed(1)} Ω
+              <span className="text-ink-600 dark:text-ink-400">Shaking means:</span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {tapeFrame.resetActive ? "resetting contact" : "ready"}
               </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Quantitative RF result:</span>
+              <span className="text-rose-700 dark:text-rose-400 font-bold">source withheld</span>
             </div>
           </div>
         )}
@@ -308,32 +270,16 @@ export function MarconiRadio3D() {
         <StudioKernelChips
           visible={showUiOverlay}
           side="right"
-          title="Marconi monopole spark-gap transmitter"
+          title="Marconi transmitter-to-receiver apparatus"
           chips={[
-            { label: "Mast Height", value: `${aerialHeightMeters}`, unit: "m" },
-            {
-              label: "Wavelength",
-              value: `${radioPhysics.wavelengthMeters.toFixed(1)}`,
-              unit: "m",
-            },
-            {
-              label: "Frequency",
-              value: `${radioPhysics.resonantFreqMhz.toFixed(2)}`,
-              unit: "MHz",
-            },
-            { label: "Spark Gap", value: `${sparkGapMm}`, unit: "mm" },
-            { label: "Coil Voltage", value: `${inductionCoilKv}`, unit: "kV" },
-            { label: "Peak RF", value: `${radioPhysics.peakRfPowerKw.toFixed(1)}`, unit: "kW" },
-            { label: "Range", value: `${radioPhysics.maxRangeMiles.toFixed(1)}`, unit: "mi" },
-            {
-              label: "R_rad",
-              value: `${radioPhysics.radiationResistanceOhms.toFixed(1)}`,
-              unit: "Ω",
-            },
-            {
-              label: "Wave crate",
-              value: crateSource === "wasm" ? "fs-fft" : "ts-wave-fallback",
-            },
+            { label: "Display mast", value: `${aerialHeightMeters}`, unit: "m" },
+            { label: "Display gap", value: `${sparkGapMm}`, unit: "mm" },
+            { label: "Display coil", value: `${inductionCoilKv}`, unit: "kV" },
+            { label: "Receiver", value: tapeFrame.receiverStage.replaceAll("-", " ") },
+            { label: "Tube current", value: "≤1", unit: "mA (source)" },
+            { label: "Single-cell EMF", value: "≤1.5", unit: "V (source)" },
+            { label: "RF link budget", value: "not disclosed" },
+            { label: "Causal tape", value: "source-bounded TS" },
           ]}
         />
       </div>
@@ -345,7 +291,7 @@ export function MarconiRadio3D() {
             id="sparkVoltage"
             patentId="us-586193-marconi-radio"
             paramKey="sparkVoltageKv"
-            label="Induction Coil Potential"
+            label="Illustrative Coil Potential"
             value={inductionCoilKv}
             min={5}
             max={50}
@@ -358,7 +304,7 @@ export function MarconiRadio3D() {
             id="aerialHeight"
             patentId="us-586193-marconi-radio"
             paramKey="antennaHeightM"
-            label="Vertical Aerial Mast Height"
+            label="Illustrative Aerial Height"
             value={aerialHeightMeters}
             min={10}
             max={120}
@@ -369,13 +315,16 @@ export function MarconiRadio3D() {
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Spark Gap Spacing</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Illustrative Spark-Gap Spacing
+              </span>
               <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
                 {sparkGapMm} mm
               </span>
             </div>
             <input
               type="range"
+              aria-label="Illustrative spark-gap spacing"
               min="2"
               max="25"
               step="1"
@@ -395,11 +344,15 @@ export function MarconiRadio3D() {
           className="mt-2"
         />
 
-        <PortHamiltonianEnergyStrip
-          patentId="us-586193-marconi-radio"
-          params={params}
-          className="mt-3"
-        />
+        <p className="mt-3 rounded-lg border border-rose-800/40 bg-rose-950/20 p-3 text-xs leading-relaxed text-ink-700 dark:text-ink-300">
+          <span className="font-mono font-bold text-rose-700 dark:text-rose-300">
+            SOURCE BOUNDARY —
+          </span>{" "}
+          The controls scale this explanatory apparatus. The grant does not supply the L, C,
+          antenna-current, loss, or path inputs needed for an honest frequency, power, or range
+          calculation; the model therefore shows the claimed causal topology without inventing a
+          link budget.
+        </p>
       </div>
     </div>
   );

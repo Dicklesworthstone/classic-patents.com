@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import {
   readLemelsonAutomaticProductionControls,
   stepLemelsonAutomaticProductionTopology,
@@ -16,11 +17,12 @@ import {
   type LemelsonAutomaticProductionModel,
 } from "./lemelsonAutomaticProductionModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-3313014-lemelson-automatic-production";
 const VIEWS = {
   overview: {
-    position: [6.8, 4.8, 7.8] as [number, number, number],
+    position: [9, 5.8, 10.3] as [number, number, number],
     target: [0, 1.15, 0.62] as [number, number, number],
   },
   carrier: {
@@ -38,18 +40,24 @@ export function LemelsonAutomaticProduction3D() {
   const studioRef = useRef<StudioContext | null>(null);
   const modelRef = useRef<LemelsonAutomaticProductionModel | null>(null);
   const [view, setView] = useState<keyof typeof VIEWS>("overview");
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 7: true });
-  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
+  const { params, effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(PATENT_ID);
   const controls = useMemo(() => readLemelsonAutomaticProductionControls(params), [params]);
-  const state = useMemo(() => stepLemelsonAutomaticProductionTopology(controls), [controls]);
-  const liveState = useRef(state);
-  liveState.current = state;
+  const state = useMemo(
+    () => stepLemelsonAutomaticProductionTopology(effectiveParams),
+    [effectiveParams],
+  );
+  const liveState = useLiveSimParams(state);
 
   useFrankenSimPhysics(PATENT_ID, {
     domain: "solid_mechanics",
-    refusal: { isRefused: true, reason: state.sourceBoundary.reason },
+    refusal: {
+      isRefused: true,
+      reason: claimConstraintResult.refusalWarning ?? state.sourceBoundary.reason,
+    },
   });
 
+  // The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -92,7 +100,7 @@ export function LemelsonAutomaticProduction3D() {
       modelRef.current = null;
       studioRef.current = null;
     };
-  }, []);
+  }, [liveState]);
 
   const selectView = (next: keyof typeof VIEWS) => {
     setView(next);
@@ -196,10 +204,22 @@ export function LemelsonAutomaticProduction3D() {
         <ClaimConstraintToggle
           patentId={PATENT_ID}
           claimStates={claimStates}
-          onClaimStateChange={(num, active) =>
-            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          onClaimStateChange={(claimNumber, active) =>
+            updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
           }
         />
+        {claimConstraintResult.activeFailures.length > 0 ? (
+          <div
+            role="status"
+            className="mt-3 space-y-1 rounded-lg border border-rose-500/40 bg-rose-500/10 p-3"
+          >
+            {claimConstraintResult.activeFailures.map((failure) => (
+              <p key={failure} className="text-xs leading-relaxed text-rose-900 dark:text-rose-100">
+                {failure}
+              </p>
+            ))}
+          </div>
+        ) : null}
       </div>
     </section>
   );

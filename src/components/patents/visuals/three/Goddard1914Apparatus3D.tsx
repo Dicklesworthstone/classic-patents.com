@@ -4,9 +4,14 @@ import { Camera, Eye, EyeOff, Layers, Pause, Play, RotateCcw, Zap } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
-import { ensureGoddardWasm, goddardKernelSource } from "@/physics/goddardWasm";
+import {
+  ensureGoddardWasm,
+  goddardKernelSource,
+  subscribeGoddardKernelSource,
+} from "@/physics/goddardWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { useWasmKernelSource } from "@/physics/useWasmKernelSource";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import {
   buildGoddard1914ApparatusModel,
@@ -33,7 +38,11 @@ const CAMERA_PRESETS: Record<
 export function GoddardRocket3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const [kernelSource, setKernelSource] = useState(goddardKernelSource());
+  const kernelSource = useWasmKernelSource(
+    goddardKernelSource,
+    subscribeGoddardKernelSource,
+    ensureGoddardWasm,
+  );
   const { params, updateParam, resetParams } = usePatentPhysics("us-1102653-goddard-rocket");
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -47,16 +56,6 @@ export function GoddardRocket3D() {
     3: true,
     7: true,
   });
-
-  useEffect(() => {
-    let active = true;
-    void ensureGoddardWasm().then((nextSource) => {
-      if (active) setKernelSource(nextSource);
-    });
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const primarySpinRpm = params.primarySpinRpm ?? 120;
   const gyroSpinRpm = params.gyroSpinRpm ?? 6_000;
@@ -206,14 +205,7 @@ export function GoddardRocket3D() {
           </div>
         )}
 
-        <div className="absolute top-3 right-3 z-10 flex max-w-[24rem] flex-wrap justify-end gap-1.5 sm:top-4 sm:right-4">
-          <ClaimConstraintToggle
-            patentId="us-1102653-goddard-rocket"
-            claimStates={claimStates}
-            onToggleClaim={(claimNumber, active) =>
-              setClaimStates((previous) => ({ ...previous, [claimNumber]: active }))
-            }
-          />
+        <div className="absolute top-3 right-3 z-10 flex max-w-[calc(100%-1.5rem)] flex-wrap justify-end gap-1.5 sm:top-4 sm:right-4">
           <button
             type="button"
             onClick={() => setIsPaused((paused) => !paused)}
@@ -323,6 +315,18 @@ export function GoddardRocket3D() {
       </div>
 
       <div className="space-y-4 border-t border-parchment-300 bg-parchment-100/90 p-4 dark:border-ink-800 dark:bg-ink-900/90">
+        <div
+          data-goddard-claims-deck
+          className="rounded-xl border border-parchment-300/80 bg-white/70 p-2 dark:border-ink-700 dark:bg-ink-950/40"
+        >
+          <ClaimConstraintToggle
+            patentId="us-1102653-goddard-rocket"
+            claimStates={claimStates}
+            onToggleClaim={(claimNumber, active) =>
+              setClaimStates((previous) => ({ ...previous, [claimNumber]: active }))
+            }
+          />
+        </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <SensitivitySlider
             id="tubeLengthRatio"

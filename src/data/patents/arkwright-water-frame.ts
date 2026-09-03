@@ -1,9 +1,9 @@
 import type { Patent } from "@/types/patent";
 
 /**
- * The PDF's source face is deliberately withheld from the catalogue. It is a
- * modern reconstruction, so no legal claim, source drawing, filing date, or
- * purported quotation is derived from it.
+ * The pinned PDF is a modern reconstruction. Its complete page-marked text
+ * remains readable on the source face, but this catalogue does not treat it
+ * as evidence for legal claims, source drawings, filing dates, or quotations.
  */
 export const arkwrightWaterFramePatent: Patent = {
   id: "gb-931-arkwright-water-frame",
@@ -30,7 +30,7 @@ export const arkwrightWaterFramePatent: Patent = {
     independentClaims: 0,
   },
   originalText:
-    "Primary-source transcription unavailable. The pinned PDF is a modern research reconstruction and is not published as historical patent text.",
+    "The Original Patent Text face contains the complete page-marked transcript of the pinned reconstruction. Because the facsimile is a modern research reconstruction rather than the original grant record, this catalogue does not use it as evidence for legal claims, source drawings, filing dates, or quotations.",
   plainEnglishExplanation: {
     overview:
       "Before 1769, textile production was constrained by a critical technological bottleneck: hand spinners on traditional spinning wheels could not produce strong cotton yarn. All European 'cotton' cloth was actually fustian—a hybrid fabric with a strong linen warp (lengthwise threads under high loom tension) and weak cotton weft (crosswise filling). James Hargreaves' 1764 Spinning Jenny multiplied human output but still relied on manual drafting, producing soft, low-twist yarn that snapped under loom tension. Richard Arkwright solved this by inventing continuous mechanical drafting using differential rollers combined with high-speed flyer twisting, creating 'Water Twist'—the world's first industrial cotton yarn strong enough for loom warp.",

@@ -74,6 +74,7 @@ enum NativeMathFormatter {
             "\\hookrightarrow": "↪", "\\dashv": "⊣",
             "\\rightleftharpoons": "⇌", "\\xrightarrow": "→", "\\to": "→",
             "\\leftarrow": "←", "\\Rightarrow": "⇒", "\\implies": "⇒", "\\prime": "′",
+            "\\Longleftrightarrow": "⟺",
             "\\partial": "∂", "\\nabla": "∇", "\\infty": "∞", "\\pi": "π",
             "\\rho": "ρ", "\\sigma": "σ", "\\Sigma": "Σ", "\\omega": "ω", "\\Omega": "Ω",
             "\\alpha": "α", "\\beta": "β", "\\gamma": "γ", "\\Gamma": "Γ",
@@ -391,7 +392,11 @@ struct CuratedSpecificationReader: View {
             } else if patent.originalTextAsset != nil {
                 BundledSourceTranscriptionReader(patent: patent)
             } else {
-                SourceBoundaryReader(patent: patent)
+                if patent.sourceVisualization.isSourceBoundPDFOnly {
+                    PDFOnlySourceReader(patent: patent)
+                } else {
+                    SourceBoundaryReader(patent: patent)
+                }
             }
         }
         .sheet(item: $selectedPreview) { preview in
@@ -667,6 +672,44 @@ private struct BundledSourcePage: Identifiable, Sendable {
     var id: Int { number }
 }
 
+/// An explicit publication boundary for records whose pinned facsimile is the
+/// only complete source currently available to the native app. This is not a
+/// loading failure and must never fall through to the local text-layer reader:
+/// that would make an absent transcript look reviewed or archival.
+private struct PDFOnlySourceReader: View {
+    let patent: PatentRecord
+
+    var body: some View {
+        MuseumPanel {
+            VStack(alignment: .leading, spacing: 10) {
+                MuseumLabel(text: "Pinned facsimile only")
+                Label("Source-bound public record", systemImage: "doc.text.magnifyingglass")
+                    .font(.system(size: Lab.size(15), weight: .bold, design: .serif))
+                    .foregroundStyle(Lab.parchment)
+                Text(patent.sourceVisualization.sourceBoundary ?? "This public record is limited to its pinned facsimile.")
+                    .font(.system(size: Lab.size(12.5), design: .serif))
+                    .foregroundStyle(Lab.text)
+                    .textSelection(.enabled)
+                Text("No reviewed transcription or archival edition is bundled here. The original PDF is the only complete source face; open Original PDF in the workstation header to read it.")
+                    .font(.system(size: Lab.size(12), design: .rounded))
+                    .foregroundStyle(Lab.secondary)
+                    .textSelection(.enabled)
+                if let digest = patent.expectedSourcePDFSHA256 {
+                    Text("PINNED PDF SHA-256")
+                        .font(.system(size: Lab.size(8), weight: .bold, design: .rounded))
+                        .foregroundStyle(Lab.secondary)
+                    Text(digest)
+                        .font(.system(size: Lab.size(8.5), design: .rounded))
+                        .foregroundStyle(Lab.secondary)
+                        .textSelection(.enabled)
+                }
+            }
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Pinned-facsimile-only source state for \(patent.shortTitle)")
+    }
+}
+
 /// Fail-soft native reader for the sole record whose curated editorial edition
 /// has not yet landed upstream. The complete source-PDF text layer is already
 /// bundled with the app; never replace those bytes with a placeholder or fetch
@@ -766,23 +809,34 @@ private struct BundledSourceTranscriptionReader: View {
             + "it never leaves this device."
     }
 
+    // Two ledger conventions reach this reader. A machine text layer is marked
+    // `--- SOURCE PDF PAGE n OF N ---`, while a human-reviewed ledger is marked
+    // `--- REVIEWED TRANSCRIPTION PAGE n OF N ---`. Both are page-complete local
+    // bytes, so the reader must page either one rather than silently collapsing
+    // a reviewed ledger into a single untitled block.
+    nonisolated private static let bundledSourceMarkers: [(marker: String, label: String)] = [
+        ("--- SOURCE PDF PAGE ", "SOURCE PDF PAGE"),
+        ("--- REVIEWED TRANSCRIPTION PAGE ", "REVIEWED TRANSCRIPTION PAGE"),
+    ]
+
     nonisolated private static func parsePages(_ source: String) -> [BundledSourcePage] {
-        let marker = "--- SOURCE PDF PAGE "
-        let chunks = source.components(separatedBy: marker)
-        let parsed = chunks.dropFirst().enumerated().compactMap { index, chunk -> BundledSourcePage? in
-            guard let lineBreak = chunk.firstIndex(of: "\n") else { return nil }
-            let heading = chunk[..<lineBreak]
-                .trimmingCharacters(in: CharacterSet(charactersIn: "- \t\r\n"))
-            let body = chunk[chunk.index(after: lineBreak)...]
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !body.isEmpty else { return nil }
-            return BundledSourcePage(
-                number: index + 1,
-                title: "SOURCE PDF PAGE \(heading)",
-                text: body
-            )
+        for (marker, label) in bundledSourceMarkers {
+            let chunks = source.components(separatedBy: marker)
+            let parsed = chunks.dropFirst().enumerated().compactMap { index, chunk -> BundledSourcePage? in
+                guard let lineBreak = chunk.firstIndex(of: "\n") else { return nil }
+                let heading = chunk[..<lineBreak]
+                    .trimmingCharacters(in: CharacterSet(charactersIn: "- \t\r\n"))
+                let body = chunk[chunk.index(after: lineBreak)...]
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !body.isEmpty else { return nil }
+                return BundledSourcePage(
+                    number: index + 1,
+                    title: "\(label) \(heading)",
+                    text: body
+                )
+            }
+            if !parsed.isEmpty { return parsed }
         }
-        if !parsed.isEmpty { return parsed }
         let trimmed = source.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? [] : [BundledSourcePage(number: 1, title: "SOURCE TRANSCRIPTION", text: trimmed)]
     }

@@ -1,10 +1,16 @@
 import { describe, expect, test } from "bun:test";
 import type { CuratedSpecificationEdition, Patent } from "@/types/patent";
+import { allPatents } from "../patents";
+import { kwolekKevlarPatent } from "../patents/kwolek-kevlar";
+import { wrightFlyerPatent } from "../patents/wright-flyer";
 import {
   evaluateReviewedLedgerTextEvidence,
   literalLedgerSectionsForEdition,
 } from "./reviewedLedgerPublicationEvidence";
-import { reviewedLedgerPublicationEvidenceFor } from "./reviewedLedgerPublicationEvidence.server";
+import {
+  reviewedLedgerPublicationEvidenceFor,
+  reviewedLedgerTextForViewer,
+} from "./reviewedLedgerPublicationEvidence.server";
 
 const PAGE_MARKER = "--- REVIEWED TRANSCRIPTION PAGE 1 OF 1 ---";
 const CLAIM_TEXT = "I claim the coupled arm and its electrically driven contact.";
@@ -27,6 +33,7 @@ const edition: CuratedSpecificationEdition = {
 
 function fixture(overrides: Partial<Pick<Patent, "archivalEdition" | "originalTextAsset">> = {}) {
   return {
+    id: "us-test-reviewed-ledger",
     archivalEdition: edition,
     originalTextAsset: {
       url: "/patents/transcripts/test-reviewed.txt",
@@ -131,5 +138,60 @@ describe("reviewed-ledger publication evidence", () => {
     );
     expect(missing.status).toBe("missing-file");
     expect(missing.error).toBe("The reviewed-transcription file is missing.");
+  });
+
+  test("loads a canonical reviewed transcript for the text reader without an edition gate", () => {
+    const transcript = reviewedLedgerTextForViewer({
+      id: wrightFlyerPatent.id,
+      originalTextAsset: wrightFlyerPatent.originalTextAsset,
+    });
+    expect(transcript).toStartWith("--- REVIEWED TRANSCRIPTION PAGE 1 OF 10 ---");
+    expect(transcript).toContain("Be it known that we, ORVILLE WRIGHT and WILBUR WRIGHT");
+
+    expect(
+      reviewedLedgerTextForViewer(
+        fixture({
+          archivalEdition: undefined,
+          originalTextAsset: {
+            ...fixture().originalTextAsset,
+            url: "/etc/passwd",
+          } as Patent["originalTextAsset"],
+        }),
+      ),
+    ).toBeUndefined();
+    expect(
+      reviewedLedgerTextForViewer(
+        fixture({
+          archivalEdition: undefined,
+          originalTextAsset: {
+            ...fixture().originalTextAsset,
+            url: "/patents/transcripts/does-not-exist-reviewed.txt",
+          } as Patent["originalTextAsset"],
+        }),
+      ),
+    ).toBeUndefined();
+  });
+
+  test("loads a complete local transcript when legacy metadata has not yet classified it", () => {
+    const transcript = reviewedLedgerTextForViewer(kwolekKevlarPatent);
+    expect(transcript).toStartWith("--- REVIEWED TRANSCRIPTION PAGE 1 OF 58 ---");
+    expect(transcript).toContain("OPTICALLY ANISOTROPIC");
+    expect(transcript).toContain("AROMATIC POLYAMIDE DOPES");
+    expect(transcript).toContain("What is claimed is:");
+  });
+
+  test("keeps every catalogue record with no structured edition readable from its full local transcript", () => {
+    const recordsWithoutEdition = allPatents.filter((patent) => !patent.archivalEdition);
+    expect(recordsWithoutEdition.map((patent) => patent.id)).toEqual([
+      "gb-931-arkwright-water-frame",
+      "us-313224-mergenthaler-linotype",
+      "us-3671542-kwolek-kevlar",
+      "us-4068536-stackhouse-manipulator",
+    ]);
+
+    for (const patent of recordsWithoutEdition) {
+      const transcript = reviewedLedgerTextForViewer(patent);
+      expect(transcript).toStartWith("--- REVIEWED TRANSCRIPTION PAGE 1 OF");
+    }
   });
 });

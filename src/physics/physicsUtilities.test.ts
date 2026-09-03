@@ -74,23 +74,37 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     const goddardChannels = energyChannelsFor("us-1102653-goddard-rocket", {});
     expect(goddardChannels).toEqual([]);
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-1102653-goddard-rocket"]).toContain("no burn rate");
-    expect(energyChannelsFor("us-2981877-noyce-ic", {})[0]?.name).toBe("DC Power Supply");
+    expect(energyChannelsFor("us-2981877-noyce-ic", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-2981877-noyce-ic"]).toContain("no applied voltage");
+    expect(energyChannelsFor("us-3138743-kilby-integrated-circuit", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-3138743-kilby-integrated-circuit"]).toContain(
+      "no supply voltage",
+    );
     expect(energyChannelsFor("us-808897-carrier-air-conditioner", {})[0]?.name).toBe("Fan work");
     expect(energyChannelsFor("us-608969-parsons-turbine", {})).toEqual([]);
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-608969-parsons-turbine"]).toContain(
       "marine piping combinations",
     );
-    expect(energyChannelsFor("us-3858232-boyle-smith-ccd", {})[0]?.name).toBe("Clock Gate Drive");
+    expect(energyChannelsFor("us-3858232-boyle-smith-ccd", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-3858232-boyle-smith-ccd"]).toContain(
+      "no complete operating voltage",
+    );
     expect(energyChannelsFor("us-3671542-kwolek-kevlar", {})).toEqual([]);
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-3671542-kwolek-kevlar"]).toContain(
-      "anisotropic liquid-crystalline polyamide dopes",
+      "optically anisotropic dope",
     );
-    expect(energyChannelsFor("us-586193-marconi-radio", {})[0]?.name).toBe("Spark RF");
+    expect(energyChannelsFor("us-586193-marconi-radio", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-586193-marconi-radio"]).toContain(
+      "no inductance, capacitance",
+    );
     expect(energyChannelsFor("us-2292387-lamarr-frequency-hopping", {})).toEqual([]);
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-2292387-lamarr-frequency-hopping"]).toContain(
       "slotted record strips",
     );
-    expect(energyChannelsFor("us-2708656-fermi-reactor", {})[0]?.name).toBe("Fission heat");
+    expect(energyChannelsFor("us-2708656-fermi-reactor", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-2708656-fermi-reactor"]).toContain(
+      "does not select a source reactor mass",
+    );
     expect(energyChannelsFor("us-313224-mergenthaler-linotype", {})[0]?.name).toBe(
       "Crucible Heating & Main Cam Drive",
     );
@@ -103,7 +117,7 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     );
     expect(energyChannelsFor("us-3541541-engelbart-mouse", {})).toEqual([]);
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-3541541-engelbart-mouse"]).toContain(
-      "perpendicular knife-edge wheels",
+      "perpendicular position wheels",
     );
     expect(energyChannelsFor("us-381968-tesla-motor", {})[0]?.name).toBe(
       "Polyphase AC Stator Input",
@@ -133,7 +147,10 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-233692-pelton-water-wheel"]).toContain(
       "bucket geometry",
     );
-    expect(energyChannelsFor("us-470918-reno-escalator", {})[0]?.name).toBe("Motor");
+    expect(energyChannelsFor("us-470918-reno-escalator", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-470918-reno-escalator"]).toContain(
+      "no prime-mover type",
+    );
     expect(energyChannelsFor("us-319596-maxim-machine-gun", {})).toEqual([]);
     expect(ENERGY_CHANNEL_OMISSION_REASONS["us-319596-maxim-machine-gun"]).toContain(
       "no continuous firing rate",

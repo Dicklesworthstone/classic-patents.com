@@ -1,11 +1,13 @@
 "use client";
 
-import { Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { stepBoyleSmithCcd } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { SimulationHeader } from "./SimulationHeader";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -33,7 +35,17 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
     integrationTimeMs: integrationTime,
     temperatureKelvin: temperature,
   });
+  const live = useLiveSimParams({
+    gateVoltage,
+    clockFreq,
+    incidentLux,
+    temperature,
+    isRunning,
+    metrics,
+  });
 
+  // The layout-effect bridge keeps current controls and kernel telemetry visible
+  // to this long-lived canvas loop without resetting its clock phase.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -46,6 +58,7 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
     const render = () => {
       animId = requestAnimationFrame(render);
       if (!onscreenRef.current) return;
+      const { gateVoltage, clockFreq, incidentLux, temperature, isRunning, metrics } = live.current;
       if (isRunning) {
         clockPhase = (clockPhase + 0.05 * (clockFreq / 5.0)) % (Math.PI * 2);
       }
@@ -290,67 +303,44 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
 
     render();
     return () => cancelAnimationFrame(animId);
-  }, [gateVoltage, clockFreq, incidentLux, temperature, isRunning, metrics, onscreenRef.current]);
+  }, [live, onscreenRef]);
 
   return (
     <div
       ref={rootRef}
       className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
     >
-      {/* Header with Title and Global Action Controls */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
-        <div>
-          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Charge-Coupled Device (CCD) Imager (US 3,858,232)
-          </h3>
-          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            3-phase MOS potential well charge transfer, optical photon integration, and
-            bucket-brigade serial readout.
-          </p>
-        </div>
-        <div className="flex items-center gap-2 self-end sm:self-auto">
-          <button
-            type="button"
-            onClick={() => {
-              toggleSound();
-              soundEngine.playSwitchClick();
-            }}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setIsRunning(!isRunning);
-              soundEngine.playSwitchClick();
-            }}
-            aria-label={isRunning ? "Pause Clock" : "Run 3-Phase Clock"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title={isRunning ? "Pause Clock" : "Run 3-Phase Clock"}
-          >
-            {isRunning ? (
-              <Pause className="w-4 h-4 text-amber-600" />
-            ) : (
-              <Play className="w-4 h-4" />
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              resetParams();
-              soundEngine.playSwitchClick();
-            }}
-            aria-label="Reset Simulation"
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title="Reset Simulation"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
+      <SimulationHeader
+        title="Charge-Coupled Device (CCD) Imager (US 3,858,232)"
+        description="3-phase MOS potential well charge transfer, optical photon integration, and bucket-brigade serial readout."
+        playbackAction={{
+          label: isRunning ? "Pause Clock" : "Run 3-Phase Clock",
+          icon: isRunning ? (
+            <Pause className="h-4 w-4 text-amber-600" />
+          ) : (
+            <Play className="h-4 w-4" />
+          ),
+          onPress: () => {
+            setIsRunning(!isRunning);
+            soundEngine.playSwitchClick();
+          },
+        }}
+        audioAction={{
+          label: isAudioMuted ? "Unmute Sound" : "Mute Sound",
+          icon: isAudioMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />,
+          onPress: () => {
+            toggleSound();
+            soundEngine.playSwitchClick();
+          },
+        }}
+        onReset={() => {
+          resetParams();
+          soundEngine.playSwitchClick();
+        }}
+        actionOrder="audio-playback"
+        descriptionHasTopMargin={false}
+        withBottomMargin={false}
+      />
 
       {/* Canvas */}
       <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-ink-800 bg-slate-950">

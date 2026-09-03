@@ -2,17 +2,17 @@
 
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
-import { stepRenoEscalator } from "@/physics/machineKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import { RENO_CAMERA_PRESETS, type RenoCameraPreset } from "./renoEscalatorCamera";
 import {
   buildRenoEscalatorModel,
   type RenoEscalatorModelResult,
+  updateRenoEscalatorIncline,
   updateRenoEscalatorKinematics,
 } from "./renoEscalatorModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
@@ -20,19 +20,10 @@ import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "comb_plates" | "cleated_deck" | "handrail" | "drive_machinery" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [9.5, 6.5, 10.5], target: [0, 0, 0] },
-  comb_plates: { pos: [5.5, 3.2, 2.5], target: [4.2, 2.1, 0] },
-  cleated_deck: { pos: [0, 2.4, 3.8], target: [0, 0.4, 0] },
-  handrail: { pos: [-2.5, 2.2, 3.2], target: [-1.0, 1.2, 1.4] },
-  drive_machinery: { pos: [6.5, 2.2, 2.8], target: [5.2, 1.5, 0] },
-  top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
-};
+const RENO_SOURCE_SPEED_FPM = 200;
+const RENO_SOURCE_SPEED_MPS = 1.016;
+const RENO_SOURCE_MAX_SINGLE_FILE_PER_HOUR = 6000;
+const RENO_SOURCE_COMB_CLEARANCE_MM = 3.175;
 
 export function RenoEscalator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -41,36 +32,21 @@ export function RenoEscalator3D() {
 
   // Transit Dynamics Parameters
   const { params, updateParam } = usePatentPhysics("us-470918-reno-escalator");
-  const beltSpeedMps = (params.beltSpeed as number) ?? 0.45;
-  const passengerCount = (params.passengerCount as number) ?? 30;
+  const beltSpeedMps = (params.beltSpeed as number) ?? RENO_SOURCE_SPEED_MPS;
   const inclineAngleDeg = (params.inclineAngle as number) ?? 25;
-  const renoIdle = stepRenoEscalator({
-    passengerCount,
-    inclineAngleDeg,
-    velocityMps: beltSpeedMps,
-  });
-  const deckSpeedFpm = renoIdle.speedFpm;
-  const passengersPerHour = renoIdle.throughputPerHour;
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const deckSpeedFpm = Math.round((beltSpeedMps * 60) / 0.3048);
+  const [activeCamera, setActiveCamera] = useState<RenoCameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-
   const live = useLiveSimParams({
     beltSpeedMps,
-    sheaveOmegaRadPerS: renoIdle.sheaveOmegaRadPerS,
-    passengerCount,
     inclineAngleDeg,
     cutawayMode,
     isAudioMuted,
-    speedFpm: deckSpeedFpm,
-    throughputPerHour: passengersPerHour,
-    motorPowerKw: renoIdle.motorPowerKw,
   });
 
-  // Shared transport tape: stepRenoEscalator is a statics throughput kernel,
-  // so its belt speed publishes as the initial machine envelope; the local
-  // rAF keeps the cleated-belt/handrail animation as-is.
+  // This publishes a TS-host transport snapshot for cross-face state only.
+  // No Reno-specific WASM module steps this visualization.
   useFrankenSimPhysics("us-470918-reno-escalator", {
     domain: "solid_mechanics",
     refusal: { isRefused: false },
@@ -85,9 +61,9 @@ export function RenoEscalator3D() {
 
   const studioRef = useRef<StudioContext | null>(null);
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: RenoCameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = RENO_CAMERA_PRESETS[preset];
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -98,14 +74,10 @@ export function RenoEscalator3D() {
   };
 
   useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
-
-  useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = RENO_CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -115,25 +87,32 @@ export function RenoEscalator3D() {
 
     const { scene, camera, renderer, controls } = studio;
 
-    // Procedural Reno Inclined Elevator Model
-    const escalatorModel: RenoEscalatorModelResult = buildRenoEscalatorModel(inclineAngleDeg);
+    // The model persists for the studio lifetime. Incline changes mutate its
+    // one shared layout, so the canvas, camera, and belt phase never flash.
+    const escalatorModel: RenoEscalatorModelResult = buildRenoEscalatorModel();
     scene.add(escalatorModel.root);
 
     let reqId: number;
+    let beltTravelM = 0;
+    let lastInclineAngleDeg = Number.NaN;
     const clock = createStudioClock();
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
-      const { dt, simTimeSec: timeSec } = clock.pump(now);
+      const { dt } = clock.pump(now);
       const p = live.current;
+      beltTravelM += Math.max(0, p.beltSpeedMps) * dt;
+
+      if (p.inclineAngleDeg !== lastInclineAngleDeg) {
+        updateRenoEscalatorIncline(escalatorModel.nodes, p.inclineAngleDeg);
+        lastInclineAngleDeg = p.inclineAngleDeg;
+      }
 
       updateRenoEscalatorKinematics(
         escalatorModel.nodes,
         escalatorModel.materials,
-        dt,
-        timeSec,
-        p.sheaveOmegaRadPerS,
+        beltTravelM,
         p.cutawayMode,
       );
 
@@ -149,7 +128,7 @@ export function RenoEscalator3D() {
       studio.cleanup();
       studioRef.current = null;
     };
-  }, [live, inclineAngleDeg]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
@@ -169,9 +148,9 @@ export function RenoEscalator3D() {
                 ["comb_plates", "Comb Teeth"],
                 ["cleated_deck", "Cleated Deck"],
                 ["handrail", "Handrail"],
-                ["drive_machinery", "Drive Motor"],
+                ["top_drive", "Top Drive Wheel"],
                 ["top", "Top"],
-              ] as [CameraPreset, string][]
+              ] as [RenoCameraPreset, string][]
             ).map(([preset, label]) => (
               <button
                 key={preset}
@@ -244,16 +223,16 @@ export function RenoEscalator3D() {
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
               <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
-                Tread Speed:
+                Belt Speed:
               </span>
               <span className="font-bold text-amber-700 dark:text-amber-400">
-                {deckSpeedFpm} FPM ({beltSpeedMps.toFixed(2)} m/s)
+                {deckSpeedFpm} FPM ({beltSpeedMps.toFixed(3)} m/s)
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Hourly Throughput:</span>
+              <span className="text-ink-600 dark:text-ink-400">Patent Maximum:</span>
               <span className="font-bold text-emerald-700 dark:text-emerald-400">
-                {passengersPerHour.toLocaleString()} pass/h
+                {RENO_SOURCE_MAX_SINGLE_FILE_PER_HOUR.toLocaleString()} pass/h, single file
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
@@ -261,9 +240,9 @@ export function RenoEscalator3D() {
               <span className="font-bold text-cyan-800 dark:text-cyan-400">{inclineAngleDeg}°</span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Motor Power:</span>
+              <span className="text-ink-600 dark:text-ink-400">Comb Clearance:</span>
               <span className="font-bold text-purple-800 dark:text-purple-400">
-                {renoIdle.motorPowerKw.toFixed(1)} kW
+                ≤ 1/8 in ({RENO_SOURCE_COMB_CLEARANCE_MM} mm)
               </span>
             </div>
           </div>
@@ -275,33 +254,38 @@ export function RenoEscalator3D() {
           title="Reno Endless Conveyor Dynamics"
           chips={[
             { label: "Belt Speed", value: `${deckSpeedFpm} FPM` },
-            { label: "Throughput", value: `${passengersPerHour.toLocaleString()} pass/h` },
-            { label: "Incline", value: `${inclineAngleDeg}°` },
-            { label: "Power", value: `${renoIdle.motorPowerKw.toFixed(1)} kW` },
-            { label: "Safety Comb", value: "1.2mm Intermeshed" },
+            { label: "Source Speed", value: `${RENO_SOURCE_SPEED_FPM} FPM (1.016 m/s)` },
             {
-              label: "Sheave crate",
-              value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
+              label: "Source Maximum",
+              value: `${RENO_SOURCE_MAX_SINGLE_FILE_PER_HOUR.toLocaleString()}/h single file`,
             },
+            { label: "Incline", value: `${inclineAngleDeg}°` },
+            { label: "Comb Clearance", value: "≤ 1/8 in (3.175 mm)" },
+            { label: "Power Location", value: "Top wheels; bottom permitted" },
+            { label: "Drive constraint", value: "v = ωR" },
+            { label: "Kernel", value: "TS host kinematics" },
           ]}
         />
       </div>
 
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Tread Speed</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Belt Speed (source reference 200 FPM)
+              </span>
               <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {beltSpeedMps.toFixed(2)} m/s
+                {beltSpeedMps.toFixed(3)} m/s
               </span>
             </div>
             <input
               type="range"
-              min="0.30"
-              max="0.75"
-              step="0.05"
+              aria-label="Belt speed"
+              min="0.400"
+              max="1.200"
+              step="0.001"
               value={beltSpeedMps}
               onChange={(e) => updateParam("beltSpeed", Number.parseFloat(e.target.value))}
               className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
@@ -311,27 +295,7 @@ export function RenoEscalator3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Live Passenger Load
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {passengerCount} riders
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="60"
-              step="2"
-              value={passengerCount}
-              onChange={(e) => updateParam("passengerCount", Number.parseInt(e.target.value, 10))}
-              className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Truss Incline Angle
+                Truss Incline (source preference ≈25°)
               </span>
               <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
                 {inclineAngleDeg}°
@@ -339,6 +303,7 @@ export function RenoEscalator3D() {
             </div>
             <input
               type="range"
+              aria-label="Truss incline"
               min="20"
               max="35"
               step="1"

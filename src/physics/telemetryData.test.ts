@@ -14,7 +14,7 @@ describe("Physics Telemetry Data Registry", () => {
       expect(entry.governingEquation.trim().length).toBeGreaterThan(0);
       expect(entry.engineMethod.trim().length).toBeGreaterThan(0);
       expect(entry.pedagogicalInsight.trim().length).toBeGreaterThan(20);
-      if (patent.id !== "us-542846-diesel-engine") {
+      if (!["us-542846-diesel-engine", "us-3671542-kwolek-kevlar"].includes(patent.id)) {
         expect(entry.controls.length).toBeGreaterThan(0);
       }
     }
@@ -48,13 +48,17 @@ describe("Physics Telemetry Data Registry", () => {
     }
   });
 
-  test("Boyle CCD leftover US 3,923,554 bus is the published US 3,858,232 kernel", () => {
+  test("Boyle CCD legacy URL shares the published source-bounded US 3,858,232 bus", () => {
     const published = PATENT_PHYSICS_REGISTRY["us-3858232-boyle-smith-ccd"];
     const leftover = PATENT_PHYSICS_REGISTRY["us-3923554-boyle-smith-ccd"];
     expect(leftover).toBe(published);
-    expect(published.controls.some((control) => control.id === "clockFrequencyMhz")).toBe(true);
+    expect(published.controls.some((control) => control.id === "clockStepRateHz")).toBe(true);
     expect(published.controls.some((control) => control.id === "clockFreq")).toBe(false);
-    expect(published.controls.some((control) => control.id === "gateVoltageV")).toBe(true);
+    expect(published.controls.some((control) => control.id === "clockFrequencyMhz")).toBe(false);
+    expect(published.controls.some((control) => control.id === "gateVoltageV")).toBe(false);
+    expect(published.controls.some((control) => control.id === "incidentLux")).toBe(false);
+    expect(published.engineMethod).toContain("stepBoyleSmithCcdSource");
+    expect(JSON.stringify(published.computeMetrics({}))).toContain("REFUSED");
   });
 
   test("does not keep a sourceFocus facsimile slider on any catalog patent", () => {
@@ -171,6 +175,40 @@ describe("Physics Telemetry Data Registry", () => {
     expect(baseline.some((metric) => metric.unit === "SNR")).toBe(false);
   });
 
+  test("Kilby exposes the source construction and refuses an invented operating point", () => {
+    const kilby = PATENT_PHYSICS_REGISTRY["us-3138743-kilby-integrated-circuit"];
+    expect(kilby.controls.map((control) => control.id)).toEqual([
+      "sectionRevealFraction",
+      "wireArchFraction",
+      "claim1ConductiveMeansPresent",
+    ]);
+    const hidden = kilby.computeMetrics({
+      sectionRevealFraction: 0,
+      wireArchFraction: 0.55,
+      claim1ConductiveMeansPresent: 1,
+    });
+    const revealed = kilby.computeMetrics({
+      sectionRevealFraction: 0.25,
+      wireArchFraction: 0.55,
+      claim1ConductiveMeansPresent: 0,
+    });
+    expect(hidden.find((metric) => metric.label === "Printed Wafer")).toMatchObject({
+      value: "0.200 × 0.080 × 0.0025",
+      unit: "in",
+      provenance: "source-disclosed",
+    });
+    expect(revealed.find((metric) => metric.label === "Semiconductor Section Reveal")?.value).toBe(
+      "25",
+    );
+    expect(revealed.find((metric) => metric.label === "Claim 1 Conductive Means")?.value).toBe(
+      "withheld",
+    );
+    expect(revealed.find((metric) => metric.label === "Electrical Performance")?.value).toBe(
+      "refused",
+    );
+    expect(JSON.stringify(revealed)).not.toMatch(/collector current|propagation delay|MHz/i);
+  });
+
   test("Tesla Teleautomaton exposes its source-described command-step sequence", () => {
     const teleautomaton = PATENT_PHYSICS_REGISTRY["us-613809-tesla-teleautomaton"];
     const common = { rfFrequency: 150, rudderAngle: 15, propellerThrottlePct: 75 };
@@ -265,19 +303,20 @@ describe("Physics Telemetry Data Registry", () => {
   test("routes Da Vinci telemetry through the executable shared contact kernel", () => {
     const daVinci = PATENT_PHYSICS_REGISTRY["us-6331181-davinci"];
     expect(daVinciRegistryEntry).toBe(daVinci);
-    expect(daVinci.engineMethod).toBe("FrankenSimEngine.stepDaVinci");
+    expect(daVinci.engineMethod).toBe(
+      "resolveDaVinciInterfaceTopology (source-bounded TypeScript topology; quantitative mechanics refused)",
+    );
     expect(
       daVinci.computeMetrics({
-        motionScaleRatio: 4,
-        tremorFilterEnabled: 0,
-        masterInputSpeedMps: 0.75,
-        gripAngleDeg: 20,
+        compatibilitySignalPresent: 0,
+        calibrationRecordAvailable: 1,
+        engagementSignalPresent: 1,
       }),
     ).toMatchObject([
-      { label: "Illustrative offset scale", value: "4:1" },
-      { label: "Compatibility signal", value: "absent" },
-      { label: "End-effector angle", value: "20", unit: "°" },
-      { label: "Illustrative tip clearance", unit: "mm" },
+      { label: "Compatibility identifier", value: "absent" },
+      { label: "Calibration record", value: "available" },
+      { label: "Engagement", value: "confirmed" },
+      { label: "Quantitative mechanics", value: "withheld" },
     ]);
   });
 
@@ -402,21 +441,20 @@ describe("Physics Telemetry Data Registry", () => {
     }
   });
 
-  test("routes Noyce US 2,981,877 telemetry through the planar-junction kernel", () => {
+  test("routes Noyce US 2,981,877 telemetry through the source-bounded lead kernel", () => {
     const noyce = PATENT_PHYSICS_REGISTRY["us-2981877-noyce-ic"];
-    expect(noyce.engineMethod).toContain("stepNoyceIC");
+    expect(noyce.engineMethod).toContain("Source-Bounded TypeScript Topology Step");
     expect(noyce.controls.map((control) => control.id)).toEqual([
-      "reverseBias",
-      "oxideThickness",
-      "clockFrequencyMhz",
+      "oxideThicknessUm",
+      "leadStripWidthFraction",
     ]);
     expect(
-      noyce.computeMetrics({ reverseBias: 5, oxideThickness: 0.5, clockFrequencyMhz: 10 }),
+      noyce.computeMetrics({ oxideThicknessUm: 1, leadStripWidthFraction: 0.12 }),
     ).toMatchObject([
-      { label: "Depletion Barrier (W)", unit: "µm" },
-      { label: "Junction Capacitance", unit: "pF/mm²" },
-      { label: "Propagation Delay (tpd)", unit: "ns" },
-      { label: "Breakdown Margin", unit: "V", value: "30.0" },
+      { label: "Oxide Thickness", unit: "µm", value: "1.0" },
+      { label: "Lead Route", unit: "contact span", value: "0.12" },
+      { label: "Claim 1 Crossing", value: "oxide-supported" },
+      { label: "Electrical Performance", value: "refused" },
     ]);
   });
 
@@ -554,15 +592,14 @@ describe("Physics Telemetry Data Registry", () => {
     }
   });
 
-  test("routes Parsons, CCD, Kevlar, Marconi, Lamarr, Fermi, Engelbart, Linotype, and Hollerith onto their shared kernels", () => {
+  test("routes Parsons, CCD, Marconi, Lamarr, Fermi, Engelbart, Linotype, and Hollerith onto their shared kernels", () => {
     const routed: Array<[string, string]> = [
       ["us-608969-parsons-turbine", "stepParsonsMarine"],
-      ["us-3858232-boyle-smith-ccd", "stepBoyleSmithCcd"],
-      ["us-3923554-boyle-smith-ccd", "stepBoyleSmithCcd"],
-      ["us-3671542-kwolek-kevlar", "stepKevlarContinuum"],
-      ["us-586193-marconi-radio", "stepMarconiRadio"],
+      ["us-3858232-boyle-smith-ccd", "stepBoyleSmithCcdSource"],
+      ["us-3923554-boyle-smith-ccd", "stepBoyleSmithCcdSource"],
+      ["us-586193-marconi-radio", "createMarconiTransportUpdater"],
       ["us-2292387-lamarr-frequency-hopping", "stepLamarrFrequencyHopping"],
-      ["us-2708656-fermi-reactor", "stepFermiReactor"],
+      ["us-2708656-fermi-reactor", "stepFermiKinetics"],
       ["us-3541541-engelbart-mouse", "stepEngelbartMouse"],
       ["us-313224-mergenthaler-linotype", "stepMergenthalerLinotype"],
       ["us-395781-hollerith-tabulating", "stepHollerithTabulating"],
@@ -573,5 +610,53 @@ describe("Physics Telemetry Data Registry", () => {
       expect(entry.controls.some((control) => control.id === "sourceFocus")).toBe(false);
       expect(entry.computeMetrics({}).length).toBeGreaterThan(0);
     }
+  });
+
+  test("keeps Makino telemetry on exact normalized closure and an honest fs-mbd refusal", () => {
+    const makino = PATENT_PHYSICS_REGISTRY["us-4341502-makino-scara"];
+    expect(makino.engineMethod).toContain("fs-mbd::JointModel::revolute");
+    expect(makino.engineMethod).toContain("closed-chain SI dynamics refused");
+    expect(makino.controls.map((control) => control.id)).toEqual([
+      "firstLinkAngleDeg",
+      "fourthLinkAngleDeg",
+      "toolAttitudeDeg",
+      "topologyVariant",
+    ]);
+    const beltMetrics = makino.computeMetrics({
+      topologyVariant: 2,
+      toolAttitudeDeg: 73,
+    });
+    expect(beltMetrics.find((metric) => metric.label === "Tool Attitude")).toMatchObject({
+      value: "73",
+      unit: "° φ · belts 11/12",
+    });
+    const closure = beltMetrics.find((metric) => metric.label === "Fixed-Member Closure");
+    expect(closure).toMatchObject({
+      unit: "normalized error",
+      progressPct: 100,
+    });
+    expect(Number(closure?.value)).toBeLessThan(1e-12);
+    expect(makino.computeMetrics({ topologyVariant: 3, toolAttitudeDeg: 73 })).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: "Tool Attitude",
+          value: "0",
+          unit: "° · Claim 6 fixed",
+        }),
+      ]),
+    );
+  });
+
+  test("keeps Kwolek's public id separate from the preserved legacy material model", () => {
+    const publicEntry = PATENT_PHYSICS_REGISTRY["us-3671542-kwolek-kevlar"];
+    const legacyEntry = PATENT_PHYSICS_REGISTRY["_legacy-unpublished-us-3671542-kwolek-kevlar"];
+    expect(publicEntry).not.toBe(legacyEntry);
+    expect(publicEntry.controls).toEqual([]);
+    expect(publicEntry.engineMethod).toContain("model withheld");
+    expect(publicEntry.computeMetrics({}).map((metric) => metric.label)).toEqual([
+      "Claim 1",
+      "Claim 2",
+      "Visual Model",
+    ]);
   });
 });

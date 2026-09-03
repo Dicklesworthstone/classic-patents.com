@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { stepRillieuxEvaporator } from "@/physics/rillieuxEvaporatorKernel";
@@ -15,6 +15,8 @@ import {
   type RillieuxEvaporatorModelNodes,
 } from "./rillieuxEvaporatorModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
+import { StudioOverlayActionToolbar } from "./StudioOverlayActionToolbar";
+import { createWideStudioOverlayActions } from "./studioOverlayActions";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -132,8 +134,11 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
 
     const clock = createStudioClock();
     const animate = (now: number) => {
+      // Keep the lifecycle alive whether the studio is currently intersecting
+      // the viewport or not. Scheduling only in the hidden branch froze the
+      // model after its first visible frame.
+      animFrameRef.current = requestAnimationFrame(animate);
       if (!studio.isVisible()) {
-        animFrameRef.current = requestAnimationFrame(animate);
         return;
       }
       const { simTimeSec } = clock.pump(now);
@@ -197,69 +202,27 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[min(90%,26rem)] sm:max-w-[26rem]">
-          <button
-            type="button"
-            onClick={() => {
+        <StudioOverlayActionToolbar
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[min(90%,26rem)] sm:max-w-[26rem]"
+          actions={createWideStudioOverlayActions({
+            isCutaway,
+            onToggleCutaway: () => {
               setIsCutaway((prev) => !prev);
               soundEngine.playSwitchClick();
-            }}
-            className={`min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
-              isCutaway
-                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-700"
-                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
-            }`}
-            title={isCutaway ? "Switch to Solid Evaporator Shells" : "Switch to Interior Cutaway"}
-            aria-label={
-              isCutaway ? "Switch to Solid Evaporator Shells" : "Switch to Interior Cutaway"
-            }
-          >
-            <Layers className="w-4 h-4" />
-            <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
+            },
+            cutawayTitle: isCutaway
+              ? "Switch to Solid Evaporator Shells"
+              : "Switch to Interior Cutaway",
+            isAudioMuted,
+            onToggleSound: () => {
               toggleSound();
               soundEngine.playSwitchClick();
-            }}
-            className="min-h-9 p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-          >
-            {isAudioMuted ? (
-              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            ) : (
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
-              showUiOverlay
-                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
-                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-700"
-            }`}
-            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
-            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
-          >
-            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
-          </button>
-
-          <button
-            aria-label="Reset camera view"
-            type="button"
-            onClick={() => handlePresetChange("overview")}
-            className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
-          >
-            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
-        </div>
+            },
+            showUiOverlay,
+            onToggleUiOverlay: () => setShowUiOverlay(!showUiOverlay),
+            onResetCamera: () => handlePresetChange("overview"),
+          })}
+        />
 
         {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
@@ -345,6 +308,7 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
             </div>
             <input
               type="range"
+              aria-label="Juice feed rate"
               min="1000"
               max="10000"
               step="250"
@@ -367,6 +331,7 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
             </div>
             <input
               type="range"
+              aria-label="Initial raw juice Brix"
               min="8"
               max="25"
               step="1"
@@ -387,6 +352,7 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
             </div>
             <input
               type="range"
+              aria-label="Target concentrate Brix"
               min="40"
               max="75"
               step="1"

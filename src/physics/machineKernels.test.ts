@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import {
+  advanceSholesTypewriterCycle,
   ccdGatePhase,
   ccdGateSvgX,
   ccdNextPhase,
@@ -15,6 +16,7 @@ import {
   otisSchematicRailY,
   renoSchematicCleat,
   sholesCarriageStudioX,
+  sholesCarriageStudioXAtDisplayStep,
   sholesKeyStudioY,
   sholesSchematicTypebar,
   sholesTypebarPose,
@@ -27,6 +29,7 @@ import {
   stepOtisElevator,
   stepRenoEscalator,
   stepSholesTypewriter,
+  stepSholesTypewriterAtCycle,
 } from "./machineKernels";
 
 describe("Machine Kernels & Mechanical Kinematics", () => {
@@ -149,8 +152,50 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(sholesCarriageStudioX(0)).toBe(0);
     expect(sholesCarriageStudioX(1)).toBeCloseTo(-0.18, 10);
     expect(sholesCarriageStudioX(12)).toBe(0);
-    expect(sholesKeyStudioY(0, false)).toBe(0.25);
-    expect(sholesKeyStudioY(10, true)).toBeCloseTo(0.25 - 0.12 - 0.16, 10);
+    expect(sholesKeyStudioY(0, 0)).toBe(0.25);
+    expect(sholesKeyStudioY(10, 1)).toBeCloseTo(0.25 - 0.12 - 0.16, 10);
+  });
+
+  test("Sholes display cycle keeps the typebar stroke continuous while the escapement never rewinds", () => {
+    const atPeak = stepSholesTypewriterAtCycle(40, 0.35);
+    const duringReturn = stepSholesTypewriterAtCycle(40, 0.525);
+    const afterRelease = stepSholesTypewriterAtCycle(40, 0.7);
+    const nextStrokeStart = stepSholesTypewriterAtCycle(40, 1);
+
+    expect(atPeak.typebarStrokePct).toBeCloseTo(1, 10);
+    expect(atPeak.totalEscapementSteps).toBe(0);
+    expect(duringReturn.typebarStrokePct).toBeCloseTo(0.5, 10);
+    expect(duringReturn.escapementAdvancePct).toBeCloseTo(0.5, 10);
+    expect(duringReturn.totalEscapementSteps).toBeCloseTo(0.5, 10);
+    expect(afterRelease.typebarStrokePct).toBe(0);
+    expect(afterRelease.totalEscapementSteps).toBe(1);
+    expect(nextStrokeStart.totalEscapementSteps).toBe(1);
+    expect(nextStrokeStart.totalEscapementSteps).toBeGreaterThanOrEqual(
+      afterRelease.totalEscapementSteps,
+    );
+  });
+
+  test("Sholes accumulated cycle state survives a cadence change and ends visibly without a teleport", () => {
+    const cyclesAtFortyWpm = advanceSholesTypewriterCycle(0, 40, 10);
+    const beforeCadenceChange = stepSholesTypewriterAtCycle(40, cyclesAtFortyWpm);
+    const afterCadenceChange = stepSholesTypewriterAtCycle(120, cyclesAtFortyWpm);
+    const nextCycles = advanceSholesTypewriterCycle(cyclesAtFortyWpm, 120, 1 / 60);
+    const atLineEnd = stepSholesTypewriterAtCycle(40, 12);
+    const afterLineEnd = stepSholesTypewriterAtCycle(40, 20);
+
+    expect(afterCadenceChange.totalEscapementSteps).toBeCloseTo(
+      beforeCadenceChange.totalEscapementSteps,
+      10,
+    );
+    expect(nextCycles - cyclesAtFortyWpm).toBeCloseTo(1 / 30, 10);
+    expect(atLineEnd.requiresManualCarriageReturn).toBe(true);
+    expect(afterLineEnd.requiresManualCarriageReturn).toBe(true);
+    expect(afterLineEnd.displayCarriageSteps).toBe(12);
+    expect(afterLineEnd.typebarStrokePct).toBe(0);
+    expect(sholesCarriageStudioXAtDisplayStep(afterLineEnd.displayCarriageSteps)).toBeCloseTo(
+      -2.16,
+      10,
+    );
   });
 
   test("stepMergenthalerLinotype computes matrix justification, lead pot solidification, and slug ejection", () => {

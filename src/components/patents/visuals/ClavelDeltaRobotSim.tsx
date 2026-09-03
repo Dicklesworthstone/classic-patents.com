@@ -71,6 +71,11 @@ export function ClavelDeltaRobotSim() {
     state.platformCenter[2],
   ] as const;
   const baseTriangle = state.legs.map((leg) => leg.basePivot);
+  const [toolCenterX, toolCenterY] = project(toolTop);
+  const toolOrientationEnd = [
+    toolCenterX + Math.cos(state.toolAxisRotationRad) * 26,
+    toolCenterY + Math.sin(state.toolAxisRotationRad) * 15,
+  ] as const;
 
   const setClaim = (number: number, active: boolean) => {
     const key =
@@ -81,7 +86,21 @@ export function ClavelDeltaRobotSim() {
   };
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-cyan-800/55 bg-slate-950 text-slate-100 shadow-2xl">
+    <section
+      className="overflow-hidden rounded-2xl border border-cyan-800/55 bg-slate-950 text-slate-100 shadow-2xl"
+      data-testid="clavel-delta-robot-two"
+      data-clavel-topology={state.topologyVisible ? "present" : "withheld"}
+      data-clavel-paired-bars={state.pairedBarsVisible ? "two-per-leg" : "withheld"}
+      data-clavel-tool-drive={state.toolAxisVisible ? "present" : "withheld"}
+      data-clavel-bar-length={state.normalizedBarLength.toFixed(6)}
+      data-clavel-closure-residual={state.closureResidual.toExponential(3)}
+      data-clavel-platform-center={state.platformCenter.map((value) => value.toFixed(6)).join(",")}
+      data-clavel-tool-angle-rad={state.toolAxisRotationRad.toFixed(6)}
+      data-clavel-runtime-source={state.runtimeSource}
+      data-clavel-topology-owner={state.topologyOwner}
+      data-clavel-frankensim-boundary={state.frankenSimBoundary}
+      data-clavel-world-support="fixed-boundary-symbol"
+    >
       <header className="border-b border-cyan-900/70 bg-slate-900/85 px-4 py-3 sm:px-6">
         <p className="font-mono text-[11px] tracking-[0.16em] text-cyan-300">
           US 4,976,582 · THREE-LEG PARALLEL TOPOLOGY
@@ -127,6 +146,39 @@ export function ClavelDeltaRobotSim() {
               rigid relation: |bar A| = |bar B| = L*; lower-bar A displacement = lower-bar B
               displacement
             </text>
+
+            <g aria-label="Fixed-world exhibit support, not a patent part">
+              <line x1="122" y1="62" x2="638" y2="62" stroke="#94a3b8" strokeWidth="5" />
+              {[148, 196, 244, 292, 340, 388, 436, 484, 532, 580, 628].map((x) => (
+                <line
+                  key={`fixed-hatch-${x}`}
+                  x1={x}
+                  y1="62"
+                  x2={x - 14}
+                  y2="46"
+                  stroke="#64748b"
+                  strokeWidth="3"
+                />
+              ))}
+              {baseTriangle.map((basePoint, index) => {
+                const [baseX, baseY] = project(basePoint);
+                return (
+                  <line
+                    key={`fixed-hanger-${index}`}
+                    x1={baseX}
+                    y1="64"
+                    x2={baseX}
+                    y2={baseY}
+                    stroke="#64748b"
+                    strokeWidth="4"
+                    strokeDasharray="8 6"
+                  />
+                );
+              })}
+              <text x="122" y="38" fill="#cbd5e1" fontSize="10" fontFamily="monospace">
+                FIXED-WORLD SUPPORT SYMBOL · EXHIBIT FRAME, NOT A PATENT PART
+              </text>
+            </g>
 
             <polygon
               points={points(baseTriangle)}
@@ -278,6 +330,21 @@ export function ClavelDeltaRobotSim() {
                 >
                   9
                 </text>
+                <line
+                  x1={toolCenterX}
+                  y1={toolCenterY}
+                  x2={toolOrientationEnd[0]}
+                  y2={toolOrientationEnd[1]}
+                  stroke="#67e8f9"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                />
+                <circle
+                  cx={toolOrientationEnd[0]}
+                  cy={toolOrientationEnd[1]}
+                  r="5"
+                  fill="#67e8f9"
+                />
                 <text
                   x={project(toolTop)[0] + 20}
                   y={project(toolTop)[1] + 25}

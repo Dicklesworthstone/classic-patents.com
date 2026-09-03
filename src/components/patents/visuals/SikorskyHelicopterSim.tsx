@@ -3,28 +3,35 @@
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "@/components/patents/visuals/PortHamiltonianEnergyStrip";
+import { applyClaimConstraintModifications } from "@/physics/claimConstraints";
 import {
   DEFAULT_SIKORSKY_CONTROLS,
   INITIAL_SIKORSKY_STATE,
+  readSikorskyControls,
+  SIKORSKY_SCENARIO,
+  SIKORSKY_SOURCE_BOUNDARY,
   type SikorskyHelicopterControls,
   type SikorskyHelicopterMetrics,
   type SikorskyHelicopterState,
   stepSikorskyHelicopterSi,
 } from "@/physics/sikorskyHelicopterKernel";
+import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 
 const PATENT_ID = "us-2318259-sikorsky-helicopter";
+const UI_REFRESH_INTERVAL_MS = 80;
 
 export const SikorskyHelicopterSim: React.FC = () => {
   const { params, updateParam } = usePatentPhysics(PATENT_ID);
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
+  const claimResult = useMemo(
+    () => applyClaimConstraintModifications(PATENT_ID, params, claimStates),
+    [claimStates, params],
+  );
   const controls = useMemo<SikorskyHelicopterControls>(
-    () => ({
-      ...DEFAULT_SIKORSKY_CONTROLS,
-      ...params,
-    }),
-    [params],
+    () => readSikorskyControls(claimResult.modifiedParams),
+    [claimResult.modifiedParams],
   );
   const [simState, setSimState] = useState<SikorskyHelicopterState>(INITIAL_SIKORSKY_STATE);
   const [metrics, setMetrics] = useState<SikorskyHelicopterMetrics>(() => {
@@ -32,8 +39,9 @@ export const SikorskyHelicopterSim: React.FC = () => {
       .metrics;
   });
 
-  const controlsRef = useRef(controls);
-  controlsRef.current = controls;
+  const controlsRef = useLiveSimParams(controls);
+  const simStateRef = useRef<SikorskyHelicopterState>(INITIAL_SIKORSKY_STATE);
+  const metricsRef = useRef<SikorskyHelicopterMetrics>(metrics);
 
   const setControl = <K extends keyof SikorskyHelicopterControls>(
     key: K,
@@ -44,26 +52,22 @@ export const SikorskyHelicopterSim: React.FC = () => {
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Animation & simulation loop (60 FPS)
+  // Keep the physical law on a bounded fixed-step scheduler while the canvas
+  // paints every frame. React only receives the readout snapshot at 12.5 Hz;
+  // restarting an rAF effect for every simulation tick previously caused
+  // visible jank and allowed more than one loop to contend during updates.
   useEffect(() => {
     let animId: number;
-    let lastTime = performance.now();
+    const scheduler = new TickScheduler(1 / 60, performance.now() / 1000);
+    let nextUiRefreshMs = 0;
 
     const frame = (now: number) => {
-      const dt = Math.min(0.05, (now - lastTime) / 1000);
-      lastTime = now;
-
-      setSimState((prevState) => {
-        const { state: nextState, metrics: nextMetrics } = stepSikorskyHelicopterSi(
-          prevState,
-          controlsRef.current,
-          dt,
-        );
-        setMetrics(nextMetrics);
-        return nextState;
+      scheduler.pump(now / 1000, () => {
+        const next = stepSikorskyHelicopterSi(simStateRef.current, controlsRef.current, 1 / 60);
+        simStateRef.current = next.state;
+        metricsRef.current = next.metrics;
       });
 
-      // Render Canvas
       const canvas = canvasRef.current;
       if (canvas) {
         const ctx = canvas.getContext("2d");
@@ -72,11 +76,17 @@ export const SikorskyHelicopterSim: React.FC = () => {
             ctx,
             canvas.width,
             canvas.height,
-            simState,
-            metrics,
+            simStateRef.current,
+            metricsRef.current,
             controlsRef.current,
           );
         }
+      }
+
+      if (now >= nextUiRefreshMs) {
+        nextUiRefreshMs = now + UI_REFRESH_INTERVAL_MS;
+        setSimState(simStateRef.current);
+        setMetrics(metricsRef.current);
       }
 
       animId = requestAnimationFrame(frame);
@@ -84,7 +94,7 @@ export const SikorskyHelicopterSim: React.FC = () => {
 
     animId = requestAnimationFrame(frame);
     return () => cancelAnimationFrame(animId);
-  }, [simState, metrics]);
+  }, [controlsRef]);
 
   return (
     <div className="w-full bg-stone-900 border border-stone-800 rounded-xl overflow-hidden shadow-2xl p-4 sm:p-6 text-stone-100 font-sans">
@@ -92,11 +102,10 @@ export const SikorskyHelicopterSim: React.FC = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-4 border-b border-stone-800">
         <div>
           <h3 className="text-lg font-bold text-amber-400 tracking-wide">
-            Sikorsky VS-300 Aerodynamic Rotorcraft Simulator
+            Sikorsky Direct-Lift Control-System Scenario
           </h3>
           <p className="text-xs text-stone-400">
-            US 2,318,259: Single Main Rotor Cyclic/Collective Feathering & Tail Anti-Torque
-            Equilibrium
+            Source-backed linkage topology with explicitly modern, normalized aerodynamic values
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -107,7 +116,7 @@ export const SikorskyHelicopterSim: React.FC = () => {
                 : "bg-amber-950 text-amber-400 border border-amber-800 animate-pulse"
             }`}
           >
-            {simState.clutchEngaged ? "ENGINE DRIVE ACTIVE" : "AUTOROTATION FREECYCLE"}
+            {simState.clutchEngaged ? "ENGINE DRIVE ACTIVE" : "ONE-WAY DRIVE OPEN"}
           </span>
           <span
             className={`px-2.5 py-1 text-xs rounded-full font-mono font-semibold ${
@@ -148,6 +157,7 @@ export const SikorskyHelicopterSim: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="Collective pitch lever angle in degrees"
               min={2.0}
               max={16.0}
               step={0.2}
@@ -157,8 +167,8 @@ export const SikorskyHelicopterSim: React.FC = () => {
             />
             <div className="flex justify-between text-[10px] text-stone-500 mt-0.5">
               <span>2° (Descent)</span>
-              <span>9.5° (Hover)</span>
-              <span>16° (Max Climb)</span>
+              <span>6.8° (Scenario Trim)</span>
+              <span>16° (High Pitch)</span>
             </div>
           </div>
 
@@ -169,6 +179,7 @@ export const SikorskyHelicopterSim: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="Engine throttle base percentage"
               min={0}
               max={100}
               step={1}
@@ -210,6 +221,7 @@ export const SikorskyHelicopterSim: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="Fore and aft cyclic pitch angle in degrees"
               min={-10.0}
               max={10.0}
               step={0.5}
@@ -231,6 +243,7 @@ export const SikorskyHelicopterSim: React.FC = () => {
             </div>
             <input
               type="range"
+              aria-label="Anti-torque rudder pedal percentage"
               min={-100}
               max={100}
               step={5}
@@ -253,23 +266,25 @@ export const SikorskyHelicopterSim: React.FC = () => {
           </div>
         </div>
 
-        {/* Column 3: Live SI Telemetry */}
+        {/* Column 3: normalized modern-scenario telemetry */}
         <div className="space-y-2 bg-stone-950/60 p-3 rounded-lg border border-stone-800/80 font-mono">
           <div className="font-semibold text-amber-400 uppercase tracking-wider font-sans mb-2">
-            Live SI Telemetry
+            Modern Scenario Telemetry
           </div>
 
           <div className="flex justify-between border-b border-stone-800/50 pb-1">
             <span className="text-stone-400">Main Rotor Lift:</span>
             <span
               className={
-                metrics.mainRotorThrustNewtons >= 5100
+                metrics.mainRotorThrustNewtons >= metrics.aircraftWeightNewtons
                   ? "text-emerald-400 font-bold"
                   : "text-amber-400"
               }
             >
               {metrics.mainRotorThrustNewtons.toFixed(1)} N{" "}
-              <span className="text-[10px] text-stone-500">/ 5,100 N Wt</span>
+              <span className="text-[10px] text-stone-500">
+                / {metrics.aircraftWeightNewtons.toFixed(0)} N scenario weight
+              </span>
             </span>
           </div>
 
@@ -314,14 +329,19 @@ export const SikorskyHelicopterSim: React.FC = () => {
         </div>
       </div>
 
-      <div className="p-4 bg-stone-900/60 rounded-lg border border-stone-800">
-        <PortHamiltonianEnergyStrip
-          patentId={PATENT_ID}
-          params={controls as unknown as Record<string, number>}
-        />
+      <div
+        data-testid="sikorsky-source-boundary"
+        className="rounded-lg border border-amber-800/70 bg-amber-950/35 p-4 text-xs leading-relaxed text-amber-100"
+      >
+        <strong>Quantitative source boundary:</strong> {SIKORSKY_SOURCE_BOUNDARY.reason}
       </div>
 
       <div className="p-4 bg-stone-900/60 rounded-lg border border-stone-800">
+        {claimResult.refusalWarning && (
+          <p className="mb-3 rounded-lg border border-rose-800/70 bg-rose-950/60 px-3 py-2 text-xs text-rose-100">
+            {claimResult.refusalWarning}
+          </p>
+        )}
         <ClaimConstraintToggle
           patentId={PATENT_ID}
           claimStates={claimStates}
@@ -660,7 +680,7 @@ function renderHelicopterSim(
 
   ctx.fillStyle = "#38bdf8";
   ctx.fillText(
-    `Tail T×L: ${(metrics.tailRotorThrustNewtons * 4.8).toFixed(0)} N·m (CW balance)`,
+    `Scenario T×L: ${(metrics.tailRotorThrustNewtons * SIKORSKY_SCENARIO.tailBoomLengthM).toFixed(0)} N·m`,
     boxX + 8,
     boxY + 36,
   );

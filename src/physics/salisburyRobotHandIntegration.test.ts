@@ -3,7 +3,10 @@ import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
 import { applyClaimConstraintModifications, CATALOG_CLAIM_CONSTRAINTS } from "./claimConstraints";
 import { ENERGY_CHANNEL_OMISSION_REASONS, energyChannelsFor } from "./energyChannels";
 import { FrankenSimEngine } from "./engine";
-import { SALISBURY_HAND_DEFAULT_CONTROLS } from "./salisburyRobotHandKernel";
+import {
+  readSalisburyRobotHandControls,
+  SALISBURY_HAND_DEFAULT_CONTROLS,
+} from "./salisburyRobotHandKernel";
 import { specClausesFor } from "./specClauses";
 import { PATENT_PHYSICS_REGISTRY } from "./telemetryData";
 
@@ -92,13 +95,26 @@ describe("US 4,921,293 Salisbury hand full physics weave", () => {
       1: false,
       2: true,
     });
+    expect(claimOneRemoved.modifiedParams.claim1RoutingEnabled).toBe(0);
     expect([
       claimOneRemoved.modifiedParams.tensionT1N,
       claimOneRemoved.modifiedParams.tensionT2N,
       claimOneRemoved.modifiedParams.tensionT3N,
       claimOneRemoved.modifiedParams.tensionT4N,
-    ]).toEqual([0, 0, 0, 0]);
+    ]).toEqual([
+      DEFAULT_PARAMS.tensionT1N,
+      DEFAULT_PARAMS.tensionT2N,
+      DEFAULT_PARAMS.tensionT3N,
+      DEFAULT_PARAMS.tensionT4N,
+    ]);
     expect(claimOneRemoved.refusalWarning).toContain("no historic cable pretension");
+
+    const claimOneState = FrankenSimEngine.stepSalisburyRobotHand(
+      readSalisburyRobotHandControls(claimOneRemoved.modifiedParams),
+    );
+    expect(claimOneState.sourceLawApplicable).toBe(false);
+    expect(claimOneState.activeJointCoordinates).toBe(0);
+    expect(claimOneState.activeCableEndCount).toBe(0);
 
     const claimTwoRemoved = applyClaimConstraintModifications(PATENT_ID, DEFAULT_PARAMS, {
       1: true,

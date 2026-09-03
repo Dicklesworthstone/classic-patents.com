@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertCircle, Lightbulb, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MaterialCard } from "@/components/patents/MaterialCard";
 import { blackbodyRgb } from "@/physics/blackbody";
 import { stepEdisonBulb } from "@/physics/catalogKernels";
@@ -11,8 +11,10 @@ import {
   edisonKernelSource,
   ensureEdisonWasm,
   stepEdisonRadiativeBalance,
+  subscribeEdisonKernelSource,
 } from "@/physics/edisonWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { useWasmKernelSource } from "@/physics/useWasmKernelSource";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -26,7 +28,11 @@ export function EdisonBulbSim() {
     "source-high-resistance" | "reported-prior-art"
   >("source-high-resistance");
   const [isVacuumIntact, setIsVacuumIntact] = useState<boolean>(true);
-  const [kernelSource, setKernelSource] = useState(edisonKernelSource());
+  const kernelSource = useWasmKernelSource(
+    edisonKernelSource,
+    subscribeEdisonKernelSource,
+    ensureEdisonWasm,
+  );
 
   const bulb = stepEdisonBulb({ voltage, hotResistanceOhm, filamentLength: filamentLengthCm });
   const radiative = stepEdisonRadiativeBalance({
@@ -37,10 +43,6 @@ export function EdisonBulbSim() {
   if (!radiative) {
     throw new Error("Edison radiative balance refused admitted UI inputs");
   }
-  useEffect(() => {
-    void ensureEdisonWasm().then((next) => setKernelSource(next));
-  }, []);
-
   // The 1.5 Ω path sits inside the source's reported one-to-four-ohm prior
   // practice. Applying this exhibit's branch voltage is a feeder-loss
   // counterfactual, not an admitted thermal operating point.

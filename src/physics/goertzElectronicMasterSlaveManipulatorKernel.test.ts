@@ -26,44 +26,62 @@ describe("US 2,846,084 source-bounded master–slave topology", () => {
     expect(state.state).toBe("correspondence");
   });
 
-  test("makes illustrative remote contact visible as normalized position mismatch and Claim 9 reflection", () => {
+  test("confines the illustrative fragile-object obstruction to the gripper channel", () => {
     const state = stepGoertzMasterSlaveTopology({
       horizontalArmPivot: 0.4,
+      horizontalArmRoll: -0.3,
+      verticalArmPivot: 0.2,
+      verticalArmRoll: -0.1,
+      toolAxis171: 0.25,
+      toolAxis172: -0.2,
+      gripperClosure: 0.8,
       contactResistance: 1,
       tachometerDampingEnabled: 0,
       limiterEnabled: 0,
       forceReflectionEnabled: 1,
     });
 
-    expect(state.positionErrors[0]).toBeCloseTo(0.4, 12);
-    expect(state.slaveChannels[0]).toBeCloseTo(0, 12);
+    expect(state.positionErrors.slice(0, 6)).toEqual([0, 0, 0, 0, 0, 0]);
+    expect(state.slaveChannels.slice(0, 6)).toEqual(state.masterChannels.slice(0, 6));
+    expect(state.positionErrors[6]).toBeCloseTo(0.8, 12);
+    expect(state.slaveChannels[6]).toBeCloseTo(0, 12);
     expect(state.reflectedResistance).toBeCloseTo(state.errorMagnitude, 12);
     expect(state.forceReflectionEnabled).toBe(true);
+    expect(state.mismatchChannel).toBe("tool opening/closing");
     expect(state.activeClaim).toBe(9);
-    expect(state.state).toBe("force-reflecting remote contact");
+    expect(state.state).toBe("force-reflecting remote gripper obstruction");
   });
 
-  test("exposes the limiter and tachometer branch without inventing a physical speed", () => {
-    const limited = stepGoertzMasterSlaveTopology({
+  test("shows limiter and tachometer branches without changing a static pose", () => {
+    const bothPaths = stepGoertzMasterSlaveTopology({
       gripperClosure: 1,
       contactResistance: 1,
       tachometerDampingEnabled: 1,
       limiterEnabled: 1,
     });
+    const pathsOmitted = stepGoertzMasterSlaveTopology({
+      gripperClosure: 1,
+      contactResistance: 1,
+      tachometerDampingEnabled: 0,
+      limiterEnabled: 0,
+    });
     const unreflected = stepGoertzMasterSlaveTopology({
-      horizontalArmPivot: 0.7,
+      gripperClosure: 0.7,
       contactResistance: 1,
       tachometerDampingEnabled: 0,
       limiterEnabled: 0,
       forceReflectionEnabled: 0,
     });
 
-    expect(limited.limiterActive).toBe(true);
-    expect(limited.positionErrors[6]).toBeCloseTo(0.55, 12);
-    expect(limited.activeClaim).toBe(12);
+    expect(bothPaths.positionErrors).toEqual(pathsOmitted.positionErrors);
+    expect(bothPaths.slaveChannels).toEqual(pathsOmitted.slaveChannels);
+    expect(bothPaths.tachometerDampingEnabled).toBe(true);
+    expect(bothPaths.limiterEnabled).toBe(true);
+    expect(bothPaths.activeClaim).toBe(12);
     expect(unreflected.reflectedResistance).toBe(0);
-    expect(unreflected.state).toBe("remote contact without reflection");
-    expect(unreflected.activeClaim).toBe(13);
+    expect(unreflected.state).toBe("remote gripper obstruction without reflection");
+    expect(unreflected.activeClaim).toBe(1);
+    expect(unreflected.quantitativeDynamicsAvailable).toBe(false);
   });
 
   test("clamps public controls and continually reports its SI refusal", () => {
@@ -91,6 +109,8 @@ describe("US 2,846,084 source-bounded master–slave topology", () => {
     expect(state.refusal.refused).toBe(true);
     expect(state.refusal.reason).toContain("arm dimensions");
     expect(state.refusal.reason).toContain("force calibration");
-    expect(state.positionLaw).toContain("normalized");
+    expect(state.refusal.reason).toContain("limiter threshold");
+    expect(state.refusal.reason).toContain("does not numerically step");
+    expect(state.positionLaw).toContain("withholds only illustrative slave-gripper closure");
   });
 });

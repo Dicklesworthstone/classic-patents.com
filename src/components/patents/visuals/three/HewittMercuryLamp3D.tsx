@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepHewittMercuryLamp } from "@/physics/catalogKernels";
@@ -21,6 +21,8 @@ import {
   type HewittMercuryLampModelNodes,
 } from "./hewittMercuryLampModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
+import { StudioOverlayActionToolbar } from "./StudioOverlayActionToolbar";
+import { createOrbitingStudioOverlayActions } from "./studioOverlayActions";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -69,7 +71,7 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  isometric: { pos: [0, 2.5, 5.0], target: [0, 1.5, 0] },
+  isometric: { pos: [0, 2.5, 6.2], target: [0, 1.5, -0.15] },
   cathode: { pos: [-1.6, 1.6, 1.8], target: [-1.6, 1.4, 0] },
   plasmaColumn: { pos: [0, 1.6, 2.5], target: [0, 1.5, 0] },
   condenser: { pos: [1.6, 1.9, 1.8], target: [1.6, 1.7, 0] },
@@ -170,15 +172,13 @@ export function HewittMercuryLamp3D({
         },
       };
     };
-    globalTransportBus.registerUpdater("us-682690-hewitt-mercury-lamp", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-682690-hewitt-mercury-lamp");
-  }, [
-    live.current.ballastResistanceOhms,
-    live.current.condenserCoolingLevel,
-    live.current.mainsVoltageV,
-    live.current.tubeDiameterMm,
-    live.current.tubeLengthCm,
-  ]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-682690-hewitt-mercury-lamp",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
@@ -204,8 +204,8 @@ export function HewittMercuryLamp3D({
 
     const clock = createStudioClock();
     const animate = (now: number) => {
+      animFrameRef.current = requestAnimationFrame(animate);
       if (!studio.isVisible()) {
-        animFrameRef.current = requestAnimationFrame(animate);
         return;
       }
       const { dt, simTimeSec } = clock.pump(now);
@@ -240,9 +240,7 @@ export function HewittMercuryLamp3D({
 
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-      nodes.materials.forEach((m) => {
-        m.dispose();
-      });
+      nodes.dispose();
       studio.cleanup();
       studioRef.current = null;
       nodesRef.current = null;
@@ -293,75 +291,23 @@ export function HewittMercuryLamp3D({
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
-          <button
-            type="button"
-            onClick={() => {
+        <StudioOverlayActionToolbar
+          actions={createOrbitingStudioOverlayActions({
+            isAudioMuted,
+            onToggleSound: () => {
               toggleSound();
               soundEngine.playSwitchClick();
-            }}
-            className="min-h-9 p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-          >
-            {isAudioMuted ? (
-              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            ) : (
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsRotating(!isRotating)}
-            aria-pressed={isRotating}
-            className={`min-h-9 p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
-              isRotating
-                ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-700"
-                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
-            }`}
-          >
-            {isRotating ? "Stop Orbit" : "Auto Orbit"}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIsCutaway(!isCutaway)}
-            className={`min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              isCutaway
-                ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-            title={isCutaway ? "Solid Tube" : "Transparent Glass Tube Cutaway"}
-            aria-label={isCutaway ? "Solid Tube" : "Transparent Glass Tube Cutaway"}
-          >
-            <Layers className="w-4 h-4" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
-              showUiOverlay
-                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
-                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-700"
-            }`}
-            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
-            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
-          >
-            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
-          </button>
-
-          <button
-            aria-label="Reset camera view"
-            type="button"
-            onClick={() => handlePresetChange("isometric")}
-            className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
-          >
-            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </button>
-        </div>
+            },
+            isRotating,
+            onToggleRotating: () => setIsRotating(!isRotating),
+            isCutaway,
+            onToggleCutaway: () => setIsCutaway(!isCutaway),
+            cutawayTitle: isCutaway ? "Solid Tube" : "Transparent Glass Tube Cutaway",
+            showUiOverlay,
+            onToggleUiOverlay: () => setShowUiOverlay(!showUiOverlay),
+            onResetCamera: () => handlePresetChange("isometric"),
+          })}
+        />
 
         {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (

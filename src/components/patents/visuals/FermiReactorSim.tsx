@@ -1,48 +1,37 @@
 "use client";
 
-import { Activity, RotateCcw, Shield, Sparkles, Volume2, VolumeX } from "lucide-react";
-import { useEffect } from "react";
-import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
+import { Activity, RotateCcw, Shield, Sparkles } from "lucide-react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
-import { FrankenSimEngine } from "@/physics/engine";
-import { fermiLatticeCell } from "@/physics/fermiKinetics";
+import {
+  FERMI_KINETICS_SOURCE_BOUNDARY,
+  fermiLatticeCell,
+  NATURAL_URANIUM_U235_PERCENT,
+  stepFermiKinetics,
+} from "@/physics/fermiKinetics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
-import { usePatentAudio } from "./three/usePatentAudio";
+import { ClaimConstraintToggle } from "./ClaimConstraintToggle";
 
 export function FermiReactorSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-2708656-fermi-reactor");
-  const { isAudioMuted, toggleSound } = usePatentAudio();
   const controlRodWithdrawalPct = params.rodWithdrawal ?? 83.5;
   const moderatorPurityPct = params.moderatorPurity ?? 99.5;
-  const fuelEnrichmentPct = params.fuelEnrichmentPct ?? 0.72;
+  const claim1Active = (params.claim1Active ?? 1) >= 0.5;
 
-  // Compute Nuclear Kinetics via FrankenSimEngine
-  const kinetics = FrankenSimEngine.stepFermiReactor(
+  const kinetics = stepFermiKinetics(
     controlRodWithdrawalPct,
     moderatorPurityPct,
-    fuelEnrichmentPct,
+    NATURAL_URANIUM_U235_PERCENT,
+    claim1Active,
   );
 
   const kEffective = kinetics.kEffective;
-  const reactivityDollars = kinetics.reactivityDollars;
-  const thermalPowerWatts = kinetics.thermalPowerWatts;
-
-  const isSupercritical = kEffective > 1.002;
-  const isCritical = kEffective >= 0.998 && kEffective <= 1.002;
-
-  useEffect(() => {
-    if (kEffective <= 1.0 || isAudioMuted || soundEngine.getIsMuted()) return;
-    const periodMs = kinetics.geigerIntervalMs;
-    const timer = setInterval(() => {
-      soundEngine.playMorseClick();
-    }, periodMs);
-    return () => clearInterval(timer);
-  }, [kEffective, isAudioMuted, kinetics.geigerIntervalMs]);
+  const isSupercritical = claim1Active && kEffective > 1.002;
+  const isCritical = claim1Active && kEffective >= 0.998 && kEffective <= 1.002;
+  const normalizedWithdrawalPct = 100 * (1 - kinetics.controlRodInsertionFraction);
+  const absorberSvgX = 70 + (normalizedWithdrawalPct / 100) * 220;
 
   const resetToCriticality = () => {
     resetParams();
-    soundEngine.playSwitchClick();
   };
 
   return (
@@ -51,36 +40,24 @@ export function FermiReactorSim() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-amber-600 dark:text-amber-500 animate-pulse" />
+            <Activity className="w-5 h-5 text-amber-600 dark:text-amber-500" />
             <h3 className="font-serif text-lg sm:text-xl font-bold text-ink-900 dark:text-parchment-100">
-              Fermi-Szilard Chicago Pile-1 Criticality Matrix (US 2,708,656)
+              Fermi–Szilard Graphite–Uranium Lattice (US 2,708,656)
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
-            <TextWithLatex text="Observe the neutron multiplication factors: $k_{\\mathrm{eff}} = \\eta \\cdot \\epsilon \\cdot p \\cdot f \\cdot P_{\\mathrm{NL}}$." />
+            <TextWithLatex text="Claim 1 binds natural-uranium rod geometry to Figure 3's $K = 1$ contour; the specification describes $K \\propto p f \\epsilon$." />
           </p>
         </div>
 
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             type="button"
-            onClick={() => {
-              toggleSound();
-              soundEngine.playSwitchClick();
-            }}
-            aria-label={isAudioMuted ? "Unmute Geiger Clicks" : "Mute Geiger Clicks"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title={isAudioMuted ? "Unmute Geiger Clicks" : "Mute Geiger Clicks"}
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-          <button
-            type="button"
             onClick={resetToCriticality}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 bg-white/80 dark:bg-ink-900/80 text-xs font-mono text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset k=1.000</span>
+            <span>Reset teaching lens</span>
           </button>
         </div>
       </div>
@@ -97,7 +74,7 @@ export function FermiReactorSim() {
           <svg
             viewBox="0 0 400 280"
             role="img"
-            aria-label={`Fermi nuclear reactor simulation: control rods withdrawn ${controlRodWithdrawalPct} percent, k-effective ${kEffective.toFixed(3)}, thermal power ${thermalPowerWatts.toPrecision(3)} watts`}
+            aria-label={`Fermi reactor Claim 1 lattice: natural uranium rods ${claim1Active ? "present" : "removed"}; normalized absorber withdrawal ${normalizedWithdrawalPct} percent`}
             className="w-full max-w-[480px] h-auto"
           >
             {/* Core Boundary / Graphite Matrix */}
@@ -139,74 +116,56 @@ export function FermiReactorSim() {
                       stroke="rgba(255,255,255,0.15)"
                       strokeWidth="1"
                     />
-                    {/* Uranium Fuel Lump */}
-                    <circle
-                      cx={cell.cx}
-                      cy={cell.cy}
-                      r={cell.slugR}
-                      className={
-                        isSupercritical
-                          ? "fill-red-500 animate-pulse"
-                          : isCritical
-                            ? "fill-emerald-400"
-                            : "fill-amber-600"
-                      }
-                    />
+                    {/* End view of Claim 1 natural-uranium rods. */}
+                    {claim1Active && (
+                      <circle
+                        cx={cell.cx}
+                        cy={cell.cy}
+                        r={cell.slugR}
+                        className={
+                          isSupercritical
+                            ? "fill-red-500"
+                            : isCritical
+                              ? "fill-emerald-400"
+                              : "fill-amber-600"
+                        }
+                      />
+                    )}
                   </g>
                 );
               }),
             )}
 
-            {/* Cadmium Control Rods (Vertical Channels) */}
-            {/* Control Rod 1 */}
-            <g transform={`translate(140, ${kinetics.rodSvgY})`}>
+            {/* Figure 8 side-entry absorber paths, shown on fixed guides. */}
+            <g transform={`translate(${absorberSvgX}, 108)`}>
               <rect
                 x="0"
                 y="0"
-                width="8"
-                height="180"
+                width="220"
+                height="8"
                 rx="2"
                 className="fill-amber-400 stroke-amber-600"
               />
-              <circle cx="4" cy="5" r="3" className="fill-amber-500" />
+              <rect x="214" y="-5" width="12" height="18" rx="2" className="fill-slate-500" />
             </g>
-            {/* Control Rod 2 */}
-            <g transform={`translate(252, ${kinetics.rodSvgY})`}>
+            <g transform={`translate(${absorberSvgX}, 174)`}>
               <rect
                 x="0"
                 y="0"
-                width="8"
-                height="180"
+                width="220"
+                height="8"
                 rx="2"
                 className="fill-amber-400 stroke-amber-600"
               />
-              <circle cx="4" cy="5" r="3" className="fill-amber-500" />
+              <rect x="214" y="-5" width="12" height="18" rx="2" className="fill-slate-500" />
             </g>
-
-            {/* Neutron Flux Glow Overlay */}
-            {isSupercritical && (
-              <circle
-                cx="200"
-                cy="140"
-                r="90"
-                fill="url(#superFluxGlow)"
-                className="pointer-events-none animate-ping"
-                style={{ animationDuration: "2s" }}
-              />
-            )}
-            <defs>
-              <radialGradient id="superFluxGlow">
-                <stop offset="0%" stopColor="rgba(239, 68, 68, 0.4)" />
-                <stop offset="100%" stopColor="rgba(239, 68, 68, 0)" />
-              </radialGradient>
-            </defs>
 
             {/* Status Badge in Center */}
-            <g transform="translate(140, 215)">
+            <g transform="translate(90, 215)">
               <rect
                 x="0"
                 y="0"
-                width="120"
+                width="220"
                 height="24"
                 rx="6"
                 className={
@@ -219,16 +178,18 @@ export function FermiReactorSim() {
                 strokeWidth="1.5"
               />
               <text
-                x="60"
+                x="110"
                 y="16"
                 textAnchor="middle"
                 className="text-[10px] font-mono font-bold fill-white tracking-wider"
               >
-                {isSupercritical
-                  ? "SUPERCRITICAL"
-                  : isCritical
-                    ? "CRITICAL (STABLE)"
-                    : "SUBCRITICAL"}
+                {!claim1Active
+                  ? "CLAIM 1 LATTICE REMOVED"
+                  : isSupercritical
+                    ? "ABOVE UNITY · NORMALIZED"
+                    : isCritical
+                      ? "NEAR UNITY · NORMALIZED"
+                      : "BELOW UNITY · NORMALIZED"}
               </text>
             </g>
           </svg>
@@ -239,7 +200,7 @@ export function FermiReactorSim() {
           <div className="p-4 rounded-xl bg-white/90 dark:bg-ink-900/90 border border-parchment-300 dark:border-ink-800 shadow-sm space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold uppercase tracking-wider text-ink-500 dark:text-ink-400">
-                Point Kinetics Telemetry
+                Source topology reader
               </span>
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             </div>
@@ -247,7 +208,7 @@ export function FermiReactorSim() {
             <div className="grid grid-cols-2 gap-3 font-mono text-xs">
               <div className="p-2.5 rounded-lg bg-parchment-100 dark:bg-ink-800/60 border border-parchment-200 dark:border-ink-700">
                 <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-                  k_eff Multiplier
+                  Normalized k_eff lens
                 </span>
                 <span
                   className={`text-sm font-bold ${
@@ -258,65 +219,49 @@ export function FermiReactorSim() {
                         : "text-blue-600 dark:text-blue-400"
                   }`}
                 >
-                  {kEffective.toFixed(4)}
+                  {claim1Active ? kEffective.toFixed(4) : "REFUSED"}
                 </span>
                 <span className="text-[10px] text-ink-500 block mt-0.5">
-                  ${reactivityDollars.toFixed(2)} Reactivity
+                  not a calibrated rod-worth curve
                 </span>
               </div>
               <div className="p-2.5 rounded-lg bg-parchment-100 dark:bg-ink-800/60 border border-parchment-200 dark:border-ink-700">
                 <span className="text-[10px] text-ink-500 dark:text-ink-400 block">
-                  Thermal Output
+                  Claim 1 fuel basis
                 </span>
                 <span className="text-sm font-bold text-amber-600 dark:text-amber-400">
-                  {thermalPowerWatts.toLocaleString()} W
+                  {claim1Active ? "Natural uranium rods" : "Rod lattice removed"}
                 </span>
                 <span className="text-[10px] text-ink-500 block mt-0.5">
-                  {kinetics.thermalFluxE7}e7 n/cm²s
+                  {NATURAL_URANIUM_U235_PERCENT.toFixed(2)}% U-235 modern reference
                 </span>
               </div>
             </div>
           </div>
 
-          <TwoClocksStrip
-            title="prompt lifetime vs delayed period"
-            fast={{
-              name: "Prompt neutrons",
-              period: "0.1",
-              scale: "ms",
-              detail:
-                "Mean lifetime of a fission neutron in the graphite lattice. Alone, this is too fast to control.",
-            }}
-            slow={{
-              name: "Delayed period",
-              period:
-                kinetics.reactorPeriodSeconds > 0 ? kinetics.reactorPeriodSeconds.toFixed(1) : "∞",
-              scale: "s",
-              detail:
-                kEffective >= 0.998 && kEffective <= 1.002
-                  ? "At delayed critical, precursor decays (β ≈ 0.0065) set the pace Fermi could walk."
-                  : kEffective > 1
-                    ? "Supercritical: e-folding time of the delayed-neutron precursors, not the prompt flash."
-                    : "Subcritical: neutron population e-folds down on the delayed time scale.",
-            }}
-          />
+          <p className="rounded-xl border border-amber-900/20 dark:border-ink-800 bg-amber-50/70 dark:bg-ink-900/70 p-3 text-xs leading-relaxed text-ink-700 dark:text-ink-300">
+            <strong className="text-ink-900 dark:text-parchment-100">Source boundary.</strong>{" "}
+            {FERMI_KINETICS_SOURCE_BOUNDARY}
+          </p>
 
           {/* Core Controls */}
           <div className="p-4 rounded-xl bg-white/90 dark:bg-ink-900/90 border border-parchment-300 dark:border-ink-800 shadow-sm space-y-4">
             <span className="text-xs font-mono font-bold uppercase tracking-wider text-ink-500 dark:text-ink-400 block">
-              Cadmium & Moderator Tuning
+              Source-bounded controls
             </span>
 
             <div className="space-y-2">
               <div className="flex justify-between text-xs">
-                <span className="text-ink-700 dark:text-ink-300">Control Rod Withdrawal:</span>
+                <span className="text-ink-700 dark:text-ink-300">
+                  Normalized Absorber Withdrawal:
+                </span>
                 <span className="font-mono font-bold text-amber-600">
-                  {controlRodWithdrawalPct}%
+                  {normalizedWithdrawalPct}%
                 </span>
               </div>
               <input
                 type="range"
-                aria-label="Control Rod Withdrawal"
+                aria-label="Normalized Absorber Withdrawal"
                 min="0"
                 max="100"
                 step="0.5"
@@ -328,13 +273,13 @@ export function FermiReactorSim() {
 
             <div className="space-y-2">
               <div className="flex justify-between text-xs">
-                <span className="text-ink-700 dark:text-ink-300">Graphite Moderator Purity:</span>
+                <span className="text-ink-700 dark:text-ink-300">Declared Graphite Purity:</span>
                 <span className="font-mono font-bold text-amber-600">{moderatorPurityPct}%</span>
               </div>
               <input
                 type="range"
-                aria-label="Graphite Moderator Purity"
-                min="80"
+                aria-label="Declared Graphite Purity"
+                min="95"
                 max="100"
                 step="0.5"
                 value={moderatorPurityPct}
@@ -343,24 +288,11 @@ export function FermiReactorSim() {
               />
             </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs">
-                <span className="text-ink-700 dark:text-ink-300">U-235 Enrichment:</span>
-                <span className="font-mono font-bold text-amber-600">
-                  {fuelEnrichmentPct.toFixed(2)}%
-                </span>
-              </div>
-              <input
-                type="range"
-                aria-label="Uranium-235 Enrichment"
-                min="0.5"
-                max="1.2"
-                step="0.01"
-                value={fuelEnrichmentPct}
-                onChange={(e) => updateParam("fuelEnrichmentPct", Number(e.target.value))}
-                className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
-              />
-            </div>
+            <ClaimConstraintToggle
+              patentId="us-2708656-fermi-reactor"
+              claimStates={{ 1: claim1Active }}
+              onToggleClaim={(_claimNumber, active) => updateParam("claim1Active", active ? 1 : 0)}
+            />
           </div>
         </div>
       </div>

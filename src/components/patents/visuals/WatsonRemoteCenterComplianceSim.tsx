@@ -23,12 +23,19 @@ export function WatsonRemoteCenterComplianceSim() {
   const topology = Number(pose.remoteCenterTopology);
   const antiTwist = Number(pose.antiTwistConstraint);
 
-  const toolX = 320 + pose.translationOffset * 105;
-  const toolAngle = (pose.remainingAxisMismatch - 0.22) * 0.48;
-  const toolEndX = toolX + Math.sin(toolAngle) * 88;
-  const toolEndY = 220 + Math.cos(toolAngle) * 88;
-  const remoteX = pose.remoteCenterTopology ? toolEndX : toolX;
-  const remoteY = pose.remoteCenterTopology ? toolEndY : 145;
+  const holeX = 507;
+  const contactY = 302;
+  const translatedX = 320 + pose.translationPhase * (holeX - 320);
+  const toolAngle = pose.remainingAxisMismatch * 0.34;
+  const toolLength = 88;
+  const toolX = pose.remoteCenterTopology
+    ? translatedX - Math.sin(toolAngle) * toolLength
+    : translatedX;
+  const toolY = pose.remoteCenterTopology ? contactY - Math.cos(toolAngle) * toolLength : 214;
+  const toolEndX = toolX + Math.sin(toolAngle) * toolLength;
+  const toolEndY = toolY + Math.cos(toolAngle) * toolLength;
+  const remoteX = pose.remoteCenterTopology ? translatedX : toolX;
+  const remoteY = pose.remoteCenterTopology ? contactY : toolY;
 
   return (
     <section className="overflow-hidden rounded-2xl border border-cyan-800/60 bg-slate-950 text-slate-100 shadow-2xl">
@@ -73,7 +80,8 @@ export function WatsonRemoteCenterComplianceSim() {
               FIGS. 4 / 5 · NORMALIZED EXHIBIT
             </text>
             <text x="22" y="393" fill="#94a3b8" fontSize="10" fontFamily="monospace">
-              geometry only — no dimensional or contact-force reconstruction
+              FIG. 4 translation {percent(pose.translationPhase)} · FIG. 5 rotation{" "}
+              {percent(pose.rotationPhase)} · topology only
             </text>
 
             <g opacity="0.48" stroke="#94a3b8" strokeDasharray="5 5">
@@ -96,7 +104,7 @@ export function WatsonRemoteCenterComplianceSim() {
               MACHINE PORTION 18
             </text>
             <rect
-              x={toolX - 73}
+              x={translatedX - 73}
               y="120"
               width="146"
               height="16"
@@ -104,19 +112,19 @@ export function WatsonRemoteCenterComplianceSim() {
               fill="#1e293b"
               stroke="#e2e8f0"
             />
-            <text x={toolX + 82} y="133" fill="#cbd5e1" fontSize="10" fontFamily="monospace">
+            <text x={translatedX + 82} y="133" fill="#cbd5e1" fontSize="10" fontFamily="monospace">
               ring 22
             </text>
             <rect
               x={toolX - 66}
-              y="204"
+              y={toolY - 8}
               width="132"
               height="16"
               rx="5"
               fill="#1e293b"
               stroke="#fbbf24"
             />
-            <text x={toolX + 74} y="217" fill="#fde68a" fontSize="10" fontFamily="monospace">
+            <text x={toolX + 74} y={toolY + 5} fill="#fde68a" fontSize="10" fontFamily="monospace">
               plate 20
             </text>
 
@@ -124,8 +132,8 @@ export function WatsonRemoteCenterComplianceSim() {
               <line
                 key={fixedX}
                 x1={fixedX}
-                y1="99"
-                x2={toolX + (index - 1) * 48}
+                y1="204"
+                x2={translatedX + (index - 1) * 48}
                 y2="120"
                 stroke="#22d3ee"
                 strokeWidth="5"
@@ -139,7 +147,7 @@ export function WatsonRemoteCenterComplianceSim() {
             </text>
 
             {[0, 1, 2].map((index) => {
-              const ringX = toolX + (index - 1) * 48;
+              const ringX = translatedX + (index - 1) * 48;
               const plateX = toolX + (index - 1) * 36;
               return (
                 <g key={index}>
@@ -153,7 +161,14 @@ export function WatsonRemoteCenterComplianceSim() {
                     strokeDasharray="4 5"
                     opacity="0.75"
                   />
-                  <line x1={ringX} y1="136" x2={plateX} y2="204" stroke="#f59e0b" strokeWidth="5" />
+                  <line
+                    x1={ringX}
+                    y1="136"
+                    x2={plateX}
+                    y2={toolY - 8}
+                    stroke="#f59e0b"
+                    strokeWidth="5"
+                  />
                 </g>
               );
             })}
@@ -166,7 +181,7 @@ export function WatsonRemoteCenterComplianceSim() {
 
             <line
               x1={toolX}
-              y1="220"
+              y1={toolY}
               x2={toolEndX}
               y2={toolEndY}
               stroke="#e2e8f0"
@@ -175,7 +190,7 @@ export function WatsonRemoteCenterComplianceSim() {
             />
             <line
               x1={toolX}
-              y1="220"
+              y1={toolY}
               x2={toolEndX}
               y2={toolEndY}
               stroke="#f8fafc"
@@ -195,7 +210,7 @@ export function WatsonRemoteCenterComplianceSim() {
               strokeDasharray="6 5"
             />
 
-            <g transform={`translate(507 302)`}>
+            <g transform={`translate(${holeX} ${contactY})`}>
               <path
                 d="M -46 0 L -18 -23 L 18 -23 L 46 0 L 18 23 L -18 23 Z"
                 fill="#334155"
@@ -220,8 +235,8 @@ export function WatsonRemoteCenterComplianceSim() {
               <line
                 x1={toolEndX}
                 y1={toolEndY}
-                x2="492"
-                y2="302"
+                x2={holeX - 15}
+                y2={contactY}
                 stroke="#fbbf24"
                 strokeWidth="2"
                 markerEnd="url(#watson-rcc-arrow)"
@@ -261,14 +276,20 @@ export function WatsonRemoteCenterComplianceSim() {
               <g>
                 <ellipse
                   cx={toolX}
-                  cy="205"
+                  cy={toolY - 7}
                   rx="29"
                   ry="8"
                   fill="none"
                   stroke="#c084fc"
                   strokeWidth="3"
                 />
-                <text x={toolX + 38} y="199" fill="#e9d5ff" fontSize="10" fontFamily="monospace">
+                <text
+                  x={toolX + 38}
+                  y={toolY - 13}
+                  fill="#e9d5ff"
+                  fontSize="10"
+                  fontFamily="monospace"
+                >
                   bellows 90 · claim 2
                 </text>
               </g>
@@ -299,7 +320,7 @@ export function WatsonRemoteCenterComplianceSim() {
         <form className="space-y-4 p-4 sm:p-5" onSubmit={(event) => event.preventDefault()}>
           <fieldset className="space-y-2">
             <label htmlFor={contactId} className="block text-xs font-medium text-slate-200">
-              Chamfer contact position{" "}
+              Contact-guided sequence{" "}
               <span className="float-right font-mono text-cyan-300">{percent(contact)}</span>
             </label>
             <input
@@ -310,7 +331,7 @@ export function WatsonRemoteCenterComplianceSim() {
               max="1"
               step="0.01"
               value={contact}
-              aria-label="Chamfer contact position"
+              aria-label="Contact-guided alignment sequence"
               onChange={(event) =>
                 updateParam("lateralContactFraction", Number(event.target.value))
               }

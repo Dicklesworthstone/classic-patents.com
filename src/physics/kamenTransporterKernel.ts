@@ -1,73 +1,103 @@
 import type { TapeUpdater } from "./useFrankenSimPhysics";
 
 /**
- * kamenTransporterKernel.ts
+ * Source-bound topology reader for US 5,701,965 — Human Transporter.
  *
- * SI Physics Kernel for US 5,701,965 — Dean Kamen Human Transporter (iBOT / Segway).
- * Computes inverted-pendulum dynamic self-balancing feedback, pitch rate sensor fusion,
- * cluster wheel planetary kinematics, and stair-climbing weight transfer in SI units.
+ * The checked grant establishes a motorized drive/control-loop relationship,
+ * independently controlled cluster wheels, and the ordering of balance,
+ * transfer, climb, and transition modes. It does not provide a controller
+ * gain, torque, speed, mass, wheel radius, or recovery-margin datum. This
+ * module therefore publishes only the state topology needed by the 2D and 3D
+ * claim-reading instruments.
  */
 
+export const KAMEN_TRANSPORTER_TOPOLOGY_STATES = [
+  "ground_support",
+  "balance",
+  "stair_start",
+  "weight_transfer",
+  "climb",
+  "transition",
+] as const;
+
+export type KamenTransporterTopologyState = (typeof KAMEN_TRANSPORTER_TOPOLOGY_STATES)[number];
+
+export const KAMEN_TRANSPORTER_TOPOLOGY_LABELS: Readonly<
+  Record<KamenTransporterTopologyState, string>
+> = {
+  ground_support: "Ground-support cluster",
+  balance: "Fore-aft balance mode",
+  stair_start: "Stair start: next pair placed",
+  weight_transfer: "Weight-transfer state",
+  climb: "Climb: balance and next-pair placement",
+  transition: "Transition gate before balance",
+};
+
 export interface KamenTransporterControls {
-  /** Desired rider pitch offset (degrees lean: negative = forward, positive = backward) [-15..15] */
+  /** Reader-selected claim topology state, not a timed or dimensional input. */
+  topologyState: KamenTransporterTopologyState;
+  /** Claim 1 comparison probe: false withdraws the balance-loop relation. */
+  balanceTopologyEnabled: boolean;
+  /** Claim 16 comparison probe: false withdraws the paired cluster topology. */
+  clusterTopologyEnabled: boolean;
+  /**
+   * Legacy modern-scenario controls retained for migration compatibility only.
+   * The public US 5,701,965 route must use topologyState, never these values.
+   */
   riderPitchLeanDeg: number;
-  /** Command velocity bias (m/s) [-3.0..5.0] */
   velocityCommandMs: number;
-  /** Yaw steering input / differential turn rate [-1.0..1.0] */
   yawSteering: number;
-  /** Transporter operating mode */
   operatingMode: "balance_2wheel" | "standard_4wheel" | "stair_climb" | "lean_mode";
-  /** Stair step height (m) [0.10..0.22] */
   stairStepHeightM: number;
-  /** Rider payload mass (kg) [40..120] */
   riderMassKg: number;
 }
 
 export interface KamenTransporterTelemetry {
-  /** True pitch angle of chassis/rider (rad) */
+  topologyState: KamenTransporterTopologyState;
+  stateLabel: string;
+  /** Claim 22 / Claim 26 balance relationship is represented, not measured. */
+  balanceLoopActive: boolean;
+  /** Claims 16–21 paired cluster-wheel topology is represented. */
+  clusterTopologyActive: boolean;
+  stairSequenceActive: boolean;
+  wheelControlMode:
+    | "independent-ground-wheel-control"
+    | "balance-mode"
+    | "cluster-positioning"
+    | "weight-transfer-position-hold"
+    | "balance-and-cluster-coordination"
+    | "transition-gate"
+    | "topology-withheld";
+  /** Render-only normalized cluster pose; it is not a printed angle. */
+  clusterDisplayPoseRad: number;
+  sourceClaimNumbers: readonly number[];
+  sourceBoundary: string;
+  /** Legacy modern-scenario fields. Never present them as grant values. */
   pitchAngleRad: number;
-  /** Pitch angle of chassis/rider (deg) */
   pitchAngleDeg: number;
-  /** Pitch angular rate d(theta)/dt (rad/s) */
   pitchRateRadS: number;
-  /** Forward linear velocity of transporter (m/s) */
   forwardVelocityMs: number;
-  /** Forward linear acceleration (m/s^2) */
   forwardAccelerationMs2: number;
-  /** Total balancing motor torque commanded (N*m) */
   balanceTorqueNm: number;
-  /** Left wheel traction torque (N*m) */
   leftWheelTorqueNm: number;
-  /** Right wheel traction torque (N*m) */
   rightWheelTorqueNm: number;
-  /** Cluster assembly rotation angle (deg) */
   clusterAngleDeg: number;
-  /** Center of gravity height above ground (m) */
   centerOfGravityHeightM: number;
-  /** Restoring ground traction force (N) */
   groundTractionForceN: number;
-  /** Inverted pendulum natural frequency omega_n = sqrt(g / h) (rad/s) */
   naturalFrequencyRadS: number;
-  /** Dynamic stability margin [0..1] */
   stabilityMargin: number;
-  /** Gyroscopic rate sensor output (V / rad/s) */
   gyroSensorRateRadS: number;
-  /** Accelerometer fore-aft gravity projection (m/s^2) */
   accelForeAftMs2: number;
-  /** True if currently in active 2-wheel dynamic balance */
   isBalancing: boolean;
-  /** True if actively climbing stairs */
   isClimbing: boolean;
-  /** Refusal flag if pitch angle exceeds safe dynamic envelope */
   pitchRefusal: boolean;
-  /** Refusal reason */
   refusalReason?: string;
 }
 
 /**
- * Dynamic pose state owned by the fixed-step transport tape. It is separate
- * from the stateless operating-point telemetry so badges and static diagrams
- * can still request a deterministic instantaneous solution.
+ * Render state owned by the fixed-step transport tape. The fields retain the
+ * shared machine-tape shape, but no wheel speed or travel quantity is inferred
+ * from the patent: both remain display-neutral at zero.
  */
 export interface KamenTransporterMotionState {
   controls: KamenTransporterControls;
@@ -77,6 +107,9 @@ export interface KamenTransporterMotionState {
 }
 
 export const KAMEN_TRANSPORTER_DEFAULT_CONTROLS: KamenTransporterControls = {
+  topologyState: "balance",
+  balanceTopologyEnabled: true,
+  clusterTopologyEnabled: true,
   riderPitchLeanDeg: 0,
   velocityCommandMs: 0,
   yawSteering: 0,
@@ -85,23 +118,27 @@ export const KAMEN_TRANSPORTER_DEFAULT_CONTROLS: KamenTransporterControls = {
   riderMassKg: 75,
 };
 
-// Physical Constants for Transporter
-const TRANSPORTER_UNLADEN_MASS_KG = 65.0; // Chassis, batteries, cluster drives
-const GRAVITY_M_S2 = 9.80665;
-/** Normalized display scenario radius; not asserted to be a patent measurement. */
-export const KAMEN_TRANSPORTER_SCENARIO_WHEEL_RADIUS_M = 0.15;
-const _CLUSTER_ARM_RADIUS_M = 0.18; // 360 mm cluster pitch circle
-const _TRACK_WIDTH_M = 0.6; // 600 mm lateral wheelbase
-const MAX_MOTOR_TORQUE_NM = 120.0;
-const MAX_SAFE_PITCH_RAD = 0.436; // ~25 degrees
+export const KAMEN_TRANSPORTER_DEFAULT_TOPOLOGY_STATE_INDEX = 1;
 
-// PID Controller Gains for Inverted Pendulum
-const K_PITCH_KP = 240.0; // N*m / rad
-const K_PITCH_KD = 42.0; // N*m / (rad/s)
-const K_VEL_KV = 35.0; // N*m / (m/s)
+export const KAMEN_TOPOLOGY_SOURCE_BOUNDARY =
+  "US 5,701,965 describes control relationships and state ordering, not numerical torque, speed, mass, wheel-radius, gain, force, or stability-margin values.";
+
+// Legacy modern-scenario constants are preserved below so older saved local
+// sessions still deserialize. They are intentionally quarantined from the
+// public source-bound topology path.
+const TRANSPORTER_UNLADEN_MASS_KG = 65.0;
+const GRAVITY_M_S2 = 9.80665;
+export const KAMEN_TRANSPORTER_SCENARIO_WHEEL_RADIUS_M = 0.15;
+const MAX_MOTOR_TORQUE_NM = 120.0;
+const MAX_SAFE_PITCH_RAD = 0.436;
+const K_PITCH_KP = 240.0;
+const K_PITCH_KD = 42.0;
+const K_VEL_KV = 35.0;
 
 /**
- * Executes one SI tick of the Dean Kamen Inverted Pendulum and Cluster Kinematics Kernel.
+ * Legacy modern illustrative calculation. It is preserved for migration only
+ * and is not evidence of a US 5,701,965 operating value. Public exhibits must
+ * use stepKamenTransporterTopology instead.
  */
 export function stepKamenTransporterSi(
   controls: KamenTransporterControls,
@@ -191,7 +228,10 @@ export function stepKamenTransporterSi(
     ? 0.0
     : Math.max(0.0, 1.0 - Math.abs(pitchAngleRad) / MAX_SAFE_PITCH_RAD);
 
+  const topology = stepKamenTransporterTopology(controls);
+
   return {
+    ...topology,
     pitchAngleRad,
     pitchAngleDeg,
     pitchRateRadS,
@@ -224,8 +264,18 @@ export function readKamenTransporterControls(
     modeVal === "standard_4wheel" || modeVal === "stair_climb" || modeVal === "lean_mode"
       ? modeVal
       : "balance_2wheel";
+  const topologyState = topologyStateFromParams(params, operatingMode);
 
   return {
+    topologyState,
+    balanceTopologyEnabled: readTopologyBoolean(
+      params.claim1BalanceEnabled ?? params.balanceTopologyEnabled,
+      KAMEN_TRANSPORTER_DEFAULT_CONTROLS.balanceTopologyEnabled,
+    ),
+    clusterTopologyEnabled: readTopologyBoolean(
+      params.claim16ClusterEnabled ?? params.clusterTopologyEnabled,
+      KAMEN_TRANSPORTER_DEFAULT_CONTROLS.clusterTopologyEnabled,
+    ),
     riderPitchLeanDeg:
       typeof params.riderPitchLeanDeg === "number"
         ? params.riderPitchLeanDeg
@@ -251,40 +301,159 @@ export function readKamenTransporterControls(
   };
 }
 
+function readTopologyBoolean(
+  value: number | boolean | string | undefined,
+  fallback: boolean,
+): boolean {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number" && Number.isFinite(value)) return value >= 0.5;
+  return fallback;
+}
+
+function topologyStateFromParams(
+  params: Record<string, number | boolean | string>,
+  legacyMode: KamenTransporterControls["operatingMode"],
+): KamenTransporterTopologyState {
+  const candidate = params.topologyState;
+  if (
+    typeof candidate === "string" &&
+    KAMEN_TRANSPORTER_TOPOLOGY_STATES.includes(candidate as never)
+  ) {
+    return candidate as KamenTransporterTopologyState;
+  }
+  if (typeof candidate === "number" && Number.isFinite(candidate)) {
+    return KAMEN_TRANSPORTER_TOPOLOGY_STATES[
+      Math.max(0, Math.min(KAMEN_TRANSPORTER_TOPOLOGY_STATES.length - 1, Math.round(candidate)))
+    ];
+  }
+
+  // Existing saved controls are mapped to their nearest source topology only.
+  switch (legacyMode) {
+    case "standard_4wheel":
+      return "ground_support";
+    case "stair_climb":
+      return "climb";
+    case "lean_mode":
+      return "weight_transfer";
+    default:
+      return KAMEN_TRANSPORTER_DEFAULT_CONTROLS.topologyState;
+  }
+}
+
+const CLUSTER_DISPLAY_POSE_RADIANS: Readonly<Record<KamenTransporterTopologyState, number>> = {
+  ground_support: 0,
+  balance: 0,
+  stair_start: Math.PI / 6,
+  weight_transfer: Math.PI / 3,
+  climb: Math.PI / 2,
+  transition: 0,
+};
+
+/**
+ * Resolve only the relations the checked claims describe. The angle is a
+ * normalized illustration pose used to separate the six states; it is never a
+ * claimed cluster angle or a dynamic calculation.
+ */
+export function stepKamenTransporterTopology(
+  controls: KamenTransporterControls,
+): KamenTransporterTelemetry {
+  const requestedState = controls.topologyState;
+  const requiresCluster = !["ground_support", "balance"].includes(requestedState);
+  const topologyState =
+    !controls.clusterTopologyEnabled && requiresCluster ? "ground_support" : requestedState;
+  const balanceState =
+    topologyState === "balance" || topologyState === "stair_start" || topologyState === "climb";
+  const balanceLoopActive = controls.balanceTopologyEnabled && balanceState;
+  const stairSequenceActive = ["stair_start", "weight_transfer", "climb", "transition"].includes(
+    topologyState,
+  );
+
+  let wheelControlMode: KamenTransporterTelemetry["wheelControlMode"] =
+    "independent-ground-wheel-control";
+  let sourceClaimNumbers: readonly number[] = [16, 21];
+  if (!controls.clusterTopologyEnabled && requiresCluster) {
+    wheelControlMode = "topology-withheld";
+    sourceClaimNumbers = [16, 21];
+  } else if (topologyState === "balance") {
+    wheelControlMode = balanceLoopActive ? "balance-mode" : "topology-withheld";
+    sourceClaimNumbers = [21, 22];
+  } else if (topologyState === "stair_start") {
+    wheelControlMode = balanceLoopActive
+      ? "balance-and-cluster-coordination"
+      : "cluster-positioning";
+    sourceClaimNumbers = [21, 22, 26];
+  } else if (topologyState === "weight_transfer") {
+    wheelControlMode = "weight-transfer-position-hold";
+    sourceClaimNumbers = [21, 23, 26];
+  } else if (topologyState === "climb") {
+    wheelControlMode = balanceLoopActive
+      ? "balance-and-cluster-coordination"
+      : "cluster-positioning";
+    sourceClaimNumbers = [21, 22, 26];
+  } else if (topologyState === "transition") {
+    wheelControlMode = "transition-gate";
+    sourceClaimNumbers = [21, 24, 25];
+  }
+
+  return {
+    topologyState,
+    stateLabel: KAMEN_TRANSPORTER_TOPOLOGY_LABELS[topologyState],
+    balanceLoopActive,
+    clusterTopologyActive: controls.clusterTopologyEnabled,
+    stairSequenceActive,
+    wheelControlMode,
+    clusterDisplayPoseRad: CLUSTER_DISPLAY_POSE_RADIANS[topologyState],
+    sourceClaimNumbers,
+    sourceBoundary: KAMEN_TOPOLOGY_SOURCE_BOUNDARY,
+    // Compatibility-only values for legacy callers. Public components and
+    // registry entries must not read or label them.
+    pitchAngleRad: 0,
+    pitchAngleDeg: 0,
+    pitchRateRadS: 0,
+    forwardVelocityMs: 0,
+    forwardAccelerationMs2: 0,
+    balanceTorqueNm: 0,
+    leftWheelTorqueNm: 0,
+    rightWheelTorqueNm: 0,
+    clusterAngleDeg: 0,
+    centerOfGravityHeightM: 0,
+    groundTractionForceN: 0,
+    naturalFrequencyRadS: 0,
+    stabilityMargin: 0,
+    gyroSensorRateRadS: 0,
+    accelForeAftMs2: 0,
+    isBalancing: balanceLoopActive,
+    isClimbing: topologyState === "climb",
+    pitchRefusal: false,
+  };
+}
+
 export function createKamenTransporterMotionState(
   controls: KamenTransporterControls = KAMEN_TRANSPORTER_DEFAULT_CONTROLS,
 ): KamenTransporterMotionState {
   return {
     controls,
-    telemetry: stepKamenTransporterSi(controls),
+    telemetry: stepKamenTransporterTopology(controls),
     wheelRollAngleRad: 0,
     travelMeters: 0,
   };
 }
 
 /**
- * Advance the single display scenario by one fixed bus tick. The rolling law
- * is theta_next = theta + (v / R) dt: angle is integrated here exactly once,
- * and renderers receive the terminal angle without reapplying wheel speed.
+ * Advance the source-reading tape by one fixed bus tick. The grant supplies a
+ * state sequence, not timing, travel, or wheel-speed values, so this updater
+ * deliberately carries a stable display pose rather than inventing motion.
  */
 export function advanceKamenTransporterMotion(
   controls: KamenTransporterControls,
-  previous: KamenTransporterMotionState = createKamenTransporterMotionState(controls),
-  dt: number = 1 / 60,
+  _previous: KamenTransporterMotionState = createKamenTransporterMotionState(controls),
+  _dt: number = 1 / 60,
 ): KamenTransporterMotionState {
-  const safeDt = Number.isFinite(dt) ? Math.max(0, dt) : 0;
-  const telemetry = stepKamenTransporterSi(controls);
-  // A refused state holds the last legal visual pose rather than multiplying
-  // the retained phase by a newly-zero speed and snapping the wheels backward.
-  const legalVelocityMs = telemetry.pitchRefusal ? 0 : telemetry.forwardVelocityMs;
-
   return {
     controls,
-    telemetry,
-    wheelRollAngleRad:
-      previous.wheelRollAngleRad +
-      (legalVelocityMs / KAMEN_TRANSPORTER_SCENARIO_WHEEL_RADIUS_M) * safeDt,
-    travelMeters: previous.travelMeters + legalVelocityMs * safeDt,
+    telemetry: stepKamenTransporterTopology(controls),
+    wheelRollAngleRad: 0,
+    travelMeters: 0,
   };
 }
 
@@ -298,7 +467,7 @@ export function resetKamenTransporterTapeState(): void {
   kamenTransporterTapeState = undefined;
 }
 
-/** One shared fixed-step tape for the transporter 2D/3D teaching faces. */
+/** One shared fixed-step source-reading tape for the transporter teaching faces. */
 export function createKamenTransporterTransportUpdater(
   getControls: () => KamenTransporterControls,
 ): TapeUpdater {
@@ -308,15 +477,14 @@ export function createKamenTransporterTransportUpdater(
 
     return {
       refusal: {
-        isRefused: next.telemetry.pitchRefusal,
-        reason: next.telemetry.refusalReason,
+        isRefused: false,
       },
       machine: {
-        poseXMeters: next.travelMeters,
+        poseXMeters: 0,
         poseYMeters: 0,
         headingRad: 0,
-        modeLabel: next.controls.operatingMode,
-        wheelSpeedMps: next.telemetry.forwardVelocityMs,
+        modeLabel: next.telemetry.stateLabel,
+        wheelSpeedMps: 0,
         wheelRollAngleRad: next.wheelRollAngleRad,
         travelMeters: next.travelMeters,
       },

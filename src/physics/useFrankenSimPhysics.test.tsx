@@ -1,4 +1,6 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import type { UniversalPatentPhysicsTelemetry } from "./types";
 import { TransportBus, useFrankenSimPhysics } from "./useFrankenSimPhysics";
@@ -53,6 +55,19 @@ describe("useFrankenSimPhysics Hook", () => {
     expect(captured?.telemetry.aero?.airspeedMps).toBe(12.5);
     expect(typeof captured?.updateTelemetry).toBe("function");
     expect(captured?.telemetryRef.current).toBeDefined();
+  });
+
+  test("uses one stable empty initial envelope when a caller omits telemetry", () => {
+    const source = readFileSync(
+      resolve(process.cwd(), "src/physics/useFrankenSimPhysics.ts"),
+      "utf8",
+    );
+    const hookSource = source.slice(source.indexOf("export function useFrankenSimPhysics("));
+    expect(source).toContain("const EMPTY_INITIAL_TELEMETRY");
+    expect(hookSource).toContain("= EMPTY_INITIAL_TELEMETRY");
+    expect(hookSource).not.toContain(
+      "initialTelemetry: Partial<UniversalPatentPhysicsTelemetry> = {}",
+    );
   });
 
   test("admits the first fixed step when the updater registers before the listener", () => {

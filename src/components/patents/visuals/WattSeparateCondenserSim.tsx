@@ -1,7 +1,7 @@
 "use client";
 
 import { RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import {
   stepWattCondenser,
@@ -11,6 +11,8 @@ import {
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
+
+const UI_SNAPSHOT_INTERVAL_MS = 80;
 
 export function WattSeparateCondenserSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("gb-913-watt-separate-condenser");
@@ -32,6 +34,7 @@ export function WattSeparateCondenserSim() {
     [params],
   );
   const [animTime, setAnimTime] = useState(0);
+  const animTimeRef = useRef(0);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const boilerId = useId();
@@ -43,18 +46,28 @@ export function WattSeparateCondenserSim() {
   useEffect(() => {
     let frameId: number;
     let lastTime = performance.now();
+    let lastUiSnapshot = 0;
 
     const loop = (time: number) => {
       frameId = requestAnimationFrame(loop);
-      if (!onscreenRef.current) return;
+      if (!onscreenRef.current) {
+        lastTime = time;
+        return;
+      }
       const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
       lastTime = time;
-      setAnimTime((prev) => prev + dt);
+      animTimeRef.current += dt;
+      // The piston, beam, valves, and PV state share one stroke phase. A bounded
+      // snapshot keeps that topology coherent without a full React re-render per rAF.
+      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = time;
+        setAnimTime(animTimeRef.current);
+      }
     };
 
     frameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameId);
-  }, [onscreenRef.current]);
+  }, [onscreenRef]);
 
   const outputs = useMemo(() => stepWattCondenser(controls), [controls]);
 
@@ -133,6 +146,8 @@ export function WattSeparateCondenserSim() {
             type="button"
             onClick={() => {
               resetParams();
+              animTimeRef.current = 0;
+              setAnimTime(0);
               soundEngine.playSwitchClick();
             }}
             aria-label="Reset Simulation"

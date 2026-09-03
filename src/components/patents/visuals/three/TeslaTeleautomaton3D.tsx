@@ -123,8 +123,12 @@ export function TeslaTeleautomaton3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-613809-tesla-teleautomaton", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-613809-tesla-teleautomaton");
+    const unregister = globalTransportBus.registerUpdater(
+      "us-613809-tesla-teleautomaton",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
   }, [live]);
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -397,6 +401,7 @@ export function TeslaTeleautomaton3D() {
             </div>
             <input
               type="range"
+              aria-label="Propeller throttle"
               min="0"
               max="100"
               step="5"

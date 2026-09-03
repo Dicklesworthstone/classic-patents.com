@@ -9,25 +9,16 @@ import { stepLemelsonManipulatorTopology } from "@/physics/lemelsonAdjustableMan
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import {
+  LEMELSON_ADJUSTABLE_MANIPULATOR_CAMERA_VIEWS,
+  type LemelsonAdjustableManipulatorCameraView,
+  lemelsonAdjustableManipulatorViewForViewport,
+} from "./lemelsonAdjustableManipulatorCamera";
 import { buildLemelsonAdjustableManipulatorModel } from "./lemelsonAdjustableManipulatorModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-3260375-lemelson-adjustable-manipulator";
-
-const VIEWS = {
-  overview: {
-    position: [4.8, 3.2, 5.2] as [number, number, number],
-    target: [0, 1.0, 0] as [number, number, number],
-  },
-  gantry: {
-    position: [0.0, 3.8, 4.5] as [number, number, number],
-    target: [0, 2.0, 0] as [number, number, number],
-  },
-  wrist: {
-    position: [2.5, 0.8, 2.5] as [number, number, number],
-    target: [0.5, 0.2, 0] as [number, number, number],
-  },
-} as const;
 
 const POSE_CONTROLS = [
   {
@@ -111,12 +102,11 @@ export function LemelsonAdjustableManipulator3D({
 } = {}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const [view, setView] = useState<keyof typeof VIEWS>("overview");
+  const [view, setView] = useState<LemelsonAdjustableManipulatorCameraView>("overview");
   const [interfaceVisible, setInterfaceVisible] = useState(true);
   const { params, effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
     usePatentPhysics(PATENT_ID);
-  const liveParams = useRef(effectiveParams);
-  liveParams.current = effectiveParams;
+  const liveParams = useLiveSimParams(effectiveParams);
   const state = stepLemelsonManipulatorTopology(effectiveParams);
 
   useFrankenSimPhysics(patentId, {
@@ -127,19 +117,32 @@ export function LemelsonAdjustableManipulator3D({
     },
   });
 
-  const selectView = (nextView: keyof typeof VIEWS) => {
+  const selectView = (nextView: LemelsonAdjustableManipulatorCameraView) => {
     setView(nextView);
-    const camera = VIEWS[nextView];
+    const camera = lemelsonAdjustableManipulatorViewForViewport(
+      nextView,
+      containerRef.current?.clientWidth ?? 640,
+    );
     studioRef.current?.controls.setView(camera.position, camera.target);
   };
 
+  // The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+    // Start every visitor with the complete supported apparatus. The former
+    // phone-only wrist close-up hid the gantry, carriage, and most of the load
+    // path on first paint; Wrist remains available as an explicit detail view.
+    const initialView = "overview";
+    const initialCamera = lemelsonAdjustableManipulatorViewForViewport(
+      initialView,
+      container.clientWidth,
+    );
+    setView(initialView);
     const studio = createThreeStudioScene({
       container,
-      cameraPos: VIEWS.overview.position,
-      targetPos: VIEWS.overview.target,
+      cameraPos: initialCamera.position,
+      targetPos: initialCamera.target,
       environmentStyle: "studio",
       enableClouds: false,
       ambientIntensity: 2.5,
@@ -186,13 +189,13 @@ export function LemelsonAdjustableManipulator3D({
       studio.cleanup();
       studioRef.current = null;
     };
-  }, []);
+  }, [liveParams]);
 
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl">
       <div className="relative min-h-[500px] sm:min-h-[630px]">
         <div ref={containerRef} className="absolute inset-0" />
-        <div className="pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-3 sm:inset-x-5 sm:top-5">
+        <div className="pointer-events-none absolute inset-x-5 top-5 hidden items-start justify-between gap-3 lg:flex">
           <div className="rounded-xl border border-cyan-700/70 bg-slate-950/85 px-3 py-2 backdrop-blur">
             <p className="font-mono text-[10px] tracking-[0.16em] text-cyan-300">
               US 3,260,375 · ADJUSTABLE MANIPULATOR TOPOLOGY
@@ -200,9 +203,13 @@ export function LemelsonAdjustableManipulator3D({
             <h3 className="text-sm font-semibold text-white">Procedural WebGL Topology Model</h3>
           </div>
 
-          <div className="pointer-events-auto flex items-center gap-2">
+          <div className="pointer-events-auto flex w-full items-center justify-end gap-2 sm:w-auto">
             <div className="flex rounded-lg border border-slate-700 bg-slate-900/80 p-0.5 backdrop-blur">
-              {(Object.keys(VIEWS) as (keyof typeof VIEWS)[]).map((vKey) => (
+              {(
+                Object.keys(
+                  LEMELSON_ADJUSTABLE_MANIPULATOR_CAMERA_VIEWS,
+                ) as LemelsonAdjustableManipulatorCameraView[]
+              ).map((vKey) => (
                 <button
                   key={vKey}
                   type="button"
@@ -222,66 +229,94 @@ export function LemelsonAdjustableManipulator3D({
               type="button"
               onClick={() => setInterfaceVisible((prev) => !prev)}
               className="rounded-lg border border-slate-700 bg-slate-900/80 p-1.5 text-slate-300 hover:text-white backdrop-blur"
-              title={interfaceVisible ? "Hide controls HUD" : "Show controls HUD"}
+              title={interfaceVisible ? "Hide controls panel" : "Show controls panel"}
             >
               {interfaceVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
         </div>
-
-        {/* Controls HUD Panel */}
-        {interfaceVisible && (
-          <div className="absolute right-3 bottom-3 z-10 max-h-[480px] w-80 overflow-y-auto rounded-xl border border-slate-700 bg-slate-900/90 p-4 text-slate-200 shadow-2xl backdrop-blur sm:right-5 sm:bottom-5">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-cyan-400">
-                Normalized Display Controls
-              </h4>
-              <button
-                type="button"
-                onClick={resetParams}
-                className="flex items-center gap-1 rounded bg-slate-800 px-2 py-1 text-xs text-slate-300 hover:bg-slate-700 hover:text-white"
-              >
-                <RotateCcw className="h-3 w-3" /> Reset
-              </button>
-            </div>
-
-            <div className="mt-3 space-y-3">
-              {POSE_CONTROLS.map((ctrl) => {
-                const val = (params[ctrl.id] ?? ctrl.defaultValue) as number;
-                return (
-                  <div key={ctrl.id} className="space-y-1">
-                    <div className="flex justify-between text-xs">
-                      <label htmlFor={`3d-${ctrl.id}`} className="text-slate-300">
-                        {ctrl.label}
-                      </label>
-                      <span className="font-mono text-cyan-300">{val.toFixed(2)}</span>
-                    </div>
-                    <input
-                      id={`3d-${ctrl.id}`}
-                      type="range"
-                      min={ctrl.min}
-                      max={ctrl.max}
-                      step={0.05}
-                      value={val}
-                      onChange={(e) => updateParam(ctrl.id, Number.parseFloat(e.target.value))}
-                      className={`h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-slate-800 ${ctrl.accent}`}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-4 border-t border-slate-800 pt-3 text-[11px] text-slate-400 leading-relaxed">
-              <p className="font-mono font-semibold text-cyan-300">Display boundary:</p>
-              <p>
-                The source illustrates carriage, column, rotary, pivot, jaw, and switch-actuator
-                relationships. All scene lengths and transforms are procedural; no source
-                dimensions, speed, force, timing, or controller-performance result is displayed.
-              </p>
-            </div>
-          </div>
-        )}
       </div>
+      {interfaceVisible && (
+        <div
+          data-mobile-layout="controls-below-canvas"
+          className="border-t border-slate-800 bg-slate-900/95 p-4 text-slate-200"
+        >
+          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+            <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-cyan-400">
+              Normalized Display Controls
+            </h4>
+            <button
+              type="button"
+              onClick={resetParams}
+              className="flex items-center gap-1 rounded bg-slate-800 px-2 py-1 text-xs text-slate-300 hover:bg-slate-700 hover:text-white"
+            >
+              <RotateCcw className="h-3 w-3" /> Reset
+            </button>
+          </div>
+
+          <div
+            data-responsive-view-deck
+            className="mt-3 flex flex-wrap items-center gap-2 lg:hidden"
+          >
+            <span className="mr-1 text-[11px] font-mono uppercase tracking-wide text-slate-400">
+              Camera
+            </span>
+            {(
+              Object.keys(
+                LEMELSON_ADJUSTABLE_MANIPULATOR_CAMERA_VIEWS,
+              ) as LemelsonAdjustableManipulatorCameraView[]
+            ).map((vKey) => (
+              <button
+                key={vKey}
+                type="button"
+                onClick={() => selectView(vKey)}
+                className={`min-h-9 rounded-lg border px-2.5 text-xs font-medium capitalize transition-colors ${
+                  view === vKey
+                    ? "border-cyan-400 bg-cyan-500/20 text-cyan-300"
+                    : "border-slate-700 bg-slate-900 text-slate-300 hover:text-white"
+                }`}
+              >
+                {vKey}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-3 grid gap-x-5 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
+            {POSE_CONTROLS.map((ctrl) => {
+              const val = (params[ctrl.id] ?? ctrl.defaultValue) as number;
+              return (
+                <div key={ctrl.id} className="space-y-1">
+                  <div className="flex justify-between gap-2 text-xs">
+                    <label htmlFor={`3d-${ctrl.id}`} className="text-slate-300">
+                      {ctrl.label}
+                    </label>
+                    <span className="shrink-0 font-mono text-cyan-300">{val.toFixed(2)}</span>
+                  </div>
+                  <input
+                    id={`3d-${ctrl.id}`}
+                    type="range"
+                    min={ctrl.min}
+                    max={ctrl.max}
+                    step={0.05}
+                    value={val}
+                    onChange={(e) => updateParam(ctrl.id, Number.parseFloat(e.target.value))}
+                    className={`h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-slate-800 ${ctrl.accent}`}
+                  />
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-4 border-t border-slate-800 pt-3 text-[11px] leading-relaxed text-slate-400">
+            <p className="font-mono font-semibold text-cyan-300">Display boundary:</p>
+            <p>
+              The source illustrates carriage, column, rotary, pivot, jaw, and switch-actuator
+              relationships. All scene lengths and transforms are procedural; no source dimensions,
+              speed, force, timing, or controller-performance result is displayed.
+            </p>
+          </div>
+        </div>
+      )}
       <div className="grid gap-3 border-t border-slate-800 bg-slate-950/95 p-4">
         <ClaimConstraintToggle
           patentId={PATENT_ID}

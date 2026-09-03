@@ -415,24 +415,23 @@ export function buildNobelDynamiteModel(): NobelDynamiteModelResult {
 }
 
 /**
- * Updates cartridge rotation, fuse spark flickering, detonation core glow, and cutaway.
+ * Updates fuse spark flickering, detonation core glow, and cutaway.
+ *
+ * The cartridge itself remains stationary. The historical mechanism has no
+ * drive train that could rotate a loaded stick; initiation only changes the
+ * localized spark, matrix emission, and shock-front state.
  */
 export function updateNobelDynamiteKinematics(
   nodes: NobelDynamiteModelNodes,
   materials: NobelDynamiteMaterials,
-  dt: number,
   timeSec: number,
   isFuseLit: boolean,
   shockwaveGlow: number,
-  stickDisplayOmegaRadPerS: number,
   isCutaway: boolean,
   ngConcentrationPct = 75,
   capEnergyJoules = 1.2,
 ) {
-  // 1. Slow presentation rotation
-  nodes.stickGroup.rotation.y += dt * stickDisplayOmegaRadPerS;
-
-  // 2. Pulse Fuse Spark when lit
+  // 1. Pulse the localized fuse spark only while it is lit.
   if (isFuseLit) {
     const nobel = stepNobelDynamite({ ngConcentrationPct, capEnergyJoules });
     const rms = nobel.shockWaveRms;
@@ -457,7 +456,7 @@ export function updateNobelDynamiteKinematics(
     nodes.shockwaveMesh.visible = false;
   }
 
-  // 3. Cutaway Mode
+  // 2. Cutaway mode.
   materials.waxPaper.opacity = isCutaway ? 0.35 : 1.0;
   materials.waxPaper.transparent = isCutaway;
   materials.kieselguhrMatrix.opacity = isCutaway ? 0.6 : 1.0;

@@ -11,6 +11,7 @@ import {
   type WatsonRccTelemetry,
 } from "@/physics/watsonRccKernel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 import {
   buildWatsonRccModel,
   updateWatsonRccKinematics,
@@ -28,16 +29,14 @@ export function WatsonRcc3D({ patentId = "us-4098001-watson-rcc" }: { patentId?:
   const controls: WatsonRccControls = readWatsonRccControls(params);
   const tel: WatsonRccTelemetry = stepWatsonRccSi(controls);
 
-  const liveControlsRef = useRef<WatsonRccControls>(controls);
-  liveControlsRef.current = controls;
-
-  const liveTelRef = useRef<WatsonRccTelemetry>(tel);
-  liveTelRef.current = tel;
+  const liveControlsRef = useLiveSimParams<WatsonRccControls>(controls);
+  const liveTelRef = useLiveSimParams<WatsonRccTelemetry>(tel);
 
   const [cameraPreset, setCameraPreset] = useState<"perspective" | "side" | "focal" | "insertion">(
     "perspective",
   );
 
+  // The persistent WebGL scene reads stable layout-effect-synchronized pose refs; depending on `.current` would recreate and flash the studio.
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -59,12 +58,13 @@ export function WatsonRcc3D({ patentId = "us-4098001-watson-rcc" }: { patentId?:
 
     const loop = () => {
       if (destroyed) return;
+      animFrameId = requestAnimationFrame(loop);
+      if (!studio.isVisible()) return;
 
       updateWatsonRccKinematics(model, liveControlsRef.current, liveTelRef.current);
 
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
-      animFrameId = requestAnimationFrame(loop);
     };
     loop();
 
@@ -75,9 +75,11 @@ export function WatsonRcc3D({ patentId = "us-4098001-watson-rcc" }: { patentId?:
         studio.scene.remove(modelRef.current.root);
         modelRef.current.dispose();
       }
-      studio.dispose();
+      studio.cleanup();
+      studioRef.current = null;
+      modelRef.current = null;
     };
-  }, []);
+  }, [liveControlsRef, liveTelRef]);
 
   const handleCameraPreset = (preset: "perspective" | "side" | "focal" | "insertion") => {
     setCameraPreset(preset);
@@ -204,6 +206,7 @@ export function WatsonRcc3D({ patentId = "us-4098001-watson-rcc" }: { patentId?:
           </div>
           <input
             type="range"
+            aria-label="Lateral contact force"
             min="0"
             max="80"
             step="1"
@@ -222,6 +225,7 @@ export function WatsonRcc3D({ patentId = "us-4098001-watson-rcc" }: { patentId?:
           </div>
           <input
             type="range"
+            aria-label="Tip moment"
             min="-3"
             max="3"
             step="0.1"
@@ -240,6 +244,7 @@ export function WatsonRcc3D({ patentId = "us-4098001-watson-rcc" }: { patentId?:
           </div>
           <input
             type="range"
+            aria-label="Initial misalignment"
             min="0"
             max="2.5"
             step="0.1"

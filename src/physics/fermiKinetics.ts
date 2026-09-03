@@ -1,70 +1,89 @@
 /**
- * Chicago Pile-1 (US 2,708,656) multiplication factor.
- * One formula for 2D, 3D, badge, schematic, and spec-clause highlight.
+ * Source-bounded US 2,708,656 lattice reader and normalized absorber lens.
  *
- * Lattice is calibrated so ZIP ~83.5% withdrawn, 99.5% graphite, and
- * natural uranium (0.72%) sit at delayed-critical k_eff ≈ 1.000.
- * The old four-factor product in engine.ts ran ~1.3 at those settings
- * and disagreed with every other surface.
+ * The grant owns the graphite/natural-uranium topology, Figure 3 K contours,
+ * an illustrative bare operating ratio near 1.005, and the instruction to
+ * insert absorber until the reproduction ratio is unity. It does not publish
+ * the rod-worth curve, flux normalization, or full point-kinetics constants
+ * needed to turn a UI rod position into a predictive reactor transient.
  */
 
 import type { NuclearKineticsState } from "./types";
 
+export const FERMI_KINETICS_SOURCE_BOUNDARY =
+  "US 2,708,656 discloses the graphite and natural-uranium rod lattice, Figure 3 criticality contours, and absorber-control principle. It does not calibrate absorber worth against travel, neutron flux, detector count rate, or a complete transient model. The live rod position and k_eff are therefore an explicitly normalized teaching lens; quantitative power, flux, detector rate, and closed energy accounting are refused.";
+
+export const NATURAL_URANIUM_U235_PERCENT = 0.72;
+
+function finiteOr(value: number, fallback: number): number {
+  return Number.isFinite(value) ? value : fallback;
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
 export function fermiKeff(
   rodWithdrawalPct: number,
-  moderatorPurityPct: number,
-  fuelEnrichmentPct = 0.72,
+  _moderatorPurityPct: number,
+  _fuelEnrichmentPct = NATURAL_URANIUM_U235_PERCENT,
 ): number {
-  const rod = Math.min(100, Math.max(0, rodWithdrawalPct));
-  const mod = Math.min(100, Math.max(0, moderatorPurityPct));
-  const enrich = Math.max(0.01, fuelEnrichmentPct);
-  const lattice = 0.85 + (rod / 100) * 0.18 * (mod / 100);
-  return Number((lattice * Math.sqrt(enrich / 0.72)).toFixed(4));
+  const rod = clamp(finiteOr(rodWithdrawalPct, 83.5), 0, 100);
+  // Normalized, not a source calibration: the patent's illustrative 1.005
+  // bare ratio is reduced by an explicitly declared 0.030 full-stroke
+  // absorber span, placing the default 83.5% teaching position at unity.
+  const normalizedFullStrokeWorth = 0.03;
+  const bareIllustrativeRatio = 1.005;
+  return Number((bareIllustrativeRatio - (1 - rod / 100) * normalizedFullStrokeWorth).toFixed(4));
 }
 
 export function stepFermiKinetics(
   rodWithdrawalPct: number,
   moderatorPurityPct: number,
-  fuelEnrichmentPct = 0.72,
+  _fuelEnrichmentPct = NATURAL_URANIUM_U235_PERCENT,
+  claim1Active = true,
 ): NuclearKineticsState {
-  const kEffective = fermiKeff(rodWithdrawalPct, moderatorPurityPct, fuelEnrichmentPct);
-  const isSupercritical = kEffective > 1.002;
-  const isCritical = kEffective >= 0.998 && kEffective <= 1.002;
-  const thermalPowerWatts = isSupercritical
-    ? Math.round(500 * (kEffective / 1.002) ** 4)
-    : isCritical
-      ? 200
-      : Math.max(1, Math.round(20 * (kEffective / 0.99)));
-  const reactivityDollars = Number(((kEffective - 1.0) / (kEffective * 0.0065)).toFixed(2));
-  const reactorPeriodSeconds = reactivityDollars > 0 ? 0.08 / (reactivityDollars * 0.0065) : -999;
-  const thermalNeutronFluxNPerCm2S = thermalPowerWatts * 3.2e7;
-  const geigerIntervalMs =
-    reactorPeriodSeconds > 0
-      ? Math.max(50, Math.min(800, Math.round(reactorPeriodSeconds * 20)))
-      : 800;
+  const rod = clamp(finiteOr(rodWithdrawalPct, 83.5), 0, 100);
+  const moderatorPurity = clamp(finiteOr(moderatorPurityPct, 99.5), 0, 100);
+  // Claim 1 is limited to natural uranium. A caller cannot silently turn this
+  // patent exhibit into an enriched-fuel reactor by changing a UI parameter.
+  const naturalUraniumPercent = NATURAL_URANIUM_U235_PERCENT;
+  const kEffective = claim1Active ? fermiKeff(rod, moderatorPurity, naturalUraniumPercent) : 0;
+  // Approximately one percent delayed neutrons and a mean delay near five
+  // seconds are printed in the grant. A six-group fit is not printed, so the
+  // source-bounded state retains one normalized delayed population only.
+  const delayedNeutronFractionBeta = 0.01;
+  // Rod worth is not calibrated, so dollar reactivity and reactor period are
+  // unavailable too. Zero is the typed refusal value; the availability flag
+  // prevents a caller from presenting it as a computed result.
+  const reactivityDollars = 0;
+  const reactorPeriodSeconds = 0;
+  const thermalPowerWatts = 0;
+  const thermalNeutronFluxNPerCm2S = 0;
+  const geigerIntervalMs = 0;
 
   return {
     kEffective,
     reactivityDollars,
     thermalNeutronFluxNPerCm2S,
-    delayedNeutronFractionBeta: 0.0065,
-    precursorConcentrationGroup1to6: [0.033, 0.219, 0.196, 0.395, 0.115, 0.042],
+    delayedNeutronFractionBeta,
+    precursorConcentrationGroup1to6: [],
+    delayedNeutronMeanDelaySeconds: 5,
+    quantitativeTransientAvailable: false,
     reactorPeriodSeconds,
     thermalPowerWatts,
-    controlRodInsertionFraction: 1 - rodWithdrawalPct / 100,
+    controlRodInsertionFraction: 1 - rod / 100,
     geigerIntervalMs,
-    geigerIntervalS: Number(Math.max(0.05, geigerIntervalMs / 1000).toFixed(3)),
-    thermalFluxE7: Number((thermalNeutronFluxNPerCm2S / 1e7).toFixed(1)),
+    geigerIntervalS: 0,
+    thermalFluxE7: 0,
     // Studio neutron scatter: 4 units/s at k=1. Not a physical v_thermal.
-    neutronDisplaySpeed: Number((kEffective * 4).toFixed(3)),
-    rodStudioY: Number(
-      (-0.5 + (Math.min(100, Math.max(0, rodWithdrawalPct)) / 100) * 3.2).toFixed(4),
-    ),
-    fuelGlowIntensity: Number(Math.max(0, (kEffective - 0.98) * 8).toFixed(3)),
-    rodSvgY: Number((30 - (Math.min(100, Math.max(0, rodWithdrawalPct)) / 100) * 120).toFixed(2)),
-    schematicRodY: Number(
-      (20 + ((100 - Math.min(100, Math.max(0, rodWithdrawalPct))) / 100) * 70).toFixed(2),
-    ),
+    neutronDisplaySpeed: claim1Active ? Number((Math.max(0, kEffective) * 4).toFixed(3)) : 0,
+    // A 5.8-unit rod spans the modeled graphite core at zero withdrawal and
+    // clears its right face at 100%. This coordinate is consumed directly by
+    // the Three.js model rather than recomputed in the presentation layer.
+    rodStudioX: Number(((rod / 100) * 5.8).toFixed(4)),
+    fuelGlowIntensity: claim1Active ? Number(Math.max(0, (kEffective - 0.98) * 8).toFixed(3)) : 0,
+    schematicRodY: 145,
     latticeRows: 5,
     latticeCols: 7,
     latticeOriginX: 80,
@@ -91,9 +110,13 @@ export function stepFermiKinetics(
     schematicCoreY1: 240,
     schematicCoreW: 240,
     schematicCoreH: 170,
-    schematicRodX: 195,
-    schematicRodW: 10,
-    schematicRodH: 160,
+    schematicRodX: Number((80 + (rod / 100) * 220).toFixed(2)),
+    schematicRodW: 240,
+    schematicRodH: 10,
+    claim1PathActive: claim1Active,
+    naturalUraniumU235Percent: naturalUraniumPercent,
+    moderatorPurityPercent: moderatorPurity,
+    sourceBoundary: FERMI_KINETICS_SOURCE_BOUNDARY,
   };
 }
 
@@ -112,7 +135,7 @@ export function fermiSchematicSlug(
   };
 }
 
-/** CP-1 graphite-block SVG seat. Shared by 2D. */
+/** Graphite-block SVG seat shared by the source-bounded 2D lattice view. */
 export function fermiLatticeCell(
   row: number,
   col: number,

@@ -66,7 +66,7 @@ function isExactAxis(
 ): value is [number, number, number] {
   return (
     Array.isArray(value) &&
-    value.length === 3 &&
+    value.length === expected.length &&
     value.every(
       (component, index) =>
         typeof component === "number" &&
@@ -214,7 +214,7 @@ export function stepSalisburyTopology(
   controls: SalisburyRobotHandControls,
 ): SalisburyMechanismState {
   const fallback = fallbackState(controls);
-  if (!stepFn || fallback.refused) return fallback;
+  if (!stepFn || fallback.refused || controls.claim1RoutingPresent === false) return fallback;
   try {
     const decoded = decodeSalisburyWasmStep(
       stepFn(

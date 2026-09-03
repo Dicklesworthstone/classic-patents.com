@@ -6,10 +6,9 @@ import {
   stepFessendenWireless,
   stepHaberAmmonia,
   stepHewittMercuryLamp,
-  stepKilbyIntegratedCircuit,
+  stepLamarrRecordControl,
   stepLandPolaroidInstantFilm,
   stepRillieuxEvaporator,
-  stepTownesLaser,
   stepYaleLock,
 } from "./catalogKernels";
 
@@ -23,10 +22,16 @@ import {
 
 import { stepAmfVersatranTopology } from "./amfVersatranKernel";
 import { stepArkwrightWaterFrame } from "./arkwrightKernel";
-import { INITIAL_BAER_STATE, readBaerControls, stepBaerOdysseySi } from "./baerOdysseyKernel";
+import { readBaerControls, readBaerOdysseyTapeFrame } from "./baerOdysseyKernel";
+import { stepBardeenPointContact } from "./bardeenPointContactKernel";
+import {
+  DEFAULT_BOYLE_SMITH_CCD_SOURCE_CONTROLS,
+  readBoyleSmithCcdSourceControls,
+  readBoyleSmithCcdTapeFrame,
+  resetBoyleSmithCcdTape,
+} from "./boyleSmithCcdKernel";
 import {
   stepBellTelephone,
-  stepBoyleSmithCcd,
   stepCorlissEngine,
   stepDavenportMotor,
   stepDeLavalSeparator,
@@ -44,7 +49,6 @@ import {
   stepMcCormickReaper,
   stepMorseTelegraph,
   stepNobelDynamite,
-  stepNoyceIC,
   stepOttoEngine,
   stepParsonsTurbine,
   stepPasteurFermentation,
@@ -53,16 +57,23 @@ import {
   stepWhitneyCottonGin,
   stepWozniakApple,
   stepZeppelinAirship,
-  voltsToKv,
 } from "./catalogKernels";
 import { stepClavelDeltaRobotTopology } from "./clavelDeltaRobotKernel";
 import { stepCortPuddlingRolling } from "./cortKernel";
 import { CRUMP_FDM_DEFAULT_CONTROLS, readCrumpFdmControls, stepCrumpFdmSi } from "./crumpFdmKernel";
-import { readDaVinciControls } from "./daVinciKernel";
+import {
+  readDaVinciInterfaceControls,
+  resolveDaVinciInterfaceTopology,
+} from "./daVinciInterfaceTopology";
 import { stepDevolProgrammedTransfer } from "./devolProgrammedTransferKernel";
-import { stepEInk } from "./eInkKernel";
+import { readEInkRuntimeControls, readEInkTapeFrame, resetEInkTape } from "./eInkSharedKernel";
 import { FrankenSimEngine } from "./engine";
-import { stepFermiKinetics } from "./fermiKinetics";
+import {
+  readFarnsworthTvControls,
+  readFarnsworthTvTapeFrame,
+  resetFarnsworthTvTape,
+} from "./farnsworthTvKernel";
+import { NATURAL_URANIUM_U235_PERCENT, stepFermiKinetics } from "./fermiKinetics";
 import {
   GOERTZ_MASTER_SLAVE_DEFAULT_CONTROLS,
   readGoertzMasterSlaveControls,
@@ -77,7 +88,7 @@ import {
 import {
   KAMEN_INJECTION_DEFAULT_CONTROLS,
   readKamenInjectionControls,
-  stepKamenInjectionMechanism,
+  readKamenInjectionTapeFrame,
 } from "./kamenInjectionKernel";
 import {
   KAMEN_SEGWAY_DEFAULT_CONTROLS,
@@ -85,10 +96,17 @@ import {
   stepKamenSegwaySi,
 } from "./kamenSegwayKernel";
 import {
-  KAMEN_TRANSPORTER_DEFAULT_CONTROLS,
   readKamenTransporterControls,
-  stepKamenTransporterSi,
+  stepKamenTransporterTopology,
 } from "./kamenTransporterKernel";
+import {
+  KILBY_FIGURE_7_VALUES,
+  KILBY_PRINTED_WAFER,
+  KILBY_SOURCE_CIRCUIT_DEFAULTS,
+  readKilbySourceCircuitControls,
+  stepKilbySourceCircuitTopology,
+} from "./kilbySourceCircuitKernel";
+import { resetLamarrTape } from "./lamarrSharedKernel";
 import { stepLemelsonManipulatorTopology } from "./lemelsonAdjustableManipulatorKernel";
 import {
   LEMELSON_AUTOMATIC_PRODUCTION_DEFAULT_CONTROLS,
@@ -97,7 +115,7 @@ import {
 } from "./lemelsonAutomaticProductionKernel";
 import {
   readLemelsonMachineVisionControls,
-  stepLemelsonMachineVisionSi,
+  stepLemelsonMachineVisionTopology,
 } from "./lemelsonMachineVisionKernel";
 import {
   LEMELSON_WAREHOUSE_DEFAULT_CONTROLS,
@@ -107,26 +125,46 @@ import {
 import {
   stepHoweSewingMachine,
   stepMergenthalerLinotype,
-  stepRenoEscalator,
   stepSholesTypewriter,
 } from "./machineKernels";
-import { stepMakinoScaraTopology } from "./makinoScaraKernel";
+import {
+  MAKINO_FRANKENSIM_BOUNDARY,
+  MAKINO_FRANKENSIM_OWNER,
+  measureMakinoScaraInvariants,
+  stepMakinoScaraTopology,
+} from "./makinoScaraKernel";
+import {
+  readMarconiRuntimeControls,
+  readMarconiTapeFrame,
+  resetMarconiTape,
+} from "./marconiSharedKernel";
 import {
   MESTRAL_VELCRO_DEFAULTS,
   readMestralVelcroControls,
   stepMestralVelcroSi,
 } from "./mestralVelcroKernel";
 import {
-  INITIAL_ETHERNET_STATE,
   readEthernetControls,
-  stepMetcalfeEthernetSi,
+  readMetcalfeEthernetTapeFrame,
+  resetMetcalfeEthernetTape,
 } from "./metcalfeEthernetKernel";
 import { stepMilacronRobotToolchanger } from "./milacronRobotToolchangerKernel";
 import { stepMultiTouch } from "./multiTouchKernel";
+import {
+  NOYCE_PLANAR_LEAD_DEFAULT_CONTROLS,
+  readNoycePlanarLeadControls,
+  stepNoycePlanarLeadTopology,
+} from "./noycePlanarLeadKernel";
 import { readOtisTopologyControls, stepOtis1861Topology } from "./otisKernel";
 import { stepPageRank } from "./pageRankKernel";
 import { stepParsonsMarine } from "./parsonsMarineKernel";
-import { stepRobotEndEffector } from "./robotEndEffectorKernel";
+import {
+  ROBOT_END_EFFECTOR_FRANKENSIM_CONTACT_OWNER,
+  ROBOT_END_EFFECTOR_FRANKENSIM_HELICAL_OWNER,
+  ROBOT_END_EFFECTOR_FRANKENSIM_PRISMATIC_OWNER,
+  ROBOT_END_EFFECTOR_FRANKENSIM_REVOLUTE_OWNER,
+  stepRobotEndEffector,
+} from "./robotEndEffectorKernel";
 import { ROOMBA_ROOM, stepRoomba } from "./roombaKernel";
 import {
   readSalisburyRobotHandControls,
@@ -149,6 +187,11 @@ import {
 } from "./sundbackZipperKernel";
 import { readTeslaTransformerControls, stepTeslaTransformerSi } from "./teslaTransformerKernel";
 import { goddardNozzleMatch } from "./thermochem";
+import {
+  readTownesMaserControls,
+  stepTownesMaserTopology,
+  TOWNES_MASER_DEFAULT_CONTROLS,
+} from "./townesMaserKernel";
 
 import {
   readWatsonRemoteCenterComplianceControls,
@@ -200,6 +243,10 @@ export interface PatentPhysicsMetadata {
   engineMethod: string;
   controls: PhysicsControl[];
   computeMetrics: (params: Record<string, number>) => PhysicsMetric[];
+  /** Reproject metrics when a stateful fixed-step tape advances. */
+  refreshFromRuntimeTape?: boolean;
+  /** Reset stateful event/trajectory tape together with baseline controls. */
+  resetRuntimeTape?: () => void;
   pedagogicalInsight: string;
   provenance?: MetricProvenanceClassification;
   enforceConstraints?: (
@@ -270,6 +317,16 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         unit: "pH",
         provenance: "scenario-modern",
       },
+      {
+        id: "claim1Active",
+        label: "Claim 1 Attached Product Path",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "on/off",
+        provenance: "scenario-reader",
+      },
     ],
     computeMetrics: (controls) => {
       const state = stepLandPolaroidInstantFilm({
@@ -278,6 +335,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         reagentViscosityCp: controls.reagentViscosityCp,
         rollerGapUm: controls.rollerGapUm,
         alkaliPh: controls.alkaliPh,
+        claim1Active: (controls.claim1Active ?? 1) >= 0.5,
       });
 
       return [
@@ -329,151 +387,128 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-3138743-kilby-integrated-circuit": {
     domain: "semiconductor_physics",
-    domainTitle: "Monolithic Integrated Circuit Solid-State Electronics",
-    equationName: "Semiconductor Bulk Sheet Resistance & P-N Transition Capacitance",
+    domainTitle: "Source-Bounded Monolithic Semiconductor Circuit Topology",
+    equationName: "Bulk Semiconductor Resistance (Geometry Required)",
     governingEquation:
-      "R_{\\text{bulk}} = \\frac{\\rho L}{W t} \\quad \\text{and} \\quad C_j = A \\sqrt{\\frac{q \\varepsilon_s N_d}{2 (V_{\\text{bi}} + V_R)}}",
-    engineMethod: "Bulk Semiconductor Mesa Resistor & P-N Junction Depletion RC Dynamics",
+      "R = \\rho \\frac{L}{A} \\quad (\\text{the grant prints }\\rho\\text{ and circuit values, but not each region's }L\\text{ and }A)",
+    engineMethod: "Source-Bounded TypeScript Topology Step (Electrical Performance Refused)",
     pedagogicalInsight:
-      "By carving resistors out of the crystal bulk and capacitors out of reverse-biased p-n junctions, an entire electronic circuit functions without discrete components or hand-soldered wires.",
+      "Kilby's illustrated multivibrator puts junction transistors, shaped semiconductor resistors, and capacitor regions in one etched germanium wafer, then makes the selected interconnections with alloyed Kovar leads, evaporated contacts, and thermally bonded gold wires. The source construction is shown without inventing an operating point.",
     controls: [
       {
-        id: "supplyVoltageV",
-        label: "Supply Voltage (+Vcc)",
-        min: 1.5,
-        max: 12.0,
-        step: 0.5,
-        defaultValue: 6.0,
-        unit: "V",
-        provenance: "scenario-modern",
+        id: "sectionRevealFraction",
+        label: "Semiconductor Section Reveal",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        defaultValue: KILBY_SOURCE_CIRCUIT_DEFAULTS.sectionRevealFraction,
+        unit: "fraction",
+        provenance: "topology-normalized",
       },
       {
-        id: "resistorLengthUm",
-        label: "Resistor Path Length",
-        min: 100,
-        max: 2000,
-        step: 50,
-        defaultValue: 500,
-        unit: "µm",
-        provenance: "scenario-modern",
+        id: "wireArchFraction",
+        label: "Thermally Bonded Wire Arch",
+        min: 0.2,
+        max: 1,
+        step: 0.01,
+        defaultValue: KILBY_SOURCE_CIRCUIT_DEFAULTS.wireArchFraction,
+        unit: "fraction",
+        provenance: "topology-normalized",
       },
       {
-        id: "resistorWidthUm",
-        label: "Resistor Path Width",
-        min: 15,
-        max: 150,
-        step: 5,
-        defaultValue: 50,
-        unit: "µm",
-        provenance: "scenario-modern",
-      },
-      {
-        id: "reverseBiasVoltageV",
-        label: "Capacitor Reverse Bias",
-        min: 0.5,
-        max: 10.0,
-        step: 0.5,
-        defaultValue: 3.0,
-        unit: "V",
-        provenance: "scenario-modern",
-      },
-      {
-        id: "baseDriveCurrentUa",
-        label: "BJT Base Drive Current",
-        min: 5,
-        max: 150,
-        step: 5,
-        defaultValue: 40,
-        unit: "µA",
-        provenance: "scenario-modern",
+        id: "claim1ConductiveMeansPresent",
+        label: "Claim 1 Conductive Means",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: KILBY_SOURCE_CIRCUIT_DEFAULTS.claim1ConductiveMeansPresent,
+        unit: "",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics: (controls) => {
-      const state = stepKilbyIntegratedCircuit({
-        substrateMaterial: "germanium",
-        supplyVoltageV: controls.supplyVoltageV ?? 6.0,
-        resistorLengthUm: controls.resistorLengthUm ?? 500,
-        resistorWidthUm: controls.resistorWidthUm ?? 50,
-        reverseBiasVoltageV: controls.reverseBiasVoltageV ?? 3.0,
-        baseDriveCurrentUa: controls.baseDriveCurrentUa ?? 40,
-      });
+      const state = stepKilbySourceCircuitTopology(readKilbySourceCircuitControls(controls));
 
       return [
         {
-          label: "Collector Load Resistor",
-          value: `${state.collectorLoadResistanceOhms}`,
-          unit: "Ω",
-          badgeColor: "indigo",
-          description:
-            "Bulk semiconductor resistance calculated from aspect ratio and sheet resistivity",
-          provenance: "scenario-modern",
-        },
-        {
-          label: "P-N Junction Capacitance",
-          value: `${state.junctionCapacitancePf}`,
-          unit: "pF",
-          badgeColor: "rose",
-          description: "Depletion layer transition capacitance under applied reverse bias",
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Collector Current",
-          value: `${state.collectorCurrentMa}`,
-          unit: "mA",
-          badgeColor: "emerald",
-          description: "Bipolar transistor amplified collector switching current",
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Propagation Delay",
-          value: `${state.propagationDelayNs}`,
-          unit: "ns",
+          label: "Semiconductor Section Reveal",
+          value: `${(state.controls.sectionRevealFraction * 100).toFixed(0)}`,
+          unit: "% illustrative reveal",
           badgeColor: "cyan",
-          description: "Monolithic solid circuit RC switching propagation delay",
-          provenance: "scenario-modern",
+          progressPct: state.controls.sectionRevealFraction * 100,
+          primary: true,
+          provenance: "topology-normalized",
         },
         {
-          label: "Phase-Shift Osc. Frequency",
-          value: `${state.phaseShiftOscillatorFrequencyKhz}`,
-          unit: "kHz",
+          label: "Wire 70 Arch",
+          value: state.controls.wireArchFraction.toFixed(2),
+          unit: "normalized drawing geometry",
           badgeColor: "amber",
-          description: "Resonant sinusoidal frequency of the integrated RC feedback oscillator",
-          provenance: "scenario-modern",
+          provenance: "topology-normalized",
         },
         {
-          label: "Packing Density",
-          value: `${(state.componentDensityPerCuFt / 1e6).toFixed(1)}`,
-          unit: "M parts/ft³",
+          label: "Printed Wafer",
+          value: `${KILBY_PRINTED_WAFER.lengthIn.toFixed(3)} × ${KILBY_PRINTED_WAFER.widthIn.toFixed(3)} × ${KILBY_PRINTED_WAFER.thicknessIn.toFixed(4)}`,
+          unit: "in",
+          badgeColor: "emerald",
+          provenance: "source-disclosed",
+        },
+        {
+          label: "Antimony N Layer",
+          value: KILBY_PRINTED_WAFER.nLayerDepthMil.toFixed(1),
+          unit: "mil",
+          badgeColor: "indigo",
+          provenance: "source-disclosed",
+        },
+        {
+          label: "Figure 7 Printed Values",
+          value: `${KILBY_FIGURE_7_VALUES.r4R5R6R7Ohms} / ${KILBY_FIGURE_7_VALUES.r3R8Ohms} / ${KILBY_FIGURE_7_VALUES.r1R2Ohms} Ω · ${KILBY_FIGURE_7_VALUES.c1C2Microfarads} µF`,
+          unit: "",
           badgeColor: "amber",
-          description: "Calculated volumetric component packing density",
-          provenance: "scenario-modern",
+          provenance: "source-disclosed",
+        },
+        {
+          label: "Claim 1 Conductive Means",
+          value: state.claim1TopologyComplete ? "present" : "withheld",
+          unit: "",
+          badgeColor: state.claim1TopologyComplete ? "emerald" : "rose",
+          provenance: "refusal-bounded",
+        },
+        {
+          label: "Electrical Performance",
+          value: "refused",
+          unit: "",
+          badgeColor: "rose",
+          provenance: "refusal-bounded",
         },
       ];
     },
   },
   "us-3728480-baer-odyssey": {
+    refreshFromRuntimeTape: true,
     domain: "video_electronics",
     domainTitle: "Television Gaming & Raster Coincidence",
     equationName: "NTSC Raster Timing, Monostable RC Spot Delay & Coincidence Gating",
     governingEquation:
       "\\tau_H = R_X C_H \\ln(2),\\quad \\tau_V = R_Y C_V \\ln(2),\\quad V_{\\text{hit}} = V_1(t) \\cdot V_2(t),\\quad s(t) = [A_c + m \\cdot v_{\\text{comp}}(t)] \\cos(2\\pi f_c t)",
-    engineMethod: "stepBaerOdysseySi (NTSC sync synthesis, RC pulse timing, collision logic)",
+    engineMethod:
+      "HostKernel.stepBaerOdysseySi (source circuit topology and fixed-step SCR latch; compiled digital-circuit WASM unavailable)",
     pedagogicalInsight:
-      "Ralph Baer synthesizes television raster dots without a computer: astable multivibrators establish horizontal/vertical sync, variable RC delays slice position pulses through AND gates, and diode coincidence detects player-ball contact in real time.",
+      "Ralph Baer synthesizes television raster dots without a computer: astable multivibrators establish horizontal/vertical sync, variable RC delays position the rectangular pulses, and the Figure 5E diode network detects overlap between two generated dots before an SCR latches the first generator off.",
     controls: [
       {
         id: "player1PotX",
-        label: "Player 1 Horizontal Pos",
+        label: "Dot 20 Horizontal (Knob 17)",
         min: 0.05,
-        max: 0.45,
+        max: 0.95,
         step: 0.01,
-        defaultValue: 0.15,
+        defaultValue: 0.25,
         unit: "norm",
         provenance: "scenario-reader",
       },
       {
         id: "player1PotY",
-        label: "Player 1 Vertical Pos",
+        label: "Dot 20 Vertical (Knob 16)",
         min: 0.05,
         max: 0.95,
         step: 0.01,
@@ -483,17 +518,17 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "player2PotX",
-        label: "Player 2 Horizontal Pos",
-        min: 0.55,
+        label: "Dot 20₁ Horizontal (Knob 17₁)",
+        min: 0.05,
         max: 0.95,
         step: 0.01,
-        defaultValue: 0.85,
+        defaultValue: 0.75,
         unit: "norm",
         provenance: "scenario-reader",
       },
       {
         id: "player2PotY",
-        label: "Player 2 Vertical Pos",
+        label: "Dot 20₁ Vertical (Knob 16₁)",
         min: 0.05,
         max: 0.95,
         step: 0.01,
@@ -544,7 +579,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     ],
     computeMetrics(rawParams) {
       const controls = readBaerControls(rawParams as any);
-      const { metrics } = stepBaerOdysseySi(INITIAL_BAER_STATE, controls, 0.016);
+      const metrics = readBaerOdysseyTapeFrame(controls).metrics;
       return [
         {
           label: "Horizontal Sync",
@@ -563,180 +598,142 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           provenance: "source-disclosed",
         },
         {
-          label: "P1 Horizontal Delay",
+          label: "Dot 20 Horizontal Delay",
           value: metrics.p1DelayHMicrosec.toFixed(1),
           unit: "µs",
           badgeColor: "indigo",
-          description: "Monostable RC delay time controlling player 1 horizontal position",
+          description: "Monostable RC delay time controlling dot 20 horizontal position",
           provenance: "scenario-reader",
         },
         {
-          label: "P1 Vertical Delay",
+          label: "Dot 20 Vertical Delay",
           value: metrics.p1DelayVMs.toFixed(2),
           unit: "ms",
           badgeColor: "purple",
-          description: "Monostable RC delay time controlling player 1 vertical position",
+          description: "Monostable RC delay time controlling dot 20 vertical position",
           provenance: "scenario-reader",
         },
         {
-          label: "RF Carrier Freq",
+          label: "Illustrative Receiver Channel",
           value: metrics.rfCarrierFreqMHz.toFixed(2),
           unit: "MHz",
           badgeColor: "amber",
-          description: "VHF television channel RF carrier frequency modulated with composite video",
-          provenance: "source-disclosed",
+          description:
+            "Modern Channel 3/4 frequency scenario; the grant requires a carrier selected for the receiver channel but prints no fixed channel frequency.",
+          provenance: "scenario-modern",
         },
         {
-          label: "Antenna RF Power",
-          value: metrics.rfAntennaPowerNanoWatts.toFixed(1),
-          unit: "nW",
-          badgeColor: "rose",
-          description: "Incidental radiation power coupled to 300-ohm television antenna terminals",
-          provenance: "scenario-reader",
+          label: "Claim 1 Signal Path",
+          value: metrics.claim1TopologyActive ? "CONNECTED" : "WITHHELD",
+          unit: "topology",
+          badgeColor: metrics.claim1TopologyActive ? "emerald" : "rose",
+          description:
+            "Control-unit dot generation, raster synchronization, participant manipulation, and direct receiver coupling.",
+          provenance: metrics.claim1TopologyActive ? "source-disclosed" : "refusal-bounded",
         },
       ];
     },
   },
   "us-3858232-boyle-smith-ccd": {
+    refreshFromRuntimeTape: true,
+    resetRuntimeTape: resetBoyleSmithCcdTape,
     domain: "solid_state_optoelectronics",
-    domainTitle: "Charge-Coupled Device MOS Potential Wells & Serial Charge Translation",
-    equationName: "MOS Surface Potential Depletion & Charge Transfer Efficiency",
+    domainTitle: "Figure 2 Single-Conductivity Charge-Transfer Topology",
+    equationName: "Figure 3 Sequential Pulse-Overlap Condition",
     governingEquation:
-      "\\psi_s = V_G - V_{\\text{FB}} + V_0 - \\sqrt{2 (V_G - V_{\\text{FB}}) V_0 + V_0^2} \\quad \\text{and} \\quad \\text{CTE} = 1 - \\exp\\left(-\\frac{\\pi^2 D_n t_{\\text{transfer}}}{4 L_{\\text{gate}}^2}\\right)",
+      "\\Delta t < 3t_p \\Longleftrightarrow \\frac{t_p}{\\Delta t} > \\frac{1}{3}",
     engineMethod:
-      "FrankenSimEngine.stepBoyleSmithCcd: MOS Gate Depletion, Photoelectron Integration, 3-Phase Clocked Potential Well Translation",
+      "HostKernel.stepBoyleSmithCcdSource (source topology and fixed-step sequence; compiled lattice/carrier WASM unavailable)",
     pedagogicalInsight:
-      "Clocked gate voltages create movable electrostatic potential wells in single-conductivity silicon. Photons generate electron packets that are sequentially transferred from well to well with >99.999% efficiency.",
+      "The issued Figure 2 shift register connects every third electrode to one of three conductors. Figure 3 overlaps the sequential pulses so the next potential-energy minimum exists before the former one collapses; the grant does not supply the fabrication and operating values needed for CTE, SNR, carrier-count, or power claims.",
     controls: [
       {
-        id: "gateVoltageV",
-        label: "Gate Clock Voltage",
-        min: 5,
-        max: 15,
-        step: 0.5,
-        defaultValue: 10,
-        unit: "V",
-        provenance: "scenario-modern",
+        id: "pulseWidthToStepRatio",
+        label: "Pulse Width / Initiation Interval",
+        min: 0.2,
+        max: 0.8,
+        step: 0.01,
+        defaultValue: DEFAULT_BOYLE_SMITH_CCD_SOURCE_CONTROLS.pulseWidthToStepRatio,
+        unit: "t_p / delta-t",
+        provenance: "scenario-reader",
       },
       {
-        id: "clockFrequencyMhz",
-        label: "3-Phase Clock Frequency",
-        min: 0.5,
-        max: 20,
-        step: 0.5,
-        defaultValue: 5.0,
-        unit: "MHz",
-        provenance: "scenario-modern",
+        id: "clockStepRateHz",
+        label: "Visible Phase-Step Rate",
+        min: 0.2,
+        max: 2.5,
+        step: 0.1,
+        defaultValue: DEFAULT_BOYLE_SMITH_CCD_SOURCE_CONTROLS.clockStepRateHz,
+        unit: "Hz display",
+        provenance: "topology-normalized",
       },
       {
-        id: "incidentLux",
-        label: "Incident Light Intensity",
-        min: 10,
-        max: 2000,
-        step: 10,
-        defaultValue: 250,
-        unit: "lux",
-        provenance: "scenario-modern",
+        id: "pulseDepthNormalized",
+        label: "Relative Potential-Well Depth",
+        min: 0.25,
+        max: 1,
+        step: 0.01,
+        defaultValue: DEFAULT_BOYLE_SMITH_CCD_SOURCE_CONTROLS.pulseDepthNormalized,
+        unit: "normalized",
+        provenance: "topology-normalized",
       },
       {
-        id: "integrationTimeMs",
-        label: "Integration Exposure Time",
-        min: 1.0,
-        max: 100.0,
-        step: 1.0,
-        defaultValue: 16.7,
-        unit: "ms",
-        provenance: "scenario-modern",
-      },
-      {
-        id: "temperatureKelvin",
-        label: "Sensor Temperature",
-        min: 200,
-        max: 350,
-        step: 5,
-        defaultValue: 300,
-        unit: "K",
-        provenance: "scenario-modern",
+        id: "running",
+        label: "Clock Sequence Running",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "boolean",
+        provenance: "topology-normalized",
       },
     ],
-    computeMetrics: (controls: Record<string, number>) => {
-      const res = stepBoyleSmithCcd({
-        gateVoltageV: controls.gateVoltageV,
-        clockFrequencyMhz: controls.clockFrequencyMhz,
-        incidentLux: controls.incidentLux,
-        integrationTimeMs: controls.integrationTimeMs,
-        temperatureKelvin: controls.temperatureKelvin,
-      });
+    computeMetrics: (rawControls: Record<string, number>) => {
+      const controls = readBoyleSmithCcdSourceControls(rawControls);
+      const metrics = readBoyleSmithCcdTapeFrame(controls).metrics;
 
       return [
         {
-          label: "Surface Depletion Potential (psi_s)",
-          value: res.surfacePotentialV.toFixed(2),
-          unit: "V",
+          label: "Figure 3 Active Phase",
+          value: `Phi ${metrics.activePhase}`,
+          unit: "of 3",
           badgeColor: "cyan",
-          progressPct: clampProgress((res.surfacePotentialV / 15) * 100),
-          provenance: "scenario-modern",
+          provenance: "scenario-reader",
         },
         {
-          label: "Full Well Storage Capacity",
-          value: res.fullWellCapacityElectrons.toLocaleString(),
-          unit: "e-",
-          badgeColor: "indigo",
-          progressPct: clampProgress((res.fullWellCapacityElectrons / 300000) * 100),
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Stored Photoelectron Packet",
-          value: res.totalCollectedElectrons.toLocaleString(),
-          unit: "e-",
-          badgeColor: res.totalCollectedElectrons > 0 ? "emerald" : "indigo",
-          progressPct: clampProgress(res.wellFillPercentage),
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Well Fill Factor",
-          value: `${res.wellFillPercentage.toFixed(1)}%`,
-          unit: "",
-          badgeColor: res.isSaturated ? "rose" : "emerald",
-          progressPct: clampProgress(res.wellFillPercentage),
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Charge Transfer Efficiency (CTE)",
-          value: `${res.ctePct.toFixed(4)}%`,
-          unit: "",
-          badgeColor: res.ctePct > 99.99 ? "emerald" : "amber",
-          progressPct: clampProgress(res.ctePct),
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Signal-to-Noise Ratio (SNR)",
-          value: res.snrDb.toFixed(1),
-          unit: "dB",
-          badgeColor: res.snrDb > 20 ? "emerald" : "amber",
-          progressPct: clampProgress((res.snrDb / 60) * 100),
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Thermal Dark Electrons",
-          value: res.darkElectrons.toLocaleString(),
-          unit: "e-",
+          label: "Printed Input Pattern",
+          value: metrics.inputPattern,
+          unit: "Figure 3",
           badgeColor: "amber",
-          progressPct: clampProgress((res.darkElectrons / 5000) * 100),
-          provenance: "scenario-modern",
+          provenance: "source-disclosed",
         },
         {
-          label: "Depletion Depth",
-          value: res.depletionDepthUm.toFixed(2),
-          unit: "um",
-          badgeColor: "cyan",
-          progressPct: clampProgress((res.depletionDepthUm / 10) * 100),
-          provenance: "scenario-modern",
+          label: "Pulse-Overlap Relation",
+          value: `${controls.pulseWidthToStepRatio.toFixed(2)} (${metrics.pulseOverlapConditionMet ? "SATISFIED" : "REFUSED"})`,
+          unit: "t_p / delta-t > 1/3",
+          badgeColor: metrics.pulseOverlapConditionMet ? "emerald" : "rose",
+          provenance: "scenario-reader",
+        },
+        {
+          label: "Claim 1 Storage Medium",
+          value: metrics.claim1TopologyComplete ? "CONTINUOUS" : "WITHHELD",
+          unit: "single conductivity type",
+          badgeColor: metrics.claim1TopologyComplete ? "emerald" : "rose",
+          provenance: metrics.claim1TopologyComplete ? "source-disclosed" : "refusal-bounded",
+        },
+        {
+          label: "Quantitative CTE / Charge / Power",
+          value: "REFUSED",
+          unit: "missing operating inputs",
+          badgeColor: "rose",
+          provenance: "refusal-bounded",
         },
       ];
     },
   },
   "us-4063220-metcalfe-ethernet": {
+    refreshFromRuntimeTape: true,
+    resetRuntimeTape: resetMetcalfeEthernetTape,
     domain: "networking_electrodynamics",
     domainTitle: "Ethernet Coaxial CSMA/CD & Binary Exponential Backoff",
     equationName:
@@ -770,7 +767,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "stationCount",
-        label: "Active Contending Stations",
+        label: "Analytical Contender Estimate",
         min: 2,
         max: 32,
         step: 1,
@@ -780,7 +777,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "offeredLoad",
-        label: "Offered Traffic Load (G)",
+        label: "Analytical Offered Load (G)",
         min: 0.05,
         max: 2.5,
         step: 0.05,
@@ -811,7 +808,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     ],
     computeMetrics: (controls: Record<string, number>) => {
       const parsedControls = readEthernetControls(controls as any);
-      const { metrics } = stepMetcalfeEthernetSi(INITIAL_ETHERNET_STATE, parsedControls, 0.016);
+      const metrics = readMetcalfeEthernetTapeFrame(parsedControls).metrics;
 
       return [
         {
@@ -883,15 +880,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-2318259-sikorsky-helicopter": {
     domain: "rotary_wing_aerodynamics",
-    domainTitle: "Direct-Lift Helicopter Aerodynamics & Anti-Torque Equilibrium",
-    equationName:
-      "Rankine-Froude Momentum Thrust, Torque Balance & Collective-Throttle Correlation",
+    domainTitle: "Source-Bounded Direct-Lift Rotorcraft Teaching Scenario",
+    equationName: "Modern Momentum-Theory Scenario Around the Disclosed Control Topology",
     governingEquation:
       "T_{\\text{main}} = C_T \\rho A (\\Omega R)^2,\\quad v_i = \\sqrt{\\frac{T}{2\\rho A}},\\quad Q_{\\text{main}} = \\frac{T v_i + P_{\\text{profile}}}{\\Omega},\\quad M_{\\text{yaw}} = Q_{\\text{main}} - T_{\\text{tail}} L_{\\text{boom}}",
     engineMethod:
-      "stepSikorskyHelicopterSi (blade element aerodynamics, swashplate feathering, tail anti-torque equilibrium)",
+      "stepSikorskyHelicopterSi (deterministic TypeScript scenario; historical SI dynamics refused)",
     pedagogicalInsight:
-      "A helicopter's overhead main rotor produces vertical lift and horizontal propulsion via cyclic blade pitch tilting, while generating a strong reactive torque that would spin the fuselage. The vertical tail rotor generates an opposing lateral thrust moment that precisely counterbalances main rotor torque and provides directional yaw maneuvering.",
+      "The grant discloses the causal mechanism—collective/cyclic pitch control, positive pitch-to-power correlation, and an orthogonal variable-pitch auxiliary rotor. The displayed forces, speeds, and dimensions come from a clearly labeled modern scenario because the grant does not quantify them.",
+    provenance: "scenario-modern",
     controls: [
       {
         id: "collectivePitchDeg",
@@ -899,7 +896,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         min: 2.0,
         max: 16.0,
         step: 0.5,
-        defaultValue: 9.5,
+        defaultValue: 6.8,
         unit: "deg",
         provenance: "scenario-reader",
       },
@@ -964,7 +961,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: metrics.mainRotorThrustNewtons.toFixed(1),
           unit: "N",
           badgeColor: "emerald",
-          description: "Total aerodynamic vertical lift generated by main rotor blades",
+          description: "Modern-scenario aerodynamic lift, not a value printed by the grant",
           provenance: "scenario-reader",
         },
         {
@@ -972,7 +969,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: metrics.mainRotorTorqueNm.toFixed(1),
           unit: "N·m",
           badgeColor: "amber",
-          description: "Newtonian aerodynamic torque reaction acting on fuselage",
+          description: "Modern-scenario aerodynamic torque reaction acting on the fuselage",
           provenance: "scenario-reader",
         },
         {
@@ -980,7 +977,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: metrics.tailRotorThrustNewtons.toFixed(1),
           unit: "N",
           badgeColor: "cyan",
-          description: "Lateral thrust force generated by vertical tail rotor",
+          description: "Modern-scenario lateral thrust from the disclosed auxiliary rotor topology",
           provenance: "scenario-reader",
         },
         {
@@ -988,7 +985,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: metrics.netYawMomentNm.toFixed(1),
           unit: "N·m",
           badgeColor: Math.abs(metrics.netYawMomentNm) < 20 ? "emerald" : "rose",
-          description: "Residual yaw torque driving fuselage angular acceleration",
+          description: "Modern-scenario residual yaw moment after auxiliary-rotor action",
           provenance: "scenario-reader",
         },
         {
@@ -996,7 +993,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: metrics.tipSpeedMs.toFixed(1),
           unit: "m/s",
           badgeColor: "indigo",
-          description: "Linear velocity at main blade tips (Mach number)",
+          description: "Modern-scenario blade-tip speed; no rotor RPM is printed by the grant",
           provenance: "scenario-reader",
         },
         {
@@ -1004,7 +1001,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: (metrics.mainRotorPowerWatts / 1000.0).toFixed(1),
           unit: "kW",
           badgeColor: "purple",
-          description: "Total aerodynamic shaft power required for hover",
+          description: "Modern-scenario aerodynamic shaft power; historical power is refused",
           provenance: "scenario-reader",
         },
         {
@@ -1012,7 +1009,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: metrics.inducedVelocityMs.toFixed(2),
           unit: "m/s",
           badgeColor: "indigo",
-          description: "Rankine-Froude momentum downwash through rotor disk",
+          description: "Modern-scenario Rankine-Froude downwash through the normalized rotor disk",
           provenance: "scenario-reader",
         },
         {
@@ -1020,8 +1017,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: metrics.effectiveThrottlePercent.toFixed(1),
           unit: "%",
           badgeColor: "emerald",
-          description: "Mechanical linkage automatic throttle compensation",
-          provenance: "source-disclosed",
+          description:
+            "Scenario value from the source-disclosed positive pitch-to-power linkage relationship",
+          provenance: "scenario-reader",
         },
       ];
     },
@@ -1168,101 +1166,126 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     },
   },
   "us-2929922-townes-laser": {
-    domain: "quantum_optics",
-    domainTitle: "Stimulated Emission & Fabry-Pérot Open Resonator Lasers",
-    equationName: "Schawlow-Townes Threshold Gain & Einstein Rate Equations",
+    domain: "optics_waves",
+    domainTitle: "Open-Resonator Maser Communications Topology",
+    equationName: "Source Geometry & End-Assembly Reflectivity Bookkeeping",
     governingEquation:
-      "g_{\\text{th}} = \\alpha + \\frac{1}{2L} \\ln\\left(\\frac{1}{R_1 R_2}\\right) \\quad \\text{and} \\quad P_{\\text{out}} = \\eta (P_p - P_{\\text{th}})",
-    engineMethod: "Optical Pumping Population Inversion & Fabry-Pérot Standing-Wave Mode Feedback",
+      "\\frac{L}{D} = \\frac{10\\,\\mathrm{cm}}{1\\,\\mathrm{cm}} = 10 \\quad \\text{and} \\quad R_{\\mathrm{round\\ trip}} = R_1 R_2",
+    engineMethod: "Source-Bounded TypeScript Topology Step (Quantitative Optical Output Refused)",
     pedagogicalInsight:
-      "Opening the sides of the cavity eliminates chaotic off-axis modes via diffraction loss, allowing only axial plane waves to build up into a pure, phase-locked coherent laser beam.",
+      "The patent is a connected communications system, not a lone modern laser tube: generator 10 feeds a focal-plane mode selector, modulated amplifier 12, and detector 13.",
     controls: [
       {
-        id: "pumpPowerWatts",
-        label: "Optical Pump Power",
-        min: 50,
-        max: 1000,
-        step: 25,
-        defaultValue: 350,
-        unit: "W",
-        provenance: "scenario-modern",
+        id: "pumpExcitationPct",
+        label: "Illustrative Pump Excitation",
+        min: 0,
+        max: 100,
+        step: 5,
+        defaultValue: TOWNES_MASER_DEFAULT_CONTROLS.pumpExcitationPct,
+        unit: "%",
+        provenance: "topology-normalized",
       },
       {
         id: "cavityLengthCm",
-        label: "Resonator Cavity Length",
+        label: "Chamber Length",
         min: 5,
+        max: 20,
+        step: 1,
+        defaultValue: TOWNES_MASER_DEFAULT_CONTROLS.cavityLengthCm,
+        unit: "cm",
+        provenance: "scenario-reader",
+        provenanceCitation: "US 2,929,922 describes chamber 14 as typically about 10 cm long.",
+      },
+      {
+        id: "chamberDiameterCm",
+        label: "Chamber Diameter",
+        min: 0.5,
+        max: 2,
+        step: 0.1,
+        defaultValue: TOWNES_MASER_DEFAULT_CONTROLS.chamberDiameterCm,
+        unit: "cm",
+        provenance: "scenario-reader",
+        provenanceCitation: "US 2,929,922 describes chamber 14 as typically about 1 cm diameter.",
+      },
+      {
+        id: "endReflectivityPct",
+        label: "End Assembly Reflectivity",
+        min: 90,
+        max: 99,
+        step: 1,
+        defaultValue: TOWNES_MASER_DEFAULT_CONTROLS.endReflectivityPct,
+        unit: "%",
+        provenance: "scenario-reader",
+        provenanceCitation: "US 2,929,922 gives a 97% reflective sapphire-and-gold example.",
+      },
+      {
+        id: "modeApertureOpenPct",
+        label: "Illustrative Mode Aperture",
+        min: 0,
         max: 100,
         step: 5,
-        defaultValue: 25,
-        unit: "cm",
-        provenance: "scenario-modern",
+        defaultValue: TOWNES_MASER_DEFAULT_CONTROLS.modeApertureOpenPct,
+        unit: "% open",
+        provenance: "topology-normalized",
       },
       {
-        id: "mirror2ReflectivityPct",
-        label: "Output Mirror Reflectivity",
-        min: 80,
-        max: 99.5,
-        step: 0.5,
-        defaultValue: 94,
+        id: "modulationFieldPct",
+        label: "Illustrative Zeeman Field",
+        min: 0,
+        max: 100,
+        step: 5,
+        defaultValue: TOWNES_MASER_DEFAULT_CONTROLS.modulationFieldPct,
         unit: "%",
-        provenance: "scenario-modern",
-      },
-      {
-        id: "beamDiameterMm",
-        label: "Aperture Diameter",
-        min: 2,
-        max: 25,
-        step: 1,
-        defaultValue: 8,
-        unit: "mm",
-        provenance: "scenario-modern",
+        provenance: "topology-normalized",
       },
     ],
     computeMetrics: (params) => {
-      const res = stepTownesLaser({
-        pumpPowerWatts: params.pumpPowerWatts ?? 350,
-        cavityLengthCm: params.cavityLengthCm ?? 25,
-        mirror2ReflectivityPct: params.mirror2ReflectivityPct ?? 94,
-        beamDiameterMm: params.beamDiameterMm ?? 8,
-      });
+      const res = stepTownesMaserTopology(readTownesMaserControls(params));
 
       return [
         {
-          label: "Laser Output Power",
-          value: `${res.laserOutputPowerWatts} W`,
-          unit: "W",
+          label: "Illustrative Pump Command",
+          value: res.controls.pumpExcitationPct.toFixed(0),
+          unit: "%",
           badgeColor: "cyan",
           primary: true,
-          provenance: "scenario-modern",
+          provenance: "topology-normalized",
         },
         {
-          label: "Threshold Gain",
-          value: `${res.thresholdGainPerCm} cm⁻¹`,
-          unit: "cm⁻¹",
+          label: "Communications Path",
+          value: res.signalPathComplete ? "connected" : "withheld",
+          unit: "",
+          badgeColor: "indigo",
+          provenance: "refusal-bounded",
+        },
+        {
+          label: "Chamber Aspect Ratio",
+          value: String(res.chamberAspectRatio),
+          unit: "L/D",
           badgeColor: "emerald",
           primary: true,
-          provenance: "scenario-modern",
+          provenance: "scenario-reader",
         },
         {
-          label: "Intracavity Power",
-          value: `${res.intraCavityPowerWatts} W`,
-          unit: "W",
+          label: "Round-Trip Reflectivity",
+          value: `${(res.readerRoundTripReflectivityFraction * 100).toFixed(2)}%`,
+          unit: "%",
           badgeColor: "amber",
-          provenance: "scenario-modern",
+          provenance: "scenario-reader",
         },
         {
-          label: "Beam Divergence",
-          value: `${res.beamDivergenceMrad} mrad`,
-          unit: "mrad",
+          label: "Potassium Example Temperature",
+          value: String(res.sourcePotassiumTemperatureK),
+          unit: "K",
           badgeColor: "purple",
-          provenance: "scenario-modern",
+          provenance: "source-disclosed",
         },
         {
-          label: "Fresnel Number",
-          value: `${res.fresnelNumber}`,
+          label: "Quantitative Optical Output",
+          value: "refused",
           unit: "",
           badgeColor: "rose",
-          provenance: "scenario-modern",
+          provenance: "refusal-bounded",
         },
       ];
     },
@@ -2039,19 +2062,19 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "The source's Fig. 9 model routes two generator circuits through collector rings and brushes to corresponding motor-coil pairs. Their changing magnetizing forces progressively shift the ring poles; Tesla says disk D follows the moving points of greatest attraction.",
   },
-  // Preserved non-public model. The exact route is constrained to a
-  // source-reading guide until its 58-page scholarly edition is accepted.
+  // Source-bounded Figure 3/Figures 7–8 reader. The normalized absorber
+  // position is pedagogical and explicitly does not claim reactor calibration.
   "_legacy-unpublished-us-2708656-fermi-reactor": {
     domain: "nuclear_kinetics",
-    domainTitle: "6-Group Delayed Neutron Point Kinetics & Criticality",
-    equationName: "Point Kinetics Differential Equation",
-    governingEquation:
-      "\\frac{dn}{dt} = \\frac{\\rho - \\beta}{\\Lambda} n + \\sum_{i=1}^6 \\lambda_i C_i \\quad \\text{with} \\quad k_{\\text{eff}} = 1.0000",
-    engineMethod: "FrankenSimEngine.stepFermiReactor",
+    domainTitle: "Graphite–Natural-Uranium Lattice & Source-Bounded Criticality",
+    equationName: "Patent Reproduction Constant Factors",
+    governingEquation: "K \\propto p f \\varepsilon \\quad ; \\quad K_{\\text{finite}} = 1",
+    engineMethod:
+      "stepFermiKinetics (host source reader plus normalized absorber lens; quantitative neutronics refused)",
     controls: [
       {
         id: "rodWithdrawal",
-        label: "Cadmium Rod Withdrawal",
+        label: "Normalized Absorber Withdrawal",
         min: 0,
         max: 100,
         step: 0.5,
@@ -2061,8 +2084,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "moderatorPurity",
-        label: "Graphite Moderator Purity",
-        min: 80,
+        label: "Declared Graphite Purity",
+        min: 95,
         max: 100,
         step: 0.5,
         defaultValue: 99.5,
@@ -2070,93 +2093,76 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         provenance: "scenario-modern",
       },
       {
-        id: "fuelEnrichmentPct",
-        label: "Uranium-235 Enrichment",
-        min: 0.5,
-        max: 1.2,
-        step: 0.01,
-        defaultValue: 0.72,
-        unit: "%",
+        id: "claim1Active",
+        label: "Claim 1 Uranium-Rod Lattice",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "topology",
         provenance: "source-disclosed",
       },
     ],
     computeMetrics: (p) => {
       const rod = p.rodWithdrawal ?? 83.5;
       const mod = p.moderatorPurity ?? 99.5;
-      const enrich = p.fuelEnrichmentPct ?? 0.72;
-      const kinetics = stepFermiKinetics(rod, mod, enrich);
+      const claim1Active = (p.claim1Active ?? 1) >= 0.5;
+      const kinetics = stepFermiKinetics(rod, mod, NATURAL_URANIUM_U235_PERCENT, claim1Active);
       const keff = kinetics.kEffective;
-      const rhoDollars = kinetics.reactivityDollars;
-      const thermalPower = kinetics.thermalPowerWatts;
-      const flux = (thermalPower * 3.2e7).toExponential(2);
 
       return [
         {
-          label: "Multiplication (keff)",
-          value: keff.toFixed(4),
-          unit: "critical",
-          badgeColor: keff > 1.005 ? "rose" : keff >= 0.998 ? "emerald" : "amber",
-          progressPct: Math.min(100, (keff / 1.05) * 100),
+          label: "Claim 1 lattice",
+          value: claim1Active ? "present" : "removed",
+          unit: "graphite + natural-U rods",
+          badgeColor: claim1Active ? "emerald" : "rose",
+          progressPct: claim1Active ? 100 : 0,
+          provenance: "source-disclosed",
+        },
+        {
+          label: "Figure 3 geometry",
+          value: claim1Active ? "included" : "not established",
+          unit: "K = 1 contour condition",
+          badgeColor: claim1Active ? "emerald" : "rose",
+          progressPct: claim1Active ? 100 : 0,
+          provenance: "source-disclosed",
+        },
+        {
+          label: "Natural uranium",
+          value: NATURAL_URANIUM_U235_PERCENT.toFixed(2),
+          unit: "% U-235 reference",
+          badgeColor: "amber",
+          progressPct: 72,
           provenance: "scenario-modern",
         },
         {
-          label: "Reactivity (ρ)",
-          value: rhoDollars >= 0 ? `+${rhoDollars.toFixed(2)}` : rhoDollars.toFixed(2),
-          unit: "$",
-          badgeColor: rhoDollars > 1 ? "rose" : "amber",
-          progressPct: Math.min(100, Math.max(0, (rhoDollars + 2) * 25)),
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Reactor Period",
-          value:
-            kinetics.reactorPeriodSeconds > 0
-              ? `${kinetics.reactorPeriodSeconds.toFixed(1)} s`
-              : "subcritical",
-          unit: "T",
-          badgeColor: kinetics.reactorPeriodSeconds > 0 ? "amber" : "cyan",
-          progressPct:
-            kinetics.reactorPeriodSeconds > 0
-              ? Math.min(100, 100 / kinetics.reactorPeriodSeconds)
-              : 0,
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Geiger Interval",
-          value: `${kinetics.geigerIntervalMs} ms`,
-          unit: "Δt",
-          badgeColor: "purple",
-          progressPct: clampProgress((kinetics.geigerIntervalMs / 800) * 100),
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Neutron Display",
-          value: `${kinetics.neutronDisplaySpeed}`,
-          unit: "u/s",
-          badgeColor: "cyan",
-          progressPct: Math.min(100, (kinetics.neutronDisplaySpeed / 6) * 100),
+          label: "Normalized k_eff lens",
+          value: claim1Active ? keff.toFixed(4) : "refused",
+          unit: "not source-calibrated",
+          badgeColor: !claim1Active ? "rose" : keff >= 0.998 ? "emerald" : "amber",
+          progressPct: claim1Active ? clampProgress((keff / 1.01) * 100) : 0,
           provenance: "topology-normalized",
         },
         {
-          label: "Thermal Power",
-          value: thermalPower.toLocaleString(),
-          unit: "W",
-          badgeColor: "purple",
-          progressPct: Math.min(100, (thermalPower / 1000) * 100),
+          label: "Quantitative transient",
+          value: "refused",
+          unit: "source boundary",
+          badgeColor: "amber",
+          progressPct: 0,
           provenance: "scenario-modern",
         },
         {
-          label: "Thermal Flux",
-          value: flux,
-          unit: "n/(cm²·s)",
+          label: "Declared graphite purity input",
+          value: kinetics.moderatorPurityPercent.toFixed(1),
+          unit: "% · no calibrated k_eff effect",
           badgeColor: "cyan",
-          progressPct: Math.min(100, (thermalPower / 500) * 100),
+          progressPct: kinetics.moderatorPurityPercent,
           provenance: "scenario-modern",
         },
       ];
     },
     pedagogicalInsight:
-      "Delayed neutron emission fractions (β = 0.0065) expand the reactor period from milliseconds to dozens of seconds, allowing cadmium control rods to maintain sub-prompt criticality safely.",
+      "Claim 1 is the graphite moderator plus geometrically spaced natural-uranium rods whose size and moderator-to-uranium volume ratio lie inside Figure 3's K = 1 contour, with sufficient purity and mass. The absorber travel is a normalized teaching control because the grant does not publish a travel-to-worth calibration.",
   },
   "us-1155986-goddard-rocket": {
     domain: "thermodynamics_transport",
@@ -2401,89 +2407,89 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-2524035-bardeen-transistor": {
     domain: "semiconductor_carrier",
-    domainTitle: "Point-Contact Minority Carrier Injection & Hole Diffusion",
-    equationName: "Einstein Diffusion & Current Gain Alpha",
+    domainTitle: "Source-Reported Point-Contact Amplifier Operating Samples",
+    equationName: "Reported Small-Signal Voltage and Power Gain",
     governingEquation:
-      "D_p = \\frac{k_B T}{q} \\mu_p \\quad \\text{and} \\quad \\alpha = \\gamma \\cdot \\beta = \\frac{\\Delta I_c}{\\Delta I_e} \\approx 1.8",
-    engineMethod: "FrankenSimEngine.stepBardeenTransistor",
+      "A_v = \\frac{V_{\\text{out}}}{V_{\\text{in}}}, \\qquad G_P = \\frac{P_{\\text{out}}}{P_{\\text{in}}}",
+    engineMethod:
+      "Source-bounded TypeScript Table I reader; quantitative carrier transport refused",
+    provenance: "source-disclosed",
     controls: [
       {
-        id: "emitterCurrent",
-        label: "Emitter Current (Ie)",
-        min: 0.5,
-        max: 8.0,
-        step: 0.1,
-        defaultValue: 1.5,
-        unit: "mA",
-        provenance: "scenario-modern",
-      },
-      {
-        id: "collectorBias",
-        label: "Collector Reverse Bias",
-        min: -80,
-        max: -10,
+        id: "operatingSample",
+        label: "Reported Table I Sample",
+        min: 1,
+        max: 3,
         step: 1,
-        defaultValue: -40,
-        unit: "V",
-        provenance: "scenario-modern",
+        defaultValue: 1,
+        unit: "sample",
+        provenance: "scenario-reader",
       },
       {
-        id: "pointSpacing",
-        label: "Whiskers Contact Spacing",
-        min: 15,
-        max: 150,
-        step: 5,
-        defaultValue: 50,
-        unit: "µm",
-        provenance: "scenario-modern",
+        id: "pointSpacingMils",
+        label: "Preferred Contact Spacing",
+        min: 1,
+        max: 10,
+        step: 0.5,
+        defaultValue: 2,
+        unit: "mils",
+        provenance: "scenario-reader",
+      },
+      {
+        id: "claim1Active",
+        label: "Claim 1 Contact Path",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "on/off",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics: (p) => {
-      const ie = p.emitterCurrent ?? 1.5;
-      const spacing = p.pointSpacing ?? 50;
-      const semi = FrankenSimEngine.stepBardeenTransistor(ie, p.collectorBias ?? -40, spacing);
-      const transitTimeNs = semi.clockPeriodNs;
-      const alpha = semi.currentGainAlpha ?? 1.0;
-      const powerGainDb = semi.powerGainDb.toFixed(1);
-      const ic = semi.collectorCurrentMa.toFixed(2);
+      const state = stepBardeenPointContact({
+        operatingSample: p.operatingSample,
+        pointSpacingMils: p.pointSpacingMils,
+        claim1Active: (p.claim1Active ?? 1) >= 0.5,
+      });
 
       return [
         {
-          label: "Current Gain (α)",
-          value: alpha.toFixed(2),
-          unit: "ratio",
-          badgeColor: alpha >= 1.0 ? "emerald" : "amber",
-          progressPct: Math.min(100, (alpha / 2.5) * 100),
-          provenance: "scenario-modern",
+          label: "Reported Voltage Gain",
+          value: state.sample.voltageGainFactor.toFixed(0),
+          unit: "×",
+          badgeColor: "emerald",
+          progressPct: clampProgress((state.sample.voltageGainFactor / 62) * 100),
+          provenance: "source-disclosed",
         },
         {
-          label: "Hole Transit Time",
-          value: transitTimeNs.toFixed(1),
-          unit: "ns",
-          badgeColor: "cyan",
-          progressPct: Math.min(100, (transitTimeNs / 30) * 100),
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Collector Current",
-          value: ic,
-          unit: "mA",
-          badgeColor: "purple",
-          progressPct: Math.min(100, (Number(ic) / 10) * 100),
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Power Amplification",
-          value: `${powerGainDb}`,
-          unit: "dB",
+          label: "Reported Power Gain",
+          value: state.sample.powerGainFactor.toFixed(0),
+          unit: "×",
           badgeColor: "indigo",
-          progressPct: Math.min(100, (Number(powerGainDb) / 25) * 100),
-          provenance: "scenario-modern",
+          progressPct: clampProgress((state.sample.powerGainFactor / 80) * 100),
+          provenance: "source-disclosed",
+        },
+        {
+          label: "Selected Contact Gap",
+          value: state.pointSpacingMicrometers.toFixed(1),
+          unit: "µm",
+          badgeColor: "purple",
+          progressPct: clampProgress((state.pointSpacingMils / 10) * 100),
+          provenance: "scenario-reader",
+        },
+        {
+          label: "Claim 1 Contact Path",
+          value: state.collectorCollectionActive ? "complete" : "removed",
+          unit: "",
+          badgeColor: state.collectorCollectionActive ? "cyan" : "rose",
+          progressPct: state.collectorCollectionActive ? 100 : 0,
+          provenance: "scenario-reader",
         },
       ];
     },
     pedagogicalInsight:
-      "Forward-biased emitter phosphor-bronze point injects minority carrier holes into n-type germanium base; reverse-biased collector placed 50 µm away sweeps them across the barrier for net power gain.",
+      "US 2,524,035 reports three amplifier operating samples and a preferred 1–10 mil spacing between emitter and collector contacts. It explains minority-carrier injection and collection, but does not report mobility, lifetime, transit time, or the complete DC supply power needed for a quantitative transport or energy model.",
   },
   "us-1781541-einstein-refrigerator": {
     domain: "thermodynamics_transport",
@@ -2634,85 +2640,67 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-2981877-noyce-ic": {
     domain: "semiconductor_carrier",
-    domainTitle: "Planar PN Barrier Depletion & Monolithic Silicon Interconnects",
-    equationName: "Depletion Region Barrier Capacitance",
+    domainTitle: "Oxide-Insulated Planar Junction Lead Topology",
+    equationName: "Source-Described Insulating Lead Bridge",
     governingEquation:
-      "W = \\sqrt{\\frac{2\\varepsilon_s (V_{bi} + V_R)}{q}\\left(\\frac{1}{N_A} + \\frac{1}{N_D}\\right)}",
-    engineMethod: "FrankenSimEngine.stepNoyceIC",
+      "\\text{metal lead} \\;|\\; \\text{retained oxide} \\;|\\; \\text{surface-reaching P-N junction}",
+    engineMethod: "Source-Bounded TypeScript Topology Step (Electrical Performance Refused)",
     controls: [
       {
-        id: "reverseBias",
-        label: "Reverse Bias Voltage (VR)",
-        min: 1,
-        max: 20,
-        step: 0.5,
-        defaultValue: 5.0,
-        unit: "V",
-        provenance: "scenario-modern",
-      },
-      {
-        id: "oxideThickness",
-        label: "SiO2 Oxide Thickness",
-        min: 0.2,
-        max: 1.2,
-        step: 0.05,
-        defaultValue: 0.5,
+        id: "oxideThicknessUm",
+        label: "Oxide Thickness",
+        min: 0.5,
+        max: 2,
+        step: 0.1,
+        defaultValue: NOYCE_PLANAR_LEAD_DEFAULT_CONTROLS.oxideThicknessUm,
         unit: "µm",
-        provenance: "scenario-modern",
+        provenance: "scenario-reader",
+        provenanceCitation:
+          "US 2,981,877 describes oxide often one micron or more and elsewhere one to two microns.",
       },
       {
-        id: "clockFrequencyMhz",
-        label: "Clock Frequency",
-        min: 1,
-        max: 50,
-        step: 1,
-        defaultValue: 10,
-        unit: "MHz",
-        provenance: "scenario-modern",
+        id: "leadStripWidthFraction",
+        label: "Lead Width / Contact Span",
+        min: 0.08,
+        max: 0.28,
+        step: 0.01,
+        defaultValue: NOYCE_PLANAR_LEAD_DEFAULT_CONTROLS.leadStripWidthFraction,
+        unit: "fraction",
+        provenance: "topology-normalized",
       },
     ],
     computeMetrics: (p) => {
-      const ic = stepNoyceIC({
-        reverseBias: p.reverseBias,
-        oxideThickness: p.oxideThickness,
-        clockFrequencyMhz: p.clockFrequencyMhz,
-      });
-      const w = ic.depletionWidthUm.toFixed(2);
-      const propDelay = ic.propDelayNs.toFixed(2);
-      const cap = ic.junctionCapPfPerMm2.toFixed(1);
+      const ic = stepNoycePlanarLeadTopology(readNoycePlanarLeadControls(p));
 
       return [
         {
-          label: "Depletion Barrier (W)",
-          value: w,
+          label: "Oxide Thickness",
+          value: ic.controls.oxideThicknessUm.toFixed(1),
           unit: "µm",
           badgeColor: "cyan",
-          progressPct: (Number(w) / 2.5) * 100,
-          provenance: "scenario-modern",
+          primary: true,
+          provenance: "scenario-reader",
         },
         {
-          label: "Junction Capacitance",
-          value: cap,
-          unit: "pF/mm²",
+          label: "Lead Route",
+          value: ic.controls.leadStripWidthFraction.toFixed(2),
+          unit: "contact span",
           badgeColor: "amber",
-          progressPct: (Number(cap) / 60) * 100,
-          provenance: "scenario-modern",
+          provenance: "topology-normalized",
         },
         {
-          label: "Propagation Delay (tpd)",
-          value: propDelay,
-          unit: "ns",
+          label: "Claim 1 Crossing",
+          value: ic.claim1TopologyComplete ? "oxide-supported" : "withheld",
+          unit: "",
           badgeColor: "emerald",
-          progressPct: (Number(propDelay) / 3.0) * 100,
-          provenance: "scenario-modern",
+          provenance: "refusal-bounded",
         },
         {
-          label: "Breakdown Margin",
-          value: ic.breakdownMarginV.toFixed(1),
-          unit: "V",
-          badgeColor: "indigo",
-          progressPct: (ic.breakdownMarginV / 35) * 100,
-          provenance: "scenario-modern",
+          label: "Electrical Performance",
+          value: "refused",
+          unit: "",
+          badgeColor: "rose",
+          provenance: "refusal-bounded",
         },
       ];
     },
@@ -2920,12 +2908,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   // Preserved, non-public legacy model. The source-reviewed US 586,193 route
   // is held below until an independently accepted visual can support it.
   "_legacy-unpublished-us-586193-marconi-radio": {
+    refreshFromRuntimeTape: true,
+    resetRuntimeTape: resetMarconiTape,
     domain: "electromagnetics_flux",
-    domainTitle: "Spark-Gap Resonant Damped Wave Oscillations & Aerial Radiation",
-    equationName: "Monopole Radiation Resistance & Resonant Frequency",
+    domainTitle: "Source-Bounded Wireless Receiver Contact and Automatic Reset",
+    equationName: "Claim 1 Receiver Contact, Local Circuit, and Shaking Sequence",
     governingEquation:
-      "f_0 = \\frac{1}{2\\pi \\sqrt{L C}} \\quad \\text{and} \\quad R_{\\text{rad}} = 36.56\\ \\Omega \\quad (\\lambda = 4h)",
-    engineMethod: "FrankenSimEngine.stepMarconiRadio",
+      "\\text{received oscillation} \\rightarrow \\text{imperfect contact conducts} \\rightarrow \\text{local circuit acts} \\rightarrow \\text{shaking means resets contact}",
+    engineMethod:
+      "createMarconiTransportUpdater (source-bounded fixed-step causal tape; quantitative RF link budget withheld)",
     controls: [
       {
         id: "sparkVoltage",
@@ -2935,6 +2926,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 28,
         unit: "kV",
+        provenance: "scenario-reader",
+        provenanceCitation:
+          "Illustrative apparatus control; US 586,193 supplies no transmitter voltage for a quantitative RF solution.",
       },
       {
         id: "aerialHeight",
@@ -2944,6 +2938,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 2,
         defaultValue: 88,
         unit: "m",
+        provenance: "scenario-reader",
+        provenanceCitation:
+          "Illustrative display dimension; US 586,193 describes elevated conductors but prints no mast height for this apparatus.",
       },
       {
         id: "sparkGapMm",
@@ -2953,47 +2950,69 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: 10,
         unit: "mm",
+        provenance: "scenario-reader",
+        provenanceCitation:
+          "Illustrative geometry control; US 586,193 does not print this spark-gap spacing.",
       },
     ],
     computeMetrics: (p) => {
-      const v = p.sparkVoltage ?? 28;
-      const h = p.aerialHeight ?? 88;
-      const radio = FrankenSimEngine.stepMarconiRadio(h, p.sparkGapMm ?? 10, v);
-      const freqKhz = radio.resonantFreqKhz;
+      const tape = readMarconiTapeFrame(readMarconiRuntimeControls(p));
 
       return [
         {
-          label: "Resonant Frequency",
-          value: freqKhz.toString(),
-          unit: "kHz",
+          label: "Illustrative Apparatus Inputs",
+          value: `${tape.controls.inductionCoilKv} kV · ${tape.controls.aerialHeightMeters} m · ${tape.controls.sparkGapMm} mm`,
+          unit: "reader controls",
+          badgeColor: "purple",
+          progressPct: clampProgress((tape.controls.inductionCoilKv / 50) * 100),
+          provenance: "scenario-reader",
+          provenanceCitation:
+            "Reader-selected display inputs only; US 586,193 supplies none of them as a basis for a quantitative RF link budget.",
+        },
+        {
+          label: "Receiver Sequence",
+          value: tape.receiverStage.replaceAll("-", " "),
+          unit: "state",
           badgeColor: "cyan",
-          progressPct: clampProgress((freqKhz / 2500) * 100),
+          progressPct: tape.pulseAgeSec === null ? 0 : clampProgress(tape.wavefrontProgress * 100),
+          provenance: "topology-normalized",
+          provenanceCitation:
+            "The order follows Claim 1's contact, circuit, and shaking means; display timing is normalized and is not a patent measurement.",
         },
         {
-          label: "Peak RF Power",
-          value: radio.peakRfPowerKw.toString(),
-          unit: "kW",
+          label: "Imperfect Contact",
+          value: tape.receiverConducting ? "conducting" : "open",
+          unit: "contact state",
           badgeColor: "amber",
-          progressPct: Math.min(100, (radio.peakRfPowerKw / 80) * 100),
+          progressPct: tape.receiverConducting ? 100 : 0,
+          provenance: "topology-normalized",
+          provenanceCitation:
+            "Claim 1 names the imperfect contact in the receiver but gives no threshold or resistance for a numerical contact model.",
         },
         {
-          label: "Radiation Resistance",
-          value: radio.radiationResistanceOhms.toFixed(1),
-          unit: "Ω",
+          label: "Sensitive-Tube Current Limit",
+          value: "≤1",
+          unit: "mA",
           badgeColor: "emerald",
-          progressPct: clampProgress(75),
+          progressPct: 100,
+          provenance: "source-disclosed",
+          provenanceCitation:
+            "US 586,193 advises allowing no more than one milliampere through a well-made sensitive tube while active.",
         },
         {
-          label: "Estimated Range",
-          value: radio.maxRangeMiles.toString(),
-          unit: "mi",
+          label: "Single-Cell EMF Limit",
+          value: "≤1.5",
+          unit: "V",
           badgeColor: "indigo",
-          progressPct: Math.min(100, (radio.maxRangeMiles / 200) * 100),
+          progressPct: 100,
+          provenance: "source-disclosed",
+          provenanceCitation:
+            "US 586,193 warns that more than 1.5 volts from a Leclanché cell may pass current with no transmitted oscillation.",
         },
       ];
     },
     pedagogicalInsight:
-      "Connecting one terminal of an elevated vertical antenna to the spark gap and the other directly to the conductive earth turns the system into an asymmetric quarter-wave Hertzian radiator.",
+      "The source-backed mechanism is a complete causal chain: received oscillations change an imperfect contact, the resulting local-circuit current operates the signal apparatus, and a circuit-actuated shaker restores the contact for the next signal. The grant does not provide a quantitative RF link budget.",
   },
   "us-1647-morse-telegraph": {
     domain: "electromagnetics_flux",
@@ -3617,6 +3636,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   // Preserved source-bound model. Publication remains held pending independent
   // figure-crop review; metrics describe only the illustrated record system.
   "_legacy-unpublished-us-2292387-lamarr-frequency-hopping": {
+    refreshFromRuntimeTape: true,
+    resetRuntimeTape: resetLamarrTape,
     domain: "electromagnetics_flux",
     domainTitle: "Synchronized record-controlled radio tuning",
     equationName: "Record position and receiver matching",
@@ -3646,26 +3667,24 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const position = Math.max(0, Math.min(6, Math.round(p.recordPosition ?? 0)));
-      const row = "ABCDEFG"[position] ?? "A";
-      const receiverTuned = position >= 3;
-      const tone = p.commandTone === 500 ? "500" : "100";
+      const state = stepLamarrRecordControl(p);
+      const tone = String(state.commandTone);
 
       return [
         {
           label: "Transmitter record row",
-          value: row,
+          value: state.transmitterRow,
           unit: "A–G",
           badgeColor: "indigo",
-          progressPct: clampProgress((position / 6) * 100),
+          progressPct: clampProgress((state.recordPosition / 6) * 100),
           provenance: "source-disclosed",
         },
         {
           label: "Receiver match",
-          value: receiverTuned ? "D–G" : "A–C false",
+          value: state.receiverEffective ? "D–G" : "A–C false",
           unit: "channels",
           badgeColor: "emerald",
-          progressPct: receiverTuned ? 100 : 0,
+          progressPct: state.receiverEffective ? 100 : 0,
           provenance: "source-disclosed",
         },
         {
@@ -3678,10 +3697,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Warning lamp 43",
-          value: receiverTuned ? "off" : "on",
+          value: state.warningLampOn ? "on" : "off",
           unit: "row H",
           badgeColor: "amber",
-          progressPct: receiverTuned ? 0 : 100,
+          progressPct: state.warningLampOn ? 100 : 0,
           provenance: "source-disclosed",
         },
       ];
@@ -3690,12 +3709,12 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "The illustrated apparatus advances matched perforated records together. Rows A–G select seven transmitter tuning positions, while the receiver is effective on D–G and deliberately ineffective on A–C; a 100-cycle or 500-cycle command then advances the rudder by one discrete step.",
   },
   "_legacy-unpublished-us-3541541-engelbart-mouse": {
-    domain: "continuum_elasticity",
-    domainTitle: "Orthogonal Coordinate Resolver Kinematics & Potentiometer D/A",
-    equationName: "Dual Knife-Edge Orthogonal Coordinate Integration",
+    domain: "mechanical_kinematics",
+    domainTitle: "Orthogonal Position-Wheel Kinematics & Source-Bounded Transduction",
+    equationName: "Dual Position-Wheel Orthogonal Coordinate Integration",
     governingEquation:
       "\\Delta X = R \\cdot \\Delta \\theta_x \\quad \\text{and} \\quad \\Delta Y = R \\cdot \\Delta \\theta_y \\quad (\\vec{v}_x \\perp \\vec{v}_y)",
-    engineMethod: "FrankenSimEngine.stepEngelbartMouse",
+    engineMethod: "HostKernel.stepEngelbartMouse (compiled rolling-contact WASM unavailable)",
     controls: [
       {
         id: "mouseSpeed",
@@ -3709,7 +3728,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "wheelRadius",
-        label: "Knife-Edge Wheel Radius",
+        label: "Illustrative Position-Wheel Radius",
         min: 6,
         max: 18,
         step: 0.5,
@@ -3719,7 +3738,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "pulsesPerRev",
-        label: "Resolver Pulses per Revolution",
+        label: "Illustrative Incremental-Encoder Pulses per Revolution",
         min: 20,
         max: 400,
         step: 4,
@@ -3739,9 +3758,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
 
       return [
         {
-          label: "Coordinate Resolution",
+          label: "Alternative Encoder Resolution",
           value: dpi.toString(),
-          unit: "DPI",
+          unit: "CPI",
           badgeColor: "cyan",
           progressPct: clampProgress((dpi / 350) * 100),
           provenance: "scenario-modern",
@@ -3755,19 +3774,19 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           provenance: "scenario-modern",
         },
         {
-          label: "Resolver Orthogonality",
-          value: "90.0",
-          unit: "deg",
-          badgeColor: "indigo",
-          progressPct: clampProgress(100),
+          label: "Claim 1 Coordinate Channels",
+          value: `${p.orthogonalAxes ?? 2}/2`,
+          unit: "axes",
+          badgeColor: (p.orthogonalAxes ?? 2) >= 2 ? "indigo" : "rose",
+          progressPct: clampProgress(((p.orthogonalAxes ?? 2) / 2) * 100),
           provenance: "source-disclosed",
         },
         {
-          label: "Tracking Slew Rate",
-          value: mouse.slewPxPerS.toString(),
-          unit: "px/s",
+          label: "Alternative Encoder Pulse Rate",
+          value: mouse.pulseRateHz.toString(),
+          unit: "counts/s",
           badgeColor: "purple",
-          progressPct: Math.min(100, (mouse.slewPxPerS / 3000) * 100),
+          progressPct: clampProgress((mouse.pulseRateHz / 5000) * 100),
           provenance: "scenario-modern",
         },
         {
@@ -3786,18 +3805,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: Math.min(100, (mouse.countsPerMm / 10) * 100),
           provenance: "scenario-modern",
         },
-        {
-          label: "Pulse Rate",
-          value: String(mouse.pulseRateHz),
-          unit: "Hz",
-          badgeColor: "cyan",
-          progressPct: Math.min(100, (mouse.pulseRateHz / 2000) * 100),
-          provenance: "scenario-modern",
-        },
       ];
     },
     pedagogicalInsight:
-      "Two sharp metal wheels mounted at right angles roll independently across the desk: each wheel turns a variable potentiometer wiper, decomposing continuous 2D planar motion into orthogonal $(X, Y)$ signals.",
+      "The preferred embodiment rests on two perpendicular position wheels plus ball-bearing support 54. Each wheel turns a multiturn potentiometer; the grant separately discloses shaft-encoder and incremental-encoder alternatives but prints no wheel dimensions, voltage, resolution, friction, mass, or power datum.",
   },
   "us-1219881-sundback-zipper": {
     domain: "mechanical_kinematics",
@@ -3924,12 +3935,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "Identical metal scoops with convex upper projections and concave lower pockets are offset by half a tooth pitch ($p/2$) along corded fabric tapes. Squeezing the teeth together through a converging Y-cam causes each scoop to nest positively inside the hollow socket of its opposing neighbor, providing extreme transverse burst strength while allowing 180° folding flexibility.",
   },
   "us-1773980-farnsworth-tv": {
+    refreshFromRuntimeTape: true,
+    resetRuntimeTape: resetFarnsworthTvTape,
     domain: "semiconductor_carrier",
     domainTitle: "Relativistic Photo-Cathode Lorentz Deflection Dissector Tube",
     equationName: "Lorentz Force Magnetic Scanline Deflection",
     governingEquation:
       "\\vec{F} = -e (\\vec{E} + \\vec{v} \\times \\vec{B}) \\quad \\text{and} \\quad r = \\frac{m_e v}{e B}",
-    engineMethod: "FrankenSimEngine.stepFarnsworthTV",
+    engineMethod: "createFarnsworthTvTransportUpdater → FrankenSimEngine.stepFarnsworthTv",
     controls: [
       {
         id: "anodeVoltage",
@@ -3993,13 +4006,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const v = p.anodeVoltage ?? 1500;
-      const i = p.coilCurrent ?? 0.42;
-      const hFreq = p.horizontalFreqKhz ?? 15.75;
-      const vFreq = p.verticalFreqHz ?? 60;
-      const lux = p.lightIntensityLux ?? 500;
-      const gauss = FrankenSimEngine.farnsworthDeflectionGauss(i);
-      const beam = FrankenSimEngine.stepFarnsworthTv(voltsToKv(v), gauss, lux);
+      const controls = readFarnsworthTvControls(p as any);
+      const beam = readFarnsworthTvTapeFrame(controls).beamState;
+      const hFreq = controls.horizontalFreqKhz;
+      const vFreq = controls.verticalFreqHz;
       const beamVelocity = beam.electronVelocityMegaMps.toFixed(1);
       const derivedScanLines = Math.round((hFreq * 1000) / vFreq);
       const photoUa = beam.photocathodeCurrentUa.toFixed(1);
@@ -5054,87 +5064,95 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "Spring-loaded brass pins pass through card perforations into mercury pools, completing 12V circuits that advance dial accumulators and trigger sorting box lids in parallel.",
   },
   "us-470918-reno-escalator": {
-    domain: "continuum_elasticity",
-    domainTitle: "Inclined Passenger Throughput & Comb-Plate Safety Extraction",
-    equationName: "Continuous Transit Throughput & Motor Drive Torque",
-    governingEquation:
-      "\\dot{N}_{\\text{pass}} = \\frac{v \\cdot w_{\\text{step}}}{L_{\\text{pass}}} \\quad \\text{and} \\quad \\tau = \\frac{R}{\\eta} \\sum m_i g (\\sin\\theta + \\mu \\cos\\theta)",
-    engineMethod: "FrankenSimEngine.stepRenoEscalator",
+    domain: "mechanical_kinematics",
+    domainTitle: "Source-Bounded Endless Conveyor Kinematics",
+    equationName: "Traveling Belt and Hand-Rail Speed",
+    governingEquation: "v = \\omega R; \\quad 200\\,\\text{ft/min} \\approx 1.016\\,\\text{m/s}",
+    engineMethod: "TypeScript host kinematic readout (no Reno WASM step)",
     controls: [
       {
-        id: "passengerCount",
-        label: "Live Passenger Load",
-        min: 0,
-        max: 60,
-        step: 2,
-        defaultValue: 30,
-        unit: "riders",
-      },
-      {
         id: "inclineAngle",
-        label: "Truss Incline Angle",
+        label: "Incline (source preference ≈25°)",
         min: 20,
         max: 35,
         step: 1,
         defaultValue: 25,
         unit: "°",
+        provenance: "scenario-reader",
+        provenanceCitation: "The specification proposes an angle of slope of about 25 degrees.",
       },
       {
         id: "beltSpeed",
-        label: "Linear Tread Velocity",
-        min: 0.3,
-        max: 0.75,
-        step: 0.05,
-        defaultValue: 0.45,
+        label: "Belt speed (source reference 200 ft/min)",
+        min: 0.4,
+        max: 1.2,
+        step: 0.001,
+        defaultValue: 1.016,
         unit: "m/s",
+        provenance: "scenario-reader",
+        provenanceCitation:
+          "The specification says the conveyor and hand-rail preferably move at about 200 feet per minute.",
       },
     ],
     computeMetrics: (p) => {
-      const count = p.passengerCount ?? 30;
-      const angle = p.inclineAngle ?? 25;
-      const v = p.beltSpeed ?? 0.45;
-      const reno = stepRenoEscalator({
-        passengerCount: count,
-        inclineAngleDeg: angle,
-        velocityMps: v,
-      });
-      const throughput = reno.throughputPerHour;
-      const torque = reno.motorTorqueNm;
-      const powerKw = reno.motorPowerKw.toFixed(2);
+      const v = p.beltSpeed ?? 1.016;
+      const inclineDeg = p.inclineAngle ?? 25;
+      const speedFpm = Math.round((v * 60) / 0.3048);
 
       return [
         {
-          label: "Hourly Throughput",
-          value: `${throughput.toLocaleString()}/hr`,
-          unit: "passengers",
-          badgeColor: "emerald",
-          progressPct: clampProgress((throughput / 10000) * 100),
-        },
-        {
-          label: "Drive Motor Torque",
-          value: `${torque} N·m`,
-          unit: "τ_motor",
-          badgeColor: "indigo",
-          progressPct: clampProgress((torque / 6000) * 100),
-        },
-        {
-          label: "Motor Power Draw",
-          value: `${powerKw} kW`,
-          unit: "P_elec",
-          badgeColor: "amber",
-          progressPct: clampProgress((Number(powerKw) / 10) * 100),
-        },
-        {
-          label: "Comb-Plate Clearance",
-          value: `${reno.combPlateClearanceMm} mm`,
-          unit: "δ_gap",
+          label: "Selected Belt Speed",
+          value: `${speedFpm} ft/min`,
+          unit: `${v.toFixed(3)} m/s`,
           badgeColor: "cyan",
-          progressPct: clampProgress(80),
+          progressPct: clampProgress((v / 1.2) * 100),
+          provenance: "scenario-reader",
+        },
+        {
+          label: "Patent Preferred Speed",
+          value: "200 ft/min",
+          unit: "≈ 1.016 m/s",
+          badgeColor: "emerald",
+          progressPct: clampProgress((200 / 240) * 100),
+          provenance: "source-disclosed",
+          provenanceCitation:
+            "The specification states that the conveyor and hand-rail preferably move at about 200 feet per minute.",
+        },
+        {
+          label: "Patent Stated Maximum",
+          value: "6,000",
+          unit: "passengers/h, single file",
+          badgeColor: "amber",
+          progressPct: clampProgress(75),
+          provenance: "source-disclosed",
+          provenanceCitation:
+            "The specification gives a maximum capacity of six thousand passengers per hour in single file.",
+        },
+        {
+          label: "Preferred Comb Clearance",
+          value: "≤ 1/8 in",
+          unit: "≤ 3.175 mm",
+          badgeColor: "cyan",
+          progressPct: clampProgress(64),
+          provenance: "source-disclosed",
+          provenanceCitation:
+            "The specification says clearance between the comb prongs and belt grooves should not exceed one-eighth inch.",
+        },
+        {
+          label: "Selected Incline",
+          value: `${inclineDeg.toFixed(0)}°`,
+          unit: "source-preference display",
+          badgeColor: "indigo",
+          progressPct: clampProgress(((inclineDeg - 20) / 15) * 100),
+          provenance: "scenario-reader",
+          provenanceCitation:
+            "The specification proposes an angle of slope of about 25 degrees; the selected value controls the normalized geometric reconstruction.",
         },
       ];
     },
     pedagogicalInsight:
-      "Longitudinally grooved treads pass smoothly under stationary comb-plate fingers with sub-millimeter clearance, lifting footwear off the incline without danger of pinching.",
+      "Reno describes a hinged, longitudinally grooved belt passing fixed comb fingers, an articulated traveling hand-rail, a preferred speed of about 200 feet per minute, and a stated single-file maximum of 6,000 passengers per hour. The source does not provide a power, torque, or load-curve measurement.",
+    provenance: "source-disclosed",
   },
   "_legacy-unpublished-us-542846-diesel-engine": {
     domain: "thermodynamics_transport",
@@ -8468,184 +8486,120 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "US 3,212,649 discloses a column, carriage, arm, wrist rotation, wrist swing, gripper operation, tape recording/playback, and resolver/error-detector paths. This shared instrument reports only normalized exhibit topology and phase comparison; it refuses unprinted dimensions, pressure, flow, payload, gain, timing, and performance values.",
   },
   "us-3081379-lemelson-machine-vision": {
-    domain: "optical_electronics",
-    domainTitle: "Television Raster Scanning & Machine Vision",
-    equationName: "Video Line Scan Dimensional Slicing & Defect Detection",
-    governingEquation:
-      "f_H = N_L \\cdot f_F,\\quad v_{\\text{scan}} = \\frac{W_{\\text{target}}}{T_{\\text{active}}},\\quad L_{\\text{meas}} = v_{\\text{scan}} \\cdot \\tau_{\\text{pulse}},\\quad F_{\\text{mag}} = \\frac{(N I)^2 \\mu_0 A_p}{2 g^2}",
-    engineMethod: "stepLemelsonMachineVisionSi (analytical SI optical signal & solenoid dynamics)",
+    domain: "source_bounded_video_signal_topology",
+    domainTitle: "Source-Bound Video Signal Gating & Analysis",
+    equationName: "Claim 1 Signal-Path Admission",
+    governingEquation: "C = S \\land G \\land A \\land I",
+    engineMethod:
+      "stepLemelsonMachineVisionTopology (deterministic TypeScript source-bounded signal topology; no calibrated beam velocity, optical responsivity, solenoid force, or response model)",
     controls: [
       {
-        id: "scanLineCount",
-        label: "Raster scan lines",
-        min: 100,
-        max: 1200,
-        step: 25,
-        defaultValue: 525,
-        unit: "lines",
-        provenance: "scenario-reader",
+        id: "scanPathEnabled",
+        label: "Electron-beam scan path",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "off/on",
+        provenance: "source-disclosed",
       },
       {
-        id: "frameRateHz",
-        label: "Frame rate",
-        min: 10,
-        max: 120,
-        step: 5,
-        defaultValue: 30,
-        unit: "Hz",
-        provenance: "scenario-reader",
+        id: "synchronizedGateEnabled",
+        label: "Synchronized programming gate",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "off/on",
+        provenance: "source-disclosed",
       },
       {
-        id: "targetWidthM",
-        label: "Field of view width",
-        min: 0.05,
-        max: 1.0,
-        step: 0.01,
-        defaultValue: 0.2,
-        unit: "m",
-        provenance: "scenario-reader",
+        id: "analyzingCircuitEnabled",
+        label: "Analyzing circuit",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "off/on",
+        provenance: "source-disclosed",
       },
       {
-        id: "illuminationLux",
-        label: "Illumination level",
-        min: 100,
-        max: 10000,
-        step: 100,
-        defaultValue: 1500,
-        unit: "lux",
-        provenance: "scenario-reader",
+        id: "inspectionSignalPresent",
+        label: "Picture signal at inspection",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "off/on",
+        provenance: "source-disclosed",
       },
       {
-        id: "thresholdVoltage",
-        label: "Threshold comparator level",
-        min: 0.05,
-        max: 1.0,
-        step: 0.05,
-        defaultValue: 0.45,
-        unit: "V",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "nominalPartWidthM",
-        label: "Nominal part width",
-        min: 0.01,
-        max: 0.5,
-        step: 0.005,
-        defaultValue: 0.08,
-        unit: "m",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "actualPartWidthM",
-        label: "Actual part width",
-        min: 0.01,
-        max: 0.5,
-        step: 0.001,
-        defaultValue: 0.082,
-        unit: "m",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "conveyorSpeedMPerS",
-        label: "Conveyor speed",
-        min: 0.01,
-        max: 2.0,
-        step: 0.05,
-        defaultValue: 0.25,
-        unit: "m/s",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "gateSolenoidCurrentA",
-        label: "Solenoid coil current",
-        min: 0.1,
-        max: 10.0,
-        step: 0.1,
-        defaultValue: 2.5,
-        unit: "A",
-        provenance: "scenario-reader",
+        id: "referenceSignalMatches",
+        label: "Reference comparison",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "difference/match",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics(rawParams) {
       const controls = readLemelsonMachineVisionControls(rawParams);
-      const state = stepLemelsonMachineVisionSi(controls);
+      const state = stepLemelsonMachineVisionTopology(controls);
       return [
         {
-          id: "horizontalScanFreqHz",
-          label: "Horizontal Scan Freq (f_H)",
-          value: state.metrics.horizontalScanFreqHz.toFixed(0),
-          unit: "Hz",
-          precision: 0,
+          label: "Scan path",
+          value: state.scanPathActive ? "ACTIVE" : "WITHHELD",
+          unit: "claim topology",
           badgeColor: "emerald",
-          provenance: "scenario-modern",
+          progressPct: state.scanPathActive ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
-          id: "linePeriodUs",
-          label: "Line Duration (T_H)",
-          value: state.metrics.linePeriodUs.toFixed(2),
-          unit: "µs",
-          precision: 2,
+          label: "Synchronized gate",
+          value: state.synchronizedGateActive ? "PASS" : "WITHHELD",
+          unit: "claim topology",
           badgeColor: "cyan",
-          provenance: "scenario-modern",
+          progressPct: state.synchronizedGateActive ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
-          id: "scanBeamVelocityMPerS",
-          label: "Beam Scan Velocity (v_scan)",
-          value: state.metrics.scanBeamVelocityMPerS.toFixed(1),
-          unit: "m/s",
-          precision: 1,
+          label: "Analyzing circuit",
+          value: state.analyzingCircuitActive ? "INSPECTING" : "WITHHELD",
+          unit: "claim topology",
           badgeColor: "indigo",
-          provenance: "scenario-modern",
+          progressPct: state.analyzingCircuitActive ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
-          id: "pulseWidthUs",
-          label: "Detected Pulse Width (τ)",
-          value: state.metrics.pulseWidthUs.toFixed(2),
-          unit: "µs",
-          precision: 2,
+          label: "Inspection signal",
+          value: state.inspectionSignalPresent ? "PRESENT" : "WITHHELD",
+          unit: "claim topology",
           badgeColor: "amber",
-          provenance: "scenario-modern",
+          progressPct: state.inspectionSignalPresent ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
-          id: "measuredPartWidthMm",
-          label: "Measured Width (L_meas)",
-          value: state.metrics.measuredPartWidthMm.toFixed(1),
-          unit: "mm",
-          precision: 1,
-          badgeColor: "emerald",
-          provenance: "scenario-modern",
-        },
-        {
-          id: "dimensionalErrorMm",
-          label: "Dimensional Deviation (ΔL)",
-          value: state.metrics.dimensionalErrorMm.toFixed(2),
-          unit: "mm",
-          precision: 2,
-          badgeColor: state.defectDetected ? "rose" : "indigo",
-          provenance: "scenario-modern",
-        },
-        {
-          id: "solenoidForceN",
-          label: "Reject Solenoid Force (F_mag)",
-          value: state.metrics.solenoidForceN.toFixed(2),
-          unit: "N",
-          precision: 2,
+          label: "Control output",
+          value: state.controlOutputReady ? "READY" : "HELD",
+          unit: "source topology",
           badgeColor: "purple",
-          provenance: "scenario-modern",
+          progressPct: state.controlOutputReady ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
-          id: "gateResponseTimeMs",
-          label: "Gate Trip Response (t_act)",
-          value: state.metrics.gateResponseTimeMs.toFixed(1),
-          unit: "ms",
-          precision: 1,
+          label: "Quantitative mechanics",
+          value: "WITHHELD",
+          unit: "missing source inputs",
           badgeColor: "amber",
-          provenance: "scenario-modern",
+          progressPct: 0,
+          provenance: "refusal-bounded",
         },
       ];
     },
     pedagogicalInsight:
-      "US 3,081,379 discloses using television raster lines to scan manufactured parts on a conveyor, converting photometric light patterns into electrical video waveforms, slicing with threshold gates, and converting pulse duration into dimension metrics to trigger high-speed sorting gates.",
+      "US 3,081,379 connects a scan path, synchronized programming and gating, an analyzing circuit, and a control output. The grant does not establish a calibrated raster rate, image-field dimension, optical response, comparator threshold, coil geometry, force, or actuator response, so this exhibit reports only the printed signal topology.",
   },
   "us-3260375-lemelson-adjustable-manipulator": {
     domain: "source_bounded_robot_kinematics",
@@ -8834,7 +8788,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     equationName: "Planar Closed-Chain Configuration",
     governingEquation:
       "\\sum_{i=1}^{4}\\mathbf{r}_i=\\mathbf{0};\\quad\\mathbf{p}_{tool}=f(\\theta_1,\\theta_2;\\text{four-link topology})",
-    engineMethod: "stepMakinoScaraTopology (source-bounded TypeScript geometry)",
+    engineMethod: `${MAKINO_FRANKENSIM_OWNER} law owner identified; ${MAKINO_FRANKENSIM_BOUNDARY}; stepMakinoScaraTopology supplies exact normalized closure`,
     controls: [
       {
         id: "firstLinkAngleDeg",
@@ -8879,6 +8833,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     ],
     computeMetrics: (params) => {
       const pose = stepMakinoScaraTopology(params);
+      const invariants = measureMakinoScaraInvariants(pose);
       const topologyLabel =
         pose.topology === "claim-1-concentric"
           ? "CONCENTRIC"
@@ -8917,10 +8872,25 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           badgeColor: "emerald",
           provenance: "scenario-reader",
         },
+        {
+          label: "Tool Attitude",
+          value: ((pose.toolAttitudeRad * 180) / Math.PI).toFixed(0),
+          unit: pose.beltTransmissionAvailable ? "° φ · belts 11/12" : "° · Claim 6 fixed",
+          badgeColor: "emerald",
+          progressPct: clampProgress(((pose.toolAttitudeRad * 180) / Math.PI + 180) / 3.6),
+          provenance: "scenario-reader",
+        },
+        {
+          label: "Fixed-Member Closure",
+          value: invariants.fixedMemberError.toExponential(1),
+          unit: "normalized error",
+          badgeColor: invariants.fixedMemberError < 1e-10 ? "emerald" : "rose",
+          progressPct: invariants.fixedMemberError < 1e-10 ? 100 : 0,
+          provenance: "source-disclosed",
+        },
       ];
     },
-    pedagogicalInsight:
-      "The grant supplies a topology and the two driven angles θ₁ and θ₂, plus belt-drive and Y-link claim forms. It does not provide a length, payload, torque, stiffness, or servo law. The shared instrument therefore renders a normalized loop-closure configuration and openly refuses SI force or performance telemetry.",
+    pedagogicalInsight: `The grant supplies a topology and the two driven angles θ₁ and θ₂, plus belt-drive and Y-link claim forms. ${MAKINO_FRANKENSIM_OWNER} owns the vertical revolute joints, but the grant withholds dimensions, masses, payload, torque, stiffness, and servo data while fs-mbd's articulated lane does not close loops. The shared instrument therefore enforces exact normalized member closure and openly refuses SI force or performance telemetry.`,
     enforceConstraints: (params) => ({
       ...params,
       topologyVariant: Math.max(1, Math.min(3, Math.round(params.topologyVariant ?? 1))),
@@ -8931,7 +8901,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     domainTitle: "Opposed-Thread Gripper Kinematics",
     equationName: "Symmetric Ball-Screw Jaw Opening",
     governingEquation: "g=\\ell\\theta/\\pi;\\quad x_L=+g/2;\\quad x_R=-g/2",
-    engineMethod: "stepRobotEndEffector (source-bounded TypeScript kinematics)",
+    engineMethod: `stepRobotEndEffector · ${ROBOT_END_EFFECTOR_FRANKENSIM_HELICAL_OWNER} typed mirror; ${ROBOT_END_EFFECTOR_FRANKENSIM_REVOLUTE_OWNER} / ${ROBOT_END_EFFECTOR_FRANKENSIM_PRISMATIC_OWNER} owners identified; ${ROBOT_END_EFFECTOR_FRANKENSIM_CONTACT_OWNER} solve refused`,
     controls: [
       {
         id: "jawOpeningFraction",
@@ -8945,13 +8915,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "gripForceSetpointN",
-        label: "Source-labelled grip setpoint",
+        label: "Requested grip command",
         min: 0,
         max: 2000,
         step: 25,
         defaultValue: 900,
-        unit: "N (not contact force)",
-        provenance: "source-disclosed",
+        unit: "N command (source-max bounded)",
+        provenance: "scenario-reader",
       },
       {
         id: "frameRotationDeg",
@@ -8971,6 +8941,16 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 0.01,
         defaultValue: 0,
         unit: "retained → fixture",
+        provenance: "scenario-reader",
+      },
+      {
+        id: "transverseOffsetFraction",
+        label: "Claim 16 transverse stage",
+        min: -1,
+        max: 1,
+        step: 0.05,
+        defaultValue: 0,
+        unit: "normalized · stroke unprinted",
         provenance: "scenario-reader",
       },
     ],
@@ -9007,7 +8987,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "N · setpoint only",
           badgeColor: "purple",
           progressPct: (state.requestedGripForceN / state.sourceReportedGripForceN) * 100,
-          provenance: "source-disclosed",
+          provenance: "scenario-reader",
         },
         {
           label: "Reported Repeatability",
@@ -9017,16 +8997,24 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           progressPct: clampProgress((1 - state.sourceRepeatabilityM / 0.1524) * 100),
           provenance: "source-disclosed",
         },
+        {
+          label: "Transverse Stage",
+          value: state.transverseOffsetNormalized.toFixed(2),
+          unit: "normalized · Claim 16",
+          badgeColor: "emerald",
+          progressPct: (state.transverseOffsetNormalized + 1) * 50,
+          provenance: "scenario-reader",
+        },
       ];
     },
-    pedagogicalInsight:
-      "US 4,765,668 prints an opposed 5 mm-lead ball screw, a typical 6-inch jaw opening, a 43 mm/s maximum hand-travel figure, eight encoder pegs, and 0.05 mm reported repeatability. The shared instrument calculates only the symmetric screw and encoder relationships. Its grip field is deliberately a bounded source-labelled setpoint: the grant does not supply workpiece/finger geometry, friction, pneumatic transfer, payload, or connector stroke for contact, pressure, or robot-arm dynamics.",
+    pedagogicalInsight: `US 4,765,668 prints an opposed 5 mm-lead ball screw, a typical 6-inch jaw opening, a 43 mm/s maximum hand-travel figure, eight encoder pegs, and 0.05 mm reported repeatability. The shared instrument mirrors ${ROBOT_END_EFFECTOR_FRANKENSIM_HELICAL_OWNER} for exact symmetric displacement and encoder phase, and keeps Claim 16 translation normalized because its stroke is unprinted. Its grip field is a visitor request bounded by the source's 2,000 N prototype maximum: the grant does not supply the material/contact card required by ${ROBOT_END_EFFECTOR_FRANKENSIM_CONTACT_OWNER}, nor enough pneumatic or body data for pressure, payload, power, deflection, or robot-arm dynamics.`,
     enforceConstraints: (params) => ({
       ...params,
       jawOpeningFraction: Math.max(0, Math.min(1, params.jawOpeningFraction ?? 0.52)),
       gripForceSetpointN: Math.max(0, Math.min(2000, params.gripForceSetpointN ?? 900)),
       frameRotationDeg: Math.max(-180, Math.min(180, params.frameRotationDeg ?? 0)),
       fingerChangeFraction: Math.max(0, Math.min(1, params.fingerChangeFraction ?? 0)),
+      transverseOffsetFraction: Math.max(-1, Math.min(1, params.transverseOffsetFraction ?? 0)),
     }),
   },
   "us-6594844-roomba": {
@@ -9109,25 +9097,17 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "US 6,594,844 claims a low-cost optical geometry: the emitter and detector fields overlap in a finite region, and the redirect circuit responds when the expected floor or wall does not occupy it. The room motion is a contextual differential-drive demonstrator, not a coverage guarantee.",
   },
   "us-6331181-davinci": {
-    domain: "medical_robotics",
+    domain: "source_bounded_tool_interface_topology",
     domainTitle: "Compatibility, Calibration, and Engagement Data",
-    equationName: "Nominal-to-Measured Tool Offset",
-    governingEquation: "\\Delta q_{tool} = q_{measured} - q_{nominal}",
-    engineMethod: "FrankenSimEngine.stepDaVinci",
+    equationName: "Nominal-to-Measured Tool Offset Record",
+    governingEquation:
+      "\\mathrm{ready}=\\mathrm{compatible}\\land\\mathrm{calibrationRecord}\\land\\mathrm{engagement},\\qquad \\Delta q_{tool}=q_{measured}-q_{nominal}",
+    engineMethod:
+      "resolveDaVinciInterfaceTopology (source-bounded TypeScript topology; quantitative mechanics refused)",
     controls: [
       {
-        id: "motionScaleRatio",
-        label: "Compatibility table entries (illustrative)",
-        min: 1,
-        max: 10,
-        step: 1,
-        defaultValue: 3,
-        unit: ":1",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "tremorFilterEnabled",
-        label: "Compatibility signal present",
+        id: "compatibilitySignalPresent",
+        label: "Compatibility identifier present",
         min: 0,
         max: 1,
         step: 1,
@@ -9136,74 +9116,74 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         provenance: "source-disclosed",
       },
       {
-        id: "gripAngleDeg",
-        label: "End-effector angle (illustrative)",
+        id: "calibrationRecordAvailable",
+        label: "Measured calibration record available",
         min: 0,
-        max: 60,
-        step: 5,
-        defaultValue: 30,
-        unit: "°",
-        provenance: "scenario-reader",
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "",
+        provenance: "source-disclosed",
       },
       {
-        id: "masterInputSpeedMps",
-        label: "Drive velocity (illustrative)",
-        min: 0.2,
-        max: 1.5,
-        step: 0.05,
-        defaultValue: 0.5,
-        unit: "m/s",
-        provenance: "scenario-reader",
+        id: "engagementSignalPresent",
+        label: "Engagement signal present",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics: (p) => {
-      const controls = readDaVinciControls(p);
-      const state = FrankenSimEngine.stepDaVinci(controls, 1);
+      const state = resolveDaVinciInterfaceTopology(readDaVinciInterfaceControls(p));
       return [
         {
-          label: "Illustrative offset scale",
-          value: `${controls.motionScaleRatio}:1`,
+          label: "Compatibility identifier",
+          value: state.compatibilitySignalPresent ? "present" : "absent",
           unit: "",
-          badgeColor: "cyan",
-          progressPct: clampProgress((controls.motionScaleRatio / 10) * 100),
-          provenance: "scenario-reader",
-        },
-        {
-          label: "Compatibility signal",
-          value: state.compatibilitySignalPercent > 0 ? "present" : "absent",
-          unit: "",
-          badgeColor: state.compatibilitySignalPercent > 0 ? "emerald" : "rose",
-          progressPct: state.compatibilitySignalPercent,
+          badgeColor: state.compatibilitySignalPresent ? "emerald" : "rose",
+          progressPct: state.compatibilitySignalPresent ? 100 : 0,
           provenance: "source-disclosed",
         },
         {
-          label: "End-effector angle",
-          value: ((state.gripRad * 180) / Math.PI).toFixed(0),
-          unit: "°",
-          badgeColor: "amber",
-          progressPct: clampProgress((controls.gripAngleDeg / 60) * 100),
-          provenance: "scenario-reader",
+          label: "Calibration record",
+          value: state.calibrationRecordAvailable ? "available" : "missing",
+          unit: "",
+          badgeColor: state.calibrationRecordAvailable ? "cyan" : "rose",
+          progressPct: state.calibrationRecordAvailable ? 100 : 0,
+          provenance: "source-disclosed",
         },
         {
-          label: "Illustrative tip clearance",
-          value: state.obstacleDistanceMm.toFixed(1),
-          unit: "mm",
-          badgeColor: state.isCupContact ? "rose" : "emerald",
-          progressPct: clampProgress((state.obstacleDistanceMm / 150) * 100),
-          provenance: "scenario-reader",
+          label: "Engagement",
+          value: state.engagementSignalPresent ? "confirmed" : "unconfirmed",
+          unit: "",
+          badgeColor: state.engagementSignalPresent ? "emerald" : "amber",
+          progressPct: state.engagementSignalPresent ? 100 : 0,
+          provenance: "source-disclosed",
+        },
+        {
+          label: "Quantitative mechanics",
+          value: "withheld",
+          unit: "",
+          badgeColor: "amber",
+          progressPct: 0,
+          provenance: "refusal-bounded",
         },
       ];
     },
     pedagogicalInsight:
-      "US 6,331,181 centers tool-boundary data: compatibility, tool type, measured calibration offsets, life information, and engagement signals are transmitted to a processor before or during tool exchange.",
+      "US 6,331,181 centers tool-boundary data: compatibility, tool type, measured calibration offsets, life information, and engagement signals are transmitted to a processor before or during tool exchange. It does not disclose a universal arm trajectory, contact material model, force, or speed.",
   },
   "us-4512709-milacron-robot-toolchanger": {
     domain: "source_bounded_toolchanger_topology",
     domainTitle: "Registration and Slide-Ramp Capture",
     equationName: "Admission and Capture State Relation",
     governingEquation:
-      "\\mathrm{captured}=\\mathrm{basePresent}\\land\\mathrm{registered}\\land\\mathrm{slideLocked}\\land\\mathrm{TMember}",
-    engineMethod: "stepMilacronRobotToolchanger (source-bounded TypeScript topology)",
+      "q_{reg}^{eff}=q_{reg}^{req}\\;\\text{only if}\\;q_{slide}=0,\\qquad\\mathrm{captured}=\\mathrm{registered}\\land\\mathrm{slideLocked}\\land\\mathrm{TMember}",
+    engineMethod:
+      "stepMilacronRobotToolchanger · fs-mbd::JointModel::prismatic / fs-contact::normal_patch / fs-tribo::partial_slip owners identified; SI solve refused",
     controls: [
       {
         id: "toolBasePresent",
@@ -9274,6 +9254,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           provenance: "source-disclosed",
         },
         {
+          label: "Sequence Interlock",
+          value: state.registrationMotionBlocked ? "withdrawal blocked" : "admissible",
+          unit: state.registrationMotionBlocked ? "align aperture 34 first" : "source order",
+          badgeColor: state.registrationMotionBlocked ? "rose" : "emerald",
+          progressPct: state.registrationMotionBlocked ? 0 : 100,
+          provenance: "source-disclosed",
+        },
+        {
           label: "Quantitative Mechanics",
           value: "refused",
           unit: "no force / stroke / time data",
@@ -9283,131 +9271,126 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       ];
     },
     pedagogicalInsight:
-      "US 4,512,709 documents registration on a cylindrical/diamond pin pair, admission through an aligned slide aperture, and capture when the shifted slide ramps bear on a T-member crossbar. The grant supplies no pressure, bore, stroke, ramp angle, friction, load, or time datum, so the shared instrument reports only that source-supported state sequence and refuses performance telemetry.",
+      "US 4,512,709 documents registration on a cylindrical/diamond pin pair, admission through an aligned slide aperture, and capture when the shifted slide ramps bear on a T-member crossbar. A closed slide therefore blocks withdrawal instead of letting the model pass a retained head through solid metal. FrankenSim's generic prismatic-joint and normal-contact owners are identified, but the grant supplies no pressure, bore, stroke, ramp angle, friction, load, or time datum, so the shared instrument refuses performance telemetry.",
   },
   "us-4575330-hull-stereolithography": {
     domain: "additive_manufacturing",
-    domainTitle: "Ultraviolet Photopolymerization Kinetics & Laser Galvanometer Slicing",
-    equationName: "Beer-Lambert Curing Depth & Gaussian Exposure Law",
+    domainTitle: "Source-Bounded Surface-Lamina Formation & Elevator Topology",
+    equationName: "Working-Surface Sequence Constraint",
     governingEquation:
-      "C_d = D_p \\ln\\left( \\frac{E_{\\text{max}}}{E_c} \\right) \\quad \\text{with} \\quad E_{\\text{max}} = \\sqrt{\\frac{2}{\\pi}} \\frac{P_L}{w_0 v_s}",
-    engineMethod: "FrankenSimEngine.stepHullStereolithography",
+      "q_{\\mathrm{recoat}}=0 \\land s_{\\mathrm{shutter}}=1 \\Rightarrow \\text{spot 27 at surface 23}; \\quad q_{\\mathrm{recoat}}>0 \\Rightarrow s_{\\mathrm{effective}}=0",
+    engineMethod:
+      "FrankenSimEngine.stepHullStereolithography (source topology; unparameterized owners refused)",
     controls: [
       {
-        id: "laserPowerMw",
-        label: "Laser Radiant Power",
-        min: 10,
-        max: 120,
-        step: 5,
-        defaultValue: HULL_SLA_DEFAULT_CONTROLS.laserPowerMw,
-        unit: "mW",
-        provenance: "scenario-reader",
+        id: "shutterRequestedOpen",
+        label: "Electronic Shutter Request",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: HULL_SLA_DEFAULT_CONTROLS.shutterRequestedOpen,
+        unit: "0 closed / 1 open",
+        provenance: "topology-normalized",
       },
       {
-        id: "laserScanSpeedMmS",
-        label: "Galvo Vector Scan Speed",
-        min: 50,
-        max: 1000,
-        step: 25,
-        defaultValue: HULL_SLA_DEFAULT_CONTROLS.laserScanSpeedMmS,
-        unit: "mm/s",
-        provenance: "scenario-reader",
+        id: "scanXFraction",
+        label: "Plotter Spot X",
+        min: -1,
+        max: 1,
+        step: 0.05,
+        defaultValue: HULL_SLA_DEFAULT_CONTROLS.scanXFraction,
+        unit: "normalized",
+        provenance: "topology-normalized",
       },
       {
-        id: "layerThicknessUm",
-        label: "Elevator Layer Step Δz",
-        min: 25,
-        max: 200,
-        step: 5,
-        defaultValue: HULL_SLA_DEFAULT_CONTROLS.layerThicknessUm,
-        unit: "µm",
-        provenance: "scenario-reader",
+        id: "scanZFraction",
+        label: "Plotter Spot Z",
+        min: -1,
+        max: 1,
+        step: 0.05,
+        defaultValue: HULL_SLA_DEFAULT_CONTROLS.scanZFraction,
+        unit: "normalized",
+        provenance: "topology-normalized",
       },
       {
-        id: "beamWaistRadiusUm",
-        label: "Gaussian Spot Radius w₀",
-        min: 50,
-        max: 200,
-        step: 5,
-        defaultValue: HULL_SLA_DEFAULT_CONTROLS.beamWaistRadiusUm,
-        unit: "µm",
-        provenance: "scenario-reader",
+        id: "recoatExcursionFraction",
+        label: "Platform Recoating Excursion",
+        min: 0,
+        max: 1,
+        step: 0.05,
+        defaultValue: HULL_SLA_DEFAULT_CONTROLS.recoatExcursionFraction,
+        unit: "normalized",
+        provenance: "topology-normalized",
       },
       {
-        id: "resinViscosityCp",
-        label: "Resin Dynamic Viscosity",
-        min: 100,
-        max: 2500,
-        step: 50,
-        defaultValue: HULL_SLA_DEFAULT_CONTROLS.resinViscosityCp,
-        unit: "cP",
-        provenance: "scenario-reader",
+        id: "displayLaminaCount",
+        label: "Illustrative Integrated Laminae",
+        min: 1,
+        max: 12,
+        step: 1,
+        defaultValue: HULL_SLA_DEFAULT_CONTROLS.displayLaminaCount,
+        unit: "display layers",
+        provenance: "topology-normalized",
       },
     ],
     computeMetrics: (p) => {
-      const controls = readHullStereolithographyControls(p);
-      const state = stepHullStereolithographySi(controls);
+      const state = stepHullStereolithographySi(readHullStereolithographyControls(p));
       return [
         {
-          label: "Peak Centerline Exposure E_max",
-          value: state.peakExposureMJCm2.toFixed(2),
-          unit: "mJ/cm²",
-          badgeColor: state.isCured ? "emerald" : "rose",
-          progressPct: clampProgress((state.peakExposureMJCm2 / 30) * 100),
-          provenance: "scenario-modern",
+          label: "Effective Electronic Shutter",
+          value: state.shutterOpen ? "open" : "closed",
+          unit: state.shutterInterlockActive ? "recoat interlock active" : "source-state",
+          badgeColor: state.shutterOpen
+            ? "purple"
+            : state.shutterInterlockActive
+              ? "amber"
+              : "cyan",
+          provenance: "topology-normalized",
         },
         {
-          label: "Curing Depth C_d",
-          value: state.cureDepthUm.toFixed(1),
-          unit: "µm",
-          badgeColor:
-            state.interlayerAdhesionRatio >= 1.0 && state.interlayerAdhesionRatio <= 2.2
-              ? "emerald"
-              : state.interlayerAdhesionRatio < 1.0
-                ? "rose"
-                : "amber",
-          progressPct: clampProgress((state.cureDepthUm / 300) * 100),
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Cured Line Width L_w",
-          value: state.curedLineWidthUm.toFixed(1),
-          unit: "µm",
+          label: "Spot 27 Position",
+          value: `(${state.spotXFraction.toFixed(2)}, ${state.spotZFraction.toFixed(2)})`,
+          unit: "normalized plotter travel",
           badgeColor: "cyan",
-          progressPct: clampProgress((state.curedLineWidthUm / 400) * 100),
-          provenance: "scenario-modern",
+          provenance: "topology-normalized",
         },
         {
-          label: "Interlayer Adhesion Ratio",
-          value: state.interlayerAdhesionRatio.toFixed(2),
-          unit: "x",
-          badgeColor:
-            state.interlayerAdhesionRatio >= 1.15 && state.interlayerAdhesionRatio <= 1.8
-              ? "emerald"
-              : "amber",
-          progressPct: clampProgress((state.interlayerAdhesionRatio / 2.5) * 100),
-          provenance: "scenario-modern",
+          label: "Platform 29 Position",
+          value:
+            state.platformDepthFraction <= 0.02
+              ? "next-layer working position"
+              : "recoating excursion",
+          unit: `q=${state.platformDepthFraction.toFixed(2)} normalized`,
+          badgeColor: state.platformDepthFraction <= 0.02 ? "emerald" : "amber",
+          provenance: "topology-normalized",
         },
         {
-          label: "Gel Conversion Degree α",
-          value: state.polymerizationConversionPct.toFixed(1),
-          unit: "%",
-          badgeColor: state.polymerizationConversionPct >= 70 ? "emerald" : "amber",
-          progressPct: clampProgress(state.polymerizationConversionPct),
-          provenance: "scenario-modern",
+          label: "Preferred Lamp Rating",
+          value: String(state.printedSourceCard.lampElectricalPowerW),
+          unit: "W electrical",
+          badgeColor: "amber",
+          provenance: "source-disclosed",
+          provenanceCitation: "US 4,575,330, preferred Fig. 3 embodiment",
         },
         {
-          label: "Layer Recoat Settling Time",
-          value: state.recoatMeniscusSettlingTimeSec.toFixed(2),
-          unit: "s",
-          badgeColor: state.recoatMeniscusSettlingTimeSec <= 4 ? "emerald" : "amber",
-          progressPct: clampProgress((state.recoatMeniscusSettlingTimeSec / 10) * 100),
-          provenance: "scenario-modern",
+          label: "Preferred Surface UV",
+          value: "about 1",
+          unit: "W/cm² long-wave UV",
+          badgeColor: "purple",
+          provenance: "source-disclosed",
+          provenanceCitation: "US 4,575,330, preferred Fig. 3 embodiment",
+        },
+        {
+          label: "Quantitative Cure / Motion",
+          value: "refused",
+          unit: "missing resin and motion cards",
+          badgeColor: "rose",
+          provenance: "refusal-bounded",
         },
       ];
     },
     pedagogicalInsight:
-      "US 4,575,330 established that 3D additive manufacturing relies on controlling radiant exposure E(x,y) to exceed critical threshold E_c while tuning cure depth C_d to exceed layer step Δz for monolithic interlayer polymer cross-linking.",
+      "Hull's grant is about forming successive cross-sections at a fixed liquid surface, keeping the growing object on a movable support, and integrating each new lamina with the preceding one. Its preferred working machine used a mercury short-arc lamp, shutter, fiber bundle, lens tube, and digital plotter—not the laser/galvanometer system previously shown here. The relevant FrankenSim prismatic-joint and optical-attenuation owners are identified, but the grant cannot parameterize a motion solve or a photopolymer cure solve, so those numerical outputs remain explicitly refused.",
   },
   "us-4921293-salisbury-robot-hand": {
     domain: "robotics_manipulation",
@@ -9484,28 +9467,28 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       return [
         {
           label: "Axis 1 source torque",
-          value: tel.jointTorquesNm[0].toFixed(3),
-          unit: "N·m",
-          badgeColor: "indigo",
+          value: tel.sourceLawApplicable ? tel.jointTorquesNm[0].toFixed(3) : "withheld",
+          unit: tel.sourceLawApplicable ? "N·m" : "Claim 1 route absent",
+          badgeColor: tel.sourceLawApplicable ? "indigo" : "rose",
           provenance: "source-disclosed",
         },
         {
           label: "Axis 2 source torque",
-          value: tel.jointTorquesNm[1].toFixed(3),
-          unit: "N·m",
-          badgeColor: "emerald",
+          value: tel.sourceLawApplicable ? tel.jointTorquesNm[1].toFixed(3) : "withheld",
+          unit: tel.sourceLawApplicable ? "N·m" : "Claim 1 route absent",
+          badgeColor: tel.sourceLawApplicable ? "emerald" : "rose",
           provenance: "source-disclosed",
         },
         {
           label: "Axis 3 source torque",
-          value: tel.jointTorquesNm[2].toFixed(3),
-          unit: "N·m",
-          badgeColor: "amber",
+          value: tel.sourceLawApplicable ? tel.jointTorquesNm[2].toFixed(3) : "withheld",
+          unit: tel.sourceLawApplicable ? "N·m" : "Claim 1 route absent",
+          badgeColor: tel.sourceLawApplicable ? "amber" : "rose",
           provenance: "source-disclosed",
         },
         {
           label: "Connected source topology",
-          value: `${tel.digitCount} palm-rooted digits / ${tel.scalarJointCoordinates} joints / ${tel.cableEndCount} cable ends`,
+          value: `${tel.claim1RoutingProbe ? tel.digitCount : 0} palm-rooted digits / ${tel.activeJointCoordinates} joints / ${tel.activeCableEndCount} cable ends`,
           unit: "",
           badgeColor: tel.claim1RoutingProbe ? "emerald" : "rose",
           progressPct: tel.claim1RoutingProbe ? 100 : 0,
@@ -9516,12 +9499,12 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: "not disclosed",
           unit: "",
           badgeColor: "amber",
-          provenance: "source-disclosed",
+          provenance: "refusal-bounded",
         },
       ];
     },
     pedagogicalInsight:
-      "Ruoff and Salisbury print three static equations for one digit's Figure 3 route: four measured cable tensions and selected pulley radii combine into three joint torques. The physical hand has three articulated digits, nine joint coordinates, and twelve separately routed cable ends; the exhibit mirrors the representative digit pose across all three. The grant supplies no historic dimensions, dynamics, contact law, grasp force, force-closure result, or stability margin.",
+      "Ruoff and Salisbury print three static equations for one digit's Figure 3 route: four measured cable tensions and selected pulley radii combine into three joint torques. fs-mbd::salisbury owns that source law and its three palm-rooted serial revolute chains. The physical hand has three articulated digits, nine joint coordinates, and twelve separately routed cable ends; the exhibit mirrors the representative digit pose across all three. The grant supplies no historic dimensions, dynamics, contact law, grasp force, force-closure result, or stability margin.",
   },
   "us-4976582-clavel-delta-robot": {
     domain: "source_bounded_robot_kinematics",
@@ -9766,112 +9749,73 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "US 5,121,329 established that FDM extrusion relies on using solid filament as a piston pump into a heated liquefier, where the flat nozzle tip irons extruded beads into a planar road (w/h ≈ 2.25) while conducting heat into the substrate to freeze dimensions in ~50 ms.",
   },
   "us-5701965-kamen-transporter": {
-    domain: "robotics_locomotion",
-    domainTitle: "Inverted Pendulum Dynamic Balancing & Cluster Stair-Climbing Kinematics",
-    equationName: "Inverted Pendulum Dynamic Equilibrium & Motor Torque",
+    domain: "source_bounded_balance_transfer_climb_topology",
+    domainTitle: "Source-Bounded Balance, Transfer & Climb Topology",
+    equationName: "Claimed State-Transition Relationship",
     governingEquation:
-      "I \\ddot{\\theta} = m g h \\sin\\theta - \\tau_{\\text{motor}} - F_{\\text{traction}} h \\cos\\theta \\quad \\text{and} \\quad \\tau_{\\text{motor}} = K_p \\theta + K_d \\dot{\\theta} + K_v (v_{\\text{cmd}} - v)",
-    engineMethod: "FrankenSimEngine.stepKamenTransporter",
+      "\\text{control loop} + \\text{motorized drive} + \\text{ground-contact module} \\longrightarrow \\text{fore-aft balance / state transition}",
+    engineMethod: "TypeScript source-topology state reader (no SI dynamics)",
     controls: [
       {
-        id: "riderPitchLeanDeg",
-        label: "Rider Pitch Lean",
-        min: -15,
-        max: 15,
+        id: "topologyState",
+        label: "Claim-reading state",
+        min: 0,
+        max: 5,
         step: 1,
-        defaultValue: KAMEN_TRANSPORTER_DEFAULT_CONTROLS.riderPitchLeanDeg,
-        unit: "°",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "velocityCommandMs",
-        label: "Velocity Command",
-        min: -2.0,
-        max: 4.0,
-        step: 0.2,
-        defaultValue: KAMEN_TRANSPORTER_DEFAULT_CONTROLS.velocityCommandMs,
-        unit: "m/s",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "yawSteering",
-        label: "Yaw Steering Differential",
-        min: -1.0,
-        max: 1.0,
-        step: 0.1,
-        defaultValue: KAMEN_TRANSPORTER_DEFAULT_CONTROLS.yawSteering,
-        unit: "",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "riderMassKg",
-        label: "Rider Payload Mass",
-        min: 40,
-        max: 120,
-        step: 5,
-        defaultValue: KAMEN_TRANSPORTER_DEFAULT_CONTROLS.riderMassKg,
-        unit: "kg",
-        provenance: "scenario-reader",
+        defaultValue: 1,
+        unit: "state",
+        provenance: "source-disclosed",
       },
     ],
     computeMetrics: (p) => {
       const controls = readKamenTransporterControls(p);
-      const tel = stepKamenTransporterSi(controls);
+      const topology = stepKamenTransporterTopology(controls);
       return [
         {
-          label: "Pitch Angle",
-          value: tel.pitchAngleDeg.toFixed(1),
-          unit: "°",
-          badgeColor: tel.pitchRefusal
-            ? "rose"
-            : Math.abs(tel.pitchAngleDeg) > 10
-              ? "amber"
-              : "emerald",
-          progressPct: clampProgress((Math.abs(tel.pitchAngleDeg) / 25) * 100),
+          label: "Claim-reading state",
+          value: topology.stateLabel.toUpperCase(),
+          unit: "source topology",
+          badgeColor: "emerald",
+          progressPct: 100,
           provenance: "source-disclosed",
         },
         {
-          label: "Balancing Torque",
-          value: tel.balanceTorqueNm.toFixed(1),
-          unit: "N·m",
-          badgeColor: Math.abs(tel.balanceTorqueNm) > 80 ? "amber" : "cyan",
-          progressPct: clampProgress((Math.abs(tel.balanceTorqueNm) / 120) * 100),
+          label: "Ground-module control",
+          value: topology.wheelControlMode.replaceAll("-", " ").toUpperCase(),
+          unit: "claim topology",
+          badgeColor: topology.wheelControlMode === "topology-withheld" ? "amber" : "cyan",
+          progressPct: topology.wheelControlMode === "topology-withheld" ? 0 : 100,
           provenance: "source-disclosed",
         },
         {
-          label: "Linear Speed",
-          value: tel.forwardVelocityMs.toFixed(2),
-          unit: "m/s",
+          label: "Claim references",
+          value: topology.sourceClaimNumbers.map((claim) => `C${claim}`).join(" · "),
+          unit: "printed claim relations",
           badgeColor: "indigo",
-          progressPct: clampProgress((Math.abs(tel.forwardVelocityMs) / 5.0) * 100),
+          progressPct: 100,
           provenance: "source-disclosed",
         },
         {
-          label: "Stability Margin",
-          value: (tel.stabilityMargin * 100).toFixed(0),
-          unit: "%",
-          badgeColor:
-            tel.stabilityMargin > 0.6 ? "emerald" : tel.stabilityMargin > 0.2 ? "amber" : "rose",
-          progressPct: clampProgress(tel.stabilityMargin * 100),
+          label: "Balance-loop relation",
+          value: topology.balanceLoopActive ? "PRESENT" : "WITHHELD",
+          unit: "source topology",
+          badgeColor: topology.balanceLoopActive ? "emerald" : "amber",
+          progressPct: topology.balanceLoopActive ? 100 : 0,
           provenance: "source-disclosed",
         },
         {
-          label: "Operating State",
-          value: tel.pitchRefusal
-            ? "UNSTABLE RUNAWAY"
-            : tel.isClimbing
-              ? "STAIR CLIMB"
-              : tel.isBalancing
-                ? "2-WHEEL BALANCE"
-                : "4-WHEEL STANDARD",
-          unit: "state",
-          badgeColor: tel.pitchRefusal ? "rose" : tel.isBalancing ? "emerald" : "amber",
-          provenance: "source-disclosed",
+          label: "Quantitative dynamics",
+          value: "WITHHELD",
+          unit: "missing source inputs",
+          badgeColor: "amber",
+          progressPct: 0,
+          provenance: "refusal-bounded",
+          provenanceCitation: topology.sourceBoundary,
         },
       ];
     },
     pedagogicalInsight:
-      "Dean Kamen's dynamic stabilization continuously drives the wheels underneath the vehicle center of gravity in response to detected pitch tilt $\\theta$ and pitch angular rate $\\dot{\\theta}$. When the rider leans forward, the inverted pendulum equation commands restorative motor torque $\\tau = K_p \\theta + K_d \\dot{\\theta}$ that balances the vehicle while creating smooth forward acceleration.",
+      "US 5,701,965 records control-loop, motorized-drive, independently controlled ground-module, and ordered balance/transfer/climb relationships. The facsimile does not provide a controller gain, torque, speed, mass, wheel radius, force, angle, or stability-margin datum, so the public instrument reads the documented state topology without forecasting vehicle dynamics.",
   },
   "us-6302230-kamen-segway": {
     domain: "robotics_locomotion",
@@ -10061,11 +10005,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     governingEquation:
       "\\mathbf{r}_{24},\\mathbf{r}_{26},\\mathbf{r}_{28} \\rightarrow O_{remote}; \\quad \\Delta\\mathbf{x}_{tip} \\approx \\boldsymbol{\\theta} \\times \\mathbf{r}_{tip}",
     engineMethod:
-      "stepWatsonRemoteCenterComplianceTopology (normalized host topology; quantitative SI model refused)",
+      "stepWatsonRemoteCenterComplianceTopology (source-topology browser pose; fs-solid::Rod owner identified; material, load, and contact inputs absent, so no WASM/SI solve)",
     controls: [
       {
         id: "lateralContactFraction",
-        label: "Chamfer Contact Position",
+        label: "Contact-Guided Sequence",
         min: 0,
         max: 1,
         step: 0.01,
@@ -10109,7 +10053,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const pose = stepWatsonRemoteCenterComplianceTopology(controls);
       return [
         {
-          label: "Illustrated Translation",
+          label: "Figure 4 Translation Phase",
           value: (pose.translationOffset * 100).toFixed(1),
           unit: "% display",
           badgeColor: "cyan",
@@ -10118,7 +10062,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Remaining Axis Mismatch",
-          value: (pose.remainingAxisMismatch * 100).toFixed(0),
+          value: (pose.remainingAxisMismatch * 100).toFixed(1),
           unit: "% normalized",
           badgeColor: "amber",
           progressPct: clampProgress(pose.remainingAxisMismatch * 100),
@@ -10141,7 +10085,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       ];
     },
     pedagogicalInsight:
-      "Watson claims a connected passive stack: at least three radial rotational elements project a virtual center to the tool end, while separate generally axial elements permit translation; Claim 2 adds torque-resistant means. The grant supplies no dimensions, material, stiffness, force, clearance, friction, mass, or timing, so this exhibit reports normalized geometry and explicitly refuses an SI performance prediction.",
+      "Watson claims a connected passive stack: fixed machine and lip 54 connect through axial flexures 56/58/60 to ring 22, then radial flexures 24/26/28 connect ring 22 to plate 20 and rod 16 while projecting center 50 to free end 52. Claim 2 adds a torque-resistant member between the fixed machine and tool. fs-solid::Rod owns the relevant flexure law, but the grant supplies no section, material, load, clearance, friction, mass, or timing inputs, so this exhibit reports normalized topology and explicitly refuses an SI solve.",
   },
   "us-4098001-watson-rcc": {
     domain: "robotics_mechanisms",
@@ -10150,11 +10094,11 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     governingEquation:
       "\\mathbf{r}_{24},\\mathbf{r}_{26},\\mathbf{r}_{28} \\rightarrow O_{remote}; \\quad \\Delta\\mathbf{x}_{tip} \\approx \\boldsymbol{\\theta} \\times \\mathbf{r}_{tip}",
     engineMethod:
-      "stepWatsonRemoteCenterComplianceTopology (normalized host topology; quantitative SI model refused)",
+      "stepWatsonRemoteCenterComplianceTopology (source-topology browser pose; fs-solid::Rod owner identified; material, load, and contact inputs absent, so no WASM/SI solve)",
     controls: [
       {
         id: "lateralContactFraction",
-        label: "Chamfer Contact Position",
+        label: "Contact-Guided Sequence",
         min: 0,
         max: 1,
         step: 0.01,
@@ -10198,7 +10142,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const pose = stepWatsonRemoteCenterComplianceTopology(controls);
       return [
         {
-          label: "Illustrated Translation",
+          label: "Figure 4 Translation Phase",
           value: (pose.translationOffset * 100).toFixed(1),
           unit: "% display",
           badgeColor: "cyan",
@@ -10207,7 +10151,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Remaining Axis Mismatch",
-          value: (pose.remainingAxisMismatch * 100).toFixed(0),
+          value: (pose.remainingAxisMismatch * 100).toFixed(1),
           unit: "% normalized",
           badgeColor: "amber",
           progressPct: clampProgress(pose.remainingAxisMismatch * 100),
@@ -10230,7 +10174,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       ];
     },
     pedagogicalInsight:
-      "Watson claims a connected passive stack: at least three radial rotational elements project a virtual center to the tool end, while separate generally axial elements permit translation; Claim 2 adds torque-resistant means. The grant supplies no dimensions, material, stiffness, force, clearance, friction, mass, or timing, so this exhibit reports normalized geometry and explicitly refuses an SI performance prediction.",
+      "Watson claims a connected passive stack: fixed machine and lip 54 connect through axial flexures 56/58/60 to ring 22, then radial flexures 24/26/28 connect ring 22 to plate 20 and rod 16 while projecting center 50 to free end 52. Claim 2 adds a torque-resistant member between the fixed machine and tool. fs-solid::Rod owns the relevant flexure law, but the grant supplies no section, material, load, clearance, friction, mass, or timing inputs, so this exhibit reports normalized topology and explicitly refuses an SI solve.",
   },
   "us-6120588-eink": {
     domain: "colloidal_physics",
@@ -10261,15 +10205,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const v = p.electrodeVoltageVolts ?? 15;
-      const out = stepEInk(
-        {
-          electrodeVoltageVolts: v,
-          fluidViscosityCp: p.fluidViscosityCp ?? 2.0,
-          particleChargeCoupled: 1.0,
-        },
-        1.0,
-      );
+      const controls = readEInkRuntimeControls(p as any);
+      const out = readEInkTapeFrame(controls).state;
       return [
         {
           label: "Surface Reflectance",
@@ -10289,6 +10226,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
       ];
     },
+    resetRuntimeTape: resetEInkTape,
     pedagogicalInsight:
       "E-Ink achieves bistable electronic paper by electrophoretically driving charged titanium dioxide white particles and carbon black pigment particles through a dielectric fluid inside microcapsules.",
   },
@@ -10357,51 +10295,60 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-2717437-mestral-velcro": {
     domain: "materials_mechanics",
-    domainTitle: "Thermoplastic Polyamide Cantilever Mechanics & Peeling Anisotropy",
-    equationName: "Euler-Bernoulli Monofilament Bending & Kendall Peeling Anisotropy",
+    domainTitle: "Source-Bounded Hook-Pile Geometry & 90° Interengagement",
+    equationName: "Circular Filament Section Geometry",
     governingEquation:
-      "\\delta = \\frac{F L^3}{3 E I}, \\qquad F_{\\text{peel}} = \\frac{w G_c}{1 - \\cos\\theta}, \\qquad \\frac{F_{\\text{shear}}}{F_{\\text{peel}}} \\gg 10",
-    engineMethod: "FrankenSimEngine.stepMestralVelcro",
+      "I = \\frac{\\pi d^4}{64}, \\qquad K_{\\mathrm{geometry,rel}} = \\frac{(d/d_0)^4}{(L/L_0)^3}",
+    engineMethod:
+      "stepMestralVelcroSi (typed host source-topology/refusal; no FrankenSim WASM module stepped)",
     controls: [
       {
         id: "filamentDiameterMm",
-        label: "Monofilament Diameter",
+        label: "Illustrative Filament Diameter",
         min: 0.1,
         max: 0.35,
         step: 0.01,
         defaultValue: MESTRAL_VELCRO_DEFAULTS.filamentDiameterMm,
         unit: "mm",
         provenance: "scenario-reader",
+        provenanceCitation:
+          "Reader-selected exhibit geometry; US 2,717,437 does not print a filament diameter.",
       },
       {
         id: "hookLengthMm",
-        label: "Hook Length",
+        label: "Illustrative Hook Height",
         min: 1.0,
         max: 3.0,
         step: 0.1,
         defaultValue: MESTRAL_VELCRO_DEFAULTS.hookLengthMm,
         unit: "mm",
         provenance: "scenario-reader",
+        provenanceCitation:
+          "Reader-selected exhibit geometry; US 2,717,437 does not print a hook length.",
       },
       {
         id: "hookDensityPerCm2",
-        label: "Hook Density",
+        label: "Illustrative Pile Population",
         min: 20,
         max: 120,
         step: 4,
         defaultValue: MESTRAL_VELCRO_DEFAULTS.hookDensityPerCm2,
         unit: "cm⁻²",
         provenance: "scenario-reader",
+        provenanceCitation:
+          "Reader-selected display population, quantized to one through five rendered rows; it is not a measured density from the grant.",
       },
       {
         id: "peelAngleDeg",
-        label: "Peeling Angle",
+        label: "Applied Clamp Direction",
         min: 15,
         max: 165,
         step: 5,
         defaultValue: MESTRAL_VELCRO_DEFAULTS.peelAngleDeg,
         unit: "deg",
         provenance: "scenario-reader",
+        provenanceCitation:
+          "Reader-selected direction of the explicitly external peel-clamp boundary; the grant does not publish a peel-test angle.",
       },
       {
         id: "peelProgress",
@@ -10415,74 +10362,40 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         provenanceCitation:
           "Reader-controlled normalized peel-front position shared by the 2D and 3D pedagogical projections; not a historical travel measurement.",
       },
-      {
-        id: "heatSettingTempC",
-        label: "Lancet Bar Temp",
-        min: 100,
-        max: 200,
-        step: 5,
-        defaultValue: MESTRAL_VELCRO_DEFAULTS.heatSettingTempC,
-        unit: "°C",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "appliedShearForceN",
-        label: "Shear Load",
-        min: 0,
-        max: 100,
-        step: 5,
-        defaultValue: MESTRAL_VELCRO_DEFAULTS.appliedShearForceN,
-        unit: "N",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "appliedPeelRateMmS",
-        label: "Peel Rate",
-        min: 2,
-        max: 40,
-        step: 2,
-        defaultValue: MESTRAL_VELCRO_DEFAULTS.appliedPeelRateMmS,
-        unit: "mm/s",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "engagementRatio",
-        label: "Engagement Ratio",
-        min: 0.2,
-        max: 1.0,
-        step: 0.05,
-        defaultValue: MESTRAL_VELCRO_DEFAULTS.engagementRatio,
-        unit: "ratio",
-        provenance: "scenario-reader",
-      },
     ],
     computeMetrics: (params: Record<string, number>) => {
       const controls = readMestralVelcroControls(params);
       const tel = stepMestralVelcroSi(controls);
       return [
         {
-          label: "Single Hook Force",
-          value: `${(tel.singleHookReleaseForceN * 1000).toFixed(1)} mN`,
-          unit: "F_hook",
+          label: "Opposed Hook Faces",
+          value: tel.hookInterengagementAvailable ? "2" : "withheld",
+          unit: "source topology",
           badgeColor: "cyan",
-          progressPct: clampProgress((tel.singleHookReleaseForceN / 0.1) * 100),
-          provenance: "scenario-modern",
+          progressPct: tel.hookInterengagementAvailable ? 100 : 3,
+          provenance: "source-disclosed",
+          provenanceCitation:
+            "Figure 2 and its accompanying text superpose two pieces of the Figure 1 hook fabric with their pile surfaces facing.",
         },
         {
-          label: "In-Plane Shear Capacity",
-          value: `${tel.shearStressCapacityN_Cm2.toFixed(1)} N/cm²`,
-          unit: "τ_max",
+          label: "Relative Face Rotation",
+          value: "90°",
+          unit: "source topology",
           badgeColor: "emerald",
-          progressPct: clampProgress((tel.shearStressCapacityN_Cm2 / 80) * 100),
-          provenance: "scenario-modern",
+          progressPct: 50,
+          provenance: "source-disclosed",
+          provenanceCitation:
+            "The specification directs that one of the two fabric pieces receive a 90-degree angular displacement before the pile surfaces are faced together.",
         },
         {
-          label: "Peel Force (1-in Tape)",
-          value: `${tel.totalPeelForceN.toFixed(2)} N`,
-          unit: "F_peel",
+          label: "Rendered Pile Rows",
+          value: `${tel.visiblePileRows}`,
+          unit: "illustrative",
           badgeColor: "amber",
-          progressPct: clampProgress((tel.totalPeelForceN / 8) * 100),
-          provenance: "scenario-modern",
+          progressPct: tel.visiblePileRows * 20,
+          provenance: "scenario-reader",
+          provenanceCitation:
+            "Display population only; this is neither a historical nor a measured hook density.",
         },
         {
           label: "Peel Front Advance",
@@ -10495,33 +10408,28 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
             "Reader-controlled normalized peel-front position shared by the 2D and 3D pedagogical projections; not a historical travel measurement.",
         },
         {
-          label: "Shear/Peel Anisotropy",
-          value: `${tel.forceAnisotropyRatio.toFixed(1)}x`,
-          unit: "α_aniso",
+          label: "Circular Section I",
+          value: tel.circularSectionSecondMomentM4.toExponential(2),
+          unit: "m⁴",
           badgeColor: "purple",
-          progressPct: clampProgress((tel.forceAnisotropyRatio / 40) * 100),
-          provenance: "scenario-modern",
+          provenance: "scenario-reader",
+          provenanceCitation:
+            "Exact circular-section geometry for the reader-selected illustrative diameter; no material modulus or force is inferred.",
         },
         {
-          label: "Shape Retention",
-          value: `${(tel.thermalRetentionFraction * 100).toFixed(1)}%`,
-          unit: "ϕ_set",
+          label: "Relative Bending Geometry",
+          value: `${tel.relativeBendingGeometryIndex.toFixed(2)}×`,
+          unit: "d⁴/L³ index",
           badgeColor: "indigo",
-          progressPct: clampProgress(tel.thermalRetentionFraction * 100),
-          provenance: "scenario-modern",
-        },
-        {
-          label: "Peeling Power",
-          value: `${(tel.peelDisengagementPowerWatts * 1000).toFixed(1)} mW`,
-          unit: "P_peel",
-          badgeColor: "rose",
-          progressPct: clampProgress((tel.peelDisengagementPowerWatts / 0.1) * 100),
-          provenance: "scenario-modern",
+          progressPct: clampProgress((tel.relativeBendingGeometryIndex / 5) * 100),
+          provenance: "scenario-reader",
+          provenanceCitation:
+            "Dimensionless circular-section geometry sensitivity only. A physical spring rate still requires modulus, boundary, and contact data absent from the grant.",
         },
       ];
     },
     pedagogicalInsight:
-      "George de Mestral's hook-and-loop fastener achieves extreme mechanical anisotropy: thousands of microscopic cantilever hooks act in parallel to resist massive in-plane shear sliding, yet peel open effortlessly with minimal force because fracture energy localizes along a single line of deflecting hooks.",
+      "The 1955 grant's fastening embodiment is hook-to-hook: two pieces of the same raised hook-pile fabric face one another after one piece is turned 90 degrees. The exhibit preserves that topology while refusing forces and energy balances the source cannot calibrate.",
   },
   "us-2846084-goertz-electronic-master-slave-manipulator": {
     domain: "robotics_teleoperation",
@@ -10597,7 +10505,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "contactResistance",
-        label: "Remote Contact Resistance",
+        label: "Illustrative Gripper Obstruction",
         min: 0,
         max: 1,
         step: 0.01,
@@ -10647,7 +10555,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         {
           label: "Illustrative Remote Obstruction",
           value: controls.contactResistance.toFixed(2),
-          unit: "normalized reader scenario",
+          unit: "fraction of closure withheld",
           badgeColor: "rose",
           progressPct: clampProgress(controls.contactResistance * 100),
           provenance: "scenario-reader",
@@ -10672,14 +10580,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           label: "Servo State",
           value: pose.state.toUpperCase(),
           unit: "source topology",
-          badgeColor: pose.limiterActive ? "amber" : "purple",
+          badgeColor: pose.forceReflectionEnabled ? "emerald" : "purple",
           provenance: "source-disclosed",
         },
         {
           label: "Feedback / Limiter Path",
-          value: `${pose.tachometerDampingEnabled ? "DAMPED" : "DIRECT"} · ${controls.limiterEnabled === 1 ? "LIMITING" : "OPEN"}`,
-          unit: "source topology",
-          badgeColor: controls.limiterEnabled === 1 ? "amber" : "indigo",
+          value: `${pose.tachometerDampingEnabled ? "TACHOMETER PRESENT" : "TACHOMETER OMITTED"} · ${pose.limiterEnabled ? "LIMITER PRESENT" : "LIMITER OMITTED"}`,
+          unit: "unevaluated source topology",
+          badgeColor: pose.limiterEnabled ? "amber" : "indigo",
           provenance: "source-disclosed",
         },
         {
@@ -10918,88 +10826,95 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     domainTitle: "Pulse-Counted Lead-Screw Mechanism (Nonclinical)",
     equationName: "Rotation Event and Actuator-State Topology",
     governingEquation:
-      "N_{pulse}=n_{turns}; \\quad x=n p; \\quad \\text{state}=f(\\text{counter},\\text{motor circuit},\\text{clutch path})",
+      "N_{pulse}=n_{turns}; \\quad x=n p; \\quad \\text{motor off when }N_{pulse}=N_{selected}",
     engineMethod:
-      "stepKamenInjectionMechanism (normalized nonclinical host topology; quantitative delivery model refused)",
+      "stepKamenInjectionMechanism (typed browser mirror of fs-mbd helical-joint topology; no Kamen WASM export; quantitative delivery refused)",
     controls: [
       {
-        id: "leadScrewTurnFraction",
-        label: "Lead-Screw Rotation",
-        min: 0,
-        max: 1,
-        step: 0.01,
-        defaultValue: KAMEN_INJECTION_DEFAULT_CONTROLS.leadScrewTurnFraction,
-        unit: "normalized",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "counterTargetFraction",
-        label: "Pulse-Counter Target",
-        min: 0,
-        max: 1,
-        step: 0.01,
-        defaultValue: KAMEN_INJECTION_DEFAULT_CONTROLS.counterTargetFraction,
-        unit: "normalized",
-        provenance: "scenario-reader",
-      },
-      {
-        id: "motorCircuitClosed",
-        label: "Motor Circuit",
-        min: 0,
-        max: 1,
+        id: "selectedPulseCount",
+        label: "Selected Screw-Turn Pulses",
+        min: 1,
+        max: 99,
         step: 1,
-        defaultValue: KAMEN_INJECTION_DEFAULT_CONTROLS.motorCircuitClosed,
-        unit: "open/closed",
+        defaultValue: KAMEN_INJECTION_DEFAULT_CONTROLS.selectedPulseCount,
+        unit: "events",
         provenance: "source-disclosed",
       },
       {
-        id: "reliefPathShown",
-        label: "Clutch Relief Path",
+        id: "displayTurnsPerSecond",
+        label: "Museum Display Speed",
+        min: 1,
+        max: 12,
+        step: 1,
+        defaultValue: KAMEN_INJECTION_DEFAULT_CONTROLS.displayTurnsPerSecond,
+        unit: "display turns/s",
+        provenance: "scenario-modern",
+      },
+      {
+        id: "offIntervalDisplaySeconds",
+        label: "Motor-Off Display Interval",
+        min: 0.5,
+        max: 8,
+        step: 0.5,
+        defaultValue: KAMEN_INJECTION_DEFAULT_CONTROLS.offIntervalDisplaySeconds,
+        unit: "display s",
+        provenance: "scenario-modern",
+      },
+      {
+        id: "clutchEngaged",
+        label: "Claim 3 Clutch",
         min: 0,
         max: 1,
         step: 1,
-        defaultValue: KAMEN_INJECTION_DEFAULT_CONTROLS.reliefPathShown,
-        unit: "hidden/shown",
+        defaultValue: Number(KAMEN_INJECTION_DEFAULT_CONTROLS.clutchEngaged),
+        unit: "released/engaged",
         provenance: "source-disclosed",
+      },
+      {
+        id: "running",
+        label: "Museum Mechanism",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: Number(KAMEN_INJECTION_DEFAULT_CONTROLS.running),
+        unit: "paused/running",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics: (p) => {
       const controls = readKamenInjectionControls(p);
-      const pose = stepKamenInjectionMechanism(controls);
+      const frame = readKamenInjectionTapeFrame(controls);
+      const { metrics } = frame;
       return [
         {
-          label: "Lead-Screw Position",
-          value: (pose.plungerPosition * 100).toFixed(0),
+          label: "Follower Position",
+          value: (metrics.followerPositionNormalized * 100).toFixed(0),
           unit: "% normalized",
           badgeColor: "cyan",
-          progressPct: clampProgress(pose.plungerPosition * 100),
+          progressPct: clampProgress(metrics.followerPositionNormalized * 100),
           provenance: "topology-normalized",
         },
         {
-          label: "Counter Progress",
-          value: (pose.pulseProgress * 100).toFixed(0),
-          unit: "% normalized",
+          label: "Screw-Turn Counter",
+          value: `${metrics.cyclePulseCount}/${metrics.selectedPulseCount}`,
+          unit: "events",
           badgeColor: "amber",
-          progressPct: clampProgress(pose.pulseProgress * 100),
-          provenance: "topology-normalized",
+          progressPct: clampProgress(metrics.counterProgress * 100),
+          provenance: "source-disclosed",
         },
         {
           label: "Mechanism State",
-          value: pose.motorState.toUpperCase(),
+          value: metrics.phase.toUpperCase(),
           unit: "source topology",
-          badgeColor: pose.reliefPathShown
-            ? "rose"
-            : pose.motorCircuitClosed
-              ? "emerald"
-              : "indigo",
+          badgeColor: !metrics.clutchEngaged ? "rose" : metrics.motorPowered ? "emerald" : "indigo",
           provenance: "source-disclosed",
         },
         {
-          label: "Claim Probe",
-          value: `CLAIM ${pose.activeClaim}`,
-          unit: "source claim",
+          label: "Joint Owner",
+          value: "FS-MBD HELICAL",
+          unit: "typed mirror",
           badgeColor: "purple",
-          provenance: "source-disclosed",
+          provenance: "topology-normalized",
         },
         {
           label: "Clinical Delivery Prediction",
@@ -11011,7 +10926,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       ];
     },
     pedagogicalInsight:
-      "US 3,858,581 ties a uniform-pitch lead screw to a striker-operated pulse switch and counter-controlled motor state. The source lacks a dose, volume-per-pulse calibration, pressure, patient condition, delivery rate, or clinical outcome, so this is explicitly a nonclinical mechanism exhibit.",
+      "US 3,858,581 makes one screw revolution one counted electrical event: motor 24 turns uniform-pitch screw 22, guided follower 18 advances plunger 14, mounted striker 80 closes switch 84, and cascaded counters 114/116 stop the motor at the selected integer. Claim 3's spring clutch can let the motor rotor turn while the screw holds. FrankenSim fs-mbd owns the generic helical-joint law, but the browser uses an explicitly labeled typed mirror because no Kamen-specific WASM export exists. The grant prints no numerical pitch, motor curve, pressure, dose calibration, safe rate, or clinical outcome.",
   },
   "us-4068536-stackhouse-manipulator": {
     domain: "solid_mechanics",
@@ -11019,7 +10934,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     equationName: "Selected Serial-Axis Display Composition",
     governingEquation:
       "\\mathbf{R}_{display}=\\mathbf{R}_{z}(q_A)\\,\\mathbf{R}_{y}(\\alpha_{AB})\\,\\mathbf{R}_{z}(q_B)\\,\\mathbf{R}_{y}(-\\alpha_{BC})\\,\\mathbf{R}_{z}(q_C),\\quad \\alpha_{AB},\\alpha_{BC}>45^\\circ",
-    engineMethod: "stepStackhouseSourceTopology (normalized host geometry; SI dynamics refused)",
+    engineMethod:
+      "stepStackhouseSourceTopology (typed browser mirror of fs-mbd revolute-joint forward kinematics; no Stackhouse WASM export; SI dynamics refused)",
     controls: [
       {
         id: "forearmRollDeg",
@@ -11029,6 +10945,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: STACKHOUSE_SOURCE_DEFAULT_CONTROLS.forearmRollDeg,
         unit: "°",
+        provenance: "topology-normalized",
       },
       {
         id: "intermediateRollDeg",
@@ -11038,6 +10955,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: STACKHOUSE_SOURCE_DEFAULT_CONTROLS.intermediateRollDeg,
         unit: "°",
+        provenance: "topology-normalized",
       },
       {
         id: "toolRollDeg",
@@ -11047,6 +10965,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: STACKHOUSE_SOURCE_DEFAULT_CONTROLS.toolRollDeg,
         unit: "°",
+        provenance: "topology-normalized",
       },
       {
         id: "firstObliqueAngleDeg",
@@ -11056,6 +10975,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: STACKHOUSE_SOURCE_DEFAULT_CONTROLS.firstObliqueAngleDeg,
         unit: "° display",
+        provenance: "scenario-reader",
       },
       {
         id: "secondObliqueAngleDeg",
@@ -11065,6 +10985,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: STACKHOUSE_SOURCE_DEFAULT_CONTROLS.secondObliqueAngleDeg,
         unit: "° display",
+        provenance: "scenario-reader",
       },
       {
         id: "singleIntersection",
@@ -11074,6 +10995,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         step: 1,
         defaultValue: STACKHOUSE_SOURCE_DEFAULT_CONTROLS.singleIntersection,
         unit: "offset/exact",
+        provenance: "scenario-reader",
       },
     ],
     computeMetrics: (params) => {
@@ -11120,7 +11042,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       ];
     },
     pedagogicalInsight:
-      "US 4,068,536 routes three elbow-mounted hydraulic-motor inputs through concentric forearm shafts, bevel gears, a second concentric-shaft set, and terminal shaft 26. The preferred axes meet at P, and the printed illustrated oblique angles are only specified as greater than 45 degrees; quantitative performance is therefore refused.",
+      "US 4,068,536 routes hydraulic motors 9a/9b/9c through spur gears into concentric forearm shafts 15/16/19, then through bevel pairs 17/18, 21/22, and 24/25 into housing shaft 14a, internal shaft 23, and terminal shaft 26. The browser mirrors FrankenSim fs-mbd's serial revolute-joint forward-kinematics law, but no generic articulated WASM constructor is exported here. The preferred axes meet at P, and the printed illustrated oblique angles are only specified as greater than 45 degrees; quantitative dynamics and performance remain refused.",
   },
 };
 
@@ -11135,8 +11057,45 @@ PATENT_PHYSICS_REGISTRY["us-7479949"] = PATENT_PHYSICS_REGISTRY["us-7479949-mult
 // The 3D/2D instruments write these ids; the badge must not stay on sourceFocus.
 PATENT_PHYSICS_REGISTRY["us-3923554-boyle-smith-ccd"] =
   PATENT_PHYSICS_REGISTRY["us-3858232-boyle-smith-ccd"];
-PATENT_PHYSICS_REGISTRY["us-3671542-kwolek-kevlar"] =
-  PATENT_PHYSICS_REGISTRY["_legacy-unpublished-us-3671542-kwolek-kevlar"];
+PATENT_PHYSICS_REGISTRY["us-3671542-kwolek-kevlar"] = {
+  domain: "source_reading",
+  domainTitle: "Source-Bounded Claim Reading",
+  equationName: "Printed Polyamide Dope Composition",
+  governingEquation:
+    "carbocyclic aromatic polyamide + selected liquid medium → optically anisotropic dope",
+  engineMethod:
+    "Source-bound claim reading; quantitative processing and material-performance model withheld",
+  controls: [],
+  computeMetrics: () => [
+    {
+      label: "Claim 1",
+      value: "optically anisotropic dope",
+      unit: "printed composition",
+      badgeColor: "emerald",
+      progressPct: 100,
+      provenance: "source-disclosed",
+    },
+    {
+      label: "Claim 2",
+      value: "> about 98% H₂SO₄",
+      unit: "printed narrowing",
+      badgeColor: "cyan",
+      progressPct: 100,
+      provenance: "source-disclosed",
+    },
+    {
+      label: "Visual Model",
+      value: "WITHHELD",
+      unit: "source boundary",
+      badgeColor: "rose",
+      progressPct: 0,
+      provenance: "refusal-bounded",
+    },
+  ],
+  pedagogicalInsight:
+    "The public reading remains at the printed composition claims: an optically anisotropic dope formed from a carbocyclic aromatic polyamide and selected liquid medium, with Claim 2 narrowing the liquid medium to concentrated sulfuric acid. The reviewed source boundary does not license a quantitative processing or material-performance model.",
+  provenance: "source-disclosed",
+};
 PATENT_PHYSICS_REGISTRY["us-586193-marconi-radio"] =
   PATENT_PHYSICS_REGISTRY["_legacy-unpublished-us-586193-marconi-radio"];
 PATENT_PHYSICS_REGISTRY["us-2292387-lamarr-frequency-hopping"] =

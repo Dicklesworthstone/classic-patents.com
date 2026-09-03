@@ -23,8 +23,15 @@ export interface SpencerMicrowaveModel {
   anodeOuter: THREE.Mesh;
   cathodeMesh: THREE.Mesh;
   spokePoints: THREE.Points;
+  spokePointSets: readonly THREE.Points[];
   spokeGeo: THREE.BufferGeometry;
   spokePos: Float32Array;
+  transformerAssembly: THREE.Group;
+  commonWaveguide: THREE.Group;
+  conveyorAssembly: THREE.Group;
+  foodLoad: THREE.Mesh;
+  coaxialLines: readonly [THREE.Mesh, THREE.Mesh];
+  electricalConductors: readonly THREE.Mesh[];
   materials: {
     copperAnodeMat: THREE.MeshStandardMaterial;
     cathodeMat: THREE.MeshStandardMaterial;
@@ -33,9 +40,6 @@ export interface SpencerMicrowaveModel {
     boreMat: THREE.MeshStandardMaterial;
     steelMat: THREE.MeshStandardMaterial;
     spokeMat: THREE.PointsMaterial;
-    ceramicInsulator?: THREE.MeshStandardMaterial;
-    radiatorFin?: THREE.MeshStandardMaterial;
-    transparentEnvelope?: THREE.MeshPhysicalMaterial;
   };
   updateKinematics: (
     delta: number,
@@ -182,63 +186,59 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   });
   disposables.push(steelMat);
 
-  const ceramicInsulator = new THREE.MeshStandardMaterial({
-    color: 0xf8fafc,
-    roughness: 0.15,
-    metalness: 0.05,
+  const conductorMat = new THREE.MeshStandardMaterial({
+    color: 0xfbbf24,
+    emissive: 0x92400e,
+    emissiveIntensity: 0.18,
+    roughness: 0.32,
+    metalness: 0.72,
   });
-  disposables.push(ceramicInsulator);
+  disposables.push(conductorMat);
 
-  const radiatorFin = new THREE.MeshStandardMaterial({
-    color: 0xa1a1aa,
-    roughness: 0.28,
-    metalness: 0.88,
+  const beltMat = new THREE.MeshStandardMaterial({
+    color: 0x262626,
+    roughness: 0.9,
+    metalness: 0.08,
   });
-  disposables.push(radiatorFin);
+  disposables.push(beltMat);
 
-  const transparentEnvelopeMat = new THREE.MeshPhysicalMaterial({
-    color: 0xffffff,
-    transmission: 0.92,
-    roughness: 0.05,
-    ior: 1.47,
-    transparent: true,
-    opacity: 0.85,
+  const foodMat = new THREE.MeshStandardMaterial({
+    color: 0xf5deb3,
+    roughness: 0.86,
   });
-  disposables.push(transparentEnvelopeMat);
+  disposables.push(foodMat);
+
+  const tubeBetween = (
+    name: string,
+    points: readonly THREE.Vector3[],
+    radius: number,
+    material: THREE.Material,
+  ) => {
+    const curve = new THREE.CatmullRomCurve3(points.map((point) => point.clone()));
+    const geometry = new THREE.TubeGeometry(curve, 32, radius, 8, false);
+    disposables.push(geometry);
+    const tube = new THREE.Mesh(geometry, material);
+    tube.name = name;
+    tube.castShadow = true;
+    root.add(tube);
+    return tube;
+  };
 
   // ==========================================
   // SOURCE-NUMBERED OSCILLATOR ABSTRACTION (10 / 11)
   // ==========================================
   const magnetronGroup = new THREE.Group();
+  magnetronGroup.name = "Oscillator source 10";
   root.add(magnetronGroup);
 
-  // Cylindrical OFHC Copper Anode Block
-  const anodeGeo = new THREE.CylinderGeometry(4.3, 4.3, 3.4, 48);
+  // Conductive evacuated envelope 12. Cutaway transparency reveals the
+  // source-described central cathode and inward radial anode vanes.
+  const anodeGeo = new THREE.CylinderGeometry(4.3, 4.3, 3.4, 48, 1, true);
   disposables.push(anodeGeo);
   const anodeOuter = new THREE.Mesh(anodeGeo, copperAnodeMat);
   anodeOuter.castShadow = true;
   anodeOuter.receiveShadow = true;
   magnetronGroup.add(anodeOuter);
-
-  // Neutral outer geometry; internal construction is not specified by the source.
-  const finCount = 24;
-  const finGeo = new THREE.BoxGeometry(1.4, 3.2, 0.08);
-  disposables.push(finGeo);
-  for (let f = 0; f < finCount; f++) {
-    const fAngle = (f * Math.PI * 2) / finCount;
-    const fin = new THREE.Mesh(finGeo, radiatorFin);
-    fin.position.set(Math.cos(fAngle) * 4.9, 0, Math.sin(fAngle) * 4.9);
-    fin.rotation.y = -fAngle;
-    fin.castShadow = true;
-    magnetronGroup.add(fin);
-  }
-
-  // Outer envelope for the named oscillator.
-  const shroudGeo = new THREE.CylinderGeometry(5.75, 5.75, 3.2, 36, 1, true);
-  disposables.push(shroudGeo);
-  const shroud = new THREE.Mesh(shroudGeo, steelMat);
-  shroud.castShadow = true;
-  magnetronGroup.add(shroud);
 
   // Central Cylindrical Interaction Bore
   const boreGeo = new THREE.CylinderGeometry(1.5, 1.5, 3.42, 36);
@@ -246,39 +246,20 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   const boreMesh = new THREE.Mesh(boreGeo, boreMat);
   magnetronGroup.add(boreMesh);
 
-  // Two visual slots mark the two source paths; this is not a cavity count.
-  const numCavities = 2;
-  for (let c = 0; c < numCavities; c++) {
-    const angle = (c / numCavities) * Math.PI * 2;
-    const rCavity = 2.75;
-    const x = Math.cos(angle) * rCavity;
-    const z = Math.sin(angle) * rCavity;
-
-    // Resonant Inductive Cylinder Hole
-    const cavGeo = new THREE.CylinderGeometry(0.72, 0.72, 3.44, 24);
-    disposables.push(cavGeo);
-    const cavMesh = new THREE.Mesh(cavGeo, darkCavityMat);
-    cavMesh.position.set(x, 0, z);
-    magnetronGroup.add(cavMesh);
-
-    // Capacitive Coupling Slot Neck to Center Bore
-    const slotGeo = new THREE.BoxGeometry(0.24, 3.44, 1.35);
-    disposables.push(slotGeo);
-    const slotMesh = new THREE.Mesh(slotGeo, darkCavityMat);
-    slotMesh.position.set(Math.cos(angle) * 2.05, 0, Math.sin(angle) * 2.05);
-    slotMesh.rotation.y = -angle;
-    magnetronGroup.add(slotMesh);
+  // A diagrammatic plurality of inward radial vanes 13. The grant requires a
+  // plurality but gives no exact count, so the display does not label this
+  // illustrative count as a measured tube construction.
+  const illustrativeVaneCount = 8;
+  for (let index = 0; index < illustrativeVaneCount; index += 1) {
+    const angle = (index * Math.PI * 2) / illustrativeVaneCount;
+    const vaneGeo = new THREE.BoxGeometry(2.45, 3.25, 0.16);
+    disposables.push(vaneGeo);
+    const vane = new THREE.Mesh(vaneGeo, copperAnodeMat);
+    vane.name = `Illustrative radial anode vane 13 (${index + 1})`;
+    vane.position.set(Math.cos(angle) * 2.72, 0, Math.sin(angle) * 2.72);
+    vane.rotation.y = -angle;
+    magnetronGroup.add(vane);
   }
-
-  // Neutral coupling bands; no mode-strapping claim is made.
-  [-1.75, 1.75].forEach((yRing) => {
-    const strapGeo = new THREE.TorusGeometry(2.35, 0.08, 12, 48);
-    disposables.push(strapGeo);
-    const strapMesh = new THREE.Mesh(strapGeo, copperAnodeMat);
-    strapMesh.rotation.x = Math.PI / 2;
-    strapMesh.position.y = yRing;
-    magnetronGroup.add(strapMesh);
-  });
 
   // Central interaction marker; the source does not specify emitter construction.
   const cathodeGeo = new THREE.CylinderGeometry(0.42, 0.42, 4.4, 24);
@@ -287,34 +268,11 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   cathodeMesh.castShadow = true;
   magnetronGroup.add(cathodeMesh);
 
-  // End markers for the oscillator abstraction.
-  [-2.4, 2.4].forEach((iy) => {
-    const insGeo = new THREE.CylinderGeometry(0.85, 0.85, 0.65, 20);
-    disposables.push(insGeo);
-    const insulator = new THREE.Mesh(insGeo, ceramicInsulator);
-    insulator.position.y = iy;
-    insulator.castShadow = true;
-    magnetronGroup.add(insulator);
-  });
-
-  // Coupling loop and common wave-guide path (26/27 -> 23).
+  // Source-numbered coupling loop 26. External coaxial line 24 is added after
+  // both oscillators are placed in the apparatus layout.
   const waveguideGroup = new THREE.Group();
-  waveguideGroup.position.set(3.8, 0, 0);
-
-  const guideGeo = new THREE.BoxGeometry(3.5, 2.2, 1.4);
-  disposables.push(guideGeo);
-  const guideMesh = new THREE.Mesh(guideGeo, steelMat);
-  guideMesh.position.x = 1.75;
-  guideMesh.castShadow = true;
-  waveguideGroup.add(guideMesh);
-
-  // Waveguide Mounting Flange with Bolting Holes
-  const flangeGeo = new THREE.BoxGeometry(0.3, 3.2, 2.2);
-  disposables.push(flangeGeo);
-  const flange = new THREE.Mesh(flangeGeo, steelMat);
-  flange.position.x = 3.5;
-  flange.castShadow = true;
-  waveguideGroup.add(flange);
+  waveguideGroup.name = "Oscillator coupling guide 26";
+  waveguideGroup.position.set(4.15, 0, 0);
 
   const loopGeo = new THREE.TorusGeometry(0.55, 0.06, 8, 24);
   disposables.push(loopGeo);
@@ -323,94 +281,113 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   waveguideGroup.add(loopMesh);
   magnetronGroup.add(waveguideGroup);
 
-  // The drawing shows two oscillator sources joined to one transformer and
-  // one treatment path. Clone the same neutral oscillator abstraction for 11;
-  // the two groups are intentionally not presented as a modern tube design.
-  magnetronGroup.position.x = -5.4;
-  const secondOscillator = magnetronGroup.clone(true);
-  secondOscillator.position.x = 5.4;
-  root.add(secondOscillator);
-
-  // Equipment Foundation Plinth & Conveyor Stand Legs
+  // Equipment foundation: every apparatus organ is supported by this plinth.
   const benchGroup = new THREE.Group();
   root.add(benchGroup);
 
-  const floorPlinthGeo = new THREE.BoxGeometry(14.0, 0.35, 8.0);
+  const floorPlinthGeo = new THREE.BoxGeometry(13.5, 0.3, 8.4);
   disposables.push(floorPlinthGeo);
   const floorPlinth = new THREE.Mesh(floorPlinthGeo, sourceMetalMat);
-  floorPlinth.position.set(0, -3.8, 0);
+  floorPlinth.name = "Spencer apparatus foundation";
+  floorPlinth.position.set(-0.8, -2.05, 0);
   floorPlinth.receiveShadow = true;
   benchGroup.add(floorPlinth);
 
-  // Transformer floor foundation pedestal
-  const transPlinthGeo = new THREE.BoxGeometry(3.2, 2.4, 2.8);
-  disposables.push(transPlinthGeo);
-  const transPlinth = new THREE.Mesh(transPlinthGeo, sourceMetalMat);
-  transPlinth.position.set(0, -2.4, -2.6);
-  transPlinth.castShadow = true;
-  benchGroup.add(transPlinth);
-
-  const transformerGeo = new THREE.BoxGeometry(2.6, 2.4, 2.2);
-  disposables.push(transformerGeo);
-  const transformer = new THREE.Mesh(transformerGeo, steelMat);
-  transformer.position.set(0, 0, -2.6);
-  root.add(transformer);
-
-  const commonGuideGeo = new THREE.BoxGeometry(7.2, 1.4, 1.4);
-  disposables.push(commonGuideGeo);
-  const commonGuide = new THREE.Mesh(commonGuideGeo, steelMat);
-  commonGuide.position.set(0, 0, 1.3);
-  root.add(commonGuide);
-
-  // 4 Chamber Support Upright Columns holding treatment applicator
-  for (const cx of [-3.4, 3.4]) {
-    for (const cz of [0.5, 2.1]) {
-      const colGeo = new THREE.CylinderGeometry(0.08, 0.08, 2.4, 16);
-      disposables.push(colGeo);
-      const col = new THREE.Mesh(colGeo, steelMat);
-      col.position.set(cx, -1.2, cz);
-      col.castShadow = true;
-      benchGroup.add(col);
+  // Transformer 18: two supported windings on one closed ferromagnetic core.
+  const transformerAssembly = new THREE.Group();
+  transformerAssembly.name = "Transformer 18";
+  transformerAssembly.position.set(-6, -0.84, 0);
+  root.add(transformerAssembly);
+  for (const x of [-0.62, 0.62]) {
+    const coilGeo = new THREE.TorusGeometry(0.48, 0.13, 10, 32);
+    disposables.push(coilGeo);
+    for (const y of [-0.55, -0.28, 0, 0.28, 0.55]) {
+      const coil = new THREE.Mesh(coilGeo, conductorMat);
+      coil.position.set(x, y, 0);
+      coil.rotation.x = Math.PI / 2;
+      transformerAssembly.add(coil);
     }
   }
+  for (const [size, position] of [
+    [
+      [2.25, 0.22, 1.05],
+      [0, 0.95, 0],
+    ],
+    [
+      [2.25, 0.22, 1.05],
+      [0, -0.95, 0],
+    ],
+    [
+      [0.22, 1.9, 1.05],
+      [-1.02, 0, 0],
+    ],
+    [
+      [0.22, 1.9, 1.05],
+      [1.02, 0, 0],
+    ],
+  ] as const) {
+    const coreGeo = new THREE.BoxGeometry(...size);
+    disposables.push(coreGeo);
+    const coreMember = new THREE.Mesh(coreGeo, sourceMetalMat);
+    coreMember.position.set(position[0], position[1], position[2]);
+    transformerAssembly.add(coreMember);
+  }
 
-  const conveyorGeo = new THREE.BoxGeometry(11.5, 0.16, 3.2);
+  // Common hollow wave guide 23 ends directly over the transverse conveyor.
+  const commonWaveguide = new THREE.Group();
+  commonWaveguide.name = "Common hollow wave guide 23";
+  commonWaveguide.position.set(0.95, -0.05, 0);
+  for (const [name, size, position] of [
+    ["top wall", [4.25, 0.09, 1.45], [0, 0.58, 0]],
+    ["bottom wall", [4.25, 0.09, 1.45], [0, -0.58, 0]],
+    ["front wall", [4.25, 1.07, 0.09], [0, 0, 0.68]],
+    ["back wall", [4.25, 1.07, 0.09], [0, 0, -0.68]],
+  ] as const) {
+    const panelGeo = new THREE.BoxGeometry(...size);
+    disposables.push(panelGeo);
+    const panel = new THREE.Mesh(panelGeo, steelMat);
+    panel.name = `Wave guide 23 ${name}`;
+    panel.position.set(position[0], position[1], position[2]);
+    panel.castShadow = true;
+    commonWaveguide.add(panel);
+  }
+  root.add(commonWaveguide);
+
+  // Conveyor 28 crosses the guide outlet at right angles, making exposure
+  // time legible as belt travel through a bounded treatment region.
+  const conveyorAssembly = new THREE.Group();
+  conveyorAssembly.name = "Transversely-moving conveyor system 28";
+  conveyorAssembly.position.set(3.35, -1.05, 0);
+  root.add(conveyorAssembly);
+  const conveyorGeo = new THREE.BoxGeometry(1.8, 0.16, 6.1);
   disposables.push(conveyorGeo);
-  const conveyor = new THREE.Mesh(conveyorGeo, steelMat);
-  conveyor.position.set(0, -2.4, 1.3);
-  root.add(conveyor);
-
-  // Conveyor Bed Stanchion Legs down to Floor Plinth
-  for (const lx of [-5.2, -1.8, 1.8, 5.2]) {
-    for (const lz of [-0.1, 2.7]) {
-      const cLegGeo = new THREE.BoxGeometry(0.16, 1.35, 0.16);
-      disposables.push(cLegGeo);
-      const cLeg = new THREE.Mesh(cLegGeo, steelMat);
-      cLeg.position.set(lx, -3.1, lz);
-      cLeg.castShadow = true;
-      benchGroup.add(cLeg);
+  const conveyorBelt = new THREE.Mesh(conveyorGeo, beltMat);
+  conveyorBelt.name = "Conveyor belt 28";
+  conveyorAssembly.add(conveyorBelt);
+  const rollerGeo = new THREE.CylinderGeometry(0.24, 0.24, 1.82, 20);
+  rollerGeo.rotateZ(Math.PI / 2);
+  disposables.push(rollerGeo);
+  for (const z of [-2.82, 2.82]) {
+    const roller = new THREE.Mesh(rollerGeo, steelMat);
+    roller.position.set(0, 0, z);
+    conveyorAssembly.add(roller);
+  }
+  const foodGeo = new THREE.SphereGeometry(0.38, 24, 16);
+  disposables.push(foodGeo);
+  const foodLoad = new THREE.Mesh(foodGeo, foodMat);
+  foodLoad.name = "Food load in treatment region";
+  foodLoad.scale.set(1.15, 0.82, 0.9);
+  foodLoad.position.set(0, 0.45, 0);
+  conveyorAssembly.add(foodLoad);
+  for (const z of [-2.35, 2.35]) {
+    for (const x of [-0.68, 0.68]) {
+      const legGeo = new THREE.BoxGeometry(0.14, 0.9, 0.14);
+      disposables.push(legGeo);
+      const leg = new THREE.Mesh(legGeo, sourceMetalMat);
+      leg.position.set(x, -0.52, z);
+      conveyorAssembly.add(leg);
     }
   }
-
-  // The source names a conveyor (28), not a turntable or mode-stirrer.
-
-  // Permanent Magnet Pole Shoes & Outer Magnetic Return Yoke
-  [-2.8, 2.8].forEach((yMag) => {
-    const poleGeo = new THREE.CylinderGeometry(4.6, 4.6, 1.2, 36);
-    disposables.push(poleGeo);
-    const poleShoe = new THREE.Mesh(poleGeo, sourceMetalMat);
-    poleShoe.position.y = yMag;
-    poleShoe.castShadow = true;
-    magnetronGroup.add(poleShoe);
-  });
-
-  // Heavy steel C-clamp magnetic return yoke bridge
-  const yokeGeo = new THREE.BoxGeometry(1.2, 6.8, 2.2);
-  disposables.push(yokeGeo);
-  const yoke = new THREE.Mesh(yokeGeo, sourceMetalMat);
-  yoke.position.set(-4.8, 0, 0);
-  yoke.castShadow = true;
-  magnetronGroup.add(yoke);
 
   // ==========================================
   // ROTATING ELECTRON SPOKE WHEEL PARTICLES
@@ -446,7 +423,134 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   disposables.push(spokeMat);
 
   const spokePoints = new THREE.Points(spokeGeo, spokeMat);
+  spokePoints.name = "Oscillator 10 illustrative electron spokes";
   magnetronGroup.add(spokePoints);
+
+  // The drawing shows two oscillator sources joined to one transformer and
+  // one treatment path. Scale and place the diagrammatic source bodies so
+  // they remain distinct and the connected system—not an invented tube
+  // housing—owns the overview.
+  magnetronGroup.scale.setScalar(0.38);
+  magnetronGroup.position.set(-3.2, -0.1, -2);
+  const secondOscillator = magnetronGroup.clone(true);
+  secondOscillator.name = "Oscillator source 11";
+  secondOscillator.position.set(-3.2, -0.1, 2);
+  const secondGuide = secondOscillator.getObjectByName("Oscillator coupling guide 26");
+  if (!secondGuide) throw new Error("Oscillator 11 is missing its coupling guide 27.");
+  secondGuide.name = "Oscillator coupling guide 27";
+  const secondSpokePoints = secondOscillator.getObjectByName(
+    "Oscillator 10 illustrative electron spokes",
+  );
+  if (!(secondSpokePoints instanceof THREE.Points)) {
+    throw new Error("Oscillator 11 is missing its illustrative electron-spoke layer.");
+  }
+  secondSpokePoints.name = "Oscillator 11 illustrative electron spokes";
+  root.add(secondOscillator);
+  const spokePointSets = [spokePoints, secondSpokePoints] as const;
+
+  // Supported apparatus: oscillator pedestals and guide columns meet the
+  // common foundation rather than leaving source organs suspended in space.
+  for (const [name, x, y, z, width, height, depth] of [
+    ["Oscillator 10 support", -3.2, -1.42, -2, 1.2, 0.96, 1.2],
+    ["Oscillator 11 support", -3.2, -1.42, 2, 1.2, 0.96, 1.2],
+    ["Wave guide 23 support A", -0.5, -1.2875, -0.55, 0.16, 1.225, 0.16],
+    ["Wave guide 23 support B", -0.5, -1.2875, 0.55, 0.16, 1.225, 0.16],
+    ["Wave guide 23 support C", 2.2, -1.2875, -0.55, 0.16, 1.225, 0.16],
+    ["Wave guide 23 support D", 2.2, -1.2875, 0.55, 0.16, 1.225, 0.16],
+  ] as const) {
+    const supportGeo = new THREE.BoxGeometry(width, height, depth);
+    disposables.push(supportGeo);
+    const support = new THREE.Mesh(supportGeo, sourceMetalMat);
+    support.name = name;
+    support.position.set(x, y, z);
+    root.add(support);
+  }
+
+  // Coaxial transmission lines 24 and 25 physically bridge both coupling
+  // loops to the open inlet of common guide 23. The endpoints deliberately
+  // overlap their mating organs so no line floats between assemblies.
+  const coaxialLines = [
+    tubeBetween(
+      "Coaxial transmission line 24",
+      [
+        new THREE.Vector3(-1.623, -0.1, -2),
+        new THREE.Vector3(-1.35, 0.5, -1.35),
+        new THREE.Vector3(-1.175, 0.25, -0.38),
+      ],
+      0.085,
+      copperAnodeMat,
+    ),
+    tubeBetween(
+      "Coaxial transmission line 25",
+      [
+        new THREE.Vector3(-1.623, -0.1, 2),
+        new THREE.Vector3(-1.35, 0.5, 1.35),
+        new THREE.Vector3(-1.175, 0.25, 0.38),
+      ],
+      0.085,
+      copperAnodeMat,
+    ),
+  ] as const;
+
+  // Conductors 15/16 energize the two envelopes; 20/21 join the cathodes;
+  // 22 returns that junction to the transformer center tap. Lines 19 terminate
+  // at supported external-input posts on the plinth boundary.
+  const electricalConductors = [
+    tubeBetween(
+      "Transformer conductor 15",
+      [
+        new THREE.Vector3(-4.98, -0.35, -0.28),
+        new THREE.Vector3(-4.65, -0.1, -1.25),
+        new THREE.Vector3(-4.83, -0.1, -2),
+      ],
+      0.045,
+      conductorMat,
+    ),
+    tubeBetween(
+      "Transformer conductor 16",
+      [
+        new THREE.Vector3(-4.98, -0.35, 0.28),
+        new THREE.Vector3(-4.65, -0.1, 1.25),
+        new THREE.Vector3(-4.83, -0.1, 2),
+      ],
+      0.045,
+      conductorMat,
+    ),
+    tubeBetween(
+      "Cathode conductor 20",
+      [new THREE.Vector3(-3.2, -0.1, -2), new THREE.Vector3(-4.35, 0.55, -1.05)],
+      0.038,
+      conductorMat,
+    ),
+    tubeBetween(
+      "Cathode conductor 21",
+      [new THREE.Vector3(-3.2, -0.1, 2), new THREE.Vector3(-4.35, 0.55, 1.05)],
+      0.038,
+      conductorMat,
+    ),
+    tubeBetween(
+      "Center-tap conductor 22",
+      [
+        new THREE.Vector3(-4.35, 0.55, -1.05),
+        new THREE.Vector3(-4.35, 0.55, 1.05),
+        new THREE.Vector3(-4.98, -0.72, 0),
+      ],
+      0.038,
+      conductorMat,
+    ),
+    tubeBetween(
+      "Power line 19 upper external boundary",
+      [new THREE.Vector3(-7.02, -0.2, -0.3), new THREE.Vector3(-7.55, -0.2, -0.3)],
+      0.05,
+      conductorMat,
+    ),
+    tubeBetween(
+      "Power line 19 lower external boundary",
+      [new THREE.Vector3(-7.02, -1.2, 0.3), new THREE.Vector3(-7.55, -1.2, 0.3)],
+      0.05,
+      conductorMat,
+    ),
+  ] as const;
 
   const updateKinematics = (
     delta: number,
@@ -479,8 +583,15 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
     anodeOuter,
     cathodeMesh,
     spokePoints,
+    spokePointSets,
     spokeGeo,
     spokePos,
+    transformerAssembly,
+    commonWaveguide,
+    conveyorAssembly,
+    foodLoad,
+    coaxialLines,
+    electricalConductors,
     materials: {
       copperAnodeMat,
       cathodeMat,
@@ -489,9 +600,6 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
       boreMat,
       steelMat,
       spokeMat,
-      ceramicInsulator,
-      radiatorFin,
-      transparentEnvelope: transparentEnvelopeMat,
     },
     updateKinematics,
     dispose,
@@ -513,18 +621,26 @@ export function updateSpencerMicrowaveKinematics(
   isCutaway = false,
 ): void {
   if (isOscillating) {
-    model.spokePoints.visible = showSpokeWheel;
     const heat = heatFrames(12, 16, 2);
     const local = 1 + Math.abs(sampleHeatAt(heat, 12, 16, 8, 0.3, 0.3));
-    model.spokePoints.rotation.y += delta * spokeDisplayOmegaRadPerS * local;
+    for (const spokeLayer of model.spokePointSets) {
+      spokeLayer.visible = showSpokeWheel;
+      spokeLayer.rotation.y += delta * spokeDisplayOmegaRadPerS * local;
+    }
     model.materials.spokeMat.opacity = Math.min(1, spokeOpacity * local);
   } else {
-    model.spokePoints.visible = false;
+    for (const spokeLayer of model.spokePointSets) spokeLayer.visible = false;
   }
 
-  // Cutaway mode: make copper anode block and magnet pole shoes translucent
+  const priorTravel = Number.isFinite(model.foodLoad.userData.travelMeters)
+    ? (model.foodLoad.userData.travelMeters as number)
+    : 0;
+  const nextTravel = (priorTravel + Math.max(0, delta) * 0.55) % 5;
+  model.foodLoad.userData.travelMeters = nextTravel;
+  model.foodLoad.position.z = -2.5 + nextTravel;
+
+  // Cutaway mode affects only the source-described conductive envelopes and
+  // vanes—not the transformer, foundation, guide, or conveyor.
   model.materials.copperAnodeMat.opacity = isCutaway ? 0.35 : 1.0;
   model.materials.copperAnodeMat.transparent = isCutaway;
-  model.materials.sourceMetalMat.opacity = isCutaway ? 0.35 : 1.0;
-  model.materials.sourceMetalMat.transparent = isCutaway;
 }

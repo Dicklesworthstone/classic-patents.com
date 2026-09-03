@@ -4,7 +4,10 @@ import { RotateCcw } from "lucide-react";
 import { useId, useMemo } from "react";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { claimConstraintStateParamId } from "@/physics/claimConstraints";
-import { stepKamenInjectionMechanism } from "@/physics/kamenInjectionKernel";
+import {
+  readKamenInjectionControls,
+  readKamenInjectionTapeFrame,
+} from "@/physics/kamenInjectionKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 const PATENT_ID = "us-3858581-kamen-medication-injection-device";
@@ -20,12 +23,13 @@ export function KamenMedicationInjectionSim() {
   const reliefId = useId();
   const { effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
     usePatentPhysics(PATENT_ID);
-  const pose = useMemo(() => stepKamenInjectionMechanism(effectiveParams), [effectiveParams]);
-  const turn = pose.leadScrewTurnFraction;
-  const target = pose.counterTargetFraction;
-  const motor = Number(pose.motorCircuitClosed);
-  const relief = Number(pose.reliefPathShown);
-  const plungerX = 232 + pose.plungerPosition * 188;
+  const controls = useMemo(() => readKamenInjectionControls(effectiveParams), [effectiveParams]);
+  const pose = readKamenInjectionTapeFrame(controls).metrics;
+  const turn = controls.displayTurnsPerSecond / 12;
+  const target = controls.selectedPulseCount / 99;
+  const motor = Number(controls.running);
+  const relief = Number(!controls.clutchEngaged);
+  const plungerX = 232 + pose.followerPositionNormalized * 188;
   return (
     <section className="overflow-hidden rounded-2xl border border-cyan-800/60 bg-slate-950 text-slate-100 shadow-2xl">
       <header className="border-b border-cyan-900/70 bg-slate-900/80 px-4 py-3 sm:px-6">
@@ -212,7 +216,7 @@ export function KamenMedicationInjectionSim() {
             <text x="409" y="244" fill="#fde68a" fontSize="10" fontFamily="monospace">
               striker / switch
             </text>
-            {pose.reliefPathShown && (
+            {!pose.clutchEngaged && (
               <g>
                 <path
                   d="M 272 252 C 292 314, 383 314, 403 252"
@@ -246,11 +250,11 @@ export function KamenMedicationInjectionSim() {
           <div className="mt-3 grid gap-2 text-xs sm:grid-cols-3">
             <div className="rounded-lg border border-slate-700 bg-slate-900/70 p-2">
               <p className="font-mono text-cyan-300">MOTOR STATE</p>
-              <p className="mt-1 text-slate-200">{pose.motorState}</p>
+              <p className="mt-1 text-slate-200">{pose.phase}</p>
             </div>
             <div className="rounded-lg border border-slate-700 bg-slate-900/70 p-2">
               <p className="font-mono text-amber-300">PULSE PROGRESS</p>
-              <p className="mt-1 text-slate-200">{percent(pose.pulseProgress)} normalized</p>
+              <p className="mt-1 text-slate-200">{percent(pose.counterProgress)} normalized</p>
             </div>
             <div className="rounded-lg border border-slate-700 bg-slate-900/70 p-2">
               <p className="font-mono text-purple-300">ACTIVE PROBE</p>

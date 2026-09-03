@@ -20,26 +20,16 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { buildOtis1861HoistingModel, updateOtis1861Kinematics } from "./otis1861HoistingModel";
+import {
+  OTIS_CAMERA_PRESETS,
+  type OtisCameraPreset,
+  otisOverviewRadiusForViewport,
+} from "./otisHoistingCamera";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-31128-otis-elevator";
-
-type CameraPreset = "overview" | "safety" | "drive" | "interlock" | "counterpoise" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  overview: { pos: [10.8, 7.2, 12.8], target: [0, 0.1, 0] },
-  safety: { pos: [6.3, 2.8, 6.2], target: [2.25, 1.25, 0] },
-  drive: { pos: [-8.6, 3.1, 6.4], target: [-3.2, 0, 0] },
-  interlock: { pos: [-5.7, 1.0, 5.1], target: [-2.2, -0.3, 0.4] },
-  counterpoise: { pos: [8.0, 3.6, 5.8], target: [4.35, 0.2, 0] },
-  top: { pos: [0, 13.6, 0.1], target: [0, 0, 0] },
-};
-
 function initialState(): OtisMechanismState {
   return {
     ...stepOtisTopology({
@@ -64,7 +54,7 @@ export function OtisHoistingApparatus3D() {
   const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("overview");
+  const [activeCamera, setActiveCamera] = useState<OtisCameraPreset>("overview");
   const [kernelSource, setKernelSource] = useState<OtisKernelSource>("unloaded");
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({
     1: true,
@@ -107,10 +97,16 @@ export function OtisHoistingApparatus3D() {
     },
   });
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: OtisCameraPreset) => {
     setActiveCamera(preset);
-    const camera = CAMERA_PRESETS[preset];
-    studioRef.current?.controls.setView(camera.pos, camera.target);
+    const camera = OTIS_CAMERA_PRESETS[preset];
+    const studio = studioRef.current;
+    studio?.controls.setView(camera.pos, camera.target);
+    if (preset === "overview") {
+      studio?.controls.setRadius(
+        otisOverviewRadiusForViewport(containerRef.current?.clientWidth ?? 0),
+      );
+    }
   };
 
   useEffect(() => {
@@ -128,7 +124,7 @@ export function OtisHoistingApparatus3D() {
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const camera = CAMERA_PRESETS.overview;
+    const camera = OTIS_CAMERA_PRESETS.overview;
     const studio = createThreeStudioScene({
       container,
       cameraPos: camera.pos,
@@ -136,7 +132,7 @@ export function OtisHoistingApparatus3D() {
       fov: 39,
     });
     studioRef.current = studio;
-    studio.controls.setRadius(13);
+    studio.controls.setRadius(otisOverviewRadiusForViewport(container.clientWidth));
     const model = buildOtis1861HoistingModel();
     studio.scene.add(model.root);
 
@@ -232,7 +228,7 @@ export function OtisHoistingApparatus3D() {
                 ["interlock", "S / T / U / Z"],
                 ["counterpoise", "Q / R"],
                 ["top", "Plan"],
-              ] as [CameraPreset, string][]
+              ] as [OtisCameraPreset, string][]
             ).map(([preset, label]) => (
               <button
                 key={preset}
@@ -254,6 +250,7 @@ export function OtisHoistingApparatus3D() {
           <ClaimConstraintToggle
             patentId={PATENT_ID}
             claimStates={claimStates}
+            className="max-[480px]:flex-nowrap max-[480px]:gap-1 max-[480px]:[&>button]:min-h-9 max-[480px]:[&>button]:px-2 max-[480px]:[&>button>span]:sr-only"
             onToggleClaim={(claimNumber, active) =>
               setClaimStates((previous) => ({ ...previous, [claimNumber]: active }))
             }

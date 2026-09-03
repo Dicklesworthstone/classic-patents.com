@@ -323,7 +323,7 @@ export function FessendenWirelessSim() {
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, [carrierFreqKhz, audioModPct, antennaTuningUh, isPlaying, sim, onscreenRef.current]);
+  }, [carrierFreqKhz, audioModPct, antennaTuningUh, isPlaying, sim, onscreenRef]);
 
   return (
     <div
@@ -440,6 +440,7 @@ export function FessendenWirelessSim() {
           </div>
           <input
             type="range"
+            aria-label="RF carrier frequency in kilohertz"
             min={40}
             max={120}
             step={1}
@@ -459,6 +460,7 @@ export function FessendenWirelessSim() {
           </div>
           <input
             type="range"
+            aria-label="Audio modulation depth percentage"
             min={10}
             max={100}
             step={5}
@@ -478,6 +480,7 @@ export function FessendenWirelessSim() {
           </div>
           <input
             type="range"
+            aria-label="Antenna tuning-coil inductance in microhenries"
             min={200}
             max={800}
             step={10}
@@ -497,6 +500,7 @@ export function FessendenWirelessSim() {
           </div>
           <input
             type="range"
+            aria-label="Transmission distance in kilometres"
             min={5}
             max={100}
             step={5}

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import {
   readWrightControls,
   stepWrightFlyerSi,
@@ -9,6 +10,7 @@ import {
   wrightWarpFromPointerNx,
 } from "@/physics/wrightKernel";
 import { buildWrightFlyerAirframe, updateWrightFlyerKinematics } from "./wrightFlyerAirframe";
+import { wrightFlyerViewForViewport } from "./wrightFlyerCamera";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals");
 
@@ -29,6 +31,8 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(threeSource).not.toContain("/ 1100");
     expect(threeSource).not.toContain("/ 400");
     expect(threeSource).toContain("wrightHoverY");
+    expect(threeSource).toContain("const particleCount = 180");
+    expect(threeSource).toContain("opacity: 0.55");
     expect(threeSource).not.toContain("* 1.4");
   });
 
@@ -55,14 +59,49 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(threeSource).not.toContain("cameraRef");
   });
 
+  test("keeps the full wing envelope inside phone and tablet overviews without weakening detail views", () => {
+    const distance = (view: ReturnType<typeof wrightFlyerViewForViewport>) =>
+      Math.hypot(
+        view.pos[0] - view.target[0],
+        view.pos[1] - view.target[1],
+        view.pos[2] - view.target[2],
+      );
+    const desktopIso = wrightFlyerViewForViewport("iso", 1200);
+    const tabletIso = wrightFlyerViewForViewport("iso", 768);
+    const phoneIso = wrightFlyerViewForViewport("iso", 375);
+    const desktopTop = wrightFlyerViewForViewport("top", 1200);
+    const phoneTop = wrightFlyerViewForViewport("top", 375);
+    const phoneDetail = wrightFlyerViewForViewport("wing_warp", 375);
+
+    expect(distance(phoneIso) / distance(desktopIso)).toBeCloseTo(2.2, 8);
+    expect(distance(tabletIso) / distance(desktopIso)).toBeCloseTo(1.6, 8);
+    expect(distance(phoneTop) / distance(desktopTop)).toBeCloseTo(1.85, 8);
+    expect(phoneDetail).toEqual(wrightFlyerViewForViewport("wing_warp", 1200));
+
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "WrightFlyer3D.tsx"), "utf8");
+    expect(threeSource).toContain("wrightFlyerViewForViewport");
+    expect(threeSource).toContain('window.addEventListener("resize", restoreResponsiveView)');
+    expect(threeSource).not.toContain("controls.setRadius(11)");
+  });
+
+  test("writes the same canonical airspeed key that the shared Wright kernel reads", () => {
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "WrightFlyer3D.tsx"), "utf8");
+
+    expect(threeSource).toContain('paramKey="airspeed"');
+    expect(threeSource).toContain('updateParam("airspeed", val)');
+    expect(threeSource).not.toContain('paramKey="airspeedKts"');
+    expect(threeSource).not.toContain('updateParam("speed", val)');
+  });
+
   test("computes genuine aerodynamic lift, induced drag, and adverse yaw cancellation in SI units", () => {
     const controls = readWrightControls({
-      warp: 6.0,
+      wingWarp: 6.0,
       rudder: 8.0,
       elevator: 3.0,
-      speed: 30.0,
+      airspeed: 30.0,
       coupled: 1,
     });
+    expect(controls.airspeedMph).toBe(30);
     const si = stepWrightFlyerSi(controls);
     expect(si.liftNewtons).toBeGreaterThan(1000);
     expect(si.totalDragNewtons).toBeGreaterThan(100);
@@ -94,6 +133,11 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(airframe.cradleGroup).toBeDefined();
     expect(airframe.leftPropBlades).toBeDefined();
     expect(airframe.rightPropBlades).toBeDefined();
+    let meshCount = 0;
+    airframe.group.traverse((candidate) => {
+      if (candidate instanceof THREE.Mesh) meshCount += 1;
+    });
+    expect(meshCount).toBeLessThan(120);
 
     const pose = stepWrightFlyerSi({
       airspeedMph: 30,
@@ -117,6 +161,8 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(airframe.rudderGroup.rotation.y).toBeCloseTo((-8.0 * Math.PI) / 180, 2);
     expect(airframe.canardGroup.rotation.x).toBeCloseTo((-3.0 * Math.PI) / 180, 2);
     expect(airframe.muslinMat.opacity).toBe(0.35);
+    expect(airframe.leftTipUpper.rotation.x).toBeCloseTo((6 * 0.6 * Math.PI) / 180, 4);
+    expect(airframe.rightTipUpper.rotation.x).toBeCloseTo((-6 * 0.6 * Math.PI) / 180, 4);
     expect(pose.airframeRollDeg).toBeCloseTo(5.4, 3);
     expect(pose.rudderSvgScale).toBe(1.2);
     expect(pose.hoverOmegaRadPerS).toBe(1.4);

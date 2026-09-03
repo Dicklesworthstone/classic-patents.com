@@ -124,14 +124,12 @@ export function EdisonPhonograph3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-200521-edison-phonograph", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-200521-edison-phonograph");
-  }, [
-    live.current.axialFeedMmPerS,
-    live.current.leadScrewPitchMm,
-    live.current.mandrelOmegaRadPerS,
-    live.current.mandrelRpm,
-  ]);
+    return globalTransportBus.registerUpdater(
+      "us-200521-edison-phonograph",
+      integrate,
+      "TS_FALLBACK",
+    );
+  }, [live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
@@ -374,6 +372,7 @@ export function EdisonPhonograph3D() {
             </div>
             <input
               type="range"
+              aria-label="Illustrative clock-work rate"
               min="40"
               max="140"
               step="5"
@@ -394,6 +393,7 @@ export function EdisonPhonograph3D() {
             </div>
             <input
               type="range"
+              aria-label="Illustrative diaphragm-excitation level"
               min="40"
               max="100"
               step="5"

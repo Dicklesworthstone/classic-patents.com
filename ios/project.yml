@@ -51,6 +51,10 @@ targets:
       - path: Assets.xcassets
       - path: Resources
         buildPhase: resources
+        excludes:
+          # Retain this legacy USDZ on disk for preservation, but a
+          # source-bounded public record must not ship an inherited model.
+          - NativeModels/us-3671542-kwolek-kevlar.usdz
     postBuildScripts:
       - name: Bundle native patent archive assets
         script: |
@@ -58,7 +62,12 @@ targets:
           SOURCE_ARCHIVE="${SRCROOT}/../public/patents/"
           BUNDLE_ARCHIVE="${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/patents/"
           mkdir -p "${BUNDLE_ARCHIVE}"
-          rsync -a --exclude='*.pdf' "${SOURCE_ARCHIVE}" "${BUNDLE_ARCHIVE}"
+          rsync -a --exclude='*.pdf' \
+            --exclude='figures/us-3671542-kwolek-kevlar/' \
+            --exclude='source-text/us-3671542-kwolek-kevlar.txt' \
+            --exclude='transcripts/us-3671542-kwolek-kevlar.txt' \
+            --exclude='transcripts/us-3671542-kwolek-kevlar-reviewed.txt' \
+            "${SOURCE_ARCHIVE}" "${BUNDLE_ARCHIVE}"
         inputFiles:
           - $(SRCROOT)/../public/patents
         basedOnDependencyAnalysis: false

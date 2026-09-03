@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import {
@@ -13,9 +13,15 @@ import {
   type StudioContext,
 } from "@/components/patents/visuals/three/ThreeStudioScene";
 import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { wasmSurfaceForPatent } from "@/physics/coverageManifest";
 import { FrankenSimEngine } from "@/physics/engine";
-import { readSalisburyRobotHandControls } from "@/physics/salisburyRobotHandKernel";
+import {
+  readSalisburyRobotHandControls,
+  SALISBURY_FRANKENSIM_CONTACT_OWNER,
+  SALISBURY_FRANKENSIM_REVOLUTE_OWNER,
+  SALISBURY_FRANKENSIM_TOPOLOGY_OWNER,
+} from "@/physics/salisburyRobotHandKernel";
 import {
   ensureSalisburyWasm,
   type SalisburyKernelSource,
@@ -24,6 +30,10 @@ import {
 } from "@/physics/salisburyWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import {
+  type SalisburyRobotHandCameraPreset,
+  salisburyRobotHandCameraForViewport,
+} from "./salisburyRobotHandCamera";
 
 export default function SalisburyRobotHand3D({
   patentId = "us-4921293-salisbury-robot-hand",
@@ -34,28 +44,38 @@ export default function SalisburyRobotHand3D({
   const studioRef = useRef<StudioContext | null>(null);
   const modelRef = useRef<SalisburyRobotHandModel | null>(null);
 
-  const { params, updateParam } = usePatentPhysics(patentId);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
-  const controls = useMemo(() => readSalisburyRobotHandControls(params), [params]);
-  const [, setKernelSource] = useState<SalisburyKernelSource>(salisburyKernelSource());
+  const { effectiveParams, claimStates, claimConstraintResult, updateParam } =
+    usePatentPhysics(patentId);
+  const controls = useMemo(
+    () => readSalisburyRobotHandControls(effectiveParams),
+    [effectiveParams],
+  );
+  const [, setKernelSource] = useState<SalisburyKernelSource>(salisburyKernelSource);
+  // This step is intentionally not memoized only by controls: the loader's
+  // state update must re-run it once the validated WASM function is installed.
   const tel = FrankenSimEngine.stepSalisburyRobotHand(controls);
+  const idlerState = !tel.claim1RoutingProbe
+    ? "withheld"
+    : tel.claim2IdlerProbe
+      ? "fixed"
+      : "released";
   const equations = useMemo(() => ALL_COLORIZED_EQUATIONS[patentId] ?? [], [patentId]);
 
   useFrankenSimPhysics(patentId);
 
   const liveTelRef = useRef(tel);
-  useEffect(() => {
+  useLayoutEffect(() => {
     liveTelRef.current = tel;
   }, [tel]);
 
-  const [cameraPreset, setCameraPreset] = useState<"overview" | "wrist" | "pulleys" | "cables">(
-    "overview",
-  );
+  const [cameraPreset, setCameraPreset] = useState<SalisburyRobotHandCameraPreset>("overview");
   const [hudVisible, setHudVisible] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Preserve the mechanism as the primary instrument on tablet/phone. The
     // explicit button still lets any visitor reopen the telemetry overlay.
+    // A layout effect applies the breakpoint before the first paint; a passive
+    // effect briefly flashed the desktop HUD on compact screens.
     setHudVisible(window.matchMedia("(min-width: 880px)").matches);
   }, []);
 
@@ -76,10 +96,12 @@ export default function SalisburyRobotHand3D({
   useEffect(() => {
     if (!containerRef.current) return;
 
+    const container = containerRef.current;
+    const initialCamera = salisburyRobotHandCameraForViewport("overview", container.clientWidth);
     const studio = createThreeStudioScene({
-      container: containerRef.current,
-      cameraPos: [3.9, 2.4, 5.2],
-      targetPos: [0, -0.35, 0],
+      container,
+      cameraPos: initialCamera.position,
+      targetPos: initialCamera.target,
       environmentStyle: "studio",
       enableFloorGrid: true,
       floorColor: 0x1e293b,
@@ -94,12 +116,13 @@ export default function SalisburyRobotHand3D({
 
     let animId: number;
     const renderLoop = () => {
+      animId = requestAnimationFrame(renderLoop);
+      if (!studio.isVisible()) return;
       if (modelRef.current && studioRef.current) {
         updateSalisburyRobotHandModel(modelRef.current, liveTelRef.current);
         studioRef.current.controls.update();
         studioRef.current.renderer.render(studioRef.current.scene, studioRef.current.camera);
       }
-      animId = requestAnimationFrame(renderLoop);
     };
     animId = requestAnimationFrame(renderLoop);
 
@@ -115,28 +138,43 @@ export default function SalisburyRobotHand3D({
     };
   }, []);
 
-  const handleCameraPreset = (preset: "overview" | "wrist" | "pulleys" | "cables") => {
+  const handleCameraPreset = (preset: SalisburyRobotHandCameraPreset) => {
     setCameraPreset(preset);
-    if (!studioRef.current) return;
-
-    switch (preset) {
-      case "overview":
-        studioRef.current.controls.setView([3.9, 2.4, 5.2], [0, -0.35, 0]);
-        break;
-      case "wrist":
-        studioRef.current.controls.setView([2.7, 0.2, 3.2], [0, -0.35, 0]);
-        break;
-      case "pulleys":
-        studioRef.current.controls.setView([2.0, 2.0, 2.4], [0, 0.75, 0]);
-        break;
-      case "cables":
-        studioRef.current.controls.setView([3.4, -0.5, 3.3], [0, -1.0, 0]);
-        break;
-    }
+    const camera = salisburyRobotHandCameraForViewport(
+      preset,
+      containerRef.current?.clientWidth ?? 1024,
+    );
+    studioRef.current?.controls.setView(camera.position, camera.target);
   };
 
+  useEffect(() => {
+    const restoreResponsiveCamera = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const camera = salisburyRobotHandCameraForViewport(cameraPreset, container.clientWidth);
+      studioRef.current?.controls.setView(camera.position, camera.target);
+    };
+    window.addEventListener("resize", restoreResponsiveCamera);
+    return () => window.removeEventListener("resize", restoreResponsiveCamera);
+  }, [cameraPreset]);
+
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-slate-700/60 bg-slate-950/90 p-4 text-slate-100 shadow-2xl backdrop-blur">
+    <div
+      className="flex flex-col gap-4 rounded-xl border border-slate-700/60 bg-slate-950/90 p-4 text-slate-100 shadow-2xl backdrop-blur"
+      data-testid="salisbury-robot-hand-three"
+      data-salisbury-routing={tel.claim1RoutingProbe ? "present" : "withheld"}
+      data-salisbury-idler={idlerState}
+      data-salisbury-active-joints={tel.activeJointCoordinates}
+      data-salisbury-active-cable-ends={tel.activeCableEndCount}
+      data-salisbury-source-law={tel.sourceLawApplicable ? "applicable" : "withheld"}
+      data-salisbury-runtime-source={tel.runtimeSource}
+      data-salisbury-t1={controls.tensionT1N.toFixed(1)}
+      data-salisbury-torques={tel.jointTorquesNm.map((torque) => torque.toFixed(3)).join(",")}
+      data-salisbury-topology-owner={tel.owners.topology}
+      data-salisbury-revolute-owner={tel.owners.revolute}
+      data-salisbury-contact-owner={tel.owners.contactCandidate}
+      data-salisbury-contact-boundary="refused-unparameterized"
+    >
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
         <div>
           <h3 className="text-base font-semibold tracking-wide text-slate-100">
@@ -157,7 +195,7 @@ export default function SalisburyRobotHand3D({
           className="w-full rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-2 text-xs text-slate-100 sm:hidden"
           value={cameraPreset}
           onChange={(event) =>
-            handleCameraPreset(event.target.value as "overview" | "wrist" | "pulleys" | "cables")
+            handleCameraPreset(event.target.value as SalisburyRobotHandCameraPreset)
           }
         >
           <option value="overview">Overview</option>
@@ -234,14 +272,16 @@ export default function SalisburyRobotHand3D({
               <span
                 className={tel.runtimeSource === "wasm" ? "text-emerald-400" : "text-amber-400"}
               >
-                {salisburyRuntimeLabel(tel.runtimeSource)}
+                {tel.sourceLawApplicable
+                  ? salisburyRuntimeLabel(tel.runtimeSource)
+                  : "not stepped — Claim 1 route withheld"}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-slate-400">Topology:</span>
               <span className="font-semibold text-slate-200">
-                {tel.digitCount} palm-rooted digits · {tel.scalarJointCoordinates} joints ·{" "}
-                {tel.cableEndCount} cable ends
+                {tel.activeJointCoordinates} active joints · {tel.activeCableEndCount} active cable
+                ends
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -253,13 +293,27 @@ export default function SalisburyRobotHand3D({
             <div className="flex items-center gap-2">
               <span className="text-slate-400">τ₁ / τ₂ / τ₃:</span>
               <span className="text-emerald-400">
-                {tel.jointTorquesNm.map((torque) => torque.toFixed(3)).join(" / ")} N·m
+                {tel.sourceLawApplicable
+                  ? `${tel.jointTorquesNm.map((torque) => torque.toFixed(3)).join(" / ")} N·m`
+                  : "withheld"}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-slate-400">Claim 2 first idler:</span>
-              <span className={tel.claim2IdlerProbe ? "text-emerald-400" : "text-amber-400"}>
-                {tel.claim2IdlerProbe ? "held" : "not held"}
+              <span
+                className={
+                  idlerState === "fixed"
+                    ? "text-emerald-400"
+                    : idlerState === "released"
+                      ? "text-amber-400"
+                      : "text-rose-400"
+                }
+              >
+                {idlerState === "fixed"
+                  ? "held"
+                  : idlerState === "released"
+                    ? "not held"
+                    : "withheld with Claim 1 topology"}
               </span>
             </div>
           </div>
@@ -280,6 +334,24 @@ export default function SalisburyRobotHand3D({
         stability.
       </div>
 
+      <div className="grid gap-2 text-[11px] leading-4 sm:grid-cols-2">
+        <div className="rounded-lg border border-emerald-700/60 bg-emerald-950/30 p-2 text-emerald-100">
+          <span className="font-mono font-bold text-emerald-300">FRANKENSIM LAW OWNERS</span>
+          <p className="mt-1">
+            {SALISBURY_FRANKENSIM_TOPOLOGY_OWNER} owns the three-digit parent graph and printed
+            tendon map; each pivot is admitted by {SALISBURY_FRANKENSIM_REVOLUTE_OWNER}.
+          </p>
+        </div>
+        <div className="rounded-lg border border-rose-700/60 bg-rose-950/30 p-2 text-rose-100">
+          <span className="font-mono font-bold text-rose-300">CONTACT SOLVE REFUSED</span>
+          <p className="mt-1">
+            {SALISBURY_FRANKENSIM_CONTACT_OWNER} needs workpiece geometry, fingertip material,
+            friction, and approach state absent from the grant. No grasp force, closure, payload, or
+            stability result is inferred.
+          </p>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div className="flex flex-col gap-1.5 rounded-lg border border-slate-800 bg-slate-900/60 p-3">
           <div className="flex justify-between text-xs font-medium">
@@ -288,6 +360,7 @@ export default function SalisburyRobotHand3D({
           </div>
           <input
             type="range"
+            aria-label="Cable tension T1"
             min="0"
             max="40"
             step="1"
@@ -305,6 +378,7 @@ export default function SalisburyRobotHand3D({
           </div>
           <input
             type="range"
+            aria-label="Cable tension T2"
             min="0"
             max="40"
             step="1"
@@ -324,6 +398,7 @@ export default function SalisburyRobotHand3D({
           </div>
           <input
             type="range"
+            aria-label="Cable tension T3"
             min="0"
             max="40"
             step="1"
@@ -341,6 +416,7 @@ export default function SalisburyRobotHand3D({
           </div>
           <input
             type="range"
+            aria-label="Cable tension T4"
             min="0"
             max="40"
             step="1"
@@ -358,6 +434,7 @@ export default function SalisburyRobotHand3D({
           </div>
           <input
             type="range"
+            aria-label="Illustrative R2 scale"
             min="4"
             max="20"
             step="1"
@@ -379,6 +456,7 @@ export default function SalisburyRobotHand3D({
           </div>
           <input
             type="checkbox"
+            aria-label="Claim 2 first idler"
             checked={controls.firstIdlerFixed}
             onChange={(e) => updateParam("firstIdlerFixed", e.target.checked ? 1 : 0)}
             className="h-5 w-5 accent-orange-500"
@@ -390,11 +468,24 @@ export default function SalisburyRobotHand3D({
       </div>
 
       <div className="pt-2 border-t border-slate-800">
+        {claimConstraintResult.activeFailures.length > 0 && (
+          <div
+            role="status"
+            className="mb-3 rounded-lg border border-rose-600/60 bg-rose-950/40 p-2 text-xs leading-5 text-rose-100"
+          >
+            {claimConstraintResult.activeFailures.map((failure) => (
+              <p key={failure}>{failure}</p>
+            ))}
+            {claimConstraintResult.refusalWarning && (
+              <p className="mt-1 text-rose-200">{claimConstraintResult.refusalWarning}</p>
+            )}
+          </div>
+        )}
         <ClaimConstraintToggle
           patentId={patentId}
           claimStates={claimStates}
-          onClaimStateChange={(num, active) =>
-            setClaimStates((prev) => ({ ...prev, [num]: active }))
+          onToggleClaim={(number, active) =>
+            updateParam(claimConstraintStateParamId(number), active ? 1 : 0)
           }
         />
       </div>

@@ -10,9 +10,9 @@ import {
   createColormappedFieldTexture,
   writeColormappedField,
 } from "@/physics/fieldTextures";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -56,7 +56,7 @@ export const NoycePlanarIC3D = memo(() => {
   const oxideThickness = (params.oxideThickness as number) ?? 0.5;
   const clockFrequencyMhz = (params.clockFrequencyMhz as number) ?? 10;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const noyce = stepNoyceIC({
@@ -111,10 +111,6 @@ export const NoycePlanarIC3D = memo(() => {
       soundEngine.stopContinuousTone();
     };
   }, [isAudioMuted, noyce.toneHz]);
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;

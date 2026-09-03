@@ -57,6 +57,14 @@ struct PatentWorkstationView: View {
 #endif
     }
 
+    private var isSourceBoundPDFOnly: Bool {
+        patent.sourceVisualization.isSourceBoundPDFOnly
+    }
+
+    private func title(for section: WorkstationSection) -> String {
+        isSourceBoundPDFOnly && section == .specification ? "Source" : section.rawValue
+    }
+
     var body: some View {
         GeometryReader { proxy in
             ScrollViewReader { reader in
@@ -146,12 +154,18 @@ struct PatentWorkstationView: View {
     private var heroActions: some View {
         if section != .specification {
             Button { section = .specification } label: {
-                Label("Read full patent", systemImage: "book.pages.fill")
+                Label(
+                    isSourceBoundPDFOnly ? "Review source state" : "Read full patent",
+                    systemImage: isSourceBoundPDFOnly ? "doc.text.magnifyingglass" : "book.pages.fill"
+                )
             }
             .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.brass, filled: true))
         }
         Button { section = .simulation } label: {
-            Label("Explore 3D model", systemImage: "cube.transparent")
+            Label(
+                isSourceBoundPDFOnly ? "Review PDF-only state" : "Explore 3D model",
+                systemImage: isSourceBoundPDFOnly ? "doc.text.magnifyingglass" : "cube.transparent"
+            )
         }
         .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.emerald, filled: displayedSection == .specification))
         Button { showsPDF = true } label: {
@@ -197,10 +211,10 @@ struct PatentWorkstationView: View {
                 if compact {
                     VStack(spacing: 4) {
                         Image(systemName: candidate.symbol).font(.system(size: 15, weight: .semibold))
-                        Text(candidate.rawValue).font(.system(size: Lab.size(8), weight: .bold, design: .rounded))
+                        Text(title(for: candidate)).font(.system(size: Lab.size(8), weight: .bold, design: .rounded))
                     }
                 } else {
-                    Label(candidate.rawValue, systemImage: candidate.symbol)
+                    Label(title(for: candidate), systemImage: candidate.symbol)
                         .font(.system(size: Lab.size(10.5), weight: .bold, design: .rounded))
                 }
             }
@@ -213,7 +227,7 @@ struct PatentWorkstationView: View {
             .overlay(RoundedRectangle(cornerRadius: compact ? 13 : 22).stroke(Lab.brass.opacity(displayedSection == candidate ? 0 : 0.34)))
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(candidate.rawValue)
+        .accessibilityLabel(title(for: candidate))
         .accessibilityAddTraits(displayedSection == candidate ? .isSelected : [])
     }
 
@@ -252,7 +266,7 @@ struct PatentWorkstationView: View {
 
     private var readingIntroduction: some View {
         VStack(alignment: .leading, spacing: 8) {
-            MuseumLabel(text: "Complete patent · dual reading desk")
+            MuseumLabel(text: isSourceBoundPDFOnly ? "Pinned facsimile · source-bound record" : "Complete patent · dual reading desk")
             Text(patent.title)
                 .font(.system(size: Lab.size(21), weight: .bold, design: .serif))
                 .foregroundStyle(Lab.parchment)
@@ -260,12 +274,20 @@ struct PatentWorkstationView: View {
             Text("\(patent.patentNumber) · \(patent.inventors.joined(separator: " · "))")
                 .font(.system(size: Lab.size(10.5), weight: .semibold, design: .rounded))
                 .foregroundStyle(Lab.brass)
-            Text("The full reviewed historical text is below—nothing is fetched from the website. Where a paragraph-level editorial reading exists, its Plain English explanation appears beside the original on wide screens and directly beneath it on iPhone.")
+            Text(
+                isSourceBoundPDFOnly
+                    ? "No reviewed transcription or archival edition is bundled for this public record. The pinned original PDF is its only complete source face."
+                    : "The full reviewed historical text is below—nothing is fetched from the website. Where a paragraph-level editorial reading exists, its Plain English explanation appears beside the original on wide screens and directly beneath it on iPhone."
+            )
                 .font(.system(size: Lab.size(13), design: .serif))
                 .foregroundStyle(Lab.text)
                 .fixedSize(horizontal: false, vertical: true)
                 .textSelection(.enabled)
-            Text("Every claim, equation, source figure, provenance marker, and engineering explanation stays available elsewhere in this workstation without leaving the app.")
+            Text(
+                isSourceBoundPDFOnly
+                    ? "The checked catalogue claims remain readable, but no model, interactive control, quantitative metric, or USDZ asset is presented before full source review."
+                    : "Every claim, equation, source figure, provenance marker, and engineering explanation stays available elsewhere in this workstation without leaving the app."
+            )
                 .font(.system(size: Lab.size(11.5), design: .rounded))
                 .foregroundStyle(Lab.secondary)
         }
@@ -279,8 +301,17 @@ struct PatentWorkstationView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.blueprint, filled: true))
-            Button { section = .simulation } label: {
-                Label("Manipulate the native 3D model", systemImage: "move.3d")
+            Button {
+                if isSourceBoundPDFOnly {
+                    showsPDF = true
+                } else {
+                    section = .simulation
+                }
+            } label: {
+                Label(
+                    isSourceBoundPDFOnly ? "Open the original PDF" : "Manipulate the native 3D model",
+                    systemImage: isSourceBoundPDFOnly ? "doc.richtext" : "move.3d"
+                )
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.emerald))
@@ -515,12 +546,17 @@ struct PatentWorkstationView: View {
             if let physics = patent.physics {
                 MuseumPanel {
                     VStack(alignment: .leading, spacing: 9) {
-                        MuseumLabel(text: "Native exhibit provenance")
+                        MuseumLabel(text: isSourceBoundPDFOnly ? "Native source boundary" : "Native exhibit provenance")
                         recordLine("Scientific domain", physics.domainTitle)
                         recordLine("Domain key", physics.domain)
                         recordLine("Numerical method", physics.engineMethod)
-                        recordLine("Spatial source", patent.sourceVisualization.spatialComponent)
-                        recordLine("Vector source", patent.sourceVisualization.vectorComponent)
+                        if isSourceBoundPDFOnly {
+                            recordLine("Native state", "Pinned facsimile only")
+                            recordLine("Withheld", "Transcript, edition, model, controls, metrics, and USDZ")
+                        } else {
+                            recordLine("Spatial source", patent.sourceVisualization.spatialComponent ?? "Unregistered")
+                            recordLine("Vector source", patent.sourceVisualization.vectorComponent ?? "Unregistered")
+                        }
                     }
                 }
             }
@@ -544,16 +580,29 @@ struct PatentWorkstationView: View {
                             }
                             .tint(Lab.brass)
                         }
+                    } else if isSourceBoundPDFOnly {
+                        recordLine("Public source", "Pinned original facsimile only")
+                        recordLine("Native text state", "No reviewed transcription or archival edition bundled")
+                        if let digest = patent.expectedSourcePDFSHA256 {
+                            recordLine("PDF SHA-256", digest)
+                        }
+                    } else {
+                        recordLine("Text asset", "No bundled transcription")
                     }
                 }
             }
             MuseumPanel {
                 VStack(alignment: .leading, spacing: 9) {
-                    MuseumLabel(text: "Verbatim catalog transcription")
+                    MuseumLabel(text: isSourceBoundPDFOnly ? "Checked catalogue excerpt" : "Verbatim catalog transcription")
                     Text(patent.originalText)
                         .font(.system(size: Lab.size(13), design: .serif))
                         .foregroundStyle(Lab.parchment)
                         .textSelection(.enabled)
+                    if isSourceBoundPDFOnly {
+                        Text("This excerpt is not a complete transcript. Read the pinned original PDF for the full historical instrument.")
+                            .font(.system(size: Lab.size(11), design: .rounded))
+                            .foregroundStyle(Lab.secondary)
+                    }
                 }
             }
             Button { showsPDF = true } label: { Label("Read the original PDF", systemImage: "doc.text.magnifyingglass") }

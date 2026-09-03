@@ -1,24 +1,31 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
-import { sholesCarriageStudioX, stepSholesTypewriter } from "@/physics/machineKernels";
+import {
+  advanceSholesTypewriterCycle,
+  sholesCarriageStudioXAtDisplayStep,
+  stepSholesTypewriter,
+  stepSholesTypewriterAtCycle,
+} from "@/physics/machineKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import {
   globalTransportBus,
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
+import { StudioOverlayActionToolbar } from "./StudioOverlayActionToolbar";
 import {
   buildSholesTypewriterModel,
   updateSholesTypewriterKinematics,
 } from "./sholesTypewriterModel";
+import { createStandardStudioOverlayActions } from "./studioOverlayActions";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -48,6 +55,11 @@ interface SholesStepPose {
   eventsPerSecond: number;
   completedSteps: number;
   keyCyclePct: number;
+  ratchetReleasePct: number;
+  typebarStrokePct: number;
+  totalEscapementSteps: number;
+  displayCarriageSteps: number;
+  requiresManualCarriageReturn: boolean;
   displayTypebarIndex: number;
   escapementStepRad: number;
 }
@@ -65,7 +77,7 @@ export const SholesTypewriter3D = memo(() => {
   const eventsPerSecond = sholesIdle.eventsPerSecond.toFixed(1);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const live = useLiveSimParams({
@@ -86,29 +98,40 @@ export const SholesTypewriter3D = memo(() => {
     },
   });
   const sholesStepRef = useRef<SholesStepPose | null>(null);
-  const sholesElapsedSRef = useRef(0);
+  const sholesCycleCountRef = useRef(0);
 
   useEffect(() => {
     const integrate: TapeUpdater = (_prev, dt) => {
-      sholesElapsedSRef.current += dt;
-      const step = stepSholesTypewriter(
+      sholesCycleCountRef.current = advanceSholesTypewriterCycle(
+        sholesCycleCountRef.current,
         live.current.demonstrationCadence,
-        sholesElapsedSRef.current,
+        dt,
+      );
+      const step = stepSholesTypewriterAtCycle(
+        live.current.demonstrationCadence,
+        sholesCycleCountRef.current,
       );
       sholesStepRef.current = step;
       return {
         machine: {
           // Escapement carriage advance and platen ratchet rotation on the tape.
-          poseXMeters: sholesCarriageStudioX(step.displayTypebarIndex),
+          poseXMeters: sholesCarriageStudioXAtDisplayStep(step.displayCarriageSteps),
           poseYMeters: 0,
-          headingRad: step.completedSteps * step.escapementStepRad,
-          modeLabel: step.keyCyclePct < 0.35 ? "typebar strike" : "carriage feed",
+          headingRad: step.totalEscapementSteps * step.escapementStepRad,
+          modeLabel: step.requiresManualCarriageReturn
+            ? "manual carriage return required"
+            : step.typebarStrokePct > 0
+              ? "typebar stroke"
+              : "carriage feed",
           wheelSpeedMps: 0,
         },
       };
     };
-    globalTransportBus.registerUpdater("us-79265-sholes-typewriter", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-79265-sholes-typewriter");
+    return globalTransportBus.registerUpdater(
+      "us-79265-sholes-typewriter",
+      integrate,
+      "TS_FALLBACK",
+    );
   }, [live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
@@ -122,10 +145,6 @@ export const SholesTypewriter3D = memo(() => {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -158,9 +177,12 @@ export const SholesTypewriter3D = memo(() => {
         updateSholesTypewriterKinematics(
           nodes,
           materials,
-          step.keyCyclePct,
+          step.typebarStrokePct,
           step.displayTypebarIndex,
           p.isCutaway,
+          p.demonstrationCadence,
+          step.totalEscapementSteps,
+          step.displayCarriageSteps,
         );
       }
 
@@ -216,55 +238,19 @@ export const SholesTypewriter3D = memo(() => {
           </div>
         )}
 
-        {/* Top Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
-          <button
-            type="button"
-            onClick={() => setIsCutaway(!isCutaway)}
-            title={isCutaway ? "Solid Frame" : "Cutaway Frame"}
-            className={`min-h-9 p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm text-xs font-sans flex items-center gap-1 ${
-              isCutaway
-                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={toggleSound}
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="min-h-9 p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`min-h-9 p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showUiOverlay
-                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-            }`}
-            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
-            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
-          >
-            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
-
-          <button
-            aria-label="Reset camera view"
-            type="button"
-            onClick={() => applyCameraPreset("iso")}
-            className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
+        <StudioOverlayActionToolbar
+          actions={createStandardStudioOverlayActions({
+            isCutaway,
+            onToggleCutaway: () => setIsCutaway(!isCutaway),
+            cutawayTitle: isCutaway ? "Solid Frame" : "Cutaway Frame",
+            isAudioMuted,
+            onToggleSound: toggleSound,
+            showUiOverlay,
+            onToggleUiOverlay: () => setShowUiOverlay(!showUiOverlay),
+            overlayTitle: showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI",
+            onResetCamera: () => applyCameraPreset("iso"),
+          })}
+        />
 
         {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
@@ -292,7 +278,7 @@ export const SholesTypewriter3D = memo(() => {
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Platen Feed:</span>
               <span className="font-bold text-purple-800 dark:text-purple-400">
-                Transverse Auto
+                Transverse Step
               </span>
             </div>
           </div>
@@ -307,7 +293,8 @@ export const SholesTypewriter3D = memo(() => {
             { label: "Strike Rate", value: eventsPerSecond, unit: "Hz" },
             { label: "Typebars", value: "12", unit: "sample" },
             { label: "Escapement", value: "Ratchet I", unit: "step" },
-            { label: "Platen Feed", value: "Line Space", unit: "auto" },
+            { label: "Platen Feed", value: "Transverse", unit: "step" },
+            { label: "Line End", value: "Manual", unit: "return" },
             {
               label: "Basket crate",
               value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
@@ -330,6 +317,7 @@ export const SholesTypewriter3D = memo(() => {
             </div>
             <input
               type="range"
+              aria-label="Demonstration cadence"
               min="10"
               max="120"
               step="5"

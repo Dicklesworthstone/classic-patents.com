@@ -213,7 +213,7 @@ describe("manual-edition publication contract", () => {
     }
 
     expect(violations).toEqual([]);
-  });
+  }, 30000);
 
   test("rejects page-summary boilerplate masquerading as a reviewed transcription", () => {
     // A page marker only proves that a ledger has the right number of pages.

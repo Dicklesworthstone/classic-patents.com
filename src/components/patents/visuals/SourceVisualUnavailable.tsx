@@ -20,7 +20,7 @@ export function SourceVisualUnavailable({ title, detail }: SourceVisualUnavailab
         <ShieldAlert className="mt-0.5 h-6 w-6 shrink-0 text-amber-700 dark:text-amber-400" />
         <div>
           <p className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-amber-800 dark:text-amber-300">
-            Source-integrity hold
+            Visual-model boundary
           </p>
           <h3
             id="source-visual-unavailable-title"
@@ -37,8 +37,8 @@ export function SourceVisualUnavailable({ title, detail }: SourceVisualUnavailab
       <div className="mt-5 flex items-start gap-3 rounded-xl border border-amber-200 bg-white/70 p-4 text-sm leading-6 text-ink-800 dark:border-amber-900/70 dark:bg-ink-950/50 dark:text-ink-200">
         <FileSearch className="mt-0.5 h-5 w-5 shrink-0 text-amber-700 dark:text-amber-400" />
         <p>
-          The original facsimile and its source text remain available elsewhere on this page. This
-          temporary refusal prevents an inherited model from being presented as evidence for the
+          The complete patent text remains available on the Original Patent Text face. This
+          visual-only boundary prevents an inherited model from being presented as evidence for the
           wrong invention. A new visual must be authored from the pinned source before this panel is
           replaced.
         </p>

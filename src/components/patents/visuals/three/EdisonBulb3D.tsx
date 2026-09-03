@@ -12,6 +12,7 @@ import {
   edisonKernelSource,
   ensureEdisonWasm,
   stepEdisonRadiativeBalance,
+  subscribeEdisonKernelSource,
 } from "@/physics/edisonWasm";
 import { TickScheduler } from "@/physics/tickScheduler";
 import type { ThermodynamicsState } from "@/physics/types";
@@ -21,6 +22,7 @@ import {
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { useWasmKernelSource } from "@/physics/useWasmKernelSource";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
@@ -76,7 +78,11 @@ export const EdisonBulb3D = memo(() => {
   const vacuumTorr = params.vacuumTorr ?? 7.6e-4;
   const [showGasMolecules] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [kernelSource, setKernelSource] = useState(edisonKernelSource());
+  const kernelSource = useWasmKernelSource(
+    edisonKernelSource,
+    subscribeEdisonKernelSource,
+    ensureEdisonWasm,
+  );
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -151,14 +157,13 @@ export const EdisonBulb3D = memo(() => {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-223898-edison-lightbulb", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-223898-edison-lightbulb");
-  }, [
-    live.current.claim1Active,
-    live.current.filamentRadiantWatts,
-    live.current.filamentTempKelvin,
-    live.current.vacuumTorr,
-  ]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-223898-edison-lightbulb",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const studioRef = useRef<StudioContext | null>(null);
 
@@ -173,10 +178,6 @@ export const EdisonBulb3D = memo(() => {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureEdisonWasm().then((next) => setKernelSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;

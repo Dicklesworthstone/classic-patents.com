@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
 import { evaluateReviewedLedgerTextEvidence } from "@/data/editions/reviewedLedgerPublicationEvidence";
 import { hullStereolithographyPatent } from "@/data/patents/hull-stereolithography";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
@@ -167,6 +168,44 @@ describe("US 4,575,330 Charles W. Hull Stereolithography manual source edition",
     for (const m of metrics) {
       expect(m.provenance).toBeDefined();
     }
+    expect(entry.controls.map((control: { id: string }) => control.id)).toEqual([
+      "shutterRequestedOpen",
+      "scanXFraction",
+      "scanZFraction",
+      "recoatExcursionFraction",
+      "displayLaminaCount",
+    ]);
+    expect(metrics.some((metric: { value: string }) => metric.value === "refused")).toBe(true);
+    expect(JSON.stringify({ controls: entry.controls, metrics })).not.toMatch(
+      /mJ\/cm|cure depth|conversion degree|galvo vector/i,
+    );
+  });
+
+  test("keeps figure metadata and the equation card pinned to the actual grant", () => {
+    expect(hullStereolithographyPatent.drawings.map((drawing) => drawing.figureNumber)).toEqual([
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+    ]);
+    expect(hullStereolithographyPatent.drawings[0].title).toContain("Method Flow");
+    expect(hullStereolithographyPatent.drawings[1].title).toContain("Process Flow");
+    expect(hullStereolithographyPatent.drawings[2].caption).toContain("mercury");
+    expect(hullStereolithographyPatent.drawings[6].caption).toContain("hinge member 42");
+    expect(hullStereolithographyPatent.drawings[7].caption).toContain("rotated 90 degrees");
+    expect(JSON.stringify(hullStereolithographyPatent.drawings)).not.toMatch(
+      /helium-cadmium|galvanometer|chemical jet|vertical shaft 30/i,
+    );
+
+    const equations = ALL_COLORIZED_EQUATIONS["us-4575330-hull-stereolithography"];
+    expect(equations).toHaveLength(1);
+    expect(equations[0].id).toBe("hull-source-working-surface-sequence");
+    expect(equations[0].claimRef).toBe(2);
+    expect(JSON.stringify(equations)).not.toMatch(/C_d|E_c|peak laser|cure depth law/i);
   });
 
   test("wires claim 1 and claim 2 constraints in claimConstraints", () => {
@@ -176,15 +215,16 @@ describe("US 4,575,330 Charles W. Hull Stereolithography manual source edition",
       {},
       { 1: false, 2: true },
     );
-    expect(r1.modifiedParams.layerThicknessUm).toBe(0);
-    expect(r1.refusalWarning).toContain("BULK GELATION REFUSAL");
+    expect(r1.modifiedParams.displayLaminaCount).toBe(1);
+    expect(r1.modifiedParams.recoatExcursionFraction).toBe(0);
+    expect(r1.refusalWarning).toContain("CLAIM 1 TOPOLOGY REMOVED");
 
     const r2 = applyClaimConstraintModifications(
       "us-4575330-hull-stereolithography",
       {},
       { 1: true, 2: false },
     );
-    expect(r2.modifiedParams.penetrationDepthUm).toBe(800);
-    expect(r2.refusalWarning).toContain("OVERPENETRATION DISTORTION");
+    expect(r2.modifiedParams.shutterRequestedOpen).toBe(0);
+    expect(r2.refusalWarning).toContain("CLAIM 2 TOPOLOGY REMOVED");
   });
 });

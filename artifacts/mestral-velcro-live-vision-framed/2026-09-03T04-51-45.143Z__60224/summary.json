@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "runId": "2026-09-03T04-51-45.143Z__60224",
+  "baseUrl": "http://127.0.0.1:3428",
+  "patentCount": 1,
+  "viewportCount": 3,
+  "eventCount": 3,
+  "failureCount": 0,
+  "eventPath": "/Users/jemanuel/projects/classic-patents.com/artifacts/mestral-velcro-live-vision-framed/2026-09-03T04-51-45.143Z__60224/events.jsonl",
+  "screenshotDirectory": "/Users/jemanuel/projects/classic-patents.com/artifacts/mestral-velcro-live-vision-framed/2026-09-03T04-51-45.143Z__60224/screenshots",
+  "performanceSampleCount": 0,
+  "performanceSummaryPath": null
+}

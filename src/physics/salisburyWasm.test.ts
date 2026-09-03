@@ -79,4 +79,17 @@ describe("Salisbury fs-mbd WASM boundary", () => {
     expect(state.historicalDynamicsAvailable).toBe(false);
     expect(state.historicalDynamicsRefusal).toContain("force closure");
   });
+
+  test("does not call or label a source-law step when Claim 1 routing is withheld", () => {
+    const state = stepSalisburyTopology({
+      ...SALISBURY_HAND_DEFAULT_CONTROLS,
+      claim1RoutingPresent: false,
+    });
+    expect(state.runtimeSource).toBe("ts-fallback");
+    expect(state.claim1RoutingProbe).toBe(false);
+    expect(state.sourceLawApplicable).toBe(false);
+    expect(state.activeJointCoordinates).toBe(0);
+    expect(state.activeCableEndCount).toBe(0);
+    expect(state.jointTorquesNm).toEqual([0, 0, 0]);
+  });
 });

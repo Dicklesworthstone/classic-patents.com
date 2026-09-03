@@ -1,21 +1,23 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import {
   globalTransportBus,
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildEastmanKodakModel, updateEastmanKodakKinematics } from "./eastmanKodakModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
+import { StudioOverlayActionToolbar } from "./StudioOverlayActionToolbar";
+import { createStandardStudioOverlayActions } from "./studioOverlayActions";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -32,7 +34,7 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [8.5, 6.5, 9.5], target: [0, 0, 0] },
+  iso: { pos: [8.8, 4.6, 10], target: [0, 0, -0.35] },
   roll_film: { pos: [0, 2.0, 3.2], target: [0, 0.4, 0] },
   barrel_shutter: { pos: [2.8, 1.2, 3.0], target: [1.4, 0, 0] },
   lens_aperture: { pos: [3.5, 0.5, 2.0], target: [2.2, 0, 0] },
@@ -65,7 +67,7 @@ export function EastmanKodak3D() {
 
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
 
   const live = useLiveSimParams({
     filmExposures,
@@ -113,9 +115,13 @@ export function EastmanKodak3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-388850-eastman-kodak", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-388850-eastman-kodak");
-  }, [live.current.barrelOmegaRadPerS]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-388850-eastman-kodak",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
@@ -130,10 +136,6 @@ export function EastmanKodak3D() {
   };
 
   useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
-
-  useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
@@ -142,6 +144,7 @@ export function EastmanKodak3D() {
       container,
       cameraPos: iso.pos,
       targetPos: iso.target,
+      fov: 44,
     });
     studioRef.current = studio;
 
@@ -224,55 +227,19 @@ export function EastmanKodak3D() {
           </div>
         )}
 
-        {/* Top Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
-          <button
-            type="button"
-            onClick={() => setIsCutaway(!isCutaway)}
-            title={isCutaway ? "Solid Camera Body" : "Cutaway Interior"}
-            className={`min-h-9 p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm text-xs font-sans flex items-center gap-1 ${
-              isCutaway
-                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={toggleSound}
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="min-h-9 p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`min-h-9 p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showUiOverlay
-                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-            }`}
-            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
-            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
-          >
-            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
-
-          <button
-            aria-label="Reset camera view"
-            type="button"
-            onClick={() => applyCameraPreset("iso")}
-            className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
+        <StudioOverlayActionToolbar
+          actions={createStandardStudioOverlayActions({
+            isCutaway,
+            onToggleCutaway: () => setIsCutaway(!isCutaway),
+            cutawayTitle: isCutaway ? "Solid Camera Body" : "Cutaway Interior",
+            isAudioMuted,
+            onToggleSound: toggleSound,
+            showUiOverlay,
+            onToggleUiOverlay: () => setShowUiOverlay(!showUiOverlay),
+            overlayTitle: showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI",
+            onResetCamera: () => applyCameraPreset("iso"),
+          })}
+        />
 
         {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
@@ -339,6 +306,7 @@ export function EastmanKodak3D() {
             </div>
             <input
               type="range"
+              aria-label="Barrel shutter speed"
               min="0.01"
               max="0.10"
               step="0.01"
@@ -357,6 +325,7 @@ export function EastmanKodak3D() {
             </div>
             <input
               type="range"
+              aria-label="Lens aperture"
               min="8"
               max="16"
               step="1"
@@ -375,6 +344,7 @@ export function EastmanKodak3D() {
             </div>
             <input
               type="range"
+              aria-label="Subject distance"
               min="0.5"
               max="8.0"
               step="0.2"

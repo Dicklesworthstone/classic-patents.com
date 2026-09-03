@@ -6,6 +6,7 @@ import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { stepTownesLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -42,6 +43,15 @@ export function TownesLaserSim({
     activeMedium,
     beamDiameterMm,
   });
+  const live = useLiveSimParams({
+    activeMedium,
+    beamDiameterMm,
+    cavityLengthCm,
+    mirror2ReflectivityPct,
+    physics,
+    pumpPowerWatts,
+  });
+  const wavePhaseRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -50,12 +60,14 @@ export function TownesLaserSim({
     if (!ctx) return;
 
     let animId: number;
-    let phase = 0;
 
     const render = () => {
       animId = requestAnimationFrame(render);
       if (!onscreenRef.current) return;
-      phase += 0.08;
+      wavePhaseRef.current += 0.08;
+      const { activeMedium, beamDiameterMm, mirror2ReflectivityPct, physics, pumpPowerWatts } =
+        live.current;
+      const phase = wavePhaseRef.current;
 
       const w = canvas.width;
       const h = canvas.height;
@@ -407,14 +419,7 @@ export function TownesLaserSim({
     return () => {
       cancelAnimationFrame(animId);
     };
-  }, [
-    pumpPowerWatts,
-    mirror2ReflectivityPct,
-    beamDiameterMm,
-    activeMedium,
-    physics,
-    onscreenRef.current,
-  ]);
+  }, [live, onscreenRef]);
 
   return (
     <div
@@ -451,6 +456,7 @@ export function TownesLaserSim({
           <button
             type="button"
             onClick={() => {
+              wavePhaseRef.current = 0;
               resetParams();
               setActiveMedium("potassium_vapor");
               soundEngine.playSwitchClick();
@@ -481,6 +487,7 @@ export function TownesLaserSim({
           </div>
           <input
             type="range"
+            aria-label="Pump flash power in watts"
             min={50}
             max={1000}
             step={25}
@@ -499,6 +506,7 @@ export function TownesLaserSim({
           </div>
           <input
             type="range"
+            aria-label="Laser cavity length in centimeters"
             min={5}
             max={100}
             step={5}
@@ -519,6 +527,7 @@ export function TownesLaserSim({
           </div>
           <input
             type="range"
+            aria-label="Output coupler R2 reflectivity percentage"
             min={80}
             max={99.5}
             step={0.5}
@@ -541,6 +550,7 @@ export function TownesLaserSim({
           </div>
           <input
             type="range"
+            aria-label="Laser aperture diameter in millimeters"
             min={2}
             max={25}
             step={1}

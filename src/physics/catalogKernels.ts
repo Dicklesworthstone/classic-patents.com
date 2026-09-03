@@ -9,7 +9,6 @@ import {
   ericssonWakeCavity,
   goodyearVulcanizationField,
   haberCatalystField,
-  marconiSparkSpectrum,
   noyceJunctionPotential,
   peltonCavityFlow,
   spencerCavityWave,
@@ -721,7 +720,6 @@ export function stepNobelDynamite(params: {
       : 0,
     ...shockWaveCrate(ng),
     shockwaveGlow: Number((1 + (detonationVelocityMps / 6000) * 1.5).toFixed(3)),
-    stickDisplayOmegaRadPerS: 0.2,
     kieselguhrCount: 24,
     kieselguhrCols: 8,
     kieselguhrOriginX: 200,
@@ -2109,6 +2107,14 @@ export function bellScopeSample(
   return { x, y };
 }
 
+/** Static display coordinates shared by the telegraph's 2D/3D circuit layout. */
+export const MORSE_ELECTRON_DISPLAY_LAYOUT = {
+  electronLaneZ: 0.3,
+  electronOriginX: -3.6,
+  electronWrapX: 3.6,
+  electronSpanX: 7.2,
+} as const;
+
 export function stepMorseTelegraph(params: {
   currentMa?: number;
   wireTurns?: number;
@@ -2150,10 +2156,7 @@ export function stepMorseTelegraph(params: {
     armatureStrikeM: Number(Math.min(0.2, 0.08 + (forceN / 10) * 0.1).toFixed(4)),
     electronDisplaySpeed: 8,
     ...lineWaveCrate(currentMa),
-    electronLaneZ: 0.3,
-    electronOriginX: -3.6,
-    electronWrapX: 3.6,
-    electronSpanX: 7.2,
+    ...MORSE_ELECTRON_DISPLAY_LAYOUT,
     keySinThreshold: 0.2,
     keyTiltRad: 0.08,
     armatureHomeY: 2.1,
@@ -2213,6 +2216,108 @@ export function farnsworthBeamFrac(x: number, originX = -4.5, spanX = 8) {
   return Math.max(0, Math.min(1, (x - originX) / span));
 }
 
+/**
+ * Source-bounded transport values needed to place the image-dissector beam.
+ * The SI electron optics step owns these values; renderers must not recreate
+ * them from controls or invoke a second, partial physics step.
+ */
+export interface FarnsworthBeamTransportState {
+  electronDisplaySpeed: number;
+  horizontalSourceOmegaRadPerSec: number;
+  verticalSourceOmegaRadPerSec: number;
+  horizontalDisplayOmegaRadPerSec: number;
+  verticalDisplayOmegaRadPerSec: number;
+  scanLines: number;
+  scanAmp: number;
+  beamPathOriginX: number;
+  beamPathSpanX: number;
+  beamJitterAmp: number;
+  beamWrapX: number;
+}
+
+/** One deterministic display frame shared by the 2D raster, 3D beam, and field plane. */
+export interface FarnsworthRasterFrame {
+  simTimeSec: number;
+  beamFraction: number;
+  rasterLineIndex: number;
+  rasterXPercent: number;
+  rasterYPercent: number;
+  horizontalDeflectionUnits: number;
+  verticalDeflectionUnits: number;
+  /** Normalized position within the current line, including retrace. */
+  linePhase: number;
+  /** Normalized position within the coherent top-to-bottom display frame. */
+  framePhase: number;
+  /** True during the short flyback interval when the electron beam is blanked. */
+  inHorizontalRetrace: boolean;
+}
+
+/**
+ * Preserve SI sweep frequencies while explicitly slowing them for perception.
+ * The baseline 15.75 kHz horizontal sweep is displayed at 2 Hz; the baseline
+ * 60 Hz vertical sweep is displayed at 0.25 Hz. These are presentation time
+ * scales, never claims about the historical circuit's physical frequency.
+ */
+export function farnsworthDisplaySweepRates(horizontalFreqKhz: number, verticalFreqHz: number) {
+  const horizontalSourceOmegaRadPerSec = 2 * Math.PI * Math.max(0, horizontalFreqKhz) * 1000;
+  const verticalSourceOmegaRadPerSec = 2 * Math.PI * Math.max(0, verticalFreqHz);
+  const horizontalDisplayTimeScale = 2 / 15_750;
+  const verticalDisplayTimeScale = 0.25 / 60;
+
+  return {
+    horizontalSourceOmegaRadPerSec,
+    verticalSourceOmegaRadPerSec,
+    horizontalDisplayOmegaRadPerSec: horizontalSourceOmegaRadPerSec * horizontalDisplayTimeScale,
+    verticalDisplayOmegaRadPerSec: verticalSourceOmegaRadPerSec * verticalDisplayTimeScale,
+  };
+}
+
+/**
+ * Map the real sweep controls to inspectable museum-display motion.
+ *
+ * Actual 15.75 kHz scanning cannot be resolved on a 60 Hz display. The
+ * couplings returned by the electron-optics kernel are explicit temporal
+ * compression factors for the exhibit; all visual faces consume this same
+ * mapping so the beam, raster spot, and field texture cannot disagree.
+ */
+export function stepFarnsworthRasterFrame(
+  transport: FarnsworthBeamTransportState,
+  simTimeSec: number,
+): FarnsworthRasterFrame {
+  const scanLines = Math.max(1, Math.round(transport.scanLines));
+  const horizontalRateScale =
+    transport.horizontalDisplayOmegaRadPerSec / Math.max(Number.EPSILON, 4 * Math.PI);
+  const frameRateHz =
+    (transport.verticalDisplayOmegaRadPerSec / (2 * Math.PI)) * horizontalRateScale;
+  const unwrappedFrame = Math.max(0, simTimeSec) * Math.max(Number.EPSILON, frameRateHz);
+  const framePhase = unwrappedFrame - Math.floor(unwrappedFrame);
+  const unwrappedLine = framePhase * scanLines;
+  const rasterLineIndex = Math.min(scanLines - 1, Math.floor(unwrappedLine));
+  const linePhase = unwrappedLine - Math.floor(unwrappedLine);
+  // A sawtooth, rather than a sine, models the forward sweep. The final 8%
+  // is explicit horizontal flyback and is blanked by both visual faces.
+  const forwardDuty = 0.92;
+  const inHorizontalRetrace = linePhase >= forwardDuty;
+  const beamFraction = inHorizontalRetrace
+    ? 1 - (linePhase - forwardDuty) / (1 - forwardDuty)
+    : linePhase / forwardDuty;
+  const verticalFraction = scanLines === 1 ? 0.5 : rasterLineIndex / (scanLines - 1);
+  const horizontalUnit = beamFraction * 2 - 1;
+
+  return {
+    simTimeSec: Math.max(0, simTimeSec),
+    beamFraction,
+    rasterLineIndex,
+    rasterXPercent: beamFraction * 100,
+    rasterYPercent: verticalFraction * 100,
+    horizontalDeflectionUnits: horizontalUnit * transport.scanAmp,
+    verticalDeflectionUnits: (verticalFraction * 2 - 1) * transport.scanAmp,
+    linePhase,
+    framePhase,
+    inHorizontalRetrace,
+  };
+}
+
 /** Near/far spark X on a Westinghouse wheelset pair. Shared by 3D. */
 export function westinghouseSparkWheelX(wheelIndex: number, near = -1.4, far = 1.4) {
   return wheelIndex < 2 ? near : far;
@@ -2234,7 +2339,9 @@ export function stepEngelbartMouse(params: {
   const diameterMm = r * 2;
   const circumferenceMm = Math.PI * diameterMm;
   return {
-    dpi: Math.round((ppr * 10) / r),
+    // Counts per inch = counts/revolution divided by inches/revolution.
+    // The prior ppr*10/r shortcut overstated resolution by ~2.47x.
+    dpi: Math.round((ppr * 25.4) / circumferenceMm),
     omegaRadPerS: Number((v / r).toFixed(1)),
     slewPxPerS: Number((v * 3.8).toFixed(0)),
     wheelDiameterMm: diameterMm,
@@ -2242,8 +2349,12 @@ export function stepEngelbartMouse(params: {
     mmPerPulse: Number((circumferenceMm / ppr).toFixed(3)),
     countsPerMm: Number((ppr / circumferenceMm).toFixed(2)),
     pulseRateHz: Number(((v * ppr) / circumferenceMm).toFixed(1)),
-    clickDisplayMs: Math.max(80, Math.round(180000 / Math.max(1, (v * ppr) / circumferenceMm))),
-    pathDisplayOmega: Number((v * 0.018).toFixed(4)),
+    // UI-only switch travel is intentionally readable and independent of
+    // pointer speed; the grant does not disclose a switch timing constant.
+    clickDisplayMs: 250,
+    // Time-dilated exhibit motion. The real wheel rate remains omega=v/r;
+    // this only maps a 100–800 mm/s scenario into a readable 3D path speed.
+    pathDisplayOmega: Number((v / 700).toFixed(4)),
     resolverSvgScale: 40,
     diameterToRadius: 2,
     pointerSvgWidth: 400,
@@ -2669,27 +2780,20 @@ export function stepMarconiRadio(
   sparkGapMm?: number,
   coilKv?: number,
 ) {
-  const h = aerialHeightMeters ?? 88;
-  const gap = Math.max(0.5, sparkGapMm ?? 10);
-  const kv = coilKv ?? 28;
-  const wavelengthMeters = h * 4;
-  const resonantFreqMhz = Number((300 / wavelengthMeters).toFixed(2));
-  const peakRfPowerKw = Number(((kv * kv) / (gap * 1.5)).toFixed(1));
+  const h = Math.max(10, Math.min(120, aerialHeightMeters ?? 88));
+  const gap = Math.max(2, Math.min(25, sparkGapMm ?? 10));
+  const kv = Math.max(5, Math.min(50, coilKv ?? 28));
+  const gapFraction = (gap - 2) / 23;
   return {
-    wavelengthMeters,
-    resonantFreqMhz,
-    resonantFreqKhz: Math.round(resonantFreqMhz * 1000),
-    maxRangeMiles: Number((0.015 * h * h * (kv / 20)).toFixed(1)),
-    peakRfPowerKw,
-    // Thin quarter-wave monopole: R_rad ≈ 36.56 Ω independent of height.
-    radiationResistanceOhms: 36.56,
-    sparkDisplayMs: 1200,
-    waveOpacityBase: Number((0.35 + (peakRfPowerKw / 80) * 0.5).toFixed(3)),
-    wavePhaseRate: Number((Math.max(0.2, resonantFreqMhz) / 0.85).toFixed(3)),
-    waveAdvancePx: Number(((Math.max(0.2, resonantFreqMhz) / 0.85) * 4).toFixed(3)),
-    waveRingWrapPx: 120,
+    displayAerialHeightMeters: h,
+    displaySparkGapMm: gap,
+    displayCoilPotentialKv: kv,
+    sourceBoundary:
+      "US 586,193 does not disclose the LC, current distribution, loss, or propagation data required for frequency, power, range, or radiation-resistance output.",
     mastStudioScale: Number(Math.max(0.25, h / 88).toFixed(4)),
-    toneEnergy: Number(Math.min(1, peakRfPowerKw / 80).toFixed(3)),
+    sparkGapStudioHalfSpan: Number((0.37 + gapFraction * 0.18).toFixed(4)),
+    sparkGapSvgHalfSpan: Number((5 + gapFraction * 9).toFixed(3)),
+    waveStrokeOpacity: 0.72,
     schematicGapX0: 230,
     schematicGapX1: 260,
     schematicGapY: 175,
@@ -2707,8 +2811,6 @@ export function stepMarconiRadio(
     schematicEarthW: 80,
     schematicEarthH: 20,
     mastSvgY: Number((210 - h * 1.6).toFixed(2)),
-    fundamentalHz: Number((resonantFreqMhz * 1e6).toFixed(0)),
-    ...marconiSparkSpectrum(resonantFreqMhz, gap),
   };
 }
 
@@ -2785,6 +2887,40 @@ export function stepColtRevolver(params: {
     schematicTriggerRestY: 145,
     schematicTriggerCockH: 20,
     schematicTriggerRestH: 8,
+  };
+}
+
+export const LAMARR_RECORD_ROWS = ["A", "B", "C", "D", "E", "F", "G"] as const;
+
+/**
+ * Source-bounded state for US 2,292,387.  The published drawing gives seven
+ * transmitter rows and the receiver's effective D–G subset; it does not
+ * license an invented RF hop rate or a continuous mechanical speed.
+ */
+export function stepLamarrRecordControl(params: {
+  recordPosition?: number;
+  commandTone?: number;
+  rudderStep?: number;
+  issueCommand?: boolean;
+}) {
+  const recordPosition = Math.max(0, Math.min(6, Math.round(params.recordPosition ?? 0)));
+  const transmitterRow = LAMARR_RECORD_ROWS[recordPosition];
+  const receiverEffective = recordPosition >= 3;
+  const commandTone = params.commandTone === 500 ? 500 : 100;
+  const commandDelta = commandTone === 500 ? 1 : -1;
+  const commandAccepted = Boolean(params.issueCommand) && receiverEffective;
+
+  return {
+    recordPosition,
+    transmitterRow,
+    receiverRow: receiverEffective ? transmitterRow : null,
+    receiverEffective,
+    warningLampOn: !receiverEffective,
+    commandTone,
+    commandDelta,
+    commandAccepted,
+    rudderStep: (params.rudderStep ?? 0) + (commandAccepted ? commandDelta : 0),
+    recordIndexAngleRad: (recordPosition * Math.PI * 2) / LAMARR_RECORD_ROWS.length,
   };
 }
 
@@ -4305,6 +4441,7 @@ export interface LandPolaroidInput {
   alkaliPh?: number; // 10.5 to 13.8
   exposureFraction?: number; // 0.0 to 1.0
   developmentTimeSec?: number; // 0 to 60 s
+  claim1Active?: boolean;
 }
 
 export interface LandPolaroidState {
@@ -4316,16 +4453,20 @@ export interface LandPolaroidState {
   printCompletionPercent: number;
   unexposedSilverComplexedRatio: number;
   rollerDisplayOmegaRadPerS: number;
+  claim1PathActive: boolean;
 }
 
 export function stepLandPolaroidInstantFilm(input: LandPolaroidInput): LandPolaroidState {
-  const viscosity = input.reagentViscosityCp ?? 25000;
-  const gap = input.rollerGapUm ?? 25;
-  const hq = input.hydroquinoneConcentrationM ?? 0.2;
-  const hypo = input.thiosulfateConcentrationM ?? 0.35;
-  const ph = input.alkaliPh ?? 12.6;
-  const exposure = Math.max(0, Math.min(1, input.exposureFraction ?? 0.6));
-  const time = Math.max(0, Math.min(60, input.developmentTimeSec ?? 30));
+  const finite = (value: number | undefined, fallback: number) =>
+    Number.isFinite(value) ? (value as number) : fallback;
+  const viscosity = Math.max(1000, Math.min(100000, finite(input.reagentViscosityCp, 25000)));
+  const gap = Math.max(1, Math.min(1000, finite(input.rollerGapUm, 25)));
+  const hq = Math.max(0, Math.min(1, finite(input.hydroquinoneConcentrationM, 0.2)));
+  const hypo = Math.max(0, Math.min(2, finite(input.thiosulfateConcentrationM, 0.35)));
+  const ph = Math.max(0, Math.min(14, finite(input.alkaliPh, 12.6)));
+  const exposure = Math.max(0, Math.min(1, finite(input.exposureFraction, 0.6)));
+  const time = Math.max(0, Math.min(60, finite(input.developmentTimeSec, 30)));
+  const claim1PathActive = input.claim1Active ?? true;
 
   // pH-dependent development rate constant k_dev (hydroquinone dianion activity)
   const phFactor = 10 ** (ph - 11.5);
@@ -4336,14 +4477,16 @@ export function stepLandPolaroidInstantFilm(input: LandPolaroidInput): LandPolar
 
   // Negative silver development
   const negProgress = 1 - Math.exp(-kDev * time);
-  const negativeSilverDensity = Number((2.8 * exposure * negProgress).toFixed(2));
+  const negativeSilverDensity = claim1PathActive
+    ? Number((2.8 * exposure * negProgress).toFixed(2))
+    : 0;
 
   // Soluble silver thiosulfate complex formation from unexposed silver halide
   const unexposedFraction = 1 - exposure;
   const complexationProgress = 1 - Math.exp(-kSol * time);
-  const unexposedSilverComplexedRatio = Number(
-    (unexposedFraction * complexationProgress).toFixed(3),
-  );
+  const unexposedSilverComplexedRatio = claim1PathActive
+    ? Number((unexposedFraction * complexationProgress).toFixed(3))
+    : 0;
 
   // Fickian Diffusion coefficient D inversely proportional to polymer viscosity
   const dDiff = 1.2e-9 * (25000 / Math.max(1000, viscosity)); // m^2/s
@@ -4352,22 +4495,32 @@ export function stepLandPolaroidInstantFilm(input: LandPolaroidInput): LandPolar
   const transferProgress = 1 - Math.exp(-time / Math.max(0.5, diffusionTimeConst));
 
   // Positive reflection silver density (D_max = 2.10)
-  const positiveSilverDensity = Number((2.1 * unexposedFraction * transferProgress).toFixed(2));
+  const positiveSilverDensity = claim1PathActive
+    ? Number((2.1 * unexposedFraction * complexationProgress * transferProgress).toFixed(2))
+    : 0;
 
   // Transfer efficiency
-  const transferEfficiencyPercent = Number((92 * (1 - Math.exp(-time / 15))).toFixed(1));
+  const transferEfficiencyPercent = claim1PathActive
+    ? Number((92 * complexationProgress * transferProgress).toFixed(1))
+    : 0;
 
   // Diffusion flux
   const gradC = (hypo * unexposedFraction) / gapMeters;
-  const diffusionFluxMolPerM2S = Number((dDiff * gradC * 1000).toFixed(4));
+  const diffusionFluxMolPerM2S = claim1PathActive ? Number((dDiff * gradC * 1000).toFixed(4)) : 0;
 
   // Meniscus spread uniformity (optimal at 10,000 - 50,000 cP)
   const viscPenalty = Math.abs(Math.log10(viscosity / 25000));
-  const meniscusSpreadUniformityPercent = Number(Math.max(40, 98 - viscPenalty * 22).toFixed(1));
+  const meniscusSpreadUniformityPercent = claim1PathActive
+    ? Number(Math.max(40, 98 - viscPenalty * 22).toFixed(1))
+    : 0;
 
   // Overall print completion percentage
-  const printCompletionPercent = Number(Math.min(100, (time / 60) * 100).toFixed(1));
-  const rollerDisplayOmegaRadPerS = time > 0 ? 3 : 0;
+  const printCompletionPercent = claim1PathActive
+    ? Number(Math.min(100, (time / 60) * 100).toFixed(1))
+    : 0;
+  // Spreading is a short mechanical event before the longer chemical wait.
+  // Do not imply that the pressure rolls rotate for the full development time.
+  const rollerDisplayOmegaRadPerS = claim1PathActive && time > 0 && time <= 3 ? 3 : 0;
 
   return {
     negativeSilverDensity,
@@ -4378,6 +4531,7 @@ export function stepLandPolaroidInstantFilm(input: LandPolaroidInput): LandPolar
     printCompletionPercent,
     unexposedSilverComplexedRatio,
     rollerDisplayOmegaRadPerS,
+    claim1PathActive,
   };
 }
 

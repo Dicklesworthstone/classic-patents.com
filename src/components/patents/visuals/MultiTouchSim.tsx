@@ -1,11 +1,12 @@
 "use client";
 
-import { Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { stepMultiTouch } from "@/physics/multiTouchKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { SimulationHeader } from "./SimulationHeader";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -312,74 +313,44 @@ export function MultiTouchSim({
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [
-    fingerCount,
-    separationMm,
-    pressureGrams,
-    gestureVelocityMmS,
-    isPlaying,
-    onscreenRef.current,
-  ]);
+  }, [fingerCount, separationMm, pressureGrams, gestureVelocityMmS, isPlaying, onscreenRef]);
 
   return (
     <div
       ref={rootRef}
       className="w-full flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-800 text-ink-900 dark:text-parchment-100 shadow-md"
     >
-      {/* Header with Title and Global Action Controls */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
-        <div>
-          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Steve Jobs et al. Multi-Touch Gesture UI (US 7,479,949)
-          </h3>
-          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Interactive mutual capacitance sensor matrix, centroid tracking, pinch-to-zoom, and
-            affine gesture heuristics.
-          </p>
-        </div>
-        <div className="flex items-center gap-2 self-end sm:self-auto">
-          <button
-            type="button"
-            onClick={() => {
-              toggleSound();
-              soundEngine.playSwitchClick();
-            }}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setIsPlaying(!isPlaying);
-              soundEngine.playSwitchClick();
-            }}
-            aria-label={isPlaying ? "Pause Simulation" : "Play Simulation"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title={isPlaying ? "Pause Simulation" : "Play Simulation"}
-          >
-            {isPlaying ? (
-              <Pause className="w-4 h-4 text-amber-600" />
-            ) : (
-              <Play className="w-4 h-4" />
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              resetParams();
-              soundEngine.playSwitchClick();
-            }}
-            aria-label="Reset Simulation"
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title="Reset Simulation"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
+      <SimulationHeader
+        title="Steve Jobs et al. Multi-Touch Gesture UI (US 7,479,949)"
+        description="Interactive mutual capacitance sensor matrix, centroid tracking, pinch-to-zoom, and affine gesture heuristics."
+        playbackAction={{
+          label: isPlaying ? "Pause Simulation" : "Play Simulation",
+          icon: isPlaying ? (
+            <Pause className="h-4 w-4 text-amber-600" />
+          ) : (
+            <Play className="h-4 w-4" />
+          ),
+          onPress: () => {
+            setIsPlaying(!isPlaying);
+            soundEngine.playSwitchClick();
+          },
+        }}
+        audioAction={{
+          label: isAudioMuted ? "Unmute Sound" : "Mute Sound",
+          icon: isAudioMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />,
+          onPress: () => {
+            toggleSound();
+            soundEngine.playSwitchClick();
+          },
+        }}
+        onReset={() => {
+          resetParams();
+          soundEngine.playSwitchClick();
+        }}
+        actionOrder="audio-playback"
+        descriptionHasTopMargin={false}
+        withBottomMargin={false}
+      />
 
       {/* Canvas */}
       <div className="relative w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-ink-800 bg-canvas">

@@ -409,13 +409,17 @@ describe("US 2,981,877 manual source edition", () => {
     const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
     const entry = PATENT_PHYSICS_REGISTRY["us-2981877-noyce-ic"];
     expect(entry).toBeDefined();
-    for (const ctrl of entry.controls) {
-      expect(ctrl.provenance).toBe("scenario-modern");
-    }
+    expect(entry.controls.map((ctrl: { provenance: string }) => ctrl.provenance)).toEqual([
+      "scenario-reader",
+      "topology-normalized",
+    ]);
     const metrics = entry.computeMetrics({});
-    for (const m of metrics) {
-      expect(m.provenance).toBe("scenario-modern");
-    }
+    expect(metrics.map((metric: { provenance: string }) => metric.provenance)).toEqual([
+      "scenario-reader",
+      "topology-normalized",
+      "refusal-bounded",
+      "refusal-bounded",
+    ]);
   });
 
   test("enforces figure acceptance audit hold in publication state registry", () => {

@@ -40,14 +40,15 @@ describe("Specification Clauses & Interactive Telemetry Weave", () => {
     expect(tesla.map((clause) => clause.caption).join(" ")).not.toContain("120 f / P");
   });
 
-  test("Fermi nuclear reactor lights critical chain-reaction clause", () => {
+  test("Fermi nuclear reactor lights the actual Claim 1 uranium-rod lattice clause", () => {
     const critical = specClausesFor("us-2708656-fermi-reactor", {
       rodWithdrawal: 90,
       moderatorPurity: 99.8,
     });
     expect(critical.length).toBe(1);
-    expect(critical[0].phrase).toBe("self-sustaining");
+    expect(critical[0].phrase).toBe("natural uranium rods disposed in a geometric pattern therein");
     expect(critical[0].active).toBe(true);
+    expect(specClausesFor("us-2708656-fermi-reactor", { claim1Active: 0 })[0].active).toBe(false);
   });
 
   test("Marconi radio lights elevated aerial antenna clause", () => {
@@ -111,7 +112,10 @@ describe("Specification Clauses & Interactive Telemetry Weave", () => {
   });
 
   test("Noyce monolithic IC lights planar oxide, vacuum leads, and dished junction clauses", () => {
-    const clauses = specClausesFor("us-2981877-noyce-ic", { reverseBias: 5, oxideThickness: 0.5 });
+    const clauses = specClausesFor("us-2981877-noyce-ic", {
+      oxideThicknessUm: 1,
+      leadStripWidthFraction: 0.12,
+    });
     expect(clauses.length).toBe(3);
     expect(clauses[0].phrase).toContain("insulating surface layer");
     expect(clauses[0].active).toBe(true);
@@ -119,7 +123,28 @@ describe("Specification Clauses & Interactive Telemetry Weave", () => {
     expect(clauses[1].active).toBe(true);
     expect(clauses[2].phrase).toContain("dished, P-N junctions");
     expect(clauses[2].active).toBe(true);
-    expect(clauses[2].caption).toContain("VR = 5 V");
+    expect(clauses[2].caption).toContain("no bias voltage");
+  });
+
+  test("Kilby maps Claim 1 to the wafer, junction, resistor, and conductive-means clauses", () => {
+    const held = specClausesFor("us-3138743-kilby-integrated-circuit", {
+      claim1ConductiveMeansPresent: 1,
+    });
+    expect(held).toHaveLength(4);
+    expect(held.map((clause) => clause.phrase)).toEqual([
+      "plurality of electrical circuit components in a wafer of single-crystal semiconductor material",
+      "plurality of junction transistors defined in the wafer",
+      "plurality of thin elongated regions of the wafer exhibiting substantial resistance",
+      "conductive means connecting selected ones of the elongated regions to regions of selected ones of the transistors",
+    ]);
+    expect(held.every((clause) => clause.active)).toBe(true);
+
+    const withheld = specClausesFor("us-3138743-kilby-integrated-circuit", {
+      claim1ConductiveMeansPresent: 0,
+    });
+    expect(withheld.slice(0, 3).every((clause) => clause.active)).toBe(true);
+    expect(withheld[3]).toMatchObject({ active: false, tone: "broken" });
+    expect(withheld[3]?.caption).toContain("no electrical performance is inferred");
   });
 
   test("Spencer microwave lights microwave region, push-pull, waveguide, and cavity resonator clauses", () => {
@@ -147,16 +172,12 @@ describe("Specification Clauses & Interactive Telemetry Weave", () => {
     expect(clauses[3].tone).toBe("live");
   });
 
-  test("Kwolek Kevlar lights anisotropic dope and viscosity discontinuity clauses", () => {
+  test("Kwolek withholds live spec-clause probes until the source edition is complete", () => {
     const clauses = specClausesFor("us-3671542-kwolek-kevlar", {
       polymerConcentrationPct: 18.5,
       drawRatio: 6.5,
     });
-    expect(clauses.length).toBe(3);
-    expect(clauses[0].phrase).toContain("Optically anisotropic dope");
-    expect(clauses[1].phrase).toContain("decrease in viscosity with increasing concentration");
-    expect(clauses[1].active).toBe(true);
-    expect(clauses[2].phrase).toContain("liquid-crystalline domains undergo spontaneous");
+    expect(clauses).toEqual([]);
   });
 
   test("Tesla US 593,138 breaks the exact common-node clause when Claim 1 is opened", () => {
@@ -229,12 +250,155 @@ describe("Specification Clauses & Interactive Telemetry Weave", () => {
     });
   });
 
+  test("Kamen Transporter reads balance and cluster relationships without invented drive values", () => {
+    const climb = specClausesFor("us-5701965-kamen-transporter", { topologyState: 4 });
+    expect(climb).toHaveLength(3);
+    expect(climb.find((clause) => clause.id === "dynamically-maintaining-stability")).toMatchObject(
+      {
+        active: true,
+        tone: "held",
+      },
+    );
+    expect(climb.find((clause) => clause.id === "cluster-of-wheels")).toMatchObject({
+      active: true,
+      tone: "live",
+    });
+    expect(climb.find((clause) => clause.id === "coordination-control-means")).toMatchObject({
+      active: true,
+      tone: "live",
+    });
+    expect(climb.map((clause) => clause.caption).join(" ")).not.toMatch(
+      /N·m|m\/s|planetary|recovery limit/i,
+    );
+
+    const withdrawn = specClausesFor("us-5701965-kamen-transporter", {
+      topologyState: 1,
+      claim1BalanceEnabled: 0,
+    });
+    expect(
+      withdrawn.find((clause) => clause.id === "dynamically-maintaining-stability"),
+    ).toMatchObject({
+      active: false,
+      tone: "broken",
+    });
+    expect(
+      withdrawn.find((clause) => clause.id === "dynamically-maintaining-stability")?.caption,
+    ).toContain("does not predict a fall");
+  });
+
+  test("Da Vinci exposes only compatibility, calibration, and engagement topology", () => {
+    const ready = specClausesFor("us-6331181-davinci", {
+      compatibilitySignalPresent: 1,
+      calibrationRecordAvailable: 1,
+      engagementSignalPresent: 1,
+    });
+    expect(ready.find((clause) => clause.id === "processor-which-directs-movement")).toMatchObject({
+      active: true,
+      tone: "held",
+    });
+    expect(ready.map((clause) => clause.caption).join(" ")).not.toMatch(/3-entry|tremor/i);
+
+    const calibrationMissing = specClausesFor("us-6331181-davinci", {
+      compatibilitySignalPresent: 1,
+      calibrationRecordAvailable: 0,
+      engagementSignalPresent: 1,
+    });
+    expect(
+      calibrationMissing.find((clause) => clause.id === "processor-which-directs-movement"),
+    ).toMatchObject({ active: false, tone: "broken" });
+  });
+
+  test("Lemelson machine vision reads scan/gate/analyzing topology without false SI output", () => {
+    const live = specClausesFor("us-3081379-lemelson-machine-vision", {});
+    expect(live).toHaveLength(4);
+    expect(live.every((clause) => clause.active)).toBe(true);
+    expect(live.map((clause) => clause.caption).join(" ")).not.toMatch(
+      /\d+\s*(?:Hz|µs|mm|V|N|ms)\b/,
+    );
+
+    const gateWithheld = specClausesFor("us-3081379-lemelson-machine-vision", {
+      synchronizedGateEnabled: 0,
+    });
+    expect(gateWithheld.find((clause) => clause.id === "gated-analyzing-circuit")).toMatchObject({
+      active: false,
+      tone: "broken",
+    });
+  });
+
+  test("Makino clauses follow the exact concentric, belt, and Y-link topology states", () => {
+    const concentric = specClausesFor("us-4341502-makino-scara", {
+      topologyVariant: 1,
+      toolAttitudeDeg: 35,
+    });
+    expect(concentric).toHaveLength(3);
+    expect(concentric.find((clause) => clause.id === "four-link-mechanism")).toMatchObject({
+      active: true,
+      tone: "held",
+    });
+    expect(concentric.find((clause) => clause.id === "belt-devices")).toMatchObject({
+      active: true,
+      tone: "live",
+    });
+    expect(concentric.find((clause) => clause.id === "belt-devices")?.caption).toContain("φ=35°");
+
+    const yLink = specClausesFor("us-4341502-makino-scara", {
+      topologyVariant: 3,
+      toolAttitudeDeg: 90,
+    });
+    expect(yLink.find((clause) => clause.id === "belt-devices")).toMatchObject({
+      active: false,
+      tone: "held",
+    });
+    expect(yLink.find((clause) => clause.id === "y-shaped-link-mechanism")).toMatchObject({
+      active: true,
+      tone: "live",
+    });
+    expect(yLink.find((clause) => clause.id === "y-shaped-link-mechanism")?.caption).toContain(
+      "φ fixed at 0°",
+    );
+    expect(yLink.map((clause) => clause.caption).join(" ")).not.toMatch(/N·m|metres|payload/i);
+  });
+
+  test("Milacron clauses expose the aperture interlock instead of impossible withdrawal", () => {
+    const blocked = specClausesFor("us-4512709-milacron-robot-toolchanger", {
+      toolBasePresent: 1,
+      registrationFraction: 0.25,
+      lockingSlideFraction: 1,
+      claimFourTMember: 1,
+    });
+    expect(blocked.find((clause) => clause.id === "milacron-separation-interlock")).toMatchObject({
+      active: false,
+      tone: "broken",
+    });
+    expect(
+      blocked.find((clause) => clause.id === "milacron-separation-interlock")?.caption,
+    ).toContain("effective base remains seated");
+
+    const released = specClausesFor("us-4512709-milacron-robot-toolchanger", {
+      toolBasePresent: 1,
+      registrationFraction: 1,
+      lockingSlideFraction: 0,
+      claimFourTMember: 1,
+    });
+    expect(released.find((clause) => clause.id === "milacron-separation-interlock")).toMatchObject({
+      active: true,
+      tone: "held",
+    });
+    expect(released.find((clause) => clause.id === "milacron-locking-slide")?.caption).toContain(
+      "aligned",
+    );
+  });
+
   test("every patent in allPatents has at least one authored spec clause with valid SI metadata", async () => {
     const { allPatents } = await import("@/data/patents");
     expect(allPatents.length).toBeGreaterThanOrEqual(85);
 
     for (const patent of allPatents) {
       const clauses = specClausesFor(patent.id, {});
+      if (patent.id === "us-3671542-kwolek-kevlar") {
+        expect(clauses).toEqual([]);
+        continue;
+      }
       expect(clauses.length).toBeGreaterThan(0);
 
       for (const clause of clauses) {

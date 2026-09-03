@@ -9,6 +9,7 @@ import {
 } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { SimulationTelemetryGrid } from "./SimulationTelemetryGrid";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function MergenthalerLinotypeSim() {
@@ -253,41 +254,38 @@ export function MergenthalerLinotypeSim() {
         </svg>
       </div>
 
-      {/* Telemetry Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Metal Temperature
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {potTempC}°C (Melt: {alloyMeltPointC}°C)
-          </span>
-        </div>
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Line Length
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            {lineLengthPicas} picas ({lineLengthMm} mm)
-          </span>
-        </div>
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Casting Throughput
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {linesPerHour} lines/hr
-          </span>
-        </div>
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Solidification Time
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {slugSolidificationTimeSec} s
-          </span>
-        </div>
-      </div>
+      <SimulationTelemetryGrid
+        cards={[
+          {
+            label: "Metal Temperature",
+            value: (
+              <>
+                {potTempC}°C (Melt: {alloyMeltPointC}°C)
+              </>
+            ),
+          },
+          {
+            label: "Line Length",
+            value: (
+              <>
+                {lineLengthPicas} picas ({lineLengthMm} mm)
+              </>
+            ),
+            valueClassName:
+              "font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500",
+          },
+          {
+            label: "Casting Throughput",
+            value: <>{linesPerHour} lines/hr</>,
+            valueClassName:
+              "font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500",
+          },
+          {
+            label: "Solidification Time",
+            value: <>{slugSolidificationTimeSec} s</>,
+          },
+        ]}
+      />
 
       {/* Sliders */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
@@ -298,6 +296,7 @@ export function MergenthalerLinotypeSim() {
           </div>
           <input
             type="range"
+            aria-label="Linotype metal pot temperature in degrees Celsius"
             min="220"
             max="300"
             step="2"
@@ -313,6 +312,7 @@ export function MergenthalerLinotypeSim() {
           </div>
           <input
             type="range"
+            aria-label="Column line measure in picas"
             min="8"
             max="26"
             step="1"

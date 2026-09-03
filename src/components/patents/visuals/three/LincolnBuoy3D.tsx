@@ -3,32 +3,19 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepLincolnBuoy } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import { type LincolnBuoyCameraPreset, lincolnBuoyViewForViewport } from "./lincolnBuoyCamera";
 import { buildLincolnBuoyModel, updateLincolnBuoyKinematics } from "./lincolnBuoyModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset = "iso" | "bellows_chambers" | "pilothouse" | "paddlewheel" | "keel" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [14, 10, 16], target: [0, 0, 0] },
-  bellows_chambers: { pos: [0, -0.8, 6.5], target: [0, -0.5, 0] },
-  pilothouse: { pos: [-5.5, 5.0, 5.0], target: [-3.2, 3.5, 0] },
-  paddlewheel: { pos: [8.5, 1.2, 3.5], target: [6.8, 0, 0] },
-  keel: { pos: [0, -4.5, 8.5], target: [0, -1.0, 0] },
-  top: { pos: [0, 13.0, 0.1], target: [0, 0, 0] },
-};
 
 export function LincolnBuoy3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -44,9 +31,9 @@ export function LincolnBuoy3D() {
     (params.shoalDepth as number) ?? (params.riverShoalDepthFt as number) ?? 4.5;
   const steamboatWeightTons =
     (params.weightTons as number) ?? (params.steamboatWeightTons as number) ?? 380;
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [activeCamera, setActiveCamera] = useState<LincolnBuoyCameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [_crateSource, setCrateSource] = useState(genericKernelSource());
+  useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const lincoln = stepLincolnBuoy({
@@ -87,9 +74,9 @@ export function LincolnBuoy3D() {
     paddleDisplayOmegaRadPerS: lincoln.paddleDisplayOmegaRadPerS,
   });
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: LincolnBuoyCameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = lincolnBuoyViewForViewport(preset, containerRef.current?.clientWidth ?? 1000);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
@@ -100,14 +87,10 @@ export function LincolnBuoy3D() {
   };
 
   useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
-
-  useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = lincolnBuoyViewForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -159,6 +142,17 @@ export function LincolnBuoy3D() {
       studioRef.current = null;
     };
   }, [live]);
+
+  useEffect(() => {
+    const restoreResponsiveView = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const next = lincolnBuoyViewForViewport(activeCamera, container.clientWidth);
+      studioRef.current?.controls.setView(next.pos, next.target);
+    };
+    window.addEventListener("resize", restoreResponsiveView);
+    return () => window.removeEventListener("resize", restoreResponsiveView);
+  }, [activeCamera]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
@@ -329,6 +323,7 @@ export function LincolnBuoy3D() {
             </div>
             <input
               type="range"
+              aria-label="Bellows inflation"
               min="0"
               max="100"
               step="1"
@@ -347,6 +342,7 @@ export function LincolnBuoy3D() {
             </div>
             <input
               type="range"
+              aria-label="Steamboat weight"
               min="200"
               max="600"
               step="10"
@@ -365,6 +361,7 @@ export function LincolnBuoy3D() {
             </div>
             <input
               type="range"
+              aria-label="Shoal water depth"
               min="2.0"
               max="12.0"
               step="0.1"

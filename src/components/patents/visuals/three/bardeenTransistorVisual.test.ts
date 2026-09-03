@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import {
   BARDEEN_REPORTED_SAMPLES,
   stepBardeenPointContact,
@@ -29,6 +30,11 @@ describe("US 2,524,035 John Bardeen & Walter Brattain Point-Contact Transistor v
     expect(threeSource).not.toContain("useGLTF");
     expect(threeSource).toContain('usePatentPhysics("us-2524035-bardeen-transistor")');
     expect(threeSource).not.toContain("us-2569347-bardeen-transistor");
+    expect(threeSource).toContain('data-testid="bardeen-source-boundary"');
+    expect(threeSource).toContain("quantitative transport and a closed energy balance are refused");
+    expect(threeSource).toContain("isRefused: true");
+    expect(threeSource).not.toContain("PortHamiltonianEnergyStrip");
+    expect(modelSource).not.toContain("Adjustment Bridge");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -156,6 +162,77 @@ describe("US 2,524,035 John Bardeen & Walter Brattain Point-Contact Transistor v
     model.dispose();
   });
 
+  test("keeps both point contacts seated on layer 3 and connects them into the Fig. 1 circuit", () => {
+    const model = buildBardeenTransistorModel();
+    try {
+      const step = stepBardeenPointContact({ pointSpacingMils: 10, claim1Active: true });
+      updateBardeenTransistorKinematics(
+        model.nodes,
+        model.materials,
+        1 / 60,
+        1,
+        step.gapStudioUnits,
+        step.carrierDisplaySpeed,
+        true,
+        false,
+      );
+      model.rootGroup.updateMatrixWorld(true);
+
+      const layerTop = new THREE.Box3().setFromObject(model.nodes.surfaceLayer).max.y;
+      const contactEndpoints = (contact: THREE.Mesh) => [
+        new THREE.Vector3(0, -0.5, 0).applyMatrix4(contact.matrixWorld),
+        new THREE.Vector3(0, 0.5, 0).applyMatrix4(contact.matrixWorld),
+      ];
+      const emitterEnds = contactEndpoints(model.nodes.emitterContact).sort((a, b) => a.y - b.y);
+      const collectorEnds = contactEndpoints(model.nodes.collectorContact).sort(
+        (a, b) => a.y - b.y,
+      );
+      expect(emitterEnds[0].y).toBeCloseTo(layerTop, 8);
+      expect(collectorEnds[0].y).toBeCloseTo(layerTop, 8);
+      expect(emitterEnds[0].x).toBeCloseTo(-step.gapStudioUnits / 2, 8);
+      expect(collectorEnds[0].x).toBeCloseTo(step.gapStudioUnits / 2, 8);
+
+      expect(model.nodes.inputTransformer.name).toBe("Input transformer 10");
+      expect(model.nodes.outputTransformer.name).toBe("Output transformer 9");
+      expect(model.nodes.emitterBattery.name).toBe("Emitter battery 7");
+      expect(model.nodes.collectorBattery.name).toBe("Collector battery 8");
+      expect(model.nodes.circuitConductors.map((wire) => wire.name)).toEqual([
+        "Input boundary to transformer 10",
+        "Transformer 10 through emitter battery 7",
+        "Collector 6 through battery 8 to transformer 9",
+        "Output transformer 9 to external boundary",
+        "Plated-base return to transformer 10",
+        "Plated-base return to transformer 9",
+      ]);
+
+      const emitterLead = model.nodes.circuitConductors[1];
+      const collectorLead = model.nodes.circuitConductors[2];
+      const emitterLeadEnd = (emitterLead.geometry as THREE.TubeGeometry).parameters.path.getPoint(
+        1,
+      );
+      const collectorLeadStart = (
+        collectorLead.geometry as THREE.TubeGeometry
+      ).parameters.path.getPoint(0);
+      expect(emitterEnds[1].distanceTo(emitterLeadEnd)).toBeLessThan(1e-8);
+      expect(collectorEnds[1].distanceTo(collectorLeadStart)).toBeLessThan(1e-8);
+
+      const foundation = model.rootGroup.getObjectByName("Bardeen Fig. 1 apparatus foundation");
+      expect(foundation).toBeDefined();
+      if (!foundation) throw new Error("Bardeen apparatus foundation is missing.");
+      const foundationTop = new THREE.Box3().setFromObject(foundation).max.y;
+      expect(new THREE.Box3().setFromObject(model.nodes.emitterBattery).min.y).toBeCloseTo(
+        foundationTop,
+        7,
+      );
+      expect(new THREE.Box3().setFromObject(model.nodes.collectorBattery).min.y).toBeCloseTo(
+        foundationTop,
+        7,
+      );
+    } finally {
+      model.dispose();
+    }
+  });
+
   test("excludes the later prototype fixture and synthetic transport claims", () => {
     const sources = [
       readFileSync(join(VISUALS_DIRECTORY, "BardeenTransistorSim.tsx"), "utf8"),
@@ -179,5 +256,39 @@ describe("US 2,524,035 John Bardeen & Walter Brattain Point-Contact Transistor v
     ]) {
       expect(sources).not.toContain(unsupported);
     }
+  });
+
+  test("keeps registry telemetry on reported samples and refuses a synthetic energy balance", () => {
+    const { PATENT_PHYSICS_REGISTRY } = require("@/physics/telemetryData");
+    const entry = PATENT_PHYSICS_REGISTRY["us-2524035-bardeen-transistor"];
+    expect(entry.engineMethod).toContain("quantitative carrier transport refused");
+    expect(entry.controls.map((control: { id: string }) => control.id)).toEqual([
+      "operatingSample",
+      "pointSpacingMils",
+      "claim1Active",
+    ]);
+    const metrics = entry.computeMetrics({
+      operatingSample: 2,
+      pointSpacingMils: 7.5,
+      claim1Active: 1,
+    });
+    expect(
+      metrics.map((metric: { label: string; value: string }) => [metric.label, metric.value]),
+    ).toEqual([
+      ["Reported Voltage Gain", "50"],
+      ["Reported Power Gain", "42"],
+      ["Selected Contact Gap", "190.5"],
+      ["Claim 1 Contact Path", "complete"],
+    ]);
+    for (const metric of metrics) expect(metric.provenance).not.toBe("scenario-modern");
+
+    const {
+      ENERGY_CHANNEL_OMISSION_REASONS,
+      energyChannelsFor,
+    } = require("@/physics/energyChannels");
+    expect(energyChannelsFor("us-2524035-bardeen-transistor", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["us-2524035-bardeen-transistor"]).toContain(
+      "signal power gain alone is not a complete SI power-flow partition",
+    );
   });
 });

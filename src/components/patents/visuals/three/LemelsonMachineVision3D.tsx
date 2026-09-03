@@ -1,43 +1,64 @@
 "use client";
 
+import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { PhysicsTelemetryBadge } from "@/components/patents/PhysicsTelemetryBadge";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
 import { createLemelsonMachineVisionModel } from "@/components/patents/visuals/three/lemelsonMachineVisionModel";
 import {
   createThreeStudioScene,
   type StudioContext,
 } from "@/components/patents/visuals/three/ThreeStudioScene";
-import { ALL_COLORIZED_EQUATIONS } from "@/data/colorizedEquations";
-import {
-  readLemelsonMachineVisionControls,
-  stepLemelsonMachineVisionSi,
-} from "@/physics/lemelsonMachineVisionKernel";
-import { createStudioClock } from "@/physics/tickScheduler";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
+import { stepLemelsonMachineVisionTopology } from "@/physics/lemelsonMachineVisionKernel";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const PATENT_ID = "us-3081379-lemelson-machine-vision";
+
+const SIGNAL_CONTROLS = [
+  ["scanPathEnabled", "Scan path"],
+  ["synchronizedGateEnabled", "Synchronized gate"],
+  ["analyzingCircuitEnabled", "Analyzing circuit"],
+  ["inspectionSignalPresent", "Picture signal present"],
+  ["referenceSignalMatches", "Reference comparison"],
+] as const;
+
+const CAMERA_PRESET_LABELS = {
+  isometric: "overview",
+  vidicon: "scan source",
+  diverter: "control path",
+  top: "top",
+} as const;
 
 export function LemelsonMachineVision3D({ patentId = PATENT_ID }: { patentId?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+  const { effectiveParams, claimStates, claimConstraintResult, updateParam, resetParams } =
+    usePatentPhysics(patentId);
+  const state = useMemo(
+    () => stepLemelsonMachineVisionTopology(effectiveParams),
+    [effectiveParams],
+  );
+  const liveState = useLiveSimParams(state);
+  const sourceBoundaryTelemetry = useMemo(
+    () => ({
+      domain: "solid_mechanics" as const,
+      refusal: {
+        isRefused: true,
+        reason: claimConstraintResult.refusalWarning ?? state.sourceBoundary.reason,
+      },
+    }),
+    [claimConstraintResult.refusalWarning, state.sourceBoundary.reason],
+  );
 
-  const { params } = usePatentPhysics(patentId);
-  const liveParams = useRef(params);
-  liveParams.current = params;
-
-  const controls = useMemo(() => readLemelsonMachineVisionControls(params), [params]);
-  const state = useMemo(() => stepLemelsonMachineVisionSi(controls), [controls]);
-  const equations = useMemo(() => ALL_COLORIZED_EQUATIONS[patentId] ?? [], [patentId]);
-
-  useFrankenSimPhysics(patentId);
+  useFrankenSimPhysics(patentId, sourceBoundaryTelemetry);
 
   const [cameraPreset, setCameraPreset] = useState<"isometric" | "vidicon" | "diverter" | "top">(
     "isometric",
   );
 
+  // The mounted render loop reads this stable, layout-effect-synchronized ref; depending on its current value would rebuild the Three.js scene.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -56,19 +77,15 @@ export function LemelsonMachineVision3D({ patentId = PATENT_ID }: { patentId?: s
 
     const model = createLemelsonMachineVisionModel();
     scene.add(model.root);
+    model.update(liveState.current);
 
     let frame = 0;
-    const clock = createStudioClock();
 
-    const animate = (now: number) => {
+    const animate = () => {
       frame = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
 
-      const { simTimeSec } = clock.pump(now);
-      const currentControls = readLemelsonMachineVisionControls(liveParams.current);
-      const currentState = stepLemelsonMachineVisionSi(currentControls);
-
-      model.update(currentControls, currentState.metrics, simTimeSec);
+      model.update(liveState.current);
 
       orbitControls.update();
       renderer.render(scene, camera);
@@ -78,11 +95,12 @@ export function LemelsonMachineVision3D({ patentId = PATENT_ID }: { patentId?: s
 
     return () => {
       cancelAnimationFrame(frame);
+      scene.remove(model.root);
       model.dispose();
-      studio.dispose();
+      studio.cleanup();
       studioRef.current = null;
     };
-  }, []);
+  }, [liveState]);
 
   const handlePresetChange = (preset: "isometric" | "vidicon" | "diverter" | "top") => {
     setCameraPreset(preset);
@@ -110,75 +128,139 @@ export function LemelsonMachineVision3D({ patentId = PATENT_ID }: { patentId?: s
   };
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-slate-700/80 bg-slate-900 p-5 text-slate-100 shadow-2xl">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+    <section className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 text-slate-100 shadow-2xl">
+      <header className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-800 bg-slate-900/80 px-4 py-3 sm:px-6">
         <div>
-          <h3 className="text-lg font-bold tracking-tight text-emerald-400">
-            3D Studio — Lemelson Television Inspection Station
+          <p className="font-mono text-[11px] tracking-[0.16em] text-cyan-300">
+            US 3,081,379 · PROCEDURAL 3D SOURCE TOPOLOGY
+          </p>
+          <h3 className="mt-1 font-serif text-xl text-white">
+            Scan, selected signal, and analysis path
           </h3>
-          <p className="text-xs text-slate-400">
-            Procedural WebGL Station: Overhead Vidicon Tube, Scan Deflection Beam & Solenoid Sorter
+          <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-300">
+            The 3D studio is a display-proportion reading aid for the claimed relationship. Color
+            reports normalized signal states; no moving part, beam sweep, waveform scale, or output
+            mechanism is presented as a calibrated reconstruction.
           </p>
         </div>
-        <div className="flex gap-1.5 rounded-lg bg-slate-950 p-1 border border-slate-800 text-xs">
+        <div className="flex flex-wrap gap-1 rounded-lg border border-slate-700 bg-slate-950 p-1 text-xs">
           {(["isometric", "vidicon", "diverter", "top"] as const).map((preset) => (
             <button
               key={preset}
               type="button"
               onClick={() => handlePresetChange(preset)}
-              className={`rounded px-2.5 py-1 font-medium capitalize transition-colors ${
+              className={`rounded px-2.5 py-1 font-medium transition-colors ${
                 cameraPreset === preset
-                  ? "bg-emerald-600 text-white"
+                  ? "bg-cyan-600 text-white"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              {preset}
+              {CAMERA_PRESET_LABELS[preset]}
             </button>
           ))}
         </div>
-      </div>
+      </header>
 
-      <div className="relative h-[480px] w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-950">
+      <div className="relative h-[480px] w-full overflow-hidden border-b border-slate-800 bg-slate-950">
         <div ref={containerRef} className="h-full w-full" />
-        <PhysicsTelemetryBadge patentId={patentId} equations={equations} />
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-        <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
-          <span className="text-slate-400">Horizontal Scan (f_H)</span>
-          <p className="mt-1 font-mono text-sm font-bold text-emerald-400">
-            {state.metrics.horizontalScanFreqHz} Hz
-          </p>
+        <div className="pointer-events-none absolute left-3 top-3 max-w-sm rounded-lg border border-cyan-800/80 bg-slate-950/90 px-3 py-2 font-mono text-[10px] leading-5 text-cyan-100 backdrop-blur">
+          <p className="text-cyan-300">CLAIM 1 TOPOLOGY</p>
+          <p>{state.signalPath.join(" → ")}</p>
         </div>
-        <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
-          <span className="text-slate-400">Beam Scan Velocity</span>
-          <p className="mt-1 font-mono text-sm font-bold text-cyan-400">
-            {state.metrics.scanBeamVelocityMPerS.toFixed(0)} m/s
-          </p>
-        </div>
-        <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
-          <span className="text-slate-400">Pulse Width (τ)</span>
-          <p className="mt-1 font-mono text-sm font-bold text-amber-400">
-            {state.metrics.pulseWidthUs.toFixed(2)} µs
-          </p>
-        </div>
-        <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
-          <span className="text-slate-400">Solenoid Reject Force</span>
-          <p className="mt-1 font-mono text-sm font-bold text-ruby-400">
-            {state.metrics.solenoidForceN.toFixed(2)} N
-          </p>
+        <div className="pointer-events-none absolute bottom-3 right-3 max-w-xs rounded-lg border border-rose-900/80 bg-slate-950/90 px-3 py-2 text-right text-[10px] leading-4 text-rose-100 backdrop-blur">
+          Display geometry only; no source-backed velocity, amplitude, force, or response model.
         </div>
       </div>
 
-      <div className="p-4 bg-slate-950 border-t border-slate-800">
-        <ClaimConstraintToggle
-          patentId={patentId}
-          claimStates={claimStates}
-          onClaimStateChange={(num, active) =>
-            setClaimStates((prev) => ({ ...prev, [num]: active }))
-          }
-        />
+      <div className="grid gap-3 border-b border-slate-800 bg-slate-900/50 p-4 text-xs sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-lg border border-slate-700 bg-slate-950/70 p-3">
+          <p className="font-mono text-cyan-300">SCAN PATH</p>
+          <p className="mt-1 text-slate-100">{state.scanPathActive ? "ACTIVE" : "WITHHELD"}</p>
+        </div>
+        <div className="rounded-lg border border-slate-700 bg-slate-950/70 p-3">
+          <p className="font-mono text-emerald-300">PICTURE SIGNAL</p>
+          <p className="mt-1 text-slate-100">{state.gatedPictureSignal ? "SELECTED" : "HELD"}</p>
+        </div>
+        <div className="rounded-lg border border-slate-700 bg-slate-950/70 p-3">
+          <p className="font-mono text-purple-300">ANALYZER</p>
+          <p className="mt-1 text-slate-100">
+            {state.analyzingCircuitActive ? "AVAILABLE" : "WITHHELD"}
+          </p>
+        </div>
+        <div className="rounded-lg border border-slate-700 bg-slate-950/70 p-3">
+          <p className="font-mono text-amber-300">REFERENCE</p>
+          <p className="mt-1 text-slate-100">{state.referenceComparison.toUpperCase()}</p>
+        </div>
       </div>
-    </div>
+
+      <div className="grid gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_20rem] sm:p-5">
+        <div className="space-y-3">
+          <p className="font-mono text-xs text-cyan-300">S ∧ G ∧ A ∧ I → C</p>
+          <p className="text-sm leading-6 text-slate-300">
+            A scan path (S), synchronized gate (G), analyzing circuit (A), and picture-signal
+            availability (I) establish the display&apos;s control-path readiness (C). This is a
+            logical reading of Claim 1, not a prediction of any physical machine outcome.
+          </p>
+          <ClaimConstraintToggle
+            patentId={patentId}
+            claimStates={claimStates}
+            onToggleClaim={(claimNumber, active) =>
+              updateParam(claimConstraintStateParamId(claimNumber), active ? 1 : 0)
+            }
+          />
+          {claimConstraintResult.activeFailures.length > 0 && (
+            <div role="status" className="rounded-lg border border-rose-800 bg-rose-950/70 p-3">
+              {claimConstraintResult.activeFailures.map((failure) => (
+                <p key={failure} className="text-[11px] leading-5 text-rose-100">
+                  {failure}
+                </p>
+              ))}
+              {claimConstraintResult.refusalWarning && (
+                <p className="mt-1 text-[10px] leading-4 text-rose-200">
+                  {claimConstraintResult.refusalWarning}
+                </p>
+              )}
+            </div>
+          )}
+          <p className="rounded-lg border border-rose-900/70 bg-rose-950/40 p-3 text-xs leading-5 text-rose-100">
+            {state.sourceBoundary.reason}
+          </p>
+        </div>
+
+        <fieldset className="space-y-3 rounded-xl border border-slate-700 bg-slate-900/60 p-3">
+          <legend className="sr-only">Source-state controls</legend>
+          <div>
+            <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-cyan-300">
+              Source-state controls
+            </h4>
+            <p className="mt-1 text-[11px] leading-4 text-slate-400">
+              Each switch is a normalized availability state, never an SI setpoint.
+            </p>
+          </div>
+          {SIGNAL_CONTROLS.map(([id, label]) => (
+            <label
+              key={id}
+              className="flex items-center justify-between gap-3 text-xs text-slate-200"
+            >
+              <span>{label}</span>
+              <input
+                type="checkbox"
+                checked={state.controls[id] >= 0.5}
+                onChange={(event) => updateParam(id, event.target.checked ? 1 : 0)}
+                className="h-4 w-4 accent-cyan-400"
+              />
+            </label>
+          ))}
+          <button
+            type="button"
+            onClick={resetParams}
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-600 bg-slate-950 px-3 py-2 text-xs font-medium text-slate-100 hover:bg-slate-800"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            Reset source exhibit
+          </button>
+        </fieldset>
+      </div>
+    </section>
   );
 }

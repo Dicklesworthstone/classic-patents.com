@@ -43,7 +43,7 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  isometric: { pos: [0, 2.5, 5.0], target: [0, 0, 0] },
+  isometric: { pos: [0, 3.2, 7.0], target: [0, 0.25, 0] },
   coronaCharger: { pos: [0, 2.4, 2.0], target: [0, 1.2, 0] },
   photoconductiveDrum: { pos: [0, 0.4, 3.2], target: [0, 0, 0] },
   opticalSlit: { pos: [2.0, 1.6, 2.2], target: [1.2, 0.85, 0] },
@@ -86,6 +86,7 @@ export function CarlsonElectrophotography3D({
   const live = useLiveSimParams({
     coronaVoltageKv,
     contrastPotentialV: sim.contrastPotentialV,
+    layerThicknessUm,
     opticalDensity: sim.opticalDensity,
     fuserTemperatureC,
     drumDisplayOmegaRadPerS: sim.drumDisplayOmegaRadPerS,
@@ -112,11 +113,11 @@ export function CarlsonElectrophotography3D({
   useEffect(() => {
     const integrate: TapeUpdater = (_prev, dt) => {
       timeRef.current += dt;
-      const layerThicknessM = Math.max(1e-6, layerThicknessUm * 1e-6);
+      const layerThicknessM = Math.max(1e-6, live.current.layerThicknessUm * 1e-6);
       const em: ElectromagneticsState = {
         frequencyHz: 0,
         magneticFluxDensityTesla: 0,
-        electricFieldVpm: sim.contrastPotentialV / layerThicknessM,
+        electricFieldVpm: live.current.contrastPotentialV / layerThicknessM,
         phaseAngleRad: (timeRef.current * live.current.drumDisplayOmegaRadPerS) % (2 * Math.PI),
         inductanceHenry: 0,
         capacitanceFarad: 0,
@@ -143,19 +144,13 @@ export function CarlsonElectrophotography3D({
       };
       return { em, thermo };
     };
-    globalTransportBus.registerUpdater(
+    const unregister = globalTransportBus.registerUpdater(
       "us-2297691-carlson-electrophotography",
       integrate,
       "TS_FALLBACK",
     );
-    return () => globalTransportBus.unregisterUpdater("us-2297691-carlson-electrophotography");
-  }, [
-    live.current.coronaVoltageKv,
-    live.current.drumDisplayOmegaRadPerS,
-    live.current.fuserTemperatureC,
-    layerThicknessUm,
-    sim.contrastPotentialV,
-  ]);
+    return unregister;
+  }, [live]);
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
@@ -182,8 +177,8 @@ export function CarlsonElectrophotography3D({
     // Pure consumer of the shared transport tape: the bus updater owns the
     // drum/fuser display-time integration (timeRef).
     const animate = () => {
+      animFrameRef.current = requestAnimationFrame(animate);
       if (!studio.isVisible()) {
-        animFrameRef.current = requestAnimationFrame(animate);
         return;
       }
       const current = live.current;

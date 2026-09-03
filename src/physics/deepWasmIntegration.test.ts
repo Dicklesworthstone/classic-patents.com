@@ -226,12 +226,34 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       expect(ledger.isConservative).toBe(true);
     });
 
-    test("computes optical and thermal balance for Maiman ruby laser", () => {
-      const ledger = computePortHamiltonianEnergy("us-3353115-maiman-laser", {
-        pumpPowerWatts: 500.0,
+    test("refuses a stored-energy ledger for Maiman while the stateless pulse model lacks field state", () => {
+      for (const patentId of ["us-3353115-maiman-ruby-laser", "us-3353115-maiman-laser"]) {
+        const ledger = computePortHamiltonianEnergy(patentId, {
+          pumpEnergyJoules: 150,
+          flashDurationMs: 1,
+        });
+        expect(ledger.energy.totalHamiltonianJoules).toBe(0);
+        expect(ledger.inputPowerWatts).toBe(0);
+        expect(ledger.dissipatedPowerWatts).toBe(0);
+        expect(ledger.isConservative).toBe(true);
+      }
+    });
+
+    test("refuses invented mass, friction, voltage, and heat for the Engelbart source model", () => {
+      const ledger = computePortHamiltonianEnergy("us-3541541-engelbart-mouse", {
+        mouseSpeed: 350,
+        wheelRadius: 10,
+        pulsesPerRev: 200,
       });
-      expect(ledger.inputPowerWatts).toBe(500.0);
-      expect(ledger.energy.thermalJoules).toBeGreaterThan(100);
+      expect(ledger.energy).toEqual({
+        kineticJoules: 0,
+        potentialJoules: 0,
+        electromagneticJoules: 0,
+        thermalJoules: 0,
+        totalHamiltonianJoules: 0,
+      });
+      expect(ledger.inputPowerWatts).toBe(0);
+      expect(ledger.dissipatedPowerWatts).toBe(0);
       expect(ledger.isConservative).toBe(true);
     });
   });

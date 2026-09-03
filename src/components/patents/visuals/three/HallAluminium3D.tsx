@@ -15,23 +15,12 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import { type HallAluminiumCameraPreset, hallViewForViewport } from "./hallAluminiumCamera";
 import { createHallAluminiumModel, updateHallAluminiumVisual } from "./hallAluminiumModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset = "overview" | "anodes" | "molten_bath" | "siphon_tap";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  overview: { pos: [0, 3.2, 4.8], target: [0, 0, 0] },
-  anodes: { pos: [0, 2.0, 2.6], target: [0, 0.5, 0] },
-  molten_bath: { pos: [0, 0.9, 3.2], target: [0, -0.2, 0] },
-  siphon_tap: { pos: [2.6, 0.6, 2.2], target: [1.8, -0.5, 0] },
-};
 
 const IDLE_EM: ElectromagneticsState = {
   frequencyHz: 0,
@@ -65,9 +54,9 @@ const IDLE_THERMO: ThermodynamicsState = {
 
 export function HallAluminium3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [activePreset, setActivePreset] = useState<CameraPreset>("overview");
+  const [activePreset, setActivePreset] = useState<HallAluminiumCameraPreset>("overview");
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
-  const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const [isCutaway, setIsCutaway] = useState<boolean>(true);
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
@@ -125,28 +114,28 @@ export function HallAluminium3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-400766-hall-aluminium", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-400766-hall-aluminium");
-  }, [
-    live.current.aluminaConcentrationPct,
-    live.current.bathTemperatureCelsius,
-    live.current.currentAmperes,
-  ]);
+    const unregister = globalTransportBus.registerUpdater(
+      "us-400766-hall-aluminium",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
+  }, [live]);
 
   const studioRef = useRef<ReturnType<typeof createThreeStudioScene> | null>(null);
 
-  const applyCameraPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: HallAluminiumCameraPreset) => {
     setActivePreset(preset);
     const studio = studioRef.current;
     if (!studio) return;
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = hallViewForViewport(preset, containerRef.current?.clientWidth ?? 1000);
     studio.controls.setView(cfg.pos, cfg.target);
   };
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const overview = CAMERA_PRESETS.overview;
+    const overview = hallViewForViewport("overview", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: overview.pos,
@@ -169,7 +158,7 @@ export function HallAluminium3D() {
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
-      const { simTimeSec: timeSec } = clock.pump(now);
+      const { dt, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
       const frameTel = transport.lastFrame.telemetry;
 
@@ -184,6 +173,7 @@ export function HallAluminium3D() {
           aluminiumProductionRateKgPerHour: p.aluminiumProductionRateKgPerHour,
         },
         timeSec,
+        dt,
       );
 
       controls.update();
@@ -194,10 +184,22 @@ export function HallAluminium3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
+      model.dispose();
       studio.cleanup();
       studioRef.current = null;
     };
   }, [live]);
+
+  useEffect(() => {
+    const restoreResponsiveView = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const config = hallViewForViewport(activePreset, container.clientWidth);
+      studioRef.current?.controls.setView(config.pos, config.target);
+    };
+    window.addEventListener("resize", restoreResponsiveView);
+    return () => window.removeEventListener("resize", restoreResponsiveView);
+  }, [activePreset]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
@@ -218,22 +220,22 @@ export function HallAluminium3D() {
             <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
               <Camera className="w-3.5 h-3.5" /> View:
             </span>
-            {(["overview", "anodes", "molten_bath", "siphon_tap"] as CameraPreset[]).map(
-              (preset) => (
-                <button
-                  key={preset}
-                  type="button"
-                  onClick={() => applyCameraPreset(preset)}
-                  className={`min-h-9 px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                    activePreset === preset
-                      ? "bg-amber-600 text-white shadow-xs font-semibold"
-                      : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                  }`}
-                >
-                  {preset.replace("_", " ")}
-                </button>
-              ),
-            )}
+            {(
+              ["overview", "anodes", "molten_bath", "siphon_tap"] as HallAluminiumCameraPreset[]
+            ).map((preset) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyCameraPreset(preset)}
+                className={`min-h-9 px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activePreset === preset
+                    ? "bg-amber-600 text-white shadow-xs font-semibold"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {preset.replace("_", " ")}
+              </button>
+            ))}
           </div>
         )}
 
@@ -390,6 +392,14 @@ export function HallAluminium3D() {
 
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <p
+          data-testid="hall-cell-source-boundary"
+          className="mb-3 text-[11px] leading-4 text-ink-600 dark:text-parchment-400"
+        >
+          The open wall is an exhibit cutaway. Hall&apos;s drawings establish the crucible, immersed
+          electrodes, and molten bath; the four-anode layout and 300 kA scale are an explicitly
+          normalized modern Hall–Héroult teaching scenario, not dimensions printed in US 400,766.
+        </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <SensitivitySlider
             id="cellCurrent"

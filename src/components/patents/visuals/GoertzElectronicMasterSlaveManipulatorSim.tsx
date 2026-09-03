@@ -438,7 +438,7 @@ export function GoertzElectronicMasterSlaveManipulatorSim() {
             />
           </label>
           <label htmlFor={contactId} className="block text-xs text-slate-200">
-            Illustrative remote contact resistance
+            Illustrative gripper obstruction
             <span className="float-right font-mono text-rose-300">{percent(contact)}</span>
             <input
               id={contactId}

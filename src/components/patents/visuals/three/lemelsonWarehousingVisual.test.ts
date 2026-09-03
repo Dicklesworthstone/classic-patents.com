@@ -1,4 +1,6 @@
 import { describe, expect, it } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import {
   DEFAULT_LEMELSON_CONTROLS,
   readLemelsonWarehousingControls,
@@ -7,6 +9,26 @@ import {
 import { createLemelsonWarehousingModel } from "./lemelsonWarehousingModel";
 
 describe("US 3,119,501 Jerome Lemelson Automatic Warehousing Visual Boundary", () => {
+  it("keeps the preserved alternate studio deterministic and explicitly outside dispatch", () => {
+    const alternateSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/LemelsonWarehousing3D.tsx"),
+      "utf8",
+    );
+    const dispatcherSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/index.tsx"),
+      "utf8",
+    );
+
+    expect(alternateSource).toContain("createStudioClock");
+    expect(alternateSource).toContain("clock.pump(timeMs)");
+    expect(alternateSource).toContain("simTimeSec - resetEpochRef.current");
+    expect(alternateSource).toContain("studio.cleanup()");
+    expect(alternateSource).not.toContain("setSimTime");
+    expect(alternateSource).not.toContain("performance.now");
+    expect(dispatcherSource).toContain("<LemelsonAutomaticWarehousing3D />");
+    expect(dispatcherSource).not.toContain("<LemelsonWarehousing3D />");
+  });
+
   it("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
     const model = createLemelsonWarehousingModel();
     expect(model.group).toBeDefined();
@@ -67,5 +89,20 @@ describe("US 3,119,501 Jerome Lemelson Automatic Warehousing Visual Boundary", (
     expect(model.forkMesh.position.z).toBeCloseTo(tel.forkY, 2);
 
     model.dispose();
+  });
+
+  it("keeps the interactive deck below the canvas instead of covering the racking", () => {
+    const studioSource = readFileSync(
+      join(
+        process.cwd(),
+        "src/components/patents/visuals/three/LemelsonAutomaticWarehousing3D.tsx",
+      ),
+      "utf8",
+    );
+
+    expect(studioSource.indexOf('data-mobile-layout="controls-below-canvas"')).toBeGreaterThan(
+      studioSource.indexOf("ref={containerRef}"),
+    );
+    expect(studioSource).not.toContain("bottom-[350px]");
   });
 });

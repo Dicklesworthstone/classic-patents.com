@@ -9,8 +9,7 @@ import {
 } from "@/data/patents/sourceTextValidation";
 import { archivalEditionForPublication } from "./publicationApproval";
 
-const BARE_DRAWING_REFERENCE =
-  /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|(?:section|division)\s+\d+)\b/i;
+const BARE_DRAWING_REFERENCE = /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|division\s+\d+)\b/i;
 
 const manualPatents = () => allPatents.filter((patent) => archivalEditionForPublication(patent));
 

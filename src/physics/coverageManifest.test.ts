@@ -10,6 +10,8 @@ import {
 import { allPatents } from "@/data/patents";
 import {
   buildPatentCoverageManifest,
+  EXTERNAL_RUNTIME_OWNER_PATENT_IDS,
+  hasExternalRuntimeOwner,
   type SharedBusParticipation,
   summarizePatentCoverage,
   wasmSurfaceForPatent,
@@ -32,12 +34,26 @@ const runtimeOwnerSources = [
     .filter((filename) => filename.endsWith("Kernel.ts"))
     .map((filename) => readFileSync(join(physicsDirectory, filename), "utf8")),
 ];
+const genericWasmHookSource = readFileSync(
+  join(physicsDirectory, "useGenericWasmSource.ts"),
+  "utf8",
+);
+
+function runtimeSourcesReachLoader(sources: readonly string[], loaderFunction: string): boolean {
+  if (sources.some((source) => source.includes(loaderFunction))) return true;
+  return (
+    loaderFunction === "ensureGenericWasm" &&
+    sources.some((source) => source.includes("useGenericWasmSource")) &&
+    genericWasmHookSource.includes(loaderFunction)
+  );
+}
 
 function assetExists(publicUrl: string): boolean {
   return Bun.file(join(ROOT, "public", publicUrl.replace(/^\//, ""))).size > 0;
 }
 
 function sharedBusParticipation(patentId: string): SharedBusParticipation {
+  if (hasExternalRuntimeOwner(patentId)) return "updater";
   const matchingSources = threeVisualSources.filter((source) => source.includes(patentId));
   if (matchingSources.some((source) => source.includes("registerUpdater"))) return "updater";
   if (matchingSources.some((source) => source.includes("useFrankenSimPhysics"))) return "snapshot";
@@ -87,8 +103,8 @@ describe("executable project coverage manifest", () => {
     expect(manifest.filter((row) => row.runtime.wasmSurface === "interpretive-wasm")).toHaveLength(
       0,
     );
-    expect(manifest.filter((row) => row.runtime.wasmSurface === "generic-wasm")).toHaveLength(40);
-    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(60);
+    expect(manifest.filter((row) => row.runtime.wasmSurface === "generic-wasm")).toHaveLength(37);
+    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(63);
 
     for (const patentId of [
       "us-x9430-colt-revolver",
@@ -97,8 +113,8 @@ describe("executable project coverage manifest", () => {
       "us-1773980-farnsworth-tv",
       "us-1781541-einstein-refrigerator",
       "us-2708656-fermi-reactor",
-      "us-3671542-kwolek-kevlar",
       "us-4136359-wozniak-apple",
+      "us-4921293-salisbury-robot-hand",
     ]) {
       expect(wasmSurfaceForPatent(patentId)?.kind).toBe("generic-wasm");
     }
@@ -107,6 +123,8 @@ describe("executable project coverage manifest", () => {
       "us-132-davenport-electric-motor",
       "us-124404-westinghouse-air-brake",
       "us-542846-diesel-engine",
+      "us-586193-marconi-radio",
+      "us-3671542-kwolek-kevlar",
     ]) {
       expect(wasmSurfaceForPatent(patentId)).toBeUndefined();
     }
@@ -123,6 +141,8 @@ describe("executable project coverage manifest", () => {
   });
 
   test("connects dormant generic adapters and leaves non-consumers on the typed host", () => {
+    expect(genericWasmHookSource).toContain("ensureGenericWasm");
+    expect(genericWasmHookSource).toContain("subscribeGenericKernelSource");
     for (const [studioFile, consumerFile] of [
       ["ColtRevolver3D.tsx", "coltRevolverModel.ts"],
       ["OttoEngine3D.tsx", "ottoEngineModel.ts"],
@@ -130,7 +150,6 @@ describe("executable project coverage manifest", () => {
       ["FarnsworthTV3D.tsx", "farnsworthTvModel.ts"],
       ["EinsteinRefrigerator3D.tsx", "einsteinRefrigeratorModel.ts"],
       ["FermiReactor3D.tsx", "fermiReactorModel.ts"],
-      ["KwolekKevlar3D.tsx", "kwolekKevlarModel.ts"],
       ["WozniakApple3D.tsx", "wozniakAppleModel.ts"],
     ] as const) {
       const studioSource = readFileSync(join(threeVisualDirectory, studioFile), "utf8");
@@ -164,9 +183,7 @@ describe("executable project coverage manifest", () => {
       const matchingRuntimeSources = runtimeOwnerSources.filter((source) =>
         source.includes(row.patentId),
       );
-      expect(matchingRuntimeSources.some((source) => source.includes(surface.loaderFunction))).toBe(
-        true,
-      );
+      expect(runtimeSourcesReachLoader(matchingRuntimeSources, surface.loaderFunction)).toBe(true);
       if (checkedArtifacts.has(surface.artifactUrl)) continue;
       checkedArtifacts.add(surface.artifactUrl);
       const bytes = await Bun.file(
@@ -176,13 +193,17 @@ describe("executable project coverage manifest", () => {
         surface.artifactSha256,
       );
     }
-    expect(checkedArtifacts.size).toBe(11);
+    expect(checkedArtifacts.size).toBe(12);
   });
 
   test("all 3D studios now have an updater or a typed snapshot path", () => {
-    expect(manifest.filter((row) => row.runtime.sharedBus === "updater")).toHaveLength(48);
-    expect(manifest.filter((row) => row.runtime.sharedBus === "snapshot")).toHaveLength(55);
+    expect(manifest.filter((row) => row.runtime.sharedBus === "updater")).toHaveLength(53);
+    expect(manifest.filter((row) => row.runtime.sharedBus === "snapshot")).toHaveLength(50);
     expect(manifest.filter((row) => row.runtime.sharedBus === "missing")).toHaveLength(0);
+    for (const patentId of EXTERNAL_RUNTIME_OWNER_PATENT_IDS) {
+      expect(visualDispatcherSource).toContain(`case "${patentId}":`);
+      expect(manifest.find((row) => row.patentId === patentId)?.runtime.sharedBus).toBe("updater");
+    }
     for (const patentId of ["us-194047-otto-engine", "us-6594844-roomba"]) {
       const promotedOwner = manifest.find((row) => row.patentId === patentId);
       expect(promotedOwner?.runtime.admittedSharedBusProvenance).toEqual(["WASM", "TS_FALLBACK"]);

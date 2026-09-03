@@ -263,6 +263,7 @@ export function ZeppelinAirshipSim() {
           </div>
           <input
             type="range"
+            aria-label="Sliding keel trim-weight position"
             min="-15"
             max="15"
             step="1"
@@ -278,6 +279,7 @@ export function ZeppelinAirshipSim() {
           </div>
           <input
             type="range"
+            aria-label="Hydrogen gas-cell purity and inflation percentage"
             min="75"
             max="100"
             step="1"

@@ -48,7 +48,7 @@ describe("ColorizedEquation Component", () => {
     const helicopterHtml = renderToString(<ColorizedEquation equation={helicopter} />);
 
     expect(ethernetHtml).toContain("Coaxial Cable Electromagnetic Wave Propagation");
-    expect(helicopterHtml).toContain("Anti-Torque Tail Rotor Equilibrium");
+    expect(helicopterHtml).toContain("Modern Anti-Torque Moment-Balance Lens");
     expect(JSON.stringify([ethernet, helicopter])).not.toContain("formatValue");
   });
 
@@ -116,5 +116,8 @@ describe("ColorizedEquation Component", () => {
     expect(html).toContain("eq-term-c_di");
     expect(html).toContain('data-var="e"');
     expect(html).toContain("eq-term-e");
+    expect(html).toContain(
+      'aria-label="Interactive governing formula. Use the arrow keys to inspect each term."',
+    );
   });
 });

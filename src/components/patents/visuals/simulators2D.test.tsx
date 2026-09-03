@@ -177,6 +177,22 @@ describe("2D Dynamic Vector Simulators & Source Visuals", () => {
     });
   }
 
+  test("keeps the PageRank canvas phase and drawing snapshot live across power iterations", async () => {
+    const source = await Bun.file(new URL("./PageRankSim.tsx", import.meta.url)).text();
+    const canvasLoop = source.slice(
+      source.indexOf("const render = () =>"),
+      source.indexOf("// Step iteration effect when playing"),
+    );
+
+    expect(source).toContain('import { useLiveSimParams } from "./three/useLiveSimParams";');
+    expect(source).toContain("const particlePhaseRef = useRef(0);");
+    expect(source).not.toContain("let particlePhase = 0;");
+    expect(canvasLoop).toContain("particlePhaseRef.current += 0.02;");
+    expect(canvasLoop).toContain("live.current");
+    expect(canvasLoop).toContain("}, [live, onscreenRef]);");
+    expect(canvasLoop).not.toContain("ranks, dampingFactor, iterationCount");
+  });
+
   test("renders source visuals gracefully in SSR mode", () => {
     const goddardHtml = renderToStaticMarkup(<GoddardRocketSourceVisual />);
     expect(goddardHtml.length).toBeGreaterThan(0);

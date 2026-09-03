@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "runId": "2026-09-03T03-52-05.952Z__37890",
+  "baseUrl": "http://127.0.0.1:3428",
+  "patentCount": 1,
+  "viewportCount": 3,
+  "eventCount": 3,
+  "failureCount": 3,
+  "eventPath": "/Users/jemanuel/projects/classic-patents.com/artifacts/reno-escalator-vision-current/2026-09-03T03-52-05.952Z__37890/events.jsonl",
+  "screenshotDirectory": "/Users/jemanuel/projects/classic-patents.com/artifacts/reno-escalator-vision-current/2026-09-03T03-52-05.952Z__37890/screenshots",
+  "performanceSampleCount": 0,
+  "performanceSummaryPath": null
+}

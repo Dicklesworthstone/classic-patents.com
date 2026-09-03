@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { stepDeForestAudion } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { useLiveSimParams } from "./three/useLiveSimParams";
 import { usePatentAudio } from "./three/usePatentAudio";
 import { useOffscreenGate } from "./useOffscreenGate";
 
@@ -42,7 +43,17 @@ export function DeForestAudionSim({
     gridSignalAmplitudeMv,
     loadResistanceKOhms,
   });
+  const live = useLiveSimParams({
+    plateVoltageV,
+    gridBiasVoltageV,
+    filamentCurrentA,
+    gridSignalAmplitudeMv,
+    loadResistanceKOhms,
+    physics,
+  });
 
+  // Draw from a layout-effect-synchronized snapshot so changing a control
+  // preserves the accumulated electron and oscilloscope phase.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -55,6 +66,14 @@ export function DeForestAudionSim({
     const render = () => {
       animId = requestAnimationFrame(render);
       if (!onscreenRef.current) return;
+      const {
+        plateVoltageV,
+        gridBiasVoltageV,
+        filamentCurrentA,
+        gridSignalAmplitudeMv,
+        loadResistanceKOhms,
+        physics,
+      } = live.current;
       time += 0.03;
 
       const w = canvas.width;
@@ -349,15 +368,7 @@ export function DeForestAudionSim({
     return () => {
       cancelAnimationFrame(animId);
     };
-  }, [
-    plateVoltageV,
-    gridBiasVoltageV,
-    filamentCurrentA,
-    gridSignalAmplitudeMv,
-    loadResistanceKOhms,
-    physics,
-    onscreenRef.current,
-  ]);
+  }, [live, onscreenRef]);
 
   return (
     <div
@@ -421,6 +432,7 @@ export function DeForestAudionSim({
           </div>
           <input
             type="range"
+            aria-label="B-battery plate voltage in volts"
             min={10}
             max={120}
             step={5}
@@ -439,6 +451,7 @@ export function DeForestAudionSim({
           </div>
           <input
             type="range"
+            aria-label="Grid bias voltage in volts"
             min={-6.0}
             max={2.0}
             step={0.25}
@@ -457,6 +470,7 @@ export function DeForestAudionSim({
           </div>
           <input
             type="range"
+            aria-label="Filament current in amperes"
             min={0.5}
             max={1.5}
             step={0.1}
@@ -475,6 +489,7 @@ export function DeForestAudionSim({
           </div>
           <input
             type="range"
+            aria-label="Input radio-frequency signal amplitude in millivolts"
             min={10}
             max={200}
             step={5}
@@ -493,6 +508,7 @@ export function DeForestAudionSim({
           </div>
           <input
             type="range"
+            aria-label="Headset load resistance in kiloohms"
             min={5}
             max={50}
             step={5}

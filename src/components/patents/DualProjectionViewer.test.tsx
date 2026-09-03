@@ -1,4 +1,6 @@
 import { describe, expect, mock, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 
 // Mock next/navigation
@@ -12,7 +14,15 @@ mock.module("next/navigation", () => ({
 }));
 
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
-import { evaluateArchivalPublicationState } from "@/data/editions/publicationApproval";
+import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
+import {
+  evaluateArchivalPublicationState,
+  patentForPublicationViewer,
+} from "@/data/editions/publicationApproval";
+import { reviewedLedgerTextForViewer } from "@/data/editions/reviewedLedgerPublicationEvidence.server";
+import { fermiReactorPatent } from "@/data/patents/fermi-reactor";
+import { kwolekKevlarPatent } from "@/data/patents/kwolek-kevlar";
+import { noyceIcPatent } from "@/data/patents/noyce-ic";
 import { wrightFlyerPatent } from "@/data/patents/wright-flyer";
 import { DualProjectionViewer } from "./DualProjectionViewer";
 
@@ -24,7 +34,6 @@ describe("DualProjectionViewer component", () => {
         archivalPublication={evaluateArchivalPublicationState(wrightFlyerPatent)}
         archivalParallelReadings={undefined}
         colorizedEquations={getColorizedEquationsForPatent(wrightFlyerPatent.id)}
-        hasRawSourceText={false}
         initialView="plain-english"
       />,
     );
@@ -40,20 +49,117 @@ describe("DualProjectionViewer component", () => {
     expect(html).toContain('data-hydrated="false"');
   });
 
-  test("renders placeholder when archival edition is held in original-spec view mode", () => {
+  test("renders an existing held edition instead of gating its complete patent text", () => {
     const originalHtml = renderToStaticMarkup(
       <DualProjectionViewer
-        patent={wrightFlyerPatent}
-        archivalPublication={evaluateArchivalPublicationState(wrightFlyerPatent)}
-        archivalParallelReadings={undefined}
-        colorizedEquations={getColorizedEquationsForPatent(wrightFlyerPatent.id)}
-        hasRawSourceText={false}
+        patent={noyceIcPatent}
+        archivalPublication={evaluateArchivalPublicationState(noyceIcPatent)}
+        archivalParallelReadings={archivalParallelReadingsFor(noyceIcPatent.id)}
+        colorizedEquations={getColorizedEquationsForPatent(noyceIcPatent.id)}
         initialView="original-spec"
       />,
     );
 
     expect(originalHtml).toContain('data-archival-publication-state="held"');
     expect(originalHtml).toContain("AUDIT_FIGURE_ACCEPTANCE_PENDING");
-    expect(originalHtml).toContain("Open Complete Original PDF");
+    expect(originalHtml).toContain("In brief, the present invention utilizes");
+    expect(originalHtml).toContain("A semiconductor device comprising");
+    expect(originalHtml).not.toContain('data-testid="held-archival-edition-notice"');
+  });
+
+  test("uses an existing held edition in the split-source face", () => {
+    const splitHtml = renderToStaticMarkup(
+      <DualProjectionViewer
+        patent={noyceIcPatent}
+        archivalPublication={evaluateArchivalPublicationState(noyceIcPatent)}
+        archivalParallelReadings={archivalParallelReadingsFor(noyceIcPatent.id)}
+        colorizedEquations={getColorizedEquationsForPatent(noyceIcPatent.id)}
+        initialView="split-view"
+      />,
+    );
+
+    expect(splitHtml).toContain("Face 2: Complete Archival Source Text");
+    expect(splitHtml).toContain("In brief, the present invention utilizes");
+    expect(splitHtml).not.toContain('data-testid="held-archival-edition-notice"');
+  });
+
+  test("renders a complete patent transcript as text when no structured edition exists", () => {
+    const reviewedTranscript = readFileSync(
+      join(process.cwd(), "public/patents/transcripts/us-821393-wright-flyer-reviewed.txt"),
+      "utf8",
+    );
+    const patentWithoutEdition = { ...wrightFlyerPatent, archivalEdition: undefined };
+
+    const originalHtml = renderToStaticMarkup(
+      <DualProjectionViewer
+        patent={patentWithoutEdition}
+        archivalPublication={evaluateArchivalPublicationState(patentWithoutEdition)}
+        reviewedTranscript={reviewedTranscript}
+        colorizedEquations={getColorizedEquationsForPatent(wrightFlyerPatent.id)}
+        initialView="original-spec"
+      />,
+    );
+    const splitHtml = renderToStaticMarkup(
+      <DualProjectionViewer
+        patent={patentWithoutEdition}
+        archivalPublication={evaluateArchivalPublicationState(patentWithoutEdition)}
+        reviewedTranscript={reviewedTranscript}
+        colorizedEquations={getColorizedEquationsForPatent(wrightFlyerPatent.id)}
+        initialView="split-view"
+      />,
+    );
+
+    for (const html of [originalHtml, splitHtml]) {
+      expect(html).toContain("Complete patent transcript");
+      expect(html).toContain("--- REVIEWED TRANSCRIPTION PAGE 1 OF 10 ---");
+      expect(html).toContain("Be it known that we, ORVILLE WRIGHT and WILBUR WRIGHT");
+      expect(html).not.toContain('data-testid="held-archival-edition-notice"');
+      expect(html).not.toContain('data-testid="pinned-pdf-facsimile"');
+    }
+  });
+
+  test("renders the complete locally available Kwolek instrument despite its editorial hold", () => {
+    const transcript = reviewedLedgerTextForViewer(kwolekKevlarPatent);
+    expect(transcript).toStartWith("--- REVIEWED TRANSCRIPTION PAGE 1 OF 58 ---");
+
+    const html = renderToStaticMarkup(
+      <DualProjectionViewer
+        patent={kwolekKevlarPatent}
+        archivalPublication={evaluateArchivalPublicationState(kwolekKevlarPatent)}
+        reviewedTranscript={transcript}
+        colorizedEquations={getColorizedEquationsForPatent(kwolekKevlarPatent.id)}
+        initialView="original-spec"
+      />,
+    );
+
+    expect(html).toContain("Complete patent transcript");
+    expect(html).toContain("--- REVIEWED TRANSCRIPTION PAGE 1 OF 58 ---");
+    expect(html).toContain("What is claimed is:");
+    expect(html).not.toContain('data-testid="held-archival-edition-notice"');
+  });
+
+  test("renders Fermi's complete reviewed ledger instead of its incomplete stored edition", () => {
+    const decision = evaluateArchivalPublicationState(fermiReactorPatent);
+    const patent = patentForPublicationViewer(fermiReactorPatent, decision);
+    const transcript = reviewedLedgerTextForViewer(fermiReactorPatent);
+
+    expect(fermiReactorPatent.archivalEdition).toBeDefined();
+    expect(patent.archivalEdition).toBeUndefined();
+    expect(transcript).toStartWith("--- REVIEWED TRANSCRIPTION PAGE 1 OF ");
+
+    const html = renderToStaticMarkup(
+      <DualProjectionViewer
+        patent={patent}
+        archivalPublication={decision}
+        reviewedTranscript={transcript}
+        colorizedEquations={getColorizedEquationsForPatent(fermiReactorPatent.id)}
+        initialView="original-spec"
+      />,
+    );
+
+    expect(html).toContain("Complete patent transcript");
+    expect(html).toContain(transcript?.slice(0, 120));
+    expect(html).not.toContain("Complete Manually Prepared Archival Edition");
+    expect(html).not.toContain('data-testid="source-text-excerpt"');
   });
 });

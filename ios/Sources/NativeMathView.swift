@@ -266,6 +266,7 @@ private struct NativeTeXParser {
         "equiv": "≡", "propto": "∝", "rightarrow": "→", "leftarrow": "←",
         "hookrightarrow": "↪", "dashv": "⊣",
         "to": "→", "longrightarrow": "⟶", "Rightarrow": "⇒", "Leftarrow": "⇐", "leftrightarrow": "↔", "rightleftharpoons": "⇌",
+        "Longleftrightarrow": "⟺",
         "mapsto": "↦", "in": "∈", "notin": "∉", "subset": "⊂", "subseteq": "⊆",
         "varnothing": "∅",
         "cup": "∪", "cap": "∩", "forall": "∀", "exists": "∃", "neg": "¬",

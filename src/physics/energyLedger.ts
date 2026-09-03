@@ -87,18 +87,6 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
-    case "us-2708656-fermi-reactor": {
-      const thermalFlux = params.thermalNeutronFlux ?? 1.2e6;
-      const keff = params.keff ?? 1.0004;
-      const coreMassKg = 42000.0; // Graphite + Uranium lattice
-
-      thermal = coreMassKg * 720.0 * 20.0; // Stored thermal mass
-      // Fission energy release rate
-      powerIn = thermalFlux * 1.8e-4 * (keff >= 1.0 ? keff : 0.95);
-      dissipated = coreMassKg * 0.05 * 9.81; // Thermal diffusion to ambient
-      break;
-    }
-
     case "us-2495429-spencer-microwave": {
       // US 2,495,429 gives comparative cooking-energy observations, but it
       // does not specify the electrical input, cavity Q, conversion
@@ -112,26 +100,15 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-3858232-boyle-smith-ccd": {
-      const vg = params.gateVoltageV ?? 10.0;
-      const fMhz = params.clockFrequencyMhz ?? 5.0;
-      const cPixelFarads = 1.5e-13; // 150 fF per MOS gate
-      const pixelCount = 1024;
-      em = 0.5 * cPixelFarads * pixelCount * vg * vg; // MOS gate potential well energy
-      powerIn = pixelCount * cPixelFarads * (vg * vg) * (fMhz * 1e6); // Dynamic switching power
-      dissipated = powerIn; // Thermal dissipation in silicon substrate
-      thermal = 0.05 * 700.0 * 25.0; // Silicon chip heat capacity
+      // The grant prints topology and a pulse-overlap condition, not the
+      // capacitance, operating voltage/frequency, die size, current, loss, or
+      // thermal mass needed for a closed energy ledger.
       break;
     }
 
     case "us-2981877-noyce-ic": {
-      const vSupply = params.reverseBias ?? params.supplyVoltageV ?? 5.0;
-      const fClockMhz = params.clockFrequencyMhz ?? 10.0;
-      const gateCount = 64;
-      const cGateFarads = 2.0e-12; // 2 pF total interconnect + junction capacitance
-      em = 0.5 * gateCount * cGateFarads * vSupply * vSupply; // Stored PN junction & oxide energy
-      powerIn = gateCount * cGateFarads * (vSupply * vSupply) * (fClockMhz * 1e6); // CV^2 f dynamic power
-      dissipated = powerIn; // Silicon substrate Joule heat
-      thermal = 0.02 * 700.0 * 25.0; // Monolithic die heat capacity
+      // The grant provides no operating voltage, capacitance, clock, current,
+      // or die thermal data. Preserve the unsupported zero ledger.
       break;
     }
 
@@ -149,17 +126,10 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-3671542-kwolek-kevlar": {
-      const vImpact = params.impactVelocity ?? 450.0;
-      const draw = params.drawRatio ?? 6.5;
-      const eModulusGpa = 20.0 + draw * 17.0; // 130 GPa modulus at 6.5x draw
-      const bulletMassKg = 0.008; // 8 gram bullet
-      kinetic = 0.5 * bulletMassKg * vImpact * vImpact; // Ballistic projectile kinetic energy (810 J)
-      const strain = 0.035; // 3.5% elongation at break
-      const fabricVolumeM3 = 0.25 * 0.25 * 0.005; // 25cm x 25cm x 5mm armor vest panel
-      potential = 0.5 * (eModulusGpa * 1e9) * strain * strain * fabricVolumeM3; // PPTA tensile strain energy
-      powerIn = kinetic * 50.0; // Rapid impulse energy transfer rate
-      dissipated = powerIn * 0.96; // Transverse wave dispersion & fiber delamination dissipation
-      thermal = 0.3 * 1420.0 * 20.0; // PPTA fabric heat capacity
+      // The checked claims identify a composition and selected liquid media,
+      // not a spinning line, finished fiber, test specimen, or energy path.
+      // Keep every ledger term at zero rather than manufacturing a tensile or
+      // ballistic model from later material data.
       break;
     }
 
@@ -324,14 +294,21 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
-    case "us-3353115-maiman-laser":
     case "us-2929922-townes-laser": {
-      const pumpWatts = params.pumpPowerWatts ?? params.flashEnergyJoules ?? 500.0;
-      const cavityQ = 1e5;
-      em = (pumpWatts / (2 * Math.PI * 4.32e14)) * cavityQ * 1e-6; // Stored optical field
-      powerIn = pumpWatts; // Flashlamp / optical pump input
-      dissipated = pumpWatts * 0.985; // Non-radiative lattice phonon relaxation (1.5% wall-plug)
-      thermal = 450.0; // Ruby crystal / laser medium heat
+      // The grant does not supply pump power, transition wavelength, gain,
+      // detector response, or an operating point. Preserve the unsupported
+      // zero ledger rather than importing a modern ruby-laser efficiency.
+      break;
+    }
+
+    case "us-3353115-maiman-ruby-laser":
+    case "us-3353115-maiman-laser": {
+      // The scenario kernel can close a pulse-power flow from its explicitly
+      // labeled modern inputs, but neither the grant nor that stateless step
+      // supplies a time-resolved optical-field state, thermal mass, or lattice
+      // temperature field. A Port-Hamiltonian stored-energy claim would invent
+      // all three. The Maiman faces therefore use energyChannelsFor() for the
+      // pulse balance and keep this state ledger honestly empty.
       break;
     }
 
@@ -409,26 +386,15 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-3138743-kilby-integrated-circuit": {
-      const vcc = params.supplyVoltageV ?? 5.0;
-      const _fClock = params.mesaFrequencyMhz ?? 1.0;
-      const rMesa = 350.0; // Mesa diffused resistor
-      powerIn = (vcc * vcc) / rMesa + 12.0e-3; // Resistor chain + phase-shift oscillator power
-      const cMesaPf = 80.0e-12; // PN junction mesa capacitor
-      em = 0.5 * cMesaPf * vcc * vcc; // Distributed monolithic junction capacitor energy
-      dissipated = powerIn; // Germanium monolithic bar thermal dissipation
-      thermal = 0.005 * 320.0 * 25.0; // Integrated circuit bar heat capacity
+      // The source omits an operating voltage/current and thermal point, so
+      // this ledger intentionally preserves unsupported energy terms at zero.
       break;
     }
 
     case "us-3541541-engelbart-mouse": {
-      const moveSpeedCms = params.movementSpeedCms ?? 12.0;
-      const v = moveSpeedCms / 100.0; // m/s
-      const mouseMassKg = 0.22; // Hardwood housing + knife-edge wheels
-      kinetic = 0.5 * mouseMassKg * v * v;
-      const iPot = 0.005; // 5 mA potentiometer divider current
-      powerIn = 5.0 * iPot + 0.15 * v; // 5V supply power + hand mechanical rolling work
-      dissipated = 5.0 * iPot + 0.14 * v; // Potentiometer Joule heat + rolling friction on desk
-      thermal = 1.2;
+      // The grant prints neither mass, hand force, rolling resistance, supply
+      // voltage/current, nor a thermal operating point. Preserve every energy
+      // term at zero instead of inventing a modern mouse power budget.
       break;
     }
 
@@ -774,17 +740,6 @@ export function computePortHamiltonianEnergy(
       thermal = ashMassKg * 840.0 * (kilnTempC - 20.0); // Leached wood ash furnace thermal capacity
       powerIn = 8500.0; // Hardwood combustion heat input
       dissipated = 8200.0; // Radiative furnace flue gas dissipation
-      break;
-    }
-
-    case "us-2543181-land-polaroid": {
-      const rollerPressureN = params.rollerPressureN ?? 85.0;
-      const rollerSpeedMps = 0.05;
-      const _podVolumeMl = 2.5;
-      powerIn = rollerPressureN * rollerSpeedMps; // Manual roller crank mechanical work
-      potential = 0.5 * 1200.0 * 0.002 ** 2; // Rupturable pod pouch burst spring strain
-      dissipated = 0.85 * powerIn + 1.2; // Viscous hydro-shear dissipation of reagent paste
-      thermal = 45.0; // Exothermic chemical reduction enthalpy
       break;
     }
 

@@ -1,87 +1,73 @@
 "use client";
 
-import { Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { Eye, EyeOff, Layers, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
-import { FrankenSimEngine } from "@/physics/engine";
+import {
+  FERMI_KINETICS_SOURCE_BOUNDARY,
+  NATURAL_URANIUM_U235_PERCENT,
+  stepFermiKinetics,
+} from "@/physics/fermiKinetics";
 import { ensureGenericWasm } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import {
+  type FermiReactorCameraPreset as CameraPreset,
+  FERMI_REACTOR_CAMERA_PRESETS,
+  fermiReactorViewForViewport,
+} from "./fermiReactorCamera";
 import { buildFermiReactorModel, updateFermiReactorKinematics } from "./fermiReactorModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
-import { usePatentAudio } from "./usePatentAudio";
-
-type CameraPreset = "iso" | "control_rods" | "graphite_core" | "gantry" | "detector" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [13, 10, 16], target: [0, 0, 0] },
-  control_rods: { pos: [0, 3.2, 4.2], target: [0, 1.0, 0] },
-  graphite_core: { pos: [0, -0.6, 4.5], target: [0, -1.2, 0] },
-  gantry: { pos: [0, 7.5, 6.0], target: [0, 4.0, 0] },
-  detector: { pos: [5.5, 0.5, 3.2], target: [2.4, -0.5, 0] },
-  top: { pos: [0, 11.0, 0.1], target: [0, 0, 0] },
-};
 
 export function FermiReactor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Nuclear Reactor Kinetics State Controls
   const { params, updateParam } = usePatentPhysics("us-2708656-fermi-reactor");
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
-  const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const [isCutaway, setIsCutaway] = useState<boolean>(true);
   const controlRodWithdrawalPct = params.rodWithdrawal ?? 83.5;
   const moderatorPurityPct = params.moderatorPurity ?? 99.5;
-  const fuelEnrichmentPct = params.fuelEnrichmentPct ?? 0.72;
-  const [showNeutronCascade, _setShowNeutronCascade] = useState<boolean>(true);
-  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
+  const showNeutronCascade = true;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const claim1Active = (params.claim1Active ?? 1) >= 0.5;
 
   useEffect(() => {
+    // Generic FrankenSim lattice/field helpers supply the display texture.
+    // They do not promote this source-bounded view into a neutronics solver.
     void ensureGenericWasm();
   }, []);
 
-  // Four-Factor Nuclear Physics Calculations
-  const reactorKinetics = FrankenSimEngine.stepFermiReactor(
+  const reactorKinetics = stepFermiKinetics(
     controlRodWithdrawalPct,
     moderatorPurityPct,
-    fuelEnrichmentPct,
+    NATURAL_URANIUM_U235_PERCENT,
+    claim1Active,
   );
+  const normalizedWithdrawalPct = 100 * (1 - reactorKinetics.controlRodInsertionFraction);
+  const declaredPurityPct = reactorKinetics.moderatorPurityPercent;
 
   const kEff = reactorKinetics.kEffective.toFixed(3);
-  const isSupercritical = Number(kEff) > 1.002;
-  const isCritical = Number(kEff) >= 0.998 && Number(kEff) <= 1.002;
-  const reactorPowerWatts = reactorKinetics.thermalPowerWatts;
-  const reactivityDollars = reactorKinetics.reactivityDollars.toFixed(2);
+  const isSupercritical = claim1Active && Number(kEff) > 1.002;
+  const isCritical = claim1Active && Number(kEff) >= 0.998 && Number(kEff) <= 1.002;
 
   useFrankenSimPhysics("us-2708656-fermi-reactor", {
     domain: "nuclear_kinetics",
-    refusal: { isRefused: false },
-    nuclear: reactorKinetics,
+    refusal: { isRefused: true, reason: FERMI_KINETICS_SOURCE_BOUNDARY },
   });
 
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-
   const live = useLiveSimParams({
-    controlRodWithdrawalPct,
-    moderatorPurityPct,
+    controlRodWithdrawalPct: normalizedWithdrawalPct,
+    moderatorPurityPct: declaredPurityPct,
     showNeutronCascade,
     isCutaway,
+    claim1Active,
     kEff,
-    geigerIntervalMs: reactorKinetics.geigerIntervalMs,
-    geigerIntervalS: reactorKinetics.geigerIntervalS,
-    isAudioMuted,
     neutronDisplaySpeed: reactorKinetics.neutronDisplaySpeed,
-    rodStudioY: reactorKinetics.rodStudioY,
+    rodStudioX: reactorKinetics.rodStudioX,
     fuelGlowIntensity: reactorKinetics.fuelGlowIntensity,
   });
 
@@ -89,21 +75,15 @@ export function FermiReactor3D() {
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = fermiReactorViewForViewport(preset, containerRef.current?.clientWidth ?? 1024);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
-  };
-
-  const toggleSound = () => {
-    toggleEngine(() => {
-      soundEngine.playSwitchClick();
-    });
   };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = fermiReactorViewForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -118,8 +98,6 @@ export function FermiReactor3D() {
     scene.add(model.root);
 
     let reqId: number;
-    let geigerClickTimer = 0;
-
     const clock = createStudioClock();
 
     const animate = (now: number) => {
@@ -127,31 +105,20 @@ export function FermiReactor3D() {
       if (!studio.isVisible()) return;
       const { dt: delta } = clock.pump(now);
       const p = live.current;
-      const refused = Number(p.kEff) > 1.002;
 
       updateFermiReactorKinematics(
         model,
-        refused ? 0 : delta,
+        delta,
         p.controlRodWithdrawalPct,
         Number(p.kEff),
         p.moderatorPurityPct,
         p.neutronDisplaySpeed,
-        p.rodStudioY,
+        p.rodStudioX,
         p.fuelGlowIntensity,
         p.showNeutronCascade,
         p.isCutaway,
+        p.claim1Active,
       );
-
-      if (p.showNeutronCascade) {
-        geigerClickTimer += delta;
-        const clickInterval = p.geigerIntervalS;
-        if (geigerClickTimer > clickInterval) {
-          geigerClickTimer = 0;
-          if (!p.isAudioMuted) {
-            soundEngine.playSwitchClick();
-          }
-        }
-      }
 
       controls.update();
       renderer.render(scene, camera);
@@ -169,28 +136,20 @@ export function FermiReactor3D() {
 
   return (
     <div className="relative w-full rounded-2xl overflow-hidden bg-parchment-100 dark:bg-ink-950 border border-parchment-300 dark:border-ink-800 shadow-xl flex flex-col transition-colors">
-      {/* Port-Hamiltonian Conservative Energy & Radiation Dissipation Strip */}
-      <PortHamiltonianEnergyStrip
-        patentId="us-2708656-fermi-reactor"
-        params={{
-          thermalNeutronFlux: 1.2e6 * Number(kEff),
-          keff: Number(kEff),
-          coreTempKelvin: 310.0 + (reactorPowerWatts / 200.0) * 15.0,
-        }}
-      />
-
       {/* Top Header Bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 border-b border-parchment-300 dark:border-ink-800 bg-parchment-50/90 dark:bg-ink-900/90 backdrop-blur-md">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span
+              className={`w-2.5 h-2.5 rounded-full ${claim1Active ? "bg-emerald-500" : "bg-rose-500"}`}
+            />
             <h3 className="font-serif text-base sm:text-lg font-bold text-ink-900 dark:text-parchment-100">
-              Enrico Fermi & Leo Szilard Nuclear Chain-Reacting Pile (US 2,708,656)
+              Fermi & Szilard Graphite–Uranium Reactor (US 2,708,656)
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-0.5">
-            Chicago Pile-1 (CP-1): Graphite moderator lattice, lumped natural uranium, and cadmium
-            safety rods.
+            Figures 7–8 source arrangement: enclosed graphite pile, natural-uranium rod lattice,
+            side-entry absorbers, and ionization chamber.
           </p>
         </div>
       </div>
@@ -202,16 +161,7 @@ export function FermiReactor3D() {
         {/* Top-Left Camera View Presets Toolbar */}
         {showUiOverlay && (
           <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 shadow-sm max-w-[calc(100%-14rem)] sm:max-w-[calc(100%-28rem)]">
-            {(
-              [
-                ["iso", "Overview"],
-                ["control_rods", "Safety Rods"],
-                ["graphite_core", "Core Lattice"],
-                ["gantry", "Timber Rig"],
-                ["detector", "Geiger Counter"],
-                ["top", "Top-Down"],
-              ] as const
-            ).map(([preset, label]) => (
+            {(Object.keys(FERMI_REACTOR_CAMERA_PRESETS) as CameraPreset[]).map((preset) => (
               <button
                 key={preset}
                 type="button"
@@ -222,7 +172,7 @@ export function FermiReactor3D() {
                     : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800"
                 }`}
               >
-                {label}
+                {FERMI_REACTOR_CAMERA_PRESETS[preset].label}
               </button>
             ))}
           </div>
@@ -230,21 +180,17 @@ export function FermiReactor3D() {
 
         {/* Top-Right Action Controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center gap-1.5 max-w-[min(90%,26rem)] sm:max-w-[26rem] justify-end">
-          <ClaimConstraintToggle
-            patentId="us-2708656-fermi-reactor"
-            claimStates={claimStates}
-            onToggleClaim={(c, active) => {
-              setClaimStates((prev) => ({ ...prev, [c]: active }));
-              updateParam("rodWithdrawal", active ? 83.5 : 99.5);
-            }}
-          />
           <button
             type="button"
             onClick={() => {
               setIsCutaway(!isCutaway);
-              soundEngine.playSwitchClick();
             }}
-            title={isCutaway ? "Switch to Solid Pile" : "Switch to Core Cutaway"}
+            title={
+              isCutaway ? "Restore enclosure and opaque moderator" : "Expose Claim 1 rod lattice"
+            }
+            aria-label={
+              isCutaway ? "Restore enclosure and opaque moderator" : "Expose Claim 1 rod lattice"
+            }
             className={`min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
               isCutaway
                 ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
@@ -265,32 +211,6 @@ export function FermiReactor3D() {
             aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
           >
             {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
-          <button
-            aria-label={isAudioMuted ? "Unmute simulation audio" : "Mute simulation audio"}
-            type="button"
-            onClick={toggleSound}
-            className="min-h-9 p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
-          >
-            {isAudioMuted ? (
-              <VolumeX className="w-4 h-4" />
-            ) : (
-              <Volume2 className="w-4 h-4 text-amber-600" />
-            )}
-          </button>
-          <button
-            aria-label={showCalloutPins ? "Hide annotation pins" : "Show annotation pins"}
-            type="button"
-            onClick={() => setShowCalloutPins(!showCalloutPins)}
-            className={`min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showCalloutPins
-                ? "bg-amber-600 text-white border-amber-700 shadow-md"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-            title="Toggle Historical Patent Numeral Pins"
-          >
-            <Zap className="w-4 h-4" />
           </button>
           <button
             aria-label="Reset camera view"
@@ -319,26 +239,27 @@ export function FermiReactor3D() {
                       : "text-blue-700 dark:text-blue-400"
                 }`}
               >
-                {kEff} (
-                {isSupercritical ? "Supercritical" : isCritical ? "Critical" : "Subcritical"})
+                {claim1Active
+                  ? `${kEff} (${isSupercritical ? "above unity" : isCritical ? "near unity" : "below unity"})`
+                  : "not established"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Thermal Power:</span>
-              <span className="text-amber-800 dark:text-amber-400 font-bold">
-                {reactorPowerWatts} W
+              <span className="text-ink-600 dark:text-ink-400">Claim 1 lattice:</span>
+              <span
+                className={`${claim1Active ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"} font-bold`}
+              >
+                {claim1Active ? "present" : "uranium rods removed"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Reactivity ρ:</span>
-              <span className="text-purple-800 dark:text-purple-400 font-bold">
-                ${reactivityDollars}
-              </span>
+              <span className="text-ink-600 dark:text-ink-400">Fuel:</span>
+              <span className="text-amber-800 dark:text-amber-400 font-bold">natural uranium</span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Rod Withdrawal:</span>
               <span className="text-cyan-800 dark:text-cyan-400 font-bold">
-                {controlRodWithdrawalPct}%
+                {normalizedWithdrawalPct}%
               </span>
             </div>
           </div>
@@ -348,54 +269,54 @@ export function FermiReactor3D() {
         <StudioKernelChips
           side="right"
           visible={showUiOverlay}
-          title="CP-1 FOUR-FACTOR KINETICS"
+          title="SOURCE TOPOLOGY · NORMALIZED ABSORBER LENS"
           chips={[
             {
-              label: "k_eff",
-              value: String(kEff),
+              label: "Claim 1 path",
+              value: claim1Active ? "graphite + U rods" : "removed",
+              tone: claim1Active ? "ok" : "warn",
+            },
+            {
+              label: "Scenario k_eff",
+              value: claim1Active ? String(kEff) : "refused",
               tone: isSupercritical ? "hot" : isCritical ? "ok" : "warn",
             },
             {
-              label: "Thermal Power",
-              value:
-                reactorPowerWatts >= 1000
-                  ? `${(reactorPowerWatts / 1000).toFixed(1)} kW`
-                  : `${reactorPowerWatts.toFixed(0)} W`,
-            },
-            { label: "Reactivity ($)", value: reactivityDollars, unit: "$" },
-            {
-              label: "Rod Position",
-              value: `${controlRodWithdrawalPct.toFixed(1)}%`,
-              unit: "withdrawn",
-            },
-            { label: "Moderator", value: `${moderatorPurityPct.toFixed(1)}%`, unit: "purity" },
-            {
-              label: "Neutron Flux",
-              value: reactorKinetics.thermalNeutronFluxNPerCm2S.toExponential(2),
-              unit: "n/cm²s",
+              label: "Absorber travel",
+              value: `${normalizedWithdrawalPct.toFixed(1)}%`,
+              unit: "normalized",
             },
             {
-              label: "Regime",
-              value: isSupercritical
-                ? "Supercritical"
-                : isCritical
-                  ? "Critical Steady"
-                  : "Subcritical Dampened",
-              tone: isSupercritical ? "hot" : isCritical ? "ok" : "warn",
+              label: "Graphite",
+              value: `${declaredPurityPct.toFixed(1)}%`,
+              unit: "declared purity",
             },
+            {
+              label: "Fuel basis",
+              value: `${NATURAL_URANIUM_U235_PERCENT.toFixed(2)}% U-235`,
+              unit: "natural-U ref.",
+            },
+            { label: "Source contour", value: "Figure 3", unit: "K = 1 boundary" },
           ]}
         />
       </div>
 
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <p
+          data-testid="fermi-reactor-source-boundary"
+          className="mb-4 text-xs leading-relaxed text-ink-600 dark:text-ink-300"
+        >
+          <strong className="text-ink-900 dark:text-parchment-100">Source boundary.</strong>{" "}
+          {FERMI_KINETICS_SOURCE_BOUNDARY}
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <SensitivitySlider
             id="rodWithdrawal"
             patentId="us-2708656-fermi-reactor"
-            paramKey="controlRodWithdrawalPct"
-            label="Control Rod Withdrawal"
-            value={controlRodWithdrawalPct}
+            paramKey="rodWithdrawal"
+            label="Normalized Absorber Withdrawal"
+            value={normalizedWithdrawalPct}
             min={0}
             max={100}
             step={0.5}
@@ -408,8 +329,8 @@ export function FermiReactor3D() {
             id="moderatorPurity"
             patentId="us-2708656-fermi-reactor"
             paramKey="moderatorPurity"
-            label="Moderator Graphite Purity"
-            value={moderatorPurityPct}
+            label="Declared Graphite Purity"
+            value={declaredPurityPct}
             min={95}
             max={100}
             step={0.1}
@@ -417,21 +338,13 @@ export function FermiReactor3D() {
             onChange={(val) => updateParam("moderatorPurity", val)}
             allParams={params}
           />
-
-          <SensitivitySlider
-            id="fuelEnrichment"
-            patentId="us-2708656-fermi-reactor"
-            paramKey="fuelEnrichmentPct"
-            label="Fuel U-235 Enrichment"
-            value={fuelEnrichmentPct}
-            min={0.5}
-            max={2.5}
-            step={0.05}
-            unit="%"
-            onChange={(val) => updateParam("fuelEnrichmentPct", val)}
-            allParams={params}
-          />
         </div>
+        <ClaimConstraintToggle
+          patentId="us-2708656-fermi-reactor"
+          claimStates={{ 1: claim1Active }}
+          onToggleClaim={(_claimNumber, active) => updateParam("claim1Active", active ? 1 : 0)}
+          className="mt-2"
+        />
       </div>
     </div>
   );

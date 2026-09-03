@@ -3,13 +3,13 @@
 import { Camera, Eye, EyeOff, Flame, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepThomsonWelding } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import {
   globalTransportBus,
   type TapeUpdater,
   useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
+import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -68,7 +68,7 @@ export function ThomsonWelding3D() {
   const [showSparks, setShowSparks] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const crateSource = useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const live = useLiveSimParams({
@@ -114,8 +114,12 @@ export function ThomsonWelding3D() {
         },
       };
     };
-    globalTransportBus.registerUpdater("us-347140-thomson-welding", integrate, "TS_FALLBACK");
-    return () => globalTransportBus.unregisterUpdater("us-347140-thomson-welding");
+    const unregister = globalTransportBus.registerUpdater(
+      "us-347140-thomson-welding",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return unregister;
   }, [live]);
   const studioRef = useRef<StudioContext | null>(null);
 
@@ -130,10 +134,6 @@ export function ThomsonWelding3D() {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -364,6 +364,7 @@ export function ThomsonWelding3D() {
             </div>
             <input
               type="range"
+              aria-label="Secondary welding current"
               min="1000"
               max="6000"
               step="100"
@@ -384,6 +385,7 @@ export function ThomsonWelding3D() {
             </div>
             <input
               type="range"
+              aria-label="Mechanical upset pressure"
               min="10"
               max="60"
               step="5"
