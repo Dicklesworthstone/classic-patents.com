@@ -65,6 +65,8 @@
 		6C0F31A83053B70537340FF2 /* us-727650-linde-air-liquefaction.usdz in Resources */ = {isa = PBXBuildFile; fileRef = EF2C1766DF91E4ADD3427983 /* us-727650-linde-air-liquefaction.usdz */; };
 		6CCCA56BC0FEEAA80E79D4CB /* us-105338-hyatt-celluloid.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 75209640AF2CB33B13C27DA4 /* us-105338-hyatt-celluloid.usdz */; };
 		6E324ADBAF031262DFCA1931 /* us-4136359-wozniak-apple.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 4C40DDFDF87D7CB98DA59148 /* us-4136359-wozniak-apple.usdz */; };
+		6F0D45AE478C53A1B3799DA9 /* PatentCollectionStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFAED83AD16E353D492E3125 /* PatentCollectionStoreTests.swift */; };
+		72564482876768A4A0352367 /* PatentCollectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2393F7248B81AA2942257AA1 /* PatentCollectionStore.swift */; };
 		746F5A6F82E8741FE76A2447 /* us-194047-otto-engine.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 61C14FF5FF577DDFFCC96533 /* us-194047-otto-engine.usdz */; };
 		798358235AA036E1FF959F0C /* us-586193-marconi-radio.usdz in Resources */ = {isa = PBXBuildFile; fileRef = C35386A4A543ECAD34CEBEFB /* us-586193-marconi-radio.usdz */; };
 		7C7FEC952E6D8CCC69243259 /* PatentPDFStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F9C6CE3C3AA63115989A99F /* PatentPDFStoreTests.swift */; };
@@ -167,6 +169,7 @@
 		217891993F739469E4642654 /* us-4068536-stackhouse-manipulator.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-4068536-stackhouse-manipulator.usdz"; sourceTree = "<group>"; };
 		223FEBB699A1D739C994B450 /* native-visualizations.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "native-visualizations.json"; sourceTree = "<group>"; };
 		228270F4892BBA07DDD2CEAA /* us-223898-edison-lightbulb.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-223898-edison-lightbulb.usdz"; sourceTree = "<group>"; };
+		2393F7248B81AA2942257AA1 /* PatentCollectionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentCollectionStore.swift; sourceTree = "<group>"; };
 		26D04B558896891ED8644458 /* us-4921293-salisbury-robot-hand.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-4921293-salisbury-robot-hand.usdz"; sourceTree = "<group>"; };
 		2956FD31EAAA9C42F1AE5A93 /* us-1219881-sundback-zipper.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-1219881-sundback-zipper.usdz"; sourceTree = "<group>"; };
 		2ECBABAB440FFDF9A699B6F9 /* us-2495429-spencer-microwave.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-2495429-spencer-microwave.usdz"; sourceTree = "<group>"; };
@@ -250,6 +253,7 @@
 		BCCE257DEE2FB77FA5A7566B /* NativeDocumentKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeDocumentKit.swift; sourceTree = "<group>"; };
 		BCD6B789D55D18D2CBB99F90 /* us-79265-sholes-typewriter.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-79265-sholes-typewriter.usdz"; sourceTree = "<group>"; };
 		BE462E30D6932C7473CC5257 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		BFAED83AD16E353D492E3125 /* PatentCollectionStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentCollectionStoreTests.swift; sourceTree = "<group>"; };
 		C35386A4A543ECAD34CEBEFB /* us-586193-marconi-radio.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-586193-marconi-radio.usdz"; sourceTree = "<group>"; };
 		C3B813846723C568753A62CA /* us-388850-eastman-kodak.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "us-388850-eastman-kodak.usdz"; sourceTree = "<group>"; };
 		C561AFAB0032EB2B23CEA356 /* PatentModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentModels.swift; sourceTree = "<group>"; };
@@ -311,6 +315,7 @@
 				BCCE257DEE2FB77FA5A7566B /* NativeDocumentKit.swift */,
 				208821AD1F723D6B2BA123DC /* NativeMathView.swift */,
 				6F1AD0F44FF84094197E64AB /* NativePatentSceneView.swift */,
+				2393F7248B81AA2942257AA1 /* PatentCollectionStore.swift */,
 				FA5DAC0D39800C8FB4C68C91 /* PatentFigureAtlasView.swift */,
 				0A6B4C11EF40A0363E909EE9 /* PatentLibrary.swift */,
 				C561AFAB0032EB2B23CEA356 /* PatentModels.swift */,
@@ -347,6 +352,7 @@
 		EBF6332A38766C590B29E4DF /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				BFAED83AD16E353D492E3125 /* PatentCollectionStoreTests.swift */,
 				4F9C6CE3C3AA63115989A99F /* PatentPDFStoreTests.swift */,
 			);
 			path = Tests;
@@ -709,6 +715,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6F0D45AE478C53A1B3799DA9 /* PatentCollectionStoreTests.swift in Sources */,
 				7C7FEC952E6D8CCC69243259 /* PatentPDFStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -730,6 +737,7 @@
 				ABF5A49283B377976C6EE06D /* NativeDocumentKit.swift in Sources */,
 				E4C4C51D5BBB9248EB039283 /* NativeMathView.swift in Sources */,
 				8FEB24E57B5FEBF1EDAE2D28 /* NativePatentSceneView.swift in Sources */,
+				72564482876768A4A0352367 /* PatentCollectionStore.swift in Sources */,
 				515172E318CD8B31F98EBDD7 /* PatentFigureAtlasView.swift in Sources */,
 				DA901178A31C549D4B3A052C /* PatentLibrary.swift in Sources */,
 				A89EDBDCAFD41CFAE21F1997 /* PatentModels.swift in Sources */,

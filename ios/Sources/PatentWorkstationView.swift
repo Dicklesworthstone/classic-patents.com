@@ -27,6 +27,7 @@ private enum WorkstationSection: String, CaseIterable, Identifiable {
 
 struct PatentWorkstationView: View {
     let patent: PatentRecord
+    @EnvironmentObject private var collection: PatentCollectionStore
     @State private var section: WorkstationSection
     @State private var showsPDF = false
 #if DEBUG
@@ -91,6 +92,7 @@ struct PatentWorkstationView: View {
         .navigationTitle(" ")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showsPDF) { PatentPDFReader(patent: patent) }
+        .onAppear { collection.recordVisit(patent.id) }
     }
 
     private func hero(compact: Bool) -> some View {
@@ -160,6 +162,14 @@ struct PatentWorkstationView: View {
             Label("Share record", systemImage: "square.and.arrow.up")
         }
         .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.emerald))
+        Button { collection.toggleSaved(patent.id) } label: {
+            Label(
+                collection.isSaved(patent.id) ? "Saved" : "Save patent",
+                systemImage: collection.isSaved(patent.id) ? "bookmark.fill" : "bookmark"
+            )
+        }
+        .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.brass))
+        .accessibilityHint(collection.isSaved(patent.id) ? "Removes this patent from your shelf" : "Adds this patent to your private shelf")
     }
 
     @ViewBuilder
