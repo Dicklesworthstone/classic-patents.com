@@ -125,13 +125,18 @@ export function completeArchivalEditionForViewer(
  * supplies its complete reviewed ledger instead. Raw ledger metadata stays
  * server-side.
  */
-export function patentForPublicationViewer(
+export function patentForSourceReader(
   patent: Patent,
-  decision: ArchivalPublicationDecision,
+  _decision?: ArchivalPublicationDecision,
 ): Patent {
   return {
     ...patent,
-    archivalEdition: completeArchivalEditionForViewer(patent, decision),
+    archivalEdition: completeArchivalEditionForViewer(patent, _decision),
     originalTextAsset: undefined,
   };
 }
+
+/**
+ * Backwards-compatible alias for patentForSourceReader.
+ */
+export const patentForPublicationViewer = patentForSourceReader;

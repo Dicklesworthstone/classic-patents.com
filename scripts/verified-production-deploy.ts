@@ -21,8 +21,8 @@ const PLATFORM_HOSTNAME = "classic-patents.vercel.app";
 const PROMOTION_HOSTNAMES = [...PUBLIC_HOSTNAMES, PLATFORM_HOSTNAME] as const;
 const WRIGHT_ROUTE = "/patents/us-821393-wright-flyer";
 const WRIGHT_ARCHIVAL_TEXT_LABEL = "Original Patent Text";
-const PUBLISHED_MANUAL_EDITION_ROUTE = "/patents/us-4063220-metcalfe-ethernet";
-const PUBLISHED_MANUAL_EDITION_MARKER = 'data-archival-edition="manual-react-edition"';
+const COMPLETE_SOURCE_DELIVERY_ROUTE = "/patents/us-4063220-metcalfe-ethernet";
+const COMPLETE_SOURCE_DELIVERY_MARKER = 'data-source-delivery="edition"';
 const PUBLICATION_CONTRACT_TESTS = [
   "src/data/editions/archivalEditionSemantics.test.ts",
   "src/data/editions/manualEditionCoverageAudit.test.ts",
@@ -303,15 +303,15 @@ function assertProtectedPreviewResponse(
 
 async function assertReleaseRoutes(url: string) {
   await assertResponse(url, WRIGHT_ROUTE, WRIGHT_ARCHIVAL_TEXT_LABEL);
-  await assertResponse(url, PUBLISHED_MANUAL_EDITION_ROUTE, PUBLISHED_MANUAL_EDITION_MARKER);
+  await assertResponse(url, COMPLETE_SOURCE_DELIVERY_ROUTE, COMPLETE_SOURCE_DELIVERY_MARKER);
 }
 
 function assertProtectedPreviewRoutes(deployment: string) {
   assertProtectedPreviewResponse(deployment, WRIGHT_ROUTE, WRIGHT_ARCHIVAL_TEXT_LABEL);
   assertProtectedPreviewResponse(
     deployment,
-    PUBLISHED_MANUAL_EDITION_ROUTE,
-    PUBLISHED_MANUAL_EDITION_MARKER,
+    COMPLETE_SOURCE_DELIVERY_ROUTE,
+    COMPLETE_SOURCE_DELIVERY_MARKER,
   );
 }
 

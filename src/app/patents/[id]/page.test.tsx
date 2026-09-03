@@ -56,9 +56,9 @@ describe("PatentDetailPage component", () => {
     expect(html).toContain("Wright Flyer");
     expect(html).toContain("Plain English Face");
     expect(html).toContain("Original Patent Text");
-    expect(html).toContain('data-archival-publication-state="held"');
-    expect(html).toContain("data-archival-publication-evidence=");
-    expect(html).toContain("acceptedFigureCount");
+    expect(html).toContain('data-source-delivery="edition"');
+    expect(html).not.toContain("data-archival-publication-");
+    expect(html).not.toContain("acceptedFigureCount");
   });
 
   test("presents Fermi's complete reviewed transcript instead of its unfinished archival draft", async () => {
@@ -67,7 +67,7 @@ describe("PatentDetailPage component", () => {
     });
     const html = renderToStaticMarkup(PageJsx);
 
-    expect(html).toContain('data-archival-edition="withheld"');
+    expect(html).toContain('data-source-delivery="transcript"');
   });
 
   test("handles legacy redirects gracefully", async () => {

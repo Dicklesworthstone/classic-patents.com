@@ -24,12 +24,15 @@
     "types": ["bun-types"]
   },
   "include": [
+    ".next-agent-kamen-webpack/types/**/*.ts",
+    ".next-agent-kamen/types/**/*.ts",
+    ".next-isolated/types/**/*.ts",
     ".next/types/**/*.ts",
     "next-env.d.ts",
     "scripts/**/*.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
-    ".next-isolated/types/**/*.ts"
+    ".next-agent-kamen-34771/types/**/*.ts"
   ],
   "exclude": ["node_modules", ".next", ".next-isolated-build", "doctor.config.ts"]
 }

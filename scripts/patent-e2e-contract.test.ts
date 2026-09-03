@@ -78,6 +78,7 @@ describe("patent E2E scenario contract", () => {
           drawings: [{ figureNumber: "1" }] as Patent["drawings"],
         }),
         patent("us-2-transcript"),
+        patent("us-3-facsimile"),
       ],
       {
         rendersEdition: (entry) => entry.id === "us-1-published",
@@ -100,7 +101,7 @@ describe("patent E2E scenario contract", () => {
       },
     );
 
-    expect(scenarios).toHaveLength(2);
+    expect(scenarios).toHaveLength(3);
     expect(scenarios[0]).toMatchObject({
       patentId: "us-1-published",
       route: "/patents/us-1-published",
@@ -132,6 +133,11 @@ describe("patent E2E scenario contract", () => {
       patentId: "us-2-transcript",
       sourceState: "transcript",
       hasCompleteTranscript: true,
+    });
+    expect(scenarios[2]).toMatchObject({
+      patentId: "us-3-facsimile",
+      sourceState: "facsimile",
+      hasCompleteTranscript: false,
     });
   });
 
@@ -170,8 +176,7 @@ describe("patent E2E scenario contract", () => {
   test("builds an exact manifest from the live catalogue and all pinned PDFs", () => {
     const scenarios = buildPatentE2EScenarios(allPatents, {
       rendersEdition: (entry) => {
-        const decision = evaluateArchivalPublicationState(entry);
-        return Boolean(completeArchivalEditionForViewer(entry, decision));
+        return Boolean(completeArchivalEditionForViewer(entry));
       },
       hasCompleteTranscript: (entry) => Boolean(reviewedLedgerTextForViewer(entry)),
       publicationDecision: evaluateArchivalPublicationState,
@@ -211,15 +216,18 @@ describe("patent E2E scenario contract", () => {
     );
     expect(scenarios.some((scenario) => scenario.sourceState === "edition")).toBe(true);
     expect(scenarios.some((scenario) => scenario.sourceState === "transcript")).toBe(true);
+    // The synthetic fixture above pins the facsimile branch. The live catalogue
+    // currently happens to have a complete text delivery for every record.
     for (const scenario of scenarios) {
       const patent = allPatents.find((entry) => entry.id === scenario.patentId);
       if (!patent) throw new Error(`Missing catalogue patent ${scenario.patentId}`);
-      const decision = evaluateArchivalPublicationState(patent);
-      const completeEdition = completeArchivalEditionForViewer(patent, decision);
-      expect(scenario.sourceState).toBe(completeEdition ? "edition" : "transcript");
-      if (!completeEdition) {
-        expect(scenario.hasCompleteTranscript).toBe(true);
-      }
+      const completeEdition = completeArchivalEditionForViewer(patent);
+      const expectedDelivery = completeEdition
+        ? "edition"
+        : scenario.hasCompleteTranscript
+          ? "transcript"
+          : "facsimile";
+      expect(scenario.sourceState).toBe(expectedDelivery);
     }
     expect(
       scenarios.every(

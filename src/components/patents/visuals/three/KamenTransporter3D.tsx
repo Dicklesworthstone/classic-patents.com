@@ -169,6 +169,11 @@ export default function KamenTransporter3D({
       data-kamen-owner={topology.genericOwner}
       data-kamen-boundary={topology.runtimeBoundary}
       data-kamen-source-figure={topology.displayPose.sourceFigure}
+      data-kamen-axle-x-m={topology.displayPose.axleXM.toFixed(12)}
+      data-kamen-axle-y-m={topology.displayPose.axleYM.toFixed(12)}
+      data-kamen-carrier-rotation-rad={topology.displayPose.carrierRotationRad.toFixed(12)}
+      data-kamen-chassis-pitch-rad={topology.displayPose.chassisPitchRad.toFixed(12)}
+      data-kamen-stair-active={topology.displayPose.stairActive ? "true" : "false"}
       data-kamen-cluster-topology={topology.clusterTopologyActive ? "present" : "withheld"}
       data-kamen-balance-loop={topology.balanceLoopActive ? "active" : "withheld"}
       data-kamen-wheel-count="three-per-lateral-cluster"

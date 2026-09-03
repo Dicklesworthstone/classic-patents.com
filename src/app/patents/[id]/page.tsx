@@ -8,12 +8,8 @@ import { LegacyPatentRedirect } from "@/components/patents/LegacyPatentRedirect"
 import { PatentHeader } from "@/components/patents/PatentHeader";
 import { PatentLineageView } from "@/components/patents/PatentLineageView";
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
-import { archivalPublicationDiagnostics } from "@/data/editions/archivalPublicationState";
 import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
-import {
-  evaluateArchivalPublicationState,
-  patentForPublicationViewer,
-} from "@/data/editions/publicationApproval";
+import { patentForSourceReader } from "@/data/editions/publicationApproval";
 import { reviewedLedgerTextForViewer } from "@/data/editions/reviewedLedgerPublicationEvidence.server";
 import { getLineagesForPatent } from "@/data/patentLineages";
 import {
@@ -88,13 +84,11 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
     notFound();
   }
   const colorizedEquations = getColorizedEquationsForPatent(id);
-  const archivalPublication = evaluateArchivalPublicationState(patent);
   // Editorial acceptance never gates source text. The viewer projection keeps
   // a complete, structurally valid edition, or falls open to the complete
   // reviewed ledger when the stored edition is only a draft.
-  const viewerPatent = patentForPublicationViewer(patent, archivalPublication);
+  const viewerPatent = patentForSourceReader(patent);
   const archivalEdition = viewerPatent.archivalEdition;
-  const archivalDiagnostics = archivalPublicationDiagnostics(archivalPublication);
   const archivalParallelReadings = archivalEdition
     ? archivalParallelReadingsFor(patent.id)
     : undefined;
@@ -102,12 +96,6 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
   // a complete structured React edition is available. Keep it as text, not as
   // a substitute PDF experience, and never use review state as a visibility gate.
   const reviewedTranscript = archivalEdition ? undefined : reviewedLedgerTextForViewer(patent);
-  const archivalPublicationView = {
-    isPublished: archivalPublication.isPublished,
-    reasonCode: archivalPublication.reasonCode,
-    explanation: archivalPublication.explanation,
-    state: { kind: archivalPublication.state.kind },
-  };
   const { prev, next } = getAdjacentPatents(id);
 
   const jsonLd = {
@@ -151,15 +139,9 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
       </div>
 
       {/* Dual Projection Viewer (Plain English + original source + visual face) */}
-      <div
-        data-archival-edition={archivalEdition?.kind ?? "withheld"}
-        data-archival-publication-state={archivalPublication.state.kind}
-        data-archival-publication-reason={archivalPublication.reasonCode}
-        data-archival-publication-evidence={JSON.stringify(archivalDiagnostics)}
-      >
+      <div>
         <DualProjectionViewer
           patent={viewerPatent}
-          archivalPublication={archivalPublicationView}
           archivalParallelReadings={archivalParallelReadings}
           reviewedTranscript={reviewedTranscript}
           colorizedEquations={colorizedEquations}

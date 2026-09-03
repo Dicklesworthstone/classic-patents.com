@@ -19,10 +19,10 @@ export type PatentE2EViewportName = keyof typeof PATENT_E2E_VIEWPORTS;
 export type PatentE2EEventStatus = "info" | "pass" | "fail";
 /**
  * The reader's source-text delivery mode. Editorial acceptance remains in
- * `sourcePublicationState`; it is deliberately not allowed to erase an
+ * internal audit fields; they are deliberately not allowed to erase an
  * otherwise complete source-text face.
  */
-export type PatentE2ESourceState = "edition" | "transcript";
+export type PatentE2ESourceState = "edition" | "transcript" | "facsimile";
 
 export interface PatentE2EControl {
   id: string;
@@ -175,18 +175,16 @@ export function buildPatentE2EScenarios(
     const decision = facts.publicationDecision?.(patent);
     const rendersEdition = facts.rendersEdition(patent);
     const hasCompleteTranscript = facts.hasCompleteTranscript(patent);
-    if (!rendersEdition && !hasCompleteTranscript) {
-      throw new Error(
-        `${patent.id} has neither a rendered archival edition nor a complete readable transcript.`,
-      );
-    }
+    // Every catalogue route has already been required to point to a canonical,
+    // locally pinned PDF above. It is the complete final source-delivery mode,
+    // not a reason to reject a record whose editorial text layer is unfinished.
     return {
       patentId: patent.id,
       patentNumber: patent.patentNumber,
       title: patent.shortTitle,
       route: `/patents/${patent.id}`,
       pdfUrl: patent.originalPdfUrl,
-      sourceState: rendersEdition ? "edition" : "transcript",
+      sourceState: rendersEdition ? "edition" : hasCompleteTranscript ? "transcript" : "facsimile",
       sourcePublicationState:
         decision?.state.kind ??
         (rendersEdition ? "accepted" : patent.archivalEdition ? "candidate" : "facsimile-only"),

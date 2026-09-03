@@ -15,10 +15,7 @@ mock.module("next/navigation", () => ({
 
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
 import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
-import {
-  evaluateArchivalPublicationState,
-  patentForPublicationViewer,
-} from "@/data/editions/publicationApproval";
+import { patentForSourceReader } from "@/data/editions/publicationApproval";
 import { reviewedLedgerTextForViewer } from "@/data/editions/reviewedLedgerPublicationEvidence.server";
 import { fermiReactorPatent } from "@/data/patents/fermi-reactor";
 import { kwolekKevlarPatent } from "@/data/patents/kwolek-kevlar";
@@ -31,7 +28,6 @@ describe("DualProjectionViewer component", () => {
     const html = renderToStaticMarkup(
       <DualProjectionViewer
         patent={wrightFlyerPatent}
-        archivalPublication={evaluateArchivalPublicationState(wrightFlyerPatent)}
         archivalParallelReadings={undefined}
         colorizedEquations={getColorizedEquationsForPatent(wrightFlyerPatent.id)}
         initialView="plain-english"
@@ -53,15 +49,14 @@ describe("DualProjectionViewer component", () => {
     const originalHtml = renderToStaticMarkup(
       <DualProjectionViewer
         patent={noyceIcPatent}
-        archivalPublication={evaluateArchivalPublicationState(noyceIcPatent)}
         archivalParallelReadings={archivalParallelReadingsFor(noyceIcPatent.id)}
         colorizedEquations={getColorizedEquationsForPatent(noyceIcPatent.id)}
         initialView="original-spec"
       />,
     );
 
-    expect(originalHtml).toContain('data-archival-publication-state="held"');
-    expect(originalHtml).toContain("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+    expect(originalHtml).toContain('data-source-delivery="edition"');
+    expect(originalHtml).not.toContain("AUDIT_FIGURE_ACCEPTANCE_PENDING");
     expect(originalHtml).toContain("In brief, the present invention utilizes");
     expect(originalHtml).toContain("A semiconductor device comprising");
     expect(originalHtml).not.toContain('data-testid="held-archival-edition-notice"');
@@ -71,7 +66,6 @@ describe("DualProjectionViewer component", () => {
     const splitHtml = renderToStaticMarkup(
       <DualProjectionViewer
         patent={noyceIcPatent}
-        archivalPublication={evaluateArchivalPublicationState(noyceIcPatent)}
         archivalParallelReadings={archivalParallelReadingsFor(noyceIcPatent.id)}
         colorizedEquations={getColorizedEquationsForPatent(noyceIcPatent.id)}
         initialView="split-view"
@@ -93,7 +87,6 @@ describe("DualProjectionViewer component", () => {
     const originalHtml = renderToStaticMarkup(
       <DualProjectionViewer
         patent={patentWithoutEdition}
-        archivalPublication={evaluateArchivalPublicationState(patentWithoutEdition)}
         reviewedTranscript={reviewedTranscript}
         colorizedEquations={getColorizedEquationsForPatent(wrightFlyerPatent.id)}
         initialView="original-spec"
@@ -102,7 +95,6 @@ describe("DualProjectionViewer component", () => {
     const splitHtml = renderToStaticMarkup(
       <DualProjectionViewer
         patent={patentWithoutEdition}
-        archivalPublication={evaluateArchivalPublicationState(patentWithoutEdition)}
         reviewedTranscript={reviewedTranscript}
         colorizedEquations={getColorizedEquationsForPatent(wrightFlyerPatent.id)}
         initialView="split-view"
@@ -118,7 +110,7 @@ describe("DualProjectionViewer component", () => {
     }
   });
 
-  test("keeps available source text visible without substituting the PDF reader when no complete text reader is available", () => {
+  test("renders the complete pinned facsimile inline when no text edition or ledger is available", () => {
     const patentWithoutTextReader = {
       ...wrightFlyerPatent,
       archivalEdition: undefined,
@@ -128,7 +120,6 @@ describe("DualProjectionViewer component", () => {
     const html = renderToStaticMarkup(
       <DualProjectionViewer
         patent={patentWithoutTextReader}
-        archivalPublication={evaluateArchivalPublicationState(patentWithoutTextReader)}
         colorizedEquations={getColorizedEquationsForPatent(wrightFlyerPatent.id)}
         initialView="original-spec"
       />,
@@ -148,7 +139,6 @@ describe("DualProjectionViewer component", () => {
     const html = renderToStaticMarkup(
       <DualProjectionViewer
         patent={kwolekKevlarPatent}
-        archivalPublication={evaluateArchivalPublicationState(kwolekKevlarPatent)}
         reviewedTranscript={transcript}
         colorizedEquations={getColorizedEquationsForPatent(kwolekKevlarPatent.id)}
         initialView="original-spec"
@@ -162,8 +152,7 @@ describe("DualProjectionViewer component", () => {
   });
 
   test("renders Fermi's complete reviewed transcript rather than calling its unfinished draft complete", () => {
-    const decision = evaluateArchivalPublicationState(fermiReactorPatent);
-    const patent = patentForPublicationViewer(fermiReactorPatent, decision);
+    const patent = patentForSourceReader(fermiReactorPatent);
     const transcript = reviewedLedgerTextForViewer(fermiReactorPatent);
 
     expect(fermiReactorPatent.archivalEdition).toBeDefined();
@@ -174,7 +163,6 @@ describe("DualProjectionViewer component", () => {
     const html = renderToStaticMarkup(
       <DualProjectionViewer
         patent={patent}
-        archivalPublication={decision}
         reviewedTranscript={transcript}
         colorizedEquations={getColorizedEquationsForPatent(fermiReactorPatent.id)}
         initialView="original-spec"

@@ -381,7 +381,7 @@ async function verifyOriginalPatentTextFace(args: {
       const sourceViewer = document.querySelector('[data-testid="dual-projection-viewer"]');
       return Boolean(
         sourceViewer?.querySelector(
-          'article[data-edition-kind], [data-testid="reviewed-transcript-fallback"], [data-testid="source-text-excerpt"]',
+          'article[data-edition-kind], [data-testid="reviewed-transcript-fallback"], [data-testid="source-facsimile-fallback"]',
         ),
       );
     },
@@ -391,26 +391,33 @@ async function verifyOriginalPatentTextFace(args: {
 
   const edition = viewer.locator("article[data-edition-kind]");
   const transcript = viewer.getByTestId("reviewed-transcript-fallback");
-  const excerptFallback = viewer.getByTestId("source-text-excerpt");
+  const facsimileFallback = viewer.getByTestId("source-facsimile-fallback");
   const transcriptCount = await transcript.count();
   const editionCount = await edition.count();
-  const excerptFallbackCount = await excerptFallback.count();
+  const facsimileFallbackCount = await facsimileFallback.count();
   const pdfEmbedCount = await viewer.locator('object[type="application/pdf"]').count();
   const transcriptText = transcriptCount > 0 ? await transcript.locator("pre").textContent() : null;
   const editionText = editionCount > 0 ? await edition.first().textContent() : null;
   const sourceDelivery =
-    transcriptCount > 0 ? "page-marked-transcript" : editionCount > 0 ? "archival-edition" : "none";
+    transcriptCount > 0
+      ? "page-marked-transcript"
+      : editionCount > 0
+        ? "archival-edition"
+        : facsimileFallbackCount > 0
+          ? "pinned-facsimile"
+          : "none";
   const errors =
     args.diagnostics.consoleErrors.length +
     args.diagnostics.pageErrors.length +
     args.diagnostics.networkErrors.length;
   const valid =
     sourceDelivery !== "none" &&
-    excerptFallbackCount === 0 &&
-    pdfEmbedCount === 0 &&
+    (sourceDelivery !== "pinned-facsimile" || pdfEmbedCount >= 1) &&
     (sourceDelivery === "page-marked-transcript"
       ? /^--- REVIEWED TRANSCRIPTION PAGE 1 OF \d+ ---/.test(transcriptText ?? "")
-      : Boolean(editionText?.trim().length)) &&
+      : sourceDelivery === "pinned-facsimile"
+        ? facsimileFallbackCount === 1
+        : Boolean(editionText?.trim().length)) &&
     errors === 0;
 
   emit({
@@ -421,9 +428,7 @@ async function verifyOriginalPatentTextFace(args: {
     status: valid ? "pass" : "fail",
     durationMs: Math.round(performance.now() - args.startedAt),
     expected: {
-      completeSourceDelivery: "archival edition or page-marked transcript",
-      excerptFallbacks: 0,
-      inlinePdfSubstitutes: 0,
+      completeSourceDelivery: "archival edition, page-marked transcript, or pinned facsimile",
       runtimeErrors: 0,
     },
     actual: {
@@ -435,7 +440,7 @@ async function verifyOriginalPatentTextFace(args: {
       transcriptStartsWithPageOne: /^--- REVIEWED TRANSCRIPTION PAGE 1 OF \d+ ---/.test(
         transcriptText ?? "",
       ),
-      excerptFallbackCount,
+      facsimileFallbackCount,
       pdfEmbedCount,
     },
     screenshotPath: null,
@@ -2784,6 +2789,239 @@ async function auditPatent(
       };
       mechanismInteractionValid =
         sourceOwnersHonest && physicalSequenceCompleted && crossFaceParity;
+    }
+
+    if (patentId === "us-5701965-kamen-transporter") {
+      const readKamenState = (testId: string) =>
+        dispatcher.getByTestId(testId).evaluate((element) => ({
+          state: element.getAttribute("data-kamen-state"),
+          contactWheels: element.getAttribute("data-kamen-contact-wheels"),
+          contactCount: Number(element.getAttribute("data-kamen-contact-count")),
+          minimumGapM: Number(element.getAttribute("data-kamen-minimum-gap-m")),
+          runtimeSource: element.getAttribute("data-kamen-runtime-source"),
+          owner: element.getAttribute("data-kamen-owner"),
+          boundary: element.getAttribute("data-kamen-boundary"),
+          sourceFigure: element.getAttribute("data-kamen-source-figure"),
+          axleXM: Number(element.getAttribute("data-kamen-axle-x-m")),
+          axleYM: Number(element.getAttribute("data-kamen-axle-y-m")),
+          carrierRotationRad: Number(element.getAttribute("data-kamen-carrier-rotation-rad")),
+          chassisPitchRad: Number(element.getAttribute("data-kamen-chassis-pitch-rad")),
+          stairActive: element.getAttribute("data-kamen-stair-active"),
+          clusterTopology: element.getAttribute("data-kamen-cluster-topology"),
+          balanceLoop: element.getAttribute("data-kamen-balance-loop"),
+          wheelCount: element.getAttribute("data-kamen-wheel-count"),
+          wheelRadiusM: Number(element.getAttribute("data-kamen-wheel-radius-m")),
+          clusterRadiusM: Number(element.getAttribute("data-kamen-cluster-radius-m")),
+          stairRiseM: Number(element.getAttribute("data-kamen-stair-rise-m")),
+          stairTreadM: Number(element.getAttribute("data-kamen-stair-tread-m")),
+        }));
+      const threeDimensional = dispatcher.getByTestId("kamen-transporter-three");
+      await threeDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      let claimToggle = dispatcher.getByTestId("claim-constraint-toggle");
+      for (const claimNumber of [1, 16]) {
+        const toggle = claimToggle.locator(`[data-claim-number="${claimNumber}"]`);
+        if ((await toggle.getAttribute("data-claim-active")) !== "true") await toggle.click();
+      }
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="kamen-transporter-three"]')
+            ?.getAttribute("data-kamen-runtime-source") === "wasm",
+        undefined,
+        { timeout: 15_000 },
+      );
+
+      const stateNames = [
+        "ground_support",
+        "balance",
+        "stair_start",
+        "weight_transfer",
+        "climb",
+        "transition",
+      ] as const;
+      const expectedContacts = ["a,b", "a", "a,b", "a,b", "b,c", "c"] as const;
+      const stateSnapshots: Awaited<ReturnType<typeof readKamenState>>[] = [];
+      const stateScreenshotPaths: string[] = [];
+      for (const [index, stateName] of stateNames.entries()) {
+        await dispatcher.locator("#kamen-3d-topology-state button").nth(index).click();
+        await page.waitForFunction(
+          ({ state }) =>
+            document
+              .querySelector('[data-testid="kamen-transporter-three"]')
+              ?.getAttribute("data-kamen-state") === state,
+          { state: stateName },
+          { timeout: 3_000 },
+        );
+        const stateSnapshot = await readKamenState("kamen-transporter-three");
+        stateSnapshots.push(stateSnapshot);
+        if (index >= 2) {
+          const stateScreenshotPath = path.join(
+            SCREENSHOT_DIRECTORY,
+            `${patentId}.${viewport}.${stateName.replaceAll("_", "-")}.png`,
+          );
+          await dispatcher.screenshot({ path: stateScreenshotPath });
+          stateScreenshotPaths.push(stateScreenshotPath);
+        }
+      }
+
+      await dispatcher.locator("#kamen-3d-topology-state button").nth(4).click();
+      await dispatcher.getByRole("button", { name: "2D Technical Diagram" }).click();
+      const twoDimensional = dispatcher.getByTestId("kamen-transporter-two");
+      await twoDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="kamen-transporter-two"]')
+            ?.getAttribute("data-kamen-runtime-source") === "wasm",
+        undefined,
+        { timeout: 15_000 },
+      );
+      const twoDimensionalClimbState = await readKamenState("kamen-transporter-two");
+      const twoDimensionalScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.shared-two-dimensional-climb.png`,
+      );
+      await dispatcher.screenshot({ path: twoDimensionalScreenshotPath });
+
+      await dispatcher.getByRole("button", { name: "3D Physics Simulation" }).click();
+      await threeDimensional.waitFor({ state: "visible", timeout: 20_000 });
+      claimToggle = dispatcher.getByTestId("claim-constraint-toggle");
+      const claim16Toggle = claimToggle.locator('[data-claim-number="16"]');
+      await claim16Toggle.click();
+      await page.waitForFunction(
+        () => {
+          const element = document.querySelector('[data-testid="kamen-transporter-three"]');
+          return (
+            element?.getAttribute("data-kamen-cluster-topology") === "withheld" &&
+            element.getAttribute("data-kamen-contact-wheels") === "direct"
+          );
+        },
+        undefined,
+        { timeout: 3_000 },
+      );
+      const clusterWithheldState = await readKamenState("kamen-transporter-three");
+      const clusterWithheldScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.claim-16-cluster-withheld-direct-support.png`,
+      );
+      await dispatcher.screenshot({ path: clusterWithheldScreenshotPath });
+      await claim16Toggle.click();
+
+      await dispatcher.locator("#kamen-3d-topology-state button").nth(1).click();
+      const claim1Toggle = claimToggle.locator('[data-claim-number="1"]');
+      await claim1Toggle.click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="kamen-transporter-three"]')
+            ?.getAttribute("data-kamen-balance-loop") === "withheld",
+        undefined,
+        { timeout: 3_000 },
+      );
+      const balanceWithheldState = await readKamenState("kamen-transporter-three");
+      const balanceWithheldScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.claim-1-balance-loop-withheld.png`,
+      );
+      await dispatcher.screenshot({ path: balanceWithheldScreenshotPath });
+      await claim1Toggle.click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="kamen-transporter-three"]')
+            ?.getAttribute("data-kamen-balance-loop") === "active",
+        undefined,
+        { timeout: 3_000 },
+      );
+      const restoredState = await readKamenState("kamen-transporter-three");
+
+      const sourceOwner = "fs-mbd::tri_wheel_cluster::step_tri_wheel_stair_contact";
+      const sourceBoundary =
+        "rigid-planar-three-equal-wheels-horizontal-tread-contact-no-force-friction-compliance-impact-or-riser-side-contact";
+      const near = (value: number, target: number, tolerance = 1e-9) =>
+        Math.abs(value - target) <= tolerance;
+      const sourceOwnersHonest = stateSnapshots.every(
+        (state) =>
+          state.runtimeSource === "wasm" &&
+          state.owner === sourceOwner &&
+          state.boundary === sourceBoundary,
+      );
+      const physicalSequenceCompleted = stateSnapshots.every(
+        (state, index) =>
+          state.state === stateNames[index] &&
+          state.contactWheels === expectedContacts[index] &&
+          state.contactCount === expectedContacts[index]?.split(",").length &&
+          state.minimumGapM >= -1e-8 &&
+          state.clusterTopology === "present" &&
+          state.wheelCount === "three-per-lateral-cluster" &&
+          state.stairActive === (index >= 2 ? "true" : "false") &&
+          near(state.wheelRadiusM, 0.096774, 1e-12) &&
+          near(state.clusterRadiusM, 0.1417574, 1e-12) &&
+          near(state.stairRiseM, 0.17399, 1e-12) &&
+          near(state.stairTreadM, 0.27686, 1e-12),
+      );
+      const startState = stateSnapshots[2];
+      const transferState = stateSnapshots[3];
+      const transferChangesOnlyChassisPitch = Boolean(
+        startState &&
+          transferState &&
+          near(startState.axleXM, transferState.axleXM) &&
+          near(startState.axleYM, transferState.axleYM) &&
+          near(startState.carrierRotationRad, transferState.carrierRotationRad) &&
+          Math.abs(startState.chassisPitchRad - transferState.chassisPitchRad) > 1e-3,
+      );
+      const climbState = stateSnapshots[4];
+      const crossFaceParity = Boolean(
+        climbState &&
+          twoDimensionalClimbState.state === climbState.state &&
+          twoDimensionalClimbState.contactWheels === climbState.contactWheels &&
+          twoDimensionalClimbState.contactCount === climbState.contactCount &&
+          near(twoDimensionalClimbState.minimumGapM, climbState.minimumGapM) &&
+          near(twoDimensionalClimbState.axleXM, climbState.axleXM) &&
+          near(twoDimensionalClimbState.axleYM, climbState.axleYM) &&
+          near(twoDimensionalClimbState.carrierRotationRad, climbState.carrierRotationRad) &&
+          near(twoDimensionalClimbState.chassisPitchRad, climbState.chassisPitchRad) &&
+          twoDimensionalClimbState.owner === climbState.owner &&
+          twoDimensionalClimbState.boundary === climbState.boundary &&
+          twoDimensionalClimbState.runtimeSource === "wasm",
+      );
+      const claimRefusalsRemainSupported =
+        clusterWithheldState.clusterTopology === "withheld" &&
+        clusterWithheldState.contactWheels === "direct" &&
+        clusterWithheldState.contactCount === 1 &&
+        clusterWithheldState.minimumGapM >= -1e-8 &&
+        clusterWithheldState.runtimeSource === "ts-fallback" &&
+        balanceWithheldState.state === "balance" &&
+        balanceWithheldState.clusterTopology === "present" &&
+        balanceWithheldState.balanceLoop === "withheld" &&
+        balanceWithheldState.contactWheels === "a" &&
+        balanceWithheldState.minimumGapM >= -1e-8 &&
+        restoredState.balanceLoop === "active" &&
+        restoredState.contactWheels === "a";
+      mechanismInteraction = {
+        available: true,
+        kind: "source-dimensioned-three-wheel-fs-mbd-support-sequence-claim-refusals-and-cross-face-parity",
+        stateSnapshots,
+        twoDimensionalClimbState,
+        clusterWithheldState,
+        balanceWithheldState,
+        restoredState,
+        sourceOwnersHonest,
+        physicalSequenceCompleted,
+        transferChangesOnlyChassisPitch,
+        crossFaceParity,
+        claimRefusalsRemainSupported,
+        stateScreenshotPaths,
+        twoDimensionalScreenshotPath,
+        clusterWithheldScreenshotPath,
+        balanceWithheldScreenshotPath,
+      };
+      mechanismInteractionValid =
+        sourceOwnersHonest &&
+        physicalSequenceCompleted &&
+        transferChangesOnlyChassisPitch &&
+        crossFaceParity &&
+        claimRefusalsRemainSupported;
     }
 
     if (patentId === "us-586193-marconi-radio") {
