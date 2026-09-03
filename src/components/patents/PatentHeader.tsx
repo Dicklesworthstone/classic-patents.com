@@ -82,6 +82,7 @@ export function PatentHeader({ patent }: PatentHeaderProps) {
 
           <button
             type="button"
+            data-testid="print-broadside-btn"
             onClick={() => setBroadsideOpen(true)}
             className="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-mono font-bold bg-amber-500/10 text-amber-900 dark:text-amber-300 border border-amber-500/30 hover:bg-amber-500/20 transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
           >
@@ -161,6 +162,7 @@ export function PatentHeader({ patent }: PatentHeaderProps) {
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             type="button"
+            data-testid="action-broadside-btn"
             onClick={() => setBroadsideOpen(true)}
             className="px-4 py-2 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-300 hover:bg-amber-500/20 text-sm font-mono font-semibold flex items-center gap-2 transition-colors shadow-xs cursor-pointer"
           >

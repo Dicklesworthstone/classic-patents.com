@@ -2865,6 +2865,14 @@ async function auditPatent(
       }
 
       await dispatcher.locator("#kamen-3d-topology-state button").nth(4).click();
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('[data-testid="kamen-transporter-three"]')
+            ?.getAttribute("data-kamen-state") === "climb",
+        undefined,
+        { timeout: 3_000 },
+      );
       await dispatcher.getByRole("button", { name: "2D Technical Diagram" }).click();
       const twoDimensional = dispatcher.getByTestId("kamen-transporter-two");
       await twoDimensional.waitFor({ state: "visible", timeout: 20_000 });

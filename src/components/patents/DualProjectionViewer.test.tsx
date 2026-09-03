@@ -125,11 +125,13 @@ describe("DualProjectionViewer component", () => {
       />,
     );
 
-    expect(html).toContain('data-testid="source-text-excerpt"');
-    expect(html).toContain("Available patent text");
-    expect(html).toContain("Be it known that we, ORVILLE WRIGHT and WILBUR WRIGHT");
-    expect(html).not.toContain('data-testid="pinned-pdf-facsimile"');
-    expect(html).not.toContain('object type="application/pdf"');
+    expect(html).toContain('data-testid="source-facsimile-fallback"');
+    expect(html).toContain(
+      "Complete patent text is available in this pinned primary-source facsimile.",
+    );
+    expect(html).toContain("<object");
+    expect(html).toContain('type="application/pdf"');
+    expect(html).not.toContain('data-testid="source-text-excerpt"');
   });
 
   test("renders the complete locally available Kwolek instrument despite its editorial hold", () => {

@@ -212,7 +212,10 @@ export function OtisHoistingApparatus3D() {
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-parchment-300 bg-parchment-50/60 shadow-patent dark:border-ink-800 dark:bg-ink-950/80">
       <div className="sr-only">Otis 1861 Complete Hoisting Apparatus 3D (US 31,128)</div>
-      <div className="relative min-h-[420px] w-full flex-1 cursor-grab active:cursor-grabbing sm:min-h-[500px]">
+      <div
+        data-testid="otis-three-viewport"
+        className="relative min-h-[420px] w-full flex-1 cursor-grab active:cursor-grabbing sm:min-h-[500px]"
+      >
         <div ref={containerRef} className="absolute inset-0 h-full w-full" />
 
         {showUiOverlay && (
@@ -246,15 +249,10 @@ export function OtisHoistingApparatus3D() {
           </div>
         )}
 
-        <div className="absolute top-3 right-3 z-20 flex max-w-[min(92%,30rem)] flex-wrap justify-end gap-1.5 sm:top-4 sm:right-4">
-          <ClaimConstraintToggle
-            patentId={PATENT_ID}
-            claimStates={claimStates}
-            className="max-[480px]:flex-nowrap max-[480px]:gap-1 max-[480px]:[&>button]:min-h-9 max-[480px]:[&>button]:px-2 max-[480px]:[&>button>span]:sr-only"
-            onToggleClaim={(claimNumber, active) =>
-              setClaimStates((previous) => ({ ...previous, [claimNumber]: active }))
-            }
-          />
+        <div
+          data-testid="otis-studio-utilities"
+          className="absolute top-3 right-3 z-20 flex flex-wrap justify-end gap-1.5 sm:top-4 sm:right-4"
+        >
           <button
             type="button"
             onClick={() => setIsCutaway((value) => !value)}
@@ -385,6 +383,23 @@ export function OtisHoistingApparatus3D() {
             <Scissors className="mr-1 inline h-4 w-4" />{" "}
             {ropeGIntact ? "Sever rope G" : "Restore rope G"}
           </button>
+        </div>
+        <div
+          data-testid="otis-claim-status-panel"
+          data-claim-layout="below-studio"
+          className="flex min-w-0 flex-wrap items-center gap-2 border-t border-parchment-200 pt-3 dark:border-ink-800"
+        >
+          <span className="shrink-0 font-sans text-[11px] font-semibold text-ink-600 dark:text-ink-300">
+            Claim topology
+          </span>
+          <ClaimConstraintToggle
+            patentId={PATENT_ID}
+            claimStates={claimStates}
+            className="min-w-0 flex-1 gap-1.5 max-[480px]:flex-nowrap max-[480px]:gap-1 max-[480px]:[&>button]:min-h-9 max-[480px]:[&>button]:px-2 max-[480px]:[&>button>span]:sr-only"
+            onToggleClaim={(claimNumber, active) =>
+              setClaimStates((previous) => ({ ...previous, [claimNumber]: active }))
+            }
+          />
         </div>
         <SensitivitySlider
           id="otisDisplayRate"

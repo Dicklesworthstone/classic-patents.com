@@ -89,8 +89,8 @@ export default function KamenTransporter3D({
     let animationFrameId: number;
     const studio = createThreeStudioScene({
       container: containerRef.current,
-      cameraPos: [1.35, 1.15, 1.65],
-      targetPos: [0.08, 0.48, 0],
+      cameraPos: [1.8, 1.5, 2.2],
+      targetPos: [0.1, 0.58, 0],
       ambientIntensity: 0.7,
       sunIntensity: 1.5,
     });
@@ -141,16 +141,16 @@ export default function KamenTransporter3D({
     if (!studioRef.current) return;
     switch (preset) {
       case "overview":
-        studioRef.current.controls.setView([1.35, 1.15, 1.65], [0.08, 0.48, 0]);
+        studioRef.current.controls.setView([1.8, 1.5, 2.2], [0.1, 0.58, 0]);
         break;
       case "side":
-        studioRef.current.controls.setView([0, 0.55, 2.25], [0.08, 0.48, 0]);
+        studioRef.current.controls.setView([0, 0.65, 2.8], [0.1, 0.58, 0]);
         break;
       case "balance":
-        studioRef.current.controls.setView([0.9, 1.0, 1.2], [0, 0.55, 0]);
+        studioRef.current.controls.setView([1.3, 1.2, 1.7], [0, 0.62, 0]);
         break;
       case "stairs":
-        studioRef.current.controls.setView([1.1, 1.05, 1.6], [0.15, 0.48, 0]);
+        studioRef.current.controls.setView([1.6, 1.45, 2.25], [0.18, 0.58, 0]);
         break;
     }
   };
