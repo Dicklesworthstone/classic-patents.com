@@ -260,6 +260,8 @@ export function stepKamenTransporterPhysics(
       const wasmCenter = decoded.wheel_centres_m[index];
       const wasmGap = decoded.signed_vertical_gaps_m[index];
       const hostWheel = pose.wheelContacts[index];
+      const wasmRiserClearance = decoded.signed_riser_clearances_m[index];
+      const hostRiserClearance = hostWheel?.signedRiserClearanceM ?? null;
       if (
         !wasmCenter ||
         wasmGap === undefined ||
@@ -269,11 +271,10 @@ export function stepKamenTransporterPhysics(
         !closeEnough(wasmGap, hostWheel.signedVerticalGapM) ||
         decoded.contact_mask[index] !== hostWheel.touching ||
         decoded.riser_contact_mask[index] !== hostWheel.touchingRiser ||
-        (decoded.signed_riser_clearances_m[index] === null) !==
-          (hostWheel.signedRiserClearanceM === null) ||
-        (decoded.signed_riser_clearances_m[index] !== null &&
-          hostWheel.signedRiserClearanceM !== null &&
-          !closeEnough(decoded.signed_riser_clearances_m[index], hostWheel.signedRiserClearanceM))
+        (wasmRiserClearance === null) !== (hostRiserClearance === null) ||
+        (wasmRiserClearance !== null &&
+          hostRiserClearance !== null &&
+          !closeEnough(wasmRiserClearance, hostRiserClearance))
       ) {
         return fallback;
       }
