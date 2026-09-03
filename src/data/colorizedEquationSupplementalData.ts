@@ -4040,7 +4040,7 @@ export function applySupplementalColorizedEquations(
           unit: "claim element",
           dimension: "[1]",
           explanation:
-            "Claim 21 names control of each cluster about a central axis; this card does not expose an angular scale or a gear arrangement.",
+            "Claim 21 names control of each cluster about a central axis. The adjacent geometry card uses the source's printed dimensions without inventing a gear arrangement.",
         },
         {
           id: "wheel_control",
@@ -4062,7 +4062,7 @@ export function applySupplementalColorizedEquations(
           unit: "claim sequence",
           dimension: "[1]",
           explanation:
-            "Claim 26 prints a start, weight-transfer, and climb ordering; it supplies no public timing, stair dimension, clearance, or traversal-performance value.",
+            "Claim 26 prints a start, weight-transfer, and climb ordering. Table 1 supplies nominal stair dimensions, while timing, force, and traversal performance remain undisclosed.",
         },
         {
           id: "balance_mode",
@@ -4077,10 +4077,93 @@ export function applySupplementalColorizedEquations(
         },
       ],
       pedagogicalNote:
-        "This normalized claim reading makes the cluster-and-wheel coordination legible. It assigns no gear train, climbing geometry, torque law, riser prediction, or modern performance simulation.",
+        "This claim reading makes the cluster-and-wheel coordination legible. The companion rigid-contact relation uses Table 1 geometry, but assigns no gear train, torque law, friction model, impact response, or modern performance simulation.",
       claimRef: 26,
       historicalSignificance:
         "Claims 21 through 26 separate cluster and wheel control relationships and state the coordination sequence for the stair-use embodiment.",
+    },
+    {
+      id: "kamen-tri-wheel-support-geometry",
+      patentId: "us-5701965-kamen-transporter",
+      title: "Claim 20 Three-Wheel Carrier & Horizontal Support Gaps",
+      category: "Source-Dimensioned Rigid Contact Geometry",
+      rawLatex:
+        "x_i=x_c+l\\cos(\\phi+2\\pi i/3),\\quad y_i=y_c+l\\sin(\\phi+2\\pi i/3),\\quad g_i=y_i-r-h(x_i)\\ge 0",
+      colorizedLatex:
+        "\\textcolor{#2563eb}{x_i}=\\textcolor{#059669}{x_c}+\\textcolor{#d97706}{l}\\cos(\\textcolor{#9333ea}{\\phi}+2\\pi i/3),\\quad \\textcolor{#2563eb}{y_i}=\\textcolor{#059669}{y_c}+\\textcolor{#d97706}{l}\\sin(\\textcolor{#9333ea}{\\phi}+2\\pi i/3),\\quad \\textcolor{#dc2626}{g_i}=y_i-\\textcolor{#0891b2}{r}-h(x_i)\\ge 0",
+      plainEnglishSentence: [
+        { text: "For each of the " },
+        { text: "three equal wheel centers", variableId: "wheel_center" },
+        { text: ", rotate the printed " },
+        { text: "carrier radius", variableId: "cluster_radius" },
+        { text: " by 120 degrees about the " },
+        { text: "cluster axis", variableId: "cluster_axis" },
+        { text: ", then subtract the " },
+        { text: "wheel radius", variableId: "wheel_radius" },
+        { text: " and local tread height. A valid rigid pose keeps every " },
+        { text: "support gap", variableId: "support_gap" },
+        { text: " nonnegative and at least one gap at zero." },
+      ],
+      variables: [
+        {
+          id: "wheel_center",
+          symbol: "(x_i,y_i)",
+          name: "Wheel-Center Coordinates",
+          color: "sapphire",
+          role: "Rigid center of wheel A, B, or C in the patent side-elevation frame",
+          unit: "meters (m)",
+          dimension: "[L]",
+          explanation:
+            "The three centers are separated by 120 degrees. The 2D and 3D faces consume the same coordinates from the accepted support receipt.",
+        },
+        {
+          id: "cluster_axis",
+          symbol: "(x_c,y_c)",
+          name: "Cluster-Axis Position",
+          color: "emerald",
+          role: "Common carrier axis connected to the chassis and both lateral wheel clusters",
+          unit: "meters (m)",
+          dimension: "[L]",
+          explanation:
+            "Figures 39 through 42 determine the discrete teaching pose of this axis relative to the ground and stair treads.",
+        },
+        {
+          id: "cluster_radius",
+          symbol: "l",
+          name: "Carrier Radius",
+          color: "amber",
+          role: "Table 1 distance from cluster axis to each wheel center",
+          unit: "meters (m)",
+          dimension: "[L]",
+          explanation: "Table 1 prints l = 5.581 inches, or 0.1417574 meters.",
+        },
+        {
+          id: "wheel_radius",
+          symbol: "r",
+          name: "Wheel Radius",
+          color: "cyan",
+          role: "Table 1 outside wheel radius used to locate the rigid rolling surface",
+          unit: "meters (m)",
+          dimension: "[L]",
+          explanation: "Table 1 prints r = 3.81 inches, or 0.096774 meters.",
+        },
+        {
+          id: "support_gap",
+          symbol: "g_i",
+          name: "Horizontal Support Gap",
+          color: "rose",
+          role: "Wheel-bottom height above ground or the applicable stair tread",
+          unit: "meters (m)",
+          dimension: "[L]",
+          explanation:
+            "A negative value is refused as support penetration. A zero value marks rigid horizontal contact; forces and riser-side contact are outside this boundary.",
+        },
+      ],
+      pedagogicalNote:
+        "The source prints r = 3.81 in, l = 5.581 in, adjacent-center distance l′ = 9.667 in, stair rise h = 6.85 in, and tread d = 10.9 in. The relation checks geometric support only; it does not infer normal force, friction, compliance, impact, or motor response.",
+      claimRef: 20,
+      historicalSignificance:
+        "Claim 20 specifies three equal wheels in each cluster, while the later stair-state claims coordinate the carrier and independently controlled ground wheels.",
     },
   ];
 
