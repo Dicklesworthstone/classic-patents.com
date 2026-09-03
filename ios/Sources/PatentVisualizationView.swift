@@ -31,11 +31,25 @@ struct NativePatentVisualization: View {
         ))
     }
 
+    private var isSourceBoundPDFOnly: Bool {
+        patent.sourceVisualization.isSourceBoundPDFOnly
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             MuseumPanel {
                 VStack(alignment: .leading, spacing: 12) {
-                    if horizontalSizeClass == .compact {
+                    if isSourceBoundPDFOnly {
+                        HStack(alignment: .center, spacing: 12) {
+                            MuseumLabel(text: patent.physics?.domainTitle ?? "Source-bound facsimile")
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.78)
+                            Spacer(minLength: 0)
+                            Label("PDF only", systemImage: "doc.text")
+                                .font(.system(size: Lab.size(9.5), weight: .bold, design: .rounded))
+                                .foregroundStyle(Lab.brass)
+                        }
+                    } else if horizontalSizeClass == .compact {
                         MuseumLabel(text: patent.physics?.domainTitle ?? "Native mechanism study")
                             .lineLimit(2)
                             .minimumScaleFactor(0.78)
@@ -68,9 +82,11 @@ struct NativePatentVisualization: View {
                     }
 
                     Group {
-                        if projection == .spatial {
+                        if isSourceBoundPDFOnly {
+                            NativePDFOnlySourceBoundaryExhibit(patent: patent)
+                        } else if projection == .spatial {
                             if patent.id == "us-971501-haber-ammonia" {
-                                NativeSourceBoundaryExhibit(patent: patent, drive: normalizedControl)
+                                NativeNoDrawingSourceBoundaryExhibit(patent: patent, drive: normalizedControl)
                             } else {
                                 NativePatentSceneView(
                                     patent: patent,
@@ -100,9 +116,13 @@ struct NativePatentVisualization: View {
                     .frame(minHeight: 300, idealHeight: 420, maxHeight: 520)
                     .background(Lab.panelStrong, in: RoundedRectangle(cornerRadius: 16))
                     .overlay(RoundedRectangle(cornerRadius: 16).stroke(Lab.blueprint.opacity(0.24)))
-                    .accessibilityLabel("Native interactive visualization for \(patent.shortTitle)")
+                    .accessibilityLabel(
+                        isSourceBoundPDFOnly
+                            ? "Source-bound PDF-only state for \(patent.shortTitle)"
+                            : "Native interactive visualization for \(patent.shortTitle)"
+                    )
 
-                    if horizontalSizeClass == .compact {
+                    if !isSourceBoundPDFOnly, horizontalSizeClass == .compact {
                         DisclosureGroup(isExpanded: $showsMechanismNotes) {
                             mechanismExplanation
                                 .padding(.top, 7)
@@ -112,21 +132,25 @@ struct NativePatentVisualization: View {
                                 .foregroundStyle(Lab.brass)
                         }
                         .tint(Lab.brass)
-                    } else {
+                    } else if !isSourceBoundPDFOnly {
                         mechanismExplanation
                     }
                 }
             }
 
             if let physics = patent.physics {
-                ViewThatFits(in: .horizontal) {
-                    HStack(alignment: .top, spacing: 14) {
-                        controlPanel(physics).frame(maxWidth: .infinity)
-                        theoryPanel(physics).frame(maxWidth: .infinity)
-                    }
-                    VStack(alignment: .leading, spacing: 14) {
-                        controlPanel(physics)
-                        theoryPanel(physics)
+                if isSourceBoundPDFOnly {
+                    sourceBoundaryTheoryPanel(physics)
+                } else {
+                    ViewThatFits(in: .horizontal) {
+                        HStack(alignment: .top, spacing: 14) {
+                            controlPanel(physics).frame(maxWidth: .infinity)
+                            theoryPanel(physics).frame(maxWidth: .infinity)
+                        }
+                        VStack(alignment: .leading, spacing: 14) {
+                            controlPanel(physics)
+                            theoryPanel(physics)
+                        }
                     }
                 }
             }
@@ -209,6 +233,22 @@ struct NativePatentVisualization: View {
                 Text(NativeMathFormatter.displayInlineMath(in: physics.pedagogicalInsight))
                     .font(.system(size: Lab.size(12.5), design: .rounded))
                     .foregroundStyle(Lab.text)
+                    .textSelection(.enabled)
+            }
+        }
+    }
+
+    private func sourceBoundaryTheoryPanel(_ physics: PatentPhysicsMetadata) -> some View {
+        MuseumPanel {
+            VStack(alignment: .leading, spacing: 11) {
+                MuseumLabel(text: "Checked claim relationship")
+                ScrollView(.horizontal, showsIndicators: false) {
+                    NativeMathView(latex: physics.governingEquation, pointSize: Lab.size(20), defaultColor: Lab.brass)
+                        .padding(.vertical, 5)
+                }
+                Text("This is a static reading aid for the checked claim language, not a live calculation or material-performance model.")
+                    .font(.system(size: Lab.size(12), design: .rounded))
+                    .foregroundStyle(Lab.secondary)
                     .textSelection(.enabled)
             }
         }

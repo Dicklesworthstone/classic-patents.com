@@ -99,6 +99,44 @@ private enum PatentCatalogValidator {
                     && sourceURL.lastPathComponent == "\(patent.id).pdf",
                 "\(patent.id) has a source PDF outside its canonical first-party path"
             )
+            try require(
+                patent.expectedSourcePDFSHA256.map(PatentPDFStore.isCanonicalSHA256) == true,
+                "\(patent.id) has no canonical pinned-PDF digest"
+            )
+
+            switch patent.sourceVisualization.kind {
+            case .model:
+                try require(
+                    !(patent.sourceVisualization.spatialComponent?.isEmpty ?? true)
+                        && !(patent.sourceVisualization.vectorComponent?.isEmpty ?? true),
+                    "\(patent.id) is missing its authored model source pair"
+                )
+            case .sourceBoundPDFOnly:
+                try require(patent.originalTextAsset == nil, "\(patent.id) exposes an unreviewed transcript")
+                try require(patent.archivalEdition == nil, "\(patent.id) exposes an unreviewed archival edition")
+                try require(
+                    patent.archivalParallelReadings.isEmpty,
+                    "\(patent.id) exposes archival parallel readings without an edition"
+                )
+                try require(
+                    patent.physics?.controls.isEmpty ?? true,
+                    "\(patent.id) exposes source-unbounded native controls"
+                )
+                try require(
+                    !(patent.sourceVisualization.sourceBoundary?.isEmpty ?? true),
+                    "\(patent.id) has no source-boundary explanation"
+                )
+                try require(
+                    patent.sourceVisualization.spatialComponent == nil
+                        && patent.sourceVisualization.vectorComponent == nil,
+                    "\(patent.id) exposes a legacy model route"
+                )
+                try require(patent.bundledAssets.isEmpty, "\(patent.id) is not PDF-only in the native bundle")
+                try require(
+                    patent.pinnedPdfSha256.map(PatentPDFStore.isCanonicalSHA256) == true,
+                    "\(patent.id) needs a standalone pinned-PDF digest"
+                )
+            }
 
             let claimNumbers = patent.claims.map(\.number)
             let claimSet = Set(claimNumbers)
@@ -162,7 +200,7 @@ private enum PatentCatalogValidator {
                 try requireUnique((asset.pageAnchors ?? []).map(\.page), context: "\(patent.id) page anchors")
                 if let digest = asset.sourcePdfSha256 {
                     try require(
-                        digest.range(of: #"^[0-9a-f]{64}$"#, options: .regularExpression) != nil,
+                        PatentPDFStore.isCanonicalSHA256(digest),
                         "\(patent.id) has a non-canonical source digest"
                     )
                 }

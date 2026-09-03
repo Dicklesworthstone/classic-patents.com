@@ -20,6 +20,10 @@ struct PatentRecord: Codable, Identifiable, Hashable {
     let usptoClassification: String
     let originalText: String
     let originalTextAsset: OriginalTextAsset?
+    /// The pinned facsimile digest is independent from editorial publication.
+    /// Source-bounded records can therefore offer the original PDF without
+    /// misrepresenting an unreviewed transcript as its integrity receipt.
+    let pinnedPdfSha256: String?
     let archivalEdition: CuratedSpecificationEdition?
     let archivalParallelReadings: [String: [String]]
     let plainEnglish: PlainEnglish
@@ -33,11 +37,24 @@ struct PatentRecord: Codable, Identifiable, Hashable {
     let sourceVisualization: PatentSourceVisualization
     let bundledAssets: [String]
     let withheldAssets: [String]
+
+    var expectedSourcePDFSHA256: String? {
+        originalTextAsset?.sourcePdfSha256 ?? pinnedPdfSha256
+    }
 }
 
 struct PatentSourceVisualization: Codable, Hashable {
-    let spatialComponent: String
-    let vectorComponent: String
+    enum Kind: String, Codable, Hashable {
+        case model
+        case sourceBoundPDFOnly = "source-bound-pdf-only"
+    }
+
+    let kind: Kind
+    let spatialComponent: String?
+    let vectorComponent: String?
+    let sourceBoundary: String?
+
+    var isSourceBoundPDFOnly: Bool { kind == .sourceBoundPDFOnly }
 }
 
 struct OriginalTextAsset: Codable, Hashable {

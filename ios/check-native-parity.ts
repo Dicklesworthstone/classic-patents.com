@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { ALL_COLORIZED_EQUATIONS } from "../src/data/colorizedEquations";
 import { ARCHIVAL_PARALLEL_READINGS } from "../src/data/editions/parallelReadings";
 import { allPatents } from "../src/data/patents/index";
@@ -5,8 +6,17 @@ import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
 
 type ExportedPatent = Record<string, any> & { id: string };
 
+const KWOLEK_ID = "us-3671542-kwolek-kevlar";
+const isSourceBoundPDFOnly = (record: ExportedPatent): boolean =>
+  record.sourceVisualization?.kind === "source-bound-pdf-only";
+const sha256 = async (file: Bun.BunFile): Promise<string> =>
+  createHash("sha256")
+    .update(new Uint8Array(await file.arrayBuffer()))
+    .digest("hex");
+
 const failures: string[] = [];
 const requireVisualParity = process.argv.includes("--require-visual-parity");
+const requireKwolekSourceBoundary = process.argv.includes("--kwolek-source-boundary");
 const isNullish = (value: unknown): value is null | undefined =>
   value === null || value === undefined;
 const assert = (condition: unknown, message: string) => {
@@ -138,6 +148,221 @@ const collectTeXCommands = (value: unknown, commands = new Set<string>()): Set<s
 
 const resourceURL = new URL("./Resources/patents.json", import.meta.url);
 const records = (await Bun.file(resourceURL).json()) as ExportedPatent[];
+
+// This deliberately narrow mode proves the native publication boundary for a
+// source-bounded record without claiming that every evolving catalogue record
+// has already received a native USDZ export. The normal command below remains
+// the full-corpus parity gate.
+if (requireKwolekSourceBoundary) {
+  const focusedFailures: string[] = [];
+  const assertFocused = (condition: unknown, message: string) => {
+    if (!condition) focusedFailures.push(message);
+  };
+  const sameFocused = (actual: unknown, expected: unknown, message: string) => {
+    assertFocused(JSON.stringify(actual) === JSON.stringify(expected), message);
+  };
+  const publicKwolek = allPatents.find((patent) => patent.id === KWOLEK_ID);
+  const nativeKwolek = records.find((record) => record.id === KWOLEK_ID);
+
+  assertFocused(publicKwolek !== undefined, "the public Kwolek record is absent");
+  assertFocused(nativeKwolek !== undefined, "the native Kwolek record is absent");
+  assertFocused(
+    publicKwolek?.originalTextAsset === undefined && publicKwolek?.archivalEdition === undefined,
+    "public Kwolek reintroduced a reviewed transcript or archival edition",
+  );
+  assertFocused(
+    publicKwolek?.drawings.length === 0,
+    "public Kwolek reintroduced an active source drawing or model claim",
+  );
+  const publicKwolekPhysics = PATENT_PHYSICS_REGISTRY[KWOLEK_ID];
+  assertFocused(
+    publicKwolekPhysics?.controls.length === 0 &&
+      publicKwolekPhysics.engineMethod.includes("model withheld"),
+    "public Kwolek exposes controls",
+  );
+  const publicClaimStates = publicKwolekPhysics?.computeMetrics({}) ?? [];
+  assertFocused(
+    publicClaimStates.map((metric) => metric.label).join("|") === "Claim 1|Claim 2|Visual Model" &&
+      publicClaimStates.every(
+        (metric) =>
+          metric.provenance === "source-disclosed" || metric.provenance === "refusal-bounded",
+      ),
+    "public Kwolek reintroduced a quantitative or performance metric",
+  );
+
+  if (nativeKwolek) {
+    assertFocused(
+      nativeKwolek.sourceVisualization?.kind === "source-bound-pdf-only",
+      "native Kwolek is not source-bound PDF-only",
+    );
+    assertFocused(
+      nativeKwolek.originalTextAsset === undefined && nativeKwolek.archivalEdition === undefined,
+      "native Kwolek ships a transcript or archival edition",
+    );
+    sameFocused(
+      nativeKwolek.archivalParallelReadings,
+      {},
+      "native Kwolek ships archival parallel readings",
+    );
+    assertFocused(
+      Array.isArray(nativeKwolek.physics?.controls) && nativeKwolek.physics.controls.length === 0,
+      "native Kwolek exposes controls",
+    );
+    assertFocused(
+      nativeKwolek.physics?.metrics === undefined &&
+        nativeKwolek.physics?.computeMetrics === undefined,
+      "native Kwolek exposes invented quantitative metrics",
+    );
+    assertFocused(
+      nativeKwolek.sourceVisualization?.spatialComponent === undefined &&
+        nativeKwolek.sourceVisualization?.vectorComponent === undefined,
+      "native Kwolek leaks legacy visualization component names",
+    );
+    assertFocused(
+      nativeKwolek.bundledAssets?.length === 0 && nativeKwolek.withheldAssets?.length === 0,
+      "native Kwolek ships or inventories withheld legacy public assets",
+    );
+  }
+
+  const kwolekPdf = Bun.file(new URL(`../public/patents/pdfs/${KWOLEK_ID}.pdf`, import.meta.url));
+  assertFocused(await kwolekPdf.exists(), "the pinned Kwolek facsimile is missing");
+  if (nativeKwolek && (await kwolekPdf.exists())) {
+    sameFocused(
+      nativeKwolek.pinnedPdfSha256,
+      await sha256(kwolekPdf),
+      "native Kwolek pinned-PDF digest drifted",
+    );
+  }
+
+  const assetManifest = (await Bun.file(
+    new URL("./Resources/patent-assets.json", import.meta.url),
+  ).json()) as string[];
+  assertFocused(
+    !assetManifest.some((path) => path.includes(KWOLEK_ID)),
+    "Kwolek public source assets leaked into the native asset manifest",
+  );
+
+  type FocusedNativeVisualization = {
+    id: string;
+    kind?: string;
+    asset: string | null;
+    builder: string;
+    spatialComponent?: string;
+    vectorComponent?: string;
+    meshCount: number;
+    namedNodeCount: number;
+    sourceBoundary?: string;
+  };
+  const nativeVisualizations = (await Bun.file(
+    new URL("./Resources/native-visualizations.json", import.meta.url),
+  ).json()) as FocusedNativeVisualization[];
+  const kwolekExhibits = nativeVisualizations.filter((entry) => entry.id === KWOLEK_ID);
+  assertFocused(kwolekExhibits.length === 1, "Kwolek native exhibit is not uniquely registered");
+  const nativeExhibit = kwolekExhibits[0];
+  assertFocused(
+    nativeExhibit?.kind === "source-bound-pdf-only" &&
+      nativeExhibit.asset === null &&
+      nativeExhibit.builder === "source-bound:pdf-only" &&
+      nativeExhibit.meshCount === 0 &&
+      nativeExhibit.namedNodeCount === 0 &&
+      nativeExhibit.spatialComponent === undefined &&
+      nativeExhibit.vectorComponent === undefined,
+    "Kwolek native manifest leaks a USDZ asset, geometry, or legacy component",
+  );
+  assertFocused(
+    nativeExhibit?.sourceBoundary?.includes("pinned facsimile") === true,
+    "Kwolek native manifest omits the facsimile boundary explanation",
+  );
+
+  const projectConfiguration = await Bun.file(new URL("./project.yml", import.meta.url)).text();
+  assertFocused(
+    projectConfiguration.includes(`NativeModels/${KWOLEK_ID}.usdz`) &&
+      projectConfiguration.includes(`--exclude='figures/${KWOLEK_ID}/'`) &&
+      projectConfiguration.includes(`--exclude='source-text/${KWOLEK_ID}.txt'`) &&
+      projectConfiguration.includes(`--exclude='transcripts/${KWOLEK_ID}.txt'`) &&
+      projectConfiguration.includes(`--exclude='transcripts/${KWOLEK_ID}-reviewed.txt'`),
+    "the native project still copies a Kwolek legacy model or source artifact",
+  );
+  const nativeProject = await Bun.file(
+    new URL("./FrankenPatents.xcodeproj/project.pbxproj", import.meta.url),
+  ).text();
+  assertFocused(
+    !nativeProject.includes(`${KWOLEK_ID}.usdz`),
+    "the checked-in Xcode project still references the Kwolek USDZ",
+  );
+  const preservedLegacyFiles = [
+    Bun.file(new URL(`./Resources/NativeModels/${KWOLEK_ID}.usdz`, import.meta.url)),
+    Bun.file(new URL(`../public/patents/source-text/${KWOLEK_ID}.txt`, import.meta.url)),
+    Bun.file(new URL(`../public/patents/transcripts/${KWOLEK_ID}.txt`, import.meta.url)),
+  ];
+  for (const legacyFile of preservedLegacyFiles) {
+    assertFocused(
+      await legacyFile.exists(),
+      `a preserved Kwolek legacy file is missing: ${legacyFile.name}`,
+    );
+  }
+
+  const [
+    webDispatcherSource,
+    visualizationSource,
+    documentSource,
+    librarySource,
+    modelExporterSource,
+  ] = await Promise.all([
+    Bun.file(new URL("../src/components/patents/visuals/index.tsx", import.meta.url)).text(),
+    Bun.file(new URL("./Sources/PatentVisualizationView.swift", import.meta.url)).text(),
+    Bun.file(new URL("./Sources/NativeDocumentKit.swift", import.meta.url)).text(),
+    Bun.file(new URL("./Sources/PatentLibrary.swift", import.meta.url)).text(),
+    Bun.file(new URL("./export-native-models.ts", import.meta.url)).text(),
+  ]);
+  const kwolekCaseStart = webDispatcherSource.indexOf(`case "${KWOLEK_ID}":`);
+  const kwolekCaseEnd = webDispatcherSource.indexOf("case ", kwolekCaseStart + 1);
+  const kwolekDispatcherCase = webDispatcherSource.slice(
+    kwolekCaseStart,
+    kwolekCaseEnd < 0 ? undefined : kwolekCaseEnd,
+  );
+  assertFocused(
+    kwolekCaseStart >= 0 &&
+      kwolekDispatcherCase.includes("<SourceVisualUnavailable") &&
+      !kwolekDispatcherCase.includes("KwolekKevlar3D") &&
+      !kwolekDispatcherCase.includes("KwolekKevlarSim"),
+    "public Kwolek dispatcher still activates a legacy 2D or 3D model",
+  );
+  assertFocused(
+    visualizationSource.includes("NativePDFOnlySourceBoundaryExhibit") &&
+      visualizationSource.includes("if isSourceBoundPDFOnly"),
+    "native visualization UI cannot render the PDF-only boundary",
+  );
+  assertFocused(
+    documentSource.includes("PDFOnlySourceReader") &&
+      documentSource.includes("else if patent.originalTextAsset != nil"),
+    "native source reader can misrepresent Kwolek as a bundled edition",
+  );
+  assertFocused(
+    librarySource.includes("case .sourceBoundPDFOnly") &&
+      librarySource.includes("is not PDF-only in the native bundle"),
+    "native record validation does not enforce the Kwolek boundary",
+  );
+  assertFocused(
+    modelExporterSource.includes('includes("--manifest-only")') &&
+      modelExporterSource.includes("nativeModelDigestsBefore") &&
+      modelExporterSource.includes("sourceBoundManifestEntry") &&
+      modelExporterSource.includes("Manifest-only export altered a preserved native USDZ asset"),
+    "the scoped native manifest exporter no longer proves USDZ preservation",
+  );
+
+  if (focusedFailures.length > 0) {
+    console.error(
+      `Kwolek source-bound native parity failed (${focusedFailures.length}):\n- ${focusedFailures.join("\n- ")}`,
+    );
+    process.exit(1);
+  }
+  console.log(
+    "Kwolek source-bound native parity green: facsimile-only route, no edition/transcript/assets/controls/metrics/USDZ, and preserved legacy files.",
+  );
+  process.exit(0);
+}
+
 const corpusTeXCommands = collectTeXCommands(records);
 for (const command of corpusTeXCommands) {
   assert(
@@ -222,6 +447,32 @@ assert(
   /excludes:\s*[\s\S]*PatentDetailView\.swift/.test(projectConfiguration),
   "the superseded external-link PatentDetailView must stay excluded from the native target",
 );
+assert(
+  projectConfiguration.includes(`NativeModels/${KWOLEK_ID}.usdz`),
+  "the preserved Kwolek USDZ is not excluded from the native resource target",
+);
+for (const excludedKwolekSourcePath of [
+  `figures/${KWOLEK_ID}/`,
+  `source-text/${KWOLEK_ID}.txt`,
+  `transcripts/${KWOLEK_ID}.txt`,
+  `transcripts/${KWOLEK_ID}-reviewed.txt`,
+]) {
+  assert(
+    projectConfiguration.includes(`--exclude='${excludedKwolekSourcePath}'`),
+    `the Kwolek source-bound build copy does not exclude ${excludedKwolekSourcePath}`,
+  );
+}
+const nativeProject = await Bun.file(
+  new URL("./FrankenPatents.xcodeproj/project.pbxproj", import.meta.url),
+).text();
+assert(
+  !nativeProject.includes(`${KWOLEK_ID}.usdz`),
+  "the Kwolek USDZ is still included by the checked-in native project",
+);
+const preservedKwolekUSDZ = Bun.file(
+  new URL(`./Resources/NativeModels/${KWOLEK_ID}.usdz`, import.meta.url),
+);
+assert(await preservedKwolekUSDZ.exists(), "the preserved legacy Kwolek USDZ was deleted");
 
 const equationsFor = (patentId: string) => {
   const published = ALL_COLORIZED_EQUATIONS[patentId] ?? [];
@@ -256,14 +507,39 @@ for (const patent of allPatents) {
     failures.push(`missing patent ${patent.id}`);
     continue;
   }
+  const sourceBounded = isSourceBoundPDFOnly(record);
   same(record.originalText, patent.originalText, `${patent.id}: original text drifted`);
-  same(record.originalTextAsset, patent.originalTextAsset, `${patent.id}: text provenance drifted`);
-  same(record.archivalEdition, patent.archivalEdition, `${patent.id}: archival edition drifted`);
-  same(
-    record.archivalParallelReadings,
-    ARCHIVAL_PARALLEL_READINGS[patent.id] ?? {},
-    `${patent.id}: parallel readings drifted`,
-  );
+  if (sourceBounded) {
+    assert(
+      record.originalTextAsset === undefined,
+      `${patent.id}: source-bound record ships a transcript`,
+    );
+    assert(
+      record.archivalEdition === undefined,
+      `${patent.id}: source-bound record ships an archival edition`,
+    );
+    same(
+      record.archivalParallelReadings,
+      {},
+      `${patent.id}: source-bound record ships parallel readings`,
+    );
+    assert(
+      Array.isArray(record.physics?.controls) && record.physics.controls.length === 0,
+      `${patent.id}: source-bound record ships native controls`,
+    );
+  } else {
+    same(
+      record.originalTextAsset,
+      patent.originalTextAsset,
+      `${patent.id}: text provenance drifted`,
+    );
+    same(record.archivalEdition, patent.archivalEdition, `${patent.id}: archival edition drifted`);
+    same(
+      record.archivalParallelReadings,
+      ARCHIVAL_PARALLEL_READINGS[patent.id] ?? {},
+      `${patent.id}: parallel readings drifted`,
+    );
+  }
   same(record.plainEnglish, patent.plainEnglishExplanation, `${patent.id}: explanation drifted`);
   same(record.claims, patent.claims, `${patent.id}: claims drifted`);
   same(record.drawings, patent.drawings, `${patent.id}: drawings drifted`);
@@ -276,17 +552,38 @@ for (const patent of allPatents) {
     `${patent.id}: PDF URL is not the canonical first-party URL`,
   );
   assert(
-    /^[0-9a-f]{64}$/i.test(record.originalTextAsset?.sourcePdfSha256 ?? ""),
+    /^[0-9a-f]{64}$/i.test(
+      sourceBounded
+        ? (record.pinnedPdfSha256 ?? "")
+        : (record.originalTextAsset?.sourcePdfSha256 ?? ""),
+    ),
     `${patent.id}: canonical PDF SHA-256 is missing or malformed`,
   );
-  assert(
-    record.sourceVisualization?.spatialComponent,
-    `${patent.id}: missing spatial visualization route`,
-  );
-  assert(
-    record.sourceVisualization?.vectorComponent,
-    `${patent.id}: missing vector visualization route`,
-  );
+  if (sourceBounded) {
+    assert(
+      typeof record.sourceVisualization?.sourceBoundary === "string" &&
+        record.sourceVisualization.sourceBoundary.includes("pinned facsimile"),
+      `${patent.id}: source-bound route has no facsimile explanation`,
+    );
+    assert(
+      record.sourceVisualization?.spatialComponent === undefined &&
+        record.sourceVisualization?.vectorComponent === undefined,
+      `${patent.id}: source-bound route leaks a legacy visualization pair`,
+    );
+  } else {
+    assert(
+      record.sourceVisualization?.kind === "model",
+      `${patent.id}: authored route is not a model route`,
+    );
+    assert(
+      record.sourceVisualization?.spatialComponent,
+      `${patent.id}: missing spatial visualization route`,
+    );
+    assert(
+      record.sourceVisualization?.vectorComponent,
+      `${patent.id}: missing vector visualization route`,
+    );
+  }
 
   const claimNumbers = record.claims.map((claim: { number: number }) => claim.number);
   const claimNumberSet = new Set(claimNumbers);
@@ -386,33 +683,84 @@ for (const patent of allPatents) {
   }
 }
 
+const sourceBoundedRecords = records.filter(isSourceBoundPDFOnly);
+same(
+  sourceBoundedRecords.map((record) => record.id),
+  [KWOLEK_ID],
+  "native source-bound routes drifted",
+);
+const publicKwolek = allPatents.find((patent) => patent.id === KWOLEK_ID);
+const nativeKwolek = byId.get(KWOLEK_ID);
+assert(publicKwolek !== undefined, "the public Kwolek record is absent");
+assert(nativeKwolek !== undefined, "the native Kwolek record is absent");
+assert(
+  publicKwolek?.originalTextAsset === undefined && publicKwolek?.archivalEdition === undefined,
+  "public Kwolek record reintroduced an unreviewed transcript or archival edition",
+);
+if (nativeKwolek) {
+  assert(
+    nativeKwolek.sourceVisualization?.kind === "source-bound-pdf-only",
+    "native Kwolek route is not PDF-only",
+  );
+  assert(
+    nativeKwolek.originalTextAsset === undefined,
+    "native Kwolek ships a reviewed transcript claim",
+  );
+  assert(
+    nativeKwolek.archivalEdition === undefined,
+    "native Kwolek ships an archival edition claim",
+  );
+  same(nativeKwolek.archivalParallelReadings, {}, "native Kwolek ships archival parallel readings");
+  assert(nativeKwolek.bundledAssets.length === 0, "native Kwolek ships public-patent assets");
+  assert(nativeKwolek.withheldAssets.length === 0, "native Kwolek reports withheld bundled assets");
+  assert(
+    Array.isArray(nativeKwolek.physics?.controls) && nativeKwolek.physics.controls.length === 0,
+    "native Kwolek exposes interactive controls",
+  );
+}
+const kwolekPdf = Bun.file(new URL(`../public/patents/pdfs/${KWOLEK_ID}.pdf`, import.meta.url));
+assert(await kwolekPdf.exists(), "the preserved Kwolek facsimile is missing");
+if ((await kwolekPdf.exists()) && nativeKwolek) {
+  same(
+    nativeKwolek.pinnedPdfSha256,
+    await sha256(kwolekPdf),
+    "native Kwolek pinned-PDF digest drifted",
+  );
+}
+
 const publicRoot = new URL("../public/patents", import.meta.url).pathname;
 const assetGlob = new Bun.Glob("**/*.{png,txt}");
 const sourceAssets = [...assetGlob.scanSync({ cwd: publicRoot, onlyFiles: true })]
   .map((path) => `patents/${path}`)
   .sort();
+const expectedBundledSourceAssets = sourceAssets.filter(
+  (path) => !sourceBoundedRecords.some((record) => path.includes(record.id)),
+);
 const manifest = (await Bun.file(
   new URL("./Resources/patent-assets.json", import.meta.url),
 ).json()) as string[];
 const manifestSet = new Set(manifest);
-same(manifest, sourceAssets, "bundled non-PDF asset manifest drifted");
+same(manifest, expectedBundledSourceAssets, "bundled non-PDF asset manifest drifted");
 assert(
   !manifest.some((path) => path.toLowerCase().endsWith(".pdf")),
   "a PDF was bundled into the app",
 );
 for (const record of records) {
   const sourcePatent = allPatents.find((patent) => patent.id === record.id);
-  const editionAssets = referencedEditionAssets(sourcePatent?.archivalEdition);
+  const sourceBounded = isSourceBoundPDFOnly(record);
+  const editionAssets = sourceBounded ? [] : referencedEditionAssets(sourcePatent?.archivalEdition);
   const expectedWithheld = editionAssets.filter((path) => !manifestSet.has(path));
-  const expectedBundled = [
-    ...new Set([
-      ...editionAssets.filter((path) => manifestSet.has(path)),
-      ...sourceAssets.filter((path) => path.includes(record.id)),
-      ...(sourcePatent?.originalTextAsset?.url?.startsWith("/patents/")
-        ? [sourcePatent.originalTextAsset.url.slice(1)]
-        : []),
-    ]),
-  ].sort();
+  const expectedBundled = sourceBounded
+    ? []
+    : [
+        ...new Set([
+          ...editionAssets.filter((path) => manifestSet.has(path)),
+          ...sourceAssets.filter((path) => path.includes(record.id)),
+          ...(sourcePatent?.originalTextAsset?.url?.startsWith("/patents/")
+            ? [sourcePatent.originalTextAsset.url.slice(1)]
+            : []),
+        ]),
+      ].sort();
   same(record.bundledAssets, expectedBundled, `${record.id}: bundled asset ledger drifted`);
   same(record.withheldAssets, expectedWithheld, `${record.id}: withheld asset ledger drifted`);
   for (const path of record.bundledAssets ?? []) {
@@ -431,7 +779,12 @@ for (const record of records) {
       `${record.id}: an approved edition references a missing source asset: ${path}`,
     );
   }
-  if (!record.archivalEdition) {
+  if (sourceBounded) {
+    assert(
+      !manifest.some((path) => path.includes(record.id)),
+      `${record.id}: source-bound public assets leaked into the native bundle`,
+    );
+  } else if (!record.archivalEdition) {
     const sourceTextPath = record.originalTextAsset?.url?.replace(/^\//, "");
     assert(
       typeof sourceTextPath === "string" &&
@@ -456,14 +809,22 @@ const visualDispatcher = await Bun.file(
   new URL("../src/components/patents/visuals/index.tsx", import.meta.url),
 ).text();
 for (const record of records) {
-  assert(
-    visualDispatcher.includes(`<${record.sourceVisualization.spatialComponent}`),
-    `${record.id}: spatial component no longer exists`,
-  );
-  assert(
-    visualDispatcher.includes(`<${record.sourceVisualization.vectorComponent}`),
-    `${record.id}: vector component no longer exists`,
-  );
+  if (isSourceBoundPDFOnly(record)) {
+    assert(
+      visualDispatcher.includes(`case "${record.id}":`) &&
+        visualDispatcher.includes("<SourceVisualUnavailable"),
+      `${record.id}: source-bound visual refusal no longer exists`,
+    );
+  } else {
+    assert(
+      visualDispatcher.includes(`<${record.sourceVisualization.spatialComponent}`),
+      `${record.id}: spatial component no longer exists`,
+    );
+    assert(
+      visualDispatcher.includes(`<${record.sourceVisualization.vectorComponent}`),
+      `${record.id}: vector component no longer exists`,
+    );
+  }
 }
 
 const swiftGlob = new Bun.Glob("Sources/**/*.swift");
@@ -526,15 +887,19 @@ assert(
 );
 
 // Source plates remain valuable archival evidence, but they cannot satisfy
-// spatial parity. Every authored web model must export to a local native asset;
-// the sole exception is Haber's explicit no-drawing source boundary, which the
-// web exhibit also refuses rather than inventing later industrial apparatus.
+// spatial parity. Every authored web model must export to a local native asset.
+// Haber keeps a no-drawing boundary; Kwolek keeps a stricter facsimile-only
+// boundary with no native model, source plate, or quantitative instrument.
 type NativeVisualizationEntry = {
   id: string;
+  // Older checked-in model entries predate the explicit kind field. The
+  // manifest-only updater must retain those byte-for-byte while it replaces
+  // only a newly source-bounded entry.
+  kind?: "model" | "no-drawing" | "source-bound-pdf-only";
   asset: string | null;
   builder: string;
-  spatialComponent: string;
-  vectorComponent: string;
+  spatialComponent?: string;
+  vectorComponent?: string;
   meshCount: number;
   namedNodeCount: number;
   sourceBoundary?: string;
@@ -547,11 +912,38 @@ assert(
   nativeVisualizations.length === records.length,
   `native visualization count ${nativeVisualizations.length} != ${records.length}`,
 );
-assert(nativeVisualById.size === records.length, "native visualization ids are not unique");
+assert(
+  nativeVisualById.size === nativeVisualizations.length,
+  "native visualization ids are not unique",
+);
 for (const record of records) {
   const visual = nativeVisualById.get(record.id);
   assert(visual !== undefined, `${record.id}: no native spatial exhibit is registered`);
   if (!visual) continue;
+  if (isSourceBoundPDFOnly(record)) {
+    assert(
+      visual.kind === "source-bound-pdf-only",
+      `${record.id}: native manifest does not declare the PDF-only boundary`,
+    );
+    assert(visual.asset === null, `${record.id}: source-bound route ships a USDZ asset`);
+    assert(
+      visual.builder === "source-bound:pdf-only",
+      `${record.id}: source-bound builder drifted`,
+    );
+    assert(
+      visual.meshCount === 0 && visual.namedNodeCount === 0,
+      `${record.id}: source-bound route exposes model geometry`,
+    );
+    assert(
+      visual.spatialComponent === undefined && visual.vectorComponent === undefined,
+      `${record.id}: source-bound manifest leaks legacy component names`,
+    );
+    assert(
+      visual.sourceBoundary?.includes("pinned facsimile"),
+      `${record.id}: native source boundary explanation is missing`,
+    );
+    continue;
+  }
   same(
     visual.spatialComponent,
     record.sourceVisualization.spatialComponent,
@@ -564,6 +956,10 @@ for (const record of records) {
   );
   if (record.id === "us-971501-haber-ammonia") {
     assert(
+      (visual.kind ?? "no-drawing") === "no-drawing",
+      `${record.id}: no-drawing manifest kind drifted`,
+    );
+    assert(
       visual.asset === null,
       `${record.id}: no-drawing boundary must not ship invented apparatus geometry`,
     );
@@ -572,6 +968,7 @@ for (const record of records) {
       `${record.id}: source boundary explanation is missing`,
     );
   } else {
+    assert((visual.kind ?? "model") === "model", `${record.id}: native manifest kind is not model`);
     assert(
       visual.asset === `NativeModels/${record.id}.usdz`,
       `${record.id}: native model path is not deterministic`,
@@ -593,8 +990,47 @@ const nativeVisualizationSource = await Bun.file(
 ).text();
 assert(
   nativeVisualizationSource.includes("NativePatentSceneView") &&
-    nativeVisualizationSource.includes("NativeSourceBoundaryExhibit"),
-  "native workstation does not route authored models and the no-drawing boundary explicitly",
+    nativeVisualizationSource.includes("NativeNoDrawingSourceBoundaryExhibit") &&
+    nativeVisualizationSource.includes("NativePDFOnlySourceBoundaryExhibit") &&
+    nativeVisualizationSource.includes("if isSourceBoundPDFOnly"),
+  "native workstation does not route models, no-drawing, and PDF-only boundaries explicitly",
+);
+const nativeDocumentSource = await Bun.file(
+  new URL("./Sources/NativeDocumentKit.swift", import.meta.url),
+).text();
+assert(
+  nativeDocumentSource.includes("else if patent.originalTextAsset != nil") &&
+    nativeDocumentSource.includes("PDFOnlySourceReader"),
+  "native document reader can mistake an absent source-bound transcript for a bundled edition",
+);
+const workstationSource = await Bun.file(
+  new URL("./Sources/PatentWorkstationView.swift", import.meta.url),
+).text();
+assert(
+  workstationSource.includes("Review PDF-only state") &&
+    workstationSource.includes("Checked catalogue excerpt") &&
+    workstationSource.includes("No reviewed transcription or archival edition"),
+  "native workstation does not label the source-bound Kwolek record honestly",
+);
+const nativeModelExporterSource = await Bun.file(
+  new URL("./export-native-models.ts", import.meta.url),
+).text();
+assert(
+  nativeModelExporterSource.includes('includes("--manifest-only")') &&
+    nativeModelExporterSource.includes("nativeModelDigestsBefore") &&
+    nativeModelExporterSource.includes("existingManifest") &&
+    nativeModelExporterSource.includes("sourceBoundManifestEntry") &&
+    nativeModelExporterSource.includes(
+      "Manifest-only export altered a preserved native USDZ asset",
+    ) &&
+    nativeModelExporterSource.includes("if (manifestOnly) {") &&
+    nativeModelExporterSource.includes("} else {\n  for (const [index, record]"),
+  "native model exporter lacks the byte-preserving manifest-only mode",
+);
+const iosReadme = await Bun.file(new URL("./README.md", import.meta.url)).text();
+assert(
+  iosReadme.includes("bun export-native-models.ts --manifest-only"),
+  "iOS documentation omits the scoped native visualization manifest export",
 );
 if (requireVisualParity) {
   for (const record of records) {
@@ -629,9 +1065,12 @@ const totals = records.reduce(
 console.log(
   `Native content/export parity green: ${records.length} patents, ${totals.editions} editions, ` +
     `${totals.claims} claims, ${totals.equations} equations, ${totals.drawings} drawings, ` +
-    `${totals.callouts} callouts, ${records.length} source visualization pairs, ` +
+    `${totals.callouts} callouts, ${records.length - sourceBoundedRecords.length} source visualization pairs, ` +
+    `${sourceBoundedRecords.length} PDF-only source-bound record, ` +
     `${manifest.length} bundled non-PDF assets, ${totals.withheldAssets} explicitly gated source crops, ` +
     `one first-party PDF network boundary. Native spatial parity: ` +
     `${nativeVisualizations.filter((entry) => entry.asset !== null).length} authored USDZ models plus ` +
-    `${nativeVisualizations.filter((entry) => entry.sourceBoundary !== undefined).length} explicit no-drawing source boundary; no source plate is credited as a 3D model.`,
+    `${nativeVisualizations.filter((entry) => entry.kind === "no-drawing").length} explicit no-drawing boundary and ` +
+    `${nativeVisualizations.filter((entry) => entry.kind === "source-bound-pdf-only").length} PDF-only boundary; ` +
+    `no source plate is credited as a 3D model.`,
 );

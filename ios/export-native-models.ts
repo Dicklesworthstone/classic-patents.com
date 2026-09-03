@@ -1,20 +1,35 @@
+import { createHash } from "node:crypto";
 import * as THREE from "three";
 import { USDZExporter } from "three/examples/jsm/exporters/USDZExporter.js";
 
+const exportArguments = process.argv.slice(2);
+const manifestOnly = exportArguments.includes("--manifest-only");
+const unsupportedArguments = exportArguments.filter((argument) => argument !== "--manifest-only");
+if (unsupportedArguments.length > 0) {
+  throw new Error(`Unsupported native-model export arguments: ${unsupportedArguments.join(", ")}`);
+}
+
 type ExportedPatent = {
   id: string;
-  sourceVisualization: {
-    spatialComponent: string;
-    vectorComponent: string;
-  };
+  sourceVisualization:
+    | {
+        kind: "model";
+        spatialComponent: string;
+        vectorComponent: string;
+      }
+    | {
+        kind: "source-bound-pdf-only";
+        sourceBoundary: string;
+      };
 };
 
 type NativeVisualizationManifestEntry = {
   id: string;
+  kind?: "model" | "no-drawing" | "source-bound-pdf-only";
   asset: string | null;
   builder: string;
-  spatialComponent: string;
-  vectorComponent: string;
+  spatialComponent?: string;
+  vectorComponent?: string;
   meshCount: number;
   namedNodeCount: number;
   sourceBoundary?: string;
@@ -23,6 +38,32 @@ type NativeVisualizationManifestEntry = {
 const resourcesURL = new URL("./Resources/", import.meta.url);
 const threeSourceURL = new URL("../src/components/patents/visuals/three/", import.meta.url);
 const records = (await Bun.file(new URL("patents.json", resourcesURL)).json()) as ExportedPatent[];
+const nativeVisualizationManifestURL = new URL("native-visualizations.json", resourcesURL);
+const existingManifest = manifestOnly
+  ? ((await Bun.file(nativeVisualizationManifestURL).json()) as NativeVisualizationManifestEntry[])
+  : [];
+
+async function nativeModelDigests(): Promise<readonly (readonly [string, string])[]> {
+  const nativeModelGlob = new Bun.Glob("NativeModels/*.usdz");
+  const paths = [
+    ...nativeModelGlob.scanSync({ cwd: resourcesURL.pathname, onlyFiles: true }),
+  ].sort();
+  return Promise.all(
+    paths.map(async (path) => {
+      const asset = Bun.file(new URL(path, resourcesURL));
+      const digest = createHash("sha256")
+        .update(new Uint8Array(await asset.arrayBuffer()))
+        .digest("hex");
+      return [path, `${asset.size}:${digest}`] as const;
+    }),
+  );
+}
+
+// This mode is intentionally read-only for every USDZ. It is used when a
+// route's publication boundary changes but no authored geometry is being
+// regenerated. Snapshotting before and after turns that guarantee into a
+// runtime-checked contract rather than relying on a convention alone.
+const nativeModelDigestsBefore = manifestOnly ? await nativeModelDigests() : undefined;
 
 const objectSize = (object: THREE.Object3D): number => {
   let count = 0;
@@ -63,7 +104,7 @@ const objectCandidates = (value: unknown, seen = new Set<unknown>()): THREE.Obje
 
 const modelModuleSpecifiers = (source: string): string[] => {
   const matches = source.matchAll(
-    /from\s+["'](\.\/[A-Za-z0-9_-]*(?:Model|model|Airframe|airframe))["']/g,
+    /from\s+["'](?:\.\/|@\/components\/patents\/visuals\/three\/)([A-Za-z0-9_-]*(?:Model|model|Airframe|airframe))["']/g,
   );
   return [...new Set([...matches].map((match) => match[1]))];
 };
@@ -80,7 +121,7 @@ const modelBuilder = async (
 
   const attempts: string[] = [];
   for (const specifier of moduleSpecifiers) {
-    const moduleURL = new URL(`${specifier}.ts`, componentURL);
+    const moduleURL = new URL(`${specifier}.ts`, threeSourceURL);
     const modelModule = (await import(moduleURL.href)) as Record<string, unknown>;
     const builders = Object.entries(modelModule).filter(
       ([name, value]) =>
@@ -103,6 +144,19 @@ const modelBuilder = async (
 
 const exporter = new USDZExporter();
 const manifest: NativeVisualizationManifestEntry[] = [];
+
+const sourceBoundManifestEntry = (
+  id: string,
+  sourceBoundary: string,
+): NativeVisualizationManifestEntry => ({
+  id,
+  kind: "source-bound-pdf-only",
+  asset: null,
+  builder: "source-bound:pdf-only",
+  meshCount: 0,
+  namedNodeCount: 0,
+  sourceBoundary,
+});
 
 const exportMaterial = (source: THREE.Material): THREE.MeshStandardMaterial => {
   const material = source as THREE.Material & {
@@ -139,59 +193,100 @@ const prepareForUSDZ = (root: THREE.Object3D): void => {
   });
 };
 
-for (const [index, record] of records.entries()) {
-  const { spatialComponent, vectorComponent } = record.sourceVisualization;
-  let built: Awaited<ReturnType<typeof modelBuilder>>;
-  try {
-    built = await modelBuilder(spatialComponent);
-  } catch (error) {
-    if (record.id !== "us-971501-haber-ammonia") throw error;
+if (manifestOnly) {
+  const existingByID = new Map(existingManifest.map((entry) => [entry.id, entry]));
+  for (const record of records) {
+    if (record.sourceVisualization.kind === "source-bound-pdf-only") {
+      manifest.push(sourceBoundManifestEntry(record.id, record.sourceVisualization.sourceBoundary));
+      continue;
+    }
+    const existing = existingByID.get(record.id);
+    if (existing) manifest.push(existing);
+  }
+  const pendingModelIDs = records
+    .filter((record) => record.sourceVisualization.kind === "model" && !existingByID.has(record.id))
+    .map((record) => record.id);
+  if (pendingModelIDs.length > 0) {
+    console.log(
+      `Manifest-only export retained ${manifest.length} existing native exhibits; ` +
+        `${pendingModelIDs.length} newer model route(s) remain pending a deliberate USDZ export: ` +
+        pendingModelIDs.join(", "),
+    );
+  }
+} else {
+  for (const [index, record] of records.entries()) {
+    if (record.sourceVisualization.kind === "source-bound-pdf-only") {
+      manifest.push(sourceBoundManifestEntry(record.id, record.sourceVisualization.sourceBoundary));
+      console.log(`[${index + 1}/${records.length}] ${record.id}: source-bound PDF-only exhibit`);
+      continue;
+    }
+
+    const { spatialComponent, vectorComponent } = record.sourceVisualization;
+    let built: Awaited<ReturnType<typeof modelBuilder>>;
+    try {
+      built = await modelBuilder(spatialComponent);
+    } catch (error) {
+      if (record.id !== "us-971501-haber-ammonia") throw error;
+      manifest.push({
+        id: record.id,
+        kind: "no-drawing",
+        asset: null,
+        builder: "source-boundary:no-drawing",
+        spatialComponent,
+        vectorComponent,
+        meshCount: 0,
+        namedNodeCount: 0,
+        sourceBoundary:
+          "US 971,501 contains no apparatus drawing; its web exhibit intentionally withholds the interpretive process-loop model.",
+      });
+      console.log(
+        `[${index + 1}/${records.length}] ${record.id}: source-bounded live chemistry exhibit`,
+      );
+      continue;
+    }
+    const { name: builder, root } = built;
+    prepareForUSDZ(root);
+    root.updateMatrixWorld(true);
+
+    let meshCount = 0;
+    let namedNodeCount = 0;
+    root.traverse((node) => {
+      if (node.name) namedNodeCount += 1;
+      if (node instanceof THREE.Mesh || node instanceof THREE.InstancedMesh) meshCount += 1;
+    });
+    if (meshCount === 0) throw new Error(`${record.id}: ${builder} exported no meshes`);
+
+    const asset = `NativeModels/${record.id}.usdz`;
+    const bytes = await exporter.parseAsync(root, { quickLookCompatible: true });
+    await Bun.write(new URL(asset, resourcesURL), bytes);
     manifest.push({
       id: record.id,
-      asset: null,
-      builder: "source-boundary:no-drawing",
+      kind: "model",
+      asset,
+      builder,
       spatialComponent,
       vectorComponent,
-      meshCount: 0,
-      namedNodeCount: 0,
-      sourceBoundary:
-        "US 971,501 contains no apparatus drawing; its web exhibit intentionally withholds the interpretive process-loop model.",
+      meshCount,
+      namedNodeCount,
     });
     console.log(
-      `[${index + 1}/${records.length}] ${record.id}: source-bounded live chemistry exhibit`,
+      `[${index + 1}/${records.length}] ${record.id}: ${meshCount} meshes via ${builder}`,
     );
-    continue;
   }
-  const { name: builder, root } = built;
-  prepareForUSDZ(root);
-  root.updateMatrixWorld(true);
-
-  let meshCount = 0;
-  let namedNodeCount = 0;
-  root.traverse((node) => {
-    if (node.name) namedNodeCount += 1;
-    if (node instanceof THREE.Mesh || node instanceof THREE.InstancedMesh) meshCount += 1;
-  });
-  if (meshCount === 0) throw new Error(`${record.id}: ${builder} exported no meshes`);
-
-  const asset = `NativeModels/${record.id}.usdz`;
-  const bytes = await exporter.parseAsync(root, { quickLookCompatible: true });
-  await Bun.write(new URL(asset, resourcesURL), bytes);
-  manifest.push({
-    id: record.id,
-    asset,
-    builder,
-    spatialComponent,
-    vectorComponent,
-    meshCount,
-    namedNodeCount,
-  });
-  console.log(`[${index + 1}/${records.length}] ${record.id}: ${meshCount} meshes via ${builder}`);
 }
 
-await Bun.write(
-  new URL("native-visualizations.json", resourcesURL),
-  `${JSON.stringify(manifest, null, 2)}\n`,
-);
+await Bun.write(nativeVisualizationManifestURL, `${JSON.stringify(manifest, null, 2)}\n`);
 
-console.log(`Exported ${manifest.length} native USDZ patent exhibits.`);
+if (nativeModelDigestsBefore) {
+  const nativeModelDigestsAfter = await nativeModelDigests();
+  if (JSON.stringify(nativeModelDigestsAfter) !== JSON.stringify(nativeModelDigestsBefore)) {
+    throw new Error("Manifest-only export altered a preserved native USDZ asset");
+  }
+  console.log(
+    `Manifest-only export preserved ${nativeModelDigestsBefore.length} native USDZ assets byte-for-byte.`,
+  );
+}
+
+console.log(
+  `${manifestOnly ? "Exported native visualization manifest for" : "Exported"} ${manifest.length} native patent exhibits.`,
+);

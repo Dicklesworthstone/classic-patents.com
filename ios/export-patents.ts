@@ -1,19 +1,31 @@
+import { createHash } from "node:crypto";
 import { ALL_COLORIZED_EQUATIONS } from "../src/data/colorizedEquations";
 import { ARCHIVAL_PARALLEL_READINGS } from "../src/data/editions/parallelReadings";
 import { allPatents } from "../src/data/patents/index";
 import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
+import type { Patent } from "../src/types/patent";
 
-type SourceVisualizationRoute = {
-  spatialComponent: string;
-  vectorComponent: string;
-};
+type SourceVisualizationRoute =
+  | {
+      kind: "model";
+      spatialComponent: string;
+      vectorComponent: string;
+    }
+  | {
+      kind: "source-bound-pdf-only";
+      sourceBoundary: string;
+    };
+
+const SOURCE_BOUNDARY_PDF_ONLY =
+  "The public record is limited to the pinned facsimile and checked claim reading. No reviewed transcription, archival edition, model, controls, quantitative metrics, or USDZ asset is shipped in the native app.";
 
 async function sourceVisualizationRoutes(): Promise<Map<string, SourceVisualizationRoute>> {
   const source = await Bun.file(
     new URL("../src/components/patents/visuals/index.tsx", import.meta.url),
   ).text();
   const switchStart = source.indexOf("switch (patentId)");
-  const switchEnd = source.indexOf("\n          default:", switchStart);
+  const defaultMatch = /\n\s*default:\s*\n\s*return\s*\(/.exec(source.slice(switchStart));
+  const switchEnd = defaultMatch?.index === undefined ? -1 : switchStart + defaultMatch.index;
   if (switchStart < 0 || switchEnd < 0) {
     throw new Error("Could not locate the canonical PatentVisualDispatcher switch");
   }
@@ -28,9 +40,16 @@ async function sourceVisualizationRoutes(): Promise<Map<string, SourceVisualizat
     const segment = dispatcher.slice(segmentStart, segmentEnd);
     const spatialComponent = segment.match(/<([A-Z][A-Za-z0-9]*3D)\b/)?.[1];
     const vectorComponent = segment.match(/<([A-Z][A-Za-z0-9]*Sim)\b/)?.[1];
+    if (segment.includes("<SourceVisualUnavailable")) {
+      for (const id of pendingIds) {
+        routes.set(id, { kind: "source-bound-pdf-only", sourceBoundary: SOURCE_BOUNDARY_PDF_ONLY });
+      }
+      pendingIds = [];
+      continue;
+    }
     if (!spatialComponent || !vectorComponent) continue;
     for (const id of pendingIds) {
-      routes.set(id, { spatialComponent, vectorComponent });
+      routes.set(id, { kind: "model", spatialComponent, vectorComponent });
     }
     pendingIds = [];
   }
@@ -41,9 +60,14 @@ async function sourceVisualizationRoutes(): Promise<Map<string, SourceVisualizat
 }
 
 const visualizationRoutes = await sourceVisualizationRoutes();
+const sourceBoundedPatentIds = new Set(
+  [...visualizationRoutes.entries()]
+    .filter(([, route]) => route.kind === "source-bound-pdf-only")
+    .map(([patentId]) => patentId),
+);
 
 const patentAssetGlob = new Bun.Glob("**/*.{png,txt}");
-const allBundledAssetPaths = [
+const allPatentAssetPaths = [
   ...patentAssetGlob.scanSync({
     cwd: new URL("../public/patents", import.meta.url).pathname,
     onlyFiles: true,
@@ -51,6 +75,9 @@ const allBundledAssetPaths = [
 ]
   .map((path) => `patents/${path}`)
   .sort();
+const allBundledAssetPaths = allPatentAssetPaths.filter(
+  (path) => ![...sourceBoundedPatentIds].some((patentId) => path.includes(patentId)),
+);
 const bundledAssetSet = new Set(allBundledAssetPaths);
 
 function equationsFor(patentId: string) {
@@ -80,53 +107,77 @@ function referencedEditionAssets(value: unknown): string[] {
   return [...assets].sort();
 }
 
-const exported = allPatents.map((patent) => {
-  const editionAssets = referencedEditionAssets(patent.archivalEdition);
-  const availableEditionAssets = editionAssets.filter((path) => bundledAssetSet.has(path));
-  const withheldAssets = editionAssets.filter((path) => !bundledAssetSet.has(path));
-  return {
-    id: patent.id,
-    patentNumber: patent.patentNumber,
-    title: patent.title,
-    shortTitle: patent.shortTitle,
-    subtitle: patent.subtitle,
-    inventors: patent.inventors,
-    inventorLocation: patent.inventorLocation,
-    grantDate: patent.grantDate,
-    filingDate: patent.filingDate,
-    era: patent.era,
-    category: patent.category,
-    categoryLabel: patent.categoryLabel,
-    summary: patent.summary,
-    heroQuote: patent.heroQuote,
-    originalPdfURL: `https://classic-patents.com${patent.originalPdfUrl}`,
-    googlePatentsURL: patent.googlePatentsUrl,
-    usptoClassification: patent.usptoClassification,
-    originalText: patent.originalText,
-    originalTextAsset: patent.originalTextAsset,
-    archivalEdition: patent.archivalEdition,
-    archivalParallelReadings: ARCHIVAL_PARALLEL_READINGS[patent.id] ?? {},
-    plainEnglish: patent.plainEnglishExplanation,
-    claims: patent.claims,
-    drawings: patent.drawings,
-    history: patent.historicalContext,
-    tags: patent.tags ?? [],
-    stats: patent.stats,
-    equations: equationsFor(patent.id),
-    physics: PATENT_PHYSICS_REGISTRY[patent.id],
-    sourceVisualization: visualizationRoutes.get(patent.id),
-    bundledAssets: [
-      ...new Set([
-        ...availableEditionAssets,
-        ...allBundledAssetPaths.filter((path) => path.includes(patent.id)),
-        ...(patent.originalTextAsset?.url?.startsWith("/patents/")
-          ? [patent.originalTextAsset.url.slice(1)]
-          : []),
-      ]),
-    ].sort(),
-    withheldAssets,
-  };
-});
+async function pinnedPdfSha256For(patent: Patent): Promise<string | undefined> {
+  if (patent.originalTextAsset?.sourcePdfSha256) return undefined;
+  const pdf = Bun.file(new URL(`../public${patent.originalPdfUrl}`, import.meta.url));
+  if (!(await pdf.exists())) {
+    throw new Error(`${patent.id}: pinned source PDF is unavailable for native export`);
+  }
+  return createHash("sha256")
+    .update(new Uint8Array(await pdf.arrayBuffer()))
+    .digest("hex");
+}
+
+const exported = await Promise.all(
+  allPatents.map(async (patent) => {
+    const sourceVisualization = visualizationRoutes.get(patent.id);
+    if (!sourceVisualization) {
+      throw new Error(`Missing source visualization route for: ${patent.id}`);
+    }
+    const isSourceBounded = sourceVisualization.kind === "source-bound-pdf-only";
+    const editionAssets = isSourceBounded ? [] : referencedEditionAssets(patent.archivalEdition);
+    const availableEditionAssets = editionAssets.filter((path) => bundledAssetSet.has(path));
+    const withheldAssets = editionAssets.filter((path) => !bundledAssetSet.has(path));
+    const physics = PATENT_PHYSICS_REGISTRY[patent.id];
+    return {
+      id: patent.id,
+      patentNumber: patent.patentNumber,
+      title: patent.title,
+      shortTitle: patent.shortTitle,
+      subtitle: patent.subtitle,
+      inventors: patent.inventors,
+      inventorLocation: patent.inventorLocation,
+      grantDate: patent.grantDate,
+      filingDate: patent.filingDate,
+      era: patent.era,
+      category: patent.category,
+      categoryLabel: patent.categoryLabel,
+      summary: patent.summary,
+      heroQuote: patent.heroQuote,
+      originalPdfURL: `https://classic-patents.com${patent.originalPdfUrl}`,
+      googlePatentsURL: patent.googlePatentsUrl,
+      usptoClassification: patent.usptoClassification,
+      originalText: patent.originalText,
+      originalTextAsset: isSourceBounded ? undefined : patent.originalTextAsset,
+      pinnedPdfSha256: await pinnedPdfSha256For(patent),
+      archivalEdition: isSourceBounded ? undefined : patent.archivalEdition,
+      archivalParallelReadings: isSourceBounded
+        ? {}
+        : (ARCHIVAL_PARALLEL_READINGS[patent.id] ?? {}),
+      plainEnglish: patent.plainEnglishExplanation,
+      claims: patent.claims,
+      drawings: patent.drawings,
+      history: patent.historicalContext,
+      tags: patent.tags ?? [],
+      stats: patent.stats,
+      equations: equationsFor(patent.id),
+      physics: isSourceBounded && physics ? { ...physics, controls: [] } : physics,
+      sourceVisualization,
+      bundledAssets: isSourceBounded
+        ? []
+        : [
+            ...new Set([
+              ...availableEditionAssets,
+              ...allBundledAssetPaths.filter((path) => path.includes(patent.id)),
+              ...(patent.originalTextAsset?.url?.startsWith("/patents/")
+                ? [patent.originalTextAsset.url.slice(1)]
+                : []),
+            ]),
+          ].sort(),
+      withheldAssets: isSourceBounded ? [] : withheldAssets,
+    };
+  }),
+);
 
 const missingVisualizationRoutes = exported.filter((patent) => !patent.sourceVisualization);
 if (missingVisualizationRoutes.length > 0) {
@@ -149,6 +200,8 @@ const totals = exported.reduce(
       sum.callouts + patent.drawings.reduce((count, drawing) => count + drawing.callouts.length, 0),
     assets: sum.assets + patent.bundledAssets.length,
     visualizations: sum.visualizations + (patent.sourceVisualization ? 1 : 0),
+    sourceBoundaries:
+      sum.sourceBoundaries + (patent.sourceVisualization.kind === "source-bound-pdf-only" ? 1 : 0),
     withheldAssets: sum.withheldAssets + patent.withheldAssets.length,
   }),
   {
@@ -158,12 +211,14 @@ const totals = exported.reduce(
     callouts: 0,
     assets: 0,
     visualizations: 0,
+    sourceBoundaries: 0,
     withheldAssets: 0,
   },
 );
 console.log(
   `Exported ${exported.length} patents, ${totals.editions} editions, ${totals.equations} equations, ` +
     `${totals.drawings} drawings, ${totals.callouts} callouts, ${totals.visualizations} visualization routes, ` +
-    `${totals.assets} patent-linked assets, and ${totals.withheldAssets} explicitly withheld upstream crops ` +
+    `${totals.sourceBoundaries} PDF-only source boundaries, ${totals.assets} patent-linked assets, and ` +
+    `${totals.withheldAssets} explicitly withheld upstream crops ` +
     `(${allBundledAssetPaths.length} total bundled assets) to ${output.pathname}`,
 );

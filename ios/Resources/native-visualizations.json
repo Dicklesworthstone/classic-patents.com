@@ -641,12 +641,12 @@
   },
   {
     "id": "us-3671542-kwolek-kevlar",
-    "asset": "NativeModels/us-3671542-kwolek-kevlar.usdz",
-    "builder": "buildKwolekKevlarModel",
-    "spatialComponent": "KwolekKevlar3D",
-    "vectorComponent": "KwolekKevlarSim",
-    "meshCount": 157,
-    "namedNodeCount": 10
+    "kind": "source-bound-pdf-only",
+    "asset": null,
+    "builder": "source-bound:pdf-only",
+    "meshCount": 0,
+    "namedNodeCount": 0,
+    "sourceBoundary": "The public record is limited to the pinned facsimile and checked claim reading. No reviewed transcription, archival edition, model, controls, quantitative metrics, or USDZ asset is shipped in the native app."
   },
   {
     "id": "us-3858232-boyle-smith-ccd",

@@ -90,7 +90,7 @@ struct NativePatentSceneView: View {
 /// refuses a 3D apparatus: the patent says "No Drawing" and an industrial
 /// recycle loop would be later art. Resolve that route explicitly with its
 /// live chemistry state instead of manufacturing archival geometry.
-struct NativeSourceBoundaryExhibit: View {
+struct NativeNoDrawingSourceBoundaryExhibit: View {
     let patent: PatentRecord
     let drive: Double
 
@@ -141,6 +141,58 @@ struct NativeSourceBoundaryExhibit: View {
             .overlay(RoundedRectangle(cornerRadius: 14).stroke(Lab.brass.opacity(0.28)))
         }
         .padding(18)
+    }
+}
+
+/// A source-bound public record may retain a pinned facsimile and checked
+/// claim reading while withholding an unreviewed edition and any interpretive
+/// geometry. Unlike the Haber no-drawing exhibit, this state has no active
+/// simulation, control, source plate, or numerical meter.
+struct NativePDFOnlySourceBoundaryExhibit: View {
+    let patent: PatentRecord
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(alignment: .top, spacing: 14) {
+                Image(systemName: "doc.text.magnifyingglass")
+                    .font(.system(size: 28))
+                    .foregroundStyle(Lab.brass)
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("Source-bound facsimile record")
+                        .font(.system(size: Lab.size(17), weight: .bold, design: .serif))
+                        .foregroundStyle(Lab.parchment)
+                    Text(patent.sourceVisualization.sourceBoundary ?? "This record is limited to its pinned public facsimile.")
+                        .font(.system(size: Lab.size(11.5), design: .rounded))
+                        .foregroundStyle(Lab.secondary)
+                        .textSelection(.enabled)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 10) {
+                Label("Available in this record", systemImage: "checkmark.circle.fill")
+                    .font(.system(size: Lab.size(11.5), weight: .bold, design: .rounded))
+                    .foregroundStyle(Lab.emerald)
+                Text("The pinned original PDF and checked catalogue claims remain available. Use Original PDF in the patent header to open the full facsimile.")
+                    .font(.system(size: Lab.size(12), design: .serif))
+                    .foregroundStyle(Lab.text)
+                    .textSelection(.enabled)
+
+                Label("Intentionally withheld", systemImage: "lock.fill")
+                    .font(.system(size: Lab.size(11.5), weight: .bold, design: .rounded))
+                    .foregroundStyle(Lab.brass)
+                    .padding(.top, 2)
+                Text("No reviewed transcription, archival edition, source-plate projection, 2D or 3D model, interactive control, or quantitative metric is presented until the complete source can be manually reconciled.")
+                    .font(.system(size: Lab.size(12), design: .serif))
+                    .foregroundStyle(Lab.secondary)
+                    .textSelection(.enabled)
+            }
+            .padding(15)
+            .background(Lab.panelStrong, in: RoundedRectangle(cornerRadius: 14))
+            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Lab.brass.opacity(0.28)))
+        }
+        .padding(18)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Source-bound PDF-only state for \(patent.shortTitle)")
     }
 }
 
