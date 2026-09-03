@@ -118,7 +118,7 @@ describe("DualProjectionViewer component", () => {
     }
   });
 
-  test("renders the pinned complete facsimile instead of a partial excerpt when no text reader is available", () => {
+  test("keeps available source text visible without substituting the PDF reader when no complete text reader is available", () => {
     const patentWithoutTextReader = {
       ...wrightFlyerPatent,
       archivalEdition: undefined,
@@ -134,11 +134,11 @@ describe("DualProjectionViewer component", () => {
       />,
     );
 
-    expect(html).toContain('data-testid="complete-facsimile-source-fallback"');
-    expect(html).toContain("Complete scanned patent record");
-    expect(html).toContain(wrightFlyerPatent.originalPdfUrl);
-    expect(html).not.toContain('data-testid="source-text-excerpt"');
-    expect(html).not.toContain("not published yet");
+    expect(html).toContain('data-testid="source-text-excerpt"');
+    expect(html).toContain("Available patent text");
+    expect(html).toContain("Be it known that we, ORVILLE WRIGHT and WILBUR WRIGHT");
+    expect(html).not.toContain('data-testid="pinned-pdf-facsimile"');
+    expect(html).not.toContain('object type="application/pdf"');
   });
 
   test("renders the complete locally available Kwolek instrument despite its editorial hold", () => {

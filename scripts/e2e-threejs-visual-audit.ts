@@ -381,7 +381,7 @@ async function verifyOriginalPatentTextFace(args: {
       const sourceViewer = document.querySelector('[data-testid="dual-projection-viewer"]');
       return Boolean(
         sourceViewer?.querySelector(
-          'article[data-edition-kind], [data-testid="reviewed-transcript-fallback"], [data-testid="complete-facsimile-source-fallback"]',
+          'article[data-edition-kind], [data-testid="reviewed-transcript-fallback"], [data-testid="source-text-excerpt"]',
         ),
       );
     },
@@ -391,33 +391,26 @@ async function verifyOriginalPatentTextFace(args: {
 
   const edition = viewer.locator("article[data-edition-kind]");
   const transcript = viewer.getByTestId("reviewed-transcript-fallback");
-  const facsimileFallback = viewer.getByTestId("complete-facsimile-source-fallback");
+  const excerptFallback = viewer.getByTestId("source-text-excerpt");
   const transcriptCount = await transcript.count();
   const editionCount = await edition.count();
-  const facsimileFallbackCount = await facsimileFallback.count();
+  const excerptFallbackCount = await excerptFallback.count();
   const pdfEmbedCount = await viewer.locator('object[type="application/pdf"]').count();
   const transcriptText = transcriptCount > 0 ? await transcript.locator("pre").textContent() : null;
   const editionText = editionCount > 0 ? await edition.first().textContent() : null;
   const sourceDelivery =
-    transcriptCount > 0
-      ? "page-marked-transcript"
-      : editionCount > 0
-        ? "archival-edition"
-        : facsimileFallbackCount > 0
-          ? "pinned-facsimile"
-          : "none";
+    transcriptCount > 0 ? "page-marked-transcript" : editionCount > 0 ? "archival-edition" : "none";
   const errors =
     args.diagnostics.consoleErrors.length +
     args.diagnostics.pageErrors.length +
     args.diagnostics.networkErrors.length;
   const valid =
     sourceDelivery !== "none" &&
-    facsimileFallbackCount <= 1 &&
+    excerptFallbackCount === 0 &&
+    pdfEmbedCount === 0 &&
     (sourceDelivery === "page-marked-transcript"
       ? /^--- REVIEWED TRANSCRIPTION PAGE 1 OF \d+ ---/.test(transcriptText ?? "")
-      : sourceDelivery === "pinned-facsimile"
-        ? pdfEmbedCount === 1
-        : Boolean(editionText?.trim().length)) &&
+      : Boolean(editionText?.trim().length)) &&
     errors === 0;
 
   emit({
@@ -428,9 +421,9 @@ async function verifyOriginalPatentTextFace(args: {
     status: valid ? "pass" : "fail",
     durationMs: Math.round(performance.now() - args.startedAt),
     expected: {
-      completeSourceDelivery: "archival edition, page-marked transcript, or pinned facsimile",
-      partialExcerptFallbacks: 0,
-      pinnedFacsimileFallbacks: "allowed only when no readable local text is available",
+      completeSourceDelivery: "archival edition or page-marked transcript",
+      excerptFallbacks: 0,
+      inlinePdfSubstitutes: 0,
       runtimeErrors: 0,
     },
     actual: {
@@ -442,7 +435,7 @@ async function verifyOriginalPatentTextFace(args: {
       transcriptStartsWithPageOne: /^--- REVIEWED TRANSCRIPTION PAGE 1 OF \d+ ---/.test(
         transcriptText ?? "",
       ),
-      facsimileFallbackCount,
+      excerptFallbackCount,
       pdfEmbedCount,
     },
     screenshotPath: null,
