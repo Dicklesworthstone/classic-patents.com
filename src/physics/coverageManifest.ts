@@ -207,6 +207,16 @@ export const DEDICATED_WASM_SURFACES = {
     artifactSha256: "32e1d6bfe67f86d963e30a2b1b0866993106dd102319a9bc9037cea191d6a113",
     refusalBoundary: "typed-wasm",
   },
+  "us-5701965-kamen-transporter": {
+    kind: "generic-wasm",
+    sourceCrate: "fs-kamen-wasm",
+    loaderFunction: "ensureKamenTransporterWasm",
+    exportName: "kamen_cluster_step",
+    artifactUrl: "/wasm/fs-kamen/fs_kamen_wasm_bg.wasm",
+    artifactSha256: "fa16c3aab661b0ac9be831f7590966a5c938c33b12d0189bf2f8d81896c12fec",
+    refusalBoundary: "typed-wasm",
+    provesSharedBusSource: true,
+  },
   "us-6331181-davinci": {
     kind: "generic-wasm",
     sourceCrate: "fs-davinci-wasm",
