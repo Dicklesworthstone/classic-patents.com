@@ -9,13 +9,13 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import {
+  type PasteurFermentationCameraPreset,
+  pasteurFermentationCameraForViewport,
+} from "./pasteurFermentationCamera";
+import {
   buildPasteurFermentationModel,
   updatePasteurFermentationKinematics,
 } from "./pasteurFermentationModel";
-import {
-  pasteurFermentationCameraForViewport,
-  type PasteurFermentationCameraPreset,
-} from "./pasteurFermentationCamera";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";

@@ -144,17 +144,14 @@ describe("US 5,121,329 Crump FDM Procedural 3D Visual Model", () => {
       expect(end.z).toBeCloseTo(path.getZ(index + 1), 6);
     }
 
-    const nozzleTipWorldY = model.gantryGroup.position.y + model.carriageGroup.position.y - 0.33;
-    const partTopWorldY =
-      model.bedGroup.position.y +
-      model.partGroup.position.y +
-      model.partGroup.children.length * 0.02;
-    const beadCenterWorldY =
-      model.gantryGroup.position.y +
-      model.carriageGroup.position.y +
-      model.activeBeadMesh.position.y;
-    expect(beadCenterWorldY + model.activeBeadMesh.scale.y / 2).toBeCloseTo(nozzleTipWorldY, 8);
-    expect(beadCenterWorldY - model.activeBeadMesh.scale.y / 2).toBeCloseTo(partTopWorldY, 8);
+    model.root.updateMatrixWorld(true);
+    const nozzleLandBounds = new THREE.Box3().setFromObject(model.planarNozzleLandMesh);
+    const partBounds = new THREE.Box3().setFromObject(model.partGroup);
+    const activeBeadBounds = new THREE.Box3().setFromObject(model.activeBeadMesh);
+    // The visible bridge must meet the actual planar-land bottom and the actual
+    // current-layer top, not a duplicated approximation of either coordinate.
+    expect(activeBeadBounds.max.y).toBeCloseTo(nozzleLandBounds.min.y, 8);
+    expect(activeBeadBounds.min.y).toBeCloseTo(partBounds.max.y, 8);
 
     // Test refusal / inactive extrusion hides bead
     const stoppedTel = { ...tel, isExtruding: false };

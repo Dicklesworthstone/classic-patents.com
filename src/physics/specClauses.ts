@@ -3263,14 +3263,9 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
     return [
       {
         id: "crump-filament-pinch-feed",
-        phrase:
-          "a plurality of drive rollers 134 are provided within supply chamber 118",
-        active:
-          tel.claim1ApparatusPresent && !tel.filamentGrindingRefusal,
-        tone:
-          tel.claim1ApparatusPresent && !tel.filamentGrindingRefusal
-            ? "live"
-            : "broken",
+        phrase: "a plurality of drive rollers 134 are provided within supply chamber 118",
+        active: tel.claim1ApparatusPresent && !tel.filamentGrindingRefusal,
+        tone: tel.claim1ApparatusPresent && !tel.filamentGrindingRefusal ? "live" : "broken",
         caption: !tel.claim1ApparatusPresent
           ? "Claim 1 apparatus topology is withheld, so the feed-chain comparison is not asserted."
           : `Figure 5 drive roller 134 and idler 136 remain visibly connected to strand 110. The displayed ${tel.maxTractionForceN.toFixed(1)} N traction limit is an illustrative friction screen, not a patent measurement.`,
@@ -3320,7 +3315,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
           ? "Claim 1 sequential-layer apparatus topology is withheld."
           : !tel.claim2HeatingMeansPresent
             ? "Claim 2 heating is withheld, so the illustrative thermoplastic thermal screen is not asserted."
-          : `Interface-temperature screen is ${tel.interfaceTempC.toFixed(1)} °C (Tg = ${CRUMP_FDM_GLASS_TRANSITION_TEMP_C} °C; margin ${tel.interfaceTemperatureMarginC.toFixed(1)} °C). Cooling time constant is ${(tel.coolingTimeConstantSec * 1000).toFixed(0)} ms. This screen does not calculate bond strength.`,
+            : `Interface-temperature screen is ${tel.interfaceTempC.toFixed(1)} °C (Tg = ${CRUMP_FDM_GLASS_TRANSITION_TEMP_C} °C; margin ${tel.interfaceTemperatureMarginC.toFixed(1)} °C). Cooling time constant is ${(tel.coolingTimeConstantSec * 1000).toFixed(0)} ms. This screen does not calculate bond strength.`,
       },
     ];
   }
