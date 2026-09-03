@@ -62,6 +62,7 @@ describe("patent view URL state", () => {
     expect(VIEWER_SOURCE).toContain("syncFromLocation");
     expect(VIEWER_SOURCE).toContain('data-testid="dual-projection-viewer"');
     expect(VIEWER_SOURCE).toContain("data-hydrated={hydrated}");
+    expect(VIEWER_SOURCE).toContain("useLayoutEffect(() => {");
     expect(VIEWER_SOURCE).toContain("setHydrated(true)");
     expect(VIEWER_SOURCE).not.toMatch(
       /const setViewMode = \(mode: PatentViewMode\) => \{\s*setViewModeState\(mode\);\s*\};/,
@@ -72,7 +73,8 @@ describe("patent view URL state", () => {
       "data-archival-publication-evidence={JSON.stringify(archivalDiagnostics)}",
     );
     expect(VIEWER_SOURCE).toContain("const archivalSource =");
-    expect(VIEWER_SOURCE).toContain(
+    expect(VIEWER_SOURCE).toContain("patent.archivalEdition && archivalParallelReadings");
+    expect(VIEWER_SOURCE).not.toContain(
       "archivalPublication.isPublished && patent.archivalEdition && archivalParallelReadings",
     );
     expect(VIEWER_SOURCE).not.toContain("evaluateArchivalPublicationState(patent)");
@@ -80,6 +82,14 @@ describe("patent view URL state", () => {
     expect(PATENT_PAGE_SOURCE).not.toContain("searchParams");
     expect(E2E_AUDIT_SOURCE).toContain('searchParams.get("view") === "original-spec"');
     expect(E2E_AUDIT_SOURCE).toContain('searchParams.get("view") === view');
+  });
+
+  test("gives the held Kwolek route a checked-claim visual boundary instead of a simulator affordance", () => {
+    expect(VIEWER_SOURCE).toContain('patent.id === "us-3671542-kwolek-kevlar"');
+    expect(VIEWER_SOURCE).toContain("Source-Bound Visual Hold");
+    expect(VIEWER_SOURCE).toContain("Checked Claim Reading");
+    expect(VIEWER_SOURCE).toContain("no interactive physical model is published");
+    expect(VIEWER_SOURCE).toContain("data-source-visual-hold={sourceVisualHold || undefined}");
   });
 });
 
@@ -150,11 +160,11 @@ describe("archival publication boundary", () => {
     { timeout: 30000 },
   );
 
-  test("does not serialize held editions or ledger metadata into client viewer props", () => {
+  test("keeps existing held editions readable while retaining ledger metadata server-side", () => {
     const heldDecision = evaluateArchivalPublicationState(whitneyCottonGinPatent);
     const heldProjection = patentForPublicationViewer(whitneyCottonGinPatent, heldDecision);
     expect(heldDecision.isPublished).toBe(false);
-    expect(heldProjection.archivalEdition).toBeUndefined();
+    expect(heldProjection.archivalEdition).toBe(whitneyCottonGinPatent.archivalEdition);
     expect(heldProjection.originalTextAsset).toBeUndefined();
 
     const acceptedPatent = allPatents.find((patent) => patent.id === "us-78317-nobel-dynamite");

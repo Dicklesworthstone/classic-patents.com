@@ -85,11 +85,10 @@ const blocks: CuratedSpecificationBlock[] = [
   {
     kind: "figure-sheet",
     figureLabel: "Figures 1–6",
-    title:
-      "Personal Transporter, Balancing Dynamics, Cluster Drive, and Sensor Control Architecture",
+    title: "Personal Transporter, Balance, Cluster-Wheel, and Control Relationships",
     description: [
       text(
-        "Drawings illustrating the personal transporter chassis, inverted pendulum balance mode, cluster wheel stair climbing sequences, planetary gear drive, and closed-loop feedback block diagram.",
+        "Drawings illustrating the personal transporter chassis, fore-aft balance mode, cluster-wheel stair-climbing sequences, cluster-wheel arrangement, and closed-loop feedback block diagram.",
       ),
     ],
   },
@@ -147,7 +146,7 @@ const blocks: CuratedSpecificationBlock[] = [
       ),
       term(
         "cluster of wheels",
-        "A planetary arrangement of two or more wheels rotatable about a central cluster axle, enabling both rolling locomotion and stair-stepping.",
+        "A cluster of two or more wheels arranged about a central cluster axis. The grant describes cluster rotation and independently driven wheels; it does not identify a planetary gear train.",
       ),
       text(
         ", each cluster being rotatably mounted on and motor-driven about a common laterally disposed central axis; each of the wheels in each cluster may be rotatably mounted about an axis parallel to the central axis so that the distance from the central axis through a diameter of each wheel is approximately the same for each of the wheels in the cluster. The wheels are motor-driven independently of the cluster.",
@@ -473,10 +472,10 @@ export const kamenTransporterParallelReadings: Readonly<Record<number, readonly 
     "Prior art analysis: conventional wheelchairs rely on static multi-wheel stability, sacrificing maneuverability and stair-climbing capabilities.",
   ],
   7: [
-    "Primary summary embodiment: human support assembly suspended over a ground-contacting module with an active motorized drive and dynamic pitch balancing loop.",
+    "Primary summary embodiment: human support assembly suspended over a ground-contacting module with a motorized drive and a fore-aft balance control loop.",
   ],
   8: [
-    "Cluster wheel variation: planetary wheel clusters rotatable about a central transverse axis to enable rolling locomotion and stair ascent.",
+    "Cluster-wheel variation: wheels grouped about a central transverse axis, with the source describing cluster rotation and independently driven wheels rather than a planetary gear train.",
   ],
   9: [
     "Arcuate element embodiment: axially adjacent arcuate rocker pairs providing smooth weight-transfer steps over obstacles.",
@@ -488,6 +487,6 @@ export const kamenTransporterParallelReadings: Readonly<Record<number, readonly 
     "Priority declaration: establishing priority to parent application Serial No. 08/021,789 filed February 24, 1993.",
   ],
   14: [
-    "Inverted pendulum dynamic balancing principles: closed-loop restorative torque drives wheels under rider center of mass based on gyro and accelerometer readings.",
+    "Balance-control description: the control loop uses subject and state inputs to determine motorized-drive control. This public reader does not turn the source material into a calibrated torque, sensor, timing, or numerical-performance model.",
   ],
 };

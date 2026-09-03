@@ -123,7 +123,9 @@ describe("US 3,081,379 Automatic Measurement Apparatus (Machine Vision) archival
       {},
       { 1: false },
     );
-    expect(r1.modifiedParams.gateWindowWidthUs).toBe(60.0);
-    expect(r1.refusalWarning).toContain("REGION OF INTEREST GATING COLLAPSE");
+    expect(r1.modifiedParams.scanPathEnabled).toBe(0);
+    expect(r1.modifiedParams.synchronizedGateEnabled).toBe(0);
+    expect(r1.modifiedParams.analyzingCircuitEnabled).toBe(0);
+    expect(r1.refusalWarning).toContain("CLAIM 1 WITHHELD");
   });
 });

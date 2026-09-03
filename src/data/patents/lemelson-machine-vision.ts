@@ -9,7 +9,7 @@ export const lemelsonMachineVisionPatent: Patent = {
   patentNumber: "US 3,081,379",
   title: "Automatic Measurement Apparatus",
   shortTitle: "Lemelson Machine Vision & Automated Video Inspection",
-  subtitle: "Television Raster Scanning, Sliced Video Pulse Gauging, and Automated Defect Ejection",
+  subtitle: "Electron-Beam Scanning, Synchronized Video Gating, and Signal Analysis",
   inventors: ["Jerome H. Lemelson"],
   inventorLocation: "Metuchen, New Jersey",
   grantDate: "1963-03-12",
@@ -18,7 +18,7 @@ export const lemelsonMachineVisionPatent: Patent = {
   category: "computing",
   categoryLabel: "Machine Vision & Industrial Automation",
   summary:
-    "Jerome H. Lemelson's landmark 1963 patent established the foundational architecture for industrial machine vision and automated optical inspection. By sweeping an electron beam across an optical image plane to generate time-varying video signals, synchronizing electronic gating networks to isolate specific target inspection zones, and measuring sliced pulse durations or comparing waveforms against reference templates, the system enabled automated dimensional measurement, character recognition, and high-speed defect rejection on factory production lines.",
+    "US 3,081,379 claims an automatic scanning and control apparatus: an electron beam scans a predetermined path in an image field, synchronized programming operates a gate, and an analyzing circuit receives only the selected portion of the resulting picture signal. The reviewed source supports that signal-path architecture, but does not provide a calibration packet for beam speed, pickup responsivity, signal amplitude, or an actuator's force and response.",
   heroQuote:
     "An automatic scanning and control apparatus comprising in combination with an electron beam scanning apparatus including means for causing an electron beam to scan an area of an image field in a single frame sweep... an analyzing means for inspecting a predetermined area of said image field by the analysis of that portion of the picture signal generated during scanning.",
   originalPdfUrl: "/patents/pdfs/us-3081379-lemelson-machine-vision.pdf",
@@ -218,16 +218,16 @@ export const lemelsonMachineVisionPatent: Patent = {
 
   plainEnglishExplanation: {
     overview:
-      "Before Jerome Lemelson's 1954–1956 invention, factory quality inspection was performed almost entirely by human workers peering through magnifying lenses or by simple fixed photocells that could only sense bulk presence or absence. Lemelson realized that television camera tubes (such as the vidicon and image orthicon) could be repurposed as ultra-fast dimensional metrology instruments: by sweeping a focused electron beam in a precise geometric raster across a moving manufactured part, optical dimensions in space are transformed into pulse durations in time. Electronic gating circuits isolate specific inspection zones, and high-speed threshold comparators measure workpiece dimensions and detect microscopic surface defects to actuate automated pneumatic or solenoid sorting diverters.",
+      "The issued claim is a signal-selection architecture. An electron beam makes a predetermined scan of an image field; a programming means is synchronized to the picture signal; a gate then passes only the selected segment to an analyzing circuit. The archive also describes reference-picture and comparison arrangements. That is enough to teach why the order of scan, selection, and analysis matters, but it is not enough to reconstruct a particular factory camera, dimensional gauge, comparator threshold, or sorting actuator.",
     coreMechanism:
-      "A television camera focused on a conveyor belt raster-scans each passing manufactured article with an electron beam deflected at a calibrated horizontal line frequency $f_H = N_L \\cdot f_F$ (~15.75 kHz in standard television). The camera's photosensitive target generates a continuous analog voltage waveform $V(t)$ directly proportional to the light reflected from the article's surface. As the beam crosses the boundary between the dark conveyor background and the reflective workpiece, the voltage jumps, creating an electrical pulse. A synchronized electronic gate passes only the scan lines corresponding to the critical inspection zone into an amplitude-slicing comparator. The comparator measures the pulse duration $\\tau_{\\text{pulse}}$, and calculates the physical dimension via $L = v_{\\text{scan}} \\cdot \\tau_{\\text{pulse}}$. If the pulse duration deviates from pre-set tolerance limits (indicating an undersized, oversized, or flawed part), a trigger pulse energizes a high-speed electromagnetic solenoid gate $F_{\\text{mag}} = \\frac{(NI)^2 \\mu_0 A}{2 g^2}$ to instantly kick the defective part off the conveyor into a reject bin.",
+      "The public instrument treats the claim as a source-bounded logical path: $C = S \\land G \\land A \\land I$. Here $S$ is the source-described scan path, $G$ is the synchronized gate, $A$ is the analyzing circuit, and $I$ is a picture-signal-present state. $C$ means only that the depicted control path is available. It is not a voltage, pulse width, physical measurement, reject decision, force, or response-time prediction. A reference branch may show a match or difference as a display state; the reviewed grant does not license a calibrated optical or actuator model.",
     mechanicalBreakdown: [
       {
         title: "Cathode Ray Vidicon Video Camera",
         summary:
-          "An optical scanning camera tube that sweeps an electron beam across a photoconductive target to convert light patterns into analog electrical waveforms.",
+          "An electron-beam scanning apparatus that produces a picture signal while traversing a predetermined image-field path.",
         technicalDetails:
-          "The camera employs magnetic deflection coils driven by sawtooth horizontal and vertical sweep generators to deflect the electron beam at a calibrated scan velocity $v_{\\text{scan}} = W_{\\text{target}} / T_{\\text{active}}$. The photoconductive target (e.g. antimony trisulfide) exhibits localized resistivity drops proportional to incident photons, generating an instantaneous current $I(t)$ and output video voltage $V(t) \\in [0, 1.2]\\text{ V}$.",
+          "Claim 1 requires an electron beam to scan a predetermined path and produce a picture signal. It does not print a particular raster count, frame rate, image-field dimension, electron-beam velocity, pickup material, optical responsivity, or signal-voltage calibration. The exhibit therefore marks the scan path as present or withheld rather than presenting a reconstructed camera measurement.",
         archaicTerm: "Electron beam scanning apparatus / television camera pickup tube",
         modernEquivalent: "CCD / CMOS line-scan and area-scan industrial machine vision camera",
       },
@@ -236,34 +236,34 @@ export const lemelsonMachineVisionPatent: Patent = {
         summary:
           "Electronic gating and commutation circuits that isolate specific regions of interest within the video frame.",
         technicalDetails:
-          "Driven by master synchronization pulses and variable delay lines, the gating circuit unblanks the video signal path only during predetermined horizontal scan lines and time intervals corresponding to the critical inspection zone, preventing false triggers from background clutter or conveyor seams.",
+          "The claim's programming means operates the gate in predetermined time relation to picture-signal generation. Its legal work is selective passage: the analyzer receives the part of the picture signal made while the beam scans the chosen area. The source does not set a gate width, delay, comparator threshold, or noise margin for a particular apparatus.",
         archaicTerm: "Gating means controlled by variable programming means",
         modernEquivalent: "Region of Interest (ROI) hardware windowing & FPGA frame grabber gating",
       },
       {
-        title: "Waveform Amplitude & Pulse Duration Slicer",
+        title: "Analyzing Circuit",
         summary:
-          "High-speed voltage comparator and differentiator networks that detect edges and measure workpiece dimensions in microseconds.",
+          "A circuit that inspects the picture-signal portion admitted by the synchronized gate.",
         technicalDetails:
-          "A clipper circuit slices the video waveform at an adjustable reference threshold $V_{\\text{threshold}}$. The resulting rectangular pulse has steep edges corresponding to physical part boundaries; pulse width $\\tau_{\\text{pulse}}$ is measured by high-speed counter clock cycles or analog RC integrators to calculate physical width $L = v_{\\text{scan}} \\cdot \\tau_{\\text{pulse}}$.",
+          "The apparatus makes the selected signal available to an analyzing circuit. That preserves the claim's causal order, $\\text{scan} \\to \\text{gate} \\to \\text{analysis}$, without assigning a threshold voltage, a pulse duration, a dimensional tolerance, or an accuracy result that the reviewed record does not establish.",
         archaicTerm: "Clipping circuit, differential analyzer, and pulse width measurement means",
         modernEquivalent: "Sub-pixel edge detection & 1D/2D dimensional gauging algorithm",
       },
       {
-        title: "Solenoid Rejection & Defect Ejection Diverter",
+        title: "Control Output Path",
         summary:
-          "An electromechanical solenoid actuator that diverts flawed or out-of-tolerance parts off the conveyor belt.",
+          "A depicted downstream control relationship, shown only when the scan, gate, picture signal, and analyzing circuit form a complete source-described path.",
         technicalDetails:
-          "Upon detection of a dimensional error $\\Delta L > \\Delta L_{\\text{tol}}$, a thyratron or relay circuit discharges a high-current pulse through a multi-turn solenoid coil ($N=450$ turns, $I=2.5\\text{ A}$), developing tractive force $F_{\\text{mag}} = \\frac{(NI)^2 \\mu_0 A}{2 g^2} \\approx 5\\text{ N}$ to extend a diverter paddle across the conveyor within 15 ms.",
+          "The drawing set includes sorting and ejection arrangements, but this grant's reviewed public record does not establish coil turns, current, gap, moving mass, force, stroke, or response time for a particular diverter. The visual therefore shows a control-path state, not a solenoid simulation or a pass/fail production claim.",
         archaicTerm: "Electromechanical sorting means / solenoid diverter gate",
-        modernEquivalent: "High-speed pneumatic blow-off nozzle & servo diverter sortation gate",
+        modernEquivalent: "Pneumatic blow-off nozzle & servo diverter sortation gate",
       },
       {
         title: "Reference Signal Waveform Store",
         summary:
           "A multi-track magnetic drum or disc that stores golden standard reference waveforms for differential comparison.",
         technicalDetails:
-          "A revolving magnetic drum synchronized with the conveyor drive reproduces a recorded golden waveform $V_{\\text{ref}}(t)$. A differential subtraction amplifier computes the instantaneous error $\\Delta V(t) = |V_{\\text{scan}}(t) - V_{\\text{ref}}(t)|$, flagging surface flaws, scratches, or missing component features.",
+          "The specification describes stored reference picture signals and comparison arrangements. The source-backed visual represents only the topological result of that branch, reference match, difference, or withheld; it does not manufacture waveform amplitude, sampling rate, optical sensitivity, or a defect-classification threshold.",
         archaicTerm: "Magnetic drum storage device and differential playback pickup",
         modernEquivalent:
           "Golden template matching & normalized cross-correlation (NCC) memory buffer",
@@ -271,39 +271,38 @@ export const lemelsonMachineVisionPatent: Patent = {
     ],
     scientificPrinciples: [
       {
-        principle: "Horizontal Line Raster Scan Dynamics",
-        formula: "f_H = N_L \\cdot f_F, \\quad T_H = \\frac{1}{f_H}",
+        principle: "Scan-Path Signal Generation",
+        formula: "S \\rightarrow P",
         explanation:
-          "The relationship between the number of horizontal scan lines per frame $N_L$, the frame rate $f_F$, and the horizontal line duration $T_H$. In standard 525-line, 30 fps video, $f_H = 15,750\\text{ Hz}$ and $T_H = 63.49\\ \\mu\\text{s}$, establishing the microsecond timebase for all dimensional measurements.",
+          "The claim starts with a scan along a predetermined path $S$ that produces a picture signal $P$. This is a relationship of apparatus functions, not a published scan rate or a reconstructed beam trajectory.",
       },
       {
-        principle: "Optical Beam Deflection & Scan Velocity",
-        formula: "v_{\\text{scan}} = \\frac{W_{\\text{target}}}{T_{\\text{active}}}",
+        principle: "Synchronized Gating",
+        formula: "P_{\\text{selected}} = P \\land G",
         explanation:
-          "The linear velocity of the electron beam spot sweeping across the target inspection field. For a 200 mm field of view and 53.33 µs active sweep time, $v_{\\text{scan}} \\approx 3,750\\text{ m/s}$, enabling high-speed optical coverage of the conveyor.",
+          "The synchronized programming and gating means $G$ selects only the picture-signal portion produced while the chosen image-field area is scanned. No absolute gate width, delay, or voltage is asserted.",
       },
       {
-        principle: "Photometric Video Signal Generation",
-        formula: "V(t) = V_{\\text{dark}} + S_V \\cdot E_{\\text{illum}} \\cdot R(x(t))",
+        principle: "Analyzing-Circuit Admission",
+        formula: "A = P_{\\text{selected}} \\land C_A",
         explanation:
-          "The instantaneous video voltage produced by the photoconductive camera target as a function of target illuminance $E_{\\text{illum}}$, local surface reflectivity $R(x(t))$, and tube responsivity $S_V$.",
+          "The analyzing circuit is active only when it receives the selected signal and its own circuit path $C_A$ is available. The expression describes connection topology, not a comparator transfer curve or a measurement accuracy.",
       },
       {
-        principle: "Sliced Pulse Duration Dimensional Gauging",
-        formula:
-          "L_{\\text{meas}} = v_{\\text{scan}} \\cdot \\tau_{\\text{pulse}}, \\quad \\Delta L = |L_{\\text{meas}} - L_{\\text{nominal}}|",
+        principle: "Claim 1 Control-Path Condition",
+        formula: "C = S \\land G \\land A \\land I",
         explanation:
-          "The fundamental equation transforming the temporal duration of a threshold-sliced video pulse $\\tau_{\\text{pulse}}$ into a calibrated physical spatial dimension $L_{\\text{meas}}$.",
+          "The public visual lights its control path $C$ only when scan $S$, synchronized gating $G$, analysis $A$, and picture-signal presence $I$ are all represented. $C$ is a normalized display state, not an electrical output or actuator command.",
       },
       {
-        principle: "Electromagnetic Solenoid Tractive Force",
-        formula: "F_{\\text{mag}} = \\frac{(N \\cdot I)^2 \\mu_0 A_p}{2 g^2}",
+        principle: "Reference Comparison State",
+        formula: "R = \\operatorname{compare}(P_{\\text{test}}, P_{\\text{reference}})",
         explanation:
-          "The magnetic tractive force generated by the rejection actuator coil as a function of ampere-turns $(N I)$, free-space permeability $\\mu_0$, pole face area $A_p$, and stroke air gap $g$.",
+          "The specification describes reference-picture comparison. This display uses match, difference, and withheld as qualitative outcomes only; it does not infer optical amplitude, tolerance, defect type, or automated sorting performance.",
       },
     ],
     whyItMattersToday:
-      "US 3,081,379 is the historic genesis of automated optical inspection and machine vision. Lemelson's insight—that video cameras are non-contact measurement tools that translate spatial geometry into electronic time waveforms—underpins every automated assembly line, semiconductor wafer inspection tool, bar code reader, and high-speed sorting facility in the modern industrial world. Modern machine vision systems (produced by companies like Cognex, Keyence, Basler, and Teledyne DALSA) use CMOS matrix sensors, telecentric lenses, and FPGA edge detection rather than vacuum vidicon tubes, but the fundamental architecture—synchronized image capture, region-of-interest gating, edge thresholding, template subtraction, and automated rejection feedback—remains identical to the system Lemelson patented in 1963.",
+      "The record is useful as an early, explicit statement of a still-familiar engineering separation: form a picture signal, select the portion that matters, and send that portion to analysis. Modern image sensors and software use different components. This museum treatment keeps the historical signal-path idea distinct from claims about the performance, lineage, or calibration of any later machine-vision product.",
   },
 
   claims: [
@@ -314,10 +313,10 @@ export const lemelsonMachineVisionPatent: Patent = {
       plainEnglish:
         "Claim 1 defines the complete combination of an electron beam scanning camera that sweeps across an image field to produce an analog video picture signal, an analyzing circuit that inspects a specific zone of that field, a gating circuit placed in the video signal path, and a synchronized programming device that automatically triggers the gate to pass only the specific portion of the video signal generated while the electron beam is scanning that predetermined inspection zone.",
       keyInnovations: [
-        "Electron beam video raster scanning of physical workpieces on production conveyors",
+        "Electron beam scanning along a predetermined image-field path",
         "Synchronized electronic gating networks isolating predetermined inspection zones",
-        "Threshold and waveform analyzing circuits executing automatic quality inspection",
-        "Direct conversion of optical image scan waveforms into machine control trigger signals",
+        "Analyzing circuit receiving only the selected picture-signal portion",
+        "Programming means synchronized to picture-signal generation",
       ],
       legalSignificance:
         "Claim 1 was the primary independent claim asserted across decades of high-stakes patent licensing and litigation in the bar-coding and machine vision industries, ultimately culminating in the landmark Federal Circuit case Symbol Technologies v. Lemelson (2004-2005) on the doctrine of patent prosecution laches.",
@@ -374,7 +373,7 @@ export const lemelsonMachineVisionPatent: Patent = {
       figureNumber: "Figure 9",
       title: "Automated Sorting Diverter Gate",
       caption:
-        "High-speed solenoid diverter gate that deflects defective or out-of-spec workpieces off the conveyor into a reject hopper.",
+        "Illustrated sorting and ejection arrangement. The public visual treats it as a downstream control-path depiction, not a calibrated force, stroke, timing, or production-performance model.",
       svgType: "flowchart",
       callouts: [
         {
@@ -400,7 +399,7 @@ export const lemelsonMachineVisionPatent: Patent = {
       "There was no electronic system capable of converting optical image scenes into real-time waveform voltages for synchronous automated sorting.",
     ],
     breakthroughInsight:
-      "Lemelson realized that a television camera tube could act as a high-speed non-contact dimensional gauge: by raster-sweeping a focused electron beam at a calibrated velocity across a moving workpiece, optical dimensions in space are transformed into pulse durations in time, allowing microsecond electronic gating circuits and threshold comparators to execute automated metrology and trigger rejection gates.",
+      "The claim makes a particular selection order explicit: a beam scans an image field, synchronized programming operates a gate, and the analyzer receives only the signal made while the predetermined area is scanned. That is a useful architecture to study without treating the grant as a calibration sheet for a camera or an actuator.",
     patentWars: [
       {
         rivalName: "Symbol Technologies, Cognex Corp., and the Machine Vision / Barcode Industry",

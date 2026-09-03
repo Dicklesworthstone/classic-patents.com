@@ -12,7 +12,9 @@ mock.module("next/navigation", () => ({
 }));
 
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
+import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
 import { evaluateArchivalPublicationState } from "@/data/editions/publicationApproval";
+import { noyceIcPatent } from "@/data/patents/noyce-ic";
 import { wrightFlyerPatent } from "@/data/patents/wright-flyer";
 import { DualProjectionViewer } from "./DualProjectionViewer";
 
@@ -40,13 +42,13 @@ describe("DualProjectionViewer component", () => {
     expect(html).toContain('data-hydrated="false"');
   });
 
-  test("renders placeholder when archival edition is held in original-spec view mode", () => {
+  test("renders an existing held edition instead of gating its complete patent text", () => {
     const originalHtml = renderToStaticMarkup(
       <DualProjectionViewer
-        patent={wrightFlyerPatent}
-        archivalPublication={evaluateArchivalPublicationState(wrightFlyerPatent)}
-        archivalParallelReadings={undefined}
-        colorizedEquations={getColorizedEquationsForPatent(wrightFlyerPatent.id)}
+        patent={noyceIcPatent}
+        archivalPublication={evaluateArchivalPublicationState(noyceIcPatent)}
+        archivalParallelReadings={archivalParallelReadingsFor(noyceIcPatent.id)}
+        colorizedEquations={getColorizedEquationsForPatent(noyceIcPatent.id)}
         hasRawSourceText={false}
         initialView="original-spec"
       />,
@@ -54,6 +56,25 @@ describe("DualProjectionViewer component", () => {
 
     expect(originalHtml).toContain('data-archival-publication-state="held"');
     expect(originalHtml).toContain("AUDIT_FIGURE_ACCEPTANCE_PENDING");
-    expect(originalHtml).toContain("Open Complete Original PDF");
+    expect(originalHtml).toContain("In brief, the present invention utilizes");
+    expect(originalHtml).toContain("A semiconductor device comprising");
+    expect(originalHtml).not.toContain('data-testid="held-archival-edition-notice"');
+  });
+
+  test("uses an existing held edition in the split-source face", () => {
+    const splitHtml = renderToStaticMarkup(
+      <DualProjectionViewer
+        patent={noyceIcPatent}
+        archivalPublication={evaluateArchivalPublicationState(noyceIcPatent)}
+        archivalParallelReadings={archivalParallelReadingsFor(noyceIcPatent.id)}
+        colorizedEquations={getColorizedEquationsForPatent(noyceIcPatent.id)}
+        hasRawSourceText={false}
+        initialView="split-view"
+      />,
+    );
+
+    expect(splitHtml).toContain("Face 2: Complete Archival Source Text");
+    expect(splitHtml).toContain("In brief, the present invention utilizes");
+    expect(splitHtml).not.toContain('data-testid="held-archival-edition-notice"');
   });
 });

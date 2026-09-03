@@ -49,8 +49,12 @@ export async function generateMetadata({ params }: PatentPageProps): Promise<Met
 
   const description = `${patent.subtitle}. ${patent.summary}`;
   const url = `/patents/${patent.id}`;
+  const presentationLabel =
+    patent.id === "us-3671542-kwolek-kevlar"
+      ? "Plain English & Source-Bound Record"
+      : "Plain English & Interactive Sim";
   return {
-    title: `${patent.shortTitle} (${patent.patentNumber}) — Plain English & Interactive Sim`,
+    title: `${patent.shortTitle} (${patent.patentNumber}) — ${presentationLabel}`,
     description,
     // Without these overrides every patent page inherits the root-layout
     // openGraph/twitter objects: generic og:title and site-level og:url.
@@ -81,7 +85,10 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
   }
   const colorizedEquations = getColorizedEquationsForPatent(id);
   const archivalPublication = evaluateArchivalPublicationState(patent);
-  const archivalEdition = archivalPublication.publishedEdition;
+  // Editorial review status must never replace an existing source-text
+  // edition with an empty gate. The state stays available as diagnostics, but
+  // visitors can read the hand-authored patent text already in the catalogue.
+  const archivalEdition = patent.archivalEdition;
   const archivalDiagnostics = archivalPublicationDiagnostics(archivalPublication);
   const viewerPatent = patentForPublicationViewer(patent, archivalPublication);
   const archivalParallelReadings = archivalEdition
@@ -131,7 +138,7 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
       {/* Patent Header & Metadata Bar */}
       <PatentHeader patent={patent} />
 
-      {/* Dual Projection Viewer (Plain English + Original Spec + Interactive Simulator) */}
+      {/* Dual Projection Viewer (Plain English + original source + visual face) */}
       <div
         data-archival-edition={archivalEdition?.kind ?? "withheld"}
         data-archival-publication-state={archivalPublication.state.kind}

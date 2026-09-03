@@ -22376,7 +22376,9 @@ ALL_COLORIZED_EQUATIONS["us-31128-otis-elevator"] = [
   },
 ];
 
-ALL_COLORIZED_EQUATIONS["us-5701965-kamen-transporter"] = [
+// Preserved for archival comparison only. The public Kamen record below intentionally
+// replaces these uncalibrated illustrative dynamics with source-bounded topology cards.
+ALL_COLORIZED_EQUATIONS["_legacy-unpublished-us-5701965-kamen-transporter"] = [
   {
     id: "kamen-inverted-pendulum-torque",
     patentId: "us-5701965-kamen-transporter",
@@ -22556,6 +22558,151 @@ ALL_COLORIZED_EQUATIONS["us-5701965-kamen-transporter"] = [
     claimRef: 16,
     historicalSignificance:
       "Enabled the iBOT mobility system to conquer standard architectural staircases without external ramps or helpers.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-5701965-kamen-transporter"] = [
+  {
+    id: "kamen-fore-aft-control-topology",
+    patentId: "us-5701965-kamen-transporter",
+    title: "Claim 1 Fore-Aft Control Topology",
+    category: "Source-Bounded Mobility-Control Topology",
+    rawLatex:
+      "\\mathrm{fore\\! -\\! aft\\ control} = \\mathrm{support} \\land \\mathrm{ground\\! -\\! contacting\\ module} \\land \\mathrm{motorized\\ drive} \\land \\mathrm{control\\ loop}",
+    colorizedLatex:
+      "\\textcolor{#2563eb}{\\mathrm{fore\\! -\\! aft\\ control}} = \\textcolor{#059669}{\\mathrm{support}} \\land \\textcolor{#0891b2}{\\mathrm{ground\\! -\\! contacting\\ module}} \\land \\textcolor{#d97706}{\\mathrm{motorized\\ drive}} \\land \\textcolor{#9333ea}{\\mathrm{control\\ loop}}",
+    plainEnglishSentence: [
+      { text: "Claim 1 joins a " },
+      { text: "support", variableId: "support" },
+      { text: ", " },
+      { text: "ground-contacting module", variableId: "ground_contact_module" },
+      { text: ", " },
+      { text: "motorized drive", variableId: "motorized_drive" },
+      { text: ", and a " },
+      { text: "fore-aft control loop", variableId: "control_loop" },
+      { text: " as one claimed combination." },
+    ],
+    variables: [
+      {
+        id: "support",
+        symbol: "\\mathrm{support}",
+        name: "Subject Support",
+        color: "emerald",
+        role: "Claim 1 support for the human subject",
+        unit: "claim element",
+        dimension: "[1]",
+        explanation:
+          "A structural element in the printed combination, displayed without a mass, height, or center-of-gravity assumption.",
+      },
+      {
+        id: "ground_contact_module",
+        symbol: "\\mathrm{ground\\! -\\! contact}",
+        name: "Ground-Contacting Module",
+        color: "cyan",
+        role: "Claim 1 ground-contact relationship",
+        unit: "claim element",
+        dimension: "[1]",
+        explanation:
+          "The claim identifies a module coupled to the support arrangement; this card does not assign it a wheel diameter or a geometry.",
+      },
+      {
+        id: "motorized_drive",
+        symbol: "\\mathrm{drive}",
+        name: "Motorized Drive Arrangement",
+        color: "amber",
+        role: "Claim 1 locomotion and control-path element",
+        unit: "claim element",
+        dimension: "[1]",
+        explanation:
+          "The source identifies a motorized drive arrangement but this public card assigns no torque, power, voltage, speed, or controller parameter.",
+      },
+      {
+        id: "control_loop",
+        symbol: "\\mathrm{loop}",
+        name: "Fore-Aft Control Loop",
+        color: "amethyst",
+        role: "Claim 1 fore-aft control relationship",
+        unit: "claim element",
+        dimension: "[1]",
+        explanation:
+          "The topological relation makes the claimed loop legible without presenting a gain, a sensor model, or a numerical stability result.",
+      },
+    ],
+    pedagogicalNote:
+      "This is a source-topology relation, not an inverted-pendulum equation. It records Claim 1's combination while refusing a public torque, angle, speed, mass, gain, response, or stability-margin calculation.",
+    claimRef: 1,
+    historicalSignificance:
+      "Claim 1 places the support, ground-contacting components, motorized drive, and fore-aft control loop in a single legal combination.",
+  },
+  {
+    id: "kamen-cluster-transfer-climb-topology",
+    patentId: "us-5701965-kamen-transporter",
+    title: "Claims 21–26 Cluster, Wheel, and Stair-State Topology",
+    category: "Source-Bounded Mobility-Control Topology",
+    rawLatex:
+      "\\mathrm{stair\\ state} = \\mathrm{cluster\\ orientation\\ control} \\land \\mathrm{ground\\! -\\! contact\\ wheel\\ control} \\land \\mathrm{start/transfer/climb}",
+    colorizedLatex:
+      "\\textcolor{#9333ea}{\\mathrm{stair\\ state}} = \\textcolor{#2563eb}{\\mathrm{cluster\\ orientation\\ control}} \\land \\textcolor{#0891b2}{\\mathrm{ground\\! -\\! contact\\ wheel\\ control}} \\land \\textcolor{#d97706}{\\mathrm{start/transfer/climb}}",
+    plainEnglishSentence: [
+      { text: "Claims 21 through 26 distinguish " },
+      { text: "cluster orientation control", variableId: "cluster_orientation" },
+      { text: " from " },
+      { text: "ground-contact wheel control", variableId: "wheel_control" },
+      { text: " and order a " },
+      { text: "start, transfer, and climb sequence", variableId: "stair_sequence" },
+      { text: " for the displayed state topology." },
+    ],
+    variables: [
+      {
+        id: "cluster_orientation",
+        symbol: "\\mathrm{cluster\\ orientation}",
+        name: "Cluster Orientation Control",
+        color: "sapphire",
+        role: "Claim 21 cluster-control relationship",
+        unit: "claim element",
+        dimension: "[1]",
+        explanation:
+          "Claim 21 names control of each cluster about a central axis; this card does not expose an angular scale or a gear arrangement.",
+      },
+      {
+        id: "wheel_control",
+        symbol: "\\mathrm{wheel\\ control}",
+        name: "Ground-Contact Wheel Control",
+        color: "cyan",
+        role: "Claim 21 wheel-control relationship",
+        unit: "claim element",
+        dimension: "[1]",
+        explanation:
+          "The source separates control of wheels in contact with the ground without disclosing a public speed, force, traction, or torque result for this card.",
+      },
+      {
+        id: "stair_sequence",
+        symbol: "\\mathrm{start/transfer/climb}",
+        name: "Stair-State Sequence",
+        color: "amber",
+        role: "Claim 26 ordered coordination state",
+        unit: "claim sequence",
+        dimension: "[1]",
+        explanation:
+          "Claim 26 prints a start, weight-transfer, and climb ordering; it supplies no public timing, stair dimension, clearance, or traversal-performance value.",
+      },
+      {
+        id: "balance_mode",
+        symbol: "\\mathrm{balance\\ mode}",
+        name: "Balance-Mode Relation",
+        color: "amethyst",
+        role: "Claims 22 and 26 balance-mode condition",
+        unit: "claim state",
+        dimension: "[1]",
+        explanation:
+          "The claim names a balance mode for selected steps. The public reader shows that named state without calculating a fall, recovery, or stability boundary.",
+      },
+    ],
+    pedagogicalNote:
+      "This normalized claim reading makes the cluster-and-wheel coordination legible. It assigns no gear train, climbing geometry, torque law, riser prediction, or modern performance simulation.",
+    claimRef: 26,
+    historicalSignificance:
+      "Claims 21 through 26 separate cluster and wheel control relationships and state the coordination sequence for the stair-use embodiment.",
   },
 ];
 
@@ -24328,6 +24475,102 @@ ALL_COLORIZED_EQUATIONS["us-3081379-lemelson-machine-vision"] = [
     claimRef: 1,
     historicalSignificance:
       "Lemelson described automated sorting gates actuated by video analysis signals to eliminate human sorting labor.",
+  },
+];
+
+// The prior SI cards for this record remain above as preserved historical
+// implementation material. The public assignment is deliberately replaced by
+// this reviewed source-bound signal-path card: US 3,081,379 does not provide a
+// calibration packet for the former beam, pickup, or actuator calculations.
+ALL_COLORIZED_EQUATIONS["us-3081379-lemelson-machine-vision"] = [
+  {
+    id: "lemelson-source-signal-path",
+    patentId: "us-3081379-lemelson-machine-vision",
+    title: "Source-Bounded Picture-Signal Path",
+    category: "Source-Bounded Video Signal Topology",
+    rawLatex: "C = S \\land G \\land A \\land I",
+    colorizedLatex:
+      "\\textcolor{#059669}{C} = \\textcolor{#2563eb}{S} \\land \\textcolor{#d97706}{G} \\land \\textcolor{#9333ea}{A} \\land \\textcolor{#0891b2}{I}",
+    plainEnglishSentence: [
+      { text: "The illustrated " },
+      { text: "control-path state", variableId: "control_path" },
+      { text: " is available only when the " },
+      { text: "scan path", variableId: "scan_path" },
+      { text: ", " },
+      { text: "synchronized gate", variableId: "synchronized_gate" },
+      { text: ", " },
+      { text: "analyzing circuit", variableId: "analyzing_circuit" },
+      { text: ", and " },
+      { text: "picture-signal-present state", variableId: "picture_signal" },
+      { text: " are all represented." },
+    ],
+    variables: [
+      {
+        id: "control_path",
+        symbol: "C",
+        name: "Control-Path State",
+        color: "emerald",
+        role: "Normalized display state for the complete Claim 1 signal path",
+        unit: "logical state",
+        dimension: "[1]",
+        explanation:
+          "This is not an electrical output, a reject decision, or an actuator command; it only marks that the source-described path is complete.",
+        telemetryMetricLabel: "Control output",
+      },
+      {
+        id: "scan_path",
+        symbol: "S",
+        name: "Scan Path",
+        color: "sapphire",
+        role: "Claim 1 electron-beam path through the image field",
+        unit: "logical state",
+        dimension: "[1]",
+        explanation:
+          "The grant names a predetermined scan path, but it does not establish a rate, image-field scale, or beam-velocity calibration for this exhibit.",
+        telemetryMetricLabel: "Scan path",
+      },
+      {
+        id: "synchronized_gate",
+        symbol: "G",
+        name: "Synchronized Gate",
+        color: "amber",
+        role: "Programming means operating the picture-signal gate in time relation",
+        unit: "logical state",
+        dimension: "[1]",
+        explanation:
+          "The state records whether the selected picture-signal path is enabled, not a gate width, threshold, delay, or voltage level.",
+        telemetryMetricLabel: "Synchronized gate",
+      },
+      {
+        id: "analyzing_circuit",
+        symbol: "A",
+        name: "Analyzing Circuit",
+        color: "amethyst",
+        role: "Claim 1 circuit receiving the selected picture-signal portion",
+        unit: "logical state",
+        dimension: "[1]",
+        explanation:
+          "The source establishes the circuit relationship without providing a calibrated comparator curve, measurement accuracy, or classification threshold.",
+        telemetryMetricLabel: "Analyzing circuit",
+      },
+      {
+        id: "picture_signal",
+        symbol: "I",
+        name: "Picture-Signal-Present State",
+        color: "cyan",
+        role: "Display-state representation of a source-described picture signal",
+        unit: "logical state",
+        dimension: "[1]",
+        explanation:
+          "The visual records presence or withholding only. It does not reconstruct optical amplitude, responsivity, waveform timing, or a physical workpiece measurement.",
+        telemetryMetricLabel: "Inspection signal",
+      },
+    ],
+    pedagogicalNote:
+      "This is a normalized topology relation. It makes Claim 1's scan-to-gate-to-analysis order visible while refusing unreviewed beam velocity, optical responsivity, signal amplitude, solenoid force, and actuator-response claims.",
+    claimRef: 1,
+    historicalSignificance:
+      "Claim 1 makes the selected portion of a picture signal, rather than the whole field, the input to analysis. The public exhibit keeps that legal structure visible without inventing a calibrated industrial apparatus.",
   },
 ];
 

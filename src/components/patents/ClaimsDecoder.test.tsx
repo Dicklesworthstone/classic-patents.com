@@ -102,4 +102,17 @@ describe("ClaimsDecoder component", () => {
       }),
     ).toBe("held");
   });
+
+  test("withholds Kwolek Claim 1 live status instead of inferring one from an unreviewed concentration", () => {
+    expect(
+      claimLiveState("us-3671542-kwolek-kevlar", 1, {
+        polymerConcentrationPct: 18,
+      }),
+    ).toBeNull();
+    expect(
+      claimLiveState("us-3671542-kwolek-kevlar", 1, {
+        polymerConcentrationPct: 0,
+      }),
+    ).toBeNull();
+  });
 });

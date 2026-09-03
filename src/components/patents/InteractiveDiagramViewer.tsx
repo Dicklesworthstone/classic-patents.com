@@ -34,8 +34,6 @@ import {
   hollerithSchematicPinX,
   hyattSchematicMold,
   hyattSchematicRam,
-  kevlarSchematicBond,
-  kevlarSchematicLattice,
   lincolnSchematicChamber,
   mccormickSchematicReelArm,
   mccormickSchematicSickleX,
@@ -58,7 +56,6 @@ import {
   stepGrammeDynamo,
   stepHollerithTabulating,
   stepHyattCelluloid,
-  stepKevlarContinuum,
   stepLincolnBuoy,
   stepMarconiRadio,
   stepMaximMachineGun,
@@ -120,6 +117,9 @@ import { stepWatsonRemoteCenterComplianceTopology } from "@/physics/watsonRemote
 import { materialProbe, whitneySamples } from "@/physics/weaveSurfaces";
 import { wrightSchematicPose, wrightWarpFromPointerNx } from "@/physics/wrightKernel";
 import type { PatentDrawing } from "@/types/patent";
+import { useOffscreenGate } from "./visuals/useOffscreenGate";
+
+const UI_SNAPSHOT_INTERVAL_MS = 80;
 
 const SCHEMATIC_VIEW_W = 400;
 const SCHEMATIC_VIEW_H = 300;
@@ -183,7 +183,6 @@ const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
   [/farnsworth|1773980|1,773,980/, "farnsworth-tv"],
   [/spencer|microwave|2495429|2,495,429/, "spencer-microwave"],
   [/noyce|2981877|2,981,877/, "noyce-ic"],
-  [/kwolek|kevlar|3671542|3,671,542/, "kwolek-kevlar"],
   [/bell|174465|174,465/, "bell-phone"],
   [/lincoln|buoy|6281|6469|6,469/, "lincoln-buoy"],
   [/howe|sewing|4750|4,750/, "howe-sewing"],
@@ -294,7 +293,6 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "kilby-ic-transistor": true,
   "kamen-injection-device": true,
   "kamen-segway": true,
-  "kwolek-kevlar": true,
   "lamarr-frequency-hopping": true,
   "lincoln-buoy": true,
   "makino-scara": true,
@@ -1264,71 +1262,6 @@ function _renderHistoricalSchematic(
           />
           <text x="200" y="286" fill="#94a3b8" fontSize="8" textAnchor="middle">
             Pinned facsimile crop · {figureNumber}
-          </text>
-        </g>
-      );
-    }
-    case "kwolek-kevlar": {
-      const kevlar = stepKevlarContinuum();
-      return (
-        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {Array.from({ length: kevlar.schematicLatticeRows }, (_, row) => {
-            const rowY = kevlarSchematicLattice(
-              row,
-              0,
-              kevlar.schematicLatticeOriginX,
-              kevlar.schematicLatticeOriginY,
-              kevlar.schematicLatticePitchX,
-              kevlar.schematicLatticePitchY,
-            ).cy;
-            return (
-              <g key={row}>
-                <line
-                  x1={kevlar.schematicLatticeX1}
-                  y1={rowY}
-                  x2={kevlar.schematicLatticeX2}
-                  y2={rowY}
-                  stroke="#f59e0b"
-                  strokeWidth="3"
-                />
-                {Array.from({ length: kevlar.schematicLatticeCols }, (_, col) => {
-                  const node = kevlarSchematicLattice(
-                    row,
-                    col,
-                    kevlar.schematicLatticeOriginX,
-                    kevlar.schematicLatticeOriginY,
-                    kevlar.schematicLatticePitchX,
-                    kevlar.schematicLatticePitchY,
-                  );
-                  return (
-                    <circle
-                      key={col}
-                      cx={node.cx}
-                      cy={node.cy}
-                      r={kevlar.schematicNodeR}
-                      fill={row % 2 === 0 ? "#38bdf8" : "#34d399"}
-                    />
-                  );
-                })}
-              </g>
-            );
-          })}
-          {kevlar.schematicBondXs.map((_, i) => {
-            const x = kevlarSchematicBond(i, kevlar.schematicBondXs).x;
-            return (
-              <line
-                key={x}
-                x1={x}
-                y1={kevlar.schematicBondY0}
-                x2={x}
-                y2={kevlar.schematicBondY1}
-                stroke="#67e8f9"
-                strokeDasharray="3 3"
-              />
-            );
-          })}
-          <text x="200" y="250" fill="#fde68a" fontSize="9" textAnchor="middle">
-            Nematic aramid H-bond lattice
           </text>
         </g>
       );
@@ -7112,7 +7045,14 @@ function _renderHistoricalSchematic(
         );
       }
 
-      const [axis1Deg, axis2Deg, axis3Deg] = state.displayJointAnglesDeg;
+      // The server uses the deterministic TypeScript fallback while a browser
+      // may have loaded the equivalent WASM step before this schematic
+      // hydrates. Their transcendental results can differ at ~1e-15, which is
+      // physically meaningless but changes literal SVG transform attributes.
+      // Quantize only the display strings so SSR and client markup are stable.
+      const [axis1Deg, axis2Deg, axis3Deg] = state.displayJointAnglesDeg.map((angle) =>
+        Number(angle.toFixed(9)),
+      );
       const renderDigit = (
         key: string,
         baseX: number,
@@ -9185,24 +9125,54 @@ export function InteractiveDiagramViewer({
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const viewerRef = useRef<HTMLDivElement | null>(null);
   const [teslaOmegaDeg, setTeslaOmegaDeg] = useState<number>(0);
+  const teslaOmegaRef = useRef(0);
+  const teslaApparatusRef = useRef<ReturnType<typeof stepTeslaMotorFig9> | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
   const isTeslaMotorSchematic = Boolean(
     patentId && /381968|tesla-motor/.test(patentId) && !/coil|533367/.test(patentId),
   );
 
+  const setViewerRefs = useCallback(
+    (element: HTMLDivElement | null) => {
+      viewerRef.current = element;
+      rootRef.current = element;
+    },
+    [rootRef],
+  );
+
+  useEffect(() => {
+    teslaApparatusRef.current = stepTeslaMotorFig9(livePhysicsParams.frequency ?? 60);
+  }, [livePhysicsParams.frequency]);
+
   useEffect(() => {
     if (!isTeslaMotorSchematic) return;
-    const apparatus = stepTeslaMotorFig9(livePhysicsParams.frequency ?? 60);
     let raf = 0;
     let last = performance.now();
+    let lastUiSnapshot = 0;
     const loop = (now: number) => {
-      const dt = (now - last) / 1000;
-      last = now;
-      setTeslaOmegaDeg((prev) => (prev + apparatus.fieldDisplayOmegaDegPerS * dt) % 360);
       raf = requestAnimationFrame(loop);
+      if (!onscreenRef.current) {
+        last = now;
+        return;
+      }
+      const apparatus = teslaApparatusRef.current;
+      if (!apparatus) return;
+      const dt = Math.max(0, Math.min(0.1, (now - last) / 1000));
+      last = now;
+      teslaOmegaRef.current =
+        (teslaOmegaRef.current + apparatus.fieldDisplayOmegaDegPerS * dt) % 360;
+      // The Tesla schematic is a source-specific field construction with
+      // several coordinated arrow primitives. Keep that projection coherent
+      // with a bounded UI snapshot instead of re-rendering this large viewer
+      // on every display frame.
+      if (now - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
+        lastUiSnapshot = now;
+        setTeslaOmegaDeg(teslaOmegaRef.current);
+      }
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [isTeslaMotorSchematic, livePhysicsParams.frequency]);
+  }, [isTeslaMotorSchematic, onscreenRef]);
 
   const activeDrawing = drawings[activeFigIndex] || drawings[0];
   const callouts = useMemo(() => activeDrawing?.callouts ?? [], [activeDrawing]);
@@ -9259,7 +9229,7 @@ export function InteractiveDiagramViewer({
 
   return (
     <div
-      ref={viewerRef}
+      ref={setViewerRefs}
       className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-5 sm:p-6 shadow-patent space-y-5"
     >
       {/* Header, Figure Switcher & Viewport Toolbar */}

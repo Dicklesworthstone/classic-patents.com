@@ -29,6 +29,23 @@ describe("PatentDetailPage component", () => {
     expect(meta.title).toContain("US 821,393");
   });
 
+  test("labels the source-held Kwolek record without advertising an interactive simulation", async () => {
+    const meta = await generateMetadata({
+      params: Promise.resolve({ id: "us-3671542-kwolek-kevlar" }),
+    });
+    expect(meta.title).toContain("Source-Bound Record");
+    expect(meta.title).not.toContain("Interactive Sim");
+
+    const PageJsx = await PatentDetailPage({
+      params: Promise.resolve({ id: "us-3671542-kwolek-kevlar" }),
+    });
+    const html = renderToStaticMarkup(PageJsx);
+    expect(html).toContain("Source-Bound Visual Hold");
+    expect(html).toContain("no interactive physical model is published");
+    expect(html).not.toContain("Interactive Real-Time Physical Simulation");
+    expect(html).toContain('data-source-visual-hold="true"');
+  });
+
   test("renders complete patent detail page for Wright Flyer", async () => {
     const PageJsx = await PatentDetailPage({
       params: Promise.resolve({ id: "us-821393-wright-flyer" }),

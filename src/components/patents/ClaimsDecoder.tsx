@@ -53,9 +53,6 @@ export function claimLiveState(
   if (patentId.includes("spencer-microwave") && claimNum === 1) {
     return (params.rfPowerSetting ?? 800) >= 200 ? "held" : "broken";
   }
-  if (patentId.includes("kwolek-kevlar") && claimNum === 1) {
-    return (params.polymerConcentrationPct ?? 12) >= 8 ? "held" : "broken";
-  }
   if (patentId.includes("boyle-smith-ccd") && claimNum === 1) {
     // Claim 1's 3-phase gates only "hold" while charge transfer stays near
     // lossless; both faces highlight >99.99% CTE as the operating criterion.

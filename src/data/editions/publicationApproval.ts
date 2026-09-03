@@ -98,16 +98,18 @@ export function archivalEditionForPublication(
 
 /**
  * Project a canonical record across the server/client boundary without
- * serializing research-only source assets. Accepted editions remain available
- * to the renderer; held editions and all ledger metadata stay server-side.
+ * serializing research-only source assets. An existing hand-authored edition
+ * remains readable even while its internal publication review is incomplete;
+ * the review decision is carried separately for diagnostics and editorial
+ * workflow. Raw ledger metadata stays server-side.
  */
 export function patentForPublicationViewer(
   patent: Patent,
-  decision: ArchivalPublicationDecision,
+  _decision: ArchivalPublicationDecision,
 ): Patent {
   return {
     ...patent,
-    archivalEdition: decision.publishedEdition,
+    archivalEdition: patent.archivalEdition,
     originalTextAsset: undefined,
   };
 }

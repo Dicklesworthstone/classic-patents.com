@@ -11,12 +11,16 @@ function manualClaimText(number: number): string {
   return block.inlines.map((inline) => inline.text).join("");
 }
 
+function sourceBoundedDependentClaimReading(number: number): string {
+  return `Claim ${String(number)} is a dependent narrowing limitation. Its exact legal condition is available on the reviewed source face; this public reading does not infer an unprinted sensor, controller setting, performance value, or operating outcome.`;
+}
+
 export const kamenTransporterPatent: Patent = {
   id: "us-5701965-kamen-transporter",
   patentNumber: "US 5,701,965",
   title: "Human Transporter",
-  shortTitle: "Dean Kamen Self-Balancing Transporter",
-  subtitle: "Inverted Pendulum Dynamic Balance, Cluster Wheel Locomotion, and Stair Climbing",
+  shortTitle: "Human Transporter Balance and Cluster-Wheel Control",
+  subtitle: "Fore-Aft Balance Control, Cluster-Wheel Locomotion, and Stair-State Coordination",
   inventors: [
     "Dean L. Kamen",
     "Robert R. Ambrogi",
@@ -31,9 +35,9 @@ export const kamenTransporterPatent: Patent = {
   filingDate: "1994-05-27",
   era: "Information & Digital Age (1950–Present)",
   category: "consumer",
-  categoryLabel: "Robotics & Dynamic Stabilization",
+  categoryLabel: "Mobility Robotics & Control Topology",
   summary:
-    "Dean Kamen's foundational 1997 patent for the iBOT mobility system and Segway personal transporter established closed-loop dynamic inverted-pendulum stabilization over a minimal two-wheel contact patch combined with planetary cluster wheels for autonomous stair climbing.",
+    "US 5,701,965 describes a human transporter with a support, a motorized ground-contacting module, and a control loop for fore-aft balance. Later claims describe clusters of wheels, separately controlled cluster and ground-contact wheel relationships, and a coordination sequence for stair use; this public exhibit reads those as source topology rather than a calibrated gear-train or quantitative performance model.",
   heroQuote:
     "A control loop, in which the motorized drive is included, dynamically maintains stability in the fore-aft plane by operation of the motorized drive in connection with the ground-contacting module.",
   originalPdfUrl: "/patents/pdfs/us-5701965-kamen-transporter.pdf",
@@ -320,73 +324,73 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
 
   plainEnglishExplanation: {
     overview:
-      "For over a century, personal mobility vehicles and wheelchairs were constrained by passive static stability: they required four or more widely spaced ground contact wheels and a low center of gravity to avoid tipping over. This static design prevented users from navigating rough terrain, stepping over curbs, or climbing architectural stairs. Dean Kamen and his DEKA engineering team abandoned passive static stability in favor of active dynamic stabilization. By treating the passenger and vehicle as an inverted pendulum, a high-speed digital control loop measures angular pitch deviation and rate of tilt via solid-state rate gyroscopes and accelerometers, driving electric servomotors to continuously position the wheels beneath the center of gravity. Combined with a rotating planetary cluster wheel mechanism, the vehicle can balance upright on two wheels at standing eye-level and climb stairs autonomously.",
+      "The reviewed grant addresses a human transporter for irregular ground that may include stairs. Its claimed move is architectural rather than a published performance specification: a support is coupled to a motorized ground-contacting module, and a control loop operates the drive in the fore-aft plane. Claims 16 and 21 add wheel clusters and separate relationships for cluster orientation and wheels in ground contact; Claims 22 through 26 name balance, slave, lean, transition, and coordination modes. The public exhibit does not turn those relationships into a calibrated gear train, controller implementation, sensor package, or operating-performance claim.",
     coreMechanism:
-      "The transporter maintains dynamic equilibrium through closed-loop inverted pendulum feedback. Solid-state gyroscopes measure chassis pitch rate d(theta)/dt while accelerometers measure gravito-inertial tilt angle theta. A DSP microcontroller executes a state-space PID loop at 100 Hz, calculating restorative motor torque tau = K_p * theta + K_d * d(theta)/dt + K_v * (v_cmd - v). When the rider leans forward (theta < 0), gravity produces a forward overturning torque m*g*h*sin(theta); the controller commands positive forward motor acceleration to drive the wheels under the rider, translating body lean into intuitive forward velocity. For climbing stairs, a secondary motor rotates the planetary cluster arm by 120 or 180 degrees, transferring total vehicle weight smoothly from step to step while the primary wheel motors maintain balance.",
+      "The legal mechanism is a sequence of relationships. Claim 1 joins the support, ground-contacting module, motorized drive, and fore-aft control loop. Claim 21 separates orientation control of each wheel cluster from rotation control of ground-contacting wheels. Claim 22 calls out a balance mode, Claim 23 a slave mode and a lean mode, and Claim 26 orders start, weight transfer, climb, and return toward normal balance. This reading presents that topology only; it does not expose a torque law, timing model, stair dimension, transfer angle, or predicted capability.",
     mechanicalBreakdown: [
       {
-        title: "Dynamic Inverted Pendulum Balance Loop",
+        title: "Fore-Aft Balance-Control Relationship",
         summary:
-          "High-speed DSP feedback controller calculating restorative motor torque from pitch rate and angle.",
+          "Claim 1 couples the motorized drive and ground-contacting module through a fore-aft control-loop relationship.",
         technicalDetails:
-          "The transporter models the rider and chassis as an inverted pendulum with natural frequency $\\omega_n = \\sqrt{g / h} \\approx 3.3\\text{ rad/s}$. The motor drive generates continuous ground torque $\\tau = K_p \\theta + K_d \\dot{\\theta} + K_v (v_{\\text{cmd}} - v)$ to counteract overturning gravitational moments.",
+          "The claim identifies the legal combination of support, motorized drive, ground-contacting module, and control loop. It does not itself establish a controller family, gain, sampling rate, state estimator, response time, or numerical stability margin for this exhibit.",
         archaicTerm: "control loop for dynamically enhancing stability in the fore-aft plane",
-        modernEquivalent: "inverted-pendulum active balance loop",
+        modernEquivalent: "fore-aft balance-control topology",
       },
       {
-        title: "Planetary Cluster Wheel Drivetrain",
+        title: "Cluster-Wheel Ground Module",
         summary:
-          "Multi-wheel planetary carrier on each lateral side rotatable about a central axle for stair climbing.",
+          "Claims 16 through 21 describe wheel clusters and separate relationships for cluster orientation and wheels in ground contact.",
         technicalDetails:
-          "Each lateral side mounts a 2-wheel or 3-wheel cluster (Figure 4) rotatable about central shaft 21. A harmonic drive cluster motor rotates the carrier arm through $120^\\circ$ or $180^\\circ$ increments, allowing the vehicle to walk up curbs and stair risers while individual wheel motors maintain traction.",
+          "The grant says wheels in each cluster can be motor-driven independently of the cluster, and Claim 21 distinguishes cluster-orientation control from wheel rotation control. It does not identify a planetary gear train, gear ratio, wheel count for the displayed embodiment, drive type, or geometric climbing limit.",
         archaicTerm: "cluster of wheels mounted to permit complete travel around an axis",
-        modernEquivalent: "planetary stair-climbing wheel cluster",
+        modernEquivalent: "cluster-wheel ground-contact module",
       },
       {
-        title: "Gyroscopic & Accelerometer Sensor Array",
+        title: "Subject and State Inputs",
         summary:
-          "Solid-state angular rate gyros and linear accelerometers providing drift-free gravito-inertial tilt estimation.",
+          "Claim 48 describes cyclical subject-provided and state-variable inputs before control of the motorized drive.",
         technicalDetails:
-          "Vibrating quartz or silicon tuning-fork rate gyroscopes measure pitch angular velocity $\\dot{\\theta}$. A complementary filter fuses the high-frequency gyro rate with low-frequency gravity vector tilt $\\theta_{\\text{accel}} = \\arcsin(a_x / g)$ to eliminate drift without mechanical gimbal lag.",
-        archaicTerm: "inclinometer / pitch rate sensor means",
-        modernEquivalent: "inertial measurement unit (IMU) sensor fusion",
+          "Claim 48 names an order of reading inputs, modifying program state, and performing calculations. This source-bounded reader does not identify a sensor, filter, processor, input rate, calibration, or signal scale that is not necessary to show that order.",
+        archaicTerm: "reading state variable inputs",
+        modernEquivalent: "state-input processing relationship",
       },
       {
-        title: "Intuitive Rider Lean Interface",
+        title: "Leaning-Responsive Drive Relationship",
         summary:
-          "Direct velocity and acceleration command via rider center-of-gravity displacement.",
+          "Dependent claims describe leaning means that sense a subject's direction of leaning and control the motorized drive accordingly.",
         technicalDetails:
-          "By measuring rider body lean, the vehicle converts intentional pitch offsets into proportional forward/reverse acceleration without requiring manual gas pedals or brake levers, mimicking human bipedal walking dynamics.",
+          "The printed claim connects the direction of leaning to the direction of movement. It does not publish a transfer function, speed or acceleration result, lean angle, sensor type, or user-interface calibration for the public exhibit.",
         archaicTerm: "leaning means for sensing leaning of the subject",
-        modernEquivalent: "body-lean velocity input transducer",
+        modernEquivalent: "leaning-direction input relationship",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Inverted Pendulum Dynamic Equilibrium",
+        principle: "Claimed Control-Loop Topology",
         formula:
-          "I \\ddot{\\theta} = m g h \\sin\\theta - \\tau_{\\text{motor}} - F_{\\text{traction}} h \\cos\\theta",
+          "\\text{subject input} + \\text{state-variable input} \\rightarrow \\text{program state} \\rightarrow \\text{motorized-drive control}",
         explanation:
-          "An inverted pendulum with center of mass at height $h$ is open-loop unstable. Applying restorative motor torque $\\tau_{\\text{motor}} = K_p \\theta + K_d \\dot{\\theta}$ stabilizes the system about the vertical gravito-inertial plumbline $\\theta = 0$.",
+          "Claim 48 supplies an ordered information relationship, not a public physical-dynamics equation. The exhibit therefore uses a qualitative state reader instead of asserting a numerical stability calculation.",
       },
       {
-        principle: "Planetary Cluster Stair-Climbing Kinematics",
+        principle: "Cluster and Wheel Coordination Topology",
         formula:
-          "H_{\\text{step, max}} \\le 2 R_{\\text{cluster}} \\cos(\\pi / N_{\\text{wheels}})",
+          "\\text{cluster orientation control} + \\text{ground-contact wheel control} \\rightarrow \\text{transfer / climb state sequence}",
         explanation:
-          "The maximum climbable stair riser height is geometrically constrained by the cluster pitch circle radius $R_{\\text{cluster}}$ and number of planetary wheels $N_{\\text{wheels}}$. Rotating the cluster carrier lifts the entire vehicle mass over the riser while slaved wheel rotation prevents scuffing against the step tread.",
+          "Claims 21 through 26 identify separate control relationships and an ordered stair-use sequence. They do not, by themselves, furnish a public geometry, timing, load, force, clearance, or traversal limit.",
       },
     ],
     whyItMattersToday:
-      "Dean Kamen's US 5,701,965 patent laid the foundation for modern dynamic personal mobility and mobile balancing robotics. It led directly to the commercial release of the Independence iBOT 3000 Mobility System (giving paralyzed individuals the ability to navigate stairs, grass, gravel, and stand at eye-level) and the iconic Segway Personal Transporter (Segway PT). The principles of inverted-pendulum IMU sensor fusion and body-lean control established in this patent now power electric hoverboards, self-balancing unicycles, delivery robots, and humanoid bipedal balancing algorithms worldwide.",
+      "The document is useful to engineering readers because it makes a mobility-control architecture explicit: ground-contact hardware, a motorized drive, balance-related control, separate cluster and wheel relations, and a transition sequence appear as distinct legal elements. This source-bound edition does not claim a quantified lineage, commercial product identity, or modern performance equivalence beyond those documented relationships.",
   },
 
   drawings: [
     {
       figureNumber: "Figure 1",
-      title: "Transporter Assembly in Four-Wheel Support Configuration",
+      title: "Transporter Assembly with Support and Ground-Contacting Module",
       caption:
-        "Perspective view showing chassis, seat assembly, and cluster ground-contacting wheels in standard 4-wheel mode.",
+        "Perspective view of the simplified seated transporter embodiment in the pinned drawing sheet.",
       svgType: "kamen-transporter",
       callouts: [
         {
@@ -394,7 +398,7 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
           figureRef: "Fig. 1",
           label: "Chassis Assembly",
           element: "10",
-          description: "Central structural frame supporting passenger seat and electronics",
+          description: "Support and assembly relationship shown in the pinned perspective drawing.",
           x: 45,
           y: 50,
         },
@@ -403,7 +407,7 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
           figureRef: "Fig. 1",
           label: "Cluster Wheel",
           element: "12",
-          description: "Multi-wheel planetary carrier for ground locomotion and climbing",
+          description: "Cluster-wheel ground-contact relationship shown in the pinned drawing.",
           x: 30,
           y: 75,
         },
@@ -412,7 +416,7 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
           figureRef: "Fig. 1",
           label: "Rider Seat",
           element: "14",
-          description: "Elevatable passenger chair with armrests and input controls",
+          description: "Subject-support arrangement shown in the seated embodiment.",
           x: 55,
           y: 35,
         },
@@ -420,9 +424,8 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
     },
     {
       figureNumber: "Figure 2",
-      title: "Elevated Two-Wheel Dynamic Balance Mode",
-      caption:
-        "Side elevation view showing inverted-pendulum dynamic balancing on lower wheel pair at standing eye-level.",
+      title: "Two-Wheel Balance Configuration",
+      caption: "Source drawing view of an embodiment in a two-wheel balance configuration.",
       svgType: "kamen-transporter",
       callouts: [
         {
@@ -430,7 +433,7 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
           figureRef: "Fig. 2",
           label: "Contact Wheel Pair",
           element: "20",
-          description: "Two ground-contacting wheels balancing under rider center of mass",
+          description: "Ground-contacting wheel pair in the illustrated configuration.",
           x: 50,
           y: 80,
         },
@@ -439,7 +442,7 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
           figureRef: "Fig. 2",
           label: "Elevated Cluster Wheel",
           element: "22",
-          description: "Upper wheel pair raised above ground in standing configuration",
+          description: "Cluster-wheel relationship depicted above the ground-contact pair.",
           x: 50,
           y: 40,
         },
@@ -447,27 +450,27 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
     },
     {
       figureNumber: "Figure 3",
-      title: "Stair-Climbing Weight Transfer Kinematic Sequence",
+      title: "Stair-Use Coordination Configuration",
       caption:
-        "Sequential diagram illustrating cluster arm rotation lifting transporter over stair risers.",
+        "Source drawing view associated with stair use; the interactive exhibit treats it as a qualitative coordination state.",
       svgType: "kamen-transporter",
       callouts: [
         {
-          id: "callout-30-riser",
+          id: "callout-30-stair-contact",
           figureRef: "Fig. 3",
-          label: "Stair Riser Contact",
+          label: "Stair-Use Contact",
           element: "30",
-          description: "Forward wheel seated against vertical stair face",
+          description: "Wheel-and-surface relationship depicted for the stair-use embodiment.",
           x: 40,
           y: 70,
         },
         {
           id: "callout-32-carrier",
           figureRef: "Fig. 3",
-          label: "Rotating Cluster Arm",
+          label: "Cluster Orientation",
           element: "32",
           description:
-            "Planetary carrier rotating to lift center of mass onto succeeding step tread",
+            "Cluster orientation relation depicted in the stair-use embodiment; no angle, clearance, or traversal value is asserted.",
           x: 60,
           y: 50,
         },
@@ -481,14 +484,14 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       isIndependent: true,
       originalText: manualClaimText(1),
       plainEnglish:
-        "A device for transporting a human over irregular ground and stairs having a chassis support, a motorized ground-contacting module defining fore-aft and lateral planes, and an active closed control loop that dynamically maintains vehicle stability in the fore-aft pitch plane by operating the drive motors.",
+        "An independent combination claim for a human transporter: it joins a support, movable support members with ground-contacting components, a motorized drive arrangement, and a fore-aft control loop. The public exhibit reads that combination as topology, not as a numerical balance prediction.",
       keyInnovations: [
-        "Dynamic fore-aft inverted pendulum stabilization",
-        "Active closed-loop feedback motor drive",
-        "Irregular ground and stair suspension chassis",
+        "Fore-aft balance control-loop relationship",
+        "Motorized ground-contacting module",
+        "Human-transporter support and surface relationship",
       ],
       legalSignificance:
-        "Foundational independent claim establishing the legal monopoly over motorized inverted-pendulum human transporters.",
+        "Independent claim defining the support, motorized-drive, ground-contact, and fore-aft control-loop combination.",
     },
     {
       number: 2,
@@ -514,8 +517,7 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       number: 4,
       isIndependent: false,
       originalText: manualClaimText(4),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 4.",
+      plainEnglish: sourceBoundedDependentClaimReading(4),
       keyInnovations: ["Refined claim 4 specification feature"],
 
       dependsOn: [3],
@@ -524,8 +526,7 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       number: 5,
       isIndependent: false,
       originalText: manualClaimText(5),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 5.",
+      plainEnglish: sourceBoundedDependentClaimReading(5),
       keyInnovations: ["Refined claim 5 specification feature"],
 
       dependsOn: [4],
@@ -534,48 +535,43 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       number: 6,
       isIndependent: false,
       originalText: manualClaimText(6),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 6.",
+      plainEnglish: sourceBoundedDependentClaimReading(6),
       keyInnovations: ["Refined claim 6 specification feature"],
 
-      dependsOn: [5],
+      dependsOn: [4],
     },
     {
       number: 7,
       isIndependent: false,
       originalText: manualClaimText(7),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 7.",
+      plainEnglish: sourceBoundedDependentClaimReading(7),
       keyInnovations: ["Refined claim 7 specification feature"],
 
-      dependsOn: [6],
+      dependsOn: [4],
     },
     {
       number: 8,
       isIndependent: false,
       originalText: manualClaimText(8),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 8.",
+      plainEnglish: sourceBoundedDependentClaimReading(8),
       keyInnovations: ["Refined claim 8 specification feature"],
 
-      dependsOn: [7],
+      dependsOn: [4],
     },
     {
       number: 9,
       isIndependent: false,
       originalText: manualClaimText(9),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 9.",
+      plainEnglish: sourceBoundedDependentClaimReading(9),
       keyInnovations: ["Refined claim 9 specification feature"],
 
-      dependsOn: [8],
+      dependsOn: [3],
     },
     {
       number: 10,
       isIndependent: false,
       originalText: manualClaimText(10),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 10.",
+      plainEnglish: sourceBoundedDependentClaimReading(10),
       keyInnovations: ["Refined claim 10 specification feature"],
 
       dependsOn: [9],
@@ -584,8 +580,7 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       number: 11,
       isIndependent: false,
       originalText: manualClaimText(11),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 11.",
+      plainEnglish: sourceBoundedDependentClaimReading(11),
       keyInnovations: ["Refined claim 11 specification feature"],
 
       dependsOn: [10],
@@ -594,28 +589,25 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       number: 12,
       isIndependent: false,
       originalText: manualClaimText(12),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 12.",
+      plainEnglish: sourceBoundedDependentClaimReading(12),
       keyInnovations: ["Refined claim 12 specification feature"],
 
-      dependsOn: [11],
+      dependsOn: [9],
     },
     {
       number: 13,
       isIndependent: false,
       originalText: manualClaimText(13),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 13.",
+      plainEnglish: sourceBoundedDependentClaimReading(13),
       keyInnovations: ["Refined claim 13 specification feature"],
 
-      dependsOn: [12],
+      dependsOn: [3],
     },
     {
       number: 14,
       isIndependent: false,
       originalText: manualClaimText(14),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 14.",
+      plainEnglish: sourceBoundedDependentClaimReading(14),
       keyInnovations: ["Refined claim 14 specification feature"],
 
       dependsOn: [13],
@@ -624,24 +616,24 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       number: 15,
       isIndependent: false,
       originalText: manualClaimText(15),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 15.",
+      plainEnglish: sourceBoundedDependentClaimReading(15),
       keyInnovations: ["Refined claim 15 specification feature"],
 
       dependsOn: [14],
     },
     {
       number: 16,
-      isIndependent: true,
+      isIndependent: false,
       originalText: manualClaimText(16),
       plainEnglish:
         "The transporter of claim 1 where the ground-contacting components are wheels rotatably mounted on support members configured as a cluster of wheels on each lateral side.",
       keyInnovations: [
-        "Planetary cluster wheel assemblies on opposing vehicle sides",
-        "Combined rolling and obstacle-stepping mechanism",
+        "Cluster-wheel assemblies on opposing vehicle sides",
+        "Wheels motor-driven independently of their clusters",
       ],
       legalSignificance:
-        "Primary independent structural claim covering the planetary multi-wheel cluster architecture.",
+        "Dependent structural claim defining wheel clusters on the two sides and their motor-driven relationship.",
+      dependsOn: [1],
     },
     {
       number: 17,
@@ -657,8 +649,7 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       number: 18,
       isIndependent: false,
       originalText: manualClaimText(18),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 18.",
+      plainEnglish: sourceBoundedDependentClaimReading(18),
       keyInnovations: ["Refined claim 18 specification feature"],
 
       dependsOn: [17],
@@ -667,21 +658,19 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       number: 19,
       isIndependent: false,
       originalText: manualClaimText(19),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 19.",
+      plainEnglish: sourceBoundedDependentClaimReading(19),
       keyInnovations: ["Refined claim 19 specification feature"],
 
-      dependsOn: [18],
+      dependsOn: [17],
     },
     {
       number: 20,
       isIndependent: false,
       originalText: manualClaimText(20),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 20.",
+      plainEnglish: sourceBoundedDependentClaimReading(20),
       keyInnovations: ["Refined claim 20 specification feature"],
 
-      dependsOn: [19],
+      dependsOn: [17],
     },
     {
       number: 21,
@@ -690,8 +679,8 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       plainEnglish:
         "The transporter of claim 17 with separate cluster rotation control and independent wheel drive control for wheels in ground contact.",
       keyInnovations: [
-        "Dual-actuator decoupling: cluster rotation vs. wheel propulsion",
-        "Independent ground wheel traction control",
+        "Separate cluster-orientation and ground-contact wheel control",
+        "Ground-contact wheel rotation control",
       ],
 
       dependsOn: [17],
@@ -701,8 +690,8 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       isIndependent: false,
       originalText: manualClaimText(22),
       plainEnglish:
-        "The transporter of claim 21 where the wheel control loop operates in a dynamic balance mode to maintain fore-aft equilibrium on two ground-contacting wheels.",
-      keyInnovations: ["Active 2-wheel inverted pendulum balancing mode"],
+        "The transporter of claim 21 where the wheel control means has a balance mode that uses the control loop while wheels in contact with the ground are driven to maintain fore-aft balance.",
+      keyInnovations: ["Fore-aft balance mode for ground-contact wheels"],
 
       dependsOn: [21],
     },
@@ -711,8 +700,8 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       isIndependent: false,
       originalText: manualClaimText(23),
       plainEnglish:
-        "The transporter of claim 21 where the wheel control loop operates in a slave mode, driving the wheels as a function of cluster rotation to assist obstacle traversal.",
-      keyInnovations: ["Cluster-slaved wheel traction coordination"],
+        "The transporter of claim 21 where wheel control has a slave mode related to cluster rotation, while cluster control has a lean mode using the control loop for stair or other surface-feature use.",
+      keyInnovations: ["Cluster-rotation slave mode", "Cluster-control lean mode"],
 
       dependsOn: [21],
     },
@@ -720,8 +709,7 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       number: 24,
       isIndependent: false,
       originalText: manualClaimText(24),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 24.",
+      plainEnglish: sourceBoundedDependentClaimReading(24),
       keyInnovations: ["Refined claim 24 specification feature"],
 
       dependsOn: [23],
@@ -730,8 +718,7 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       number: 25,
       isIndependent: false,
       originalText: manualClaimText(25),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 25.",
+      plainEnglish: sourceBoundedDependentClaimReading(25),
       keyInnovations: ["Refined claim 25 specification feature"],
 
       dependsOn: [24],
@@ -741,51 +728,48 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       isIndependent: false,
       originalText: manualClaimText(26),
       plainEnglish:
-        "The transporter of claim 21 featuring a coordination controller executing a multi-phase stair-climbing state machine: (1) start alignment on a lower wheel pair, (2) weight transfer by rotating cluster arms to plant upper wheels on the step tread while stabilizing position, and (3) climb forward drive over the riser while dynamically balancing.",
+        "Claim 26 specifies coordination between cluster and wheel control: start with a first wheel pair, rotate a second pair to the stair, transfer weight while wheel drives maintain cluster position relative to the world, then alternate transfer and climb before returning to normal balance. The claim states an ordered relationship, not a timing or performance result.",
       keyInnovations: [
-        "Four-state deterministic stair climbing cycle",
-        "Dynamic balance preservation during vertical stair elevation",
+        "Claimed start, transfer, and climb state ordering",
+        "Coordination of cluster and wheel control means",
       ],
       legalSignificance:
-        "Core operational claim protecting the iBOT wheelchair autonomous stair-climbing algorithm.",
+        "Dependent claim spelling out a coordination sequence for the source-described stair-climbing mode.",
       dependsOn: [21],
     },
     {
       number: 27,
       isIndependent: false,
       originalText: manualClaimText(27),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 27.",
+      plainEnglish: sourceBoundedDependentClaimReading(27),
       keyInnovations: ["Refined claim 27 specification feature"],
 
-      dependsOn: [26],
+      dependsOn: [23],
     },
     {
       number: 28,
       isIndependent: false,
       originalText: manualClaimText(28),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 28.",
+      plainEnglish: sourceBoundedDependentClaimReading(28),
       keyInnovations: ["Refined claim 28 specification feature"],
 
-      dependsOn: [27],
+      dependsOn: [17],
     },
     {
       number: 29,
       isIndependent: false,
       originalText: manualClaimText(29),
       plainEnglish:
-        "The transporter of claim 17 including a leaning sensor to detect rider body tilt in a given direction to command vehicle motion.",
-      keyInnovations: ["Intuitive body-lean command interface"],
+        "The transporter of claim 17 with leaning means that sense a subject's direction of leaning and control the motorized drive to move in that direction.",
+      keyInnovations: ["Leaning-direction drive-control relationship"],
 
-      dependsOn: [28],
+      dependsOn: [17],
     },
     {
       number: 30,
       isIndependent: false,
       originalText: manualClaimText(30),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 30.",
+      plainEnglish: sourceBoundedDependentClaimReading(30),
       keyInnovations: ["Refined claim 30 specification feature"],
 
       dependsOn: [29],
@@ -794,78 +778,70 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       number: 31,
       isIndependent: false,
       originalText: manualClaimText(31),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 31.",
+      plainEnglish: sourceBoundedDependentClaimReading(31),
       keyInnovations: ["Refined claim 31 specification feature"],
 
-      dependsOn: [30],
+      dependsOn: [29],
     },
     {
       number: 32,
       isIndependent: false,
       originalText: manualClaimText(32),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 32.",
+      plainEnglish: sourceBoundedDependentClaimReading(32),
       keyInnovations: ["Refined claim 32 specification feature"],
 
-      dependsOn: [31],
+      dependsOn: [17],
     },
     {
       number: 33,
       isIndependent: false,
       originalText: manualClaimText(33),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 33.",
+      plainEnglish: sourceBoundedDependentClaimReading(33),
       keyInnovations: ["Refined claim 33 specification feature"],
 
-      dependsOn: [32],
+      dependsOn: [17],
     },
     {
       number: 34,
       isIndependent: false,
       originalText: manualClaimText(34),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 34.",
+      plainEnglish: sourceBoundedDependentClaimReading(34),
       keyInnovations: ["Refined claim 34 specification feature"],
 
-      dependsOn: [33],
+      dependsOn: [23],
     },
     {
       number: 35,
       isIndependent: false,
       originalText: manualClaimText(35),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 35.",
+      plainEnglish: sourceBoundedDependentClaimReading(35),
       keyInnovations: ["Refined claim 35 specification feature"],
 
-      dependsOn: [34],
+      dependsOn: [24],
     },
     {
       number: 36,
       isIndependent: false,
       originalText: manualClaimText(36),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 36.",
+      plainEnglish: sourceBoundedDependentClaimReading(36),
       keyInnovations: ["Refined claim 36 specification feature"],
 
-      dependsOn: [35],
+      dependsOn: [33],
     },
     {
       number: 37,
       isIndependent: false,
       originalText: manualClaimText(37),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 37.",
+      plainEnglish: sourceBoundedDependentClaimReading(37),
       keyInnovations: ["Refined claim 37 specification feature"],
 
-      dependsOn: [36],
+      dependsOn: [17],
     },
     {
       number: 38,
       isIndependent: false,
       originalText: manualClaimText(38),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 38.",
+      plainEnglish: sourceBoundedDependentClaimReading(38),
       keyInnovations: ["Refined claim 38 specification feature"],
 
       dependsOn: [37],
@@ -874,18 +850,16 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       number: 39,
       isIndependent: false,
       originalText: manualClaimText(39),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 39.",
+      plainEnglish: sourceBoundedDependentClaimReading(39),
       keyInnovations: ["Refined claim 39 specification feature"],
 
-      dependsOn: [38],
+      dependsOn: [17],
     },
     {
       number: 40,
       isIndependent: false,
       originalText: manualClaimText(40),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 40.",
+      plainEnglish: sourceBoundedDependentClaimReading(40),
       keyInnovations: ["Refined claim 40 specification feature"],
 
       dependsOn: [39],
@@ -894,18 +868,16 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       number: 41,
       isIndependent: false,
       originalText: manualClaimText(41),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 41.",
+      plainEnglish: sourceBoundedDependentClaimReading(41),
       keyInnovations: ["Refined claim 41 specification feature"],
 
-      dependsOn: [40],
+      dependsOn: [39],
     },
     {
       number: 42,
       isIndependent: false,
       originalText: manualClaimText(42),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 42.",
+      plainEnglish: sourceBoundedDependentClaimReading(42),
       keyInnovations: ["Refined claim 42 specification feature"],
 
       dependsOn: [41],
@@ -915,13 +887,13 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       isIndependent: false,
       originalText: manualClaimText(43),
       plainEnglish:
-        "The transporter of claim 1 where the human support is proximate to the ground to allow a rider to stand thereon (the standing scooter / Segway PT architecture).",
+        "The transporter of claim 1 where the support is proximate to the ground to permit a subject to stand on it.",
       keyInnovations: [
         "Low standing platform configuration",
-        "Upright human transporter form factor",
+        "Standing-subject support relationship",
       ],
       legalSignificance:
-        "Broad claim protecting upright standing self-balancing transporters (the commercial Segway PT).",
+        "Dependent claim narrowing the Claim 1 support arrangement to one that permits standing.",
       dependsOn: [1],
     },
     {
@@ -938,64 +910,57 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       number: 45,
       isIndependent: false,
       originalText: manualClaimText(45),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 45.",
+      plainEnglish: sourceBoundedDependentClaimReading(45),
       keyInnovations: ["Refined claim 45 specification feature"],
 
-      dependsOn: [44],
+      dependsOn: [43],
     },
     {
       number: 46,
       isIndependent: false,
       originalText: manualClaimText(46),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 46.",
+      plainEnglish: sourceBoundedDependentClaimReading(46),
       keyInnovations: ["Refined claim 46 specification feature"],
 
-      dependsOn: [45],
+      dependsOn: [43],
     },
     {
       number: 47,
       isIndependent: false,
       originalText: manualClaimText(47),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 47.",
+      plainEnglish: sourceBoundedDependentClaimReading(47),
       keyInnovations: ["Refined claim 47 specification feature"],
 
-      dependsOn: [46],
+      dependsOn: [44],
     },
     {
       number: 48,
       isIndependent: false,
       originalText: manualClaimText(48),
       plainEnglish:
-        "The transporter of claim 1 where the digital control loop executes cyclically: reading rider inputs, reading inertial state variables, updating program state machine, and computing motor drive commands.",
-      keyInnovations: [
-        "Cyclic real-time digital control loop architecture",
-        "Inertial sensor state-variable update pipeline",
-      ],
+        "The transporter of claim 1 where the control loop cyclically reads subject-provided and state-variable inputs, modifies program state, and performs calculations for motorized-drive control.",
+      keyInnovations: ["Cyclical control-loop input ordering", "Program-state update relationship"],
 
-      dependsOn: [47],
+      dependsOn: [1],
     },
     {
       number: 49,
       isIndependent: true,
       originalText: manualClaimText(49),
       plainEnglish:
-        "A device for transporting a payload over irregular ground and stairs with left/right support members permitting complete 360-degree rotation and an active feedback control loop that dynamically balances the assembly by controlling net torque about the ground contact point against gravity.",
+        "An independent payload-transporter version of the Claim 1 arrangement, using support members, a motorized drive arrangement, and a fore-aft control loop.",
       keyInnovations: [
-        "Payload-generic inverted pendulum balance vehicle",
-        "Net torque ground-contact acceleration equilibrium",
+        "Payload transport control-loop arrangement",
+        "Fore-aft balance relationship",
       ],
       legalSignificance:
-        "Broad independent claim protecting balance transporter systems carrying non-human or cargo payloads.",
+        "Independent payload-oriented variant of the transport and control arrangement.",
     },
     {
       number: 50,
       isIndependent: false,
       originalText: manualClaimText(50),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 50.",
+      plainEnglish: sourceBoundedDependentClaimReading(50),
       keyInnovations: ["Refined claim 50 specification feature"],
 
       dependsOn: [49],
@@ -1004,28 +969,25 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       number: 51,
       isIndependent: false,
       originalText: manualClaimText(51),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 51.",
+      plainEnglish: sourceBoundedDependentClaimReading(51),
       keyInnovations: ["Refined claim 51 specification feature"],
 
-      dependsOn: [50],
+      dependsOn: [49],
     },
     {
       number: 52,
       isIndependent: false,
       originalText: manualClaimText(52),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 52.",
+      plainEnglish: sourceBoundedDependentClaimReading(52),
       keyInnovations: ["Refined claim 52 specification feature"],
 
-      dependsOn: [51],
+      dependsOn: [50],
     },
     {
       number: 53,
       isIndependent: false,
       originalText: manualClaimText(53),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 53.",
+      plainEnglish: sourceBoundedDependentClaimReading(53),
       keyInnovations: ["Refined claim 53 specification feature"],
 
       dependsOn: [52],
@@ -1034,51 +996,35 @@ A motorized drive, mounted to the assembly and coupled to the ground-contacting 
       number: 54,
       isIndependent: false,
       originalText: manualClaimText(54),
-      plainEnglish:
-        "A transporter device according to the preceding claims incorporating refined mechanical linkages, sensor feedback thresholds, or operational state transitions specified in claim 54.",
+      plainEnglish: sourceBoundedDependentClaimReading(54),
       keyInnovations: ["Refined claim 54 specification feature"],
 
-      dependsOn: [53],
+      dependsOn: [52],
     },
   ],
 
   historicalContext: {
     problemStatement:
-      "In the mid-1990s, powered wheelchairs and mobility devices remained essentially unchanged since the mid-20th century: heavy lead-acid battery platforms with small caster wheels that were easily immobilized by curbs, steep thresholds, or a single flight of stairs. Meanwhile, rapid advancements in digital signal processors (DSPs) and solid-state micromachined quartz rate sensors (MEMS precursors) made real-time computational inverted pendulum balancing feasible outside advanced university robotics labs.",
+      "The grant itself identifies a tension between stability and ease of locomotion for human transport devices over irregular surfaces and stairs. It says stair-climbing devices tend to be complex, heavy, and difficult for ordinary locomotion.",
     priorArtLimitations: [
-      "Previous attempts at stair-climbing wheelchairs relied on heavy tracked tank treads or complex multi-legged walking linkages that were slow, prone to slipping on wet edges, and incapable of ordinary street navigation.",
-      "No prior vehicle incorporated active inverted-pendulum dynamic self-balancing, forcing vehicles to maintain low, cumbersome static profiles.",
-      "Traditional wheelchairs required four widely spaced wheels, locking users below eye level in social conversations.",
+      "The source says existing transport devices require compromises to address physical incapacity.",
+      "The source identifies the difficulty of a self-propelled, user-guidable transporter that can address stairs and ordinary locomotion.",
+      "The reviewed grant does not quantify earlier vehicles, comparative safety, weight, speed, or commercial performance.",
     ],
     breakthroughInsight:
-      "Dean Kamen observed a young man in a wheelchair struggle to get over a sidewalk curb in downtown Manchester, NH. Kamen realized that the human body does not navigate the world via static 4-point stability—humans are dynamic inverted pendulums that walk by continuously controlling falling. DEKA developed the 'Fred' prototype (which became the iBOT and later the Segway), demonstrating that dynamic feedback balance could lift a seated passenger to eye-level and conquer architectural stairs.",
-    patentWars: [
-      {
-        rivalName: "DEKA vs. Hoverboard Importers & Personal Transporter Infringement",
-        rivalClaim:
-          "Foreign manufacturers imported unbranded 2-wheel self-balancing hoverboards and scooters claiming generic prior art.",
-        conflictDetails:
-          "DEKA and Segway filed Section 337 ITC complaints and federal patent infringement lawsuits asserting US 5,701,965 and related patents.",
-        resolution:
-          "In 2015, Ninebot acquired Segway and consolidated the foundational DEKA patents, enforcing general exclusion orders against infringing hoverboards.",
-        legalOutcome:
-          "US 5,701,965 established DEKA and Segway as the undisputed intellectual property owners of dynamic self-balancing vehicles.",
-      },
-    ],
+      "Within the checked claims, the differentiating structure is the combination of a ground-contacting module, motorized drive and control loop, cluster and wheel-control relations, and a coordination sequence. This record does not infer a particular control implementation.",
+    patentWars: [],
     civilizationalImpact:
-      "US 5,701,965 transformed assistive technology and ignited the personal electric micro-mobility industry. It proved that microprocessors and sensor fusion could replace mechanical static stability with algorithmic dynamic stability, leading to millions of self-balancing vehicles, hoverboards, robotic legs, and dynamic humanoid control systems.",
+      "This source-bound record does not make an unsourced commercial or industry-wide impact claim. Its educational value lies in making the grant's claimed mobility-control topology legible.",
     aftermath:
-      "The iBOT received FDA clearance in 2003, and the consumer spin-off Segway PT launched in 2001. In 2019, DEKA partnered with Toyota to release the next-generation iBOT 4000.",
-    sideNotes: [
-      "The codename for the Segway during development was 'Ginger' (derived from 'IT' and Ginger Rogers / Fred Astaire).",
-      "Dean Kamen founded FIRST Robotics in 1989 while developing the balance technologies in Manchester, NH.",
-    ],
+      "No source-verified commercial, regulatory, or litigation after-history is asserted in this edition.",
+    sideNotes: [],
     funFact:
-      "When Steve Jobs first test-rode the early transporter prototype in DEKA's basement, he famously predicted that cities would be designed around it.",
+      "The reviewed grant prints 54 claims and includes both human-subject and payload transporter embodiments.",
   },
 
   stats: {
     totalClaims: 54,
-    independentClaims: 3,
+    independentClaims: 2,
   },
 };

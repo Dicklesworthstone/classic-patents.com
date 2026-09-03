@@ -27,20 +27,20 @@
 | **5** | Sheet 3 of 34 (FIG. 3) | Schematic view showing swivel arrangement and four-wheel support. |
 | **6** | Sheet 4 of 34 (FIG. 4) | Side elevation of the transporter ascending stairs. |
 | **7** | Sheet 5 of 34 (FIG. 5) | Block diagram of power and closed-loop control system. |
-| **8** | Sheet 6 of 34 (FIG. 6) | Control strategy block diagram for dynamic wheel-torque balancing. |
-| **9–36** | Sheets 7–34 (FIGS. 7–45) | Detailed diagrams for cluster mechanics, joystick control, microcontroller architecture, sensor filtering, and stair climbing kinematics. |
+| **8** | Sheet 6 of 34 (FIG. 6) | Control-strategy drawing for a simplified version of FIG. 1; its printed caption says it is used to achieve balance using wheel torque. This receipt does not treat that drawing as a calibrated public dynamics model. |
+| **9–36** | Sheets 7–34 (FIGS. 7–45) | Additional drawing sheets retained in the facsimile. This receipt does not assign unreviewed component identities, dimensions, sensor specifications, or performance behavior to them. |
 | **37** | Col. 1–2 | Title, Technical Field, Background Art, Summary of the Invention, Brief Description of Drawings (FIGS. 1–37). |
 | **38** | Col. 3–4 | Brief Description of Drawings (FIGS. 38–45), Detailed Description of Specific Embodiments opening. |
-| **39** | Col. 5–6 | Detailed Description: ground-contacting members, dynamic balance, and cluster rotation. |
-| **40** | Col. 7–8 | Detailed Description: two-wheel balancing mode, sensor fusion, rate gyroscopes, and accelerometers. |
-| **41** | Col. 9–10 | Detailed Description: stair climbing state machine, riser alignment, and weight transfer. |
-| **42** | Col. 11–12 | Detailed Description: microcontroller architecture, peripheral bus communications, and motor drives. |
-| **43** | Col. 13–14 | Detailed Description: mathematical coordinate transformations, angle variables, and kinematic parameters. |
-| **44** | Col. 15–16 | Detailed Description: pitch rate compensation, differentiator loops, and cluster torque feedback. |
-| **45** | Col. 17–18 | Detailed Description: reset angle sequence, analog/digital hybrid control, and opening of claims. |
-| **46** | Col. 19–20 | Claims 1 through 20 (Independent Claim 1: inverted-pendulum personal mobility transporter). |
-| **47** | Col. 21–22 | Claims 21 through 48 (Cluster control, coordination modes, joystick/lean transducers). |
-| **48** | Col. 23–24 | Claims 49 through 54 (Independent Claim 49: payload transporter; closing signatures). |
+| **39** | Col. 5–6 | Detailed Description: ground-contacting-module, balance-related, and cluster-control embodiments. |
+| **40** | Col. 7–8 | Detailed Description continuation. The public source reader does not infer a sensor implementation or signal calibration from this locator. |
+| **41** | Col. 9–10 | Detailed Description: stair-use and cluster/wheel coordination embodiments. |
+| **42** | Col. 11–12 | Detailed Description continuation; no controller gain, timing, motor rating, or performance value is taken from this locator for the public exhibit. |
+| **43** | Col. 13–14 | Detailed Description continuation; this receipt does not publish a derived geometry or angle model. |
+| **44** | Col. 15–16 | Detailed Description continuation; this receipt does not publish a derived torque, rate, or response model. |
+| **45** | Col. 17–18 | Detailed Description continuation and opening of claims. |
+| **46** | Col. 19–20 | Claims 1 through 20 (human-transporter, arcuate-element, and wheel-cluster claims). |
+| **47** | Col. 21–22 | Claims 21 through 48 (cluster/wheel control and coordination claims). |
+| **48** | Col. 23–24 | Claims 49 through 54 (payload-transporter and closing claims). |
 
 ---
 
@@ -50,7 +50,8 @@
 - **Reviewed Comparison Ledger**: `public/patents/transcripts/us-5701965-kamen-transporter-reviewed.txt`.
 - **Figure Crops**: Stored under `public/patents/figures/us-5701965-kamen-transporter/` (`fig-1-source-crop-v1.png` to `fig-6-source-crop-v1.png`).
 - **Claim Count**: Exactly 54 printed claims as printed in the official patent grant (Independent Claims 1, 49; 52 dependent claims).
-- **Physical SI Kernel**: `src/physics/kamenTransporterKernel.ts` (inverted pendulum pitch stabilization $\tau = K_p \theta + K_d \dot{\theta} + K_i \int \theta dt$, cluster planetary gear ratio, dynamic center-of-gravity elevation).
+- **Public source-reading topology**: `src/physics/kamenTransporterKernel.ts` reads the grant's balance, cluster, transfer, climb, and transition relations in TypeScript. It makes no WASM claim and exposes no source-disclosed SI torque, speed, mass, geometry, gain, or stability-margin calculation.
+- **Editorial boundary**: The public visual distinguishes the source's cluster-wheel topology from an unproven gear-train design. It does not infer a commercial product lineage, performance result, or modern control implementation absent separately checked evidence.
 
 ---
 

@@ -55,7 +55,6 @@ import { kamenMedicationInjectionParallelReadings } from "./kamenMedicationInjec
 import { kamenSegwayParallelReadings } from "./kamenSegwayEdition";
 import { kamenTransporterParallelReadings } from "./kamenTransporterEdition";
 import { kilbyIntegratedCircuitParallelReadings } from "./kilbyIntegratedCircuitEdition";
-import { kwolekKevlarParallelReadings } from "./kwolekKevlarEdition";
 import { lamarrFrequencyHoppingParallelReadings } from "./lamarrFrequencyHoppingEdition";
 import { landPolaroidParallelReadings } from "./landPolaroidEdition";
 import { lemelsonAdjustableManipulatorParallelReadings } from "./lemelsonAdjustableManipulatorEdition";
@@ -195,7 +194,6 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-3353115-maiman-ruby-laser": maimanRubyLaserParallelReadings,
   "us-2929922-townes-laser": townesLaserParallelReadings,
   "us-3541541-engelbart-mouse": engelbartMouseParallelReadings,
-  "us-3671542-kwolek-kevlar": kwolekKevlarParallelReadings,
   "us-3728480-baer-odyssey": baerOdysseyParallelReadings,
   "us-3858232-boyle-smith-ccd": boyleSmithCcdParallelReadings,
   "us-4063220-metcalfe-ethernet": metcalfeEthernetParallelReadings,
