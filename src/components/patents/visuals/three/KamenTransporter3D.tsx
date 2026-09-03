@@ -50,7 +50,7 @@ export default function KamenTransporter3D({
     kamenTransporterKernelSource,
   );
   const topology = useMemo(
-    () => stepKamenTransporterPhysics(controls),
+    () => stepKamenTransporterPhysics(controls, kernelSource),
     [controls, kernelSource],
   );
   const liveControls = useLiveSimParams(controls);
@@ -247,7 +247,8 @@ export default function KamenTransporter3D({
           <div className="flex items-center gap-2">
             <span className="font-bold text-sky-400">CONTACT:</span>
             <span>
-              {topology.displayPose.contactWheelIds.join(" + ").toUpperCase()} · {topology.displayPose.sourceFigure}
+              {topology.displayPose.contactWheelIds.join(" + ").toUpperCase()} ·{" "}
+              {topology.displayPose.sourceFigure}
             </span>
           </div>
           <p className="max-w-80 pt-1 text-[10px] leading-relaxed text-ink-400">

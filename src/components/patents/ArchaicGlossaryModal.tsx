@@ -235,6 +235,7 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
             id="glossary-tab-glossary"
             aria-selected={activeTab === "glossary"}
             aria-controls="glossary-panel-glossary"
+            onClick={() => setActiveTab("glossary")}
             className={`pb-2 border-b-2 font-bold transition-colors cursor-pointer ${
               activeTab === "glossary"
                 ? "border-amber-600 text-amber-700 dark:text-amber-400"
@@ -250,6 +251,7 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
               id="glossary-tab-citation"
               aria-selected={activeTab === "citation"}
               aria-controls="glossary-panel-citation"
+              onClick={() => setActiveTab("citation")}
               className={`pb-2 border-b-2 font-bold transition-colors cursor-pointer ${
                 activeTab === "citation"
                   ? "border-amber-600 text-amber-700 dark:text-amber-400"

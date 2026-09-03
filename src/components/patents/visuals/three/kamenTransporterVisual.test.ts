@@ -113,10 +113,10 @@ describe("US 5,701,965 Kamen Transporter source-bound Three.js topology", () => 
 
     expect(sceneSource).toContain("globalTransportBus.registerUpdater");
     expect(sceneSource).toContain("createKamenTransporterTransportUpdater");
-    expect(sceneSource).toContain("stepKamenTransporterTopology");
+    expect(sceneSource).toContain("stepKamenTransporterPhysics");
     expect(sceneSource).not.toContain("stepKamenTransporterSi");
     expect(sceneSource).not.toMatch(/riderPitchLeanDeg|velocityCommandMs|MOTOR TORQUE|N·m|m\/s/i);
-    expect(twoDimensionalSource).toContain("stepKamenTransporterTopology");
+    expect(twoDimensionalSource).toContain("stepKamenTransporterPhysics");
     expect(twoDimensionalSource).not.toMatch(/riderPitchLeanDeg|velocityCommandMs|N·m|m\/s/i);
     expect(twoDimensionalSource.match(/<PhysicsTelemetryBadge/g)?.length).toBe(1);
     expect(modelSource).toContain("cluster-wheel-carrier");

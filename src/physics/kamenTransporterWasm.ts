@@ -204,9 +204,10 @@ function fallbackState(controls: KamenTransporterControls): KamenTransporterRunt
 /** Step the source pose through the generic FrankenSim owner when loaded. */
 export function stepKamenTransporterPhysics(
   controls: KamenTransporterControls,
+  sourceHint: KamenTransporterKernelSource = source,
 ): KamenTransporterRuntimeTelemetry {
   const fallback = fallbackState(controls);
-  if (!stepFn || !fallback.clusterTopologyActive) return fallback;
+  if (sourceHint !== "wasm" || !stepFn || !fallback.clusterTopologyActive) return fallback;
 
   try {
     const stateIndex = KAMEN_TRANSPORTER_TOPOLOGY_STATES.indexOf(fallback.topologyState);
