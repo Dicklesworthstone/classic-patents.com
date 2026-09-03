@@ -86,6 +86,11 @@ export function KamenTransporterSim({
       data-kamen-contact-wheels={topology.displayPose.contactWheelIds.join(",")}
       data-kamen-contact-count={topology.displayPose.contactCount}
       data-kamen-minimum-gap-m={topology.displayPose.minimumGapM.toFixed(12)}
+      data-kamen-riser-contact-wheels={topology.displayPose.riserContactWheelIds.join(",")}
+      data-kamen-riser-contact-count={topology.displayPose.riserContactCount}
+      data-kamen-minimum-riser-clearance-m={
+        topology.displayPose.minimumRiserClearanceM?.toFixed(12) ?? "not-applicable"
+      }
       data-kamen-runtime-source={topology.runtimeSource}
       data-kamen-owner={topology.genericOwner}
       data-kamen-boundary={topology.runtimeBoundary}
@@ -310,9 +315,9 @@ export function KamenTransporterSim({
           <p className="font-bold">Source boundary</p>
           <p className="mt-1 leading-relaxed text-[11px] text-ink-600 dark:text-ink-400">
             Table 1 prints the nominal 3.81-inch wheel radius, 5.581-inch carrier radius, 6.85-inch
-            rise, and 10.9-inch tread. The generic fs-mbd owner checks those rigid horizontal
-            contacts; force, friction, impact, compliance, motor, sensor, and controller results
-            remain withheld.
+            rise, 10.9-inch tread, and 3.011-inch upper-contact offset. The generic fs-mbd owner
+            checks rigid tread support and both finite riser faces; force, friction, impact,
+            compliance, motor, sensor, and controller results remain withheld.
           </p>
         </div>
 

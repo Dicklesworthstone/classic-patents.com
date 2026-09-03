@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import * as fs from "node:fs";
 import { LEGACY_PATENT_REDIRECTS } from "../src/data/patents";
 import {
   assertCanonicalVercelProject,
@@ -127,7 +128,6 @@ describe("deployment verification contract", () => {
 
   describe("structured JSONL log contract", () => {
     test("writes valid bounded JSONL entries for sweep results", () => {
-      const tempLogPath = "/Volumes/USBNVME16TB/temp_agent_space/test-sweep.jsonl";
       const sampleResult = {
         schema: "classic-patents.source-reader-sweep.v1",
         timestamp: new Date().toISOString(),
@@ -140,11 +140,8 @@ describe("deployment verification contract", () => {
         pageErrors: [],
       };
 
-      const fs = require("node:fs");
-      fs.writeFileSync(tempLogPath, `${JSON.stringify(sampleResult)}\n`);
-
-      const readBack = fs.readFileSync(tempLogPath, "utf8").trim();
-      const parsed = JSON.parse(readBack);
+      const jsonLine = `${JSON.stringify(sampleResult)}\n`;
+      const parsed = JSON.parse(jsonLine.trim());
 
       expect(parsed.schema).toBe("classic-patents.source-reader-sweep.v1");
       expect(parsed.patentId).toBe("us-821393-wright-flyer");

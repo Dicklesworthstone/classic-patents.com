@@ -9751,7 +9751,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     domainTitle: "Source-Dimensioned Tri-Wheel Balance & Stair Contact",
     equationName: "Rigid Three-Wheel Carrier Support Relation",
     governingEquation:
-      "x_i=x_c+l\\cos(\\phi+2\\pi i/3),\\quad y_i=y_c+l\\sin(\\phi+2\\pi i/3),\\quad g_i=y_i-r-h(x_i)\\ge 0",
+      "x_i=x_c+l\\cos(\\phi+2\\pi i/3),\\quad y_i=y_c+l\\sin(\\phi+2\\pi i/3),\\quad g_i=y_i-r-h(x_i)\\ge 0,\\quad \\rho_i=\\min_k(\\|c_i-q_k\\|-r)\\ge 0",
     engineMethod:
       "fs-kamen-wasm source adapter over fs-mbd::tri_wheel_cluster with typed equation-identical fallback",
     controls: [
@@ -9812,6 +9812,21 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           provenanceCitation: topology.sourceGeometryReceipt,
         },
         {
+          label: "Finite-riser contacts",
+          value: topology.displayPose.stairActive
+            ? topology.displayPose.riserContactCount > 0
+              ? topology.displayPose.riserContactWheelIds.join(" + ").toUpperCase()
+              : "CLEAR"
+            : "NOT ACTIVE",
+          unit: topology.displayPose.stairActive
+            ? `${topology.displayPose.riserContactCount} tangent wheel${topology.displayPose.riserContactCount === 1 ? "" : "s"}`
+            : "level-ground state",
+          badgeColor: topology.displayPose.riserContactCount > 0 ? "rose" : "emerald",
+          progressPct: 100,
+          provenance: "source-disclosed",
+          provenanceCitation: topology.sourceGeometryReceipt,
+        },
+        {
           label: "Nominal source geometry",
           value: "r 3.810 · l 5.581 · h 6.850 · d 10.900",
           unit: "inches · Table 1",
@@ -9832,7 +9847,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       ];
     },
     pedagogicalInsight:
-      "US 5,701,965 records a three-equal-wheel cluster, nominal wheel/carrier/stair geometry, independently controlled ground wheels, and the ordered balance/transfer/climb sequence. The fs-mbd owner resolves all three wheel centers and refuses penetration or unsupported poses. It does not forecast vehicle dynamics because the facsimile omits the mass/inertia, motor, controller, sensor, friction, compliance, impact, and contact inputs needed to do so.",
+      "US 5,701,965 records a three-equal-wheel cluster, nominal wheel/carrier/stair geometry, independently controlled ground wheels, and the ordered balance/transfer/climb sequence. Table 1's z is the upper-wheel tread offset beyond the riser; the lower wheel is one radius before the edge and tangent to the vertical face. The fs-mbd owner resolves all three wheel centers and refuses horizontal-support or finite-riser penetration. It does not forecast vehicle dynamics because the facsimile omits the mass/inertia, motor, controller, sensor, friction, compliance, impact, and contact inputs needed to do so.",
   },
   "us-6302230-kamen-segway": {
     domain: "robotics_locomotion",

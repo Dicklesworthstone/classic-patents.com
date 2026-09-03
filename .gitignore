@@ -63,6 +63,10 @@ artifacts/threejs-fleet-audit/
 artifacts/viewport-audit/
 artifacts/nobel-maxim-live-vision/
 artifacts/threejs-physics-audit/
+artifacts/deploy-sweeps/
+artifacts/test-tmp/
+artifacts/*.md
+artifacts/*.json
 tmp/
 tsconfig.tsbuildinfo
 .ntm/

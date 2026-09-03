@@ -2798,6 +2798,12 @@ async function auditPatent(
           contactWheels: element.getAttribute("data-kamen-contact-wheels"),
           contactCount: Number(element.getAttribute("data-kamen-contact-count")),
           minimumGapM: Number(element.getAttribute("data-kamen-minimum-gap-m")),
+          riserContactWheels: element.getAttribute("data-kamen-riser-contact-wheels"),
+          riserContactCount: Number(element.getAttribute("data-kamen-riser-contact-count")),
+          minimumRiserClearanceM:
+            element.getAttribute("data-kamen-minimum-riser-clearance-m") === "not-applicable"
+              ? null
+              : Number(element.getAttribute("data-kamen-minimum-riser-clearance-m")),
           runtimeSource: element.getAttribute("data-kamen-runtime-source"),
           owner: element.getAttribute("data-kamen-owner"),
           boundary: element.getAttribute("data-kamen-boundary"),
@@ -2840,6 +2846,7 @@ async function auditPatent(
         "transition",
       ] as const;
       const expectedContacts = ["a,b", "a", "a,b", "a,b", "b,c", "c"] as const;
+      const expectedRiserContacts = ["", "", "a", "a", "b", ""] as const;
       const stateSnapshots: Awaited<ReturnType<typeof readKamenState>>[] = [];
       const stateScreenshotPaths: string[] = [];
       for (const [index, stateName] of stateNames.entries()) {
@@ -2945,7 +2952,7 @@ async function auditPatent(
 
       const sourceOwner = "fs-mbd::tri_wheel_cluster::step_tri_wheel_stair_contact";
       const sourceBoundary =
-        "rigid-planar-three-equal-wheels-horizontal-tread-contact-no-force-friction-compliance-impact-or-riser-side-contact";
+        "rigid-planar-three-equal-wheels-horizontal-support-and-finite-riser-clearance-no-force-friction-compliance-impact-motor-controller-or-sensor";
       const near = (value: number, target: number, tolerance = 1e-9) =>
         Math.abs(value - target) <= tolerance;
       const sourceOwnersHonest = stateSnapshots.every(
@@ -2960,6 +2967,12 @@ async function auditPatent(
           state.contactWheels === expectedContacts[index] &&
           state.contactCount === expectedContacts[index]?.split(",").length &&
           state.minimumGapM >= -1e-8 &&
+          state.riserContactWheels === expectedRiserContacts[index] &&
+          state.riserContactCount ===
+            (expectedRiserContacts[index] ? expectedRiserContacts[index]?.split(",").length : 0) &&
+          (index >= 2
+            ? state.minimumRiserClearanceM !== null && state.minimumRiserClearanceM >= -1e-8
+            : state.minimumRiserClearanceM === null) &&
           state.clusterTopology === "present" &&
           state.wheelCount === "three-per-lateral-cluster" &&
           state.stairActive === (index >= 2 ? "true" : "false") &&
@@ -2985,6 +2998,14 @@ async function auditPatent(
           twoDimensionalClimbState.contactWheels === climbState.contactWheels &&
           twoDimensionalClimbState.contactCount === climbState.contactCount &&
           near(twoDimensionalClimbState.minimumGapM, climbState.minimumGapM) &&
+          twoDimensionalClimbState.riserContactWheels === climbState.riserContactWheels &&
+          twoDimensionalClimbState.riserContactCount === climbState.riserContactCount &&
+          twoDimensionalClimbState.minimumRiserClearanceM !== null &&
+          climbState.minimumRiserClearanceM !== null &&
+          near(
+            twoDimensionalClimbState.minimumRiserClearanceM,
+            climbState.minimumRiserClearanceM,
+          ) &&
           near(twoDimensionalClimbState.axleXM, climbState.axleXM) &&
           near(twoDimensionalClimbState.axleYM, climbState.axleYM) &&
           near(twoDimensionalClimbState.carrierRotationRad, climbState.carrierRotationRad) &&
@@ -2998,17 +3019,21 @@ async function auditPatent(
         clusterWithheldState.contactWheels === "direct" &&
         clusterWithheldState.contactCount === 1 &&
         clusterWithheldState.minimumGapM >= -1e-8 &&
+        clusterWithheldState.minimumRiserClearanceM === null &&
+        clusterWithheldState.riserContactCount === 0 &&
         clusterWithheldState.runtimeSource === "ts-fallback" &&
         balanceWithheldState.state === "balance" &&
         balanceWithheldState.clusterTopology === "present" &&
         balanceWithheldState.balanceLoop === "withheld" &&
         balanceWithheldState.contactWheels === "a" &&
         balanceWithheldState.minimumGapM >= -1e-8 &&
+        balanceWithheldState.minimumRiserClearanceM === null &&
+        balanceWithheldState.riserContactCount === 0 &&
         restoredState.balanceLoop === "active" &&
         restoredState.contactWheels === "a";
       mechanismInteraction = {
         available: true,
-        kind: "source-dimensioned-three-wheel-fs-mbd-support-sequence-claim-refusals-and-cross-face-parity",
+        kind: "source-dimensioned-three-wheel-fs-mbd-tread-and-riser-contact-sequence-claim-refusals-and-cross-face-parity",
         stateSnapshots,
         twoDimensionalClimbState,
         clusterWithheldState,

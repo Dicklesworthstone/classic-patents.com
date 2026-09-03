@@ -4088,9 +4088,9 @@ export function applySupplementalColorizedEquations(
       title: "Claim 20 Three-Wheel Carrier & Horizontal Support Gaps",
       category: "Source-Dimensioned Rigid Contact Geometry",
       rawLatex:
-        "x_i=x_c+l\\cos(\\phi+2\\pi i/3),\\quad y_i=y_c+l\\sin(\\phi+2\\pi i/3),\\quad g_i=y_i-r-h(x_i)\\ge 0",
+        "x_i=x_c+l\\cos(\\phi+2\\pi i/3),\\quad y_i=y_c+l\\sin(\\phi+2\\pi i/3),\\quad g_i=y_i-r-h(x_i)\\ge 0,\\quad \\rho_i=\\min_k(\\|c_i-q_k\\|-r)\\ge 0",
       colorizedLatex:
-        "\\textcolor{#2563eb}{x_i}=\\textcolor{#059669}{x_c}+\\textcolor{#d97706}{l}\\cos(\\textcolor{#9333ea}{\\phi}+2\\pi i/3),\\quad \\textcolor{#2563eb}{y_i}=\\textcolor{#059669}{y_c}+\\textcolor{#d97706}{l}\\sin(\\textcolor{#9333ea}{\\phi}+2\\pi i/3),\\quad \\textcolor{#dc2626}{g_i}=y_i-\\textcolor{#0891b2}{r}-h(x_i)\\ge 0",
+        "\\textcolor{#2563eb}{x_i}=\\textcolor{#059669}{x_c}+\\textcolor{#d97706}{l}\\cos(\\textcolor{#9333ea}{\\phi}+2\\pi i/3),\\quad \\textcolor{#2563eb}{y_i}=\\textcolor{#059669}{y_c}+\\textcolor{#d97706}{l}\\sin(\\textcolor{#9333ea}{\\phi}+2\\pi i/3),\\quad \\textcolor{#dc2626}{g_i}=y_i-\\textcolor{#0891b2}{r}-h(x_i)\\ge 0,\\quad \\textcolor{#be123c}{\\rho_i}=\\min_k(\\|c_i-q_k\\|-r)\\ge 0",
       plainEnglishSentence: [
         { text: "For each of the " },
         { text: "three equal wheel centers", variableId: "wheel_center" },
@@ -4102,7 +4102,9 @@ export function applySupplementalColorizedEquations(
         { text: "wheel radius", variableId: "wheel_radius" },
         { text: " and local tread height. A valid rigid pose keeps every " },
         { text: "support gap", variableId: "support_gap" },
-        { text: " nonnegative and at least one gap at zero." },
+        { text: " nonnegative and at least one gap at zero. The nearest finite " },
+        { text: "riser gap", variableId: "riser_gap" },
+        { text: " must also stay nonnegative." },
       ],
       variables: [
         {
@@ -4156,11 +4158,22 @@ export function applySupplementalColorizedEquations(
           unit: "meters (m)",
           dimension: "[L]",
           explanation:
-            "A negative value is refused as support penetration. A zero value marks rigid horizontal contact; forces and riser-side contact are outside this boundary.",
+            "A negative value is refused as horizontal-support penetration. A zero value marks rigid ground or tread contact.",
+        },
+        {
+          id: "riser_gap",
+          symbol: "\\rho_i",
+          name: "Finite-Riser Clearance",
+          color: "rose",
+          role: "Shortest wheel-circle clearance to either finite vertical stair face",
+          unit: "meters (m)",
+          dimension: "[L]",
+          explanation:
+            "For each riser segment, q_k is the closest point to wheel center c_i. A negative value is refused as wheel/riser penetration; zero is rigid side tangency.",
         },
       ],
       pedagogicalNote:
-        "The source prints r = 3.81 in, l = 5.581 in, adjacent-center distance l′ = 9.667 in, stair rise h = 6.85 in, and tread d = 10.9 in. The relation checks geometric support only; it does not infer normal force, friction, compliance, impact, or motor response.",
+        "The source prints r = 3.81 in, l = 5.581 in, adjacent-center distance l′ = 9.667 in, stair rise h = 6.85 in, tread d = 10.9 in, and z = 3.011 in. Here z is the upper-wheel tread contact offset beyond the riser when the lower wheel is tangent one radius before the edge. The relation checks rigid support and finite-riser clearance only; it does not infer normal force, friction, compliance, impact, or motor response.",
       claimRef: 20,
       historicalSignificance:
         "Claim 20 specifies three equal wheels in each cluster, while the later stair-state claims coordinate the carrier and independently controlled ground wheels.",

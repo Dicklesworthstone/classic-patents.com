@@ -72494,6 +72494,11 @@
       "patents/figures/us-821393-wright-flyer-fig-5-preview-v3.png",
       "patents/figures/us-821393-wright-flyer-fig-5-preview.png",
       "patents/figures/us-821393-wright-flyer-fig-5.png",
+      "patents/figures/us-821393-wright-flyer/fig-1-source-sheet-v1.png",
+      "patents/figures/us-821393-wright-flyer/fig-2-source-sheet-v1.png",
+      "patents/figures/us-821393-wright-flyer/fig-3-source-crop-v5.png",
+      "patents/figures/us-821393-wright-flyer/fig-4-source-crop-v5.png",
+      "patents/figures/us-821393-wright-flyer/fig-5-source-crop-v5.png",
       "patents/source-text/us-821393-wright-flyer.txt",
       "patents/transcripts/us-821393-wright-flyer-reviewed.txt",
       "patents/transcripts/us-821393-wright-flyer.txt"
@@ -166484,8 +166489,8 @@
         "patentId": "us-5701965-kamen-transporter",
         "title": "Claim 20 Three-Wheel Carrier & Horizontal Support Gaps",
         "category": "Source-Dimensioned Rigid Contact Geometry",
-        "rawLatex": "x_i=x_c+l\\cos(\\phi+2\\pi i/3),\\quad y_i=y_c+l\\sin(\\phi+2\\pi i/3),\\quad g_i=y_i-r-h(x_i)\\ge 0",
-        "colorizedLatex": "\\textcolor{#2563eb}{x_i}=\\textcolor{#059669}{x_c}+\\textcolor{#d97706}{l}\\cos(\\textcolor{#9333ea}{\\phi}+2\\pi i/3),\\quad \\textcolor{#2563eb}{y_i}=\\textcolor{#059669}{y_c}+\\textcolor{#d97706}{l}\\sin(\\textcolor{#9333ea}{\\phi}+2\\pi i/3),\\quad \\textcolor{#dc2626}{g_i}=y_i-\\textcolor{#0891b2}{r}-h(x_i)\\ge 0",
+        "rawLatex": "x_i=x_c+l\\cos(\\phi+2\\pi i/3),\\quad y_i=y_c+l\\sin(\\phi+2\\pi i/3),\\quad g_i=y_i-r-h(x_i)\\ge 0,\\quad \\rho_i=\\min_k(\\|c_i-q_k\\|-r)\\ge 0",
+        "colorizedLatex": "\\textcolor{#2563eb}{x_i}=\\textcolor{#059669}{x_c}+\\textcolor{#d97706}{l}\\cos(\\textcolor{#9333ea}{\\phi}+2\\pi i/3),\\quad \\textcolor{#2563eb}{y_i}=\\textcolor{#059669}{y_c}+\\textcolor{#d97706}{l}\\sin(\\textcolor{#9333ea}{\\phi}+2\\pi i/3),\\quad \\textcolor{#dc2626}{g_i}=y_i-\\textcolor{#0891b2}{r}-h(x_i)\\ge 0,\\quad \\textcolor{#be123c}{\\rho_i}=\\min_k(\\|c_i-q_k\\|-r)\\ge 0",
         "plainEnglishSentence": [
           {
             "text": "For each of the "
@@ -166523,7 +166528,14 @@
             "variableId": "support_gap"
           },
           {
-            "text": " nonnegative and at least one gap at zero."
+            "text": " nonnegative and at least one gap at zero. The nearest finite "
+          },
+          {
+            "text": "riser gap",
+            "variableId": "riser_gap"
+          },
+          {
+            "text": " must also stay nonnegative."
           }
         ],
         "variables": [
@@ -166575,10 +166587,20 @@
             "role": "Wheel-bottom height above ground or the applicable stair tread",
             "unit": "meters (m)",
             "dimension": "[L]",
-            "explanation": "A negative value is refused as support penetration. A zero value marks rigid horizontal contact; forces and riser-side contact are outside this boundary."
+            "explanation": "A negative value is refused as horizontal-support penetration. A zero value marks rigid ground or tread contact."
+          },
+          {
+            "id": "riser_gap",
+            "symbol": "\\rho_i",
+            "name": "Finite-Riser Clearance",
+            "color": "rose",
+            "role": "Shortest wheel-circle clearance to either finite vertical stair face",
+            "unit": "meters (m)",
+            "dimension": "[L]",
+            "explanation": "For each riser segment, q_k is the closest point to wheel center c_i. A negative value is refused as wheel/riser penetration; zero is rigid side tangency."
           }
         ],
-        "pedagogicalNote": "The source prints r = 3.81 in, l = 5.581 in, adjacent-center distance l′ = 9.667 in, stair rise h = 6.85 in, and tread d = 10.9 in. The relation checks geometric support only; it does not infer normal force, friction, compliance, impact, or motor response.",
+        "pedagogicalNote": "The source prints r = 3.81 in, l = 5.581 in, adjacent-center distance l′ = 9.667 in, stair rise h = 6.85 in, tread d = 10.9 in, and z = 3.011 in. Here z is the upper-wheel tread contact offset beyond the riser when the lower wheel is tangent one radius before the edge. The relation checks rigid support and finite-riser clearance only; it does not infer normal force, friction, compliance, impact, or motor response.",
         "claimRef": 20,
         "historicalSignificance": "Claim 20 specifies three equal wheels in each cluster, while the later stair-state claims coordinate the carrier and independently controlled ground wheels."
       }
@@ -166587,7 +166609,7 @@
       "domain": "source_dimensioned_tri_wheel_contact",
       "domainTitle": "Source-Dimensioned Tri-Wheel Balance & Stair Contact",
       "equationName": "Rigid Three-Wheel Carrier Support Relation",
-      "governingEquation": "x_i=x_c+l\\cos(\\phi+2\\pi i/3),\\quad y_i=y_c+l\\sin(\\phi+2\\pi i/3),\\quad g_i=y_i-r-h(x_i)\\ge 0",
+      "governingEquation": "x_i=x_c+l\\cos(\\phi+2\\pi i/3),\\quad y_i=y_c+l\\sin(\\phi+2\\pi i/3),\\quad g_i=y_i-r-h(x_i)\\ge 0,\\quad \\rho_i=\\min_k(\\|c_i-q_k\\|-r)\\ge 0",
       "engineMethod": "fs-kamen-wasm source adapter over fs-mbd::tri_wheel_cluster with typed equation-identical fallback",
       "controls": [
         {
@@ -166601,7 +166623,7 @@
           "provenance": "source-disclosed"
         }
       ],
-      "pedagogicalInsight": "US 5,701,965 records a three-equal-wheel cluster, nominal wheel/carrier/stair geometry, independently controlled ground wheels, and the ordered balance/transfer/climb sequence. The fs-mbd owner resolves all three wheel centers and refuses penetration or unsupported poses. It does not forecast vehicle dynamics because the facsimile omits the mass/inertia, motor, controller, sensor, friction, compliance, impact, and contact inputs needed to do so."
+      "pedagogicalInsight": "US 5,701,965 records a three-equal-wheel cluster, nominal wheel/carrier/stair geometry, independently controlled ground wheels, and the ordered balance/transfer/climb sequence. Table 1's z is the upper-wheel tread offset beyond the riser; the lower wheel is one radius before the edge and tangent to the vertical face. The fs-mbd owner resolves all three wheel centers and refuses horizontal-support or finite-riser penetration. It does not forecast vehicle dynamics because the facsimile omits the mass/inertia, motor, controller, sensor, friction, compliance, impact, and contact inputs needed to do so."
     },
     "sourceVisualization": {
       "kind": "model",

@@ -165,6 +165,11 @@ export default function KamenTransporter3D({
       data-kamen-contact-wheels={topology.displayPose.contactWheelIds.join(",")}
       data-kamen-contact-count={topology.displayPose.contactCount}
       data-kamen-minimum-gap-m={topology.displayPose.minimumGapM.toFixed(12)}
+      data-kamen-riser-contact-wheels={topology.displayPose.riserContactWheelIds.join(",")}
+      data-kamen-riser-contact-count={topology.displayPose.riserContactCount}
+      data-kamen-minimum-riser-clearance-m={
+        topology.displayPose.minimumRiserClearanceM?.toFixed(12) ?? "not-applicable"
+      }
       data-kamen-runtime-source={topology.runtimeSource}
       data-kamen-owner={topology.genericOwner}
       data-kamen-boundary={topology.runtimeBoundary}
@@ -250,15 +255,25 @@ export default function KamenTransporter3D({
             <span>{topology.sourceClaimNumbers.join(", ")}</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="font-bold text-sky-400">CONTACT:</span>
+            <span className="font-bold text-sky-400">TREAD:</span>
             <span>
               {topology.displayPose.contactWheelIds.join(" + ").toUpperCase()} ·{" "}
               {topology.displayPose.sourceFigure}
             </span>
           </div>
+          {topology.displayPose.stairActive ? (
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-rose-400">RISER:</span>
+              <span>
+                {topology.displayPose.riserContactCount > 0
+                  ? `${topology.displayPose.riserContactWheelIds.join(" + ").toUpperCase()} TANGENT`
+                  : "CLEAR"}
+              </span>
+            </div>
+          ) : null}
           <p className="max-w-80 pt-1 text-[10px] leading-relaxed text-ink-400">
-            {kamenTransporterRuntimeLabel(topology.runtimeSource)} · Table 1 dimensions · horizontal
-            support gaps only.
+            {kamenTransporterRuntimeLabel(topology.runtimeSource)} · Table 1 dimensions · tread and
+            finite-riser clearance.
           </p>
         </div>
       </div>
@@ -304,9 +319,9 @@ export default function KamenTransporter3D({
           <p className="font-bold">Source boundary</p>
           <p className="mt-1 text-[11px] leading-relaxed text-ink-600 dark:text-ink-400">
             The grant prints three equal wheels per cluster and nominal wheel, carrier, stair, and
-            centre-offset dimensions. The generic fs-mbd owner checks rigid horizontal support;
-            force, friction, impact, compliance, motor, sensor, and controller results remain
-            withheld.
+            centre-offset dimensions. The generic fs-mbd owner checks rigid tread support and
+            finite vertical-riser clearance; force, friction, impact, compliance, motor, sensor,
+            and controller results remain withheld.
           </p>
         </div>
 

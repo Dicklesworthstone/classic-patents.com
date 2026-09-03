@@ -57,6 +57,19 @@ describe("US 223,898 Thomas Edison Incandescent Lamp visual & physics boundary",
     expect(threeSource).not.toContain("camera.position.set");
   });
 
+  test("keeps the full desktop View rail out of the Claim 1 and utility-control lanes", () => {
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "EdisonBulb3D.tsx"), "utf8");
+
+    // The View rail is bounded by the compact utility lane only. Claim 1 is
+    // deliberately moved to a second desktop row, rather than being allowed
+    // to squeeze or cover the final Plan View button.
+    expect(threeSource).toContain("sm:right-56");
+    expect(threeSource).toContain("sm:max-w-none");
+    expect(threeSource).toContain("sm:absolute sm:top-full sm:right-0 sm:mt-3 sm:flex-nowrap");
+    expect(threeSource).not.toContain("sm:max-w-[calc(100%-28rem)]");
+    expect(threeSource).not.toContain("sm:right-auto");
+  });
+
   test("computes finite interpretive temperature, hot resistance, and radiant watts in SI units", () => {
     const result = stepEdisonBulb({
       voltage: 110,

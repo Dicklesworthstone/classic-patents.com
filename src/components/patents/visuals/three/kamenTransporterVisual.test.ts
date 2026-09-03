@@ -6,6 +6,7 @@ import {
   KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M,
   KAMEN_TRANSPORTER_TOPOLOGY_STATES,
   kamenHorizontalSupportHeightM,
+  kamenMinimumRiserClearanceM,
   readKamenTransporterControls,
   stepKamenTransporterTopology,
 } from "@/physics/kamenTransporterKernel";
@@ -76,6 +77,15 @@ describe("US 5,701,965 Kamen Transporter source-bound Three.js topology", () => 
             KAMEN_TRANSPORTER_SOURCE_GEOMETRY_M.wheelRadiusM -
             kamenHorizontalSupportHeightM(center.x, telemetry.displayPose.stairActive),
         ).toBeCloseTo(expected.signedVerticalGapM, 12);
+        if (telemetry.displayPose.stairActive) {
+          expect(kamenMinimumRiserClearanceM(center.x, center.y)).toBeCloseTo(
+            expected.signedRiserClearanceM ?? Number.NaN,
+            12,
+          );
+          expect(expected.signedRiserClearanceM ?? -1).toBeGreaterThanOrEqual(-1e-8);
+        } else {
+          expect(expected.signedRiserClearanceM).toBeNull();
+        }
       }
     }
 
