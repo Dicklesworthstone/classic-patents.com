@@ -607,10 +607,7 @@ export function resolveKamenTransporterDisplayPose(
     const signedRiserClearanceM = pose.stairActive
       ? kamenMinimumRiserClearanceM(centerXM, centerYM)
       : null;
-    if (
-      signedRiserClearanceM !== null &&
-      signedRiserClearanceM < -KAMEN_CONTACT_TOLERANCE_M
-    ) {
+    if (signedRiserClearanceM !== null && signedRiserClearanceM < -KAMEN_CONTACT_TOLERANCE_M) {
       throw new Error(
         `Kamen ${topologyState} wheel ${KAMEN_WHEEL_IDS[index]} penetrates a vertical riser by ${signedRiserClearanceM} m.`,
       );

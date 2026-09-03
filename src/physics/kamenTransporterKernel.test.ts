@@ -87,8 +87,7 @@ describe("Kamen transporter source-bound topology tape", () => {
         expect(pose.minimumRiserClearanceM ?? -1).toBeGreaterThanOrEqual(-1e-8);
         expect(
           pose.wheelContacts.every(
-            (wheel) =>
-              wheel.signedRiserClearanceM !== null && wheel.signedRiserClearanceM >= -1e-8,
+            (wheel) => wheel.signedRiserClearanceM !== null && wheel.signedRiserClearanceM >= -1e-8,
           ),
         ).toBe(true);
       } else {

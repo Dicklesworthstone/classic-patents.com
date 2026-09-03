@@ -12,7 +12,7 @@ const VALID_RECEIPT = JSON.stringify({
   ok: {
     owner: KAMEN_TRANSPORTER_GENERIC_OWNER,
     boundary:
-      "rigid-planar-three-equal-wheels-horizontal-tread-contact-no-force-friction-compliance-impact-or-riser-side-contact",
+      "rigid-planar-three-equal-wheels-horizontal-support-and-finite-riser-clearance-no-force-friction-compliance-impact-motor-controller-or-sensor",
     source_receipt: "us-5701965-table-1-figures-39-through-42",
     state: "balance",
     source_figure: "figure-39a",
@@ -22,7 +22,7 @@ const VALID_RECEIPT = JSON.stringify({
     wheel_radius_m: 0.096774,
     stair_rise_m: 0.17399,
     stair_tread_m: 0.27686,
-    riser_to_lower_contact_m: 0.0764794,
+    riser_to_upper_contact_m: 0.0764794,
     axle_x_m: 0,
     axle_y_m: 0.2385314,
     carrier_rotation_rad: 0,
@@ -37,6 +37,10 @@ const VALID_RECEIPT = JSON.stringify({
     contact_mask: [true, false, false],
     contact_count: 1,
     minimum_gap_m: 0,
+    signed_riser_clearances_m: [null, null, null],
+    riser_contact_mask: [false, false, false],
+    riser_contact_count: 0,
+    minimum_riser_clearance_m: null,
   },
 });
 
@@ -46,6 +50,7 @@ describe("Kamen transporter generic FrankenSim browser boundary", () => {
     expect(decoded?.owner).toBe(KAMEN_TRANSPORTER_GENERIC_OWNER);
     expect(decoded?.contact_mask).toEqual([true, false, false]);
     expect(decoded?.wheel_centres_m).toHaveLength(3);
+    expect(decoded?.minimum_riser_clearance_m).toBeNull();
   });
 
   test("rejects missing ownership, geometry drift, penetration, and unsupported poses", () => {
@@ -64,6 +69,18 @@ describe("Kamen transporter generic FrankenSim browser boundary", () => {
     expect(
       decodeKamenTransporterWasmStep(
         JSON.stringify({
+          ok: {
+            ...parsed,
+            stair_active: true,
+            signed_riser_clearances_m: [-0.01, 0.2, 0.3],
+            minimum_riser_clearance_m: -0.01,
+          },
+        }),
+      ),
+    ).toBeNull();
+    expect(
+      decodeKamenTransporterWasmStep(
+        JSON.stringify({
           ok: { ...parsed, contact_mask: [false, false, false], contact_count: 0 },
         }),
       ),
@@ -76,5 +93,6 @@ describe("Kamen transporter generic FrankenSim browser boundary", () => {
     expect(telemetry.genericOwner).toBe(KAMEN_TRANSPORTER_GENERIC_OWNER);
     expect(telemetry.displayPose.contactWheelIds).toEqual(["a"]);
     expect(telemetry.displayPose.minimumGapM).toBeCloseTo(0, 12);
+    expect(telemetry.displayPose.minimumRiserClearanceM).toBeNull();
   });
 });
