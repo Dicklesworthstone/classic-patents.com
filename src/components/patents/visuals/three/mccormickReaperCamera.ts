@@ -4,6 +4,7 @@ export type McCormickReaperCameraPreset =
   | "grain_reel"
   | "platform"
   | "drive_wheel"
+  | "transmission"
   | "top";
 
 export type McCormickReaperCameraView = {
@@ -20,6 +21,7 @@ export const MCCORMICK_REAPER_CAMERA_PRESETS: Record<
   grain_reel: { pos: [2.8, 3.8, 4.0], target: [0, 1.2, 0] },
   platform: { pos: [0, 5.0, 0], target: [0, -0.5, -0.5] },
   drive_wheel: { pos: [-5.0, 1.2, 3.2], target: [-3.2, 0.4, 0] },
+  transmission: { pos: [7.4, 2.6, 5.3], target: [3.1, 0.15, 0.85] },
   top: { pos: [0, 13.0, 0.1], target: [0, 0, 0] },
 };
 

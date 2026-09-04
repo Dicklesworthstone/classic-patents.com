@@ -52,6 +52,11 @@ import {
   readLamarrRuntimeControls,
 } from "@/physics/lamarrSharedKernel";
 import {
+  createMarconiTransportUpdater,
+  getMarconiTapeFrame,
+  readMarconiRuntimeControls,
+} from "@/physics/marconiSharedKernel";
+import {
   createMcCormickTransportUpdater,
   getMcCormickTapeFrame,
   MCCORMICK_FRANKENSIM_BOUNDARY,
@@ -59,11 +64,6 @@ import {
   MCCORMICK_SOURCE_BOUNDARY,
   readMcCormickRuntimeControls,
 } from "@/physics/mccormickReaperKernel";
-import {
-  createMarconiTransportUpdater,
-  getMarconiTapeFrame,
-  readMarconiRuntimeControls,
-} from "@/physics/marconiSharedKernel";
 import {
   createMetcalfeEthernetTransportUpdater,
   readEthernetControls,

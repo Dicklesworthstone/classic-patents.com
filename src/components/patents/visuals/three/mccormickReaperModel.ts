@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import type { McCormickKinematicPhases } from "@/physics/mccormickReaperKernel";
-import { mccormickReelCrate } from "@/physics/genericWasm";
 
 function deterministicUnit(index: number, channel: number): number {
   let state = Math.imul(index + 1, 0x9e3779b1) ^ Math.imul(channel + 1, 0x85ebca6b);
@@ -59,14 +58,22 @@ export interface McCormickReaperModel {
   rootGroup: THREE.Group;
   platformGroup: THREE.Group;
   driveWheelGroup: THREE.Group;
+  groundGear: THREE.Group;
   countershaftGroup: THREE.Group;
+  firstPinion: THREE.Group;
+  countershaftGear: THREE.Group;
   cutterCrankGroup: THREE.Group;
+  crankPinion: THREE.Group;
+  lowerCrankPin: THREE.Mesh;
+  upperCrankPin: THREE.Mesh;
   cutterAssembly: THREE.Group;
   sickleBarGroup: THREE.Group;
   upperCutterGroup: THREE.Group;
   lowerPitman: THREE.Mesh;
   upperPitman: THREE.Mesh;
   reelGroup: THREE.Group;
+  axlePulley: THREE.Mesh;
+  reelPulley: THREE.Mesh;
   reelBeltSegments: readonly THREE.Mesh[];
   stalksInstanced: THREE.InstancedMesh;
   stalkCount: number;
@@ -330,14 +337,12 @@ export function buildMcCormickReaperModel(): McCormickReaperModel {
   cutterCrankGroup.add(crankAxle);
   const crankPinGeometry = new THREE.SphereGeometry(0.09, 12, 8);
   geometriesToDispose.push(crankPinGeometry);
-  for (const [x, y] of [
-    [-0.22, 0.24],
-    [0.22, -0.24],
-  ] as const) {
-    const pin = new THREE.Mesh(crankPinGeometry, sickleSteel);
-    pin.position.set(x, y, 0);
-    cutterCrankGroup.add(pin);
-  }
+  const lowerCrankPin = new THREE.Mesh(crankPinGeometry, sickleSteel);
+  lowerCrankPin.position.set(-0.22, 0.24, 0);
+  cutterCrankGroup.add(lowerCrankPin);
+  const upperCrankPin = new THREE.Mesh(crankPinGeometry, sickleSteel);
+  upperCrankPin.position.set(0.22, -0.24, 0);
+  cutterCrankGroup.add(upperCrankPin);
 
   // --- 4. DOUBLE-CRANK CONTRARY CUTTERS AND SUPPORT FINGERS (CLAIM 1) ---
   const cutterAssembly = new THREE.Group();
@@ -429,21 +434,6 @@ export function buildMcCormickReaperModel(): McCormickReaperModel {
     platformGroup.add(bearingBox);
   });
 
-  // Reel Drive Pulley & Crossed Leather Belt from Main Wheel Axle
-  const reelPulleyGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.12, 16);
-  geometriesToDispose.push(reelPulleyGeo);
-  const reelPulley = new THREE.Mesh(reelPulleyGeo, castIron);
-  reelPulley.rotation.z = Math.PI / 2;
-  reelPulley.position.set(3.4, 1.45, 0.85);
-  platformGroup.add(reelPulley);
-
-  const beltGeo = new THREE.BoxGeometry(0.06, 1.8, 0.1);
-  geometriesToDispose.push(beltGeo);
-  const driveBelt = new THREE.Mesh(beltGeo, weatheredWood);
-  driveBelt.position.set(3.4, 0.6, 0.4);
-  driveBelt.rotation.x = 0.45;
-  platformGroup.add(driveBelt);
-
   const reelGroup = new THREE.Group();
   reelGroup.position.set(0.5, 1.45, 0.85);
   rootGroup.add(reelGroup);
@@ -453,6 +443,68 @@ export function buildMcCormickReaperModel(): McCormickReaperModel {
   const reelAxle = new THREE.Mesh(reelAxleGeo, ashWood);
   reelAxle.rotation.z = Math.PI / 2;
   reelGroup.add(reelAxle);
+
+  // The printed 13-inch wheel-axle pulley drives the 12-inch reel pulley by
+  // an ordinary open leather band. Both pulleys are fixed to their shafts;
+  // two tangent spans and two wrap curves make one continuous loop.
+  const axlePulleyGeometry = new THREE.CylinderGeometry(0.52, 0.52, 0.14, 24);
+  const reelPulleyGeometry = new THREE.CylinderGeometry(0.48, 0.48, 0.14, 24);
+  geometriesToDispose.push(axlePulleyGeometry, reelPulleyGeometry);
+  const axlePulley = new THREE.Mesh(axlePulleyGeometry, castIron);
+  axlePulley.name = "source-thirteen-inch-axle-pulley";
+  axlePulley.rotation.z = Math.PI / 2;
+  axlePulley.position.x = 0.55;
+  driveWheelGroup.add(axlePulley);
+  const reelPulley = new THREE.Mesh(reelPulleyGeometry, castIron);
+  reelPulley.name = "source-twelve-inch-reel-pulley";
+  reelPulley.rotation.z = Math.PI / 2;
+  reelPulley.position.x = 3.45;
+  reelGroup.add(reelPulley);
+
+  function beltTube(points: readonly THREE.Vector3[], name: string): THREE.Mesh {
+    const geometry = new THREE.TubeGeometry(
+      new THREE.CatmullRomCurve3([...points], false, "centripetal"),
+      24,
+      0.045,
+      8,
+      false,
+    );
+    geometriesToDispose.push(geometry);
+    const segment = new THREE.Mesh(geometry, beltLeather);
+    segment.name = name;
+    rootGroup.add(segment);
+    return segment;
+  }
+
+  const beltX = 3.95;
+  const lowerPlus = new THREE.Vector3(beltX, -0.438, 0.462);
+  const lowerMinus = new THREE.Vector3(beltX, 0.038, -0.462);
+  const upperPlus = new THREE.Vector3(beltX, 1.23, 1.277);
+  const upperMinus = new THREE.Vector3(beltX, 1.67, 0.423);
+  const reelBeltSegments = [
+    beltTube([lowerPlus, upperPlus], "source-reel-belt-tangent-a"),
+    beltTube([lowerMinus, upperMinus], "source-reel-belt-tangent-b"),
+    beltTube(
+      [
+        lowerPlus,
+        new THREE.Vector3(beltX, -0.695, 0.158),
+        new THREE.Vector3(beltX, -0.662, -0.238),
+        new THREE.Vector3(beltX, -0.358, -0.495),
+        lowerMinus,
+      ],
+      "source-thirteen-inch-pulley-wrap",
+    ),
+    beltTube(
+      [
+        upperPlus,
+        new THREE.Vector3(beltX, 1.596, 1.307),
+        new THREE.Vector3(beltX, 1.877, 1.07),
+        new THREE.Vector3(beltX, 1.907, 0.704),
+        upperMinus,
+      ],
+      "source-twelve-inch-pulley-wrap",
+    ),
+  ] as const;
 
   // 4 Spider hubs on axle
   [-2.5, 2.5].forEach((hx) => {
@@ -531,9 +583,23 @@ export function buildMcCormickReaperModel(): McCormickReaperModel {
     rootGroup,
     platformGroup,
     driveWheelGroup,
+    groundGear,
+    countershaftGroup,
+    firstPinion,
+    countershaftGear,
+    cutterCrankGroup,
+    crankPinion,
+    lowerCrankPin,
+    upperCrankPin,
     cutterAssembly,
     sickleBarGroup,
+    upperCutterGroup,
+    lowerPitman,
+    upperPitman,
     reelGroup,
+    axlePulley,
+    reelPulley,
+    reelBeltSegments,
     stalksInstanced,
     stalkCount,
     materials: {
@@ -550,26 +616,43 @@ export function buildMcCormickReaperModel(): McCormickReaperModel {
 }
 
 /**
- * Updates Cyrus McCormick grain reaper master bull-wheel rotation, reel vanes, sickle bar reciprocating stroke, and platform cutaway.
+ * Drains the shared source-ratio tape into the wheel, both gear stages,
+ * double crank, contrary cutter members, reel, and connected pitman rods.
  */
 export function updateMcCormickReaperKinematics(
   model: McCormickReaperModel,
-  wheelRadPerSec: number,
-  reelRadPerSec: number,
-  cutterRadPerSec: number,
-  elapsedSeconds: number,
+  phases: McCormickKinematicPhases,
   showStalks: boolean,
   isCutaway = false,
+  claimOneActive = true,
 ): void {
-  const flex = mccormickReelCrate(reelRadPerSec).reelFlex;
-  model.driveWheelGroup.rotation.x = elapsedSeconds * wheelRadPerSec;
-  model.reelGroup.rotation.x = elapsedSeconds * reelRadPerSec;
-  model.sickleBarGroup.position.x = Math.sin(elapsedSeconds * cutterRadPerSec) * 0.22 * flex;
+  model.driveWheelGroup.rotation.x = phases.groundWheelRad;
+  model.countershaftGroup.rotation.x = phases.countershaftRad;
+  model.cutterCrankGroup.rotation.x = phases.cutterCrankRad;
+  model.reelGroup.rotation.x = phases.reelRad;
+
+  const stroke = Math.sin(phases.cutterCrankRad) * 0.22;
+  model.sickleBarGroup.position.x = stroke;
+  model.upperCutterGroup.position.x = -stroke;
+  model.upperCutterGroup.visible = claimOneActive;
+  model.upperPitman.visible = claimOneActive;
+
+  model.rootGroup.updateMatrixWorld(true);
+  const lowerCrankWorld = model.lowerCrankPin.getWorldPosition(new THREE.Vector3());
+  const upperCrankWorld = model.upperCrankPin.getWorldPosition(new THREE.Vector3());
+  const lowerBladeWorld = model.sickleBarGroup.localToWorld(new THREE.Vector3(2.65, 0, 0));
+  const upperBladeWorld = model.upperCutterGroup.localToWorld(new THREE.Vector3(2.65, 0.16, 0));
+  setBeamBetween(model.lowerPitman, lowerCrankWorld, lowerBladeWorld);
+  setBeamBetween(model.upperPitman, upperCrankWorld, upperBladeWorld);
   model.stalksInstanced.visible = showStalks;
 
   // Cutaway mode: make wooden platform deck and divider boards translucent
   model.materials.weatheredWood.opacity = isCutaway ? 0.35 : 1.0;
   model.materials.weatheredWood.transparent = isCutaway;
+  model.materials.weatheredWood.depthWrite = !isCutaway;
   model.materials.ashWood.opacity = isCutaway ? 0.35 : 1.0;
   model.materials.ashWood.transparent = isCutaway;
+  model.materials.ashWood.depthWrite = !isCutaway;
+  model.materials.weatheredWood.needsUpdate = true;
+  model.materials.ashWood.needsUpdate = true;
 }

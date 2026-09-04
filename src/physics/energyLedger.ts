@@ -761,12 +761,9 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-x8277-mccormick-reaper": {
-      const horseSpeedMps = params.speedMps ?? 1.5;
-      const bladeSpeedMps = horseSpeedMps * 2.4;
-      kinetic = 0.5 * 350.0 * horseSpeedMps ** 2 + 0.5 * 8.0 * bladeSpeedMps ** 2; // Reaper chassis & sickle bar kinetic energy
-      potential = 25.0;
-      powerIn = 746.0 * 2.0; // Two draught horses (~1500 W mechanical drawbar power)
-      dissipated = 1420.0; // Cutter bar reciprocating friction and grain stem shear
+      // The source prints kinematic ratios but no mass, inertia, drawbar
+      // force, cutting resistance, or loss data. A nonzero ledger would be a
+      // fabricated power model rather than an auditable source projection.
       break;
     }
 

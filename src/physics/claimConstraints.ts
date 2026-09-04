@@ -1177,14 +1177,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-x8277-mccormick-reaper",
-      claimTitle: "Serrated Reciprocating Cutter-Bar, Guard Fingers, and Revolving Reel",
+      claimTitle: "Contrary Cutter Members and Grain Support",
       activeDescription:
-        "Claim 1 guides grain into slotted guard teeth, slices stems with a rapid reciprocating sickle knife, and sweeps cut grain onto a platform.",
+        "Claim 1 covers a crank-driven vibrating cutter working against supporting projections, including McCormick's double-crank option in which an upper gathering bar moves contrary to the lower cutter.",
       invertedDescription:
-        "Manual scythe harvesting: grain stems bend away from dull blades uncut, seed heads shatter, and harvesting is capped at 1 acre/day per laborer.",
-      failureModeName: "Grain Stem Deflection & Seed Shatter Loss",
+        "Removing the upper gathering bar without supplying the claim's stationary support alternative leaves the lower blade sweeping beneath unsupported stalks, so stems can deflect instead of crossing the cutting edge.",
+      failureModeName: "Unsupported Stem Deflection at the Cutter",
       historicalPriorArt:
-        "Manual scythes and cradles were exhausting, weather-vulnerable, and severely limited harvested acreage.",
+        "The grant distinguishes its supported vibrating-blade arrangements from a bare cutting edge by specifying how projections gather and hold grain across the cutter.",
     },
   ],
   "us-132-davenport-electric-motor": [

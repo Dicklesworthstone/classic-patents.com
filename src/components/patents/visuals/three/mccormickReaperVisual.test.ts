@@ -4,6 +4,14 @@ import { join } from "node:path";
 import * as THREE from "three";
 import { stepMcCormickReaper } from "@/physics/catalogKernels";
 import {
+  createMcCormickTransportUpdater,
+  getMcCormickTapeFrame,
+  MCCORMICK_FRANKENSIM_BOUNDARY,
+  MCCORMICK_KERNEL_SOURCE,
+  MCCORMICK_SOURCE_BOUNDARY,
+  readMcCormickRuntimeControls,
+} from "@/physics/mccormickReaperKernel";
+import {
   MCCORMICK_DESKTOP_LOWER_CLEARANCE_PX,
   MCCORMICK_DESKTOP_SAFE_TOP_PX,
   MCCORMICK_REAPER_CAMERA_PRESETS,
@@ -52,8 +60,8 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildMcCormickReaperModel");
     expect(modelSource).toContain("updateMcCormickReaperKinematics");
-    expect(modelSource).toContain("mccormickReelCrate");
-    expect(modelSource).not.toContain("0.4 + Math.abs(reelRadPerSec)");
+    expect(modelSource).not.toContain("mccormickReelCrate");
+    expect(modelSource).not.toContain("operator spring seat");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -70,6 +78,10 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
       expect(threeSource).not.toContain(forbidden);
       expect(modelSource).not.toContain(forbidden);
     }
+    expect(threeSource).not.toContain("TickScheduler");
+    expect(threeSource).not.toContain("createStudioClock");
+    expect(threeSource).not.toContain("globalTransportBus.registerUpdater");
+    expect(threeSource).not.toContain("PortHamiltonianEnergyStrip");
   });
 
   test("exposes authentic camera presets and UI overlay for grain reaper observation", () => {
@@ -78,7 +90,15 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
       "utf8",
     );
 
-    for (const preset of ["iso", "sickle_guards", "grain_reel", "platform", "drive_wheel", "top"]) {
+    for (const preset of [
+      "iso",
+      "sickle_guards",
+      "grain_reel",
+      "platform",
+      "drive_wheel",
+      "transmission",
+      "top",
+    ]) {
       expect(threeSource).toContain(preset);
     }
 
@@ -105,6 +125,7 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
       "grain_reel",
       "platform",
       "drive_wheel",
+      "transmission",
       "top",
     ] as const) {
       expect(mccormickReaperCameraForViewport(preset, width)).toEqual(
@@ -141,12 +162,17 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
         // the reciprocating cutter and the higher reel slat envelope, not just
         // the still frame that happened to be captured by the audit.
         for (let frame = 0; frame <= 240; frame += 1) {
+          const timeSec = frame / 60;
+          const groundWheelRad = reaper.groundWheelOmegaRadPerS * timeSec;
           updateMcCormickReaperKinematics(
             model,
-            reaper.groundWheelOmegaRadPerS,
-            reaper.reelOmegaRadPerS,
-            reaper.cutterOmegaRadPerS,
-            frame / 60,
+            {
+              groundWheelRad,
+              countershaftRad: -groundWheelRad * reaper.firstGearRatio,
+              cutterCrankRad: groundWheelRad * reaper.cutterToWheelRatio,
+              reelRad: groundWheelRad * reaper.reelToWheelRatio,
+              travelM: reaper.groundSpeedMps * timeSec,
+            },
             true,
             false,
           );
@@ -183,6 +209,15 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
       result.reelOmegaRadPerS / result.cutterOmegaRadPerS,
       5,
     );
+    expect(result.groundGearTeeth).toBe(30);
+    expect(result.countershaftPinionTeeth).toBe(9);
+    expect(result.countershaftGearTeeth).toBe(27);
+    expect(result.crankPinionTeeth).toBe(9);
+    expect(result.firstGearRatio).toBe(30 / 9);
+    expect(result.secondGearRatio).toBe(27 / 9);
+    expect(result.cutterToWheelRatio).toBe(10);
+    expect(result.reelToWheelRatio).toBe(13 / 12);
+    expect(result.upperCutterToothLengthIn).toBe(1.5);
   });
 
   test("builds and articulates procedural platform, bull drive wheel, guard fingers, sickle bar, and reel correctly", () => {
@@ -191,19 +226,100 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
     expect(model.rootGroup.children.length).toBeGreaterThan(2);
     expect(model.platformGroup).toBeDefined();
     expect(model.driveWheelGroup).toBeDefined();
+    expect(model.groundGear).toBeDefined();
+    expect(model.countershaftGroup).toBeDefined();
+    expect(model.firstPinion).toBeDefined();
+    expect(model.countershaftGear).toBeDefined();
+    expect(model.cutterCrankGroup).toBeDefined();
+    expect(model.crankPinion).toBeDefined();
     expect(model.cutterAssembly).toBeDefined();
     expect(model.sickleBarGroup).toBeDefined();
     expect(model.reelGroup).toBeDefined();
+    expect(model.reelBeltSegments).toHaveLength(4);
     expect(model.stalksInstanced).toBeDefined();
     expect(model.materials.weatheredWood).toBeDefined();
     expect(model.materials.castIron).toBeDefined();
     expect(model.materials.sickleSteel).toBeDefined();
 
-    // Test kinematics update & cutaway
-    updateMcCormickReaperKinematics(model, 3.5, 1.2, 10.0, 1.0, true, true);
-    expect(model.driveWheelGroup.rotation.x).toBe(3.5);
+    const phases = {
+      groundWheelRad: 1.2,
+      countershaftRad: -4,
+      cutterCrankRad: 12,
+      reelRad: 1.3,
+      travelM: 0.5,
+    };
+    updateMcCormickReaperKinematics(model, phases, true, true);
+    expect(model.driveWheelGroup.rotation.x).toBe(phases.groundWheelRad);
+    expect(model.countershaftGroup.rotation.x).toBe(phases.countershaftRad);
+    expect(model.cutterCrankGroup.rotation.x).toBe(phases.cutterCrankRad);
+    expect(model.reelGroup.rotation.x).toBe(phases.reelRad);
+    expect(model.sickleBarGroup.position.x).toBeCloseTo(-model.upperCutterGroup.position.x, 12);
     expect(model.materials.weatheredWood.opacity).toBe(0.35);
 
+    model.rootGroup.updateMatrixWorld(true);
+    const intersects = (a: THREE.Object3D, b: THREE.Object3D) =>
+      new THREE.Box3().setFromObject(a).intersectsBox(new THREE.Box3().setFromObject(b));
+    expect(intersects(model.groundGear, model.firstPinion)).toBe(true);
+    expect(intersects(model.countershaftGear, model.crankPinion)).toBe(true);
+    for (const span of model.reelBeltSegments.slice(0, 2)) {
+      expect(intersects(span, model.axlePulley)).toBe(true);
+      expect(intersects(span, model.reelPulley)).toBe(true);
+      expect(intersects(span, model.reelBeltSegments[2])).toBe(true);
+      expect(intersects(span, model.reelBeltSegments[3])).toBe(true);
+    }
+    expect(intersects(model.reelBeltSegments[2], model.axlePulley)).toBe(true);
+    expect(intersects(model.reelBeltSegments[3], model.reelPulley)).toBe(true);
+    expect(intersects(model.lowerPitman, model.lowerCrankPin)).toBe(true);
+    expect(intersects(model.upperPitman, model.upperCrankPin)).toBe(true);
+
+    updateMcCormickReaperKinematics(model, phases, true, false, false);
+    expect(model.upperCutterGroup.visible).toBe(false);
+    expect(model.upperPitman.visible).toBe(false);
+
     model.dispose();
+  });
+
+  test("shares exact gear, belt, pause, reset, and refusal state on the route-owned tape", () => {
+    let raw: Record<string, number | boolean> = {
+      forwardSpeedMph: 2.5,
+      isRunning: true,
+      resetEpoch: 0,
+    };
+    const updater = createMcCormickTransportUpdater(() => readMcCormickRuntimeControls(raw));
+    for (let tick = 0; tick < 12; tick += 1) updater({} as never, 1 / 60);
+    const moving = getMcCormickTapeFrame();
+    expect(moving).not.toBeNull();
+    expect(moving?.phases.countershaftRad).toBeCloseTo(
+      -(moving?.phases.groundWheelRad ?? 0) * (30 / 9),
+      12,
+    );
+    expect(moving?.phases.cutterCrankRad).toBeCloseTo(
+      (moving?.phases.groundWheelRad ?? 0) * 10,
+      12,
+    );
+    expect(moving?.phases.reelRad).toBeCloseTo(
+      (moving?.phases.groundWheelRad ?? 0) * (13 / 12),
+      12,
+    );
+
+    raw = { ...raw, isRunning: false };
+    updater({} as never, 1 / 60);
+    const held = getMcCormickTapeFrame();
+    updater({} as never, 1 / 60);
+    expect(getMcCormickTapeFrame()).toEqual(held);
+
+    raw = { ...raw, resetEpoch: 1 };
+    updater({} as never, 1 / 60);
+    expect(getMcCormickTapeFrame()?.timeSec).toBe(0);
+    expect(getMcCormickTapeFrame()?.phases).toMatchObject({
+      groundWheelRad: 0,
+      countershaftRad: 0,
+      cutterCrankRad: 0,
+      reelRad: 0,
+      travelM: 0,
+    });
+    expect(MCCORMICK_KERNEL_SOURCE).toBe("source-bounded-ts");
+    expect(MCCORMICK_FRANKENSIM_BOUNDARY).toContain("cutting-contact");
+    expect(MCCORMICK_SOURCE_BOUNDARY).toContain("30:9 and 27:9");
   });
 });
