@@ -1500,7 +1500,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         phrase: "blade",
         active: speed > 0,
         tone: "live",
-        caption: `Forward Speed=${speed} mph: Reciprocating sickle blade shears standing grain stalks against guard fingers.`,
+        caption: `Scenario Ground Speed=${speed} mph: the printed 30:9 × 27:9 train drives the lower blade at ten crank turns per ground-wheel turn; cutting force and stem contact remain unmodeled.`,
       },
       {
         id: "reel",
@@ -1508,7 +1508,7 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: speed > 0.5,
         tone: "held",
         caption:
-          "Rotating wooden bat reel sweeps grain heads onto the cutter bar and collecting platform.",
+          "The printed 13-inch axle pulley and 12-inch reel pulley impose a 13:12 no-slip speed ratio; crop contact and belt loss remain unmodeled.",
       },
     ];
   }

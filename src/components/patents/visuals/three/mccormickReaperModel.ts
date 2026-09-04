@@ -90,6 +90,12 @@ export interface McCormickReaperModel {
   dispose: () => void;
 }
 
+// With the two stage-one gear centers separated along +Z, this ten-degree
+// keying offset seats a 30-tooth wheel tooth in a 9-tooth pinion valley at
+// zero phase. The -30/9 angular constraint then preserves that indexing for
+// every subsequent frame instead of rendering tooth-on-tooth interference.
+export const MCCORMICK_FIRST_PINION_INDEXING_RAD = -Math.PI / 18;
+
 function setBeamBetween(mesh: THREE.Mesh, start: THREE.Vector3, end: THREE.Vector3): void {
   const direction = end.clone().sub(start);
   mesh.position.copy(start).add(end).multiplyScalar(0.5);
@@ -313,6 +319,7 @@ export function buildMcCormickReaperModel(): McCormickReaperModel {
   countershaftGroup.position.set(3.05, -0.2, 0.975);
   rootGroup.add(countershaftGroup);
   const firstPinion = buildSpurGear("source-first-pinion", 9, 0.225, 0.2);
+  firstPinion.rotation.x = MCCORMICK_FIRST_PINION_INDEXING_RAD;
   countershaftGroup.add(firstPinion);
   const countershaftGear = buildSpurGear("source-countershaft-gear", 27, 0.675, 0.2);
   countershaftGear.position.x = -0.5;
@@ -450,12 +457,12 @@ export function buildMcCormickReaperModel(): McCormickReaperModel {
   const axlePulleyGeometry = new THREE.CylinderGeometry(0.52, 0.52, 0.14, 24);
   const reelPulleyGeometry = new THREE.CylinderGeometry(0.48, 0.48, 0.14, 24);
   geometriesToDispose.push(axlePulleyGeometry, reelPulleyGeometry);
-  const axlePulley = new THREE.Mesh(axlePulleyGeometry, castIron);
+  const axlePulley = new THREE.Mesh(axlePulleyGeometry, ashWood);
   axlePulley.name = "source-thirteen-inch-axle-pulley";
   axlePulley.rotation.z = Math.PI / 2;
   axlePulley.position.x = 0.55;
   driveWheelGroup.add(axlePulley);
-  const reelPulley = new THREE.Mesh(reelPulleyGeometry, castIron);
+  const reelPulley = new THREE.Mesh(reelPulleyGeometry, ashWood);
   reelPulley.name = "source-twelve-inch-reel-pulley";
   reelPulley.rotation.z = Math.PI / 2;
   reelPulley.position.x = 3.45;

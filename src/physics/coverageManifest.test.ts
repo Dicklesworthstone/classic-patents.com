@@ -103,8 +103,8 @@ describe("executable project coverage manifest", () => {
     expect(manifest.filter((row) => row.runtime.wasmSurface === "interpretive-wasm")).toHaveLength(
       0,
     );
-    expect(manifest.filter((row) => row.runtime.wasmSurface === "generic-wasm")).toHaveLength(37);
-    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(63);
+    expect(manifest.filter((row) => row.runtime.wasmSurface === "generic-wasm")).toHaveLength(36);
+    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(64);
 
     for (const patentId of [
       "us-x9430-colt-revolver",
@@ -201,8 +201,8 @@ describe("executable project coverage manifest", () => {
   });
 
   test("all 3D studios now have an updater or a typed snapshot path", () => {
-    expect(manifest.filter((row) => row.runtime.sharedBus === "updater")).toHaveLength(54);
-    expect(manifest.filter((row) => row.runtime.sharedBus === "snapshot")).toHaveLength(49);
+    expect(manifest.filter((row) => row.runtime.sharedBus === "updater")).toHaveLength(55);
+    expect(manifest.filter((row) => row.runtime.sharedBus === "snapshot")).toHaveLength(48);
     expect(manifest.filter((row) => row.runtime.sharedBus === "missing")).toHaveLength(0);
     for (const patentId of EXTERNAL_RUNTIME_OWNER_PATENT_IDS) {
       expect(visualDispatcherSource).toContain(`case "${patentId}":`);

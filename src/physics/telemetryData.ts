@@ -5905,7 +5905,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     controls: [
       {
         id: "forwardSpeedMph",
-        label: "Horse Ground Speed",
+        label: "Scenario Ground Speed",
         min: 1.0,
         max: 5.0,
         step: 0.2,

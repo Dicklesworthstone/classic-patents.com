@@ -17,7 +17,11 @@ import {
   MCCORMICK_REAPER_CAMERA_PRESETS,
   mccormickReaperCameraForViewport,
 } from "./mccormickReaperCamera";
-import { buildMcCormickReaperModel, updateMcCormickReaperKinematics } from "./mccormickReaperModel";
+import {
+  buildMcCormickReaperModel,
+  MCCORMICK_FIRST_PINION_INDEXING_RAD,
+  updateMcCormickReaperKinematics,
+} from "./mccormickReaperModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 const DESKTOP_AUDIT_VIEWPORT = { width: 1214, height: 460 };
@@ -96,7 +100,8 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
       "grain_reel",
       "platform",
       "drive_wheel",
-      "transmission",
+      "gear_train",
+      "reel_belt",
       "top",
     ]) {
       expect(threeSource).toContain(preset);
@@ -125,7 +130,8 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
       "grain_reel",
       "platform",
       "drive_wheel",
-      "transmission",
+      "gear_train",
+      "reel_belt",
       "top",
     ] as const) {
       expect(mccormickReaperCameraForViewport(preset, width)).toEqual(
@@ -197,6 +203,53 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
     }
   });
 
+  test("keeps the double crank and both connected pitmans visible in the phone inspection view", () => {
+    const phoneCanvas = { width: 343, height: 380 };
+    const view = mccormickReaperCameraForViewport("sickle_guards", phoneCanvas.width);
+    const model = buildMcCormickReaperModel();
+    try {
+      updateMcCormickReaperKinematics(
+        model,
+        {
+          groundWheelRad: 0.12,
+          countershaftRad: -0.4,
+          cutterCrankRad: 1.2,
+          reelRad: 0.13,
+          travelM: 0,
+        },
+        false,
+        false,
+        true,
+      );
+      model.rootGroup.updateMatrixWorld(true);
+
+      const camera = new THREE.PerspectiveCamera(
+        42,
+        phoneCanvas.width / phoneCanvas.height,
+        0.1,
+        1000,
+      );
+      camera.position.set(...view.pos);
+      camera.lookAt(...view.target);
+      camera.updateProjectionMatrix();
+      camera.updateMatrixWorld();
+
+      for (const [name, member] of [
+        ["double crank", model.cutterCrankGroup],
+        ["lower pitman", model.lowerPitman],
+        ["upper pitman", model.upperPitman],
+      ] as const) {
+        const bounds = projectedObjectBounds(member, camera);
+        expect(bounds.minX, `${name} left`).toBeGreaterThan(-0.9);
+        expect(bounds.maxX, `${name} right`).toBeLessThan(0.9);
+        expect(bounds.minY, `${name} bottom`).toBeGreaterThan(-0.9);
+        expect(bounds.maxY, `${name} top`).toBeLessThan(0.8);
+      }
+    } finally {
+      model.dispose();
+    }
+  });
+
   test("computes genuine ground drive ratio, reel speed, and cutter frequency in SI units", () => {
     const result = stepMcCormickReaper({ forwardSpeedMph: 2.5 });
     expect(result.groundWheelRpm).toBeGreaterThan(20);
@@ -220,6 +273,31 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
     expect(result.upperCutterToothLengthIn).toBe(1.5);
   });
 
+  test("indexes both external meshes tooth-to-valley and preserves that phase under motion", () => {
+    // A contact phase sum of pi means one member presents a tooth center
+    // while the other presents the center of a valley. This catches the
+    // visually plausible but nonphysical tooth-on-tooth zero phase that the
+    // old decorative transmission used.
+    const contactPhase = (phase: number) => {
+      const wrapped = phase % (2 * Math.PI);
+      return wrapped < 0 ? wrapped + 2 * Math.PI : wrapped;
+    };
+
+    for (const groundWheelRad of [0, 0.17, 1.2, Math.PI * 3.4]) {
+      const countershaftRad = -groundWheelRad * (30 / 9);
+      const cutterCrankRad = groundWheelRad * 10;
+      const stageOnePhase = contactPhase(
+        30 * (Math.PI / 2 - groundWheelRad) +
+          9 * (-Math.PI / 2 - countershaftRad - MCCORMICK_FIRST_PINION_INDEXING_RAD),
+      );
+      const stageTwoPhase = contactPhase(
+        27 * (Math.PI / 2 - countershaftRad) + 9 * (-Math.PI / 2 - cutterCrankRad),
+      );
+      expect(stageOnePhase).toBeCloseTo(Math.PI, 10);
+      expect(stageTwoPhase).toBeCloseTo(Math.PI, 10);
+    }
+  });
+
   test("builds and articulates procedural platform, bull drive wheel, guard fingers, sickle bar, and reel correctly", () => {
     const model = buildMcCormickReaperModel();
 
@@ -229,6 +307,7 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
     expect(model.groundGear).toBeDefined();
     expect(model.countershaftGroup).toBeDefined();
     expect(model.firstPinion).toBeDefined();
+    expect(model.firstPinion.rotation.x).toBe(MCCORMICK_FIRST_PINION_INDEXING_RAD);
     expect(model.countershaftGear).toBeDefined();
     expect(model.cutterCrankGroup).toBeDefined();
     expect(model.crankPinion).toBeDefined();

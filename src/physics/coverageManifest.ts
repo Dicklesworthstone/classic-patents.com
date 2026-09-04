@@ -237,7 +237,6 @@ export const DEDICATED_WASM_SURFACES = {
 
 const GENERIC_WASM_PATENT_IDS = new Set([
   "us-x72-whitney-cotton-gin",
-  "us-x8277-mccormick-reaper",
   "us-588-ericsson-propeller",
   "us-3633-goodyear-rubber",
   "us-6162-corliss-steam-engine",

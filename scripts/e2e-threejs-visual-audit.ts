@@ -2240,6 +2240,222 @@ async function auditPatent(
         resumed;
     }
 
+    if (patentId === "us-x8277-mccormick-reaper") {
+      const readMcCormickOwner = async () => {
+        const snapshot = await runtimeOwnerSnapshot(page, patentId);
+        return {
+          raw: snapshot,
+          running: snapshot?.["data-mccormick-running"],
+          timeSec: Number(snapshot?.["data-mccormick-time-sec"]),
+          groundWheelRad: Number(snapshot?.["data-mccormick-ground-wheel-rad"]),
+          countershaftRad: Number(snapshot?.["data-mccormick-countershaft-rad"]),
+          cutterCrankRad: Number(snapshot?.["data-mccormick-cutter-crank-rad"]),
+          reelRad: Number(snapshot?.["data-mccormick-reel-rad"]),
+          provenance: snapshot?.["data-runtime-provenance"],
+          ownerMount: snapshot?.["data-runtime-owner-mount"],
+          kernelSource: snapshot?.["data-mccormick-kernel-source"],
+          frankenSimBoundary: snapshot?.["data-mccormick-frankensim-boundary"],
+        };
+      };
+      const readMcCormickFace = (face: "two" | "three") =>
+        dispatcher.locator(`[data-mccormick-face="${face}"]`).evaluate((node) => ({
+          running: node.getAttribute("data-mccormick-running"),
+          groundWheelRad: Number(node.getAttribute("data-mccormick-ground-wheel-rad")),
+          countershaftRad: Number(node.getAttribute("data-mccormick-countershaft-rad")),
+          cutterCrankRad: Number(node.getAttribute("data-mccormick-cutter-crank-rad")),
+          reelRad: Number(node.getAttribute("data-mccormick-reel-rad")),
+          provenance: node.getAttribute("data-mccormick-runtime-provenance"),
+          kernelSource: node.getAttribute("data-mccormick-kernel-source"),
+          frankenSimBoundary: node.getAttribute("data-mccormick-frankensim-boundary"),
+        }));
+
+      await page.waitForFunction(
+        (id) => {
+          const owner = document.querySelector(
+            `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+          );
+          const time = owner?.getAttribute("data-mccormick-time-sec");
+          return time !== null && time !== "" && Number.isFinite(Number(time));
+        },
+        patentId,
+        { timeout: 3_000 },
+      );
+      const movingStart = await readMcCormickOwner();
+      await page.waitForFunction(
+        ({ id, startTime }) => {
+          const owner = document.querySelector(
+            `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+          );
+          return Number(owner?.getAttribute("data-mccormick-time-sec")) > startTime + 1 / 30;
+        },
+        { id: patentId, startTime: movingStart.timeSec },
+        { timeout: 5_000 },
+      );
+      const movingEnd = await readMcCormickOwner();
+      const deltas = {
+        groundWheelRad: movingEnd.groundWheelRad - movingStart.groundWheelRad,
+        countershaftRad: movingEnd.countershaftRad - movingStart.countershaftRad,
+        cutterCrankRad: movingEnd.cutterCrankRad - movingStart.cutterCrankRad,
+        reelRad: movingEnd.reelRad - movingStart.reelRad,
+      };
+      const constraintTolerance = 1e-9;
+      const firstGearMeshClosed =
+        deltas.groundWheelRad > 1e-5 &&
+        Math.abs(deltas.countershaftRad + deltas.groundWheelRad * (30 / 9)) < constraintTolerance;
+      const secondGearMeshClosed =
+        Math.abs(deltas.cutterCrankRad - deltas.groundWheelRad * 10) < constraintTolerance;
+      const reelBeltClosed =
+        Math.abs(deltas.reelRad - deltas.groundWheelRad * (13 / 12)) < constraintTolerance;
+      const sourceBoundaryHonest =
+        movingEnd.provenance === "TS_FALLBACK" &&
+        movingEnd.kernelSource === "source-bounded-ts" &&
+        movingEnd.frankenSimBoundary ===
+          "fs-mbd::revolute+gear+belt+fs-solid::cutting-contact-browser-composition-unavailable";
+
+      // The crop is useful in the overview, but it sits directly between the
+      // inspection cameras and the patented transmission/cutter members.
+      // Remove it before every mechanism close-up so the evidence captures
+      // show the connected parts rather than a wall of foreground stalks.
+      await surface.getByTitle("Hide Wheat Stalks").click();
+
+      if (viewport === "phone" || viewport === "phone375") {
+        await surface.getByLabel("McCormick mechanism camera view").selectOption("gear_train");
+      } else {
+        await surface.getByRole("button", { name: "Gear Train" }).click();
+      }
+      await page.waitForTimeout(100);
+      const gearTrainScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.physical-30-9-27-9-gear-train.png`,
+      );
+      await dispatcher.screenshot({ path: gearTrainScreenshotPath });
+
+      if (viewport === "phone" || viewport === "phone375") {
+        await surface.getByLabel("McCormick mechanism camera view").selectOption("reel_belt");
+      } else {
+        await surface.getByRole("button", { name: "Reel Belt" }).click();
+      }
+      await page.waitForTimeout(100);
+      const reelBeltScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.physical-13-12-reel-belt.png`,
+      );
+      await dispatcher.screenshot({ path: reelBeltScreenshotPath });
+
+      if (viewport === "phone" || viewport === "phone375") {
+        await surface.getByLabel("McCormick mechanism camera view").selectOption("sickle_guards");
+      } else {
+        await surface.getByRole("button", { name: "Double Cutter" }).click();
+      }
+      await page.waitForTimeout(100);
+      const cutterScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.physical-double-crank-contrary-cutters.png`,
+      );
+      await dispatcher.screenshot({ path: cutterScreenshotPath });
+
+      await surface.getByRole("button", { name: "Pause Simulation" }).click();
+      await page.waitForFunction(
+        (id) =>
+          document
+            .querySelector(`[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`)
+            ?.getAttribute("data-mccormick-running") === "false",
+        patentId,
+        { timeout: 3_000 },
+      );
+      const pausedStart = await readMcCormickOwner();
+      const pausedThreeFace = await readMcCormickFace("three");
+      await page.waitForTimeout(200);
+      const pausedEnd = await readMcCormickOwner();
+      const pauseHeld =
+        Math.abs(pausedEnd.timeSec - pausedStart.timeSec) < 1e-12 &&
+        Math.abs(pausedEnd.groundWheelRad - pausedStart.groundWheelRad) < 1e-12 &&
+        Math.abs(pausedEnd.countershaftRad - pausedStart.countershaftRad) < 1e-12 &&
+        Math.abs(pausedEnd.cutterCrankRad - pausedStart.cutterCrankRad) < 1e-12 &&
+        Math.abs(pausedEnd.reelRad - pausedStart.reelRad) < 1e-12;
+
+      await dispatcher.getByRole("button", { name: "2D Technical Diagram" }).click();
+      await dispatcher.locator('[data-mccormick-face="two"]').waitFor({
+        state: "visible",
+        timeout: 20_000,
+      });
+      const pausedTwoFace = await readMcCormickFace("two");
+      const ownerAfterFaceSwitch = await readMcCormickOwner();
+      const pausedCrossFaceParity =
+        pausedThreeFace.running === "false" &&
+        pausedTwoFace.running === "false" &&
+        Math.abs(pausedTwoFace.groundWheelRad - pausedThreeFace.groundWheelRad) <
+          constraintTolerance &&
+        Math.abs(pausedTwoFace.countershaftRad - pausedThreeFace.countershaftRad) <
+          constraintTolerance &&
+        Math.abs(pausedTwoFace.cutterCrankRad - pausedThreeFace.cutterCrankRad) <
+          constraintTolerance &&
+        Math.abs(pausedTwoFace.reelRad - pausedThreeFace.reelRad) < constraintTolerance &&
+        pausedTwoFace.kernelSource === "source-bounded-ts";
+      const singleOwnerLifecycle = ownerAfterFaceSwitch.ownerMount === movingEnd.ownerMount;
+      const twoDimensionalScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.shared-double-crank-two-dimensional.png`,
+      );
+      await dispatcher.screenshot({ path: twoDimensionalScreenshotPath });
+
+      await surface.getByRole("button", { name: "Play Simulation" }).click();
+      const resumed = await page
+        .waitForFunction(
+          ({ id, heldTime }) => {
+            const owner = document.querySelector(
+              `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+            );
+            return (
+              owner?.getAttribute("data-mccormick-running") === "true" &&
+              Number(owner?.getAttribute("data-mccormick-time-sec")) > heldTime
+            );
+          },
+          { id: patentId, heldTime: pausedEnd.timeSec },
+          { timeout: 3_000 },
+        )
+        .then(() => true)
+        .catch(() => false);
+      await dispatcher.getByRole("button", { name: "3D Physics Simulation" }).click();
+      await dispatcher.locator('[data-mccormick-face="three"]').waitFor({
+        state: "visible",
+        timeout: 20_000,
+      });
+
+      mechanismInteraction = {
+        available: true,
+        kind: "printed-two-stage-gear-and-reel-belt-pause-and-cross-face-parity",
+        movingStart,
+        movingEnd,
+        deltas,
+        firstGearMeshClosed,
+        secondGearMeshClosed,
+        reelBeltClosed,
+        sourceBoundaryHonest,
+        pausedStart,
+        pausedEnd,
+        pauseHeld,
+        pausedThreeFace,
+        pausedTwoFace,
+        pausedCrossFaceParity,
+        singleOwnerLifecycle,
+        resumed,
+        gearTrainScreenshotPath,
+        reelBeltScreenshotPath,
+        cutterScreenshotPath,
+        twoDimensionalScreenshotPath,
+      };
+      mechanismInteractionValid =
+        firstGearMeshClosed &&
+        secondGearMeshClosed &&
+        reelBeltClosed &&
+        sourceBoundaryHonest &&
+        pauseHeld &&
+        pausedCrossFaceParity &&
+        singleOwnerLifecycle &&
+        resumed;
+    }
+
     if (patentId === "us-4063220-metcalfe-ethernet") {
       const beforeCollision = await runtimeOwnerSnapshot(page, patentId);
       const beforeCollisionCount = Number(beforeCollision?.["data-collision-count"] ?? 0);

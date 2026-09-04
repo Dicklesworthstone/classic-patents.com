@@ -363,7 +363,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(brush0.x2).toBe(338);
   });
 
-  test("McCormick reaper computes sickle bar reciprocating frequency and harvest rate", () => {
+  test("McCormick reaper computes source-ratio wheel, cutter, and reel rates", () => {
     const res = stepMcCormickReaper({ forwardSpeedMph: 2.5 });
     expect(res.cutterHz).toBeGreaterThan(0);
     expect(res.groundSpeedMps).toBeGreaterThan(0);

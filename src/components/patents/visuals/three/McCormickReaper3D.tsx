@@ -22,7 +22,6 @@ import {
   MCCORMICK_ZERO_PHASES,
 } from "@/physics/mccormickReaperKernel";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
-import { useGenericWasmSource } from "@/physics/useGenericWasmSource";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -42,7 +41,8 @@ const CAMERA_OPTIONS: readonly [CameraPreset, string][] = [
   ["grain_reel", "Grain Reel"],
   ["platform", "Platform"],
   ["drive_wheel", "Drive Wheel"],
-  ["transmission", "Gear & Belt Drive"],
+  ["gear_train", "Gear Train"],
+  ["reel_belt", "Reel Belt"],
   ["top", "Plan View"],
 ];
 
@@ -54,7 +54,6 @@ export function McCormickReaper3D() {
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const crateSource = useGenericWasmSource();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const { params, updateParam, resetParams } = usePatentPhysics("us-x8277-mccormick-reaper");
@@ -328,10 +327,6 @@ export function McCormickReaper3D() {
             {
               label: "Dynamics",
               value: "typed refusal",
-            },
-            {
-              label: "Crate",
-              value: crateSource === "wasm" ? "fs-mbd flex" : "ts fallback",
             },
           ]}
         />

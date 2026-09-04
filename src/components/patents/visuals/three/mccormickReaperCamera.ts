@@ -4,7 +4,8 @@ export type McCormickReaperCameraPreset =
   | "grain_reel"
   | "platform"
   | "drive_wheel"
-  | "transmission"
+  | "gear_train"
+  | "reel_belt"
   | "top";
 
 export type McCormickReaperCameraView = {
@@ -17,11 +18,12 @@ export const MCCORMICK_REAPER_CAMERA_PRESETS: Record<
   McCormickReaperCameraView
 > = {
   iso: { pos: [10.5, 7.0, 11.0], target: [0, 0, 0] },
-  sickle_guards: { pos: [-1.0, 1.0, 4.5], target: [-0.5, -0.6, 1.8] },
+  sickle_guards: { pos: [2.15, 1.65, 5.2], target: [2.15, -0.45, 1.85] },
   grain_reel: { pos: [2.8, 3.8, 4.0], target: [0, 1.2, 0] },
   platform: { pos: [0, 5.0, 0], target: [0, -0.5, -0.5] },
   drive_wheel: { pos: [-5.0, 1.2, 3.2], target: [-3.2, 0.4, 0] },
-  transmission: { pos: [7.4, 2.6, 5.3], target: [3.1, 0.15, 0.85] },
+  gear_train: { pos: [0.7, 1.0, 4.7], target: [2.85, -0.2, 1.0] },
+  reel_belt: { pos: [7.2, 2.7, 4.8], target: [3.95, 0.6, 0.5] },
   top: { pos: [0, 13.0, 0.1], target: [0, 0, 0] },
 };
 

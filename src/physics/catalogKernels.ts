@@ -991,7 +991,7 @@ export function stepMcCormickReaper(params: { forwardSpeedMph?: number }) {
   };
 }
 
-/** Reel pose from the cutter-phase studio clock. Shared by 2D. */
+/** Converts a cutter-relative reel phase to degrees for source-ratio diagrams. */
 export function mccormickReelAngleDeg(cutterPhaseRad: number, reelToCutterRatio: number) {
   return Number((((cutterPhaseRad * reelToCutterRatio * 180) / Math.PI) % 360).toFixed(2));
 }
