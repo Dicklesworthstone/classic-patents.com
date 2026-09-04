@@ -217,15 +217,6 @@ export const DEDICATED_WASM_SURFACES = {
     refusalBoundary: "typed-wasm",
     provesSharedBusSource: true,
   },
-  "us-6331181-davinci": {
-    kind: "generic-wasm",
-    sourceCrate: "fs-davinci-wasm",
-    loaderFunction: "ensureDaVinciTopologyWasm",
-    exportName: "davinci_topology_step",
-    artifactUrl: "/wasm/fs-davinci/fs_davinci_wasm_bg.wasm",
-    artifactSha256: "f09c2a0718c927247a56f84b10037ac21318f89d8a4e27c53b030fa43b14816d",
-    refusalBoundary: "typed-wasm",
-  },
   "us-6594844-roomba": {
     kind: "generic-wasm",
     sourceCrate: "fs-roomba-wasm",

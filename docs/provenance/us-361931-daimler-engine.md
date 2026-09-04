@@ -77,7 +77,7 @@ the closely arranged page-2 details.
 | Source PDF page | Active intact source sheet | 300 DPI raster | SHA-256 | Citation occurrences |
 | --- | --- | --- | --- | --- |
 | 1 | `source-sheet-1-v1.png` | 2320 × 3408 | `1ac9ceb6eb1164d00298d671dc7100af8c75291f3072decf3accabbd809918ab` | `edition-block-1-group-0-inline-1`; `edition-block-9-group-0-inline-1` |
-| 2 | `source-sheet-2-v1.png` | 2320 × 3408 | `653a2dfd70d4633a3d0a73b427e37b100fdcb6e0d213e85e372291c9131d574b` | `edition-block-2-group-0-inline-1`; `edition-block-9-group-0-inline-3`, `-7`, `-9`, `-11`, `-13`; `edition-block-18-group-0-inline-1`, `-3` |
+| 2 | `source-sheet-2-v1.png` | 2320 × 3408 | `653a2dfd70d4633a3d0a73b427e37b100fdcb6e0d213e85e372291c9131d574b` | `edition-block-2-group-0-inline-1`; `edition-block-9-group-0-inline-3`; `edition-block-9-group-0-inline-7`; `edition-block-9-group-0-inline-9`; `edition-block-9-group-0-inline-11`; `edition-block-9-group-0-inline-13`; `edition-block-18-group-0-inline-1`; `edition-block-18-group-0-inline-3` |
 | 3 | `source-sheet-3-v1.png` | 2320 × 3408 | `4f83f9b64fd482f9f43c013d7719aed5b3f1da861f2cd0c9e738b0a781d1d00d` | `edition-block-3-group-0-inline-1`; `edition-block-9-group-0-inline-5` |
 
 Each raster was freshly rendered from the pinned PDF and compared
