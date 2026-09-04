@@ -552,9 +552,8 @@ export function applySupplementalColorizedEquations(
       ],
       pedagogicalNote:
         "Unlike a conventional crank which gives exactly 1 revolution per cycle, Watt's fixed planet gear imparts an extra full revolution during its orbit, doubling output shaft speed and halving required flywheel inertia.",
-      claimRef: 2,
       historicalSignificance:
-        "Claim 2 of GB 1306 protected this 2:1 epicyclic speed doubling, which proved crucial for powering cotton spinning mills and rolling mills across Britain.",
+        "This 2:1 epicyclic speed doubling proved crucial for powering cotton spinning mills and rolling mills across Britain.",
     },
     {
       id: "watt-instantaneous-torque",
@@ -632,9 +631,8 @@ export function applySupplementalColorizedEquations(
       ],
       pedagogicalNote:
         "Because the planet gear center orbits at radius $2 r_s$ while dividing the lever arm across the gear mesh, the resulting mean torque is identical to a crank of radius $r_s$, but delivered at twice the rotational velocity.",
-      claimRef: 1,
       historicalSignificance:
-        "Claim 1 of GB 1306 established the first commercially practical continuous rotary drive for industrial steam power.",
+        "The rotary-drive arrangement established a commercially practical continuous drive for industrial steam power.",
     },
   ];
 

@@ -52,6 +52,7 @@ struct ArchivalPublicationSummary: Codable, Hashable {
 
     var isReconstructionQuarantined: Bool {
         reasonCode == "FABRICATION_OR_RECONSTRUCTION_QUARANTINE"
+            || reasonCode == "AUDIT_RECONSTRUCTION_QUARANTINE"
     }
 }
 

@@ -10,6 +10,9 @@ type ExportedPatent = Record<string, any> & { id: string };
 const KWOLEK_ID = "us-3671542-kwolek-kevlar";
 const isSourceBoundPDFOnly = (record: ExportedPatent): boolean =>
   record.sourceVisualization?.kind === "source-bound-pdf-only";
+const isReconstructionQuarantined = (record: ExportedPatent): boolean =>
+  record.archivalPublication?.reasonCode === "FABRICATION_OR_RECONSTRUCTION_QUARANTINE" ||
+  record.archivalPublication?.reasonCode === "AUDIT_RECONSTRUCTION_QUARANTINE";
 const sha256 = async (file: Bun.BunFile): Promise<string> =>
   createHash("sha256")
     .update(new Uint8Array(await file.arrayBuffer()))
@@ -575,8 +578,7 @@ for (const patent of allPatents) {
     record.originalPdfURL === `https://classic-patents.com${patent.originalPdfUrl}`,
     `${patent.id}: PDF URL is not the canonical first-party URL`,
   );
-  const reconstructionQuarantined =
-    record.archivalPublication?.reasonCode === "FABRICATION_OR_RECONSTRUCTION_QUARANTINE";
+  const reconstructionQuarantined = isReconstructionQuarantined(record);
   assert(
     reconstructionQuarantined ||
       /^[0-9a-f]{64}$/i.test(
@@ -818,8 +820,7 @@ for (const record of records) {
       sourceTextPath.endsWith(".txt") &&
       record.bundledAssets.includes(sourceTextPath);
     assert(
-      hasCompleteBundledSourceReader ||
-        record.archivalPublication?.reasonCode === "FABRICATION_OR_RECONSTRUCTION_QUARANTINE",
+      hasCompleteBundledSourceReader || isReconstructionQuarantined(record),
       `${record.id}: record without an archival edition has neither a complete bundled source reader nor an explicit reconstruction quarantine`,
     );
     if (typeof sourceTextPath === "string" && manifestSet.has(sourceTextPath)) {

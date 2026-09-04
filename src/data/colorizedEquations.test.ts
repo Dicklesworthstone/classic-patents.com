@@ -54,6 +54,17 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
     expect(totalVariables).toBeGreaterThanOrEqual(500);
   });
 
+  test("links equations only to claims present in the canonical record", () => {
+    for (const patent of allPatents) {
+      const claimNumbers = new Set(patent.claims.map((claim) => claim.number));
+      for (const equation of ALL_COLORIZED_EQUATIONS[patent.id] ?? []) {
+        if (equation.claimRef !== undefined) {
+          expect(claimNumbers.has(equation.claimRef)).toBe(true);
+        }
+      }
+    }
+  });
+
   test("keeps Ericsson's public cards within the printed source geometry and shaft relation", () => {
     const cards = ALL_COLORIZED_EQUATIONS["us-588-ericsson-propeller"];
     expect(cards.map((card) => card.id)).toEqual([
