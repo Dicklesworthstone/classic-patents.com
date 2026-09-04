@@ -108,8 +108,8 @@ describe("archival publication boundary", () => {
       whitneyCottonGinPatent.archivalEdition,
     );
 
-    const heldPatent = allPatents.find((patent) => patent.id === "us-542846-diesel-engine");
-    if (!heldPatent) throw new Error("Diesel engine patent not found");
+    const heldPatent = allPatents.find((patent) => patent.id === "us-613809-tesla-teleautomaton");
+    if (!heldPatent) throw new Error("Tesla teleautomaton patent not found");
     expect(archivalEditionForPublication(heldPatent)).toBeUndefined();
 
     const unmappedPatent: Patent = {
@@ -172,8 +172,8 @@ describe("archival publication boundary", () => {
   );
 
   test("keeps existing held editions readable without accepting audit state as a client prop", () => {
-    const heldPatent = allPatents.find((patent) => patent.id === "us-542846-diesel-engine");
-    if (!heldPatent) throw new Error("Diesel engine patent not found");
+    const heldPatent = allPatents.find((patent) => patent.id === "us-613809-tesla-teleautomaton");
+    if (!heldPatent) throw new Error("Tesla teleautomaton patent not found");
     const heldDecision = evaluateArchivalPublicationState(heldPatent);
     const heldProjection = patentForSourceReader(heldPatent);
     expect(heldDecision.isPublished).toBe(false);

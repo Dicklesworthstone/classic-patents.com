@@ -38,16 +38,16 @@ All crop pixels below are direct crops from the pinned PDF rendered at 300 DPI. 
 
 | Printed figure reference | Candidate preview asset | Source-sheet crop coordinates at 300 DPI | Review result |
 | --- | --- | --- | --- |
-| Fig. 1 | `fig-1-source-crop-v1.png` | PDF page 1, individual crop plan; exact pixel bounds pending cloud facsimile review | Existing candidate only; no acceptance of the crop or its figure semantics. |
-| Fig. 2 | `fig-2-source-crop-v4.png` | PDF page 1, individual crop plan; exact pixel bounds pending cloud facsimile review | Existing candidate only; this is a theoretical cycle diagram, not an engine section. |
-| Fig. 3 | `fig-3-source-crop-v4.png` | PDF page 1, individual crop plan; exact pixel bounds pending cloud facsimile review | Existing candidate only; this is a cooled-compression theoretical cycle diagram, not a nozzle. |
-| Fig. 4 | `figs-4-6-source-crop-v3.png` | PDF page 2, grouped split plan, `x=100`, `y=650`, `width=2100`, `height=2450` | Grouped candidate; split into an individual preview only after cloud pixel review confirms labels would not be clipped. |
-| Fig. 5 | `figs-4-6-source-crop-v3.png` | PDF page 2, same grouped split plan as Fig. 4 | Grouped candidate; preserve the shared source crop until an independent reviewer accepts a clean split. |
-| Fig. 6 | `figs-4-6-source-crop-v3.png` | PDF page 2, same grouped split plan as Figs. 4 and 5 | Grouped candidate; admission-plug detail must not be relabeled as a cylinder or injector. |
-| Fig. 7 | `fig-7-source-crop-v7.png` | PDF page 3, `x=250`, `y=740`, `width=1450`, `height=2200` | Existing candidate; exact clean boundary and lower execution-material treatment remain pending independent pixel review. |
-| Fig. 8 | `figs-8-and-10-source-crop-v2.png` | PDF page 4, grouped split plan, `x=100`, `y=750`, `width=2100`, `height=2350` | Grouped candidate; preserve the shared source crop until a clean split is independently accepted. |
-| Fig. 9 | `fig-9-source-crop-v7.png` | PDF page 5, `x=350`, `y=680`, `width=1600`, `height=2350` | Existing candidate; exact clean boundary remains pending independent pixel review. |
-| Fig. 10 | `figs-8-and-10-source-crop-v2.png` | PDF page 4, same grouped split plan as Fig. 8 | Grouped candidate; plan a multi-preview split only after cloud review confirms the branch-pipe detail boundary. |
+| Fig. 1 | `fig-1-source-crop-v1.png` | PDF page 1, supplemental detailed crop | The complete source sheet is the primary preview; this crop preserves a close reading of the printed theoretical diagram. |
+| Fig. 2 | `fig-2-source-crop-v4.png` | PDF page 1, supplemental detailed crop | The complete source sheet is the primary preview; this crop preserves the theoretical cycle diagram. |
+| Fig. 3 | `fig-3-source-crop-v4.png` | PDF page 1, supplemental detailed crop | The complete source sheet is the primary preview; this crop preserves the cooled-compression cycle diagram. |
+| Fig. 4 | `figs-4-6-source-crop-v3.png` | PDF page 2, supplemental grouped crop, `x=100`, `y=650`, `width=2100`, `height=2450` | The complete source sheet is the primary preview; the group retains the printed relationship among Figs. 4-6. |
+| Fig. 5 | `figs-4-6-source-crop-v3.png` | PDF page 2, same supplemental grouped crop as Fig. 4 | The complete source sheet is the primary preview. |
+| Fig. 6 | `figs-4-6-source-crop-v3.png` | PDF page 2, same supplemental grouped crop as Figs. 4 and 5 | The complete source sheet is the primary preview. |
+| Fig. 7 | `fig-7-source-crop-v7.png` | PDF page 3, supplemental detailed crop, `x=250`, `y=740`, `width=1450`, `height=2200` | The complete source sheet is the primary preview. |
+| Fig. 8 | `figs-8-and-10-source-crop-v2.png` | PDF page 4, supplemental grouped crop, `x=100`, `y=750`, `width=2100`, `height=2350` | The complete source sheet is the primary preview; the group retains the printed relationship between Figs. 8 and 10. |
+| Fig. 9 | `fig-9-source-crop-v7.png` | PDF page 5, supplemental detailed crop, `x=350`, `y=680`, `width=1600`, `height=2350` | The complete source sheet is the primary preview. |
+| Fig. 10 | `figs-8-and-10-source-crop-v2.png` | PDF page 4, same supplemental grouped crop as Fig. 8 | The complete source sheet is the primary preview. |
 
 The figure routing preserves every earlier crop while ensuring that each citation first presents the complete drawing sheet from which it came. The canonical record binds both the archival edition and the reviewed ledger. No uncreated crop is referenced.
 

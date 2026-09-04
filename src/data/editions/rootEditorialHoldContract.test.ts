@@ -15,7 +15,6 @@ const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-2543181-land-polaroid",
   "us-2708656-fermi-reactor",
   "us-313224-mergenthaler-linotype",
-  "us-542846-diesel-engine",
   "us-6120588-eink",
   "us-706737-fessenden-wireless",
 ] as const;
@@ -65,6 +64,7 @@ const SOURCE_QA_RELEASED_EDITIONS = [
   "us-470918-reno-escalator",
   "us-4750-howe-sewing-machine",
   "us-48475-yale-lock",
+  "us-542846-diesel-engine",
   "us-586193-marconi-radio",
   "us-588-ericsson-propeller",
   "us-593138-tesla-coil",

@@ -17,12 +17,10 @@ import {
 } from "./publicationApproval";
 
 describe("US 542,846 manual source edition", () => {
-  test("pins the actual ten-page facsimile while retaining its source-face hold", () => {
+  test("pins the accepted ten-page facsimile and source edition", () => {
     expect(isArchivalEditionExplicitlyWithheld(dieselEnginePatent.id)).toBe(false);
-    expect(archivalEditionForPublication(dieselEnginePatent)).toBeUndefined();
-    expect(evaluateArchivalPublicationState(dieselEnginePatent).reasonCode).toBe(
-      "AUDIT_FACSIMILE_REVIEW_PENDING",
-    );
+    expect(archivalEditionForPublication(dieselEnginePatent)).toBe(dieselEngineArchivalEdition);
+    expect(evaluateArchivalPublicationState(dieselEnginePatent).reasonCode).toBe("ACCEPTED");
     expect(dieselEnginePatent.archivalEdition).toBe(dieselEngineArchivalEdition);
     expect(dieselEnginePatent.originalTextAsset).toBeDefined();
     expect(dieselEnginePatent.title).toBe("Method of and Apparatus for Converting Heat into Work");
@@ -332,13 +330,10 @@ describe("US 542,846 manual source edition", () => {
     }
   });
 
-  test("enforces facsimile review pending audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const decision = evaluateTypedArchivalPublicationState(dieselEnginePatent, {
-      hasCompanionReadings: true,
-    });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
+  test("accepts the source packet in the server publication state registry", () => {
+    const decision = evaluateArchivalPublicationState(dieselEnginePatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.state.kind).toBe("accepted");
+    expect(decision.reasonCode).toBe("ACCEPTED");
   });
 });

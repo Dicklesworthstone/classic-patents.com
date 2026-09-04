@@ -73,6 +73,7 @@ const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
   "us-361931-daimler-engine",
   "us-36836-gatling-gun",
   "us-381968-tesla-motor",
+  "us-542846-diesel-engine",
   "us-588-ericsson-propeller",
   "us-586193-marconi-radio",
   "us-593138-tesla-coil",

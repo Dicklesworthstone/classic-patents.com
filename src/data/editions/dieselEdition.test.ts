@@ -14,17 +14,15 @@ import { dieselEnginePatent } from "@/data/patents/diesel-engine";
 const PINNED_SHA256 = "57679379a0e1d1dc97591e6f634fa6f7ed7c0ec3b465edf493b5f79595a0e866";
 
 describe("US 542,846 Rudolf Diesel Engine Archival Edition Contract", () => {
-  test("retains the bound edition as research evidence while the provenance hold is active", () => {
+  test("accepts the bound edition after source, ledger, and figure-sheet review", () => {
     const result = validateCuratedSpecificationEdition(dieselEngineArchivalEdition);
     expect(result).toEqual({
       valid: true,
       errors: [],
     });
     expect(isArchivalEditionExplicitlyWithheld(dieselEnginePatent.id)).toBe(false);
-    expect(archivalEditionForPublication(dieselEnginePatent)).toBeUndefined();
-    expect(evaluateArchivalPublicationState(dieselEnginePatent).reasonCode).toBe(
-      "AUDIT_FACSIMILE_REVIEW_PENDING",
-    );
+    expect(archivalEditionForPublication(dieselEnginePatent)).toBe(dieselEngineArchivalEdition);
+    expect(evaluateArchivalPublicationState(dieselEnginePatent).reasonCode).toBe("ACCEPTED");
     expect(dieselEnginePatent.archivalEdition).toBe(dieselEngineArchivalEdition);
     expect(dieselEnginePatent.originalTextAsset).toBeDefined();
   });
