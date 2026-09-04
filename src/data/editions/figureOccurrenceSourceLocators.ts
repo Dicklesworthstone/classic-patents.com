@@ -4290,6 +4290,52 @@ function rillieuxEvaporatorSourceSheetLocator(
   };
 }
 
+const FESSENDEN_WIRELESS_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const FESSENDEN_WIRELESS_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-706737-fessenden-wireless.md#independent-source-sheet-review-2026-09-04";
+const FESSENDEN_WIRELESS_SOURCE_SHEET_ASSET =
+  "/patents/figures/us-706737-fessenden-wireless/source-sheet-1-v1.png";
+const FESSENDEN_WIRELESS_SOURCE_SHEET_OCCURRENCES = [
+  "edition-block-1-group-0-inline-1",
+  "edition-block-1-group-0-inline-3",
+  "edition-block-1-group-0-inline-5",
+  "edition-block-1-group-0-inline-7",
+  "edition-block-1-group-0-inline-9",
+  "edition-block-4-group-0-inline-1",
+  "edition-block-5-group-0-inline-1",
+  "edition-block-6-group-0-inline-1",
+  "edition-block-10-group-0-inline-1",
+  "edition-block-10-group-0-inline-3",
+  "edition-block-11-group-0-inline-1",
+  "edition-block-12-group-0-inline-1",
+  "edition-block-23-group-0-inline-1",
+] as const satisfies readonly FigureOccurrenceKey[];
+
+function fessendenWirelessSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: FESSENDEN_WIRELESS_SOURCE_SHEET_RASTER.width,
+    height: FESSENDEN_WIRELESS_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: FESSENDEN_WIRELESS_SOURCE_SHEET_ASSET,
+    sourcePdfPage: 1,
+    sourceRaster: FESSENDEN_WIRELESS_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      FESSENDEN_WIRELESS_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: FESSENDEN_WIRELESS_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
 const WOZNIAK_APPLE_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
 const WOZNIAK_APPLE_EVIDENCE_REFERENCE =
   "docs/provenance/us-4136359-wozniak-apple.md#editorial-boundaries";
@@ -6540,6 +6586,9 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
   "us-3237-rillieux-evaporator": RILLIEUX_EVAPORATOR_SOURCE_SHEET_OCCURRENCES.map(
     ([occurrenceKey, sourcePdfPage]) =>
       rillieuxEvaporatorSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
+  "us-706737-fessenden-wireless": FESSENDEN_WIRELESS_SOURCE_SHEET_OCCURRENCES.map(
+    fessendenWirelessSourceSheetLocator,
   ),
   "us-4136359-wozniak-apple": [
     // Fig. 1 (Page 2)

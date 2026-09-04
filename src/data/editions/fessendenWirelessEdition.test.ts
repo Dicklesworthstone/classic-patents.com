@@ -11,6 +11,12 @@ import {
 
 const expectedFigureCrops = [
   {
+    src: "/patents/figures/us-706737-fessenden-wireless/source-sheet-1-v1.png",
+    width: 2320,
+    height: 3408,
+    sha256: "80ac578d0928cde8a61c09923e343b1d4e1bba5a71e9e3314a33d7ba5f623ef6",
+  },
+  {
     src: "/patents/figures/us-706737-fessenden-wireless/fig-1-source-crop-v4.png",
     width: 1750,
     height: 405,
@@ -106,7 +112,7 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     }
   });
 
-  test("attaches both Fig. 2 source views to every authored Fig. 2 occurrence", () => {
+  test("uses the complete pinned drawing sheet before supplemental Fig. 2 views", () => {
     const figureRefs = fessendenWirelessArchivalEdition.blocks.flatMap((block) =>
       block.kind === "paragraph"
         ? block.inlines.filter(
@@ -118,10 +124,14 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     const fig2Refs = figureRefs.filter((reference) => reference.text === "Fig. 2");
     expect(fig2Refs).toHaveLength(2);
     const expected = new Set([
+      "/patents/figures/us-706737-fessenden-wireless/source-sheet-1-v1.png",
       "/patents/figures/us-706737-fessenden-wireless/fig-2-source-crop-v10.png",
       "/patents/figures/us-706737-fessenden-wireless/fig-2-source-crop-v10-detail-v2.png",
     ]);
     for (const reference of fig2Refs) {
+      expect(reference.figurePreviews?.[0]?.src).toBe(
+        "/patents/figures/us-706737-fessenden-wireless/source-sheet-1-v1.png",
+      );
       expect(new Set((reference.figurePreviews ?? []).map((preview) => preview.src))).toEqual(
         expected,
       );
@@ -155,6 +165,9 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     for (const reference of figureRefs) {
       expect(reference.label?.length).toBeGreaterThan(20);
       expect(reference.figurePreviews?.length).toBeGreaterThan(0);
+      expect(reference.figurePreviews?.[0]?.src).toBe(
+        "/patents/figures/us-706737-fessenden-wireless/source-sheet-1-v1.png",
+      );
       for (const preview of reference.figurePreviews ?? []) {
         expect(existsSync(resolve(root, "public", preview.src.slice(1)))).toBe(true);
         expect(preview.width).toBeGreaterThan(0);

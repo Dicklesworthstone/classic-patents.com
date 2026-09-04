@@ -248,6 +248,7 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 2. Have the actual accepted step supply stored energy and input/dissipation ports when the model defines them; consume that same receipt across faces.
 3. Measure r=H[n+1]-H[n]-integral(Pin-Pdiss)dt in joules; display a documented tolerance and, if useful, r/dt separately in watts. Handle static/steady states explicitly.
 4. Replace default invented values and all-zero refusal masquerading as conservation with a typed unavailable reason. Remove unconditional green certification; preserve legitimate instruments.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -255,6 +256,7 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 - An intentionally unbalanced analytic fixture fails while lossless, dissipative, and driven fixtures pass appropriate residual bounds.
 - Unit tests pin SI dimensions, varying dt, invalid inputs, refusal/last-valid behavior; browser checks compare 2D/3D/badge/strip tick and provenance.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.3` — Derive each displayed sensitivity from the current admitted model
 
@@ -268,6 +270,7 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 2. Bind controls, units, output identity and admissible domain to the same step used by the instrument.
 3. Use the actual current resistance/viscosity/geometry; discrete source topology gets a finite change with units rather than a fabricated derivative.
 4. Keep AD as an implementation option, not a label until an AD path actually runs.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -275,6 +278,7 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 - Compare each continuous branch against scale-aware central differences away from discontinuities; one-sided checks or explicit refusal at boundaries.
 - Cross-face browser check changes a nondefault control and verifies derivative, output and explanatory units refer to the same admitted model.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-fov.1` — Keep full archival records out of search and navigation client bundles
 
@@ -288,6 +292,7 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 2. Generate a compact typed catalogue/search projection with exactly the searchable/filterable/navigation fields needed; keep full editions on server/per-record boundaries.
 3. Preserve query semantics, keyboard results, era/category filtering, chronology, lineage, all 103 records, and static routes.
 4. Record pre/post gzip/brotli, parse time and build-reported route sizes on the same source snapshot. Restore the 198 kB claim only if its measurement definition is met; otherwise document a precise tested budget.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -295,12 +300,13 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 - All search/filter/navigation contract tests pass and browser search opens Wright, a British record and a robotics record at 320 px.
 - Fresh production size evidence demonstrates reduction without dropping catalogue content or moving it into an equally eager request.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Set route budgets from measured before/after artifacts; target the documented 198 kB under an explicitly stated compression/route definition rather than silently changing its meaning. Preserve query result equivalence.
 
 #### `classic-patentscom-zqi.1` — Establish a repeatable full-suite run without module-mock leakage
 
 **Current state / why:** Initial combined run: 2809 pass/9 fail. Chips 8/8, audio 3/3 and inventory 4/4 pass alone. A peer removed Whitney visual module mocks during the audit. Verify the repaired state before adding code; do not duplicate a peer fix.
 
-**Goals:** V23. **Files/seams:** `src/components/patents/visuals/three/whitneyCottonGinVisual.test.ts`, `src/components/patents/visuals/StudioKernelChips.test.tsx`, `src/hooks/usePatentAudio.test.tsx`, `src/data/editions/archivalAuditInventory.test.ts`, `package.json`.
+**Goals:** V23. **Files/seams:** `src/components/patents/visuals/three/whitneyCottonGinVisual.test.ts`, `src/components/patents/visuals/three/StudioKernelChips.test.tsx`, `src/components/patents/visuals/three/usePatentAudio.test.tsx`, `src/data/editions/archivalAuditInventory.test.ts`, `package.json`.
 
 **Implementation:**
 
@@ -308,6 +314,7 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 2. Use isolated subprocess boundaries or injectable dependencies for necessary framework substitutes; keep real kernel and catalogue assertions.
 3. Inventory tests which remove temporary fixtures and supply a repository-policy-compliant way to execute required checks without deleting files.
 4. Avoid weakening counts/assertions to accommodate changing source during a run; capture the same source identity.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -328,6 +335,7 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 2. Use stable semantic face identifiers and explicit source-bounded capability metadata, not display-title selectors.
 3. For an unavailable model, verify the explanatory state, complete text/PDF access and absence of unsupported control results.
 4. Report failed actions separately from evidence-capture events; preserve traces, screenshots and diagnostics.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -348,6 +356,7 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 2. Preserve existing USDZ and source evidence; use byte-preserving manifest-only mode when geometry is unchanged.
 3. Update exported content, equations, publication status and bundled assets together; keep first-party PDF download/hash boundary and offline read behavior.
 4. Run existing native parity and DSR checks against that exact export and retain evidence.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -355,6 +364,7 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 - Offline catalogue/search/edition/figure reads work; PDF network access remains explicit and digest-checked.
 - Current Catalyst tests and iPhone UI journeys pass; real hardware limitations are explicitly distinguished from simulator proof.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- An export taken while source changes is invalid; detect drift during export and preserve both old and candidate artifacts for diagnosis.
 
 #### `classic-patentscom-xpi.1` — Replace local OCR entry point with bounded cloud Luna execution
 
@@ -368,6 +378,7 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 2. Submit explicit PDF digest and bounded page ranges to cloud Luna workers with limited concurrency, durable checkpoints and resumable job identity.
 3. Preserve all existing PDFs/drafts; keep machine output outside reviewed publication bindings.
 4. If cloud transport is unavailable, return a specific blocker and leave existing partial work intact.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -387,6 +398,7 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 1. Reject directory existence before scanning file contents.
 2. Exercise the checker using an injected filesystem view or safe fixture path, never by creating src/pages in this repository.
 3. Preserve existing error aggregation and normal App Router metadata/static-route checks.
+4. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -407,6 +419,7 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 2. Generate factual catalogue/acceptance/runtime counts from typed inventories on one snapshot.
 3. Correct stale IDs and obsolete physics descriptions using current provenance; do not reintroduce rejected Kwolek ballistics or unsupported Spencer tube performance.
 4. Keep replay, stronger field ownership and coupled labs as clearly tracked goals; update payload claims only with scoped measurements.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -418,6 +431,7 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 #### `classic-patentscom-xpi.7` — Restore a reproducible br and bv workflow over the complete issue history
 
 **Current state / why:** Installed br 0.5.6 fails runtime-schema repair and JSONL import. SQLite integrity is okay but DB has 140 rows vs 144 JSONL records, making default bv stale. Scratch official br 0.5.10 --no-db succeeds and is used for this recovery plan.
+The new br export round trip preserved all original IDs, titles, descriptions, statuses, priorities, acceptance/design/notes and dependency edges. It normalized optional defaults and timestamp fractional precision. bv --db .beads/issues.jsonl --no-cache reads the complete graph; default bv still risks stale SQLite.
 
 **Goals:** V28. **Files/seams:** `.beads/`, `AGENTS.md`.
 
@@ -427,6 +441,8 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 2. Use a supported verified br release through the project workflow, not direct JSONL/SQL mutation.
 3. Reconcile to a complete store without tombstoning/replacing unrelated records, then verify list/show/ready/update/deps/sync round trips.
 4. Make bv read that same current issue set and document version/mode until the installed binary is repaired.
+5. Use bv --db .beads/issues.jsonl --no-cache for graph validation until the installed DB workflow is repaired. Do not run the broken old br repair loop again or directly edit JSONL to suppress a tool error.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -447,6 +463,7 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 2. Derive cold/loading/WASM/fallback/refused/unavailable states from runtime receipts. A module loaded without stepping cannot promote the label; a stepped adjunct cannot promote unrelated host outputs.
 3. Permit one envelope to contain explicitly qualified outputs from different owners; forbid mixed ticks, stale incompatible states and borrowed digests.
 4. Record exact generic-crate export availability, then promote law ownership in the bounded family batches. Preserve good source topology where the source provides no quantitative law.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -454,6 +471,7 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 - Negative tests cover loaded-but-unstepped, failed-step, stale-tick, mixed-owner and forged-provenance outputs.
 - Browser unload/reload/WASM-disabled paths display truthful provenance and last valid state without destroying the reader or substituting another patent.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.7` — Complete claim-to-source-to-mechanism links without invented failure modes
 
@@ -467,6 +485,7 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 2. Map source clause/figure occurrence to a named model predicate or finite change, the emitted output, explanatory text and keyboard action.
 3. Provide explicit reveal-corresponding-source/explanation actions with stable IDs and URL/back behavior; keep synchronization user-controlled and reduced-motion safe.
 4. A prior-art inversion may illustrate only outcomes supported by the admitted model; distinguish an educational intervention from a historical assertion.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -474,6 +493,7 @@ Complexity is relative: S is a narrow change; M spans a few seams; L crosses run
 - Automated contract detects wrong claim IDs and stale block mappings; browser tests toggle representative probes and compare matching source/diagram/output on one tick.
 - No forced auto-scroll steals focus; all links and controls work in 320 px, keyboard-only, reduced-motion and unavailable-WebGL states.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 Additional prerequisites to companion proof: `classic-patentscom-2y5.6`.
 
@@ -489,6 +509,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.6`.
 2. Trace historical/legal assertions to primary or authoritative evidence and physical assertions to the exact admitted model and declared units/assumptions. Research current external sources only as needed with the prescribed HTTP user agent.
 3. Correct unsupported assertions while preserving explanatory depth; an honest empty patentWars is preferable to an invented fight.
 4. Cover accepted records as well as held ones; strict edition acceptance must not exempt editorial copy from review.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -496,6 +517,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.6`.
 - Equations, interpretations and model regimes agree; no later embodiment is attributed to the selected patent without explicit separation.
 - Per-record content regressions and browser rendering checks retain claim text, accessible mathematics and readable explanations.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Retain page/block/claim/figure locators for every reviewed correction. A transcript containing edition strings does not alone prove no omitted source passages; account for the full facsimile page map.
 
 #### `classic-patentscom-2y5.9` — Implement visitor control recording, checkpoints and deterministic replay
 
@@ -509,6 +531,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.6`.
 2. Implement deterministic checkpoint/restore and replay from the same accepted kernel path; reject incompatible model versions instead of silently resuming.
 3. Add accessible record, pause, rewind and scrub controls with explanatory Wright and Lamarr examples; examples are authored teaching sequences, not historical flight records.
 4. Compute Blake3 over canonical accepted state where supported; retain explicit host digest type elsewhere. Define float serialization/quantization policy and do not promise cross-platform bit equality without evidence.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -516,6 +539,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.6`.
 - Changed seed/model/artifact invalidates comparison; refusal resumes from the last legal checkpoint without inventing state.
 - Bounded memory, long-pause/catch-up and route teardown tests pass; keyboard and 320 px replay operate without loss of normal controls.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 Additional prerequisites to companion proof: `classic-patentscom-2y5.12`.
 
@@ -531,6 +555,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.12`.
 2. Use versioned bounded buffers with ownership/lease semantics, tick and shape metadata, and bounded backpressure/catch-up.
 3. Drain each accepted field/pose buffer once per tick into renderer resources; handle WASM memory growth, detached buffers, context loss and worker failure.
 4. Describe actual compatibility mode in concise product language; do not require isolation to read or operate the exhibit. Preserve legacy files unless separately authorized to remove them.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -538,6 +563,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.12`.
 - No stale view survives memory growth; buffer counts plateau under sustained stepping; transfers cannot replay a released lease.
 - Worker failure shows last valid pose and an honest fallback/refusal while text, controls and route navigation remain usable.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.13` — Drive flagship scalar and vector displays from actual model samples
 
@@ -551,6 +577,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.12`.
 2. Compose generic fs-airflow/fs-flux/fs-conduction/fs-lattice or the appropriate existing owner; inspect available exports before adding narrow browser exports.
 3. Label the domain and declared material/boundary inputs; do not infer a spatial flux from a lumped reactor or radiative power equation without an additional explicit model.
 4. Render the same buffer through 2D and 3D; retain topology and explanatory views if the stronger field solve remains blocked. Do not call steam flow in a separator a justified de Laval turbine model.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -558,6 +585,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.12`.
 - Grid/buffer size, finite values, integral/conservation checks and boundary conditions pass against analytic cases.
 - Changing a physical input changes the sampled field and both renderers consistently; context-loss, reduced-motion and transfer-mode browser paths pass.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 Additional prerequisites to companion proof: `classic-patentscom-2y5.20`.
 
@@ -565,7 +593,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.20`.
 
 **Current state / why:** Existing Web Audio tones and mute cleanup are real. The deep roadmap additionally promises procedural waveform streaming; unused popcorn randomness is not a live bug. The work must start by tracing active call sites.
 
-**Goals:** V17, V18. **Files/seams:** `src/utils/soundEngine.ts`, `src/hooks/usePatentAudio.ts`, `src/components/layout/AudioCleanupProvider.tsx`, `src/components/patents/visuals/`.
+**Goals:** V17, V18. **Files/seams:** `src/utils/soundEngine.ts`, `src/components/patents/visuals/three/usePatentAudio.ts`, `src/components/layout/AudioCleanupProvider.tsx`, `src/components/patents/visuals/`.
 
 **Implementation:**
 
@@ -573,6 +601,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.20`.
 2. Where a signal reconstruction is admitted, stream deterministic samples with bounded buffering; use seeded event generation for stochastic illustrative models.
 3. Keep default mute, remute on mount, user-gesture startup, immediate stop on mute/hide/unmount and stale-promise protection.
 4. Do not add forbidden historical carbon/magnetron/propeller parameters just because an old roadmap requested a sound; qualify modern sonification explicitly.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -580,6 +609,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.20`.
 - Changing an admitted input changes the expected waveform; unsupported inputs produce no fabricated acoustic claim.
 - Real browser mute, route switch, suspended/resumed context and reduced-motion/no-audio fallback tests show no lingering sound or node accumulation.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.17` — Build two bounded coupled teaching laboratories with genuine shared port state
 
@@ -593,6 +623,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.20`.
 2. For mechanical and electrical pilot chains, solve coupled state/constraints and energy transfer with bounded steps and documented refusal.
 3. Provide an accessible lab UI that shows cause, propagated response and the evidence boundary; label the assembly as an educational composition when historically unproven.
 4. Run one shared replay clock; never combine independently timed HUD numbers and call that coupling.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -600,6 +631,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.20`.
 - Port units and signs validate; injected energy errors are detected; conservation/passivity checks use measured residuals.
 - Both pilot labs replay deterministically and work with keyboard/320 px/text-only access; missing source/model support stays an open blocker.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-fov.3` — Split selected visual and physics modules and prove bounded scene lifecycle
 
@@ -613,6 +645,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.20`.
 2. Lazy-load selected visual/kernel data at user-relevant boundaries without delaying source text or accessible controls unnecessarily.
 3. Measure canvas creation, disposal, listener/resource counts and camera preservation through control changes, face switching and repeated navigation.
 4. Keep existing static KaTeX choice unless measured LCP evidence justifies revisiting it; do not use pagination or reduced content as an unapproved shortcut.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -633,6 +666,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.20`.
 2. Add no-WebGL, rejected-WASM, reduced-motion, keyboard-only, asset timeout and context-loss cases across each distinct mechanism/runtime family.
 3. Audit actual semantic accessibility and accessible math output, not raw attribute counts; fix confirmed failures with retained before/after evidence.
 4. Keep real-device Safari and real-GPU acceptance linked to va0 rather than duplicating or falsely passing it with SwiftShader.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -640,6 +674,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.20`.
 - Representative keyboard/screen-reader/reduced-motion routes remain pedagogically useful when graphics fail.
 - Performance evidence states hardware/rendering mode; the real-device requirement remains separately visible until actually satisfied.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Performance acceptance uses a declared device/network/rendering matrix, cold/warm navigation and p50/p95 sampling. Proposed targets: source-page LCP <=2.5 s, interaction latency <=200 ms and layout shift <=0.1 on the agreed reference device; record any target revision with measured justification rather than laundering SwiftShader data.
 
 #### `classic-patentscom-zqi.7` — Gate local releases on complete tests and matching browser/native artifacts
 
@@ -653,6 +688,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.20`.
 2. Keep all-catalogue source-reader coverage and add representative interaction/refusal journeys covering distinct owner families and source-bounded records.
 3. Verify asset manifests and browser expectations come from the tested build. Validate native export parity when shipping native artifacts.
 4. Retain the exclusive prebuilt workflow and alias-after-verification order; rehearse locally without promotion. Do not add GitHub Actions or cloud builds contrary to project policy.
+5. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -660,6 +696,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.20`.
 - Stale source/assets, wrong model hash, incomplete build and failed browser refusal case block promotion.
 - A same-source local rehearsal succeeds with retained receipts; actual deployment remains a separately authorized action.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- The gate may be rehearsed and reviewed locally without deploying. Do not run the production entry point merely to test its locks or checks because successful execution promotes public aliases.
 
 #### `classic-patentscom-2y5.19` — Prove dimensions, admissibility, conditioning and conservation of admitted models
 
@@ -674,6 +711,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.20`.
 3. For continuous sensitivities, select perturbations by input/output scale and test conditioning; for constraints test rank/closure and singular configurations.
 4. For energetic systems validate discrete power balance/passivity, analytic solutions and timestep convergence; correct model/solver errors before loosening tolerances.
 5. Use metamorphic laws such as unit conversion, symmetry, scaling and zero-input limits; seeded fuzzing explores valid and invalid domains without requiring a historical number for every parameter.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -681,6 +719,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.20`.
 - Deliberate unit mismatch, energy injection, missing parameter, singularity and non-finite output are caught.
 - Intervals/uncertainty remain honest and readable; no undocumented Monte Carlo number or arbitrary precision is presented as historical truth.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-xpi.9` — Tie completion to fulfilled scope and a final integrated acceptance run
 
@@ -695,6 +734,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.20`.
 3. Produce the final integrated matrix from the same source: archive acceptance, claim/figure/reading parity, numerical/refusal checks, full tests/types/lint/build, browser access/performance and native parity.
 4. Document remaining external source/cloud/device blockers precisely. A release/epic cannot be called fully complete while mandatory evidence is still blocked.
 5. Build completion accounting independently now; its final companion acceptance waits for all other scoped proof tasks and the existing real-device va0 requirement. Epics organize work and do not count as prerequisite implementations.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -720,6 +760,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 3. Bind canonical controls to one stepped result and drain its relevant fields into 2D, 3D, schematic, badge, claim probes and audio. Adjunct demonstration samples cannot promote host physics.
 4. Where no quantitative law is supported, retain the source-topology exhibit and document what an explicit modern scenario would require. If stronger required modeling is blocked, leave that scope open with exact source/crate blockers rather than silently declaring it complete.
 5. Pin artifact digests, typed refusal, last legal pose, default/modern scenario boundaries and real ownership after load/step. No arithmetic duplication in presentation.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -727,6 +768,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 - Direct WASM execution agrees with the admitted host/reference model at default, boundary and nondefault controls within justified tolerances.
 - For every listed ID, browser control changes produce matching 2D/3D/schematic/badge outputs and provenance, including WASM-unavailable and refused cases.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.23` — Complete admitted generic runtime ownership: computing batch 1
 
@@ -749,6 +791,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 3. Bind canonical controls to one stepped result and drain its relevant fields into 2D, 3D, schematic, badge, claim probes and audio. Adjunct demonstration samples cannot promote host physics.
 4. Where no quantitative law is supported, retain the source-topology exhibit and document what an explicit modern scenario would require. If stronger required modeling is blocked, leave that scope open with exact source/crate blockers rather than silently declaring it complete.
 5. Pin artifact digests, typed refusal, last legal pose, default/modern scenario boundaries and real ownership after load/step. No arithmetic duplication in presentation.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -756,6 +799,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 - Direct WASM execution agrees with the admitted host/reference model at default, boundary and nondefault controls within justified tolerances.
 - For every listed ID, browser control changes produce matching 2D/3D/schematic/badge outputs and provenance, including WASM-unavailable and refused cases.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.25` — Complete admitted generic runtime ownership: computing batch 2
 
@@ -778,6 +822,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 3. Bind canonical controls to one stepped result and drain its relevant fields into 2D, 3D, schematic, badge, claim probes and audio. Adjunct demonstration samples cannot promote host physics.
 4. Where no quantitative law is supported, retain the source-topology exhibit and document what an explicit modern scenario would require. If stronger required modeling is blocked, leave that scope open with exact source/crate blockers rather than silently declaring it complete.
 5. Pin artifact digests, typed refusal, last legal pose, default/modern scenario boundaries and real ownership after load/step. No arithmetic duplication in presentation.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -785,6 +830,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 - Direct WASM execution agrees with the admitted host/reference model at default, boundary and nondefault controls within justified tolerances.
 - For every listed ID, browser control changes produce matching 2D/3D/schematic/badge outputs and provenance, including WASM-unavailable and refused cases.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.27` — Complete admitted generic runtime ownership: computing batch 3
 
@@ -807,6 +853,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 3. Bind canonical controls to one stepped result and drain its relevant fields into 2D, 3D, schematic, badge, claim probes and audio. Adjunct demonstration samples cannot promote host physics.
 4. Where no quantitative law is supported, retain the source-topology exhibit and document what an explicit modern scenario would require. If stronger required modeling is blocked, leave that scope open with exact source/crate blockers rather than silently declaring it complete.
 5. Pin artifact digests, typed refusal, last legal pose, default/modern scenario boundaries and real ownership after load/step. No arithmetic duplication in presentation.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -814,6 +861,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 - Direct WASM execution agrees with the admitted host/reference model at default, boundary and nondefault controls within justified tolerances.
 - For every listed ID, browser control changes produce matching 2D/3D/schematic/badge outputs and provenance, including WASM-unavailable and refused cases.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.29` — Complete admitted generic runtime ownership: computing batch 4
 
@@ -829,6 +877,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 3. Bind canonical controls to one stepped result and drain its relevant fields into 2D, 3D, schematic, badge, claim probes and audio. Adjunct demonstration samples cannot promote host physics.
 4. Where no quantitative law is supported, retain the source-topology exhibit and document what an explicit modern scenario would require. If stronger required modeling is blocked, leave that scope open with exact source/crate blockers rather than silently declaring it complete.
 5. Pin artifact digests, typed refusal, last legal pose, default/modern scenario boundaries and real ownership after load/step. No arithmetic duplication in presentation.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -836,6 +885,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 - Direct WASM execution agrees with the admitted host/reference model at default, boundary and nondefault controls within justified tolerances.
 - For every listed ID, browser control changes produce matching 2D/3D/schematic/badge outputs and provenance, including WASM-unavailable and refused cases.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.31` — Complete admitted generic runtime ownership: consumer batch 1
 
@@ -858,6 +908,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 3. Bind canonical controls to one stepped result and drain its relevant fields into 2D, 3D, schematic, badge, claim probes and audio. Adjunct demonstration samples cannot promote host physics.
 4. Where no quantitative law is supported, retain the source-topology exhibit and document what an explicit modern scenario would require. If stronger required modeling is blocked, leave that scope open with exact source/crate blockers rather than silently declaring it complete.
 5. Pin artifact digests, typed refusal, last legal pose, default/modern scenario boundaries and real ownership after load/step. No arithmetic duplication in presentation.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -865,6 +916,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 - Direct WASM execution agrees with the admitted host/reference model at default, boundary and nondefault controls within justified tolerances.
 - For every listed ID, browser control changes produce matching 2D/3D/schematic/badge outputs and provenance, including WASM-unavailable and refused cases.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.33` — Complete admitted generic runtime ownership: consumer batch 2
 
@@ -887,6 +939,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 3. Bind canonical controls to one stepped result and drain its relevant fields into 2D, 3D, schematic, badge, claim probes and audio. Adjunct demonstration samples cannot promote host physics.
 4. Where no quantitative law is supported, retain the source-topology exhibit and document what an explicit modern scenario would require. If stronger required modeling is blocked, leave that scope open with exact source/crate blockers rather than silently declaring it complete.
 5. Pin artifact digests, typed refusal, last legal pose, default/modern scenario boundaries and real ownership after load/step. No arithmetic duplication in presentation.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -894,6 +947,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 - Direct WASM execution agrees with the admitted host/reference model at default, boundary and nondefault controls within justified tolerances.
 - For every listed ID, browser control changes produce matching 2D/3D/schematic/badge outputs and provenance, including WASM-unavailable and refused cases.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.35` — Complete admitted generic runtime ownership: consumer batch 3
 
@@ -913,6 +967,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 3. Bind canonical controls to one stepped result and drain its relevant fields into 2D, 3D, schematic, badge, claim probes and audio. Adjunct demonstration samples cannot promote host physics.
 4. Where no quantitative law is supported, retain the source-topology exhibit and document what an explicit modern scenario would require. If stronger required modeling is blocked, leave that scope open with exact source/crate blockers rather than silently declaring it complete.
 5. Pin artifact digests, typed refusal, last legal pose, default/modern scenario boundaries and real ownership after load/step. No arithmetic duplication in presentation.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -920,6 +975,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 - Direct WASM execution agrees with the admitted host/reference model at default, boundary and nondefault controls within justified tolerances.
 - For every listed ID, browser control changes produce matching 2D/3D/schematic/badge outputs and provenance, including WASM-unavailable and refused cases.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.37` — Complete admitted generic runtime ownership: electricity batch 1
 
@@ -942,6 +998,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 3. Bind canonical controls to one stepped result and drain its relevant fields into 2D, 3D, schematic, badge, claim probes and audio. Adjunct demonstration samples cannot promote host physics.
 4. Where no quantitative law is supported, retain the source-topology exhibit and document what an explicit modern scenario would require. If stronger required modeling is blocked, leave that scope open with exact source/crate blockers rather than silently declaring it complete.
 5. Pin artifact digests, typed refusal, last legal pose, default/modern scenario boundaries and real ownership after load/step. No arithmetic duplication in presentation.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -949,6 +1006,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 - Direct WASM execution agrees with the admitted host/reference model at default, boundary and nondefault controls within justified tolerances.
 - For every listed ID, browser control changes produce matching 2D/3D/schematic/badge outputs and provenance, including WASM-unavailable and refused cases.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.39` — Complete admitted generic runtime ownership: electricity batch 2
 
@@ -964,6 +1022,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 3. Bind canonical controls to one stepped result and drain its relevant fields into 2D, 3D, schematic, badge, claim probes and audio. Adjunct demonstration samples cannot promote host physics.
 4. Where no quantitative law is supported, retain the source-topology exhibit and document what an explicit modern scenario would require. If stronger required modeling is blocked, leave that scope open with exact source/crate blockers rather than silently declaring it complete.
 5. Pin artifact digests, typed refusal, last legal pose, default/modern scenario boundaries and real ownership after load/step. No arithmetic duplication in presentation.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -971,6 +1030,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 - Direct WASM execution agrees with the admitted host/reference model at default, boundary and nondefault controls within justified tolerances.
 - For every listed ID, browser control changes produce matching 2D/3D/schematic/badge outputs and provenance, including WASM-unavailable and refused cases.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.41` — Complete admitted generic runtime ownership: materials batch 1
 
@@ -993,6 +1053,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 3. Bind canonical controls to one stepped result and drain its relevant fields into 2D, 3D, schematic, badge, claim probes and audio. Adjunct demonstration samples cannot promote host physics.
 4. Where no quantitative law is supported, retain the source-topology exhibit and document what an explicit modern scenario would require. If stronger required modeling is blocked, leave that scope open with exact source/crate blockers rather than silently declaring it complete.
 5. Pin artifact digests, typed refusal, last legal pose, default/modern scenario boundaries and real ownership after load/step. No arithmetic duplication in presentation.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -1000,6 +1061,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 - Direct WASM execution agrees with the admitted host/reference model at default, boundary and nondefault controls within justified tolerances.
 - For every listed ID, browser control changes produce matching 2D/3D/schematic/badge outputs and provenance, including WASM-unavailable and refused cases.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.43` — Complete admitted generic runtime ownership: materials batch 2
 
@@ -1022,6 +1084,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 3. Bind canonical controls to one stepped result and drain its relevant fields into 2D, 3D, schematic, badge, claim probes and audio. Adjunct demonstration samples cannot promote host physics.
 4. Where no quantitative law is supported, retain the source-topology exhibit and document what an explicit modern scenario would require. If stronger required modeling is blocked, leave that scope open with exact source/crate blockers rather than silently declaring it complete.
 5. Pin artifact digests, typed refusal, last legal pose, default/modern scenario boundaries and real ownership after load/step. No arithmetic duplication in presentation.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -1029,6 +1092,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 - Direct WASM execution agrees with the admitted host/reference model at default, boundary and nondefault controls within justified tolerances.
 - For every listed ID, browser control changes produce matching 2D/3D/schematic/badge outputs and provenance, including WASM-unavailable and refused cases.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.45` — Complete admitted generic runtime ownership: materials batch 3
 
@@ -1047,6 +1111,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 3. Bind canonical controls to one stepped result and drain its relevant fields into 2D, 3D, schematic, badge, claim probes and audio. Adjunct demonstration samples cannot promote host physics.
 4. Where no quantitative law is supported, retain the source-topology exhibit and document what an explicit modern scenario would require. If stronger required modeling is blocked, leave that scope open with exact source/crate blockers rather than silently declaring it complete.
 5. Pin artifact digests, typed refusal, last legal pose, default/modern scenario boundaries and real ownership after load/step. No arithmetic duplication in presentation.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -1054,6 +1119,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 - Direct WASM execution agrees with the admitted host/reference model at default, boundary and nondefault controls within justified tolerances.
 - For every listed ID, browser control changes produce matching 2D/3D/schematic/badge outputs and provenance, including WASM-unavailable and refused cases.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.47` — Complete admitted generic runtime ownership: optics batch 1
 
@@ -1071,6 +1137,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 3. Bind canonical controls to one stepped result and drain its relevant fields into 2D, 3D, schematic, badge, claim probes and audio. Adjunct demonstration samples cannot promote host physics.
 4. Where no quantitative law is supported, retain the source-topology exhibit and document what an explicit modern scenario would require. If stronger required modeling is blocked, leave that scope open with exact source/crate blockers rather than silently declaring it complete.
 5. Pin artifact digests, typed refusal, last legal pose, default/modern scenario boundaries and real ownership after load/step. No arithmetic duplication in presentation.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -1078,6 +1145,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 - Direct WASM execution agrees with the admitted host/reference model at default, boundary and nondefault controls within justified tolerances.
 - For every listed ID, browser control changes produce matching 2D/3D/schematic/badge outputs and provenance, including WASM-unavailable and refused cases.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.49` — Complete admitted generic runtime ownership: telecom batch 1
 
@@ -1100,6 +1168,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 3. Bind canonical controls to one stepped result and drain its relevant fields into 2D, 3D, schematic, badge, claim probes and audio. Adjunct demonstration samples cannot promote host physics.
 4. Where no quantitative law is supported, retain the source-topology exhibit and document what an explicit modern scenario would require. If stronger required modeling is blocked, leave that scope open with exact source/crate blockers rather than silently declaring it complete.
 5. Pin artifact digests, typed refusal, last legal pose, default/modern scenario boundaries and real ownership after load/step. No arithmetic duplication in presentation.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -1107,6 +1176,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 - Direct WASM execution agrees with the admitted host/reference model at default, boundary and nondefault controls within justified tolerances.
 - For every listed ID, browser control changes produce matching 2D/3D/schematic/badge outputs and provenance, including WASM-unavailable and refused cases.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 #### `classic-patentscom-2y5.51` — Complete admitted generic runtime ownership: telecom batch 2
 
@@ -1124,6 +1194,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 3. Bind canonical controls to one stepped result and drain its relevant fields into 2D, 3D, schematic, badge, claim probes and audio. Adjunct demonstration samples cannot promote host physics.
 4. Where no quantitative law is supported, retain the source-topology exhibit and document what an explicit modern scenario would require. If stronger required modeling is blocked, leave that scope open with exact source/crate blockers rather than silently declaring it complete.
 5. Pin artifact digests, typed refusal, last legal pose, default/modern scenario boundaries and real ownership after load/step. No arithmetic duplication in presentation.
+6. Before claiming the task, recheck current source and reservations for peer completion. Record remaining work precisely and reuse valid landed changes; do not recreate completed work from this dated plan.
 
 **Target and acceptance:**
 
@@ -1131,6 +1202,7 @@ Additional prerequisites to companion proof: `classic-patentscom-2y5.2`, `classi
 - Direct WASM execution agrees with the admitted host/reference model at default, boundary and nondefault controls within justified tolerances.
 - For every listed ID, browser control changes produce matching 2D/3D/schematic/badge outputs and provenance, including WASM-unavailable and refused cases.
 - Keep implementation completion distinct from companion acceptance; neither an unavailable external witness nor a changing peer snapshot is evidence of success.
+- Log model/artifact identity, actual control values, units, tick/dt, owner provenance, refusal and expected/actual outputs. Verify both a real stepped WASM path and the admitted fallback where those paths exist; structural/source-token assertions alone do not prove numerical correctness.
 
 <!-- REALITY_CHECK_REGISTER_END -->
 
@@ -1218,3 +1290,60 @@ Operational and scope pass: incorporated the verified br round-trip behavior and
 The three newly promoted edition suites passed **23 tests / zero failures**. Their later inventory rows all have `ACCEPTED` and zero findings. This validates the decision to re-scope their new restoration issues to verification of landed work; it does not replace the companion's independent full-facsimile review.
 
 Crump's actual deployed `fig-1-source-crop-v1.png` returned **HTTP 200 / image/png**. The failed harness URL is a local newer `source-sheet-1-v1.png` expectation. The reported failure is therefore deployment-expectation drift, not evidence that this particular deployed crop is broken.
+
+Refinement pass 4 also checked every concrete file reference. It corrected three misplaced audio/chip test paths in the plan and all four affected issue descriptions. These modules live under `visuals/three/`, not a separate hooks directory.
+
+### Refinement pass 5
+
+Convergence pass: reviewed every task and companion against V01–V28, scope, preservation, references, numerical/source evidence, failure modes, dependencies and external blockers. All 60 scopes have companions, all goals are represented, dependency endpoints resolve and the plan is acyclic. Found nothing further to change in the plan. Runtime completion remains future work; plan convergence does not imply the project is finished.
+
+## Final validation and implementation handoff
+
+All phases of the requested skill are complete: full documentation review, 28-goal checklist, existing-backlog comparison, source/AST/behavior investigation, granular bridge, initial beads, three in-place ambition rounds, regenerated beads, five refinement passes and graph validation. The fifth refinement found no further plan change. Phase 3b direct implementation is the alternative for projects without beads and does not apply here. The product work represented by the new backlog remains to be implemented and accepted.
+
+The final JSONL has **269 records**, including the original tombstone. All **144 original IDs**, substantive fields and dependency edges were preserved. There are **125 new issues**, with **168 new blocking edges** in addition to parent/child grouping. Actual dependency validation and bv's fully computed cycle analysis found **zero cycles**. Every implementation scope has a companion; every V01–V28 goal has coverage; all concrete file references were checked.
+
+`br ready --limit 0` reports **35 ready tasks**. bv reports 41 structurally actionable entries because its graph count includes the five organizational epics and the existing manually blocked real-device issue. Use br's readiness/status for claiming implementation work; do not treat that bv aggregate as 41 immediately executable tasks. The robot plan and triage both identify useful independent starts:
+
+- `classic-patentscom-2y5.1`: correct synthetic energy certification.
+- `classic-patentscom-2y5.3`: correct model-inconsistent sensitivities.
+- `classic-patentscom-2y5.5`: establish field-level runtime ownership evidence.
+- `classic-patentscom-zqi.3`: repair browser identity and source-bounded acceptance.
+- `classic-patentscom-fov.1`: remove complete archival records from initial client bundles.
+
+The first two directly repair misleading scientific readouts. The ownership contract unlocks the largest deeper integration workstream. Bundle and browser fixes can proceed without waiting for archival research.
+
+### Verification receipts
+
+| Check | Observed result | Limit of the result |
+|---|---|---|
+| Initial broad Bun run | 2,809 pass / 9 fail | Moving source; mocked chip/audio tests and archival inventory failed |
+| Isolated affected suites | Chips 8/8, audio 3/3, inventory 4/4 | Isolation alone did not prove suite health |
+| Later broad Bun run | 2,814 pass / 7 fail, 2,821 tests in 408 files | Remaining failures concern changing archive/coverage expectations |
+| Three newly promoted edition suites | 23 pass / 0 fail | Structural/source-contract proof, not a substitute for independent complete facsimile reading |
+| Initial data gate | Passed with archival warnings | An earlier source snapshot |
+| Later data gate | Failed; 85 accepted but expected gap list stale for Whitney | Current release readiness was not established |
+| TypeScript | Passed, including final independent run | Different time from the isolated build |
+| Biome | Initially 10 errors/3 warnings; later passes with 2 large-file warnings | Peer fixes changed the source during audit |
+| Isolated fresh Next build | Passed, 334 generated static pages | Own scratch copy; not a release of the later dirty checkout |
+| Build-reported first-load JS | Home 1.64 MB, detail 2.03 MB, timeline 1.70 MB | Not a measured physical-phone LCP/transfer result |
+| Production browser matrix | 141 passed actions; 4 failed actions plus 4 failure-evidence events | Wright/Tesla passed both widths; Kwolek selector and Crump manifest drift diagnosed |
+| Native full parity | Failed with 136 differences | Compared to source at that run, not the older successful native receipt |
+| Numeric counterexamples | Wright energy unchanged under real airspeed change; Edison derivative wrong at 200 Ω | These specific defects are directly reproduced |
+| br sync | `--no-db sync --flush-only` succeeded; no pending export errors | JSONL writes already persisted by br; installed old DB workflow remains broken |
+| br/bv and independent graph validation | 35 ready tasks; zero cycles; complete original history preserved | Graph correctness is not implementation completion |
+
+The broad test commands included all `src` and `ios` tests and the patent-E2E, deployment-verification and threejs-performance contract tests. They were not an assertion that every script test ran: `scripts/deployment-target.test.ts`, which deletes temporary fixture directories, was deliberately excluded under the no-deletion rule. No local OCR, deployment, unrelated code repair or destructive cleanup was performed.
+
+### Retained evidence
+
+The main evidence directory is `/Users/jemanuel/Library/Application Support/Codex/brain/classic-patents-reality-20260904/scratch/evidence/`. It contains the test, lint, type, build, verifier, native, numerical, AST, inventory, br and bv results, with a SHA-256 manifest. `plan-validation.json` beside it records the original-history and dependency checks; `br-actions.jsonl` records each tool mutation. The scratch directory also retains the verified br binary/checksum, full pre-mutation `.beads` backup, the isolated build, viewport screenshots and live-browser traces under `live-e2e/2026-09-04T21-33-34-610Z__22093/`.
+
+The task commands for this session use the verified scratch binary because the installed br is broken:
+
+```sh
+'/Users/jemanuel/Library/Application Support/Codex/brain/classic-patents-reality-20260904/scratch/br-0.5.10/br' --no-db ready --limit 0
+bv --db .beads/issues.jsonl --no-cache --robot-triage
+```
+
+The backed-up official br 0.5.10 release archive was checked against SHA-256 `face0ebc867f11cd531e9fbcb4eedcf210de6b061d114cad15f79dc46ce65c03`. The permanent tooling-repair issue is part of the plan; this audit does not silently change the user's global installation.

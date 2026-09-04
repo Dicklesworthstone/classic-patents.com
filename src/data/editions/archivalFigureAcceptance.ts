@@ -2166,4 +2166,18 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
       },
     },
   },
+  "us-706737-fessenden-wireless": {
+    sourcePdfSha256: "2098ec6d967d3ab7999da0fb96357328fa68bb8e7639c1863ac600547aff8887",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 13,
+    assets: {
+      "/patents/figures/us-706737-fessenden-wireless/source-sheet-1-v1.png": {
+        sha256: "80ac578d0928cde8a61c09923e343b1d4e1bba5a71e9e3314a33d7ba5f623ef6",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
 } as const satisfies Readonly<Record<string, ArchivalFigureAcceptanceAttestation>>;

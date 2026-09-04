@@ -113,3 +113,23 @@ The existing source-pixel candidates were inspected without local rasterization.
 ## Publication Approval & Verification
 
 The local PDF digest and seven-page structure are verified, and the candidate edition contains all 21 claim blocks and authored figure references. The publication state remains **candidate / independent acceptance withheld** pending Luna visual review of every page, exact claims parity against the facsimile, clean figure crops for Figures 1–5, and root acceptance. The receipt makes no claim for amplitude modulation, carbon-microphone speech transmission, liquid thermal reception, or later Fessenden broadcast history; the current source describes a fine-wire microphonic contact and relay in Figure 2.
+
+### Independent source-sheet review (2026-09-04)
+
+PDF page 1 was rendered directly from the pinned facsimile at 300 DPI (2320 ×
+3408 pixels) and visually compared against the printed sheet. It contains the
+complete printed set of Figures 1–5: the two apparatus diagrams, the
+sectional elevation and top plan of the conductor, and the continuous-wall
+conductor elevation. The resulting immutable full-sheet asset is
+`public/patents/figures/us-706737-fessenden-wireless/source-sheet-1-v1.png`
+with SHA-256
+`80ac578d0928cde8a61c09923e343b1d4e1bba5a71e9e3314a33d7ba5f623ef6`.
+
+All thirteen authored figure-reference occurrences now lead with that full
+sheet, whose source rectangle is the entire page (`0,0,2320,3408`). The prior
+versioned figure crops and their detail crops remain preserved as supplemental
+research assets; they were neither replaced nor deleted. This repairs the
+active citation path's incomplete-crop risk, but does not change the separate
+candidate hold: the continuous edition still requires independent review of
+the complete specification and claims before it can be accepted as an
+archival edition.

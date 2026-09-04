@@ -29,6 +29,10 @@ const _term = (termText: string, definition: string): CuratedSpecificationInline
 });
 
 const FIGURE_DIMENSIONS: Record<string, { width: number; height: number }> = {
+  "/patents/figures/us-706737-fessenden-wireless/source-sheet-1-v1.png": {
+    width: 2320,
+    height: 3408,
+  },
   "/patents/figures/us-706737-fessenden-wireless/fig-1-source-crop-v4.png": {
     width: 1750,
     height: 405,
@@ -59,9 +63,19 @@ const FIGURE_DIMENSIONS: Record<string, { width: number; height: number }> = {
   },
 };
 
+const SOURCE_SHEET_PATH = "/patents/figures/us-706737-fessenden-wireless/source-sheet-1-v1.png";
+
+const sourceSheetPreview = (altText: string) => ({
+  src: SOURCE_SHEET_PATH,
+  alt: `Pinned source drawing sheet containing Figures 1–5. ${altText}`,
+  width: FIGURE_DIMENSIONS[SOURCE_SHEET_PATH].width,
+  height: FIGURE_DIMENSIONS[SOURCE_SHEET_PATH].height,
+});
+
 const ref = (figureLabel: string, cropSrc: string, altText: string): CuratedSpecificationInline => {
   const dims = FIGURE_DIMENSIONS[cropSrc] ?? { width: 1200, height: 800 };
   const previews = [
+    sourceSheetPreview(altText),
     {
       src: cropSrc,
       alt: altText,
@@ -92,7 +106,7 @@ const ref = (figureLabel: string, cropSrc: string, altText: string): CuratedSpec
   return {
     kind: "reference",
     text: figureLabel,
-    href: cropSrc,
+    href: SOURCE_SHEET_PATH,
     referenceType: "figure",
     label: `${figureLabel}: ${altText}`,
     figurePreviews: previews,
@@ -106,28 +120,31 @@ const refGroup = (
 ): CuratedSpecificationInline => ({
   kind: "reference",
   text: figureLabel,
-  href: previews[0]?.src ?? "#",
   referenceType: "figure",
   label: `${figureLabel}: ${altText}`,
-  figurePreviews: previews.flatMap((preview) => {
-    const dims = FIGURE_DIMENSIONS[preview.src] ?? { width: 1200, height: 800 };
-    const authored = {
-      ...preview,
-      alt: `${preview.alt} ${altText}`,
-      width: dims.width,
-      height: dims.height,
-    };
-    if (!preview.src.endsWith("fig-3-source-crop-v4.png")) return [authored];
-    return [
-      authored,
-      {
-        src: "/patents/figures/us-706737-fessenden-wireless/fig-3-source-crop-v4-detail-v2.png",
-        alt: `Fig. 3 lower detail showing the cone, ground lead 8, and mast numeral 7 without neighboring signatures. ${altText}`,
-        width: 500,
-        height: 470,
-      },
-    ];
-  }),
+  href: SOURCE_SHEET_PATH,
+  figurePreviews: [
+    sourceSheetPreview(altText),
+    ...previews.flatMap((preview) => {
+      const dims = FIGURE_DIMENSIONS[preview.src] ?? { width: 1200, height: 800 };
+      const authored = {
+        ...preview,
+        alt: `${preview.alt} ${altText}`,
+        width: dims.width,
+        height: dims.height,
+      };
+      if (!preview.src.endsWith("fig-3-source-crop-v4.png")) return [authored];
+      return [
+        authored,
+        {
+          src: "/patents/figures/us-706737-fessenden-wireless/fig-3-source-crop-v4-detail-v2.png",
+          alt: `Fig. 3 lower detail showing the cone, ground lead 8, and mast numeral 7 without neighboring signatures. ${altText}`,
+          width: 500,
+          height: 470,
+        },
+      ];
+    }),
+  ],
 });
 
 const p = (...inlines: CuratedSpecificationInline[]) => ({
