@@ -1767,6 +1767,30 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
       },
     },
   },
+  "us-608969-parsons-turbine": {
+    sourcePdfSha256: "fafd0884e61225ee7f93d0a88c81229cbbb4984e48869c204af58cb6af64b991",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    acceptanceBasis: "direct-facsimile-crop-review",
+    acceptedOccurrenceCount: 7,
+    assets: {
+      "/patents/figures/us-608969-parsons-turbine/source-sheet-1-v1.png": {
+        sha256: "c62b45cc66223e233b986f2fde542eca3d5b221cde18d8376cb70138e2d6d491",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-608969-parsons-turbine/source-sheet-2-v1.png": {
+        sha256: "9f227e36650567fac56aa0f94f22674f5385b9658df3dbdca0d9cf6466d4878e",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-608969-parsons-turbine/source-sheet-3-v1.png": {
+        sha256: "d6a0d2cc7eae660c632063ed6b94d803c938fd922afb3c5cf6fc19424935eb98",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
   "us-6285999-pagerank": {
     sourcePdfSha256: "c2e024116b9411385aa9cb5d51d3eb34b99f59db190c2bb9298d9d6d6eeed2e4",
     reviewer: "Classic Patents editorial agent (GPT-5 Codex)",

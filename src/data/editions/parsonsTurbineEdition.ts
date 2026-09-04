@@ -6,25 +6,21 @@ import type {
 
 const text = (value: string): CuratedSpecificationInlines => [{ kind: "text", text: value }];
 
+const sourceSheetPreview = (sheet: 1 | 2 | 3, figure: string, description: string) => ({
+  src: `/patents/figures/us-608969-parsons-turbine/source-sheet-${sheet}-v1.png`,
+  alt: `Complete unmodified source drawing sheet ${sheet} of 3 from US 608,969, including ${figure}: ${description}`,
+  width: 2320,
+  height: 3408,
+});
+
 const PREVIEWS = {
-  1: {
-    src: "/patents/figures/us-608969-parsons-turbine/fig-1-source-crop-v1.png",
-    alt: "Figure 1 from US 608,969: eight marine turbines coupled to four screw-shafts.",
-    width: 1130,
-    height: 1330,
-  },
-  2: {
-    src: "/patents/figures/us-608969-parsons-turbine/fig-2-source-crop-v1.png",
-    alt: "Figure 2 from US 608,969: four main turbines and reversing turbines for a fast vessel.",
-    width: 1130,
-    height: 1330,
-  },
-  3: {
-    src: "/patents/figures/us-608969-parsons-turbine/fig-3-source-crop-v1.png",
-    alt: "Figure 3 from US 608,969: six turbines coupled to three screw-shafts.",
-    width: 900,
-    height: 1350,
-  },
+  1: sourceSheetPreview(1, "Fig. 1", "eight marine turbines coupled to four screw-shafts"),
+  2: sourceSheetPreview(
+    2,
+    "Fig. 2",
+    "four main turbines and reversing turbines for a fast vessel",
+  ),
+  3: sourceSheetPreview(3, "Fig. 3", "six turbines coupled to three screw-shafts"),
 } as const;
 
 const figure = (

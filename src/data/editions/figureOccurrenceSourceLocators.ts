@@ -977,6 +977,40 @@ function daimlerMarineEngineSourceSheetLocator(args: {
   };
 }
 
+const PARSONS_TURBINE_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
+const PARSONS_TURBINE_EVIDENCE_REFERENCE =
+  "docs/provenance/us-608969-parsons-turbine.md#source-sheet-acceptance-2026-09-03";
+
+/**
+ * Each Parsons figure occupies a distinct historic sheet. The active preview
+ * preserves its entire source sheet, including the printed identity and
+ * signature panel, rather than depending on a narrower crop boundary.
+ */
+function parsonsTurbineSourceSheetLocator(args: {
+  occurrenceKey: FigureOccurrenceKey;
+  sourcePdfPage: 1 | 2 | 3;
+}): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: PARSONS_TURBINE_SOURCE_RASTER.width,
+    height: PARSONS_TURBINE_SOURCE_RASTER.height,
+  };
+  return {
+    ...args,
+    activeAsset: `/patents/figures/us-608969-parsons-turbine/source-sheet-${args.sourcePdfPage}-v1.png`,
+    sourceRaster: PARSONS_TURBINE_SOURCE_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      PARSONS_TURBINE_SOURCE_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-03",
+    evidenceReference: PARSONS_TURBINE_EVIDENCE_REFERENCE,
+  };
+}
+
 const MCCORMICK_REAPER_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
 const MCCORMICK_REAPER_EVIDENCE_REFERENCE =
   "docs/provenance/us-x8277-mccormick-reaper.md#source-sheet-acceptance-2026-09-03";
