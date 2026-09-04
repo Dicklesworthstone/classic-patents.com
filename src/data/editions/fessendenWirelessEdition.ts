@@ -214,18 +214,33 @@ export const fessendenWirelessParallelReadings: Readonly<Record<number, readonly
     "The source concludes that large capacity with small inductance lowers ohmic loss, shortens the sending-conductor, and enlarges the useful radiating surface, making a large fraction of the wavelength practical.",
   ],
   21: [
-    "The low-frequency system can replace the induction-coil and spark-gap with a dynamo or similar alternating source; without the gap it gives a substantially uniform continuous train, while persistent oscillation can bridge spark-gap intervals.",
+    "The low-frequency system can replace the induction-coil and spark-gap then in use with a dynamo or another source of alternating voltage.",
   ],
   22: [
-    "Fessenden compares one-million-period trains with ten-thousand sparks per second, then explains that small resistance and low frequency yield energetic practical continuity and improve tuned-receiver resonance even when trains do not quite overlap.",
+    "Without a spark-gap, the dynamo supplies a continuous train of substantially uniform radiant waves instead of the diminishing trains and no-radiation intervals associated with spark discharge.",
   ],
   23: [
-    "The uniform-capacity paragraph says a conductor uniform in figure has nearly equal upper and lower capacity to ground, which depends chiefly on size and shape when the conductor is not close to ground.",
+    "With a spark discharge, persistent low-frequency oscillation can bridge no-radiation intervals: the stated ninety-thousand-period example makes every tenth oscillation coincide with the next spark's first oscillation.",
   ],
   24: [
+    "The resulting radiation is practically continuous and divides the first oscillation's energy among nine waves; at one million periods, the ten-thousand-spark example would require one hundred useful oscillations to maintain that continuity.",
+  ],
+  25: [
+    "A single spark divided among one hundred electromagnetic waves would leave each wave too weak for practical use at commercial distances.",
+  ],
+  26: [
+    "Keeping resistance small and frequency low produces practically continuous streams energetic enough for practically continuous effects at the receiving-station, even when successive trains do not quite overlap.",
+  ],
+  27: [
+    "For a receiver tuned to the transmitter, the waves' regularity, continuity, and energy improve resonance enough to compensate for the broad resonance curve associated with large-capacity tuning.",
+  ],
+  28: [
+    "The uniform-capacity paragraph says a conductor uniform in figure has nearly equal upper and lower capacity to ground, which depends chiefly on size and shape when the conductor is not close to ground.",
+  ],
+  29: [
     "The specification then introduces the twenty-one formal claims, which state the legal combinations for low-frequency sending-conductors, alternating sources, tuned radiation, and the electro-magnetic signal receiver.",
   ],
-  48: [
+  53: [
     "The closing attestation records that Reginald A. Fessenden set his hand and names the two printed witnesses, W. B. Fearing and S. C. Gray.",
   ],
 };
@@ -494,17 +509,42 @@ export const fessendenWirelessArchivalEdition: FessendenWirelessWipEdition = {
     ),
     p(
       text(
-        "With this system, whereby large amounts of energy may be radiated at a low frequency, I am able to substitute for the induction-coil and spark-gap now in use a dynamo or similar source of alternating voltage. If the dynamo be used without the spark-gap, I am able at once to produce a continuous train of radiant waves of substantially uniform strength, as distinguished from the well-known systems wherein the spark-discharge starts a train of waves of rapidly-diminishing power followed by relatively long intervals of no radiation. Furthermore, where the spark discharge is used I am able, by reason of the persistent oscillation coupled with the low frequency, to greatly diminish and, indeed, to completely bridge over the intervals of no radiation. With ten thousand sparks per second exciting a sending-conductor having a periodicity of ninety thousand, if each spark gives only ten oscillations before being damped sufficiently to stop radiation, every tenth oscillation coincides with the first oscillation produced by the next succeeding spark. The radiation is therefore practically continuous and the energy of the first oscillation produced by the spark is divided between only nine electromagnetic waves.",
+        "With this system, whereby large amounts of energy may be radiated at a low frequency, I am able to substitute for the induction-coil and spark-gap now in use a dynamo or similar source of alternating voltage.",
       ),
     ),
     p(
       text(
-        "If the frequency were one million and the sparks ten thousand per second it would be necessary to have an oscillator capable of one hundred useful oscillations of a power sufficient to produce useful radiations in order to maintain practically continuous radiation. The energy of a single spark in that case would be divided between one hundred radiant electromagnetic waves and would be too small for practical use over commercial distances. From the above it will be seen that by keeping R small and the frequency low I am able to radiate practically continuous streams of electromagnetic waves of an energy sufficient for practically continuous effects at the receiving-station. Even in the case where the sets of oscillations do not quite overlap in time it is evident that the intervals of inactivity are decreased by the increase of the time of a train to ten times what it would be with a frequency of one million. This is a great advantage in cases where the receiver is tuned to the period of the transmitter, for the regularity, continuity, and great energy of the waves improve the resonance in a manner that by use of proper devices at the receiving-station more than compensates for the rather broad curve of resonance involved in any use of large capacity for tuning purposes.",
+        "If the dynamo be used without the spark-gap, I am able at once to produce a continuous train of radiant waves of substantially uniform strength, as distinguished from the well-known systems wherein the spark-discharge starts a train of waves of rapidly-diminishing power followed by relatively long intervals of no radiation.",
       ),
     ),
     p(
       text(
-        "In practice substantial uniformity of capacity distribution may be obtained by making the conductor uniform in figure from the top to a point at or near the bottom, as indicated in ",
+        "Furthermore, where the spark discharge is used I am able, by reason of the persistent oscillation coupled with the low frequency, to greatly diminish and, indeed, to completely bridge over the intervals of no radiation, for with ten thousand sparks per second exciting a sending-conductor of a periodicity of ninety thousand it is evident that if each spark gives only ten oscillations before being damped sufficiently to stop radiation, every tenth oscillation will coincide with the first oscillation produced by the next succeeding spark.",
+      ),
+    ),
+    p(
+      text(
+        "Thus the radiation will be practically continuous, and the total energy of the first oscillation produced by the spark will be divided between only nine electromagnetic waves. Now if the frequency were one million and the sparks ten thousand per second it would be necessary to have an oscillator capable of one hundred useful oscillations of a power sufficient to produce useful radiations in order to maintain practically continuous radiation.",
+      ),
+    ),
+    p(
+      text(
+        "The energy of a single spark in that case would be divided between one hundred radiant electromagnetic waves and would be too small for practical use over commercial distances.",
+      ),
+    ),
+    p(
+      text(
+        "From the above it will be seen that by keeping R small and the frequency low I am able to radiate practically continuous streams of electromagnetic waves of an energy sufficient for practically continuous effects at the receiving-station. Even in the case where the sets of oscillations do not quite overlap in time it is evident that the intervals of inactivity are decreased by the increase of the time of a train to ten times what it would be with a frequency of one million.",
+      ),
+    ),
+    p(
+      text(
+        "This is a great advantage in cases where the receiver is tuned to the period of the transmitter, for the regularity, continuity, and great energy of the waves improve the resonance in a manner that by use of proper devices at the receiving-station more than compensates for the rather broad curve of resonance involved in any use of large capacity for tuning purposes.",
+      ),
+    ),
+    p(
+      text(
+        "In practice it is found that substantial uniformity of distribution of capacity may be obtained by making the conductor uniform in figure from the top to a point at or near the bottom, as is indicated in ",
       ),
       ref(
         "Fig. 3",
@@ -512,7 +552,7 @@ export const fessendenWirelessArchivalEdition: FessendenWirelessWipEdition = {
         "Fig. 3, sectional elevation of one form of conductor.",
       ),
       text(
-        ". Some have held that the capacity of the upper portion of a vertical conductor of uniform cross-section is much smaller than that of the middle or lower portions because it is farther from ground; I have found by actual measurement that this is practically not the case. The upper portions have practically the same capacity as the lower portions, and the capacity of a conductor with respect to ground depends mainly upon its size and shape, not upon its distance from ground when that distance is not small.",
+        ". It has been held by some that the capacity of the upper portion of a vertical conductor of uniform cross-section is much smaller than that of the middle or lower portions by reason of its greater distance from ground; but I have found by actual measurement that this is practically not the case, the upper portions having practically the same capacity as the lower portions. The capacity of a conductor with respect to ground is mainly dependent upon its size and shape and not upon its distance from the ground when the distance between the conductor and ground is not small.",
       ),
     ),
     p(text("I claim herein as my invention—")),
