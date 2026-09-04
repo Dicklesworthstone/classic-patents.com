@@ -52,6 +52,14 @@ import {
   readLamarrRuntimeControls,
 } from "@/physics/lamarrSharedKernel";
 import {
+  createMcCormickTransportUpdater,
+  getMcCormickTapeFrame,
+  MCCORMICK_FRANKENSIM_BOUNDARY,
+  MCCORMICK_KERNEL_SOURCE,
+  MCCORMICK_SOURCE_BOUNDARY,
+  readMcCormickRuntimeControls,
+} from "@/physics/mccormickReaperKernel";
+import {
   createMarconiTransportUpdater,
   getMarconiTapeFrame,
   readMarconiRuntimeControls,
@@ -299,6 +307,47 @@ export function WhitneyPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
       data-whitney-cylinder-phase-rad={tape?.phases.cylinderRad ?? ""}
       data-whitney-clearer-phase-rad={tape?.phases.clearerRad ?? ""}
       data-whitney-lint-cycle={tape?.phases.lintCycle01 ?? ""}
+    />
+  );
+}
+
+/** Stable owner for McCormick's printed wheel, two-stage gear, belt, and double-crank ratios. */
+export function McCormickPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
+  const mount = useRuntimeOwnerMount();
+  const { effectiveParams } = usePatentPhysics(patentId);
+  const liveParams = useLiveSimParams(effectiveParams);
+  const { frame } = useFrankenSimPhysics(patentId, {
+    domain: "solid_mechanics",
+    refusal: { isRefused: true, reason: MCCORMICK_SOURCE_BOUNDARY },
+  });
+
+  useEffect(() => {
+    return globalTransportBus.registerUpdater(
+      patentId,
+      createMcCormickTransportUpdater(() => readMcCormickRuntimeControls(liveParams.current)),
+      "TS_FALLBACK",
+    );
+  }, [patentId, liveParams]);
+
+  const tape = getMcCormickTapeFrame();
+  return (
+    <span
+      hidden
+      data-testid="patent-physics-runtime-owner"
+      data-patent-id={patentId}
+      data-runtime-tick={frame.tick}
+      data-runtime-owner-mount={mount}
+      data-runtime-digest={frame.digest}
+      data-runtime-provenance={frame.provenance}
+      data-mccormick-kernel-source={MCCORMICK_KERNEL_SOURCE}
+      data-mccormick-frankensim-boundary={MCCORMICK_FRANKENSIM_BOUNDARY}
+      data-mccormick-running={tape?.controls.isRunning ?? ""}
+      data-mccormick-time-sec={tape?.timeSec ?? ""}
+      data-mccormick-ground-wheel-rad={tape?.phases.groundWheelRad ?? ""}
+      data-mccormick-countershaft-rad={tape?.phases.countershaftRad ?? ""}
+      data-mccormick-cutter-crank-rad={tape?.phases.cutterCrankRad ?? ""}
+      data-mccormick-reel-rad={tape?.phases.reelRad ?? ""}
+      data-mccormick-travel-m={tape?.phases.travelM ?? ""}
     />
   );
 }

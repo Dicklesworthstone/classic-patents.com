@@ -888,14 +888,25 @@ export function whitneySchematicRay(
 }
 
 export function stepMcCormickReaper(params: { forwardSpeedMph?: number }) {
-  const groundSpeedMph = params.forwardSpeedMph ?? 2.5;
+  const groundSpeedMph = Math.max(0, Math.min(5, params.forwardSpeedMph ?? 2.5));
   // US X8277 specifies a two-foot ground wheel, then 30:9 and 27:9 gear
   // engagements to its double crank. It also specifies a 13-inch pulley on
   // the ground-wheel axle and a 12-inch pulley on the reel. This is a no-slip
   // kinematic estimate from those printed dimensions, not a field model.
-  const groundWheelRpm = (groundSpeedMph * 88) / (Math.PI * 2);
-  const cutterCrankRpm = Number((groundWheelRpm * (30 / 9) * (27 / 9)).toFixed(1));
-  const reelRpm = Number((groundWheelRpm * (13 / 12)).toFixed(1));
+  const groundWheelDiameterFt = 2;
+  const groundGearTeeth = 30;
+  const countershaftPinionTeeth = 9;
+  const countershaftGearTeeth = 27;
+  const crankPinionTeeth = 9;
+  const axlePulleyDiameterIn = 13;
+  const reelPulleyDiameterIn = 12;
+  const firstGearRatio = groundGearTeeth / countershaftPinionTeeth;
+  const secondGearRatio = countershaftGearTeeth / crankPinionTeeth;
+  const cutterToWheelRatio = firstGearRatio * secondGearRatio;
+  const reelToWheelRatio = axlePulleyDiameterIn / reelPulleyDiameterIn;
+  const groundWheelRpm = (groundSpeedMph * 88) / (Math.PI * groundWheelDiameterFt);
+  const cutterCrankRpm = Number((groundWheelRpm * cutterToWheelRatio).toFixed(1));
+  const reelRpm = Number((groundWheelRpm * reelToWheelRatio).toFixed(1));
   const cutterHz = Number((cutterCrankRpm / 60).toFixed(2));
   const wheel = rpmToOmega(groundWheelRpm);
   const reel = rpmToOmega(reelRpm);
@@ -910,6 +921,18 @@ export function stepMcCormickReaper(params: { forwardSpeedMph?: number }) {
     reelOmegaRadPerS: reel.omegaRadPerS,
     cutterOmegaRadPerS: cutter.omegaRadPerS,
     cutterOmegaDegPerS: cutter.omegaDegPerS,
+    groundWheelDiameterFt,
+    groundGearTeeth,
+    countershaftPinionTeeth,
+    countershaftGearTeeth,
+    crankPinionTeeth,
+    axlePulleyDiameterIn,
+    reelPulleyDiameterIn,
+    firstGearRatio,
+    secondGearRatio,
+    cutterToWheelRatio,
+    reelToWheelRatio,
+    upperCutterToothLengthIn: 1.5,
     cutterDisplayRadPerFrame: Number((cutter.omegaRadPerS / 60).toFixed(6)),
     phaseWrapRad: Number((2 * Math.PI).toFixed(6)),
     reelBarPct: Number(Math.min(100, (reelRpm / 80) * 100).toFixed(1)),

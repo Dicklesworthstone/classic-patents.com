@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import type { McCormickKinematicPhases } from "@/physics/mccormickReaperKernel";
 import { mccormickReelCrate } from "@/physics/genericWasm";
 
 function deterministicUnit(index: number, channel: number): number {
@@ -58,9 +59,15 @@ export interface McCormickReaperModel {
   rootGroup: THREE.Group;
   platformGroup: THREE.Group;
   driveWheelGroup: THREE.Group;
+  countershaftGroup: THREE.Group;
+  cutterCrankGroup: THREE.Group;
   cutterAssembly: THREE.Group;
   sickleBarGroup: THREE.Group;
+  upperCutterGroup: THREE.Group;
+  lowerPitman: THREE.Mesh;
+  upperPitman: THREE.Mesh;
   reelGroup: THREE.Group;
+  reelBeltSegments: readonly THREE.Mesh[];
   stalksInstanced: THREE.InstancedMesh;
   stalkCount: number;
   materials: {
@@ -74,6 +81,13 @@ export interface McCormickReaperModel {
     varnishedTimber?: THREE.MeshStandardMaterial;
   };
   dispose: () => void;
+}
+
+function setBeamBetween(mesh: THREE.Mesh, start: THREE.Vector3, end: THREE.Vector3): void {
+  const direction = end.clone().sub(start);
+  mesh.position.copy(start).add(end).multiplyScalar(0.5);
+  mesh.scale.set(1, direction.length(), 1);
+  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
 }
 
 export function buildMcCormickReaperModel(): McCormickReaperModel {
@@ -140,6 +154,49 @@ export function buildMcCormickReaperModel(): McCormickReaperModel {
   });
   materialsToDispose.push(strawMat);
 
+  const beltLeather = new THREE.MeshStandardMaterial({
+    color: 0x713f12,
+    roughness: 0.82,
+    metalness: 0.02,
+  });
+  materialsToDispose.push(beltLeather);
+
+  function buildSpurGear(
+    name: string,
+    teeth: number,
+    pitchRadius: number,
+    thickness: number,
+  ): THREE.Group {
+    const gear = new THREE.Group();
+    gear.name = name;
+    const coreGeometry = new THREE.CylinderGeometry(
+      Math.max(0.08, pitchRadius - 0.07),
+      Math.max(0.08, pitchRadius - 0.07),
+      thickness,
+      Math.max(16, teeth * 2),
+    );
+    geometriesToDispose.push(coreGeometry);
+    const core = new THREE.Mesh(coreGeometry, brassGears);
+    core.rotation.z = Math.PI / 2;
+    gear.add(core);
+
+    const toothGeometry = new THREE.BoxGeometry(thickness, 0.14, 0.09);
+    geometriesToDispose.push(toothGeometry);
+    const toothInstances = new THREE.InstancedMesh(toothGeometry, brassGears, teeth);
+    toothInstances.name = `${name}-${teeth}-teeth`;
+    const tooth = new THREE.Object3D();
+    for (let index = 0; index < teeth; index += 1) {
+      const angle = (index * Math.PI * 2) / teeth;
+      tooth.position.set(0, Math.cos(angle) * pitchRadius, Math.sin(angle) * pitchRadius);
+      tooth.rotation.set(angle, 0, 0);
+      tooth.updateMatrix();
+      toothInstances.setMatrixAt(index, tooth.matrix);
+    }
+    toothInstances.instanceMatrix.needsUpdate = true;
+    gear.add(toothInstances);
+    return gear;
+  }
+
   // --- 2. HEAVY TIMBER CHASSIS & GRAIN PLATFORM ---
   const platformGroup = new THREE.Group();
   rootGroup.add(platformGroup);
@@ -178,7 +235,7 @@ export function buildMcCormickReaperModel(): McCormickReaperModel {
   evener.position.set(3.3, -0.32, 7.5);
   platformGroup.add(evener);
 
-  // Grain Divider Wedge Shoe (Claim 3)
+  // Grain-divider bow and shoe claimed as part of the source's second claim.
   const dividerGeo = new THREE.ConeGeometry(0.65, 3.2, 4);
   geometriesToDispose.push(dividerGeo);
   const dividerShoe = new THREE.Mesh(dividerGeo, weatheredWood);
@@ -195,21 +252,6 @@ export function buildMcCormickReaperModel(): McCormickReaperModel {
   separatorRod.rotation.y = Math.PI / 2;
   separatorRod.position.set(-2.9, 0.2, 1.8);
   platformGroup.add(separatorRod);
-
-  // Operator spring seat
-  const seatPostGeo = new THREE.BoxGeometry(0.08, 0.8, 0.22);
-  geometriesToDispose.push(seatPostGeo);
-  const seatPost = new THREE.Mesh(seatPostGeo, wroughtIron);
-  seatPost.position.set(2.4, 0.1, -1.8);
-  seatPost.rotation.x = 0.25;
-  platformGroup.add(seatPost);
-
-  const seatPanGeo = new THREE.CylinderGeometry(0.42, 0.35, 0.08, 16);
-  geometriesToDispose.push(seatPanGeo);
-  const seatPan = new THREE.Mesh(seatPanGeo, castIron);
-  seatPan.position.set(2.4, 0.55, -1.9);
-  seatPan.castShadow = true;
-  platformGroup.add(seatPan);
 
   // Outer grain wheel (small wheel on non-drive side)
   const grainWheelGeo = new THREE.TorusGeometry(0.9, 0.08, 12, 24);
@@ -253,22 +295,51 @@ export function buildMcCormickReaperModel(): McCormickReaperModel {
     driveWheelGroup.add(spoke);
   }
 
-  // Master bevel bull gear driving cutter pitman
-  const bullGearGeo = new THREE.CylinderGeometry(0.95, 0.95, 0.24, 28);
-  geometriesToDispose.push(bullGearGeo);
-  const bullGear = new THREE.Mesh(bullGearGeo, brassGears);
-  bullGear.rotation.z = Math.PI / 2;
-  driveWheelGroup.add(bullGear);
+  // The source prints both tooth counts. Preserve the complete 30:9 × 27:9
+  // train instead of substituting smooth decorative discs.
+  const groundGear = buildSpurGear("source-ground-gear", 30, 0.75, 0.2);
+  groundGear.position.x = -0.35;
+  driveWheelGroup.add(groundGear);
 
-  // Pinion gear and counterbalanced pitman crank disc
-  const crankDiscGeo = new THREE.CylinderGeometry(0.38, 0.38, 0.12, 20);
-  geometriesToDispose.push(crankDiscGeo);
-  const crankDisc = new THREE.Mesh(crankDiscGeo, castIron);
-  crankDisc.rotation.z = Math.PI / 2;
-  crankDisc.position.set(-0.25, -0.3, 0.6);
-  driveWheelGroup.add(crankDisc);
+  const countershaftGroup = new THREE.Group();
+  countershaftGroup.name = "source-nine-and-twenty-seven-tooth-countershaft";
+  countershaftGroup.position.set(3.05, -0.2, 0.975);
+  rootGroup.add(countershaftGroup);
+  const firstPinion = buildSpurGear("source-first-pinion", 9, 0.225, 0.2);
+  countershaftGroup.add(firstPinion);
+  const countershaftGear = buildSpurGear("source-countershaft-gear", 27, 0.675, 0.2);
+  countershaftGear.position.x = -0.5;
+  countershaftGroup.add(countershaftGear);
+  const countershaftAxleGeometry = new THREE.CylinderGeometry(0.07, 0.07, 1.05, 12);
+  geometriesToDispose.push(countershaftAxleGeometry);
+  const countershaftAxle = new THREE.Mesh(countershaftAxleGeometry, wroughtIron);
+  countershaftAxle.rotation.z = Math.PI / 2;
+  countershaftAxle.position.x = -0.25;
+  countershaftGroup.add(countershaftAxle);
 
-  // --- 4. POINTED GUARD FINGERS & SERRATED SICKLE BAR (CLAIM 1) ---
+  const cutterCrankGroup = new THREE.Group();
+  cutterCrankGroup.name = "source-nine-tooth-upright-double-crank";
+  cutterCrankGroup.position.set(2.55, -0.2, 1.875);
+  rootGroup.add(cutterCrankGroup);
+  const crankPinion = buildSpurGear("source-crank-pinion", 9, 0.225, 0.22);
+  cutterCrankGroup.add(crankPinion);
+  const crankAxleGeometry = new THREE.CylinderGeometry(0.075, 0.075, 0.72, 12);
+  geometriesToDispose.push(crankAxleGeometry);
+  const crankAxle = new THREE.Mesh(crankAxleGeometry, wroughtIron);
+  crankAxle.rotation.z = Math.PI / 2;
+  cutterCrankGroup.add(crankAxle);
+  const crankPinGeometry = new THREE.SphereGeometry(0.09, 12, 8);
+  geometriesToDispose.push(crankPinGeometry);
+  for (const [x, y] of [
+    [-0.22, 0.24],
+    [0.22, -0.24],
+  ] as const) {
+    const pin = new THREE.Mesh(crankPinGeometry, sickleSteel);
+    pin.position.set(x, y, 0);
+    cutterCrankGroup.add(pin);
+  }
+
+  // --- 4. DOUBLE-CRANK CONTRARY CUTTERS AND SUPPORT FINGERS (CLAIM 1) ---
   const cutterAssembly = new THREE.Group();
   cutterAssembly.position.set(0.5, -0.6, 1.85);
   rootGroup.add(cutterAssembly);
@@ -305,13 +376,32 @@ export function buildMcCormickReaperModel(): McCormickReaperModel {
     sickleBarGroup.add(tooth);
   }
 
-  // Heavy timber pitman connecting rod with iron strap ends
-  const pitmanArmGeo = new THREE.BoxGeometry(0.12, 0.12, 1.9);
-  geometriesToDispose.push(pitmanArmGeo);
-  const pitmanArm = new THREE.Mesh(pitmanArmGeo, ashWood);
-  pitmanArm.position.set(3.0, 0, 0.85);
-  pitmanArm.rotation.y = -Math.PI / 8;
-  cutterAssembly.add(pitmanArm);
+  // The disclosed double-crank option gives the upper gathering teeth equal
+  // and contrary motion, supporting stalks against the lower cutting edge.
+  const upperCutterGroup = new THREE.Group();
+  upperCutterGroup.name = "source-contrary-upper-gathering-blade";
+  cutterAssembly.add(upperCutterGroup);
+  const upperBacking = new THREE.Mesh(sickleBackingGeo, wroughtIron);
+  upperBacking.position.y = 0.16;
+  upperCutterGroup.add(upperBacking);
+  const upperToothGeometry = new THREE.ConeGeometry(0.13, 0.56, 3);
+  geometriesToDispose.push(upperToothGeometry);
+  for (let toothIndex = 0; toothIndex < fingerCount; toothIndex += 1) {
+    const tooth = new THREE.Mesh(upperToothGeometry, wroughtIron);
+    tooth.rotation.x = -Math.PI / 2;
+    tooth.rotation.z = 0.12;
+    tooth.position.set(-2.8 + toothIndex * (5.6 / (fingerCount - 1)), 0.16, 0.2);
+    upperCutterGroup.add(tooth);
+  }
+
+  const pitmanGeometry = new THREE.CylinderGeometry(0.055, 0.065, 1, 10);
+  geometriesToDispose.push(pitmanGeometry);
+  const lowerPitman = new THREE.Mesh(pitmanGeometry, ashWood);
+  lowerPitman.name = "source-lower-pitman";
+  rootGroup.add(lowerPitman);
+  const upperPitman = new THREE.Mesh(pitmanGeometry, ashWood);
+  upperPitman.name = "source-upper-pitman";
+  rootGroup.add(upperPitman);
 
   // --- 5. REVOLVING 4-VANE GRAIN REEL & UPRIGHT TIMBER POSTS (CLAIM 2) ---
   // Heavy Ash Timber Reel Uprights & Diagonal Struts mounted to Chassis Sills
