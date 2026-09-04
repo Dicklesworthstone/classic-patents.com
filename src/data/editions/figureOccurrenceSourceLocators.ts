@@ -3834,6 +3834,71 @@ function lemelsonAutomaticWarehousingSourceSheetLocator(
   };
 }
 
+const LEMELSON_AUTOMATIC_PRODUCTION_SOURCE_SHEET_RASTER = {
+  width: 2320,
+  height: 3408,
+} as const;
+const LEMELSON_AUTOMATIC_PRODUCTION_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-3313014-lemelson-automatic-production.md#complete-source-sheet-acceptance-2026-09-04";
+const LEMELSON_AUTOMATIC_PRODUCTION_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-3313014-lemelson-automatic-production/source-sheet-1-v1.png",
+  2: "/patents/figures/us-3313014-lemelson-automatic-production/source-sheet-2-v1.png",
+  3: "/patents/figures/us-3313014-lemelson-automatic-production/source-sheet-3-v1.png",
+  4: "/patents/figures/us-3313014-lemelson-automatic-production/source-sheet-4-v1.png",
+  5: "/patents/figures/us-3313014-lemelson-automatic-production/source-sheet-5-v1.png",
+  6: "/patents/figures/us-3313014-lemelson-automatic-production/source-sheet-6-v1.png",
+} as const;
+const LEMELSON_AUTOMATIC_PRODUCTION_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-1-group-0-inline-0", 1],
+  ["edition-block-1-group-0-inline-2", 1],
+  ["edition-block-1-group-0-inline-4", 1],
+  ["edition-block-2-group-0-inline-0", 2],
+  ["edition-block-2-group-0-inline-2", 2],
+  ["edition-block-2-group-0-inline-4", 2],
+  ["edition-block-3-group-0-inline-0", 3],
+  ["edition-block-3-group-0-inline-2", 3],
+  ["edition-block-4-group-0-inline-0", 4],
+  ["edition-block-4-group-0-inline-2", 4],
+  ["edition-block-4-group-0-inline-4", 4],
+  ["edition-block-4-group-0-inline-6", 4],
+  ["edition-block-5-group-0-inline-0", 5],
+  ["edition-block-6-group-0-inline-0", 6],
+  ["edition-block-6-group-0-inline-2", 6],
+  ["edition-block-15-group-0-inline-1", 1],
+  ["edition-block-15-group-0-inline-3", 1],
+  ["edition-block-17-group-0-inline-1", 1],
+  ["edition-block-20-group-0-inline-3", 2],
+  ["edition-block-21-group-0-inline-0", 5],
+  ["edition-block-23-group-0-inline-0", 5],
+  ["edition-block-25-group-0-inline-0", 6],
+  ["edition-block-26-group-0-inline-1", 6],
+  ["edition-block-26-group-0-inline-3", 6],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof LEMELSON_AUTOMATIC_PRODUCTION_SOURCE_SHEET_ASSETS,
+])[];
+
+function lemelsonAutomaticProductionSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof LEMELSON_AUTOMATIC_PRODUCTION_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = { x: 0, y: 0, width: 2320, height: 3408 };
+  return {
+    occurrenceKey,
+    activeAsset: LEMELSON_AUTOMATIC_PRODUCTION_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage,
+    sourceRaster: LEMELSON_AUTOMATIC_PRODUCTION_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      LEMELSON_AUTOMATIC_PRODUCTION_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: LEMELSON_AUTOMATIC_PRODUCTION_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
 const ENGELBART_MOUSE_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
 const ENGELBART_MOUSE_SOURCE_SHEET_EVIDENCE_REFERENCE =
   "docs/provenance/us-3541541-engelbart-mouse.md#complete-source-sheet-acceptance-2026-09-04";
@@ -6402,6 +6467,10 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
   "us-3119501-lemelson-automatic-warehousing":
     LEMELSON_AUTOMATIC_WAREHOUSING_SOURCE_SHEET_OCCURRENCES.map(([occurrenceKey, sourcePdfPage]) =>
       lemelsonAutomaticWarehousingSourceSheetLocator(occurrenceKey, sourcePdfPage),
+    ),
+  "us-3313014-lemelson-automatic-production":
+    LEMELSON_AUTOMATIC_PRODUCTION_SOURCE_SHEET_OCCURRENCES.map(([occurrenceKey, sourcePdfPage]) =>
+      lemelsonAutomaticProductionSourceSheetLocator(occurrenceKey, sourcePdfPage),
     ),
   "us-3541541-engelbart-mouse": ENGELBART_MOUSE_SOURCE_SHEET_OCCURRENCES.map(
     ([occurrenceKey, sourcePdfPage]) =>

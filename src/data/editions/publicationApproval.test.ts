@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { allPatents } from "@/data/patents";
+import { FIGURE_OCCURRENCE_SOURCE_LOCATORS } from "./figureOccurrenceSourceLocators";
 import {
   archivalEditionForPublication,
   completeArchivalEditionForViewer,
@@ -27,15 +28,42 @@ describe("Publication Approval State Machine", () => {
     const lemelson = allPatents.find((p) => p.id === "us-3313014-lemelson-automatic-production");
     if (!lemelson) throw new Error("Lemelson automatic production patent not found");
 
+    const originalEntries = Object.entries(FIGURE_OCCURRENCE_SOURCE_LOCATORS);
+    delete (FIGURE_OCCURRENCE_SOURCE_LOCATORS as Record<string, unknown>)[lemelson.id];
+    try {
+      const decision = evaluateArchivalPublicationState(lemelson);
+      expect(decision.status).toBe("withheld-pending-review");
+      expect(decision.isPublished).toBe(false);
+      expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+      expect(decision.figureManifest.requiredFigureCount).toBeGreaterThan(0);
+      expect(decision.figureManifest.acceptedFigureCount).toBe(0);
+      expect(decision.figureManifest.attestation).toMatchObject({
+        matchesEdition: true,
+        matchesLocators: false,
+      });
+    } finally {
+      for (const key of Object.keys(FIGURE_OCCURRENCE_SOURCE_LOCATORS)) {
+        delete (FIGURE_OCCURRENCE_SOURCE_LOCATORS as Record<string, unknown>)[key];
+      }
+      for (const [k, v] of originalEntries) {
+        (FIGURE_OCCURRENCE_SOURCE_LOCATORS as Record<string, unknown>)[k] = v;
+      }
+    }
+  });
+
+  it("authorizes publication for a verified edition once all occurrences have source locators", () => {
+    const lemelson = allPatents.find((p) => p.id === "us-3313014-lemelson-automatic-production");
+    if (!lemelson) throw new Error("Lemelson automatic production patent not found");
+
     const decision = evaluateArchivalPublicationState(lemelson);
-    expect(decision.status).toBe("withheld-pending-review");
-    expect(decision.isPublished).toBe(false);
-    expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
-    expect(decision.figureManifest.requiredFigureCount).toBeGreaterThan(0);
-    expect(decision.figureManifest.acceptedFigureCount).toBe(0);
+    expect(decision.status).toBe("published");
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest.requiredFigureCount).toBe(24);
+    expect(decision.figureManifest.acceptedFigureCount).toBe(24);
     expect(decision.figureManifest.attestation).toMatchObject({
       matchesEdition: true,
-      matchesLocators: false,
+      matchesLocators: true,
     });
   });
 

@@ -148,3 +148,18 @@ Finally complete native parity, real-device/accessibility evidence and a same-so
 Phase 1 documentation/code/behavior investigation and Phase 2 bridge strategy are complete. Initial issue generation, three in-place ambition rounds, five refinement passes, and final graph evidence are recorded here as they are performed.
 
 <!-- REALITY_CHECK_GENERATED_REGISTER -->
+
+### Initial Phase 3a instruction (verbatim)
+
+```
+OK so please take ALL of that and elaborate on it and use it to create a comprehensive and granular
+set of beads for all this with tasks, subtasks, and dependency structure overlaid, with detailed
+comments so that the whole thing is totally self-contained and self-documenting (including relevant
+background, reasoning/justification, considerations, etc.-- anything we'd want our "future self" to
+know about the goals and intentions and thought process and how it serves the over-arching goals of
+the project.) The beads should be so detailed that we never need to consult back to the original
+markdown plan document. Remember to ONLY use the `br` tool to create and modify the beads and add
+the dependencies.
+```
+
+The initial bridge is being materialized through br as per-record restoration and acceptance tasks, plus numerical, performance, verification, native, OCR, architecture and documentation work.

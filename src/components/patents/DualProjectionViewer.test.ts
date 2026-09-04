@@ -104,8 +104,13 @@ describe("archival publication boundary", () => {
     const acceptedPatent = allPatents.find((patent) => patent.id === "us-78317-nobel-dynamite");
     if (!acceptedPatent) throw new Error("Nobel dynamite patent not found");
     expect(archivalEditionForPublication(acceptedPatent)).toBe(acceptedPatent.archivalEdition);
-    // Whitney has an audit hold in ARCHIVAL_PUBLICATION_STATE_OVERRIDES (classic-patentscom-hi0)
-    expect(archivalEditionForPublication(whitneyCottonGinPatent)).toBeUndefined();
+    expect(archivalEditionForPublication(whitneyCottonGinPatent)).toBe(
+      whitneyCottonGinPatent.archivalEdition,
+    );
+
+    const heldPatent = allPatents.find((patent) => patent.id === "us-347140-thomson-welding");
+    if (!heldPatent) throw new Error("Thomson welding patent not found");
+    expect(archivalEditionForPublication(heldPatent)).toBeUndefined();
 
     const unmappedPatent: Patent = {
       ...acceptedPatent,
@@ -167,10 +172,12 @@ describe("archival publication boundary", () => {
   );
 
   test("keeps existing held editions readable without accepting audit state as a client prop", () => {
-    const heldDecision = evaluateArchivalPublicationState(whitneyCottonGinPatent);
-    const heldProjection = patentForSourceReader(whitneyCottonGinPatent);
+    const heldPatent = allPatents.find((patent) => patent.id === "us-347140-thomson-welding");
+    if (!heldPatent) throw new Error("Thomson welding patent not found");
+    const heldDecision = evaluateArchivalPublicationState(heldPatent);
+    const heldProjection = patentForSourceReader(heldPatent);
     expect(heldDecision.isPublished).toBe(false);
-    expect(heldProjection.archivalEdition).toBe(whitneyCottonGinPatent.archivalEdition);
+    expect(heldProjection.archivalEdition).toBe(heldPatent.archivalEdition);
     expect(heldProjection.originalTextAsset).toBeUndefined();
 
     const acceptedPatent = allPatents.find((patent) => patent.id === "us-78317-nobel-dynamite");

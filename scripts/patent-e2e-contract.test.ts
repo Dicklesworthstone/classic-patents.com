@@ -257,20 +257,22 @@ describe("patent E2E scenario contract", () => {
       acceptanceBasis: expect.any(String),
       sourcePdfSha256: expect.stringMatching(/^[a-f0-9]{64}$/),
       matchesEdition: true,
-      matchesLocators: false,
+      matchesLocators: true,
     });
     expect(lemelsonProduction?.sourceDecision.figureAttestation?.acceptedOccurrenceCount).toBe(
       lemelsonProduction?.sourceDecision.requiredFigureCount,
     );
     expect(lemelsonProduction?.sourceState).toBe("edition");
-    expect(lemelsonProduction?.sourceReasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
-    expect(lemelsonProduction?.sourceDecision.acceptedFigureCount).toBe(0);
+    expect(lemelsonProduction?.sourceReasonCode).toBe("ACCEPTED");
+    expect(lemelsonProduction?.sourceDecision.acceptedFigureCount).toBe(
+      lemelsonProduction?.sourceDecision.requiredFigureCount,
+    );
     expect(
       lemelsonProduction?.sourceDecision.figures.every(
         (figure) =>
-          figure.status === "pending" &&
-          figure.sourcePdfPage === null &&
-          figure.sourceRegion === null,
+          figure.status === "accepted" &&
+          figure.sourcePdfPage !== null &&
+          figure.sourceRegion !== null,
       ),
     ).toBe(true);
 

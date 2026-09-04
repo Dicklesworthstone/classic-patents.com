@@ -139,5 +139,9 @@ describe("US X72 Whitney cotton-gin manual edition", () => {
   test("publishes the bound edition with figure citations tied to the pinned source", () => {
     expect(isArchivalEditionExplicitlyWithheld("us-x72-whitney-cotton-gin")).toBe(false);
     expect(whitneyCottonGinPatent.archivalEdition).toBe(whitneyCottonGinArchivalEdition);
+    const { evaluateArchivalPublicationState } = require("./publicationApproval");
+    const decision = evaluateArchivalPublicationState(whitneyCottonGinPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
   });
 });

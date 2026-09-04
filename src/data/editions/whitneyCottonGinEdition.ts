@@ -91,7 +91,7 @@ export const whitneyCottonGinArchivalEdition: CuratedSpecificationEdition = {
       kind: "masthead",
       lines: [
         "72 X. E. WHITNEY. COTTON GIN.",
-        "Patented March 14, 1794.",
+        "Patented Mar. 14, 1794.",
         "A Description of a New Invented Cotton Gin: or Machine for cleansing and separating Cotton from its seeds.",
       ],
     },

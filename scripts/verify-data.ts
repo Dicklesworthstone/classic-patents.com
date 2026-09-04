@@ -36,6 +36,7 @@ import type { CuratedSpecificationBlock, CuratedSpecificationInlines } from "../
 const MAX_PDF_TEXT_BUFFER_BYTES = 64 * 1024 * 1024;
 const BARE_DRAWING_REFERENCE = /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|division\s+\d+)\b/i;
 const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
+  "us-x72-whitney-cotton-gin",
   "us-x9430-colt-revolver",
   "us-x8277-mccormick-reaper",
   "us-132-davenport-electric-motor",
@@ -95,6 +96,7 @@ const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
   "us-3138743-kilby-integrated-circuit",
   "us-3212649-amf-versatran",
   "us-3260375-lemelson-adjustable-manipulator",
+  "us-3313014-lemelson-automatic-production",
   "us-3353115-maiman-ruby-laser",
   "us-3541541-engelbart-mouse",
   "us-3728480-baer-odyssey",
