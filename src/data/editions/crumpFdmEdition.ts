@@ -16,100 +16,42 @@ const term = (value: string, definition: string, label?: string): CuratedSpecifi
   label,
 });
 
-const FIGURES = {
-  1: {
-    src: "/patents/figures/us-5121329-crump-fdm/fig-1-source-crop-v1.png",
-    alt: "Figure 1 from US 5,121,329: perspective view of overall computer-driven 3-axis FDM apparatus with heated head, X-Y gantry, Z elevator table, filament spool, and controller.",
-    width: 2020,
-    height: 1550,
-  },
-  2: {
-    src: "/patents/figures/us-5121329-crump-fdm/fig-2-source-crop-v1.png",
-    alt: "Figure 2 from US 5,121,329: side elevation of movable dispensing head, motor drive, and filament pinch rollers.",
-    width: 1050,
-    height: 1450,
-  },
-  3: {
-    src: "/patents/figures/us-5121329-crump-fdm/fig-3-source-crop-v1.png",
-    alt: "Figure 3 from US 5,121,329: vertical cross-section of heated liquefier flow passage and discharge nozzle tip creating flattened bead.",
-    width: 1000,
-    height: 1450,
-  },
-  4: {
-    src: "/patents/figures/us-5121329-crump-fdm/fig-4-source-crop-v1.png",
-    alt: "Figure 4 from US 5,121,329: enlarged view showing sequential layer-by-layer buildup of solidifying thermoplastic roads on substrate.",
-    width: 2050,
-    height: 1000,
-  },
-  5: {
-    src: "/patents/figures/us-5121329-crump-fdm/fig-5-source-crop-v1.png",
-    alt: "Figure 5 from US 5,121,329: top plan view showing raster filling and contour outline toolpaths.",
-    width: 1050,
-    height: 900,
-  },
-  6: {
-    src: "/patents/figures/us-5121329-crump-fdm/fig-6-source-crop-v1.png",
-    alt: "Figure 6 from US 5,121,329: perspective view of multi-bead overlapping solid structure.",
-    width: 1000,
-    height: 900,
-  },
-  7: {
-    src: "/patents/figures/us-5121329-crump-fdm/fig-7-source-crop-v1.png",
-    alt: "Figure 7 from US 5,121,329: plan view of multi-orifice manifold.",
-    width: 1050,
-    height: 1100,
-  },
-  8: {
-    src: "/patents/figures/us-5121329-crump-fdm/fig-8-source-crop-v1.png",
-    alt: "Figure 8 from US 5,121,329: sectional elevation of multi-orifice manifold.",
-    width: 1000,
-    height: 1100,
-  },
-  9: {
-    src: "/patents/figures/us-5121329-crump-fdm/fig-9-source-crop-v1.png",
-    alt: "Figure 9 from US 5,121,329: alternative embodiment with pressurized fluid supply tank and flexible conduit.",
-    width: 1050,
-    height: 1500,
-  },
-  10: {
-    src: "/patents/figures/us-5121329-crump-fdm/fig-10-source-crop-v1.png",
-    alt: "Figure 10 from US 5,121,329: alternative embodiment with ultrasonic vibratory fluidizing transducer.",
-    width: 1000,
-    height: 1500,
-  },
-  11: {
-    src: "/patents/figures/us-5121329-crump-fdm/fig-11-source-crop-v1.png",
-    alt: "Figure 11 from US 5,121,329: flow chart of computer CAD slicing and CAM toolpath command generation.",
-    width: 1050,
-    height: 1500,
-  },
-  12: {
-    src: "/patents/figures/us-5121329-crump-fdm/fig-12-source-crop-v1.png",
-    alt: "Figure 12 from US 5,121,329: perspective view of free-space wireframe strand object.",
-    width: 1000,
-    height: 1500,
-  },
+const SOURCE_SHEET_BY_FIGURE = {
+  1: 1,
+  2: 2,
+  3: 2,
+  4: 3,
+  5: 3,
+  6: 2,
+  7: 2,
+  8: 2,
+  9: 3,
+  10: 3,
+  11: 2,
+  12: 3,
 } as const;
 
+const sourceSheet = (number: keyof typeof SOURCE_SHEET_BY_FIGURE) => {
+  const sourceSheetNumber = SOURCE_SHEET_BY_FIGURE[number];
+  return {
+    src: `/patents/figures/us-5121329-crump-fdm/source-sheet-${sourceSheetNumber}-v1.png`,
+    alt: `Complete primary source drawing sheet ${sourceSheetNumber} of 3 for US 5,121,329, containing Fig. ${number}.`,
+    width: 2320,
+    height: 3408,
+  };
+};
+
 const figure = (
-  number: keyof typeof FIGURES,
+  number: keyof typeof SOURCE_SHEET_BY_FIGURE,
   label = `FIG. ${number}`,
 ): CuratedSpecificationInline => {
-  const meta = FIGURES[number];
   return {
     kind: "reference",
     referenceType: "figure",
     text: label,
     href: `#figure-${number}`,
-    label: `Figure ${number} of US 5,121,329`,
-    figurePreviews: [
-      {
-        src: meta.src,
-        alt: meta.alt,
-        width: meta.width,
-        height: meta.height,
-      },
-    ],
+    label: `Complete primary source drawing sheet for Figure ${number} of US 5,121,329`,
+    figurePreviews: [sourceSheet(number)],
   };
 };
 

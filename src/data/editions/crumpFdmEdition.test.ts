@@ -73,13 +73,13 @@ describe("US 5,121,329 S. Scott Crump FDM Archival Edition Contract", () => {
     }
   });
 
-  test("pins source crops, technical term annotations, and parallel readings", () => {
-    for (let fig = 1; fig <= 12; fig++) {
-      const cropPath = resolve(
+  test("pins complete source drawing sheets, technical term annotations, and parallel readings", () => {
+    for (let sheet = 1; sheet <= 3; sheet++) {
+      const sourceSheetPath = resolve(
         process.cwd(),
-        `public/patents/figures/us-5121329-crump-fdm/fig-${fig}-source-crop-v1.png`,
+        `public/patents/figures/us-5121329-crump-fdm/source-sheet-${sheet}-v1.png`,
       );
-      expect(existsSync(cropPath)).toBe(true);
+      expect(existsSync(sourceSheetPath)).toBe(true);
     }
 
     const readings = archivalParallelReadingsFor(PATENT_ID);
