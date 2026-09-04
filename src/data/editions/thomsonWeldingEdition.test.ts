@@ -209,13 +209,16 @@ describe("thomsonWeldingArchivalEdition", () => {
     expect(m1).not.toEqual(m2);
   });
 
-  test("enforces facsimile review pending audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const decision = evaluateTypedArchivalPublicationState(thomsonWeldingPatent, {
-      hasCompanionReadings: true,
+  test("accepts the complete, source-bound edition after independent sheet review", () => {
+    const { evaluateArchivalPublicationState } = require("./publicationApproval");
+    const decision = evaluateArchivalPublicationState(thomsonWeldingPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.state.kind).toBe("accepted");
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 40,
+      acceptedFigureCount: 40,
+      attestation: { matchesEdition: true, matchesLocators: true },
     });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
   });
 });

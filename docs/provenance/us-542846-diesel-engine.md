@@ -50,3 +50,8 @@ All crop pixels below are direct crops from the pinned PDF rendered at 300 DPI. 
 | Fig. 10 | `figs-8-and-10-source-crop-v2.png` | PDF page 4, same grouped split plan as Fig. 8 | Grouped candidate; plan a multi-preview split only after cloud review confirms the branch-pipe detail boundary. |
 
 This lane establishes only a version-preserving crop plan and authored occurrence-to-asset routing. It does **not** accept the Diesel archival edition for publication: the canonical record intentionally leaves `archivalEdition` and `originalTextAsset` unset until root independently completes full source-text, figure-sheet, foreign-patent-number, and visitor-facing review. Existing assets are preserved; no uncreated crop is referenced. The adjacent execution material on pages 2 through 5 is an explicit acceptance issue for that reviewer, not a claim that the crops are isolated when the printed layout makes isolation impossible.
+
+## Independent source-sheet review (2026-09-04)
+
+Drawing sheets 1 through 5 (PDF pages 1 through 5) were rendered directly from the pinned facsimile at 300 DPI (2320 × 3408 pixels) and visually compared against the printed sheets. The resulting immutable source-sheet assets are `public/patents/figures/us-542846-diesel-engine/source-sheet-1-v1.png` through `source-sheet-5-v1.png`. All forty-five authored figure-reference occurrences lead with their respective full sheet, whose source rectangle is the entire page (`0,0,2320,3408`). This confirms drawing-sheet coverage, but does not change the separate candidate hold: the continuous edition still requires independent review of the complete specification and claims before publication.
+

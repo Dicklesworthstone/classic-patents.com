@@ -69,6 +69,7 @@ const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
   "us-247804-delaval-separator",
   "us-307031-edison-indicator",
   "us-319596-maxim-machine-gun",
+  "us-347140-thomson-welding",
   "us-361931-daimler-engine",
   "us-36836-gatling-gun",
   "us-381968-tesla-motor",

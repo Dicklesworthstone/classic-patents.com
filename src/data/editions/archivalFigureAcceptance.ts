@@ -2282,4 +2282,38 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
       },
     },
   },
+  "us-542846-diesel-engine": {
+    sourcePdfSha256: "57679379a0e1d1dc97591e6f634fa6f7ed7c0ec3b465edf493b5f79595a0e866",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 45,
+    assets: {
+      "/patents/figures/us-542846-diesel-engine/source-sheet-1-v1.png": {
+        sha256: "d78768fa229c5b9ba6199ae71990ea30b3cc9a7187728710ec62edb051707ab9",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-542846-diesel-engine/source-sheet-2-v1.png": {
+        sha256: "b87c928cc7fa19ca401d7ed067a75ed9838c66c5765a72f4e8fc820ca53673af",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-542846-diesel-engine/source-sheet-3-v1.png": {
+        sha256: "e128509e51394b585169dd21bb1729bbf383ba21d20cae2021d4492d366e0c94",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-542846-diesel-engine/source-sheet-4-v1.png": {
+        sha256: "89999dc69af185dcaed49a949fac4efeb1fe7e662b0b17240175e7de994435e4",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-542846-diesel-engine/source-sheet-5-v1.png": {
+        sha256: "f47e09fed452ecdef387a3a096f92dafb7e31a4baa68cc66104b59a8f80c8431",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
 } as const satisfies Readonly<Record<string, ArchivalFigureAcceptanceAttestation>>;

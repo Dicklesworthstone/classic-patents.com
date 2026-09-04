@@ -171,7 +171,39 @@ describe("US 542,846 manual source edition", () => {
         sha256: "43912b42435410bba1468cb6724c37b7bb3ba563fd7f95a2dae64a08e40fe8d5",
       },
     } as const;
-    for (const expected of Object.values(approvedCrops)) {
+    const sourceSheets = {
+      1: {
+        src: "/patents/figures/us-542846-diesel-engine/source-sheet-1-v1.png",
+        width: 2320,
+        height: 3408,
+        sha256: "d78768fa229c5b9ba6199ae71990ea30b3cc9a7187728710ec62edb051707ab9",
+      },
+      2: {
+        src: "/patents/figures/us-542846-diesel-engine/source-sheet-2-v1.png",
+        width: 2320,
+        height: 3408,
+        sha256: "b87c928cc7fa19ca401d7ed067a75ed9838c66c5765a72f4e8fc820ca53673af",
+      },
+      3: {
+        src: "/patents/figures/us-542846-diesel-engine/source-sheet-3-v1.png",
+        width: 2320,
+        height: 3408,
+        sha256: "e128509e51394b585169dd21bb1729bbf383ba21d20cae2021d4492d366e0c94",
+      },
+      4: {
+        src: "/patents/figures/us-542846-diesel-engine/source-sheet-4-v1.png",
+        width: 2320,
+        height: 3408,
+        sha256: "89999dc69af185dcaed49a949fac4efeb1fe7e662b0b17240175e7de994435e4",
+      },
+      5: {
+        src: "/patents/figures/us-542846-diesel-engine/source-sheet-5-v1.png",
+        width: 2320,
+        height: 3408,
+        sha256: "f47e09fed452ecdef387a3a096f92dafb7e31a4baa68cc66104b59a8f80c8431",
+      },
+    } as const;
+    for (const expected of [...Object.values(approvedCrops), ...Object.values(sourceSheets)]) {
       const asset = resolve(process.cwd(), "public", expected.src.slice(1));
       const png = readFileSync(asset);
       expect(png.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
@@ -181,21 +213,21 @@ describe("US 542,846 manual source edition", () => {
     }
 
     const expectedAssetsByOccurrence: Readonly<Record<string, string[]>> = {
-      "Figure 1": [approvedCrops[1].src],
-      "Fig. 1": [approvedCrops[1].src],
-      "Fig. 2": [approvedCrops[2].src],
-      "Fig. 3": [approvedCrops[3].src],
-      "Fig. 4": [approvedCrops[4].src],
-      "Fig. 5": [approvedCrops[5].src],
-      "Fig. 6": [approvedCrops[6].src],
-      "Fig. 7": [approvedCrops[7].src],
-      "Fig. 8": [approvedCrops[8].src],
-      "Fig. 9": [approvedCrops[9].src],
-      "Fig. 10": [approvedCrops[10].src],
-      "Figs. 4 and 5": [approvedCrops[4].src],
-      "Figs. 8 to 10": [approvedCrops[8].src, approvedCrops[9].src],
-      "Figs. 9 and 10": [approvedCrops[9].src, approvedCrops[10].src],
-      "Figs. 8 and 10": [approvedCrops[8].src],
+      "Figure 1": [sourceSheets[1].src, approvedCrops[1].src],
+      "Fig. 1": [sourceSheets[1].src, approvedCrops[1].src],
+      "Fig. 2": [sourceSheets[1].src, approvedCrops[2].src],
+      "Fig. 3": [sourceSheets[1].src, approvedCrops[3].src],
+      "Fig. 4": [sourceSheets[2].src, approvedCrops[4].src],
+      "Fig. 5": [sourceSheets[2].src, approvedCrops[5].src],
+      "Fig. 6": [sourceSheets[2].src, approvedCrops[6].src],
+      "Fig. 7": [sourceSheets[3].src, approvedCrops[7].src],
+      "Fig. 8": [sourceSheets[4].src, approvedCrops[8].src],
+      "Fig. 9": [sourceSheets[5].src, approvedCrops[9].src],
+      "Fig. 10": [sourceSheets[4].src, approvedCrops[10].src],
+      "Figs. 4 and 5": [sourceSheets[2].src, approvedCrops[4].src],
+      "Figs. 8 to 10": [sourceSheets[4].src, approvedCrops[8].src, approvedCrops[9].src],
+      "Figs. 9 and 10": [sourceSheets[5].src, approvedCrops[9].src, approvedCrops[10].src],
+      "Figs. 8 and 10": [sourceSheets[4].src, approvedCrops[8].src],
     };
     for (const reference of references) {
       const expectedAssets = expectedAssetsByOccurrence[reference.text];

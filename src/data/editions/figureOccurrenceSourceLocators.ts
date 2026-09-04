@@ -4544,6 +4544,93 @@ function thomsonWeldingSourceSheetLocator(
   };
 }
 
+const DIESEL_ENGINE_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const DIESEL_ENGINE_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-542846-diesel-engine.md#independent-source-sheet-review-2026-09-04";
+const DIESEL_ENGINE_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-542846-diesel-engine/source-sheet-1-v1.png",
+  2: "/patents/figures/us-542846-diesel-engine/source-sheet-2-v1.png",
+  3: "/patents/figures/us-542846-diesel-engine/source-sheet-3-v1.png",
+  4: "/patents/figures/us-542846-diesel-engine/source-sheet-4-v1.png",
+  5: "/patents/figures/us-542846-diesel-engine/source-sheet-5-v1.png",
+} as const;
+const DIESEL_ENGINE_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-1-group-0-inline-0", 1],
+  ["edition-block-1-group-0-inline-2", 1],
+  ["edition-block-1-group-0-inline-4", 1],
+  ["edition-block-2-group-0-inline-0", 2],
+  ["edition-block-2-group-0-inline-2", 2],
+  ["edition-block-2-group-0-inline-4", 2],
+  ["edition-block-3-group-0-inline-0", 3],
+  ["edition-block-4-group-0-inline-0", 4],
+  ["edition-block-4-group-0-inline-2", 5],
+  ["edition-block-4-group-0-inline-4", 4],
+  ["edition-block-8-group-0-inline-1", 1],
+  ["edition-block-8-group-0-inline-3", 1],
+  ["edition-block-8-group-0-inline-5", 1],
+  ["edition-block-8-group-0-inline-7", 2],
+  ["edition-block-8-group-0-inline-9", 2],
+  ["edition-block-8-group-0-inline-11", 2],
+  ["edition-block-8-group-0-inline-13", 3],
+  ["edition-block-8-group-0-inline-15", 4],
+  ["edition-block-8-group-0-inline-17", 5],
+  ["edition-block-8-group-0-inline-19", 4],
+  ["edition-block-9-group-0-inline-1", 1],
+  ["edition-block-11-group-0-inline-1", 1],
+  ["edition-block-12-group-0-inline-1", 1],
+  ["edition-block-14-group-0-inline-1", 1],
+  ["edition-block-15-group-0-inline-1", 1],
+  ["edition-block-19-group-0-inline-1", 1],
+  ["edition-block-21-group-0-inline-1", 2],
+  ["edition-block-21-group-0-inline-7", 2],
+  ["edition-block-22-group-0-inline-1", 2],
+  ["edition-block-23-group-0-inline-1", 2],
+  ["edition-block-27-group-0-inline-1", 3],
+  ["edition-block-27-group-0-inline-3", 2],
+  ["edition-block-27-group-0-inline-5", 2],
+  ["edition-block-29-group-0-inline-1", 2],
+  ["edition-block-33-group-0-inline-0", 4],
+  ["edition-block-33-group-0-inline-2", 2],
+  ["edition-block-34-group-0-inline-1", 2],
+  ["edition-block-34-group-0-inline-3", 4],
+  ["edition-block-35-group-0-inline-1", 5],
+  ["edition-block-35-group-0-inline-3", 2],
+  ["edition-block-36-group-0-inline-1", 4],
+  ["edition-block-36-group-0-inline-3", 5],
+  ["edition-block-37-group-0-inline-1", 4],
+  ["edition-block-37-group-0-inline-5", 4],
+  ["edition-block-37-group-0-inline-7", 4],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof DIESEL_ENGINE_SOURCE_SHEET_ASSETS,
+])[];
+
+function dieselEngineSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof DIESEL_ENGINE_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: DIESEL_ENGINE_SOURCE_SHEET_RASTER.width,
+    height: DIESEL_ENGINE_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: DIESEL_ENGINE_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage,
+    sourceRaster: DIESEL_ENGINE_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      DIESEL_ENGINE_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: DIESEL_ENGINE_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
 const WOZNIAK_APPLE_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
 const WOZNIAK_APPLE_EVIDENCE_REFERENCE =
   "docs/provenance/us-4136359-wozniak-apple.md#editorial-boundaries";
@@ -6808,6 +6895,10 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
   "us-347140-thomson-welding": THOMSON_WELDING_SOURCE_SHEET_OCCURRENCES.map(
     ([occurrenceKey, sourcePdfPage]) =>
       thomsonWeldingSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
+  "us-542846-diesel-engine": DIESEL_ENGINE_SOURCE_SHEET_OCCURRENCES.map(
+    ([occurrenceKey, sourcePdfPage]) =>
+      dieselEngineSourceSheetLocator(occurrenceKey, sourcePdfPage),
   ),
   "us-4136359-wozniak-apple": [
     // Fig. 1 (Page 2)

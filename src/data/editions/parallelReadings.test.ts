@@ -12,7 +12,6 @@ const EXPECTED_ROOT_QA_WITHHOLDS = [
   "us-2543181-land-polaroid",
   "us-2708656-fermi-reactor",
   "us-313224-mergenthaler-linotype",
-  "us-347140-thomson-welding",
   "us-542846-diesel-engine",
   "us-6120588-eink",
   "us-706737-fessenden-wireless",

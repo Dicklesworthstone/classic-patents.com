@@ -329,11 +329,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "A primary facsimile has not yet been independently published.",
     "facsimile-only",
   ),
-  "us-347140-thomson-welding": auditHold(
-    "AUDIT_FACSIMILE_REVIEW_PENDING",
-    "classic-patentscom-qm2",
-    "The inherited archival hold remains in force until the source packet is independently accepted.",
-  ),
   "us-4068536-stackhouse-manipulator": auditHold(
     "FABRICATION_OR_RECONSTRUCTION_QUARANTINE",
     "classic-patentscom-qm2",

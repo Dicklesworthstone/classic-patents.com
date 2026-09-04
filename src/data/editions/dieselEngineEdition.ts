@@ -55,6 +55,19 @@ const FIGURE_CROP_DIMENSIONS: Readonly<Record<number, readonly [number, number]>
   9: [1600, 2350],
 };
 
+const SOURCE_SHEET_BY_FIGURE: Readonly<Record<number, number>> = {
+  1: 1,
+  2: 1,
+  3: 1,
+  4: 2,
+  5: 2,
+  6: 2,
+  7: 3,
+  8: 4,
+  9: 5,
+  10: 4,
+};
+
 const preview = (figure: number) => {
   const [width, height] = FIGURE_CROP_DIMENSIONS[figure] ?? [600, 600];
   return {
@@ -62,6 +75,17 @@ const preview = (figure: number) => {
     alt: `Source-facsimile crop of Fig. ${figure} from US 542,846.`,
     width,
     height,
+  };
+};
+
+const sourceSheetPreview = (figure: number): ReturnType<typeof preview> => {
+  const sheet = SOURCE_SHEET_BY_FIGURE[figure];
+  if (!sheet) throw new Error(`US 542,846 has no source-sheet mapping for Fig. ${figure}.`);
+  return {
+    src: `/patents/figures/us-542846-diesel-engine/source-sheet-${sheet}-v1.png`,
+    alt: `US 542,846 complete source drawing sheet ${sheet}, containing Fig. ${figure}.`,
+    width: 2320,
+    height: 3408,
   };
 };
 
@@ -83,9 +107,15 @@ const groupedPreview = (group: "4-6" | "8-and-10"): ReturnType<typeof preview> =
 };
 
 const sourcePreviews = (figure: number): readonly ReturnType<typeof preview>[] => {
-  if (figure === 4 || figure === 5 || figure === 6) return [groupedPreview("4-6")];
-  if (figure === 8 || figure === 10) return [groupedPreview("8-and-10")];
-  return [preview(figure)];
+  const detailedPreviews =
+    figure === 4 || figure === 5 || figure === 6
+      ? [groupedPreview("4-6")]
+      : figure === 8 || figure === 10
+        ? [groupedPreview("8-and-10")]
+        : [preview(figure)];
+  // The direct full sheet remains the active evidence. Retain the existing
+  // source-derived crop after it as an optional close reading aid.
+  return [sourceSheetPreview(figure), ...detailedPreviews];
 };
 
 const figure = (
