@@ -21,6 +21,7 @@ private enum PatentRootSection: String, CaseIterable, Identifiable {
 struct PatentRootView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @AppStorage(LabAppearance.storageKey) private var appearance = LabAppearance.dark.rawValue
+    @AppStorage(Lab.textScaleStorageKey) private var textScale = Lab.defaultTextScale
     @StateObject private var library: PatentLibrary
     @StateObject private var collection: PatentCollectionStore
     @State private var section = PatentRootSection.archive
@@ -70,6 +71,7 @@ struct PatentRootView: View {
             }
         }
         .environmentObject(collection)
+        .environment(\.dynamicTypeSize, Lab.dynamicTypeSize(for: textScale))
         .safeAreaInset(edge: .top, spacing: 0) {
             HStack(spacing: 9) {
                 Image("MonsterIcon")

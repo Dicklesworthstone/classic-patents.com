@@ -584,7 +584,7 @@ struct CuratedSpecificationReader: View {
                                 .frame(width: 260, height: 210)
                                 .overlay(alignment: .topTrailing) {
                                     Image(systemName: "arrow.up.left.and.arrow.down.right")
-                                        .font(.system(size: 11, weight: .bold))
+                                        .font(.system(size: Lab.size(11), weight: .bold))
                                         .foregroundStyle(Lab.background)
                                         .padding(7)
                                         .background(Lab.brass, in: Circle())

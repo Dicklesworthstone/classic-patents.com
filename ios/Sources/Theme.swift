@@ -9,6 +9,12 @@ enum LabAppearance: String {
 }
 
 enum Lab {
+    static let textScaleStorageKey = "frankenpatents.textScale"
+    static let defaultTextScale = 1.0
+    static let minimumTextScale = 0.8
+    static let maximumTextScale = 1.5
+    static let textScaleStep = 0.1
+
     static let background = adaptive(dark: UIColor(red: 0.018, green: 0.024, blue: 0.027, alpha: 1), light: UIColor(red: 0.945, green: 0.925, blue: 0.875, alpha: 1))
     static let backgroundWarm = adaptive(dark: UIColor(red: 0.055, green: 0.043, blue: 0.026, alpha: 1), light: UIColor(red: 0.985, green: 0.955, blue: 0.885, alpha: 1))
     static let panel = adaptive(dark: UIColor(white: 0, alpha: 0.55), light: UIColor(red: 1, green: 0.985, blue: 0.94, alpha: 0.96))
@@ -27,11 +33,40 @@ enum Lab {
     }
 
     static func size(_ base: CGFloat) -> CGFloat {
+        let textScale = CGFloat(storedTextScale)
 #if targetEnvironment(macCatalyst)
-        base * 1.50
+        return base * 1.50 * textScale
 #else
-        UIFontMetrics(forTextStyle: .body).scaledValue(for: base * 1.06)
+        return UIFontMetrics(forTextStyle: .body).scaledValue(for: base * 1.06) * textScale
 #endif
+    }
+
+    static var storedTextScale: Double {
+        let defaults = UserDefaults.standard
+        guard defaults.object(forKey: textScaleStorageKey) != nil else { return defaultTextScale }
+        return normalizedTextScale(defaults.double(forKey: textScaleStorageKey))
+    }
+
+    static func normalizedTextScale(_ candidate: Double) -> Double {
+        guard candidate.isFinite else { return defaultTextScale }
+        let clamped = min(max(candidate, minimumTextScale), maximumTextScale)
+        return (clamped / textScaleStep).rounded() * textScaleStep
+    }
+
+    static func adjustedTextScale(from current: Double, steps: Int) -> Double {
+        normalizedTextScale(current + Double(steps) * textScaleStep)
+    }
+
+    static func dynamicTypeSize(for scale: Double) -> DynamicTypeSize {
+        switch normalizedTextScale(scale) {
+        case ..<0.9: return .small
+        case ..<1.0: return .medium
+        case ..<1.1: return .large
+        case ..<1.2: return .xLarge
+        case ..<1.3: return .xxLarge
+        case ..<1.4: return .xxxLarge
+        default: return .accessibility1
+        }
     }
 
     static func categoryColor(_ category: String) -> Color {
@@ -204,7 +239,7 @@ struct BlueprintGlyph: View {
                 }
                 context.draw(
                     Text(Image(systemName: Lab.categorySymbol(category)))
-                        .font(.system(size: 34, weight: .semibold))
+                        .font(.system(size: Lab.size(34), weight: .semibold))
                         .foregroundColor(color),
                     at: center
                 )

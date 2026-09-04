@@ -365,7 +365,7 @@ struct BlueprintGlyph: View {
                 }
                 context.draw(
                     Text(Image(systemName: Lab.categorySymbol(category)))
-                        .font(.system(size: 34, weight: .semibold))
+                        .font(.system(size: Lab.size(34), weight: .semibold))
                         .foregroundColor(color),
                     at: center
                 )

@@ -47,7 +47,7 @@ struct NativePatentSceneView: View {
             if isPrepared && !didLoadModel {
                 VStack(spacing: 9) {
                     Image(systemName: "exclamationmark.triangle.fill")
-                        .font(.system(size: 24, weight: .bold))
+                        .font(.system(size: Lab.size(24), weight: .bold))
                         .foregroundStyle(.red)
                     Text("Bundled 3D model unavailable")
                         .font(.system(size: Lab.size(13), weight: .bold, design: .rounded))
@@ -65,7 +65,7 @@ struct NativePatentSceneView: View {
             VStack {
                 HStack(alignment: .top) {
                     Label("BUNDLED AUTHORED MODEL · METAL 3D", systemImage: "cube.transparent")
-                        .font(.system(size: 8.5, weight: .black, design: .rounded))
+                        .font(.system(size: Lab.size(8.5), weight: .black, design: .rounded))
                         .foregroundStyle(.black)
                         .padding(.horizontal, 9)
                         .padding(.vertical, 6)
@@ -76,7 +76,7 @@ struct NativePatentSceneView: View {
                         resetToken &+= 1
                     } label: {
                         Image(systemName: "view.3d")
-                            .font(.system(size: 13, weight: .bold))
+                            .font(.system(size: Lab.size(13), weight: .bold))
                             .frame(width: 36, height: 36)
                     }
                     .buttonStyle(.plain)
@@ -88,7 +88,7 @@ struct NativePatentSceneView: View {
                 Spacer()
                 HStack {
                     Label("Drag to orbit · pinch to zoom", systemImage: "hand.draw")
-                        .font(.system(size: 9.5, weight: .semibold, design: .rounded))
+                        .font(.system(size: Lab.size(9.5), weight: .semibold, design: .rounded))
                         .foregroundStyle(Lab.parchment.opacity(0.88))
                         .padding(.horizontal, 10)
                         .padding(.vertical, 7)
@@ -121,7 +121,7 @@ struct NativeNoDrawingSourceBoundaryExhibit: View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .top, spacing: 14) {
                 Image(systemName: "exclamationmark.shield.fill")
-                    .font(.system(size: 28))
+                    .font(.system(size: Lab.size(28)))
                     .foregroundStyle(Lab.brass)
                 VStack(alignment: .leading, spacing: 5) {
                     Text("No apparatus drawing exists in US 971,501")
@@ -154,7 +154,7 @@ struct NativeNoDrawingSourceBoundaryExhibit: View {
                         with: .color(index == 0 ? Lab.blueprint.opacity(0.75) : index == 1 ? Lab.brass.opacity(0.82) : Lab.emerald.opacity(0.78))
                     )
                     context.draw(
-                        Text(label).font(.system(size: 11, weight: .bold, design: .rounded)).foregroundColor(.black),
+                        Text(label).font(.system(size: Lab.size(11), weight: .bold, design: .rounded)).foregroundColor(.black),
                         at: CGPoint(x: x, y: midY)
                     )
                 }
@@ -178,7 +178,7 @@ struct NativePDFOnlySourceBoundaryExhibit: View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .top, spacing: 14) {
                 Image(systemName: "doc.text.magnifyingglass")
-                    .font(.system(size: 28))
+                    .font(.system(size: Lab.size(28)))
                     .foregroundStyle(Lab.brass)
                 VStack(alignment: .leading, spacing: 5) {
                     Text("Source-bound facsimile record")

@@ -17,6 +17,33 @@ struct FrankenPatentsApp: App {
 #endif
         .commands {
             SidebarCommands()
+            PatentTextSizeCommands()
+        }
+    }
+}
+
+private struct PatentTextSizeCommands: Commands {
+    @AppStorage(Lab.textScaleStorageKey) private var textScale = Lab.defaultTextScale
+
+    var body: some Commands {
+        CommandMenu("Text Size") {
+            Button("Larger Text") {
+                textScale = Lab.adjustedTextScale(from: textScale, steps: 1)
+            }
+            .keyboardShortcut("+", modifiers: .command)
+            .disabled(Lab.normalizedTextScale(textScale) >= Lab.maximumTextScale)
+
+            Button("Smaller Text") {
+                textScale = Lab.adjustedTextScale(from: textScale, steps: -1)
+            }
+            .keyboardShortcut("-", modifiers: .command)
+            .disabled(Lab.normalizedTextScale(textScale) <= Lab.minimumTextScale)
+
+            Button("Actual Size") {
+                textScale = Lab.defaultTextScale
+            }
+            .keyboardShortcut("0", modifiers: .command)
+            .disabled(Lab.normalizedTextScale(textScale) == Lab.defaultTextScale)
         }
     }
 }

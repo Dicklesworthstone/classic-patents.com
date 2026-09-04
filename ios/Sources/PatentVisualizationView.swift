@@ -338,7 +338,7 @@ private struct LiveSourcePatentPlate: View {
                     ForEach(Array(drawing.callouts.enumerated()), id: \.element.id) { index, callout in
                         let pulse = (sin(time * (1.4 + drive) + Double(index) * 0.8) + 1) / 2
                         Text(callout.label)
-                            .font(.system(size: 8.5, weight: .black, design: .rounded))
+                            .font(.system(size: Lab.size(8.5), weight: .black, design: .rounded))
                             .foregroundStyle(Lab.background)
                             .lineLimit(1)
                             .minimumScaleFactor(0.42)
@@ -362,7 +362,7 @@ private struct LiveSourcePatentPlate: View {
         }
         .overlay(alignment: .topLeading) {
             Label("BUNDLED SOURCE PLATE · RESPONSIVE ANNOTATIONS", systemImage: "point.3.filled.connected.trianglepath.dotted")
-                .font(.system(size: 8, weight: .black, design: .rounded))
+                .font(.system(size: Lab.size(8), weight: .black, design: .rounded))
                 .foregroundStyle(Lab.background)
                 .padding(.horizontal, 9)
                 .padding(.vertical, 6)
@@ -744,7 +744,7 @@ private struct PatentMechanismCanvas: View {
             )
             context.draw(
                 Text(label)
-                    .font(.system(size: 7.5, weight: .black, design: .rounded))
+                    .font(.system(size: Lab.size(7.5), weight: .black, design: .rounded))
                     .foregroundColor(Lab.parchment.opacity(0.92)),
                 at: point,
                 anchor: .center
@@ -851,7 +851,7 @@ private struct PatentMechanismCanvas: View {
         ]
         for (copy, point, color) in labels {
             context.draw(
-                Text(copy).font(.system(size: 8, weight: .black, design: .rounded)).foregroundColor(color),
+                Text(copy).font(.system(size: Lab.size(8), weight: .black, design: .rounded)).foregroundColor(color),
                 at: point,
                 anchor: copy.hasPrefix("E") || copy.hasPrefix("IN-") || copy.hasPrefix("G") ? .top : .bottomLeading
             )
@@ -1000,7 +1000,7 @@ private struct PatentMechanismCanvas: View {
         )
         context.draw(
             Text("FIG. 9 · 2 CIRCUITS · \(Int(frequency.rounded())) Hz")
-                .font(.system(size: 9, weight: .bold, design: .rounded))
+                .font(.system(size: Lab.size(9), weight: .bold, design: .rounded))
                 .foregroundColor(Lab.secondary),
             at: CGPoint(x: center.x, y: size.height - 20),
             anchor: .bottom
@@ -1087,7 +1087,7 @@ private struct PatentMechanismCanvas: View {
 
         context.draw(
             Text(String(format: "MASTER %.3f MHz · NTSC %.3f MHz · WINDOW %.1f ns", crystal, crystal / 4, 500 / cpuMHz))
-                .font(.system(size: 8.5, weight: .bold, design: .rounded))
+                .font(.system(size: Lab.size(8.5), weight: .bold, design: .rounded))
                 .foregroundColor(Lab.secondary),
             at: CGPoint(x: size.width * 0.50, y: size.height - 16),
             anchor: .bottom
@@ -1105,17 +1105,17 @@ private struct PatentMechanismCanvas: View {
         context.fill(Path(roundedRect: rect, cornerRadius: 9), with: .color(color.opacity(0.13)))
         context.stroke(Path(roundedRect: rect, cornerRadius: 9), with: .color(color), lineWidth: 2)
         context.draw(
-            Text(title).font(.system(size: 10, weight: .black, design: .rounded)).foregroundColor(Lab.parchment),
+            Text(title).font(.system(size: Lab.size(10), weight: .black, design: .rounded)).foregroundColor(Lab.parchment),
             at: CGPoint(x: rect.midX, y: rect.minY + rect.height * 0.31),
             anchor: .center
         )
         context.draw(
-            Text(detail).font(.system(size: 9, weight: .bold, design: .rounded)).foregroundColor(color),
+            Text(detail).font(.system(size: Lab.size(9), weight: .bold, design: .rounded)).foregroundColor(color),
             at: CGPoint(x: rect.midX, y: rect.midY),
             anchor: .center
         )
         context.draw(
-            Text(state).font(.system(size: 7.5, weight: .bold, design: .rounded)).foregroundColor(Lab.secondary),
+            Text(state).font(.system(size: Lab.size(7.5), weight: .bold, design: .rounded)).foregroundColor(Lab.secondary),
             at: CGPoint(x: rect.midX, y: rect.maxY - rect.height * 0.18),
             anchor: .center
         )
@@ -1153,11 +1153,11 @@ private struct PatentMechanismCanvas: View {
 
     private func drawTelemetry(context: inout GraphicsContext, size: CGSize, phase: Double) {
         let label = Text(patent.shortTitle.uppercased())
-            .font(.system(size: 11, weight: .bold, design: .rounded))
+            .font(.system(size: Lab.size(11), weight: .bold, design: .rounded))
             .foregroundColor(Lab.parchment.opacity(0.80))
         context.draw(label, at: CGPoint(x: 16, y: 16), anchor: .topLeading)
         let phaseLabel = Text(String(format: "STATE %.3f  ·  DRIVE %.0f%%", phase.truncatingRemainder(dividingBy: 1), normalizedControl * 100))
-            .font(.system(size: 9, weight: .semibold, design: .rounded))
+            .font(.system(size: Lab.size(9), weight: .semibold, design: .rounded))
             .foregroundColor(Lab.secondary)
         context.draw(phaseLabel, at: CGPoint(x: size.width - 16, y: size.height - 14), anchor: .bottomTrailing)
     }

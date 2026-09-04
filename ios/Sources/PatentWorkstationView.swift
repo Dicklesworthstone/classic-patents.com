@@ -213,7 +213,7 @@ struct PatentWorkstationView: View {
             Group {
                 if compact {
                     VStack(spacing: 4) {
-                        Image(systemName: candidate.symbol).font(.system(size: 15, weight: .semibold))
+                        Image(systemName: candidate.symbol).font(.system(size: Lab.size(15), weight: .semibold))
                         Text(title(for: candidate)).font(.system(size: Lab.size(8), weight: .bold, design: .rounded))
                     }
                 } else {
