@@ -184,4 +184,34 @@ describe("US X72 Eli Whitney Cotton Gin visual & kinematics boundary", () => {
     expect(WHITNEY_FRANKENSIM_BOUNDARY).toContain("belt-contact-browser-composition-unavailable");
     expect(WHITNEY_SOURCE_BOUNDARY).toContain("directly couples the winch");
   });
+
+  test("keeps the direct axle and crossed-band constraints closed through speed changes", () => {
+    let raw: Record<string, number | boolean> = {
+      crankRpm: 60,
+      seedGridClearance: 3.2,
+      isRunning: true,
+      resetEpoch: 0,
+    };
+    const updater = createWhitneyTransportUpdater(() => readWhitneyRuntimeControls(raw));
+
+    for (let tick = 0; tick < 7; tick++) updater({} as never, 1 / 60);
+    raw = { ...raw, crankRpm: 180 };
+    for (let tick = 0; tick < 11; tick++) updater({} as never, 1 / 60);
+    raw = { ...raw, crankRpm: 90 };
+    for (let tick = 0; tick < 13; tick++) updater({} as never, 1 / 60);
+
+    const moving = getWhitneyTapeFrame();
+    if (!moving) throw new Error("Whitney transport did not publish a tape frame.");
+
+    // The single source coordinate is the crank. These exact equality checks
+    // are deliberately stricter than a tolerance: a belt that only appears to
+    // close at one speed still slips after enough fixed ticks.
+    expect(moving.phases.cylinderRad).toBe(
+      moving.phases.crankRad * moving.outputs.sawToCrankRatio,
+    );
+    expect(moving.phases.clearerRad).toBe(
+      -moving.phases.crankRad * moving.outputs.brushToCrankRatio,
+    );
+    expect(moving.phases.clearerRad).toBe(-3 * moving.phases.cylinderRad);
+  });
 });

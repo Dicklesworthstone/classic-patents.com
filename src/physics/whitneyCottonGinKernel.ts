@@ -81,9 +81,15 @@ export function createWhitneyTransportUpdater(
     if (controls.isRunning) {
       timeSec += dt;
       phases.crankRad += outputs.crankOmegaRadPerS * dt;
-      phases.cylinderRad += outputs.sawOmegaRadPerS * dt;
-      // The crossed band reverses the clearer's rotation.
-      phases.clearerRad -= outputs.brushOmegaRadPerS * dt;
+      // These are holonomic drive constraints, not three independent display
+      // oscillators. US X72 directly joins the winch and toothed-cylinder
+      // axle; the declared teaching whirls reverse the clearer's rotation at
+      // a 3:1 speed ratio. Deriving both driven phases from the sole input
+      // coordinate preserves their no-slip closure exactly, including after a
+      // speed change, instead of allowing rounded angular-rate integrations
+      // to accumulate a fictitious belt slip.
+      phases.cylinderRad = phases.crankRad * outputs.sawToCrankRatio;
+      phases.clearerRad = -phases.crankRad * outputs.brushToCrankRatio;
       phases.lintCycle01 = (phases.lintCycle01 + dt * outputs.lintDisplayCyclesPerSecond) % 1;
     }
 
