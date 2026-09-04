@@ -2,6 +2,7 @@
 
 import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { readLamarrRuntimeControls, readLamarrTapeFrame } from "@/physics/lamarrSharedKernel";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -25,16 +26,17 @@ export function LamarrFrequencyHopping3D() {
   const studioRef = useRef<StudioContext | null>(null);
 
   // Spread Spectrum State Controls
-  const { params, updateParam } = usePatentPhysics("us-2292387-lamarr-frequency-hopping");
+  const { effectiveParams, updateParam, claimStates } = usePatentPhysics(
+    "us-2292387-lamarr-frequency-hopping",
+  );
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<LamarrCameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { frame } = useFrankenSimPhysics("us-2292387-lamarr-frequency-hopping");
   // Pure consumer of the shared transport tape; no local integration clock.
-  const recordState = readLamarrTapeFrame(readLamarrRuntimeControls(params));
+  const recordState = readLamarrTapeFrame(readLamarrRuntimeControls(effectiveParams));
   const live = useLiveSimParams({ recordState, isCutaway });
 
   const applyCameraPreset = (preset: LamarrCameraPreset) => {
@@ -79,6 +81,7 @@ export function LamarrFrequencyHopping3D() {
         state.recordState.receiverEffective,
         state.recordState.warningLampOn,
         state.isCutaway,
+        state.recordState.recordSynchronizationPresent,
       );
 
       controls.update();
@@ -169,17 +172,25 @@ export function LamarrFrequencyHopping3D() {
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
               <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
-                Matched record row:
+                Transmitter record row:
               </span>
               <span className="font-bold text-emerald-700 dark:text-emerald-400">
                 {recordState.transmitterRow} (
-                {recordState.receiverEffective ? "D–G receiver channel" : "A–C false channel"})
+                {!recordState.recordSynchronizationPresent
+                  ? "receiver record withheld"
+                  : recordState.receiverEffective
+                    ? "D–G receiver channel"
+                    : "A–C false channel"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Lamp 43:</span>
               <span className="text-amber-800 dark:text-amber-400 font-bold">
-                {recordState.warningLampOn ? "ON (false channel)" : "OFF (matched)"}
+                {recordState.warningLampOn
+                  ? "ON (false channel)"
+                  : recordState.recordSynchronizationPresent
+                    ? "OFF (matched)"
+                    : "OFF (receiver withheld)"}
               </span>
             </div>
           </div>
@@ -188,7 +199,7 @@ export function LamarrFrequencyHopping3D() {
 
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
         <label className="space-y-2">
-          Matched record position
+          Transmitter record position
           <input
             type="range"
             min="0"
@@ -217,7 +228,9 @@ export function LamarrFrequencyHopping3D() {
           <span>
             {recordState.warningLampOn
               ? "Lamp 43 warns: do not send a control impulse."
-              : "Lamp 43 off: records select the same channel."}
+              : recordState.recordSynchronizationPresent
+                ? "Lamp 43 off: records select the same channel."
+                : "Claim 1 probe: the receiver record and synchronization path are withheld."}
           </span>
         </div>
       </div>
@@ -227,14 +240,14 @@ export function LamarrFrequencyHopping3D() {
           patentId="us-2292387-lamarr-frequency-hopping"
           claimStates={claimStates}
           onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0)
           }
           className="mt-2"
         />
 
         <PortHamiltonianEnergyStrip
           patentId="us-2292387-lamarr-frequency-hopping"
-          params={params}
+          params={effectiveParams}
           className="mt-3"
         />
       </div>

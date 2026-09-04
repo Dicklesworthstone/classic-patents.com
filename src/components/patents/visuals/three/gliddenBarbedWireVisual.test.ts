@@ -7,6 +7,7 @@ import {
   GLIDDEN_BARBED_WIRE_CAMERA_PRESETS,
   GLIDDEN_COMPACT_ISOMETRIC_SAFE_ZONE,
   gliddenBarbedWireCameraForViewport,
+  isGliddenCompactClaimViewport,
 } from "./gliddenBarbedWireCamera";
 import {
   buildGliddenBarbedWireModel,
@@ -15,6 +16,7 @@ import {
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 const COMPACT_AUDIT_VIEWPORT = { width: 286, height: 380 };
+const CLAIM_FOCUS_AUDIT_VIEWPORT = { width: 375, height: 812 };
 const LANDSCAPE_AUDIT_VIEWPORT = { width: 639, height: 380 };
 const TABLET_AUDIT_VIEWPORT = { width: 718, height: 1024 };
 
@@ -27,6 +29,11 @@ function projectedObjectBounds(root: THREE.Object3D, camera: THREE.PerspectiveCa
   };
   const point = new THREE.Vector3();
   root.traverse((node) => {
+    let ancestor: THREE.Object3D | null = node;
+    while (ancestor) {
+      if (!ancestor.visible) return;
+      ancestor = ancestor.parent;
+    }
     const positions = (node as THREE.Mesh).geometry?.getAttribute("position");
     if (!positions) return;
     for (let index = 0; index < positions.count; index += 1) {
@@ -38,6 +45,17 @@ function projectedObjectBounds(root: THREE.Object3D, camera: THREE.PerspectiveCa
     }
   });
   return bounds;
+}
+
+function projectedPixels(
+  frame: ReturnType<typeof projectedObjectBounds>,
+  canvasWidth: number,
+  canvasHeight: number,
+) {
+  return {
+    width: ((frame.maxX - frame.minX) * canvasWidth) / 2,
+    height: ((frame.maxY - frame.minY) * canvasHeight) / 2,
+  };
 }
 
 describe("US 157,124 Joseph Glidden Twisted Wire Barbed Fence visual & kinematics boundary", () => {
@@ -213,6 +231,76 @@ describe("US 157,124 Joseph Glidden Twisted Wire Barbed Fence visual & kinematic
         model.dispose();
       }
     }
+  });
+
+  test("keeps the printed twisted strands and each barb legible at 375 by 812px", () => {
+    const { width, height } = CLAIM_FOCUS_AUDIT_VIEWPORT;
+    expect(isGliddenCompactClaimViewport(width, height)).toBe(true);
+    expect(
+      isGliddenCompactClaimViewport(COMPACT_AUDIT_VIEWPORT.width, COMPACT_AUDIT_VIEWPORT.height),
+    ).toBe(false);
+    expect(gliddenBarbedWireCameraForViewport("iso", width, height)).not.toEqual(
+      GLIDDEN_BARBED_WIRE_CAMERA_PRESETS.iso,
+    );
+
+    const auditedStates = [
+      { name: "default", twistsPerFoot: 5, isLocked: true },
+      { name: "primary-control-max", twistsPerFoot: 10, isLocked: true },
+      { name: "claim-inverted", twistsPerFoot: 10, isLocked: false },
+    ] as const;
+    for (const state of auditedStates) {
+      const model = buildGliddenBarbedWireModel();
+      try {
+        model.setCompactClaimFocus(true);
+        expect(model.nodes.presentationPropsGroup.visible).toBe(false);
+        const view = gliddenBarbedWireCameraForViewport("iso", width, height);
+        const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 1000);
+        camera.position.set(...view.pos);
+        camera.lookAt(...view.target);
+        camera.updateProjectionMatrix();
+        camera.updateMatrixWorld();
+
+        const machineRpm = state.twistsPerFoot * 24;
+        const flyerOmegaRadPerS = Number(((machineRpm * 2 * Math.PI) / 60).toFixed(3));
+        updateGliddenBarbedWireKinematics(
+          model.nodes,
+          model.materials,
+          1 / 60,
+          0,
+          flyerOmegaRadPerS,
+          flyerOmegaRadPerS * 0.2,
+          state.isLocked,
+          false,
+        );
+        model.rootGroup.updateMatrixWorld(true);
+
+        const wire = projectedObjectBounds(model.nodes.wireAssemblyGroup, camera);
+        expect(wire.minX, `${state.name} strand left`).toBeGreaterThan(-0.75);
+        expect(wire.maxX, `${state.name} strand right`).toBeLessThan(0.9);
+        expect(wire.minY, `${state.name} strand lower`).toBeGreaterThan(-0.2);
+        expect(wire.maxY, `${state.name} strand upper`).toBeLessThan(0.2);
+        const wirePixels = projectedPixels(wire, width, height);
+        expect(wirePixels.width, `${state.name} claimed strand width`).toBeGreaterThan(290);
+        expect(wirePixels.height, `${state.name} claimed strand height`).toBeGreaterThan(130);
+
+        for (const [index, barb] of model.nodes.barbGroups.entries()) {
+          const pixels = projectedPixels(projectedObjectBounds(barb, camera), width, height);
+          expect(
+            Math.max(pixels.width, pixels.height),
+            `${state.name} barb ${index + 1} readable dimension`,
+          ).toBeGreaterThan(30);
+        }
+      } finally {
+        model.dispose();
+      }
+    }
+
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "GliddenBarbedWire3D.tsx"),
+      "utf8",
+    );
+    expect(threeSource).toContain("setCompactClaimFocus");
+    expect(threeSource).toContain("isGliddenCompactClaimViewport");
   });
 
   test("computes genuine catenary sag, barb slip threshold, and locked state in SI units", () => {

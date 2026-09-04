@@ -4,6 +4,7 @@ import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepDeForestAudion } from "@/physics/catalogKernels";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { SemiconductorState } from "@/physics/types";
 import {
@@ -62,9 +63,11 @@ export function DeForestAudion3D() {
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("isometric");
   const [isRotating, setIsRotating] = useState(false);
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
-  const { params, updateParam } = usePatentPhysics("us-879532-de-forest-audion");
+  const { params, effectiveParams, claimStates, updateParam } = usePatentPhysics(
+    "us-879532-de-forest-audion",
+  );
+  const claim1Active = claimStates[1] ?? true;
 
   const plateVoltageV = params.plateVoltageV ?? 45;
   const gridBiasVoltageV = params.gridBiasVoltageV ?? -1.5;
@@ -73,6 +76,7 @@ export function DeForestAudion3D() {
   const loadResistanceKOhms = params.loadResistanceKOhms ?? 20;
 
   const sim = stepDeForestAudion({
+    claim1GridPresent: claim1Active,
     plateVoltageV,
     gridBiasVoltageV,
     filamentCurrentA,
@@ -81,6 +85,7 @@ export function DeForestAudion3D() {
   });
 
   const live = useLiveSimParams({
+    claim1GridPresent: sim.claim1GridPresent,
     gridBiasVoltageV,
     filamentTemperatureK: sim.filamentTemperatureK,
     plateCurrentMa: sim.plateCurrentMa,
@@ -98,7 +103,12 @@ export function DeForestAudion3D() {
     domain: "semiconductor_carrier",
     timestampMs: 0,
     timeStepDt: 1 / 60,
-    refusal: { isRefused: false },
+    refusal: {
+      isRefused: !claim1Active,
+      reason: claim1Active
+        ? undefined
+        : "Claim 1 comparison withholds the interposed conducting member; active voltage-gain telemetry is refused.",
+    },
     semi: { ...IDLE_SEMI },
   });
 
@@ -108,7 +118,12 @@ export function DeForestAudion3D() {
   useEffect(() => {
     const integrate: TapeUpdater = (prev) => {
       return {
-        refusal: { isRefused: false },
+        refusal: {
+          isRefused: !live.current.claim1GridPresent,
+          reason: live.current.claim1GridPresent
+            ? undefined
+            : "Claim 1 comparison withholds the interposed conducting member; active voltage-gain telemetry is refused.",
+        },
         semi: {
           ...(prev.semi ?? IDLE_SEMI),
           biasVoltageVolts: live.current.gridBiasVoltageV,
@@ -165,6 +180,7 @@ export function DeForestAudion3D() {
       articulateDeForestAudionModel(
         nodes,
         {
+          claim1GridPresent: p.claim1GridPresent,
           filamentTemperatureK: p.filamentTemperatureK,
           plateCurrentMa: p.plateCurrentMa,
           voltageGain: p.voltageGain,
@@ -296,8 +312,12 @@ export function DeForestAudion3D() {
             },
             {
               label: "State",
-              value: sim.isConducting ? "Active Linear Triode" : "Cutoff",
-              tone: sim.isConducting ? "ok" : "warn",
+              value: !claim1Active
+                ? "Two-Electrode Diode — No Gain"
+                : sim.isConducting
+                  ? "Active Linear Triode"
+                  : "Cutoff",
+              tone: claim1Active && sim.isConducting ? "ok" : "warn",
             },
           ]}
         />
@@ -356,14 +376,14 @@ export function DeForestAudion3D() {
           patentId="us-879532-de-forest-audion"
           claimStates={claimStates}
           onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0)
           }
           className="mt-2"
         />
 
         <PortHamiltonianEnergyStrip
           patentId="us-879532-de-forest-audion"
-          params={params}
+          params={effectiveParams}
           className="mt-3"
         />
       </div>

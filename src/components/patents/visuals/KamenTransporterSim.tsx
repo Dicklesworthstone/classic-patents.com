@@ -25,7 +25,7 @@ import { useLiveSimParams } from "./three/useLiveSimParams";
 
 function KamenTransporterHeader() {
   return (
-    <div className="flex w-full flex-col justify-between gap-4 border-b border-parchment-200 pb-4 sm:flex-row sm:items-center dark:border-ink-800">
+    <header className="flex w-full flex-col justify-between gap-4 border-b border-parchment-200 pb-4 sm:flex-row sm:items-center dark:border-ink-800">
       <div>
         <div className="flex items-center gap-2">
           <span className="rounded-full border border-cyan-300 bg-cyan-100 px-2.5 py-0.5 text-xs font-bold text-cyan-800 dark:border-cyan-700 dark:bg-cyan-900/60 dark:text-cyan-200">
@@ -39,7 +39,7 @@ function KamenTransporterHeader() {
           Source-Dimensioned Balance, Transfer &amp; Climb Contact Geometry
         </h3>
       </div>
-    </div>
+    </header>
   );
 }
 

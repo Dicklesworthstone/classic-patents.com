@@ -66,12 +66,16 @@ const CAMERA_OPTIONS: readonly [CameraPreset, string][] = [
   ["top", "Plan View"],
 ];
 
-export function WhitneyCottonGin3D() {
+export function WhitneyCottonGin3D({
+  initialShowUiOverlay = true,
+}: {
+  initialShowUiOverlay?: boolean;
+} = {}) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Mechanical Simulation Parameters
   const { params, updateParam, resetParams } = usePatentPhysics("us-x72-whitney-cotton-gin");
-  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(initialShowUiOverlay);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const crankRpm = params.crankRpm ?? 60;
   const isRunning = (params.isRunning ?? 1) > 0.5;
@@ -176,23 +180,29 @@ export function WhitneyCottonGin3D() {
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Mobile camera control remains available when the responsive HUD is suppressed. */}
-        <label className="sm:hidden absolute top-14 left-3 z-10 flex min-h-9 max-w-[calc(100%-1.5rem)] items-center gap-1.5 rounded-xl border border-parchment-300 bg-white/90 px-2 text-[10px] text-ink-600 shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/90 dark:text-ink-300">
-          <Camera className="h-3.5 w-3.5 shrink-0" />
-          <span className="sr-only">Whitney mechanism camera view</span>
-          <select
-            aria-label="Whitney mechanism camera view"
-            value={activeCamera}
-            onChange={(event) => applyCameraPreset(event.target.value as CameraPreset)}
-            className="min-w-0 max-w-40 bg-transparent font-medium text-ink-800 outline-hidden dark:text-parchment-100"
+        {/* HUD suppression must not remove the only mechanism-inspection action
+            on tablets: keep the same source-named camera choices reachable. */}
+        {!showUiOverlay && (
+          <label
+            data-testid="whitney-compact-camera-control"
+            className="absolute top-14 left-3 z-10 flex min-h-9 max-w-[calc(100%-1.5rem)] items-center gap-1.5 rounded-xl border border-parchment-300 bg-white/90 px-2 text-[10px] text-ink-600 shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/90 dark:text-ink-300"
           >
-            {CAMERA_OPTIONS.map(([preset, label]) => (
-              <option key={preset} value={preset}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </label>
+            <Camera className="h-3.5 w-3.5 shrink-0" />
+            <span className="sr-only">Whitney mechanism camera view</span>
+            <select
+              aria-label="Whitney mechanism camera view"
+              value={activeCamera}
+              onChange={(event) => applyCameraPreset(event.target.value as CameraPreset)}
+              className="min-w-0 max-w-40 bg-transparent font-medium text-ink-800 outline-hidden dark:text-parchment-100"
+            >
+              {CAMERA_OPTIONS.map(([preset, label]) => (
+                <option key={preset} value={preset}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
 
         {/* Desktop camera preset toolbar */}
         {showUiOverlay && (

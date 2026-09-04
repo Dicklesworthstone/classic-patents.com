@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "l
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepBaekelandBakelite } from "@/physics/catalogKernels";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { ContinuumState, ThermodynamicsState } from "@/physics/types";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -47,18 +48,19 @@ export function BaekelandBakelite3D() {
   const [showCallouts, setShowCallouts] = useState(true);
   const [activePreset, setActivePreset] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
-  const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
+  const { params, effectiveParams, claimStates, updateParam } = usePatentPhysics(EXHIBIT_ID);
+  const claim1Active = claimStates[1] ?? true;
   const tempC = (params.curingTempC as number) ?? 130;
   const pressPsi = (params.autoclavePressurePsi as number) ?? 75;
   const catPct = (params.catalystPct as number) ?? 1.5;
   const timeMin = (params.curingTimeMin as number) ?? 60;
   const filler = (params.fillerPct as number) ?? 45;
+  const effectivePressPsi = claim1Active ? pressPsi : 0;
 
   const live = useLiveSimParams({
     curingTempC: tempC,
-    autoclavePressurePsi: pressPsi,
+    autoclavePressurePsi: effectivePressPsi,
     catalystPct: catPct,
     curingTimeMin: timeMin,
     fillerPct: filler,
@@ -70,12 +72,12 @@ export function BaekelandBakelite3D() {
   // (no time integration), so this face publishes an honest ENVELOPE —
   // autoclave thermodynamics and cured-resin strength from
   // stepBaekelandBakelite — while the local rAF keeps pacing the display.
-  const sim = stepBaekelandBakelite(tempC, pressPsi, catPct, timeMin, filler);
+  const sim = stepBaekelandBakelite(tempC, effectivePressPsi, catPct, timeMin, filler);
 
   const bakeliteThermo: ThermodynamicsState = {
     temperatureCelsius: tempC,
     temperatureKelvin: tempC + 273.15,
-    pressureAtm: pressPsi / 14.6959, // autoclave gauge psi -> atm
+    pressureAtm: effectivePressPsi / 14.6959, // autoclave gauge psi -> atm
     partialPressureButaneAtm: 0,
     heatInputWatts: 0,
     coolingPowerWatts: 0,
@@ -95,10 +97,12 @@ export function BaekelandBakelite3D() {
   useFrankenSimPhysics(EXHIBIT_ID, {
     domain: "materials_kinetics",
     refusal: {
-      isRefused: !sim.isFoamingSuppressed,
-      reason: !sim.isFoamingSuppressed
-        ? "Insufficient mold pressure: foaming voids would defeat the thermoset"
-        : undefined,
+      isRefused: !claim1Active || !sim.isFoamingSuppressed,
+      reason: !claim1Active
+        ? "Claim 1 comparison withholds pressure from the combined heat-and-pressure cure."
+        : !sim.isFoamingSuppressed
+          ? "Insufficient mold pressure: foaming voids would defeat the thermoset"
+          : undefined,
     },
     thermo: bakeliteThermo,
     continuum: curedContinuum,
@@ -166,8 +170,8 @@ export function BaekelandBakelite3D() {
   const chips: KernelChip[] = [
     {
       label: "Stage",
-      value: sim.resinStage.split(" ")[0] ?? "A-stage",
-      tone: sim.resinStage.startsWith("C") ? "ok" : undefined,
+      value: sim.isFoamingSuppressed ? (sim.resinStage.split(" ")[0] ?? "A-stage") : "Porous cure",
+      tone: sim.isFoamingSuppressed && sim.resinStage.startsWith("C") ? "ok" : "warn",
     },
     {
       label: "Conversion",
@@ -176,18 +180,18 @@ export function BaekelandBakelite3D() {
     },
     {
       label: "P_model",
-      value: `${pressPsi} psi`,
+      value: `${effectivePressPsi} psi`,
       tone: sim.isFoamingSuppressed ? "ok" : "warn",
     },
     {
       label: "Tensile (model)",
       value: `${sim.tensileStrengthMpa} MPa`,
-      tone: "ok",
+      tone: sim.isFoamingSuppressed ? "ok" : "warn",
     },
     {
       label: "Dielectric (model)",
       value: `${sim.dielectricBreakdownKvPerMm} kV/mm`,
-      tone: "ok",
+      tone: sim.isFoamingSuppressed ? "ok" : "warn",
     },
   ];
 
@@ -354,15 +358,16 @@ export function BaekelandBakelite3D() {
         <ClaimConstraintToggle
           patentId="us-942699-baekeland-bakelite"
           claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
+          onToggleClaim={(claimNo, active) => {
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0);
+            if (!active) setCutaway(true);
+          }}
           className="mt-2"
         />
 
         <PortHamiltonianEnergyStrip
           patentId="us-942699-baekeland-bakelite"
-          params={params}
+          params={effectiveParams}
           className="mt-3"
         />
       </div>

@@ -2109,11 +2109,16 @@ async function auditPatent(
         movingEnd.frankenSimBoundary ===
           "fs-mbd::revolute+belt-contact-browser-composition-unavailable";
 
-      if (viewport === "phone" || viewport === "phone375") {
-        await surface.getByLabel("Whitney mechanism camera view").selectOption("grate_teeth");
-      } else {
-        await surface.getByRole("button", { name: "Breastwork & Teeth" }).click();
-      }
+      const inspectWhitneyMechanism = async (preset: string, label: string) => {
+        const compactCameraControl = surface.getByLabel("Whitney mechanism camera view");
+        if (await compactCameraControl.isVisible()) {
+          await compactCameraControl.selectOption(preset);
+          return;
+        }
+        await surface.getByRole("button", { name: label }).click();
+      };
+
+      await inspectWhitneyMechanism("grate_teeth", "Breastwork & Teeth");
       await page.waitForTimeout(100);
       const wireTeethScreenshotPath = path.join(
         SCREENSHOT_DIRECTORY,
@@ -2121,11 +2126,7 @@ async function auditPatent(
       );
       await dispatcher.screenshot({ path: wireTeethScreenshotPath });
 
-      if (viewport === "phone" || viewport === "phone375") {
-        await surface.getByLabel("Whitney mechanism camera view").selectOption("direct_winch");
-      } else {
-        await surface.getByRole("button", { name: "Direct Winch" }).click();
-      }
+      await inspectWhitneyMechanism("direct_winch", "Direct Winch");
       await page.waitForTimeout(100);
       const directWinchScreenshotPath = path.join(
         SCREENSHOT_DIRECTORY,
@@ -2133,11 +2134,7 @@ async function auditPatent(
       );
       await dispatcher.screenshot({ path: directWinchScreenshotPath });
 
-      if (viewport === "phone" || viewport === "phone375") {
-        await surface.getByLabel("Whitney mechanism camera view").selectOption("whirl_drive");
-      } else {
-        await surface.getByRole("button", { name: "Whirls & Band" }).click();
-      }
+      await inspectWhitneyMechanism("whirl_drive", "Whirls & Band");
       await page.waitForTimeout(100);
       const crossedBandScreenshotPath = path.join(
         SCREENSHOT_DIRECTORY,

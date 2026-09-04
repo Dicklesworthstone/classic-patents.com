@@ -2,7 +2,6 @@
 
 import { Radio, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
-import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { readLamarrRuntimeControls, readLamarrTapeFrame } from "@/physics/lamarrSharedKernel";
 import { usePatentRuntimeTick } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -13,24 +12,26 @@ import { useOffscreenGate } from "./useOffscreenGate";
 const TRANSMITTER_ROWS = ["A", "B", "C", "D", "E", "F", "G"] as const;
 
 export function LamarrFrequencyHoppingSim() {
-  const { params, updateParam, resetParams } = usePatentPhysics(
+  const { effectiveParams, updateParam, resetParams } = usePatentPhysics(
     "us-2292387-lamarr-frequency-hopping",
   );
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [rudderStep, setRudderStep] = useState(0);
   const { rootRef } = useOffscreenGate<HTMLDivElement>();
   usePatentRuntimeTick("us-2292387-lamarr-frequency-hopping", 1);
-  const recordState = readLamarrTapeFrame(readLamarrRuntimeControls(params));
+  const recordState = readLamarrTapeFrame(readLamarrRuntimeControls(effectiveParams));
   const {
     recordPosition,
     transmitterRow: txRow,
     receiverEffective: receiverTuned,
     warningLampOn: lampOn,
+    recordSynchronizationPresent,
   } = recordState;
   const transmitCommand = () => {
     const next = readLamarrTapeFrame({
       recordPosition,
       commandTone: recordState.commandTone === 500 ? 500 : 100,
+      claim1SynchronizedRecordsPresent: recordSynchronizationPresent,
     });
     if (!next.receiverEffective) return;
     setRudderStep((step) => step + next.commandDelta);
@@ -66,7 +67,9 @@ export function LamarrFrequencyHoppingSim() {
             }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-colors border shadow-sm bg-purple-700 text-white border-purple-800"
           >
-            Advance matched records one index
+            {recordSynchronizationPresent
+              ? "Advance matched records one index"
+              : "Advance transmitter record one index"}
           </button>
           <button
             type="button"
@@ -114,18 +117,24 @@ export function LamarrFrequencyHoppingSim() {
               <span className="text-ink-400 block mt-3">7 tuning condensers · 24a–24g</span>
             </div>
             <div className="rounded-xl border border-cyan-700/50 bg-cyan-950/30 p-4">
-              <span className="text-cyan-300 block mb-2">RECEIVER RECORD 37′</span>
+              <span className="text-cyan-300 block mb-2">
+                RECEIVER RECORD 37′{recordSynchronizationPresent ? "" : " — WITHHELD"}
+              </span>
               <div className="flex gap-1.5">
                 {TRANSMITTER_ROWS.map((row) => (
                   <span
                     key={row}
-                    className={`w-8 h-8 rounded border flex items-center justify-center ${row === txRow && receiverTuned ? "bg-cyan-500 text-white border-cyan-300" : "border-ink-600 text-ink-400"}`}
+                    className={`w-8 h-8 rounded border flex items-center justify-center ${recordSynchronizationPresent && row === txRow && receiverTuned ? "bg-cyan-500 text-white border-cyan-300" : "border-ink-600 text-ink-400"}`}
                   >
                     {row}
                   </span>
                 ))}
               </div>
-              <span className="text-ink-400 block mt-3">4 effective channels · 24′d–24′g</span>
+              <span className="text-ink-400 block mt-3">
+                {recordSynchronizationPresent
+                  ? "4 effective channels · 24′d–24′g"
+                  : "Claim 1 synchronized receiver actuation absent"}
+              </span>
             </div>
           </div>
           <div
@@ -136,7 +145,9 @@ export function LamarrFrequencyHoppingSim() {
               <span className="text-sm text-parchment-100">
                 {lampOn
                   ? "LAMP ON — transmitter-only false channel"
-                  : "LAMP OFF — transmitter and receiver tuned alike"}
+                  : recordSynchronizationPresent
+                    ? "LAMP OFF — transmitter and receiver tuned alike"
+                    : "LAMP OFF — receiver match not inferred"}
               </span>
             </div>
             <span
@@ -153,7 +164,9 @@ export function LamarrFrequencyHoppingSim() {
         <div className="lg:col-span-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/60 p-5 space-y-5">
           <label className="space-y-2 block text-xs font-mono">
             <span className="font-semibold text-ink-800 dark:text-parchment-200">
-              Record position (matched strips)
+              {recordSynchronizationPresent
+                ? "Record position (matched strips)"
+                : "Transmitter record position"}
             </span>
             <input
               type="range"
@@ -202,23 +215,11 @@ export function LamarrFrequencyHoppingSim() {
             channels; the lamp warns the operator.
           </p>
 
-          <TwoClocksStrip
-            title="carrier wave cycle vs piano roll frequency hop rate"
-            fast={{
-              name: "RF carrier period",
-              period: "20.0",
-              scale: "µs",
-              detail:
-                "50 kHz electromagnetic radio frequency carrier wave oscillations transmitted to torpedo antenna.",
-            }}
-            slow={{
-              name: "Slotted tape hop rate",
-              period: "700",
-              scale: "ms",
-              detail:
-                "Punched player-piano paper roll step rate advancing synchronously between transmitter and receiver.",
-            }}
-          />
+          <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-xs leading-relaxed text-amber-950 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-100">
+            Source boundary: the grant prints the record/tuning topology and the 100-cycle and
+            500-cycle command labels, but no carrier frequency, record speed, RF power, or hopping
+            period.
+          </div>
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import type { TapeUpdater } from "./useFrankenSimPhysics";
 
 export interface FarnsworthTvControls {
   readonly running: boolean;
+  readonly claim1ScanPathPresent: boolean;
   readonly anodeVoltage: number;
   readonly coilCurrent: number;
   readonly lightIntensityLux: number;
@@ -14,6 +15,7 @@ export interface FarnsworthTvControls {
 
 export const DEFAULT_FARNSWORTH_CONTROLS: FarnsworthTvControls = {
   running: true,
+  claim1ScanPathPresent: true,
   anodeVoltage: 1500,
   coilCurrent: 0.42,
   lightIntensityLux: 500,
@@ -28,6 +30,10 @@ export function readFarnsworthTvControls(
   return {
     running:
       raw?.running === undefined ? DEFAULT_FARNSWORTH_CONTROLS.running : Boolean(raw.running),
+    claim1ScanPathPresent:
+      raw?.claim1ScanPathPresent === undefined
+        ? DEFAULT_FARNSWORTH_CONTROLS.claim1ScanPathPresent
+        : Number(raw.claim1ScanPathPresent) >= 0.5,
     anodeVoltage: Math.max(500, Math.min(6000, raw?.anodeVoltage ?? 1500)),
     coilCurrent: Math.max(0.1, Math.min(1, raw?.coilCurrent ?? 0.42)),
     lightIntensityLux: Math.max(0, Math.min(2000, raw?.lightIntensityLux ?? 500)),
@@ -43,6 +49,7 @@ function sameFarnsworthTvControls(
 ): boolean {
   return (
     left.running === right.running &&
+    left.claim1ScanPathPresent === right.claim1ScanPathPresent &&
     left.anodeVoltage === right.anodeVoltage &&
     left.coilCurrent === right.coilCurrent &&
     left.lightIntensityLux === right.lightIntensityLux &&
@@ -120,7 +127,13 @@ export function createFarnsworthTvTransportUpdater(
 
     return {
       domain: "semiconductor_microarch",
-      refusal: { isRefused: false },
+      refusal: controls.claim1ScanPathPresent
+        ? { isRefused: false }
+        : {
+            isRefused: true,
+            reason:
+              "Claim 1 electrical-image traversal is withheld; no raster telemetry or substitute scanning mechanism is inferred.",
+          },
       semi: {
         biasVoltageVolts: result.beamState.acceleratingVoltageVolts,
         currentGainAlpha: 0,
@@ -134,17 +147,19 @@ export function createFarnsworthTvTransportUpdater(
         powerGainDb: 0,
         collectorCurrentMa: 0,
       },
-      raster: {
-        simTimeSec: result.state.simTimeSec,
-        scanLines: result.beamState.scanLines,
-        rasterLineIndex: result.scanFrame.rasterLineIndex,
-        rasterXPercent: result.scanFrame.rasterXPercent,
-        rasterYPercent: result.scanFrame.rasterYPercent,
-        beamFraction: result.scanFrame.beamFraction,
-        horizontalDeflectionUnits: result.scanFrame.horizontalDeflectionUnits,
-        verticalDeflectionUnits: result.scanFrame.verticalDeflectionUnits,
-        inHorizontalRetrace: result.scanFrame.inHorizontalRetrace,
-      },
+      raster: controls.claim1ScanPathPresent
+        ? {
+            simTimeSec: result.state.simTimeSec,
+            scanLines: result.beamState.scanLines,
+            rasterLineIndex: result.scanFrame.rasterLineIndex,
+            rasterXPercent: result.scanFrame.rasterXPercent,
+            rasterYPercent: result.scanFrame.rasterYPercent,
+            beamFraction: result.scanFrame.beamFraction,
+            horizontalDeflectionUnits: result.scanFrame.horizontalDeflectionUnits,
+            verticalDeflectionUnits: result.scanFrame.verticalDeflectionUnits,
+            inHorizontalRetrace: result.scanFrame.inHorizontalRetrace,
+          }
+        : undefined,
     };
   };
 }

@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "l
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepEinsteinRefrigerator } from "@/physics/catalogKernels";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { ensureGenericWasm } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import type { ThermodynamicsState } from "@/physics/types";
@@ -25,17 +26,17 @@ import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "generator" | "condenser" | "evaporator" | "absorber" | "top";
+type CameraPreset = "iso" | "generator" | "condenser" | "evaporator" | "exchanger" | "top";
 
 const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
   iso: { pos: [11, 8, 14], target: [0, 0, 0] },
-  generator: { pos: [3.8, 0.4, 3.8], target: [3.4, -0.8, 0] },
-  condenser: { pos: [2.4, 3.6, 3.0], target: [2.2, 2.6, 0] },
-  evaporator: { pos: [-2.8, 2.8, 3.8], target: [-2.8, 1.8, 0] },
-  absorber: { pos: [-3.2, -0.6, 3.6], target: [-2.8, -1.4, 0] },
+  generator: { pos: [-4.8, -1.1, 3.8], target: [-3.4, -2.05, 0] },
+  condenser: { pos: [2.4, 2.8, 3.8], target: [0, 0, 0] },
+  evaporator: { pos: [4.8, 1.7, 3.8], target: [3.4, 0.32, 0] },
+  exchanger: { pos: [-3.2, -0.6, 3.6], target: [-1.55, -2.05, 0] },
   top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
 };
 
@@ -55,17 +56,20 @@ export function EinsteinRefrigerator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Absorption Thermodynamics State Controls
-  const { params, updateParam } = usePatentPhysics("us-1781541-einstein-refrigerator");
+  const { params, effectiveParams, updateParam, claimStates } = usePatentPhysics(
+    "us-1781541-einstein-refrigerator",
+  );
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
-  const heatInputWatts = params.heatInput ?? 220;
-  const systemPressureAtm = params.totalPressure ?? 15;
-  const auxiliaryGasRatio = params.ammoniaRatio ?? params.auxiliaryGasRatio ?? 0.65;
+  const heatInputWatts = effectiveParams.heatInput ?? 220;
+  const systemPressureAtm = effectiveParams.totalPressure ?? 15;
+  const auxiliaryGasRatio =
+    effectiveParams.ammoniaRatio ?? effectiveParams.auxiliaryGasRatio ?? 0.65;
   const [isHeating, _setIsHeating] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+  const claim1Active = claimStates[1] ?? true;
 
   useEffect(() => {
     void ensureGenericWasm();
@@ -75,6 +79,7 @@ export function EinsteinRefrigerator3D() {
     heatInput: heatInputWatts,
     totalPressure: systemPressureAtm,
     ammoniaRatio: auxiliaryGasRatio,
+    claim1LiftPathPresent: effectiveParams.claim1LiftPathPresent,
   });
   const evaporatorTemperatureCelsius = frige.evapTempC;
   const copEfficiency = frige.cop.toFixed(2);
@@ -88,7 +93,7 @@ export function EinsteinRefrigerator3D() {
     isAudioMuted,
     totalPressureAtm: systemPressureAtm,
     partialPressureButaneAtm: frige.partialPressureButaneAtm,
-    claim1Active: claimStates[1] === false ? 0 : 1,
+    claim1Active: claim1Active ? 1 : 0,
     coolingWatts: frige.coolingWatts,
     evapTempC: frige.evapTempC,
     cop: frige.cop,
@@ -104,7 +109,12 @@ export function EinsteinRefrigerator3D() {
   // the patentId-keyed bus so every face reads one deterministic state.
   useFrankenSimPhysics("us-1781541-einstein-refrigerator", {
     domain: "thermodynamics_transport",
-    refusal: { isRefused: false },
+    refusal: claim1Active
+      ? { isRefused: false }
+      : {
+          isRefused: true,
+          reason: frige.refusalReason ?? "Claim 1 heated liquid-lift path is withheld.",
+        },
     thermo: {
       ...IDLE_THERMO,
       temperatureCelsius: frige.evapTempC,
@@ -112,7 +122,7 @@ export function EinsteinRefrigerator3D() {
       pressureAtm: systemPressureAtm,
       partialPressureButaneAtm: frige.partialPressureButaneAtm,
       heatInputWatts,
-      coolingPowerWatts: frige.coolingWatts,
+      coolingPowerWatts: claim1Active ? frige.coolingWatts : 0,
       coefficientOfPerformance: frige.cop,
     },
   });
@@ -126,7 +136,7 @@ export function EinsteinRefrigerator3D() {
         refusal: {
           isRefused: refused,
           reason: refused
-            ? "Claim 1 valve closed: absorption cycle held at last legal state"
+            ? "Claim 1 heated conduit 32 is withheld; no cooling state is inferred."
             : undefined,
         },
         thermo: {
@@ -136,8 +146,8 @@ export function EinsteinRefrigerator3D() {
           pressureAtm: live.current.totalPressureAtm ?? 15,
           partialPressureButaneAtm: live.current.partialPressureButaneAtm ?? 5.25,
           heatInputWatts: live.current.heatInputWatts ?? 220,
-          coolingPowerWatts: live.current.coolingWatts ?? 0,
-          coefficientOfPerformance: live.current.cop ?? 0,
+          coolingPowerWatts: refused ? 0 : (live.current.coolingWatts ?? 0),
+          coefficientOfPerformance: refused ? 0 : (live.current.cop ?? 0),
         },
       };
     };
@@ -201,6 +211,7 @@ export function EinsteinRefrigerator3D() {
         p.isCutaway,
         p.heatFrameIndex,
         p.fluidWrapY,
+        (p.claim1Active ?? 1) >= 0.5,
       );
 
       controls.update();
@@ -237,7 +248,7 @@ export function EinsteinRefrigerator3D() {
                 ["generator", "Boiler Generator"],
                 ["condenser", "Condenser Fins"],
                 ["evaporator", "Cold Evaporator"],
-                ["absorber", "Absorber Column"],
+                ["exchanger", "Solution Exchanger"],
                 ["top", "Top View"],
               ] as const
             ).map(([preset, label]) => (
@@ -329,13 +340,15 @@ export function EinsteinRefrigerator3D() {
                 Evaporator Temp:
               </span>
               <span className="font-bold text-cyan-700 dark:text-cyan-400">
-                {evaporatorTemperatureCelsius.toFixed(1)} °C ({frige.evapTempF} °F)
+                {claim1Active
+                  ? `${evaporatorTemperatureCelsius.toFixed(1)} °C (${frige.evapTempF} °F)`
+                  : "WITHHELD"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Cooling Output:</span>
               <span className="text-emerald-800 dark:text-emerald-400 font-bold">
-                {coolingPowerWatts.toFixed(1)} W
+                {claim1Active ? `${coolingPowerWatts.toFixed(1)} W` : "REFUSED"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
@@ -347,7 +360,7 @@ export function EinsteinRefrigerator3D() {
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">COP Efficiency:</span>
               <span className="text-purple-800 dark:text-purple-400 font-bold">
-                {copEfficiency}
+                {claim1Active ? copEfficiency : "REFUSED"}
               </span>
             </div>
           </div>
@@ -361,16 +374,16 @@ export function EinsteinRefrigerator3D() {
           chips={[
             {
               label: "T_evap",
-              value: `${evaporatorTemperatureCelsius.toFixed(1)}`,
-              unit: "°C",
-              tone: "ok",
+              value: claim1Active ? evaporatorTemperatureCelsius.toFixed(1) : "WITHHELD",
+              unit: claim1Active ? "°C" : undefined,
+              tone: claim1Active ? "ok" : "warn",
             },
             {
               label: "Q_cooling",
-              value: `${coolingPowerWatts.toFixed(0)}`,
-              unit: "W",
+              value: claim1Active ? coolingPowerWatts.toFixed(0) : "REFUSED",
+              unit: claim1Active ? "W" : undefined,
             },
-            { label: "COP", value: copEfficiency },
+            { label: "COP", value: claim1Active ? copEfficiency : "REFUSED" },
             { label: "Q_heat", value: `${heatInputWatts.toFixed(0)}`, unit: "W" },
             {
               label: "P_total",
@@ -378,7 +391,14 @@ export function EinsteinRefrigerator3D() {
               unit: "atm",
             },
             { label: "Working Fluid", value: "Butane + NH₃ + H₂O" },
-            { label: "Mechanism", value: "Zero Moving Parts / Hermetic" },
+            {
+              label: "Mechanism",
+              value: claim1Active
+                ? "Gravity + Heat-Lift / Hermetic"
+                : "Conduit 32 Withheld / Open Cycle",
+              tone: claim1Active ? undefined : "warn",
+            },
+            { label: "Boundary", value: "Illustrative scenario — patent prints no setpoint" },
           ]}
         />
       </div>
@@ -433,16 +453,23 @@ export function EinsteinRefrigerator3D() {
           patentId="us-1781541-einstein-refrigerator"
           claimStates={claimStates}
           onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0)
           }
           className="mt-2"
         />
 
-        <PortHamiltonianEnergyStrip
-          patentId="us-1781541-einstein-refrigerator"
-          params={params}
-          className="mt-3"
-        />
+        {claim1Active ? (
+          <PortHamiltonianEnergyStrip
+            patentId="us-1781541-einstein-refrigerator"
+            params={effectiveParams}
+            className="mt-3"
+          />
+        ) : (
+          <div className="mt-3 rounded-xl border border-rose-300 bg-rose-50 px-3 py-2 font-mono text-[11px] text-rose-900 dark:border-rose-900/60 dark:bg-rose-950/30 dark:text-rose-200">
+            Energy ledger refused: Claim 1&apos;s heat-lift return is open, and the grant prints no
+            replacement operating state.
+          </div>
+        )}
       </div>
     </div>
   );

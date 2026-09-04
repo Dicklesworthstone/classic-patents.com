@@ -41,9 +41,9 @@
 - `public/patents/transcripts/us-4512709-milacron-robot-toolchanger-reviewed.txt`
   is the page-marked research ledger used to compare the edition to this ten-page
   facsimile. Its page markers are not shown in the public edition.
-- Facsimile-derived figure crops are stored below
-  `public/patents/figures/us-4512709-milacron-robot-toolchanger/`. Every authored
-  figure reference in the edition must point at one or more of those local files.
+- The active edition uses complete pinned drawing sheets below
+  `public/patents/figures/us-4512709-milacron-robot-toolchanger/`. The earlier
+  per-figure crops remain preserved as research assets and are not active evidence.
 - The grant prints four numbered claims. The archival edition preserves all four, and
   the catalogue record reads the exact claim text dynamically from that edition.
 - Google Patents HTML and the PDF text layer may aid comparison only. Published
@@ -55,3 +55,21 @@
   force, lock capacity, tool mass, cycle time, positional accuracy, or production rate.
   The interactive kernel must therefore model only normalized engagement topology and
   explicitly refuse quantitative mechanical-performance claims.
+
+## Complete source-sheet acceptance (2026-09-04)
+
+Each printed drawing sheet was rendered directly from its pinned PDF page at
+the document's native 2320 × 3408 raster, then visually reviewed. The active
+assets retain each sheet's patent header, date, patent number, sheet number,
+figure labels, reference numerals, and neighboring drawing matter. The
+occurrence-source locator registry binds all 48 active references to their
+specific PDF page and complete source raster.
+
+| PDF page | Printed sheet | Figures | Active asset | SHA-256 |
+| ---: | --- | --- | --- | --- |
+| 2 | Sheet 1 of 6 | FIG. 1 | `source-sheet-1-v1.png` | `69a4af0cd55654b64c81632a7b468747e18e5c8f0846a1caf1991538b1d96f1b` |
+| 3 | Sheet 2 of 6 | FIGS. 2–4 | `source-sheet-2-v1.png` | `3c74c40253075ab664d16989e99e6897651f9567e328e0657f243da0886f4d84` |
+| 4 | Sheet 3 of 6 | FIG. 5 | `source-sheet-3-v1.png` | `db28f711c7a5fb0e3f87d8f00b5d7bf05c236e2f8cd002c754d76c203ea7189f` |
+| 5 | Sheet 4 of 6 | FIG. 6 | `source-sheet-4-v1.png` | `84279d2d0ea08a6b5ccaccdc16037cfce23f3f0293dac0a34fe2eb0d49f0c7ff` |
+| 6 | Sheet 5 of 6 | FIGS. 7–8 | `source-sheet-5-v1.png` | `9df5f88065595eb69a1adfdd34d98633683b4cd8f0c34395929bc572d817d10b` |
+| 7 | Sheet 6 of 6 | FIGS. 9–10 | `source-sheet-6-v1.png` | `52602994eb1170e6f1a3e9b6248f45e76446eb08cfbef617ffc00c212ac8ed25` |

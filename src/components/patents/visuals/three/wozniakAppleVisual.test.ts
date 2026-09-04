@@ -149,6 +149,57 @@ describe("US 4,136,359 Steve Wozniak Apple II Microcomputer visual & bus timing 
     }
   });
 
+  test("fits the whole Apple II source envelope and readable DIP packages in the live 375px canvas", () => {
+    const model = buildWozniakAppleModel();
+    try {
+      // The 375px reader route is inset by the exhibit shell: its live studio
+      // canvas is 341 × 380px, not the browser's outer 375 × 812px viewport.
+      const canvasWidth = 341;
+      const canvasHeight = 380;
+      const view = wozniakAppleCameraForViewport("iso", canvasWidth, canvasHeight);
+      const camera = new THREE.PerspectiveCamera(42, canvasWidth / canvasHeight, 0.1, 1000);
+      camera.position.set(...view.pos);
+      camera.lookAt(...view.target);
+      camera.updateProjectionMatrix();
+      camera.updateMatrixWorld();
+
+      const primaryMaximum = stepWozniakApple({ crystalFreq: 28, ramCapacityKb: 48 });
+      for (const [stateName, cutaway] of [
+        ["default", false],
+        ["primary control maximum", false],
+        ["claim-inverted comparison", true],
+      ] as const) {
+        model.setCutaway?.(cutaway);
+        model.updateKinematics(0.4, 12, primaryMaximum.busDisplaySpeed, true);
+        const apparatus = projectedObjectBounds(model.root, camera);
+
+        expect(apparatus.minX, `${stateName} left source envelope`).toBeGreaterThan(-0.7);
+        expect(apparatus.maxX, `${stateName} right source envelope`).toBeLessThan(0.7);
+        expect(apparatus.minY, `${stateName} lower source envelope`).toBeGreaterThan(-0.5);
+        expect(apparatus.maxY, `${stateName} upper source envelope`).toBeLessThan(0.3);
+        expect(
+          ((apparatus.maxX - apparatus.minX) * canvasWidth) / 2,
+          `${stateName} horizontal legibility`,
+        ).toBeGreaterThan(200);
+        expect(
+          ((apparatus.maxY - apparatus.minY) * canvasHeight) / 2,
+          `${stateName} vertical legibility`,
+        ).toBeGreaterThan(125);
+      }
+
+      // The 6502/DRAM/ROM packages must remain visually distinct from dark
+      // FR-4; they are dielectric molded packages, not mirrored black metal.
+      const chipLuminance =
+        0.2126 * model.icChipMaterial.color.r +
+        0.7152 * model.icChipMaterial.color.g +
+        0.0722 * model.icChipMaterial.color.b;
+      expect(chipLuminance).toBeGreaterThan(0.12);
+      expect(model.icChipMaterial.emissiveIntensity).toBeGreaterThan(0);
+    } finally {
+      model.dispose();
+    }
+  });
+
   test("reselects only the overview for a desktop-to-phone resize", () => {
     const source = readFileSync(join(VISUALS_DIRECTORY, "three", "WozniakApple3D.tsx"), "utf8");
     expect(wozniakAppleCameraForViewport("iso", 1216, 460)).toEqual({

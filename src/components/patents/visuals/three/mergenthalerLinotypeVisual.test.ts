@@ -73,6 +73,9 @@ describe("US 313,224 Mergenthaler matrix-bar visual and source boundary", () => 
     expect(threeSource).toContain("typed refusal — no SI data");
     expect(threeSource).not.toContain("useGenericWasmSource");
     expect(threeSource).not.toContain("PortHamiltonianEnergyStrip");
+    expect(threeSource).toContain("claimConstraintStateParamId");
+    expect(threeSource).not.toContain("ensureGenericWasm");
+    expect(threeSource).not.toContain("setClaimStates");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

@@ -4,6 +4,7 @@ import type { TapeUpdater } from "./useFrankenSimPhysics";
 export interface LamarrRuntimeControls {
   readonly recordPosition: number;
   readonly commandTone: 100 | 500;
+  readonly claim1SynchronizedRecordsPresent: boolean;
 }
 
 export function readLamarrRuntimeControls(
@@ -12,6 +13,10 @@ export function readLamarrRuntimeControls(
   return {
     recordPosition: Math.max(0, Math.min(6, Math.round(raw?.recordPosition ?? 0))),
     commandTone: raw?.commandTone === 500 ? 500 : 100,
+    claim1SynchronizedRecordsPresent:
+      raw?.claim1SynchronizedRecordsPresent === undefined
+        ? true
+        : Number(raw.claim1SynchronizedRecordsPresent) >= 0.5,
   };
 }
 
@@ -27,7 +32,8 @@ export function getLamarrTapeFrame(): LamarrTapeFrame | undefined {
 export function readLamarrTapeFrame(controls: LamarrRuntimeControls): LamarrTapeFrame {
   if (
     tapeFrame?.recordPosition === controls.recordPosition &&
-    tapeFrame.commandTone === controls.commandTone
+    tapeFrame.commandTone === controls.commandTone &&
+    tapeFrame.recordSynchronizationPresent === controls.claim1SynchronizedRecordsPresent
   ) {
     return tapeFrame;
   }
@@ -46,21 +52,29 @@ export function createLamarrTransportUpdater(
     const controls = getControls();
     if (
       tapeFrame?.recordPosition === controls.recordPosition &&
-      tapeFrame.commandTone === controls.commandTone
+      tapeFrame.commandTone === controls.commandTone &&
+      tapeFrame.recordSynchronizationPresent === controls.claim1SynchronizedRecordsPresent
     ) {
       return null;
     }
     tapeFrame = stepLamarrRecordControl(controls);
     return {
       domain: "electromagnetics_flux",
-      refusal: { isRefused: false },
+      refusal: tapeFrame.recordSynchronizationPresent
+        ? { isRefused: false }
+        : {
+            isRefused: true,
+            reason: tapeFrame.refusalReason ?? "Claim 1 record synchronization is withheld.",
+          },
       machine: {
         poseXMeters: tapeFrame.recordPosition,
         poseYMeters: 0,
         headingRad: 0,
-        modeLabel: tapeFrame.receiverEffective
-          ? `matched row ${tapeFrame.transmitterRow}`
-          : `unmatched row ${tapeFrame.transmitterRow}`,
+        modeLabel: !tapeFrame.recordSynchronizationPresent
+          ? `receiver record withheld; transmitter row ${tapeFrame.transmitterRow}`
+          : tapeFrame.receiverEffective
+            ? `matched row ${tapeFrame.transmitterRow}`
+            : `transmitter-only row ${tapeFrame.transmitterRow}`,
         wheelSpeedMps: 0,
       },
     };

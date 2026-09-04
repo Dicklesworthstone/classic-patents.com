@@ -250,7 +250,6 @@ const GENERIC_WASM_PATENT_IDS = new Set([
   "us-174465-bell-telephone",
   "us-247804-delaval-separator",
   "us-2981877-noyce-ic",
-  "us-313224-mergenthaler-linotype",
   "us-319596-maxim-machine-gun",
   "us-347140-thomson-welding",
   "us-381968-tesla-motor",

@@ -3834,6 +3834,231 @@ function lemelsonAutomaticWarehousingSourceSheetLocator(
   };
 }
 
+const ENGELBART_MOUSE_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const ENGELBART_MOUSE_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-3541541-engelbart-mouse.md#complete-source-sheet-acceptance-2026-09-04";
+const ENGELBART_MOUSE_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-3541541-engelbart-mouse/source-sheet-1-v1.png",
+  2: "/patents/figures/us-3541541-engelbart-mouse/source-sheet-2-v1.png",
+  3: "/patents/figures/us-3541541-engelbart-mouse/source-sheet-3-v1.png",
+} as const;
+const ENGELBART_MOUSE_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-1-group-0-inline-0", 1],
+  ["edition-block-1-group-0-inline-2", 1],
+  ["edition-block-1-group-0-inline-4", 1],
+  ["edition-block-2-group-0-inline-0", 2],
+  ["edition-block-2-group-0-inline-2", 2],
+  ["edition-block-2-group-0-inline-4", 2],
+  ["edition-block-3-group-0-inline-0", 3],
+  ["edition-block-17-group-0-inline-0", 1],
+  ["edition-block-17-group-0-inline-2", 1],
+  ["edition-block-17-group-0-inline-4", 1],
+  ["edition-block-17-group-0-inline-6", 1],
+  ["edition-block-17-group-0-inline-8", 2],
+  ["edition-block-17-group-0-inline-10", 2],
+  ["edition-block-17-group-0-inline-12", 2],
+  ["edition-block-17-group-0-inline-14", 3],
+  ["edition-block-19-group-0-inline-0", 1],
+  ["edition-block-21-group-0-inline-1", 1],
+  ["edition-block-21-group-0-inline-3", 1],
+  ["edition-block-25-group-0-inline-0", 2],
+  ["edition-block-26-group-0-inline-1", 2],
+  ["edition-block-27-group-0-inline-0", 2],
+  ["edition-block-28-group-0-inline-1", 2],
+  ["edition-block-29-group-0-inline-0", 2],
+  ["edition-block-29-group-0-inline-2", 2],
+  ["edition-block-29-group-0-inline-4", 1],
+  ["edition-block-29-group-0-inline-6", 2],
+  ["edition-block-30-group-0-inline-1", 2],
+  ["edition-block-32-group-0-inline-1", 2],
+  ["edition-block-34-group-0-inline-1", 2],
+  ["edition-block-35-group-0-inline-0", 3],
+  ["edition-block-35-group-0-inline-2", 2],
+  ["edition-block-35-group-0-inline-4", 3],
+  ["edition-block-35-group-0-inline-6", 3],
+  ["edition-block-38-group-0-inline-1", 1],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof ENGELBART_MOUSE_SOURCE_SHEET_ASSETS,
+])[];
+
+function engelbartMouseSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof ENGELBART_MOUSE_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = { x: 0, y: 0, width: 2320, height: 3408 };
+  return {
+    occurrenceKey,
+    activeAsset: ENGELBART_MOUSE_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage,
+    sourceRaster: ENGELBART_MOUSE_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      ENGELBART_MOUSE_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: ENGELBART_MOUSE_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const WATSON_RCC_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const WATSON_RCC_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-4098001-watson-rcc.md#complete-source-sheet-acceptance-2026-09-04";
+const WATSON_RCC_SOURCE_SHEET_ASSETS = {
+  2: "/patents/figures/us-4098001-watson-rcc/source-sheet-1-v1.png",
+  3: "/patents/figures/us-4098001-watson-rcc/source-sheet-2-v1.png",
+  4: "/patents/figures/us-4098001-watson-rcc/source-sheet-3-v1.png",
+} as const;
+const WATSON_RCC_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-1-group-0-inline-0", 2],
+  ["edition-block-1-group-0-inline-2", 2],
+  ["edition-block-1-group-0-inline-4", 2],
+  ["edition-block-1-group-0-inline-6", 2],
+  ["edition-block-1-group-0-inline-8", 2],
+  ["edition-block-1-group-0-inline-10", 2],
+  ["edition-block-2-group-0-inline-0", 3],
+  ["edition-block-2-group-0-inline-2", 3],
+  ["edition-block-2-group-0-inline-4", 3],
+  ["edition-block-2-group-0-inline-6", 3],
+  ["edition-block-2-group-0-inline-8", 3],
+  ["edition-block-3-group-0-inline-0", 4],
+  ["edition-block-3-group-0-inline-2", 4],
+  ["edition-block-3-group-0-inline-4", 4],
+  ["edition-block-3-group-0-inline-6", 4],
+  ["edition-block-14-group-0-inline-1", 2],
+  ["edition-block-14-group-0-inline-3", 2],
+  ["edition-block-14-group-0-inline-5", 2],
+  ["edition-block-14-group-0-inline-7", 2],
+  ["edition-block-14-group-0-inline-9", 2],
+  ["edition-block-14-group-0-inline-11", 2],
+  ["edition-block-14-group-0-inline-13", 3],
+  ["edition-block-14-group-0-inline-15", 3],
+  ["edition-block-14-group-0-inline-17", 4],
+  ["edition-block-15-group-0-inline-1", 2],
+  ["edition-block-16-group-0-inline-3", 2],
+  ["edition-block-17-group-0-inline-1", 2],
+  ["edition-block-17-group-0-inline-3", 2],
+  ["edition-block-18-group-0-inline-1", 2],
+  ["edition-block-18-group-0-inline-3", 3],
+  ["edition-block-19-group-0-inline-1", 3],
+  ["edition-block-19-group-0-inline-3", 3],
+  ["edition-block-20-group-0-inline-1", 3],
+  ["edition-block-20-group-0-inline-3", 3],
+  ["edition-block-21-group-0-inline-1", 4],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof WATSON_RCC_SOURCE_SHEET_ASSETS,
+])[];
+
+function watsonRccSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof WATSON_RCC_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = { x: 0, y: 0, width: 2320, height: 3408 };
+  return {
+    occurrenceKey,
+    activeAsset: WATSON_RCC_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage,
+    sourceRaster: WATSON_RCC_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      WATSON_RCC_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: WATSON_RCC_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
+const MILACRON_ROBOT_TOOLCHANGER_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const MILACRON_ROBOT_TOOLCHANGER_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-4512709-milacron-robot-toolchanger.md#complete-source-sheet-acceptance-2026-09-04";
+const MILACRON_ROBOT_TOOLCHANGER_SOURCE_SHEET_ASSETS = {
+  2: "/patents/figures/us-4512709-milacron-robot-toolchanger/source-sheet-1-v1.png",
+  3: "/patents/figures/us-4512709-milacron-robot-toolchanger/source-sheet-2-v1.png",
+  4: "/patents/figures/us-4512709-milacron-robot-toolchanger/source-sheet-3-v1.png",
+  5: "/patents/figures/us-4512709-milacron-robot-toolchanger/source-sheet-4-v1.png",
+  6: "/patents/figures/us-4512709-milacron-robot-toolchanger/source-sheet-5-v1.png",
+  7: "/patents/figures/us-4512709-milacron-robot-toolchanger/source-sheet-6-v1.png",
+} as const;
+const MILACRON_ROBOT_TOOLCHANGER_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-3-group-0-inline-0", 2],
+  ["edition-block-4-group-0-inline-0", 3],
+  ["edition-block-4-group-0-inline-2", 3],
+  ["edition-block-4-group-0-inline-4", 3],
+  ["edition-block-5-group-0-inline-0", 4],
+  ["edition-block-5-group-0-inline-2", 5],
+  ["edition-block-6-group-0-inline-0", 6],
+  ["edition-block-6-group-0-inline-2", 6],
+  ["edition-block-7-group-0-inline-0", 7],
+  ["edition-block-7-group-0-inline-2", 7],
+  ["edition-block-18-group-0-inline-0", 2],
+  ["edition-block-18-group-0-inline-2", 3],
+  ["edition-block-18-group-0-inline-4", 3],
+  ["edition-block-18-group-0-inline-6", 3],
+  ["edition-block-18-group-0-inline-8", 3],
+  ["edition-block-18-group-0-inline-10", 3],
+  ["edition-block-18-group-0-inline-12", 4],
+  ["edition-block-18-group-0-inline-14", 3],
+  ["edition-block-18-group-0-inline-16", 5],
+  ["edition-block-18-group-0-inline-18", 4],
+  ["edition-block-18-group-0-inline-20", 6],
+  ["edition-block-18-group-0-inline-22", 5],
+  ["edition-block-18-group-0-inline-24", 6],
+  ["edition-block-18-group-0-inline-26", 6],
+  ["edition-block-18-group-0-inline-28", 7],
+  ["edition-block-18-group-0-inline-30", 7],
+  ["edition-block-18-group-0-inline-32", 7],
+  ["edition-block-20-group-0-inline-0", 2],
+  ["edition-block-22-group-0-inline-0", 3],
+  ["edition-block-22-group-0-inline-2", 3],
+  ["edition-block-22-group-0-inline-6", 5],
+  ["edition-block-23-group-0-inline-0", 3],
+  ["edition-block-23-group-0-inline-2", 4],
+  ["edition-block-23-group-0-inline-4", 5],
+  ["edition-block-24-group-0-inline-0", 3],
+  ["edition-block-24-group-0-inline-2", 3],
+  ["edition-block-25-group-0-inline-0", 4],
+  ["edition-block-26-group-0-inline-1", 5],
+  ["edition-block-27-group-0-inline-1", 6],
+  ["edition-block-27-group-0-inline-3", 4],
+  ["edition-block-27-group-0-inline-5", 7],
+  ["edition-block-27-group-0-inline-7", 6],
+  ["edition-block-27-group-0-inline-9", 6],
+  ["edition-block-28-group-0-inline-0", 7],
+  ["edition-block-28-group-0-inline-2", 7],
+  ["edition-block-28-group-0-inline-4", 6],
+  ["edition-block-28-group-0-inline-6", 6],
+  ["edition-block-29-group-0-inline-1", 3],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof MILACRON_ROBOT_TOOLCHANGER_SOURCE_SHEET_ASSETS,
+])[];
+
+function milacronRobotToolchangerSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof MILACRON_ROBOT_TOOLCHANGER_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = { x: 0, y: 0, width: 2320, height: 3408 };
+  return {
+    occurrenceKey,
+    activeAsset: MILACRON_ROBOT_TOOLCHANGER_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage,
+    sourceRaster: MILACRON_ROBOT_TOOLCHANGER_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      MILACRON_ROBOT_TOOLCHANGER_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct native-raster source-sheet review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: MILACRON_ROBOT_TOOLCHANGER_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
 const GATLING_GUN_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
 const GATLING_GUN_SOURCE_SHEET_EVIDENCE_REFERENCE =
   "docs/provenance/us-36836-gatling-gun.md#complete-source-sheet-acceptance-2026-09-04";
@@ -6178,6 +6403,17 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
     LEMELSON_AUTOMATIC_WAREHOUSING_SOURCE_SHEET_OCCURRENCES.map(([occurrenceKey, sourcePdfPage]) =>
       lemelsonAutomaticWarehousingSourceSheetLocator(occurrenceKey, sourcePdfPage),
     ),
+  "us-3541541-engelbart-mouse": ENGELBART_MOUSE_SOURCE_SHEET_OCCURRENCES.map(
+    ([occurrenceKey, sourcePdfPage]) =>
+      engelbartMouseSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
+  "us-4098001-watson-rcc": WATSON_RCC_SOURCE_SHEET_OCCURRENCES.map(
+    ([occurrenceKey, sourcePdfPage]) => watsonRccSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
+  "us-4512709-milacron-robot-toolchanger": MILACRON_ROBOT_TOOLCHANGER_SOURCE_SHEET_OCCURRENCES.map(
+    ([occurrenceKey, sourcePdfPage]) =>
+      milacronRobotToolchangerSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
   "us-36836-gatling-gun": GATLING_GUN_SOURCE_SHEET_OCCURRENCES.map(gatlingGunSourceSheetLocator),
   "us-x72-whitney-cotton-gin": WHITNEY_COTTON_GIN_SOURCE_SHEET_OCCURRENCES.map(
     ([occurrenceKey, sourcePdfPage]) =>

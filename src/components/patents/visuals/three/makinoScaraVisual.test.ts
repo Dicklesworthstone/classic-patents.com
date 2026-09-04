@@ -23,6 +23,7 @@ import {
 
 const THREE_DIRECTORY = join(process.cwd(), "src", "components", "patents", "visuals", "three");
 const COMPACT_PHONE_VIEWPORT = { width: 286, height: 380 };
+const WIDE_DESKTOP_VIEWPORT = { width: 1216, height: 460 };
 const COMPACT_SWEEP_SAFE_ZONE = { minX: -0.86, maxX: 0.86, minY: -0.5, maxY: 0.56 };
 
 function createCompactOverviewCamera() {
@@ -30,6 +31,21 @@ function createCompactOverviewCamera() {
   const camera = new THREE.PerspectiveCamera(
     42,
     COMPACT_PHONE_VIEWPORT.width / COMPACT_PHONE_VIEWPORT.height,
+    0.1,
+    100,
+  );
+  camera.position.fromArray(cameraView.position);
+  camera.lookAt(...cameraView.target);
+  camera.updateProjectionMatrix();
+  camera.updateMatrixWorld(true);
+  return camera;
+}
+
+function createWideDesktopOverviewCamera() {
+  const cameraView = makinoScaraViewForViewport("overview", WIDE_DESKTOP_VIEWPORT.width);
+  const camera = new THREE.PerspectiveCamera(
+    42,
+    WIDE_DESKTOP_VIEWPORT.width / WIDE_DESKTOP_VIEWPORT.height,
     0.1,
     100,
   );
@@ -201,6 +217,86 @@ describe("US 4,341,502 Makino Assembly Robot visual boundary", () => {
       expect(frame.maxX).toBeLessThan(0.94);
       expect(frame.minY).toBeGreaterThan(-0.9);
       expect(frame.maxY).toBeLessThan(0.4);
+    }
+  });
+
+  test("keeps the wide desktop overview focused on the source linkage instead of its plinth", () => {
+    expect(makinoScaraViewForViewport("overview", WIDE_DESKTOP_VIEWPORT.width)).toEqual({
+      position: [2.61, -1.855, 3.06],
+      target: [0, -3.52, 0],
+    });
+    expect(makinoScaraFloorForViewport(WIDE_DESKTOP_VIEWPORT.width)).toEqual({
+      radius: 1.45,
+      centerX: 0,
+    });
+
+    const model = buildMakinoScaraModel();
+    const camera = createWideDesktopOverviewCamera();
+    const claimOneInverted = applySharedClaimConstraintModifications("us-4341502-makino-scara", {
+      topologyVariant: 1,
+      firstLinkAngleDeg: 180,
+      fourthLinkAngleDeg: -38,
+      toolAttitudeDeg: 0,
+      claim1ConstraintActive: 0,
+    });
+
+    try {
+      for (const state of [
+        {
+          label: "primary-control maximum",
+          params: {
+            topologyVariant: 1,
+            firstLinkAngleDeg: 180,
+            fourthLinkAngleDeg: -38,
+            toolAttitudeDeg: 0,
+          },
+        },
+        { label: "Claim 1 inverted", params: claimOneInverted.modifiedParams },
+      ]) {
+        model.updatePose(stepMakinoScaraTopology(state.params));
+        model.root.updateMatrixWorld(true);
+
+        const linkage = projectedVisibleGeometryBounds(model.root, camera);
+        const beltPath = model.root.getObjectByName("Claims 2 and 5 connected belt transmission");
+        const firstLink = model.root.getObjectByName("First link 4");
+        expect(beltPath).toBeInstanceOf(THREE.Object3D);
+        expect(firstLink).toBeInstanceOf(THREE.Object3D);
+        const belt = projectedVisibleGeometryBounds(beltPath as THREE.Object3D, camera);
+        const drivenLink = projectedVisibleGeometryBounds(firstLink as THREE.Object3D, camera);
+
+        expect(linkage.minX, `${state.label} left edge`).toBeGreaterThan(-0.3);
+        expect(linkage.maxX, `${state.label} right edge`).toBeLessThan(0.4);
+        expect(linkage.minY, `${state.label} lower edge`).toBeGreaterThan(-0.66);
+        expect(linkage.maxY, `${state.label} upper edge`).toBeLessThan(0.72);
+        expect(
+          (linkage.maxY - linkage.minY) * (WIDE_DESKTOP_VIEWPORT.height / 2),
+          `${state.label} linkage legibility`,
+        ).toBeGreaterThan(280);
+        expect(
+          Math.max(
+            (belt.maxX - belt.minX) * (WIDE_DESKTOP_VIEWPORT.width / 2),
+            (belt.maxY - belt.minY) * (WIDE_DESKTOP_VIEWPORT.height / 2),
+          ),
+          `${state.label} belt-path legibility`,
+        ).toBeGreaterThan(160);
+        expect(
+          Math.max(
+            (drivenLink.maxX - drivenLink.minX) * (WIDE_DESKTOP_VIEWPORT.width / 2),
+            (drivenLink.maxY - drivenLink.minY) * (WIDE_DESKTOP_VIEWPORT.height / 2),
+          ),
+          `${state.label} driven-link legibility`,
+        ).toBeGreaterThan(70);
+      }
+
+      const plinth = projectedPhonePlinthBounds(
+        WIDE_DESKTOP_VIEWPORT.width,
+        WIDE_DESKTOP_VIEWPORT.height,
+      );
+      expect(plinth.minX).toBeGreaterThan(-0.34);
+      expect(plinth.maxX).toBeLessThan(0.34);
+      expect((plinth.maxY - plinth.minY) * (WIDE_DESKTOP_VIEWPORT.height / 2)).toBeLessThan(210);
+    } finally {
+      model.dispose();
     }
   });
 

@@ -29,6 +29,21 @@
 ## Editorial & Preservation Boundaries
 - **Public Source Face**: Hand-authored continuous archival edition at `src/data/editions/watsonRccEdition.ts`.
 - **Reviewed Comparison Ledger**: `public/patents/transcripts/us-4098001-watson-rcc-reviewed.txt`.
-- **Figure Crops**: All 15 printed figure labels are represented under `public/patents/figures/us-4098001-watson-rcc/` (`fig-1` through `fig-12`, including `fig-4a`, `fig-5a`, and `fig-11a`).
+- **Figure assets**: The active edition uses three complete pinned drawing sheets under `public/patents/figures/us-4098001-watson-rcc/`; the earlier per-figure crops remain preserved as research assets and are not active evidence.
 - **Claim Count**: Exactly 2 printed claims (Claim 1 independent, Claim 2 dependent).
 - **Source-bounded exhibit kernel**: `src/physics/watsonRemoteCenterComplianceKernel.ts` reports normalized connected geometry and explicitly refuses SI contact dynamics because the grant supplies no dimensions, material, stiffness, load, clearance, friction, mass, or timing inputs. The older `watsonRccKernel.ts` is not a published physics path.
+
+## Complete source-sheet acceptance (2026-09-04)
+
+The three printed drawing sheets were rendered directly from the pinned PDF at
+300 DPI and visually reviewed as complete sheets. They retain the grant
+headers, date, patent number, sheet number, figure labels, reference numerals,
+and neighboring drawing material. All 35 active figure-reference occurrences
+are bound to the reviewed source page and full source raster in the
+occurrence-source locator registry.
+
+| PDF page | Printed sheet | Figures | Active asset | SHA-256 |
+| ---: | --- | --- | --- | --- |
+| 2 | Sheet 1 of 3 | FIGS. 1–5, including 4A | `source-sheet-1-v1.png` | `89d12d6fb431b3e35bc45ea5f189eaf10b46f02019161e25222f131c82cede72` |
+| 3 | Sheet 2 of 3 | FIGS. 5A–9 | `source-sheet-2-v1.png` | `525e6329d7522246211d3506d03319b0284dca11353ad9b4f1bb70b174b1ccec` |
+| 4 | Sheet 3 of 3 | FIGS. 10–12, including 11A | `source-sheet-3-v1.png` | `0f3b8567dc4b9c08f6fc1905b5e2e11f4728103cb53640f83877462f7c2fe16d` |

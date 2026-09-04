@@ -23,6 +23,7 @@ export const GLIDDEN_BARBED_WIRE_CAMERA_PRESETS: Record<
   top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
 };
 
+const NARROW_PHONE_CANVAS_MAX_WIDTH_PX = 320;
 const COMPACT_PHONE_MAX_WIDTH_PX = 480;
 
 // A 320 px phone renders this studio in a 286 × 380 px canvas. The desktop
@@ -31,6 +32,7 @@ const COMPACT_PHONE_MAX_WIDTH_PX = 480;
 // to the edge. Pulling only the overview back keeps both source Fig. 1 working
 // ends in view; its detail presets remain deliberately close inspection views.
 const COMPACT_ISOMETRIC_DISTANCE_MULTIPLIER = 1.65;
+const CLAIM_FOCUS_ISOMETRIC_DISTANCE_MULTIPLIER = 1.2;
 
 export const GLIDDEN_COMPACT_ISOMETRIC_SAFE_ZONE = {
   viewportWidth: 286,
@@ -42,7 +44,19 @@ export const GLIDDEN_COMPACT_ISOMETRIC_SAFE_ZONE = {
 } as const;
 
 function isPortraitPhoneViewport(viewportWidth: number, viewportHeight: number) {
-  return viewportWidth <= COMPACT_PHONE_MAX_WIDTH_PX && viewportHeight > viewportWidth;
+  return (
+    viewportWidth > 0 &&
+    viewportWidth <= COMPACT_PHONE_MAX_WIDTH_PX &&
+    viewportHeight > viewportWidth
+  );
+}
+
+/** 375 px portrait readers show only the printed-claim wire assembly, not workshop props. */
+export function isGliddenCompactClaimViewport(viewportWidth: number, viewportHeight: number) {
+  return (
+    isPortraitPhoneViewport(viewportWidth, viewportHeight) &&
+    viewportWidth > NARROW_PHONE_CANVAS_MAX_WIDTH_PX
+  );
 }
 
 function pullCameraBack(
@@ -65,7 +79,11 @@ export function gliddenBarbedWireCameraForViewport(
   viewportHeight: number,
 ): GliddenBarbedWireCameraView {
   const view = GLIDDEN_BARBED_WIRE_CAMERA_PRESETS[preset];
-  return preset === "iso" && isPortraitPhoneViewport(viewportWidth, viewportHeight)
-    ? pullCameraBack(view, COMPACT_ISOMETRIC_DISTANCE_MULTIPLIER)
-    : view;
+  if (preset !== "iso" || !isPortraitPhoneViewport(viewportWidth, viewportHeight)) return view;
+  return pullCameraBack(
+    view,
+    isGliddenCompactClaimViewport(viewportWidth, viewportHeight)
+      ? CLAIM_FOCUS_ISOMETRIC_DISTANCE_MULTIPLIER
+      : COMPACT_ISOMETRIC_DISTANCE_MULTIPLIER,
+  );
 }

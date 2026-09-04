@@ -1,6 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import * as THREE from "three";
 import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
 import {
@@ -11,6 +13,7 @@ import {
   WHITNEY_KERNEL_SOURCE,
   WHITNEY_SOURCE_BOUNDARY,
 } from "@/physics/whitneyCottonGinKernel";
+import { WhitneyCottonGin3D } from "./WhitneyCottonGin3D";
 import {
   buildWhitneyCottonGinModel,
   updateWhitneyCottonGinKinematics,
@@ -79,6 +82,21 @@ describe("US X72 Eli Whitney Cotton Gin visual & kinematics boundary", () => {
     expect(threeSource).toContain("Whitney Cotton Gin 3D");
     expect(threeSource).toContain("controls.setView");
     expect(threeSource).not.toContain("cameraRef");
+  });
+
+  test("keeps Breastwork & Teeth reachable in the 768 px tablet clean-canvas layout", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(
+        WhitneyCottonGin3D as React.ComponentType<{ initialShowUiOverlay?: boolean }>,
+        { initialShowUiOverlay: false },
+      ),
+    );
+
+    expect(html).toContain('data-testid="whitney-compact-camera-control"');
+    expect(html).toContain('aria-label="Whitney mechanism camera view"');
+    expect(html).toContain('value="grate_teeth"');
+    expect(html).toContain("Breastwork &amp; Teeth");
+    expect(html).not.toContain('aria-label="Whitney mechanism camera view" disabled');
   });
 
   test("closes the source-disclosed direct drive and declared crossed-band ratio", () => {

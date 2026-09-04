@@ -75,6 +75,43 @@ describe("US 4,512,709 Cincinnati Milacron Robot Toolchanger Archival Edition Co
     }
   });
 
+  test("binds all active figure references to independently reviewed complete drawing sheets", () => {
+    const references = milacronRobotToolchangerArchivalEdition.blocks.flatMap((block) => {
+      const inlines =
+        block.kind === "paragraph" || block.kind === "claim"
+          ? block.inlines
+          : block.kind === "figure-sheet"
+            ? block.description
+            : [];
+      return inlines.filter(
+        (inline): inline is Extract<(typeof inlines)[number], { kind: "reference" }> =>
+          inline.kind === "reference" && inline.referenceType === "figure",
+      );
+    });
+    expect(references).toHaveLength(48);
+    const activeAssets = new Set<string>();
+    for (const reference of references) {
+      expect(reference.figurePreviews).toHaveLength(1);
+      const preview = reference.figurePreviews?.[0];
+      expect(preview).toMatchObject({ width: 2320, height: 3408 });
+      if (!preview) continue;
+      expect(preview.src).toStartWith(
+        "/patents/figures/us-4512709-milacron-robot-toolchanger/source-sheet-",
+      );
+      expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+      activeAssets.add(preview.src);
+    }
+    expect(activeAssets).toEqual(
+      new Set(
+        Array.from(
+          { length: 6 },
+          (_, index) =>
+            `/patents/figures/us-4512709-milacron-robot-toolchanger/source-sheet-${index + 1}-v1.png`,
+        ),
+      ),
+    );
+  });
+
   test("contains distinct parallel readings for every paragraph index", () => {
     const paragraphIndices = milacronRobotToolchangerArchivalEdition.blocks
       .map((b, idx) => (b.kind === "paragraph" ? idx : null))
@@ -187,5 +224,12 @@ describe("US 4,512,709 Cincinnati Milacron Robot Toolchanger Archival Edition Co
     );
     expect(r4.modifiedParams.claimFourTMember).toBe(0);
     expect(r4.activeFailures[0]).toContain("Claim 4 Geometry Not Selected");
+  });
+
+  test("strictly accepts the reviewed figure evidence without changing reader access", () => {
+    const { evaluateArchivalPublicationState } = require("./publicationApproval");
+    const decision = evaluateArchivalPublicationState(milacronRobotToolchangerPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
   });
 });

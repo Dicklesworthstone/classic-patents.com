@@ -127,8 +127,8 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       activeDescription:
         "Claim 1 scans a continuous electronic charge image across an aperture without mechanical spinning discs.",
       invertedDescription:
-        "Mechanical Nipkow disc: scanning speed is limited by inertia, producing low resolution and severe motion blur.",
-      failureModeName: "Mechanical Disc Line Tearing & Frame Desync",
+        "Source-bounded comparison: the electrical image remains, but traversal of each elementary area by the electric shutter is withheld; the exhibit does not substitute an unclaimed scanner or infer a picture.",
+      failureModeName: "Claim 1 Image Traversal Withheld",
       historicalPriorArt:
         "Baird and Jenkins used spinning mechanical aperture discs limited to 30–60 lines.",
     },
@@ -139,12 +139,12 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       patentId: "us-1781541-einstein-refrigerator",
       claimTitle: "Single-Pressure Inert Gas Absorption Cycle",
       activeDescription:
-        "Claim 1 circulates butane, ammonia, and hydrogen at uniform total pressure without mechanical pumps or shaft seals.",
+        "Claim 1 connects generator, elevated condenser and container, evaporator, gravity returns, inert-gas and refrigerant conduits, and a separately heated liquid-lift conduit into one apparatus.",
       invertedDescription:
-        "Mechanical shaft pump: moving piston seals degrade over time, leaking toxic sulfur dioxide or methyl chloride refrigerant.",
-      failureModeName: "Shaft-Seal Refrigerant Leakage",
+        "Source-bounded comparison: conduit 32 and its separate heat source are withheld, so weak absorption liquid cannot be lifted from the generator to elevated container 33 and the claimed return circuit is open.",
+      failureModeName: "Claim 1 Heated Lift Path Withheld",
       historicalPriorArt:
-        "Early domestic compressor refrigerators caused fatal toxic gas poisonings due to worn shaft packings.",
+        "The specification expressly situates this apparatus after the inert-gas absorption systems in Von Platen and Munters US 1,685,764 and Einstein and Szilard's British Patent 282,428.",
     },
   ],
 
@@ -754,12 +754,12 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       patentId: "us-2292387-lamarr-frequency-hopping",
       claimTitle: "Synchronized Slotted-Tape Spread-Spectrum Frequency Hopping",
       activeDescription:
-        "Claim 1 rapidly steps RF carrier frequencies across 88 channels in synchronized pseudo-random sequence between transmitter and receiver.",
+        "Claim 1 moves first and second elongated records in synchronism so their record-actuated mechanisms repeatedly tune transmitter and receiver to the same successive carrier frequencies.",
       invertedDescription:
-        "Single-channel fixed frequency: adversary narrowband CW jamming broadcasts overwhelm the radio guidance link completely.",
-      failureModeName: "Narrowband Electronic Jamming Overwhelm",
+        "Source-bounded comparison: the receiver's second record and synchronized actuation are withheld, so no receiver frequency match or received command is inferred.",
+      failureModeName: "Claim 1 Receiver Record Synchronization Withheld",
       historicalPriorArt:
-        "Radio-controlled torpedoes operated on static fixed frequencies vulnerable to enemy radio interference.",
+        "The specification distinguishes its paired record control from manual simultaneous tuning and describes false transmitter channels A–C alongside receiver-effective channels D–G.",
     },
   ],
   "us-2297691-carlson-electrophotography": [
@@ -1923,6 +1923,33 @@ export function applyClaimConstraintModifications(
       break;
     }
 
+    case "us-1773980-farnsworth-tv": {
+      const claim1Active = claimStates[1] ?? true;
+      modified.claim1ScanPathPresent = claim1Active ? 1 : 0;
+      if (!claim1Active) {
+        modified.running = 0;
+        activeFailures.push(
+          "Source-bound Claim 1 condition absent: the electric shutter no longer traverses each elementary area of the electrical image",
+        );
+        refusalWarning =
+          "SOURCE-BOUND REFUSAL: US 1,773,980 Claim 1 does not establish a television picture when the electrical-image traversal is withheld; no substitute scanner or quantitative image failure is inferred.";
+      }
+      break;
+    }
+
+    case "us-1781541-einstein-refrigerator": {
+      const claim1Active = claimStates[1] ?? true;
+      modified.claim1LiftPathPresent = claim1Active ? 1 : 0;
+      if (!claim1Active) {
+        activeFailures.push(
+          "Source-bound Claim 1 condition absent: heated conduit 32 no longer lifts weak absorption liquid from generator 29 to elevated container 33",
+        );
+        refusalWarning =
+          "SOURCE-BOUND REFUSAL: the Claim 1 liquid-lift and return circuit is open; US 1,781,541 supplies no operating pressure, temperature, flow rate, or cooling capacity from which to infer a replacement state.";
+      }
+      break;
+    }
+
     case "us-x9430-colt-revolver": {
       modified.claim1CapsPresent = (claimStates[1] ?? true) ? 1 : 0;
       modified.claim2PartitionsPresent = (claimStates[2] ?? true) ? 1 : 0;
@@ -2134,15 +2161,13 @@ export function applyClaimConstraintModifications(
 
     case "us-2292387-lamarr-frequency-hopping": {
       const claim1Active = claimStates[1] ?? true;
+      modified.claim1SynchronizedRecordsPresent = claim1Active ? 1 : 0;
       if (!claim1Active) {
-        modified.hoppingRateHz = 0.0; // Static single carrier
-        modified.activeChannels = 1;
-        modified.jammingSuppressionDb = 0.0;
         activeFailures.push(
-          "Narrowband Jamming Interception: Static carrier frequency overridden by adversary EW noise broadcast",
+          "Source-bound Claim 1 condition absent: the receiver's second record and synchronized record actuation are withheld",
         );
         refusalWarning =
-          "EW VULNERABILITY: Fixed-frequency carrier lacks spread-spectrum processing gain against jamming.";
+          "SOURCE-BOUND REFUSAL: US 2,292,387 supplies no RF power, carrier values, hop rate, noise spectrum, or jamming margin from which to infer a quantitative failure.";
       }
       break;
     }
@@ -2464,6 +2489,7 @@ export function applyClaimConstraintModifications(
     case "us-879532-de-forest-audion": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
+        modified.claim1GridPresent = 0;
         modified.voltageGainAv = 1.0; // Passive diode (no gain)
         modified.transconductanceMicromhos = 0.0;
         activeFailures.push(
@@ -2478,6 +2504,7 @@ export function applyClaimConstraintModifications(
     case "us-942699-baekeland-bakelite": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
+        modified.autoclavePressurePsi = 0;
         modified.crosslinkDensityPct = 12.0; // Under-cured porous sponge
         modified.tensileStrengthMpa = 3.5; // Collapsed from 60 MPa to 3.5 MPa
         activeFailures.push(

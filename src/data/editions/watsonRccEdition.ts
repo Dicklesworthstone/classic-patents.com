@@ -16,29 +16,29 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   text: value,
   definition,
 });
-const crop = (file: string, width: number, height: number, label: string) => ({
-  src: `/patents/figures/us-4098001-watson-rcc/${file}.png`,
-  alt: `Source-facsimile crop of ${label} from US 4,098,001.`,
-  width,
-  height,
+const sourceSheet = (sheet: 1 | 2 | 3, label: string) => ({
+  src: `/patents/figures/us-4098001-watson-rcc/source-sheet-${sheet}-v1.png`,
+  alt: `Complete primary drawing sheet ${sheet} of 3 for ${label} in US 4,098,001.`,
+  width: 2320,
+  height: 3408,
 });
 
 const FIGURES = {
-  "FIG. 1": [crop("fig-1-source-crop-v1", 1300, 1280, "Fig. 1")],
-  "FIG. 2": [crop("fig-2-source-crop-v1", 1350, 1050, "Fig. 2")],
-  "FIG. 3": [crop("fig-3-source-crop-v1", 1350, 1250, "Fig. 3")],
-  "FIG. 4": [crop("fig-4-source-crop-v1", 1200, 1050, "Fig. 4")],
-  "FIG. 4a": [crop("fig-4a-source-crop-v1", 1200, 980, "Fig. 4a")],
-  "FIG. 5": [crop("fig-5-source-crop-v1", 1200, 1050, "Fig. 5")],
-  "FIG. 5a": [crop("fig-5a-source-crop-v1", 1350, 1050, "Fig. 5a")],
-  "FIG. 6": [crop("fig-6-source-crop-v1", 1350, 1580, "Fig. 6")],
-  "FIG. 7": [crop("fig-7-source-crop-v1", 1350, 1050, "Fig. 7")],
-  "FIG. 8": [crop("fig-8-source-crop-v1", 1350, 1600, "Fig. 8")],
-  "FIG. 9": [crop("fig-9-source-crop-v1", 1350, 1450, "Fig. 9")],
-  "FIG. 10": [crop("fig-10-source-crop-v1", 1400, 1700, "Fig. 10")],
-  "FIG. 11": [crop("fig-11-source-crop-v1", 1400, 1650, "Fig. 11")],
-  "FIG. 11a": [crop("fig-11a-source-crop-v1", 1400, 1250, "Fig. 11a")],
-  "FIG. 12": [crop("fig-12-source-crop-v1", 1400, 1750, "Fig. 12")],
+  "FIG. 1": [sourceSheet(1, "FIG. 1")],
+  "FIG. 2": [sourceSheet(1, "FIG. 2")],
+  "FIG. 3": [sourceSheet(1, "FIG. 3")],
+  "FIG. 4": [sourceSheet(1, "FIG. 4")],
+  "FIG. 4a": [sourceSheet(1, "FIG. 4A")],
+  "FIG. 5": [sourceSheet(1, "FIG. 5")],
+  "FIG. 5a": [sourceSheet(2, "FIG. 5A")],
+  "FIG. 6": [sourceSheet(2, "FIG. 6")],
+  "FIG. 7": [sourceSheet(2, "FIG. 7")],
+  "FIG. 8": [sourceSheet(2, "FIG. 8")],
+  "FIG. 9": [sourceSheet(2, "FIG. 9")],
+  "FIG. 10": [sourceSheet(3, "FIG. 10")],
+  "FIG. 11": [sourceSheet(3, "FIG. 11")],
+  "FIG. 11a": [sourceSheet(3, "FIG. 11A")],
+  "FIG. 12": [sourceSheet(3, "FIG. 12")],
 } as const;
 
 const figure = (label: keyof typeof FIGURES): CuratedSpecificationInline => ({

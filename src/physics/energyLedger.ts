@@ -355,26 +355,17 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-1781541-einstein-refrigerator": {
-      const heatInputW = params.heatInputWatts ?? params.burnerWatts ?? 120.0;
-      const genTempC = params.generatorTempC ?? 160.0;
-      const cop = 0.35; // Einstein single-pressure absorption cycle COP
-      powerIn = heatInputW; // Gas burner / electrical thermal input
-      potential = 0.85 * 9.80665 * 0.45; // Ammonia solution liquid head in bubble pump lift pipe
-      thermal = 2.4 * 4184.0 * (genTempC - 20.0) * 0.05; // Thermodynamic enthalpy in rich/poor solution
-      dissipated = heatInputW * (1.0 - cop * 0.2); // Condenser and absorber ambient rejection
+      // The grant gives topology and the ordering h₂ < h₁, but no masses,
+      // elevations, flow rates, temperatures, pressures, heat-source power,
+      // cooling capacity, or loss model. A numeric energy ledger would be an
+      // invented apparatus, so the source-bounded ledger remains zero.
       break;
     }
 
     case "us-2292387-lamarr-frequency-hopping": {
-      const rfWatts = params.rfPowerWatts ?? 15.0;
-      const hopRateHz = params.hoppingRateHz ?? 12.0;
-      powerIn = rfWatts + 8.0; // Transmitter RF power + piano roll pneumatic/clockwork drive power
-      em = (rfWatts / (2 * Math.PI * 150e6)) * 25.0; // 150 MHz transmitter tank circuit energy
-      const tapeDrumInertia = 0.008; // Slotted paper roll inertia
-      const omegaDrum = (hopRateHz * 2 * Math.PI) / 88.0;
-      kinetic = 0.5 * tapeDrumInertia * omegaDrum * omegaDrum;
-      dissipated = rfWatts * 0.78 + 7.2; // Antenna radiation field + mechanical friction of 88 tracker-bar levers
-      thermal = 4.0; // Master chassis thermal capacity
+      // The grant specifies record, tuning, and control topology but no RF
+      // power, carrier values, record speed, inertia, suction, or loss data.
+      // Preserve the explicit zero ledger instead of backfilling folklore.
       break;
     }
 

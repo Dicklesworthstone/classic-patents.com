@@ -24,6 +24,7 @@ export interface LamarrFrequencyHoppingModel {
   receiverDrum2: THREE.Mesh;
   receiverPaperWeb: THREE.Mesh;
   receiverComb: THREE.Mesh;
+  receiverTrain: THREE.Group;
   recordLink: THREE.Line;
   bulkheadRings: THREE.Mesh[];
   sidePlates: THREE.Mesh[];
@@ -45,6 +46,7 @@ export interface LamarrFrequencyHoppingModel {
     receiverTuned: boolean,
     lampOn: boolean,
     isCutaway?: boolean,
+    recordSynchronizationPresent?: boolean,
   ) => void;
   dispose: () => void;
 }
@@ -376,9 +378,9 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
 
   for (let i = 0; i < hopCount; i++) {
     const idx = i * 3;
-    hopPos[idx] = (lcg() - 0.5) * 7.5;
-    hopPos[idx + 1] = -1.2 + (lcg() - 0.5) * 2.2;
-    hopPos[idx + 2] = (lcg() - 0.5) * 1.5;
+    hopPos[idx] = (i - (hopCount - 1) / 2) * 0.18;
+    hopPos[idx + 1] = 0.8 + lcg() * 0.03;
+    hopPos[idx + 2] = 0;
   }
 
   hopGeo.setAttribute("position", new THREE.BufferAttribute(hopPos, 3));
@@ -395,15 +397,24 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
   disposables.push(hopMat);
 
   const hopPoints = new THREE.Points(hopGeo, hopMat);
-  root.add(hopPoints);
+  hopPoints.name = "channel-row-indicator-points";
+  spectrumBarsGroup.add(hopPoints);
 
   const updateKinematics = (
     activeChan: number,
     receiverTuned: boolean,
     lampOn: boolean,
     isCutaway = false,
+    recordSynchronizationPresent = true,
   ) => {
-    updateLamarrFrequencyHoppingKinematics(model, activeChan, receiverTuned, lampOn, isCutaway);
+    updateLamarrFrequencyHoppingKinematics(
+      model,
+      activeChan,
+      receiverTuned,
+      lampOn,
+      isCutaway,
+      recordSynchronizationPresent,
+    );
   };
 
   const dispose = () => {
@@ -423,6 +434,7 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
     receiverDrum2,
     receiverPaperWeb,
     receiverComb,
+    receiverTrain,
     recordLink,
     bulkheadRings,
     sidePlates,
@@ -454,6 +466,7 @@ export function updateLamarrFrequencyHoppingKinematics(
   receiverTuned: boolean,
   lampOn: boolean,
   isCutaway = false,
+  recordSynchronizationPresent = true,
 ): void {
   const recordIndex = Math.max(0, Math.min(6, Math.round(activeChan)));
   const indexAngle = (recordIndex * Math.PI * 2) / 7;
@@ -469,6 +482,8 @@ export function updateLamarrFrequencyHoppingKinematics(
   model.receiverPaperWeb.position.x = (recordIndex - 3) * 0.05;
   model.comb.position.y = 1.6 + (recordIndex - 3) * 0.012;
   model.receiverComb.position.y = 1.6 + (recordIndex - 3) * 0.012;
+  model.receiverTrain.visible = recordSynchronizationPresent;
+  model.recordLink.visible = recordSynchronizationPresent;
 
   const maxDisplayChannels = model.barMeshes.length;
   for (let c = 0; c < maxDisplayChannels; c++) {

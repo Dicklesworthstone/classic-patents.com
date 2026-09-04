@@ -241,7 +241,9 @@ export function energyChannelsFor(
       heatInput: params.heatInput ?? 220,
       totalPressure: params.totalPressure ?? 15,
       ammoniaRatio: params.ammoniaRatio,
+      claim1LiftPathPresent: params.claim1LiftPathPresent,
     });
+    if (!e.operating) return [];
     return [
       { name: "Burner", watts: e.coolingWatts / Math.max(0.05, e.cop), tone: "in" },
       { name: "Evaporator", watts: e.coolingWatts, tone: "useful" },
@@ -300,6 +302,7 @@ export function energyChannelsFor(
   }
   if (patentId === "us-879532-de-forest-audion") {
     const tube = stepDeForestAudion({
+      claim1GridPresent: (params.claim1GridPresent ?? 1) >= 0.5,
       filamentCurrentA: params.filamentCurrentA,
       gridBiasV: params.gridBiasV,
       rfInputMv: params.rfInputMv,

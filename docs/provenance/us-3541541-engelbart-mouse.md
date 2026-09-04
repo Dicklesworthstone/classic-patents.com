@@ -34,7 +34,7 @@
 - The older `public/patents/transcripts/us-3541541-engelbart-mouse.txt` remains research evidence only and is not exported as the reviewed transcription.
 - The source prints eight claims. The canonical record reads those claim strings from the edition to prevent drift.
 
-## Source erratum and figure-crop publication hold
+## Source erratum and complete-source-sheet acceptance (2026-09-04)
 
 The page-5 source paragraph is preserved literally. It says that the readout
 scheme of `FIG. 6` has the digital-output advantage, then says “In the readout
@@ -45,32 +45,19 @@ reference label discloses the source inconsistency and its hover preview shows
 both the Fig. 5 and Fig. 6 source crops. This is an editorial disclosure, not a
 silent correction of the grant.
 
-The archival edition and reviewed-transcription asset remain withheld from the
-canonical record pending root review of the replacement crops. Existing PDFs,
-ledger, edition, and crop files are preserved. No crop is deleted or repointed
-as part of this erratum repair.
+All 34 live figure references now use their complete pinned source sheet,
+rendered directly from the facsimile at 300 DPI. The active assets retain the
+printed sheet headers, signatures, figure labels, reference numerals, and
+neighboring material rather than presenting an unverified reconstruction.
 
-The failed source crops are queued for cloud visual inspection of the complete
-three drawing sheets. The next version must be created from the pinned PDF at
-the source raster's native pixel dimensions, upright, with the complete printed
-figure label and reference numerals retained, and with filing headers,
-inventor/attorney signatures, and neighboring drawing material excluded.
-Exact `(left, top, width, height)` source-pixel rectangles are intentionally
-not guessed in this receipt: the cloud inspection must return those rectangles
-against the actual source-sheet raster before any new PNG is created or any
-reference is repointed.
+| PDF page | Printed sheet | Active complete source-sheet asset | SHA-256 |
+| ---: | --- | --- | --- |
+| 1 | Sheet 1 of 3; FIGS. 1–3 | `source-sheet-1-v1.png` | `fc407967aaa9b9a54e176b33d2d1100da294ebebf031849beb03a286c3b50827` |
+| 2 | Sheet 2 of 3; FIGS. 4–6 | `source-sheet-2-v1.png` | `5974818aff9488ee7c5e5433851ae025c8f5dc580a301a3c44c1b213a15ebaea` |
+| 3 | Sheet 3 of 3; FIG. 7 | `source-sheet-3-v1.png` | `bb2e1faa8fc8d29656935f71a39e0c1cec41f4bf8a1d2f9ab0cfc7e3f7846bf0` |
 
-| Figure | PDF drawing page | Current preserved crop | Planned replacement | Crop gate |
-| --- | ---: | --- | --- | --- |
-| Fig. 1 | 1 | `fig-1-source-crop-v2.png` | `fig-1-source-crop-v3.png` | One upright source-pixel crop of the pictorial display system; retain `FIG. 1` and numerals; exclude filing header and inventor/attorney lines. |
-| Fig. 2 | 1 | `fig-2-source-crop-v4.png` | none | Accepted; do not alter until root review requests a new source comparison. |
-| Fig. 3 | 1 | `fig-3-source-crop-v2.png` | `fig-3-source-crop-v3.png` | One upright source-pixel crop of the sectional plan; retain `FIG. 3` and all printed numerals; exclude filing header and signatures. |
-| Fig. 4 | 2 | `fig-4-source-crop-v2.png` | `fig-4-source-crop-v3.png` | One upright source-pixel crop of the potentiometer schematic; retain `FIG. 4`, terminals, and numerals; exclude sheet header and signatures. |
-| Fig. 5 | 2 | `fig-5-source-crop-v2.png` | none | Accepted; retain as the shaft-encoder preview and pair with Fig. 6 only at the disclosed page-5 erratum occurrence. |
-| Fig. 6 | 2 | `fig-6-source-crop-v2.png` | `fig-6-source-crop-v3.png` | One upright source-pixel crop of the incremental-encoder circuit; retain `FIG. 6`, disc 100, contacts, sensors, and circuit numerals; exclude sheet header and signatures. |
-| Fig. 7 | 3 | `fig-7-source-crop-v1.png` | `fig-7-source-crop-v2.png` | One upright source-pixel crop of the second incremental-encoder circuit; retain `FIG. 7`, labels, and numerals; exclude filing header and inventor/attorney lines. |
-
-The companion edition test records the same pending replacement versions and
-asserts that the legacy references remain in place until those files exist.
-Publication stays withheld until a root reviewer accepts the new crops and the
-full source-face gate is reopened.
+Each 2320 × 3408 asset was visually reviewed against its respective PDF page.
+The occurrence-source locator registry binds every active reference to that
+specific full-sheet raster and PDF page. The page-five FIG. 5 / disc 100
+erratum above remains visible as source disclosure; it does not withhold or
+replace any archival text, ledger, facsimile, or drawing evidence.

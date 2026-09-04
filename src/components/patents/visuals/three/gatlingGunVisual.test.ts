@@ -120,6 +120,52 @@ describe("US 36,836 Richard Gatling Revolving Battery Gun visual & ballistics bo
     }
   });
 
+  test("keeps the muzzle cluster fully visible at the independent 375 by 812px phone receipt", () => {
+    const model = buildGatlingGunModel();
+    try {
+      const canvasWidth = 375;
+      const canvasHeight = 812;
+      const view = gatlingGunCameraForViewport("iso", canvasWidth, canvasHeight);
+      expect(view).not.toEqual(GATLING_GUN_CAMERA_PRESETS.iso);
+      const camera = new THREE.PerspectiveCamera(42, canvasWidth / canvasHeight, 0.1, 1000);
+      camera.position.set(...view.pos);
+      camera.lookAt(...view.target);
+      camera.updateProjectionMatrix();
+      camera.updateMatrixWorld();
+
+      // Default, primary-control maximum, and the claim-inverted frozen
+      // comparison each put the six source barrels at a legitimate rotation.
+      // The full geometry sweep below also protects the extrema between those
+      // receipts, which is where the outer muzzle used to leave the right edge.
+      const auditedStates = [
+        { name: "default", phase: 0 },
+        { name: "primary-control-max", phase: Math.PI * 2 },
+        { name: "claim-inverted", phase: Math.PI * 1.5 },
+      ] as const;
+      for (const state of auditedStates) {
+        model.nodes.barrelClusterGroup.rotation.x = state.phase;
+        model.nodes.crankGroup.rotation.x = state.phase;
+        const frame = projectedMeshBounds(model.rootGroup, camera);
+        expect(frame.minX, `${state.name} left envelope`).toBeGreaterThan(-0.7);
+        expect(frame.maxX, `${state.name} right muzzle envelope`).toBeLessThan(0.85);
+        expect(frame.minY, `${state.name} lower envelope`).toBeGreaterThan(-0.35);
+        expect(frame.maxY, `${state.name} upper envelope`).toBeLessThan(0.3);
+        expect(((frame.maxX - frame.minX) * canvasWidth) / 2).toBeGreaterThan(260);
+        expect(((frame.maxY - frame.minY) * canvasHeight) / 2).toBeGreaterThan(200);
+      }
+
+      for (let phaseIndex = 0; phaseIndex < 72; phaseIndex++) {
+        const phase = (phaseIndex * Math.PI * 2) / 72;
+        model.nodes.barrelClusterGroup.rotation.x = phase;
+        model.nodes.crankGroup.rotation.x = phase;
+        const frame = projectedMeshBounds(model.rootGroup, camera);
+        expect(frame.maxX, `swept phase ${phaseIndex} muzzle edge`).toBeLessThan(0.85);
+      }
+    } finally {
+      model.dispose();
+    }
+  });
+
   test("reselects only the overview for a desktop-to-phone resize", () => {
     const source = readFileSync(join(VISUALS_DIRECTORY, "three", "GatlingGun3D.tsx"), "utf8");
     expect(gatlingGunCameraForViewport("iso", 1216, 460)).toEqual(GATLING_GUN_CAMERA_PRESETS.iso);

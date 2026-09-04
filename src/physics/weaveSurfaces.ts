@@ -513,6 +513,7 @@ export function materialProbe(
       heatInput: params.heatInput,
       totalPressure: params.totalPressure,
       ammoniaRatio: params.ammoniaRatio ?? params.auxiliaryGasRatio,
+      claim1LiftPathPresent: params.claim1LiftPathPresent,
     });
     return {
       part: calloutLabel,
@@ -983,6 +984,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
       heatInput: params.heatInput,
       totalPressure: params.totalPressure,
       ammoniaRatio: params.ammoniaRatio ?? params.auxiliaryGasRatio,
+      claim1LiftPathPresent: params.claim1LiftPathPresent,
     });
     return [{ label: "COP", min: 0.1, max: 0.4, live: frige.cop, unit: "" }];
   }
@@ -3180,6 +3182,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
   }
   if (patentId.includes("879532") || patentId.includes("audion")) {
     const tube = stepDeForestAudion({
+      claim1GridPresent: (params.claim1GridPresent ?? 1) >= 0.5,
       filamentCurrentA: params.filamentCurrentA,
       gridBiasV: params.gridBiasV,
       rfInputMv: params.rfInputMv,

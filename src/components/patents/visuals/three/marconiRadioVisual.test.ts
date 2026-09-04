@@ -221,6 +221,17 @@ describe("US 586,193 Guglielmo Marconi Wireless Radio Telegraphy visual & electr
     expect(nodes.sparkPillars.length).toBe(4);
     expect(nodes.waveRings.length).toBe(5);
     expect(nodes.mast).toBeDefined();
+    expect(nodes.guyAnchors).toHaveLength(8);
+    for (let index = 0; index < nodes.guyAnchors.length; index++) {
+      const lineEndpointOffset = index * 6 + 3;
+      const anchor = nodes.guyAnchors[index];
+      expect(nodes.guyLinePositions[lineEndpointOffset]).toBeCloseTo(anchor.position.x, 6);
+      expect(nodes.guyLinePositions[lineEndpointOffset + 1]).toBeCloseTo(
+        anchor.position.y + 0.11,
+        6,
+      );
+      expect(nodes.guyLinePositions[lineEndpointOffset + 2]).toBeCloseTo(anchor.position.z, 6);
+    }
     expect(nodes.sparkArc).toBeDefined();
     expect(rootGroup.getObjectByName("Aerial-to-spark conductor")).toBeDefined();
     expect(rootGroup.getObjectByName("Spark-to-earth conductor")).toBeDefined();

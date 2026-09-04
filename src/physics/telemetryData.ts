@@ -1652,6 +1652,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     ],
     computeMetrics: (params) => {
       const res = stepDeForestAudion({
+        claim1GridPresent: (params.claim1GridPresent ?? 1) >= 0.5,
         plateVoltageV: params.plateVoltageV ?? 45,
         gridBiasVoltageV: params.gridBiasVoltageV ?? -1.5,
         filamentCurrentA: params.filamentCurrentA ?? 1.0,
@@ -2498,7 +2499,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     equationName: "Dalton Evaporative Vaporization & COP",
     governingEquation:
       "P_{\\text{total}} = P_{\\text{NH}_3} + P_{\\text{butane}} + P_{\\text{H}_2\\text{O}} \\quad \\text{and} \\quad \\text{COP} = \\frac{Q_{\\text{evap}}}{Q_{\\text{heat}}}",
-    engineMethod: "FrankenSimEngine.stepEinsteinRefrigerator",
+    engineMethod: "stepEinsteinRefrigerator (declared illustrative scenario)",
     controls: [
       {
         id: "heatInput",
@@ -2536,6 +2537,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         heatInput: p.heatInput,
         totalPressure: p.totalPressure,
         ammoniaRatio: p.ammoniaRatio ?? p.auxiliaryGasRatio,
+        claim1LiftPathPresent: p.claim1LiftPathPresent,
       });
       const evapTemp = frige.evapTempC;
       const cop = frige.cop;
@@ -2545,25 +2547,25 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       return [
         {
           label: "Evaporator Temp",
-          value: evapTemp.toFixed(1),
-          unit: "°C",
-          badgeColor: evapTemp < 0 ? "cyan" : "amber",
+          value: frige.operating ? evapTemp.toFixed(1) : "withheld",
+          unit: frige.operating ? "°C" : "",
+          badgeColor: frige.operating ? (evapTemp < 0 ? "cyan" : "amber") : "rose",
           progressPct: Math.min(100, Math.max(0, (30 - evapTemp) * 2)),
           provenance: "scenario-modern",
         },
         {
           label: "Cooling Power (Qc)",
-          value: coolingWatts.toString(),
-          unit: "W",
-          badgeColor: "emerald",
+          value: frige.operating ? coolingWatts.toString() : "refused",
+          unit: frige.operating ? "W" : "",
+          badgeColor: frige.operating ? "emerald" : "rose",
           progressPct: Math.min(100, (coolingWatts / 120) * 100),
           provenance: "scenario-modern",
         },
         {
           label: "Thermodynamic COP",
-          value: cop.toFixed(2),
-          unit: "ratio",
-          badgeColor: "indigo",
+          value: frige.operating ? cop.toFixed(2) : "refused",
+          unit: frige.operating ? "ratio" : "",
+          badgeColor: frige.operating ? "indigo" : "rose",
           progressPct: Math.min(100, (cop / 0.5) * 100),
           provenance: "scenario-modern",
         },
@@ -3695,9 +3697,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         },
         {
           label: "Receiver match",
-          value: state.receiverEffective ? "D–G" : "A–C false",
+          value: !state.recordSynchronizationPresent
+            ? "withheld"
+            : state.receiverEffective
+              ? "D–G"
+              : "A–C false",
           unit: "channels",
-          badgeColor: "emerald",
+          badgeColor: state.recordSynchronizationPresent ? "emerald" : "rose",
           progressPct: state.receiverEffective ? 100 : 0,
           provenance: "source-disclosed",
         },

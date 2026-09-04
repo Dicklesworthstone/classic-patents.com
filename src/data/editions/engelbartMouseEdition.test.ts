@@ -344,11 +344,11 @@ describe("US 3,541,541 Douglas Engelbart Mouse manual archival edition", () => {
     expect(energyChannelsFor("us-3541541-engelbart-mouse", {})).toEqual([]);
   });
 
-  test("enforces figure acceptance pending hold while ledger is verified", () => {
+  test("accepts independently reviewed full-sheet figure evidence while the ledger stays verified", () => {
     const { evaluateArchivalPublicationState } = require("./publicationApproval");
     const decision = evaluateArchivalPublicationState(engelbartMousePatent);
-    expect(decision.isPublished).toBe(false);
-    expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
     expect(decision.state.evidence.ledgerContent.valid).toBe(true);
     expect(decision.state.evidence.ledgerContent.status).toBe("verified");
   });

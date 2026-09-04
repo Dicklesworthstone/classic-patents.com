@@ -47,6 +47,9 @@ describe("US 942,699 Leo Hendrik Baekeland Bakelite visual & polymer mechanics b
     expect(studioSource).toContain("setCutaway");
     expect(studioSource).toContain("controls.setView");
     expect(studioSource).not.toContain("camera.position.set");
+    expect(studioSource).toContain("claimConstraintStateParamId");
+    expect(studioSource).toContain("effectivePressPsi");
+    expect(studioSource).not.toContain("setClaimStates");
   });
 
   test("computes genuine step-growth polycondensation kinetics, gel point, and autoclave pressure in SI units", () => {
@@ -104,6 +107,19 @@ describe("US 942,699 Leo Hendrik Baekeland Bakelite visual & polymer mechanics b
     );
     expect(model.materials.bakeliteResin.color.getHex()).toBe(0x5c2b0e); // C-stage unfoamed color
     expect(model.nodes.molecularNetworkGroup.rotation.y).toBe(0);
+
+    model.update(
+      {
+        curingTempC: 140,
+        autoclavePressurePsi: 0,
+        catalystPct: 2.0,
+        curingTimeMin: 75,
+        fillerPct: 50,
+      },
+      1.6,
+    );
+    expect(model.nodes.bubbleParticlesGroup.visible).toBe(true);
+    expect(model.nodes.pressureNeedle.rotation.z).toBeCloseTo(0.75 * Math.PI, 8);
   });
 
   test("keeps the editorial molecular interpretation inside the molded specimen and mounts both gauges to the vessel", () => {

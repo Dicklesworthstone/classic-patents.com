@@ -4,6 +4,8 @@ import { join } from "node:path";
 import { stepEinsteinRefrigerator } from "@/physics/catalogKernels";
 import {
   buildEinsteinRefrigeratorModel,
+  EINSTEIN_SOURCE_CONDUITS,
+  EINSTEIN_SOURCE_PORTS,
   updateEinsteinRefrigeratorKinematics,
 } from "./einsteinRefrigeratorModel";
 
@@ -28,6 +30,9 @@ describe("US 1,781,541 Albert Einstein & Leo Szilard Refrigerator visual & therm
     expect(modelSource).not.toContain("coolingWatts / 80");
     expect(modelSource).not.toContain("stepEinsteinRefrigerator({})");
     expect(threeSource).toContain("p.heatFrameIndex");
+    expect(threeSource).toContain("claimConstraintStateParamId(claimNo)");
+    expect(threeSource).not.toContain("setClaimStates");
+    expect(modelSource).not.toContain("(lcg() - 0.5) * 6.2");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -52,7 +57,7 @@ describe("US 1,781,541 Albert Einstein & Leo Szilard Refrigerator visual & therm
       "utf8",
     );
 
-    for (const preset of ["iso", "generator", "condenser", "evaporator", "absorber", "top"]) {
+    for (const preset of ["iso", "generator", "condenser", "evaporator", "exchanger", "top"]) {
       expect(threeSource).toContain(preset);
     }
 
@@ -62,7 +67,7 @@ describe("US 1,781,541 Albert Einstein & Leo Szilard Refrigerator visual & therm
     expect(threeSource).not.toContain("cameraRef");
   });
 
-  test("computes genuine Dalton partial pressure, sub-zero evaporator temp, and COP in SI units", () => {
+  test("keeps the illustrative operating scenario bounded and refuses it when Claim 1 is open", () => {
     const result = stepEinsteinRefrigerator({
       heatInput: 220,
       totalPressure: 15,
@@ -75,6 +80,33 @@ describe("US 1,781,541 Albert Einstein & Leo Szilard Refrigerator visual & therm
     expect(result.fluidDisplaySpeed).toBeCloseTo(result.coolingWatts / 45 + 0.8, 2);
     expect(result.fluidWrapY).toBe(2.8);
     expect(result.heatFrameIndex).toBe(Math.floor((result.coolingWatts / 80) * 8));
+
+    const refused = stepEinsteinRefrigerator({
+      heatInput: 220,
+      totalPressure: 15,
+      ammoniaRatio: 0.65,
+      claim1LiftPathPresent: 0,
+    });
+    expect(refused.operating).toBe(false);
+    expect(refused.coolingWatts).toBe(0);
+    expect(refused.cop).toBe(0);
+    expect(refused.refusalReason).toContain("Claim 1");
+  });
+
+  test("connects every numbered conduit to explicit source-organ ports", () => {
+    expect(EINSTEIN_SOURCE_CONDUITS.map((route) => route.id)).toEqual([
+      "5",
+      "11",
+      "27",
+      "30",
+      "32",
+      "34",
+      "37",
+    ]);
+    for (const route of EINSTEIN_SOURCE_CONDUITS) {
+      expect(route.points[0]).toEqual(EINSTEIN_SOURCE_PORTS[route.from]);
+      expect(route.points.at(-1)).toEqual(EINSTEIN_SOURCE_PORTS[route.to]);
+    }
   });
 
   test("builds and articulates procedural boiler generator, condenser coil, and evaporator correctly", () => {
@@ -86,8 +118,9 @@ describe("US 1,781,541 Albert Einstein & Leo Szilard Refrigerator visual & therm
     expect(model.heaterMesh).toBeDefined();
     expect(model.condenserGroup).toBeDefined();
     expect(model.evaporatorMesh).toBeDefined();
-    expect(model.absorberMesh).toBeDefined();
-    expect(model.economizerMesh).toBeDefined();
+    expect(model.containerMesh).toBeDefined();
+    expect(model.heatExchangerMesh).toBeDefined();
+    expect(model.conduitCurves).toHaveLength(7);
     expect(model.materials.coldEvaporator).toBeDefined();
     expect(model.materials.hotGenerator).toBeDefined();
 
@@ -108,6 +141,21 @@ describe("US 1,781,541 Albert Einstein & Leo Szilard Refrigerator visual & therm
       fridge.fluidWrapY,
     );
     expect(model.materials.weldedSteel.opacity).toBe(0.35);
+
+    updateEinsteinRefrigeratorKinematics(
+      model,
+      0.016,
+      fridge.fluidDisplaySpeed,
+      fridge.heaterGlowIntensity,
+      fridge.generatorGlowIntensity,
+      true,
+      false,
+      fridge.heatFrameIndex,
+      fridge.fluidWrapY,
+      false,
+    );
+    expect(model.fluidPoints.visible).toBe(false);
+    expect(model.liftPathGroup.visible).toBe(false);
 
     model.dispose();
   });

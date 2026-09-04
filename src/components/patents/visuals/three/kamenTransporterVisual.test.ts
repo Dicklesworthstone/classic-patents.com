@@ -43,6 +43,37 @@ function projectedObjectBounds(object: THREE.Object3D, camera: THREE.Perspective
   return frame;
 }
 
+function isEffectivelyVisible(node: THREE.Object3D) {
+  for (let current: THREE.Object3D | null = node; current; current = current.parent) {
+    if (!current.visible) return false;
+  }
+  return true;
+}
+
+function projectedVisibleGeometryBounds(object: THREE.Object3D, camera: THREE.PerspectiveCamera) {
+  const points: THREE.Vector3[] = [];
+  object.traverse((node) => {
+    if (!isEffectivelyVisible(node) || !(node instanceof THREE.Mesh)) return;
+    const positions = node.geometry.getAttribute("position");
+    if (!positions) return;
+    for (let index = 0; index < positions.count; index += 1) {
+      points.push(
+        new THREE.Vector3()
+          .fromBufferAttribute(positions, index)
+          .applyMatrix4(node.matrixWorld)
+          .project(camera),
+      );
+    }
+  });
+  expect(points.length).toBeGreaterThan(0);
+  return {
+    minX: Math.min(...points.map((point) => point.x)),
+    maxX: Math.max(...points.map((point) => point.x)),
+    minY: Math.min(...points.map((point) => point.y)),
+    maxY: Math.max(...points.map((point) => point.y)),
+  };
+}
+
 describe("US 5,701,965 Kamen Transporter source-bound Three.js topology", () => {
   test("uses a procedural Three.js model with named cluster-wheel topology and no external asset", () => {
     const model = buildKamenTransporterModel();
@@ -205,6 +236,57 @@ describe("US 5,701,965 Kamen Transporter source-bound Three.js topology", () => 
     }
   });
 
+  test("widens the desktop overview for the high climb and transition mast envelopes", () => {
+    const canvasWidth = 1216;
+    const canvasHeight = 460;
+    const model = buildKamenTransporterModel();
+    try {
+      for (const topologyState of ["climb", "transition"] as const) {
+        const controls = readKamenTransporterControls({ topologyState });
+        const view = kamenTransporterCameraForViewport(
+          "overview",
+          canvasWidth,
+          canvasHeight,
+          topologyState,
+        );
+        const camera = new THREE.PerspectiveCamera(42, canvasWidth / canvasHeight, 0.1, 1000);
+        camera.position.set(...view.pos);
+        camera.lookAt(...view.target);
+        camera.updateProjectionMatrix();
+        camera.updateMatrixWorld(true);
+
+        updateKamenTransporterKinematics(
+          model,
+          controls,
+          stepKamenTransporterTopology(controls),
+          0,
+        );
+        model.root.updateMatrixWorld(true);
+        const apparatus = projectedVisibleGeometryBounds(model.root, camera);
+        const controlMast = projectedVisibleGeometryBounds(model.standingMast, camera);
+
+        expect(view, `${topologyState} must not reuse the balance overview`).not.toEqual(
+          KAMEN_TRANSPORTER_CAMERA_PRESETS.overview,
+        );
+        expect(apparatus.minX, `${topologyState} left edge`).toBeGreaterThan(-0.3);
+        expect(apparatus.maxX, `${topologyState} right edge`).toBeLessThan(0.34);
+        expect(apparatus.minY, `${topologyState} lower edge`).toBeGreaterThan(-0.9);
+        expect(apparatus.maxY, `${topologyState} upper edge`).toBeLessThan(0.9);
+        expect(
+          (apparatus.maxY - apparatus.minY) * (canvasHeight / 2),
+          `${topologyState} apparatus legibility`,
+        ).toBeGreaterThan(360);
+        expect(controlMast.maxY, `${topologyState} handle clearance`).toBeLessThan(0.9);
+        expect(
+          (controlMast.maxY - controlMast.minY) * (canvasHeight / 2),
+          `${topologyState} mast legibility`,
+        ).toBeGreaterThan(175);
+      }
+    } finally {
+      model.dispose();
+    }
+  });
+
   test("reselects only the overview for a desktop-to-phone resize", () => {
     const source = readFileSync(
       join(process.cwd(), "src/components/patents/visuals/three/KamenTransporter3D.tsx"),
@@ -220,6 +302,8 @@ describe("US 5,701,965 Kamen Transporter source-bound Three.js topology", () => 
       KAMEN_TRANSPORTER_CAMERA_PRESETS.balance,
     );
     expect(source).toContain('if (cameraPreset !== "overview") return;');
+    expect(source).toContain("cameraPreset, controls.topologyState");
+    expect(source).toContain("reselectResponsiveOverview();");
     expect(source).toContain('window.addEventListener("resize", reselectResponsiveOverview)');
     expect(source).toContain(
       'window.addEventListener("orientationchange", reselectResponsiveOverview)',

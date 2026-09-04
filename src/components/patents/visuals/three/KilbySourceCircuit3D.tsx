@@ -104,6 +104,29 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
     };
   }, [live]);
 
+  // A gallery reader can rotate from a desktop-width overview into a portrait
+  // phone without remounting the studio. Reapply only the broad Fig. 6a view;
+  // deliberate close inspection presets keep their chosen framing.
+  useEffect(() => {
+    if (activeView !== "figure6a") return;
+    const reselectResponsiveOverview = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const view = kilbySourceCircuitCameraForViewport(
+        "figure6a",
+        container.clientWidth,
+        container.clientHeight,
+      );
+      studioRef.current?.controls.setView(view.pos, view.target);
+    };
+    window.addEventListener("resize", reselectResponsiveOverview);
+    window.addEventListener("orientationchange", reselectResponsiveOverview);
+    return () => {
+      window.removeEventListener("resize", reselectResponsiveOverview);
+      window.removeEventListener("orientationchange", reselectResponsiveOverview);
+    };
+  }, [activeView]);
+
   const actions = createStandardStudioOverlayActions({
     isCutaway: cutaway,
     onToggleCutaway: () => setCutaway((value) => !value),

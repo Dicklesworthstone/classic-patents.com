@@ -45,7 +45,7 @@ describe("US 4,098,001 manual source edition", () => {
     }
   });
 
-  test("cites source-derived crops and annotates technical historical language", () => {
+  test("cites complete primary source sheets and annotates technical historical language", () => {
     const references = watsonRccArchivalEdition.blocks.flatMap((block) => {
       const inlines =
         "inlines" in block ? block.inlines : block.kind === "figure-sheet" ? block.description : [];
@@ -73,6 +73,47 @@ describe("US 4,098,001 manual source edition", () => {
       "flexures",
     ]);
     expect(terms.every((item) => item.definition.length > 80)).toBe(true);
+  });
+
+  test("maps every printed figure to its reviewed complete drawing sheet", () => {
+    const references = watsonRccArchivalEdition.blocks.flatMap((block) => {
+      const inlines =
+        "inlines" in block ? block.inlines : block.kind === "figure-sheet" ? block.description : [];
+      return inlines.filter(
+        (inline): inline is Extract<(typeof inlines)[number], { kind: "reference" }> =>
+          inline.kind === "reference" && inline.referenceType === "figure",
+      );
+    });
+    const expectedSheetByFigure = {
+      "FIG. 1": 1,
+      "FIG. 2": 1,
+      "FIG. 3": 1,
+      "FIG. 4": 1,
+      "FIG. 4a": 1,
+      "FIG. 5": 1,
+      "FIG. 5a": 2,
+      "FIG. 6": 2,
+      "FIG. 7": 2,
+      "FIG. 8": 2,
+      "FIG. 9": 2,
+      "FIG. 10": 3,
+      "FIG. 11": 3,
+      "FIG. 11a": 3,
+      "FIG. 12": 3,
+    } as const;
+    expect(references).toHaveLength(35);
+    for (const reference of references) {
+      const sourceSheet =
+        expectedSheetByFigure[reference.text as keyof typeof expectedSheetByFigure];
+      expect(sourceSheet).toBeDefined();
+      expect(reference.figurePreviews).toEqual([
+        expect.objectContaining({
+          src: `/patents/figures/us-4098001-watson-rcc/source-sheet-${sourceSheet}-v1.png`,
+          width: 2320,
+          height: 3408,
+        }),
+      ]);
+    }
   });
 
   test("pairs every source paragraph with an explanatory reading and a page-complete ledger", () => {

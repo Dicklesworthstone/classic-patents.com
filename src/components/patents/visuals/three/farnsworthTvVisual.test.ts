@@ -57,6 +57,10 @@ describe("US 1,773,980 Philo T. Farnsworth Television System visual & electron o
     expect(twoSource).not.toContain("stepFarnsworthTv");
     expect(threeSource).not.toContain("createStudioClock");
     expect(twoSource).not.toContain("createStudioClock");
+    expect(threeSource).toContain("claimConstraintStateParamId(claimNo)");
+    expect(threeSource).not.toContain("setClaimStates");
+    expect(threeSource).toContain("p.showElectronBeam && p.claim1Active");
+    expect(twoSource).toContain("claim1Active && !scanFrame.inHorizontalRetrace");
     expect(threeSource).toContain("model.photocathode.add(photocathodeField)");
     expect(threeSource).toContain('preset === "iso" ? 2.15 : 1.55');
     expect(threeSource).not.toContain("scene.add(fieldPlane)");

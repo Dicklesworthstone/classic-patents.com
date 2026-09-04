@@ -21,8 +21,10 @@ export interface LindeLiquefactionModelNodes {
   cryostatGroup: THREE.Group;
   solidCasingMesh: THREE.Mesh;
   cutawayCasingMesh: THREE.Mesh;
+  claimProcessGroup: THREE.Group;
   counterCurrentCoilGroup: THREE.Group;
   coilRings: THREE.Mesh[];
+  innerCoilSegments: THREE.Mesh[];
   inletSupplyPipe: THREE.Mesh;
   returnRecyclePipe: THREE.Mesh;
   jtValveGroup: THREE.Group;
@@ -141,6 +143,9 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
         color: 0x38bdf8,
         roughness: 0.25,
         metalness: 0.85,
+        transparent: true,
+        opacity: 0.42,
+        depthWrite: false,
       }),
     ),
     receiverVessel: trackMat(
@@ -190,21 +195,57 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   // -------------------------------------------------------------
   // 2. Counter-current apparatus G′: two coiled pipes, one inside the other
   // -------------------------------------------------------------
+  const claimProcessGroup = new THREE.Group();
+  claimProcessGroup.name = "Claim1RegenerativeCompressionCoolingExpansionPath";
+  root.add(claimProcessGroup);
+
   const counterCurrentCoilGroup = new THREE.Group();
-  root.add(counterCurrentCoilGroup);
+  counterCurrentCoilGroup.name = "ConcentricCounterCurrentApparatusGPrime";
+  claimProcessGroup.add(counterCurrentCoilGroup);
 
   const coilRings: THREE.Mesh[] = [];
+  const innerCoilSegments: THREE.Mesh[] = [];
   const coilTurns = 18;
+  const coilRadius = 0.95;
+  const coilTopY = 2.3;
+  const coilBottomY = -1.35;
 
+  // The drawing and specification describe G′ as one pipe arranged inside
+  // another and coiled into a long counter-current conductor. Separate torus
+  // rings look superficially similar but are physically disconnected. Build
+  // every full turn as a helical tube whose endpoints exactly meet the next
+  // turn, then place the high-pressure tube concentrically inside the
+  // translucent low-pressure return tube.
   for (let c = 0; c < coilTurns; c++) {
-    const fraction = c / (coilTurns - 1);
-    const coilMat = fraction < 0.5 ? materials.highPressurePath : materials.lowPressureReturn;
-
-    const ring = new THREE.Mesh(trackGeo(new THREE.TorusGeometry(0.95, 0.08, 12, 36)), coilMat);
-    ring.rotation.x = Math.PI / 2;
-    ring.position.set(0, 2.3 - c * 0.22, 0);
-    counterCurrentCoilGroup.add(ring);
-    coilRings.push(ring);
+    const points: THREE.Vector3[] = [];
+    const samplesPerTurn = 24;
+    for (let sample = 0; sample <= samplesPerTurn; sample++) {
+      const turnFraction = (c + sample / samplesPerTurn) / coilTurns;
+      const angle = turnFraction * coilTurns * Math.PI * 2;
+      points.push(
+        new THREE.Vector3(
+          Math.cos(angle) * coilRadius,
+          THREE.MathUtils.lerp(coilTopY, coilBottomY, turnFraction),
+          Math.sin(angle) * coilRadius,
+        ),
+      );
+    }
+    const centerline = new THREE.CatmullRomCurve3(points, false, "centripetal");
+    const outerReturnSegment = new THREE.Mesh(
+      trackGeo(new THREE.TubeGeometry(centerline, samplesPerTurn, 0.105, 12, false)),
+      materials.lowPressureReturn,
+    );
+    outerReturnSegment.name = `LowPressureReturnGPrimeTurn${c + 1}`;
+    outerReturnSegment.renderOrder = 1;
+    const innerSupplySegment = new THREE.Mesh(
+      trackGeo(new THREE.TubeGeometry(centerline, samplesPerTurn, 0.045, 10, false)),
+      materials.highPressurePath,
+    );
+    innerSupplySegment.name = `HighPressureSupplyGPrimeTurn${c + 1}`;
+    innerSupplySegment.renderOrder = 2;
+    counterCurrentCoilGroup.add(outerReturnSegment, innerSupplySegment);
+    coilRings.push(outerReturnSegment);
+    innerCoilSegments.push(innerSupplySegment);
   }
 
   // Top dome casing header & pipe manifold flange
@@ -217,26 +258,57 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
 
   // High-pressure supply into G′ from cooler K
   const inletSupplyPipe = new THREE.Mesh(
-    trackGeo(new THREE.CylinderGeometry(0.06, 0.06, 1.2, 12)),
+    trackGeo(new THREE.CylinderGeometry(0.045, 0.045, 1.4, 12)),
     materials.highPressurePath,
   );
-  inletSupplyPipe.position.set(-0.65, 3.2, 0);
+  inletSupplyPipe.name = "HighPressureSupplyFromCoolerK";
+  inletSupplyPipe.position.set(coilRadius, coilTopY + 0.7, 0);
   counterCurrentCoilGroup.add(inletSupplyPipe);
 
   // Low-pressure return from G′
   const returnRecyclePipe = new THREE.Mesh(
-    trackGeo(new THREE.CylinderGeometry(0.09, 0.09, 1.2, 12)),
+    trackGeo(new THREE.CylinderGeometry(0.105, 0.105, 1.4, 12)),
     materials.lowPressureReturn,
   );
-  returnRecyclePipe.position.set(0.65, 3.2, 0);
+  returnRecyclePipe.name = "LowPressureReturnToCompressorC";
+  returnRecyclePipe.position.set(coilRadius + 0.35, coilTopY + 0.7, 0);
   counterCurrentCoilGroup.add(returnRecyclePipe);
+
+  const returnHeader = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.105, 0.105, 0.35, 12)),
+    materials.lowPressureReturn,
+  );
+  returnHeader.name = "LowPressureReturnHeader";
+  returnHeader.rotation.z = Math.PI / 2;
+  returnHeader.position.set(coilRadius + 0.175, coilTopY, 0);
+  counterCurrentCoilGroup.add(returnHeader);
 
   // -------------------------------------------------------------
   // 3. Nozzle N with regulating valve R′ at the bottom of G′
   // -------------------------------------------------------------
   const jtValveGroup = new THREE.Group();
   jtValveGroup.position.set(0, -1.6, 0);
-  root.add(jtValveGroup);
+  claimProcessGroup.add(jtValveGroup);
+
+  const valveFeedPoints = [
+    new THREE.Vector3(coilRadius, coilBottomY, 0),
+    new THREE.Vector3(0.55, coilBottomY, 0),
+    new THREE.Vector3(0.28, -1.6, 0),
+  ];
+  const valveFeedCenterline = new THREE.CatmullRomCurve3(valveFeedPoints, false, "centripetal");
+  const valveFeedOuter = new THREE.Mesh(
+    trackGeo(new THREE.TubeGeometry(valveFeedCenterline, 24, 0.105, 12, false)),
+    materials.lowPressureReturn,
+  );
+  valveFeedOuter.name = "LowPressureReturnAroundValveFeed";
+  valveFeedOuter.renderOrder = 1;
+  const valveFeedInner = new THREE.Mesh(
+    trackGeo(new THREE.TubeGeometry(valveFeedCenterline, 24, 0.045, 10, false)),
+    materials.highPressurePath,
+  );
+  valveFeedInner.name = "HighPressureFeedToValveRPrime";
+  valveFeedInner.renderOrder = 2;
+  claimProcessGroup.add(valveFeedOuter, valveFeedInner);
 
   // Valve Body Casting
   const jtBody = new THREE.Mesh(
@@ -356,8 +428,10 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
     cryostatGroup,
     solidCasingMesh,
     cutawayCasingMesh,
+    claimProcessGroup,
     counterCurrentCoilGroup,
     coilRings,
+    innerCoilSegments,
     inletSupplyPipe,
     returnRecyclePipe,
     jtValveGroup,
@@ -387,6 +461,7 @@ export function updateLindeLiquefactionKinematics(
   timeSec: number,
   showFlowTracer: boolean,
   cutawayMode: boolean,
+  claim1Active = true,
 ) {
   // 1. The handwheel is a source-named part, not a measured dynamic output.
   nodes.jtHandwheel.rotation.z = 0;
@@ -394,14 +469,16 @@ export function updateLindeLiquefactionKinematics(
   // 2. Cutaway Visibility
   nodes.solidCasingMesh.visible = !cutawayMode;
   nodes.cutawayCasingMesh.visible = cutawayMode;
+  nodes.claimProcessGroup.visible = claim1Active;
 
   // 3. Flow markers are an explicitly illustrative tracer, not a product or
   // volume readout. The only source pressure used here is the printed
   // 75-atmosphere example.
   const pressureNorm = 1;
-  materials.flowTracer.opacity = showFlowTracer ? 0.65 : 0.0;
+  materials.flowTracer.opacity = showFlowTracer && claim1Active ? 0.65 : 0.0;
+  nodes.flowTracerPoints.visible = claim1Active;
 
-  if (showFlowTracer) {
+  if (showFlowTracer && claim1Active) {
     const pos = nodes.flowTracerPoints.geometry.attributes.position.array as Float32Array;
     const jetSpeed = 1.1;
     const jtField = computeJouleThomsonThermalField(75, 120, 16);

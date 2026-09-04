@@ -27,7 +27,10 @@ export function DeForestAudionSim({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
-  const { params, updateParam, resetParams } = usePatentPhysics("us-879532-de-forest-audion");
+  const { params, claimStates, updateParam, resetParams } = usePatentPhysics(
+    "us-879532-de-forest-audion",
+  );
+  const claim1GridPresent = claimStates[1] ?? true;
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const plateVoltageV = params.plateVoltageV ?? initialPlateVoltageV;
   const gridBiasVoltageV = params.gridBiasVoltageV ?? initialGridBiasVoltageV;
@@ -37,6 +40,7 @@ export function DeForestAudionSim({
 
   // Compute live physics
   const physics = stepDeForestAudion({
+    claim1GridPresent,
     plateVoltageV,
     gridBiasVoltageV,
     filamentCurrentA,
@@ -44,6 +48,7 @@ export function DeForestAudionSim({
     loadResistanceKOhms,
   });
   const live = useLiveSimParams({
+    claim1GridPresent,
     plateVoltageV,
     gridBiasVoltageV,
     filamentCurrentA,
@@ -67,6 +72,7 @@ export function DeForestAudionSim({
       animId = requestAnimationFrame(render);
       if (!onscreenRef.current) return;
       const {
+        claim1GridPresent,
         plateVoltageV,
         gridBiasVoltageV,
         filamentCurrentA,
@@ -160,18 +166,24 @@ export function DeForestAudionSim({
       const gridX = bulbX;
       const isGridNeg = gridBiasVoltageV < 0;
 
-      ctx.strokeStyle = isGridNeg ? "#f43f5e" : "#38bdf8";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      for (let gy = bulbY - 50; gy <= bulbY + 50; gy += 12) {
-        ctx.moveTo(gridX - 6, gy);
-        ctx.lineTo(gridX + 6, gy);
-      }
-      ctx.stroke();
+      if (claim1GridPresent) {
+        ctx.strokeStyle = isGridNeg ? "#f43f5e" : "#38bdf8";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let gy = bulbY - 50; gy <= bulbY + 50; gy += 12) {
+          ctx.moveTo(gridX - 6, gy);
+          ctx.lineTo(gridX + 6, gy);
+        }
+        ctx.stroke();
 
-      ctx.font = "bold 9px monospace";
-      ctx.fillStyle = isGridNeg ? "#fb7185" : "#38bdf8";
-      ctx.fillText(`GRID a (${gridBiasVoltageV.toFixed(1)} V)`, gridX - 22, bulbY - 60);
+        ctx.font = "bold 9px monospace";
+        ctx.fillStyle = isGridNeg ? "#fb7185" : "#38bdf8";
+        ctx.fillText(`GRID a (${gridBiasVoltageV.toFixed(1)} V)`, gridX - 22, bulbY - 60);
+      } else {
+        ctx.font = "bold 9px monospace";
+        ctx.fillStyle = "#fb7185";
+        ctx.fillText("GRID a WITHHELD", gridX - 35, bulbY - 60);
+      }
 
       // (C) COLD COLLECTOR PLATE ANODE (x: 230)
       const plateX = bulbX + 50;
@@ -196,7 +208,7 @@ export function DeForestAudionSim({
 
           // Grid repulsive choking effect
           let yOffset = 0;
-          if (px > gridX - 10 && px < gridX + 10 && isGridNeg) {
+          if (claim1GridPresent && px > gridX - 10 && px < gridX + 10 && isGridNeg) {
             yOffset = Math.sin(tProgress * Math.PI) * 4;
           }
 
@@ -251,6 +263,7 @@ export function DeForestAudionSim({
       ctx.beginPath();
       for (let vx = -6; vx <= 2; vx += 0.2) {
         const pt = stepDeForestAudion({
+          claim1GridPresent,
           plateVoltageV,
           gridBiasVoltageV: vx,
           filamentCurrentA,

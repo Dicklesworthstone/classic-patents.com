@@ -1,7 +1,7 @@
 "use client";
 
 import { BookOpen, Check, Copy, Download, Search, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import type { Patent } from "@/types/patent";
 import {
   downloadCitationFile,
@@ -76,6 +76,13 @@ const CITATION_FORMATS: readonly {
     machineReadable: false,
   },
 ];
+
+const QUICK_ACCESS_CITATION_FORMATS = [
+  { format: "bibtex", label: "BibTeX (.bib)" },
+  { format: "ris", label: "RIS (.ris - Zotero)" },
+  { format: "chicago", label: "Chicago Manual of Style" },
+  { format: "apa", label: "APA 7th Edition" },
+] as const;
 
 const GLOSSARY_TERMS: readonly GlossaryEntry[] = [
   {
@@ -208,7 +215,7 @@ function GlossaryTabs({
   readonly patent?: Patent;
   readonly onSelectTab: (tab: GlossaryTab) => void;
 }) {
-  const handleNavigation = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleNavigation = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
     event.preventDefault();
     const next = activeTab === "glossary" ? "citation" : "glossary";
@@ -338,12 +345,6 @@ function CitationPanel({
 }) {
   const activeFormat = findCitationFormat(citationFormat);
   const activeCitationText = citations[citationFormat];
-  const quickAccessFormats = [
-    { format: "bibtex", label: "BibTeX (.bib)" },
-    { format: "ris", label: "RIS (.ris - Zotero)" },
-    { format: "chicago", label: "Chicago Manual of Style" },
-    { format: "apa", label: "APA 7th Edition" },
-  ] as const;
 
   return (
     <div
@@ -416,7 +417,7 @@ function CitationPanel({
           Quick Access Formats
         </span>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-          {quickAccessFormats.map(({ format, label }) => {
+          {QUICK_ACCESS_CITATION_FORMATS.map(({ format, label }) => {
             const copyKey = `quick-${format}`;
             const wasCopied = copiedFormat === copyKey;
             return (

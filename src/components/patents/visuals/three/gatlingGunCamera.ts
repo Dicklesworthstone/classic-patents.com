@@ -25,17 +25,28 @@ const NARROW_PHONE_ISO: GatlingGunCameraView = {
   target: [0.5, 0.3, 0],
 };
 
+// A 375 px reader canvas exposes more of the long muzzle cluster than the
+// 320 px receipt, but remains portrait-constrained. This second overview fits
+// every barrel rotation rather than allowing the right-most muzzle to leave
+// frame. It deliberately applies only between the already-audited 320 px path
+// and tablet widths.
+const COMPACT_PHONE_CANVAS_MAX_WIDTH_PX = 480;
+const COMPACT_PHONE_ISO: GatlingGunCameraView = {
+  pos: [17.3, 9.26, 18.9],
+  target: [0.5, 0.3, 0],
+};
+
 export function gatlingGunCameraForViewport(
   preset: GatlingGunCameraPreset,
   viewportWidth: number,
   viewportHeight = Math.max(1, viewportWidth / 1.6),
 ): GatlingGunCameraView {
   const view = GATLING_GUN_CAMERA_PRESETS[preset];
-  const isNarrowPhonePortrait =
-    preset === "iso" &&
-    viewportWidth > 0 &&
-    viewportWidth <= NARROW_PHONE_CANVAS_MAX_WIDTH_PX &&
-    viewportHeight > viewportWidth;
+  const isPortraitOverview =
+    preset === "iso" && viewportWidth > 0 && viewportHeight > viewportWidth;
 
-  return isNarrowPhonePortrait ? NARROW_PHONE_ISO : view;
+  if (!isPortraitOverview) return view;
+  if (viewportWidth <= NARROW_PHONE_CANVAS_MAX_WIDTH_PX) return NARROW_PHONE_ISO;
+  if (viewportWidth <= COMPACT_PHONE_CANVAS_MAX_WIDTH_PX) return COMPACT_PHONE_ISO;
+  return view;
 }

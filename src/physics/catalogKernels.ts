@@ -2838,10 +2838,12 @@ export function stepLamarrRecordControl(params: {
   commandTone?: number;
   rudderStep?: number;
   issueCommand?: boolean;
+  claim1SynchronizedRecordsPresent?: number | boolean;
 }) {
   const recordPosition = Math.max(0, Math.min(6, Math.round(params.recordPosition ?? 0)));
   const transmitterRow = LAMARR_RECORD_ROWS[recordPosition];
-  const receiverEffective = recordPosition >= 3;
+  const recordSynchronizationPresent = Number(params.claim1SynchronizedRecordsPresent ?? 1) >= 0.5;
+  const receiverEffective = recordSynchronizationPresent && recordPosition >= 3;
   const commandTone = params.commandTone === 500 ? 500 : 100;
   const commandDelta = commandTone === 500 ? 1 : -1;
   const commandAccepted = Boolean(params.issueCommand) && receiverEffective;
@@ -2851,7 +2853,11 @@ export function stepLamarrRecordControl(params: {
     transmitterRow,
     receiverRow: receiverEffective ? transmitterRow : null,
     receiverEffective,
-    warningLampOn: !receiverEffective,
+    recordSynchronizationPresent,
+    warningLampOn: recordPosition < 3,
+    refusalReason: recordSynchronizationPresent
+      ? null
+      : "Claim 1's second record and synchronized receiver actuation are withheld; receiver tuning and command acceptance are not inferred.",
     commandTone,
     commandDelta,
     commandAccepted,
@@ -3004,24 +3010,34 @@ export function stepEinsteinRefrigerator(params: {
   heatInput?: number;
   totalPressure?: number;
   ammoniaRatio?: number;
+  claim1LiftPathPresent?: number | boolean;
 }) {
   const qIn = params.heatInput ?? 220;
   const press = params.totalPressure ?? 15.0;
   const nh3 = params.ammoniaRatio ?? 0.65;
+  const claim1LiftPathPresent = Number(params.claim1LiftPathPresent ?? 1) >= 0.5;
   const evapTempC = -25 + (press - 10) * 1.4 - (nh3 - 0.65) * 18;
-  const cop = Number((0.32 * (1 - Math.abs(evapTempC) / 120)).toFixed(2));
-  const coolingWatts = Math.round(qIn * cop);
+  const scenarioCop = Number((0.32 * (1 - Math.abs(evapTempC) / 120)).toFixed(2));
+  const cop = claim1LiftPathPresent ? scenarioCop : 0;
+  const coolingWatts = claim1LiftPathPresent ? Math.round(qIn * cop) : 0;
   return {
+    operating: claim1LiftPathPresent,
+    claim1LiftPathPresent,
+    refusalReason: claim1LiftPathPresent
+      ? null
+      : "Claim 1 heated liquid-lift conduit is withheld; the source cycle is open and no cooling state is inferred.",
     evapTempC: Number(evapTempC.toFixed(1)),
     evapTempF: Math.round((evapTempC * 9) / 5 + 32),
     coolingWatts,
     cop,
     pressureAtm: press,
     partialPressureButaneAtm: Number((press * (1 - nh3)).toFixed(2)),
-    fluidDisplaySpeed: Number((coolingWatts / 45 + 0.8).toFixed(3)),
-    heaterGlowIntensity: Number(((qIn / 250) * 0.95).toFixed(3)),
-    generatorGlowIntensity: Number(((qIn / 300) * 0.7).toFixed(3)),
-    evaporatorGlowIntensity: Number(Math.min(1.3, Math.max(0.08, -evapTempC / 35)).toFixed(3)),
+    fluidDisplaySpeed: claim1LiftPathPresent ? Number((coolingWatts / 45 + 0.8).toFixed(3)) : 0,
+    heaterGlowIntensity: claim1LiftPathPresent ? Number(((qIn / 250) * 0.95).toFixed(3)) : 0,
+    generatorGlowIntensity: claim1LiftPathPresent ? Number(((qIn / 300) * 0.7).toFixed(3)) : 0,
+    evaporatorGlowIntensity: claim1LiftPathPresent
+      ? Number(Math.min(1.3, Math.max(0.08, -evapTempC / 35)).toFixed(3))
+      : 0,
     schematicVesselLeftX: 70,
     schematicVesselRightX: 240,
     schematicVesselTopY: 50,
@@ -3374,6 +3390,7 @@ export function stepEdisonIndicator(
 }
 
 export interface DeForestAudionKernelInput {
+  claim1GridPresent?: boolean;
   filamentCurrentA?: number;
   gridBiasV?: number;
   gridBiasVoltageV?: number;
@@ -3384,6 +3401,7 @@ export interface DeForestAudionKernelInput {
 }
 
 export interface DeForestAudionKernelOutput {
+  claim1GridPresent: boolean;
   filamentCurrentA: number;
   filamentPowerW: number;
   filamentGlowRadiusPx: number;
@@ -3415,6 +3433,7 @@ export interface DeForestAudionKernelOutput {
 export function stepDeForestAudion(
   params: DeForestAudionKernelInput = {},
 ): DeForestAudionKernelOutput {
+  const claim1GridPresent = params.claim1GridPresent ?? true;
   const filamentCurrentA = params.filamentCurrentA ?? 1.0;
   const gridBiasV = params.gridBiasVoltageV ?? params.gridBiasV ?? -1.5;
   const rfInputMv = params.gridSignalAmplitudeMv ?? params.rfInputMv ?? 50;
@@ -3432,19 +3451,25 @@ export function stepDeForestAudion(
   const mu = 12.0;
   const k = 0.00035; // Perveance constant
 
-  const vEff = gridBiasV + plateVoltageV / mu;
+  // With Claim 1's interposed conducting member present, grid potential
+  // controls the plate-current operating point. Removing that member leaves a
+  // two-electrode thermionic diode: plate current may still flow, but there is
+  // no control-grid transconductance and therefore no active voltage gain.
+  const vEff = (claim1GridPresent ? gridBiasV : 0) + plateVoltageV / mu;
   const gridCutoffVoltageV = Number((-plateVoltageV / mu).toFixed(2));
   const rawCurrentMa = vEff > 0 ? k * vEff ** 1.5 * 1000 * emissionFactor : 0.01 * emissionFactor;
   const plateCurrentMa = Number(Math.max(0, Math.min(15.0, rawCurrentMa)).toFixed(2));
 
-  const gm_A_per_V = vEff > 0 ? 1.5 * k * Math.sqrt(vEff) * emissionFactor : 0.00005;
+  const gm_A_per_V = claim1GridPresent && vEff > 0 ? 1.5 * k * Math.sqrt(vEff) * emissionFactor : 0;
   const transconductanceMicroMhos = Math.round(gm_A_per_V * 1e6);
 
   const rpOhm = gm_A_per_V > 1e-6 ? mu / gm_A_per_V : 200000;
   const plateResistanceKOhms = Number((rpOhm / 1000).toFixed(1));
 
   const rLoadOhm = loadResistanceKOhms * 1000;
-  const voltageGain = Number(((mu * rLoadOhm) / (rpOhm + rLoadOhm)).toFixed(2));
+  const voltageGain = claim1GridPresent
+    ? Number(((mu * rLoadOhm) / (rpOhm + rLoadOhm)).toFixed(2))
+    : 0;
 
   const vInRms = rfInputMv / 1000 / Math.SQRT2;
   const vOutRms = vInRms * voltageGain;
@@ -3453,7 +3478,9 @@ export function stepDeForestAudion(
   const outputSignalMv = Number((rfInputMv * voltageGain).toFixed(1));
 
   const platePowerMw = Number((plateVoltageV * plateCurrentMa).toFixed(1));
-  const powerGainDb = Number((20 * Math.log10(Math.max(1, voltageGain * 3.5))).toFixed(1));
+  const powerGainDb = claim1GridPresent
+    ? Number((20 * Math.log10(Math.max(1, voltageGain * 3.5))).toFixed(1))
+    : 0;
   const isConducting = plateCurrentMa > 0.05;
   const electronDisplayAdvance = isConducting ? Number((plateCurrentMa * 1.525).toFixed(3)) : 0;
   const electronStreamAdvancePerFrame = isConducting
@@ -3462,6 +3489,7 @@ export function stepDeForestAudion(
   const scopeSweepOmegaRadPerS = 6;
 
   return {
+    claim1GridPresent,
     filamentCurrentA,
     filamentPowerW,
     filamentGlowRadiusPx,

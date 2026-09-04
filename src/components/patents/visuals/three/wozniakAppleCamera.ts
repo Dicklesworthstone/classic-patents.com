@@ -26,17 +26,30 @@ const NARROW_PHONE_ISO: WozniakAppleCameraView = {
   target: [0, -0.8, 0],
 };
 
+// The 375 × 812 portrait receipt is wider than the established 320 px path,
+// yet still clips the board/chassis at its left, right, and lower edges with
+// the desktop overview. This only widens the portrait overview envelope; CPU,
+// RAM, slot, and top inspection views remain deliberately close.
+const COMPACT_PHONE_CANVAS_MAX_WIDTH_PX = 480;
+const COMPACT_PHONE_ISO: WozniakAppleCameraView = {
+  // The live 375px route gives the studio a 341 × 380px canvas. The same
+  // source-envelope view that is safe at 320px fills that actual canvas
+  // without cutting off the chassis, and keeps the board readable.
+  pos: [0, 18.0, 26.0],
+  target: [0, -0.8, 0],
+};
+
 export function wozniakAppleCameraForViewport(
   preset: WozniakAppleCameraPreset,
   viewportWidth: number,
   viewportHeight = Math.max(1, viewportWidth / 1.6),
 ): WozniakAppleCameraView {
   const view = WOZNIAK_APPLE_CAMERA_PRESETS[preset];
-  const isNarrowPhonePortrait =
-    preset === "iso" &&
-    viewportWidth > 0 &&
-    viewportWidth <= NARROW_PHONE_CANVAS_MAX_WIDTH_PX &&
-    viewportHeight > viewportWidth;
+  const isPortraitOverview =
+    preset === "iso" && viewportWidth > 0 && viewportHeight > viewportWidth;
 
-  return isNarrowPhonePortrait ? NARROW_PHONE_ISO : view;
+  if (!isPortraitOverview) return view;
+  if (viewportWidth <= NARROW_PHONE_CANVAS_MAX_WIDTH_PX) return NARROW_PHONE_ISO;
+  if (viewportWidth <= COMPACT_PHONE_CANVAS_MAX_WIDTH_PX) return COMPACT_PHONE_ISO;
+  return view;
 }

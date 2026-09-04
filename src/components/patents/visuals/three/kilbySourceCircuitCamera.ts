@@ -48,18 +48,29 @@ const NARROW_PHONE_FIGURE_6A: KilbySourceCircuitCameraView = {
   target: [0, 0.25, 0],
 };
 
+// At a 375 × 812 reader canvas, the Fig. 6a support, germanium wafer, and
+// attached Kovar-lead envelope otherwise crosses both horizontal edges. This
+// portrait-only source overview backs off along the established diagonal and
+// recentres its printed construction; the 320 px and wider tablet paths are
+// intentionally unchanged.
+const COMPACT_PHONE_CANVAS_MAX_WIDTH_PX = 480;
+const COMPACT_PHONE_FIGURE_6A: KilbySourceCircuitCameraView = {
+  label: "Fig. 6a Construction",
+  pos: [24, 25.325, 20.4],
+  // Lift the look target just enough to retain the lower lead frame while
+  // keeping the topmost Wire 70 arch inside the 375 px portrait envelope.
+  target: [0.2, 0.45, 0],
+};
+
 export function kilbySourceCircuitCameraForViewport(
   preset: KilbySourceCircuitCameraPreset,
   viewportWidth: number,
   viewportHeight = Math.max(1, viewportWidth / 1.6),
 ): KilbySourceCircuitCameraView {
-  const isNarrowPhonePortrait =
-    preset === "figure6a" &&
-    viewportWidth > 0 &&
-    viewportWidth <= NARROW_PHONE_CANVAS_MAX_WIDTH_PX &&
-    viewportHeight > viewportWidth;
-
-  return isNarrowPhonePortrait
-    ? NARROW_PHONE_FIGURE_6A
-    : KILBY_SOURCE_CIRCUIT_CAMERA_PRESETS[preset];
+  const isPortraitOverview =
+    preset === "figure6a" && viewportWidth > 0 && viewportHeight > viewportWidth;
+  if (!isPortraitOverview) return KILBY_SOURCE_CIRCUIT_CAMERA_PRESETS[preset];
+  if (viewportWidth <= NARROW_PHONE_CANVAS_MAX_WIDTH_PX) return NARROW_PHONE_FIGURE_6A;
+  if (viewportWidth <= COMPACT_PHONE_CANVAS_MAX_WIDTH_PX) return COMPACT_PHONE_FIGURE_6A;
+  return KILBY_SOURCE_CIRCUIT_CAMERA_PRESETS[preset];
 }

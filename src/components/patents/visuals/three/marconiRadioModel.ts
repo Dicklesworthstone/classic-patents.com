@@ -25,6 +25,7 @@ export interface MarconiRadioModelNodes {
   aerialWire: THREE.Mesh;
   guyLines: THREE.LineSegments;
   guyLinePositions: Float32Array;
+  guyAnchors: THREE.Mesh[];
   sparkGapGroup: THREE.Group;
   sparkBalls: THREE.Mesh[];
   sparkPillars: THREE.Mesh[];
@@ -227,11 +228,19 @@ export function buildMarconiRadioModel(): MarconiRadioModelResult {
   // Mast Guy Wires
   const guyWiresGeo = trackGeo(new THREE.BufferGeometry());
   const guyPositions: number[] = [];
+  const guyAnchorPositions: THREE.Vector3[] = [];
   [-2.2, 2.2].forEach((gz) => {
-    guyPositions.push(-3.5, 5.2, 0, -6.5, -3.0, gz);
-    guyPositions.push(-3.5, 5.2, 0, -0.5, -3.0, gz);
-    guyPositions.push(-3.5, 3.0, 0, -5.5, -3.0, gz * 0.8);
-    guyPositions.push(-3.5, 3.0, 0, -1.5, -3.0, gz * 0.8);
+    const anchors = [
+      new THREE.Vector3(-6.5, -3.0, gz),
+      new THREE.Vector3(-0.5, -3.0, gz),
+      new THREE.Vector3(-5.5, -3.0, gz * 0.8),
+      new THREE.Vector3(-1.5, -3.0, gz * 0.8),
+    ];
+    const mastAttachmentY = [5.2, 5.2, 3.0, 3.0];
+    anchors.forEach((anchor, index) => {
+      guyPositions.push(-3.5, mastAttachmentY[index], 0, anchor.x, anchor.y, anchor.z);
+      guyAnchorPositions.push(anchor);
+    });
   });
   const guyLinePositions = new Float32Array(guyPositions);
   guyWiresGeo.setAttribute("position", new THREE.BufferAttribute(guyLinePositions, 3));
@@ -240,6 +249,20 @@ export function buildMarconiRadioModel(): MarconiRadioModelResult {
     trackMat(new THREE.LineBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.6 })),
   );
   rootGroup.add(guyLines);
+
+  // Neutral display supports, not claimed radio organs: every guy line now
+  // terminates in a visible ground stake instead of ending unsupported in
+  // space at the studio floor plane.
+  const guyAnchors = guyAnchorPositions.map((position, index) => {
+    const anchor = new THREE.Mesh(
+      trackGeo(new THREE.CylinderGeometry(0.11, 0.17, 0.22, 10)),
+      materials.groundEarth,
+    );
+    anchor.name = `DisplayGuyAnchor${index + 1}`;
+    anchor.position.set(position.x, position.y - 0.11, position.z);
+    rootGroup.add(anchor);
+    return anchor;
+  });
 
   // 2. Ruhmkorff Induction Spark Coil
   const inductionCoilGroup = new THREE.Group();
@@ -568,6 +591,7 @@ export function buildMarconiRadioModel(): MarconiRadioModelResult {
     aerialWire,
     guyLines,
     guyLinePositions,
+    guyAnchors,
     sparkGapGroup,
     sparkBalls,
     sparkPillars,

@@ -29,6 +29,7 @@ export function FarnsworthTVSim() {
     "electronic-farnsworth",
   );
   const isScanning = controls.running;
+  const claim1Active = controls.claim1ScanPathPresent;
 
   return (
     <div
@@ -133,7 +134,7 @@ export function FarnsworthTVSim() {
               style={{
                 left: `${scanFrame.rasterXPercent}%`,
                 top: `${scanFrame.rasterYPercent}%`,
-                opacity: scanFrame.inHorizontalRetrace ? 0 : 1,
+                opacity: claim1Active && !scanFrame.inHorizontalRetrace ? 1 : 0,
                 transform: "translate(-50%, -50%)",
               }}
             />
@@ -145,7 +146,11 @@ export function FarnsworthTVSim() {
           </div>
 
           <div className="text-xs font-mono text-ink-300 mt-3">
-            {mode === "electronic-farnsworth" ? (
+            {!claim1Active ? (
+              <span className="text-amber-400 font-bold">
+                Claim 1 traversal withheld · no raster picture inferred
+              </span>
+            ) : mode === "electronic-farnsworth" ? (
               <span className="text-emerald-400 font-bold">
                 Electron Optics: {scanLines} lines · {beam.electronVelocityMegaMps} Mm/s · r=
                 {beam.gyroRadiusMm} mm · {beam.photocathodeCurrentUa} µA

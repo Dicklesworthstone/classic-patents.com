@@ -22,6 +22,7 @@ import { gliddenFlyerCrate } from "@/physics/genericWasm";
 
 export interface GliddenBarbedWireModelNodes {
   rootGroup: THREE.Group;
+  presentationPropsGroup: THREE.Group;
   bench: THREE.Mesh;
   feedSpools: THREE.Mesh[];
   flyerGroup: THREE.Group;
@@ -48,6 +49,8 @@ export interface GliddenBarbedWireModelResult {
   rootGroup: THREE.Group;
   nodes: GliddenBarbedWireModelNodes;
   materials: GliddenBarbedWireMaterials;
+  /** Compact portrait readers prioritize the printed claim over invented workshop staging. */
+  setCompactClaimFocus: (enabled: boolean) => void;
   dispose: () => void;
 }
 
@@ -101,6 +104,13 @@ function createBenchTexture(): THREE.CanvasTexture | undefined {
 
 export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
   const rootGroup = new THREE.Group();
+  // The bench, spools, flyer, gears, and take-up drum are explicitly staging
+  // props. Keeping them in one group lets a narrow reader inspect the actual
+  // printed wire-and-barb claim without pretending that the props are source
+  // apparatus.
+  const presentationPropsGroup = new THREE.Group();
+  presentationPropsGroup.name = "presentation-only workshop props";
+  rootGroup.add(presentationPropsGroup);
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
   const texturesToDispose: THREE.Texture[] = [];
@@ -185,7 +195,7 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
 
   // --- 1. Heavy Wooden Workshop Bench & Cast Iron Bed ---
   const benchGroup = new THREE.Group();
-  rootGroup.add(benchGroup);
+  presentationPropsGroup.add(benchGroup);
 
   const benchTop = new THREE.Mesh(
     trackGeo(new THREE.BoxGeometry(11.4, 0.6, 5.0)),
@@ -230,7 +240,7 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
   spoolLocations.forEach((loc) => {
     const spoolAssembly = new THREE.Group();
     spoolAssembly.position.set(loc.x, loc.y, loc.z);
-    rootGroup.add(spoolAssembly);
+    presentationPropsGroup.add(spoolAssembly);
 
     // Cast iron frame stand
     const stand = new THREE.Mesh(
@@ -274,7 +284,7 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
   // --- 3. Presentation twist arbor (not a source-drawn or separately claimed structure) ---
   const flyerGroup = new THREE.Group();
   flyerGroup.position.set(-2.0, 0, 0);
-  rootGroup.add(flyerGroup);
+  presentationPropsGroup.add(flyerGroup);
 
   // Cast iron flyer cage rings and cross-arms
   const outerFlyerRing = new THREE.Mesh(
@@ -316,7 +326,7 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
   // Flyer Drive Bevel Gears & Bearing Housings
   const flyerGears = new THREE.Group();
   flyerGears.position.set(-2.4, 0, 0);
-  rootGroup.add(flyerGears);
+  presentationPropsGroup.add(flyerGears);
 
   const bevelGear1 = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.7, 0.5, 0.25, 20)),
@@ -484,7 +494,7 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
   // --- 7. Presentation take-up reel (not part of the printed claim) ---
   const reelGroup = new THREE.Group();
   reelGroup.position.set(3.8, 0, 0);
-  rootGroup.add(reelGroup);
+  presentationPropsGroup.add(reelGroup);
 
   // Heavy walnut core drum
   const reelHub = new THREE.Mesh(
@@ -530,6 +540,7 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
 
   const nodes: GliddenBarbedWireModelNodes = {
     rootGroup,
+    presentationPropsGroup,
     bench: benchTop,
     feedSpools,
     flyerGroup,
@@ -549,7 +560,11 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
     for (const t of texturesToDispose) t.dispose();
   };
 
-  return { rootGroup, nodes, materials, dispose };
+  const setCompactClaimFocus = (enabled: boolean) => {
+    presentationPropsGroup.visible = !enabled;
+  };
+
+  return { rootGroup, nodes, materials, setCompactClaimFocus, dispose };
 }
 
 /**

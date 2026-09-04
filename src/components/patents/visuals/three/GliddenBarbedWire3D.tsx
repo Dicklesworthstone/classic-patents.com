@@ -18,9 +18,11 @@ import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   type GliddenBarbedWireCameraPreset as CameraPreset,
   gliddenBarbedWireCameraForViewport,
+  isGliddenCompactClaimViewport,
 } from "./gliddenBarbedWireCamera";
 import {
   buildGliddenBarbedWireModel,
+  type GliddenBarbedWireModelResult,
   updateGliddenBarbedWireKinematics,
 } from "./gliddenBarbedWireModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
@@ -50,6 +52,7 @@ const IDLE_MACHINE: MachineState = {
 
 export const GliddenBarbedWire3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const modelRef = useRef<GliddenBarbedWireModelResult | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
@@ -176,7 +179,12 @@ export const GliddenBarbedWire3D = memo(() => {
 
     const { scene, camera, renderer, controls } = studio;
 
-    const { rootGroup, nodes, materials, dispose } = buildGliddenBarbedWireModel();
+    const model = buildGliddenBarbedWireModel();
+    const { rootGroup, nodes, materials, dispose } = model;
+    modelRef.current = model;
+    model.setCompactClaimFocus(
+      isGliddenCompactClaimViewport(container.clientWidth, container.clientHeight),
+    );
     scene.add(rootGroup);
 
     // Animation Loop
@@ -211,6 +219,7 @@ export const GliddenBarbedWire3D = memo(() => {
       dispose();
       studio.cleanup();
       studioRef.current = null;
+      modelRef.current = null;
     };
   }, [live]);
 
@@ -222,6 +231,9 @@ export const GliddenBarbedWire3D = memo(() => {
         activeCamera,
         container.clientWidth,
         container.clientHeight,
+      );
+      modelRef.current?.setCompactClaimFocus(
+        isGliddenCompactClaimViewport(container.clientWidth, container.clientHeight),
       );
       studioRef.current?.controls.setView(view.pos, view.target);
     };

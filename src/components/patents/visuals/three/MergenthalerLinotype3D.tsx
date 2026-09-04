@@ -2,7 +2,7 @@
 
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { ensureGenericWasm } from "@/physics/genericWasm";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { createStudioClock } from "@/physics/tickScheduler";
 import {
   globalTransportBus,
@@ -30,20 +30,15 @@ export function MergenthalerLinotype3D() {
   const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
-  useEffect(() => {
-    void ensureGenericWasm();
-  }, []);
-
-  const { params, updateParam } = usePatentPhysics("us-313224-mergenthaler-linotype");
+  const { params, claimStates, updateParam } = usePatentPhysics("us-313224-mergenthaler-linotype");
   // The registry still carries legacy parameter keys for route compatibility.
   // This source face interprets them only as declared display coordinates; it
   // never projects later commercial Linotype measurements onto US 313,224.
   const selectionCadencePerMin = params.matrixRate ?? 60;
   const stopTravelDisplay = params.spacebandWedge ?? 6.5;
   const moldClosurePct = Math.round((((params.potTemp ?? 260) - 220) / 100) * 100);
-  const claim1Active = claimStates[1] !== false;
+  const claim1Active = claimStates[1] ?? true;
   const [activeCamera, setActiveCamera] = useState<MergenthalerLinotypeCameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
@@ -332,10 +327,10 @@ export function MergenthalerLinotype3D() {
 
         <ClaimConstraintToggle
           patentId="us-313224-mergenthaler-linotype"
-          claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
+          claimStates={{ 1: claim1Active }}
+          onToggleClaim={(claimNo, active) => {
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0);
+          }}
           className="mt-2"
         />
         <p className="mt-3 text-[11px] leading-relaxed text-amber-800 dark:text-amber-300">

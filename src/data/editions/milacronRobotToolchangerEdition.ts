@@ -7,17 +7,17 @@ import type {
 const PATENT_NUMBER = "4,512,709";
 const FIGURE_ROOT = "/patents/figures/us-4512709-milacron-robot-toolchanger";
 
-const figureDimensions: Record<number, readonly [number, number]> = {
-  1: [1400, 1950],
-  2: [1400, 963],
-  3: [1400, 875],
-  4: [1400, 875],
-  5: [1400, 1867],
-  6: [1235, 1900],
-  7: [1400, 1786],
-  8: [997, 1150],
-  9: [1400, 1131],
-  10: [1400, 840],
+const sourceSheetByFigure: Record<number, number> = {
+  1: 1,
+  2: 2,
+  3: 2,
+  4: 2,
+  5: 3,
+  6: 4,
+  7: 5,
+  8: 5,
+  9: 6,
+  10: 6,
 };
 
 const p = (
@@ -41,19 +41,22 @@ const claim = (
 });
 
 const figure = (number: number, text = `FIG. ${number}`): CuratedSpecificationInline => {
-  const [width, height] = figureDimensions[number] ?? [1200, 800];
+  const sheet = sourceSheetByFigure[number];
+  if (!sheet) {
+    throw new Error(`US ${PATENT_NUMBER} is missing Figure ${number} source-sheet metadata.`);
+  }
   return {
     kind: "reference",
     text,
     href: `#figure-${number}`,
     referenceType: "figure",
-    label: `Source crop of ${text} from US ${PATENT_NUMBER}`,
+    label: `Complete primary source sheet for ${text} in US ${PATENT_NUMBER}`,
     figurePreviews: [
       {
-        src: `${FIGURE_ROOT}/fig-${number}-source-crop-v1.png`,
-        alt: `${text}, source drawing crop from US ${PATENT_NUMBER}`,
-        width,
-        height,
+        src: `${FIGURE_ROOT}/source-sheet-${sheet}-v1.png`,
+        alt: `Complete primary drawing sheet ${sheet} of 6 for ${text} in US ${PATENT_NUMBER}`,
+        width: 2320,
+        height: 3408,
       },
     ],
   };

@@ -118,6 +118,22 @@ describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
     expect(res.refusalWarning).toContain("SOURCE-BOUND REFUSAL");
   });
 
+  test("Einstein Claim 1 inversion opens only the source-described heated lift path", () => {
+    const raw = { heatInput: 220, totalPressure: 15, ammoniaRatio: 0.65 };
+    const result = applyClaimConstraintModifications("us-1781541-einstein-refrigerator", raw, {
+      1: false,
+    });
+
+    expect(result.modifiedParams).toMatchObject({
+      ...raw,
+      claim1LiftPathPresent: 0,
+    });
+    expect(result.modifiedParams.shaftPumpEnabled).toBeUndefined();
+    expect(result.modifiedParams.leakRate).toBeUndefined();
+    expect(result.activeFailures[0]).toContain("conduit 32");
+    expect(result.refusalWarning).toContain("supplies no operating pressure");
+  });
+
   test("Kwolek Claim 1 has no live inversion until the complete source edition exists", () => {
     const params = { polymerConcentrationPct: 18, drawRatio: 6.5, impactVelocity: 450 };
     expect(CATALOG_CLAIM_CONSTRAINTS["us-3671542-kwolek-kevlar"]).toEqual([]);

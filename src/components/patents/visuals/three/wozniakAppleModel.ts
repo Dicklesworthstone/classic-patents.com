@@ -26,6 +26,8 @@ export interface WozniakAppleModel {
   computerGroup: THREE.Group;
   chassis: THREE.Mesh;
   motherboard: THREE.Mesh;
+  /** Matte molded-package material for the 6502, DRAM, and ROM DIPs. */
+  icChipMaterial: THREE.MeshStandardMaterial;
   cpuGroup: THREE.Group;
   ramGroup: THREE.Group;
   romGroup: THREE.Group;
@@ -139,9 +141,14 @@ export function buildWozniakAppleModel(): WozniakAppleModel {
   disposables.push(pcbGreenMat);
 
   const icChipMat = new THREE.MeshStandardMaterial({
-    color: 0x111827,
-    roughness: 0.3,
-    metalness: 0.75,
+    // Black epoxy DIPs are not mirrored metal. A cool charcoal dielectric
+    // keeps their real package form distinguishable from the dark FR-4 board
+    // under the studio's physically based lighting, including compact phones.
+    color: 0x64748b,
+    emissive: 0x162338,
+    emissiveIntensity: 0.22,
+    roughness: 0.48,
+    metalness: 0.08,
   });
   disposables.push(icChipMat);
 
@@ -394,6 +401,7 @@ export function buildWozniakAppleModel(): WozniakAppleModel {
     computerGroup,
     chassis,
     motherboard,
+    icChipMaterial: icChipMat,
     cpuGroup,
     ramGroup,
     romGroup,

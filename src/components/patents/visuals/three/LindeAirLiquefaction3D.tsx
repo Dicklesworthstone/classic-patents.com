@@ -2,6 +2,7 @@
 
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Wind } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { FrankenSimEngine } from "@/physics/engine";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -47,9 +48,8 @@ export function LindeAirLiquefaction3D() {
   const [cutawayMode, setCutawayMode] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-
-  const { params } = usePatentPhysics("us-727650-linde-air-liquefaction");
+  const { params, claimStates, updateParam } = usePatentPhysics("us-727650-linde-air-liquefaction");
+  const claim1Active = claimStates[1] ?? true;
   const linde = FrankenSimEngine.stepLindeAirLiquefaction();
   const highPressureAtm = linde.highPressureAtm;
   const lowPressureAtm = linde.lowPressureAtm;
@@ -59,23 +59,33 @@ export function LindeAirLiquefaction3D() {
   // the patentId-keyed bus so badges and sibling faces read one honest state.
   useFrankenSimPhysics("us-727650-linde-air-liquefaction", {
     domain: "thermodynamics_transport",
-    refusal: { isRefused: false },
-    thermo: {
-      temperatureCelsius: coolerOutletC,
-      temperatureKelvin: coolerOutletC + 273.15,
-      pressureAtm: highPressureAtm,
-      partialPressureButaneAtm: 0,
-      heatInputWatts: 0,
-      coolingPowerWatts: 0,
-      coefficientOfPerformance: 0,
-      blackbodyRadiantPowerWatts: 0,
-      fluidFlowVelocityMps: 0,
+    refusal: {
+      isRefused: !claim1Active,
+      reason: claim1Active
+        ? undefined
+        : "Claim 1 comparison withholds the regenerative counter-current path.",
     },
+    ...(claim1Active
+      ? {
+          thermo: {
+            temperatureCelsius: coolerOutletC,
+            temperatureKelvin: coolerOutletC + 273.15,
+            pressureAtm: highPressureAtm,
+            partialPressureButaneAtm: 0,
+            heatInputWatts: 0,
+            coolingPowerWatts: 0,
+            coefficientOfPerformance: 0,
+            blackbodyRadiantPowerWatts: 0,
+            fluidFlowVelocityMps: 0,
+          },
+        }
+      : {}),
   });
 
   const live = useLiveSimParams({
     showFlowTracer,
     cutawayMode,
+    claim1Active,
     isAudioMuted,
   });
 
@@ -124,6 +134,7 @@ export function LindeAirLiquefaction3D() {
         timeSec,
         p.showFlowTracer,
         p.cutawayMode,
+        p.claim1Active,
       );
 
       controls.update();
@@ -294,10 +305,11 @@ export function LindeAirLiquefaction3D() {
 
         <ClaimConstraintToggle
           patentId="us-727650-linde-air-liquefaction"
-          claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
+          claimStates={{ 1: claim1Active }}
+          onToggleClaim={(claimNo, active) => {
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0);
+            if (!active) setCutawayMode(true);
+          }}
           className="mt-2"
         />
 

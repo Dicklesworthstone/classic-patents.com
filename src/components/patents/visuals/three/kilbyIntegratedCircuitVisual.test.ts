@@ -283,4 +283,73 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Visual & Phys
       model.dispose();
     }
   });
+
+  test("fits the wafer and attached Kovar leads at the independent 375 by 812px phone receipt", () => {
+    const model = buildKilbySourceCircuitModel();
+    try {
+      const canvasWidth = 375;
+      const canvasHeight = 812;
+      const view = kilbySourceCircuitCameraForViewport("figure6a", canvasWidth, canvasHeight);
+      expect(view).not.toEqual(KILBY_SOURCE_CIRCUIT_CAMERA_PRESETS.figure6a);
+      const camera = new THREE.PerspectiveCamera(42, canvasWidth / canvasHeight, 0.1, 1000);
+      camera.position.set(...view.pos);
+      camera.lookAt(...view.target);
+      camera.updateProjectionMatrix();
+      camera.updateMatrixWorld();
+
+      const auditedStates = [
+        { name: "default", controls: {} },
+        { name: "reveal-max", controls: { sectionRevealFraction: 1 } },
+        { name: "claim-inverted", controls: { claim1ConductiveMeansPresent: 0 } },
+      ] as const;
+      for (const state of auditedStates) {
+        model.update(stepKilbySourceCircuitTopology(state.controls));
+        model.root.updateMatrixWorld(true);
+        const apparatus = projectedObjectBounds(model.root, camera);
+        const wafer = projectedPixels(
+          projectedObjectBounds(model.wafer, camera),
+          canvasWidth,
+          canvasHeight,
+        );
+        const leads = projectedPixels(
+          projectedObjectBounds(model.kovarLeads, camera),
+          canvasWidth,
+          canvasHeight,
+        );
+
+        expect(apparatus.minX, `${state.name} left source envelope`).toBeGreaterThan(-0.8);
+        expect(apparatus.maxX, `${state.name} right source envelope`).toBeLessThan(0.85);
+        expect(apparatus.minY, `${state.name} lower source envelope`).toBeGreaterThan(-0.32);
+        expect(apparatus.maxY, `${state.name} upper source envelope`).toBeLessThan(0.25);
+        expect(
+          projectedPixels(apparatus, canvasWidth, canvasHeight).width,
+          `${state.name} apparatus width`,
+        ).toBeGreaterThan(285);
+        expect(wafer.width, `${state.name} wafer width`).toBeGreaterThan(195);
+        expect(wafer.height, `${state.name} wafer height`).toBeGreaterThan(130);
+        expect(leads.width, `${state.name} Kovar-lead width`).toBeGreaterThan(230);
+        expect(leads.height, `${state.name} Kovar-lead height`).toBeGreaterThan(160);
+      }
+    } finally {
+      model.dispose();
+    }
+  });
+
+  test("reselects only the Fig. 6a overview after a desktop-to-phone resize", () => {
+    const studioSource = readFileSync(studioFile, "utf-8");
+    expect(kilbySourceCircuitCameraForViewport("figure6a", 1216, 460)).toEqual(
+      KILBY_SOURCE_CIRCUIT_CAMERA_PRESETS.figure6a,
+    );
+    expect(kilbySourceCircuitCameraForViewport("figure6a", 375, 812)).not.toEqual(
+      KILBY_SOURCE_CIRCUIT_CAMERA_PRESETS.figure6a,
+    );
+    expect(kilbySourceCircuitCameraForViewport("wires70", 375, 812)).toEqual(
+      KILBY_SOURCE_CIRCUIT_CAMERA_PRESETS.wires70,
+    );
+    expect(studioSource).toContain('if (activeView !== "figure6a") return;');
+    expect(studioSource).toContain('window.addEventListener("resize", reselectResponsiveOverview)');
+    expect(studioSource).toContain(
+      'window.addEventListener("orientationchange", reselectResponsiveOverview)',
+    );
+  });
 });

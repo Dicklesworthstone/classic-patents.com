@@ -35,6 +35,8 @@ describe("US 879,532 Lee de Forest Audion Triode Visual & Electronics Boundary",
     expect(simSource).not.toContain("- time * 6");
     expect(modelSource).not.toContain("const speed = 0.02");
     expect(studioSource).toContain("electronStreamAdvancePerFrame");
+    expect(studioSource).toContain("claimConstraintStateParamId");
+    expect(studioSource).not.toContain("setClaimStates");
     expect(studioSource).toContain("isometric: { pos: [0, 0.8, 5.2], target: [0, 0.1, 0] }");
     expect(studioSource).toContain("const [isCutaway, setIsCutaway] = useState(true);");
     expect(modelSource).toContain("depthWrite: false");
@@ -59,7 +61,8 @@ describe("US 879,532 Lee de Forest Audion Triode Visual & Electronics Boundary",
       join(rootDir, "src/components/patents/visuals/DeForestAudionSim.tsx"),
       "utf-8",
     );
-    expect(simSource).toContain('usePatentPhysics("us-879532-de-forest-audion")');
+    expect(simSource).toContain("us-879532-de-forest-audion");
+    expect(simSource).toContain("claim1GridPresent");
     expect(simSource).toContain('updateParam("plateVoltageV"');
     expect(simSource).toContain('updateParam("gridBiasVoltageV"');
     expect(simSource).not.toContain("setPlateVoltageV");
@@ -82,6 +85,29 @@ describe("US 879,532 Lee de Forest Audion Triode Visual & Electronics Boundary",
     expect(res.outputSignalMv).toBeGreaterThan(250);
     expect(res.dynamicTransconductanceMicromhos).toBeGreaterThan(200);
     expect(res.gridCutoffVoltageV).toBeLessThan(-3.0);
+
+    const diode = stepDeForestAudion({
+      claim1GridPresent: false,
+      plateVoltageV: 45,
+      gridBiasVoltageV: -5,
+      filamentCurrentA: 1.0,
+      gridSignalAmplitudeMv: 50,
+      loadResistanceKOhms: 20,
+    });
+    const diodeAtOppositeGridSetting = stepDeForestAudion({
+      claim1GridPresent: false,
+      plateVoltageV: 45,
+      gridBiasVoltageV: 2,
+      filamentCurrentA: 1.0,
+      gridSignalAmplitudeMv: 50,
+      loadResistanceKOhms: 20,
+    });
+    expect(diode.claim1GridPresent).toBe(false);
+    expect(diode.plateCurrentMa).toBe(diodeAtOppositeGridSetting.plateCurrentMa);
+    expect(diode.dynamicTransconductanceMicromhos).toBe(0);
+    expect(diode.voltageGain).toBe(0);
+    expect(diode.outputSignalMv).toBe(0);
+    expect(diode.isConducting).toBe(true);
   });
 
   test("builds and articulates procedural glass bulb, filament, grid, and plate collector", () => {
@@ -117,6 +143,7 @@ describe("US 879,532 Lee de Forest Audion Triode Visual & Electronics Boundary",
     articulateDeForestAudionModel(
       nodes,
       {
+        claim1GridPresent: true,
         filamentTemperatureK: 2200,
         plateCurrentMa: 2.0,
         voltageGain: 8.5,
@@ -127,6 +154,23 @@ describe("US 879,532 Lee de Forest Audion Triode Visual & Electronics Boundary",
     );
 
     expect(nodes.filamentLight.intensity).toBeGreaterThan(2.0);
+    expect(nodes.gridGroup.visible).toBe(true);
+
+    articulateDeForestAudionModel(
+      nodes,
+      {
+        claim1GridPresent: false,
+        filamentTemperatureK: 2200,
+        plateCurrentMa: 2.0,
+        voltageGain: 0,
+        isConducting: true,
+        electronStreamAdvancePerFrame: sim.electronStreamAdvancePerFrame,
+      },
+      1.1,
+    );
+    expect(nodes.gridGroup.visible).toBe(false);
+    expect(nodes.gridLead.visible).toBe(false);
+    expect(nodes.potentialRings.visible).toBe(false);
   });
 
   test("derives all printed claims dynamically from edition without duplicate strings", () => {

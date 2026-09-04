@@ -103,8 +103,8 @@ describe("executable project coverage manifest", () => {
     expect(manifest.filter((row) => row.runtime.wasmSurface === "interpretive-wasm")).toHaveLength(
       0,
     );
-    expect(manifest.filter((row) => row.runtime.wasmSurface === "generic-wasm")).toHaveLength(36);
-    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(64);
+    expect(manifest.filter((row) => row.runtime.wasmSurface === "generic-wasm")).toHaveLength(35);
+    expect(manifest.filter((row) => row.runtime.wasmSurface === "none")).toHaveLength(65);
 
     for (const patentId of [
       "us-x9430-colt-revolver",
@@ -127,6 +127,7 @@ describe("executable project coverage manifest", () => {
       "us-542846-diesel-engine",
       "us-586193-marconi-radio",
       "us-2495429-spencer-microwave",
+      "us-313224-mergenthaler-linotype",
       "us-6331181-davinci",
       "us-3671542-kwolek-kevlar",
     ]) {

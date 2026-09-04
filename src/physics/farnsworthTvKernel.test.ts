@@ -58,6 +58,35 @@ describe("US 1,773,980 shared image-dissector raster tape", () => {
   test("normalizes numeric runtime flags to real booleans", () => {
     expect(readFarnsworthTvControls({ running: 0 as never }).running).toBe(false);
     expect(readFarnsworthTvControls({ running: 1 as never }).running).toBe(true);
+    expect(
+      readFarnsworthTvControls({ claim1ScanPathPresent: 0 as never }).claim1ScanPathPresent,
+    ).toBe(false);
+    expect(
+      readFarnsworthTvControls({ claim1ScanPathPresent: 1 as never }).claim1ScanPathPresent,
+    ).toBe(true);
+  });
+
+  test("withholds raster telemetry and freezes traversal when Claim 1's scan path is absent", () => {
+    let controls = DEFAULT_FARNSWORTH_CONTROLS;
+    const updater = createFarnsworthTvTransportUpdater(() => controls);
+    updater({} as never, 1 / 60);
+    const before = structuredClone(getFarnsworthTvTapeFrame());
+
+    controls = {
+      ...controls,
+      running: false,
+      claim1ScanPathPresent: false,
+    };
+    const refused = updater({} as never, 1 / 60);
+    const after = getFarnsworthTvTapeFrame();
+    const refusal = refused?.refusal;
+
+    expect(after?.state.simTimeSec).toBe(before?.state.simTimeSec);
+    if (!refusal?.isRefused) {
+      throw new Error("Claim 1 scan-path withdrawal must publish an explicit refusal receipt.");
+    }
+    expect(refusal.reason).toContain("Claim 1");
+    expect(refused?.raster).toBeUndefined();
   });
 
   test("identical fixed-step tapes are byte-stable and control rates remain effective", () => {

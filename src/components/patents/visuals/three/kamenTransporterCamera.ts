@@ -5,6 +5,8 @@ export type KamenTransporterCameraView = {
   target: [number, number, number];
 };
 
+export type KamenTransporterOverviewState = "climb" | "transition";
+
 export const KAMEN_TRANSPORTER_CAMERA_PRESETS: Record<
   KamenTransporterCameraPreset,
   KamenTransporterCameraView
@@ -25,10 +27,32 @@ const NARROW_PHONE_OVERVIEW: KamenTransporterCameraView = {
   target: [0.1, 0.62, 0],
 };
 
+const DESKTOP_STAIR_OVERVIEW: KamenTransporterCameraView = {
+  // Figure 42C's climb pose and Figure 38's transition pose lift the mast
+  // above the normal-balance envelope. Pull straight back along the overview
+  // sightline rather than moving the source-derived apparatus or clipping its
+  // handle at the top of a short desktop canvas.
+  pos: [2.14, 1.684, 2.64],
+  target: [0.1, 0.58, 0],
+};
+
+function needsDesktopStairOverview(
+  preset: KamenTransporterCameraPreset,
+  viewportWidth: number,
+  topologyState: string | undefined,
+): topologyState is KamenTransporterOverviewState {
+  return (
+    preset === "overview" &&
+    viewportWidth >= 880 &&
+    (topologyState === "climb" || topologyState === "transition")
+  );
+}
+
 export function kamenTransporterCameraForViewport(
   preset: KamenTransporterCameraPreset,
   viewportWidth: number,
   viewportHeight = Math.max(1, viewportWidth / 1.6),
+  topologyState?: string,
 ): KamenTransporterCameraView {
   const view = KAMEN_TRANSPORTER_CAMERA_PRESETS[preset];
   const isNarrowPhonePortrait =
@@ -37,5 +61,8 @@ export function kamenTransporterCameraForViewport(
     viewportWidth <= NARROW_PHONE_CANVAS_MAX_WIDTH_PX &&
     viewportHeight > viewportWidth;
 
-  return isNarrowPhonePortrait ? NARROW_PHONE_OVERVIEW : view;
+  if (isNarrowPhonePortrait) return NARROW_PHONE_OVERVIEW;
+  return needsDesktopStairOverview(preset, viewportWidth, topologyState)
+    ? DESKTOP_STAIR_OVERVIEW
+    : view;
 }

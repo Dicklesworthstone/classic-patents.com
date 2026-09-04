@@ -4,6 +4,7 @@ import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import { claimConstraintStateParamId } from "@/physics/claimConstraints";
 import { FrankenSimEngine } from "@/physics/engine";
 import { readFarnsworthTvControls, readFarnsworthTvTapeFrame } from "@/physics/farnsworthTvKernel";
 import {
@@ -63,7 +64,7 @@ export function FarnsworthTV3D() {
 
   // Dissector Tube State Controls
   const patentId = "us-1773980-farnsworth-tv";
-  const { params, effectiveParams, updateParam } = usePatentPhysics(patentId);
+  const { params, effectiveParams, updateParam, claimStates } = usePatentPhysics(patentId);
   const runtimeTick = usePatentRuntimeTick(patentId, 6);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
@@ -75,7 +76,7 @@ export function FarnsworthTV3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+  const claim1Active = claimStates[1] ?? true;
 
   useEffect(() => {
     void ensureGenericWasm();
@@ -94,6 +95,7 @@ export function FarnsworthTV3D() {
     isCutaway,
     isAudioMuted,
     velocityMps,
+    claim1Active,
   });
 
   const applyCameraPreset = (preset: CameraPreset) => {
@@ -166,7 +168,7 @@ export function FarnsworthTV3D() {
         model,
         currentBeam,
         scanFrame,
-        p.showElectronBeam && !scanFrame.inHorizontalRetrace,
+        p.showElectronBeam && p.claim1Active && !scanFrame.inHorizontalRetrace,
         p.isCutaway,
       );
 
@@ -324,7 +326,13 @@ export function FarnsworthTV3D() {
               value: `${deflectionGauss.toFixed(1)}`,
               unit: "Gauss",
             },
-            { label: "Scanning", value: "All-Electronic Continuous Dissection" },
+            {
+              label: "Scanning",
+              value: claim1Active
+                ? "All-Electronic Continuous Dissection"
+                : "Claim 1 Traversal Withheld",
+              tone: claim1Active ? undefined : "warn",
+            },
           ]}
         />
       </div>
@@ -379,14 +387,14 @@ export function FarnsworthTV3D() {
           patentId="us-1773980-farnsworth-tv"
           claimStates={claimStates}
           onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+            updateParam(claimConstraintStateParamId(claimNo), active ? 1 : 0)
           }
           className="mt-2"
         />
 
         <PortHamiltonianEnergyStrip
           patentId="us-1773980-farnsworth-tv"
-          params={params}
+          params={effectiveParams}
           className="mt-3"
         />
       </div>

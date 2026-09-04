@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import {
   buildLindeLiquefactionModel,
@@ -27,6 +28,8 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & cryogenics boundar
     expect(modelSource).toContain("updateLindeLiquefactionKinematics");
     expect(threeSource).toContain("p.showFlowTracer");
     expect(threeSource).toContain("p.cutawayMode");
+    expect(threeSource).toContain("p.claim1Active");
+    expect(threeSource).toContain("claimConstraintStateParamId");
     expect(modelSource).toContain("computeJouleThomsonThermalField(75");
     for (const forbidden of [
       "77 K",
@@ -94,16 +97,34 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & cryogenics boundar
     expect(result.modelBoundary).not.toContain("yield");
   });
 
-  test("builds an apparatus diagram and labels the flow tracer as illustrative", () => {
+  test("builds one physically continuous concentric G′ helix and labels the flow tracer as illustrative", () => {
     const { root, nodes, materials } = buildLindeLiquefactionModel();
     expect(root.children.length).toBeGreaterThan(4);
     expect(nodes.coilRings.length).toBe(18);
+    expect(nodes.innerCoilSegments.length).toBe(18);
+
+    for (let index = 0; index < nodes.coilRings.length - 1; index++) {
+      const currentPath = (nodes.coilRings[index].geometry as THREE.TubeGeometry).parameters.path;
+      const nextPath = (nodes.coilRings[index + 1].geometry as THREE.TubeGeometry).parameters.path;
+      expect(currentPath.getPoint(1).distanceTo(nextPath.getPoint(0))).toBeLessThan(1e-9);
+    }
+
+    const outerPath = (nodes.coilRings[0].geometry as THREE.TubeGeometry).parameters.path;
+    const innerPath = (nodes.innerCoilSegments[0].geometry as THREE.TubeGeometry).parameters.path;
+    expect(outerPath.getPoint(0).distanceTo(innerPath.getPoint(0))).toBeLessThan(1e-12);
+    expect(outerPath.getPoint(1).distanceTo(innerPath.getPoint(1))).toBeLessThan(1e-12);
 
     // Initial state
-    updateLindeLiquefactionKinematics(nodes, materials, 0.1, 1.0, true, true);
+    updateLindeLiquefactionKinematics(nodes, materials, 0.1, 1.0, true, true, true);
     expect(nodes.cutawayCasingMesh.visible).toBe(true);
     expect(nodes.solidCasingMesh.visible).toBe(false);
+    expect(nodes.claimProcessGroup.visible).toBe(true);
     expect(materials.flowTracer.opacity).toBeGreaterThan(0);
     expect("condensedGasVolume" in nodes).toBe(false);
+
+    updateLindeLiquefactionKinematics(nodes, materials, 0.1, 1.1, true, true, false);
+    expect(nodes.claimProcessGroup.visible).toBe(false);
+    expect(nodes.flowTracerPoints.visible).toBe(false);
+    expect(materials.flowTracer.opacity).toBe(0);
   });
 });

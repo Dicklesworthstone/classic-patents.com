@@ -1110,6 +1110,30 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
       },
     },
   },
+  "us-3541541-engelbart-mouse": {
+    sourcePdfSha256: "2a01a32bc3d4c3eec1745dd77fcb92f1404e02844c640c9c10a451ed3b5791e0",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 34,
+    assets: {
+      "/patents/figures/us-3541541-engelbart-mouse/source-sheet-1-v1.png": {
+        sha256: "fc407967aaa9b9a54e176b33d2d1100da294ebebf031849beb03a286c3b50827",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-3541541-engelbart-mouse/source-sheet-2-v1.png": {
+        sha256: "5974818aff9488ee7c5e5433851ae025c8f5dc580a301a3c44c1b213a15ebaea",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-3541541-engelbart-mouse/source-sheet-3-v1.png": {
+        sha256: "bb2e1faa8fc8d29656935f71a39e0c1cec41f4bf8a1d2f9ab0cfc7e3f7846bf0",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
   "us-361931-daimler-engine": {
     sourcePdfSha256: "1c20cb38fad97fe6658cd711d7009dcb70da74af4cf22aec380882e055407159",
     reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
@@ -1325,85 +1349,25 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
   },
   "us-4098001-watson-rcc": {
     sourcePdfSha256: "67ca409f96f1456b603f198653a1a5d9c411c25dab5737ac2824b7fdaff2093b",
-    reviewer: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-09-01",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
     acceptedOccurrenceCount: 35,
     assets: {
-      "/patents/figures/us-4098001-watson-rcc/fig-1-source-crop-v1.png": {
-        sha256: "452d227c72e5a1a29258e9e27c021d81630f6b7b7eef31e84a455d29c13a441b",
-        width: 1300,
-        height: 1280,
+      "/patents/figures/us-4098001-watson-rcc/source-sheet-1-v1.png": {
+        sha256: "89d12d6fb431b3e35bc45ea5f189eaf10b46f02019161e25222f131c82cede72",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-4098001-watson-rcc/fig-10-source-crop-v1.png": {
-        sha256: "8ade4168ab1cb59fa0295a1626cf1e485e360e0adca5af2eb9dfc66dfddd4f9d",
-        width: 1400,
-        height: 1700,
+      "/patents/figures/us-4098001-watson-rcc/source-sheet-2-v1.png": {
+        sha256: "525e6329d7522246211d3506d03319b0284dca11353ad9b4f1bb70b174b1ccec",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-4098001-watson-rcc/fig-11-source-crop-v1.png": {
-        sha256: "652b27c4c6e969dd1fba52c8c60dd179509c6be51c8f89cc7e3fc16421b37180",
-        width: 1400,
-        height: 1650,
-      },
-      "/patents/figures/us-4098001-watson-rcc/fig-11a-source-crop-v1.png": {
-        sha256: "562210f929001b722741dd7468679cf147af64e06d09c352ae94fe34d383d816",
-        width: 1400,
-        height: 1250,
-      },
-      "/patents/figures/us-4098001-watson-rcc/fig-12-source-crop-v1.png": {
-        sha256: "6c524f7d37643999904d95c799eda7ebe5d80882f94aa35a9d2beeaf0b32fc53",
-        width: 1400,
-        height: 1750,
-      },
-      "/patents/figures/us-4098001-watson-rcc/fig-2-source-crop-v1.png": {
-        sha256: "7ff10a7dd4e097f4b8793ea84cd4c2d2c0db821b9c76d346b745508d5798733b",
-        width: 1350,
-        height: 1050,
-      },
-      "/patents/figures/us-4098001-watson-rcc/fig-3-source-crop-v1.png": {
-        sha256: "314db5b559bf13093d4fb1e1bd92cbc58905cd4aa1d06a8844e310e3bbff2af4",
-        width: 1350,
-        height: 1250,
-      },
-      "/patents/figures/us-4098001-watson-rcc/fig-4-source-crop-v1.png": {
-        sha256: "2e2e51a2faca76a899f7ae3e9cb21dd45c7896500f931e13ae2064db04d711eb",
-        width: 1200,
-        height: 1050,
-      },
-      "/patents/figures/us-4098001-watson-rcc/fig-4a-source-crop-v1.png": {
-        sha256: "6137ba6a12c8a4d892cadc7d159a9191f5135b9e4a97ca14232047af459f7112",
-        width: 1200,
-        height: 980,
-      },
-      "/patents/figures/us-4098001-watson-rcc/fig-5-source-crop-v1.png": {
-        sha256: "9f67999f7299de07f4c35f0d96fa2cee79f9883904d81214e8bc9bba0bb5c6a2",
-        width: 1200,
-        height: 1050,
-      },
-      "/patents/figures/us-4098001-watson-rcc/fig-5a-source-crop-v1.png": {
-        sha256: "e22fafac13e35fec0c74a186e3e852f717781f69019b9ea2bffe73e8d58e5d73",
-        width: 1350,
-        height: 1050,
-      },
-      "/patents/figures/us-4098001-watson-rcc/fig-6-source-crop-v1.png": {
-        sha256: "34945ea56df93d38b64308de63f78dd0f4f0b921170bab7aff6f0d8445dafb28",
-        width: 1350,
-        height: 1580,
-      },
-      "/patents/figures/us-4098001-watson-rcc/fig-7-source-crop-v1.png": {
-        sha256: "0cb107e9b860a469ff653900a1374a78da1cd9815d937f32d23aa9bfc0187df2",
-        width: 1350,
-        height: 1050,
-      },
-      "/patents/figures/us-4098001-watson-rcc/fig-8-source-crop-v1.png": {
-        sha256: "17c45ac267ea871d2bf840c498fe253f167bca7c1d25a2050bc14c8976cb6d9a",
-        width: 1350,
-        height: 1600,
-      },
-      "/patents/figures/us-4098001-watson-rcc/fig-9-source-crop-v1.png": {
-        sha256: "eff63e9b9f0fecadf92210245225de5b697548ca50ab5470a2a0c926ee3adbbd",
-        width: 1350,
-        height: 1450,
+      "/patents/figures/us-4098001-watson-rcc/source-sheet-3-v1.png": {
+        sha256: "0f3b8567dc4b9c08f6fc1905b5e2e11f4728103cb53640f83877462f7c2fe16d",
+        width: 2320,
+        height: 3408,
       },
     },
   },
@@ -1457,60 +1421,40 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
   },
   "us-4512709-milacron-robot-toolchanger": {
     sourcePdfSha256: "9ac43ea5baee978c390bd096fe4beaa2c229a5cde227d9f3e005d035026425b0",
-    reviewer: "Classic Patents editorial agent (GentleCedar)",
-    reviewedAt: "2026-09-01",
-    acceptanceBasis: "migrated-reviewed-edition-attestation",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct native-raster source-sheet review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
     acceptedOccurrenceCount: 48,
     assets: {
-      "/patents/figures/us-4512709-milacron-robot-toolchanger/fig-1-source-crop-v1.png": {
-        sha256: "59d34e0daa464c024d262171d3ae1bc49fca537bbca95c49cba4192f63a11a89",
-        width: 1400,
-        height: 1950,
+      "/patents/figures/us-4512709-milacron-robot-toolchanger/source-sheet-1-v1.png": {
+        sha256: "69a4af0cd55654b64c81632a7b468747e18e5c8f0846a1caf1991538b1d96f1b",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-4512709-milacron-robot-toolchanger/fig-10-source-crop-v1.png": {
-        sha256: "15cc991b41fa3037d52d75b2efdfdff3b74371a3781147d16a962f2228a719a9",
-        width: 1400,
-        height: 840,
+      "/patents/figures/us-4512709-milacron-robot-toolchanger/source-sheet-2-v1.png": {
+        sha256: "3c74c40253075ab664d16989e99e6897651f9567e328e0657f243da0886f4d84",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-4512709-milacron-robot-toolchanger/fig-2-source-crop-v1.png": {
-        sha256: "f83fa0d8cb07845cb1bf1af411ef87b31375f9915916ce0eae92648fe354e602",
-        width: 1400,
-        height: 963,
+      "/patents/figures/us-4512709-milacron-robot-toolchanger/source-sheet-3-v1.png": {
+        sha256: "db28f711c7a5fb0e3f87d8f00b5d7bf05c236e2f8cd002c754d76c203ea7189f",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-4512709-milacron-robot-toolchanger/fig-3-source-crop-v1.png": {
-        sha256: "85fcf3ec0d12c6962292f5c6b8b2f4cc71a55d36640f438497152b748f6a672c",
-        width: 1400,
-        height: 875,
+      "/patents/figures/us-4512709-milacron-robot-toolchanger/source-sheet-4-v1.png": {
+        sha256: "84279d2d0ea08a6b5ccaccdc16037cfce23f3f0293dac0a34fe2eb0d49f0c7ff",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-4512709-milacron-robot-toolchanger/fig-4-source-crop-v1.png": {
-        sha256: "f7d65d694ee0275bca64057e8933cd406af274b13e6b2d76d91724524cc7d141",
-        width: 1400,
-        height: 875,
+      "/patents/figures/us-4512709-milacron-robot-toolchanger/source-sheet-5-v1.png": {
+        sha256: "9df5f88065595eb69a1adfdd34d98633683b4cd8f0c34395929bc572d817d10b",
+        width: 2320,
+        height: 3408,
       },
-      "/patents/figures/us-4512709-milacron-robot-toolchanger/fig-5-source-crop-v1.png": {
-        sha256: "38a0c408be9021cfa45f2f9538a05b5b432660cad8e3ab7bb3ef202fd64a5f95",
-        width: 1400,
-        height: 1867,
-      },
-      "/patents/figures/us-4512709-milacron-robot-toolchanger/fig-6-source-crop-v1.png": {
-        sha256: "220af429914c4240fa41a1f61cd36d36b10fe01bc97d74a509b0f011bc8e64cc",
-        width: 1235,
-        height: 1900,
-      },
-      "/patents/figures/us-4512709-milacron-robot-toolchanger/fig-7-source-crop-v1.png": {
-        sha256: "3e313f1a37a35485ce662441d40084be8ea7f5f29737595c904fa6d0f2fed725",
-        width: 1400,
-        height: 1786,
-      },
-      "/patents/figures/us-4512709-milacron-robot-toolchanger/fig-8-source-crop-v1.png": {
-        sha256: "9ef7405b497366283210aaac6614f45de8d956e9fe1123d0250790e3e51a1463",
-        width: 997,
-        height: 1150,
-      },
-      "/patents/figures/us-4512709-milacron-robot-toolchanger/fig-9-source-crop-v1.png": {
-        sha256: "37f03df9f7de59552c88f6ea030f9271812d44e09065f30dfb251e3b8e01f67b",
-        width: 1400,
-        height: 1131,
+      "/patents/figures/us-4512709-milacron-robot-toolchanger/source-sheet-6-v1.png": {
+        sha256: "52602994eb1170e6f1a3e9b6248f45e76446eb08cfbef617ffc00c212ac8ed25",
+        width: 2320,
+        height: 3408,
       },
     },
   },

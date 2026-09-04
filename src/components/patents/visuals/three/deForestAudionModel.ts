@@ -18,7 +18,9 @@ export interface DeForestAudionModelNodes {
   glassBulbRim: THREE.Mesh;
   filamentMesh: THREE.Mesh;
   filamentLight: THREE.PointLight;
+  gridGroup: THREE.Group;
   gridMesh: THREE.Mesh;
+  gridLead: THREE.Object3D;
   plateMesh: THREE.Mesh;
   getterMirror: THREE.Mesh;
   pinchSeal: THREE.Mesh;
@@ -340,7 +342,9 @@ export function buildDeForestAudionModel(): DeForestAudionModelNodes {
     glassBulbRim,
     filamentMesh,
     filamentLight,
+    gridGroup,
     gridMesh,
+    gridLead: externalLeads.children[1],
     plateMesh,
     getterMirror,
     pinchSeal,
@@ -355,6 +359,7 @@ export function buildDeForestAudionModel(): DeForestAudionModelNodes {
 export function articulateDeForestAudionModel(
   nodes: DeForestAudionModelNodes,
   telemetry: {
+    claim1GridPresent: boolean;
     filamentTemperatureK: number;
     plateCurrentMa: number;
     voltageGain: number;
@@ -363,6 +368,10 @@ export function articulateDeForestAudionModel(
   },
   _timeSec: number,
 ) {
+  nodes.gridGroup.visible = telemetry.claim1GridPresent;
+  nodes.gridLead.visible = telemetry.claim1GridPresent;
+  nodes.potentialRings.visible = telemetry.claim1GridPresent;
+
   // 1. Filament Heat Glow
   const fMat = nodes.filamentMesh.material as THREE.MeshStandardMaterial;
   const tempRatio = Math.max(0.4, Math.min(1.8, telemetry.filamentTemperatureK / 2200));
