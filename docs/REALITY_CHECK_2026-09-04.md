@@ -12,7 +12,7 @@ Do not respond by hiding readable patent text, restoring speculative historical 
 
 ## Evidence boundary
 
-The baseline checkout was `b627671e4cc4796161ffefdf6dd052cbe01f46f3` on `main`, with extensive pre-existing edits and other agents actively changing the tree. Strict accepted-edition coverage rose from 80 to 81 and then **82 of 103** during this investigation. The inventory used below is the last captured 82-record snapshot; counts are not assertions about a later commit or deployment.
+The baseline checkout was `b627671e4cc4796161ffefdf6dd052cbe01f46f3` on `main`, with extensive pre-existing edits and other agents actively changing the tree. Strict accepted-edition coverage rose from 80 to 81 and then **82 of 103** during this investigation. The initial per-record backlog used the 82-record snapshot. A later complete inventory at `726e6a4d` has **85 accepted / 18 nonaccepted**, 384 unaccepted figure occurrences, zero records with attested figures lacking locators, and nine lacking both. The issue refinement distinguishes these later completions from work still outstanding. Counts are not assertions about a later commit or deployment.
 
 Three states were examined separately:
 
@@ -73,7 +73,7 @@ The verified deployment entry point is substantial: an exclusive lock, clean/sou
 
 ### 1. Acceptance is unfinished, even though reading is available
 
-The final captured inventory has 82 accepted records and 21 remaining. Primary reasons: eight facsimile-review holds, five incomplete specifications, three reconstructions, three figure-acceptance holds, and two primary-facsimile holds. These categories are primary causes, not mutually exclusive descriptions of all work.
+The backlog-creation inventory had 82 accepted records and 21 remaining; the later 85/18 snapshot is recorded above. Primary reasons: eight facsimile-review holds, five incomplete specifications, three reconstructions, three figure-acceptance holds, and two primary-facsimile holds. These categories are primary causes, not mutually exclusive descriptions of all work.
 
 The reader intentionally serves existing source text. Keep this policy. Finishing a transcript or edition must mean checking every relevant page of the pinned facsimile, with cloud-only OCR if a machine draft is needed. Changing a status flag, increasing a coverage constant, passing a containment test, or serving an inherited transcript does not perform that review.
 
@@ -163,3 +163,38 @@ the dependencies.
 ```
 
 The initial bridge is being materialized through br as per-record restoration and acceptance tasks, plus numerical, performance, verification, native, OCR, architecture and documentation work.
+
+### Ambition round 1
+
+Round 1 changed the unit of proof from “a patent has a WASM surface” to “this output came from this accepted owner at this tick.” It added full claim/paragraph linkage and editorial review beyond structural edition acceptance. It explicitly preserves nonphysical claim explanations, normalized topology and declared modern scenarios. Removing a questionable label is an immediate correction, not completion of the promised engineering instrument.
+
+### Ambition round 2
+
+Round 2 added the missing end-to-end mechanisms: bounded replay/checkpoints, capability-aware field transport, real field sampling, signal-based audio, two actual coupled labs, selected-module loading, full-catalogue failure/access testing and stronger same-source release gates. Dependencies now follow owner evidence → buffer/replay contracts → advanced instruments. Reading, compact search and immediate numerical corrections remain independently deliverable.
+
+### Ambition round 3
+
+Round 3 replaced blanket “more advanced physics” with concrete mathematical obligations: dimensional contracts, interval/regime admission, conditioned derivatives, constraint closure, measured discrete energy/passivity residuals, analytic references, convergence and metamorphic tests. It also expanded generic-runtime completion into explicitly listed catalogue cohorts of at most eight records, each with a companion proof task. A final integrated completion task prevents closed containment issues from standing in for restoration. These methods earn their place by catching the observed energy/sensitivity/ownership defects; no esoteric technique is required just for appearance.
+
+### Regenerated Phase 3a instruction (verbatim)
+
+```
+OK so please take ALL of that and elaborate on it and use it to create a comprehensive and granular
+set of beads for all this with tasks, subtasks, and dependency structure overlaid, with detailed
+comments so that the whole thing is totally self-contained and self-documenting (including relevant
+background, reasoning/justification, considerations, etc.-- anything we'd want our "future self" to
+know about the goals and intentions and thought process and how it serves the over-arching goals of
+the project.) The beads should be so detailed that we never need to consult back to the original
+markdown plan document. Remember to ONLY use the `br` tool to create and modify the beads and add
+the dependencies.
+```
+
+The expanded plan has 60 implementation/restoration scopes, each with a companion acceptance task, grouped in five epics. The generic-runtime cohorts enumerate their exact catalogue IDs and current owners.
+
+### Later verification and concurrent progress
+
+The second broad run had **2,814 passes / seven failures / 2,821 tests**. The earlier chip/audio failures are gone after peer edits. The remaining failures concern README coverage, publication approval/reader expectations and hold-inventory counts as peers promote records. The later data gate reports 85 accepted editions but fails because its expected gap list still includes Whitney. These failures are recorded, not waived. A passing old gate must not be cited as current release readiness.
+
+The latest independent typecheck passed. The latest lint passed with two size warnings (the native catalogue JSON and the vendored PDF worker are above Biome's configured file-size limit). The successful isolated build remains a distinct earlier source snapshot. No claim is made that these separate checks form a green release receipt for the later checkout.
+
+Three records in the initial backlog became accepted during the session: Lemelson automatic production, Milacron's robot tool changer and Whitney cotton gin. Their restoration tasks are refined to verify the newly landed work and repair only an evidenced regression, while their independent acceptance tasks remain explicit. No new transcription is requested merely because an earlier inventory was red.

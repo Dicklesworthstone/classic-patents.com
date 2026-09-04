@@ -15,13 +15,13 @@ const term = (
   definition,
 });
 
-const PLATE_DIMS: Record<number, { width: number; height: number }> = {
-  1: { width: 2000, height: 2750 },
-  2: { width: 2000, height: 2750 },
-  3: { width: 2000, height: 2750 },
-  4: { width: 2000, height: 2750 },
-  5: { width: 2000, height: 2750 },
-  6: { width: 2000, height: 2750 },
+const SOURCE_SHEET_DIMS: Record<number, { width: number; height: number }> = {
+  1: { width: 2320, height: 3408 },
+  2: { width: 2320, height: 3408 },
+  3: { width: 2320, height: 3408 },
+  4: { width: 2320, height: 3408 },
+  5: { width: 2320, height: 3408 },
+  6: { width: 2320, height: 3408 },
 };
 
 function makePreview(
@@ -32,14 +32,14 @@ function makePreview(
   return {
     kind: "reference",
     text: surfaceText,
-    href: `#plate-${plateNumbers[0]}`,
+    href: `#source-sheet-${plateNumbers[0]}`,
     referenceType: "figure",
     label: altText,
     figurePreviews: plateNumbers.map((num) => ({
-      src: `/patents/figures/us-3237-rillieux-evaporator/plate-${num}-source-crop-v1.png`,
-      alt: `Plate ${num}: ${altText}`,
-      width: PLATE_DIMS[num]?.width ?? 300,
-      height: PLATE_DIMS[num]?.height ?? 300,
+      src: `/patents/figures/us-3237-rillieux-evaporator/source-sheet-${num}-v1.png`,
+      alt: `Source drawing sheet ${num}: ${altText}`,
+      width: SOURCE_SHEET_DIMS[num]?.width ?? 300,
+      height: SOURCE_SHEET_DIMS[num]?.height ?? 300,
     })),
   };
 }

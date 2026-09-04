@@ -37,7 +37,7 @@ describe("US 3,237 Norbert Rillieux Multiple-Effect Evaporator Archival Edition 
     }
   });
 
-  test("all plate preview assets exist on disk with exact pixel dimensions", () => {
+  test("all active figure previews are complete pinned source sheets", () => {
     const figurePreviews = rillieuxEvaporatorArchivalEdition.blocks.flatMap((block) => {
       if (block.kind === "paragraph") {
         return block.inlines.flatMap((inline) =>
@@ -55,8 +55,9 @@ describe("US 3,237 Norbert Rillieux Multiple-Effect Evaporator Archival Edition 
       const relativePath = preview.src.replace(/^\//, "");
       const fullPath = path.join(process.cwd(), "public", relativePath);
       expect(fs.existsSync(fullPath)).toBe(true);
-      expect(preview.width).toBe(2000);
-      expect(preview.height).toBe(2750);
+      expect(preview.src).toMatch(/\/source-sheet-[1-6]-v1\.png$/);
+      expect(preview.width).toBe(2320);
+      expect(preview.height).toBe(3408);
     }
   });
 

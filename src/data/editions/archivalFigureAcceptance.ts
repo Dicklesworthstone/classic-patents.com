@@ -30,6 +30,45 @@ export interface ArchivalFigureAcceptanceAttestation {
 export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
   Record<string, ArchivalFigureAcceptanceAttestation>
 > = {
+  "us-3237-rillieux-evaporator": {
+    sourcePdfSha256: "10d9a2c3909f1a7d7086c063925f96feed8aa362e1b39a64275a869853dc1d7a",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 6,
+    assets: {
+      "/patents/figures/us-3237-rillieux-evaporator/source-sheet-1-v1.png": {
+        sha256: "5f18d9afe016bfe9ad8cf6a069f5b3568c1517ba8cabfb98550a0af92a0389a7",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-3237-rillieux-evaporator/source-sheet-2-v1.png": {
+        sha256: "772355903b4520d2854d5f3051d81ef448fa8e699674acbb467a700d272efdce",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-3237-rillieux-evaporator/source-sheet-3-v1.png": {
+        sha256: "423cc209a90b340ff4ce57e9876ba81e8c7a5fe217e62aa92768f89a0788a60d",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-3237-rillieux-evaporator/source-sheet-4-v1.png": {
+        sha256: "ba17565044e955be2cc99e4b45ab83d8ddca83f629869e7b2c803f1b9032687f",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-3237-rillieux-evaporator/source-sheet-5-v1.png": {
+        sha256: "36a035fbd94df854fa994b1d4a88292413ddafae53367739161bde41214b3917",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-3237-rillieux-evaporator/source-sheet-6-v1.png": {
+        sha256: "e87510ffbc30a2384db658ef790c1fc1069fa257e48b9654e910b397e008276a",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
   "us-3138743-kilby-integrated-circuit": {
     sourcePdfSha256: "e523c17aaef78f727181d87c427be3edf10f964bed20b90ef07a8099a1c18eef",
     reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",

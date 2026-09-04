@@ -4241,6 +4241,55 @@ function whitneyCottonGinSourceSheetLocator(
   };
 }
 
+const RILLIEUX_EVAPORATOR_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 } as const;
+const RILLIEUX_EVAPORATOR_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-3237-rillieux-evaporator.md#source-sheet-review-2026-09-04";
+const RILLIEUX_EVAPORATOR_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-3237-rillieux-evaporator/source-sheet-1-v1.png",
+  2: "/patents/figures/us-3237-rillieux-evaporator/source-sheet-2-v1.png",
+  3: "/patents/figures/us-3237-rillieux-evaporator/source-sheet-3-v1.png",
+  4: "/patents/figures/us-3237-rillieux-evaporator/source-sheet-4-v1.png",
+  5: "/patents/figures/us-3237-rillieux-evaporator/source-sheet-5-v1.png",
+  6: "/patents/figures/us-3237-rillieux-evaporator/source-sheet-6-v1.png",
+} as const;
+const RILLIEUX_EVAPORATOR_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-4-group-0-inline-1", 1],
+  ["edition-block-4-group-0-inline-3", 2],
+  ["edition-block-4-group-0-inline-5", 3],
+  ["edition-block-4-group-0-inline-7", 4],
+  ["edition-block-4-group-0-inline-9", 5],
+  ["edition-block-4-group-0-inline-11", 6],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof RILLIEUX_EVAPORATOR_SOURCE_SHEET_ASSETS,
+])[];
+
+function rillieuxEvaporatorSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourcePdfPage: keyof typeof RILLIEUX_EVAPORATOR_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: RILLIEUX_EVAPORATOR_SOURCE_SHEET_RASTER.width,
+    height: RILLIEUX_EVAPORATOR_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: RILLIEUX_EVAPORATOR_SOURCE_SHEET_ASSETS[sourcePdfPage],
+    sourcePdfPage,
+    sourceRaster: RILLIEUX_EVAPORATOR_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      RILLIEUX_EVAPORATOR_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: RILLIEUX_EVAPORATOR_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
 const WOZNIAK_APPLE_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
 const WOZNIAK_APPLE_EVIDENCE_REFERENCE =
   "docs/provenance/us-4136359-wozniak-apple.md#editorial-boundaries";
@@ -6487,6 +6536,10 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
   "us-x72-whitney-cotton-gin": WHITNEY_COTTON_GIN_SOURCE_SHEET_OCCURRENCES.map(
     ([occurrenceKey, sourcePdfPage]) =>
       whitneyCottonGinSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
+  "us-3237-rillieux-evaporator": RILLIEUX_EVAPORATOR_SOURCE_SHEET_OCCURRENCES.map(
+    ([occurrenceKey, sourcePdfPage]) =>
+      rillieuxEvaporatorSourceSheetLocator(occurrenceKey, sourcePdfPage),
   ),
   "us-4136359-wozniak-apple": [
     // Fig. 1 (Page 2)
