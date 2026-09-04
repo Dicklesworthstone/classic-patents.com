@@ -49,35 +49,38 @@ struct NativePatentVisualization: View {
                                 .font(.system(size: Lab.size(9.5), weight: .bold, design: .rounded))
                                 .foregroundStyle(Lab.brass)
                         }
-                    } else if horizontalSizeClass == .compact {
-                        MuseumLabel(text: patent.physics?.domainTitle ?? "Native mechanism study")
-                            .lineLimit(2)
-                            .minimumScaleFactor(0.78)
-                        HStack(spacing: 12) {
-                            Picker("Projection", selection: $projection) {
-                                ForEach(VisualizationProjection.allCases) { projection in
-                                    Text(projection.compactTitle).tag(projection)
-                                }
-                            }
-                            .pickerStyle(.segmented)
-                            .frame(maxWidth: 220)
-                            Spacer(minLength: 0)
-                            animationButton
-                        }
                     } else {
-                        HStack(alignment: .center, spacing: 12) {
-                            MuseumLabel(text: patent.physics?.domainTitle ?? "Native mechanism study")
-                                .lineLimit(2)
-                                .minimumScaleFactor(0.78)
-                            Spacer(minLength: 8)
-                            Picker("Projection", selection: $projection) {
-                                ForEach(VisualizationProjection.allCases) { projection in
-                                    Text(projection.rawValue).tag(projection)
+                        ViewThatFits(in: .horizontal) {
+                            HStack(alignment: .center, spacing: 12) {
+                                MuseumLabel(text: patent.physics?.domainTitle ?? "Native mechanism study")
+                                    .lineLimit(2)
+                                    .minimumScaleFactor(0.78)
+                                Spacer(minLength: 8)
+                                Picker("Projection", selection: $projection) {
+                                    ForEach(VisualizationProjection.allCases) { projection in
+                                        Text(projection.rawValue).tag(projection)
+                                    }
+                                }
+                                .pickerStyle(.segmented)
+                                .frame(maxWidth: 260)
+                                animationButton
+                            }
+                            VStack(alignment: .leading, spacing: 12) {
+                                MuseumLabel(text: patent.physics?.domainTitle ?? "Native mechanism study")
+                                    .lineLimit(2)
+                                    .minimumScaleFactor(0.78)
+                                HStack(spacing: 12) {
+                                    Picker("Projection", selection: $projection) {
+                                        ForEach(VisualizationProjection.allCases) { projection in
+                                            Text(projection.compactTitle).tag(projection)
+                                        }
+                                    }
+                                    .pickerStyle(.segmented)
+                                    .frame(maxWidth: 220)
+                                    Spacer(minLength: 0)
+                                    animationButton
                                 }
                             }
-                            .pickerStyle(.segmented)
-                            .frame(maxWidth: 260)
-                            animationButton
                         }
                     }
 
@@ -156,6 +159,7 @@ struct NativePatentVisualization: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var mechanismExplanation: some View {
