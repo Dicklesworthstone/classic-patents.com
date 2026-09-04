@@ -8,6 +8,7 @@ import {
   fessendenWirelessParallelReadings,
   manualFessendenClaimText,
 } from "./fessendenWirelessEdition";
+import { evaluateReviewedLedgerTextEvidence } from "./reviewedLedgerPublicationEvidence";
 
 const expectedFigureCrops = [
   {
@@ -315,6 +316,38 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     expect(editionText).toContain("which is adjusted normally out of contact with the wire 12");
     expect(editionText).toContain(
       'grounded conductor" is meant a conductor grounded either directly or through a capacity, an inductance, or a resistance, so that the current in the conductor flows through the conductor to ground, and vice versa',
+    );
+  });
+
+  test("keeps the late continuous-radiation and uniform-conductor passages literal to the ledger", () => {
+    const ledger = readFileSync(ledgerPath, "utf-8");
+    const evidence = evaluateReviewedLedgerTextEvidence(fessendenWirelessPatent, ledger);
+    expect(evidence).toMatchObject({
+      status: "verified",
+      valid: true,
+      authoredSectionCount: 56,
+      coveredSectionCount: 56,
+      missingSectionIndexes: [],
+      missingClaimNumbers: [],
+    });
+
+    const editionText = fessendenWirelessArchivalEdition.blocks
+      .flatMap((block) => {
+        if (block.kind === "masthead") return block.lines;
+        if (block.kind === "paragraph" || block.kind === "claim") {
+          return [block.inlines.map((inline) => inline.text).join("")];
+        }
+        return [];
+      })
+      .join(" ");
+    expect(editionText).toContain(
+      "for with ten thousand sparks per second exciting a sending-conductor of a periodicity of ninety thousand it is evident",
+    );
+    expect(editionText).toContain(
+      "Thus the radiation will be practically continuous, and the total energy of the first oscillation",
+    );
+    expect(editionText).toContain(
+      "In practice it is found that substantial uniformity of distribution of capacity may be obtained",
     );
   });
 

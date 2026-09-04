@@ -110,6 +110,23 @@ The current candidate ledger and edition were rechecked against the official Goo
 
 The existing source-pixel candidates were inspected without local rasterization. Figure 1, Figure 4, and Figure 5 are legible and complete for their selected regions. The Fig. 2 main crop (`fig-2-source-crop-v10.png`) ends before the lower vertical ground lead and ground symbol; its preserved detail crop (`fig-2-source-crop-v10-detail-v2.png`) supplies that omitted region. The Fig. 3 main crop (`fig-3-source-crop-v4.png`) ends before the lower cone/ground-lead termination and clips the upper-right numeral 5 at the crop edge; its preserved lower detail (`fig-3-source-crop-v4-detail-v2.png`) supplies the lower lead and numeral 8 region but does not restore that upper-right numeral 5. These are candidate-crop defects, not silently replaced or deleted assets, and remain open for independent visual acceptance.
 
+### Late-specification literal correction: 2026-09-04
+
+The numbered source page 5 (PDF page 6) was rendered directly from the pinned
+facsimile and visually checked against the reviewed ledger. The candidate
+edition had compressed and modernized the continuous-radiation discussion and
+the final uniform-conductor observation. Its source blocks now retain the
+printed paragraph sequence and wording, including “for with ten thousand
+sparks per second,” “Thus the radiation will be practically continuous, and
+the total energy,” and “In practice it is found that substantial uniformity of
+distribution of capacity.” The reviewed ledger covers all 56 masthead,
+specification, claim, and attestation sections of the edited source face.
+
+This correction removes a literal-parity defect only. It does not grant
+facsimile-review approval: `completeFacsimileReviewed` remains `false`, and
+the visitor-facing source reader continues to use the complete seven-page
+reviewed ledger while the archival edition is independently reviewed.
+
 ## Publication Approval & Verification
 
 The local PDF digest and seven-page structure are verified, and the candidate edition contains all 21 claim blocks and authored figure references. The publication state remains **candidate / independent acceptance withheld** pending Luna visual review of every page, exact claims parity against the facsimile, clean figure crops for Figures 1–5, and root acceptance. The receipt makes no claim for amplitude modulation, carbon-microphone speech transmission, liquid thermal reception, or later Fessenden broadcast history; the current source describes a fine-wire microphonic contact and relay in Figure 2.

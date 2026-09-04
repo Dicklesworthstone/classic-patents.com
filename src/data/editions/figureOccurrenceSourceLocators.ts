@@ -4308,7 +4308,7 @@ const FESSENDEN_WIRELESS_SOURCE_SHEET_OCCURRENCES = [
   "edition-block-10-group-0-inline-3",
   "edition-block-11-group-0-inline-1",
   "edition-block-12-group-0-inline-1",
-  "edition-block-23-group-0-inline-1",
+  "edition-block-28-group-0-inline-1",
 ] as const satisfies readonly FigureOccurrenceKey[];
 
 function fessendenWirelessSourceSheetLocator(
