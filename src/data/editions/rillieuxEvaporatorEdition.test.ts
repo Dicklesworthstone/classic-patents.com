@@ -3,7 +3,9 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { rillieuxEvaporatorPatent } from "../patents/rillieux-evaporator";
+import { validateReviewedTranscriptionEditorialIntegrity } from "../patents/sourceTextValidation";
 import { completeArchivalEditionForViewer } from "./publicationApproval";
+import { reviewedLedgerTextForViewer } from "./reviewedLedgerPublicationEvidence.server";
 import {
   manualRillieuxClaimText,
   RILLIEUX_EVAPORATOR_PARALLEL_READINGS,
@@ -101,5 +103,31 @@ describe("US 3,237 Norbert Rillieux Multiple-Effect Evaporator Archival Edition 
     for (let page = 1; page <= 11; page++) {
       expect(content).toContain(`--- REVIEWED TRANSCRIPTION PAGE ${page} OF 11 ---`);
     }
+  });
+
+  test("transcribes the six source-sheet headers instead of editorial drawing placeholders", () => {
+    const ledgerPath = path.join(
+      process.cwd(),
+      "public",
+      "patents",
+      "transcripts",
+      "us-3237-rillieux-evaporator-reviewed.txt",
+    );
+    const content = fs.readFileSync(ledgerPath, "utf8");
+
+    expect(validateReviewedTranscriptionEditorialIntegrity(content, 11)).toEqual({ valid: true });
+    for (let sheet = 1; sheet <= 6; sheet++) {
+      expect(content).toContain(`Sheet ${sheet}. 6 Sheets.`);
+    }
+    expect(content).toContain("N. Rillieux.");
+    expect(content).toContain("Vacuum Pan.");
+    expect(content).not.toMatch(/\[Drawing Plate \d+\]/);
+  });
+
+  test("continues to serve the complete eleven-page ledger while the reconstruction is held", () => {
+    const source = reviewedLedgerTextForViewer(rillieuxEvaporatorPatent);
+    expect(source).toStartWith("--- REVIEWED TRANSCRIPTION PAGE 1 OF 11 ---");
+    expect(source).toContain("--- REVIEWED TRANSCRIPTION PAGE 11 OF 11 ---");
+    expect(source).toContain("Sheet 6. 6 Sheets.");
   });
 });

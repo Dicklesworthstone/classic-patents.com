@@ -13,7 +13,7 @@
 - **PDF SHA-256 Digest**: `10d9a2c3909f1a7d7086c063925f96feed8aa362e1b39a64275a869853dc1d7a`
 - **PDF Page Count**: 11 pages
 - **Retrieval Date**: August 19, 2026
-- **Full-Facsimile Review Date**: 2026-09-04 drawing-sheet and specification/claims visual audit. This establishes the source-sheet evidence below and confirms that the short edition is not yet a page-complete transcription.
+- **Full-Facsimile Review Date**: 2026-09-04 drawing-sheet visual audit. This establishes the source-sheet evidence below and confirms that the short edition is not yet a page-complete transcription; it does not accept the specification/claims transcription.
 - **Rights Basis**: Public domain United States Government patent grant (1843).
 
 ---
@@ -46,7 +46,7 @@ page-complete specification. The remaining full-specification repair is an inter
 publication task only: it must never remove the visitor's access to the best available
 complete source text or the pinned facsimile.
 
-- **Visitor Source Face**: `src/data/editions/rillieuxEvaporatorEdition.ts`
+- **Visitor Source Face**: The source reader serves the complete local ledger at `public/patents/transcripts/us-3237-rillieux-evaporator-reviewed.txt` while `rillieuxEvaporatorEdition.ts` remains a clearly marked, incomplete draft. The pinned PDF remains available alongside it.
 - **Reviewed Ledger**: `public/patents/transcripts/us-3237-rillieux-evaporator-reviewed.txt`
 - **Active Figure Assets**: `public/patents/figures/us-3237-rillieux-evaporator/source-sheet-1-v1.png` through `source-sheet-6-v1.png`; each is a lossless 2320 × 3408 300-DPI render of the corresponding pinned-PDF drawing page. Legacy `plate-*-source-crop-v1.png` files remain preserved but are no longer active edition previews.
 - **Printed Claims**: Exactly 5 claims printed in the Letters Patent.
@@ -67,3 +67,14 @@ editorially cropped drawing.
 | 4 / Sheet 4 | `source-sheet-4-v1.png` | `ba17565044e955be2cc99e4b45ab83d8ddca83f629869e7b2c803f1b9032687f` |
 | 5 / Sheet 5 | `source-sheet-5-v1.png` | `36a035fbd94df854fa994b1d4a88292413ddafae53367739161bde41214b3917` |
 | 6 / Sheet 6 | `source-sheet-6-v1.png` | `e87510ffbc30a2384db658ef790c1fc1069fa257e48b9654e910b397e008276a` |
+
+## Drawing-sheet ledger correction — 2026-09-04
+
+Each of PDF pages 1–6 was rendered directly from the pinned facsimile and
+visually checked. The ledger no longer substitutes editorial entries such as
+`[Drawing Plate 1]`. It now transcribes the printed sheet identity, inventor
+name, title, patent number/date, and visible figure labels from each drawing
+sheet. These corrections do not pretend that the draft edition is complete or
+that all of the raw recognition errors on source pages 7–11 are resolved.
+They remove a specific false “reviewed” placeholder while preserving every
+visitor's complete-ledger and PDF access.
