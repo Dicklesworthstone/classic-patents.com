@@ -20,6 +20,7 @@ private enum PatentRootSection: String, CaseIterable, Identifiable {
 
 struct PatentRootView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.dynamicTypeSize) private var systemDynamicTypeSize
     @AppStorage(LabAppearance.storageKey) private var appearance = LabAppearance.dark.rawValue
     @AppStorage(Lab.textScaleStorageKey) private var textScale = Lab.defaultTextScale
     @StateObject private var library: PatentLibrary
@@ -71,7 +72,7 @@ struct PatentRootView: View {
             }
         }
         .environmentObject(collection)
-        .environment(\.dynamicTypeSize, Lab.dynamicTypeSize(for: textScale))
+        .environment(\.dynamicTypeSize, Lab.dynamicTypeSize(from: systemDynamicTypeSize, for: textScale))
         .safeAreaInset(edge: .top, spacing: 0) {
             HStack(spacing: 9) {
                 Image("MonsterIcon")

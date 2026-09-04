@@ -929,7 +929,7 @@ private struct PatentMechanismCanvas: View {
             )
             context.draw(
                 Text(poleLabels[index])
-                    .font(.system(size: max(8, scale * 0.024), weight: .black, design: .rounded))
+                    .font(.system(size: Lab.size(max(8, scale * 0.024)), weight: .black, design: .rounded))
                     .foregroundColor(.white),
                 at: seat,
                 anchor: .center
