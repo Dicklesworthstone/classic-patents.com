@@ -72,7 +72,11 @@ struct PatentWorkstationView: View {
             ScrollViewReader { reader in
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 18) {
-                        Color.clear.frame(height: 1).id("workstation-top")
+                        // The persistent museum masthead is a safe-area inset,
+                        // while this scroll view deliberately hides its own
+                        // navigation bar. Keep a small visible runway so the
+                        // first section row cannot start underneath the inset.
+                        Color.clear.frame(height: 24).id("workstation-top")
                         // Eight equally weighted pills do not fit in an iPad
                         // split-view detail column: their labels collapse to
                         // two-letter fragments. Use the explicit 4×2 rail

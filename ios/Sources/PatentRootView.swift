@@ -90,6 +90,8 @@ struct PatentRootView: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
             .background(Lab.background.opacity(0.96))
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("frankenpatents-masthead")
         }
         .preferredColorScheme((LabAppearance(rawValue: appearance) ?? .dark).colorScheme)
     }

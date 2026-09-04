@@ -74,6 +74,15 @@ final class FrankenPatentsUITests: XCTestCase {
             message: "The Wright Flyer plain-English workstation did not render",
             screenshotName: "App Store 3 - Wright Flyer engineering workstation"
         )
+        let masthead = app.descendants(matching: .any)["frankenpatents-masthead"]
+        let firstSection = app.buttons["Full Patent"]
+        XCTAssertTrue(masthead.waitForExistence(timeout: 12), "The persistent museum masthead is missing")
+        XCTAssertTrue(firstSection.waitForExistence(timeout: 12), "The first workstation section is missing")
+        XCTAssertGreaterThanOrEqual(
+            firstSection.frame.minY,
+            masthead.frame.maxY - 1,
+            "The first workstation row is hidden beneath the persistent masthead"
+        )
     }
 
     func testLatestCatalogueDeltaRobotExhibitRenders() {
