@@ -31,18 +31,17 @@ The source PDF's trailing fifth page is blank. Its ledger section therefore cont
 
 The local `public/patents/source-text/us-588-ericsson-propeller.txt` is retained as a legacy comparison artifact and is not used by the manually prepared Original Patent Text face. It is neither a source for the edition nor evidence of completeness.
 
-## Figure-preview receipt
+## Complete source-sheet acceptance (2026-09-04)
 
-The Original Patent Text face uses six individually authored source crops rather
-than sending every figure reference to a whole drawing sheet:
-
-- `public/patents/figures/us-588-ericsson-propeller/fig-1-source-crop-v1.png`
-  and `fig-2-source-crop-v1.png` are cropped from PDF p. 1.
-- `fig-3-source-crop-v1.png` through `fig-6-source-crop-v1.png` are cropped
-  from PDF p. 2.
-
-Each crop was checked visually against its printed figure label before it was
-bound to the matching typed figure reference. The two
-`source-sheet-*-source-crop-v1.png` files in the same directory are retained
-as source-review renders of the two drawing sheets; they are provenance
-evidence, not visitor-facing previews.
+Direct 300 DPI visual review confirms that PDF page 1 contains Figs. 1 and 2,
+and PDF page 2 contains Figs. 3 through 6. Each complete sheet retains its
+source title, patent number, figure labels, lettering, signatures, and the
+surrounding geometry needed to interpret every cited figure. The active
+visitor-facing evidence is the unmodified complete-sheet render:
+`source-sheet-1-v1.png` (2320 × 3408; SHA-256
+`1ca319ff08021d4edefd66eaf07e71a9bf7f945e27f89ee6b508c979d8c91437`) and
+`source-sheet-2-v1.png` (2320 × 3408; SHA-256
+`2d16789f1d9dde794ce5f845d6bbfd94d7ed65ea75c1f81b63ed1fb75ad168f6`). All
+21 active figure-reference occurrences resolve to their complete source
+sheet. The former isolated crops and source-review renders remain preserved
+comparison artifacts; no historical content was reconstructed.

@@ -13,43 +13,24 @@ const term = (text: string, definition: string): CuratedSpecificationInline => (
   label: "Patent vocabulary",
 });
 
+const sourceSheet = (number: 1 | 2 | 3 | 4 | 5 | 6) => {
+  const sourcePdfPage = number <= 2 ? 1 : 2;
+  const figureRange = sourcePdfPage === 1 ? "Figs. 1 and 2" : "Figs. 3 through 6";
+  return {
+    src: `/patents/figures/us-588-ericsson-propeller/source-sheet-${sourcePdfPage}-v1.png`,
+    alt: `Complete source drawing sheet containing ${figureRange}, highlighting Fig. ${number}, from US 588.`,
+    width: 2320,
+    height: 3408,
+  };
+};
+
 const FIGURES = {
-  1: {
-    src: "/patents/figures/us-588-ericsson-propeller/fig-1-source-crop-v1.png",
-    alt: "Source crop of Figure 1: longitudinal stern section with the concentric propeller axes and broad hoops.",
-    width: 860,
-    height: 1950,
-  },
-  2: {
-    src: "/patents/figures/us-588-ericsson-propeller/fig-2-source-crop-v1.png",
-    alt: "Source crop of Figure 2: cylinder developed with the spiral planes used to set plate geometry.",
-    width: 850,
-    height: 1950,
-  },
-  3: {
-    src: "/patents/figures/us-588-ericsson-propeller/fig-3-source-crop-v1.png",
-    alt: "Source crop of Figure 3: end view of hoop A, spiral plates, stays, and water line.",
-    width: 700,
-    height: 850,
-  },
-  4: {
-    src: "/patents/figures/us-588-ericsson-propeller/fig-4-source-crop-v1.png",
-    alt: "Source crop of Figure 4: longitudinal stern installation and removable upright stem.",
-    width: 1050,
-    height: 1100,
-  },
-  5: {
-    src: "/patents/figures/us-588-ericsson-propeller/fig-5-source-crop-v1.png",
-    alt: "Source crop of Figure 5: plan of the stern installation and engine arrangement.",
-    width: 750,
-    height: 1250,
-  },
-  6: {
-    src: "/patents/figures/us-588-ericsson-propeller/fig-6-source-crop-v2.png",
-    alt: "Source crop of Figure 6: upright shaft, conical gears, hoops, and coupling arrangement.",
-    width: 1000,
-    height: 950,
-  },
+  1: sourceSheet(1),
+  2: sourceSheet(2),
+  3: sourceSheet(3),
+  4: sourceSheet(4),
+  5: sourceSheet(5),
+  6: sourceSheet(6),
 } as const;
 
 const figure = (
@@ -60,7 +41,7 @@ const figure = (
   text: value,
   href: "#",
   referenceType: "figure",
-  label: `Open the primary facsimile preview for ${value}`,
+  label: `Open the complete primary source sheet for ${value}`,
   figurePreviews: numbers.map((number) => FIGURES[number]),
 });
 

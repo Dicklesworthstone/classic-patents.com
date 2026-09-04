@@ -49,14 +49,10 @@ describe("ericssonPropellerArchivalEdition", () => {
     }
   });
 
-  test("gives each printed figure a source-faithful local crop and annotates period machinery terms", () => {
-    const expectedFigureCrops = [
-      "/patents/figures/us-588-ericsson-propeller/fig-1-source-crop-v1.png",
-      "/patents/figures/us-588-ericsson-propeller/fig-2-source-crop-v1.png",
-      "/patents/figures/us-588-ericsson-propeller/fig-3-source-crop-v1.png",
-      "/patents/figures/us-588-ericsson-propeller/fig-4-source-crop-v1.png",
-      "/patents/figures/us-588-ericsson-propeller/fig-5-source-crop-v1.png",
-      "/patents/figures/us-588-ericsson-propeller/fig-6-source-crop-v2.png",
+  test("gives each printed figure its complete source sheet and annotates period machinery terms", () => {
+    const expectedSourceSheets = [
+      "/patents/figures/us-588-ericsson-propeller/source-sheet-1-v1.png",
+      "/patents/figures/us-588-ericsson-propeller/source-sheet-2-v1.png",
     ];
     const sourceTerms = ericssonPropellerArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
@@ -66,7 +62,7 @@ describe("ericssonPropellerArchivalEdition", () => {
           )
         : [],
     );
-    const figureCrops = ericssonPropellerArchivalEdition.blocks.flatMap((block) =>
+    const figureSheets = ericssonPropellerArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
         ? block.inlines.flatMap((inline) =>
             inline.kind === "reference" && inline.referenceType === "figure"
@@ -76,9 +72,9 @@ describe("ericssonPropellerArchivalEdition", () => {
         : [],
     );
 
-    expect([...new Set(figureCrops)].sort()).toEqual(expectedFigureCrops);
-    for (const crop of expectedFigureCrops) {
-      expect(existsSync(`${process.cwd()}/public${crop}`)).toBe(true);
+    expect([...new Set(figureSheets)].sort()).toEqual(expectedSourceSheets);
+    for (const sourceSheet of expectedSourceSheets) {
+      expect(existsSync(`${process.cwd()}/public${sourceSheet}`)).toBe(true);
     }
     expect(sourceTerms.map((entry) => entry.text)).toEqual(
       expect.arrayContaining([
