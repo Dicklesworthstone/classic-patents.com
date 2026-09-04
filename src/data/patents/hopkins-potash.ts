@@ -1,8 +1,6 @@
 import type { Patent } from "@/types/patent";
 import { hopkinsPotashArchivalEdition } from "../editions/hopkinsPotashEdition";
 
-const hopkinsSourceDrawingCrops = [["Fig. 1", "Parchment Letters Patent No. 1 Facsimile"]] as const;
-
 export const hopkinsPotashPatent: Patent = {
   id: "us-x1-hopkins-potash",
   patentNumber: "US 1 (X1)",
@@ -18,7 +16,7 @@ export const hopkinsPotashPatent: Patent = {
   category: "materials",
   categoryLabel: "Industrial Chemistry & Materials",
   summary:
-    "The historic very first patent granted by the United States of America under the Patent Act of 1790, signed by President George Washington, Secretary of State Thomas Jefferson, and Attorney General Edmund Randolph. Samuel Hopkins discovered that roasting raw wood ashes in a furnace prior to leaching oxidizes combustible organics and tar, boosting potassium carbonate yield by over 50% while producing sparkling, high-purity pearl ash for glass, soap, and gunpowder.",
+    "The historic first patent granted by the United States under the Patent Act of 1790 records Samuel Hopkins's process of burning raw ashes before dissolving and boiling them in water to make pearl ash, and of fluxing that product to make pot ash. The pinned grant bears President George Washington's signature and Attorney General Edmund Randolph's certification.",
   heroQuote:
     "Which Operation of burning the raw Ashes in a Furnace, preparatory to their Dissolution and boiling in Water, is new, leaves little Residuum; and produces a much greater Quantity of Salt.",
   originalPdfUrl: "/patents/pdfs/us-x1-hopkins-potash.pdf",
@@ -118,15 +116,7 @@ export const hopkinsPotashPatent: Patent = {
       "Hopkins's patent stands as the cornerstone of American patent law and early industrial chemistry, establishing the principle that chemical process optimization—specifically thermal pre-treatment to eliminate organic impurities—is a patentable technological breakthrough.",
   },
   claims: [],
-  drawings: hopkinsSourceDrawingCrops.map(([figNum, title]) => ({
-    figureNumber: figNum,
-    title,
-    // No bespoke schematic: the parchment carries no drawing. The identifier
-    // resolves to the viewer's honest generic rendering.
-    svgType: "hopkins-potash",
-    caption: `${title} from the historical parchment grant of United States Patent No. 1. The parchment carries no technical drawing; the patented apparatus and process are described in words only.`,
-    callouts: [],
-  })),
+  drawings: [],
   historicalContext: {
     problemStatement:
       "In the 18th century, potash and pearl ash were the world's most vital industrial alkalis, needed for manufacturing glass, scouring raw wool, making soap, and formulating gunpowder. Clearing the North American forests generated millions of tons of wood ashes, but primitive pot-leaching left ashes contaminated with unburned charcoal and acidic organic tars, producing foul, discolored, low-potency potash that fetched low market prices in London.",
@@ -142,7 +132,7 @@ export const hopkinsPotashPatent: Patent = {
     civilizationalImpact:
       "As United States Patent #1, Hopkins's patent laid the institutional cornerstone for American innovation. Economically, potash became America's first major industrial export: in 1790, over 7,000 tons were shipped to Europe, providing vital foreign currency for the nascent United States while turning clearing trees from agricultural land into an immediate profitable harvest.",
     funFact:
-      "President George Washington, Secretary of State Thomas Jefferson, and Attorney General Edmund Randolph personally reviewed and signed Hopkins's application at Federal Hall in New York City, which was then serving as the temporary capital of the United States.",
+      "The pinned grant visibly bears President George Washington's handwritten signature and Attorney General Edmund Randolph's certification at the City of New York, then the temporary federal capital.",
     aftermath:
       "Hopkins licensed his process widely across Pennsylvania, New York, and Vermont. Decades later in 1836, when a catastrophic fire destroyed the U.S. Patent Office, the government painstakingly reconstructed the early records and officially designated Hopkins's milestone grant as 'Patent X1'.",
     sideNotes: [

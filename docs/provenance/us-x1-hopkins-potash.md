@@ -20,12 +20,12 @@ The pinned single-page facsimile PDF was visually reviewed at full archival reso
 
 | Facsimile locator | Content checked |
 | --- | --- |
-| PDF p. 1 | Single-sheet parchment letters patent; opening recital "Whereas Samuel Hopkins..."; description of the 4-step process for Pearl ash and fluxing for Pot ash; patent grant under the Act "An Act to promote the Progress of useful Arts" for a term of 14 years; Testimonium dated at the City of New York, 31 July 1790; presidential signature of George Washington; certification of examination by Attorney General Edmund Randolph. |
+| PDF p. 1 | Single-sheet parchment letters patent; opening recital "Whereas Samuel Hopkins..."; description of the 4-step process for Pearl ash and fluxing for Pot ash; patent grant under the Act "An Act to promote the Progress of useful Arts" for a term of 14 years; Testimonium dated at the City of New York, 31 July 1790; handwritten signature of George Washington; certification of examination by Attorney General Edmund Randolph. No separate technical drawing or Thomas Jefferson countersignature is visible on this pinned sheet. |
 
 ## Editorial and preservation boundaries
 
-- `src/data/editions/hopkinsPotashEdition.ts` is the complete visitor-facing source face. Its prose, claims, glossary annotations, and figure references are individually authored typed React nodes.
-- Each figure reference in the edition points to the local crop in `public/patents/figures/us-x1-hopkins-potash/fig-1-source-crop-v1.png` taken from the pinned parchment facsimile.
+- `src/data/editions/hopkinsPotashEdition.ts` is the complete visitor-facing source face. Its prose and glossary annotations are individually authored typed React nodes.
+- The sheet is a letters patent, not a technical drawing; the retained local parchment image is research evidence and is not represented as a numbered patent figure.
 - `public/patents/transcripts/us-x1-hopkins-potash-reviewed.txt` is the review ledger for this edition.
 - The grant contains the single operative claim embedded within the letters patent recital defining the exclusive right of burning raw ashes preparatory to dissolving and boiling them in water.
-- Revision 2026-08-22: the source face was repaired against the pinned parchment. The masthead now prints only the document's actual opening ("THE UNITED STATES." / "To all to whom these Presents shall come." / "GREETING."); invented Patent-Office furniture and titles not adjacent to the signatures were removed; Jefferson's "By the President," attestation and Attorney General Randolph's full certification paragraph were restored verbatim from the facsimile; the recital's mid-sentence colon before "These are therefore" was restored. The parallel-reading companion map is registered and the fabrication hold on this record is lifted.
+- Revision 2026-09-03: independent visual review of the full 300-DPI rendering confirms the parchment's actual opening, operative recital, George Washington signature, and Edmund Randolph certification. The edition no longer invents a Thomas Jefferson countersignature or treats the parchment itself as a numbered technical drawing. The parallel-reading companion map remains registered.

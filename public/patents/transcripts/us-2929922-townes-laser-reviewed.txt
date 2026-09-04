@@ -1,671 +1,119 @@
 --- REVIEWED TRANSCRIPTION PAGE 1 OF 5 ---
 
 March 22, 1960
-
-A. L. SCHAWLOW ETAL
-
+A. L. SCHAWLOW ET AL.
 2,929,922
-
 MASERS AND MASER COMMUNICATIONS SYSTEM
-
-10,
-
 Filed July 30, 1958
-
-2 FIG. /
-
-GENERATOR
-
-MODULATED sid
-
-(SEE FIG. 2)
-
->—| AMPLIFIER
-
+FIG. 1
+GENERATOR (SEE FIG. 2)
+MODULATED AMPLIFIER (SEE FIG. 3)
 DETECTOR
-
-(SEE FIG. 3)
-
-ENERGIZING |
-Y/
-1s SOURCE 20
-
-MODULATING
-SOURCE +I/
-
-70
-MODULATED
-AMPLIFIER
-
-LAMP 4-3!
-
-ENERGIZING
-SOURCE | 5, |
-
-(SEE FIG, 3)
-
-NEGATIVE of SE
-TEMPERATURE
-MEOIUM
-
+MODULATING SOURCE
+FIG. 2
+LAMP ENERGIZING SOURCE
+NEGATIVE TEMPERATURE MEDIUM
+TO MODULATED AMPLIFIER (SEE FIG. 3)
 FIG. 3
-
-a at Wax
-
-om |
-
-16h 46
-
-i,
-
-DETECTOR
-
-U3
-
-22
-FROM
-GENERATOR
-
-Ji ,
-(SEE FIG. 2) MEDIUM
-
-MODULATING
-| SOURCE
-
-“
-
-32 30 +4 ‘
-
+LAMP ENERGIZING SOURCE
+FROM GENERATOR (SEE FIG. 2)
+MODULATING SOURCE
+INVENTORS
 A. L. SCHAWLOW
-INVENTORS ©” by TOWNES
-
-© Oo iam C Comtpa
-
+C. H. TOWNES
 ATTORNEY
 
 --- REVIEWED TRANSCRIPTION PAGE 2 OF 5 ---
 
-—— 2,929,922
-4 ce Patented Mar. 22, 1960°
-
-United States Patent O
-
-4
-
+March 22, 1960
+UNITED STATES PATENT OFFICE
 2,929,922
+MASERS AND MASER COMMUNICATIONS SYSTEM
+Arthur L. Schawlow, Madison, N. J., and Charles H. Townes, New York, N. Y., assignors to Bell Telephone Laboratories, Incorporated, New York, N. Y., a corporation of New York
+Application July 30, 1958, Serial No. 752,137
+11 Claims. (Cl. 250–7)
 
-MASERS AND MASER COMMUNICATIONS
-: SYSTEM ;
+This invention relates to the generation and amplification of infrared, visible, and ultraviolet waves, and more particularly to the generation and amplification of such waves by means of devices including media in which the stimulated emission of radiation occurs; devices of this type are now generally termed masers.
 
-Arthur L. Schawlow, Madison, N.J.. and Charles. H.
-Townes, New York, N.Y., assignors to Bell Telephone
-Laboratories, Incorporated, New York, N.Y., 2 corpo-
-ration of New York
+It is characteristic of a maser that it employs a medium in which there is established at least intermittently a nonequilibrium population distribution in a pair of spaced energy levels of its energy level system. In particular, the population of the higher of the selected pair of energy levels may be made larger than that of the lower. It is now usual to describe a medium which is in such a state of nonequilibrium as exhibiting a negative temperature. It is known that a competing process known as relaxation tends to return the system to equilibrium.
 
-’ Application July 30, 1958, Serial No. 752,137
-11 Claims. (Cl. 250—7)
+It is characteristic that if there be applied to a medium which is in a negative temperature state a signal of a frequency which satisfies Planck’s law with respect to the two energy levels which are in nonequilibrium, where h is Planck’s constant, then the applied signal will stimulate the emission of radiation at the signal frequency from the medium and the signal will be amplified.
 
-This invention relates to the generation and amplifica-
-tion: of infrared, visible, and ultraviolet waves, and more
-particularly to the generation and amplification of such
-waves by means of devices including media in which the
-stimulated’ emission of radiation occurs: devices of this
-type are now. generally termed “masers.”
+Among the more promising forms of masers known is one which employs as the negative temperature medium a material whose energy level system is characterized by at least three energy levels, with the separations of these three energy levels falling within desired operating frequency ranges. To this material, there is supplied pumping power which effects transitions from the lowest to the highest of the selected three energy levels. By power saturation of the highest energy level, whereby the populations of the highest and lowest energy levels tend to be equalized, there is established in one of these two energy levels a nonequilibrium population distribution with respect to the intermediate energy level of the selected three, whereby a negative temperature results in the material. Thereafter a signal of appropriate frequency can be amplified by being applied thereto in a manner such that the emission of radiation is stimulated therefrom.
 
-‘It 'is characteristic of a maser that it employs a medium
+It is to be noted that the process of relaxation from randomly overpopulated states may give rise to spontaneous emission, that is, emission caused by radiative transitions in a mode other than the desired or stimulated one.
 
-_in which there is established at least intermittently a non-
-equilibrium: ‘population distribution in a pair of spaced
-energy levels of its energy level system. In particular, the
-population of the higher of the selected pair of energy
-levels may ‘be made larger than that of the lower. It is
-now usual to describe:a medium which is in such a state
-of nonequilibrium as exhibiting a negative temperature.
-It is known that a competing process known as Ttelaxation
-tends to return the system to equilibrium. ;
+Generators and amplifiers employing atomic and molecular processes, as do the various known varieties of masers, may in principle be extended in operation far beyond the range of frequencies which have been generated and amplified by electronic processes. As, however, the maser concept is applied to the translation of wavelengths in the infrared, visible, and ultraviolet regions of the electromagnetic wave spectrum, it is found that conventional or microwave maser techniques and structures are suitable neither for the generation of monochromatic radiation nor to provide coherent amplification.
 
-' It is characteristic that if there be applied to 'a medium
-which is in a negative temperature state a signal of a fre-
-quency which ‘satisfies Planck’s law with Tespect to the
-two energy levels which are in nonequilibrium
+Accordingly, an object of the present invention is a system, including a maser, for translating infrared, visible, and ultraviolet energy. A maser designed for operation in the microwave range of the spectrum might, for example, comprise a cavity having therein an ensemble of atomic or molecular systems, the cavity being characterized by being able to support only one mode near the frequency which corresponds to the desired radiative transitions of the systems. Alternatively, such an ensemble might be located in a waveguide, which similarly would be characterized by one, or a very few, preferred modes of propagation in the frequency range of interest.
 
-E,— Ky
+The energy emitted by a maser operating in the microwave range is typically monochromatic, due to the energy produced by stimulated emission being very much larger than the background of radiation caused by spontaneous emission. Such devices are inherently monochromatic because stimulated emission provides completely coherent amplification, and spontaneous emission, which is not so coherent, is characteristically small by comparison with the stimulated emission.
 
-{pes
+A maser cavity operating at frequencies above those in the microwave range requires an impractically small cavity structure, of the order of one wavelength, and/or a high and not easily realizable density of pumping power. Cavities which are large compared to a wavelength are accordingly capable of supporting a large number of modes within the frequency ranges of interest. A disadvantage of this approach is that masers including such cavities must be operated at relatively high power levels in order that the emission stimulated therefrom be at least as large as that spontaneously emitted therefrom.
 
-where h is Planck’s constant )
+Another object of this invention is a practically realizable, efficient, low-noise maser structure which is capable of the generation of monochromatic radiation, or coherent amplification, in the infrared, visible, and ultraviolet portions of the electromagnetic spectrum.
 
-then the applied signal. will stimulate the emission of
+The above and other objects of the present invention are realized in an illustrative embodiment wherein a negative temperature medium is disposed between two spaced parallel reflecting plates in a configuration which is of practical size and which may be pumped by readily available power sources, and wherein a single mode corresponding to the stimulated emission can be effectively isolated.
 
-10
+More particularly, one specific illustrative embodiment of the present invention comprises a maser including a chamber having reflective parallel end plates and side members. Positioned within the chamber is a negative temperature medium, which is pumped by an energy source disposed about the chamber. The side walls are transparent to the pumping energy and either transparent to or absorptive of other energy radiated thereat. Further, an optical configuration is arranged adjacent to one of the end plates of the chamber for isolating the one mode of those supported within the chamber which it is desired to selectively utilize.
 
-15
-
-20
-
-25
-
-30
-
-35
-
-radiation at the signal frequency from the medium and the |.
-
-signal will be amplified. ;
-
-Among the more promising forms of masers known is
-one which employs as the negative temperature medium
-a material whose energy level system is characterized by
-at least three energy levels, with the separations of these
-three energy. levels falling within desired operating fre-
-quency ranges. To this material, there is supplied pump-
-ing power which effects transitions from the lowest to
-the highest of the selected three energy levels, By power
-saturation of the highest energy level, whereby the popula-
-tions of the highest and lowest energy levels tend to be
-equalized, there is established in one of these two-energy
-levels a nonequilibrium population distribution with re-
-spect to the intermediate energy level'of the selected three,
-whereby a negative temperature results in the material.
-Thereafter:a signal of appropriate frequency can be am-
-plified by being applied thereto in a manner such that the
-emission of radiation ‘jis stimulated therefrom.
-
-“It is to be noted: that the process of relaxation from
-randomly overpopulated states ‘may give rise to spon-
-taneous. emission, that is, emission caused by’ radiative
-transitions in a mode other than the desired or stimulated
-one: : . : Tn
-
-. Generators. and amplifiers employing atomic and molec-
-ular processes, as do the various known varieties of
-masers, may in principle: be extended in operation far
-
-beyond the range of frequencies which have been gen--
-electronic processes. As, how-. |
-
-erated and amplified by
-ever, the maser concept. is applied to the translation of
-wavelengths in the infrared; visible, and ultraviolet regions
-
-of “the electromagnetic. wave spectrum, it is found. that .
-
-‘conventional ‘or microwave maser techinques and struc-
-
-40
-
-45
-
-50
-
-2
-
-tures are suitable neither for the generation of mono-
-chromatic radiation nor to provide coherent amplification.
-
-Accordingly, an object of the present invention is a
-system, including a maser, for translating infrared, visible,
-and ultraviolet energy.
-
-A maser. designed for operation “in the microwave
-range of the spectrum might, for example, comprise a
-cavity having therein an ensemble of atomic or molecular
-systems, the cavity being characterized by being able to
-support only one mode near the frequency which cor-
-responds to the desired radiative transitions of the sys-
-tems. Alternatively, such an ensemble might be located
-in a waveguide, which similarly would be characterized
-by one, or a very few, preferred modes of propagation in
-the frequency range of interest. “1
-
-Thus, the energy emitted by a maser operating in the
-microwave range is typically monochromatic, due to the
-energy produced by stimulated emission being very much
-larger than the background of radiation caused by spon-
-taneous emission. In other words, such devices are in-
-herently monochromatic because stimulated emission pro-
-duces completely coherent amplification, and spontaneous
-emission, which ‘is not. so coherent, is characteristically
-small by comparison with the stimulated emission.
-
-On the other hand, the maintenance of a single isolated
-mode is a maser cavity operating at frequencies above
-those in the microwave range requires an impractically
-small cavity structure (of the order of one wavelength)
-and/or a high and not easily realizable density of pump-
-ing power. Hence, one is led to consider, in these higher
-frequency ranges, cavities which are large compared to a
-wavelength, and which are accordingly capable of sup-
-Porting a large number of modes within the frequency
-ranges of interest. A disadvantage of this approach, how-
-ever, is that masers including such cavities must be oper-
-ated at relatively high power levels in order that the.
-emission stimulated therefrom be at least as large as that
-spontaneously emitted therefrom.
-
-Accordingly, another object of this invention is a prac-
-tically realizable, efficient, low-noise maser structure
-which is capable of the generation of monochromatic
-tadiation; ‘or coherent amplification, in the infrared, visi-
-ble, and ultraviolet ‘portions of the electromagnetic
-spectrum.
-
-The above and other objects of the present invention
-are realized in an illustrative embodiment thereof wherein _
-a negative temperature medium is disposed between two
-spaced parailel reflecting plates in ‘a configuration which
-is of practical size and which may ‘be pumped by readily
-available power sources, and wheréin a single mode cor-
-
-. Tesponding to the stimulated emission can be effectively
-
-55
-
-60
-
-65
-
-70
-
-isolated. :
-
-More particularly, one specific illustrative embodiment
-of the present invention: comprises a maser including a
-chamber having ‘reflective end parallel plates and. side
-walls, Positioned within the chamber is a negative tem-
-perature medium, which is pumped by an energy source
-disposed- about’ the chamber. The side walls are trans-
-Parent to the pumping energy and either transparent to or
-absorptive of other: energy radiated thereat, Further, an
-optical: configuration is arranged adjacent to one of the
-end plates of the chamber for isolating the one mode of
-those supported within the chamber which it is desired to
-selectively utilize. :
-
-‘The principles of the Present invention may illustra-
-
-tively be embodied in a communications system which
-
-comprises a maser device capable of generating mono-
-chromatic _Tadiation, a second maser device. capable of ;
-modulating and coherently amplifying the output: of. the’
-
-; Maser. generator, and a device for detecting the ‘output |
-
-of the second maser, Alternatively, such a system may
+The principles of the present invention may illustratively be embodied in a communications system which comprises a maser device capable of generating monochromatic radiation, a second maser device capable of modulating and coherently amplifying the output of the maser generator, and a device for detecting the output of the second maser. Alternatively, such a system may
 
 --- REVIEWED TRANSCRIPTION PAGE 3 OF 5 ---
 
-3
+ include a maser generator whose output is modulated by a nonamplifying device, or a system in which the maser generator itself is modulated.
 
-include a maser generator whose output is modulated by
-a nonamplifying device, or a system in which the maser
-generator itself is modulated.
+Thus, a feature of the present invention is a system for communicating information by means of energy having wavelengths in the infrared, visible, or ultraviolet portions of the electromagnetic spectrum, comprising a monochromatic generator, a modulatable coherent amplifier, and a detector.
 
-Thus, a feature of the present invention is a system
-for. communicating information by means of energy hav-
-ing wavelengths in the infrared, visible, or ultraviolet
-portions of the electromagnetic spectrum, comprising a
-monochromatic generator, a modulatable coherent ampli-
-fier, and a detector.
+Another feature of this invention is a maser generator including a chamber comprising reflective parallel end members and side members, a negative temperature medium within said chamber, a pumping power source disposed about the side members, the side members being transparent to the pumping energy and either transparent to or absorptive of other energy radiated thereat, and a configuration arranged adjacent to one of the end members for abstracting from the chamber a selected one of the modes supported therein, whereby there is provided efficient, low-noise, monochromatic generation of infrared, visible, or ultraviolet waves.
 
-Another feature. of this invention is a maser generator
-including a. chamber comprising reflective parallel end
-members and side members, a negative temperature
-medium within said chamber, a pumping power source
-disposed, about the side members, the side members
-being transparent.to the pumping energy and either trans-
-parent to or absorptive of other energy radiated thereat,
-and a.configuration arranged adjacent to one of the end
-members for abstracting from the chamber a selected
-one of the modes supported therein, whereby there is
-provided efficient, low-noise, monochromatic generation
-of: infrared, visible, or ultraviolet waves.
+A further feature of the present invention is a maser amplifier including a chamber comprising reflective parallel end members and side members, a negative temperature medium within said chamber, a pumping power source disposed about the side members, the side members being transparent to the pumping energy and nonreflective of other energy radiated thereat, and a configuration arranged adjacent to one of the end members for abstracting from the chamber an amplified replica of a wave fed through the other end member thereof, whereby there is provided an efficient, low-noise, coherent amplifier of infrared, visible, or ultraviolet waves.
 
-A further: feature of the present invention is a maser
-amplifier including ’a chamber comprising reflective paral-
-lel. end members and side members, a negative temper-
-ature medium within said chamber, a pumping power
-source disposed about the side members, the side mem-
-bers being transparent to the pumping energy and non-
-reflective of other energy radiated thereat, and a con-
-figuration arranged adjacent to one of the end members
-for abstracting from the chamber an amplified replica of
-a. wave fed through the other end member thereof, where-
-by, there: is provided an efficient, low-noise, coherent am-
-plifier- of infrared, visible, or ultraviolet waves.
+A still further feature of this invention is an arrangement for modulating the signal output of a maser of the type herein described comprising a structure for establishing a magnetic field parallel to the longitudinal axis of the chamber thereof, and an information source capable of varying the magnetic field in correspondence with the output of the source.
 
-A still further feature of this invention is an arrange-
-ment for modulating the signal output of a maser of the
-type-herein-described comprising a structure for establish-
-ing a magnetic field parallel to. the longitudinal axis of
-the-chamber thereof, and an information source capable
-of: varying. the magnetic field in correspondence with the
-output-of the source.
+The principles of the present invention will be better understood from the following more detailed discussion taken in conjunction with the accompanying drawing, in which Fig. 1 is a block diagram of a communications system illustratively embodying aspects of the principles of the present invention; Fig. 2 is a perspective view of a generator made in accordance with the principles of this invention; and Fig. 3 is a perspective view of an amplifier embodying the principles of the present invention. Also, Fig. 3 depicts a modulating source and a detector, arranged in typical relationship, to the amplifier.
 
-The. principles of the present invention will be better
+Referring now to Fig. 1, there is shown a communications system in which the principles of the present invention are illustratively embodied. The system includes a generator or oscillator 10, a modulating source 11, a modulated amplifier 12, and a detector 13.
 
-“understood from the following more detailed discussion
-taken in conjunction with the accompanying drawing, in
-which: -
+The generator 10, which is shown in detail in Fig. 2, includes a chamber 14, which typically may be about one centimeter in diameter and ten centimeters in length. The chamber 14 comprises a hollow cylinder 15 having its ends capped by two flat parallel assemblies 16 and 17. Disposed within the chamber 14 is a negative temperature material whose radiative energy level separations correspond to frequencies in the infrared, visible, and ultraviolet ranges.
 
-Fig. 1 is a block diagram of a communications system
-illustratively embodying aspects of the principles of the
-present invention; ,
+Various materials are suitable for use as the active or negative temperature medium of maser devices of the general type described herein. For example, vapors of the alkali metals, namely lithium, sodium, potassium, rubidium, and cesium, and some solid rare earth salts, for example anhydrous chlorides of europium and samarium, may be so used. In particular, potassium maintained at a temperature of about 435 degrees Kelvin, at which temperature it exhibits a vapor pressure of about 0.001 millimeter, may advantageously be included in a specific illustrative embodiment of the principles of the present invention as the active medium thereof.
 
-Fig. 2 is a perspective view of a generator made in ac-
-cordance with the principles of this invention; and
+Each of the flat parallel assemblies 16 and 17 of the device shown in Fig. 2 advantageously includes a material which reflects most of the energy incident thereupon. An assembly comprising sapphire with a coating of gold, typically about 500 angstrom units thick, on the outer surface of the sapphire member may be included in specific embodiments. Such an assembly exhibits 97 percent reflectivity, 2 percent absorptivity, and 1 percent transmissivity to wavelengths in the infrared range.
 
-Fig. 3. isa perspective view of an amplifier embody-
-ing. the. principles of the present invention. Also, Fig.
-3. depicts. a modulating source and a detector, arranged
-in typical relationship. to the amplifier.
+The cylinder 15 of the chamber 14 is advantageously of a material which is transparent to the pumping energy and either transparent to or absorptive of other radiation impinging thereupon, thereby both to allow the negative temperature medium within the cylinder 15 to be pumped and to eliminate from the chamber radiation occurring in all modes except those corresponding to waves which travel back and forth between the reflective assemblies 16 and 17. These reflected modes are coupled much more strongly to the excited atomic systems of the negative temperature medium than any other modes and hence would be strongly favored for maser oscillations.
 
-Referring now to Fig. 1, there-is shown a communica-
-tions. system in which the principles of the present inven-
-tion are illustratively embodied. The system includes a
-generator or oscillator 10, a modulating source 11, a
-modulated amplifier 12, and a detector. 13.
-
-_ The generator. 16, which is shown in detail in Fig. 2,
-includes a chamber 14, which typically may be about
-one centimeter in diameter and ten centimeters in length.
-The chamber 14 comprises a hollow cylinder 15 hay-
-ing its.ends capped by two flat parallel assemblies 16 and
-17.. Disposed within the chamber 14 is a negative tem-
-perature material whose radiative energy level separa-
-tions correspond to frequencies in the ranges of interest,
-namely, the infrared, visible, and ultraviolet ranges.
-
-Various materials are suitable for use as the active
-or negative temperature medium of maser devices of the
-general type described herein. For example, vapors of
-the alkali metals; namely, lithium, sodium, potassium,
-nibidium and cesium, and some solid rare earth salts, for
-example, anhydrous chlorides of europium and samarium,
-may be so used..
-
-In particular, potassium maintained_at a temperature
-
-2,029,022 a .
-
-10
-
-15
-
-20
-
-25
-
-30
-
-35
-
-40
-
-45
-
-50
-
-55
-
-60
-
-65
-
-70
-
-75
-
-of about 435 degrees Kelvin, at which temperature it ¢x-
-hibits a vapor pressure of about 0.001 millimeter, may.
-advantageously be included in a specific illustrative em-
-bodiment of the principles of the present invention as
-the active medium thereof.
-
-Each of the flat parallel assemblies 16 and 17 of the
-device shown in Fig. 2 advantageously includes as a.com-
-ponent part thereof a material which reflects most of the
-energy incident thereupon. Thus, for example, an as-
-sembly comprising sapphire 16a, which material is char=
-acterized by good chemical inertness and excellent trans-
-mission properties, particularly for infrared wavelengths,
-and having a coating of gold 16d, typically’ about 500
-angstrom. units thick, on the outer surface of. the sap-
-phire member, may be included in specific embodiments
-of this invention. Such an assembly exhibits 97 percent
-reflectivity, 2 percent absorptivity, and 1 percent trans-
-mitivity to. wavelengths in the infrared range.
-
-The inner and outer parallel faces of. each sapphire:
-plate reflect a small portion of the radiation directed.
-thereat. Therefore, the. thickness of the sapphire plates:
-should advantageously be chosen such that the reflections.
-from the two faces of each plate add in phase.
-
-It is noted that the phase angle between the reflections
-from the two faces or surfaces of each sapphire member
-depends on the thickness and refractive index thereof.
-Since sapphire is crystalline and the refractive index: is:
-different for ordinary and extraordinary rays, the thick-
-ness may be chosen to give ‘constructive interference: for
-one polarization and destructive interference for the polar--
-ization. perpendicular thereto, in that manner discrimi-
-nating between modes traveling in the same direction: but:
-having different polarizations.
-
-The cylinder 15 of the chamber 14 is advantageously
-of a material. which is transparent to the pumping. en
-ergy and either transparent to or absorptive of other
-radiation impinging thereupon, thereby both to allow. the:
-negative temperature medium within the cylinder 15 to
-be pumped and to eliminate from the chamber radiation
-occurring in all modes except those corresponding to
-waves which travel back and forth between the reflective
-assemblies 16 and 47. Tliese reflected modes are coupled:
-much more strongly to the excited atomic systems of. the
-negative temperature medium than any other modes and.
-hence would be strongly favored for maser oscillations.
-
-In those specific embodiments of the present invention:
-in which the negative temperature medium within the
-chamber 14 is at a pressure other than atmospheric, as:
-in the case of the potassium vapor, for example, it. is
-advantageous to support the chamber 14, by means of:
-spacer elements 18, within a protective shell £9, typically:
-of glass, within which shell a pressure approximately”
-equal to that within the chamber 14 is maintained. In-
-this manner, the resultant forces acting on the opposing:
-faces of the end assemblies 16 and 17 are made so.small
-as not to be capable of distorting the assemblies and:
-thereby disturbing their parallelism. —
-
-Arranged around the protective shell 19 are a plurality-
-of pumping sources 2@ which, in a maser generator in-
-cluding potassium vapor as the active medium thereof,
-may advantageously comprise an assembly of potassium
-lamps, which lamps 20 are energized by a source 21.
-
-The maser generator shown in Fig. 2 further includes
-a housing 22 in which the protective shell 19 is supported
-by spacer elements 27. The inner surface of the Housing:
-22 is of a material which is capable of reflecting a major:
-part of the energy radiated thereupon from the pumping
-power sources 20, thereby to aid in directing. a substantial’
-portion of the energy emitted by the sources 20 toward’
-the chamber 14 and into the negative temperature .me-
-dium therein. ; :
-
-The process of oscillation within a maser generator.
-made in accordance with the principles of. the. present.
-invention depends on the selective regeneration within the.
+In those specific embodiments in which the negative temperature medium within the chamber 14 is at a pressure other than atmospheric, as in the case of potassium vapor, it is advantageous to support the chamber 14 by spacer elements 18 within a protective shell 19, typically of glass, within which shell a pressure approximately equal to that within the chamber 14 is maintained. In this manner, the resultant forces acting on the opposing faces of the end assemblies 16 and 17 are made small.
 
 --- REVIEWED TRANSCRIPTION PAGE 4 OF 5 ---
 
-Seber, S
+Mode selection in the maser generator shown in Fig. 2 is based on the phenomenon that, when energy is radiated from a chamber through an end plate member which is large compared to the wavelength of the characteristic radiation, each point in the focal plane thereof corresponds to a mode of a particular direction, affording thereby a separation of modes. If radiation falling on a very limited area in the focal plane is detected, that radiation will represent spontaneous and stimulated emission from a selected and limited number of modes, the large background of spontaneous emission produced in other modes being thereby effectively isolated.
 
-_ chamber 14 of a component of the energy spontaneously
+Radiation in the desired mode is transmitted through the end assembly 17 and focused by a double-convex lens 23 arranged such that the desired energy is directed through an aperture 24 in an absorptive sheet 25 which lies in the focal plane of the lens 23. A second double-convex lens 26 is employed to reconvert the selected energy to the form of a plane wave, in which form the desired energy radiates to the modulated amplifier 12.
 
-emitted: by. the: negative: temperature mediim ‘therein,
+The maser amplifier shown in Fig. 3 is similar in structure to the generator described above. The amplifier includes a chamber 14 comprising a hollow cylinder 15 supported within a protective shell 19 by supporting members 18 and within which cylinder a suitable negative temperature medium is disposed. Arranged about the protective shell 19 is a pumping power assembly 30, which may advantageously comprise a potassium lamp formed in the shape of a spiral, energized by a source 31.
 
-* Mode selection in-the maser ‘generator shown in Fig. 2
-is based‘on the phenomenon that, when. energy is radiated
-from:a chamber’ of the type: herein:described: through
-an’end plate member’ which ‘is large compared to the
-wavelength of the
-characteristic direction, Thus, if the emitted radiation is
-focused by a lens, each point in: the focal plane thereof
-will: correspond toa mode of ‘a particular direction,
-affording thereby a separation of modes. And, if radia-
-tion falling..on a very limited area.in the focal plane is
-detected, that’ ‘radiation will represent spontaneous and
-stimulated emission from a‘selected and limited number
-of modes, the large’ background of spontaneous emission
-Prodiiced. in other modes being’ thereby effectively iso-
-ated. mee : :
+Energy directed from the generator 10 through the left-hand end of the cylinder 15 of the amplifying device of Fig. 3 may be modulated by an assembly including a coil 32 for establishing a magnetic field parallel to the longitudinal axis of the cylinder 15 and a source 11 for varying the strength of the longitudinal magnetic field, whereby broadening or splitting of the spectral lines emitted by the device 12 results, a phenomenon generally termed the Zeeman effect.
 
-~ The principles. of this phenomenon are utilized in the
-maser generator shown in Fig. 2.. Radiation in the de-
-sired mode: is transmitted ‘through the end assembly 17
-and: focused bya double-convex Jens 23° arranged: such
-that: the desired energy is directed through an aperture
-24 in an absorptive sheet 25 which lies. in the focal plane
-of the lens 23. =A: second double-convex lens 26 is em-
+The device 12 shown in Fig. 3 radiates through the right-hand end of the cylinder 15 an amplified counterpart of the energy directed at the device 12 by the generator 10. The radiated energy is directed by two lenses 33 and 36 through an aperture 34 in an absorptive member 35 and to a detector 13. The detector 13 may, for example, include a photomultiplier tube.
 
-_Bloyed to reconveit: the selected energy to the form of a
+It is noted that the admission of a signal into the region between the two end parallel plates of the amplifying device 12 is similar to the process involved in a microwave cavity. The partially reflecting surfaces of the end plates are analogous to coupling holes; if a monochromatic plane wave strikes the outside of one partially reflecting surface, energy will build up between the plates, and the relations between input wave, cavity energy, and output wave correspond to those for a microwave impinging on an appropriate cavity with input and output coupling holes.
 
-plane wave, in which form: the desired energy radiates to
-the modulated amplifier 12, ;
-~The. maser amplifier shown in Fig. 3 is similar‘in struc-
-ture, to ‘the: generator described above. The amplifier
-includes a:chamber 14 comprising a hollow cylinder 15
-supported within a protective shell 19 by supporting
-members 18 and within which cylinder 15 there -is dis.
+Thus, the principles may be embodied in monochromatic maser generators of infrared, visible, or ultraviolet wavelengths. It is feasible to tune such generators by varying the pressure or temperature of the negative temperature media. Alternatively, tuning may be based on the Stark effect. Maser devices embodying these principles may advantageously be utilized in spectroscopy and measurement applications, as well as in communications.
 
-posed: a suitable negative temperature medium: ‘The shelf’
+The various specific embodiments herein described are merely illustrative of the general principles of the invention. Although the amplifying chamber 14 has been shown as a hollow cylinder, any other transparent structure suitable for retaining the negative temperature medium and including reflective end assemblies may be substituted therefor.
 
-19 is. supported: within a reflective housing 22 by spacer
-or:supporting members 27. ore “
-. Arranged about the protective shell 19 of the amplifier
-
-: 12!shown “in Fig.: 3: is a pumping power assembly 30°
-which may advantageously comprise, ‘in a specific illus. -
-
-trative embodiment of the present invention wherein the
-negative temperature ‘médium is potassium vapor, a potas-
-
-radiation, each mode radiates in a:
-
-10
-
-15
-
-ing the pressure or temperature of the negative tempera-.
-ture media thereof. ‘Alternatively, tuning of such devices *
-may-be based on the Stark effect (i.e., observed changes.
-in the spectrum of a system when the system is subjected’
-to an electric field) or on the Zeeman effect. .
-
-. Further, it has been shown that embodiments of this
-invention include coherent maser amplifiers of infrared,
-visible, or ultraviolet wavelengths. It is to be noted that
-these devices are capable of amplifying energy of these
-wavelengths with no significant change in the wavefront
-or phase thereof, - : .
-
-It is to be noted that maser devices embodying the
-principles of the present invention may advantageously be
-utilized in various spectroscopy and measurement appli-
-cations, as well as in the communications field.
-
-It is'to be understood that the various specific embodi-
-
-. ments disclosed -are merely illustrative of the general '
-
-20
-
-25
-
-30
-
-. parent side members,
-
-35
-
-. ture medium -disposed within
-
-40
-
-sium lamp formed in the shape of a spiral, which spiral
-
-lamp is energized by a source 31. ; oo,
-
-«Energy. which is directed from. the. generator 10 through
-the left-hand end of the cylinder 15 of the amplifying
-device of Fig. 3 may be modulated by an assembly in-
-cluding a coil 32 for establishing a magnetic field parallel
-to the longitudinal axis of the cylinder 15 and a source
-11 for varying the Strength of the longitudinal magnetic
-field, whereby broadening or splitting of the spectral lines
-emitted by. the device 12 in correspondence with the
-variation of the magnetic field results, which phenome-
-non is generaly termed the Zeeman effect.
-
-The device 12 shown in Fig. 3. radiates through the
-right-hand end of the cylinder 15 an amplified counterpart
-of the energy directed at the device 12. by the generator
-10. The radiated energy is directed by two lenses 33
-and 36 through an aperture 34 in an absorptive member
-35 and to a detector 13. _ The detector 13 may,. for ex-
-ample, include a photomultiplier tube,
-
-It is noted that the admission of a signal into the region
-between the two end parallel plates of the amplifying
-device 12 is similar to the process involved in a micro-
-Wave cavity. . More particularly, the partially reflecting
-surfaces of the end plates are analogous to coupling holes;
-and, if a monochromatic plane wave strikes the outside
-of one of the: partially reflecting’ surfaces, energy will
-build up in the region between the plates, and the rela-
-tions between input wave, energy in the “cavity,” and
-output wave correspond to those for a microwave im-
-pinging on an appropriate cavity with ‘input and output
-coupling holes.
-
-Thus, it.is seen that the principles of the present in-
-vention may illustratively be embodied in monochromatic
-maser generators of infrared, visible, or ultraviolet wave-
-lengths. It is feasible to tune such generators by vary-
-
-45
-
-50
-
-55
-
-60
-
-65
-
-70
-
-principles of the invention. Thus, although the amplify-
-ing chamber 14 has been shown and described as including
-a hollow cylinder, itis of course clear that any other trans-
-parent ‘structure (more specifically, ‘transparent to the
-pumping energy and transparent to or absorptive of other
-radiation) ‘suitable for retaining the negative temperature
-medium and including reflective end assemblies may be
-easily: substituted therefor. ;
-What is claimed is:
+WHAT IS CLAIMED IS:
 
 1. A communications system for operation in the infrared, visible, or ultraviolet regions of the electromagnetic wave spectrum comprising a monochromatic maser generator, a coherent modulated maser amplifier, a modulating source, and a detector; said generator comprising a chamber having end reflective parallel members and transparent side members, a negative temperature medium disposed within said chamber, and means arranged about said chamber for pumping said medium; said amplifier comprising a chamber having end reflective parallel members and transparent side members, a negative temperature medium disposed within said chamber, means arranged about said chamber for pumping said medium, and coupling means for abstracting from one end of said chamber an amplified counterpart of the energy transmitted into the other end thereof and for directing said amplified counterpart at said detector.
 
 2. A communications system for operation in the infrared, visible or ultraviolet regions of the electromagnetic wave spectrum comprising a monochromatic maser generator, a coherent maser amplifier, said generator and amplifier including means for modulating the output of said generator in accordance with signal information, and a detector; said generator comprising a chamber having a length which is substantially greater than its transverse dimension and having partially reflective parallel end members and nonreflective side members, a negative temperature medium disposed within said chamber and characterized by at least three distinct energy levels, two of which have a separation in the frequency range of interest, means for pumping said medium so that a population inversion is produced therein between said two separated energy levels, and means for abstracting from said chamber and directing at the amplifier input the energy of a particular mode of electromagnetic vibration; said amplifier comprising a chamber having a length which is substantially greater than its transverse dimension and having partially reflective parallel end members and nonreflective side members, a negative temperature medium disposed within said chamber and characterized by at least three distinct energy levels, two of which have a separation in the frequency range of interest, means for pumping said medium so that a population inversion is produced therein between said two separated energy levels, means for abstracting from said chamber the energy of a particular mode of electromagnetic vibration representing an amplified and modulated replica of the generator output, and means for directing said replica at said detector.
 
-3. A communications system for operation in the infrared, visible or ultraviolet regions of the electromagnetic wave spectrum comprising a monochromatic maser generator, a coherent modulated maser amplifier, a modulating source and a detector, said amplifier including means for establishing a magnetic field parallel to the longitudinal axis of said chamber, said modulating source being coupled to said magnetic means, the radiative output of said generator being directed at said amplifier, and the radiative output of said amplifier, constituting an amplified and modulated counterpart of the radiative output of said generator, being directed at said detector.
+3. A communications system for operation in the in-
 
 --- REVIEWED TRANSCRIPTION PAGE 5 OF 5 ---
+
+frared, visible or ultraviolet regions of the electromagnetic wave spectrum comprising a monochromatic maser generator, a coherent modulated maser amplifier, a modulating source and a detector, said amplifier including means for establishing a magnetic field parallel to the longitudinal axis of said chamber, said modulating source being coupled to said magnetic means, the radiative output of said generator being directed at said amplifier, and the radiative output of said amplifier, constituting an amplified and modulated counterpart of the radiative output of said generator, being directed at said detector.
 
 4. A maser generator comprising a chamber having reflective parallel end members and side members, a negative temperature medium disposed within said chamber, means arranged about said chamber for pumping said medium, said side members being transparent to the pumping energy and transparent to or absorptive of other energy radiated thereat.
 
@@ -682,3 +130,9 @@ What is claimed is:
 10. A maser amplifier as in claim 9 wherein said negative temperature medium comprises potassium, and said pumping means comprises an assembly of potassium lamps.
 
 11. A modulated maser amplifier comprising a chamber having end reflective parallel members, a negative temperature medium disposed within said chamber, means arranged about said chamber for pumping said medium, means coupled to and under the control of a modulating source for establishing a magnetic field parallel to the longitudinal axis of said chamber, and means for abstracting from one end of said chamber an amplified counterpart of the energy directed into the other end thereof, which counterpart is modulatable in accordance with the output of said source.
+
+REFERENCES CITED
+
+UNITED STATES PATENTS
+
+2,836,722  Dicke et al.  May 27, 1958

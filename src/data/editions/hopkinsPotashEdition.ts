@@ -11,39 +11,20 @@ const term = (
   label,
 });
 
-const preview = (label: string): CuratedSpecificationInline => ({
-  kind: "reference",
-  text: label,
-  href: "#figure-1",
-  referenceType: "figure",
-  label: "Open the source-derived Hopkins Patent X1 parchment facsimile",
-  figurePreviews: [
-    {
-      src: "/patents/figures/us-x1-hopkins-potash/fig-1-source-crop-v1.png",
-      alt: "Parchment letters patent for United States Patent X1, granted to Samuel Hopkins on July 31, 1790, signed by George Washington, Thomas Jefferson, and Edmund Randolph.",
-      width: 2640,
-      height: 2090,
-    },
-  ],
-});
-
 export const HOPKINS_PARALLEL_READINGS: Readonly<Record<number, readonly string[]>> = {
-  2: [
+  1: [
     "The formal preamble and recital: Samuel Hopkins of Philadelphia discovers a novel apparatus and four-step process for making Pearl ash by roasting raw wood ashes in a furnace prior to leaching, yielding a dramatically higher salt content with minimal residual carbon.",
   ],
-  3: [
+  2: [
     "The operative legal grant: in accordance with the 1790 Patent Act, the United States grants Hopkins and his assigns the exclusive right for fourteen years to practice and vend the discovery of furnace-calcining raw ashes prior to water dissolution.",
   ],
-  4: [
-    "Execution and testimonium: issued under the Great Seal of the United States at the City of New York on July 31, 1790, executed by George Washington and countersigned by Secretary of State Thomas Jefferson.",
+  3: [
+    "Execution and testimonium: issued under the Great Seal of the United States at the City of New York on July 31, 1790, with the handwritten signature of George Washington visible on the pinned sheet.",
   ],
-  5: [
+  4: [
     "Presidential execution: George Washington affixes his own hand to make the invention letters patent, the act that gives the federal grant its force under the 1790 Patent Act.",
   ],
-  6: [
-    "Countersignature: the notation “By the President” records that Thomas Jefferson, Secretary of State, signed the instrument in the President's name, the customary attestation for sealing letters patent of the United States.",
-  ],
-  7: [
+  5: [
     "Legal examination and certification: Attorney General Edmund Randolph certifies at the City of New York on July 31, 1790 that the foregoing letters patent were delivered to him in pursuance of the Act to promote the Progress of useful Arts and that he finds them conformable to that Act.",
   ],
 };
@@ -54,6 +35,11 @@ export const hopkinsPotashArchivalEdition: CuratedSpecificationEdition = {
   preparedBy: "Classic Patents editorial agent (ox-alpha)",
   preparedAt: "2026-08-22",
   completeFacsimileReviewed: true,
+  drawingStatus: {
+    kind: "no-drawings-in-facsimile",
+    evidence:
+      "The pinned single-sheet letters patent contains text, seals, and signatures but no separate technical drawing or numbered figure.",
+  },
   claimStatus: {
     kind: "no-formal-claims-in-facsimile",
     evidence:
@@ -63,22 +49,6 @@ export const hopkinsPotashArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "masthead",
       lines: ["THE UNITED STATES.", "To all to whom these Presents shall come.", "GREETING."],
-    },
-    {
-      kind: "figure-sheet",
-      figureLabel: "PARCHMENT FACSIMILE (PAGE 1)",
-      title: "Letters Patent No. 1 — Pot Ash and Pearl Ash",
-      description: [
-        {
-          kind: "text",
-          text: "The preserved single-sheet parchment facsimile of ",
-        },
-        preview("United States Patent No. 1"),
-        {
-          kind: "text",
-          text: ", bearing the signature of President George Washington, Secretary of State Thomas Jefferson, and Attorney General Edmund Randolph.",
-        },
-      ],
     },
     {
       kind: "paragraph",
@@ -152,16 +122,7 @@ export const hopkinsPotashArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "G°. WASHINGTON.",
-        },
-      ],
-    },
-    {
-      kind: "paragraph",
-      inlines: [
-        {
-          kind: "text",
-          text: "By the President, TH: JEFFERSON.",
+          text: "G. WASHINGTON.",
         },
       ],
     },
@@ -173,7 +134,7 @@ export const hopkinsPotashArchivalEdition: CuratedSpecificationEdition = {
           text: "City of New York July 31st. 1790. I do hereby certify that the foregoing Letters Patent were delivered to me in pursuance of the Act, entituled “An Act to promote the Progress of useful Arts”; that I have examined the same, and find them conformable to the said Act.",
         },
         term(
-          "EDM: RANDOLPH",
+          "Edm. Randolph",
           "Edmund Randolph of Virginia, the first Attorney General of the United States, whose statutory duty under the 1790 Patent Act was to examine each letters-patent application for conformity to the Act before grant.",
         ),
         {
