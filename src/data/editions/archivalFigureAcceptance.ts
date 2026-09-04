@@ -2316,4 +2316,78 @@ export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
       },
     },
   },
+  "us-6331181-davinci": {
+    sourcePdfSha256: "ff8eef36d94ec5ec3ec01038b7145030caf617ea018fcde9f00df6380beb3d91",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 120 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 17,
+    assets: {
+      "/patents/figures/us-6331181-davinci/sheet-1-source-crop-v1.png": {
+        sha256: "125179097540fe4cd553f1479a89c739879b1bc593e9b89b0d60c8d96c04fc02",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6331181-davinci/sheet-2-source-crop-v1.png": {
+        sha256: "db42d1143fa10ebf3da2e6fe5e0ad39a8e3a112452a3451a320fb738c2733602",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6331181-davinci/sheet-3-source-crop-v1.png": {
+        sha256: "43b35b7c44498521e1ac342f1cd44f41b148d449aef809a004ef0df237100e03",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6331181-davinci/sheet-5-source-crop-v1.png": {
+        sha256: "440f1ea730b28c6ad46b392e4ab92b7e9752967fe3080c8505c456af3da5f93e",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6331181-davinci/sheet-7-source-crop-v1.png": {
+        sha256: "3ecf8e20b84ad5b6ed0152fa140a3f8c8a56517dd378243626f1f86d890292f7",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6331181-davinci/sheet-9-source-crop-v1.png": {
+        sha256: "fa44b911496ca266e4ccaff34a013f10559f38d73df4a9686cda2d02de9035db",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6331181-davinci/sheet-11-source-crop-v1.png": {
+        sha256: "4022da4798a378544df16b2d6a337830ab91bcaf6df556b1f7cd452bfbe164dc",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6331181-davinci/sheet-14-source-crop-v1.png": {
+        sha256: "b2d1126004441dd944752e5c3b128eb47ac7ad4c51bd185764d40cacefa459b4",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6331181-davinci/sheet-15-source-crop-v1.png": {
+        sha256: "53db15f6e60dc3660a4a8a2b16dd52cf5d41014f7da58345e93779c7d3fe6c1a",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6331181-davinci/sheet-16-source-crop-v1.png": {
+        sha256: "2f07a493f18a280a6a8d6562b89bbeb335c63fca90b8129a64a424d905282129",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6331181-davinci/sheet-18-source-crop-v1.png": {
+        sha256: "3b40a9b5391ecedfad9f89a336d4faa0f955ab1021e4ace54e492d87134e3583",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6331181-davinci/sheet-21-source-crop-v1.png": {
+        sha256: "8ada8eb35743dbeafad09da38eccf10eede7796808599718dba37f1e343e04e8",
+        width: 928,
+        height: 1364,
+      },
+      "/patents/figures/us-6331181-davinci/sheet-22-source-crop-v1.png": {
+        sha256: "5cf6569fdf3b83d6c3397cf37fef8b7a70a508a6a6cb5722b9a65f4c05a1d838",
+        width: 928,
+        height: 1364,
+      },
+    },
+  },
 } as const satisfies Readonly<Record<string, ArchivalFigureAcceptanceAttestation>>;

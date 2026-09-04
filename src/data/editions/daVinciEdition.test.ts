@@ -72,7 +72,7 @@ describe("US 6,331,181 Surgical Robotic Tools Archival Research Boundary", () =>
       return [];
     });
 
-    expect(figurePreviews).toHaveLength(25);
+    expect(figurePreviews).toHaveLength(32);
 
     for (const preview of figurePreviews) {
       const relPath = preview.src.replace(/^\//, "");
@@ -100,6 +100,10 @@ describe("US 6,331,181 Surgical Robotic Tools Archival Research Boundary", () =>
         : [],
     );
     const expectedSheets: Readonly<Record<string, readonly number[]>> = {
+      "FIG. 1": [1],
+      "FIG. 2": [2],
+      "FIGS. 2A-C": [3, 4],
+      "FIG. 2A": [3, 4],
       "FIGS. 3 and 3A": [5, 6],
       "FIG. 4": [7],
       "FIGS. 4A-B": [7, 8],
@@ -114,15 +118,15 @@ describe("US 6,331,181 Surgical Robotic Tools Archival Research Boundary", () =>
       "FIG. 15": [22],
     };
 
-    expect(sourceReferences).toHaveLength(12);
+    expect(sourceReferences).toHaveLength(17);
     for (const reference of sourceReferences) {
       const expected = expectedSheets[reference.text];
       expect(expected).toBeDefined();
       if (!expected) throw new Error(`Unexpected Da Vinci figure reference: ${reference.text}`);
       expect(
-        reference.figurePreviews?.map((preview) =>
-          Number(preview.src.match(/\/sheet-(\d+)-source-crop-v1\.png$/)?.[1]),
-        ),
+        reference.figurePreviews
+          ?.filter((preview) => preview.src.includes("/sheet-"))
+          .map((preview) => Number(preview.src.match(/\/sheet-(\d+)-source-crop-v1\.png$/)?.[1])),
       ).toEqual([...expected]);
     }
 

@@ -687,6 +687,44 @@ const DIESEL_ENGINE_OCCURRENCES = Object.fromEntries(
     locator.activeAsset,
   ]),
 );
+const DAVINCI_ID = "us-6331181-davinci";
+const DAVINCI_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[DAVINCI_ID].assets);
+const DAVINCI_OCCURRENCES = {
+  "edition-block-12-group-0-inline-1":
+    "/patents/figures/us-6331181-davinci/sheet-1-source-crop-v1.png",
+  "edition-block-12-group-0-inline-3":
+    "/patents/figures/us-6331181-davinci/sheet-2-source-crop-v1.png",
+  "edition-block-12-group-0-inline-5":
+    "/patents/figures/us-6331181-davinci/sheet-3-source-crop-v1.png",
+  "edition-block-12-group-0-inline-7":
+    "/patents/figures/us-6331181-davinci/sheet-5-source-crop-v1.png",
+  "edition-block-12-group-0-inline-9":
+    "/patents/figures/us-6331181-davinci/sheet-7-source-crop-v1.png",
+  "edition-block-12-group-0-inline-11":
+    "/patents/figures/us-6331181-davinci/sheet-7-source-crop-v1.png",
+  "edition-block-12-group-0-inline-13":
+    "/patents/figures/us-6331181-davinci/sheet-9-source-crop-v1.png",
+  "edition-block-12-group-0-inline-15":
+    "/patents/figures/us-6331181-davinci/sheet-11-source-crop-v1.png",
+  "edition-block-12-group-0-inline-17":
+    "/patents/figures/us-6331181-davinci/sheet-11-source-crop-v1.png",
+  "edition-block-12-group-0-inline-19":
+    "/patents/figures/us-6331181-davinci/sheet-14-source-crop-v1.png",
+  "edition-block-12-group-0-inline-21":
+    "/patents/figures/us-6331181-davinci/sheet-15-source-crop-v1.png",
+  "edition-block-12-group-0-inline-23":
+    "/patents/figures/us-6331181-davinci/sheet-16-source-crop-v1.png",
+  "edition-block-12-group-0-inline-25":
+    "/patents/figures/us-6331181-davinci/sheet-18-source-crop-v1.png",
+  "edition-block-12-group-0-inline-27":
+    "/patents/figures/us-6331181-davinci/sheet-21-source-crop-v1.png",
+  "edition-block-12-group-0-inline-29":
+    "/patents/figures/us-6331181-davinci/sheet-22-source-crop-v1.png",
+  "edition-block-14-group-0-inline-1":
+    "/patents/figures/us-6331181-davinci/sheet-1-source-crop-v1.png",
+  "edition-block-16-group-0-inline-1":
+    "/patents/figures/us-6331181-davinci/sheet-3-source-crop-v1.png",
+} as const;
 const COLT_ID = "us-x9430-colt-revolver";
 const COLT_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[COLT_ID].assets);
 const COLT_REVOLVER_OCCURRENCES = {
@@ -1341,6 +1379,7 @@ const VALIDATION_OPTIONS = {
     [EINK_ID]: EINK_ASSETS,
     [THOMSON_WELDING_ID]: THOMSON_WELDING_ASSETS,
     [DIESEL_ENGINE_ID]: DIESEL_ENGINE_ASSETS,
+    [DAVINCI_ID]: DAVINCI_ASSETS,
     [ROOMBA_ID]: ROOMBA_ASSETS,
     [CORLISS_ID]: CORLISS_ASSETS,
     [LINDE_AIR_LIQUEFACTION_ID]: LINDE_AIR_LIQUEFACTION_ASSETS,
@@ -1428,6 +1467,7 @@ const VALIDATION_OPTIONS = {
     [EINK_ID]: EINK_OCCURRENCES,
     [THOMSON_WELDING_ID]: THOMSON_WELDING_OCCURRENCES,
     [DIESEL_ENGINE_ID]: DIESEL_ENGINE_OCCURRENCES,
+    [DAVINCI_ID]: DAVINCI_OCCURRENCES,
     [WOZNIAK_APPLE_ID]: WOZNIAK_APPLE_OCCURRENCES,
     [ROOMBA_ID]: ROOMBA_OCCURRENCES,
     [CORLISS_ID]: CORLISS_OCCURRENCES,
@@ -1517,6 +1557,7 @@ const VALIDATION_OPTIONS = {
     [EINK_ID]: 26,
     [THOMSON_WELDING_ID]: 5,
     [DIESEL_ENGINE_ID]: 10,
+    [DAVINCI_ID]: 34,
     [ROOMBA_ID]: 26,
     [CORLISS_ID]: 8,
     [LINDE_AIR_LIQUEFACTION_ID]: 5,
@@ -1609,6 +1650,7 @@ describe("figure occurrence source locators", () => {
       EINK_ID,
       THOMSON_WELDING_ID,
       DIESEL_ENGINE_ID,
+      DAVINCI_ID,
       WOZNIAK_APPLE_ID,
       ROOMBA_ID,
       CORLISS_ID,
@@ -1796,6 +1838,32 @@ describe("figure occurrence source locators", () => {
           locator.sourceRectPixels.y === 0 &&
           locator.sourceRectPixels.width === 2320 &&
           locator.sourceRectPixels.height === 3408 &&
+          locator.evidenceReference.endsWith("#independent-source-sheet-review-2026-09-04"),
+      ),
+    ).toBe(true);
+  });
+
+  test("binds every Da Vinci citation to its byte-verified complete source sheet", () => {
+    const locators = FIGURE_OCCURRENCE_SOURCE_LOCATORS[DAVINCI_ID];
+    expect(locators).toHaveLength(17);
+    expect(locators.map((locator) => locator.occurrenceKey)).toEqual(
+      Object.keys(DAVINCI_OCCURRENCES) as FigureOccurrenceKey[],
+    );
+    expect(new Set(locators.map((locator) => locator.activeAsset))).toEqual(
+      new Set(DAVINCI_ASSETS),
+    );
+    expect(locators.map((locator) => locator.sourcePdfPage)).toEqual([
+      3, 4, 5, 7, 9, 9, 11, 13, 13, 16, 17, 18, 20, 23, 24, 3, 5,
+    ]);
+    expect(
+      locators.every(
+        (locator) =>
+          locator.sourceRaster.width === 928 &&
+          locator.sourceRaster.height === 1364 &&
+          locator.sourceRectPixels.x === 0 &&
+          locator.sourceRectPixels.y === 0 &&
+          locator.sourceRectPixels.width === 928 &&
+          locator.sourceRectPixels.height === 1364 &&
           locator.evidenceReference.endsWith("#independent-source-sheet-review-2026-09-04"),
       ),
     ).toBe(true);

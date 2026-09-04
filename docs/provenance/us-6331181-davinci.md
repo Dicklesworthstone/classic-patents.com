@@ -60,3 +60,7 @@ that absence instead of pointing at sheet 16, which is FIG. 9.
 - Cloud textual sources and the PDF text layer were comparison aids. The new source-sheet images are direct PDF rasterizations without OCR; neither they nor any raw machine transcription substitute for the authored source face.
 - The grant prints 28 claims: independent claims 1, 6, 17, and 19; dependent claims retain their printed dependencies.
 - Until the complete specification body is authored and reconciled, the pinned PDF remains the authoritative visitor-facing source. This receipt does not constitute runtime or deployment proof, or a claim that an isolated figure-crop set is complete.
+
+## Independent source-sheet review (2026-09-04)
+
+The 22 preserved source-sheet assets were independently checked against PDF pages 3–24. Each is a byte-for-byte direct 120-DPI rasterization of its corresponding page (928 × 1364 pixels); no source pixels were redrawn, isolated, or removed. All seventeen active figure-reference occurrences now lead with their complete cited drawing sheet, and their locator rectangles deliberately cover the entire source page. The legacy close crops remain supplemental reading aids after that source sheet. This drawing evidence does not alter the separate incomplete-specification status of the stored editorial draft; visitors continue to receive the page-complete reviewed ledger and pinned PDF.

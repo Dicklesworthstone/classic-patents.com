@@ -4631,6 +4631,70 @@ function dieselEngineSourceSheetLocator(
   };
 }
 
+const DAVINCI_SOURCE_SHEET_RASTER = { width: 928, height: 1364 } as const;
+const DAVINCI_SOURCE_SHEET_EVIDENCE_REFERENCE =
+  "docs/provenance/us-6331181-davinci.md#independent-source-sheet-review-2026-09-04";
+const DAVINCI_SOURCE_SHEET_ASSETS = {
+  1: "/patents/figures/us-6331181-davinci/sheet-1-source-crop-v1.png",
+  2: "/patents/figures/us-6331181-davinci/sheet-2-source-crop-v1.png",
+  3: "/patents/figures/us-6331181-davinci/sheet-3-source-crop-v1.png",
+  5: "/patents/figures/us-6331181-davinci/sheet-5-source-crop-v1.png",
+  7: "/patents/figures/us-6331181-davinci/sheet-7-source-crop-v1.png",
+  9: "/patents/figures/us-6331181-davinci/sheet-9-source-crop-v1.png",
+  11: "/patents/figures/us-6331181-davinci/sheet-11-source-crop-v1.png",
+  14: "/patents/figures/us-6331181-davinci/sheet-14-source-crop-v1.png",
+  15: "/patents/figures/us-6331181-davinci/sheet-15-source-crop-v1.png",
+  16: "/patents/figures/us-6331181-davinci/sheet-16-source-crop-v1.png",
+  18: "/patents/figures/us-6331181-davinci/sheet-18-source-crop-v1.png",
+  21: "/patents/figures/us-6331181-davinci/sheet-21-source-crop-v1.png",
+  22: "/patents/figures/us-6331181-davinci/sheet-22-source-crop-v1.png",
+} as const;
+const DAVINCI_SOURCE_SHEET_OCCURRENCES = [
+  ["edition-block-12-group-0-inline-1", 1],
+  ["edition-block-12-group-0-inline-3", 2],
+  ["edition-block-12-group-0-inline-5", 3],
+  ["edition-block-12-group-0-inline-7", 5],
+  ["edition-block-12-group-0-inline-9", 7],
+  ["edition-block-12-group-0-inline-11", 7],
+  ["edition-block-12-group-0-inline-13", 9],
+  ["edition-block-12-group-0-inline-15", 11],
+  ["edition-block-12-group-0-inline-17", 11],
+  ["edition-block-12-group-0-inline-19", 14],
+  ["edition-block-12-group-0-inline-21", 15],
+  ["edition-block-12-group-0-inline-23", 16],
+  ["edition-block-12-group-0-inline-25", 18],
+  ["edition-block-12-group-0-inline-27", 21],
+  ["edition-block-12-group-0-inline-29", 22],
+  ["edition-block-14-group-0-inline-1", 1],
+  ["edition-block-16-group-0-inline-1", 3],
+] as const satisfies readonly (readonly [
+  FigureOccurrenceKey,
+  keyof typeof DAVINCI_SOURCE_SHEET_ASSETS,
+])[];
+
+function davinciSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+  sourceSheet: keyof typeof DAVINCI_SOURCE_SHEET_ASSETS,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: DAVINCI_SOURCE_SHEET_RASTER.width,
+    height: DAVINCI_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: DAVINCI_SOURCE_SHEET_ASSETS[sourceSheet],
+    sourcePdfPage: sourceSheet + 2,
+    sourceRaster: DAVINCI_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(sourceRectPixels, DAVINCI_SOURCE_SHEET_RASTER),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 120 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: DAVINCI_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
+}
+
 const WOZNIAK_APPLE_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
 const WOZNIAK_APPLE_EVIDENCE_REFERENCE =
   "docs/provenance/us-4136359-wozniak-apple.md#editorial-boundaries";
@@ -6899,6 +6963,9 @@ export const FIGURE_OCCURRENCE_SOURCE_LOCATORS: FigureOccurrenceSourceLocatorReg
   "us-542846-diesel-engine": DIESEL_ENGINE_SOURCE_SHEET_OCCURRENCES.map(
     ([occurrenceKey, sourcePdfPage]) =>
       dieselEngineSourceSheetLocator(occurrenceKey, sourcePdfPage),
+  ),
+  "us-6331181-davinci": DAVINCI_SOURCE_SHEET_OCCURRENCES.map(([occurrenceKey, sourceSheet]) =>
+    davinciSourceSheetLocator(occurrenceKey, sourceSheet),
   ),
   "us-4136359-wozniak-apple": [
     // Fig. 1 (Page 2)

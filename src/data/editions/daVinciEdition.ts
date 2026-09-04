@@ -21,6 +21,14 @@ export const DAVINCI_FIGURE_DIMS: Record<number, { width: number; height: number
   3: { width: 1856, height: 2385 },
 };
 
+const DAVINCI_SOURCE_SHEET_DIMS = { width: 928, height: 1364 } as const;
+
+const SOURCE_SHEETS_BY_LEGACY_PREVIEW: Readonly<Record<number, readonly number[]>> = {
+  1: [1],
+  2: [2],
+  3: [3, 4],
+};
+
 function figureAssetPath(number: number): string {
   return `/patents/figures/us-6331181-davinci/fig-${number}-source-crop-v1.png`;
 }
@@ -36,16 +44,23 @@ function makePreview(
     href: `#figure-${figureNumbers[0]}`,
     referenceType: "figure",
     label: altText,
-    figurePreviews: figureNumbers.map((num) => ({
-      src: figureAssetPath(num),
-      alt: `${surfaceText}: ${altText}`,
-      width: DAVINCI_FIGURE_DIMS[num]?.width ?? 1200,
-      height: DAVINCI_FIGURE_DIMS[num]?.height ?? 1600,
-    })),
+    figurePreviews: [
+      ...figureNumbers.flatMap((num) =>
+        (SOURCE_SHEETS_BY_LEGACY_PREVIEW[num] ?? []).map((sheetNumber) => ({
+          src: `/patents/figures/us-6331181-davinci/sheet-${sheetNumber}-source-crop-v1.png`,
+          alt: `${surfaceText}: ${altText} (complete source drawing sheet ${sheetNumber} of 22)`,
+          ...DAVINCI_SOURCE_SHEET_DIMS,
+        })),
+      ),
+      ...figureNumbers.map((num) => ({
+        src: figureAssetPath(num),
+        alt: `${surfaceText}: ${altText} (supplemental close crop)`,
+        width: DAVINCI_FIGURE_DIMS[num]?.width ?? 1200,
+        height: DAVINCI_FIGURE_DIMS[num]?.height ?? 1600,
+      })),
+    ],
   };
 }
-
-const DAVINCI_SOURCE_SHEET_DIMS = { width: 928, height: 1364 } as const;
 
 function makeSourceSheetPreview(
   surfaceText: string,
