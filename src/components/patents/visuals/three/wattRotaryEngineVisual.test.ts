@@ -46,6 +46,10 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
     expect(studioSource).toContain("live.current.gearInspection");
     expect(studioSource).toContain("live.current.showCallouts");
     expect(studioSource).toContain("flywheel and labels temporarily hidden");
+    expect(studioSource).toContain('data-audit-primary-control="true"');
+    expect(studioSource).toContain("Scenario Flywheel Mass");
+    expect(studioSource).not.toContain("Flywheel Inertia");
+    expect(studioSource).not.toContain("brakeHorsepower");
   });
 
   test("builds complete procedural node graph with all authentic engine assemblies", () => {

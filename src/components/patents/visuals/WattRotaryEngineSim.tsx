@@ -240,7 +240,7 @@ export function WattRotaryEngineSim() {
           <svg
             viewBox="0 0 700 480"
             role="img"
-            aria-label={`Rotary steam engine simulation: ${isPlaying ? `beam oscillating with planet gear producing ${telemetry.meanPowerKw.toFixed(1)} kilowatts` : "beam stationary"}`}
+            aria-label={`Rotary steam engine simulation: ${isPlaying ? `beam oscillating with planet gear in a declared scenario whose ideal indicated power is ${telemetry.meanPowerKw.toFixed(1)} kilowatts` : "beam stationary"}`}
             className="w-full h-full"
           >
             {/* Grid and background styling */}
@@ -515,9 +515,10 @@ export function WattRotaryEngineSim() {
                 </tspan>
               </text>
               <text x="12" y="78" fill="#94a3b8" fontSize="10">
-                Shaft Power:{" "}
+                Scenario Ideal Power:{" "}
                 <tspan fill="#10b981">
-                  {telemetry.meanPowerKw.toFixed(1)} kW ({telemetry.brakeHorsepower.toFixed(1)} hp)
+                  {telemetry.meanPowerKw.toFixed(1)} kW ({telemetry.indicatedHorsepower.toFixed(1)}{" "}
+                  hp indicated)
                 </tspan>
               </text>
             </g>
@@ -725,13 +726,13 @@ export function WattRotaryEngineSim() {
         <div className="space-y-1.5">
           <div className="flex justify-between text-xs">
             <span className="text-stone-400 flex items-center gap-1">
-              <Activity className="w-3.5 h-3.5 text-amber-400" /> Beam Stroke Rate
+              <Activity className="w-3.5 h-3.5 text-amber-400" /> Scenario Beam Stroke Rate
             </span>
             <span className="font-mono text-amber-300">{strokeRateSpm} SPM</span>
           </div>
           <input
             type="range"
-            aria-label="Beam stroke rate in strokes per minute"
+            aria-label="Scenario beam stroke rate in strokes per minute"
             min="10"
             max="30"
             step="2"
@@ -745,13 +746,13 @@ export function WattRotaryEngineSim() {
         <div className="space-y-1.5">
           <div className="flex justify-between text-xs">
             <span className="text-stone-400 flex items-center gap-1">
-              <Flame className="w-3.5 h-3.5 text-rose-400" /> Boiler Pressure
+              <Flame className="w-3.5 h-3.5 text-rose-400" /> Scenario Effective Pressure
             </span>
             <span className="font-mono text-rose-300">{boilerPressureKpa} kPa</span>
           </div>
           <input
             type="range"
-            aria-label="Boiler steam pressure in kilopascals"
+            aria-label="Scenario effective steam pressure in kilopascals"
             min="40"
             max="120"
             step="5"
@@ -785,13 +786,13 @@ export function WattRotaryEngineSim() {
         <div className="space-y-1.5">
           <div className="flex justify-between text-xs">
             <span className="text-stone-400 flex items-center gap-1">
-              <Gauge className="w-3.5 h-3.5 text-purple-400" /> Flywheel Mass
+              <Gauge className="w-3.5 h-3.5 text-purple-400" /> Scenario Flywheel Mass
             </span>
             <span className="font-mono text-purple-300">{flywheelMassKg} kg</span>
           </div>
           <input
             type="range"
-            aria-label="Flywheel mass in kilograms"
+            aria-label="Scenario flywheel mass in kilograms"
             min="1000"
             max="6000"
             step="250"

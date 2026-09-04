@@ -36,8 +36,8 @@ describe("James Watt 1781 Sun & Planet Epicyclic Physics Kernel (GB 1306)", () =
     // Indicated power at 20 SPM should be ~18 - 25 kW (~25 - 35 hp)
     expect(telemetry.meanPowerKw).toBeGreaterThan(10);
     expect(telemetry.meanPowerKw).toBeLessThan(40);
-    expect(telemetry.brakeHorsepower).toBeGreaterThan(15);
-    expect(telemetry.brakeHorsepower).toBeLessThan(50);
+    expect(telemetry.indicatedHorsepower).toBeGreaterThan(15);
+    expect(telemetry.indicatedHorsepower).toBeLessThan(50);
   });
 
   test("keeps every moving wheel clear of the common foundation through a full orbit", () => {

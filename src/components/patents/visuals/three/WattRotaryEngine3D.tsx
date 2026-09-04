@@ -404,19 +404,19 @@ export function WattRotaryEngine3D() {
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Indicated Power:</span>
+              <span className="text-ink-600 dark:text-ink-400">Scenario Ideal Power:</span>
               <span className="text-emerald-700 dark:text-emerald-400 font-bold">
                 {telemetry.meanPowerKw.toFixed(1)} kW
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Horsepower:</span>
+              <span className="text-ink-600 dark:text-ink-400">Scenario Indicated HP:</span>
               <span className="text-purple-800 dark:text-purple-400 font-bold">
-                {telemetry.brakeHorsepower.toFixed(1)} hp
+                {telemetry.indicatedHorsepower.toFixed(1)} hp
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Piston Force:</span>
+              <span className="text-ink-600 dark:text-ink-400">Scenario Piston Force:</span>
               <span className="text-rose-700 dark:text-rose-400 font-bold">
                 {(telemetry.pistonForceN / 1e3).toFixed(1)} kN
               </span>
@@ -430,9 +430,9 @@ export function WattRotaryEngine3D() {
           visible={showUiOverlay}
           title="SUN AND PLANET ROTARY STEAM POWER"
           chips={[
-            { label: "Stroke Rate", value: `${strokeRateSpm}`, unit: "SPM" },
+            { label: "Scenario Stroke", value: `${strokeRateSpm}`, unit: "SPM" },
             {
-              label: "Boiler Pressure",
+              label: "Scenario Pressure",
               value: `${boilerPressureKpa}`,
               unit: "kPa",
             },
@@ -448,7 +448,7 @@ export function WattRotaryEngine3D() {
               unit: "Planet/Sun",
             },
             {
-              label: "Flywheel Mass",
+              label: "Scenario Flywheel Mass",
               value: `${flywheelMassKg.toLocaleString()}`,
               unit: "kg",
             },
@@ -462,14 +462,16 @@ export function WattRotaryEngine3D() {
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Boiler Pressure</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Scenario Effective Pressure
+              </span>
               <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
                 {boilerPressureKpa} kPa
               </span>
             </div>
             <input
               type="range"
-              aria-label="Boiler pressure"
+              aria-label="Scenario effective boiler pressure"
               min="40"
               max="120"
               step="5"
@@ -481,14 +483,16 @@ export function WattRotaryEngine3D() {
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Stroke Rate</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Scenario Stroke Rate
+              </span>
               <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
                 {strokeRateSpm} SPM
               </span>
             </div>
             <input
               type="range"
-              aria-label="Stroke rate"
+              aria-label="Scenario stroke rate"
               min="10"
               max="40"
               step="1"
@@ -506,6 +510,7 @@ export function WattRotaryEngine3D() {
               </span>
             </div>
             <input
+              data-audit-primary-control="true"
               aria-label="Planet to sun gear ratio"
               type="range"
               min="0.5"
@@ -521,14 +526,16 @@ export function WattRotaryEngine3D() {
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Flywheel Inertia</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Scenario Flywheel Mass
+              </span>
               <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
                 {flywheelMassKg} kg
               </span>
             </div>
             <input
               type="range"
-              aria-label="Flywheel inertia"
+              aria-label="Scenario flywheel mass"
               min="1000"
               max="5000"
               step="250"

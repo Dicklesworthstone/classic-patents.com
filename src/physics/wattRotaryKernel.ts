@@ -72,7 +72,7 @@ export interface WattRotaryTelemetry {
   // Energy & Power
   indicatedPowerKw: number; // Instantaneous indicated power (kW)
   meanPowerKw: number; // Cycle-averaged shaft power (kW)
-  brakeHorsepower: number; // Imperial horse-power (hp)
+  indicatedHorsepower: number; // Ideal indicated power converted to imperial horsepower
   flywheelKineticEnergyJ: number; // Kinetic energy in flywheel (J)
   speedFluctuationCoeff: number; // Flywheel speed fluctuation coefficient delta
 }
@@ -308,7 +308,10 @@ export function stepWattRotaryEngine(
   // Energy & Power
   const indicatedPowerKw = (instantaneousTorqueNm * shaftAngularVelocityRadS) / 1000;
   const meanPowerKw = (meanTorqueNm * meanShaftAngularVelocityRadS) / 1000;
-  const brakeHorsepower = meanPowerKw * 1.34102; // hp
+  // This is an ideal indicated-power conversion. Calling it brake horsepower
+  // would imply measured shaft losses that the source and scenario do not
+  // supply.
+  const indicatedHorsepower = meanPowerKw * 1.34102;
 
   const flywheelKineticEnergyJ =
     0.5 * iFlywheel * shaftAngularVelocityRadS * shaftAngularVelocityRadS;
@@ -358,7 +361,7 @@ export function stepWattRotaryEngine(
     meanTorqueNm,
     indicatedPowerKw,
     meanPowerKw,
-    brakeHorsepower,
+    indicatedHorsepower,
     flywheelKineticEnergyJ,
     speedFluctuationCoeff,
   };
