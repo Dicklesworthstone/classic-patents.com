@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { evaluateArchivalPublicationState } from "@/data/editions/publicationApproval";
 import { parsonsTurbinePatent } from "@/data/patents/parsons-turbine";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import {
@@ -52,7 +53,7 @@ describe("US 608,969 manual source edition", () => {
     }
   });
 
-  test("uses local source crops for every authored drawing reference", () => {
+  test("uses complete, exact source sheets for every authored drawing reference", () => {
     const references = parsonsTurbineArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
         ? block.inlines.filter(
@@ -67,14 +68,28 @@ describe("US 608,969 manual source edition", () => {
       for (const preview of reference.figurePreviews ?? []) {
         expect(preview.src).toStartWith("/patents/figures/us-608969-parsons-turbine/");
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+        expect(preview).toMatchObject({ width: 2320, height: 3408 });
+        expect(preview.alt).toContain("Complete unmodified source drawing sheet");
         sources.add(preview.src);
       }
     }
     expect([...sources].sort()).toEqual([
-      "/patents/figures/us-608969-parsons-turbine/fig-1-source-crop-v1.png",
-      "/patents/figures/us-608969-parsons-turbine/fig-2-source-crop-v1.png",
-      "/patents/figures/us-608969-parsons-turbine/fig-3-source-crop-v1.png",
+      "/patents/figures/us-608969-parsons-turbine/source-sheet-1-v1.png",
+      "/patents/figures/us-608969-parsons-turbine/source-sheet-2-v1.png",
+      "/patents/figures/us-608969-parsons-turbine/source-sheet-3-v1.png",
     ]);
+
+    for (const legacyCrop of [
+      "fig-1-source-crop-v1.png",
+      "fig-2-source-crop-v1.png",
+      "fig-3-source-crop-v1.png",
+    ]) {
+      expect(
+        existsSync(
+          resolve(process.cwd(), "public/patents/figures/us-608969-parsons-turbine", legacyCrop),
+        ),
+      ).toBe(true);
+    }
   });
 
   test("makes the selected historical vacuum condition an authored annotation", () => {
@@ -146,14 +161,16 @@ describe("US 608,969 manual source edition", () => {
     expect(energyChannelsFor("us-608969-parsons-turbine", {})).toEqual([]);
   });
 
-  test("enforces figure acceptance pending audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const { parsonsTurbinePatent } = require("@/data/patents/parsons-turbine");
-    const decision = evaluateTypedArchivalPublicationState(parsonsTurbinePatent, {
-      hasCompanionReadings: true,
+  test("accepts all seven source citations against full-sheet source-pixel evidence", () => {
+    const decision = evaluateArchivalPublicationState(parsonsTurbinePatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 7,
+      acceptedFigureCount: 7,
     });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+    expect(decision.figureManifest.figures.every((figure) => figure.status === "accepted")).toBe(
+      true,
+    );
   });
 });
