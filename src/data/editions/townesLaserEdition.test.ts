@@ -42,6 +42,25 @@ describe("US 2,929,922 Townes & Schawlow Optical Maser / Laser Archival Edition 
     }
   });
 
+  test("proves literal ledger coverage for all source sections and printed claims", () => {
+    const { townesLaserPatent } = require("@/data/patents/townes-laser");
+    const {
+      reviewedLedgerPublicationEvidenceFor,
+    } = require("./reviewedLedgerPublicationEvidence.server");
+    const evidence = reviewedLedgerPublicationEvidenceFor(townesLaserPatent);
+
+    expect(evidence).toMatchObject({
+      status: "verified",
+      valid: true,
+      authoredSectionCount: 50,
+      coveredSectionCount: 50,
+      coverageFraction: 1,
+      missingSectionIndexes: [],
+      missingClaimNumbers: [],
+      error: null,
+    });
+  });
+
   test("verifies all referenced source figure crops exist on disk", () => {
     for (const block of townesLaserArchivalEdition.blocks) {
       if (block.kind === "paragraph" || block.kind === "claim") {
@@ -91,14 +110,12 @@ describe("US 2,929,922 Townes & Schawlow Optical Maser / Laser Archival Edition 
     }
   });
 
-  test("enforces facsimile review pending audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
+  test("reports only the remaining figure-evidence work in publication state", () => {
+    const { evaluateArchivalPublicationState } = require("./publicationApproval");
     const { townesLaserPatent } = require("@/data/patents/townes-laser");
-    const decision = evaluateTypedArchivalPublicationState(townesLaserPatent, {
-      hasCompanionReadings: true,
-    });
+    const decision = evaluateArchivalPublicationState(townesLaserPatent);
     expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
+    expect(decision.state.kind).toBe("candidate");
+    expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
   });
 });

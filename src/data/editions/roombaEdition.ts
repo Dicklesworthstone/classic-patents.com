@@ -4,25 +4,14 @@ import type {
   CuratedSpecificationInlines,
 } from "@/types/patent";
 
-const term = (
-  surfaceText: string,
-  key: string,
-  definition: string,
-): CuratedSpecificationInline => ({
-  kind: "term",
-  text: surfaceText,
-  label: key,
-  definition,
-});
-
 export const ROOMBA_FIGURE_DIMS: Record<number, { width: number; height: number }> = {
-  1: { width: 1856, height: 2385 },
-  2: { width: 1856, height: 2385 },
-  3: { width: 1856, height: 2385 },
+  1: { width: 2320, height: 3408 },
+  2: { width: 2320, height: 3408 },
+  3: { width: 2320, height: 3408 },
 };
 
-function figureAssetPath(number: number): string {
-  return `/patents/figures/us-6594844-roomba/fig-${number}-source-crop-v1.png`;
+function figureAssetPath(): string {
+  return "/patents/figures/us-6594844-roomba/source-sheet-1-v1.png";
 }
 
 function makePreview(
@@ -37,8 +26,8 @@ function makePreview(
     referenceType: "figure",
     label: altText,
     figurePreviews: figureNumbers.map((num) => ({
-      src: figureAssetPath(num),
-      alt: `Figure ${num}: ${altText}`,
+      src: figureAssetPath(),
+      alt: `Figure ${num}: ${altText}. Complete source drawing sheet 1 of 19.`,
       width: ROOMBA_FIGURE_DIMS[num]?.width ?? 1200,
       height: ROOMBA_FIGURE_DIMS[num]?.height ?? 1600,
     })),
@@ -70,37 +59,37 @@ export const roombaParallelReadings: Readonly<Record<number, readonly string[]>>
     "Summary: Intersect the field of view of a detector with the field of emission of a directed beam at a predetermined region, then detect whether the floor or wall occupies that region.",
   ],
   10: [
-    "Sensor coordination: A downward sensor redirects the robot when the expected surface is absent; a wall sensor redirects when the wall occupies the intersection region and returns toward it through decreasing radii of curvature.",
+    "Summary: The autonomous robot carries one sensor subsystem aimed at the traversed surface and another aimed near its direction of travel. Each combines a directed optical emitter with a photon detector whose fields intersect at a finite predetermined region.",
   ],
   12: [
-    "Brief Description of Figures: FIGS. 1-3 show a robot approaching downward and upward stairs and a floor obstacle; FIGS. 4-16 show travel paths, optical fields, overlap, collimators, and sensor placement; FIGS. 17-18 show cliff and wall logic; FIGS. 19-21 show decreasing-curvature wall following; FIGS. 22-25 show system and sensor placement; and FIGS. 26-34 show detector, oscillator, power, connector, jumper, and charging circuits.",
+    "Brief description: FIGS. 1-3 show the robot approaching a downward stair, an upward stair, and an obstacle on a floor. These are the initial operating situations the source uses to introduce the detector geometry.",
   ],
   13: [
-    "Detailed Description: Cleaning device 10 can dust, mop, vacuum, or sweep a floor and operates in random coverage and wall-following modes. It may encounter downward stair 12, upward stair 14, or floor obstacle 16.",
+    "Brief description: FIGS. 4-15 cover random and wall-following travel, the emitter and detector fields, overlap examples, the height relation, preferred sensor details, installation in the robot shell, and wall-detection placement.",
   ],
   14: [
-    "Random and wall-following modes: In random bounce the robot travels straight until contact, turns away randomly, and continues; in wall following it follows a wall for a time before returning to random mode.",
+    "Brief description: FIGS. 16-34 continue through the cliff and wall flow charts, decreasing-radius wall following, system and sensor views, and the detector, oscillator, power, decoupling, connector, jumper, and constant-current circuits.",
   ],
   16: [
-    "Cliff detection geometry: Emitter 52 and detector 56 have fields that intersect at a region. When the expected floor does not occupy that region, circuitry redirects the robot to avoid the stair or unsuitable obstacle.",
+    "The preferred cleaning robot may dust, mop, vacuum, or sweep. It uses random coverage and wall following, distinguishes stairs from traversable low obstacles, and gives the claimed detector a concrete cleaning-machine setting.",
   ],
   17: [
-    "Wall-following behavior: A side-looking emitter and detector identify a wall in their finite intersection region; the controller turns away and back toward the wall through decreasing radii of curvature for smoother following.",
+    "The source contrasts its two operating modes: random bounce runs straight until contact and then makes a random turn, while wall following tracks a wall for a time. Both modes explain why the device needs low-power reliable obstacle sensing.",
   ],
   18: [
-    "Preferred optics: Angled emitter and detector collimators create a finite overlap that better addresses specular scattering and surfaces of different reflectivity. Infrared systems are preferred when cost is a design constraint.",
+    "Sensor subsystem 50 uses emitter 52 and detector 56. Their directed emission and view fields intersect in a region whose expected occupancy by floor or wall lets the controller distinguish a drop or obstacle from an intended surface.",
   ],
   19: [
-    "Modulation and thresholding: The emitter is modulated at several kilohertz and the detector is tuned to that frequency; amplification, DC blocking, peak detection, and comparison produce the logic output.",
+    "The detailed description states both responses of the same geometry: obstacle avoidance redirects the robot when the floor does not occupy the overlap region, while wall following redirects it when a wall does occupy that region. Collimator tubes define the two optical cones.",
   ],
   20: [
-    "Circuit and embodiments: The source also describes fiber-optic or laser emitters, a microprocessor controlling drive motion, multiple cliff and wall sensors, and detector, oscillator, power, connector, jumper, and constant-current circuits.",
+    "The preferred angled collimators make the overlap region finite, reducing sensitivity to specular scattering and surface reflectivity. The source identifies an infrared emitter and infrared radiation detector, while noting the differing distance responses of emitted and returned energy.",
   ],
   21: [
-    "The wall controller turns away when a wall occupies the intersection and turns back when it leaves, preferably through continuously decreasing radii of curvature for smoother following.",
+    "For wall sensing, emitter 102 and detector 100 are parallel to the floor and use 22-degree cones. Their optical axes intersect 80 degrees apart, locating the finite sensing volume ahead of the robot shell and directing specular reflections from emitter toward detector.",
   ],
   22: [
-    "The preferred cliff logic modulates the emitter at several kilohertz, tunes the detector, and starts avoidance when the expected-surface reflection is absent.",
+    "The cliff-sensor logic modulates the emitter at several kilohertz and tests the tuned detector at step 150. An absent signal at step 152 means the expected surface is absent, initiates avoidance, and resumes the sensing loop after a reflected signal.",
   ],
 };
 
@@ -122,7 +111,8 @@ export const roombaArchivalEdition: CuratedSpecificationEdition = {
         "ROBOT OBSTACLE DETECTION SYSTEM",
         "Inventor: Joseph L. Jones, Acton, MA (US)",
         "Assignee: iRobot Corporation, Burlington, MA",
-        "Application No.: 09/768,773 · Filed: Jan. 24, 2001",
+        "Appl. No.: 09/768,773",
+        "Filed: Jan. 24, 2001",
       ],
     },
     {
@@ -159,13 +149,7 @@ export const roombaArchivalEdition: CuratedSpecificationEdition = {
       "It is therefore an object of this invention to provide a robot obstacle detection system which is simple in design, low cost, accurate, easy to implement, and easy to calibrate. It is a further object of this invention to provide such a robot detection system which prevents an autonomous cleaning robot from driving off a stair or over an obstacle which is too high or too low. It is a further object of this invention to provide a robotic wall detection system which is low cost, accurate, easy to implement and easy to calibrate.",
     ),
     p(
-      "The robot includes a ",
-      term(
-        "cliff sensor subsystem",
-        "Cliff Detection Optical Subsystem",
-        "Down-looking collimated infrared emitter and photodiode pairs whose beams intersect at a defined distance above the floor, detecting drops such as stairs.",
-      ),
-      " comprising an optical emitter and detector whose fields intersect at a predetermined region, providing detection of whether the expected floor occupies that region.",
+      "This invention features an autonomous robot comprising a housing which navigates in at least one direction on a surface. A first sensor subsystem is aimed at the surface for detecting obstacles on the surface. A second sensor subsystem is aimed at least proximate the direction of navigation for detecting walls. Each subsystem includes an optical emitter which emits a directed beam having a defined field of emission and a photon detector having a defined field of view which intersects the field of emission of the emitter at a finite, predetermined region.",
     ),
     {
       kind: "heading",
@@ -173,19 +157,19 @@ export const roombaArchivalEdition: CuratedSpecificationEdition = {
       text: "BRIEF DESCRIPTION OF THE DRAWINGS",
     },
     p(
-      "The invention is described in detail with reference to the accompanying drawings:\n",
+      "Other objects, features and advantages will occur to those skilled in the art from the following description of a preferred embodiment and the accompanying drawings, in which:\n",
       makePreview("FIG. 1", [1], "Robot 10 approaching downward stair 12"),
-      " is a schematic view of a robot in accordance with the subject invention approaching a downward stair;\n",
+      " is schematic view of a robot in accordance with the subject invention approaching a downward stair;\n",
       makePreview("FIG. 2", [2], "Robot 10 approaching upward stair 14"),
-      " is a schematic view of the same robot approaching an upward stair; and\n",
+      " is a schematic view of the same robot approaching an upward stair;\n",
       makePreview("FIG. 3", [3], "Robot 10 approaching floor obstacle 16"),
       " is a schematic view of the same robot approaching an obstacle on a floor.",
     ),
     p(
-      "The fourth drawing view contrasts the wall-following and random modes of travel; the fifth shows a sensor subsystem; the sixth shows a preferred sensor subsystem; the seventh shows the field of emission and field of view; the eighth shows full overlap; the ninth shows minimal overlap; the tenth graphs overlap area against sensor height; the eleventh and twelfth show overlap examples with corresponding areas; the thirteenth is a detailed sensor-subsystem view; the fourteenth shows the subsystem in a robot housing; the fifteenth shows the wall detection system in the housing; and the sixteenth shows another sensor-system embodiment. Individual source-facsimile crops for these views are being prepared.",
+      "FIG. 4 is a schematic view showing the difference between the wall following and random modes of travel of a robot in accordance with the subject invention; FIG. 5 is a schematic view of a sensor subsystem in accordance with one embodiment of the subject invention; FIG. 6 is a schematic view of a sensor subsystem in accordance with another, preferred embodiment of the subject invention; FIG. 7 is a schematic view showing the field of emission of the emitter and the field of view of the detector of the sensor subsystem shown in FIG. 6; FIG. 8 is a three dimensional schematic view showing a fall overlap of the field of emission of the emitter and the field of view of the detector in accordance with the subject invention; FIG. 9 is a three dimensional schematic view showing the situation which occurs when there is a minimal overlap between the field of emission and the field of view of the sensor subsystem of the subject invention; FIG. 10 is a graph showing the relationship between the ratio of overlap area and the height of the sensor subsystem above the floor; FIG. 11 is a series of views showing, from top to bottom, no overlap between the field of emission and the field of view and then a full overlap of the field of view over the field of emission; FIG. 12 is a set of figures corresponding to FIG. 11 depicting the area of overlap for each of these situations shown in FIG. 11; FIG. 13 is a more detailed schematic view of the sensor subsystem according to the preferred embodiment of the subject invention; FIG. 14 is a schematic view of the sensor subsystem of FIG. 13 in place on the shell or housing of a robot in accordance with the subject invention; FIG. 15 is a schematic view of the wall detection system in accordance with the subject invention in place on the shell or housing of a robot;",
     ),
     p(
-      "The seventeenth drawing view is a flow chart for cliff detection; the eighteenth is a flow chart for wall detection; the nineteenth shows decreasing-curvature wall following; the twentieth compares abrupt and smoothed wall-following paths. The remaining drawing-sheet views — a complete robotic-cleaning-device block diagram, three-dimensional device and bottom/side views with cliff and wall sensors, and detector, oscillator, power, decoupling, connector, jumper, and constant-current circuit diagrams — appear on the later sheets of the same patent.",
+      "FIG. 16 is a schematic three dimensional view of another embodiment of the sensor system in accordance with the subject invention; FIG. 17 is a flow chart depicting the primary steps associated with a logic which detects whether a cliff is present in front of the robot in accordance with the subject invention; FIG. 18 is a flow chart depicting the primary steps associated with the logic of the wall detection mode of operation of the robot in accordance with the subject invention; FIG. 19 is a bottom view of a cleaning robot in accordance with the subject invention configured to turn about curvatures of decreasing radiuses; FIG. 20 is a schematic top view showing the abrupt turns made by a robot in the wall following mode when the wall following algorithm of the subject invention is not employed; FIG. 21 is a view similar to FIG. 20 except that now the wall following algorithm of the subject invention is employed to smooth out the path of the robotic cleaning device in the wall following mode; FIG. 22 is a block diagram showing the primary components associated with a complete robotic cleaning device; FIG. 23 is a schematic three dimensional view of a robotic cleaning device employing a number of cliff sensors and wall sensors in accordance with the subject invention; FIG. 24 is a bottom view of one particular robotic cleaning device and the cliff sensors incorporated therewith in accordance to the subject invention; FIG. 25 is a side view of the same robot further incorporating wall following sensors in accordance with the subject invention; FIG. 26 is a circuit diagram for the detector circuit of the subject invention; FIG. 27 is a circuit diagram for the oscillator circuit of the subject invention; FIG. 28 is a circuit diagram for the power connection circuit of the subject invention; FIG. 29 is the decoupling circuit of the subject invention; FIG. 30 is a diagram of a connector used in the subject invention; FIG. 31 is a diagram of another connector; FIG. 32 is a diagram of still another connector; FIG. 33 is a circuit diagram of a jumper used in the subject invention; and FIG. 34 is a circuit diagram for constant current source used in the subject invention.",
     ),
     {
       kind: "heading",
@@ -193,33 +177,27 @@ export const roombaArchivalEdition: CuratedSpecificationEdition = {
       text: "DETAILED DESCRIPTION OF THE PREFERRED EMBODIMENTS",
     },
     p(
-      "Referring to ",
+      "Robotic cleaning device 10, ",
       makePreview("FIG. 1", [1], "Robot 10 approaching downward stair 12"),
-      ", robotic cleaning device 10 can be configured to dust, mop, vacuum, and/or sweep a surface such as a floor. Typically, robot 10 operates in two modes: random coverage and a wall following mode. In either mode, robot 10 may encounter downward stair 12, upward stair 14, and/or obstacle 16.",
+      ' can be configured to dust, mop, vacuum, and/or sweep a surface such as a floor. Typically, robot 10 operates in two modes: random coverage and a wall following mode as discussed in the Background section above. In either mode, robot 10 may encounter downward stair 12 or another similar “cliff”, upward stair 14, FIG. 2 or another similar rise, and/or obstacle 16, FIG. 3. According to one specification, the robot must be capable of traversing obstacles less then 5/8" high or low. Therefore, robot 10 must avoid stairs 12 and 14 but traverse obstacle 16 which may be an extension cord, the interface between a rug and hard flooring, or a threshold between rooms.',
     ),
     p(
-      "As delineated in the background of the invention, presently available obstacle sensor subsystems useful in connection with robot 10 are either too complex or too expensive or both. Moreover, robot 10, shown in the fourth drawing view, is designed to be inexpensive and to operate based on battery power to thus thoroughly clean room 20 in two modes: a wall following mode as shown at 22 and 24 and a random bounce mode as shown at 26.",
+      "As delineated in the background of the invention, presently available obstacle sensor subsystems useful in connection with robot 10 are either too complex or too expensive or both. Moreover, robot 10, FIG. 4 is designed to be inexpensive and to operate based on battery power to thus thoroughly clean room 20 in two modes: a wall following mode as shown at 22 and 24 and a random bounce mode as shown at 26. In the wall following mode, the robot follows the wall for a time. In the random bounce mode, the robot travels in a straight line until it bumps into an object. It then turns away from the obstacle by a random turn and then continues along in a straight line until the next object is encountered.",
     ),
     p(
-      "In the simplest embodiment, sensor subsystem 50, shown in the fifth drawing view, includes optical emitter 52 which emits a directed beam 54 having a defined field of emission. Sensor subsystem 50 also includes photon detector 56 having a defined field of view which intersects the field of emission of emitter 52 at or for a given region. Surface 58 may be a floor or a wall depending on the arrangement of sensor subsystem 50 with respect to the housing of the robot.",
+      "In the simplest embodiment, sensor subsystem 50, FIG. 5 according to this invention includes optical emitter 52 which emits a directed beam 54 having a defined field of emission explained supra. Sensor subsystem 50 also includes photon detector 56 having a defined field of view which intersects the field of emission of emitter 52 at or for a given region. Surface 58 may be a floor or a wall depending on the arrangement of sensor subsystem 50 with respect to the housing of the robot.",
     ),
     p(
-      "For wall following, the circuitry redirects the robot when the wall occupies the region defined by the intersection of the field of emission of emitter 52 and the field of view of detector 56. Emitter collimator tube 60 forms directed beam 54 with a predefined field of emission and detector collimator tube 62 defines the field of view of detector 56.",
+      "In general, for obstacle avoidance, circuitry is added to the robot and connected to detector 56 to redirect the robot when surface 58 does not occupy the region defining the intersection of the field of emission of emitter 52 and the field of view of detector 56. For wall following, the circuitry redirects the robot when the wall occupies the region defined by the intersection of the field of emission of emitter 52 and the field of view of detector 56. Emitter collimator tube 60 forms directed beam 54 with a predefined field of emission and detector collimator tube 62 defines the field of view of the detector 56.",
     ),
     p(
-      "Accordingly, in the preferred embodiment, emitter collimator 60', shown in the sixth drawing view, and detector collimator 62' are both angled with respect to surface 58 and with respect to each other. The region 70, shown in the seventh drawing view, in which the field of emission of emitter 52' and the field of view of detector 56' intersect is finite to more adequately address specular scattering and surfaces of different reflectivity.",
-      term(
-        "wall following mode",
-        "Wall boundary tracking behavior",
-        "The source's controller turns away from a detected wall and then returns through decreasing radii of curvature until the optical intersection again contains the wall.",
-      ),
-      " the circuitry redirects the robot when the wall occupies the region and back towards the wall when the wall no longer occupies the region of intersection, preferably at decreasing radiuses of curvature until the wall once again occupies the region.",
+      "Accordingly, in the preferred embodiment, emitter collimator 60', FIG. 6 and detector collimator 62' are both angled with respect to surface 58 and with respect to each other as shown. In this way, the region 70, FIG. 7 in which the field of emission of emitter 52' as shown at 72 and the field of view of detector 56' as shown at 74 intersect is finite to more adequately address specular scattering and surfaces of different reflectivity. In this design, the emitter is typically an infrared emitter and the detector is typically an infrared radiation detector. The infrared energy directed at the floor decreases rapidly as the sensor-to-floor distance increases while the infrared energy received by the detector changes linearly with surface reflectivity.",
     ),
     p(
-      "In the wall detection mode, the logic modulates the emitter and detects signals from the detector until a reflection is detected. A wall is then next to the robot and the controlling circuitry causes the robot to turn away from the wall and then turn back until a reflection is again detected. By continuously decreasing the radius of curvature, the path of the robot along the wall in the wall following mode is made smoother.",
+      "For wall detection, emitter 102 and detector 100 are arranged as shown in FIG. 15. The optical axes of the emitter and detector are parallel to the floor on which the robot travels. The field of emission of the emitter and the field of view of the detector are both 22 degree cones. A three millimeter diameter tube produces a cone of this specification when the active element is mounted 0.604 inches from the open end as shown. The optical axes of the emitter and detector intersect at an angle of 80 degrees. The volume of intersection 103 occurs at a point about 2.6 inches ahead of the point of tangency between the robot shell 106 and the wall 104 when the robot is travelling parallel to the wall. The line bisecting the intersection of the optical axes of the emitter and detector is perpendicular to the wall. This ensures that reflections from specular walls are directed from the emitter into the detector.",
     ),
     p(
-      "The source further describes an emitter modulated at a frequency of several kilohertz and a detector tuned to that frequency. When a signal is not output by the detector, the expected surface is not present and no overlap is detected; in response, an avoidance algorithm is initiated.",
+      "The logic of the circuitry associated with the cliff sensor embodiment modulates the emitter at a frequency of several kilohertz and detects any signal from the detector, step 150, FIG. 17, which is tuned to that frequency. When a signal is not output by the detector, step 152, the expected surface is not present and no overlap is detected. In response, an avoidance algorithm is initiated, step 17 to cause the robot to avoid any interfering obstacle. When a reflected signal is detected, processing continues to step 150.",
     ),
     {
       kind: "heading",

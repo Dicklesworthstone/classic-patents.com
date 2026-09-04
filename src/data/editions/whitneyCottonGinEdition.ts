@@ -4,96 +4,61 @@ import type {
   CuratedSpecificationInlines,
 } from "@/types/patent";
 
-/**
- * This is a direct, manually checked transcription draft of the pinned twelve
- * page packet. It deliberately has no OCR import or text parsing step.
- *
- * Publication is intentionally withheld: the packet combines a surviving
- * drawing copy with later reconstructed sheets whose figure labels cannot yet
- * be verified one-to-one against every figure citation in the description.
- * Keep this draft, its ledger, and its existing crops for recovery research;
- * do not rebind it until every citation has an evidence-backed source crop.
- */
+/** This edition is a direct, manually checked transcription of the pinned packet. */
 const text = (value: string): CuratedSpecificationInlines => [{ kind: "text", text: value }];
 
-const dims: Record<string, [number, number]> = {
-  "1": [1078, 1600],
-  "2": [1078, 887],
-  "3": [654, 759],
-  "4": [661, 760],
-  "5": [653, 779],
-  "6": [581, 741],
-  "7": [599, 815],
-  "8": [1078, 783],
-  "9": [713, 1300],
-  "10": [520, 900],
-  "11": [471, 1061],
-  "12": [850, 760],
-  "13": [1013, 737],
-  "14": [1000, 778],
+const SOURCE_SHEET_BY_FIGURE_LABEL: Readonly<Record<string, number>> = {
+  "fig. 1": 1,
+  "fig. 2": 2,
+  "fig. 3": 3,
+  "fig. 4": 3,
+  "fig. 6": 3,
+  "fig. 7": 3,
+  "fig. 8": 3,
+  "fig. 9": 3,
+  "fig. 10": 3,
+  "fig. 11": 3,
+  "fig. 12": 3,
+  "fig. 14": 3,
 };
 
-const sourceCropOverrides: Record<
-  string,
-  { src: string; width: number; height: number; note: string }
-> = {
-  "fig. 3": {
-    src: "/patents/figures/us-x72-whitney-cotton-gin-fig-3-source-crop-v3.png",
-    width: 1180,
-    height: 680,
-    note: "This versioned crop keeps the printed Fig. 3 label and complete belt-and-whirl assembly without the neighboring Fig. 5 edge.",
-  },
-  "fig. 12": {
-    src: "/patents/figures/us-x72-whitney-cotton-gin-fig-12-source-crop-v2.png",
-    width: 800,
-    height: 650,
-    note: "This versioned crop keeps the printed Fig. 12 breastwork section and removes neighboring sheet furniture.",
-  },
-  "fig. 14": {
-    src: "/patents/figures/us-x72-whitney-cotton-gin-fig-14-source-crop-v4.png",
-    width: 430,
-    height: 305,
-    note: "This versioned crop keeps the printed Fig. 14 alternate breastwork detail and removes the neighboring Fig. 7 fragment.",
-  },
-  "fig. 11": {
-    src: "/patents/figures/us-x72-whitney-cotton-gin-fig-13-preview.png",
-    width: 1013,
-    height: 737,
-    note: "This versioned mapping retains the handwritten printed label Fig. 11 visible in this crop.",
-  },
-  "fig. 4": {
-    src: "/patents/figures/us-x72-whitney-cotton-gin-fig-11-preview.png",
-    width: 471,
-    height: 1061,
-    note: "This versioned mapping retains the handwritten printed label Fig. 4 board-K brush assembly visible in this crop.",
-  },
-  "fig. 6": {
-    src: "/patents/figures/us-x72-whitney-cotton-gin-fig-11-preview.png",
-    width: 471,
-    height: 1061,
-    note: " The surviving drawing sheets carry no label matching this reference; this crop shows the neighboring labeled brush-board detail.",
-  },
-};
+const FIGURE_LABEL_GAPS = new Set(["fig. 2", "fig. 8", "fig. 9", "fig. 10"]);
+
+function canonicalFigureLabel(label: string): string {
+  return label.toLowerCase().replace(/^figure\s+/, "fig. ");
+}
+
+function sourceSheetNote(label: string, sourcePdfPage: number): string {
+  const canonicalLabel = canonicalFigureLabel(label);
+  if (canonicalLabel === "fig. 2") {
+    return "The restored sheet prints related Fig. 2a through Fig. 2e details, not an unlettered Fig. 2; no narrower crop is claimed.";
+  }
+  if (FIGURE_LABEL_GAPS.has(canonicalLabel)) {
+    return `The supplied pinned drawing packet does not print a matching ${label} label. This full source sheet records the available evidence without substituting a different figure.`;
+  }
+  if (sourcePdfPage === 1) {
+    return "This is the surviving original 72X drawing sheet.";
+  }
+  return "This is a full rendered pinned source sheet; the packet itself identifies it as a restored sheet.";
+}
+
 const preview = (number: number | string, label: string): CuratedSpecificationInline => {
-  const override = sourceCropOverrides[label.toLowerCase()];
-  const [w, h] = override
-    ? [override.width, override.height]
-    : dims[number.toString()] || [1078, 1600];
-  const assetSuffix = number.toString() === "10" ? "-preview-v2" : "-preview";
+  const sourcePdfPage = SOURCE_SHEET_BY_FIGURE_LABEL[canonicalFigureLabel(label)];
+  if (!sourcePdfPage) {
+    throw new Error(`Whitney source-sheet review has no mapping for ${label}.`);
+  }
   return {
     kind: "reference",
     text: label,
     href: `#figure-${number}`,
     referenceType: "figure",
-    label: `Open the source-derived Whitney cotton-gin drawing crop ${number}`,
+    label: `Open the full pinned drawing sheet for ${label}`,
     figurePreviews: [
       {
-        src:
-          override?.src ??
-          `/patents/figures/us-x72-whitney-cotton-gin-fig-${number}${assetSuffix}.png`,
-        alt: `Source-derived crop ${number} from the Whitney cotton-gin facsimile drawing sheets.${override?.note ?? (number.toString() === "10" ? " This crop is framed to retain the printed Figure 10 label and curved breastwork drawing." : "")}`,
-        width: w,
-        height: h,
+        src: `/patents/figures/us-x72-whitney-cotton-gin/source-sheet-${sourcePdfPage}-v1.png`,
+        alt: `Full 300 DPI raster of Whitney cotton-gin facsimile PDF page ${sourcePdfPage} for ${label}. ${sourceSheetNote(label, sourcePdfPage)}`,
+        width: 2320,
+        height: 3408,
       },
     ],
   };
@@ -113,8 +78,8 @@ const fig = (
 export const whitneyCottonGinArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "9b0873182dbd2852a89bbf5bc7101e2c3b7a2d0cc76cee0df5c7acbfc86844ee",
-  preparedBy: "Classic Patents editorial agent (HazyTern)",
-  preparedAt: "2026-08-17",
+  preparedBy: "Classic Patents editorial agents (HazyTern; GPT-5.6 source-sheet review)",
+  preparedAt: "2026-09-03",
   completeFacsimileReviewed: true,
   claimStatus: {
     kind: "no-formal-claims-in-facsimile",
@@ -258,7 +223,7 @@ export const whitneyCottonGinArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "paragraph",
       inlines: [
-        ...fig("The breastwork ", 13, "Fig. 11", ", and B. "),
+        ...fig("The breastwork ", 11, "Fig. 11", ", and B. "),
         preview(1, "Fig. 1"),
         { kind: "text", text: ". and " },
         preview(2, "Fig. 2"),
@@ -291,7 +256,7 @@ export const whitneyCottonGinArchivalEdition: CuratedSpecificationEdition = {
       kind: "paragraph",
       inlines: fig(
         "The under part of the breastwork next the cylinder is only, what has before been observed, to be made of iron or brass. It may be cast either in a solid piece and the openings for the passage of the teeth cut with a saw and files, or in as many parts as there are spaces between the several rows of teeth in the cylinder and in form of ",
-        14,
+        12,
         "Fig. 12",
         ", and the pieces set by means of a shank or tenon, in a groove running lengthwise along the wooden part of the breastwork. The breastwork described, if properly constructed, will it is thought answer every valuable purpose. But I shall mention one of a different construction which I have used with success, and is made in the following manner.",
       ),
@@ -321,7 +286,7 @@ export const whitneyCottonGinArchivalEdition: CuratedSpecificationEdition = {
       kind: "paragraph",
       inlines: fig(
         "The brush is made of Hogs bristles, set in a manner somewhat similar to that of setting the reeds in a Weavers Sleigh. Between two strips of wood about ⅛ of an inch in thickness and half an inch in breadth, is placed a small quantity of bristles; then a strong thread or twine is wound round the sticks, close to the bristles: then another quantity of bristles is inserted &c. till a brush is formed, equal in length to the cylinder. The bristles on the side a.a. ",
-        11,
+        6,
         "Fig. 6",
         " are smeared with pitch or rosin and seared down with a hot iron even with the wood, to prevent them from drawing out. On the other side they are cut with a chisel to the length of about an inch from the wood. A brush of this kind is fixed in each of the before mentioned channels.",
       ),
@@ -336,7 +301,7 @@ export const whitneyCottonGinArchivalEdition: CuratedSpecificationEdition = {
       kind: "paragraph",
       inlines: fig(
         "A clearer with two brushes may be made by simply screwing upon the axis the board K. ",
-        9,
+        4,
         "Fig. 4",
         ", and another similar board on the opposite side, which leaves spaces for the insertion of the brushes s.s. The clearer may also be formed of a cylinder with grooves running lengthwise in it for the reception of the brushes; or in any other way, which may be found convenient.",
       ),
@@ -364,7 +329,7 @@ export const whitneyCottonGinArchivalEdition: CuratedSpecificationEdition = {
       kind: "paragraph",
       inlines: fig(
         "The clearer is put in motion by the cylinder, by means of a band and whirls. These whirls are plain wheels of solid wood about 2 ½ or 3 inches thick. Their periphery is a spherical surface swelling at the center, and sloping off at the edges. To give them the proper shape, take a perfect globe of the same Diameter as your intended whirl; inscribe upon it a circle dividing it into two equal parts: then cut the globe on each side, parallel to the plane of this circle, and at the distance from it, of half the thickness of your whirl. On these whirls runs a leather band, the breadth of which answers to the thickness of the whirls. The band may be broader or narrower and the whirls thicker or thinner in proportion as the resistance to be overcome is greater or less. The reason for giving the whirls this shape is to secure them the better from being unbanded. A band of this kind always inclines to the highest place on the whirl, and is much less liable to be cast off from the work, when it runs on a spherical surface, than when it runs in a groove in the periphery of the whirl. ",
-        8,
+        3,
         "Fig. 3",
       ),
     },

@@ -85,28 +85,45 @@ const FIGURE_14_LABEL_CROP = {
   height: 100,
 } as const;
 
+/**
+ * Earlier per-figure crops are intentionally retained as review lineage.
+ * The active edition below uses the complete source sheets instead: several
+ * printed figures share a sheet, and the intact page avoids asserting a
+ * crop boundary that the facsimile itself does not supply.
+ */
+export const grammeDynamoPreservedLegacyFigureCrops = {
+  figures: FIGURE_CROPS,
+  figure14Label: FIGURE_14_LABEL_CROP,
+} as const;
+
+const DRAWING_SHEET_RASTER = { width: 1392, height: 2045 } as const;
+
+const sourceDrawingSheetPreview = (sheet: 1 | 2 | 3 | 4, label: string) => ({
+  src: `/patents/figures/us-120057-gramme-dynamo/drawing-sheet-${sheet}.png`,
+  alt: `Complete unmodified source drawing sheet ${sheet} (PDF page ${sheet}), containing ${label}, from US 120,057.`,
+  ...DRAWING_SHEET_RASTER,
+});
+
 type FigureNumber = keyof typeof FIGURE_CROPS;
 type FigureReference = Extract<CuratedSpecificationInline, { kind: "reference" }>;
 
-const figureGroup = (text: string, sheet: 1 | 2 | 3 | 4, figures: readonly FigureNumber[]) =>
+const figureGroup = (text: string, sheet: 1 | 2 | 3 | 4) =>
   ({
     kind: "reference",
     text,
     href: `#drawing-sheet-${sheet}`,
     referenceType: "figure",
-    label: `Open the source-facsimile crop for ${text} in US 120,057`,
-    figurePreviews: figures.flatMap((figure) =>
-      figure === 14 ? [FIGURE_CROPS[figure], FIGURE_14_LABEL_CROP] : [FIGURE_CROPS[figure]],
-    ),
+    label: `Open the complete source drawing sheet for ${text} in US 120,057`,
+    figurePreviews: [sourceDrawingSheetPreview(sheet, text)],
   }) satisfies FigureReference;
 
-const figure1To3 = figureGroup("Figs. 1, 2, and 3", 1, [1, 2, 3]);
-const figure4To6 = figureGroup("Figs. 4, 5, and 6", 1, [4, 5, 6]);
-const figure7To9 = figureGroup("Figs. 7, 8, and 9", 2, [7, 8, 9]);
-const figure10To13 = figureGroup("Figs. 10, 11, 12, and 13", 3, [10, 11, 12, 13]);
-const figure14 = figureGroup("Fig. 14", 4, [14]);
+const figure1To3 = figureGroup("Figs. 1, 2, and 3", 1);
+const figure4To6 = figureGroup("Figs. 4, 5, and 6", 1);
+const figure7To9 = figureGroup("Figs. 7, 8, and 9", 2);
+const figure10To13 = figureGroup("Figs. 10, 11, 12, and 13", 3);
+const figure14 = figureGroup("Fig. 14", 4);
 
-const REFERENCE_CROPS: Record<string, readonly FigureNumber[]> = {
+const REFERENCE_FIGURES: Record<string, readonly FigureNumber[]> = {
   "1:Figure 1": [1],
   "1:Fig. 1": [1],
   "1:Fig. 2": [2],
@@ -131,9 +148,9 @@ const sourceFigure = (
   text: string,
   sheet: 1 | 2 | 3 | 4,
 ): Extract<CuratedSpecificationInline, { kind: "reference" }> => {
-  const figures = REFERENCE_CROPS[`${sheet}:${text}`];
+  const figures = REFERENCE_FIGURES[`${sheet}:${text}`];
   if (!figures) {
-    throw new Error(`US 120,057 has no authored source crop for ${text} on sheet ${sheet}.`);
+    throw new Error(`US 120,057 has no authored figure mapping for ${text} on sheet ${sheet}.`);
   }
 
   return {
@@ -141,10 +158,8 @@ const sourceFigure = (
     text,
     href: `#drawing-sheet-${sheet}`,
     referenceType: "figure",
-    label: `Open the source-facsimile crop for ${text} in US 120,057`,
-    figurePreviews: figures.flatMap((figure) =>
-      figure === 14 ? [FIGURE_CROPS[figure], FIGURE_14_LABEL_CROP] : [FIGURE_CROPS[figure]],
-    ),
+    label: `Open the complete source drawing sheet for ${text} in US 120,057`,
+    figurePreviews: [sourceDrawingSheetPreview(sheet, text)],
   };
 };
 

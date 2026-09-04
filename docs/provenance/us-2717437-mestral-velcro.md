@@ -26,7 +26,42 @@
 
 ---
 
-## 3. Editorial & Preservation Boundaries
+## 3. Source-sheet acceptance (2026-09-03)
+
+The complete three-page pinned PDF was visually reviewed. PDF page 1 is the
+only drawing sheet: it prints both Fig. 1 (the heated-lancet loop-forming and
+cutting process) and Fig. 2 (two crossed, interengaging fabric pieces). PDF
+pages 2 and 3 are specification and claims pages with no additional figures.
+
+Every active figure citation in the continuous edition therefore uses the same
+complete, unmodified 300 DPI render of PDF page 1:
+
+| Active asset | PDF page | Dimensions | SHA-256 |
+| --- | --- | --- | --- |
+| `/patents/figures/us-2717437-mestral-velcro/source-sheet-1-v1.png` | 1 | 2320×3408 | `3836f440a26c7be2257dbf1bd985f775d0c5387fbbda49b30483bdab493c5dd9` |
+
+No crop boundary, rotation, masking, reconstruction, compositing, or OCR is
+used. The source rectangle is the complete raster `(0, 0, 2320, 3408)` with
+zero absolute pixel error against the active asset. The 11—not 12—authored
+active occurrences are: `edition-block-1-group-0-inline-0` (Fig. 1),
+`edition-block-1-group-0-inline-2` (Fig. 2),
+`edition-block-6-group-0-inline-1` (Fig. 1),
+`edition-block-6-group-0-inline-3` (Fig. 2),
+`edition-block-7-group-0-inline-1` (Fig. 1),
+`edition-block-11-group-0-inline-1` (Fig. 1),
+`edition-block-11-group-0-inline-5` (Fig. 1),
+`edition-block-13-group-0-inline-1` (Fig. 2),
+`edition-block-13-group-0-inline-3` (Fig. 1),
+`edition-block-16-group-0-inline-1` (Figs. 1), and
+`edition-block-16-group-0-inline-3` (Fig. 2). All map to PDF page 1 and the
+same full-sheet asset.
+
+The prior `fig-1-source-crop-v1.png` and `fig-2-source-crop-v1.png` assets
+remain preserved untouched. The active edition no longer relies on either
+legacy crop. This internal evidence repair does not change source-reader
+access to the complete edition or pinned PDF.
+
+## 4. Editorial & Preservation Boundaries
 
 - **Visitor-Facing Source Face**: [`src/data/editions/mestralVelcroEdition.ts`](file:///Users/jemanuel/projects/classic-patents.com/src/data/editions/mestralVelcroEdition.ts)
 - **Reviewed Comparison Ledger**: [`public/patents/transcripts/us-2717437-mestral-velcro-reviewed.txt`](file:///Users/jemanuel/projects/classic-patents.com/public/patents/transcripts/us-2717437-mestral-velcro-reviewed.txt)

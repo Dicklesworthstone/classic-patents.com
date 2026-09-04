@@ -4,7 +4,6 @@ import { join } from "node:path";
 
 const SNAPSHOT_CONTRACTS = [
   ["DavenportMotorSim.tsx", "rotorAngleRef", "setRotorAngleDeg"],
-  ["WattRotaryEngineSim.tsx", "timeRef", "setTime"],
   ["HopkinsPotashSim.tsx", "cycleProgressRef", "setCycleProgress"],
   ["McCormickReaperSim.tsx", "phaseRef", "setPhase"],
   ["PasteurFermentationSim.tsx", "timerSecondsRef", "setTimerSeconds"],
@@ -17,7 +16,6 @@ const SNAPSHOT_CONTRACTS = [
   ["MaximMachineGunSim.tsx", "cyclePhaseRef", "setCyclePhase"],
   ["ParsonsTurbineSim.tsx", "flowPhaseRef", "setFlowPhase"],
   ["WattSeparateCondenserSim.tsx", "animTimeRef", "setAnimTime"],
-  ["ArkwrightWaterFrameSim.tsx", "animTimeRef", "setAnimTime"],
   ["EdisonPhonographSim.tsx", "cylinderAngleRef", "setCylinderAngleDeg"],
   ["DeLavalSeparatorSim.tsx", "angleRef", "setAngleDeg"],
   ["CorlissEngineSim.tsx", "crankAngleRef", "setCrankAngleDeg"],
@@ -62,6 +60,14 @@ describe("2D rAF presentation ownership", () => {
     expect(source).toContain("const UI_SNAPSHOT_INTERVAL_MS = 80;");
     expect(source).toContain("lastUiSnapshot");
     expect(source).not.toMatch(/setTeslaOmegaDeg\(\s*\(prev\)\s*=>/);
+  });
+
+  test("keeps Watt Rotary on the route-level owner without a private rAF loop", () => {
+    const source = sourceFor("WattRotaryEngineSim.tsx");
+
+    expect(source).toContain('useFrankenSimPhysics("gb-1306-watt-rotary-engine"');
+    expect(source).toContain("getWattRotaryTapeFrame()?.telemetry");
+    expect(source).not.toContain("requestAnimationFrame");
   });
 
   test("keeps the Otis loop stable while controls change", () => {

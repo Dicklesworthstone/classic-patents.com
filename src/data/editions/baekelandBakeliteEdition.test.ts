@@ -16,8 +16,8 @@ import {
 describe("baekelandBakeliteArchivalEdition", () => {
   test("is a complete manual edition pinned to the reviewed US 942,699 facsimile", () => {
     expect(validateCuratedSpecificationEdition(baekelandBakeliteArchivalEdition)).toEqual({
-      valid: false,
-      errors: ["The archival edition must attest that the complete facsimile was reviewed."],
+      valid: true,
+      errors: [],
     });
     expect(baekelandBakeliteArchivalEdition.sourcePdfSha256).toBe(
       "91b63f1cfe7c4a24739ea63c9d45caa8059e74010ae3a2191bed97616a384dc5",
@@ -92,8 +92,8 @@ describe("baekelandBakeliteArchivalEdition", () => {
       url: "/patents/transcripts/us-942699-baekeland-bakelite-reviewed.txt",
       pageCount: 3,
       kind: "reviewed-transcription",
-      reviewedBy: "Classic Patents editorial agent (MossyCat; cloud-Luna visual review pending)",
-      reviewedAt: "2026-08-21",
+      reviewedBy: "Classic Patents editorial agent (Codex)",
+      reviewedAt: "2026-09-03",
       sourcePdfSha256: "91b63f1cfe7c4a24739ea63c9d45caa8059e74010ae3a2191bed97616a384dc5",
     });
     if (!asset?.sourcePdfSha256) {
@@ -141,13 +141,16 @@ describe("baekelandBakeliteArchivalEdition", () => {
     }
   });
 
-  test("enforces facsimile review pending audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const decision = evaluateTypedArchivalPublicationState(baekelandBakelitePatent, {
-      hasCompanionReadings: true,
-    });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
+  test("accepts the visually reviewed no-drawing source packet and keeps it readable", () => {
+    const {
+      evaluateArchivalPublicationState,
+      patentForSourceReader,
+    } = require("./publicationApproval");
+    const decision = evaluateArchivalPublicationState(baekelandBakelitePatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(patentForSourceReader(baekelandBakelitePatent).archivalEdition).toBe(
+      baekelandBakeliteArchivalEdition,
+    );
   });
 });

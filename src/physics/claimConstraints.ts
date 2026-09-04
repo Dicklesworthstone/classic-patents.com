@@ -29,6 +29,12 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
   // mechanism inversion. Keep the explicit empty seat so callers can
   // distinguish a reviewed refusal from an unregistered catalogue id.
   "us-3671542-kwolek-kevlar": [],
+  // Historical pre-1836 grants without formal numbered claims.
+  "gb-931-arkwright-water-frame": [],
+  "gb-1306-watt-rotary-engine": [],
+  "gb-1420-cort-puddling-rolling": [],
+  "us-x1-hopkins-potash": [],
+  "us-x72-whitney-cotton-gin": [],
   "us-821393-wright-flyer": [
     {
       claimNumber: 1,

@@ -12,7 +12,6 @@ import {
  * record receives an explicit replacement acceptance.
  */
 const REQUIRED_ROOT_EDITORIAL_HOLDS = [
-  "us-2297691-carlson-electrophotography",
   "us-2543181-land-polaroid",
   "us-2708656-fermi-reactor",
   "us-313224-mergenthaler-linotype",
@@ -21,7 +20,6 @@ const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-347140-thomson-welding",
   "us-3541541-engelbart-mouse",
   "us-395781-hollerith-tabulating",
-  "us-400766-hall-aluminium",
   "us-542846-diesel-engine",
   "us-6120588-eink",
   "us-621195-zeppelin-airship",
@@ -45,6 +43,7 @@ const SOURCE_QA_RELEASED_EDITIONS = [
   "us-194047-otto-engine",
   "us-200521-edison-phonograph",
   "us-223898-edison-lightbulb",
+  "us-2297691-carlson-electrophotography",
   "us-2292387-lamarr-frequency-hopping",
   "us-233692-pelton-water-wheel",
   "us-235199-bell-photophone",
@@ -64,6 +63,7 @@ const SOURCE_QA_RELEASED_EDITIONS = [
   "us-381968-tesla-motor",
   "us-3858232-boyle-smith-ccd",
   "us-388850-eastman-kodak",
+  "us-400766-hall-aluminium",
   "us-4136359-wozniak-apple",
   "us-470918-reno-escalator",
   "us-4750-howe-sewing-machine",

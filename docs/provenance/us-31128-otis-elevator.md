@@ -23,3 +23,30 @@ The complete three-sheet local PDF was visually reviewed at 300 DPI before the a
 ## Source-layer boundary
 
 The older `public/patents/source-text/us-31128-otis-elevator.txt` is not used as proof or as public edition input. It contains unreviewed text-layer errors. The reviewed transcription and the typed manual edition were prepared from the pinned PDF. No OCR output, parsed HTML, Markdown input, or automatic reflow is rendered as the archival edition.
+
+## Source-sheet acceptance (2026-09-03)
+
+The previous active crops divided the drawing sheet into separate crops for Figs. 1, 2, and 3, which severed the spatial and mechanical relationships between the elevation view, front view, and detached stop mechanism. The active evidence is therefore the complete unmodified source drawing sheet:
+
+- Active asset:
+  `public/patents/figures/us-31128-otis-elevator/source-sheet-1-v1.png`
+- Exact pinned source: PDF page 1, rendered at 300 dpi, 2320 × 3408 pixels.
+- Source rectangle: `x=0`, `y=0`, `width=2320`, `height=3408`; normalized
+  rectangle `(0, 0, 1, 1)`.
+- Source PDF SHA-256:
+  `c35eb5c999bc20b015ef0d24a3ffb0f194123d780c8a46fabea7f2d52a355d42`.
+- Active asset SHA-256:
+  `4d4d57f705b8eb92b73193c230e18decfb3f8f1d9c576a4d66e7478f777d8a15`.
+- Direct 300 DPI source-pixel review: verified intact drawing sheet with all three figures, letter callouts A–Z, inventor signature, and witness signatures.
+
+All eight authored citations bind to this exact page-one source rectangle:
+`edition-block-3-group-0-inline-0`,
+`edition-block-3-group-0-inline-2`,
+`edition-block-3-group-0-inline-4`,
+`edition-block-3-group-0-inline-6`,
+`edition-block-7-group-0-inline-1`,
+`edition-block-9-group-0-inline-1`,
+`edition-block-13-group-0-inline-1`, and
+`edition-block-27-group-0-inline-1`.
+The older individual crops are preserved as historical review artifacts under `public/patents/figures/us-31128-otis-elevator/`.
+

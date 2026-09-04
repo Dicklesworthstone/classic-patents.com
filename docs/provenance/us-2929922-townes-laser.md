@@ -24,7 +24,7 @@
 | :--- | :--- | :--- |
 | **Page 1** | The sole drawing sheet: Figures 1–3, showing the communications-system block diagram, the generator, and the amplifier; inventor and attorney signatures | Reviewed directly against the facsimile |
 | **Page 2** | Specification columns 1–2: patent-office masthead, Serial No. 752,137, eleven-claim notice, preamble, and optical-maser theory | Reviewed directly against the facsimile |
-| **Page 3** | Specification continuation: generator chamber, parallel end assemblies, pumping medium, reflective materials, pressure shell, and mode selection | Reviewed against the cloud Luna facsimile reading |
+| **Page 3** | Specification continuation: generator chamber, parallel end assemblies, pumping medium, reflective materials, pressure shell, and mode selection | Independently visually rechecked against the pinned facsimile on 2026-09-03 |
 | **Page 4** | Specification columns 5–6, followed by “What is claimed is:” and Claims 1–3 | Reviewed directly against the facsimile |
 | **Page 5** | Claims 4–11 and cited references | Reviewed directly against the facsimile |
 
@@ -32,7 +32,8 @@
 
 ## Preservation Boundaries
 
-1. **Publication hold**: The current typed edition, ledger, record, and crops are rejected and must remain visitor-withheld until rebuilt against this facsimile.
-2. **Observed source boundary**: The grant prints only Figures 1–3 and eleven claims. The obsolete edition's Figures 4–5, thirteen-claim sequence, Serial No. 752,021, and related descriptions were not supported by the pinned source and are not published.
-3. **False crop evidence**: The current `fig-5-source-crop-v1.png` is a clipped portion of Figure 1 plus drawing-sheet signatures, not a Figure 5. Existing files are preserved as evidence and must not be relabeled or published.
-4. **Required repair**: Rebuild the page-complete reviewed ledger, continuous manual edition, all eleven claim nodes and decoders, and three exact source-figure crops before root QA may remove the hold.
+1. **Facsimile review**: The five-page pinned facsimile was independently visually rechecked on 2026-09-03: its drawing sheet, masthead, continuous specification, all eleven claims, and cited reference were reviewed.
+2. **Observed source boundary**: The grant prints only Figures 1–3 and eleven claims. Figures 4–5, a thirteen-claim sequence, Serial No. 752,021, and related descriptions are not supported by this pinned source and must not be presented as part of this grant.
+3. **Retained false-crop evidence**: `fig-5-source-crop-v1.png` is a clipped portion of Figure 1 plus drawing-sheet signatures, not a Figure 5. It is retained as research evidence and is not linked by the visitor-facing edition.
+4. **Reviewed-ledger repair**: On 2026-09-03, the five-page reviewed ledger was rebuilt from the visually checked facsimile and the source-correct manual edition. Its ordered page markers, seven masthead lines, thirty-two source paragraphs, and all eleven printed claims now have literal-coverage evidence.
+5. **Remaining internal evidence work**: Figure-occurrence acceptance remains independently tracked. It does not gate the complete archival edition or pinned facsimile in the visitor reader.

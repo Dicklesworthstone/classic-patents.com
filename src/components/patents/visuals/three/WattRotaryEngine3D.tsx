@@ -12,21 +12,19 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { createStudioClock } from "@/physics/tickScheduler";
-import {
-  globalTransportBus,
-  type TapeUpdater,
-  useFrankenSimPhysics,
-} from "@/physics/useFrankenSimPhysics";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import {
+  getWattRotaryTapeFrame,
   readWattRotaryControls,
   stepWattRotaryEngine,
-  type WattRotaryTelemetry,
+  WATT_ROTARY_FRANKENSIM_BOUNDARY,
+  WATT_ROTARY_KERNEL_SOURCE,
+  WATT_ROTARY_KINEMATIC_GEOMETRY,
+  WATT_ROTARY_SOURCE_BOUNDARY,
 } from "@/physics/wattRotaryKernel";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -42,13 +40,30 @@ const CAMERA_PRESETS: Record<
   // Keep the flywheel behind the sun-and-planet train in the default view.
   // The model is read from the mechanism side first; the flywheel remains
   // available as a named part instead of becoming an accidental occluder.
-  overview: { pos: [4.8, 4.2, -5.8], target: [0.5, 1.8, 0] },
+  overview: {
+    pos: [4.8, 5.4, -5.8],
+    target: [0.5, WATT_ROTARY_KINEMATIC_GEOMETRY.sunCenterY + 0.9, 0],
+  },
   // Inspect the meshing pair from the side opposite the flywheel. Looking
   // through the flywheel's rim makes the very mechanism this preset teaches
   // needlessly opaque.
-  "gear-mesh": { pos: [3.25, 1.45, -3], target: [2.2, 0.9, 0] },
-  beam: { pos: [0.2, 4.5, 4.0], target: [0, 3.2, 0] },
-  cylinder: { pos: [-3.8, 2.5, 3.2], target: [-2.2, 1.5, 0] },
+  "gear-mesh": {
+    pos: [3.25, 2.65, -3],
+    target: [
+      WATT_ROTARY_KINEMATIC_GEOMETRY.sunCenterX,
+      WATT_ROTARY_KINEMATIC_GEOMETRY.sunCenterY,
+      0,
+    ],
+  },
+  beam: {
+    pos: [0.2, 5.7, 4.0],
+    target: [
+      WATT_ROTARY_KINEMATIC_GEOMETRY.beamPivotX,
+      WATT_ROTARY_KINEMATIC_GEOMETRY.beamPivotY,
+      0,
+    ],
+  },
+  cylinder: { pos: [-3.8, 3.7, 3.2], target: [-2.2, 2.7, 0] },
 };
 
 function cameraPresetForViewport(
@@ -96,7 +111,7 @@ export function WattRotaryEngine3D() {
   const modelRef = useRef<WattRotaryModelNodes | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
-  const [isPlaying, setIsPlaying] = useState(true);
+  const isPlaying = (params.isRunning ?? 1) > 0.5;
   const [cutaway, setCutaway] = useState(false);
   // The labels are useful on demand, but sprite labels render above the mesh
   // and make the compact planet/sun pair harder to inspect at tablet width.
@@ -113,44 +128,17 @@ export function WattRotaryEngine3D() {
     boilerPressureKpa,
     gearRatioNpOverNs,
     flywheelMassKg,
-    isPlaying,
     cutaway,
     showCallouts,
     gearInspection: cameraPreset === "gear-mesh",
   });
 
-  // Shared transport tape: sun-and-planet kinematics publish to the patentId-keyed bus.
-  useFrankenSimPhysics("gb-1306-watt-rotary-engine", {
+  // Pure consumer of the shared transport tape: the route-level owner survives
+  // 2D/3D switches; this face only consumes it.
+  const { frame } = useFrankenSimPhysics("gb-1306-watt-rotary-engine", {
     domain: "thermo_fluid",
-    refusal: { isRefused: false },
+    refusal: { isRefused: true, reason: WATT_ROTARY_SOURCE_BOUNDARY },
   });
-  const wattStepRef = useRef<WattRotaryTelemetry | null>(null);
-  const wattTimeRef = useRef(0);
-
-  useEffect(() => {
-    const integrate: TapeUpdater = (_prev, dt) => {
-      if (!live.current.isPlaying) return null;
-      wattTimeRef.current += dt;
-      const out = stepWattRotaryEngine(readWattRotaryControls(live.current), wattTimeRef.current);
-      wattStepRef.current = out;
-      return {
-        machine: {
-          // Planet-gear orbit pose and flywheel shaft rotation on the tape.
-          poseXMeters: out.planetPosX,
-          poseYMeters: out.planetPosY,
-          headingRad: (out.sunShaftAngleDeg * Math.PI) / 180,
-          modeLabel: "sun-and-planet running",
-          wheelSpeedMps: out.pistonVelocityMps,
-        },
-      };
-    };
-    const unregister = globalTransportBus.registerUpdater(
-      "gb-1306-watt-rotary-engine",
-      integrate,
-      "TS_FALLBACK",
-    );
-    return unregister;
-  }, [live]);
 
   const handleCameraPreset = (preset: CameraPreset) => {
     setCameraPreset(preset);
@@ -177,16 +165,14 @@ export function WattRotaryEngine3D() {
     studio.scene.add(model.root);
     modelRef.current = model;
 
-    const clock = createStudioClock();
-    const animate = (now: number) => {
+    const animate = () => {
       animFrameRef.current = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
-      clock.pump(now);
       studio.controls.update();
 
       if (modelRef.current) {
         // Bus-owned kernel step: read the latest shared-tape gear poses.
-        const out = wattStepRef.current;
+        const out = getWattRotaryTapeFrame()?.telemetry;
         if (out) {
           modelRef.current.updateAnimation(out);
         }
@@ -223,18 +209,36 @@ export function WattRotaryEngine3D() {
     return () => window.removeEventListener("resize", restoreMobileFraming);
   }, [cameraPreset]);
 
-  const telemetry = stepWattRotaryEngine(
-    {
-      strokeRateSpm,
-      boilerPressureKpa,
-      gearRatioNpOverNs,
-      flywheelMassKg,
-    },
-    0,
-  );
+  const telemetry =
+    getWattRotaryTapeFrame()?.telemetry ??
+    stepWattRotaryEngine(
+      readWattRotaryControls({
+        strokeRateSpm,
+        boilerPressureKpa,
+        gearRatioNpOverNs,
+        flywheelMassKg,
+      }),
+      0,
+    );
 
   return (
-    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+    <div
+      className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent"
+      data-watt-face="three"
+      data-watt-runtime-tick={frame.tick}
+      data-watt-runtime-provenance={frame.provenance}
+      data-watt-kernel-source={WATT_ROTARY_KERNEL_SOURCE}
+      data-watt-frankensim-boundary={WATT_ROTARY_FRANKENSIM_BOUNDARY}
+      data-watt-running={isPlaying}
+      data-watt-carrier-angle-rad={telemetry.planetOrbitAngleRad}
+      data-watt-rod-angle-rad={telemetry.connectingRodAngleRad}
+      data-watt-planet-angle-rad={telemetry.planetBodyAngleRad}
+      data-watt-sun-angle-rad={telemetry.sunShaftAngleRad}
+      data-watt-mesh-residual-rad={telemetry.gearMeshConstraintResidualRad}
+      data-watt-rod-residual-m={telemetry.connectingRodConstraintResidualM}
+      data-watt-sun-teeth={telemetry.sunTeeth}
+      data-watt-planet-teeth={telemetry.planetTeeth}
+    >
       <div className="sr-only">James Watt Rotary Steam Engine &amp; Sun-and-Planet Gear 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
@@ -294,8 +298,9 @@ export function WattRotaryEngine3D() {
         <div className="absolute top-14 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[calc(100%-1.5rem)] sm:max-w-[26rem]">
           <button
             type="button"
+            aria-label={isPlaying ? "Pause Motion" : "Resume Motion"}
             onClick={() => {
-              setIsPlaying(!isPlaying);
+              updateParam("isRunning", isPlaying ? 0 : 1);
               soundEngine.playSwitchClick();
             }}
             className={`min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
@@ -395,7 +400,7 @@ export function WattRotaryEngine3D() {
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Driveshaft Speed:</span>
               <span className="text-amber-800 dark:text-amber-400 font-bold">
-                {telemetry.shaftRpm.toFixed(1)} RPM
+                {telemetry.shaftRpm.toFixed(1)} RPM instantaneous
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
@@ -433,7 +438,7 @@ export function WattRotaryEngine3D() {
             },
             {
               label: "Shaft Speed",
-              value: `${telemetry.shaftRpm.toFixed(0)}`,
+              value: `${telemetry.meanShaftRpm.toFixed(0)}`,
               unit: "RPM",
               tone: "hot",
             },
@@ -534,6 +539,11 @@ export function WattRotaryEngine3D() {
           </div>
         </div>
 
+        <p className="mt-3 rounded-xl border border-amber-500/25 bg-amber-950/10 px-3 py-2 text-xs leading-relaxed text-ink-700 dark:text-parchment-300">
+          <strong className="text-ink-900 dark:text-parchment-100">Source boundary.</strong>{" "}
+          {WATT_ROTARY_SOURCE_BOUNDARY}
+        </p>
+
         <ClaimConstraintToggle
           patentId="gb-1306-watt-rotary-engine"
           claimStates={claimStates}
@@ -541,12 +551,6 @@ export function WattRotaryEngine3D() {
             setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
           }
           className="mt-2"
-        />
-
-        <PortHamiltonianEnergyStrip
-          patentId="gb-1306-watt-rotary-engine"
-          params={params}
-          className="mt-3"
         />
       </div>
     </div>

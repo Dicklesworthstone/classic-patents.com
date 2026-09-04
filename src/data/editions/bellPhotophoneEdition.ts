@@ -14,38 +14,50 @@ const p = (...inlines: CuratedSpecificationInline[]) => ({
   kind: "paragraph" as const,
   inlines: inlines as CuratedSpecificationInlines,
 });
-const FIGURE_DIMS: Record<number, { width: number; height: number }> = {
-  1: { width: 5000, height: 2700 },
-  2: { width: 1800, height: 1800 },
-  3: { width: 1500, height: 1500 },
-  4: { width: 900, height: 1300 },
-  5: { width: 1500, height: 1700 },
-  6: { width: 1000, height: 1500 },
-  7: { width: 1000, height: 1600 },
-  8: { width: 5700, height: 1700 },
-  9: { width: 1500, height: 1900 },
-  10: { width: 5000, height: 1800 },
-  11: { width: 1100, height: 1300 },
-  12: { width: 1800, height: 1300 },
-  13: { width: 2500, height: 900 },
-  14: { width: 900, height: 1100 },
-  15: { width: 700, height: 900 },
-  16: { width: 360, height: 560 },
-  17: { width: 360, height: 560 },
-  18: { width: 500, height: 510 },
-  19: { width: 310, height: 480 },
-  20: { width: 280, height: 480 },
-  21: { width: 320, height: 480 },
-  22: { width: 260, height: 340 },
-  23: { width: 200, height: 340 },
-  24: { width: 230, height: 470 },
+/**
+ * The three patent drawing sheets were visually checked against the pinned
+ * thirteen-page facsimile on 2026-09-04. Every active citation opens its
+ * complete, direct 300 DPI source sheet. Earlier per-figure crops remain in
+ * the asset directory as preserved research material, but are no longer
+ * evidence for the source face.
+ */
+const SOURCE_SHEET_FOR_FIGURE: Record<number, number> = {
+  1: 1,
+  2: 1,
+  3: 2,
+  4: 2,
+  5: 2,
+  6: 2,
+  7: 2,
+  8: 2,
+  9: 2,
+  10: 3,
+  11: 2,
+  12: 2,
+  13: 2,
+  14: 2,
+  15: 2,
+  16: 2,
+  17: 2,
+  18: 3,
+  19: 3,
+  20: 3,
+  21: 3,
+  22: 3,
+  23: 3,
+  24: 3,
 };
-const figureAssetPath = (number: number) =>
-  number === 16 || number === 17
-    ? "/patents/figures/us-235199-bell-photophone/figs-16-and-17-source-crop-v5.png"
-    : number >= 18
-      ? `/patents/figures/us-235199-bell-photophone/fig-${number}-source-crop-v5.png`
-      : `/patents/figures/us-235199-bell-photophone/fig-${number}-source-crop${number === 14 || number === 15 ? "-v4" : "-v3"}.png`;
+
+const SOURCE_SHEET_WIDTH = 2320;
+const SOURCE_SHEET_HEIGHT = 3408;
+
+function sourceSheetForFigure(number: number): number {
+  const sourceSheet = SOURCE_SHEET_FOR_FIGURE[number];
+  if (!sourceSheet) {
+    throw new Error(`Bell Photophone Figure ${number} has no reviewed drawing-sheet mapping.`);
+  }
+  return sourceSheet;
+}
 
 function figurePreviews(numbers: readonly number[]) {
   const previews: Array<{
@@ -54,16 +66,14 @@ function figurePreviews(numbers: readonly number[]) {
     width: number;
     height: number;
   }> = [];
-  const seenSources = new Set<string>();
-  for (const number of numbers) {
-    const src = figureAssetPath(number);
-    if (seenSources.has(src)) continue;
-    seenSources.add(src);
+  const sourceSheets = [...new Set(numbers.map(sourceSheetForFigure))];
+  for (const sourceSheet of sourceSheets) {
+    const figuresOnSheet = numbers.filter((number) => sourceSheetForFigure(number) === sourceSheet);
     previews.push({
-      src,
-      alt: `Fig. ${number} from US 235,199`,
-      width: FIGURE_DIMS[number].width,
-      height: FIGURE_DIMS[number].height,
+      src: `/patents/figures/us-235199-bell-photophone/source-sheet-${sourceSheet}-v1.png`,
+      alt: `Complete source drawing sheet ${sourceSheet} for Fig. ${figuresOnSheet.join(", ")} from US 235,199`,
+      width: SOURCE_SHEET_WIDTH,
+      height: SOURCE_SHEET_HEIGHT,
     });
   }
   return previews;
@@ -669,7 +679,7 @@ export const bellPhotophoneArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "924fc983c2b53e84e122b7fb84014b5d37cf2461eae4132ea235211364f25e85",
   preparedBy: "Classic Patents editorial agent (manual facsimile review)",
-  preparedAt: "2026-08-21",
+  preparedAt: "2026-09-04",
   completeFacsimileReviewed: true,
   blocks: [
     {

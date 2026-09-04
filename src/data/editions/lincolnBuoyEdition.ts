@@ -4,22 +4,22 @@ const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", 
 
 const FIGURE_PREVIEWS = {
   1: {
-    src: "/patents/figures/us-6469-lincoln-buoy-fig-1-hover.png",
-    alt: "US 6,469, Figure 1: side elevation of Lincoln's vessel with the buoyant chambers expanded.",
-    width: 2100,
-    height: 780,
+    src: "/patents/figures/us-6469-lincoln-buoy/source-sheet-1-v1.png",
+    alt: "Complete source drawing sheet 1 of 1 for US 6,469, containing Figs. 1-3; cited Fig. 1.",
+    width: 2320,
+    height: 3408,
   },
   2: {
-    src: "/patents/figures/us-6469-lincoln-buoy-fig-2-hover.png",
-    alt: "US 6,469, Figure 2: transverse section of a contracted buoyant chamber.",
-    width: 900,
-    height: 750,
+    src: "/patents/figures/us-6469-lincoln-buoy/source-sheet-1-v1.png",
+    alt: "Complete source drawing sheet 1 of 1 for US 6,469, containing Figs. 1-3; cited Fig. 2.",
+    width: 2320,
+    height: 3408,
   },
   3: {
-    src: "/patents/figures/us-6469-lincoln-buoy-fig-3-hover.png",
-    alt: "US 6,469, Figure 3: longitudinal vertical section through a buoyant chamber and receiving box.",
-    width: 900,
-    height: 750,
+    src: "/patents/figures/us-6469-lincoln-buoy/source-sheet-1-v1.png",
+    alt: "Complete source drawing sheet 1 of 1 for US 6,469, containing Figs. 1-3; cited Fig. 3.",
+    width: 2320,
+    height: 3408,
   },
 } as const;
 

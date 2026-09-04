@@ -7684,8 +7684,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     domainTitle: "Rotary Steam Engine & Epicyclic Gearing",
     equationName: "Epicyclic Speed Multiplication & Instantaneous Shaft Torque",
     governingEquation:
-      "\\omega_{\\text{shaft}} = \\omega_{\\text{beam}} \\left(1 + \\frac{N_{\\text{planet}}}{N_{\\text{sun}}}\\right) = 2 \\cdot \\omega_{\\text{beam}} \\quad \\text{and} \\quad \\tau = \\frac{1}{2} F_{\\text{rod}} r_s \\sin(\\theta)",
-    engineMethod: "stepWattRotaryEngine",
+      "N_s(\\omega_s-\\omega_c)+N_p(\\omega_p-\\omega_c)=0 \\quad \\text{and} \\quad \\Delta\\theta_s=2\\pi\\left(1+\\frac{N_p}{N_s}\\right)",
+    engineMethod:
+      "stepWattRotaryEngine (source-bounded TypeScript closed linkage; fs-mbd holonomic gear constraints unavailable)",
     controls: [
       {
         id: "strokeRateSpm",
@@ -7739,10 +7740,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       return [
         {
           label: "Driveshaft Speed",
-          value: `${watt.shaftRpm.toFixed(1)} RPM`,
+          value: `${watt.meanShaftRpm.toFixed(1)} RPM mean`,
           unit: `${watt.speedMultiplier.toFixed(1)}× Speed Multiplier`,
           badgeColor: "amber",
-          progressPct: Math.min(100, (watt.shaftRpm / 60.0) * 100),
+          progressPct: Math.min(100, (watt.meanShaftRpm / 60.0) * 100),
           provenance: "scenario-modern",
         },
         {

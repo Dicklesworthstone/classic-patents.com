@@ -9,6 +9,13 @@ import {
 } from "./claimConstraints";
 
 describe("Catalog Claim Constraints & Prior-Art Inversions", () => {
+  test("every catalogue record has an explicit key in CATALOG_CLAIM_CONSTRAINTS", () => {
+    expect(allPatents.length).toBe(103);
+    for (const patent of allPatents) {
+      expect(CATALOG_CLAIM_CONSTRAINTS[patent.id]).toBeDefined();
+    }
+  });
+
   test("every numbered constraint names a claim that actually exists in the catalogue record", () => {
     for (const patent of allPatents) {
       const constraints = CATALOG_CLAIM_CONSTRAINTS[patent.id] ?? [];

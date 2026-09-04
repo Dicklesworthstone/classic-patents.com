@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import * as THREE from "three";
 import { stepBaekelandBakelite } from "@/physics/catalogKernels";
 import { buildBaekelandBakeliteModel } from "./baekelandBakeliteModel";
 
@@ -103,6 +104,36 @@ describe("US 942,699 Leo Hendrik Baekeland Bakelite visual & polymer mechanics b
     );
     expect(model.materials.bakeliteResin.color.getHex()).toBe(0x5c2b0e); // C-stage unfoamed color
     expect(model.nodes.molecularNetworkGroup.rotation.y).toBe(0);
+  });
+
+  test("keeps the editorial molecular interpretation inside the molded specimen and mounts both gauges to the vessel", () => {
+    const model = buildBaekelandBakeliteModel();
+    model.rootGroup.updateMatrixWorld(true);
+
+    const boundsFor = (object: THREE.Object3D) => new THREE.Box3().setFromObject(object);
+    const specimenBounds = boundsFor(model.nodes.bakeliteSpecimen);
+    const networkBounds = boundsFor(model.nodes.molecularNetworkGroup);
+    const jacketBounds = boundsFor(model.nodes.steamJacket);
+    const headerBounds = boundsFor(model.nodes.gaugeManifoldHeader);
+    const pressureStemBounds = boundsFor(model.nodes.pressureGaugeStem);
+    const pressureGaugeBounds = boundsFor(model.nodes.pressureGaugeBody);
+    const temperatureStemBounds = boundsFor(model.nodes.temperatureGaugeStem);
+    const temperatureGaugeBounds = boundsFor(model.nodes.temperatureGaugeBody);
+
+    // The display-scale crosslink motif is a cured-resin interpretation, not
+    // another object suspended over the pressure vessel.
+    expect(model.nodes.molecularNetworkGroup.parent).toBe(model.nodes.moldGroup);
+    expect(specimenBounds.containsBox(networkBounds)).toBe(true);
+
+    // Each dial joins the vessel crown through the common header and a stem;
+    // there is no visible air gap between autoclave, manifold, and instrument.
+    expect(headerBounds.min.y).toBeLessThanOrEqual(jacketBounds.max.y + 0.001);
+    expect(pressureStemBounds.min.y).toBeLessThanOrEqual(headerBounds.max.y + 0.001);
+    expect(pressureStemBounds.max.y).toBeGreaterThanOrEqual(pressureGaugeBounds.min.y - 0.001);
+    expect(temperatureStemBounds.min.y).toBeLessThanOrEqual(headerBounds.max.y + 0.001);
+    expect(temperatureStemBounds.max.y).toBeGreaterThanOrEqual(
+      temperatureGaugeBounds.min.y - 0.001,
+    );
   });
 
   test("derives all printed claims dynamically from edition without duplicate strings", () => {

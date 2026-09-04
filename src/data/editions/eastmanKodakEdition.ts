@@ -12,21 +12,39 @@ const claim = (number: number, value: string) => ({
   inlines: text(value),
 });
 
-const figure = (number: number, width: number, height: number): CuratedSpecificationInline => ({
-  kind: "reference",
-  text: `Fig. ${number}`,
-  href: `#fig-${number}`,
-  referenceType: "figure",
-  label: `Open the source-faithful Fig. ${number} crop from US 388,850`,
-  figurePreviews: [
-    {
-      src: `/patents/figures/us-388850-eastman-kodak/fig-${number}-source-crop-v1.png`,
-      alt: `Fig. ${number} from George Eastman's US 388,850 Camera drawing sheets.`,
-      width,
-      height,
-    },
-  ],
-});
+const figureSourceSheets = {
+  1: 1,
+  2: 1,
+  3: 1,
+  4: 2,
+  5: 2,
+  6: 2,
+  7: 2,
+  8: 2,
+  9: 3,
+  10: 3,
+  11: 2,
+} as const;
+
+const figure = (number: keyof typeof figureSourceSheets): CuratedSpecificationInline => {
+  const sourceSheet = figureSourceSheets[number];
+
+  return {
+    kind: "reference",
+    text: `Fig. ${number}`,
+    href: `#fig-${number}`,
+    referenceType: "figure",
+    label: `Open complete source drawing sheet ${sourceSheet} for Fig. ${number} from US 388,850`,
+    figurePreviews: [
+      {
+        src: `/patents/figures/us-388850-eastman-kodak/source-sheet-${sourceSheet}-v1.png`,
+        alt: `Complete unmodified source drawing sheet ${sourceSheet} from George Eastman's US 388,850 Camera patent, including Fig. ${number}.`,
+        width: 2560,
+        height: 3300,
+      },
+    ],
+  };
+};
 
 /**
  * Continuous, hand-authored reading of the complete 1888 grant. Page furniture
@@ -77,31 +95,31 @@ export const eastmanKodakArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "In the accompanying drawings, wherein I have illustrated one embodiment of my present improvements, ",
       },
-      figure(1, 1500, 820),
+      figure(1),
       { kind: "text", text: " is a view in perspective of the complete instrument. " },
-      figure(2, 1000, 650),
+      figure(2),
       { kind: "text", text: " is a side and " },
-      figure(3, 1050, 660),
+      figure(3),
       {
         kind: "text",
         text: " a top view of the camera, the side and top of the box being removed to disclose the interior arrangement. ",
       },
-      figure(4, 500, 650),
+      figure(4),
       { kind: "text", text: " is a front view with cap or end of box removed. " },
-      figure(5, 400, 680),
+      figure(5),
       { kind: "text", text: " is a view in perspective of the lens-holder and shutter. " },
-      figure(6, 450, 780),
+      figure(6),
       {
         kind: "text",
         text: " is a view in perspective of the lens-holder and shutter, several of the parts being detached. ",
       },
-      figure(7, 850, 600),
+      figure(7),
       { kind: "text", text: ", " },
-      figure(8, 850, 600),
+      figure(8),
       { kind: "text", text: ", " },
-      figure(9, 950, 820),
+      figure(9),
       { kind: "text", text: ", and " },
-      figure(10, 900, 800),
+      figure(10),
       { kind: "text", text: " are views in perspective of the " },
       {
         kind: "term",
@@ -111,7 +129,7 @@ export const eastmanKodakArchivalEdition: CuratedSpecificationEdition = {
         label: "Period mechanism term",
       },
       { kind: "text", text: ", looking from opposite sides. " },
-      figure(11, 650, 900),
+      figure(11),
       {
         kind: "text",
         text: " is a detail view illustrating the manner of mounting and supporting the spool. Similar letters of reference in the several figures indicate the same parts.",

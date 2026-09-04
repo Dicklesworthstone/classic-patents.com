@@ -49,6 +49,23 @@ circuit in communication with a detector redirects the robot
 when the surface does not occupy the region to avoid
 obstacles. A similar system is employed to detect walls.
 
+(21) Appl. No.: 09/768,773
+(22) Filed: Jan. 24, 2001
+
+(57) ABSTRACT
+
+A robot obstacle detection system including a robot housing
+which navigates with respect to a surface and a sensor
+subsystem having a defined relationship with respect to the
+housing and aimed at the surface for detecting the surface.
+The sensor subsystem includes an optical emitter which
+emits a directed beam having a defined field of emission and
+a photon detector having a defined field of view which
+intersects the field of emission of the emitter at a region. A
+circuit in communication with a detector redirects the robot
+when the surface does not occupy the region to avoid
+obstacles. A similar system is employed to detect walls.
+
 20 Claims, 19 Drawing Sheets
 
 22
@@ -821,7 +838,7 @@ section above. In either mode, robot 10 may encounter
 downward stair 12 or another similar “cliff”, upward stair
 14, FIG. 2 or another similar rise, and/or obstacle 16, FIG.
 3. According to one specification, the robot must be capable
-of traversing obstacles less then *" high or low. Therefore,
+of traversing obstacles less then 5/8" high or low. Therefore,
 robot 10 must avoid stairs 12 and 14 but traverse obstacle 16
 which may be an extension cord, the interface between a rug
 and hard flooring, or a threshold between rooms.
@@ -893,7 +910,7 @@ mator 60', FIG. 6 and detector collimator 62' are both angled
 with respect to surface 58 and with respect to each other as
 shown. In this way, the region 70, FIG. 7 in which the field
 of emission of emitter 52' as shown at 72 and the field of
-view of detector of 56' as shown at 74 intersect is finite to
+view of detector 56' as shown at 74 intersect is finite to
 more adequately address specular scattering and surfaces of
 different reflectivity. In this design, the emitter is typically an
 infrared emitter and the detector is typically an infrared

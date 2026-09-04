@@ -4,14 +4,19 @@ import type {
   CuratedSpecificationInlines,
 } from "@/types/patent";
 
-const figureDimensions: Record<number, readonly [number, number]> = {
-  1: [850, 1120],
-  2: [530, 560],
-  3: [530, 560],
-  4: [530, 560],
-  5: [530, 680],
-  6: [820, 400],
-};
+/**
+ * The pinned grant's drawing sheets are PDF pages 2 and 3. Individual figure
+ * crops remain preserved on disk, but the active edition points only to the
+ * complete, upright source sheets so it does not assert unverified crop bounds.
+ */
+const sourcePdfPageForFigure = (number: number): 2 | 3 => (number === 1 ? 2 : 3);
+
+const sourceSheetPreview = (sourcePdfPage: 2 | 3, label: string) => ({
+  src: `/patents/figures/us-4341502-makino-scara/source-sheet-${sourcePdfPage}-v1.png`,
+  alt: `Complete unmodified source drawing sheet ${sourcePdfPage - 1} of 2 (PDF page ${sourcePdfPage}), containing ${label}, from US 4,341,502.`,
+  width: 2320,
+  height: 3408,
+});
 
 const p = (
   ...inlines: readonly (string | CuratedSpecificationInline)[]
@@ -23,41 +28,30 @@ const p = (
 });
 
 const figure = (number: number, text = `FIG. ${number}`): CuratedSpecificationInline => {
-  const [width, height] = figureDimensions[number] ?? [1200, 800];
   return {
     kind: "reference",
     text,
     href: `#figure-${number}`,
     referenceType: "figure",
-    label: `Source crop of ${text} from US 4,341,502`,
-    figurePreviews: [
-      {
-        src: `/patents/figures/us-4341502-makino-scara/fig-${number}-source-crop-v1.png`,
-        alt: `${text}, source drawing crop from US 4,341,502`,
-        width,
-        height,
-      },
-    ],
+    label: `Open the complete source drawing sheet containing ${text} in US 4,341,502`,
+    figurePreviews: [sourceSheetPreview(sourcePdfPageForFigure(number), text)],
   };
 };
 
-const figureRange = (first: number, last: number, text: string): CuratedSpecificationInline => ({
-  kind: "reference",
-  text,
-  href: `#figure-${first}`,
-  referenceType: "figure",
-  label: `Source crops of ${text} from US 4,341,502`,
-  figurePreviews: Array.from({ length: last - first + 1 }, (_, index) => {
-    const number = first + index;
-    const [width, height] = figureDimensions[number] ?? [1200, 800];
-    return {
-      src: `/patents/figures/us-4341502-makino-scara/fig-${number}-source-crop-v1.png`,
-      alt: `FIG. ${number}, source drawing crop from US 4,341,502`,
-      width,
-      height,
-    };
-  }),
-});
+const figureRange = (first: number, last: number, text: string): CuratedSpecificationInline => {
+  const sourcePdfPage = sourcePdfPageForFigure(first);
+  if (sourcePdfPage !== sourcePdfPageForFigure(last)) {
+    throw new Error(`${text} spans source drawing sheets in US 4,341,502.`);
+  }
+  return {
+    kind: "reference",
+    text,
+    href: `#figure-${first}`,
+    referenceType: "figure",
+    label: `Open the complete source drawing sheet containing ${text} in US 4,341,502`,
+    figurePreviews: [sourceSheetPreview(sourcePdfPage, text)],
+  };
+};
 
 const term = (text: string, label: string, definition: string): CuratedSpecificationInline => ({
   kind: "term",

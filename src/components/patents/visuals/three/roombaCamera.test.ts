@@ -71,12 +71,23 @@ function setModelState(
 }
 
 describe("Roomba desktop teaching camera", () => {
-  test("tightens only desktop isometric while retaining room and compact presets", () => {
+  test("tightens and follows only desktop isometric while retaining room and compact presets", () => {
     const desktop = roombaCameraViewForViewport("iso", 1214);
     expect(desktop).toEqual({ pos: [0.55, -4.14, 0.5], target: [0.05, -4.55, 0] });
-    expect(roombaCameraViewForViewport("iso", 720)).toEqual(ROOMBA_CAMERA_PRESETS.iso);
-    expect(roombaCameraViewForViewport("iso", 320)).toEqual(ROOMBA_CAMERA_PRESETS.iso);
+    const movingFocus = { x: -0.35, z: 0.2 };
+    const followedDesktop = roombaCameraViewForViewport("iso", 1214, movingFocus);
+    expect(followedDesktop.pos[0]).toBeCloseTo(0.2, 12);
+    expect(followedDesktop.pos[1]).toBe(-4.14);
+    expect(followedDesktop.pos[2]).toBeCloseTo(0.7, 12);
+    expect(followedDesktop.target[0]).toBeCloseTo(-0.3, 12);
+    expect(followedDesktop.target[1]).toBe(-4.55);
+    expect(followedDesktop.target[2]).toBeCloseTo(0.2, 12);
+    expect(roombaCameraViewForViewport("iso", 720, movingFocus)).toEqual(ROOMBA_CAMERA_PRESETS.iso);
+    expect(roombaCameraViewForViewport("iso", 320, movingFocus)).toEqual(ROOMBA_CAMERA_PRESETS.iso);
     expect(roombaCameraViewForViewport("cleaning_path", 1214)).toEqual(
+      ROOMBA_CAMERA_PRESETS.cleaning_path,
+    );
+    expect(roombaCameraViewForViewport("cleaning_path", 1214, movingFocus)).toEqual(
       ROOMBA_CAMERA_PRESETS.cleaning_path,
     );
     expect(roombaCameraViewForViewport("robot_chassis", 1214)).toEqual(
@@ -88,18 +99,24 @@ describe("Roomba desktop teaching camera", () => {
       "utf8",
     );
     expect(studioSource).toContain("roombaCameraViewForViewport");
+    expect(studioSource).toContain("trackDesktopTeachingCamera");
+    expect(studioSource).toContain("isRoombaDesktopTeachingIsometric");
   });
 
-  test("keeps the desktop chassis, drive, and Claim 1 contrast in their UI-safe lane", () => {
+  test("keeps a pre-mounted moving chassis and Claim 1 contrast in the desktop UI-safe lane", () => {
     const viewport = [1214, 460] as const;
-    const cameraView = roombaCameraViewForViewport("iso", viewport[0]);
+    const defaultCameraView = roombaCameraViewForViewport("iso", viewport[0]);
     const model = buildRoombaModel();
     try {
       const defaultState = initialRoombaState();
       setModelState(model, defaultState);
-      const defaultBounds = projectedMeshBounds(cameraView, ...viewport, model.mainGroup);
-      const sensorBounds = projectedMeshBounds(cameraView, ...viewport, model.opticalSensorGroup);
-      const wheelBounds = projectedMeshBounds(cameraView, ...viewport, model.leftWheel);
+      const defaultBounds = projectedMeshBounds(defaultCameraView, ...viewport, model.mainGroup);
+      const sensorBounds = projectedMeshBounds(
+        defaultCameraView,
+        ...viewport,
+        model.opticalSensorGroup,
+      );
+      const wheelBounds = projectedMeshBounds(defaultCameraView, ...viewport, model.leftWheel);
 
       // The title toolbar ends near +0.70 NDC. The two lower HUD cards leave
       // a central lane bounded horizontally by about -0.55 and +0.25 NDC.
@@ -112,12 +129,13 @@ describe("Roomba desktop teaching camera", () => {
       expect(sensorBounds.widthPx).toBeGreaterThan(60);
       expect(wheelBounds.heightPx).toBeGreaterThan(50);
 
-      // Drive Speed = 1 m/s is the V24 primary-control maximum. Advance the
-      // same deterministic kernel tape for 0.2 s, including its brush/wheel
-      // pose and resulting spiral displacement, instead of testing a static
-      // proxy at the origin.
+      // The shared tape can have advanced before the interactive 3D face
+      // mounts.  A close desktop camera fixed at the origin then lets a
+      // 1 m/s spiral leave the visual frame, even though the kernel itself is
+      // correct. Exercise a multi-second deterministic tape, not a static
+      // proxy at the origin or a single post-slider tick.
       let maxState = defaultState;
-      for (let index = 0; index < 24; index += 1) {
+      for (let index = 0; index < 480; index += 1) {
         maxState = stepRoomba(
           {
             wheelSpeedMps: 1,
@@ -130,25 +148,36 @@ describe("Roomba desktop teaching camera", () => {
         );
       }
       setModelState(model, maxState);
-      const maxBounds = projectedMeshBounds(cameraView, ...viewport, model.mainGroup);
-      expect(maxBounds.minX).toBeGreaterThan(-0.42);
-      expect(maxBounds.maxX).toBeLessThan(0.23);
-      expect(maxBounds.minY).toBeGreaterThan(-0.6);
-      expect(maxBounds.maxY).toBeLessThan(0.46);
-      expect(maxBounds.widthPx).toBeGreaterThan(350);
-      expect(maxBounds.heightPx).toBeGreaterThan(220);
+      const staleBounds = projectedMeshBounds(defaultCameraView, ...viewport, model.mainGroup);
+      expect(staleBounds.minY).toBeLessThan(-0.9);
+
+      const trackedCameraView = roombaCameraViewForViewport("iso", viewport[0], {
+        x: maxState.displayX,
+        z: maxState.displayY,
+      });
+      const maxBounds = projectedMeshBounds(trackedCameraView, ...viewport, model.mainGroup);
+      expect(maxBounds.minX).toBeGreaterThan(-0.34);
+      expect(maxBounds.maxX).toBeLessThan(0.24);
+      expect(maxBounds.minY).toBeGreaterThan(-0.24);
+      expect(maxBounds.maxY).toBeLessThan(0.66);
+      expect(maxBounds.widthPx).toBeGreaterThan(250);
+      expect(maxBounds.heightPx).toBeGreaterThan(150);
 
       // ClaimConstraintToggle removes only the optical emitter/detector
       // subsystem. The rest of the teaching model remains prominent.
       model.setOpticalSensorEnabled(false);
       expect(model.opticalSensorGroup.visible).toBe(false);
-      const claimInvertedBounds = projectedMeshBounds(cameraView, ...viewport, model.mainGroup);
-      expect(claimInvertedBounds.widthPx).toBeGreaterThan(350);
-      expect(claimInvertedBounds.heightPx).toBeGreaterThan(210);
-      expect(claimInvertedBounds.minX).toBeGreaterThan(-0.42);
-      expect(claimInvertedBounds.maxX).toBeLessThan(0.23);
-      expect(claimInvertedBounds.minY).toBeGreaterThan(-0.55);
-      expect(claimInvertedBounds.maxY).toBeLessThan(0.46);
+      const claimInvertedBounds = projectedMeshBounds(
+        trackedCameraView,
+        ...viewport,
+        model.mainGroup,
+      );
+      expect(claimInvertedBounds.widthPx).toBeGreaterThan(250);
+      expect(claimInvertedBounds.heightPx).toBeGreaterThan(150);
+      expect(claimInvertedBounds.minX).toBeGreaterThan(-0.34);
+      expect(claimInvertedBounds.maxX).toBeLessThan(0.24);
+      expect(claimInvertedBounds.minY).toBeGreaterThan(-0.24);
+      expect(claimInvertedBounds.maxY).toBeLessThan(0.66);
     } finally {
       model.dispose();
     }

@@ -50,25 +50,77 @@ describe("US 2,717,437 manual source edition", () => {
     }
   });
 
-  test("cites source-derived crops and annotates technical historical language", () => {
-    const figureSheet = mestralVelcroArchivalEdition.blocks.find(
-      (candidate) => candidate.kind === "figure-sheet",
-    );
-    expect(figureSheet).toBeDefined();
-    if (figureSheet?.kind === "figure-sheet") {
-      const figureInlines = figureSheet.description.filter(
-        (inline) => inline.kind === "reference" && inline.figurePreviews,
+  test("binds all 11 active figure citations to the complete digest-pinned source sheet", () => {
+    const sourceSheet = "/patents/figures/us-2717437-mestral-velcro/source-sheet-1-v1.png";
+    const figureOccurrences = mestralVelcroArchivalEdition.blocks.flatMap((block, blockIndex) => {
+      const inlines =
+        block.kind === "figure-sheet"
+          ? block.description
+          : block.kind === "paragraph"
+            ? block.inlines
+            : [];
+      return inlines.flatMap((inline, inlineIndex) =>
+        inline.kind === "reference" && inline.referenceType === "figure"
+          ? [
+              {
+                occurrenceKey: `edition-block-${blockIndex}-group-0-inline-${inlineIndex}`,
+                text: inline.text,
+                previews: inline.figurePreviews,
+              },
+            ]
+          : [],
       );
-      expect(figureInlines.length).toBeGreaterThanOrEqual(2);
-      for (const inline of figureInlines) {
-        if (inline.kind === "reference" && inline.figurePreviews) {
-          for (const preview of inline.figurePreviews) {
-            expect(existsSync(resolve(process.cwd(), `public${preview.src}`))).toBe(true);
-          }
-        }
-      }
+    });
+
+    expect(
+      figureOccurrences.map((occurrence) => [occurrence.occurrenceKey, occurrence.text]),
+    ).toEqual([
+      ["edition-block-1-group-0-inline-0", "Fig. 1"],
+      ["edition-block-1-group-0-inline-2", "Fig. 2"],
+      ["edition-block-6-group-0-inline-1", "Fig. 1"],
+      ["edition-block-6-group-0-inline-3", "Fig. 2"],
+      ["edition-block-7-group-0-inline-1", "Fig. 1"],
+      ["edition-block-11-group-0-inline-1", "Fig. 1"],
+      ["edition-block-11-group-0-inline-5", "Fig. 1"],
+      ["edition-block-13-group-0-inline-1", "Fig. 2"],
+      ["edition-block-13-group-0-inline-3", "Fig. 1"],
+      ["edition-block-16-group-0-inline-1", "Figs. 1"],
+      ["edition-block-16-group-0-inline-3", "2"],
+    ]);
+    for (const occurrence of figureOccurrences) {
+      expect(occurrence.previews).toEqual([
+        expect.objectContaining({ src: sourceSheet, width: 2320, height: 3408 }),
+      ]);
+      expect(occurrence.previews?.[0]?.alt).toContain(
+        "Complete unmodified source drawing sheet 1 of 1",
+      );
     }
 
+    const sourceSheetPath = resolve(process.cwd(), `public${sourceSheet}`);
+    expect(existsSync(sourceSheetPath)).toBe(true);
+    expect(createHash("sha256").update(readFileSync(sourceSheetPath)).digest("hex")).toBe(
+      "3836f440a26c7be2257dbf1bd985f775d0c5387fbbda49b30483bdab493c5dd9",
+    );
+    for (const legacyAsset of ["fig-1-source-crop-v1.png", "fig-2-source-crop-v1.png"]) {
+      expect(
+        existsSync(
+          resolve(process.cwd(), "public/patents/figures/us-2717437-mestral-velcro", legacyAsset),
+        ),
+      ).toBe(true);
+    }
+
+    const provenance = readFileSync(
+      resolve(process.cwd(), "docs/provenance/us-2717437-mestral-velcro.md"),
+      "utf8",
+    );
+    expect(provenance).toContain("## 3. Source-sheet acceptance (2026-09-03)");
+    expect(provenance).toContain("The 11—not 12—authored");
+    expect(provenance).toContain(
+      "3836f440a26c7be2257dbf1bd985f775d0c5387fbbda49b30483bdab493c5dd9",
+    );
+  });
+
+  test("annotates technical historical language", () => {
     const annotatedTerms = mestralVelcroArchivalEdition.blocks.flatMap((candidate) =>
       candidate.kind === "paragraph"
         ? candidate.inlines.filter((inline) => inline.kind === "term")

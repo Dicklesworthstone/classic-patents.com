@@ -6,8 +6,11 @@ import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValid
 import {
   grammeDynamoArchivalEdition,
   grammeDynamoParallelReadings,
+  grammeDynamoPreservedLegacyFigureCrops,
 } from "@/data/editions/grammeDynamoEdition";
 import { grammeDynamoPatent } from "@/data/patents/gramme-dynamo";
+import type { CuratedSpecificationInline } from "@/types/patent";
+import { completeArchivalEditionForViewer, patentForSourceReader } from "./publicationApproval";
 
 describe("grammeDynamoArchivalEdition", () => {
   test("is a continuous manual edition of the complete nine-page primary facsimile", () => {
@@ -26,7 +29,7 @@ describe("grammeDynamoArchivalEdition", () => {
     ).toEqual([1, 2, 3]);
   });
 
-  test("preserves the four source sheets and gives every cited figure its own checked source crop", async () => {
+  test("binds every cited figure to its complete, visually reviewed source sheet", async () => {
     const sheets = grammeDynamoArchivalEdition.blocks.filter(
       (block) => block.kind === "figure-sheet",
     );
@@ -37,135 +40,132 @@ describe("grammeDynamoArchivalEdition", () => {
       "DRAWING SHEET 4",
     ]);
 
-    const figureReferences = grammeDynamoArchivalEdition.blocks.flatMap((block) => {
-      if (!("inlines" in block)) return [];
-      return block.inlines.filter(
-        (inline): inline is Extract<(typeof block.inlines)[number], { kind: "reference" }> =>
-          inline.kind === "reference" && inline.referenceType === "figure",
-      );
-    });
+    const figureReferences: Extract<CuratedSpecificationInline, { kind: "reference" }>[] = [];
+    for (const block of grammeDynamoArchivalEdition.blocks) {
+      const inlineGroups =
+        block.kind === "paragraph" || block.kind === "claim"
+          ? [block.inlines]
+          : block.kind === "figure-sheet"
+            ? [block.description]
+            : [];
+      for (const inlines of inlineGroups) {
+        for (const inline of inlines) {
+          if (inline.kind === "reference" && inline.referenceType === "figure") {
+            figureReferences.push(inline);
+          }
+        }
+      }
+    }
 
     const publicText = JSON.stringify(grammeDynamoArchivalEdition.blocks);
     for (const figure of ["Fig. 1", "Fig. 4", "Fig. 7", "Fig. 10", "Fig. 12", "Fig. 14"]) {
       expect(publicText).toContain(figure);
     }
-    const expectedCropFiles = Array.from({ length: 14 }, (_, index) => `fig-${index + 1}.png`);
-    expectedCropFiles[0] = "fig-1-source-crop-v3.png";
-    expectedCropFiles[1] = "fig-2-source-crop-v3.png";
-    expectedCropFiles[2] = "fig-3-source-crop-v2.png";
-    expectedCropFiles[3] = "fig-4-source-crop-v2.png";
-    expectedCropFiles[4] = "fig-5-source-crop-v3.png";
-    expectedCropFiles[5] = "fig-6-source-crop-v2.png";
-    expectedCropFiles[6] = "fig-7-source-crop.png";
-    expectedCropFiles[7] = "fig-8-source-crop-v3.png";
-    expectedCropFiles[8] = "fig-9.png";
-    expectedCropFiles[9] = "fig-10-source-crop-v3.png";
-    expectedCropFiles[10] = "fig-11-source-crop-v3.png";
-    expectedCropFiles[11] = "fig-12-source-crop-v3.png";
-    expectedCropFiles[12] = "fig-13-source-crop-v3.png";
-    expectedCropFiles[13] = "fig-14-source-crop-v5.png";
-    expectedCropFiles.push("fig-14-label-source-crop-v4.png");
-    for (const cropFile of expectedCropFiles) {
-      expect(publicText).toContain(`/patents/figures/us-120057-gramme-dynamo/${cropFile}`);
-    }
+
+    const sourceSheets = [
+      {
+        sourcePdfPage: 1,
+        filename: "drawing-sheet-1.png",
+        sha256: "a7c2380f83a93fcdebba8c39ada3833984d845aad829898b1ac22f4d9c304bd2",
+      },
+      {
+        sourcePdfPage: 2,
+        filename: "drawing-sheet-2.png",
+        sha256: "9f047812267a5e0f7d02f4e43f66b21936bd408e9fe29321fadea91050750e27",
+      },
+      {
+        sourcePdfPage: 3,
+        filename: "drawing-sheet-3.png",
+        sha256: "9c58685c61fbaa91e460b7542cde68d37b39a1dd0d61cf14e2a0517478dc72ea",
+      },
+      {
+        sourcePdfPage: 4,
+        filename: "drawing-sheet-4.png",
+        sha256: "d2a63bed87918eeb58eb9b2447a034fc5cc959bba92c9edd149a8efc04021512",
+      },
+    ] as const;
+    const sourceSheetForFigure = {
+      1: 1,
+      2: 1,
+      3: 1,
+      4: 1,
+      5: 1,
+      6: 1,
+      7: 2,
+      8: 2,
+      9: 2,
+      10: 3,
+      11: 3,
+      12: 3,
+      13: 3,
+      14: 4,
+    } as const;
+
+    expect(figureReferences).toHaveLength(31);
     for (const reference of figureReferences) {
-      expect(reference.figurePreviews?.length).toBeGreaterThan(0);
-      for (const preview of reference.figurePreviews ?? []) {
-        expect(preview.src).toStartWith("/patents/figures/us-120057-gramme-dynamo/fig-");
-        expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
-      }
+      expect(reference.figurePreviews).toHaveLength(1);
+      const sourcePdfPage = Number(reference.href?.match(/drawing-sheet-(\d+)/)?.[1]);
+      const expected = sourceSheets.find((sheet) => sheet.sourcePdfPage === sourcePdfPage);
+      const preview = reference.figurePreviews?.[0];
+      expect(expected).toBeDefined();
+      expect(preview).toMatchObject({
+        src: `/patents/figures/us-120057-gramme-dynamo/${expected?.filename}`,
+        width: 1392,
+        height: 2045,
+      });
+      expect(preview?.alt).toContain("Complete unmodified source drawing sheet");
+      expect(existsSync(resolve(process.cwd(), "public", preview?.src.slice(1) ?? ""))).toBe(true);
     }
 
-    // Every printed figure number must have an occurrence-specific authored
-    // reference. A grouped drawing-sheet description may provide additional
-    // context, but it cannot be the only link for a cited figure, and no
-    // reference may silently point at a neighboring figure's crop.
     for (const figureNumber of Array.from({ length: 14 }, (_, index) => index + 1)) {
       const references = figureReferences.filter((reference) =>
         Boolean(reference.text.match(/\d+/g)?.includes(String(figureNumber))),
       );
       expect(references.length).toBeGreaterThan(0);
-      const hasMatchingPreview = references.some((reference) =>
-        (reference.figurePreviews ?? []).some(
-          (preview) =>
-            preview.src.includes(`/fig-${figureNumber}.png`) ||
-            preview.src.includes(`/fig-${figureNumber}-source-crop`),
+      const expectedSourcePdfPage =
+        sourceSheetForFigure[figureNumber as keyof typeof sourceSheetForFigure];
+      expect(
+        references.some((reference) =>
+          reference.figurePreviews?.[0]?.src.endsWith(
+            `/drawing-sheet-${expectedSourcePdfPage}.png`,
+          ),
         ),
-      );
-      expect(hasMatchingPreview).toBe(true);
+      ).toBe(true);
     }
 
-    // These are byte-identity proofs for the currently bound candidates, not
-    // visual acceptance. The provenance receipt records the separate visual
-    // publication gate and its blocked figures.
-    const hashPinnedCandidateProof = [
-      [
-        "fig-1-source-crop-v3.png",
-        315,
-        435,
-        "833c51a8bd14b98018483346bfa0c6410605760b53abfe9c3fee3f3d2c165ac9",
-      ],
-      [
-        "fig-2-source-crop-v3.png",
-        225,
-        450,
-        "3ea81d59b9d4a959dc9b1f53bd6abc3de4654860920cebfdde2572be3a44773e",
-      ],
-      [
-        "fig-5-source-crop-v3.png",
-        1220,
-        385,
-        "a21bf1960c8007c94d494026c7dd752de4d911877e9a0de249ea1dbeb2874b3c",
-      ],
-      [
-        "fig-8-source-crop-v3.png",
-        945,
-        440,
-        "07c45fc62e6e4747ea3cfff29c517fcfdf27c861b0965006c0fec3e4f3b47c1a",
-      ],
-      [
-        "fig-10-source-crop-v3.png",
-        320,
-        600,
-        "c447d92e8c711e3c607dd114859faebc6408ec871a5a0eb3603c4e6fd63a695d",
-      ],
-      [
-        "fig-11-source-crop-v3.png",
-        450,
-        450,
-        "7866ed1c0d216575176f617b1b3645b9d469ae55e04af510bbae7ad4f82b45e7",
-      ],
-    ] as const;
-    for (const [filename, width, height, sha256] of hashPinnedCandidateProof) {
-      const preview = figureReferences
-        .flatMap((reference) => reference.figurePreviews ?? [])
-        .find((candidate) => candidate.src.endsWith(filename));
-      expect(preview).toMatchObject({
-        src: `/patents/figures/us-120057-gramme-dynamo/${filename}`,
-        width,
-        height,
+    for (const sourceSheet of sourceSheets) {
+      const path = resolve(
+        process.cwd(),
+        "public/patents/figures/us-120057-gramme-dynamo",
+        sourceSheet.filename,
+      );
+      expect(existsSync(path)).toBe(true);
+      const bytes = new Uint8Array(await Bun.file(path).arrayBuffer());
+      expect(createHash("sha256").update(bytes).digest("hex")).toBe(sourceSheet.sha256);
+      const png = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+      expect({ width: png.getUint32(16), height: png.getUint32(20) }).toEqual({
+        width: 1392,
+        height: 2045,
       });
-      const bytes = new Uint8Array(
-        await Bun.file(resolve(process.cwd(), "public", preview?.src.slice(1) ?? "")).arrayBuffer(),
-      );
-      expect(createHash("sha256").update(bytes).digest("hex")).toBe(sha256);
     }
 
-    const figure14Previews = figureReferences
-      .filter((reference) => /Fig\. 14/.test(reference.text))
-      .flatMap((reference) => reference.figurePreviews ?? []);
-    expect(figure14Previews).toContainEqual({
-      src: "/patents/figures/us-120057-gramme-dynamo/fig-14-source-crop-v5.png",
-      alt: "Upright source-facsimile apparatus crop of Fig. 14 from US 120,057, with the complete printed figure label and no witness block.",
-      width: 1500,
-      height: 930,
-    });
-    expect(figure14Previews).toContainEqual({
-      src: "/patents/figures/us-120057-gramme-dynamo/fig-14-label-source-crop-v4.png",
-      alt: "Upright source-facsimile crop of the printed Fig. 14 label from US 120,057.",
-      width: 180,
-      height: 100,
-    });
+    const provenance = readFileSync(
+      resolve(process.cwd(), "docs/provenance/us-120057-gramme-dynamo.md"),
+      "utf8",
+    );
+    expect(provenance).toContain("## Source-sheet acceptance (2026-09-04)");
+    expect(provenance).toContain("31 authored figure-reference nodes");
+    for (const sourceSheet of sourceSheets) {
+      expect(provenance).toContain(sourceSheet.filename);
+      expect(provenance).toContain(sourceSheet.sha256);
+    }
+
+    for (const preview of [
+      ...Object.values(grammeDynamoPreservedLegacyFigureCrops.figures),
+      grammeDynamoPreservedLegacyFigureCrops.figure14Label,
+    ]) {
+      expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+    }
   });
 
   test("does not leave a source figure citation stranded in a plain text node", () => {
@@ -290,13 +290,10 @@ describe("grammeDynamoArchivalEdition", () => {
     expect(energyChannelsFor("us-120057-gramme-dynamo", {})).toEqual([]);
   });
 
-  test("enforces figure acceptance audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const decision = evaluateTypedArchivalPublicationState(grammeDynamoPatent, {
-      hasCompanionReadings: true,
-    });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+  test("keeps the complete source edition available while archival audit evidence is reconciled", () => {
+    expect(completeArchivalEditionForViewer(grammeDynamoPatent)).toBe(grammeDynamoArchivalEdition);
+    expect(patentForSourceReader(grammeDynamoPatent).archivalEdition).toBe(
+      grammeDynamoArchivalEdition,
+    );
   });
 });

@@ -1,11 +1,27 @@
 import * as THREE from "three";
+import type { ArkwrightKinematicPhases } from "@/physics/arkwrightKernel";
 
 export interface ArkwrightWaterFrameModelNodes {
   root: THREE.Group;
   wheelGroup: THREE.Group;
   shaftGroup: THREE.Group;
   feedRollersGroup: THREE.Group;
+  intermediateRollerOneGroup: THREE.Group;
+  intermediateRollerTwoGroup: THREE.Group;
   deliveryRollersGroup: THREE.Group;
+  feedLowerRollers: THREE.Group[];
+  feedUpperRollers: THREE.Group[];
+  intermediateOneLowerRollers: THREE.Group[];
+  intermediateOneUpperRollers: THREE.Group[];
+  intermediateTwoLowerRollers: THREE.Group[];
+  intermediateTwoUpperRollers: THREE.Group[];
+  deliveryLowerRollers: THREE.Group[];
+  deliveryUpperRollers: THREE.Group[];
+  wheelBevelRotor: THREE.Group;
+  shaftBevelRotor: THREE.Group;
+  rollerDriveRotors: THREE.Group[];
+  spindleDriveRotors: THREE.Group[];
+  spindleWhorlRotors: THREE.Group[];
   flyerGroups: THREE.Group[];
   bobbinGroups: THREE.Group[];
   traverseRailGroup: THREE.Group;
@@ -13,6 +29,7 @@ export interface ArkwrightWaterFrameModelNodes {
   calloutGroup: THREE.Group;
   setCutaway: (cutaway: boolean) => void;
   setCalloutsVisible: (visible: boolean) => void;
+  updateAnimation: (phases: ArkwrightKinematicPhases) => void;
   dispose: () => void;
 }
 
@@ -133,7 +150,9 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
   wheelGroup.position.set(0.35, 0.22, 0);
   root.add(wheelGroup);
 
-  const drumGeom = new THREE.CylinderGeometry(0.24, 0.24, 0.16, 32);
+  // The normalized drum is tangent to the plinth and lower rail instead of
+  // passing through both timber members.
+  const drumGeom = new THREE.CylinderGeometry(0.13, 0.13, 0.16, 32);
   disposables.push(drumGeom);
   const drumMesh = new THREE.Mesh(drumGeom, darkOakMaterial);
   drumMesh.rotation.x = Math.PI / 2;
@@ -149,7 +168,7 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
   // ==================== 3. B: HORIZONTAL IRON DRIVING SHAFT ====================
   const shaftGroup = new THREE.Group();
   shaftGroup.name = "driving-shaft-B";
-  shaftGroup.position.set(0, 0.22, 0);
+  shaftGroup.position.set(0, 0.22, 0.06);
   root.add(shaftGroup);
 
   const shaftGeom = new THREE.CylinderGeometry(0.015, 0.015, 1.15, 16);
@@ -158,22 +177,47 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
   shaftMesh.rotation.z = Math.PI / 2;
   shaftGroup.add(shaftMesh);
 
-  // Clutch disengaging lever
+  // The clutch lever is supported by the frame and does not orbit with the
+  // shaft. Keeping it out of shaftGroup prevents the old cage-rotation bug.
   const clutchGeom = new THREE.BoxGeometry(0.04, 0.08, 0.04);
   disposables.push(clutchGeom);
   const clutchMesh = new THREE.Mesh(clutchGeom, brassMaterial);
-  clutchMesh.position.set(-0.45, 0, 0);
-  shaftGroup.add(clutchMesh);
+  clutchMesh.position.set(-0.45, 0.26, 0.06);
+  root.add(clutchMesh);
+
+  // Fixed bearing pedestals tie the shaft to the base instead of leaving the
+  // complete drive train suspended in space.
+  const bearingPedestalGeom = new THREE.BoxGeometry(0.06, 0.14, 0.08);
+  const bearingCapGeom = new THREE.BoxGeometry(0.08, 0.06, 0.1);
+  disposables.push(bearingPedestalGeom, bearingCapGeom);
+  for (const x of [-0.52, 0.52]) {
+    const pedestal = new THREE.Mesh(bearingPedestalGeom, darkOakMaterial);
+    pedestal.position.set(x, 0.15, 0.06);
+    root.add(pedestal);
+    const cap = new THREE.Mesh(bearingCapGeom, ironMaterial);
+    cap.position.set(x, 0.22, 0.06);
+    root.add(cap);
+  }
 
   // ==================== 4. C & D: DIFFERENTIAL DRAFTING ROLLERS ====================
   const feedRollersGroup = new THREE.Group();
   feedRollersGroup.name = "feed-rollers-C1";
-  feedRollersGroup.position.set(0, 0.88, -0.06);
+  feedRollersGroup.position.set(0, 0.88, -0.09);
   root.add(feedRollersGroup);
+
+  const intermediateRollerOneGroup = new THREE.Group();
+  intermediateRollerOneGroup.name = "intermediate-rollers-C2";
+  intermediateRollerOneGroup.position.set(0, 0.88, -0.03);
+  root.add(intermediateRollerOneGroup);
+
+  const intermediateRollerTwoGroup = new THREE.Group();
+  intermediateRollerTwoGroup.name = "intermediate-rollers-C3";
+  intermediateRollerTwoGroup.position.set(0, 0.88, 0.03);
+  root.add(intermediateRollerTwoGroup);
 
   const deliveryRollersGroup = new THREE.Group();
   deliveryRollersGroup.name = "delivery-rollers-C4";
-  deliveryRollersGroup.position.set(0, 0.88, 0.06);
+  deliveryRollersGroup.position.set(0, 0.88, 0.09);
   root.add(deliveryRollersGroup);
 
   // 4 Spindle stations along X-axis: -0.36, -0.12, 0.12, 0.36
@@ -181,47 +225,221 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
 
   const rollerGeom = new THREE.CylinderGeometry(0.018, 0.018, 0.07, 16);
   disposables.push(rollerGeom);
+  const feedLowerRollers: THREE.Group[] = [];
+  const feedUpperRollers: THREE.Group[] = [];
+  const intermediateOneLowerRollers: THREE.Group[] = [];
+  const intermediateOneUpperRollers: THREE.Group[] = [];
+  const intermediateTwoLowerRollers: THREE.Group[] = [];
+  const intermediateTwoUpperRollers: THREE.Group[] = [];
+  const deliveryLowerRollers: THREE.Group[] = [];
+  const deliveryUpperRollers: THREE.Group[] = [];
 
-  for (const x of stationX) {
+  const rollerAxleGeom = new THREE.CylinderGeometry(0.003, 0.003, 0.92, 10);
+  const saddleWireGeom = new THREE.CylinderGeometry(0.002, 0.002, 0.18, 8);
+  const weightGeom = new THREE.CylinderGeometry(0.025, 0.025, 0.06, 16);
+  disposables.push(rollerAxleGeom, saddleWireGeom, weightGeom);
+
+  for (const group of [
+    feedRollersGroup,
+    intermediateRollerOneGroup,
+    intermediateRollerTwoGroup,
+    deliveryRollersGroup,
+  ]) {
+    const axle = new THREE.Mesh(rollerAxleGeom, ironMaterial);
+    axle.name = `${group.name}-continuous-lower-axle`;
+    axle.rotation.z = Math.PI / 2;
+    axle.position.y = -0.01;
+    group.add(axle);
+  }
+
+  const createRollerRotor = (
+    name: string,
+    x: number,
+    y: number,
+    material: THREE.MeshStandardMaterial,
+  ): THREE.Group => {
+    const rotor = new THREE.Group();
+    rotor.name = name;
+    rotor.position.set(x, y, 0);
+    const roller = new THREE.Mesh(rollerGeom, material);
+    // CylinderGeometry is Y-aligned; this fixed child transform aligns it to
+    // the rotor's X axis. Animation then rotates the parent about that axis.
+    roller.rotation.z = Math.PI / 2;
+    rotor.add(roller);
+    return rotor;
+  };
+
+  stationX.forEach((x, stationIndex) => {
     // Pair 1: Feed Rollers (Lower fluted brass, upper leather cot)
-    const lowerFeed = new THREE.Mesh(rollerGeom, brassMaterial);
-    lowerFeed.rotation.z = Math.PI / 2;
-    lowerFeed.position.set(x, -0.01, 0);
+    const lowerFeed = createRollerRotor(
+      `feed-lower-rotor-${stationIndex + 1}`,
+      x,
+      -0.01,
+      brassMaterial,
+    );
     feedRollersGroup.add(lowerFeed);
+    feedLowerRollers.push(lowerFeed);
 
-    const upperFeed = new THREE.Mesh(rollerGeom, leatherMaterial);
-    upperFeed.rotation.z = Math.PI / 2;
-    upperFeed.position.set(x, 0.026, 0);
+    const upperFeed = createRollerRotor(
+      `feed-upper-rotor-${stationIndex + 1}`,
+      x,
+      0.026,
+      leatherMaterial,
+    );
     feedRollersGroup.add(upperFeed);
+    feedUpperRollers.push(upperFeed);
+
+    const lowerIntermediateOne = createRollerRotor(
+      `intermediate-one-lower-rotor-${stationIndex + 1}`,
+      x,
+      -0.01,
+      brassMaterial,
+    );
+    intermediateRollerOneGroup.add(lowerIntermediateOne);
+    intermediateOneLowerRollers.push(lowerIntermediateOne);
+
+    const upperIntermediateOne = createRollerRotor(
+      `intermediate-one-upper-rotor-${stationIndex + 1}`,
+      x,
+      0.026,
+      leatherMaterial,
+    );
+    intermediateRollerOneGroup.add(upperIntermediateOne);
+    intermediateOneUpperRollers.push(upperIntermediateOne);
+
+    const lowerIntermediateTwo = createRollerRotor(
+      `intermediate-two-lower-rotor-${stationIndex + 1}`,
+      x,
+      -0.01,
+      brassMaterial,
+    );
+    intermediateRollerTwoGroup.add(lowerIntermediateTwo);
+    intermediateTwoLowerRollers.push(lowerIntermediateTwo);
+
+    const upperIntermediateTwo = createRollerRotor(
+      `intermediate-two-upper-rotor-${stationIndex + 1}`,
+      x,
+      0.026,
+      leatherMaterial,
+    );
+    intermediateRollerTwoGroup.add(upperIntermediateTwo);
+    intermediateTwoUpperRollers.push(upperIntermediateTwo);
 
     // Pair 4: Delivery Rollers (Accelerating speed)
-    const lowerDeliv = new THREE.Mesh(rollerGeom, brassMaterial);
-    lowerDeliv.rotation.z = Math.PI / 2;
-    lowerDeliv.position.set(x, -0.01, 0);
+    const lowerDeliv = createRollerRotor(
+      `delivery-lower-rotor-${stationIndex + 1}`,
+      x,
+      -0.01,
+      brassMaterial,
+    );
     deliveryRollersGroup.add(lowerDeliv);
+    deliveryLowerRollers.push(lowerDeliv);
 
-    const upperDeliv = new THREE.Mesh(rollerGeom, leatherMaterial);
-    upperDeliv.rotation.z = Math.PI / 2;
-    upperDeliv.position.set(x, 0.026, 0);
+    const upperDeliv = createRollerRotor(
+      `delivery-upper-rotor-${stationIndex + 1}`,
+      x,
+      0.026,
+      leatherMaterial,
+    );
     deliveryRollersGroup.add(upperDeliv);
+    deliveryUpperRollers.push(upperDeliv);
 
-    // D: Suspended Lead Weights & Saddles
-    const saddleWireGeom = new THREE.CylinderGeometry(0.002, 0.002, 0.18, 8);
-    disposables.push(saddleWireGeom);
-    const saddleWire = new THREE.Mesh(saddleWireGeom, ironMaterial);
-    saddleWire.position.set(x, -0.08, 0);
-    feedRollersGroup.add(saddleWire);
+    // D: each pressure stage keeps its own stationary saddle and deadweight.
+    for (const group of [
+      feedRollersGroup,
+      intermediateRollerOneGroup,
+      intermediateRollerTwoGroup,
+      deliveryRollersGroup,
+    ]) {
+      const saddleWire = new THREE.Mesh(saddleWireGeom, ironMaterial);
+      saddleWire.position.set(x, -0.08, 0);
+      group.add(saddleWire);
 
-    const weightGeom = new THREE.CylinderGeometry(0.025, 0.025, 0.06, 16);
-    disposables.push(weightGeom);
-    const weightMesh = new THREE.Mesh(weightGeom, leadWeightMaterial);
-    weightMesh.position.set(x, -0.16, 0);
-    feedRollersGroup.add(weightMesh);
-  }
+      const weightMesh = new THREE.Mesh(weightGeom, leadWeightMaterial);
+      weightMesh.position.set(x, -0.16, 0);
+      group.add(weightMesh);
+    }
+  });
+
+  // Source-bounded normalized transmission housing. It physically receives
+  // shaft B and exposes four coaxial outputs into the four lower roller axles.
+  // The pinned reconstruction withholds its internal tooth counts, so the
+  // cover deliberately avoids drawing a false exposed gear or belt ratio.
+  const rollerDriveRotors: THREE.Group[] = [];
+  const transmissionCoverMaterial = new THREE.MeshStandardMaterial({
+    color: 0x334155,
+    roughness: 0.55,
+    metalness: 0.7,
+    transparent: true,
+    opacity: 0.72,
+  });
+  const transmissionCoverGeom = new THREE.BoxGeometry(0.1, 0.65, 0.28);
+  const transmissionCover = new THREE.Mesh(transmissionCoverGeom, transmissionCoverMaterial);
+  transmissionCover.name = "normalized-drafting-transmission-housing";
+  transmissionCover.position.set(0.52, 0.545, 0);
+  root.add(transmissionCover);
+  const drivePulleyGeom = new THREE.CylinderGeometry(0.025, 0.025, 0.018, 20);
+  disposables.push(transmissionCoverMaterial, transmissionCoverGeom, drivePulleyGeom);
+  const rollerStages = [
+    feedRollersGroup,
+    intermediateRollerOneGroup,
+    intermediateRollerTwoGroup,
+    deliveryRollersGroup,
+  ];
+  rollerStages.forEach((stage, stageIndex) => {
+    const stagePulleyRotor = new THREE.Group();
+    stagePulleyRotor.name = `drafting-stage-drive-rotor-${stageIndex + 1}`;
+    stagePulleyRotor.position.set(0.47, 0.87, stage.position.z);
+    const stagePulley = new THREE.Mesh(drivePulleyGeom, brassMaterial);
+    stagePulley.rotation.z = Math.PI / 2;
+    stagePulleyRotor.add(stagePulley);
+    root.add(stagePulleyRotor);
+    rollerDriveRotors.push(stagePulleyRotor);
+  });
 
   // ==================== 5. E & F: SPINDLES, FLYERS & BOBBINS ====================
   const flyerGroups: THREE.Group[] = [];
   const bobbinGroups: THREE.Group[] = [];
+  const spindleDriveRotors: THREE.Group[] = [];
+  const spindleWhorlRotors: THREE.Group[] = [];
+  const spindleDriverBevelGeom = new THREE.CylinderGeometry(0.012, 0.037, 0.035, 16);
+  const spindleDrivenBevelGeom = new THREE.CylinderGeometry(0.004, 0.01, 0.035, 16);
+  const spindleLayshaftGeom = new THREE.CylinderGeometry(0.004, 0.004, 0.13, 12);
+  const layshaftSpurGeom = new THREE.CylinderGeometry(0.05, 0.05, 0.012, 24);
+  const spindleWhorlGeom = new THREE.CylinderGeometry(0.01, 0.01, 0.012, 16);
+  disposables.push(
+    spindleDriverBevelGeom,
+    spindleDrivenBevelGeom,
+    spindleLayshaftGeom,
+    layshaftSpurGeom,
+    spindleWhorlGeom,
+  );
+
+  // Four continuous roving paths make the material flow physically legible:
+  // feed nip -> delivery nip -> flyer guide -> bobbin. They remain stationary
+  // centerlines while the rollers and flyers move around them.
+  const yarnPathMaterial = new THREE.LineBasicMaterial({
+    color: 0xfef08a,
+    transparent: true,
+    opacity: 0.9,
+  });
+  disposables.push(yarnPathMaterial);
+  const yarnPathGeometries: THREE.BufferGeometry[] = [];
+  for (const x of stationX) {
+    const pathPoints = [
+      new THREE.Vector3(x, 0.88, -0.12),
+      new THREE.Vector3(x, 0.88, 0.06),
+      new THREE.Vector3(x, 0.72, 0.06),
+      new THREE.Vector3(x + 0.045, 0.56, 0.06),
+      new THREE.Vector3(x + 0.026, 0.61, 0.06),
+    ];
+    const pathGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
+    disposables.push(pathGeometry);
+    yarnPathGeometries.push(pathGeometry);
+    const yarnPath = new THREE.Line(pathGeometry, yarnPathMaterial);
+    yarnPath.name = `continuous-roving-path-${x}`;
+    root.add(yarnPath);
+  }
 
   // G: Traversing Rail holding the bobbins (moves up and down)
   const traverseRailGroup = new THREE.Group();
@@ -229,7 +447,9 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
   traverseRailGroup.position.set(0, 0.52, 0.06);
   root.add(traverseRailGroup);
 
-  const travRailMesh = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.025, 0.12), oakMaterial);
+  const traverseRailGeom = new THREE.BoxGeometry(1.0, 0.025, 0.12);
+  disposables.push(traverseRailGeom);
+  const travRailMesh = new THREE.Mesh(traverseRailGeom, oakMaterial);
   traverseRailGroup.add(travRailMesh);
 
   for (let i = 0; i < 4; i++) {
@@ -241,18 +461,44 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
     root.add(spindleStation);
 
     // Steel Spindle Shaft
-    const spindleShaftGeom = new THREE.CylinderGeometry(0.005, 0.005, 0.45, 12);
+    const spindleShaftGeom = new THREE.CylinderGeometry(0.005, 0.005, 0.61, 12);
     disposables.push(spindleShaftGeom);
     const spindleShaft = new THREE.Mesh(spindleShaftGeom, steelMaterial);
-    spindleShaft.position.set(0, 0.58, 0);
+    spindleShaft.position.set(0, 0.515, 0);
     spindleStation.add(spindleShaft);
 
-    // Spindle Whorl (brass pulley at bottom)
-    const whorlGeom = new THREE.CylinderGeometry(0.02, 0.02, 0.02, 16);
-    disposables.push(whorlGeom);
-    const whorl = new THREE.Mesh(whorlGeom, brassMaterial);
-    whorl.position.set(0, 0.38, 0);
-    spindleStation.add(whorl);
+    // Two physical stages close the declared 18.5:1 spindle drive: a 3.7:1
+    // bevel pair turns a short vertical layshaft, then a 5:1 external spur
+    // pair drives the spindle whorl. Pitch-radius × angular-speed products
+    // match at both meshes.
+    const spindleDriverBevel = new THREE.Mesh(spindleDriverBevelGeom, brassMaterial);
+    spindleDriverBevel.name = `spindle-driver-bevel-${i + 1}`;
+    spindleDriverBevel.rotation.z = Math.PI / 2;
+    spindleDriverBevel.position.x = x + 0.06;
+    shaftGroup.add(spindleDriverBevel);
+
+    const spindleDrivenRotor = new THREE.Group();
+    spindleDrivenRotor.name = `spindle-layshaft-rotor-${i + 1}`;
+    spindleDrivenRotor.position.set(x + 0.06, 0.245, 0.06);
+    const spindleDrivenBevel = new THREE.Mesh(spindleDrivenBevelGeom, brassMaterial);
+    spindleDrivenBevel.position.y = -0.018;
+    const spindleLayshaft = new THREE.Mesh(spindleLayshaftGeom, steelMaterial);
+    spindleLayshaft.position.y = 0.05;
+    const layshaftSpur = new THREE.Mesh(layshaftSpurGeom, brassMaterial);
+    layshaftSpur.name = `layshaft-five-to-one-driver-${i + 1}`;
+    layshaftSpur.position.y = 0.095;
+    spindleDrivenRotor.add(spindleDrivenBevel, spindleLayshaft, layshaftSpur);
+    root.add(spindleDrivenRotor);
+    spindleDriveRotors.push(spindleDrivenRotor);
+
+    const spindleWhorlRotor = new THREE.Group();
+    spindleWhorlRotor.name = `spindle-whorl-rotor-${i + 1}`;
+    spindleWhorlRotor.position.set(0, 0.34, 0);
+    const whorl = new THREE.Mesh(spindleWhorlGeom, brassMaterial);
+    whorl.name = `spindle-five-to-one-driven-whorl-${i + 1}`;
+    spindleWhorlRotor.add(whorl);
+    spindleStation.add(spindleWhorlRotor);
+    spindleWhorlRotors.push(spindleWhorlRotor);
 
     // E: Revolving Steel Flyer
     const flyerGroup = new THREE.Group();
@@ -342,6 +588,33 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
   leverMesh.position.set(-0.05, 0, 0);
   camGroup.add(leverMesh);
 
+  // A visible right-angle transmission at the intersection of wheel A and
+  // shaft B closes the power path. The modern reconstruction names
+  // intermediate gearing without dimensions, so these are deliberately
+  // normalized bevel members rather than asserted historical tooth counts.
+  const rightAngleDriveGroup = new THREE.Group();
+  rightAngleDriveGroup.name = "normalized-right-angle-drive-A-to-B";
+  rightAngleDriveGroup.position.set(0.35, 0.22, 0);
+  const wheelBevelGeom = new THREE.CylinderGeometry(0.045, 0.09, 0.08, 20);
+  const shaftBevelGeom = new THREE.CylinderGeometry(0.045, 0.09, 0.08, 20);
+  disposables.push(wheelBevelGeom, shaftBevelGeom);
+  const wheelBevelRotor = new THREE.Group();
+  wheelBevelRotor.name = "wheel-axis-bevel-rotor";
+  wheelBevelRotor.position.z = 0.05;
+  const wheelBevel = new THREE.Mesh(wheelBevelGeom, brassMaterial);
+  wheelBevel.name = "wheel-axis-bevel-member";
+  wheelBevel.rotation.x = Math.PI / 2;
+  wheelBevelRotor.add(wheelBevel);
+  const shaftBevelRotor = new THREE.Group();
+  shaftBevelRotor.name = "shaft-axis-bevel-rotor";
+  shaftBevelRotor.position.set(-0.05, 0, 0.06);
+  const shaftBevel = new THREE.Mesh(shaftBevelGeom, brassMaterial);
+  shaftBevel.name = "shaft-axis-bevel-member";
+  shaftBevel.rotation.z = Math.PI / 2;
+  shaftBevelRotor.add(shaftBevel);
+  rightAngleDriveGroup.add(wheelBevelRotor, shaftBevelRotor);
+  root.add(rightAngleDriveGroup);
+
   // ==================== 7. CALLOUT ANNOTATION PINS ====================
   const calloutGroup = new THREE.Group();
   calloutGroup.name = "callout-pins";
@@ -352,7 +625,7 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
     { label: "B", pos: [-0.45, 0.22, 0.1], desc: "Iron Driving Shaft & Clutch" },
     { label: "C", pos: [-0.12, 0.95, 0], desc: "Differential Drafting Rollers" },
     { label: "D", pos: [0.12, 0.72, -0.06], desc: "Lead Clamping Deadweights" },
-    { label: "E", pos: [-0.36, 0.74, 0.12], desc: "High-Speed Steel Flyer (3500 RPM)" },
+    { label: "E", pos: [-0.36, 0.74, 0.12], desc: "Revolving Steel Flyer" },
     { label: "F", pos: [0.36, 0.54, 0.12], desc: "Drag-Retarded Bobbin" },
     { label: "G", pos: [0.55, 0.52, 0.1], desc: "Heart-Cam Traverse Motion" },
   ];
@@ -372,12 +645,63 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
   }
 
   // Toggles
-  const setCutaway = (_cutaway: boolean) => {
-    // Framework is open-frame; cutaway highlights internal gears and drafting train
+  const setCutaway = (cutaway: boolean) => {
+    transmissionCover.visible = !cutaway;
   };
 
   const setCalloutsVisible = (visible: boolean) => {
     calloutGroup.visible = visible;
+  };
+
+  const updateAnimation = (phases: ArkwrightKinematicPhases) => {
+    // Rotate every body about its own physical shaft. Rotating the former
+    // aggregate groups made complete roller nips, hanging weights, and the
+    // main drum orbit around arbitrary world axes.
+    wheelGroup.rotation.z = phases.wheelRad;
+    shaftGroup.rotation.x = phases.shaftRad;
+    wheelBevelRotor.rotation.z = phases.wheelRad;
+    shaftBevelRotor.rotation.x = phases.shaftRad;
+    for (const roller of feedLowerRollers) roller.rotation.x = phases.feedRollerRad;
+    for (const roller of feedUpperRollers) roller.rotation.x = -phases.feedRollerRad;
+    for (const roller of intermediateOneLowerRollers) {
+      roller.rotation.x = phases.intermediateRollerOneRad;
+    }
+    for (const roller of intermediateOneUpperRollers) {
+      roller.rotation.x = -phases.intermediateRollerOneRad;
+    }
+    for (const roller of intermediateTwoLowerRollers) {
+      roller.rotation.x = phases.intermediateRollerTwoRad;
+    }
+    for (const roller of intermediateTwoUpperRollers) {
+      roller.rotation.x = -phases.intermediateRollerTwoRad;
+    }
+    for (const roller of deliveryLowerRollers) roller.rotation.x = phases.deliveryRollerRad;
+    for (const roller of deliveryUpperRollers) roller.rotation.x = -phases.deliveryRollerRad;
+    const draftingPhases = [
+      phases.feedRollerRad,
+      phases.intermediateRollerOneRad,
+      phases.intermediateRollerTwoRad,
+      phases.deliveryRollerRad,
+    ];
+    rollerDriveRotors.forEach((rotor, index) => {
+      rotor.rotation.x = draftingPhases[index];
+    });
+    for (const rotor of spindleDriveRotors) rotor.rotation.y = phases.spindleLayshaftRad;
+    for (const rotor of spindleWhorlRotors) rotor.rotation.y = phases.spindleRad;
+    for (const flyer of flyerGroups) flyer.rotation.y = phases.spindleRad;
+    for (const bobbin of bobbinGroups) bobbin.rotation.y = phases.bobbinRad;
+
+    const traverseOffset = Math.sin(phases.traverseRad) * 0.04;
+    traverseRailGroup.position.y = 0.52 + traverseOffset;
+    camGroup.rotation.z = phases.traverseRad;
+
+    // Keep the final yarn segment attached to the traversing bobbin instead
+    // of leaving a floating endpoint at the rail's neutral pose.
+    for (const pathGeometry of yarnPathGeometries) {
+      const positions = pathGeometry.getAttribute("position") as THREE.BufferAttribute;
+      positions.setY(4, 0.61 + traverseOffset);
+      positions.needsUpdate = true;
+    }
   };
 
   const dispose = () => {
@@ -391,7 +715,22 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
     wheelGroup,
     shaftGroup,
     feedRollersGroup,
+    intermediateRollerOneGroup,
+    intermediateRollerTwoGroup,
     deliveryRollersGroup,
+    feedLowerRollers,
+    feedUpperRollers,
+    intermediateOneLowerRollers,
+    intermediateOneUpperRollers,
+    intermediateTwoLowerRollers,
+    intermediateTwoUpperRollers,
+    deliveryLowerRollers,
+    deliveryUpperRollers,
+    wheelBevelRotor,
+    shaftBevelRotor,
+    rollerDriveRotors,
+    spindleDriveRotors,
+    spindleWhorlRotors,
     flyerGroups,
     bobbinGroups,
     traverseRailGroup,
@@ -399,6 +738,7 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
     calloutGroup,
     setCutaway,
     setCalloutsVisible,
+    updateAnimation,
     dispose,
   };
 }

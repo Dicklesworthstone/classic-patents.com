@@ -163,8 +163,15 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
-    case "gb-913-watt-separate-condenser":
     case "gb-1306-watt-rotary-engine": {
+      // The available GB 1306 artifact does not supply a source engine's
+      // dimensions, pressure trace, mass flow, losses, or inertia. The live
+      // visual can solve its declared kinematics, but a closed historical
+      // power partition would be fabricated. Preserve the explicit zero state.
+      break;
+    }
+
+    case "gb-913-watt-separate-condenser": {
       const boilerPsi = params.boilerPressurePsi ?? params.boilerPressureKpa ?? 14.7;
       const spm = params.strokesPerMinute ?? params.strokeRateSpm ?? 18;
       const boreIn = params.cylinderBoreInches ?? 24;
@@ -840,13 +847,9 @@ export function computePortHamiltonianEnergy(
     }
 
     case "gb-931-arkwright-water-frame": {
-      const waterHeadM = 2.5;
-      const flowRateKgPerS = 80.0;
-      const flyerRpm = 1800.0;
-      const omega = (flyerRpm * 2 * Math.PI) / 60.0;
-      kinetic = 0.5 * (64 * 0.0008) * omega ** 2; // 64 spinning flyers rotational kinetic energy
-      powerIn = flowRateKgPerS * 9.80665 * waterHeadM * 0.65; // Mill race water wheel power
-      dissipated = 0.92 * powerIn; // Roller drafting friction and flyer bearing drag
+      // The pinned reconstruction contains no authenticated water head, flow,
+      // torque, inertia, or loss measurements. Kinematic scenario controls do
+      // not close an energy balance, so leave every ledger channel at zero.
       break;
     }
 
@@ -860,11 +863,10 @@ export function computePortHamiltonianEnergy(
     }
 
     case "gb-1420-cort-puddling-rolling": {
-      const furnaceTempC = params.furnaceTempC ?? 1400.0;
-      const chargeKg = 250.0;
-      thermal = chargeKg * 650.0 * furnaceTempC; // Molten pig iron decarburization thermal energy
-      powerIn = 45000.0; // Coal reverberatory flame input power
-      dissipated = 42000.0; // Radiative furnace flue gas dissipation
+      // The later abridgment provides neither a closed thermal control volume
+      // nor authenticated fuel, flow, charge, torque, or loss measurements.
+      // Leave the ledger at zero instead of laundering scenario values into an
+      // apparently measured Port-Hamiltonian balance.
       break;
     }
 

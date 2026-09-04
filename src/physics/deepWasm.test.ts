@@ -307,9 +307,11 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
       if (
         name === "ArkwrightWaterFrame3D.tsx" ||
         name === "BoyleSmithCcd3D.tsx" ||
+        name === "CortPuddlingRolling3D.tsx" ||
         name === "LamarrFrequencyHopping3D.tsx" ||
         name === "MarconiRadio3D.tsx" ||
-        name === "TeslaCoil3D.tsx"
+        name === "TeslaCoil3D.tsx" ||
+        name === "WattRotaryEngine3D.tsx"
       ) {
         // Bus-driven pose consumers: they integrate nothing locally, so the
         // honest contract is "no local clock AND no fake fixed dt" — phases

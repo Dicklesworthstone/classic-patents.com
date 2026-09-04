@@ -140,7 +140,8 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         phrase: "Planet wheel",
         active: isRotating,
         tone: isRotating ? "held" : "broken",
-        caption: `Planet wheel rigidly bolted to connecting rod, orbiting around the sun without rotating on its own axis.`,
+        caption:
+          "Planet wheel rigidly bolted to the connecting rod: it cannot spin relative to that rod, so its only axial rocking is the rod's own finite-length motion.",
       },
       {
         id: "two-complete-revolutions",

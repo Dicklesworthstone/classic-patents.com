@@ -9,27 +9,28 @@ import {
   edisonIndicatorClaimText,
   edisonIndicatorParallelReadings,
 } from "./edisonIndicatorEdition";
+import { evaluateArchivalPublicationState, patentForSourceReader } from "./publicationApproval";
 
 const EXPECTED_FIGURE_PREVIEWS = {
   "Figure 1": {
-    src: "/patents/figures/us-307031-edison-indicator/fig-1-source-crop-v2.png",
-    width: 1740,
-    height: 1120,
+    src: "/patents/figures/us-307031-edison-indicator/source-sheet-1-v1.png",
+    width: 2320,
+    height: 3408,
   },
   "Fig. 2": {
-    src: "/patents/figures/us-307031-edison-indicator/fig-2-source-crop-v2.png",
-    width: 1750,
-    height: 360,
+    src: "/patents/figures/us-307031-edison-indicator/source-sheet-1-v1.png",
+    width: 2320,
+    height: 3408,
   },
   "Fig. 3": {
-    src: "/patents/figures/us-307031-edison-indicator/fig-3-source-crop-v3.png",
-    width: 1080,
-    height: 480,
+    src: "/patents/figures/us-307031-edison-indicator/source-sheet-1-v1.png",
+    width: 2320,
+    height: 3408,
   },
   "Fig. 4": {
-    src: "/patents/figures/us-307031-edison-indicator/fig-4-source-crop-v2.png",
-    width: 340,
-    height: 500,
+    src: "/patents/figures/us-307031-edison-indicator/source-sheet-1-v1.png",
+    width: 2320,
+    height: 3408,
   },
 } as const;
 
@@ -108,7 +109,7 @@ describe("US 307,031 Thomas Edison Electrical Indicator Archival Edition", () =>
     });
   });
 
-  it("maps every Figure occurrence to its exact clean source crop", () => {
+  it("maps every Figure occurrence to its exact, unmodified source sheet", () => {
     const figureReferences = edisonIndicatorArchivalEdition.blocks
       .flatMap((block) => (block.kind === "paragraph" ? block.inlines : []))
       .filter((inline) => inline.kind === "reference" && inline.referenceType === "figure");
@@ -155,13 +156,13 @@ describe("US 307,031 Thomas Edison Electrical Indicator Archival Edition", () =>
     expect(energyChannelsFor("us-307031-edison-indicator", {})).toEqual([]);
   });
 
-  it("enforces facsimile review pending audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const decision = evaluateTypedArchivalPublicationState(edisonIndicatorPatent, {
-      hasCompanionReadings: true,
-    });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FACSIMILE_REVIEW_PENDING");
+  it("accepts all independently reviewed figure occurrences without gating the source reader", () => {
+    const decision = evaluateArchivalPublicationState(edisonIndicatorPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.state.kind).toBe("accepted");
+    expect(decision.reasonCode).toBe("ACCEPTED");
+
+    const readerPatent = patentForSourceReader(edisonIndicatorPatent, decision);
+    expect(readerPatent.archivalEdition).toBe(edisonIndicatorArchivalEdition);
   });
 });

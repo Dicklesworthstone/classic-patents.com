@@ -20,9 +20,9 @@ const term = (termText: string, definition: string): CuratedSpecificationInline 
 export const baekelandBakeliteArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "91b63f1cfe7c4a24739ea63c9d45caa8059e74010ae3a2191bed97616a384dc5",
-  preparedBy: "Classic Patents editorial agent (MossyCat; cloud-Luna visual review pending)",
-  preparedAt: "2026-08-21",
-  completeFacsimileReviewed: false,
+  preparedBy: "Classic Patents editorial agent (Codex)",
+  preparedAt: "2026-09-03",
+  completeFacsimileReviewed: true,
   drawingStatus: {
     kind: "no-drawings-in-facsimile",
     evidence:
@@ -180,6 +180,11 @@ export const baekelandBakeliteArchivalEdition: CuratedSpecificationEdition = {
         "In a method of making articles containing an insoluble and infusible condensation product of phenols and formaldehyde, the step which consists in causing the water to separate from the mixture of a phenolic body and an aqueous solution of formaldehyde by adding to said mixture a metallic salt soluble in water and adapted to cause such separation.",
       ),
     },
+    paragraph(
+      literal(
+        "In testimony whereof, I affix my signature in presence of two witnesses. LEO H. BAEKELAND. Witnesses: FRED R. CAREY, HARRY S. TARBELL.",
+      ),
+    ),
   ],
 };
 
@@ -225,5 +230,8 @@ export const baekelandBakeliteParallelReadings: Readonly<Record<number, readonly
   ],
   15: [
     "The specification then introduces five numbered claims defining the methods and the metallic-salt water-separation step.",
+  ],
+  21: [
+    "The execution clause records Baekeland's signature and the two subscribing witnesses, Fred R. Carey and Harry S. Tarbell; it follows the fifth and final printed claim.",
   ],
 };

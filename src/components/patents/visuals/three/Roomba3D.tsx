@@ -29,7 +29,12 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { buildRoombaModel } from "./RoombaModel";
-import { type RoombaCameraPreset, roombaCameraViewForViewport } from "./roombaCamera";
+import {
+  isRoombaDesktopTeachingIsometric,
+  type RoombaCameraFocus,
+  type RoombaCameraPreset,
+  roombaCameraViewForViewport,
+} from "./roombaCamera";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { usePatentAudio } from "./usePatentAudio";
 
@@ -100,26 +105,40 @@ export function Roomba3D() {
   const poseHud = roombaPoseHudPresentation(physicsFrame.provenance);
 
   const studioRef = useRef<StudioContext | null>(null);
+  const activeCameraRef = useRef<RoombaCameraPreset>("iso");
+  const followsRoombaRef = useRef(true);
+  const lastCameraFocusRef = useRef<RoombaCameraFocus | null>(null);
 
-  const cameraForContainer = (preset: RoombaCameraPreset) =>
+  const cameraForContainer = (preset: RoombaCameraPreset, focus?: RoombaCameraFocus) =>
     roombaCameraViewForViewport(
       preset,
       containerRef.current?.clientWidth ||
         (typeof window === "undefined" ? 1000 : window.innerWidth),
+      focus,
     );
 
   const applyCameraPreset = (preset: RoombaCameraPreset) => {
     setActiveCamera(preset);
-    const cfg = cameraForContainer(preset);
+    activeCameraRef.current = preset;
+    followsRoombaRef.current = preset === "iso";
+    const tape = getRoombaTapeState();
+    const focus = preset === "iso" && tape ? { x: tape.displayX, z: tape.displayY } : undefined;
+    const cfg = cameraForContainer(preset, focus);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
+    lastCameraFocusRef.current = focus ?? null;
   };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+    const tapeAtMount = getRoombaTapeState();
+    const initialFocus = tapeAtMount
+      ? { x: tapeAtMount.displayX, z: tapeAtMount.displayY }
+      : undefined;
     const iso = roombaCameraViewForViewport(
       "iso",
       container.clientWidth || (typeof window === "undefined" ? 1000 : window.innerWidth),
+      initialFocus,
     );
     const studio = createThreeStudioScene({
       container,
@@ -127,6 +146,13 @@ export function Roomba3D() {
       targetPos: iso.target,
     });
     studioRef.current = studio;
+    lastCameraFocusRef.current = initialFocus ?? null;
+    const stopAutomaticCameraFollow = () => {
+      followsRoombaRef.current = false;
+    };
+    container.addEventListener("dblclick", stopAutomaticCameraFollow);
+    container.addEventListener("pointerdown", stopAutomaticCameraFollow);
+    container.addEventListener("wheel", stopAutomaticCameraFollow, { passive: true });
     const model = buildRoombaModel();
     studio.scene.add(model.root);
 
@@ -134,6 +160,35 @@ export function Roomba3D() {
     let lastTrailTick = -1;
     let lastHudTick = -1;
     let rafId = 0;
+
+    const trackDesktopTeachingCamera = (
+      tape: NonNullable<ReturnType<typeof getRoombaTapeState>>,
+    ) => {
+      const viewportWidth =
+        container.clientWidth || (typeof window === "undefined" ? 1000 : window.innerWidth);
+      if (
+        activeCameraRef.current !== "iso" ||
+        !followsRoombaRef.current ||
+        !isRoombaDesktopTeachingIsometric("iso", viewportWidth)
+      ) {
+        return;
+      }
+
+      const focus = { x: tape.displayX, z: tape.displayY };
+      const previousFocus = lastCameraFocusRef.current;
+      // Keep a close teaching view centered on the shared physical pose while
+      // avoiding needless control resets for sub-centimetre tape increments.
+      if (
+        previousFocus &&
+        Math.hypot(focus.x - previousFocus.x, focus.z - previousFocus.z) < 0.01
+      ) {
+        return;
+      }
+
+      const camera = roombaCameraViewForViewport("iso", viewportWidth, focus);
+      studio.controls.setView(camera.pos, camera.target);
+      lastCameraFocusRef.current = focus;
+    };
 
     const animate = () => {
       rafId = requestAnimationFrame(animate);
@@ -147,6 +202,7 @@ export function Roomba3D() {
         model.mainGroup.position.z = tape.displayY;
         model.mainGroup.rotation.y = -tape.heading;
         model.updateKinematics(tape);
+        trackDesktopTeachingCamera(tape);
 
         const physicsTick = transport.lastFrame.tick;
         if (physicsTick !== lastTrailTick && physicsTick % 4 === 0) {
@@ -174,6 +230,9 @@ export function Roomba3D() {
 
     return () => {
       cancelAnimationFrame(rafId);
+      container.removeEventListener("dblclick", stopAutomaticCameraFollow);
+      container.removeEventListener("pointerdown", stopAutomaticCameraFollow);
+      container.removeEventListener("wheel", stopAutomaticCameraFollow);
       model.dispose();
       studio.dispose();
     };

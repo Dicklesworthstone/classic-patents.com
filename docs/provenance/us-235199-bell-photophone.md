@@ -22,8 +22,8 @@
 
 | PDF Page | Physical Content | Verification Notes |
 | :--- | :--- | :--- |
-| **Page 1** | Drawing Sheet 1 (Figs. 1–6) | Full system schematic (Fig. 1), transmitter beam path (Fig. 2), tone siren wheel (Fig. 3), and screen-grating details (Figs. 4–6). |
-| **Page 2** | Drawing Sheet 2 (Figs. 3–17) | Additional transmitter and grating views (Figs. 3–9), parabolic receiver (Fig. 10), and selenium-cell constructions (Figs. 11–17). |
+| **Page 1** | Drawing Sheet 1 (Figs. 1–2) | Full system schematic (Fig. 1) and transmitter beam-path/interrupter detail (Fig. 2). |
+| **Page 2** | Drawing Sheet 2 (Figs. 3–9 and 11–17) | Additional transmitter and grating views (Figs. 3–9) and selenium-cell constructions (Figs. 11–17). |
 | **Page 3** | Drawing Sheet 3 (Figs. 10 and 18–24) | Repeated system view (Fig. 10), alternate selenium-cell assemblies (Figs. 18–19), and construction details (Figs. 20–24). |
 | **Page 4** | Specification Masthead & Column 1–2 | Preamble, statement of invention, discovery of photo-acoustic effect across substances, transmitter principles, and description of Figures 1–3. |
 | **Page 5** | Specification Page 2 (Cols 1–2) | Beam modulation physics, mirror diaphragms of mica/glass/metal, acoustic beam focus, and slotted grating shutter mechanics. |
@@ -59,6 +59,50 @@ The existing previews were audited as cloud vision evidence only. Figs. 1–15 a
 | Figs. 18–24 | PDF p. 3, Sheet 3 | Upright, 0° clockwise | One preview per printed figure, preserving the complete numbered cell detail and labels while excluding every adjacent detail and Sheet 3 furniture. | v5 provisionally clean; independent review required. |
 
 The final crop filenames must retain the existing catalogue convention (`fig-<n>-source-crop-v<next>.png`, with the grouped `figs-16-and-17-source-crop-v<next>.png`). The edition remains held and may retain the current versioned candidates as WIP evidence, but those rejected v3/v4 previews must be replaced and independently accepted before the edition is unbound from the root hold. Crop replacement and independent visual acceptance remain external cloud work; this lane intentionally leaves those files untouched.
+
+### Complete source-sheet acceptance (2026-09-04)
+
+All thirteen pages of the immutable PDF were visually reviewed again. The
+prior 2026-08-21 crop discussion is retained as a historical record of the
+per-figure candidates; it does not describe the active figure evidence below.
+Every active figure reference in `bellPhotophoneEdition.ts` now opens a direct,
+unmodified 300 DPI render of the complete drawing sheet that prints it. The
+render is neither a crop nor a reconstruction: it covers the exact full-sheet
+source rectangle `(0, 0, 2320, 3408)`, with no rotation, masking, compositing,
+or OCR. This review used the already pinned source packet only.
+
+| PDF page / verified printed figures | Active full-sheet asset | SHA-256 |
+| --- | --- | --- |
+| 1 / Figs. 1–2 | `/patents/figures/us-235199-bell-photophone/source-sheet-1-v1.png` | `28d4be40b8c2cc3e6468337814d202e1f2001086f66ee96e1a79ef6be4fa9705` |
+| 2 / Figs. 3–9 and 11–17 | `/patents/figures/us-235199-bell-photophone/source-sheet-2-v1.png` | `e624181efbebc2fbf30da6db8a322b8e9eb0431990045fb7bf04638394e908d7` |
+| 3 / Fig. 10 and Figs. 18–24 | `/patents/figures/us-235199-bell-photophone/source-sheet-3-v1.png` | `b4e4616fd74a3c88ab2e05057cb2318b7b0467f4f9f1223b21f05e6c8b13bc92` |
+
+The exact active edition occurrences are: `edition-block-20-group-0-inline-0`,
+`edition-block-20-group-0-inline-2`, and
+`edition-block-23-group-0-inline-1` (PDF page 1);
+`edition-block-27-group-0-inline-1`, `edition-block-28-group-0-inline-0`,
+`edition-block-30-group-0-inline-1`, `edition-block-33-group-0-inline-3`,
+`edition-block-33-group-0-inline-5`, `edition-block-33-group-0-inline-7`,
+`edition-block-33-group-0-inline-9`, `edition-block-34-group-0-inline-1`,
+`edition-block-36-group-0-inline-1`, `edition-block-37-group-0-inline-0`,
+`edition-block-40-group-0-inline-1`, `edition-block-40-group-0-inline-3`,
+`edition-block-43-group-0-inline-1`, `edition-block-44-group-0-inline-1`,
+`edition-block-46-group-0-inline-1`, `edition-block-62-group-0-inline-1`,
+`edition-block-64-group-0-inline-1`, `edition-block-64-group-0-inline-3`,
+`edition-block-66-group-0-inline-1`, `edition-block-67-group-0-inline-1`,
+`edition-block-68-group-0-inline-7`, and
+`edition-block-87-group-0-inline-1` (PDF page 2); and
+`edition-block-53-group-0-inline-0`, `edition-block-68-group-0-inline-1`,
+`edition-block-68-group-0-inline-3`, `edition-block-68-group-0-inline-5`,
+`edition-block-68-group-0-inline-9`, `edition-block-72-group-0-inline-1`,
+and `edition-block-72-group-0-inline-3` (PDF page 3). Each has the same exact
+full-sheet rectangle and is ready for the centralized acceptance and locator
+registries.
+
+All earlier named per-figure crops remain preserved, untouched, in
+`public/patents/figures/us-235199-bell-photophone/`; the visitor-facing edition
+does not rely on them as source evidence. This evidence repair never withholds
+the continuous archival edition or the pinned facsimile from the source reader.
 
 ### Source erratum corrected in the text lane
 

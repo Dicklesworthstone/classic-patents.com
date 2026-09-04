@@ -15,28 +15,16 @@ const term = (
   definition,
 });
 
-const FIGURE_DIMS: Record<number, { width: number; height: number }> = {
-  1: { width: 450, height: 710 },
-  2: { width: 260, height: 720 },
-  3: { width: 380, height: 580 },
-  4: { width: 440, height: 700 },
-  5: { width: 360, height: 400 },
-  6: { width: 340, height: 390 },
-  7: { width: 360, height: 190 },
-  8: { width: 360, height: 160 },
-  9: { width: 380, height: 140 },
-  10: { width: 360, height: 320 },
-  11: { width: 240, height: 300 },
-  12: { width: 190, height: 300 },
-  13: { width: 180, height: 300 },
-  14: { width: 170, height: 300 },
-  15: { width: 150, height: 300 },
-  16: { width: 160, height: 300 },
-  17: { width: 360, height: 330 },
-  18: { width: 360, height: 90 },
-  19: { width: 140, height: 350 },
-  20: { width: 240, height: 380 },
-};
+/**
+ * The sole drawing sheet in the pinned packet is PDF page 1. It contains
+ * Figs. 1–20 in one historic layout, so each citation keeps that intact source
+ * sheet instead of relying on an unverified isolated-crop boundary.
+ */
+const SOURCE_SHEET_PREVIEW = {
+  src: "/patents/figures/us-48475-yale-lock/source-sheet-1-v1.png",
+  width: 2320,
+  height: 3408,
+} as const;
 
 function makePreview(
   surfaceText: string,
@@ -49,12 +37,12 @@ function makePreview(
     href: `#figure-${figureNumbers[0]}`,
     referenceType: "figure",
     label: altText,
-    figurePreviews: figureNumbers.map((num) => ({
-      src: `/patents/figures/us-48475-yale-lock/fig-${num}-source-crop-v1.png`,
-      alt: `Figure ${num}: ${altText}`,
-      width: FIGURE_DIMS[num]?.width ?? 300,
-      height: FIGURE_DIMS[num]?.height ?? 300,
-    })),
+    figurePreviews: [
+      {
+        ...SOURCE_SHEET_PREVIEW,
+        alt: `Drawing-sheet source for ${surfaceText}: ${altText}`,
+      },
+    ],
   };
 }
 

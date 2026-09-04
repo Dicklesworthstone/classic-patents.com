@@ -1,15 +1,22 @@
 "use client";
 
-import { Cog, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
-import { ARKWRIGHT_DEFAULT_CONTROLS, stepArkwrightWaterFrame } from "@/physics/arkwrightKernel";
+import { Cog, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { useId } from "react";
+import {
+  ARKWRIGHT_DEFAULT_CONTROLS,
+  ARKWRIGHT_FRANKENSIM_BOUNDARY,
+  ARKWRIGHT_KERNEL_SOURCE,
+  ARKWRIGHT_SOURCE_BOUNDARY,
+  ARKWRIGHT_ZERO_PHASES,
+  getArkwrightTapeFrame,
+  stepArkwrightWaterFrame,
+} from "@/physics/arkwrightKernel";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
-import { useOffscreenGate } from "./useOffscreenGate";
 
 const EXHIBIT_ID = "gb-931-arkwright-water-frame";
-const UI_SNAPSHOT_INTERVAL_MS = 80;
 
 export function ArkwrightWaterFrameSim() {
   const { params, updateParam, resetParams } = usePatentPhysics(EXHIBIT_ID);
@@ -21,6 +28,7 @@ export function ArkwrightWaterFrameSim() {
   const stapleLengthMm = params.stapleLengthMm ?? ARKWRIGHT_DEFAULT_CONTROLS.stapleLengthMm;
   const inputRovingCountNe =
     params.inputRovingCountNe ?? ARKWRIGHT_DEFAULT_CONTROLS.inputRovingCountNe;
+  const isRunning = (params.isRunning ?? 1) > 0.5;
   const controls = {
     waterWheelRpm,
     totalDraftRatio,
@@ -28,62 +36,53 @@ export function ArkwrightWaterFrameSim() {
     stapleLengthMm,
     inputRovingCountNe,
   };
-  const [animTime, setAnimTime] = useState(0);
-  const animTimeRef = useRef(0);
-  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
+  const { frame } = useFrankenSimPhysics(EXHIBIT_ID, {
+    domain: "continuum_elasticity",
+    refusal: { isRefused: true, reason: ARKWRIGHT_SOURCE_BOUNDARY },
+  });
 
   const speedId = useId();
   const draftId = useId();
   const weightId = useId();
   const stapleId = useId();
 
-  // Run 60 FPS animation loop (paused while scrolled offscreen)
-  useEffect(() => {
-    let frameId: number;
-    let lastTime = performance.now();
-    let lastUiSnapshot = 0;
-
-    const loop = (time: number) => {
-      frameId = requestAnimationFrame(loop);
-      if (!onscreenRef.current) {
-        lastTime = time;
-        return;
-      }
-      const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
-      lastTime = time;
-      animTimeRef.current += dt;
-      // Rollers, flyer, bobbin, and heart-cam traverse derive from one drive;
-      // keep their SVG projection coherent in a bounded UI snapshot.
-      if (time - lastUiSnapshot >= UI_SNAPSHOT_INTERVAL_MS) {
-        lastUiSnapshot = time;
-        setAnimTime(animTimeRef.current);
-      }
-    };
-
-    frameId = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(frameId);
-  }, [onscreenRef]);
-
-  const outputs = stepArkwrightWaterFrame(controls);
+  const tape = getArkwrightTapeFrame();
+  const outputs = tape?.outputs ?? stepArkwrightWaterFrame(controls);
+  const phases = tape?.phases ?? ARKWRIGHT_ZERO_PHASES;
 
   const wheelRpm = waterWheelRpm;
   const draftRatio = totalDraftRatio;
 
   // Roller angles: feed is slow, intermediate faster, front is fastest
-  const feedRollerAngle = animTime * outputs.feedRollerOmegaRadPerS;
-  const deliveryRollerAngle = animTime * outputs.deliveryRollerOmegaRadPerS;
-  const flyerAngle = animTime * outputs.spindleOmegaRadPerSec;
-  const _bobbinAngle = animTime * outputs.bobbinOmegaRadPerS;
+  const feedRollerAngle = phases.feedRollerRad;
+  const intermediateOneAngle = phases.intermediateRollerOneRad;
+  const intermediateTwoAngle = phases.intermediateRollerTwoRad;
+  const deliveryRollerAngle = phases.deliveryRollerRad;
+  const flyerAngle = phases.spindleRad;
+  const wheelAngle = phases.wheelRad;
 
   // Heart-cam vertical oscillation [-18px, +18px]
-  const traversePhase = (animTime * outputs.traverseFreqHz * 2 * Math.PI) % (2 * Math.PI);
+  const traversePhase = phases.traverseRad;
   // Cardioid / triangular continuous lift
   const traverseOffset = Math.sin(traversePhase) * 18;
 
   return (
     <div
-      ref={rootRef}
       className="w-full bg-parchment-50 dark:bg-ink-900/95 border border-parchment-300 dark:border-ink-800 rounded-2xl p-4 sm:p-6 text-ink-900 dark:text-parchment-200 shadow-md backdrop-blur-xl transition-colors"
+      data-arkwright-face="two"
+      data-arkwright-runtime-tick={frame.tick}
+      data-arkwright-runtime-provenance={frame.provenance}
+      data-arkwright-kernel-source={ARKWRIGHT_KERNEL_SOURCE}
+      data-arkwright-frankensim-boundary={ARKWRIGHT_FRANKENSIM_BOUNDARY}
+      data-arkwright-running={isRunning}
+      data-arkwright-wheel-phase-rad={phases.wheelRad}
+      data-arkwright-feed-phase-rad={phases.feedRollerRad}
+      data-arkwright-intermediate-one-phase-rad={phases.intermediateRollerOneRad}
+      data-arkwright-intermediate-two-phase-rad={phases.intermediateRollerTwoRad}
+      data-arkwright-delivery-phase-rad={phases.deliveryRollerRad}
+      data-arkwright-spindle-layshaft-phase-rad={phases.spindleLayshaftRad}
+      data-arkwright-spindle-phase-rad={phases.spindleRad}
+      data-arkwright-traverse-phase-rad={phases.traverseRad}
     >
       {/* Header & Mode Badge */}
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-5 border-b border-parchment-200 dark:border-ink-800">
@@ -115,13 +114,13 @@ export function ArkwrightWaterFrameSim() {
                   : "text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-stone-200"
               }`}
             >
-              Arkwright Frame (Warp)
+              Nominal Teaching Scenario
             </button>
             <button
               type="button"
               onClick={() => {
-                updateParam("totalDraftRatio", 2.5);
-                updateParam("rollerClampingWeightKg", 0.8);
+                updateParam("totalDraftRatio", 3);
+                updateParam("rollerClampingWeightKg", 1);
                 soundEngine.playSwitchClick();
               }}
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
@@ -130,9 +129,22 @@ export function ArkwrightWaterFrameSim() {
                   : "text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-stone-200"
               }`}
             >
-              Manual Jenny Mode
+              Low-Draft Comparison
             </button>
           </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              updateParam("isRunning", isRunning ? 0 : 1);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isRunning ? "Pause Motion" : "Resume Motion"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isRunning ? "Pause Motion" : "Resume Motion"}
+          >
+            {isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+          </button>
 
           <button
             type="button"
@@ -150,8 +162,7 @@ export function ArkwrightWaterFrameSim() {
             type="button"
             onClick={() => {
               resetParams();
-              animTimeRef.current = 0;
-              setAnimTime(0);
+              updateParam("resetEpoch", (params.resetEpoch ?? 0) + 1);
               soundEngine.playSwitchClick();
             }}
             aria-label="Reset Simulation"
@@ -261,13 +272,45 @@ export function ArkwrightWaterFrameSim() {
               {/* Pair 2: Intermediate Slow */}
               <g transform="translate(-20, 0)">
                 <circle cx="0" cy="12" r="10" fill="url(#brassGrad)" />
+                <line
+                  x1="0"
+                  y1="12"
+                  x2={10 * Math.cos(intermediateOneAngle)}
+                  y2={12 + 10 * Math.sin(intermediateOneAngle)}
+                  stroke="#451a03"
+                  strokeWidth="1.5"
+                />
                 <circle cx="0" cy="-10" r="10" fill="url(#leatherGrad)" />
+                <line
+                  x1="0"
+                  y1="-10"
+                  x2={10 * Math.cos(-intermediateOneAngle)}
+                  y2={-10 + 10 * Math.sin(-intermediateOneAngle)}
+                  stroke="#451a03"
+                  strokeWidth="1.5"
+                />
               </g>
 
               {/* Pair 3: Intermediate Fast */}
               <g transform="translate(20, 0)">
                 <circle cx="0" cy="12" r="10" fill="url(#brassGrad)" />
+                <line
+                  x1="0"
+                  y1="12"
+                  x2={10 * Math.cos(intermediateTwoAngle)}
+                  y2={12 + 10 * Math.sin(intermediateTwoAngle)}
+                  stroke="#451a03"
+                  strokeWidth="1.5"
+                />
                 <circle cx="0" cy="-10" r="10" fill="url(#leatherGrad)" />
+                <line
+                  x1="0"
+                  y1="-10"
+                  x2={10 * Math.cos(-intermediateTwoAngle)}
+                  y2={-10 + 10 * Math.sin(-intermediateTwoAngle)}
+                  stroke="#451a03"
+                  strokeWidth="1.5"
+                />
               </g>
 
               {/* Pair 4: Front Delivery Rollers (High Speed v4 = D * v1) */}
@@ -371,10 +414,16 @@ export function ArkwrightWaterFrameSim() {
 
             {/* Central Driving Drum (A) on right */}
             <g transform="translate(420, 380)">
-              <ellipse cx="0" cy="0" rx="55" ry="18" fill="url(#woodPost)" />
-              <ellipse cx="0" cy="-10" rx="55" ry="18" fill="url(#woodPost)" />
-              <circle cx="0" cy="-10" r="10" fill="#475569" />
-              <line x1="0" y1="-10" x2="0" y2="35" stroke="#334155" strokeWidth="4" />
+              <circle cx="0" cy="0" r="48" fill="url(#woodPost)" stroke="#451a03" strokeWidth="3" />
+              <circle cx="0" cy="0" r="10" fill="#475569" />
+              <line
+                x1="0"
+                y1="0"
+                x2={42 * Math.cos(wheelAngle)}
+                y2={42 * Math.sin(wheelAngle)}
+                stroke="#d6b27a"
+                strokeWidth="4"
+              />
             </g>
 
             {/* Heart-Cam & Traverse Mechanism (G) */}
@@ -454,7 +503,7 @@ export function ArkwrightWaterFrameSim() {
             </g>
           </svg>
 
-          {/* Warp Grade Water Twist Badge */}
+          {/* Declared comparison-threshold badge */}
           <div className="absolute bottom-3 left-4 flex items-center gap-2">
             <span
               className={`px-2.5 py-1 text-xs font-mono font-bold rounded-lg border ${
@@ -464,8 +513,8 @@ export function ArkwrightWaterFrameSim() {
               }`}
             >
               {outputs.isWarpGradeWaterTwist
-                ? "✓ WARP-GRADE WATER TWIST (Loom Ready)"
-                : "⚠ WEFT-ONLY YARN (Insufficient Tenacity)"}
+                ? "SCENARIO ≥ 1.8 N COMPARISON THRESHOLD"
+                : "SCENARIO < 1.8 N COMPARISON THRESHOLD"}
             </span>
           </div>
         </div>
@@ -512,7 +561,7 @@ export function ArkwrightWaterFrameSim() {
 
             <div className="bg-stone-950/60 p-3 rounded-xl border border-stone-800">
               <span className="text-[11px] font-mono text-stone-400 block">
-                Yarn Tenacity / Break Force
+                Scenario Break Load
               </span>
               <span
                 className={`text-lg font-mono font-bold ${
@@ -610,21 +659,24 @@ export function ArkwrightWaterFrameSim() {
             </div>
           </div>
 
-          {/* Cromford Factory Output Callout */}
+          {/* Explicitly scaled teaching-scenario output */}
           <div className="bg-stone-950/90 p-3 rounded-xl border border-amber-500/20 text-xs flex items-center justify-between">
             <div>
               <span className="text-stone-400 block text-[10px] font-mono">
-                CROMFORD MILL CAPACITY (96 Spindles @ 12hr)
+                SCALED SCENARIO OUTPUT (96 lanes × 12 h)
               </span>
               <span className="text-amber-300 font-bold font-mono text-sm">
-                {outputs.millProductionKgPerDay.toFixed(1)} kg / day (
-                {Math.round((outputs.yarnLengthMetersPerHour * 24) / 1000)} km yarn/day)
+                {outputs.millProductionKgPerDay.toFixed(1)} kg / 12 h
               </span>
             </div>
             <span className="px-2 py-1 bg-amber-500/10 text-amber-300 rounded font-mono text-[10px] border border-amber-500/30">
-              1771 Factory System
+              Declared inputs
             </span>
           </div>
+
+          <p className="rounded-xl border border-amber-500/25 bg-amber-950/10 px-3 py-2 text-xs leading-relaxed text-stone-300">
+            <strong className="text-stone-100">Source boundary.</strong> {ARKWRIGHT_SOURCE_BOUNDARY}
+          </p>
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
@@ -51,25 +52,59 @@ describe("lincolnBuoyArchivalEdition", () => {
     expect(reviewedTxt).toContain("A. LINCOLN.");
   });
 
-  test("binds every source figure citation to a local source-derived hover preview", () => {
-    const references = lincolnBuoyArchivalEdition.blocks.flatMap((block) =>
+  test("binds all ten authored figure occurrences to the complete source drawing sheet", () => {
+    const sourceSheet = "/patents/figures/us-6469-lincoln-buoy/source-sheet-1-v1.png";
+    const sourceSheetPath = resolve(process.cwd(), "public", sourceSheet.replace(/^\//, ""));
+    const sourceSheetBytes = readFileSync(sourceSheetPath);
+    expect(createHash("sha256").update(sourceSheetBytes).digest("hex")).toBe(
+      "56bd69ba57f894c068b46ac83bb58d251f5c1e853966168bfaf8004638ef6add",
+    );
+    expect(sourceSheetBytes.readUInt32BE(16)).toBe(2320);
+    expect(sourceSheetBytes.readUInt32BE(20)).toBe(3408);
+
+    const references = lincolnBuoyArchivalEdition.blocks.flatMap((block, blockIndex) =>
       "inlines" in block
-        ? block.inlines.filter(
-            (inline): inline is Extract<typeof inline, { kind: "reference" }> =>
-              inline.kind === "reference" && inline.referenceType === "figure",
+        ? block.inlines.flatMap((inline, inlineIndex) =>
+            inline.kind === "reference" && inline.referenceType === "figure"
+              ? [
+                  {
+                    inline,
+                    occurrenceKey: `edition-block-${blockIndex}-group-0-inline-${inlineIndex}`,
+                  },
+                ]
+              : [],
           )
         : [],
     );
+    expect(references.map((reference) => reference.occurrenceKey)).toEqual([
+      "edition-block-7-group-0-inline-0",
+      "edition-block-7-group-0-inline-2",
+      "edition-block-7-group-0-inline-4",
+      "edition-block-9-group-0-inline-1",
+      "edition-block-10-group-0-inline-1",
+      "edition-block-11-group-0-inline-1",
+      "edition-block-12-group-0-inline-1",
+      "edition-block-12-group-0-inline-3",
+      "edition-block-12-group-0-inline-5",
+      "edition-block-13-group-0-inline-1",
+    ]);
 
-    expect(references.length).toBeGreaterThan(0);
-    for (const reference of references) {
-      expect(reference.figurePreviews?.length).toBeGreaterThan(0);
-      for (const preview of reference.figurePreviews ?? []) {
-        expect(preview.src).toStartWith("/patents/figures/us-6469-lincoln-buoy-");
-        expect(existsSync(resolve(process.cwd(), "public", preview.src.replace(/^\//, "")))).toBe(
-          true,
-        );
-      }
+    const previews = references.flatMap((reference) => reference.inline.figurePreviews ?? []);
+    expect(previews).toHaveLength(12);
+    for (const preview of previews) {
+      expect(preview).toMatchObject({ src: sourceSheet, width: 2320, height: 3408 });
+      expect(preview.alt).toContain("Complete source drawing sheet 1 of 1");
+    }
+
+    for (const legacyAsset of [
+      "us-6469-lincoln-buoy-fig-1-hover.png",
+      "us-6469-lincoln-buoy-fig-2-hover.png",
+      "us-6469-lincoln-buoy-fig-3-hover.png",
+      "us-6469-lincoln-buoy-fig-1-preview.png",
+      "us-6469-lincoln-buoy-fig-2-preview.png",
+      "us-6469-lincoln-buoy-fig-3-preview.png",
+    ]) {
+      expect(existsSync(resolve(process.cwd(), "public/patents/figures", legacyAsset))).toBe(true);
     }
   });
 
@@ -93,11 +128,11 @@ describe("lincolnBuoyArchivalEdition", () => {
     }
   });
 
-  test("enforces figure acceptance pending hold while ledger is verified", () => {
+  test("accepts all source-sheet figure evidence while retaining the verified ledger", () => {
     const { evaluateArchivalPublicationState } = require("./publicationApproval");
     const decision = evaluateArchivalPublicationState(lincolnBuoyPatent);
-    expect(decision.isPublished).toBe(false);
-    expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+    expect(decision.isPublished).toBe(true);
+    expect(decision.reasonCode).toBe("ACCEPTED");
     expect(decision.state.evidence.ledgerContent.valid).toBe(true);
     expect(decision.state.evidence.ledgerContent.status).toBe("verified");
   });

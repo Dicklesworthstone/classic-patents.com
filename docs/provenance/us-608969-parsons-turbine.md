@@ -44,8 +44,9 @@ carried by the catalogue record. The source's application date is March 4,
 - `public/patents/transcripts/us-608969-parsons-turbine-reviewed.txt` is the
   page-marked, human-reviewed comparison ledger. It is not rendered as the
   public source face.
-- The figure previews are tightly cropped directly from the pinned drawing
-  sheets at `public/patents/figures/us-608969-parsons-turbine/`.
+- The active figure previews are complete, unmodified drawing-sheet renders at
+  `public/patents/figures/us-608969-parsons-turbine/`. Earlier tight crops are
+  retained as legacy research assets and are not active evidence.
 - `public/patents/source-text/us-608969-parsons-turbine.txt` and the prior
   unreviewed transcript are retained legacy research evidence only. They are
   not authority for the public edition and are not a reviewed transcription.
@@ -53,21 +54,25 @@ carried by the catalogue record. The source's application date is March 4,
   legal string from the archival edition to prevent a second transcription from
   drifting.
 
-## Deferred clean source-crop plan (cloud visual acceptance required)
+## Source-sheet acceptance (2026-09-03)
 
-The pinned PDF embeds each drawing sheet as a 2320 × 3408 px raster (300 dpi).
-Figure 2's existing crop is accepted. Figures 1 and 3 remain pending clean
-re-crops; the following bounds are the exact source-pixel rectangles for the
-next versioned assets. They retain the printed sheet title and all pipe,
-valve, turbine-bank, screw-shaft, and condenser labels while excluding the
-outer scan border and the filing header above the drawing.
+Direct visual review of the pinned PDF at 300 DPI confirmed that its first
+three pages are individual drawing sheets: page 1 contains Fig. 1, page 2
+contains Fig. 2, and page 3 contains Fig. 3. The earlier crop previews omit
+different parts of the printed sheet identities and signature panels. The
+active previews therefore use complete, unmodified renders of their respective
+source pages rather than relying on crop boundaries.
 
-| Figure | PDF page | Source-pixel rectangle `(x, y, width, height)` | Required visible content | Next asset |
-| --- | ---: | --- | --- | --- |
-| Fig. 1 | 1 | `(180, 300, 1960, 2960)` | Eight A/A′/B/B′/C/C′/D/D′ turbines, shafts 1–4, boiler pipe P, valves R¹–R¹⁶, pipes P¹–P¹⁰ and Q¹–Q⁸, condenser E, and sheet title | `fig-1-source-crop-v2.png` |
-| Fig. 3 | 3 | `(180, 300, 1960, 2960)` | Six A/A′/B/B′/C/C′ turbines, shafts 1–3, U-pipes and V/W valves, condenser K, and sheet title | `fig-3-source-crop-v2.png` |
+| Source PDF page | Active intact source sheet | 300 DPI raster | SHA-256 | Citation occurrences |
+| --- | --- | --- | --- | --- |
+| 1 | `source-sheet-1-v1.png` | 2320 × 3408 | `c62b45cc66223e233b986f2fde542eca3d5b221cde18d8376cb70138e2d6d491` | `edition-block-18-group-0-inline-1`; `edition-block-19-group-0-inline-1` |
+| 2 | `source-sheet-2-v1.png` | 2320 × 3408 | `9f227e36650567fac56aa0f94f22674f5385b9658df3dbdca0d9cf6466d4878e` | `edition-block-18-group-0-inline-3`; `edition-block-24-group-0-inline-1`; `edition-block-24-group-0-inline-3` |
+| 3 | `source-sheet-3-v1.png` | 2320 × 3408 | `d6a0d2cc7eae660c632063ed6b94d803c938fd922afb3c5cf6fc19424935eb98` | `edition-block-18-group-0-inline-5`; `edition-block-28-group-0-inline-1` |
 
-These are crop instructions, not accepted assets: no edition reference is
-repointed until an independent cloud reviewer confirms that every listed
-label and route junction is legible and that no adjacent sheet material is
-included. Existing `v1` files remain preserved as research candidates.
+Each active raster was freshly rendered from the pinned PDF and compared
+pixel-for-pixel with its review render (absolute error 0). Every locator uses
+the complete 2320 × 3408 source rectangle, mechanically normalized to
+`{ x: 0, y: 0, width: 1, height: 1 }`. All seven active figure occurrences
+are accepted against the pinned PDF digest. The earlier `fig-*-source-crop-v1`
+assets remain preserved as research candidates. This provenance remediation
+does not alter source-text delivery or visitor access.

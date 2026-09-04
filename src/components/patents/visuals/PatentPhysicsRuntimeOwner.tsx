@@ -1,12 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  ARKWRIGHT_FRANKENSIM_BOUNDARY,
+  ARKWRIGHT_KERNEL_SOURCE,
+  ARKWRIGHT_SOURCE_BOUNDARY,
+  createArkwrightTransportUpdater,
+  getArkwrightTapeFrame,
+  readArkwrightRuntimeControls,
+} from "@/physics/arkwrightKernel";
 import { createBaerOdysseyTransportUpdater, readBaerControls } from "@/physics/baerOdysseyKernel";
 import {
   createBoyleSmithCcdTransportUpdater,
   getBoyleSmithCcdTapeFrame,
   readBoyleSmithCcdSourceControls,
 } from "@/physics/boyleSmithCcdKernel";
+import {
+  CORT_FRANKENSIM_BOUNDARY,
+  CORT_KERNEL_SOURCE,
+  CORT_SOURCE_BOUNDARY,
+  createCortTransportUpdater,
+  getCortTapeFrame,
+  readCortRuntimeControls,
+} from "@/physics/cortKernel";
 import {
   createEInkTransportUpdater,
   getEInkTapeFrame,
@@ -38,6 +54,14 @@ import {
 } from "@/physics/metcalfeEthernetKernel";
 import { globalTransportBus, useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import {
+  createWattRotaryTransportUpdater,
+  getWattRotaryTapeFrame,
+  readWattRotaryRuntimeControls,
+  WATT_ROTARY_FRANKENSIM_BOUNDARY,
+  WATT_ROTARY_KERNEL_SOURCE,
+  WATT_ROTARY_SOURCE_BOUNDARY,
+} from "@/physics/wattRotaryKernel";
 import { useLiveSimParams } from "./three/useLiveSimParams";
 
 let nextRuntimeOwnerMount = 0;
@@ -48,6 +72,140 @@ function useRuntimeOwnerMount(): number {
     return nextRuntimeOwnerMount;
   });
   return mount;
+}
+
+/** Stable owner for the prescribed water-frame transmission coordinates. */
+export function ArkwrightPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
+  const mount = useRuntimeOwnerMount();
+  const { effectiveParams } = usePatentPhysics(patentId);
+  const liveParams = useLiveSimParams(effectiveParams);
+  const { frame } = useFrankenSimPhysics(patentId, {
+    domain: "continuum_elasticity",
+    refusal: { isRefused: true, reason: ARKWRIGHT_SOURCE_BOUNDARY },
+  });
+
+  useEffect(() => {
+    return globalTransportBus.registerUpdater(
+      patentId,
+      createArkwrightTransportUpdater(() => readArkwrightRuntimeControls(liveParams.current)),
+      "TS_FALLBACK",
+    );
+  }, [patentId, liveParams]);
+
+  const tape = getArkwrightTapeFrame();
+  return (
+    <span
+      hidden
+      data-testid="patent-physics-runtime-owner"
+      data-patent-id={patentId}
+      data-runtime-tick={frame.tick}
+      data-runtime-owner-mount={mount}
+      data-runtime-digest={frame.digest}
+      data-runtime-provenance={frame.provenance}
+      data-arkwright-kernel-source={ARKWRIGHT_KERNEL_SOURCE}
+      data-arkwright-frankensim-boundary={ARKWRIGHT_FRANKENSIM_BOUNDARY}
+      data-arkwright-running={tape?.controls.isRunning ?? ""}
+      data-arkwright-total-draft-ratio={tape?.outputs.totalDraftRatio ?? ""}
+      data-arkwright-time-sec={tape?.timeSec ?? ""}
+      data-arkwright-wheel-phase-rad={tape?.phases.wheelRad ?? ""}
+      data-arkwright-feed-phase-rad={tape?.phases.feedRollerRad ?? ""}
+      data-arkwright-intermediate-one-phase-rad={tape?.phases.intermediateRollerOneRad ?? ""}
+      data-arkwright-intermediate-two-phase-rad={tape?.phases.intermediateRollerTwoRad ?? ""}
+      data-arkwright-delivery-phase-rad={tape?.phases.deliveryRollerRad ?? ""}
+      data-arkwright-spindle-layshaft-phase-rad={tape?.phases.spindleLayshaftRad ?? ""}
+      data-arkwright-spindle-phase-rad={tape?.phases.spindleRad ?? ""}
+      data-arkwright-bobbin-phase-rad={tape?.phases.bobbinRad ?? ""}
+      data-arkwright-traverse-phase-rad={tape?.phases.traverseRad ?? ""}
+    />
+  );
+}
+
+/** Stable owner for Watt's closed linkage and constrained external-gear mesh. */
+export function WattRotaryPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
+  const mount = useRuntimeOwnerMount();
+  const { effectiveParams } = usePatentPhysics(patentId);
+  const liveParams = useLiveSimParams(effectiveParams);
+  const { frame } = useFrankenSimPhysics(patentId, {
+    domain: "thermo_fluid",
+    refusal: { isRefused: true, reason: WATT_ROTARY_SOURCE_BOUNDARY },
+  });
+
+  useEffect(() => {
+    return globalTransportBus.registerUpdater(
+      patentId,
+      createWattRotaryTransportUpdater(() => readWattRotaryRuntimeControls(liveParams.current)),
+      "TS_FALLBACK",
+    );
+  }, [patentId, liveParams]);
+
+  const tape = getWattRotaryTapeFrame();
+  return (
+    <span
+      hidden
+      data-testid="patent-physics-runtime-owner"
+      data-patent-id={patentId}
+      data-runtime-tick={frame.tick}
+      data-runtime-owner-mount={mount}
+      data-runtime-digest={frame.digest}
+      data-runtime-provenance={frame.provenance}
+      data-watt-kernel-source={WATT_ROTARY_KERNEL_SOURCE}
+      data-watt-frankensim-boundary={WATT_ROTARY_FRANKENSIM_BOUNDARY}
+      data-watt-running={tape?.controls.isRunning ?? ""}
+      data-watt-time-sec={tape?.timeSec ?? ""}
+      data-watt-carrier-angle-rad={tape?.telemetry.planetOrbitAngleRad ?? ""}
+      data-watt-rod-angle-rad={tape?.telemetry.connectingRodAngleRad ?? ""}
+      data-watt-planet-angle-rad={tape?.telemetry.planetBodyAngleRad ?? ""}
+      data-watt-sun-angle-rad={tape?.telemetry.sunShaftAngleRad ?? ""}
+      data-watt-mesh-residual-rad={tape?.telemetry.gearMeshConstraintResidualRad ?? ""}
+      data-watt-rod-residual-m={tape?.telemetry.connectingRodConstraintResidualM ?? ""}
+      data-watt-sun-teeth={tape?.telemetry.sunTeeth ?? ""}
+      data-watt-planet-teeth={tape?.telemetry.planetTeeth ?? ""}
+    />
+  );
+}
+
+/** Stable owner for Cort's declared furnace/roll teaching coordinates. */
+export function CortPhysicsRuntimeOwner({ patentId }: { patentId: string }) {
+  const mount = useRuntimeOwnerMount();
+  const { effectiveParams } = usePatentPhysics(patentId);
+  const liveParams = useLiveSimParams(effectiveParams);
+  const { frame } = useFrankenSimPhysics(patentId, {
+    domain: "thermodynamics_transport",
+    refusal: { isRefused: true, reason: CORT_SOURCE_BOUNDARY },
+  });
+
+  useEffect(() => {
+    return globalTransportBus.registerUpdater(
+      patentId,
+      createCortTransportUpdater(() => readCortRuntimeControls(liveParams.current)),
+      "TS_FALLBACK",
+    );
+  }, [patentId, liveParams]);
+
+  const tape = getCortTapeFrame();
+  return (
+    <span
+      hidden
+      data-testid="patent-physics-runtime-owner"
+      data-patent-id={patentId}
+      data-runtime-tick={frame.tick}
+      data-runtime-owner-mount={mount}
+      data-runtime-digest={frame.digest}
+      data-runtime-provenance={frame.provenance}
+      data-cort-kernel-source={CORT_KERNEL_SOURCE}
+      data-cort-frankensim-boundary={CORT_FRANKENSIM_BOUNDARY}
+      data-cort-running={tape?.controls.isRunning ?? ""}
+      data-cort-time-sec={tape?.timeSec ?? ""}
+      data-cort-top-roll-phase-rad={tape?.phases.topRollRad ?? ""}
+      data-cort-bottom-roll-phase-rad={tape?.phases.bottomRollRad ?? ""}
+      data-cort-rabble-phase-rad={tape?.phases.rabbleCycleRad ?? ""}
+      data-cort-billet-travel-m={tape?.phases.billetTravelM ?? ""}
+      data-cort-working-roll-radius-mm={tape?.outputs.workingRollRadiusMm ?? ""}
+      data-cort-roll-nip-gap-mm={tape?.outputs.rollNipGapMm ?? ""}
+      data-cort-billet-height-mm={tape?.outputs.billetEntryHeightMm ?? ""}
+      data-cort-nip-interference-mm={tape?.outputs.nipInterferenceMm ?? ""}
+    />
+  );
 }
 
 /** Stable nonvisual owner that survives 2D/3D face switches in the dispatcher. */

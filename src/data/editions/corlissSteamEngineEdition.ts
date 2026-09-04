@@ -6,22 +6,19 @@ import type {
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
-const dims: Record<string, [number, number]> = {
-  "1": [720, 840],
-  "2": [720, 936],
-  "3": [823, 720],
-  "4": [720, 1057],
-  "5": [720, 1057],
-  "8": [720, 1057],
-  "9": [720, 1057],
+const sourceSheetForFigure: Record<string, number> = {
+  "1": 1,
+  "2": 2,
+  "3": 3,
+  "4": 4,
+  "5": 4,
 };
 
 const figure = (number: number | string): CuratedSpecificationInline => {
-  const [w, h] = dims[number.toString()] || [720, 720];
-  const sourcePreview =
-    number.toString() === "3"
-      ? "/patents/figures/us-6162-corliss-steam-engine-fig-3-source-crop-v2.png"
-      : `/patents/figures/us-6162-corliss-steam-engine-fig-${number}-preview.png`;
+  const sourcePage = sourceSheetForFigure[number.toString()];
+  if (!sourcePage) {
+    throw new Error(`Corliss figure ${number} has no reviewed drawing-sheet mapping.`);
+  }
   return {
     kind: "reference",
     text: `Fig. ${number}`,
@@ -30,10 +27,10 @@ const figure = (number: number | string): CuratedSpecificationInline => {
     label: `Open the source-faithful crop for Figure ${number} of US 6,162`,
     figurePreviews: [
       {
-        src: sourcePreview,
+        src: `/patents/figures/us-6162-corliss-steam-engine/source-sheet-${sourcePage}-v1.png`,
         alt: `Figure ${number} from George H. Corliss's US 6,162 steam-engine patent.`,
-        width: w,
-        height: h,
+        width: 2320,
+        height: 3408,
       },
     ],
   };
@@ -55,10 +52,9 @@ const term = (
  * Drawing-sheet order and printed page furniture remain in the PDF; this
  * reader preserves the legal argument without scan-page reconstruction.
  *
- * Figure preview bindings are intentionally retained as versioned evidence
- * until a fresh cloud visual review produces figure-specific crops for the
- * known-bad Sheet 4 and masthead-contaminated assets. This edition must not be
- * promoted by publication approval while that crop audit is open.
+ * Each figure occurrence binds to the complete drawing sheet visually reviewed
+ * from the pinned PDF. Legacy detail crops remain preserved as research assets,
+ * but are not cited as source evidence in the visitor-facing edition.
  */
 export const corlissSteamEngineArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
@@ -118,10 +114,10 @@ export const corlissSteamEngineArchivalEdition: CuratedSpecificationEdition = {
           label: "Open the source-faithful crop for Figure 1 of US 6,162",
           figurePreviews: [
             {
-              src: "/patents/figures/us-6162-corliss-steam-engine-fig-1-source-crop-v2.png",
+              src: "/patents/figures/us-6162-corliss-steam-engine/source-sheet-1-v1.png",
               alt: "Figure 1 from US 6,162.",
-              width: 1400,
-              height: 1043,
+              width: 2320,
+              height: 3408,
             },
           ],
         },
@@ -148,16 +144,10 @@ export const corlissSteamEngineArchivalEdition: CuratedSpecificationEdition = {
           label: "Open the source-faithful crops for Figures 6 and 7",
           figurePreviews: [
             {
-              src: "/patents/figures/us-6162-corliss-steam-engine-fig-6-source-crop-v2.png",
-              alt: "Figure 6 from US 6,162.",
-              width: 600,
-              height: 650,
-            },
-            {
-              src: "/patents/figures/us-6162-corliss-steam-engine-fig-7-preview.png",
-              alt: "Figure 7 from US 6,162.",
-              width: 720,
-              height: 720,
+              src: "/patents/figures/us-6162-corliss-steam-engine/source-sheet-3-v1.png",
+              alt: "Figures 6 and 7 from US 6,162.",
+              width: 2320,
+              height: 3408,
             },
           ],
         },
@@ -255,16 +245,10 @@ export const corlissSteamEngineArchivalEdition: CuratedSpecificationEdition = {
           label: "Open the source-faithful crops for Figures 8 and 9",
           figurePreviews: [
             {
-              src: "/patents/figures/us-6162-corliss-steam-engine-fig-8-preview.png",
-              alt: "Figure 8 from US 6,162.",
-              width: 720,
-              height: 1057,
-            },
-            {
-              src: "/patents/figures/us-6162-corliss-steam-engine-fig-9-source-crop-v2.png",
-              alt: "Figure 9 from US 6,162.",
-              width: 1370,
-              height: 520,
+              src: "/patents/figures/us-6162-corliss-steam-engine/source-sheet-4-v1.png",
+              alt: "Figures 8 and 9 from US 6,162.",
+              width: 2320,
+              height: 3408,
             },
           ],
         },

@@ -22,11 +22,17 @@ export interface BaekelandBakeliteModelNodes {
   rootGroup: THREE.Group;
   autoclaveShell: THREE.Mesh;
   cutawayShell: THREE.Mesh;
+  steamJacket: THREE.Mesh;
   doorFlangeGroup: THREE.Group;
   ramGroup: THREE.Group;
   moldGroup: THREE.Group;
   bakeliteSpecimen: THREE.Mesh;
   molecularNetworkGroup: THREE.Group;
+  gaugeManifoldHeader: THREE.Mesh;
+  pressureGaugeBody: THREE.Mesh;
+  pressureGaugeStem: THREE.Mesh;
+  temperatureGaugeBody: THREE.Mesh;
+  temperatureGaugeStem: THREE.Mesh;
   pressureNeedle: THREE.Mesh;
   tempNeedle: THREE.Mesh;
   bubbleParticlesGroup: THREE.Group;
@@ -244,14 +250,42 @@ export function buildBaekelandBakeliteModel(): BaekelandBakeliteModelResult {
   pipeManifold.position.set(0, 2.3, 0);
   rootGroup.add(pipeManifold);
 
-  // Pressure Gauge
-  const pGaugeBody = new THREE.Mesh(
+  // The gauges are mounted to a short header seated on the vessel crown. The
+  // patent calls for a closed vessel, but does not draw an instrument panel;
+  // this is an explicitly editorial process readout, not a reconstructed
+  // Bakelizer detail. Keeping the header, stems, and dials in one connected
+  // assembly makes that relationship legible without pretending the gauge
+  // geometry is evidence from the grant.
+  const gaugeManifoldHeader = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.035, 0.035, 1.1, 12),
+    materials.steamPipe,
+  );
+  gaugeManifoldHeader.rotation.z = Math.PI / 2;
+  gaugeManifoldHeader.position.set(0, 0.08, 0);
+  pipeManifold.add(gaugeManifoldHeader);
+
+  const pressureGaugeStem = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.03, 0.03, 0.24, 12),
+    materials.steamPipe,
+  );
+  pressureGaugeStem.position.set(-0.5, 0.2, 0);
+  pipeManifold.add(pressureGaugeStem);
+
+  const temperatureGaugeStem = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.03, 0.03, 0.24, 12),
+    materials.steamPipe,
+  );
+  temperatureGaugeStem.position.set(0.5, 0.2, 0);
+  pipeManifold.add(temperatureGaugeStem);
+
+  // Pressure gauge
+  const pressureGaugeBody = new THREE.Mesh(
     new THREE.CylinderGeometry(0.22, 0.22, 0.08, 24),
     materials.brass,
   );
-  pGaugeBody.rotation.x = Math.PI / 2;
-  pGaugeBody.position.set(-0.5, 0.4, 0);
-  pipeManifold.add(pGaugeBody);
+  pressureGaugeBody.rotation.x = Math.PI / 2;
+  pressureGaugeBody.position.set(-0.5, 0.4, 0);
+  pipeManifold.add(pressureGaugeBody);
 
   const pDial = new THREE.Mesh(new THREE.CircleGeometry(0.19, 24), materials.gaugeDial);
   pDial.position.set(-0.5, 0.4, 0.045);
@@ -263,14 +297,14 @@ export function buildBaekelandBakeliteModel(): BaekelandBakeliteModelResult {
   pressureNeedle.position.set(-0.5, 0.4, 0.05);
   pipeManifold.add(pressureNeedle);
 
-  // Temperature Gauge
-  const tGaugeBody = new THREE.Mesh(
+  // Temperature gauge
+  const temperatureGaugeBody = new THREE.Mesh(
     new THREE.CylinderGeometry(0.22, 0.22, 0.08, 24),
     materials.brass,
   );
-  tGaugeBody.rotation.x = Math.PI / 2;
-  tGaugeBody.position.set(0.5, 0.4, 0);
-  pipeManifold.add(tGaugeBody);
+  temperatureGaugeBody.rotation.x = Math.PI / 2;
+  temperatureGaugeBody.position.set(0.5, 0.4, 0);
+  pipeManifold.add(temperatureGaugeBody);
 
   const tDial = new THREE.Mesh(new THREE.CircleGeometry(0.19, 24), materials.gaugeDial);
   tDial.position.set(0.5, 0.4, 0.045);
@@ -282,11 +316,15 @@ export function buildBaekelandBakeliteModel(): BaekelandBakeliteModelResult {
   tempNeedle.position.set(0.5, 0.4, 0.05);
   pipeManifold.add(tempNeedle);
 
-  // 4. 3D Macromolecular Crosslink Lattice (Floating Pedagogical Visualization)
+  // 4. 3D macromolecular crosslink lattice. It is a modern, display-scale
+  // interpretation of the cured resin, so it belongs inside the specimen and
+  // follows the mold rather than floating above the apparatus as a separate
+  // physical object.
   const molecularNetworkGroup = new THREE.Group();
   molecularNetworkGroup.name = "Molecular_Crosslinks";
-  molecularNetworkGroup.position.set(0, 3.4, 0);
-  rootGroup.add(molecularNetworkGroup);
+  molecularNetworkGroup.position.set(0, 0, 0);
+  molecularNetworkGroup.scale.set(0.28, 0.18, 0.28);
+  moldGroup.add(molecularNetworkGroup);
 
   const ringGeo = new THREE.TorusGeometry(0.12, 0.03, 8, 6); // Benzene hexagon
   const bondGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.4, 8);
@@ -335,11 +373,17 @@ export function buildBaekelandBakeliteModel(): BaekelandBakeliteModelResult {
     rootGroup,
     autoclaveShell,
     cutawayShell,
+    steamJacket,
     doorFlangeGroup,
     ramGroup,
     moldGroup,
     bakeliteSpecimen,
     molecularNetworkGroup,
+    gaugeManifoldHeader,
+    pressureGaugeBody,
+    pressureGaugeStem,
+    temperatureGaugeBody,
+    temperatureGaugeStem,
     pressureNeedle,
     tempNeedle,
     bubbleParticlesGroup,

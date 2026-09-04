@@ -1,5 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import * as THREE from "three";
+import {
+  CORT_ACTIVE_BILLET_HEIGHT_M,
+  CORT_ROLL_CENTER_SEPARATION_M,
+  CORT_ROLL_PASS_RADII_M,
+} from "@/physics/cortKernel";
+import { ENERGY_CHANNEL_OMISSION_REASONS, energyChannelsFor } from "@/physics/energyChannels";
 import { cortPuddlingRollingViewForViewport } from "./cortPuddlingRollingCamera";
 import { buildCortPuddlingRollingModel } from "./cortPuddlingRollingModel";
 
@@ -14,7 +20,6 @@ describe("Henry Cort Puddling & Grooved Rolling 3D WebGL Model", () => {
     expect(model.topRollGroup).toBeDefined();
     expect(model.bottomRollGroup).toBeDefined();
     expect(model.billetMesh).toBeDefined();
-    expect(model.calloutSprites.length).toBe(0);
     model.dispose();
   });
 
@@ -28,31 +33,101 @@ describe("Henry Cort Puddling & Grooved Rolling 3D WebGL Model", () => {
     model.dispose();
   });
 
-  test("toggles callout pins visibility", () => {
+  test("maintains unlabelled presentation without invented callout sprites", () => {
     const model = buildCortPuddlingRollingModel();
-    model.setShowCallouts(false);
-    for (const sprite of model.calloutSprites) {
-      expect(sprite.visible).toBe(false);
-    }
-
-    model.setShowCallouts(true);
-    for (const sprite of model.calloutSprites) {
-      expect(sprite.visible).toBe(true);
-    }
+    let spriteCount = 0;
+    model.root.traverse((obj) => {
+      if (obj instanceof THREE.Sprite) spriteCount++;
+    });
+    expect(spriteCount).toBe(0);
     model.dispose();
   });
 
   test("animates rolls and rabble deterministically without errors", () => {
     const model = buildCortPuddlingRollingModel();
-    // Step animation at t = 1.0s, coming to nature = true, rollOmega = 3.14 rad/s
-    const rabbleOmega = (15 * 2 * Math.PI) / 60;
-    model.updateAnimation(1.0, true, 3.14, rabbleOmega);
+    const phases = {
+      rabbleCycleRad: 0.5,
+      topRollRad: -3.14,
+      bottomRollRad: 3.14,
+      billetTravelM: 0.2,
+    };
+    model.updateAnimation(phases, 1.0, true);
     expect(model.topRollGroup.rotation.x).toBeCloseTo(-3.14, 2);
     expect(model.bottomRollGroup.rotation.x).toBeCloseTo(3.14, 2);
 
     // Step animation at t = 2.0s
-    model.updateAnimation(2.0, false, 3.14, rabbleOmega);
+    const phases2 = {
+      rabbleCycleRad: 1.0,
+      topRollRad: -6.28,
+      bottomRollRad: 6.28,
+      billetTravelM: 0.4,
+    };
+    model.updateAnimation(phases2, 2.0, false);
     expect(model.topRollGroup.rotation.x).toBeCloseTo(-6.28, 2);
+    model.dispose();
+  });
+
+  test("builds actual recessed pass bands on continuous supported roll cores", () => {
+    const model = buildCortPuddlingRollingModel();
+    const named: Record<string, THREE.Object3D[]> = {};
+    model.root.traverse((object) => {
+      if (!object.name) return;
+      const objectsWithName = named[object.name] ?? [];
+      objectsWithName.push(object);
+      named[object.name] = objectsWithName;
+    });
+
+    expect(named["continuous-roll-core"]).toHaveLength(2);
+    expect(named["full-radius-roll-shoulder"]).toHaveLength(10);
+    for (let pass = 1; pass <= 4; pass++) {
+      expect(named[`recessed-working-pass-${pass}`]).toHaveLength(2);
+    }
+    expect(named["left-supported-roll-journal"]).toHaveLength(2);
+    expect(named["right-supported-roll-journal"]).toHaveLength(2);
+    expect(named["left-roll-bearing-stand"]).toHaveLength(1);
+    expect(named["right-roll-bearing-stand"]).toHaveLength(1);
+    expect(named["rolling-mill-bedplate"]).toHaveLength(1);
+
+    const firstPassGap =
+      model.topRollGroup.position.y -
+      model.bottomRollGroup.position.y -
+      2 * CORT_ROLL_PASS_RADII_M[0];
+    const billetHeight = (model.billetMesh.geometry as THREE.BoxGeometry).parameters.height;
+    expect(model.topRollGroup.position.y - model.bottomRollGroup.position.y).toBeCloseTo(
+      CORT_ROLL_CENTER_SEPARATION_M,
+      12,
+    );
+    expect(firstPassGap).toBeCloseTo(CORT_ACTIVE_BILLET_HEIGHT_M, 12);
+    expect(billetHeight).toBeCloseTo(firstPassGap, 12);
+    model.dispose();
+  });
+
+  test("keeps the rabble anchored to the working door and makes particles replay-pure", () => {
+    const model = buildCortPuddlingRollingModel();
+    const door = model.root.getObjectByName("supported-working-door-frame");
+    expect(door).toBeDefined();
+    expect(model.rabbleGroup.name).toBe("door-pivoted-rabble");
+    expect(model.rabbleGroup.position.x).toBeCloseTo(door?.position.x ?? Number.NaN, 12);
+    expect(model.rabbleGroup.position.z).toBeCloseTo(door?.position.z ?? Number.NaN, 12);
+
+    const phases = {
+      rabbleCycleRad: 0.6,
+      topRollRad: -1.2,
+      bottomRollRad: 1.2,
+      billetTravelM: 0.5,
+    };
+    model.updateAnimation(phases, 1.25, true);
+    const first = Array.from(
+      (model.sparkParticles.geometry.getAttribute("position") as THREE.BufferAttribute)
+        .array as Float32Array,
+    );
+    model.updateAnimation({ ...phases, billetTravelM: 0.8 }, 2.5, true);
+    model.updateAnimation(phases, 1.25, true);
+    const replay = Array.from(
+      (model.sparkParticles.geometry.getAttribute("position") as THREE.BufferAttribute)
+        .array as Float32Array,
+    );
+    expect(replay).toEqual(first);
     model.dispose();
   });
 
@@ -61,8 +136,8 @@ describe("Henry Cort Puddling & Grooved Rolling 3D WebGL Model", () => {
       new URL("./CortPuddlingRolling3D.tsx", import.meta.url),
     ).text();
     expect(threeSource).not.toContain("(30 * 2 * Math.PI) / 60");
-    expect(threeSource).toContain("outputs.rollOmegaRadPerS");
-    expect(threeSource).toContain("outputs.rabbleOmegaRadPerS");
+    expect(threeSource).toContain("stepCortPuddlingRolling");
+    expect(threeSource).toContain("getCortTapeFrame");
     expect(threeSource).toContain("useLiveSimParams");
     const modelSource = await Bun.file(
       new URL("./cortPuddlingRollingModel.ts", import.meta.url),
@@ -70,8 +145,7 @@ describe("Henry Cort Puddling & Grooved Rolling 3D WebGL Model", () => {
     expect(modelSource).not.toContain("(15 * 2 * Math.PI) / 60");
     expect(modelSource).not.toContain("timeSec * 5");
     expect(modelSource).not.toContain("timeSec * 10)");
-    expect(modelSource).toContain("puddleFlickerOmegaRadPerS");
-    expect(modelSource).toContain("sparkHashRate");
+    expect(modelSource).toContain("CortKinematicPhases");
   });
 
   test("keeps the full furnace-stack envelope inside the overview framing", async () => {
@@ -115,5 +189,29 @@ describe("Henry Cort Puddling & Grooved Rolling 3D WebGL Model", () => {
     });
     expect(meshCount).toBeGreaterThan(15);
     expect(() => model.dispose()).not.toThrow();
+  });
+
+  test("shares a route-owned tape and refuses unsupported source power", async () => {
+    const dispatcher = await Bun.file(new URL("../index.tsx", import.meta.url)).text();
+    const owner = await Bun.file(
+      new URL("../PatentPhysicsRuntimeOwner.tsx", import.meta.url),
+    ).text();
+    const studio = await Bun.file(new URL("./CortPuddlingRolling3D.tsx", import.meta.url)).text();
+    const diagram = await Bun.file(
+      new URL("../CortPuddlingRollingSim.tsx", import.meta.url),
+    ).text();
+
+    expect(dispatcher).toContain("<CortPhysicsRuntimeOwner patentId={patentId} />");
+    expect(owner).toContain("createCortTransportUpdater");
+    expect(studio).not.toContain("globalTransportBus.registerUpdater");
+    expect(studio).not.toContain("createStudioClock");
+    expect(studio).not.toContain("PortHamiltonianEnergyStrip");
+    expect(studio).not.toContain("Pins Off");
+    expect(diagram).toContain("getCortTapeFrame");
+    expect(diagram).not.toContain("Coal Grate (A)");
+    expect(energyChannelsFor("gb-1420-cort-puddling-rolling", {})).toEqual([]);
+    expect(ENERGY_CHANNEL_OMISSION_REASONS["gb-1420-cort-puddling-rolling"]).toContain(
+      "no furnace dimensions",
+    );
   });
 });

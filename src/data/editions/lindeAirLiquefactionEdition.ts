@@ -28,16 +28,10 @@ const drawing: CuratedSpecificationInline = {
   label: "Preview the source drawing for US 727,650",
   figurePreviews: [
     {
-      src: "/patents/figures/us-727650-linde-air-liquefaction/fig-1-source-crop-v2.png",
-      alt: "Upright source-facsimile crop of the sole apparatus drawing in US 727,650, excluding the witness and inventor-signature blocks.",
-      width: 1640,
-      height: 1500,
-    },
-    {
-      src: "/patents/figures/us-727650-linde-air-liquefaction/fig-1-left-pipe-source-crop-v2.png",
-      alt: "Upright source-facsimile detail preserving the left-hand pipe and flow arrow cropped from the main US 727,650 apparatus preview.",
-      width: 360,
-      height: 120,
+      src: "/patents/figures/us-727650-linde-air-liquefaction/source-sheet-1-v1.png",
+      alt: "Complete upright source drawing sheet 1 of 1 for US 727,650, including the interconnected apparatus, title, and execution furniture.",
+      width: 2320,
+      height: 3408,
     },
   ],
 };

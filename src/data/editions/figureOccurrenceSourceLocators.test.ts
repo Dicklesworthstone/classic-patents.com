@@ -55,6 +55,204 @@ const CLAVEL_DELTA_ROBOT_OCCURRENCES = {
   "edition-block-33-group-0-inline-1":
     "/patents/figures/us-4976582-clavel-delta-robot/fig-1-source-crop-v1.png",
 } as const;
+const MESTRAL_VELCRO_ID = "us-2717437-mestral-velcro";
+const MESTRAL_VELCRO_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[MESTRAL_VELCRO_ID].assets,
+);
+const MESTRAL_VELCRO_OCCURRENCES = {
+  "edition-block-1-group-0-inline-0":
+    "/patents/figures/us-2717437-mestral-velcro/source-sheet-1-v1.png",
+  "edition-block-1-group-0-inline-2":
+    "/patents/figures/us-2717437-mestral-velcro/source-sheet-1-v1.png",
+  "edition-block-6-group-0-inline-1":
+    "/patents/figures/us-2717437-mestral-velcro/source-sheet-1-v1.png",
+  "edition-block-6-group-0-inline-3":
+    "/patents/figures/us-2717437-mestral-velcro/source-sheet-1-v1.png",
+  "edition-block-7-group-0-inline-1":
+    "/patents/figures/us-2717437-mestral-velcro/source-sheet-1-v1.png",
+  "edition-block-11-group-0-inline-1":
+    "/patents/figures/us-2717437-mestral-velcro/source-sheet-1-v1.png",
+  "edition-block-11-group-0-inline-5":
+    "/patents/figures/us-2717437-mestral-velcro/source-sheet-1-v1.png",
+  "edition-block-13-group-0-inline-1":
+    "/patents/figures/us-2717437-mestral-velcro/source-sheet-1-v1.png",
+  "edition-block-13-group-0-inline-3":
+    "/patents/figures/us-2717437-mestral-velcro/source-sheet-1-v1.png",
+  "edition-block-16-group-0-inline-1":
+    "/patents/figures/us-2717437-mestral-velcro/source-sheet-1-v1.png",
+  "edition-block-16-group-0-inline-3":
+    "/patents/figures/us-2717437-mestral-velcro/source-sheet-1-v1.png",
+} as const;
+const LINCOLN_BUOY_ID = "us-6469-lincoln-buoy";
+const LINCOLN_BUOY_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[LINCOLN_BUOY_ID].assets,
+);
+const LINCOLN_BUOY_OCCURRENCES = {
+  "edition-block-7-group-0-inline-0": "/patents/figures/us-6469-lincoln-buoy/source-sheet-1-v1.png",
+  "edition-block-7-group-0-inline-2": "/patents/figures/us-6469-lincoln-buoy/source-sheet-1-v1.png",
+  "edition-block-7-group-0-inline-4": "/patents/figures/us-6469-lincoln-buoy/source-sheet-1-v1.png",
+  "edition-block-9-group-0-inline-1": "/patents/figures/us-6469-lincoln-buoy/source-sheet-1-v1.png",
+  "edition-block-10-group-0-inline-1":
+    "/patents/figures/us-6469-lincoln-buoy/source-sheet-1-v1.png",
+  "edition-block-11-group-0-inline-1":
+    "/patents/figures/us-6469-lincoln-buoy/source-sheet-1-v1.png",
+  "edition-block-12-group-0-inline-1":
+    "/patents/figures/us-6469-lincoln-buoy/source-sheet-1-v1.png",
+  "edition-block-12-group-0-inline-3":
+    "/patents/figures/us-6469-lincoln-buoy/source-sheet-1-v1.png",
+  "edition-block-12-group-0-inline-5":
+    "/patents/figures/us-6469-lincoln-buoy/source-sheet-1-v1.png",
+  "edition-block-13-group-0-inline-1":
+    "/patents/figures/us-6469-lincoln-buoy/source-sheet-1-v1.png",
+} as const;
+const HALL_ALUMINIUM_ID = "us-400766-hall-aluminium";
+const HALL_ALUMINIUM_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[HALL_ALUMINIUM_ID].assets,
+);
+const HALL_ALUMINIUM_OCCURRENCES = {
+  "edition-block-1-group-0-inline-1":
+    "/patents/figures/us-400766-hall-aluminium/source-sheet-1-v1.png",
+  "edition-block-1-group-0-inline-3":
+    "/patents/figures/us-400766-hall-aluminium/source-sheet-1-v1.png",
+  "edition-block-4-group-0-inline-1":
+    "/patents/figures/us-400766-hall-aluminium/source-sheet-1-v1.png",
+  "edition-block-4-group-0-inline-3":
+    "/patents/figures/us-400766-hall-aluminium/source-sheet-1-v1.png",
+  "edition-block-8-group-0-inline-1":
+    "/patents/figures/us-400766-hall-aluminium/source-sheet-1-v1.png",
+  "edition-block-8-group-0-inline-3":
+    "/patents/figures/us-400766-hall-aluminium/source-sheet-1-v1.png",
+} as const;
+const EASTMAN_KODAK_ID = "us-388850-eastman-kodak";
+const EASTMAN_KODAK_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[EASTMAN_KODAK_ID].assets,
+);
+const EASTMAN_KODAK_OCCURRENCES = {
+  "edition-block-4-group-0-inline-1":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-1-v1.png",
+  "edition-block-4-group-0-inline-3":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-1-v1.png",
+  "edition-block-4-group-0-inline-5":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-1-v1.png",
+  "edition-block-4-group-0-inline-7":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-2-v1.png",
+  "edition-block-4-group-0-inline-9":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-2-v1.png",
+  "edition-block-4-group-0-inline-11":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-2-v1.png",
+  "edition-block-4-group-0-inline-13":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-2-v1.png",
+  "edition-block-4-group-0-inline-15":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-2-v1.png",
+  "edition-block-4-group-0-inline-17":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-3-v1.png",
+  "edition-block-4-group-0-inline-19":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-3-v1.png",
+  "edition-block-4-group-0-inline-23":
+    "/patents/figures/us-388850-eastman-kodak/source-sheet-2-v1.png",
+} as const;
+const MAKINO_SCARA_ID = "us-4341502-makino-scara";
+const MAKINO_SCARA_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[MAKINO_SCARA_ID].assets,
+);
+const MAKINO_SCARA_OCCURRENCES = {
+  "edition-block-11-group-0-inline-0":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-2-v1.png",
+  "edition-block-11-group-0-inline-2":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-11-group-0-inline-4":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-2-v1.png",
+  "edition-block-11-group-0-inline-6":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-11-group-0-inline-8":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-13-group-0-inline-1":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-2-v1.png",
+  "edition-block-14-group-0-inline-1":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-15-group-0-inline-0":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-15-group-0-inline-2":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-16-group-0-inline-1":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-16-group-0-inline-3":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-16-group-0-inline-5":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-16-group-0-inline-7":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-16-group-0-inline-9":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-17-group-0-inline-1":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+  "edition-block-17-group-0-inline-3":
+    "/patents/figures/us-4341502-makino-scara/source-sheet-3-v1.png",
+} as const;
+const BAER_ODYSSEY_ID = "us-3728480-baer-odyssey";
+const BAER_ODYSSEY_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[BAER_ODYSSEY_ID].assets,
+);
+const BAER_ODYSSEY_OCCURRENCES = {
+  "edition-block-21-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-02-v1.png",
+  "edition-block-22-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-02-v1.png",
+  "edition-block-23-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-02-v1.png",
+  "edition-block-24-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-03-v1.png",
+  "edition-block-25-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-03-v1.png",
+  "edition-block-26-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-04-v1.png",
+  "edition-block-27-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-05-v1.png",
+  "edition-block-28-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-04-v1.png",
+  "edition-block-29-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-06-v1.png",
+  "edition-block-30-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-11-v1.png",
+  "edition-block-31-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-11-v1.png",
+  "edition-block-32-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-12-v1.png",
+  "edition-block-33-group-0-inline-0":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-12-v1.png",
+  "edition-block-35-group-0-inline-1":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-02-v1.png",
+  "edition-block-35-group-0-inline-3":
+    "/patents/figures/us-3728480-baer-odyssey/source-sheet-pdf-02-v1.png",
+} as const;
+const CARLSON_ELECTROPHOTOGRAPHY_ID = "us-2297691-carlson-electrophotography";
+const CARLSON_ELECTROPHOTOGRAPHY_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[CARLSON_ELECTROPHOTOGRAPHY_ID].assets,
+);
+const CARLSON_ELECTROPHOTOGRAPHY_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[CARLSON_ELECTROPHOTOGRAPHY_ID].map((locator) => [
+    locator.occurrenceKey,
+    locator.activeAsset,
+  ]),
+);
+const YALE_LOCK_ID = "us-48475-yale-lock";
+const YALE_LOCK_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[YALE_LOCK_ID].assets);
+const YALE_LOCK_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[YALE_LOCK_ID].map((locator) => [
+    locator.occurrenceKey,
+    locator.activeAsset,
+  ]),
+);
+const BELL_PHOTOPHONE_ID = "us-235199-bell-photophone";
+const BELL_PHOTOPHONE_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[BELL_PHOTOPHONE_ID].assets,
+);
+const BELL_PHOTOPHONE_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[BELL_PHOTOPHONE_ID].map((locator) => [
+    locator.occurrenceKey,
+    locator.activeAsset,
+  ]),
+);
 const COLT_ID = "us-x9430-colt-revolver";
 const COLT_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[COLT_ID].assets);
 const COLT_REVOLVER_OCCURRENCES = {
@@ -576,6 +774,59 @@ const DAIMLER_ENGINE_OCCURRENCES = Object.fromEntries(
   FIGURE_OCCURRENCE_SOURCE_LOCATORS[DAIMLER_ENGINE_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
 );
 
+const ROOMBA_ID = "us-6594844-roomba";
+const ROOMBA_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[ROOMBA_ID].assets);
+const ROOMBA_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[ROOMBA_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
+);
+
+const CORLISS_ID = "us-6162-corliss-steam-engine";
+const CORLISS_ASSETS = Object.keys(ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[CORLISS_ID].assets);
+const CORLISS_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[CORLISS_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
+);
+
+const LINDE_AIR_LIQUEFACTION_ID = "us-727650-linde-air-liquefaction";
+const LINDE_AIR_LIQUEFACTION_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[LINDE_AIR_LIQUEFACTION_ID].assets,
+);
+const LINDE_AIR_LIQUEFACTION_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[LINDE_AIR_LIQUEFACTION_ID].map((l) => [
+    l.occurrenceKey,
+    l.activeAsset,
+  ]),
+);
+
+const PARSONS_TURBINE_ID = "us-608969-parsons-turbine";
+const PARSONS_TURBINE_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[PARSONS_TURBINE_ID].assets,
+);
+const PARSONS_TURBINE_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[PARSONS_TURBINE_ID].map((l) => [
+    l.occurrenceKey,
+    l.activeAsset,
+  ]),
+);
+
+const EDISON_INDICATOR_ID = "us-307031-edison-indicator";
+const EDISON_INDICATOR_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[EDISON_INDICATOR_ID].assets,
+);
+const EDISON_INDICATOR_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[EDISON_INDICATOR_ID].map((l) => [
+    l.occurrenceKey,
+    l.activeAsset,
+  ]),
+);
+
+const OTIS_ELEVATOR_ID = "us-31128-otis-elevator";
+const OTIS_ELEVATOR_ASSETS = Object.keys(
+  ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS[OTIS_ELEVATOR_ID].assets,
+);
+const OTIS_ELEVATOR_OCCURRENCES = Object.fromEntries(
+  FIGURE_OCCURRENCE_SOURCE_LOCATORS[OTIS_ELEVATOR_ID].map((l) => [l.occurrenceKey, l.activeAsset]),
+);
+
 const VALIDATION_OPTIONS = {
   canonicalAssetsByPatent: {
     [HULL_ID]: HULL_ASSETS,
@@ -590,9 +841,22 @@ const VALIDATION_OPTIONS = {
     [PAGERANK_ID]: PAGERANK_ASSETS,
     [WRIGHT_ID]: WRIGHT_ASSETS,
     [DE_FOREST_ID]: DE_FOREST_ASSETS,
+    [EDISON_INDICATOR_ID]: EDISON_INDICATOR_ASSETS,
     [GLIDDEN_BARBED_WIRE_ID]: GLIDDEN_BARBED_WIRE_ASSETS,
     [SUNDBACK_ZIPPER_ID]: SUNDBACK_ZIPPER_ASSETS,
     [PELTON_ID]: PELTON_ASSETS,
+    [MESTRAL_VELCRO_ID]: MESTRAL_VELCRO_ASSETS,
+    [LINCOLN_BUOY_ID]: LINCOLN_BUOY_ASSETS,
+    [HALL_ALUMINIUM_ID]: HALL_ALUMINIUM_ASSETS,
+    [EASTMAN_KODAK_ID]: EASTMAN_KODAK_ASSETS,
+    [MAKINO_SCARA_ID]: MAKINO_SCARA_ASSETS,
+    [BAER_ODYSSEY_ID]: BAER_ODYSSEY_ASSETS,
+    [CARLSON_ELECTROPHOTOGRAPHY_ID]: CARLSON_ELECTROPHOTOGRAPHY_ASSETS,
+    [YALE_LOCK_ID]: YALE_LOCK_ASSETS,
+    [BELL_PHOTOPHONE_ID]: BELL_PHOTOPHONE_ASSETS,
+    [ROOMBA_ID]: ROOMBA_ASSETS,
+    [CORLISS_ID]: CORLISS_ASSETS,
+    [LINDE_AIR_LIQUEFACTION_ID]: LINDE_AIR_LIQUEFACTION_ASSETS,
     [EINSTEIN_REFRIGERATOR_ID]: EINSTEIN_REFRIGERATOR_ASSETS,
     [SPENCER_MICROWAVE_ID]: SPENCER_MICROWAVE_ASSETS,
     [TESLA_MOTOR_ID]: TESLA_MOTOR_ASSETS,
@@ -601,14 +865,16 @@ const VALIDATION_OPTIONS = {
     [DELAVAL_ID]: DELAVAL_ASSETS,
     [EDISON_BULB_ID]: EDISON_BULB_ASSETS,
     [EDISON_PHONOGRAPH_ID]: EDISON_PHONOGRAPH_ASSETS,
+    [OTIS_ELEVATOR_ID]: OTIS_ELEVATOR_ASSETS,
     [MAXIM_MACHINE_GUN_ID]: MAXIM_MACHINE_GUN_ASSETS,
     [DAIMLER_ENGINE_ID]: DAIMLER_ENGINE_ASSETS,
+    [PARSONS_TURBINE_ID]: PARSONS_TURBINE_ASSETS,
     [MCCORMICK_REAPER_ID]: MCCORMICK_REAPER_ASSETS,
   },
   canonicalOccurrencesByPatent: {
     [HULL_ID]: HULL_OCCURRENCES,
     [KAMEN_TRANSPORTER_ID]: KAMEN_TRANSPORTER_OCCURRENCES,
-    [KAMEN_SEGWAY_ID]: KAMEN_SEGWAY_OCCURRENCES,
+    [KAMEN_SEGWAY_ID]: KAMEN_SEGWAY_ASSETS ? KAMEN_SEGWAY_OCCURRENCES : {},
     [KAMEN_MEDICATION_INJECTION_ID]: KAMEN_MEDICATION_INJECTION_OCCURRENCES,
     [SIKORSKY_ID]: SIKORSKY_OCCURRENCES,
     [METCALFE_ID]: METCALFE_OCCURRENCES,
@@ -618,9 +884,22 @@ const VALIDATION_OPTIONS = {
     [PAGERANK_ID]: PAGERANK_OCCURRENCES,
     [WRIGHT_ID]: WRIGHT_OCCURRENCES,
     [DE_FOREST_ID]: DE_FOREST_OCCURRENCES,
+    [EDISON_INDICATOR_ID]: EDISON_INDICATOR_OCCURRENCES,
     [GLIDDEN_BARBED_WIRE_ID]: GLIDDEN_BARBED_WIRE_OCCURRENCES,
     [SUNDBACK_ZIPPER_ID]: SUNDBACK_ZIPPER_OCCURRENCES,
     [PELTON_ID]: PELTON_OCCURRENCES,
+    [MESTRAL_VELCRO_ID]: MESTRAL_VELCRO_OCCURRENCES,
+    [LINCOLN_BUOY_ID]: LINCOLN_BUOY_OCCURRENCES,
+    [HALL_ALUMINIUM_ID]: HALL_ALUMINIUM_OCCURRENCES,
+    [EASTMAN_KODAK_ID]: EASTMAN_KODAK_OCCURRENCES,
+    [MAKINO_SCARA_ID]: MAKINO_SCARA_OCCURRENCES,
+    [BAER_ODYSSEY_ID]: BAER_ODYSSEY_OCCURRENCES,
+    [CARLSON_ELECTROPHOTOGRAPHY_ID]: CARLSON_ELECTROPHOTOGRAPHY_OCCURRENCES,
+    [YALE_LOCK_ID]: YALE_LOCK_OCCURRENCES,
+    [BELL_PHOTOPHONE_ID]: BELL_PHOTOPHONE_OCCURRENCES,
+    [ROOMBA_ID]: ROOMBA_OCCURRENCES,
+    [CORLISS_ID]: CORLISS_OCCURRENCES,
+    [LINDE_AIR_LIQUEFACTION_ID]: LINDE_AIR_LIQUEFACTION_OCCURRENCES,
     [EINSTEIN_REFRIGERATOR_ID]: EINSTEIN_REFRIGERATOR_OCCURRENCES,
     [SPENCER_MICROWAVE_ID]: SPENCER_MICROWAVE_OCCURRENCES,
     [TESLA_MOTOR_ID]: TESLA_MOTOR_OCCURRENCES,
@@ -629,8 +908,10 @@ const VALIDATION_OPTIONS = {
     [DELAVAL_ID]: DELAVAL_OCCURRENCES,
     [EDISON_BULB_ID]: EDISON_BULB_OCCURRENCES,
     [EDISON_PHONOGRAPH_ID]: EDISON_PHONOGRAPH_OCCURRENCES,
+    [OTIS_ELEVATOR_ID]: OTIS_ELEVATOR_OCCURRENCES,
     [MAXIM_MACHINE_GUN_ID]: MAXIM_MACHINE_GUN_OCCURRENCES,
     [DAIMLER_ENGINE_ID]: DAIMLER_ENGINE_OCCURRENCES,
+    [PARSONS_TURBINE_ID]: PARSONS_TURBINE_OCCURRENCES,
     [MCCORMICK_REAPER_ID]: MCCORMICK_REAPER_OCCURRENCES,
   },
   sourcePdfPageCountsByPatent: {
@@ -646,9 +927,22 @@ const VALIDATION_OPTIONS = {
     [PAGERANK_ID]: 15,
     [WRIGHT_ID]: 10,
     [DE_FOREST_ID]: 4,
+    [EDISON_INDICATOR_ID]: 3,
     [GLIDDEN_BARBED_WIRE_ID]: 2,
     [SUNDBACK_ZIPPER_ID]: 5,
     [PELTON_ID]: 3,
+    [MESTRAL_VELCRO_ID]: 3,
+    [LINCOLN_BUOY_ID]: 3,
+    [HALL_ALUMINIUM_ID]: 3,
+    [EASTMAN_KODAK_ID]: 9,
+    [MAKINO_SCARA_ID]: 5,
+    [BAER_ODYSSEY_ID]: 21,
+    [CARLSON_ELECTROPHOTOGRAPHY_ID]: 10,
+    [YALE_LOCK_ID]: 4,
+    [BELL_PHOTOPHONE_ID]: 13,
+    [ROOMBA_ID]: 26,
+    [CORLISS_ID]: 8,
+    [LINDE_AIR_LIQUEFACTION_ID]: 5,
     [EINSTEIN_REFRIGERATOR_ID]: 4,
     [SPENCER_MICROWAVE_ID]: 3,
     [TESLA_MOTOR_ID]: 9,
@@ -657,8 +951,10 @@ const VALIDATION_OPTIONS = {
     [DELAVAL_ID]: 3,
     [EDISON_BULB_ID]: 4,
     [EDISON_PHONOGRAPH_ID]: 3,
+    [OTIS_ELEVATOR_ID]: 3,
     [MAXIM_MACHINE_GUN_ID]: 5,
     [DAIMLER_ENGINE_ID]: 6,
+    [PARSONS_TURBINE_ID]: 8,
     [MCCORMICK_REAPER_ID]: 3,
   },
 } as const;
@@ -679,9 +975,22 @@ describe("figure occurrence source locators", () => {
       PAGERANK_ID,
       WRIGHT_ID,
       DE_FOREST_ID,
+      EDISON_INDICATOR_ID,
       GLIDDEN_BARBED_WIRE_ID,
       SUNDBACK_ZIPPER_ID,
       PELTON_ID,
+      MESTRAL_VELCRO_ID,
+      LINCOLN_BUOY_ID,
+      HALL_ALUMINIUM_ID,
+      EASTMAN_KODAK_ID,
+      MAKINO_SCARA_ID,
+      BAER_ODYSSEY_ID,
+      CARLSON_ELECTROPHOTOGRAPHY_ID,
+      YALE_LOCK_ID,
+      BELL_PHOTOPHONE_ID,
+      ROOMBA_ID,
+      CORLISS_ID,
+      LINDE_AIR_LIQUEFACTION_ID,
       EINSTEIN_REFRIGERATOR_ID,
       SPENCER_MICROWAVE_ID,
       TESLA_MOTOR_ID,
@@ -690,8 +999,10 @@ describe("figure occurrence source locators", () => {
       DELAVAL_ID,
       EDISON_BULB_ID,
       EDISON_PHONOGRAPH_ID,
+      OTIS_ELEVATOR_ID,
       MAXIM_MACHINE_GUN_ID,
       DAIMLER_ENGINE_ID,
+      PARSONS_TURBINE_ID,
       MCCORMICK_REAPER_ID,
     ]);
     expect(locators).toHaveLength(3);

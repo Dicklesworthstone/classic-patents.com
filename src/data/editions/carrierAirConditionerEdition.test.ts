@@ -9,6 +9,10 @@ import {
   carrierAirConditionerArchivalEdition,
   carrierAirConditionerParallelReadings,
 } from "./carrierAirConditionerEdition";
+import {
+  completeArchivalEditionForViewer,
+  evaluateArchivalPublicationState,
+} from "./publicationApproval";
 
 describe("carrierAirConditionerArchivalEdition", () => {
   test("pins the complete four-sheet source and its five printed claims", () => {
@@ -103,6 +107,33 @@ describe("carrierAirConditionerArchivalEdition", () => {
     expect(JSON.stringify(carrierAirConditionerPatent)).not.toContain("Sackett-Wilhelms");
     expect(JSON.stringify(carrierAirConditionerPatent).toLowerCase()).not.toContain("dew-point");
     expect(JSON.stringify(carrierAirConditionerPatent).toLowerCase()).not.toContain("reheat");
+  });
+
+  test("pins the printed execution witnesses while keeping figure remediation internal", () => {
+    const transcript = readFileSync(
+      resolve(
+        process.cwd(),
+        "public/patents/transcripts/us-808897-carrier-air-conditioner-reviewed.txt",
+      ),
+      "utf8",
+    );
+    const witnessBlock = carrierAirConditionerArchivalEdition.blocks.at(-1);
+
+    expect(transcript).toContain("Witnesses: CHAS. W. PARKER, C. B. HORNBECK.");
+    expect(transcript).not.toContain("Witnesses: CHAS. W. PARKER, G. B. HORNBECK.");
+    expect(witnessBlock).toMatchObject({
+      kind: "paragraph",
+      inlines: [{ kind: "text", text: "Witnesses: CHAS. W. PARKER, C. B. HORNBECK." }],
+    });
+    const decision = evaluateArchivalPublicationState(carrierAirConditionerPatent);
+    expect(decision.reasonCode).toBe("FIGURE_ACCEPTANCE_PENDING");
+    expect(decision.figureManifest).toMatchObject({
+      requiredFigureCount: 8,
+      acceptedFigureCount: 0,
+    });
+    expect(completeArchivalEditionForViewer(carrierAirConditionerPatent, decision)).toBe(
+      carrierAirConditionerArchivalEdition,
+    );
   });
 
   test("gives every printed claim a distinct, source-specific decoder and innovation set", () => {

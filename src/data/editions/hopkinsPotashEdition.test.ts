@@ -44,11 +44,11 @@ describe("US Patent 1 [X1] Samuel Hopkins Potash manual source edition", () => {
     expect(hopkinsPotashPatent.claims).toHaveLength(0);
   });
 
-  test("uses an authored local source crop for the parchment grant", () => {
-    const previewCropPath = resolve(
-      `${process.cwd()}/public/patents/figures/us-x1-hopkins-potash/fig-1-source-crop-v1.png`,
+  test("records the source-true absence of technical drawings", () => {
+    expect(hopkinsPotashPatent.drawings).toEqual([]);
+    expect(hopkinsPotashArchivalEdition.blocks.some((block) => block.kind === "figure-sheet")).toBe(
+      false,
     );
-    expect(existsSync(previewCropPath)).toBe(true);
   });
 
   test("verifies reviewed transcription ledger integrity", () => {
@@ -62,8 +62,9 @@ describe("US Patent 1 [X1] Samuel Hopkins Potash manual source edition", () => {
     expect(result.error).toBeUndefined();
     expect(ledgerText).toContain("--- REVIEWED TRANSCRIPTION PAGE 1 OF 1 ---");
     expect(ledgerText).toContain("Whereas Samuel Hopkins of the City of Philadelphia");
-    expect(ledgerText).toContain("G°. WASHINGTON");
-    expect(ledgerText).toContain("EDM: RANDOLPH");
+    expect(ledgerText).toContain("G. WASHINGTON");
+    expect(ledgerText).toContain("Edm. Randolph");
+    expect(ledgerText).not.toContain("TH: JEFFERSON");
   });
 
   test("provides complete parallel readings covering all edition paragraph blocks", () => {
@@ -74,5 +75,17 @@ describe("US Patent 1 [X1] Samuel Hopkins Potash manual source edition", () => {
       expect(HOPKINS_PARALLEL_READINGS[index]).toBeDefined();
       expect(HOPKINS_PARALLEL_READINGS[index][0].length).toBeGreaterThan(20);
     }
+  });
+
+  test("never withholds the source-true parchment edition from the reader", () => {
+    const {
+      evaluateArchivalPublicationState,
+      patentForSourceReader,
+    } = require("./publicationApproval");
+    const decision = evaluateArchivalPublicationState(hopkinsPotashPatent);
+    expect(typeof decision.isPublished).toBe("boolean");
+    expect(patentForSourceReader(hopkinsPotashPatent).archivalEdition).toBe(
+      hopkinsPotashArchivalEdition,
+    );
   });
 });

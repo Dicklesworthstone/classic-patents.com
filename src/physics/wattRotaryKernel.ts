@@ -8,6 +8,14 @@
  * dimensioned engine installation from which these lengths can be recovered.
  */
 
+import type { TapeUpdater } from "./useFrankenSimPhysics";
+
+export const WATT_ROTARY_KERNEL_SOURCE = "source-bounded-ts" as const;
+export const WATT_ROTARY_FRANKENSIM_BOUNDARY =
+  "fs-mbd::holonomic-gear-and-four-bar-constraints-unavailable" as const;
+export const WATT_ROTARY_SOURCE_BOUNDARY =
+  "The pinned artifact is a modern research reconstruction, not a primary 1781 Chancery facsimile. The shared kernel therefore owns only declared normalized linkage geometry, rigid planet-to-rod attachment, external-gear no-slip kinematics, and visitor-declared scenario inputs. Historical dimensions, pressure, force, power, efficiency, wear, and performance remain unavailable." as const;
+
 export interface WattRotaryControls {
   strokeRateSpm: number; // Engine beam cycles per minute (double-strokes/min, 10 - 30)
   boilerPressureKpa: number; // Effective steam pressure above condensation (40 - 120 kPa)
@@ -25,8 +33,9 @@ export interface WattRotaryTelemetry {
   pistonVelocityMps: number; // Piston instantaneous velocity (m/s)
   planetOrbitAngleDeg: number; // Planet center orbital angle (0 - 360 deg)
   planetOrbitAngleRad: number;
-  planetBodyAngleDeg: number; // Planet has a fixed orientation while its centre orbits
+  planetBodyAngleDeg: number; // Planet rocks with the rigidly attached connecting rod
   planetBodyAngleRad: number;
+  planetAngularVelocityRadS: number;
   planetPosX: number; // Planet center X coordinate (m)
   planetPosY: number; // Planet center Y coordinate (m)
   sunShaftAngleDeg: number; // Wrapped flywheel shaft angle (0 - 360 deg)
@@ -46,8 +55,10 @@ export interface WattRotaryTelemetry {
   sunTeeth: number;
   planetTeeth: number;
   gearRatioNpOverNs: number;
-  shaftRpm: number; // Output driveshaft speed (RPM)
-  shaftAngularVelocityRadS: number; // Driveshaft angular velocity (rad/s)
+  shaftRpm: number; // Instantaneous output driveshaft speed (RPM)
+  meanShaftRpm: number; // Net revolutions per cycle expressed as mean RPM
+  shaftAngularVelocityRadS: number; // Instantaneous driveshaft angular velocity (rad/s)
+  meanShaftAngularVelocityRadS: number;
   cycleOmegaRadPerS: number; // Beam / planet-orbit angular velocity (rad/s)
   speedMultiplier: number; // 1 + Np/Ns (2.0 for equal gears)
 
@@ -73,17 +84,34 @@ export interface WattRotaryTelemetry {
  */
 export const WATT_ROTARY_KINEMATIC_GEOMETRY = Object.freeze({
   beamPivotX: 0,
-  beamPivotY: 3.2,
+  beamPivotY: 4.4,
   beamHalfLengthM: 2.2,
   sunCenterX: 2.2,
-  sunCenterY: 0.9,
+  sunCenterY: 2.1,
   gearCenterDistanceM: 0.9,
   connectingRodLengthM: 2.4,
+  flywheelRadiusM: 1.8,
+  flywheelRimRadiusM: 0.14,
+  foundationTopY: 0,
+  minimumMovingClearanceM: 0.12,
   nominalSunTeeth: 20,
   ratioMin: 0.5,
   ratioMax: 2,
   ratioStep: 0.25,
 });
+
+export interface WattRotaryRuntimeControls extends WattRotaryControls {
+  isRunning: boolean;
+  resetEpoch: number;
+}
+
+export interface WattRotaryTapeFrame {
+  controls: WattRotaryRuntimeControls;
+  timeSec: number;
+  telemetry: WattRotaryTelemetry;
+}
+
+let latestWattRotaryTapeFrame: WattRotaryTapeFrame | null = null;
 
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
@@ -130,6 +158,22 @@ export function readWattRotaryControls(
   };
 }
 
+export function readWattRotaryRuntimeControls(
+  raw: Partial<WattRotaryRuntimeControls> | Record<string, number | boolean | undefined>,
+): WattRotaryRuntimeControls {
+  const isRunning =
+    typeof raw.isRunning === "boolean" ? raw.isRunning : Number(raw.isRunning ?? 1) > 0.5;
+  return {
+    ...readWattRotaryControls(raw as Partial<WattRotaryControls>),
+    isRunning,
+    resetEpoch: Number(raw.resetEpoch ?? 0),
+  };
+}
+
+export function getWattRotaryTapeFrame(): WattRotaryTapeFrame | null {
+  return latestWattRotaryTapeFrame;
+}
+
 export function stepWattRotaryEngine(
   controls: WattRotaryControls,
   timeSec = 0,
@@ -151,8 +195,11 @@ export function stepWattRotaryEngine(
   const rPlanet = rOrbit - rSun;
   const sunTeeth = geometry.nominalSunTeeth;
   const planetTeeth = Math.round(sunTeeth * ratio);
-  const rFlywheel = 2.4; // Flywheel outer rim radius (m)
-  const iFlywheel = 0.5 * mFlywheel * (rFlywheel * rFlywheel); // Moment of inertia (kg*m^2)
+  const rFlywheel = geometry.flywheelRadiusM;
+  // The rendered flywheel carries most of its material in the rim, so the
+  // thin-ring limit I = mr^2 is the consistent declared scenario model. The
+  // previous solid-disc factor silently disagreed with the visible machine.
+  const iFlywheel = mFlywheel * rFlywheel * rFlywheel;
 
   // Cycle Frequency
   const fCycle = spm / 60; // Hz (engine cycles per sec)
@@ -183,24 +230,12 @@ export function stepWattRotaryEngine(
   const connectingRodLength = Math.hypot(rodDx, rodDy);
   const connectingRodAngleRad = Math.atan2(rodDx, -rodDy);
 
-  // Watt's planet wheel travels around the sun but is restrained from turning
-  // about its own centre. The connecting spear therefore supplies a moving
-  // bearing position, not the wheel's axial orientation. For an external
-  // epicyclic mesh, Ns(theta_s - theta_c) + Np(theta_p - theta_c) = 0. With
-  // theta_p fixed at zero, theta_s = (1 + Np/Ns) * theta_c.
-  const planetBodyAngleRad = 0;
-  const planetBodyAngleDeg = (planetBodyAngleRad * 180) / Math.PI;
-  const shaftRpm = spm * speedMultiplier;
-  const shaftAngularVelocityRadS = (shaftRpm * 2 * Math.PI) / 60;
-  const sunShaftAngleRad = speedMultiplier * carrierAngleRad;
-  const sunShaftAngleDeg = positiveModulo((sunShaftAngleRad * 180) / Math.PI, 360);
-  const gearMeshConstraintResidualRad =
-    sunTeeth * (sunShaftAngleRad - carrierAngleRad) +
-    planetTeeth * (planetBodyAngleRad - carrierAngleRad);
-
   // The piston follows the left beam end. Differentiate the four-bar closure
   // analytically so velocity and rendered position remain the same mechanism.
-  const pistonBottomReferenceY = geometry.beamHalfLengthM;
+  // The mechanism was translated upward as one rigid layout so its orbiting
+  // gears and flywheel clear the foundation. Preserve the same normalized
+  // piston datum relative to the beam pivot rather than to world zero.
+  const pistonBottomReferenceY = geometry.beamPivotY - 1;
   const pistonPositionM = clamp(leftBeamEndY - pistonBottomReferenceY, 0, stroke);
   const planetVelocityX = rOrbit * omegaCycle * Math.cos(orbitPhase);
   const planetVelocityY = rOrbit * omegaCycle * Math.sin(orbitPhase);
@@ -214,6 +249,49 @@ export function stepWattRotaryEngine(
       : 0;
   const pistonVelocityMps =
     -geometry.beamHalfLengthM * Math.cos(beamAngleRad) * beamAngularVelocity;
+
+  // The planet is not a freely spinning idler: it is rigidly part of the
+  // connecting spear. A real finite-length spear rocks slightly as its upper
+  // pin follows the beam arc, so the planet body must rock by that same angle.
+  // Treating it as perfectly world-fixed is only the infinite-rod
+  // approximation and produces an artificially uniform flywheel speed.
+  const initialPlanetWorldX = geometry.sunCenterX;
+  const initialPlanetWorldY = geometry.sunCenterY - rOrbit;
+  const initialBeamAngleRad = solveBeamAngleRad(initialPlanetWorldX, initialPlanetWorldY);
+  const initialRightBeamEndX =
+    geometry.beamPivotX + geometry.beamHalfLengthM * Math.cos(initialBeamAngleRad);
+  const initialRightBeamEndY =
+    geometry.beamPivotY + geometry.beamHalfLengthM * Math.sin(initialBeamAngleRad);
+  const initialConnectingRodAngleRad = Math.atan2(
+    initialPlanetWorldX - initialRightBeamEndX,
+    -(initialPlanetWorldY - initialRightBeamEndY),
+  );
+  const planetBodyAngleRad = connectingRodAngleRad - initialConnectingRodAngleRad;
+  const planetBodyAngleDeg = (planetBodyAngleRad * 180) / Math.PI;
+
+  const rightBeamVelocityX =
+    -geometry.beamHalfLengthM * Math.sin(beamAngleRad) * beamAngularVelocity;
+  const rightBeamVelocityY =
+    geometry.beamHalfLengthM * Math.cos(beamAngleRad) * beamAngularVelocity;
+  const rodVelocityX = planetVelocityX - rightBeamVelocityX;
+  const rodVelocityY = planetVelocityY - rightBeamVelocityY;
+  const planetAngularVelocityRadS =
+    (-rodDy * rodVelocityX + rodDx * rodVelocityY) /
+    (geometry.connectingRodLengthM * geometry.connectingRodLengthM);
+
+  // External-gear pitch contact requires equal material-point velocity:
+  // Ns(theta_s-theta_c) + Np(theta_p-theta_c) = 0. Because theta_p is the
+  // rod's small rocking angle rather than zero, the shaft makes the same net
+  // 1 + Np/Ns turns per cycle but speeds up and slows down within that cycle.
+  const sunShaftAngleRad = speedMultiplier * carrierAngleRad - ratio * planetBodyAngleRad;
+  const sunShaftAngleDeg = positiveModulo((sunShaftAngleRad * 180) / Math.PI, 360);
+  const meanShaftRpm = spm * speedMultiplier;
+  const meanShaftAngularVelocityRadS = (meanShaftRpm * 2 * Math.PI) / 60;
+  const shaftAngularVelocityRadS = speedMultiplier * omegaCycle - ratio * planetAngularVelocityRadS;
+  const shaftRpm = (shaftAngularVelocityRadS * 60) / (2 * Math.PI);
+  const gearMeshConstraintResidualRad =
+    sunTeeth * (sunShaftAngleRad - carrierAngleRad) +
+    planetTeeth * (planetBodyAngleRad - carrierAngleRad);
 
   // Forces
   const pistonArea = (Math.PI * bore * bore) / 4;
@@ -229,7 +307,7 @@ export function stepWattRotaryEngine(
 
   // Energy & Power
   const indicatedPowerKw = (instantaneousTorqueNm * shaftAngularVelocityRadS) / 1000;
-  const meanPowerKw = (meanTorqueNm * shaftAngularVelocityRadS) / 1000;
+  const meanPowerKw = (meanTorqueNm * meanShaftAngularVelocityRadS) / 1000;
   const brakeHorsepower = meanPowerKw * 1.34102; // hp
 
   const flywheelKineticEnergyJ =
@@ -247,6 +325,7 @@ export function stepWattRotaryEngine(
     planetOrbitAngleRad: carrierAngleRad,
     planetBodyAngleDeg,
     planetBodyAngleRad,
+    planetAngularVelocityRadS,
     planetPosX,
     planetPosY,
     sunShaftAngleDeg,
@@ -267,7 +346,9 @@ export function stepWattRotaryEngine(
     planetTeeth,
     gearRatioNpOverNs: ratio,
     shaftRpm,
+    meanShaftRpm,
     shaftAngularVelocityRadS,
+    meanShaftAngularVelocityRadS,
     cycleOmegaRadPerS: omegaCycle,
     speedMultiplier,
     pistonForceN,
@@ -280,5 +361,43 @@ export function stepWattRotaryEngine(
     brakeHorsepower,
     flywheelKineticEnergyJ,
     speedFluctuationCoeff,
+  };
+}
+
+/**
+ * One route-level owner for both the SVG and Three.js faces. The mechanism is
+ * integrated at the transport bus's fixed step, while React receives a lower
+ * frequency snapshot so the large SVG tree is not reconciled every frame.
+ */
+export function createWattRotaryTransportUpdater(
+  readControls: () => WattRotaryRuntimeControls,
+): TapeUpdater {
+  let timeSec = 0;
+  let lastResetEpoch: number | null = null;
+  let ticksSincePublish = 4;
+
+  return (_previous, dt) => {
+    const controls = readControls();
+    if (lastResetEpoch !== null && controls.resetEpoch !== lastResetEpoch) {
+      timeSec = 0;
+    }
+    lastResetEpoch = controls.resetEpoch;
+    if (controls.isRunning) timeSec += dt;
+
+    const telemetry = stepWattRotaryEngine(controls, timeSec);
+    latestWattRotaryTapeFrame = { controls, timeSec, telemetry };
+
+    ticksSincePublish += 1;
+    if (ticksSincePublish < 5) return null;
+    ticksSincePublish = 0;
+    return {
+      machine: {
+        poseXMeters: telemetry.planetPosX,
+        poseYMeters: telemetry.planetPosY,
+        headingRad: telemetry.sunShaftAngleRad,
+        modeLabel: controls.isRunning ? "sun-and-planet running" : "sun-and-planet held",
+        wheelSpeedMps: telemetry.pistonVelocityMps,
+      },
+    };
   };
 }

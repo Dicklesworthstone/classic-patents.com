@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const SOURCES = [
-  ["ArkwrightWaterFrameSim.tsx", "[onscreenRef]);"],
+  ["TeslaMotorSim.tsx", "[onscreenRef]);"],
   ["CorlissEngineSim.tsx", ", onscreenRef]);"],
   ["DavenportMotorSim.tsx", ", onscreenRef]);"],
   ["DeLavalSeparatorSim.tsx", ", onscreenRef]);"],

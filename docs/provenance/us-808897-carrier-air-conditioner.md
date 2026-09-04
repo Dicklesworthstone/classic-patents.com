@@ -58,7 +58,9 @@ the complete printed figure, its printed `Fig.` caption, and all source letters
 needed by the matching description, while excluding neighboring figures,
 page borders, and synthetic labels. The worker must also return the crop's
 pixel dimensions and a visual note explaining the boundary. No local render,
-crop, OCR, or image-processing operation is authorized for this handoff.
+crop, OCR, or image-processing operation is authorized for this handoff;
+rendering the pinned PDF solely to inspect source evidence does not create an
+accepted crop.
 
 | Figure | Target on PDF page 1 | Required versioned output | Binding rule |
 | --- | --- | --- | --- |
@@ -69,9 +71,11 @@ crop, OCR, or image-processing operation is authorized for this handoff.
 | 5 | Enlarged spray-nozzle section in its first plane; retain the printed `h` lettering | `fig-5-source-crop-v2.png` | Keep v1; bind only after the worker confirms nozzle boundaries |
 | 6 | Enlarged spray-nozzle section in the second plane; retain the printed `h` lettering | `fig-6-source-crop-v2.png` | Keep v1; bind only after the worker confirms the distinct plane |
 
-Until all six native-pixel rectangles and replacement files exist, this record
-remains withheld. Existing edition references intentionally continue to point
-at the preserved previews rather than an unverified crop.
+Until all six native-pixel rectangles and replacement files exist, the figure
+acceptance issue remains an internal archival remediation. Existing edition
+references intentionally continue to point at the preserved previews rather
+than an unverified crop. That internal issue must never remove or downgrade a
+visitor's complete source text.
 
 The five typed claims are source-faithful:
 
@@ -92,9 +96,16 @@ facts supported by this document.
 
 ## Independent-review boundary
 
-The edition author reviewed all four source sheets visually, then performed a
-second source comparison while preparing the typed ledger. This is local
-source evidence, not independent acceptance. Root must still integrate the
-patent-local `carrierAirConditionerParallelReadings` export into the shared
-parallel-reading registry, run the shared gates, and independently compare
-the live page and source PDF before this Bead may be accepted or closed.
+On 2026-09-03, an independent visual re-review inspected all four pages of the
+pinned PDF against the reviewed ledger and continuous edition. The source PDF
+digest remained `b8cfbb69e27934862236ecabf03396e67d04a4b4011c98083f1205cd76f0291e`.
+The review confirmed the document identity, filing date, all five claims,
+execution block, and the air-washer/plate-separator mechanism. It corrected
+one factual mismatch: the printed page-4 execution block names **C. B.
+Hornbeck**, not G. B. Hornbeck. The drawing sheet's handwritten witness marks
+are retained as such rather than being normalized to the printed execution
+names.
+
+This supports removing the obsolete facsimile-review hold only. It does not
+accept the existing figure crops, assert a completed figure review, or alter
+the complete visitor-facing source reader.

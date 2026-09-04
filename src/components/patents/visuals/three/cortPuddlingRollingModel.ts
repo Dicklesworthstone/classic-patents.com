@@ -12,11 +12,21 @@
  * - Reverberatory Puddling Furnace: brick hearth, coal firebox, arched roof crown,
  *   working door with puddler rabble rod, molten decarburizing bath, chimney stack.
  * - Grooved Rolling Mill: heavy cast-iron stanchions, counter-rotating chilled-iron
- *   rolls with graduated profile grooves (box, diamond, flat, round), screw-down
- *   adjustment wheels, hot billet and slag squeeze droplets.
+ *   rolls with four declared recessed working bands, screw-down adjustment
+ *   wheels, hot billet and deterministic slag/spark reader aids.
  */
 
 import * as THREE from "three";
+import {
+  CORT_ACTIVE_BILLET_HEIGHT_M,
+  CORT_BILLET_TRAVEL_M,
+  CORT_ROLL_BODY_RADIUS_M,
+  CORT_ROLL_CENTER_SEPARATION_M,
+  CORT_ROLL_PASS_RADII_M,
+  CORT_ROLL_PASS_WIDTHS_M,
+  CORT_ROLL_PASS_X_M,
+  type CortKinematicPhases,
+} from "@/physics/cortKernel";
 
 export interface CortModel {
   root: THREE.Group;
@@ -29,14 +39,11 @@ export interface CortModel {
   bottomRollGroup: THREE.Group;
   billetMesh: THREE.Mesh;
   sparkParticles: THREE.Points;
-  calloutSprites: THREE.Sprite[];
   setCutaway: (enabled: boolean) => void;
-  setShowCallouts: (enabled: boolean) => void;
   updateAnimation: (
+    phases: CortKinematicPhases,
     timeSec: number,
     isComingToNature: boolean,
-    rollOmegaRadPerS: number,
-    rabbleOmegaRadPerS: number,
   ) => void;
   dispose: () => void;
 }
@@ -173,17 +180,34 @@ export function buildCortPuddlingRollingModel(): CortModel {
 
   // Puddler Working Door & Rabble Rod
   const rabbleGroup = new THREE.Group();
-  const doorFrameGeo = new THREE.BoxGeometry(0.6, 0.7, 0.1);
-  const doorFrame = new THREE.Mesh(doorFrameGeo, ironMetalMaterial);
+  const doorFrame = new THREE.Group();
+  doorFrame.name = "supported-working-door-frame";
   doorFrame.position.set(0.3, 1.2, 0.95);
+  const doorSideGeo = new THREE.BoxGeometry(0.08, 0.7, 0.1);
+  const doorLintelGeo = new THREE.BoxGeometry(0.6, 0.08, 0.1);
+  for (const x of [-0.26, 0.26]) {
+    const side = new THREE.Mesh(doorSideGeo, ironMetalMaterial);
+    side.position.x = x;
+    doorFrame.add(side);
+  }
+  for (const y of [-0.31, 0.31]) {
+    const lintel = new THREE.Mesh(doorLintelGeo, ironMetalMaterial);
+    lintel.position.y = y;
+    doorFrame.add(lintel);
+  }
   furnaceGroup.add(doorFrame);
 
-  // Rabble Iron Bar
-  const rabbleRodGeo = new THREE.CylinderGeometry(0.02, 0.02, 1.6, 12);
-  rabbleRodGeo.rotateX(Math.PI / 3);
+  // Rabble iron pivots at the working door; its inner end remains inside the bath.
+  rabbleGroup.position.set(0.3, 1.15, 0.95);
+  rabbleGroup.name = "door-pivoted-rabble";
+  const rabbleRodGeo = new THREE.CylinderGeometry(0.02, 0.02, 1.34, 12);
+  rabbleRodGeo.rotateX(-1.797);
   const rabbleRod = new THREE.Mesh(rabbleRodGeo, ironMetalMaterial);
-  rabbleRod.position.set(0.3, 1.05, 0.45);
+  rabbleRod.position.set(0, -0.15, -0.65);
   rabbleGroup.add(rabbleRod);
+  const rabbleHead = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.04, 0.05), ironMetalMaterial);
+  rabbleHead.position.set(0, -0.3, -1.3);
+  rabbleGroup.add(rabbleHead);
   furnaceGroup.add(rabbleGroup);
 
   // ==========================================
@@ -196,16 +220,19 @@ export function buildCortPuddlingRollingModel(): CortModel {
   // Mill Bedplate Foundation
   const millBaseGeo = new THREE.BoxGeometry(2.4, 0.3, 1.8);
   const millBase = new THREE.Mesh(millBaseGeo, ironMetalMaterial);
+  millBase.name = "rolling-mill-bedplate";
   millBase.position.set(0, 0.15, 0);
   millGroup.add(millBase);
 
   // Left & Right Cast-Iron Stanchions / Housings
   const stanchionGeo = new THREE.BoxGeometry(0.35, 1.8, 0.8);
   const leftStanchion = new THREE.Mesh(stanchionGeo, ironMetalMaterial);
+  leftStanchion.name = "left-roll-bearing-stand";
   leftStanchion.position.set(-0.85, 1.05, 0);
   millGroup.add(leftStanchion);
 
   const rightStanchion = new THREE.Mesh(stanchionGeo, ironMetalMaterial);
+  rightStanchion.name = "right-roll-bearing-stand";
   rightStanchion.position.set(0.85, 1.05, 0);
   millGroup.add(rightStanchion);
 
@@ -231,31 +258,57 @@ export function buildCortPuddlingRollingModel(): CortModel {
 
   // Grooved Rollers Assembly
   const topRollGroup = new THREE.Group();
-  topRollGroup.position.set(0, 1.25, 0);
+  topRollGroup.position.set(0, 1.015 + CORT_ROLL_CENTER_SEPARATION_M / 2, 0);
   millGroup.add(topRollGroup);
 
   const bottomRollGroup = new THREE.Group();
-  bottomRollGroup.position.set(0, 0.75, 0);
+  bottomRollGroup.position.set(0, 1.015 - CORT_ROLL_CENTER_SEPARATION_M / 2, 0);
   millGroup.add(bottomRollGroup);
 
-  // Function to build a grooved roller with matching pass collars
+  // Coaxially connected roll core, full-radius shoulders, and reduced-radius
+  // working bands. Unlike the former overlaid cylinders, these bands create
+  // real visible pass recesses without hidden geometry pretending to be cuts.
   function buildGroovedRoller(): THREE.Group {
     const group = new THREE.Group();
-    const mainBodyGeo = new THREE.CylinderGeometry(0.24, 0.24, 1.35, 24);
-    mainBodyGeo.rotateZ(Math.PI / 2);
-    const mainBody = new THREE.Mesh(mainBodyGeo, chilledRollMaterial);
-    group.add(mainBody);
+    const coreGeo = new THREE.CylinderGeometry(0.12, 0.12, 1.35, 24);
+    coreGeo.rotateZ(Math.PI / 2);
+    const core = new THREE.Mesh(coreGeo, ironMetalMaterial);
+    core.name = "continuous-roll-core";
+    group.add(core);
 
-    // Profile Grooves (Pass 1: Box, Pass 2: Diamond, Pass 3: Flat, Pass 4: Round)
-    const grooveXPositions = [-0.4, -0.15, 0.1, 0.35];
-    const grooveRadii = [0.18, 0.19, 0.2, 0.21];
-    const grooveWidths = [0.14, 0.11, 0.12, 0.08];
+    const shoulderIntervals = [
+      [-0.675, -0.47],
+      [-0.33, -0.205],
+      [-0.095, 0.04],
+      [0.16, 0.31],
+      [0.39, 0.675],
+    ] as const;
+    for (const [start, end] of shoulderIntervals) {
+      const width = end - start;
+      const shoulderGeo = new THREE.CylinderGeometry(
+        CORT_ROLL_BODY_RADIUS_M,
+        CORT_ROLL_BODY_RADIUS_M,
+        width,
+        32,
+      );
+      shoulderGeo.rotateZ(Math.PI / 2);
+      const shoulder = new THREE.Mesh(shoulderGeo, chilledRollMaterial);
+      shoulder.position.x = (start + end) / 2;
+      shoulder.name = "full-radius-roll-shoulder";
+      group.add(shoulder);
+    }
 
-    for (let i = 0; i < grooveXPositions.length; i++) {
-      const gGeo = new THREE.CylinderGeometry(grooveRadii[i], grooveRadii[i], grooveWidths[i], 24);
+    for (let i = 0; i < CORT_ROLL_PASS_X_M.length; i++) {
+      const gGeo = new THREE.CylinderGeometry(
+        CORT_ROLL_PASS_RADII_M[i],
+        CORT_ROLL_PASS_RADII_M[i],
+        CORT_ROLL_PASS_WIDTHS_M[i],
+        32,
+      );
       gGeo.rotateZ(Math.PI / 2);
-      const gMesh = new THREE.Mesh(gGeo, ironMetalMaterial);
-      gMesh.position.set(grooveXPositions[i], 0, 0);
+      const gMesh = new THREE.Mesh(gGeo, chilledRollMaterial);
+      gMesh.name = `recessed-working-pass-${i + 1}`;
+      gMesh.position.set(CORT_ROLL_PASS_X_M[i], 0, 0);
       group.add(gMesh);
     }
 
@@ -263,10 +316,12 @@ export function buildCortPuddlingRollingModel(): CortModel {
     const journalGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.25, 16);
     journalGeo.rotateZ(Math.PI / 2);
     const leftJournal = new THREE.Mesh(journalGeo, ironMetalMaterial);
+    leftJournal.name = "left-supported-roll-journal";
     leftJournal.position.set(-0.78, 0, 0);
     group.add(leftJournal);
 
     const rightJournal = new THREE.Mesh(journalGeo, ironMetalMaterial);
+    rightJournal.name = "right-supported-roll-journal";
     rightJournal.position.set(0.78, 0, 0);
     group.add(rightJournal);
 
@@ -280,22 +335,27 @@ export function buildCortPuddlingRollingModel(): CortModel {
   bottomRollGroup.add(bottomRoller);
 
   // Hot Wrought Iron Billet Passing Through Pass 1
-  const billetGeo = new THREE.BoxGeometry(0.12, 0.1, 1.2);
+  const billetGeo = new THREE.BoxGeometry(0.12, CORT_ACTIVE_BILLET_HEIGHT_M, 1.2);
   const billetMesh = new THREE.Mesh(billetGeo, hotBilletMaterial);
-  billetMesh.position.set(-0.4, 1.0, 0);
+  billetMesh.name = "first-pass-billet-no-interference";
+  billetMesh.position.set(CORT_ROLL_PASS_X_M[0], 1.015, -CORT_BILLET_TRAVEL_M / 2);
   millGroup.add(billetMesh);
 
   // Slag / Spark Particles (Deterministic pseudo-random distribution)
   const sparkCount = 45;
   const sparkGeo = new THREE.BufferGeometry();
   const sparkPositions = new Float32Array(sparkCount * 3);
+  const sparkPhaseSeeds = new Float32Array(sparkCount);
+  const sparkXSeeds = new Float32Array(sparkCount);
+  const sparkZSeeds = new Float32Array(sparkCount);
+  const fractional = (value: number) => value - Math.floor(value);
   for (let i = 0; i < sparkCount; i++) {
-    const r1 = (Math.sin(i * 12.9898) * 43758.5453) % 1;
-    const r2 = (Math.sin(i * 78.233) * 43758.5453) % 1;
-    const r3 = (Math.sin(i * 45.164) * 43758.5453) % 1;
-    sparkPositions[i * 3] = -0.4 + (Math.abs(r1) - 0.5) * 0.2;
-    sparkPositions[i * 3 + 1] = 0.95 - Math.abs(r2) * 0.4;
-    sparkPositions[i * 3 + 2] = (Math.abs(r3) - 0.5) * 0.3;
+    sparkXSeeds[i] = fractional(Math.sin((i + 1) * 12.9898) * 43758.5453);
+    sparkPhaseSeeds[i] = fractional(Math.sin((i + 1) * 78.233) * 43758.5453);
+    sparkZSeeds[i] = fractional(Math.sin((i + 1) * 45.164) * 43758.5453);
+    sparkPositions[i * 3] = CORT_ROLL_PASS_X_M[0] + (sparkXSeeds[i] - 0.5) * 0.18;
+    sparkPositions[i * 3 + 1] = 0.95 - sparkPhaseSeeds[i] * 0.6;
+    sparkPositions[i * 3 + 2] = (sparkZSeeds[i] - 0.5) * 0.24;
   }
   sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPositions, 3));
   const sparkMaterial = new THREE.PointsMaterial({
@@ -306,55 +366,6 @@ export function buildCortPuddlingRollingModel(): CortModel {
   });
   const sparkParticles = new THREE.Points(sparkGeo, sparkMaterial);
   millGroup.add(sparkParticles);
-
-  // ==========================================
-  // 3. CALLOUT SPRITES
-  // ==========================================
-  const calloutSprites: THREE.Sprite[] = [];
-  // No numbered source drawing is accepted for GB 1420. Keep the model
-  // unlabelled rather than presenting invented letters as archival callouts.
-  const labels: readonly { text: string; pos: [number, number, number] }[] = [];
-
-  function createTextSprite(message: string): THREE.Sprite {
-    if (typeof document === "undefined") {
-      const spriteMat = new THREE.SpriteMaterial({ depthTest: false });
-      const sprite = new THREE.Sprite(spriteMat);
-      sprite.scale.set(0.8, 0.2, 1);
-      return sprite;
-    }
-
-    const canvas = document.createElement("canvas");
-    canvas.width = 256;
-    canvas.height = 64;
-    const ctx = canvas.getContext("2d");
-    if (ctx) {
-      ctx.fillStyle = "rgba(10, 10, 12, 0.85)";
-      ctx.strokeStyle = "#e7e5e4";
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.roundRect(4, 4, 248, 56, 10);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.font = "bold 24px monospace";
-      ctx.fillStyle = "#fef08a";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(message, 128, 32);
-    }
-    const texture = new THREE.CanvasTexture(canvas);
-    const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: false });
-    const sprite = new THREE.Sprite(spriteMat);
-    sprite.scale.set(0.8, 0.2, 1);
-    return sprite;
-  }
-
-  for (const item of labels) {
-    const sprite = createTextSprite(item.text);
-    sprite.position.set(...item.pos);
-    root.add(sprite);
-    calloutSprites.push(sprite);
-  }
 
   return {
     root,
@@ -367,63 +378,45 @@ export function buildCortPuddlingRollingModel(): CortModel {
     bottomRollGroup,
     billetMesh,
     sparkParticles,
-    calloutSprites,
 
     setCutaway(enabled: boolean) {
       roofGroup.visible = !enabled;
     },
 
-    setShowCallouts(enabled: boolean) {
-      for (const s of calloutSprites) {
-        s.visible = enabled;
-      }
-    },
+    updateAnimation(phases: CortKinematicPhases, timeSec: number, isComingToNature: boolean) {
+      // 1. The rod sweeps about its supported door pivot; it never translates
+      // away from the opening or floats through the furnace shell.
+      rabbleGroup.rotation.y = Math.sin(phases.rabbleCycleRad) * 0.18;
 
-    updateAnimation(
-      timeSec: number,
-      isComingToNature: boolean,
-      rollOmegaRadPerS: number,
-      rabbleOmegaRadPerS: number,
-    ) {
-      // 1. Rabble stirring oscillation from the kernel ω, not leftover 3 / 4.
-      const rabbleAngle = Math.sin(timeSec * rabbleOmegaRadPerS) * 0.15;
-      rabbleGroup.rotation.y = rabbleAngle;
-      rabbleGroup.position.x = Math.sin(timeSec * rabbleOmegaRadPerS * (4 / 3)) * 0.08;
-
-      // 2. Puddle ball growth and texture. Flicker drains rabble ω (15 rpm → leftover 5).
-      const millDisplayScale = 10 / Math.PI;
-      const puddleFlickerOmegaRadPerS = rabbleOmegaRadPerS * millDisplayScale;
+      // 2. The purely illustrative glow is a function of shared tape time, so
+      // pause and deterministic replay hold the exact same visual state.
       if (isComingToNature) {
         puddleBallMesh.scale.set(1.4, 0.85, 1.2);
         (puddleBallMesh.material as THREE.MeshStandardMaterial).emissiveIntensity =
-          0.85 + Math.sin(timeSec * puddleFlickerOmegaRadPerS) * 0.1;
+          0.85 + Math.sin(timeSec * 2.7) * 0.1;
       } else {
         puddleBallMesh.scale.set(0.8, 0.5, 0.8);
       }
 
-      // 3. Counter-rotating grooved rolls
-      topRollGroup.rotation.x = -timeSec * rollOmegaRadPerS;
-      bottomRollGroup.rotation.x = timeSec * rollOmegaRadPerS;
+      // 3. Counter-rotating rolls share one constrained tape coordinate.
+      topRollGroup.rotation.x = phases.topRollRad;
+      bottomRollGroup.rotation.x = phases.bottomRollRad;
 
-      // 4. Billet movement through rolls. Studio radius keeps default 30 RPM at 0.4 units/s.
-      const studioBilletRadius = 0.4 / Math.PI;
-      billetMesh.position.z = ((timeSec * rollOmegaRadPerS * studioBilletRadius) % 1.2) - 0.6;
+      // 4. Billet travel is integrated from the working-radius surface speed.
+      billetMesh.position.z = phases.billetTravelM - CORT_BILLET_TRAVEL_M / 2;
 
-      // 5. Spark particle animation. Hash rate drains roll ω (30 rpm → leftover 10).
-      const sparkHashRate = rollOmegaRadPerS * millDisplayScale;
+      // 5. Deterministic slag/spark reader aid. Positions are a pure function
+      // of tape time and fixed seeds, never frame count or ambient randomness.
       const posAttr = sparkParticles.geometry.getAttribute("position") as THREE.BufferAttribute;
       const posArr = posAttr.array as Float32Array;
       for (let i = 0; i < sparkCount; i++) {
-        posArr[i * 3 + 1] -= 0.015;
-        if (posArr[i * 3 + 1] < 0.3) {
-          posArr[i * 3 + 1] = 0.95;
-          const rx = (Math.sin(i * 17.13 + timeSec * sparkHashRate) * 43758.5453) % 1;
-          const rz = (Math.sin(i * 91.71 + timeSec * sparkHashRate) * 43758.5453) % 1;
-          posArr[i * 3] = -0.4 + (Math.abs(rx) - 0.5) * 0.2;
-          posArr[i * 3 + 2] = (Math.abs(rz) - 0.5) * 0.3;
-        }
+        const fall = fractional(sparkPhaseSeeds[i] + timeSec * 0.85);
+        posArr[i * 3] = CORT_ROLL_PASS_X_M[0] + (sparkXSeeds[i] - 0.5) * 0.18;
+        posArr[i * 3 + 1] = 0.95 - fall * 0.6;
+        posArr[i * 3 + 2] = (sparkZSeeds[i] - 0.5) * 0.24;
       }
       posAttr.needsUpdate = true;
+      sparkMaterial.opacity = Math.abs(billetMesh.position.z) < 0.22 ? 0.85 : 0.08;
     },
 
     dispose() {

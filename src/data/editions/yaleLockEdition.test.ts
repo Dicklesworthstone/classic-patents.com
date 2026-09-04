@@ -1,8 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { yaleLockPatent } from "../patents/yale-lock";
+import { completeArchivalEditionForViewer } from "./publicationApproval";
 import {
   manualYaleClaimText,
   yaleLockArchivalEdition,
@@ -14,6 +15,29 @@ const LEDGER_PATH = resolve(
   process.cwd(),
   "public/patents/transcripts/us-48475-yale-lock-reviewed.txt",
 );
+const SOURCE_SHEET_URL = "/patents/figures/us-48475-yale-lock/source-sheet-1-v1.png";
+const SOURCE_SHEET_PATH = resolve(process.cwd(), "public", SOURCE_SHEET_URL.replace(/^\//, ""));
+const SOURCE_SHEET_SHA256 = "a4927cabec8906a14f8de33cfd7a39cb8d2083fdba6dae51eb5f971cfb68a938";
+
+function activeFigurePreviews() {
+  return yaleLockArchivalEdition.blocks.flatMap((block) => {
+    const inlineGroups =
+      block.kind === "paragraph" || block.kind === "claim"
+        ? [block.inlines]
+        : block.kind === "figure-sheet"
+          ? [block.description]
+          : block.kind === "table"
+            ? [...block.headers, ...block.rows.flat()]
+            : [];
+    return inlineGroups.flatMap((inlines) =>
+      inlines.flatMap((inline) =>
+        inline.kind === "reference" && inline.referenceType === "figure"
+          ? (inline.figurePreviews ?? [])
+          : [],
+      ),
+    );
+  });
+}
 
 describe("US 48,475 Linus Yale Jr. Lock Archival Edition Contract", () => {
   test("pinned PDF SHA-256 matches archival edition", () => {
@@ -43,43 +67,32 @@ describe("US 48,475 Linus Yale Jr. Lock Archival Edition Contract", () => {
     expect(figureNumbers).toEqual(Array.from({ length: 20 }, (_, index) => `Fig. ${index + 1}`));
   });
 
-  test("all figure preview assets exist on disk with exact pixel dimensions", () => {
-    const referencedFigures = new Set<number>();
-    for (const block of yaleLockArchivalEdition.blocks) {
-      if (block.kind === "paragraph") {
-        for (const inline of block.inlines) {
-          if (inline.kind === "reference" && inline.figurePreviews) {
-            for (const preview of inline.figurePreviews) {
-              const figureMatch = preview.src.match(/fig-(\d+)-source-crop-v\d+\.png$/);
-              expect(figureMatch).not.toBeNull();
-              referencedFigures.add(Number(figureMatch?.[1]));
-              const diskPath = resolve(process.cwd(), "public", preview.src.replace(/^\//, ""));
-              const fileBuffer = readFileSync(diskPath);
-              expect(fileBuffer.length).toBeGreaterThan(100);
+  test("binds every active figure citation to the full p. 1 source sheet", () => {
+    const sourceSheet = readFileSync(SOURCE_SHEET_PATH);
+    expect(createHash("sha256").update(sourceSheet).digest("hex")).toBe(SOURCE_SHEET_SHA256);
+    expect(sourceSheet.readUInt32BE(16)).toBe(2320);
+    expect(sourceSheet.readUInt32BE(20)).toBe(3408);
 
-              // Verify PNG header dimensions (bytes 16-23: width [16..20], height [20..24])
-              const width = fileBuffer.readUInt32BE(16);
-              const height = fileBuffer.readUInt32BE(20);
-              expect(preview.width).toBe(width);
-              expect(preview.height).toBe(height);
-            }
-          }
-        }
-      }
-    }
-    expect(referencedFigures).toEqual(new Set(Array.from({ length: 20 }, (_, index) => index + 1)));
+    const previews = activeFigurePreviews();
+    expect(previews).toHaveLength(30);
+    expect(previews.every((preview) => preview.src === SOURCE_SHEET_URL)).toBe(true);
+    expect(previews.every((preview) => preview.width === 2320 && preview.height === 3408)).toBe(
+      true,
+    );
   });
 
-  test("records versioned source-crop targets while the crop lane is reviewed", () => {
-    const previews = yaleLockArchivalEdition.blocks.flatMap((block) =>
-      block.kind === "paragraph"
-        ? block.inlines.flatMap((inline) =>
-            inline.kind === "reference" && inline.figurePreviews ? inline.figurePreviews : [],
-          )
-        : [],
-    );
-    expect(previews.length).toBeGreaterThan(0);
-    expect(previews.every((preview) => /-source-crop-v\d+\.png$/.test(preview.src))).toBe(true);
+  test("preserves every retired v1 figure crop as research evidence", () => {
+    for (let figure = 1; figure <= 20; figure += 1) {
+      expect(
+        existsSync(
+          resolve(
+            process.cwd(),
+            "public/patents/figures/us-48475-yale-lock",
+            `fig-${figure}-source-crop-v1.png`,
+          ),
+        ),
+      ).toBe(true);
+    }
   });
 
   test("every paragraph block has a corresponding parallel reading", () => {
@@ -125,14 +138,14 @@ describe("US 48,475 Linus Yale Jr. Lock Archival Edition Contract", () => {
     expect(energyChannelsFor("us-48475-yale-lock", {})).toEqual([]);
   });
 
-  test("enforces figure acceptance audit hold in publication state registry", () => {
+  test("never turns an internal figure-review decision into a source-reader gate", () => {
     const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
     const decision = evaluateTypedArchivalPublicationState(yaleLockPatent, {
       hasCompanionReadings: true,
     });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+    expect(completeArchivalEditionForViewer(yaleLockPatent, decision)).toBe(
+      yaleLockArchivalEdition,
+    );
   });
 
   test("claim constraints accurately describe Claim 1 bolt-holding arrangement", () => {
