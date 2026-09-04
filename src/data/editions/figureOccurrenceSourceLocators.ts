@@ -3068,11 +3068,52 @@ const WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_RASTER = { width: 2320, height: 3408 }
 const WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_EVIDENCE_REFERENCE =
   "docs/provenance/us-124404-westinghouse-air-brake.md#direct-source-sheet-acceptance-2026-09-04";
 const WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_OCCURRENCES = [
-  "edition-block-1-group-0-inline-1", "edition-block-1-group-0-inline-3", "edition-block-1-group-0-inline-5", "edition-block-1-group-0-inline-7", "edition-block-1-group-0-inline-9", "edition-block-1-group-0-inline-11", "edition-block-5-group-0-inline-0", "edition-block-5-group-0-inline-2", "edition-block-5-group-0-inline-4", "edition-block-5-group-0-inline-6", "edition-block-5-group-0-inline-8", "edition-block-5-group-0-inline-10", "edition-block-5-group-0-inline-12", "edition-block-5-group-0-inline-14", "edition-block-14-group-0-inline-1", "edition-block-14-group-0-inline-3", "edition-block-15-group-0-inline-1", "edition-block-15-group-0-inline-3", "edition-block-15-group-0-inline-5", "edition-block-15-group-0-inline-7", "edition-block-17-group-0-inline-1", "edition-block-17-group-0-inline-3",
+  "edition-block-1-group-0-inline-1",
+  "edition-block-1-group-0-inline-3",
+  "edition-block-1-group-0-inline-5",
+  "edition-block-1-group-0-inline-7",
+  "edition-block-1-group-0-inline-9",
+  "edition-block-1-group-0-inline-11",
+  "edition-block-5-group-0-inline-0",
+  "edition-block-5-group-0-inline-2",
+  "edition-block-5-group-0-inline-4",
+  "edition-block-5-group-0-inline-6",
+  "edition-block-5-group-0-inline-8",
+  "edition-block-5-group-0-inline-10",
+  "edition-block-5-group-0-inline-12",
+  "edition-block-5-group-0-inline-14",
+  "edition-block-14-group-0-inline-1",
+  "edition-block-14-group-0-inline-3",
+  "edition-block-15-group-0-inline-1",
+  "edition-block-15-group-0-inline-3",
+  "edition-block-15-group-0-inline-5",
+  "edition-block-15-group-0-inline-7",
+  "edition-block-17-group-0-inline-1",
+  "edition-block-17-group-0-inline-3",
 ] as const satisfies readonly FigureOccurrenceKey[];
-function westinghouseAirBrakeSourceSheetLocator(occurrenceKey: FigureOccurrenceKey): FigureOccurrenceSourceLocator {
-  const sourceRectPixels = { x: 0, y: 0, width: WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_RASTER.width, height: WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_RASTER.height };
-  return { occurrenceKey, activeAsset: "/patents/figures/us-124404-westinghouse-air-brake/source-sheet-1-v1.png", sourcePdfPage: 1, sourceRaster: WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_RASTER, sourceRectPixels, normalizedSourceRect: normalizeSourceRectangle(sourceRectPixels, WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_RASTER), reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review", reviewedAt: "2026-09-04", evidenceReference: WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_EVIDENCE_REFERENCE };
+function westinghouseAirBrakeSourceSheetLocator(
+  occurrenceKey: FigureOccurrenceKey,
+): FigureOccurrenceSourceLocator {
+  const sourceRectPixels = {
+    x: 0,
+    y: 0,
+    width: WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_RASTER.width,
+    height: WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_RASTER.height,
+  };
+  return {
+    occurrenceKey,
+    activeAsset: "/patents/figures/us-124404-westinghouse-air-brake/source-sheet-1-v1.png",
+    sourcePdfPage: 1,
+    sourceRaster: WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_RASTER,
+    sourceRectPixels,
+    normalizedSourceRect: normalizeSourceRectangle(
+      sourceRectPixels,
+      WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_RASTER,
+    ),
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-pixel review",
+    reviewedAt: "2026-09-04",
+    evidenceReference: WESTINGHOUSE_AIR_BRAKE_SOURCE_SHEET_EVIDENCE_REFERENCE,
+  };
 }
 
 const DE_FOREST_AUDION_SOURCE_RASTER = { width: 2320, height: 3408 } as const;
