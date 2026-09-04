@@ -110,8 +110,8 @@ export function ArkwrightWaterFrameSim() {
             <button
               type="button"
               onClick={() => {
-                updateParam("totalDraftRatio", 2.5);
-                updateParam("rollerClampingWeightKg", 0.8);
+                updateParam("totalDraftRatio", 3);
+                updateParam("rollerClampingWeightKg", 1);
                 soundEngine.playSwitchClick();
               }}
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
@@ -120,7 +120,7 @@ export function ArkwrightWaterFrameSim() {
                   : "text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-stone-200"
               }`}
             >
-              Manual Jenny Mode
+              Low-Draft Comparison
             </button>
           </div>
 

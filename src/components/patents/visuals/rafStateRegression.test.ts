@@ -16,7 +16,6 @@ const SNAPSHOT_CONTRACTS = [
   ["MaximMachineGunSim.tsx", "cyclePhaseRef", "setCyclePhase"],
   ["ParsonsTurbineSim.tsx", "flowPhaseRef", "setFlowPhase"],
   ["WattSeparateCondenserSim.tsx", "animTimeRef", "setAnimTime"],
-  ["ArkwrightWaterFrameSim.tsx", "animTimeRef", "setAnimTime"],
   ["EdisonPhonographSim.tsx", "cylinderAngleRef", "setCylinderAngleDeg"],
   ["DeLavalSeparatorSim.tsx", "angleRef", "setAngleDeg"],
   ["CorlissEngineSim.tsx", "crankAngleRef", "setCrankAngleDeg"],

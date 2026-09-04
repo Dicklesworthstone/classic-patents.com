@@ -20,7 +20,7 @@ export const ARKWRIGHT_SOURCE_BOUNDARY =
   "The pinned GB 931 artifact is a modern reconstruction, not the original enrolled specification or drawing. This exhibit therefore owns only a declared normalized topology and internally consistent differential-speed kinematics. Historical dimensions, gear ratios, spindle speed, clamp mass, material law, yarn strength, output, power, and efficiency remain unavailable; every numeric input and output is a modern teaching scenario." as const;
 
 export interface ArkwrightWaterFrameControls {
-  /** Water wheel / drum driving speed (RPM, default 180) */
+  /** Declared wheel / drum driving speed (RPM, default 180) */
   waterWheelRpm?: number;
   /** Total draft ratio across 4 roller pairs (D = v4 / v1, range 3.0 to 10.0, default 6.0) */
   totalDraftRatio?: number;
@@ -49,6 +49,10 @@ export interface ArkwrightWaterFrameOutputs {
   wheelOmegaRadPerS: number;
   /** Feed-roller pair angular velocity (rad/s) */
   feedRollerOmegaRadPerS: number;
+  /** First intermediate roller-pair angular velocity (rad/s) */
+  intermediateRollerOneOmegaRadPerS: number;
+  /** Second intermediate roller-pair angular velocity (rad/s) */
+  intermediateRollerTwoOmegaRadPerS: number;
   /** Front delivery-roller angular velocity (rad/s) */
   deliveryRollerOmegaRadPerS: number;
   /** Bobbin take-up angular velocity (rad/s) */
@@ -69,7 +73,7 @@ export interface ArkwrightWaterFrameOutputs {
   yarnTenacityCnPerTex: number;
   /** Yarn breaking strength (Newtons, N) */
   yarnBreakingForceN: number;
-  /** True "Water Twist" warp suitability (strength > 2.0 N threshold) */
+  /** Whether the declared strength scenario clears its 1.8 N comparison threshold */
   isWarpGradeWaterTwist: boolean;
   /** Bobbin take-up winding speed (RPM) */
   bobbinRpm: number;
@@ -79,7 +83,7 @@ export interface ArkwrightWaterFrameOutputs {
   traverseFreqHz: number;
   /** Production rate per 4-spindle frame (grams/hour) */
   productionRateGramsPerHour: number;
-  /** Production rate per 96-spindle Cromford Mill water frame (kg/day @ 12hr) */
+  /** Scenario output scaled to 96 lanes over 12 hours (kg/day) */
   millProductionKgPerDay: number;
   /** Yarn delivery length produced per hour (meters/hour) */
   yarnLengthMetersPerHour: number;
@@ -94,6 +98,8 @@ export interface ArkwrightKinematicPhases {
   wheelRad: number;
   shaftRad: number;
   feedRollerRad: number;
+  intermediateRollerOneRad: number;
+  intermediateRollerTwoRad: number;
   deliveryRollerRad: number;
   spindleRad: number;
   bobbinRad: number;
@@ -120,6 +126,8 @@ export const ARKWRIGHT_ZERO_PHASES: Readonly<ArkwrightKinematicPhases> = Object.
   wheelRad: 0,
   shaftRad: 0,
   feedRollerRad: 0,
+  intermediateRollerOneRad: 0,
+  intermediateRollerTwoRad: 0,
   deliveryRollerRad: 0,
   spindleRad: 0,
   bobbinRad: 0,
@@ -194,19 +202,23 @@ export function stepArkwrightWaterFrame(
     Math.min(0.8, controls.bobbinDragCoeff ?? ARKWRIGHT_DEFAULT_CONTROLS.bobbinDragCoeff),
   );
 
-  // 1. Transmission kinematics: Great wheel to iron shaft and flyer spindle whorls
-  // Transmission gear ratio from main drum to spindle whorl: ~18.5:1
+  // 1. Declared transmission scenario: wheel to shaft and flyer spindle.
+  // The 18.5:1 ratio is a teaching input, not a measurement from the pinned artifact.
   const flyerSpindleRpm = waterWheelRpm * 18.5;
   const spindleOmegaRadPerSec = (flyerSpindleRpm * 2 * Math.PI) / 60;
   const wheelOmegaRadPerS = (waterWheelRpm * 2 * Math.PI) / 60;
 
-  // 2. Front delivery roller speed (driven through intermediate worm gear and draft train)
-  // Roller diameter d_roller = 1 inch = 0.0254 m
+  // 2. Declared four-pair drafting train. Equal roller diameters and equal
+  // geometric ratio increments make the intermediate speeds explicit while
+  // preserving D = omega_delivery / omega_feed exactly.
   const frontRollerDiameterM = 0.0254;
-  // Feed pair is slow; front roller RPM is geared relative to water wheel and drafting train
   const feedRollerRpm = (waterWheelRpm * 0.75) / 4.0;
   const frontRollerRpm = (waterWheelRpm * 0.75 * totalDraftRatio) / 4.0;
   const feedRollerOmegaRadPerS = (feedRollerRpm * 2 * Math.PI) / 60;
+  const draftStageRatio = totalDraftRatio ** (1 / 3);
+  const intermediateRollerOneOmegaRadPerS = feedRollerOmegaRadPerS * draftStageRatio;
+  const intermediateRollerTwoOmegaRadPerS =
+    feedRollerOmegaRadPerS * draftStageRatio * draftStageRatio;
   const deliveryRollerOmegaRadPerS = (frontRollerRpm * 2 * Math.PI) / 60;
   const deliveryVelocityMPerMin = Math.PI * frontRollerDiameterM * frontRollerRpm;
   const deliveryVelocityMPerSec = deliveryVelocityMPerMin / 60.0;
@@ -245,7 +257,8 @@ export function stepArkwrightWaterFrame(
 
   // Total breaking load F = Tenacity (cN/tex) * Tex / 100 (in Newtons)
   const yarnBreakingForceN = (yarnTenacityCnPerTex * yarnLinearDensityTex) / 100.0;
-  // Threshold for warp-grade thread on 18th-century looms was ~1.8 N
+  // Declared comparison threshold; the pinned reconstruction supplies no
+  // authenticated tensile test or loom-load datum.
   const isWarpGradeWaterTwist = yarnBreakingForceN >= 1.8;
 
   // 7. Bobbin take-up and dead-spindle drag differential
@@ -257,15 +270,14 @@ export function stepArkwrightWaterFrame(
   const bobbinSlipRpm = flyerSpindleRpm - bobbinRpm;
   const bobbinOmegaRadPerS = (bobbinRpm * 2 * Math.PI) / 60;
 
-  // 8. Heart-cam traverse motion
-  // Worm gear from main shaft drives heart-cam at ~0.08 Hz (1 cycle per 12.5 seconds)
+  // 8. Declared traverse-motion cadence.
   const traverseFreqHz = (waterWheelRpm / 180.0) * 0.08;
 
   // 9. Production metrics
   // Mass per spindle per hour = v_delivery (m/hr) * (tex / 1000) g/m
   const singleSpindleGramsPerHour = deliveryVelocityMPerMin * 60 * (yarnLinearDensityTex / 1000);
-  const productionRateGramsPerHour = singleSpindleGramsPerHour * 4; // 4-spindle model
-  const millProductionKgPerDay = (singleSpindleGramsPerHour * 96 * 12) / 1000.0; // 96-spindle Cromford frame
+  const productionRateGramsPerHour = singleSpindleGramsPerHour * 4;
+  const millProductionKgPerDay = (singleSpindleGramsPerHour * 96 * 12) / 1000.0;
   const yarnLengthMetersPerHour = deliveryVelocityMPerMin * 60 * 4;
 
   return {
@@ -276,6 +288,8 @@ export function stepArkwrightWaterFrame(
     spindleOmegaRadPerSec,
     wheelOmegaRadPerS,
     feedRollerOmegaRadPerS,
+    intermediateRollerOneOmegaRadPerS,
+    intermediateRollerTwoOmegaRadPerS,
     deliveryRollerOmegaRadPerS,
     bobbinOmegaRadPerS,
     outputYarnCountNe,
@@ -323,6 +337,8 @@ export function createArkwrightTransportUpdater(
       phases.wheelRad += outputs.wheelOmegaRadPerS * dt;
       phases.shaftRad += outputs.wheelOmegaRadPerS * dt;
       phases.feedRollerRad += outputs.feedRollerOmegaRadPerS * dt;
+      phases.intermediateRollerOneRad += outputs.intermediateRollerOneOmegaRadPerS * dt;
+      phases.intermediateRollerTwoRad += outputs.intermediateRollerTwoOmegaRadPerS * dt;
       phases.deliveryRollerRad += outputs.deliveryRollerOmegaRadPerS * dt;
       phases.spindleRad += outputs.spindleOmegaRadPerSec * dt;
       phases.bobbinRad += outputs.bobbinOmegaRadPerS * dt;

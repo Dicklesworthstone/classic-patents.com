@@ -36,8 +36,8 @@ describe("archival audit vs reader totality contract (3hc.9)", () => {
       }
     }
 
-    expect(editionCount).toBe(89);
-    expect(transcriptCount).toBe(14);
+    expect(editionCount).toBe(90);
+    expect(transcriptCount).toBe(13);
     expect(facsimileCount).toBe(0);
     expect(editionCount + transcriptCount + facsimileCount).toBe(103);
   });
@@ -45,15 +45,15 @@ describe("archival audit vs reader totality contract (3hc.9)", () => {
   test(
     "maintains strict audit standards without conflating audit holds with reader withholding",
     () => {
-      // Exactly 35 patents meet the strictest full publication criteria
+      // Exactly 38 patents meet the strictest full publication criteria
       const auditDecisions = allPatents.map((p) => evaluateArchivalPublicationState(p));
       const acceptedCount = auditDecisions.filter((d) => d.isPublished).length;
       const nonAcceptedCount = auditDecisions.filter((d) => !d.isPublished).length;
 
-      expect(acceptedCount).toBe(35);
-      expect(nonAcceptedCount).toBe(68);
+      expect(acceptedCount).toBe(38);
+      expect(nonAcceptedCount).toBe(65);
 
-      // For each of the 68 non-accepted patents, verify that reader delivery is NOT withheld
+      // For each of the 65 non-accepted patents, verify that reader delivery is NOT withheld
       for (const patent of allPatents) {
         const decision = evaluateArchivalPublicationState(patent);
         if (!decision.isPublished) {

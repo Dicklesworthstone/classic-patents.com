@@ -7,10 +7,10 @@ export interface ArkwrightWaterFrameModelNodes {
   shaftGroup: THREE.Group;
   feedRollersGroup: THREE.Group;
   deliveryRollersGroup: THREE.Group;
-  feedLowerRollers: THREE.Mesh[];
-  feedUpperRollers: THREE.Mesh[];
-  deliveryLowerRollers: THREE.Mesh[];
-  deliveryUpperRollers: THREE.Mesh[];
+  feedLowerRollers: THREE.Group[];
+  feedUpperRollers: THREE.Group[];
+  deliveryLowerRollers: THREE.Group[];
+  deliveryUpperRollers: THREE.Group[];
   flyerGroups: THREE.Group[];
   bobbinGroups: THREE.Group[];
   traverseRailGroup: THREE.Group;
@@ -187,35 +187,64 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
 
   const rollerGeom = new THREE.CylinderGeometry(0.018, 0.018, 0.07, 16);
   disposables.push(rollerGeom);
-  const feedLowerRollers: THREE.Mesh[] = [];
-  const feedUpperRollers: THREE.Mesh[] = [];
-  const deliveryLowerRollers: THREE.Mesh[] = [];
-  const deliveryUpperRollers: THREE.Mesh[] = [];
+  const feedLowerRollers: THREE.Group[] = [];
+  const feedUpperRollers: THREE.Group[] = [];
+  const deliveryLowerRollers: THREE.Group[] = [];
+  const deliveryUpperRollers: THREE.Group[] = [];
 
-  for (const x of stationX) {
+  const createRollerRotor = (
+    name: string,
+    x: number,
+    y: number,
+    material: THREE.MeshStandardMaterial,
+  ): THREE.Group => {
+    const rotor = new THREE.Group();
+    rotor.name = name;
+    rotor.position.set(x, y, 0);
+    const roller = new THREE.Mesh(rollerGeom, material);
+    // CylinderGeometry is Y-aligned; this fixed child transform aligns it to
+    // the rotor's X axis. Animation then rotates the parent about that axis.
+    roller.rotation.z = Math.PI / 2;
+    rotor.add(roller);
+    return rotor;
+  };
+
+  stationX.forEach((x, stationIndex) => {
     // Pair 1: Feed Rollers (Lower fluted brass, upper leather cot)
-    const lowerFeed = new THREE.Mesh(rollerGeom, brassMaterial);
-    lowerFeed.rotation.z = Math.PI / 2;
-    lowerFeed.position.set(x, -0.01, 0);
+    const lowerFeed = createRollerRotor(
+      `feed-lower-rotor-${stationIndex + 1}`,
+      x,
+      -0.01,
+      brassMaterial,
+    );
     feedRollersGroup.add(lowerFeed);
     feedLowerRollers.push(lowerFeed);
 
-    const upperFeed = new THREE.Mesh(rollerGeom, leatherMaterial);
-    upperFeed.rotation.z = Math.PI / 2;
-    upperFeed.position.set(x, 0.026, 0);
+    const upperFeed = createRollerRotor(
+      `feed-upper-rotor-${stationIndex + 1}`,
+      x,
+      0.026,
+      leatherMaterial,
+    );
     feedRollersGroup.add(upperFeed);
     feedUpperRollers.push(upperFeed);
 
     // Pair 4: Delivery Rollers (Accelerating speed)
-    const lowerDeliv = new THREE.Mesh(rollerGeom, brassMaterial);
-    lowerDeliv.rotation.z = Math.PI / 2;
-    lowerDeliv.position.set(x, -0.01, 0);
+    const lowerDeliv = createRollerRotor(
+      `delivery-lower-rotor-${stationIndex + 1}`,
+      x,
+      -0.01,
+      brassMaterial,
+    );
     deliveryRollersGroup.add(lowerDeliv);
     deliveryLowerRollers.push(lowerDeliv);
 
-    const upperDeliv = new THREE.Mesh(rollerGeom, leatherMaterial);
-    upperDeliv.rotation.z = Math.PI / 2;
-    upperDeliv.position.set(x, 0.026, 0);
+    const upperDeliv = createRollerRotor(
+      `delivery-upper-rotor-${stationIndex + 1}`,
+      x,
+      0.026,
+      leatherMaterial,
+    );
     deliveryRollersGroup.add(upperDeliv);
     deliveryUpperRollers.push(upperDeliv);
 
@@ -231,7 +260,7 @@ export function buildArkwrightWaterFrameModel(): ArkwrightWaterFrameModelNodes {
     const weightMesh = new THREE.Mesh(weightGeom, leadWeightMaterial);
     weightMesh.position.set(x, -0.16, 0);
     feedRollersGroup.add(weightMesh);
-  }
+  });
 
   // ==================== 5. E & F: SPINDLES, FLYERS & BOBBINS ====================
   const flyerGroups: THREE.Group[] = [];

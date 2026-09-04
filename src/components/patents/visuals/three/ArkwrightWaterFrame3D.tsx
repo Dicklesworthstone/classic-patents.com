@@ -104,7 +104,8 @@ export function ArkwrightWaterFrame3D() {
       rafId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
 
-      // Pure consumer of the route-level shared tape. The model owns the axis
+      // Pure consumer of the shared transport tape: the route-level owner survives
+      // 2D/3D switches; this face only consumes it. The model owns the axis
       // mapping so a renderer cannot accidentally rotate an entire nip cage.
       model.updateAnimation(getArkwrightTapeFrame()?.phases ?? ARKWRIGHT_ZERO_PHASES);
 
