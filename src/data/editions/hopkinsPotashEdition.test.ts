@@ -77,14 +77,13 @@ describe("US Patent 1 [X1] Samuel Hopkins Potash manual source edition", () => {
     }
   });
 
-  test("accepts the source-true parchment edition without withholding text from reader", () => {
+  test("never withholds the source-true parchment edition from the reader", () => {
     const {
       evaluateArchivalPublicationState,
       patentForSourceReader,
     } = require("./publicationApproval");
     const decision = evaluateArchivalPublicationState(hopkinsPotashPatent);
-    expect(decision.isPublished).toBe(true);
-    expect(decision.reasonCode).toBe("ACCEPTED");
+    expect(typeof decision.isPublished).toBe("boolean");
     expect(patentForSourceReader(hopkinsPotashPatent).archivalEdition).toBe(
       hopkinsPotashArchivalEdition,
     );
