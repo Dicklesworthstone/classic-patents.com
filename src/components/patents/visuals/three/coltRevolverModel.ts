@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { wave2dFrames, waveFrameRms } from "@/physics/genericWasm";
+import type { ColtLockworkState } from "@/physics/coltRevolverKernel";
 import { createLcg } from "@/utils/lcg";
 
 /**
@@ -40,30 +40,26 @@ export const COLT_HISTORICAL_FINISHES = {
 } as const;
 
 /**
- * 1836 Samuel Colt Paterson Revolver (.36 Caliber No. 5 Texas Model)
- * Authentic Historical Engineering Specifications from US Patent 138 (Feb 25, 1836)
+ * Source-informed teaching reconstruction of Samuel Colt's US X9430 pistol.
  *
- * Kinematic Geometric Coordinates:
+ * Display-coordinate geometry (not dimensions printed by the grant):
  * - Center of Cylinder Axis: Y = 0, Z = 0
- * - 5 Chambers on Radius R = 0.82 units (.36 Caliber Bore)
+ * - Five chambers traced from the source drawing on radius R = 0.82 units
  * - Top Firing Chamber: Y = +0.82, Z = 0 (12 o'clock)
  * - Octagonal Barrel Bore: Y = +0.82, Z = 0 (Concentric with Top Chamber)
  * - Center Arbor Axis: Y = 0, Z = 0 (Rigid Axle through Cylinder into Barrel Lug)
  * - Hammer Striker Nose: Y = +0.82, Z = 0 (Strikes Top Percussion Nipple)
- * - Loading Lever Rammer: Y = -0.82, Z = 0 (Enters Bottom Chamber at 6 o'clock)
  */
 
 export interface ColtRevolverModel {
   group: THREE.Group;
   cylinderGroup: THREE.Group;
+  ratchetGroup: THREE.Group;
+  shackleCoupling: THREE.Mesh;
+  percussionCapsGroup: THREE.Group;
+  capPartitionsGroup: THREE.Group;
   hammerGroup: THREE.Group;
   triggerGroup: THREE.Group;
-  loadingLeverGroup: THREE.Group;
-  rammerPlunger: THREE.Mesh;
-  blastGroup: THREE.Group;
-  blastMesh: THREE.Mesh;
-  smokeMesh: THREE.Points;
-  sparkPoints: THREE.Points;
   lockworkCutawayGroup: THREE.Group;
   handPawl: THREE.Mesh;
   boltDetent: THREE.Mesh;
@@ -233,7 +229,7 @@ function createCylinderEngravingTexture(): THREE.CanvasTexture {
 }
 
 /**
- * Builds a blueprint-accurate, museum-quality 3D Colt Paterson 1836 Revolver.
+ * Builds a connected, source-informed 3D interpretation of the 1836 mechanism.
  */
 export function buildColtRevolverModel(): ColtRevolverModel {
   const lcg = createLcg(9430);
@@ -287,6 +283,10 @@ export function buildColtRevolverModel(): ColtRevolverModel {
   // Positioned at origin (0, 0, 0)
   const cylinderGroup = new THREE.Group();
   cylinderGroup.position.set(0, 0, 0);
+  const ratchetGroup = new THREE.Group();
+  const percussionCapsGroup = new THREE.Group();
+  const capPartitionsGroup = new THREE.Group();
+  cylinderGroup.add(percussionCapsGroup, capPartitionsGroup);
 
   const cylinderLength = 2.7;
   const cylinderRadius = 1.32;
@@ -324,12 +324,26 @@ export function buildColtRevolverModel(): ColtRevolverModel {
   const centerHole = new THREE.Mesh(centerHoleGeo, boreInteriorMat);
   cylinderGroup.add(centerHole);
 
-  // Rear Ratchet Indexing Star (5-Tooth Steel Cam for Hand Pawl)
+  // Rear ratchet is an independently articulated body. Claim 5's shackle is
+  // what transfers this rotation to the cylinder; keeping both coordinates
+  // separate makes the claimed connection observable rather than decorative.
   const ratchetGeo = new THREE.CylinderGeometry(0.52, 0.56, 0.32, 10);
   ratchetGeo.rotateZ(Math.PI / 2);
   const ratchetStar = new THREE.Mesh(ratchetGeo, caseHardenedMat);
   ratchetStar.position.set(-cylinderLength / 2 - 0.16, 0, 0);
-  cylinderGroup.add(ratchetStar);
+  ratchetGroup.add(ratchetStar);
+  for (let tooth = 0; tooth < chamberCount; tooth++) {
+    const angle = (tooth * Math.PI * 2) / chamberCount;
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.2, 0.18), caseHardenedMat);
+    mesh.position.set(
+      -cylinderLength / 2 - 0.18,
+      Math.cos(angle) * 0.55,
+      Math.sin(angle) * 0.55,
+    );
+    mesh.rotation.x = angle;
+    ratchetGroup.add(mesh);
+  }
+  rootGroup.add(ratchetGroup);
 
   // 5 Chamber Bores, Nipple Recesses, Isolating Partition Walls, and Locking Notches
   for (let c = 0; c < chamberCount; c++) {
@@ -337,7 +351,7 @@ export function buildColtRevolverModel(): ColtRevolverModel {
     const cy = Math.cos(theta) * chamberPitchRadius;
     const cz = Math.sin(theta) * chamberPitchRadius;
 
-    // Bored Powder & Ball Chamber (.36 caliber)
+    // Chamber bore. The grant does not print a caliber or ballistic load card.
     const chamberGeo = new THREE.CylinderGeometry(0.23, 0.23, cylinderLength + 0.02, 16);
     chamberGeo.rotateZ(Math.PI / 2);
     const chamberMesh = new THREE.Mesh(chamberGeo, boreInteriorMat);
@@ -363,7 +377,7 @@ export function buildColtRevolverModel(): ColtRevolverModel {
     capGeo.rotateZ(Math.PI / 2);
     const capMesh = new THREE.Mesh(capGeo, percussionCapMat);
     capMesh.position.set(-cylinderLength / 2 - 0.14, cy, cz);
-    cylinderGroup.add(capMesh);
+    percussionCapsGroup.add(capMesh);
 
     // Radial Flash-Barrier Partition Walls (Claim 3) between Nipples
     const partTheta = theta + Math.PI / chamberCount;
@@ -373,7 +387,7 @@ export function buildColtRevolverModel(): ColtRevolverModel {
     partGeo.rotateX(partTheta);
     const partitionWall = new THREE.Mesh(partGeo, bluedBarrelMat);
     partitionWall.position.set(-cylinderLength / 2 - 0.06, partPy, partPz);
-    cylinderGroup.add(partitionWall);
+    capPartitionsGroup.add(partitionWall);
 
     // Fluted Scallop Grooves on Outer Cylinder Body
     const fy = Math.cos(partTheta) * (cylinderRadius + 0.02);
@@ -405,12 +419,19 @@ export function buildColtRevolverModel(): ColtRevolverModel {
   arborPin.position.set(0.6, 0, 0);
   rootGroup.add(arborPin);
 
+  // Source shackle/coupling collar between ratchet and cylinder (Claim 5).
+  const shackleGeo = new THREE.TorusGeometry(0.38, 0.075, 10, 28);
+  shackleGeo.rotateY(Math.PI / 2);
+  const shackleCoupling = new THREE.Mesh(shackleGeo, polishedBrassMat);
+  shackleCoupling.position.set(-cylinderLength / 2 - 0.02, 0, 0);
+  rootGroup.add(shackleCoupling);
+
   // --- 4. OCTAGONAL RIFLED BARREL & UNDER-LUG (US X9430 Fig. 1) ---
   // Barrel Axis is PRECISELY at Y = +0.82, Z = 0 (Concentric with Top Chamber)
   const barrelGroup = new THREE.Group();
   barrelGroup.position.set(0, 0, 0);
 
-  const barrelLength = 6.6; // 7.5-inch Paterson barrel
+  const barrelLength = 6.6;
   const barrelStartX = cylinderLength / 2 + 0.05; // 1.40
   const barrelCenterX = barrelStartX + barrelLength / 2; // 4.70
 
