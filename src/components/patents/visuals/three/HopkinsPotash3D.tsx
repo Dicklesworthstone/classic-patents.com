@@ -1,88 +1,100 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { stepHopkinsPotash } from "@/physics/hopkinsPotashKernel";
-import { createStudioClock } from "@/physics/tickScheduler";
+import {
+  Camera,
+  Eye,
+  EyeOff,
+  Layers,
+  Pause,
+  Play,
+  RotateCcw,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  getHopkinsTapeFrame,
+  HOPKINS_DEFAULT_CONTROLS,
+  HOPKINS_FRANKENSIM_BOUNDARY,
+  HOPKINS_KERNEL_SOURCE,
+  HOPKINS_SOURCE_BOUNDARY,
+  HOPKINS_ZERO_PHASES,
+  stepHopkinsPotash,
+} from "@/physics/hopkinsPotashKernel";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import {
+  type HopkinsPotashCameraPreset as CameraPreset,
+  hopkinsPotashViewForViewport,
+} from "./hopkinsPotashCamera";
 import { animateHopkinsPotashModel, buildHopkinsPotashModel } from "./hopkinsPotashModel";
 import { type KernelChip, StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "furnace" | "leaching" | "crystallizer" | "ingot" | "top";
-
-const CAMERA_PRESETS: Record<
-  CameraPreset,
-  { pos: [number, number, number]; target: [number, number, number] }
-> = {
-  iso: { pos: [4.5, 3.2, 4.8], target: [0, 0.5, 0] },
-  furnace: { pos: [-1.6, 1.4, 2.5], target: [-1.6, 0.6, 0] },
-  leaching: { pos: [-0.4, 1.3, 2.2], target: [-0.4, 0.5, 0] },
-  crystallizer: { pos: [0.8, 1.4, 2.2], target: [0.8, 0.5, 0] },
-  ingot: { pos: [1.8, 1.0, 1.8], target: [1.8, 0.25, 0] },
-  top: { pos: [0, 6.0, 0.1], target: [0, 0, 0] },
-};
+const CAMERA_PRESET_OPTIONS: readonly { readonly id: CameraPreset; readonly label: string }[] = [
+  { id: "iso", label: "Overview" },
+  { id: "furnace", label: "1 Burn Ashes" },
+  { id: "leaching", label: "2 Dissolve & Boil" },
+  { id: "settling", label: "3 Settle Ley" },
+  { id: "crystallizer", label: "4 Make Pearl Ash" },
+  { id: "fluxing", label: "5 Flux Pot Ash" },
+  { id: "top", label: "Plan View" },
+];
 
 export function HopkinsPotash3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
-  const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const [isCutaway, setIsCutaway] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+  const { params, updateParam, resetParams } = usePatentPhysics("us-x1-hopkins-potash");
+  const roastTempC = params.roastTempC ?? HOPKINS_DEFAULT_CONTROLS.roastTempC;
+  const roastTimeHours = params.roastTimeHours ?? HOPKINS_DEFAULT_CONTROLS.roastTimeHours;
+  const ashBatchKg = params.ashBatchKg ?? HOPKINS_DEFAULT_CONTROLS.ashBatchKg;
+  const waterVolumeLiters = params.waterVolumeLiters ?? HOPKINS_DEFAULT_CONTROLS.waterVolumeLiters;
+  const waterTempC = params.waterTempC ?? HOPKINS_DEFAULT_CONTROLS.waterTempC;
+  const isRunning = (params.isRunning ?? 1) > 0.5;
 
-  const { params, updateParam } = usePatentPhysics("us-x1-hopkins-potash");
-  const roastTempC = (params.roastTempC as number) ?? 750;
-  const roastTimeHours = (params.roastTimeHours as number) ?? 4;
-  const ashBatchKg = (params.ashBatchKg as number) ?? 500;
-  const waterTempC = (params.waterTempC as number) ?? 80;
+  const pot = useMemo(
+    () =>
+      stepHopkinsPotash({
+        roastTempC,
+        roastTimeHours,
+        ashBatchKg,
+        waterVolumeLiters,
+        waterTempC,
+      }),
+    [ashBatchKg, roastTempC, roastTimeHours, waterTempC, waterVolumeLiters],
+  );
 
-  const pot = stepHopkinsPotash({
-    roastTempC,
-    roastTimeHours,
-    ashBatchKg,
-    waterTempC,
-  });
-
-  const live = useLiveSimParams({
-    roastTempC,
-    roastTimeHours,
-    ashBatchKg,
-    waterTempC,
-    isCutaway,
-    isAudioMuted,
-    decarbonizationPct: pot.decarbonizationPct,
-    pearlAshYieldKg: pot.pearlAshYieldKg,
-  });
-  // Shared transport tape: calcination thermodynamics publish to the bus.
-  useFrankenSimPhysics("us-x1-hopkins-potash", {
+  const live = useLiveSimParams({ isCutaway, fallbackOutputs: pot });
+  const { frame } = useFrankenSimPhysics("us-x1-hopkins-potash", {
     domain: "thermodynamics_transport",
-    refusal: { isRefused: false },
-    thermo: {
-      temperatureCelsius: roastTempC,
-      temperatureKelvin: roastTempC + 273.15,
-      pressureAtm: 1,
-      partialPressureButaneAtm: 0,
-      heatInputWatts: 0,
-      coolingPowerWatts: 0,
-      coefficientOfPerformance: 0,
-      blackbodyRadiantPowerWatts: 0,
-      fluidFlowVelocityMps: 0,
-    },
+    refusal: { isRefused: true, reason: HOPKINS_SOURCE_BOUNDARY },
   });
+  const tape = getHopkinsTapeFrame();
+  const outputs = tape?.outputs ?? pot;
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
+    const cfg = hopkinsPotashViewForViewport(preset, containerRef.current?.clientWidth ?? 1000);
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
+
+  useEffect(() => {
+    const restoreResponsiveView = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const view = hopkinsPotashViewForViewport(activeCamera, container.clientWidth);
+      studioRef.current?.controls.setView(view.pos, view.target);
+    };
+    window.addEventListener("resize", restoreResponsiveView);
+    return () => window.removeEventListener("resize", restoreResponsiveView);
+  }, [activeCamera]);
 
   useEffect(() => {
     if (!isAudioMuted) {
@@ -99,7 +111,7 @@ export function HopkinsPotash3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const iso = CAMERA_PRESETS.iso;
+    const iso = hopkinsPotashViewForViewport("iso", container.clientWidth);
     const studio = createThreeStudioScene({
       container,
       cameraPos: iso.pos,
@@ -113,24 +125,16 @@ export function HopkinsPotash3D() {
     studio.scene.add(modelResult.rootGroup);
 
     let animId: number;
-    const studioClock = createStudioClock();
 
-    const animate = (now: number) => {
+    const animate = () => {
       animId = requestAnimationFrame(animate);
       if (!studio.isVisible()) return;
-      const { simTimeSec: timeS } = studioClock.pump(now);
-      const p = live.current;
-
+      const liveTape = getHopkinsTapeFrame();
       animateHopkinsPotashModel(
         modelResult,
-        {
-          roastTempC: p.roastTempC,
-          roastTimeHours: p.roastTimeHours,
-          ashBatchKg: p.ashBatchKg,
-          waterTempC: p.waterTempC,
-          isCutaway: Boolean(p.isCutaway),
-        },
-        timeS,
+        liveTape?.outputs ?? live.current.fallbackOutputs,
+        liveTape?.phases ?? HOPKINS_ZERO_PHASES,
+        Boolean(live.current.isCutaway),
       );
 
       studio.controls.update();
@@ -147,12 +151,17 @@ export function HopkinsPotash3D() {
     };
   }, [live]);
 
+  const readerSteps = [
+    "1 Burn Ashes",
+    "2 Dissolve & Boil",
+    "3 Settle Ley",
+    "4 Make Pearl Ash",
+    "5 Optional Fluxing",
+  ] as const;
   const currentStageName =
-    pot.decarbonizationPct >= 85
-      ? "Pearl Ash Refinement"
-      : pot.decarbonizationPct >= 50
-        ? "Furnace Calcination"
-        : "Raw Ash Leaching";
+    readerSteps[
+      Math.min(readerSteps.length - 1, Math.floor((tape?.phases.processCycle01 ?? 0) * 5))
+    ];
 
   const kernelChips: KernelChip[] = [
     {
@@ -163,51 +172,69 @@ export function HopkinsPotash3D() {
     },
     {
       label: "Decarb",
-      value: `${pot.decarbonizationPct.toFixed(1)}`,
+      value: `${outputs.decarbonizationPct.toFixed(1)}`,
       unit: "%",
-      tone: pot.decarbonizationPct >= 80 ? "ok" : "warn",
+      tone: outputs.decarbonizationPct >= 80 ? "ok" : "warn",
     },
     {
       label: "Yield",
-      value: `${pot.pearlAshYieldKg.toFixed(1)}`,
+      value: `${outputs.pearlAshYieldKg.toFixed(1)}`,
       unit: "kg K₂CO₃",
       tone: "ok",
     },
     {
       label: "Purity",
-      value: `${pot.pearlAshPurityPct.toFixed(1)}`,
+      value: `${outputs.pearlAshPurityPct.toFixed(1)}`,
       unit: "%",
-      tone: pot.pearlAshPurityPct >= 85 ? "ok" : "warn",
+      tone: outputs.pearlAshPurityPct >= 85 ? "ok" : "warn",
     },
     {
-      label: "Stage",
+      label: "Reader step",
       value: currentStageName,
       tone: "ok",
     },
   ];
 
   return (
-    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+    <div
+      className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent"
+      data-hopkins-face="three"
+      data-hopkins-runtime-tick={frame.tick}
+      data-hopkins-runtime-provenance={frame.provenance}
+      data-hopkins-kernel-source={HOPKINS_KERNEL_SOURCE}
+      data-hopkins-frankensim-boundary={HOPKINS_FRANKENSIM_BOUNDARY}
+      data-hopkins-running={isRunning}
+      data-hopkins-process-cycle={tape?.phases.processCycle01 ?? 0}
+      data-hopkins-flame-phase-rad={tape?.phases.flamePhaseRad ?? 0}
+      data-hopkins-boil-phase-rad={tape?.phases.boilPhaseRad ?? 0}
+    >
       <div className="sr-only">Samuel Hopkins Potash and Pearl Ash Apparatus 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
+        <label className="absolute top-14 left-3 z-10 sm:hidden">
+          <span className="sr-only">Hopkins process camera view</span>
+          <select
+            aria-label="Hopkins process camera view"
+            value={activeCamera}
+            onChange={(event) => applyCameraPreset(event.target.value as CameraPreset)}
+            className="min-h-10 max-w-[10.75rem] rounded-lg border border-parchment-300 bg-white/90 px-2 text-xs font-semibold text-ink-800 shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/90 dark:text-parchment-200"
+          >
+            {CAMERA_PRESET_OPTIONS.map(({ id, label }) => (
+              <option key={id} value={id}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </label>
+
         {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-28rem)] gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+          <div className="absolute top-4 left-4 z-10 hidden max-w-[calc(100%-28rem)] flex-nowrap gap-1.5 overflow-x-auto rounded-xl border border-parchment-300 bg-white/85 p-1.5 text-xs shadow-sm backdrop-blur-md transition-opacity duration-200 scrollbar-none dark:border-ink-700 dark:bg-ink-900/85 sm:flex">
+            <span className="px-2 py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
               <Camera className="w-3.5 h-3.5" /> View:
             </span>
-            {(
-              [
-                ["iso", "Overview"],
-                ["furnace", "Kiln (Stage 1)"],
-                ["leaching", "Tub (Stage 2)"],
-                ["crystallizer", "Pot (Stage 3)"],
-                ["ingot", "Ingot (Stage 4)"],
-                ["top", "Plan View"],
-              ] as [CameraPreset, string][]
-            ).map(([preset, label]) => (
+            {CAMERA_PRESET_OPTIONS.map(({ id: preset, label }) => (
               <button
                 key={preset}
                 type="button"
@@ -229,7 +256,7 @@ export function HopkinsPotash3D() {
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
-            title={isCutaway ? "Solid Apparatus" : "Cutaway View"}
+            title={isCutaway ? "Restore Opaque Vessel Walls" : "Reveal Vessel Contents"}
             className={`min-h-9 p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm text-xs font-sans flex items-center gap-1 ${
               isCutaway
                 ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
@@ -238,6 +265,20 @@ export function HopkinsPotash3D() {
           >
             <Layers className="w-4 h-4" />
             <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              updateParam("isRunning", isRunning ? 0 : 1);
+              soundEngine.playSwitchClick();
+            }}
+            title={isRunning ? "Pause Process Reader" : "Resume Process Reader"}
+            aria-label={isRunning ? "Pause Process Reader" : "Resume Process Reader"}
+            className="min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm text-xs font-semibold flex items-center gap-1"
+          >
+            {isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            <span className="hidden md:inline">{isRunning ? "Pause" : "Resume"}</span>
           </button>
 
           <button
@@ -263,11 +304,16 @@ export function HopkinsPotash3D() {
           </button>
 
           <button
-            aria-label="Reset camera view"
+            aria-label="Reset Process and Camera"
             type="button"
-            onClick={() => applyCameraPreset("iso")}
+            onClick={() => {
+              resetParams();
+              updateParam("resetEpoch", (params.resetEpoch ?? 0) + 1);
+              applyCameraPreset("iso");
+              soundEngine.playSwitchClick();
+            }}
             className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
+            title="Reset Process and Camera"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
@@ -281,23 +327,23 @@ export function HopkinsPotash3D() {
                 Pearl Ash Yield:
               </span>
               <span className="font-bold text-emerald-700 dark:text-emerald-400">
-                {pot.pearlAshYieldKg.toFixed(1)} kg
+                {outputs.pearlAshYieldKg.toFixed(1)} kg scenario
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Decarbonization:</span>
+              <span className="text-ink-600 dark:text-ink-400">Scenario burnout:</span>
               <span className="font-bold text-amber-700 dark:text-amber-400">
-                {pot.decarbonizationPct.toFixed(1)}%
+                {outputs.decarbonizationPct.toFixed(1)}%
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Purity:</span>
+              <span className="text-ink-600 dark:text-ink-400">Scenario assay:</span>
               <span className="font-bold text-cyan-800 dark:text-cyan-400">
-                {pot.pearlAshPurityPct.toFixed(1)}%
+                {outputs.pearlAshPurityPct.toFixed(1)}%
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Reaction Stage:</span>
+              <span className="text-ink-600 dark:text-ink-400">Reader step:</span>
               <span className="font-bold text-purple-800 dark:text-purple-400">
                 {currentStageName}
               </span>
@@ -308,7 +354,7 @@ export function HopkinsPotash3D() {
         {/* Physics Chips */}
         <StudioKernelChips
           visible={showUiOverlay}
-          title="Arrhenius Calcination & Leaching Yield"
+          title="SOURCE-BOUNDED SI TEACHING SCENARIO"
           chips={kernelChips}
           side="right"
         />
@@ -394,20 +440,9 @@ export function HopkinsPotash3D() {
           </div>
         </div>
 
-        <ClaimConstraintToggle
-          patentId="us-x1-hopkins-potash"
-          claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
-          className="mt-2"
-        />
-
-        <PortHamiltonianEnergyStrip
-          patentId="us-x1-hopkins-potash"
-          params={params}
-          className="mt-3"
-        />
+        <p className="mt-3 text-[11px] leading-relaxed text-amber-800 dark:text-amber-300">
+          {HOPKINS_SOURCE_BOUNDARY}
+        </p>
       </div>
     </div>
   );

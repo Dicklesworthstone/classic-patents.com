@@ -269,20 +269,10 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "facsimile-only",
   ),
 
-  "us-3353115-maiman-ruby-laser": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-ug8",
-    "Complete figure review is still required before the archival edition can be accepted.",
-  ),
   "us-3138743-kilby-integrated-circuit": auditHold(
     "AUDIT_FIGURE_ACCEPTANCE_PENDING",
     "classic-patentscom-ndg",
     "Source-approved figures and ledger acceptance are pending.",
-  ),
-  "us-2981877-noyce-ic": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-6xs",
-    "The Figure 3 and Figure 5 source crops require acceptance.",
   ),
   "us-2708656-fermi-reactor": auditHold(
     "AUDIT_FULL_SPECIFICATION_PENDING",

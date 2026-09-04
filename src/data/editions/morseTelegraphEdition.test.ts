@@ -11,6 +11,24 @@ import {
 } from "./morseTelegraphEdition";
 
 describe("morseTelegraphArchivalEdition", () => {
+  const acceptedSourceSheets = {
+    "/patents/figures/us-1647-morse-telegraph/source-sheet-1-v1.png": {
+      sha256: "7b8d588e37946b44a183e405cb4c2636084063bf7bb4d587c7c81b85043e664d",
+      width: 2320,
+      height: 3408,
+    },
+    "/patents/figures/us-1647-morse-telegraph/source-sheet-2-v1.png": {
+      sha256: "963b3cbd6c7d73a12cd819b4e88d8e0a3705ed1fc80e744eae06ed5a2adaa351",
+      width: 2320,
+      height: 3408,
+    },
+    "/patents/figures/us-1647-morse-telegraph/source-sheet-3-v1.png": {
+      sha256: "b00e83560fdb7a650f65b376e928c8b89bf3d03ccc091fc8f01af109e799b832",
+      width: 2320,
+      height: 3408,
+    },
+  } as const;
+
   test("pins the nine-page US 1,647 facsimile and its complete printed claim set", () => {
     expect(validateCuratedSpecificationEdition(morseTelegraphArchivalEdition)).toEqual({
       valid: true,
@@ -62,7 +80,7 @@ describe("morseTelegraphArchivalEdition", () => {
     }
   });
 
-  test("uses a source-derived crop for every printed figure reference and never an OCR input", () => {
+  test("uses an attested complete primary source sheet for every printed figure reference", () => {
     const serialized = JSON.stringify(morseTelegraphArchivalEdition.blocks);
     expect(serialized).not.toContain("SOURCE PDF PAGE");
     expect(serialized).not.toContain("pdftotext");
@@ -73,8 +91,15 @@ describe("morseTelegraphArchivalEdition", () => {
         if (inline.kind !== "reference" || inline.referenceType !== "figure") continue;
         expect(inline.figurePreviews?.length).toBeGreaterThan(0);
         for (const preview of inline.figurePreviews ?? []) {
-          expect(preview.src).toStartWith("/patents/figures/us-1647-morse-telegraph-fig-");
-          expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+          const accepted = acceptedSourceSheets[preview.src as keyof typeof acceptedSourceSheets];
+          expect(accepted).toBeDefined();
+          expect(preview.width).toBe(accepted?.width);
+          expect(preview.height).toBe(accepted?.height);
+          const sourceSheet = resolve(process.cwd(), "public", preview.src.slice(1));
+          expect(existsSync(sourceSheet)).toBe(true);
+          expect(createHash("sha256").update(readFileSync(sourceSheet)).digest("hex")).toBe(
+            accepted?.sha256,
+          );
         }
       }
     }

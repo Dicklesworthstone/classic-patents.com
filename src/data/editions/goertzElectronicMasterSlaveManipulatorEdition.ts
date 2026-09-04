@@ -25,7 +25,6 @@ function figure(
   label: string,
   source: string,
 ): CuratedSpecificationInline {
-  const isTallSheet = /fig-(?:2|6|7|8|10-12|13-14)-source-crop-v1\.png$/.test(source);
   return {
     kind: "reference",
     text,
@@ -35,32 +34,38 @@ function figure(
     figurePreviews: [
       {
         src: source,
-        alt: `${text} crop from the pinned US 2,846,084 facsimile.`,
-        width: isTallSheet ? 4640 : 4400,
-        height: isTallSheet ? 6816 : 5200,
+        alt: `${text} on its complete source sheet from the pinned US 2,846,084 facsimile.`,
+        width: 2320,
+        height: 3408,
       },
     ],
   };
 }
 
 const sourceFigureDirectory = `/patents/figures/${PATENT_ID}`;
-const sourceCropByFigure: Readonly<Record<number, string>> = {
-  1: "fig-1-source-crop-v1.png",
-  2: "fig-2-source-crop-v1.png",
-  3: "fig-3-5-source-crop-v1.png",
-  4: "fig-3-5-source-crop-v1.png",
-  5: "fig-3-5-source-crop-v1.png",
-  6: "fig-6-source-crop-v1.png",
-  7: "fig-7-source-crop-v1.png",
-  8: "fig-8-source-crop-v1.png",
-  9: "fig-9-source-crop-v1.png",
-  10: "fig-10-12-source-crop-v1.png",
-  11: "fig-10-12-source-crop-v1.png",
-  12: "fig-10-12-source-crop-v1.png",
-  13: "fig-13-14-source-crop-v1.png",
-  14: "fig-13-14-source-crop-v1.png",
-  15: "fig-15-source-crop-v1.png",
-  16: "fig-16-source-crop-v1.png",
+/**
+ * The active previews are direct full-sheet renders of the pinned facsimile.
+ * Figure-specific crops remain on disk as preservation derivatives, but the
+ * source face now keeps the entire printed sheet, its figure label, and its
+ * surrounding drawing context available at every occurrence.
+ */
+const sourcePdfPageByFigure: Readonly<Record<number, number>> = {
+  1: 1,
+  2: 2,
+  3: 3,
+  4: 3,
+  5: 3,
+  6: 4,
+  7: 5,
+  8: 6,
+  9: 7,
+  10: 8,
+  11: 8,
+  12: 8,
+  13: 9,
+  14: 9,
+  15: 10,
+  16: 11,
 };
 
 function sourceFigurePreview(
@@ -69,25 +74,31 @@ function sourceFigurePreview(
 ): NonNullable<
   Extract<CuratedSpecificationInline, { kind: "reference" }>["figurePreviews"]
 >[number] {
-  const source = sourceCropByFigure[number];
-  if (!source) throw new Error(`US 2,846,084 has no authored crop for Fig. ${number}.`);
-  const isTallSheet = /fig-(?:2|6|7|8|10-12|13-14)-source-crop-v1\.png$/.test(source);
+  const sourcePdfPage = sourcePdfPageByFigure[number];
+  if (!sourcePdfPage) {
+    throw new Error(`US 2,846,084 has no pinned source sheet for Fig. ${number}.`);
+  }
   return {
-    src: `${sourceFigureDirectory}/${source}`,
-    alt: `${sourceText} crop from the pinned US 2,846,084 facsimile.`,
-    width: isTallSheet ? 4640 : 4400,
-    height: isTallSheet ? 6816 : 5200,
+    src: `${sourceFigureDirectory}/source-sheet-${sourcePdfPage}-v1.png`,
+    alt: `${sourceText} on its complete source sheet from the pinned US 2,846,084 facsimile.`,
+    width: 2320,
+    height: 3408,
   };
 }
 
 /**
- * Explicit source-crop lookup used only by authored reference nodes below.
+ * Explicit complete-source-sheet lookup used only by authored reference nodes below.
  * The occurrence itself is always written in the relevant source paragraph;
  * no renderer scans prose to discover a figure citation.
  */
 function sourceFigure(number: number, sourceText = `Fig. ${number}`): CuratedSpecificationInline {
   const preview = sourceFigurePreview(number, sourceText);
-  return figure(sourceText, `#fig-${number}`, `Pinned source crop for Fig. ${number}`, preview.src);
+  return figure(
+    sourceText,
+    `#fig-${number}`,
+    `Pinned complete source sheet for Fig. ${number}`,
+    preview.src,
+  );
 }
 
 /**

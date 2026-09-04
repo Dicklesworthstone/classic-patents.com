@@ -12,6 +12,24 @@ import {
   noyceIcParallelReadings,
 } from "./noyceIcEdition";
 
+const NOYCE_SOURCE_SHEETS = {
+  "/patents/figures/us-2981877-noyce-ic/source-sheet-1-v1.png": {
+    sha256: "5c712d83a261ef7cb40ce16f63a557d79f149a7bedc029bd8092730cb8846aef",
+    width: 2320,
+    height: 3408,
+  },
+  "/patents/figures/us-2981877-noyce-ic/source-sheet-2-v1.png": {
+    sha256: "c859f8f64fb58cd725beb5914d25793a96242d8026ebb6dc4d2d007cde23e1b6",
+    width: 2320,
+    height: 3408,
+  },
+  "/patents/figures/us-2981877-noyce-ic/source-sheet-3-v1.png": {
+    sha256: "3d9e2032361d8433675827cd79f6f6440efed65c6e5b1470f0b83bfade4fc99c",
+    width: 2320,
+    height: 3408,
+  },
+} as const;
+
 describe("US 2,981,877 manual source edition", () => {
   test("pins the eight-page facsimile and all ten printed claims", () => {
     expect(noyceIcPatent.archivalEdition).toBe(noyceIcArchivalEdition);
@@ -170,41 +188,49 @@ describe("US 2,981,877 manual source edition", () => {
     expect(patentSource).not.toContain("A semiconductor device as defined in claim 1");
   });
 
-  test("records the exact cloud recrop plan without binding uncreated replacement assets", () => {
-    const pendingPlan = [
-      {
-        figure: "Fig. 3",
-        page: 2,
-        rectangle: [430, 570, 1500, 800],
-        src: "/patents/figures/us-2981877-noyce-ic/fig-3-source-crop-v4.png",
-      },
-      {
-        figure: "Fig. 5 left source panel",
-        page: 2,
-        rectangle: [360, 2130, 860, 680],
-        src: "/patents/figures/us-2981877-noyce-ic/fig-5-source-crop-v3-left.png",
-      },
-      {
-        figure: "Fig. 5 right source panel",
-        page: 2,
-        rectangle: [1250, 2130, 780, 680],
-        src: "/patents/figures/us-2981877-noyce-ic/fig-5-source-crop-v3-right.png",
-      },
-    ] as const;
-    const serializedEdition = JSON.stringify(noyceIcArchivalEdition);
-    for (const item of pendingPlan) {
-      expect(serializedEdition).not.toContain(item.src);
-      expect(existsSync(resolve(process.cwd(), "public", item.src.slice(1)))).toBe(false);
-      expect(item.rectangle.every((coordinate) => Number.isInteger(coordinate))).toBe(true);
-      expect(item.rectangle[2]).toBeGreaterThan(0);
-      expect(item.rectangle[3]).toBeGreaterThan(0);
+  test("pins every active figure citation to a complete primary drawing sheet", () => {
+    const editionJson = JSON.stringify(noyceIcArchivalEdition);
+    for (const [asset, expected] of Object.entries(NOYCE_SOURCE_SHEETS)) {
+      const sheet = resolve(process.cwd(), "public", asset.slice(1));
+      const bytes = readFileSync(sheet);
+      expect(existsSync(sheet)).toBe(true);
+      expect(bytes.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
+      expect({ width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) }).toEqual({
+        width: expected.width,
+        height: expected.height,
+      });
+      expect(createHash("sha256").update(bytes).digest("hex")).toBe(expected.sha256);
+      expect(editionJson).toContain(asset);
     }
-    expect(serializedEdition).toContain("fig-3-source-crop-v3.png");
-    expect(serializedEdition).toContain("fig-5-source-crop-v2-left.png");
-    expect(serializedEdition).toContain("fig-5-source-crop-v2-right.png");
+    for (const legacyCrop of [
+      "fig-1-source-crop-v1.png",
+      "fig-1-source-crop-v2.png",
+      "fig-2-source-crop-v1.png",
+      "fig-2-source-crop-v2.png",
+      "fig-3-source-crop-v1.png",
+      "fig-3-source-crop-v2.png",
+      "fig-3-source-crop-v3.png",
+      "fig-4-source-crop-v1.png",
+      "fig-4-source-crop-v2.png",
+      "fig-4-source-crop-v3.png",
+      "fig-5-source-crop-v1.png",
+      "fig-5-source-crop-v2-left.png",
+      "fig-5-source-crop-v2-right.png",
+      "fig-6-source-crop-v1.png",
+      "fig-6-source-crop-v2.png",
+      "fig-7-source-crop-v1.png",
+      "fig-7-source-crop-v2.png",
+    ]) {
+      expect(
+        existsSync(
+          resolve(process.cwd(), "public/patents/figures/us-2981877-noyce-ic", legacyCrop),
+        ),
+      ).toBe(true);
+      expect(editionJson).not.toContain(legacyCrop);
+    }
   });
 
-  test("pairs each source paragraph explicitly and maps every literal figure occurrence to pinned source crops", () => {
+  test("pairs each source paragraph explicitly and maps every literal figure occurrence to pinned source sheets", () => {
     const paragraphIndexes = noyceIcArchivalEdition.blocks.flatMap((block, index) =>
       block.kind === "paragraph" ? [index] : [],
     );
@@ -256,72 +282,14 @@ describe("US 2,981,877 manual source edition", () => {
       "Figs. 3": 7,
       "Figs. 6": 1,
     };
-    const cropProofs: Record<
-      number,
-      readonly { src: string; width: number; height: number; sha256: string }[]
-    > = {
-      1: [
-        {
-          src: "/patents/figures/us-2981877-noyce-ic/fig-1-source-crop-v2.png",
-          width: 1500,
-          height: 1250,
-          sha256: "4fbef84970dde39569b9f8a607cdf2170bbcec94a6bdb2f9dc251fe9ea84a8ed",
-        },
-      ],
-      2: [
-        {
-          src: "/patents/figures/us-2981877-noyce-ic/fig-2-source-crop-v2.png",
-          width: 1340,
-          height: 660,
-          sha256: "854980f3f0012457dba6caa6c3250757df9fbc2c2e86a51f3cc9a249e52c9064",
-        },
-      ],
-      3: [
-        {
-          src: "/patents/figures/us-2981877-noyce-ic/fig-3-source-crop-v3.png",
-          width: 1500,
-          height: 950,
-          sha256: "5f6537a7d1858b1d0560aa61f71486187c58fb1312a518980cbb5660f56a2268",
-        },
-      ],
-      4: [
-        {
-          src: "/patents/figures/us-2981877-noyce-ic/fig-4-source-crop-v3.png",
-          width: 1700,
-          height: 570,
-          sha256: "2875f0c90fed673c96ccff4df868c8864adf308318f2ec8887a8caab399549d5",
-        },
-      ],
-      5: [
-        {
-          src: "/patents/figures/us-2981877-noyce-ic/fig-5-source-crop-v2-left.png",
-          width: 950,
-          height: 650,
-          sha256: "e60e991620fc4cc6f65f6c2326ca79b4974b5e671e57b8fd29e05649b569d583",
-        },
-        {
-          src: "/patents/figures/us-2981877-noyce-ic/fig-5-source-crop-v2-right.png",
-          width: 800,
-          height: 460,
-          sha256: "31328131e8f5daaffd7f03c77aa6d4507d150740103440c3414b0de5b485add3",
-        },
-      ],
-      6: [
-        {
-          src: "/patents/figures/us-2981877-noyce-ic/fig-6-source-crop-v2.png",
-          width: 1200,
-          height: 880,
-          sha256: "9b00970bf243df426abacbd29a78b9c4ee3e335bc489c8e8b205b1603c2362c9",
-        },
-      ],
-      7: [
-        {
-          src: "/patents/figures/us-2981877-noyce-ic/fig-7-source-crop-v2.png",
-          width: 1100,
-          height: 800,
-          sha256: "366919a0b063462e7654d4cda3cf4c78dbc0f5fa3c865b7a3a2525345ded6815",
-        },
-      ],
+    const sourceSheetByFigure: Record<number, keyof typeof NOYCE_SOURCE_SHEETS> = {
+      1: "/patents/figures/us-2981877-noyce-ic/source-sheet-1-v1.png",
+      2: "/patents/figures/us-2981877-noyce-ic/source-sheet-1-v1.png",
+      3: "/patents/figures/us-2981877-noyce-ic/source-sheet-2-v1.png",
+      4: "/patents/figures/us-2981877-noyce-ic/source-sheet-2-v1.png",
+      5: "/patents/figures/us-2981877-noyce-ic/source-sheet-2-v1.png",
+      6: "/patents/figures/us-2981877-noyce-ic/source-sheet-3-v1.png",
+      7: "/patents/figures/us-2981877-noyce-ic/source-sheet-3-v1.png",
     };
     expect(figures).toHaveLength(55);
     expect(
@@ -336,18 +304,17 @@ describe("US 2,981,877 manual source edition", () => {
       const target = literalTargets[reference.text];
       expect(target).toBeDefined();
       expect(reference.label).toBe(
-        `Open the source-facsimile crop for Fig. ${target} in US 2,981,877`,
+        `Open the complete primary drawing sheet for Fig. ${target} in US 2,981,877`,
       );
       expect(
         reference.figurePreviews?.map(({ src, width, height }) => ({ src, width, height })),
-      ).toEqual(cropProofs[target].map(({ src, width, height }) => ({ src, width, height })));
-    }
-    for (const proofs of Object.values(cropProofs)) {
-      for (const proof of proofs) {
-        const path = resolve(process.cwd(), "public", proof.src.slice(1));
-        expect(existsSync(path)).toBe(true);
-        expect(createHash("sha256").update(readFileSync(path)).digest("hex")).toBe(proof.sha256);
-      }
+      ).toEqual([
+        {
+          src: sourceSheetByFigure[target],
+          width: 2320,
+          height: 3408,
+        },
+      ]);
     }
   });
 
@@ -422,13 +389,11 @@ describe("US 2,981,877 manual source edition", () => {
     ]);
   });
 
-  test("enforces figure acceptance audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const decision = evaluateTypedArchivalPublicationState(noyceIcPatent, {
-      hasCompanionReadings: true,
-    });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+  test("accepts the source edition after all direct figure-sheet evidence is pinned", () => {
+    const { evaluateArchivalPublicationState } = require("./publicationApproval");
+    const decision = evaluateArchivalPublicationState(noyceIcPatent);
+    expect(decision.isPublished).toBe(true);
+    expect(decision.state.kind).toBe("accepted");
+    expect(decision.reasonCode).toBe("ACCEPTED");
   });
 });

@@ -16,23 +16,23 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
-const crop = (file: string, width: number, height: number, label: string) => ({
-  src: `/patents/figures/us-79265-sholes-typewriter-${file}.png`,
-  alt: `Source-facsimile crop of ${label} from US 79,265.`,
-  width,
-  height,
+const sourceSheet = (sourcePdfPage: 1 | 2, label: string) => ({
+  src: `/patents/figures/us-79265-sholes-typewriter/source-sheet-${sourcePdfPage}-v1.png`,
+  alt: `Full source-facsimile drawing sheet ${sourcePdfPage} of 2, containing ${label}, from US 79,265.`,
+  width: 2320,
+  height: 3408,
 });
 
 const FIGURES = {
-  "Fig. 1": crop("fig-1-tight-source-crop", 820, 650, "Fig. 1"),
-  "Fig. 2": crop("fig-2-tight-source-crop", 470, 240, "Fig. 2"),
-  "Fig. 3": crop("fig-3-tight-source-crop", 360, 320, "Fig. 3"),
-  "Fig. 4": crop("fig-4-tight-source-crop", 360, 260, "Fig. 4"),
-  "Fig. 5": crop("fig-5-focus-source-crop", 310, 270, "Fig. 5"),
-  "Fig. 6": crop("fig-6-isolated-source-crop-v2", 440, 190, "Fig. 6"),
-  "Fig. 7": crop("fig-7-verified-source-crop", 760, 360, "Fig. 7"),
-  "Fig. 8": crop("fig-8-verified-source-crop", 800, 340, "Fig. 8"),
-  "Fig. 9": crop("fig-9-tight-source-crop-v2", 400, 175, "Fig. 9"),
+  "Fig. 1": sourceSheet(1, "Fig. 1"),
+  "Fig. 2": sourceSheet(1, "Fig. 2"),
+  "Fig. 3": sourceSheet(1, "Fig. 3"),
+  "Fig. 4": sourceSheet(2, "Fig. 4"),
+  "Fig. 5": sourceSheet(2, "Fig. 5"),
+  "Fig. 6": sourceSheet(2, "Fig. 6"),
+  "Fig. 7": sourceSheet(2, "Fig. 7"),
+  "Fig. 8": sourceSheet(2, "Fig. 8"),
+  "Fig. 9": sourceSheet(1, "Fig. 9"),
 } as const;
 
 const figure = (
@@ -43,7 +43,7 @@ const figure = (
   text: sourceText,
   href: "#",
   referenceType: "figure",
-  label: `Open the source-facsimile crop for ${label} in US 79,265`,
+  label: `Open the source-facsimile sheet containing ${label} in US 79,265`,
   figurePreviews: [FIGURES[label]],
 });
 
@@ -55,7 +55,7 @@ const figures = (
   text: sourceText,
   href: "#",
   referenceType: "figure",
-  label: `Open the source-facsimile crops for ${sourceText} in US 79,265`,
+  label: `Open the source-facsimile sheets containing ${sourceText} in US 79,265`,
   figurePreviews: labels.map((label) => FIGURES[label]),
 });
 
@@ -67,9 +67,9 @@ const claim = (number: number, value: string) => ({
 
 /**
  * Continuous, manually prepared reading edition of the six-page US 79,265
- * facsimile. The two drawing sheets are represented through direct figure
- * crops; the explanatory prose is deliberately continuous rather than tied to
- * source scan-page boundaries.
+ * facsimile. The two direct source drawing sheets carry each printed-figure
+ * preview; the explanatory prose is deliberately continuous rather than tied
+ * to source scan-page boundaries.
  */
 export const sholesTypewriterArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
@@ -101,7 +101,10 @@ export const sholesTypewriterArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 7"),
         { kind: "text", text: " and " },
         figure("Fig. 8"),
-        { kind: "text", text: ". Every preview is a direct crop from those sheets." },
+        {
+          kind: "text",
+          text: ". Every preview is the complete source sheet containing the cited figure.",
+        },
       ],
     },
     paragraph(text("To all whom it may concern:")),

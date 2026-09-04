@@ -9,44 +9,69 @@ const PATENT_ID = "us-3081379-lemelson-machine-vision";
 const SOURCE_SHA256 = "2550a9d494a822f3f639c985899452b39432d53928db419633458d020c554b44";
 const SOURCE_FIGURE_DIRECTORY = `/patents/figures/${PATENT_ID}`;
 
-const sourceSheetByFigure: Readonly<Record<number, string>> = {
-  1: "fig-1-source-crop-v1.png",
-  2: "fig-1-source-crop-v1.png",
-  3: "fig-2-source-crop-v1.png",
-  4: "fig-4-source-crop-v1.png",
-  5: "fig-4-source-crop-v1.png",
-  6: "fig-5-source-crop-v1.png",
-  7: "fig-5-source-crop-v1.png",
-  8: "fig-6-source-crop-v1.png",
-  9: "fig-7-source-crop-v1.png",
-  10: "fig-8-source-crop-v1.png",
-  11: "fig-8-source-crop-v1.png",
-  12: "fig-9-source-crop-v1.png",
-  13: "fig-9-source-crop-v1.png",
-  14: "fig-10-source-crop-v1.png",
-  15: "fig-10-source-crop-v1.png",
-};
-
 export const figure = _figure;
 
-function sheetForFigure(figureNumber: number): string {
-  return sourceSheetByFigure[figureNumber] ?? "fig-1-source-crop-v1.png";
+/**
+ * Each active preview is a direct, full 72-DPI rendering of the named drawing
+ * sheet from the pinned grant. The printed subfigures 1A, 1B, 1C, 4A, and 4B
+ * cannot be resolved from a numeric figure number alone.
+ */
+const sourceSheetByCitation: Readonly<Record<string, number>> = {
+  "FIG. 1": 1,
+  "FIG. 2": 1,
+  "FIG. 3": 1,
+  "FIG. 1A": 2,
+  "FIG. 1B": 2,
+  "FIGS. 1B": 2,
+  "FIG. 1b": 2,
+  "FIG. 113": 2,
+  "FIG. 1C": 3,
+  "FIG. 4": 4,
+  "FIG. 4A": 6,
+  "FIG. 4B": 6,
+  "FIG. 5": 7,
+  "FIG. 6": 7,
+  "FIG. 7": 7,
+  "FIG. 8": 8,
+  "FIG. 9": 9,
+  "FIG. 10": 9,
+  "FIG. 11": 9,
+  "FIG. 12": 9,
+  "FIG. 13": 10,
+  "FIG. 14": 10,
+  "FIG. 15": 8,
+};
+
+const sourceSheetDimensions = [2320, 3408] as const;
+
+function sheetForFigure(number: number, sourceText: string, sourceSheetOverride?: number): number {
+  const sheet = sourceSheetOverride ?? sourceSheetByCitation[sourceText];
+  if (!sheet) {
+    throw new Error(
+      `US 3,081,379 figure citation ${sourceText} (figure ${number}) has no reviewed source sheet.`,
+    );
+  }
+  return sheet;
 }
 
-function _figure(number: number, sourceText = `FIG. ${number}`): CuratedSpecificationInline {
-  const sheet = sheetForFigure(number);
+function _figure(
+  number: number,
+  sourceText = `FIG. ${number}`,
+  sourceSheetOverride?: number,
+): CuratedSpecificationInline {
+  const sheet = sheetForFigure(number, sourceText, sourceSheetOverride);
   return {
     kind: "reference",
     text: sourceText,
     href: `#fig-${number}`,
     referenceType: "figure",
-    label: `Pinned source crop for Fig. ${number}`,
+    label: `Direct pinned source sheet for ${sourceText}`,
     figurePreviews: [
       {
-        src: `${SOURCE_FIGURE_DIRECTORY}/${sheet}`,
-        alt: `${sourceText} on its pinned US 3,081,379 drawing sheet.`,
-        width: 4834,
-        height: 7100,
+        src: `${SOURCE_FIGURE_DIRECTORY}/source-sheet-${sheet}-v1.png`,
+        alt: `${sourceText} on direct full drawing sheet ${sheet} of the pinned US 3,081,379 facsimile.`,
+        width: sourceSheetDimensions[0],
+        height: sourceSheetDimensions[1],
       },
     ],
   };
@@ -190,7 +215,7 @@ const blocks: CuratedSpecificationBlock[] = [
     ),
   ]),
   paragraph([
-    _figure(1, "FIG. 13"),
+    _figure(1, "FIG. 13", 2),
     _text(
       " illustrates a portion of a mult-i-track recording member containing both picture and code signals recorded on different tracks thereof and also illustrates in block diagram notation, gating and computing circuitry for utilizing reproductions of recordings;",
     ),
@@ -224,7 +249,7 @@ const blocks: CuratedSpecificationBlock[] = [
     ),
   ]),
   paragraph([
-    _figure(4, "FIG. 4"),
+    _figure(4, "FIG. 4", 5),
     _text(
       " is a fragmentary view of a scanning field i1- lustrating-the physical significance of certain of the signals recorded on the recording member of FIG. 4;",
     ),
@@ -266,7 +291,7 @@ const blocks: CuratedSpecificationBlock[] = [
     ),
   ]),
   paragraph([
-    _figure(8, "FIG. 8"),
+    _figure(8, "FIG. 8", 5),
     _text(
       " illustrates a scanning field showing physical aspects of the signals recorded in FIG. 8;",
     ),

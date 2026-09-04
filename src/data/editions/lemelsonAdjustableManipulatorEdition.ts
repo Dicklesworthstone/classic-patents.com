@@ -41,10 +41,10 @@ const figure = (number: number, text = `FIG. ${number}`): CuratedSpecificationIn
   label: `Source crop of ${text} from US ${PATENT_NUMBER}`,
   figurePreviews: [
     {
-      src: `${FIGURE_ROOT}/fig-${sheetForFigure(number)}-source-crop-v1.png`,
-      alt: `${text}, source drawing crop from US ${PATENT_NUMBER}`,
-      width: 4834,
-      height: 7100,
+      src: `${FIGURE_ROOT}/source-sheet-${sheetForFigure(number)}-v1.png`,
+      alt: `${text}, complete source drawing sheet from US ${PATENT_NUMBER}`,
+      width: 2320,
+      height: 3408,
     },
   ],
 });
@@ -190,7 +190,7 @@ export const lemelsonAdjustableManipulatorArchivalEdition: CuratedSpecificationE
       kind: "figure-sheet",
       figureLabel: "FIG. 7",
       title: "Sequential forward, stop, and reverse control",
-      description: [figure(3), { kind: "text", text: ", source drawing sheet 3 of 3." }],
+      description: [figure(7), { kind: "text", text: ", source drawing sheet 3 of 3." }],
     },
     p(
       figure(1),

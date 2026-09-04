@@ -20,7 +20,6 @@ import {
   stepWozniakApple,
 } from "./catalogKernels";
 import { FrankenSimEngine } from "./engine";
-import { stepHopkinsPotash } from "./hopkinsPotashKernel";
 import { readKamenSegwayControls, stepKamenSegwaySi } from "./kamenSegwayKernel";
 import { stepRillieuxEvaporator } from "./rillieuxEvaporatorKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
@@ -36,6 +35,8 @@ export const ENERGY_CHANNEL_OMISSION_REASONS = {
     "The surviving GB 1306 record used here establishes the sun-and-planet topology but supplies no source engine dimensions, pressure trace, steam mass flow, condenser heat rejection, friction, efficiency, or calibrated flywheel inertia from which a closed SI energy partition can be derived.",
   "gb-1420-cort-puddling-rolling":
     "The pinned GB 1420 witness is a later abridgment with no furnace dimensions, charge thermal state, coal calorimetry, fuel or flue flow, roll torque, rolling speed, loss measurements, or material card from which a closed SI energy partition can be derived.",
+  "us-x1-hopkins-potash":
+    "The pinned US X1 letters patent supplies no furnace or vessel dimensions, ash or water mass, fuel rate, temperature, duration, heat-transfer properties, evaporation endpoint, loss measurements, or measured yield from which a closed SI energy partition can be derived.",
   "us-3138743-kilby-integrated-circuit":
     "US 3,138,743 prints the monolithic circuit construction, wafer dimensions and resistivity, layer depth, selected resistor and capacitor values, contacts, leads, and interconnect topology, but no supply voltage, operating current, transistor gain, junction geometry, measured frequency, delay, thermal point, or power datum from which a closed SI energy balance can be derived.",
   "us-2981877-noyce-ic":
@@ -570,19 +571,7 @@ export function energyChannelsFor(
   }
 
   if (patentId === "us-x1-hopkins-potash") {
-    const hopkins = stepHopkinsPotash({
-      roastTempC: params.roastTempC ?? params.furnaceTempC,
-      roastTimeHours: params.roastTimeHours,
-      ashBatchKg: params.ashBatchKg,
-      waterTempC: params.waterTempC,
-    });
-    const roastHours = params.roastTimeHours ?? 2.5;
-    const roastW = Math.max(100, Math.round(hopkins.thermalEnergyJoules / (roastHours * 3600)));
-    return [
-      { name: "Combustion Fire", watts: roastW, tone: "in" },
-      { name: "Pearlash Carbon Burnout & Evap", watts: roastW * 0.7, tone: "useful" },
-      { name: "Flue & Vessel Convection Loss", watts: roastW * 0.3, tone: "loss" },
-    ];
+    return [];
   }
 
   if (patentId === "us-3633-goodyear-rubber") {

@@ -68,3 +68,37 @@ Full facsimile review was completed across all 10 pages of `public/patents/pdfs/
 | `FIG. 16` | `fig-16-source-crop-v1.png` | 1720 x 650 | `694b12ca0087abd6e3c1ec5e2207a22aa38122d11178f269f578f56eea7cf18a` |
 | `FIG. 17` | `fig-17-source-crop-v1.png` | 1720 x 550 | `c7300dff55f1639d3eae834b16b95be97d949ba4487af985a5cf1cc879e7687a` |
 | `FIG. 18` | `fig-18-source-crop-v1.png` | 1800 x 900 | `f61c38a89da7888c802b7a9ccaceab0cfe44b8ec835c9f6512359f6df9db0b98` |
+
+## Source-sheet acceptance (2026-09-04)
+
+Reviewer: **Classic Patents editorial agent (GPT-5.6)**. Review method: direct
+visual review of every page of the pinned ten-page PDF and byte comparison of
+the five complete 300 DPI raster sheets against fresh renders of PDF pages
+1–5. Pages 1–5 are the complete drawing sheets; pages 6–10 contain the
+specification, claims, references, and signatures only. No OCR was used.
+
+The active edition now binds every one of its **59** figure-reference nodes to
+the complete primary drawing sheet that prints that figure. The historical
+individual crops in the preceding table remain preserved as legacy editorial
+assets and are not deleted or rewritten.
+
+| PDF page | Figures physically printed | Active complete source-sheet asset | Dimensions | SHA-256 | Active occurrence count |
+| --- | --- | --- | --- | --- | ---: |
+| 1 | FIGS. 1–3 | `sheet-1-01.png` | 2320 x 3408 | `d1a4ce060e2cfa1ef093df3baf853ed837299f16438090893754c5f7216ef898` | 9 |
+| 2 | FIGS. 4–7 | `sheet-2-02.png` | 2320 x 3408 | `95eceb8df7e723a6f90ee38f32a940a437c626ba31776d525340f03f897c9e7e` | 13 |
+| 3 | FIGS. 8–11 | `sheet-3-03.png` | 2320 x 3408 | `15f1b618e64fa04356a907364539be06f00057a6baa5c923d75c6e75d2d81117` | 12 |
+| 4 | FIGS. 12–15 | `sheet-4-04.png` | 2320 x 3408 | `6e29ba1d4bfc34b9e9fb1956e03a9a5c2085e183ebc96f1c4cfd0cc76fbcaf33` | 14 |
+| 5 | FIGS. 16–18 | `sheet-5-05.png` | 2320 x 3408 | `ae8ede41e4731be156d91c4f7444765250419ccc92ea88abbf63d53779c5a779` | 11 |
+
+The complete-sheet source rectangle for each occurrence is the whole reviewed
+source raster: `x=0, y=0, width=2320, height=3408`; its normalized rectangle
+is `x=0, y=0, width=1, height=1`. The exact occurrence-to-PDF-page binding is
+intentionally recorded here for the shared locator registry:
+
+| Source PDF page | Authored occurrence keys |
+| --- | --- |
+| 1 | `edition-block-2-group-0-inline-1`, `edition-block-2-group-0-inline-3`, `edition-block-2-group-0-inline-5`, `edition-block-17-group-0-inline-1`, `edition-block-17-group-0-inline-3`, `edition-block-17-group-0-inline-5`, `edition-block-20-group-0-inline-1`, `edition-block-22-group-0-inline-1`, `edition-block-23-group-0-inline-0` |
+| 2 | `edition-block-3-group-0-inline-1`, `edition-block-3-group-0-inline-3`, `edition-block-3-group-0-inline-5`, `edition-block-3-group-0-inline-7`, `edition-block-17-group-0-inline-7`, `edition-block-17-group-0-inline-9`, `edition-block-17-group-0-inline-11`, `edition-block-17-group-0-inline-13`, `edition-block-17-group-0-inline-15`, `edition-block-24-group-0-inline-1`, `edition-block-25-group-0-inline-1`, `edition-block-26-group-0-inline-0`, `edition-block-26-group-0-inline-2` |
+| 3 | `edition-block-4-group-0-inline-1`, `edition-block-4-group-0-inline-3`, `edition-block-4-group-0-inline-5`, `edition-block-4-group-0-inline-7`, `edition-block-17-group-0-inline-17`, `edition-block-17-group-0-inline-19`, `edition-block-17-group-0-inline-21`, `edition-block-17-group-0-inline-23`, `edition-block-27-group-0-inline-0`, `edition-block-28-group-0-inline-0`, `edition-block-29-group-0-inline-0`, `edition-block-29-group-0-inline-2` |
+| 4 | `edition-block-5-group-0-inline-1`, `edition-block-5-group-0-inline-3`, `edition-block-5-group-0-inline-5`, `edition-block-5-group-0-inline-7`, `edition-block-17-group-0-inline-25`, `edition-block-17-group-0-inline-27`, `edition-block-17-group-0-inline-29`, `edition-block-17-group-0-inline-31`, `edition-block-30-group-0-inline-0`, `edition-block-31-group-0-inline-0`, `edition-block-32-group-0-inline-0`, `edition-block-32-group-0-inline-2`, `edition-block-32-group-0-inline-4`, `edition-block-32-group-0-inline-6` |
+| 5 | `edition-block-6-group-0-inline-1`, `edition-block-6-group-0-inline-3`, `edition-block-6-group-0-inline-5`, `edition-block-17-group-0-inline-33`, `edition-block-17-group-0-inline-35`, `edition-block-17-group-0-inline-37`, `edition-block-33-group-0-inline-0`, `edition-block-33-group-0-inline-2`, `edition-block-33-group-0-inline-4`, `edition-block-33-group-0-inline-6`, `edition-block-34-group-0-inline-1` |

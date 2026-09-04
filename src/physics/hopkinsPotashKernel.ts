@@ -1,13 +1,21 @@
 /**
- * Physics Kernel for US Patent No. 1 (X1) — Samuel Hopkins (1790)
+ * Source-bounded SI teaching kernel for US Patent No. 1 (X1) — Samuel Hopkins (1790)
  * Making Pot and Pearl Ashes by a New Apparatus and Process
  *
- * Governs:
+ * Evaluates a declared modern scenario for:
  * 1. High-temperature ash calcination kinetics (Arrhenius organic oxidation).
  * 2. Counter-current aqueous lixiviation and dissolution equilibrium (K₂CO₃).
  * 3. Evaporative crystallization of pearl ash salts.
- * 4. High-temperature pot-ash fluxing and fusion enthalpy.
+ * 4. High-temperature pot-ash fluxing and fused-phase volume.
  */
+
+import type { TapeUpdater } from "./useFrankenSimPhysics";
+
+export const HOPKINS_KERNEL_SOURCE = "source-bounded-ts" as const;
+export const HOPKINS_FRANKENSIM_BOUNDARY =
+  "fs-conduction::transient+reactive-transport-browser-composition-unavailable" as const;
+export const HOPKINS_SOURCE_BOUNDARY =
+  "The pinned US X1 artifact is a one-sheet letters patent with no technical drawing, dimensions, charge masses, water quantities, temperatures, residence times, material assay, vessel properties, fuel rate, or measured yield. Apparatus geometry and every numerical result are explicitly modern teaching scenarios. No FrankenSim transient-conduction plus reactive-transport composition stepped this frame." as const;
 
 export interface HopkinsPotashControls {
   roastTempC?: number; // Roasting furnace temperature (500 to 950 °C)
@@ -20,14 +28,14 @@ export interface HopkinsPotashControls {
 export interface HopkinsPotashOutputs {
   roastTempKelvin: number;
   decarbonizationPct: number; // Percentage of organic carbon oxidized
-  residualCarbonPct: number; // Remaining unoxidized soot/tar
+  residualCarbonPct: number; // Scenario percentage of the initial combustible burden remaining
   dissolvedK2co3Kg: number; // Total potassium carbonate extracted into ley
   leyConcentrationGpl: number; // Ley concentration in grams per liter (g/L)
   leyDensityKgM3: number; // Solution density (kg/m³)
   pearlAshYieldKg: number; // Crystalline pearl ash produced
   pearlAshPurityPct: number; // Chemical purity of K₂CO₃ (%)
-  potashFusedVolumeLiters: number; // Cast fused potash volume
-  thermalEnergyJoules: number; // Total calcination and boiling energy
+  potashFusedVolumeLiters: number; // Scenario fused-phase volume; no cast shape is implied
+  thermalEnergyJoules: number; // Scenario sensible-plus-evaporation inventory, not source power
   extractionEfficiencyPct: number; // Leaching extraction yield vs theoretical max
   flameDisplayOmegaRadPerS: number;
   flameHarmonicOmegaRadPerS: number;
@@ -41,6 +49,61 @@ export const HOPKINS_DEFAULT_CONTROLS: Required<HopkinsPotashControls> = {
   waterVolumeLiters: 400,
   waterTempC: 80,
 };
+
+export interface HopkinsRuntimeControls extends Required<HopkinsPotashControls> {
+  isRunning: boolean;
+  resetEpoch: number;
+}
+
+export interface HopkinsKinematicPhases {
+  processCycle01: number;
+  flamePhaseRad: number;
+  flameHarmonicPhaseRad: number;
+  boilPhaseRad: number;
+}
+
+export interface HopkinsTapeFrame {
+  controls: HopkinsRuntimeControls;
+  outputs: HopkinsPotashOutputs;
+  phases: HopkinsKinematicPhases;
+  timeSec: number;
+}
+
+export const HOPKINS_ZERO_PHASES: Readonly<HopkinsKinematicPhases> = Object.freeze({
+  processCycle01: 0,
+  flamePhaseRad: 0,
+  flameHarmonicPhaseRad: 0,
+  boilPhaseRad: 0,
+});
+
+let latestHopkinsTapeFrame: HopkinsTapeFrame | null = null;
+
+export function readHopkinsControls(
+  raw: Partial<HopkinsPotashControls> | Record<string, number | undefined>,
+): Required<HopkinsPotashControls> {
+  return {
+    roastTempC: Number(raw.roastTempC ?? HOPKINS_DEFAULT_CONTROLS.roastTempC),
+    roastTimeHours: Number(raw.roastTimeHours ?? HOPKINS_DEFAULT_CONTROLS.roastTimeHours),
+    ashBatchKg: Number(raw.ashBatchKg ?? HOPKINS_DEFAULT_CONTROLS.ashBatchKg),
+    waterVolumeLiters: Number(raw.waterVolumeLiters ?? HOPKINS_DEFAULT_CONTROLS.waterVolumeLiters),
+    waterTempC: Number(raw.waterTempC ?? HOPKINS_DEFAULT_CONTROLS.waterTempC),
+  };
+}
+
+export function readHopkinsRuntimeControls(
+  raw: Partial<HopkinsRuntimeControls> | Record<string, number | boolean | undefined>,
+): HopkinsRuntimeControls {
+  return {
+    ...readHopkinsControls(raw as Record<string, number | undefined>),
+    isRunning:
+      typeof raw.isRunning === "boolean" ? raw.isRunning : Number(raw.isRunning ?? 1) > 0.5,
+    resetEpoch: Number(raw.resetEpoch ?? 0),
+  };
+}
+
+export function getHopkinsTapeFrame(): HopkinsTapeFrame | null {
+  return latestHopkinsTapeFrame;
+}
 
 /**
  * Step the thermochemical calcination, leaching, and crystallization cycle for Hopkins Potash.
@@ -106,9 +169,10 @@ export function stepHopkinsPotash(controls: HopkinsPotashControls = {}): Hopkins
   const pearlAshYieldKg = Number((dissolvedK2co3Kg * 0.98).toFixed(2));
   const pearlAshPurityPct = Number((82 + 0.16 * decarbonizationPct).toFixed(1));
 
-  // 5. Fluxing to Dense Cast Potash:
+  // 5. Fluxing to dense pot ash. The result is a liquid-phase volume; the
+  // source does not authorize any particular cast product shape.
   // Pure fused K₂CO₃ density = 2430 kg/m³
-  const potashFusedVolumeLiters = Number(((pearlAshYieldKg / 2.43) * 0.95).toFixed(2));
+  const potashFusedVolumeLiters = Number((pearlAshYieldKg / 2.43).toFixed(2));
 
   // 6. Energy balance:
   // Roasting heat: m * Cp * ΔT + carbon combustion enthalpy (-393 kJ/mol C)
@@ -137,5 +201,71 @@ export function stepHopkinsPotash(controls: HopkinsPotashControls = {}): Hopkins
     flameDisplayOmegaRadPerS,
     flameHarmonicOmegaRadPerS,
     boilDisplayOmegaRadPerS,
+  };
+}
+
+/**
+ * Fixed-step owner for the normalized process reader. It does not accelerate
+ * the historical chemistry: the cycle is only a display coordinate shared by
+ * both faces, while the source-bounded SI scenario is evaluated once per tick.
+ */
+export function createHopkinsTransportUpdater(
+  readControls: () => HopkinsRuntimeControls,
+): TapeUpdater {
+  const phases: HopkinsKinematicPhases = { ...HOPKINS_ZERO_PHASES };
+  let timeSec = 0;
+  let lastResetEpoch: number | null = null;
+  let ticksSincePublish = 4;
+
+  return (_previous, dt) => {
+    const controls = readControls();
+    if (lastResetEpoch !== null && controls.resetEpoch !== lastResetEpoch) {
+      Object.assign(phases, HOPKINS_ZERO_PHASES);
+      timeSec = 0;
+    }
+    lastResetEpoch = controls.resetEpoch;
+    const outputs = stepHopkinsPotash(controls);
+
+    if (controls.isRunning) {
+      timeSec += dt;
+      phases.processCycle01 =
+        (phases.processCycle01 + dt * 0.2 * (2.5 / Math.max(0.2, controls.roastTimeHours))) % 1;
+      phases.flamePhaseRad += outputs.flameDisplayOmegaRadPerS * dt;
+      phases.flameHarmonicPhaseRad += outputs.flameHarmonicOmegaRadPerS * dt;
+      phases.boilPhaseRad += outputs.boilDisplayOmegaRadPerS * dt;
+    }
+
+    latestHopkinsTapeFrame = {
+      controls,
+      outputs,
+      phases: { ...phases },
+      timeSec,
+    };
+
+    ticksSincePublish += 1;
+    if (ticksSincePublish < 5) return null;
+    ticksSincePublish = 0;
+    return {
+      thermo: {
+        temperatureCelsius: controls.roastTempC,
+        temperatureKelvin: outputs.roastTempKelvin,
+        pressureAtm: 1,
+        partialPressureButaneAtm: 0,
+        heatInputWatts: 0,
+        coolingPowerWatts: 0,
+        coefficientOfPerformance: 0,
+        blackbodyRadiantPowerWatts: 0,
+        fluidFlowVelocityMps: 0,
+      },
+      machine: {
+        poseXMeters: phases.processCycle01,
+        poseYMeters: Math.sin(phases.boilPhaseRad) * 0.005,
+        headingRad: phases.flamePhaseRad,
+        modeLabel: controls.isRunning
+          ? "normalized Hopkins process reader"
+          : "Hopkins process reader held",
+        wheelSpeedMps: 0,
+      },
+    };
   };
 }

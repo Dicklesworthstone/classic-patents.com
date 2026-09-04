@@ -57,3 +57,35 @@
   rate. The interactive kernel therefore models normalized pose and source-described
   switch sequencing only, and explicitly refuses quantitative mechanical-performance
   claims.
+
+## Source-sheet acceptance (2026-09-04)
+
+The three drawing pages were visually reviewed at their native `2320 × 3408`
+source-pixel dimensions against the pinned eleven-page PDF. The active edition
+previews now retain each complete drawing sheet, including the printed sheet
+identity, figure labels, and inventor signature, rather than relying on a
+reconstructed or inferred individual-figure boundary. The older enlarged
+`fig-*-source-crop-v1.png` files are preserved as historical derivatives but are
+not active edition evidence.
+
+- Reviewer: Classic Patents editorial agent (GPT-5.6); direct native-raster source-sheet review
+- Reviewed: 2026-09-04
+- Acceptance basis: independent figure review against the pinned facsimile
+- Source PDF digest: `e7be38b9f72cba77958ddab0422e147a6947056e4d51dddc7559508723cbdf34`
+
+| Active complete source sheet | PDF page | Printed figures checked | SHA-256 | Raster |
+| --- | ---: | --- | --- | --- |
+| `source-sheet-1-v1.png` | 1 | Figs. 1, 2, and 2′ | `05189d8d8c5efc4ec6fbb8b35078ce43377c2cd94b6de612bd542d9cd03e0887` | 2320 × 3408 |
+| `source-sheet-2-v1.png` | 2 | Figs. 3, 4, 5, and 6 | `2cb28e4169fd10acfc7d8b607b3dfdd9d4254a539035efb315c6e657f02c7c29` | 2320 × 3408 |
+| `source-sheet-3-v1.png` | 3 | Fig. 7 | `75b4e79097a06a99cda9b67d0cfcc84979e8ee592595f58d33f75e1fd6285121` | 2320 × 3408 |
+
+Every active figure occurrence uses its complete verified source sheet and the
+full-source rectangle `{ x: 0, y: 0, width: 2320, height: 3408 }`. The precise
+edition occurrence groups are recorded by source PDF page for the shared locator
+registry:
+
+| PDF page | Edition figure occurrence keys |
+| --- | --- |
+| 1 | `edition-block-4-group-0-inline-0`; `edition-block-7-group-0-inline-0`; `edition-block-7-group-0-inline-2`; `edition-block-7-group-0-inline-4`; `edition-block-7-group-0-inline-6`; `edition-block-7-group-0-inline-8`; `edition-block-7-group-0-inline-12`; `edition-block-7-group-0-inline-20`; `edition-block-7-group-0-inline-28`; `edition-block-8-group-0-inline-0`; `edition-block-8-group-0-inline-2`; `edition-block-8-group-0-inline-4`; `edition-block-8-group-0-inline-6`; `edition-block-8-group-0-inline-8`; `edition-block-9-group-0-inline-0`; `edition-block-12-group-0-inline-1`; `edition-block-12-group-0-inline-3`; `edition-block-12-group-0-inline-5`; `edition-block-14-group-0-inline-1`; `edition-block-14-group-0-inline-3`; `edition-block-14-group-0-inline-5`; `edition-block-15-group-0-inline-1`; `edition-block-15-group-0-inline-3`; `edition-block-16-group-0-inline-1`; `edition-block-16-group-0-inline-3`; `edition-block-16-group-0-inline-6`; `edition-block-16-group-0-inline-8`; `edition-block-21-group-0-inline-4`; `edition-block-22-group-0-inline-6`; `edition-block-28-group-0-inline-1`; `edition-block-29-group-0-inline-1` |
+| 2 | `edition-block-5-group-0-inline-0`; `edition-block-7-group-0-inline-10`; `edition-block-7-group-0-inline-14`; `edition-block-7-group-0-inline-16`; `edition-block-7-group-0-inline-18`; `edition-block-7-group-0-inline-22`; `edition-block-7-group-0-inline-24`; `edition-block-13-group-0-inline-1`; `edition-block-13-group-0-inline-3`; `edition-block-17-group-0-inline-1`; `edition-block-18-group-0-inline-0`; `edition-block-19-group-0-inline-1`; `edition-block-20-group-0-inline-1`; `edition-block-21-group-0-inline-0`; `edition-block-21-group-0-inline-2`; `edition-block-21-group-0-inline-6`; `edition-block-21-group-0-inline-8`; `edition-block-28-group-0-inline-3` |
+| 3 | `edition-block-6-group-0-inline-0`; `edition-block-7-group-0-inline-26`; `edition-block-22-group-0-inline-0`; `edition-block-22-group-0-inline-2`; `edition-block-22-group-0-inline-4`; `edition-block-22-group-0-inline-8`; `edition-block-27-group-0-inline-1`; `edition-block-29-group-0-inline-3` |

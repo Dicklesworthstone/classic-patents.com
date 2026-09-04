@@ -92,6 +92,7 @@ export const EXTERNAL_RUNTIME_OWNER_PATENT_IDS = [
   "gb-931-arkwright-water-frame",
   "gb-1306-watt-rotary-engine",
   "gb-1420-cort-puddling-rolling",
+  "us-x1-hopkins-potash",
   "us-1773980-farnsworth-tv",
   "us-4063220-metcalfe-ethernet",
   "us-3728480-baer-odyssey",

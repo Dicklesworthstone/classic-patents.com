@@ -4,13 +4,21 @@ import type {
   CuratedSpecificationInlines,
 } from "@/types/patent";
 
-const figureDimensions: Record<number, readonly [number, number]> = {
-  1: [900, 1060],
-  2: [700, 1220],
-  3: [900, 1220],
-  4: [620, 690],
-  5: [650, 690],
-  6: [800, 400],
+const FIGURE_ROOT = "/patents/figures/us-4765668-robot-end-effector";
+const SOURCE_SHEET_DIMENSIONS = { width: 2320, height: 3408 } as const;
+
+/**
+ * The public previews retain each complete primary drawing sheet. Figure 6
+ * shares sheet 1 with Figure 1; Figures 4 and 5 share sheet 4. The older
+ * individual crops remain preserved on disk as editorial aids only.
+ */
+const FIGURE_SOURCE_PDF_PAGE: Record<number, 2 | 3 | 4 | 5> = {
+  1: 2,
+  2: 3,
+  3: 4,
+  4: 5,
+  5: 5,
+  6: 2,
 };
 
 const p = (
@@ -34,19 +42,22 @@ const claim = (
 });
 
 const figure = (number: number, text = `FIG. ${number}`): CuratedSpecificationInline => {
-  const [width, height] = figureDimensions[number] ?? [1200, 800];
+  const sourcePdfPage = FIGURE_SOURCE_PDF_PAGE[number];
+  if (!sourcePdfPage) {
+    throw new Error(`Robot End Effector source sheet is not mapped for figure ${number}.`);
+  }
   return {
     kind: "reference",
     text,
     href: `#figure-${number}`,
     referenceType: "figure",
-    label: `Source crop of ${text} from US 4,765,668`,
+    label: `Complete primary drawing sheet for ${text} from US 4,765,668`,
     figurePreviews: [
       {
-        src: `/patents/figures/us-4765668-robot-end-effector/fig-${number}-source-crop-v1.png`,
-        alt: `${text}, source drawing crop from US 4,765,668`,
-        width,
-        height,
+        src: `${FIGURE_ROOT}/source-sheet-${sourcePdfPage}-v1.png`,
+        alt: `${text}, complete primary drawing sheet ${sourcePdfPage - 1} of 4 from US 4,765,668`,
+        width: SOURCE_SHEET_DIMENSIONS.width,
+        height: SOURCE_SHEET_DIMENSIONS.height,
       },
     ],
   };
@@ -57,14 +68,17 @@ const figures = (numbers: readonly number[], text: string): CuratedSpecification
   text,
   href: `#figure-${numbers[0]}`,
   referenceType: "figure",
-  label: `Source crops of ${text} from US 4,765,668`,
+  label: `Complete primary drawing sheets for ${text} from US 4,765,668`,
   figurePreviews: numbers.map((number) => {
-    const [width, height] = figureDimensions[number] ?? [1200, 800];
+    const sourcePdfPage = FIGURE_SOURCE_PDF_PAGE[number];
+    if (!sourcePdfPage) {
+      throw new Error(`Robot End Effector source sheet is not mapped for figure ${number}.`);
+    }
     return {
-      src: `/patents/figures/us-4765668-robot-end-effector/fig-${number}-source-crop-v1.png`,
-      alt: `FIG. ${number}, source drawing crop from US 4,765,668`,
-      width,
-      height,
+      src: `${FIGURE_ROOT}/source-sheet-${sourcePdfPage}-v1.png`,
+      alt: `FIG. ${number}, complete primary drawing sheet ${sourcePdfPage - 1} of 4 from US 4,765,668`,
+      width: SOURCE_SHEET_DIMENSIONS.width,
+      height: SOURCE_SHEET_DIMENSIONS.height,
     };
   }),
 });

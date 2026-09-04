@@ -742,11 +742,8 @@ export function computePortHamiltonianEnergy(
 
     case "us-x1-hopkins-potash":
     case "us-1-hopkins-potash": {
-      const kilnTempC = params.roastTempC ?? params.kilnTempC ?? 750.0;
-      const ashMassKg = params.ashBatchKg ?? params.ashMassKg ?? 200.0;
-      thermal = ashMassKg * 840.0 * (kilnTempC - 20.0); // Leached wood ash furnace thermal capacity
-      powerIn = 8500.0; // Hardwood combustion heat input
-      dissipated = 8200.0; // Radiative furnace flue gas dissipation
+      // The one-sheet letters patent supplies no quantitative thermal inputs,
+      // so an energy ledger would be invented rather than source-derived.
       break;
     }
 
