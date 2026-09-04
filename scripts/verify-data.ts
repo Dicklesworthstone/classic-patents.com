@@ -38,6 +38,7 @@ const BARE_DRAWING_REFERENCE = /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|d
 const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
   "us-x9430-colt-revolver",
   "us-x8277-mccormick-reaper",
+  "us-x72-whitney-cotton-gin",
   "us-132-davenport-electric-motor",
   "us-1647-morse-telegraph",
   "us-3633-goodyear-rubber",
@@ -94,6 +95,7 @@ const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
   "us-3858232-boyle-smith-ccd",
   "us-3858581-kamen-medication-injection-device",
   "us-388850-eastman-kodak",
+  "us-395781-hollerith-tabulating",
   "us-400766-hall-aluminium",
   "us-470918-reno-escalator",
   "us-4063220-metcalfe-ethernet",

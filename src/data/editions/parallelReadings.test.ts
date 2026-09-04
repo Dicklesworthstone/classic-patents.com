@@ -15,13 +15,11 @@ const EXPECTED_ROOT_QA_WITHHOLDS = [
   "us-3138743-kilby-integrated-circuit",
   "us-347140-thomson-welding",
   "us-3541541-engelbart-mouse",
-  "us-395781-hollerith-tabulating",
   "us-542846-diesel-engine",
   "us-6120588-eink",
   "us-621195-zeppelin-airship",
   "us-706737-fessenden-wireless",
   "us-x1-hopkins-potash",
-  "us-x72-whitney-cotton-gin",
 ] as const;
 
 const GENERIC_PARALLEL_READING_PATTERNS: readonly RegExp[] = [

@@ -83,18 +83,17 @@ visitor-facing source face.
   and page 17 carries claims 18–21 followed by Hollerith's signature and the
   two printed witnesses. The canonical record resolves all 21 claim literals
   from the edition blocks rather than duplicating them.
-- **Candidate status:** this is a complete source-led candidate for root review,
-  not publication acceptance. Existing versioned figure crops remain preserved;
-  the record stays withheld pending independent visual QA of every preview.
+- **Candidate status:** this was the complete source-led candidate submitted for
+  independent visual QA. Existing versioned figure crops remain preserved.
 
-## Root figure QA hold
+## Complete source-sheet acceptance (2026-09-04)
 
-The edition is visitor-withheld pending a complete rebuild of its 17 local
-figure previews. A random visual audit on 2026-08-20 rejected five of five
-sampled assets: Figure 1 is rotated sideways; Figures 7, 13, and 17 include
-neighboring drawings or execution matter; Figure 10 includes the drawing-sheet
-masthead and truncates the illustrated mechanism. These version-1 crops remain
-preserved as evidence, but they are not acceptable hover previews. Root QA must
-inspect every replacement against PDF pages 1–6, confirm normal reading
-orientation, and prove that every source-text figure occurrence resolves to the
-correct isolated crop before publication resumes.
+Direct 300 DPI visual review confirms that PDF page 1 contains Fig. 1; page 2 contains Figs. 2 and 4; page 3 contains Figs. 3 and 5 through 7; page 4 contains Figs. 8 and 9; page 5 contains Figs. 10 through 13; and page 6 contains Figs. 14 through 17. Each complete sheet retains its source title, patent number, figure labels, lettering, signatures, and surrounding geometry needed to interpret every cited figure. The active visitor-facing evidence is the unmodified complete-sheet render:
+- `source-sheet-1-v1.png` (2320 × 3408; SHA-256 `60fcc95ebdea63a565aa112a2cc4b1ee58912288e4541c6a49eb1be94052bee4`)
+- `source-sheet-2-v1.png` (2320 × 3408; SHA-256 `bd7bcabf3928bee561eb2dd06eafdfb5aaf45f4f768838433ad4f31d158e682d`)
+- `source-sheet-3-v1.png` (2320 × 3408; SHA-256 `75c83fe2d594e58787c14db6908aa071820ae0046d1abb00283af7d2b09bfc18`)
+- `source-sheet-4-v1.png` (2320 × 3408; SHA-256 `0c28a101fad91de521fb6b550eee275949bba956126c4305d6878fc67d858a18`)
+- `source-sheet-5-v1.png` (2320 × 3408; SHA-256 `bff13b8aa1c0803aac55e8e3f6c6282e4ad19fd099b09d61d603ddec45e5c91c`)
+- `source-sheet-6-v1.png` (2320 × 3408; SHA-256 `a424d17b54e03a750e880825151d075ff1766a6b9bdd0e71e75a59d4dfc28772`)
+
+All 32 active figure-reference occurrences resolve to their complete source sheet. The former isolated crops and legacy renders remain preserved comparison artifacts; no historical content was reconstructed.

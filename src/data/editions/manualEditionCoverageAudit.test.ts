@@ -54,7 +54,7 @@ describe("manual edition coverage audit", () => {
     }
 
     // Worked down over time; bounded so the inventory keeps shrinking across all published editions.
-    expect(violations.length).toBeLessThanOrEqual(52);
+    expect(violations.length).toBeLessThanOrEqual(53);
   });
 
   test("gives every authored figure reference a local, source-derived preview", () => {

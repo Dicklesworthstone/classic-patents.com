@@ -4,8 +4,8 @@ import type {
   CuratedSpecificationInline,
 } from "@/types/patent";
 
-/** Individual crops made directly from the six source drawing sheets. */
-export const hollerithTabulatingFigureCrops = {
+/** Preserved derivative crops made directly from the six source drawing sheets. */
+export const hollerithTabulatingLegacyFigureCrops = {
   "Fig. 1": [
     {
       src: "/patents/figures/us-395781-hollerith-tabulating/fig-1-source-crop-v1.png",
@@ -144,6 +144,51 @@ export const hollerithTabulatingFigureCrops = {
   ],
 } as const;
 
+const FIGURE_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17] as const;
+type FigureNumber = (typeof FIGURE_NUMBERS)[number];
+
+const SOURCE_SHEET_BY_FIGURE: Readonly<Record<FigureNumber, number>> = {
+  1: 1,
+  2: 2,
+  3: 3,
+  4: 2,
+  5: 3,
+  6: 3,
+  7: 3,
+  8: 4,
+  9: 4,
+  10: 5,
+  11: 5,
+  12: 5,
+  13: 5,
+  14: 6,
+  15: 6,
+  16: 6,
+  17: 6,
+};
+
+type FullSourceSheetPreview = {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+};
+
+const completeSourceSheetForFigure = (number: FigureNumber): FullSourceSheetPreview => {
+  const sourceSheet = SOURCE_SHEET_BY_FIGURE[number];
+  return {
+    src: `/patents/figures/us-395781-hollerith-tabulating/source-sheet-${sourceSheet}-v1.png`,
+    alt: `Complete primary source drawing sheet ${sourceSheet} of 6 for US 395,781, containing Fig. ${number}.`,
+    width: 2320,
+    height: 3408,
+  };
+};
+
+/** Active archival previews preserve each entire primary drawing sheet. */
+export const hollerithTabulatingFigureCrops = Object.fromEntries(
+  FIGURE_NUMBERS.map((number) => [`Fig. ${number}`, [completeSourceSheetForFigure(number)]]),
+) as Record<`Fig. ${FigureNumber}`, [FullSourceSheetPreview]>;
+
 const figureReference = (
   text: string,
   ...previews: { src: string; alt: string; width: number; height: number }[]
@@ -152,7 +197,7 @@ const figureReference = (
   text,
   href: "#",
   referenceType: "figure",
-  label: `Open the source-facsimile crop for ${text} in US 395,781`,
+  label: `Open the complete primary source sheet for ${text} in US 395,781`,
   figurePreviews: previews,
 });
 
@@ -210,7 +255,7 @@ export const hollerithTabulatingSourceBlocksDraft: readonly CuratedSpecification
         text: "Figure 1",
         href: "#",
         referenceType: "figure",
-        label: "Open the source-facsimile crop for Fig. 1 in US 395,781",
+        label: "Open the complete primary source sheet for Fig. 1 in US 395,781",
         figurePreviews: hollerithTabulatingFigureCrops["Fig. 1"],
       },
       {
@@ -222,7 +267,7 @@ export const hollerithTabulatingSourceBlocksDraft: readonly CuratedSpecification
         text: "Fig. 2",
         href: "#",
         referenceType: "figure",
-        label: "Open the source-facsimile crop for Fig. 2 in US 395,781",
+        label: "Open the complete primary source sheet for Fig. 2 in US 395,781",
         figurePreviews: hollerithTabulatingFigureCrops["Fig. 2"],
       },
       {
@@ -234,7 +279,7 @@ export const hollerithTabulatingSourceBlocksDraft: readonly CuratedSpecification
         text: "Fig. 3",
         href: "#",
         referenceType: "figure",
-        label: "Open the source-facsimile crop for Fig. 3 in US 395,781",
+        label: "Open the complete primary source sheet for Fig. 3 in US 395,781",
         figurePreviews: hollerithTabulatingFigureCrops["Fig. 3"],
       },
       { kind: "text", text: " a detail illustrating one of the contact-pins and mercury-cups. " },
@@ -243,7 +288,7 @@ export const hollerithTabulatingSourceBlocksDraft: readonly CuratedSpecification
         text: "Fig. 4",
         href: "#",
         referenceType: "figure",
-        label: "Open the source-facsimile crop for Fig. 4 in US 395,781",
+        label: "Open the complete primary source sheet for Fig. 4 in US 395,781",
         figurePreviews: hollerithTabulatingFigureCrops["Fig. 4"],
       },
       { kind: "text", text: " is a view in perspective, and " },
@@ -252,7 +297,7 @@ export const hollerithTabulatingSourceBlocksDraft: readonly CuratedSpecification
         text: "Fig. 5",
         href: "#",
         referenceType: "figure",
-        label: "Open the source-facsimile crop for Fig. 5 in US 395,781",
+        label: "Open the complete primary source sheet for Fig. 5 in US 395,781",
         figurePreviews: hollerithTabulatingFigureCrops["Fig. 5"],
       },
       {
@@ -264,7 +309,7 @@ export const hollerithTabulatingSourceBlocksDraft: readonly CuratedSpecification
         text: "Figs. 6 to 12, inclusive,",
         href: "#",
         referenceType: "figure",
-        label: "Open the source-facsimile crops for Figs. 6 through 12 in US 395,781",
+        label: "Open the complete primary source sheets for Figs. 6 through 12 in US 395,781",
         figurePreviews: [
           ...hollerithTabulatingFigureCrops["Fig. 6"],
           ...hollerithTabulatingFigureCrops["Fig. 7"],
@@ -284,7 +329,7 @@ export const hollerithTabulatingSourceBlocksDraft: readonly CuratedSpecification
         text: "Fig. 13",
         href: "#",
         referenceType: "figure",
-        label: "Open the source-facsimile crop for Fig. 13 in US 395,781",
+        label: "Open the complete primary source sheet for Fig. 13 in US 395,781",
         figurePreviews: hollerithTabulatingFigureCrops["Fig. 13"],
       },
       {
@@ -296,7 +341,7 @@ export const hollerithTabulatingSourceBlocksDraft: readonly CuratedSpecification
         text: "Fig. 14",
         href: "#",
         referenceType: "figure",
-        label: "Open the source-facsimile crop for Fig. 14 in US 395,781",
+        label: "Open the complete primary source sheet for Fig. 14 in US 395,781",
         figurePreviews: hollerithTabulatingFigureCrops["Fig. 14"],
       },
       {
@@ -308,7 +353,7 @@ export const hollerithTabulatingSourceBlocksDraft: readonly CuratedSpecification
         text: "Figs. 15, 16 and 17",
         href: "#",
         referenceType: "figure",
-        label: "Open the source-facsimile crops for Figs. 15, 16 and 17 in US 395,781",
+        label: "Open the complete primary source sheets for Figs. 15, 16 and 17 in US 395,781",
         figurePreviews: [
           ...hollerithTabulatingFigureCrops["Fig. 15"],
           ...hollerithTabulatingFigureCrops["Fig. 16"],
@@ -398,7 +443,7 @@ export const hollerithTabulatingSourceBlocksDraft: readonly CuratedSpecification
         text: "Fig. 13",
         href: "#",
         referenceType: "figure",
-        label: "Open the source-facsimile crop for Fig. 13 in US 395,781",
+        label: "Open the complete primary source sheet for Fig. 13 in US 395,781",
         figurePreviews: hollerithTabulatingFigureCrops["Fig. 13"],
       },
       {
@@ -460,7 +505,7 @@ export const hollerithTabulatingSourceBlocksDraft: readonly CuratedSpecification
         text: "Figs. 1, 2, and 3",
         href: "#",
         referenceType: "figure",
-        label: "Open the source-facsimile crops for Figs. 1, 2, and 3 in US 395,781",
+        label: "Open the complete primary source sheets for Figs. 1, 2, and 3 in US 395,781",
         figurePreviews: [
           ...hollerithTabulatingFigureCrops["Fig. 1"],
           ...hollerithTabulatingFigureCrops["Fig. 2"],

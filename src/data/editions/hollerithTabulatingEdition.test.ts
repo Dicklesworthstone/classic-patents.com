@@ -101,7 +101,7 @@ describe("hollerithTabulatingArchivalEdition", () => {
     }
   });
 
-  test("records the actual six drawing sheets and renders every cited figure locally", () => {
+  test("records the actual six drawing sheets and renders every cited figure from its complete source sheet", () => {
     const ledger = readFileSync(
       `${process.cwd()}/public/patents/transcripts/us-395781-hollerith-tabulating-reviewed.txt`,
       "utf8",
@@ -119,18 +119,18 @@ describe("hollerithTabulatingArchivalEdition", () => {
     expect(ledger).toContain("Thomas Durant.");
     expect(ledger).not.toContain("[Drawing Sheet");
 
-    for (const crops of Object.values(hollerithTabulatingFigureCrops)) {
-      expect(crops).toHaveLength(1);
-      const crop = crops[0];
-      expect(existsSync(resolve(process.cwd(), "public", crop.src.slice(1)))).toBe(true);
-      expect(crop.width).toBeGreaterThan(300);
-      expect(crop.height).toBeGreaterThan(300);
+    for (const sourceSheets of Object.values(hollerithTabulatingFigureCrops)) {
+      expect(sourceSheets).toHaveLength(1);
+      const sourceSheet = sourceSheets[0];
+      expect(existsSync(resolve(process.cwd(), "public", sourceSheet.src.slice(1)))).toBe(true);
+      expect(sourceSheet.width).toBe(2320);
+      expect(sourceSheet.height).toBe(3408);
     }
 
     expect(hollerithTabulatingFigureCrops["Fig. 6"][0]).toMatchObject({
-      src: "/patents/figures/us-395781-hollerith-tabulating/fig-6-source-crop-v4.png",
-      width: 800,
-      height: 900,
+      src: "/patents/figures/us-395781-hollerith-tabulating/source-sheet-3-v1.png",
+      width: 2320,
+      height: 3408,
     });
   });
 
@@ -220,13 +220,16 @@ describe("hollerithTabulatingArchivalEdition", () => {
     expect(energyChannelsFor("us-395781-hollerith-tabulating", {})).toEqual([]);
   });
 
-  test("enforces figure acceptance pending audit hold in publication state registry", () => {
-    const { evaluateTypedArchivalPublicationState } = require("./archivalPublicationState");
-    const decision = evaluateTypedArchivalPublicationState(hollerithTabulatingPatent, {
-      hasCompanionReadings: true,
-    });
-    expect(decision.isPublished).toBe(false);
-    expect(decision.state.kind).toBe("held");
-    expect(decision.reasonCode).toBe("AUDIT_FIGURE_ACCEPTANCE_PENDING");
+  test("accepts independently reviewed complete source sheets in the publication state registry", () => {
+    const {
+      completeArchivalEditionForViewer,
+      evaluateArchivalPublicationState,
+    } = require("./publicationApproval");
+    const pubDecision = evaluateArchivalPublicationState(hollerithTabulatingPatent);
+    expect(completeArchivalEditionForViewer(hollerithTabulatingPatent, pubDecision)).toBe(
+      hollerithTabulatingArchivalEdition,
+    );
+    expect(pubDecision.status).toBe("published");
+    expect(pubDecision.reasonCode).toBe("ACCEPTED");
   });
 });

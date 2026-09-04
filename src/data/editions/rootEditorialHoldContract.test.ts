@@ -18,13 +18,11 @@ const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-3138743-kilby-integrated-circuit",
   "us-347140-thomson-welding",
   "us-3541541-engelbart-mouse",
-  "us-395781-hollerith-tabulating",
   "us-542846-diesel-engine",
   "us-6120588-eink",
   "us-621195-zeppelin-airship",
   "us-706737-fessenden-wireless",
   "us-x1-hopkins-potash",
-  "us-x72-whitney-cotton-gin",
 ] as const;
 
 const SOURCE_QA_RELEASED_EDITIONS = [
@@ -63,6 +61,7 @@ const SOURCE_QA_RELEASED_EDITIONS = [
   "us-381968-tesla-motor",
   "us-3858232-boyle-smith-ccd",
   "us-388850-eastman-kodak",
+  "us-395781-hollerith-tabulating",
   "us-400766-hall-aluminium",
   "us-4136359-wozniak-apple",
   "us-470918-reno-escalator",
@@ -88,6 +87,7 @@ const SOURCE_QA_RELEASED_EDITIONS = [
   "us-879532-de-forest-audion",
   "us-942699-baekeland-bakelite",
   "us-971501-haber-ammonia",
+  "us-x72-whitney-cotton-gin",
   "us-x8277-mccormick-reaper",
   "us-x9430-colt-revolver",
 ] as const;

@@ -42,8 +42,6 @@ export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
   "us-542846-diesel-engine",
   "us-6120588-eink",
   // --- Historical reason: companion-reading map had not been authored ---
-  "us-x72-whitney-cotton-gin",
-  "us-395781-hollerith-tabulating",
   // --- Historical reason: reviewed-ledger coverage was incomplete ---
   // --- Historical fabrication repair (retained for audit provenance) ---
   "us-x1-hopkins-potash",

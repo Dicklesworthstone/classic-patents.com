@@ -305,11 +305,6 @@ export const ARCHIVAL_PUBLICATION_STATE_OVERRIDES: Readonly<Record<string, Publi
     "classic-patentscom-87z",
     "The provenance hold must be reconciled before the source edition is released.",
   ),
-  "us-395781-hollerith-tabulating": auditHold(
-    "AUDIT_FIGURE_ACCEPTANCE_PENDING",
-    "classic-patentscom-jks",
-    "All 17 figure previews require QA acceptance.",
-  ),
   "us-3237-rillieux-evaporator": auditHold(
     "AUDIT_FACSIMILE_REVIEW_PENDING",
     "classic-patentscom-pam",

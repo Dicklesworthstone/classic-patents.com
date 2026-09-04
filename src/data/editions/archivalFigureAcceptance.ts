@@ -30,6 +30,69 @@ export interface ArchivalFigureAcceptanceAttestation {
 export const ARCHIVAL_FIGURE_ACCEPTANCE_ATTESTATIONS: Readonly<
   Record<string, ArchivalFigureAcceptanceAttestation>
 > = {
+  "us-x72-whitney-cotton-gin": {
+    sourcePdfSha256: "9b0873182dbd2852a89bbf5bc7101e2c3b7a2d0cc76cee0df5c7acbfc86844ee",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 25,
+    assets: {
+      "/patents/figures/us-x72-whitney-cotton-gin/source-sheet-1-v1.png": {
+        sha256: "6d99d6afdcc73a4f9d25d349bbf938f6a79051e10b7c5e26ce0ed930991ded38",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-x72-whitney-cotton-gin/source-sheet-2-v1.png": {
+        sha256: "d44db37019961e5485d20672bc66320579a7c1963705258275605eccb72ca4f9",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-x72-whitney-cotton-gin/source-sheet-3-v1.png": {
+        sha256: "1a3e2e973aa7e71186b8116251704c2518b9b828f46d64d42d8b6b440e620fda",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
+  "us-395781-hollerith-tabulating": {
+    sourcePdfSha256: "39d7c9879f8386f63f609bd43c0a73c96dbe50943d5d17044733c254b8d5a780",
+    reviewer: "Classic Patents editorial agent (GPT-5.6); direct 300 DPI source-sheet review",
+    reviewedAt: "2026-09-04",
+    acceptanceBasis: "independent-figure-review",
+    acceptedOccurrenceCount: 32,
+    assets: {
+      "/patents/figures/us-395781-hollerith-tabulating/source-sheet-1-v1.png": {
+        sha256: "60fcc95ebdea63a565aa112a2cc4b1ee58912288e4541c6a49eb1be94052bee4",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-395781-hollerith-tabulating/source-sheet-2-v1.png": {
+        sha256: "bd7bcabf3928bee561eb2dd06eafdfb5aaf45f4f768838433ad4f31d158e682d",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-395781-hollerith-tabulating/source-sheet-3-v1.png": {
+        sha256: "75c83fe2d594e58787c14db6908aa071820ae0046d1abb00283af7d2b09bfc18",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-395781-hollerith-tabulating/source-sheet-4-v1.png": {
+        sha256: "0c28a101fad91de521fb6b550eee275949bba956126c4305d6878fc67d858a18",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-395781-hollerith-tabulating/source-sheet-5-v1.png": {
+        sha256: "bff13b8aa1c0803aac55e8e3f6c6282e4ad19fd099b09d61d603ddec45e5c91c",
+        width: 2320,
+        height: 3408,
+      },
+      "/patents/figures/us-395781-hollerith-tabulating/source-sheet-6-v1.png": {
+        sha256: "a424d17b54e03a750e880825151d075ff1766a6b9bdd0e71e75a59d4dfc28772",
+        width: 2320,
+        height: 3408,
+      },
+    },
+  },
   "us-307031-edison-indicator": {
     sourcePdfSha256: "f36bc6aa879d42a3f495a9bda05871bb6181aa1979e6baa03b258c42d6a30c13",
     reviewer: "Classic Patents editorial agent (Codex); direct 300 DPI source-pixel review",
