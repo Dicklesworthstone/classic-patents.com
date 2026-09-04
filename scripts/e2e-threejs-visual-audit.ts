@@ -1656,6 +1656,196 @@ async function auditPatent(
         resumed;
     }
 
+    if (patentId === "gb-1420-cort-puddling-rolling") {
+      const readCortOwner = async () => {
+        const snapshot = await runtimeOwnerSnapshot(page, patentId);
+        return {
+          raw: snapshot,
+          running: snapshot?.["data-cort-running"],
+          timeSec: Number(snapshot?.["data-cort-time-sec"]),
+          topRollRad: Number(snapshot?.["data-cort-top-roll-phase-rad"]),
+          bottomRollRad: Number(snapshot?.["data-cort-bottom-roll-phase-rad"]),
+          rabbleRad: Number(snapshot?.["data-cort-rabble-phase-rad"]),
+          billetTravelM: Number(snapshot?.["data-cort-billet-travel-m"]),
+          workingRollRadiusMm: Number(snapshot?.["data-cort-working-roll-radius-mm"]),
+          nipGapMm: Number(snapshot?.["data-cort-roll-nip-gap-mm"]),
+          billetHeightMm: Number(snapshot?.["data-cort-billet-height-mm"]),
+          nipInterferenceMm: Number(snapshot?.["data-cort-nip-interference-mm"]),
+          provenance: snapshot?.["data-runtime-provenance"],
+          ownerMount: snapshot?.["data-runtime-owner-mount"],
+          kernelSource: snapshot?.["data-cort-kernel-source"],
+          frankenSimBoundary: snapshot?.["data-cort-frankensim-boundary"],
+        };
+      };
+      const readCortFace = (face: "two" | "three") =>
+        dispatcher.locator(`[data-cort-face="${face}"]`).evaluate((element) => ({
+          running: element.getAttribute("data-cort-running"),
+          topRollRad: Number(element.getAttribute("data-cort-top-roll-phase-rad")),
+          bottomRollRad: Number(element.getAttribute("data-cort-bottom-roll-phase-rad")),
+          rabbleRad: Number(element.getAttribute("data-cort-rabble-phase-rad")),
+          billetTravelM: Number(element.getAttribute("data-cort-billet-travel-m")),
+          nipInterferenceMm: Number(element.getAttribute("data-cort-nip-interference-mm")),
+        }));
+
+      await page.waitForFunction(
+        (id) => {
+          const owner = document.querySelector(
+            `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+          );
+          const time = owner?.getAttribute("data-cort-time-sec");
+          return time !== null && time !== "" && Number.isFinite(Number(time));
+        },
+        patentId,
+        { timeout: 3_000 },
+      );
+      const movingStart = await readCortOwner();
+      await page.waitForFunction(
+        ({ id, startTime }) => {
+          const owner = document.querySelector(
+            `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+          );
+          return Number(owner?.getAttribute("data-cort-time-sec")) > startTime + 1 / 30;
+        },
+        { id: patentId, startTime: movingStart.timeSec },
+        { timeout: 5_000 },
+      );
+      const movingEnd = await readCortOwner();
+      const deltas = {
+        topRollRad: movingEnd.topRollRad - movingStart.topRollRad,
+        bottomRollRad: movingEnd.bottomRollRad - movingStart.bottomRollRad,
+        rabbleRad: movingEnd.rabbleRad - movingStart.rabbleRad,
+        billetTravelM:
+          (movingEnd.billetTravelM - movingStart.billetTravelM + 1.2) % 1.2,
+      };
+      const phaseTolerance = 1e-8;
+      const counterRotationClosed =
+        deltas.topRollRad < -1e-4 &&
+        deltas.bottomRollRad > 1e-4 &&
+        Math.abs(deltas.topRollRad + deltas.bottomRollRad) < phaseTolerance;
+      const noSlipBilletTravelClosed =
+        deltas.billetTravelM > 1e-5 &&
+        Math.abs(
+          deltas.billetTravelM -
+            deltas.bottomRollRad * (movingEnd.workingRollRadiusMm / 1000),
+        ) < phaseTolerance;
+      const nipGeometryClosed =
+        Math.abs(movingEnd.nipGapMm - movingEnd.billetHeightMm) < phaseTolerance &&
+        Math.abs(movingEnd.nipInterferenceMm) < phaseTolerance;
+      const sourceBoundaryHonest =
+        movingEnd.provenance === "TS_FALLBACK" &&
+        movingEnd.kernelSource === "source-bounded-ts" &&
+        movingEnd.frankenSimBoundary ===
+          "fs-mbd::revolute+fs-solid::contact+fs-conduction::transient-browser-composition-unavailable";
+
+      await surface.getByRole("button", { name: "Groove Passes" }).click();
+      await page.waitForTimeout(100);
+      const groovePassScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.physical-groove-passes.png`,
+      );
+      await dispatcher.screenshot({ path: groovePassScreenshotPath });
+
+      await surface.getByRole("button", { name: "Pause Process Motion" }).click();
+      await page.waitForFunction(
+        (id) =>
+          document
+            .querySelector(`[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`)
+            ?.getAttribute("data-cort-running") === "false",
+        patentId,
+        { timeout: 3_000 },
+      );
+      const pausedStart = await readCortOwner();
+      const pausedThreeFace = await readCortFace("three");
+      await page.waitForTimeout(200);
+      const pausedEnd = await readCortOwner();
+      const pauseHeld =
+        Math.abs(pausedEnd.timeSec - pausedStart.timeSec) < 1e-12 &&
+        Math.abs(pausedEnd.topRollRad - pausedStart.topRollRad) < 1e-12 &&
+        Math.abs(pausedEnd.bottomRollRad - pausedStart.bottomRollRad) < 1e-12 &&
+        Math.abs(pausedEnd.rabbleRad - pausedStart.rabbleRad) < 1e-12 &&
+        Math.abs(pausedEnd.billetTravelM - pausedStart.billetTravelM) < 1e-12;
+
+      await dispatcher.getByRole("button", { name: "2D Technical Diagram" }).click();
+      await dispatcher.locator('[data-cort-face="two"]').waitFor({
+        state: "visible",
+        timeout: 20_000,
+      });
+      const pausedTwoFace = await readCortFace("two");
+      const ownerAfterFaceSwitch = await readCortOwner();
+      const faceTolerance = 1e-9;
+      const pausedCrossFaceParity =
+        pausedThreeFace.running === "false" &&
+        pausedTwoFace.running === "false" &&
+        Math.abs(pausedTwoFace.topRollRad - pausedThreeFace.topRollRad) < faceTolerance &&
+        Math.abs(pausedTwoFace.bottomRollRad - pausedThreeFace.bottomRollRad) < faceTolerance &&
+        Math.abs(pausedTwoFace.rabbleRad - pausedThreeFace.rabbleRad) < faceTolerance &&
+        Math.abs(pausedTwoFace.billetTravelM - pausedThreeFace.billetTravelM) < faceTolerance &&
+        Math.abs(pausedTwoFace.nipInterferenceMm - pausedThreeFace.nipInterferenceMm) <
+          faceTolerance;
+      const singleOwnerLifecycle = ownerAfterFaceSwitch.ownerMount === movingEnd.ownerMount;
+
+      await surface.getByRole("button", { name: "Rolling Mill" }).click();
+      const twoDimensionalScreenshotPath = path.join(
+        SCREENSHOT_DIRECTORY,
+        `${patentId}.${viewport}.shared-tape-two-dimensional.png`,
+      );
+      await dispatcher.screenshot({ path: twoDimensionalScreenshotPath });
+
+      await surface.getByRole("button", { name: "Resume Process Motion" }).click();
+      const resumed = await page
+        .waitForFunction(
+          ({ id, heldTime }) => {
+            const owner = document.querySelector(
+              `[data-testid="patent-physics-runtime-owner"][data-patent-id="${id}"]`,
+            );
+            return (
+              owner?.getAttribute("data-cort-running") === "true" &&
+              Number(owner?.getAttribute("data-cort-time-sec")) > heldTime
+            );
+          },
+          { id: patentId, heldTime: pausedEnd.timeSec },
+          { timeout: 3_000 },
+        )
+        .then(() => true)
+        .catch(() => false);
+      await dispatcher.getByRole("button", { name: "3D Physics Simulation" }).click();
+      await dispatcher.locator('[data-cort-face="three"]').waitFor({
+        state: "visible",
+        timeout: 20_000,
+      });
+
+      mechanismInteraction = {
+        available: true,
+        kind: "counter-rotating-no-slip-roll-bite-pause-and-cross-face-parity",
+        movingStart,
+        movingEnd,
+        deltas,
+        counterRotationClosed,
+        noSlipBilletTravelClosed,
+        nipGeometryClosed,
+        sourceBoundaryHonest,
+        pausedStart,
+        pausedEnd,
+        pauseHeld,
+        pausedThreeFace,
+        pausedTwoFace,
+        pausedCrossFaceParity,
+        singleOwnerLifecycle,
+        resumed,
+        groovePassScreenshotPath,
+        twoDimensionalScreenshotPath,
+      };
+      mechanismInteractionValid =
+        counterRotationClosed &&
+        noSlipBilletTravelClosed &&
+        nipGeometryClosed &&
+        sourceBoundaryHonest &&
+        pauseHeld &&
+        pausedCrossFaceParity &&
+        singleOwnerLifecycle &&
+        resumed;
+    }
+
     if (patentId === "us-4063220-metcalfe-ethernet") {
       const beforeCollision = await runtimeOwnerSnapshot(page, patentId);
       const beforeCollisionCount = Number(beforeCollision?.["data-collision-count"] ?? 0);
