@@ -41,7 +41,6 @@ export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
   // --- Historical reason: companion-reading map had not been authored ---
   // --- Historical reason: reviewed-ledger coverage was incomplete ---
   // --- Historical fabrication repair (retained for audit provenance) ---
-  "us-x1-hopkins-potash",
 ] as const;
 
 export function isArchivalEditionExplicitlyWithheld(patentId: string): boolean {

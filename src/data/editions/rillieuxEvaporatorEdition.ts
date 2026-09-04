@@ -98,7 +98,10 @@ export const rillieuxEvaporatorArchivalEdition: CuratedSpecificationEdition = {
   sourcePdfSha256: "10d9a2c3909f1a7d7086c063925f96feed8aa362e1b39a64275a869853dc1d7a",
   preparedBy: "Classic Patents Editorial Team",
   preparedAt: "2026-08-19",
-  completeFacsimileReviewed: true,
+  // The pinned source pages establish that this is a short editorial
+  // reconstruction, not the complete five-page specification. Mark it as a
+  // draft so the source reader falls open to the full page-marked ledger.
+  completeFacsimileReviewed: false,
   blocks: [
     {
       kind: "masthead",

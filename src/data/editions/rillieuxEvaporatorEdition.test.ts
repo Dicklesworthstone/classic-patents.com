@@ -2,6 +2,8 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { rillieuxEvaporatorPatent } from "../patents/rillieux-evaporator";
+import { completeArchivalEditionForViewer } from "./publicationApproval";
 import {
   manualRillieuxClaimText,
   RILLIEUX_EVAPORATOR_PARALLEL_READINGS,
@@ -35,6 +37,11 @@ describe("US 3,237 Norbert Rillieux Multiple-Effect Evaporator Archival Edition 
       const text = manualRillieuxClaimText(i);
       expect(text.length).toBeGreaterThan(30);
     }
+  });
+
+  test("marks the short reconstruction as a draft so the source reader falls open to the ledger", () => {
+    expect(rillieuxEvaporatorArchivalEdition.completeFacsimileReviewed).toBe(false);
+    expect(completeArchivalEditionForViewer(rillieuxEvaporatorPatent)).toBeUndefined();
   });
 
   test("all active figure previews are complete pinned source sheets", () => {

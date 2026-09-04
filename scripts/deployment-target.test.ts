@@ -170,8 +170,8 @@ describe("patent source route manifest", () => {
     const transcriptCount = manifest.filter((m) => m.expectedDeliveryMode === "transcript").length;
     const facsimileCount = manifest.filter((m) => m.expectedDeliveryMode === "facsimile").length;
 
-    expect(editionCount).toBe(92);
-    expect(transcriptCount).toBe(11);
+    expect(editionCount).toBe(91);
+    expect(transcriptCount).toBe(12);
     expect(facsimileCount).toBe(0);
     expect(editionCount + transcriptCount + facsimileCount).toBe(103);
   });

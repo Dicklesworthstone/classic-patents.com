@@ -16,7 +16,6 @@ const EXPECTED_ROOT_QA_WITHHOLDS = [
   "us-542846-diesel-engine",
   "us-6120588-eink",
   "us-706737-fessenden-wireless",
-  "us-x1-hopkins-potash",
 ] as const;
 
 const GENERIC_PARALLEL_READING_PATTERNS: readonly RegExp[] = [

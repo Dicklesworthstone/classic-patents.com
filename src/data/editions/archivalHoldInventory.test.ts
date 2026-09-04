@@ -10,12 +10,12 @@ describe("archival hold inventory and partition contract (3hc.3)", () => {
 
   test("derives the exact catalogue totals and partition counts", () => {
     expect(report.totalPatents).toBe(103);
-    expect(report.acceptedCount).toBe(85);
-    expect(report.heldCount).toBe(18);
+    expect(report.acceptedCount).toBe(86);
+    expect(report.heldCount).toBe(17);
 
-    // Exact 18-state disjoint reason-code partition (after figure acceptance):
+    // Exact 17-state disjoint reason-code partition (after figure acceptance):
     expect(report.categoryCounts["figure-related"]).toBe(0);
-    expect(report.categoryCounts["facsimile-review-related"]).toBe(8);
+    expect(report.categoryCounts["facsimile-review-related"]).toBe(7);
     expect(report.categoryCounts["ledger-related"]).toBe(0);
     expect(report.categoryCounts["full-specification-related"]).toBe(5);
     expect(report.categoryCounts["claim-parity-related"]).toBe(0);
@@ -31,12 +31,12 @@ describe("archival hold inventory and partition contract (3hc.3)", () => {
       report.categoryCounts["reconstruction-quarantine"] +
       report.categoryCounts["primary-facsimile-gap"];
 
-    expect(partitionSum).toBe(18);
+    expect(partitionSum).toBe(17);
   });
 
   test("proves every held patent delivers a complete source face in the reader", () => {
     const heldEntries = report.entries.filter((e) => e.category !== "accepted");
-    expect(heldEntries.length).toBe(18);
+    expect(heldEntries.length).toBe(17);
 
     for (const entry of heldEntries) {
       expect(["edition", "transcript", "facsimile"]).toContain(entry.readerDeliveryMode);
@@ -51,8 +51,8 @@ describe("archival hold inventory and partition contract (3hc.3)", () => {
       (e) => e.readerDeliveryMode === "transcript",
     ).length;
 
-    expect(editionDeliveries).toBe(92);
-    expect(transcriptDeliveries).toBe(11);
+    expect(editionDeliveries).toBe(91);
+    expect(transcriptDeliveries).toBe(12);
     expect(editionDeliveries + transcriptDeliveries).toBe(103);
   });
 
@@ -86,8 +86,8 @@ describe("archival hold inventory and partition contract (3hc.3)", () => {
       "# Classic Patents — Internal Archival Hold Inventory & Remediation Map",
     );
     expect(markdown).toContain("Total Catalogue Patents: 103");
-    expect(markdown).toContain("Fully Accepted Editions: 85");
-    expect(markdown).toContain("Under Remediation Review: 18");
+    expect(markdown).toContain("Fully Accepted Editions: 86");
+    expect(markdown).toContain("Under Remediation Review: 17");
     expect(markdown).toContain("classic-patentscom-source-reader-remediation-3hc.4");
     expect(markdown).toContain("classic-patentscom-source-reader-remediation-3hc.5");
     expect(markdown).toContain("classic-patentscom-source-reader-remediation-3hc.6");

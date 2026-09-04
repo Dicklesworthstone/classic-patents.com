@@ -36,6 +36,7 @@ import type { CuratedSpecificationBlock, CuratedSpecificationInlines } from "../
 const MAX_PDF_TEXT_BUFFER_BYTES = 64 * 1024 * 1024;
 const BARE_DRAWING_REFERENCE = /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|division\s+\d+)\b/i;
 const EXPECTED_PUBLISHED_EDITION_IDS = new Set([
+  "us-x1-hopkins-potash",
   "us-x72-whitney-cotton-gin",
   "us-x9430-colt-revolver",
   "us-x8277-mccormick-reaper",

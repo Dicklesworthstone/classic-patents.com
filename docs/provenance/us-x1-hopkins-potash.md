@@ -9,14 +9,15 @@
 - Filing date: 1790-07-31
 - Primary public record: https://commons.wikimedia.org/wiki/File:United_States_Patent_X1.png
 - Local immutable facsimile: `public/patents/pdfs/us-x1-hopkins-potash.pdf`
-- Retrieval and full-facsimile review date: 2026-08-19
+- Retrieval date: 2026-08-19
+- Full-facsimile review date: 2026-09-04
 - Rights basis: a United States patent granted in 1790 (United States Patent No. 1); its historical text and drawings are public-domain United States Government material.
 - SHA-256: `d4cdaf8e4f5cf9fc841df0a98adca8341b5c513e4f328f013f50fc914509777e`
 - PDF page count: 1
 
 ## Facsimile map and comparison record
 
-The pinned single-page facsimile PDF was visually reviewed at full archival resolution. The public source face is deliberately continuous and provides the full legal instrument signed by President George Washington, Secretary of State Thomas Jefferson, and Attorney General Edmund Randolph.
+The pinned single-page facsimile PDF was visually reviewed at full archival resolution. The public source face is deliberately continuous and provides the full legal instrument executed by President George Washington and certified by Attorney General Edmund Randolph.
 
 | Facsimile locator | Content checked |
 | --- | --- |
